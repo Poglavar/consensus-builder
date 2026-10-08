@@ -1,0 +1,464 @@
+{
+  "checkedAt": "2026-10-08",
+  "scope": "Four one-village public exports centered on the observed click coordinates. Each 100 m × 100 m result was compared with four 50 m quadrants; each selected click ID was queried fresh by exact ID and an absent UUID was checked. No whole-village export was requested.",
+  "summary": {
+    "targets": 4,
+    "publishedVillageMapLoads": 4,
+    "ordinaryClickInfoGeometrySamples": 4,
+    "boundedViewportExports": 4,
+    "quadrantExports": 16,
+    "quadrantIdAndGeometryUnionsMatch": 4,
+    "freshExactIdMatchesClickGeometry": 4,
+    "syntheticAbsentIdLookupsReturnedZero": 4,
+    "wupTargetInsideClickSamples": 0,
+    "wholeVillageCompletenessProven": false,
+    "wholeCityCompletenessProven": false,
+    "registryFound": null,
+    "boundedViewportFeatures": 174,
+    "boundedViewportGeometryValidation": true,
+    "nonIntersectingCandidateResponses": 4,
+    "allClickCoordinatesInsideSampleParcels": true,
+    "wupPointCoveredByClickSample": 0,
+    "boundedViewportProviderCandidates": 181,
+    "boundedViewportActualIntersections": 174,
+    "providerReturnedNonIntersectingCenterCandidates": 7
+  },
+  "cities": [
+    {
+      "wupCityCode": 9587,
+      "city": "Kozhikode",
+      "file": "kerala-9587.json",
+      "selectedPublishedVillage": "Karuvanthuruthi",
+      "locationCode": "110114",
+      "districtGid": "2ece95c1-1675-4a41-9044-c3cbffeec718",
+      "talukGid": "f6220330-f761-40c4-9f51-d322eb85834a",
+      "villageGid": "31374b48-8a5d-4e89-96c7-55fc46d77504",
+      "clickSampleFile": "kerala-9587-click-sample.json",
+      "boundedExportFile": "kerala-9587-bounded-export.json",
+      "boundedFeatureCount": 57,
+      "quadrantUnionFeatureCount": 59,
+      "centerAndQuadrantIdsEqual": true,
+      "centerAndQuadrantGeometriesEqual": true,
+      "sampleIdInCenterWindow": true,
+      "exactIdGeometryMatchesClick": true,
+      "absentIdReturnedZero": true,
+      "wupDistanceToClickParcelMeters": 5900.11,
+      "scope": "One 100 m × 100 m window around a sample parcel in published Karuvanthuruthi revenue village, a Kozhikode-taluka peri-urban/city-edge candidate. The sample parcel is 5.90 km from the WUP target point, so it does not establish point coverage. This is not a complete village or city inventory.",
+      "wholeCityCompletenessProven": false,
+      "boundedGeometryValidation": {
+        "library": "backend/parcels/source-contract.js validateGeometry",
+        "projection": "EPSG:32643 to EPSG:4326 using backend package proj4 2.22.0, rounded to 1e-8 degrees",
+        "validFeatureCount": 59,
+        "totalFeatureCount": 59,
+        "allValid": true
+      },
+      "sampleCoordinateWgs84LonLat": [
+        75.82866662,
+        11.1611574
+      ],
+      "sampleCoordinateInsideParcel": true,
+      "distanceFromWupTargetToSampleCoordinateMeters": 5916.09,
+      "spatialIntersectionAudit": [
+        {
+          "window": "center100m",
+          "providerRawFeatureCount": 59,
+          "actualPolygonIntersectionCount": 57,
+          "rawCountMinusIntersectionCount": 2
+        },
+        {
+          "window": "southwest50m",
+          "providerRawFeatureCount": 18,
+          "actualPolygonIntersectionCount": 17,
+          "rawCountMinusIntersectionCount": 1
+        },
+        {
+          "window": "southeast50m",
+          "providerRawFeatureCount": 19,
+          "actualPolygonIntersectionCount": 16,
+          "rawCountMinusIntersectionCount": 3
+        },
+        {
+          "window": "northwest50m",
+          "providerRawFeatureCount": 23,
+          "actualPolygonIntersectionCount": 21,
+          "rawCountMinusIntersectionCount": 2
+        },
+        {
+          "window": "northeast50m",
+          "providerRawFeatureCount": 21,
+          "actualPolygonIntersectionCount": 19,
+          "rawCountMinusIntersectionCount": 2
+        }
+      ],
+      "providerReturnsNonIntersectingCandidates": true,
+      "allBoundedGeometriesValid": true,
+      "providerReturnedCandidateCount": 59,
+      "boundedPolygonIntersectionCount": 57,
+      "boundedFeatureCountDefinition": "unique returned geometries that actually intersect the 100 m center window",
+      "providerReturnedNonIntersectingCandidates": 2,
+      "actualPolygonIntersectionCountsByWindow": [
+        {
+          "window": "center100m",
+          "count": 57
+        },
+        {
+          "window": "southwest50m",
+          "count": 17
+        },
+        {
+          "window": "southeast50m",
+          "count": 16
+        },
+        {
+          "window": "northwest50m",
+          "count": 21
+        },
+        {
+          "window": "northeast50m",
+          "count": 19
+        }
+      ],
+      "perQuadrantRawIdSetsRetained": false,
+      "clickInfoPath": "/web/proxy/click_info/multiple/110114",
+      "clickInfoRequestFields": {
+        "layer_code": "LAND_PARCEL",
+        "crs": "32643",
+        "x": "590480.1322",
+        "y": "1233925.4370"
+      },
+      "clickInfoStatus": 200,
+      "nativeParcelIdField": "parcel_gid",
+      "status": "published_village_bounded_viewport_and_exact_id_verified_partial_coverage",
+      "resultCategory": "public_service_partial_geometry_sample",
+      "verifiedSample": true,
+      "registryFound": null
+    },
+    {
+      "wupCityCode": 9765,
+      "city": "Kochi",
+      "file": "kerala-9765.json",
+      "selectedPublishedVillage": "Thiruvankulam",
+      "locationCode": "070211",
+      "districtGid": "e0d2187c-2a19-444c-90c9-ffedf9eb5d69",
+      "talukGid": "20d024a3-6bca-4478-9678-8294a15b484f",
+      "villageGid": "a95a17f6-d671-497d-a791-54a351ef7858",
+      "clickSampleFile": "kerala-9765-click-sample.json",
+      "boundedExportFile": "kerala-9765-bounded-export.json",
+      "boundedFeatureCount": 33,
+      "quadrantUnionFeatureCount": 35,
+      "centerAndQuadrantIdsEqual": true,
+      "centerAndQuadrantGeometriesEqual": true,
+      "sampleIdInCenterWindow": true,
+      "exactIdGeometryMatchesClick": true,
+      "absentIdReturnedZero": true,
+      "wupDistanceToClickParcelMeters": 12210.19,
+      "scope": "One 100 m × 100 m window around a sample parcel in published Thiruvankulam village, a southern Kochi/Tripunithura urban-fringe candidate. The sample parcel is 12.21 km from the WUP target point, so it does not establish point coverage. This is not a complete village or city inventory.",
+      "wholeCityCompletenessProven": false,
+      "boundedGeometryValidation": {
+        "library": "backend/parcels/source-contract.js validateGeometry",
+        "projection": "EPSG:32643 to EPSG:4326 using backend package proj4 2.22.0, rounded to 1e-8 degrees",
+        "validFeatureCount": 35,
+        "totalFeatureCount": 35,
+        "allValid": true
+      },
+      "sampleCoordinateWgs84LonLat": [
+        76.36082896,
+        9.96340681
+      ],
+      "sampleCoordinateInsideParcel": true,
+      "distanceFromWupTargetToSampleCoordinateMeters": 12234.17,
+      "spatialIntersectionAudit": [
+        {
+          "window": "center100m",
+          "providerRawFeatureCount": 35,
+          "actualPolygonIntersectionCount": 33,
+          "rawCountMinusIntersectionCount": 2
+        },
+        {
+          "window": "southwest50m",
+          "providerRawFeatureCount": 13,
+          "actualPolygonIntersectionCount": 10,
+          "rawCountMinusIntersectionCount": 3
+        },
+        {
+          "window": "southeast50m",
+          "providerRawFeatureCount": 12,
+          "actualPolygonIntersectionCount": 10,
+          "rawCountMinusIntersectionCount": 2
+        },
+        {
+          "window": "northwest50m",
+          "providerRawFeatureCount": 17,
+          "actualPolygonIntersectionCount": 15,
+          "rawCountMinusIntersectionCount": 2
+        },
+        {
+          "window": "northeast50m",
+          "providerRawFeatureCount": 14,
+          "actualPolygonIntersectionCount": 12,
+          "rawCountMinusIntersectionCount": 2
+        }
+      ],
+      "providerReturnsNonIntersectingCandidates": true,
+      "allBoundedGeometriesValid": true,
+      "providerReturnedCandidateCount": 35,
+      "boundedPolygonIntersectionCount": 33,
+      "boundedFeatureCountDefinition": "unique returned geometries that actually intersect the 100 m center window",
+      "providerReturnedNonIntersectingCandidates": 2,
+      "actualPolygonIntersectionCountsByWindow": [
+        {
+          "window": "center100m",
+          "count": 33
+        },
+        {
+          "window": "southwest50m",
+          "count": 10
+        },
+        {
+          "window": "southeast50m",
+          "count": 10
+        },
+        {
+          "window": "northwest50m",
+          "count": 15
+        },
+        {
+          "window": "northeast50m",
+          "count": 12
+        }
+      ],
+      "perQuadrantRawIdSetsRetained": false,
+      "clickInfoPath": "/web/proxy/click_info/multiple/070211",
+      "clickInfoRequestFields": {
+        "layer_code": "LAND_PARCEL",
+        "crs": "32643",
+        "x": "649170.6726",
+        "y": "1101673.1650"
+      },
+      "clickInfoStatus": 200,
+      "nativeParcelIdField": "parcel_gid",
+      "status": "published_village_bounded_viewport_and_exact_id_verified_partial_coverage",
+      "resultCategory": "public_service_partial_geometry_sample",
+      "verifiedSample": true,
+      "registryFound": null
+    },
+    {
+      "wupCityCode": 9847,
+      "city": "Kollam",
+      "file": "kerala-9847.json",
+      "selectedPublishedVillage": "Iravipuram",
+      "locationCode": "020301",
+      "districtGid": "724af3d5-147d-416b-a956-b968b6c7f38b",
+      "talukGid": "a92fa901-eab7-40ae-abe9-f1b45f41cfaa",
+      "villageGid": "a5f8cb4b-9b03-4f8a-a391-5304842a8f7a",
+      "clickSampleFile": "kerala-9847-click-sample.json",
+      "boundedExportFile": "kerala-9847-bounded-export.json",
+      "boundedFeatureCount": 25,
+      "quadrantUnionFeatureCount": 27,
+      "centerAndQuadrantIdsEqual": true,
+      "centerAndQuadrantGeometriesEqual": true,
+      "sampleIdInCenterWindow": true,
+      "exactIdGeometryMatchesClick": true,
+      "absentIdReturnedZero": true,
+      "wupDistanceToClickParcelMeters": 54458.46,
+      "scope": "One 100 m × 100 m window around a sample parcel in published Iravipuram village, a Kollam urban-locality candidate. The sample parcel is 54.46 km from the WUP target point, so the WUP/city coordinate association remains unresolved. This is not a complete village or city inventory.",
+      "wholeCityCompletenessProven": false,
+      "boundedGeometryValidation": {
+        "library": "backend/parcels/source-contract.js validateGeometry",
+        "projection": "EPSG:32643 to EPSG:4326 using backend package proj4 2.22.0, rounded to 1e-8 degrees",
+        "validFeatureCount": 27,
+        "totalFeatureCount": 27,
+        "allValid": true
+      },
+      "sampleCoordinateWgs84LonLat": [
+        76.62751009,
+        8.84755083
+      ],
+      "sampleCoordinateInsideParcel": true,
+      "distanceFromWupTargetToSampleCoordinateMeters": 54470.31,
+      "spatialIntersectionAudit": [
+        {
+          "window": "center100m",
+          "providerRawFeatureCount": 27,
+          "actualPolygonIntersectionCount": 25,
+          "rawCountMinusIntersectionCount": 2
+        },
+        {
+          "window": "southwest50m",
+          "providerRawFeatureCount": 12,
+          "actualPolygonIntersectionCount": 10,
+          "rawCountMinusIntersectionCount": 2
+        },
+        {
+          "window": "southeast50m",
+          "providerRawFeatureCount": 9,
+          "actualPolygonIntersectionCount": 7,
+          "rawCountMinusIntersectionCount": 2
+        },
+        {
+          "window": "northwest50m",
+          "providerRawFeatureCount": 11,
+          "actualPolygonIntersectionCount": 10,
+          "rawCountMinusIntersectionCount": 1
+        },
+        {
+          "window": "northeast50m",
+          "providerRawFeatureCount": 14,
+          "actualPolygonIntersectionCount": 12,
+          "rawCountMinusIntersectionCount": 2
+        }
+      ],
+      "providerReturnsNonIntersectingCandidates": true,
+      "allBoundedGeometriesValid": true,
+      "providerReturnedCandidateCount": 27,
+      "boundedPolygonIntersectionCount": 25,
+      "boundedFeatureCountDefinition": "unique returned geometries that actually intersect the 100 m center window",
+      "providerReturnedNonIntersectingCandidates": 2,
+      "actualPolygonIntersectionCountsByWindow": [
+        {
+          "window": "center100m",
+          "count": 25
+        },
+        {
+          "window": "southwest50m",
+          "count": 10
+        },
+        {
+          "window": "southeast50m",
+          "count": 7
+        },
+        {
+          "window": "northwest50m",
+          "count": 10
+        },
+        {
+          "window": "northeast50m",
+          "count": 12
+        }
+      ],
+      "perQuadrantRawIdSetsRetained": false,
+      "clickInfoPath": "/web/proxy/click_info/multiple/020301",
+      "clickInfoRequestFields": {
+        "layer_code": "LAND_PARCEL",
+        "crs": "32643",
+        "x": "678983.4742",
+        "y": "978388.9526"
+      },
+      "clickInfoStatus": 200,
+      "nativeParcelIdField": "parcel_gid",
+      "status": "published_village_bounded_viewport_and_exact_id_verified_partial_coverage",
+      "resultCategory": "public_service_partial_geometry_sample",
+      "verifiedSample": true,
+      "registryFound": null
+    },
+    {
+      "wupCityCode": 10013,
+      "city": "Thiruvananthapuram",
+      "file": "kerala-10013.json",
+      "selectedPublishedVillage": "Kudappanakunnu",
+      "locationCode": "010111",
+      "districtGid": "dfd75e07-cae4-45e8-875b-6292909b8089",
+      "talukGid": "dbf9909e-af46-40ae-9ad6-0fa83789d7b5",
+      "villageGid": "a58a0b11-6829-4fd0-8d7a-a12ef5befd0b",
+      "clickSampleFile": "kerala-10013-click-sample.json",
+      "boundedExportFile": "kerala-10013-bounded-export.json",
+      "boundedFeatureCount": 59,
+      "quadrantUnionFeatureCount": 60,
+      "centerAndQuadrantIdsEqual": true,
+      "centerAndQuadrantGeometriesEqual": true,
+      "sampleIdInCenterWindow": true,
+      "exactIdGeometryMatchesClick": true,
+      "absentIdReturnedZero": true,
+      "wupDistanceToClickParcelMeters": 3469.63,
+      "scope": "One 100 m × 100 m window around a sample parcel in published Kudappanakunnu urban locality. The sample parcel is 3.47 km from the WUP target point and does not contain it. The earlier Sasthamangalam candidate at the WUP location was outside the published subset. This is not a complete village or city inventory.",
+      "wholeCityCompletenessProven": false,
+      "boundedGeometryValidation": {
+        "library": "backend/parcels/source-contract.js validateGeometry",
+        "projection": "EPSG:32643 to EPSG:4326 using backend package proj4 2.22.0, rounded to 1e-8 degrees",
+        "validFeatureCount": 60,
+        "totalFeatureCount": 60,
+        "allValid": true
+      },
+      "sampleCoordinateWgs84LonLat": [
+        76.95605474,
+        8.53918293
+      ],
+      "sampleCoordinateInsideParcel": true,
+      "distanceFromWupTargetToSampleCoordinateMeters": 3488.22,
+      "spatialIntersectionAudit": [
+        {
+          "window": "center100m",
+          "providerRawFeatureCount": 60,
+          "actualPolygonIntersectionCount": 59,
+          "rawCountMinusIntersectionCount": 1
+        },
+        {
+          "window": "southwest50m",
+          "providerRawFeatureCount": 28,
+          "actualPolygonIntersectionCount": 25,
+          "rawCountMinusIntersectionCount": 3
+        },
+        {
+          "window": "southeast50m",
+          "providerRawFeatureCount": 23,
+          "actualPolygonIntersectionCount": 21,
+          "rawCountMinusIntersectionCount": 2
+        },
+        {
+          "window": "northwest50m",
+          "providerRawFeatureCount": 17,
+          "actualPolygonIntersectionCount": 16,
+          "rawCountMinusIntersectionCount": 1
+        },
+        {
+          "window": "northeast50m",
+          "providerRawFeatureCount": 20,
+          "actualPolygonIntersectionCount": 19,
+          "rawCountMinusIntersectionCount": 1
+        }
+      ],
+      "providerReturnsNonIntersectingCandidates": true,
+      "allBoundedGeometriesValid": true,
+      "providerReturnedCandidateCount": 60,
+      "boundedPolygonIntersectionCount": 59,
+      "boundedFeatureCountDefinition": "unique returned geometries that actually intersect the 100 m center window",
+      "providerReturnedNonIntersectingCandidates": 1,
+      "actualPolygonIntersectionCountsByWindow": [
+        {
+          "window": "center100m",
+          "count": 59
+        },
+        {
+          "window": "southwest50m",
+          "count": 25
+        },
+        {
+          "window": "southeast50m",
+          "count": 21
+        },
+        {
+          "window": "northwest50m",
+          "count": 16
+        },
+        {
+          "window": "northeast50m",
+          "count": 19
+        }
+      ],
+      "perQuadrantRawIdSetsRetained": false,
+      "clickInfoPath": "/web/proxy/click_info/multiple/010111",
+      "clickInfoRequestFields": {
+        "layer_code": "LAND_PARCEL",
+        "crs": "32643",
+        "x": "715303.1991",
+        "y": "944452.0231"
+      },
+      "clickInfoStatus": 200,
+      "nativeParcelIdField": "parcel_gid",
+      "status": "published_village_bounded_viewport_and_exact_id_verified_partial_coverage",
+      "resultCategory": "public_service_partial_geometry_sample",
+      "verifiedSample": true,
+      "registryFound": null
+    }
+  ]
+}

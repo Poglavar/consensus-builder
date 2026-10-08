@@ -1,0 +1,273 @@
+{
+  "schemaVersion": 1,
+  "kind": "city_parcel_source_research",
+  "checkedAt": "2026-10-08",
+  "workstream": "africa_east",
+  "verifiedParcelResponse": {
+    "provider": "ArcGIS Online public FeatureServer item TZ Lands_WFL1; publisher authority not established",
+    "endpoint": "https://services3.arcgis.com/kUatCIwPzByJQvIx/ArcGIS/rest/services/TZ_Lands_WFL1/FeatureServer/0/query",
+    "layer": {
+      "name": "Parcel",
+      "geometryType": "esriGeometryPolygon",
+      "spatialReference": 3857,
+      "featureCount": 17,
+      "candidateNativeKeyField": "ParcelNo"
+    },
+    "candidateExtentWgs84": [
+      39.11553,
+      -6.59489,
+      39.12617,
+      -6.58302
+    ],
+    "candidateExtentRelation": "Small advertised extent is about 29 km northwest of the WUP centre; it does not establish Dar city coverage.",
+    "targetCenterCount": 0,
+    "sampleRequest": {
+      "where": "1=1",
+      "geometry": "39.120,-6.589,39.122,-6.587",
+      "geometryType": "esriGeometryEnvelope",
+      "inSR": 4326,
+      "outSR": 4326,
+      "outFields": "OBJECTID,ParcelNo",
+      "returnGeometry": true,
+      "resultRecordCount": 1
+    },
+    "sampleHttpStatus": 200,
+    "sampleFeatureCount": 1,
+    "sampleGeometryType": "Polygon",
+    "sampleVertexCount": 5,
+    "sampleGeometryBboxWgs84": [
+      39.120091,
+      -6.589371,
+      39.12247,
+      -6.587311
+    ],
+    "assessment": "The bounded sample has a nonempty ParcelNo value (17 characters), but its value was not retained. The catalog item only tags the source “Tanzania land bank”; it does not document a Dar es Salaam affiliation. The layer extent is about 28.7 km from the WUP centre and a 1 km centre count is zero, so do not treat this sample as a WUP-city match.",
+    "sampleParcelNo": {
+      "fieldPresent": true,
+      "nonempty": true,
+      "valueSaved": false,
+      "valueLengthCharacters": 17
+    },
+    "nearestExtentCornerDistanceToWupCenterMeters": 28657,
+    "itemMetadata": {
+      "httpStatus": 200,
+      "title": "TZ Lands_WFL1",
+      "type": "Feature Service",
+      "access": "public",
+      "tags": [
+        "Tanzania land bank."
+      ],
+      "descriptionPresent": false,
+      "documentedDarCityAffiliation": false
+    }
+  },
+  "registryFound": null,
+  "verifiedSample": false,
+  "coverageAssessment": {
+    "verifiedOpenScope": null,
+    "countrywideVerified": false
+  },
+  "cityId": "wup2025:3566",
+  "wupCityCode": 3566,
+  "name": "Dar es Salaam",
+  "country": "United Republic of Tanzania",
+  "countryCode": "TZ",
+  "centerLatLon": [
+    -6.83352843774764,
+    39.2241417477354
+  ],
+  "status": "no_verified_sample_candidate_extent_excludes_target",
+  "priorEvidence": [
+    "research/india-africa-2026-10-08/africa-ne-city-dar-es-salaam.json",
+    "research/india-africa-2026-10-08/africa-ne-country-TZ.json"
+  ],
+  "newFindings": [
+    {
+      "source": "Tanzania Ministry of Lands, Survey and Mapping Department",
+      "url": "https://www.lands.go.tz/services/surveys-and-mapping-2",
+      "evidence": "Official mandate covers cadastral/topographic/geodetic surveys, converting survey data into charts/maps/plans, and maintaining national mapping infrastructure. The page describes departmental functions, not an open parcel API."
+    },
+    {
+      "source": "Tanzania Ministry of Lands, Huduma ya Upimaji na Ramani brochure",
+      "url": "https://www.lands.go.tz/uploads/documents/sw-1682065961-HUDUMA%20YA%20UPIMAJI%20NA%20RAMANI.pdf",
+      "evidence": "Official service brochure describes map products, including electronic maps for some urban/municipal areas, as products supplied on application/for a fee. Cadastral-map and plan-registration services are agency workflows, not evidence of unrestricted bulk access."
+    },
+    {
+      "source": "Dar es Salaam 20,000 plot survey project",
+      "url": "https://www.lands.go.tz/uploads/documents/sw-1693120359-1456588499-MRADI%20WA%20KUPIMA%20VIWANJA%2020_000%20JIJINI%20DAR%20ES%20SALAAM.pdf",
+      "evidence": "Official project document describes a plot surveying/allocation process in Dar; it does not publish a reusable parcel feature layer."
+    },
+    {
+      "source": "e-Ardhi",
+      "url": "https://eardhi.lands.go.tz/",
+      "evidence": "Previously reviewed official land-services application uses an account-oriented workflow. No anonymous parcel query/download endpoint was identified."
+    },
+    {
+      "source": "TAMISEMI GeoPortal",
+      "url": "https://tamisemi.online/",
+      "evidence": "Public geospatial portal inventory reviewed in the prior pass showed thematic/admin layers (e.g. schools, reserves, hazards), not cadastral plots. The portal host/operator status was not independently established as an authoritative cadastral publisher."
+    },
+    {
+      "source": "ArcGIS Online public catalog search, exact Dar parcel query",
+      "url": "https://www.arcgis.com/sharing/rest/search?q=%22Dar+es+Salaam%22+parcel&f=json&num=10&start=1",
+      "evidence": "Returned one feature service, Dar Es Salaam Damage Assessment. Direct service metadata identifies point layers for commercial/residential buildings and public facilities and describes a structural-damage collection, so this is a project/assessment service, not cadastral polygons."
+    },
+    {
+      "source": "ArcGIS Online public catalog item TZ Lands_WFL1",
+      "url": "https://services3.arcgis.com/kUatCIwPzByJQvIx/ArcGIS/rest/services/TZ_Lands_WFL1/FeatureServer",
+      "evidence": "A fresh exact ArcGIS search returned a Feature Service with one polygon layer called Parcel (17 features). A bounded 1-feature query returned a polygon and the metadata advertises ParcelNo as an identifier field. Its small extent is [39.11553,-6.59489,39.12617,-6.58302], approximately 29 km northwest of the WUP city point; count within 1 km of that point is zero. This is a genuine public nearby parcel candidate, but source authority and Dar-wide coverage are unverified."
+    }
+  ],
+  "discoveryChecks": [
+    {
+      "target": "ArcGIS exact Dar parcel search",
+      "method": "GET ArcGIS Online sharing REST search, q=\"Dar es Salaam\" parcel, f=json, num=10",
+      "httpStatus": 200,
+      "resultCount": 1,
+      "result": "Only Dar Es Salaam Damage Assessment Feature Service."
+    },
+    {
+      "target": "Dar damage-assessment false positive metadata",
+      "method": "GET FeatureServer and layer metadata only; no feature records fetched",
+      "httpStatus": 200,
+      "result": "Three point layers: Commercial Buildings, Residential Buildings, Public Facilities. Service description says structural-damage assessment collection; not cadastral parcel polygons."
+    },
+    {
+      "target": "Tanzania parcel service catalog item",
+      "method": "GET ArcGIS Online search q=TZ_Lands_WFL1, f=json, num=5",
+      "httpStatus": 200,
+      "resultCount": 1,
+      "result": "TZ Lands_WFL1 Feature Service; item ID 27c2898e0cd34eb0a7a09dceff7575a3."
+    },
+    {
+      "target": "Candidate Parcel layer metadata",
+      "method": "GET FeatureServer/0?f=json",
+      "httpStatus": 200,
+      "result": "Polygon layer named Parcel; service metadata lists 17 records and a small extent in EPSG:3857. Metadata advertises ParcelNo as a candidate parcel reference. No owner/contact values were requested or saved."
+    },
+    {
+      "target": "Candidate service coverage at target",
+      "method": "GET layer query with returnCountOnly=true, 1 km distance from WUP centre",
+      "httpStatus": 200,
+      "resultCount": 0
+    },
+    {
+      "target": "Candidate geometry sample",
+      "method": "GET layer query restricted to 0.002 degree envelope, resultRecordCount=1, outFields=OBJECTID,ParcelNo, returnGeometry=true",
+      "httpStatus": 200,
+      "featureCount": 1,
+      "result": "One closed Polygon, 5 vertices, no attribute values retained."
+    },
+    {
+      "target": "ArcGIS broad catalogue context",
+      "method": "GET search q=\"Dar es Salaam\" cadastral OR cadastre and q=\"Dar es Salaam\" land use GIS, f=json, num=10",
+      "httpStatus": 200,
+      "result": "First-page results were mostly NDVI, hospitals, bus-stop travel analyses and other thematic products; land-use query returned zero. They do not establish a city parcel layer."
+    },
+    {
+      "target": "Nonempty native candidate identifier",
+      "method": "Repeat bounded one-feature query; inspect only whether ParcelNo is empty and its type/length, never the value",
+      "httpStatus": 200,
+      "result": "ParcelNo is a nonempty string (17 characters); value not retained."
+    },
+    {
+      "target": "Candidate item provenance/nearby city affiliation",
+      "method": "GET public ArcGIS item metadata by item ID",
+      "httpStatus": 200,
+      "result": "Public feature service, tag “Tanzania land bank.”, no description or documented Dar-city affiliation; layer extent nearest corner is approximately 28.7 km from WUP centre."
+    }
+  ],
+  "sourceQuality": "The ArcGIS Damage Assessment service is non-cadastral based on its own description and point geometry. TZ Lands_WFL1 is a public third-party ArcGIS-hosted polygon layer named Parcel, with a nonempty ParcelNo field and one sampled polygon, but its item only says “Tanzania land bank.” No source authority or Dar municipal affiliation is documented; its extent is 28.7 km from the target point.",
+  "blocker": "A public partial parcel candidate exists, but its extent lies about 28.7 km from the WUP point, a 1 km centre count is zero, and the item does not document Dar-city affiliation. No city-centre parcel geometry or authoritative registry endpoint was found.",
+  "remainingUncertainty": "The partial polygon layer may refer to land in the wider Dar region, but no municipal boundary overlay or authoritative source attribution was established. Do not generalize its 17 features citywide or treat its nonempty ParcelNo as a city match.",
+  "nextStep": "Ask the publishing agency or data custodian for the service scope/authority and a published endpoint whose extent includes the WUP point or documented Dar municipality; then make a bounded parcel-ID+geometry query.",
+  "sampleGeometryVerified": true,
+  "requests": [
+    {
+      "endpoint": "https://www.arcgis.com/sharing/rest/search",
+      "method": "GET",
+      "query": {
+        "q": "\"Dar es Salaam\" parcel",
+        "f": "json",
+        "num": 10,
+        "start": 1
+      },
+      "httpStatus": 200,
+      "resultCount": 1,
+      "assessment": "The sole match was a damage-assessment service, not a parcel layer."
+    },
+    {
+      "endpoint": "https://www.arcgis.com/sharing/rest/search",
+      "method": "GET",
+      "query": {
+        "q": "TZ_Lands_WFL1",
+        "f": "json",
+        "num": 5,
+        "start": 1
+      },
+      "httpStatus": 200,
+      "resultCount": 1,
+      "assessment": "Returned the public TZ Lands_WFL1 Feature Service candidate."
+    },
+    {
+      "endpoint": "https://services3.arcgis.com/kUatCIwPzByJQvIx/ArcGIS/rest/services/TZ_Lands_WFL1/FeatureServer",
+      "method": "GET",
+      "query": {
+        "f": "json"
+      },
+      "httpStatus": 200,
+      "assessment": "One layer, Parcel (0), polygon geometry; advertised 17 features, local extent does not contain target centre."
+    },
+    {
+      "endpoint": "https://services3.arcgis.com/kUatCIwPzByJQvIx/ArcGIS/rest/services/TZ_Lands_WFL1/FeatureServer/0/query",
+      "method": "GET",
+      "query": {
+        "f": "json",
+        "returnCountOnly": true,
+        "where": "1=1"
+      },
+      "httpStatus": 200,
+      "count": 17,
+      "assessment": "Count only; no feature records or attributes."
+    },
+    {
+      "endpoint": "https://services3.arcgis.com/kUatCIwPzByJQvIx/ArcGIS/rest/services/TZ_Lands_WFL1/FeatureServer/0/query",
+      "method": "GET",
+      "query": {
+        "f": "json",
+        "returnCountOnly": true,
+        "where": "1=1",
+        "geometry": "39.2241417477354,-6.83352843774764",
+        "geometryType": "esriGeometryPoint",
+        "inSR": 4326,
+        "spatialRel": "esriSpatialRelIntersects",
+        "distance": 1000,
+        "units": "esriSRUnit_Meter"
+      },
+      "httpStatus": 200,
+      "count": 0,
+      "assessment": "Count only within 1 km of the WUP centre."
+    },
+    {
+      "endpoint": "https://services3.arcgis.com/kUatCIwPzByJQvIx/ArcGIS/rest/services/TZ_Lands_WFL1/FeatureServer/0/query",
+      "method": "GET",
+      "query": {
+        "f": "json",
+        "where": "1=1",
+        "geometry": "39.120,-6.589,39.122,-6.587",
+        "geometryType": "esriGeometryEnvelope",
+        "inSR": 4326,
+        "spatialRel": "esriSpatialRelIntersects",
+        "outFields": "OBJECTID,ParcelNo",
+        "returnGeometry": true,
+        "outSR": 4326,
+        "returnZ": false,
+        "returnM": false,
+        "resultRecordCount": 1
+      },
+      "httpStatus": 200,
+      "featureCount": 1,
+      "assessment": "One bounded polygon sample confirmed geometry and ParcelNo key presence; no identifier value or owner/contact attributes retained."
+    }
+  ]
+}

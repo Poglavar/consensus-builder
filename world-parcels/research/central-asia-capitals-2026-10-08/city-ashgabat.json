@@ -1,0 +1,99 @@
+{
+  "schemaVersion": 1,
+  "kind": "city_parcel_source_research",
+  "checkedAt": "2026-10-08",
+  "verifiedParcelResponse": null,
+  "source": null,
+  "registryFound": null,
+  "verifiedSample": false,
+  "targetGeometryEvidence": "none",
+  "nativeIdReadiness": "not_verified",
+  "cityId": "capital:TM:ashgabat",
+  "name": "Ashgabat",
+  "country": "Turkmenistan",
+  "countryCode": "TM",
+  "centerLatLon": [
+    37.9601,
+    58.3261
+  ],
+  "pointBasis": "Chosen central-city map query point; not a WUP centroid or official boundary.",
+  "resultCategory": "public_service_no_geometry",
+  "priorEvidence": [],
+  "nativeLanguageSearches": [
+    {
+      "languageScript": "Russian",
+      "exactQuery": "Ашхабад земельный кадастр кадастровая карта участок геопортал Туркменистан официальный",
+      "date": "2026-10-08",
+      "executionMethod": "web.run search_query; response_length=long",
+      "resultUrls": [
+        "https://www.turkmenistan.gov.tm/ru/post/58708/zakon-turkmenistana-o-gosudarstvennom-zemelnom-kadastre",
+        "https://mejlis.gov.tm/single-law/355?lang=ru",
+        "https://turkmenistan.gov.tm/ru/post/82861/kadastr-uchyot-zemelnyh-resursov"
+      ],
+      "summary": "Official statutory sources describe a national land cadastre and cadastral maps covering Ashgabat, with parcel boundaries, area, turning-point coordinates and unique cadastral numbers. No public map viewer/download endpoint surfaced."
+    },
+    {
+      "languageScript": "Turkmen (Latin)",
+      "exactQuery": "Aşgabat ýer kadastry kadastr kartasy ýer bölegi geoportal",
+      "date": "2026-10-08",
+      "executionMethod": "web.run search_query; response_length=long",
+      "resultUrls": [
+        "https://mejlis.gov.tm/single-law/355?lang=tm"
+      ],
+      "summary": "Official Turkmen-language law describes the unified state land cadastre, cadastral maps, unique parcel number, and the scope including Ashgabat. Search found no public GIS service endpoint."
+    }
+  ],
+  "officialAndRelevantLeads": [
+    {
+      "url": "https://mejlis.gov.tm/single-law/355?lang=ru",
+      "operator": "Mejlis of Turkmenistan",
+      "observation": "Official law defines cadastral maps as graphical/textual land-cadastre records and says they depict parcel boundaries, areas, turning-point coordinates and cadastral numbers. Typical cadastral maps cover Ashgabat. It also provides that cadastral information is furnished under an established procedure, may be paid, and may be subject to access restrictions."
+    },
+    {
+      "url": "https://turkmenistan.gov.tm/ru/post/58708/zakon-turkmenistana-o-gosudarstvennom-zemelnom-kadastre",
+      "operator": "Government of Turkmenistan publication of land-cadastre law",
+      "observation": "Official legal text confirms unique cadastral IDs and map layers/scope for Ashgabat, but does not publish an online viewer or feature endpoint."
+    },
+    {
+      "url": "https://turkmenistan.gov.tm/ru/post/82861/kadastr-uchyot-zemelnyh-resursov",
+      "operator": "Government of Turkmenistan publication",
+      "observation": "Reports digitalization of land-cadastre work and territorial registry services including Ashgabat. This is evidence of institutional digitization, not public parcel access."
+    },
+    {
+      "url": "https://tdh.gov.tm/ru/post/26915/zapushchen-sajt-sluzhby-po-gosudarstvennoj-registracii-prav-na-nedvizhimoe-imushchestvo",
+      "operator": "State News Agency of Turkmenistan (TDH)",
+      "observation": "Reports launch of a state real-estate rights registration service site and public appointment workflow; it does not identify public spatial data or parcel geometry."
+    }
+  ],
+  "requestsAndEndpointChecks": [
+    {
+      "url": "https://mejlis.gov.tm/single-law/355?lang=ru",
+      "method": "GET",
+      "httpStatus": "accessible (web search/open)",
+      "contentType": "HTML",
+      "assessment": "Official legal source confirms city coverage and parcel-map contents, but no public download route."
+    },
+    {
+      "url": "https://turkmenistan.gov.tm/ru/post/58708/zakon-turkmenistana-o-gosudarstvennom-zemelnom-kadastre",
+      "method": "GET",
+      "httpStatus": "accessible (web open)",
+      "contentType": "HTML",
+      "assessment": "Statutory lead confirms cadastral system and Ashgabat map scope; no online geometry service found."
+    },
+    {
+      "url": "https://turkmenistan.gov.tm/ru/post/82861/kadastr-uchyot-zemelnyh-resursov",
+      "method": "GET",
+      "httpStatus": "accessible (web open)",
+      "contentType": "HTML",
+      "assessment": "Describes digital land-cadastre modernization, not anonymous parcel API."
+    }
+  ],
+  "coverageAssessment": {
+    "claimedScope": "Statutory State Land Cadastre is nationwide and includes cadastral maps for Ashgabat.",
+    "verifiedOpenScope": null,
+    "countrywideVerified": false
+  },
+  "blocker": "The law proves cadastral maps exist for Ashgabat and define parcels with boundaries, coordinates and unique numbers, but this search found no ordinary public viewer or bounded digital feature endpoint. The law indicates access is provided under established procedures and may be paid/restricted.",
+  "remainingUncertainty": "Whether any public GIS map has been published outside the searched official portals, whether map data are digital and downloadable to ordinary users, and whether parcel geometry can be accessed without an application.",
+  "nextStep": "Search for a publicly advertised official Ashgabat land-resource/registration map or dataset; use only a published public service and bounded feature query if found."
+}

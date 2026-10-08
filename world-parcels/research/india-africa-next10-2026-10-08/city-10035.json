@@ -1,0 +1,138 @@
+{
+  "schemaVersion": 1,
+  "checkedAt": "2026-10-08",
+  "wupCityCode": 10035,
+  "cityId": "wup2025:10035",
+  "name": "Ghatkesar",
+  "country": "India",
+  "countryCode": "IN",
+  "centerLatLon": [
+    17.4300271469809,
+    78.6542279686069
+  ],
+  "cohorts": [
+    "growth200"
+  ],
+  "queuePriority": 43,
+  "stateOrUT": "Telangana",
+  "administrativeIdentity": {
+    "district": "Medchal_Malkajgiri (new boundary; old TGRAC field D_Name=Rangareddy)",
+    "tehsilOrTaluk": "Ghatkesar mandal",
+    "revenueVillage": "Annojiguda",
+    "identityEvidence": "Official TGRAC query feature at exact saved WUP coordinate returns DMV_Code 1512012, New_Villagename Annojiguda, New_Mandal Ghatkesar. The WUP cohort label Ghatkesar is retained; this revenue-village identity is separate."
+  },
+  "inheritedResearch": {
+    "previouslyInvestigated": false,
+    "previousStatuses": [],
+    "previousEvidenceFiles": [],
+    "registryFoundBefore": null,
+    "verifiedSampleBefore": false,
+    "sourceIdsBefore": [],
+    "evidence": []
+  },
+  "freshResearch": {
+    "queries": [
+      {
+        "language": "Telugu",
+        "script": "Telugu",
+        "query": "ఘట్‌కేసర్ భూసర్వే గ్రామ పటం పట్టాదారు భూభారతి తెలంగాణ",
+        "checkedAt": "2026-10-08",
+        "actualResultUrls": [
+          "https://bhubharati.telangana.gov.in/gis/",
+          "https://tgrac.telangana.gov.in/arcgis/rest/services/Bhunaksha_Folder/Bhunaksha_query/MapServer?f=json"
+        ],
+        "result": "Search surfaced official Telangana Bhu Bharati and TGRAC map routes. Native-script search itself did not prove coverage; the direct TGRAC bounded API call below verified one parcel feature."
+      }
+    ],
+    "portals": [
+      {
+        "name": "Telangana Bhu Bharati public GIS",
+        "operator": "Government of Telangana",
+        "homeUrl": "https://bhubharati.telangana.gov.in/gis/",
+        "observation": "Public GIS selector lists district/division/mandal/village and survey-number search; this remains the viewer/record interface."
+      },
+      {
+        "name": "TGRAC Bhunaksha query MapServer",
+        "operator": "Telangana Remote Sensing Applications Centre, Government of Telangana",
+        "homeUrl": "https://tgrac.telangana.gov.in/arcgis/rest/services/Bhunaksha_Folder/Bhunaksha_query/MapServer?f=json",
+        "mapUrl": "https://tgrac.telangana.gov.in/arcgis/rest/services/Bhunaksha_Folder/Bhunaksha_query/MapServer/0?f=json",
+        "observation": "Public ArcGIS REST MapServer layer Full Cadastral is polygon geometry, reports WKID 4326 and query support. A point query at the exact WUP location and a native-key attribute query both returned the same parcel polygon."
+      }
+    ],
+    "requests": [
+      {
+        "method": "GET",
+        "url": "https://tgrac.telangana.gov.in/arcgis/rest/services/Bhunaksha_Folder/Bhunaksha_query/MapServer?f=json",
+        "httpStatus": 200,
+        "contentType": null,
+        "assessment": "MapServer metadata identifies public layers including Full Cadastral and query operations; layer cap 1000."
+      },
+      {
+        "method": "GET",
+        "url": "https://tgrac.telangana.gov.in/arcgis/rest/services/Bhunaksha_Folder/Bhunaksha_query/MapServer/0?f=json",
+        "httpStatus": 200,
+        "contentType": null,
+        "assessment": "Full Cadastral polygon layer advertises WGS84 (WKID 4326), maxRecordCount 1000, and query capability."
+      },
+      {
+        "method": "GET",
+        "url": "https://tgrac.telangana.gov.in/arcgis/rest/services/Bhunaksha_Folder/Bhunaksha_query/MapServer/0/query?geometry=78.6542279686069%2C17.4300271469809&geometryType=esriGeometryPoint&inSR=4326&spatialRel=esriSpatialRelIntersects&outFields=Parcel_num%2CV_Name%2CM_Name%2CD_Name%2CDMV_Code%2CNew_District%2CNew_Mandal%2CNew_Villagename%2CRemarks&returnGeometry=true&outSR=4326&f=json",
+        "httpStatus": 200,
+        "contentType": null,
+        "assessment": "Exact WUP point intersects one nonempty polygon; native fields identify Annojiguda revenue village, code 1512012, parcel number 92. Same polygon as exact attribute lookup."
+      },
+      {
+        "method": "GET",
+        "url": "https://tgrac.telangana.gov.in/arcgis/rest/services/Bhunaksha_Folder/Bhunaksha_query/MapServer/0/query?where=DMV_Code%3D%271512012%27+AND+Parcel_num%3D%2792%27+AND+V_Name%3D%27Annojiguda%27&outFields=Parcel_num%2CV_Name%2CM_Name%2CD_Name%2CDMV_Code%2CNew_District%2CNew_Mandal%2CNew_Villagename%2CRemarks&returnGeometry=true&outSR=4326&f=json",
+        "httpStatus": 200,
+        "contentType": null,
+        "assessment": "The successful composite natural-key filter DMV_Code=1512012 AND Parcel_num=92 AND V_Name=Annojiguda returned one polygon, with the same 27-vertex ring as the exact WUP point query. No object ID is used as identity."
+      },
+      {
+        "method": "GET",
+        "url": "https://tgrac.telangana.gov.in/arcgis/rest/services/Bhunaksha_Folder/Bhunaksha_query/MapServer/0/query?geometry=78.6528%2C17.4296&geometryType=esriGeometryPoint&inSR=4326&spatialRel=esriSpatialRelIntersects&outFields=Parcel_num%2CV_Name%2CM_Name%2CD_Name%2CDMV_Code%2CNew_District%2CNew_Mandal%2CNew_Villagename%2CRemarks&returnGeometry=false&resultRecordCount=3&f=json",
+        "httpStatus": 200,
+        "contentType": null,
+        "assessment": "A separate nearby point returned parcel number 93 with the same DMV_Code=1512012 and Annojiguda/Ghatkesar attributes, showing different parcels are distinguished by Parcel_num within this sampled village; this is not a key-stability or uniqueness proof."
+      }
+    ]
+  },
+  "status": "verified_sample_partial_coverage",
+  "verifiedParcelResponse": "india-city-10035-parcel-response.json",
+  "coverageAssessment": {
+    "claimedScope": "one point-intersecting parcel at WUP Ghatkesar center; sample in Annojiguda village",
+    "verifiedOpenScope": "one parcel feature, no completeness or village/city coverage claim",
+    "countrywideVerified": false
+  },
+  "resultCategory": "verified_sample_city_scope",
+  "registryFound": true,
+  "verifiedSample": true,
+  "technicalBlocker": "Nine app cells yielded 37 nonblank survey numbers; fresh exact native-ID counts, manifests and geometries timed out at 15 seconds. The source also supports ESRI JSON/AMF only, while the current adapter requires GeoJSON. Three blank-ID Road/Village boundary rows are an explicit omitted-subset candidate, not parcel identities.",
+  "remainingUncertainty": "Only one parcel was sampled. Attribute identity is composite (DMV_Code 1512012 + Parcel_num 92), but source did not document a permanence guarantee. Not yet an integration acceptance result.",
+  "nextStep": "Establish repeatable complete native-ID reads within the existing deadline, then add tested ESRI JSON support before app enablement; retain explicit unidentified-boundary exclusions.",
+  "workstream": "india",
+  "kind": "city_parcel_source_research",
+  "queueCohorts": [
+    "growth200"
+  ],
+  "queuePriorAssessment": {
+    "checkedAt": "2026-10-08",
+    "cohort": "india-africa",
+    "evidenceFile": "research/india-africa-2026-10-08/india-city-10035.json",
+    "resultCategory": "no_verified_sample_candidate_citywide",
+    "freshVerifiedSample": false,
+    "technicalBlocker": "Official state selector/viewer is publicly reachable, but this bounded pass did not resolve a city-specific cadastral feature or verify nonempty parcel geometry at the WUP target.",
+    "nextStep": "Select the official Bhu Bharati district, mandal and village at the WUP coordinate; test the point or one survey number and capture its parcel geometry and stable survey identifier."
+  },
+  "sourceQuality": "Official TGRAC/Telangana government ArcGIS REST service; point and attribute lookup returned a public polygon. Native identity uses publisher fields DMV_Code + Parcel_num; no object ID is used.",
+  "assessment": {
+    "status": "verified_sample_partial_coverage",
+    "runtimeReadiness": "technical-hold",
+    "registryFound": true,
+    "verifiedSample": true,
+    "technicalBlocker": "Nine app cells yielded 37 nonblank survey numbers; fresh exact native-ID counts, manifests and geometries timed out at 15 seconds. The source also supports ESRI JSON/AMF only, while the current adapter requires GeoJSON. Three blank-ID Road/Village boundary rows are an explicit omitted-subset candidate, not parcel identities.",
+    "evidenceFile": "research/india-africa-next10-2026-10-08/ghatkesar-acceptance.json"
+  },
+  "runtimeReadiness": "technical-hold",
+  "acceptanceFile": "research/india-africa-next10-2026-10-08/ghatkesar-acceptance.json"
+}

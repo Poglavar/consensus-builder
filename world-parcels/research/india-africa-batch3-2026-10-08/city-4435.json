@@ -1,0 +1,150 @@
+{
+  "schemaVersion": 1,
+  "kind": "city_parcel_source_research",
+  "cityId": "wup2025:4435",
+  "wupCityCode": 4435,
+  "name": "Al-Qahirah (Cairo)",
+  "country": "Egypt",
+  "countryCode": "EG",
+  "centerLatLon": [
+    30.0646095252452,
+    31.2607144569505
+  ],
+  "population2025": 25566102,
+  "checkedAt": "2026-10-08",
+  "resultCategory": "public_service_no_geometry",
+  "priorEvidence": [
+    {
+      "path": "research/cairo.json",
+      "status": null
+    },
+    {
+      "path": "research/india-africa-2026-10-08/africa-ne-city-al-qahirah-cairo.json",
+      "status": "public_service_no_geometry"
+    }
+  ],
+  "priorBlocker": "The public city-specific search found no verified parcel polygons for Al-Qahirah (Cairo); ESA map products and NUCA land-offer maps do not establish an open general cadastre for this city.",
+  "nativeLanguageSearches": [
+    {
+      "languageScript": "Arabic",
+      "exactQuery": "القاهرة قطع الأراضي خريطة مساحية بيانات مفتوحة عقارات بوابة حكومية",
+      "date": "2026-10-08",
+      "executionMethod": "web.run search_query; response_length=long",
+      "resultUrls": [
+        "https://cairo.gov.eg/ar",
+        "https://www.esa.gov.eg/alexDigitalMaps.aspx",
+        "https://www.gcudc.gov.eg/",
+        "https://lands.nuca.gov.eg/ar/ViewZone.aspx",
+        "https://www.esa.gov.eg/sellingmaproomdigital.aspx"
+      ],
+      "summary": "Found official Cairo Governorate map directory, official Survey Authority digital map product workflow, city utilities GIS, and NUCA offered-plot pages. None exposes a public general cadastral feature layer for Cairo."
+    },
+    {
+      "languageScript": "Arabic",
+      "exactQuery": "القاهرة السجل العيني الحضري الهيئة المصرية العامة للمساحة GIS قطع الأراضي خرائط تاريخية",
+      "date": "2026-10-08",
+      "executionMethod": "web.run search_query; response_length=long",
+      "resultUrls": [
+        "https://www.esa.gov.eg/segel.aspx",
+        "https://www.esa.gov.eg/egy_his_maps.aspx",
+        "https://www.esa.gov.eg/sellingmaproomdigital.aspx"
+      ],
+      "summary": "Official ESA confirms an urban real-property register project and historical 1892 Cairo cadastral sheets; the current digital maps route requires a formal request. No anonymous current parcel vector service was found."
+    }
+  ],
+  "officialAndRelevantLeads": [
+    {
+      "url": "https://www.cairo.gov.eg/ar/about-governorate/maps/",
+      "operator": "Cairo Governorate",
+      "observation": "Official map directory lists neighborhood, tourism, and government-services maps; these are administrative/service maps, not parcel cadastre."
+    },
+    {
+      "url": "https://www.esa.gov.eg/sellingmaproomdigital.aspx",
+      "operator": "Egyptian Survey Authority (ESA)",
+      "observation": "Official digital-map products are requested by formal letter, with location, scale, layers, format/projection; an estimate/payment and delivery process follows. This is a request/purchase route, not an anonymous download endpoint."
+    },
+    {
+      "url": "https://www.gcudc.gov.eg/",
+      "operator": "Cairo Governorate Utilities Network Information Center",
+      "observation": "Officially described GIS supports utility infrastructure and survey services; no general land-parcel layer is published on the page."
+    },
+    {
+      "url": "https://lands.nuca.gov.eg/ar/ViewZone.aspx?ID=4797",
+      "operator": "New Urban Communities Authority (NUCA)",
+      "observation": "Prior pass traced this to New Cairo offered lots. It is a new-city land-allocation project, not Cairo-wide land registry coverage."
+    },
+    {
+      "url": "https://www.esa.gov.eg/segel.aspx",
+      "operator": "Egyptian Survey Authority (ESA)",
+      "observation": "Official description of the National Urban Real-Estate Register says it builds a national property database as a GIS for land and real estate in cities/new urban communities; its implementation list includes Cairo districts and New Cairo. This confirms cadastral mapping context, not public access."
+    },
+    {
+      "url": "https://www.esa.gov.eg/egy_his_maps.aspx",
+      "operator": "Egyptian Survey Authority (ESA)",
+      "observation": "Official historical-map catalogue lists Cairo cadastral map sheets dating to 1892, described as showing property and other features. Historical maps are not current parcel boundaries."
+    },
+    {
+      "url": "https://www.esa.gov.eg/sellingmaproomdigital.aspx",
+      "operator": "Egyptian Survey Authority (ESA)",
+      "observation": "Current digital map products follow a written-request workflow specifying location, scale, layers and format, followed by estimate/payment/delivery; no anonymous feature service is described."
+    }
+  ],
+  "requestsAndEndpointChecks": [
+    {
+      "url": "https://www.cairo.gov.eg/ar/about-governorate/maps/",
+      "method": "GET",
+      "httpStatus": "accessible (web open)",
+      "contentType": "HTML",
+      "assessment": "Map directory exposes neighborhood, tourist and government-service map links; no parcel feature route found."
+    },
+    {
+      "url": "https://www.esa.gov.eg/sellingmaproomdigital.aspx",
+      "method": "GET",
+      "httpStatus": "accessible (web open)",
+      "contentType": "HTML",
+      "assessment": "Official map access is by written request, estimate, payment, and delivery; no anonymous feature query."
+    },
+    {
+      "url": "https://www.gcudc.gov.eg/",
+      "method": "GET",
+      "httpStatus": "search result accessible",
+      "contentType": "HTML",
+      "assessment": "Utility GIS and survey service description; not a cadastral feed or bounded geometry response."
+    },
+    {
+      "url": "https://www.esa.gov.eg/segel.aspx",
+      "method": "GET",
+      "httpStatus": "accessible (web open)",
+      "contentType": "HTML",
+      "assessment": "Confirms urban property GIS and implementation areas, but no download or feature endpoint."
+    },
+    {
+      "url": "https://www.esa.gov.eg/egy_his_maps.aspx",
+      "method": "GET",
+      "httpStatus": "accessible (web open)",
+      "contentType": "HTML",
+      "assessment": "Historical Cairo cadastral sheets are listed; no current parcel vector service."
+    },
+    {
+      "url": "https://www.cairo.gov.eg/ar/about-governorate/maps/",
+      "method": "GET",
+      "httpStatus": "search-indexed; web-accessible",
+      "contentType": "HTML/map viewer",
+      "assessment": "Official governorate viewer search result describes neighborhood search and administrative/service maps, not property parcels."
+    }
+  ],
+  "verifiedParcelResponse": null,
+  "source": null,
+  "registryFound": null,
+  "verifiedSample": false,
+  "targetGeometryEvidence": "none",
+  "nativeIdReadiness": "not_verified",
+  "coverageAssessment": {
+    "claimedScope": "Target city only; national or administrative service descriptions do not establish city parcel coverage.",
+    "verifiedOpenScope": null,
+    "countrywideVerified": false
+  },
+  "blocker": "No anonymous current Cairo parcel feature endpoint or bounded parcel polygon was found. ESA documents an urban property GIS and historical cadastral sheets, while its current digital-map route is a formal product request; the Cairo governorate viewer covers administrative/service mapping.",
+  "remainingUncertainty": "ESA/local agencies may hold current parcel geometry and historical mapping exists, but this pass establishes neither public vector access nor citywide current parcel coverage.",
+  "nextStep": "If open data is required, seek an ESA/Cairo public parcel service or an authorized small-area extract; otherwise retain as no verified public sample."
+}

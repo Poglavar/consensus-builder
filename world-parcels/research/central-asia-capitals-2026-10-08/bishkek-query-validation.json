@@ -1,0 +1,122 @@
+{
+  "source": "official public cadastre viewer proxy; anonymous public session only",
+  "headers": {
+    "userAgent": "Mozilla/5.0 (Macintosh; Intel Mac OS X 14_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/140.0.0.0 Safari/537.36",
+    "accept": "application/json",
+    "acceptLanguage": "ru-KG,ky-KG;q=0.9,ru-RU;q=0.8,en;q=0.5",
+    "referer": "https://cadastre.kg/svc-portal/map/main.do"
+  },
+  "bbox": "74.5697,42.8745,74.5699,42.8747,EPSG:4326",
+  "hitCountAttempt": {
+    "url": "https://cadastre.kg/svc-portal/map/proxy.do?http://localhost/o2map/services/wfs?service=WFS&version=1.1.0&request=GetFeature&typename=ENI_AREA&propertyname=PROPCODE,DOMCODE,THE_GEOM&outputFormat=application/json&srsname=EPSG%3A4326&bbox=74.5697,42.8745,74.5699,42.8747,EPSG%3A4326&resultType=hits",
+    "httpStatus": 200,
+    "assessment": "JSON request ignored resultType=hits and returned the same 3-feature collection; XML/default-output hits attempt returned OWS exception Failed to get property: {http://www.opengis.net/gml}featureMembers. No numberOfFeatures count exposed."
+  },
+  "pagination": [
+    {
+      "url": "https://cadastre.kg/svc-portal/map/proxy.do?http://localhost/o2map/services/wfs?service=WFS&version=1.1.0&request=GetFeature&typename=ENI_AREA&propertyname=PROPCODE,DOMCODE,THE_GEOM&outputFormat=application/json&srsname=EPSG%3A4326&bbox=74.5697,42.8745,74.5699,42.8747,EPSG%3A4326&maxFeatures=1&startIndex=0",
+      "httpStatus": 200,
+      "featureCount": 1,
+      "code": "1-01-02-0011-0889"
+    },
+    {
+      "url": "https://cadastre.kg/svc-portal/map/proxy.do?http://localhost/o2map/services/wfs?service=WFS&version=1.1.0&request=GetFeature&typename=ENI_AREA&propertyname=PROPCODE,DOMCODE,THE_GEOM&outputFormat=application/json&srsname=EPSG%3A4326&bbox=74.5697,42.8745,74.5699,42.8747,EPSG%3A4326&maxFeatures=1&startIndex=1",
+      "httpStatus": 200,
+      "featureCount": 1,
+      "code": "1-01-02-0011-0890"
+    },
+    {
+      "url": "https://cadastre.kg/svc-portal/map/proxy.do?http://localhost/o2map/services/wfs?service=WFS&version=1.1.0&request=GetFeature&typename=ENI_AREA&propertyname=PROPCODE,DOMCODE,THE_GEOM&outputFormat=application/json&srsname=EPSG%3A4326&bbox=74.5697,42.8745,74.5699,42.8747,EPSG%3A4326&maxFeatures=1&startIndex=2",
+      "httpStatus": 200,
+      "featureCount": 1,
+      "code": "1-01-02-0011-0855"
+    },
+    {
+      "url": "https://cadastre.kg/svc-portal/map/proxy.do?http://localhost/o2map/services/wfs?service=WFS&version=1.1.0&request=GetFeature&typename=ENI_AREA&propertyname=PROPCODE,DOMCODE,THE_GEOM&outputFormat=application/json&srsname=EPSG%3A4326&bbox=74.5697,42.8745,74.5699,42.8747,EPSG%3A4326&maxFeatures=1&startIndex=3",
+      "httpStatus": 200,
+      "featureCount": 0
+    }
+  ],
+  "exactCode": {
+    "code": "1-01-02-0011-0890",
+    "url": "https://cadastre.kg/svc-portal/map/proxy.do?http://localhost/o2map/services/wfs?service=WFS&version=1.1.0&request=GetFeature&typename=ENI_AREA&propertyname=PROPCODE,DOMCODE,THE_GEOM&outputFormat=application/json&srsname=EPSG%3A4326&bbox=74.5697,42.8745,74.5699,42.8747,EPSG%3A4326&maxFeatures=2&filter=%3Cogc%3AFilter%20xmlns%3Aogc%3D%22http%3A%2F%2Fwww.opengis.net%2Fogc%22%3E%3Cogc%3APropertyIsEqualTo%3E%3Cogc%3APropertyName%3EPROPCODE%3C%2Fogc%3APropertyName%3E%3Cogc%3ALiteral%3E1-01-02-0011-0890%3C%2Fogc%3ALiteral%3E%3C%2Fogc%3APropertyIsEqualTo%3E%3C%2Fogc%3AFilter%3E",
+    "httpStatus": 200,
+    "featureCount": 1
+  },
+  "absentCode": {
+    "code": "ZZ-NO-SUCH-PROPCODE-000000",
+    "url": "https://cadastre.kg/svc-portal/map/proxy.do?http://localhost/o2map/services/wfs?service=WFS&version=1.1.0&request=GetFeature&typename=ENI_AREA&propertyname=PROPCODE,DOMCODE,THE_GEOM&outputFormat=application/json&srsname=EPSG%3A4326&bbox=74.5697,42.8745,74.5699,42.8747,EPSG%3A4326&maxFeatures=2&filter=%3Cogc%3AFilter%20xmlns%3Aogc%3D%22http%3A%2F%2Fwww.opengis.net%2Fogc%22%3E%3Cogc%3APropertyIsEqualTo%3E%3Cogc%3APropertyName%3EPROPCODE%3C%2Fogc%3APropertyName%3E%3Cogc%3ALiteral%3EZZ-NO-SUCH-PROPCODE-000000%3C%2Fogc%3ALiteral%3E%3C%2Fogc%3APropertyIsEqualTo%3E%3C%2Fogc%3AFilter%3E",
+    "httpStatus": 200,
+    "featureCount": 0
+  },
+  "anonymousNoCookieChecks": {
+    "headers": [
+      "User-Agent: Chrome 140 desktop",
+      "Accept: application/json",
+      "Referer: https://cadastre.kg/svc-portal/map/main.do"
+    ],
+    "noCookieOrCredentials": true,
+    "centerCategoryQuery": {
+      "url": "https://cadastre.kg/svc-portal/map/proxy.do?http://localhost/o2map/services/wfs?service=WFS&version=1.1.0&request=GetFeature&typename=ENI_AREA&propertyname=PROPCODE,DOMCODE,NAZNACHENI,THE_GEOM&outputFormat=application%2Fjson&srsname=EPSG%3A4326&maxFeatures=3&bbox=74.5697,42.8745,74.5699,42.8747,EPSG%3A4326&filter=%3Cogc%3AFilter+xmlns%3Aogc%3D%22http%3A%2F%2Fwww.opengis.net%2Fogc%22%3E%3Cogc%3APropertyIsEqualTo%3E%3Cogc%3APropertyName%3ENAZNACHENI%3C%2Fogc%3APropertyName%3E%3Cogc%3ALiteral%3E%D0%B7%D0%B5%D0%BC%D0%B5%D0%BB%D1%8C%D0%BD%D1%8B%D0%B9+%D1%83%D1%87%D0%B0%D1%81%D1%82%D0%BE%D0%BA%3C%2Fogc%3ALiteral%3E%3C%2Fogc%3APropertyIsEqualTo%3E%3C%2Fogc%3AFilter%3E",
+      "httpStatus": 200,
+      "contentType": "application/json;charset=UTF-8",
+      "featureCount": 2,
+      "featureCodes": [
+        "1-01-02-0011-0889",
+        "1-01-02-0011-0890"
+      ],
+      "evidenceFile": "world-parcels/research/central-asia-capitals-2026-10-08/bishkek-center-land-plots.geojson",
+      "assessment": "Upstream NAZNACHENI exact filter returned only two land plots; 0855 was excluded because its separately inspected category is Нежилое помещение."
+    },
+    "exactCodeWithoutBbox": {
+      "url": "https://cadastre.kg/svc-portal/map/proxy.do?http://localhost/o2map/services/wfs?service=WFS&version=1.1.0&request=GetFeature&typename=ENI_AREA&propertyname=PROPCODE,DOMCODE,NAZNACHENI,THE_GEOM&outputFormat=application/json&srsname=EPSG%3A4326&maxFeatures=2&filter=%3Cogc%3AFilter%20xmlns%3Aogc%3D%22http%3A%2F%2Fwww.opengis.net%2Fogc%22%3E%3Cogc%3APropertyIsEqualTo%3E%3Cogc%3APropertyName%3EPROPCODE%3C%2Fogc%3APropertyName%3E%3Cogc%3ALiteral%3E1-01-02-0011-0890%3C%2Fogc%3ALiteral%3E%3C%2Fogc%3APropertyIsEqualTo%3E%3C%2Fogc%3AFilter%3E",
+      "httpStatus": 200,
+      "featureCount": 1,
+      "code": "1-01-02-0011-0890"
+    }
+  },
+  "sortAndPagingAnonymous": {
+    "sortBy": "PROPCODE+A",
+    "httpStatus": 200,
+    "noCookieOrCredentials": true,
+    "requestUrlPattern": "https://cadastre.kg/svc-portal/map/proxy.do?http://localhost/o2map/services/wfs?service=WFS&version=1.1.0&request=GetFeature&typename=ENI_AREA&propertyname=PROPCODE,DOMCODE,NAZNACHENI,THE_GEOM&outputFormat=application%2Fjson&srsname=EPSG%3A4326&maxFeatures=3&bbox=74.5685500,42.8733500,74.5710500,42.8758500,EPSG%3A4326&filter=%3Cogc%3AFilter+xmlns%3Aogc%3D%22http%3A%2F%2Fwww.opengis.net%2Fogc%22%3E%3Cogc%3APropertyIsEqualTo%3E%3Cogc%3APropertyName%3ENAZNACHENI%3C%2Fogc%3APropertyName%3E%3Cogc%3ALiteral%3E%D0%B7%D0%B5%D0%BC%D0%B5%D0%BB%D1%8C%D0%BD%D1%8B%D0%B9+%D1%83%D1%87%D0%B0%D1%81%D1%82%D0%BE%D0%BA%3C%2Fogc%3ALiteral%3E%3C%2Fogc%3APropertyIsEqualTo%3E%3C%2Fogc%3AFilter%3E&sortBy=PROPCODE%2BA&startIndex={n}",
+    "startIndexTests": [
+      {
+        "startIndex": 0,
+        "repeat": 1,
+        "returnedCodes": [
+          "1-01-02-0011-0045",
+          "1-01-02-0011-0073",
+          "1-01-02-0011-0074"
+        ],
+        "assessment": "Repeated startIndex=0 returned the same sequence."
+      },
+      {
+        "startIndex": 3,
+        "returnedCodes": [
+          "1-01-02-0011-0075",
+          "1-01-02-0011-0076",
+          "1-01-02-0011-0077"
+        ]
+      },
+      {
+        "startIndex": 24,
+        "returnedCodes": [
+          "1-01-02-0011-0966",
+          "1-01-02-0011-1026"
+        ],
+        "assessment": "Short final page."
+      },
+      {
+        "startIndex": 26,
+        "returnedCodes": [],
+        "assessment": "Empty terminal page."
+      }
+    ],
+    "note": "sortBy=PROPCODE+D also returned HTTP 200 and descending-looking codes. Include THE_GEOM in propertyname: omitting it caused OWS error “Cannot reproject data, the source CRS is not available.”"
+  },
+  "coverageAssessment": {
+    "verifiedOpenScope": "Category-filtered 3x3 neighborhood only: 111 unique land-feature PROPCODEs over nine adjacent bounded cells; each cell paged to an empty terminal offset. Citywide coverage is unknown.",
+    "paginationCheck": "Nine cells: 55 HTTP 200 requests, all terminal pages empty. Anonymous category-filtered center-cell ascending sort/paging was also checked: repeated start 0 stable, short page at offset 24, empty at 26. resultType=hits gave no count."
+  }
+}

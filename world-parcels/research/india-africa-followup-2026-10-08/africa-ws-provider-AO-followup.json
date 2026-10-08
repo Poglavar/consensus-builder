@@ -1,0 +1,368 @@
+{
+  "schemaVersion": 1,
+  "kind": "city_source_technical_followup",
+  "countryCode": "AO",
+  "checkedAt": "2026-10-08",
+  "priorEvidence": "world-parcels/research/india-africa-2026-10-08/africa-ws-provider-AO.json",
+  "source": {
+    "candidateName": "Luanda_AGT_Oficial_2_gdb FeatureServer layer 0",
+    "candidateUrl": "https://services-eu1.arcgis.com/7r9gTPdSG9MPi1LZ/arcgis/rest/services/Luanda_AGT_Oficial_2_gdb/FeatureServer/0",
+    "candidateOperator": "Hosted ArcGIS Online item; named Luanda AGT Oficial; authority and reuse terms not confirmed",
+    "extent": {
+      "advertisedWKID": 102100,
+      "latestWKID": 3857,
+      "xmin": 1446622.0050001144,
+      "ymin": -1044748.8887000084,
+      "xmax": 2145383.0154038696,
+      "ymax": -973494.5757770063,
+      "approximateLonLatEnvelope": [
+        12.995226574352296,
+        -9.343449578824405,
+        19.27230353027723,
+        -8.71129302077353
+      ],
+      "interpretation": "The service is a Luanda-area layer; all eight assigned WUP target centers fall outside the advertised layer envelope. Center-point exclusion does not establish that the whole city or other local sources lack parcels."
+    },
+    "targetScope": "Eight growth-city target attempts are carried over from the prior shared record and each timed out/HTTP 000. No new target query was sent in this follow-up because the service extent could not first be established.",
+    "geometryType": "esriGeometryPolygon",
+    "maxRecordCount": 2000,
+    "objectIdField": "OBJECTID (ArcGIS transport OID; not a canonical parcel ID)",
+    "fields": [
+      {
+        "name": "OBJECTID",
+        "type": "esriFieldTypeOID"
+      },
+      {
+        "name": "Area",
+        "type": "esriFieldTypeDouble"
+      },
+      {
+        "name": "Latitude",
+        "type": "esriFieldTypeDouble"
+      },
+      {
+        "name": "Longitude",
+        "type": "esriFieldTypeDouble"
+      },
+      {
+        "name": "PredioT",
+        "type": "esriFieldTypeString"
+      },
+      {
+        "name": "Afetacao",
+        "type": "esriFieldTypeString"
+      },
+      {
+        "name": "Servico",
+        "type": "esriFieldTypeString"
+      },
+      {
+        "name": "Area_Total",
+        "type": "esriFieldTypeDouble"
+      },
+      {
+        "name": "ID_AGT",
+        "type": "esriFieldTypeString"
+      },
+      {
+        "name": "Provincia",
+        "type": "esriFieldTypeString"
+      },
+      {
+        "name": "Municipio",
+        "type": "esriFieldTypeString"
+      },
+      {
+        "name": "Comuna",
+        "type": "esriFieldTypeString"
+      },
+      {
+        "name": "ID_GGPEN",
+        "type": "esriFieldTypeString"
+      },
+      {
+        "name": "Inscricao",
+        "type": "esriFieldTypeInteger"
+      },
+      {
+        "name": "Recolha",
+        "type": "esriFieldTypeString"
+      },
+      {
+        "name": "Bairro",
+        "type": "esriFieldTypeString"
+      },
+      {
+        "name": "GlobalID",
+        "type": "esriFieldTypeString"
+      },
+      {
+        "name": "Pred_T_Urb",
+        "type": "esriFieldTypeString"
+      },
+      {
+        "name": "Ac",
+        "type": "esriFieldTypeDouble"
+      },
+      {
+        "name": "Luz",
+        "type": "esriFieldTypeString"
+      },
+      {
+        "name": "Agua",
+        "type": "esriFieldTypeString"
+      },
+      {
+        "name": "Saneamento",
+        "type": "esriFieldTypeString"
+      },
+      {
+        "name": "AlturaMax",
+        "type": "esriFieldTypeString"
+      },
+      {
+        "name": "Cod_Prov",
+        "type": "esriFieldTypeString"
+      },
+      {
+        "name": "Cod_Munic",
+        "type": "esriFieldTypeString"
+      },
+      {
+        "name": "Cod_Comuna",
+        "type": "esriFieldTypeString"
+      },
+      {
+        "name": "Fonte_Reg",
+        "type": "esriFieldTypeString"
+      },
+      {
+        "name": "Num_Bairro",
+        "type": "esriFieldTypeString"
+      },
+      {
+        "name": "Cod_Bairro",
+        "type": "esriFieldTypeString"
+      },
+      {
+        "name": "Antiguidad",
+        "type": "esriFieldTypeString"
+      },
+      {
+        "name": "GlobalID_1",
+        "type": "esriFieldTypeGlobalID"
+      },
+      {
+        "name": "SHAPE_Leng",
+        "type": "esriFieldTypeDouble"
+      },
+      {
+        "name": "Shape__Area",
+        "type": "esriFieldTypeDouble"
+      },
+      {
+        "name": "Shape__Length",
+        "type": "esriFieldTypeDouble"
+      }
+    ],
+    "candidateNativeIdentifierFields": [
+      "ID_AGT (string; alias “ID de Registo AGT”)",
+      "ID_GGPEN (string; alias “ID do polígono GGPEN”)",
+      "GlobalID_1 (GlobalID type)"
+    ],
+    "excludedMetadataFieldsNote": "No feature values were requested. Owner-related Qualid_Prop, tax Ip, account/editor fields (Creator, Editor, CreationDate, EditDate), and any record attributes were omitted from this evidence packet."
+  },
+  "officialAgencyFindings": {
+    "agency": "IGCA (Instituto Geográfico e Cadastral de Angola)",
+    "agencyUrl": "https://www.igca.gov.ao/home",
+    "mission": "Official home page identifies IGCA as national cartography/cadastre authority and the institution responsible for developing/coordinating Angola’s National Geographic Information System.",
+    "publicServices": [
+      "Instrução de Processos de Legalização",
+      "Criação de Base de Dados Geográficas",
+      "Levantamento Topográficos",
+      "Venda de Mapas"
+    ],
+    "publicServiceEvidence": "https://www.igca.gov.ao/home (service categories); service detail https://www.igca.gov.ao/detalhes-servicos/81",
+    "landRightsPortal": "https://www.igca.gov.ao/detalhes-noticias/20 reports JUCDF launched in Luanda in September 2025 as a one-stop administrative process for land-right concessions and related certificates, handled at municipal administrations; this is not an open parcel-geometry viewer/API.",
+    "discoveryAssessment": "Official route documents public map/database/survey services and an administrative land-right workflow, but no downloadable or anonymous bounded cadastral polygon service was discoverable in the inspected pages."
+  },
+  "requests": [
+    {
+      "method": "GET",
+      "url": "https://services-eu1.arcgis.com/7r9gTPdSG9MPi1LZ/arcgis/rest/services/Luanda_AGT_Oficial_2_gdb/FeatureServer/0?f=pjson",
+      "httpStatus": 200,
+      "contentType": "application/json; charset=utf-8",
+      "responseBytes": 24357,
+      "networkContext": "ordinary host network",
+      "deadlineSeconds": 15,
+      "elapsedSeconds": 4.0,
+      "assessment": "Feature layer metadata retrieved successfully with normal TLS verification; saved only sanitized service/extent/schema metadata below."
+    }
+  ],
+  "officialPageChecks": [
+    {
+      "url": "https://www.igca.gov.ao/home",
+      "method": "GET",
+      "result": "Official IGCA page read via web open; it describes the national cartography/cadastre role and service categories."
+    },
+    {
+      "url": "https://www.igca.gov.ao/detalhes-servicos/81",
+      "method": "GET",
+      "result": "Official service detail page “Instrução de Processos de Legalização”; page lists service contacts, not an open map endpoint."
+    },
+    {
+      "url": "https://www.igca.gov.ao/detalhes-noticias/20",
+      "method": "GET",
+      "result": "Official news describes JUCDF operating at municipal administration as a land-right concession workflow."
+    }
+  ],
+  "assessment": "Metadata is reachable on the ordinary host network. The layer advertises a Luanda-area polygon extent; all eight target WUP centers are outside it. Earlier shared target calls are inherited timed-out attempts only. No target feature queries were sent in this follow-up.",
+  "reuseStatus": "Not assessed.",
+  "limitations": "Extent exclusion applies to each target center only and does not establish that the full municipal area is outside or that no other parcel source exists. Candidate service publisher authority/reuse terms remain unconfirmed; no feature values or owner/account metadata were requested or retained.",
+  "priorSharedProviderAttempt": {
+    "provenance": "Inherited from world-parcels/research/india-africa-2026-10-08/africa-ws-provider-AO.json, initial pass dated 2026-10-08.",
+    "fanoutCount": 8,
+    "targets": [
+      4201,
+      3898,
+      3610,
+      546,
+      2250,
+      686,
+      1169,
+      3711
+    ],
+    "outcome": "Shared provider summary reports bounded bbox/count=3 requests timed out or returned HTTP 000; no individual parameterized URLs are retained there. These are inherited attempts, not new follow-up queries."
+  },
+  "followupCheck": {
+    "method": "one shared GET of FeatureServer layer metadata",
+    "url": "https://services-eu1.arcgis.com/7r9gTPdSG9MPi1LZ/arcgis/rest/services/Luanda_AGT_Oficial_2_gdb/FeatureServer/0?f=pjson",
+    "outcome": "HTTP 200 on ordinary host network after 4.0 seconds, under 15-second deadline.",
+    "targetParcelQueriesSent": 0,
+    "reason": "All eight WUP centers are outside the advertised Web Mercator extent; the candidate is not applicable to these target centers."
+  },
+  "priorContextLimitedRequests": [
+    {
+      "method": "GET",
+      "url": "https://services-eu1.arcgis.com/7r9gTPdSG9MPi1LZ/arcgis/rest/services/Luanda_AGT_Oficial_2_gdb/FeatureServer/0?f=pjson",
+      "httpStatus": null,
+      "assessment": "Preserved earlier failed DNS attempt from the restricted tool context. It did not yield a server response and is distinct from the later ordinary-host result.",
+      "networkContext": "restricted tool context"
+    }
+  ],
+  "targetExtentChecks": [
+    {
+      "wupCityCode": 4201,
+      "name": "Luau",
+      "centerLatLon": [
+        -10.7078928499378,
+        22.2261150980932
+      ],
+      "centerEPSG3857Meters": [
+        2474199.815,
+        -1198997.227
+      ],
+      "centerInsideServiceExtent": false,
+      "interpretation": "Target WUP center lies outside the advertised service envelope; no target parcel query was sent in follow-up."
+    },
+    {
+      "wupCityCode": 3898,
+      "name": "Luena",
+      "centerLatLon": [
+        -11.7785281015056,
+        19.9086289389282
+      ],
+      "centerEPSG3857Meters": [
+        2216218.436,
+        -1320513.767
+      ],
+      "centerInsideServiceExtent": false,
+      "interpretation": "Target WUP center lies outside the advertised service envelope; no target parcel query was sent in follow-up."
+    },
+    {
+      "wupCityCode": 3610,
+      "name": "Malanje",
+      "centerLatLon": [
+        -9.54358315549037,
+        16.3510839676508
+      ],
+      "centerEPSG3857Meters": [
+        1820194.341,
+        -1067333.742
+      ],
+      "centerInsideServiceExtent": false,
+      "interpretation": "Target WUP center lies outside the advertised service envelope; no target parcel query was sent in follow-up."
+    },
+    {
+      "wupCityCode": 546,
+      "name": "Cabinda",
+      "centerLatLon": [
+        -5.57829080007551,
+        12.2035678576447
+      ],
+      "centerEPSG3857Meters": [
+        1358494.96,
+        -621955.843
+      ],
+      "centerInsideServiceExtent": false,
+      "interpretation": "Target WUP center lies outside the advertised service envelope; no target parcel query was sent in follow-up."
+    },
+    {
+      "wupCityCode": 2250,
+      "name": "M'banza Congo",
+      "centerLatLon": [
+        -6.26111194437744,
+        14.2330999524817
+      ],
+      "centerEPSG3857Meters": [
+        1584421.439,
+        -698375.117
+      ],
+      "centerInsideServiceExtent": false,
+      "interpretation": "Target WUP center lies outside the advertised service envelope; no target parcel query was sent in follow-up."
+    },
+    {
+      "wupCityCode": 686,
+      "name": "Soyo",
+      "centerLatLon": [
+        -6.16051964154324,
+        12.3668533360166
+      ],
+      "centerEPSG3857Meters": [
+        1376671.816,
+        -687111.118
+      ],
+      "centerInsideServiceExtent": false,
+      "interpretation": "Target WUP center lies outside the advertised service envelope; no target parcel query was sent in follow-up."
+    },
+    {
+      "wupCityCode": 1169,
+      "name": "Lubango",
+      "centerLatLon": [
+        -14.9071396924962,
+        13.5144246201527
+      ],
+      "centerEPSG3857Meters": [
+        1504418.867,
+        -1678500.64
+      ],
+      "centerInsideServiceExtent": false,
+      "interpretation": "Target WUP center lies outside the advertised service envelope; no target parcel query was sent in follow-up."
+    },
+    {
+      "wupCityCode": 3711,
+      "name": "Cuito",
+      "centerLatLon": [
+        -12.3876404410188,
+        16.9374515389056
+      ],
+      "centerEPSG3857Meters": [
+        1885468.481,
+        -1389856.473
+      ],
+      "centerInsideServiceExtent": false,
+      "interpretation": "Target WUP center lies outside the advertised service envelope; no target parcel query was sent in follow-up."
+    }
+  ],
+  "nextStep": "Search for relevant municipal/provincial IGCA or AGT layers for each target, verifying advertised extent before any bounded query."
+}

@@ -1,0 +1,803 @@
+{
+  "schemaVersion": 1,
+  "kind": "city_parcel_source_research",
+  "checkedAt": "2026-10-08T05:17:23.212350+00:00",
+  "cityId": "wup2025:6408",
+  "wupCityCode": 6408,
+  "name": "Ahmedabad",
+  "country": "India",
+  "countryCode": "IN",
+  "centerLatLon": [
+    23.0208369805955,
+    72.5971679403649
+  ],
+  "priorEvidence": [
+    "research/ahmedabad.json",
+    "research/india-africa-2026-10-08/india-city-6408.json"
+  ],
+  "status": "verified_sample_partial_coverage",
+  "registryFound": true,
+  "verifiedSample": true,
+  "sourceId": "in-gj-tpvd-final-plots",
+  "operator": "Government of Gujarat, Town Planning and Valuation Department (TPVD)",
+  "endpoint": "https://tpvd.openprp.in/geoserver/ows",
+  "featureType": "ctp:final_plot_boundary",
+  "responseFormat": "GeoJSON through WFS 1.1.0",
+  "schemaFields": [
+    "gid",
+    "tps_name",
+    "tps_no",
+    "village",
+    "city",
+    "authority",
+    "district",
+    "state",
+    "status",
+    "fp_no",
+    "reser_use",
+    "reser_type",
+    "tps_id",
+    "the_geom",
+    "show_hide",
+    "fp_area",
+    "fp_area_final",
+    "temp",
+    "search",
+    "dxf_access",
+    "epsg_code"
+  ],
+  "officialProvenance": [
+    {
+      "url": "https://www.auda.org.in/",
+      "evidence": "Ahmedabad Urban Development Authority site links to the Gujarat Town Planning and Valuation Department website."
+    },
+    {
+      "url": "https://townplanning.gujarat.gov.in/Home",
+      "evidence": "Official Government of Gujarat department page links TPWebGIS to the public role map at tpvd.openprp.in."
+    },
+    {
+      "url": "https://tpvd.openprp.in/pro/main/modules/role_public/map/index.php",
+      "evidence": "Public district/TPS selector links the scheme viewer; its scripts point to the same-host GeoServer."
+    },
+    {
+      "url": "https://tpvd.openprp.in/ctpvd/index.html",
+      "evidence": "Final-plot WMS display and public WFS search use final_plot_boundary and the publisher search reference; F-form requests use fp_no plus tps_id. No F-form ownership requests were needed or made."
+    }
+  ],
+  "cityAssociation": {
+    "exactWupPointParcelSample": false,
+    "exactPointAssessment": "The 0.002-degree viewport around the saved point returned no final plots. Its town-planning boundary is Sarangpur 18, tps_id100, authority AMC, city Ahmedabad, status Final. A 1-km Web Mercator viewport returned 25 final plots; the aligned app grid returned 132 native references.",
+    "verifiedAdministrativeScope": {
+      "city": "Ahmedabad",
+      "authority": "AMC",
+      "status": "Final"
+    },
+    "appCenterLatLon": [
+      23.02004,
+      72.59975
+    ],
+    "entryPlot": "Sarangpur 18 10",
+    "centerRelation": "The app starts near a verified plot about 280 m from the saved WUP point, within the same named final AMC scheme."
+  },
+  "nativeIdentity": {
+    "field": "search",
+    "displayNumberField": "fp_no",
+    "meaning": "Publisher-provided reference combining village, town-planning scheme and final-plot labels. The official viewer uses this field as its search label and value.",
+    "examples": [
+      "Sarangpur 18 10",
+      "Kankaria_Varid 2 1/1",
+      "Jamalpur 1 108"
+    ],
+    "transportOnlyFields": [
+      "gid",
+      "WFS feature.id"
+    ],
+    "evidence": "132 distinct source references from nine aligned app cells returned the same polygon geometry on fresh exact native-key reads. fp_no repeats between schemes and is not used alone as the canonical key.",
+    "permanence": "Formal immutability and current title semantics are undocumented; no legal or permanent-title claim is made."
+  },
+  "coverageAssessment": {
+    "verifiedOpenScope": "Partial final AMC town-planning schemes in the bounded central Ahmedabad entry area.",
+    "citywideVerified": false,
+    "countrywideVerified": false,
+    "sourceCurrentness": null,
+    "ownershipAvailable": false
+  },
+  "technicalFindings": {
+    "fixedFilters": {
+      "status": "Final",
+      "city": "Ahmedabad",
+      "authority": "AMC"
+    },
+    "geometryField": "the_geom",
+    "coordinateHandling": "CRS:84 works for WFS spatial filters and GeoJSON output. A longer OGC CRS84 URN returned an ExceptionReport; EPSG:3857 bbox queries also worked.",
+    "tls": "Python initially lacked an omitted Sectigo intermediate; default system curl trusted the host. Runtime uses the already bundled source-scoped Sectigo DV R36 intermediate with hostname and chain verification enabled. No insecure TLS option is used.",
+    "pagination": "The forced maxFeatures 3 test found a legacy counter defect: full pages report 50, final partial page at startIndex 48 reports 2. The strict adapter rejected it. Runtime requests at most 1000 records and rejects reported counts above 1000; no counter relaxation is applied.",
+    "initialAcceptanceFile": "research/india-africa-next10-2026-10-08/ahmedabad-adapter-initial.json",
+    "scopedAcceptanceFile": "research/india-africa-next10-2026-10-08/ahmedabad-acceptance.json",
+    "failedSmallPageFile": "research/india-africa-next10-2026-10-08/ahmedabad-small-page-failure.json",
+    "counterDiagnosticFile": "research/india-africa-next10-2026-10-08/ahmedabad-small-page-counter-check.json",
+    "acceptedNativeReferences": 132,
+    "freshExactGeometryHashesMatch": true,
+    "positiveAreaOverlapsAbove001M2": 0,
+    "sourceBinding": "complete",
+    "sixConcurrentCellsMaxElapsedMs": 1854
+  },
+  "otherCandidates": [
+    {
+      "candidate": "Ahmedabad municipal ArcGIS",
+      "result": "HTTPS endpoint had a certificate-expiry failure. The ordinary public HTTP services directory was readable and exposed roads, landmarks and administrative layers. Hosted/image folders returned token-required code499; no token was sought. No parcel layer was verified."
+    },
+    {
+      "candidate": "AnyRoR",
+      "result": "The tested public route timed out; this is an access observation, not evidence of absent records."
+    }
+  ],
+  "technicalBlocker": null,
+  "nextStep": "Local source enabled for the stated final AMC planning-plot scope; maintain the strict 1000-feature cap and native reference checks. Broader coverage and title semantics remain unverified.",
+  "termsHandling": "Informational only; no terms or licence gate applied.",
+  "requests": [
+    {
+      "label": "amc-services",
+      "url": "https://gis.ahmedabadcity.gov.in/arcgis/rest/services?f=json",
+      "method": "GET",
+      "requestedAt": "2026-10-08T04:48:59.774305+00:00",
+      "httpStatus": null,
+      "errorType": "URLError",
+      "error": "<urlopen error [SSL: CERTIFICATE_VERIFY_FAILED] certificate verify failed: certificate has expired (_ssl.c:1082)>",
+      "elapsedMs": 828,
+      "requestBatch": "initial-requests"
+    },
+    {
+      "label": "amc-portal",
+      "url": "https://gis.ahmedabadcity.gov.in/portal/sharing/rest/portals/self?f=json",
+      "method": "GET",
+      "requestedAt": "2026-10-08T04:48:59.775178+00:00",
+      "httpStatus": null,
+      "errorType": "URLError",
+      "error": "<urlopen error [SSL: CERTIFICATE_VERIFY_FAILED] certificate verify failed: certificate has expired (_ssl.c:1082)>",
+      "elapsedMs": 821,
+      "requestBatch": "initial-requests"
+    },
+    {
+      "label": "auda",
+      "url": "https://www.auda.org.in/",
+      "method": "GET",
+      "requestedAt": "2026-10-08T04:48:59.775275+00:00",
+      "httpStatus": 200,
+      "finalUrl": "https://www.auda.org.in/",
+      "contentType": "text/html; charset=utf-8",
+      "bytes": 133705,
+      "byteCapExceeded": false,
+      "elapsedMs": 3281,
+      "requestBatch": "initial-requests"
+    },
+    {
+      "label": "anyror",
+      "url": "https://anyror.gujarat.gov.in/",
+      "method": "GET",
+      "requestedAt": "2026-10-08T04:49:00.596801+00:00",
+      "httpStatus": null,
+      "errorType": "URLError",
+      "error": "<urlopen error timed out>",
+      "elapsedMs": 19038,
+      "requestBatch": "initial-requests"
+    },
+    {
+      "label": "townplanning",
+      "url": "https://townplanning.gujarat.gov.in/",
+      "method": "GET",
+      "requestedAt": "2026-10-08T04:50:12.380691+00:00",
+      "httpStatus": null,
+      "errorType": "URLError",
+      "error": "<urlopen error timed out>",
+      "elapsedMs": 20255,
+      "requestBatch": "second-requests"
+    },
+    {
+      "label": "georule",
+      "url": "https://georule.in/",
+      "method": "GET",
+      "requestedAt": "2026-10-08T04:50:12.381093+00:00",
+      "httpStatus": 200,
+      "finalUrl": "https://georule.in/",
+      "contentType": "text/html; charset=utf-8",
+      "bytes": 11061,
+      "byteCapExceeded": false,
+      "elapsedMs": 2560,
+      "requestBatch": "second-requests"
+    },
+    {
+      "label": "amc-services-http",
+      "url": "http://gis.ahmedabadcity.gov.in/arcgis/rest/services?f=json",
+      "method": "GET",
+      "requestedAt": "2026-10-08T04:50:12.381260+00:00",
+      "httpStatus": 200,
+      "finalUrl": "http://gis.ahmedabadcity.gov.in/arcgis/rest/services?f=json",
+      "contentType": "text/plain;charset=utf-8",
+      "bytes": 304,
+      "byteCapExceeded": false,
+      "elapsedMs": 731,
+      "requestBatch": "second-requests"
+    },
+    {
+      "label": "amc-hosted",
+      "url": "http://gis.ahmedabadcity.gov.in/arcgis/rest/services/Hosted?f=json",
+      "method": "GET",
+      "requestedAt": "2026-10-08T04:53:38.742257+00:00",
+      "httpStatus": 200,
+      "finalUrl": "http://gis.ahmedabadcity.gov.in/arcgis/rest/services/Hosted?f=json",
+      "contentType": "text/plain;charset=utf-8",
+      "bytes": 62,
+      "byteCapExceeded": false,
+      "elapsedMs": 466,
+      "requestBatch": "amc-public-requests"
+    },
+    {
+      "label": "amc-map",
+      "url": "http://gis.ahmedabadcity.gov.in/arcgis/rest/services/Our_Ahmedabad/MapServer?f=json",
+      "method": "GET",
+      "requestedAt": "2026-10-08T04:53:38.742739+00:00",
+      "httpStatus": 200,
+      "finalUrl": "http://gis.ahmedabadcity.gov.in/arcgis/rest/services/Our_Ahmedabad/MapServer?f=json",
+      "contentType": "text/plain;charset=utf-8",
+      "bytes": 2784,
+      "byteCapExceeded": false,
+      "elapsedMs": 14980,
+      "requestBatch": "amc-public-requests"
+    },
+    {
+      "label": "amc-images",
+      "url": "http://gis.ahmedabadcity.gov.in/arcgis/rest/services/amcimage?f=json",
+      "method": "GET",
+      "requestedAt": "2026-10-08T04:53:38.742867+00:00",
+      "httpStatus": 200,
+      "finalUrl": "http://gis.ahmedabadcity.gov.in/arcgis/rest/services/amcimage?f=json",
+      "contentType": "text/plain;charset=utf-8",
+      "bytes": 62,
+      "byteCapExceeded": false,
+      "elapsedMs": 458,
+      "requestBatch": "amc-public-requests"
+    },
+    {
+      "label": "tpvd-app",
+      "url": "https://tpvd.openprp.in/pro/main/modules/role_public/map/src/app/app.js",
+      "method": "GET",
+      "requestedAt": "2026-10-08T04:55:06.831192+00:00",
+      "transport": "curl default certificate verification",
+      "exitCode": 0,
+      "result": "200 18686",
+      "error": "",
+      "requestBatch": "tpvd-asset-requests"
+    },
+    {
+      "label": "tpvd-layers",
+      "url": "https://tpvd.openprp.in/pro/main/modules/role_public/map/src/app/LayersControl.js",
+      "method": "GET",
+      "requestedAt": "2026-10-08T04:55:06.834808+00:00",
+      "transport": "curl default certificate verification",
+      "exitCode": 0,
+      "result": "200 3841",
+      "error": "",
+      "requestBatch": "tpvd-asset-requests"
+    },
+    {
+      "label": "tpvd-popup",
+      "url": "https://tpvd.openprp.in/pro/main/modules/role_public/map/src/app/Popup.js",
+      "method": "GET",
+      "requestedAt": "2026-10-08T04:55:06.835575+00:00",
+      "transport": "curl default certificate verification",
+      "exitCode": 0,
+      "result": "200 3347",
+      "error": "",
+      "requestBatch": "tpvd-asset-requests"
+    },
+    {
+      "label": "tpvd-wfs-capabilities",
+      "url": "https://tpvd.openprp.in/geoserver/ows?service=WFS&version=2.0.0&request=GetCapabilities",
+      "method": "GET",
+      "requestedAt": "2026-10-08T04:56:10.971835+00:00",
+      "transport": "curl default certificate verification",
+      "exitCode": 0,
+      "result": "200 82495",
+      "error": "",
+      "requestBatch": "tpvd-metadata-requests"
+    },
+    {
+      "label": "tpvd-districts",
+      "url": "https://tpvd.openprp.in/pro/main/modules/role_public/map/gujarat_district.geojson",
+      "method": "GET",
+      "requestedAt": "2026-10-08T04:56:10.972140+00:00",
+      "transport": "curl default certificate verification",
+      "exitCode": 0,
+      "result": "200 9772",
+      "error": "",
+      "requestBatch": "tpvd-metadata-requests"
+    },
+    {
+      "label": "tpvd-main-viewer",
+      "url": "https://tpvd.openprp.in/ctpvd/index.html",
+      "method": "GET",
+      "requestedAt": "2026-10-08T04:56:10.975099+00:00",
+      "transport": "curl default certificate verification",
+      "exitCode": 0,
+      "result": "200 23702",
+      "error": "",
+      "requestBatch": "tpvd-metadata-requests"
+    },
+    {
+      "label": "tpvd-schema",
+      "url": "https://tpvd.openprp.in/geoserver/ows?service=WFS&version=2.0.0&request=DescribeFeatureType&typeNames=ctp%3Afinal_plot_boundary%2Cctp%3Aoriginal_plot_boundary%2Cctp%3Atps_boundary",
+      "method": "GET",
+      "requestedAt": "2026-10-08T04:57:51.950438+00:00",
+      "transport": "curl default certificate verification",
+      "exitCode": 0,
+      "result": "200 77849",
+      "error": "",
+      "requestBatch": "tpvd-schema-requests"
+    },
+    {
+      "label": "tpvd-main-app",
+      "url": "https://tpvd.openprp.in/ctpvd/src/app/1app.js",
+      "method": "GET",
+      "requestedAt": "2026-10-08T04:57:51.950709+00:00",
+      "transport": "curl default certificate verification",
+      "exitCode": 0,
+      "result": "200 31706",
+      "error": "",
+      "requestBatch": "tpvd-schema-requests"
+    },
+    {
+      "label": "tpvd-main-search",
+      "url": "https://tpvd.openprp.in/ctpvd/src/app/1search_1.js",
+      "method": "GET",
+      "requestedAt": "2026-10-08T04:57:51.953611+00:00",
+      "transport": "curl default certificate verification",
+      "exitCode": 0,
+      "result": "200 5166",
+      "error": "",
+      "requestBatch": "tpvd-schema-requests"
+    },
+    {
+      "name": "tpvd-finalplots-center",
+      "url": "https://tpvd.openprp.in/geoserver/ows?service=WFS&version=2.0.0&request=GetFeature&typeNames=ctp%3Afinal_plot_boundary&outputFormat=application%2Fjson&srsName=EPSG%3A4326&bbox=72.5961679403649%2C23.0198369805955%2C72.5981679403649%2C23.021836980595502%2Curn%3Aogc%3Adef%3Acrs%3AOGC%3A1.3%3ACRS84&count=3&propertyName=the_geom%2Cfp_no%2Ctps_no%2Ctps_name%2Ctps_id%2Cvillage%2Ccity%2Cauthority%2Cdistrict%2Cstatus%2Csearch",
+      "fetchedAt": "2026-10-08T05:03:05.540955+00:00",
+      "httpStatus": "200",
+      "returnCode": 0,
+      "elapsedSeconds": 0.936,
+      "error": "",
+      "bytes": 837,
+      "nonJSONExcerpt": "<ows:ExceptionReport xmlns:xs=\"http://www.w3.org/2001/XMLSchema\" xmlns:ows=\"http://www.opengis.net/ows/1.1\" xmlns:xsi=\"http://www.w3.org/2001/XMLSchema-instance\" version=\"2.0.0\" xsi:schemaLocation=\"http://www.opengis.net/ows/1.1 http://tpvd.openprp.in:80/geoserver/schemas/ows/1.1.0/owsAll.xsd\">\n  <ows:Exception exceptionCode=\"NoApplicableCode\">\n    <ows:ExceptionText>org.opengis.referencing.NoSuchAuthorityCodeException: Authority &amp;quot;OGC&amp;quot; is unknown or doesn&amp;apos;t match the supplied hints. Maybe it is defined in an unreachable JAR file?\nAuthority &amp;quot;OGC&amp;quot; is ",
+      "requestBatch": "tpvd-center-requests"
+    },
+    {
+      "name": "tpvd-tps-center",
+      "url": "https://tpvd.openprp.in/geoserver/ows?service=WFS&version=2.0.0&request=GetFeature&typeNames=ctp%3Atps_boundary&outputFormat=application%2Fjson&srsName=EPSG%3A4326&bbox=72.5961679403649%2C23.0198369805955%2C72.5981679403649%2C23.021836980595502%2Curn%3Aogc%3Adef%3Acrs%3AOGC%3A1.3%3ACRS84&count=3&propertyName=the_geom%2Ctps_no%2Ctps_name%2Ctps_id%2Cvillage%2Ccity%2Cauthority%2Cdistrict%2Cstatus",
+      "fetchedAt": "2026-10-08T05:03:05.525826+00:00",
+      "httpStatus": "200",
+      "returnCode": 0,
+      "elapsedSeconds": 0.921,
+      "error": "",
+      "bytes": 837,
+      "nonJSONExcerpt": "<ows:ExceptionReport xmlns:xs=\"http://www.w3.org/2001/XMLSchema\" xmlns:ows=\"http://www.opengis.net/ows/1.1\" xmlns:xsi=\"http://www.w3.org/2001/XMLSchema-instance\" version=\"2.0.0\" xsi:schemaLocation=\"http://www.opengis.net/ows/1.1 http://tpvd.openprp.in:80/geoserver/schemas/ows/1.1.0/owsAll.xsd\">\n  <ows:Exception exceptionCode=\"NoApplicableCode\">\n    <ows:ExceptionText>org.opengis.referencing.NoSuchAuthorityCodeException: Authority &amp;quot;OGC&amp;quot; is unknown or doesn&amp;apos;t match the supplied hints. Maybe it is defined in an unreachable JAR file?\nAuthority &amp;quot;OGC&amp;quot; is ",
+      "requestBatch": "tpvd-center-requests"
+    },
+    {
+      "name": "tpvd-finalplots-center-3857",
+      "url": "https://tpvd.openprp.in/geoserver/ows?service=WFS&version=2.0.0&request=GetFeature&typeNames=ctp%3Afinal_plot_boundary&outputFormat=application%2Fjson&srsName=EPSG%3A4326&bbox=8081368.448664391%2C2634417.761169868%2C8081591.087645979%2C2634659.664696692%2CEPSG%3A3857&count=3&propertyName=the_geom%2Cfp_no%2Ctps_no%2Ctps_name%2Ctps_id%2Cvillage%2Ccity%2Cauthority%2Cdistrict%2Cstatus%2Csearch",
+      "fetchedAt": "2026-10-08T05:03:23.594551+00:00",
+      "httpStatus": "200",
+      "returnCode": 0,
+      "elapsedSeconds": 0.945,
+      "error": "",
+      "bytes": 71,
+      "type": "FeatureCollection",
+      "numberMatched": null,
+      "numberReturned": null,
+      "features": [],
+      "errorBody": null,
+      "requestBatch": "tpvd-center3857-requests"
+    },
+    {
+      "name": "tpvd-tps-center-3857",
+      "url": "https://tpvd.openprp.in/geoserver/ows?service=WFS&version=2.0.0&request=GetFeature&typeNames=ctp%3Atps_boundary&outputFormat=application%2Fjson&srsName=EPSG%3A4326&bbox=8081368.448664391%2C2634417.761169868%2C8081591.087645979%2C2634659.664696692%2CEPSG%3A3857&count=3&propertyName=the_geom%2Ctps_no%2Ctps_name%2Ctps_id%2Cvillage%2Ccity%2Cauthority%2Cdistrict%2Cstatus",
+      "fetchedAt": "2026-10-08T05:03:23.872694+00:00",
+      "httpStatus": "200",
+      "returnCode": 0,
+      "elapsedSeconds": 1.222,
+      "error": "",
+      "bytes": 12534,
+      "type": "FeatureCollection",
+      "numberMatched": null,
+      "numberReturned": null,
+      "features": [
+        {
+          "id": "tps_boundary.fid-aba760_1a119d94b3b_6bb",
+          "properties": {
+            "gid": 33,
+            "tps_name": "Sarangpur 18",
+            "tps_no": "18",
+            "village": "Sarangpur",
+            "city": "Ahmedabad",
+            "authority": "AMC",
+            "district": "Ahmedabad",
+            "status": "Final",
+            "tps_id": 100,
+            "dxf_access": 0
+          },
+          "geometryType": "MultiPolygon"
+        }
+      ],
+      "errorBody": null,
+      "requestBatch": "tpvd-center3857-requests"
+    },
+    {
+      "name": "tpvd-finalplots-tps100",
+      "url": "https://tpvd.openprp.in/geoserver/ows?service=WFS&version=1.1.0&request=GetFeature&typeName=ctp%3Afinal_plot_boundary&outputFormat=application%2Fjson&srsName=EPSG%3A4326&maxFeatures=3&propertyName=the_geom%2Cfp_no%2Ctps_no%2Ctps_name%2Ctps_id%2Cvillage%2Ccity%2Cauthority%2Cdistrict%2Cstatus%2Csearch&cql_filter=tps_id%3D100",
+      "fetchedAt": "2026-10-08T05:04:08.502168+00:00",
+      "httpStatus": "200",
+      "returnCode": 0,
+      "elapsedSeconds": 1.076,
+      "error": "",
+      "bytes": 2568,
+      "type": "FeatureCollection",
+      "totalFeatures": 33,
+      "numberReturned": null,
+      "features": [
+        {
+          "id": "final_plot_boundary.fid-aba760_1a119d94b3b_fdc",
+          "properties": {
+            "gid": 20005,
+            "tps_name": "Sarangpur_18",
+            "tps_no": "18",
+            "village": "Sarangpur",
+            "city": "Ahmedabad",
+            "authority": "AMC",
+            "district": "Ahmedabad",
+            "status": "Final",
+            "fp_no": "10",
+            "tps_id": 100,
+            "search": "Sarangpur 18 10",
+            "dxf_access": 0
+          },
+          "geometryType": "MultiPolygon"
+        },
+        {
+          "id": "final_plot_boundary.fid-aba760_1a119d94b3b_fdd",
+          "properties": {
+            "gid": 9272,
+            "tps_name": "Sarangpur_18",
+            "tps_no": "18",
+            "village": "Sarangpur",
+            "city": "Ahmedabad",
+            "authority": "AMC",
+            "district": "Ahmedabad",
+            "status": "Final",
+            "fp_no": "19",
+            "tps_id": 100,
+            "search": "Sarangpur 18 19",
+            "dxf_access": 0
+          },
+          "geometryType": "MultiPolygon"
+        },
+        {
+          "id": "final_plot_boundary.fid-aba760_1a119d94b3b_fde",
+          "properties": {
+            "gid": 10481,
+            "tps_name": "Sarangpur_18",
+            "tps_no": "18",
+            "village": "Sarangpur",
+            "city": "Ahmedabad",
+            "authority": "AMC",
+            "district": "Ahmedabad",
+            "status": "Final",
+            "fp_no": "22",
+            "tps_id": 100,
+            "search": "Sarangpur 18 22",
+            "dxf_access": 0
+          },
+          "geometryType": "MultiPolygon"
+        }
+      ],
+      "errorBody": null,
+      "requestBatch": "tpvd-tps100-requests"
+    },
+    {
+      "name": "tpvd-finalplots-center1km",
+      "url": "https://tpvd.openprp.in/geoserver/ows?service=WFS&version=1.1.0&request=GetFeature&typeName=ctp%3Afinal_plot_boundary&outputFormat=application%2Fjson&srsName=EPSG%3A4326&maxFeatures=3&propertyName=the_geom%2Cfp_no%2Ctps_no%2Ctps_name%2Ctps_id%2Cvillage%2Ccity%2Cauthority%2Cdistrict%2Cstatus%2Csearch&bbox=8080979.7681551855%2C2634038.712484793%2C8081979.7681551855%2C2635038.712484793%2CEPSG%3A3857",
+      "fetchedAt": "2026-10-08T05:04:08.666168+00:00",
+      "httpStatus": "200",
+      "returnCode": 0,
+      "elapsedSeconds": 1.23,
+      "error": "",
+      "bytes": 8929,
+      "type": "FeatureCollection",
+      "totalFeatures": 25,
+      "numberReturned": null,
+      "features": [
+        {
+          "id": "final_plot_boundary.fid-aba760_1a119d94b3b_fd9",
+          "properties": {
+            "gid": 41222,
+            "tps_name": "Kankaria_Varid_2",
+            "tps_no": "2",
+            "village": "Kankaria_Varid",
+            "city": "Ahmedabad",
+            "authority": "AMC",
+            "district": "Ahmedabad",
+            "status": "Final",
+            "fp_no": "4",
+            "tps_id": 290,
+            "search": "Kankaria_Varid 2 4",
+            "dxf_access": 0
+          },
+          "geometryType": "MultiPolygon"
+        },
+        {
+          "id": "final_plot_boundary.fid-aba760_1a119d94b3b_fda",
+          "properties": {
+            "gid": 11333,
+            "tps_name": "Sarangpur_18",
+            "tps_no": "18",
+            "village": "Sarangpur",
+            "city": "Ahmedabad",
+            "authority": "AMC",
+            "district": "Ahmedabad",
+            "status": "Final",
+            "fp_no": "18",
+            "tps_id": 100,
+            "search": "Sarangpur 18 18",
+            "dxf_access": 0
+          },
+          "geometryType": "MultiPolygon"
+        },
+        {
+          "id": "final_plot_boundary.fid-aba760_1a119d94b3b_fdb",
+          "properties": {
+            "gid": 41221,
+            "tps_name": "Kankaria_Varid_2",
+            "tps_no": "2",
+            "village": "Kankaria_Varid",
+            "city": "Ahmedabad",
+            "authority": "AMC",
+            "district": "Ahmedabad",
+            "status": "Final",
+            "fp_no": "5",
+            "tps_id": 290,
+            "search": "Kankaria_Varid 2 5",
+            "dxf_access": 0
+          },
+          "geometryType": "MultiPolygon"
+        }
+      ],
+      "errorBody": null,
+      "requestBatch": "tpvd-tps100-requests"
+    },
+    {
+      "name": "tpvd-crs84-small",
+      "url": "https://tpvd.openprp.in/geoserver/ows?service=WFS&version=1.1.0&request=GetFeature&typeName=ctp%3Afinal_plot_boundary&outputFormat=application%2Fjson&srsName=CRS%3A84&maxFeatures=3&sortBy=search&startIndex=0&bbox=72.5921679403649%2C23.015836980595502%2C72.6021679403649%2C23.0258369805955%2CCRS%3A84",
+      "fetchedAt": "2026-10-08T05:05:32.441522+00:00",
+      "httpStatus": "200",
+      "returnCode": 0,
+      "elapsedSeconds": 1.31,
+      "error": "",
+      "bytes": 8892,
+      "type": "FeatureCollection",
+      "totalFeatures": 45,
+      "features": [
+        {
+          "id": "final_plot_boundary.fid-aba760_1a119d94b3b_2a5a",
+          "properties": {
+            "gid": 41224,
+            "tps_name": "Kankaria_Varid_2",
+            "tps_no": "2",
+            "village": "Kankaria_Varid",
+            "city": "Ahmedabad",
+            "authority": "AMC",
+            "district": "Ahmedabad",
+            "state": "Gujarat",
+            "status": "Final",
+            "fp_no": "1/1",
+            "reser_use": "Lawn",
+            "reser_type": "Recreation",
+            "tps_id": 290,
+            "show_hide": 1,
+            "fp_area": null,
+            "fp_area_final": null,
+            "temp": null,
+            "search": "Kankaria_Varid 2 1/1",
+            "dxf_access": 0,
+            "epsg_code": "EPSG:32643"
+          },
+          "geometryType": "MultiPolygon"
+        },
+        {
+          "id": "final_plot_boundary.fid-aba760_1a119d94b3b_2a5b",
+          "properties": {
+            "gid": 41223,
+            "tps_name": "Kankaria_Varid_2",
+            "tps_no": "2",
+            "village": "Kankaria_Varid",
+            "city": "Ahmedabad",
+            "authority": "AMC",
+            "district": "Ahmedabad",
+            "state": "Gujarat",
+            "status": "Final",
+            "fp_no": "1/2",
+            "reser_use": "Lawn",
+            "reser_type": "Recreation",
+            "tps_id": 290,
+            "show_hide": 1,
+            "fp_area": null,
+            "fp_area_final": null,
+            "temp": null,
+            "search": "Kankaria_Varid 2 1/2",
+            "dxf_access": 0,
+            "epsg_code": "EPSG:32643"
+          },
+          "geometryType": "MultiPolygon"
+        },
+        {
+          "id": "final_plot_boundary.fid-aba760_1a119d94b3b_2a5c",
+          "properties": {
+            "gid": 41215,
+            "tps_name": "Kankaria_Varid_2",
+            "tps_no": "2",
+            "village": "Kankaria_Varid",
+            "city": "Ahmedabad",
+            "authority": "AMC",
+            "district": "Ahmedabad",
+            "state": "Gujarat",
+            "status": "Final",
+            "fp_no": "11",
+            "reser_use": null,
+            "reser_type": null,
+            "tps_id": 290,
+            "show_hide": 1,
+            "fp_area": "-",
+            "fp_area_final": 0,
+            "temp": "0",
+            "search": "Kankaria_Varid 2 11",
+            "dxf_access": 0,
+            "epsg_code": "EPSG:32643"
+          },
+          "geometryType": "MultiPolygon"
+        }
+      ],
+      "errorBody": null,
+      "requestBatch": "tpvd-crs84-requests"
+    },
+    {
+      "name": "tpvd-tps100-sorted",
+      "url": "https://tpvd.openprp.in/geoserver/ows?service=WFS&version=1.1.0&request=GetFeature&typeName=ctp%3Afinal_plot_boundary&outputFormat=application%2Fjson&srsName=CRS%3A84&maxFeatures=3&sortBy=search&startIndex=0&cql_filter=tps_id%3D100",
+      "fetchedAt": "2026-10-08T05:05:32.407491+00:00",
+      "httpStatus": "200",
+      "returnCode": 0,
+      "elapsedSeconds": 1.272,
+      "error": "",
+      "bytes": 8713,
+      "type": "FeatureCollection",
+      "totalFeatures": 33,
+      "features": [
+        {
+          "id": "final_plot_boundary.fid-aba760_1a119d94b3b_2a57",
+          "properties": {
+            "gid": 10127,
+            "tps_name": "Sarangpur_18",
+            "tps_no": "18",
+            "village": "Sarangpur",
+            "city": "Ahmedabad",
+            "authority": "AMC",
+            "district": "Ahmedabad",
+            "state": "Gujarat",
+            "status": "Final",
+            "fp_no": "1",
+            "reser_use": null,
+            "reser_type": null,
+            "tps_id": 100,
+            "show_hide": 1,
+            "fp_area": "2118",
+            "fp_area_final": 2118,
+            "temp": "2118",
+            "search": "Sarangpur 18 1",
+            "dxf_access": 0,
+            "epsg_code": "EPSG:32643"
+          },
+          "geometryType": "MultiPolygon"
+        },
+        {
+          "id": "final_plot_boundary.fid-aba760_1a119d94b3b_2a58",
+          "properties": {
+            "gid": 20005,
+            "tps_name": "Sarangpur_18",
+            "tps_no": "18",
+            "village": "Sarangpur",
+            "city": "Ahmedabad",
+            "authority": "AMC",
+            "district": "Ahmedabad",
+            "state": "Gujarat",
+            "status": "Final",
+            "fp_no": "10",
+            "reser_use": null,
+            "reser_type": null,
+            "tps_id": 100,
+            "show_hide": 1,
+            "fp_area": "623",
+            "fp_area_final": 623,
+            "temp": "623",
+            "search": "Sarangpur 18 10",
+            "dxf_access": 0,
+            "epsg_code": "EPSG:32643"
+          },
+          "geometryType": "MultiPolygon"
+        },
+        {
+          "id": "final_plot_boundary.fid-aba760_1a119d94b3b_2a59",
+          "properties": {
+            "gid": 530,
+            "tps_name": "Sarangpur_18",
+            "tps_no": "18",
+            "village": "Sarangpur",
+            "city": "Ahmedabad",
+            "authority": "AMC",
+            "district": "Ahmedabad",
+            "state": "Gujarat",
+            "status": "Final",
+            "fp_no": "11",
+            "reser_use": null,
+            "reser_type": null,
+            "tps_id": 100,
+            "show_hide": 1,
+            "fp_area": "340",
+            "fp_area_final": 340,
+            "temp": "340",
+            "search": "Sarangpur 18 11",
+            "dxf_access": 0,
+            "epsg_code": "EPSG:32643"
+          },
+          "geometryType": "MultiPolygon"
+        }
+      ],
+      "errorBody": null,
+      "requestBatch": "tpvd-crs84-requests"
+    },
+    {
+      "url": "https://tpvd.openprp.in/geoserver/ows?service=WFS&version=1.1.0&request=GetFeature&typeName=ctp%3Afinal_plot_boundary&outputFormat=application%2Fjson&srsName=CRS%3A84&maxFeatures=3&sortBy=search&startIndex=0&cql_filter=%28status%3D%27Final%27+AND+city%3D%27Ahmedabad%27+AND+authority%3D%27AMC%27%29+AND+BBOX%28the_geom%2C72.5921679403649%2C23.015836980595502%2C72.6021679403649%2C23.0258369805955%2C%27CRS%3A84%27%29",
+      "fetchedAt": "2026-10-08T05:08:46.063471+00:00",
+      "httpStatus": "200",
+      "returnCode": 0,
+      "elapsedSeconds": 1.173,
+      "error": "",
+      "bytes": 8892,
+      "type": "FeatureCollection",
+      "totalFeatures": 45,
+      "featureCount": 3,
+      "features": [
+        {
+          "id": "final_plot_boundary.fid-aba760_1a119d94b3b_5817",
+          "nativeId": "Kankaria_Varid 2 1/1",
+          "status": "Final",
+          "city": "Ahmedabad"
+        },
+        {
+          "id": "final_plot_boundary.fid-aba760_1a119d94b3b_5818",
+          "nativeId": "Kankaria_Varid 2 1/2",
+          "status": "Final",
+          "city": "Ahmedabad"
+        },
+        {
+          "id": "final_plot_boundary.fid-aba760_1a119d94b3b_5819",
+          "nativeId": "Kankaria_Varid 2 11",
+          "status": "Final",
+          "city": "Ahmedabad"
+        }
+      ]
+    }
+  ],
+  "runtimeReadiness": "enabled_local",
+  "browserEvidenceFile": "research/india-africa-next10-2026-10-08/browser-check.json",
+  "requestHeaderContext": {
+    "discovery": "The initial Python discovery helper used Mozilla/5.0 with Accept application/json,text/html,application/xml,*/*. TPVD curl metadata samples used system curl defaults; all successful samples returnedHTTP200 without a session.",
+    "runtime": "The actual WFS adapter sends Accept application/geo+json,application/json and no browser cookie or token. The headed UI queries the local gateway.",
+    "headerComparison": "No controlled browser-header comparison was performed; successful anonymous geometry and runtime checks establish the observed route."
+  }
+}

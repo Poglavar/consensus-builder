@@ -1,0 +1,1484 @@
+{
+  "schemaVersion": 1,
+  "kind": "nairobi_outline_adapter_acceptance",
+  "checkedAt": "2026-10-08",
+  "status": "passed_bounded_local_geometry_identity_and_binding_acceptance",
+  "cityId": "wup2025:2033",
+  "wupCityCode": 2033,
+  "name": "Nairobi",
+  "countryCode": "KE",
+  "centerLatLon": [
+    -1.26592113731299,
+    36.845161927435
+  ],
+  "descriptorFile": "/tmp/india-africa-batch3-nairobi-descriptor.json",
+  "descriptorId": "ke-nairobi-maps-outlines",
+  "adapter": "nairobi-outlines",
+  "identityKind": "geometry-sha256-v1",
+  "maxConcurrentQueries": 2,
+  "requestAudit": {
+    "checkedAt": "2026-10-08T05:55:35.132Z",
+    "networkPolicy": "Anonymous normal GET via the adapter; no Authorization, account, cookie, WFS key, paid route, or quota workaround. Calls were sequential (one at a time), below descriptor maxConcurrentQueries=2.",
+    "providerUsageTerms": {
+      "faq": "https://nairobimaps.com/",
+      "mapPage": "https://nairobimaps.com/gis-data/nairobi-parcels-cadastre.html",
+      "allowance": "Provider FAQ describes a limit of 25 preview areas per day; this is an area allowance, not a 25-request ceiling. The implementation below records actual calls and response previewRemaining without inventing a request-count equivalence.",
+      "observedPreviewRemaining": "Every captured HTTP 200 response reported previewRemaining=24."
+    },
+    "freshGrid": {
+      "alignedCellWidthDegrees": 0.0025,
+      "cellCount": 9,
+      "rows": [
+        {
+          "key": "r0c0",
+          "bbox": [
+            36.8425,
+            -1.27,
+            36.845,
+            -1.2675
+          ],
+          "featureCount": 160
+        },
+        {
+          "key": "r0c1",
+          "bbox": [
+            36.845,
+            -1.27,
+            36.8475,
+            -1.2675
+          ],
+          "featureCount": 77
+        },
+        {
+          "key": "r0c2",
+          "bbox": [
+            36.8475,
+            -1.27,
+            36.85,
+            -1.2675
+          ],
+          "featureCount": 116
+        },
+        {
+          "key": "r1c0",
+          "bbox": [
+            36.8425,
+            -1.2675,
+            36.845,
+            -1.265
+          ],
+          "featureCount": 218
+        },
+        {
+          "key": "r1c1",
+          "bbox": [
+            36.845,
+            -1.2675,
+            36.8475,
+            -1.265
+          ],
+          "featureCount": 130
+        },
+        {
+          "key": "r1c2",
+          "bbox": [
+            36.8475,
+            -1.2675,
+            36.85,
+            -1.265
+          ],
+          "featureCount": 132
+        },
+        {
+          "key": "r2c0",
+          "bbox": [
+            36.8425,
+            -1.265,
+            36.845,
+            -1.2625
+          ],
+          "featureCount": 175
+        },
+        {
+          "key": "r2c1",
+          "bbox": [
+            36.845,
+            -1.265,
+            36.8475,
+            -1.2625
+          ],
+          "featureCount": 100
+        },
+        {
+          "key": "r2c2",
+          "bbox": [
+            36.8475,
+            -1.265,
+            36.85,
+            -1.2625
+          ],
+          "featureCount": 76
+        }
+      ],
+      "countSum": 1184,
+      "uniqueCanonicalGeometryIds": 1066,
+      "responses": [
+        {
+          "requestUrl": "https://nairobimaps.com/api/get_parcels.php?bbox=36.8425%2C-1.27%2C36.845%2C-1.2675&zoom=19",
+          "httpStatus": 200,
+          "responseBytes": 34521,
+          "elapsedMs": 2021,
+          "responseSha256": "a5e5554c394e53e3307c706837f1b679ec8148cd57d248d38121f59316741ac6",
+          "bboxEcho": [
+            36.8425,
+            -1.27,
+            36.845,
+            -1.2675
+          ],
+          "featureCount": 160,
+          "metadata": {
+            "count": 160,
+            "zoom": 19,
+            "limit": 4000,
+            "truncated": false,
+            "previewRemaining": 24
+          },
+          "countMatchesReturned": true,
+          "propertiesAllEmpty": true,
+          "sourceFeatureIdsPresent": false
+        },
+        {
+          "requestUrl": "https://nairobimaps.com/api/get_parcels.php?bbox=36.845%2C-1.27%2C36.8475%2C-1.2675&zoom=19",
+          "httpStatus": 200,
+          "responseBytes": 17995,
+          "elapsedMs": 1768,
+          "responseSha256": "024bf2e123cdaaed861d4c198cfc7a92505c290370b5ab63a8714680387e0d8b",
+          "bboxEcho": [
+            36.845,
+            -1.27,
+            36.8475,
+            -1.2675
+          ],
+          "featureCount": 77,
+          "metadata": {
+            "count": 77,
+            "zoom": 19,
+            "limit": 4000,
+            "truncated": false,
+            "previewRemaining": 24
+          },
+          "countMatchesReturned": true,
+          "propertiesAllEmpty": true,
+          "sourceFeatureIdsPresent": false
+        },
+        {
+          "requestUrl": "https://nairobimaps.com/api/get_parcels.php?bbox=36.8475%2C-1.27%2C36.85%2C-1.2675&zoom=19",
+          "httpStatus": 200,
+          "responseBytes": 35634,
+          "elapsedMs": 2735,
+          "responseSha256": "546ea0a4b1f4e82f4792411d2725447aedd9da4a56293d9668a4f4b54edb78bd",
+          "bboxEcho": [
+            36.8475,
+            -1.27,
+            36.85,
+            -1.2675
+          ],
+          "featureCount": 116,
+          "metadata": {
+            "count": 116,
+            "zoom": 19,
+            "limit": 4000,
+            "truncated": false,
+            "previewRemaining": 24
+          },
+          "countMatchesReturned": true,
+          "propertiesAllEmpty": true,
+          "sourceFeatureIdsPresent": false
+        },
+        {
+          "requestUrl": "https://nairobimaps.com/api/get_parcels.php?bbox=36.8425%2C-1.2675%2C36.845%2C-1.265&zoom=19",
+          "httpStatus": 200,
+          "responseBytes": 47409,
+          "elapsedMs": 359,
+          "responseSha256": "6485703bfdece5c2dc3f1ce74588542c833172d3181ffdbd8d5a1cec7f2f5a24",
+          "bboxEcho": [
+            36.8425,
+            -1.2675,
+            36.845,
+            -1.265
+          ],
+          "featureCount": 218,
+          "metadata": {
+            "count": 218,
+            "zoom": 19,
+            "limit": 4000,
+            "truncated": false,
+            "previewRemaining": 24
+          },
+          "countMatchesReturned": true,
+          "propertiesAllEmpty": true,
+          "sourceFeatureIdsPresent": false
+        },
+        {
+          "requestUrl": "https://nairobimaps.com/api/get_parcels.php?bbox=36.845%2C-1.2675%2C36.8475%2C-1.265&zoom=19",
+          "httpStatus": 200,
+          "responseBytes": 30291,
+          "elapsedMs": 237,
+          "responseSha256": "7c1ef7bf48d3eb13f3e5a2b22cf1dd9e1babb1fb14db426305362b1a11e3b4be",
+          "bboxEcho": [
+            36.845,
+            -1.2675,
+            36.8475,
+            -1.265
+          ],
+          "featureCount": 130,
+          "metadata": {
+            "count": 130,
+            "zoom": 19,
+            "limit": 4000,
+            "truncated": false,
+            "previewRemaining": 24
+          },
+          "countMatchesReturned": true,
+          "propertiesAllEmpty": true,
+          "sourceFeatureIdsPresent": false
+        },
+        {
+          "requestUrl": "https://nairobimaps.com/api/get_parcels.php?bbox=36.8475%2C-1.2675%2C36.85%2C-1.265&zoom=19",
+          "httpStatus": 200,
+          "responseBytes": 41397,
+          "elapsedMs": 245,
+          "responseSha256": "c6f877607c7c24f61bca82f7b35f4a02b1da484b77f47b772ca43a123f2ab8b9",
+          "bboxEcho": [
+            36.8475,
+            -1.2675,
+            36.85,
+            -1.265
+          ],
+          "featureCount": 132,
+          "metadata": {
+            "count": 132,
+            "zoom": 19,
+            "limit": 4000,
+            "truncated": false,
+            "previewRemaining": 24
+          },
+          "countMatchesReturned": true,
+          "propertiesAllEmpty": true,
+          "sourceFeatureIdsPresent": false
+        },
+        {
+          "requestUrl": "https://nairobimaps.com/api/get_parcels.php?bbox=36.8425%2C-1.265%2C36.845%2C-1.2625&zoom=19",
+          "httpStatus": 200,
+          "responseBytes": 41078,
+          "elapsedMs": 238,
+          "responseSha256": "62a90a3439076962128612dc592511f9218daf018a1cc2f929a249994fac6f88",
+          "bboxEcho": [
+            36.8425,
+            -1.265,
+            36.845,
+            -1.2625
+          ],
+          "featureCount": 175,
+          "metadata": {
+            "count": 175,
+            "zoom": 19,
+            "limit": 4000,
+            "truncated": false,
+            "previewRemaining": 24
+          },
+          "countMatchesReturned": true,
+          "propertiesAllEmpty": true,
+          "sourceFeatureIdsPresent": false
+        },
+        {
+          "requestUrl": "https://nairobimaps.com/api/get_parcels.php?bbox=36.845%2C-1.265%2C36.8475%2C-1.2625&zoom=19",
+          "httpStatus": 200,
+          "responseBytes": 23667,
+          "elapsedMs": 263,
+          "responseSha256": "4d73a6edfacf07e37415e76eb34f47f937de30ddf1c2c4afd1270c0ec5afbe4f",
+          "bboxEcho": [
+            36.845,
+            -1.265,
+            36.8475,
+            -1.2625
+          ],
+          "featureCount": 100,
+          "metadata": {
+            "count": 100,
+            "zoom": 19,
+            "limit": 4000,
+            "truncated": false,
+            "previewRemaining": 24
+          },
+          "countMatchesReturned": true,
+          "propertiesAllEmpty": true,
+          "sourceFeatureIdsPresent": false
+        },
+        {
+          "requestUrl": "https://nairobimaps.com/api/get_parcels.php?bbox=36.8475%2C-1.265%2C36.85%2C-1.2625&zoom=19",
+          "httpStatus": 200,
+          "responseBytes": 30500,
+          "elapsedMs": 237,
+          "responseSha256": "2e063ad4141f0df34c821a884f249037077cc775b792c09667f42865773fc78a",
+          "bboxEcho": [
+            36.8475,
+            -1.265,
+            36.85,
+            -1.2625
+          ],
+          "featureCount": 76,
+          "metadata": {
+            "count": 76,
+            "zoom": 19,
+            "limit": 4000,
+            "truncated": false,
+            "previewRemaining": 24
+          },
+          "countMatchesReturned": true,
+          "propertiesAllEmpty": true,
+          "sourceFeatureIdsPresent": false
+        }
+      ],
+      "allHTTP200": true,
+      "allCountsMatch": true,
+      "allUntruncated": true,
+      "allPropertiesEmpty": true,
+      "noSourceFeatureIds": true
+    },
+    "freshColdIdReads": {
+      "adapterInstance": "New createParcelSource instance in a separate Node process; no process-local ID cache or previous adapter instance reused.",
+      "uniqueObservedIds": 1066,
+      "lookupCellWidthDegrees": 0.0025,
+      "uniqueLocatorCells": 18,
+      "largestCellGroup": 185,
+      "requestBatchLimit": 80,
+      "batchPlan": [
+        {
+          "bbox": [
+            36.8399998,
+            -1.2650002,
+            36.8425002,
+            -1.2624998
+          ],
+          "ids": 4,
+          "requests": 1
+        },
+        {
+          "bbox": [
+            36.8399998,
+            -1.2675002,
+            36.8425002,
+            -1.2649998
+          ],
+          "ids": 9,
+          "requests": 1
+        },
+        {
+          "bbox": [
+            36.8399998,
+            -1.2700002,
+            36.8425002,
+            -1.2674998
+          ],
+          "ids": 13,
+          "requests": 1
+        },
+        {
+          "bbox": [
+            36.8399998,
+            -1.2725002,
+            36.8425002,
+            -1.2699998
+          ],
+          "ids": 1,
+          "requests": 1
+        },
+        {
+          "bbox": [
+            36.8424998,
+            -1.2625002,
+            36.8450002,
+            -1.2599998
+          ],
+          "ids": 2,
+          "requests": 1
+        },
+        {
+          "bbox": [
+            36.8424998,
+            -1.2650002,
+            36.8450002,
+            -1.2624998
+          ],
+          "ids": 165,
+          "requests": 3
+        },
+        {
+          "bbox": [
+            36.8424998,
+            -1.2675002,
+            36.8450002,
+            -1.2649998
+          ],
+          "ids": 185,
+          "requests": 3
+        },
+        {
+          "bbox": [
+            36.8424998,
+            -1.2700002,
+            36.8450002,
+            -1.2674998
+          ],
+          "ids": 138,
+          "requests": 2
+        },
+        {
+          "bbox": [
+            36.8424998,
+            -1.2725002,
+            36.8450002,
+            -1.2699998
+          ],
+          "ids": 4,
+          "requests": 1
+        },
+        {
+          "bbox": [
+            36.8449998,
+            -1.2650002,
+            36.8475002,
+            -1.2624998
+          ],
+          "ids": 87,
+          "requests": 2
+        },
+        {
+          "bbox": [
+            36.8449998,
+            -1.2675002,
+            36.8475002,
+            -1.2649998
+          ],
+          "ids": 105,
+          "requests": 2
+        },
+        {
+          "bbox": [
+            36.8449998,
+            -1.2700002,
+            36.8475002,
+            -1.2674998
+          ],
+          "ids": 65,
+          "requests": 1
+        },
+        {
+          "bbox": [
+            36.8449998,
+            -1.2725002,
+            36.8475002,
+            -1.2699998
+          ],
+          "ids": 1,
+          "requests": 1
+        },
+        {
+          "bbox": [
+            36.8474998,
+            -1.2650002,
+            36.8500002,
+            -1.2624998
+          ],
+          "ids": 71,
+          "requests": 1
+        },
+        {
+          "bbox": [
+            36.8474998,
+            -1.2675002,
+            36.8500002,
+            -1.2649998
+          ],
+          "ids": 118,
+          "requests": 2
+        },
+        {
+          "bbox": [
+            36.8474998,
+            -1.2700002,
+            36.8500002,
+            -1.2674998
+          ],
+          "ids": 94,
+          "requests": 2
+        },
+        {
+          "bbox": [
+            36.8474998,
+            -1.2725002,
+            36.8500002,
+            -1.2699998
+          ],
+          "ids": 3,
+          "requests": 1
+        },
+        {
+          "bbox": [
+            36.8474998,
+            -1.2875002,
+            36.8500002,
+            -1.2849998
+          ],
+          "ids": 1,
+          "requests": 1
+        }
+      ],
+      "batchesCompleted": 27,
+      "requests": [
+        {
+          "requestUrl": "https://nairobimaps.com/api/get_parcels.php?bbox=36.8399998%2C-1.2650002%2C36.8425002%2C-1.2624998&zoom=19",
+          "httpStatus": 200,
+          "responseBytes": 19031,
+          "elapsedMs": 744,
+          "responseSha256": "ea5f4ce6a03bf8ee0c7014eb26362d320cbc637d9768570d2794b4eac25b9244",
+          "bboxEcho": [
+            36.8399998,
+            -1.2650002,
+            36.8425002,
+            -1.2624998
+          ],
+          "featureCount": 40,
+          "metadata": {
+            "count": 40,
+            "zoom": 19,
+            "limit": 4000,
+            "truncated": false,
+            "previewRemaining": 24
+          },
+          "countMatchesReturned": true,
+          "propertiesAllEmpty": true,
+          "sourceFeatureIdsPresent": false
+        },
+        {
+          "requestUrl": "https://nairobimaps.com/api/get_parcels.php?bbox=36.8399998%2C-1.2675002%2C36.8425002%2C-1.2649998&zoom=19",
+          "httpStatus": 200,
+          "responseBytes": 18707,
+          "elapsedMs": 246,
+          "responseSha256": "44557d871261ac98acaecbc23cd75bcfe21e00eb5d01b1e1af0cdead0f889d91",
+          "bboxEcho": [
+            36.8399998,
+            -1.2675002,
+            36.8425002,
+            -1.2649998
+          ],
+          "featureCount": 83,
+          "metadata": {
+            "count": 83,
+            "zoom": 19,
+            "limit": 4000,
+            "truncated": false,
+            "previewRemaining": 24
+          },
+          "countMatchesReturned": true,
+          "propertiesAllEmpty": true,
+          "sourceFeatureIdsPresent": false
+        },
+        {
+          "requestUrl": "https://nairobimaps.com/api/get_parcels.php?bbox=36.8399998%2C-1.2700002%2C36.8425002%2C-1.2674998&zoom=19",
+          "httpStatus": 200,
+          "responseBytes": 25123,
+          "elapsedMs": 238,
+          "responseSha256": "3ee06e48afaa091c71a1a9f9b3a19b620a146a45e3e00f337274a6690ffa8173",
+          "bboxEcho": [
+            36.8399998,
+            -1.2700002,
+            36.8425002,
+            -1.2674998
+          ],
+          "featureCount": 116,
+          "metadata": {
+            "count": 116,
+            "zoom": 19,
+            "limit": 4000,
+            "truncated": false,
+            "previewRemaining": 24
+          },
+          "countMatchesReturned": true,
+          "propertiesAllEmpty": true,
+          "sourceFeatureIdsPresent": false
+        },
+        {
+          "requestUrl": "https://nairobimaps.com/api/get_parcels.php?bbox=36.8399998%2C-1.2725002%2C36.8425002%2C-1.2699998&zoom=19",
+          "httpStatus": 200,
+          "responseBytes": 23536,
+          "elapsedMs": 242,
+          "responseSha256": "75808b92b8396d4cb4ffe8c71b34ece1fdb420b7d9ad9a10330b1bb5a344a433",
+          "bboxEcho": [
+            36.8399998,
+            -1.2725002,
+            36.8425002,
+            -1.2699998
+          ],
+          "featureCount": 103,
+          "metadata": {
+            "count": 103,
+            "zoom": 19,
+            "limit": 4000,
+            "truncated": false,
+            "previewRemaining": 24
+          },
+          "countMatchesReturned": true,
+          "propertiesAllEmpty": true,
+          "sourceFeatureIdsPresent": false
+        },
+        {
+          "requestUrl": "https://nairobimaps.com/api/get_parcels.php?bbox=36.8424998%2C-1.2625002%2C36.8450002%2C-1.2599998&zoom=19",
+          "httpStatus": 200,
+          "responseBytes": 2479,
+          "elapsedMs": 242,
+          "responseSha256": "f363371a0c947fab35f9c118f8b5b9f521f15a44fefc0c80d7193d5d8c33fe5b",
+          "bboxEcho": [
+            36.8424998,
+            -1.2625002,
+            36.8450002,
+            -1.2599998
+          ],
+          "featureCount": 10,
+          "metadata": {
+            "count": 10,
+            "zoom": 19,
+            "limit": 4000,
+            "truncated": false,
+            "previewRemaining": 24
+          },
+          "countMatchesReturned": true,
+          "propertiesAllEmpty": true,
+          "sourceFeatureIdsPresent": false
+        },
+        {
+          "requestUrl": "https://nairobimaps.com/api/get_parcels.php?bbox=36.8424998%2C-1.2650002%2C36.8450002%2C-1.2624998&zoom=19",
+          "httpStatus": 200,
+          "responseBytes": 41092,
+          "elapsedMs": 239,
+          "responseSha256": "77a38f5fcb96af73cb9315c10948db2a386cc9fc74606fa19f75644119f5c48a",
+          "bboxEcho": [
+            36.8424998,
+            -1.2650002,
+            36.8450002,
+            -1.2624998
+          ],
+          "featureCount": 175,
+          "metadata": {
+            "count": 175,
+            "zoom": 19,
+            "limit": 4000,
+            "truncated": false,
+            "previewRemaining": 24
+          },
+          "countMatchesReturned": true,
+          "propertiesAllEmpty": true,
+          "sourceFeatureIdsPresent": false
+        },
+        {
+          "requestUrl": "https://nairobimaps.com/api/get_parcels.php?bbox=36.8424998%2C-1.2650002%2C36.8450002%2C-1.2624998&zoom=19",
+          "httpStatus": 200,
+          "responseBytes": 41092,
+          "elapsedMs": 239,
+          "responseSha256": "77a38f5fcb96af73cb9315c10948db2a386cc9fc74606fa19f75644119f5c48a",
+          "bboxEcho": [
+            36.8424998,
+            -1.2650002,
+            36.8450002,
+            -1.2624998
+          ],
+          "featureCount": 175,
+          "metadata": {
+            "count": 175,
+            "zoom": 19,
+            "limit": 4000,
+            "truncated": false,
+            "previewRemaining": 24
+          },
+          "countMatchesReturned": true,
+          "propertiesAllEmpty": true,
+          "sourceFeatureIdsPresent": false
+        },
+        {
+          "requestUrl": "https://nairobimaps.com/api/get_parcels.php?bbox=36.8424998%2C-1.2650002%2C36.8450002%2C-1.2624998&zoom=19",
+          "httpStatus": 200,
+          "responseBytes": 41092,
+          "elapsedMs": 238,
+          "responseSha256": "77a38f5fcb96af73cb9315c10948db2a386cc9fc74606fa19f75644119f5c48a",
+          "bboxEcho": [
+            36.8424998,
+            -1.2650002,
+            36.8450002,
+            -1.2624998
+          ],
+          "featureCount": 175,
+          "metadata": {
+            "count": 175,
+            "zoom": 19,
+            "limit": 4000,
+            "truncated": false,
+            "previewRemaining": 24
+          },
+          "countMatchesReturned": true,
+          "propertiesAllEmpty": true,
+          "sourceFeatureIdsPresent": false
+        },
+        {
+          "requestUrl": "https://nairobimaps.com/api/get_parcels.php?bbox=36.8424998%2C-1.2675002%2C36.8450002%2C-1.2649998&zoom=19",
+          "httpStatus": 200,
+          "responseBytes": 47423,
+          "elapsedMs": 240,
+          "responseSha256": "3d3d7bdae7b5699c041a3c1e4227ef3780c5390e997414753cf790b1522fe672",
+          "bboxEcho": [
+            36.8424998,
+            -1.2675002,
+            36.8450002,
+            -1.2649998
+          ],
+          "featureCount": 218,
+          "metadata": {
+            "count": 218,
+            "zoom": 19,
+            "limit": 4000,
+            "truncated": false,
+            "previewRemaining": 24
+          },
+          "countMatchesReturned": true,
+          "propertiesAllEmpty": true,
+          "sourceFeatureIdsPresent": false
+        },
+        {
+          "requestUrl": "https://nairobimaps.com/api/get_parcels.php?bbox=36.8424998%2C-1.2675002%2C36.8450002%2C-1.2649998&zoom=19",
+          "httpStatus": 200,
+          "responseBytes": 47423,
+          "elapsedMs": 238,
+          "responseSha256": "3d3d7bdae7b5699c041a3c1e4227ef3780c5390e997414753cf790b1522fe672",
+          "bboxEcho": [
+            36.8424998,
+            -1.2675002,
+            36.8450002,
+            -1.2649998
+          ],
+          "featureCount": 218,
+          "metadata": {
+            "count": 218,
+            "zoom": 19,
+            "limit": 4000,
+            "truncated": false,
+            "previewRemaining": 24
+          },
+          "countMatchesReturned": true,
+          "propertiesAllEmpty": true,
+          "sourceFeatureIdsPresent": false
+        },
+        {
+          "requestUrl": "https://nairobimaps.com/api/get_parcels.php?bbox=36.8424998%2C-1.2675002%2C36.8450002%2C-1.2649998&zoom=19",
+          "httpStatus": 200,
+          "responseBytes": 47423,
+          "elapsedMs": 239,
+          "responseSha256": "3d3d7bdae7b5699c041a3c1e4227ef3780c5390e997414753cf790b1522fe672",
+          "bboxEcho": [
+            36.8424998,
+            -1.2675002,
+            36.8450002,
+            -1.2649998
+          ],
+          "featureCount": 218,
+          "metadata": {
+            "count": 218,
+            "zoom": 19,
+            "limit": 4000,
+            "truncated": false,
+            "previewRemaining": 24
+          },
+          "countMatchesReturned": true,
+          "propertiesAllEmpty": true,
+          "sourceFeatureIdsPresent": false
+        },
+        {
+          "requestUrl": "https://nairobimaps.com/api/get_parcels.php?bbox=36.8424998%2C-1.2700002%2C36.8450002%2C-1.2674998&zoom=19",
+          "httpStatus": 200,
+          "responseBytes": 34746,
+          "elapsedMs": 240,
+          "responseSha256": "7315cf9f413156fe7df7e78d9b1c586ca931d48dbea2801aaaf40bedfa332abb",
+          "bboxEcho": [
+            36.8424998,
+            -1.2700002,
+            36.8450002,
+            -1.2674998
+          ],
+          "featureCount": 161,
+          "metadata": {
+            "count": 161,
+            "zoom": 19,
+            "limit": 4000,
+            "truncated": false,
+            "previewRemaining": 24
+          },
+          "countMatchesReturned": true,
+          "propertiesAllEmpty": true,
+          "sourceFeatureIdsPresent": false
+        },
+        {
+          "requestUrl": "https://nairobimaps.com/api/get_parcels.php?bbox=36.8424998%2C-1.2700002%2C36.8450002%2C-1.2674998&zoom=19",
+          "httpStatus": 200,
+          "responseBytes": 34746,
+          "elapsedMs": 242,
+          "responseSha256": "7315cf9f413156fe7df7e78d9b1c586ca931d48dbea2801aaaf40bedfa332abb",
+          "bboxEcho": [
+            36.8424998,
+            -1.2700002,
+            36.8450002,
+            -1.2674998
+          ],
+          "featureCount": 161,
+          "metadata": {
+            "count": 161,
+            "zoom": 19,
+            "limit": 4000,
+            "truncated": false,
+            "previewRemaining": 24
+          },
+          "countMatchesReturned": true,
+          "propertiesAllEmpty": true,
+          "sourceFeatureIdsPresent": false
+        },
+        {
+          "requestUrl": "https://nairobimaps.com/api/get_parcels.php?bbox=36.8424998%2C-1.2725002%2C36.8450002%2C-1.2699998&zoom=19",
+          "httpStatus": 200,
+          "responseBytes": 53946,
+          "elapsedMs": 239,
+          "responseSha256": "3a940524c49e8863964ec2cd1a4079c2eb20c3f86d88f262a45332ede94d5234",
+          "bboxEcho": [
+            36.8424998,
+            -1.2725002,
+            36.8450002,
+            -1.2699998
+          ],
+          "featureCount": 245,
+          "metadata": {
+            "count": 245,
+            "zoom": 19,
+            "limit": 4000,
+            "truncated": false,
+            "previewRemaining": 24
+          },
+          "countMatchesReturned": true,
+          "propertiesAllEmpty": true,
+          "sourceFeatureIdsPresent": false
+        },
+        {
+          "requestUrl": "https://nairobimaps.com/api/get_parcels.php?bbox=36.8449998%2C-1.2650002%2C36.8475002%2C-1.2624998&zoom=19",
+          "httpStatus": 200,
+          "responseBytes": 23681,
+          "elapsedMs": 256,
+          "responseSha256": "ac3f32d1dd457f85c6a8935202328b1e86a2b4e8bb280b52211b8f5c7fddf6ca",
+          "bboxEcho": [
+            36.8449998,
+            -1.2650002,
+            36.8475002,
+            -1.2624998
+          ],
+          "featureCount": 100,
+          "metadata": {
+            "count": 100,
+            "zoom": 19,
+            "limit": 4000,
+            "truncated": false,
+            "previewRemaining": 24
+          },
+          "countMatchesReturned": true,
+          "propertiesAllEmpty": true,
+          "sourceFeatureIdsPresent": false
+        },
+        {
+          "requestUrl": "https://nairobimaps.com/api/get_parcels.php?bbox=36.8449998%2C-1.2650002%2C36.8475002%2C-1.2624998&zoom=19",
+          "httpStatus": 200,
+          "responseBytes": 23681,
+          "elapsedMs": 240,
+          "responseSha256": "ac3f32d1dd457f85c6a8935202328b1e86a2b4e8bb280b52211b8f5c7fddf6ca",
+          "bboxEcho": [
+            36.8449998,
+            -1.2650002,
+            36.8475002,
+            -1.2624998
+          ],
+          "featureCount": 100,
+          "metadata": {
+            "count": 100,
+            "zoom": 19,
+            "limit": 4000,
+            "truncated": false,
+            "previewRemaining": 24
+          },
+          "countMatchesReturned": true,
+          "propertiesAllEmpty": true,
+          "sourceFeatureIdsPresent": false
+        },
+        {
+          "requestUrl": "https://nairobimaps.com/api/get_parcels.php?bbox=36.8449998%2C-1.2675002%2C36.8475002%2C-1.2649998&zoom=19",
+          "httpStatus": 200,
+          "responseBytes": 30305,
+          "elapsedMs": 237,
+          "responseSha256": "7f63eb64a2887759898fe7b8ab77d569f858d7a827a309569101ef3a0bdcdbd6",
+          "bboxEcho": [
+            36.8449998,
+            -1.2675002,
+            36.8475002,
+            -1.2649998
+          ],
+          "featureCount": 130,
+          "metadata": {
+            "count": 130,
+            "zoom": 19,
+            "limit": 4000,
+            "truncated": false,
+            "previewRemaining": 24
+          },
+          "countMatchesReturned": true,
+          "propertiesAllEmpty": true,
+          "sourceFeatureIdsPresent": false
+        },
+        {
+          "requestUrl": "https://nairobimaps.com/api/get_parcels.php?bbox=36.8449998%2C-1.2675002%2C36.8475002%2C-1.2649998&zoom=19",
+          "httpStatus": 200,
+          "responseBytes": 30305,
+          "elapsedMs": 238,
+          "responseSha256": "7f63eb64a2887759898fe7b8ab77d569f858d7a827a309569101ef3a0bdcdbd6",
+          "bboxEcho": [
+            36.8449998,
+            -1.2675002,
+            36.8475002,
+            -1.2649998
+          ],
+          "featureCount": 130,
+          "metadata": {
+            "count": 130,
+            "zoom": 19,
+            "limit": 4000,
+            "truncated": false,
+            "previewRemaining": 24
+          },
+          "countMatchesReturned": true,
+          "propertiesAllEmpty": true,
+          "sourceFeatureIdsPresent": false
+        },
+        {
+          "requestUrl": "https://nairobimaps.com/api/get_parcels.php?bbox=36.8449998%2C-1.2700002%2C36.8475002%2C-1.2674998&zoom=19",
+          "httpStatus": 200,
+          "responseBytes": 18010,
+          "elapsedMs": 243,
+          "responseSha256": "f31a9806cad23096eae82a272d5deab5b4c18450b9ce706eae891ff0d5d0cbd8",
+          "bboxEcho": [
+            36.8449998,
+            -1.2700002,
+            36.8475002,
+            -1.2674998
+          ],
+          "featureCount": 77,
+          "metadata": {
+            "count": 77,
+            "zoom": 19,
+            "limit": 4000,
+            "truncated": false,
+            "previewRemaining": 24
+          },
+          "countMatchesReturned": true,
+          "propertiesAllEmpty": true,
+          "sourceFeatureIdsPresent": false
+        },
+        {
+          "requestUrl": "https://nairobimaps.com/api/get_parcels.php?bbox=36.8449998%2C-1.2725002%2C36.8475002%2C-1.2699998&zoom=19",
+          "httpStatus": 200,
+          "responseBytes": 18468,
+          "elapsedMs": 238,
+          "responseSha256": "64d6d17afb1115e6fc4b879d0794125eeffaf4ef6a7bbef733f9b26a9c9a9c38",
+          "bboxEcho": [
+            36.8449998,
+            -1.2725002,
+            36.8475002,
+            -1.2699998
+          ],
+          "featureCount": 78,
+          "metadata": {
+            "count": 78,
+            "zoom": 19,
+            "limit": 4000,
+            "truncated": false,
+            "previewRemaining": 24
+          },
+          "countMatchesReturned": true,
+          "propertiesAllEmpty": true,
+          "sourceFeatureIdsPresent": false
+        },
+        {
+          "requestUrl": "https://nairobimaps.com/api/get_parcels.php?bbox=36.8474998%2C-1.2650002%2C36.8500002%2C-1.2624998&zoom=19",
+          "httpStatus": 200,
+          "responseBytes": 30515,
+          "elapsedMs": 247,
+          "responseSha256": "4cf7b88b934f6691f80f4dbf1b236b37c9ac83e0a0696d4201b9826d7b46cc76",
+          "bboxEcho": [
+            36.8474998,
+            -1.2650002,
+            36.8500002,
+            -1.2624998
+          ],
+          "featureCount": 76,
+          "metadata": {
+            "count": 76,
+            "zoom": 19,
+            "limit": 4000,
+            "truncated": false,
+            "previewRemaining": 24
+          },
+          "countMatchesReturned": true,
+          "propertiesAllEmpty": true,
+          "sourceFeatureIdsPresent": false
+        },
+        {
+          "requestUrl": "https://nairobimaps.com/api/get_parcels.php?bbox=36.8474998%2C-1.2675002%2C36.8500002%2C-1.2649998&zoom=19",
+          "httpStatus": 200,
+          "responseBytes": 41412,
+          "elapsedMs": 241,
+          "responseSha256": "2f76f416b936e3c111e38db8996b035d4a3a9d8bce94de3fb1c8ca174bd60703",
+          "bboxEcho": [
+            36.8474998,
+            -1.2675002,
+            36.8500002,
+            -1.2649998
+          ],
+          "featureCount": 132,
+          "metadata": {
+            "count": 132,
+            "zoom": 19,
+            "limit": 4000,
+            "truncated": false,
+            "previewRemaining": 24
+          },
+          "countMatchesReturned": true,
+          "propertiesAllEmpty": true,
+          "sourceFeatureIdsPresent": false
+        },
+        {
+          "requestUrl": "https://nairobimaps.com/api/get_parcels.php?bbox=36.8474998%2C-1.2675002%2C36.8500002%2C-1.2649998&zoom=19",
+          "httpStatus": 200,
+          "responseBytes": 41412,
+          "elapsedMs": 242,
+          "responseSha256": "2f76f416b936e3c111e38db8996b035d4a3a9d8bce94de3fb1c8ca174bd60703",
+          "bboxEcho": [
+            36.8474998,
+            -1.2675002,
+            36.8500002,
+            -1.2649998
+          ],
+          "featureCount": 132,
+          "metadata": {
+            "count": 132,
+            "zoom": 19,
+            "limit": 4000,
+            "truncated": false,
+            "previewRemaining": 24
+          },
+          "countMatchesReturned": true,
+          "propertiesAllEmpty": true,
+          "sourceFeatureIdsPresent": false
+        },
+        {
+          "requestUrl": "https://nairobimaps.com/api/get_parcels.php?bbox=36.8474998%2C-1.2700002%2C36.8500002%2C-1.2674998&zoom=19",
+          "httpStatus": 200,
+          "responseBytes": 35650,
+          "elapsedMs": 243,
+          "responseSha256": "9ea3788f3481679a5adff31b49e0b2134e1553016bc48e91a9132e0c4cf293b6",
+          "bboxEcho": [
+            36.8474998,
+            -1.2700002,
+            36.8500002,
+            -1.2674998
+          ],
+          "featureCount": 116,
+          "metadata": {
+            "count": 116,
+            "zoom": 19,
+            "limit": 4000,
+            "truncated": false,
+            "previewRemaining": 24
+          },
+          "countMatchesReturned": true,
+          "propertiesAllEmpty": true,
+          "sourceFeatureIdsPresent": false
+        },
+        {
+          "requestUrl": "https://nairobimaps.com/api/get_parcels.php?bbox=36.8474998%2C-1.2700002%2C36.8500002%2C-1.2674998&zoom=19",
+          "httpStatus": 200,
+          "responseBytes": 35650,
+          "elapsedMs": 239,
+          "responseSha256": "9ea3788f3481679a5adff31b49e0b2134e1553016bc48e91a9132e0c4cf293b6",
+          "bboxEcho": [
+            36.8474998,
+            -1.2700002,
+            36.8500002,
+            -1.2674998
+          ],
+          "featureCount": 116,
+          "metadata": {
+            "count": 116,
+            "zoom": 19,
+            "limit": 4000,
+            "truncated": false,
+            "previewRemaining": 24
+          },
+          "countMatchesReturned": true,
+          "propertiesAllEmpty": true,
+          "sourceFeatureIdsPresent": false
+        },
+        {
+          "requestUrl": "https://nairobimaps.com/api/get_parcels.php?bbox=36.8474998%2C-1.2725002%2C36.8500002%2C-1.2699998&zoom=19",
+          "httpStatus": 200,
+          "responseBytes": 34799,
+          "elapsedMs": 256,
+          "responseSha256": "364f4c88fb4f738e3ac80ae0e14b0b7aed37b7a366a508f19e846bee5ec1265a",
+          "bboxEcho": [
+            36.8474998,
+            -1.2725002,
+            36.8500002,
+            -1.2699998
+          ],
+          "featureCount": 114,
+          "metadata": {
+            "count": 114,
+            "zoom": 19,
+            "limit": 4000,
+            "truncated": false,
+            "previewRemaining": 24
+          },
+          "countMatchesReturned": true,
+          "propertiesAllEmpty": true,
+          "sourceFeatureIdsPresent": false
+        },
+        {
+          "requestUrl": "https://nairobimaps.com/api/get_parcels.php?bbox=36.8474998%2C-1.2875002%2C36.8500002%2C-1.2849998&zoom=19",
+          "httpStatus": 200,
+          "responseBytes": 19985,
+          "elapsedMs": 1203,
+          "responseSha256": "6a6d19c82ffd99fad15e491bb14b35dddbe7934ae6a5214d94ca90178413fe39",
+          "bboxEcho": [
+            36.8474998,
+            -1.2875002,
+            36.8500002,
+            -1.2849998
+          ],
+          "featureCount": 45,
+          "metadata": {
+            "count": 45,
+            "zoom": 19,
+            "limit": 4000,
+            "truncated": false,
+            "previewRemaining": 24
+          },
+          "countMatchesReturned": true,
+          "propertiesAllEmpty": true,
+          "sourceFeatureIdsPresent": false
+        }
+      ],
+      "observedIdsFound": 1066,
+      "observedIdsAbsent": 0,
+      "canonicalGeometryMatches": true,
+      "sameIdChangedGeometryConflicts": 0,
+      "allHTTP200": true,
+      "allCountMetadataConsistent": true,
+      "allUntruncated": true,
+      "allPropertiesEmpty": true,
+      "noSourceFeatureIds": true,
+      "syntheticNegativeTest": {
+        "description": "One syntactically valid geometry-sha256-v1 reference generated for a tiny artificial polygon inside an already queried cell.",
+        "expectedAbsentCount": 1,
+        "observedAbsentCount": 1,
+        "legalParcelInference": "none; the ID represents a test-only geometry version, not a parcel record."
+      }
+    },
+    "extraDiagnosticCall": {
+      "count": 1,
+      "bbox": [
+        36.8399998,
+        -1.2650002,
+        36.8425002,
+        -1.2624998
+      ],
+      "httpStatus": 200,
+      "metadata": {
+        "count": 40,
+        "zoom": 19,
+        "limit": 4000,
+        "truncated": false,
+        "previewRemaining": 24
+      },
+      "reason": "An initial harness version correctly received the expected absence for its deliberate nonexistent-hash ID but mistakenly treated that absence as a run failure. This duplicate same-cell call was superseded by the complete run; it found no observed grid ID missing."
+    },
+    "footprintAndBindingReads": {
+      "calls": 3,
+      "requests": [
+        {
+          "requestUrl": "https://nairobimaps.com/api/get_parcels.php?bbox=36.845151927435%2C-1.26593113731299%2C36.845171927435004%2C-1.2659111373129899&zoom=19",
+          "httpStatus": 200,
+          "responseBytes": 629,
+          "elapsedMs": 236,
+          "responseSha256": "1a4eebcb7a24f0b51b1d1c3bddcc8ca7b5ff9557ae08418da9d16664a5cd4c13",
+          "bboxEcho": [
+            36.845151927435,
+            -1.26593113731299,
+            36.845171927435004,
+            -1.2659111373129899
+          ],
+          "featureCount": 2,
+          "metadata": {
+            "count": 2,
+            "zoom": 19,
+            "limit": 4000,
+            "truncated": false,
+            "previewRemaining": 24
+          },
+          "countMatchesReturned": true,
+          "propertiesAllEmpty": true,
+          "sourceFeatureIdsPresent": false
+        },
+        {
+          "requestUrl": "https://nairobimaps.com/api/get_parcels.php?bbox=36.845151927435%2C-1.26593113731299%2C36.845171927435004%2C-1.2659111373129899&zoom=19",
+          "httpStatus": 200,
+          "responseBytes": 629,
+          "elapsedMs": 236,
+          "responseSha256": "1a4eebcb7a24f0b51b1d1c3bddcc8ca7b5ff9557ae08418da9d16664a5cd4c13",
+          "bboxEcho": [
+            36.845151927435,
+            -1.26593113731299,
+            36.845171927435004,
+            -1.2659111373129899
+          ],
+          "featureCount": 2,
+          "metadata": {
+            "count": 2,
+            "zoom": 19,
+            "limit": 4000,
+            "truncated": false,
+            "previewRemaining": 24
+          },
+          "countMatchesReturned": true,
+          "propertiesAllEmpty": true,
+          "sourceFeatureIdsPresent": false
+        },
+        {
+          "requestUrl": "https://nairobimaps.com/api/get_parcels.php?bbox=36.8449998%2C-1.2675002%2C36.8475002%2C-1.2649998&zoom=19",
+          "httpStatus": 200,
+          "responseBytes": 30305,
+          "elapsedMs": 241,
+          "responseSha256": "7f63eb64a2887759898fe7b8ab77d569f858d7a827a309569101ef3a0bdcdbd6",
+          "bboxEcho": [
+            36.8449998,
+            -1.2675002,
+            36.8475002,
+            -1.2649998
+          ],
+          "featureCount": 130,
+          "metadata": {
+            "count": 130,
+            "zoom": 19,
+            "limit": 4000,
+            "truncated": false,
+            "previewRemaining": 24
+          },
+          "countMatchesReturned": true,
+          "propertiesAllEmpty": true,
+          "sourceFeatureIdsPresent": false
+        }
+      ],
+      "footprint": {
+        "bbox": [
+          36.845151927435,
+          -1.26593113731299,
+          36.845171927435004,
+          -1.2659111373129899
+        ],
+        "responseFeatureCount": 2,
+        "returnedSelectedOutline": true
+      },
+      "sourceBinding": {
+        "coverage": "complete",
+        "parcelCount": 2,
+        "parcelIds": [
+          "KE-NAIROBI-NM-g1~368450797~-12658433~da3346393f9072e27a714160a14a3b5bba650f8059bd29b108d63a11b0470eb2",
+          "KE-NAIROBI-NM-g1~368451413~-12658306~b2c826e9d82db0929c92dd5737da49cf9cdeba1f2ba49d70c3ad2816d4b2ae87"
+        ],
+        "unsurveyedM2": 0,
+        "unknownM2": 0,
+        "source": "server:ke-nairobi-maps-outlines"
+      },
+      "parcelActBinding": {
+        "coverage": "complete",
+        "selectedParcelCount": 1,
+        "extra": [],
+        "siteM2": 126.85,
+        "source": "server:ke-nairobi-maps-outlines",
+        "parcelEntry": {
+          "parcelId": "KE-NAIROBI-NM-g1~368451413~-12658306~b2c826e9d82db0929c92dd5737da49cf9cdeba1f2ba49d70c3ad2816d4b2ae87",
+          "overlapM2": 126.854,
+          "intrusionM": null
+        }
+      },
+      "error": null
+    },
+    "totalCallsThisAcceptance": 40,
+    "distinctLookupCellsAcrossGridAndExactReads": 18,
+    "actualProviderPreviewRemainingObserved": 24,
+    "quotaExhausted": false,
+    "sourceError": null
+  },
+  "geometryQuality": {
+    "distinctCanonicalFeatures": 1066,
+    "uniqueSyntheticIds": 1066,
+    "sourceNativeIdField": null,
+    "sourceParcelId": null,
+    "parcelNumber": null,
+    "allOutputPropertiesEmpty": true,
+    "ringIntegrity": {
+      "rings": 1068,
+      "vertices": 6412,
+      "openRings": 0,
+      "shortRings": 0,
+      "nonfiniteCoordinates": 0,
+      "coordinateOutOfRange": 0,
+      "duplicateAdjacentCount": 0,
+      "duplicateAdjacent": []
+    },
+    "localPositiveAreaOverlap": {
+      "method": "Turf 6 intersect(a,b) after bounding-box candidate sweep; each pair passed as two features, intersections measured with Turf area.",
+      "candidateEnvelopePairs": 2384,
+      "actualIntersections": 0,
+      "positiveAreaOverlapsAbove0_01m2": 0,
+      "overlayErrors": 0
+    },
+    "crossCellIdentity": "The same canonical SHA-256 synthetic ID always mapped to identical canonical geometry across returned cells; one source ID per geometry, 1,066 unique IDs in the 9-cell union.",
+    "canonicalSelfIntersectionCheck": {
+      "method": "Turf 6 kinks applied independently to every canonical feature retained from the 9-cell acceptance.",
+      "featuresChecked": 1066,
+      "featuresWithKinks": 0,
+      "checkedAt": "2026-10-08T06:20:39.506747+00:00"
+    }
+  },
+  "wupPointAndBinding": {
+    "pointContainment": {
+      "lonLat": [
+        36.845161927435,
+        -1.26592113731299
+      ],
+      "containingCount": 1,
+      "matches": [
+        {
+          "featureIndex": 598,
+          "id": "KE-NAIROBI-NM-g1~368451413~-12658306~b2c826e9d82db0929c92dd5737da49cf9cdeba1f2ba49d70c3ad2816d4b2ae87",
+          "areaM2": 126.85374314884386,
+          "bbox": [
+            36.8451413,
+            -1.2659901,
+            36.8452355,
+            -1.2658179
+          ]
+        }
+      ]
+    },
+    "selectedOutline": {
+      "id": "KE-NAIROBI-NM-g1~368451413~-12658306~b2c826e9d82db0929c92dd5737da49cf9cdeba1f2ba49d70c3ad2816d4b2ae87",
+      "featureIndex": 598,
+      "areaM2": 126.85374314884386,
+      "bbox": [
+        36.8451413,
+        -1.2659901,
+        36.8452355,
+        -1.2658179
+      ],
+      "rings": 1
+    },
+    "footprint": {
+      "bbox": [
+        36.845151927435,
+        -1.26593113731299,
+        36.845171927435004,
+        -1.2659111373129899
+      ],
+      "responseFeatureCount": 2,
+      "returnedSelectedOutline": true
+    },
+    "sourceBinding": {
+      "coverage": "complete",
+      "parcelCount": 2,
+      "parcelIds": [
+        "KE-NAIROBI-NM-g1~368450797~-12658433~da3346393f9072e27a714160a14a3b5bba650f8059bd29b108d63a11b0470eb2",
+        "KE-NAIROBI-NM-g1~368451413~-12658306~b2c826e9d82db0929c92dd5737da49cf9cdeba1f2ba49d70c3ad2816d4b2ae87"
+      ],
+      "unsurveyedM2": 0,
+      "unknownM2": 0,
+      "source": "server:ke-nairobi-maps-outlines"
+    },
+    "parcelActBinding": {
+      "coverage": "complete",
+      "selectedParcelCount": 1,
+      "extra": [],
+      "siteM2": 126.85,
+      "source": "server:ke-nairobi-maps-outlines",
+      "parcelEntry": {
+        "parcelId": "KE-NAIROBI-NM-g1~368451413~-12658306~b2c826e9d82db0929c92dd5737da49cf9cdeba1f2ba49d70c3ad2816d4b2ae87",
+        "overlapM2": 126.854,
+        "intrusionM": null
+      }
+    },
+    "allSuccessful": true
+  },
+  "sourceIdentityPolicy": {
+    "nativeParcelIdentifiersPresent": false,
+    "sourceParcelId": null,
+    "parcelNumber": null,
+    "syntheticIdNamespace": "ke-nairobi-maps-outlines",
+    "meaning": "Synthetic geometry-version reference only. A hash or application ID must not be described as an official parcel, land-registry identifier or stable source record ID."
+  },
+  "coverageAndUseCaveats": [
+    "This verifies anonymous returned outlines only in the sampled local area; it does not establish citywide or national coverage.",
+    "The provider is commercial and not a government registry. Survey-record provenance was not independently verified, and source terms require written permission for commercial/bulk use.",
+    "Provider bounds queries select by intersecting envelope and return whole geometries; footprint reads apply exact Turf intersection. This acceptance does not establish cadastral/legal boundary status.",
+    "No account, paid service, feature download or WFS key was used. The source keeps all source properties empty and does not retain any source feature IDs."
+  ],
+  "retainedSafeGeometryFile": "/tmp/india-africa-batch3-nairobi-canonical-geometries.json",
+  "retainedSafeGeometryFileProperties": "FeatureCollection with 1,066 canonical geometries, application-derived feature ids and empty feature properties; no source IDs or personal data.",
+  "hostLoad": {
+    "gridRunStart1m5m15m": [
+      12.86181640625,
+      10.6708984375,
+      8.6435546875
+    ],
+    "exactRunStart1m5m15m": [
+      18.7412109375,
+      11.9931640625,
+      9.359375
+    ],
+    "exactRunEnd1m5m15m": [
+      18.2392578125,
+      12.10791015625,
+      9.4306640625
+    ],
+    "interpretation": "Host load was elevated during both runs. Requests were sequential; request durations are recorded but should not be treated as provider performance benchmarks."
+  },
+  "evidenceFiles": [
+    "research/india-africa-2026-10-08/africa-ne-city-nairobi.json",
+    "research/india-africa-next10-2026-10-08/africa-east-city-2033.json",
+    "research/india-africa-batch3-2026-10-08/nairobi-quality-audit.json",
+    "research/india-africa-batch3-2026-10-08/nairobi-acceptance.json"
+  ],
+  "rawLogs": [
+    "/tmp/india-africa-batch3-nairobi-grid-results.json",
+    "/tmp/india-africa-batch3-nairobi-exact-acceptance.json",
+    "/tmp/india-africa-batch3-nairobi/grid-analysis.json"
+  ]
+}

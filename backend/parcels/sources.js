@@ -12,6 +12,8 @@ import { createGmlSnapshotParcelSource } from './gml-snapshot-source.js';
 import { createCatastroWfsParcelSource } from './catastro-wfs-source.js';
 import { createDlrsSheetParcelSource } from './dlrs-sheet-source.js';
 import { createKeralaParcelSource } from './kerala-source.js';
+import { createNairobiOutlineSource } from './nairobi-outline-source.js';
+import { createKazakhstanPkkSource } from './kazakhstan-pkk-source.js';
 import { createHttpsJsonFetch } from './https-json-fetch.js';
 import { HttpError } from '../utils/helpers.js';
 import { decodeCustomSource } from './custom-source-config.js';
@@ -102,6 +104,8 @@ export function createParcelSource(descriptor, options = {}) {
         'geojson-snapshot': createGeojsonSnapshotParcelSource, 'gml-snapshot': createGmlSnapshotParcelSource,
         'catastro-wfs': createCatastroWfsParcelSource, 'dlrs-sheet': createDlrsSheetParcelSource,
         'kerala-entebhoomi': createKeralaParcelSource,
+        'nairobi-outlines': createNairobiOutlineSource,
+        'kazakhstan-pkk': createKazakhstanPkkSource,
         socrata: createSocrataParcelSource }[descriptor.adapter];
     if (!factory) throw new Error(`Unsupported parcel adapter: ${descriptor.adapter}`);
     if (descriptor.caCertificate && !options.fetchImpl) {

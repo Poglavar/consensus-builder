@@ -21,10 +21,27 @@ function integerFeature(oid, geometry = GEOMETRY) {
 function wfs11Page(features, totalFeatures = features.length) {
     return { ok: true, status: 200, json: async () => ({ type: 'FeatureCollection', features, totalFeatures }) };
 }
+function ahmedabadCapFeature(index) {
+    const search = `Jamalpur 1 ${index}`;
+    return {
+        type: 'Feature', id: `final_plot_boundary.${index}`,
+        properties: { search, fp_no: String(index), status: 'Final', city: 'Ahmedabad', authority: 'AMC' },
+        geometry: { type: 'Polygon', coordinates: [[[72.5901, 23.0151], [72.5902, 23.0151], [72.5902, 23.0152], [72.5901, 23.0152], [72.5901, 23.0151]]] }
+    };
+}
 function source(pages, override = {}) {
     const fetchImpl = vi.fn(); pages.forEach(payload => fetchImpl.mockResolvedValueOnce(payload));
     return { adapter: createWfsParcelSource({ ...descriptor, ...override }, { fetchImpl }), fetchImpl };
 }
+const AHMEDABAD_CAPPED_PROFILE = {
+    id: 'ahmedabad-wfs11-capped-profile-test', endpoint: 'https://tpvd.openprp.in/geoserver/ows',
+    version: '1.1.0', featureType: 'ctp:final_plot_boundary', idField: 'search', idType: 'string',
+    idPattern: undefined, idPrefix: 'IN-GJ-TPVD-', parcelNumberField: 'fp_no',
+    outFields: ['search', 'fp_no', 'status', 'city', 'authority'],
+    attributeFilters: { status: 'Final', city: 'Ahmedabad', authority: 'AMC' },
+    geometryField: 'the_geom', pageSize: 1000, maxFeatures: 1000, maxBboxKm2: 2
+};
+const AHMEDABAD_BOUNDS = [72.59, 23.015, 72.595, 23.02];
 
 describe('WFS parcel adapter', () => {
     it('uses explicit longitude/latitude CRS and pages until the known match count is reached', async () => {
@@ -52,6 +69,61 @@ describe('WFS parcel adapter', () => {
         expect(new URL(fetchImpl.mock.calls[0][0]).searchParams.get('cql_filter')).toBe("idu IN ('75105000AD0011','75105000AD9999')");
         expect(result.absentIds).toEqual(['FR-PCI-75105000AD9999']);
         expect(result.complete).toBe(true);
+    });
+    it('combines fixed city attributes and a CRS:84 BBOX in one CQL filter', async () => {
+        const filtered = {
+            geometryField: 'shape',
+            attributeFilters: { status: 'Final', city: 'Ahmedabad', authority: 'AMC' },
+            outFields: [...descriptor.outFields, 'status', 'city', 'authority']
+        };
+        const matching = {
+            ...feature(1),
+            properties: { ...feature(1).properties, status: 'Final', city: 'Ahmedabad', authority: 'AMC' }
+        };
+        const { adapter, fetchImpl } = source([page([matching])], filtered);
+        const result = await adapter.queryBounds(BOUNDS);
+        const url = new URL(fetchImpl.mock.calls[0][0]);
+        expect(result.features).toHaveLength(1);
+        expect(url.searchParams.get('cql_filter')).toBe("(status = 'Final' AND city = 'Ahmedabad' AND authority = 'AMC') AND (BBOX(shape,2.355,48.8486,2.356,48.8494,'CRS:84'))");
+        expect(url.searchParams.has('bbox')).toBe(false);
+    });
+    it('combines fixed city attributes with exact native-ID lookup scope', async () => {
+        const filtered = {
+            attributeFilters: { status: 'Final', city: 'Ahmedabad', authority: 'AMC' },
+            geometryField: 'shape',
+            outFields: [...descriptor.outFields, 'status', 'city', 'authority']
+        };
+        const matching = {
+            ...feature(1),
+            properties: { ...feature(1).properties, status: 'Final', city: 'Ahmedabad', authority: 'AMC' }
+        };
+        const { adapter, fetchImpl } = source([page([matching])], filtered);
+        const result = await adapter.queryIds(['FR-PCI-75105000AD0011']);
+        const url = new URL(fetchImpl.mock.calls[0][0]);
+        expect(result.features.map(parcel => parcel.id)).toEqual(['FR-PCI-75105000AD0011']);
+        expect(url.searchParams.get('cql_filter')).toBe("(status = 'Final' AND city = 'Ahmedabad' AND authority = 'AMC') AND (idu IN ('75105000AD0011'))");
+        expect(url.searchParams.has('bbox')).toBe(false);
+    });
+    it('rejects a feature when the provider ignores a fixed city filter', async () => {
+        const filtered = {
+            attributeFilters: { status: 'Final', city: 'Ahmedabad', authority: 'AMC' },
+            geometryField: 'shape',
+            outFields: [...descriptor.outFields, 'status', 'city', 'authority']
+        };
+        const outside = {
+            ...feature(1),
+            properties: { ...feature(1).properties, status: 'Final', city: 'Gandhinagar', authority: 'AMC' }
+        };
+        const { adapter } = source([page([outside])], filtered);
+        await expect(adapter.queryBounds(BOUNDS)).rejects.toMatchObject({ status: 502, code: 'parcel-source-unavailable' });
+    });
+    it.each([undefined, '', 'shape);DROP_TABLE', 'geom.field'])('requires a safe geometry field with fixed filters (%s)', geometryField => {
+        const fetchImpl = vi.fn();
+        expect(() => createWfsParcelSource({
+            ...descriptor, geometryField,
+            attributeFilters: { status: 'Final' }, outFields: [...descriptor.outFields, 'status']
+        }, { fetchImpl })).toThrow(/invalid wfs parcel source descriptor/i);
+        expect(fetchImpl).not.toHaveBeenCalled();
     });
     it('supports GeoServer WFS 1.1 paging and strict numeric native IDs', async () => {
         const hk = {
@@ -106,6 +178,30 @@ describe('WFS parcel adapter', () => {
         };
         const { adapter } = source([wfs11Page([integerFeature(1800293576)], 2), wfs11Page([], 2)], hk);
         await expect(adapter.queryBounds([114.181, 22.314, 114.185, 22.317])).rejects.toMatchObject({ status: 502, code: 'parcel-source-unavailable' });
+    });
+    it('accepts a counted 1000-feature WFS 1.1 capped profile in one request', async () => {
+        const { adapter, fetchImpl } = source([
+            wfs11Page(Array.from({ length: 1000 }, (_, index) => ahmedabadCapFeature(index + 1)), 1000)
+        ], AHMEDABAD_CAPPED_PROFILE);
+        const result = await adapter.queryBounds(AHMEDABAD_BOUNDS);
+        const url = new URL(fetchImpl.mock.calls[0][0]);
+        expect(result.complete).toBe(true);
+        expect(result.features).toHaveLength(1000);
+        expect(fetchImpl).toHaveBeenCalledTimes(1);
+        expect(url.searchParams.get('maxFeatures')).toBe('1000');
+        expect(url.searchParams.get('startIndex')).toBe('0');
+        expect(url.searchParams.get('cql_filter')).toContain("(status = 'Final' AND city = 'Ahmedabad' AND authority = 'AMC') AND (BBOX(the_geom,72.59,23.015,72.595,23.02,'CRS:84'))");
+        expect(url.searchParams.has('bbox')).toBe(false);
+    });
+    it('rejects a capped WFS 1.1 page when the reported count exceeds the feature limit', async () => {
+        const { adapter, fetchImpl } = source([
+            wfs11Page(Array.from({ length: 1000 }, (_, index) => ahmedabadCapFeature(index + 1)), 1001)
+        ], AHMEDABAD_CAPPED_PROFILE);
+        await expect(adapter.queryBounds(AHMEDABAD_BOUNDS)).rejects.toMatchObject({ status: 502, code: 'parcel-source-unavailable' });
+        const url = new URL(fetchImpl.mock.calls[0][0]);
+        expect(fetchImpl).toHaveBeenCalledTimes(1);
+        expect(url.searchParams.get('maxFeatures')).toBe('1000');
+        expect(url.searchParams.get('startIndex')).toBe('0');
     });
     it.each([undefined, 'unknown', -1])('refuses missing or invalid WFS 1.1 match counts (%s)', async matched => {
         const hk = { id: 'wfs11-counter-test', endpoint: 'https://provider.example/wfs', version: '1.1.0',

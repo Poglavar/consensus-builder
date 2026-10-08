@@ -1,0 +1,480 @@
+{
+  "schemaVersion": 1,
+  "preparedAt": "2026-10-08",
+  "purpose": "Technical follow-up after first regional research and four-city integration; shared service checks remain distinct from city-target geometry verification.",
+  "releasedCommit": "fe51483ef23281982273c90d08dbdc0603f4a4d3",
+  "releasedFrontendBuild": "deploy-410",
+  "targetCityCount": 39,
+  "plannedDirectTargets": 19,
+  "conditionalBiharTargets": 20,
+  "cities": [
+    {
+      "cityId": "wup2025:9587",
+      "wupCityCode": 9587,
+      "name": "Kozhikode",
+      "countryCode": "IN",
+      "centerLatLon": [
+        11.2059147426276,
+        75.8583486485998
+      ],
+      "workstream": "kerala",
+      "plannedCheck": "target_public_source_followup"
+    },
+    {
+      "cityId": "wup2025:9765",
+      "wupCityCode": 9765,
+      "name": "Kochi",
+      "countryCode": "IN",
+      "centerLatLon": [
+        10.0612792171801,
+        76.3088105504372
+      ],
+      "workstream": "kerala",
+      "plannedCheck": "target_public_source_followup"
+    },
+    {
+      "cityId": "wup2025:9847",
+      "wupCityCode": 9847,
+      "name": "Kollam",
+      "countryCode": "IN",
+      "centerLatLon": [
+        9.29818038422683,
+        76.4275496736682
+      ],
+      "workstream": "kerala",
+      "plannedCheck": "target_public_source_followup"
+    },
+    {
+      "cityId": "wup2025:10013",
+      "wupCityCode": 10013,
+      "name": "Thiruvananthapuram",
+      "countryCode": "IN",
+      "centerLatLon": [
+        8.50983231508796,
+        76.9676364538033
+      ],
+      "workstream": "kerala",
+      "plannedCheck": "target_public_source_followup"
+    },
+    {
+      "cityId": "wup2025:10737",
+      "wupCityCode": 10737,
+      "name": "Darauli",
+      "countryCode": "IN",
+      "centerLatLon": [
+        26.1350913588765,
+        84.1658019427551
+      ],
+      "workstream": "bihar",
+      "plannedCheck": "target_public_source_followup"
+    },
+    {
+      "cityId": "wup2025:10791",
+      "wupCityCode": 10791,
+      "name": "Raghunathpur",
+      "countryCode": "IN",
+      "centerLatLon": [
+        25.9929452167679,
+        84.2915701031615
+      ],
+      "workstream": "bihar",
+      "plannedCheck": "expand_if_shared_public_viewer_works"
+    },
+    {
+      "cityId": "wup2025:10829",
+      "wupCityCode": 10829,
+      "name": "Areraj",
+      "countryCode": "IN",
+      "centerLatLon": [
+        26.5532969746,
+        84.6696100512271
+      ],
+      "workstream": "bihar",
+      "plannedCheck": "expand_if_shared_public_viewer_works"
+    },
+    {
+      "cityId": "wup2025:10835",
+      "wupCityCode": 10835,
+      "name": "Harsidhi",
+      "countryCode": "IN",
+      "centerLatLon": [
+        26.6872456566718,
+        84.7644732569845
+      ],
+      "workstream": "bihar",
+      "plannedCheck": "expand_if_shared_public_viewer_works"
+    },
+    {
+      "cityId": "wup2025:10893",
+      "wupCityCode": 10893,
+      "name": "Kalyanpur",
+      "countryCode": "IN",
+      "centerLatLon": [
+        26.4466696212949,
+        84.8669945860888
+      ],
+      "workstream": "bihar",
+      "plannedCheck": "expand_if_shared_public_viewer_works"
+    },
+    {
+      "cityId": "wup2025:10911",
+      "wupCityCode": 10911,
+      "name": "Masrakh",
+      "countryCode": "IN",
+      "centerLatLon": [
+        26.1211707275585,
+        84.7950953210667
+      ],
+      "workstream": "bihar",
+      "plannedCheck": "expand_if_shared_public_viewer_works"
+    },
+    {
+      "cityId": "wup2025:10927",
+      "wupCityCode": 10927,
+      "name": "Dhaka",
+      "countryCode": "IN",
+      "centerLatLon": [
+        26.6630429867703,
+        85.1567394385869
+      ],
+      "workstream": "bihar",
+      "plannedCheck": "expand_if_shared_public_viewer_works"
+    },
+    {
+      "cityId": "wup2025:10933",
+      "wupCityCode": 10933,
+      "name": "Chakia",
+      "countryCode": "IN",
+      "centerLatLon": [
+        26.4025743820036,
+        85.0420780355781
+      ],
+      "workstream": "bihar",
+      "plannedCheck": "expand_if_shared_public_viewer_works"
+    },
+    {
+      "cityId": "wup2025:10957",
+      "wupCityCode": 10957,
+      "name": "Bairgania",
+      "countryCode": "IN",
+      "centerLatLon": [
+        26.7265024228444,
+        85.258964919446
+      ],
+      "workstream": "bihar",
+      "plannedCheck": "expand_if_shared_public_viewer_works"
+    },
+    {
+      "cityId": "wup2025:10969",
+      "wupCityCode": 10969,
+      "name": "Chirand",
+      "countryCode": "IN",
+      "centerLatLon": [
+        25.7489853409713,
+        84.887639805399
+      ],
+      "workstream": "bihar",
+      "plannedCheck": "expand_if_shared_public_viewer_works"
+    },
+    {
+      "cityId": "wup2025:11027",
+      "wupCityCode": 11027,
+      "name": "Hajipur",
+      "countryCode": "IN",
+      "centerLatLon": [
+        25.9809989936602,
+        85.4509953679278
+      ],
+      "workstream": "bihar",
+      "plannedCheck": "target_public_source_followup"
+    },
+    {
+      "cityId": "wup2025:11029",
+      "wupCityCode": 11029,
+      "name": "Naubatpur",
+      "countryCode": "IN",
+      "centerLatLon": [
+        25.4909770292272,
+        84.9507260772197
+      ],
+      "workstream": "bihar",
+      "plannedCheck": "expand_if_shared_public_viewer_works"
+    },
+    {
+      "cityId": "wup2025:11039",
+      "wupCityCode": 11039,
+      "name": "Patna",
+      "countryCode": "IN",
+      "centerLatLon": [
+        25.5970203089431,
+        85.1397184130161
+      ],
+      "workstream": "bihar",
+      "plannedCheck": "target_public_source_followup"
+    },
+    {
+      "cityId": "wup2025:11109",
+      "wupCityCode": 11109,
+      "name": "Khirz Sarai",
+      "countryCode": "IN",
+      "centerLatLon": [
+        24.9669021893364,
+        85.0901889548943
+      ],
+      "workstream": "bihar",
+      "plannedCheck": "expand_if_shared_public_viewer_works"
+    },
+    {
+      "cityId": "wup2025:11117",
+      "wupCityCode": 11117,
+      "name": "Ekangar Sarai",
+      "countryCode": "IN",
+      "centerLatLon": [
+        25.2213089855198,
+        85.2355683904544
+      ],
+      "workstream": "bihar",
+      "plannedCheck": "expand_if_shared_public_viewer_works"
+    },
+    {
+      "cityId": "wup2025:11201",
+      "wupCityCode": 11201,
+      "name": "Muriya",
+      "countryCode": "IN",
+      "centerLatLon": [
+        26.2319164670468,
+        86.0833220365614
+      ],
+      "workstream": "bihar",
+      "plannedCheck": "expand_if_shared_public_viewer_works"
+    },
+    {
+      "cityId": "wup2025:11285",
+      "wupCityCode": 11285,
+      "name": "Nawada",
+      "countryCode": "IN",
+      "centerLatLon": [
+        26.2001645571738,
+        86.4343948922223
+      ],
+      "workstream": "bihar",
+      "plannedCheck": "expand_if_shared_public_viewer_works"
+    },
+    {
+      "cityId": "wup2025:11305",
+      "wupCityCode": 11305,
+      "name": "Bakhri",
+      "countryCode": "IN",
+      "centerLatLon": [
+        25.6035865271048,
+        86.2567977340494
+      ],
+      "workstream": "bihar",
+      "plannedCheck": "expand_if_shared_public_viewer_works"
+    },
+    {
+      "cityId": "wup2025:11337",
+      "wupCityCode": 11337,
+      "name": "Bhaptiyahi",
+      "countryCode": "IN",
+      "centerLatLon": [
+        26.2835746201486,
+        86.7336945187684
+      ],
+      "workstream": "bihar",
+      "plannedCheck": "expand_if_shared_public_viewer_works"
+    },
+    {
+      "cityId": "wup2025:11347",
+      "wupCityCode": 11347,
+      "name": "Gamharia",
+      "countryCode": "IN",
+      "centerLatLon": [
+        26.0693392469207,
+        86.7301918567993
+      ],
+      "workstream": "bihar",
+      "plannedCheck": "expand_if_shared_public_viewer_works"
+    },
+    {
+      "cityId": "wup2025:11415",
+      "wupCityCode": 11415,
+      "name": "Asarganj",
+      "countryCode": "IN",
+      "centerLatLon": [
+        25.095462687706,
+        86.6697214561759
+      ],
+      "workstream": "bihar",
+      "plannedCheck": "expand_if_shared_public_viewer_works"
+    },
+    {
+      "cityId": "wup2025:11447",
+      "wupCityCode": 11447,
+      "name": "Amarpur",
+      "countryCode": "IN",
+      "centerLatLon": [
+        25.0857858011865,
+        86.8839490491015
+      ],
+      "workstream": "bihar",
+      "plannedCheck": "expand_if_shared_public_viewer_works"
+    },
+    {
+      "cityId": "wup2025:11511",
+      "wupCityCode": 11511,
+      "name": "Semapur",
+      "countryCode": "IN",
+      "centerLatLon": [
+        25.4980899560268,
+        87.4841083291156
+      ],
+      "workstream": "bihar",
+      "plannedCheck": "expand_if_shared_public_viewer_works"
+    },
+    {
+      "cityId": "wup2025:3439",
+      "wupCityCode": 3439,
+      "name": "Abidjan",
+      "countryCode": "CI",
+      "centerLatLon": [
+        5.35604816980528,
+        -4.01965468787951
+      ],
+      "workstream": "africa_services",
+      "plannedCheck": "target_public_source_followup"
+    },
+    {
+      "cityId": "wup2025:2412",
+      "wupCityCode": 2412,
+      "name": "Mansa",
+      "countryCode": "ZM",
+      "centerLatLon": [
+        -11.2027334066671,
+        28.8914856820841
+      ],
+      "workstream": "africa_services",
+      "plannedCheck": "target_public_source_followup"
+    },
+    {
+      "cityId": "wup2025:4201",
+      "wupCityCode": 4201,
+      "name": "Luau",
+      "countryCode": "AO",
+      "centerLatLon": [
+        -10.7078928499378,
+        22.2261150980932
+      ],
+      "workstream": "africa_services",
+      "plannedCheck": "target_public_source_followup"
+    },
+    {
+      "cityId": "wup2025:3898",
+      "wupCityCode": 3898,
+      "name": "Luena",
+      "countryCode": "AO",
+      "centerLatLon": [
+        -11.7785281015056,
+        19.9086289389282
+      ],
+      "workstream": "africa_services",
+      "plannedCheck": "target_public_source_followup"
+    },
+    {
+      "cityId": "wup2025:3610",
+      "wupCityCode": 3610,
+      "name": "Malanje",
+      "countryCode": "AO",
+      "centerLatLon": [
+        -9.54358315549037,
+        16.3510839676508
+      ],
+      "workstream": "africa_services",
+      "plannedCheck": "target_public_source_followup"
+    },
+    {
+      "cityId": "wup2025:546",
+      "wupCityCode": 546,
+      "name": "Cabinda",
+      "countryCode": "AO",
+      "centerLatLon": [
+        -5.57829080007551,
+        12.2035678576447
+      ],
+      "workstream": "africa_services",
+      "plannedCheck": "target_public_source_followup"
+    },
+    {
+      "cityId": "wup2025:2250",
+      "wupCityCode": 2250,
+      "name": "M'banza Congo",
+      "countryCode": "AO",
+      "centerLatLon": [
+        -6.26111194437744,
+        14.2330999524817
+      ],
+      "workstream": "africa_services",
+      "plannedCheck": "target_public_source_followup"
+    },
+    {
+      "cityId": "wup2025:686",
+      "wupCityCode": 686,
+      "name": "Soyo",
+      "countryCode": "AO",
+      "centerLatLon": [
+        -6.16051964154324,
+        12.3668533360166
+      ],
+      "workstream": "africa_services",
+      "plannedCheck": "target_public_source_followup"
+    },
+    {
+      "cityId": "wup2025:1169",
+      "wupCityCode": 1169,
+      "name": "Lubango",
+      "countryCode": "AO",
+      "centerLatLon": [
+        -14.9071396924962,
+        13.5144246201527
+      ],
+      "workstream": "africa_services",
+      "plannedCheck": "target_public_source_followup"
+    },
+    {
+      "cityId": "wup2025:3711",
+      "wupCityCode": 3711,
+      "name": "Cuito",
+      "countryCode": "AO",
+      "centerLatLon": [
+        -12.3876404410188,
+        16.9374515389056
+      ],
+      "workstream": "africa_services",
+      "plannedCheck": "target_public_source_followup"
+    },
+    {
+      "cityId": "wup2025:8364",
+      "wupCityCode": 8364,
+      "name": "New Delhi",
+      "countryCode": "IN",
+      "centerLatLon": [
+        28.6257327699734,
+        77.2078130770808
+      ],
+      "workstream": "root",
+      "plannedCheck": "target_public_source_followup"
+    },
+    {
+      "cityId": "wup2025:4033",
+      "wupCityCode": 4033,
+      "name": "Mboloko",
+      "countryCode": "ZA",
+      "centerLatLon": [
+        -25.4662366387406,
+        27.8447650141456
+      ],
+      "workstream": "root",
+      "plannedCheck": "target_public_source_followup"
+    }
+  ]
+}

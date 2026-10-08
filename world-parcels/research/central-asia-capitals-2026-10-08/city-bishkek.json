@@ -1,0 +1,184 @@
+{
+  "schemaVersion": 1,
+  "kind": "city_parcel_source_research",
+  "checkedAt": "2026-10-08",
+  "verifiedParcelResponse": {
+    "url": "https://cadastre.kg/svc-portal/map/proxy.do?http://localhost/o2map/services/wfs?service=WFS&version=1.1.0&request=GetFeature&typename=ENI_AREA&propertyname=PROPCODE,DOMCODE,NAZNACHENI,THE_GEOM&outputFormat=application%2Fjson&srsname=EPSG%3A4326&maxFeatures=3&bbox=74.5697,42.8745,74.5699,42.8747,EPSG%3A4326&filter=%3Cogc%3AFilter+xmlns%3Aogc%3D%22http%3A%2F%2Fwww.opengis.net%2Fogc%22%3E%3Cogc%3APropertyIsEqualTo%3E%3Cogc%3APropertyName%3ENAZNACHENI%3C%2Fogc%3APropertyName%3E%3Cogc%3ALiteral%3E%D0%B7%D0%B5%D0%BC%D0%B5%D0%BB%D1%8C%D0%BD%D1%8B%D0%B9+%D1%83%D1%87%D0%B0%D1%81%D1%82%D0%BE%D0%BA%3C%2Fogc%3ALiteral%3E%3C%2Fogc%3APropertyIsEqualTo%3E%3C%2Fogc%3AFilter%3E",
+    "httpStatus": 200,
+    "contentType": "application/json;charset=UTF-8",
+    "featureCount": 2,
+    "verifiedFeatureIds": [
+      "1-01-02-0011-0889",
+      "1-01-02-0011-0890"
+    ],
+    "evidenceFile": "world-parcels/research/central-asia-capitals-2026-10-08/bishkek-center-land-plots.geojson",
+    "requestFilter": "NAZNACHENI = земельный участок; 0.0002-degree center bbox; maxFeatures=3; EPSG:4326; ordinary public request without cookies or credentials."
+  },
+  "source": {
+    "sourceId": "KG-BISHKEK-CADASTRE-ENI-AREA",
+    "name": "Cadastre.kg public map – ENI_AREA",
+    "url": "https://cadastre.kg/svc-portal/map/main.do",
+    "operator": "State Agency for Land Resources, Cadastre, Geodesy and Cartography under the Cabinet of Ministers of the Kyrgyz Republic (publisher attribution on official agency page/footer)",
+    "serviceType": "Public WFS 1.1.0 GetFeature via the public map proxy; tested working without cookies or authentication.",
+    "layer": "ENI_AREA (public viewer layer labelled “Земельные участки” / land plots)",
+    "geometryType": "MultiPolygon",
+    "outputCrs": "EPSG:4326",
+    "nativeIdField": "PROPCODE",
+    "nativeIdEvidence": "The public map UI labels its search field “Код ЕНИ”; exact OGC filtering by PROPCODE returned the tested feature once, including a successful no-bbox lookup for 1-01-02-0011-0890. Repeatability is demonstrated, but a published permanence guarantee was not found."
+  },
+  "registryFound": null,
+  "verifiedSample": true,
+  "targetGeometryEvidence": "No-cookie category-filtered target bbox returned two land-plot MultiPolygons, PROPCODE 1-01-02-0011-0889 and 1-01-02-0011-0890; the selected center is inside 0890. A 3x3 adjacent bounded sample returned 111 unique land plots. Across that neighborhood, 108/111 are GEOS-valid, 3 are invalid, and 12 pairs have positive-area intersections; the center feature itself is valid and no other land-category polygon contains the point.",
+  "nativeIdReadiness": "candidate_verified_public_code",
+  "cityId": "capital:KG:bishkek",
+  "name": "Bishkek",
+  "country": "Kyrgyzstan",
+  "countryCode": "KG",
+  "centerLatLon": [
+    42.8746,
+    74.5698
+  ],
+  "pointBasis": "Chosen central-city map query point; not a WUP centroid or official boundary.",
+  "resultCategory": "partial_coverage",
+  "priorEvidence": [],
+  "nativeLanguageSearches": [
+    {
+      "languageScript": "Kyrgyz",
+      "exactQuery": "site:gov.kg Бишкек жер участкалары карта кадастр ГИС мэрия официальный",
+      "date": "2026-10-08",
+      "executionMethod": "web.run search_query",
+      "resultUrls": [
+        "https://cadastre.kg/svc-portal/map/main.do",
+        "https://gosreg.gov.kg/ru/ru/"
+      ],
+      "summary": "Search surfaced the official cadastre map and the responsible State Agency’s site; the map page is attributed to that Agency. The public vector viewer was subsequently inspected and queried anonymously."
+    },
+    {
+      "languageScript": "Russian",
+      "exactQuery": "Бишкек публичная кадастровая карта Кыргызстан карта земельных участков кадастр геопортал официальный",
+      "date": "2026-10-08",
+      "executionMethod": "web.run search_query",
+      "resultUrls": [
+        "https://cadastre.kg/svc-portal/map/main.do",
+        "https://www.cadastre.kg/svc-portal/main/index.do"
+      ],
+      "summary": "Official public map lists cadastral boundaries/land cadastre and has address and ENI-code search; agency attribution is shown in its footer."
+    },
+    {
+      "languageScript": "Kyrgyz",
+      "exactQuery": "Бишкек жер тилкеси кадастр картасы жер ресурстары расмий",
+      "date": "2026-10-08",
+      "executionMethod": "web.run search_query",
+      "resultUrls": [
+        "https://cadastre.kg/svc-portal/map/main.do",
+        "https://www.cadastre.kg/svc-portal/main/index.do"
+      ],
+      "summary": "Native Kyrgyz search again surfaced the official public map. Public viewer scripts and WFS capabilities were inspected; the center box returned three parcel polygons."
+    },
+    {
+      "languageScript": "Russian",
+      "exactQuery": "site:gov.kg Бишкек является столицей Кыргызской Республики официальный сайт gov.kg",
+      "date": "2026-10-08",
+      "executionMethod": "web.run search_query",
+      "resultUrls": [
+        "https://www.shailoo.gov.kg/ru/ZakonodatelstvoMyyzamdar/ZakonyMyyzamdar/o-statuse-stolicy/",
+        "https://stat.gov.kg/ru/gorod-bishkek/"
+      ],
+      "summary": "Official Kyrgyz Central Election Commission page displays the capital-status law, which states that Bishkek is the capital; the National Statistics Committee page independently calls Bishkek the republic’s capital."
+    }
+  ],
+  "officialAndRelevantLeads": [
+    {
+      "url": "https://www.shailoo.gov.kg/ru/ZakonodatelstvoMyyzamdar/ZakonyMyyzamdar/o-statuse-stolicy/",
+      "operator": "Central Election Commission of the Kyrgyz Republic",
+      "observation": "Official capital-status statute text says: “Столицей Кыргызской Республики является город Бишкек.”"
+    },
+    {
+      "url": "https://stat.gov.kg/ru/gorod-bishkek/",
+      "operator": "National Statistical Committee of the Kyrgyz Republic",
+      "observation": "Official statistical profile identifies Bishkek as the capital of the Kyrgyz Republic and a city of republican significance."
+    },
+    {
+      "url": "https://cadastre.kg/svc-portal/main/index.do",
+      "operator": "State Agency for Land Resources, Cadastre, Geodesy and Cartography under the Cabinet of Ministers of the Kyrgyz Republic (page footer attribution)",
+      "observation": "Official service homepage says map users may view/check information on the map; links the interactive map and public data. Some e-services require agreement, but the map and WFS vector query used for this bounded research worked without login."
+    },
+    {
+      "url": "https://cadastre.kg/svc-portal/map/main.do",
+      "operator": "Public Cadastre Map (agency attribution in the linked official service site)",
+      "observation": "Public map shows “Кадастровые границы” and “Земельный кадастр” layers; public viewer UI includes “Код ЕНИ” and address search. Viewer scripts configure ENI_AREA as the land-parcel layer; WFS capabilities advertise ENI_AREA with EPSG:4326 and GetFeature/JSON."
+    },
+    {
+      "url": "https://gosreg.gov.kg/ru/ru/",
+      "operator": "State Agency for Land Resources, Cadastre, Geodesy and Cartography under the Cabinet of Ministers",
+      "observation": "Official agency page identifies the cadastre/geodesy agency and its integrated cadastre information system."
+    }
+  ],
+  "requestsAndEndpointChecks": [
+    {
+      "url": "https://cadastre.kg/svc-portal/map/main.do",
+      "method": "GET, normal public viewer with browser headers",
+      "httpStatus": 200,
+      "contentType": "text/html",
+      "assessment": "Loaded public interactive map. Viewer config indicated _AUTH=false; no login or credentials used."
+    },
+    {
+      "url": "https://cadastre.kg/svc-portal/map/proxy.do?http://localhost/o2map/services/wfs?service=WFS&request=GetCapabilities&version=1.1.0",
+      "method": "GET, via viewer’s public proxy",
+      "httpStatus": 200,
+      "contentType": "text/xml",
+      "assessment": "WFS capabilities list ENI_AREA and ENI_BUILDINGS, standard GetFeature and application/json output. ENI_AREA default geometry CRS is EPSG:4326; bbox in submitted requests used lon,lat order and returned correctly located polygons."
+    },
+    {
+      "url": "https://cadastre.kg/svc-portal/map/proxy.do?http://localhost/o2map/services/wfs?service=WFS&version=1.1.0&request=GetFeature&typename=ENI_AREA&propertyname=PROPCODE,DOMCODE,THE_GEOM&outputFormat=application/json&srsname=EPSG%3A4326&maxFeatures=3&bbox=74.5697,42.8745,74.5699,42.8747,EPSG%3A4326",
+      "method": "GET, WFS 1.1.0 GetFeature via public viewer proxy, anonymous viewer cookie, browser headers",
+      "httpStatus": 200,
+      "contentType": "application/json;charset=UTF-8",
+      "requestFilter": "ENI_AREA, propertyname PROPCODE,DOMCODE,THE_GEOM, outputFormat application/json, srsname EPSG:4326, maxFeatures=3, bbox 74.5697,42.8745,74.5699,42.8747,EPSG:4326",
+      "featureCount": 3,
+      "assessment": "Three closed MultiPolygons with PROPCODEs 0889, 0890 and 0855; all have DOMCODE=20. Exact chosen point [74.5698,42.8746] falls in 0890 and 0855. Approximate spherical areas: 1,093 m²; 1,077 m²; and 50,990 m² (the largest has 13 closed rings including 12 holes). The nested/overlapping sample is flagged; no administrative boundary or buildings were queried."
+    },
+    {
+      "url": "https://cadastre.kg/svc-portal/map/proxy.do?http://localhost/o2map/services/wfs?service=WFS&version=1.1.0&request=GetFeature&typename=ENI_AREA&propertyname=PROPCODE,DOMCODE,THE_GEOM&outputFormat=application/json&srsname=EPSG%3A4326&bbox=74.5697,42.8745,74.5699,42.8747,EPSG%3A4326&maxFeatures=2&filter=%3Cogc%3AFilter%20xmlns%3Aogc%3D%22http%3A%2F%2Fwww.opengis.net%2Fogc%22%3E%3Cogc%3APropertyIsEqualTo%3E%3Cogc%3APropertyName%3EPROPCODE%3C%2Fogc%3APropertyName%3E%3Cogc%3ALiteral%3E1-01-02-0011-0890%3C%2Fogc%3ALiteral%3E%3C%2Fogc%3APropertyIsEqualTo%3E%3C%2Fogc%3AFilter%3E",
+      "method": "GET, exact OGC PropertyIsEqualTo filter on PROPCODE through public viewer proxy",
+      "httpStatus": 200,
+      "featureCount": 1,
+      "assessment": "Returned one geometry matching the tested code."
+    },
+    {
+      "url": "https://cadastre.kg/svc-portal/map/proxy.do?http://localhost/o2map/services/wfs?service=WFS&version=1.1.0&request=GetFeature&typename=ENI_AREA&propertyname=PROPCODE,DOMCODE,THE_GEOM&outputFormat=application/json&srsname=EPSG%3A4326&bbox=74.5697,42.8745,74.5699,42.8747,EPSG%3A4326&maxFeatures=2&filter=%3Cogc%3AFilter%20xmlns%3Aogc%3D%22http%3A%2F%2Fwww.opengis.net%2Fogc%22%3E%3Cogc%3APropertyIsEqualTo%3E%3Cogc%3APropertyName%3EPROPCODE%3C%2Fogc%3APropertyName%3E%3Cogc%3ALiteral%3EZZ-NO-SUCH-PROPCODE-000000%3C%2Fogc%3ALiteral%3E%3C%2Fogc%3APropertyIsEqualTo%3E%3C%2Fogc%3AFilter%3E",
+      "method": "GET, exact OGC equality filter for deliberately absent code",
+      "httpStatus": 200,
+      "featureCount": 0,
+      "assessment": "No match for absent code."
+    },
+    {
+      "url": "https://cadastre.kg/svc-portal/map/proxy.do?http://localhost/o2map/services/wfs?service=WFS&version=1.1.0&request=GetFeature&typename=ENI_AREA&propertyname=PROPCODE,DOMCODE,NAZNACHENI,THE_GEOM&outputFormat=application%2Fjson&srsname=EPSG%3A4326&maxFeatures=3&bbox=74.5697,42.8745,74.5699,42.8747,EPSG%3A4326&filter=%3Cogc%3AFilter+xmlns%3Aogc%3D%22http%3A%2F%2Fwww.opengis.net%2Fogc%22%3E%3Cogc%3APropertyIsEqualTo%3E%3Cogc%3APropertyName%3ENAZNACHENI%3C%2Fogc%3APropertyName%3E%3Cogc%3ALiteral%3E%D0%B7%D0%B5%D0%BC%D0%B5%D0%BB%D1%8C%D0%BD%D1%8B%D0%B9+%D1%83%D1%87%D0%B0%D1%81%D1%82%D0%BE%D0%BA%3C%2Fogc%3ALiteral%3E%3C%2Fogc%3APropertyIsEqualTo%3E%3C%2Fogc%3AFilter%3E",
+      "method": "GET, category-filtered public WFS 1.1.0 GetFeature; no Cookie header, no credentials",
+      "httpStatus": 200,
+      "contentType": "application/json;charset=UTF-8",
+      "requestFilter": "NAZNACHENI = земельный участок; bbox 74.5697,42.8745,74.5699,42.8747,EPSG:4326; maxFeatures=3; PROPCODE,DOMCODE,NAZNACHENI,THE_GEOM requested.",
+      "featureCount": 2,
+      "assessment": "Returned only the two land-category geometries; selected point is in PROPCODE 0890. Ordinary no-cookie public request succeeds."
+    },
+    {
+      "url": "world-parcels/research/central-asia-capitals-2026-10-08/bishkek-neighborhood-3x3-requests.json",
+      "method": "Bounded 3x3 category-filtered pagination manifest; each executed URL and page count recorded",
+      "httpStatus": 200,
+      "featureCount": 111,
+      "assessment": "55 HTTP 200 page requests across nine cells; all terminal pages empty; exact request count and GEOS checks recorded in the manifest. Initial grid used a public viewer session cookie (not authenticated); exact center and sorted-page checks succeeded without cookies."
+    }
+  ],
+  "coverageAssessment": {
+    "claimedScope": "National public cadastre map; exact city coverage not documented in inspected metadata.",
+    "verifiedOpenScope": "No-cookie 0.0002-degree center query plus 3x3 adjacent 0.0025-degree neighborhood; 111 unique land polygons across nine cells; each cell’s bounded paging reached an empty terminal page. This is local sampling, not citywide extent or completeness.",
+    "countrywideVerified": false,
+    "paginationCheck": "Nine cells: 55 HTTP 200 requests total, each capped at three; all terminal pages empty. A separate anonymous ascending PROPCODE sort check returned repeatable page 0, an ordered short page at offset 24, and empty at 26 for the center cell."
+  },
+  "blocker": "Public center sample is verified, but neighborhood quality needs production QA: 3 of 111 features are invalid and 12 pairs have positive-area intersections. PROPCODE permanence/global uniqueness and full-city coverage are undocumented.",
+  "remainingUncertainty": "Whether overlaps are legitimate lineage/topology or source defects; how to repair/omit invalid shapes; whether PROPCODE is permanently unique; exact citywide extent; and completeness beyond bounded local query cells.",
+  "nextStep": "Use a source-specific bounded WFS adapter only after geospatial QA defines handling for invalid geometries and positive-area overlaps; retain PROPCODE as the public code with permanence semantics explicitly unverified.",
+  "neighborhoodEvidenceFile": "world-parcels/research/central-asia-capitals-2026-10-08/bishkek-neighborhood-3x3-requests.json",
+  "verifiedSampleBasis": "The public source returned 111 unique category-filtered land-plot polygons with PROPCODE across nine bounded cells; sample verification is complete. Runtime geometry remains held because 3/111 geometries are invalid and 12 feature pairs have positive-area intersections. This is not citywide coverage.",
+  "runtimeGeometryHold": "Do not wire to runtime until handling for invalid geometries and overlapping pairs is resolved; prototype adapter remains unwired."
+}

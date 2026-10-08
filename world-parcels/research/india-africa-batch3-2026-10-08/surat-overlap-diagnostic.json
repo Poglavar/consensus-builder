@@ -1,0 +1,101 @@
+{
+  "schemaVersion": 1,
+  "checkedAt": "2026-10-08T05:44:08.306Z",
+  "purpose": "Bounded exact-ID geometry diagnostic for one strict-overlap pair from root Surat acceptance; no acceptance/catalog/tolerance changes.",
+  "source": {
+    "descriptorPath": "/tmp/india-africa-batch3-surat-descriptor.json",
+    "sourceId": "in-gj-tpvd-surat-final-plots",
+    "endpoint": "https://tpvd.openprp.in/geoserver/ows",
+    "featureType": "ctp:final_plot_boundary",
+    "idField": "search",
+    "fixedFilters": {
+      "status": "Final",
+      "city": "Surat",
+      "authority": "SMC"
+    },
+    "queryMethod": "existing createParcelSource(...).queryIds(two exact IDs) using existing createHttpsJsonFetch and published source-scoped Sectigo intermediate",
+    "requestUrls": [
+      "https://tpvd.openprp.in/geoserver/ows?service=WFS&version=1.1.0&request=GetFeature&typeName=ctp%3Afinal_plot_boundary&outputFormat=application%2Fjson&srsName=CRS%3A84&sortBy=search&maxFeatures=1000&startIndex=0&cql_filter=%28status+%3D+%27Final%27+AND+city+%3D+%27Surat%27+AND+authority+%3D+%27SMC%27%29+AND+%28search+IN+%28%27Piplod+6+92%27%2C%27Umra_North+5+177%27%29%29"
+    ],
+    "httpStatuses": [
+      200
+    ],
+    "responseFeatureCount": 2,
+    "complete": true,
+    "absentIds": []
+  },
+  "features": {
+    "IN-GJ-SURAT-Piplod 6 92": {
+      "id": "IN-GJ-SURAT-Piplod 6 92",
+      "geodesicAreaM2": 5205.142054882001,
+      "projectedArea32643M2": 5181.9959716796875,
+      "vertexCount": 38,
+      "bbox32643M": [
+        269378.63851373654,
+        2342188.9826644254,
+        269446.3370774555,
+        2342283.5383678363
+      ]
+    },
+    "IN-GJ-SURAT-Umra_North 5 177": {
+      "id": "IN-GJ-SURAT-Umra_North 5 177",
+      "geodesicAreaM2": 3717.416890309121,
+      "projectedArea32643M2": 3700.8878173828125,
+      "vertexCount": 69,
+      "bbox32643M": [
+        269354.5138264503,
+        2342271.9051613137,
+        269451.8748517053,
+        2342337.3266016706
+      ]
+    }
+  },
+  "intersection": {
+    "type": "Polygon",
+    "geodesicAreaM2": 0.23937012999021598,
+    "projectedArea32643M2": 0.23870849609375,
+    "bbox32643M": [
+      269378.63851373654,
+      2342278.6814980465,
+      269431.5034222875,
+      2342283.5383678363
+    ],
+    "projectedVertexCount": 5,
+    "relativeAreaRatios": {
+      "overlapOverPiplod": 4.598724251256625e-05,
+      "overlapOverUmraNorth": 6.439152160044961e-05,
+      "overlapOverSmaller": 6.439152160044961e-05
+    },
+    "minimumOrientedWidth32643M": 0.00897643668577075,
+    "orientationEdgeLength32643M": 53.08754788327038,
+    "thinnessRatioAreaOverMinDimensionM": 26.66649789550237,
+    "hullVertexCount": 4,
+    "bboxDimensionsM": [
+      52.86490855098236,
+      4.856869789771736
+    ],
+    "components": [
+      {
+        "componentIndex": 0,
+        "hullVertexCount": 4,
+        "bbox32643M": [
+          269378.63851373654,
+          2342278.6814980465,
+          269431.5034222875,
+          2342283.5383678363
+        ],
+        "minimumOrientedWidth32643M": 0.00897643668577075,
+        "orientationEdgeLength32643M": 53.08754788327038,
+        "projectedArea32643M2": 0.23870849609375
+      }
+    ]
+  },
+  "rawGeometryPath": "/private/tmp/surat-overlap-geometries-2026-10-08.geojson",
+  "interpretation": "The exact fresh geometries intersect by 0.2394 m², only 0.0046% of Piplod and 0.0064% of Umra North. The intersection is a single narrow boundary sliver with approximately 9 mm minimum oriented width and about 53 m supporting edge; this is consistent with a sub-centimeter edge-position mismatch, not a substantive parcel overlap. It remains a one-pair anomaly; keep original acceptance result and do not apply a global tolerance or reject either parcel based on this diagnosis alone.",
+  "measurementMethod": {
+    "lookup": "Fresh source.queryIds for the two exact canonical IDs; descriptor filters status=Final, city=Surat, authority=SMC; complete=true, both IDs present.",
+    "intersection": "@turf/turf 6.x intersect(a,b), then @turf/turf area() in square metres.",
+    "projection": "Project WGS84 [longitude,latitude] positions with proj4 EPSG:4326 to EPSG:32643; compute planar polygon areas with shoelace exterior-minus-holes.",
+    "minimumOrientedWidth": "For the projected intersection exterior, construct the convex hull and scan projection ranges on each hull-edge normal; report the smallest range. This is the convex-polygon minimum caliper width."
+  }
+}

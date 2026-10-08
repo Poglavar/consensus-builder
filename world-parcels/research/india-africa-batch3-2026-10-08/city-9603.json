@@ -1,0 +1,89 @@
+{
+  "schemaVersion": 1,
+  "kind": "city_parcel_source_research",
+  "checkedAt": "2026-10-08",
+  "cityId": "wup2025:9603",
+  "wupCityCode": 9603,
+  "name": "Kanpur",
+  "country": "India",
+  "countryCode": "IN",
+  "region": "India",
+  "centerLatLon": [
+    26.460949782044,
+    80.3406195423691
+  ],
+  "cohorts": [
+    "largest200"
+  ],
+  "largestRank": 97,
+  "population2025": 4329973,
+  "annualGrowthPct2015To2025": -0.127565,
+  "priorEvidenceFiles": [
+    "research/kanpur.json",
+    "research/india-africa-2026-10-08/india-city-9603.json"
+  ],
+  "inheritedAssessment": {
+    "checkedAt": "2026-10-08",
+    "cohort": "india-africa",
+    "evidenceFile": "research/india-africa-2026-10-08/india-city-9603.json",
+    "resultCategory": "no_verified_sample_candidate_citywide",
+    "freshVerifiedSample": false,
+    "technicalBlocker": "Official state portals were identified, but this search pass did not establish the exact revenue village at the WUP coordinate or return a public parcel polygon/feature response.",
+    "nextStep": "Resolve the WUP coordinate to its exact revenue village in an official UP map selector, then inspect one bounded gata/plot response for polygon geometry, stable identifier and CRS."
+  },
+  "status": "no_verified_sample_candidate_citywide",
+  "resultCategory": "no_verified_sample_candidate_citywide",
+  "registryFound": false,
+  "verifiedSample": false,
+  "sourceIdCandidate": null,
+  "operator": null,
+  "source": null,
+  "nativeIdentity": null,
+  "coverageAssessment": {
+    "verifiedOpenScope": null,
+    "exactWupPointParcelSample": false,
+    "citywideVerified": false,
+    "countrywideVerified": false
+  },
+  "freshResearch": {
+    "queries": [
+      {
+        "language": "Hindi",
+        "query": "कानपुर भू नक्शा राजस्व ग्राम नक्शा गाटा उत्तर प्रदेश आधिकारिक",
+        "actualResultUrls": [
+          "https://upbhunaksha.gov.in/home/",
+          "https://bor.up.nic.in/?search_key=HOMECENTER",
+          "https://upbhulekh.gov.in/"
+        ],
+        "result": "Official UP BhuNaksha viewer opened and displayed location selectors with a preselected Agra district/tehsil/village, not the Kanpur WUP point. Board of Revenue search result advertises revenue-village maps. No Kanpur village code or plot feature was returned."
+      }
+    ],
+    "requests": [
+      {
+        "method": "GET",
+        "url": "https://upbhunaksha.gov.in/home/",
+        "status": 200,
+        "contentType": "text/html",
+        "observation": "Official public viewer rendered UI; defaults shown by this fetch were Agra district 146, Agra tehsil 00766, village 124649 अकवरपुर; not target Kanpur."
+      },
+      {
+        "method": "GET",
+        "url": "https://bor.up.nic.in/?search_key=HOMECENTER",
+        "status": "timeout (web fetch HTTP 400)",
+        "observation": "Official search result page indexes a revenue-village-map service; no city/parcel features returned."
+      }
+    ],
+    "sources": [
+      "https://upbhunaksha.gov.in/home/",
+      "https://bor.up.nic.in/?search_key=HOMECENTER",
+      "https://upbhulekh.gov.in/"
+    ]
+  },
+  "technicalFindings": {
+    "termsHandling": "Informational; no license/terms gate applied."
+  },
+  "technicalBlocker": "The official UP BhuNaksha UI opened but rendered a default Agra village, not the Kanpur WUP point; no Kanpur village code or parcel polygon was obtained. Inherited public viewer uses raster WMS tiles and the vector plot route returned 401 without authorization.",
+  "nextStep": "Resolve the WUP coordinate to its exact revenue village in an official UP map selector, then inspect one bounded gata/plot response for polygon geometry, stable identifier and CRS.",
+  "termsHandling": "Informational only; no terms or licence gate applied.",
+  "runtimeReadiness": "not_enabled"
+}

@@ -1,0 +1,282 @@
+{
+  "hostLoad": [
+    7.5458984375,
+    7.62744140625,
+    6.8173828125
+  ],
+  "checkedAt": "2026-10-07T23:07:04.461Z",
+  "purpose": "Find a complete bounded request profile within the existing 15-second browser deadline; no timeout changes.",
+  "tests": [
+    {
+      "name": "dense-cell",
+      "bbox": [
+        27.8425,
+        -25.4675,
+        27.845,
+        -25.465
+      ],
+      "complete": true,
+      "count": 49,
+      "elapsedMs": 1766
+    },
+    {
+      "name": "six-concurrent-app-cells",
+      "results": [
+        {
+          "bbox": [
+            27.8425,
+            -25.4675,
+            27.845000000000002,
+            -25.465
+          ],
+          "elapsedMs": 992,
+          "complete": true,
+          "count": 49
+        },
+        {
+          "bbox": [
+            27.84,
+            -25.4675,
+            27.8425,
+            -25.465
+          ],
+          "elapsedMs": 15286,
+          "complete": true,
+          "count": 81
+        },
+        {
+          "bbox": [
+            27.845000000000002,
+            -25.4675,
+            27.8475,
+            -25.465
+          ],
+          "elapsedMs": 1514,
+          "complete": true,
+          "count": 42
+        },
+        {
+          "bbox": [
+            27.8425,
+            -25.465,
+            27.845000000000002,
+            -25.462500000000002
+          ],
+          "elapsedMs": 1438,
+          "complete": true,
+          "count": 8
+        },
+        {
+          "bbox": [
+            27.84,
+            -25.465,
+            27.8425,
+            -25.462500000000002
+          ],
+          "elapsedMs": 1787,
+          "complete": true,
+          "count": 142
+        },
+        {
+          "bbox": [
+            27.845000000000002,
+            -25.465,
+            27.8475,
+            -25.462500000000002
+          ],
+          "elapsedMs": 1250,
+          "complete": true,
+          "count": 0
+        }
+      ]
+    }
+  ],
+  "requests": [
+    {
+      "url": "https://maps.geoscience.org.za/hosting/rest/services/Administrative_Boundaries_and_Cadastral_Data/MapServer/46/query?where=LSTATUS+IN+%28%27R%27%2C%27S%27%29+AND+WSTATUS+IN+%28%27+%27%2C%27C%27%29&geometry=27.8425%2C-25.4675%2C27.845%2C-25.465&geometryType=esriGeometryEnvelope&inSR=4326&spatialRel=esriSpatialRelIntersects&f=json&returnCountOnly=true",
+      "method": "GET",
+      "status": 200,
+      "elapsedMs": 1187,
+      "bytes": 12
+    },
+    {
+      "url": "https://maps.geoscience.org.za/hosting/rest/services/Administrative_Boundaries_and_Cadastral_Data/MapServer/46/query?where=LSTATUS+IN+%28%27R%27%2C%27S%27%29+AND+WSTATUS+IN+%28%27+%27%2C%27C%27%29&geometry=27.8425%2C-25.4675%2C27.845%2C-25.465&geometryType=esriGeometryEnvelope&inSR=4326&spatialRel=esriSpatialRelIntersects&f=json&returnIdsOnly=true",
+      "method": "GET",
+      "status": 200,
+      "elapsedMs": 282,
+      "bytes": 389
+    },
+    {
+      "url": "https://maps.geoscience.org.za/hosting/rest/services/Administrative_Boundaries_and_Cadastral_Data/MapServer/46/query?where=LSTATUS+IN+%28%27R%27%2C%27S%27%29+AND+WSTATUS+IN+%28%27+%27%2C%27C%27%29&outFields=OBJECTID%2CPRCL_KEY%2CID%2CLSTATUS%2CWSTATUS%2CPRCL_TYPE%2CDATE_STAMP%2CPARCEL_NO&returnGeometry=true&outSR=4326&f=geojson&objectIds=112754%2C112817%2C112818%2C112819%2C112820%2C112829%2C112830%2C112831%2C112832%2C112833%2C112834%2C112835%2C112836%2C112899%2C112900%2C112909%2C112910%2C112911%2C112912%2C112993%2C112994%2C112995%2C112996%2C112997%2C112998%2C113132%2C113133%2C113134%2C113135%2C113136%2C113137%2C113138%2C113139%2C113140%2C113141%2C113142%2C113143%2C113176%2C113304%2C113305%2C113306%2C113307%2C113818%2C113819%2C113820%2C113821%2C113822%2C113823%2C113824",
+      "method": "GET",
+      "status": 200,
+      "elapsedMs": 279,
+      "bytes": 25447
+    },
+    {
+      "url": "https://maps.geoscience.org.za/hosting/rest/services/Administrative_Boundaries_and_Cadastral_Data/MapServer/46/query?where=LSTATUS+IN+%28%27R%27%2C%27S%27%29+AND+WSTATUS+IN+%28%27+%27%2C%27C%27%29&geometry=27.8425%2C-25.4675%2C27.845000000000002%2C-25.465&geometryType=esriGeometryEnvelope&inSR=4326&spatialRel=esriSpatialRelIntersects&f=json&returnCountOnly=true",
+      "method": "GET",
+      "status": 200,
+      "elapsedMs": 292,
+      "bytes": 12
+    },
+    {
+      "url": "https://maps.geoscience.org.za/hosting/rest/services/Administrative_Boundaries_and_Cadastral_Data/MapServer/46/query?where=LSTATUS+IN+%28%27R%27%2C%27S%27%29+AND+WSTATUS+IN+%28%27+%27%2C%27C%27%29&geometry=27.84%2C-25.4675%2C27.8425%2C-25.465&geometryType=esriGeometryEnvelope&inSR=4326&spatialRel=esriSpatialRelIntersects&f=json&returnCountOnly=true",
+      "method": "GET",
+      "status": 200,
+      "elapsedMs": 14191,
+      "bytes": 12
+    },
+    {
+      "url": "https://maps.geoscience.org.za/hosting/rest/services/Administrative_Boundaries_and_Cadastral_Data/MapServer/46/query?where=LSTATUS+IN+%28%27R%27%2C%27S%27%29+AND+WSTATUS+IN+%28%27+%27%2C%27C%27%29&geometry=27.845000000000002%2C-25.4675%2C27.8475%2C-25.465&geometryType=esriGeometryEnvelope&inSR=4326&spatialRel=esriSpatialRelIntersects&f=json&returnCountOnly=true",
+      "method": "GET",
+      "status": 200,
+      "elapsedMs": 959,
+      "bytes": 12
+    },
+    {
+      "url": "https://maps.geoscience.org.za/hosting/rest/services/Administrative_Boundaries_and_Cadastral_Data/MapServer/46/query?where=LSTATUS+IN+%28%27R%27%2C%27S%27%29+AND+WSTATUS+IN+%28%27+%27%2C%27C%27%29&geometry=27.8425%2C-25.465%2C27.845000000000002%2C-25.462500000000002&geometryType=esriGeometryEnvelope&inSR=4326&spatialRel=esriSpatialRelIntersects&f=json&returnCountOnly=true",
+      "method": "GET",
+      "status": 200,
+      "elapsedMs": 795,
+      "bytes": 11
+    },
+    {
+      "url": "https://maps.geoscience.org.za/hosting/rest/services/Administrative_Boundaries_and_Cadastral_Data/MapServer/46/query?where=LSTATUS+IN+%28%27R%27%2C%27S%27%29+AND+WSTATUS+IN+%28%27+%27%2C%27C%27%29&geometry=27.84%2C-25.465%2C27.8425%2C-25.462500000000002&geometryType=esriGeometryEnvelope&inSR=4326&spatialRel=esriSpatialRelIntersects&f=json&returnCountOnly=true",
+      "method": "GET",
+      "status": 200,
+      "elapsedMs": 941,
+      "bytes": 13
+    },
+    {
+      "url": "https://maps.geoscience.org.za/hosting/rest/services/Administrative_Boundaries_and_Cadastral_Data/MapServer/46/query?where=LSTATUS+IN+%28%27R%27%2C%27S%27%29+AND+WSTATUS+IN+%28%27+%27%2C%27C%27%29&geometry=27.845000000000002%2C-25.465%2C27.8475%2C-25.462500000000002&geometryType=esriGeometryEnvelope&inSR=4326&spatialRel=esriSpatialRelIntersects&f=json&returnCountOnly=true",
+      "method": "GET",
+      "status": 200,
+      "elapsedMs": 966,
+      "bytes": 11
+    },
+    {
+      "url": "https://maps.geoscience.org.za/hosting/rest/services/Administrative_Boundaries_and_Cadastral_Data/MapServer/46/query?where=LSTATUS+IN+%28%27R%27%2C%27S%27%29+AND+WSTATUS+IN+%28%27+%27%2C%27C%27%29&geometry=27.8425%2C-25.4675%2C27.845000000000002%2C-25.465&geometryType=esriGeometryEnvelope&inSR=4326&spatialRel=esriSpatialRelIntersects&f=json&returnIdsOnly=true",
+      "method": "GET",
+      "status": 200,
+      "elapsedMs": 288,
+      "bytes": 389
+    },
+    {
+      "url": "https://maps.geoscience.org.za/hosting/rest/services/Administrative_Boundaries_and_Cadastral_Data/MapServer/46/query?where=LSTATUS+IN+%28%27R%27%2C%27S%27%29+AND+WSTATUS+IN+%28%27+%27%2C%27C%27%29&outFields=OBJECTID%2CPRCL_KEY%2CID%2CLSTATUS%2CWSTATUS%2CPRCL_TYPE%2CDATE_STAMP%2CPARCEL_NO&returnGeometry=true&outSR=4326&f=geojson&objectIds=112754%2C112817%2C112818%2C112819%2C112820%2C112829%2C112830%2C112831%2C112832%2C112833%2C112834%2C112835%2C112836%2C112899%2C112900%2C112909%2C112910%2C112911%2C112912%2C112993%2C112994%2C112995%2C112996%2C112997%2C112998%2C113132%2C113133%2C113134%2C113135%2C113136%2C113137%2C113138%2C113139%2C113140%2C113141%2C113142%2C113143%2C113176%2C113304%2C113305%2C113306%2C113307%2C113818%2C113819%2C113820%2C113821%2C113822%2C113823%2C113824",
+      "method": "GET",
+      "status": 200,
+      "elapsedMs": 405,
+      "bytes": 25447
+    },
+    {
+      "url": "https://maps.geoscience.org.za/hosting/rest/services/Administrative_Boundaries_and_Cadastral_Data/MapServer/46/query?where=LSTATUS+IN+%28%27R%27%2C%27S%27%29+AND+WSTATUS+IN+%28%27+%27%2C%27C%27%29&geometry=27.8425%2C-25.465%2C27.845000000000002%2C-25.462500000000002&geometryType=esriGeometryEnvelope&inSR=4326&spatialRel=esriSpatialRelIntersects&f=json&returnIdsOnly=true",
+      "method": "GET",
+      "status": 200,
+      "elapsedMs": 276,
+      "bytes": 102
+    },
+    {
+      "url": "https://maps.geoscience.org.za/hosting/rest/services/Administrative_Boundaries_and_Cadastral_Data/MapServer/46/query?where=LSTATUS+IN+%28%27R%27%2C%27S%27%29+AND+WSTATUS+IN+%28%27+%27%2C%27C%27%29&geometry=27.84%2C-25.465%2C27.8425%2C-25.462500000000002&geometryType=esriGeometryEnvelope&inSR=4326&spatialRel=esriSpatialRelIntersects&f=json&returnIdsOnly=true",
+      "method": "GET",
+      "status": 200,
+      "elapsedMs": 273,
+      "bytes": 1040
+    },
+    {
+      "url": "https://maps.geoscience.org.za/hosting/rest/services/Administrative_Boundaries_and_Cadastral_Data/MapServer/46/query?where=LSTATUS+IN+%28%27R%27%2C%27S%27%29+AND+WSTATUS+IN+%28%27+%27%2C%27C%27%29&geometry=27.845000000000002%2C-25.4675%2C27.8475%2C-25.465&geometryType=esriGeometryEnvelope&inSR=4326&spatialRel=esriSpatialRelIntersects&f=json&returnIdsOnly=true",
+      "method": "GET",
+      "status": 200,
+      "elapsedMs": 270,
+      "bytes": 340
+    },
+    {
+      "url": "https://maps.geoscience.org.za/hosting/rest/services/Administrative_Boundaries_and_Cadastral_Data/MapServer/46/query?where=LSTATUS+IN+%28%27R%27%2C%27S%27%29+AND+WSTATUS+IN+%28%27+%27%2C%27C%27%29&geometry=27.845000000000002%2C-25.465%2C27.8475%2C-25.462500000000002&geometryType=esriGeometryEnvelope&inSR=4326&spatialRel=esriSpatialRelIntersects&f=json&returnIdsOnly=true",
+      "method": "GET",
+      "status": 200,
+      "elapsedMs": 272,
+      "bytes": 49
+    },
+    {
+      "url": "https://maps.geoscience.org.za/hosting/rest/services/Administrative_Boundaries_and_Cadastral_Data/MapServer/46/query?where=LSTATUS+IN+%28%27R%27%2C%27S%27%29+AND+WSTATUS+IN+%28%27+%27%2C%27C%27%29&outFields=OBJECTID%2CPRCL_KEY%2CID%2CLSTATUS%2CWSTATUS%2CPRCL_TYPE%2CDATE_STAMP%2CPARCEL_NO&returnGeometry=true&outSR=4326&f=geojson&objectIds=113176%2C113252%2C113253%2C113254%2C113255%2C113256%2C113257%2C113258",
+      "method": "GET",
+      "status": 200,
+      "elapsedMs": 347,
+      "bytes": 5280
+    },
+    {
+      "url": "https://maps.geoscience.org.za/hosting/rest/services/Administrative_Boundaries_and_Cadastral_Data/MapServer/46/query?where=LSTATUS+IN+%28%27R%27%2C%27S%27%29+AND+WSTATUS+IN+%28%27+%27%2C%27C%27%29&outFields=OBJECTID%2CPRCL_KEY%2CID%2CLSTATUS%2CWSTATUS%2CPRCL_TYPE%2CDATE_STAMP%2CPARCEL_NO&returnGeometry=true&outSR=4326&f=geojson&objectIds=112115%2C112116%2C112117%2C112118%2C112119%2C112120%2C112121%2C112124%2C112125%2C112126%2C112127%2C112128%2C112129%2C112130%2C112135%2C112136%2C112137%2C112138%2C112139%2C112140%2C112141%2C112142%2C112143%2C112144%2C112145%2C112146%2C112147%2C112148%2C112149%2C112150%2C112151%2C112152%2C112153%2C112154%2C112155%2C112156%2C112157%2C112158%2C112159%2C112170%2C112171%2C112172%2C112173%2C112174%2C112175%2C112176%2C112177%2C112178%2C112179%2C112180%2C112181%2C112182%2C112183%2C112184%2C112185%2C112186%2C112187%2C112188%2C112189%2C112190%2C112191%2C112192%2C112193%2C112194%2C112195%2C112196%2C112197%2C112198%2C112199%2C112200%2C112206%2C112207%2C112208%2C112220%2C112221%2C112222%2C112223%2C112224%2C112225%2C112226%2C112227%2C112228%2C112229%2C112230%2C112231%2C112232%2C112233%2C112234%2C112235%2C112236%2C112237%2C112238%2C112239%2C112240%2C112241%2C112242%2C112243%2C112244%2C112245%2C112246",
+      "method": "GET",
+      "status": 200,
+      "elapsedMs": 276,
+      "bytes": 49710
+    },
+    {
+      "url": "https://maps.geoscience.org.za/hosting/rest/services/Administrative_Boundaries_and_Cadastral_Data/MapServer/46/query?where=LSTATUS+IN+%28%27R%27%2C%27S%27%29+AND+WSTATUS+IN+%28%27+%27%2C%27C%27%29&outFields=OBJECTID%2CPRCL_KEY%2CID%2CLSTATUS%2CWSTATUS%2CPRCL_TYPE%2CDATE_STAMP%2CPARCEL_NO&returnGeometry=true&outSR=4326&f=geojson&objectIds=112095%2C112096%2C112097%2C112098%2C112099%2C112100%2C112101%2C112102%2C112835%2C112836%2C112912%2C113048%2C113049%2C113050%2C113051%2C113052%2C113053%2C113054%2C113055%2C113056%2C113057%2C113058%2C113059%2C113060%2C113061%2C113062%2C113063%2C113064%2C113065%2C113141%2C113142%2C113143%2C113144%2C113145%2C113146%2C113147%2C113206%2C113207%2C113215%2C113216%2C113217%2C113308",
+      "method": "GET",
+      "status": 200,
+      "elapsedMs": 280,
+      "bytes": 20643
+    },
+    {
+      "url": "https://maps.geoscience.org.za/hosting/rest/services/Administrative_Boundaries_and_Cadastral_Data/MapServer/46/query?where=LSTATUS+IN+%28%27R%27%2C%27S%27%29+AND+WSTATUS+IN+%28%27+%27%2C%27C%27%29&outFields=OBJECTID%2CPRCL_KEY%2CID%2CLSTATUS%2CWSTATUS%2CPRCL_TYPE%2CDATE_STAMP%2CPARCEL_NO&returnGeometry=true&outSR=4326&f=geojson&objectIds=112247%2C112248%2C112249%2C112250%2C112251%2C112253%2C112254%2C112265%2C112266%2C112267%2C112268%2C112269%2C112270%2C112271%2C112272%2C112273%2C112274%2C113176%2C113248%2C113249%2C113250%2C113251%2C113252%2C113253%2C113258%2C113259%2C113260%2C113261%2C113262%2C113263%2C113264%2C113265%2C113266%2C113267%2C113268%2C113323%2C113324%2C113325%2C113326%2C113327%2C113328%2C113329",
+      "method": "GET",
+      "status": 200,
+      "elapsedMs": 283,
+      "bytes": 22231
+    },
+    {
+      "url": "https://maps.geoscience.org.za/hosting/rest/services/Administrative_Boundaries_and_Cadastral_Data/MapServer/46/query?where=LSTATUS+IN+%28%27R%27%2C%27S%27%29+AND+WSTATUS+IN+%28%27+%27%2C%27C%27%29&geometry=27.84%2C-25.4675%2C27.8425%2C-25.465&geometryType=esriGeometryEnvelope&inSR=4326&spatialRel=esriSpatialRelIntersects&f=json&returnIdsOnly=true",
+      "method": "GET",
+      "status": 200,
+      "elapsedMs": 784,
+      "bytes": 613
+    },
+    {
+      "url": "https://maps.geoscience.org.za/hosting/rest/services/Administrative_Boundaries_and_Cadastral_Data/MapServer/46/query?where=LSTATUS+IN+%28%27R%27%2C%27S%27%29+AND+WSTATUS+IN+%28%27+%27%2C%27C%27%29&outFields=OBJECTID%2CPRCL_KEY%2CID%2CLSTATUS%2CWSTATUS%2CPRCL_TYPE%2CDATE_STAMP%2CPARCEL_NO&returnGeometry=true&outSR=4326&f=geojson&objectIds=112135%2C112136%2C112160%2C112161%2C112162%2C112163%2C112164%2C112165%2C112166%2C112167%2C112168%2C112169%2C112170%2C112199%2C112200%2C112201%2C112202%2C112203%2C112204%2C112205%2C112208%2C112209%2C112210%2C112211%2C112348%2C112349%2C112350%2C112351%2C112352%2C112353%2C112354%2C112358%2C112359%2C112401%2C112402%2C112404%2C112414%2C112415%2C112416%2C112848%2C112849%2C112850%2C112851%2C112852%2C112853%2C112854%2C112855%2C112856%2C112920%2C112921%2C112922%2C113009%2C113010%2C113011%2C113012%2C113013%2C113014%2C113015%2C113016%2C113017%2C113018%2C113019%2C113106%2C113107%2C113168%2C113169%2C113170%2C113171%2C113172%2C113173%2C113174%2C113175%2C113176%2C113261%2C113262%2C113263%2C113264%2C113265%2C113266%2C113267%2C113268",
+      "method": "GET",
+      "status": 200,
+      "elapsedMs": 293,
+      "bytes": 40780
+    }
+  ],
+  "descriptor": {
+    "id": "za-cgs-northwest-erven",
+    "adapter": "arcgis",
+    "endpoint": "https://maps.geoscience.org.za/hosting/rest/services/Administrative_Boundaries_and_Cadastral_Data/MapServer/46",
+    "idField": "PRCL_KEY",
+    "objectIdField": "OBJECTID",
+    "idType": "string",
+    "idPrefix": "ZA-CGS-NW-",
+    "outFields": [
+      "OBJECTID",
+      "PRCL_KEY",
+      "ID",
+      "LSTATUS",
+      "WSTATUS",
+      "PRCL_TYPE",
+      "DATE_STAMP",
+      "PARCEL_NO"
+    ],
+    "parcelNumberField": "PARCEL_NO",
+    "attributeFilters": {
+      "LSTATUS": [
+        "R",
+        "S"
+      ],
+      "WSTATUS": [
+        " ",
+        "C"
+      ]
+    },
+    "boundsQueryMode": "object-ids",
+    "idsQueryMode": "object-ids",
+    "pageSize": 100,
+    "idBatchSize": 50,
+    "maxFeatures": 2000,
+    "maxBboxKm2": 2,
+    "metricSrid": 32735,
+    "maxConcurrentQueries": 6
+  },
+  "result": "failed"
+}

@@ -1,0 +1,64 @@
+{
+  "schemaVersion": 1,
+  "kind": "central_asia_capitals_integration_outcomes",
+  "checkedAt": "2026-10-08",
+  "status": "integrated_local_only",
+  "indexFile": "research/central-asia-capitals-2026-10-08/index.json",
+  "cityCount": 5,
+  "summary": {
+    "newRegistryCityRows": 2,
+    "updatedExistingRegistryCityRows": 1,
+    "existingOfficialOnlyRowsReassessed": 2,
+    "newNonWupDemographicsRows": 4,
+    "newAppCityEntries": 1,
+    "sourceRowsAdded": 2,
+    "geometrySamplesAccepted": 2,
+    "runtimeEnabled": 1,
+    "heldForGeometryQa": 1
+  },
+  "outcomes": [
+    {
+      "cityId": "capital:KZ:astana",
+      "registryFound": true,
+      "verifiedSample": true,
+      "sourceId": "kz-astana-pkk-esil",
+      "runtimeStatus": "enabled",
+      "decision": "Accepted for partial Esil district 254 coverage after exact-ID/hash and binding acceptance; citywide completeness and ownership are not asserted."
+    },
+    {
+      "cityId": "capital:KG:bishkek",
+      "registryFound": true,
+      "verifiedSample": true,
+      "sourceId": "kg-bishkek-cadastre-eni-area",
+      "runtimeStatus": "held_geometry_qa",
+      "decision": "Verified official local parcel sample and repeatable PROPCODE reads; held from runtime because 3/111 geometries are invalid and 12 positive-area overlap pairs remain."
+    },
+    {
+      "cityId": "capital:TJ:dushanbe",
+      "registryFound": true,
+      "verifiedSample": false,
+      "sourceId": null,
+      "runtimeStatus": "not_integrated",
+      "decision": "Official portal existence documented; host TLS failure prevented service or geometry verification."
+    },
+    {
+      "cityId": "wup2025:3082",
+      "registryFound": true,
+      "verifiedSample": false,
+      "sourceId": null,
+      "runtimeStatus": "not_integrated",
+      "decision": "Official national parcel geoportal documented; host timeouts prevented service or geometry verification."
+    },
+    {
+      "cityId": "capital:TM:ashgabat",
+      "registryFound": true,
+      "verifiedSample": false,
+      "sourceId": null,
+      "runtimeStatus": "not_integrated",
+      "decision": "Official law documents state cadastral maps including Ashgabat; no public parcel endpoint or geometry found."
+    }
+  ],
+  "reportFile": "report/city-demographics.json",
+  "registryFile": "registry.json",
+  "deploymentStatus": "local only; uncommitted and undeployed"
+}

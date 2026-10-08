@@ -1,0 +1,275 @@
+{
+  "schemaVersion": 1,
+  "checkedAt": "2026-10-07T23:25:51.764Z",
+  "cityId": "wup2025:10023",
+  "name": "Venjaramoodu",
+  "sourceId": "kerala-entebhoomi-ilms-map-proxy",
+  "endpointHost": "entebhoomi.kerala.gov.in",
+  "selectors": {
+    "locationCode": "010309",
+    "districtGid": "dfd75e07-cae4-45e8-875b-6292909b8089",
+    "talukGid": "56d4cd54-4ad1-469a-bdbf-202951b95c39",
+    "villageGid": "ce6185fb-b497-4803-a49d-4a0a8925aef8"
+  },
+  "targetCenterLonLat": [
+    76.9124484846266,
+    8.65276906631116
+  ],
+  "alignedCellDegrees": 0.005,
+  "alignedCellWgs84": [
+    76.91,
+    8.65,
+    76.915,
+    8.655
+  ],
+  "sourceLimits": {
+    "exactConcurrency": 16,
+    "maxFeatures": 1000,
+    "maxResponseBytes": 2097152,
+    "requestDeadlineMs": 15000
+  },
+  "host": {
+    "start": {
+      "loadAverage1m5m15m": [
+        13.64306640625,
+        13.7802734375,
+        10.84375
+      ],
+      "logicalCpuCount": 8
+    },
+    "end": {
+      "loadAverage1m5m15m": [
+        11.5009765625,
+        13.28955078125,
+        10.7353515625
+      ],
+      "logicalCpuCount": 8
+    }
+  },
+  "requests": [
+    {
+      "method": "GET",
+      "host": "entebhoomi.kerala.gov.in",
+      "path": "/web/ilms/map",
+      "httpStatus": 200,
+      "contentType": "text/html;charset=UTF-8",
+      "elapsedMs": 1009
+    },
+    {
+      "method": "GET",
+      "host": "entebhoomi.kerala.gov.in",
+      "path": "/web/taluk/gid",
+      "httpStatus": 200,
+      "contentType": "application/json",
+      "elapsedMs": 751
+    },
+    {
+      "method": "GET",
+      "host": "entebhoomi.kerala.gov.in",
+      "path": "/web/village/gid",
+      "httpStatus": 200,
+      "contentType": "application/json",
+      "elapsedMs": 765
+    },
+    {
+      "method": "POST",
+      "host": "entebhoomi.kerala.gov.in",
+      "path": "/web/ilms/map/view",
+      "httpStatus": 200,
+      "contentType": "text/html;charset=UTF-8",
+      "elapsedMs": 1558
+    },
+    {
+      "method": "POST",
+      "host": "bhunaksha.entebhoomi.kerala.gov.in",
+      "path": "/bhunaksha_v5_emaps/core/v2/map/export/geojson/010309",
+      "httpStatus": 200,
+      "contentType": "application/geo+json",
+      "elapsedMs": 1359
+    },
+    {
+      "method": "GET",
+      "host": "entebhoomi.kerala.gov.in",
+      "path": "/web/ilms/map",
+      "httpStatus": 200,
+      "contentType": "text/html;charset=UTF-8",
+      "elapsedMs": 769
+    },
+    {
+      "method": "GET",
+      "host": "entebhoomi.kerala.gov.in",
+      "path": "/web/taluk/gid",
+      "httpStatus": 200,
+      "contentType": "application/json",
+      "elapsedMs": 764
+    },
+    {
+      "method": "GET",
+      "host": "entebhoomi.kerala.gov.in",
+      "path": "/web/village/gid",
+      "httpStatus": 200,
+      "contentType": "application/json",
+      "elapsedMs": 771
+    },
+    {
+      "method": "POST",
+      "host": "entebhoomi.kerala.gov.in",
+      "path": "/web/ilms/map/view",
+      "httpStatus": 200,
+      "contentType": "text/html;charset=UTF-8",
+      "elapsedMs": 791
+    },
+    {
+      "method": "POST",
+      "host": "entebhoomi.kerala.gov.in",
+      "path": "/web/proxy/mapinfo/feature_info/010309",
+      "httpStatus": 200,
+      "contentType": "application/json",
+      "elapsedMs": 1499
+    },
+    {
+      "method": "POST",
+      "host": "entebhoomi.kerala.gov.in",
+      "path": "/web/proxy/mapinfo/feature_info/010309",
+      "httpStatus": 200,
+      "contentType": "application/json",
+      "elapsedMs": 1483
+    },
+    {
+      "method": "POST",
+      "host": "entebhoomi.kerala.gov.in",
+      "path": "/web/proxy/mapinfo/feature_info/010309",
+      "httpStatus": 200,
+      "contentType": "application/json",
+      "elapsedMs": 1510
+    },
+    {
+      "method": "POST",
+      "host": "entebhoomi.kerala.gov.in",
+      "path": "/web/proxy/mapinfo/feature_info/010309",
+      "httpStatus": 200,
+      "contentType": "application/json",
+      "elapsedMs": 1601
+    },
+    {
+      "method": "POST",
+      "host": "entebhoomi.kerala.gov.in",
+      "path": "/web/proxy/mapinfo/feature_info/010309",
+      "httpStatus": 200,
+      "contentType": "application/json",
+      "elapsedMs": 1526
+    },
+    {
+      "method": "GET",
+      "host": "entebhoomi.kerala.gov.in",
+      "path": "/web/ilms/map",
+      "httpStatus": 200,
+      "contentType": "text/html;charset=UTF-8",
+      "elapsedMs": 786
+    },
+    {
+      "method": "GET",
+      "host": "entebhoomi.kerala.gov.in",
+      "path": "/web/taluk/gid",
+      "httpStatus": 200,
+      "contentType": "application/json",
+      "elapsedMs": 767
+    },
+    {
+      "method": "GET",
+      "host": "entebhoomi.kerala.gov.in",
+      "path": "/web/village/gid",
+      "httpStatus": 200,
+      "contentType": "application/json",
+      "elapsedMs": 731
+    },
+    {
+      "method": "POST",
+      "host": "entebhoomi.kerala.gov.in",
+      "path": "/web/ilms/map/view",
+      "httpStatus": 200,
+      "contentType": "text/html;charset=UTF-8",
+      "elapsedMs": 813
+    },
+    {
+      "method": "POST",
+      "host": "bhunaksha.entebhoomi.kerala.gov.in",
+      "path": "/bhunaksha_v5_emaps/core/v2/map/export/geojson/010309",
+      "httpStatus": 200,
+      "contentType": "application/geo+json",
+      "elapsedMs": 1401
+    }
+  ],
+  "checks": {
+    "defaultFloorAlignedCell": {
+      "ok": true,
+      "elapsedMs": 6438,
+      "complete": true,
+      "featureCount": 220,
+      "geometryCount": 220,
+      "nativeIds": [
+        "f9185bad-4e9b-45c0-a10e-3bd17a47f2f9",
+        "d6628729-f1e3-4deb-ab97-417038f17a89",
+        "1aa38ef7-39c1-4132-8943-96ef12c86d3c",
+        "b98c08ff-c3e1-4331-aec4-97a3a2db2ddf"
+      ]
+    },
+    "freshAdapterExactRereadFour": {
+      "ok": true,
+      "elapsedMs": 4966,
+      "complete": true,
+      "expectedCount": 4,
+      "returnedCount": 4,
+      "geometryMatches": [
+        {
+          "nativeId": "f9185bad-4e9b-45c0-a10e-3bd17a47f2f9",
+          "present": true,
+          "geometryMatches": true,
+          "viewportGeometrySha256": "9415524718c32112e6aa4647c8fc9aeca9ddf4b9037a9c2d7c1f72496396defb",
+          "exactGeometrySha256": "9415524718c32112e6aa4647c8fc9aeca9ddf4b9037a9c2d7c1f72496396defb"
+        },
+        {
+          "nativeId": "d6628729-f1e3-4deb-ab97-417038f17a89",
+          "present": true,
+          "geometryMatches": true,
+          "viewportGeometrySha256": "3572a1c7e18e586be360bd30d65cc6754a0663f29f8fe3ab2b85c067278a21ea",
+          "exactGeometrySha256": "3572a1c7e18e586be360bd30d65cc6754a0663f29f8fe3ab2b85c067278a21ea"
+        },
+        {
+          "nativeId": "1aa38ef7-39c1-4132-8943-96ef12c86d3c",
+          "present": true,
+          "geometryMatches": true,
+          "viewportGeometrySha256": "50e7a67609a9c83d381fc0f767b1baa5a267c8a672df315a79a185e693e86360",
+          "exactGeometrySha256": "50e7a67609a9c83d381fc0f767b1baa5a267c8a672df315a79a185e693e86360"
+        },
+        {
+          "nativeId": "b98c08ff-c3e1-4331-aec4-97a3a2db2ddf",
+          "present": true,
+          "geometryMatches": true,
+          "viewportGeometrySha256": "966d1521de4f5e4d322c72acb2cc91cd1e0207aa1b1163597e5f839f7cccba56",
+          "exactGeometrySha256": "966d1521de4f5e4d322c72acb2cc91cd1e0207aa1b1163597e5f839f7cccba56"
+        }
+      ]
+    },
+    "zeroUuidExactAbsence": {
+      "ok": true,
+      "elapsedMs": 1528,
+      "complete": true,
+      "featureCount": 0,
+      "absentIds": [
+        "IN-KL-ENTEBHOOMI-010309-00000000-0000-0000-0000-000000000000"
+      ]
+    },
+    "firstParcelFootprintSourceBinding": {
+      "ok": true,
+      "elapsedMs": 4814,
+      "coverage": "complete",
+      "parcelCount": 1,
+      "siteM2": 1978.71,
+      "parcelIds": [
+        "IN-KL-ENTEBHOOMI-010309-f9185bad-4e9b-45c0-a10e-3bd17a47f2f9"
+      ]
+    }
+  },
+  "outcome": "passed"
+}

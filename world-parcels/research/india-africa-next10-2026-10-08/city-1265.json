@@ -1,0 +1,137 @@
+{
+  "schemaVersion": 1,
+  "checkedAt": "2026-10-08",
+  "workstream": "africa_west",
+  "kind": "city_parcel_source_research",
+  "cityId": "wup2025:1265",
+  "queueRank": 26,
+  "wupCityCode": 1265,
+  "name": "Lagos",
+  "country": "Nigeria",
+  "countryCode": "NG",
+  "centerLatLon": [
+    6.56844874683968,
+    3.31028078517139
+  ],
+  "cohorts": [
+    "largest200"
+  ],
+  "largestRank": 26,
+  "growthRank": null,
+  "population2025": 12791699,
+  "annualGrowthPct2015To2025": 1.425783,
+  "priorEvidence": [
+    "research/lagos.json",
+    "research/india-africa-2026-10-08/africa-ws-city-1265.json"
+  ],
+  "priorAssessment": {
+    "resultCategory": "candidate_service_outside_target",
+    "freshVerifiedSample": false,
+    "technicalBlocker": "Earlier services9 ArcGIS candidate had a full extent outside the Lagos target and its bounded query returned zero features."
+  },
+  "freshCityLocalSearch": {
+    "languageScript": "English (Latin script)",
+    "exactQueries": [
+      "\"Lagos_CPs\" ArcGIS",
+      "\"Lagos_Charting__WFL1\"",
+      "\"Lagos_Survey_X_FeaturesToJSO1\"",
+      "Lagos State Geographic Information Services GIS data land parcels official Lagos LAGIS",
+      "\"Lagos State GIS\" \"Lagos Charting\" cadastral parcel polygon",
+      "\"lagosplanPolygon\""
+    ],
+    "date": "2026-10-08",
+    "resultUrls": [
+      "https://services8.arcgis.com/oTalEaSXAuyNT7xf/arcgis/rest/services",
+      "https://www.lagosstate.gov.ng/",
+      "https://lagossurveyor.ebs-rcm.com/",
+      "https://documents1.worldbank.org/curated/en/682781468100141560/pdf/849600PGD0P123010Box382156B00OUO090.pdf",
+      "https://services8.arcgis.com/oTalEaSXAuyNT7xf/arcgis/rest/services/Lagos_Charting__WFL1/FeatureServer?f=pjson",
+      "https://services8.arcgis.com/oTalEaSXAuyNT7xf/arcgis/rest/services/Lagos_Charting__WFL1/FeatureServer/2?f=pjson",
+      "https://www.arcgis.com/sharing/rest/content/items/fea25939c7ba476cadbe7cc765f6bdf9?f=json"
+    ],
+    "summary": "Ordinary-host requests with TLS verification enabled succeeded (HTTP 200) against public ArcGIS Online. Metadata confirms Lagos_Charting__WFL1 layer 2 lagosplanPolygon is polygon geometry with fields PLN, LOTAINF, LOTAAC, LOTASF, LOTDES, UP, but no service description or copyright. A bounded 0.002-degree WGS84 bbox at the WUP point returned count=2 and two polygons. All six lot/plan fields were null in both; the two 93-vertex geometries are exactly equal (same SHA-256) and span approximately 3.7 km by 6.9 km, rather than separate parcel boundaries. ArcGIS OBJECTIDs 86987/86993 are transport row IDs only. Related Lagos_CPs layer is points explicitly named community pharmacies; Lagos_Survey_X_FeaturesToJSO1 is school flood survey points. Thus this route exposes public target-intersecting polygon geometry but does not verify parcel boundaries or a native parcel key. Earlier web fetcher cache-miss and restricted-shell DNS failures were environment/tool limitations, not upstream status. A second bounded query with an OR-of-IS-NOT-NULL filter across all six plausible lot/plan fields (±0.02° bbox, about 4.4 km square) returned count=0 and no sample at HTTP 200. The layer advertises a large Web Mercator extent and maxRecordCount 2000. This is a limited target-neighborhood result only, not a citywide absence claim."
+  },
+  "requests": [
+    {
+      "url": "https://services8.arcgis.com/oTalEaSXAuyNT7xf/arcgis/rest/services?f=pjson",
+      "method": "GET",
+      "httpStatus": 200,
+      "networkContext": "exec_command require_escalated; TLS verified",
+      "outcome": "Public ArcGIS folder (1.18 MB JSON) lists Lagos_CPs, Lagos_Charting__WFL1 and Lagos_Survey_X_FeaturesToJSO1."
+    },
+    {
+      "url": "https://services8.arcgis.com/oTalEaSXAuyNT7xf/arcgis/rest/services/Lagos_Charting__WFL1/FeatureServer?f=pjson",
+      "method": "GET",
+      "httpStatus": 200,
+      "networkContext": "exec_command require_escalated; TLS verified",
+      "outcome": "Feature service metadata; query capability, EPSG:3857; service description/copyright empty; extent broad."
+    },
+    {
+      "url": "https://services8.arcgis.com/oTalEaSXAuyNT7xf/arcgis/rest/services/Lagos_Charting__WFL1/FeatureServer/2?f=pjson",
+      "method": "GET",
+      "httpStatus": 200,
+      "networkContext": "exec_command require_escalated; TLS verified",
+      "outcome": "Layer 2 lagosplanPolygon, Polygon; fields include PLN, LOTAINF, LOTAAC, LOTASF, LOTDES, UP and OBJECTID; native identity semantics remain undocumented."
+    },
+    {
+      "url": "See africa-west-lagos-arcgis-probes.json for exact bounded count and feature query URLs.",
+      "method": "GET",
+      "httpStatus": 200,
+      "networkContext": "exec_command require_escalated; TLS verified",
+      "outcome": "WGS84 bbox [3.30928078517139,6.56744874683968,3.31128078517139,6.56944874683968], count=2, requested max 3, returned 2 identical polygon geometries; lot fields all null."
+    },
+    {
+      "url": "https://services8.arcgis.com/oTalEaSXAuyNT7xf/arcgis/rest/services/Lagos_CPs/FeatureServer/0?f=pjson",
+      "method": "GET",
+      "httpStatus": 200,
+      "networkContext": "exec_command require_escalated; TLS verified",
+      "outcome": "Lagos_CPs is point layer with NAME_OF_COMMUNITY_PHARMACY; not land parcels."
+    },
+    {
+      "url": "https://services8.arcgis.com/oTalEaSXAuyNT7xf/arcgis/rest/services/Lagos_Survey_X_FeaturesToJSO1/FeatureServer/0?f=pjson",
+      "method": "GET",
+      "httpStatus": 200,
+      "networkContext": "exec_command require_escalated; TLS verified",
+      "outcome": "Survey-named points layer has school flood questionnaire attributes; not land parcels."
+    },
+    {
+      "url": "https://services5.arcgis.com/FmxVFcLfGZgh8t6m/ArcGIS/rest/services/Lagos_State2/FeatureServer/0?f=pjson",
+      "method": "GET",
+      "httpStatus": 200,
+      "networkContext": "exec_command require_escalated; TLS verified",
+      "outcome": "Separate community-hosted layer described as test; generic Lagos layer, no parcel schema or source attribution. Not queried after metadata failed to establish parcel semantics."
+    },
+    {
+      "url": "http://gisapps.lagosstate.gov.ng/ArcGIS/rest/services/LAGIS_MINNA/MapServer?f=jsapi",
+      "method": "GET",
+      "outcome": "Historical Lagos GIS URL reference only; not reached in this pass. World Bank source says GIS information available to public at a cost."
+    },
+    {
+      "url": "See africa-west-lagos-arcgis-probes.json expandedLocalNonblankFieldCheck for exact count/sample URLs and parameters.",
+      "method": "GET",
+      "httpStatus": 200,
+      "networkContext": "exec_command require_escalated; TLS verified",
+      "outcome": "Bounded ~4.4 km square around WUP target; OR filter PLN/LOTAINF/LOTAAC/LOTASF/LOTDES/UP IS NOT NULL; count=0, result limit 3. This says no populated candidate lot fields in this local query only; it does not establish citywide absence."
+    }
+  ],
+  "verifiedParcelResponse": null,
+  "source": null,
+  "registryFound": null,
+  "verifiedSample": false,
+  "coverageAssessment": {
+    "claimedScope": "City-level only; no broader coverage implied.",
+    "verifiedOpenScope": null,
+    "countrywideVerified": false
+  },
+  "status": "candidate_service_no_parcel_semantics_or_native_id",
+  "blocker": "No meaningful native lot attributes were returned around the target. At the exact target, two identical large polygons had null lot/plan fields; within the approximately 4.4 km local envelope, the OR-of-non-null-fields filter matched zero rows. OBJECTIDs remain transport identifiers only.",
+  "remainingUncertainty": "The layer advertises a broad extent across multiple countries and this bounded local check does not establish Lagos-wide coverage or absence. Official/restricted cadastral datasets may exist outside this layer.",
+  "nextStep": "Only revisit if a documented official Lagos parcel layer or viewer route yields parcel-scale geometry and non-null stable parcel keys; do not infer identity from this layer’s OBJECTID.",
+  "resultCategory": "candidate_service_no_parcel_semantics",
+  "evidenceType": "new_or_retry_target_service_probe",
+  "targetEndpointProbePerformed": true,
+  "sharedCountryAssessment": "africa-ws-provider-NG.json",
+  "evidenceFiles": [
+    "africa-west-lagos-arcgis-probes.json"
+  ]
+}

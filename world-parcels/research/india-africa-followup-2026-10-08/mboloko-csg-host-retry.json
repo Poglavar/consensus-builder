@@ -1,0 +1,238 @@
+{
+  "checkedAt": "2026-10-07T23:02:14.521Z",
+  "purpose": "Ordinary host-network retry after restricted-context DNS failures; metadata only",
+  "requests": [
+    {
+      "url": "https://csggis.drdlr.gov.za/server/rest/services/Property_Viewer/MapServer/202?f=pjson",
+      "error": "fetch failed",
+      "cause": "ENOTFOUND",
+      "elapsedMs": 235
+    },
+    {
+      "url": "https://csggis.drdlr.gov.za/server/rest/services/Property_Viewer/MapServer/3?f=pjson",
+      "error": "fetch failed",
+      "cause": "ENOTFOUND",
+      "elapsedMs": 6
+    },
+    {
+      "url": "https://dffeportal.environment.gov.za/hosting/rest/services/CSG_Cadaster/CSG_Cadastral_Data/MapServer/2?f=pjson",
+      "httpStatus": 200,
+      "metadata": {
+        "name": "Erven",
+        "description": "",
+        "geometryType": "esriGeometryPolygon",
+        "fields": [
+          {
+            "name": "OBJECTID",
+            "type": "esriFieldTypeOID",
+            "alias": "OBJECTID",
+            "domain": null
+          },
+          {
+            "name": "GID",
+            "type": "esriFieldTypeInteger",
+            "alias": "GID",
+            "domain": null
+          },
+          {
+            "name": "PRCL_KEY",
+            "type": "esriFieldTypeString",
+            "alias": "PRCL_KEY",
+            "length": 50,
+            "domain": null
+          },
+          {
+            "name": "PRCL_TYPE",
+            "type": "esriFieldTypeString",
+            "alias": "PRCL_TYPE",
+            "length": 10,
+            "domain": null
+          },
+          {
+            "name": "LSTATUS",
+            "type": "esriFieldTypeString",
+            "alias": "LSTATUS",
+            "length": 1,
+            "domain": null
+          },
+          {
+            "name": "WSTATUS",
+            "type": "esriFieldTypeString",
+            "alias": "WSTATUS",
+            "length": 1,
+            "domain": null
+          },
+          {
+            "name": "GEOM_AREA",
+            "type": "esriFieldTypeDouble",
+            "alias": "GEOM_AREA",
+            "domain": null
+          },
+          {
+            "name": "COMMENTS",
+            "type": "esriFieldTypeString",
+            "alias": "COMMENTS",
+            "length": 120,
+            "domain": null
+          },
+          {
+            "name": "TAG_X",
+            "type": "esriFieldTypeDouble",
+            "alias": "TAG_X",
+            "domain": null
+          },
+          {
+            "name": "TAG_Y",
+            "type": "esriFieldTypeDouble",
+            "alias": "TAG_Y",
+            "domain": null
+          },
+          {
+            "name": "TAG_VALUE",
+            "type": "esriFieldTypeString",
+            "alias": "TAG_VALUE",
+            "length": 40,
+            "domain": null
+          },
+          {
+            "name": "TAG_SIZE",
+            "type": "esriFieldTypeDouble",
+            "alias": "TAG_SIZE",
+            "domain": null
+          },
+          {
+            "name": "TAG_ANGLE",
+            "type": "esriFieldTypeDouble",
+            "alias": "TAG_ANGLE",
+            "domain": null
+          },
+          {
+            "name": "TAG_JUST",
+            "type": "esriFieldTypeString",
+            "alias": "TAG_JUST",
+            "length": 2,
+            "domain": null
+          },
+          {
+            "name": "ID",
+            "type": "esriFieldTypeString",
+            "alias": "ID",
+            "length": 60,
+            "domain": null
+          },
+          {
+            "name": "DATE_STAMP",
+            "type": "esriFieldTypeDate",
+            "alias": "DATE_STAMP",
+            "length": 8,
+            "domain": null
+          },
+          {
+            "name": "PROVINCE",
+            "type": "esriFieldTypeString",
+            "alias": "PROVINCE",
+            "length": 50,
+            "domain": null
+          },
+          {
+            "name": "MAJ_REGION",
+            "type": "esriFieldTypeString",
+            "alias": "MAJ_REGION",
+            "length": 50,
+            "domain": null
+          },
+          {
+            "name": "MAJ_CODE",
+            "type": "esriFieldTypeString",
+            "alias": "MAJ_CODE",
+            "length": 50,
+            "domain": null
+          },
+          {
+            "name": "MIN_REGION",
+            "type": "esriFieldTypeString",
+            "alias": "MIN_REGION",
+            "length": 50,
+            "domain": null
+          },
+          {
+            "name": "MIN_CODE",
+            "type": "esriFieldTypeString",
+            "alias": "MIN_CODE",
+            "length": 50,
+            "domain": null
+          },
+          {
+            "name": "PARCEL_NO",
+            "type": "esriFieldTypeInteger",
+            "alias": "PARCEL_NO",
+            "domain": null
+          },
+          {
+            "name": "PORTION",
+            "type": "esriFieldTypeInteger",
+            "alias": "PORTION",
+            "domain": null
+          },
+          {
+            "name": "SS_NAME",
+            "type": "esriFieldTypeString",
+            "alias": "SS_NAME",
+            "length": 50,
+            "domain": null
+          },
+          {
+            "name": "DSG_NO",
+            "type": "esriFieldTypeString",
+            "alias": "DSG_NO",
+            "length": 50,
+            "domain": null
+          },
+          {
+            "name": "SR_NO",
+            "type": "esriFieldTypeString",
+            "alias": "SR_NO",
+            "length": 50,
+            "domain": null
+          },
+          {
+            "name": "SS_NO",
+            "type": "esriFieldTypeString",
+            "alias": "SS_NO",
+            "length": 50,
+            "domain": null
+          },
+          {
+            "name": "Shape",
+            "type": "esriFieldTypeGeometry",
+            "alias": "Shape",
+            "domain": null
+          },
+          {
+            "name": "Shape.STArea()",
+            "type": "esriFieldTypeDouble",
+            "alias": "Shape.STArea()",
+            "domain": null
+          },
+          {
+            "name": "Shape.STLength()",
+            "type": "esriFieldTypeDouble",
+            "alias": "Shape.STLength()",
+            "domain": null
+          }
+        ],
+        "extent": {
+          "xmin": 16.475219541000058,
+          "ymin": -34.82840717999994,
+          "xmax": 32.579882455000075,
+          "ymax": -22.25269008199996,
+          "spatialReference": {
+            "wkid": 4148,
+            "latestWkid": 4148
+          }
+        }
+      },
+      "elapsedMs": 784
+    }
+  ]
+}

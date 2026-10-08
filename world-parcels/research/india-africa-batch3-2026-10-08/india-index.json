@@ -1,0 +1,122 @@
+{
+  "schemaVersion": 1,
+  "checkedAt": "2026-10-08",
+  "queueFile": "world-parcels/research/india-africa-batch3-2026-10-08/queue.json",
+  "assignedTo": "growth_top20_india",
+  "assignedCount": 5,
+  "verifiedSampleCount": 1,
+  "rows": [
+    {
+      "cityId": "wup2025:11821",
+      "wupCityCode": 11821,
+      "name": "Kolkata",
+      "countryCode": "IN",
+      "centerLatLon": [
+        22.5859710859864,
+        88.3536574635294
+      ],
+      "cohorts": [
+        "largest200"
+      ],
+      "assigned": true,
+      "assessmentFile": "city-11821.json",
+      "inheritedStatus": "no_verified_sample_candidate_citywide",
+      "resultCategory": "no_verified_sample_candidate_citywide",
+      "registryFound": false,
+      "verifiedSample": false,
+      "sourceIdCandidate": null,
+      "technicalBlocker": "No public parcel polygon was obtained. The official West Bengal portal currently indexes Plot Map Request and Mouza Map Request but describes login for Citizen Services; direct page fetch timed out/502 or returned Invalid Operation. Kolkata mouza match and open geometry remain unverified.",
+      "nextStep": "Find a reachable official cadastral map route for the WUP point, confirm its mouza, then verify a plot boundary/map sheet with stable plot identity. Search and shared WB urban-service leads do not establish parcel geometry."
+    },
+    {
+      "cityId": "wup2025:7945",
+      "wupCityCode": 7945,
+      "name": "Mumbai",
+      "countryCode": "IN",
+      "centerLatLon": [
+        19.12248075999,
+        72.8833426320986
+      ],
+      "cohorts": [
+        "largest200"
+      ],
+      "assigned": true,
+      "assessmentFile": "city-7945.json",
+      "inheritedStatus": "no_verified_sample_candidate_citywide",
+      "resultCategory": "no_verified_sample_candidate_citywide",
+      "registryFound": false,
+      "verifiedSample": false,
+      "sourceIdCandidate": null,
+      "technicalBlocker": "Official Maharashtra service pages and the public BhuNaksha viewer are discoverable, but this fetch could not retrieve the map page or any Mumbai City/Mumbai Suburban plot geometry. The target city-survey/village identity remains unverified.",
+      "nextStep": "Reach the official BhuNaksha viewer without the observed redirect loop, resolve the WUP point to the city-survey/gat hierarchy, and verify a map boundary with stable parcel identity."
+    },
+    {
+      "cityId": "wup2025:7233",
+      "wupCityCode": 7233,
+      "name": "Surat",
+      "countryCode": "IN",
+      "centerLatLon": [
+        21.1776194957192,
+        72.7789187685758
+      ],
+      "cohorts": [
+        "largest200"
+      ],
+      "assigned": true,
+      "assessmentFile": "city-7233.json",
+      "inheritedStatus": "no_verified_open_endpoint_after_attempts",
+      "resultCategory": "verified_sample_partial_coverage",
+      "registryFound": true,
+      "verifiedSample": true,
+      "sourceIdCandidate": "in-gj-tpvd-surat-final-plots",
+      "technicalBlocker": null,
+      "nextStep": "Surat SMC final-plot use is accepted and enabled for the bounded sampled coverage. Keep scope limited to final TPVD planning plots; the exact WUP-point cell returned no parcel, citywide completeness is unverified, and plots do not establish current title or ownership.",
+      "acceptanceFile": "surat-acceptance.json",
+      "runtimeStatus": "enabled"
+    },
+    {
+      "cityId": "wup2025:9717",
+      "wupCityCode": 9717,
+      "name": "Lucknow",
+      "countryCode": "IN",
+      "centerLatLon": [
+        26.8615244724503,
+        80.9654352206033
+      ],
+      "cohorts": [
+        "largest200"
+      ],
+      "assigned": true,
+      "assessmentFile": "city-9717.json",
+      "inheritedStatus": "no_verified_sample_candidate_citywide",
+      "resultCategory": "no_verified_sample_candidate_citywide",
+      "registryFound": false,
+      "verifiedSample": false,
+      "sourceIdCandidate": null,
+      "technicalBlocker": "The official UP BhuNaksha UI opened but rendered a default Agra village, not the Lucknow WUP point; no Lucknow village code or parcel polygon was obtained. Inherited level lookup POST reached an upstream 403 and vector plot API was not verified.",
+      "nextStep": "Resolve the WUP coordinate to its exact revenue village in an official UP map selector, then inspect one bounded gata/plot response for polygon geometry, stable identifier and CRS."
+    },
+    {
+      "cityId": "wup2025:9603",
+      "wupCityCode": 9603,
+      "name": "Kanpur",
+      "countryCode": "IN",
+      "centerLatLon": [
+        26.460949782044,
+        80.3406195423691
+      ],
+      "cohorts": [
+        "largest200"
+      ],
+      "assigned": true,
+      "assessmentFile": "city-9603.json",
+      "inheritedStatus": "no_verified_sample_candidate_citywide",
+      "resultCategory": "no_verified_sample_candidate_citywide",
+      "registryFound": false,
+      "verifiedSample": false,
+      "sourceIdCandidate": null,
+      "technicalBlocker": "The official UP BhuNaksha UI opened but rendered a default Agra village, not the Kanpur WUP point; no Kanpur village code or parcel polygon was obtained. Inherited public viewer uses raster WMS tiles and the vector plot route returned 401 without authorization.",
+      "nextStep": "Resolve the WUP coordinate to its exact revenue village in an official UP map selector, then inspect one bounded gata/plot response for polygon geometry, stable identifier and CRS."
+    }
+  ]
+}

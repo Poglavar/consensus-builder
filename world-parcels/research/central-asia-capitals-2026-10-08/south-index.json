@@ -1,0 +1,51 @@
+{
+  "schemaVersion": 1,
+  "kind": "workstream_research_index",
+  "checkedAt": "2026-10-08",
+  "scope": "South workstream: Dushanbe (Tajikistan), Tashkent (Uzbekistan), Ashgabat (Turkmenistan) from the five-capital Central Asia queue.",
+  "cityCount": 3,
+  "summary": {
+    "verifiedGeometryCities": 0,
+    "promisingUnavailableCities": 2,
+    "officialServiceNoGeometryCities": 1
+  },
+  "cities": [
+    {
+      "cityId": "capital:TJ:dushanbe",
+      "name": "Dushanbe",
+      "countryCode": "TJ",
+      "resultCategory": "promising_unavailable",
+      "recordPath": "world-parcels/research/central-asia-capitals-2026-10-08/city-dushanbe.json",
+      "registryFound": null,
+      "verifiedSample": false,
+      "targetGeometryEvidence": "none",
+      "blocker": "The official registration-service homepage is reachable and directly confirms the Geoportal entry at geoportal.tj; ordinary HTTP on both portal aliases forces HTTPS, whose certificate is expired. Its linked State Committee website also redirects to HTTPS with an expired certificate. TLS verification was not bypassed, so viewer scripts/service endpoints could not be inspected and no parcel polygon was verified.",
+      "nextStep": "Retry the official portal through a permitted public browser or another network; inspect viewer-linked service calls and make a tiny Dushanbe query before classifying geometry or coverage."
+    },
+    {
+      "cityId": "wup2025:3082",
+      "name": "Tashkent",
+      "countryCode": "UZ",
+      "resultCategory": "promising_unavailable",
+      "recordPath": "world-parcels/research/central-asia-capitals-2026-10-08/city-tashkent.json",
+      "registryFound": null,
+      "verifiedSample": false,
+      "targetGeometryEvidence": "none",
+      "blocker": "Official sources describe open.ngis.uz as a public geoportal with parcel/real-estate information, but bounded HTTPS and HTTP GETs both timed out. The viewer scripts/service API and anonymous geometry remain inaccessible and unverified.",
+      "nextStep": "Retry open.ngis.uz in the ordinary public viewer, inspect its own scripts/network calls, and test a tiny bbox around the WUP point with only parcel ID and geometry fields if available."
+    },
+    {
+      "cityId": "capital:TM:ashgabat",
+      "name": "Ashgabat",
+      "countryCode": "TM",
+      "resultCategory": "public_service_no_geometry",
+      "recordPath": "world-parcels/research/central-asia-capitals-2026-10-08/city-ashgabat.json",
+      "registryFound": null,
+      "verifiedSample": false,
+      "targetGeometryEvidence": "none",
+      "blocker": "The law proves cadastral maps exist for Ashgabat and define parcels with boundaries, coordinates and unique numbers, but this search found no ordinary public viewer or bounded digital feature endpoint. The law indicates access is provided under established procedures and may be paid/restricted.",
+      "nextStep": "Search for a publicly advertised official Ashgabat land-resource/registration map or dataset; use only a published public service and bounded feature query if found."
+    }
+  ],
+  "overallFinding": "No parcel polygon was verified for these three cities. Dushanbe has an official public geoportal lead, but its HTTP aliases redirect to HTTPS with an expired certificate; the linked registration service is accessible and confirms the portal link. Tashkent’s official portal times out over both HTTP and HTTPS. Turkmen law confirms Ashgabat cadastral maps exist, but this search found no anonymous online service; statutory information access can be paid or restricted."
+}

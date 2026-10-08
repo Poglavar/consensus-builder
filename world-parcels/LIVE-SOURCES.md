@@ -5,9 +5,83 @@ The source evidence is saved in `registry.json` and `research/`: endpoints, oper
 sample requests and responses, native identifiers, paging observations and uncertainties.
 The globe's `source` tier means a verified sample exists; it does not enable a runtime provider.
 
+## Central Asian republic capitals — 8 October 2026
+
+The [five-capital check](research/central-asia-capitals-2026-10-08/index.json) qualifies **Astana — Esil district** locally. The catalogue now contains **114 app entries / 101 executable providers**. Bishkek has verified public parcel data but remains unconfigured for geometry quality; Dushanbe, Tashkent and Ashgabat have documented official registry or portal evidence without a verified public geometry response in this pass.
+
+Astana's official national EGKN public cadastral map requires the viewer's district selector and native coordinate system. The accepted provider reads `egkn:u_view`, `district_id:254`, in **EPSG:32642**, then transforms complete shapes to WGS84. The native cadastral number is `kad_nomer`; `gid` is transport ordering. Generated GeoServer feature IDs change between otherwise identical requests and are never parcel identity. Earlier zero-feature `ru_view` queries without the required district and WGS84-coordinate probes remain recorded as inconclusive, superseded requests.
+
+The live adapter verified **154 native identities in nine cells**, complete forced three-record paging across 65 pages, all fresh exact lookups with matching geometry, explicit absence and both source-binding paths. All 154 sampled polygons are valid. Five measured overlaps are retained unchanged: the two largest are **0.451 m² and 0.382 m²**, with minimum oriented widths of about **9.8 mm and 12.1 mm**; the other three are below 0.007 m². These explicit source-precision cases do not introduce a global repair or tolerance. The [native-coordinate geometry audit](research/central-asia-capitals-2026-10-08/astana-national-u-view-3x3-requests.json) and [adapter acceptance](research/central-asia-capitals-2026-10-08/astana-acceptance.json) retain the checks.
+
+An unchunked 80-key FES request returned HTTP 414. Exact reads now split into at most 20 keys per upstream filter under one 15-second deadline and response-byte budget; caller batches of 80 and 74 passed. A source-scoped published Sectigo intermediate completes the omitted server certificate chain, preserving ordinary TLS and hostname verification. The shared verified-HTTPS helper now exposes a bounded standard response stream as well as JSON, so the actual runtime transport exercises the adapter's tighter byte limits.
+
+The first full browser viewport exposed a provider BBOX overfetch: one genuine parcel was 0.883 m outside the requested projected envelope. Its fresh exact-ID geometry matched. The adapter now validates and counts every returned row before locally excluding envelope misses; it does not move boundaries or relax pagination checks. After the fix, the headed browser loaded **25 cells / 386 retained parcels**, selected cadastral number `21320072529`, and panned to **40 cells / 483 retained parcels**. All 40 final gateway requests returned HTTP 200, without source warnings or page errors. The [browser record](research/central-asia-capitals-2026-10-08/browser-check.json) retains the initial failure and successful retest.
+
+| Capital | Recorded result |
+| --- | --- |
+| Astana | Enabled for the public provider's Esil district view. Partial city coverage; ownership and boundary update dates unestablished. |
+| Bishkek | Official public WFS returns native `PROPCODE` and parcel geometry. Published `NAZNACHENI=земельный участок` filters out overlapping premises. In nine cells, 111 parcel polygons include three invalid geometries and 12 positive-area overlap pairs; candidate adapter/tests exist but are not wired into the runtime. |
+| Dushanbe | Official registration service links a public parcel geoportal; its expired HTTPS certificate blocks ordinary verified access. HTTP redirects to the same HTTPS service. |
+| Tashkent | Official sources describe the public NGIS parcel/real-estate geoportal; HTTP and HTTPS requests timed out. |
+| Ashgabat | Official law documents the cadastre and cadastral maps; no anonymous parcel-feature service was found in the checked public sources. |
+
+These are city-source findings, not claims that the other countries lack cadastres. None of the new live sources imports parcel geometry into the database; continuation changes remain uncommitted and undeployed.
+
+## Third India and Africa batch, plus Nairobi — 8 October 2026
+
+The [third batch](research/india-africa-batch3-2026-10-08/index.json) checked Kolkata, Mumbai, Surat, Lucknow, Kanpur, Cairo, Kinshasa, Alexandria, Khartoum and Addis Ababa. **Surat** qualifies locally. The additional **Nairobi** follow-up also qualifies under the user's geometry-reference policy. This regional step brought the catalogue to **113 app entries / 100 executable providers**, before the Astana addition above; changes in this continuation remain uncommitted and undeployed.
+
+Surat uses Gujarat TPVD's final SMC planning plots, with partial scheme coverage and no claim of current title or ownership. Nine aligned cells returned **231 native references**, all reread with matching geometry. Footprint and both source-binding paths passed. A pair of adjacent plots has a **0.239 m² overlap, about 9 mm wide**: the original strict overlap failure and separate precision-sliver assessment are retained, and the source geometry is unchanged. See the [acceptance record](research/india-africa-batch3-2026-10-08/surat-acceptance.json) and [overlap diagnosis](research/india-africa-batch3-2026-10-08/surat-overlap-diagnostic.json).
+
+Nairobi streams anonymous public outlines from the commercial Nairobi Maps publisher. Government lineage, source registry numbers, ownership and update dates remain unverified or unavailable. **Missing published IDs are not a display gate.** The source namespace and canonical polygon coordinates produce a versioned SHA-256 application identity; encoding normalizes ring start, orientation, component order and consecutive duplicate vertices at 1e-7-degree precision. It does not union plots or repair boundaries. The identity carries a deterministic spatial locator so a fresh process can re-read the outline and verify its complete hash. A changed boundary creates a new reference rather than inheriting the old identity.
+
+Nine Nairobi cells contained **1,066 distinct outlines**. Every application identity resolved from a fresh source instance with identical canonical geometry; explicit absence, footprints and source binding also passed. All 1,068 rings were closed, a separate Turf check found no self-intersections, and the sampled pairwise check found no positive overlaps above 0.01 m². This supports the sampled local geometry, not citywide cadastral completeness or legal boundary status. The [quality audit](research/india-africa-batch3-2026-10-08/nairobi-quality-audit.json) and [acceptance](research/india-africa-batch3-2026-10-08/nairobi-acceptance.json) retain the provider responses and limits. Its FAQ describes **25 preview areas per day**, not 25 requests; quotas and incomplete responses remain errors.
+
+Headed-browser checks confirmed source attribution, parcel selection and new-cell panning: Surat grew from **9 cells / 231 retained parcels** to **12 / 433**; Nairobi from **25 / 2,184** to **28 / 2,342**. Nairobi's menu and details show the short `G1-…` application reference and its boundary-change explanation, including at 390 px width. The report renders all 171 regional targets and all five Central Asian capitals, with unavailable population matches left blank. Across these additions, **619 distinct headless tests in 25 files passed**; [final verification](research/india-africa-batch3-2026-10-08/final-verification.json) and [browser checks](research/india-africa-batch3-2026-10-08/browser-check.json) preserve the evidence.
+
+The other nine batch targets have documented technical/access or discovery limits: unavailable official mapping routes in Kolkata and Mumbai; no target-city parcel response from Uttar Pradesh's public selectors; official map production or ordering routes in Cairo and Alexandria; an unavailable Sudanese geoportal; an Addis registration/OTP workflow; and incomplete public geoportal links in Kinshasa. None of these outcomes establishes that the city lacks a cadastre. Earlier evidence is retained and no parcel geometry was imported into the database.
+
+## Next ten India and Africa cities — 8 October 2026
+
+The [next-ten batch](research/india-africa-next10-2026-10-08/index.json) investigated five Indian and five African cities and qualified **Ahmedabad** locally. The catalogue now has **111 app entries / 98 executable providers**; **14 of the 171 regional cohort cities** have configured entries. These changes remain uncommitted and undeployed.
+
+Ahmedabad uses Gujarat TPVD's published **final AMC town-planning plots**, with partial coverage and no claim of current title or ownership. The publisher's `search` reference combines village, scheme and final-plot labels; `gid` and WFS feature IDs are transport fields. Nine aligned 0.005-degree cells yielded **132 native references**, all reread with matching geometry. Explicit absence, footprint reads, complete source binding and the sampled overlap check passed. Six simultaneous cold cells completed in 1.86 seconds; this is a completion check, not a performance benchmark.
+
+The WFS adapter now combines fixed attributes and spatial bounds in one CQL filter and rejects any returned record outside the configured scope. The provider misreports the total on its last partial offset page; that failed probe is retained. Its descriptor requests up to 1,000 records and rejects larger reported totals, preserving strict completeness checks. A source-scoped trusted certificate intermediate completes the server's omitted chain; TLS verification remains enabled.
+
+Headed-browser inspection loaded nine cells with 132 retained features, selected `Sarangpur 18 10`, and panned to twelve complete cells with 221 retained features. All twelve gateway requests returned HTTP 200, with no source warning or uncaught page error. **214 headless tests in 13 files passed.** The [browser evidence](research/india-africa-next10-2026-10-08/browser-check.json) and [native acceptance](research/india-africa-next10-2026-10-08/ahmedabad-acceptance.json) record the separate checks.
+
+| Other targets | Result |
+| --- | --- |
+| Ghatkesar | Official Annojiguda survey geometry: 37 nonblank survey numbers across nine cells. Held because fresh exact native-ID reads timed out and the older provider supports ESRI JSON/AMF only. Three blank-ID road/village boundaries remain an explicit omitted-subset candidate. |
+| Nairobi | Initially held for missing published IDs. The geometry-reference follow-up above now enables the anonymous commercial outlines; government source lineage remains unverified. |
+| Bengaluru, Chennai, Hyderabad | Bengaluru's mapping routes timed out; Chennai's reachable GIS returned administrative layers; Hyderabad's target response was an aggregate GHMC polygon. No target parcel/native-ID pair was verified. |
+| Lagos, Dakar | Lagos returned large duplicate outlines with null lot fields. Dakar's reachable products were topographic or administrative request routes. Neither yielded a verified parcel source. |
+| Dar es Salaam, Antananarivo | The Dar candidate lies about 29 km from the saved point; Antananarivo's PLOF candidate has no IDs and returned no target-centre features. Neither establishes target parcel coverage. |
+
+Earlier failed requests and assessments are preserved. No negative outcome implies citywide absence, and no parcel geometry was imported.
+
+## India and Africa follow-up — 8 October 2026
+
+The follow-up qualifies **three more app entries**, bringing the local catalogue to **110 entries / 97 executable providers**. These continuation changes are uncommitted and undeployed. The [follow-up index](research/india-africa-followup-2026-10-08/index.json) distinguishes the earlier released build from this continuation. The report retains all 171 regional cohort cities and adds one separately identified village; no parcel geometry was imported.
+
+| Entry | Source and verified scope |
+| --- | --- |
+| Mboloko | Council for Geoscience mirror of North West cadastral erven; 588 native `PRCL_KEY` identities. Surveyed/approved records are included; sampled records carry `DATE_STAMP` 2017-10-13. Current registration and citywide completeness are unestablished. |
+| Kochi — Thiruvankulam | Published village 070211, in Thrippunithura Municipality; 229 native parcel UUIDs. Historical Kochi urban-agglomeration association, with village coverage stated. |
+| Iravipuram (Kollam) | Published village 020301; 162 native parcel UUIDs. A separate local entry: the WUP Kollam point is 54.47 km away and its settlement crosswalk remains unresolved. No WUP population or enabled status is transferred. |
+
+The three enabled entries passed **27 aligned viewport cells and 979 fresh exact native-ID reads**, explicit absence, footprint reads and complete source binding. Additional nine-cell audits passed for Kozhikode (280 IDs) and Thiruvananthapuram (456 IDs), but both failed expanded browser checks twice and remain research-only. The existing Venjaramoodu provider also passed its default 0.005-degree cell, fresh ID and binding regression. Kerala descriptors now select explicit published villages; the adapter limits fresh exact lookups to 16 concurrent requests, shared across calls. A failed lookup rejects the entire query and stops queued work. Concurrent session expiry cannot discard a newer session. Deadlines and response limits are unchanged.
+
+Observed cold 80-ID batches for the enabled Kerala villages completed within 12.153 seconds. Host load is recorded; these are completion checks, not an isolated performance benchmark. Iravipuram's initial pan failed during a source cooldown; a fresh load and pan passed. Kozhikode's expanded loads retained 15 then 23 of 25 cells; Thiruvananthapuram retained 27 of 30 after panning, then only 12 of 25 on a fresh load. The saved metadata does not establish the relative contributions of upstream delays and request queueing. An earlier Mboloko profile exceeded 15 seconds before fresh complete checks passed. All failures remain in evidence. Empty, incomplete or failed queries remain errors.
+
+Final verification passed **252 headless tests in 18 files**. Headed-browser inspection confirmed rendered parcel selection, source attribution and new-cell panning for all three enabled entries. The [browser record](research/india-africa-followup-2026-10-08/browser-check.json) preserves the accepted checks and held candidates separately.
+
+Mansa now has verified public geometry, but the wider app grid exposed two disjoint lots with the same `MAN/350` identifier and different survey references. It remains held. New Delhi's 224 repeated `propertyid` groups are all disjoint with matching references, refining the earlier conflicting-geometry assessment; production connectivity and publisher-facing identity remain unresolved. Bihar has three fresh selector/point checks without verified parcel geometry, with 20 conditional targets explicitly unqueried. Abidjan's observed API returns 502. One shared Angola layer's extent excludes eight target centers; these are extent checks, not eight new geometry queries.
+
 ## India and Africa candidate integration — 8 October 2026
 
-Four new app cities are enabled, bringing the catalogue to **107 city entries / 94 executable providers**. The [integration index](research/india-africa-integration-2026-10-08/index.json) records all seven candidates, including failed requests and alternate sources. No parcel geometry was imported.
+The first released integration added four app cities, reaching **107 city entries / 94 executable providers** at that stage. The [integration index](research/india-africa-integration-2026-10-08/index.json) records all seven candidates, including failed requests and alternate sources. No parcel geometry was imported.
 
 | City | Outcome and scope |
 | --- | --- |
@@ -15,8 +89,8 @@ Four new app cities are enabled, bringing the catalogue to **107 city entries / 
 | Cosmo City | Same municipal source; complete native groups around the WUP center. |
 | Ennerdale | Municipal source passed. The GISCOE mirror remains held because repeated native IDs have overlapping boundaries. |
 | Accra | Partial Accra Metro property app on Berry ICT's host. Complete publisher `parcelid` footprint groups, not claimed statutory cadastral identity; official authority unconfirmed. |
-| Mboloko | GISCOE cells are complete and the sampled repeated native key has disjoint parts, but complete exact-ID reads are too slow and full-target acceptance remains incomplete. |
-| New Delhi | Published e-Dharti IDs and their pair have conflicting geometries; the alternate official GIS route timed out. |
+| Mboloko | The first-pass GISCOE route remains held for slow/incomplete native-ID reads. The later CGS source is qualified separately in the follow-up above. |
+| New Delhi | Initially held for repeated-ID geometry. The later component audit above establishes disjoint parts; connectivity and publisher-facing identity remain unresolved. |
 | Pune | Current official map routes time out or redirect-loop; historical WKT samples do not establish current runtime access. |
 
 Acceptance covered **45 viewport cells and 2,064 exact native identities**, with forced small-page reads for the ArcGIS cities, explicit absence, footprint queries and complete proposal binding. Johannesburg's request profile also passed six simultaneous app-sized cells within the unchanged 15-second browser deadline. Earlier smaller-page timeouts are retained.
@@ -74,7 +148,12 @@ information for users, who choose the data they use. Source attribution and term
 visible, and the source-details notice explains the provider and conditions without requiring
 acceptance before loading parcels. This policy applies to every city and country.
 
-Runtime eligibility depends on geometry, native identity and complete bounded/ID reads.
+Runtime eligibility depends on geometry, reproducible source-scoped identity and complete bounded/ID reads.
+Prefer published native identifiers. Where a high-quality outline source omits them, explicitly
+labelled application references may use a versioned canonical-geometry hash. The source namespace
+and canonicalization version are part of the hash; ring start, orientation and component order
+must not change it. An actual boundary change creates a new reference. Such references identify
+geometry versions, not official registry records, ownership or continuing legal parcels.
 Authentication requirements, broken requests and ambiguous parcel identity remain technical
 blockers. Existing failed attempts and earlier licence-based assessments are historical evidence;
 the registry's current `liveIntegration` state follows this technical-only policy. Older batch
@@ -96,7 +175,9 @@ The gateway exposes three provider-independent reads:
 | Proposal footprint | `POST /parcel-sources/:sourceId/under` with `{ "geometry": GeoJSON, "srid": 4326 }` |
 
 Adapters return complete WGS84 Polygon/MultiPolygon FeatureCollections with stable canonical
-`properties.parcelId`, `sourceId` and `sourceParcelId`. Provider fields live under
+`properties.parcelId` and `sourceId`. `sourceParcelId` is the native published key, or explicitly
+null for geometry-derived references. Those references additionally expose `parcelIdentityKind`,
+`sourceGeometryHash` and a short `geometryDisplayId`, while leaving `parcelNumber` null. Provider fields live under
 `sourceProperties`; app consumers do not depend on their names. ID responses explicitly list
 `absentIds`. Pagination is completed before a cell is published, including a further read when
 a full GeoJSON page omits ArcGIS's transfer-limit flag. Limits, timeout, malformed

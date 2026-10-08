@@ -1,0 +1,187 @@
+{
+  "schemaVersion": 1,
+  "kind": "city_parcel_source_research",
+  "checkedAt": "2026-10-08",
+  "cityId": "wup2025:7233",
+  "wupCityCode": 7233,
+  "name": "Surat",
+  "country": "India",
+  "countryCode": "IN",
+  "region": "India",
+  "centerLatLon": [
+    21.1776194957192,
+    72.7789187685758
+  ],
+  "cohorts": [
+    "largest200"
+  ],
+  "largestRank": 53,
+  "population2025": 6908925,
+  "annualGrowthPct2015To2025": 2.055327,
+  "priorEvidenceFiles": [
+    "research/surat.json",
+    "research/india-africa-2026-10-08/india-city-7233.json"
+  ],
+  "inheritedAssessment": {
+    "checkedAt": "2026-10-08",
+    "cohort": "india-africa",
+    "evidenceFile": "research/india-africa-2026-10-08/india-city-7233.json",
+    "resultCategory": "no_verified_open_endpoint_after_attempts",
+    "freshVerifiedSample": false,
+    "technicalBlocker": "Official AnyRoR candidate endpoint timed out in the browser fetch, and native-script search results did not return an official state page; availability and geometry remain unknown.",
+    "nextStep": "Reach AnyRoR through a functioning official browser route, resolve the WUP coordinate to the official village/survey hierarchy, and test whether a public response yields parcel polygon geometry and a stable survey ID."
+  },
+  "status": "verified_sample_partial_coverage",
+  "resultCategory": "verified_sample_partial_coverage",
+  "registryFound": true,
+  "verifiedSample": true,
+  "sourceIdCandidate": "in-gj-tpvd-surat-final-plots",
+  "operator": "Government of Gujarat, Town Planning and Valuation Department (TPVD)",
+  "source": {
+    "sourceIdCandidate": "in-gj-tpvd-surat-final-plots",
+    "operator": "Government of Gujarat, Town Planning and Valuation Department (TPVD)",
+    "endpoint": "https://tpvd.openprp.in/geoserver/ows",
+    "featureType": "ctp:final_plot_boundary",
+    "protocol": "OGC WFS 1.1.0 GeoJSON",
+    "geometryField": "the_geom",
+    "responseCRS": "EPSG:4326 per response",
+    "officialProvenance": [
+      "https://townplanning.gujarat.gov.in/Home",
+      "https://tpvd.openprp.in/pro/main/modules/role_public/map/index.php",
+      "https://tpvd.openprp.in/ctpvd/index.html"
+    ],
+    "scope": "Accepted public final TPVD planning plots for Surat Municipal Corporation (SMC), bounded partial samples only. Not citywide completeness, title, ownership, or current registration evidence.",
+    "rawSample": "/private/tmp/india-batch3-tpvd-surat-umra-north-5-37.json",
+    "sourceId": "in-gj-tpvd-surat-final-plots"
+  },
+  "nativeIdentity": {
+    "field": "search",
+    "publisherReference": "Umra_North 5 37",
+    "displayNumberField": "fp_no",
+    "components": {
+      "village": "Umra_North",
+      "tps_no": "5",
+      "fp_no": "37",
+      "tps_id": 16
+    },
+    "transportOnlyFields": [
+      "gid",
+      "WFS feature.id"
+    ],
+    "identityAssessment": "Exact anonymous CQL lookup returned one feature with the same polygon schema. Treat search as publisher lookup label/composite reference; no formal permanence guarantee or title/current-registration semantics asserted."
+  },
+  "coverageAssessment": {
+    "verifiedOpenScope": "One exact TPVD final-plot reference in Umra_North TPS 5, city Surat, authority SMC; bounded nearby 0.01° cell had 21 features.",
+    "exactWupPointParcelSample": false,
+    "citywideVerified": false,
+    "countrywideVerified": false,
+    "sourceCurrentness": null,
+    "ownershipAvailable": false
+  },
+  "freshResearch": {
+    "queries": [
+      {
+        "language": "Gujarati",
+        "query": "સુરત જમીન રેકોર્ડ સર્વે પ્લોટ નકશો ટીપી સ્કીમ TPVD Surat official",
+        "actualResultUrls": [
+          "https://townplanning.gujarat.gov.in/Home",
+          "https://tpvd.openprp.in/pro/main/modules/role_public/map/index.php",
+          "https://tpvd.openprp.in/ctpvd/index.html"
+        ],
+        "result": "Native-script search surfaced the official Gujarat TPVD department and its public TPWebGIS. Bounded WFS probes below verified a Surat SMC final-plot sample."
+      },
+      {
+        "language": "Gujarati",
+        "query": "સુરત જમીન રેકોર્ડ સર્વે પ્લોટ નકશો TPVD સુરત મહાનગરપાલિકા official",
+        "actualResultUrls": [
+          "https://tpvd.openprp.in/geoserver/ows"
+        ],
+        "result": "The official public WFS feature query is recorded below; no AnyRoR parcel geometry was tested in this fresh pass."
+      }
+    ],
+    "requests": [
+      {
+        "method": "GET",
+        "url": "https://tpvd.openprp.in/geoserver/ows?service=WFS&version=1.1.0&request=GetFeature&typeName=ctp%3Afinal_plot_boundary&outputFormat=application%2Fjson&srsName=CRS%3A84&propertyName=the_geom%2Cfp_no%2Ctps_no%2Ctps_name%2Ctps_id%2Cvillage%2Ccity%2Cauthority%2Cdistrict%2Cstatus%2Csearch&maxFeatures=5&cql_filter=status%3D%27Final%27+AND+city%3D%27Surat%27+AND+BBOX%28the_geom%2C72.7739187685758%2C21.1726194957192%2C72.7839187685758%2C21.1826194957192%2C%27CRS%3A84%27%29",
+        "status": "HTTP 200",
+        "totalFeatures": 21,
+        "returnedFeatures": 5,
+        "observation": "1-km-class cell; totalFeatures=21; bounded page returned 5; sample includes city=Surat, authority=SMC, status=Final, village=Umra_North, TPS 5."
+      },
+      {
+        "method": "GET",
+        "url": "https://tpvd.openprp.in/geoserver/ows?service=WFS&version=1.1.0&request=GetFeature&typeName=ctp%3Afinal_plot_boundary&outputFormat=application%2Fjson&srsName=CRS%3A84&propertyName=the_geom%2Cfp_no%2Ctps_no%2Ctps_name%2Ctps_id%2Cvillage%2Ccity%2Cauthority%2Cdistrict%2Cstatus%2Csearch&maxFeatures=5&cql_filter=status%3D%27Final%27+AND+city%3D%27Surat%27+AND+authority%3D%27SMC%27+AND+BBOX%28the_geom%2C72.7779187685758%2C21.1766194957192%2C72.7799187685758%2C21.1786194957192%2C%27CRS%3A84%27%29",
+        "status": "HTTP 200",
+        "totalFeatures": 0,
+        "returnedFeatures": 0,
+        "observation": "Exact 0.002° box centered on saved WUP point; totalFeatures=0."
+      },
+      {
+        "method": "GET",
+        "url": "https://tpvd.openprp.in/geoserver/ows?service=WFS&version=1.1.0&request=GetFeature&typeName=ctp%3Afinal_plot_boundary&outputFormat=application%2Fjson&srsName=CRS%3A84&propertyName=the_geom%2Cfp_no%2Ctps_no%2Ctps_name%2Ctps_id%2Cvillage%2Ccity%2Cauthority%2Cdistrict%2Cstatus%2Csearch&maxFeatures=5&cql_filter=status%3D%27Final%27+AND+city%3D%27Surat%27+AND+authority%3D%27SMC%27+AND+search%3D%27Umra_North+5+37%27",
+        "status": "HTTP 200",
+        "totalFeatures": 1,
+        "returnedFeatures": 1,
+        "observation": "Exact publisher search reference; one MultiPolygon feature. Its closed 77-vertex exterior ring has bbox [72.78007486806726,21.173703794926862,72.78176677842092,21.174621177695013] in lon/lat and centroid [72.78092615417103,21.174179236185818]. The polygon is ~430m southeast of WUP point."
+      }
+    ],
+    "sources": [
+      "https://townplanning.gujarat.gov.in/Home",
+      "https://tpvd.openprp.in/pro/main/modules/role_public/map/index.php",
+      "https://tpvd.openprp.in/ctpvd/index.html"
+    ]
+  },
+  "technicalFindings": {
+    "fixedFilters": {
+      "status": "Final",
+      "city": "Surat",
+      "authority": "SMC"
+    },
+    "bboxCRS": "CRS:84",
+    "exactWupBboxTotal": 0,
+    "nearbyCellTotal": 21,
+    "samplePolygon": {
+      "geometryType": "MultiPolygon",
+      "polygonCount": 1,
+      "exteriorRingVertexCount": 77,
+      "exteriorRingClosed": true,
+      "bboxLonLat": [
+        72.78007486806726,
+        21.173703794926862,
+        72.78176677842092,
+        21.174621177695013
+      ],
+      "centroidLonLat": [
+        72.78092615417103,
+        21.174179236185818
+      ],
+      "distanceFromWupMApprox": 430
+    },
+    "transportIdNotCanonical": true,
+    "termsHandling": "Informational; no license/terms gate applied."
+  },
+  "technicalBlocker": null,
+  "nextStep": "Surat SMC final-plot use is accepted and enabled for the bounded sampled coverage. Keep scope limited to final TPVD planning plots; the exact WUP-point cell returned no parcel, citywide completeness is unverified, and plots do not establish current title or ownership.",
+  "termsHandling": "Informational only; no terms or licence gate applied.",
+  "runtimeReadiness": "enabled",
+  "sampleSummary": {
+    "path": "/private/tmp/india-batch3-tpvd-surat-umra-north-5-37.json",
+    "publisherSearch": "Umra_North 5 37",
+    "bboxLonLat": [
+      72.78007486806726,
+      21.173703794926862,
+      72.78176677842092,
+      21.174621177695013
+    ],
+    "centroidLonLat": [
+      72.78092615417103,
+      21.174179236185818
+    ]
+  },
+  "acceptanceFile": "research/india-africa-batch3-2026-10-08/surat-acceptance.json",
+  "remainingLimitations": [
+    "The exact WUP-centered 0.002° cell returned no parcel; the accepted sample is nearby in Umra_North TPS 5.",
+    "Citywide completeness and current registration/title semantics are unverified.",
+    "One documented 0.239 m² (~9 mm minimum width) boundary sliver was retained unchanged."
+  ]
+}

@@ -62,13 +62,15 @@
     "The supplied normalized JSON lacks WUP city-level 0–3 quality flags; those remain null. The existing 2025 plausibility label is retained separately when present.",
     "Further Wikidata queries were left off after the public SPARQL endpoint began rate-limiting to 1 request/min; only three verified returned GeoNames sitelinks are retained.",
     "Coalesced app-only Washington into canonical Washington, D.C. after same-country name alias and 2.78 km center check; retained app source ID and source coordinates on canonical row.",
-    "Wikipedia links are included only when the linked article is about the candidate city/town/municipality; broader administrative-area pages are rejected. A focused manual scope audit on 2026-10-07 corrected Nandail and Golapganj, removed unsupported Lakhai and Bahubal links, and added verified settlement pages in English, Bengali, and Chinese. The original API-derived links and rejected evidence are retained in wikipediaEvidence where reviewed."
+    "Wikipedia links are included only when the linked article is about the candidate city/town/municipality; broader administrative-area pages are rejected. A focused manual scope audit on 2026-10-07 corrected Nandail and Golapganj, removed unsupported Lakhai and Bahubal links, and added verified settlement pages in English, Bengali, and Chinese. The original API-derived links and rejected evidence are retained in wikipediaEvidence where reviewed.",
+    "The October 8 follow-up adds one distinct Iravipuram village row without transferring population or configured status from the distant WUP Kollam point. Other enrichment-run counters retain their original snapshot meaning.",
+    "The October 8 Central Asia capitals integration adds four non-WUP capital rows with no transferred population values. Astana has an accepted app entry scoped to Esil district 254; Bishkek has a verified partial official geometry sample held from runtime pending local geometry QA. Dushanbe and Ashgabat document official registry/portal existence without public parcel geometry."
   ],
   "counts": {
     "registryRows": 273,
     "largestQueueRows": 200,
     "growthQueueRows": 200,
-    "liveCityRows": 103,
+    "liveCityRows": 114,
     "uniqueWupMatchedCandidates": 431,
     "unmatchedSourceRows": 29,
     "unmatchedDuplicateRowsMerged": 28,
@@ -79,14 +81,14 @@
     "allCandidatesVerifiedWikipedia": 282,
     "registryGeonamesArticleSitelinks": 3,
     "wikidataBatchFailures": 0,
-    "uniqueRegistryIdsInOutput": 273,
+    "uniqueRegistryIdsInOutput": 281,
     "wikipediaPreexistingLinksPreserved": 3,
     "wikipediaLinksAddedByMediaWikiApi": 123,
     "wikipediaLinksTotal": 282,
     "wikipediaApiBatchesSucceeded": 21,
     "wikipediaApiBatchesFailed": 0,
     "sameCityAliasRowsMerged": 1,
-    "distinctCandidateRows": 460
+    "distinctCandidateRows": 465
   },
   "cities": [
     {
@@ -3597,7 +3599,9 @@
       "registryCityIds": [
         "wup2025:6408"
       ],
-      "appCityIds": [],
+      "appCityIds": [
+        "ahmedabad"
+      ],
       "wupCityCode": 6408,
       "cohorts": [
         "largest200",
@@ -4326,11 +4330,14 @@
       "registryCityIds": [
         "wup2025:7233"
       ],
-      "appCityIds": [],
+      "appCityIds": [
+        "surat"
+      ],
       "wupCityCode": 7233,
       "cohorts": [
         "largest200",
-        "registry"
+        "registry",
+        "app"
       ],
       "population2015": 5625340,
       "population2025": 6908925,
@@ -5271,11 +5278,14 @@
       "registryCityIds": [
         "wup2025:2033"
       ],
-      "appCityIds": [],
+      "appCityIds": [
+        "nairobi"
+      ],
       "wupCityCode": 2033,
       "cohorts": [
         "largest200",
-        "registry"
+        "registry",
+        "app"
       ],
       "population2015": 4674237,
       "population2025": 6134334,
@@ -6486,7 +6496,9 @@
       "registryCityIds": [
         "wup2025:9765"
       ],
-      "appCityIds": [],
+      "appCityIds": [
+        "kochi"
+      ],
       "wupCityCode": 9765,
       "cohorts": [
         "largest200",
@@ -18867,11 +18879,16 @@
       "countryCode": "ZA",
       "latitude": -25.4662366387406,
       "longitude": 27.8447650141456,
-      "registryCityIds": [],
-      "appCityIds": [],
+      "registryCityIds": [
+        "wup2025:4033"
+      ],
+      "appCityIds": [
+        "mboloko"
+      ],
       "wupCityCode": 4033,
       "cohorts": [
-        "growth200"
+        "growth200",
+        "registry"
       ],
       "population2015": 51045,
       "population2025": 102374,
@@ -30833,6 +30850,198 @@
         }
       ],
       "wikipediaLookupStatus": "attempted_no_verified_article"
+    },
+    {
+      "id": "village:IN-KL-020301",
+      "name": "Iravipuram (Kollam)",
+      "countryCode": "IN",
+      "latitude": 8.847550832774829,
+      "longitude": 76.62751009273858,
+      "registryCityIds": [
+        "village:IN-KL-020301"
+      ],
+      "appCityIds": [
+        "iravipuram"
+      ],
+      "cohorts": [
+        "configured",
+        "local-village-source"
+      ],
+      "wupCityCode": null,
+      "wupName": null,
+      "population2015": null,
+      "population2025": null,
+      "annualGrowthPct2015To2025": null,
+      "populationPlausibility2025": null,
+      "populationMatch": null,
+      "wikipediaUrl": null,
+      "wikipediaEvidence": null,
+      "wikipediaLookupStatus": "not_attempted",
+      "sourceNames": [
+        {
+          "source": "public_cadastral_village",
+          "name": "Iravipuram",
+          "countryCode": "IN",
+          "coordinates": {
+            "lat": 8.847550832774829,
+            "lon": 76.62751009273858
+          },
+          "matchConfidence": "high",
+          "matchBasis": "explicit_published_village_code_020301"
+        }
+      ]
+    },
+    {
+      "id": "capital:TJ:dushanbe",
+      "name": "Dushanbe",
+      "countryCode": "TJ",
+      "latitude": 38.5598,
+      "longitude": 68.787,
+      "registryCityIds": [
+        "capital:TJ:dushanbe"
+      ],
+      "appCityIds": [],
+      "cohorts": [
+        "capital-research",
+        "official-registry-documented"
+      ],
+      "wupCityCode": null,
+      "wupName": null,
+      "population2015": null,
+      "population2025": null,
+      "annualGrowthPct2015To2025": null,
+      "populationPlausibility2025": null,
+      "populationMatch": null,
+      "wikipediaUrl": null,
+      "wikipediaEvidence": null,
+      "wikipediaLookupStatus": "not_attempted",
+      "sourceNames": [
+        {
+          "source": "official_registry_or_portal",
+          "name": "Tajikistan State Geoportal, public portal lead unavailable",
+          "countryCode": "TJ",
+          "coordinates": {
+            "lat": 38.5598,
+            "lon": 68.787
+          }
+        }
+      ]
+    },
+    {
+      "id": "capital:KZ:astana",
+      "name": "Astana",
+      "countryCode": "KZ",
+      "latitude": 51.1282,
+      "longitude": 71.4304,
+      "registryCityIds": [
+        "capital:KZ:astana"
+      ],
+      "appCityIds": [
+        "astana"
+      ],
+      "cohorts": [
+        "capital-research",
+        "app",
+        "official-parcel-source"
+      ],
+      "wupCityCode": null,
+      "wupName": null,
+      "population2015": null,
+      "population2025": null,
+      "annualGrowthPct2015To2025": null,
+      "populationPlausibility2025": null,
+      "populationMatch": null,
+      "wikipediaUrl": null,
+      "wikipediaEvidence": null,
+      "wikipediaLookupStatus": "not_attempted",
+      "sourceNames": [
+        {
+          "source": "official_public_cadastre",
+          "name": "Kazakhstan National Public Cadastral Map (PKK/EGKN), Esil district 254",
+          "countryCode": "KZ",
+          "coordinates": {
+            "lat": 51.1282,
+            "lon": 71.4304
+          },
+          "matchConfidence": "official_sample",
+          "matchBasis": "accepted bounded 9-cell Esil district sample; not citywide"
+        }
+      ]
+    },
+    {
+      "id": "capital:KG:bishkek",
+      "name": "Bishkek",
+      "countryCode": "KG",
+      "latitude": 42.8746,
+      "longitude": 74.5698,
+      "registryCityIds": [
+        "capital:KG:bishkek"
+      ],
+      "appCityIds": [],
+      "cohorts": [
+        "capital-research",
+        "public-parcel-sample",
+        "quality-held"
+      ],
+      "wupCityCode": null,
+      "wupName": null,
+      "population2015": null,
+      "population2025": null,
+      "annualGrowthPct2015To2025": null,
+      "populationPlausibility2025": null,
+      "populationMatch": null,
+      "wikipediaUrl": null,
+      "wikipediaEvidence": null,
+      "wikipediaLookupStatus": "not_attempted",
+      "sourceNames": [
+        {
+          "source": "official_public_cadastre_candidate",
+          "name": "Kyrgyz Republic public cadastre map, bounded land-plot sample",
+          "countryCode": "KG",
+          "coordinates": {
+            "lat": 42.8746,
+            "lon": 74.5698
+          },
+          "matchConfidence": "official_sample_quality_held",
+          "matchBasis": "bounded anonymous 3x3 land-plot sample; 3 invalid geometries and 12 positive-area overlaps"
+        }
+      ]
+    },
+    {
+      "id": "capital:TM:ashgabat",
+      "name": "Ashgabat",
+      "countryCode": "TM",
+      "latitude": 37.9601,
+      "longitude": 58.3261,
+      "registryCityIds": [
+        "capital:TM:ashgabat"
+      ],
+      "appCityIds": [],
+      "cohorts": [
+        "capital-research",
+        "official-registry-documented"
+      ],
+      "wupCityCode": null,
+      "wupName": null,
+      "population2015": null,
+      "population2025": null,
+      "annualGrowthPct2015To2025": null,
+      "populationPlausibility2025": null,
+      "populationMatch": null,
+      "wikipediaUrl": null,
+      "wikipediaEvidence": null,
+      "wikipediaLookupStatus": "not_attempted",
+      "sourceNames": [
+        {
+          "source": "official_registry_or_portal",
+          "name": "Turkmenistan State Land Cadastre, official law",
+          "countryCode": "TM",
+          "coordinates": {
+            "lat": 37.9601,
+            "lon": 58.3261
+          }
+        }
+      ]
     }
   ],
   "wikipediaLookupErrors": [

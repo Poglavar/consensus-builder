@@ -1,0 +1,144 @@
+{
+  "purpose": "Summarizes final headless and manual-browser verification for the third regional batch, Nairobi identity support and Central Asian capitals.",
+  "verifiedAt": "2026-10-08T06:53:01.289047Z",
+  "status": "passed",
+  "headless": {
+    "uniqueAssertions": 619,
+    "files": 25,
+    "allLatestResultsPassed": true,
+    "deduplication": "Latest result per repo-relative test filename and full assertion name.",
+    "testFiles": [
+      {
+        "file": "backend/test/ahmedabad-city-config.test.js",
+        "passed": 3
+      },
+      {
+        "file": "backend/test/astana-city-config.test.js",
+        "passed": 2
+      },
+      {
+        "file": "backend/test/bishkek-source.test.js",
+        "passed": 9
+      },
+      {
+        "file": "backend/test/frontend-ground-menu.test.js",
+        "passed": 11
+      },
+      {
+        "file": "backend/test/frontend-parcel-menu.test.js",
+        "passed": 24
+      },
+      {
+        "file": "backend/test/frontend-world-coverage.test.js",
+        "passed": 48
+      },
+      {
+        "file": "backend/test/geometry-derived-parcel-reference.test.js",
+        "passed": 4
+      },
+      {
+        "file": "backend/test/geometry-identity.test.js",
+        "passed": 6
+      },
+      {
+        "file": "backend/test/growth-cohort-live-parcel-sources.test.js",
+        "passed": 3
+      },
+      {
+        "file": "backend/test/https-json-fetch.test.js",
+        "passed": 7
+      },
+      {
+        "file": "backend/test/kazakhstan-pkk-source.test.js",
+        "passed": 12
+      },
+      {
+        "file": "backend/test/live-source-binding-wiring.test.js",
+        "passed": 5
+      },
+      {
+        "file": "backend/test/nairobi-city-config.test.js",
+        "passed": 2
+      },
+      {
+        "file": "backend/test/nairobi-outline-source.test.js",
+        "passed": 17
+      },
+      {
+        "file": "backend/test/parcel-coverage-report.test.js",
+        "passed": 9
+      },
+      {
+        "file": "backend/test/parcel-identity-opacity.test.js",
+        "passed": 365
+      },
+      {
+        "file": "backend/test/parcel-report-evidence.test.js",
+        "passed": 10
+      },
+      {
+        "file": "backend/test/parcel-source-binding.test.js",
+        "passed": 11
+      },
+      {
+        "file": "backend/test/parcel-source-city-metric.test.js",
+        "passed": 2
+      },
+      {
+        "file": "backend/test/parcel-source-notice.test.js",
+        "passed": 7
+      },
+      {
+        "file": "backend/test/parcel-source-route.test.js",
+        "passed": 7
+      },
+      {
+        "file": "backend/test/shared-live-parcel-sources.test.js",
+        "passed": 7
+      },
+      {
+        "file": "backend/test/surat-city-config.test.js",
+        "passed": 2
+      },
+      {
+        "file": "backend/test/wfs-parcel-adapter.test.js",
+        "passed": 38
+      },
+      {
+        "file": "backend/test/world-coverage-build.test.js",
+        "passed": 8
+      }
+    ],
+    "earlierFailures": "HTTP route tests initially could not bind under sandbox restrictions; authorized local-listener rerun passed. World coverage initially used a stale generated artifact; regenerated --run and affected tests passed."
+  },
+  "localCatalog": {
+    "configuredAppCities": 114,
+    "executableProviders": 101,
+    "providerCatalogCityIds": 113,
+    "existingAppOutsideGatewayCatalog": [
+      "belgrade"
+    ]
+  },
+  "browserEvidence": [
+    "research/india-africa-batch3-2026-10-08/browser-check.json",
+    "research/central-asia-capitals-2026-10-08/browser-check.json"
+  ],
+  "newEnabledEntries": [
+    "surat",
+    "nairobi",
+    "astana"
+  ],
+  "releaseState": "Local, uncommitted and undeployed; no parcel geometry imported into the database.",
+  "finalChecks": {
+    "jsonFilesParsed": 46,
+    "javascriptSyntaxPassed": true,
+    "gitDiffCheckPassed": true,
+    "suratAfterSharedTransportChange": {
+      "parcelId": "IN-GJ-SURAT-Umra_North 5 37",
+      "complete": true,
+      "featureCount": 1
+    },
+    "previewCacheControl": "no-store, must-revalidate",
+    "bishkekReportBasisUpdated": "Verified sample and explicit runtime geometry hold, linked to the nine-cell geometry audit. Both affected report files passed 19 tests after regeneration."
+  }
+}

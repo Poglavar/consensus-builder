@@ -1,0 +1,18 @@
+{
+  "purpose": "Links shared final verification and the Central Asian capital browser record.",
+  "verifiedAt": "2026-10-08T06:53:01.289047Z",
+  "status": "passed",
+  "sharedVerification": "research/india-africa-batch3-2026-10-08/final-verification.json",
+  "browserEvidence": "research/central-asia-capitals-2026-10-08/browser-check.json",
+  "runtimeEnabled": [
+    "astana"
+  ],
+  "runtimeGeometryHeld": [
+    "bishkek"
+  ],
+  "noVerifiedPublicGeometry": [
+    "dushanbe",
+    "tashkent",
+    "ashgabat"
+  ]
+}

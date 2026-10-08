@@ -1,0 +1,100 @@
+{
+  "schemaVersion": 1,
+  "kind": "city_parcel_source_research",
+  "checkedAt": "2026-10-08",
+  "cityId": "wup2025:11821",
+  "wupCityCode": 11821,
+  "name": "Kolkata",
+  "country": "India",
+  "countryCode": "IN",
+  "region": "India",
+  "centerLatLon": [
+    22.5859710859864,
+    88.3536574635294
+  ],
+  "cohorts": [
+    "largest200"
+  ],
+  "largestRank": 9,
+  "population2025": 22549738,
+  "annualGrowthPct2015To2025": 0.572688,
+  "priorEvidenceFiles": [
+    "research/kolkata.json",
+    "research/india-africa-2026-10-08/india-city-11821.json"
+  ],
+  "inheritedAssessment": {
+    "checkedAt": "2026-10-08",
+    "cohort": "india-africa",
+    "evidenceFile": "research/india-africa-2026-10-08/india-city-11821.json",
+    "resultCategory": "no_verified_sample_candidate_citywide",
+    "freshVerifiedSample": false,
+    "technicalBlocker": "No public, unauthenticated parcel geometry/sample verified in this pass. Banglarbhumi host direct fetch timed out; official WBUDMA service is OTP based and describes record lookup, without public parcel geometry confirmed.",
+    "nextStep": "Find a reachable official cadastral map route for the WUP point, confirm its mouza, then verify a plot boundary/map sheet with stable plot identity. Search and shared WB urban-service leads do not establish parcel geometry."
+  },
+  "status": "no_verified_sample_candidate_citywide",
+  "resultCategory": "no_verified_sample_candidate_citywide",
+  "registryFound": false,
+  "verifiedSample": false,
+  "sourceIdCandidate": null,
+  "operator": null,
+  "source": null,
+  "nativeIdentity": null,
+  "coverageAssessment": {
+    "verifiedOpenScope": null,
+    "exactWupPointParcelSample": false,
+    "citywideVerified": false,
+    "countrywideVerified": false
+  },
+  "freshResearch": {
+    "queries": [
+      {
+        "language": "Bengali",
+        "query": "কলকাতা জমির মৌজা মানচিত্র খতিয়ান দাগ পশ্চিমবঙ্গ Banglarbhumi",
+        "actualResultUrls": [
+          "https://banglarbhumi.gov.in/",
+          "https://banglarbhumi.gov.in/BanglarBhumi/KnowYourProperty.action"
+        ],
+        "result": "Official West Bengal portal search result exposes Plot Map Request, Mouza Map Request and Mouza Map Availability Details. The same portal says to log in for Citizen Services. The Kolkata-specific result search did not yield a parcel polygon; direct page retrieval timed out/502 and the KnowYourProperty route rendered Invalid Operation / HTTP Header Method Change in indexed output."
+      },
+      {
+        "language": "Bengali",
+        "query": "কলকাতা জমির মৌজা মানচিত্র খতিয়ান দাগ পশ্চিমবঙ্গ",
+        "actualResultUrls": [
+          "https://udma.wb.gov.in/page/cms/know_your_property_procedure_a353e3"
+        ],
+        "result": "The earlier native-language search result was a shared WB urban record procedure page; this is not city-specific geometry."
+      }
+    ],
+    "requests": [
+      {
+        "method": "GET",
+        "url": "https://banglarbhumi.gov.in/",
+        "status": "timeout (web fetch HTTP 400)",
+        "observation": "Official search result is indexed and shows citizen service/map requests; direct fetch from this client timed out."
+      },
+      {
+        "method": "GET",
+        "url": "https://banglarbhumi.gov.in/BanglarBhumi/",
+        "status": "502 Bad Gateway (web fetch)",
+        "observation": "Portal unavailable through the fetch client; not evidence that parcel data do not exist."
+      },
+      {
+        "method": "GET",
+        "url": "https://banglarbhumi.gov.in/BanglarBhumi/KnowYourProperty.action",
+        "status": "timeout/invalid operation in fetch/indexed output",
+        "observation": "No parcel or map response obtained."
+      }
+    ],
+    "sources": [
+      "https://banglarbhumi.gov.in/",
+      "https://banglarbhumi.gov.in/BanglarBhumi/KnowYourProperty.action"
+    ]
+  },
+  "technicalFindings": {
+    "termsHandling": "Informational; no license/terms gate applied."
+  },
+  "technicalBlocker": "No public parcel polygon was obtained. The official West Bengal portal currently indexes Plot Map Request and Mouza Map Request but describes login for Citizen Services; direct page fetch timed out/502 or returned Invalid Operation. Kolkata mouza match and open geometry remain unverified.",
+  "nextStep": "Find a reachable official cadastral map route for the WUP point, confirm its mouza, then verify a plot boundary/map sheet with stable plot identity. Search and shared WB urban-service leads do not establish parcel geometry.",
+  "termsHandling": "Informational only; no terms or licence gate applied.",
+  "runtimeReadiness": "not_enabled"
+}

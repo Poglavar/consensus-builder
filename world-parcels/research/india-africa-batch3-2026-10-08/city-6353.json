@@ -1,0 +1,166 @@
+{
+  "schemaVersion": 1,
+  "kind": "city_parcel_source_research",
+  "cityId": "wup2025:6353",
+  "wupCityCode": 6353,
+  "name": "Ādīs Ᾱbeba (Addis Ababa)",
+  "country": "Ethiopia",
+  "countryCode": "ET",
+  "centerLatLon": [
+    9.00714292574818,
+    38.7489828471342
+  ],
+  "population2025": 6705705,
+  "checkedAt": "2026-10-08",
+  "resultCategory": "official_cadastre_account_or_service_access_no_geometry",
+  "priorEvidence": [
+    {
+      "path": "research/addis-ababa.json",
+      "status": null
+    },
+    {
+      "path": "research/retry/cities/addis-ababa.json",
+      "status": null
+    },
+    {
+      "path": "research/india-africa-2026-10-08/africa-ne-city-d-s-beba-addis-ababa.json",
+      "status": "public_service_no_geometry"
+    }
+  ],
+  "priorBlocker": "No anonymous Ādīs Ᾱbeba (Addis Ababa) parcel feature layer or stable parcel IDs were verified; the national land system is an account-oriented service and public catalog results were not a target-city parcel sample.",
+  "nativeLanguageSearches": [
+    {
+      "languageScript": "Amharic",
+      "exactQuery": "አዲስ አበባ የመሬት ካዳስተር የመሬት ፓርሴል ካርታ GIS",
+      "date": "2026-10-08",
+      "executionMethod": "web.run search_query; response_length=long",
+      "resultUrls": [
+        "https://eland.addiscadaster.gov.et/",
+        "https://addiscadaster.gov.et/",
+        "https://ethionsdi.gov.et/",
+        "https://www.geoportal.gov.et/"
+      ],
+      "summary": "Found the Addis Ababa City Administration Landholding Registration and Information Agency e-Land cadastre, which advertises parcel mapping and map-based query. Public registration requires phone, name, password and OTP; no anonymous parcel endpoint/sample was exposed. Ethio-NSDI and geoportal hosts did not return usable target-city geometry."
+    },
+    {
+      "languageScript": "Amharic",
+      "exactQuery": "አዲስ አበባ መሬት ምዝገባ ፓርሴል ካርታ የመሬት ልማት",
+      "date": "2026-10-08",
+      "executionMethod": "web.run search_query; response_length=long",
+      "resultUrls": [
+        "https://eland.addiscadaster.gov.et/",
+        "https://addiscadaster.gov.et/",
+        "https://www.aapdb.gov.et/"
+      ],
+      "summary": "Confirmed the city landholding agency, e-Land portal and city planning bureau. No additional open parcel layer found."
+    },
+    {
+      "languageScript": "English cross-check",
+      "exactQuery": "site:eland.addiscadaster.gov.et Addis e-Land map parcel query login",
+      "date": "2026-10-08",
+      "executionMethod": "web.run search_query; response_length=long",
+      "resultUrls": [
+        "https://eland.addiscadaster.gov.et/",
+        "https://eland.addiscadaster.gov.et/registration"
+      ],
+      "summary": "Portal advertises map-based parcel query; registration instructions require OTP verification before login."
+    },
+    {
+      "languageScript": "Amharic indexed search follow-up",
+      "exactQuery": "Addis Ababa City Land Holding Registration and Information Agency e-Land parcel map registration OTP",
+      "date": "2026-10-08",
+      "executionMethod": "web.run search_query; response_length=medium",
+      "resultUrls": [
+        "https://eland.addiscadaster.gov.et/",
+        "https://eland.addiscadaster.gov.et/registration",
+        "https://addiscadaster.gov.et/services"
+      ],
+      "summary": "Official agency portal says e-Land provides parcel mapping/map-based queries. Registration requires name, phone, password and OTP; agency information-dissemination services require an application and identity documents. No anonymous feature endpoint appeared."
+    }
+  ],
+  "officialAndRelevantLeads": [
+    {
+      "url": "https://eland.addiscadaster.gov.et/",
+      "operator": "Addis Ababa City Administration Landholding Registration and Information Agency",
+      "observation": "Official online cadastre service describes GIS parcel/building/condominium mapping and map-based query. The system also handles ownership and applications, so its service description alone does not make feature geometry public."
+    },
+    {
+      "url": "https://eland.addiscadaster.gov.et/registration",
+      "operator": "Addis Ababa City Administration Landholding Registration and Information Agency",
+      "observation": "Public signup page requests a valid phone number, full name and OTP verification before a user can log in. No account was created and no login-gated data was accessed."
+    },
+    {
+      "url": "https://addiscadaster.gov.et/",
+      "operator": "Addis Ababa City Administration Landholding Registration and Information Agency",
+      "observation": "Official agency site lists landholding information dissemination and property-registration services that require an application form and identity documents; supports the conclusion that online service delivery is request/account-oriented."
+    },
+    {
+      "url": "https://ethionsdi.gov.et/",
+      "operator": "Ethiopian National Spatial Data Infrastructure / Space Science and Geospatial Institute",
+      "observation": "Portal describes public/authorized data sharing and WMS/WFS support, but this search pass could not load the site and found no Addis cadastral feature layer."
+    },
+    {
+      "url": "https://addiscadaster.gov.et/services",
+      "operator": "Addis Ababa City Administration Landholding Registration and Information Agency",
+      "observation": "Agency service catalogue lists land/landholding information dissemination as an application service requiring identification documents. This corroborates a request-oriented official route, not an anonymous feature feed."
+    }
+  ],
+  "requestsAndEndpointChecks": [
+    {
+      "url": "https://eland.addiscadaster.gov.et/",
+      "method": "GET",
+      "httpStatus": "search indexed; direct open returned no parsed content",
+      "contentType": "HTML (indexed)",
+      "assessment": "Portal describes city cadastre and map-based queries, but no anonymous layer endpoint was exposed."
+    },
+    {
+      "url": "https://eland.addiscadaster.gov.et/registration",
+      "method": "GET",
+      "httpStatus": "accessible (search indexed; web open returned zero parsed lines)",
+      "contentType": "HTML (indexed)",
+      "assessment": "Registration flow requires a valid phone, name and OTP before login; no registration initiated."
+    },
+    {
+      "url": "https://addiscadaster.gov.et/",
+      "method": "GET",
+      "httpStatus": "accessible (web open)",
+      "contentType": "HTML",
+      "assessment": "Official agency service descriptions; identity documents/application form, not parcel features."
+    },
+    {
+      "url": "https://ethionsdi.gov.et/",
+      "method": "GET",
+      "httpStatus": "timeout via web open",
+      "contentType": null,
+      "assessment": "NSDI host timed out; no data layer tested. The 2026-09-29 retry record already noted upstream unavailability."
+    },
+    {
+      "url": "https://www.geoportal.gov.et/",
+      "method": "GET",
+      "httpStatus": "unavailable via web open",
+      "contentType": null,
+      "assessment": "No public catalog or parcel geometry could be inspected."
+    },
+    {
+      "url": "https://eland.addiscadaster.gov.et/registration",
+      "method": "GET",
+      "httpStatus": "search-indexed; web open returned indexed text",
+      "contentType": "HTML",
+      "assessment": "Registration requires full name, phone and OTP; no account or login-only information accessed."
+    }
+  ],
+  "verifiedParcelResponse": null,
+  "source": null,
+  "registryFound": null,
+  "verifiedSample": false,
+  "targetGeometryEvidence": "none",
+  "nativeIdReadiness": "not_verified",
+  "coverageAssessment": {
+    "claimedScope": "Target city only; national or administrative service descriptions do not establish city parcel coverage.",
+    "verifiedOpenScope": null,
+    "countrywideVerified": false
+  },
+  "blocker": "The official city landholding agency e-Land portal advertises parcel mapping and map-based queries, but its public registration flow requires a name, phone and OTP; no anonymous feature endpoint or bounded geometry was exposed.",
+  "remainingUncertainty": "The cadastre likely contains parcel geometry, but this pass did not test any account-only path or discover a separate guest map; national SDI hosts remained unavailable.",
+  "nextStep": "Retain as official but account-oriented lead; test only a separate officially documented anonymous viewer or publicly published bounded service if one is surfaced."
+}

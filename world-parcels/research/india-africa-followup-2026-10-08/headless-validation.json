@@ -1,0 +1,64 @@
+{
+  "schemaVersion": 1,
+  "checkedAt": "2026-10-08T03:51:01+04:00",
+  "command": "npm test -- test/kerala-source.test.js test/kerala-cities-config.test.js test/mboloko-city-config.test.js test/growth-cohort-live-parcel-sources.test.js test/india-africa-live-parcel-sources.test.js test/frontend-city-source-integrations.test.js test/parcel-source-binding.test.js test/parcel-source-concurrency.test.js test/parcel-source-route.test.js test/parcel-source-health.test.js test/live-parcel-resolver.test.js test/arcgis-parcel-adapter.test.js test/arcgis-composite-parcel-adapter.test.js test/world-coverage-build.test.js test/frontend-world-coverage.test.js test/parcel-report-evidence.test.js test/parcel-coverage-report.test.js test/i18n-locale-coverage.test.js",
+  "workingDirectory": "backend",
+  "exitCode": 0,
+  "result": "passed",
+  "testFiles": {
+    "passed": 18,
+    "failed": 0
+  },
+  "tests": {
+    "passed": 252,
+    "failed": 0
+  },
+  "durationMs": 1520,
+  "runOutput": "18 test files passed; 252 tests passed.",
+  "verifiedContext": {
+    "configuredAppCityCount": 110,
+    "sourceCatalogCount": 97,
+    "kozhikodeExcludedFromAppConfig": true,
+    "thiruvananthapuramExcludedFromAppConfig": true,
+    "bothHeldCityLabelsExcludedFromAllLocales": true,
+    "keralaCityHoldTestPassed": true
+  },
+  "previousRuns": [
+    {
+      "checkedAt": "2026-10-08T03:40:35+04:00",
+      "result": "passed",
+      "testFiles": {
+        "passed": 18,
+        "failed": 0
+      },
+      "tests": {
+        "passed": 252,
+        "failed": 0
+      },
+      "durationMs": 2040
+    },
+    {
+      "checkedAt": "2026-10-08T03:32:41+04:00",
+      "result": "passed",
+      "testFiles": {
+        "passed": 18,
+        "failed": 0
+      },
+      "tests": {
+        "passed": 251,
+        "failed": 0
+      },
+      "durationMs": 1380
+    }
+  ],
+  "postSourceLinkOrderingCheck": {
+    "checkedAt": "2026-10-08T03:53:39+04:00",
+    "command": "npm test -- test/world-coverage-build.test.js test/frontend-world-coverage.test.js test/parcel-report-evidence.test.js test/parcel-coverage-report.test.js",
+    "result": "passed",
+    "exitCode": 0,
+    "testFilesPassed": 4,
+    "testsPassed": 75,
+    "durationMs": 202,
+    "reason": "Rechecked generated reports after placing the qualified CGS source first in the Mboloko research source list."
+  }
+}

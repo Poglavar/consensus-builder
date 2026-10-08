@@ -1,0 +1,133 @@
+{
+  "schemaVersion": 1,
+  "kind": "city_parcel_source_research",
+  "checkedAt": "2026-10-08",
+  "verifiedParcelResponse": null,
+  "source": null,
+  "registryFound": null,
+  "verifiedSample": false,
+  "targetGeometryEvidence": "none",
+  "nativeIdReadiness": "not_verified",
+  "cityId": "wup2025:3082",
+  "wupCityCode": 3082,
+  "name": "Tashkent",
+  "country": "Uzbekistan",
+  "countryCode": "UZ",
+  "centerLatLon": [
+    41.2393518231547,
+    69.2589127379298
+  ],
+  "pointBasis": "Saved WUP2025 Tashkent point; it is not an administrative boundary.",
+  "resultCategory": "promising_unavailable",
+  "priorEvidence": [
+    {
+      "path": "research/toshkent.json",
+      "status": "temporarily_unavailable"
+    },
+    {
+      "path": "research/retry/cities/toshkent.json",
+      "status": "temporarily_unavailable"
+    },
+    {
+      "path": "research/native-language-2026-10-04/cities-toshkent.json",
+      "status": "temporarily_unavailable"
+    }
+  ],
+  "priorBlocker": "Earlier direct requests to Kadastr Agency hosts were reset or inaccessible from the research client; the official Agency description did not identify an endpoint. The 2026-10-04 Uzbek-language search identified open.ngis.uz but did not verify geometry.",
+  "nativeLanguageSearches": [
+    {
+      "languageScript": "Uzbek (Latin)",
+      "exactQuery": "Toshkent kadastr yer uchastkalari xarita GIS ochiq ma’lumotlar geoportal",
+      "date": "2026-10-08",
+      "executionMethod": "web.run search_query; response_length=long",
+      "resultUrls": [
+        "https://gov.uz/oz/kadastr/news/view/143473",
+        "https://dgov.uz/uz/solution/detail/52/",
+        "https://open.ngis.uz/"
+      ],
+      "summary": "Official Kadastr Agency announcement says the public National Geo-information Portal open.ngis.uz was launched to provide citizens and businesses open information on land parcels and real estate. Digital Government describes it as data from the State Register of Rights to Real Estate. Direct portal open timed out; no map API or sample feature was verified."
+    },
+    {
+      "languageScript": "Uzbek (Cyrillic)",
+      "exactQuery": "Тошкент кадастр xarita yer uchastkasi kadastr geoportal davlat xizmatlari",
+      "date": "2026-10-08",
+      "executionMethod": "web.run search_query; response_length=long",
+      "resultUrls": [
+        "https://open.ngis.uz/",
+        "https://kadastryordamchi.uz/uz"
+      ],
+      "summary": "Search surfaced open.ngis.uz viewer UI with a cadastral-number search and map-layer interface, and official help services for cadastral information. Search/indexed UI does not reveal whether a parcel geometry layer is anonymously downloadable; no direct endpoint request succeeded."
+    },
+    {
+      "languageScript": "Russian",
+      "exactQuery": "Ташкент кадастр кадастровая карта земельный участок кадастровая карта Узбекистан геопортал",
+      "date": "2026-10-08",
+      "executionMethod": "web.run search_query; response_length=long",
+      "resultUrls": [
+        "https://open.ngis.uz/",
+        "https://dgov.uz/ru/solution/detail/52/"
+      ],
+      "summary": "Official Digital Government page characterizes NGIS as providing public information from the State Register of Rights to Real Estate through the National GIS, but geometry and direct viewer queries remain unverified."
+    }
+  ],
+  "officialAndRelevantLeads": [
+    {
+      "url": "https://gov.uz/oz/kadastr/news/view/143473",
+      "operator": "Cadastre Agency under the Ministry of Economy and Finance of Uzbekistan",
+      "observation": "Official announcement states open.ngis.uz public geoportal launched to provide open information to citizens and businesses about land parcels and real estate. It does not specify downloadable geometry/API or city/country layer coverage."
+    },
+    {
+      "url": "https://dgov.uz/uz/solution/detail/52/",
+      "operator": "Digital Government of Uzbekistan",
+      "observation": "Describes the National Geoinformation Portal as providing open data based on the State Register of Rights to Real Estate; offers cadastral number, address and use-purpose information. It also describes access to a user’s own property list/extract, which may involve personalized workflows; this research did not access those."
+    },
+    {
+      "url": "https://open.ngis.uz/",
+      "operator": "National Geographic Information System / Cadastre Agency",
+      "observation": "Official public portal lead; direct page timed out in the research client. Indexed UI indicates a map and cadastral-number search, but no service endpoint or polygon response was available."
+    },
+    {
+      "url": "https://kadastryordamchi.uz/uz",
+      "operator": "Cadastre Agency service/help portal",
+      "observation": "Indexed help page describes a nearest-object cadastral-number lookup; other registry/extract functions are service workflows. Not evidence of an anonymous polygon service."
+    }
+  ],
+  "requestsAndEndpointChecks": [
+    {
+      "url": "https://open.ngis.uz/",
+      "method": "GET (browser-like headers, default TLS verification)",
+      "httpStatus": "connect timeout (18 seconds)",
+      "contentType": "unavailable",
+      "assessment": "The HTTPS public portal did not respond within the bounded timeout; no scripts or geometry obtained. TLS verification was not disabled."
+    },
+    {
+      "url": "http://open.ngis.uz/",
+      "method": "GET (browser-like headers; redirects not followed)",
+      "httpStatus": "connect timeout (15 seconds)",
+      "contentType": "unavailable",
+      "assessment": "The HTTP route also timed out before responding; no public redirect destination or alternate viewer entry was observed."
+    },
+    {
+      "url": "https://gov.uz/oz/kadastr/news/view/143473",
+      "method": "GET",
+      "httpStatus": "accessible (web search/open)",
+      "contentType": "HTML",
+      "assessment": "Confirms official portal launch and stated open parcel/real-estate information; not a geometry response."
+    },
+    {
+      "url": "https://dgov.uz/uz/solution/detail/52/",
+      "method": "GET",
+      "httpStatus": "accessible (web open)",
+      "contentType": "HTML",
+      "assessment": "Confirms public-data purpose of NGIS, but no directly exposed download endpoint."
+    }
+  ],
+  "coverageAssessment": {
+    "claimedScope": "National NGIS / public information sourced from the state real-estate rights register; the actual map geometry scope is unverified.",
+    "verifiedOpenScope": null,
+    "countrywideVerified": false
+  },
+  "blocker": "Official sources describe open.ngis.uz as a public geoportal with parcel/real-estate information, but bounded HTTPS and HTTP GETs both timed out. The viewer scripts/service API and anonymous geometry remain inaccessible and unverified.",
+  "remainingUncertainty": "Whether the public UI’s portal data are served as polygons or only identify parcel numbers/address/use; whether direct reads are open without OneID or terms acceptance; coverage completeness for Tashkent; API and reuse conditions.",
+  "nextStep": "Retry open.ngis.uz in the ordinary public viewer, inspect its own scripts/network calls, and test a tiny bbox around the WUP point with only parcel ID and geometry fields if available."
+}

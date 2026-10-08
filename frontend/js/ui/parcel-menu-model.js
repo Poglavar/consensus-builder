@@ -114,9 +114,12 @@
     }
 
     // The id the parcel panel's title shows: HR-<cadastral municipality>-<parcel number> when the
-    // record carries both, else the live parcel id.
+    // record carries both, the short application reference for geometry identities, else the live parcel id.
     function displayParcelId(props, parcelId) {
         const p = props || {};
+        if (p.parcelIdentityKind === 'geometry-sha256-v1' && String(p.geometryDisplayId || '').trim()) {
+            return String(p.geometryDisplayId).trim();
+        }
         const number = p.BROJ_CESTICE ?? p.broj_cestice;
         const municipality = p.MATICNI_BROJ_KO ?? p.maticni_broj_ko ?? (p.cadastralMunicipality && p.cadastralMunicipality.id);
         if (number !== undefined && number !== null && municipality !== undefined && municipality !== null) {

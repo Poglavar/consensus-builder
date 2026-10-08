@@ -1,0 +1,365 @@
+{
+  "schemaVersion": 1,
+  "checkedAt": "2026-10-08",
+  "wupCityCode": 10747,
+  "cityId": "wup2025:10747",
+  "name": "Chennai",
+  "country": "India",
+  "countryCode": "IN",
+  "centerLatLon": [
+    13.0444628101411,
+    80.2033736591079
+  ],
+  "cohorts": [
+    "largest200"
+  ],
+  "queuePriority": 116,
+  "stateOrUT": "Tamil Nadu",
+  "administrativeIdentity": {
+    "district": "Chennai",
+    "tehsilOrTaluk": null,
+    "revenueVillage": null,
+    "identityEvidence": "District boundary label only; official urban TSLR town/block/ward identity at the exact WUP center is unresolved. WUP cohort label Chennai retained."
+  },
+  "inheritedResearch": {
+    "previouslyInvestigated": true,
+    "previousStatuses": [
+      "temporarily_unavailable"
+    ],
+    "previousEvidenceFiles": [
+      "research/chennai.json",
+      "research/retry/cities/chennai.json"
+    ],
+    "registryFoundBefore": null,
+    "verifiedSampleBefore": false,
+    "sourceIdsBefore": [],
+    "evidence": [
+      {
+        "path": "research/chennai.json",
+        "checkedAt": "2026-09-29",
+        "status": "temporarily_unavailable",
+        "scope": "Chennai is recorded in Town Survey Land Registers (TSLR), per search results; the state portals appear record- and map-lookup oriented",
+        "source": null,
+        "requests": [
+          {
+            "method": "GET",
+            "url": "https://tngis.tn.gov.in/",
+            "httpStatus": null,
+            "contentType": null,
+            "assessment": "unreachable from this environment; not a verdict"
+          },
+          {
+            "method": "GET",
+            "url": "https://tngis.tn.gov.in/arcgis/rest/services?f=json",
+            "httpStatus": null,
+            "contentType": null,
+            "assessment": "unreachable"
+          },
+          {
+            "method": "GET",
+            "url": "https://tngis.tn.gov.in/geoserver/ows?service=WFS&request=GetCapabilities",
+            "httpStatus": null,
+            "contentType": null,
+            "assessment": "unreachable"
+          },
+          {
+            "method": "GET",
+            "url": "https://eservices.tn.gov.in/eservicesnew/land/chitta_ta.html",
+            "httpStatus": null,
+            "contentType": null,
+            "assessment": "unreachable"
+          },
+          {
+            "method": "GET",
+            "url": "https://www.arcgis.com/sharing/rest/search (Chennai/Tamil Nadu parcel/cadastral feature services)",
+            "httpStatus": 200,
+            "contentType": null,
+            "assessment": "no relevant hosted parcel feature service listed"
+          }
+        ],
+        "conclusion": "Every Tamil Nadu government host tried reset the connection, which may reflect geo-restriction or proxy behaviour rather than absence of a service. Whether TN-GIS exposes anonymous bounded polygon queries is unknown. A state source would not imply India-wide coverage; other Indian cities are separate attempts.",
+        "nextStep": "Retry TN-GIS and the eServices map endpoints later or from another network path; look for a documented TN-GIS feature service and test a bounded Chennai polygon query."
+      },
+      {
+        "path": "research/retry/cities/chennai.json",
+        "checkedAt": "2026-09-30",
+        "status": "temporarily_unavailable",
+        "scope": null,
+        "source": null,
+        "requests": [
+          {
+            "method": "GET",
+            "url": "https://tngis.tn.gov.in/ ; /arcgis/rest/services?f=json+%3B+%2Fgeoserver%2Fwfs%3Fservice%3DWFS&request=GetCapabilities",
+            "httpStatus": null,
+            "contentType": null,
+            "assessment": "connection reset by peer"
+          },
+          {
+            "method": "GET",
+            "url": "https://eservices.tn.gov.in/eservicesnew/land/chitta_ta.html and /",
+            "httpStatus": null,
+            "contentType": null,
+            "assessment": "connection reset"
+          },
+          {
+            "method": "GET",
+            "url": "https://tnreginet.gov.in/ ; https://www.tn.gov.in/ ; https://tnhb.tn.gov.in/",
+            "httpStatus": null,
+            "contentType": null,
+            "assessment": "connection reset"
+          },
+          {
+            "method": "GET",
+            "url": "https://tnmaps.tn.gov.in/",
+            "httpStatus": null,
+            "contentType": null,
+            "assessment": "CONNECT 502"
+          },
+          {
+            "method": "GET",
+            "url": "https://www.arcgis.com/sharing/rest/search?q=Chennai+cadastral+OR+parcel+OR+survey",
+            "httpStatus": 200,
+            "contentType": "application/json",
+            "assessment": "680 hits, top results are travel/hub apps; no parcel feature service checked as relevant"
+          }
+        ],
+        "conclusion": "Every tn.gov.in host resets or 502s from this network while central hosts (nic.in, bhuvan, ldo.mohua) answer; suggests state-level network filtering, unproven.",
+        "nextStep": "No change."
+      }
+    ]
+  },
+  "freshResearch": {
+    "queries": [
+      {
+        "language": "Tamil",
+        "script": "Tamil",
+        "query": "சென்னை நகர சர்வே வரைபடம் TSLR TN eServices நில அளவை புலப்படம் அதிகாரப்பூர்வம்",
+        "checkedAt": "2026-10-08",
+        "actualResultUrls": [
+          "https://chennai.nic.in/service/eservices-anytime-anywhere-land/",
+          "https://eservices.tn.gov.in/eservicesnew/index.html",
+          "https://services.india.gov.in/service/detail/view-land-records-of-patta--chitta--fmb-rural-tamil-nadu"
+        ],
+        "result": "Official Chennai District page and Government Services Portal describe eServices for Patta/FMB/Chitta and urban TSLR extracts by district, urban/rural, town/block/ward and survey/subdivision; sources point to text/record lookup rather than a public parcel geometry layer."
+      },
+      {
+        "language": "Tamil",
+        "script": "Tamil",
+        "query": "சென்னை TSLR நகர நிலவரைபடம் சர்வே எண் சென்னை நில அளவை துறை அதிகாரப்பூர்வ",
+        "checkedAt": "2026-10-08",
+        "actualResultUrls": [
+          "https://chennai.nic.in/ta/service/%E0%AE%87%E0%AE%A3%E0%AF%88%E0%AE%B5%E0%AE%B4%E0%AE%BF-%E0%AE%9A%E0%AF%87%E0%AE%B5%E0%AF%88%E0%AE%95%E0%AE%B3%E0%AF%8D-%E0%AE%8E%E0%AE%99%E0%AF%8D%E0%AE%95%E0%AF%87%E0%AE%AF%E0%AF%81/",
+          "https://eservices.tn.gov.in/eservicesnew/index.html"
+        ],
+        "result": "Tamil-language official district route confirms land eServices; eServices application endpoint timed out in direct requests. No geometry was returned. The Tamil official page was returned by native-script search; its direct web fetch timed out."
+      }
+    ],
+    "portals": [
+      {
+        "name": "Chennai District eServices (Anytime/Anywhere) – Land",
+        "operator": "Government of Tamil Nadu, Chennai District",
+        "homeUrl": "https://chennai.nic.in/service/eservices-anytime-anywhere-land/",
+        "observation": "HTTP 200 official informational page describes Patta/FMB/Chitta/TSLR access and Collectorate Survey Office. It does not itself return geometries."
+      },
+      {
+        "name": "Tamil Nadu eServices of Land Records",
+        "operator": "Government of Tamil Nadu, Revenue Department",
+        "homeUrl": "https://eservices.tn.gov.in/eservicesnew/index.html",
+        "observation": "Official record portal; service descriptions distinguish rural FMB and urban TSLR by town, block and ward. Direct application page timed out during this pass."
+      },
+      {
+        "name": "Greater Chennai Corporation public GIS REST",
+        "operator": "Greater Chennai Corporation",
+        "homeUrl": "https://gisgcc.chennaicorporation.gov.in/server/rest/services?f=pjson",
+        "mapUrl": "https://gisgcc.chennaicorporation.gov.in/server/rest/services/GCCPublic/GCC_AdminBoundary/MapServer",
+        "observation": "Live ArcGIS Server metadata accessible. Exact target-point lookup returned admin ward 136. Public metadata inspected on ward layer and EDPMobile2025 shows administrative, ward and roads layers, not parcel cadastral geometry. GCCPropertyTax public folder listing is empty; a separate GCCWebAppPublic folder returns ArcGIS 499 Token Required, which was not bypassed."
+      }
+    ],
+    "requests": [
+      {
+        "method": "GET",
+        "url": "https://chennai.nic.in/service/eservices-anytime-anywhere-land/",
+        "httpStatus": 200,
+        "contentType": "text/html",
+        "assessment": "Official district page loads. It points to eServices and lists Patta/FMB/Chitta/TSLR and record extraction; no map geometry service or feature API linked in inspected content."
+      },
+      {
+        "method": "GET",
+        "url": "https://eservices.tn.gov.in/eservicesnew/index.html",
+        "httpStatus": null,
+        "assessment": "Bounded HTTPS request timed out; no application response could be inspected."
+      },
+      {
+        "method": "GET",
+        "url": "https://chennai.nic.in/ta/service/%E0%AE%87%E0%AE%A3%E0%AF%88%E0%AE%B5%E0%AE%B4%E0%AE%BF-%E0%AE%9A%E0%AF%87%E0%AE%B5%E0%AF%88%E0%AE%95%E0%AE%B3%E0%AF%8D-%E0%AE%8E%E0%AE%99%E0%AF%8D%E0%AE%95%E0%AF%87%E0%AE%AF%E0%AF%81/",
+        "httpStatus": null,
+        "assessment": "Official Tamil-language page discovered in native-script search, which describes online Patta/FMB/Chitta/TSLR and A-register/poramboke lookups and links to eServices; direct page fetch timed out, so no HTTP status was obtained."
+      },
+      {
+        "method": "GET",
+        "url": "https://gisgcc.chennaicorporation.gov.in/server/rest/services?f=pjson",
+        "httpStatus": 200,
+        "contentType": "text/plain;charset=UTF-8",
+        "assessment": "Live ArcGIS REST root metadata lists folders and documents current municipality GIS service endpoint."
+      },
+      {
+        "method": "GET",
+        "url": "https://gisgcc.chennaicorporation.gov.in/server/rest/services/GCCPublic/GCC_AdminBoundary/MapServer/4?f=pjson",
+        "httpStatus": 200,
+        "contentType": "text/plain;charset=UTF-8",
+        "assessment": "Ward_Boundary polygon layer, EPSG:32644; schema fields are ward, OBJECTID, shape and geometry metrics."
+      },
+      {
+        "method": "GET",
+        "url": "https://gisgcc.chennaicorporation.gov.in/server/rest/services/GCCPublic/GCC_AdminBoundary/MapServer/4/query?geometry=80.2033736591079%2C13.0444628101411&geometryType=esriGeometryPoint&inSR=4326&spatialRel=esriSpatialRelIntersects&outFields=ward&returnGeometry=false&f=json",
+        "httpStatus": 200,
+        "contentType": "application/json;charset=UTF-8",
+        "assessment": "One point match at the exact WUP target; only ward=136 returned."
+      },
+      {
+        "method": "GET",
+        "url": "https://gisgcc.chennaicorporation.gov.in/server/rest/services/GCCPropertyTax/?f=pjson",
+        "httpStatus": 200,
+        "contentType": "text/plain;charset=UTF-8",
+        "assessment": "Empty public services list; no public property-tax parcel layer is listed in this directory response."
+      },
+      {
+        "method": "GET",
+        "url": "https://gisgcc.chennaicorporation.gov.in/server/rest/services/GCCWebAppPublic/?f=pjson",
+        "httpStatus": 200,
+        "contentType": "text/plain;charset=UTF-8",
+        "assessment": "ArcGIS response body is error code 499 Token Required. No token sought/used; stop at this access boundary."
+      },
+      {
+        "method": "GET",
+        "url": "https://gisgcc.chennaicorporation.gov.in/server/rest/services/GCCDepts/EDPMobile2025/FeatureServer/layers?f=pjson",
+        "httpStatus": 200,
+        "contentType": "text/plain;charset=UTF-8",
+        "assessment": "Lists EDP_Roads_2025, EDP_zoneBoundary_2025 and EDP_wardBoundary_2025; these are not cadastral parcels."
+      }
+    ],
+    "result": "No geometry was obtained.",
+    "technicalDiscoveryChecks": [
+      {
+        "method": "Official municipal ArcGIS REST directory and layer metadata; escalated read-only GETs, no owner/property attributes requested",
+        "urls": [
+          "https://gisgcc.chennaicorporation.gov.in/server/rest/services?f=pjson",
+          "https://gisgcc.chennaicorporation.gov.in/server/rest/services/GCCPublic/?f=pjson",
+          "https://gisgcc.chennaicorporation.gov.in/server/rest/services/GCCDepts/EDPMobile2025/FeatureServer/layers?f=pjson",
+          "https://gisgcc.chennaicorporation.gov.in/server/rest/services/GCCPublic/GCC_AdminBoundary/MapServer/4?f=pjson",
+          "https://gisgcc.chennaicorporation.gov.in/server/rest/services/GCCPropertyTax/?f=pjson",
+          "https://gisgcc.chennaicorporation.gov.in/server/rest/services/GCCWebAppPublic/?f=pjson"
+        ],
+        "results": [
+          {
+            "url": "https://gisgcc.chennaicorporation.gov.in/server/rest/services?f=pjson",
+            "httpStatus": 200,
+            "contentType": "text/plain;charset=UTF-8",
+            "bytes": 276,
+            "observation": "ArcGIS REST root returns folders including GCCPublic, GCCPropertyTax, GCCWebAppPublic, Revenue, and others."
+          },
+          {
+            "url": "https://gisgcc.chennaicorporation.gov.in/server/rest/services/GCCPublic/?f=pjson",
+            "httpStatus": 200,
+            "contentType": "text/plain;charset=UTF-8",
+            "bytes": 363,
+            "observation": "Public folder directory lists ICCC_API and ICCC_Relief_CookingCenter (FeatureServer/MapServer), not a parcel layer."
+          },
+          {
+            "url": "https://gisgcc.chennaicorporation.gov.in/server/rest/services/GCCDepts/EDPMobile2025/FeatureServer/layers?f=pjson",
+            "httpStatus": 200,
+            "contentType": "text/plain;charset=UTF-8",
+            "bytes": 31655,
+            "observation": "Service exposes three polygon/road utility layers: EDP_Roads_2025, EDP_zoneBoundary_2025, EDP_wardBoundary_2025. No cadastral parcel layer."
+          },
+          {
+            "url": "https://gisgcc.chennaicorporation.gov.in/server/rest/services/GCCPublic/GCC_AdminBoundary/MapServer/4?f=pjson",
+            "httpStatus": 200,
+            "contentType": "text/plain;charset=UTF-8",
+            "bytes": 6419,
+            "observation": "Ward_Boundary is polygon geometry in EPSG:32644; public safe attributes include only ward plus transport OBJECTID and geometry-area/perimeter fields."
+          },
+          {
+            "url": "https://gisgcc.chennaicorporation.gov.in/server/rest/services/GCCPropertyTax/?f=pjson",
+            "httpStatus": 200,
+            "contentType": "text/plain;charset=UTF-8",
+            "bytes": 60,
+            "observation": "Returns an empty services list for this public folder endpoint."
+          },
+          {
+            "url": "https://gisgcc.chennaicorporation.gov.in/server/rest/services/GCCWebAppPublic/?f=pjson",
+            "httpStatus": 200,
+            "contentType": "text/plain;charset=UTF-8",
+            "bytes": 80,
+            "bodyError": {
+              "code": 499,
+              "message": "Token Required"
+            },
+            "observation": "Folder returns token-required response; no token sought or used and no further calls made."
+          }
+        ]
+      },
+      {
+        "method": "Exact WUP point administrative query; GET to public GCC ward polygon layer, fields restricted to ward, returnGeometry=false",
+        "url": "https://gisgcc.chennaicorporation.gov.in/server/rest/services/GCCPublic/GCC_AdminBoundary/MapServer/4/query?geometry=80.2033736591079%2C13.0444628101411&geometryType=esriGeometryPoint&inSR=4326&spatialRel=esriSpatialRelIntersects&outFields=ward&returnGeometry=false&f=json",
+        "httpStatus": 200,
+        "contentType": "application/json;charset=UTF-8",
+        "bytes": 185,
+        "responseSummary": {
+          "featureCount": 1,
+          "attributes": {
+            "ward": "136"
+          },
+          "geometryReturned": false
+        },
+        "observation": "Exact saved Chennai WUP target resolves to Corporation ward 136. This is city administrative identity only, not a TSLR revenue block/survey number or parcel polygon."
+      },
+      {
+        "method": "Official eServices/TNGIS/CMDA direct endpoint reachability; escalated ordinary GETs, connect timeout 8 s/read timeout 22 s",
+        "urls": [
+          "https://eservices.tn.gov.in/eservicesnew/index.html",
+          "http://eservices.tn.gov.in/eservicesnew/index.html",
+          "https://tngis.tn.gov.in/apps/cumta/",
+          "https://www.cmdachennai.gov.in/"
+        ],
+        "result": "eServices HTTPS and HTTP, the TNGIS CUMTA map editor and CMDA root all raised ConnectTimeout before HTTP response. No frontend scripts or application APIs could be inspected from those routes."
+      },
+      {
+        "method": "Current official service-route discovery",
+        "exactQuery": "site:gisgcc.chennaicorporation.gov.in/server/rest/services \"Property\" Chennai MapServer",
+        "actualResultUrls": [
+          "https://gisgcc.chennaicorporation.gov.in/server/rest/services/GCCPublic/GCC_AdminBoundary/MapServer",
+          "https://gisgcc.chennaicorporation.gov.in/server/rest/services/GCCDepts/EDPMobile2025/FeatureServer/layers"
+        ],
+        "observation": "Search and direct REST metadata identify municipal ward/road services, not parcel geometry. This is a bounded check of these public municipal services, not an absence claim for all Chennai cadastral sources."
+      }
+    ]
+  },
+  "status": "temporarily_unavailable",
+  "verifiedParcelResponse": null,
+  "coverageAssessment": {
+    "claimedScope": null,
+    "verifiedOpenScope": null,
+    "countrywideVerified": false
+  },
+  "resultCategory": "temporarily_unavailable",
+  "registryFound": null,
+  "verifiedSample": false,
+  "technicalBlocker": "No Chennai parcel polygon was obtained. The official eServices/TNGIS/CMDA application routes timed out before HTTP response; live GCC public GIS metadata exposes road and administrative boundaries, and the exact WUP point resolves only to ward 136. The public GCCPropertyTax folder listing is empty, while a separate GCCWebAppPublic folder explicitly requires a token.",
+  "remainingUncertainty": "The exact TSLR town/block/ward/survey hierarchy and any public machine-readable TSLR geometry remain unresolved; the token-gated GCCWebAppPublic folder was not accessed further. This does not show that Chennai has no cadastral data.",
+  "nextStep": "If an India-network route becomes available, inspect the public TSLR extract workflow from the official eServices landing page and resolve the WUP target to its town/block/ward/survey hierarchy; do not use the token-gated municipal folder without authorization.",
+  "workstream": "india",
+  "kind": "city_parcel_source_research",
+  "queueCohorts": [
+    "largest200"
+  ],
+  "queuePriorAssessment": {
+    "checkedAt": "2026-10-08",
+    "cohort": "india-africa",
+    "evidenceFile": "research/india-africa-2026-10-08/india-city-10747.json",
+    "resultCategory": "no_verified_open_endpoint_after_attempts",
+    "freshVerifiedSample": false,
+    "technicalBlocker": "No nonempty parcel feature geometry tied to the WUP target was obtained. State portal was either an interactive shell or timed out; J&K inherited API endpoints require authentication.",
+    "nextStep": "Reach official eServices from its landing page, resolve the WUP point to the applicable FMB or urban TSLR hierarchy, and verify a map boundary with a stable survey identifier."
+  }
+}

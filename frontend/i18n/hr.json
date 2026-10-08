@@ -942,6 +942,7 @@
                 "proposalsHint": "Kreiraj prijedlog koji uključuje sve odabrane čestice."
             },
             "idLabel": "ID:",
+            "geometryReferenceNote": "Aplikacijska oznaka izvedena iz geometrije. Izvorni registarski broj nije dostupan; promjena granice stvara novu oznaku.",
             "tabInfo": "Info",
             "tabProposals": "Prijedlozi",
             "tabProposalsWithCount": "Prijedlozi ({{count}})",
@@ -3631,7 +3632,14 @@
             "ennerdale": "Ennerdale, Južnoafrička Republika",
             "cosmo_city": "Cosmo City, Južnoafrička Republika",
             "accra": "Akra, Gana",
-            "venjaramoodu": "Venjaramoodu, Indija"
+            "mboloko": "Mboloko, Južnoafrička Republika",
+            "venjaramoodu": "Venjaramoodu, Indija",
+            "kochi": "Kochi — Thiruvankulam, Indija",
+            "iravipuram": "Iravipuram (Kollam), Indija",
+            "ahmedabad": "Ahmedabad, Indija",
+            "surat": "Surat, Indija",
+            "nairobi": "Nairobi, Kenija",
+            "astana": "Astana, Kazahstan"
         },
         "detect": {
             "confirm": "Dopustiti Consensus Builderu da koristi tvoju približnu lokaciju kako bi odabrao najbliži grad?",

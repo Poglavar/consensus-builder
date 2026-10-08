@@ -5,23 +5,23 @@
     "asOf": "2026-10-08",
     "demographicSnapshotDate": "2026-10-07",
     "statisticsYear": 2025,
-    "cityCount": 460,
+    "cityCount": 465,
     "countryCount": 255,
     "statisticalJurisdictions": 237,
-    "checkedCityCount": 377,
+    "checkedCityCount": 382,
     "uncheckedCityCount": 83,
-    "cityRegistryFoundCount": 146,
-    "verifiedCitySampleCount": 132,
+    "cityRegistryFoundCount": 158,
+    "verifiedCitySampleCount": 143,
     "nationalCadastreCount": 72,
     "countryTwoRegionCount": 50,
     "populationMatchedCount": 431,
     "growthMatchedCount": 430,
     "checkedCitiesMissingDate": 0,
     "wikiCityCount": 282,
-    "configuredAppCityCount": 107,
+    "configuredAppCityCount": 114,
     "unmatchedStatisticalAmounts": {
       "landAreaKm2": 0,
-      "builtUpAreaKm2": 0.003000000026077032,
+      "builtUpAreaKm2": 0.003000000084284693,
       "population": 2
     },
     "warnings": []
@@ -44,13 +44,13 @@
     },
     {
       "id": "local",
-      "jurisdictions": 45,
-      "landAreaKm2": 60135851,
-      "builtUpAreaKm2": 233911.612,
-      "population": 3805669189,
-      "landAreaKm2Pct": 44.632405223758894,
-      "builtUpAreaKm2Pct": 45.34898070410582,
-      "populationPct": 46.23236243780346
+      "jurisdictions": 50,
+      "landAreaKm2": 64070814,
+      "builtUpAreaKm2": 242909.28299999997,
+      "population": 3889266986,
+      "landAreaKm2Pct": 47.55290705812219,
+      "builtUpAreaKm2Pct": 47.09337981739521,
+      "populationPct": 47.24793248815812
     },
     {
       "id": "none",
@@ -64,13 +64,13 @@
     },
     {
       "id": "unknown",
-      "jurisdictions": 118,
-      "landAreaKm2": 48766996,
-      "builtUpAreaKm2": 85607.051,
-      "population": 1575477843,
-      "landAreaKm2Pct": 36.194521085557255,
-      "builtUpAreaKm2Pct": 16.59683532057572,
-      "populationPct": 19.13935737263705
+      "jurisdictions": 113,
+      "landAreaKm2": 44832033,
+      "builtUpAreaKm2": 76609.38000000008,
+      "population": 1491880046,
+      "landAreaKm2Pct": 33.274019251193955,
+      "builtUpAreaKm2Pct": 14.85243620728634,
+      "populationPct": 18.123787322282386
     }
   ],
   "cities": [
@@ -108,12 +108,12 @@
       "checkedDate": "2026-10-08",
       "checkedDateEvidence": {
         "date": "2026-10-08",
-        "path": "research/india-africa-2026-10-08/africa-ws-city-3439.json",
+        "path": "research/india-africa-followup-2026-10-08/africa-ws-city-3439.json",
         "field": "$.checkedAt"
       },
       "registryFound": null,
       "registryFindingBasis": null,
-      "registryBasis": "Official SIGFU portal and documented public data API were inspected; safe localities GET returned HTTP 502 and no parcel geometry was requested.",
+      "registryBasis": "Fresh technical inspection confirmed the public viewer’s generated locality GET path and ordinary cookie/referer flow, but the exact generated route returned HTTP 502. No safe bbox-scoped lot DTO was observed; bulk all-lots route was not called.",
       "verifiedSample": false,
       "impliedParcelsTried": null,
       "sourceIds": [],
@@ -121,7 +121,7 @@
       "evidenceFiles": [
         "research/abidjan.json",
         "research/retry/cities/abidjan.json",
-        "research/india-africa-2026-10-08/africa-ws-city-3439.json"
+        "research/india-africa-followup-2026-10-08/africa-ws-city-3439.json"
       ],
       "osmUrl": "https://www.openstreetmap.org/?mlat=5.35605&mlon=-4.01965#map=12/5.35605/-4.01965",
       "googleMapsUrl": "https://www.google.com/maps/search/?api=1&query=5.35605%2C-4.01965",
@@ -261,12 +261,12 @@
       "checkedDate": "2026-10-08",
       "checkedDateEvidence": {
         "date": "2026-10-08",
-        "path": "research/india-africa-2026-10-08/africa-ne-city-d-s-beba-addis-ababa.json",
+        "path": "research/india-africa-batch3-2026-10-08/city-6353.json",
         "field": "$.checkedAt"
       },
       "registryFound": null,
       "registryFindingBasis": null,
-      "registryBasis": "No anonymous Ādīs Ᾱbeba (Addis Ababa) parcel feature layer or stable parcel IDs were verified; the national land system is an account-oriented service and public catalog results were not a target-city parcel sample.",
+      "registryBasis": "A city-government cadastre advertises parcel mapping, but access is through OTP-based user registration/online service workflows. No public anonymous parcel geometry endpoint was identified or sampled.",
       "verifiedSample": false,
       "impliedParcelsTried": null,
       "sourceIds": [],
@@ -274,7 +274,7 @@
       "evidenceFiles": [
         "research/addis-ababa.json",
         "research/retry/cities/addis-ababa.json",
-        "research/india-africa-2026-10-08/africa-ne-city-d-s-beba-addis-ababa.json"
+        "research/india-africa-batch3-2026-10-08/city-6353.json"
       ],
       "osmUrl": "https://www.openstreetmap.org/?mlat=9.00714&mlon=38.74898#map=12/9.00714/38.74898",
       "googleMapsUrl": "https://www.google.com/maps/search/?api=1&query=9.00714%2C38.74898",
@@ -380,7 +380,9 @@
       "registryCityIds": [
         "wup2025:6408"
       ],
-      "appCityIds": [],
+      "appCityIds": [
+        "ahmedabad"
+      ],
       "cohorts": [
         "largest200",
         "registry"
@@ -404,19 +406,24 @@
       "checkedDate": "2026-10-08",
       "checkedDateEvidence": {
         "date": "2026-10-08",
-        "path": "research/india-africa-2026-10-08/india-city-6408.json",
+        "path": "research/india-africa-next10-2026-10-08/city-6408.json",
         "field": "$.checkedAt"
       },
-      "registryFound": false,
-      "registryFindingBasis": null,
-      "registryBasis": "Official AnyRoR candidate endpoint timed out in the browser fetch, and native-script search results did not return an official state page; availability and geometry remain unknown.",
-      "verifiedSample": false,
+      "registryFound": true,
+      "registryFindingBasis": "recorded_evidence",
+      "registryBasis": "Government of Gujarat TPVD final AMC planning plots: 132 native search references passed fresh exact geometry reads in nine cells, and local browser selection and pan passed. Partial final-scheme coverage; current registration and ownership remain unverified.",
+      "verifiedSample": true,
       "impliedParcelsTried": null,
-      "sourceIds": [],
-      "evidenceUrls": [],
+      "sourceIds": [
+        "in-gj-tpvd-final-plots"
+      ],
+      "evidenceUrls": [
+        "https://tpvd.openprp.in/geoserver/ows"
+      ],
       "evidenceFiles": [
         "research/ahmedabad.json",
-        "research/india-africa-2026-10-08/india-city-6408.json"
+        "research/india-africa-next10-2026-10-08/city-6408.json",
+        "research/india-africa-next10-2026-10-08/ahmedabad-acceptance.json"
       ],
       "osmUrl": "https://www.openstreetmap.org/?mlat=23.02084&mlon=72.59717#map=12/23.02084/72.59717",
       "googleMapsUrl": "https://www.google.com/maps/search/?api=1&query=23.02084%2C72.59717",
@@ -836,19 +843,19 @@
       "checkedDate": "2026-10-08",
       "checkedDateEvidence": {
         "date": "2026-10-08",
-        "path": "research/india-africa-2026-10-08/africa-ne-city-al-khar-m-khartoum.json",
+        "path": "research/india-africa-batch3-2026-10-08/city-4325.json",
         "field": "$.checkedAt"
       },
       "registryFound": null,
       "registryFindingBasis": null,
-      "registryBasis": "No Al-Kharṭūm (Khartoum) parcel polygons or stable IDs were verified. Sudan NIC describes a WMS/WFS portal, but its linked portal was unreachable; Aqari’s plot route is partner-specific.",
+      "registryBasis": "An official national WMS/WFS portal is documented but its linked host is unavailable in this search. No published Khartoum parcel layer or geometry was verified.",
       "verifiedSample": false,
       "impliedParcelsTried": null,
       "sourceIds": [],
       "evidenceUrls": [],
       "evidenceFiles": [
         "research/khartoum.json",
-        "research/india-africa-2026-10-08/africa-ne-city-al-khar-m-khartoum.json"
+        "research/india-africa-batch3-2026-10-08/city-4325.json"
       ],
       "osmUrl": "https://www.openstreetmap.org/?mlat=15.63354&mlon=32.49525#map=12/15.63354/32.49525",
       "googleMapsUrl": "https://www.google.com/maps/search/?api=1&query=15.63354%2C32.49525",
@@ -907,19 +914,19 @@
       "checkedDate": "2026-10-08",
       "checkedDateEvidence": {
         "date": "2026-10-08",
-        "path": "research/india-africa-2026-10-08/africa-ne-city-al-qahirah-cairo.json",
+        "path": "research/india-africa-batch3-2026-10-08/city-4435.json",
         "field": "$.checkedAt"
       },
       "registryFound": null,
       "registryFindingBasis": null,
-      "registryBasis": "The public city-specific search found no verified parcel polygons for Al-Qahirah (Cairo); ESA map products and NUCA land-offer maps do not establish an open general cadastre for this city.",
+      "registryBasis": "No public anonymous Cairo parcel feature endpoint or bounded parcel polygon was found. Official ESA map access describes a formal request, estimate and payment path, while the Cairo portal map directory covers administrative/tourism/services.",
       "verifiedSample": false,
       "impliedParcelsTried": null,
       "sourceIds": [],
       "evidenceUrls": [],
       "evidenceFiles": [
         "research/cairo.json",
-        "research/india-africa-2026-10-08/africa-ne-city-al-qahirah-cairo.json"
+        "research/india-africa-batch3-2026-10-08/city-4435.json"
       ],
       "osmUrl": "https://www.openstreetmap.org/?mlat=30.06263&mlon=31.24967#map=12/30.06263/31.24967",
       "googleMapsUrl": "https://www.google.com/maps/search/?api=1&query=30.06263%2C31.24967",
@@ -1185,19 +1192,19 @@
       "checkedDate": "2026-10-08",
       "checkedDateEvidence": {
         "date": "2026-10-08",
-        "path": "research/india-africa-2026-10-08/africa-ne-city-alexandria.json",
+        "path": "research/india-africa-batch3-2026-10-08/city-275.json",
         "field": "$.checkedAt"
       },
       "registryFound": null,
       "registryFindingBasis": null,
-      "registryBasis": "The public city-specific search found no verified parcel polygons for Alexandria; ESA map products and NUCA land-offer maps do not establish an open general cadastre for this city.",
+      "registryBasis": "The official ESA confirms detailed Alexandria digital GIS map production, but its published access route is formal request and purchase. The seemingly relevant ArcGIS parcel service is outside Egypt.",
       "verifiedSample": false,
       "impliedParcelsTried": null,
       "sourceIds": [],
       "evidenceUrls": [],
       "evidenceFiles": [
         "research/alexandria.json",
-        "research/india-africa-2026-10-08/africa-ne-city-alexandria.json"
+        "research/india-africa-batch3-2026-10-08/city-275.json"
       ],
       "osmUrl": "https://www.openstreetmap.org/?mlat=31.19337&mlon=29.95177#map=12/31.19337/29.95177",
       "googleMapsUrl": "https://www.google.com/maps/search/?api=1&query=31.19337%2C29.95177",
@@ -1702,12 +1709,12 @@
       "checkedDate": "2026-10-08",
       "checkedDateEvidence": {
         "date": "2026-10-08",
-        "path": "research/india-africa-2026-10-08/africa-ne-city-antananarivo.json",
+        "path": "research/india-africa-next10-2026-10-08/africa-east-city-1961.json",
         "field": "$.checkedAt"
       },
       "registryFound": null,
       "registryFindingBasis": null,
-      "registryBasis": "No verified parcel layer for Antananarivo was established. Antananarivo’s prior PLOF WFS candidate remains semantically unconfirmed and partial; it cannot establish parcel coverage for this city.",
+      "registryBasis": "Fresh OITF WFS checks reproduce three geometry-only PLOF polygons and a zero-feature city-centre bbox. DescribeFeatureType exposes only msGeometry; no feature ID or parcel attributes are present. PLOF is a land-status/planning inventory, not a verified cadastre.",
       "verifiedSample": false,
       "impliedParcelsTried": null,
       "sourceIds": [],
@@ -1715,7 +1722,7 @@
       "evidenceFiles": [
         "research/antananarivo.json",
         "research/retry/cities/antananarivo.json",
-        "research/india-africa-2026-10-08/africa-ne-city-antananarivo.json"
+        "research/india-africa-next10-2026-10-08/africa-east-city-1961.json"
       ],
       "osmUrl": "https://www.openstreetmap.org/?mlat=-18.86511&mlon=47.53777#map=12/-18.86511/47.53777",
       "googleMapsUrl": "https://www.google.com/maps/search/?api=1&query=-18.86511%2C47.53777",
@@ -2242,6 +2249,115 @@
       "evidenceFiles": [],
       "osmUrl": "https://www.openstreetmap.org/?mlat=13.72237&mlon=43.95176#map=12/13.72237/43.95176",
       "googleMapsUrl": "https://www.google.com/maps/search/?api=1&query=13.72237%2C43.95176",
+      "wikipediaUrl": null,
+      "wikipediaEvidence": null
+    },
+    {
+      "id": "capital:TM:ashgabat",
+      "name": "Ashgabat",
+      "country": "Turkmenistan",
+      "countryCode": "TM",
+      "latitude": 37.9601,
+      "longitude": 58.3261,
+      "registryCityIds": [
+        "capital:TM:ashgabat"
+      ],
+      "appCityIds": [],
+      "cohorts": [
+        "capital-research",
+        "official-registry-documented"
+      ],
+      "wupCityCode": null,
+      "wupName": null,
+      "growthRank": null,
+      "researchFocusRegion": null,
+      "researchPriority": null,
+      "population2015": null,
+      "population2025": null,
+      "annualGrowthPct2015To2025": null,
+      "populationPlausibility2025": null,
+      "populationMatch": null,
+      "checked": true,
+      "checkedDate": "2026-10-08",
+      "checkedDateEvidence": {
+        "date": "2026-10-08",
+        "path": "research/central-asia-capitals-2026-10-08/city-ashgabat.json",
+        "field": "$.checkedAt"
+      },
+      "registryFound": true,
+      "registryFindingBasis": "recorded_evidence",
+      "registryBasis": "Official Turkmen law establishes a State Land Cadastre and cadastral maps covering Ashgabat, with parcel boundaries, areas, coordinates and unique cadastral numbers. This confirms official registry/map existence only; no public viewer, endpoint, or geometry was found. Access may follow formal or paid procedures.",
+      "verifiedSample": false,
+      "impliedParcelsTried": null,
+      "sourceIds": [],
+      "evidenceUrls": [
+        "https://mejlis.gov.tm/single-law/355?lang=ru",
+        "https://turkmenistan.gov.tm/ru/post/58708/zakon-turkmenistana-o-gosudarstvennom-zemelnom-kadastre",
+        "https://turkmenistan.gov.tm/ru/post/82861/kadastr-uchyot-zemelnyh-resursov",
+        "https://tdh.gov.tm/ru/post/26915/zapushchen-sajt-sluzhby-po-gosudarstvennoj-registracii-prav-na-nedvizhimoe-imushchestvo"
+      ],
+      "evidenceFiles": [
+        "research/central-asia-capitals-2026-10-08/city-ashgabat.json"
+      ],
+      "osmUrl": "https://www.openstreetmap.org/?mlat=37.96010&mlon=58.32610#map=12/37.96010/58.32610",
+      "googleMapsUrl": "https://www.google.com/maps/search/?api=1&query=37.96010%2C58.32610",
+      "wikipediaUrl": null,
+      "wikipediaEvidence": null
+    },
+    {
+      "id": "capital:KZ:astana",
+      "name": "Astana",
+      "country": "Kazakhstan",
+      "countryCode": "KZ",
+      "latitude": 51.1282,
+      "longitude": 71.4304,
+      "registryCityIds": [
+        "capital:KZ:astana"
+      ],
+      "appCityIds": [
+        "astana"
+      ],
+      "cohorts": [
+        "capital-research",
+        "app",
+        "official-parcel-source"
+      ],
+      "wupCityCode": null,
+      "wupName": null,
+      "growthRank": null,
+      "researchFocusRegion": null,
+      "researchPriority": null,
+      "population2015": null,
+      "population2025": null,
+      "annualGrowthPct2015To2025": null,
+      "populationPlausibility2025": null,
+      "populationMatch": null,
+      "checked": true,
+      "checkedDate": "2026-10-08",
+      "checkedDateEvidence": {
+        "date": "2026-10-08",
+        "path": "research/central-asia-capitals-2026-10-08/city-astana.json",
+        "field": "$.checkedAt"
+      },
+      "registryFound": true,
+      "registryFindingBasis": "recorded_evidence",
+      "registryBasis": "The official Kazakhstan public cadastral map returned bounded land-parcel geometry and native cadastral numbers for Esil district_id 254. Adapter acceptance passed for 154 local parcels and exact-ID fresh geometry; this is local partial coverage only.",
+      "verifiedSample": true,
+      "impliedParcelsTried": null,
+      "sourceIds": [
+        "kz-astana-pkk-esil"
+      ],
+      "evidenceUrls": [
+        "https://map.gov4c.kz/egkn/",
+        "https://map.gov4c.kz/geoserver/wfs"
+      ],
+      "evidenceFiles": [
+        "research/central-asia-capitals-2026-10-08/city-astana.json",
+        "research/central-asia-capitals-2026-10-08/astana-acceptance.json",
+        "research/central-asia-capitals-2026-10-08/astana-national-u-view-3x3-requests.json"
+      ],
+      "osmUrl": "https://www.openstreetmap.org/?mlat=51.12820&mlon=71.43040#map=12/51.12820/71.43040",
+      "googleMapsUrl": "https://www.google.com/maps/search/?api=1&query=51.12820%2C71.43040",
       "wikipediaUrl": null,
       "wikipediaEvidence": null
     },
@@ -3540,19 +3656,19 @@
       "checkedDate": "2026-10-08",
       "checkedDateEvidence": {
         "date": "2026-10-08",
-        "path": "research/india-africa-2026-10-08/india-city-9949.json",
+        "path": "research/india-africa-next10-2026-10-08/city-9949.json",
         "field": "$.checkedAt"
       },
-      "registryFound": false,
+      "registryFound": null,
       "registryFindingBasis": null,
-      "registryBasis": "No nonempty parcel feature geometry tied to the WUP target was obtained. State portal was either an interactive shell or timed out; J&K inherited API endpoints require authentication.",
+      "registryBasis": "No geometry was obtained. Escalated ordinary GET attempts to the official Dishaank, Karnataka BhoomiMaps, KSRSAC and GBA GIS Viewer routes all ended in ConnectTimeout before HTTP response. The search-indexed GBA viewer exposes admin selectors; the official GEPTIS public view requires mobile-linked registration. These are specific access/interface findings, not evidence that no Karnataka data exists.",
       "verifiedSample": false,
       "impliedParcelsTried": null,
       "sourceIds": [],
       "evidenceUrls": [],
       "evidenceFiles": [
         "research/bengaluru.json",
-        "research/india-africa-2026-10-08/india-city-9949.json"
+        "research/india-africa-next10-2026-10-08/city-9949.json"
       ],
       "osmUrl": "https://www.openstreetmap.org/?mlat=12.97194&mlon=77.59369#map=12/12.97194/77.59369",
       "googleMapsUrl": "https://www.google.com/maps/search/?api=1&query=12.97194%2C77.59369",
@@ -4094,6 +4210,61 @@
         "distanceKm": 4.78,
         "coordinateThresholdKm": 30
       }
+    },
+    {
+      "id": "capital:KG:bishkek",
+      "name": "Bishkek",
+      "country": "Kyrgyzstan",
+      "countryCode": "KG",
+      "latitude": 42.8746,
+      "longitude": 74.5698,
+      "registryCityIds": [
+        "capital:KG:bishkek"
+      ],
+      "appCityIds": [],
+      "cohorts": [
+        "capital-research",
+        "public-parcel-sample",
+        "quality-held"
+      ],
+      "wupCityCode": null,
+      "wupName": null,
+      "growthRank": null,
+      "researchFocusRegion": null,
+      "researchPriority": null,
+      "population2015": null,
+      "population2025": null,
+      "annualGrowthPct2015To2025": null,
+      "populationPlausibility2025": null,
+      "populationMatch": null,
+      "checked": true,
+      "checkedDate": "2026-10-08",
+      "checkedDateEvidence": {
+        "date": "2026-10-08",
+        "path": "research/central-asia-capitals-2026-10-08/city-bishkek.json",
+        "field": "$.checkedAt"
+      },
+      "registryFound": true,
+      "registryFindingBasis": "recorded_evidence",
+      "registryBasis": "The official public cadastre map returned 111 unique category-filtered land-plot polygons with native PROPCODEs across a bounded nine-cell sample. Geometry QA found 3 of 111 invalid features and 12 positive-area intersection pairs, so runtime integration is held and the prototype adapter remains unwired. This verifies a local public sample only; citywide coverage, PROPCODE permanence, and ownership are not established.",
+      "verifiedSample": true,
+      "impliedParcelsTried": null,
+      "sourceIds": [
+        "kg-bishkek-cadastre-eni-area"
+      ],
+      "evidenceUrls": [
+        "https://cadastre.kg/svc-portal/map/main.do"
+      ],
+      "evidenceFiles": [
+        "research/central-asia-capitals-2026-10-08/city-bishkek.json",
+        "research/central-asia-capitals-2026-10-08/bishkek-query-validation.json",
+        "research/central-asia-capitals-2026-10-08/bishkek-neighborhood-3x3-requests.json",
+        "research/central-asia-capitals-2026-10-08/bishkek-neighborhood-3x3.geojson"
+      ],
+      "osmUrl": "https://www.openstreetmap.org/?mlat=42.87460&mlon=74.56980#map=12/42.87460/74.56980",
+      "googleMapsUrl": "https://www.google.com/maps/search/?api=1&query=42.87460%2C74.56980",
+      "wikipediaUrl": null,
+      "wikipediaEvidence": null
     },
     {
       "id": "us-capital:ND",
@@ -4791,13 +4962,14 @@
       },
       "registryFound": null,
       "registryFindingBasis": null,
-      "registryBasis": "Anonymous candidate service was known, but bounded target query timed out / returned HTTP 000 for the eight assigned non-Luanda cities; no sample verified.",
+      "registryBasis": "The anonymous Luanda AGT polygon layer metadata is now reachable, but the target WUP center falls outside its advertised extent. The previous shared target attempts were timeouts; no city-specific feature query was sent in this follow-up.",
       "verifiedSample": false,
       "impliedParcelsTried": null,
       "sourceIds": [],
       "evidenceUrls": [],
       "evidenceFiles": [
-        "research/india-africa-2026-10-08/africa-ws-city-546.json"
+        "research/india-africa-2026-10-08/africa-ws-city-546.json",
+        "research/india-africa-followup-2026-10-08/africa-ws-city-546.json"
       ],
       "osmUrl": "https://www.openstreetmap.org/?mlat=-5.57829&mlon=12.20357#map=12/-5.57829/12.20357",
       "googleMapsUrl": "https://www.google.com/maps/search/?api=1&query=-5.57829%2C12.20357",
@@ -6012,12 +6184,12 @@
       "checkedDate": "2026-10-08",
       "checkedDateEvidence": {
         "date": "2026-10-08",
-        "path": "research/india-africa-2026-10-08/india-city-10747.json",
+        "path": "research/india-africa-next10-2026-10-08/city-10747.json",
         "field": "$.checkedAt"
       },
       "registryFound": null,
       "registryFindingBasis": null,
-      "registryBasis": "No nonempty parcel feature geometry tied to the WUP target was obtained. State portal was either an interactive shell or timed out; J&K inherited API endpoints require authentication.",
+      "registryBasis": "No Chennai parcel polygon was obtained. The official eServices/TNGIS/CMDA application routes timed out before HTTP response; live GCC public GIS metadata exposes road and administrative boundaries, and the exact WUP point resolves only to ward 136. The public GCCPropertyTax folder listing is empty, while a separate GCCWebAppPublic folder explicitly requires a token.",
       "verifiedSample": false,
       "impliedParcelsTried": null,
       "sourceIds": [],
@@ -6025,7 +6197,7 @@
       "evidenceFiles": [
         "research/chennai.json",
         "research/retry/cities/chennai.json",
-        "research/india-africa-2026-10-08/india-city-10747.json"
+        "research/india-africa-next10-2026-10-08/city-10747.json"
       ],
       "osmUrl": "https://www.openstreetmap.org/?mlat=13.08784&mlon=80.27847#map=12/13.08784/80.27847",
       "googleMapsUrl": "https://www.google.com/maps/search/?api=1&query=13.08784%2C80.27847",
@@ -7216,13 +7388,14 @@
       },
       "registryFound": null,
       "registryFindingBasis": null,
-      "registryBasis": "Anonymous candidate service was known, but bounded target query timed out / returned HTTP 000 for the eight assigned non-Luanda cities; no sample verified.",
+      "registryBasis": "The anonymous Luanda AGT polygon layer metadata is now reachable, but the target WUP center falls outside its advertised extent. The previous shared target attempts were timeouts; no city-specific feature query was sent in this follow-up.",
       "verifiedSample": false,
       "impliedParcelsTried": null,
       "sourceIds": [],
       "evidenceUrls": [],
       "evidenceFiles": [
-        "research/india-africa-2026-10-08/africa-ws-city-3711.json"
+        "research/india-africa-2026-10-08/africa-ws-city-3711.json",
+        "research/india-africa-followup-2026-10-08/africa-ws-city-3711.json"
       ],
       "osmUrl": "https://www.openstreetmap.org/?mlat=-12.38764&mlon=16.93745#map=12/-12.38764/16.93745",
       "googleMapsUrl": "https://www.google.com/maps/search/?api=1&query=-12.38764%2C16.93745",
@@ -7482,12 +7655,12 @@
       "checkedDate": "2026-10-08",
       "checkedDateEvidence": {
         "date": "2026-10-08",
-        "path": "research/india-africa-2026-10-08/africa-ws-city-33.json",
+        "path": "research/india-africa-next10-2026-10-08/city-33.json",
         "field": "$.checkedAt"
       },
       "registryFound": null,
       "registryFindingBasis": null,
-      "registryBasis": "No anonymous target-city parcel polygon sample with stable native ID was verified in this pass.",
+      "registryBasis": "No documented anonymous Dakar parcel feature route. The old record remains unavailable over both schemes; reachable official Dakar products are topographic vectors, while DGID parcel extracts follow an administrative procedure.",
       "verifiedSample": false,
       "impliedParcelsTried": null,
       "sourceIds": [],
@@ -7495,7 +7668,7 @@
       "evidenceFiles": [
         "research/dakar.json",
         "research/retry/cities/dakar.json",
-        "research/india-africa-2026-10-08/africa-ws-city-33.json"
+        "research/india-africa-next10-2026-10-08/city-33.json"
       ],
       "osmUrl": "https://www.openstreetmap.org/?mlat=14.74390&mlon=-17.38936#map=12/14.74390/-17.38936",
       "googleMapsUrl": "https://www.google.com/maps/search/?api=1&query=14.74390%2C-17.38936",
@@ -7711,12 +7884,12 @@
       "checkedDate": "2026-10-08",
       "checkedDateEvidence": {
         "date": "2026-10-08",
-        "path": "research/india-africa-2026-10-08/africa-ne-city-dar-es-salaam.json",
+        "path": "research/india-africa-next10-2026-10-08/africa-east-city-3566.json",
         "field": "$.checkedAt"
       },
       "registryFound": null,
       "registryFindingBasis": null,
-      "registryBasis": "No anonymous Dar es Salaam parcel polygons or stable IDs were verified; e-Ardhi is an account-oriented land-service workflow, not evidence of a public city feature endpoint.",
+      "registryBasis": "A public partial parcel candidate exists, but its extent lies about 28.7 km from the WUP point, a 1 km centre count is zero, and the item does not document Dar-city affiliation. No city-centre parcel geometry or authoritative registry endpoint was found.",
       "verifiedSample": false,
       "impliedParcelsTried": null,
       "sourceIds": [],
@@ -7724,7 +7897,7 @@
       "evidenceFiles": [
         "research/dar-es-salaam.json",
         "research/retry/cities/dar-es-salaam.json",
-        "research/india-africa-2026-10-08/africa-ne-city-dar-es-salaam.json"
+        "research/india-africa-next10-2026-10-08/africa-east-city-3566.json"
       ],
       "osmUrl": "https://www.openstreetmap.org/?mlat=-6.83353&mlon=39.22414#map=12/-6.83353/39.22414",
       "googleMapsUrl": "https://www.google.com/maps/search/?api=1&query=-6.83353%2C39.22414",
@@ -7783,26 +7956,19 @@
       "checkedDate": "2026-10-08",
       "checkedDateEvidence": {
         "date": "2026-10-08",
-        "path": "research/india-africa-2026-10-08/india-city-10737.json",
+        "path": "research/india-africa-followup-2026-10-08/bihar-city-10737-darauli.json",
         "field": "$.checkedAt"
       },
-      "registryFound": true,
-      "registryFindingBasis": "recorded_evidence",
-      "registryBasis": "Official state portals were discoverable; exact target revenue-village identity and a nonempty parcel geometry response at the WUP point were not verified in this pass.",
+      "registryFound": null,
+      "registryFindingBasis": null,
+      "registryBasis": "No target-point parcel identity or polygon was returned. The shared viewer returns 204 for the exact WUP coordinate without a selected sheet GIS code, and its current click/report/highlight flow exposes only point IDs, plot number, EPSG:32645 bbox, and raster images. The source-level result applies to the viewer, not all Bihar services.",
       "verifiedSample": false,
       "impliedParcelsTried": null,
       "sourceIds": [],
-      "evidenceUrls": [
-        "https://dilrmp.gov.in/dilrmpold/MapULPIN/tehsil-level/212",
-        "https://dilrmp.gov.in/dilrmpold/MapULPIN/tehsil-level/218",
-        "https://bhunaksha.bihar.gov.in/index.jsp",
-        "https://bhunaksha.bihar.gov.in/10/index.jsp",
-        "https://katihar.nic.in/block-maps/",
-        "https://bbnl.nic.in/admnis/admin/showimg.aspx?ID=11"
-      ],
+      "evidenceUrls": [],
       "evidenceFiles": [
         "research/growth-top20-2026-10-07/city-10737.json",
-        "research/india-africa-2026-10-08/india-city-10737.json",
+        "research/india-africa-followup-2026-10-08/bihar-city-10737-darauli.json",
         "research/growth-top20-integration-2026-10-07/bihar.json"
       ],
       "osmUrl": "https://www.openstreetmap.org/?mlat=26.13509&mlon=84.16580#map=12/26.13509/84.16580",
@@ -9022,6 +9188,58 @@
       "wikipediaEvidence": null
     },
     {
+      "id": "capital:TJ:dushanbe",
+      "name": "Dushanbe",
+      "country": "Tajikistan",
+      "countryCode": "TJ",
+      "latitude": 38.5598,
+      "longitude": 68.787,
+      "registryCityIds": [
+        "capital:TJ:dushanbe"
+      ],
+      "appCityIds": [],
+      "cohorts": [
+        "capital-research",
+        "official-registry-documented"
+      ],
+      "wupCityCode": null,
+      "wupName": null,
+      "growthRank": null,
+      "researchFocusRegion": null,
+      "researchPriority": null,
+      "population2015": null,
+      "population2025": null,
+      "annualGrowthPct2015To2025": null,
+      "populationPlausibility2025": null,
+      "populationMatch": null,
+      "checked": true,
+      "checkedDate": "2026-10-08",
+      "checkedDateEvidence": {
+        "date": "2026-10-08",
+        "path": "research/central-asia-capitals-2026-10-08/city-dushanbe.json",
+        "field": "$.checkedAt"
+      },
+      "registryFound": true,
+      "registryFindingBasis": "recorded_evidence",
+      "registryBasis": "Official Tajik registration-service material links to the State Geoportal; the portal search index describes land parcels, cadastral numbers and geometry. This documents an official parcel-portal lead, but the site redirects to HTTPS with an expired certificate. No service endpoint or public geometry was verified.",
+      "verifiedSample": false,
+      "impliedParcelsTried": null,
+      "sourceIds": [],
+      "evidenceUrls": [
+        "https://geoportal.tj/",
+        "https://mis.nsift.tj/gis",
+        "https://baqaydgiri.tj/",
+        "https://www.zamin.tj/"
+      ],
+      "evidenceFiles": [
+        "research/central-asia-capitals-2026-10-08/city-dushanbe.json"
+      ],
+      "osmUrl": "https://www.openstreetmap.org/?mlat=38.55980&mlon=68.78700#map=12/38.55980/68.78700",
+      "googleMapsUrl": "https://www.google.com/maps/search/?api=1&query=38.55980%2C68.78700",
+      "wikipediaUrl": null,
+      "wikipediaEvidence": null
+    },
+    {
       "id": "wup2025:11117",
       "name": "Ekangar Sarai",
       "country": "India",
@@ -10062,15 +10280,20 @@
         "path": "research/india-africa-2026-10-08/india-city-10035.json",
         "field": "$.checkedAt"
       },
-      "registryFound": null,
-      "registryFindingBasis": null,
-      "registryBasis": "Official state selector/viewer is publicly reachable, but this bounded pass did not resolve a city-specific cadastral feature or verify nonempty parcel geometry at the WUP target.",
-      "verifiedSample": false,
+      "registryFound": true,
+      "registryFindingBasis": "recorded_evidence",
+      "registryBasis": "Nine app cells yielded 37 nonblank survey numbers; fresh exact native-ID counts, manifests and geometries timed out at 15 seconds. The source also supports ESRI JSON/AMF only, while the current adapter requires GeoJSON. Three blank-ID Road/Village boundary rows are an explicit omitted-subset candidate, not parcel identities.",
+      "verifiedSample": true,
       "impliedParcelsTried": null,
-      "sourceIds": [],
-      "evidenceUrls": [],
+      "sourceIds": [
+        "tg-dmv-1512012-annojiguda"
+      ],
+      "evidenceUrls": [
+        "https://tgrac.telangana.gov.in/arcgis/rest/services/Bhunaksha_Folder/Bhunaksha_query/MapServer/0"
+      ],
       "evidenceFiles": [
-        "research/india-africa-2026-10-08/india-city-10035.json"
+        "research/india-africa-2026-10-08/india-city-10035.json",
+        "research/india-africa-next10-2026-10-08/city-10035.json"
       ],
       "osmUrl": "https://www.openstreetmap.org/?mlat=17.43003&mlon=78.65423#map=12/17.43003/78.65423",
       "googleMapsUrl": "https://www.google.com/maps/search/?api=1&query=17.43003%2C78.65423",
@@ -10653,19 +10876,19 @@
       "checkedDate": "2026-10-08",
       "checkedDateEvidence": {
         "date": "2026-10-08",
-        "path": "research/india-africa-2026-10-08/india-city-11027.json",
+        "path": "research/india-africa-followup-2026-10-08/bihar-city-11027-hajipur.json",
         "field": "$.checkedAt"
       },
-      "registryFound": false,
+      "registryFound": null,
       "registryFindingBasis": null,
-      "registryBasis": "Official state portals were discoverable; exact target revenue-village identity and a nonempty parcel geometry response at the WUP point were not verified in this pass.",
+      "registryBasis": "No target-point parcel identity or polygon was returned. The shared viewer returns 204 for the exact WUP coordinate without a selected sheet GIS code, and its current click/report/highlight flow exposes only point IDs, plot number, EPSG:32645 bbox, and raster images. The source-level result applies to the viewer, not all Bihar services.",
       "verifiedSample": false,
       "impliedParcelsTried": null,
       "sourceIds": [],
       "evidenceUrls": [],
       "evidenceFiles": [
         "research/hajipur.json",
-        "research/india-africa-2026-10-08/india-city-11027.json"
+        "research/india-africa-followup-2026-10-08/bihar-city-11027-hajipur.json"
       ],
       "osmUrl": "https://www.openstreetmap.org/?mlat=25.98100&mlon=85.45100#map=12/25.98100/85.45100",
       "googleMapsUrl": "https://www.google.com/maps/search/?api=1&query=25.98100%2C85.45100",
@@ -11763,12 +11986,12 @@
       "checkedDate": "2026-10-08",
       "checkedDateEvidence": {
         "date": "2026-10-08",
-        "path": "research/india-africa-2026-10-08/india-city-9913.json",
+        "path": "research/india-africa-next10-2026-10-08/city-9913.json",
         "field": "$.checkedAt"
       },
       "registryFound": null,
       "registryFindingBasis": null,
-      "registryBasis": "Official state selector/viewer is publicly reachable, but this bounded pass did not resolve a city-specific cadastral feature or verify nonempty parcel geometry at the WUP target.",
+      "registryBasis": "Public TGRAC endpoint at the WUP coordinate returns one aggregate GHMC polygon, with blank Parcel_num and a “to be checked” remark; the ULB cadastral and cadastral point queries return zero features.",
       "verifiedSample": false,
       "impliedParcelsTried": null,
       "sourceIds": [],
@@ -11776,7 +11999,7 @@
       "evidenceFiles": [
         "research/hyderabad.json",
         "research/retry/cities/hyderabad.json",
-        "research/india-africa-2026-10-08/india-city-9913.json"
+        "research/india-africa-next10-2026-10-08/city-9913.json"
       ],
       "osmUrl": "https://www.openstreetmap.org/?mlat=17.41389&mlon=78.47569#map=12/17.41389/78.47569",
       "googleMapsUrl": "https://www.google.com/maps/search/?api=1&query=17.41389%2C78.47569",
@@ -12215,6 +12438,62 @@
         "distanceKm": 2.162,
         "coordinateThresholdKm": 30
       }
+    },
+    {
+      "id": "village:IN-KL-020301",
+      "name": "Iravipuram (Kollam)",
+      "country": "India",
+      "countryCode": "IN",
+      "latitude": 8.847550832774829,
+      "longitude": 76.62751009273858,
+      "registryCityIds": [
+        "village:IN-KL-020301"
+      ],
+      "appCityIds": [
+        "iravipuram"
+      ],
+      "cohorts": [
+        "configured",
+        "local-village-source"
+      ],
+      "wupCityCode": null,
+      "wupName": null,
+      "growthRank": null,
+      "researchFocusRegion": null,
+      "researchPriority": null,
+      "population2015": null,
+      "population2025": null,
+      "annualGrowthPct2015To2025": null,
+      "populationPlausibility2025": null,
+      "populationMatch": null,
+      "checked": true,
+      "checkedDate": "2026-10-08",
+      "checkedDateEvidence": {
+        "date": "2026-10-08",
+        "path": "research/india-africa-followup-2026-10-08/kerala-assessment.json",
+        "field": "$.checkedAt"
+      },
+      "registryFound": true,
+      "registryFindingBasis": "recorded_evidence",
+      "registryBasis": "Published Iravipuram cadastral village 020301; 162 native parcel_gid identities matched fresh exact geometry across nine aligned cells at the displayed village entry. Published Iravipuram cadastral village (020301), limited to bounded source queries. Iravipuram, Kollam Corporation. Kept separate from the WUP Kollam entry because its saved point is about 54 km away and the settlement crosswalk is unresolved. Update year and full village completeness remain unestablished.",
+      "verifiedSample": true,
+      "impliedParcelsTried": null,
+      "sourceIds": [
+        "in-kl-entebhoomi-020301"
+      ],
+      "evidenceUrls": [
+        "https://bhunaksha.entebhoomi.kerala.gov.in/bhunaksha_v5_emaps/core/v2/map/export/geojson/020301",
+        "https://entebhoomi.kerala.gov.in/web/ilms/map"
+      ],
+      "evidenceFiles": [
+        "research/india-africa-followup-2026-10-08/kerala-9847.json",
+        "research/india-africa-followup-2026-10-08/kerala-adapter-parallel.json",
+        "research/india-africa-followup-2026-10-08/kerala-assessment.json"
+      ],
+      "osmUrl": "https://www.openstreetmap.org/?mlat=8.84755&mlon=76.62751#map=12/8.84755/76.62751",
+      "googleMapsUrl": "https://www.google.com/maps/search/?api=1&query=8.84755%2C76.62751",
+      "wikipediaUrl": null,
+      "wikipediaEvidence": null
     },
     {
       "id": "wup2025:7017",
@@ -13645,19 +13924,19 @@
       "checkedDate": "2026-10-08",
       "checkedDateEvidence": {
         "date": "2026-10-08",
-        "path": "research/india-africa-2026-10-08/india-city-9603.json",
+        "path": "research/india-africa-batch3-2026-10-08/city-9603.json",
         "field": "$.checkedAt"
       },
       "registryFound": false,
       "registryFindingBasis": null,
-      "registryBasis": "Official state portals were identified, but this search pass did not establish the exact revenue village at the WUP coordinate or return a public parcel polygon/feature response.",
+      "registryBasis": "The official UP BhuNaksha UI opened but rendered a default Agra village, not the Kanpur WUP point; no Kanpur village code or parcel polygon was obtained. Inherited public viewer uses raster WMS tiles and the vector plot route returned 401 without authorization.",
       "verifiedSample": false,
       "impliedParcelsTried": null,
       "sourceIds": [],
       "evidenceUrls": [],
       "evidenceFiles": [
         "research/kanpur.json",
-        "research/india-africa-2026-10-08/india-city-9603.json"
+        "research/india-africa-batch3-2026-10-08/city-9603.json"
       ],
       "osmUrl": "https://www.openstreetmap.org/?mlat=26.46095&mlon=80.34062#map=12/26.46095/80.34062",
       "googleMapsUrl": "https://www.google.com/maps/search/?api=1&query=26.46095%2C80.34062",
@@ -14466,19 +14745,19 @@
       "checkedDate": "2026-10-08",
       "checkedDateEvidence": {
         "date": "2026-10-08",
-        "path": "research/india-africa-2026-10-08/africa-ws-city-1854.json",
+        "path": "research/india-africa-batch3-2026-10-08/city-1854.json",
         "field": "$.checkedAt"
       },
-      "registryFound": false,
+      "registryFound": null,
       "registryFindingBasis": null,
-      "registryBasis": "No anonymous target-city parcel polygon sample with stable native ID was verified in this pass.",
+      "registryBasis": "The cadastre.gouv.cd host could not be resolved from this environment; government and e-Foncier systems may hold cadastral records behind an unavailable or access-controlled service. The existence of local records or the Gombe pilot does not establish anonymous public access at the WUP coordinate.",
       "verifiedSample": false,
       "impliedParcelsTried": null,
       "sourceIds": [],
       "evidenceUrls": [],
       "evidenceFiles": [
         "research/kinshasa.json",
-        "research/india-africa-2026-10-08/africa-ws-city-1854.json"
+        "research/india-africa-batch3-2026-10-08/city-1854.json"
       ],
       "osmUrl": "https://www.openstreetmap.org/?mlat=-4.32758&mlon=15.31357#map=12/-4.32758/15.31357",
       "googleMapsUrl": "https://www.google.com/maps/search/?api=1&query=-4.32758%2C15.31357",
@@ -14574,7 +14853,9 @@
       "registryCityIds": [
         "wup2025:9765"
       ],
-      "appCityIds": [],
+      "appCityIds": [
+        "kochi"
+      ],
       "cohorts": [
         "largest200",
         "registry"
@@ -14598,20 +14879,26 @@
       "checkedDate": "2026-10-08",
       "checkedDateEvidence": {
         "date": "2026-10-08",
-        "path": "research/india-africa-2026-10-08/india-city-9765.json",
+        "path": "research/india-africa-followup-2026-10-08/kerala-assessment.json",
         "field": "$.checkedAt"
       },
-      "registryFound": false,
-      "registryFindingBasis": null,
-      "registryBasis": "Official state selector is publicly reachable, but candidate city/locality is not confirmed inside published survey coverage (or exact village unresolved); point-identify returned only the HTML viewer shell, not parcel feature geometry.",
-      "verifiedSample": false,
+      "registryFound": true,
+      "registryFindingBasis": "recorded_evidence",
+      "registryBasis": "Published Thiruvankulam cadastral village 070211; 229 native parcel_gid identities matched fresh exact geometry across nine aligned cells at the displayed village entry. Published Thiruvankulam cadastral village (070211), limited to bounded source queries. Village lies in Thrippunithura Municipality and the historical Kochi urban agglomeration; Kochi Corporation and WUP-point coverage are not claimed. Update year and full village completeness remain unestablished.",
+      "verifiedSample": true,
       "impliedParcelsTried": null,
-      "sourceIds": [],
-      "evidenceUrls": [],
+      "sourceIds": [
+        "in-kl-entebhoomi-070211"
+      ],
+      "evidenceUrls": [
+        "https://bhunaksha.entebhoomi.kerala.gov.in/bhunaksha_v5_emaps/core/v2/map/export/geojson/070211",
+        "https://entebhoomi.kerala.gov.in/web/ilms/map"
+      ],
       "evidenceFiles": [
         "research/kochi.json",
         "research/retry/cities/kochi.json",
-        "research/india-africa-2026-10-08/india-city-9765.json"
+        "research/india-africa-followup-2026-10-08/kerala-adapter-parallel.json",
+        "research/india-africa-followup-2026-10-08/kerala-assessment.json"
       ],
       "osmUrl": "https://www.openstreetmap.org/?mlat=10.06128&mlon=76.30881#map=12/10.06128/76.30881",
       "googleMapsUrl": "https://www.google.com/maps/search/?api=1&query=10.06128%2C76.30881",
@@ -14670,19 +14957,19 @@
       "checkedDate": "2026-10-08",
       "checkedDateEvidence": {
         "date": "2026-10-08",
-        "path": "research/india-africa-2026-10-08/india-city-11821.json",
+        "path": "research/india-africa-batch3-2026-10-08/city-11821.json",
         "field": "$.checkedAt"
       },
       "registryFound": false,
       "registryFindingBasis": null,
-      "registryBasis": "No public, unauthenticated parcel geometry/sample verified in this pass. Banglarbhumi host direct fetch timed out; official WBUDMA service is OTP based and describes record lookup, without public parcel geometry confirmed.",
+      "registryBasis": "No public parcel polygon was obtained. The official West Bengal portal currently indexes Plot Map Request and Mouza Map Request but describes login for Citizen Services; direct page fetch timed out/502 or returned Invalid Operation. Kolkata mouza match and open geometry remain unverified.",
       "verifiedSample": false,
       "impliedParcelsTried": null,
       "sourceIds": [],
       "evidenceUrls": [],
       "evidenceFiles": [
         "research/kolkata.json",
-        "research/india-africa-2026-10-08/india-city-11821.json"
+        "research/india-africa-batch3-2026-10-08/city-11821.json"
       ],
       "osmUrl": "https://www.openstreetmap.org/?mlat=22.56263&mlon=88.36304#map=12/22.56263/88.36304",
       "googleMapsUrl": "https://www.google.com/maps/search/?api=1&query=22.56263%2C88.36304",
@@ -14741,12 +15028,12 @@
       "checkedDate": "2026-10-08",
       "checkedDateEvidence": {
         "date": "2026-10-08",
-        "path": "research/india-africa-2026-10-08/india-city-9847.json",
+        "path": "research/india-africa-followup-2026-10-08/kerala-assessment.json",
         "field": "$.checkedAt"
       },
       "registryFound": null,
       "registryFindingBasis": null,
-      "registryBasis": "Official state selector is publicly reachable, but candidate city/locality is not confirmed inside published survey coverage (or exact village unresolved); point-identify returned only the HTML viewer shell, not parcel feature geometry.",
+      "registryBasis": "A complete Iravipuram village source is enabled as a separate local entry in Kollam Corporation. The saved WUP Kollam point is about 54.47 km away; no reliable settlement boundary/crosswalk links that point to this sample. WUP-point and citywide parcel coverage remain unverified.",
       "verifiedSample": false,
       "impliedParcelsTried": null,
       "sourceIds": [],
@@ -14754,7 +15041,8 @@
       "evidenceFiles": [
         "research/kollam.json",
         "research/retry/cities/kollam.json",
-        "research/india-africa-2026-10-08/india-city-9847.json"
+        "research/india-africa-followup-2026-10-08/kerala-assessment.json",
+        "research/india-africa-followup-2026-10-08/kerala-city-association.json"
       ],
       "osmUrl": "https://www.openstreetmap.org/?mlat=9.29818&mlon=76.42755#map=12/9.29818/76.42755",
       "googleMapsUrl": "https://www.google.com/maps/search/?api=1&query=9.29818%2C76.42755",
@@ -14865,19 +15153,24 @@
       "checkedDate": "2026-10-08",
       "checkedDateEvidence": {
         "date": "2026-10-08",
-        "path": "research/india-africa-2026-10-08/india-city-9587.json",
+        "path": "research/india-africa-followup-2026-10-08/kerala-assessment.json",
         "field": "$.checkedAt"
       },
-      "registryFound": false,
-      "registryFindingBasis": null,
-      "registryBasis": "Official Ente Bhoomi selector confirms an unpublished/alternate candidate but does not verify its boundary at the WUP point; point-identify returned only the generic HTML viewer shell, not parcel geometry.",
-      "verifiedSample": false,
+      "registryFound": true,
+      "registryFindingBasis": "recorded_evidence",
+      "registryBasis": "Published Karuvanthuruthi village geometry with a historical Kozhikode urban-agglomeration association. The native geometry audit passed 280 parcel IDs across nine cells, but the ordinary 25-cell browser view timed out in two consecutive loads. It retained only 15 then 23 complete cells and displayed the normal unavailable-source warning. Some same-cell retries passed; reliable expanded viewport loading remains unverified. No timeout or failure handling is weakened.",
+      "verifiedSample": true,
       "impliedParcelsTried": null,
-      "sourceIds": [],
-      "evidenceUrls": [],
+      "sourceIds": [
+        "in-kl-entebhoomi-110114"
+      ],
+      "evidenceUrls": [
+        "https://bhunaksha.entebhoomi.kerala.gov.in/bhunaksha_v5_emaps/core/v2/map/export/geojson/110114"
+      ],
       "evidenceFiles": [
         "research/kozhikode.json",
-        "research/india-africa-2026-10-08/india-city-9587.json"
+        "research/india-africa-followup-2026-10-08/kerala-browser-initial-failure.json",
+        "research/india-africa-followup-2026-10-08/kerala-assessment.json"
       ],
       "osmUrl": "https://www.openstreetmap.org/?mlat=11.20591&mlon=75.85835#map=12/11.20591/75.85835",
       "googleMapsUrl": "https://www.google.com/maps/search/?api=1&query=11.20591%2C75.85835",
@@ -15336,19 +15629,19 @@
       "checkedDate": "2026-10-08",
       "checkedDateEvidence": {
         "date": "2026-10-08",
-        "path": "research/india-africa-2026-10-08/africa-ws-city-1265.json",
+        "path": "research/india-africa-next10-2026-10-08/city-1265.json",
         "field": "$.checkedAt"
       },
-      "registryFound": false,
+      "registryFound": null,
       "registryFindingBasis": null,
-      "registryBasis": "Candidate layer extent is far outside Lagos and bounded target query returned zero features.",
+      "registryBasis": "No meaningful native lot attributes were returned around the target. At the exact target, two identical large polygons had null lot/plan fields; within the approximately 4.4 km local envelope, the OR-of-non-null-fields filter matched zero rows. OBJECTIDs remain transport identifiers only.",
       "verifiedSample": false,
       "impliedParcelsTried": null,
       "sourceIds": [],
       "evidenceUrls": [],
       "evidenceFiles": [
         "research/lagos.json",
-        "research/india-africa-2026-10-08/africa-ws-city-1265.json"
+        "research/india-africa-next10-2026-10-08/city-1265.json"
       ],
       "osmUrl": "https://www.openstreetmap.org/?mlat=6.45407&mlon=3.39467#map=12/6.45407/3.39467",
       "googleMapsUrl": "https://www.google.com/maps/search/?api=1&query=6.45407%2C3.39467",
@@ -16702,13 +16995,14 @@
       },
       "registryFound": null,
       "registryFindingBasis": null,
-      "registryBasis": "Anonymous candidate service was known, but bounded target query timed out / returned HTTP 000 for the eight assigned non-Luanda cities; no sample verified.",
+      "registryBasis": "The anonymous Luanda AGT polygon layer metadata is now reachable, but the target WUP center falls outside its advertised extent. The previous shared target attempts were timeouts; no city-specific feature query was sent in this follow-up.",
       "verifiedSample": false,
       "impliedParcelsTried": null,
       "sourceIds": [],
       "evidenceUrls": [],
       "evidenceFiles": [
-        "research/india-africa-2026-10-08/africa-ws-city-4201.json"
+        "research/india-africa-2026-10-08/africa-ws-city-4201.json",
+        "research/india-africa-followup-2026-10-08/africa-ws-city-4201.json"
       ],
       "osmUrl": "https://www.openstreetmap.org/?mlat=-10.70789&mlon=22.22612#map=12/-10.70789/22.22612",
       "googleMapsUrl": "https://www.google.com/maps/search/?api=1&query=-10.70789%2C22.22612",
@@ -16754,13 +17048,14 @@
       },
       "registryFound": null,
       "registryFindingBasis": null,
-      "registryBasis": "Anonymous candidate service was known, but bounded target query timed out / returned HTTP 000 for the eight assigned non-Luanda cities; no sample verified.",
+      "registryBasis": "The anonymous Luanda AGT polygon layer metadata is now reachable, but the target WUP center falls outside its advertised extent. The previous shared target attempts were timeouts; no city-specific feature query was sent in this follow-up.",
       "verifiedSample": false,
       "impliedParcelsTried": null,
       "sourceIds": [],
       "evidenceUrls": [],
       "evidenceFiles": [
-        "research/india-africa-2026-10-08/africa-ws-city-1169.json"
+        "research/india-africa-2026-10-08/africa-ws-city-1169.json",
+        "research/india-africa-followup-2026-10-08/africa-ws-city-1169.json"
       ],
       "osmUrl": "https://www.openstreetmap.org/?mlat=-14.90714&mlon=13.51442#map=12/-14.90714/13.51442",
       "googleMapsUrl": "https://www.google.com/maps/search/?api=1&query=-14.90714%2C13.51442",
@@ -16890,19 +17185,19 @@
       "checkedDate": "2026-10-08",
       "checkedDateEvidence": {
         "date": "2026-10-08",
-        "path": "research/india-africa-2026-10-08/india-city-9717.json",
+        "path": "research/india-africa-batch3-2026-10-08/city-9717.json",
         "field": "$.checkedAt"
       },
       "registryFound": false,
       "registryFindingBasis": null,
-      "registryBasis": "Official state portals were identified, but this search pass did not establish the exact revenue village at the WUP coordinate or return a public parcel polygon/feature response.",
+      "registryBasis": "The official UP BhuNaksha UI opened but rendered a default Agra village, not the Lucknow WUP point; no Lucknow village code or parcel polygon was obtained. Inherited level lookup POST reached an upstream 403 and vector plot API was not verified.",
       "verifiedSample": false,
       "impliedParcelsTried": null,
       "sourceIds": [],
       "evidenceUrls": [],
       "evidenceFiles": [
         "research/lucknow.json",
-        "research/india-africa-2026-10-08/india-city-9717.json"
+        "research/india-africa-batch3-2026-10-08/city-9717.json"
       ],
       "osmUrl": "https://www.openstreetmap.org/?mlat=26.86152&mlon=80.96544#map=12/26.86152/80.96544",
       "googleMapsUrl": "https://www.google.com/maps/search/?api=1&query=26.86152%2C80.96544",
@@ -16966,13 +17261,14 @@
       },
       "registryFound": null,
       "registryFindingBasis": null,
-      "registryBasis": "Anonymous candidate service was known, but bounded target query timed out / returned HTTP 000 for the eight assigned non-Luanda cities; no sample verified.",
+      "registryBasis": "The anonymous Luanda AGT polygon layer metadata is now reachable, but the target WUP center falls outside its advertised extent. The previous shared target attempts were timeouts; no city-specific feature query was sent in this follow-up.",
       "verifiedSample": false,
       "impliedParcelsTried": null,
       "sourceIds": [],
       "evidenceUrls": [],
       "evidenceFiles": [
-        "research/india-africa-2026-10-08/africa-ws-city-3898.json"
+        "research/india-africa-2026-10-08/africa-ws-city-3898.json",
+        "research/india-africa-followup-2026-10-08/africa-ws-city-3898.json"
       ],
       "osmUrl": "https://www.openstreetmap.org/?mlat=-11.77853&mlon=19.90863#map=12/-11.77853/19.90863",
       "googleMapsUrl": "https://www.google.com/maps/search/?api=1&query=-11.77853%2C19.90863",
@@ -17242,13 +17538,14 @@
       },
       "registryFound": null,
       "registryFindingBasis": null,
-      "registryBasis": "Anonymous candidate service was known, but bounded target query timed out / returned HTTP 000 for the eight assigned non-Luanda cities; no sample verified.",
+      "registryBasis": "The anonymous Luanda AGT polygon layer metadata is now reachable, but the target WUP center falls outside its advertised extent. The previous shared target attempts were timeouts; no city-specific feature query was sent in this follow-up.",
       "verifiedSample": false,
       "impliedParcelsTried": null,
       "sourceIds": [],
       "evidenceUrls": [],
       "evidenceFiles": [
-        "research/india-africa-2026-10-08/africa-ws-city-2250.json"
+        "research/india-africa-2026-10-08/africa-ws-city-2250.json",
+        "research/india-africa-followup-2026-10-08/africa-ws-city-2250.json"
       ],
       "osmUrl": "https://www.openstreetmap.org/?mlat=-6.26111&mlon=14.23310#map=12/-6.26111/14.23310",
       "googleMapsUrl": "https://www.google.com/maps/search/?api=1&query=-6.26111%2C14.23310",
@@ -17443,13 +17740,14 @@
       },
       "registryFound": null,
       "registryFindingBasis": null,
-      "registryBasis": "Anonymous candidate service was known, but bounded target query timed out / returned HTTP 000 for the eight assigned non-Luanda cities; no sample verified.",
+      "registryBasis": "The anonymous Luanda AGT polygon layer metadata is now reachable, but the target WUP center falls outside its advertised extent. The previous shared target attempts were timeouts; no city-specific feature query was sent in this follow-up.",
       "verifiedSample": false,
       "impliedParcelsTried": null,
       "sourceIds": [],
       "evidenceUrls": [],
       "evidenceFiles": [
-        "research/india-africa-2026-10-08/africa-ws-city-3610.json"
+        "research/india-africa-2026-10-08/africa-ws-city-3610.json",
+        "research/india-africa-followup-2026-10-08/africa-ws-city-3610.json"
       ],
       "osmUrl": "https://www.openstreetmap.org/?mlat=-9.54358&mlon=16.35108#map=12/-9.54358/16.35108",
       "googleMapsUrl": "https://www.google.com/maps/search/?api=1&query=-9.54358%2C16.35108",
@@ -17890,15 +18188,20 @@
         "path": "research/india-africa-2026-10-08/africa-ws-city-2412.json",
         "field": "$.checkedAt"
       },
-      "registryFound": null,
-      "registryFindingBasis": null,
-      "registryBasis": "Candidate metadata and bounded Mansa feature query timed out from this network (HTTP 000); target city coverage and stable parcel identifiers remain unverified.",
-      "verifiedSample": false,
+      "registryFound": true,
+      "registryFindingBasis": "recorded_evidence",
+      "registryBasis": "The public no-www NSDI endpoint returns complete bounded cadastral lot geometry. The first center-relative nine-cell audit verified all 86 UPIDs, but the wider aligned app-cell audit exposed two different plots sharing MAN/350. They are disjoint and carry different survey references (138/67 versus 23/71), survey dates and survey areas. A shared UPID alone is therefore insufficient to establish one stable ground parcel in the tested app area.",
+      "verifiedSample": true,
       "impliedParcelsTried": null,
-      "sourceIds": [],
-      "evidenceUrls": [],
+      "sourceIds": [
+        "zm-nsdi-cadaster-new"
+      ],
+      "evidenceUrls": [
+        "https://map.gov.zm/arcgis/rest/services/NSDI_Vector/CadasterNew/MapServer/0"
+      ],
       "evidenceFiles": [
-        "research/india-africa-2026-10-08/africa-ws-city-2412.json"
+        "research/india-africa-2026-10-08/africa-ws-city-2412.json",
+        "research/india-africa-followup-2026-10-08/mansa-assessment.json"
       ],
       "osmUrl": "https://www.openstreetmap.org/?mlat=-11.20273&mlon=28.89149#map=12/-11.20273/28.89149",
       "googleMapsUrl": "https://www.google.com/maps/search/?api=1&query=-11.20273%2C28.89149",
@@ -18310,7 +18613,9 @@
       "registryCityIds": [
         "wup2025:4033"
       ],
-      "appCityIds": [],
+      "appCityIds": [
+        "mboloko"
+      ],
       "cohorts": [
         "growth200",
         "registry"
@@ -18339,23 +18644,27 @@
       },
       "registryFound": true,
       "registryFindingBasis": "recorded_evidence",
-      "registryBasis": "GISCOE Erven returned three parcel polygons with distinct SG21KEY values intersecting the saved city-centre bbox. Complete target coverage and native-ID retrieval are unverified; known source identity conflicts elsewhere are retained in the review.",
+      "registryBasis": "CGS North West Erven mirror: 588 native PRCL_KEY identities matched fresh exact reads in nine Mboloko cells. Surveyed/approved records, with source DATE_STAMP 2017-10-13 in this sample; current registration and citywide completeness are unestablished.",
       "verifiedSample": true,
       "impliedParcelsTried": null,
       "sourceIds": [
+        "za-cgs-northwest-erven",
         "za-giscoe-erven"
       ],
       "evidenceUrls": [
+        "https://maps.geoscience.org.za/hosting/rest/services/Administrative_Boundaries_and_Cadastral_Data/MapServer/46",
         "https://imagery.esri-southafrica.com/server/rest/services/GISCOE/South_Africa_Cadastre/MapServer/1"
       ],
       "evidenceFiles": [
         "research/india-africa-2026-10-08/africa-ws-city-4033.json",
-        "research/india-africa-integration-2026-10-08/giscoe-acceptance.json",
-        "research/india-africa-integration-2026-10-08/index.json",
+        "research/india-africa-followup-2026-10-08/mboloko-assessment.json",
+        "research/india-africa-followup-2026-10-08/mboloko-cgs-scoped.json",
         "research/durban.json",
+        "research/india-africa-integration-2026-10-08/index.json",
         "research/india-africa-2026-10-08/root-city-3664.json",
         "research/india-africa-2026-10-08/africa-ws-city-3990.json",
         "research/india-africa-2026-10-08/africa-ws-city-3809.json",
+        "research/india-africa-integration-2026-10-08/giscoe-acceptance.json",
         "research/same-country-expansion-2026-10-07/johannesburg-research.json"
       ],
       "osmUrl": "https://www.openstreetmap.org/?mlat=-25.46624&mlon=27.84477#map=12/-25.46624/27.84477",
@@ -19766,19 +20075,19 @@
       "checkedDate": "2026-10-08",
       "checkedDateEvidence": {
         "date": "2026-10-08",
-        "path": "research/india-africa-2026-10-08/india-city-7945.json",
+        "path": "research/india-africa-batch3-2026-10-08/city-7945.json",
         "field": "$.checkedAt"
       },
       "registryFound": false,
       "registryFindingBasis": null,
-      "registryBasis": "Official state urban map service documented, but map endpoint redirect loop prevented viewer inspection; this pass did not identify a city-specific parcel or verify geometry.",
+      "registryBasis": "Official Maharashtra service pages and the public BhuNaksha viewer are discoverable, but this fetch could not retrieve the map page or any Mumbai City/Mumbai Suburban plot geometry. The target city-survey/village identity remains unverified.",
       "verifiedSample": false,
       "impliedParcelsTried": null,
       "sourceIds": [],
       "evidenceUrls": [],
       "evidenceFiles": [
         "research/mumbai.json",
-        "research/india-africa-2026-10-08/india-city-7945.json"
+        "research/india-africa-batch3-2026-10-08/city-7945.json"
       ],
       "osmUrl": "https://www.openstreetmap.org/?mlat=19.07283&mlon=72.88261#map=12/19.07283/72.88261",
       "googleMapsUrl": "https://www.google.com/maps/search/?api=1&query=19.07283%2C72.88261",
@@ -20271,10 +20580,13 @@
       "registryCityIds": [
         "wup2025:2033"
       ],
-      "appCityIds": [],
+      "appCityIds": [
+        "nairobi"
+      ],
       "cohorts": [
         "largest200",
-        "registry"
+        "registry",
+        "app"
       ],
       "wupCityCode": 2033,
       "wupName": "Nairobi",
@@ -20295,19 +20607,27 @@
       "checkedDate": "2026-10-08",
       "checkedDateEvidence": {
         "date": "2026-10-08",
-        "path": "research/india-africa-2026-10-08/africa-ne-city-nairobi.json",
+        "path": "research/india-africa-next10-2026-10-08/africa-east-city-2033.json",
         "field": "$.checkedAt"
       },
       "registryFound": true,
       "registryFindingBasis": "recorded_evidence",
-      "registryBasis": "The official Nairobi County LIMS identifies city land-record, survey and valuation services. Its public City Map link exposes no parcel geometry endpoint; registry/service existence is separate from an open polygon API.",
-      "verifiedSample": false,
+      "registryBasis": "Public commercial Nairobi Maps parcel-outline geometry identified and accepted for local geometry-only display. It is not an official government cadastre; source features have no native registry number, parcel attributes, ownership or verified government lineage. The source-scoped geometry-sha256-v1 application reference identifies the observed outline version and changes when geometry changes.",
+      "verifiedSample": true,
       "impliedParcelsTried": null,
-      "sourceIds": [],
-      "evidenceUrls": [],
+      "sourceIds": [
+        "ke-nairobi-maps-outlines"
+      ],
+      "evidenceUrls": [
+        "https://nairobimaps.com/",
+        "https://nairobimaps.com/gis-data/nairobi-parcels-cadastre.html",
+        "https://nairobimaps.com/api/get_parcels.php"
+      ],
       "evidenceFiles": [
         "research/nairobi.json",
-        "research/india-africa-2026-10-08/africa-ne-city-nairobi.json"
+        "research/india-africa-next10-2026-10-08/africa-east-city-2033.json",
+        "research/india-africa-batch3-2026-10-08/nairobi-acceptance.json",
+        "research/india-africa-batch3-2026-10-08/nairobi-quality-audit.json"
       ],
       "osmUrl": "https://www.openstreetmap.org/?mlat=-1.26592&mlon=36.84516#map=12/-1.26592/36.84516",
       "googleMapsUrl": "https://www.google.com/maps/search/?api=1&query=-1.26592%2C36.84516",
@@ -21183,12 +21503,12 @@
       "checkedDate": "2026-10-08",
       "checkedDateEvidence": {
         "date": "2026-10-08",
-        "path": "research/india-africa-integration-2026-10-08/india-delhi-8364-audit.json",
+        "path": "research/india-africa-followup-2026-10-08/delhi-assessment.json",
         "field": "$.checkedAt"
       },
       "registryFound": true,
       "registryFindingBasis": "recorded_evidence",
-      "registryBasis": "L&DO-managed Delhi properties only, not the full Delhi cadastre. The fresh sample is in Malviya Nagar, about 10 km south of the saved WUP centre. The earlier full-snapshot audit found repeated propertyid, unique_propert_id and paired identifiers with conflicting geometry. The fresh three-feature prefix confirms availability but does not resolve that native-identity failure.",
+      "registryBasis": "A fresh complete public e-Dharti snapshot contains 25,999 features. Grouping by propertyid yields 25,768 keys; all 224 repeated-key groups are disjoint and have matching unique_propert_id, with no measured overlap. This refines the older conflicting-geometry assessment: repeated rows are not by themselves invalid if complete components are assembled. Integration still lacks verified publisher-facing identity semantics and production connectivity.",
       "verifiedSample": true,
       "impliedParcelsTried": null,
       "sourceIds": [
@@ -21200,9 +21520,9 @@
       "evidenceFiles": [
         "research/retry/cities/new-delhi.json",
         "research/new-delhi.json",
-        "research/india-africa-integration-2026-10-08/india-delhi-8364-audit.json",
-        "research/india-africa-integration-2026-10-08/index.json",
+        "research/india-africa-followup-2026-10-08/delhi-assessment.json",
         "research/india-africa-2026-10-08/root-city-8364.json",
+        "research/india-africa-integration-2026-10-08/india-delhi-8364-audit.json",
         "research/batch-six-root-source-attempts.json"
       ],
       "osmUrl": "https://www.openstreetmap.org/?mlat=28.62137&mlon=77.21480#map=12/28.62137/77.21480",
@@ -22445,19 +22765,19 @@
       "checkedDate": "2026-10-08",
       "checkedDateEvidence": {
         "date": "2026-10-08",
-        "path": "research/india-africa-2026-10-08/india-city-11039.json",
+        "path": "research/india-africa-followup-2026-10-08/bihar-city-11039-patna.json",
         "field": "$.checkedAt"
       },
-      "registryFound": false,
+      "registryFound": null,
       "registryFindingBasis": null,
-      "registryBasis": "Official state portals were discoverable; exact target revenue-village identity and a nonempty parcel geometry response at the WUP point were not verified in this pass.",
+      "registryBasis": "No target-point parcel identity or polygon was returned. The shared viewer returns 204 for the exact WUP coordinate without a selected sheet GIS code, and its current click/report/highlight flow exposes only point IDs, plot number, EPSG:32645 bbox, and raster images. The source-level result applies to the viewer, not all Bihar services.",
       "verifiedSample": false,
       "impliedParcelsTried": null,
       "sourceIds": [],
       "evidenceUrls": [],
       "evidenceFiles": [
         "research/patna.json",
-        "research/india-africa-2026-10-08/india-city-11039.json"
+        "research/india-africa-followup-2026-10-08/bihar-city-11039-patna.json"
       ],
       "osmUrl": "https://www.openstreetmap.org/?mlat=25.59702&mlon=85.13972#map=12/25.59702/85.13972",
       "googleMapsUrl": "https://www.google.com/maps/search/?api=1&query=25.59702%2C85.13972",
@@ -26599,13 +26919,14 @@
       },
       "registryFound": null,
       "registryFindingBasis": null,
-      "registryBasis": "Anonymous candidate service was known, but bounded target query timed out / returned HTTP 000 for the eight assigned non-Luanda cities; no sample verified.",
+      "registryBasis": "The anonymous Luanda AGT polygon layer metadata is now reachable, but the target WUP center falls outside its advertised extent. The previous shared target attempts were timeouts; no city-specific feature query was sent in this follow-up.",
       "verifiedSample": false,
       "impliedParcelsTried": null,
       "sourceIds": [],
       "evidenceUrls": [],
       "evidenceFiles": [
-        "research/india-africa-2026-10-08/africa-ws-city-686.json"
+        "research/india-africa-2026-10-08/africa-ws-city-686.json",
+        "research/india-africa-followup-2026-10-08/africa-ws-city-686.json"
       ],
       "osmUrl": "https://www.openstreetmap.org/?mlat=-6.16052&mlon=12.36685#map=12/-6.16052/12.36685",
       "googleMapsUrl": "https://www.google.com/maps/search/?api=1&query=-6.16052%2C12.36685",
@@ -26931,10 +27252,13 @@
       "registryCityIds": [
         "wup2025:7233"
       ],
-      "appCityIds": [],
+      "appCityIds": [
+        "surat"
+      ],
       "cohorts": [
         "largest200",
-        "registry"
+        "registry",
+        "app"
       ],
       "wupCityCode": 7233,
       "wupName": "Surat",
@@ -26955,19 +27279,26 @@
       "checkedDate": "2026-10-08",
       "checkedDateEvidence": {
         "date": "2026-10-08",
-        "path": "research/india-africa-2026-10-08/india-city-7233.json",
+        "path": "research/india-africa-batch3-2026-10-08/city-7233.json",
         "field": "$.checkedAt"
       },
-      "registryFound": false,
-      "registryFindingBasis": null,
-      "registryBasis": "Official AnyRoR candidate endpoint timed out in the browser fetch, and native-script search results did not return an official state page; availability and geometry remain unknown.",
-      "verifiedSample": false,
+      "registryFound": true,
+      "registryFindingBasis": "recorded_evidence",
+      "registryBasis": "Official Gujarat TPVD final-planning-plot source identified and accepted for bounded Surat geometry. This is an official planning layer, not proof of current land title or ownership; exact WUP-point sample and citywide completeness are not established.",
+      "verifiedSample": true,
       "impliedParcelsTried": null,
-      "sourceIds": [],
-      "evidenceUrls": [],
+      "sourceIds": [
+        "in-gj-tpvd-surat-final-plots"
+      ],
+      "evidenceUrls": [
+        "https://townplanning.gujarat.gov.in/Home",
+        "https://tpvd.openprp.in/ctpvd/index.html",
+        "https://tpvd.openprp.in/geoserver/ows"
+      ],
       "evidenceFiles": [
         "research/surat.json",
-        "research/india-africa-2026-10-08/india-city-7233.json"
+        "research/india-africa-batch3-2026-10-08/city-7233.json",
+        "research/india-africa-batch3-2026-10-08/surat-acceptance.json"
       ],
       "osmUrl": "https://www.openstreetmap.org/?mlat=21.17762&mlon=72.77892#map=12/21.17762/72.77892",
       "googleMapsUrl": "https://www.google.com/maps/search/?api=1&query=21.17762%2C72.77892",
@@ -28017,20 +28348,26 @@
       "checkedDate": "2026-10-08",
       "checkedDateEvidence": {
         "date": "2026-10-08",
-        "path": "research/india-africa-2026-10-08/india-city-10013.json",
+        "path": "research/india-africa-followup-2026-10-08/kerala-assessment.json",
         "field": "$.checkedAt"
       },
-      "registryFound": null,
-      "registryFindingBasis": null,
-      "registryBasis": "Official state selector is publicly reachable, but candidate city/locality is not confirmed inside published survey coverage (or exact village unresolved); point-identify returned only the HTML viewer shell, not parcel feature geometry.",
-      "verifiedSample": false,
+      "registryFound": true,
+      "registryFindingBasis": "recorded_evidence",
+      "registryBasis": "Published Kudappanakunnu village geometry, associated with a Thiruvananthapuram municipal zone. The native geometry audit passed 456 parcel IDs across nine cells, but the ordinary browser checks failed twice: the first view loaded 25 cells and then retained only 27 of 30 after panning; a fresh load after cooldown retained only 12 of 25 cells. Both displayed the unavailable-source warning. Keep the village research-only pending reliable expanded viewport loading under unchanged deadlines.",
+      "verifiedSample": true,
       "impliedParcelsTried": null,
-      "sourceIds": [],
-      "evidenceUrls": [],
+      "sourceIds": [
+        "in-kl-entebhoomi-010111"
+      ],
+      "evidenceUrls": [
+        "https://bhunaksha.entebhoomi.kerala.gov.in/bhunaksha_v5_emaps/core/v2/map/export/geojson/010111"
+      ],
       "evidenceFiles": [
         "research/thiruvananthapuram.json",
         "research/retry/cities/thiruvananthapuram.json",
-        "research/india-africa-2026-10-08/india-city-10013.json"
+        "research/india-africa-followup-2026-10-08/kerala-browser-initial-failure.json",
+        "research/india-africa-followup-2026-10-08/kerala-assessment.json",
+        "research/india-africa-followup-2026-10-08/kerala-adapter-parallel.json"
       ],
       "osmUrl": "https://www.openstreetmap.org/?mlat=8.50983&mlon=76.96764#map=12/8.50983/76.96764",
       "googleMapsUrl": "https://www.google.com/maps/search/?api=1&query=8.50983%2C76.96764",
@@ -28607,20 +28944,26 @@
         "confidence": "high"
       },
       "checked": true,
-      "checkedDate": "2026-09-30",
+      "checkedDate": "2026-10-08",
       "checkedDateEvidence": {
-        "date": "2026-09-30",
-        "path": "research/retry/cities/toshkent.json",
+        "date": "2026-10-08",
+        "path": "research/central-asia-capitals-2026-10-08/city-tashkent.json",
         "field": "$.checkedAt"
       },
-      "registryFound": null,
-      "registryFindingBasis": null,
-      "registryBasis": null,
+      "registryFound": true,
+      "registryFindingBasis": "recorded_evidence",
+      "registryBasis": "Official Cadastre Agency and Digital Government sources identify open.ngis.uz as a public national geospatial information portal for parcels and real estate. This establishes a documented official portal, not a responding endpoint or obtained public parcel geometry. Bounded HTTP/HTTPS requests timed out; viewer service, target-city parcel geometry and coverage remain unverified.",
       "verifiedSample": false,
       "impliedParcelsTried": null,
       "sourceIds": [],
-      "evidenceUrls": [],
+      "evidenceUrls": [
+        "https://gov.uz/oz/kadastr/news/view/143473",
+        "https://dgov.uz/uz/solution/detail/52/",
+        "https://open.ngis.uz/",
+        "https://kadastryordamchi.uz/uz"
+      ],
       "evidenceFiles": [
+        "research/central-asia-capitals-2026-10-08/city-tashkent.json",
         "research/toshkent.json",
         "research/retry/cities/toshkent.json"
       ],
@@ -33779,8 +34122,8 @@
       "population": 1463865524,
       "statisticsYear": 2025,
       "missingStatisticsReason": null,
-      "citiesChecked": 63,
-      "citiesWithRegistry": 6,
+      "citiesChecked": 64,
+      "citiesWithRegistry": 12,
       "checked": true,
       "checkedDate": "2026-09-29",
       "nationalCadastreFound": false,
@@ -34408,8 +34751,8 @@
       "population": 20843754,
       "statisticsYear": 2025,
       "missingStatisticsReason": null,
-      "citiesChecked": 0,
-      "citiesWithRegistry": 0,
+      "citiesChecked": 1,
+      "citiesWithRegistry": 1,
       "checked": true,
       "checkedDate": "2026-09-30",
       "nationalCadastreFound": null,
@@ -34423,7 +34766,7 @@
         "research/retry/countries/KZ.json"
       ],
       "evidenceUrls": [],
-      "category": "unknown"
+      "category": "local"
     },
     {
       "code": "KE",
@@ -34559,8 +34902,8 @@
       "population": 7295034,
       "statisticsYear": 2025,
       "missingStatisticsReason": null,
-      "citiesChecked": 0,
-      "citiesWithRegistry": 0,
+      "citiesChecked": 1,
+      "citiesWithRegistry": 1,
       "checked": true,
       "checkedDate": "2026-09-30",
       "nationalCadastreFound": null,
@@ -34574,7 +34917,7 @@
         "research/retry/countries/KG.json"
       ],
       "evidenceUrls": [],
-      "category": "unknown"
+      "category": "local"
     },
     {
       "code": "LA",
@@ -38248,8 +38591,8 @@
       "population": 10786734,
       "statisticsYear": 2025,
       "missingStatisticsReason": null,
-      "citiesChecked": 0,
-      "citiesWithRegistry": 0,
+      "citiesChecked": 1,
+      "citiesWithRegistry": 1,
       "checked": true,
       "checkedDate": "2026-09-30",
       "nationalCadastreFound": null,
@@ -38263,7 +38606,7 @@
         "research/retry/countries/TJ.json"
       ],
       "evidenceUrls": [],
-      "category": "unknown"
+      "category": "local"
     },
     {
       "code": "TH",
@@ -38538,8 +38881,8 @@
       "population": 7618847,
       "statisticsYear": 2025,
       "missingStatisticsReason": null,
-      "citiesChecked": 0,
-      "citiesWithRegistry": 0,
+      "citiesChecked": 1,
+      "citiesWithRegistry": 1,
       "checked": true,
       "checkedDate": "2026-09-30",
       "nationalCadastreFound": null,
@@ -38553,7 +38896,7 @@
         "research/retry/countries/TM.json"
       ],
       "evidenceUrls": [],
-      "category": "unknown"
+      "category": "local"
     },
     {
       "code": "TC",
@@ -39255,7 +39598,7 @@
       "statisticsYear": 2025,
       "missingStatisticsReason": null,
       "citiesChecked": 1,
-      "citiesWithRegistry": 0,
+      "citiesWithRegistry": 1,
       "checked": true,
       "checkedDate": "2026-09-30",
       "nationalCadastreFound": null,
@@ -39269,7 +39612,7 @@
         "research/retry/countries/UZ.json"
       ],
       "evidenceUrls": [],
-      "category": "unknown"
+      "category": "local"
     },
     {
       "code": "VU",
@@ -39462,7 +39805,7 @@
       "statisticsYear": 2025,
       "missingStatisticsReason": null,
       "citiesChecked": 2,
-      "citiesWithRegistry": 1,
+      "citiesWithRegistry": 2,
       "checked": true,
       "checkedDate": "2026-09-30",
       "nationalCadastreFound": false,
@@ -39525,7 +39868,9 @@
       "The supplied normalized JSON lacks WUP city-level 0–3 quality flags; those remain null. The existing 2025 plausibility label is retained separately when present.",
       "Further Wikidata queries were left off after the public SPARQL endpoint began rate-limiting to 1 request/min; only three verified returned GeoNames sitelinks are retained.",
       "Coalesced app-only Washington into canonical Washington, D.C. after same-country name alias and 2.78 km center check; retained app source ID and source coordinates on canonical row.",
-      "Wikipedia links are included only when the linked article is about the candidate city/town/municipality; broader administrative-area pages are rejected. A focused manual scope audit on 2026-10-07 corrected Nandail and Golapganj, removed unsupported Lakhai and Bahubal links, and added verified settlement pages in English, Bengali, and Chinese. The original API-derived links and rejected evidence are retained in wikipediaEvidence where reviewed."
+      "Wikipedia links are included only when the linked article is about the candidate city/town/municipality; broader administrative-area pages are rejected. A focused manual scope audit on 2026-10-07 corrected Nandail and Golapganj, removed unsupported Lakhai and Bahubal links, and added verified settlement pages in English, Bengali, and Chinese. The original API-derived links and rejected evidence are retained in wikipediaEvidence where reviewed.",
+      "The October 8 follow-up adds one distinct Iravipuram village row without transferring population or configured status from the distant WUP Kollam point. Other enrichment-run counters retain their original snapshot meaning.",
+      "The October 8 Central Asia capitals integration adds four non-WUP capital rows with no transferred population values. Astana has an accepted app entry scoped to Esil district 254; Bishkek has a verified partial official geometry sample held from runtime pending local geometry QA. Dushanbe and Ashgabat document official registry/portal existence without public parcel geometry."
     ],
     "checked": "A recorded city investigation, including failed attempts. A configured app source can establish registry identification without supplying a city-specific investigation date.",
     "registryFound": "Yes for city-scoped registry evidence (including local registry offices or cadastral maps), a verified parcel sample, or a source configured for that city. Registry presence does not imply a public geometry API. Broader regional leads with unresolved target coverage remain null; a recorded unsuccessful search is not proof that no registry exists.",

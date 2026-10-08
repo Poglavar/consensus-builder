@@ -1,0 +1,168 @@
+{
+  "checkedAt": "2026-10-07T22:48:33.471Z",
+  "cityId": "wup2025:4033",
+  "url": "https://maps.geoscience.org.za/hosting/rest/services/Administrative_Boundaries_and_Cadastral_Data/MapServer/46/query?f=geojson&where=1%3D1&geometry=27.843765%2C-25.467237%2C27.845765%2C-25.465237&geometryType=esriGeometryEnvelope&inSR=4326&outSR=4326&spatialRel=esriSpatialRelIntersects&returnGeometry=true&outFields=OBJECTID%2CPRCL_KEY%2CID%2CLSTATUS%2CWSTATUS%2CPARCEL_NO%2CPORTION%2CMAJ_REGION%2CMIN_REGION%2CDATE_STAMP%2CPRCL_TYPE&resultRecordCount=3",
+  "parameters": {
+    "f": "geojson",
+    "where": "1=1",
+    "geometry": "27.843765,-25.467237,27.845765,-25.465237",
+    "geometryType": "esriGeometryEnvelope",
+    "inSR": "4326",
+    "outSR": "4326",
+    "spatialRel": "esriSpatialRelIntersects",
+    "returnGeometry": "true",
+    "outFields": "OBJECTID,PRCL_KEY,ID,LSTATUS,WSTATUS,PARCEL_NO,PORTION,MAJ_REGION,MIN_REGION,DATE_STAMP,PRCL_TYPE",
+    "resultRecordCount": "3"
+  },
+  "httpStatus": 200,
+  "elapsedMs": 14313,
+  "payload": {
+    "type": "FeatureCollection",
+    "features": [
+      {
+        "type": "Feature",
+        "id": 112754,
+        "geometry": {
+          "type": "Polygon",
+          "coordinates": [
+            [
+              [
+                27.84410984400006,
+                -25.467072625999947
+              ],
+              [
+                27.844290390000022,
+                -25.46715104799995
+              ],
+              [
+                27.84437505000005,
+                -25.466987702999983
+              ],
+              [
+                27.844220876000065,
+                -25.46696276099993
+              ],
+              [
+                27.844150480000053,
+                -25.46699553699994
+              ],
+              [
+                27.84410984400006,
+                -25.467072625999947
+              ]
+            ]
+          ]
+        },
+        "properties": {
+          "OBJECTID": 112754,
+          "PRCL_KEY": "N372T0JQ005400000732000000",
+          "ID": "T0JQ00540000073200000",
+          "LSTATUS": "S",
+          "WSTATUS": " ",
+          "PARCEL_NO": 732,
+          "PORTION": 0,
+          "MAJ_REGION": "JQ",
+          "MIN_REGION": "LETHLABILE-C",
+          "DATE_STAMP": 1507852800000,
+          "PRCL_TYPE": "E"
+        }
+      },
+      {
+        "type": "Feature",
+        "id": 112817,
+        "geometry": {
+          "type": "Polygon",
+          "coordinates": [
+            [
+              [
+                27.844529223000052,
+                -25.467012644999958
+              ],
+              [
+                27.84437505000005,
+                -25.466987702999983
+              ],
+              [
+                27.844290390000022,
+                -25.46715104799995
+              ],
+              [
+                27.844468605000028,
+                -25.46722843199996
+              ],
+              [
+                27.84455671000006,
+                -25.467061273999946
+              ],
+              [
+                27.844529223000052,
+                -25.467012644999958
+              ]
+            ]
+          ]
+        },
+        "properties": {
+          "OBJECTID": 112817,
+          "PRCL_KEY": "N372T0JQ005400000733000000",
+          "ID": "T0JQ00540000073300000",
+          "LSTATUS": "S",
+          "WSTATUS": " ",
+          "PARCEL_NO": 733,
+          "PORTION": 0,
+          "MAJ_REGION": "JQ",
+          "MIN_REGION": "LETHLABILE-C",
+          "DATE_STAMP": 1507852800000,
+          "PRCL_TYPE": "E"
+        }
+      },
+      {
+        "type": "Feature",
+        "id": 112818,
+        "geometry": {
+          "type": "Polygon",
+          "coordinates": [
+            [
+              [
+                27.844468605000028,
+                -25.46722843199996
+              ],
+              [
+                27.844290390000022,
+                -25.46715104799995
+              ],
+              [
+                27.844226894000034,
+                -25.46727355699994
+              ],
+              [
+                27.84440423200005,
+                -25.46735056399996
+              ],
+              [
+                27.844468605000028,
+                -25.46722843199996
+              ]
+            ]
+          ]
+        },
+        "properties": {
+          "OBJECTID": 112818,
+          "PRCL_KEY": "N372T0JQ005400000734000000",
+          "ID": "T0JQ00540000073400000",
+          "LSTATUS": "S",
+          "WSTATUS": " ",
+          "PARCEL_NO": 734,
+          "PORTION": 0,
+          "MAJ_REGION": "JQ",
+          "MIN_REGION": "LETHLABILE-C",
+          "DATE_STAMP": 1507852800000,
+          "PRCL_TYPE": "E"
+        }
+      }
+    ],
+    "exceededTransferLimit": true,
+    "properties": {
+      "exceededTransferLimit": true
+    }
+  }
+}

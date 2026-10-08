@@ -1,0 +1,864 @@
+{
+  "checkedAt": "2026-10-07T22:44:50.706Z",
+  "requests": [
+    {
+      "url": "https://screening.environment.gov.za/server/rest/services/Corp/Planning_Cadastre/MapServer/0?f=pjson",
+      "httpStatus": 200,
+      "elapsedMs": 1650,
+      "metadata": {
+        "name": "Cadastre",
+        "description": "",
+        "fields": [
+          {
+            "name": "OID",
+            "type": "esriFieldTypeOID",
+            "alias": "OID",
+            "domain": null
+          },
+          {
+            "name": "UniqueID",
+            "type": "esriFieldTypeString",
+            "alias": "UniqueID",
+            "length": 31,
+            "domain": null
+          },
+          {
+            "name": "PropSrc",
+            "type": "esriFieldTypeString",
+            "alias": "PropSrc",
+            "length": 12,
+            "domain": null
+          },
+          {
+            "name": "SG_CODE",
+            "type": "esriFieldTypeString",
+            "alias": "SG_CODE",
+            "length": 100,
+            "domain": null
+          },
+          {
+            "name": "PARCEL_NO",
+            "type": "esriFieldTypeInteger",
+            "alias": "PARCEL_NO",
+            "domain": null
+          },
+          {
+            "name": "PORTION",
+            "type": "esriFieldTypeInteger",
+            "alias": "PORTION",
+            "domain": null
+          },
+          {
+            "name": "MINREG_FRMNM",
+            "type": "esriFieldTypeString",
+            "alias": "MINREG_FRMNM",
+            "length": 150,
+            "domain": null
+          },
+          {
+            "name": "MAJ_REGION",
+            "type": "esriFieldTypeString",
+            "alias": "MAJ_REGION",
+            "length": 50,
+            "domain": null
+          },
+          {
+            "name": "X",
+            "type": "esriFieldTypeDouble",
+            "alias": "X",
+            "domain": null
+          },
+          {
+            "name": "Y",
+            "type": "esriFieldTypeDouble",
+            "alias": "Y",
+            "domain": null
+          },
+          {
+            "name": "Shape",
+            "type": "esriFieldTypeGeometry",
+            "alias": "Shape",
+            "domain": null
+          },
+          {
+            "name": "Shape.STArea()",
+            "type": "esriFieldTypeDouble",
+            "alias": "Shape.STArea()",
+            "domain": null
+          },
+          {
+            "name": "Shape.STLength()",
+            "type": "esriFieldTypeDouble",
+            "alias": "Shape.STLength()",
+            "domain": null
+          }
+        ],
+        "extent": {
+          "xmin": 16.46188853600006,
+          "ymin": -34.83304429399993,
+          "xmax": 32.89091571200004,
+          "ymax": -22.125940224999965,
+          "spatialReference": {
+            "wkid": 4326,
+            "latestWkid": 4326,
+            "xyTolerance": 8.983152841195215e-9,
+            "zTolerance": 0.001,
+            "mTolerance": 0.001,
+            "falseX": -400,
+            "falseY": -400,
+            "xyUnits": 999999999.9999999,
+            "falseZ": -100000,
+            "zUnits": 10000,
+            "falseM": -100000,
+            "mUnits": 10000
+          }
+        },
+        "capabilities": "Map,Query,Data",
+        "supportedQueryFormats": "JSON, geoJSON, PBF",
+        "advancedQueryCapabilities": {
+          "useStandardizedQueries": true,
+          "supportsStatistics": true,
+          "supportsPercentileStatistics": true,
+          "supportsHavingClause": true,
+          "supportsOrderBy": true,
+          "supportsDistinct": true,
+          "supportsCountDistinct": true,
+          "supportsPagination": true,
+          "supportsLod": false,
+          "supportsQueryWithLodSR": false,
+          "supportsTrueCurve": true,
+          "supportsQueryWithDatumTransformation": true,
+          "supportsReturningQueryExtent": true,
+          "supportsQueryWithDistance": true,
+          "supportsSqlExpression": true,
+          "supportsTimeRelation": true,
+          "supportsSqlFormat": false,
+          "supportsQueryAnalytic": true
+        }
+      }
+    },
+    {
+      "url": "https://maps.geoscience.org.za/hosting/rest/services/Administrative_Boundaries_and_Cadastral_Data/MapServer?f=pjson",
+      "httpStatus": 200,
+      "elapsedMs": 1618,
+      "metadata": {
+        "description": "",
+        "capabilities": "Map,Query,Data",
+        "layers": [
+          {
+            "id": 0,
+            "name": "Administrative Boundaries",
+            "parentLayerId": -1,
+            "defaultVisibility": true,
+            "subLayerIds": [
+              1,
+              2,
+              3
+            ],
+            "minScale": 0,
+            "maxScale": 0,
+            "type": "Group Layer",
+            "supportsDynamicLegends": false
+          },
+          {
+            "id": 1,
+            "name": "Local Municipality",
+            "parentLayerId": 0,
+            "defaultVisibility": true,
+            "subLayerIds": null,
+            "minScale": 2000000,
+            "maxScale": 0,
+            "type": "Feature Layer",
+            "geometryType": "esriGeometryPolygon",
+            "supportsDynamicLegends": true
+          },
+          {
+            "id": 2,
+            "name": "District Municipality",
+            "parentLayerId": 0,
+            "defaultVisibility": true,
+            "subLayerIds": null,
+            "minScale": 5000000,
+            "maxScale": 0,
+            "type": "Feature Layer",
+            "geometryType": "esriGeometryPolygon",
+            "supportsDynamicLegends": true
+          },
+          {
+            "id": 3,
+            "name": "SA Province",
+            "parentLayerId": 0,
+            "defaultVisibility": true,
+            "subLayerIds": null,
+            "minScale": 0,
+            "maxScale": 3000000,
+            "type": "Feature Layer",
+            "geometryType": "esriGeometryPolygon",
+            "supportsDynamicLegends": true
+          },
+          {
+            "id": 4,
+            "name": "Cadastral Data",
+            "parentLayerId": -1,
+            "defaultVisibility": true,
+            "subLayerIds": [
+              5,
+              10
+            ],
+            "minScale": 0,
+            "maxScale": 0,
+            "type": "Group Layer",
+            "supportsDynamicLegends": false
+          },
+          {
+            "id": 5,
+            "name": "SA",
+            "parentLayerId": 4,
+            "defaultVisibility": true,
+            "subLayerIds": [
+              6,
+              7,
+              8,
+              9
+            ],
+            "minScale": 0,
+            "maxScale": 0,
+            "type": "Group Layer",
+            "supportsDynamicLegends": false
+          },
+          {
+            "id": 6,
+            "name": "SA Erf",
+            "parentLayerId": 5,
+            "defaultVisibility": true,
+            "subLayerIds": null,
+            "minScale": 10000,
+            "maxScale": 0,
+            "type": "Feature Layer",
+            "geometryType": "esriGeometryPolygon",
+            "supportsDynamicLegends": true
+          },
+          {
+            "id": 7,
+            "name": "SA Holding",
+            "parentLayerId": 5,
+            "defaultVisibility": false,
+            "subLayerIds": null,
+            "minScale": 100000,
+            "maxScale": 0,
+            "type": "Feature Layer",
+            "geometryType": "esriGeometryPolygon",
+            "supportsDynamicLegends": true
+          },
+          {
+            "id": 8,
+            "name": "SA Farm Portion",
+            "parentLayerId": 5,
+            "defaultVisibility": false,
+            "subLayerIds": null,
+            "minScale": 100000,
+            "maxScale": 0,
+            "type": "Feature Layer",
+            "geometryType": "esriGeometryPolygon",
+            "supportsDynamicLegends": true
+          },
+          {
+            "id": 9,
+            "name": "SA Parent Farm",
+            "parentLayerId": 5,
+            "defaultVisibility": false,
+            "subLayerIds": null,
+            "minScale": 400000,
+            "maxScale": 0,
+            "type": "Feature Layer",
+            "geometryType": "esriGeometryPolygon",
+            "supportsDynamicLegends": true
+          },
+          {
+            "id": 10,
+            "name": "Provinces",
+            "parentLayerId": 4,
+            "defaultVisibility": true,
+            "subLayerIds": [
+              11,
+              16,
+              21,
+              26,
+              31,
+              36,
+              41,
+              45,
+              50
+            ],
+            "minScale": 0,
+            "maxScale": 0,
+            "type": "Group Layer",
+            "supportsDynamicLegends": false
+          },
+          {
+            "id": 11,
+            "name": "Eastern Cape",
+            "parentLayerId": 10,
+            "defaultVisibility": false,
+            "subLayerIds": [
+              12,
+              13,
+              14,
+              15
+            ],
+            "minScale": 0,
+            "maxScale": 0,
+            "type": "Group Layer",
+            "supportsDynamicLegends": false
+          },
+          {
+            "id": 12,
+            "name": "Erf",
+            "parentLayerId": 11,
+            "defaultVisibility": false,
+            "subLayerIds": null,
+            "minScale": 0,
+            "maxScale": 0,
+            "type": "Feature Layer",
+            "geometryType": "esriGeometryPolygon",
+            "supportsDynamicLegends": true
+          },
+          {
+            "id": 13,
+            "name": "Holding",
+            "parentLayerId": 11,
+            "defaultVisibility": false,
+            "subLayerIds": null,
+            "minScale": 0,
+            "maxScale": 0,
+            "type": "Feature Layer",
+            "geometryType": "esriGeometryPolygon",
+            "supportsDynamicLegends": true
+          },
+          {
+            "id": 14,
+            "name": "Farm Portion",
+            "parentLayerId": 11,
+            "defaultVisibility": false,
+            "subLayerIds": null,
+            "minScale": 0,
+            "maxScale": 0,
+            "type": "Feature Layer",
+            "geometryType": "esriGeometryPolygon",
+            "supportsDynamicLegends": true
+          },
+          {
+            "id": 15,
+            "name": "Parent Farm",
+            "parentLayerId": 11,
+            "defaultVisibility": false,
+            "subLayerIds": null,
+            "minScale": 0,
+            "maxScale": 0,
+            "type": "Feature Layer",
+            "geometryType": "esriGeometryPolygon",
+            "supportsDynamicLegends": true
+          },
+          {
+            "id": 16,
+            "name": "Free State",
+            "parentLayerId": 10,
+            "defaultVisibility": false,
+            "subLayerIds": [
+              17,
+              18,
+              19,
+              20
+            ],
+            "minScale": 0,
+            "maxScale": 0,
+            "type": "Group Layer",
+            "supportsDynamicLegends": false
+          },
+          {
+            "id": 17,
+            "name": "Erf",
+            "parentLayerId": 16,
+            "defaultVisibility": true,
+            "subLayerIds": null,
+            "minScale": 0,
+            "maxScale": 0,
+            "type": "Feature Layer",
+            "geometryType": "esriGeometryPolygon",
+            "supportsDynamicLegends": true
+          },
+          {
+            "id": 18,
+            "name": "Holding",
+            "parentLayerId": 16,
+            "defaultVisibility": true,
+            "subLayerIds": null,
+            "minScale": 0,
+            "maxScale": 0,
+            "type": "Feature Layer",
+            "geometryType": "esriGeometryPolygon",
+            "supportsDynamicLegends": true
+          },
+          {
+            "id": 19,
+            "name": "Farm Portion",
+            "parentLayerId": 16,
+            "defaultVisibility": false,
+            "subLayerIds": null,
+            "minScale": 0,
+            "maxScale": 0,
+            "type": "Feature Layer",
+            "geometryType": "esriGeometryPolygon",
+            "supportsDynamicLegends": true
+          },
+          {
+            "id": 20,
+            "name": "Parent Farm",
+            "parentLayerId": 16,
+            "defaultVisibility": true,
+            "subLayerIds": null,
+            "minScale": 0,
+            "maxScale": 0,
+            "type": "Feature Layer",
+            "geometryType": "esriGeometryPolygon",
+            "supportsDynamicLegends": true
+          },
+          {
+            "id": 21,
+            "name": "Gauteng",
+            "parentLayerId": 10,
+            "defaultVisibility": false,
+            "subLayerIds": [
+              22,
+              23,
+              24,
+              25
+            ],
+            "minScale": 0,
+            "maxScale": 0,
+            "type": "Group Layer",
+            "supportsDynamicLegends": false
+          },
+          {
+            "id": 22,
+            "name": "Erf",
+            "parentLayerId": 21,
+            "defaultVisibility": false,
+            "subLayerIds": null,
+            "minScale": 0,
+            "maxScale": 0,
+            "type": "Feature Layer",
+            "geometryType": "esriGeometryPolygon",
+            "supportsDynamicLegends": true
+          },
+          {
+            "id": 23,
+            "name": "Holding",
+            "parentLayerId": 21,
+            "defaultVisibility": false,
+            "subLayerIds": null,
+            "minScale": 0,
+            "maxScale": 0,
+            "type": "Feature Layer",
+            "geometryType": "esriGeometryPolygon",
+            "supportsDynamicLegends": true
+          },
+          {
+            "id": 24,
+            "name": "Farm Portion",
+            "parentLayerId": 21,
+            "defaultVisibility": false,
+            "subLayerIds": null,
+            "minScale": 0,
+            "maxScale": 0,
+            "type": "Feature Layer",
+            "geometryType": "esriGeometryPolygon",
+            "supportsDynamicLegends": true
+          },
+          {
+            "id": 25,
+            "name": "Parent Farm",
+            "parentLayerId": 21,
+            "defaultVisibility": false,
+            "subLayerIds": null,
+            "minScale": 0,
+            "maxScale": 0,
+            "type": "Feature Layer",
+            "geometryType": "esriGeometryPolygon",
+            "supportsDynamicLegends": true
+          },
+          {
+            "id": 26,
+            "name": "KwaZulu-Natal",
+            "parentLayerId": 10,
+            "defaultVisibility": false,
+            "subLayerIds": [
+              27,
+              28,
+              29,
+              30
+            ],
+            "minScale": 0,
+            "maxScale": 0,
+            "type": "Group Layer",
+            "supportsDynamicLegends": false
+          },
+          {
+            "id": 27,
+            "name": "Erf",
+            "parentLayerId": 26,
+            "defaultVisibility": false,
+            "subLayerIds": null,
+            "minScale": 0,
+            "maxScale": 0,
+            "type": "Feature Layer",
+            "geometryType": "esriGeometryPolygon",
+            "supportsDynamicLegends": true
+          },
+          {
+            "id": 28,
+            "name": "Holding",
+            "parentLayerId": 26,
+            "defaultVisibility": false,
+            "subLayerIds": null,
+            "minScale": 0,
+            "maxScale": 0,
+            "type": "Feature Layer",
+            "geometryType": "esriGeometryPolygon",
+            "supportsDynamicLegends": true
+          },
+          {
+            "id": 29,
+            "name": "Farm Portion",
+            "parentLayerId": 26,
+            "defaultVisibility": false,
+            "subLayerIds": null,
+            "minScale": 0,
+            "maxScale": 0,
+            "type": "Feature Layer",
+            "geometryType": "esriGeometryPolygon",
+            "supportsDynamicLegends": true
+          },
+          {
+            "id": 30,
+            "name": "Parent Farm",
+            "parentLayerId": 26,
+            "defaultVisibility": false,
+            "subLayerIds": null,
+            "minScale": 0,
+            "maxScale": 0,
+            "type": "Feature Layer",
+            "geometryType": "esriGeometryPolygon",
+            "supportsDynamicLegends": true
+          },
+          {
+            "id": 31,
+            "name": "Limpopo",
+            "parentLayerId": 10,
+            "defaultVisibility": false,
+            "subLayerIds": [
+              32,
+              33,
+              34,
+              35
+            ],
+            "minScale": 0,
+            "maxScale": 0,
+            "type": "Group Layer",
+            "supportsDynamicLegends": false
+          },
+          {
+            "id": 32,
+            "name": "Erf",
+            "parentLayerId": 31,
+            "defaultVisibility": false,
+            "subLayerIds": null,
+            "minScale": 0,
+            "maxScale": 0,
+            "type": "Feature Layer",
+            "geometryType": "esriGeometryPolygon",
+            "supportsDynamicLegends": true
+          },
+          {
+            "id": 33,
+            "name": "Holding",
+            "parentLayerId": 31,
+            "defaultVisibility": false,
+            "subLayerIds": null,
+            "minScale": 0,
+            "maxScale": 0,
+            "type": "Feature Layer",
+            "geometryType": "esriGeometryPolygon",
+            "supportsDynamicLegends": true
+          },
+          {
+            "id": 34,
+            "name": "Farm Portion",
+            "parentLayerId": 31,
+            "defaultVisibility": false,
+            "subLayerIds": null,
+            "minScale": 0,
+            "maxScale": 0,
+            "type": "Feature Layer",
+            "geometryType": "esriGeometryPolygon",
+            "supportsDynamicLegends": true
+          },
+          {
+            "id": 35,
+            "name": "Parent Farm",
+            "parentLayerId": 31,
+            "defaultVisibility": false,
+            "subLayerIds": null,
+            "minScale": 0,
+            "maxScale": 0,
+            "type": "Feature Layer",
+            "geometryType": "esriGeometryPolygon",
+            "supportsDynamicLegends": true
+          },
+          {
+            "id": 36,
+            "name": "Mpumalanga",
+            "parentLayerId": 10,
+            "defaultVisibility": false,
+            "subLayerIds": [
+              37,
+              38,
+              39,
+              40
+            ],
+            "minScale": 0,
+            "maxScale": 0,
+            "type": "Group Layer",
+            "supportsDynamicLegends": false
+          },
+          {
+            "id": 37,
+            "name": "Erf",
+            "parentLayerId": 36,
+            "defaultVisibility": false,
+            "subLayerIds": null,
+            "minScale": 0,
+            "maxScale": 0,
+            "type": "Feature Layer",
+            "geometryType": "esriGeometryPolygon",
+            "supportsDynamicLegends": true
+          },
+          {
+            "id": 38,
+            "name": "Holding",
+            "parentLayerId": 36,
+            "defaultVisibility": true,
+            "subLayerIds": null,
+            "minScale": 0,
+            "maxScale": 0,
+            "type": "Feature Layer",
+            "geometryType": "esriGeometryPolygon",
+            "supportsDynamicLegends": true
+          },
+          {
+            "id": 39,
+            "name": "Farm Portion",
+            "parentLayerId": 36,
+            "defaultVisibility": false,
+            "subLayerIds": null,
+            "minScale": 0,
+            "maxScale": 0,
+            "type": "Feature Layer",
+            "geometryType": "esriGeometryPolygon",
+            "supportsDynamicLegends": true
+          },
+          {
+            "id": 40,
+            "name": "Parent Farm",
+            "parentLayerId": 36,
+            "defaultVisibility": false,
+            "subLayerIds": null,
+            "minScale": 0,
+            "maxScale": 0,
+            "type": "Feature Layer",
+            "geometryType": "esriGeometryPolygon",
+            "supportsDynamicLegends": true
+          },
+          {
+            "id": 41,
+            "name": "Northern Cape",
+            "parentLayerId": 10,
+            "defaultVisibility": false,
+            "subLayerIds": [
+              42,
+              43,
+              44
+            ],
+            "minScale": 0,
+            "maxScale": 0,
+            "type": "Group Layer",
+            "supportsDynamicLegends": false
+          },
+          {
+            "id": 42,
+            "name": "Erf",
+            "parentLayerId": 41,
+            "defaultVisibility": false,
+            "subLayerIds": null,
+            "minScale": 0,
+            "maxScale": 0,
+            "type": "Feature Layer",
+            "geometryType": "esriGeometryPolygon",
+            "supportsDynamicLegends": true
+          },
+          {
+            "id": 43,
+            "name": "Farm Portion",
+            "parentLayerId": 41,
+            "defaultVisibility": false,
+            "subLayerIds": null,
+            "minScale": 0,
+            "maxScale": 0,
+            "type": "Feature Layer",
+            "geometryType": "esriGeometryPolygon",
+            "supportsDynamicLegends": true
+          },
+          {
+            "id": 44,
+            "name": "Parent Farm",
+            "parentLayerId": 41,
+            "defaultVisibility": false,
+            "subLayerIds": null,
+            "minScale": 0,
+            "maxScale": 0,
+            "type": "Feature Layer",
+            "geometryType": "esriGeometryPolygon",
+            "supportsDynamicLegends": true
+          },
+          {
+            "id": 45,
+            "name": "North West",
+            "parentLayerId": 10,
+            "defaultVisibility": false,
+            "subLayerIds": [
+              46,
+              47,
+              48,
+              49
+            ],
+            "minScale": 0,
+            "maxScale": 0,
+            "type": "Group Layer",
+            "supportsDynamicLegends": false
+          },
+          {
+            "id": 46,
+            "name": "Erf",
+            "parentLayerId": 45,
+            "defaultVisibility": true,
+            "subLayerIds": null,
+            "minScale": 0,
+            "maxScale": 0,
+            "type": "Feature Layer",
+            "geometryType": "esriGeometryPolygon",
+            "supportsDynamicLegends": true
+          },
+          {
+            "id": 47,
+            "name": "Holding",
+            "parentLayerId": 45,
+            "defaultVisibility": true,
+            "subLayerIds": null,
+            "minScale": 0,
+            "maxScale": 0,
+            "type": "Feature Layer",
+            "geometryType": "esriGeometryPolygon",
+            "supportsDynamicLegends": true
+          },
+          {
+            "id": 48,
+            "name": "Farm Portion",
+            "parentLayerId": 45,
+            "defaultVisibility": true,
+            "subLayerIds": null,
+            "minScale": 0,
+            "maxScale": 0,
+            "type": "Feature Layer",
+            "geometryType": "esriGeometryPolygon",
+            "supportsDynamicLegends": true
+          },
+          {
+            "id": 49,
+            "name": "Parent Farm",
+            "parentLayerId": 45,
+            "defaultVisibility": true,
+            "subLayerIds": null,
+            "minScale": 0,
+            "maxScale": 0,
+            "type": "Feature Layer",
+            "geometryType": "esriGeometryPolygon",
+            "supportsDynamicLegends": true
+          },
+          {
+            "id": 50,
+            "name": "Western Cape",
+            "parentLayerId": 10,
+            "defaultVisibility": true,
+            "subLayerIds": [
+              51,
+              52,
+              53
+            ],
+            "minScale": 0,
+            "maxScale": 0,
+            "type": "Group Layer",
+            "supportsDynamicLegends": false
+          },
+          {
+            "id": 51,
+            "name": "Erf",
+            "parentLayerId": 50,
+            "defaultVisibility": false,
+            "subLayerIds": null,
+            "minScale": 0,
+            "maxScale": 0,
+            "type": "Feature Layer",
+            "geometryType": "esriGeometryPolygon",
+            "supportsDynamicLegends": true
+          },
+          {
+            "id": 52,
+            "name": "Farm Portion",
+            "parentLayerId": 50,
+            "defaultVisibility": false,
+            "subLayerIds": null,
+            "minScale": 0,
+            "maxScale": 0,
+            "type": "Feature Layer",
+            "geometryType": "esriGeometryPolygon",
+            "supportsDynamicLegends": true
+          },
+          {
+            "id": 53,
+            "name": "Parent Farm",
+            "parentLayerId": 50,
+            "defaultVisibility": false,
+            "subLayerIds": null,
+            "minScale": 0,
+            "maxScale": 0,
+            "type": "Feature Layer",
+            "geometryType": "esriGeometryPolygon",
+            "supportsDynamicLegends": true
+          },
+          {
+            "id": 54,
+            "name": "Basemap",
+            "parentLayerId": -1,
+            "defaultVisibility": false,
+            "subLayerIds": [],
+            "minScale": 0,
+            "maxScale": 0,
+            "type": "Group Layer",
+            "supportsDynamicLegends": false
+          }
+        ],
+        "supportedQueryFormats": "JSON, geoJSON, PBF"
+      }
+    }
+  ]
+}

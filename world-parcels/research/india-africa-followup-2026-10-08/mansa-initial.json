@@ -1,0 +1,447 @@
+{
+  "schemaVersion": 1,
+  "purpose": "Complete bounded, exact identity, footprint and binding acceptance through the existing adapter; no imported parcels.",
+  "checkedAt": "2026-10-07T22:55:36.422Z",
+  "researchCityId": "wup2025:2412",
+  "sourceId": "zm-nsdi-cadaster-new",
+  "descriptor": {
+    "id": "zm-nsdi-cadaster-new",
+    "adapter": "arcgis",
+    "endpoint": "https://map.gov.zm/arcgis/rest/services/NSDI_Vector/CadasterNew/MapServer/0",
+    "idField": "SDE.Lots.UPID",
+    "objectIdField": "SDE.Lots.OBJECTID",
+    "idType": "string",
+    "idPrefix": "ZM-NSDI-",
+    "outFields": [
+      "SDE.Lots.UPID",
+      "SDE.Lots.OBJECTID"
+    ],
+    "parcelNumberField": "SDE.Lots.UPID",
+    "boundsQueryMode": "object-ids",
+    "exactQueryMode": "object-ids",
+    "pageSize": 50,
+    "idBatchSize": 50,
+    "maxFeatures": 2000,
+    "maxBboxKm2": 2,
+    "metricSrid": 32735,
+    "maxConcurrentQueries": 6
+  },
+  "center": [
+    -11.2027334066671,
+    28.8914856820841
+  ],
+  "grid": 0.0025,
+  "tests": [
+    {
+      "name": "viewport-0",
+      "passed": true,
+      "elapsedMs": 13741,
+      "bbox": [
+        28.89,
+        -11.205,
+        28.8925,
+        -11.2025
+      ],
+      "count": 2,
+      "complete": true
+    },
+    {
+      "name": "viewport-1",
+      "passed": true,
+      "elapsedMs": 11071,
+      "bbox": [
+        28.8875,
+        -11.205,
+        28.89,
+        -11.2025
+      ],
+      "count": 2,
+      "complete": true
+    },
+    {
+      "name": "viewport-2",
+      "passed": true,
+      "elapsedMs": 13023,
+      "bbox": [
+        28.8925,
+        -11.205,
+        28.895,
+        -11.2025
+      ],
+      "count": 11,
+      "complete": true
+    },
+    {
+      "name": "viewport-3",
+      "passed": true,
+      "elapsedMs": 13951,
+      "bbox": [
+        28.89,
+        -11.2075,
+        28.8925,
+        -11.205
+      ],
+      "count": 8,
+      "complete": true
+    },
+    {
+      "name": "viewport-4",
+      "passed": true,
+      "elapsedMs": 14042,
+      "bbox": [
+        28.89,
+        -11.2025,
+        28.8925,
+        -11.2
+      ],
+      "count": 4,
+      "complete": true
+    },
+    {
+      "name": "viewport-5",
+      "passed": true,
+      "elapsedMs": 14139,
+      "bbox": [
+        28.8875,
+        -11.2075,
+        28.89,
+        -11.205
+      ],
+      "count": 10,
+      "complete": true
+    },
+    {
+      "name": "viewport-6",
+      "passed": true,
+      "elapsedMs": 2534,
+      "bbox": [
+        28.8925,
+        -11.2075,
+        28.895,
+        -11.205
+      ],
+      "count": 33,
+      "complete": true
+    },
+    {
+      "name": "viewport-7",
+      "passed": true,
+      "elapsedMs": 2207,
+      "bbox": [
+        28.8875,
+        -11.2025,
+        28.89,
+        -11.2
+      ],
+      "count": 35,
+      "complete": true
+    },
+    {
+      "name": "viewport-8",
+      "passed": true,
+      "elapsedMs": 1993,
+      "bbox": [
+        28.8925,
+        -11.2025,
+        28.895,
+        -11.2
+      ],
+      "count": 1,
+      "complete": true
+    }
+  ],
+  "requests": [
+    {
+      "checkedAt": "2026-10-07T22:55:36.432Z",
+      "url": "https://map.gov.zm/arcgis/rest/services/NSDI_Vector/CadasterNew/MapServer/0/query?where=1%3D1&geometry=28.89%2C-11.205%2C28.8925%2C-11.2025&geometryType=esriGeometryEnvelope&inSR=4326&spatialRel=esriSpatialRelIntersects&f=json&returnCountOnly=true",
+      "method": "GET",
+      "operation": "count",
+      "httpStatus": 200,
+      "contentType": "application/json; charset=UTF-8",
+      "bytes": 11,
+      "elapsedMs": 4694
+    },
+    {
+      "checkedAt": "2026-10-07T22:55:41.129Z",
+      "url": "https://map.gov.zm/arcgis/rest/services/NSDI_Vector/CadasterNew/MapServer/0/query?where=1%3D1&geometry=28.89%2C-11.205%2C28.8925%2C-11.2025&geometryType=esriGeometryEnvelope&inSR=4326&spatialRel=esriSpatialRelIntersects&f=json&returnIdsOnly=true",
+      "method": "GET",
+      "operation": "manifest",
+      "httpStatus": 200,
+      "contentType": "application/json; charset=UTF-8",
+      "bytes": 67,
+      "elapsedMs": 4522
+    },
+    {
+      "checkedAt": "2026-10-07T22:55:45.661Z",
+      "url": "https://map.gov.zm/arcgis/rest/services/NSDI_Vector/CadasterNew/MapServer/0/query?where=1%3D1&outFields=SDE.Lots.UPID%2CSDE.Lots.OBJECTID&returnGeometry=true&outSR=4326&f=geojson&objectIds=34575%2C34582",
+      "method": "GET",
+      "operation": "geometry",
+      "httpStatus": 200,
+      "contentType": "application/geo+json; charset=UTF-8",
+      "bytes": 1024,
+      "elapsedMs": 4507
+    },
+    {
+      "checkedAt": "2026-10-07T22:55:50.174Z",
+      "url": "https://map.gov.zm/arcgis/rest/services/NSDI_Vector/CadasterNew/MapServer/0/query?where=1%3D1&geometry=28.8875%2C-11.205%2C28.89%2C-11.2025&geometryType=esriGeometryEnvelope&inSR=4326&spatialRel=esriSpatialRelIntersects&f=json&returnCountOnly=true",
+      "method": "GET",
+      "operation": "count",
+      "httpStatus": 200,
+      "contentType": "application/json; charset=UTF-8",
+      "bytes": 11,
+      "elapsedMs": 3119
+    },
+    {
+      "checkedAt": "2026-10-07T22:55:53.294Z",
+      "url": "https://map.gov.zm/arcgis/rest/services/NSDI_Vector/CadasterNew/MapServer/0/query?where=1%3D1&geometry=28.8875%2C-11.205%2C28.89%2C-11.2025&geometryType=esriGeometryEnvelope&inSR=4326&spatialRel=esriSpatialRelIntersects&f=json&returnIdsOnly=true",
+      "method": "GET",
+      "operation": "manifest",
+      "httpStatus": 200,
+      "contentType": "application/json; charset=UTF-8",
+      "bytes": 67,
+      "elapsedMs": 3484
+    },
+    {
+      "checkedAt": "2026-10-07T22:55:56.783Z",
+      "url": "https://map.gov.zm/arcgis/rest/services/NSDI_Vector/CadasterNew/MapServer/0/query?where=1%3D1&outFields=SDE.Lots.UPID%2CSDE.Lots.OBJECTID&returnGeometry=true&outSR=4326&f=geojson&objectIds=33620%2C33621",
+      "method": "GET",
+      "operation": "geometry",
+      "httpStatus": 200,
+      "contentType": "application/geo+json; charset=UTF-8",
+      "bytes": 822,
+      "elapsedMs": 4461
+    },
+    {
+      "checkedAt": "2026-10-07T22:56:01.253Z",
+      "url": "https://map.gov.zm/arcgis/rest/services/NSDI_Vector/CadasterNew/MapServer/0/query?where=1%3D1&geometry=28.8925%2C-11.205%2C28.895%2C-11.2025&geometryType=esriGeometryEnvelope&inSR=4326&spatialRel=esriSpatialRelIntersects&f=json&returnCountOnly=true",
+      "method": "GET",
+      "operation": "count",
+      "httpStatus": 200,
+      "contentType": "application/json; charset=UTF-8",
+      "bytes": 12,
+      "elapsedMs": 4566
+    },
+    {
+      "checkedAt": "2026-10-07T22:56:05.822Z",
+      "url": "https://map.gov.zm/arcgis/rest/services/NSDI_Vector/CadasterNew/MapServer/0/query?where=1%3D1&geometry=28.8925%2C-11.205%2C28.895%2C-11.2025&geometryType=esriGeometryEnvelope&inSR=4326&spatialRel=esriSpatialRelIntersects&f=json&returnIdsOnly=true",
+      "method": "GET",
+      "operation": "manifest",
+      "httpStatus": 200,
+      "contentType": "application/json; charset=UTF-8",
+      "bytes": 121,
+      "elapsedMs": 3745
+    },
+    {
+      "checkedAt": "2026-10-07T22:56:09.569Z",
+      "url": "https://map.gov.zm/arcgis/rest/services/NSDI_Vector/CadasterNew/MapServer/0/query?where=1%3D1&outFields=SDE.Lots.UPID%2CSDE.Lots.OBJECTID&returnGeometry=true&outSR=4326&f=geojson&objectIds=34572%2C34573%2C34574%2C34575%2C34576%2C34577%2C34578%2C34579%2C34580%2C34581%2C34582",
+      "method": "GET",
+      "operation": "geometry",
+      "httpStatus": 200,
+      "contentType": "application/geo+json; charset=UTF-8",
+      "bytes": 4700,
+      "elapsedMs": 4703
+    },
+    {
+      "checkedAt": "2026-10-07T22:56:14.277Z",
+      "url": "https://map.gov.zm/arcgis/rest/services/NSDI_Vector/CadasterNew/MapServer/0/query?where=1%3D1&geometry=28.89%2C-11.2075%2C28.8925%2C-11.205&geometryType=esriGeometryEnvelope&inSR=4326&spatialRel=esriSpatialRelIntersects&f=json&returnCountOnly=true",
+      "method": "GET",
+      "operation": "count",
+      "httpStatus": 200,
+      "contentType": "application/json; charset=UTF-8",
+      "bytes": 11,
+      "elapsedMs": 4685
+    },
+    {
+      "checkedAt": "2026-10-07T22:56:18.965Z",
+      "url": "https://map.gov.zm/arcgis/rest/services/NSDI_Vector/CadasterNew/MapServer/0/query?where=1%3D1&geometry=28.89%2C-11.2075%2C28.8925%2C-11.205&geometryType=esriGeometryEnvelope&inSR=4326&spatialRel=esriSpatialRelIntersects&f=json&returnIdsOnly=true",
+      "method": "GET",
+      "operation": "manifest",
+      "httpStatus": 200,
+      "contentType": "application/json; charset=UTF-8",
+      "bytes": 103,
+      "elapsedMs": 4466
+    },
+    {
+      "checkedAt": "2026-10-07T22:56:23.432Z",
+      "url": "https://map.gov.zm/arcgis/rest/services/NSDI_Vector/CadasterNew/MapServer/0/query?where=1%3D1&outFields=SDE.Lots.UPID%2CSDE.Lots.OBJECTID&returnGeometry=true&outSR=4326&f=geojson&objectIds=33513%2C33600%2C33601%2C33602%2C33603%2C33604%2C33607%2C34575",
+      "method": "GET",
+      "operation": "geometry",
+      "httpStatus": 200,
+      "contentType": "application/geo+json; charset=UTF-8",
+      "bytes": 4268,
+      "elapsedMs": 4787
+    },
+    {
+      "checkedAt": "2026-10-07T22:56:28.260Z",
+      "url": "https://map.gov.zm/arcgis/rest/services/NSDI_Vector/CadasterNew/MapServer/0/query?where=1%3D1&geometry=28.89%2C-11.2025%2C28.8925%2C-11.2&geometryType=esriGeometryEnvelope&inSR=4326&spatialRel=esriSpatialRelIntersects&f=json&returnCountOnly=true",
+      "method": "GET",
+      "operation": "count",
+      "httpStatus": 200,
+      "contentType": "application/json; charset=UTF-8",
+      "bytes": 11,
+      "elapsedMs": 4479
+    },
+    {
+      "checkedAt": "2026-10-07T22:56:32.741Z",
+      "url": "https://map.gov.zm/arcgis/rest/services/NSDI_Vector/CadasterNew/MapServer/0/query?where=1%3D1&geometry=28.89%2C-11.2025%2C28.8925%2C-11.2&geometryType=esriGeometryEnvelope&inSR=4326&spatialRel=esriSpatialRelIntersects&f=json&returnIdsOnly=true",
+      "method": "GET",
+      "operation": "manifest",
+      "httpStatus": 200,
+      "contentType": "application/json; charset=UTF-8",
+      "bytes": 79,
+      "elapsedMs": 4950
+    },
+    {
+      "checkedAt": "2026-10-07T22:56:37.693Z",
+      "url": "https://map.gov.zm/arcgis/rest/services/NSDI_Vector/CadasterNew/MapServer/0/query?where=1%3D1&outFields=SDE.Lots.UPID%2CSDE.Lots.OBJECTID&returnGeometry=true&outSR=4326&f=geojson&objectIds=34823%2C34920%2C34582%2C40125",
+      "method": "GET",
+      "operation": "geometry",
+      "httpStatus": 200,
+      "contentType": "application/geo+json; charset=UTF-8",
+      "bytes": 2946,
+      "elapsedMs": 4585
+    },
+    {
+      "checkedAt": "2026-10-07T22:56:42.363Z",
+      "url": "https://map.gov.zm/arcgis/rest/services/NSDI_Vector/CadasterNew/MapServer/0/query?where=1%3D1&geometry=28.8875%2C-11.2075%2C28.89%2C-11.205&geometryType=esriGeometryEnvelope&inSR=4326&spatialRel=esriSpatialRelIntersects&f=json&returnCountOnly=true",
+      "method": "GET",
+      "operation": "count",
+      "httpStatus": 200,
+      "contentType": "application/json; charset=UTF-8",
+      "bytes": 12,
+      "elapsedMs": 4517
+    },
+    {
+      "checkedAt": "2026-10-07T22:56:46.892Z",
+      "url": "https://map.gov.zm/arcgis/rest/services/NSDI_Vector/CadasterNew/MapServer/0/query?where=1%3D1&geometry=28.8875%2C-11.2075%2C28.89%2C-11.205&geometryType=esriGeometryEnvelope&inSR=4326&spatialRel=esriSpatialRelIntersects&f=json&returnIdsOnly=true",
+      "method": "GET",
+      "operation": "manifest",
+      "httpStatus": 200,
+      "contentType": "application/json; charset=UTF-8",
+      "bytes": 115,
+      "elapsedMs": 4743
+    },
+    {
+      "checkedAt": "2026-10-07T22:56:51.641Z",
+      "url": "https://map.gov.zm/arcgis/rest/services/NSDI_Vector/CadasterNew/MapServer/0/query?where=1%3D1&outFields=SDE.Lots.UPID%2CSDE.Lots.OBJECTID&returnGeometry=true&outSR=4326&f=geojson&objectIds=33513%2C33514%2C33600%2C33601%2C33603%2C33621%2C33622%2C39515%2C39516%2C39517",
+      "method": "GET",
+      "operation": "geometry",
+      "httpStatus": 200,
+      "contentType": "application/geo+json; charset=UTF-8",
+      "bytes": 5506,
+      "elapsedMs": 4855
+    },
+    {
+      "checkedAt": "2026-10-07T22:56:56.512Z",
+      "url": "https://map.gov.zm/arcgis/rest/services/NSDI_Vector/CadasterNew/MapServer/0/query?where=1%3D1&geometry=28.8925%2C-11.2075%2C28.895%2C-11.205&geometryType=esriGeometryEnvelope&inSR=4326&spatialRel=esriSpatialRelIntersects&f=json&returnCountOnly=true",
+      "method": "GET",
+      "operation": "count",
+      "httpStatus": 200,
+      "contentType": "application/json; charset=UTF-8",
+      "bytes": 12,
+      "elapsedMs": 1010
+    },
+    {
+      "checkedAt": "2026-10-07T22:56:57.524Z",
+      "url": "https://map.gov.zm/arcgis/rest/services/NSDI_Vector/CadasterNew/MapServer/0/query?where=1%3D1&geometry=28.8925%2C-11.2075%2C28.895%2C-11.205&geometryType=esriGeometryEnvelope&inSR=4326&spatialRel=esriSpatialRelIntersects&f=json&returnIdsOnly=true",
+      "method": "GET",
+      "operation": "manifest",
+      "httpStatus": 200,
+      "contentType": "application/json; charset=UTF-8",
+      "bytes": 253,
+      "elapsedMs": 743
+    },
+    {
+      "checkedAt": "2026-10-07T22:56:58.269Z",
+      "url": "https://map.gov.zm/arcgis/rest/services/NSDI_Vector/CadasterNew/MapServer/0/query?where=1%3D1&outFields=SDE.Lots.UPID%2CSDE.Lots.OBJECTID&returnGeometry=true&outSR=4326&f=geojson&objectIds=33604%2C33607%2C34459%2C34460%2C34461%2C34462%2C34463%2C34464%2C34466%2C34552%2C34553%2C34555%2C34557%2C34558%2C34559%2C34561%2C34562%2C34563%2C34564%2C34565%2C34566%2C34568%2C34569%2C34570%2C34572%2C34573%2C34574%2C34575%2C34576%2C34577%2C34578%2C40608%2C40598",
+      "method": "GET",
+      "operation": "geometry",
+      "httpStatus": 200,
+      "contentType": "application/geo+json; charset=UTF-8",
+      "bytes": 14469,
+      "elapsedMs": 770
+    },
+    {
+      "checkedAt": "2026-10-07T22:56:59.047Z",
+      "url": "https://map.gov.zm/arcgis/rest/services/NSDI_Vector/CadasterNew/MapServer/0/query?where=1%3D1&geometry=28.8875%2C-11.2025%2C28.89%2C-11.2&geometryType=esriGeometryEnvelope&inSR=4326&spatialRel=esriSpatialRelIntersects&f=json&returnCountOnly=true",
+      "method": "GET",
+      "operation": "count",
+      "httpStatus": 200,
+      "contentType": "application/json; charset=UTF-8",
+      "bytes": 12,
+      "elapsedMs": 629
+    },
+    {
+      "checkedAt": "2026-10-07T22:56:59.678Z",
+      "url": "https://map.gov.zm/arcgis/rest/services/NSDI_Vector/CadasterNew/MapServer/0/query?where=1%3D1&geometry=28.8875%2C-11.2025%2C28.89%2C-11.2&geometryType=esriGeometryEnvelope&inSR=4326&spatialRel=esriSpatialRelIntersects&f=json&returnIdsOnly=true",
+      "method": "GET",
+      "operation": "manifest",
+      "httpStatus": 200,
+      "contentType": "application/json; charset=UTF-8",
+      "bytes": 265,
+      "elapsedMs": 749
+    },
+    {
+      "checkedAt": "2026-10-07T22:57:00.430Z",
+      "url": "https://map.gov.zm/arcgis/rest/services/NSDI_Vector/CadasterNew/MapServer/0/query?where=1%3D1&outFields=SDE.Lots.UPID%2CSDE.Lots.OBJECTID&returnGeometry=true&outSR=4326&f=geojson&objectIds=34800%2C34801%2C34802%2C34803%2C34804%2C34805%2C34806%2C34807%2C34808%2C34810%2C34811%2C34812%2C34813%2C34814%2C34815%2C34817%2C34819%2C34821%2C34823%2C34824%2C34826%2C34827%2C34913%2C34915%2C34917%2C34918%2C34920%2C34921%2C34709%2C34710%2C34711%2C34712%2C34713%2C34715%2C34716",
+      "method": "GET",
+      "operation": "geometry",
+      "httpStatus": 200,
+      "contentType": "application/geo+json; charset=UTF-8",
+      "bytes": 16906,
+      "elapsedMs": 817
+    },
+    {
+      "checkedAt": "2026-10-07T22:57:01.264Z",
+      "url": "https://map.gov.zm/arcgis/rest/services/NSDI_Vector/CadasterNew/MapServer/0/query?where=1%3D1&geometry=28.8925%2C-11.2025%2C28.895%2C-11.2&geometryType=esriGeometryEnvelope&inSR=4326&spatialRel=esriSpatialRelIntersects&f=json&returnCountOnly=true",
+      "method": "GET",
+      "operation": "count",
+      "httpStatus": 200,
+      "contentType": "application/json; charset=UTF-8",
+      "bytes": 11,
+      "elapsedMs": 629
+    },
+    {
+      "checkedAt": "2026-10-07T22:57:01.895Z",
+      "url": "https://map.gov.zm/arcgis/rest/services/NSDI_Vector/CadasterNew/MapServer/0/query?where=1%3D1&geometry=28.8925%2C-11.2025%2C28.895%2C-11.2&geometryType=esriGeometryEnvelope&inSR=4326&spatialRel=esriSpatialRelIntersects&f=json&returnIdsOnly=true",
+      "method": "GET",
+      "operation": "manifest",
+      "httpStatus": 200,
+      "contentType": "application/json; charset=UTF-8",
+      "bytes": 61,
+      "elapsedMs": 756
+    },
+    {
+      "checkedAt": "2026-10-07T22:57:02.654Z",
+      "url": "https://map.gov.zm/arcgis/rest/services/NSDI_Vector/CadasterNew/MapServer/0/query?where=1%3D1&outFields=SDE.Lots.UPID%2CSDE.Lots.OBJECTID&returnGeometry=true&outSR=4326&f=geojson&objectIds=34582",
+      "method": "GET",
+      "operation": "geometry",
+      "httpStatus": 200,
+      "contentType": "application/geo+json; charset=UTF-8",
+      "bytes": 594,
+      "elapsedMs": 600
+    },
+    {
+      "checkedAt": "2026-10-07T22:57:03.268Z",
+      "url": "https://map.gov.zm/arcgis/rest/services/NSDI_Vector/CadasterNew/MapServer/0/query?where=SDE.Lots.UPID+IN+%28%27MAN%2F294%27%2C%27MAN%2F434%27%2C%27MAN%2F506%27%2C%27MAN%2F407%27%2C%27MAN%2F433%27%2C%27MAN%2F303%27%2C%27MAN%2F302%27%2C%27MAN%2F301%27%2C%27MAN%2F300%27%2C%27MAN%2F296%27%29&outFields=SDE.Lots.UPID%2CSDE.Lots.OBJECTID&returnGeometry=true&outSR=4326&f=geojson&orderByFields=SDE.Lots.OBJECTID&resultRecordCount=50&resultOffset=0",
+      "method": "GET",
+      "operation": "geometry",
+      "httpStatus": 200,
+      "contentType": "application/geo+json; charset=UTF-8",
+      "bytes": 76,
+      "elapsedMs": 461
+    }
+  ],
+  "privacy": "Only request parameters, native parcel identifiers, counts and geometry hashes saved in repository. Geometry stays in temporary acceptance cache; no owners requested.",
+  "result": "failed",
+  "failure": {
+    "message": "Parcel provider is unavailable (HTTP 400).",
+    "code": "parcel-source-unavailable",
+    "status": 502
+  },
+  "coordinatorReview": {
+    "outcome": "harness_configuration_error",
+    "explanation": "The acceptance harness misspelled idsQueryMode as exactQueryMode. Viewport manifest reads passed, but exact lookup used unsupported default offset/order parameters and returned ArcGIS error 400. Corrected run uses the existing idsQueryMode option; no runtime behavior was relaxed.",
+    "correctedEvidenceFile": "research/india-africa-followup-2026-10-08/mansa-corrected.json"
+  }
+}

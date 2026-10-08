@@ -1,0 +1,74 @@
+{
+  "schemaVersion": 1,
+  "kind": "proposed_arcgis_parcel_source_descriptor",
+  "sourceId": "tg-dmv-1512012-annojiguda",
+  "cityId": "wup2025:10035",
+  "cityName": "Ghatkesar (WUP cohort) / Annojiguda (source revenue village)",
+  "sourceOperator": "Telangana Remote Sensing Applications Centre (TGRAC), Government of Telangana",
+  "endpoint": "https://tgrac.telangana.gov.in/arcgis/rest/services/Bhunaksha_Folder/Bhunaksha_query/MapServer/0",
+  "layerName": "Full Cadastral",
+  "layerId": 0,
+  "descriptor": {
+    "id": "tg-dmv-1512012-annojiguda",
+    "adapter": "arcgis",
+    "endpoint": "https://tgrac.telangana.gov.in/arcgis/rest/services/Bhunaksha_Folder/Bhunaksha_query/MapServer/0",
+    "idField": "Parcel_num",
+    "objectIdField": "OBJECTID_12",
+    "idType": "string",
+    "idPrefix": "tg-dmv-1512012-",
+    "parcelNumberField": "Parcel_num",
+    "outFields": [
+      "OBJECTID_12",
+      "Parcel_num",
+      "DMV_Code",
+      "V_Name",
+      "M_Name",
+      "New_District",
+      "New_Mandal",
+      "New_Villagename"
+    ],
+    "attributeFilters": {
+      "DMV_Code": "1512012",
+      "V_Name": "Annojiguda"
+    },
+    "attributeNotNull": [
+      "Parcel_num"
+    ],
+    "attributeExclusions": {
+      "Parcel_num": [
+        "",
+        " "
+      ]
+    },
+    "boundsQueryMode": "object-ids",
+    "idsQueryMode": "object-ids",
+    "pageSize": 100,
+    "idBatchSize": 10,
+    "maxFeatures": 1000,
+    "maxBboxKm2": 2,
+    "maxConcurrentQueries": 6,
+    "metricSrid": 32644
+  },
+  "identityRationale": "Keep publisher Parcel_num exact as the native string key. Namespace the per-village key using observed DMV_Code through idPrefix; fix both DMV_Code and V_Name as server filters. Never use OBJECTID_12 or other OBJECTID fields as parcel identity.",
+  "explicitExcludedSubset": {
+    "filter": {
+      "Parcel_num": [
+        "",
+        " "
+      ]
+    },
+    "reason": "Nine bounded app cells revealed three whitespace-only Parcel_num rows with Descriptio=Parcel Boundary, Feature_Co=1101, Remarks Road/Village, and three distinct geometries. They are unidentified boundary features, not numbered parcel rows. This is explicit; report the omitted subset and do not invent IDs. Three local rows were counted; village-wide omitted count is unknown."
+  },
+  "runtimeReady": false,
+  "holdReasons": [
+    "Existing arcgis-source.js forces f=geojson for feature reads; this service advertises JSON, AMF and returned HTTP 400 Output format not supported for f=geojson.",
+    "Fresh native-key count, manifest and exact-geometry requests for sample Parcel_num 92 and 93 timed out at the 15-second read deadline, including a combined 92/93 geometry batch.",
+    "Nine-cell native-key uniqueness applies only to the sampled bounded neighborhood; whole Annojiguda scope uniqueness was not verified because the village count timed out."
+  ],
+  "evidenceFiles": [
+    "ghatkesar-acceptance.json",
+    "ghatkesar-boundary-exclusions.json",
+    "india-city-10035-parcel-response.json",
+    "city-10035.json"
+  ]
+}

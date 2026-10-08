@@ -1,0 +1,73 @@
+{
+  "wupCityCode": 9587,
+  "city": "Kozhikode",
+  "source": "official Ente Bhoomi public viewer click-info response",
+  "village": "Karuvanthuruthi",
+  "villageMalayalam": "കരുവന്‍തുരുത്തി",
+  "locationCode": "110114",
+  "crs": "EPSG:32643",
+  "endpoint": "/web/proxy/click_info/multiple/110114",
+  "request": {
+    "method": "POST",
+    "contentType": "multipart/form-data",
+    "fields": {
+      "layer_code": "LAND_PARCEL",
+      "crs": "32643",
+      "x": "590480.1322",
+      "y": "1233925.4370"
+    }
+  },
+  "featureCountReturned": 1,
+  "nativeParcelFields": {
+    "parcel_gid": "77211068-4399-433e-8433-fa8299ad5e0a",
+    "survey_no": "109",
+    "block_no": "26"
+  },
+  "geometry": {
+    "encoding": "WKT",
+    "type": "MULTIPOLYGON Z",
+    "value": "MULTIPOLYGON Z (((590489.1508101 1233938.639773 0,590485.4246554 1233915.9052386 0,590457.2428723 1233915.5562646 0,590452.6001268 1233917.1167724 0,590452.8317499 1233921.2529169 0,590452.7514612 1233929.7819478 0,590475.0374093 1233929.9199186 0,590475.4750555 1233938.9825525 0,590480.274533 1233939.0190686 0,590485.4044935 1233938.879113 0,590489.1508101 1233938.639773 0)))",
+    "sha256": "950b6722257d941dcbdeae36d85f73d8ce8b80b514e3a168ec1f75451c084625",
+    "chars": 379
+  },
+  "responseNotes": "Only safe parcel identifiers and geom were persisted; non-whitelisted response attributes filtered in memory.",
+  "validation": {
+    "transform": {
+      "from": "EPSG:32643",
+      "to": "EPSG:4326",
+      "library": "backend package proj4 2.22.0"
+    },
+    "wgs84Bbox": [
+      75.82841427,
+      11.16106863,
+      75.82874955,
+      11.16128022
+    ],
+    "polygonCount": 1,
+    "ringCount": 1,
+    "vertexCount": 10,
+    "allRingsClosed": true,
+    "allCoordinatesFinite3d": true,
+    "allRingsPositiveArea": true,
+    "selfIntersectionCount": 0,
+    "validClosedPolygon": true,
+    "wupTargetCenterLatLon": [
+      11.2059147426276,
+      75.8583486485998
+    ],
+    "wupPointInsideParcel": false,
+    "distanceToParcelBoundaryMeters": 5900.11,
+    "distanceMethod": "Euclidean distance in EPSG:32643 between the viewer click coordinate and the projected WUP target point",
+    "viewerClickCoordinateSourceCrs": "EPSG:32643",
+    "viewerClickCoordinate": [
+      590480.1322,
+      1233925.437
+    ],
+    "viewerClickCoordinateWgs84LonLat": [
+      75.82866662,
+      11.1611574
+    ],
+    "viewerClickCoordinateInsideSampleParcel": true,
+    "distanceFromWupTargetToClickCoordinateMeters": 5916.09
+  }
+}

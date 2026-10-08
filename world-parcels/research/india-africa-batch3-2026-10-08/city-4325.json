@@ -1,0 +1,115 @@
+{
+  "schemaVersion": 1,
+  "kind": "city_parcel_source_research",
+  "cityId": "wup2025:4325",
+  "wupCityCode": 4325,
+  "name": "Al-Kharṭūm (Khartoum)",
+  "country": "Sudan",
+  "countryCode": "SD",
+  "centerLatLon": [
+    15.6335384772136,
+    32.4952458979726
+  ],
+  "population2025": 6809355,
+  "checkedAt": "2026-10-08",
+  "resultCategory": "promising_official_portal_temporarily_unavailable",
+  "priorEvidence": [
+    {
+      "path": "research/khartoum.json",
+      "status": null
+    },
+    {
+      "path": "research/india-africa-2026-10-08/africa-ne-city-al-khar-m-khartoum.json",
+      "status": "promising_unavailable"
+    }
+  ],
+  "priorBlocker": "No Al-Kharṭūm (Khartoum) parcel polygons or stable IDs were verified. Sudan NIC describes a WMS/WFS portal, but its linked portal was unreachable; Aqari’s plot route is partner-specific.",
+  "nativeLanguageSearches": [
+    {
+      "languageScript": "Arabic",
+      "exactQuery": "ولاية الخرطوم قطع الأراضي كادستر خريطة تسجيل الأراضي بوابة جغرافية",
+      "date": "2026-10-08",
+      "executionMethod": "web.run search_query; response_length=long",
+      "resultUrls": [
+        "https://nic.gov.sd/public/projectDetails/3",
+        "https://sj.gov.sd/ar/content/page/إدارة-تسجيلات-الاراضي",
+        "https://www.geoportal.gov.sd/"
+      ],
+      "summary": "Found the National Information Center (NIC) official Sudan Spatial Portal description (WMS/WFS) and Judiciary land-registry mandate. Portal target is linked but inaccessible to the web client; no layer capabilities or parcel sample could be checked."
+    },
+    {
+      "languageScript": "Arabic",
+      "exactQuery": "بوابة السودان المكانية الخرطوم طبقة الأراضي",
+      "date": "2026-10-08",
+      "executionMethod": "web.run search_query; response_length=long",
+      "resultUrls": [
+        "https://nic.gov.sd/public/projectDetails/3"
+      ],
+      "summary": "Search results returned only the NIC project page describing the WMS/WFS portal; no indexed Khartoum parcel layer or service endpoint."
+    },
+    {
+      "languageScript": "Arabic",
+      "exactQuery": "www.geoportal.gov.sd WFS parcels",
+      "date": "2026-10-08",
+      "executionMethod": "web.run search_query; response_length=long",
+      "resultUrls": [
+        "https://nic.gov.sd/public/projectDetails/3"
+      ],
+      "summary": "No indexed service capabilities or specific parcel layer were returned; the official NIC page remains the lead."
+    }
+  ],
+  "officialAndRelevantLeads": [
+    {
+      "url": "https://nic.gov.sd/public/projectDetails/3",
+      "operator": "Sudan National Information Center (NIC)",
+      "observation": "Official page describes Sudan Spatial Portal as a national interactive spatial-information viewer offering WMS and WFS; it links to geoportal.gov.sd. It does not name a cadastre/parcel layer."
+    },
+    {
+      "url": "https://sj.gov.sd/ar/content/page/إدارة-تسجيلات-الاراضي",
+      "operator": "Judiciary of the Republic of Sudan, Land Registry Administration",
+      "observation": "Official Arabic page says land registration is part of the judiciary, describes survey/settlement and the registrar-general with offices across Sudan. This validates the land registry as authority context but not an open spatial feed."
+    },
+    {
+      "url": "https://aqari.nctr.sd/ar/about",
+      "operator": "Judiciary of Sudan / Aqari",
+      "observation": "Prior pass describes this as a national digital real-estate registration service with partner/user-specific land lookup; it is not evidence of public anonymous feature access."
+    }
+  ],
+  "requestsAndEndpointChecks": [
+    {
+      "url": "https://nic.gov.sd/public/projectDetails/3",
+      "method": "GET",
+      "httpStatus": "accessible (web open)",
+      "contentType": "HTML",
+      "assessment": "Official portal description/link only."
+    },
+    {
+      "url": "https://www.geoportal.gov.sd/",
+      "method": "GET",
+      "httpStatus": "unavailable via web open",
+      "contentType": null,
+      "assessment": "Linked portal could not be fetched; no WMS/WFS capabilities or bounded parcel response. Prior pass also failed public portal access. Temporary access failure does not prove absence."
+    },
+    {
+      "url": "https://sj.gov.sd/ar/content/page/إدارة-تسجيلات-الاراضي",
+      "method": "GET",
+      "httpStatus": "accessible (web open)",
+      "contentType": "HTML",
+      "assessment": "Official land-registry description, not parcel geometry."
+    }
+  ],
+  "verifiedParcelResponse": null,
+  "source": null,
+  "registryFound": null,
+  "verifiedSample": false,
+  "targetGeometryEvidence": "none",
+  "nativeIdReadiness": "not_verified",
+  "coverageAssessment": {
+    "claimedScope": "Target city only; national or administrative service descriptions do not establish city parcel coverage.",
+    "verifiedOpenScope": null,
+    "countrywideVerified": false
+  },
+  "blocker": "An official national WMS/WFS portal is documented but its linked host is unavailable in this search. No published Khartoum parcel layer or geometry was verified.",
+  "remainingUncertainty": "The portal may expose cadastral layers once reachable; no exact WFS layer, access terms, target extent or native identifiers were visible. The current service failure is not evidence of absence.",
+  "nextStep": "Retry the official geoportal and inspect public GetCapabilities/GetFeatureType inventory only after it responds; then test a tiny Khartoum bbox without owner fields."
+}

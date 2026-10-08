@@ -207,6 +207,20 @@
         const areaLabel = tParcel('panel.parcel.metrics.area', {}, 'Area:');
         const marketPriceLabel = tParcel('panel.parcel.metrics.marketPrice', {}, 'Est. Mkt. Price:');
 
+        const geometryReferenceId = props.parcelIdentityKind === 'geometry-sha256-v1'
+            ? String(props.geometryDisplayId || '').trim()
+            : '';
+        const geometryReferenceNote = geometryReferenceId
+            ? tParcel(
+                'panel.parcel.geometryReferenceNote',
+                {},
+                'Application reference derived from geometry. Source registry number unavailable; boundary changes create a new reference.'
+            )
+            : '';
+        const geometryReferenceNoteHtml = geometryReferenceId
+            ? `<div class="parcel-identity-note" role="note" data-i18n-key="panel.parcel.geometryReferenceNote">${geometryReferenceNote}</div>`
+            : '';
+
         const normalizedParcelId = resolveParcelId(feature);
         const brojCestice = feature.properties.BROJ_CESTICE ?? feature.properties.broj_cestice;
         const maticniBrojKo = feature.properties.MATICNI_BROJ_KO ?? feature.properties.maticni_broj_ko ?? (feature.properties.cadastralMunicipality && feature.properties.cadastralMunicipality.id);
@@ -698,6 +712,7 @@
             ` : ''}
             <div class="parcel-owners-container" id="${PARCEL_OWNER_VALUE_ELEMENT_ID}">${ownershipHtml}</div>
         </div>
+        ${geometryReferenceNoteHtml}
         <div style="display: flex; gap: 8px;">
             <div class="metric-group" style="flex: 1;">
                 <div class="metric-label" data-i18n-key="panel.parcel.metrics.owners">${ownersLabel}</div>
@@ -741,7 +756,11 @@
             titleElement.removeAttribute('data-i18n-key');
             titleElement.removeAttribute('data-i18n-params');
 
-            const resolvedId = displayParcelId || brojValue;
+            const resolvedId = props.parcelIdentityKind === 'geometry-sha256-v1'
+                ? (typeof getParcelDisplayNumberFromProperties === 'function'
+                    ? getParcelDisplayNumberFromProperties(props, displayParcelId)
+                    : (geometryReferenceId || displayParcelId))
+                : displayParcelId || brojValue;
             titleElement.textContent = '';
             // A piece on open ground (PARCEL-OPTIONAL.md phase 3) is no cadastral parcel: its id is a
             // proposal-local name, so the title says what the ground is instead of "Parcel <id>".

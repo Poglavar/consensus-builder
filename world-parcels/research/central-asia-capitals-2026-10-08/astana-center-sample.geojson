@@ -1,0 +1,113 @@
+{
+  "type": "FeatureCollection",
+  "crs": "EPSG:4326",
+  "features": [
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Polygon",
+        "coordinates": [
+          [
+            [
+              71.42973415969975,
+              51.12837879883281
+            ],
+            [
+              71.42972005349401,
+              51.128380213034134
+            ],
+            [
+              71.42971780603392,
+              51.12837133679591
+            ],
+            [
+              71.42973191223703,
+              51.128369922594864
+            ],
+            [
+              71.42973415969975,
+              51.12837879883281
+            ]
+          ]
+        ]
+      },
+      "properties": {
+        "LAND_AREA": "0,0001",
+        "REGION": "Есиль"
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Polygon",
+        "coordinates": [
+          [
+            [
+              71.42976658874305,
+              51.12845763987904
+            ],
+            [
+              71.42975307259627,
+              51.12846054904073
+            ],
+            [
+              71.42974844931138,
+              51.1284520450067
+            ],
+            [
+              71.42976196403869,
+              51.12844913493978
+            ],
+            [
+              71.42976658874305,
+              51.12845763987904
+            ]
+          ]
+        ]
+      },
+      "properties": {
+        "LAND_AREA": "0,0001",
+        "REGION": "Есиль"
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Polygon",
+        "coordinates": [
+          [
+            [
+              71.43111899487366,
+              51.128083926625706
+            ],
+            [
+              71.43110646719612,
+              51.12808824564588
+            ],
+            [
+              71.4310996034021,
+              51.12808036353451
+            ],
+            [
+              71.43111212964978,
+              51.12807604450811
+            ],
+            [
+              71.43111899487366,
+              51.128083926625706
+            ]
+          ]
+        ]
+      },
+      "properties": {
+        "LAND_AREA": "0,0001",
+        "REGION": "Есиль"
+      }
+    }
+  ],
+  "sourceRequest": "https://gis.esaulet.kz/server/rest/services/Sloi_geoportala_otkrytiy_kontur_0702/MapServer/18/query?where=1%3D1&geometry=71.4294%2C51.1272%2C71.4314%2C51.1292&geometryType=esriGeometryEnvelope&inSR=4326&outSR=4326&spatialRel=esriSpatialRelIntersects&outFields=LAND_AREA%2CREGION&returnGeometry=true&resultRecordCount=3&f=geojson",
+  "sourceResponse": {
+    "httpStatus": 200,
+    "exceededTransferLimit": true
+  }
+}

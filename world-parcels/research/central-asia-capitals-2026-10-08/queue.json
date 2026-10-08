@@ -1,0 +1,83 @@
+{
+  "schemaVersion": 1,
+  "status": "in_progress",
+  "preparedAt": "2026-10-08T05:47:22.950129+00:00",
+  "scope": "User-requested parcel-source research for the capitals of the five Central Asian republics. Separate from the next ten India/Africa cities.",
+  "cityCount": 5,
+  "cities": [
+    {
+      "cityId": "capital:KZ:astana",
+      "name": "Astana",
+      "country": "Kazakhstan",
+      "countryCode": "KZ",
+      "centerLatLon": [
+        51.1282,
+        71.4304
+      ],
+      "pointBasis": "Chosen central-city map query point; not a WUP centroid or official boundary",
+      "workstream": "north",
+      "status": "in_progress",
+      "priorEvidenceFiles": []
+    },
+    {
+      "cityId": "capital:KG:bishkek",
+      "name": "Bishkek",
+      "country": "Kyrgyzstan",
+      "countryCode": "KG",
+      "centerLatLon": [
+        42.8746,
+        74.5698
+      ],
+      "pointBasis": "Chosen central-city map query point; not a WUP centroid or official boundary",
+      "workstream": "north",
+      "status": "in_progress",
+      "priorEvidenceFiles": []
+    },
+    {
+      "cityId": "capital:TJ:dushanbe",
+      "name": "Dushanbe",
+      "country": "Tajikistan",
+      "countryCode": "TJ",
+      "centerLatLon": [
+        38.5598,
+        68.787
+      ],
+      "pointBasis": "Chosen central-city map query point; not a WUP centroid or official boundary",
+      "workstream": "south",
+      "status": "in_progress",
+      "priorEvidenceFiles": []
+    },
+    {
+      "cityId": "wup2025:3082",
+      "name": "Tashkent",
+      "country": "Uzbekistan",
+      "countryCode": "UZ",
+      "centerLatLon": [
+        41.2393518231547,
+        69.2589127379298
+      ],
+      "pointBasis": "Saved WUP2025 Tashkent point",
+      "workstream": "south",
+      "status": "in_progress",
+      "priorEvidenceFiles": [
+        "research/toshkent.json",
+        "research/retry/cities/toshkent.json",
+        "research/native-language-2026-10-04/cities-toshkent.json"
+      ]
+    },
+    {
+      "cityId": "capital:TM:ashgabat",
+      "name": "Ashgabat",
+      "country": "Turkmenistan",
+      "countryCode": "TM",
+      "centerLatLon": [
+        37.9601,
+        58.3261
+      ],
+      "pointBasis": "Chosen central-city map query point; not a WUP centroid or official boundary",
+      "workstream": "south",
+      "status": "in_progress",
+      "priorEvidenceFiles": []
+    }
+  ]
+}

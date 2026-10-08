@@ -1,0 +1,133 @@
+{
+  "checkedAt": "2026-10-07T22:37:14.389Z",
+  "origin": "https://api.urbangametheory.xyz",
+  "checks": [
+    {
+      "city": "johannesburg",
+      "sourceId": "za-joburg-registered-stands",
+      "bbox": [
+        27.8575,
+        -26.125,
+        27.86,
+        -26.1225
+      ],
+      "viewport": {
+        "status": 200,
+        "complete": true,
+        "count": 27,
+        "elapsedMs": 4964
+      },
+      "exact": {
+        "status": 200,
+        "complete": true,
+        "count": 3,
+        "elapsedMs": 1495,
+        "nativeIdentities": [
+          "T0IQ0156012000020710000000",
+          "T0IQ0488014000025150000200",
+          "T0IQ0156003000003970000000"
+        ]
+      },
+      "geometryMatches": true,
+      "passed": true
+    },
+    {
+      "city": "cosmo_city",
+      "sourceId": "za-joburg-registered-stands",
+      "bbox": [
+        27.92,
+        -26.0375,
+        27.9225,
+        -26.035
+      ],
+      "viewport": {
+        "status": 200,
+        "complete": true,
+        "count": 56,
+        "elapsedMs": 5098
+      },
+      "exact": {
+        "status": 200,
+        "complete": true,
+        "count": 3,
+        "elapsedMs": 1427,
+        "nativeIdentities": [
+          "T0IQ0724008000204950000000",
+          "T0IQ0724008000094500000000",
+          "T0IQ0724008000090100000000"
+        ]
+      },
+      "geometryMatches": true,
+      "passed": true
+    },
+    {
+      "city": "ennerdale",
+      "sourceId": "za-joburg-registered-stands",
+      "bbox": [
+        27.845,
+        -26.4075,
+        27.8475,
+        -26.405
+      ],
+      "viewport": {
+        "status": 200,
+        "complete": true,
+        "count": 8,
+        "elapsedMs": 5645
+      },
+      "exact": {
+        "status": 200,
+        "complete": true,
+        "count": 3,
+        "elapsedMs": 1483,
+        "nativeIdentities": [
+          "T0IQ0104001000013730000000",
+          "T0IQ0104001000013760000000",
+          "T0IQ0104001000013700000000"
+        ]
+      },
+      "geometryMatches": true,
+      "passed": true
+    },
+    {
+      "city": "accra",
+      "sourceId": "gh-ama-public-property-app",
+      "bbox": [
+        -0.2175,
+        5.5475,
+        -0.215,
+        5.55
+      ],
+      "viewport": {
+        "status": 200,
+        "complete": true,
+        "count": 38,
+        "elapsedMs": 1098
+      },
+      "exact": {
+        "status": 200,
+        "complete": true,
+        "count": 3,
+        "elapsedMs": 178,
+        "nativeIdentities": [
+          "AMAPO35918A",
+          "AMAKD35409",
+          "AMAKD35594"
+        ]
+      },
+      "geometryMatches": true,
+      "passed": true
+    }
+  ],
+  "passed": true,
+  "commit": "fe51483ef23281982273c90d08dbdc0603f4a4d3",
+  "frontendBuild": "deploy-410",
+  "frontendReport": {
+    "hashMatchesLocal": true,
+    "totalCityRows": 460,
+    "configuredCities": 107,
+    "regionalCityRows": 171,
+    "regionalChecked": 171
+  },
+  "backendProviderCount": 94
+}

@@ -2315,6 +2315,110 @@
             sidebar: { disabledSections: ['parcelBlocks', 'roads', 'areaMonitor'] },
             parcelBuilder: { url: 'https://urbangametheory.xyz/codechecker/' }
         },
+        kochi: {
+            id: 'kochi',
+            label: translateCityText('city.labels.kochi', 'Kochi — Thiruvankulam, India'),
+            currency: { locale: 'en-IN', code: 'INR' },
+            map: {
+                initialView: { type: 'center', zoom: SHARED_DEFAULT_ZOOM },
+                defaultCenter: [9.963406805925196, 76.36082896288808], defaultZoom: SHARED_DEFAULT_ZOOM,
+                parcelZoomRange: { min: 17, max: Infinity }, latLngPadding: 0.08
+            },
+            projection: {
+                datasetCrs: 'EPSG:4326', definition: '+proj=longlat +datum=WGS84 +no_defs',
+                metricCrs: 'EPSG:32643',
+                metricDefinition: '+proj=utm +zone=43 +datum=WGS84 +units=m +no_defs +type=crs',
+                fallbackLatLng: [9.963406805925196, 76.36082896288808],
+                fallbackDataset: [76.36082896288808, 9.963406805925196]
+            },
+            parcels: {
+                strategy: 'grid', gridSize: 0.001, source: 'parcel-source',
+                sourceId: 'in-kl-entebhoomi-070211', idPrefix: 'IN-KL-ENTEBHOOMI-070211-',
+                requiresBackend: true, ownership: false, liveRadiusKm: 1.5,
+                attribution: '<a href="https://entebhoomi.kerala.gov.in/web/ilms/map">Kerala Survey and Land Records Department / NIC Kerala · Ente Bhoomi</a> · Thiruvankulam village coverage only · adapted'
+            },
+            buildings: { source: 'osm' },
+            sidebar: { disabledSections: ['parcelBlocks', 'roads', 'areaMonitor'] },
+            parcelBuilder: { url: 'https://urbangametheory.xyz/codechecker/' }
+        },
+        iravipuram: {
+            id: 'iravipuram',
+            label: translateCityText('city.labels.iravipuram', 'Iravipuram (Kollam), India'),
+            currency: { locale: 'en-IN', code: 'INR' },
+            map: {
+                initialView: { type: 'center', zoom: SHARED_DEFAULT_ZOOM },
+                defaultCenter: [8.847550832774829, 76.62751009273858], defaultZoom: SHARED_DEFAULT_ZOOM,
+                parcelZoomRange: { min: 17, max: Infinity }, latLngPadding: 0.08
+            },
+            projection: {
+                datasetCrs: 'EPSG:4326', definition: '+proj=longlat +datum=WGS84 +no_defs',
+                metricCrs: 'EPSG:32643',
+                metricDefinition: '+proj=utm +zone=43 +datum=WGS84 +units=m +no_defs +type=crs',
+                fallbackLatLng: [8.847550832774829, 76.62751009273858],
+                fallbackDataset: [76.62751009273858, 8.847550832774829]
+            },
+            parcels: {
+                strategy: 'grid', gridSize: 0.001, source: 'parcel-source',
+                sourceId: 'in-kl-entebhoomi-020301', idPrefix: 'IN-KL-ENTEBHOOMI-020301-',
+                requiresBackend: true, ownership: false, liveRadiusKm: 1.5,
+                attribution: '<a href="https://entebhoomi.kerala.gov.in/web/ilms/map">Kerala Survey and Land Records Department / NIC Kerala · Ente Bhoomi</a> · Iravipuram village coverage only · adapted'
+            },
+            buildings: { source: 'osm' },
+            sidebar: { disabledSections: ['parcelBlocks', 'roads', 'areaMonitor'] },
+            parcelBuilder: { url: 'https://urbangametheory.xyz/codechecker/' }
+        },
+        ahmedabad: {
+            id: 'ahmedabad',
+            label: translateCityText('city.labels.ahmedabad', 'Ahmedabad, India'),
+            currency: { locale: 'en-IN', code: 'INR' },
+            map: {
+                initialView: { type: 'center', zoom: 18 },
+                defaultCenter: [23.02004, 72.59975], defaultZoom: 18,
+                parcelZoomRange: { min: 17, max: Infinity }, latLngPadding: 0.08
+            },
+            projection: {
+                datasetCrs: 'EPSG:4326', definition: '+proj=longlat +datum=WGS84 +no_defs',
+                metricCrs: 'EPSG:32643',
+                metricDefinition: '+proj=utm +zone=43 +datum=WGS84 +units=m +no_defs +type=crs',
+                fallbackLatLng: [23.02004, 72.59975],
+                fallbackDataset: [72.59975, 23.02004]
+            },
+            parcels: {
+                strategy: 'grid', gridSize: 0.005, source: 'parcel-source',
+                sourceId: 'in-gj-tpvd-final-plots', idPrefix: 'IN-GJ-TPVD-',
+                requiresBackend: true, ownership: false, liveRadiusKm: 3,
+                attribution: '<a href="https://tpvd.openprp.in/ctpvd/index.html">Gujarat TPVD final planning plots · publisher &amp; conditions</a> · Ahmedabad Municipal Corporation (AMC) Final town-planning plots only · partial coverage; not ownership or current-title evidence · registration/currentness unverified'
+            },
+            buildings: { source: 'osm' },
+            sidebar: { disabledSections: ['parcelBlocks', 'roads', 'areaMonitor'] },
+            parcelBuilder: { url: 'https://urbangametheory.xyz/codechecker/' }
+        },
+        surat: {
+            id: 'surat',
+            label: translateCityText('city.labels.surat', 'Surat, India'),
+            currency: { locale: 'en-IN', code: 'INR' },
+            map: {
+                initialView: { type: 'center', zoom: 18 },
+                defaultCenter: [21.174179236185818, 72.78092615417103], defaultZoom: 18,
+                parcelZoomRange: { min: 17, max: Infinity }, latLngPadding: 0.08
+            },
+            projection: {
+                datasetCrs: 'EPSG:4326', definition: '+proj=longlat +datum=WGS84 +no_defs',
+                metricCrs: 'EPSG:32643',
+                metricDefinition: '+proj=utm +zone=43 +datum=WGS84 +units=m +no_defs +type=crs',
+                fallbackLatLng: [21.174179236185818, 72.78092615417103],
+                fallbackDataset: [72.78092615417103, 21.174179236185818]
+            },
+            parcels: {
+                strategy: 'grid', gridSize: 0.005, source: 'parcel-source',
+                sourceId: 'in-gj-tpvd-surat-final-plots', idPrefix: 'IN-GJ-SURAT-',
+                requiresBackend: true, ownership: false, liveRadiusKm: 3,
+                attribution: '<a href="https://tpvd.openprp.in/ctpvd/index.html">Gujarat TPVD final planning plots · publisher &amp; conditions</a> · Surat Municipal Corporation Final plots only · partial coverage; not ownership or current-title evidence · registration/currentness unverified'
+            },
+            buildings: { source: 'osm' },
+            sidebar: { disabledSections: ['parcelBlocks', 'roads', 'areaMonitor'] },
+            parcelBuilder: { url: 'https://urbangametheory.xyz/codechecker/' }
+        },
         bismarck: {
             id: 'bismarck',
             label: translateCityText('city.labels.bismarck', 'Bismarck, United States'),
@@ -2815,6 +2919,31 @@
             sidebar: { disabledSections: ['parcelBlocks', 'roads', 'areaMonitor'] },
             parcelBuilder: { url: 'https://urbangametheory.xyz/codechecker/' }
         },
+        astana: {
+            id: 'astana',
+            label: translateCityText('city.labels.astana', 'Astana, Kazakhstan'),
+            currency: { locale: 'ru-KZ', code: 'KZT' },
+            map: {
+                initialView: { type: 'center', zoom: 18 },
+                defaultCenter: [51.1282, 71.4304], defaultZoom: 18,
+                parcelZoomRange: { min: 17, max: Infinity }, latLngPadding: 0.08
+            },
+            projection: {
+                datasetCrs: 'EPSG:4326', definition: '+proj=longlat +datum=WGS84 +no_defs',
+                metricCrs: 'EPSG:32642',
+                metricDefinition: '+proj=utm +zone=42 +datum=WGS84 +units=m +no_defs +type=crs',
+                fallbackLatLng: [51.1282, 71.4304], fallbackDataset: [71.4304, 51.1282]
+            },
+            parcels: {
+                strategy: 'grid', gridSize: 0.0025, source: 'parcel-source',
+                sourceId: 'kz-astana-pkk-esil', idPrefix: 'KZ-ASTANA-PKK-',
+                requiresBackend: true, ownership: false, liveRadiusKm: 2,
+                attribution: '<a href="https://map.gov4c.kz/egkn/">Kazakhstan EGKN public cadastral map</a> · Esil district only; partial Astana coverage · native cadastral numbers; ownership and boundary update dates unestablished'
+            },
+            buildings: { source: 'osm' },
+            sidebar: { disabledSections: ['parcelBlocks', 'roads', 'areaMonitor'] },
+            parcelBuilder: { url: 'https://urbangametheory.xyz/codechecker/' }
+        },
         dubai: {
             id: 'dubai',
             label: translateCityText('city.labels.dubai', 'Dubai, United Arab Emirates'),
@@ -3160,6 +3289,57 @@
                 sourceId: 'gh-ama-public-property-app', idPrefix: 'GH-AMA-',
                 requiresBackend: true, ownership: false, liveRadiusKm: 2,
                 attribution: '<a href="https://gis.berryict.com/gis/gis/ama/propertyidentification.php">Accra Metro property app · Berry ICT host · conditions</a> · Partial app-PID footprints; official authority and legal cadastral meaning unconfirmed'
+            },
+            buildings: { source: 'osm' },
+            sidebar: { disabledSections: ['parcelBlocks', 'roads', 'areaMonitor'] },
+            parcelBuilder: { url: 'https://urbangametheory.xyz/codechecker/' }
+        },
+        mboloko: {
+            id: 'mboloko',
+            label: translateCityText('city.labels.mboloko', 'Mboloko, South Africa'),
+            currency: { locale: 'en-ZA', code: 'ZAR' },
+            map: {
+                initialView: { type: 'center', zoom: SHARED_DEFAULT_ZOOM },
+                defaultCenter: [-25.4662366387406, 27.8447650141456], defaultZoom: 18,
+                parcelZoomRange: { min: 17, max: Infinity }, latLngPadding: 0.08
+            },
+            projection: {
+                datasetCrs: 'EPSG:4326', definition: '+proj=longlat +datum=WGS84 +no_defs',
+                metricCrs: 'EPSG:32735',
+                metricDefinition: '+proj=utm +zone=35 +south +datum=WGS84 +units=m +no_defs +type=crs',
+                fallbackLatLng: [-25.4662366387406, 27.8447650141456], fallbackDataset: [27.8447650141456, -25.4662366387406]
+            },
+            parcels: {
+                strategy: 'grid', gridSize: 0.0025, source: 'parcel-source',
+                sourceId: 'za-cgs-northwest-erven', idPrefix: 'ZA-CGS-NW-',
+                requiresBackend: true, ownership: false, liveRadiusKm: 2,
+                attribution: '<a href="https://maps.geoscience.org.za/hosting/rest/services/Administrative_Boundaries_and_Cadastral_Data/MapServer/46">CGS North West Erven · publisher &amp; conditions</a> · Surveyed approved parcels; Mboloko entry area verified; sampled records 2017-10-13; currentness and registration unestablished'
+            },
+            buildings: { source: 'osm' },
+            sidebar: { disabledSections: ['parcelBlocks', 'roads', 'areaMonitor'] },
+                parcelBuilder: { url: 'https://urbangametheory.xyz/codechecker/' }
+            },
+        nairobi: {
+            id: 'nairobi',
+            label: translateCityText('city.labels.nairobi', 'Nairobi, Kenya'),
+            currency: { locale: 'en-KE', code: 'KES' },
+            map: {
+                initialView: { type: 'center', zoom: 18 },
+                defaultCenter: [-1.26592113731299, 36.845161927435], defaultZoom: 18,
+                parcelZoomRange: { min: 17, max: Infinity }, latLngPadding: 0.08
+            },
+            projection: {
+                datasetCrs: 'EPSG:4326', definition: '+proj=longlat +datum=WGS84 +no_defs',
+                metricCrs: 'EPSG:32737',
+                metricDefinition: '+proj=utm +zone=37 +south +datum=WGS84 +units=m +no_defs +type=crs',
+                fallbackLatLng: [-1.26592113731299, 36.845161927435],
+                fallbackDataset: [36.845161927435, -1.26592113731299]
+            },
+            parcels: {
+                strategy: 'grid', gridSize: 0.0025, source: 'parcel-source',
+                sourceId: 'ke-nairobi-maps-outlines', idPrefix: 'KE-NAIROBI-NM-',
+                requiresBackend: true, ownership: false, liveRadiusKm: 3,
+                attribution: '<a href="https://nairobimaps.com/">Nairobi Maps</a> · <a href="https://nairobimaps.com/gis-data/nairobi-parcels-cadastre.html">parcel outlines</a>. Public commercial outlines are for geometry references only; source registry numbers and ownership are unavailable.'
             },
             buildings: { source: 'osm' },
             sidebar: { disabledSections: ['parcelBlocks', 'roads', 'areaMonitor'] },

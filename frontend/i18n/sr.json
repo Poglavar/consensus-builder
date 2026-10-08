@@ -993,6 +993,7 @@
             "builderTooltip": "Otvori graditelj parcela",
             "builderLabel": "Graditelj parcela",
             "idLabel": "ID:",
+            "geometryReferenceNote": "Aplikativna oznaka izvedena iz geometrije. Izvorni registarski broj nije dostupan; promena granice stvara novu oznaku.",
             "metrics": {
                 "owner": "Vlasnik:",
                 "owners": "Vlasnici:",
@@ -3631,7 +3632,14 @@
             "ennerdale": "Ennerdale, Južnoafrička Republika",
             "cosmo_city": "Cosmo City, Južnoafrička Republika",
             "accra": "Akra, Gana",
-            "venjaramoodu": "Vendžaramudu, Indija"
+            "mboloko": "Mboloko, Južnoafrička Republika",
+            "venjaramoodu": "Vendžaramudu, Indija",
+            "kochi": "Koči — Tiruvankulam, Indija",
+            "iravipuram": "Iravipuram (Kolam), Indija",
+            "ahmedabad": "Ahmedabad, Indija",
+            "surat": "Surat, Indija",
+            "nairobi": "Nairobi, Kenija",
+            "astana": "Astana, Kazahstan"
         },
         "detect": {
             "confirm": "Dozvoliti Consensus Builder-u da koristi tvoju približnu lokaciju da izabere najbliži grad?",

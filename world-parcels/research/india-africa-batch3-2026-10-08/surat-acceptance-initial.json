@@ -1,0 +1,655 @@
+{
+  "schemaVersion": 1,
+  "purpose": "Fresh acceptance of the filtered Surat catalogue descriptor; no parcel database import.",
+  "checkedAt": "2026-10-08T05:41:29.807Z",
+  "cityId": "wup2025:7233",
+  "descriptor": {
+    "id": "in-gj-tpvd-surat-final-plots",
+    "name": "Gujarat TPVD — Surat final town-planning plots",
+    "adapter": "wfs",
+    "version": "1.1.0",
+    "endpoint": "https://tpvd.openprp.in/geoserver/ows",
+    "featureType": "ctp:final_plot_boundary",
+    "geometryField": "the_geom",
+    "idField": "search",
+    "idType": "string",
+    "idPrefix": "IN-GJ-SURAT-",
+    "parcelNumberField": "fp_no",
+    "outFields": [
+      "search",
+      "fp_no",
+      "tps_id",
+      "tps_no",
+      "tps_name",
+      "village",
+      "city",
+      "authority",
+      "district",
+      "status"
+    ],
+    "attributeFilters": {
+      "status": "Final",
+      "city": "Surat",
+      "authority": "SMC"
+    },
+    "pageSize": 1000,
+    "maxFeatures": 1000,
+    "maxBboxKm2": 2,
+    "maxConcurrentQueries": 6,
+    "caCertificate": "./certificates/sectigo-public-server-authentication-ca-dv-r36.pem",
+    "countryCode": "IN",
+    "metricSrid": 32643,
+    "cityIds": [
+      "surat"
+    ],
+    "scope": "Final Surat Municipal Corporation (SMC) town-planning plot boundaries from Gujarat TPVD. Partial planning-scheme coverage; not a current title/ownership registry or citywide completeness claim. Native search reference combines village, scheme and final-plot labels. Single counted responses up to 1,000 records; larger scopes reject because this provider misreports terminal offset-page counts.",
+    "evidenceFile": "research/india-africa-batch3-2026-10-08/city-7233.json",
+    "attribution": "Government of Gujarat, Town Planning and Valuation Department (TPVD) — final SMC planning plots. Partial coverage; registration and currentness unverified. Adapted to WGS84.",
+    "catalogueUrl": "https://townplanning.gujarat.gov.in/Home",
+    "licenceNote": "Source conditions are informational. No named reuse licence was identified on the inspected public map.",
+    "caveats": [
+      "The official TPVD website links to the public TPWebGIS host; no account is used.",
+      "Final planning plots are not proof of current land title or ownership. Draft, preliminary and non-SMC schemes are excluded by fixed upstream and response-validated filters.",
+      "The server omits its certificate intermediate. A source-scoped published Sectigo intermediate completes the trusted chain; hostname and certificate validation remain enabled.",
+      "WFS FIDs and gid are transport data, not parcel identities.",
+      "The legacy WFS misreports the total on a final partial offset page. Queries request up to 1000 records and reject match counts above 1000; no offset-counter relaxation is applied."
+    ]
+  },
+  "cellSize": 0.005,
+  "centerLatLon": [
+    21.174179236185818,
+    72.78092615417103
+  ],
+  "tests": [
+    {
+      "name": "six-simultaneous-cold-cells",
+      "passed": true,
+      "elapsedMs": 1957,
+      "cells": [
+        {
+          "bbox": [
+            72.775,
+            21.165,
+            72.78,
+            21.17
+          ],
+          "count": 49,
+          "elapsedMs": 1555,
+          "complete": true
+        },
+        {
+          "bbox": [
+            72.78,
+            21.165,
+            72.785,
+            21.17
+          ],
+          "count": 30,
+          "elapsedMs": 1616,
+          "complete": true
+        },
+        {
+          "bbox": [
+            72.785,
+            21.165,
+            72.79,
+            21.17
+          ],
+          "count": 35,
+          "elapsedMs": 1479,
+          "complete": true
+        },
+        {
+          "bbox": [
+            72.775,
+            21.17,
+            72.78,
+            21.175
+          ],
+          "count": 17,
+          "elapsedMs": 1361,
+          "complete": true
+        },
+        {
+          "bbox": [
+            72.78,
+            21.17,
+            72.785,
+            21.175
+          ],
+          "count": 44,
+          "elapsedMs": 1497,
+          "complete": true
+        },
+        {
+          "bbox": [
+            72.785,
+            21.17,
+            72.79,
+            21.175
+          ],
+          "count": 84,
+          "elapsedMs": 1957,
+          "complete": true
+        }
+      ],
+      "totalElapsedMs": 1957
+    },
+    {
+      "name": "viewport-6",
+      "passed": true,
+      "elapsedMs": 215,
+      "bbox": [
+        72.775,
+        21.175,
+        72.78,
+        21.18
+      ],
+      "count": 0,
+      "complete": true
+    },
+    {
+      "name": "viewport-7",
+      "passed": true,
+      "elapsedMs": 223,
+      "bbox": [
+        72.78,
+        21.175,
+        72.785,
+        21.18
+      ],
+      "count": 5,
+      "complete": true
+    },
+    {
+      "name": "viewport-8",
+      "passed": true,
+      "elapsedMs": 242,
+      "bbox": [
+        72.785,
+        21.175,
+        72.79,
+        21.18
+      ],
+      "count": 21,
+      "complete": true
+    },
+    {
+      "name": "fresh-exact-0",
+      "passed": true,
+      "elapsedMs": 719,
+      "count": 40,
+      "allGeometryHashesMatch": true,
+      "ids": [
+        "IN-GJ-SURAT-Umra_North 5 1",
+        "IN-GJ-SURAT-Umra_North 5 10",
+        "IN-GJ-SURAT-Umra_North 5 11",
+        "IN-GJ-SURAT-Umra_North 5 11/A",
+        "IN-GJ-SURAT-Umra_North 5 12",
+        "IN-GJ-SURAT-Umra_North 5 12/A",
+        "IN-GJ-SURAT-Umra_North 5 13",
+        "IN-GJ-SURAT-Umra_North 5 14",
+        "IN-GJ-SURAT-Umra_North 5 2",
+        "IN-GJ-SURAT-Umra_North 5 26",
+        "IN-GJ-SURAT-Umra_North 5 3",
+        "IN-GJ-SURAT-Umra_North 5 31",
+        "IN-GJ-SURAT-Umra_North 5 4",
+        "IN-GJ-SURAT-Umra_North 5 5",
+        "IN-GJ-SURAT-Umra_North 5 6",
+        "IN-GJ-SURAT-Umra_North 5 7",
+        "IN-GJ-SURAT-Umra_North 5 8",
+        "IN-GJ-SURAT-Umra_North 5 126",
+        "IN-GJ-SURAT-Umra_North 5 145",
+        "IN-GJ-SURAT-Umra_North 5 147",
+        "IN-GJ-SURAT-Umra_North 5 148",
+        "IN-GJ-SURAT-Umra_North 5 149",
+        "IN-GJ-SURAT-Umra_North 5 150",
+        "IN-GJ-SURAT-Umra_North 5 151",
+        "IN-GJ-SURAT-Umra_North 5 152",
+        "IN-GJ-SURAT-Umra_North 5 153",
+        "IN-GJ-SURAT-Umra_North 5 154",
+        "IN-GJ-SURAT-Umra_North 5 155",
+        "IN-GJ-SURAT-Umra_North 5 156",
+        "IN-GJ-SURAT-Umra_North 5 157",
+        "IN-GJ-SURAT-Umra_North 5 158",
+        "IN-GJ-SURAT-Umra_North 5 159",
+        "IN-GJ-SURAT-Umra_North 5 160",
+        "IN-GJ-SURAT-Umra_North 5 163",
+        "IN-GJ-SURAT-Umra_South 4 1",
+        "IN-GJ-SURAT-Umra_South 4 19",
+        "IN-GJ-SURAT-Umra_South 4 2",
+        "IN-GJ-SURAT-Umra_South 4 20",
+        "IN-GJ-SURAT-Umra_South 4 22",
+        "IN-GJ-SURAT-Umra_South 4 23"
+      ]
+    },
+    {
+      "name": "fresh-exact-40",
+      "passed": true,
+      "elapsedMs": 673,
+      "count": 40,
+      "allGeometryHashesMatch": true,
+      "ids": [
+        "IN-GJ-SURAT-Umra_South 4 3",
+        "IN-GJ-SURAT-Umra_South 4 4",
+        "IN-GJ-SURAT-Umra_South 4 5",
+        "IN-GJ-SURAT-Umra_South 4 6",
+        "IN-GJ-SURAT-Umra_South 4 69",
+        "IN-GJ-SURAT-Umra_South 4 7",
+        "IN-GJ-SURAT-Umra_South 4 70",
+        "IN-GJ-SURAT-Umra_South 4 71",
+        "IN-GJ-SURAT-Umra_South 4 72",
+        "IN-GJ-SURAT-Umra_South 4 73",
+        "IN-GJ-SURAT-Umra_South 4 79",
+        "IN-GJ-SURAT-Umra_South 4 8",
+        "IN-GJ-SURAT-Umra_North 5 118",
+        "IN-GJ-SURAT-Umra_North 5 119",
+        "IN-GJ-SURAT-Umra_North 5 120",
+        "IN-GJ-SURAT-Umra_North 5 121",
+        "IN-GJ-SURAT-Umra_North 5 122",
+        "IN-GJ-SURAT-Umra_North 5 123",
+        "IN-GJ-SURAT-Umra_North 5 124",
+        "IN-GJ-SURAT-Umra_North 5 125",
+        "IN-GJ-SURAT-Umra_North 5 15",
+        "IN-GJ-SURAT-Umra_North 5 17",
+        "IN-GJ-SURAT-Umra_North 5 18",
+        "IN-GJ-SURAT-Umra_North 5 19",
+        "IN-GJ-SURAT-Umra_North 5 20",
+        "IN-GJ-SURAT-Umra_North 5 21",
+        "IN-GJ-SURAT-Umra_North 5 22",
+        "IN-GJ-SURAT-Umra_North 5 23",
+        "IN-GJ-SURAT-Umra_North 5 24",
+        "IN-GJ-SURAT-Umra_North 5 25",
+        "IN-GJ-SURAT-Umra_North 5 27",
+        "IN-GJ-SURAT-Umra_North 5 28",
+        "IN-GJ-SURAT-Umra_North 5 29",
+        "IN-GJ-SURAT-Umra_North 5 30",
+        "IN-GJ-SURAT-Umra_North 5 32",
+        "IN-GJ-SURAT-Umra_North 5 33",
+        "IN-GJ-SURAT-Umra_North 5 34",
+        "IN-GJ-SURAT-Umra_North 5 35",
+        "IN-GJ-SURAT-Umra_North 5 36",
+        "IN-GJ-SURAT-Umra_North 5 37"
+      ]
+    },
+    {
+      "name": "fresh-exact-80",
+      "passed": true,
+      "elapsedMs": 748,
+      "count": 40,
+      "allGeometryHashesMatch": true,
+      "ids": [
+        "IN-GJ-SURAT-Umra_North 5 38",
+        "IN-GJ-SURAT-Umra_North 5 39",
+        "IN-GJ-SURAT-Umra_North 5 40",
+        "IN-GJ-SURAT-Umra_North 5 41",
+        "IN-GJ-SURAT-Umra_North 5 42",
+        "IN-GJ-SURAT-Umra_North 5 43",
+        "IN-GJ-SURAT-Umra_North 5 44",
+        "IN-GJ-SURAT-Umra_North 5 47",
+        "IN-GJ-SURAT-Umra_North 5 48",
+        "IN-GJ-SURAT-Umra_North 5 49",
+        "IN-GJ-SURAT-Piplod 6 136",
+        "IN-GJ-SURAT-Piplod 6 67",
+        "IN-GJ-SURAT-Piplod 6 68",
+        "IN-GJ-SURAT-Piplod 6 69",
+        "IN-GJ-SURAT-Piplod 6 70",
+        "IN-GJ-SURAT-Piplod 6 71",
+        "IN-GJ-SURAT-Piplod 6 72",
+        "IN-GJ-SURAT-Piplod 6 73",
+        "IN-GJ-SURAT-Piplod 6 74",
+        "IN-GJ-SURAT-Piplod 6 75",
+        "IN-GJ-SURAT-Piplod 6 76",
+        "IN-GJ-SURAT-Piplod 6 77",
+        "IN-GJ-SURAT-Piplod 6 79",
+        "IN-GJ-SURAT-Piplod 6 80",
+        "IN-GJ-SURAT-Piplod 6 81",
+        "IN-GJ-SURAT-Piplod 6 82",
+        "IN-GJ-SURAT-Piplod 6 87",
+        "IN-GJ-SURAT-Piplod 6 88",
+        "IN-GJ-SURAT-Piplod 6 89",
+        "IN-GJ-SURAT-Piplod 6 90",
+        "IN-GJ-SURAT-Piplod 6 91",
+        "IN-GJ-SURAT-Piplod 6 92",
+        "IN-GJ-SURAT-Piplod 6 93",
+        "IN-GJ-SURAT-Piplod 6 94",
+        "IN-GJ-SURAT-Piplod 6 98",
+        "IN-GJ-SURAT-Piplod 6 99",
+        "IN-GJ-SURAT-Umra_North 5 170",
+        "IN-GJ-SURAT-Umra_North 5 171",
+        "IN-GJ-SURAT-Umra_North 5 174",
+        "IN-GJ-SURAT-Umra_North 5 175"
+      ]
+    },
+    {
+      "name": "fresh-exact-120",
+      "passed": true,
+      "elapsedMs": 674,
+      "count": 40,
+      "allGeometryHashesMatch": true,
+      "ids": [
+        "IN-GJ-SURAT-Umra_North 5 176",
+        "IN-GJ-SURAT-Umra_North 5 177",
+        "IN-GJ-SURAT-Umra_North 5 178",
+        "IN-GJ-SURAT-Umra_North 5 179",
+        "IN-GJ-SURAT-Umra_North 5 180",
+        "IN-GJ-SURAT-Umra_North 5 181",
+        "IN-GJ-SURAT-Umra_North 5 182",
+        "IN-GJ-SURAT-Umra_North 5 183",
+        "IN-GJ-SURAT-Umra_North 5 184",
+        "IN-GJ-SURAT-Umra_North 5 185",
+        "IN-GJ-SURAT-Umra_North 5 186",
+        "IN-GJ-SURAT-Umra_North 5 187",
+        "IN-GJ-SURAT-Umra_North 5 9",
+        "IN-GJ-SURAT-Piplod 6 95",
+        "IN-GJ-SURAT-Piplod 6 96",
+        "IN-GJ-SURAT-Piplod 6 97",
+        "IN-GJ-SURAT-Umra_North 5 16",
+        "IN-GJ-SURAT-Umra_North 5 161",
+        "IN-GJ-SURAT-Umra_North 5 162",
+        "IN-GJ-SURAT-Umra_North 5 164",
+        "IN-GJ-SURAT-Umra_North 5 165",
+        "IN-GJ-SURAT-Umra_North 5 166",
+        "IN-GJ-SURAT-Umra_North 5 167",
+        "IN-GJ-SURAT-Umra_North 5 168",
+        "IN-GJ-SURAT-Umra_North 5 169",
+        "IN-GJ-SURAT-Umra_North 5 172",
+        "IN-GJ-SURAT-Umra_North 5 173",
+        "IN-GJ-SURAT-Umra_North 5 100",
+        "IN-GJ-SURAT-Umra_North 5 101",
+        "IN-GJ-SURAT-Umra_North 5 102",
+        "IN-GJ-SURAT-Umra_North 5 103",
+        "IN-GJ-SURAT-Umra_North 5 104",
+        "IN-GJ-SURAT-Umra_North 5 105",
+        "IN-GJ-SURAT-Umra_North 5 106",
+        "IN-GJ-SURAT-Umra_North 5 107",
+        "IN-GJ-SURAT-Umra_North 5 108",
+        "IN-GJ-SURAT-Umra_North 5 109",
+        "IN-GJ-SURAT-Umra_North 5 110",
+        "IN-GJ-SURAT-Umra_North 5 111",
+        "IN-GJ-SURAT-Umra_North 5 112"
+      ]
+    },
+    {
+      "name": "fresh-exact-160",
+      "passed": true,
+      "elapsedMs": 680,
+      "count": 40,
+      "allGeometryHashesMatch": true,
+      "ids": [
+        "IN-GJ-SURAT-Umra_North 5 113",
+        "IN-GJ-SURAT-Umra_North 5 114",
+        "IN-GJ-SURAT-Umra_North 5 115",
+        "IN-GJ-SURAT-Umra_North 5 116",
+        "IN-GJ-SURAT-Umra_North 5 117",
+        "IN-GJ-SURAT-Umra_North 5 127",
+        "IN-GJ-SURAT-Umra_North 5 128",
+        "IN-GJ-SURAT-Umra_North 5 129",
+        "IN-GJ-SURAT-Umra_North 5 129/A",
+        "IN-GJ-SURAT-Umra_North 5 130",
+        "IN-GJ-SURAT-Umra_North 5 131",
+        "IN-GJ-SURAT-Umra_North 5 132",
+        "IN-GJ-SURAT-Umra_North 5 133",
+        "IN-GJ-SURAT-Umra_North 5 134",
+        "IN-GJ-SURAT-Umra_North 5 135",
+        "IN-GJ-SURAT-Umra_North 5 136",
+        "IN-GJ-SURAT-Umra_North 5 137",
+        "IN-GJ-SURAT-Umra_North 5 138",
+        "IN-GJ-SURAT-Umra_North 5 139",
+        "IN-GJ-SURAT-Umra_North 5 140",
+        "IN-GJ-SURAT-Umra_North 5 141",
+        "IN-GJ-SURAT-Umra_North 5 142",
+        "IN-GJ-SURAT-Umra_North 5 143",
+        "IN-GJ-SURAT-Umra_North 5 144",
+        "IN-GJ-SURAT-Umra_North 5 146",
+        "IN-GJ-SURAT-Umra_North 5 50",
+        "IN-GJ-SURAT-Umra_North 5 51",
+        "IN-GJ-SURAT-Umra_North 5 52",
+        "IN-GJ-SURAT-Umra_North 5 62",
+        "IN-GJ-SURAT-Umra_North 5 63",
+        "IN-GJ-SURAT-Umra_North 5 64",
+        "IN-GJ-SURAT-Umra_North 5 65",
+        "IN-GJ-SURAT-Umra_North 5 66",
+        "IN-GJ-SURAT-Umra_North 5 67",
+        "IN-GJ-SURAT-Umra_North 5 68",
+        "IN-GJ-SURAT-Umra_North 5 69",
+        "IN-GJ-SURAT-Umra_North 5 71",
+        "IN-GJ-SURAT-Umra_North 5 74",
+        "IN-GJ-SURAT-Umra_North 5 75",
+        "IN-GJ-SURAT-Umra_North 5 76"
+      ]
+    },
+    {
+      "name": "fresh-exact-200",
+      "passed": true,
+      "elapsedMs": 478,
+      "count": 31,
+      "allGeometryHashesMatch": true,
+      "ids": [
+        "IN-GJ-SURAT-Umra_North 5 77",
+        "IN-GJ-SURAT-Umra_North 5 78",
+        "IN-GJ-SURAT-Umra_North 5 79",
+        "IN-GJ-SURAT-Umra_North 5 93",
+        "IN-GJ-SURAT-Umra_North 5 94",
+        "IN-GJ-SURAT-Umra_North 5 95",
+        "IN-GJ-SURAT-Umra_North 5 96",
+        "IN-GJ-SURAT-Umra_North 5 97",
+        "IN-GJ-SURAT-Umra_North 5 98",
+        "IN-GJ-SURAT-Umra_North 5 99",
+        "IN-GJ-SURAT-Umra_South 4 10",
+        "IN-GJ-SURAT-Umra_South 4 11",
+        "IN-GJ-SURAT-Umra_South 4 12",
+        "IN-GJ-SURAT-Umra_South 4 13",
+        "IN-GJ-SURAT-Umra_South 4 15",
+        "IN-GJ-SURAT-Umra_South 4 16",
+        "IN-GJ-SURAT-Umra_South 4 17",
+        "IN-GJ-SURAT-Umra_South 4 18",
+        "IN-GJ-SURAT-Umra_South 4 9",
+        "IN-GJ-SURAT-Umra_North 5 45",
+        "IN-GJ-SURAT-Umra_North 5 46",
+        "IN-GJ-SURAT-Athwa_Umra 5 82",
+        "IN-GJ-SURAT-Umra_North 5 53",
+        "IN-GJ-SURAT-Umra_North 5 54",
+        "IN-GJ-SURAT-Umra_North 5 55",
+        "IN-GJ-SURAT-Umra_North 5 56",
+        "IN-GJ-SURAT-Umra_North 5 58",
+        "IN-GJ-SURAT-Umra_North 5 59",
+        "IN-GJ-SURAT-Umra_North 5 60",
+        "IN-GJ-SURAT-Umra_North 5 61",
+        "IN-GJ-SURAT-Umra_North 5 70"
+      ]
+    },
+    {
+      "name": "complete-bounded-single-response",
+      "passed": true,
+      "elapsedMs": 437,
+      "bbox": [
+        72.775,
+        21.165,
+        72.78,
+        21.17
+      ],
+      "pageSize": 1000,
+      "maxFeatures": 1000,
+      "count": 49,
+      "upstreamRequests": 1,
+      "allGeometryHashesMatch": true
+    },
+    {
+      "name": "explicit-absence",
+      "passed": true,
+      "elapsedMs": 370,
+      "absentId": "IN-GJ-SURAT-NoSuchScheme 000000 999999",
+      "complete": true
+    },
+    {
+      "name": "footprint-read",
+      "passed": true,
+      "elapsedMs": 232,
+      "selectedId": "IN-GJ-SURAT-Umra_North 5 37",
+      "count": 1,
+      "complete": true
+    },
+    {
+      "name": "complete-source-binding",
+      "passed": true,
+      "elapsedMs": 269,
+      "coverage": "complete",
+      "parcelCount": 1,
+      "selectedId": "IN-GJ-SURAT-Umra_North 5 37"
+    },
+    {
+      "name": "exact-parcel-act-binding",
+      "passed": true,
+      "elapsedMs": 372,
+      "coverage": "complete",
+      "parcelCount": 1
+    },
+    {
+      "name": "positive-area-overlaps",
+      "passed": false,
+      "elapsedMs": 47,
+      "error": "Found 1 positive-area overlaps"
+    }
+  ],
+  "requests": [
+    {
+      "at": "2026-10-08T05:41:29.814Z",
+      "url": "https://tpvd.openprp.in/geoserver/ows?service=WFS&version=1.1.0&request=GetFeature&typeName=ctp%3Afinal_plot_boundary&outputFormat=application%2Fjson&srsName=CRS%3A84&sortBy=search&maxFeatures=1000&startIndex=0&cql_filter=%28status+%3D+%27Final%27+AND+city+%3D+%27Surat%27+AND+authority+%3D+%27SMC%27%29+AND+%28BBOX%28the_geom%2C72.775%2C21.165%2C72.78%2C21.17%2C%27CRS%3A84%27%29%29",
+      "status": 200,
+      "elapsedMs": 910
+    },
+    {
+      "at": "2026-10-08T05:41:29.832Z",
+      "url": "https://tpvd.openprp.in/geoserver/ows?service=WFS&version=1.1.0&request=GetFeature&typeName=ctp%3Afinal_plot_boundary&outputFormat=application%2Fjson&srsName=CRS%3A84&sortBy=search&maxFeatures=1000&startIndex=0&cql_filter=%28status+%3D+%27Final%27+AND+city+%3D+%27Surat%27+AND+authority+%3D+%27SMC%27%29+AND+%28BBOX%28the_geom%2C72.78%2C21.165%2C72.785%2C21.17%2C%27CRS%3A84%27%29%29",
+      "status": 200,
+      "elapsedMs": 958
+    },
+    {
+      "at": "2026-10-08T05:41:29.838Z",
+      "url": "https://tpvd.openprp.in/geoserver/ows?service=WFS&version=1.1.0&request=GetFeature&typeName=ctp%3Afinal_plot_boundary&outputFormat=application%2Fjson&srsName=CRS%3A84&sortBy=search&maxFeatures=1000&startIndex=0&cql_filter=%28status+%3D+%27Final%27+AND+city+%3D+%27Surat%27+AND+authority+%3D+%27SMC%27%29+AND+%28BBOX%28the_geom%2C72.785%2C21.165%2C72.79%2C21.17%2C%27CRS%3A84%27%29%29",
+      "status": 200,
+      "elapsedMs": 866
+    },
+    {
+      "at": "2026-10-08T05:41:29.844Z",
+      "url": "https://tpvd.openprp.in/geoserver/ows?service=WFS&version=1.1.0&request=GetFeature&typeName=ctp%3Afinal_plot_boundary&outputFormat=application%2Fjson&srsName=CRS%3A84&sortBy=search&maxFeatures=1000&startIndex=0&cql_filter=%28status+%3D+%27Final%27+AND+city+%3D+%27Surat%27+AND+authority+%3D+%27SMC%27%29+AND+%28BBOX%28the_geom%2C72.775%2C21.17%2C72.78%2C21.175%2C%27CRS%3A84%27%29%29",
+      "status": 200,
+      "elapsedMs": 903
+    },
+    {
+      "at": "2026-10-08T05:41:29.850Z",
+      "url": "https://tpvd.openprp.in/geoserver/ows?service=WFS&version=1.1.0&request=GetFeature&typeName=ctp%3Afinal_plot_boundary&outputFormat=application%2Fjson&srsName=CRS%3A84&sortBy=search&maxFeatures=1000&startIndex=0&cql_filter=%28status+%3D+%27Final%27+AND+city+%3D+%27Surat%27+AND+authority+%3D+%27SMC%27%29+AND+%28BBOX%28the_geom%2C72.78%2C21.17%2C72.785%2C21.175%2C%27CRS%3A84%27%29%29",
+      "status": 200,
+      "elapsedMs": 859
+    },
+    {
+      "at": "2026-10-08T05:41:29.855Z",
+      "url": "https://tpvd.openprp.in/geoserver/ows?service=WFS&version=1.1.0&request=GetFeature&typeName=ctp%3Afinal_plot_boundary&outputFormat=application%2Fjson&srsName=CRS%3A84&sortBy=search&maxFeatures=1000&startIndex=0&cql_filter=%28status+%3D+%27Final%27+AND+city+%3D+%27Surat%27+AND+authority+%3D+%27SMC%27%29+AND+%28BBOX%28the_geom%2C72.785%2C21.17%2C72.79%2C21.175%2C%27CRS%3A84%27%29%29",
+      "status": 200,
+      "elapsedMs": 868
+    },
+    {
+      "at": "2026-10-08T05:41:31.771Z",
+      "url": "https://tpvd.openprp.in/geoserver/ows?service=WFS&version=1.1.0&request=GetFeature&typeName=ctp%3Afinal_plot_boundary&outputFormat=application%2Fjson&srsName=CRS%3A84&sortBy=search&maxFeatures=1000&startIndex=0&cql_filter=%28status+%3D+%27Final%27+AND+city+%3D+%27Surat%27+AND+authority+%3D+%27SMC%27%29+AND+%28BBOX%28the_geom%2C72.775%2C21.175%2C72.78%2C21.18%2C%27CRS%3A84%27%29%29",
+      "status": 200,
+      "elapsedMs": 215
+    },
+    {
+      "at": "2026-10-08T05:41:31.987Z",
+      "url": "https://tpvd.openprp.in/geoserver/ows?service=WFS&version=1.1.0&request=GetFeature&typeName=ctp%3Afinal_plot_boundary&outputFormat=application%2Fjson&srsName=CRS%3A84&sortBy=search&maxFeatures=1000&startIndex=0&cql_filter=%28status+%3D+%27Final%27+AND+city+%3D+%27Surat%27+AND+authority+%3D+%27SMC%27%29+AND+%28BBOX%28the_geom%2C72.78%2C21.175%2C72.785%2C21.18%2C%27CRS%3A84%27%29%29",
+      "status": 200,
+      "elapsedMs": 219
+    },
+    {
+      "at": "2026-10-08T05:41:32.210Z",
+      "url": "https://tpvd.openprp.in/geoserver/ows?service=WFS&version=1.1.0&request=GetFeature&typeName=ctp%3Afinal_plot_boundary&outputFormat=application%2Fjson&srsName=CRS%3A84&sortBy=search&maxFeatures=1000&startIndex=0&cql_filter=%28status+%3D+%27Final%27+AND+city+%3D+%27Surat%27+AND+authority+%3D+%27SMC%27%29+AND+%28BBOX%28the_geom%2C72.785%2C21.175%2C72.79%2C21.18%2C%27CRS%3A84%27%29%29",
+      "status": 200,
+      "elapsedMs": 237
+    },
+    {
+      "at": "2026-10-08T05:41:32.452Z",
+      "url": "https://tpvd.openprp.in/geoserver/ows?service=WFS&version=1.1.0&request=GetFeature&typeName=ctp%3Afinal_plot_boundary&outputFormat=application%2Fjson&srsName=CRS%3A84&sortBy=search&maxFeatures=1000&startIndex=0&cql_filter=%28status+%3D+%27Final%27+AND+city+%3D+%27Surat%27+AND+authority+%3D+%27SMC%27%29+AND+%28search+IN+%28%27Umra_North+5+1%27%2C%27Umra_North+5+10%27%2C%27Umra_North+5+11%27%2C%27Umra_North+5+11%2FA%27%2C%27Umra_North+5+12%27%2C%27Umra_North+5+12%2FA%27%2C%27Umra_North+5+13%27%2C%27Umra_North+5+14%27%2C%27Umra_North+5+2%27%2C%27Umra_North+5+26%27%2C%27Umra_North+5+3%27%2C%27Umra_North+5+31%27%2C%27Umra_North+5+4%27%2C%27Umra_North+5+5%27%2C%27Umra_North+5+6%27%2C%27Umra_North+5+7%27%2C%27Umra_North+5+8%27%2C%27Umra_North+5+126%27%2C%27Umra_North+5+145%27%2C%27Umra_North+5+147%27%2C%27Umra_North+5+148%27%2C%27Umra_North+5+149%27%2C%27Umra_North+5+150%27%2C%27Umra_North+5+151%27%2C%27Umra_North+5+152%27%2C%27Umra_North+5+153%27%2C%27Umra_North+5+154%27%2C%27Umra_North+5+155%27%2C%27Umra_North+5+156%27%2C%27Umra_North+5+157%27%2C%27Umra_North+5+158%27%2C%27Umra_North+5+159%27%2C%27Umra_North+5+160%27%2C%27Umra_North+5+163%27%2C%27Umra_South+4+1%27%2C%27Umra_South+4+19%27%2C%27Umra_South+4+2%27%2C%27Umra_South+4+20%27%2C%27Umra_South+4+22%27%2C%27Umra_South+4+23%27%29%29",
+      "status": 200,
+      "elapsedMs": 511
+    },
+    {
+      "at": "2026-10-08T05:41:33.172Z",
+      "url": "https://tpvd.openprp.in/geoserver/ows?service=WFS&version=1.1.0&request=GetFeature&typeName=ctp%3Afinal_plot_boundary&outputFormat=application%2Fjson&srsName=CRS%3A84&sortBy=search&maxFeatures=1000&startIndex=0&cql_filter=%28status+%3D+%27Final%27+AND+city+%3D+%27Surat%27+AND+authority+%3D+%27SMC%27%29+AND+%28search+IN+%28%27Umra_South+4+3%27%2C%27Umra_South+4+4%27%2C%27Umra_South+4+5%27%2C%27Umra_South+4+6%27%2C%27Umra_South+4+69%27%2C%27Umra_South+4+7%27%2C%27Umra_South+4+70%27%2C%27Umra_South+4+71%27%2C%27Umra_South+4+72%27%2C%27Umra_South+4+73%27%2C%27Umra_South+4+79%27%2C%27Umra_South+4+8%27%2C%27Umra_North+5+118%27%2C%27Umra_North+5+119%27%2C%27Umra_North+5+120%27%2C%27Umra_North+5+121%27%2C%27Umra_North+5+122%27%2C%27Umra_North+5+123%27%2C%27Umra_North+5+124%27%2C%27Umra_North+5+125%27%2C%27Umra_North+5+15%27%2C%27Umra_North+5+17%27%2C%27Umra_North+5+18%27%2C%27Umra_North+5+19%27%2C%27Umra_North+5+20%27%2C%27Umra_North+5+21%27%2C%27Umra_North+5+22%27%2C%27Umra_North+5+23%27%2C%27Umra_North+5+24%27%2C%27Umra_North+5+25%27%2C%27Umra_North+5+27%27%2C%27Umra_North+5+28%27%2C%27Umra_North+5+29%27%2C%27Umra_North+5+30%27%2C%27Umra_North+5+32%27%2C%27Umra_North+5+33%27%2C%27Umra_North+5+34%27%2C%27Umra_North+5+35%27%2C%27Umra_North+5+36%27%2C%27Umra_North+5+37%27%29%29",
+      "status": 200,
+      "elapsedMs": 466
+    },
+    {
+      "at": "2026-10-08T05:41:33.844Z",
+      "url": "https://tpvd.openprp.in/geoserver/ows?service=WFS&version=1.1.0&request=GetFeature&typeName=ctp%3Afinal_plot_boundary&outputFormat=application%2Fjson&srsName=CRS%3A84&sortBy=search&maxFeatures=1000&startIndex=0&cql_filter=%28status+%3D+%27Final%27+AND+city+%3D+%27Surat%27+AND+authority+%3D+%27SMC%27%29+AND+%28search+IN+%28%27Umra_North+5+38%27%2C%27Umra_North+5+39%27%2C%27Umra_North+5+40%27%2C%27Umra_North+5+41%27%2C%27Umra_North+5+42%27%2C%27Umra_North+5+43%27%2C%27Umra_North+5+44%27%2C%27Umra_North+5+47%27%2C%27Umra_North+5+48%27%2C%27Umra_North+5+49%27%2C%27Piplod+6+136%27%2C%27Piplod+6+67%27%2C%27Piplod+6+68%27%2C%27Piplod+6+69%27%2C%27Piplod+6+70%27%2C%27Piplod+6+71%27%2C%27Piplod+6+72%27%2C%27Piplod+6+73%27%2C%27Piplod+6+74%27%2C%27Piplod+6+75%27%2C%27Piplod+6+76%27%2C%27Piplod+6+77%27%2C%27Piplod+6+79%27%2C%27Piplod+6+80%27%2C%27Piplod+6+81%27%2C%27Piplod+6+82%27%2C%27Piplod+6+87%27%2C%27Piplod+6+88%27%2C%27Piplod+6+89%27%2C%27Piplod+6+90%27%2C%27Piplod+6+91%27%2C%27Piplod+6+92%27%2C%27Piplod+6+93%27%2C%27Piplod+6+94%27%2C%27Piplod+6+98%27%2C%27Piplod+6+99%27%2C%27Umra_North+5+170%27%2C%27Umra_North+5+171%27%2C%27Umra_North+5+174%27%2C%27Umra_North+5+175%27%29%29",
+      "status": 200,
+      "elapsedMs": 544
+    },
+    {
+      "at": "2026-10-08T05:41:34.593Z",
+      "url": "https://tpvd.openprp.in/geoserver/ows?service=WFS&version=1.1.0&request=GetFeature&typeName=ctp%3Afinal_plot_boundary&outputFormat=application%2Fjson&srsName=CRS%3A84&sortBy=search&maxFeatures=1000&startIndex=0&cql_filter=%28status+%3D+%27Final%27+AND+city+%3D+%27Surat%27+AND+authority+%3D+%27SMC%27%29+AND+%28search+IN+%28%27Umra_North+5+176%27%2C%27Umra_North+5+177%27%2C%27Umra_North+5+178%27%2C%27Umra_North+5+179%27%2C%27Umra_North+5+180%27%2C%27Umra_North+5+181%27%2C%27Umra_North+5+182%27%2C%27Umra_North+5+183%27%2C%27Umra_North+5+184%27%2C%27Umra_North+5+185%27%2C%27Umra_North+5+186%27%2C%27Umra_North+5+187%27%2C%27Umra_North+5+9%27%2C%27Piplod+6+95%27%2C%27Piplod+6+96%27%2C%27Piplod+6+97%27%2C%27Umra_North+5+16%27%2C%27Umra_North+5+161%27%2C%27Umra_North+5+162%27%2C%27Umra_North+5+164%27%2C%27Umra_North+5+165%27%2C%27Umra_North+5+166%27%2C%27Umra_North+5+167%27%2C%27Umra_North+5+168%27%2C%27Umra_North+5+169%27%2C%27Umra_North+5+172%27%2C%27Umra_North+5+173%27%2C%27Umra_North+5+100%27%2C%27Umra_North+5+101%27%2C%27Umra_North+5+102%27%2C%27Umra_North+5+103%27%2C%27Umra_North+5+104%27%2C%27Umra_North+5+105%27%2C%27Umra_North+5+106%27%2C%27Umra_North+5+107%27%2C%27Umra_North+5+108%27%2C%27Umra_North+5+109%27%2C%27Umra_North+5+110%27%2C%27Umra_North+5+111%27%2C%27Umra_North+5+112%27%29%29",
+      "status": 200,
+      "elapsedMs": 460
+    },
+    {
+      "at": "2026-10-08T05:41:35.266Z",
+      "url": "https://tpvd.openprp.in/geoserver/ows?service=WFS&version=1.1.0&request=GetFeature&typeName=ctp%3Afinal_plot_boundary&outputFormat=application%2Fjson&srsName=CRS%3A84&sortBy=search&maxFeatures=1000&startIndex=0&cql_filter=%28status+%3D+%27Final%27+AND+city+%3D+%27Surat%27+AND+authority+%3D+%27SMC%27%29+AND+%28search+IN+%28%27Umra_North+5+113%27%2C%27Umra_North+5+114%27%2C%27Umra_North+5+115%27%2C%27Umra_North+5+116%27%2C%27Umra_North+5+117%27%2C%27Umra_North+5+127%27%2C%27Umra_North+5+128%27%2C%27Umra_North+5+129%27%2C%27Umra_North+5+129%2FA%27%2C%27Umra_North+5+130%27%2C%27Umra_North+5+131%27%2C%27Umra_North+5+132%27%2C%27Umra_North+5+133%27%2C%27Umra_North+5+134%27%2C%27Umra_North+5+135%27%2C%27Umra_North+5+136%27%2C%27Umra_North+5+137%27%2C%27Umra_North+5+138%27%2C%27Umra_North+5+139%27%2C%27Umra_North+5+140%27%2C%27Umra_North+5+141%27%2C%27Umra_North+5+142%27%2C%27Umra_North+5+143%27%2C%27Umra_North+5+144%27%2C%27Umra_North+5+146%27%2C%27Umra_North+5+50%27%2C%27Umra_North+5+51%27%2C%27Umra_North+5+52%27%2C%27Umra_North+5+62%27%2C%27Umra_North+5+63%27%2C%27Umra_North+5+64%27%2C%27Umra_North+5+65%27%2C%27Umra_North+5+66%27%2C%27Umra_North+5+67%27%2C%27Umra_North+5+68%27%2C%27Umra_North+5+69%27%2C%27Umra_North+5+71%27%2C%27Umra_North+5+74%27%2C%27Umra_North+5+75%27%2C%27Umra_North+5+76%27%29%29",
+      "status": 200,
+      "elapsedMs": 475
+    },
+    {
+      "at": "2026-10-08T05:41:35.946Z",
+      "url": "https://tpvd.openprp.in/geoserver/ows?service=WFS&version=1.1.0&request=GetFeature&typeName=ctp%3Afinal_plot_boundary&outputFormat=application%2Fjson&srsName=CRS%3A84&sortBy=search&maxFeatures=1000&startIndex=0&cql_filter=%28status+%3D+%27Final%27+AND+city+%3D+%27Surat%27+AND+authority+%3D+%27SMC%27%29+AND+%28search+IN+%28%27Umra_North+5+77%27%2C%27Umra_North+5+78%27%2C%27Umra_North+5+79%27%2C%27Umra_North+5+93%27%2C%27Umra_North+5+94%27%2C%27Umra_North+5+95%27%2C%27Umra_North+5+96%27%2C%27Umra_North+5+97%27%2C%27Umra_North+5+98%27%2C%27Umra_North+5+99%27%2C%27Umra_South+4+10%27%2C%27Umra_South+4+11%27%2C%27Umra_South+4+12%27%2C%27Umra_South+4+13%27%2C%27Umra_South+4+15%27%2C%27Umra_South+4+16%27%2C%27Umra_South+4+17%27%2C%27Umra_South+4+18%27%2C%27Umra_South+4+9%27%2C%27Umra_North+5+45%27%2C%27Umra_North+5+46%27%2C%27Athwa_Umra+5+82%27%2C%27Umra_North+5+53%27%2C%27Umra_North+5+54%27%2C%27Umra_North+5+55%27%2C%27Umra_North+5+56%27%2C%27Umra_North+5+58%27%2C%27Umra_North+5+59%27%2C%27Umra_North+5+60%27%2C%27Umra_North+5+61%27%2C%27Umra_North+5+70%27%29%29",
+      "status": 200,
+      "elapsedMs": 473
+    },
+    {
+      "at": "2026-10-08T05:41:36.425Z",
+      "url": "https://tpvd.openprp.in/geoserver/ows?service=WFS&version=1.1.0&request=GetFeature&typeName=ctp%3Afinal_plot_boundary&outputFormat=application%2Fjson&srsName=CRS%3A84&sortBy=search&maxFeatures=1000&startIndex=0&cql_filter=%28status+%3D+%27Final%27+AND+city+%3D+%27Surat%27+AND+authority+%3D+%27SMC%27%29+AND+%28BBOX%28the_geom%2C72.775%2C21.165%2C72.78%2C21.17%2C%27CRS%3A84%27%29%29",
+      "status": 200,
+      "elapsedMs": 228
+    },
+    {
+      "at": "2026-10-08T05:41:36.862Z",
+      "url": "https://tpvd.openprp.in/geoserver/ows?service=WFS&version=1.1.0&request=GetFeature&typeName=ctp%3Afinal_plot_boundary&outputFormat=application%2Fjson&srsName=CRS%3A84&sortBy=search&maxFeatures=1000&startIndex=0&cql_filter=%28status+%3D+%27Final%27+AND+city+%3D+%27Surat%27+AND+authority+%3D+%27SMC%27%29+AND+%28search+IN+%28%27NoSuchScheme+000000+999999%27%29%29",
+      "status": 200,
+      "elapsedMs": 370
+    },
+    {
+      "at": "2026-10-08T05:41:37.233Z",
+      "url": "https://tpvd.openprp.in/geoserver/ows?service=WFS&version=1.1.0&request=GetFeature&typeName=ctp%3Afinal_plot_boundary&outputFormat=application%2Fjson&srsName=CRS%3A84&sortBy=search&maxFeatures=1000&startIndex=0&cql_filter=%28status+%3D+%27Final%27+AND+city+%3D+%27Surat%27+AND+authority+%3D+%27SMC%27%29+AND+%28BBOX%28the_geom%2C72.78007486806726%2C21.173703794926862%2C72.78176677842092%2C21.174621177695013%2C%27CRS%3A84%27%29%29",
+      "status": 200,
+      "elapsedMs": 228
+    },
+    {
+      "at": "2026-10-08T05:41:37.466Z",
+      "url": "https://tpvd.openprp.in/geoserver/ows?service=WFS&version=1.1.0&request=GetFeature&typeName=ctp%3Afinal_plot_boundary&outputFormat=application%2Fjson&srsName=CRS%3A84&sortBy=search&maxFeatures=1000&startIndex=0&cql_filter=%28status+%3D+%27Final%27+AND+city+%3D+%27Surat%27+AND+authority+%3D+%27SMC%27%29+AND+%28BBOX%28the_geom%2C72.78007486806726%2C21.173703794926862%2C72.78176677842092%2C21.174621177695013%2C%27CRS%3A84%27%29%29",
+      "status": 200,
+      "elapsedMs": 217
+    },
+    {
+      "at": "2026-10-08T05:41:37.736Z",
+      "url": "https://tpvd.openprp.in/geoserver/ows?service=WFS&version=1.1.0&request=GetFeature&typeName=ctp%3Afinal_plot_boundary&outputFormat=application%2Fjson&srsName=CRS%3A84&sortBy=search&maxFeatures=1000&startIndex=0&cql_filter=%28status+%3D+%27Final%27+AND+city+%3D+%27Surat%27+AND+authority+%3D+%27SMC%27%29+AND+%28search+IN+%28%27Umra_North+5+37%27%29%29",
+      "status": 200,
+      "elapsedMs": 371
+    }
+  ],
+  "nativeGeometryHashes": [],
+  "result": "failed",
+  "hostLoad": [
+    12.57177734375,
+    8.25927734375,
+    6.30908203125
+  ],
+  "hostCpuCount": 8,
+  "overlaps": [
+    {
+      "a": "IN-GJ-SURAT-Piplod 6 92",
+      "b": "IN-GJ-SURAT-Umra_North 5 177",
+      "areaM2": 0.23937012999021598
+    }
+  ],
+  "failure": {
+    "message": "Found 1 positive-area overlaps"
+  }
+}

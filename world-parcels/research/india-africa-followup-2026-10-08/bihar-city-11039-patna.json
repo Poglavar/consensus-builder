@@ -1,0 +1,138 @@
+{
+  "schemaVersion": 1,
+  "checkedAt": "2026-10-08",
+  "cityId": "wup2025:11039",
+  "wupCityCode": 11039,
+  "name": "Patna",
+  "country": "India",
+  "countryCode": "IN",
+  "centerLatLon": [
+    25.5970203089431,
+    85.1397184130161
+  ],
+  "cohorts": [
+    "largest200"
+  ],
+  "priorStatus": "no_verified_sample_candidate_citywide",
+  "priorEvidenceFiles": [
+    "research/patna.json"
+  ],
+  "freshFollowup": true,
+  "sourceId": "bihar-bhunaksha",
+  "sourceFamilyEvidence": "bihar-family-viewer.json",
+  "nativeSearchQueries": [
+    {
+      "query": "पटना मानचित्र भू नक्शा भू अभिलेख राजस्व गांव नक्शा बिहार",
+      "language": "Hindi",
+      "script": "Devanagari",
+      "searchEngineResultUrls": [
+        "https://biharbhumi.bihar.gov.in/"
+      ],
+      "sharedBatchResult": true
+    },
+    {
+      "query": "हाजीपुर भू नक्शा बिहार गांव खेसरा नक्शा राजस्व",
+      "language": "Hindi",
+      "script": "Devanagari",
+      "searchEngineResultUrls": [
+        "https://biharbhumi.bihar.gov.in/"
+      ],
+      "sharedBatchResult": true
+    },
+    {
+      "query": "दरौली सीवान भू नक्शा राजस्व गांव खेसरा मानचित्र बिहार",
+      "language": "Hindi",
+      "script": "Devanagari",
+      "searchEngineResultUrls": [
+        "https://biharbhumi.bihar.gov.in/"
+      ],
+      "sharedBatchResult": true
+    }
+  ],
+  "headersUsed": {
+    "userAgent": "Mozilla/5.0 (Macintosh; Intel Mac OS X 14_6) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/129.0.0.0 Safari/537.36",
+    "acceptLanguage": "hi-IN,hi;q=0.9,en-IN;q=0.8,en;q=0.7",
+    "origin": "https://bhunaksha.bihar.gov.in",
+    "referer": "https://bhunaksha.bihar.gov.in/10/index.jsp",
+    "cookieSession": "Persisted normal anonymous browser session; cookie names/values not saved."
+  },
+  "administrativeIdentity": {
+    "districtCode": "28",
+    "district": "PATNA",
+    "subdivisionCode": "02",
+    "subdivision": "पटना सदर",
+    "circleCode": "04",
+    "circle": "Patna Rural",
+    "villageOptionsReturned": 62,
+    "nameMatch": "No revenue-village option containing Patna was found in this circle’s returned list.",
+    "assessment": "Nominatim administrative lead inherited from the previous pass; not an official revenue village. The official selector confirms a Patna Rural circle exists but no exact revenue mauza for this WUP point was identified; the list count/name check is not a complete boundary containment test."
+  },
+  "requests": [
+    {
+      "url": "https://bhunaksha.bihar.gov.in/rest/MapInfo/getPlotAtXY",
+      "method": "POST",
+      "form": {
+        "state": "10",
+        "giscode": "",
+        "xEPSG32645": 313176.06,
+        "yEPSG32645": 2832368.26
+      },
+      "httpStatus": 204,
+      "contentType": null,
+      "bytes": 0,
+      "assessment": "Fresh direct target-point identify attempt with no selected GIS code returned no content. The viewer flow normally requires a previously selected cadastral sheet; this does not establish absence of nearby mapped parcels."
+    }
+  ],
+  "status": "no_verified_sample_candidate_citywide",
+  "verifiedParcelResponse": null,
+  "source": null,
+  "coverageAssessment": {
+    "claimedScope": "Bihar BhuNaksha viewer; selected cadastral map sheets and point clicks",
+    "verifiedOpenScope": null,
+    "countrywideVerified": false
+  },
+  "technicalBlocker": "No target-point parcel identity or polygon was returned. The shared viewer returns 204 for the exact WUP coordinate without a selected sheet GIS code, and its current click/report/highlight flow exposes only point IDs, plot number, EPSG:32645 bbox, and raster images. The source-level result applies to the viewer, not all Bihar services.",
+  "remainingUncertainty": "Exact target revenue village and any other city-specific open parcel source remain unresolved; no target parcel geometry was verified.",
+  "nextStep": "Resolve the WUP point to an official revenue mauza or boundary. Revisit the point with that exact map sheet if the viewer adds a vector/feature endpoint; otherwise test an independent official urban/regional parcel source.",
+  "officialSelectorRequests": [
+    {
+      "url": "https://bhunaksha.bihar.gov.in/rest/Levels/ListsAfterLevel",
+      "method": "POST",
+      "form": {
+        "state": "10",
+        "level": "1",
+        "codes": "28,",
+        "hasmap": "true"
+      },
+      "httpStatus": 200,
+      "contentType": "application/json",
+      "result": "District 28 descendants include subdivision code 02 पटना सदर."
+    },
+    {
+      "url": "https://bhunaksha.bihar.gov.in/rest/Levels/ListsAfterLevel",
+      "method": "POST",
+      "form": {
+        "state": "10",
+        "level": "2",
+        "codes": "28,02,",
+        "hasmap": "true"
+      },
+      "httpStatus": 200,
+      "contentType": "application/json",
+      "result": "Patna Sadar descendants include circle code 04 Patna Rural."
+    },
+    {
+      "url": "https://bhunaksha.bihar.gov.in/rest/Levels/ListsAfterLevel",
+      "method": "POST",
+      "form": {
+        "state": "10",
+        "level": "3",
+        "codes": "28,02,04,",
+        "hasmap": "true"
+      },
+      "httpStatus": 200,
+      "contentType": "application/json",
+      "result": "62 mapped village choices; no option name contains Patna."
+    }
+  ]
+}

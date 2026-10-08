@@ -1,0 +1,28 @@
+{
+  "schemaVersion": 1,
+  "checkedAt": "2026-10-07T22:43:18.466Z",
+  "cityId": "wup2025:4033",
+  "purpose": "Official CSG alternative to the slow GISCOE native-ID path; metadata only.",
+  "requests": [
+    {
+      "url": "https://csggis.drdlr.gov.za/server/rest/services/Property_Viewer/MapServer/2?f=pjson",
+      "layer": 2,
+      "error": "fetch failed"
+    },
+    {
+      "url": "https://csggis.drdlr.gov.za/server/rest/services/Property_Viewer/MapServer/202?f=pjson",
+      "layer": 202,
+      "error": "fetch failed"
+    },
+    {
+      "url": "https://csggis.drdlr.gov.za/server/rest/services/Property_Viewer/MapServer/505?f=pjson",
+      "layer": 505,
+      "error": "fetch failed"
+    },
+    {
+      "url": "https://csggis.drdlr.gov.za/server/rest/services/Property_Viewer/MapServer/3?f=pjson",
+      "layer": 3,
+      "error": "fetch failed"
+    }
+  ]
+}

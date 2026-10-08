@@ -1,0 +1,396 @@
+{
+  "schemaVersion": 1,
+  "purpose": "Manual headed Chrome checks for Surat and Nairobi; no browser test suite.",
+  "checkedAt": "2026-10-08T06:21:53.666488+00:00",
+  "browserSession": "parcel-batch3",
+  "nairobi": {
+    "result": "passed",
+    "localUrl": "http://localhost:5638/?city=nairobi&backend=http%3A%2F%2Flocalhost%3A4640&reduceMotion=1",
+    "initialView": {
+      "boundsCount": 25,
+      "featureCount": 2184,
+      "viewport": [
+        1200,
+        818
+      ],
+      "zoom": 18,
+      "alerts": [],
+      "loading": false
+    },
+    "selection": {
+      "parcelId": "KE-NAIROBI-NM-g1~368451413~-12658306~b2c826e9d82db0929c92dd5737da49cf9cdeba1f2ba49d70c3ad2816d4b2ae87",
+      "menuTitle": "Parcel G1-b2c826e9d82d",
+      "panelTitle": "Parcel G1-b2c826e9d82d",
+      "note": "Application reference derived from geometry. Source registry number unavailable; boundary changes create a new reference."
+    },
+    "pan": {
+      "alerts": [],
+      "boundsCount": 28,
+      "centerLatLon": [
+        -1.265921103407454,
+        36.85079455375672
+      ],
+      "city": "nairobi",
+      "featureCount": 2342,
+      "loading": false,
+      "zoom": 18
+    },
+    "panAction": "350 pixels then 700 pixels east; first move remained inside retained cells, second loaded three new cells.",
+    "requestsIncludingReload": [
+      {
+        "url": "http://localhost:4640/parcel-sources/ke-nairobi-maps-outlines?bbox=36.84%2C-1.2725%2C36.84250000000001%2C-1.27",
+        "httpStatus": 200
+      },
+      {
+        "url": "http://localhost:4640/parcel-sources/ke-nairobi-maps-outlines?bbox=36.84%2C-1.27%2C36.84250000000001%2C-1.2675",
+        "httpStatus": 200
+      },
+      {
+        "url": "http://localhost:4640/parcel-sources/ke-nairobi-maps-outlines?bbox=36.84%2C-1.2675%2C36.84250000000001%2C-1.2650000000000001",
+        "httpStatus": 200
+      },
+      {
+        "url": "http://localhost:4640/parcel-sources/ke-nairobi-maps-outlines?bbox=36.84%2C-1.2650000000000001%2C36.84250000000001%2C-1.2625",
+        "httpStatus": 200
+      },
+      {
+        "url": "http://localhost:4640/parcel-sources/ke-nairobi-maps-outlines?bbox=36.84%2C-1.2625%2C36.84250000000001%2C-1.26",
+        "httpStatus": 200
+      },
+      {
+        "url": "http://localhost:4640/parcel-sources/ke-nairobi-maps-outlines?bbox=36.84250000000001%2C-1.2725%2C36.845%2C-1.27",
+        "httpStatus": 200
+      },
+      {
+        "url": "http://localhost:4640/parcel-sources/ke-nairobi-maps-outlines?bbox=36.84250000000001%2C-1.27%2C36.845%2C-1.2675",
+        "httpStatus": 200
+      },
+      {
+        "url": "http://localhost:4640/parcel-sources/ke-nairobi-maps-outlines?bbox=36.84250000000001%2C-1.2675%2C36.845%2C-1.2650000000000001",
+        "httpStatus": 200
+      },
+      {
+        "url": "http://localhost:4640/parcel-sources/ke-nairobi-maps-outlines?bbox=36.84250000000001%2C-1.2650000000000001%2C36.845%2C-1.2625",
+        "httpStatus": 200
+      },
+      {
+        "url": "http://localhost:4640/parcel-sources/ke-nairobi-maps-outlines?bbox=36.84250000000001%2C-1.2625%2C36.845%2C-1.26",
+        "httpStatus": 200
+      },
+      {
+        "url": "http://localhost:4640/parcel-sources/ke-nairobi-maps-outlines?bbox=36.845%2C-1.2725%2C36.847500000000004%2C-1.27",
+        "httpStatus": 200
+      },
+      {
+        "url": "http://localhost:4640/parcel-sources/ke-nairobi-maps-outlines?bbox=36.845%2C-1.27%2C36.847500000000004%2C-1.2675",
+        "httpStatus": 200
+      },
+      {
+        "url": "http://localhost:4640/parcel-sources/ke-nairobi-maps-outlines?bbox=36.845%2C-1.2675%2C36.847500000000004%2C-1.2650000000000001",
+        "httpStatus": 200
+      },
+      {
+        "url": "http://localhost:4640/parcel-sources/ke-nairobi-maps-outlines?bbox=36.845%2C-1.2650000000000001%2C36.847500000000004%2C-1.2625",
+        "httpStatus": 200
+      },
+      {
+        "url": "http://localhost:4640/parcel-sources/ke-nairobi-maps-outlines?bbox=36.845%2C-1.2625%2C36.847500000000004%2C-1.26",
+        "httpStatus": 200
+      },
+      {
+        "url": "http://localhost:4640/parcel-sources/ke-nairobi-maps-outlines?bbox=36.847500000000004%2C-1.2725%2C36.85%2C-1.27",
+        "httpStatus": 200
+      },
+      {
+        "url": "http://localhost:4640/parcel-sources/ke-nairobi-maps-outlines?bbox=36.847500000000004%2C-1.27%2C36.85%2C-1.2675",
+        "httpStatus": 200
+      },
+      {
+        "url": "http://localhost:4640/parcel-sources/ke-nairobi-maps-outlines?bbox=36.847500000000004%2C-1.2675%2C36.85%2C-1.2650000000000001",
+        "httpStatus": 200
+      },
+      {
+        "url": "http://localhost:4640/parcel-sources/ke-nairobi-maps-outlines?bbox=36.847500000000004%2C-1.2650000000000001%2C36.85%2C-1.2625",
+        "httpStatus": 200
+      },
+      {
+        "url": "http://localhost:4640/parcel-sources/ke-nairobi-maps-outlines?bbox=36.847500000000004%2C-1.2625%2C36.85%2C-1.26",
+        "httpStatus": 200
+      },
+      {
+        "url": "http://localhost:4640/parcel-sources/ke-nairobi-maps-outlines?bbox=36.85%2C-1.2725%2C36.8525%2C-1.27",
+        "httpStatus": 200
+      },
+      {
+        "url": "http://localhost:4640/parcel-sources/ke-nairobi-maps-outlines?bbox=36.85%2C-1.27%2C36.8525%2C-1.2675",
+        "httpStatus": 200
+      },
+      {
+        "url": "http://localhost:4640/parcel-sources/ke-nairobi-maps-outlines?bbox=36.85%2C-1.2675%2C36.8525%2C-1.2650000000000001",
+        "httpStatus": 200
+      },
+      {
+        "url": "http://localhost:4640/parcel-sources/ke-nairobi-maps-outlines?bbox=36.85%2C-1.2650000000000001%2C36.8525%2C-1.2625",
+        "httpStatus": 200
+      },
+      {
+        "url": "http://localhost:4640/parcel-sources/ke-nairobi-maps-outlines?bbox=36.85%2C-1.2625%2C36.8525%2C-1.26",
+        "httpStatus": 200
+      },
+      {
+        "url": "http://localhost:4640/parcel-sources/ke-nairobi-maps-outlines?bbox=36.84%2C-1.2725%2C36.84250000000001%2C-1.27",
+        "httpStatus": 200
+      },
+      {
+        "url": "http://localhost:4640/parcel-sources/ke-nairobi-maps-outlines?bbox=36.84%2C-1.27%2C36.84250000000001%2C-1.2675",
+        "httpStatus": 200
+      },
+      {
+        "url": "http://localhost:4640/parcel-sources/ke-nairobi-maps-outlines?bbox=36.84%2C-1.2675%2C36.84250000000001%2C-1.2650000000000001",
+        "httpStatus": 200
+      },
+      {
+        "url": "http://localhost:4640/parcel-sources/ke-nairobi-maps-outlines?bbox=36.84%2C-1.2650000000000001%2C36.84250000000001%2C-1.2625",
+        "httpStatus": 200
+      },
+      {
+        "url": "http://localhost:4640/parcel-sources/ke-nairobi-maps-outlines?bbox=36.84%2C-1.2625%2C36.84250000000001%2C-1.26",
+        "httpStatus": 200
+      },
+      {
+        "url": "http://localhost:4640/parcel-sources/ke-nairobi-maps-outlines?bbox=36.84250000000001%2C-1.2725%2C36.845%2C-1.27",
+        "httpStatus": 200
+      },
+      {
+        "url": "http://localhost:4640/parcel-sources/ke-nairobi-maps-outlines?bbox=36.84250000000001%2C-1.27%2C36.845%2C-1.2675",
+        "httpStatus": 200
+      },
+      {
+        "url": "http://localhost:4640/parcel-sources/ke-nairobi-maps-outlines?bbox=36.84250000000001%2C-1.2675%2C36.845%2C-1.2650000000000001",
+        "httpStatus": 200
+      },
+      {
+        "url": "http://localhost:4640/parcel-sources/ke-nairobi-maps-outlines?bbox=36.84250000000001%2C-1.2650000000000001%2C36.845%2C-1.2625",
+        "httpStatus": 200
+      },
+      {
+        "url": "http://localhost:4640/parcel-sources/ke-nairobi-maps-outlines?bbox=36.84250000000001%2C-1.2625%2C36.845%2C-1.26",
+        "httpStatus": 200
+      },
+      {
+        "url": "http://localhost:4640/parcel-sources/ke-nairobi-maps-outlines?bbox=36.845%2C-1.2725%2C36.847500000000004%2C-1.27",
+        "httpStatus": 200
+      },
+      {
+        "url": "http://localhost:4640/parcel-sources/ke-nairobi-maps-outlines?bbox=36.845%2C-1.27%2C36.847500000000004%2C-1.2675",
+        "httpStatus": 200
+      },
+      {
+        "url": "http://localhost:4640/parcel-sources/ke-nairobi-maps-outlines?bbox=36.845%2C-1.2675%2C36.847500000000004%2C-1.2650000000000001",
+        "httpStatus": 200
+      },
+      {
+        "url": "http://localhost:4640/parcel-sources/ke-nairobi-maps-outlines?bbox=36.845%2C-1.2650000000000001%2C36.847500000000004%2C-1.2625",
+        "httpStatus": 200
+      },
+      {
+        "url": "http://localhost:4640/parcel-sources/ke-nairobi-maps-outlines?bbox=36.845%2C-1.2625%2C36.847500000000004%2C-1.26",
+        "httpStatus": 200
+      },
+      {
+        "url": "http://localhost:4640/parcel-sources/ke-nairobi-maps-outlines?bbox=36.847500000000004%2C-1.2725%2C36.85%2C-1.27",
+        "httpStatus": 200
+      },
+      {
+        "url": "http://localhost:4640/parcel-sources/ke-nairobi-maps-outlines?bbox=36.847500000000004%2C-1.27%2C36.85%2C-1.2675",
+        "httpStatus": 200
+      },
+      {
+        "url": "http://localhost:4640/parcel-sources/ke-nairobi-maps-outlines?bbox=36.847500000000004%2C-1.2675%2C36.85%2C-1.2650000000000001",
+        "httpStatus": 200
+      },
+      {
+        "url": "http://localhost:4640/parcel-sources/ke-nairobi-maps-outlines?bbox=36.847500000000004%2C-1.2650000000000001%2C36.85%2C-1.2625",
+        "httpStatus": 200
+      },
+      {
+        "url": "http://localhost:4640/parcel-sources/ke-nairobi-maps-outlines?bbox=36.847500000000004%2C-1.2625%2C36.85%2C-1.26",
+        "httpStatus": 200
+      },
+      {
+        "url": "http://localhost:4640/parcel-sources/ke-nairobi-maps-outlines?bbox=36.85%2C-1.2725%2C36.8525%2C-1.27",
+        "httpStatus": 200
+      },
+      {
+        "url": "http://localhost:4640/parcel-sources/ke-nairobi-maps-outlines?bbox=36.85%2C-1.27%2C36.8525%2C-1.2675",
+        "httpStatus": 200
+      },
+      {
+        "url": "http://localhost:4640/parcel-sources/ke-nairobi-maps-outlines?bbox=36.85%2C-1.2675%2C36.8525%2C-1.2650000000000001",
+        "httpStatus": 200
+      },
+      {
+        "url": "http://localhost:4640/parcel-sources/ke-nairobi-maps-outlines?bbox=36.85%2C-1.2650000000000001%2C36.8525%2C-1.2625",
+        "httpStatus": 200
+      },
+      {
+        "url": "http://localhost:4640/parcel-sources/ke-nairobi-maps-outlines?bbox=36.85%2C-1.2625%2C36.8525%2C-1.26",
+        "httpStatus": 200
+      },
+      {
+        "url": "http://localhost:4640/parcel-sources/ke-nairobi-maps-outlines?bbox=36.8525%2C-1.27%2C36.855000000000004%2C-1.2675",
+        "httpStatus": 200
+      },
+      {
+        "url": "http://localhost:4640/parcel-sources/ke-nairobi-maps-outlines?bbox=36.8525%2C-1.2675%2C36.855000000000004%2C-1.2650000000000001",
+        "httpStatus": 200
+      },
+      {
+        "url": "http://localhost:4640/parcel-sources/ke-nairobi-maps-outlines?bbox=36.8525%2C-1.2650000000000001%2C36.855000000000004%2C-1.2625",
+        "httpStatus": 200
+      }
+    ],
+    "uncaughtPageErrors": [],
+    "visualInspection": {
+      "outlinesRendered": true,
+      "sourceAttributionVisible": true,
+      "selectedParcelOutline": true,
+      "shortApplicationReferenceVisibleInMenuAndDetails": true,
+      "referenceExplanationVisible": true,
+      "newPanCellsRendered": true
+    },
+    "initialUiFinding": "First browser inspection exposed the full internal hash in the parcel click menu. displayParcelId now uses the short application reference for geometry identities; reload and actual parcel click confirmed the fix.",
+    "screenshotsViewed": [
+      "/tmp/parcel-batch3-nairobi-initial.png",
+      "/tmp/parcel-batch3-nairobi-selected.png",
+      "/tmp/parcel-batch3-nairobi-pan.png"
+    ],
+    "mobile": {
+      "viewport": [
+        390,
+        844
+      ],
+      "verifiedParcelId": "KE-NAIROBI-NM-g1~368451413~-12658306~b2c826e9d82db0929c92dd5737da49cf9cdeba1f2ba49d70c3ad2816d4b2ae87",
+      "shortReferenceAndExplanationVisible": true,
+      "screenshot": "/tmp/parcel-batch3-nairobi-mobile.png"
+    }
+  },
+  "countsMeaning": "Feature counts describe retained unique geometry across complete cells, not the number visible in the screenshot.",
+  "sessionCleanup": "Named parcel-batch3 browser closed; agent-browser session list reported no active sessions.",
+  "surat": {
+    "result": "passed",
+    "localUrl": "http://localhost:5638/?city=surat&backend=http%3A%2F%2Flocalhost%3A4640&reduceMotion=1",
+    "initialView": {
+      "boundsCount": 9,
+      "featureCount": 231,
+      "centerLatLon": [
+        21.174177516292083,
+        72.7809262275696
+      ],
+      "zoom": 18,
+      "loading": false,
+      "alerts": []
+    },
+    "selection": {
+      "parcelId": "IN-GJ-SURAT-Umra_North 5 37",
+      "menuTitle": "Parcel IN-GJ-SURAT-Umra_North 5 37",
+      "nativeReference": "Umra_North 5 37"
+    },
+    "pan": {
+      "alerts": [],
+      "boundsCount": 12,
+      "centerLatLon": [
+        21.174177516292083,
+        72.7884364128113
+      ],
+      "city": "surat",
+      "featureCount": 433,
+      "loading": false,
+      "zoom": 18
+    },
+    "panAction": "Two 700-pixel moves east. The first remained within retained cells; the second fetched additional cells.",
+    "requests": [
+      {
+        "url": "http://localhost:4640/parcel-sources/in-gj-tpvd-surat-final-plots?bbox=72.775%2C21.165%2C72.78%2C21.17",
+        "httpStatus": 200
+      },
+      {
+        "url": "http://localhost:4640/parcel-sources/in-gj-tpvd-surat-final-plots?bbox=72.775%2C21.17%2C72.78%2C21.175",
+        "httpStatus": 200
+      },
+      {
+        "url": "http://localhost:4640/parcel-sources/in-gj-tpvd-surat-final-plots?bbox=72.775%2C21.175%2C72.78%2C21.18",
+        "httpStatus": 200
+      },
+      {
+        "url": "http://localhost:4640/parcel-sources/in-gj-tpvd-surat-final-plots?bbox=72.78%2C21.165%2C72.785%2C21.17",
+        "httpStatus": 200
+      },
+      {
+        "url": "http://localhost:4640/parcel-sources/in-gj-tpvd-surat-final-plots?bbox=72.78%2C21.17%2C72.785%2C21.175",
+        "httpStatus": 200
+      },
+      {
+        "url": "http://localhost:4640/parcel-sources/in-gj-tpvd-surat-final-plots?bbox=72.78%2C21.175%2C72.785%2C21.18",
+        "httpStatus": 200
+      },
+      {
+        "url": "http://localhost:4640/parcel-sources/in-gj-tpvd-surat-final-plots?bbox=72.785%2C21.165%2C72.79%2C21.17",
+        "httpStatus": 200
+      },
+      {
+        "url": "http://localhost:4640/parcel-sources/in-gj-tpvd-surat-final-plots?bbox=72.785%2C21.17%2C72.79%2C21.175",
+        "httpStatus": 200
+      },
+      {
+        "url": "http://localhost:4640/parcel-sources/in-gj-tpvd-surat-final-plots?bbox=72.785%2C21.175%2C72.79%2C21.18",
+        "httpStatus": 200
+      },
+      {
+        "url": "http://localhost:4640/parcel-sources/in-gj-tpvd-surat-final-plots?bbox=72.79%2C21.165%2C72.795%2C21.17",
+        "httpStatus": 200
+      },
+      {
+        "url": "http://localhost:4640/parcel-sources/in-gj-tpvd-surat-final-plots?bbox=72.79%2C21.17%2C72.795%2C21.175",
+        "httpStatus": 200
+      },
+      {
+        "url": "http://localhost:4640/parcel-sources/in-gj-tpvd-surat-final-plots?bbox=72.79%2C21.175%2C72.795%2C21.18",
+        "httpStatus": 200
+      }
+    ],
+    "uncaughtPageErrors": [],
+    "visualInspection": {
+      "outlinesRendered": true,
+      "selectedParcelOutline": true,
+      "sourceAttributionAndPartialScopeVisible": true,
+      "newPanCellsRendered": true
+    },
+    "screenshotsViewed": [
+      "/tmp/parcel-batch3-surat-selected.png",
+      "/tmp/parcel-batch3-surat-pan-expanded.png"
+    ]
+  },
+  "report": {
+    "totalCityRows": 465,
+    "regionalCohortRows": 171,
+    "targetsVerified": [
+      "Kolkata",
+      "Mumbai",
+      "Surat",
+      "Lucknow",
+      "Kanpur",
+      "Cairo",
+      "Kinshasa",
+      "Alexandria",
+      "Khartoum",
+      "Addis Ababa",
+      "Nairobi"
+    ],
+    "enabledRegionalAdditions": [
+      "Surat",
+      "Nairobi"
+    ],
+    "uncaughtPageErrors": []
+  }
+}

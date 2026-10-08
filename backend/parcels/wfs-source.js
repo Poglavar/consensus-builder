@@ -1,7 +1,7 @@
 // Adapts fixed WFS 1.1/2.0 GeoJSON layers to complete WGS84 parcels, with optional provider pacing.
 import { bbox as geometryBbox, booleanIntersects, feature as geoFeature } from '@turf/turf';
 import { HttpError } from '../utils/helpers.js';
-import { upstreamError, providerHttpError, validateBounds, validateGeometry, canonicalParcelFeature } from './source-contract.js';
+import { upstreamError, providerHttpError, validateBounds, validateGeometry, canonicalParcelFeature, createParcelAttributeFilter } from './source-contract.js';
 
 const sourceRequestQueues = new Map();
 
@@ -38,6 +38,11 @@ export function createWfsParcelSource(descriptor, { fetchImpl = globalThis.fetch
         || !Array.isArray(outFields) || !outFields.includes(idField)
         || (descriptor.parcelNumberField && !outFields.includes(descriptor.parcelNumberField))
         || new URL(endpoint).protocol !== 'https:') throw new Error('Invalid WFS parcel source descriptor.');
+    const attributeFilter = createParcelAttributeFilter(descriptor);
+    const hasFixedAttributeFilter = Boolean(attributeFilter.where);
+    if (hasFixedAttributeFilter && (typeof descriptor.geometryField !== 'string' || !identifier.test(descriptor.geometryField))) {
+        throw new Error('Invalid WFS parcel source descriptor.');
+    }
     const idPattern = descriptor.idPattern ? new RegExp(descriptor.idPattern) : null;
     const pageSize = descriptor.pageSize || 1000;
     const maxFeatures = descriptor.maxFeatures || 10000;
@@ -97,6 +102,9 @@ export function createWfsParcelSource(descriptor, { fetchImpl = globalThis.fetch
             if (matched > maxFeatures) throw upstreamError('Parcel provider query exceeds the parcel limit; use a smaller area.');
             if (offset + page.length > matched || (!page.length && offset < matched)) throw upstreamError('WFS parcel provider returned incomplete pagination.');
             for (const feature of page) {
+                if (hasFixedAttributeFilter && !attributeFilter.matches(feature?.properties || {})) {
+                    throw upstreamError('WFS parcel provider returned a feature outside its configured attribute filter.');
+                }
                 const nativeId = feature?.properties?.[idField];
                 if (!validId(nativeId)) throw upstreamError('Parcel provider returned a missing or invalid native parcel ID.');
                 if (!validateGeometry(feature.geometry)) throw upstreamError('Parcel provider returned invalid polygon geometry.');
@@ -117,7 +125,12 @@ export function createWfsParcelSource(descriptor, { fetchImpl = globalThis.fetch
 
     function queryBounds(bbox) {
         validateBounds(bbox, maxBboxKm2, descriptor);
-        // CRS:84 fixes longitude/latitude order for both the filter and the GeoJSON response.
+        // CRS:84 fixes longitude/latitude order for both the spatial filter and GeoJSON response.
+        if (hasFixedAttributeFilter) {
+            const [west, south, east, north] = bbox;
+            const spatial = `BBOX(${descriptor.geometryField},${west},${south},${east},${north},'CRS:84')`;
+            return query({ cql_filter: `(${attributeFilter.where}) AND (${spatial})` });
+        }
         return query({ bbox: `${bbox.join(',')},CRS:84` });
     }
 
@@ -133,7 +146,8 @@ export function createWfsParcelSource(descriptor, { fetchImpl = globalThis.fetch
             }
             return `'${tail.replaceAll("'", "''")}'`;
         });
-        const filter = `${idField} IN (${native.join(',')})`;
+        const idFilter = `${idField} IN (${native.join(',')})`;
+        const filter = hasFixedAttributeFilter ? `(${attributeFilter.where}) AND (${idFilter})` : idFilter;
         const result = await query({ cql_filter: filter });
         if (result.features.some(feature => !unique.includes(feature.id))) throw upstreamError('Parcel ID query returned unexpected parcels.');
         const present = new Set(result.features.map(feature => feature.id));

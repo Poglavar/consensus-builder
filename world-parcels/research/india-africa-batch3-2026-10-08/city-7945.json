@@ -1,0 +1,102 @@
+{
+  "schemaVersion": 1,
+  "kind": "city_parcel_source_research",
+  "checkedAt": "2026-10-08",
+  "cityId": "wup2025:7945",
+  "wupCityCode": 7945,
+  "name": "Mumbai",
+  "country": "India",
+  "countryCode": "IN",
+  "region": "India",
+  "centerLatLon": [
+    19.12248075999,
+    72.8833426320986
+  ],
+  "cohorts": [
+    "largest200"
+  ],
+  "largestRank": 12,
+  "population2025": 20203056,
+  "annualGrowthPct2015To2025": 0.969251,
+  "priorEvidenceFiles": [
+    "research/mumbai.json",
+    "research/india-africa-2026-10-08/india-city-7945.json"
+  ],
+  "inheritedAssessment": {
+    "checkedAt": "2026-10-08",
+    "cohort": "india-africa",
+    "evidenceFile": "research/india-africa-2026-10-08/india-city-7945.json",
+    "resultCategory": "no_verified_sample_candidate_citywide",
+    "freshVerifiedSample": false,
+    "technicalBlocker": "Official state urban map service documented, but map endpoint redirect loop prevented viewer inspection; this pass did not identify a city-specific parcel or verify geometry.",
+    "nextStep": "Reach the official BhuNaksha viewer without the observed redirect loop, resolve the WUP point to the city-survey/gat hierarchy, and verify a map boundary with stable parcel identity."
+  },
+  "status": "no_verified_sample_candidate_citywide",
+  "resultCategory": "no_verified_sample_candidate_citywide",
+  "registryFound": false,
+  "verifiedSample": false,
+  "sourceIdCandidate": null,
+  "operator": null,
+  "source": null,
+  "nativeIdentity": null,
+  "coverageAssessment": {
+    "verifiedOpenScope": null,
+    "exactWupPointParcelSample": false,
+    "citywideVerified": false,
+    "countrywideVerified": false
+  },
+  "freshResearch": {
+    "queries": [
+      {
+        "language": "Marathi",
+        "query": "मुंबई भूलेख 7/12 मालमत्ता नकाशा भू-नक्शा महाराष्ट्र सरकारी मुंबई सर्वे",
+        "actualResultUrls": [
+          "https://bhumiabhilekh.maharashtra.gov.in/Services",
+          "https://mahabhunakasha.mahabhumi.gov.in/27/",
+          "https://mahabhumi.gov.in/Mahabhumilink/MainDashboard/MainDashboard"
+        ],
+        "result": "Official Maharashtra land-records results list e-Maps/Bhu Naksha and property-card/map services. Official BhuNaksha viewer excerpt shows State, Category, District, Taluka, Village and plot-number controls. The city-survey/village identity and a Mumbai parcel polygon were not verified."
+      },
+      {
+        "language": "Marathi",
+        "query": "site:mahabhunakasha.mahabhumi.gov.in मुंबई भू नकाशा city survey plot map",
+        "actualResultUrls": [
+          "https://mahabhunakasha.mahabhumi.gov.in/27/"
+        ],
+        "result": "Search returned the shared Maharashtra BhuNaksha viewer; direct viewer fetch was inaccessible through this browser client, no target feature returned."
+      }
+    ],
+    "requests": [
+      {
+        "method": "GET",
+        "url": "https://bhumiabhilekh.maharashtra.gov.in/Services",
+        "status": "timeout (web fetch HTTP 400)",
+        "observation": "Search index exposes official map/property-card services."
+      },
+      {
+        "method": "GET",
+        "url": "https://mahabhunakasha.mahabhumi.gov.in/27/",
+        "status": "inaccessible via web fetch",
+        "observation": "Official viewer search excerpt shows district/taluka/village/plot selectors; no feature response."
+      },
+      {
+        "method": "GET",
+        "url": "https://mahabhunakasha.mahabhumi.gov.in/27/index.jsp",
+        "status": "timeout (inherited prior evidence)",
+        "observation": "Prior evidence did not fetch the map."
+      }
+    ],
+    "sources": [
+      "https://bhumiabhilekh.maharashtra.gov.in/Services",
+      "https://mahabhunakasha.mahabhumi.gov.in/27/",
+      "https://mahabhumi.gov.in/Mahabhumilink/MainDashboard/MainDashboard"
+    ]
+  },
+  "technicalFindings": {
+    "termsHandling": "Informational; no license/terms gate applied."
+  },
+  "technicalBlocker": "Official Maharashtra service pages and the public BhuNaksha viewer are discoverable, but this fetch could not retrieve the map page or any Mumbai City/Mumbai Suburban plot geometry. The target city-survey/village identity remains unverified.",
+  "nextStep": "Reach the official BhuNaksha viewer without the observed redirect loop, resolve the WUP point to the city-survey/gat hierarchy, and verify a map boundary with stable parcel identity.",
+  "termsHandling": "Informational only; no terms or licence gate applied.",
+  "runtimeReadiness": "not_enabled"
+}

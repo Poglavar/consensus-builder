@@ -1,0 +1,163 @@
+{
+  "schemaVersion": 1,
+  "kind": "central_asia_capitals_integration_index",
+  "checkedAt": "2026-10-08",
+  "status": "local_integration_complete_with_bishkek_geometry_qa_hold",
+  "queue": "research/central-asia-capitals-2026-10-08/queue.json",
+  "southIndex": "research/central-asia-capitals-2026-10-08/south-index.json",
+  "northIndex": "research/central-asia-capitals-2026-10-08/north-index.json",
+  "cityCount": 5,
+  "summary": {
+    "officialRegistryOrPortalFound": 5,
+    "verifiedPublicGeometryCities": 2,
+    "runtimeEnabledCities": 1,
+    "geometryQaHeldCities": 1,
+    "officialPortalOrRegistryOnlyCities": 3,
+    "noVerifiedGeometryCities": 3,
+    "nonWupCapitalRows": 4
+  },
+  "cities": [
+    {
+      "cityId": "capital:KZ:astana",
+      "name": "Astana",
+      "countryCode": "KZ",
+      "centerLatLon": [
+        51.1282,
+        71.4304
+      ],
+      "pointBasis": "Chosen central-city query point, not a WUP centroid or administrative boundary.",
+      "resultCategory": "verified_sample_partial_coverage",
+      "officialRegistryOrPortalFound": true,
+      "publicEndpointVerified": true,
+      "verifiedSample": true,
+      "nativeIdField": "kad_nomer",
+      "runtimeStatus": "enabled",
+      "sourceId": "kz-astana-pkk-esil",
+      "targetGeometryEvidence": "Official national PKK egkn:u_view in district_id 254 returned a valid closed MultiPolygon containing the selected point. Nine bounded cells yielded 154 distinct native cadastral keys; all 154 fresh exact-ID geometries matched canonical hashes. The 65 forced short-page requests reproduced the baseline ID set and hashes. Explicit absent-ID probe returned 0; sourceBinding and parcelActBinding each returned exactly one matching parcel. Five measured overlap pairs, all left unchanged, max 0.074380% of smaller parent parcel.",
+      "technicalBlocker": null,
+      "limitations": [
+        "Esil district 254/local sample only; no citywide completeness claim.",
+        "kad_nomer permanence/global uniqueness is undocumented; cadastral reference does not establish title or ownership.",
+        "Five tiny measured overlaps were accepted without repair."
+      ],
+      "acceptanceFile": "research/central-asia-capitals-2026-10-08/astana-acceptance.json",
+      "evidenceFiles": [
+        "research/central-asia-capitals-2026-10-08/city-astana.json",
+        "research/central-asia-capitals-2026-10-08/astana-acceptance.json",
+        "research/central-asia-capitals-2026-10-08/astana-national-u-view-3x3-requests.json"
+      ]
+    },
+    {
+      "cityId": "capital:KG:bishkek",
+      "name": "Bishkek",
+      "countryCode": "KG",
+      "centerLatLon": [
+        42.8746,
+        74.5698
+      ],
+      "pointBasis": "Chosen central-city query point, not a WUP centroid or administrative boundary.",
+      "resultCategory": "verified_sample_partial_coverage",
+      "officialRegistryOrPortalFound": true,
+      "publicEndpointVerified": true,
+      "verifiedSample": true,
+      "nativeIdField": "PROPCODE",
+      "runtimeStatus": "held_geometry_qa",
+      "sourceId": "kg-bishkek-cadastre-eni-area",
+      "adapterStatus": "implemented_unwired",
+      "targetGeometryEvidence": "Anonymous public category-filtered center query returned land plots 0889/0890 and selected point is inside 0890. Nine bounded cells yielded 111 unique polygons with repeatable exact-code reads and terminal pagination.",
+      "technicalBlocker": "Geometry QA holds runtime use: 3/111 geometries are invalid and 12 pairs have positive-area intersections. Adapter implementation exists but is not wired.",
+      "limitations": [
+        "Nine-cell local sample only; citywide completeness is unknown.",
+        "PROPCODE permanence/global uniqueness and reuse terms are undocumented.",
+        "No runtime adapter acceptance; geometry QA must be resolved first."
+      ],
+      "acceptanceFile": null,
+      "evidenceFiles": [
+        "research/central-asia-capitals-2026-10-08/city-bishkek.json",
+        "research/central-asia-capitals-2026-10-08/bishkek-query-validation.json"
+      ]
+    },
+    {
+      "cityId": "capital:TJ:dushanbe",
+      "name": "Dushanbe",
+      "countryCode": "TJ",
+      "centerLatLon": [
+        38.5598,
+        68.787
+      ],
+      "pointBasis": "Chosen central-city query point, not a WUP centroid or administrative boundary.",
+      "resultCategory": "promising_unavailable",
+      "officialRegistryOrPortalFound": true,
+      "publicEndpointVerified": false,
+      "verifiedSample": false,
+      "nativeIdField": null,
+      "runtimeStatus": "not_integrated",
+      "sourceId": null,
+      "targetGeometryEvidence": "none",
+      "technicalBlocker": "The official State Geoportal is linked by the registration authority and indexed as a land-parcel map, but its HTTPS certificate was expired; no viewer service or geometry could be verified.",
+      "limitations": [
+        "Official portal existence is documented; public service availability and city coverage are not verified."
+      ],
+      "evidenceFiles": [
+        "research/central-asia-capitals-2026-10-08/city-dushanbe.json"
+      ]
+    },
+    {
+      "cityId": "wup2025:3082",
+      "name": "Tashkent",
+      "countryCode": "UZ",
+      "centerLatLon": [
+        41.2393518231547,
+        69.2589127379298
+      ],
+      "pointBasis": "Saved WUP2025 Tashkent point.",
+      "resultCategory": "promising_unavailable",
+      "officialRegistryOrPortalFound": true,
+      "publicEndpointVerified": false,
+      "verifiedSample": false,
+      "nativeIdField": null,
+      "runtimeStatus": "not_integrated",
+      "sourceId": null,
+      "targetGeometryEvidence": "none",
+      "technicalBlocker": "Official Cadastre Agency and Digital Government sources identify the public national geoportal for land-parcel information, but bounded HTTP/HTTPS requests timed out; no service layer or parcel geometry was verified.",
+      "limitations": [
+        "Official portal listing is not evidence that the endpoint was reachable or that target-city geometry is public."
+      ],
+      "evidenceFiles": [
+        "research/central-asia-capitals-2026-10-08/city-tashkent.json"
+      ]
+    },
+    {
+      "cityId": "capital:TM:ashgabat",
+      "name": "Ashgabat",
+      "countryCode": "TM",
+      "centerLatLon": [
+        37.9601,
+        58.3261
+      ],
+      "pointBasis": "Chosen central-city query point, not a WUP centroid or administrative boundary.",
+      "resultCategory": "public_service_no_geometry",
+      "officialRegistryOrPortalFound": true,
+      "publicEndpointVerified": false,
+      "verifiedSample": false,
+      "nativeIdField": null,
+      "runtimeStatus": "not_integrated",
+      "sourceId": null,
+      "targetGeometryEvidence": "none",
+      "technicalBlocker": "Official law confirms the State Land Cadastre and cadastral maps cover Ashgabat and define parcel boundaries, coordinates and unique numbers, but no public viewer, endpoint or geometry was found.",
+      "limitations": [
+        "Legal confirmation of a state cadastre does not establish open access or public geometry; access may be formal or paid."
+      ],
+      "evidenceFiles": [
+        "research/central-asia-capitals-2026-10-08/city-ashgabat.json"
+      ]
+    }
+  ],
+  "methodNotes": [
+    "registryFound/officialRegistryOrPortalFound means documented official registry or portal existence; it does not imply anonymous access or parcel geometry.",
+    "A small verified sample is not a citywide completeness claim.",
+    "Geometry references do not establish ownership or legal title.",
+    "Astana and Bishkek use chosen central-city points rather than WUP centroids; only Astana is configured in the app, scoped to Esil district 254.",
+    "Bishkek has a verified public sample but is held from runtime pending invalid-geometry and positive-area-overlap QA."
+  ]
+}

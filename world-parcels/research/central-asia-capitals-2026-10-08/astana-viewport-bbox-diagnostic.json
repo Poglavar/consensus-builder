@@ -1,0 +1,229 @@
+{
+  "purpose": "Records bounded provider BBOX overfetch diagnosis before the local envelope filter fix.",
+  "observedAt": "2026-10-08T06:46:31.278Z",
+  "source": "National Public Cadastral Map / EGKN WFS 2.0.0",
+  "method": {
+    "tls": "Verified HTTPS via existing source-scoped Sectigo DV R36 intermediate; no verification bypass",
+    "bboxQuery": "count=1000, startIndex=0, sortBy=gid, viewparams district_id:254, srsname EPSG:32642",
+    "exactIdQuery": "Adapter queryIds, FES kad_nomer equality, no bbox"
+  },
+  "frontendFailedCalls": 5,
+  "cells": [
+    {
+      "boundsWgs84": [
+        71.425,
+        51.1225,
+        71.4275,
+        51.125
+      ],
+      "boundsEpsg32642": [
+        669692.9406292314,
+        5666243.999640149,
+        669877.0333483431,
+        5666527.7323588235
+      ],
+      "requestUrlLength": 354,
+      "httpStatus": 200,
+      "featureCount": 19,
+      "numberMatched": 19,
+      "totalFeatures": 19,
+      "numberReturned": 19,
+      "strictEnvelopeMisses": 1,
+      "outliers": [
+        {
+          "gid": 5216047,
+          "kadNomer": "21320128920",
+          "extent": [
+            669641.3824,
+            5666151.4207,
+            669761.2082,
+            5666243.1168
+          ],
+          "outsideSides": {
+            "south": 0.8828401491045952
+          },
+          "maxGapM": 0.8828401491045952
+        }
+      ]
+    },
+    {
+      "boundsWgs84": [
+        71.425,
+        51.1275,
+        71.4275,
+        51.13000000000001
+      ],
+      "boundsEpsg32642": [
+        669674.6111767008,
+        5666799.9251010325,
+        669858.6856358299,
+        5667083.65779815
+      ],
+      "requestUrlLength": 353,
+      "httpStatus": 200,
+      "featureCount": 31,
+      "numberMatched": 31,
+      "totalFeatures": 31,
+      "numberReturned": 31,
+      "strictEnvelopeMisses": 0,
+      "outliers": []
+    },
+    {
+      "boundsWgs84": [
+        71.425,
+        51.13000000000001,
+        71.4275,
+        51.1325
+      ],
+      "boundsEpsg32642": [
+        669665.4459620749,
+        5667077.887978789,
+        669849.5112906848,
+        5667361.620665054
+      ],
+      "requestUrlLength": 353,
+      "httpStatus": 200,
+      "featureCount": 23,
+      "numberMatched": 23,
+      "totalFeatures": 23,
+      "numberReturned": 23,
+      "strictEnvelopeMisses": 0,
+      "outliers": []
+    },
+    {
+      "boundsWgs84": [
+        71.425,
+        51.1325,
+        71.4275,
+        51.135
+      ],
+      "boundsEpsg32642": [
+        669656.2804218981,
+        5667355.85095475,
+        669840.3366196372,
+        5667639.583630121
+      ],
+      "requestUrlLength": 352,
+      "httpStatus": 200,
+      "featureCount": 34,
+      "numberMatched": 34,
+      "totalFeatures": 34,
+      "numberReturned": 34,
+      "strictEnvelopeMisses": 0,
+      "outliers": []
+    },
+    {
+      "boundsWgs84": [
+        71.4275,
+        51.1225,
+        71.43,
+        51.125
+      ],
+      "boundsEpsg32642": [
+        669867.8596550551,
+        5666249.76978641,
+        670051.9617610163,
+        5666533.50834647
+      ],
+      "requestUrlLength": 351,
+      "httpStatus": 200,
+      "featureCount": 7,
+      "numberMatched": 7,
+      "totalFeatures": 7,
+      "numberReturned": 7,
+      "strictEnvelopeMisses": 0,
+      "outliers": []
+    }
+  ],
+  "outlierTotal": 1,
+  "uniqueOutlierNativeIds": 1,
+  "exactIdLookup": {
+    "returned": 1,
+    "allOutlierIdsReturned": true,
+    "allGidsMatched": true,
+    "allCanonicalGeometriesMatched": true
+  },
+  "assessment": "A fresh verified raw WFS read of the first failed bbox returns gid 5216047 / kad_nomer 21320128920 although its EPSG:32642 envelope is 0.882840149m south of the requested envelope. A fresh exact kad_nomer adapter lookup returns the same gid and identical canonical WGS84 geometry after projection. This supports a real provider-side bbox overfetch/slack behavior affecting at least that row; the geometry is not altered by the bbox query. In four other originally failed cells, fresh raw responses show no envelope misses and the current adapter accepts all four on retest, so the original five-of-six UI failures are not all reproducible from these fresh reads.",
+  "runtimeAdapterRetest": {
+    "observedAt": "2026-10-08T06:47:19.699Z",
+    "bounds": [
+      {
+        "bbox": [
+          71.425,
+          51.1225,
+          71.4275,
+          51.125
+        ],
+        "initialUiStatus": 502,
+        "retestStatus": 502,
+        "message": "Astana PKK returned a feature outside the requested projected bounds.",
+        "features": 19
+      },
+      {
+        "bbox": [
+          71.425,
+          51.125,
+          71.4275,
+          51.1275
+        ],
+        "initialUiStatus": 200,
+        "retestStatus": 200,
+        "features": 26
+      },
+      {
+        "bbox": [
+          71.425,
+          51.1275,
+          71.4275,
+          51.13000000000001
+        ],
+        "initialUiStatus": 502,
+        "retestStatus": 200,
+        "features": 31
+      },
+      {
+        "bbox": [
+          71.425,
+          51.13000000000001,
+          71.4275,
+          51.1325
+        ],
+        "initialUiStatus": 502,
+        "retestStatus": 200,
+        "features": 23
+      },
+      {
+        "bbox": [
+          71.425,
+          51.1325,
+          71.4275,
+          51.135
+        ],
+        "initialUiStatus": 502,
+        "retestStatus": 200,
+        "features": 34
+      },
+      {
+        "bbox": [
+          71.4275,
+          51.1225,
+          71.43,
+          51.125
+        ],
+        "initialUiStatus": 502,
+        "retestStatus": 200,
+        "features": 7
+      }
+    ],
+    "summary": "Only the first initial 502 is reproducible in a fresh direct adapter run. The other four initial 502 cells were accepted by the current adapter on retest; their fresh raw WFS responses had no envelope-miss rows. Original UI 502s outside the first cell remain unexplained by this bounded diagnostic.",
+    "version": "Before the local overfetch-filter fix; preserved as initial diagnostic evidence."
+  },
+  "subsequentIntegrationFinding": "The gateway shares source cooldown across viewport cells: a source-unavailable error pauses later cells. This explains why one direct envelope rejection can be repeated across several gateway requests; the direct checks alone did not reproduce those subsequent cooldown errors.",
+  "resolution": {
+    "adapter": "Validate and count all returned records, then exclude native geometry envelopes outside the requested projected rectangle. No arbitrary distance tolerance or boundary repair.",
+    "browserFinalCells": 40,
+    "browserFinalGatewayStatuses": {
+      "200": 40
+    }
+  }
+}

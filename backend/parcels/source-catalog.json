@@ -3612,7 +3612,12 @@
         "The public viewer issues a temporary map-session key; it is refreshed once on expiry and kept only in memory.",
         "The provider returns an empty HTTP 200 body for some unserved bounds. These are treated as unavailable, never confirmed empty coverage.",
         "Map polygons are adapted to WGS84 from EPSG:32643. Only parcel ID, survey number and block number are retained."
-      ]
+      ],
+      "locationCode": "010309",
+      "districtGid": "dfd75e07-cae4-45e8-875b-6292909b8089",
+      "talukGid": "56d4cd54-4ad1-469a-bdbf-202951b95c39",
+      "villageGid": "ce6185fb-b497-4803-a49d-4a0a8925aef8",
+      "exactConcurrency": 16
     },
     {
       "id": "za-joburg-registered-stands",
@@ -3703,6 +3708,313 @@
       "catalogueUrl": "https://gis.berryict.com/gis/gis/ama/propertyidentification.php",
       "licenceUrl": "https://gis.berryict.com/gis/gis/ama/propertyidentification.php",
       "licenceNote": "Reuse terms are unestablished and informational. Berry ICT hosts this publicly accessible Accra Metro-branded app; no official authority is inferred from the branding."
+    },
+    {
+      "id": "za-cgs-northwest-erven",
+      "adapter": "arcgis",
+      "endpoint": "https://maps.geoscience.org.za/hosting/rest/services/Administrative_Boundaries_and_Cadastral_Data/MapServer/46",
+      "idField": "PRCL_KEY",
+      "objectIdField": "OBJECTID",
+      "idType": "string",
+      "idPrefix": "ZA-CGS-NW-",
+      "outFields": [
+        "OBJECTID",
+        "PRCL_KEY",
+        "ID",
+        "LSTATUS",
+        "WSTATUS",
+        "PRCL_TYPE",
+        "DATE_STAMP",
+        "PARCEL_NO"
+      ],
+      "parcelNumberField": "PARCEL_NO",
+      "attributeFilters": {
+        "LSTATUS": [
+          "R",
+          "S"
+        ],
+        "WSTATUS": [
+          " ",
+          "C"
+        ]
+      },
+      "boundsQueryMode": "object-ids",
+      "idsQueryMode": "object-ids",
+      "pageSize": 100,
+      "idBatchSize": 50,
+      "maxFeatures": 2000,
+      "maxBboxKm2": 2,
+      "metricSrid": 32735,
+      "maxConcurrentQueries": 6,
+      "name": "Council for Geoscience — North West cadastral erven",
+      "countryCode": "ZA",
+      "cityIds": [
+        "mboloko"
+      ],
+      "scope": "North West provincial erven mirror. Includes published LSTATUS S or R with WSTATUS blank or C; proposed and historic status codes are excluded. Mboloko entry area verified; every sampled record has DATE_STAMP 2017-10-13. Dataset update year and current legal registration are not established. Farm portions and holdings are separate layers and are outside this source.",
+      "evidenceFile": "research/india-africa-followup-2026-10-08/mboloko-assessment.json",
+      "catalogueUrl": "https://maps.geoscience.org.za/hosting/rest/services/Administrative_Boundaries_and_Cadastral_Data/MapServer/46",
+      "attribution": "Council for Geoscience · North West cadastral erven mirror. Sampled records dated 2017-10-13; currentness and registration unestablished. Adapted to WGS84.",
+      "licenceNote": "Source conditions are informational. The inspected service does not state a named reuse licence."
+    },
+    {
+      "id": "in-kl-entebhoomi-070211",
+      "adapter": "kerala-entebhoomi",
+      "endpoint": "https://entebhoomi.kerala.gov.in/web/ilms/map",
+      "locationCode": "070211",
+      "districtGid": "e0d2187c-2a19-444c-90c9-ffedf9eb5d69",
+      "talukGid": "20d024a3-6bca-4478-9678-8294a15b484f",
+      "villageGid": "a95a17f6-d671-497d-a791-54a351ef7858",
+      "idField": "parcel_gid",
+      "idType": "string",
+      "idPrefix": "IN-KL-ENTEBHOOMI-070211-",
+      "outFields": [
+        "parcel_gid",
+        "survey_no",
+        "block_no"
+      ],
+      "parcelNumberField": "survey_no",
+      "maxFeatures": 1000,
+      "maxBboxKm2": 1,
+      "maxResponseBytes": 2097152,
+      "maxConcurrentQueries": 2,
+      "exactConcurrency": 16,
+      "metricSrid": 32643,
+      "name": "Kerala Ente Bhoomi — Thiruvankulam cadastral parcels",
+      "cityIds": [
+        "kochi"
+      ],
+      "countryCode": "IN",
+      "scope": "Published Thiruvankulam cadastral village (070211), limited to bounded source queries. Village lies in Thrippunithura Municipality and the historical Kochi urban agglomeration; Kochi Corporation and WUP-point coverage are not claimed.",
+      "evidenceFile": "research/india-africa-followup-2026-10-08/kerala-assessment.json",
+      "attribution": "Government of Kerala, Survey and Land Records Department / NIC Kerala — Ente Bhoomi. Adapted to WGS84.",
+      "licenceUrl": "https://entebhoomi.kerala.gov.in/web/home",
+      "catalogueUrl": "https://entebhoomi.kerala.gov.in/web/ilms/map",
+      "caveats": [
+        "Only parcel ID, survey number and block number are retained; ownership is not provided.",
+        "Source update year and full village/city completeness are unestablished.",
+        "Temporary public-viewer session values remain in memory; empty or incomplete responses fail the query."
+      ]
+    },
+    {
+      "id": "in-kl-entebhoomi-020301",
+      "adapter": "kerala-entebhoomi",
+      "endpoint": "https://entebhoomi.kerala.gov.in/web/ilms/map",
+      "locationCode": "020301",
+      "districtGid": "724af3d5-147d-416b-a956-b968b6c7f38b",
+      "talukGid": "a92fa901-eab7-40ae-abe9-f1b45f41cfaa",
+      "villageGid": "a5f8cb4b-9b03-4f8a-a391-5304842a8f7a",
+      "idField": "parcel_gid",
+      "idType": "string",
+      "idPrefix": "IN-KL-ENTEBHOOMI-020301-",
+      "outFields": [
+        "parcel_gid",
+        "survey_no",
+        "block_no"
+      ],
+      "parcelNumberField": "survey_no",
+      "maxFeatures": 1000,
+      "maxBboxKm2": 1,
+      "maxResponseBytes": 2097152,
+      "maxConcurrentQueries": 2,
+      "exactConcurrency": 16,
+      "metricSrid": 32643,
+      "name": "Kerala Ente Bhoomi — Iravipuram cadastral parcels",
+      "cityIds": [
+        "iravipuram"
+      ],
+      "countryCode": "IN",
+      "scope": "Published Iravipuram cadastral village (020301), limited to bounded source queries. Iravipuram, Kollam Corporation. Kept separate from the WUP Kollam entry because its saved point is about 54 km away and the settlement crosswalk is unresolved.",
+      "evidenceFile": "research/india-africa-followup-2026-10-08/kerala-assessment.json",
+      "attribution": "Government of Kerala, Survey and Land Records Department / NIC Kerala — Ente Bhoomi. Adapted to WGS84.",
+      "licenceUrl": "https://entebhoomi.kerala.gov.in/web/home",
+      "catalogueUrl": "https://entebhoomi.kerala.gov.in/web/ilms/map",
+      "caveats": [
+        "Only parcel ID, survey number and block number are retained; ownership is not provided.",
+        "Source update year and full village/city completeness are unestablished.",
+        "Temporary public-viewer session values remain in memory; empty or incomplete responses fail the query."
+      ]
+    },
+    {
+      "id": "in-gj-tpvd-final-plots",
+      "name": "Gujarat TPVD — Ahmedabad final planning plots",
+      "adapter": "wfs",
+      "version": "1.1.0",
+      "endpoint": "https://tpvd.openprp.in/geoserver/ows",
+      "featureType": "ctp:final_plot_boundary",
+      "geometryField": "the_geom",
+      "idField": "search",
+      "idType": "string",
+      "idPrefix": "IN-GJ-TPVD-",
+      "parcelNumberField": "fp_no",
+      "outFields": [
+        "search",
+        "fp_no",
+        "tps_id",
+        "tps_no",
+        "tps_name",
+        "village",
+        "city",
+        "authority",
+        "district",
+        "status"
+      ],
+      "attributeFilters": {
+        "status": "Final",
+        "city": "Ahmedabad",
+        "authority": "AMC"
+      },
+      "pageSize": 1000,
+      "maxFeatures": 1000,
+      "maxBboxKm2": 2,
+      "maxConcurrentQueries": 6,
+      "caCertificate": "./certificates/sectigo-public-server-authentication-ca-dv-r36.pem",
+      "countryCode": "IN",
+      "metricSrid": 32643,
+      "cityIds": [
+        "ahmedabad"
+      ],
+      "scope": "Published final town-planning plots in Ahmedabad Municipal Corporation schemes only. The native search reference combines the provider's village, town-planning scheme and final-plot labels; fp_no is the display number. Bounded central Ahmedabad samples are verified; citywide completeness, current legal registration and ownership are not established.",
+      "evidenceFile": "research/india-africa-next10-2026-10-08/city-6408.json",
+      "attribution": "Government of Gujarat, Town Planning and Valuation Department (TPVD) — final AMC planning plots. Partial coverage; registration and currentness unverified. Adapted to WGS84.",
+      "catalogueUrl": "https://townplanning.gujarat.gov.in/Home",
+      "licenceNote": "Source conditions are informational. No named reuse licence was identified on the inspected public map.",
+      "caveats": [
+        "The official TPVD website links to the public TPWebGIS host; no account is used.",
+        "Final planning plots are not proof of current land title or ownership. Draft, preliminary and non-AMC schemes are excluded by fixed upstream and response-validated filters.",
+        "The server omits its certificate intermediate. A source-scoped published Sectigo intermediate completes the trusted chain; hostname and certificate validation remain enabled.",
+        "WFS FIDs and gid are transport data, not parcel identities.",
+        "The legacy WFS misreports the total on a final partial offset page. Queries request up to 1000 records and reject match counts above 1000; no offset-counter relaxation is applied."
+      ]
+    },
+    {
+      "id": "in-gj-tpvd-surat-final-plots",
+      "name": "Gujarat TPVD — Surat final town-planning plots",
+      "adapter": "wfs",
+      "version": "1.1.0",
+      "endpoint": "https://tpvd.openprp.in/geoserver/ows",
+      "featureType": "ctp:final_plot_boundary",
+      "geometryField": "the_geom",
+      "idField": "search",
+      "idType": "string",
+      "idPrefix": "IN-GJ-SURAT-",
+      "parcelNumberField": "fp_no",
+      "outFields": [
+        "search",
+        "fp_no",
+        "tps_id",
+        "tps_no",
+        "tps_name",
+        "village",
+        "city",
+        "authority",
+        "district",
+        "status"
+      ],
+      "attributeFilters": {
+        "status": "Final",
+        "city": "Surat",
+        "authority": "SMC"
+      },
+      "pageSize": 1000,
+      "maxFeatures": 1000,
+      "maxBboxKm2": 2,
+      "maxConcurrentQueries": 6,
+      "caCertificate": "./certificates/sectigo-public-server-authentication-ca-dv-r36.pem",
+      "countryCode": "IN",
+      "metricSrid": 32643,
+      "cityIds": [
+        "surat"
+      ],
+      "scope": "Final Surat Municipal Corporation (SMC) town-planning plot boundaries from Gujarat TPVD. Partial planning-scheme coverage; not a current title/ownership registry or citywide completeness claim. Native search reference combines village, scheme and final-plot labels. Single counted responses up to 1,000 records; larger scopes reject because this provider misreports terminal offset-page counts.",
+      "evidenceFile": "research/india-africa-batch3-2026-10-08/city-7233.json",
+      "attribution": "Government of Gujarat, Town Planning and Valuation Department (TPVD) — final SMC planning plots. Partial coverage; registration and currentness unverified. Adapted to WGS84.",
+      "catalogueUrl": "https://townplanning.gujarat.gov.in/Home",
+      "licenceNote": "Source conditions are informational. No named reuse licence was identified on the inspected public map.",
+      "caveats": [
+        "The official TPVD website links to the public TPWebGIS host; no account is used.",
+        "Final planning plots are not proof of current land title or ownership. Draft, preliminary and non-SMC schemes are excluded by fixed upstream and response-validated filters.",
+        "The server omits its certificate intermediate. A source-scoped published Sectigo intermediate completes the trusted chain; hostname and certificate validation remain enabled.",
+        "WFS FIDs and gid are transport data, not parcel identities.",
+        "The legacy WFS misreports the total on a final partial offset page. Queries request up to 1000 records and reject match counts above 1000; no offset-counter relaxation is applied.",
+        "Sampled adjacent Piplod 6 92 and Umra_North 5 177 boundaries have a 0.239 m² overlap with about 9 mm minimum oriented width. Source geometry is retained unchanged."
+      ]
+    },
+    {
+      "id": "ke-nairobi-maps-outlines",
+      "name": "Nairobi Maps — public parcel outlines",
+      "adapter": "nairobi-outlines",
+      "endpoint": "https://nairobimaps.com/api/get_parcels.php",
+      "identityKind": "geometry-sha256-v1",
+      "idPrefix": "KE-NAIROBI-NM-",
+      "outFields": [],
+      "maxFeatures": 4000,
+      "maxResponseBytes": 2097152,
+      "maxBboxKm2": 1,
+      "lookupCellSize": 0.0025,
+      "maxConcurrentQueries": 2,
+      "countryCode": "KE",
+      "metricSrid": 32737,
+      "cityIds": [
+        "nairobi"
+      ],
+      "scope": "Public parcel outlines from Nairobi Maps, a commercial publisher. Sampled local coverage only; source registry numbers, ownership and official government lineage are not supplied. Application references identify geometry versions and change when boundaries change.",
+      "evidenceFile": "research/india-africa-batch3-2026-10-08/nairobi-quality-audit.json",
+      "attribution": "Nairobi Maps — public parcel outlines; application references derived from geometry. Registry numbers and ownership unavailable.",
+      "catalogueUrl": "https://nairobimaps.com/gis-data/nairobi-parcels-cadastre.html",
+      "licenceUrl": "https://nairobimaps.com/",
+      "licenceNote": "Provider permits personal, educational and non-commercial viewing/searching with attribution. Bulk or commercial use requires written permission. Source terms are informational; the live service also applies anonymous preview-area limits.",
+      "caveats": [
+        "Commercial survey-record compilation; not an official registry. Source lineage and update dates are not independently verified.",
+        "Public geometry responses have empty properties and no source IDs; no paid attributes or WFS credentials are used.",
+        "Application identity uses source namespace plus canonical geometry SHA-256 at 1e-7-degree precision, a version marker and a spatial locator. Ring order and start vertex do not change the identity. Consecutive duplicate coordinates are removed during canonical encoding; no shapes are unioned or boundaries repaired.",
+        "Fresh exact reads locate the source outline spatially and verify its complete hash. A changed outline does not inherit the old reference. Absence means that geometry version was not returned, not that a legal parcel ceased to exist.",
+        "The anonymous viewport response must report matching count, fixed zoom 19 and truncated=false, with count below its reported limit. Errors, quotas and incomplete responses remain errors.",
+        "Observed viewport selection uses intersecting envelopes and returns whole polygons, including some that do not topologically intersect the rectangle. Footprint reads apply an exact geometry intersection filter."
+      ]
+    },
+    {
+      "id": "kz-astana-pkk-esil",
+      "name": "Kazakhstan EGKN PKK — Astana, Esil district",
+      "adapter": "kazakhstan-pkk",
+      "endpoint": "https://map.gov4c.kz/geoserver/wfs",
+      "featureType": "egkn:u_view",
+      "districtId": 254,
+      "projection": "EPSG:32642",
+      "idField": "kad_nomer",
+      "idType": "string",
+      "objectIdField": "gid",
+      "idPrefix": "KZ-ASTANA-PKK-",
+      "parcelNumberField": "kad_nomer",
+      "outFields": [
+        "gid",
+        "kad_nomer"
+      ],
+      "pageSize": 1000,
+      "maxFeatures": 10000,
+      "maxBboxKm2": 1,
+      "maxConcurrentQueries": 2,
+      "maxResponseBytes": 4194304,
+      "maxTotalResponseBytes": 25165824,
+      "caCertificate": "./certificates/sectigo-public-server-authentication-ca-dv-r36.pem",
+      "countryCode": "KZ",
+      "metricSrid": 32642,
+      "cityIds": [
+        "astana"
+      ],
+      "scope": "Official national public cadastral map, restricted to the provider’s Esil district view (district_id:254) in Astana. Partial city coverage; native cadastral numbers are supplied. Currentness, ownership and citywide completeness are not established.",
+      "evidenceFile": "research/central-asia-capitals-2026-10-08/astana-acceptance.json",
+      "attribution": "Government for Citizens — EGKN public cadastral map. Astana Esil district 254 only; native cadastral numbers, adapted to WGS84. Ownership and currentness unestablished.",
+      "catalogueUrl": "https://map.gov4c.kz/egkn/",
+      "licenceNote": "Source conditions are informational. No named reuse licence was identified on the inspected public map.",
+      "caveats": [
+        "The public viewer’s district_id parameter is required. The configured scope is one published district view, not Kazakhstan-wide or citywide coverage.",
+        "Native cadastral identity is kad_nomer. The gid property orders pagination; generated GeoServer feature IDs change between otherwise identical responses and are never used as parcel identity.",
+        "The service requires native EPSG:32642 queries and returns native coordinates. Four-corner projected envelopes are queried and complete source geometry is transformed to WGS84. Direct CRS:84 requests returned no features and are not evidence of parcel absence.",
+        "The server omits its published Sectigo intermediate. Source-scoped CA supplementation preserves ordinary certificate and hostname verification.",
+        "Up to 80 requested IDs are read in filters of at most 20 terms under a single 15-second deadline and shared response-byte budget; an unchunked 80-term filter returned HTTP 414.",
+        "All 154 locally sampled parcels were valid. Five source-boundary overlaps were retained unchanged; the two largest measure 0.451 m² and 0.382 m², with minimum oriented widths about 9.8 mm and 12.1 mm. No global geometry repair or tolerance is applied."
+      ]
     }
   ]
 }

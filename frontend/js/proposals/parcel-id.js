@@ -100,6 +100,12 @@ function getParcelAreaById(parcelId) {
 
 function getParcelDisplayNumberFromProperties(properties, fallback = '') {
     if (properties) {
+        // Geometry-hash identifiers are internal source identities; the selected parcel UI should
+        // show only their short application reference, never the canonical hash-based parcel id.
+        if (properties.parcelIdentityKind === 'geometry-sha256-v1') {
+            const geometryDisplayId = normalizeParcelId(properties.geometryDisplayId);
+            if (geometryDisplayId) return geometryDisplayId;
+        }
         for (const key of PARCEL_NUMBER_PROPERTY_CANDIDATES) {
             const value = properties[key];
             if (value !== undefined && value !== null) {

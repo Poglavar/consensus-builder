@@ -9,11 +9,8 @@ import { canonicalParcelFeature, providerHttpError, upstreamError, validateBound
 const APP_ORIGIN = 'https://entebhoomi.kerala.gov.in';
 const MAP_ORIGIN = 'https://bhunaksha.entebhoomi.kerala.gov.in';
 const MAP_PATH = '/bhunaksha_v5_emaps/core/v2/map/export/';
-const LOCATION_CODE = '010309';
-const DISTRICT_GID = 'dfd75e07-cae4-45e8-875b-6292909b8089';
-const TALUK_GID = '56d4cd54-4ad1-469a-bdbf-202951b95c39';
-const VILLAGE_GID = 'ce6185fb-b497-4803-a49d-4a0a8925aef8';
 const NATIVE_ID = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i;
+const UUID = /^[0-9a-f]{8}-[0-9a-f]{4}-[1-8][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/i;
 const toMetric = proj4('EPSG:4326', 'EPSG:32643');
 const toWgs84 = proj4('EPSG:32643', 'EPSG:4326');
 const USER_AGENT = 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/128.0.0.0 Safari/537.36';
@@ -84,11 +81,17 @@ function projectGeometry(geometry, transform) {
 }
 
 export function createKeralaParcelSource(descriptor, { fetchImpl = globalThis.fetch, now = Date.now } = {}) {
-    const { id, idPrefix, outFields = ['parcel_gid', 'survey_no', 'block_no'], parcelNumberField = 'survey_no' } = descriptor;
+    const { id, idPrefix, locationCode, districtGid, talukGid, villageGid,
+        outFields = ['parcel_gid', 'survey_no', 'block_no'], parcelNumberField = 'survey_no' } = descriptor;
     const maxBboxKm2 = descriptor.maxBboxKm2 ?? 0.001;
     const maxFeatures = descriptor.maxFeatures ?? 1000;
     const maxResponseBytes = descriptor.maxResponseBytes ?? MAX_BYTES;
-    if (typeof id !== 'string' || !id || descriptor.endpoint !== `${APP_ORIGIN}/web/ilms/map` || idPrefix !== 'IN-KL-ENTEBHOOMI-010309-'
+    const exactConcurrency = descriptor.exactConcurrency;
+    if (typeof id !== 'string' || !id || descriptor.endpoint !== `${APP_ORIGIN}/web/ilms/map`
+        || typeof locationCode !== 'string' || !/^\d{6}$/.test(locationCode)
+        || ![districtGid, talukGid, villageGid].every(value => typeof value === 'string' && UUID.test(value))
+        || idPrefix !== `IN-KL-ENTEBHOOMI-${locationCode}-`
+        || !Number.isSafeInteger(exactConcurrency) || exactConcurrency < 1 || exactConcurrency > 16
         || !Array.isArray(outFields) || outFields.length !== 3 || !['parcel_gid', 'survey_no', 'block_no'].every(field => outFields.includes(field))
         || !outFields.includes(parcelNumberField) || !Number.isFinite(maxBboxKm2) || maxBboxKm2 > 1 || maxBboxKm2 <= 0
         || !Number.isSafeInteger(maxFeatures) || maxFeatures < 1 || maxFeatures > 5000
@@ -98,12 +101,31 @@ export function createKeralaParcelSource(descriptor, { fetchImpl = globalThis.fe
 
     let sessionPromise = null;
     const recent = new Map();
+    let activeExact = 0;
+    const exactQueue = [];
     const result = (features, extra = {}) => ({ type: 'FeatureCollection', features,
         complete: true, sourceId: id, returnsWGS84: true, ...extra });
     function remember(feature) {
         recent.delete(feature.id);
         recent.set(feature.id, { feature: structuredClone(feature), expires: now() + 60000 });
         while (recent.size > 10000) recent.delete(recent.keys().next().value);
+    }
+
+    function withExactConcurrency(work, onFailure) {
+        return new Promise((resolve, reject) => {
+            const start = () => {
+                activeExact++;
+                Promise.resolve().then(work).then(resolve, error => {
+                    onFailure?.(error);
+                    reject(error);
+                }).finally(() => {
+                    activeExact--;
+                    exactQueue.shift()?.();
+                });
+            };
+            if (activeExact < exactConcurrency) start();
+            else exactQueue.push(start);
+        });
     }
 
     function cookieHeader(response) {
@@ -175,32 +197,32 @@ export function createKeralaParcelSource(descriptor, { fetchImpl = globalThis.fe
             [csrfHeader]: csrf, ...(cookie ? { Cookie: cookie } : {}) };
 
         const districtOptions = $('select#districtGid option').map((_, element) => $(element).attr('value')).get();
-        if (!districtOptions.includes(DISTRICT_GID)) throw upstreamError('Kerala district selector no longer contains Manikkal.');
+        if (!districtOptions.includes(districtGid)) throw upstreamError('Kerala district selector no longer contains the configured district.');
         const getJson = async (path, params = {}) => {
             const url = new URL(path, APP_ORIGIN); url.search = new URLSearchParams(params);
             const fetched = await checkedResponse(url.href, { headers }, 2 * 1024 * 1024);
             try { return JSON.parse(fetched.bytes.toString('utf8')); }
             catch { throw upstreamError('Kerala map selector returned invalid JSON.'); }
         };
-        const talukList = await getJson('/web/taluk/gid', { districtId: DISTRICT_GID });
+        const talukList = await getJson('/web/taluk/gid', { districtId: districtGid });
         const taluks = talukList?.dataPojo?.talukids;
-        if (!Array.isArray(taluks) || !taluks.some(item => item?.gid === TALUK_GID)) throw upstreamError('Kerala taluk selector no longer contains Manikkal.');
-        const villageList = await getJson('/web/village/gid', { talukId: TALUK_GID,
+        if (!Array.isArray(taluks) || !taluks.some(item => item?.gid === talukGid)) throw upstreamError('Kerala taluk selector no longer contains the configured taluk.');
+        const villageList = await getJson('/web/village/gid', { talukId: talukGid,
             loadAllVillage: 'true', loadPublishedVillage: 'true' });
         const villages = villageList?.dataPojo?.villageids;
-        if (!Array.isArray(villages) || !villages.some(item => item?.gid === VILLAGE_GID)) throw upstreamError('Kerala village selector no longer contains Manikkal.');
+        if (!Array.isArray(villages) || !villages.some(item => item?.gid === villageGid)) throw upstreamError('Kerala village selector no longer contains the configured village.');
         const selected = await checkedResponse(`${APP_ORIGIN}/web/ilms/map/view`, { method: 'POST', headers: {
             ...headers, 'Content-Type': 'application/x-www-form-urlencoded' }, body: new URLSearchParams({
-            districtGid: DISTRICT_GID, talukGid: TALUK_GID, villageGid: VILLAGE_GID }) }, 2 * 1024 * 1024);
+            districtGid, talukGid, villageGid }) }, 2 * 1024 * 1024);
         const map = load(selected.bytes.toString('utf8'));
         let config;
         try { config = JSON.parse(map('#initdata').attr('value')); }
         catch { throw upstreamError('Kerala village map did not return its map configuration.'); }
-        if (config?.location_code !== LOCATION_CODE || typeof config.fgb_url !== 'string') throw upstreamError('Kerala selected an unexpected cadastral village.');
+        if (config?.location_code !== locationCode || typeof config.fgb_url !== 'string') throw upstreamError('Kerala selected an unexpected cadastral village.');
         let authUrl;
         try { authUrl = new URL(config.fgb_url); } catch { throw upstreamError('Kerala viewer did not issue a valid map session.'); }
         if (authUrl.protocol !== 'https:' || authUrl.hostname !== 'bhunaksha.entebhoomi.kerala.gov.in'
-            || authUrl.pathname !== `${MAP_PATH}fgb/${LOCATION_CODE}` || !authUrl.searchParams.get('auth_key')) {
+            || authUrl.pathname !== `${MAP_PATH}fgb/${locationCode}` || !authUrl.searchParams.get('auth_key')) {
             throw upstreamError('Kerala viewer did not issue a valid map session.');
         }
         const authKey = authUrl.searchParams.get('auth_key');
@@ -213,18 +235,19 @@ export function createKeralaParcelSource(descriptor, { fetchImpl = globalThis.fe
     }
 
     function mapUrl(format, authKey) {
-        const url = new URL(`${MAP_PATH}${format}/${LOCATION_CODE}`, MAP_ORIGIN);
+        const url = new URL(`${MAP_PATH}${format}/${locationCode}`, MAP_ORIGIN);
         url.searchParams.set('auth_key', authKey);
         return url.href;
     }
 
     async function postMap(format, body, attempt = 0) {
-        const session = await getSession();
+        const sessionRequest = getSession();
+        const session = await sessionRequest;
         const response = await fetchResponse(mapUrl(format, session.authKey), { method: 'POST', headers: {
             ...session.headers, 'Content-Type': 'application/json', Accept: 'application/geo+json,application/json,*/*' },
             body: JSON.stringify(body) });
         if ([401, 403, 498, 499].includes(response.status) && attempt === 0) {
-            sessionPromise = null;
+            if (sessionPromise === sessionRequest) sessionPromise = null;
             return postMap(format, body, 1);
         }
         if (!response.ok) throw providerHttpError(response);
@@ -291,13 +314,14 @@ export function createKeralaParcelSource(descriptor, { fetchImpl = globalThis.fe
     }
 
     async function exactFeature(nativeId, attempt = 0) {
-        const session = await getSession();
-        const endpoint = `${APP_ORIGIN}/web/proxy/mapinfo/feature_info/${LOCATION_CODE}`;
+        const sessionRequest = getSession();
+        const session = await sessionRequest;
+        const endpoint = `${APP_ORIGIN}/web/proxy/mapinfo/feature_info/${locationCode}`;
         const response = await fetchResponse(endpoint, { method: 'POST', headers: { ...session.headers,
             'Content-Type': 'application/json', Accept: 'application/json' }, body: JSON.stringify({
             map_type: 'GENERIC_MAP', layer_code: 'LAND_PARCEL', attributes: { parcel_gid: nativeId }, fit_to_this: 'false', type: 'json' }) });
         if ([401, 403, 498, 499].includes(response.status) && attempt === 0) {
-            sessionPromise = null;
+            if (sessionPromise === sessionRequest) sessionPromise = null;
             return exactFeature(nativeId, 1);
         }
         if (!response.ok) throw providerHttpError(response);
@@ -307,16 +331,15 @@ export function createKeralaParcelSource(descriptor, { fetchImpl = globalThis.fe
     async function queryIds(ids) {
         if (!Array.isArray(ids) || !ids.length || ids.length > 80) throw new HttpError(400, 'Provide between 1 and 80 Kerala parcel IDs.');
         const unique = [...new Set(ids.map(value => `${idPrefix}${exactId(value)}`))];
-        const nativeIds = unique.map(value => value.slice(idPrefix.length));
-        const features = [];
-        for (let index = 0; index < unique.length; index++) {
-            const idValue = unique[index];
+        let queryFailed = false;
+        const groupedFeatures = await Promise.all(unique.map(async idValue => {
             const cached = recent.get(idValue);
-            if (cached && cached.expires > now()) { features.push(structuredClone(cached.feature)); continue; }
+            if (cached && cached.expires > now()) return [structuredClone(cached.feature)];
             recent.delete(idValue);
-            const nativeId = nativeIds[index];
-            features.push(...await exactFeature(nativeId));
-        }
+            const nativeId = idValue.slice(idPrefix.length);
+            return withExactConcurrency(() => queryFailed ? [] : exactFeature(nativeId), () => { queryFailed = true; });
+        }));
+        const features = groupedFeatures.flat();
         const present = new Set(features.map(feature => feature.id));
         return result(features, { absentIds: unique.filter(value => !present.has(value)) });
     }
@@ -328,7 +351,7 @@ export function createKeralaParcelSource(descriptor, { fetchImpl = globalThis.fe
         if (!rows.length) return [];
         const row = rows[0];
         const properties = row?.attributes;
-        if (row?.locationCode !== LOCATION_CODE || !properties || String(properties.parcel_gid || '').toLowerCase() !== requestedNativeId) {
+        if (row?.locationCode !== locationCode || !properties || String(properties.parcel_gid || '').toLowerCase() !== requestedNativeId) {
             throw upstreamError('Kerala exact parcel lookup returned an unexpected parcel.');
         }
         const geometry = projectGeometry(parseKeralaWktPolygon(row.geom), toWgs84);

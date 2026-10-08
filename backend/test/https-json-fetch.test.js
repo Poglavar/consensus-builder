@@ -107,4 +107,30 @@ describe('createHttpsJsonFetch', () => {
         expect(result).toMatchObject({ ok: false, status: 503 });
         expect(resume).toHaveBeenCalledOnce();
     });
+
+    it('exposes the same bounded bytes through a standard response body', async () => {
+        const response = readableResponse(['{"features":', '[]}']);
+        const fetchJson = createHttpsJsonFetch(extraCa, { getImpl: respondingGet(response) });
+        const result = await fetchJson('https://map.gov4c.kz/geoserver/wfs');
+        const reader = result.body.getReader();
+        const chunks = [];
+        for (;;) {
+            const { done, value } = await reader.read();
+            if (done) break;
+            chunks.push(Buffer.from(value));
+        }
+        expect(Buffer.concat(chunks).toString('utf8')).toBe('{"features":[]}');
+        expect(result.bodyUsed).toBe(true);
+    });
+
+    it('enforces the shared byte limit when an adapter consumes the body directly', async () => {
+        const response = readableResponse(['123', '456']);
+        const fetchJson = createHttpsJsonFetch(extraCa, { getImpl: respondingGet(response), maxBytes: 5 });
+        const result = await fetchJson('https://map.gov4c.kz/geoserver/wfs');
+        const reader = result.body.getReader();
+        await expect((async () => {
+            while (!(await reader.read()).done) { /* Drain until the transport rejects. */ }
+        })()).rejects.toThrow('Parcel provider response exceeds the byte limit.');
+        expect(response.destroyed).toBe(true);
+    });
 });

@@ -1,0 +1,6055 @@
+{
+  "schemaVersion": 1,
+  "checkedAt": "2026-10-07T22:43:18.549Z",
+  "cityId": "wup2025:8364",
+  "purpose": "Determine whether repeated published IDs are disjoint complete components or genuinely overlapping boundary conflicts. The source stays held pending this evidence.",
+  "sourceUrl": "https://ldo.mohua.gov.in/assets/MIS_V5.1/Geojson_s/Property_25999.js",
+  "request": {
+    "url": "https://ldo.mohua.gov.in/assets/MIS_V5.1/Geojson_s/Property_25999.js",
+    "method": "GET",
+    "httpStatus": 200,
+    "bytes": 22117499,
+    "elapsedMs": 24548,
+    "contentType": "application/javascript",
+    "etag": "\"694e35e1-1517c7b\"",
+    "lastModified": "Fri, 26 Dec 2025 07:14:41 GMT"
+  },
+  "wrapperVariable": "pro",
+  "featureCount": 25999,
+  "propertyFieldNames": [
+    "OBJECTID",
+    "propertyid",
+    "propertynu",
+    "property_s",
+    "st_area_sh",
+    "st_length_",
+    "Shape_Leng",
+    "old_propert_id",
+    "unique_propert_id",
+    "land_type",
+    "status",
+    "lease_tenure",
+    "land_use",
+    "area_in_sqm",
+    "address",
+    "loacalityn",
+    "lesse_name",
+    "ground_rent_Rs",
+    "status_of_RGR",
+    "Shape_Length",
+    "Shape_Area",
+    "lessee_name"
+  ],
+  "nativeIdCount": 25768,
+  "duplicateGroupCount": 224,
+  "disjointGroupCount": 224,
+  "overlappingGroupCount": 0,
+  "inconsistentReferenceGroups": 0,
+  "identicalGeometryGroups": 0,
+  "failedIntersectionGroups": 0,
+  "duplicateGroups": [
+    {
+      "propertyid": "21374",
+      "sourceRows": 2,
+      "distinctGeometryCount": 2,
+      "matchingUniquePropertyId": true,
+      "geometryHashes": [
+        "bdc5c067ec8ac5123fcca08e930245417e960cc2da6b3e780625fa8b84f4c8da",
+        "f02bd5cc7d1db01bfde3808ee7c0a1cab5c2a62dd3ee3fcb0bbcc949732c3a61"
+      ],
+      "bboxes": [
+        [
+          77.22640834491268,
+          28.528581381394307,
+          77.22678958657481,
+          28.52880749970934
+        ],
+        [
+          77.22643127391454,
+          28.528774279624535,
+          77.22681251632241,
+          28.529000398021633
+        ]
+      ],
+      "maxPairOverlapM2": 0,
+      "classification": "disjoint"
+    },
+    {
+      "propertyid": "22938",
+      "sourceRows": 2,
+      "distinctGeometryCount": 2,
+      "matchingUniquePropertyId": true,
+      "geometryHashes": [
+        "ed1d0a793a5b476d074c295f98cf9c6bcb06c7d02421fd19cfdfdf7dfdad669c",
+        "8d528acacfba8c1b02127e3b155e4e4a05c25652e8ee35780cd9a99f892a262c"
+      ],
+      "bboxes": [
+        [
+          77.24329755196085,
+          28.568239538412847,
+          77.2435064326161,
+          28.568384556513646
+        ],
+        [
+          77.23857577276958,
+          28.57159753262854,
+          77.23876480961492,
+          28.57170494243409
+        ]
+      ],
+      "maxPairOverlapM2": 0,
+      "classification": "disjoint"
+    },
+    {
+      "propertyid": "41176",
+      "sourceRows": 2,
+      "distinctGeometryCount": 2,
+      "matchingUniquePropertyId": true,
+      "geometryHashes": [
+        "722050e7c969adb7e36c96acd2fccd4a4dc9231d91d422e687b6382ca6bdf700",
+        "775099cb2f67ab248de9237bb977e666eee35db1c33b86015196f1851fee18b1"
+      ],
+      "bboxes": [
+        [
+          77.2435368518098,
+          28.568687125559137,
+          77.24374573740188,
+          28.568832142070466
+        ],
+        [
+          77.23852594706057,
+          28.57189168278379,
+          77.2387149844462,
+          28.571999092573055
+        ]
+      ],
+      "maxPairOverlapM2": 0,
+      "classification": "disjoint"
+    },
+    {
+      "propertyid": "52079",
+      "sourceRows": 2,
+      "distinctGeometryCount": 2,
+      "matchingUniquePropertyId": true,
+      "geometryHashes": [
+        "c6a94730a74f01e8c0ae65d1272ac31e6e4056a1f68f1e052ccce9252b9069b6",
+        "7f2c75c6287976b26c4f291f8bf4ded331b26d38ef4fd7d28e2b2cdb74e46817"
+      ],
+      "bboxes": [
+        [
+          77.2422888134565,
+          28.568477428283348,
+          77.24249769768132,
+          28.568622446431252
+        ],
+        [
+          77.23926042347503,
+          28.57106252599644,
+          77.23938329098185,
+          28.57122913319279
+        ]
+      ],
+      "maxPairOverlapM2": 0,
+      "classification": "disjoint"
+    },
+    {
+      "propertyid": "44162",
+      "sourceRows": 2,
+      "distinctGeometryCount": 2,
+      "matchingUniquePropertyId": true,
+      "geometryHashes": [
+        "803cfb5baec5c0b9f71ea7709dbadf58eab468f642fd5213c6b6e2c8f346883b",
+        "ae113d9cdd24b4b9a7f6d4e4f96029a0620b3f2d432d520eda2207a2899db5d3"
+      ],
+      "bboxes": [
+        [
+          77.24244834914671,
+          28.568775819244713,
+          77.24265723190764,
+          28.568920836611106
+        ],
+        [
+          77.23892332740657,
+          28.571205063721923,
+          77.2390461936932,
+          28.571371671973512
+        ]
+      ],
+      "maxPairOverlapM2": 0,
+      "classification": "disjoint"
+    },
+    {
+      "propertyid": "28553",
+      "sourceRows": 2,
+      "distinctGeometryCount": 2,
+      "matchingUniquePropertyId": true,
+      "geometryHashes": [
+        "841c04cd3d2c855ee2199b279cc3f90d9d6f1a8c1dc052e836352e398b64f24f",
+        "7574177e78aa838558513892bde0ef7e9049e8bcf6d9aeff98022a4aeb40ba84"
+      ],
+      "bboxes": [
+        [
+          77.24324063494149,
+          28.56871420381241,
+          77.2434495185266,
+          28.56885922362284
+        ],
+        [
+          77.23894417731843,
+          28.571584135862516,
+          77.23913321397,
+          28.571691545150212
+        ]
+      ],
+      "maxPairOverlapM2": 0,
+      "classification": "disjoint"
+    },
+    {
+      "propertyid": "31293",
+      "sourceRows": 2,
+      "distinctGeometryCount": 2,
+      "matchingUniquePropertyId": true,
+      "geometryHashes": [
+        "928962d8b38fa0307d57bad5545ca28c6a3121e5b418799fb91b1f4ac1bebf0d",
+        "ff92af8b1a136d6b079afed1a97aa2feffe1d4fc284d40083d1c327499f5cfca"
+      ],
+      "bboxes": [
+        [
+          77.24254380436204,
+          28.568365777692787,
+          77.24275268834766,
+          28.568510795139712
+        ],
+        [
+          77.23971905934897,
+          28.57087016291959,
+          77.23984167352242,
+          28.571036827632106
+        ]
+      ],
+      "maxPairOverlapM2": 0,
+      "classification": "disjoint"
+    },
+    {
+      "propertyid": "44673",
+      "sourceRows": 2,
+      "distinctGeometryCount": 2,
+      "matchingUniquePropertyId": true,
+      "geometryHashes": [
+        "42204e308d09671857c22542c504d7501e39cfeaccf2ab22b56707151ddc512c",
+        "2c7fa8c51c7b77b15bfee1b0208ba5f7bd0cc50ff2c93ed887b22634be3e1e1f"
+      ],
+      "bboxes": [
+        [
+          77.21379803857121,
+          28.533225296812056,
+          77.2138989315165,
+          28.533426696185188
+        ],
+        [
+          77.21384318477479,
+          28.53323538577046,
+          77.21394421868372,
+          28.533437271086633
+        ]
+      ],
+      "maxPairOverlapM2": 0,
+      "classification": "disjoint"
+    },
+    {
+      "propertyid": "28100",
+      "sourceRows": 2,
+      "distinctGeometryCount": 2,
+      "matchingUniquePropertyId": true,
+      "geometryHashes": [
+        "b6c21a27dde60cf903530ede880f38bbb304688e7f3922ee2802d2e1aa639770",
+        "5a6e5def9407b6d18e59bc9dd0eef6a8c687bd3984505eeca0aa3c405ee68b5b"
+      ],
+      "bboxes": [
+        [
+          77.24218904323835,
+          28.56830273984189,
+          77.24239521204429,
+          28.56850461814898
+        ],
+        [
+          77.23930256028866,
+          28.571044708727307,
+          77.23942542884441,
+          28.571211315925567
+        ]
+      ],
+      "maxPairOverlapM2": 0,
+      "classification": "disjoint"
+    },
+    {
+      "propertyid": "30304",
+      "sourceRows": 2,
+      "distinctGeometryCount": 2,
+      "matchingUniquePropertyId": true,
+      "geometryHashes": [
+        "4a9e0ea46911db3b80912968d6a4a8eb6120fea002c2e2b98bdb59523a88733e",
+        "7e3ad86f47bf2891e829ad5534040823fa8ac2fdfaca074d9ed41bc4ef0906a5"
+      ],
+      "bboxes": [
+        [
+          77.23617956519148,
+          28.573660944518195,
+          77.23640013094152,
+          28.57388797867474
+        ],
+        [
+          77.22942660535912,
+          28.569953918489865,
+          77.22969271946683,
+          28.570174737608223
+        ]
+      ],
+      "maxPairOverlapM2": 0,
+      "classification": "disjoint"
+    },
+    {
+      "propertyid": "50862",
+      "sourceRows": 2,
+      "distinctGeometryCount": 2,
+      "matchingUniquePropertyId": true,
+      "geometryHashes": [
+        "af70017826693719b2bdcb3da971dfb05c11db043907d25cf9dddc65b60da3b4",
+        "4e74b004d9b5861dcef6e60de8ccc17722a867b537cfc3e52d9af0f79ce2f79f"
+      ],
+      "bboxes": [
+        [
+          77.23655885723018,
+          28.57350068126241,
+          77.23677942301993,
+          28.573727716351183
+        ],
+        [
+          77.22905696443944,
+          28.570118969122856,
+          77.22927757873191,
+          28.57033274095945
+        ]
+      ],
+      "maxPairOverlapM2": 0,
+      "classification": "disjoint"
+    },
+    {
+      "propertyid": "52068",
+      "sourceRows": 2,
+      "distinctGeometryCount": 2,
+      "matchingUniquePropertyId": true,
+      "geometryHashes": [
+        "8b694e8c0077e69c52a72227df0bc53709d0d7d0a21b00d30e54746151ad1027",
+        "f87884306cbd425fb04635fa93a25702399ff044524f83ed5092d32262ed5379"
+      ],
+      "bboxes": [
+        [
+          77.23597279005905,
+          28.573751499321347,
+          77.23619335477261,
+          28.573978533469003
+        ],
+        [
+          77.22971332436227,
+          28.569826249096256,
+          77.2299769161399,
+          28.570052548644856
+        ]
+      ],
+      "maxPairOverlapM2": 0,
+      "classification": "disjoint"
+    },
+    {
+      "propertyid": "50810",
+      "sourceRows": 2,
+      "distinctGeometryCount": 2,
+      "matchingUniquePropertyId": true,
+      "geometryHashes": [
+        "3424cb64685df42e0fb558095b05378f73120775e261257f6c73ba28afc133c7",
+        "f3a64c2eaf77551b81cea23135a80ab9b5a2910cabafaff159f084cd6ff756ff"
+      ],
+      "bboxes": [
+        [
+          77.2357199268616,
+          28.573858338195453,
+          77.2359404905651,
+          28.574085373196812
+        ],
+        [
+          77.2298555842942,
+          28.570086219633957,
+          77.23009885437843,
+          28.570275379859417
+        ]
+      ],
+      "maxPairOverlapM2": 0,
+      "classification": "disjoint"
+    },
+    {
+      "propertyid": "52422",
+      "sourceRows": 2,
+      "distinctGeometryCount": 2,
+      "matchingUniquePropertyId": true,
+      "geometryHashes": [
+        "14b640d2272faa508d61240a7e0291bc5a90c58ad4959c63e95ed60fd2de7b45",
+        "042f7441d7979345e1575fda1b3e72290a218b590e24f3d47428c46827cb2478"
+      ],
+      "bboxes": [
+        [
+          77.23546706314566,
+          28.573965177509923,
+          77.23568762680357,
+          28.574192212479854
+        ],
+        [
+          77.2299775225314,
+          28.570309050597942,
+          77.23022079315707,
+          28.570498210928896
+        ]
+      ],
+      "maxPairOverlapM2": 0,
+      "classification": "disjoint"
+    },
+    {
+      "propertyid": "51323",
+      "sourceRows": 2,
+      "distinctGeometryCount": 2,
+      "matchingUniquePropertyId": true,
+      "geometryHashes": [
+        "98dafd8d43868ed33555a3b5b54fa700f0af93b196d4db9425bc07022325f7cf",
+        "71465236e074c4f35dc841658dbbceb5aff8afd0098af9774d4f3a527029982a"
+      ],
+      "bboxes": [
+        [
+          77.23559349403955,
+          28.573911758342426,
+          77.23581405875154,
+          28.57413879244295
+        ],
+        [
+          77.22991655334528,
+          28.570197635134083,
+          77.23015982370023,
+          28.570386795412293
+        ]
+      ],
+      "maxPairOverlapM2": 0,
+      "classification": "disjoint"
+    },
+    {
+      "propertyid": "31176",
+      "sourceRows": 2,
+      "distinctGeometryCount": 2,
+      "matchingUniquePropertyId": true,
+      "geometryHashes": [
+        "9707f662f08600cfa5f0d5d9a0af76acb000c291f7e7b66b8979f28d49374349",
+        "f5cdf28ecb3276e8e4cc5385683b4441a14c95f680468ac81fbfaa13e4f9f963"
+      ],
+      "bboxes": [
+        [
+          77.23605817523165,
+          28.573445226170566,
+          77.23627874038965,
+          28.573672260315725
+        ],
+        [
+          77.23034334052203,
+          28.570977544456895,
+          77.23058661076674,
+          28.57116670598953
+        ]
+      ],
+      "maxPairOverlapM2": 0,
+      "classification": "disjoint"
+    },
+    {
+      "propertyid": "50054",
+      "sourceRows": 2,
+      "distinctGeometryCount": 2,
+      "matchingUniquePropertyId": true,
+      "geometryHashes": [
+        "a4433ad641b5c50f3a2db46a14a9de4d480bbaa9954a3201374b4a6d5e403594",
+        "14b71ca89cb5fc382adf3a5965e2dffe2e7c48de711dd3299e78c8305256a2f0"
+      ],
+      "bboxes": [
+        [
+          77.23618460620528,
+          28.57339180472905,
+          77.23640517137653,
+          28.573618839758193
+        ],
+        [
+          77.23040430965075,
+          28.571088961470778,
+          77.23064062441715,
+          28.571333156863073
+        ]
+      ],
+      "maxPairOverlapM2": 0,
+      "classification": "disjoint"
+    },
+    {
+      "propertyid": "50128",
+      "sourceRows": 2,
+      "distinctGeometryCount": 2,
+      "matchingUniquePropertyId": true,
+      "geometryHashes": [
+        "b29159715184d9133317f5d4f3e6bd693506baef8f0d3f4f9acf2a71884a42a6",
+        "0356126e82c8299be4f5b2553b086739df9d398b022c9d8b8549ed0ac4515baf"
+      ],
+      "bboxes": [
+        [
+          77.23631103600371,
+          28.57333838496343,
+          77.23653160120728,
+          28.573565419106334
+        ],
+        [
+          77.23058932988384,
+          28.570876145061924,
+          77.23085018524074,
+          28.57114734166449
+        ]
+      ],
+      "maxPairOverlapM2": 0,
+      "classification": "disjoint"
+    },
+    {
+      "propertyid": "50133",
+      "sourceRows": 2,
+      "distinctGeometryCount": 2,
+      "matchingUniquePropertyId": true,
+      "geometryHashes": [
+        "41e54ad008a5b0952b9dd78f588a461d615f4f808c396e14f5b18de5bb91ab66",
+        "b8491d63515e1ed909fa514ed1b0a3fce0293b84870a7bcb45ba94144551e02b"
+      ],
+      "bboxes": [
+        [
+          77.23656389727901,
+          28.573231543294735,
+          77.23678446250905,
+          28.57345857748587
+        ],
+        [
+          77.23046594325447,
+          28.570653934950748,
+          77.23070942996067,
+          28.57084370793487
+        ]
+      ],
+      "maxPairOverlapM2": 0,
+      "classification": "disjoint"
+    },
+    {
+      "propertyid": "49012",
+      "sourceRows": 2,
+      "distinctGeometryCount": 2,
+      "matchingUniquePropertyId": true,
+      "geometryHashes": [
+        "58ca1e88ec9a0542f5657e9694673ba220d90f1481922feadb4d93ab950ffe27",
+        "f87f2a03fe9baac6d3a10cd24ab421bd17d99e0bfcab303f75eeb9c1cd63282a"
+      ],
+      "bboxes": [
+        [
+          77.23585140039096,
+          28.573535780773444,
+          77.23607196451249,
+          28.573762814909728
+        ],
+        [
+          77.23028237050663,
+          28.5708661283087,
+          77.23052564046156,
+          28.571055289771785
+        ]
+      ],
+      "maxPairOverlapM2": 0,
+      "classification": "disjoint"
+    },
+    {
+      "propertyid": "51325",
+      "sourceRows": 2,
+      "distinctGeometryCount": 2,
+      "matchingUniquePropertyId": true,
+      "geometryHashes": [
+        "f9dce389279b79b9ae6c2ee4f9b774bccd1c7edd6545dbcba39de41027fbef91",
+        "c48c605d97464831bb9eaaca62973b80f472f39c9110c413af446d7fc0059f24"
+      ],
+      "bboxes": [
+        [
+          77.2357249679995,
+          28.57358920103699,
+          77.23594553214596,
+          28.57381623515756
+        ],
+        [
+          77.23022140062628,
+          28.570754713009404,
+          77.23046467031047,
+          28.57094387353457
+        ]
+      ],
+      "maxPairOverlapM2": 0,
+      "classification": "disjoint"
+    },
+    {
+      "propertyid": "51888",
+      "sourceRows": 2,
+      "distinctGeometryCount": 2,
+      "matchingUniquePropertyId": true,
+      "geometryHashes": [
+        "ba421341f50f992fc7c0a90e45e9dd460840d25313b0ece1a7559fd5dd4b9fa4",
+        "b08c457b13961e228d6e4c1d584826b699bbc8d2b660bdec97263080c970c7e3"
+      ],
+      "bboxes": [
+        [
+          77.2353456742012,
+          28.573749458471447,
+          77.23556623726708,
+          28.573976493429992
+        ],
+        [
+          77.23003849185255,
+          28.570420466025528,
+          77.23028176274896,
+          28.57060962640923
+        ]
+      ],
+      "maxPairOverlapM2": 0,
+      "classification": "disjoint"
+    },
+    {
+      "propertyid": "52211",
+      "sourceRows": 2,
+      "distinctGeometryCount": 2,
+      "matchingUniquePropertyId": true,
+      "geometryHashes": [
+        "1d1541dd7e07444701bb0b9e6471bab0ebf25c4ba3ae1e8956d4fa0233e6e3d5",
+        "c686d8b426f0c1d53a484c33010d6df3468b9092fbb77d9787e283b16e9fab47"
+      ],
+      "bboxes": [
+        [
+          77.23660159352026,
+          28.572352761224455,
+          77.23681792214585,
+          28.57255891265444
+        ],
+        [
+          77.2339081623878,
+          28.57557919387435,
+          77.23415306577846,
+          28.575789548199158
+        ]
+      ],
+      "maxPairOverlapM2": 0,
+      "classification": "disjoint"
+    },
+    {
+      "propertyid": "50490",
+      "sourceRows": 2,
+      "distinctGeometryCount": 2,
+      "matchingUniquePropertyId": true,
+      "geometryHashes": [
+        "c3434633c960dc39dc424002f8200ec935f25bbac8458375b5dfb7480a8708a7",
+        "25b278c19f7ef8ff2dcc50b216068c7ace8b3d173cf0ee46a9613916c5a21e4e"
+      ],
+      "bboxes": [
+        [
+          77.23641752883611,
+          28.57243901653521,
+          77.2366347174973,
+          28.57264555297382
+        ],
+        [
+          77.23421347797806,
+          28.574006758044384,
+          77.23442784799585,
+          28.574221538482814
+        ]
+      ],
+      "maxPairOverlapM2": 0,
+      "classification": "disjoint"
+    },
+    {
+      "propertyid": "52476",
+      "sourceRows": 2,
+      "distinctGeometryCount": 2,
+      "matchingUniquePropertyId": true,
+      "geometryHashes": [
+        "315806fdd04fab6e4d5cd0523210cd3eab3228cf07a4b04b4394294b1a480ba0",
+        "1948e4af6aae6500fbf839d9fca3ee22ce9f28356c97ec90c1bbb1cff87b72ba"
+      ],
+      "bboxes": [
+        [
+          77.23668355653473,
+          28.572501027180326,
+          77.23689988451207,
+          28.572707178616167
+        ],
+        [
+          77.23381676228168,
+          28.57548538355857,
+          77.23406166446594,
+          28.57569573786807
+        ]
+      ],
+      "maxPairOverlapM2": 0,
+      "classification": "disjoint"
+    },
+    {
+      "propertyid": "50142",
+      "sourceRows": 2,
+      "distinctGeometryCount": 2,
+      "matchingUniquePropertyId": true,
+      "geometryHashes": [
+        "2354c5c89fe232999a9b0a8e721613df96c5b31b6e6aacf2327f1c31195f899e",
+        "394418e6f526ac61bc2cfaccafeeb3052c3d9c4e5d757b0f685de5213ac2c8c4"
+      ],
+      "bboxes": [
+        [
+          77.23650091255641,
+          28.57258666456249,
+          77.23671810159057,
+          28.572793201005954
+        ],
+        [
+          77.23408730993,
+          28.574060661528097,
+          77.23430167992852,
+          28.574275442846968
+        ]
+      ],
+      "maxPairOverlapM2": 0,
+      "classification": "disjoint"
+    },
+    {
+      "propertyid": "48912",
+      "sourceRows": 2,
+      "distinctGeometryCount": 2,
+      "matchingUniquePropertyId": true,
+      "geometryHashes": [
+        "7d84a792697cdab093eb3d659bcc97b295e702dfaa20c3758705dd2bc240a2f5",
+        "2ef1d2f646ff1071bfce8eab00aa6103b2380346ca3fe299def09ca3f223b2f0"
+      ],
+      "bboxes": [
+        [
+          77.23676551975245,
+          28.57264929487473,
+          77.23698184605983,
+          28.572855446333286
+        ],
+        [
+          77.23372536133675,
+          28.57539157408968,
+          77.23397026433913,
+          28.575601927448282
+        ]
+      ],
+      "maxPairOverlapM2": 0,
+      "classification": "disjoint"
+    },
+    {
+      "propertyid": "52426",
+      "sourceRows": 2,
+      "distinctGeometryCount": 2,
+      "matchingUniquePropertyId": true,
+      "geometryHashes": [
+        "a6cbea07afcb97d552e502558e706771aeb73a81ece6443bfb3b811562bce0d1",
+        "ab5dd2456a125a7269a6d8e640f270fc1c2b1385815400cfd40e3c25f50cfaa5"
+      ],
+      "bboxes": [
+        [
+          77.23658429754265,
+          28.572734312522506,
+          77.23680148592805,
+          28.572940848085704
+        ],
+        [
+          77.23396114072497,
+          28.57411456580313,
+          77.23417551174504,
+          28.574329347117274
+        ]
+      ],
+      "maxPairOverlapM2": 0,
+      "classification": "disjoint"
+    },
+    {
+      "propertyid": "50623",
+      "sourceRows": 2,
+      "distinctGeometryCount": 2,
+      "matchingUniquePropertyId": true,
+      "geometryHashes": [
+        "0ec0dc0c807e2227121fc112cf7ffe4fc2d5fc7c56df9a08dadae5ce5d213aae",
+        "75c60da2ed06f1d994dcb2106df66dcbeb977db069842fd59224c4bc01ba4073"
+      ],
+      "bboxes": [
+        [
+          77.23684748222809,
+          28.572797560716662,
+          77.2370638099307,
+          28.573003712181073
+        ],
+        [
+          77.2336339615394,
+          28.575297762728166,
+          77.23387886337353,
+          28.5755081178754
+        ]
+      ],
+      "maxPairOverlapM2": 0,
+      "classification": "disjoint"
+    },
+    {
+      "propertyid": "30696",
+      "sourceRows": 2,
+      "distinctGeometryCount": 2,
+      "matchingUniquePropertyId": true,
+      "geometryHashes": [
+        "e86fac01f61d4a4a3f0a9f572c32baca7bc796fd083ebc6ceb89304c6ba57aae",
+        "6a62d3d7703e459c7e655d74fb237b4e7230d7c9e224afcfbe642048b4978e70"
+      ],
+      "bboxes": [
+        [
+          77.23666768173231,
+          28.57288196041524,
+          77.23688487050977,
+          28.573088495983296
+        ],
+        [
+          77.23383497342823,
+          28.57416846998431,
+          77.23404934240459,
+          28.574383251243276
+        ]
+      ],
+      "maxPairOverlapM2": 0,
+      "classification": "disjoint"
+    },
+    {
+      "propertyid": "66350",
+      "sourceRows": 2,
+      "distinctGeometryCount": 2,
+      "matchingUniquePropertyId": true,
+      "geometryHashes": [
+        "8e5ea441e85a0765b411ea36a91ab7238b0f52f1068a2e7a108fa9020f4ab3b3",
+        "0a22566421375b4d56f0a167d70ea438299550176d090e83b4a065c175c429b2"
+      ],
+      "bboxes": [
+        [
+          77.23520445776688,
+          28.571402830126374,
+          77.23542473682761,
+          28.57162980610805
+        ],
+        [
+          77.23572032671487,
+          28.574433305815315,
+          77.23593416749397,
+          28.574647938857687
+        ]
+      ],
+      "maxPairOverlapM2": 0,
+      "classification": "disjoint"
+    },
+    {
+      "propertyid": "51332",
+      "sourceRows": 2,
+      "distinctGeometryCount": 2,
+      "matchingUniquePropertyId": true,
+      "geometryHashes": [
+        "d5e971c768bc739c5f65dadd1f55a8ea64a285b4b6165adfd1164d88752efa87",
+        "6d10b6594ca1662233d6689b66a2b42adfe548538a08dc42443405c6b4421533"
+      ],
+      "bboxes": [
+        [
+          77.2363258378348,
+          28.571852777159634,
+          77.23654692186958,
+          28.572060902962686
+        ],
+        [
+          77.2343532911543,
+          28.57604761993832,
+          77.23459800577545,
+          28.57625835630353
+        ]
+      ],
+      "maxPairOverlapM2": 0,
+      "classification": "disjoint"
+    },
+    {
+      "propertyid": "20898",
+      "sourceRows": 2,
+      "distinctGeometryCount": 2,
+      "matchingUniquePropertyId": true,
+      "geometryHashes": [
+        "aabc2697f907dab4092a65ca40a52643a0a1bf5303c91c03e32724498acb922f",
+        "82f7c2e9bd47463ec9aca51b03824d688dae71b97a4f13406987a7051a21dbff"
+      ],
+      "bboxes": [
+        [
+          77.23612397244753,
+          28.571938287594637,
+          77.23634762912529,
+          28.572147726354615
+        ],
+        [
+          77.23459198133006,
+          28.57384504422337,
+          77.23480635132937,
+          28.574059825628368
+        ]
+      ],
+      "maxPairOverlapM2": 0,
+      "classification": "disjoint"
+    },
+    {
+      "propertyid": "30271",
+      "sourceRows": 2,
+      "distinctGeometryCount": 2,
+      "matchingUniquePropertyId": true,
+      "geometryHashes": [
+        "bf5a58114de27d11fdbb32e85d9d04e26527297c899a5375e916678acf541f41",
+        "0d71d6f1589b5c2d9a5d1f8fcd2e6d1cf8845caac40fecea7daa5c3c97841705"
+      ],
+      "bboxes": [
+        [
+          77.23620890050243,
+          28.57208524900761,
+          77.23643255753859,
+          28.57229468688993
+        ],
+        [
+          77.23446581266587,
+          28.573898948941025,
+          77.23468018368675,
+          28.574113730341345
+        ]
+      ],
+      "maxPairOverlapM2": 0,
+      "classification": "disjoint"
+    },
+    {
+      "propertyid": "51588",
+      "sourceRows": 2,
+      "distinctGeometryCount": 2,
+      "matchingUniquePropertyId": true,
+      "geometryHashes": [
+        "bd35158e8e20b3420aa027fdd2f1c0f5001a0b4e1020fe571ed4fae9f53069e4",
+        "d1b5d4b7a7425cba85386d6b34ba65724b7c7cd6e5dee4d006a58b07dc317853"
+      ],
+      "bboxes": [
+        [
+          77.23648694944679,
+          28.57215050890095,
+          77.23670803325707,
+          28.572358636579345
+        ],
+        [
+          77.23399956367965,
+          28.575673004101418,
+          77.23427493445011,
+          28.57591462852876
+        ]
+      ],
+      "maxPairOverlapM2": 0,
+      "classification": "disjoint"
+    },
+    {
+      "propertyid": "50406",
+      "sourceRows": 2,
+      "distinctGeometryCount": 2,
+      "matchingUniquePropertyId": true,
+      "geometryHashes": [
+        "f728014e91e31a08465417e5c09524324dbffa8061ff8a943711796104dc4692",
+        "e24f51e56b57a13b913b342d1671f39ce379725e11b27e50afe0029fd82e614b"
+      ],
+      "bboxes": [
+        [
+          77.23629382878539,
+          28.572232209449282,
+          77.23651748619903,
+          28.5724416473559
+        ],
+        [
+          77.23433964590998,
+          28.573952853564876,
+          77.23455401488717,
+          28.574167634909976
+        ]
+      ],
+      "maxPairOverlapM2": 0,
+      "classification": "disjoint"
+    },
+    {
+      "propertyid": "78460",
+      "sourceRows": 2,
+      "distinctGeometryCount": 2,
+      "matchingUniquePropertyId": true,
+      "geometryHashes": [
+        "99b60240bfb1b3f91a5034782576f4bbd01edfac76e88e414e01dfd496fbba70",
+        "ac85dd450892379381834e9ca6079bbf4ad1baa9aef4a6d16fd006e59fc27cc0"
+      ],
+      "bboxes": [
+        [
+          77.2434004434706,
+          28.559858384151145,
+          77.24359276510093,
+          28.559946575232516
+        ],
+        [
+          77.24348543411888,
+          28.57803169267759,
+          77.24367359066812,
+          28.57807764028016
+        ]
+      ],
+      "maxPairOverlapM2": 0,
+      "classification": "disjoint"
+    },
+    {
+      "propertyid": "44522",
+      "sourceRows": 2,
+      "distinctGeometryCount": 2,
+      "matchingUniquePropertyId": true,
+      "geometryHashes": [
+        "0b23c20390c3be0ef2eb78fd2f670cad598dbd579b0105b90a51790dc671a789",
+        "c34f7e75928f64397bc12dafddb7ac5ee3741b6168ea2410548c4e9bca4c366f"
+      ],
+      "bboxes": [
+        [
+          77.20980270532817,
+          28.535205393655904,
+          77.21007034298209,
+          28.53543487811654
+        ],
+        [
+          77.21229844964559,
+          28.540142879771675,
+          77.21248757809937,
+          28.54024280611715
+        ]
+      ],
+      "maxPairOverlapM2": 0,
+      "classification": "disjoint"
+    },
+    {
+      "propertyid": "37849",
+      "sourceRows": 2,
+      "distinctGeometryCount": 2,
+      "matchingUniquePropertyId": true,
+      "geometryHashes": [
+        "557cdf2ca51a4a14a0965c21c49333b75a666729db4c2d3b3a6f0aadf67d9d99",
+        "cdc3dfbdc2987178866e726294d14e5d03698ed0d1ce536e0e7c83f5f00962d7"
+      ],
+      "bboxes": [
+        [
+          77.24661503550772,
+          28.561989145619794,
+          77.2468076131711,
+          28.562072249348958
+        ],
+        [
+          77.24531607371736,
+          28.56325537941712,
+          77.24550822165685,
+          28.563328182110517
+        ]
+      ],
+      "maxPairOverlapM2": 0,
+      "classification": "disjoint"
+    },
+    {
+      "propertyid": "37852",
+      "sourceRows": 2,
+      "distinctGeometryCount": 2,
+      "matchingUniquePropertyId": true,
+      "geometryHashes": [
+        "9a517cec493d9e6f51affe751fdfabdd0a80f56583b1b961262a6278bac03b22",
+        "b788d573dd58ea49964e02808221bd8676d7ef6ca2b041c1fefb9c103eec2492"
+      ],
+      "bboxes": [
+        [
+          77.24626902105372,
+          28.56139763240175,
+          77.24636538414381,
+          28.561566626865332
+        ],
+        [
+          77.24580146165036,
+          28.56318586555448,
+          77.24585792613631,
+          28.563352783120227
+        ]
+      ],
+      "maxPairOverlapM2": 0,
+      "classification": "disjoint"
+    },
+    {
+      "propertyid": "51933",
+      "sourceRows": 2,
+      "distinctGeometryCount": 2,
+      "matchingUniquePropertyId": true,
+      "geometryHashes": [
+        "013fb250fbbc4990e2fceb0650b404bce114f4e40ff5172e198b86973cb3973e",
+        "6ebad0fd363205de09dd6f59bff5bb903ec84b05998c42c9801fb963cb430126"
+      ],
+      "bboxes": [
+        [
+          77.24454493879794,
+          28.560420496315768,
+          77.24473745428519,
+          28.560505963088435
+        ],
+        [
+          77.13890353228223,
+          28.647689437485592,
+          77.13909622944807,
+          28.64777397187105
+        ]
+      ],
+      "maxPairOverlapM2": 0,
+      "classification": "disjoint"
+    },
+    {
+      "propertyid": "51769",
+      "sourceRows": 2,
+      "distinctGeometryCount": 2,
+      "matchingUniquePropertyId": true,
+      "geometryHashes": [
+        "704e5309dfaafcb04d2ba9c124a62c44dbbe8da46341d58d1b75351ca27711d3",
+        "271731e799edb468ea8c70d888782ecdc3614420e0cf6d022b3743d417dca0a8"
+      ],
+      "bboxes": [
+        [
+          77.23171148580072,
+          28.577514785535133,
+          77.23193144167927,
+          28.57760128769872
+        ],
+        [
+          77.22955169987539,
+          28.573376587215968,
+          77.22977464775235,
+          28.573523970287184
+        ]
+      ],
+      "maxPairOverlapM2": 0,
+      "classification": "disjoint"
+    },
+    {
+      "propertyid": "30012",
+      "sourceRows": 2,
+      "distinctGeometryCount": 2,
+      "matchingUniquePropertyId": true,
+      "geometryHashes": [
+        "66e391b4a2eb0825c5b27a66ec94823ce349d9bb506ab229270f9715afc45110",
+        "76177fd4e0119f59dcad07061171f38c5c6059e8e481c48edec5119f43b00f24"
+      ],
+      "bboxes": [
+        [
+          77.2299023652126,
+          28.57668074639349,
+          77.23010662158022,
+          28.576806770072714
+        ],
+        [
+          77.24716282116661,
+          28.569520586733816,
+          77.2473406205152,
+          28.569652191579756
+        ]
+      ],
+      "maxPairOverlapM2": 0,
+      "classification": "disjoint"
+    },
+    {
+      "propertyid": "50067",
+      "sourceRows": 2,
+      "distinctGeometryCount": 2,
+      "matchingUniquePropertyId": true,
+      "geometryHashes": [
+        "6480050c727915ff6ba21fc3d18e6dd927f930d115bb383fb14f0430cfae0e7a",
+        "70f73d883a86f603c7cd8259ae54c50789c71eb6b45e6019fb02f0c821e57ea2"
+      ],
+      "bboxes": [
+        [
+          77.23092969316346,
+          28.57765442309476,
+          77.23102595522754,
+          28.577834284341805
+        ],
+        [
+          77.23102313221845,
+          28.5776555729989,
+          77.2311193941216,
+          28.57783543417452
+        ]
+      ],
+      "maxPairOverlapM2": 0,
+      "classification": "disjoint"
+    },
+    {
+      "propertyid": "63944",
+      "sourceRows": 2,
+      "distinctGeometryCount": 2,
+      "matchingUniquePropertyId": true,
+      "geometryHashes": [
+        "df1d96b07b767ce75c8fdacdc42ae46c12b6f6a8accf1d6f9a3b0d2396282ccc",
+        "0aa31bfa5dab901c70fe62054e16e1f697f8bc2c1baf7dd5000606c852ddb045"
+      ],
+      "bboxes": [
+        [
+          77.24595317939722,
+          28.54182989827868,
+          77.24615852808365,
+          28.54198144609205
+        ],
+        [
+          77.24616529302546,
+          28.541724815431852,
+          77.24636871998369,
+          28.5418893119512
+        ]
+      ],
+      "maxPairOverlapM2": 0,
+      "classification": "disjoint"
+    },
+    {
+      "propertyid": "24374",
+      "sourceRows": 2,
+      "distinctGeometryCount": 2,
+      "matchingUniquePropertyId": true,
+      "geometryHashes": [
+        "89f36963784defdd0b73943e8950fb96d06e54f3118ebf6c6e7624a0ef1efbbc",
+        "b08bd57686152c59464bec1f293ece333b927a8e19c21c292a2b79105a4397f9"
+      ],
+      "bboxes": [
+        [
+          77.24375398061031,
+          28.54064124335902,
+          77.24386760737278,
+          28.54082491867639
+        ],
+        [
+          77.10228600582799,
+          28.636568395325224,
+          77.10233569591648,
+          28.6367340138643
+        ]
+      ],
+      "maxPairOverlapM2": 0,
+      "classification": "disjoint"
+    },
+    {
+      "propertyid": "38042",
+      "sourceRows": 2,
+      "distinctGeometryCount": 2,
+      "matchingUniquePropertyId": true,
+      "geometryHashes": [
+        "83ee41a6a833f23c4a9aa0ba72825e9d6c1feb019f55e5f605f22924c9252146",
+        "7432b7c43e0dc73d6a58a162eebf9566863c717e39f922d4cf30cd45cc623dc4"
+      ],
+      "bboxes": [
+        [
+          77.25090527409708,
+          28.537337482127608,
+          77.25113732054953,
+          28.53745503559115
+        ],
+        [
+          77.26029942658765,
+          28.53619575198592,
+          77.26040278828486,
+          28.53636538122813
+        ]
+      ],
+      "maxPairOverlapM2": 0,
+      "classification": "disjoint"
+    },
+    {
+      "propertyid": "26599",
+      "sourceRows": 2,
+      "distinctGeometryCount": 2,
+      "matchingUniquePropertyId": true,
+      "geometryHashes": [
+        "af6f414b867c1805f7a4e4b6fa01f0b90ffa525ab5fd18e904b92477891b449c",
+        "14a98c6c28ef8e69e77157c2300e5b1ab62e875592eae850c0f86ecdcae476ca"
+      ],
+      "bboxes": [
+        [
+          77.2549917438594,
+          28.538134183899423,
+          77.2551429582494,
+          28.538311163119758
+        ],
+        [
+          77.25479184602918,
+          28.5382238119134,
+          77.25494305930843,
+          28.538400792061022
+        ]
+      ],
+      "maxPairOverlapM2": 0,
+      "classification": "disjoint"
+    },
+    {
+      "propertyid": "49755",
+      "sourceRows": 2,
+      "distinctGeometryCount": 2,
+      "matchingUniquePropertyId": true,
+      "geometryHashes": [
+        "abc4b7e3daacdbbaf47bf38e07e8354214eb8f82e1753dec1954fa0fe8f889a7",
+        "6256b9418a932145c08aa0a2f21160a261f6d352c068a092f7900153b8a4c850"
+      ],
+      "bboxes": [
+        [
+          77.25418007514277,
+          28.538264583346507,
+          77.2544174034564,
+          28.538434094044582
+        ],
+        [
+          77.2541134422327,
+          28.53828699030921,
+          77.25426465492937,
+          28.538463969706488
+        ]
+      ],
+      "maxPairOverlapM2": 0,
+      "classification": "disjoint"
+    },
+    {
+      "propertyid": "34490",
+      "sourceRows": 2,
+      "distinctGeometryCount": 2,
+      "matchingUniquePropertyId": true,
+      "geometryHashes": [
+        "050954e0d9b8bd4a0dd7d464a380e71b22fc37eadeb026f645d1b53f348a1c03",
+        "2d4d36d1a0f8709618ac2bd594ee9338683ee83ac96c600e5db9370e9dace4c6"
+      ],
+      "bboxes": [
+        [
+          77.25279424215137,
+          28.536053415415772,
+          77.2530639855978,
+          28.53620272655564
+        ],
+        [
+          77.25029948702273,
+          28.536226646994553,
+          77.25045607962893,
+          28.536433927262223
+        ]
+      ],
+      "maxPairOverlapM2": 0,
+      "classification": "disjoint"
+    },
+    {
+      "propertyid": "25505",
+      "sourceRows": 2,
+      "distinctGeometryCount": 2,
+      "matchingUniquePropertyId": true,
+      "geometryHashes": [
+        "d0b57b4029bd754caa301df68723a1fbf7822501b51b113f657f6ea08d76c5ef",
+        "227ea11c3965642c2aecc7d7e7b8eb645e1fdc8d439a84b00abccd19359436c9"
+      ],
+      "bboxes": [
+        [
+          77.20576820683146,
+          28.531714324698715,
+          77.2059956188715,
+          28.53179298590146
+        ],
+        [
+          77.2055383201079,
+          28.531411030785208,
+          77.20563210119305,
+          28.531613275351425
+        ]
+      ],
+      "maxPairOverlapM2": 0,
+      "classification": "disjoint"
+    },
+    {
+      "propertyid": "25501",
+      "sourceRows": 2,
+      "distinctGeometryCount": 2,
+      "matchingUniquePropertyId": true,
+      "geometryHashes": [
+        "a4c4386bedd4bfc2616116fc9b987bd4ddaa180fe539f1e20c14edd347950cd6",
+        "1cdbcfe3c1f4816143e3caf6f2b018354819d92dce7b4129e00dc590d3d958b5"
+      ],
+      "bboxes": [
+        [
+          77.20576469957417,
+          28.53178299839462,
+          77.2059921107213,
+          28.531861660479983
+        ],
+        [
+          77.20561702737945,
+          28.531415739510827,
+          77.20570665603013,
+          28.531617741329377
+        ]
+      ],
+      "maxPairOverlapM2": 0,
+      "classification": "disjoint"
+    },
+    {
+      "propertyid": "52661",
+      "sourceRows": 2,
+      "distinctGeometryCount": 2,
+      "matchingUniquePropertyId": true,
+      "geometryHashes": [
+        "c17cd894748bf3d5571187dfea57895690e3d04e647ba9022582d7b0dddf1265",
+        "d0ada2de94fc59cc1b986ae2ee6c1edcd559cdd63d67d4f2464114c2e308e670"
+      ],
+      "bboxes": [
+        [
+          77.20576119127531,
+          28.531851672975446,
+          77.20598860360987,
+          28.53193033417264
+        ],
+        [
+          77.20569158237505,
+          28.531420204586254,
+          77.20578120986806,
+          28.53162220728261
+        ]
+      ],
+      "maxPairOverlapM2": 0,
+      "classification": "disjoint"
+    },
+    {
+      "propertyid": "52690",
+      "sourceRows": 2,
+      "distinctGeometryCount": 2,
+      "matchingUniquePropertyId": true,
+      "geometryHashes": [
+        "cbb1f99b76dc5e0eb1ef9e4fd7ab371c5c90e10992e5c8022a252bf0ea08e8dc",
+        "3cdad9008584a485a1b502a8acda97e5b7d5fc68867ee4baffab9ce926351215"
+      ],
+      "bboxes": [
+        [
+          77.20575768399641,
+          28.531920346670383,
+          77.20598509545688,
+          28.53199900784819
+        ],
+        [
+          77.20576613635271,
+          28.53142467053896,
+          77.20585576369061,
+          28.531626672292507
+        ]
+      ],
+      "maxPairOverlapM2": 0,
+      "classification": "disjoint"
+    },
+    {
+      "propertyid": "52696",
+      "sourceRows": 2,
+      "distinctGeometryCount": 2,
+      "matchingUniquePropertyId": true,
+      "geometryHashes": [
+        "cd0be95afeea84f318dd44f8b9258a5817844fd54fcb5ca389f7c076b37abd3b",
+        "775b93cc9e45ab6754765fd3bc5d292693254d1b8c4a6c197a44e00dda0cca18"
+      ],
+      "bboxes": [
+        [
+          77.20574716012733,
+          28.532126368621128,
+          77.20597457305095,
+          28.532205029807177
+        ],
+        [
+          77.20598979930865,
+          28.5314380663286,
+          77.20607942623764,
+          28.531640068861737
+        ]
+      ],
+      "maxPairOverlapM2": 0,
+      "classification": "disjoint"
+    },
+    {
+      "propertyid": "52701",
+      "sourceRows": 2,
+      "distinctGeometryCount": 2,
+      "matchingUniquePropertyId": true,
+      "geometryHashes": [
+        "e8a3ff6a0cfd15529c45ec19055e24178a07c0478df5a8f83ed25c16397742b0",
+        "a66fbf63da06c4ed6d263f2dff168017641ae9c603427980a71fe4c1e763cb53"
+      ],
+      "bboxes": [
+        [
+          77.20574365284281,
+          28.532195042314132,
+          77.20597106489234,
+          28.5322737034808
+        ],
+        [
+          77.20606435328115,
+          28.53144253211601,
+          77.2061539800926,
+          28.531644534608372
+        ]
+      ],
+      "maxPairOverlapM2": 0,
+      "classification": "disjoint"
+    },
+    {
+      "propertyid": "52715",
+      "sourceRows": 2,
+      "distinctGeometryCount": 2,
+      "matchingUniquePropertyId": true,
+      "geometryHashes": [
+        "8e15dbb14403f279d5c65a5925fd5e64ab78de49e3afd2ceee5d43553120c7d5",
+        "9a0e8812d1ed93875e08f01e26908cc0d7d9c98b1e38ef09496e4025a1bb61ac"
+      ],
+      "bboxes": [
+        [
+          77.20649851285211,
+          28.53079812995304,
+          77.20658587705596,
+          28.530997580657388
+        ],
+        [
+          77.20648898151076,
+          28.530995967339305,
+          77.2065763458701,
+          28.531195418053617
+        ]
+      ],
+      "maxPairOverlapM2": 0,
+      "classification": "disjoint"
+    },
+    {
+      "propertyid": "22829",
+      "sourceRows": 2,
+      "distinctGeometryCount": 2,
+      "matchingUniquePropertyId": true,
+      "geometryHashes": [
+        "08d246c6c3fe4099ff2bce7015939b32959f875a7932dc6b97460b102d18fdff",
+        "fc066d9db2e8bd7645e3abeda772d2368da855611e84b188a900d8df96d53892"
+      ],
+      "bboxes": [
+        [
+          77.20518421766182,
+          28.532052061280826,
+          77.20540993492084,
+          28.532127118820178
+        ],
+        [
+          77.20726409195493,
+          28.535419645542557,
+          77.20745316081486,
+          28.535619919306274
+        ]
+      ],
+      "maxPairOverlapM2": 0,
+      "classification": "disjoint"
+    },
+    {
+      "propertyid": "26580",
+      "sourceRows": 2,
+      "distinctGeometryCount": 2,
+      "matchingUniquePropertyId": true,
+      "geometryHashes": [
+        "4631fd9d840e6f4c7784b58922ef23cbdee70e4b81fd762c5de827422241c316",
+        "3f82be7e7411d232606397b81e5d92a359baed195eb0a969119584ec6f1ca7d9"
+      ],
+      "bboxes": [
+        [
+          77.2062134622953,
+          28.53145146355033,
+          77.20630309087683,
+          28.53165346502588
+        ],
+        [
+          77.20628801832072,
+          28.531455929180613,
+          77.20638075255438,
+          28.531658117444103
+        ]
+      ],
+      "maxPairOverlapM2": 0,
+      "classification": "disjoint"
+    },
+    {
+      "propertyid": "28274",
+      "sourceRows": 2,
+      "distinctGeometryCount": 2,
+      "matchingUniquePropertyId": true,
+      "geometryHashes": [
+        "f65a4c664ff470939b5bd8f2fcca87f1cfe2af056c593dac65ef1096081e74e5",
+        "c7ee1b7519a60b8e3434c898cc8a8b85667baa0df97ac017c970e8cac4958623"
+      ],
+      "bboxes": [
+        [
+          77.25086563244739,
+          28.534358118884946,
+          77.25106512905926,
+          28.534462859785435
+        ],
+        [
+          77.25048001213322,
+          28.534851875019406,
+          77.25067950979367,
+          28.53495661635371
+        ]
+      ],
+      "maxPairOverlapM2": 0,
+      "classification": "disjoint"
+    },
+    {
+      "propertyid": "64577",
+      "sourceRows": 2,
+      "distinctGeometryCount": 2,
+      "matchingUniquePropertyId": true,
+      "geometryHashes": [
+        "be0954a557ce15794e61bfe6fb167c197bf5ae54b7f3679618e6119776686864",
+        "bf67f44ce780ec134d45c7f479b299973750d275cc1e0d92ae99aa13b012b8dc"
+      ],
+      "bboxes": [
+        [
+          77.25005326919957,
+          28.53445812224035,
+          77.25024253913675,
+          28.534537268035837
+        ],
+        [
+          77.2138031195463,
+          28.588286626096526,
+          77.21409527521931,
+          28.588418110422097
+        ]
+      ],
+      "maxPairOverlapM2": 0,
+      "classification": "disjoint"
+    },
+    {
+      "propertyid": "22987",
+      "sourceRows": 2,
+      "distinctGeometryCount": 2,
+      "matchingUniquePropertyId": true,
+      "geometryHashes": [
+        "09d71822ac70ca0f8737934456210af0a8eaa25e31a023e82ac4cdfdfbc3a757",
+        "c36f27dbc55d8868ef9bad12a4a3e7ffd6751c6f9faf59ebce7d09df7d1e60c7"
+      ],
+      "bboxes": [
+        [
+          77.21203743775884,
+          28.53834388036197,
+          77.21225708927396,
+          28.53852637810411
+        ],
+        [
+          77.24285570746419,
+          28.572389563597593,
+          77.24304472776221,
+          28.572439124352634
+        ]
+      ],
+      "maxPairOverlapM2": 0,
+      "classification": "disjoint"
+    },
+    {
+      "propertyid": "78135",
+      "sourceRows": 2,
+      "distinctGeometryCount": 2,
+      "matchingUniquePropertyId": true,
+      "geometryHashes": [
+        "6d03587ffc1786b4387e03054d9a2657cdecf50ca27edca1710ce0bbbe6e9108",
+        "54508a5a8f8a33c3e7b5238c9cdda8fe7c8b7a88562f8d2ebc4fc654a188470e"
+      ],
+      "bboxes": [
+        [
+          77.2073454810291,
+          28.53510899935693,
+          77.20756396086003,
+          28.535288451219184
+        ],
+        [
+          77.24396633790671,
+          28.5741912035676,
+          77.24401316997597,
+          28.574356644192896
+        ]
+      ],
+      "maxPairOverlapM2": 0,
+      "classification": "disjoint"
+    },
+    {
+      "propertyid": "79120",
+      "sourceRows": 2,
+      "distinctGeometryCount": 2,
+      "matchingUniquePropertyId": true,
+      "geometryHashes": [
+        "c566b6199b7331aa0dbb4f0ab725969affb9125d908a9c56e945550264aaa449",
+        "428aafa3da49ec8f3c35d02ec9f0bbcd1a344f1cb7ad4c14c9840765a303400c"
+      ],
+      "bboxes": [
+        [
+          77.20768923311303,
+          28.535457195076788,
+          77.2079077143856,
+          28.53563664811029
+        ],
+        [
+          77.20773834251237,
+          28.535506938258813,
+          77.20795682280207,
+          28.535686391333158
+        ]
+      ],
+      "maxPairOverlapM2": 0,
+      "classification": "disjoint"
+    },
+    {
+      "propertyid": "79181",
+      "sourceRows": 2,
+      "distinctGeometryCount": 2,
+      "matchingUniquePropertyId": true,
+      "geometryHashes": [
+        "fc97f79cf317321f36f05cdcad5a9892cbe5ef67538c78b1aba55733bdda53e7",
+        "1c49148270b836e66a1c647288fd9fdd3f0b277cf9201646a37cdd6768b757d2"
+      ],
+      "bboxes": [
+        [
+          77.20660277554566,
+          28.535859101531614,
+          77.20680550599303,
+          28.535975003663754
+        ],
+        [
+          77.20662421324718,
+          28.535935149229402,
+          77.20682694384719,
+          28.536051051390654
+        ]
+      ],
+      "maxPairOverlapM2": 0,
+      "classification": "disjoint"
+    },
+    {
+      "propertyid": "52680",
+      "sourceRows": 2,
+      "distinctGeometryCount": 2,
+      "matchingUniquePropertyId": true,
+      "geometryHashes": [
+        "cb1979389e7f6e2dbf54c619d04a4886cdf8115de99b029ec0dd83cde45aa51c",
+        "ef7df414a50435ead52fd2ada69051f9661b4acd6baa5064a57056099e648960"
+      ],
+      "bboxes": [
+        [
+          77.20549658554235,
+          28.53241948823927,
+          77.20558863809717,
+          28.53262570921658
+        ],
+        [
+          77.2055673537188,
+          28.532452916241354,
+          77.2056762878383,
+          28.53265647035142
+        ]
+      ],
+      "maxPairOverlapM2": 0,
+      "classification": "disjoint"
+    },
+    {
+      "propertyid": "65151",
+      "sourceRows": 2,
+      "distinctGeometryCount": 2,
+      "matchingUniquePropertyId": true,
+      "geometryHashes": [
+        "4e4c1e3f50d267861dce50c657fdf5b7724175110286fb97c40bbfd512e2e345",
+        "5c62783596528577dec753c0c90cd8ccca070df686c65cf0d43d3186c7a1756c"
+      ],
+      "bboxes": [
+        [
+          77.24569658807717,
+          28.53791048413014,
+          77.24588390062145,
+          28.538071683250436
+        ],
+        [
+          77.1820449487768,
+          28.59539851916204,
+          77.18338918692012,
+          28.596456912781914
+        ]
+      ],
+      "maxPairOverlapM2": 0,
+      "classification": "disjoint"
+    },
+    {
+      "propertyid": "66497",
+      "sourceRows": 2,
+      "distinctGeometryCount": 2,
+      "matchingUniquePropertyId": true,
+      "geometryHashes": [
+        "e44eca8dd70241535fccdd8a5c548edd1a8877e40f745f14b2a9a2ac66e2ae97",
+        "e0003a6a7506fbd27b6583bb9d566affcfdb742c30ac9b82a2e896ce8615a4c4"
+      ],
+      "bboxes": [
+        [
+          77.2285182499472,
+          28.572328385891957,
+          77.22873194225838,
+          28.57254297889837
+        ],
+        [
+          77.23089096174246,
+          28.566139238269738,
+          77.23112760250913,
+          28.566472482377453
+        ]
+      ],
+      "maxPairOverlapM2": 0,
+      "classification": "disjoint"
+    },
+    {
+      "propertyid": "49725",
+      "sourceRows": 2,
+      "distinctGeometryCount": 2,
+      "matchingUniquePropertyId": true,
+      "geometryHashes": [
+        "e6df43411bcb5636f52b82a4a02de9508d42859686d0921921c05d3beb4292bc",
+        "1c2ed8c74671c7b4587766c4c342229579a14188bbaa86adb1f9636195cb88db"
+      ],
+      "bboxes": [
+        [
+          77.23019928674705,
+          28.572079048920163,
+          77.23046587382615,
+          28.572321515204777
+        ],
+        [
+          77.2295930470669,
+          28.5727764685943,
+          77.22986469486573,
+          28.57307711027392
+        ]
+      ],
+      "maxPairOverlapM2": 0,
+      "classification": "disjoint"
+    },
+    {
+      "propertyid": "65757",
+      "sourceRows": 2,
+      "distinctGeometryCount": 2,
+      "matchingUniquePropertyId": true,
+      "geometryHashes": [
+        "52a50fe5b70a2a2467a8a170c74f308c436d81c089d7bc61a11c0c23f2f35857",
+        "1f05e69f0aa6b86130f92b529f49a7e0812bc3ebc724e20a3b947b33c076a5f7"
+      ],
+      "bboxes": [
+        [
+          77.22954882039893,
+          28.571388339512254,
+          77.22979397453331,
+          28.57159809945516
+        ],
+        [
+          77.16775149676037,
+          28.65365238211268,
+          77.16790271834441,
+          28.653816829153275
+        ]
+      ],
+      "maxPairOverlapM2": 0,
+      "classification": "disjoint"
+    },
+    {
+      "propertyid": "30207",
+      "sourceRows": 2,
+      "distinctGeometryCount": 2,
+      "matchingUniquePropertyId": true,
+      "geometryHashes": [
+        "3025140503c5805aa1cea7e30725943c8ebc0c845935524992ffcd3aafc42ed6",
+        "5a05613c26a88e3f15ab71af9e4e1ab21a44c4be18e115cb02c280ddfcd599db"
+      ],
+      "bboxes": [
+        [
+          77.22739091115825,
+          28.569695303364526,
+          77.22760520750018,
+          28.569910064739485
+        ],
+        [
+          77.22726471544136,
+          28.5697491494773,
+          77.22747901278542,
+          28.569963912617713
+        ]
+      ],
+      "maxPairOverlapM2": 0,
+      "classification": "disjoint"
+    },
+    {
+      "propertyid": "21530",
+      "sourceRows": 3,
+      "distinctGeometryCount": 3,
+      "matchingUniquePropertyId": true,
+      "geometryHashes": [
+        "9bbf379db63232f478199d30ad18fc641dd2b173b1b1a862c9d2d4c309ea1fe2",
+        "35b058c9bd37a83f3c7d006714d87b91396399f11fb92226a34efd052f94b488",
+        "2918344a1c165f2598b732552afebb976eae5d00d2c02800bd3d7f286f9aa50b"
+      ],
+      "bboxes": [
+        [
+          77.17631196321561,
+          28.555922263413812,
+          77.17666094798872,
+          28.556255832322233
+        ],
+        [
+          77.17611951633762,
+          28.555972615568226,
+          77.1764712727671,
+          28.556339004298007
+        ],
+        [
+          77.17628159623001,
+          28.556172661014806,
+          77.17674406616132,
+          28.55648676904669
+        ]
+      ],
+      "maxPairOverlapM2": 0,
+      "classification": "disjoint"
+    },
+    {
+      "propertyid": "67236",
+      "sourceRows": 2,
+      "distinctGeometryCount": 2,
+      "matchingUniquePropertyId": true,
+      "geometryHashes": [
+        "1695e8cda6190cb9f0ea5628ad676bc4cc65ca720556975ebcf78b16fa362129",
+        "34fae9766468a276fe0ce9eb27071632794d82d42de9f983b43e3bd5221fcb60"
+      ],
+      "bboxes": [
+        [
+          77.24112763665475,
+          28.57832358171738,
+          77.24131538531523,
+          28.578368416709914
+        ],
+        [
+          77.17519546076775,
+          28.644140559425797,
+          77.17537859130988,
+          28.64432321565242
+        ]
+      ],
+      "maxPairOverlapM2": 0,
+      "classification": "disjoint"
+    },
+    {
+      "propertyid": "22620",
+      "sourceRows": 2,
+      "distinctGeometryCount": 2,
+      "matchingUniquePropertyId": true,
+      "geometryHashes": [
+        "f043fe84eb990c538c15cd34ff56b075d5e0a79723909d339c5665846045684a",
+        "1cdd11e728775e5c4434391a6e4fa1e6687cadd63fb07daf7e2e58c68630f2a0"
+      ],
+      "bboxes": [
+        [
+          77.23932465048982,
+          28.57443669372043,
+          77.2395130354119,
+          28.57452299468288
+        ],
+        [
+          77.24106167944032,
+          28.574668522048054,
+          77.2411119841856,
+          28.574833849730975
+        ]
+      ],
+      "maxPairOverlapM2": 0,
+      "classification": "disjoint"
+    },
+    {
+      "propertyid": "32971",
+      "sourceRows": 2,
+      "distinctGeometryCount": 2,
+      "matchingUniquePropertyId": true,
+      "geometryHashes": [
+        "48ab96a1ccc95eed02a1a08fbb1ddb62865b42c27f2e8deeac97870c391125bf",
+        "1cda08edfb41802bd8494ef4af0dd8b60bac468e61f4517d6ffd09a57ff4760b"
+      ],
+      "bboxes": [
+        [
+          77.24327659556201,
+          28.56296433278447,
+          77.24346753334514,
+          28.563023868826416
+        ],
+        [
+          77.11273501444393,
+          28.635070847336873,
+          77.11293199129909,
+          28.635146358021967
+        ]
+      ],
+      "maxPairOverlapM2": 0,
+      "classification": "disjoint"
+    },
+    {
+      "propertyid": "68655",
+      "sourceRows": 2,
+      "distinctGeometryCount": 2,
+      "matchingUniquePropertyId": true,
+      "geometryHashes": [
+        "31b748335a08edbac4d6a5a9f4f031ac64d63db501bc1b6ecb8210a1187f26e1",
+        "e88e41fde14bd1e6e1e82e4de2fb99406d6a52cf88a770737f299bfe22ec8521"
+      ],
+      "bboxes": [
+        [
+          77.24290913114102,
+          28.56133197621107,
+          77.24300762818791,
+          28.56150122757261
+        ],
+        [
+          77.1825231253869,
+          28.63660510215205,
+          77.18262869276543,
+          28.636748409176516
+        ]
+      ],
+      "maxPairOverlapM2": 0,
+      "classification": "disjoint"
+    },
+    {
+      "propertyid": "77754",
+      "sourceRows": 2,
+      "distinctGeometryCount": 2,
+      "matchingUniquePropertyId": true,
+      "geometryHashes": [
+        "42de2a53332732b8b9a6b91963099d213e513e98de58a855618f616f9540d8b0",
+        "cca8b9d3f4cb415f53239330da479cd724cd53281f9444c24b4f825ea02207c3"
+      ],
+      "bboxes": [
+        [
+          77.20694302056901,
+          28.529416323151217,
+          77.20707474075765,
+          28.52962110647414
+        ],
+        [
+          77.20701920618437,
+          28.529431050594894,
+          77.20715082712609,
+          28.529635492104994
+        ]
+      ],
+      "maxPairOverlapM2": 0,
+      "classification": "disjoint"
+    },
+    {
+      "propertyid": "55710",
+      "sourceRows": 2,
+      "distinctGeometryCount": 2,
+      "matchingUniquePropertyId": true,
+      "geometryHashes": [
+        "a7a8b8dee5be2d1f062f2aa709a5ea9a5520a63aa6c872aceac3c000f52a336f",
+        "d60bf494730c36555e42d9045688f3a7eb0fd57a5af3145e0c41fa69869a17c9"
+      ],
+      "bboxes": [
+        [
+          77.24258141832158,
+          28.572356667415708,
+          77.24276868928423,
+          28.57239927502206
+        ],
+        [
+          77.24258180449183,
+          28.572315424242294,
+          77.24276907649973,
+          28.572358031903082
+        ]
+      ],
+      "maxPairOverlapM2": 0,
+      "classification": "disjoint"
+    },
+    {
+      "propertyid": "52663",
+      "sourceRows": 2,
+      "distinctGeometryCount": 2,
+      "matchingUniquePropertyId": true,
+      "geometryHashes": [
+        "f10417e950da7cbb577adc509ac503910c05a4d48b251d999b8f9df032989ba6",
+        "38596c12cc1287a01ba8f62e4d37cb91fee60955edef90d3193d2d14d8046e99"
+      ],
+      "bboxes": [
+        [
+          77.20583352282931,
+          28.5303600169033,
+          77.20606127659411,
+          28.530436195141657
+        ],
+        [
+          77.20582964524696,
+          28.53042592115459,
+          77.20605739915366,
+          28.530502099391143
+        ]
+      ],
+      "maxPairOverlapM2": 0,
+      "classification": "disjoint"
+    },
+    {
+      "propertyid": "79055",
+      "sourceRows": 2,
+      "distinctGeometryCount": 2,
+      "matchingUniquePropertyId": true,
+      "geometryHashes": [
+        "38e8429b3d439bfeda28e904ad2355e020e91ea45d899013888f894002873c11",
+        "73813a2865c91a5ba71924872e27373928f0bc319d7cdb8a70334f150b088003"
+      ],
+      "bboxes": [
+        [
+          77.24308400280457,
+          28.570647221436246,
+          77.24320658642546,
+          28.57081378287644
+        ],
+        [
+          77.24325215188487,
+          28.570577305876096,
+          77.24337500673548,
+          28.570743551625455
+        ]
+      ],
+      "maxPairOverlapM2": 0,
+      "classification": "disjoint"
+    },
+    {
+      "propertyid": "20993",
+      "sourceRows": 2,
+      "distinctGeometryCount": 2,
+      "matchingUniquePropertyId": true,
+      "geometryHashes": [
+        "70e25986d328617a108ac99de106a680028d860bb3f45c9ede38d4de202c196b",
+        "f78189429d481380693a5afa11ef22e39751d82488a94cda6680501d3bb7ce5d"
+      ],
+      "bboxes": [
+        [
+          77.23765160579121,
+          28.571716491994394,
+          77.23777326124794,
+          28.571883371484958
+        ],
+        [
+          77.17018431927177,
+          28.646496819599236,
+          77.17036652019725,
+          28.646679704395158
+        ]
+      ],
+      "maxPairOverlapM2": 0,
+      "classification": "disjoint"
+    },
+    {
+      "propertyid": "31874",
+      "sourceRows": 2,
+      "distinctGeometryCount": 2,
+      "matchingUniquePropertyId": true,
+      "geometryHashes": [
+        "a9d5a6010e35e206280b36859ff2d50174537783b9dcb71a3ea2ca123fc4c383",
+        "9ce7ab9402d5f2d19e48a6b4e3733299e33d8dd2f4066b2adddad95b4a49f733"
+      ],
+      "bboxes": [
+        [
+          77.25931109212554,
+          28.536492062824227,
+          77.25953272202815,
+          28.536661754513474
+        ],
+        [
+          77.12078194911517,
+          28.633432870053227,
+          77.12105834635273,
+          28.633641104381063
+        ]
+      ],
+      "maxPairOverlapM2": 0,
+      "classification": "disjoint"
+    },
+    {
+      "propertyid": "31506",
+      "sourceRows": 2,
+      "distinctGeometryCount": 2,
+      "matchingUniquePropertyId": true,
+      "geometryHashes": [
+        "0bea435551e86f0c3e765b21462af2171b7c560f05ae98c39cf5fccdb1e26775",
+        "e8be0dec4a9c61e3a15d9c4833ad0a5788aaf625b1c3e74843899e4e2117aa0e"
+      ],
+      "bboxes": [
+        [
+          77.25966480984242,
+          28.54132829285503,
+          77.25987369084729,
+          28.54147552391149
+        ],
+        [
+          77.25970633805397,
+          28.541402182488728,
+          77.25989445451515,
+          28.54151246830733
+        ]
+      ],
+      "maxPairOverlapM2": 0,
+      "classification": "disjoint"
+    },
+    {
+      "propertyid": "62313",
+      "sourceRows": 2,
+      "distinctGeometryCount": 2,
+      "matchingUniquePropertyId": true,
+      "geometryHashes": [
+        "8eefb19f58273c51e09a00a38c8b7112abd72c3b7bd1a359f824bf1e9a8d52d3",
+        "54b246c413cfc6e9eb55ce1537304317ad749b4a9a6da7ac6290b830a3c53f09"
+      ],
+      "bboxes": [
+        [
+          77.25713731192252,
+          28.540756749466247,
+          77.25726254583985,
+          28.540922794990976
+        ],
+        [
+          77.25709551432931,
+          28.540775190170017,
+          77.25722076733824,
+          28.5409412017419
+        ]
+      ],
+      "maxPairOverlapM2": 0,
+      "classification": "disjoint"
+    },
+    {
+      "propertyid": "62477",
+      "sourceRows": 2,
+      "distinctGeometryCount": 2,
+      "matchingUniquePropertyId": true,
+      "geometryHashes": [
+        "8979f1269615d146fa09e6b8ebb0b50f8d06b5701936298f4414c1e17602164a",
+        "88ce53292384ac9d2a5c647aaaf66604232189d24a97055a258236fe3934a1e5"
+      ],
+      "bboxes": [
+        [
+          77.25960251918094,
+          28.541217458815552,
+          77.25979063534506,
+          28.54132774449937
+        ],
+        [
+          77.17990285017065,
+          28.63215097079435,
+          77.18011149361487,
+          28.63230532265657
+        ]
+      ],
+      "maxPairOverlapM2": 0,
+      "classification": "disjoint"
+    },
+    {
+      "propertyid": "63154",
+      "sourceRows": 2,
+      "distinctGeometryCount": 2,
+      "matchingUniquePropertyId": true,
+      "geometryHashes": [
+        "fe3c293158fd0719c1f99eaa705b3154a59faabe0576abe184af03eb89832945",
+        "bea8d8561984930ca31f8fb49c9bc3051bcc57a31ce6ef140f06aa6226210d63"
+      ],
+      "bboxes": [
+        [
+          77.21242019174704,
+          28.593114346833403,
+          77.21339371022084,
+          28.594091738709263
+        ],
+        [
+          77.21177196559125,
+          28.595563650958113,
+          77.21283155678334,
+          28.596431727997473
+        ]
+      ],
+      "maxPairOverlapM2": 0,
+      "classification": "disjoint"
+    },
+    {
+      "propertyid": "25024",
+      "sourceRows": 3,
+      "distinctGeometryCount": 3,
+      "matchingUniquePropertyId": true,
+      "geometryHashes": [
+        "47523a785a67876dad5420d726fcc7216271a5ca73fee004b9222bb03706b991",
+        "4b33c7682d4c1d4f90492dfb99a14b6c1c5dcad897f7a79758abddde7fbedf59",
+        "cea28ef4f413e58cd9c6211e728d84288d0230b1cbf525bf188696ffee792549"
+      ],
+      "bboxes": [
+        [
+          77.2121916810105,
+          28.593875859166605,
+          77.21333515989923,
+          28.594846159182328
+        ],
+        [
+          77.21199374271353,
+          28.594630277568225,
+          77.21268978790863,
+          28.595401280074075
+        ],
+        [
+          77.21249185360058,
+          28.594747803448907,
+          77.21310665649524,
+          28.5954996362756
+        ]
+      ],
+      "maxPairOverlapM2": 0,
+      "classification": "disjoint"
+    },
+    {
+      "propertyid": "25033",
+      "sourceRows": 2,
+      "distinctGeometryCount": 2,
+      "matchingUniquePropertyId": true,
+      "geometryHashes": [
+        "8a672a579cacbf31b332fea18b704d9fb8526c8b991f07d6e371b2d8ba763b55",
+        "4a642044a7a78a7bb7c57efcf21b67db6c9cd4b249a6c1bcac5dedcf3c62bf50"
+      ],
+      "bboxes": [
+        [
+          77.23687900809718,
+          28.62269306439072,
+          77.23866001570184,
+          28.623996170398495
+        ],
+        [
+          77.23383097498532,
+          28.61857632108812,
+          77.23542328333525,
+          28.61975846224713
+        ]
+      ],
+      "maxPairOverlapM2": 0,
+      "classification": "disjoint"
+    },
+    {
+      "propertyid": "34826",
+      "sourceRows": 2,
+      "distinctGeometryCount": 2,
+      "matchingUniquePropertyId": true,
+      "geometryHashes": [
+        "0d86a4a01b632fb29d256470e5e15daec9b77474e4e821d3005391de345ce26d",
+        "1dcde0dd318a7193320fd1679e9f2b2e889f5d747a5327cf1b5fe9855f01349d"
+      ],
+      "bboxes": [
+        [
+          77.23041696335694,
+          28.62657722888801,
+          77.23119982069998,
+          28.627455229812025
+        ],
+        [
+          77.22999335836057,
+          28.62683692410944,
+          77.23087135017559,
+          28.627699879400122
+        ]
+      ],
+      "maxPairOverlapM2": 0,
+      "classification": "disjoint"
+    },
+    {
+      "propertyid": "35482",
+      "sourceRows": 2,
+      "distinctGeometryCount": 2,
+      "matchingUniquePropertyId": true,
+      "geometryHashes": [
+        "4092ce6b992abc0d43f3ebf9941f8c507e5753d64a3267191f23e5066e3880d4",
+        "b30d0b1b680e271554566afe023b9ea1207ccee585047bf1f06fda07df9f9ad5"
+      ],
+      "bboxes": [
+        [
+          77.23095776998345,
+          28.628077985072164,
+          77.23126175968835,
+          28.62839310264197
+        ],
+        [
+          77.23236559938934,
+          28.63016114316446,
+          77.23262576746707,
+          28.630340723333337
+        ]
+      ],
+      "maxPairOverlapM2": 0,
+      "classification": "disjoint"
+    },
+    {
+      "propertyid": "35346",
+      "sourceRows": 2,
+      "distinctGeometryCount": 2,
+      "matchingUniquePropertyId": true,
+      "geometryHashes": [
+        "83ce3291a5b62f5a83c8b6c4a07617458a2dfa237686c307f44379f8704ca427",
+        "2620865e9b920ae19246469bc830874830cf6f24d295aa9f25c98ccce98e82d2"
+      ],
+      "bboxes": [
+        [
+          77.23083327763187,
+          28.628151167010632,
+          77.23113643037154,
+          28.62846515073764
+        ],
+        [
+          77.23200741613456,
+          28.63029559680351,
+          77.23226767155421,
+          28.630475012118424
+        ]
+      ],
+      "maxPairOverlapM2": 0,
+      "classification": "disjoint"
+    },
+    {
+      "propertyid": "14306",
+      "sourceRows": 2,
+      "distinctGeometryCount": 2,
+      "matchingUniquePropertyId": true,
+      "geometryHashes": [
+        "f0260890ae4d7a432616d437a54b220b9e425386750929065f09abb192891f0b",
+        "da30b2bb89bca29b45dbd890d0d31639f50eae2ad389b187c9e67d2cd870629c"
+      ],
+      "bboxes": [
+        [
+          77.18425872342837,
+          28.60114112817068,
+          77.1845655770964,
+          28.60134155224744
+        ],
+        [
+          77.18440946102433,
+          28.601443030307625,
+          77.18471631554792,
+          28.6016434546223
+        ]
+      ],
+      "maxPairOverlapM2": 0,
+      "classification": "disjoint"
+    },
+    {
+      "propertyid": "22119",
+      "sourceRows": 2,
+      "distinctGeometryCount": 2,
+      "matchingUniquePropertyId": true,
+      "geometryHashes": [
+        "6967666403e1cfc13bfa81374b26589917be20fa47eed0e96808067e139661b9",
+        "00068adc0dec38f8a4a2253bb81b2c4ed7c6b6e037c99ff70c458ebae13fed8c"
+      ],
+      "bboxes": [
+        [
+          77.18686741111034,
+          28.60379265713124,
+          77.18722011536985,
+          28.604100595576053
+        ],
+        [
+          77.21778032544582,
+          28.58868372457758,
+          77.21807248401338,
+          28.588815208097166
+        ]
+      ],
+      "maxPairOverlapM2": 0,
+      "classification": "disjoint"
+    },
+    {
+      "propertyid": "57930",
+      "sourceRows": 2,
+      "distinctGeometryCount": 2,
+      "matchingUniquePropertyId": true,
+      "geometryHashes": [
+        "7d3147770e42446636d6fd8cd25e500badf32fbcbab49decd527bf87504c0fe4",
+        "24fe130ef007d56808d68dfb5f527252e5730eb3a240fa9e9d7c136ff9b28d1b"
+      ],
+      "bboxes": [
+        [
+          77.18666731861904,
+          28.599762669947555,
+          77.18693769841875,
+          28.60005051101768
+        ],
+        [
+          77.13979326721102,
+          28.647771701763066,
+          77.13998069978996,
+          28.647888805102372
+        ]
+      ],
+      "maxPairOverlapM2": 0,
+      "classification": "disjoint"
+    },
+    {
+      "propertyid": "57413",
+      "sourceRows": 2,
+      "distinctGeometryCount": 2,
+      "matchingUniquePropertyId": true,
+      "geometryHashes": [
+        "ff75253e72def48bf6a661d5c078198389c5344f0f1a8b965512ef800386de86",
+        "8b5259a7bfd09480a3f60e0321d08f8e62a97db759b27bfc796712b7c0d39f42"
+      ],
+      "bboxes": [
+        [
+          77.18387660068217,
+          28.60153688942872,
+          77.18418344418588,
+          28.601739528169446
+        ],
+        [
+          77.18472389418035,
+          28.602008466238917,
+          77.18507180149159,
+          28.602292265798642
+        ]
+      ],
+      "maxPairOverlapM2": 0,
+      "classification": "disjoint"
+    },
+    {
+      "propertyid": "21439",
+      "sourceRows": 2,
+      "distinctGeometryCount": 2,
+      "matchingUniquePropertyId": true,
+      "geometryHashes": [
+        "b76a7a6cd4985dc44a50225d626023587651b3ad310b0594fc6607ebf1d7ce35",
+        "0abac3e5fed84851d8f3420f9cf0960702f64dfea45f8430ba6b869a41e36fb7"
+      ],
+      "bboxes": [
+        [
+          77.1809537967822,
+          28.5899270054729,
+          77.18324364630126,
+          28.59144099481345
+        ],
+        [
+          77.18128521004601,
+          28.590649707761848,
+          77.18360528374834,
+          28.592140452762827
+        ]
+      ],
+      "maxPairOverlapM2": 0,
+      "classification": "disjoint"
+    },
+    {
+      "propertyid": "25338",
+      "sourceRows": 2,
+      "distinctGeometryCount": 2,
+      "matchingUniquePropertyId": true,
+      "geometryHashes": [
+        "f70787134866c0d7377a89917bd7e69cdc89abfd1f0df9ba68c736e3ccba7663",
+        "3bef570f9cc363127c5e1576ba36f3ddda5f8ea55e3e9c96a71c153e87ee5bd0"
+      ],
+      "bboxes": [
+        [
+          77.18307647219922,
+          28.594111808833674,
+          77.18542868837909,
+          28.595680682247274
+        ],
+        [
+          77.18268253086717,
+          28.593361177887623,
+          77.18501472174236,
+          28.594880036801268
+        ]
+      ],
+      "maxPairOverlapM2": 0,
+      "classification": "disjoint"
+    },
+    {
+      "propertyid": "25277",
+      "sourceRows": 2,
+      "distinctGeometryCount": 2,
+      "matchingUniquePropertyId": true,
+      "geometryHashes": [
+        "7f3228f9809692f5984fae13e781afab5dd6914c1e1bc7a12e7efdae5d891d50",
+        "e71ac68cd5c3b453892c6a6bb73978b2253096cb1bf377750c57c0b4b8a2a6c9"
+      ],
+      "bboxes": [
+        [
+          77.17874707533146,
+          28.58929670447777,
+          77.17994099491669,
+          28.59060247061839
+        ],
+        [
+          77.1798916497021,
+          28.58929149023307,
+          77.18067919636626,
+          28.590403351791622
+        ]
+      ],
+      "maxPairOverlapM2": 0,
+      "classification": "disjoint"
+    },
+    {
+      "propertyid": "23611",
+      "sourceRows": 2,
+      "distinctGeometryCount": 2,
+      "matchingUniquePropertyId": true,
+      "geometryHashes": [
+        "29ce286f55d0bc3737ee1efea5879dbb15cc014c85fcb9317dd28b4eb85e8b65",
+        "193a46ef781a5c39e2351c146e48d8cdf1bff8a6c439875ba8162d40a41b80a7"
+      ],
+      "bboxes": [
+        [
+          77.18797164353627,
+          28.58982457513468,
+          77.19074640194884,
+          28.591582500049654
+        ],
+        [
+          77.18757084132365,
+          28.58905262963034,
+          77.19033543483548,
+          28.590791078646554
+        ]
+      ],
+      "maxPairOverlapM2": 0,
+      "classification": "disjoint"
+    },
+    {
+      "propertyid": "23713",
+      "sourceRows": 2,
+      "distinctGeometryCount": 2,
+      "matchingUniquePropertyId": true,
+      "geometryHashes": [
+        "8fef12f608e53fdfe7fc2362274dd6464f78a60a8be221a2d452371301384559",
+        "685aef1e3ca7ed66a5ae04e43431053bee95e1ca4e5f0e2951aab7b5da4f2d02"
+      ],
+      "bboxes": [
+        [
+          77.18527505484916,
+          28.584126144729563,
+          77.18758313258738,
+          28.585246074744585
+        ],
+        [
+          77.18419108594686,
+          28.583982700998675,
+          77.1872086368822,
+          28.58520634723827
+        ]
+      ],
+      "maxPairOverlapM2": 0,
+      "classification": "disjoint"
+    },
+    {
+      "propertyid": "33354",
+      "sourceRows": 2,
+      "distinctGeometryCount": 2,
+      "matchingUniquePropertyId": true,
+      "geometryHashes": [
+        "724cbe9de073ffee1d2b6b58c046947312e6f3e10fcbf1ffa480ac332afdee22",
+        "e904f0950048e019c6c2ed5d22d2e8632c66b33826c0cf79b4b8b51b6095e7d9"
+      ],
+      "bboxes": [
+        [
+          77.21479695748167,
+          28.588185109992327,
+          77.21508911797893,
+          28.588316588582522
+        ],
+        [
+          77.21476950236264,
+          28.58838990770928,
+          77.21506166343993,
+          28.588521386322977
+        ]
+      ],
+      "maxPairOverlapM2": 0,
+      "classification": "disjoint"
+    },
+    {
+      "propertyid": "21914",
+      "sourceRows": 2,
+      "distinctGeometryCount": 2,
+      "matchingUniquePropertyId": true,
+      "geometryHashes": [
+        "b4ad4cb45569d9d12995a9a54ae2b32174b84f89a900f94dc8dfed7fe7e6d7d5",
+        "f5b4a91edc18c5dc458a6d2d0942ae69a23413599e487f625fecf5489e9ff3e9"
+      ],
+      "bboxes": [
+        [
+          77.2149338818428,
+          28.58876677194944,
+          77.21519056066595,
+          28.589024304147795
+        ],
+        [
+          77.1208354950436,
+          28.637515521179385,
+          77.12102310190173,
+          28.63755896989816
+        ]
+      ],
+      "maxPairOverlapM2": 0,
+      "classification": "disjoint"
+    },
+    {
+      "propertyid": "21326",
+      "sourceRows": 2,
+      "distinctGeometryCount": 2,
+      "matchingUniquePropertyId": true,
+      "geometryHashes": [
+        "b7fa98a97d4825f406ff30131dcba55bc52721570a197428e6e60aae874c46c8",
+        "1ce655808b3c9040cedfaabdabbf383d2d1d9e8c135f603c96c7b26f8c3d4760"
+      ],
+      "bboxes": [
+        [
+          77.22857015197566,
+          28.590123189340993,
+          77.22890833197609,
+          28.590417970368076
+        ],
+        [
+          77.22852543482973,
+          28.590375573614885,
+          77.22887464858536,
+          28.590669412553332
+        ]
+      ],
+      "maxPairOverlapM2": 0,
+      "classification": "disjoint"
+    },
+    {
+      "propertyid": "25493",
+      "sourceRows": 2,
+      "distinctGeometryCount": 2,
+      "matchingUniquePropertyId": true,
+      "geometryHashes": [
+        "15ed5eb459e5505e9381fe1b84f8d70149943048ef9fe8f26e9f02bf6d6d1b65",
+        "0a7f93f005ddccfd9ef987ca99c1c336570764ed6e306e4f216e883a2cabaff4"
+      ],
+      "bboxes": [
+        [
+          77.22815705584945,
+          28.588754328261352,
+          77.22839840927168,
+          28.58894143480126
+        ],
+        [
+          77.22813185631435,
+          28.58891502692345,
+          77.2283732080809,
+          28.589102133447522
+        ]
+      ],
+      "maxPairOverlapM2": 0,
+      "classification": "disjoint"
+    },
+    {
+      "propertyid": "21497",
+      "sourceRows": 2,
+      "distinctGeometryCount": 2,
+      "matchingUniquePropertyId": true,
+      "geometryHashes": [
+        "912e63a09909880b451caf5027a609dae3579233e752e4aadfd34d2868fd8b2a",
+        "cb5e02ae9f021fa5c9e20bd1f50643a708c3c89eb98c7dda0bba71ead4d4e4d5"
+      ],
+      "bboxes": [
+        [
+          77.2283732080809,
+          28.5887807352155,
+          77.22861456125864,
+          28.588967841426165
+        ],
+        [
+          77.22834800885525,
+          28.58894143480126,
+          77.22858936037733,
+          28.58912854009412
+        ]
+      ],
+      "maxPairOverlapM2": 0,
+      "classification": "disjoint"
+    },
+    {
+      "propertyid": "33415",
+      "sourceRows": 2,
+      "distinctGeometryCount": 2,
+      "matchingUniquePropertyId": true,
+      "geometryHashes": [
+        "96f15cdc119ab04457e087a0123d8f029c7fb3e4b0e305607a90a375c865badf",
+        "32192a01a083dadbb08378e8a7eb297c4829111e21ddc9b33e61493d8956fbf1"
+      ],
+      "bboxes": [
+        [
+          77.22858936037733,
+          28.58880714272067,
+          77.22908669897548,
+          28.589025520704446
+        ],
+        [
+          77.2285641614802,
+          28.588967841426165,
+          77.22906149883072,
+          28.589186216730674
+        ]
+      ],
+      "maxPairOverlapM2": 0,
+      "classification": "disjoint"
+    },
+    {
+      "propertyid": "21677",
+      "sourceRows": 3,
+      "distinctGeometryCount": 3,
+      "matchingUniquePropertyId": true,
+      "geometryHashes": [
+        "24e6361e2f669dc42ef5ea1eeb0c53804850d43f4987176ef371f353e5ddc92a",
+        "53d39909c0035cb76a2e315957ae46988d4ce4c515a90650db8168484e444d47",
+        "06597c631ffdaadb9ce07159bf77755e84a0c30922a7f24582b5f6a225b50a15"
+      ],
+      "bboxes": [
+        [
+          77.22777014194573,
+          28.589551334250693,
+          77.22800655086282,
+          28.589900799203868
+        ],
+        [
+          77.22795529480013,
+          28.589573955306584,
+          77.22819170422846,
+          28.589923418269713
+        ],
+        [
+          77.22814044975999,
+          28.58959657435143,
+          77.22837685559293,
+          28.589946038030423
+        ]
+      ],
+      "maxPairOverlapM2": 0,
+      "classification": "disjoint"
+    },
+    {
+      "propertyid": "24930",
+      "sourceRows": 2,
+      "distinctGeometryCount": 2,
+      "matchingUniquePropertyId": true,
+      "geometryHashes": [
+        "cb6a7f6bf313c37d8b80b8f48c3d8cfe18a23727fbe3a9b18b3d9ab3ee4e5e0e",
+        "bf30b27cb6d932badc970231e1d2801852365b49ca92ceee0dee30c04ba33fed"
+      ],
+      "bboxes": [
+        [
+          77.25008784143378,
+          28.590897398748975,
+          77.25018635177808,
+          28.591064559983895
+        ],
+        [
+          77.24390568764777,
+          28.59173524616291,
+          77.24429877747662,
+          28.59206209200175
+        ]
+      ],
+      "maxPairOverlapM2": 0,
+      "classification": "disjoint"
+    },
+    {
+      "propertyid": "27329",
+      "sourceRows": 3,
+      "distinctGeometryCount": 3,
+      "matchingUniquePropertyId": true,
+      "geometryHashes": [
+        "0e26e4ca9822820b4817d975ab821b6779420c1b17a8b3b79cb432cbef4ecbea",
+        "24c4fde7f4d3e58fd9c420195185791790935eff9e3a3f92baf6f214ccf5685f",
+        "a12eca231cf5d5588b2580c6e666d68b75c777d9df63cef4fb31dd880e659ab2"
+      ],
+      "bboxes": [
+        [
+          77.25010884065938,
+          28.588958445484337,
+          77.25048759519615,
+          28.589374891070793
+        ],
+        [
+          77.24450548191248,
+          28.588014280563126,
+          77.24471887105125,
+          28.58819664417869
+        ],
+        [
+          77.24512614909901,
+          28.588432205483088,
+          77.24531048670137,
+          28.588614502213716
+        ]
+      ],
+      "maxPairOverlapM2": 0,
+      "classification": "disjoint"
+    },
+    {
+      "propertyid": "52201",
+      "sourceRows": 2,
+      "distinctGeometryCount": 2,
+      "matchingUniquePropertyId": true,
+      "geometryHashes": [
+        "eb3de322bc17c56962fe0e5a64e2ce2b96a98afcdd60b72e5a1512b71a8aa6a9",
+        "8347fbaaa25490162b9e8015610996bf5bc84d3cd836b65488b75db8d4589ebc"
+      ],
+      "bboxes": [
+        [
+          77.24240235187474,
+          28.581196813484986,
+          77.24260215600214,
+          28.58136924752468
+        ],
+        [
+          77.24271579839174,
+          28.581957146839226,
+          77.2429054279295,
+          28.582041604709715
+        ]
+      ],
+      "maxPairOverlapM2": 0,
+      "classification": "disjoint"
+    },
+    {
+      "propertyid": "51488",
+      "sourceRows": 2,
+      "distinctGeometryCount": 2,
+      "matchingUniquePropertyId": true,
+      "geometryHashes": [
+        "9e591bb913903a7278d1bbca925026de84b6f65ff7e5b9e5db15862e19c8794a",
+        "b5523a9ffae9af164dd9eab8e54b1bb7ad85b52a830e7b46160ee3e891776df1"
+      ],
+      "bboxes": [
+        [
+          77.24246023508454,
+          28.581261668232298,
+          77.24266003928408,
+          28.581434102303962
+        ],
+        [
+          77.24271308600355,
+          28.58203961363826,
+          77.24290271568724,
+          28.582124071503568
+        ]
+      ],
+      "maxPairOverlapM2": 0,
+      "classification": "disjoint"
+    },
+    {
+      "propertyid": "33728",
+      "sourceRows": 2,
+      "distinctGeometryCount": 2,
+      "matchingUniquePropertyId": true,
+      "geometryHashes": [
+        "15e447b98650d7ef538c36b887d3a0f2336a6fe1166c6bc1251d823c541e41f8",
+        "19257289e7cb9140844fe6befe14623c525ea850f54eb50104eae05235bebdda"
+      ],
+      "bboxes": [
+        [
+          77.24163946247681,
+          28.581304682646678,
+          77.2418407589113,
+          28.581476534812708
+        ],
+        [
+          77.2427185107803,
+          28.58187468003944,
+          77.24290814017213,
+          28.581959137915117
+        ]
+      ],
+      "maxPairOverlapM2": 0,
+      "classification": "disjoint"
+    },
+    {
+      "propertyid": "22019",
+      "sourceRows": 2,
+      "distinctGeometryCount": 2,
+      "matchingUniquePropertyId": true,
+      "geometryHashes": [
+        "68cc97597ac127da6a0fe8e4baa68d755cc6991a0bf77bbeced47ad3a1ad92b0",
+        "dc73beee898a7450ddc378489a14f1b5abf0845a8cded312c8b2a3dabda9a5d8"
+      ],
+      "bboxes": [
+        [
+          77.24251811834738,
+          28.58132652295033,
+          77.2427179226382,
+          28.581498957053956
+        ],
+        [
+          77.24276815957758,
+          28.582177721601536,
+          77.24289819493734,
+          28.582343982655196
+        ]
+      ],
+      "maxPairOverlapM2": 0,
+      "classification": "disjoint"
+    },
+    {
+      "propertyid": "35607",
+      "sourceRows": 2,
+      "distinctGeometryCount": 2,
+      "matchingUniquePropertyId": true,
+      "geometryHashes": [
+        "6ac91eeb463c4d1fd787d62f50165b8c911b77d09edb55b0ab7fada3ba460645",
+        "6a43e05bb5068e9c325cac8563c47dd73d4388a842159efc8950938a04d0dfd8"
+      ],
+      "bboxes": [
+        [
+          77.24157676904647,
+          28.581365854782927,
+          77.24177806453598,
+          28.581537706985888
+        ],
+        [
+          77.24272122316928,
+          28.581792213238916,
+          77.24291085139333,
+          28.581876671119783
+        ]
+      ],
+      "maxPairOverlapM2": 0,
+      "classification": "disjoint"
+    },
+    {
+      "propertyid": "50720",
+      "sourceRows": 2,
+      "distinctGeometryCount": 2,
+      "matchingUniquePropertyId": true,
+      "geometryHashes": [
+        "ff56c82145a949fd89aad2ef8fb25c14616d24c0e4c440cc48347a9cf4c2209d",
+        "1c5c83a311f7f629fb9fa2c35cf5a53d59e818f4c49c8f7ed48cf44e2ff5f9a1"
+      ],
+      "bboxes": [
+        [
+          77.24257600168241,
+          28.581391377639083,
+          77.24277580606451,
+          28.5815638117747
+        ],
+        [
+          77.24267470066877,
+          28.58217672597033,
+          77.24277360879766,
+          28.582342654695584
+        ]
+      ],
+      "maxPairOverlapM2": 0,
+      "classification": "disjoint"
+    },
+    {
+      "propertyid": "51044",
+      "sourceRows": 2,
+      "distinctGeometryCount": 2,
+      "matchingUniquePropertyId": true,
+      "geometryHashes": [
+        "e224a7fc3cd423d8a5ab2468f5a582271904d353c062c3878b45851f6d0ab18e",
+        "925b09f4ed0ac66f9c8b3557feadfbb512bec9771a29eabc607c898cf135dada"
+      ],
+      "bboxes": [
+        [
+          77.24151407450299,
+          28.58142702687682,
+          77.24171537010758,
+          28.581598879133598
+        ],
+        [
+          77.24272393555862,
+          28.581709746437642,
+          77.24291356363673,
+          28.5817942043406
+        ]
+      ],
+      "maxPairOverlapM2": 0,
+      "classification": "disjoint"
+    },
+    {
+      "propertyid": "47330",
+      "sourceRows": 2,
+      "distinctGeometryCount": 2,
+      "matchingUniquePropertyId": true,
+      "geometryHashes": [
+        "ed2b1f42cd9c003db08fe41429cf9d04ccc2b1fc757d4753ca9192b9cc1bf6a2",
+        "5f975c04fb21b1240fa1f47c80efd52d246183d051c15d64d7fc81e2dde73f5a"
+      ],
+      "bboxes": [
+        [
+          77.24263388508962,
+          28.581456232298567,
+          77.24283368956304,
+          28.581628666466163
+        ],
+        [
+          77.24257728601971,
+          28.582175729868975,
+          77.24268012549227,
+          28.582341659565184
+        ]
+      ],
+      "maxPairOverlapM2": 0,
+      "classification": "disjoint"
+    },
+    {
+      "propertyid": "22100",
+      "sourceRows": 2,
+      "distinctGeometryCount": 2,
+      "matchingUniquePropertyId": true,
+      "geometryHashes": [
+        "225dd900c3514288622aff586e94373c00d811f34f862ee8b7af942ba8aaec3a",
+        "f0034a6bf42ee67d43bcf1b8cfa2ee2b849c12378c6e3ddce33dcc0d3397b820"
+      ],
+      "bboxes": [
+        [
+          77.24145137990647,
+          28.58148819806018,
+          77.24165267560703,
+          28.581660050337014
+        ],
+        [
+          77.24272664794832,
+          28.581552659913523,
+          77.24291655763821,
+          28.581711737543774
+        ]
+      ],
+      "maxPairOverlapM2": 0,
+      "classification": "disjoint"
+    },
+    {
+      "propertyid": "47034",
+      "sourceRows": 2,
+      "distinctGeometryCount": 2,
+      "matchingUniquePropertyId": true,
+      "geometryHashes": [
+        "2eb5b62bb52a6cb327f2ac870defd469df9acc4f6f3dcc34357c63365ebc6bcc",
+        "8390c04d755feb3134225df2fd227f68ff95c1f4f16e15cd9825132308a1aaf5"
+      ],
+      "bboxes": [
+        [
+          77.24069241647571,
+          28.582616965352575,
+          77.24088710830863,
+          28.58279464893903
+        ],
+        [
+          77.2411444470796,
+          28.58300635717232,
+          77.24159371210571,
+          28.583328613134643
+        ]
+      ],
+      "maxPairOverlapM2": 0,
+      "classification": "disjoint"
+    },
+    {
+      "propertyid": "52199",
+      "sourceRows": 2,
+      "distinctGeometryCount": 2,
+      "matchingUniquePropertyId": true,
+      "geometryHashes": [
+        "c1b07b6c499de2f928ec975e6912b1eb778f4e9a2102416703a1d93e6e697b9b",
+        "c2fbc6f69058c819958deca44ccb139a4e753e4404ff63a45658eb582ca80cec"
+      ],
+      "bboxes": [
+        [
+          77.24076171694838,
+          28.582672306227355,
+          77.24095640881059,
+          28.582849989836262
+        ],
+        [
+          77.24095292039416,
+          28.583000726689562,
+          77.24143627654887,
+          28.58345777110674
+        ]
+      ],
+      "maxPairOverlapM2": 0,
+      "classification": "disjoint"
+    },
+    {
+      "propertyid": "51860",
+      "sourceRows": 2,
+      "distinctGeometryCount": 2,
+      "matchingUniquePropertyId": true,
+      "geometryHashes": [
+        "ce2cdee7a1cf7d3744654d5d0573fdafd5c59ccdf1f81e8cffb6704b00303d04",
+        "652a45c561295dda81d98b683728a3acd37efc07b090661f71a56247ca52c099"
+      ],
+      "bboxes": [
+        [
+          77.24112939344806,
+          28.582735765931726,
+          77.24122509718346,
+          28.58290173023038
+        ],
+        [
+          77.24056259935406,
+          28.58313405295749,
+          77.24106184070688,
+          28.583479892212267
+        ]
+      ],
+      "maxPairOverlapM2": 0,
+      "classification": "disjoint"
+    },
+    {
+      "propertyid": "52204",
+      "sourceRows": 2,
+      "distinctGeometryCount": 2,
+      "matchingUniquePropertyId": true,
+      "geometryHashes": [
+        "09e43c63f87a0faf1e2abe9e8da969823482611296a30e231a12fdf3bdb38553",
+        "82354d0c35a3f70b1d6985981bd771fb1946c051781b542e706d7f6d181f72e7"
+      ],
+      "bboxes": [
+        [
+          77.24140973096412,
+          28.58273875586005,
+          77.24150543427146,
+          28.58290471902639
+        ],
+        [
+          77.24020374397993,
+          28.58259253206238,
+          77.24066614233021,
+          28.582987543760904
+        ]
+      ],
+      "maxPairOverlapM2": 0,
+      "classification": "disjoint"
+    },
+    {
+      "propertyid": "20986",
+      "sourceRows": 2,
+      "distinctGeometryCount": 2,
+      "matchingUniquePropertyId": true,
+      "geometryHashes": [
+        "18dacb3f5034fdb0d60aec0749d8154815d534b76087ee4d4487a5b400e8488a",
+        "1451b7c6e8c70acf928e4f32aa3e9cdb996d340560fcf66accb27dfd314d27f3"
+      ],
+      "bboxes": [
+        [
+          77.20478430307277,
+          28.631065853009144,
+          77.20506826751321,
+          28.63121152500013
+        ],
+        [
+          77.20479215903184,
+          28.631198827122354,
+          77.2050761248526,
+          28.631344499127596
+        ]
+      ],
+      "maxPairOverlapM2": 0,
+      "classification": "disjoint"
+    },
+    {
+      "propertyid": "56615",
+      "sourceRows": 2,
+      "distinctGeometryCount": 2,
+      "matchingUniquePropertyId": true,
+      "geometryHashes": [
+        "2c35f1e87ef1280262cc7c8583b9e69895141450d59a6c4fef596a9f624c4977",
+        "336660fe048fdd32f08e11c34c0958c844358eca79058e58c243406bc6cf2510"
+      ],
+      "bboxes": [
+        [
+          77.10353987067047,
+          28.637149268923945,
+          77.10358891978206,
+          28.637314751446567
+        ],
+        [
+          77.10279185841604,
+          28.637141099394334,
+          77.10284092211036,
+          28.637306587890556
+        ]
+      ],
+      "maxPairOverlapM2": 0,
+      "classification": "disjoint"
+    },
+    {
+      "propertyid": "27076",
+      "sourceRows": 2,
+      "distinctGeometryCount": 2,
+      "matchingUniquePropertyId": true,
+      "geometryHashes": [
+        "b89c2137aeb6a62d8c0997629f3d471317067d56459971ead6ab0cfe71a80efa",
+        "011525d36ec6a8d1e6ec0727432da569363d11177eb7c1d926125851f41ed05f"
+      ],
+      "bboxes": [
+        [
+          77.10233275291729,
+          28.636569045810425,
+          77.10238244700376,
+          28.636734662526433
+        ],
+        [
+          77.20420951521542,
+          28.6930643783871,
+          77.20433371691358,
+          28.693230708159508
+        ]
+      ],
+      "maxPairOverlapM2": 0,
+      "classification": "disjoint"
+    },
+    {
+      "propertyid": "42585",
+      "sourceRows": 2,
+      "distinctGeometryCount": 2,
+      "matchingUniquePropertyId": true,
+      "geometryHashes": [
+        "e5c9dad424c87fb5ee7d4eea4be59356f879f6005eaa1f0e306711e344ec4883",
+        "37d317bfe96a76b106a9621d4db9ee3b607648b5e5ad8485f8d57c3e8e6efa4d"
+      ],
+      "bboxes": [
+        [
+          77.11429192416227,
+          28.63635568256864,
+          77.114478361679,
+          28.63647122443098
+        ],
+        [
+          77.11424693516284,
+          28.636283365309996,
+          77.11443330368387,
+          28.636398941648107
+        ]
+      ],
+      "maxPairOverlapM2": 0,
+      "classification": "disjoint"
+    },
+    {
+      "propertyid": "21036",
+      "sourceRows": 2,
+      "distinctGeometryCount": 2,
+      "matchingUniquePropertyId": true,
+      "geometryHashes": [
+        "60f4d49cc33417215bc0a7d55a228aa1064022e056d669e5f535ccf003a0c259",
+        "c65f5604916aa9f2098f84d8f0ca30a6c7aa887300b8e3e4d0a6567410bdfd3d"
+      ],
+      "bboxes": [
+        [
+          77.10033389078698,
+          28.63507587488688,
+          77.10038303056653,
+          28.63524137914028
+        ],
+        [
+          77.11132408944661,
+          28.637375700299714,
+          77.11150999267711,
+          28.637492441060548
+        ]
+      ],
+      "maxPairOverlapM2": 0,
+      "classification": "disjoint"
+    },
+    {
+      "propertyid": "23435",
+      "sourceRows": 2,
+      "distinctGeometryCount": 2,
+      "matchingUniquePropertyId": true,
+      "geometryHashes": [
+        "f9abbe7176d6d7ac638b531feab801934991f9e50b96bb0d893be2e5b4316fcc",
+        "bb244316a3417157cbf0234798788fc93bd07b0388037f16a66771a32c0b38aa"
+      ],
+      "bboxes": [
+        [
+          77.10430756397619,
+          28.635120632082117,
+          77.10435669645089,
+          28.63528613470518
+        ],
+        [
+          77.1794364457401,
+          28.639154048543237,
+          77.17956562378734,
+          28.639256313874032
+        ]
+      ],
+      "maxPairOverlapM2": 0,
+      "classification": "disjoint"
+    },
+    {
+      "propertyid": "77781",
+      "sourceRows": 2,
+      "distinctGeometryCount": 2,
+      "matchingUniquePropertyId": true,
+      "geometryHashes": [
+        "a469a73ffbb703a7101196a2b871605bd0b6f7e5508eba4d50bf2aabced8b7ec",
+        "08415371e370d8ec9e829bbfa27d76dec8314434d8c445605758be7ca12ee0dd"
+      ],
+      "bboxes": [
+        [
+          77.1016945897262,
+          28.634747456950567,
+          77.10174372827059,
+          28.634912961563206
+        ],
+        [
+          77.17280610729595,
+          28.64722292064965,
+          77.17301370589459,
+          28.647382672253325
+        ]
+      ],
+      "maxPairOverlapM2": 0,
+      "classification": "disjoint"
+    },
+    {
+      "propertyid": "55494",
+      "sourceRows": 2,
+      "distinctGeometryCount": 2,
+      "matchingUniquePropertyId": true,
+      "geometryHashes": [
+        "da51c577c8ef251165c85bf88e6b4be507de8d4205a387451ab94482e8755e0b",
+        "d21b3d7531c3ac22545e094ec4f3296e72cef8e7c91467af8e1e5e9cbd265d7e"
+      ],
+      "bboxes": [
+        [
+          77.1038949707042,
+          28.634552229000736,
+          77.10394410360946,
+          28.63471773090045
+        ],
+        [
+          77.10403521715837,
+          28.63455380605463,
+          77.1040843498599,
+          28.63471930879881
+        ]
+      ],
+      "maxPairOverlapM2": 0,
+      "classification": "disjoint"
+    },
+    {
+      "propertyid": "54669",
+      "sourceRows": 2,
+      "distinctGeometryCount": 2,
+      "matchingUniquePropertyId": true,
+      "geometryHashes": [
+        "7b15b981db2c5be9a38d78d9431a15d8928ac4f3e3661d5c18fd6c44a276d202",
+        "4ca102cd67de5ce2ae973117e23aaf7b2b485e30a7eba75bffc3c2256a281db8"
+      ],
+      "bboxes": [
+        [
+          77.09607372078776,
+          28.63441382930927,
+          77.09612698306623,
+          28.634580161319803
+        ],
+        [
+          77.09612044388292,
+          28.63441527179707,
+          77.09617370504789,
+          28.634581604723508
+        ]
+      ],
+      "maxPairOverlapM2": 0,
+      "classification": "disjoint"
+    },
+    {
+      "propertyid": "35031",
+      "sourceRows": 2,
+      "distinctGeometryCount": 2,
+      "matchingUniquePropertyId": true,
+      "geometryHashes": [
+        "9e7bf59d3c41572d435ad4b9a6d5e18dee9155d952c60c6708d9ef9e58145c06",
+        "696960e5f741c167b34cf9892ae74faa149136103bd15aca3009883a73f1a1df"
+      ],
+      "bboxes": [
+        [
+          77.21382976098485,
+          28.63101221360469,
+          77.21427606279565,
+          28.631237784547213
+        ],
+        [
+          77.21427617131299,
+          28.631200589058896,
+          77.2145030369132,
+          28.631334543872967
+        ]
+      ],
+      "maxPairOverlapM2": 0,
+      "classification": "disjoint"
+    },
+    {
+      "propertyid": "33513",
+      "sourceRows": 2,
+      "distinctGeometryCount": 2,
+      "matchingUniquePropertyId": true,
+      "geometryHashes": [
+        "652197fffd03d5acc4271da839e518293177e8592e0a4ec083ecd974d25ea409",
+        "fa86ba2029bb1ba65fb6b58b961099664a2035cae2ae8f4015e48082e8fed498"
+      ],
+      "bboxes": [
+        [
+          77.11267668040428,
+          28.635571186753296,
+          77.1128755896244,
+          28.635669342280032
+        ],
+        [
+          77.18309920914302,
+          28.63910341230432,
+          77.18321447628753,
+          28.639217371434583
+        ]
+      ],
+      "maxPairOverlapM2": 0,
+      "classification": "disjoint"
+    },
+    {
+      "propertyid": "33833",
+      "sourceRows": 3,
+      "distinctGeometryCount": 3,
+      "matchingUniquePropertyId": true,
+      "geometryHashes": [
+        "cd5249ebd42adb512d0d1bc3eed10e36bc4f7b51df07ba9965bde69b6805da64",
+        "7d3d781c424f5fcf84a27ef13c0388282fc862b0621dc9e39821e7c4448632f8",
+        "870810846cc56cc805613f5a44d363b7b85a31bbb85452cde445db9322a311dc"
+      ],
+      "bboxes": [
+        [
+          77.21443738991073,
+          28.599611058758125,
+          77.21548068063906,
+          28.600679192163934
+        ],
+        [
+          77.21525244910103,
+          28.59980470558414,
+          77.21581908212046,
+          28.600350828726718
+        ],
+        [
+          77.21498828626586,
+          28.600198309091304,
+          77.21559282225292,
+          28.600653875357136
+        ]
+      ],
+      "maxPairOverlapM2": 0,
+      "classification": "disjoint"
+    },
+    {
+      "propertyid": "51068",
+      "sourceRows": 2,
+      "distinctGeometryCount": 2,
+      "matchingUniquePropertyId": true,
+      "geometryHashes": [
+        "1c3eec8efe03447abd9c18c0efe8e69df1b4f1ab3bd016428b491079596fd114",
+        "8e2ed3f5924e14cf0b6ac4f209d6881517acddfd6633559f640684738ff64a99"
+      ],
+      "bboxes": [
+        [
+          77.21764889964031,
+          28.59502201122859,
+          77.21881737524131,
+          28.59605822465702
+        ],
+        [
+          77.21712235383625,
+          28.59547991687671,
+          77.2181960408949,
+          28.596442254654004
+        ]
+      ],
+      "maxPairOverlapM2": 0,
+      "classification": "disjoint"
+    },
+    {
+      "propertyid": "21097",
+      "sourceRows": 2,
+      "distinctGeometryCount": 2,
+      "matchingUniquePropertyId": true,
+      "geometryHashes": [
+        "ffb55dad7efa30860e93038a805f5a86ce0cb617ca981ad66973d00e144dda19",
+        "de1999a7acea239929db2ac8099836049e31491b4199fd49ce19f95a19f4586d"
+      ],
+      "bboxes": [
+        [
+          77.21525831247386,
+          28.592297548342973,
+          77.21598493733516,
+          28.592940336820167
+        ],
+        [
+          77.2151261798446,
+          28.592601990107514,
+          77.21557892630354,
+          28.59304024147059
+        ]
+      ],
+      "maxPairOverlapM2": 0,
+      "classification": "disjoint"
+    },
+    {
+      "propertyid": "24630",
+      "sourceRows": 2,
+      "distinctGeometryCount": 2,
+      "matchingUniquePropertyId": true,
+      "geometryHashes": [
+        "303eedd4d66badb4ac1e734edbf9478b04fcee593aa55578ca39c4872e47ccd9",
+        "e208ee79fc0b93e6e9c4d3a8b91218168289c5b1d98ac1c475f89588162f9b97"
+      ],
+      "bboxes": [
+        [
+          77.21612123322076,
+          28.59440400123271,
+          77.21708491880138,
+          28.595248114289397
+        ],
+        [
+          77.21589946947375,
+          28.594169594953886,
+          77.21666647607677,
+          28.594805821436644
+        ]
+      ],
+      "maxPairOverlapM2": 0,
+      "classification": "disjoint"
+    },
+    {
+      "propertyid": "26142",
+      "sourceRows": 2,
+      "distinctGeometryCount": 2,
+      "matchingUniquePropertyId": true,
+      "geometryHashes": [
+        "0c6f904ece1bbcc53a00497a6b2db7177c883d835f33d570fdd67cb5b4681713",
+        "ce85028b50c5dba4ff30a8824b51b1308aacf84ab1439577e692340b26d716d8"
+      ],
+      "bboxes": [
+        [
+          77.21970850514624,
+          28.628738247332134,
+          77.22043801865388,
+          28.628860483945054
+        ],
+        [
+          77.21971414341442,
+          28.628822997870913,
+          77.22044624019831,
+          28.62898406413629
+        ]
+      ],
+      "maxPairOverlapM2": 0,
+      "classification": "disjoint"
+    },
+    {
+      "propertyid": "14194",
+      "sourceRows": 2,
+      "distinctGeometryCount": 2,
+      "matchingUniquePropertyId": true,
+      "geometryHashes": [
+        "96c05a8954f572de941b8d490c86cd18a47613907f599f2ad0499ec5e5e8b32f",
+        "71948732c867c2a13734230ed369a78ab86c349ac5b413cbd627fc23e0f0ba2b"
+      ],
+      "bboxes": [
+        [
+          77.21956106848688,
+          28.626514194789117,
+          77.22043844123097,
+          28.626682783718586
+        ],
+        [
+          77.21956928864194,
+          28.6266377749402,
+          77.22044408308861,
+          28.626767591135145
+        ]
+      ],
+      "maxPairOverlapM2": 0,
+      "classification": "disjoint"
+    },
+    {
+      "propertyid": "24751",
+      "sourceRows": 2,
+      "distinctGeometryCount": 2,
+      "matchingUniquePropertyId": true,
+      "geometryHashes": [
+        "189556394325ae676a6b2a7691cdb22c9e39235a7a0752fab585e29f8453a64f",
+        "5f3e7f2b21949d8456638ae24a32f411050ea08ccad39505ca5041d50f9f2436"
+      ],
+      "bboxes": [
+        [
+          77.20632923171183,
+          28.633400119827296,
+          77.20640395345254,
+          28.633589208822702
+        ],
+        [
+          77.20623369578651,
+          28.63340418846596,
+          77.20634697084363,
+          28.63360584792215
+        ]
+      ],
+      "maxPairOverlapM2": 0,
+      "classification": "disjoint"
+    },
+    {
+      "propertyid": "26534",
+      "sourceRows": 2,
+      "distinctGeometryCount": 2,
+      "matchingUniquePropertyId": true,
+      "geometryHashes": [
+        "2462e45a52ae6734a9b58c9c6cf70afce6c8fd9aa74a8eb5400cd84c23384e5f",
+        "e5124a76455e8bca3ad09a92416b6cfe6536c0c7b185dfdae44fe48da516388f"
+      ],
+      "bboxes": [
+        [
+          77.23465972235434,
+          28.630275999873597,
+          77.23501024592582,
+          28.63068539908473
+        ],
+        [
+          77.23457392263363,
+          28.63032506703297,
+          77.2349244461411,
+          28.630734466368654
+        ]
+      ],
+      "maxPairOverlapM2": 0,
+      "classification": "disjoint"
+    },
+    {
+      "propertyid": "21368",
+      "sourceRows": 2,
+      "distinctGeometryCount": 2,
+      "matchingUniquePropertyId": true,
+      "geometryHashes": [
+        "ad64b7c9491ea8c333e384eb4a53c832ca6a479b4ae1bfe9001549b3397d8961",
+        "c5b63c267f3c86b0e25120a447d981f8703a2a994e97dfd31f8432947103426a"
+      ],
+      "bboxes": [
+        [
+          77.23405912258411,
+          28.630619468933574,
+          77.2344096499113,
+          28.631028880607147
+        ],
+        [
+          77.23397332228834,
+          28.63066853574104,
+          77.23432385377446,
+          28.63107794842427
+        ]
+      ],
+      "maxPairOverlapM2": 0,
+      "classification": "disjoint"
+    },
+    {
+      "propertyid": "35788",
+      "sourceRows": 2,
+      "distinctGeometryCount": 2,
+      "matchingUniquePropertyId": true,
+      "geometryHashes": [
+        "4c100d4f33a7d6fddbc2f5c2f363106c809c4dfa0fedbee33a376c7650b8e822",
+        "bd5483efe2e0e3ac95c660484287a53f5827bbb8da9284da44c551549e85e790"
+      ],
+      "bboxes": [
+        [
+          77.23849190989264,
+          28.6304628486946,
+          77.2391962616632,
+          28.630751415681985
+        ],
+        [
+          77.23850935088124,
+          28.63073334597791,
+          77.23921083145476,
+          28.631021837687868
+        ]
+      ],
+      "maxPairOverlapM2": 0,
+      "classification": "disjoint"
+    },
+    {
+      "propertyid": "21224",
+      "sourceRows": 3,
+      "distinctGeometryCount": 3,
+      "matchingUniquePropertyId": true,
+      "geometryHashes": [
+        "03decc1870c2bd1736c3bdc5d90e30480b16806f5c2064d4464992480f8d1228",
+        "0e823068646ee241ec7df3eb1c61259b5d44c4fdae4907e794aad013b646983a",
+        "07612949ca2f48772f410e2d63b363477d13a43bf32ecf23a894d34b5b67eb11"
+      ],
+      "bboxes": [
+        [
+          77.2324289019313,
+          28.631551731499417,
+          77.23277944067213,
+          28.63196115713023
+        ],
+        [
+          77.23234310007454,
+          28.631600797351652,
+          77.23269363877039,
+          28.632010223992136
+        ],
+        [
+          77.23225729813564,
+          28.631649863153598,
+          77.23260783780881,
+          28.63205929082061
+        ]
+      ],
+      "maxPairOverlapM2": 0,
+      "classification": "disjoint"
+    },
+    {
+      "propertyid": "29777",
+      "sourceRows": 3,
+      "distinctGeometryCount": 3,
+      "matchingUniquePropertyId": true,
+      "geometryHashes": [
+        "2dae16385b2d451612c176c897dc6d8518dbddc257ead973063b65c65fe2322b",
+        "50a0b51f1b880009ec2c700b26dba15056d0b5ec469ba8b3a96949b2d8caaea7",
+        "7cb723c3b14f4aa72fdeb569710a2720267606b28b4360ca2dd3010aef3c5e41"
+      ],
+      "bboxes": [
+        [
+          77.23191408955842,
+          28.63184612585861,
+          77.23226463107717,
+          28.632255556696034
+        ],
+        [
+          77.23182828720873,
+          28.63189519140917,
+          77.23217882868249,
+          28.632304622371148
+        ],
+        [
+          77.23174248477686,
+          28.631944256909442,
+          77.23209302618655,
+          28.63235368888108
+        ]
+      ],
+      "maxPairOverlapM2": 0,
+      "classification": "disjoint"
+    },
+    {
+      "propertyid": "66792",
+      "sourceRows": 2,
+      "distinctGeometryCount": 2,
+      "matchingUniquePropertyId": true,
+      "geometryHashes": [
+        "4b3131e25378f9287a6901fe715972ce8b40508cf737d35b36064ee54e3d6d2e",
+        "2172ba57d7e0adb6f9ddd4359e6e290722950720c7a21311e9b0cfaf4a332bb6"
+      ],
+      "bboxes": [
+        [
+          77.17085518307786,
+          28.64541877073918,
+          77.17103660946508,
+          28.645601830862486
+        ],
+        [
+          77.17448780720521,
+          28.642929977377975,
+          77.17467093502114,
+          28.643112634757234
+        ]
+      ],
+      "maxPairOverlapM2": 0,
+      "classification": "disjoint"
+    },
+    {
+      "propertyid": "66856",
+      "sourceRows": 2,
+      "distinctGeometryCount": 2,
+      "matchingUniquePropertyId": true,
+      "geometryHashes": [
+        "56182f14b1489d02cc70d22f338f746bdea21bfb811aea4f1e1fa30c14f54852",
+        "54818c9cf726f4b7eb095f6a362992a98ad5be37128e34499aa5133d980926b5"
+      ],
+      "bboxes": [
+        [
+          77.17160274094103,
+          28.644659125092463,
+          77.17178464730846,
+          28.644842077583313
+        ],
+        [
+          77.17175799156799,
+          28.644567131595288,
+          77.17193989789062,
+          28.644750084946565
+        ]
+      ],
+      "maxPairOverlapM2": 0,
+      "classification": "disjoint"
+    },
+    {
+      "propertyid": "55611",
+      "sourceRows": 2,
+      "distinctGeometryCount": 2,
+      "matchingUniquePropertyId": true,
+      "geometryHashes": [
+        "3585800a6481c06246f297c0c51c6cad15700883d5f5944df97d74e89e77056a",
+        "61174353c5adeca573cdc6c3ec9e2e4bda9e8f9a5f402e06eec3309c272489eb"
+      ],
+      "bboxes": [
+        [
+          77.18658446022583,
+          28.63842839502591,
+          77.1867136414774,
+          28.6385308673037
+        ],
+        [
+          77.18382832939845,
+          28.639633375385372,
+          77.18394539496641,
+          28.63974732550422
+        ]
+      ],
+      "maxPairOverlapM2": 0,
+      "classification": "disjoint"
+    },
+    {
+      "propertyid": "66685",
+      "sourceRows": 2,
+      "distinctGeometryCount": 2,
+      "matchingUniquePropertyId": true,
+      "geometryHashes": [
+        "c787fb048fef6588f3380890efe6d749475c27eb8fd430467a615a585fce26f7",
+        "1ae1fcb9ae96ab2ea5558cb7b89deb2f7b8d8055fd292ca5141e4b6a7666daf1"
+      ],
+      "bboxes": [
+        [
+          77.17416175842386,
+          28.643127887630694,
+          77.17434488737298,
+          28.643310545086386
+        ],
+        [
+          77.17176590620791,
+          28.644200364917694,
+          77.17194815770156,
+          28.644383238480227
+        ]
+      ],
+      "maxPairOverlapM2": 0,
+      "classification": "disjoint"
+    },
+    {
+      "propertyid": "67223",
+      "sourceRows": 2,
+      "distinctGeometryCount": 2,
+      "matchingUniquePropertyId": true,
+      "geometryHashes": [
+        "507b91dbdb68d7e1d2c313e73fae3e63cfb250a2df03a7815ffa67469ff111f4",
+        "5d6ed0d67109735157815667c8505524797bb06acc67235053ba9a629ddc6728"
+      ],
+      "bboxes": [
+        [
+          77.17496448066512,
+          28.644281006154706,
+          77.17514761126755,
+          28.644463663349082
+        ],
+        [
+          77.17487907210754,
+          28.64402289535728,
+          77.17506220218186,
+          28.64420555258836
+        ]
+      ],
+      "maxPairOverlapM2": 0,
+      "classification": "disjoint"
+    },
+    {
+      "propertyid": "26747",
+      "sourceRows": 2,
+      "distinctGeometryCount": 2,
+      "matchingUniquePropertyId": true,
+      "geometryHashes": [
+        "443f12b882abd267de4ced7d9ea098bd99c16383b023b617e853c3682032e8df",
+        "c97aa68aca95c6f553b355c8f415fd70fbbdf13abd87e28163cd02b145772c50"
+      ],
+      "bboxes": [
+        [
+          77.18282324352333,
+          28.640377701958133,
+          77.18295241885623,
+          28.640480676324426
+        ],
+        [
+          77.18113153929977,
+          28.642149312623044,
+          77.18121555853062,
+          28.64225378287488
+        ]
+      ],
+      "maxPairOverlapM2": 0,
+      "classification": "disjoint"
+    },
+    {
+      "propertyid": "33117",
+      "sourceRows": 2,
+      "distinctGeometryCount": 2,
+      "matchingUniquePropertyId": true,
+      "geometryHashes": [
+        "a7f025c2298f5369eebce6364ad4660fe8a07944dd42b8ea813da3f22f9ae8e4",
+        "70be8249a8d4ade9bf2acdf50f1bf942cc9e316708c5aa1777c710c9d708a1d0"
+      ],
+      "bboxes": [
+        [
+          77.18273667121724,
+          28.64025387312303,
+          77.18286585026749,
+          28.640356705018178
+        ],
+        [
+          77.1809959021691,
+          28.64213141663037,
+          77.18107992152272,
+          28.642235886039956
+        ]
+      ],
+      "maxPairOverlapM2": 0,
+      "classification": "disjoint"
+    },
+    {
+      "propertyid": "28311",
+      "sourceRows": 2,
+      "distinctGeometryCount": 2,
+      "matchingUniquePropertyId": true,
+      "geometryHashes": [
+        "faad1d19192d81cde7a9147ef6712fdda90602c13c3c7a776182dba11d3a84bc",
+        "269dda4a84f45207b4fca2127c4b2c053b780ed2d56159559f7edd752dc36680"
+      ],
+      "bboxes": [
+        [
+          77.17574091301091,
+          28.64514588135899,
+          77.17592324255523,
+          28.645328735090278
+        ],
+        [
+          77.17581832282784,
+          28.64509960336715,
+          77.17600065234839,
+          28.645282457979246
+        ]
+      ],
+      "maxPairOverlapM2": 0,
+      "classification": "disjoint"
+    },
+    {
+      "propertyid": "28318",
+      "sourceRows": 2,
+      "distinctGeometryCount": 2,
+      "matchingUniquePropertyId": true,
+      "geometryHashes": [
+        "0c0a755527e7d51d5da3be5989d77baed5001b56d24d5808c1d448bab4314436",
+        "aa9d01954d0edce0d19ff3a808dcfd81876c5cd2bdb31a72d52a7c2e55e2b6cf"
+      ],
+      "bboxes": [
+        [
+          77.17589573257507,
+          28.645053326236415,
+          77.17607806207188,
+          28.645236179925327
+        ],
+        [
+          77.17597314227123,
+          28.64500704816279,
+          77.17615547172566,
+          28.64518990183052
+        ]
+      ],
+      "maxPairOverlapM2": 0,
+      "classification": "disjoint"
+    },
+    {
+      "propertyid": "78084",
+      "sourceRows": 2,
+      "distinctGeometryCount": 2,
+      "matchingUniquePropertyId": true,
+      "geometryHashes": [
+        "04aa8a1cd85be51f9f651871ed4e6ab848af30adabbbdf9f2aa36fd1fa4d83d2",
+        "2d30e263256c42a3a838cc1584a74243e60bf60dcb43151fbd720a9946bb06af"
+      ],
+      "bboxes": [
+        [
+          77.17708696497016,
+          28.64737672353117,
+          77.17727010275097,
+          28.64755937904367
+        ],
+        [
+          77.17563886585728,
+          28.648250808982233,
+          77.17582221000559,
+          28.64843341207127
+        ]
+      ],
+      "maxPairOverlapM2": 0,
+      "classification": "disjoint"
+    },
+    {
+      "propertyid": "21980",
+      "sourceRows": 2,
+      "distinctGeometryCount": 2,
+      "matchingUniquePropertyId": true,
+      "geometryHashes": [
+        "2a794ab744f285095b71a123c939e5b93726922a0657c8ec358a4eefa263cf8f",
+        "08e6a6870e05e9f1024b9d03593bc53684c2d91b54bc3ca733467e39e2a98ecb"
+      ],
+      "bboxes": [
+        [
+          77.17735695922158,
+          28.648181239505284,
+          77.17753954905328,
+          28.648364032067903
+        ],
+        [
+          77.17743424111158,
+          28.648134791170545,
+          77.17761683090008,
+          28.648317584613746
+        ]
+      ],
+      "maxPairOverlapM2": 0,
+      "classification": "disjoint"
+    },
+    {
+      "propertyid": "29729",
+      "sourceRows": 2,
+      "distinctGeometryCount": 2,
+      "matchingUniquePropertyId": true,
+      "geometryHashes": [
+        "38395d574aa359da252fae4b13fb9ee3c73d31be48437d8cafdd1c948b7388d5",
+        "8c4113d33e86dc3fa9bca66fe8b42be728b891a181333a45f32d4b579ed530d5"
+      ],
+      "bboxes": [
+        [
+          77.17774336895859,
+          28.64794899917887,
+          77.17792595967131,
+          28.648131792569213
+        ],
+        [
+          77.17618671293339,
+          28.648230263497847,
+          77.17636916423133,
+          28.648413088858828
+        ]
+      ],
+      "maxPairOverlapM2": 0,
+      "classification": "disjoint"
+    },
+    {
+      "propertyid": "27876",
+      "sourceRows": 2,
+      "distinctGeometryCount": 2,
+      "matchingUniquePropertyId": true,
+      "geometryHashes": [
+        "ddb9f5d4519b2ede3eebe81ba209f46dd9d943759ac32edb424c2adca5a2feee",
+        "2efde2cc7b242042e57457b1b908be9d83dd2474d3b583d4f9ccf777b37322d7"
+      ],
+      "bboxes": [
+        [
+          77.17165890771192,
+          28.647659242514045,
+          77.17186597039965,
+          28.647820792309272
+        ],
+        [
+          77.17187053111645,
+          28.647165125200598,
+          77.17205366457827,
+          28.64734778323567
+        ]
+      ],
+      "maxPairOverlapM2": 0,
+      "classification": "disjoint"
+    },
+    {
+      "propertyid": "20835",
+      "sourceRows": 2,
+      "distinctGeometryCount": 2,
+      "matchingUniquePropertyId": true,
+      "geometryHashes": [
+        "584886009d9656881fb3ed1240a46bdb8cb04968aa93833ed053c7d57b3504a0",
+        "5e984f81ce78986c0a69f17f51136004c448b77ad7714ae1b144b3076d060072"
+      ],
+      "bboxes": [
+        [
+          77.1756050143421,
+          28.64721210420206,
+          77.1758127231658,
+          28.647373145643225
+        ],
+        [
+          77.16939579438491,
+          28.645624275117115,
+          77.16957805748964,
+          28.645807144470986
+        ]
+      ],
+      "maxPairOverlapM2": 0,
+      "classification": "disjoint"
+    },
+    {
+      "propertyid": "36765",
+      "sourceRows": 2,
+      "distinctGeometryCount": 2,
+      "matchingUniquePropertyId": true,
+      "geometryHashes": [
+        "a3ca68ed4067e4c99f02c06a7f8ed4c44d98f9f902547e2969d5b7feec98cdf0",
+        "133bcb7348c656d779236062dce20d354e41e037f6b34c50f79282ac8299cd91"
+      ],
+      "bboxes": [
+        [
+          77.17556197914242,
+          28.648297764279157,
+          77.17574532331771,
+          28.64848036739029
+        ],
+        [
+          77.17533131550942,
+          28.64843863086302,
+          77.17551466080678,
+          28.64862123315496
+        ]
+      ],
+      "maxPairOverlapM2": 0,
+      "classification": "disjoint"
+    },
+    {
+      "propertyid": "28797",
+      "sourceRows": 2,
+      "distinctGeometryCount": 2,
+      "matchingUniquePropertyId": true,
+      "geometryHashes": [
+        "7fa11454254268822505ac1661a8464369ddd76ff8cc6d39de7f93a6bda738dd",
+        "9a2a602bb8f85b72214b5584e2886a440adb891ed6c2f06aada6d6dcbcb4e637"
+      ],
+      "bboxes": [
+        [
+          77.17637268011428,
+          28.646101074676363,
+          77.17655501185176,
+          28.646283930002923
+        ],
+        [
+          77.17667642499434,
+          28.645614300236897,
+          77.17685910513381,
+          28.64579760823016
+        ]
+      ],
+      "maxPairOverlapM2": 0,
+      "classification": "disjoint"
+    },
+    {
+      "propertyid": "66087",
+      "sourceRows": 2,
+      "distinctGeometryCount": 2,
+      "matchingUniquePropertyId": true,
+      "geometryHashes": [
+        "0a4e509ca73ca934e2e8776d7a5f1942c9658662a65908adb2eda1d540b3e7ec",
+        "9f55a53b090bebf427be383e16b5c79fcf16b47d39e9fd6012b41e622c85df00"
+      ],
+      "bboxes": [
+        [
+          77.16676750459969,
+          28.64904916341849,
+          77.16697457276881,
+          28.64921070912512
+        ],
+        [
+          77.16581656663371,
+          28.650282444619954,
+          77.16602436080872,
+          28.65044148007022
+        ]
+      ],
+      "maxPairOverlapM2": 0,
+      "classification": "disjoint"
+    },
+    {
+      "propertyid": "29573",
+      "sourceRows": 2,
+      "distinctGeometryCount": 2,
+      "matchingUniquePropertyId": true,
+      "geometryHashes": [
+        "7bc5170078136815d1a4b784c874d2a70b538f46e31835174dde33202aacc15d",
+        "13a3d3ffcd12f075a4994165c73b89590b48fb1dc268fc6148f89c8429ab7c2c"
+      ],
+      "bboxes": [
+        [
+          77.16736389697594,
+          28.652303220943264,
+          77.16754504507549,
+          28.652429782502647
+        ],
+        [
+          77.16739008334385,
+          28.652337393859952,
+          77.16757122837922,
+          28.652463955444222
+        ]
+      ],
+      "maxPairOverlapM2": 0,
+      "classification": "disjoint"
+    },
+    {
+      "propertyid": "28609",
+      "sourceRows": 2,
+      "distinctGeometryCount": 2,
+      "matchingUniquePropertyId": true,
+      "geometryHashes": [
+        "b1a6cdbd5804a4644547b0fc6a4a95162bfd4cd30f4410fc350b3a3dc4b3770c",
+        "e9eb05024e05c2bc63bebe9fc3923138c3774174981f557f9ae7a77619a75066"
+      ],
+      "bboxes": [
+        [
+          77.16628025232697,
+          28.65247099438748,
+          77.16646042845771,
+          28.652599177400713
+        ],
+        [
+          77.16630699097298,
+          28.65250483110674,
+          77.16648716816502,
+          28.65263301412849
+        ]
+      ],
+      "maxPairOverlapM2": 0,
+      "classification": "disjoint"
+    },
+    {
+      "propertyid": "28518",
+      "sourceRows": 2,
+      "distinctGeometryCount": 2,
+      "matchingUniquePropertyId": true,
+      "geometryHashes": [
+        "1ef5458118dd3e3bd6ab68bb57eba861816252c9ea969a0e31cb0adba85453de",
+        "7c5c1980644183fd3dbbe016b94ff389b750ced75fd9cace389604f28170b87a"
+      ],
+      "bboxes": [
+        [
+          77.16636046934028,
+          28.652572504509795,
+          77.16654064660977,
+          28.65270068758132
+        ],
+        [
+          77.16633373065912,
+          28.652538667803256,
+          77.16651390686734,
+          28.652666850866275
+        ]
+      ],
+      "maxPairOverlapM2": 0,
+      "classification": "disjoint"
+    },
+    {
+      "propertyid": "63102",
+      "sourceRows": 2,
+      "distinctGeometryCount": 2,
+      "matchingUniquePropertyId": true,
+      "geometryHashes": [
+        "9339eefa881da661ed63ca2c16d5431d09c6c3a846171faa9ede14d0f11846b1",
+        "0d3fcc5495b701d495e7e27d41e1e0fee0837b056e64fe9bbd9f8d5866fc1172"
+      ],
+      "bboxes": [
+        [
+          77.16703861494135,
+          28.65238881494032,
+          77.1672187904476,
+          28.652516999512105
+        ],
+        [
+          77.16701187509824,
+          28.65235497929453,
+          77.16719205155123,
+          28.652483162021063
+        ]
+      ],
+      "maxPairOverlapM2": 0,
+      "classification": "disjoint"
+    },
+    {
+      "propertyid": "65328",
+      "sourceRows": 2,
+      "distinctGeometryCount": 2,
+      "matchingUniquePropertyId": true,
+      "geometryHashes": [
+        "014d9767b6c259a710f7a4b21bf1d8c2849a81d4c633c2177938ef43de124ad8",
+        "09a2df8ae964c294d72908e179b61f2e9f0f94b96ac1ca56d86024b864478a2b"
+      ],
+      "bboxes": [
+        [
+          77.16656891898076,
+          28.652369664152356,
+          77.1667151330743,
+          28.65252817368802
+        ],
+        [
+          77.16666431009848,
+          28.652633226804436,
+          77.16680815068442,
+          28.652792860445054
+        ]
+      ],
+      "maxPairOverlapM2": 0,
+      "classification": "disjoint"
+    },
+    {
+      "propertyid": "28704",
+      "sourceRows": 2,
+      "distinctGeometryCount": 2,
+      "matchingUniquePropertyId": true,
+      "geometryHashes": [
+        "ec3da3aaa519c40eb630dc74df5ea4040a103edcc2457f0b0aa57169ce052085",
+        "bbaced5226b5e034c1f34ff95f37697ee34abf42697db9e495c32d426d418105"
+      ],
+      "bboxes": [
+        [
+          77.16781473501587,
+          28.652435475135107,
+          77.16799590154396,
+          28.652561996362184
+        ],
+        [
+          77.16784090529183,
+          28.652469656285078,
+          77.16802207292024,
+          28.65259617663505
+        ]
+      ],
+      "maxPairOverlapM2": 0,
+      "classification": "disjoint"
+    },
+    {
+      "propertyid": "28167",
+      "sourceRows": 2,
+      "distinctGeometryCount": 2,
+      "matchingUniquePropertyId": true,
+      "geometryHashes": [
+        "46e9d6fd06e4965c02904aecff74ab706b35bb4455b8bc5c2d1b0598387b5dcb",
+        "723020ff96fca2822fb671df61fd9a0f2dd9f48dc4dc47748a52db1d874b51f2"
+      ],
+      "bboxes": [
+        [
+          77.1677072071466,
+          28.652750187481352,
+          77.16788837516621,
+          28.652876713974766
+        ],
+        [
+          77.16768103577655,
+          28.65271600904698,
+          77.16786220172897,
+          28.652842534613523
+        ]
+      ],
+      "maxPairOverlapM2": 0,
+      "classification": "disjoint"
+    },
+    {
+      "propertyid": "28473",
+      "sourceRows": 2,
+      "distinctGeometryCount": 2,
+      "matchingUniquePropertyId": true,
+      "geometryHashes": [
+        "0f7447580ee8249cbd161baa8612f4c9a1f1e5c8b929d913788ccbf00b0a7283",
+        "e1ccb606d9c9b05bca4c8b35a0511dc27959ba2f9a297ca4aa94590a2270f0f9"
+      ],
+      "bboxes": [
+        [
+          77.16813141989851,
+          28.65284016461611,
+          77.16831258565792,
+          28.65296669591841
+        ],
+        [
+          77.16815759445441,
+          28.652874345626476,
+          77.16833875925042,
+          28.653000874264055
+        ]
+      ],
+      "maxPairOverlapM2": 0,
+      "classification": "disjoint"
+    },
+    {
+      "propertyid": "23126",
+      "sourceRows": 2,
+      "distinctGeometryCount": 2,
+      "matchingUniquePropertyId": true,
+      "geometryHashes": [
+        "f293e542746526078ead65889eeb5070d1fc6dfe8f49a3ff09c0d7b23d2c8fa0",
+        "90a1e63db8caf17c59c7ad913a3340204a755e82980dbeaea9200d46f7607023"
+      ],
+      "bboxes": [
+        [
+          77.1669925198908,
+          28.653378094038256,
+          77.16717435168421,
+          28.653503479646318
+        ],
+        [
+          77.1670183061737,
+          28.653412517690327,
+          77.16720013752457,
+          28.653537892039232
+        ]
+      ],
+      "maxPairOverlapM2": 0,
+      "classification": "disjoint"
+    },
+    {
+      "propertyid": "26795",
+      "sourceRows": 2,
+      "distinctGeometryCount": 2,
+      "matchingUniquePropertyId": true,
+      "geometryHashes": [
+        "232ea849eafe97388db1abd5a442db517e888a726d5c1549fb71adf27fea3902",
+        "8f1f1c87562a4a2d1b62846fea0c6913574f15f3be5415ddb6a63de016e6afc3"
+      ],
+      "bboxes": [
+        [
+          77.16679632185291,
+          28.647183541083734,
+          77.16697913760045,
+          28.647366280413948
+        ],
+        [
+          77.16947323912602,
+          28.645578041572268,
+          77.16965550326687,
+          28.645760911807027
+        ]
+      ],
+      "maxPairOverlapM2": 0,
+      "classification": "disjoint"
+    },
+    {
+      "propertyid": "66133",
+      "sourceRows": 2,
+      "distinctGeometryCount": 2,
+      "matchingUniquePropertyId": true,
+      "geometryHashes": [
+        "746b92301b8242cbbe04a13429f8a39f359342b94f0b301e9dc56e1f731b3264",
+        "9d6ef08c2367dc39fc4b5ccf13a3271e4d5afc540da57ddc27189f806409bc2c"
+      ],
+      "bboxes": [
+        [
+          77.16687348516399,
+          28.64713694170885,
+          77.16705629884126,
+          28.64731968014817
+        ],
+        [
+          77.1695506848014,
+          28.645531808872065,
+          77.16973294687376,
+          28.64571468090609
+        ]
+      ],
+      "maxPairOverlapM2": 0,
+      "classification": "disjoint"
+    },
+    {
+      "propertyid": "66130",
+      "sourceRows": 2,
+      "distinctGeometryCount": 2,
+      "matchingUniquePropertyId": true,
+      "geometryHashes": [
+        "7efdfe07cd2c9e254d786561da09b1e25fd3e67520dca9b271b1e9eb4c93f82b",
+        "55a4ee6d50f458eaf23f0867f04b16eed582655f3b7566df720826f46ad430dd"
+      ],
+      "bboxes": [
+        [
+          77.16577895787894,
+          28.647794325781582,
+          77.1659612865614,
+          28.647977184154023
+        ],
+        [
+          77.16849657170022,
+          28.646160336786423,
+          77.16867884106294,
+          28.64634320620523
+        ]
+      ],
+      "maxPairOverlapM2": 0,
+      "classification": "disjoint"
+    },
+    {
+      "propertyid": "27535",
+      "sourceRows": 2,
+      "distinctGeometryCount": 2,
+      "matchingUniquePropertyId": true,
+      "geometryHashes": [
+        "99b3a87201f1bd91f84d10bc2ae22d04b5e8d87c17a39fdde72be5bb86f8a3a4",
+        "599d402bb6ca5a59e4fd02be7237c0b44d5443c456602233c5624d12deec3602"
+      ],
+      "bboxes": [
+        [
+          77.16601120805856,
+          28.647655510479698,
+          77.16619353468059,
+          28.647838366148104
+        ],
+        [
+          77.16872890382673,
+          28.646021629435758,
+          77.16891117209641,
+          28.64620449795476
+        ]
+      ],
+      "maxPairOverlapM2": 0,
+      "classification": "disjoint"
+    },
+    {
+      "propertyid": "14053",
+      "sourceRows": 2,
+      "distinctGeometryCount": 2,
+      "matchingUniquePropertyId": true,
+      "geometryHashes": [
+        "b6328eee373d355246f4c3e2cff0906026a801a2548595a30a524a74ad539078",
+        "a3434427717ae8d058b1a55e417a8709c37a2ff6bccdaecc4276a8bc01871099"
+      ],
+      "bboxes": [
+        [
+          77.16593379272798,
+          28.647701783228072,
+          77.16611611833262,
+          28.647884638868568
+        ],
+        [
+          77.16865145951338,
+          28.646067865260267,
+          77.16883372676554,
+          28.64625073468599
+        ]
+      ],
+      "maxPairOverlapM2": 0,
+      "classification": "disjoint"
+    },
+    {
+      "propertyid": "24005",
+      "sourceRows": 2,
+      "distinctGeometryCount": 2,
+      "matchingUniquePropertyId": true,
+      "geometryHashes": [
+        "0be47571507f38928254563221a773bdbbfa87d3525407f826f2fbaae3132557",
+        "83cf8766d05e5014e913af674247cdfd9dad188539328f2d893714124e08d77d"
+      ],
+      "bboxes": [
+        [
+          77.16500480328507,
+          28.648257072075634,
+          77.16518713919514,
+          28.648439928675725
+        ],
+        [
+          77.1676792352798,
+          28.646645127353114,
+          77.16786204476114,
+          28.64682786569797
+        ]
+      ],
+      "maxPairOverlapM2": 0,
+      "classification": "disjoint"
+    },
+    {
+      "propertyid": "66126",
+      "sourceRows": 2,
+      "distinctGeometryCount": 2,
+      "matchingUniquePropertyId": true,
+      "geometryHashes": [
+        "1d9b866bf658943a9d3fa7fdb755d2b6f0de75fd85bd557af2e801cdde894f96",
+        "95265964a892ff3cb9f7da61d155548034e908cc4dec929ea2689719c9c53fef"
+      ],
+      "bboxes": [
+        [
+          77.16508222034471,
+          28.648210796324797,
+          77.16526455111853,
+          28.648393651985394
+        ],
+        [
+          77.16775639994363,
+          28.646598531121597,
+          77.16793920938119,
+          28.646781268542853
+        ]
+      ],
+      "maxPairOverlapM2": 0,
+      "classification": "disjoint"
+    },
+    {
+      "propertyid": "66125",
+      "sourceRows": 2,
+      "distinctGeometryCount": 2,
+      "matchingUniquePropertyId": true,
+      "geometryHashes": [
+        "53abaa0efde120edeee6d1b61acd293c3048a1f7870a899c190f69bcdd41074a",
+        "631fb23aa9e1f9b298c552736feba7e22aacd80f110835daa11f2c4cc803dfa5"
+      ],
+      "bboxes": [
+        [
+          77.16492739229082,
+          28.648303348752954,
+          77.16510972515705,
+          28.648486202635496
+        ],
+        [
+          77.16760206855672,
+          28.646691723560373,
+          77.1677848810937,
+          28.646874464632837
+        ]
+      ],
+      "maxPairOverlapM2": 0,
+      "classification": "disjoint"
+    },
+    {
+      "propertyid": "63381",
+      "sourceRows": 2,
+      "distinctGeometryCount": 2,
+      "matchingUniquePropertyId": true,
+      "geometryHashes": [
+        "47bdaa7c27400cf771e2d517afa47d84f0607eb18b0590bf57d68b31d506433a",
+        "fc5b043968a417573371942d6e2e8dc251ac2d8e69ce99629f10322cc9a30a61"
+      ],
+      "bboxes": [
+        [
+          77.16515963326314,
+          28.648164522337034,
+          77.16534196607682,
+          28.64834737528682
+        ],
+        [
+          77.1656003135199,
+          28.64735078758753,
+          77.16596506154299,
+          28.647716477869018
+        ]
+      ],
+      "maxPairOverlapM2": 0,
+      "classification": "disjoint"
+    },
+    {
+      "propertyid": "24895",
+      "sourceRows": 2,
+      "distinctGeometryCount": 2,
+      "matchingUniquePropertyId": true,
+      "geometryHashes": [
+        "13cc02afc0639da7c525d9f1de950bd6ccf095ae92584dd10bee655da845164b",
+        "bc9af4fd458c4de08b80fc2fce039122b697f678d5c1aabd2b728153fbe8a87d"
+      ],
+      "bboxes": [
+        [
+          77.16539188080289,
+          28.648025695454724,
+          77.16557420854416,
+          28.648208551161513
+        ],
+        [
+          77.16810935776142,
+          28.64639152016625,
+          77.16829162817143,
+          28.64657438872311
+        ]
+      ],
+      "maxPairOverlapM2": 0,
+      "classification": "disjoint"
+    },
+    {
+      "propertyid": "27534",
+      "sourceRows": 2,
+      "distinctGeometryCount": 2,
+      "matchingUniquePropertyId": true,
+      "geometryHashes": [
+        "9001e4e387a3b747a4a6314dc83c1a589f2065c6e95456aada24d1c25cd5032f",
+        "7b7ed7707ba698ff174a20c6ee4e6b8c353dd395ff768e7fe83e95fcd3d12735"
+      ],
+      "bboxes": [
+        [
+          77.16477256191311,
+          28.64839590003367,
+          77.16495489889824,
+          28.64857875758287
+        ],
+        [
+          77.16744774103586,
+          28.64678492037938,
+          77.16763055152263,
+          28.64696765785431
+        ]
+      ],
+      "maxPairOverlapM2": 0,
+      "classification": "disjoint"
+    },
+    {
+      "propertyid": "14616",
+      "sourceRows": 2,
+      "distinctGeometryCount": 2,
+      "matchingUniquePropertyId": true,
+      "geometryHashes": [
+        "7438b1c1280eb3fd71614c301da36b579d10c04438b590e693f2e582fdf188be",
+        "e34bda997229315ca913d1e3ed80a2c8a726310b194f12affbc8851a6a066d34"
+      ],
+      "bboxes": [
+        [
+          77.16469514970579,
+          28.648442178375866,
+          77.16487748362853,
+          28.648625033207516
+        ],
+        [
+          77.16467160930577,
+          28.647906440014953,
+          77.16503635790068,
+          28.648272130805047
+        ]
+      ],
+      "maxPairOverlapM2": 0,
+      "classification": "disjoint"
+    },
+    {
+      "propertyid": "66124",
+      "sourceRows": 2,
+      "distinctGeometryCount": 2,
+      "matchingUniquePropertyId": true,
+      "geometryHashes": [
+        "b1d94fa6a1a7540935aa5f88b9f81618bbd0a1b572127dc42f0dd9da94ed14ff",
+        "f6023505e9cc9eaac57dc68bd615159be97440883546da1f1b997218a2a1adb9"
+      ],
+      "bboxes": [
+        [
+          77.16484997812228,
+          28.64834962529124,
+          77.16503230997111,
+          28.64853248099895
+        ],
+        [
+          77.16752490481268,
+          28.64673832246573,
+          77.16770771637094,
+          28.64692106082108
+        ]
+      ],
+      "maxPairOverlapM2": 0,
+      "classification": "disjoint"
+    },
+    {
+      "propertyid": "63382",
+      "sourceRows": 2,
+      "distinctGeometryCount": 2,
+      "matchingUniquePropertyId": true,
+      "geometryHashes": [
+        "ea7d1ee5bbb4ab3d75a0da46017fcd5138ac482505fa5b8931a8cea5dad0f783",
+        "8a22200cb561801a28d524969783d4f1227798ad23eb31c5cc64d7ca4bbe03f1"
+      ],
+      "bboxes": [
+        [
+          77.16461773841424,
+          28.648488455709735,
+          77.16480006929311,
+          28.648671309676917
+        ],
+        [
+          77.16729341117181,
+          28.64687811792152,
+          77.16747622375405,
+          28.647060857194575
+        ]
+      ],
+      "maxPairOverlapM2": 0,
+      "classification": "disjoint"
+    },
+    {
+      "propertyid": "24752",
+      "sourceRows": 2,
+      "distinctGeometryCount": 2,
+      "matchingUniquePropertyId": true,
+      "geometryHashes": [
+        "2e2b4417c1c19abf4beec1be96edd1937fd86b37c203e1203d53cdea046195c1",
+        "7bd4016a2ebda9029c78619357087dcd919b78f163e734ff1ecb120f6bde561f"
+      ],
+      "bboxes": [
+        [
+          77.16796318167175,
+          28.654493425934703,
+          77.1681064695323,
+          28.654653298967407
+        ],
+        [
+          77.16800196166041,
+          28.65447038032967,
+          77.16814524848577,
+          28.6546302541945
+        ]
+      ],
+      "maxPairOverlapM2": 0,
+      "classification": "disjoint"
+    },
+    {
+      "propertyid": "65737",
+      "sourceRows": 2,
+      "distinctGeometryCount": 2,
+      "matchingUniquePropertyId": true,
+      "geometryHashes": [
+        "743ea9c913c9eebb278e8c644670861dbdf68d9871522b799ae5535fa1c00679",
+        "3293377fca248b3e5b0e397a290f021ffd05b40dca80f67d706ee391d90f4fbe"
+      ],
+      "bboxes": [
+        [
+          77.16723214040874,
+          28.65463203899344,
+          77.16737309059134,
+          28.654792928260346
+        ],
+        [
+          77.16396132128256,
+          28.65333057917466,
+          77.16414214231077,
+          28.653457686150965
+        ]
+      ],
+      "maxPairOverlapM2": 0,
+      "classification": "disjoint"
+    },
+    {
+      "propertyid": "65827",
+      "sourceRows": 2,
+      "distinctGeometryCount": 2,
+      "matchingUniquePropertyId": true,
+      "geometryHashes": [
+        "ed00939365fcbea6059b0b45cd77283347aa4183890f6fa905b663434df0c4b8",
+        "cdc9227fb2988529a77fc704a01741e145e04641c10b8f28278e2aa87b1af1e4"
+      ],
+      "bboxes": [
+        [
+          77.16731062428377,
+          28.654587182092996,
+          77.16745157448372,
+          28.654748071319634
+        ],
+        [
+          77.16696198774943,
+          28.654126506102898,
+          77.16711413522579,
+          28.654290555198767
+        ]
+      ],
+      "maxPairOverlapM2": 0,
+      "classification": "disjoint"
+    },
+    {
+      "propertyid": "28965",
+      "sourceRows": 2,
+      "distinctGeometryCount": 2,
+      "matchingUniquePropertyId": true,
+      "geometryHashes": [
+        "5e47a3efa8dfbce40caf4f8f80fa1d13a6ea1e802115658a07cf74b1e9e0afce",
+        "cc2c37c50b69be69fe4d4479c2057397588b9bdd281b9c1a0f9c41dbe712f10d"
+      ],
+      "bboxes": [
+        [
+          77.16664318828626,
+          28.654549405245735,
+          77.1668251674118,
+          28.65467449520636
+        ],
+        [
+          77.16661750310998,
+          28.65451494186835,
+          77.16679948607953,
+          28.654640033411734
+        ]
+      ],
+      "maxPairOverlapM2": 0,
+      "classification": "disjoint"
+    },
+    {
+      "propertyid": "39176",
+      "sourceRows": 2,
+      "distinctGeometryCount": 2,
+      "matchingUniquePropertyId": true,
+      "geometryHashes": [
+        "8bc214b7704fc07c4bbd014d6ea5736842d5f0b2ade12b580b2bb07772d0ae11",
+        "21ec6e9e37c4d39aed6fa353d8ebeb7140c20740e1deec9e22b173c25418046e"
+      ],
+      "bboxes": [
+        [
+          77.16827310593293,
+          28.655687684862883,
+          77.1684548039416,
+          28.655813457698116
+        ],
+        [
+          77.1682472024797,
+          28.655653345281223,
+          77.16842890241774,
+          28.65577911804244
+        ]
+      ],
+      "maxPairOverlapM2": 0,
+      "classification": "disjoint"
+    },
+    {
+      "propertyid": "28977",
+      "sourceRows": 2,
+      "distinctGeometryCount": 2,
+      "matchingUniquePropertyId": true,
+      "geometryHashes": [
+        "4133a0e931fb7debfc4d31ab7a29d14992f1ac1596835442c1ed46fe97de4af7",
+        "621023a3a8dea9ebd7036e115940b542aeda06c26c6c18be70bcee229020adbf"
+      ],
+      "bboxes": [
+        [
+          77.1680558591156,
+          28.65370311837479,
+          77.16823815283945,
+          28.653827647411553
+        ],
+        [
+          77.16808135666842,
+          28.65373769723057,
+          77.16826365664475,
+          28.653862219092602
+        ]
+      ],
+      "maxPairOverlapM2": 0,
+      "classification": "disjoint"
+    },
+    {
+      "propertyid": "28960",
+      "sourceRows": 2,
+      "distinctGeometryCount": 2,
+      "matchingUniquePropertyId": true,
+      "geometryHashes": [
+        "e02e35243bdea6d648b5d39b2f8bb9234090c1b2e59c01102791c696f4499472",
+        "2feead648dee1dfb15f2553bda6f6ef2d24a8c22a2fdb330007ae92d5f6349e7"
+      ],
+      "bboxes": [
+        [
+          77.16792833109665,
+          28.653530243490003,
+          77.16811061880681,
+          28.6536547917224
+        ],
+        [
+          77.16790282453674,
+          28.653495667452326,
+          77.16808510292677,
+          28.653620225581793
+        ]
+      ],
+      "maxPairOverlapM2": 0,
+      "classification": "disjoint"
+    },
+    {
+      "propertyid": "28460",
+      "sourceRows": 2,
+      "distinctGeometryCount": 2,
+      "matchingUniquePropertyId": true,
+      "geometryHashes": [
+        "ed42ea1eb1df6c9cfe54c6ed32401bf3935ceb227a8abfe41e05ac62b2a54715",
+        "5ea0ff0573528f4483997b099f23d5d0c400c8d01bf07f9366909cce564f85ff"
+      ],
+      "bboxes": [
+        [
+          77.16831874613719,
+          28.65354727595616,
+          77.16850067029702,
+          28.653672480441678
+        ],
+        [
+          77.16829301098575,
+          28.653512830865253,
+          77.16847493898955,
+          28.65363803781898
+        ]
+      ],
+      "maxPairOverlapM2": 0,
+      "classification": "disjoint"
+    },
+    {
+      "propertyid": "65629",
+      "sourceRows": 2,
+      "distinctGeometryCount": 2,
+      "matchingUniquePropertyId": true,
+      "geometryHashes": [
+        "0bafda388ea80b9bf5cefd6d874a9df4c3aff3bdfa259450882754fec5565981",
+        "61e768480dbdc86d26c9650f2fd98a58f45850e0bde2f5544fca131636ca263a"
+      ],
+      "bboxes": [
+        [
+          77.16810097398856,
+          28.65309269777574,
+          77.16824326237355,
+          28.653253016278722
+        ],
+        [
+          77.16813993220421,
+          28.653069897306256,
+          77.16828220971937,
+          28.653230220675372
+        ]
+      ],
+      "maxPairOverlapM2": 0,
+      "classification": "disjoint"
+    },
+    {
+      "propertyid": "66047",
+      "sourceRows": 2,
+      "distinctGeometryCount": 2,
+      "matchingUniquePropertyId": true,
+      "geometryHashes": [
+        "d9a58066173b8568545a48ca37a0adf0c21b8b1d1ce440e47db836fc90dc2810",
+        "4cfe1325e268e4d38b125cf63c9594d770d9171ebabbf1bed6eb0ffdef632ce7"
+      ],
+      "bboxes": [
+        [
+          77.16790132710379,
+          28.656183243447494,
+          77.16804341790328,
+          28.65634364773724
+        ],
+        [
+          77.16801839222182,
+          28.656115061255356,
+          77.16816048097971,
+          28.656275465467456
+        ]
+      ],
+      "maxPairOverlapM2": 0,
+      "classification": "disjoint"
+    },
+    {
+      "propertyid": "25513",
+      "sourceRows": 2,
+      "distinctGeometryCount": 2,
+      "matchingUniquePropertyId": true,
+      "geometryHashes": [
+        "35abb61ef8186509dd17da08f1aa465bffec54d03e114c8943633f24902ced68",
+        "ac0b8598fed83f9547d06b0517fb794c58e7ecac6467ef83678222a9ec1cb456"
+      ],
+      "bboxes": [
+        [
+          77.16797936985138,
+          28.65613778866316,
+          77.16812146066563,
+          28.656298192912057
+        ],
+        [
+          77.16794034950881,
+          28.65616051607691,
+          77.1680824382705,
+          28.656320920313487
+        ]
+      ],
+      "maxPairOverlapM2": 0,
+      "classification": "disjoint"
+    },
+    {
+      "propertyid": "29739",
+      "sourceRows": 2,
+      "distinctGeometryCount": 2,
+      "matchingUniquePropertyId": true,
+      "geometryHashes": [
+        "2d787970ff9d303fa525283f18ff6945f2b34b6d7bbbfcf4a63d88aeb0cf2f91",
+        "ee96af487b7c3f16098eede9c2c5cc90d06b617efa3a5e4f78b3d1f8dc843aad"
+      ],
+      "bboxes": [
+        [
+          77.16590467658808,
+          28.655069046041515,
+          77.16604725332608,
+          28.655229234901455
+        ],
+        [
+          77.16586574873855,
+          28.655091898555725,
+          77.16600832546973,
+          28.6552520874362
+        ]
+      ],
+      "maxPairOverlapM2": 0,
+      "classification": "disjoint"
+    },
+    {
+      "propertyid": "29738",
+      "sourceRows": 2,
+      "distinctGeometryCount": 2,
+      "matchingUniquePropertyId": true,
+      "geometryHashes": [
+        "b98e1bebde09fa8918b1c34e3f28ad0f43d163257a80abb021b6ba27dba7bd81",
+        "c58bde81ac79b031fbf5d638e7d670572d4426a47c20dbdbf2beaebf93cfac53"
+      ],
+      "bboxes": [
+        [
+          77.16513922812497,
+          28.65591166742137,
+          77.16532041042448,
+          28.6560381575434
+        ],
+        [
+          77.16516537208969,
+          28.655945862027824,
+          77.16534656164364,
+          28.656072344056764
+        ]
+      ],
+      "maxPairOverlapM2": 0,
+      "classification": "disjoint"
+    },
+    {
+      "propertyid": "26384",
+      "sourceRows": 2,
+      "distinctGeometryCount": 2,
+      "matchingUniquePropertyId": true,
+      "geometryHashes": [
+        "d45f28fa422ce20e730b6a504087e55cc1c4b7e3562a2aaa8cbb57c36951a50c",
+        "624d93129747a3d0cde9303992e3d9d52b7de44eb86c2177baca27d224092d23"
+      ],
+      "bboxes": [
+        [
+          77.16863111391964,
+          28.653117194558646,
+          77.1687751243036,
+          28.653276747513083
+        ],
+        [
+          77.18716863704852,
+          28.64228641793458,
+          77.18729782102648,
+          28.642388651338713
+        ]
+      ],
+      "maxPairOverlapM2": 0,
+      "classification": "disjoint"
+    },
+    {
+      "propertyid": "28958",
+      "sourceRows": 2,
+      "distinctGeometryCount": 2,
+      "matchingUniquePropertyId": true,
+      "geometryHashes": [
+        "4cdc4c0235face0c1bb6c75d4d72e3932709fafa7f95457bd9cfa21cf4c95138",
+        "ec358b278c8814b732c462f3cbdeb10ceb46297ece22e23c2ecefae6668a2ceb"
+      ],
+      "bboxes": [
+        [
+          77.16710102546432,
+          28.654042456696452,
+          77.16725300241077,
+          28.654206586190924
+        ],
+        [
+          77.16705466345368,
+          28.6540704589226,
+          77.16720670287022,
+          28.654234553903862
+        ]
+      ],
+      "maxPairOverlapM2": 0,
+      "classification": "disjoint"
+    },
+    {
+      "propertyid": "39422",
+      "sourceRows": 2,
+      "distinctGeometryCount": 2,
+      "matchingUniquePropertyId": true,
+      "geometryHashes": [
+        "43af0d38e51cec6ec8a84eea251b2d739a0d8c62c10ab836534b3125aa9c37b7",
+        "6b906f08633af9697a440cb62eb72313a708f2300b5afbe383de2e77250dc898"
+      ],
+      "bboxes": [
+        [
+          77.16673054803309,
+          28.65426693394385,
+          77.16688295309335,
+          28.65443087904464
+        ],
+        [
+          77.16668429721858,
+          28.65429507863734,
+          77.16683676575393,
+          28.654458988323256
+        ]
+      ],
+      "maxPairOverlapM2": 0,
+      "classification": "disjoint"
+    },
+    {
+      "propertyid": "27014",
+      "sourceRows": 2,
+      "distinctGeometryCount": 2,
+      "matchingUniquePropertyId": true,
+      "geometryHashes": [
+        "9773a91221e1698e7fb80c751e7a08071ecaef68315c69ac6ae32549dea1b1a3",
+        "aaf5c5280b3b9958956027610d770dd1a36e8d1becf7bf76c5524aad518df714"
+      ],
+      "bboxes": [
+        [
+          77.16677680514324,
+          28.654238815968327,
+          77.16692916563586,
+          28.65440277242473
+        ],
+        [
+          77.16682308323615,
+          28.654210705981583,
+          77.16697538229909,
+          28.65437469877129
+        ]
+      ],
+      "maxPairOverlapM2": 0,
+      "classification": "disjoint"
+    },
+    {
+      "propertyid": "28967",
+      "sourceRows": 2,
+      "distinctGeometryCount": 2,
+      "matchingUniquePropertyId": true,
+      "geometryHashes": [
+        "31e87beea369362fc3c6a855dca7336df90cfa3ad7c92ce0b6174d4e7c8dc171",
+        "9f68c9d2bf254965b24f7ff348d299b79b447055fc63822cad9dac7ffae2911d"
+      ],
+      "bboxes": [
+        [
+          77.16767362818292,
+          28.653998578701632,
+          77.16781524789147,
+          28.65415648729109
+        ],
+        [
+          77.16763760770804,
+          28.65402031232541,
+          77.16777922744804,
+          28.654178221886188
+        ]
+      ],
+      "maxPairOverlapM2": 0,
+      "classification": "disjoint"
+    },
+    {
+      "propertyid": "23132",
+      "sourceRows": 2,
+      "distinctGeometryCount": 2,
+      "matchingUniquePropertyId": true,
+      "geometryHashes": [
+        "d1219e2dddc38807dc217ec1404e22e1548d7db378aa0a2697f8a1014fd8e585",
+        "db30c5ffdc7ab02b18f05d2c4ea02da78c1780c346f8618cbb12a43c80d91aec"
+      ],
+      "bboxes": [
+        [
+          77.16450258162249,
+          28.655603149299854,
+          77.16468293893439,
+          28.65573102798572
+        ],
+        [
+          77.1645291971279,
+          28.655637058514305,
+          77.16470956271523,
+          28.655764927319435
+        ]
+      ],
+      "maxPairOverlapM2": 0,
+      "classification": "disjoint"
+    },
+    {
+      "propertyid": "29750",
+      "sourceRows": 2,
+      "distinctGeometryCount": 2,
+      "matchingUniquePropertyId": true,
+      "geometryHashes": [
+        "cd215ddfd1b7419df8ee887e53a018e358376207b12d1dfb7722feb23693add6",
+        "1ce4aefb88df87298fa7214cd4e28ceba2813ecc99fcca3c1a6ec0914a35b210"
+      ],
+      "bboxes": [
+        [
+          77.1641351876198,
+          28.655797612557606,
+          77.16427709844987,
+          28.655958095895556
+        ],
+        [
+          77.1640961318753,
+          28.655820295210457,
+          77.1642380426051,
+          28.655980781225722
+        ]
+      ],
+      "maxPairOverlapM2": 0,
+      "classification": "disjoint"
+    },
+    {
+      "propertyid": "65864",
+      "sourceRows": 2,
+      "distinctGeometryCount": 2,
+      "matchingUniquePropertyId": true,
+      "geometryHashes": [
+        "43408137b598d09318c219b496de252477004353cb63c460c4426a8fcd412d59",
+        "85700b457894a92f8f67318d32bf4967cb81bce20a6e21fc17fb563a25a5d27c"
+      ],
+      "bboxes": [
+        [
+          77.16440737175854,
+          28.65391610909975,
+          77.16458865551284,
+          28.654042423410992
+        ],
+        [
+          77.16438127997093,
+          28.65388188896221,
+          77.16456256981976,
+          28.65400819239193
+        ]
+      ],
+      "maxPairOverlapM2": 0,
+      "classification": "disjoint"
+    },
+    {
+      "propertyid": "39412",
+      "sourceRows": 2,
+      "distinctGeometryCount": 2,
+      "matchingUniquePropertyId": true,
+      "geometryHashes": [
+        "cb9280082bb6c6dc17f3a757c361b7eb6e6574ca3a34ae2d0c33f9a859898fa1",
+        "08fad907229b3bcb97c47aea935d2b7065b4e339ae443020675c2049fc7f834a"
+      ],
+      "bboxes": [
+        [
+          77.16409275255363,
+          28.653807996546508,
+          77.16423542110869,
+          28.6539681392333
+        ],
+        [
+          77.16413166359898,
+          28.653785120418114,
+          77.16427432396165,
+          28.65394527041472
+        ]
+      ],
+      "maxPairOverlapM2": 0,
+      "classification": "disjoint"
+    },
+    {
+      "propertyid": "28624",
+      "sourceRows": 2,
+      "distinctGeometryCount": 2,
+      "matchingUniquePropertyId": true,
+      "geometryHashes": [
+        "1b3ada9746c98d365f18c6a6d48d6b2ec619ab167098396381856c69c47c922b",
+        "ced60896afb9d59fddbfd2ee3cb634daaf655e264da41b007b6ef0085c4374eb"
+      ],
+      "bboxes": [
+        [
+          77.16425147860885,
+          28.654390796240907,
+          77.16439962721618,
+          28.654548315667487
+        ],
+        [
+          77.16421372581785,
+          28.65441513633043,
+          77.16436188357261,
+          28.654572649350484
+        ]
+      ],
+      "maxPairOverlapM2": 0,
+      "classification": "disjoint"
+    },
+    {
+      "propertyid": "65199",
+      "sourceRows": 2,
+      "distinctGeometryCount": 2,
+      "matchingUniquePropertyId": true,
+      "geometryHashes": [
+        "63b02bf9f40f3f67d0ed7836c859cb27be8968e6dc82a034974cc340b2275829",
+        "055a07b4af55f7b879c727b683ea6a6f8c3da3e9788a20d40ad258ed519e93cd"
+      ],
+      "bboxes": [
+        [
+          77.16367201721397,
+          28.653991540351793,
+          77.16385364310071,
+          28.65411725333922
+        ],
+        [
+          77.16358201112288,
+          28.653895180088508,
+          77.1637627122197,
+          28.65402248502983
+        ]
+      ],
+      "maxPairOverlapM2": 0,
+      "classification": "disjoint"
+    },
+    {
+      "propertyid": "65231",
+      "sourceRows": 2,
+      "distinctGeometryCount": 2,
+      "matchingUniquePropertyId": true,
+      "geometryHashes": [
+        "a4e1d3235b99619eefd650c2902e3deacaa3c7dc2181f3c79fe54ef5feae56de",
+        "a1989e7b18d5343f862449dcaefa5e77f3b6901b59711bc592bc7571d94ac8ea"
+      ],
+      "bboxes": [
+        [
+          77.16406538898012,
+          28.654526636619877,
+          77.16424667078469,
+          28.654652952362422
+        ],
+        [
+          77.164091474671,
+          28.65456086491385,
+          77.16427277985045,
+          28.654687162396158
+        ]
+      ],
+      "maxPairOverlapM2": 0,
+      "classification": "disjoint"
+    },
+    {
+      "propertyid": "25502",
+      "sourceRows": 2,
+      "distinctGeometryCount": 2,
+      "matchingUniquePropertyId": true,
+      "geometryHashes": [
+        "33fa2d4c5a0c5507572aeb1add4b877818bac03489c64fd54145da77f195af52",
+        "e7b19d912d5f7a5876ef8812ddb55c70064db7cdeee50f00a2f4a2715f07bca7"
+      ],
+      "bboxes": [
+        [
+          77.16507355882874,
+          28.654781079808174,
+          77.1652561651437,
+          28.654905002889468
+        ],
+        [
+          77.16504827835202,
+          28.654746386677008,
+          77.16523088973638,
+          28.654870302533883
+        ]
+      ],
+      "maxPairOverlapM2": 0,
+      "classification": "disjoint"
+    },
+    {
+      "propertyid": "25490",
+      "sourceRows": 2,
+      "distinctGeometryCount": 2,
+      "matchingUniquePropertyId": true,
+      "geometryHashes": [
+        "ea388dc594664e86e83d86d1c75d023d66710a5fe9390b77216f1dbc414e973f",
+        "707909cbcbb64e8e0ae42c99a95c5a8a051ac5474b9d043c4b295c4555530526"
+      ],
+      "bboxes": [
+        [
+          77.16292522159479,
+          28.653549329061043,
+          77.16310698160834,
+          28.65367482665224
+        ],
+        [
+          77.16295105718368,
+          28.653583701555046,
+          77.16313280898433,
+          28.65370920551779
+        ]
+      ],
+      "maxPairOverlapM2": 0,
+      "classification": "disjoint"
+    },
+    {
+      "propertyid": "29335",
+      "sourceRows": 2,
+      "distinctGeometryCount": 2,
+      "matchingUniquePropertyId": true,
+      "geometryHashes": [
+        "8aba932ed09ded09934767338f678131ac10e9cc0c76153d41ecd5cc8bd8963e",
+        "9affae7303eefc14f7d2eb7b3746bf6132ca8bf6c5d96552c43dc34f2fd19273"
+      ],
+      "bboxes": [
+        [
+          77.16295113133296,
+          28.65465123484591,
+          77.1631336673673,
+          28.654775310500238
+        ],
+        [
+          77.16297647573242,
+          28.654685894775817,
+          77.16315901801961,
+          28.654809963255325
+        ]
+      ],
+      "maxPairOverlapM2": 0,
+      "classification": "disjoint"
+    },
+    {
+      "propertyid": "46494",
+      "sourceRows": 2,
+      "distinctGeometryCount": 2,
+      "matchingUniquePropertyId": true,
+      "geometryHashes": [
+        "9f8ed97403fe54f693d8911fe6820b057d4537537207f0c6d3eecba2b9a24d3f",
+        "72ccd2444605154b519b4fab6d3cd56b7efd228a74cc8e55843262e4dac30b5f"
+      ],
+      "bboxes": [
+        [
+          77.16377496778533,
+          28.655037343196554,
+          77.16391708046984,
+          28.655197742496572
+        ],
+        [
+          77.16373596046985,
+          28.65506008904314,
+          77.1638780793196,
+          28.6552204810986
+        ]
+      ],
+      "maxPairOverlapM2": 0,
+      "classification": "disjoint"
+    },
+    {
+      "propertyid": "36535",
+      "sourceRows": 2,
+      "distinctGeometryCount": 2,
+      "matchingUniquePropertyId": true,
+      "geometryHashes": [
+        "e8226225050299e5894be71ed58af3640d9bc0166374c84d6e2fd8d81e578888",
+        "978a8f83748730ed643698b8c34ce90ab6c9abfc790685406163d17b02556a09"
+      ],
+      "bboxes": [
+        [
+          77.1639321511625,
+          28.65522847050786,
+          77.16407546877979,
+          28.655388338377964
+        ],
+        [
+          77.16389338460283,
+          28.65525153557316,
+          77.16403670840528,
+          28.65541139526429
+        ]
+      ],
+      "maxPairOverlapM2": 0,
+      "classification": "disjoint"
+    },
+    {
+      "propertyid": "29623",
+      "sourceRows": 2,
+      "distinctGeometryCount": 2,
+      "matchingUniquePropertyId": true,
+      "geometryHashes": [
+        "49d7cf22ece07a0615838b764999e008713cf297aea863cff6e4b2e5b8ae3876",
+        "9df05a5d2cc7f0998207f68b9a5ce32df6deae4d47b98795389cf8472c5b2c68"
+      ],
+      "bboxes": [
+        [
+          77.16397091863472,
+          28.655205410795258,
+          77.16411423134883,
+          28.655365275200094
+        ],
+        [
+          77.16400968926845,
+          28.655182348366395,
+          77.16415299488601,
+          28.65534222009722
+        ]
+      ],
+      "maxPairOverlapM2": 0,
+      "classification": "disjoint"
+    },
+    {
+      "propertyid": "29621",
+      "sourceRows": 2,
+      "distinctGeometryCount": 2,
+      "matchingUniquePropertyId": true,
+      "geometryHashes": [
+        "a7174880d7ec9f32c260fccd3f6a02c676b60d0308f273058d767a4139f0c248",
+        "f84cbb40eb7a0defbcb7d74b4bb99de5e30f21a5eb1fb7f17b4b963780b928fb"
+      ],
+      "bboxes": [
+        [
+          77.16394998548056,
+          28.655556037467917,
+          77.16409338686745,
+          28.655715866431816
+        ],
+        [
+          77.16391123362598,
+          28.65557912391361,
+          77.16405464313218,
+          28.655738946518916
+        ]
+      ],
+      "maxPairOverlapM2": 0,
+      "classification": "disjoint"
+    },
+    {
+      "propertyid": "13682",
+      "sourceRows": 2,
+      "distinctGeometryCount": 2,
+      "matchingUniquePropertyId": true,
+      "geometryHashes": [
+        "4a9de94a14446e2443707477ac018894449bc02304c1b5eef61533d77625c117",
+        "0ab21f732e1e7ef02ebfddec5769668e2dcdd6d831ad8a935855da9a3777b8aa"
+      ],
+      "bboxes": [
+        [
+          77.16420725343427,
+          28.64818426402036,
+          77.16457200231501,
+          28.648549955064738
+        ],
+        [
+          77.16436203900362,
+          28.648091656182146,
+          77.16472678778909,
+          28.648457347141765
+        ]
+      ],
+      "maxPairOverlapM2": 0,
+      "classification": "disjoint"
+    },
+    {
+      "propertyid": "40719",
+      "sourceRows": 2,
+      "distinctGeometryCount": 2,
+      "matchingUniquePropertyId": true,
+      "geometryHashes": [
+        "025dc23a72cfcf707963af6023ae85cab49d43bb046f2395c8d2e6edddafe2f9",
+        "dd7c4375950664fc1772aa008a72209080e1288b860383619b1e83a909371cb0"
+      ],
+      "bboxes": [
+        [
+          77.16956600175192,
+          28.64497708674681,
+          77.16993074732844,
+          28.64534277485557
+        ],
+        [
+          77.1698755533017,
+          28.64479185958232,
+          77.17024029868738,
+          28.645157547521404
+        ]
+      ],
+      "maxPairOverlapM2": 0,
+      "classification": "disjoint"
+    },
+    {
+      "propertyid": "66644",
+      "sourceRows": 2,
+      "distinctGeometryCount": 2,
+      "matchingUniquePropertyId": true,
+      "geometryHashes": [
+        "5f404771d86272fe4ae7a1aca092995e3fa83294479a429acf69f3e6ab7cd77a",
+        "38254518a3902bc7ff6914e8ec9947aaaebf97357f19d565dcbdeb125e47ee4b"
+      ],
+      "bboxes": [
+        [
+          77.17134567467075,
+          28.643906731614198,
+          77.17171041913033,
+          28.644272418747803
+        ],
+        [
+          77.17114607230687,
+          28.64403014621222,
+          77.1715108169038,
+          28.644395833454944
+        ]
+      ],
+      "maxPairOverlapM2": 0,
+      "classification": "disjoint"
+    },
+    {
+      "propertyid": "66280",
+      "sourceRows": 2,
+      "distinctGeometryCount": 2,
+      "matchingUniquePropertyId": true,
+      "geometryHashes": [
+        "aefa063edb6ab278bc2bf82730f09034adfd4290c532ab177cb66f2293cf0f5a",
+        "e069fffea0498815f68302d2517fbfadbca778a886376ea2b84baa5a6688ce0c"
+      ],
+      "bboxes": [
+        [
+          77.16303754042471,
+          28.655492603899262,
+          77.16324493491956,
+          28.65565315533145
+        ],
+        [
+          77.16420384869687,
+          28.656707191860338,
+          77.16439227144346,
+          28.65689392126342
+        ]
+      ],
+      "maxPairOverlapM2": 0,
+      "classification": "disjoint"
+    },
+    {
+      "propertyid": "66665",
+      "sourceRows": 2,
+      "distinctGeometryCount": 2,
+      "matchingUniquePropertyId": true,
+      "geometryHashes": [
+        "cc0636ce53edc313553aa1c0d2696828b6d8477393135740201689e50b0076b2",
+        "e65632323c57062fca8e5c1f8a6e48901a901233ccd7172c963232d2d5448b73"
+      ],
+      "bboxes": [
+        [
+          77.17305269901904,
+          28.64288501581248,
+          77.17341744242462,
+          28.643250702010047
+        ],
+        [
+          77.1738265443563,
+          28.642421928261857,
+          77.17419128728423,
+          28.642787614034997
+        ]
+      ],
+      "maxPairOverlapM2": 0,
+      "classification": "disjoint"
+    },
+    {
+      "propertyid": "34404",
+      "sourceRows": 2,
+      "distinctGeometryCount": 2,
+      "matchingUniquePropertyId": true,
+      "geometryHashes": [
+        "f13d33bec66a251a0ef3620da49b583525e6e0a3618add08f3e55bd9ec986530",
+        "e6add24326d74b177ac926d8c428a185decb3014c1d2c6cf2e8c7532a21aaca4"
+      ],
+      "bboxes": [
+        [
+          77.13378153972229,
+          28.65148193362706,
+          77.1338771312099,
+          28.651651927557605
+        ],
+        [
+          77.13495954522506,
+          28.650043015453846,
+          77.1351522529408,
+          28.650127608311116
+        ]
+      ],
+      "maxPairOverlapM2": 0,
+      "classification": "disjoint"
+    },
+    {
+      "propertyid": "22790",
+      "sourceRows": 2,
+      "distinctGeometryCount": 2,
+      "matchingUniquePropertyId": true,
+      "geometryHashes": [
+        "3a59b38929345ddef40c1f4b30ae54f969d39cc3f9c88fab2b8c70ae42f0a5a5",
+        "6622906730725f4a6076039aeb7475490326c130d096433deb3e513c2e71bad9"
+      ],
+      "bboxes": [
+        [
+          77.13431955017656,
+          28.65136566417272,
+          77.13441640376068,
+          28.651535616106003
+        ],
+        [
+          77.13422970863613,
+          28.651342757846272,
+          77.13432656439461,
+          28.65151270978302
+        ]
+      ],
+      "maxPairOverlapM2": 0,
+      "classification": "disjoint"
+    }
+  ],
+  "geometrySafeToAssemble": true,
+  "safeSample": [
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Polygon",
+        "coordinates": [
+          [
+            [
+              77.20750045120398,
+              28.533624588132852
+            ],
+            [
+              77.2075039012407,
+              28.533627953525624
+            ],
+            [
+              77.20762583331681,
+              28.53374689598945
+            ],
+            [
+              77.20759882768519,
+              28.53376848668419
+            ],
+            [
+              77.20747689561112,
+              28.53364954419614
+            ],
+            [
+              77.20747344557448,
+              28.533646178802684
+            ],
+            [
+              77.20750045120398,
+              28.533624588132852
+            ]
+          ]
+        ]
+      },
+      "properties": {
+        "propertyid": "74170",
+        "unique_propert_id": "L026571"
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Polygon",
+        "coordinates": [
+          [
+            [
+              77.20759882768519,
+              28.53376848668419
+            ],
+            [
+              77.2075718220425,
+              28.533790077374096
+            ],
+            [
+              77.20744988997046,
+              28.533671134861827
+            ],
+            [
+              77.20744643993388,
+              28.53366776946768
+            ],
+            [
+              77.20747344557448,
+              28.533646178802684
+            ],
+            [
+              77.20747689561112,
+              28.53364954419614
+            ],
+            [
+              77.20759882768519,
+              28.53376848668419
+            ]
+          ]
+        ]
+      },
+      "properties": {
+        "propertyid": "74171",
+        "unique_propert_id": "L026560"
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Polygon",
+        "coordinates": [
+          [
+            [
+              77.20751781072381,
+              28.5338332587394
+            ],
+            [
+              77.20749080504785,
+              28.53385484941482
+            ],
+            [
+              77.20736887298193,
+              28.533735906829893
+            ],
+            [
+              77.20736542294554,
+              28.533732541433693
+            ],
+            [
+              77.2073924286194,
+              28.53371095078319
+            ],
+            [
+              77.20739587865587,
+              28.533714316178703
+            ],
+            [
+              77.20751781072381,
+              28.5338332587394
+            ]
+          ]
+        ]
+      },
+      "properties": {
+        "propertyid": "28148",
+        "unique_propert_id": "L026827/1"
+      }
+    }
+  ],
+  "conclusion": "All repeated propertyid groups are disjoint with matching unique_propert_id; investigate publisher component semantics and runtime bounded snapshot support."
+}

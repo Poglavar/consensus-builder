@@ -1,0 +1,656 @@
+{
+  "checkedAt": "2026-10-07T22:58:24.013Z",
+  "cityId": "wup2025:4033",
+  "bbox": [
+    27.8425,
+    -25.4675,
+    27.845,
+    -25.465
+  ],
+  "sources": [
+    {
+      "sourceId": "za-dffe-csg-erven",
+      "descriptor": {
+        "id": "za-dffe-csg-erven",
+        "endpoint": "https://dffeportal.environment.gov.za/hosting/rest/services/CSG_Cadaster/CSG_Cadastral_Data/MapServer/2",
+        "idField": "PRCL_KEY",
+        "objectIdField": "OBJECTID",
+        "outFields": [
+          "OBJECTID",
+          "PRCL_KEY",
+          "ID",
+          "LSTATUS",
+          "WSTATUS",
+          "PRCL_TYPE",
+          "DATE_STAMP",
+          "PARCEL_NO"
+        ],
+        "idType": "string",
+        "idPrefix": "ZA-PROBE-",
+        "boundsQueryMode": "object-ids",
+        "idsQueryMode": "object-ids",
+        "pageSize": 100,
+        "idBatchSize": 50,
+        "maxFeatures": 2000,
+        "maxBboxKm2": 2,
+        "metricSrid": 32735
+      },
+      "requests": [
+        {
+          "url": "https://dffeportal.environment.gov.za/hosting/rest/services/CSG_Cadaster/CSG_Cadastral_Data/MapServer/2/query?where=1%3D1&geometry=27.8425%2C-25.4675%2C27.845%2C-25.465&geometryType=esriGeometryEnvelope&inSR=4326&spatialRel=esriSpatialRelIntersects&f=json&returnCountOnly=true",
+          "method": "GET",
+          "httpStatus": 200,
+          "bytes": 12,
+          "elapsedMs": 939
+        },
+        {
+          "url": "https://dffeportal.environment.gov.za/hosting/rest/services/CSG_Cadaster/CSG_Cadastral_Data/MapServer/2/query?where=1%3D1&geometry=27.8425%2C-25.4675%2C27.845%2C-25.465&geometryType=esriGeometryEnvelope&inSR=4326&spatialRel=esriSpatialRelIntersects&f=json&returnIdsOnly=true",
+          "method": "GET",
+          "httpStatus": 200,
+          "bytes": 438,
+          "elapsedMs": 259
+        },
+        {
+          "url": "https://dffeportal.environment.gov.za/hosting/rest/services/CSG_Cadaster/CSG_Cadastral_Data/MapServer/2/query?where=1%3D1&outFields=OBJECTID%2CPRCL_KEY%2CID%2CLSTATUS%2CWSTATUS%2CPRCL_TYPE%2CDATE_STAMP%2CPARCEL_NO&returnGeometry=true&outSR=4326&f=geojson&objectIds=8081931%2C8081994%2C8081995%2C8081996%2C8081997%2C8082006%2C8082007%2C8082008%2C8082009%2C8082010%2C8082011%2C8082012%2C8082013%2C8082076%2C8082077%2C8082086%2C8082087%2C8082088%2C8082089%2C8082170%2C8082171%2C8082172%2C8082173%2C8082174%2C8082175%2C8082309%2C8082310%2C8082311%2C8082312%2C8082313%2C8082314%2C8082315%2C8082316%2C8082317%2C8082318%2C8082319%2C8082320%2C8082353%2C8082481%2C8082482%2C8082483%2C8082484%2C8082995%2C8082996%2C8082997%2C8082998%2C8082999%2C8083000%2C8083001",
+          "method": "GET",
+          "httpStatus": 200,
+          "bytes": 72,
+          "elapsedMs": 262
+        }
+      ],
+      "result": "failed",
+      "failure": {
+        "message": "Parcel provider is unavailable (HTTP 400).",
+        "status": 502,
+        "code": "parcel-source-unavailable"
+      },
+      "elapsedMs": 1465
+    },
+    {
+      "sourceId": "za-dffe-planning-cadastre",
+      "descriptor": {
+        "id": "za-dffe-planning-cadastre",
+        "endpoint": "https://screening.environment.gov.za/server/rest/services/Corp/Planning_Cadastre/MapServer/0",
+        "idField": "SG_CODE",
+        "objectIdField": "OID",
+        "outFields": [
+          "OID",
+          "SG_CODE",
+          "PARCEL_NO",
+          "PORTION",
+          "PropSrc",
+          "MINREG_FRMNM",
+          "MAJ_REGION"
+        ],
+        "idType": "string",
+        "idPrefix": "ZA-PROBE-",
+        "boundsQueryMode": "object-ids",
+        "idsQueryMode": "object-ids",
+        "pageSize": 100,
+        "idBatchSize": 50,
+        "maxFeatures": 2000,
+        "maxBboxKm2": 2,
+        "metricSrid": 32735
+      },
+      "requests": [
+        {
+          "url": "https://screening.environment.gov.za/server/rest/services/Corp/Planning_Cadastre/MapServer/0/query?where=1%3D1&geometry=27.8425%2C-25.4675%2C27.845%2C-25.465&geometryType=esriGeometryEnvelope&inSR=4326&spatialRel=esriSpatialRelIntersects&f=json&returnCountOnly=true",
+          "method": "GET",
+          "httpStatus": 200,
+          "bytes": 12,
+          "elapsedMs": 8445
+        },
+        {
+          "url": "https://screening.environment.gov.za/server/rest/services/Corp/Planning_Cadastre/MapServer/0/query?where=1%3D1&geometry=27.8425%2C-25.4675%2C27.845%2C-25.465&geometryType=esriGeometryEnvelope&inSR=4326&spatialRel=esriSpatialRelIntersects&f=json&returnIdsOnly=true",
+          "method": "GET",
+          "httpStatus": 200,
+          "bytes": 449,
+          "elapsedMs": 6663
+        },
+        {
+          "url": "https://screening.environment.gov.za/server/rest/services/Corp/Planning_Cadastre/MapServer/0/query?where=1%3D1&outFields=OID%2CSG_CODE%2CPARCEL_NO%2CPORTION%2CPropSrc%2CMINREG_FRMNM%2CMAJ_REGION&returnGeometry=true&outSR=4326&f=geojson&objectIds=1526645%2C1526708%2C1526709%2C1526710%2C1526711%2C1526720%2C1526721%2C1526722%2C1526723%2C1526724%2C1526725%2C1526726%2C1526727%2C1526790%2C1526791%2C1526800%2C1526801%2C1526802%2C1526803%2C1526884%2C1526885%2C1526886%2C1526887%2C1526888%2C1526889%2C1527023%2C1527024%2C1527025%2C1527026%2C1527027%2C1527028%2C1527029%2C1527030%2C1527031%2C1527032%2C1527033%2C1527034%2C1527067%2C1527195%2C1527196%2C1527197%2C1527198%2C1527709%2C1527710%2C1527711%2C1527712%2C1527713%2C1527714%2C1527715%2C9013595%2C9644651",
+          "method": "GET",
+          "httpStatus": 200,
+          "bytes": 51535,
+          "elapsedMs": 955
+        },
+        {
+          "url": "https://screening.environment.gov.za/server/rest/services/Corp/Planning_Cadastre/MapServer/0/query?where=SG_CODE+IN+%28%27T0JQ00540000073200000%27%2C%27T0JQ00540000073300000%27%2C%27T0JQ00540000073400000%27%29&f=json&returnCountOnly=true",
+          "method": "GET",
+          "httpStatus": 200,
+          "bytes": 11,
+          "elapsedMs": 413
+        },
+        {
+          "url": "https://screening.environment.gov.za/server/rest/services/Corp/Planning_Cadastre/MapServer/0/query?where=SG_CODE+IN+%28%27T0JQ00540000073200000%27%2C%27T0JQ00540000073300000%27%2C%27T0JQ00540000073400000%27%29&f=json&returnIdsOnly=true",
+          "method": "GET",
+          "httpStatus": 200,
+          "bytes": 65,
+          "elapsedMs": 300
+        },
+        {
+          "url": "https://screening.environment.gov.za/server/rest/services/Corp/Planning_Cadastre/MapServer/0/query?where=1%3D1&outFields=OID%2CSG_CODE%2CPARCEL_NO%2CPORTION%2CPropSrc%2CMINREG_FRMNM%2CMAJ_REGION&returnGeometry=true&outSR=4326&f=geojson&objectIds=1526645%2C1526708%2C1526709",
+          "method": "GET",
+          "httpStatus": 200,
+          "bytes": 1448,
+          "elapsedMs": 486
+        }
+      ],
+      "viewport": {
+        "complete": true,
+        "count": 51,
+        "elapsedMs": 16079
+      },
+      "sample": [
+        {
+          "type": "Feature",
+          "id": "ZA-PROBE-T0JQ00540000073200000",
+          "geometry": {
+            "type": "Polygon",
+            "coordinates": [
+              [
+                [
+                  27.844109845000048,
+                  -25.467072625999947
+                ],
+                [
+                  27.844290390000026,
+                  -25.46715104799995
+                ],
+                [
+                  27.844375049000064,
+                  -25.466987702999972
+                ],
+                [
+                  27.844220876000065,
+                  -25.466962760999934
+                ],
+                [
+                  27.844150480000053,
+                  -25.466995536999946
+                ],
+                [
+                  27.844109845000048,
+                  -25.467072625999947
+                ]
+              ]
+            ]
+          },
+          "properties": {
+            "parcelId": "ZA-PROBE-T0JQ00540000073200000",
+            "id": "ZA-PROBE-T0JQ00540000073200000",
+            "sourceId": "za-dffe-planning-cadastre",
+            "sourceParcelId": "T0JQ00540000073200000",
+            "parcelNumber": "T0JQ00540000073200000",
+            "cadMunicipalityName": null,
+            "sourceProperties": {
+              "OID": 1526645,
+              "SG_CODE": "T0JQ00540000073200000",
+              "PARCEL_NO": 732,
+              "PORTION": 0,
+              "PropSrc": "Erven",
+              "MINREG_FRMNM": "LETHLABILE-C",
+              "MAJ_REGION": "JQ"
+            }
+          }
+        },
+        {
+          "type": "Feature",
+          "id": "ZA-PROBE-T0JQ00540000073300000",
+          "geometry": {
+            "type": "Polygon",
+            "coordinates": [
+              [
+                [
+                  27.84452922400004,
+                  -25.467012644999954
+                ],
+                [
+                  27.844375049000064,
+                  -25.466987702999972
+                ],
+                [
+                  27.844290390000026,
+                  -25.46715104799995
+                ],
+                [
+                  27.84446860500003,
+                  -25.467228431999956
+                ],
+                [
+                  27.844556711000052,
+                  -25.467061273999946
+                ],
+                [
+                  27.84452922400004,
+                  -25.467012644999954
+                ]
+              ]
+            ]
+          },
+          "properties": {
+            "parcelId": "ZA-PROBE-T0JQ00540000073300000",
+            "id": "ZA-PROBE-T0JQ00540000073300000",
+            "sourceId": "za-dffe-planning-cadastre",
+            "sourceParcelId": "T0JQ00540000073300000",
+            "parcelNumber": "T0JQ00540000073300000",
+            "cadMunicipalityName": null,
+            "sourceProperties": {
+              "OID": 1526708,
+              "SG_CODE": "T0JQ00540000073300000",
+              "PARCEL_NO": 733,
+              "PORTION": 0,
+              "PropSrc": "Erven",
+              "MINREG_FRMNM": "LETHLABILE-C",
+              "MAJ_REGION": "JQ"
+            }
+          }
+        },
+        {
+          "type": "Feature",
+          "id": "ZA-PROBE-T0JQ00540000073400000",
+          "geometry": {
+            "type": "Polygon",
+            "coordinates": [
+              [
+                [
+                  27.84446860500003,
+                  -25.467228431999956
+                ],
+                [
+                  27.844290390000026,
+                  -25.46715104799995
+                ],
+                [
+                  27.84422689400003,
+                  -25.46727355799993
+                ],
+                [
+                  27.844404231000055,
+                  -25.467350563999958
+                ],
+                [
+                  27.84446860500003,
+                  -25.467228431999956
+                ]
+              ]
+            ]
+          },
+          "properties": {
+            "parcelId": "ZA-PROBE-T0JQ00540000073400000",
+            "id": "ZA-PROBE-T0JQ00540000073400000",
+            "sourceId": "za-dffe-planning-cadastre",
+            "sourceParcelId": "T0JQ00540000073400000",
+            "parcelNumber": "T0JQ00540000073400000",
+            "cadMunicipalityName": null,
+            "sourceProperties": {
+              "OID": 1526709,
+              "SG_CODE": "T0JQ00540000073400000",
+              "PARCEL_NO": 734,
+              "PORTION": 0,
+              "PropSrc": "Erven",
+              "MINREG_FRMNM": "LETHLABILE-C",
+              "MAJ_REGION": "JQ"
+            }
+          }
+        }
+      ],
+      "nativeIds": [
+        "ZA-PROBE-T0JQ00540000073200000",
+        "ZA-PROBE-T0JQ00540000073300000",
+        "ZA-PROBE-T0JQ00540000073400000",
+        "ZA-PROBE-T0JQ00540000073500000",
+        "ZA-PROBE-T0JQ00540000073600000",
+        "ZA-PROBE-T0JQ00540000072600000",
+        "ZA-PROBE-T0JQ00540000072700000",
+        "ZA-PROBE-T0JQ00540000072800000",
+        "ZA-PROBE-T0JQ00540000072900000",
+        "ZA-PROBE-T0JQ00540000073000000",
+        "ZA-PROBE-T0JQ00540000078000000",
+        "ZA-PROBE-T0JQ00540000078100000",
+        "ZA-PROBE-T0JQ00540000078200000",
+        "ZA-PROBE-T0JQ00540000078300000",
+        "ZA-PROBE-T0JQ00540000078400000",
+        "ZA-PROBE-T0JQ00540000079300000",
+        "ZA-PROBE-T0JQ00540000079400000",
+        "ZA-PROBE-T0JQ00540000079500000",
+        "ZA-PROBE-T0JQ00540000079600000",
+        "ZA-PROBE-T0JQ00540000073100000",
+        "ZA-PROBE-T0JQ00540000072000000",
+        "ZA-PROBE-T0JQ00540000072100000",
+        "ZA-PROBE-T0JQ00540000072200000",
+        "ZA-PROBE-T0JQ00540000072300000",
+        "ZA-PROBE-T0JQ00540000072400000",
+        "ZA-PROBE-T0JQ00540000057400000",
+        "ZA-PROBE-T0JQ00540000057500000",
+        "ZA-PROBE-T0JQ00540000057600000",
+        "ZA-PROBE-T0JQ00540000057700000",
+        "ZA-PROBE-T0JQ00540000057800000",
+        "ZA-PROBE-T0JQ00540000057900000",
+        "ZA-PROBE-T0JQ00540000058000000",
+        "ZA-PROBE-T0JQ00540000058100000",
+        "ZA-PROBE-T0JQ00540000058200000",
+        "ZA-PROBE-T0JQ00540000058300000",
+        "ZA-PROBE-T0JQ00540000058400000",
+        "ZA-PROBE-T0JQ00540000058500000",
+        "ZA-PROBE-T0JQ00540000029900000",
+        "ZA-PROBE-T0JQ00540000077600000",
+        "ZA-PROBE-T0JQ00540000077700000",
+        "ZA-PROBE-T0JQ00540000077800000",
+        "ZA-PROBE-T0JQ00540000077900000",
+        "ZA-PROBE-T0JQ00540000056700000",
+        "ZA-PROBE-T0JQ00540000056800000",
+        "ZA-PROBE-T0JQ00540000056900000",
+        "ZA-PROBE-T0JQ00540000057000000",
+        "ZA-PROBE-T0JQ00540000057100000",
+        "ZA-PROBE-T0JQ00540000057200000",
+        "ZA-PROBE-T0JQ00540000057300000",
+        "ZA-PROBE-T0JQ00000000024200000",
+        "ZA-PROBE-T0JQ00000000024200023"
+      ],
+      "exact": {
+        "complete": true,
+        "absentIds": [],
+        "count": 3,
+        "elapsedMs": 1204,
+        "geometriesMatch": true
+      },
+      "result": "passed_bounded_probe",
+      "elapsedMs": 17284
+    },
+    {
+      "sourceId": "za-cgs-nw-erven",
+      "descriptor": {
+        "id": "za-cgs-nw-erven",
+        "endpoint": "https://maps.geoscience.org.za/hosting/rest/services/Administrative_Boundaries_and_Cadastral_Data/MapServer/46",
+        "idField": "PRCL_KEY",
+        "objectIdField": "OBJECTID",
+        "outFields": [
+          "OBJECTID",
+          "PRCL_KEY",
+          "ID",
+          "LSTATUS",
+          "WSTATUS",
+          "PRCL_TYPE",
+          "DATE_STAMP",
+          "PARCEL_NO"
+        ],
+        "idType": "string",
+        "idPrefix": "ZA-PROBE-",
+        "boundsQueryMode": "object-ids",
+        "idsQueryMode": "object-ids",
+        "pageSize": 100,
+        "idBatchSize": 50,
+        "maxFeatures": 2000,
+        "maxBboxKm2": 2,
+        "metricSrid": 32735
+      },
+      "requests": [
+        {
+          "url": "https://maps.geoscience.org.za/hosting/rest/services/Administrative_Boundaries_and_Cadastral_Data/MapServer/46/query?where=1%3D1&geometry=27.8425%2C-25.4675%2C27.845%2C-25.465&geometryType=esriGeometryEnvelope&inSR=4326&spatialRel=esriSpatialRelIntersects&f=json&returnCountOnly=true",
+          "method": "GET",
+          "httpStatus": 200,
+          "bytes": 12,
+          "elapsedMs": 1954
+        },
+        {
+          "url": "https://maps.geoscience.org.za/hosting/rest/services/Administrative_Boundaries_and_Cadastral_Data/MapServer/46/query?where=1%3D1&geometry=27.8425%2C-25.4675%2C27.845%2C-25.465&geometryType=esriGeometryEnvelope&inSR=4326&spatialRel=esriSpatialRelIntersects&f=json&returnIdsOnly=true",
+          "method": "GET",
+          "httpStatus": 200,
+          "bytes": 389,
+          "elapsedMs": 282
+        },
+        {
+          "url": "https://maps.geoscience.org.za/hosting/rest/services/Administrative_Boundaries_and_Cadastral_Data/MapServer/46/query?where=1%3D1&outFields=OBJECTID%2CPRCL_KEY%2CID%2CLSTATUS%2CWSTATUS%2CPRCL_TYPE%2CDATE_STAMP%2CPARCEL_NO&returnGeometry=true&outSR=4326&f=geojson&objectIds=112754%2C112817%2C112818%2C112819%2C112820%2C112829%2C112830%2C112831%2C112832%2C112833%2C112834%2C112835%2C112836%2C112899%2C112900%2C112909%2C112910%2C112911%2C112912%2C112993%2C112994%2C112995%2C112996%2C112997%2C112998%2C113132%2C113133%2C113134%2C113135%2C113136%2C113137%2C113138%2C113139%2C113140%2C113141%2C113142%2C113143%2C113176%2C113304%2C113305%2C113306%2C113307%2C113818%2C113819%2C113820%2C113821%2C113822%2C113823%2C113824",
+          "method": "GET",
+          "httpStatus": 200,
+          "bytes": 25447,
+          "elapsedMs": 280
+        },
+        {
+          "url": "https://maps.geoscience.org.za/hosting/rest/services/Administrative_Boundaries_and_Cadastral_Data/MapServer/46/query?where=PRCL_KEY+IN+%28%27N372T0JQ005400000732000000%27%2C%27N372T0JQ005400000733000000%27%2C%27N372T0JQ005400000734000000%27%29&f=json&returnCountOnly=true",
+          "method": "GET",
+          "httpStatus": 200,
+          "bytes": 11,
+          "elapsedMs": 353
+        },
+        {
+          "url": "https://maps.geoscience.org.za/hosting/rest/services/Administrative_Boundaries_and_Cadastral_Data/MapServer/46/query?where=PRCL_KEY+IN+%28%27N372T0JQ005400000732000000%27%2C%27N372T0JQ005400000733000000%27%2C%27N372T0JQ005400000734000000%27%29&f=json&returnIdsOnly=true",
+          "method": "GET",
+          "httpStatus": 200,
+          "bytes": 67,
+          "elapsedMs": 303
+        },
+        {
+          "url": "https://maps.geoscience.org.za/hosting/rest/services/Administrative_Boundaries_and_Cadastral_Data/MapServer/46/query?where=1%3D1&outFields=OBJECTID%2CPRCL_KEY%2CID%2CLSTATUS%2CWSTATUS%2CPRCL_TYPE%2CDATE_STAMP%2CPARCEL_NO&returnGeometry=true&outSR=4326&f=geojson&objectIds=112754%2C112817%2C112818",
+          "method": "GET",
+          "httpStatus": 200,
+          "bytes": 1536,
+          "elapsedMs": 274
+        }
+      ],
+      "viewport": {
+        "complete": true,
+        "count": 49,
+        "elapsedMs": 2525
+      },
+      "sample": [
+        {
+          "type": "Feature",
+          "id": "ZA-PROBE-N372T0JQ005400000732000000",
+          "geometry": {
+            "type": "Polygon",
+            "coordinates": [
+              [
+                [
+                  27.84410984400006,
+                  -25.467072625999947
+                ],
+                [
+                  27.844290390000022,
+                  -25.46715104799995
+                ],
+                [
+                  27.84437505000005,
+                  -25.466987702999983
+                ],
+                [
+                  27.844220876000065,
+                  -25.46696276099993
+                ],
+                [
+                  27.844150480000053,
+                  -25.46699553699994
+                ],
+                [
+                  27.84410984400006,
+                  -25.467072625999947
+                ]
+              ]
+            ]
+          },
+          "properties": {
+            "parcelId": "ZA-PROBE-N372T0JQ005400000732000000",
+            "id": "ZA-PROBE-N372T0JQ005400000732000000",
+            "sourceId": "za-cgs-nw-erven",
+            "sourceParcelId": "N372T0JQ005400000732000000",
+            "parcelNumber": "N372T0JQ005400000732000000",
+            "cadMunicipalityName": null,
+            "sourceProperties": {
+              "OBJECTID": 112754,
+              "PRCL_KEY": "N372T0JQ005400000732000000",
+              "ID": "T0JQ00540000073200000",
+              "LSTATUS": "S",
+              "WSTATUS": " ",
+              "PRCL_TYPE": "E",
+              "DATE_STAMP": 1507852800000,
+              "PARCEL_NO": 732
+            }
+          }
+        },
+        {
+          "type": "Feature",
+          "id": "ZA-PROBE-N372T0JQ005400000733000000",
+          "geometry": {
+            "type": "Polygon",
+            "coordinates": [
+              [
+                [
+                  27.844529223000052,
+                  -25.467012644999958
+                ],
+                [
+                  27.84437505000005,
+                  -25.466987702999983
+                ],
+                [
+                  27.844290390000022,
+                  -25.46715104799995
+                ],
+                [
+                  27.844468605000028,
+                  -25.46722843199996
+                ],
+                [
+                  27.84455671000006,
+                  -25.467061273999946
+                ],
+                [
+                  27.844529223000052,
+                  -25.467012644999958
+                ]
+              ]
+            ]
+          },
+          "properties": {
+            "parcelId": "ZA-PROBE-N372T0JQ005400000733000000",
+            "id": "ZA-PROBE-N372T0JQ005400000733000000",
+            "sourceId": "za-cgs-nw-erven",
+            "sourceParcelId": "N372T0JQ005400000733000000",
+            "parcelNumber": "N372T0JQ005400000733000000",
+            "cadMunicipalityName": null,
+            "sourceProperties": {
+              "OBJECTID": 112817,
+              "PRCL_KEY": "N372T0JQ005400000733000000",
+              "ID": "T0JQ00540000073300000",
+              "LSTATUS": "S",
+              "WSTATUS": " ",
+              "PRCL_TYPE": "E",
+              "DATE_STAMP": 1507852800000,
+              "PARCEL_NO": 733
+            }
+          }
+        },
+        {
+          "type": "Feature",
+          "id": "ZA-PROBE-N372T0JQ005400000734000000",
+          "geometry": {
+            "type": "Polygon",
+            "coordinates": [
+              [
+                [
+                  27.844468605000028,
+                  -25.46722843199996
+                ],
+                [
+                  27.844290390000022,
+                  -25.46715104799995
+                ],
+                [
+                  27.844226894000034,
+                  -25.46727355699994
+                ],
+                [
+                  27.84440423200005,
+                  -25.46735056399996
+                ],
+                [
+                  27.844468605000028,
+                  -25.46722843199996
+                ]
+              ]
+            ]
+          },
+          "properties": {
+            "parcelId": "ZA-PROBE-N372T0JQ005400000734000000",
+            "id": "ZA-PROBE-N372T0JQ005400000734000000",
+            "sourceId": "za-cgs-nw-erven",
+            "sourceParcelId": "N372T0JQ005400000734000000",
+            "parcelNumber": "N372T0JQ005400000734000000",
+            "cadMunicipalityName": null,
+            "sourceProperties": {
+              "OBJECTID": 112818,
+              "PRCL_KEY": "N372T0JQ005400000734000000",
+              "ID": "T0JQ00540000073400000",
+              "LSTATUS": "S",
+              "WSTATUS": " ",
+              "PRCL_TYPE": "E",
+              "DATE_STAMP": 1507852800000,
+              "PARCEL_NO": 734
+            }
+          }
+        }
+      ],
+      "nativeIds": [
+        "ZA-PROBE-N372T0JQ005400000732000000",
+        "ZA-PROBE-N372T0JQ005400000733000000",
+        "ZA-PROBE-N372T0JQ005400000734000000",
+        "ZA-PROBE-N372T0JQ005400000735000000",
+        "ZA-PROBE-N372T0JQ005400000736000000",
+        "ZA-PROBE-N372T0JQ005400000726000000",
+        "ZA-PROBE-N372T0JQ005400000727000000",
+        "ZA-PROBE-N372T0JQ005400000728000000",
+        "ZA-PROBE-N372T0JQ005400000729000000",
+        "ZA-PROBE-N372T0JQ005400000730000000",
+        "ZA-PROBE-N372T0JQ005400000780000000",
+        "ZA-PROBE-N372T0JQ005400000781000000",
+        "ZA-PROBE-N372T0JQ005400000782000000",
+        "ZA-PROBE-N372T0JQ005400000783000000",
+        "ZA-PROBE-N372T0JQ005400000784000000",
+        "ZA-PROBE-N372T0JQ005400000793000000",
+        "ZA-PROBE-N372T0JQ005400000794000000",
+        "ZA-PROBE-N372T0JQ005400000795000000",
+        "ZA-PROBE-N372T0JQ005400000796000000",
+        "ZA-PROBE-N372T0JQ005400000731000000",
+        "ZA-PROBE-N372T0JQ005400000720000000",
+        "ZA-PROBE-N372T0JQ005400000721000000",
+        "ZA-PROBE-N372T0JQ005400000722000000",
+        "ZA-PROBE-N372T0JQ005400000723000000",
+        "ZA-PROBE-N372T0JQ005400000724000000",
+        "ZA-PROBE-N372T0JQ005400000574000000",
+        "ZA-PROBE-N372T0JQ005400000575000000",
+        "ZA-PROBE-N372T0JQ005400000576000000",
+        "ZA-PROBE-N372T0JQ005400000577000000",
+        "ZA-PROBE-N372T0JQ005400000578000000",
+        "ZA-PROBE-N372T0JQ005400000579000000",
+        "ZA-PROBE-N372T0JQ005400000580000000",
+        "ZA-PROBE-N372T0JQ005400000581000000",
+        "ZA-PROBE-N372T0JQ005400000582000000",
+        "ZA-PROBE-N372T0JQ005400000583000000",
+        "ZA-PROBE-N372T0JQ005400000584000000",
+        "ZA-PROBE-N372T0JQ005400000585000000",
+        "ZA-PROBE-N372T0JQ005400000299000000",
+        "ZA-PROBE-N372T0JQ005400000776000000",
+        "ZA-PROBE-N372T0JQ005400000777000000",
+        "ZA-PROBE-N372T0JQ005400000778000000",
+        "ZA-PROBE-N372T0JQ005400000779000000",
+        "ZA-PROBE-N372T0JQ005400000567000000",
+        "ZA-PROBE-N372T0JQ005400000568000000",
+        "ZA-PROBE-N372T0JQ005400000569000000",
+        "ZA-PROBE-N372T0JQ005400000570000000",
+        "ZA-PROBE-N372T0JQ005400000571000000",
+        "ZA-PROBE-N372T0JQ005400000572000000",
+        "ZA-PROBE-N372T0JQ005400000573000000"
+      ],
+      "exact": {
+        "complete": true,
+        "absentIds": [],
+        "count": 3,
+        "elapsedMs": 940,
+        "geometriesMatch": true
+      },
+      "result": "passed_bounded_probe",
+      "elapsedMs": 3465
+    }
+  ]
+}

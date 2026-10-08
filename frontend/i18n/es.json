@@ -958,6 +958,7 @@
                 "proposalsHint": "Crea una propuesta que incluya todas las parcelas seleccionadas."
             },
             "idLabel": "ID:",
+            "geometryReferenceNote": "Referencia de la aplicación derivada de la geometría. No hay número registral de origen; un cambio en el límite genera una nueva referencia.",
             "tabInfo": "Info",
             "tabProposals": "Propuestas",
             "tabProposalsWithCount": "Propuestas ({{count}})",
@@ -3645,7 +3646,14 @@
             "ennerdale": "Ennerdale, Sudáfrica",
             "cosmo_city": "Cosmo City, Sudáfrica",
             "accra": "Acra, Ghana",
-            "venjaramoodu": "Venjaramoodu, India"
+            "mboloko": "Mboloko, Sudáfrica",
+            "venjaramoodu": "Venjaramoodu, India",
+            "kochi": "Kochi — Thiruvankulam, India",
+            "iravipuram": "Iravipuram (Kollam), India",
+            "ahmedabad": "Ahmedabad, India",
+            "surat": "Surat, India",
+            "nairobi": "Nairobi, Kenia",
+            "astana": "Astaná, Kazajistán"
         },
         "detect": {
             "confirm": "¿Permites que Consensus Builder use tu ubicación aproximada para elegir la ciudad más cercana?",

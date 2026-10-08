@@ -1,0 +1,31 @@
+{
+  "checkedAt": "2026-10-07T23:00:22.207Z",
+  "cityId": "wup2025:8364",
+  "runtime": "production backend host",
+  "method": "GET",
+  "url": "https://ldo.mohua.gov.in/assets/MIS_V5.1/Geojson_s/Property_25999.js",
+  "headers": {
+    "Range": "bytes=0-1023"
+  },
+  "timeoutMs": 15000,
+  "error": "fetch failed",
+  "errorName": "TypeError",
+  "cause": "UND_ERR_CONNECT_TIMEOUT",
+  "elapsedMs": 10681,
+  "assessment": "The production backend host could not establish a connection before its connection timeout. No payload obtained; this is not evidence of data absence.",
+  "priorObservedAttempts": {
+    "productionNodeFetch": {
+      "timeoutMs": 15000,
+      "cause": "UND_ERR_CONNECT_TIMEOUT",
+      "elapsedMs": 10557
+    },
+    "productionCurlRange": {
+      "timeoutSeconds": 18,
+      "range": "0-1023",
+      "httpStatus": 0,
+      "bytes": 0,
+      "elapsedMs": 18002
+    },
+    "timestampNote": "Earlier same-session observations; exact observation timestamps were not retained."
+  }
+}

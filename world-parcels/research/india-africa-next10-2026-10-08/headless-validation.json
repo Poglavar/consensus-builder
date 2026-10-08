@@ -1,0 +1,45 @@
+{
+  "schemaVersion": 1,
+  "checkedAt": "2026-10-08T09:26:30+04:00",
+  "cwd": "backend",
+  "command": "npm test -- --run test/wfs-parcel-adapter.test.js test/ahmedabad-city-config.test.js test/international-live-parcel-sources.test.js test/india-africa-live-parcel-sources.test.js test/live-parcel-source-transport.test.js test/parcel-source-binding.test.js test/live-source-binding-wiring.test.js test/world-coverage-build.test.js test/frontend-world-coverage.test.js test/parcel-coverage-report.test.js test/frontend-world-entry.test.js test/i18n-locale-coverage.test.js test/passthrough-live-parcel-sources.test.js",
+  "result": "passed",
+  "summary": {
+    "testFilesPassed": 13,
+    "testFilesFailed": 0,
+    "testsPassed": 214,
+    "testsFailed": 0,
+    "durationSeconds": 1.77
+  },
+  "files": [
+    "test/wfs-parcel-adapter.test.js",
+    "test/ahmedabad-city-config.test.js",
+    "test/international-live-parcel-sources.test.js",
+    "test/india-africa-live-parcel-sources.test.js",
+    "test/live-parcel-source-transport.test.js",
+    "test/parcel-source-binding.test.js",
+    "test/live-source-binding-wiring.test.js",
+    "test/world-coverage-build.test.js",
+    "test/frontend-world-coverage.test.js",
+    "test/parcel-coverage-report.test.js",
+    "test/frontend-world-entry.test.js",
+    "test/i18n-locale-coverage.test.js",
+    "test/passthrough-live-parcel-sources.test.js"
+  ],
+  "failures": [],
+  "hostLoad": {
+    "platform": "Darwin",
+    "loadAverage1m": 5.79,
+    "loadAverage5m": 5.56,
+    "loadAverage15m": 5.56,
+    "onlineLogicalCpus": 8,
+    "loadAverage1mPerCpuApprox": 0.72,
+    "observedAt": "2026-10-08T09:26+04:00"
+  },
+  "browserSessionCheck": {
+    "ownedSession": "batch10-india",
+    "result": "closed",
+    "confirmedAbsentFromActiveSessionList": true,
+    "otherSessionUntouched": "india-africa-next10-ui"
+  }
+}

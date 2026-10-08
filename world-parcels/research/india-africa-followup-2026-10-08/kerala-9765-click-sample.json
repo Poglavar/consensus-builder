@@ -1,0 +1,73 @@
+{
+  "wupCityCode": 9765,
+  "city": "Kochi",
+  "source": "official Ente Bhoomi public viewer click-info response",
+  "village": "Thiruvankulam",
+  "locationCode": "070211",
+  "crs": "EPSG:32643",
+  "endpoint": "/web/proxy/click_info/multiple/070211",
+  "request": {
+    "method": "POST",
+    "contentType": "multipart/form-data",
+    "fields": {
+      "layer_code": "LAND_PARCEL",
+      "crs": "32643",
+      "x": "649170.6726",
+      "y": "1101673.1650"
+    }
+  },
+  "featureIndex": 0,
+  "featureCountReturned": 1,
+  "nativeParcelFields": {
+    "parcel_gid": "1258826f-a7fd-44ca-a97b-fe50b78c001e",
+    "survey_no": "87",
+    "block_no": "25"
+  },
+  "geometry": {
+    "encoding": "WKT",
+    "type": "MULTIPOLYGON Z",
+    "value": "MULTIPOLYGON Z (((649166.0450668 1101655.3870261 0,649182.1228194 1101657.0662204 0,649181.1041945 1101667.5042055 0,649177.6120361 1101698.3484417 0,649175.2520916 1101697.4963827 -91.4848963,649161.4601803 1101695.4222639 0,649163.4428563 1101677.7171505 0,649164.2087397 1101673.6353847 0,649166.0450668 1101655.3870261 0)))",
+    "sha256": "30a75761a66dd47a6ab52ae9b2a549cb84b48a9a52de90a5ca42a5f7ec9caf11",
+    "chars": 327
+  },
+  "responseNotes": "Only the normal click-info response was requested. Any unapproved/personal attributes were filtered in memory and not persisted.",
+  "validation": {
+    "transform": {
+      "from": "EPSG:32643",
+      "to": "EPSG:4326",
+      "library": "backend package proj4 2.22.0"
+    },
+    "wgs84Bbox": [
+      76.36074577,
+      9.96324623,
+      76.3609328,
+      9.96363426
+    ],
+    "polygonCount": 1,
+    "ringCount": 1,
+    "vertexCount": 8,
+    "allRingsClosed": true,
+    "allCoordinatesFinite3d": true,
+    "allRingsPositiveArea": true,
+    "selfIntersectionCount": 0,
+    "validClosedPolygon": true,
+    "wupTargetCenterLatLon": [
+      10.0612792171801,
+      76.3088105504372
+    ],
+    "wupPointInsideParcel": false,
+    "distanceToParcelBoundaryMeters": 12210.19,
+    "distanceMethod": "Euclidean distance in EPSG:32643 between the viewer click coordinate and the projected WUP target point",
+    "viewerClickCoordinateSourceCrs": "EPSG:32643",
+    "viewerClickCoordinate": [
+      649170.6726,
+      1101673.165
+    ],
+    "viewerClickCoordinateWgs84LonLat": [
+      76.36082896,
+      9.96340681
+    ],
+    "viewerClickCoordinateInsideSampleParcel": true,
+    "distanceFromWupTargetToClickCoordinateMeters": 12234.17
+  }
+}

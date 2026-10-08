@@ -1,0 +1,149 @@
+{
+  "schemaVersion": 1,
+  "checkedAt": "2026-10-08",
+  "purpose": "Official administrative attribution check for the four Kerala published-village parcel samples and their WUP city labels.",
+  "wupSourceContext": {
+    "localDataset": "world-parcels/report/city-demographics.json",
+    "localDatasetSources": [
+      "https://population.un.org/wup/downloads?tab=Cities",
+      "https://population.un.org/wup/assets/Publications/undesa_pd_2025_wup2025_methodological_report.pdf"
+    ],
+    "localDataFinding": "The report stores each WUP city code, name, population and latitude/longitude point. No WUP settlement polygon or boundary geometry for these four records is present in the inspected local report or city-research files.",
+    "methodologyFinding": "WUP 2025 combines national urban definitions with the harmonized Degree of Urbanization approach. UN methodology explains that estimates under a city name can refer to a city proper or a larger urban agglomeration, and administrative changes may incorporate neighboring settlements. A WUP point alone therefore does not establish a local-government boundary or a parcel-coverage footprint.",
+    "interpretationLimit": "The available local data cannot establish whether the Kollam WUP point is an error, a representative point for a different WUP settlement footprint, or based on another source convention. No cause is inferred.",
+    "historicalCensusFinding": "The official 2001 Kerala PCA-UA table explicitly places Karuvanthuruthy (CT) and Feroke (CT) in Kozhikode UA, and Thrippunithura (M) and Thiruvankulam (CT) in Kochi UA. These are historical official urban-agglomeration component lists and resolve the requested urban-area association at that date. They do not establish current WUP 2025 settlement footprints or parcel/city coverage."
+  },
+  "cities": [
+    {
+      "wupCityCode": 9847,
+      "wupCityName": "Kollam",
+      "wupTargetCenterLatLon": [
+        9.29818038422683,
+        76.4275496736682
+      ],
+      "selectedPublishedVillage": "Iravipuram",
+      "sampleLocationCode": "020301",
+      "samplePointLonLat": [
+        76.62751009,
+        8.84755083
+      ],
+      "sampleToWupCenterDistanceMeters": 54470.31,
+      "officialLocalAttribution": "Strong municipal association verified: an official Kerala Coastal Zone Management Authority agenda identifies a parcel in Iravipuram village, Kollam Municipal Corporation, Kollam District. Kerala Tourism also lists Iravipuram under Kollam Corporation, Kollam District, 5.5 km from Kollam. This supports an Iravipuram/Kollam Corporation relationship, but does not establish that the WUP center represents this parcel or define a WUP urban-agglomeration boundary.",
+      "wupPointContext": "The local WUP research record's reverse-geocode lead at the target coordinate is Alappuzha District / Karthikappally Taluk, explicitly marked as non-official and not a revenue-village confirmation. Its coordinate is about 54.47 km from the Iravipuram click point. With no local WUP boundary geometry and no official explanation for that point, attribution of this village sample to WUP:9847 remains ambiguous.",
+      "recommendedAssociation": "Keep the observed sample identified as Iravipuram, Kollam Corporation. Do not present it as WUP Kollam city-center or citywide coverage. If association must be unambiguous, use a distinct Iravipuram village entry and leave WUP 9847 disabled until a reliable boundary/settlement crosswalk is available.",
+      "sources": [
+        {
+          "title": "Kerala Coastal Zone Management Authority, 85th agenda, item 85.02.196",
+          "url": "https://keralaczma.gov.in/images/pdf/agenda/85th%20agenda.pdf",
+          "checkedFacts": "Lines 5708-5722 identify ReSy No. 760/1/8 in Iravipuram village, Kollam Municipal Corporation, Kollam District."
+        },
+        {
+          "title": "Kerala Tourism, Iravipuram location finder",
+          "url": "https://www.keralatourism.org/routes-locations/iravipuram--i-/id/4495",
+          "checkedFacts": "Lists Iravipuram, Kollam Corporation, Kollam District, and 5.5 km from Kollam."
+        },
+        {
+          "title": "Local WUP target research record",
+          "url": "repo:world-parcels/research/india-africa-2026-10-08/india-city-9847.json",
+          "checkedFacts": "Stores WUP:9847 target [9.29818038422683,76.4275496736682] and marks the Alappuzha/Karthikappally reverse-geocode lead as non-official."
+        }
+      ]
+    },
+    {
+      "wupCityCode": 9765,
+      "wupCityName": "Kochi",
+      "wupTargetCenterLatLon": [
+        10.0612792171801,
+        76.3088105504372
+      ],
+      "selectedPublishedVillage": "Thiruvankulam",
+      "sampleLocationCode": "070211",
+      "sampleToWupCenterDistanceMeters": 12234.17,
+      "officialLocalAttribution": "The Office of the Registrar General & Census Commissioner, India's 2001 Primary Census Abstract for Kerala urban agglomerations explicitly lists both Thrippunithura (M) and Thiruvankulam (CT) as components of Kochi UA. The current Kerala Land Revenue record identifies Thiruvankulam as a Kanayannur Taluk village in Thripunithura Municipality, and Ente Bhoomi also maps it to Thripoonithura. This supports a historical Kochi urban-agglomeration association, not a Kochi Corporation claim or a current WUP 2025 boundary assertion.",
+      "recommendedAssociation": "A named Thiruvankulam sample may be associated with the historical Kochi Urban Agglomeration cohort, with the 2001 basis and village-sample scope stated. Retain its Tripunithura municipal identity; do not imply Kochi Corporation or citywide/WUP-point coverage.",
+      "sources": [
+        {
+          "title": "Kerala Land Revenue Department, Thiruvankulam Village Office",
+          "url": "https://landrevenue.kerala.gov.in/core/Office_websites/contactus.php?nm=13921392Thiruvankulamvillageoffice",
+          "checkedFacts": "Identifies Ernakulam District, Kanayannur Taluk, Village Thiruvankulam, area type Municipality, Municipality Thripunithura."
+        },
+        {
+          "title": "Government of Kerala Ente Bhoomi, Phase-I village-to-local-body list",
+          "url": "https://survey.entebhoomi.kerala.gov.in/portal/web/portalalertdoc/doc/e30ad2e5-8541-45d7-aa84-cc45b19c7c00",
+          "checkedFacts": "Lists Thiruvankulam under Thripoonithura, distinct from the Kochi Corporation-mapped villages in the same list."
+        },
+        {
+          "title": "Office of the Registrar General & Census Commissioner, India, PCA-UA: Primary Census Abstract — Urban Agglomeration, Kerala, 2001",
+          "url": "https://censusindia.gov.in/nada/index.php/catalog/21458/study-description",
+          "checkedFacts": "Official Census Digital Library metadata identifies ORGI as producer and geographic granularity as Urban Agglomeration, Town, OG. The Kochi UA component list at lines 288-314 includes Thrippunithura (M) and Thiruvankulam (CT). Historical 2001 classification, not a current boundary."
+        }
+      ]
+    },
+    {
+      "wupCityCode": 9587,
+      "wupCityName": "Kozhikode",
+      "wupTargetCenterLatLon": [
+        11.2059147426276,
+        75.8583486485998
+      ],
+      "selectedPublishedVillage": "Karuvanthuruthi",
+      "sampleLocationCode": "110114",
+      "sampleToWupCenterDistanceMeters": 5916.09,
+      "officialLocalAttribution": "The Office of the Registrar General & Census Commissioner, India's 2001 Primary Census Abstract for Kerala urban agglomerations explicitly lists Karuvanthuruthy (CT) and Feroke (CT) as components of Kozhikode UA. The Revenue Department identifies the selected Karuvanthiruthi village and its Feroke address; this supports an urban-agglomeration association beyond the earlier district/taluk evidence. It does not make either town part of Kozhikode Municipal Corporation, establish a current WUP 2025 boundary, or locate the sampled parcel within a historical polygon.",
+      "recommendedAssociation": "A named Karuvanthuruthi/ Feroke-area sample may be associated with the historical Kozhikode Urban Agglomeration cohort, with the 2001 basis and village-sample scope stated. Do not imply Kozhikode Corporation or citywide coverage; confirm current WUP settlement footprint separately if required.",
+      "sources": [
+        {
+          "title": "Kerala Land Revenue Department, Karuvanthiruthi Village Office contact",
+          "url": "https://landrevenue.kerala.gov.in/core/Office_websites/contactus.php?nm=990990Karuvanthiruthivillageoffice",
+          "checkedFacts": "District Kozhikode, Taluk Kozhikode, Village Karuvanthiruthi, Ward 32; office address West Nallur, Feroke."
+        },
+        {
+          "title": "Kerala Land Revenue Department, Karuvanthiruthi village profile",
+          "url": "https://landrevenue.kerala.gov.in/core/Office_websites/about_village.php?nm=990990Karuvanthiruthivillageoffice",
+          "checkedFacts": "Describes the revenue village, says 17 municipal divisions and parts of 3 divisions are included, and places its office at Feroke."
+        },
+        {
+          "title": "Government of Kerala, Beypore wetland brief",
+          "url": "https://www.swak.kerala.gov.in/images/pdf/wetland-notifications/3.Beypore.pdf",
+          "checkedFacts": "Lists Karuvanthuruthi as one of the villages in the wetland complex, Taluk Kozhikode, and names Feroke Municipality and Kozhikode Corporation; does not map each village to one local body."
+        },
+        {
+          "title": "Office of the Registrar General & Census Commissioner, India, PCA-UA: Primary Census Abstract — Urban Agglomeration, Kerala, 2001",
+          "url": "https://censusindia.gov.in/nada/index.php/catalog/21458/study-description",
+          "checkedFacts": "Official Census Digital Library metadata identifies ORGI as producer and geographic granularity as Urban Agglomeration, Town, OG. The Kozhikode UA component list at lines 236-251 includes Karuvanthuruthy (CT) and Feroke (CT). Historical 2001 classification, not a current boundary."
+        },
+        {
+          "title": "Office of the Registrar General & Census Commissioner, India, District Census Handbook: Kozhikode, 2011",
+          "url": "https://censusindia.gov.in/nada/index.php/catalog/657/download/2276/DH_2011_3204_PART_B_DCHB_KOZHIKODE.pdf",
+          "checkedFacts": "Search-indexed table identifies Karuvanthuruthy (CT) and Feroke (CT) as urban census towns; PDF open timed out, so the UA component claim is based on the 2001 PCA-UA page above."
+        }
+      ]
+    },
+    {
+      "wupCityCode": 10013,
+      "wupCityName": "Thiruvananthapuram",
+      "wupTargetCenterLatLon": [
+        8.50983231508796,
+        76.9676364538033
+      ],
+      "selectedPublishedVillage": "Kudappanakunnu",
+      "sampleLocationCode": "010111",
+      "sampleToWupCenterDistanceMeters": 3488.22,
+      "officialLocalAttribution": "Thiruvananthapuram Municipal Corporation identifies Kudappanakunnu as one of its zonal offices. This verifies a municipal association, but the checked page is not a ward or boundary map and does not place the exact sample parcel against the corporation boundary.",
+      "recommendedAssociation": "Retain Kudappanakunnu as the named sample locality in Thiruvananthapuram; describe it as a municipal-zone sample without claiming coverage around the WUP point or across the city.",
+      "sources": [
+        {
+          "title": "Thiruvananthapuram Municipal Corporation, Town Planning",
+          "url": "https://tmc.lsgkerala.gov.in/en/town-planning",
+          "checkedFacts": "Lists Kudappanakkunnu among the Corporation's zonal offices."
+        },
+        {
+          "title": "Thiruvananthapuram Municipal Corporation, Address",
+          "url": "https://tmc.lsgkerala.gov.in/en/address",
+          "checkedFacts": "Lists the Kudappanakkunnu zonal office address."
+        }
+      ]
+    }
+  ],
+  "coverageCaveat": "Each associated parcel is a single ordinary viewer click sample from one selected published revenue village, with a verified parcel polygon. These facts do not prove that an entire village, municipal corporation, WUP settlement, or urban agglomeration is covered. The WUP coordinates are point targets, not parcel boundaries."
+}

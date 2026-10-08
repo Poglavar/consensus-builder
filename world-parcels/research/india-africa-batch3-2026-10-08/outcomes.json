@@ -1,0 +1,229 @@
+{
+  "schemaVersion": 1,
+  "kind": "india_africa_batch3_city_outcomes",
+  "checkedAt": "2026-10-08",
+  "queue": "research/india-africa-batch3-2026-10-08/queue.json",
+  "outcomes": [
+    {
+      "cityId": "wup2025:11821",
+      "wupCityCode": 11821,
+      "name": "Kolkata",
+      "countryCode": "IN",
+      "region": "India",
+      "workstream": "india",
+      "resultCategory": "no_verified_sample_candidate_citywide",
+      "registryFound": false,
+      "verifiedSample": false,
+      "sourceIds": [],
+      "evidenceFiles": [
+        "research/india-africa-batch3-2026-10-08/city-11821.json"
+      ],
+      "blocker": "No public parcel polygon was obtained. The official West Bengal portal currently indexes Plot Map Request and Mouza Map Request but describes login for Citizen Services; direct page fetch timed out/502 or returned Invalid Operation. Kolkata mouza match and open geometry remain unverified.",
+      "nextStep": "Find a reachable official cadastral map route for the WUP point, confirm its mouza, then verify a plot boundary/map sheet with stable plot identity. Search and shared WB urban-service leads do not establish parcel geometry."
+    },
+    {
+      "cityId": "wup2025:7945",
+      "wupCityCode": 7945,
+      "name": "Mumbai",
+      "countryCode": "IN",
+      "region": "India",
+      "workstream": "india",
+      "resultCategory": "no_verified_sample_candidate_citywide",
+      "registryFound": false,
+      "verifiedSample": false,
+      "sourceIds": [],
+      "evidenceFiles": [
+        "research/india-africa-batch3-2026-10-08/city-7945.json"
+      ],
+      "blocker": "Official Maharashtra service pages and the public BhuNaksha viewer are discoverable, but this fetch could not retrieve the map page or any Mumbai City/Mumbai Suburban plot geometry. The target city-survey/village identity remains unverified.",
+      "nextStep": "Reach the official BhuNaksha viewer without the observed redirect loop, resolve the WUP point to the city-survey/gat hierarchy, and verify a map boundary with stable parcel identity."
+    },
+    {
+      "cityId": "wup2025:7233",
+      "wupCityCode": 7233,
+      "name": "Surat",
+      "countryCode": "IN",
+      "region": "India",
+      "workstream": "india",
+      "resultCategory": "verified_sample_partial_coverage",
+      "registryFound": true,
+      "verifiedSample": true,
+      "sourceIds": [
+        "in-gj-tpvd-surat-final-plots"
+      ],
+      "evidenceFiles": [
+        "research/india-africa-batch3-2026-10-08/city-7233.json",
+        "research/india-africa-batch3-2026-10-08/surat-acceptance.json"
+      ],
+      "blocker": null,
+      "nextStep": "The bounded Surat SMC final-plot source is accepted and enabled. Keep the configured scope to sampled final TPVD plots; do not infer exact WUP-point coverage, citywide completeness, current title, or ownership. The documented 0.239 m² (~9 mm) boundary sliver is retained unchanged.",
+      "acceptance": "passed_with_documented_boundary_sliver",
+      "uniqueNativeReferences": 231,
+      "scope": "Final TPVD planning plots for Surat SMC; partial coverage, not title/ownership/current registration.",
+      "acceptanceFile": "research/india-africa-batch3-2026-10-08/surat-acceptance.json",
+      "runtimeStatus": "enabled"
+    },
+    {
+      "cityId": "wup2025:9717",
+      "wupCityCode": 9717,
+      "name": "Lucknow",
+      "countryCode": "IN",
+      "region": "India",
+      "workstream": "india",
+      "resultCategory": "no_verified_sample_candidate_citywide",
+      "registryFound": false,
+      "verifiedSample": false,
+      "sourceIds": [],
+      "evidenceFiles": [
+        "research/india-africa-batch3-2026-10-08/city-9717.json"
+      ],
+      "blocker": "The official UP BhuNaksha UI opened but rendered a default Agra village, not the Lucknow WUP point; no Lucknow village code or parcel polygon was obtained. Inherited level lookup POST reached an upstream 403 and vector plot API was not verified.",
+      "nextStep": "Resolve the WUP coordinate to its exact revenue village in an official UP map selector, then inspect one bounded gata/plot response for polygon geometry, stable identifier and CRS."
+    },
+    {
+      "cityId": "wup2025:9603",
+      "wupCityCode": 9603,
+      "name": "Kanpur",
+      "countryCode": "IN",
+      "region": "India",
+      "workstream": "india",
+      "resultCategory": "no_verified_sample_candidate_citywide",
+      "registryFound": false,
+      "verifiedSample": false,
+      "sourceIds": [],
+      "evidenceFiles": [
+        "research/india-africa-batch3-2026-10-08/city-9603.json"
+      ],
+      "blocker": "The official UP BhuNaksha UI opened but rendered a default Agra village, not the Kanpur WUP point; no Kanpur village code or parcel polygon was obtained. Inherited public viewer uses raster WMS tiles and the vector plot route returned 401 without authorization.",
+      "nextStep": "Resolve the WUP coordinate to its exact revenue village in an official UP map selector, then inspect one bounded gata/plot response for polygon geometry, stable identifier and CRS."
+    },
+    {
+      "cityId": "wup2025:4435",
+      "wupCityCode": 4435,
+      "name": "Al-Qahirah (Cairo)",
+      "countryCode": "EG",
+      "region": "Africa",
+      "workstream": "africa_north_east",
+      "resultCategory": "public_service_no_geometry",
+      "registryFound": null,
+      "verifiedSample": false,
+      "sourceIds": [],
+      "evidenceFiles": [
+        "research/india-africa-batch3-2026-10-08/city-4435.json"
+      ],
+      "blocker": "No public anonymous Cairo parcel feature endpoint or bounded parcel polygon was found. Official ESA map access describes a formal request, estimate and payment path, while the Cairo portal map directory covers administrative/tourism/services.",
+      "nextStep": "If open data is required, seek an ESA/Cairo public parcel service or an authorized small-area extract; otherwise retain as no verified public sample."
+    },
+    {
+      "cityId": "wup2025:1854",
+      "wupCityCode": 1854,
+      "name": "Kinshasa",
+      "countryCode": "CD",
+      "region": "Africa",
+      "workstream": "africa_west",
+      "resultCategory": "no_verified_public_parcel_endpoint",
+      "registryFound": null,
+      "verifiedSample": false,
+      "sourceIds": [],
+      "evidenceFiles": [
+        "research/india-africa-batch3-2026-10-08/city-1854.json"
+      ],
+      "blocker": "The cadastre.gouv.cd host could not be resolved from this environment; government and e-Foncier systems may hold cadastral records behind an unavailable or access-controlled service. The existence of local records or the Gombe pilot does not establish anonymous public access at the WUP coordinate.",
+      "nextStep": "If the official cadastre portal becomes reachable or the Geoportail link is published, inspect its documented public service and run one bounded target query for the WUP coordinate before reconsidering the source."
+    },
+    {
+      "cityId": "wup2025:275",
+      "wupCityCode": 275,
+      "name": "Alexandria",
+      "countryCode": "EG",
+      "region": "Africa",
+      "workstream": "africa_north_east",
+      "resultCategory": "official_mapping_product_no_open_endpoint",
+      "registryFound": null,
+      "verifiedSample": false,
+      "sourceIds": [],
+      "evidenceFiles": [
+        "research/india-africa-batch3-2026-10-08/city-275.json"
+      ],
+      "blocker": "The official ESA confirms detailed Alexandria digital GIS map production, but its published access route is formal request and purchase. The seemingly relevant ArcGIS parcel service is outside Egypt.",
+      "nextStep": "Ask ESA/Alexandria Governorate for a small licensed/open GIS extract or public service; do not use the US Alexandria layer."
+    },
+    {
+      "cityId": "wup2025:4325",
+      "wupCityCode": 4325,
+      "name": "Al-Kharṭūm (Khartoum)",
+      "countryCode": "SD",
+      "region": "Africa",
+      "workstream": "africa_north_east",
+      "resultCategory": "promising_official_portal_temporarily_unavailable",
+      "registryFound": null,
+      "verifiedSample": false,
+      "sourceIds": [],
+      "evidenceFiles": [
+        "research/india-africa-batch3-2026-10-08/city-4325.json"
+      ],
+      "blocker": "An official national WMS/WFS portal is documented but its linked host is unavailable in this search. No published Khartoum parcel layer or geometry was verified.",
+      "nextStep": "Retry the official geoportal and inspect public GetCapabilities/GetFeatureType inventory only after it responds; then test a tiny Khartoum bbox without owner fields."
+    },
+    {
+      "cityId": "wup2025:6353",
+      "wupCityCode": 6353,
+      "name": "Ādīs Ᾱbeba (Addis Ababa)",
+      "countryCode": "ET",
+      "region": "Africa",
+      "workstream": "africa_north_east",
+      "resultCategory": "official_cadastre_account_or_service_access_no_geometry",
+      "registryFound": null,
+      "verifiedSample": false,
+      "sourceIds": [],
+      "evidenceFiles": [
+        "research/india-africa-batch3-2026-10-08/city-6353.json"
+      ],
+      "blocker": "A city-government cadastre advertises parcel mapping, but access is through OTP-based user registration/online service workflows. No public anonymous parcel geometry endpoint was identified or sampled.",
+      "nextStep": "Retain as official but account-oriented lead; test only a separate officially documented anonymous viewer or publicly published bounded service if one is surfaced."
+    }
+  ],
+  "separateReassessment": {
+    "cityId": "wup2025:2033",
+    "wupCityCode": 2033,
+    "name": "Nairobi",
+    "countryCode": "KE",
+    "region": "Africa",
+    "workstream": "separate_reassessment_not_counted_in_ten",
+    "resultCategory": "verified_sample_partial_coverage_geometry_derived_identity",
+    "registryFound": true,
+    "verifiedSample": true,
+    "sourceIds": [
+      "ke-nairobi-maps-outlines"
+    ],
+    "identityKind": "geometry-sha256-v1",
+    "identityMeaning": "Deterministic source-scoped application identity for observed geometry version; not source-native registry number or ownership identity.",
+    "uniqueGeometryIdentities": 1066,
+    "cellCount": 9,
+    "freshColdExactGeometryReadsPassed": true,
+    "sampledBindingPassed": true,
+    "allSourceFeaturePropertiesEmpty": true,
+    "officialGovernmentLineageVerified": false,
+    "ownershipAvailable": false,
+    "evidenceFiles": [
+      "research/india-africa-batch3-2026-10-08/nairobi-quality-audit.json",
+      "research/india-africa-batch3-2026-10-08/nairobi-acceptance.json"
+    ],
+    "scope": "Public commercial Nairobi Maps outlines, bounded sample near WUP point; not citywide completeness.",
+    "blocker": null,
+    "newAppEntry": true,
+    "appCityId": "nairobi",
+    "runtimeStatus": "enabled",
+    "limitations": [
+      "Commercial outline geometry; official government lineage is unverified.",
+      "No source-native registry numbers, parcel attributes, or ownership are available.",
+      "geometry-sha256-v1 is a source-scoped application identity for the observed geometry version, not a registry number or legal identity.",
+      "Acceptance covers nine bounded cells near the WUP point, not citywide completeness."
+    ]
+  },
+  "notes": [
+    "The ten queued cities exclude the separate Nairobi reassessment.",
+    "Surat acceptance passed with a documented 0.239 m² adjacent-boundary sliver; source geometry was left unchanged.",
+    "Nairobi’s source is commercial public outline geometry, not verified government cadastral lineage; geometry-derived IDs identify geometry versions only."
+  ]
+}

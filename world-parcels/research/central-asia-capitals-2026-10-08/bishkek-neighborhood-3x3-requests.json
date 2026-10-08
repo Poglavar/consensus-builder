@@ -1,0 +1,819 @@
+{
+  "date": "2026-10-08",
+  "queryScope": "3x3 adjacent 0.0025-degree EPSG:4326 bounding boxes around selected Bishkek center; each request maxFeatures=3 and startIndex paged to an empty terminal page.",
+  "source": "Cadastre.kg public WFS ENI_AREA through public map proxy",
+  "wfsVersion": "1.1.0",
+  "propertyName": "OID,PROPCODE,DOMCODE,NAZNACHENI,STS,DATEINS,DATEUPD,OID_OLD,AMNESTIED,FROM_GPS,THE_GEOM",
+  "filterXml": "<ogc:Filter xmlns:ogc=\"http://www.opengis.net/ogc\"><ogc:PropertyIsEqualTo><ogc:PropertyName>NAZNACHENI</ogc:PropertyName><ogc:Literal>земельный участок</ogc:Literal></ogc:PropertyIsEqualTo></ogc:Filter>",
+  "outputFormat": "application/json",
+  "srsName": "EPSG:4326",
+  "cookieUse": "The initial 3x3 grid used a public viewer session cookie; no login/authentication. Follow-up exact-center category and sorted pagination checks succeeded without any cookie or credentials.",
+  "totalPageRequests": 55,
+  "http200PageRequests": 55,
+  "totalFeatureRows": 127,
+  "uniqueFeatureCount": 111,
+  "allNineCellsReachedEmptyTerminalPage": true,
+  "cellSummary": [
+    {
+      "cell": [
+        0,
+        0
+      ],
+      "bbox": "74.5660500,42.8758500,74.5685500,42.8783500,EPSG:4326",
+      "cellFeatureRows": 7,
+      "cellUniqueCodes": 7,
+      "terminalEmptyPage": true,
+      "pages": 4
+    },
+    {
+      "cell": [
+        0,
+        1
+      ],
+      "bbox": "74.5685500,42.8758500,74.5710500,42.8783500,EPSG:4326",
+      "cellFeatureRows": 10,
+      "cellUniqueCodes": 10,
+      "terminalEmptyPage": true,
+      "pages": 5
+    },
+    {
+      "cell": [
+        0,
+        2
+      ],
+      "bbox": "74.5710500,42.8758500,74.5735500,42.8783500,EPSG:4326",
+      "cellFeatureRows": 16,
+      "cellUniqueCodes": 16,
+      "terminalEmptyPage": true,
+      "pages": 7
+    },
+    {
+      "cell": [
+        1,
+        0
+      ],
+      "bbox": "74.5660500,42.8733500,74.5685500,42.8758500,EPSG:4326",
+      "cellFeatureRows": 9,
+      "cellUniqueCodes": 9,
+      "terminalEmptyPage": true,
+      "pages": 4
+    },
+    {
+      "cell": [
+        1,
+        1
+      ],
+      "bbox": "74.5685500,42.8733500,74.5710500,42.8758500,EPSG:4326",
+      "cellFeatureRows": 26,
+      "cellUniqueCodes": 26,
+      "terminalEmptyPage": true,
+      "pages": 10
+    },
+    {
+      "cell": [
+        1,
+        2
+      ],
+      "bbox": "74.5710500,42.8733500,74.5735500,42.8758500,EPSG:4326",
+      "cellFeatureRows": 30,
+      "cellUniqueCodes": 30,
+      "terminalEmptyPage": true,
+      "pages": 11
+    },
+    {
+      "cell": [
+        2,
+        0
+      ],
+      "bbox": "74.5660500,42.8708500,74.5685500,42.8733500,EPSG:4326",
+      "cellFeatureRows": 1,
+      "cellUniqueCodes": 1,
+      "terminalEmptyPage": true,
+      "pages": 2
+    },
+    {
+      "cell": [
+        2,
+        1
+      ],
+      "bbox": "74.5685500,42.8708500,74.5710500,42.8733500,EPSG:4326",
+      "cellFeatureRows": 14,
+      "cellUniqueCodes": 14,
+      "terminalEmptyPage": true,
+      "pages": 6
+    },
+    {
+      "cell": [
+        2,
+        2
+      ],
+      "bbox": "74.5710500,42.8708500,74.5735500,42.8733500,EPSG:4326",
+      "cellFeatureRows": 14,
+      "cellUniqueCodes": 14,
+      "terminalEmptyPage": true,
+      "pages": 6
+    }
+  ],
+  "pageRequests": [
+    {
+      "cell": [
+        0,
+        0
+      ],
+      "bbox": "74.5660500,42.8758500,74.5685500,42.8783500,EPSG:4326",
+      "startIndex": 0,
+      "url": "https://cadastre.kg/svc-portal/map/proxy.do?http://localhost/o2map/services/wfs?service=WFS&version=1.1.0&request=GetFeature&typename=ENI_AREA&propertyname=OID,PROPCODE,DOMCODE,NAZNACHENI,STS,DATEINS,DATEUPD,OID_OLD,AMNESTIED,FROM_GPS,THE_GEOM&outputFormat=application%2Fjson&srsname=EPSG%3A4326&maxFeatures=3&bbox=74.5660500,42.8758500,74.5685500,42.8783500,EPSG%3A4326&filter=%3Cogc%3AFilter+xmlns%3Aogc%3D%22http%3A%2F%2Fwww.opengis.net%2Fogc%22%3E%3Cogc%3APropertyIsEqualTo%3E%3Cogc%3APropertyName%3ENAZNACHENI%3C%2Fogc%3APropertyName%3E%3Cogc%3ALiteral%3E%D0%B7%D0%B5%D0%BC%D0%B5%D0%BB%D1%8C%D0%BD%D1%8B%D0%B9+%D1%83%D1%87%D0%B0%D1%81%D1%82%D0%BE%D0%BA%3C%2Fogc%3ALiteral%3E%3C%2Fogc%3APropertyIsEqualTo%3E%3C%2Fogc%3AFilter%3E&startIndex=0",
+      "http": "HTTP 200 type application/json;charset=UTF-8 bytes 2233",
+      "featureCount": 3
+    },
+    {
+      "cell": [
+        0,
+        0
+      ],
+      "bbox": "74.5660500,42.8758500,74.5685500,42.8783500,EPSG:4326",
+      "startIndex": 3,
+      "url": "https://cadastre.kg/svc-portal/map/proxy.do?http://localhost/o2map/services/wfs?service=WFS&version=1.1.0&request=GetFeature&typename=ENI_AREA&propertyname=OID,PROPCODE,DOMCODE,NAZNACHENI,STS,DATEINS,DATEUPD,OID_OLD,AMNESTIED,FROM_GPS,THE_GEOM&outputFormat=application%2Fjson&srsname=EPSG%3A4326&maxFeatures=3&bbox=74.5660500,42.8758500,74.5685500,42.8783500,EPSG%3A4326&filter=%3Cogc%3AFilter+xmlns%3Aogc%3D%22http%3A%2F%2Fwww.opengis.net%2Fogc%22%3E%3Cogc%3APropertyIsEqualTo%3E%3Cogc%3APropertyName%3ENAZNACHENI%3C%2Fogc%3APropertyName%3E%3Cogc%3ALiteral%3E%D0%B7%D0%B5%D0%BC%D0%B5%D0%BB%D1%8C%D0%BD%D1%8B%D0%B9+%D1%83%D1%87%D0%B0%D1%81%D1%82%D0%BE%D0%BA%3C%2Fogc%3ALiteral%3E%3C%2Fogc%3APropertyIsEqualTo%3E%3C%2Fogc%3AFilter%3E&startIndex=3",
+      "http": "HTTP 200 type application/json;charset=UTF-8 bytes 2023",
+      "featureCount": 3
+    },
+    {
+      "cell": [
+        0,
+        0
+      ],
+      "bbox": "74.5660500,42.8758500,74.5685500,42.8783500,EPSG:4326",
+      "startIndex": 6,
+      "url": "https://cadastre.kg/svc-portal/map/proxy.do?http://localhost/o2map/services/wfs?service=WFS&version=1.1.0&request=GetFeature&typename=ENI_AREA&propertyname=OID,PROPCODE,DOMCODE,NAZNACHENI,STS,DATEINS,DATEUPD,OID_OLD,AMNESTIED,FROM_GPS,THE_GEOM&outputFormat=application%2Fjson&srsname=EPSG%3A4326&maxFeatures=3&bbox=74.5660500,42.8758500,74.5685500,42.8783500,EPSG%3A4326&filter=%3Cogc%3AFilter+xmlns%3Aogc%3D%22http%3A%2F%2Fwww.opengis.net%2Fogc%22%3E%3Cogc%3APropertyIsEqualTo%3E%3Cogc%3APropertyName%3ENAZNACHENI%3C%2Fogc%3APropertyName%3E%3Cogc%3ALiteral%3E%D0%B7%D0%B5%D0%BC%D0%B5%D0%BB%D1%8C%D0%BD%D1%8B%D0%B9+%D1%83%D1%87%D0%B0%D1%81%D1%82%D0%BE%D0%BA%3C%2Fogc%3ALiteral%3E%3C%2Fogc%3APropertyIsEqualTo%3E%3C%2Fogc%3AFilter%3E&startIndex=6",
+      "http": "HTTP 200 type application/json;charset=UTF-8 bytes 620",
+      "featureCount": 1
+    },
+    {
+      "cell": [
+        0,
+        0
+      ],
+      "bbox": "74.5660500,42.8758500,74.5685500,42.8783500,EPSG:4326",
+      "startIndex": 7,
+      "url": "https://cadastre.kg/svc-portal/map/proxy.do?http://localhost/o2map/services/wfs?service=WFS&version=1.1.0&request=GetFeature&typename=ENI_AREA&propertyname=OID,PROPCODE,DOMCODE,NAZNACHENI,STS,DATEINS,DATEUPD,OID_OLD,AMNESTIED,FROM_GPS,THE_GEOM&outputFormat=application%2Fjson&srsname=EPSG%3A4326&maxFeatures=3&bbox=74.5660500,42.8758500,74.5685500,42.8783500,EPSG%3A4326&filter=%3Cogc%3AFilter+xmlns%3Aogc%3D%22http%3A%2F%2Fwww.opengis.net%2Fogc%22%3E%3Cogc%3APropertyIsEqualTo%3E%3Cogc%3APropertyName%3ENAZNACHENI%3C%2Fogc%3APropertyName%3E%3Cogc%3ALiteral%3E%D0%B7%D0%B5%D0%BC%D0%B5%D0%BB%D1%8C%D0%BD%D1%8B%D0%B9+%D1%83%D1%87%D0%B0%D1%81%D1%82%D0%BE%D0%BA%3C%2Fogc%3ALiteral%3E%3C%2Fogc%3APropertyIsEqualTo%3E%3C%2Fogc%3AFilter%3E&startIndex=7",
+      "http": "HTTP 200 type application/json;charset=UTF-8 bytes 42",
+      "featureCount": 0
+    },
+    {
+      "cell": [
+        0,
+        1
+      ],
+      "bbox": "74.5685500,42.8758500,74.5710500,42.8783500,EPSG:4326",
+      "startIndex": 0,
+      "url": "https://cadastre.kg/svc-portal/map/proxy.do?http://localhost/o2map/services/wfs?service=WFS&version=1.1.0&request=GetFeature&typename=ENI_AREA&propertyname=OID,PROPCODE,DOMCODE,NAZNACHENI,STS,DATEINS,DATEUPD,OID_OLD,AMNESTIED,FROM_GPS,THE_GEOM&outputFormat=application%2Fjson&srsname=EPSG%3A4326&maxFeatures=3&bbox=74.5685500,42.8758500,74.5710500,42.8783500,EPSG%3A4326&filter=%3Cogc%3AFilter+xmlns%3Aogc%3D%22http%3A%2F%2Fwww.opengis.net%2Fogc%22%3E%3Cogc%3APropertyIsEqualTo%3E%3Cogc%3APropertyName%3ENAZNACHENI%3C%2Fogc%3APropertyName%3E%3Cogc%3ALiteral%3E%D0%B7%D0%B5%D0%BC%D0%B5%D0%BB%D1%8C%D0%BD%D1%8B%D0%B9+%D1%83%D1%87%D0%B0%D1%81%D1%82%D0%BE%D0%BA%3C%2Fogc%3ALiteral%3E%3C%2Fogc%3APropertyIsEqualTo%3E%3C%2Fogc%3AFilter%3E&startIndex=0",
+      "http": "HTTP 200 type application/json;charset=UTF-8 bytes 2229",
+      "featureCount": 3
+    },
+    {
+      "cell": [
+        0,
+        1
+      ],
+      "bbox": "74.5685500,42.8758500,74.5710500,42.8783500,EPSG:4326",
+      "startIndex": 3,
+      "url": "https://cadastre.kg/svc-portal/map/proxy.do?http://localhost/o2map/services/wfs?service=WFS&version=1.1.0&request=GetFeature&typename=ENI_AREA&propertyname=OID,PROPCODE,DOMCODE,NAZNACHENI,STS,DATEINS,DATEUPD,OID_OLD,AMNESTIED,FROM_GPS,THE_GEOM&outputFormat=application%2Fjson&srsname=EPSG%3A4326&maxFeatures=3&bbox=74.5685500,42.8758500,74.5710500,42.8783500,EPSG%3A4326&filter=%3Cogc%3AFilter+xmlns%3Aogc%3D%22http%3A%2F%2Fwww.opengis.net%2Fogc%22%3E%3Cogc%3APropertyIsEqualTo%3E%3Cogc%3APropertyName%3ENAZNACHENI%3C%2Fogc%3APropertyName%3E%3Cogc%3ALiteral%3E%D0%B7%D0%B5%D0%BC%D0%B5%D0%BB%D1%8C%D0%BD%D1%8B%D0%B9+%D1%83%D1%87%D0%B0%D1%81%D1%82%D0%BE%D0%BA%3C%2Fogc%3ALiteral%3E%3C%2Fogc%3APropertyIsEqualTo%3E%3C%2Fogc%3AFilter%3E&startIndex=3",
+      "http": "HTTP 200 type application/json;charset=UTF-8 bytes 2143",
+      "featureCount": 3
+    },
+    {
+      "cell": [
+        0,
+        1
+      ],
+      "bbox": "74.5685500,42.8758500,74.5710500,42.8783500,EPSG:4326",
+      "startIndex": 6,
+      "url": "https://cadastre.kg/svc-portal/map/proxy.do?http://localhost/o2map/services/wfs?service=WFS&version=1.1.0&request=GetFeature&typename=ENI_AREA&propertyname=OID,PROPCODE,DOMCODE,NAZNACHENI,STS,DATEINS,DATEUPD,OID_OLD,AMNESTIED,FROM_GPS,THE_GEOM&outputFormat=application%2Fjson&srsname=EPSG%3A4326&maxFeatures=3&bbox=74.5685500,42.8758500,74.5710500,42.8783500,EPSG%3A4326&filter=%3Cogc%3AFilter+xmlns%3Aogc%3D%22http%3A%2F%2Fwww.opengis.net%2Fogc%22%3E%3Cogc%3APropertyIsEqualTo%3E%3Cogc%3APropertyName%3ENAZNACHENI%3C%2Fogc%3APropertyName%3E%3Cogc%3ALiteral%3E%D0%B7%D0%B5%D0%BC%D0%B5%D0%BB%D1%8C%D0%BD%D1%8B%D0%B9+%D1%83%D1%87%D0%B0%D1%81%D1%82%D0%BE%D0%BA%3C%2Fogc%3ALiteral%3E%3C%2Fogc%3APropertyIsEqualTo%3E%3C%2Fogc%3AFilter%3E&startIndex=6",
+      "http": "HTTP 200 type application/json;charset=UTF-8 bytes 1891",
+      "featureCount": 3
+    },
+    {
+      "cell": [
+        0,
+        1
+      ],
+      "bbox": "74.5685500,42.8758500,74.5710500,42.8783500,EPSG:4326",
+      "startIndex": 9,
+      "url": "https://cadastre.kg/svc-portal/map/proxy.do?http://localhost/o2map/services/wfs?service=WFS&version=1.1.0&request=GetFeature&typename=ENI_AREA&propertyname=OID,PROPCODE,DOMCODE,NAZNACHENI,STS,DATEINS,DATEUPD,OID_OLD,AMNESTIED,FROM_GPS,THE_GEOM&outputFormat=application%2Fjson&srsname=EPSG%3A4326&maxFeatures=3&bbox=74.5685500,42.8758500,74.5710500,42.8783500,EPSG%3A4326&filter=%3Cogc%3AFilter+xmlns%3Aogc%3D%22http%3A%2F%2Fwww.opengis.net%2Fogc%22%3E%3Cogc%3APropertyIsEqualTo%3E%3Cogc%3APropertyName%3ENAZNACHENI%3C%2Fogc%3APropertyName%3E%3Cogc%3ALiteral%3E%D0%B7%D0%B5%D0%BC%D0%B5%D0%BB%D1%8C%D0%BD%D1%8B%D0%B9+%D1%83%D1%87%D0%B0%D1%81%D1%82%D0%BE%D0%BA%3C%2Fogc%3ALiteral%3E%3C%2Fogc%3APropertyIsEqualTo%3E%3C%2Fogc%3AFilter%3E&startIndex=9",
+      "http": "HTTP 200 type application/json;charset=UTF-8 bytes 649",
+      "featureCount": 1
+    },
+    {
+      "cell": [
+        0,
+        1
+      ],
+      "bbox": "74.5685500,42.8758500,74.5710500,42.8783500,EPSG:4326",
+      "startIndex": 10,
+      "url": "https://cadastre.kg/svc-portal/map/proxy.do?http://localhost/o2map/services/wfs?service=WFS&version=1.1.0&request=GetFeature&typename=ENI_AREA&propertyname=OID,PROPCODE,DOMCODE,NAZNACHENI,STS,DATEINS,DATEUPD,OID_OLD,AMNESTIED,FROM_GPS,THE_GEOM&outputFormat=application%2Fjson&srsname=EPSG%3A4326&maxFeatures=3&bbox=74.5685500,42.8758500,74.5710500,42.8783500,EPSG%3A4326&filter=%3Cogc%3AFilter+xmlns%3Aogc%3D%22http%3A%2F%2Fwww.opengis.net%2Fogc%22%3E%3Cogc%3APropertyIsEqualTo%3E%3Cogc%3APropertyName%3ENAZNACHENI%3C%2Fogc%3APropertyName%3E%3Cogc%3ALiteral%3E%D0%B7%D0%B5%D0%BC%D0%B5%D0%BB%D1%8C%D0%BD%D1%8B%D0%B9+%D1%83%D1%87%D0%B0%D1%81%D1%82%D0%BE%D0%BA%3C%2Fogc%3ALiteral%3E%3C%2Fogc%3APropertyIsEqualTo%3E%3C%2Fogc%3AFilter%3E&startIndex=10",
+      "http": "HTTP 200 type application/json;charset=UTF-8 bytes 42",
+      "featureCount": 0
+    },
+    {
+      "cell": [
+        0,
+        2
+      ],
+      "bbox": "74.5710500,42.8758500,74.5735500,42.8783500,EPSG:4326",
+      "startIndex": 0,
+      "url": "https://cadastre.kg/svc-portal/map/proxy.do?http://localhost/o2map/services/wfs?service=WFS&version=1.1.0&request=GetFeature&typename=ENI_AREA&propertyname=OID,PROPCODE,DOMCODE,NAZNACHENI,STS,DATEINS,DATEUPD,OID_OLD,AMNESTIED,FROM_GPS,THE_GEOM&outputFormat=application%2Fjson&srsname=EPSG%3A4326&maxFeatures=3&bbox=74.5710500,42.8758500,74.5735500,42.8783500,EPSG%3A4326&filter=%3Cogc%3AFilter+xmlns%3Aogc%3D%22http%3A%2F%2Fwww.opengis.net%2Fogc%22%3E%3Cogc%3APropertyIsEqualTo%3E%3Cogc%3APropertyName%3ENAZNACHENI%3C%2Fogc%3APropertyName%3E%3Cogc%3ALiteral%3E%D0%B7%D0%B5%D0%BC%D0%B5%D0%BB%D1%8C%D0%BD%D1%8B%D0%B9+%D1%83%D1%87%D0%B0%D1%81%D1%82%D0%BE%D0%BA%3C%2Fogc%3ALiteral%3E%3C%2Fogc%3APropertyIsEqualTo%3E%3C%2Fogc%3AFilter%3E&startIndex=0",
+      "http": "HTTP 200 type application/json;charset=UTF-8 bytes 2018",
+      "featureCount": 3
+    },
+    {
+      "cell": [
+        0,
+        2
+      ],
+      "bbox": "74.5710500,42.8758500,74.5735500,42.8783500,EPSG:4326",
+      "startIndex": 3,
+      "url": "https://cadastre.kg/svc-portal/map/proxy.do?http://localhost/o2map/services/wfs?service=WFS&version=1.1.0&request=GetFeature&typename=ENI_AREA&propertyname=OID,PROPCODE,DOMCODE,NAZNACHENI,STS,DATEINS,DATEUPD,OID_OLD,AMNESTIED,FROM_GPS,THE_GEOM&outputFormat=application%2Fjson&srsname=EPSG%3A4326&maxFeatures=3&bbox=74.5710500,42.8758500,74.5735500,42.8783500,EPSG%3A4326&filter=%3Cogc%3AFilter+xmlns%3Aogc%3D%22http%3A%2F%2Fwww.opengis.net%2Fogc%22%3E%3Cogc%3APropertyIsEqualTo%3E%3Cogc%3APropertyName%3ENAZNACHENI%3C%2Fogc%3APropertyName%3E%3Cogc%3ALiteral%3E%D0%B7%D0%B5%D0%BC%D0%B5%D0%BB%D1%8C%D0%BD%D1%8B%D0%B9+%D1%83%D1%87%D0%B0%D1%81%D1%82%D0%BE%D0%BA%3C%2Fogc%3ALiteral%3E%3C%2Fogc%3APropertyIsEqualTo%3E%3C%2Fogc%3AFilter%3E&startIndex=3",
+      "http": "HTTP 200 type application/json;charset=UTF-8 bytes 1679",
+      "featureCount": 3
+    },
+    {
+      "cell": [
+        0,
+        2
+      ],
+      "bbox": "74.5710500,42.8758500,74.5735500,42.8783500,EPSG:4326",
+      "startIndex": 6,
+      "url": "https://cadastre.kg/svc-portal/map/proxy.do?http://localhost/o2map/services/wfs?service=WFS&version=1.1.0&request=GetFeature&typename=ENI_AREA&propertyname=OID,PROPCODE,DOMCODE,NAZNACHENI,STS,DATEINS,DATEUPD,OID_OLD,AMNESTIED,FROM_GPS,THE_GEOM&outputFormat=application%2Fjson&srsname=EPSG%3A4326&maxFeatures=3&bbox=74.5710500,42.8758500,74.5735500,42.8783500,EPSG%3A4326&filter=%3Cogc%3AFilter+xmlns%3Aogc%3D%22http%3A%2F%2Fwww.opengis.net%2Fogc%22%3E%3Cogc%3APropertyIsEqualTo%3E%3Cogc%3APropertyName%3ENAZNACHENI%3C%2Fogc%3APropertyName%3E%3Cogc%3ALiteral%3E%D0%B7%D0%B5%D0%BC%D0%B5%D0%BB%D1%8C%D0%BD%D1%8B%D0%B9+%D1%83%D1%87%D0%B0%D1%81%D1%82%D0%BE%D0%BA%3C%2Fogc%3ALiteral%3E%3C%2Fogc%3APropertyIsEqualTo%3E%3C%2Fogc%3AFilter%3E&startIndex=6",
+      "http": "HTTP 200 type application/json;charset=UTF-8 bytes 1664",
+      "featureCount": 3
+    },
+    {
+      "cell": [
+        0,
+        2
+      ],
+      "bbox": "74.5710500,42.8758500,74.5735500,42.8783500,EPSG:4326",
+      "startIndex": 9,
+      "url": "https://cadastre.kg/svc-portal/map/proxy.do?http://localhost/o2map/services/wfs?service=WFS&version=1.1.0&request=GetFeature&typename=ENI_AREA&propertyname=OID,PROPCODE,DOMCODE,NAZNACHENI,STS,DATEINS,DATEUPD,OID_OLD,AMNESTIED,FROM_GPS,THE_GEOM&outputFormat=application%2Fjson&srsname=EPSG%3A4326&maxFeatures=3&bbox=74.5710500,42.8758500,74.5735500,42.8783500,EPSG%3A4326&filter=%3Cogc%3AFilter+xmlns%3Aogc%3D%22http%3A%2F%2Fwww.opengis.net%2Fogc%22%3E%3Cogc%3APropertyIsEqualTo%3E%3Cogc%3APropertyName%3ENAZNACHENI%3C%2Fogc%3APropertyName%3E%3Cogc%3ALiteral%3E%D0%B7%D0%B5%D0%BC%D0%B5%D0%BB%D1%8C%D0%BD%D1%8B%D0%B9+%D1%83%D1%87%D0%B0%D1%81%D1%82%D0%BE%D0%BA%3C%2Fogc%3ALiteral%3E%3C%2Fogc%3APropertyIsEqualTo%3E%3C%2Fogc%3AFilter%3E&startIndex=9",
+      "http": "HTTP 200 type application/json;charset=UTF-8 bytes 1611",
+      "featureCount": 3
+    },
+    {
+      "cell": [
+        0,
+        2
+      ],
+      "bbox": "74.5710500,42.8758500,74.5735500,42.8783500,EPSG:4326",
+      "startIndex": 12,
+      "url": "https://cadastre.kg/svc-portal/map/proxy.do?http://localhost/o2map/services/wfs?service=WFS&version=1.1.0&request=GetFeature&typename=ENI_AREA&propertyname=OID,PROPCODE,DOMCODE,NAZNACHENI,STS,DATEINS,DATEUPD,OID_OLD,AMNESTIED,FROM_GPS,THE_GEOM&outputFormat=application%2Fjson&srsname=EPSG%3A4326&maxFeatures=3&bbox=74.5710500,42.8758500,74.5735500,42.8783500,EPSG%3A4326&filter=%3Cogc%3AFilter+xmlns%3Aogc%3D%22http%3A%2F%2Fwww.opengis.net%2Fogc%22%3E%3Cogc%3APropertyIsEqualTo%3E%3Cogc%3APropertyName%3ENAZNACHENI%3C%2Fogc%3APropertyName%3E%3Cogc%3ALiteral%3E%D0%B7%D0%B5%D0%BC%D0%B5%D0%BB%D1%8C%D0%BD%D1%8B%D0%B9+%D1%83%D1%87%D0%B0%D1%81%D1%82%D0%BE%D0%BA%3C%2Fogc%3ALiteral%3E%3C%2Fogc%3APropertyIsEqualTo%3E%3C%2Fogc%3AFilter%3E&startIndex=12",
+      "http": "HTTP 200 type application/json;charset=UTF-8 bytes 1552",
+      "featureCount": 3
+    },
+    {
+      "cell": [
+        0,
+        2
+      ],
+      "bbox": "74.5710500,42.8758500,74.5735500,42.8783500,EPSG:4326",
+      "startIndex": 15,
+      "url": "https://cadastre.kg/svc-portal/map/proxy.do?http://localhost/o2map/services/wfs?service=WFS&version=1.1.0&request=GetFeature&typename=ENI_AREA&propertyname=OID,PROPCODE,DOMCODE,NAZNACHENI,STS,DATEINS,DATEUPD,OID_OLD,AMNESTIED,FROM_GPS,THE_GEOM&outputFormat=application%2Fjson&srsname=EPSG%3A4326&maxFeatures=3&bbox=74.5710500,42.8758500,74.5735500,42.8783500,EPSG%3A4326&filter=%3Cogc%3AFilter+xmlns%3Aogc%3D%22http%3A%2F%2Fwww.opengis.net%2Fogc%22%3E%3Cogc%3APropertyIsEqualTo%3E%3Cogc%3APropertyName%3ENAZNACHENI%3C%2Fogc%3APropertyName%3E%3Cogc%3ALiteral%3E%D0%B7%D0%B5%D0%BC%D0%B5%D0%BB%D1%8C%D0%BD%D1%8B%D0%B9+%D1%83%D1%87%D0%B0%D1%81%D1%82%D0%BE%D0%BA%3C%2Fogc%3ALiteral%3E%3C%2Fogc%3APropertyIsEqualTo%3E%3C%2Fogc%3AFilter%3E&startIndex=15",
+      "http": "HTTP 200 type application/json;charset=UTF-8 bytes 627",
+      "featureCount": 1
+    },
+    {
+      "cell": [
+        0,
+        2
+      ],
+      "bbox": "74.5710500,42.8758500,74.5735500,42.8783500,EPSG:4326",
+      "startIndex": 16,
+      "url": "https://cadastre.kg/svc-portal/map/proxy.do?http://localhost/o2map/services/wfs?service=WFS&version=1.1.0&request=GetFeature&typename=ENI_AREA&propertyname=OID,PROPCODE,DOMCODE,NAZNACHENI,STS,DATEINS,DATEUPD,OID_OLD,AMNESTIED,FROM_GPS,THE_GEOM&outputFormat=application%2Fjson&srsname=EPSG%3A4326&maxFeatures=3&bbox=74.5710500,42.8758500,74.5735500,42.8783500,EPSG%3A4326&filter=%3Cogc%3AFilter+xmlns%3Aogc%3D%22http%3A%2F%2Fwww.opengis.net%2Fogc%22%3E%3Cogc%3APropertyIsEqualTo%3E%3Cogc%3APropertyName%3ENAZNACHENI%3C%2Fogc%3APropertyName%3E%3Cogc%3ALiteral%3E%D0%B7%D0%B5%D0%BC%D0%B5%D0%BB%D1%8C%D0%BD%D1%8B%D0%B9+%D1%83%D1%87%D0%B0%D1%81%D1%82%D0%BE%D0%BA%3C%2Fogc%3ALiteral%3E%3C%2Fogc%3APropertyIsEqualTo%3E%3C%2Fogc%3AFilter%3E&startIndex=16",
+      "http": "HTTP 200 type application/json;charset=UTF-8 bytes 42",
+      "featureCount": 0
+    },
+    {
+      "cell": [
+        1,
+        0
+      ],
+      "bbox": "74.5660500,42.8733500,74.5685500,42.8758500,EPSG:4326",
+      "startIndex": 0,
+      "url": "https://cadastre.kg/svc-portal/map/proxy.do?http://localhost/o2map/services/wfs?service=WFS&version=1.1.0&request=GetFeature&typename=ENI_AREA&propertyname=OID,PROPCODE,DOMCODE,NAZNACHENI,STS,DATEINS,DATEUPD,OID_OLD,AMNESTIED,FROM_GPS,THE_GEOM&outputFormat=application%2Fjson&srsname=EPSG%3A4326&maxFeatures=3&bbox=74.5660500,42.8733500,74.5685500,42.8758500,EPSG%3A4326&filter=%3Cogc%3AFilter+xmlns%3Aogc%3D%22http%3A%2F%2Fwww.opengis.net%2Fogc%22%3E%3Cogc%3APropertyIsEqualTo%3E%3Cogc%3APropertyName%3ENAZNACHENI%3C%2Fogc%3APropertyName%3E%3Cogc%3ALiteral%3E%D0%B7%D0%B5%D0%BC%D0%B5%D0%BB%D1%8C%D0%BD%D1%8B%D0%B9+%D1%83%D1%87%D0%B0%D1%81%D1%82%D0%BE%D0%BA%3C%2Fogc%3ALiteral%3E%3C%2Fogc%3APropertyIsEqualTo%3E%3C%2Fogc%3AFilter%3E&startIndex=0",
+      "http": "HTTP 200 type application/json;charset=UTF-8 bytes 1923",
+      "featureCount": 3
+    },
+    {
+      "cell": [
+        1,
+        0
+      ],
+      "bbox": "74.5660500,42.8733500,74.5685500,42.8758500,EPSG:4326",
+      "startIndex": 3,
+      "url": "https://cadastre.kg/svc-portal/map/proxy.do?http://localhost/o2map/services/wfs?service=WFS&version=1.1.0&request=GetFeature&typename=ENI_AREA&propertyname=OID,PROPCODE,DOMCODE,NAZNACHENI,STS,DATEINS,DATEUPD,OID_OLD,AMNESTIED,FROM_GPS,THE_GEOM&outputFormat=application%2Fjson&srsname=EPSG%3A4326&maxFeatures=3&bbox=74.5660500,42.8733500,74.5685500,42.8758500,EPSG%3A4326&filter=%3Cogc%3AFilter+xmlns%3Aogc%3D%22http%3A%2F%2Fwww.opengis.net%2Fogc%22%3E%3Cogc%3APropertyIsEqualTo%3E%3Cogc%3APropertyName%3ENAZNACHENI%3C%2Fogc%3APropertyName%3E%3Cogc%3ALiteral%3E%D0%B7%D0%B5%D0%BC%D0%B5%D0%BB%D1%8C%D0%BD%D1%8B%D0%B9+%D1%83%D1%87%D0%B0%D1%81%D1%82%D0%BE%D0%BA%3C%2Fogc%3ALiteral%3E%3C%2Fogc%3APropertyIsEqualTo%3E%3C%2Fogc%3AFilter%3E&startIndex=3",
+      "http": "HTTP 200 type application/json;charset=UTF-8 bytes 1889",
+      "featureCount": 3
+    },
+    {
+      "cell": [
+        1,
+        0
+      ],
+      "bbox": "74.5660500,42.8733500,74.5685500,42.8758500,EPSG:4326",
+      "startIndex": 6,
+      "url": "https://cadastre.kg/svc-portal/map/proxy.do?http://localhost/o2map/services/wfs?service=WFS&version=1.1.0&request=GetFeature&typename=ENI_AREA&propertyname=OID,PROPCODE,DOMCODE,NAZNACHENI,STS,DATEINS,DATEUPD,OID_OLD,AMNESTIED,FROM_GPS,THE_GEOM&outputFormat=application%2Fjson&srsname=EPSG%3A4326&maxFeatures=3&bbox=74.5660500,42.8733500,74.5685500,42.8758500,EPSG%3A4326&filter=%3Cogc%3AFilter+xmlns%3Aogc%3D%22http%3A%2F%2Fwww.opengis.net%2Fogc%22%3E%3Cogc%3APropertyIsEqualTo%3E%3Cogc%3APropertyName%3ENAZNACHENI%3C%2Fogc%3APropertyName%3E%3Cogc%3ALiteral%3E%D0%B7%D0%B5%D0%BC%D0%B5%D0%BB%D1%8C%D0%BD%D1%8B%D0%B9+%D1%83%D1%87%D0%B0%D1%81%D1%82%D0%BE%D0%BA%3C%2Fogc%3ALiteral%3E%3C%2Fogc%3APropertyIsEqualTo%3E%3C%2Fogc%3AFilter%3E&startIndex=6",
+      "http": "HTTP 200 type application/json;charset=UTF-8 bytes 2037",
+      "featureCount": 3
+    },
+    {
+      "cell": [
+        1,
+        0
+      ],
+      "bbox": "74.5660500,42.8733500,74.5685500,42.8758500,EPSG:4326",
+      "startIndex": 9,
+      "url": "https://cadastre.kg/svc-portal/map/proxy.do?http://localhost/o2map/services/wfs?service=WFS&version=1.1.0&request=GetFeature&typename=ENI_AREA&propertyname=OID,PROPCODE,DOMCODE,NAZNACHENI,STS,DATEINS,DATEUPD,OID_OLD,AMNESTIED,FROM_GPS,THE_GEOM&outputFormat=application%2Fjson&srsname=EPSG%3A4326&maxFeatures=3&bbox=74.5660500,42.8733500,74.5685500,42.8758500,EPSG%3A4326&filter=%3Cogc%3AFilter+xmlns%3Aogc%3D%22http%3A%2F%2Fwww.opengis.net%2Fogc%22%3E%3Cogc%3APropertyIsEqualTo%3E%3Cogc%3APropertyName%3ENAZNACHENI%3C%2Fogc%3APropertyName%3E%3Cogc%3ALiteral%3E%D0%B7%D0%B5%D0%BC%D0%B5%D0%BB%D1%8C%D0%BD%D1%8B%D0%B9+%D1%83%D1%87%D0%B0%D1%81%D1%82%D0%BE%D0%BA%3C%2Fogc%3ALiteral%3E%3C%2Fogc%3APropertyIsEqualTo%3E%3C%2Fogc%3AFilter%3E&startIndex=9",
+      "http": "HTTP 200 type application/json;charset=UTF-8 bytes 42",
+      "featureCount": 0
+    },
+    {
+      "cell": [
+        1,
+        1
+      ],
+      "bbox": "74.5685500,42.8733500,74.5710500,42.8758500,EPSG:4326",
+      "startIndex": 0,
+      "url": "https://cadastre.kg/svc-portal/map/proxy.do?http://localhost/o2map/services/wfs?service=WFS&version=1.1.0&request=GetFeature&typename=ENI_AREA&propertyname=OID,PROPCODE,DOMCODE,NAZNACHENI,STS,DATEINS,DATEUPD,OID_OLD,AMNESTIED,FROM_GPS,THE_GEOM&outputFormat=application%2Fjson&srsname=EPSG%3A4326&maxFeatures=3&bbox=74.5685500,42.8733500,74.5710500,42.8758500,EPSG%3A4326&filter=%3Cogc%3AFilter+xmlns%3Aogc%3D%22http%3A%2F%2Fwww.opengis.net%2Fogc%22%3E%3Cogc%3APropertyIsEqualTo%3E%3Cogc%3APropertyName%3ENAZNACHENI%3C%2Fogc%3APropertyName%3E%3Cogc%3ALiteral%3E%D0%B7%D0%B5%D0%BC%D0%B5%D0%BB%D1%8C%D0%BD%D1%8B%D0%B9+%D1%83%D1%87%D0%B0%D1%81%D1%82%D0%BE%D0%BA%3C%2Fogc%3ALiteral%3E%3C%2Fogc%3APropertyIsEqualTo%3E%3C%2Fogc%3AFilter%3E&startIndex=0",
+      "http": "HTTP 200 type application/json;charset=UTF-8 bytes 1727",
+      "featureCount": 3
+    },
+    {
+      "cell": [
+        1,
+        1
+      ],
+      "bbox": "74.5685500,42.8733500,74.5710500,42.8758500,EPSG:4326",
+      "startIndex": 3,
+      "url": "https://cadastre.kg/svc-portal/map/proxy.do?http://localhost/o2map/services/wfs?service=WFS&version=1.1.0&request=GetFeature&typename=ENI_AREA&propertyname=OID,PROPCODE,DOMCODE,NAZNACHENI,STS,DATEINS,DATEUPD,OID_OLD,AMNESTIED,FROM_GPS,THE_GEOM&outputFormat=application%2Fjson&srsname=EPSG%3A4326&maxFeatures=3&bbox=74.5685500,42.8733500,74.5710500,42.8758500,EPSG%3A4326&filter=%3Cogc%3AFilter+xmlns%3Aogc%3D%22http%3A%2F%2Fwww.opengis.net%2Fogc%22%3E%3Cogc%3APropertyIsEqualTo%3E%3Cogc%3APropertyName%3ENAZNACHENI%3C%2Fogc%3APropertyName%3E%3Cogc%3ALiteral%3E%D0%B7%D0%B5%D0%BC%D0%B5%D0%BB%D1%8C%D0%BD%D1%8B%D0%B9+%D1%83%D1%87%D0%B0%D1%81%D1%82%D0%BE%D0%BA%3C%2Fogc%3ALiteral%3E%3C%2Fogc%3APropertyIsEqualTo%3E%3C%2Fogc%3AFilter%3E&startIndex=3",
+      "http": "HTTP 200 type application/json;charset=UTF-8 bytes 1501",
+      "featureCount": 3
+    },
+    {
+      "cell": [
+        1,
+        1
+      ],
+      "bbox": "74.5685500,42.8733500,74.5710500,42.8758500,EPSG:4326",
+      "startIndex": 6,
+      "url": "https://cadastre.kg/svc-portal/map/proxy.do?http://localhost/o2map/services/wfs?service=WFS&version=1.1.0&request=GetFeature&typename=ENI_AREA&propertyname=OID,PROPCODE,DOMCODE,NAZNACHENI,STS,DATEINS,DATEUPD,OID_OLD,AMNESTIED,FROM_GPS,THE_GEOM&outputFormat=application%2Fjson&srsname=EPSG%3A4326&maxFeatures=3&bbox=74.5685500,42.8733500,74.5710500,42.8758500,EPSG%3A4326&filter=%3Cogc%3AFilter+xmlns%3Aogc%3D%22http%3A%2F%2Fwww.opengis.net%2Fogc%22%3E%3Cogc%3APropertyIsEqualTo%3E%3Cogc%3APropertyName%3ENAZNACHENI%3C%2Fogc%3APropertyName%3E%3Cogc%3ALiteral%3E%D0%B7%D0%B5%D0%BC%D0%B5%D0%BB%D1%8C%D0%BD%D1%8B%D0%B9+%D1%83%D1%87%D0%B0%D1%81%D1%82%D0%BE%D0%BA%3C%2Fogc%3ALiteral%3E%3C%2Fogc%3APropertyIsEqualTo%3E%3C%2Fogc%3AFilter%3E&startIndex=6",
+      "http": "HTTP 200 type application/json;charset=UTF-8 bytes 2254",
+      "featureCount": 3
+    },
+    {
+      "cell": [
+        1,
+        1
+      ],
+      "bbox": "74.5685500,42.8733500,74.5710500,42.8758500,EPSG:4326",
+      "startIndex": 9,
+      "url": "https://cadastre.kg/svc-portal/map/proxy.do?http://localhost/o2map/services/wfs?service=WFS&version=1.1.0&request=GetFeature&typename=ENI_AREA&propertyname=OID,PROPCODE,DOMCODE,NAZNACHENI,STS,DATEINS,DATEUPD,OID_OLD,AMNESTIED,FROM_GPS,THE_GEOM&outputFormat=application%2Fjson&srsname=EPSG%3A4326&maxFeatures=3&bbox=74.5685500,42.8733500,74.5710500,42.8758500,EPSG%3A4326&filter=%3Cogc%3AFilter+xmlns%3Aogc%3D%22http%3A%2F%2Fwww.opengis.net%2Fogc%22%3E%3Cogc%3APropertyIsEqualTo%3E%3Cogc%3APropertyName%3ENAZNACHENI%3C%2Fogc%3APropertyName%3E%3Cogc%3ALiteral%3E%D0%B7%D0%B5%D0%BC%D0%B5%D0%BB%D1%8C%D0%BD%D1%8B%D0%B9+%D1%83%D1%87%D0%B0%D1%81%D1%82%D0%BE%D0%BA%3C%2Fogc%3ALiteral%3E%3C%2Fogc%3APropertyIsEqualTo%3E%3C%2Fogc%3AFilter%3E&startIndex=9",
+      "http": "HTTP 200 type application/json;charset=UTF-8 bytes 1821",
+      "featureCount": 3
+    },
+    {
+      "cell": [
+        1,
+        1
+      ],
+      "bbox": "74.5685500,42.8733500,74.5710500,42.8758500,EPSG:4326",
+      "startIndex": 12,
+      "url": "https://cadastre.kg/svc-portal/map/proxy.do?http://localhost/o2map/services/wfs?service=WFS&version=1.1.0&request=GetFeature&typename=ENI_AREA&propertyname=OID,PROPCODE,DOMCODE,NAZNACHENI,STS,DATEINS,DATEUPD,OID_OLD,AMNESTIED,FROM_GPS,THE_GEOM&outputFormat=application%2Fjson&srsname=EPSG%3A4326&maxFeatures=3&bbox=74.5685500,42.8733500,74.5710500,42.8758500,EPSG%3A4326&filter=%3Cogc%3AFilter+xmlns%3Aogc%3D%22http%3A%2F%2Fwww.opengis.net%2Fogc%22%3E%3Cogc%3APropertyIsEqualTo%3E%3Cogc%3APropertyName%3ENAZNACHENI%3C%2Fogc%3APropertyName%3E%3Cogc%3ALiteral%3E%D0%B7%D0%B5%D0%BC%D0%B5%D0%BB%D1%8C%D0%BD%D1%8B%D0%B9+%D1%83%D1%87%D0%B0%D1%81%D1%82%D0%BE%D0%BA%3C%2Fogc%3ALiteral%3E%3C%2Fogc%3APropertyIsEqualTo%3E%3C%2Fogc%3AFilter%3E&startIndex=12",
+      "http": "HTTP 200 type application/json;charset=UTF-8 bytes 1918",
+      "featureCount": 3
+    },
+    {
+      "cell": [
+        1,
+        1
+      ],
+      "bbox": "74.5685500,42.8733500,74.5710500,42.8758500,EPSG:4326",
+      "startIndex": 15,
+      "url": "https://cadastre.kg/svc-portal/map/proxy.do?http://localhost/o2map/services/wfs?service=WFS&version=1.1.0&request=GetFeature&typename=ENI_AREA&propertyname=OID,PROPCODE,DOMCODE,NAZNACHENI,STS,DATEINS,DATEUPD,OID_OLD,AMNESTIED,FROM_GPS,THE_GEOM&outputFormat=application%2Fjson&srsname=EPSG%3A4326&maxFeatures=3&bbox=74.5685500,42.8733500,74.5710500,42.8758500,EPSG%3A4326&filter=%3Cogc%3AFilter+xmlns%3Aogc%3D%22http%3A%2F%2Fwww.opengis.net%2Fogc%22%3E%3Cogc%3APropertyIsEqualTo%3E%3Cogc%3APropertyName%3ENAZNACHENI%3C%2Fogc%3APropertyName%3E%3Cogc%3ALiteral%3E%D0%B7%D0%B5%D0%BC%D0%B5%D0%BB%D1%8C%D0%BD%D1%8B%D0%B9+%D1%83%D1%87%D0%B0%D1%81%D1%82%D0%BE%D0%BA%3C%2Fogc%3ALiteral%3E%3C%2Fogc%3APropertyIsEqualTo%3E%3C%2Fogc%3AFilter%3E&startIndex=15",
+      "http": "HTTP 200 type application/json;charset=UTF-8 bytes 1551",
+      "featureCount": 3
+    },
+    {
+      "cell": [
+        1,
+        1
+      ],
+      "bbox": "74.5685500,42.8733500,74.5710500,42.8758500,EPSG:4326",
+      "startIndex": 18,
+      "url": "https://cadastre.kg/svc-portal/map/proxy.do?http://localhost/o2map/services/wfs?service=WFS&version=1.1.0&request=GetFeature&typename=ENI_AREA&propertyname=OID,PROPCODE,DOMCODE,NAZNACHENI,STS,DATEINS,DATEUPD,OID_OLD,AMNESTIED,FROM_GPS,THE_GEOM&outputFormat=application%2Fjson&srsname=EPSG%3A4326&maxFeatures=3&bbox=74.5685500,42.8733500,74.5710500,42.8758500,EPSG%3A4326&filter=%3Cogc%3AFilter+xmlns%3Aogc%3D%22http%3A%2F%2Fwww.opengis.net%2Fogc%22%3E%3Cogc%3APropertyIsEqualTo%3E%3Cogc%3APropertyName%3ENAZNACHENI%3C%2Fogc%3APropertyName%3E%3Cogc%3ALiteral%3E%D0%B7%D0%B5%D0%BC%D0%B5%D0%BB%D1%8C%D0%BD%D1%8B%D0%B9+%D1%83%D1%87%D0%B0%D1%81%D1%82%D0%BE%D0%BA%3C%2Fogc%3ALiteral%3E%3C%2Fogc%3APropertyIsEqualTo%3E%3C%2Fogc%3AFilter%3E&startIndex=18",
+      "http": "HTTP 200 type application/json;charset=UTF-8 bytes 1580",
+      "featureCount": 3
+    },
+    {
+      "cell": [
+        1,
+        1
+      ],
+      "bbox": "74.5685500,42.8733500,74.5710500,42.8758500,EPSG:4326",
+      "startIndex": 21,
+      "url": "https://cadastre.kg/svc-portal/map/proxy.do?http://localhost/o2map/services/wfs?service=WFS&version=1.1.0&request=GetFeature&typename=ENI_AREA&propertyname=OID,PROPCODE,DOMCODE,NAZNACHENI,STS,DATEINS,DATEUPD,OID_OLD,AMNESTIED,FROM_GPS,THE_GEOM&outputFormat=application%2Fjson&srsname=EPSG%3A4326&maxFeatures=3&bbox=74.5685500,42.8733500,74.5710500,42.8758500,EPSG%3A4326&filter=%3Cogc%3AFilter+xmlns%3Aogc%3D%22http%3A%2F%2Fwww.opengis.net%2Fogc%22%3E%3Cogc%3APropertyIsEqualTo%3E%3Cogc%3APropertyName%3ENAZNACHENI%3C%2Fogc%3APropertyName%3E%3Cogc%3ALiteral%3E%D0%B7%D0%B5%D0%BC%D0%B5%D0%BB%D1%8C%D0%BD%D1%8B%D0%B9+%D1%83%D1%87%D0%B0%D1%81%D1%82%D0%BE%D0%BA%3C%2Fogc%3ALiteral%3E%3C%2Fogc%3APropertyIsEqualTo%3E%3C%2Fogc%3AFilter%3E&startIndex=21",
+      "http": "HTTP 200 type application/json;charset=UTF-8 bytes 2213",
+      "featureCount": 3
+    },
+    {
+      "cell": [
+        1,
+        1
+      ],
+      "bbox": "74.5685500,42.8733500,74.5710500,42.8758500,EPSG:4326",
+      "startIndex": 24,
+      "url": "https://cadastre.kg/svc-portal/map/proxy.do?http://localhost/o2map/services/wfs?service=WFS&version=1.1.0&request=GetFeature&typename=ENI_AREA&propertyname=OID,PROPCODE,DOMCODE,NAZNACHENI,STS,DATEINS,DATEUPD,OID_OLD,AMNESTIED,FROM_GPS,THE_GEOM&outputFormat=application%2Fjson&srsname=EPSG%3A4326&maxFeatures=3&bbox=74.5685500,42.8733500,74.5710500,42.8758500,EPSG%3A4326&filter=%3Cogc%3AFilter+xmlns%3Aogc%3D%22http%3A%2F%2Fwww.opengis.net%2Fogc%22%3E%3Cogc%3APropertyIsEqualTo%3E%3Cogc%3APropertyName%3ENAZNACHENI%3C%2Fogc%3APropertyName%3E%3Cogc%3ALiteral%3E%D0%B7%D0%B5%D0%BC%D0%B5%D0%BB%D1%8C%D0%BD%D1%8B%D0%B9+%D1%83%D1%87%D0%B0%D1%81%D1%82%D0%BE%D0%BA%3C%2Fogc%3ALiteral%3E%3C%2Fogc%3APropertyIsEqualTo%3E%3C%2Fogc%3AFilter%3E&startIndex=24",
+      "http": "HTTP 200 type application/json;charset=UTF-8 bytes 1181",
+      "featureCount": 2
+    },
+    {
+      "cell": [
+        1,
+        1
+      ],
+      "bbox": "74.5685500,42.8733500,74.5710500,42.8758500,EPSG:4326",
+      "startIndex": 26,
+      "url": "https://cadastre.kg/svc-portal/map/proxy.do?http://localhost/o2map/services/wfs?service=WFS&version=1.1.0&request=GetFeature&typename=ENI_AREA&propertyname=OID,PROPCODE,DOMCODE,NAZNACHENI,STS,DATEINS,DATEUPD,OID_OLD,AMNESTIED,FROM_GPS,THE_GEOM&outputFormat=application%2Fjson&srsname=EPSG%3A4326&maxFeatures=3&bbox=74.5685500,42.8733500,74.5710500,42.8758500,EPSG%3A4326&filter=%3Cogc%3AFilter+xmlns%3Aogc%3D%22http%3A%2F%2Fwww.opengis.net%2Fogc%22%3E%3Cogc%3APropertyIsEqualTo%3E%3Cogc%3APropertyName%3ENAZNACHENI%3C%2Fogc%3APropertyName%3E%3Cogc%3ALiteral%3E%D0%B7%D0%B5%D0%BC%D0%B5%D0%BB%D1%8C%D0%BD%D1%8B%D0%B9+%D1%83%D1%87%D0%B0%D1%81%D1%82%D0%BE%D0%BA%3C%2Fogc%3ALiteral%3E%3C%2Fogc%3APropertyIsEqualTo%3E%3C%2Fogc%3AFilter%3E&startIndex=26",
+      "http": "HTTP 200 type application/json;charset=UTF-8 bytes 42",
+      "featureCount": 0
+    },
+    {
+      "cell": [
+        1,
+        2
+      ],
+      "bbox": "74.5710500,42.8733500,74.5735500,42.8758500,EPSG:4326",
+      "startIndex": 0,
+      "url": "https://cadastre.kg/svc-portal/map/proxy.do?http://localhost/o2map/services/wfs?service=WFS&version=1.1.0&request=GetFeature&typename=ENI_AREA&propertyname=OID,PROPCODE,DOMCODE,NAZNACHENI,STS,DATEINS,DATEUPD,OID_OLD,AMNESTIED,FROM_GPS,THE_GEOM&outputFormat=application%2Fjson&srsname=EPSG%3A4326&maxFeatures=3&bbox=74.5710500,42.8733500,74.5735500,42.8758500,EPSG%3A4326&filter=%3Cogc%3AFilter+xmlns%3Aogc%3D%22http%3A%2F%2Fwww.opengis.net%2Fogc%22%3E%3Cogc%3APropertyIsEqualTo%3E%3Cogc%3APropertyName%3ENAZNACHENI%3C%2Fogc%3APropertyName%3E%3Cogc%3ALiteral%3E%D0%B7%D0%B5%D0%BC%D0%B5%D0%BB%D1%8C%D0%BD%D1%8B%D0%B9+%D1%83%D1%87%D0%B0%D1%81%D1%82%D0%BE%D0%BA%3C%2Fogc%3ALiteral%3E%3C%2Fogc%3APropertyIsEqualTo%3E%3C%2Fogc%3AFilter%3E&startIndex=0",
+      "http": "HTTP 200 type application/json;charset=UTF-8 bytes 1533",
+      "featureCount": 3
+    },
+    {
+      "cell": [
+        1,
+        2
+      ],
+      "bbox": "74.5710500,42.8733500,74.5735500,42.8758500,EPSG:4326",
+      "startIndex": 3,
+      "url": "https://cadastre.kg/svc-portal/map/proxy.do?http://localhost/o2map/services/wfs?service=WFS&version=1.1.0&request=GetFeature&typename=ENI_AREA&propertyname=OID,PROPCODE,DOMCODE,NAZNACHENI,STS,DATEINS,DATEUPD,OID_OLD,AMNESTIED,FROM_GPS,THE_GEOM&outputFormat=application%2Fjson&srsname=EPSG%3A4326&maxFeatures=3&bbox=74.5710500,42.8733500,74.5735500,42.8758500,EPSG%3A4326&filter=%3Cogc%3AFilter+xmlns%3Aogc%3D%22http%3A%2F%2Fwww.opengis.net%2Fogc%22%3E%3Cogc%3APropertyIsEqualTo%3E%3Cogc%3APropertyName%3ENAZNACHENI%3C%2Fogc%3APropertyName%3E%3Cogc%3ALiteral%3E%D0%B7%D0%B5%D0%BC%D0%B5%D0%BB%D1%8C%D0%BD%D1%8B%D0%B9+%D1%83%D1%87%D0%B0%D1%81%D1%82%D0%BE%D0%BA%3C%2Fogc%3ALiteral%3E%3C%2Fogc%3APropertyIsEqualTo%3E%3C%2Fogc%3AFilter%3E&startIndex=3",
+      "http": "HTTP 200 type application/json;charset=UTF-8 bytes 1943",
+      "featureCount": 3
+    },
+    {
+      "cell": [
+        1,
+        2
+      ],
+      "bbox": "74.5710500,42.8733500,74.5735500,42.8758500,EPSG:4326",
+      "startIndex": 6,
+      "url": "https://cadastre.kg/svc-portal/map/proxy.do?http://localhost/o2map/services/wfs?service=WFS&version=1.1.0&request=GetFeature&typename=ENI_AREA&propertyname=OID,PROPCODE,DOMCODE,NAZNACHENI,STS,DATEINS,DATEUPD,OID_OLD,AMNESTIED,FROM_GPS,THE_GEOM&outputFormat=application%2Fjson&srsname=EPSG%3A4326&maxFeatures=3&bbox=74.5710500,42.8733500,74.5735500,42.8758500,EPSG%3A4326&filter=%3Cogc%3AFilter+xmlns%3Aogc%3D%22http%3A%2F%2Fwww.opengis.net%2Fogc%22%3E%3Cogc%3APropertyIsEqualTo%3E%3Cogc%3APropertyName%3ENAZNACHENI%3C%2Fogc%3APropertyName%3E%3Cogc%3ALiteral%3E%D0%B7%D0%B5%D0%BC%D0%B5%D0%BB%D1%8C%D0%BD%D1%8B%D0%B9+%D1%83%D1%87%D0%B0%D1%81%D1%82%D0%BE%D0%BA%3C%2Fogc%3ALiteral%3E%3C%2Fogc%3APropertyIsEqualTo%3E%3C%2Fogc%3AFilter%3E&startIndex=6",
+      "http": "HTTP 200 type application/json;charset=UTF-8 bytes 1763",
+      "featureCount": 3
+    },
+    {
+      "cell": [
+        1,
+        2
+      ],
+      "bbox": "74.5710500,42.8733500,74.5735500,42.8758500,EPSG:4326",
+      "startIndex": 9,
+      "url": "https://cadastre.kg/svc-portal/map/proxy.do?http://localhost/o2map/services/wfs?service=WFS&version=1.1.0&request=GetFeature&typename=ENI_AREA&propertyname=OID,PROPCODE,DOMCODE,NAZNACHENI,STS,DATEINS,DATEUPD,OID_OLD,AMNESTIED,FROM_GPS,THE_GEOM&outputFormat=application%2Fjson&srsname=EPSG%3A4326&maxFeatures=3&bbox=74.5710500,42.8733500,74.5735500,42.8758500,EPSG%3A4326&filter=%3Cogc%3AFilter+xmlns%3Aogc%3D%22http%3A%2F%2Fwww.opengis.net%2Fogc%22%3E%3Cogc%3APropertyIsEqualTo%3E%3Cogc%3APropertyName%3ENAZNACHENI%3C%2Fogc%3APropertyName%3E%3Cogc%3ALiteral%3E%D0%B7%D0%B5%D0%BC%D0%B5%D0%BB%D1%8C%D0%BD%D1%8B%D0%B9+%D1%83%D1%87%D0%B0%D1%81%D1%82%D0%BE%D0%BA%3C%2Fogc%3ALiteral%3E%3C%2Fogc%3APropertyIsEqualTo%3E%3C%2Fogc%3AFilter%3E&startIndex=9",
+      "http": "HTTP 200 type application/json;charset=UTF-8 bytes 1638",
+      "featureCount": 3
+    },
+    {
+      "cell": [
+        1,
+        2
+      ],
+      "bbox": "74.5710500,42.8733500,74.5735500,42.8758500,EPSG:4326",
+      "startIndex": 12,
+      "url": "https://cadastre.kg/svc-portal/map/proxy.do?http://localhost/o2map/services/wfs?service=WFS&version=1.1.0&request=GetFeature&typename=ENI_AREA&propertyname=OID,PROPCODE,DOMCODE,NAZNACHENI,STS,DATEINS,DATEUPD,OID_OLD,AMNESTIED,FROM_GPS,THE_GEOM&outputFormat=application%2Fjson&srsname=EPSG%3A4326&maxFeatures=3&bbox=74.5710500,42.8733500,74.5735500,42.8758500,EPSG%3A4326&filter=%3Cogc%3AFilter+xmlns%3Aogc%3D%22http%3A%2F%2Fwww.opengis.net%2Fogc%22%3E%3Cogc%3APropertyIsEqualTo%3E%3Cogc%3APropertyName%3ENAZNACHENI%3C%2Fogc%3APropertyName%3E%3Cogc%3ALiteral%3E%D0%B7%D0%B5%D0%BC%D0%B5%D0%BB%D1%8C%D0%BD%D1%8B%D0%B9+%D1%83%D1%87%D0%B0%D1%81%D1%82%D0%BE%D0%BA%3C%2Fogc%3ALiteral%3E%3C%2Fogc%3APropertyIsEqualTo%3E%3C%2Fogc%3AFilter%3E&startIndex=12",
+      "http": "HTTP 200 type application/json;charset=UTF-8 bytes 1526",
+      "featureCount": 3
+    },
+    {
+      "cell": [
+        1,
+        2
+      ],
+      "bbox": "74.5710500,42.8733500,74.5735500,42.8758500,EPSG:4326",
+      "startIndex": 15,
+      "url": "https://cadastre.kg/svc-portal/map/proxy.do?http://localhost/o2map/services/wfs?service=WFS&version=1.1.0&request=GetFeature&typename=ENI_AREA&propertyname=OID,PROPCODE,DOMCODE,NAZNACHENI,STS,DATEINS,DATEUPD,OID_OLD,AMNESTIED,FROM_GPS,THE_GEOM&outputFormat=application%2Fjson&srsname=EPSG%3A4326&maxFeatures=3&bbox=74.5710500,42.8733500,74.5735500,42.8758500,EPSG%3A4326&filter=%3Cogc%3AFilter+xmlns%3Aogc%3D%22http%3A%2F%2Fwww.opengis.net%2Fogc%22%3E%3Cogc%3APropertyIsEqualTo%3E%3Cogc%3APropertyName%3ENAZNACHENI%3C%2Fogc%3APropertyName%3E%3Cogc%3ALiteral%3E%D0%B7%D0%B5%D0%BC%D0%B5%D0%BB%D1%8C%D0%BD%D1%8B%D0%B9+%D1%83%D1%87%D0%B0%D1%81%D1%82%D0%BE%D0%BA%3C%2Fogc%3ALiteral%3E%3C%2Fogc%3APropertyIsEqualTo%3E%3C%2Fogc%3AFilter%3E&startIndex=15",
+      "http": "HTTP 200 type application/json;charset=UTF-8 bytes 2102",
+      "featureCount": 3
+    },
+    {
+      "cell": [
+        1,
+        2
+      ],
+      "bbox": "74.5710500,42.8733500,74.5735500,42.8758500,EPSG:4326",
+      "startIndex": 18,
+      "url": "https://cadastre.kg/svc-portal/map/proxy.do?http://localhost/o2map/services/wfs?service=WFS&version=1.1.0&request=GetFeature&typename=ENI_AREA&propertyname=OID,PROPCODE,DOMCODE,NAZNACHENI,STS,DATEINS,DATEUPD,OID_OLD,AMNESTIED,FROM_GPS,THE_GEOM&outputFormat=application%2Fjson&srsname=EPSG%3A4326&maxFeatures=3&bbox=74.5710500,42.8733500,74.5735500,42.8758500,EPSG%3A4326&filter=%3Cogc%3AFilter+xmlns%3Aogc%3D%22http%3A%2F%2Fwww.opengis.net%2Fogc%22%3E%3Cogc%3APropertyIsEqualTo%3E%3Cogc%3APropertyName%3ENAZNACHENI%3C%2Fogc%3APropertyName%3E%3Cogc%3ALiteral%3E%D0%B7%D0%B5%D0%BC%D0%B5%D0%BB%D1%8C%D0%BD%D1%8B%D0%B9+%D1%83%D1%87%D0%B0%D1%81%D1%82%D0%BE%D0%BA%3C%2Fogc%3ALiteral%3E%3C%2Fogc%3APropertyIsEqualTo%3E%3C%2Fogc%3AFilter%3E&startIndex=18",
+      "http": "HTTP 200 type application/json;charset=UTF-8 bytes 1661",
+      "featureCount": 3
+    },
+    {
+      "cell": [
+        1,
+        2
+      ],
+      "bbox": "74.5710500,42.8733500,74.5735500,42.8758500,EPSG:4326",
+      "startIndex": 21,
+      "url": "https://cadastre.kg/svc-portal/map/proxy.do?http://localhost/o2map/services/wfs?service=WFS&version=1.1.0&request=GetFeature&typename=ENI_AREA&propertyname=OID,PROPCODE,DOMCODE,NAZNACHENI,STS,DATEINS,DATEUPD,OID_OLD,AMNESTIED,FROM_GPS,THE_GEOM&outputFormat=application%2Fjson&srsname=EPSG%3A4326&maxFeatures=3&bbox=74.5710500,42.8733500,74.5735500,42.8758500,EPSG%3A4326&filter=%3Cogc%3AFilter+xmlns%3Aogc%3D%22http%3A%2F%2Fwww.opengis.net%2Fogc%22%3E%3Cogc%3APropertyIsEqualTo%3E%3Cogc%3APropertyName%3ENAZNACHENI%3C%2Fogc%3APropertyName%3E%3Cogc%3ALiteral%3E%D0%B7%D0%B5%D0%BC%D0%B5%D0%BB%D1%8C%D0%BD%D1%8B%D0%B9+%D1%83%D1%87%D0%B0%D1%81%D1%82%D0%BE%D0%BA%3C%2Fogc%3ALiteral%3E%3C%2Fogc%3APropertyIsEqualTo%3E%3C%2Fogc%3AFilter%3E&startIndex=21",
+      "http": "HTTP 200 type application/json;charset=UTF-8 bytes 1774",
+      "featureCount": 3
+    },
+    {
+      "cell": [
+        1,
+        2
+      ],
+      "bbox": "74.5710500,42.8733500,74.5735500,42.8758500,EPSG:4326",
+      "startIndex": 24,
+      "url": "https://cadastre.kg/svc-portal/map/proxy.do?http://localhost/o2map/services/wfs?service=WFS&version=1.1.0&request=GetFeature&typename=ENI_AREA&propertyname=OID,PROPCODE,DOMCODE,NAZNACHENI,STS,DATEINS,DATEUPD,OID_OLD,AMNESTIED,FROM_GPS,THE_GEOM&outputFormat=application%2Fjson&srsname=EPSG%3A4326&maxFeatures=3&bbox=74.5710500,42.8733500,74.5735500,42.8758500,EPSG%3A4326&filter=%3Cogc%3AFilter+xmlns%3Aogc%3D%22http%3A%2F%2Fwww.opengis.net%2Fogc%22%3E%3Cogc%3APropertyIsEqualTo%3E%3Cogc%3APropertyName%3ENAZNACHENI%3C%2Fogc%3APropertyName%3E%3Cogc%3ALiteral%3E%D0%B7%D0%B5%D0%BC%D0%B5%D0%BB%D1%8C%D0%BD%D1%8B%D0%B9+%D1%83%D1%87%D0%B0%D1%81%D1%82%D0%BE%D0%BA%3C%2Fogc%3ALiteral%3E%3C%2Fogc%3APropertyIsEqualTo%3E%3C%2Fogc%3AFilter%3E&startIndex=24",
+      "http": "HTTP 200 type application/json;charset=UTF-8 bytes 1630",
+      "featureCount": 3
+    },
+    {
+      "cell": [
+        1,
+        2
+      ],
+      "bbox": "74.5710500,42.8733500,74.5735500,42.8758500,EPSG:4326",
+      "startIndex": 27,
+      "url": "https://cadastre.kg/svc-portal/map/proxy.do?http://localhost/o2map/services/wfs?service=WFS&version=1.1.0&request=GetFeature&typename=ENI_AREA&propertyname=OID,PROPCODE,DOMCODE,NAZNACHENI,STS,DATEINS,DATEUPD,OID_OLD,AMNESTIED,FROM_GPS,THE_GEOM&outputFormat=application%2Fjson&srsname=EPSG%3A4326&maxFeatures=3&bbox=74.5710500,42.8733500,74.5735500,42.8758500,EPSG%3A4326&filter=%3Cogc%3AFilter+xmlns%3Aogc%3D%22http%3A%2F%2Fwww.opengis.net%2Fogc%22%3E%3Cogc%3APropertyIsEqualTo%3E%3Cogc%3APropertyName%3ENAZNACHENI%3C%2Fogc%3APropertyName%3E%3Cogc%3ALiteral%3E%D0%B7%D0%B5%D0%BC%D0%B5%D0%BB%D1%8C%D0%BD%D1%8B%D0%B9+%D1%83%D1%87%D0%B0%D1%81%D1%82%D0%BE%D0%BA%3C%2Fogc%3ALiteral%3E%3C%2Fogc%3APropertyIsEqualTo%3E%3C%2Fogc%3AFilter%3E&startIndex=27",
+      "http": "HTTP 200 type application/json;charset=UTF-8 bytes 1503",
+      "featureCount": 3
+    },
+    {
+      "cell": [
+        1,
+        2
+      ],
+      "bbox": "74.5710500,42.8733500,74.5735500,42.8758500,EPSG:4326",
+      "startIndex": 30,
+      "url": "https://cadastre.kg/svc-portal/map/proxy.do?http://localhost/o2map/services/wfs?service=WFS&version=1.1.0&request=GetFeature&typename=ENI_AREA&propertyname=OID,PROPCODE,DOMCODE,NAZNACHENI,STS,DATEINS,DATEUPD,OID_OLD,AMNESTIED,FROM_GPS,THE_GEOM&outputFormat=application%2Fjson&srsname=EPSG%3A4326&maxFeatures=3&bbox=74.5710500,42.8733500,74.5735500,42.8758500,EPSG%3A4326&filter=%3Cogc%3AFilter+xmlns%3Aogc%3D%22http%3A%2F%2Fwww.opengis.net%2Fogc%22%3E%3Cogc%3APropertyIsEqualTo%3E%3Cogc%3APropertyName%3ENAZNACHENI%3C%2Fogc%3APropertyName%3E%3Cogc%3ALiteral%3E%D0%B7%D0%B5%D0%BC%D0%B5%D0%BB%D1%8C%D0%BD%D1%8B%D0%B9+%D1%83%D1%87%D0%B0%D1%81%D1%82%D0%BE%D0%BA%3C%2Fogc%3ALiteral%3E%3C%2Fogc%3APropertyIsEqualTo%3E%3C%2Fogc%3AFilter%3E&startIndex=30",
+      "http": "HTTP 200 type application/json;charset=UTF-8 bytes 42",
+      "featureCount": 0
+    },
+    {
+      "cell": [
+        2,
+        0
+      ],
+      "bbox": "74.5660500,42.8708500,74.5685500,42.8733500,EPSG:4326",
+      "startIndex": 0,
+      "url": "https://cadastre.kg/svc-portal/map/proxy.do?http://localhost/o2map/services/wfs?service=WFS&version=1.1.0&request=GetFeature&typename=ENI_AREA&propertyname=OID,PROPCODE,DOMCODE,NAZNACHENI,STS,DATEINS,DATEUPD,OID_OLD,AMNESTIED,FROM_GPS,THE_GEOM&outputFormat=application%2Fjson&srsname=EPSG%3A4326&maxFeatures=3&bbox=74.5660500,42.8708500,74.5685500,42.8733500,EPSG%3A4326&filter=%3Cogc%3AFilter+xmlns%3Aogc%3D%22http%3A%2F%2Fwww.opengis.net%2Fogc%22%3E%3Cogc%3APropertyIsEqualTo%3E%3Cogc%3APropertyName%3ENAZNACHENI%3C%2Fogc%3APropertyName%3E%3Cogc%3ALiteral%3E%D0%B7%D0%B5%D0%BC%D0%B5%D0%BB%D1%8C%D0%BD%D1%8B%D0%B9+%D1%83%D1%87%D0%B0%D1%81%D1%82%D0%BE%D0%BA%3C%2Fogc%3ALiteral%3E%3C%2Fogc%3APropertyIsEqualTo%3E%3C%2Fogc%3AFilter%3E&startIndex=0",
+      "http": "HTTP 200 type application/json;charset=UTF-8 bytes 518",
+      "featureCount": 1
+    },
+    {
+      "cell": [
+        2,
+        0
+      ],
+      "bbox": "74.5660500,42.8708500,74.5685500,42.8733500,EPSG:4326",
+      "startIndex": 1,
+      "url": "https://cadastre.kg/svc-portal/map/proxy.do?http://localhost/o2map/services/wfs?service=WFS&version=1.1.0&request=GetFeature&typename=ENI_AREA&propertyname=OID,PROPCODE,DOMCODE,NAZNACHENI,STS,DATEINS,DATEUPD,OID_OLD,AMNESTIED,FROM_GPS,THE_GEOM&outputFormat=application%2Fjson&srsname=EPSG%3A4326&maxFeatures=3&bbox=74.5660500,42.8708500,74.5685500,42.8733500,EPSG%3A4326&filter=%3Cogc%3AFilter+xmlns%3Aogc%3D%22http%3A%2F%2Fwww.opengis.net%2Fogc%22%3E%3Cogc%3APropertyIsEqualTo%3E%3Cogc%3APropertyName%3ENAZNACHENI%3C%2Fogc%3APropertyName%3E%3Cogc%3ALiteral%3E%D0%B7%D0%B5%D0%BC%D0%B5%D0%BB%D1%8C%D0%BD%D1%8B%D0%B9+%D1%83%D1%87%D0%B0%D1%81%D1%82%D0%BE%D0%BA%3C%2Fogc%3ALiteral%3E%3C%2Fogc%3APropertyIsEqualTo%3E%3C%2Fogc%3AFilter%3E&startIndex=1",
+      "http": "HTTP 200 type application/json;charset=UTF-8 bytes 42",
+      "featureCount": 0
+    },
+    {
+      "cell": [
+        2,
+        1
+      ],
+      "bbox": "74.5685500,42.8708500,74.5710500,42.8733500,EPSG:4326",
+      "startIndex": 0,
+      "url": "https://cadastre.kg/svc-portal/map/proxy.do?http://localhost/o2map/services/wfs?service=WFS&version=1.1.0&request=GetFeature&typename=ENI_AREA&propertyname=OID,PROPCODE,DOMCODE,NAZNACHENI,STS,DATEINS,DATEUPD,OID_OLD,AMNESTIED,FROM_GPS,THE_GEOM&outputFormat=application%2Fjson&srsname=EPSG%3A4326&maxFeatures=3&bbox=74.5685500,42.8708500,74.5710500,42.8733500,EPSG%3A4326&filter=%3Cogc%3AFilter+xmlns%3Aogc%3D%22http%3A%2F%2Fwww.opengis.net%2Fogc%22%3E%3Cogc%3APropertyIsEqualTo%3E%3Cogc%3APropertyName%3ENAZNACHENI%3C%2Fogc%3APropertyName%3E%3Cogc%3ALiteral%3E%D0%B7%D0%B5%D0%BC%D0%B5%D0%BB%D1%8C%D0%BD%D1%8B%D0%B9+%D1%83%D1%87%D0%B0%D1%81%D1%82%D0%BE%D0%BA%3C%2Fogc%3ALiteral%3E%3C%2Fogc%3APropertyIsEqualTo%3E%3C%2Fogc%3AFilter%3E&startIndex=0",
+      "http": "HTTP 200 type application/json;charset=UTF-8 bytes 1475",
+      "featureCount": 3
+    },
+    {
+      "cell": [
+        2,
+        1
+      ],
+      "bbox": "74.5685500,42.8708500,74.5710500,42.8733500,EPSG:4326",
+      "startIndex": 3,
+      "url": "https://cadastre.kg/svc-portal/map/proxy.do?http://localhost/o2map/services/wfs?service=WFS&version=1.1.0&request=GetFeature&typename=ENI_AREA&propertyname=OID,PROPCODE,DOMCODE,NAZNACHENI,STS,DATEINS,DATEUPD,OID_OLD,AMNESTIED,FROM_GPS,THE_GEOM&outputFormat=application%2Fjson&srsname=EPSG%3A4326&maxFeatures=3&bbox=74.5685500,42.8708500,74.5710500,42.8733500,EPSG%3A4326&filter=%3Cogc%3AFilter+xmlns%3Aogc%3D%22http%3A%2F%2Fwww.opengis.net%2Fogc%22%3E%3Cogc%3APropertyIsEqualTo%3E%3Cogc%3APropertyName%3ENAZNACHENI%3C%2Fogc%3APropertyName%3E%3Cogc%3ALiteral%3E%D0%B7%D0%B5%D0%BC%D0%B5%D0%BB%D1%8C%D0%BD%D1%8B%D0%B9+%D1%83%D1%87%D0%B0%D1%81%D1%82%D0%BE%D0%BA%3C%2Fogc%3ALiteral%3E%3C%2Fogc%3APropertyIsEqualTo%3E%3C%2Fogc%3AFilter%3E&startIndex=3",
+      "http": "HTTP 200 type application/json;charset=UTF-8 bytes 1776",
+      "featureCount": 3
+    },
+    {
+      "cell": [
+        2,
+        1
+      ],
+      "bbox": "74.5685500,42.8708500,74.5710500,42.8733500,EPSG:4326",
+      "startIndex": 6,
+      "url": "https://cadastre.kg/svc-portal/map/proxy.do?http://localhost/o2map/services/wfs?service=WFS&version=1.1.0&request=GetFeature&typename=ENI_AREA&propertyname=OID,PROPCODE,DOMCODE,NAZNACHENI,STS,DATEINS,DATEUPD,OID_OLD,AMNESTIED,FROM_GPS,THE_GEOM&outputFormat=application%2Fjson&srsname=EPSG%3A4326&maxFeatures=3&bbox=74.5685500,42.8708500,74.5710500,42.8733500,EPSG%3A4326&filter=%3Cogc%3AFilter+xmlns%3Aogc%3D%22http%3A%2F%2Fwww.opengis.net%2Fogc%22%3E%3Cogc%3APropertyIsEqualTo%3E%3Cogc%3APropertyName%3ENAZNACHENI%3C%2Fogc%3APropertyName%3E%3Cogc%3ALiteral%3E%D0%B7%D0%B5%D0%BC%D0%B5%D0%BB%D1%8C%D0%BD%D1%8B%D0%B9+%D1%83%D1%87%D0%B0%D1%81%D1%82%D0%BE%D0%BA%3C%2Fogc%3ALiteral%3E%3C%2Fogc%3APropertyIsEqualTo%3E%3C%2Fogc%3AFilter%3E&startIndex=6",
+      "http": "HTTP 200 type application/json;charset=UTF-8 bytes 1654",
+      "featureCount": 3
+    },
+    {
+      "cell": [
+        2,
+        1
+      ],
+      "bbox": "74.5685500,42.8708500,74.5710500,42.8733500,EPSG:4326",
+      "startIndex": 9,
+      "url": "https://cadastre.kg/svc-portal/map/proxy.do?http://localhost/o2map/services/wfs?service=WFS&version=1.1.0&request=GetFeature&typename=ENI_AREA&propertyname=OID,PROPCODE,DOMCODE,NAZNACHENI,STS,DATEINS,DATEUPD,OID_OLD,AMNESTIED,FROM_GPS,THE_GEOM&outputFormat=application%2Fjson&srsname=EPSG%3A4326&maxFeatures=3&bbox=74.5685500,42.8708500,74.5710500,42.8733500,EPSG%3A4326&filter=%3Cogc%3AFilter+xmlns%3Aogc%3D%22http%3A%2F%2Fwww.opengis.net%2Fogc%22%3E%3Cogc%3APropertyIsEqualTo%3E%3Cogc%3APropertyName%3ENAZNACHENI%3C%2Fogc%3APropertyName%3E%3Cogc%3ALiteral%3E%D0%B7%D0%B5%D0%BC%D0%B5%D0%BB%D1%8C%D0%BD%D1%8B%D0%B9+%D1%83%D1%87%D0%B0%D1%81%D1%82%D0%BE%D0%BA%3C%2Fogc%3ALiteral%3E%3C%2Fogc%3APropertyIsEqualTo%3E%3C%2Fogc%3AFilter%3E&startIndex=9",
+      "http": "HTTP 200 type application/json;charset=UTF-8 bytes 1655",
+      "featureCount": 3
+    },
+    {
+      "cell": [
+        2,
+        1
+      ],
+      "bbox": "74.5685500,42.8708500,74.5710500,42.8733500,EPSG:4326",
+      "startIndex": 12,
+      "url": "https://cadastre.kg/svc-portal/map/proxy.do?http://localhost/o2map/services/wfs?service=WFS&version=1.1.0&request=GetFeature&typename=ENI_AREA&propertyname=OID,PROPCODE,DOMCODE,NAZNACHENI,STS,DATEINS,DATEUPD,OID_OLD,AMNESTIED,FROM_GPS,THE_GEOM&outputFormat=application%2Fjson&srsname=EPSG%3A4326&maxFeatures=3&bbox=74.5685500,42.8708500,74.5710500,42.8733500,EPSG%3A4326&filter=%3Cogc%3AFilter+xmlns%3Aogc%3D%22http%3A%2F%2Fwww.opengis.net%2Fogc%22%3E%3Cogc%3APropertyIsEqualTo%3E%3Cogc%3APropertyName%3ENAZNACHENI%3C%2Fogc%3APropertyName%3E%3Cogc%3ALiteral%3E%D0%B7%D0%B5%D0%BC%D0%B5%D0%BB%D1%8C%D0%BD%D1%8B%D0%B9+%D1%83%D1%87%D0%B0%D1%81%D1%82%D0%BE%D0%BA%3C%2Fogc%3ALiteral%3E%3C%2Fogc%3APropertyIsEqualTo%3E%3C%2Fogc%3AFilter%3E&startIndex=12",
+      "http": "HTTP 200 type application/json;charset=UTF-8 bytes 1203",
+      "featureCount": 2
+    },
+    {
+      "cell": [
+        2,
+        1
+      ],
+      "bbox": "74.5685500,42.8708500,74.5710500,42.8733500,EPSG:4326",
+      "startIndex": 14,
+      "url": "https://cadastre.kg/svc-portal/map/proxy.do?http://localhost/o2map/services/wfs?service=WFS&version=1.1.0&request=GetFeature&typename=ENI_AREA&propertyname=OID,PROPCODE,DOMCODE,NAZNACHENI,STS,DATEINS,DATEUPD,OID_OLD,AMNESTIED,FROM_GPS,THE_GEOM&outputFormat=application%2Fjson&srsname=EPSG%3A4326&maxFeatures=3&bbox=74.5685500,42.8708500,74.5710500,42.8733500,EPSG%3A4326&filter=%3Cogc%3AFilter+xmlns%3Aogc%3D%22http%3A%2F%2Fwww.opengis.net%2Fogc%22%3E%3Cogc%3APropertyIsEqualTo%3E%3Cogc%3APropertyName%3ENAZNACHENI%3C%2Fogc%3APropertyName%3E%3Cogc%3ALiteral%3E%D0%B7%D0%B5%D0%BC%D0%B5%D0%BB%D1%8C%D0%BD%D1%8B%D0%B9+%D1%83%D1%87%D0%B0%D1%81%D1%82%D0%BE%D0%BA%3C%2Fogc%3ALiteral%3E%3C%2Fogc%3APropertyIsEqualTo%3E%3C%2Fogc%3AFilter%3E&startIndex=14",
+      "http": "HTTP 200 type application/json;charset=UTF-8 bytes 42",
+      "featureCount": 0
+    },
+    {
+      "cell": [
+        2,
+        2
+      ],
+      "bbox": "74.5710500,42.8708500,74.5735500,42.8733500,EPSG:4326",
+      "startIndex": 0,
+      "url": "https://cadastre.kg/svc-portal/map/proxy.do?http://localhost/o2map/services/wfs?service=WFS&version=1.1.0&request=GetFeature&typename=ENI_AREA&propertyname=OID,PROPCODE,DOMCODE,NAZNACHENI,STS,DATEINS,DATEUPD,OID_OLD,AMNESTIED,FROM_GPS,THE_GEOM&outputFormat=application%2Fjson&srsname=EPSG%3A4326&maxFeatures=3&bbox=74.5710500,42.8708500,74.5735500,42.8733500,EPSG%3A4326&filter=%3Cogc%3AFilter+xmlns%3Aogc%3D%22http%3A%2F%2Fwww.opengis.net%2Fogc%22%3E%3Cogc%3APropertyIsEqualTo%3E%3Cogc%3APropertyName%3ENAZNACHENI%3C%2Fogc%3APropertyName%3E%3Cogc%3ALiteral%3E%D0%B7%D0%B5%D0%BC%D0%B5%D0%BB%D1%8C%D0%BD%D1%8B%D0%B9+%D1%83%D1%87%D0%B0%D1%81%D1%82%D0%BE%D0%BA%3C%2Fogc%3ALiteral%3E%3C%2Fogc%3APropertyIsEqualTo%3E%3C%2Fogc%3AFilter%3E&startIndex=0",
+      "http": "HTTP 200 type application/json;charset=UTF-8 bytes 1709",
+      "featureCount": 3
+    },
+    {
+      "cell": [
+        2,
+        2
+      ],
+      "bbox": "74.5710500,42.8708500,74.5735500,42.8733500,EPSG:4326",
+      "startIndex": 3,
+      "url": "https://cadastre.kg/svc-portal/map/proxy.do?http://localhost/o2map/services/wfs?service=WFS&version=1.1.0&request=GetFeature&typename=ENI_AREA&propertyname=OID,PROPCODE,DOMCODE,NAZNACHENI,STS,DATEINS,DATEUPD,OID_OLD,AMNESTIED,FROM_GPS,THE_GEOM&outputFormat=application%2Fjson&srsname=EPSG%3A4326&maxFeatures=3&bbox=74.5710500,42.8708500,74.5735500,42.8733500,EPSG%3A4326&filter=%3Cogc%3AFilter+xmlns%3Aogc%3D%22http%3A%2F%2Fwww.opengis.net%2Fogc%22%3E%3Cogc%3APropertyIsEqualTo%3E%3Cogc%3APropertyName%3ENAZNACHENI%3C%2Fogc%3APropertyName%3E%3Cogc%3ALiteral%3E%D0%B7%D0%B5%D0%BC%D0%B5%D0%BB%D1%8C%D0%BD%D1%8B%D0%B9+%D1%83%D1%87%D0%B0%D1%81%D1%82%D0%BE%D0%BA%3C%2Fogc%3ALiteral%3E%3C%2Fogc%3APropertyIsEqualTo%3E%3C%2Fogc%3AFilter%3E&startIndex=3",
+      "http": "HTTP 200 type application/json;charset=UTF-8 bytes 1677",
+      "featureCount": 3
+    },
+    {
+      "cell": [
+        2,
+        2
+      ],
+      "bbox": "74.5710500,42.8708500,74.5735500,42.8733500,EPSG:4326",
+      "startIndex": 6,
+      "url": "https://cadastre.kg/svc-portal/map/proxy.do?http://localhost/o2map/services/wfs?service=WFS&version=1.1.0&request=GetFeature&typename=ENI_AREA&propertyname=OID,PROPCODE,DOMCODE,NAZNACHENI,STS,DATEINS,DATEUPD,OID_OLD,AMNESTIED,FROM_GPS,THE_GEOM&outputFormat=application%2Fjson&srsname=EPSG%3A4326&maxFeatures=3&bbox=74.5710500,42.8708500,74.5735500,42.8733500,EPSG%3A4326&filter=%3Cogc%3AFilter+xmlns%3Aogc%3D%22http%3A%2F%2Fwww.opengis.net%2Fogc%22%3E%3Cogc%3APropertyIsEqualTo%3E%3Cogc%3APropertyName%3ENAZNACHENI%3C%2Fogc%3APropertyName%3E%3Cogc%3ALiteral%3E%D0%B7%D0%B5%D0%BC%D0%B5%D0%BB%D1%8C%D0%BD%D1%8B%D0%B9+%D1%83%D1%87%D0%B0%D1%81%D1%82%D0%BE%D0%BA%3C%2Fogc%3ALiteral%3E%3C%2Fogc%3APropertyIsEqualTo%3E%3C%2Fogc%3AFilter%3E&startIndex=6",
+      "http": "HTTP 200 type application/json;charset=UTF-8 bytes 1916",
+      "featureCount": 3
+    },
+    {
+      "cell": [
+        2,
+        2
+      ],
+      "bbox": "74.5710500,42.8708500,74.5735500,42.8733500,EPSG:4326",
+      "startIndex": 9,
+      "url": "https://cadastre.kg/svc-portal/map/proxy.do?http://localhost/o2map/services/wfs?service=WFS&version=1.1.0&request=GetFeature&typename=ENI_AREA&propertyname=OID,PROPCODE,DOMCODE,NAZNACHENI,STS,DATEINS,DATEUPD,OID_OLD,AMNESTIED,FROM_GPS,THE_GEOM&outputFormat=application%2Fjson&srsname=EPSG%3A4326&maxFeatures=3&bbox=74.5710500,42.8708500,74.5735500,42.8733500,EPSG%3A4326&filter=%3Cogc%3AFilter+xmlns%3Aogc%3D%22http%3A%2F%2Fwww.opengis.net%2Fogc%22%3E%3Cogc%3APropertyIsEqualTo%3E%3Cogc%3APropertyName%3ENAZNACHENI%3C%2Fogc%3APropertyName%3E%3Cogc%3ALiteral%3E%D0%B7%D0%B5%D0%BC%D0%B5%D0%BB%D1%8C%D0%BD%D1%8B%D0%B9+%D1%83%D1%87%D0%B0%D1%81%D1%82%D0%BE%D0%BA%3C%2Fogc%3ALiteral%3E%3C%2Fogc%3APropertyIsEqualTo%3E%3C%2Fogc%3AFilter%3E&startIndex=9",
+      "http": "HTTP 200 type application/json;charset=UTF-8 bytes 1767",
+      "featureCount": 3
+    },
+    {
+      "cell": [
+        2,
+        2
+      ],
+      "bbox": "74.5710500,42.8708500,74.5735500,42.8733500,EPSG:4326",
+      "startIndex": 12,
+      "url": "https://cadastre.kg/svc-portal/map/proxy.do?http://localhost/o2map/services/wfs?service=WFS&version=1.1.0&request=GetFeature&typename=ENI_AREA&propertyname=OID,PROPCODE,DOMCODE,NAZNACHENI,STS,DATEINS,DATEUPD,OID_OLD,AMNESTIED,FROM_GPS,THE_GEOM&outputFormat=application%2Fjson&srsname=EPSG%3A4326&maxFeatures=3&bbox=74.5710500,42.8708500,74.5735500,42.8733500,EPSG%3A4326&filter=%3Cogc%3AFilter+xmlns%3Aogc%3D%22http%3A%2F%2Fwww.opengis.net%2Fogc%22%3E%3Cogc%3APropertyIsEqualTo%3E%3Cogc%3APropertyName%3ENAZNACHENI%3C%2Fogc%3APropertyName%3E%3Cogc%3ALiteral%3E%D0%B7%D0%B5%D0%BC%D0%B5%D0%BB%D1%8C%D0%BD%D1%8B%D0%B9+%D1%83%D1%87%D0%B0%D1%81%D1%82%D0%BE%D0%BA%3C%2Fogc%3ALiteral%3E%3C%2Fogc%3APropertyIsEqualTo%3E%3C%2Fogc%3AFilter%3E&startIndex=12",
+      "http": "HTTP 200 type application/json;charset=UTF-8 bytes 1318",
+      "featureCount": 2
+    },
+    {
+      "cell": [
+        2,
+        2
+      ],
+      "bbox": "74.5710500,42.8708500,74.5735500,42.8733500,EPSG:4326",
+      "startIndex": 14,
+      "url": "https://cadastre.kg/svc-portal/map/proxy.do?http://localhost/o2map/services/wfs?service=WFS&version=1.1.0&request=GetFeature&typename=ENI_AREA&propertyname=OID,PROPCODE,DOMCODE,NAZNACHENI,STS,DATEINS,DATEUPD,OID_OLD,AMNESTIED,FROM_GPS,THE_GEOM&outputFormat=application%2Fjson&srsname=EPSG%3A4326&maxFeatures=3&bbox=74.5710500,42.8708500,74.5735500,42.8733500,EPSG%3A4326&filter=%3Cogc%3AFilter+xmlns%3Aogc%3D%22http%3A%2F%2Fwww.opengis.net%2Fogc%22%3E%3Cogc%3APropertyIsEqualTo%3E%3Cogc%3APropertyName%3ENAZNACHENI%3C%2Fogc%3APropertyName%3E%3Cogc%3ALiteral%3E%D0%B7%D0%B5%D0%BC%D0%B5%D0%BB%D1%8C%D0%BD%D1%8B%D0%B9+%D1%83%D1%87%D0%B0%D1%81%D1%82%D0%BE%D0%BA%3C%2Fogc%3ALiteral%3E%3C%2Fogc%3APropertyIsEqualTo%3E%3C%2Fogc%3AFilter%3E&startIndex=14",
+      "http": "HTTP 200 type application/json;charset=UTF-8 bytes 42",
+      "featureCount": 0
+    }
+  ],
+  "topologyCheck": {
+    "engine": "GEOS 3.14.1",
+    "featureCount": 111,
+    "geometryTypeCounts": {
+      "MultiPolygon": 111
+    },
+    "ringCount": 116,
+    "closedRingCount": 116,
+    "validFeatureCount": 108,
+    "invalidFeatures": [
+      {
+        "propcod": "1-01-02-0011-0988",
+        "reason": "Ring Self-intersection[74.57296899 42.87585897]"
+      },
+      {
+        "propcod": "1-01-02-0011-0118",
+        "reason": "Too few points in geometry component[74.57113451 42.87302071]"
+      },
+      {
+        "propcod": "1-01-02-0011-1026",
+        "reason": "Self-intersection[74.5691353446677 42.8739288455661]"
+      }
+    ],
+    "intersectingPairsIncludingBoundary": 29,
+    "positiveAreaOverlapPairCount": 12,
+    "positiveAreaOverlapPairs": [
+      {
+        "left": "1-01-02-0011-0257",
+        "right": "1-01-02-0011-0181",
+        "intersectionAreaDeg2": 2.5693411870519095e-11
+      },
+      {
+        "left": "1-01-02-0011-0306",
+        "right": "1-01-02-0011-0995",
+        "intersectionAreaDeg2": 5.502967170226629e-11
+      },
+      {
+        "left": "1-01-02-0011-0068",
+        "right": "1-01-02-0011-0469",
+        "intersectionAreaDeg2": 2.1944958391838123e-10
+      },
+      {
+        "left": "1-01-02-0011-0469",
+        "right": "1-01-02-0011-0069",
+        "intersectionAreaDeg2": 1.281752080559175e-12
+      },
+      {
+        "left": "1-01-02-0011-0327",
+        "right": "1-01-02-0011-0988",
+        "intersectionAreaDeg2": 2.0006328463219097e-12
+      },
+      {
+        "left": "1-01-02-0011-0882",
+        "right": "1-01-02-0011-0394",
+        "intersectionAreaDeg2": 3.538537652590866e-11
+      },
+      {
+        "left": "1-01-02-0011-0795",
+        "right": "1-01-02-0011-0262",
+        "intersectionAreaDeg2": 3.4641521960327793e-11
+      },
+      {
+        "left": "1-01-02-0011-0074",
+        "right": "1-01-02-0011-0888",
+        "intersectionAreaDeg2": 2.743298494321356e-12
+      },
+      {
+        "left": "1-01-02-0011-0298",
+        "right": "1-01-02-0011-0893",
+        "intersectionAreaDeg2": 4.247850421806599e-12
+      },
+      {
+        "left": "1-01-02-0011-0118",
+        "right": "1-01-02-0011-0966",
+        "intersectionAreaDeg2": 8.336485284796212e-11
+      },
+      {
+        "left": "1-01-02-0011-0382",
+        "right": "1-01-02-0011-0767",
+        "intersectionAreaDeg2": 2.634049076615495e-11
+      },
+      {
+        "left": "1-01-02-0011-0338",
+        "right": "1-01-02-0011-1036",
+        "intersectionAreaDeg2": 9.706550600937887e-11
+      }
+    ],
+    "centerPoint": [
+      74.5698,
+      42.8746
+    ],
+    "featuresContainingCenter": [
+      "1-01-02-0011-0890"
+    ]
+  }
+}

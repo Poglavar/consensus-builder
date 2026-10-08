@@ -1,0 +1,73 @@
+{
+  "wupCityCode": 9847,
+  "city": "Kollam",
+  "source": "official Ente Bhoomi public viewer click-info response",
+  "village": "Iravipuram",
+  "villageMalayalam": "ഇരവിപുരം",
+  "locationCode": "020301",
+  "crs": "EPSG:32643",
+  "endpoint": "/web/proxy/click_info/multiple/020301",
+  "request": {
+    "method": "POST",
+    "contentType": "multipart/form-data",
+    "fields": {
+      "layer_code": "LAND_PARCEL",
+      "crs": "32643",
+      "x": "678983.4742",
+      "y": "978388.9526"
+    }
+  },
+  "featureCountReturned": 1,
+  "nativeParcelFields": {
+    "parcel_gid": "80c7e159-369c-443b-9055-3fdc31bf5a71",
+    "survey_no": "106",
+    "block_no": "57"
+  },
+  "geometry": {
+    "encoding": "WKT",
+    "type": "MULTIPOLYGON Z",
+    "value": "MULTIPOLYGON Z (((678998.9122635 978341.9442868 0,679020.4036544 978362.1304884 0,679020.6859589 978362.4223603 0,679021.9850207 978385.6266795 0,679023.1445936 978400.599103 0,678973.3806604 978397.4295734 0,678978.3346414 978385.8741291 -94.7122592,678993.4578074 978353.2507588 0,678994.1875557 978351.8685682 0,678998.9122635 978341.9442868 0)))",
+    "sha256": "0b96a55323d8c9290ae93e307deba91b4674d2062a91b87210237df56a235612",
+    "chars": 349
+  },
+  "responseNotes": "Only safe parcel identifiers and geom were persisted; non-whitelisted response attributes filtered in memory.",
+  "validation": {
+    "transform": {
+      "from": "EPSG:32643",
+      "to": "EPSG:4326",
+      "library": "backend package proj4 2.22.0"
+    },
+    "wgs84Bbox": [
+      76.62741867,
+      8.8471252,
+      76.62787118,
+      8.84765457
+    ],
+    "polygonCount": 1,
+    "ringCount": 1,
+    "vertexCount": 9,
+    "allRingsClosed": true,
+    "allCoordinatesFinite3d": true,
+    "allRingsPositiveArea": true,
+    "selfIntersectionCount": 0,
+    "validClosedPolygon": true,
+    "wupTargetCenterLatLon": [
+      9.29818038422683,
+      76.4275496736682
+    ],
+    "wupPointInsideParcel": false,
+    "distanceToParcelBoundaryMeters": 54458.46,
+    "distanceMethod": "Euclidean distance in EPSG:32643 between the viewer click coordinate and the projected WUP target point",
+    "viewerClickCoordinateSourceCrs": "EPSG:32643",
+    "viewerClickCoordinate": [
+      678983.4742,
+      978388.9526
+    ],
+    "viewerClickCoordinateWgs84LonLat": [
+      76.62751009,
+      8.84755083
+    ],
+    "viewerClickCoordinateInsideSampleParcel": true,
+    "distanceFromWupTargetToClickCoordinateMeters": 54470.31
+  }
+}

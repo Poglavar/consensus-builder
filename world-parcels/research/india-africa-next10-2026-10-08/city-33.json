@@ -1,0 +1,100 @@
+{
+  "schemaVersion": 1,
+  "checkedAt": "2026-10-08",
+  "workstream": "africa_west",
+  "kind": "city_parcel_source_research",
+  "cityId": "wup2025:33",
+  "queueRank": 120,
+  "wupCityCode": 33,
+  "name": "Dakar",
+  "country": "Senegal",
+  "countryCode": "SN",
+  "centerLatLon": [
+    14.7439034455783,
+    -17.3893643705506
+  ],
+  "cohorts": [
+    "largest200"
+  ],
+  "largestRank": 120,
+  "growthRank": null,
+  "population2025": 3852475,
+  "annualGrowthPct2015To2025": 1.828571,
+  "priorEvidence": [
+    "research/dakar.json",
+    "research/retry/cities/dakar.json",
+    "research/india-africa-2026-10-08/africa-ws-city-33.json"
+  ],
+  "priorAssessment": {
+    "resultCategory": "no_new_verified_target_sample",
+    "freshVerifiedSample": false,
+    "technicalBlocker": "Earlier GeoSenegal catalog candidate for Dakar parcel-plan vectors returned 503/timeout; direct host retries in this pass reset HTTP and timed out HTTPS."
+  },
+  "freshCityLocalSearch": {
+    "languageScript": "French (Latin script)",
+    "exactQueries": [
+      "site:geosenegal.gouv.sn \"Données vectorielles du plan cadastral\"",
+      "site:geosenegal.gouv.sn \"plan cadastral de Dakar\" parcelles",
+      "site:geosenegal.gouv.sn \"cadastral\" Dakar parcel",
+      "site:dgid.sn Dakar plan cadastral public parcelle SIG"
+    ],
+    "date": "2026-10-08",
+    "resultUrls": [
+      "https://www.geosenegal.gouv.sn/dakar-nd-28-xix-241.html",
+      "https://www.geosenegal.gouv.sn/-base-de-donnees-geographiques-.html",
+      "https://www.dgid.sn/fiches/nicad",
+      "https://www.dgid.sn/wp-content/uploads/2023/02/NICAD.pdf"
+    ],
+    "summary": "Fresh official sources confirm GeoSenegal’s Dakar ND-28-XIX offering is 1:200,000 topographic KML/SHP from ANAT, not parcel geometry. The national geodata catalog describes normalized vectors and imagery, not a parcel feature API. DGID NICAD instructions route parcel-plan extracts through the local Cadastre bureau with title/allocation and plan documentation; no anonymous feature endpoint is documented. Direct ordinary-host HTTPS to the exact old georepertoire cadastral-plan record timed out and HTTP reset. The currently operating GeoSenegal catalog and Dakar sheet pages return HTTP 200. No target bbox query was possible because no parcel feature endpoint was found."
+  },
+  "requests": [
+    {
+      "url": "http://www.georepertoire.gouv.sn/catalog/search/resource/details.page?uuid=%7BF8264ED8-8268-4F69-8BAB-64F0BC72E453%7D",
+      "method": "GET",
+      "networkContext": "exec_command require_escalated; direct public host",
+      "outcome": "Connection reset by peer; no HTTP response."
+    },
+    {
+      "url": "https://www.georepertoire.gouv.sn/catalog/search/resource/details.page?uuid=%7BF8264ED8-8268-4F69-8BAB-64F0BC72E453%7D",
+      "method": "GET",
+      "networkContext": "exec_command require_escalated; TLS verification enabled",
+      "outcome": "Connect timeout after 25 seconds; no HTTP response."
+    },
+    {
+      "url": "https://www.geosenegal.gouv.sn/georepertoire.html",
+      "method": "GET",
+      "httpStatus": 200,
+      "networkContext": "exec_command require_escalated; TLS verified",
+      "outcome": "Current official metadata catalog page is reachable; no anonymous parcel service endpoint exposed."
+    },
+    {
+      "url": "https://www.geosenegal.gouv.sn/dakar-nd-28-xix-241.html",
+      "method": "GET",
+      "httpStatus": 200,
+      "networkContext": "exec_command require_escalated; TLS verified",
+      "outcome": "Official Dakar 1:200,000 vector sheet page; data are KML/SHP topographic sheet from ANAT."
+    },
+    {
+      "url": "https://www.dgid.sn/fiches/nicad",
+      "method": "GET",
+      "outcome": "Official public procedure inspected; NICAD/parcel extracts are obtained through local Cadastre bureau with documentary prerequisites, no anonymous feature endpoint."
+    }
+  ],
+  "verifiedParcelResponse": null,
+  "source": null,
+  "registryFound": null,
+  "verifiedSample": false,
+  "coverageAssessment": {
+    "claimedScope": "City-level only; no broader coverage implied.",
+    "verifiedOpenScope": null,
+    "countrywideVerified": false
+  },
+  "status": "no_verified_open_parcel_endpoint_after_attempts",
+  "blocker": "No documented anonymous Dakar parcel feature route. The old record remains unavailable over both schemes; reachable official Dakar products are topographic vectors, while DGID parcel extracts follow an administrative procedure.",
+  "remainingUncertainty": "Cadastral geometry may be held by DGID, PROCASEF/SIFCOM, or local bureaux/restricted services; availability of such records is not disproved.",
+  "nextStep": "If DGID, GeoSenegal or PROCASEF publishes an anonymous map-service route, query a small WGS84 target envelope and confirm parcel semantics and native NICAD/other stable ID with bounded exact reads.",
+  "resultCategory": "no_new_verified_target_sample",
+  "evidenceType": "new_or_retry_city_specific_discovery",
+  "targetEndpointProbePerformed": false,
+  "evidenceFiles": []
+}

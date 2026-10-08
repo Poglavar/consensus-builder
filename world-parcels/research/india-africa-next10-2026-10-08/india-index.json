@@ -1,0 +1,70 @@
+{
+  "schemaVersion": 1,
+  "checkedAt": "2026-10-08",
+  "workstream": "india",
+  "kind": "city_parcel_source_research_index",
+  "scope": "Four assigned India targets in the next-ten unresolved cohort; WUP target labels and points retained.",
+  "queue": "queue.json",
+  "cityFiles": [
+    {
+      "wupCityCode": 9949,
+      "cityId": "wup2025:9949",
+      "name": "Bengaluru",
+      "cohorts": [
+        "largest200"
+      ],
+      "file": "city-9949.json",
+      "status": "temporarily_unavailable",
+      "verifiedSample": false,
+      "resultCategory": "temporarily_unavailable",
+      "technicalBlocker": "No geometry was obtained. Escalated ordinary GET attempts to the official Dishaank, Karnataka BhoomiMaps, KSRSAC and GBA GIS Viewer routes all ended in ConnectTimeout before HTTP response. The search-indexed GBA viewer exposes admin selectors; the official GEPTIS public view requires mobile-linked registration. These are specific access/interface findings, not evidence that no Karnataka data exists."
+    },
+    {
+      "wupCityCode": 10747,
+      "cityId": "wup2025:10747",
+      "name": "Chennai",
+      "cohorts": [
+        "largest200"
+      ],
+      "file": "city-10747.json",
+      "status": "temporarily_unavailable",
+      "verifiedSample": false,
+      "resultCategory": "temporarily_unavailable",
+      "technicalBlocker": "No Chennai parcel polygon was obtained. The official eServices/TNGIS/CMDA application routes timed out before HTTP response; live GCC public GIS metadata exposes road and administrative boundaries, and the exact WUP point resolves only to ward 136. The public GCCPropertyTax folder listing is empty, while a separate GCCWebAppPublic folder explicitly requires a token."
+    },
+    {
+      "wupCityCode": 9913,
+      "cityId": "wup2025:9913",
+      "name": "Hyderabad",
+      "cohorts": [
+        "largest200"
+      ],
+      "file": "city-9913.json",
+      "status": "no_verified_sample_candidate_citywide",
+      "verifiedSample": false,
+      "resultCategory": "no_verified_sample_candidate_citywide",
+      "technicalBlocker": "Public TGRAC endpoint at the WUP coordinate returns one aggregate GHMC polygon, with blank Parcel_num and a “to be checked” remark; the ULB cadastral and cadastral point queries return zero features."
+    },
+    {
+      "wupCityCode": 10035,
+      "cityId": "wup2025:10035",
+      "name": "Ghatkesar",
+      "cohorts": [
+        "growth200"
+      ],
+      "file": "city-10035.json",
+      "status": "verified_sample_partial_coverage",
+      "verifiedSample": true,
+      "resultCategory": "verified_geometry_native_read_hold",
+      "technicalBlocker": "Nine app cells yielded 37 nonblank survey numbers; fresh exact native-ID counts, manifests and geometries timed out at 15 seconds. The source also supports ESRI JSON/AMF only, while the current adapter requires GeoJSON. Three blank-ID Road/Village boundary rows are an explicit omitted-subset candidate, not parcel identities.",
+      "acceptanceFile": "research/india-africa-next10-2026-10-08/ghatkesar-acceptance.json"
+    }
+  ],
+  "verifiedSampleCount": 1,
+  "cityCount": 4,
+  "notes": [
+    "Ghatkesar sample is independently verified at the exact WUP coordinate; full adapter acceptance is owned by the separate west/south worker.",
+    "Bengaluru and Chennai remain temporary endpoint/access blockers; Hyderabad official state service returned only aggregate administrative geometry at the exact WUP point.",
+    "No citywide or statewide completeness is claimed."
+  ]
+}

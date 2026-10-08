@@ -1,0 +1,346 @@
+{
+  "schemaVersion": 1,
+  "checkedAt": "2026-10-08",
+  "sourceFamily": "bihar-bhunaksha",
+  "assignedBiharCityCount": 23,
+  "freshCitySpecificTargetPointChecks": 3,
+  "cityGeometryVerifiedCount": 0,
+  "sourceLevelFinding": "No machine-readable complete parcel polygon query was verified from the current public Bihar BhuNaksha viewer; see bihar-family-viewer.json. This is a source-level result, not 23 fresh city geometry investigations.",
+  "rows": [
+    {
+      "cityId": "wup2025:10737",
+      "wupCityCode": 10737,
+      "name": "Darauli",
+      "centerLatLon": [
+        26.1350913588765,
+        84.1658019427551
+      ],
+      "priorStatus": "no_verified_sample_candidate_citywide",
+      "priorEvidenceFiles": [
+        "research/growth-top20-integration-2026-10-07/bihar.json",
+        "research/growth-top20-2026-10-07/city-10737.json"
+      ],
+      "freshCitySpecificTargetPointCheck": true,
+      "freshEvidenceFile": "bihar-city-10737-darauli.json",
+      "BhuNakshaFamilyImpact": "This exact WUP point was freshly tried (see per-city evidence), but the point lookup returned 204 without a selected sheet; the shared viewer still lacks a complete vector-polygon query. No other Bihar target is implied checked."
+    },
+    {
+      "cityId": "wup2025:10791",
+      "wupCityCode": 10791,
+      "name": "Raghunathpur",
+      "centerLatLon": [
+        25.9929452167679,
+        84.2915701031615
+      ],
+      "priorStatus": "no_verified_sample_candidate_citywide",
+      "priorEvidenceFiles": [
+        "research/growth-top20-integration-2026-10-07/bihar.json",
+        "research/growth-top20-2026-10-07/city-10791.json"
+      ],
+      "freshCitySpecificTargetPointCheck": false,
+      "freshEvidenceFile": null,
+      "BhuNakshaFamilyImpact": "Potential shared-source blocker only: no complete vector-polygon query was verified from this viewer. No fresh target-point request or city-specific geometry investigation for this city in this follow-up."
+    },
+    {
+      "cityId": "wup2025:10829",
+      "wupCityCode": 10829,
+      "name": "Areraj",
+      "centerLatLon": [
+        26.5532969746,
+        84.6696100512271
+      ],
+      "priorStatus": "no_verified_sample_candidate_citywide",
+      "priorEvidenceFiles": [],
+      "freshCitySpecificTargetPointCheck": false,
+      "freshEvidenceFile": null,
+      "BhuNakshaFamilyImpact": "Potential shared-source blocker only: no complete vector-polygon query was verified from this viewer. No fresh target-point request or city-specific geometry investigation for this city in this follow-up."
+    },
+    {
+      "cityId": "wup2025:10835",
+      "wupCityCode": 10835,
+      "name": "Harsidhi",
+      "centerLatLon": [
+        26.6872456566718,
+        84.7644732569845
+      ],
+      "priorStatus": "no_verified_sample_candidate_citywide",
+      "priorEvidenceFiles": [],
+      "freshCitySpecificTargetPointCheck": false,
+      "freshEvidenceFile": null,
+      "BhuNakshaFamilyImpact": "Potential shared-source blocker only: no complete vector-polygon query was verified from this viewer. No fresh target-point request or city-specific geometry investigation for this city in this follow-up."
+    },
+    {
+      "cityId": "wup2025:10893",
+      "wupCityCode": 10893,
+      "name": "Kalyanpur",
+      "centerLatLon": [
+        26.4466696212949,
+        84.8669945860888
+      ],
+      "priorStatus": "no_verified_sample_candidate_citywide",
+      "priorEvidenceFiles": [],
+      "freshCitySpecificTargetPointCheck": false,
+      "freshEvidenceFile": null,
+      "BhuNakshaFamilyImpact": "Potential shared-source blocker only: no complete vector-polygon query was verified from this viewer. No fresh target-point request or city-specific geometry investigation for this city in this follow-up."
+    },
+    {
+      "cityId": "wup2025:10911",
+      "wupCityCode": 10911,
+      "name": "Masrakh",
+      "centerLatLon": [
+        26.1211707275585,
+        84.7950953210667
+      ],
+      "priorStatus": "no_verified_sample_candidate_citywide",
+      "priorEvidenceFiles": [],
+      "freshCitySpecificTargetPointCheck": false,
+      "freshEvidenceFile": null,
+      "BhuNakshaFamilyImpact": "Potential shared-source blocker only: no complete vector-polygon query was verified from this viewer. No fresh target-point request or city-specific geometry investigation for this city in this follow-up."
+    },
+    {
+      "cityId": "wup2025:10927",
+      "wupCityCode": 10927,
+      "name": "Dhaka",
+      "centerLatLon": [
+        26.6630429867703,
+        85.1567394385869
+      ],
+      "priorStatus": "no_verified_sample_candidate_citywide",
+      "priorEvidenceFiles": [],
+      "freshCitySpecificTargetPointCheck": false,
+      "freshEvidenceFile": null,
+      "BhuNakshaFamilyImpact": "Potential shared-source blocker only: no complete vector-polygon query was verified from this viewer. No fresh target-point request or city-specific geometry investigation for this city in this follow-up."
+    },
+    {
+      "cityId": "wup2025:10933",
+      "wupCityCode": 10933,
+      "name": "Chakia",
+      "centerLatLon": [
+        26.4025743820036,
+        85.0420780355781
+      ],
+      "priorStatus": "no_verified_sample_candidate_citywide",
+      "priorEvidenceFiles": [],
+      "freshCitySpecificTargetPointCheck": false,
+      "freshEvidenceFile": null,
+      "BhuNakshaFamilyImpact": "Potential shared-source blocker only: no complete vector-polygon query was verified from this viewer. No fresh target-point request or city-specific geometry investigation for this city in this follow-up."
+    },
+    {
+      "cityId": "wup2025:10957",
+      "wupCityCode": 10957,
+      "name": "Bairgania",
+      "centerLatLon": [
+        26.7265024228444,
+        85.258964919446
+      ],
+      "priorStatus": "no_verified_sample_candidate_citywide",
+      "priorEvidenceFiles": [],
+      "freshCitySpecificTargetPointCheck": false,
+      "freshEvidenceFile": null,
+      "BhuNakshaFamilyImpact": "Potential shared-source blocker only: no complete vector-polygon query was verified from this viewer. No fresh target-point request or city-specific geometry investigation for this city in this follow-up."
+    },
+    {
+      "cityId": "wup2025:10969",
+      "wupCityCode": 10969,
+      "name": "Chirand",
+      "centerLatLon": [
+        25.7489853409713,
+        84.887639805399
+      ],
+      "priorStatus": "no_verified_sample_candidate_citywide",
+      "priorEvidenceFiles": [],
+      "freshCitySpecificTargetPointCheck": false,
+      "freshEvidenceFile": null,
+      "BhuNakshaFamilyImpact": "Potential shared-source blocker only: no complete vector-polygon query was verified from this viewer. No fresh target-point request or city-specific geometry investigation for this city in this follow-up."
+    },
+    {
+      "cityId": "wup2025:11027",
+      "wupCityCode": 11027,
+      "name": "Hajipur",
+      "centerLatLon": [
+        25.9809989936602,
+        85.4509953679278
+      ],
+      "priorStatus": "no_verified_sample_candidate_citywide",
+      "priorEvidenceFiles": [
+        "research/hajipur.json"
+      ],
+      "freshCitySpecificTargetPointCheck": true,
+      "freshEvidenceFile": "bihar-city-11027-hajipur.json",
+      "BhuNakshaFamilyImpact": "This exact WUP point was freshly tried (see per-city evidence), but the point lookup returned 204 without a selected sheet; the shared viewer still lacks a complete vector-polygon query. No other Bihar target is implied checked."
+    },
+    {
+      "cityId": "wup2025:11029",
+      "wupCityCode": 11029,
+      "name": "Naubatpur",
+      "centerLatLon": [
+        25.4909770292272,
+        84.9507260772197
+      ],
+      "priorStatus": "no_verified_sample_candidate_citywide",
+      "priorEvidenceFiles": [],
+      "freshCitySpecificTargetPointCheck": false,
+      "freshEvidenceFile": null,
+      "BhuNakshaFamilyImpact": "Potential shared-source blocker only: no complete vector-polygon query was verified from this viewer. No fresh target-point request or city-specific geometry investigation for this city in this follow-up."
+    },
+    {
+      "cityId": "wup2025:11039",
+      "wupCityCode": 11039,
+      "name": "Patna",
+      "centerLatLon": [
+        25.5970203089431,
+        85.1397184130161
+      ],
+      "priorStatus": "no_verified_sample_candidate_citywide",
+      "priorEvidenceFiles": [
+        "research/patna.json"
+      ],
+      "freshCitySpecificTargetPointCheck": true,
+      "freshEvidenceFile": "bihar-city-11039-patna.json",
+      "BhuNakshaFamilyImpact": "This exact WUP point was freshly tried (see per-city evidence), but the point lookup returned 204 without a selected sheet; the shared viewer still lacks a complete vector-polygon query. No other Bihar target is implied checked."
+    },
+    {
+      "cityId": "wup2025:11109",
+      "wupCityCode": 11109,
+      "name": "Khirz Sarai",
+      "centerLatLon": [
+        24.9669021893364,
+        85.0901889548943
+      ],
+      "priorStatus": "no_verified_sample_candidate_citywide",
+      "priorEvidenceFiles": [],
+      "freshCitySpecificTargetPointCheck": false,
+      "freshEvidenceFile": null,
+      "BhuNakshaFamilyImpact": "Potential shared-source blocker only: no complete vector-polygon query was verified from this viewer. No fresh target-point request or city-specific geometry investigation for this city in this follow-up."
+    },
+    {
+      "cityId": "wup2025:11117",
+      "wupCityCode": 11117,
+      "name": "Ekangar Sarai",
+      "centerLatLon": [
+        25.2213089855198,
+        85.2355683904544
+      ],
+      "priorStatus": "no_verified_sample_candidate_citywide",
+      "priorEvidenceFiles": [],
+      "freshCitySpecificTargetPointCheck": false,
+      "freshEvidenceFile": null,
+      "BhuNakshaFamilyImpact": "Potential shared-source blocker only: no complete vector-polygon query was verified from this viewer. No fresh target-point request or city-specific geometry investigation for this city in this follow-up."
+    },
+    {
+      "cityId": "wup2025:11201",
+      "wupCityCode": 11201,
+      "name": "Muriya",
+      "centerLatLon": [
+        26.2319164670468,
+        86.0833220365614
+      ],
+      "priorStatus": "no_verified_sample_candidate_citywide",
+      "priorEvidenceFiles": [],
+      "freshCitySpecificTargetPointCheck": false,
+      "freshEvidenceFile": null,
+      "BhuNakshaFamilyImpact": "Potential shared-source blocker only: no complete vector-polygon query was verified from this viewer. No fresh target-point request or city-specific geometry investigation for this city in this follow-up."
+    },
+    {
+      "cityId": "wup2025:11285",
+      "wupCityCode": 11285,
+      "name": "Nawada",
+      "centerLatLon": [
+        26.2001645571738,
+        86.4343948922223
+      ],
+      "priorStatus": "no_verified_sample_candidate_citywide",
+      "priorEvidenceFiles": [],
+      "freshCitySpecificTargetPointCheck": false,
+      "freshEvidenceFile": null,
+      "BhuNakshaFamilyImpact": "Potential shared-source blocker only: no complete vector-polygon query was verified from this viewer. No fresh target-point request or city-specific geometry investigation for this city in this follow-up."
+    },
+    {
+      "cityId": "wup2025:11305",
+      "wupCityCode": 11305,
+      "name": "Bakhri",
+      "centerLatLon": [
+        25.6035865271048,
+        86.2567977340494
+      ],
+      "priorStatus": "no_verified_sample_candidate_citywide",
+      "priorEvidenceFiles": [],
+      "freshCitySpecificTargetPointCheck": false,
+      "freshEvidenceFile": null,
+      "BhuNakshaFamilyImpact": "Potential shared-source blocker only: no complete vector-polygon query was verified from this viewer. No fresh target-point request or city-specific geometry investigation for this city in this follow-up."
+    },
+    {
+      "cityId": "wup2025:11337",
+      "wupCityCode": 11337,
+      "name": "Bhaptiyahi",
+      "centerLatLon": [
+        26.2835746201486,
+        86.7336945187684
+      ],
+      "priorStatus": "no_verified_sample_candidate_citywide",
+      "priorEvidenceFiles": [],
+      "freshCitySpecificTargetPointCheck": false,
+      "freshEvidenceFile": null,
+      "BhuNakshaFamilyImpact": "Potential shared-source blocker only: no complete vector-polygon query was verified from this viewer. No fresh target-point request or city-specific geometry investigation for this city in this follow-up."
+    },
+    {
+      "cityId": "wup2025:11347",
+      "wupCityCode": 11347,
+      "name": "Gamharia",
+      "centerLatLon": [
+        26.0693392469207,
+        86.7301918567993
+      ],
+      "priorStatus": "no_verified_sample_candidate_citywide",
+      "priorEvidenceFiles": [],
+      "freshCitySpecificTargetPointCheck": false,
+      "freshEvidenceFile": null,
+      "BhuNakshaFamilyImpact": "Potential shared-source blocker only: no complete vector-polygon query was verified from this viewer. No fresh target-point request or city-specific geometry investigation for this city in this follow-up."
+    },
+    {
+      "cityId": "wup2025:11415",
+      "wupCityCode": 11415,
+      "name": "Asarganj",
+      "centerLatLon": [
+        25.095462687706,
+        86.6697214561759
+      ],
+      "priorStatus": "no_verified_sample_candidate_citywide",
+      "priorEvidenceFiles": [],
+      "freshCitySpecificTargetPointCheck": false,
+      "freshEvidenceFile": null,
+      "BhuNakshaFamilyImpact": "Potential shared-source blocker only: no complete vector-polygon query was verified from this viewer. No fresh target-point request or city-specific geometry investigation for this city in this follow-up."
+    },
+    {
+      "cityId": "wup2025:11447",
+      "wupCityCode": 11447,
+      "name": "Amarpur",
+      "centerLatLon": [
+        25.0857858011865,
+        86.8839490491015
+      ],
+      "priorStatus": "no_verified_sample_candidate_citywide",
+      "priorEvidenceFiles": [],
+      "freshCitySpecificTargetPointCheck": false,
+      "freshEvidenceFile": null,
+      "BhuNakshaFamilyImpact": "Potential shared-source blocker only: no complete vector-polygon query was verified from this viewer. No fresh target-point request or city-specific geometry investigation for this city in this follow-up."
+    },
+    {
+      "cityId": "wup2025:11511",
+      "wupCityCode": 11511,
+      "name": "Semapur",
+      "centerLatLon": [
+        25.4980899560268,
+        87.4841083291156
+      ],
+      "priorStatus": "no_verified_sample_candidate_citywide",
+      "priorEvidenceFiles": [
+        "research/growth-top20-integration-2026-10-07/bihar.json",
+        "research/growth-top20-2026-10-07/city-11511.json"
+      ],
+      "freshCitySpecificTargetPointCheck": false,
+      "freshEvidenceFile": null,
+      "BhuNakshaFamilyImpact": "Potential shared-source blocker only: no complete vector-polygon query was verified from this viewer. No fresh target-point request or city-specific geometry investigation for this city in this follow-up."
+    }
+  ]
+}

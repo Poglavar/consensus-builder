@@ -1,0 +1,97 @@
+{
+  "schemaVersion": 1,
+  "checkedAt": "2026-10-08",
+  "status": "local_acceptance_complete",
+  "purpose": "Technical follow-up after the released India/Africa pass; source checks and city geometry verification are recorded separately.",
+  "initialRelease": {
+    "commit": "fe51483ef23281982273c90d08dbdc0603f4a4d3",
+    "frontendBuild": "deploy-410",
+    "evidenceFile": "research/india-africa-followup-2026-10-08/release-verification.json"
+  },
+  "followupDeploymentStatus": "Local continuation is validated and remains uncommitted and undeployed; it is not part of the initial release.",
+  "scope": {
+    "regionalQueueCities": 171,
+    "followupInventoryCities": 39,
+    "plannedDirectTargets": 19,
+    "conditionalBiharCitiesNotIndividuallyQueried": 20,
+    "sharedAngolaExtentChecksWithoutFreshCityGeometryQuery": 8,
+    "newAppEntries": 3,
+    "newlyConfiguredCohortCities": 2,
+    "distinctLocalVillageEntries": 1
+  },
+  "currentCatalogue": {
+    "configuredCities": 110,
+    "executableProviders": 97
+  },
+  "newEntries": [
+    {
+      "appCityId": "mboloko",
+      "sourceId": "za-cgs-northwest-erven",
+      "uniqueNativeIdentities": 588,
+      "evidenceFile": "research/india-africa-followup-2026-10-08/mboloko-assessment.json"
+    },
+    {
+      "appCityId": "kochi",
+      "sourceId": "in-kl-entebhoomi-070211",
+      "uniqueNativeIdentities": 229,
+      "evidenceFile": "research/india-africa-followup-2026-10-08/kerala-assessment.json"
+    },
+    {
+      "appCityId": "iravipuram",
+      "sourceId": "in-kl-entebhoomi-020301",
+      "uniqueNativeIdentities": 162,
+      "evidenceFile": "research/india-africa-followup-2026-10-08/kerala-assessment.json"
+    }
+  ],
+  "acceptance": {
+    "viewportCells": 45,
+    "uniqueNativeIdentities": 1715,
+    "allFreshExactGeometryMatches": true,
+    "explicitAbsence": true,
+    "footprintReads": true,
+    "completeSourceBinding": true,
+    "geometryImported": false,
+    "deadlinesRaised": false,
+    "existingVenjaramooduRegression": "passed",
+    "qualifiedViewportCells": 27,
+    "qualifiedUniqueNativeIdentities": 979,
+    "note": "Raw acceptance totals include Kozhikode and Thiruvananthapuram, subsequently held by expanded browser checks.",
+    "browserAcceptedAppEntries": 3
+  },
+  "holds": {
+    "Mansa": "Native MAN/350 denotes two disjoint lots with inconsistent survey references; no arbitrary compound key or merge.",
+    "New Delhi": "Internal propertyid duplicates have valid disjoint components, but publisher-facing identity and production connectivity remain unresolved.",
+    "Bihar": "Three fresh selector/point checks and observed public click/report workflow did not verify a geometry route; twenty conditional cities were not newly queried.",
+    "Abidjan": "Observed public locality API returns HTTP 502.",
+    "Angola": "Shared Luanda candidate metadata is reachable; its extent excludes all eight target centers.",
+    "Kozhikode": "The native geometry audit passed 280 parcel IDs across nine cells, but the ordinary 25-cell browser view timed out in two consecutive loads. It retained only 15 then 23 complete cells and displayed the normal unavailable-source warning. Some same-cell retries passed; reliable expanded viewport loading remains unverified. No timeout or failure handling is weakened.",
+    "Thiruvananthapuram": "The native geometry audit passed 456 parcel IDs across nine cells, but the ordinary browser checks failed twice: the first view loaded 25 cells and then retained only 27 of 30 after panning; a fresh load after cooldown retained only 12 of 25 cells. Both displayed the unavailable-source warning. Keep the village research-only pending reliable expanded viewport loading under unchanged deadlines."
+  },
+  "evidenceFiles": [
+    "research/india-africa-followup-2026-10-08/queue.json",
+    "research/india-africa-followup-2026-10-08/outcome-summary.json",
+    "research/india-africa-followup-2026-10-08/mboloko-assessment.json",
+    "research/india-africa-followup-2026-10-08/kerala-assessment.json",
+    "research/india-africa-followup-2026-10-08/kerala-city-association.json",
+    "research/india-africa-followup-2026-10-08/mansa-assessment.json",
+    "research/india-africa-followup-2026-10-08/delhi-assessment.json",
+    "research/india-africa-followup-2026-10-08/bihar-index.json",
+    "research/india-africa-followup-2026-10-08/africa-ws-followup-index.json",
+    "research/india-africa-followup-2026-10-08/browser-check.json",
+    "research/india-africa-followup-2026-10-08/headless-validation.json",
+    "research/india-africa-followup-2026-10-08/evidence-qa.json",
+    "research/india-africa-followup-2026-10-08/kerala-browser-initial-failure.json"
+  ],
+  "termsAreInformational": true,
+  "validation": {
+    "headlessTestsPassed": 252,
+    "headlessFilesPassed": 18,
+    "reportTestsAfterFinalSourceOrdering": 75,
+    "browserAcceptedEntries": 3,
+    "browserHeldCandidates": 2,
+    "regionalReportRows": 171,
+    "regionalConfiguredRows": 13,
+    "separateLocalVillageEntries": 1,
+    "taskBrowsersClosed": true
+  }
+}

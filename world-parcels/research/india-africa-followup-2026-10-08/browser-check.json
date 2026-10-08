@@ -1,0 +1,165 @@
+{
+  "schemaVersion": 1,
+  "checkedAt": "2026-10-08",
+  "status": "passed_three_enabled_entries_two_candidates_held",
+  "method": "Manual inspection in a dedicated headed Chrome via agent-browser: inspect settled geometry, pointer-click a rendered polygon, check action menu and attribution, pan to new cells and inspect retained coverage. No browser suite.",
+  "frontendPort": 5638,
+  "backendPort": 4640,
+  "cacheControl": "no-store, must-revalidate",
+  "cities": [
+    {
+      "cityId": "mboloko",
+      "initialRetainedParcels": 588,
+      "initialLoadedCells": 9,
+      "afterPanRetainedParcels": 701,
+      "afterPanLoadedCells": 12,
+      "pointerClick": [
+        240,
+        605
+      ],
+      "selectedParcelId": "ZA-CGS-NW-N372T0JQ005400000575000000",
+      "parcelActionMenuVisible": true,
+      "sourceAttributionInspected": true,
+      "sampleRecordDateNotice": "2017-10-13",
+      "settledSourceWarnings": [],
+      "uncaughtPageErrors": [],
+      "screenshotVisuallyInspected": true,
+      "taskBrowserClosed": true,
+      "url": "http://localhost:5638/?city=mboloko&backend=http%3A%2F%2Flocalhost%3A4640&reduceMotion=1"
+    },
+    {
+      "cityId": "kochi",
+      "status": "passed",
+      "initialRetainedParcels": 612,
+      "initialLoadedCells": 25,
+      "afterPanRetainedParcels": 731,
+      "afterPanLoadedCells": 30,
+      "pointerClick": [
+        600,
+        409
+      ],
+      "selectedParcelId": "IN-KL-ENTEBHOOMI-070211-1258826f-a7fd-44ca-a97b-fe50b78c001e",
+      "parcelActionMenuVisible": true,
+      "sourceAttributionInspected": true,
+      "screenshotVisuallyInspected": true,
+      "settledSourceWarnings": [],
+      "uncaughtPageErrors": [],
+      "taskBrowserClosed": true,
+      "url": "http://localhost:5638/?city=kochi&backend=http%3A%2F%2Flocalhost%3A4640&reduceMotion=1",
+      "observation": "Initial load, polygon selection and pan passed. All 30 cell responses returned HTTP 200.",
+      "earlierFailureEvidenceFile": null
+    },
+    {
+      "cityId": "iravipuram",
+      "status": "passed",
+      "initialRetainedParcels": 382,
+      "initialLoadedCells": 25,
+      "afterPanRetainedParcels": 527,
+      "afterPanLoadedCells": 30,
+      "pointerClick": [
+        600,
+        409
+      ],
+      "selectedParcelId": "IN-KL-ENTEBHOOMI-020301-80c7e159-369c-443b-9055-3fdc31bf5a71",
+      "parcelActionMenuVisible": true,
+      "sourceAttributionInspected": true,
+      "screenshotVisuallyInspected": true,
+      "settledSourceWarnings": [],
+      "uncaughtPageErrors": [],
+      "taskBrowserClosed": true,
+      "url": "http://localhost:5638/?city=iravipuram&backend=http%3A%2F%2Flocalhost%3A4640&reduceMotion=1",
+      "observation": "Selection passed on the complete initial load. The first pan failed during a cooldown; a fresh load and pan passed with no visible warning.",
+      "earlierFailureEvidenceFile": "research/india-africa-followup-2026-10-08/kerala-browser-initial-failure.json"
+    }
+  ],
+  "completedAt": "2026-10-07T23:50:44.241663Z",
+  "heldCandidates": [
+    {
+      "cityId": "kozhikode",
+      "firstCompleteCells": 15,
+      "secondCompleteCells": 23,
+      "requiredInitialCells": 25,
+      "decision": "research_only",
+      "evidenceFile": "research/india-africa-followup-2026-10-08/kerala-browser-initial-failure.json"
+    },
+    {
+      "cityId": "thiruvananthapuram",
+      "firstPanCompleteCells": 27,
+      "requiredPanCells": 30,
+      "freshRetryCompleteCells": 12,
+      "requiredInitialCells": 25,
+      "decision": "research_only",
+      "evidenceFile": "research/india-africa-followup-2026-10-08/kerala-browser-initial-failure.json"
+    }
+  ],
+  "limitations": [
+    "These are bounded local manual checks, not citywide coverage or a long-term availability guarantee.",
+    "Iravipuram passed a fresh retry; the initial failure remains visible in the evidence."
+  ],
+  "browserCleanup": {
+    "namedSessionClosed": true,
+    "finalActiveSessionCount": 0,
+    "ownedChromeProcessesRemaining": 0
+  },
+  "report": {
+    "cohort": "india-africa",
+    "configuredRows": 13,
+    "count": "171 of 461 rows",
+    "rows": 171,
+    "targetRows": [
+      {
+        "configured": true,
+        "name": "Kochi",
+        "note": "Published Thiruvankulam cadastral village 070211; 229 native parcel_gid identities matched fresh exact geometry across nine aligned cells at the displayed village entry. Published Thiruvankulam cadastral village (070211), limited to bounded source queries. Village lies in Thrippunithura Municipality and the historical Kochi urban agglomeration; Kochi Corporation and WUP-point coverage are not claimed. Update year and full village completeness remain unestablished.\nhttps://bhunaksha.entebhoomi.kerala.gov.in/bhunaksha_v5_emaps/core/v2/map/export/geojson/070211\nhttps://entebhoomi.kerala.gov.in/web/ilms/map",
+        "registryLink": "https://bhunaksha.entebhoomi.kerala.gov.in/bhunaksha_v5_emaps/core/v2/map/export/geojson/070211"
+      },
+      {
+        "configured": false,
+        "name": "Kollam",
+        "note": "A complete Iravipuram village source is enabled as a separate local entry in Kollam Corporation. The saved WUP Kollam point is about 54.47 km away; no reliable settlement boundary/crosswalk links that point to this sample. WUP-point and citywide parcel coverage remain unverified.",
+        "registryLink": null
+      },
+      {
+        "configured": false,
+        "name": "Kozhikode",
+        "note": "Published Karuvanthuruthi village geometry with a historical Kozhikode urban-agglomeration association. The native geometry audit passed 280 parcel IDs across nine cells, but the ordinary 25-cell browser view timed out in two consecutive loads. It retained only 15 then 23 complete cells and displayed the normal unavailable-source warning. Some same-cell retries passed; reliable expanded viewport loading remains unverified. No timeout or failure handling is weakened.\nhttps://bhunaksha.entebhoomi.kerala.gov.in/bhunaksha_v5_emaps/core/v2/map/export/geojson/110114",
+        "registryLink": "https://bhunaksha.entebhoomi.kerala.gov.in/bhunaksha_v5_emaps/core/v2/map/export/geojson/110114"
+      },
+      {
+        "configured": true,
+        "name": "Mboloko",
+        "note": "CGS North West Erven mirror: 588 native PRCL_KEY identities matched fresh exact reads in nine Mboloko cells. Surveyed/approved records, with source DATE_STAMP 2017-10-13 in this sample; current registration and citywide completeness are unestablished.\nhttps://maps.geoscience.org.za/hosting/rest/services/Administrative_Boundaries_and_Cadastral_Data/MapServer/46\nhttps://imagery.esri-southafrica.com/server/rest/services/GISCOE/South_Africa_Cadastre/MapServer/1",
+        "registryLink": "https://maps.geoscience.org.za/hosting/rest/services/Administrative_Boundaries_and_Cadastral_Data/MapServer/46"
+      },
+      {
+        "configured": false,
+        "name": "Thiruvananthapuram",
+        "note": "Published Kudappanakunnu village geometry, associated with a Thiruvananthapuram municipal zone. The native geometry audit passed 456 parcel IDs across nine cells, but the ordinary browser checks failed twice: the first view loaded 25 cells and then retained only 27 of 30 after panning; a fresh load after cooldown retained only 12 of 25 cells. Both displayed the unavailable-source warning. Keep the village research-only pending reliable expanded viewport loading under unchanged deadlines.\nhttps://bhunaksha.entebhoomi.kerala.gov.in/bhunaksha_v5_emaps/core/v2/map/export/geojson/010111",
+        "registryLink": "https://bhunaksha.entebhoomi.kerala.gov.in/bhunaksha_v5_emaps/core/v2/map/export/geojson/010111"
+      }
+    ],
+    "url": "http://localhost:5638/parcel-coverage-report.html?cohort=india-africa#cities",
+    "screenshotVisuallyInspected": true,
+    "separateIravipuramRow": {
+      "buttons": [],
+      "count": "1 of 461 rows",
+      "rows": [
+        "Iravipuram (Kollam)\nConfigured in the app\n\t—\t—\tIndia\tYes\t2026-10-08\tYes\nParcel sample verified\n\tNot recorded\tMap ↗\tMap ↗\t—"
+      ]
+    }
+  },
+  "localRuntimeCatalog": {
+    "restartedAfterFinalDecisions": true,
+    "providerCount": 97,
+    "enabledSourceIds": [
+      "za-cgs-northwest-erven",
+      "in-kl-entebhoomi-070211",
+      "in-kl-entebhoomi-020301"
+    ],
+    "heldSourceIdsAbsent": [
+      "in-kl-entebhoomi-110114",
+      "in-kl-entebhoomi-010111"
+    ],
+    "noCacheHeaderVerified": "no-store, must-revalidate"
+  }
+}

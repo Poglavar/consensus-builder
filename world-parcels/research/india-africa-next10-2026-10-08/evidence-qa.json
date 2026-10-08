@@ -1,0 +1,584 @@
+{
+  "schemaVersion": 1,
+  "kind": "india_africa_next10_evidence_qa",
+  "checkedAt": "2026-10-08T05:32:03.376213+00:00",
+  "batchStatus": "local_acceptance_complete",
+  "checks": {
+    "queueRows": 10,
+    "queueIndiaRows": 5,
+    "queueAfricaRows": 5,
+    "uniqueCityCodes": 10,
+    "cityCodes": [
+      9949,
+      10747,
+      9913,
+      10035,
+      6408,
+      1265,
+      33,
+      2033,
+      3566,
+      1961
+    ],
+    "indexAndSummaryMatchQueueAsSet": true,
+    "indexStatus": "local_acceptance_complete",
+    "summaryStatus": "local_acceptance_complete",
+    "catalogCounts": {
+      "cities": 111,
+      "providers": 98,
+      "interpretation": "Current local validated catalogue; changes remain uncommitted and undeployed."
+    },
+    "batchFilesTotal": 28,
+    "batchJsonFilesParsed": 28,
+    "parseErrors": [],
+    "batchJsonFilenames": [
+      "africa-east-city-1961.json",
+      "africa-east-city-2033.json",
+      "africa-east-city-3566.json",
+      "africa-east-index.json",
+      "africa-west-index.json",
+      "africa-west-lagos-arcgis-probes.json",
+      "ahmedabad-acceptance.json",
+      "ahmedabad-adapter-initial.json",
+      "ahmedabad-small-page-counter-check.json",
+      "ahmedabad-small-page-failure.json",
+      "browser-check.json",
+      "city-10035.json",
+      "city-10747.json",
+      "city-1265.json",
+      "city-33.json",
+      "city-6408.json",
+      "city-9913.json",
+      "city-9949.json",
+      "evidence-qa.json",
+      "ghatkesar-acceptance.json",
+      "ghatkesar-boundary-exclusions.json",
+      "ghatkesar-source-proposal.json",
+      "headless-validation.json",
+      "index.json",
+      "india-city-10035-parcel-response.json",
+      "india-index.json",
+      "outcome-summary.json",
+      "queue.json"
+    ],
+    "researchReferenceOccurrencesChecked": 183,
+    "uniqueResearchReferencesChecked": 55,
+    "missingResearchReferences": [],
+    "allResearchReferencesUnderResearchTree": true,
+    "registryFile": "registry.json",
+    "registryReferenceObjectsToBatch": 29,
+    "registryDistinctBatchJsonRefs": 12,
+    "registryBatchRefsMissing": [],
+    "registryBatchJsonRefs": [
+      "research/india-africa-next10-2026-10-08/africa-east-city-1961.json",
+      "research/india-africa-next10-2026-10-08/africa-east-city-2033.json",
+      "research/india-africa-next10-2026-10-08/africa-east-city-3566.json",
+      "research/india-africa-next10-2026-10-08/ahmedabad-acceptance.json",
+      "research/india-africa-next10-2026-10-08/city-10035.json",
+      "research/india-africa-next10-2026-10-08/city-10747.json",
+      "research/india-africa-next10-2026-10-08/city-1265.json",
+      "research/india-africa-next10-2026-10-08/city-33.json",
+      "research/india-africa-next10-2026-10-08/city-6408.json",
+      "research/india-africa-next10-2026-10-08/city-9913.json",
+      "research/india-africa-next10-2026-10-08/city-9949.json",
+      "research/india-africa-next10-2026-10-08/index.json"
+    ],
+    "batchAppEntries": {
+      "count": 1,
+      "cityId": "ahmedabad",
+      "wupCityCode": 6408,
+      "matchingRegistryCityRows": 1,
+      "matchingEnabledSourceRows": 1,
+      "ghatkesarAppEntry": false,
+      "nairobiAppEntry": false,
+      "ghatkesarIntegrationStatus": "held",
+      "nairobiRuntimeReadiness": "technical-hold"
+    },
+    "priorFailuresReferenced": {
+      "ahmedabadSmallPageFailure": true,
+      "ahmedabadCounterDiagnostic": true,
+      "ghatkesarExactReadTimeoutAndFormatMismatch": true,
+      "evidenceFiles": [
+        "research/india-africa-next10-2026-10-08/ahmedabad-small-page-failure.json",
+        "research/india-africa-next10-2026-10-08/ahmedabad-small-page-counter-check.json",
+        "research/india-africa-next10-2026-10-08/ghatkesar-acceptance.json"
+      ]
+    },
+    "browserEvidence": {
+      "result": "passed",
+      "initialGridCells": 9,
+      "initialRetainedFeatures": 132,
+      "postPanCells": 12,
+      "postPanRetainedFeatures": 221,
+      "gatewayRequests": 12,
+      "allGatewayRequestsHTTP200": true,
+      "selectedId": "IN-GJ-TPVD-Sarangpur 18 10",
+      "pageErrors": 0,
+      "cleanupStatus": "closed; final session list empty",
+      "headlessValidation": "passed",
+      "headlessTestFilesPassed": 13,
+      "headlessTestsPassed": 214,
+      "headlessOwnedSessionCheck": {
+        "ownedSession": "batch10-india",
+        "result": "closed",
+        "confirmedAbsentFromActiveSessionList": true,
+        "otherSessionUntouched": "india-africa-next10-ui"
+      },
+      "reportReview": {
+        "result": "passed",
+        "renderedRows": 171,
+        "configuredRows": 14,
+        "batchCityRowsChecked": 10,
+        "uncaughtPageErrors": 0
+      }
+    },
+    "privacyReview": {
+      "privatePathsFound": [],
+      "sensitiveFieldPathsFound": [
+        "$.sampleFeatures[0].properties.ownershipType",
+        "$.sampleFeatures[1].properties.ownershipType",
+        "$.sampleFeatures[2].properties.ownershipType",
+        "$.coverageAssessment.ownershipAvailable"
+      ],
+      "notes": "No credentials, cookie values, owner/contact identities, or private home-directory paths were found. Schema-only ownership markers (unknown/false) are non-personal and are not ownership claims."
+    },
+    "scopeReview": {
+      "twoRegistryFoundFlagsAreSourceDiscoveriesOnly": "Neither establishes legal registry completeness, title, or ownership. Ahmedabad is limited to final AMC planning plots; Ghatkesar is app-held.",
+      "partialCoverageOnly": true,
+      "citywideAbsenceInferred": false,
+      "browserCleanupComplete": true,
+      "cleanupNote": "Dedicated browser closed after map and report verification; final session list empty. The separate batch10-india session was also confirmed closed."
+    }
+  },
+  "reviewedBatchFiles": [
+    "africa-east-city-1961.json",
+    "africa-east-city-2033.json",
+    "africa-east-city-3566.json",
+    "africa-east-index.json",
+    "africa-west-index.json",
+    "africa-west-lagos-arcgis-probes.json",
+    "ahmedabad-acceptance.json",
+    "ahmedabad-adapter-initial.json",
+    "ahmedabad-small-page-counter-check.json",
+    "ahmedabad-small-page-failure.json",
+    "browser-check.json",
+    "city-10035.json",
+    "city-10747.json",
+    "city-1265.json",
+    "city-33.json",
+    "city-6408.json",
+    "city-9913.json",
+    "city-9949.json",
+    "evidence-qa.json",
+    "ghatkesar-acceptance.json",
+    "ghatkesar-boundary-exclusions.json",
+    "ghatkesar-source-proposal.json",
+    "headless-validation.json",
+    "index.json",
+    "india-city-10035-parcel-response.json",
+    "india-index.json",
+    "outcome-summary.json",
+    "queue.json"
+  ],
+  "reviewedEvidenceRefs": [
+    "research/ahmedabad.json",
+    "research/antananarivo.json",
+    "research/bengaluru.json",
+    "research/chennai.json",
+    "research/dakar.json",
+    "research/dar-es-salaam.json",
+    "research/hyderabad.json",
+    "research/india-africa-2026-10-08/africa-ne-city-antananarivo.json",
+    "research/india-africa-2026-10-08/africa-ne-city-dar-es-salaam.json",
+    "research/india-africa-2026-10-08/africa-ne-city-nairobi.json",
+    "research/india-africa-2026-10-08/africa-ne-country-KE.json",
+    "research/india-africa-2026-10-08/africa-ne-country-MG.json",
+    "research/india-africa-2026-10-08/africa-ne-country-TZ.json",
+    "research/india-africa-2026-10-08/africa-ne-index.json",
+    "research/india-africa-2026-10-08/africa-ws-city-1265.json",
+    "research/india-africa-2026-10-08/africa-ws-city-33.json",
+    "research/india-africa-2026-10-08/africa-ws-index.json",
+    "research/india-africa-2026-10-08/india-city-10035.json",
+    "research/india-africa-2026-10-08/india-city-10747.json",
+    "research/india-africa-2026-10-08/india-city-6408.json",
+    "research/india-africa-2026-10-08/india-city-9913.json",
+    "research/india-africa-2026-10-08/india-city-9949.json",
+    "research/india-africa-2026-10-08/india-index.json",
+    "research/india-africa-followup-2026-10-08/index.json",
+    "research/india-africa-next10-2026-10-08/africa-east-city-1961.json",
+    "research/india-africa-next10-2026-10-08/africa-east-city-2033.json",
+    "research/india-africa-next10-2026-10-08/africa-east-city-3566.json",
+    "research/india-africa-next10-2026-10-08/africa-east-index.json",
+    "research/india-africa-next10-2026-10-08/africa-west-index.json",
+    "research/india-africa-next10-2026-10-08/africa-west-lagos-arcgis-probes.json",
+    "research/india-africa-next10-2026-10-08/ahmedabad-acceptance.json",
+    "research/india-africa-next10-2026-10-08/ahmedabad-adapter-initial.json",
+    "research/india-africa-next10-2026-10-08/ahmedabad-small-page-counter-check.json",
+    "research/india-africa-next10-2026-10-08/ahmedabad-small-page-failure.json",
+    "research/india-africa-next10-2026-10-08/browser-check.json",
+    "research/india-africa-next10-2026-10-08/city-10035.json",
+    "research/india-africa-next10-2026-10-08/city-10747.json",
+    "research/india-africa-next10-2026-10-08/city-1265.json",
+    "research/india-africa-next10-2026-10-08/city-33.json",
+    "research/india-africa-next10-2026-10-08/city-6408.json",
+    "research/india-africa-next10-2026-10-08/city-9913.json",
+    "research/india-africa-next10-2026-10-08/city-9949.json",
+    "research/india-africa-next10-2026-10-08/ghatkesar-acceptance.json",
+    "research/india-africa-next10-2026-10-08/ghatkesar-boundary-exclusions.json",
+    "research/india-africa-next10-2026-10-08/ghatkesar-source-proposal.json",
+    "research/india-africa-next10-2026-10-08/india-city-10035-parcel-response.json",
+    "research/india-africa-next10-2026-10-08/india-index.json",
+    "research/india-africa-next10-2026-10-08/queue.json",
+    "research/lagos.json",
+    "research/nairobi.json",
+    "research/retry/cities/antananarivo.json",
+    "research/retry/cities/chennai.json",
+    "research/retry/cities/dakar.json",
+    "research/retry/cities/dar-es-salaam.json",
+    "research/retry/cities/hyderabad.json"
+  ],
+  "registryReferenceObjects": [
+    {
+      "path": "$.sources[137]",
+      "references": [
+        [
+          "evidenceFile",
+          "research/india-africa-next10-2026-10-08/city-6408.json"
+        ],
+        [
+          "latestResearchFile",
+          "research/india-africa-next10-2026-10-08/city-6408.json"
+        ]
+      ],
+      "kind": "source"
+    },
+    {
+      "path": "$.sources[137].liveIntegration",
+      "references": [
+        [
+          "evidenceFile",
+          "research/india-africa-next10-2026-10-08/city-6408.json"
+        ]
+      ],
+      "kind": "nested"
+    },
+    {
+      "path": "$.sources[137].integrationAttempts[0]",
+      "references": [
+        [
+          "evidenceFile",
+          "research/india-africa-next10-2026-10-08/city-6408.json"
+        ]
+      ],
+      "kind": "nested"
+    },
+    {
+      "path": "$.sources[138]",
+      "references": [
+        [
+          "evidenceFile",
+          "research/india-africa-next10-2026-10-08/city-10035.json"
+        ],
+        [
+          "latestResearchFile",
+          "research/india-africa-next10-2026-10-08/city-10035.json"
+        ]
+      ],
+      "kind": "source"
+    },
+    {
+      "path": "$.sources[138].liveIntegration",
+      "references": [
+        [
+          "evidenceFile",
+          "research/india-africa-next10-2026-10-08/city-10035.json"
+        ]
+      ],
+      "kind": "nested"
+    },
+    {
+      "path": "$.sources[138].integrationAttempts[0]",
+      "references": [
+        [
+          "evidenceFile",
+          "research/india-africa-next10-2026-10-08/city-10035.json"
+        ]
+      ],
+      "kind": "nested"
+    },
+    {
+      "path": "$.cities[23]",
+      "references": [
+        [
+          "latestAssessmentFile",
+          "research/india-africa-next10-2026-10-08/city-9949.json"
+        ],
+        [
+          "latestAttemptFile",
+          "research/india-africa-next10-2026-10-08/city-9949.json"
+        ]
+      ],
+      "kind": "city"
+    },
+    {
+      "path": "$.cities[23].regionalResearch",
+      "references": [
+        [
+          "evidenceFile",
+          "research/india-africa-next10-2026-10-08/city-9949.json"
+        ]
+      ],
+      "kind": "nested"
+    },
+    {
+      "path": "$.cities[25]",
+      "references": [
+        [
+          "latestAssessmentFile",
+          "research/india-africa-next10-2026-10-08/city-1265.json"
+        ],
+        [
+          "latestAttemptFile",
+          "research/india-africa-next10-2026-10-08/city-1265.json"
+        ]
+      ],
+      "kind": "city"
+    },
+    {
+      "path": "$.cities[25].regionalResearch",
+      "references": [
+        [
+          "evidenceFile",
+          "research/india-africa-next10-2026-10-08/city-1265.json"
+        ]
+      ],
+      "kind": "nested"
+    },
+    {
+      "path": "$.cities[28]",
+      "references": [
+        [
+          "latestAssessmentFile",
+          "research/india-africa-next10-2026-10-08/city-10747.json"
+        ],
+        [
+          "latestAttemptFile",
+          "research/india-africa-next10-2026-10-08/city-10747.json"
+        ]
+      ],
+      "kind": "city"
+    },
+    {
+      "path": "$.cities[28].regionalResearch",
+      "references": [
+        [
+          "evidenceFile",
+          "research/india-africa-next10-2026-10-08/city-10747.json"
+        ]
+      ],
+      "kind": "nested"
+    },
+    {
+      "path": "$.cities[36]",
+      "references": [
+        [
+          "latestAssessmentFile",
+          "research/india-africa-next10-2026-10-08/city-9913.json"
+        ],
+        [
+          "latestAttemptFile",
+          "research/india-africa-next10-2026-10-08/city-9913.json"
+        ]
+      ],
+      "kind": "city"
+    },
+    {
+      "path": "$.cities[36].regionalResearch",
+      "references": [
+        [
+          "evidenceFile",
+          "research/india-africa-next10-2026-10-08/city-9913.json"
+        ]
+      ],
+      "kind": "nested"
+    },
+    {
+      "path": "$.cities[41]",
+      "references": [
+        [
+          "latestAssessmentFile",
+          "research/india-africa-next10-2026-10-08/africa-east-city-3566.json"
+        ],
+        [
+          "latestAttemptFile",
+          "research/india-africa-next10-2026-10-08/africa-east-city-3566.json"
+        ]
+      ],
+      "kind": "city"
+    },
+    {
+      "path": "$.cities[41].regionalResearch",
+      "references": [
+        [
+          "evidenceFile",
+          "research/india-africa-next10-2026-10-08/africa-east-city-3566.json"
+        ]
+      ],
+      "kind": "nested"
+    },
+    {
+      "path": "$.cities[43]",
+      "references": [
+        [
+          "latestAssessmentFile",
+          "research/india-africa-next10-2026-10-08/city-6408.json"
+        ],
+        [
+          "latestAttemptFile",
+          "research/india-africa-next10-2026-10-08/city-6408.json"
+        ],
+        [
+          "liveAcceptanceFile",
+          "research/india-africa-next10-2026-10-08/ahmedabad-acceptance.json"
+        ]
+      ],
+      "kind": "city"
+    },
+    {
+      "path": "$.cities[43].regionalResearch",
+      "references": [
+        [
+          "evidenceFile",
+          "research/india-africa-next10-2026-10-08/city-6408.json"
+        ]
+      ],
+      "kind": "nested"
+    },
+    {
+      "path": "$.cities[43].liveIntegration",
+      "references": [
+        [
+          "evidenceFile",
+          "research/india-africa-next10-2026-10-08/city-6408.json"
+        ]
+      ],
+      "kind": "nested"
+    },
+    {
+      "path": "$.cities[64]",
+      "references": [
+        [
+          "latestAssessmentFile",
+          "research/india-africa-next10-2026-10-08/africa-east-city-2033.json"
+        ],
+        [
+          "latestAttemptFile",
+          "research/india-africa-next10-2026-10-08/africa-east-city-2033.json"
+        ]
+      ],
+      "kind": "city"
+    },
+    {
+      "path": "$.cities[64].regionalResearch",
+      "references": [
+        [
+          "evidenceFile",
+          "research/india-africa-next10-2026-10-08/africa-east-city-2033.json"
+        ]
+      ],
+      "kind": "nested"
+    },
+    {
+      "path": "$.cities[117]",
+      "references": [
+        [
+          "latestAssessmentFile",
+          "research/india-africa-next10-2026-10-08/africa-east-city-1961.json"
+        ],
+        [
+          "latestAttemptFile",
+          "research/india-africa-next10-2026-10-08/africa-east-city-1961.json"
+        ]
+      ],
+      "kind": "city"
+    },
+    {
+      "path": "$.cities[117].regionalResearch",
+      "references": [
+        [
+          "evidenceFile",
+          "research/india-africa-next10-2026-10-08/africa-east-city-1961.json"
+        ]
+      ],
+      "kind": "nested"
+    },
+    {
+      "path": "$.cities[119]",
+      "references": [
+        [
+          "latestAssessmentFile",
+          "research/india-africa-next10-2026-10-08/city-33.json"
+        ],
+        [
+          "latestAttemptFile",
+          "research/india-africa-next10-2026-10-08/city-33.json"
+        ]
+      ],
+      "kind": "city"
+    },
+    {
+      "path": "$.cities[119].regionalResearch",
+      "references": [
+        [
+          "evidenceFile",
+          "research/india-africa-next10-2026-10-08/city-33.json"
+        ]
+      ],
+      "kind": "nested"
+    },
+    {
+      "path": "$.cities[312]",
+      "references": [
+        [
+          "latestAssessmentFile",
+          "research/india-africa-next10-2026-10-08/city-10035.json"
+        ],
+        [
+          "latestAttemptFile",
+          "research/india-africa-next10-2026-10-08/city-10035.json"
+        ]
+      ],
+      "kind": "city"
+    },
+    {
+      "path": "$.cities[312].regionalResearch",
+      "references": [
+        [
+          "evidenceFile",
+          "research/india-africa-next10-2026-10-08/city-10035.json"
+        ]
+      ],
+      "kind": "nested"
+    },
+    {
+      "path": "$.cities[312].liveIntegration",
+      "references": [
+        [
+          "evidenceFile",
+          "research/india-africa-next10-2026-10-08/city-10035.json"
+        ]
+      ],
+      "kind": "nested"
+    },
+    {
+      "path": "$.regionalResearch",
+      "references": [
+        [
+          "latestNextBatchFile",
+          "research/india-africa-next10-2026-10-08/index.json"
+        ]
+      ],
+      "kind": "nested"
+    }
+  ]
+}

@@ -1,0 +1,198 @@
+{
+  "schemaVersion": 1,
+  "kind": "targeted_africa_followup_index",
+  "checkedAt": "2026-10-08",
+  "targets": [
+    {
+      "wupCityCode": 3439,
+      "name": "Abidjan",
+      "countryCode": "CI",
+      "status": "temporarily_unavailable",
+      "resultCategory": "promising_service_unavailable",
+      "verifiedSample": false,
+      "evidence": [
+        "africa-ws-city-3439.json",
+        "africa-ws-provider-CI-followup.json"
+      ]
+    },
+    {
+      "wupCityCode": 2412,
+      "name": "Mansa",
+      "countryCode": "ZM",
+      "status": "verified_sample_city_scope",
+      "resultCategory": "verified_sample_city_scope",
+      "verifiedSample": true,
+      "evidence": [
+        "africa-ws-city-2412.json",
+        "africa-ws-mansa-9grid.json",
+        "africa-ws-mansa-native-exact.json",
+        "africa-ws-city-2412-parcel-response.json",
+        "africa-ws-provider-ZM.json"
+      ],
+      "sampleSummary": "Nine adjacent 0.0025° cells; 86 unique native UPIDs all freshly exact-resolved; sample scope only.",
+      "registryFound": true,
+      "assessment": "86 unique native UPID polygons observed and exact-validated in nine small Mansa cells; source is bounded to this sample and not a national-coverage claim."
+    },
+    {
+      "wupCityCode": 4201,
+      "name": "Luau",
+      "countryCode": "AO",
+      "status": "temporarily_unavailable",
+      "resultCategory": "candidate_layer_extent_excludes_target_center",
+      "followupTargetQuerySent": false,
+      "verifiedSample": false,
+      "evidence": [
+        "africa-ws-city-4201.json",
+        "africa-ws-provider-AO-followup.json",
+        "africa-ws-provider-AO-followup.json"
+      ],
+      "targetProbeProvenance": "Initial shared AO provider pass; not a new follow-up city query.",
+      "inheritedTargetEndpointProbePerformed": true,
+      "targetEndpointProbePerformed": false,
+      "evidenceType": "shared_provider_followup_no_new_target_probe",
+      "targetWupCenterInsideCandidateExtent": false,
+      "assessment": "Shared layer metadata returned HTTP 200 on ordinary host network; WUP center is outside its advertised extent. Historical shared target timeout is not a fresh target query."
+    },
+    {
+      "wupCityCode": 3898,
+      "name": "Luena",
+      "countryCode": "AO",
+      "status": "temporarily_unavailable",
+      "resultCategory": "candidate_layer_extent_excludes_target_center",
+      "followupTargetQuerySent": false,
+      "verifiedSample": false,
+      "evidence": [
+        "africa-ws-city-3898.json",
+        "africa-ws-provider-AO-followup.json",
+        "africa-ws-provider-AO-followup.json"
+      ],
+      "targetProbeProvenance": "Initial shared AO provider pass; not a new follow-up city query.",
+      "inheritedTargetEndpointProbePerformed": true,
+      "targetEndpointProbePerformed": false,
+      "evidenceType": "shared_provider_followup_no_new_target_probe",
+      "targetWupCenterInsideCandidateExtent": false,
+      "assessment": "Shared layer metadata returned HTTP 200 on ordinary host network; WUP center is outside its advertised extent. Historical shared target timeout is not a fresh target query."
+    },
+    {
+      "wupCityCode": 3610,
+      "name": "Malanje",
+      "countryCode": "AO",
+      "status": "temporarily_unavailable",
+      "resultCategory": "candidate_layer_extent_excludes_target_center",
+      "followupTargetQuerySent": false,
+      "verifiedSample": false,
+      "evidence": [
+        "africa-ws-city-3610.json",
+        "africa-ws-provider-AO-followup.json",
+        "africa-ws-provider-AO-followup.json"
+      ],
+      "targetProbeProvenance": "Initial shared AO provider pass; not a new follow-up city query.",
+      "inheritedTargetEndpointProbePerformed": true,
+      "targetEndpointProbePerformed": false,
+      "evidenceType": "shared_provider_followup_no_new_target_probe",
+      "targetWupCenterInsideCandidateExtent": false,
+      "assessment": "Shared layer metadata returned HTTP 200 on ordinary host network; WUP center is outside its advertised extent. Historical shared target timeout is not a fresh target query."
+    },
+    {
+      "wupCityCode": 546,
+      "name": "Cabinda",
+      "countryCode": "AO",
+      "status": "temporarily_unavailable",
+      "resultCategory": "candidate_layer_extent_excludes_target_center",
+      "followupTargetQuerySent": false,
+      "verifiedSample": false,
+      "evidence": [
+        "africa-ws-city-546.json",
+        "africa-ws-provider-AO-followup.json",
+        "africa-ws-provider-AO-followup.json"
+      ],
+      "targetProbeProvenance": "Initial shared AO provider pass; not a new follow-up city query.",
+      "inheritedTargetEndpointProbePerformed": true,
+      "targetEndpointProbePerformed": false,
+      "evidenceType": "shared_provider_followup_no_new_target_probe",
+      "targetWupCenterInsideCandidateExtent": false,
+      "assessment": "Shared layer metadata returned HTTP 200 on ordinary host network; WUP center is outside its advertised extent. Historical shared target timeout is not a fresh target query."
+    },
+    {
+      "wupCityCode": 2250,
+      "name": "M'banza Congo",
+      "countryCode": "AO",
+      "status": "temporarily_unavailable",
+      "resultCategory": "candidate_layer_extent_excludes_target_center",
+      "followupTargetQuerySent": false,
+      "verifiedSample": false,
+      "evidence": [
+        "africa-ws-city-2250.json",
+        "africa-ws-provider-AO-followup.json",
+        "africa-ws-provider-AO-followup.json"
+      ],
+      "targetProbeProvenance": "Initial shared AO provider pass; not a new follow-up city query.",
+      "inheritedTargetEndpointProbePerformed": true,
+      "targetEndpointProbePerformed": false,
+      "evidenceType": "shared_provider_followup_no_new_target_probe",
+      "targetWupCenterInsideCandidateExtent": false,
+      "assessment": "Shared layer metadata returned HTTP 200 on ordinary host network; WUP center is outside its advertised extent. Historical shared target timeout is not a fresh target query."
+    },
+    {
+      "wupCityCode": 686,
+      "name": "Soyo",
+      "countryCode": "AO",
+      "status": "temporarily_unavailable",
+      "resultCategory": "candidate_layer_extent_excludes_target_center",
+      "followupTargetQuerySent": false,
+      "verifiedSample": false,
+      "evidence": [
+        "africa-ws-city-686.json",
+        "africa-ws-provider-AO-followup.json",
+        "africa-ws-provider-AO-followup.json"
+      ],
+      "targetProbeProvenance": "Initial shared AO provider pass; not a new follow-up city query.",
+      "inheritedTargetEndpointProbePerformed": true,
+      "targetEndpointProbePerformed": false,
+      "evidenceType": "shared_provider_followup_no_new_target_probe",
+      "targetWupCenterInsideCandidateExtent": false,
+      "assessment": "Shared layer metadata returned HTTP 200 on ordinary host network; WUP center is outside its advertised extent. Historical shared target timeout is not a fresh target query."
+    },
+    {
+      "wupCityCode": 1169,
+      "name": "Lubango",
+      "countryCode": "AO",
+      "status": "temporarily_unavailable",
+      "resultCategory": "candidate_layer_extent_excludes_target_center",
+      "followupTargetQuerySent": false,
+      "verifiedSample": false,
+      "evidence": [
+        "africa-ws-city-1169.json",
+        "africa-ws-provider-AO-followup.json",
+        "africa-ws-provider-AO-followup.json"
+      ],
+      "targetProbeProvenance": "Initial shared AO provider pass; not a new follow-up city query.",
+      "inheritedTargetEndpointProbePerformed": true,
+      "targetEndpointProbePerformed": false,
+      "evidenceType": "shared_provider_followup_no_new_target_probe",
+      "targetWupCenterInsideCandidateExtent": false,
+      "assessment": "Shared layer metadata returned HTTP 200 on ordinary host network; WUP center is outside its advertised extent. Historical shared target timeout is not a fresh target query."
+    },
+    {
+      "wupCityCode": 3711,
+      "name": "Cuito",
+      "countryCode": "AO",
+      "status": "temporarily_unavailable",
+      "resultCategory": "candidate_layer_extent_excludes_target_center",
+      "followupTargetQuerySent": false,
+      "verifiedSample": false,
+      "evidence": [
+        "africa-ws-city-3711.json",
+        "africa-ws-provider-AO-followup.json",
+        "africa-ws-provider-AO-followup.json"
+      ],
+      "targetProbeProvenance": "Initial shared AO provider pass; not a new follow-up city query.",
+      "inheritedTargetEndpointProbePerformed": true,
+      "targetEndpointProbePerformed": false,
+      "evidenceType": "shared_provider_followup_no_new_target_probe",
+      "targetWupCenterInsideCandidateExtent": false,
+      "assessment": "Shared layer metadata returned HTTP 200 on ordinary host network; WUP center is outside its advertised extent. Historical shared target timeout is not a fresh target query."
+    }
+  ],
+  "limitations": "Only Mansa has verified parcel geometry. SIGFU remains unavailable. The Angola candidate metadata was retrieved on ordinary host network and excludes all eight WUP target centers; no Angola target feature queries were sent in this follow-up."
+}
