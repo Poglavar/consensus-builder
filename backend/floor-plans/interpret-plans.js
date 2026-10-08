@@ -11,6 +11,8 @@ import { computeCost,record } from '../../../agents/lib/llm-cost/index.mjs';
 import { submitBatch,pollBatch } from '../../../agents/lib/llm-cost/batch.mjs';
 import { fingerprint } from '../buildings/floor-models.js';
 import { buildReadingRequest,parseReading,PROCESSOR,DEFAULT_MODEL,MAX_OUTPUT_TOKENS } from './plan-reading.js';
+import { verifyRasterEvidence } from './raster-evidence.js';
+import { sourceGeometry } from './source-geometry.js';
 
 const exec=promisify(execFile);
 const PROVIDER='anthropic';
@@ -57,14 +59,28 @@ export async function enqueuePlanTasks(db,{limit=100,sourceHash=null,deadline=In
     return {sources:sources.size,enqueued,ambiguous,deferred};
 }
 
-export async function renderTask(db,task,{python=process.env.FLOOR_PLAN_PYTHON||'python3',deadline=Infinity}={}) {
+export async function renderTask(db,task,{python=process.env.FLOOR_PLAN_PYTHON||'python3',deadline=Infinity,includeEvidence=true}={}) {
     const row=(await db.query('SELECT data FROM floor_plan.blob WHERE sha256=$1',[task.source_sha256])).rows[0];
     if(!row) throw new Error('Archived source bytes are missing.');
     const directory=await mkdtemp(join(tmpdir(),'floor-plan-vision-'));
     try {
         const source=join(directory,'source'),output=join(directory,'page.png');await writeFile(source,row.data);
-        const {stdout}=await exec(python,[fileURLToPath(new URL('../scripts/render-floor-plan-page.py',import.meta.url)),source,output,'--page',String(task.page),'--grid'],{timeout:Math.max(1,Math.min(120000,deadline-Date.now())),maxBuffer:1024*1024});
-        return {...JSON.parse(stdout),data:await readFile(output)};
+        const timeout=()=>Math.max(1,Math.min(120000,deadline-Date.now()));
+        const {stdout}=await exec(python,[fileURLToPath(new URL('../scripts/render-floor-plan-page.py',import.meta.url)),source,output,'--page',String(task.page)],{timeout:timeout(),maxBuffer:1024*1024});
+        const image={...JSON.parse(stdout),data:await readFile(output)};
+        if(includeEvidence) {
+            const evidence=join(directory,'evidence.json'),annotation=join(directory,'candidates.png'),scaleAnnotation=join(directory,'scales.png');
+            await exec(python,[fileURLToPath(new URL('../scripts/extract-floor-plan-evidence.py',import.meta.url)),output,'--evidence',evidence,'--annotation',annotation],{timeout:timeout(),maxBuffer:1024*1024});
+            image.evidence=sourceGeometry(JSON.parse(await readFile(evidence,'utf8')));
+            await writeFile(evidence,JSON.stringify(image.evidence));
+            const {stdout:annotationOutput}=await exec(python,[fileURLToPath(new URL('../scripts/extract-floor-plan-evidence.py',import.meta.url)),output,'--annotate-evidence',evidence,'--annotation',annotation,'--scale-annotation',scaleAnnotation],{timeout:timeout(),maxBuffer:1024*1024});
+            const annotationEvidence=JSON.parse(annotationOutput);
+            image.evidence.issues.push(...(annotationEvidence.issues||[]));
+            image.evidence.scaleStrips=annotationEvidence.scaleStrips;
+            image.annotation=await readFile(annotation);
+            image.scaleAnnotation=await readFile(scaleAnnotation);
+        }
+        return image;
     } finally {await rm(directory,{recursive:true,force:true});}
 }
 
@@ -76,10 +92,11 @@ export async function currentTaskContext(db,task,{lock=false}={}) {
     return Boolean(row) && fingerprint(contextIdentity(taskContext(row)))===fingerprint(contextIdentity(task.context));
 }
 
-export function reservationUsd(model,inputTokens,price=computeCost) {
+export function reservationUsd(model,inputTokens,price=computeCost,maxOutputTokens=MAX_OUTPUT_TOKENS) {
     if(!Number.isInteger(inputTokens)||inputTokens<1) throw new Error('Token count required before submission.');
+    if(!Number.isInteger(maxOutputTokens)||maxOutputTokens<256||maxOutputTokens>MAX_OUTPUT_TOKENS)throw new Error('Invalid output token allowance.');
     // Count endpoint is an estimate; reserve 20% input headroom plus the full output allowance.
-    return price(model,{input_tokens:Math.ceil(inputTokens*1.2)+1024,output_tokens:MAX_OUTPUT_TOKENS},{batch:true});
+    return price(model,{input_tokens:Math.ceil(inputTokens*1.2)+1024,output_tokens:maxOutputTokens},{batch:true});
 }
 
 export async function budgetUsed(db) {
@@ -96,6 +113,7 @@ export async function storeReading(db,task,reading,{associationCurrent=true}={})
     try {
         for(const model of reading.plans) {
             if(!associationCurrent) model.quality.issues.push('Listing or source association changed after submission.');
+            if(model.quality.rasterEvidence?.checked!==true) model.quality.issues.push('Wall positions have not been checked against the source image.');
             const status=model.quality.issues.length?'needs_review':'ready',b=task.context.building;
             const id=fingerprint([task.id,model.unitId]),hash=fingerprint(model);
             await db.query(`INSERT INTO floor_plan.processed_plan(id,task_id,region_id,city,source,owner_id,building_id,source_sha256,model,model_hash,status)
@@ -114,8 +132,9 @@ export async function storeReading(db,task,reading,{associationCurrent=true}={})
 }
 
 export async function interpretPlans(db,{dailyBudgetUsd=0,chunkSize=1,model=DEFAULT_MODEL,submit=true,
-    client,price=computeCost,ledger=record,render=renderTask,log=console.log,deadline=Infinity}={}) {
+    maxOutputTokens=MAX_OUTPUT_TOKENS,client,price=computeCost,ledger=record,render=renderTask,verifyRaster=verifyRasterEvidence,log=console.log,deadline=Infinity}={}) {
     if(!Number.isFinite(dailyBudgetUsd)||dailyBudgetUsd<0||!Number.isInteger(chunkSize)||chunkSize<1||chunkSize>20) throw new Error('Invalid AI budget or chunk size (1..20).');
+    if(!Number.isInteger(maxOutputTokens)||maxOutputTokens<256||maxOutputTokens>MAX_OUTPUT_TOKENS)throw new Error('Invalid output token allowance.');
     const locked=(await db.query(`SELECT pg_try_advisory_lock(hashtext('floor-plan-ai')) AS locked`)).rows[0].locked;
     if(!locked) throw new Error('Another floor-plan AI worker is running.');
     const result={submitted:0,collected:0,ready:0,needsReview:0,notPlan:0,failed:0,awaitingBatch:0,costUsd:0,budgetDeferred:0};
@@ -157,6 +176,14 @@ export async function interpretPlans(db,{dailyBudgetUsd=0,chunkSize=1,model=DEFA
                     const calls=message.content.filter(p=>p.type==='tool_use'&&p.name==='record_floor_plan');
                     if(calls.length!==1) throw new Error('Expected exactly one structured floor-plan reading.');
                     const reading=parseReading(JSON.stringify(calls[0].input),task,{...task.result.image,model:message.model||batch.model});
+                    if(reading.plans.length) {
+                        try {
+                            const cleanImage=await render(db,task,{deadline,includeEvidence:false});
+                            await verifyRaster(reading,cleanImage,{deadline});
+                        } catch(error) {
+                            for(const plan of reading.plans) plan.quality.issues.push(`Source-raster verification unavailable: ${error.message}`);
+                        }
+                    }
                     const saved=await storeReading(db,task,reading,{associationCurrent:await currentTaskContext(db,task)});
                     for(const key of ['ready','needsReview','notPlan']) result[key]+=saved[key];
                 } catch(error) {
@@ -177,13 +204,13 @@ export async function interpretPlans(db,{dailyBudgetUsd=0,chunkSize=1,model=DEFA
                 if(Date.now()>=deadline) break;
                 try {
                     if(!await currentTaskContext(db,task)) throw new Error('Source or building association changed before processing.');
-                    const image=await render(db,task,{deadline}),request=buildReadingRequest(task,image,model);
+                    const image=await render(db,task,{deadline}),request=buildReadingRequest(task,image,model,{maxOutputTokens});
                     if(Date.now()>=deadline) break;
                     const tokens=await client.messages.countTokens({model,system:request.params.system,messages:request.params.messages,
                         tools:request.params.tools,tool_choice:request.params.tool_choice},{timeout:timeout()});
-                    const maximum=reservationUsd(model,tokens.input_tokens,price);
+                    const maximum=reservationUsd(model,tokens.input_tokens,price,request.params.max_tokens);
                     if(used+reserve+maximum>dailyBudgetUsd) {result.budgetDeferred++;break;}
-                    await db.query(`UPDATE floor_plan.plan_task SET result=$2,updated_at=now() WHERE id=$1`,[task.id,JSON.stringify({image:{width:image.width,height:image.height},reservedUsd:maximum})]);
+                    await db.query(`UPDATE floor_plan.plan_task SET result=$2,updated_at=now() WHERE id=$1`,[task.id,JSON.stringify({image:{width:image.width,height:image.height,evidence:image.evidence},reservedUsd:maximum})]);
                     requests.push(request);accepted.push(task);reserve+=maximum;
                 } catch(error) {
                     await db.query(`UPDATE floor_plan.plan_task SET status='error',error=$2,updated_at=now() WHERE id=$1`,[task.id,error.message]);result.failed++;

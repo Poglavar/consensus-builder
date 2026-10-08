@@ -1,10 +1,17 @@
 # Floor-plan production runtime
 
 Deploy through the repository's normal Git release workflow. The job files alone
-do not register a schedule. On 2026-10-08 the archive schema and isolated Python
-runtime were prepared, but the production preflight found no seeded agency sites,
-home-page targets or Anthropic key. The job remained disabled. Verify the current
-host rather than assuming that audit still describes it.
+do not register a schedule. **The user explicitly withheld approval to schedule
+this job on 2026-10-08. Do not run `--enable` without their subsequent explicit
+approval.**
+
+Production setup on that date installed the schema/runtime, seeded agency sites
+and configured the approved provider credential. The deployed preflight passed.
+A bounded manual run with `--no-ai` fetched eight pages, persisted source hashes
+and reported partial coverage with one robots exclusion and no implementation
+errors. No provider batches were submitted by that production smoke. PM2 still
+had no floor-plan daily job registered. Verify the current host rather than
+assuming that audit still describes it.
 
 ## Prepare the deployed checkout
 
@@ -30,7 +37,7 @@ packages and checks OpenCV, NumPy, Pillow, `pdfinfo`, `pdftoppm`, `pdftotext` an
 Tesseract. Install missing system commands through the host's normal package
 management. With no arguments or `--help`, the installer only prints usage.
 
-## Verify and enable
+## Verify; enable only after explicit scheduling approval
 
 ```sh
 FLOOR_PLAN_PYTHON=backend/.venv-floor-plans/bin/python node backend/scripts/floor-plan-archive.mjs check --production
@@ -62,7 +69,9 @@ only after inspecting sample geometry and actual costs.
 
 The matching `Agency Floor Plans` entry must be deployed in
 `alerts-server-telegram/bot-list.json` before enabling the schedule. The reviewed
-entry is also in [`monitor-entry.json`](monitor-entry.json). It checks four hours
+entry is also in [`monitor-entry.json`](monitor-entry.json). It is currently
+`active:false` while scheduling approval is withheld. Activate the monitor only
+when the job is explicitly approved and enabled. It checks four hours
 after the scheduled start and judges the latest scheduled run, not yesterday's
 artifact. Do not invoke notification delivery merely to test registration.
 

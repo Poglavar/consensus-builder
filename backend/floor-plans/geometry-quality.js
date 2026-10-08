@@ -17,6 +17,20 @@ function inRing(p,ring) {
     return inside;
 }
 const inPolygon=(p,rings)=>inRing(p,rings[0])&&!rings.slice(1).some(r=>inRing(p,r));
+function crossesSolid(a,b,rings) {
+    const d=[b[0]-a[0],b[1]-a[1]],cuts=[0,1],cross=(p,q)=>p[0]*q[1]-p[1]*q[0];
+    for(const ring of rings)for(let i=0;i<ring.length;i++) {
+        const p=ring[i],q=ring[(i+1)%ring.length],e=[q[0]-p[0],q[1]-p[1]],den=cross(d,e);
+        if(Math.abs(den)<1e-10)continue;
+        const offset=[p[0]-a[0],p[1]-a[1]],t=cross(offset,e)/den,u=cross(offset,d)/den;
+        if(t>0&&t<1&&u>=0&&u<=1)cuts.push(t);
+    }
+    cuts.sort((x,y)=>x-y);
+    return cuts.slice(1).some((end,i)=>{
+        if(end-cuts[i]<1e-8)return false;
+        const t=(cuts[i]+end)/2;return inPolygon([a[0]+t*d[0],a[1]+t*d[1]],rings);
+    });
+}
 const edgeDistance=(p,polygons)=>Math.min(...polygons.flatMap(rings=>rings.flatMap(ring=>ring.map((a,i)=>pointSegment(p,a,ring[(i+1)%ring.length])))));
 
 export function geometryIssues(architecture,{rooms=[]}={}) {
@@ -28,7 +42,7 @@ export function geometryIssues(architecture,{rooms=[]}={}) {
     if(walls.some(rings=>rings[0].some(p=>!slabs.some(s=>inPolygon(p,s))&&edgeDistance(p,slabs)>.6))) issues.push('Wall geometry extends outside the slab outline.');
     for(const opening of architecture.openings) {
         const a=metric(opening.a,size),b=metric(opening.b,size),span=distance(a,b);
-        if(span>.01 && [.25,.5,.75].some(t=>walls.some(w=>inPolygon([a[0]+(b[0]-a[0])*t,a[1]+(b[1]-a[1])*t],w)))) {
+        if(span>.01 && walls.some(w=>crossesSolid(a,b,w))) {
             issues.push('An opening overlaps a solid wall; its wall gap needs review.');
         }
         if([a,b].some(p=>edgeDistance(p,walls)>Math.max(.3,opening.depthM))) issues.push('An opening is disconnected from its adjoining walls.');

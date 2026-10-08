@@ -1,41 +1,64 @@
-// Exercise metric geometry, source identity, and cost gates without network or browser APIs.
+// Exercise source-grounded vectorization, identity, and cost gates without network or browser APIs.
 import {describe,it,expect,vi} from 'vitest';
-import {parseReading,buildReadingRequest} from '../floor-plans/plan-reading.js';
+import {parseReading,buildReadingRequest,MAX_OUTPUT_TOKENS} from '../floor-plans/plan-reading.js';
 import {addressKey,chooseBinding,chooseAddressedBuilding,prepareBinding} from '../floor-plans/building-resolution.js';
 import {taskId,reservationUsd,storeReading} from '../floor-plans/interpret-plans.js';
 
 const context={building:{city:'test-city',source:'survey',ownerId:'',buildingId:'42',name:'Test building'},facts:{floor:'1',sourceId:'7'}};
 const task={id:'a'.repeat(64),source_sha256:'b'.repeat(64),source_url:'https://agency.test/plan.png',page:1,context};
-function drawing() {return {schema:'floor-plan-reading.v1',notPlan:false,issues:[],plans:[{
-    id:'A1',label:'A1',scope:'unit',floor:1,floorEvidence:'First floor',framePx:[19,19,162,162],
-    scale:{a:[20,190],b:[180,190],lengthM:8,quote:'8 m'},slabsPx:[[[[20,20],[180,20],[180,180],[20,180]]]],
-    wallsPx:[{a:[20,20],b:[20,180],widthPx:2},{a:[180,20],b:[180,180],widthPx:2},
-        {a:[20,20],b:[60,20],widthPx:2},{a:[80,20],b:[180,20],widthPx:2},
-        {a:[20,180],b:[60,180],widthPx:2},{a:[90,180],b:[180,180],widthPx:2}],
-    openingsPx:[{kind:'window',a:[60,20],b:[80,20],depthPx:2},
-        {kind:'door',a:[60,180],b:[90,180],depthPx:2,hinge:[60,180],openTip:[60,150]}],
+const evidence={version:'source-geometry-v1',widthPx:200,heightPx:200,issues:[],
+    wallCandidates:[
+        {id:'W1',a:[20,20],b:[20,180],widthPx:2},{id:'W2',a:[180,20],b:[180,180],widthPx:2},
+        {id:'W3',a:[20,20],b:[60,20],widthPx:2},{id:'W4',a:[80,20],b:[180,20],widthPx:2},
+        {id:'W5',a:[20,180],b:[60,180],widthPx:2},{id:'W6',a:[90,180],b:[180,180],widthPx:2}
+    ],
+    openingCandidates:[{id:'G1',a:[60,20],b:[80,20],widthPx:2},{id:'G2',a:[60,180],b:[90,180],widthPx:2}],
+    scaleCandidates:[{id:'S1',a:[20,190],b:[180,190],widthPx:2}],
+    outlineCorners:[[19,19],[181,19],[181,181],[19,181]]
+};
+function drawing() {return {schema:'floor-plan-reading.v3',notPlan:false,issues:[],plans:[{
+    id:'A1',label:'A1',scope:'unit',floor:1,floorEvidence:'First floor',
+    scale:{candidateId:'S1',lengthM:8,quote:'8 m'},slabs:[{outer:['F0','F1','F2','F3'],holes:[]}],
+    wallIds:['W1','W2','W3','W4','W5','W6'],railingIds:[],
+    openings:[{candidateId:'G1',kind:'window',hinge:null,swing:null},{candidateId:'G2',kind:'door',hinge:'a',swing:'counterclockwise'}],
     rooms:[{name:'Living room',areaM2:null}],wallHeightM:null,heightEvidence:'',elevationM:null,elevationEvidence:'',northPx:null,northEvidence:'',issues:[]
 }]};}
-const parse=raw=>parseReading(JSON.stringify(raw),task,{width:200,height:200});
+const parse=raw=>parseReading(JSON.stringify(raw),task,{width:200,height:200,evidence});
 
 describe('source reading to vector architecture',()=>{
-    it('converts pixels using a measured scale and retains unknown vertical facts',()=>{
+    it('selects measured geometry, derives its frame, and retains unknown vertical facts',()=>{
         const plan=parse(drawing()).plans[0];
         expect(plan.architecture.dimensionsM).toEqual([8.1,8.1]);
         expect(plan.architecture.walls).toHaveLength(6);
         expect(plan.architecture.openings[0]).toMatchObject({kind:'window',depthM:0.1});
         expect(plan.architecture.openings[1].hinge[0]).toBeCloseTo(41/162);
+        expect(plan.source.framePx).toEqual([19,19,162,162]);
+        expect(plan.source.wallIds).toEqual(['W1','W2','W3','W4','W5','W6']);
         expect(plan.elevationM).toBeNull();expect(plan.source.northPx).toBeNull();
         expect(plan.verticalDimensionsBasis).toMatch(/Estimated/);
         expect(plan.building.buildingId).toBe('42');
     });
-    it.each(['scale','door','frame','floor'])('rejects invalid %s evidence',kind=>{
+    it.each(['scale','floor','unknown-wall','unknown-scale','invented-slab','unknown-opening','conflicting-opening','duplicate-opening'])('rejects invalid %s evidence',kind=>{
         const raw=drawing(),p=raw.plans[0];
         if(kind==='scale')p.scale.lengthM=null;
-        if(kind==='door')p.openingsPx[1].hinge=null;
-        if(kind==='frame')p.framePx=[0,0,400,400];
         if(kind==='floor')p.floorEvidence='';
+        if(kind==='unknown-wall')p.wallIds[0]='W404';
+        if(kind==='unknown-scale')p.scale.candidateId='S404';
+        if(kind==='invented-slab')p.slabs[0].outer[1]='F404';
+        if(kind==='unknown-opening')p.openings[0].candidateId='G404';
+        if(kind==='conflicting-opening')p.openings[0].candidateId='W1';
+        if(kind==='duplicate-opening')p.openings.push({...p.openings[0]});
         expect(()=>parse(raw)).toThrow();
+    });
+    it.each(['outside-frame','missing-hinge'])('retains only valid geometry with a mandatory review issue for an %s opening',kind=>{
+        const raw=drawing(),opening=raw.plans[0].openings[0];
+        Object.assign(opening,{kind:'door',hinge:kind==='missing-hinge'?null:'a',swing:'counterclockwise'});
+        const plan=parse(raw).plans[0];
+        expect(plan.architecture.walls).toHaveLength(6);
+        expect(plan.architecture.openings).toHaveLength(1);
+        expect(plan.source.openingIds).toEqual(['G2']);
+        expect(plan.source.omittedOpenings).toEqual([expect.objectContaining({candidateId:'G1',reason:expect.any(String)})]);
+        expect(plan.quality.issues).toEqual([expect.stringContaining('Opening G1 was omitted from this incomplete preview:')]);
     });
     it('retains floor conflicts and multiple distinct drawings',()=>{
         const raw=drawing();raw.plans.push({...structuredClone(raw.plans[0]),id:'A2',floor:2});
@@ -43,19 +66,27 @@ describe('source reading to vector architecture',()=>{
         expect(read.plans[1].quality.issues).toContain('Drawing and listing floor numbers conflict.');
     });
     it('never accepts an empty successful response or non-plan with geometry',()=>{
-        expect(()=>parse({schema:'floor-plan-reading.v1',notPlan:false,issues:[],plans:[]})).toThrow();
+        expect(()=>parse({schema:'floor-plan-reading.v3',notPlan:false,issues:[],plans:[]})).toThrow();
         const raw=drawing();raw.notPlan=true;expect(()=>parse(raw)).toThrow();
     });
-    it('passes image dimensions and treats the source as data without requesting building IDs',()=>{
-        const request=buildReadingRequest(task,{data:Buffer.from('png'),width:200,height:200});
+    it('passes measured evidence and image dimensions without requesting building IDs',()=>{
+        const request=buildReadingRequest(task,{data:Buffer.from('png'),annotation:Buffer.from('annotated'),scaleAnnotation:Buffer.from('scales'),width:200,height:200,evidence});
         expect(request.custom_id).toBe(task.id);
-        expect(JSON.parse(request.params.messages[0].content[1].text).image.widthPx).toBe(200);
+        const message=request.params.messages[0].content.find(part=>part.type==='text');
+        const payload=JSON.parse(message.text);
+        expect(payload.image.widthPx).toBe(200);expect(payload.sourceEvidence).toStrictEqual(evidence);
+        expect(request.params.max_tokens).toBe(MAX_OUTPUT_TOKENS);
         expect(request.params.system).toContain('untrusted source data');
-        const payload=JSON.parse(request.params.messages[0].content[1].text);
         expect(payload).not.toHaveProperty('building');
         expect(payload.listing).not.toHaveProperty('coordinates');
         expect(request.params.tool_choice).toEqual({type:'tool',name:'record_floor_plan'});
-        expect(request.params.tools[0].input_schema).toMatchObject({additionalProperties:false});
+        expect(request.params.tools[0]).toMatchObject({input_schema:{additionalProperties:false}});
+        expect(request.params.messages[0].content.filter(part=>part.type==='image')).toHaveLength(3);
+    });
+    it('uses the explicitly bounded output allowance for a small pilot',()=>{
+        const image={data:Buffer.from('png'),width:200,height:200,evidence};
+        expect(buildReadingRequest(task,image,'test-model',{maxOutputTokens:2800}).params.max_tokens).toBe(2800);
+        expect(()=>buildReadingRequest(task,image,'test-model',{maxOutputTokens:0})).toThrow(/token allowance/);
     });
 });
 
@@ -89,8 +120,11 @@ describe('durable tasks and spend accounting',()=>{
     });
     it('reserves maximum output and input headroom, using batch pricing',()=>{
         const price=vi.fn(()=>0.15);expect(reservationUsd('model',1000,price)).toBe(0.15);
-        expect(price).toHaveBeenCalledWith('model',{input_tokens:2224,output_tokens:12000},{batch:true});
+        expect(price).toHaveBeenCalledWith('model',{input_tokens:2224,output_tokens:MAX_OUTPUT_TOKENS},{batch:true});
+        reservationUsd('model',1000,price,2800);
+        expect(price).toHaveBeenLastCalledWith('model',{input_tokens:2224,output_tokens:2800},{batch:true});
         expect(()=>reservationUsd('model',null,price)).toThrow();
+        expect(()=>reservationUsd('model',1000,price,-1)).toThrow();
     });
     it('rolls back on a vector artifact read-back mismatch',async()=>{
         const db={query:vi.fn(async sql=>({rows:sql.startsWith('SELECT model_hash')?[{model_hash:'wrong'}]:[],rowCount:1}))};

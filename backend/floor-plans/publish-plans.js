@@ -1,10 +1,20 @@
-// Only complete floors with measured scale and source orientation can enter the map registry.
+// Only complete floors with independently verified scale and orientation enter the map registry.
 import * as turf from '@turf/turf';
 import { canonicalJson,fingerprint,saveFloorModel,buildingSourceId } from '../buildings/floor-models.js';
 import { currentTaskContext } from './interpret-plans.js';
 import { closeRing,geometryIssues } from './geometry-quality.js';
 
 const SCHEMA='consensus-builder.building-floor-plans.v2';
+function verifiedRegistration(source) {
+    const evidence=source.registrationEvidence,scale=source.scale;
+    if(evidence?.schema!=='floor-plan-registration-evidence.v1'||evidence.sourceSha256!==source.sha256||evidence.page!==source.page) return false;
+    if(evidence.scale?.status!=='verified'||!evidence.scale.basis?.trim()||
+        evidence.orientation?.status!=='verified'||!evidence.orientation.basis?.trim()) return false;
+    const measurement=value=>({candidateId:value.candidateId??value.id,a:value.a,b:value.b,lengthM:value.lengthM,quote:value.quote});
+    return scale&&Number.isFinite(scale.lengthM)&&scale.lengthM>0&&
+        fingerprint(measurement(evidence.scale))===fingerprint(measurement(scale))&&
+        fingerprint(evidence.orientation.northPx)===fingerprint(source.northPx);
+}
 function combinedSlabs(architecture,transform) {
     return architecture.slabs.map(rings=>turf.polygon(rings.map(ring=>closeRing(ring.map(transform)))))
         .reduce((a,b)=>a?turf.union(a,b):b,null);
@@ -14,8 +24,10 @@ export function registerFullFloor(model,footprint) {
     if(model.scope!=='floor') throw new Error('Apartment placement within its building remains unresolved.');
     if(!Number.isInteger(model.floor)) throw new Error('The source does not identify a floor.');
     if(model.quality.issues.length||geometryIssues(model.architecture,{rooms:model.rooms}).length) throw new Error('Vector geometry still requires review.');
+    if(model.quality.rasterEvidence?.checked!==true||model.quality.rasterEvidence?.passed!==true) throw new Error('Wall positions require independent source-raster evidence.');
     const north=model.source?.northPx;
     if(!north||!model.source.northEvidence||!model.source.scale?.quote) throw new Error('Printed scale and north orientation are required.');
+    if(!verifiedRegistration(model.source)) throw new Error('Scale and north orientation require independent source verification before map placement.');
     if(!footprint||!['Polygon','MultiPolygon'].includes(footprint.type)) throw new Error('A current building footprint is required.');
     const [width,height]=model.architecture.dimensionsM;
     const dx=north[1][0]-north[0][0],dy=north[1][1]-north[0][1],length=Math.hypot(dx,dy);
@@ -30,7 +42,7 @@ export function registerFullFloor(model,footprint) {
     const area=intersection?turf.area(intersection):0,planOverlap=area/turf.area(placed),buildingOverlap=area/turf.area(footprint);
     if(!(planOverlap>=.9&&buildingOverlap>=.9)) throw new Error(`Plan/footprint coverage is insufficient (${(planOverlap*100).toFixed(1)}% / ${(buildingOverlap*100).toFixed(1)}%).`);
     return {corners:[[0,0],[1,0],[1,1],[0,1]].map(project),
-        basis:'Printed dimension and north arrow; slab centroid aligned to current building footprint; >=90% overlap in both directions.',
+        basis:'Independently verified printed scale and north arrow; slab centroid aligned to current building footprint; >=90% overlap in both directions.',
         planOverlap,buildingOverlap};
 }
 

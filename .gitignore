@@ -20,7 +20,7 @@ backend/logs/
 backend/.venv-floor-plans/
 scripts/__pycache__/
 backend/scripts/__pycache__/
-backend/.venv-floor-plans/
+backend/test/__pycache__/
 
 # Stray screenshots in the repo root (debug captures belong in a scratch directory)
 /*.png

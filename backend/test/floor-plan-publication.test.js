@@ -5,9 +5,12 @@ import {currentTaskContext} from '../floor-plans/interpret-plans.js';
 import {createRequire} from 'node:module';
 const {validateFloorPlans}=createRequire(import.meta.url)('../../frontend/js/building-floor-plans.js');
 const rect=(x,y,w,h)=>[[[x,y],[x+w,y],[x+w,y+h],[x,y+h]]];
-function model() {return {scope:'floor',floor:1,elevationM:null,rooms:[],quality:{issues:[],processor:'test'},
+function model() {return {scope:'floor',floor:1,elevationM:null,rooms:[],quality:{issues:[],processor:'test',rasterEvidence:{checked:true,passed:true}},
     verticalDimensionsBasis:'Estimated heights',source:{url:'https://agency.test/plan.png',sha256:'a'.repeat(64),page:1,
-        scale:{quote:'10m'},northPx:[[100,100],[100,50]],northEvidence:'N'},
+        scale:{id:'S1',a:[0,0],b:[100,0],lengthM:10,quote:'10m'},northPx:[[100,100],[100,50]],northEvidence:'N',
+        registrationEvidence:{schema:'floor-plan-registration-evidence.v1',sourceSha256:'a'.repeat(64),page:1,
+            scale:{candidateId:'S1',a:[0,0],b:[100,0],lengthM:10,quote:'10m',status:'verified',basis:'Printed endpoints checked against archived source.'},
+            orientation:{northPx:[[100,100],[100,50]],status:'verified',basis:'Arrow checked on the floor drawing.'}}},
     architecture:{schema:'consensus-builder.floor-architecture.v1',dimensionsM:[10,10],wallHeightM:2.7,slabThicknessM:.2,
         slabs:[rect(0,0,1,1)],walls:[rect(0,0,1,.02),rect(0,.98,1,.02),rect(0,.02,.02,.96),rect(.98,.02,.02,.96)],
         openings:[],landings:[],stairs:[],railings:[]}};}
@@ -24,10 +27,11 @@ describe('whole-floor geographic registration',()=>{
         expect(validateFloorPlans(saved)).toEqual([]);
         expect(saved.floors[0]).toMatchObject({level:1,elevationM:3,elevationBasis:'estimated'});
     });
-    it.each(['unit','north','floor','review','small','large'])('rejects unsafe %s registration',kind=>{
+    it.each(['unit','north','floor','review','raster','small','large'])('rejects unsafe %s registration',kind=>{
         const plan=model();let shape=footprint(10);
         if(kind==='unit')plan.scope='unit';if(kind==='north')plan.source.northPx=null;
         if(kind==='floor')plan.floor=null;if(kind==='review')plan.quality.issues=['uncertain'];
+        if(kind==='raster')delete plan.quality.rasterEvidence;
         if(kind==='small')shape=footprint(5);if(kind==='large')shape=footprint(20);
         expect(()=>registerFullFloor(plan,shape)).toThrow();
     });
@@ -40,6 +44,17 @@ describe('whole-floor geographic registration',()=>{
         const next=mergeRegisteredFloor(existing,{...row,id:'c'.repeat(64),model:{...plan,floor:2}},r);
         expect(next.floors.map(f=>f.level)).toEqual([1,2]);expect(next.layouts).toHaveLength(2);
         expect(next.layouts[0]).toEqual(existing.layouts[0]);
+    });
+    it.each(['absent','source','page','scale','candidate','north','unverified'])('rejects %s independent registration evidence even on a matching square footprint',kind=>{
+        const plan=model(),evidence=plan.source.registrationEvidence;
+        if(kind==='absent')delete plan.source.registrationEvidence;
+        if(kind==='source')evidence.sourceSha256='b'.repeat(64);
+        if(kind==='page')evidence.page=2;
+        if(kind==='scale')evidence.scale.lengthM=20;
+        if(kind==='candidate')evidence.scale.candidateId='S2';
+        if(kind==='north')evidence.orientation.northPx=[[100,100],[150,100]];
+        if(kind==='unverified')evidence.scale.status='model-read';
+        expect(()=>registerFullFloor(plan,footprint(10))).toThrow(/independent source verification/);
     });
 });
 

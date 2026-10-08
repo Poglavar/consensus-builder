@@ -521,6 +521,8 @@ Expanded SAM 3 head fine-tuning used 96 training tiles and fresh 16-tile validat
 - Keep the HGK company registry, candidate websites, immutable source archive and OCR drafts in `floor_plan`; only reviewed, registered architecture belongs in `consensus.building_floor_model`, because a public drawing does not establish a building or floor transform.
 - New-build advertisements receive priority while resale evidence is retained; site failures and incomplete crawls never imply removal.
 - Avenue V currently has five public unit reconstructions, one with conflicting floor labels, and no verified whole-floor registration; preserve the unknown building areas.
+- 2026-10-08: The production provider key was explicitly approved and configured, but the user withheld permission to schedule the daily floor-plan job; keep both the job and its outcome monitor disabled until subsequent explicit approval.
+- 2026-10-08: Agency interpretation stores source-linked metric vectors and explicit height assumptions for deterministic 3D previews; canonical map placement additionally requires independent scale and north verification because footprint overlap cannot establish either measurement.
 
 - A listing can embed other apartments in project tables and recommendation cards; archive their sources, but assign a plan only to its evidenced row/card owner and never treat the first card as the page listing.
 

@@ -1,14 +1,14 @@
 // Exercise paid floor-plan batch state transitions with the real shared batch helpers and a fake client.
 import {describe,expect,it,vi} from 'vitest';
 import {interpretPlans} from '../floor-plans/interpret-plans.js';
-import {PROCESSOR} from '../floor-plans/plan-reading.js';
+import {PROCESSOR,MAX_OUTPUT_TOKENS} from '../floor-plans/plan-reading.js';
 
 const context={building:{city:'test-city',source:'survey',ownerId:'',buildingId:'42',name:'Test building',footprint:null},
  facts:{sourceId:'7',floor:'1',unitId:'A1',areaM2:60}};
 const baseTask=()=>({id:'a'.repeat(64),source_sha256:'b'.repeat(64),source_url:'https://agency.test/plan.pdf',
  page:1,listing_url:'https://agency.test/listing/1',context,processor:PROCESSOR,status:'queued',batch_id:null,
  result:{},cost_usd:null,created_at:new Date().toISOString()});
-const notPlan={schema:'floor-plan-reading.v1',notPlan:true,issues:[],plans:[]};
+const notPlan={schema:'floor-plan-reading.v3',notPlan:true,issues:[],plans:[]};
 
 function makeDb({queued=[],batches=[],tasks=[],used=0}={}) {
  const state={batches:structuredClone(batches),tasks:structuredClone(tasks.length?tasks:queued),calls:[]};
@@ -79,8 +79,9 @@ function fakeClient({response=notPlan,processingStatus='ended'}={}) {
  return {client:{withOptions(){return this;},messages:{countTokens,batches:{create,retrieve,results}}},create,retrieve,results,countTokens};
 }
 
-const render=vi.fn(async()=>({data:Buffer.from('png'),width:100,height:100}));
-const price=vi.fn((_model,usage)=>usage.output_tokens===12000?0.25:0.02);
+const evidence={version:'source-geometry-v1',widthPx:100,heightPx:100,issues:[],wallCandidates:[],openingCandidates:[],scaleCandidates:[],outlineCorners:[]};
+const render=vi.fn(async()=>({data:Buffer.from('png'),annotation:Buffer.from('marks'),width:100,height:100,evidence}));
+const price=vi.fn((_model,usage)=>usage.output_tokens===MAX_OUTPUT_TOKENS?0.25:0.02);
 
 describe('floor-plan paid batch worker',()=>{
  it('defers unaffordable work without posting a batch or marking a task submitted',async()=>{
