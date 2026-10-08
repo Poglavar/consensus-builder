@@ -1,0 +1,194 @@
+{
+  "review_date": "2026-10-09",
+  "scope": "Primary-source BEV contract research only; no repo/Git/code/deploy changes.",
+  "queries": {
+    "english": [
+      "site:kataster.bev.gv.at \"tiles/kataster\" \"gst\"",
+      "site:kataster.bev.gv.at BEV Kataster API Grundstück Suche Gst Vektor Tiles",
+      "site:bev.gv.at Kataster Österreich digitaler Kataster Grundstück Grenzen Genauigkeit GIS",
+      "site:kataster.bev.gv.at API Grundstückssuche JSON BEV Katastralmappe",
+      "site:bev.gv.at BEV Katasterservice API Vector Tiles Grundstückssuche",
+      "site:bev.gv.at \"VTC\" \"Schnittstellenbeschreibung\" Kataster",
+      "site:bev.gv.at \"Vector Tiles\" Kataster VTC BEV",
+      "site:kataster.bev.gv.at \"API\" Grundstück Suchanleitung"
+    ],
+    "german": [
+      "site:bev.gv.at \"rstatus\" Kataster BEV",
+      "site:bev.gv.at \"Generalisierung\" Kataster Vektorkachel",
+      "BEV Kataster Vektorkacheln Grundstückssuche API Zoomstufe Geometrie",
+      "BEV Katasterservice Grundstückssuche API Rechteck Geometrie Genauigkeit",
+      "BEV Kataster Vektorkacheln Grundstückssuche API Zoomstufe Geometrie",
+      "BEV Katasterservice Grundstückssuche API Rechteck Geometrie Genauigkeit"
+    ]
+  },
+  "official_sources": [
+    {
+      "url": "https://kataster.bev.gv.at/",
+      "title": "BEV Katasterservice",
+      "opened": true,
+      "finding": "The public app shell loads a client-side viewer bundle. The viewer’s search request is implemented in JavaScript; the official VTC format PDF describes the vector tile service but does not document a JSON API contract for /api/all or /api/gst."
+    },
+    {
+      "url": "https://www.bev.gv.at/dam/jcr:0b1df72b-93a6-46c0-aac2-1662cb33b429/BEV_S_KA_Katastralmappe_VTC.pdf",
+      "title": "BEV_S_KA_Katastralmappe_VTC, release PDF",
+      "opened": true,
+      "finding": "The BEV says VTC is used by kataster.bev.gv.at and publishes tiles at /tiles/{kataster|symbole}/{z}/{x}/{y}.pbf. It uses different generalization algorithms, with the condition that z16 geometries are represented with cm-level accuracy; legal coordinates cannot be derived from them. This is an accuracy statement, not a numeric tolerance, exact-envelope contract, or explicit vertex-preservation/bounds promise. Layers gst (Polygon) and gnr (Point) are available z13–z16. rstatus E means Grundsteuerkataster and G means Grenzkataster."
+    },
+    {
+      "url": "https://www.bev.gv.at/dam/jcr:5b7684bd-8c71-41a0-8cd2-2e757105c33b/KatasterVectorTiles_im_QGis.pdf",
+      "title": "KatasterVectorTiles im QGIS einbinden",
+      "opened": true,
+      "finding": "The official QGIS guidance uses the same kataster tile URL, sets max zoom 16, and shows the VTC as a vector-tile layer. It documents endpoint consumption and zoom range, not search/detail API geometry semantics."
+    },
+    {
+      "url": "https://www.bev.gv.at/Services/Downloads/Produktbezogene-Downloads/Formatbeschreibungen-Infos.html",
+      "title": "Format descriptions and other information",
+      "opened": true,
+      "finding": "The official download index lists the VTC and QGIS vector-tile guidance, supporting that VTC is the described open map service. It lists downloadable/stichtag DKM products separately."
+    },
+    {
+      "url": "https://www.bev.gv.at/Services/Produkte/Kataster-und-Verzeichnisse/Katastralmappe-und-Sachdaten-digital.html",
+      "title": "Digitale Katastralmappe and cadastral data",
+      "opened": true,
+      "finding": "BEV distinguishes DKM graphical data from descriptive parcel-register data and distributes graphic raster/vector and descriptive products. Digital map accuracy generally follows the original analog map source; Grenzkataster has cm-level legal coordinates, while Grundsteuerkataster graphical precision can be decimeter-to-meter. The page describes daily updates for current data but does not specify a live JSON API or locator geometry contract."
+    },
+    {
+      "url": "https://www.bev.gv.at/Services/Produkte/Kataster-und-Verzeichnisse/Kataster-Stichtagsdaten.html",
+      "title": "Cadastral reference-date data",
+      "opened": true,
+      "finding": "BEV notes the DKM topology is validated only within a cadastral municipality and processing can leave inconsistencies; graphical and descriptive data may differ. Source-history accuracy varies from centimeters through decimeters/meters. This cautions against equating a search/detail polygon envelope with authoritative legal boundary coordinates."
+    },
+    {
+      "url": "https://www.bev.gv.at/Services/Produkte/Kataster-und-Verzeichnisse/Verwaltungsgrenzen.html",
+      "title": "Administrative boundaries",
+      "opened": true,
+      "finding": "BEV says cadastral-accurate extracts from DKM are not suitable for determining an exact parcel boundary; daily data can contain gaps/overlaps when adjacent municipalities are loaded at different times. This statement concerns administrative-boundary extracts, not a specific parcel API contract."
+    },
+    {
+      "url": "https://www.bev.gv.at/Services/Dienstleistungen/Glossar-Woerterbuch/Grenzkataster.html",
+      "title": "Grenzkataster",
+      "opened": true,
+      "finding": "The legally binding cm-level coordinates apply to parcels entered in Grenzkataster; they are not a universal accuracy guarantee for Grundsteuerkataster parcels."
+    },
+    {
+      "url": "https://www.bev.gv.at/dam/jcr:a6342749-e2c2-4525-9cee-3b7531474599/BEV_S_KA_Katastralmappe_SHP_V2.7.pdf",
+      "title": "BEV cadastral map SHP spec",
+      "opened": true,
+      "finding": "The SHP schema independently defines RSTATUS E as Grundsteuerkataster and G as Grenzkataster."
+    },
+    {
+      "url": "https://www.bev.gv.at/dam/jcr:239729f2-83e1-400e-9e5f-9ff65cc02257/BEV_S_KA_Katastralmappe_Grundstuecksdaten_GPKG_V1.0.pdf",
+      "title": "DKM and parcel data reference-date GPKG spec",
+      "opened": true,
+      "finding": "The official product schema identifies GST.geom as POLYGON and GST attributes include KG, GNR, RSTATUS, and MST. It documents packaged reference-date data, not live search API semantics."
+    },
+    {
+      "url": "https://www.bev.gv.at/dam/jcr:3219284c-b985-487c-8459-e778d0b6b439/BEV%20Service%202025%20Brosch%C3%BCre_DIN%20l%C3%A4ngs%20A4_99x210cm.pdf",
+      "title": "BEV Service 2025 brochure",
+      "opened": true,
+      "finding": "BEV describes Katasterservice as a freely usable web application showing the current Austrian cadastre and parcel information, and describes generic text search across parcel numbers and other object types. It does not state search result geometry is the complete parcel shape."
+    }
+  ],
+  "viewer_bundle": {
+    "html_url": "https://kataster.bev.gv.at/",
+    "html_observation": "The HTML shell links to /at.gv.bev.kataster/assets/index-CtYaVX4-.js.",
+    "bundle_url": "https://kataster.bev.gv.at/at.gv.bev.kataster/assets/index-CtYaVX4-.js",
+    "source_map": "A guessed .js.map URL returned 404.",
+    "note": "The current 1,373,748-byte bundle is minified with embedded translation newlines. References below use physical lines and character offsets in the exact downloaded asset.",
+    "locations": [
+      {
+        "line": 74,
+        "offsets": [
+          292404,
+          292735,
+          293060,
+          293411
+        ],
+        "excerpt": "The app context performs GET requests to /api/{a}/{c}/, /api/kgnr/{a}/, /api/gst/{KG}/{GNR}/, and /api/vgst/{id}/, parses JSON, and caches results. This describes client usage, not a geometry guarantee."
+      },
+      {
+        "line": 276,
+        "offsets": [
+          637016
+        ],
+        "excerpt": "The bundle declares /at.gv.bev.kataster/api/all/ as the generic search endpoint constant."
+      },
+      {
+        "line": 383,
+        "offsets": [
+          1332602
+        ],
+        "excerpt": "The search widget uses GET {apiBase}/?term={input}&layers={selectedLayerCodes}; it reads response.data.features, removes unnamed features, and stores them as search results. Nothing in this consumer code treats its geometry as a complete parcel shape or exact extent."
+      },
+      {
+        "line": 25,
+        "offsets": [
+          94840
+        ],
+        "excerpt": "German in-app help text states the vector-tile URL, TileSet3857 and 512×512 tile size, generalization, and z16 centimeter-accuracy condition while cautioning that coordinates are not legally binding."
+      },
+      {
+        "line": 41,
+        "offsets": [
+          121706
+        ],
+        "excerpt": "English in-app help text says that BEV applies generalization algorithms and requires z16 geometry to be depicted at centimeter accuracy, but warns that coordinates are not legally binding; it points to the VTC interface description."
+      },
+      {
+        "line": 35,
+        "offsets": [
+          104297,
+          133359
+        ],
+        "excerpt": "Viewer data dictionaries reference rstatus values E and G and translation keys; authoritative meanings are defined in the VTC PDF."
+      }
+    ],
+    "sha256": "ccc54f98f0f1c548e98bfef11abb247809a024765619d99356140c319a58d343",
+    "fetched_at_utc": "2026-10-08T20:29Z"
+  },
+  "bounded_live_observation": {
+    "note": "Read-only requests to the official public viewer endpoints; this is observed behavior, not a published service guarantee. Sensitive/person-related attributes were not retained.",
+    "search_url_pattern": "https://kataster.bev.gv.at/api/all/?term={query}&layers=gst",
+    "detail_url_pattern": "https://kataster.bev.gv.at/at.gv.bev.kataster/api/gst/{KG}/{GNR}/",
+    "query": "Three known non-sensitive parcel IDs (KG 01004; parcel numbers 1683, 1706, 1750), including one generic search and details for all three.",
+    "result": "For each of the three parcel IDs, detail API returned a 5-vertex axis-aligned rectangular Polygon. Generic search for 01004 1683 returned the same rectangle as the detail route. The z16 MVT gst tile had many-vertex parcel geometry. This is observed output, not a published promise; no official API spec was found guaranteeing that returned rectangles are full parcel outlines or exact geometry extents."
+  },
+  "conclusions": {
+    "confirmed": "The official VTC specification (released 2022) describes the public z13–z16 GST Polygon vector-tile layer, a 512 px TileSet3857 endpoint, generalized geometry, and cm-accuracy representation at z16 while explicitly disclaiming legally binding coordinates. It defines rstatus E=Grundsteuerkataster and G=Grenzkataster. The current viewer consumes /api/all as a generic search/locator endpoint and /api/gst/{KG}/{GNR} as detail JSON.",
+    "not_found": "No official specification found for /api/all or /api/gst that promises returned search/detail polygons or geometryBbox equal the exact full parcel-shape extents; no numerical tile bounds tolerance or vertex-preservation guarantee; no documented complete-neighbor-fragment contract for clipped edge features; and no freshness interval for live JSON routes.",
+    "engineering_implication_for_root": "Treat the documented z16 MVT GST polygon as the parcel shape input at stated approximate precision, with explicit cross-tile completeness checks if reconstructing it. Treat search/detail geometries as locators/envelopes only unless BEV supplies a contract. Do not infer an arbitrary tolerance from ‘cm accuracy’; do not use MVT coordinates as legally binding survey coordinates."
+  },
+  "primary_source_references": [
+    {
+      "source": "BEV_S_KA_Katastralmappe_VTC.pdf",
+      "url": "https://www.bev.gv.at/dam/jcr:0b1df72b-93a6-46c0-aac2-1662cb33b429/BEV_S_KA_Katastralmappe_VTC.pdf",
+      "references": [
+        "PDF pp. 3–4 (lines 69–80): VTC use, TileSet3857, 512px tiles, endpoint, generalization, z16 cm-accuracy condition, and explicit non-legal-coordinate warning.",
+        "PDF pp. 8–9 (lines 174–191): gst Polygon and gnr Point layers available z13–z16; properties include kg, gnr, ez, rstatus.",
+        "PDF p. 13 (lines 278–281): E=Grundsteuerkataster; G=Grenzkataster."
+      ]
+    },
+    {
+      "source": "Katastralmappe und Sachdaten digital",
+      "url": "https://www.bev.gv.at/Services/Produkte/Kataster-und-Verzeichnisse/Katastralmappe-und-Sachdaten-digital.html",
+      "references": [
+        "BEV page lines 312–324: DKM accuracy derives from original analog map; Grenzkataster cm-level but Grundsteuerkataster graphical boundaries may be dm–m and non-binding.",
+        "BEV page lines 331–336: DKM and descriptive data are centrally reconciled daily; product datasets updated daily."
+      ]
+    },
+    {
+      "source": "Kataster Stichtagsdaten",
+      "url": "https://www.bev.gv.at/Services/Produkte/Kataster-und-Verzeichnisse/Kataster-Stichtagsdaten.html",
+      "references": [
+        "BEV page lines 238–249, 256–260: topology validation and source-history-dependent accuracy cautions."
+      ]
+    },
+    {
+      "source": "KatasterVectorTiles im QGIS einbinden",
+      "url": "https://www.bev.gv.at/dam/jcr:5b7684bd-8c71-41a0-8cd2-2e757105c33b/KatasterVectorTiles_im_QGis.pdf",
+      "references": [
+        "PDF page 5 (lines 10–16): kataster tile URL, max zoom 16, official style."
+      ]
+    }
+  ]
+}

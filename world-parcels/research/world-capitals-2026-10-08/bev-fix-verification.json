@@ -1,0 +1,62 @@
+{
+  "schemaVersion": 1,
+  "purpose": "Post-deployment Vienna regression verification; actual provider data through the repository adapter and a manual headed browser, without a browser test suite.",
+  "checkedAt": "2026-10-08T20:28:12.290427+00:00",
+  "originalFailure": {
+    "publicUrl": "https://api.urbangametheory.xyz/parcel-sources/at-bev-kataster-vector-tiles?bbox=16.371,48.206,16.376,48.211",
+    "httpStatus": 502,
+    "originError": "BEV parcel reconstruction does not cover its published bounds.",
+    "affectedReferences": [
+      "01004:1683",
+      "01004:1706",
+      "01004:1750"
+    ],
+    "cause": "The generalized z16 outlines were strictly compared to search/detail locator-envelope extrema. The locator rectangles were larger than the display outline."
+  },
+  "headless": {
+    "testFiles": [
+      "bev-parcel-adapter.test.js",
+      "parcel-source-route.test.js",
+      "parcel-source-binding.test.js",
+      "parcel-source-health.test.js",
+      "source-geometry.test.js",
+      "parcel-report-evidence.test.js",
+      "parcel-coverage-report.test.js",
+      "live-source-binding-wiring.test.js",
+      "parcel-source-notice.test.js"
+    ],
+    "passedFiles": 9,
+    "passedTests": 86,
+    "newRegressionBehaviors": [
+      "Generalized outlines smaller than the locator rectangle are accepted.",
+      "Missing far-side fragments still fail with a wider locator.",
+      "Geometry outside the locator envelope fails.",
+      "Contradictory neighbouring cuts fail.",
+      "An unmatched very narrow cut fails even within the endpoint rounding allowance."
+    ]
+  },
+  "liveAcceptanceFile": "research/world-capitals-2026-10-08/bev-fix-check.json",
+  "qualityFile": "research/world-capitals-2026-10-08/bev-fix-quality.json",
+  "manualBrowser": {
+    "url": "http://localhost:5638/?city=vienna&backend=http%3A%2F%2Flocalhost%3A5640&reduceMotion=1",
+    "headed": true,
+    "parcelLayers": 267,
+    "selectedParcelId": "AT-BEV-01004:601",
+    "realMouseSelectionPassed": true,
+    "detailsPanelOpened": true,
+    "pageErrors": [],
+    "browserClosed": true,
+    "screenshotCaptured": false,
+    "screenshotLimit": "The browser CLI screenshot did not complete; loading, selected identity and the Details panel were verified from the live browser state."
+  },
+  "metadataChecks": {
+    "passedFiles": 3,
+    "passedTests": 24,
+    "testFiles": [
+      "frontend-city-source-integrations.test.js",
+      "coverage-evidence-consistency.test.js",
+      "world-coverage-build.test.js"
+    ],
+    "artifactCheck": "Regenerated world-coverage.json after the registry timestamp update; exact generated output matches."
+  }
+}

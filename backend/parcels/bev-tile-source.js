@@ -29,6 +29,48 @@ function gridBounds(bounds) {
 
 function overlaps(a, b) { return a[0] <= b[2] && a[2] >= b[0] && a[1] <= b[3] && a[3] >= b[1]; }
 
+// Core clipping must not leave an unmatched cut along a tile boundary. Comparing
+// both sides catches missing fragments without treating the locator as an exact
+// parcel envelope. A boundary exactly on a tile seam is conservatively rejected
+// if no matching fragment exists on the other side.
+function seamIntervals(geometry, axis, boundary) {
+    const polygons = geometry.type === 'Polygon' ? [geometry.coordinates] : geometry.coordinates;
+    const intervals = [];
+    for (const polygon of polygons) for (const ring of polygon) for (let i = 1; i < ring.length; i++) {
+        const a = ring[i - 1], b = ring[i];
+        if (a[axis] === boundary && b[axis] === boundary && a[1 - axis] !== b[1 - axis]) {
+            intervals.push([Math.min(a[1 - axis], b[1 - axis]), Math.max(a[1 - axis], b[1 - axis])]);
+        }
+    }
+    return intervals.sort((a, b) => a[0] - b[0]);
+}
+
+function validateTileSeams(fragments) {
+    // Adjacent tiles independently quantize their buffered coordinates. Allow
+    // two encoded grid units at seam endpoints (one unit per side), without
+    // moving vertices or filling gaps. A missing neighbour always fails.
+    const epsilon = 2;
+    for (const part of fragments) for (const [axis, boundary, dx, dy] of [
+        [0, part.x * EXTENT, -1, 0], [0, (part.x + 1) * EXTENT, 1, 0],
+        [1, part.y * EXTENT, 0, -1], [1, (part.y + 1) * EXTENT, 0, 1]
+    ]) {
+        const cuts = seamIntervals(part.geometry.geometry, axis, boundary);
+        if (!cuts.length) continue;
+        const opposite = fragments.filter(item => item.x === part.x + dx && item.y === part.y + dy)
+            .flatMap(item => seamIntervals(item.geometry.geometry, axis, boundary)).sort((a, b) => a[0] - b[0]);
+        if (!opposite.length) throw upstreamError('BEV parcel fragments do not close across a tile edge.');
+        for (const [start, end] of cuts) {
+            let covered = start;
+            for (const [left, right] of opposite) {
+                if (left > covered + epsilon) break;
+                if (right >= covered) covered = right;
+                if (covered >= end - epsilon) break;
+            }
+            if (covered < end - epsilon) throw upstreamError('BEV parcel fragments do not close across a tile edge.');
+        }
+    }
+}
+
 function tileList(bounds, maxTiles) {
     const indices = bounds.map(value => Math.floor(value / EXTENT));
     const [left, top, right, bottom] = indices;
@@ -136,7 +178,7 @@ export function createBevTileParcelSource(descriptor, { fetchImpl = globalThis.f
                             if (!polygons.length) throw upstreamError('BEV tile returned empty cadastral geometry.');
                             // Remove the provider's tile buffer before union. Each tile owns only its core.
                             const clipped = intersect(multiPolygon(polygons), core);
-                            if (clipped) fragments.push({ nativeId, geometry: clipped, bounds: geometryBbox(clipped) });
+                            if (clipped) fragments.push({ nativeId, x, y, geometry: clipped, bounds: geometryBbox(clipped) });
                         }
                     } catch (error) {
                         if (error.status) throw error;
@@ -150,7 +192,7 @@ export function createBevTileParcelSource(descriptor, { fetchImpl = globalThis.f
 
         async function parcel(nativeId) {
             const [kg, gnr] = nativeId.split(':');
-            // The official search result already contains exact parcel bounds. The detail endpoint
+            // The official search result contains a parcel locator envelope. The detail endpoint
             // also computes land-use/history data and can take >20 seconds for a simple road parcel.
             const search = await request(`${SEARCH}?${new URLSearchParams({ term: `${kg} ${gnr}`, layers: 'GST-KG' })}`, { json: true });
             if (search?.searchTerm !== `${kg} ${gnr}` || search.data?.type !== 'FeatureCollection'
@@ -171,14 +213,16 @@ export function createBevTileParcelSource(descriptor, { fetchImpl = globalThis.f
             const fragments = [];
             for (const [x, y] of needed) fragments.push(...(await tile(x, y)).filter(part => part.nativeId === nativeId));
             if (!fragments.length) throw upstreamError('BEV parcel locator has no corresponding tile geometry.');
+            validateTileSeams(fragments);
             let merged = fragments[0].geometry;
             try { for (const part of fragments.slice(1)) merged = union(merged, part.geometry); }
             catch { throw upstreamError('BEV parcel fragments could not be reconstructed.'); }
             const actualBounds = geometryBbox(merged);
-            // z16 has a 2^32 global grid: two units are under 2 cm in projected metres.
-            // Larger differences indicate a missing fragment or mismatched locator/tile revision.
-            if (actualBounds.some((value, index) => Math.abs(value - expectedBounds[index]) > 2)) {
-                throw upstreamError('BEV parcel reconstruction does not cover its published bounds.');
+            // The generalized z16 outline can be smaller than the locator rectangle.
+            // Require containment, allowing two encoded units for rounding at its envelope.
+            if (actualBounds[0] < expectedBounds[0] - 2 || actualBounds[1] < expectedBounds[1] - 2
+                || actualBounds[2] > expectedBounds[2] + 2 || actualBounds[3] > expectedBounds[3] + 2) {
+                throw upstreamError('BEV parcel reconstruction exceeds its locator bounds.');
             }
             const mapCoordinates = coordinates => typeof coordinates[0] === 'number'
                 ? wgsPoint(coordinates) : coordinates.map(mapCoordinates);

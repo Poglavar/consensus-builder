@@ -1,0 +1,2225 @@
+{
+  "schemaVersion": 1,
+  "purpose": "Independent GEOS topology check of complete runtime parcels projected to metric coordinates; no repair applied. Counts are bounded sample evidence, not whole-city guarantees.",
+  "library": "Shapely 2.1.2",
+  "metricCrs": "EPSG:32633",
+  "featureCount": 315,
+  "validNonemptyCount": 315,
+  "invalidFeatures": [],
+  "exactDuplicateGeometryPairs": [],
+  "positiveAreaOverlapPairsAbove0_01M2": [],
+  "sumPairwiseOverlapM2": 0,
+  "operationErrors": [],
+  "areaM2": {
+    "min": 1.961014624721533,
+    "median": 606.3186415918665,
+    "max": 16909.552450160227
+  },
+  "features": [
+    {
+      "id": "AT-BEV-01004:1683",
+      "areaM2": 258.89240198951916,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "AT-BEV-01004:1706",
+      "areaM2": 641.9969060142237,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "AT-BEV-01004:1750",
+      "areaM2": 3716.254150366579,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "AT-BEV-01004:1066",
+      "areaM2": 242.5047850766763,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "AT-BEV-01004:1067",
+      "areaM2": 546.2638146704783,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "AT-BEV-01004:1069",
+      "areaM2": 606.5637418319951,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "AT-BEV-01004:1070/1",
+      "areaM2": 611.2074599045616,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "AT-BEV-01004:1076",
+      "areaM2": 735.7521364699618,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "AT-BEV-01004:1077",
+      "areaM2": 719.8658068648637,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "AT-BEV-01004:1078/1",
+      "areaM2": 660.3230106322012,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "AT-BEV-01004:1078/2",
+      "areaM2": 416.2531548650206,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "AT-BEV-01004:1078/4",
+      "areaM2": 165.49970581749773,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "AT-BEV-01004:1079",
+      "areaM2": 339.5719320873017,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "AT-BEV-01004:1080",
+      "areaM2": 302.520768468979,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "AT-BEV-01004:1081",
+      "areaM2": 506.72481877755934,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "AT-BEV-01004:1082",
+      "areaM2": 1163.0251252273674,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "AT-BEV-01004:1088",
+      "areaM2": 490.54392253231816,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "AT-BEV-01004:1089",
+      "areaM2": 386.7557408416362,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "AT-BEV-01004:1640",
+      "areaM2": 1096.1528509225855,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "AT-BEV-01004:1641",
+      "areaM2": 424.14836214391454,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "AT-BEV-01004:1644",
+      "areaM2": 1397.240183490353,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "AT-BEV-01004:1646",
+      "areaM2": 5086.196157808269,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "AT-BEV-01004:1648",
+      "areaM2": 1235.230933899358,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "AT-BEV-01004:1649",
+      "areaM2": 861.8841627083006,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "AT-BEV-01004:1650",
+      "areaM2": 1118.4821840364436,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "AT-BEV-01004:1651",
+      "areaM2": 384.35179073502275,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "AT-BEV-01004:1652",
+      "areaM2": 90.78918355387498,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "AT-BEV-01004:1653",
+      "areaM2": 790.4910452862683,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "AT-BEV-01004:1654",
+      "areaM2": 2494.6145735226432,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "AT-BEV-01004:1655",
+      "areaM2": 1525.9076992474043,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "AT-BEV-01004:1656/1",
+      "areaM2": 4510.882577395354,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "AT-BEV-01004:1664",
+      "areaM2": 1627.4905479500699,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "AT-BEV-01004:1665",
+      "areaM2": 7917.940285365968,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "AT-BEV-01004:1681",
+      "areaM2": 2553.9340811079783,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "AT-BEV-01004:1682",
+      "areaM2": 396.2376532987132,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "AT-BEV-01004:1684/1",
+      "areaM2": 4750.449522884508,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "AT-BEV-01004:1684/2",
+      "areaM2": 1339.713993244425,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "AT-BEV-01004:1696/1",
+      "areaM2": 7870.664143390795,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "AT-BEV-01004:1701",
+      "areaM2": 2173.3012344838103,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "AT-BEV-01004:1702",
+      "areaM2": 586.7663334236928,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "AT-BEV-01004:1703",
+      "areaM2": 292.7199633065445,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "AT-BEV-01004:1704",
+      "areaM2": 1090.1753317864634,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "AT-BEV-01004:1705",
+      "areaM2": 3263.560555693947,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "AT-BEV-01004:1707",
+      "areaM2": 985.3129070456796,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "AT-BEV-01004:1708",
+      "areaM2": 5059.566703673642,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "AT-BEV-01004:1709",
+      "areaM2": 1760.6901204026549,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "AT-BEV-01004:1711",
+      "areaM2": 10619.81238062515,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "AT-BEV-01004:1712",
+      "areaM2": 314.02474921942195,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "AT-BEV-01004:1713",
+      "areaM2": 545.3810326403566,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "AT-BEV-01004:1714",
+      "areaM2": 779.1963571756855,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "AT-BEV-01004:1715",
+      "areaM2": 68.26617903183204,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "AT-BEV-01004:1716",
+      "areaM2": 78.35134428192282,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "AT-BEV-01004:1717",
+      "areaM2": 248.3528648892147,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "AT-BEV-01004:1718",
+      "areaM2": 1246.2766841150394,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "AT-BEV-01004:1719",
+      "areaM2": 1473.5760770062022,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "AT-BEV-01004:1720",
+      "areaM2": 2874.036481934412,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "AT-BEV-01004:1724",
+      "areaM2": 2462.5948813549585,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "AT-BEV-01004:1725",
+      "areaM2": 446.8327095467052,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "AT-BEV-01004:1726/3",
+      "areaM2": 5794.7904221302815,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "AT-BEV-01004:1727",
+      "areaM2": 7687.746210432211,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "AT-BEV-01004:1728",
+      "areaM2": 1951.2461645654885,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "AT-BEV-01004:1729",
+      "areaM2": 1545.2599410265243,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "AT-BEV-01004:1730",
+      "areaM2": 1469.3270994989396,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "AT-BEV-01004:1731",
+      "areaM2": 237.0201759314802,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "AT-BEV-01004:1753",
+      "areaM2": 348.255832279349,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "AT-BEV-01004:1754",
+      "areaM2": 877.300098533562,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "AT-BEV-01004:1832/1",
+      "areaM2": 16909.552450160227,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "AT-BEV-01004:401",
+      "areaM2": 1291.1461000957643,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "AT-BEV-01004:407",
+      "areaM2": 1011.9237475897943,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "AT-BEV-01004:408",
+      "areaM2": 462.69106359118734,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "AT-BEV-01004:409",
+      "areaM2": 304.5379766682609,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "AT-BEV-01004:410",
+      "areaM2": 147.36970791588337,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "AT-BEV-01004:521/2",
+      "areaM2": 935.483816047875,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "AT-BEV-01004:521/3",
+      "areaM2": 547.8774899114485,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "AT-BEV-01004:521/4",
+      "areaM2": 342.0586396720764,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "AT-BEV-01004:522",
+      "areaM2": 512.3950200569128,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "AT-BEV-01004:525/3",
+      "areaM2": 178.52848824278985,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "AT-BEV-01004:528",
+      "areaM2": 1044.6454989650015,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "AT-BEV-01004:529",
+      "areaM2": 1123.4571795349852,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "AT-BEV-01004:540/1",
+      "areaM2": 3507.988132968412,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "AT-BEV-01004:541",
+      "areaM2": 1014.4810182314441,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "AT-BEV-01004:542",
+      "areaM2": 958.6690129018186,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "AT-BEV-01004:543/1",
+      "areaM2": 856.1121897703752,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "AT-BEV-01004:544",
+      "areaM2": 281.4594457861712,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "AT-BEV-01004:545",
+      "areaM2": 1330.8636721379753,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "AT-BEV-01004:546/1",
+      "areaM2": 936.850526193642,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "AT-BEV-01004:546/2",
+      "areaM2": 935.7149555143712,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "AT-BEV-01004:547/1",
+      "areaM2": 859.3255487998865,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "AT-BEV-01004:547/2",
+      "areaM2": 42.43600304960872,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "AT-BEV-01004:547/3",
+      "areaM2": 548.6798373622444,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "AT-BEV-01004:548/1",
+      "areaM2": 426.31306681546494,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "AT-BEV-01004:548/2",
+      "areaM2": 430.7348086930249,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "AT-BEV-01004:549",
+      "areaM2": 760.8811274109496,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "AT-BEV-01004:551/1",
+      "areaM2": 1058.9031217100987,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "AT-BEV-01004:551/2",
+      "areaM2": 1264.9169264737543,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "AT-BEV-01004:552/1",
+      "areaM2": 491.22911386849364,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "AT-BEV-01004:552/2",
+      "areaM2": 673.9703075125193,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "AT-BEV-01004:552/3",
+      "areaM2": 345.5995459252094,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "AT-BEV-01004:553",
+      "areaM2": 141.22973314852558,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "AT-BEV-01004:555",
+      "areaM2": 684.4492057607695,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "AT-BEV-01004:556",
+      "areaM2": 442.24237234348846,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "AT-BEV-01004:557",
+      "areaM2": 235.71897925105435,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "AT-BEV-01004:558",
+      "areaM2": 1013.7218404031098,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "AT-BEV-01004:565",
+      "areaM2": 1177.7963770000129,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "AT-BEV-01004:588/1",
+      "areaM2": 1571.5982599602423,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "AT-BEV-01004:589",
+      "areaM2": 352.2059763377978,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "AT-BEV-01004:590/1",
+      "areaM2": 381.75420261689976,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "AT-BEV-01004:590/2",
+      "areaM2": 441.9440554290427,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "AT-BEV-01004:592",
+      "areaM2": 749.3304344434131,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "AT-BEV-01004:594",
+      "areaM2": 648.0700099068822,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "AT-BEV-01004:595",
+      "areaM2": 170.26351990551404,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "AT-BEV-01004:596",
+      "areaM2": 554.126315550631,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "AT-BEV-01004:598",
+      "areaM2": 287.1800780556052,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "AT-BEV-01004:599",
+      "areaM2": 543.9395644831127,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "AT-BEV-01004:600",
+      "areaM2": 409.08065724279976,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "AT-BEV-01004:601",
+      "areaM2": 868.1033121111465,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "AT-BEV-01004:603/1",
+      "areaM2": 545.9127171737814,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "AT-BEV-01004:603/2",
+      "areaM2": 544.2585330358911,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "AT-BEV-01004:603/3",
+      "areaM2": 1256.48037409661,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "AT-BEV-01004:604/1",
+      "areaM2": 440.3591224903118,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "AT-BEV-01004:604/2",
+      "areaM2": 445.93889418879195,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "AT-BEV-01004:605/2",
+      "areaM2": 534.7646847873917,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "AT-BEV-01004:605/3",
+      "areaM2": 873.0103872271351,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "AT-BEV-01004:606/2",
+      "areaM2": 681.2789386344083,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "AT-BEV-01004:607",
+      "areaM2": 586.4784412793738,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "AT-BEV-01004:609",
+      "areaM2": 1062.7179674749373,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "AT-BEV-01004:613",
+      "areaM2": 610.2423148430564,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "AT-BEV-01004:614",
+      "areaM2": 693.2790913818659,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "AT-BEV-01004:616/1",
+      "areaM2": 956.2656112114939,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "AT-BEV-01004:617",
+      "areaM2": 566.0130167177043,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "AT-BEV-01004:620/1",
+      "areaM2": 322.94398470336233,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "AT-BEV-01004:620/2",
+      "areaM2": 6.144595369487364,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "AT-BEV-01004:621",
+      "areaM2": 641.4296963481419,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "AT-BEV-01004:622",
+      "areaM2": 289.4097078421545,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "AT-BEV-01004:623",
+      "areaM2": 262.19533731574734,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "AT-BEV-01004:624",
+      "areaM2": 153.21470035145973,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "AT-BEV-01004:625",
+      "areaM2": 749.0075165785015,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "AT-BEV-01004:626",
+      "areaM2": 192.42397312507615,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "AT-BEV-01004:627",
+      "areaM2": 419.0169203672282,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "AT-BEV-01004:628",
+      "areaM2": 1370.8167598448929,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "AT-BEV-01004:630",
+      "areaM2": 494.7726081138872,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "AT-BEV-01004:660",
+      "areaM2": 1504.7948490265514,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "AT-BEV-01004:712",
+      "areaM2": 1088.3409634338009,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "AT-BEV-01004:714",
+      "areaM2": 370.8103489917588,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "AT-BEV-01004:715",
+      "areaM2": 770.7053525889743,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "AT-BEV-01004:716",
+      "areaM2": 461.5750711171929,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "AT-BEV-01004:717",
+      "areaM2": 681.0654085976009,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "AT-BEV-01004:718",
+      "areaM2": 376.118153303253,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "AT-BEV-01004:719",
+      "areaM2": 511.2754581847344,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "AT-BEV-01004:732",
+      "areaM2": 712.9785934823932,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "AT-BEV-01004:733",
+      "areaM2": 384.4851502643863,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "AT-BEV-01004:734",
+      "areaM2": 683.5280267435274,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "AT-BEV-01004:735",
+      "areaM2": 751.3827995125544,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "AT-BEV-01004:736",
+      "areaM2": 507.5663248007471,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "AT-BEV-01004:737",
+      "areaM2": 860.9387723912295,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "AT-BEV-01004:738",
+      "areaM2": 1460.7178905640262,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "AT-BEV-01004:739/1",
+      "areaM2": 323.61154972123364,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "AT-BEV-01004:740",
+      "areaM2": 1210.8595650536636,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "AT-BEV-01004:741",
+      "areaM2": 1006.1655046154413,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "AT-BEV-01004:744",
+      "areaM2": 1377.4119920030214,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "AT-BEV-01004:745",
+      "areaM2": 1585.846913159664,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "AT-BEV-01004:746",
+      "areaM2": 1631.0320097926287,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "AT-BEV-01004:747",
+      "areaM2": 1150.5967915037575,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "AT-BEV-01004:748",
+      "areaM2": 841.6665898442493,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "AT-BEV-01004:749",
+      "areaM2": 630.4778585228913,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "AT-BEV-01004:750",
+      "areaM2": 561.0723442336202,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "AT-BEV-01004:751",
+      "areaM2": 1444.3350668273458,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "AT-BEV-01004:752",
+      "areaM2": 453.6139860388934,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "AT-BEV-01004:753",
+      "areaM2": 604.9285196167838,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "AT-BEV-01004:754",
+      "areaM2": 777.6472386675947,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "AT-BEV-01004:755",
+      "areaM2": 661.0508666371823,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "AT-BEV-01004:756",
+      "areaM2": 613.4328841733034,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "AT-BEV-01004:758",
+      "areaM2": 558.810275724788,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "AT-BEV-01004:808",
+      "areaM2": 361.5606108812638,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "AT-BEV-01004:809",
+      "areaM2": 339.6873984859035,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "AT-BEV-01004:810",
+      "areaM2": 1467.1950333006441,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "AT-BEV-01004:811",
+      "areaM2": 727.8661056251585,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "AT-BEV-01004:814",
+      "areaM2": 1311.7274169871307,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "AT-BEV-01004:815",
+      "areaM2": 2661.625653949419,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "AT-BEV-01004:816/1",
+      "areaM2": 900.6209393605208,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "AT-BEV-01004:816/2",
+      "areaM2": 3458.3574148005982,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "AT-BEV-01004:817",
+      "areaM2": 5739.980960849035,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "AT-BEV-01004:818",
+      "areaM2": 67.58329754876678,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "AT-BEV-01004:819",
+      "areaM2": 221.98036520265848,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "AT-BEV-01004:820",
+      "areaM2": 264.0286638641554,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "AT-BEV-01004:822",
+      "areaM2": 443.9583491493175,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "AT-BEV-01004:823",
+      "areaM2": 1574.7473919049626,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "AT-BEV-01004:824",
+      "areaM2": 5054.954873374687,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "AT-BEV-01004:825",
+      "areaM2": 1792.8543637765335,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "AT-BEV-01004:826",
+      "areaM2": 158.30258036238038,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "AT-BEV-01004:827",
+      "areaM2": 207.46595435006105,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "AT-BEV-01004:828",
+      "areaM2": 273.21110827486933,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "AT-BEV-01004:829",
+      "areaM2": 667.084566920836,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "AT-BEV-01004:830",
+      "areaM2": 126.72704897621458,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "AT-BEV-01004:831/1",
+      "areaM2": 606.456487908028,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "AT-BEV-01004:832",
+      "areaM2": 380.140492117783,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "AT-BEV-01004:833",
+      "areaM2": 291.6396350864013,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "AT-BEV-01004:834",
+      "areaM2": 447.4089643328449,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "AT-BEV-01004:835",
+      "areaM2": 507.3501557996357,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "AT-BEV-01004:836",
+      "areaM2": 625.9420219826451,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "AT-BEV-01004:837/1",
+      "areaM2": 89.62425431698398,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "AT-BEV-01004:838/1",
+      "areaM2": 1.961014624721533,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "AT-BEV-01004:838/2",
+      "areaM2": 192.76523373568648,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "AT-BEV-01004:839",
+      "areaM2": 229.56057518920449,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "AT-BEV-01004:840",
+      "areaM2": 566.3052255948601,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "AT-BEV-01004:841",
+      "areaM2": 1252.7009686296012,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "AT-BEV-01004:842",
+      "areaM2": 635.2163997871289,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "AT-BEV-01004:843",
+      "areaM2": 388.9032391796527,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "AT-BEV-01004:844",
+      "areaM2": 125.84811866090352,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "AT-BEV-01004:845",
+      "areaM2": 181.590808476831,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "AT-BEV-01004:846",
+      "areaM2": 111.28753044840485,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "AT-BEV-01004:847",
+      "areaM2": 339.43349147924994,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "AT-BEV-01004:848",
+      "areaM2": 246.50181147960768,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "AT-BEV-01004:849",
+      "areaM2": 191.7190073706856,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "AT-BEV-01004:850",
+      "areaM2": 173.96981184130533,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "AT-BEV-01004:851",
+      "areaM2": 619.2777194184921,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "AT-BEV-01004:852",
+      "areaM2": 596.8783955455276,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "AT-BEV-01004:853",
+      "areaM2": 4437.891296341167,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "AT-BEV-01004:856",
+      "areaM2": 134.56166228059388,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "AT-BEV-01004:858",
+      "areaM2": 455.63796236491635,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "AT-BEV-01004:859",
+      "areaM2": 1479.6424111294275,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "AT-BEV-01004:860",
+      "areaM2": 455.6778262451602,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "AT-BEV-01004:861",
+      "areaM2": 628.3973835000043,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "AT-BEV-01004:868",
+      "areaM2": 720.2760225291887,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "AT-BEV-01004:869",
+      "areaM2": 478.4409472131501,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "AT-BEV-01004:871",
+      "areaM2": 925.7220324796251,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "AT-BEV-01004:874/1",
+      "areaM2": 707.9958688883878,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "AT-BEV-01004:901/1",
+      "areaM2": 2163.755750917151,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "AT-BEV-01004:906",
+      "areaM2": 768.4587884313593,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "AT-BEV-01004:907",
+      "areaM2": 683.7056223064294,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "AT-BEV-01004:910",
+      "areaM2": 240.2894961479093,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "AT-BEV-01004:911",
+      "areaM2": 4650.458913923541,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "AT-BEV-01004:912",
+      "areaM2": 544.5942955500844,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "AT-BEV-01004:913",
+      "areaM2": 1088.1339197279067,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "AT-BEV-01004:914",
+      "areaM2": 269.82615049521877,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "AT-BEV-01004:915",
+      "areaM2": 459.327483312218,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "AT-BEV-01004:916",
+      "areaM2": 409.04058086654913,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "AT-BEV-01004:917",
+      "areaM2": 254.0384669967904,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "AT-BEV-01004:918",
+      "areaM2": 862.3816186381769,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "AT-BEV-01004:920",
+      "areaM2": 459.1606185525024,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "AT-BEV-01004:921",
+      "areaM2": 1035.7020473373034,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "AT-BEV-01004:922/1",
+      "areaM2": 458.4693783073734,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "AT-BEV-01004:922/2",
+      "areaM2": 606.3186415918665,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "AT-BEV-01004:923",
+      "areaM2": 483.06352175338884,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "AT-BEV-01004:924",
+      "areaM2": 557.0287746128038,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "AT-BEV-01004:925",
+      "areaM2": 793.2821239191853,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "AT-BEV-01004:926",
+      "areaM2": 655.6123940042521,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "AT-BEV-01004:927",
+      "areaM2": 401.2490216596377,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "AT-BEV-01004:928",
+      "areaM2": 972.7094770733427,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "AT-BEV-01004:929",
+      "areaM2": 575.71541786336,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "AT-BEV-01004:930",
+      "areaM2": 486.33383701670084,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "AT-BEV-01004:931",
+      "areaM2": 716.3902363044176,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "AT-BEV-01004:932",
+      "areaM2": 577.5883282651376,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "AT-BEV-01004:933",
+      "areaM2": 328.2768831398097,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "AT-BEV-01004:934",
+      "areaM2": 497.9668524121407,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "AT-BEV-01004:936",
+      "areaM2": 505.35240258510123,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "AT-BEV-01004:937/1",
+      "areaM2": 627.4471179687749,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "AT-BEV-01004:938",
+      "areaM2": 802.2811772005656,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "AT-BEV-01004:939",
+      "areaM2": 801.1760329733606,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "AT-BEV-01004:941",
+      "areaM2": 969.4211382320061,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "AT-BEV-01004:942",
+      "areaM2": 281.029464676677,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "AT-BEV-01004:943",
+      "areaM2": 320.8459692284123,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "AT-BEV-01004:944",
+      "areaM2": 446.0810467517339,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "AT-BEV-01004:945",
+      "areaM2": 641.897971833205,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "AT-BEV-01004:946",
+      "areaM2": 1262.510607405965,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "AT-BEV-01004:947",
+      "areaM2": 311.45501226267646,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "AT-BEV-01004:948",
+      "areaM2": 340.4971231143919,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "AT-BEV-01004:949",
+      "areaM2": 1792.4694910113587,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "AT-BEV-01004:950",
+      "areaM2": 849.8114074378809,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "AT-BEV-01004:951",
+      "areaM2": 550.535655006316,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "AT-BEV-01004:952",
+      "areaM2": 387.92604277707926,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "AT-BEV-01004:953",
+      "areaM2": 869.8804998378145,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "AT-BEV-01004:954",
+      "areaM2": 556.5754566942082,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "AT-BEV-01004:957",
+      "areaM2": 444.54455504009036,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "AT-BEV-01004:958",
+      "areaM2": 1177.3195228035283,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "AT-BEV-01004:960",
+      "areaM2": 910.4702823183384,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "AT-BEV-01004:961",
+      "areaM2": 324.63608791260936,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "AT-BEV-01004:962",
+      "areaM2": 806.2747080979032,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "AT-BEV-01004:963",
+      "areaM2": 477.32276109721005,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "AT-BEV-01004:964",
+      "areaM2": 569.0974211587574,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "AT-BEV-01004:965",
+      "areaM2": 1047.7684237232118,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "AT-BEV-01004:970",
+      "areaM2": 559.3876373835054,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "AT-BEV-01004:971",
+      "areaM2": 1787.616093663634,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "AT-BEV-01004:1090/1",
+      "areaM2": 520.8728621480988,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "AT-BEV-01004:1090/2",
+      "areaM2": 419.6336979109985,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "AT-BEV-01004:1092",
+      "areaM2": 703.3543104055656,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "AT-BEV-01004:1093",
+      "areaM2": 516.2958063099825,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "AT-BEV-01004:1094",
+      "areaM2": 544.8714248239074,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "AT-BEV-01004:1095",
+      "areaM2": 744.3082889648242,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "AT-BEV-01004:1097/1",
+      "areaM2": 485.95905658412346,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "AT-BEV-01004:1097/2",
+      "areaM2": 476.10074448024363,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "AT-BEV-01004:1121",
+      "areaM2": 444.223086433319,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "AT-BEV-01004:1122/1",
+      "areaM2": 876.7998433894256,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "AT-BEV-01004:1123",
+      "areaM2": 146.49843827734583,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "AT-BEV-01004:1124/1",
+      "areaM2": 525.4634106287834,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "AT-BEV-01004:1125",
+      "areaM2": 276.6096700743279,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "AT-BEV-01004:1126",
+      "areaM2": 877.5706203765819,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "AT-BEV-01004:1128",
+      "areaM2": 864.5227033188249,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "AT-BEV-01004:1675",
+      "areaM2": 2815.61844556389,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "AT-BEV-01004:1677",
+      "areaM2": 3473.13842704785,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "AT-BEV-01004:1679",
+      "areaM2": 151.4591543245458,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "AT-BEV-01004:803",
+      "areaM2": 902.8083279374529,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "AT-BEV-01004:804/1",
+      "areaM2": 538.7717471470459,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "AT-BEV-01004:805",
+      "areaM2": 603.3299371478837,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "AT-BEV-01004:862",
+      "areaM2": 271.6385558176354,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "AT-BEV-01004:863/1",
+      "areaM2": 349.96430703438017,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "AT-BEV-01004:863/2",
+      "areaM2": 485.20125449752976,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "AT-BEV-01004:864",
+      "areaM2": 543.8116373785043,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "AT-BEV-01004:865",
+      "areaM2": 383.60155701901425,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "AT-BEV-01004:866",
+      "areaM2": 689.4587078456602,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "AT-BEV-01004:867",
+      "areaM2": 730.8321123058631,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "AT-BEV-01004:881",
+      "areaM2": 532.5775986386367,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "AT-BEV-01004:883",
+      "areaM2": 286.117658490862,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "AT-BEV-01004:884",
+      "areaM2": 3567.1226206491624,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "AT-BEV-01004:888/3",
+      "areaM2": 1178.712247523817,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    }
+  ]
+}

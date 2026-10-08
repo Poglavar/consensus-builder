@@ -4253,17 +4253,20 @@
         "vienna"
       ],
       "maxConcurrentQueries": 2,
-      "scope": "51 complete native kg/gnr references in 13 Vienna cells plus cross-tile landmarks. Public z16 cadastral display coordinates, reconstructed across all locator tiles; not legally binding survey coordinates. Wider completeness unverified.",
+      "scope": "315 complete native kg/gnr references in a wider Vienna viewport and two adjacent pans, with matching fresh reference geometry and no sampled invalid shapes, duplicates or overlaps. Generalized z16 cadastral display coordinates are reconstructed from every locator tile, with matched tile seams and locator containment; they are not legally binding survey coordinates. Wider city coverage remains unverified.",
       "evidenceFile": "research/world-capitals-2026-10-08/vienna-acceptance.json",
       "catalogueUrl": "https://kataster.bev.gv.at/",
       "attribution": "BEV, CC BY 4.0; adapted from public cadastral vector tiles. Display coordinates are not legally binding survey coordinates.",
       "licenceNote": "BEV, CC BY 4.0; adapted from public cadastral vector tiles. Display coordinates are not legally binding survey coordinates.",
       "additionalCityEvidence": {
-        "vienna": "research/world-capitals-2026-10-08/vienna-acceptance.json"
+        "vienna": "research/world-capitals-2026-10-08/bev-fix-check.json"
       },
       "cityScopes": {
-        "vienna": "51 complete native kg/gnr references in 13 Vienna cells plus cross-tile landmarks. Public z16 cadastral display coordinates, reconstructed across all locator tiles; not legally binding survey coordinates. Wider completeness unverified."
-      }
+        "vienna": "315 complete native kg/gnr references in a wider Vienna viewport and two adjacent pans, with matching fresh reference geometry and no sampled invalid shapes, duplicates or overlaps. Generalized z16 cadastral display coordinates are reconstructed from every locator tile, with matched tile seams and locator containment; they are not legally binding survey coordinates. Wider city coverage remains unverified."
+      },
+      "qualityEvidenceFile": "research/world-capitals-2026-10-08/bev-fix-quality.json",
+      "precisionNote": "Official BEV VTC specification describes generalized z16 display geometry at centimeter-level accuracy; map-source accuracy varies, and these are not legal survey coordinates.",
+      "completenessNote": "Reconstructs all tiles intersecting the official search/detail locator envelope; requires corresponding parcel cuts on both sides of each tile seam and rejects outlines outside the locator. Two encoded grid units are allowed for independent coordinate rounding. An exact parcel boundary on a tile seam without a matching neighbour is conservatively rejected."
     },
     {
       "id": "me-water-cadastral-parcels",

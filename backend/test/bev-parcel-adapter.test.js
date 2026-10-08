@@ -52,7 +52,7 @@ function locator(rings = parcelRings, props = {}) {
     return { ...bboxPolygon(bounds), properties: { kg: '01004', gnr: '387/1', ez: '123', privateDetails: 'must not be published', ...props } };
 }
 
-function fixture({ rings = parcelRings, locatorValue = locator(rings), tileOptions = {}, rightMissing = false, override } = {}) {
+function fixture({ rings = parcelRings, rightRings, locatorValue = locator(rings), tileOptions = {}, rightMissing = false, override } = {}) {
     return vi.fn(async (input, init) => {
         const url = String(input);
         expect(init.redirect).toBe('error');
@@ -69,7 +69,7 @@ function fixture({ rings = parcelRings, locatorValue = locator(rings), tileOptio
         const match = url.match(/\/16\/(\d+)\/(\d+)\.pbf$/);
         if (!match) throw new Error('Unexpected request');
         const x = Number(match[1]);
-        return new Response(encodeTile(rings, { offsetX: (x - X) * E, empty: rightMissing && x === X + 1, ...tileOptions }));
+        return new Response(encodeTile(x === X + 1 && rightRings ? rightRings : rings, { offsetX: (x - X) * E, empty: rightMissing && x === X + 1, ...tileOptions }));
     });
 }
 
@@ -115,7 +115,31 @@ describe('BEV full parcel reconstruction', () => {
     });
 
     it('fails closed when a tile omits the far side of a parcel', async () => {
-        await expect(createBevTileParcelSource(descriptor, { fetchImpl: fixture({ rightMissing: true }) }).queryIds([id])).rejects.toThrow(/published bounds/);
+        await expect(createBevTileParcelSource(descriptor, { fetchImpl: fixture({ rightMissing: true }) }).queryIds([id])).rejects.toThrow(/tile edge/);
+    });
+
+    it('accepts a generalized outline inside a wider locator while still rejecting a missing far-side fragment', async () => {
+        const locatorValue = locator([rect(90, 90, E + 110, 1010)]);
+        const complete = await createBevTileParcelSource(descriptor, { fetchImpl: fixture({ locatorValue }) }).queryIds([id]);
+        expect(complete.features).toHaveLength(1);
+        expect(complete.features[0].geometry).not.toEqual(locatorValue.geometry);
+        await expect(createBevTileParcelSource(descriptor, { fetchImpl: fixture({ locatorValue, rightMissing: true }) })
+            .queryIds([id])).rejects.toThrow(/tile edge/);
+    });
+
+    it('rejects tile geometry extending outside the locator envelope', async () => {
+        const locatorValue = locator([rect(110, 110, E + 90, 990)]);
+        await expect(createBevTileParcelSource(descriptor, { fetchImpl: fixture({ locatorValue }) })
+            .queryIds([id])).rejects.toThrow(/locator bounds/);
+    });
+
+    it('rejects contradictory neighbouring fragment edges and a missing very narrow cut', async () => {
+        const rings = [rect(100, 100, E + 100, 1000)], rightRings = [rect(100, 110, E + 100, 990)];
+        await expect(createBevTileParcelSource(descriptor, { fetchImpl: fixture({ rings, rightRings }) })
+            .queryIds([id])).rejects.toThrow(/tile edge/);
+        const narrow = [rect(E - 100, 100, E + 100, 101)];
+        await expect(createBevTileParcelSource(descriptor, { fetchImpl: fixture({ rings: narrow, rightMissing: true }) })
+            .queryIds([id])).rejects.toThrow(/tile edge/);
     });
 
     it('fails closed on mismatched locator identity and changed tile resolution', async () => {

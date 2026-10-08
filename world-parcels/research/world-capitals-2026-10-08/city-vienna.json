@@ -142,7 +142,7 @@
   "resultCategory": "verified_public_geometry_runtime_enabled",
   "coverageAssessment": {
     "claimedScope": "Official Austrian cadastre",
-    "verifiedOpenScope": "51 complete native kg/gnr references in 13 Vienna cells plus cross-tile landmarks. Public z16 cadastral display coordinates, reconstructed across all locator tiles; not legally binding survey coordinates. Wider completeness unverified.",
+    "verifiedOpenScope": "315 complete native kg/gnr references in a wider Vienna viewport and two adjacent pans, with matching fresh reference geometry and no sampled invalid shapes, duplicates or overlaps. Generalized z16 cadastral display coordinates are reconstructed from every locator tile, with matched tile seams and locator containment; they are not legally binding survey coordinates. Wider city coverage remains unverified.",
     "countrywideVerified": false
   },
   "runtimeReadiness": "enabled",
@@ -150,9 +150,11 @@
   "appCityId": "vienna",
   "runtimeAssessment": {
     "status": "enabled",
-    "reason": "51 complete native kg/gnr references in 13 Vienna cells plus cross-tile landmarks. Public z16 cadastral display coordinates, reconstructed across all locator tiles; not legally binding survey coordinates. Wider completeness unverified.",
+    "reason": "315 complete native kg/gnr references in a wider Vienna viewport and two adjacent pans, with matching fresh reference geometry and no sampled invalid shapes, duplicates or overlaps. Generalized z16 cadastral display coordinates are reconstructed from every locator tile, with matched tile seams and locator containment; they are not legally binding survey coordinates. Wider city coverage remains unverified.",
     "evidenceFile": "research/world-capitals-2026-10-08/vienna-acceptance.json",
-    "qualityFile": "research/world-capitals-2026-10-08/vienna-quality.json"
+    "qualityFile": "research/world-capitals-2026-10-08/vienna-quality.json",
+    "additionalEvidenceFile": "research/world-capitals-2026-10-08/bev-fix-check.json",
+    "additionalQualityFile": "research/world-capitals-2026-10-08/bev-fix-quality.json"
   },
   "researchGroup": "europe",
   "retainedPolygonSampleFile": "research/world-capitals-2026-10-08/vienna-adapter-sample.geojson",
@@ -163,5 +165,6 @@
     ],
     "basis": "Chosen view within the bounded qualified area; separate from the initial capital research locator.",
     "gridSizeDegrees": 0.0005
-  }
+  },
+  "remainingUncertainty": "315 complete native kg/gnr references in a wider Vienna viewport and two adjacent pans, with matching fresh reference geometry and no sampled invalid shapes, duplicates or overlaps. Generalized z16 cadastral display coordinates are reconstructed from every locator tile, with matched tile seams and locator containment; they are not legally binding survey coordinates. Wider city coverage remains unverified."
 }
