@@ -11,6 +11,7 @@ import path from 'node:path';
 import { spawn } from 'node:child_process';
 import dotenv from 'dotenv';
 import { fileURLToPath } from 'node:url';
+import { isEntrypoint } from './entrypoint.js';
 
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
 const LENS_RUN = path.join(__dirname, '..', 'lens', 'run.mjs');
@@ -120,7 +121,7 @@ function main() {
     });
 }
 
-if (import.meta.url === `file://${process.argv[1]}`) {
+if (isEntrypoint(import.meta.url)) {
     try {
         main();
     } catch (error) {

@@ -25,6 +25,7 @@ import { createAgentLlm, estimateBatchCostUsd, runPickBatch } from './llm-picker
 import { buildChoiceRequest, optionId, parseChoice } from './society-llm.js';
 import { sendAndConfirmPolling } from './solana-send.js';
 import { sendTelegram } from './telegram.js';
+import { isEntrypoint } from './entrypoint.js';
 
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
 const require = createRequire(import.meta.url);
@@ -362,7 +363,7 @@ async function main() {
     }
 }
 
-if (import.meta.url === `file://${process.argv[1]}`) {
+if (isEntrypoint(import.meta.url)) {
     main().catch(async error => {
         console.error(`[${new Date().toISOString()}] SOCIETY AGENT FAILED:`, error);
         if (process.argv.includes('--live')) await sendTelegram(`Society agent FAILED: ${error.message}`);
