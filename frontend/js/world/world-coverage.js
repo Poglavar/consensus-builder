@@ -9,6 +9,7 @@
 //   coverage.tierAt(lat, lon) -> Place                  see below
 //   coverage.nameAt(lat, lon, zoom) -> { kind: 'city'|'country'|'territory'|'ocean'|'world', name, cc }  the chip name
 //   coverage.searchPlaces(query, { limit }) -> Place[]  diacritic-insensitive, best first
+//   coverage.liveSummary -> { cityCount, countryCount } unique configured live-city and country counts
 //   coverage.tierColors / WorldCoverage.TIERS
 //
 // Place: { kind: 'live-city' | 'city' | 'country' | 'territory' | 'ocean', tier: 'live'|'source'|'none'|'unknown',
@@ -101,6 +102,10 @@
         const territories = (data.territories || []).map(c => Object.assign({}, c, { bbox: c.rings.length ? ringsBbox(c.rings) : null }));
         const countryByCc = new Map(countries.map(c => [c.cc, c]));
         const liveCities = data.liveCities;
+        const liveSummary = Object.freeze({
+            cityCount: new Set(liveCities.map(city => typeof city.id === 'string' ? city.id.trim() : '').filter(Boolean)).size,
+            countryCount: new Set(liveCities.map(city => typeof city.cc === 'string' ? city.cc.trim() : '').filter(Boolean)).size
+        });
         // Registry cities that a configured city already covers are the same place under another name.
         const cities = data.cities.filter(city => !liveCities.some(l => haversineKm(l.lat, l.lon, city.lat, city.lon) <= (l.radiusKm ?? LIVE_RADIUS_KM)));
         const countryName = cc => (countryByCc.get(cc) || {}).name || cc || '';
@@ -238,7 +243,7 @@
             });
         }
 
-        return { data, tierAt, nameAt, searchPlaces, countries, territories, cities, liveCities };
+        return { data, tierAt, nameAt, searchPlaces, countries, territories, cities, liveCities, liveSummary };
     }
 
     function load(url) {

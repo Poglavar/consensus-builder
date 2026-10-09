@@ -4369,6 +4369,10 @@
     "world": {
         "title": "Elige un lugar",
         "hint": "Arrastra para girar · haz clic en cualquier lugar para ver qué datos de parcelas existen",
+        "reach": {
+            "headline": "Ciudades: {{cities}} · países: {{countries}}",
+            "caption": "Con datos de parcelas, listo para explorar"
+        },
         "canvasLabel": "Globo. Arrastra para girar, desplaza para acercar, haz clic en un lugar para ver sus datos de parcelas.",
         "close": "Cerrar",
         "backToMap": "Volver al mapa",

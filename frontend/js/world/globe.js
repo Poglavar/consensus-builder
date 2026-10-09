@@ -391,6 +391,19 @@
         results.hidden = true;
         searchWrap.append(searchInput, results);
         top.append(searchWrap);
+        const reach = el('div', 'world-reach', { role: 'status', 'aria-live': 'polite', 'aria-atomic': 'true' });
+        const reachHeadline = el('p', 'world-reach__headline');
+        const reachCaption = el('p', 'world-reach__caption');
+        reach.append(reachHeadline, reachCaption);
+        reach.hidden = coverage.liveSummary.cityCount === 0;
+        top.appendChild(reach);
+        let reachTimer = null;
+        function dismissReach() {
+            global.clearTimeout(reachTimer);
+            reachTimer = null;
+            reach.classList.add('world-reach--dismissed');
+            reach.setAttribute('aria-hidden', 'true');
+        }
         root.appendChild(top);
 
         const closeBtn = el('button', 'world-view__close', { type: 'button' });
@@ -450,6 +463,11 @@
             root.setAttribute('aria-label', t('world.title', 'Choose a place'));
             searchInput.placeholder = t('world.search.placeholder', 'Search a city or country');
             searchInput.setAttribute('aria-label', t('world.search.label', 'Search places'));
+            reachHeadline.textContent = t('world.reach.headline', '{{cities}} cities · {{countries}} countries', {
+                cities: global.CbFormat.formatInteger(coverage.liveSummary.cityCount),
+                countries: global.CbFormat.formatInteger(coverage.liveSummary.countryCount)
+            });
+            reachCaption.textContent = t('world.reach.caption', 'With parcel data, ready to explore');
             const closeLabel = opts.closeLabel ? t(opts.closeLabel, 'Back to map') : t('world.close', 'Close');
             closeBtn.textContent = opts.closeLabel ? closeLabel : '×';
             closeBtn.setAttribute('aria-label', closeLabel);
@@ -981,6 +999,9 @@
 
         // ---- wiring ----
         const canvas = renderer.domElement;
+        // The welcome count steps aside as soon as the visitor starts exploring.
+        root.addEventListener('pointerdown', dismissReach, { once: true, capture: true });
+        root.addEventListener('keydown', dismissReach, { once: true, capture: true });
         // Labels and canvas share one gesture surface; controls are filtered in onPointerDown.
         // Capture on the canvas keeps drags alive when labels move or disappear under a finger.
         root.addEventListener('pointerdown', onPointerDown);
@@ -1020,6 +1041,7 @@
         resizeObserver.observe(root);
         resize();
         render(performance.now());
+        reachTimer = global.setTimeout(dismissReach, 8000);
         schedule();
 
         const api = {
@@ -1027,6 +1049,7 @@
             close() {
                 if (closed) return;
                 closed = true;
+                global.clearTimeout(reachTimer);
                 root.__unregisterEscape?.();
                 if (raf) cancelAnimationFrame(raf);
                 if (flight) { flight.resolve(false); flight = null; }

@@ -4355,6 +4355,10 @@
     "world": {
         "title": "Izaberite mesto",
         "hint": "Prevucite za okretanje · kliknite bilo gde da vidite koji podaci o parcelama postoje",
+        "reach": {
+            "headline": "Gradovi: {{cities}} · države: {{countries}}",
+            "caption": "Uz katastarske podatke, spremno za istraživanje"
+        },
         "canvasLabel": "Globus. Prevucite za okretanje, točkićem zumirajte, kliknite mesto da proverite podatke o parcelama.",
         "close": "Zatvori",
         "backToMap": "Nazad na mapu",

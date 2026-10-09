@@ -4318,6 +4318,10 @@
     "world": {
         "title": "Choose a place",
         "hint": "Drag to spin · click anywhere to see what parcel data exists there",
+        "reach": {
+            "headline": "{{cities}} cities · {{countries}} countries",
+            "caption": "With parcel data, ready to explore"
+        },
         "canvasLabel": "Globe. Drag to rotate, scroll to zoom, click a place to check parcel data.",
         "close": "Close",
         "backToMap": "Back to map",

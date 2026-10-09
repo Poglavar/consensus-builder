@@ -107,6 +107,49 @@ body.world-view-open {
     pointer-events: auto;
 }
 
+/* A brief welcome below the search row; it never blocks a globe gesture. */
+.world-reach {
+    position: absolute;
+    top: calc(100% + var(--cb-space-4));
+    left: 50%;
+    transform: translateX(-50%);
+    box-sizing: border-box;
+    width: max-content;
+    max-width: 100%;
+    padding: var(--cb-space-3) var(--cb-space-5);
+    border: 1px solid var(--world-edge);
+    border-radius: var(--cb-radius-xl);
+    background: var(--world-glass);
+    backdrop-filter: blur(12px);
+    -webkit-backdrop-filter: blur(12px);
+    text-align: center;
+    pointer-events: none;
+    transition: opacity 0.35s ease, transform 0.35s ease, visibility 0s linear 0.35s;
+}
+
+.world-reach__headline {
+    margin: 0;
+    color: var(--world-live);
+    font-size: var(--cb-text-xl);
+    font-weight: 650;
+    line-height: 1.4;
+    text-wrap: balance;
+}
+
+.world-reach__caption {
+    margin: var(--cb-space-1) 0 0;
+    color: var(--world-ink);
+    font-size: var(--cb-text-sm);
+    line-height: 1.5;
+    text-wrap: balance;
+}
+
+.world-reach--dismissed {
+    opacity: 0;
+    visibility: hidden;
+    transform: translate(-50%, -4px);
+}
+
 .world-search .world-search__input {
     box-sizing: border-box;
     width: 100%;
@@ -735,6 +778,7 @@ body.world-view-open {
 
 @media (prefers-reduced-motion: reduce) {
     .world-view__top,
+    .world-reach,
     .world-legend,
     .world-view__labels {
         transition: none;

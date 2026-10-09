@@ -12,6 +12,52 @@ const WorldCoverage = require(path.join(REPO, 'frontend/js/world/world-coverage.
 const data = JSON.parse(readFileSync(path.join(REPO, 'frontend/data/world-coverage.json'), 'utf8'));
 const coverage = WorldCoverage.create(data);
 
+describe('liveSummary', () => {
+    it('counts configured live cities and countries, excluding registry-only city and country entries', () => {
+        const sample = WorldCoverage.create({
+            countries: [
+                { cc: 'AA', name: 'Live country', tier: 'live', coverage: 'partial', rings: [] },
+                { cc: 'BB', name: 'Registry source country', tier: 'source', coverage: 'partial', rings: [] },
+                { cc: 'CC', name: 'Registry live country', tier: 'live', coverage: 'full', rings: [] }
+            ],
+            cities: [
+                { id: 'registry-source', name: 'Source City', cc: 'BB', tier: 'source', lat: 0, lon: 0, note: '' },
+                { id: 'registry-live', name: 'Registry City', cc: 'CC', tier: 'live', lat: 1, lon: 1, note: '' }
+            ],
+            liveCities: [
+                { id: 'configured-1', name: 'Configured One', cc: 'AA', lat: 10, lon: 10 },
+                { id: 'configured-2', name: 'Configured Two', cc: 'AA', lat: 20, lon: 20 }
+            ]
+        });
+
+        expect(sample.liveSummary).toEqual({ cityCount: 2, countryCount: 1 });
+    });
+
+    it('deduplicates live city IDs and country codes and ignores empty values', () => {
+        const sample = WorldCoverage.create({
+            countries: [],
+            cities: [],
+            liveCities: [
+                { id: 'same-city', cc: 'AA' },
+                { id: 'same-city', cc: 'AA' },
+                { id: ' same-city ', cc: ' AA ' },
+                { id: 'other-city', cc: 'AA' },
+                { id: 'third-city', cc: 'BB' },
+                { id: '', cc: '' },
+                { id: '   ', cc: '  ' }
+            ]
+        });
+
+        expect(sample.liveSummary).toEqual({ cityCount: 3, countryCount: 2 });
+        expect(Object.isFrozen(sample.liveSummary)).toBe(true);
+    });
+
+    it('returns zero counts when there are no configured live cities', () => {
+        const sample = WorldCoverage.create({ countries: [], cities: [], liveCities: [] });
+        expect(sample.liveSummary).toEqual({ cityCount: 0, countryCount: 0 });
+    });
+});
+
 describe('tierAt', () => {
     it.each([
         ['sydney', 'au-nsw-six-cadastre-lot', -33.8585, 151.0795, 'Sydney', -33.8585, 151.4],
