@@ -115,6 +115,21 @@ describe('production static frontend build', () => {
         rmSync(temp, { recursive: true, force: true });
     });
 
+    it('every safe group is one consecutive script run in the real index.html (the server build refuses otherwise)', () => {
+        const index = readFileSync(new URL('../../frontend/index.html', import.meta.url), 'utf8');
+        const arrays = findScriptArrays(index);
+        for (const group of SAFE_GROUPS) {
+            let found = 0;
+            for (const array of arrays) {
+                const items = array.items;
+                for (let i = 0; i <= items.length - group.paths.length; i += 1) {
+                    if (group.paths.every((pathEntry, offset) => items[i + offset].value.split('?')[0] === pathEntry.split('?')[0])) found += 1;
+                }
+            }
+            expect(found, `${group.name}: a script inserted inside the group, or a group member moved, breaks the run`).toBe(1);
+        }
+    });
+
     it('keeps the production allowlist scope-isolated and deploys only the staged tree', () => {
         for (const group of SAFE_GROUPS) {
             for (const entry of group.paths) {
