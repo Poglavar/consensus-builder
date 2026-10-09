@@ -1,0 +1,75 @@
+{
+  "schemaVersion": "1.0",
+  "checkedAt": "2026-10-09",
+  "cityRecord": "city-10681-bhore.json",
+  "purpose": "Document independent city-specific registry source review and bounded anonymous geometry access investigation.",
+  "scopeLimits": {
+    "maxFullPolygonsRetainedInCityRecord": 0,
+    "maxFullPolygonsRetainedInReview": 0,
+    "maxFullPolygonsRetainedInRepository": 3,
+    "ownerOrAddressDataRetained": false,
+    "credentialsOrTokenValuesRetained": false,
+    "citywideCompletenessAsserted": false
+  },
+  "assessment": "The official viewer requires locality selection through district/circle/mauza and map sheet; the locator was not resolved to an exact mauza and no full polygon response/schema was verified.",
+  "registryAssessment": "The official Bihar revenue portal provides BhuNaksha map service; the official Bhulagan Circle Wise Report explicitly lists Bhore Circle in Gopalganj district. This is local revenue/cadastral administration evidence.",
+  "officialPrimarySources": [
+    {
+      "title": "Bihar Department of Revenue and Land Reforms land map",
+      "url": "https://bhunaksha.bihar.gov.in/",
+      "observation": "Official BhuNaksha UI selects district, subdivision, circle, mauza, survey type and map sheet."
+    },
+    {
+      "title": "Bihar Land Records Circle Wise Report",
+      "url": "https://www.bhulagan.bihar.gov.in/reports/CircleWiseReport.aspx",
+      "observation": "Official report names Gopalganj district’s Bhore Circle, confirming local revenue administration."
+    },
+    {
+      "title": "Bihar Revenue and Land Reforms Department",
+      "url": "https://land.bihar.gov.in/landbihar/Default.aspx",
+      "observation": "Official land-record portal identifies the Department and services including Bhu-Naksha and records."
+    }
+  ],
+  "searchQueries": [
+    {
+      "language": "English",
+      "query": "Bhore Bihar India official land records cadastral parcel map revenue registry Gopalganj",
+      "executionMethod": "Executed web search",
+      "resultUrls": [
+        "https://bhunaksha.bihar.gov.in/",
+        "https://www.bhulagan.bihar.gov.in/reports/CircleWiseReport.aspx",
+        "https://land.bihar.gov.in/landbihar/Default.aspx"
+      ]
+    },
+    {
+      "language": "Hindi",
+      "query": "भोरे गोपालगंज बिहार भूमि अभिलेख भू नक्शा राजस्व अंचल आधिकारिक",
+      "executionMethod": "Executed web search",
+      "resultUrls": [
+        "https://bhunaksha.bihar.gov.in/",
+        "https://www.bhulagan.bihar.gov.in/reports/CircleWiseReport.aspx",
+        "https://land.bihar.gov.in/landbihar/Default.aspx"
+      ]
+    }
+  ],
+  "geometryDecision": {
+    "publicParcelGeometryFound": false,
+    "sampleFile": null,
+    "details": "The official viewer requires locality selection through district/circle/mauza and map sheet; the locator was not resolved to an exact mauza and no full polygon response/schema was verified."
+  },
+  "coverageAssessment": {
+    "claimedScope": "The official Bihar revenue portal provides BhuNaksha map service; the official Bhulagan Circle Wise Report explicitly lists Bhore Circle in Gopalganj district. This is local revenue/cadastral administration evidence.",
+    "verifiedOpenScope": "The official viewer requires locality selection through district/circle/mauza and map sheet; the locator was not resolved to an exact mauza and no full polygon response/schema was verified.",
+    "citywideVerified": false,
+    "countrywideVerified": false
+  },
+  "attempts": [
+    {
+      "attempt": "official source/UI and public service inspection",
+      "result": "The official viewer requires locality selection through district/circle/mauza and map sheet; the locator was not resolved to an exact mauza and no full polygon response/schema was verified.",
+      "credentialsUsed": false,
+      "personalPropertyFieldsRequested": false
+    }
+  ],
+  "remainingUncertainty": "The WUP point’s exact mauza and map sheet are unresolved; generic Bihar viewer presence does not prove coverage at the point."
+}

@@ -1,0 +1,20 @@
+{
+  "checkedAt": "2026-10-09T04:16:12.052549+00:00",
+  "url": "http://localhost:5638/?city=kitwe&backend=http%3A%2F%2F127.0.0.1%3A5640&reduceMotion=1&lang=en",
+  "headedBrowser": true,
+  "loadedParcels": 46,
+  "visibleParcels": 15,
+  "parcelFetchFinished": true,
+  "sourceTimeoutWarningPresent": false,
+  "explicitRetryCount": 0,
+  "selectedParcelId": "ZM-NSDI-LOT-112196",
+  "selectionMethod": "Actual pointer at 64,583 followed by Details menu",
+  "detailsMatchesNativeId": true,
+  "uncaughtPageErrors": [],
+  "qualityFile": "research/overnight-cities-2026-10-08/kitwe-wide-browser-quality.json",
+  "browserClosed": true,
+  "sourceBudget": 6,
+  "previousBrowserFailureFile": "research/overnight-cities-2026-10-08/kitwe-browser-check.json",
+  "scope": "Complete observed initial viewport only; no citywide completeness claim.",
+  "browserCloseConfirmedAt": "2026-10-09T04:19:31.541970+00:00"
+}

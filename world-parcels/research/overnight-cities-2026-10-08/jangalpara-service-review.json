@@ -1,0 +1,77 @@
+{
+  "schemaVersion": "1.0",
+  "checkedAt": "2026-10-09",
+  "cityRecord": "city-11809-jangalpara.json",
+  "purpose": "Document official local registry/map evidence and bounded anonymous parcel-geometry access review.",
+  "scopeLimits": {
+    "maxFullPolygonsRetainedInCityRecord": 0,
+    "maxFullPolygonsRetainedInReview": 0,
+    "maxFullPolygonsRetainedInRepository": 0,
+    "ownerOrAddressDataRetained": false,
+    "credentialsOrTokenValuesRetained": false,
+    "citywideCompletenessAsserted": false
+  },
+  "assessment": "Official Hooghly district sources identify Jangalpara locally. The state land-record portal has plot/mouza maps and record request services; the Know Your Property viewing path is account/OTP gated and asks for property selectors and identifiers. No credentials or property information were entered and no anonymous vector geometry endpoint was found.",
+  "registryAssessment": "The official Hooghly district health directory lists Jangalpara PHC, tying the locality to Hooghly. West Bengal’s official Banglarbhumi portal provides plot/RoR and plot/mouza-map services; its interface requires login for citizen map requests, and the official UDMA Know Your Property procedure requires OTP registration and block/mouza/plot selection. No anonymous parcel geometry service was identified.",
+  "officialPrimarySources": [
+    {
+      "url": "https://hooghly.gov.in/health-helpline/",
+      "observation": "The official Hooghly district health directory lists Jangalpara PHC, tying the locality to Hooghly. West Bengal’s official Banglarbhumi portal provides plot/RoR and plot/mouza-map services; its interface requires login for citizen map requests, and the official UDMA Know Your Property procedure requires OTP registration and block/mouza/plot selection. No anonymous parcel geometry service was identified."
+    },
+    {
+      "url": "https://banglarbhumi.gov.in/",
+      "observation": "The official Hooghly district health directory lists Jangalpara PHC, tying the locality to Hooghly. West Bengal’s official Banglarbhumi portal provides plot/RoR and plot/mouza-map services; its interface requires login for citizen map requests, and the official UDMA Know Your Property procedure requires OTP registration and block/mouza/plot selection. No anonymous parcel geometry service was identified."
+    },
+    {
+      "url": "https://banglarbhumi.gov.in/BanglarBhumi/Forms",
+      "observation": "The official Hooghly district health directory lists Jangalpara PHC, tying the locality to Hooghly. West Bengal’s official Banglarbhumi portal provides plot/RoR and plot/mouza-map services; its interface requires login for citizen map requests, and the official UDMA Know Your Property procedure requires OTP registration and block/mouza/plot selection. No anonymous parcel geometry service was identified."
+    },
+    {
+      "url": "https://udma.wb.gov.in/page/cms/know_your_property_procedure_a353e3",
+      "observation": "The official Hooghly district health directory lists Jangalpara PHC, tying the locality to Hooghly. West Bengal’s official Banglarbhumi portal provides plot/RoR and plot/mouza-map services; its interface requires login for citizen map requests, and the official UDMA Know Your Property procedure requires OTP registration and block/mouza/plot selection. No anonymous parcel geometry service was identified."
+    }
+  ],
+  "searchQueries": [
+    {
+      "language": "English",
+      "query": "Jangalpara Hooghly West Bengal official cadastral plot map land records GIS",
+      "result": "Official Hooghly source identifies a Jangalpara PHC; West Bengal Banglarbhumi lists plot, RoR, plot-map and mouza-map services but gates citizen services behind login. No public parcel-vector API found.",
+      "method": "Separate English and local-language source discovery followed by official-source review.",
+      "scope": "Find local registry evidence and public parcel geometry."
+    },
+    {
+      "language": "Bengali",
+      "query": "জঙ্গলপাড়া হুগলি জমির মানচিত্র ভূমি রেকর্ড সরকার পশ্চিমবঙ্গ",
+      "result": "হুগলি জেলার সরকারি স্বাস্থ্য-তালিকায় জঙ্গলপাড়া PHC আছে। পশ্চিমবঙ্গের সরকারি Banglarbhumi-তে প্লট ও মৌজা মানচিত্রের পরিষেবা আছে, তবে নাগরিক মানচিত্র অনুরোধে লগইন লাগে; কোনো উন্মুক্ত parcel-vector API শনাক্ত হয়নি।",
+      "method": "Separate English and local-language source discovery followed by official-source review.",
+      "scope": "Find local registry evidence and public parcel geometry."
+    }
+  ],
+  "geometryDecision": {
+    "publicParcelGeometryFound": null,
+    "decision": "No geometry retained; no anonymous exact-point geometry response was verified."
+  },
+  "coverageAssessment": {
+    "citywideCompletenessAsserted": false,
+    "scope": "Reviewed official sources and exact unchanged WUP settlement locator only.",
+    "limits": "The WUP locator is a population-weighted settlement point, not a mouza/plot identity; exact local mouza and map-sheet coverage were not matched. No anonymous geometry was verified."
+  },
+  "attempts": [
+    {
+      "url": "https://banglarbhumi.gov.in/",
+      "method": "GET official West Bengal land-record portal",
+      "result": "Lists RS-LR plot information, plot-map and mouza-map requests, with “Please Login” for citizen services; no account or property lookup attempted."
+    },
+    {
+      "url": "https://udma.wb.gov.in/page/cms/know_your_property_procedure_a353e3",
+      "method": "GET official West Bengal UDMA service procedure",
+      "result": "Requires OTP-based citizen registration, district, block/BLLRO office, mouza and plot/khatian for Know Your Property. Stopped before any account, plot or property input."
+    },
+    {
+      "url": "https://hooghly.gov.in/health-helpline/",
+      "method": "GET official Hooghly district health directory",
+      "result": "Lists Jangalpara PHC, supporting locality binding; not a cadastral source."
+    }
+  ],
+  "remainingUncertainty": "The WUP locator is a population-weighted settlement point, not a mouza/plot identity; exact local mouza and map-sheet coverage were not matched. No anonymous geometry was verified."
+}

@@ -1,0 +1,114 @@
+{
+  "schemaVersion": 1,
+  "checkedAt": "2026-10-09",
+  "sourceId": "lk-kandy-registry-review",
+  "purpose": "Review city-local registry basis and anonymous geometry-only routes without querying personal/property attributes.",
+  "primaryPublisher": "Sri Lanka Survey Department; Registrar General’s Department; Kandy Municipal Council",
+  "sourceUrl": "https://it.survey.gov.lk/nsdi/lis/kml_service_tmp.php",
+  "registryFound": true,
+  "registryBasis": "The official Survey Department’s public “Download Parcel Info KML data” page links a `Cadastre(Kandy).kmz` file. The Kandy link is a genuine public parcel-geometry candidate, but the page exposes no field schema or safe attribute allowlist. The Survey Department states that its parcel-based LIS is attributed with tenement information, so downloading the full district file before screening its attributes could expose landholding identifiers. The file was not fetched, and no geometry was retained. Separately, the Registrar General’s Department lists Kandy among active title-registration offices, where cadastral maps are integrated with land title records.",
+  "officialSources": [
+    {
+      "url": "https://it.survey.gov.lk/nsdi/lis/kml_service_tmp.php",
+      "observation": "The official Survey Department site is titled “Download Parcel Info KML data,” provides a district selector, and publicly links `Cadastre(Kandy).kmz`. It does not declare the file’s fields, owner/tenement attributes, extent, or a geometry-only download option. The file was not fetched."
+    },
+    {
+      "url": "https://survey.gov.lk/sdweb/pages_service_land_info.php?id=6e1880f44d8da29c58503d0342b63fb78f5b976a&l=s",
+      "observation": "The Survey Department explains that its cadastral maps support land-title registration and that its parcel-based Land Information System is attributed with tenement information collected for title issuance. This is why the Kandy KMZ was not fetched until its schema can be screened."
+    },
+    {
+      "url": "https://survey.gov.lk/sdweb/home.php",
+      "observation": "The Survey Department describes its national surveying/cadastre role and public land-information products, including GIS/CAD map data and copies of existing survey plans for customers."
+    },
+    {
+      "url": "https://www.rgd.gov.lk/web/index.php/en/services/document-land-registration/title/title-registration",
+      "observation": "The Registrar General’s Department identifies title registration as incorporating a cadastral map and lists Kandy among the implementing land-registration offices."
+    },
+    {
+      "url": "https://kandy.mc.gov.lk/Division/Land",
+      "observation": "Kandy Municipal Council’s Land Division describes local map preparation, measurement, municipal land management, and land-plan processes. This is local institutional evidence, not a general private-parcel layer."
+    }
+  ],
+  "searchQueries": [
+    {
+      "language": "English",
+      "query": "Kandy Sri Lanka official cadastral parcel map KML land registry survey department GIS",
+      "result": "The Survey Department’s public KML page links `Cadastre(Kandy).kmz` under a parcel-info download page. Its safe fields/schema are not published, and the Survey Department says its cadastral LIS contains tenement information; no download was made. Kandy is also listed as a title-registration office.",
+      "urls": [
+        "https://it.survey.gov.lk/nsdi/lis/kml_service_tmp.php",
+        "https://survey.gov.lk/sdweb/pages_service_land_info.php?id=6e1880f44d8da29c58503d0342b63fb78f5b976a&l=s",
+        "https://www.rgd.gov.lk/web/index.php/en/services/document-land-registration/title/title-registration"
+      ],
+      "scope": "Find first-party city-specific registry/cadastre evidence and safe anonymous geometry-only routes; do not submit identifiers."
+    },
+    {
+      "language": "Sinhala",
+      "query": "මහනුවර නිල කැඩැස්තර සිතියම ඉඩම් කැබලි KML ඉඩම් ලියාපදිංචි කාර්යාලය",
+      "result": "ශ්‍රී ලංකා මිනින්දෝරු දෙපාර්තමේන්තුවේ පොදු පිටුවේ මහනුවර දිස්ත්‍රික්කය සඳහා `Cadastre(Kandy).kmz` ගොනුව සඳහන් වේ. එහි ගුණාංග/හිමිකම් දත්ත සඳහා ආරක්ෂිත ක්ෂේත්‍ර ලැයිස්තුවක් නොපෙන්වයි; දෙපාර්තමේන්තුවේ ඉඩම් තොරතුරු පද්ධතිය හිමිකම් තොරතුරු සමඟ සම්බන්ධ බව දක්වන නිසා ගොනුව බාගත කර නැත. මහනුවර හිමිකම් ලියාපදිංචි කාර්යාලයක් ලෙස නිල ලැයිස්තුවේ ඇත.",
+      "urls": [
+        "https://it.survey.gov.lk/nsdi/lis/kml_service_tmp.php",
+        "https://survey.gov.lk/sdweb/pdf/surveydocuments/DSR_sinhala/DSR%20Chapter%2021.pdf",
+        "https://www.rgd.gov.lk/web/index.php/en/services/document-land-registration/title/title-registration"
+      ],
+      "scope": "Find first-party city-specific registry/cadastre evidence and safe anonymous geometry-only routes; do not submit identifiers."
+    }
+  ],
+  "accessReview": {
+    "publicAnonymousGeometryVerified": false,
+    "completeGeoreferencedPolygonCount": 0,
+    "geometryRetained": false,
+    "ownerAddressTaxOrPersonLookupRequested": false,
+    "authenticationOrCredentialsUsed": false,
+    "captchaOrPersonalFormSubmitted": false,
+    "routeInspectionStatus": "local_registry_or_candidate_found_safe_geometry_schema_unverified",
+    "reason": "An anonymous Kandy cadastre KMZ download is publicly linked, but no schema/field allowlist is exposed before download; the Survey Department says the parcel LIS carries tenement information. The district file was not fetched, parsed, filtered, or retained. No parcel-level query or owner/title data was requested.",
+    "nativeIdsUsed": "No safe parcel feature identifier retrieved; no feature attributes requested."
+  },
+  "requestEvidence": [
+    {
+      "url": "https://it.survey.gov.lk/nsdi/lis/kml_service_tmp.php",
+      "method": "official public page/document review",
+      "status": "content available through public search/page review; HTTP status not separately captured",
+      "httpStatusObtained": false,
+      "observation": "The official Survey Department site is titled “Download Parcel Info KML data,” provides a district selector, and publicly links `Cadastre(Kandy).kmz`. It does not declare the file’s fields, owner/tenement attributes, extent, or a geometry-only download option. The file was not fetched."
+    },
+    {
+      "url": "https://survey.gov.lk/sdweb/pages_service_land_info.php?id=6e1880f44d8da29c58503d0342b63fb78f5b976a&l=s",
+      "method": "official public page/document review",
+      "status": "content available through public search/page review; HTTP status not separately captured",
+      "httpStatusObtained": false,
+      "observation": "The Survey Department explains that its cadastral maps support land-title registration and that its parcel-based Land Information System is attributed with tenement information collected for title issuance. This is why the Kandy KMZ was not fetched until its schema can be screened."
+    },
+    {
+      "url": "https://survey.gov.lk/sdweb/home.php",
+      "method": "official public page/document review",
+      "status": "content available through public search/page review; HTTP status not separately captured",
+      "httpStatusObtained": false,
+      "observation": "The Survey Department describes its national surveying/cadastre role and public land-information products, including GIS/CAD map data and copies of existing survey plans for customers."
+    },
+    {
+      "url": "https://www.rgd.gov.lk/web/index.php/en/services/document-land-registration/title/title-registration",
+      "method": "official public page/document review",
+      "status": "content available through public search/page review; HTTP status not separately captured",
+      "httpStatusObtained": false,
+      "observation": "The Registrar General’s Department identifies title registration as incorporating a cadastral map and lists Kandy among the implementing land-registration offices."
+    },
+    {
+      "url": "https://kandy.mc.gov.lk/Division/Land",
+      "method": "official public page/document review",
+      "status": "content available through public search/page review; HTTP status not separately captured",
+      "httpStatusObtained": false,
+      "observation": "Kandy Municipal Council’s Land Division describes local map preparation, measurement, municipal land management, and land-plan processes. This is local institutional evidence, not a general private-parcel layer."
+    }
+  ],
+  "technicalBlocker": "An anonymous Kandy cadastre KMZ download is publicly linked, but no schema/field allowlist is exposed before download; the Survey Department says the parcel LIS carries tenement information. The district file was not fetched, parsed, filtered, or retained. No parcel-level query or owner/title data was requested.",
+  "sampleDisposition": "A public Kandy cadastre KMZ link was recorded as a candidate, but no file was fetched because the field schema/allowlist is unknown. No geometry or feature attributes retained.",
+  "remainingUncertainty": "Whether the Kandy district KMZ contains sensitive owner/tenement attributes, its exact spatial extent, and whether it can be safely reduced to geometry plus non-identifying fields. It is not yet confirmed to cover only the WUP point/city extent.",
+  "publicParcelGeometryCandidateFound": true,
+  "geometryCandidateReview": {
+    "url": "https://it.survey.gov.lk/nsdi/lis/kml_service_tmp.php",
+    "listedDownload": "Cadastre(Kandy).kmz",
+    "downloadPerformed": false,
+    "reason": "The page does not publish the KMZ attribute schema or a geometry-only option; the Survey Department says parcel LIS records include tenement information. Screen the schema before any file/feature retrieval."
+  }
+}

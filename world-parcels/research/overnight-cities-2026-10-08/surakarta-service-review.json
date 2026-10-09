@@ -1,0 +1,127 @@
+{
+  "schemaVersion": "1.0",
+  "checkedAt": "2026-10-09",
+  "cityRecord": "city-7158-surakarta.json",
+  "purpose": "Read-only city parcel-source discovery; no runtime, global, catalog, or registry integration.",
+  "scopeLimits": {
+    "maxFullPolygonsRetainedInThisCityReport": 3,
+    "fullPolygonsRetained": 0,
+    "ownerOrAddressDataRetained": false,
+    "accountCredentialsOrPublicTokenValuesRetained": false
+  },
+  "assessment": "The official city BAPENDA SMARTGIS map documents tax-object polygons, but its UI includes taxpayer-name and address search. Direct anonymous HTTPS requests to the viewer timed out before returning HTML, so no JavaScript route or geometry-only API could be verified.",
+  "registryAssessment": "This is a city property-tax GIS, not a verified legal cadastre or land-title source. The local BPN Land Office page did not expose public parcel geometry in the reviewed content.",
+  "searchQueries": [
+    {
+      "language": "English",
+      "query": "Surakarta Indonesia official cadastral parcel map GIS property tax parcel map BPN",
+      "result": "Found official BAPENDA SMARTGIS for city PBB-P2 tax objects; no geometry-only service or title-cadastre coverage claim.",
+      "urls": [
+        "https://pajak.surakarta.go.id/smartgis/",
+        "https://pajak.surakarta.go.id/smartgis/peta",
+        "https://kot-surakarta.atrbpn.go.id/"
+      ],
+      "method": "Separate English search and official city/BPN page review."
+    },
+    {
+      "language": "Indonesian",
+      "query": "site:surakarta.go.id peta persil tanah bidang tanah GIS Surakarta pertanahan",
+      "result": "BAPENDA Kota Surakarta menyediakan SMARTGIS peta objek PBB-P2 dengan fitur peta bidang. UI menampilkan kolom NOP, Nama WP dan Alamat; tidak ada pencarian atau query fitur yang dijalankan karena data dapat berisi informasi pribadi.",
+      "urls": [
+        "https://pajak.surakarta.go.id/smartgis/",
+        "https://pajak.surakarta.go.id/smartgis/peta",
+        "https://kot-surakarta.atrbpn.go.id/"
+      ],
+      "method": "Separate Indonesian-language search and official city/BPN page review."
+    }
+  ],
+  "officialSources": [
+    {
+      "url": "https://pajak.surakarta.go.id/smartgis/",
+      "method": "GET via web reader",
+      "observation": "Official BAPENDA Kota Surakarta SMARTGIS page states it shows geographic PBB-P2 objects and allows viewing/editing tax-map parcels. This is a city tax map; no title-cadastre status claimed.",
+      "httpStatus": 200,
+      "contentType": "text/html"
+    },
+    {
+      "url": "https://pajak.surakarta.go.id/smartgis/peta",
+      "method": "GET via web reader",
+      "observation": "Rendered UI exposes 'Peta Bidang', administrative layers and fields NOP/Nama WP/Alamat. Search was not submitted. Direct browser navigation timed out, so no script/service route was inspected.",
+      "httpStatus": 200,
+      "contentType": "text/html"
+    },
+    {
+      "url": "https://kot-surakarta.atrbpn.go.id/",
+      "method": "GET via web reader",
+      "observation": "Official ATR/BPN local land-office app shell requires JavaScript; no anonymous parcel endpoint is present in the reviewed text.",
+      "httpStatus": 200,
+      "contentType": "text/html"
+    },
+    {
+      "url": "https://pajak.surakarta.go.id/smartgis/peta",
+      "method": "anonymous HTTPS GET via requests.Session",
+      "observation": "Two direct requests with browser headers timed out before HTTP response. No HTML or script bundle was downloaded; no query was submitted.",
+      "httpStatus": null,
+      "contentType": null,
+      "rawHtmlPath": null,
+      "scriptPaths": []
+    }
+  ],
+  "portals": [
+    {
+      "name": "SMARTGIS PBB-P2",
+      "operator": "Badan Pendapatan Daerah Kota Surakarta",
+      "url": "https://pajak.surakarta.go.id/smartgis/",
+      "observation": "City tax-object GIS and parcel map; UI exposes taxpayer information fields."
+    },
+    {
+      "name": "Kantor Pertanahan Kota Surakarta",
+      "operator": "ATR/BPN",
+      "url": "https://kot-surakarta.atrbpn.go.id/",
+      "observation": "Official local land office site; no public parcel service identified in the page shell."
+    }
+  ],
+  "viewerAndServiceTrace": {
+    "attempted": true,
+    "summary": "Reviewed official page descriptions and the map controls rendered by the web reader. Two ordinary anonymous HTTPS GET attempts to the map page timed out before HTTP response. No script paths or geometry-only query contract were available; no tax-object lookup was attempted.",
+    "fullPolygonLimit": 3,
+    "fullPolygonsRetained": 0,
+    "ownerOrAddressDataRequested": false,
+    "credentialsOrTokenValuesRetained": false
+  },
+  "geometryAttempt": {
+    "fullPolygonLimit": 3,
+    "fullPolygonsRetained": 0,
+    "ownerOrAddressDataRequested": false,
+    "outcome": "No geometry query was made; the viewer exposes taxpayer name/address fields and a safe geometry-only contract was not found."
+  },
+  "remainingUncertainty": "Whether SMARTGIS serves polygons with fields that can be safely filtered to identifiers and geometry; whether the mapped tax objects align with cadastral plots; whether BPN's local portal has an authenticated or public map module.",
+  "nextStep": "Inspect only official static JavaScript or metadata for a geometry-only service; do not submit NOP, name or address lookups or retain property records.",
+  "transportFollowThrough": {
+    "requestMetadata": [
+      {
+        "url": "https://pajak.surakarta.go.id/smartgis/peta",
+        "method": "anonymous HTTPS GET via requests.Session with Chrome 131 User-Agent, HTML Accept, Accept-Language id-ID,id;q=0.9,en;q=0.8, and same-origin Referer; follow redirects enabled; 10-second timeout",
+        "httpStatus": null,
+        "contentType": null,
+        "redirects": [],
+        "cookiesObserved": [],
+        "rawHtmlPath": null,
+        "scriptPaths": [],
+        "assessment": "TCP connect timed out before an HTTP response; no cookie, redirect chain, HTML bytes, or static script paths were available. No query parameters or taxpayer/property identifiers were sent."
+      },
+      {
+        "url": "https://pajak.surakarta.go.id/smartgis/peta",
+        "method": "anonymous HTTPS GET via requests.Session with Chrome 131 User-Agent, HTML Accept, Accept-Language en-US,en;q=0.9,mr;q=0.7,id;q=0.6, and Referer https://pajak.surakarta.go.id/smartgis/; follow redirects enabled; connect/read timeout 10/25 seconds",
+        "httpStatus": null,
+        "contentType": null,
+        "redirects": [],
+        "cookiesObserved": [],
+        "rawHtmlPath": null,
+        "scriptPaths": [],
+        "assessment": "Repeated TCP connect timeout; no HTTP response or raw HTML/JavaScript was obtained. No map search or property lookup was submitted."
+      }
+    ],
+    "directFetchResult": "No HTTP status, Content-Type, redirect response, cookies, raw HTML, or JavaScript paths. The requests connected to the target host only until ConnectTimeout; they sent no query string or property identifier."
+  }
+}

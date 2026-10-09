@@ -1,0 +1,82 @@
+{
+  "schemaVersion": "1.0",
+  "checkedAt": "2026-10-09",
+  "cityRecord": "city-11312-wuhu.json",
+  "purpose": "Read-only city parcel-source discovery; no runtime, global, catalog, or registry integration.",
+  "scopeLimits": {
+    "maxFullPolygonsRetainedInThisCityReport": 3,
+    "fullPolygonsRetained": 0,
+    "ownerOrAddressDataRetained": false,
+    "accountCredentialsOrPublicTokenValuesRetained": false
+  },
+  "assessment": "City bureau confirms a visual cadastral lookup, but its official link resolves to a generic government-services department list (HTTP 200, no cadastral/map text or viewer scripts) rather than the described electronic-map page. The notice publishes no vector endpoint. No anonymous polygon response was verified.",
+  "registryAssessment": "Official city notice documents visual lookup of city-area property natural conditions, rights status and cadastral maps; service entry is Wanshitong APP or Anhui Government Services Wuhu subsite electronic map. No open vector endpoint is published in the notice.",
+  "searchQueries": [
+    {
+      "language": "English",
+      "query": "Wuhu China official public cadastral parcel map GIS land registry WMS feature service",
+      "result": "English search found the Wuhu Natural Resources and Planning Bureau notice describing a city cadastral-map query service, but the official route is through Wanshitong / Anhui Government Services; no anonymous full-polygon service was identified.",
+      "urls": [
+        "https://zrzyhghj.wuhu.gov.cn/xwzx/tzgg/8600847.html",
+        "https://wh.ahzwfw.gov.cn/bog-bsdt/static/workProcess/departmentHoem.html?cityCode=340200000000&cityName=%E8%8A%9C%E6%B9%96%E5%B8%82&deptCode=34020010260000000000"
+      ],
+      "method": "Separate English web search; official notice opened and linked government-service route followed via the page link."
+    },
+    {
+      "language": "Simplified Chinese",
+      "query": "芜湖市 自然资源和规划局 地籍图 宗地图 不动产登记 查询 地图 GIS 官方",
+      "result": "芜湖市自然资源和规划局发布的不动产登记中心公告确认“芜湖市地籍图查询”可视化查询市区不动产自然状况、权利状态和地籍图；入口在皖事通或安徽政务服务网芜湖分厅电子地图。本人名下查询明确需注册、实名认证和刷脸；公告未说明地图服务是否匿名，也未公布矢量下载或服务接口。",
+      "urls": [
+        "https://zrzyhghj.wuhu.gov.cn/xwzx/tzgg/8600847.html",
+        "https://zrzyhghj.wuhu.gov.cn/xwzx/tzgg/8768547.html",
+        "https://wh.ahzwfw.gov.cn/bog-bsdt/static/workProcess/departmentHoem.html?cityCode=340200000000&cityName=%E8%8A%9C%E6%B9%96%E5%B8%82&deptCode=34020010260000000000"
+      ],
+      "method": "Separate Simplified Chinese search; opened the city bureau notice and followed its official government-service link (page request timed out)."
+    }
+  ],
+  "officialSources": [
+    {
+      "url": "https://zrzyhghj.wuhu.gov.cn/xwzx/tzgg/8600847.html",
+      "method": "GET via web reader",
+      "observation": "HTTP 200 official bureau notice; lines 76–78 describe the cadastral map lookup and government-service entry.",
+      "httpStatus": 200,
+      "contentType": "text/html"
+    },
+    {
+      "url": "https://wh.ahzwfw.gov.cn/bog-bsdt/static/workProcess/departmentHoem.html?cityCode=340200000000&cityName=%E8%8A%9C%E6%B9%96%E5%B8%82&deptCode=34020010260000000000",
+      "method": "GET via official page link",
+      "observation": "The bureau page link to Anhui government service timed out in the reader; no viewer HTML/JS or service route was obtained.",
+      "contentType": "unknown"
+    },
+    {
+      "url": "https://zrzyhghj.wuhu.gov.cn/openness/public/6596701/40037218.html",
+      "method": "GET via web search result",
+      "observation": "Official bureau page identifies the municipal registration center responsibilities including cadastral database and public query service.",
+      "httpStatus": 200,
+      "contentType": "text/html"
+    },
+    {
+      "url": "https://wh.ahzwfw.gov.cn/bog-bsdt/static/workProcess/departmentHoem.html?cityCode=340200000000&cityName=%E8%8A%9C%E6%B9%96%E5%B8%82&deptCode=34020010260000000000",
+      "method": "Direct anonymous GET with browser-like headers, followed official city-bureau link",
+      "httpStatus": 200,
+      "contentType": "text/html",
+      "observation": "Page title is a generic department list; page contains no cadastral/map terms or viewer scripts. It is not the advertised electronic-map viewer."
+    }
+  ],
+  "viewerAndServiceTrace": {
+    "attempted": true,
+    "summary": "City bureau confirms a visual cadastral lookup, but its official link resolves to a generic government-services department list (HTTP 200, no cadastral/map text or viewer scripts) rather than the described electronic-map page. The notice publishes no vector endpoint. No anonymous polygon response was verified.",
+    "fullPolygonLimit": 3,
+    "fullPolygonsRetained": 0,
+    "ownerOrAddressDataRequested": false,
+    "credentialsOrTokenValuesRetained": false
+  },
+  "geometryAttempt": {
+    "fullPolygonLimit": 3,
+    "fullPolygonsRetained": 0,
+    "ownerOrAddressDataRequested": false,
+    "outcome": "No full parcel polygon was verified; no geometry has been retained."
+  },
+  "remainingUncertainty": "Whether the electronic-map viewer permits anonymous access, what datasets it displays, and whether any full polygon export/API is available; no direct route was identified. The cited announcement states the “other property” cadastral query exists but does not specify access requirements.",
+  "nextStep": "Retry the official Wuhu government-service electronic map when reachable; inspect its public viewer assets and network calls before testing only a small geometry-only query."
+}

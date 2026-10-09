@@ -1,0 +1,112 @@
+{
+  "name": "Agadir",
+  "country": "Morocco",
+  "countryCode": "MA",
+  "rank": 602,
+  "point": [
+    30.3906326835215,
+    -9.53832005967082
+  ],
+  "population2025": 869990,
+  "populationUnit": "persons",
+  "population2025k": 869.99,
+  "populationPlausibility2025": "High",
+  "schemaVersion": 1,
+  "checkedAt": "2026-10-09",
+  "status": "complete",
+  "registryFound": true,
+  "registryBasis": "ANCFCC’s official regional service directory lists both the Land Registry (Conservation Foncière) and Cadastre offices at Agadir. ANCFCC describes its national cadastre mandate. Its plan request page asks for applicant identity/contact details and a specific land-title number and includes CAPTCHA/payment steps; no public anonymous point-based geometry route was verified.",
+  "registryEvidenceUrls": [
+    "https://www.ancfcc.gov.ma/ReseauBlocsFonciers/",
+    "https://www.ancfcc.gov.ma/arprésentation/réseau-des-blocs-fonciers/",
+    "https://www.ancfcc.gov.ma/cadastre/",
+    "https://www.ancfcc.gov.ma/Plancadastralpage",
+    "https://www.ancfcc.gov.ma/Content/carto/PLAN-CATALOGUE-2022.pdf",
+    "https://site.agadir.ma/"
+  ],
+  "publicParcelGeometryFound": false,
+  "verifiedSample": false,
+  "verifiedParcelResponse": {
+    "url": null,
+    "httpStatus": null,
+    "contentType": null,
+    "featureType": null,
+    "nativeCrs": null,
+    "responseCount": 0,
+    "responseNumberMatched": "not queried",
+    "requestLimit": 0,
+    "requestFilter": "No anonymous coordinate query was made. The public plan-request workflow requires applicant and parcel-title details.",
+    "requestedFields": [],
+    "safeFieldsRetained": [],
+    "featureIds": [],
+    "nativeParcelIdentifier": null,
+    "wupPointContained": false,
+    "sampleGeometryFile": null,
+    "sampleSha256": null,
+    "limitations": "No anonymous public parcel geometry or native parcel ID was retrieved."
+  },
+  "freshResearch": {
+    "queries": [
+      {
+        "language": "French",
+        "query": "Agadir cadastre parcelles cadastrales ANCFCC service local cartographie plan cadastral officiel",
+        "scope": "Locate official Agadir registry/cadastre services and assess anonymous parcel geometry availability.",
+        "result": "ANCFCC’s official service network lists both Conservation Foncière and Cadastre offices in Agadir. The cadastral-plan portal is a request workflow requiring applicant personal details, a land-title number, contact verification/CAPTCHA and payment; it is not an anonymous coordinate query. No public parcel feature geometry was verified.",
+        "actualResultUrls": [
+          "https://www.ancfcc.gov.ma/ReseauBlocsFonciers/",
+          "https://www.ancfcc.gov.ma/cadastre/",
+          "https://www.ancfcc.gov.ma/Plancadastralpage",
+          "https://www.ancfcc.gov.ma/Content/carto/PLAN-CATALOGUE-2022.pdf",
+          "https://site.agadir.ma/"
+        ],
+        "executionMethod": "Separate French-language search followed by review of ANCFCC and the Agadir municipal portal; no personal/title data or form submission."
+      },
+      {
+        "language": "Arabic",
+        "query": "أكادير المسح العقاري المحافظة العقارية مخطط cadastral خريطة قطع أرض رسمية ANCFCC",
+        "scope": "Locate official Agadir registry/cadastre services and assess anonymous parcel geometry availability.",
+        "result": "تعرض الشبكة الرسمية للوكالة ANCFCC مصلحة المحافظة العقارية ومصلحة المسح العقاري في أكادير. طلب المخطط العقاري عبر الإنترنت يتطلب بيانات مقدم الطلب ورقم الرسم العقاري ورقم هاتف ورمز تحقق وأداء، لذلك لا يمثل استعلامًا جغرافيًا مجهول الهوية. لم يتم التحقق من واجهة عامة لهندسة القطع.",
+        "actualResultUrls": [
+          "https://www.ancfcc.gov.ma/arprésentation/réseau-des-blocs-fonciers/",
+          "https://www.ancfcc.gov.ma/ar",
+          "https://www.ancfcc.gov.ma/cadastre/",
+          "https://www.ancfcc.gov.ma/Plancadastralpage",
+          "https://site.agadir.ma/"
+        ],
+        "executionMethod": "بحث منفصل باللغة العربية ومراجعة مصادر ANCFCC الرسمية وصفحة الجماعة؛ لم تُرسل بيانات شخصية أو رقم رسم ولم يُرسل أي نموذج."
+      }
+    ]
+  },
+  "scopeLimits": "The WUP settlement point is not a cadastral title number. ANCFCC’s Agadir branch confirms local registry/cadastre services, but the online plan request requires personal applicant data, a specific title number, phone verification/CAPTCHA and payment. No form was filled, legal terms accepted, title queried, or geometry requested.",
+  "pointBasis": "UN WUP 2025 population-weighted settlement centroid; this is not a municipal boundary or a parcel-coverage claim.",
+  "source": {
+    "sourceId": "MA-AGADIR-ANCFCC-LOCAL-CADASTRE",
+    "name": "ANCFCC Agadir Conservation Foncière and Cadastre offices",
+    "url": "https://www.ancfcc.gov.ma/ReseauBlocsFonciers/",
+    "operator": "Agence Nationale de la Conservation Foncière, du Cadastre et de la Cartographie (ANCFCC)",
+    "serviceType": "Official local property registration/cadastre offices; online plan ordering is title-specific and identity/payment-gated; anonymous public geometry not verified",
+    "layer": null,
+    "geometryType": null,
+    "outputCrs": null,
+    "nativeIdField": null,
+    "nativeIdEvidence": "No parcel feature response was queried; the official plan request requires an existing land-title number."
+  },
+  "wupCityCode": 659,
+  "cityId": "wup2025:659",
+  "queueRank": 602,
+  "sourceIds": [],
+  "adapterReady": false,
+  "runtimeReadiness": "not_enabled_no_verified_public_geometry",
+  "technicalBlocker": "No verified anonymous public parcel-vector query. The official ANCFCC plan service is a title-number-specific request form with personal details, CAPTCHA/phone confirmation and payment; the WUP point cannot identify a parcel.",
+  "remainingUncertainty": "Whether ANCFCC exposes a separate public map service for Agadir; none was identified from official sources reviewed.",
+  "coverageAssessment": {
+    "verifiedOpenScope": "No anonymous public parcel geometry verified.",
+    "citywideVerified": false,
+    "countrywideVerified": false
+  },
+  "centerLatLon": [
+    30.3906326835215,
+    -9.53832005967082
+  ],
+  "rootReviewedAt": "2026-10-09T02:05:58.056454+00:00"
+}

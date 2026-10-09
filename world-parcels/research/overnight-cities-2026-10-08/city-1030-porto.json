@@ -1,0 +1,116 @@
+{
+  "name": "Porto",
+  "country": "Portugal",
+  "countryCode": "PT",
+  "rank": 521,
+  "point": [
+    41.1587792348487,
+    -8.60200361644315
+  ],
+  "population2025": 990433,
+  "schemaVersion": 1,
+  "kind": "city_parcel_source_research",
+  "checkedAt": "2026-10-09",
+  "populationUnit": "persons",
+  "status": "complete",
+  "verifiedSample": false,
+  "publicParcelGeometryFound": false,
+  "runtimeReadiness": "not_enabled_no_verified_public_geometry",
+  "priorEvidenceFiles": [],
+  "scopeLimits": "DGT advertises a Portugal-wide WGS84 envelope but its official data description limits cadastral coverage to recorded operations: legacy CGPR predominantly south of the Tagus and CPE in seven municipalities (not Porto). Five bounded 1 km² WFS queries around the WUP point returned zero. The city historical map covers the historic core using 1892 cartography; SICadPorto inventories municipal-owned assets only. None is a verified current citywide parcel source. The WUP locator is a settlement centroid, not a parcel or boundary. No owner/address data retained.",
+  "pointBasis": "UN WUP 2025 population-weighted settlement centroid; this is not a municipal boundary or a parcel-coverage claim.",
+  "registryFound": true,
+  "registryBasis": "The official IRN directory lists the Porto Land Registry and property-related registry services. The separate DGT national cadastral WFS has limited actual coverage: its official coverage note says legacy CGPR is predominantly south of the Tagus and CPE was limited to seven named municipalities, not Porto. No citywide geometry is inferred from the WFS service envelope.",
+  "resultCategory": "local_property_registry_exists_no_feature_at_wup_point",
+  "research": {
+    "executedQueries": [
+      {
+        "language": "English",
+        "query": "Porto Portugal official cadastral parcel map WFS land registry Porto DGT",
+        "scope": "Find city-local land registry/map evidence and public full-polygon parcel geometry.",
+        "result": "Official DGT cadastral WFS and Porto Land Registry directory found. Schema was inspected before a 20 m WUP-centered feature query; it returned zero features.",
+        "actualResultUrls": [
+          "https://irn.justica.gov.pt/Contactos-do-Registo/-Registo-Predial-de-Porto",
+          "https://www.dgterritorio.gov.pt/atividades/cadastro",
+          "https://snicws.dgterritorio.gov.pt/geoserver/inspire/ows?service=WFS&request=GetCapabilities&version=2.0.0"
+        ],
+        "executionMethod": "Separate native-language or English public search followed by official-source, public map/service and client inspection."
+      },
+      {
+        "language": "Portuguese",
+        "query": "Porto cadastro predial carta cadastral parcelas Conservatória do Registo Predial Porto oficial",
+        "scope": "Find city-local land registry/map evidence and public full-polygon parcel geometry.",
+        "result": "DGT identifies the national cadastral service and WFS; IRN lists Porto Land Registry. The bounded WFS query at the WUP point had HTTP 200 and 0 features.",
+        "actualResultUrls": [
+          "https://irn.justica.gov.pt/Contactos-do-Registo/-Registo-Predial-de-Porto",
+          "https://www.dgterritorio.gov.pt/atividades/cadastro",
+          "https://snicws.dgterritorio.gov.pt/geoserver/inspire/ows?service=WFS&request=GetCapabilities&version=2.0.0"
+        ],
+        "executionMethod": "Separate native-language or English public search followed by official-source, public map/service and client inspection."
+      }
+    ],
+    "officialSources": [
+      {
+        "url": "https://irn.justica.gov.pt/Contactos-do-Registo/-Registo-Predial-de-Porto",
+        "observation": "Official Portuguese Institute of Registries and Notaries lists the Porto Land Registry and property-related registry services."
+      },
+      {
+        "url": "https://www.dgterritorio.gov.pt/atividades/cadastro",
+        "observation": "Official DGT describes the national cadastral map and public viewer; coverage is limited to cadastral-operation areas, not asserted citywide."
+      },
+      {
+        "url": "https://snicws.dgterritorio.gov.pt/geoserver/inspire/ows?service=WFS&request=GetCapabilities&version=2.0.0",
+        "httpStatus": 200,
+        "observation": "Official INSPIRE WFS capabilities expose inspire:cadastralparcel. DescribeFeatureType exposed geometry, inspireid and nationalcadastralreference fields; no owner/address fields in schema."
+      },
+      {
+        "url": "https://www.cm-porto.pt/cartas-historicas-interativas-do-porto/cartas-historicas-interativas-do-porto",
+        "observation": "Official municipal historical map is based on the 1892 Teles Ferreira plan and initially covers the built historic core. It is a historical cartography viewer, not a current general cadastral parcel service. Its linked ArcGIS application returned HTTP 500 on direct GET during inspection."
+      },
+      {
+        "url": "https://www.cm-porto.pt/patrimonio/mipweb-sicadporto-sistema-de-inventario-dos-imoveis-municipais",
+        "observation": "Official municipal SICadPorto page describes a georeferenced inventory of municipal real estate (8,186 of 8,223 municipal asset records georeferenced as of Aug 2021), not a general citywide parcel cadastre. Linked public ArcGIS viewer returned HTTP 500 on direct GET."
+      }
+    ],
+    "viewerAndServiceTrace": {
+      "viewerUrl": "https://snic.dgterritorio.gov.pt/visualizadorCadastro",
+      "apiBase": "https://snicws.dgterritorio.gov.pt/geoserver/inspire/ows",
+      "observedClientRoutes": [
+        "WFS GetCapabilities",
+        "WFS DescribeFeatureType",
+        "WFS GetFeature"
+      ],
+      "notes": "Capabilities advertise default CRS urn:ogc:def:crs:EPSG::3763 (PT-TM06/ETRS89, easting/northing) and WGS84 bounding envelope [-9.6711423,36.9343887,-6.0389093,42.1761204]. DescribeFeatureType confirmed safe fields inspireid, geometry, nationalcadastralreference (plus other non-owner fields); queries requested only these three fields. The broad WFS envelope is not evidence of city coverage: DGT official coverage notes identify legacy CGPR predominantly south of the Tagus and CPE in seven listed municipalities, not Porto. Five 1 km² native CRS neighborhood queries (center and four adjacent cells) returned 0 features each. Municipal candidate pages document a historical 1892 core-area map and SICadPorto municipal-asset inventory; both linked ArcGIS apps returned direct HTTP 500."
+    }
+  },
+  "verifiedParcelResponse": null,
+  "source": {
+    "id": "PT-DGT-INSPIRE-CADASTRALPARCEL",
+    "name": "DGT Carta Cadastral INSPIRE WFS",
+    "url": "https://snicws.dgterritorio.gov.pt/geoserver/inspire/ows?service=WFS&request=GetCapabilities&version=2.0.0",
+    "operator": "Direção-Geral do Território",
+    "type": "Public national INSPIRE cadastral parcel WFS",
+    "layer": "inspire:cadastralparcel",
+    "geometryType": "MultiSurface",
+    "outputCrs": "EPSG:4326",
+    "nativeIdField": "nationalcadastralreference",
+    "nativeIdEvidence": "Official DescribeFeatureType identifies nationalcadastralreference; no feature at the WUP point to inspect."
+  },
+  "wupCityCode": 1030,
+  "cityId": "wup2025:1030",
+  "queueRank": 521,
+  "populationPlausibility2025": "High",
+  "centerLatLon": [
+    41.1587792348487,
+    -8.60200361644315
+  ],
+  "sourceIds": [],
+  "adapterReady": false,
+  "technicalBlocker": "Official DGT metadata indicates that the national WFS does not provide general Porto parcel coverage: CGPR is predominantly south of the Tagus, and CPE coverage is limited to seven named municipalities that exclude Porto. The service advertises a broader envelope, but five small native-CRS 1 km² neighborhood queries around the WUP point (each count=3, geometry and two safe identifier fields only) returned zero. Porto municipal map candidates are historic 1892 cartography and an inventory of municipal-owned assets, not citywide current cadastre.",
+  "remainingUncertainty": "Whether Porto maintains a separate current citywide parcel vector dataset not documented on the inspected municipal portals; none was found. The DGT WFS query only tests five bounded neighborhoods, not every Porto parcel.",
+  "registryEvidenceUrls": [
+    "https://irn.justica.gov.pt/Contactos-do-Registo/-Registo-Predial-de-Porto",
+    "https://www.dgterritorio.gov.pt/atividades/cadastro"
+  ],
+  "rootReviewedAt": "2026-10-09T01:19:13.626142+00:00"
+}

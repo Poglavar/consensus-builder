@@ -1,0 +1,78 @@
+{
+  "schemaVersion": "1.0",
+  "checkedAt": "2026-10-09",
+  "cityRecord": "city-1316-seeb.json",
+  "purpose": "Read-only local registry and parcel-service discovery; no runtime or global changes.",
+  "scopeLimits": {
+    "maxFullPolygonsRetainedInThisCityReport": 0,
+    "maxFullPolygonsRetainedAcrossCityReview": 0,
+    "ownerOrAddressDataRetained": false,
+    "accountCredentialsOrPublicTokenValuesRetained": false
+  },
+  "assessment": "Official Ministry site lists land and real-estate registry services and identifies Sultan Haitham City in Wilayat Seeb. The public geoportal layer metadata returned HTTP 403; because fields and safe native key could not be verified, no plot feature request was made. The SeebContract map’s relationship to current legal cadastral parcels is not established.",
+  "searchQueries": [
+    {
+      "language": "English",
+      "query": "Seeb Oman official cadastral land registry plot map GIS public parcels",
+      "result": "The Ministry of Housing and Urban Planning provides national land and real-estate services. Its official geoportal indexes a SeebContract_MIL1 map service with a polygon layer named MUSCAT.Plots. The service root metadata was reachable, but the layer-metadata request returned HTTP 403, preventing safe field/schema review; no feature query was made.",
+      "method": "Separate language-specific search and official source/service review; no property-specific lookup."
+    },
+    {
+      "language": "Arabic",
+      "query": "السيب عمان خريطة قطع أراضي سجل عقاري نظام معلومات جغرافية رسمي",
+      "result": "تقدم وزارة الإسكان والتخطيط العمراني خدمات الأراضي والتسجيل العقاري على المستوى الوطني. وتعرض بيانات البوابة الجغرافية الرسمية خدمة SeebContract_MIL1 وطبقة مضلعات باسم MUSCAT.Plots؛ نجح طلب بيانات الخدمة الرئيسية، لكن طلب بيانات الطبقة أعاد HTTP 403، لذلك لم يمكن التحقق من الحقول بأمان ولم يُجر طلب معالم.",
+      "method": "Separate language-specific search and official source/service review; no property-specific lookup."
+    }
+  ],
+  "officialPrimarySources": [
+    {
+      "url": "https://mohup.gov.om/",
+      "observation": "Official Ministry site lists land and real-estate registry services and identifies Sultan Haitham City in Wilayat Seeb."
+    },
+    {
+      "url": "https://geoportal.mm.gov.om/server/rest/services/SeebContract_MIL1/MapServer?f=pjson",
+      "observation": "Official geoportal service metadata lists polygon layer MUSCAT.Plots and spatial reference EPSG:32640; it does not provide a reviewed safe field schema."
+    },
+    {
+      "url": "https://geoportal.mm.gov.om/server/rest/services/SeebContract_MIL1/MapServer/11?f=pjson",
+      "observation": "Layer-metadata request through the public research tool returned HTTP 403; no query or feature data requested."
+    },
+    {
+      "url": "https://gov.om/w/get-cadastral-drawing",
+      "observation": "Gov.om describes the cadastral-drawing application service for land."
+    }
+  ],
+  "attempts": [
+    {
+      "source": "https://mohup.gov.om/",
+      "outcome": "Official Ministry site lists land and real-estate registry services and identifies Sultan Haitham City in Wilayat Seeb.",
+      "fieldsRequested": [],
+      "sensitiveFieldsRequested": false
+    },
+    {
+      "source": "https://geoportal.mm.gov.om/server/rest/services/SeebContract_MIL1/MapServer?f=pjson",
+      "outcome": "Official geoportal service metadata lists polygon layer MUSCAT.Plots and spatial reference EPSG:32640; it does not provide a reviewed safe field schema.",
+      "fieldsRequested": [],
+      "sensitiveFieldsRequested": false
+    },
+    {
+      "source": "https://geoportal.mm.gov.om/server/rest/services/SeebContract_MIL1/MapServer/11?f=pjson",
+      "outcome": "Layer-metadata request through the public research tool returned HTTP 403; no query or feature data requested.",
+      "fieldsRequested": [],
+      "sensitiveFieldsRequested": false
+    },
+    {
+      "source": "https://gov.om/w/get-cadastral-drawing",
+      "outcome": "Gov.om describes the cadastral-drawing application service for land.",
+      "fieldsRequested": [],
+      "sensitiveFieldsRequested": false
+    }
+  ],
+  "geometryDecision": "No geometry retained; no public parcel feature response with a verified safe native identifier and complete geometry was obtained.",
+  "remainingUncertainty": "Whether this Seeb planning/contract plot layer is a legally authoritative cadastral source, and whether a public safe-key schema can be accessed, remains unknown.",
+  "runtimeAssessment": {
+    "status": "not_assessed",
+    "reason": "No runtime adapter or contract test was performed."
+  },
+  "technicalBlocker": "The public geoportal layer metadata returned HTTP 403; because fields and safe native key could not be verified, no plot feature request was made. The SeebContract map’s relationship to current legal cadastral parcels is not established."
+}

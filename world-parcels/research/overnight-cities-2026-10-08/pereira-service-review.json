@@ -1,0 +1,82 @@
+{
+  "schemaVersion": "1.0",
+  "checkedAt": "2026-10-09",
+  "cityRecord": "city-2066-pereira.json",
+  "purpose": "Document first-party local registry/map evidence and bounded anonymous geometry access review.",
+  "scopeLimits": {
+    "maxFullPolygonsRetainedInCityRecord": 0,
+    "maxFullPolygonsRetainedInReview": 0,
+    "maxFullPolygonsRetainedInRepository": 3,
+    "ownerOrAddressDataRetained": false,
+    "credentialsOrTokenValuesRetained": false,
+    "citywideCompletenessAsserted": false
+  },
+  "assessment": "Official local publications identify AMCO as cadastral manager; public ArcGIS metadata returned HTTP 200, Polygon, EPSG:9377, safe OBJECTID. Bounded query around the unchanged WUP locator returned HTTP 200 and three polygons, with only OBJECTID requested. Dataset title is Terreno Catastro AMCO; interpretation is physical/ground cadastral geometry only.",
+  "registryAssessment": "Pereira’s official publications identify AMCO as the gestor catastral for the municipality. The official SIGPER web map references an AMCO terrain-cadastre layer; a public FeatureServer serves polygon geometry. Bounded response is labeled Terreno and is treated only as a physical ground/terrain cadastral unit, not a legal property-right, title or ownership register.",
+  "officialPrimarySources": [
+    {
+      "url": "https://www.pereira.gov.co/publicaciones/6700/catastro-multiproposito-reanuda-la-atencion-al-publico/",
+      "observation": "Pereira’s official publications identify AMCO as the gestor catastral for the municipality. The official SIGPER web map references an AMCO terrain-cadastre layer; a public FeatureServer serves polygon geometry. Bounded response is labeled Terreno and is treated only as a physical ground/terrain cadastral unit, not a legal property-right, title or ownership register."
+    },
+    {
+      "url": "https://www.pereira.gov.co/publicaciones/5721/autoridad-catastral-avala-procesos-del-amco/",
+      "observation": "Pereira’s official publications identify AMCO as the gestor catastral for the municipality. The official SIGPER web map references an AMCO terrain-cadastre layer; a public FeatureServer serves polygon geometry. Bounded response is labeled Terreno and is treated only as a physical ground/terrain cadastral unit, not a legal property-right, title or ownership register."
+    },
+    {
+      "url": "https://www.igac.gov.co/index.php/catastro-multiproposito/catastro-multiproposito",
+      "observation": "Pereira’s official publications identify AMCO as the gestor catastral for the municipality. The official SIGPER web map references an AMCO terrain-cadastre layer; a public FeatureServer serves polygon geometry. Bounded response is labeled Terreno and is treated only as a physical ground/terrain cadastral unit, not a legal property-right, title or ownership register."
+    },
+    {
+      "url": "https://www.arcgis.com/home/item.html?id=c32ced1ac5804240b69a835aec82e34c",
+      "observation": "Pereira’s official publications identify AMCO as the gestor catastral for the municipality. The official SIGPER web map references an AMCO terrain-cadastre layer; a public FeatureServer serves polygon geometry. Bounded response is labeled Terreno and is treated only as a physical ground/terrain cadastral unit, not a legal property-right, title or ownership register."
+    },
+    {
+      "url": "https://services3.arcgis.com/Zdpg0E6lri7EggIc/arcgis/rest/services/Terreno_Catastro__AMCO___09052025_/FeatureServer/0",
+      "observation": "Pereira’s official publications identify AMCO as the gestor catastral for the municipality. The official SIGPER web map references an AMCO terrain-cadastre layer; a public FeatureServer serves polygon geometry. Bounded response is labeled Terreno and is treated only as a physical ground/terrain cadastral unit, not a legal property-right, title or ownership register."
+    }
+  ],
+  "searchQueries": [
+    {
+      "language": "English",
+      "query": "Pereira Colombia official cadastral manager AMCO SIGPER cadastral map terrain geometry",
+      "result": "Official city sources identify AMCO cadastral management; municipal webmap and public feature metadata identify a terrain-cadastre polygon layer.",
+      "method": "English-language search and official-source review.",
+      "scope": "Identify current city-specific registry and safe public parcel geometry."
+    },
+    {
+      "language": "Spanish",
+      "query": "Pereira catastro multipropósito AMCO gestor catastral mapa SIGPER terreno geográfico oficial",
+      "result": "Las fuentes oficiales municipales identifican a AMCO como gestor catastral; el mapa SIGPER y la capa pública exponen polígonos de terreno, no derechos de propiedad.",
+      "method": "Local-language search and official-source review.",
+      "scope": "Identify current city-specific registry and safe public parcel geometry."
+    }
+  ],
+  "geometryDecision": "Retained 3 geometry-only polygon(s) with safe GIS OBJECTID.",
+  "coverageAssessment": {
+    "claimedScope": "Pereira’s official publications identify AMCO as the gestor catastral for the municipality. The official SIGPER web map references an AMCO terrain-cadastre layer; a public FeatureServer serves polygon geometry. Bounded response is labeled Terreno and is treated only as a physical ground/terrain cadastral unit, not a legal property-right, title or ownership register.",
+    "verifiedOpenScope": "Bounded geometry response only; no citywide completeness claim.",
+    "citywideVerified": false,
+    "countrywideVerified": false,
+    "geometryVerified": true
+  },
+  "attempts": [
+    {
+      "kind": "layer-metadata",
+      "url": "https://services3.arcgis.com/Zdpg0E6lri7EggIc/arcgis/rest/services/Terreno_Catastro__AMCO___09052025_/FeatureServer/0?f=json",
+      "httpStatus": 200,
+      "result": "Polygon layer, EPSG:9377, safe OBJECTID; feature values were not retrieved during schema review."
+    },
+    {
+      "kind": "bounded-geometry-query",
+      "bbox4326": [
+        -75.702,
+        4.8127,
+        -75.7002,
+        4.8145
+      ],
+      "httpStatus": 200,
+      "result": "3 polygon features; request allowlisted OBJECTID and geometry only; retained only OBJECTID and geometry."
+    }
+  ],
+  "remainingUncertainty": "Citywide completeness, current geometry version, and the relationship between the physical terrain units and legal registered units remain unresolved."
+}

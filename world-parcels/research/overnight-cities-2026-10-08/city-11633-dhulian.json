@@ -1,0 +1,110 @@
+{
+  "name": "Dhulian",
+  "country": "India",
+  "countryCode": "IN",
+  "rank": 287,
+  "point": [
+    24.5986770210172,
+    88.0305880437377
+  ],
+  "population2025": 1699325,
+  "schemaVersion": 1,
+  "kind": "city_parcel_source_research",
+  "checkedAt": "2026-10-09",
+  "populationUnit": "persons",
+  "status": "complete",
+  "verifiedSample": false,
+  "publicParcelGeometryFound": false,
+  "runtimeReadiness": "not_enabled_no_verified_public_geometry",
+  "priorEvidenceFiles": [],
+  "scopeLimits": "The WUP locator is a settlement centroid. State land-record services and a local municipal boundary map do not prove parcel-registry coverage at this coordinate. Banglarbhumi’s map actions require sign-in and UD&MA property lookup requires OTP registration; no login, OTP, or gated query was attempted. No public geometry/service trace or parcel geometry was found.",
+  "pointBasis": "UN WUP 2025 population-weighted settlement centroid; this is not a municipal boundary or a parcel-coverage claim.",
+  "registryFound": null,
+  "registryBasis": "West Bengal’s official Banglarbhumi portal exposes mouza-map and plot-map services, and the state urban property workflow selects district/block/mouza and uses land/registration databases. However, no Dhulian-specific mouza/map availability result, exact point-to-mouza match or local parcel registry response was obtained. The Dhulian municipal map found is an administrative map, not a cadastre.",
+  "resultCategory": "state_land_record_services_city_coverage_unverified",
+  "research": {
+    "executedQueries": [
+      {
+        "language": "English",
+        "query": "Dhulian official cadastral map land records Murshidabad Banglarbhumi mouza map West Bengal",
+        "scope": "Find actual city-specific cadastral/land-record sources and public parcel geometry.",
+        "result": "Official West Bengal portals advertise mouza and plot map services, and the Urban Development and Municipal Affairs workflow describes plot/khatian lookup. No Dhulian-specific mouza availability or parcel response was verified.",
+        "actualResultUrls": [
+          "https://banglarbhumi.gov.in/",
+          "https://udma.wb.gov.in/page/cms/know_your_property_procedure_a353e3",
+          "https://udma.wb.gov.in/public/uploads/file_doc/56-spelcommr.pdf",
+          "https://dhuliyanmunicipality.org/"
+        ],
+        "executionMethod": "Separate web search in the stated language followed by official-source and public viewer/service inspection."
+      },
+      {
+        "language": "Bengali",
+        "query": "ধুলিয়ান মুর্শিদাবাদ সরকারি মৌজা মানচিত্র জমির রেকর্ড বাংলার ভূমি",
+        "scope": "Find actual city-specific cadastral/land-record sources and public parcel geometry.",
+        "result": "Official state sources describe statewide land-record map workflows; local Dhulian map evidence is administrative municipal mapping only. The exact city mouza/parcel coverage remains unverified.",
+        "actualResultUrls": [
+          "https://banglarbhumi.gov.in/",
+          "https://udma.wb.gov.in/page/cms/know_your_property_procedure_a353e3",
+          "https://udma.wb.gov.in/public/uploads/file_doc/56-spelcommr.pdf",
+          "https://dhuliyanmunicipality.org/"
+        ],
+        "executionMethod": "Separate web search in the stated language followed by official-source and public viewer/service inspection."
+      }
+    ],
+    "officialSources": [
+      {
+        "url": "https://banglarbhumi.gov.in/",
+        "observation": "Official West Bengal land-record portal lists Mouza Map Request, Mouza Map Availability Details, RS-LR plot information and plot-map request; citizen actions prompt sign-in."
+      },
+      {
+        "url": "https://udma.wb.gov.in/page/cms/know_your_property_procedure_a353e3",
+        "observation": "Official state urban property procedure describes OTP registration and selection by district, block and mouza, then plot/khatian; it states linkage to Land & Land Reforms and Registration databases. No Dhulian-specific availability result was obtained."
+      },
+      {
+        "url": "https://udma.wb.gov.in/public/uploads/file_doc/56-spelcommr.pdf",
+        "observation": "Official state urban-development PDF includes a Dhuliyan Municipality map; it is an urban/administrative map, not parcel geometry."
+      },
+      {
+        "url": "https://dhuliyanmunicipality.org/",
+        "observation": "Municipal site describes the local body and wards; it does not expose cadastral records or a parcel map."
+      }
+    ],
+    "viewerAndServiceTrace": {
+      "viewerUrl": "https://banglarbhumi.gov.in/",
+      "apiBase": null,
+      "observedClientRoutes": [],
+      "notes": "The official portal lists mouza and plot-map functions but directs users to sign in. The UD&MA property procedure requires OTP registration. A normal public GET to the Banglarbhumi home action timed out; no authenticated steps were attempted, and no anonymous map/service endpoint was identified."
+    }
+  },
+  "verifiedParcelResponse": null,
+  "source": {
+    "sourceId": "IN-WB-DHULIAN-LAND-RECORD-CANDIDATE",
+    "name": "West Bengal Banglarbhumi and UD&MA property lookup (local coverage unconfirmed)",
+    "url": "https://banglarbhumi.gov.in/",
+    "operator": "Land & Land Reforms and Refugee Relief & Rehabilitation Department, Government of West Bengal",
+    "serviceType": "Statewide land-record and mouza-map services; no Dhulian-specific registry/map match or public parcel geometry verified.",
+    "layer": null,
+    "geometryType": null,
+    "outputCrs": null,
+    "nativeIdField": null,
+    "nativeIdEvidence": "No Dhulian mouza identifier or parcel identifier was resolved."
+  },
+  "wupCityCode": 11633,
+  "cityId": "wup2025:11633",
+  "queueRank": 287,
+  "populationPlausibility2025": "High",
+  "centerLatLon": [
+    24.5986770210172,
+    88.0305880437377
+  ],
+  "sourceIds": [],
+  "adapterReady": false,
+  "technicalBlocker": "The WUP locator is a settlement centroid. State land-record services and a local municipal boundary map do not prove parcel-registry coverage at this coordinate. Banglarbhumi’s map actions require sign-in and UD&MA property lookup requires OTP registration; no login, OTP, or gated query was attempted. No public geometry/service trace or parcel geometry was found.",
+  "remainingUncertainty": "Whether a different current anonymous full-polygon service exists in this city; none was verified in the inspected sources.",
+  "coverageAssessment": {
+    "verifiedOpenScope": "The WUP locator is a settlement centroid. State land-record services and a local municipal boundary map do not prove parcel-registry coverage at this coordinate. Banglarbhumi’s map actions require sign-in and UD&MA property lookup requires OTP registration; no login, OTP, or gated query was attempted. No public geometry/service trace or parcel geometry was found.",
+    "citywideVerified": false,
+    "countrywideVerified": false
+  },
+  "rootReviewedAt": "2026-10-08T21:54:55.714575+00:00"
+}

@@ -1,0 +1,189 @@
+{
+  "schemaVersion": "1.0",
+  "checkedAt": "2026-10-09",
+  "cityRecord": "city-1668-zurich.json",
+  "purpose": "Document first-party local registry/map evidence and schema-first anonymous geometry review.",
+  "scopeLimits": {
+    "maxFullPolygonsRetainedInCityRecord": 0,
+    "maxFullPolygonsRetainedInReview": 0,
+    "maxFullPolygonsRetainedInRepository": 0,
+    "ownerOrAddressDataRetained": false,
+    "credentialsOrTokenValuesRetained": false,
+    "citywideCompletenessAsserted": false
+  },
+  "assessment": "The City of Zürich publishes official cadastral-survey open data and the Canton of Zürich provides a machine-readable AV WFS. GetCapabilities and DescribeFeatureType confirm the `ms:liegenschaften_f` parcel layer with MultiSurface geometry and safe cadastral keys `nbident`, `nummer`, and `egris_egrid`; unstable system object IDs and unrelated fields were excluded. Exact-point and bounded surrounding WFS queries returned no features, so parcel geometry at the ranked locator is not verified. The official WFS and parcel-layer schema are public and safe fields are known. Exact point, earlier small boxes, a native EPSG:2056 ±100 m box and a standard EPSG:4326 (latitude,longitude) ±100 m box all returned HTTP 200 empty FeatureCollections; no polygon was available to retain at the locator.",
+  "registryAssessment": "The City of Zürich publishes official cadastral-survey open data and the Canton of Zürich provides a machine-readable AV WFS. GetCapabilities and DescribeFeatureType confirm the `ms:liegenschaften_f` parcel layer with MultiSurface geometry and safe cadastral keys `nbident`, `nummer`, and `egris_egrid`; unstable system object IDs and unrelated fields were excluded. Exact-point and bounded surrounding WFS queries returned no features, so parcel geometry at the ranked locator is not verified.",
+  "officialPrimarySources": [
+    {
+      "url": "https://www.stadt-zuerich.ch/geodaten/download/Amtliche_Vermessung_Stadt_Zuerich",
+      "observation": "Official WFS schema and layer advertised extent were reviewed; the WUP point is within the advertised WGS84 bounding box. A federal transform yielded LV95 EPSG:2056 E=2682900.8094122503, N=1248481.086045864. Exact and bounded safe-key requests in native EPSG:2056 and official-axis EPSG:4326 returned HTTP 200 with zero features. No geometry is retained; no citywide completeness claim."
+    },
+    {
+      "url": "https://maps.zh.ch/wfs/AVZHWFS",
+      "observation": "Official WFS schema and layer advertised extent were reviewed; the WUP point is within the advertised WGS84 bounding box. A federal transform yielded LV95 EPSG:2056 E=2682900.8094122503, N=1248481.086045864. Exact and bounded safe-key requests in native EPSG:2056 and official-axis EPSG:4326 returned HTTP 200 with zero features. No geometry is retained; no citywide completeness claim."
+    },
+    {
+      "url": "https://www.geocat.ch/geonetwork/srv/api/records/ad78b0f8-dc57-4813-97e3-8be2409cd5aa",
+      "observation": "Official WFS schema and layer advertised extent were reviewed; the WUP point is within the advertised WGS84 bounding box. A federal transform yielded LV95 EPSG:2056 E=2682900.8094122503, N=1248481.086045864. Exact and bounded safe-key requests in native EPSG:2056 and official-axis EPSG:4326 returned HTTP 200 with zero features. No geometry is retained; no citywide completeness claim."
+    },
+    {
+      "url": "https://geodesy.geo.admin.ch/reframe/wgs84tolv95?easting=8.53646620813248&northing=47.3819463819352&format=json",
+      "observation": "Official WFS schema and layer advertised extent were reviewed; the WUP point is within the advertised WGS84 bounding box. A federal transform yielded LV95 EPSG:2056 E=2682900.8094122503, N=1248481.086045864. Exact and bounded safe-key requests in native EPSG:2056 and official-axis EPSG:4326 returned HTTP 200 with zero features. No geometry is retained; no citywide completeness claim."
+    }
+  ],
+  "searchQueries": [
+    {
+      "language": "English",
+      "query": "Zurich official cadastral survey parcels WFS Grundstücke Liegenschaften GIS open data",
+      "result": "Official WFS schema and layer advertised extent were reviewed; the WUP point is within the advertised WGS84 bounding box. A federal transform yielded LV95 EPSG:2056 E=2682900.8094122503, N=1248481.086045864. Exact and bounded safe-key requests in native EPSG:2056 and official-axis EPSG:4326 returned HTTP 200 with zero features. No geometry is retained; no citywide completeness claim.",
+      "method": "Separate English-language search and official-source review."
+    },
+    {
+      "language": "German",
+      "query": "Zürich amtliche Vermessung Liegenschaften Grundstücke WFS Parzellen GIS Open Data",
+      "result": "Official WFS schema and layer advertised extent were reviewed; the WUP point is within the advertised WGS84 bounding box. A federal transform yielded LV95 EPSG:2056 E=2682900.8094122503, N=1248481.086045864. Exact and bounded safe-key requests in native EPSG:2056 and official-axis EPSG:4326 returned HTTP 200 with zero features. No geometry is retained; no citywide completeness claim.",
+      "method": "Separate German-language search and official-source review."
+    }
+  ],
+  "geometryDecision": "No parcel geometry retained; safe-key spatial feature queries returned empty collections at the ranked point and within bounded adjacent square extents.",
+  "coverageAssessment": {
+    "claimedScope": "The City of Zürich publishes official cadastral-survey open data and the Canton of Zürich provides a machine-readable AV WFS. GetCapabilities and DescribeFeatureType confirm the `ms:liegenschaften_f` parcel layer with MultiSurface geometry and safe cadastral keys `nbident`, `nummer`, and `egris_egrid`; unstable system object IDs and unrelated fields were excluded. Exact-point and bounded surrounding WFS queries returned no features, so parcel geometry at the ranked locator is not verified.",
+    "verifiedOpenScope": "Official WFS schema and layer advertised extent were reviewed; the WUP point is within the advertised WGS84 bounding box. A federal transform yielded LV95 EPSG:2056 E=2682900.8094122503, N=1248481.086045864. Exact and bounded safe-key requests in native EPSG:2056 and official-axis EPSG:4326 returned HTTP 200 with zero features. No geometry is retained; no citywide completeness claim.",
+    "citywideVerified": false,
+    "countrywideVerified": false
+  },
+  "attempts": [
+    {
+      "source": "https://maps.zh.ch/wfs/AVZHWFS (GetCapabilities; WFS 2.0.0)",
+      "outcome": "HTTP 200; official public WFS capabilities inspected.",
+      "fieldsRequested": [],
+      "sensitiveFieldsRequested": false
+    },
+    {
+      "source": "https://maps.zh.ch/wfs/AVZHWFS (DescribeFeatureType; ms:liegenschaften_f)",
+      "outcome": "HTTP 200; parcel MultiSurface schema inspected; safe fields nbident, nummer, egris_egrid; excluded system IDs geodb_oid, objectid, objid.",
+      "fieldsRequested": [
+        "nbident",
+        "nummer",
+        "egris_egrid"
+      ],
+      "sensitiveFieldsRequested": false
+    },
+    {
+      "source": "https://maps.zh.ch/wfs/AVZHWFS (GetFeature; WUP point Intersects, EPSG:4326, safe keys only, max 3)",
+      "outcome": "HTTP 200; empty FeatureCollection.",
+      "fieldsRequested": [
+        "nbident",
+        "nummer",
+        "egris_egrid",
+        "geometry"
+      ],
+      "sensitiveFieldsRequested": false
+    },
+    {
+      "source": "https://maps.zh.ch/wfs/AVZHWFS (GetFeature; BBOX ±25 m, EPSG:2056, safe keys only, max 3)",
+      "outcome": "HTTP 200; empty FeatureCollection.",
+      "fieldsRequested": [
+        "nbident",
+        "nummer",
+        "egris_egrid",
+        "geometry"
+      ],
+      "sensitiveFieldsRequested": false
+    },
+    {
+      "source": "https://maps.zh.ch/wfs/AVZHWFS (GetFeature; BBOX ±50 m, EPSG:2056, safe keys only, max 3)",
+      "outcome": "HTTP 200; empty FeatureCollection.",
+      "fieldsRequested": [
+        "nbident",
+        "nummer",
+        "egris_egrid",
+        "geometry"
+      ],
+      "sensitiveFieldsRequested": false
+    },
+    {
+      "source": "https://maps.zh.ch/wfs/AVZHWFS (GetFeature; BBOX ±100 m in native EPSG:2056, E/N axis; safe keys and geometry, count=3)",
+      "requestUrl": "https://maps.zh.ch/wfs/AVZHWFS?service=WFS&version=2.0.0&request=GetFeature&typenames=ms%3Aliegenschaften_f&count=3&outputformat=application%2Fjson%3B+subtype%3Dgeojson&srsname=urn%3Aogc%3Adef%3Acrs%3AEPSG%3A%3A4326&propertyname=nbident%2Cnummer%2Cegris_egrid&filter=%3Cfes%3AFilter+xmlns%3Afes%3D%22http%3A%2F%2Fwww.opengis.net%2Ffes%2F2.0%22+xmlns%3Agml%3D%22http%3A%2F%2Fwww.opengis.net%2Fgml%2F3.2%22%3E%3Cfes%3ABBOX%3E%3Cfes%3AValueReference%3Egeometry%3C%2Ffes%3AValueReference%3E%3Cgml%3AEnvelope+srsName%3D%22urn%3Aogc%3Adef%3Acrs%3AEPSG%3A%3A2056%22%3E%3Cgml%3AlowerCorner%3E2682800.8094122503+1248381.086045864%3C%2Fgml%3AlowerCorner%3E%3Cgml%3AupperCorner%3E2683000.8094122503+1248581.086045864%3C%2Fgml%3AupperCorner%3E%3C%2Fgml%3AEnvelope%3E%3C%2Ffes%3ABBOX%3E%3C%2Ffes%3AFilter%3E",
+      "httpStatus": 200,
+      "featureCount": 0,
+      "outcome": "HTTP 200 empty FeatureCollection; no parcel polygon returned.",
+      "fieldsRequested": [
+        "nbident",
+        "nummer",
+        "egris_egrid",
+        "geometry"
+      ],
+      "sensitiveFieldsRequested": false
+    },
+    {
+      "source": "https://maps.zh.ch/wfs/AVZHWFS (GetFeature; ±100 m geographic box using EPSG:4326 standard latitude/longitude axis order; safe keys and geometry, count=3)",
+      "requestUrl": "https://maps.zh.ch/wfs/AVZHWFS?service=WFS&version=2.0.0&request=GetFeature&typenames=ms%3Aliegenschaften_f&count=3&outputformat=application%2Fjson%3B+subtype%3Dgeojson&srsname=urn%3Aogc%3Adef%3Acrs%3AEPSG%3A%3A4326&propertyname=nbident%2Cnummer%2Cegris_egrid&filter=%3Cfes%3AFilter+xmlns%3Afes%3D%22http%3A%2F%2Fwww.opengis.net%2Ffes%2F2.0%22+xmlns%3Agml%3D%22http%3A%2F%2Fwww.opengis.net%2Fgml%2F3.2%22%3E%3Cfes%3ABBOX%3E%3Cfes%3AValueReference%3Egeometry%3C%2Ffes%3AValueReference%3E%3Cgml%3AEnvelope+srsName%3D%22urn%3Aogc%3Adef%3Acrs%3AEPSG%3A%3A4326%22%3E%3Cgml%3AlowerCorner%3E47.3810463819352+8.53512620813248%3C%2Fgml%3AlowerCorner%3E%3Cgml%3AupperCorner%3E47.3828463819352+8.53780620813248%3C%2Fgml%3AupperCorner%3E%3C%2Fgml%3AEnvelope%3E%3C%2Ffes%3ABBOX%3E%3C%2Ffes%3AFilter%3E",
+      "httpStatus": 200,
+      "featureCount": 0,
+      "outcome": "HTTP 200 empty FeatureCollection; no parcel polygon returned.",
+      "fieldsRequested": [
+        "nbident",
+        "nummer",
+        "egris_egrid",
+        "geometry"
+      ],
+      "sensitiveFieldsRequested": false
+    }
+  ],
+  "schemaReview": {
+    "layer": "ms:liegenschaften_f",
+    "geometryType": "MultiSurface",
+    "safeNativeFields": [
+      "nbident",
+      "nummer",
+      "egris_egrid"
+    ],
+    "excludedFields": [
+      "geodb_oid",
+      "objectid",
+      "objid"
+    ],
+    "excludedReason": "Unstable/system object IDs excluded; requests select only safe cadastral keys plus geometry.",
+    "sourceCrs": "EPSG:2056",
+    "outputCrs": "CRS84 GeoJSON"
+  },
+  "remainingUncertainty": "The advertised WGS84 bounding box includes the ranked point; no native extent was included in the layer capabilities. Empty corrected-CRS responses indicate no intersecting parcel feature in the tested extent, but broader citywide completeness was not tested.",
+  "runtimeAssessment": {
+    "status": "not_assessed",
+    "reason": "No adapter or runtime contract was tested."
+  },
+  "technicalBlocker": "The official WFS and parcel-layer schema are public and safe fields are known. Exact point, earlier small boxes, a native EPSG:2056 ±100 m box and a standard EPSG:4326 (latitude,longitude) ±100 m box all returned HTTP 200 empty FeatureCollections; no polygon was available to retain at the locator.",
+  "registryBasis": "The City of Zürich publishes official cadastral-survey open data and the Canton of Zürich provides a machine-readable AV WFS. GetCapabilities and DescribeFeatureType confirm the `ms:liegenschaften_f` parcel layer with MultiSurface geometry and safe cadastral keys `nbident`, `nummer`, and `egris_egrid`; unstable system object IDs and unrelated fields were excluded. Exact-point and bounded surrounding WFS queries returned no features, so parcel geometry at the ranked locator is not verified.",
+  "crsAxisExtentCheck": {
+    "officialCapabilities": "https://maps.zh.ch/wfs/AVZHWFS?service=WFS&version=2.0.0&request=GetCapabilities",
+    "wfsVersion": "2.0.0",
+    "layer": "ms:liegenschaften_f",
+    "defaultCrs": "urn:ogc:def:crs:EPSG::2056",
+    "otherAdvertisedCrs": [
+      "EPSG:21781",
+      "EPSG:21780",
+      "EPSG:21782",
+      "EPSG:4326",
+      "EPSG:31297",
+      "EPSG:4258",
+      "EPSG:3857"
+    ],
+    "wgs84BoundingBox": {
+      "lowerCornerLonLat": [
+        8.157224,
+        47.141694
+      ],
+      "upperCornerLonLat": [
+        9.037478,
+        47.712435
+      ],
+      "rankedPointInside": true
+    },
+    "nativeExtentAdvertised": false,
+    "nativeAxisOrder": "EPSG:2056 uses easting,northing; official transform of WUP [47.3819463819352,8.53646620813248] gives [2682900.8094122503,1248481.086045864].",
+    "geographicFilterAxisOrder": "EPSG:4326 standard GML axis order latitude,longitude; response is GeoJSON CRS84 longitude,latitude.",
+    "layerSchema": "DescribeFeatureType: geometry MultiSurfacePropertyType; fields geodb_oid integer, objectid integer, objid string, nbident string, nummer string, egris_egrid string, vollstaendigkeit string, flaechenmass integer, bfsnr integer, bearbeitungsdatum string. Requests included only nbident, nummer, egris_egrid and geometry.",
+    "queryOutcome": "Native CRS BBOX ±100 m and EPSG:4326 standard-axis ±100 m both returned HTTP 200, feature count 0."
+  }
+}

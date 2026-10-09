@@ -1,0 +1,114 @@
+{
+  "name": "Arrah",
+  "country": "India",
+  "countryCode": "IN",
+  "rank": 1005,
+  "point": [
+    25.5541795216581,
+    84.6600567114203
+  ],
+  "freshResearch": {
+    "queries": [
+      {
+        "language": "English",
+        "query": "Arrah Bihar India official land records cadastral parcel map BhuNaksha Bhoomi registry",
+        "scope": "Identify current first-party local registry/cadastre and safe public parcel geometry.",
+        "result": "The official Bihar Department of Revenue and Land Reforms lists Bhu-Naksha and Revenue Maps among its services. Its Bhu-Naksha viewer could not be fetched in the web review; the official statewide RoR portal and Bhojpur district office reference support jurisdiction context, but no selected Arrah mouza/village or coordinate-level map extent was verified. Record-of-rights forms may contain personal data and were not queried.",
+        "executionMethod": "Separate English-language web search followed by first-party page review."
+      },
+      {
+        "language": "Hindi",
+        "query": "आरा भोजपुर बिहार भू नक्शा राजस्व एवं भूमि सुधार विभाग भू नक्शा आधिकारिक",
+        "scope": "Find first-party local-language registry, cadastral map or land-service evidence, and confirm locality.",
+        "result": "The official Bihar Department of Revenue and Land Reforms lists Bhu-Naksha and Revenue Maps among its services. Its Bhu-Naksha viewer could not be fetched in the web review; the official statewide RoR portal and Bhojpur district office reference support jurisdiction context, but no selected Arrah mouza/village or coordinate-level map extent was verified. Record-of-rights forms may contain personal data and were not queried.",
+        "executionMethod": "Separate local-language web search followed by first-party page review."
+      }
+    ],
+    "portals": [
+      {
+        "name": "Bihar Department of Revenue and Land Reforms Bhu-Naksha",
+        "operator": "Department of Revenue and Land Reforms, Government of Bihar",
+        "homeUrl": "https://land.bihar.gov.in/landbihar/Default.aspx",
+        "observation": "The official Bihar Department of Revenue and Land Reforms lists Bhu-Naksha and Revenue Maps among its services. Its Bhu-Naksha viewer could not be fetched in the web review; the official statewide RoR portal and Bhojpur district office reference support jurisdiction context, but no selected Arrah mouza/village or coordinate-level map extent was verified. Record-of-rights forms may contain personal data and were not queried."
+      }
+    ],
+    "requests": [
+      {
+        "checkedAt": "2026-10-09T05:42:07.550155+00:00",
+        "url": "https://land.bihar.gov.in/docs/RTI_LandRecords-Bihar.pdf",
+        "normalTlsVerification": true,
+        "httpStatus": 200,
+        "contentType": "application/pdf",
+        "finalUrl": "https://land.bihar.gov.in/docs/RTI_LandRecords-Bihar.pdf",
+        "bytesRead": 1460648,
+        "boundedReadIncomplete": false,
+        "sha256": "becd38405da8f64e6ed8831ee4c20d839d4da123f4a44535d04f56b405411394"
+      }
+    ],
+    "historicalContext": []
+  },
+  "status": "complete",
+  "verifiedParcelResponse": null,
+  "source": {
+    "sourceId": "IN-10929-LOCAL-CADASTRE-REVIEW",
+    "name": "Bihar Department of Revenue and Land Reforms Bhu-Naksha",
+    "url": "https://land.bihar.gov.in/landbihar/Default.aspx",
+    "operator": "Department of Revenue and Land Reforms, Government of Bihar",
+    "serviceType": "Official local registry/map service reviewed; no safe anonymous full-polygon response verified.",
+    "layer": null,
+    "geometryType": null,
+    "outputCrs": null,
+    "nativeIdField": null,
+    "nativeIdEvidence": null
+  },
+  "coverageAssessment": {
+    "claimedScope": "Bihar’s official land-records program includes parcel mapping and the relevant district is Bhojpur/Arrah, but the WUP point’s revenue village and anonymous map coverage remain unverified.",
+    "verifiedOpenScope": "The official Bihar Department of Revenue and Land Reforms lists Bhu-Naksha and Revenue Maps among its services. Its Bhu-Naksha viewer could not be fetched in the web review; the official statewide RoR portal and Bhojpur district office reference support jurisdiction context, but no selected Arrah mouza/village or coordinate-level map extent was verified. Record-of-rights forms may contain personal data and were not queried.",
+    "countrywideVerified": false,
+    "citywideVerified": false
+  },
+  "registryFound": true,
+  "verifiedSample": false,
+  "resultCategory": "official_local_registry_geometry_unverified",
+  "technicalBlocker": "Official Bhu-Naksha direct viewer fetch timed out in the web tool; no valid district/circle/mouza selection or coordinate-to-parcel response was obtained. Avoided records queries that request names/plot ownership.",
+  "remainingUncertainty": "The WUP point may lie in an urban municipal ward or a particular revenue village; neither was verified through the parcel map.",
+  "nextStep": "If the official source later exposes a documented public feature service, inspect metadata first and make only a bounded query retaining safe native IDs plus geometry.",
+  "schemaVersion": "1.0",
+  "checkedAt": "2026-10-09",
+  "wupCityCode": 10929,
+  "cityId": "wup2025:10929",
+  "runtimeReadiness": "not_enabled_no_verified_public_geometry",
+  "adapterReady": false,
+  "centerLatLon": [
+    25.5541795216581,
+    84.6600567114203
+  ],
+  "population2025k": 547.584,
+  "populationUnit": "persons",
+  "queueRank": 1005,
+  "population2025": 547584,
+  "populationPlausibility2025": "Moderate",
+  "pointBasis": "UN WUP 2025 population-weighted settlement centroid; this is not a municipal boundary or a parcel-coverage claim.",
+  "publicParcelGeometryFound": false,
+  "sourceIds": [],
+  "registryBasis": "The Bihar Directorate of Land Records and Survey RTI manual explicitly locates the District Land Records Office for Bhojpur at Ara, and describes cadastral survey, map preparation and land-record duties. This establishes local land-record custody. The anonymous BhuNaksha point-to-mouza geometry route remains unverified.",
+  "registryEvidenceUrls": [
+    "https://land.bihar.gov.in/docs/RTI_LandRecords-Bihar.pdf",
+    "https://land.bihar.gov.in/landbihar/Default.aspx",
+    "https://bhunaksha.bihar.gov.in/index.jsp",
+    "https://land.bihar.gov.in/Ror2025/ViewRor.aspx"
+  ],
+  "runtimeAssessment": {
+    "status": "not_enabled_no_verified_public_geometry",
+    "reason": "Official Bhu-Naksha direct viewer fetch timed out in the web tool; no valid district/circle/mouza selection or coordinate-to-parcel response was obtained. Avoided records queries that request names/plot ownership."
+  },
+  "cohort": "overnight-followon-1001-1100",
+  "priorCheck": {
+    "attemptState": "pending",
+    "attemptEvidence": [],
+    "possiblePriorMatches": []
+  },
+  "rootPreviousRegistryBasis": "The official Bihar Department of Revenue and Land Reforms lists Bhu-Naksha and Revenue Maps among its services. Its Bhu-Naksha viewer could not be fetched in the web review; the official statewide RoR portal and Bhojpur district office reference support jurisdiction context, but no selected Arrah mouza/village or coordinate-level map extent was verified. Record-of-rights forms may contain personal data and were not queried.",
+  "rootReviewedAt": "2026-10-09T05:45:07.249008+00:00",
+  "rootReviewNote": "Reviewed exact immutable WUP identity, separate multilingual discovery, cited city custody and actual source observations. The Bihar Directorate of Land Records and Survey RTI manual explicitly locates the District Land Records Office for Bhojpur at Ara, and describes cadastral survey, map preparation and land-record duties. This establishes local land-record custody. The anonymous BhuNaksha point-to-mouza geometry route remains unverified."
+}

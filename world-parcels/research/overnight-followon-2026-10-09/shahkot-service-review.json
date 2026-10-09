@@ -1,0 +1,82 @@
+{
+  "schemaVersion": "1.0",
+  "checkedAt": "2026-10-09",
+  "cityRecord": "city-7850-shahkot.json",
+  "purpose": "Document independent city-specific registry source review and bounded anonymous geometry access investigation.",
+  "scopeLimits": {
+    "maxFullPolygonsRetainedInCityRecord": 0,
+    "maxFullPolygonsRetainedInReview": 0,
+    "maxFullPolygonsRetainedInRepository": 3,
+    "ownerOrAddressDataRetained": false,
+    "credentialsOrTokenValuesRetained": false,
+    "citywideCompletenessAsserted": false
+  },
+  "assessment": "The official cadastral map viewer was inspected as a UI/source lead, but no anonymous full-polygon vector endpoint was traced or queried; no polygon sample retained.",
+  "registryAssessment": "Punjab Government land-record and cadastral-map services provide local tehsil/village selection; the DILRMP report identifies Tehsil Shahkot. The public map shell is not a full parcel response, and no vector schema or source-native geometry was verified.",
+  "officialPrimarySources": [
+    {
+      "title": "Punjab Land Records Cadastral Map",
+      "url": "https://jamabandi.punjab.gov.pk/CadastralMap.aspx",
+      "observation": "Punjab Government cadastral map UI provides district/tehsil/village selection; no full vector response/schema was verified."
+    },
+    {
+      "title": "Punjab Land Records service",
+      "url": "https://jamabandi.punjab.gov.pk/FardRequestCR.aspx",
+      "observation": "Official Department of Revenue land-record portal offers region, district, tehsil, village and record searches; personal/record-detail screens were not queried."
+    },
+    {
+      "title": "Punjab Land Records Authority",
+      "url": "https://www.punjab-zameen.gov.pk/",
+      "observation": "Official PLRA service centers and digital land-record context."
+    },
+    {
+      "title": "DILRMP Shahkot report",
+      "url": "https://dilrmp.gov.in/dilrmpold/PhyscialComponent/CLR/village-level/209",
+      "observation": "Government DILRMP report identifies Tehsil Shahkot in Punjab land-record digitization reporting."
+    }
+  ],
+  "searchQueries": [
+    {
+      "language": "English",
+      "query": "Shahkot Pakistan official cadastral parcel map land records GIS Board of Revenue Khyber Pakhtunkhwa",
+      "executionMethod": "Executed web search",
+      "resultUrls": [
+        "https://jamabandi.punjab.gov.pk/CadastralMap.aspx",
+        "https://jamabandi.punjab.gov.pk/FardRequestCR.aspx",
+        "https://www.punjab-zameen.gov.pk/",
+        "https://dilrmp.gov.in/dilrmpold/PhyscialComponent/CLR/village-level/209"
+      ]
+    },
+    {
+      "language": "Urdu",
+      "query": "شاہکوٹ پنجاب پاکستان اراضی ریکارڈز زمین کا نقشہ پٹواری سرکاری پنجاب لینڈ ریکارڈز",
+      "executionMethod": "Executed web search",
+      "resultUrls": [
+        "https://jamabandi.punjab.gov.pk/CadastralMap.aspx",
+        "https://jamabandi.punjab.gov.pk/FardRequestCR.aspx",
+        "https://www.punjab-zameen.gov.pk/",
+        "https://dilrmp.gov.in/dilrmpold/PhyscialComponent/CLR/village-level/209"
+      ]
+    }
+  ],
+  "geometryDecision": {
+    "publicParcelGeometryFound": false,
+    "sampleFile": null,
+    "details": "The official cadastral map viewer was inspected as a UI/source lead, but no anonymous full-polygon vector endpoint was traced or queried; no polygon sample retained."
+  },
+  "coverageAssessment": {
+    "claimedScope": "Punjab Government land-record and cadastral-map services provide local tehsil/village selection; the DILRMP report identifies Tehsil Shahkot. The public map shell is not a full parcel response, and no vector schema or source-native geometry was verified.",
+    "verifiedOpenScope": "The official cadastral map viewer was inspected as a UI/source lead, but no anonymous full-polygon vector endpoint was traced or queried; no polygon sample retained.",
+    "citywideVerified": false,
+    "countrywideVerified": false
+  },
+  "attempts": [
+    {
+      "attempt": "official source/UI and public service inspection",
+      "result": "The official cadastral map viewer was inspected as a UI/source lead, but no anonymous full-polygon vector endpoint was traced or queried; no polygon sample retained.",
+      "credentialsUsed": false,
+      "personalPropertyFieldsRequested": false
+    }
+  ],
+  "remainingUncertainty": "The WUP point has not been resolved to an exact cadastral village or map sheet. The public viewer advertises locality selectors but polygon geometry access and point containment remain unverified."
+}

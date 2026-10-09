@@ -1,0 +1,19 @@
+{
+  "purpose": "Independent metric geometry audit of every captured public Konya point parcel; no source repair or exclusion.",
+  "metricCrs": "EPSG:32636",
+  "featureCount": 7,
+  "invalidFeatures": [
+    {
+      "id": "TR-TKGM-128083-812-81"
+    }
+  ],
+  "exactDuplicateGeometryPairs": [],
+  "positiveAreaOverlapPairs": [],
+  "overlayErrors": [],
+  "sourceWgs84InvalidFeatures": [
+    {
+      "id": "TR-TKGM-128083-812-81",
+      "reason": "Ring Self-intersection[32.48401 37.86709]"
+    }
+  ]
+}

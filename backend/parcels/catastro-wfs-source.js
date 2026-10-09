@@ -1,6 +1,7 @@
 // Spain's INSPIRE CP WFS serves GML and does not implement offset pagination.
 // Small, unpaged windows must match the collection's total; a truncated reply is unavailable.
 import proj4 from 'proj4';
+import { SaxesParser } from 'saxes';
 import { bbox as geometryBbox, booleanIntersects, feature as geoFeature } from '@turf/turf';
 import { HttpError } from '../utils/helpers.js';
 import { canonicalParcelFeature, providerHttpError, upstreamError, validateBounds, validateGeometry } from './source-contract.js';
@@ -10,6 +11,38 @@ const ENDPOINT = 'https://ovc.catastro.meh.es/INSPIRE/wfsCP.aspx';
 const ID_FIELD = 'nationalCadastralReference';
 const KEY = /^[A-Z0-9]{14}$/;
 const utm = zone => `+proj=utm +zone=${zone} +ellps=GRS80 +units=m +no_defs`;
+
+// The official GetParcel query reports a missing reference as an HTTP200 OWS exception.
+// Accept only its observed, explicit message for this exact reference and requested zone.
+// General exceptions, viewport failures and malformed documents remain unavailable.
+function explicitMissingReference(bytes, params) {
+    if (params.STOREDQUERY_ID !== 'GetParcel' || !KEY.test(params.REFCAT || '')
+        || params.SRSNAME !== 'EPSG::25830' || bytes.length > 8192) return false;
+    const parser = new SaxesParser({ xmlns: true });
+    const names = ['ExceptionReport', 'Exception', 'ExceptionText'];
+    const counts = [0, 0, 0];
+    let depth = 0, text = '';
+    const reject = () => { throw new Error('Not an explicit parcel absence.'); };
+    parser.on('doctype', reject);
+    parser.on('error', reject);
+    parser.on('opentag', tag => {
+        if (tag.uri !== 'http://www.opengis.net/ows/1.1' || tag.local !== names[depth]
+            || ++counts[depth] !== 1) reject();
+        if (depth === 1 && !Object.values(tag.attributes).some(a => !a.uri
+            && a.local === 'exceptionCode' && a.value === 'OperationProcessingFailed')) reject();
+        depth++;
+    });
+    const append = value => { if (depth === 3) text += value; else if (value.trim()) reject(); };
+    parser.on('text', append);
+    parser.on('cdata', append);
+    parser.on('closetag', () => { depth--; });
+    try {
+        // The matched provider message contains ASCII only, including both echoed keys.
+        parser.write(new TextDecoder('utf-8', { fatal: true }).decode(bytes)).close();
+        return depth === 0 && counts.every(n => n === 1)
+            && text.trim() === `No se ha encontrado la parcela ${params.REFCAT} para el huso 25830`;
+    } catch { return false; }
+}
 
 export function createCatastroWfsParcelSource(descriptor, { fetchImpl = globalThis.fetch, now = Date.now } = {}) {
     if (descriptor.endpoint !== ENDPOINT || descriptor.idField !== ID_FIELD || descriptor.idPrefix !== 'ES-DGC-'
@@ -56,7 +89,9 @@ export function createCatastroWfsParcelSource(descriptor, { fetchImpl = globalTh
             if (declared && !response.headers.get('content-encoding') && Number(declared) !== size) {
                 throw upstreamError('Cadastral WFS response body is incomplete.');
             }
-            const parsed = await parseGmlParcels(Buffer.concat(chunks, size), { idField: ID_FIELD,
+            const bytes = Buffer.concat(chunks, size);
+            if (explicitMissingReference(bytes, params)) return [];
+            const parsed = await parseGmlParcels(bytes, { idField: ID_FIELD,
                 maxBytes, maxFeatures, signal });
             if (!Number.isSafeInteger(parsed.numberMatched) || parsed.numberMatched !== parsed.featureCount
                 || parsed.duplicateNativeCount || parsed.features.some(f => !KEY.test(f.properties[ID_FIELD]))) {

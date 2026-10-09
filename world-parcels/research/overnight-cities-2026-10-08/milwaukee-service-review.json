@@ -1,0 +1,81 @@
+{
+  "schemaVersion": "1.0",
+  "checkedAt": "2026-10-09",
+  "cityRecord": "city-7846-milwaukee.json",
+  "purpose": "Document first-party local registry/map evidence and bounded anonymous geometry access review.",
+  "scopeLimits": {
+    "maxFullPolygonsRetainedInCityRecord": 3,
+    "maxFullPolygonsRetainedInReview": 0,
+    "maxFullPolygonsRetainedInRepository": 3,
+    "ownerOrAddressDataRetained": false,
+    "credentialsOrTokenValuesRetained": false,
+    "citywideCompletenessAsserted": false
+  },
+  "assessment": "Official county cadastral service metadata described a polygon layer and safe Parcel_Key field. Exact WUP point intersection returned an empty FeatureCollection. A single 25 m point-distance query returned three polygon geometries, all with Parcel_Key=null, and properties.exceededTransferLimit=true. No sensitive fields were requested. The exact centroid query had no intersecting parcel. The bounded nearby response was transfer-limited and contained null Parcel_Key values, so native parcel identity and query completeness remain unverified.",
+  "registryAssessment": "Milwaukee County Land Information Office publishes a county cadastral parcel layer covering municipalities including Milwaukee. Safe schema inspection identified Polygon geometry and Parcel_Key; tax keys and unrelated fields were excluded. The bounded query returned nearby geometry but Parcel_Key was null in all returned features; the transfer-limit flag means this partial response does not establish full local coverage.",
+  "officialPrimarySources": [
+    {
+      "url": "https://county.milwaukee.gov/EN/Administrative-Services/Land-Information-Office",
+      "observation": "Milwaukee County Land Information Office publishes a county cadastral parcel layer covering municipalities including Milwaukee. Safe schema inspection identified Polygon geometry and Parcel_Key; tax keys and unrelated fields were excluded. The bounded query returned nearby geometry but Parcel_Key was null in all returned features; the transfer-limit flag means this partial response does not establish full local coverage."
+    },
+    {
+      "url": "https://services2.arcgis.com/s1wgJQKbKJihhhaT/ArcGIS/rest/services/Cadastral/FeatureServer/7",
+      "observation": "Milwaukee County Land Information Office publishes a county cadastral parcel layer covering municipalities including Milwaukee. Safe schema inspection identified Polygon geometry and Parcel_Key; tax keys and unrelated fields were excluded. The bounded query returned nearby geometry but Parcel_Key was null in all returned features; the transfer-limit flag means this partial response does not establish full local coverage."
+    }
+  ],
+  "searchQueries": [
+    {
+      "language": "English",
+      "query": "Milwaukee official county land information office cadastral parcel GIS feature layer",
+      "result": "Official county cadastral service metadata described a polygon layer and safe Parcel_Key field. Exact WUP point intersection returned an empty FeatureCollection. A single 25 m point-distance query returned three polygon geometries, all with Parcel_Key=null, and properties.exceededTransferLimit=true. No sensitive fields were requested.",
+      "method": "Separate English-language discovery; official source review."
+    },
+    {
+      "language": "English",
+      "query": "Milwaukee County parcel cadastral map Parcel_Key official land information",
+      "result": "Official county cadastral service metadata described a polygon layer and safe Parcel_Key field. Exact WUP point intersection returned an empty FeatureCollection. A single 25 m point-distance query returned three polygon geometries, all with Parcel_Key=null, and properties.exceededTransferLimit=true. No sensitive fields were requested.",
+      "method": "Separate local-language discovery; official source review."
+    }
+  ],
+  "geometryDecision": "Three bounded full Polygon geometries retained with null Parcel_Key values; response was transfer-limited. No exact-point intersection, native parcel identity, or coverage completeness established.",
+  "coverageAssessment": {
+    "claimedScope": "Milwaukee County Land Information Office publishes a county cadastral parcel layer covering municipalities including Milwaukee. Safe schema inspection identified Polygon geometry and Parcel_Key; tax keys and unrelated fields were excluded. The bounded query returned nearby geometry but Parcel_Key was null in all returned features; the transfer-limit flag means this partial response does not establish full local coverage.",
+    "verifiedOpenScope": "Official county cadastral service metadata described a polygon layer and safe Parcel_Key field. Exact WUP point intersection returned an empty FeatureCollection. A single 25 m point-distance query returned three polygon geometries, all with Parcel_Key=null, and properties.exceededTransferLimit=true. No sensitive fields were requested.",
+    "citywideVerified": false,
+    "countrywideVerified": false
+  },
+  "attempts": [
+    {
+      "source": "https://services2.arcgis.com/s1wgJQKbKJihhhaT/ArcGIS/rest/services/Cadastral/FeatureServer/7",
+      "outcome": "Official county cadastral service metadata described a polygon layer and safe Parcel_Key field. Exact WUP point intersection returned an empty FeatureCollection. A single 25 m point-distance query returned three polygon geometries, all with Parcel_Key=null, and properties.exceededTransferLimit=true. No sensitive fields were requested.",
+      "fieldsRequested": [
+        "Parcel_Key",
+        "geometry"
+      ],
+      "sensitiveFieldsRequested": false
+    }
+  ],
+  "remainingUncertainty": "Whether a fresh safe local query can return complete nearby results with non-null native Parcel_Key values; citywide coverage and runtime remain unverified.",
+  "runtimeAssessment": {
+    "status": "not_assessed",
+    "reason": "No runtime contract or adapter behavior was tested."
+  },
+  "technicalBlocker": "The exact centroid query had no intersecting parcel. The bounded nearby response was transfer-limited and contained null Parcel_Key values, so native parcel identity and query completeness remain unverified.",
+  "geometryEvidence": {
+    "samplePath": "samples/milwaukee-county-cadastral-wup7846-samples.geojson",
+    "featureCount": 3,
+    "queryPoint": [
+      43.0472023941442,
+      -87.9561409333908
+    ],
+    "queryCrs": "EPSG:4326",
+    "geometryType": "Polygon",
+    "sourceKeyFields": [
+      "Parcel_Key"
+    ],
+    "allNativeKeysNull": true,
+    "responseTransferLimited": true,
+    "geometrySha256": "c58ca9f82e17fa97fbecad9db5182757fd9ba9016125f44370725b595eb106e5",
+    "privacyPolicy": "Only Parcel_Key and geometry were requested and retained; all Parcel_Key values were null. No owner, address, tax, account or other attributes were requested or retained."
+  }
+}

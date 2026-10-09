@@ -1,0 +1,130 @@
+{
+  "name": "Kanazawa",
+  "country": "Japan",
+  "countryCode": "JP",
+  "rank": 1041,
+  "point": [
+    36.5670173027101,
+    136.632880385073
+  ],
+  "freshResearch": {
+    "queries": [
+      {
+        "language": "English",
+        "query": "Kanazawa Japan official cadastral parcel map land registry GIS map city",
+        "scope": "Identify first-party local land-registry/cadastral sources and safe anonymous parcel geometry.",
+        "result": "Kanazawa’s official sources refer to cadastral-map and cadastral-register records, land-number reference maps, and the city open-data/map-information platform. Property-tax registers are available to owners and other legally eligible parties through documented application; the public map portal advertises facility maps and a map API but the reviewed catalogue did not expose a parcel-feature dataset or schema. No safe anonymous parcel-vector route or WUP-point geometry was verified.",
+        "executionMethod": "Separate English-language web search followed by official-source review.",
+        "actualResultUrls": [
+          "https://www4.city.kanazawa.lg.jp/soshikikarasagasu/shisanzeika/gyomuannai/1/1/tetuduki/shisan/9209.html",
+          "https://www4.city.kanazawa.lg.jp/material/files/group/12/2998.pdf",
+          "https://portal-data.city.kanazawa.ishikawa.jp/",
+          "https://map.city.kanazawa.ishikawa.jp/"
+        ]
+      },
+      {
+        "language": "Japanese",
+        "query": "金沢市 地番図 地籍図 公開 地図情報サービス 土地登記 金沢市 公式",
+        "scope": "Find first-party local-language registry/cadastral sources and any public parcel-map/geometry route.",
+        "result": "Kanazawa’s official sources refer to cadastral-map and cadastral-register records, land-number reference maps, and the city open-data/map-information platform. Property-tax registers are available to owners and other legally eligible parties through documented application; the public map portal advertises facility maps and a map API but the reviewed catalogue did not expose a parcel-feature dataset or schema. No safe anonymous parcel-vector route or WUP-point geometry was verified.",
+        "executionMethod": "Separate local-language web search followed by official-source review.",
+        "actualResultUrls": [
+          "https://www4.city.kanazawa.lg.jp/soshikikarasagasu/shisanzeika/gyomuannai/1/1/tetuduki/shisan/9209.html",
+          "https://www4.city.kanazawa.lg.jp/material/files/group/12/2998.pdf",
+          "https://portal-data.city.kanazawa.ishikawa.jp/",
+          "https://map.city.kanazawa.ishikawa.jp/"
+        ]
+      }
+    ],
+    "portals": [
+      {
+        "name": "https://portal-data.city.kanazawa.ishikawa.jp/",
+        "operator": "Japan",
+        "homeUrl": "https://portal-data.city.kanazawa.ishikawa.jp/",
+        "observation": "Official city open-data portal describes public datasets and map-information API; the reviewed catalog does not identify parcel polygons."
+      },
+      {
+        "name": "https://www4.city.kanazawa.lg.jp/soshikikarasagasu/shisanzeika/gyomuannai/1/1/tetuduki/shisan/9209.html",
+        "operator": "Japan",
+        "homeUrl": "https://www4.city.kanazawa.lg.jp/soshikikarasagasu/shisanzeika/gyomuannai/1/1/tetuduki/shisan/9209.html",
+        "observation": "City page says fixed-asset registers may be viewed by the owner, agent, heir, tenant or other eligible parties with documentation."
+      },
+      {
+        "name": "https://www4.city.kanazawa.lg.jp/material/files/group/12/2998.pdf",
+        "operator": "Japan",
+        "homeUrl": "https://www4.city.kanazawa.lg.jp/material/files/group/12/2998.pdf",
+        "observation": "Official city bulletin refers to city cadastral maps and books being prepared/notified; this is not a public vector service."
+      }
+    ],
+    "requests": [],
+    "historicalContext": []
+  },
+  "status": "complete",
+  "verifiedParcelResponse": null,
+  "source": {
+    "sourceId": "JP-4416-LOCAL-CADASTRE",
+    "name": "Kanazawa official local land registry/map review",
+    "url": "https://www4.city.kanazawa.lg.jp/soshikikarasagasu/shisanzeika/gyomuannai/1/1/tetuduki/shisan/9209.html",
+    "operator": null,
+    "serviceType": "Official local cadastral/registry service reviewed; no anonymous safe full-parcel geometry response verified",
+    "layer": null,
+    "geometryType": null,
+    "outputCrs": null,
+    "nativeIdField": null,
+    "nativeIdEvidence": null,
+    "attributesRequested": [],
+    "sampleCount": 0,
+    "sampleFile": null,
+    "directGeometryQueryVerified": false,
+    "directMetadataSchemaVerified": false,
+    "geometryStatus": "not_verified",
+    "operatorNote": "Use the registryBasis and linked primary evidence for the verified institution; the previous country label was not an operator."
+  },
+  "coverageAssessment": {
+    "claimedScope": "Official Kanazawa materials identify city cadastral-map records and land-number reference mapping, while property-tax register inspection is limited to owners, agents, heirs or tenants with proof. No point-specific public geometry was confirmed.",
+    "verifiedOpenScope": "No anonymous full parcel geometry response verified in this investigation.",
+    "countrywideVerified": false,
+    "citywideVerified": false
+  },
+  "registryFound": true,
+  "registryBasis": "Official Kanazawa materials identify city cadastral-map records and land-number reference mapping, while property-tax register inspection is limited to owners, agents, heirs or tenants with proof. No point-specific public geometry was confirmed.",
+  "verifiedSample": false,
+  "resultCategory": "no_verified_public_geometry",
+  "technicalBlocker": "No publicly documented anonymous parcel layer or safe geometry-only schema found.",
+  "remainingUncertainty": "Whether any separate city map API exposes cadastral polygons and whether the ranked WUP point is covered remain unknown.",
+  "nextStep": "Recheck if the city publishes parcel-layer metadata or an anonymous safe-ID geometry endpoint.",
+  "schemaVersion": "1.0",
+  "checkedAt": "2026-10-09",
+  "wupCityCode": 4416,
+  "cityId": "wup2025:4416",
+  "runtimeReadiness": "not_enabled_no_verified_public_geometry",
+  "adapterReady": false,
+  "centerLatLon": [
+    36.5670173027101,
+    136.632880385073
+  ],
+  "population2025k": 533.682,
+  "populationUnit": "persons",
+  "queueRank": 1041,
+  "population2025": 533682,
+  "populationPlausibility2025": "Moderate",
+  "pointBasis": "UN WUP2025 population-weighted settlement locator; not a municipal boundary or parcel-coverage claim.",
+  "publicParcelGeometryFound": false,
+  "sourceIds": [],
+  "registryEvidenceUrls": [
+    "https://www4.city.kanazawa.lg.jp/soshikikarasagasu/shisanzeika/gyomuannai/1/1/tetuduki/shisan/9209.html",
+    "https://www4.city.kanazawa.lg.jp/material/files/group/12/2998.pdf",
+    "https://portal-data.city.kanazawa.ishikawa.jp/",
+    "https://map.city.kanazawa.ishikawa.jp/"
+  ],
+  "runtimeAssessment": {
+    "status": "not_enabled_no_verified_public_geometry",
+    "reason": "No publicly documented anonymous parcel layer or safe geometry-only schema found."
+  },
+  "rootReviewedAt": "2026-10-09T06:45:08.823796+00:00",
+  "rootReview": {
+    "checkedAt": "2026-10-09T06:45:08.823796+00:00",
+    "basis": "Reviewed city-specific English/local-language attempts, local-custody basis, source routes and documented responses. Public geometry remains unverified; access failures and unknown custody do not establish absence.",
+    "primarySourceAuditFile": "research/overnight-followon-2026-10-09/unreviewed-primary-source-audit.json"
+  }
+}

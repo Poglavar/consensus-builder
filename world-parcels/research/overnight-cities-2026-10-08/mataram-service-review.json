@@ -1,0 +1,61 @@
+{
+  "schemaVersion": "1.0",
+  "checkedAt": "2026-10-09",
+  "cityRecord": "city-8108-mataram.json",
+  "purpose": "Document local registry evidence and public parcel-geometry route review.",
+  "scopeLimits": {
+    "maxFullPolygonsRetainedInCityRecord": 0,
+    "maxFullPolygonsRetainedInReview": 0,
+    "maxFullPolygonsRetainedInRepository": 0,
+    "ownerOrAddressDataRetained": false,
+    "credentialsOrTokenValuesRetained": false,
+    "citywideCompletenessAsserted": false
+  },
+  "assessment": "The local ATR/BPN office confirms parcel-boundary inspection and land-right processing in Mataram. Official city SIMTARU serves spatial-planning and zoning functions, not cadastral parcels. BHUMI documentation describes the national map platform, but public WFS GetCapabilities and DescribeFeatureType requests to its `umum:Persil` proxy returned HTTP 403; no geometry was queried or retained.",
+  "registryAssessment": "Kantor Pertanahan Kota Mataram (ATR/BPN) publishes city-specific field-inspection work involving plot boundaries and land-title processing, establishing a local registry/procedure. The article concerns a different kelurahan and does not prove WUP-point parcel coverage.",
+  "officialPrimarySources": [
+    {
+      "url": "https://kot-mataram.atrbpn.go.id/berita/pemeriksaan-tanah-di-kelurahan-karang-pule-wujud-komitmen-pelayanan-pertanahan-yang-profesional",
+      "observation": "Official city land-office article describes field inspection of plot boundaries and land-right processing in Mataram; no geometry is published in the article."
+    },
+    {
+      "url": "https://simtaru.mataramkota.go.id/",
+      "observation": "Official Mataram City spatial-planning system offers RTRW/RDTR and zoning/planning maps; these are not cadastral parcel geometry."
+    },
+    {
+      "url": "https://bhumi.atrbpn.go.id/bantuan/peta",
+      "observation": "Official BHUMI help page describes the public interactive national land/spatial map platform; it does not establish Mataram-specific feature coverage."
+    },
+    {
+      "url": "https://bhumi.atrbpn.go.id/expapi/bhumigeos/umum/ows",
+      "method": "WFS GetCapabilities and DescribeFeatureType; schema-first metadata check",
+      "httpStatus": 403,
+      "observation": "Both public metadata requests returned HTTP 403. No WFS feature query or geometry request followed."
+    }
+  ],
+  "searchQueries": [
+    {
+      "language": "Indonesian",
+      "query": "Kota Mataram peta bidang tanah ATR BPN kadaster GIS pertanahan resmi",
+      "result": "The official Kantor Pertanahan Kota Mataram reports city land-service and boundary-inspection procedures. The official SIMTARU portal exposes city planning/zoning information. No city-specific anonymous parcel vector service was found.",
+      "method": "Separate Indonesian-language discovery search and first-party city land-office/planning portal review."
+    },
+    {
+      "language": "English",
+      "query": "Mataram Lombok city official land registry cadastral map GIS ATR BPN parcel public",
+      "result": "Official ATR/BPN BHUMI documentation describes the national spatial-information platform; the Mataram-specific land office confirms local parcel-boundary procedures. The national WFS metadata proxy denied schema requests with HTTP 403, so no parcel feature query was made.",
+      "method": "Separate English-language discovery search and review of official local and national service pages."
+    }
+  ],
+  "serviceChecks": [
+    {
+      "url": "https://bhumi.atrbpn.go.id/expapi/bhumigeos/umum/ows",
+      "method": "WFS GetCapabilities and DescribeFeatureType; schema-first metadata check",
+      "httpStatus": 403,
+      "observation": "Both public metadata requests returned HTTP 403. No WFS feature query or geometry request followed."
+    }
+  ],
+  "geometryEvidence": null,
+  "privacy": "No owner, address, credentials, tokens or property-specific records were requested or retained.",
+  "runtimeAssessment": "not_enabled_no_verified_public_geometry"
+}

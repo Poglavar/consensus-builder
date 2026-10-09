@@ -1,0 +1,122 @@
+{
+  "schemaVersion": 1,
+  "kind": "city_parcel_source_research",
+  "checkedAt": "2026-10-09",
+  "name": "Tai'an",
+  "country": "China",
+  "countryCode": "CN",
+  "populationUnit": "persons",
+  "status": "complete",
+  "registryFound": true,
+  "registryBasis": "The Tai’an Municipal Natural Resources and Planning Bureau’s official unit directory describes the municipal Real Estate Registration and Transaction Center as responsible for unified registration across the Tai’an urban districts, including cadastral-rights investigation, city registration, transaction management and registration-information queries. This directly covers the Tai’an urban core.",
+  "registryEvidenceUrls": [
+    "https://zrzyj.taian.gov.cn/art/2026/1/8/art_165858_10329041.html?xxgkhide=1",
+    "https://zrzyj.taian.gov.cn/",
+    "https://zrzyj.taian.gov.cn/art/2025/7/8/art_51079_10332021.html",
+    "https://zrzyj.taian.gov.cn/art/2024/1/9/art_51079_10323010.html"
+  ],
+  "verifiedSample": false,
+  "publicParcelGeometryFound": false,
+  "runtimeReadiness": "not_enabled_no_verified_public_geometry",
+  "wupCityCode": 10044,
+  "cityId": "wup2025:10044",
+  "centerLatLon": [
+    36.1926275753878,
+    117.144237596171
+  ],
+  "rank": 762,
+  "queueRank": 762,
+  "population2025": 703020,
+  "population2025k": 703.02,
+  "populationPlausibility2025": "High",
+  "pointBasis": "UN WUP 2025 population-weighted settlement centroid; this is not a municipal boundary or a parcel-coverage claim.",
+  "technicalBlocker": "Official bureau pages describe cadastral-map visualization/search functions, but the reviewed workflow is exposed through the one-network registration platform, Shandong government portal, or an identity-verified self-service terminal using unit/parcel code or location. These flows can return registration attributes beyond safe geometry and identifier fields. No form or feature query was submitted; no anonymous server-side allowlist or parcel geometry schema was verified.",
+  "scopeLimits": "Official bureau pages describe cadastral-map visualization/search functions, but the reviewed workflow is exposed through the one-network registration platform, Shandong government portal, or an identity-verified self-service terminal using unit/parcel code or location. These flows can return registration attributes beyond safe geometry and identifier fields. No form or feature query was submitted; no anonymous server-side allowlist or parcel geometry schema was verified.",
+  "remainingUncertainty": "Tai’an has a city cadastral-map query service, but its public-access conditions, response properties, geometry route, coordinate reference system, coverage at the queued point, and completeness remain unverified.",
+  "research": {
+    "executedQueries": [
+      {
+        "language": "English",
+        "query": "Tai'an Shandong official property registration center cadastral map",
+        "scope": "Identify city-specific registry/cadastral evidence and any safe public parcel-geometry route; do not query personal, owner, address, tax, account, title, or parcel records.",
+        "result": "English-language results did not identify a separate safe geometry endpoint. Official city sources establish the urban registration center and cadastral-map query service.",
+        "actualResultUrls": [
+          "https://zrzyj.taian.gov.cn/art/2026/1/8/art_165858_10329041.html?xxgkhide=1",
+          "https://zrzyj.taian.gov.cn/",
+          "https://zrzyj.taian.gov.cn/art/2025/7/8/art_51079_10332021.html",
+          "https://zrzyj.taian.gov.cn/art/2024/1/9/art_51079_10323010.html"
+        ],
+        "executionMethod": "Separate English and local-language official-source searches; review of official public HTML and indexed service/catalog pages. Only informational pages were inspected; no personal or parcel query was made."
+      },
+      {
+        "language": "Chinese",
+        "query": "泰安市 不动产登记中心 地籍图查询 官方",
+        "scope": "Identify city-specific registry/cadastral evidence and any safe public parcel-geometry route; do not query personal, owner, address, tax, account, title, or parcel records.",
+        "result": "The city’s official bureau directory assigns registration and cadastral investigation across Tai’an urban districts to its municipal center. Official publications describe cadastral-map lookup via authenticated/local-service channels; no anonymous geometry request was sent.",
+        "actualResultUrls": [
+          "https://zrzyj.taian.gov.cn/art/2026/1/8/art_165858_10329041.html?xxgkhide=1",
+          "https://zrzyj.taian.gov.cn/",
+          "https://zrzyj.taian.gov.cn/art/2025/7/8/art_51079_10332021.html",
+          "https://zrzyj.taian.gov.cn/art/2024/1/9/art_51079_10323010.html"
+        ],
+        "executionMethod": "Separate English and local-language official-source searches; review of official public HTML and indexed service/catalog pages. Only informational pages were inspected; no personal or parcel query was made."
+      }
+    ],
+    "officialSources": [
+      {
+        "url": "https://zrzyj.taian.gov.cn/art/2026/1/8/art_165858_10329041.html?xxgkhide=1",
+        "observation": "Official Tai’an bureau unit directory: the municipal registration/transaction center handles cadastral investigations and unified registration in Tai’an urban districts, including Taishan and Daiyue."
+      },
+      {
+        "url": "https://zrzyj.taian.gov.cn/",
+        "observation": "Official Tai’an Natural Resources and Planning Bureau homepage and public service portal."
+      },
+      {
+        "url": "https://zrzyj.taian.gov.cn/art/2025/7/8/art_51079_10332021.html",
+        "observation": "Official bureau report describes cadastral-map visual queries in the one-network platform and authenticated self-service terminal, with lookup keyed by property-unit/parcel code or location and registration attributes returned."
+      },
+      {
+        "url": "https://zrzyj.taian.gov.cn/art/2024/1/9/art_51079_10323010.html",
+        "observation": "Official report states the center’s online service channel includes cadastral-map queries, alongside registration certificates, progress and payment services; this is not a documented geometry-only endpoint."
+      }
+    ],
+    "metadataReviewFile": "taian-service-review.json",
+    "routeInspectionFile": "temporary route audit outside repository"
+  },
+  "source": {
+    "sourceId": null,
+    "name": null,
+    "operator": null,
+    "url": null,
+    "serviceType": "No verified anonymous geometry-only parcel feature endpoint in this review.",
+    "geometryType": null,
+    "coordinateReferenceSystem": null,
+    "nativeIdFields": [],
+    "directGeometryQueryVerified": false,
+    "directMetadataSchemaVerified": false,
+    "scope": "Official bureau pages describe cadastral-map visualization/search functions, but the reviewed workflow is exposed through the one-network registration platform, Shandong government portal, or an identity-verified self-service terminal using unit/parcel code or location. These flows can return registration attributes beyond safe geometry and identifier fields. No form or feature query was submitted; no anonymous server-side allowlist or parcel geometry schema was verified."
+  },
+  "coverageAssessment": {
+    "citywideCompletenessAsserted": false,
+    "wupPointParcelPresenceAsserted": false,
+    "basis": "No verified parcel features were retrieved; city-level registry evidence is not a coverage claim."
+  },
+  "runtimeAssessment": {
+    "state": "not_enabled_no_verified_public_geometry",
+    "reason": "No anonymous parcel geometry route with a verified safe geometry-and-stable-ID response schema was established."
+  },
+  "rootReview": "pending",
+  "rootPrimaryReadback": {
+    "url": "https://zrzyj.taian.gov.cn/art/2026/1/8/art_165858_10329041.html?xxgkhide=1",
+    "fetch": 200,
+    "contentType": "text/html",
+    "title": "泰安市自然资源和规划局 下属单位 泰安市自然资源和规划局下属单位"
+  },
+  "rootReviewNote": "Reviewed the local primary institution/service evidence and stated geometry/access/identity limits. Fresh page readback failures are preserved separately and do not imply absent data; matching primary indexed text supplements the direct readback where available. No public geometry was verified for this city.",
+  "point": [
+    36.1926275753878,
+    117.144237596171
+  ],
+  "rootReviewedAt": "2026-10-09T03:06:11.183980+00:00",
+  "sourceIds": []
+}

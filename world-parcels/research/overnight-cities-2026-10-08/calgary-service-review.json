@@ -1,0 +1,86 @@
+{
+  "schemaVersion": "1.0",
+  "checkedAt": "2026-10-09",
+  "cityRecord": "city-1126-calgary.json",
+  "purpose": "Document local official registry/map evidence and bounded anonymous geometry-route review.",
+  "scopeLimits": {
+    "maxFullPolygonsRetainedInCityRecord": 3,
+    "maxFullPolygonsRetainedInReview": 3,
+    "maxFullPolygonsRetainedInRepository": 3,
+    "ownerOrAddressDataRetained": false,
+    "credentialsOrTokenValuesRetained": false,
+    "citywideCompletenessAsserted": false
+  },
+  "assessment": "181 valid distinct assessed registered-parcel geometries verified in thirteen bounded 0.001-degree cells around Calgary’s unchanged WUP locator. City metadata says these lands have registered parcels at Alberta Land Titles and excludes titled parking/storage units, machinery/equipment and linear property. This safe-field assessment geometry source is distinct from the paid municipal Ownership Parcel Fabric. Complete forced three-row pagination, all 181 fresh CPID reads, explicit absence, footprint and source binding passed in 22 checks/75 requests. The original ArcGIS-oriented harness falsely reported pagination failure because it did not log Socrata row arrays; that run remains preserved and a corrected fresh logger verifies 33 features over eleven nonempty pages. Independent GEOS found no invalid or duplicate geometries, sampled overlaps above 0.01 square metres or operation errors. The exact WUP point returned no intersecting feature; nearby examples are explicitly nearby. Source geometry is unchanged. The annual dataset is replaced each January; CPID continuity after replacement, wider coverage, legal title and survey accuracy remain unverified. Only geometry, CPID, transport row ID and modification date are requested.",
+  "registryAssessment": "Formal OPF is distinct from the open assessment geometry source; equivalence is not claimed.",
+  "officialPrimarySources": [
+    {
+      "url": "https://www.calgary.ca/maps/ownership-parcel-fabric.html",
+      "observation": "City says OPF represents registered titled and approved tentative parcels within city limits, derived from legal survey fabric and Alberta Land Titles."
+    },
+    {
+      "url": "https://cityonline.calgary.ca/ownership-parcel-fabric-opf-by-section---shapefile/5637144619.p",
+      "observation": "Official OPF product is a section-based shapefile."
+    },
+    {
+      "url": "https://data.calgary.ca/Government/Current-Year-Property-Assessments-Parcel-/4bsw-nn7w",
+      "observation": "Public current-year property-assessment parcel dataset used as distinct geometry candidate."
+    }
+  ],
+  "searchQueries": [
+    {
+      "language": "English",
+      "query": "City of Calgary Ownership Parcel Fabric current year property assessments parcel open data CPID",
+      "result": "Official OPF and public assessment dataset are distinct; safe nearby polygons returned but exact locator intersection was empty.",
+      "method": "English search and official metadata/geometry requests with CPID+geometry allowlist."
+    },
+    {
+      "language": "French",
+      "query": "Calgary cadastre parcelles données ouvertes carte parcellaire officielle Calgary",
+      "result": "No additional French-language parcel vector service established.",
+      "method": "Separate French-language discovery search."
+    }
+  ],
+  "serviceChecks": [
+    {
+      "url": "https://data.calgary.ca/api/views/4bsw-nn7w.json",
+      "method": "GET metadata",
+      "httpStatus": 200,
+      "observation": "Metadata identifies CPID, multipolygon and mod_date; requests used only CPID and geometry."
+    },
+    {
+      "url": "https://data.calgary.ca/resource/4bsw-nn7w.json?$select=cpid,multipolygon&$where=intersects(multipolygon,POINT(-114.105700735457%2051.0353306517676))",
+      "method": "GET point intersection",
+      "httpStatus": 200,
+      "observation": "Empty."
+    },
+    {
+      "url": "https://data.calgary.ca/resource/4bsw-nn7w.json?$select=cpid,multipolygon&$where=within_circle(multipolygon,51.0353306517676,-114.105700735457,50)&$limit=3",
+      "method": "GET bounded nearby geometry",
+      "httpStatus": 200,
+      "observation": "Three features retained; aggregate count four; none covers locator."
+    }
+  ],
+  "geometryEvidence": {
+    "file": "city-1126-calgary-samples.geojson",
+    "featureCount": 3,
+    "attributes": [
+      "cpid"
+    ],
+    "geometryType": "MultiPolygon",
+    "crs": "WGS84",
+    "exactLocatorFeature": false
+  },
+  "privacy": "Only public safe IDs and geometry were retained for Calgary. No owner, address, title, account, or tax attributes were requested; other cities had no geometry retained.",
+  "rootDecision": "approved_for_bounded_runtime",
+  "runtimeAssessment": "not_enabled_candidate_qualified_root_review",
+  "qualification": {
+    "acceptanceFile": "calgary-assessment-parcels-acceptance.json (temporary only)",
+    "boundedCells": 13,
+    "distinctTemporaryFeatures": 181,
+    "pagination": "Harness expected ArcGIS features objects; independent Socrata pageSize=3 query matched the same 33 IDs/geometries as normal paging."
+  },
+  "acceptanceFile": "calgary-root-protocol-acceptance.json",
+  "qualityFile": "calgary-root-quality.json",
+  "headedBrowserCheckFile": "research/overnight-cities-2026-10-08/calgary-browser-check.json"
+}

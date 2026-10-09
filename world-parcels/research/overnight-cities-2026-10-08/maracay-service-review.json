@@ -1,0 +1,59 @@
+{
+  "schemaVersion": 1,
+  "checkedAt": "2026-10-09",
+  "sourceId": "ve-maracay-registry-review",
+  "purpose": "Review city-local registry basis and anonymous geometry-only routes without querying personal/property attributes.",
+  "primaryPublisher": "Alcaldía del Municipio Girardot — Dirección Ejecutiva de Catastro Municipal",
+  "sourceUrl": "https://www.alcaldiagirardot.gob.ve/",
+  "registryFound": true,
+  "registryBasis": "The official Maracay municipal website lists a Dirección Ejecutiva de Catastro Municipal and a “Catastro en Línea” service. This establishes a municipality-specific cadastral office/service, but the public page did not expose an anonymous parcel feature schema or georeferenced polygon endpoint.",
+  "officialSources": [
+    {
+      "url": "https://www.alcaldiagirardot.gob.ve/",
+      "observation": "The official Maracay municipal website lists a Dirección Ejecutiva de Catastro Municipal and a “Catastro en Línea” service. This establishes a municipality-specific cadastral office/service, but the public page did not expose an anonymous parcel feature schema or georeferenced polygon endpoint."
+    }
+  ],
+  "searchQueries": [
+    {
+      "language": "English",
+      "query": "Maracay Venezuela Girardot official municipal cadastre online cadastral parcels map GIS",
+      "scope": "Find official local registry/cadastre evidence and safe anonymous geometry-only routes; do not submit identifiers.",
+      "result": "The official Maracay municipal website lists a Dirección Ejecutiva de Catastro Municipal and a “Catastro en Línea” service. This establishes a municipality-specific cadastral office/service, but the public page did not expose an anonymous parcel feature schema or georeferenced polygon endpoint.",
+      "actualResultUrls": [
+        "https://www.alcaldiagirardot.gob.ve/"
+      ]
+    },
+    {
+      "language": "Spanish",
+      "query": "Maracay catastro Girardot Aragua Alcaldía ficha catastral mapa parcelario oficial",
+      "scope": "Find native-language local registry/cadastre evidence and safe anonymous geometry-only routes.",
+      "result": "The official Maracay municipal website lists a Dirección Ejecutiva de Catastro Municipal and a “Catastro en Línea” service. This establishes a municipality-specific cadastral office/service, but the public page did not expose an anonymous parcel feature schema or georeferenced polygon endpoint.",
+      "actualResultUrls": [
+        "https://www.alcaldiagirardot.gob.ve/"
+      ]
+    }
+  ],
+  "accessReview": {
+    "publicAnonymousGeometryVerified": false,
+    "completeGeoreferencedPolygonCount": 0,
+    "geometryRetained": false,
+    "ownerAddressTaxOrPersonLookupRequested": false,
+    "authenticationOrCredentialsUsed": false,
+    "captchaOrPersonalFormSubmitted": false,
+    "routeInspectionStatus": "city_local_records_verified_no_public_geometry_contract",
+    "reason": "The municipal homepage presents Catastro en Línea and account fields but no safe anonymous geometry-only feature route or schema was verified. No credentials, cadastral identifier, owner, address, or property-specific form was submitted.",
+    "nativeIdsUsed": "No safe parcel feature identifier retrieved; no feature attributes requested."
+  },
+  "requestEvidence": [
+    {
+      "url": "https://www.alcaldiagirardot.gob.ve/",
+      "method": "official public page/document review",
+      "status": "status_not_exposed_by_web_open",
+      "httpStatusObtained": false,
+      "observation": "The official Maracay municipal website lists a Dirección Ejecutiva de Catastro Municipal and a “Catastro en Línea” service. This establishes a municipality-specific cadastral office/service, but the public page did not expose an anonymous parcel feature schema or georeferenced polygon endpoint."
+    }
+  ],
+  "technicalBlocker": "The municipal homepage presents Catastro en Línea and account fields but no safe anonymous geometry-only feature route or schema was verified. No credentials, cadastral identifier, owner, address, or property-specific form was submitted.",
+  "sampleDisposition": "No parcel geometry or feature attributes retained.",
+  "remainingUncertainty": "Whether an anonymous city-scoped full-polygon service exists and whether the WUP point corresponds to the named local record unit remain unverified."
+}

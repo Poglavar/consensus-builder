@@ -1,0 +1,103 @@
+{
+  "schemaVersion": "1.0",
+  "checkedAt": "2026-10-09",
+  "cityRecord": "city-6500-naberezhnye-chelny.json",
+  "purpose": "Document separate English/local-language searches, first-party local registry/cadastre evidence, and bounded anonymous geometry discovery.",
+  "scopeLimits": {
+    "maxFullPolygonsRetainedInCityRecord": 0,
+    "maxFullPolygonsRetainedInReview": 0,
+    "maxFullPolygonsRetainedInRepository": 0,
+    "ownerOrAddressDataRetained": false,
+    "credentialsOrTokenValuesRetained": false,
+    "citywideCompletenessAsserted": false
+  },
+  "assessment": "The official city land-and-property administration handles cadastral registration and plot-plan procedures. The service materials require administrative applications; no anonymous geometry service was identified.",
+  "registryAssessment": "First-party registry, cadastral or land-administration custodian route identified as described in the cited official-source observations; public safe geometry remains unverified.",
+  "officialPrimarySources": [
+    {
+      "url": "https://nabchelny.ru/company/3756",
+      "observation": "Official city site gives the city Executive Committee land-and-property office as responsible for cadastral registration, plot-plan approval, and boundary coordination. It describes administrative documents, not open parcel geometries."
+    },
+    {
+      "url": "https://nabchelny.ru/upload/files/user/20.03.2025_2127_Salaxov_F.Sh._Gizatullin_L.R.pdf",
+      "observation": "Official municipal resolution references cadastral land parcels and city land administration. No public feature layer is documented."
+    }
+  ],
+  "searchQueries": [
+    {
+      "language": "English",
+      "query": "Naberezhnye Chelny official land cadastral map Rosreestr city administration GIS real estate registration",
+      "resultUrls": [
+        "https://nabchelny.ru/company/3756",
+        "https://nabchelny.ru/upload/files/user/20.03.2025_2127_Salaxov_F.Sh._Gizatullin_L.R.pdf"
+      ],
+      "result": "The English search did not surface an official anonymous parcel endpoint.",
+      "scope": "Identify first-party local registry and public parcel geometry; preserve the unchanged WUP settlement locator and avoid owner or address attributes."
+    },
+    {
+      "language": "Russian",
+      "query": "Набережные Челны официальный земельный участок кадастровая карта муниципальный комитет земельные отношения",
+      "resultUrls": [
+        "https://nabchelny.ru/company/3756",
+        "https://nabchelny.ru/upload/files/user/20.03.2025_2127_Salaxov_F.Sh._Gizatullin_L.R.pdf"
+      ],
+      "result": "The Russian search found the official city land-and-property office and municipal cadastral registration procedures, including boundary and plot-plan approvals; no public geometry service was described.",
+      "scope": "Find first-party local-language registry/cadastral routes and any anonymous safe parcel geometry service near the unchanged WUP point."
+    }
+  ],
+  "geometryDecision": {
+    "verified": false,
+    "sourceId": null,
+    "sampleCount": 0,
+    "sampleFile": null,
+    "nativeId": null,
+    "nativeIdField": null,
+    "exactWupPointTest": "No source-native full polygon was returned at the WUP point. publicParcelGeometryFound:false means unverified here, not confirmed absence.",
+    "requestEvidence": []
+  },
+  "coverageAssessment": {
+    "claimedScope": "The official city land-and-property administration handles cadastral registration and plot-plan procedures. The service materials require administrative applications; no anonymous geometry service was identified.",
+    "verifiedOpenScope": "No full parcel geometry was verified and no citywide coverage is asserted.",
+    "citywideVerified": false,
+    "countrywideVerified": false,
+    "geometryVerified": false
+  },
+  "attempts": [
+    {
+      "url": "https://nabchelny.ru/company/3756",
+      "result": "Official city site gives the city Executive Committee land-and-property office as responsible for cadastral registration, plot-plan approval, and boundary coordination. It describes administrative documents, not open parcel geometries."
+    },
+    {
+      "url": "https://nabchelny.ru/upload/files/user/20.03.2025_2127_Salaxov_F.Sh._Gizatullin_L.R.pdf",
+      "result": "Official municipal resolution references cadastral land parcels and city land administration. No public feature layer is documented."
+    }
+  ],
+  "remainingUncertainty": "No safe public geometry schema or exact-point feature response was verified; federal cadastral viewer behavior was not tested.",
+  "nextStep": "Use the official source catalog or documented map-service metadata if available; request only safe parcel identifiers and geometry, never owner or address fields.",
+  "runtimeAssessment": "not enabled; no verified full-parcel geometry",
+  "cohort": "overnight-next-1101-1200",
+  "cohortState": "research_complete_pending_root_review",
+  "integrationState": "not_integrated",
+  "rootPrimaryChecks": [
+    {
+      "wupCityCode": 6500,
+      "url": "https://nabchelny.ru/company/3756",
+      "checkedAt": "2026-10-09T07:10:47.396594+00:00",
+      "method": "Anonymous read-only GET, standard TLS where advertised; no credentials or property values",
+      "httpStatus": 200,
+      "finalUrl": "https://nabchelny.ru/company/3756",
+      "contentType": "text/html",
+      "bytesRead": 33788,
+      "sha256": "c7ea96e61588ade19e0fce9c15a77747c11604224252dda3fa9939393b9d77af",
+      "complete": true
+    }
+  ],
+  "rootReviewedAt": "2026-10-09T07:13:02.981057+00:00",
+  "rootReview": {
+    "checkedAt": "2026-10-09T07:13:02.981057+00:00",
+    "decision": "Reviewed city identity, canonical population/point, separate searches and saved source/request evidence. No full public parcel geometry verified in this pass.",
+    "custodyScope": "The official city land-and-property administration handles cadastral registration and plot-plan procedures. The service materials require administrative applications; no anonymous geometry service was identified.",
+    "transportFailuresDoNotProveAbsence": true,
+    "geometryClaimScope": "Investigation outcome only; no worldwide or citywide absence asserted."
+  }
+}

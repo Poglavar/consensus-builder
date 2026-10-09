@@ -1,0 +1,142 @@
+{
+  "schemaVersion": 1,
+  "kind": "city_parcel_source_research",
+  "checkedAt": "2026-10-09",
+  "country": "India",
+  "countryCode": "IN",
+  "populationUnit": "persons",
+  "status": "complete",
+  "verifiedSample": false,
+  "publicParcelGeometryFound": false,
+  "runtimeReadiness": "not_enabled_no_verified_public_geometry",
+  "priorEvidenceFiles": [],
+  "scopeLimits": "The WUP point is a population-cluster locator, not an official city boundary or parcel identity. Absence of a public polygon in this pass does not establish that no cadastral records exist. No personal owner, address, tax, or account fields were requested or copied; no login, CAPTCHA, credential, or token was used.",
+  "wupCityCode": 9663,
+  "queueRank": 205,
+  "name": "Ponnani",
+  "centerLatLon": [
+    10.5745428235413,
+    76.063193781817
+  ],
+  "population2025": 2409567,
+  "pointBasis": "UN WUP 2025 population-weighted settlement centroid; this is not a municipal boundary or a parcel-coverage claim.",
+  "registryFound": true,
+  "registryBasis": "Official Kerala Survey/Ente Bhoomi sources list Ponnani Nagaram and Ezhuvathiruthy survey camps. The Ente Bhoomi taluk selector distinguishes 11 all-village entries (including Ponnani Nagaram) from zero published-village entries for Ponnani; its map POST can return a viewer shell for Ponnani Nagaram, but a bounded anonymous GeoJSON export returned HTTP 200 with an empty body, not a geometry response. A legacy public Bhu-Naksha viewer and parcel-boundary WMS are discoverable, but no vector feature was obtained.",
+  "resultCategory": "official_local_digital_survey_activity_and_public_map_viewer_no_verified_parcel_geometry",
+  "research": {
+    "executedQueries": [
+      {
+        "language": "English",
+        "query": "Ponnani land parcel GIS cadastral Kerala official പൊന്നാനി ഭൂപടം ഭൂമിയുടെ വിവരങ്ങൾ",
+        "method": "web search",
+        "checkedAt": "2026-10-08"
+      },
+      {
+        "language": "Malayalam",
+        "query": "പൊന്നാനി ഭൂനക്ഷ ഭൂരേഖ സർക്കാർ",
+        "method": "web search",
+        "checkedAt": "2026-10-08"
+      },
+      {
+        "language": "Malayalam",
+        "query": "site:entebhoomi.kerala.gov.in പൊന്നാനി ഭൂപടം സർവേ ഭൂമി",
+        "method": "web search",
+        "checkedAt": "2026-10-08"
+      },
+      {
+        "language": "Malayalam",
+        "query": "site:lsgkerala.gov.in പൊന്നാനി നഗരസഭ GIS പാഴ്സൽ ഭൂപടം",
+        "method": "web search",
+        "checkedAt": "2026-10-08"
+      }
+    ],
+    "officialSources": [
+      {
+        "url": "https://entebhoomi.kerala.gov.in/web/home",
+        "observation": "Official Kerala Integrated Land Information and Management System citizen portal; describes live land parcel maps (LPM) through its services and login/SSO."
+      },
+      {
+        "url": "https://entebhoomi.kerala.gov.in/web/ilms/map",
+        "observation": "Official digital-survey map viewer. Malappuram → Ponnani has 11 entries in the all-villages selector, including Ponnani Nagaram (GID e09a8049-9858-4cb7-b269-454cff5b7da1), but zero entries when restricted to published villages. A page-backed map-view POST returned a viewer shell (location_code 100308, LAND_PARCEL layer); a bounded anonymous GeoJSON export returned an empty HTTP 200 body, not usable geometry. WUP locator and town query point are not equated."
+      },
+      {
+        "url": "https://survey.entebhoomi.kerala.gov.in/portal/web/campoffice",
+        "observation": "Official survey portal lists Malappuram → Ponnani Taluk survey camp offices for Ezhuvathiruthy and Ponnani Nagaram, indicating local survey activity."
+      },
+      {
+        "url": "https://survey.entebhoomi.kerala.gov.in/portal/web/digitalresurvey",
+        "observation": "Official survey process page describes survey and boundary work; not an open parcel data service."
+      },
+      {
+        "url": "https://emaps.kerala.gov.in/bhunaksha/kl/homenew.html",
+        "observation": "Legacy official Kerala Bhu-Naksha viewer loaded under the parent-authorized, source-scoped TLS verification exception. Its public client code exposes parcel search and KL_PARCEL_BOUNDARY WMS, but no anonymous vector feature service was established; no parcel lookup was submitted."
+      }
+    ],
+    "requestsAndEndpointChecks": [
+      {
+        "method": "GET",
+        "url": "https://entebhoomi.kerala.gov.in/web/ilms/map",
+        "checkedAt": "2026-10-08",
+        "httpStatus": 200,
+        "contentType": "text/html",
+        "observation": "Official viewer loaded with district/taluk/village selectors."
+      },
+      {
+        "method": "GET",
+        "url": "https://entebhoomi.kerala.gov.in/assets/js/web/web_taluk_village.js?cache=MC4wLjMzMA",
+        "checkedAt": "2026-10-08",
+        "httpStatus": 200,
+        "contentType": "application/javascript",
+        "observation": "Selector metadata distinguishes all villages from published villages: Ponnani has 11 in the all-village list and zero published entries."
+      },
+      {
+        "method": "POST",
+        "url": "https://entebhoomi.kerala.gov.in/web/ilms/map/view",
+        "checkedAt": "2026-10-08",
+        "httpStatus": 200,
+        "contentType": "text/html",
+        "observation": "Page-backed request for Ponnani Nagaram returned a map-view shell identifying location_code 100308 and LAND_PARCEL layer; ephemeral authentication material was not retained."
+      },
+      {
+        "method": "POST",
+        "url": "https://bhunaksha.entebhoomi.kerala.gov.in/bhunaksha_v5_emaps/core/v2/map/export/geojson/100308",
+        "checkedAt": "2026-10-08",
+        "httpStatus": 200,
+        "contentType": "absent",
+        "observation": "Bounded 100 m EPSG:32643 export request around the WUP locator returned 0 bytes. This is an empty response, not a valid empty GeoJSON feature collection; no geometry was verified."
+      },
+      {
+        "method": "GET",
+        "url": "https://emaps.kerala.gov.in/bhunaksha/kl/homenew.html",
+        "checkedAt": "2026-10-08",
+        "httpStatus": 200,
+        "contentType": "text/html",
+        "observation": "Loaded with a source-scoped certificate-verification exception explicitly authorized by the parent. Public viewer client code inspected; no parcel feature request sent."
+      },
+      {
+        "method": "GET",
+        "url": "https://emaps.kerala.gov.in/bhunaksha/kl/mapHomeJS.js",
+        "checkedAt": "2026-10-08",
+        "httpStatus": 200,
+        "contentType": "application/javascript",
+        "observation": "Public viewer code exposes KL_PARCEL_BOUNDARY WMS and plot-search UI, but did not establish an anonymous vector parcel endpoint. Sensitive transient strings were not copied."
+      }
+    ],
+    "coverageAssessment": {
+      "verifiedOpenScope": "Ponnani Taluk survey-camp activity and village-list availability state; both Ente Bhoomi viewer shell and legacy Bhu-Naksha viewer are publicly loadable, but neither produced verified public parcel polygon geometry in this pass.",
+      "citywideVerified": false,
+      "countrywideVerified": false,
+      "geometryVerified": false
+    },
+    "blocker": "Ente Bhoomi lists Ponnani Nagaram among all villages but not among villages with published maps; its bounded anonymous export returned an empty body. Legacy Bhu-Naksha exposes a WMS map layer but this pass did not retrieve vector features. Authenticated live parcel access was not attempted.",
+    "remainingUncertainty": "Whether the WUP cluster overlaps Ponnani Taluk or Ponnani Nagaram; whether another anonymous feature endpoint exists behind the legacy viewer; parcel polygon geometry, stable parcel identity, full coverage and update vintage."
+  },
+  "cityId": "wup2025:9663",
+  "populationPlausibility2025": "High",
+  "rootReviewedAt": "2026-10-08T20:54:18.632578+00:00",
+  "sourceIds": [],
+  "point": [
+    10.5745428235413,
+    76.063193781817
+  ]
+}

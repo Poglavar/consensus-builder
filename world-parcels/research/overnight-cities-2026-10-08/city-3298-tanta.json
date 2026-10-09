@@ -1,0 +1,108 @@
+{
+  "schemaVersion": 1,
+  "kind": "city_parcel_source_research",
+  "checkedAt": "2026-10-09",
+  "name": "Tanta",
+  "country": "Egypt",
+  "countryCode": "EG",
+  "populationUnit": "persons",
+  "status": "complete",
+  "registryFound": true,
+  "registryBasis": "An Egyptian Ministry of Justice public directory booklet hosted by the Ministry of Finance lists the Tanta Real Estate Publicity office and Tanta registration mission (مأمورية شهر طنطا); the Egyptian Survey Authority map catalogue includes a Tanta topographic sheet. These establish local registry/survey institutions, but no public cadastral parcel-vector source was verified.",
+  "registryEvidenceUrls": [
+    "https://assets.mof.gov.eg/files0cb868e0-08ce-11ec-a1b5-d3b23deafc98.pdf",
+    "https://www.esa.gov.eg/files/Topographic_Maps.pdf",
+    "https://www.esa.gov.eg/main.aspx",
+    "https://moj.gov.eg/"
+  ],
+  "verifiedSample": false,
+  "publicParcelGeometryFound": false,
+  "runtimeReadiness": "not_enabled_no_verified_public_geometry",
+  "wupCityCode": 3298,
+  "cityId": "wup2025:3298",
+  "centerLatLon": [
+    30.7887514956432,
+    31.0000631436687
+  ],
+  "rank": 504,
+  "queueRank": 504,
+  "population2025": 1018577,
+  "population2025k": 1018.577,
+  "pointBasis": "UN WUP 2025 population-weighted settlement centroid; this is not a municipal boundary or a parcel-coverage claim.",
+  "technicalBlocker": "The reviewed official sources establish local registry and survey offices and a Tanta topographic sheet, but no public anonymous parcel-vector endpoint or geometry-only schema was identified. No applicant or property lookup was attempted.",
+  "scopeLimits": "An Egyptian Ministry of Justice public directory booklet hosted by the Ministry of Finance lists the Tanta Real Estate Publicity office and Tanta registration mission (مأمورية شهر طنطا); the Egyptian Survey Authority map catalogue includes a Tanta topographic sheet. These establish local registry/survey institutions, but no public cadastral parcel-vector source was verified. No public anonymous parcel polygons were retained; the route review is limited to the official informational/map-product sources listed.",
+  "remainingUncertainty": "Topographic map coverage does not establish cadastral parcel coverage. The local office may hold parcel records or title-linked plans that are not openly downloadable; public schema, geometry and completeness remain unverified.",
+  "research": {
+    "executedQueries": [
+      {
+        "language": "English",
+        "query": "Tanta Egypt official cadastral land registry parcel map GIS",
+        "scope": "Find Tanta-specific property-registration and survey sources, and any anonymous geometry-only public route.",
+        "result": "Official Egyptian materials list a Tanta property-registration office and an ESA topographic map sheet for Tanta. The inspected materials are directory/map catalogue content rather than parcel geometry; no open parcel-vector schema or route was identified.",
+        "actualResultUrls": [
+          "https://assets.mof.gov.eg/files0cb868e0-08ce-11ec-a1b5-d3b23deafc98.pdf",
+          "https://www.esa.gov.eg/files/Topographic_Maps.pdf",
+          "https://www.esa.gov.eg/main.aspx"
+        ],
+        "executionMethod": "Local-language and English-language search plus review of official pages; no private lookup."
+      },
+      {
+        "language": "Arabic",
+        "query": "طنطا مصلحة المساحة الغربية مكتب مساحة طنطا خريطة عقارية سجل عيني",
+        "scope": "البحث عن مكتب التسجيل العقاري والمساحة المحلي في طنطا ومسار هندسة قطع عام وآمن.",
+        "result": "تظهر وثيقة حكومية مصرية مأمورية شهر طنطا ومكتب الشهر العقاري بطنطا، كما يتضمن دليل الهيئة المصرية العامة للمساحة خريطة طبوغرافية باسم طنطا. لا تحتوي المصادر التي تمت مراجعتها على طبقة قطع عقارية متجهة أو مخطط API؛ لم يتم إرسال أي طلب متعلق بعقار أو مالك.",
+        "actualResultUrls": [
+          "https://assets.mof.gov.eg/files0cb868e0-08ce-11ec-a1b5-d3b23deafc98.pdf",
+          "https://www.esa.gov.eg/files/Topographic_Maps.pdf",
+          "https://www.esa.gov.eg/main.aspx"
+        ],
+        "executionMethod": "Local-language and English-language search plus review of official pages; no private lookup."
+      }
+    ],
+    "officialSources": [
+      {
+        "url": "https://assets.mof.gov.eg/files0cb868e0-08ce-11ec-a1b5-d3b23deafc98.pdf",
+        "observation": "Government directory booklet lists Tanta real-estate publicity office and Tanta registration mission in Western Governorate."
+      },
+      {
+        "url": "https://www.esa.gov.eg/files/Topographic_Maps.pdf",
+        "observation": "Official ESA topographic map catalogue/index includes Tanta sheet 88/60, a topographic product rather than a parcel map."
+      },
+      {
+        "url": "https://www.esa.gov.eg/main.aspx",
+        "observation": "Official Egyptian Survey Authority site, the national survey/mapping body; used for institutional context only."
+      }
+    ]
+  },
+  "source": {
+    "sourceId": "eg-tanta-real-estate-registration-and-survey-services",
+    "name": "Tanta local land-registration and public-map source review",
+    "operator": "Egyptian Ministry of Justice Real Estate Publicity and Notarization Authority; Egyptian Survey Authority",
+    "url": "https://assets.mof.gov.eg/files0cb868e0-08ce-11ec-a1b5-d3b23deafc98.pdf",
+    "scope": "An Egyptian Ministry of Justice public directory booklet hosted by the Ministry of Finance lists the Tanta Real Estate Publicity office and Tanta registration mission (مأمورية شهر طنطا); the Egyptian Survey Authority map catalogue includes a Tanta topographic sheet. These establish local registry/survey institutions, but no public cadastral parcel-vector source was verified. No complete public parcel geometry was verified.",
+    "nativeIdField": null,
+    "attributesRequested": [],
+    "identityBasis": "No native parcel identifier queried or retained.",
+    "geometryStatus": "no_public_geometry_verified"
+  },
+  "coverageAssessment": {
+    "verifiedOpenScope": "Official local or jurisdictional registry/survey evidence was found; no anonymous full parcel polygons were verified.",
+    "citywideVerified": false,
+    "countrywideVerified": false
+  },
+  "priorEvidenceFiles": [],
+  "populationPlausibility2025": "High",
+  "sourceIds": [],
+  "point": [
+    30.7887514956432,
+    31.0000631436687
+  ],
+  "sampleFile": null,
+  "sampleFeatureCount": 0,
+  "sampleCrs": null,
+  "runtimeAssessment": {
+    "status": "no_public_geometry_verified_runtime_not_enabled",
+    "reason": "The reviewed official sources establish local registry and survey offices and a Tanta topographic sheet, but no public anonymous parcel-vector endpoint or geometry-only schema was identified. No applicant or property lookup was attempted."
+  },
+  "rootReviewedAt": "2026-10-09T01:02:36.862973+00:00"
+}

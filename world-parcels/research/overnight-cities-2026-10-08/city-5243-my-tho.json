@@ -1,0 +1,119 @@
+{
+  "name": "Mỹ Tho",
+  "country": "Viet Nam",
+  "countryCode": "VN",
+  "rank": 969,
+  "point": [
+    10.4202791727906,
+    106.367538224808
+  ],
+  "population2025": 565906,
+  "population2025k": 565.906,
+  "populationPlausibility2025": "Moderate",
+  "schemaVersion": 1,
+  "kind": "city_parcel_source_research",
+  "checkedAt": "2026-10-09",
+  "populationUnit": "persons",
+  "status": "complete",
+  "verifiedSample": false,
+  "publicParcelGeometryFound": false,
+  "runtimeReadiness": "not_enabled_no_verified_public_geometry",
+  "adapterReady": false,
+  "priorEvidenceFiles": [],
+  "priorCheck": {
+    "attemptState": "pending",
+    "attemptEvidence": [],
+    "possiblePriorMatches": [],
+    "resolvedPriorMatches": []
+  },
+  "pointBasis": "UN WUP 2025 population-weighted settlement centroid; this is not a municipal boundary or a parcel-coverage claim.",
+  "registryFound": true,
+  "registryBasis": "The official Mỹ Tho GIS viewer credits its parcel dataset to Văn phòng Đăng ký đất đai tỉnh Tiền Giang and states an update date of October 2024. This names the local provincial land-registration custodian.",
+  "registryEvidenceUrls": [
+    "https://gismytho.vbgis.vn/ban-do-tra-cuu-thong-tin-quy-hoach",
+    "https://tiengiang.gov.vn/van-ban/-/vanbanconfig/TXBVj3DpVeEO/Detail_Document_Config/31215685"
+  ],
+  "resultCategory": "public_parcel_map_layer_advertised_access_timeout_no_sample",
+  "remainingUncertainty": "Whether the active viewer exposes a full anonymous polygon response versus rendered map only; current ward/administrative boundary changed after 2025 merger and WUP centroid coverage must be checked in the viewer.",
+  "scopeLimits": "No citywide completeness is asserted. No owner/address/account/token values retained. At most three complete native parcel geometries may be retained for this city; none was obtained.",
+  "verifiedParcelResponse": null,
+  "source": {
+    "sourceId": "VN-TIENGIANG-MYTHO-URBAN-INFO-GIS",
+    "name": "Mỹ Tho Urban Information Management System planning map",
+    "operator": "Mỹ Tho city public GIS; parcel layer data credited to Văn phòng Đăng ký đất đai tỉnh Tiền Giang (Tiền Giang Provincial Land Registration Office)",
+    "url": "https://gismytho.vbgis.vn/ban-do-tra-cuu-thong-tin-quy-hoach",
+    "serviceType": "Public urban-planning information map that advertises land-parcel data supplied by the provincial Land Registration Office, updated to October 2024. The map viewer did not return in this inspection, so full native geometry and exact WUP-point coverage remain unverified.",
+    "geometryType": "Cadastral parcel display advertised by source; full-polygon feature response not verified.",
+    "outputCrs": null,
+    "nativeIdField": "Map-sheet number (Số tờ bản đồ) shown in public viewer UI; parcel number field not confirmed."
+  },
+  "sourceIds": [],
+  "wupCityCode": 5243,
+  "cityId": "wup2025:5243",
+  "queueRank": 969,
+  "centerLatLon": [
+    10.4202791727906,
+    106.367538224808
+  ],
+  "technicalBlocker": "Official indexed map description reports a public cadastral parcel layer credited to the provincial Land Registration Office and includes map-sheet search. Direct viewer inspection timed out; no feature response or complete polygon sample was obtained.",
+  "coverageAssessment": {
+    "claimedScope": "Mỹ Tho public urban-planning map includes parcel data from Tiền Giang provincial Land Registration Office; the data is stated to be current to October 2024.",
+    "verifiedOpenScope": "Official search-indexed viewer advertises the parcel layer and map-sheet search. Direct site request timed out, so no exact coverage or geometry schema was verified; timeout is an access failure, not evidence that the source is absent.",
+    "countrywideVerified": false,
+    "citywideVerified": false,
+    "geometryVerified": false
+  },
+  "runtimeAssessment": {
+    "status": "not_enabled_no_verified_full_polygon_sample",
+    "reason": "Official indexed map description reports a public cadastral parcel layer credited to the provincial Land Registration Office and includes map-sheet search. Direct viewer inspection timed out; no feature response or complete polygon sample was obtained."
+  },
+  "research": {
+    "executedQueries": [
+      {
+        "language": "Vietnamese",
+        "query": "Mỹ Tho bản đồ địa chính thửa đất tra cứu quy hoạch GIS chính thức Tiền Giang",
+        "scope": "Find current official city parcel map and named local land-registration custodian.",
+        "result": "Official Mỹ Tho urban-information GIS map is indexed with parcel data credited to Tiền Giang Land Registration Office, updated October 2024; UI includes map-sheet search.",
+        "method": "Separate Vietnamese-language search and review of official portal description and provincial government pages.",
+        "actualResultUrls": [
+          "https://gismytho.vbgis.vn/ban-do-tra-cuu-thong-tin-quy-hoach",
+          "https://tiengiang.gov.vn/van-ban/-/vanbanconfig/TXBVj3DpVeEO/Detail_Document_Config/31215685"
+        ],
+        "executionMethod": "Separate Vietnamese-language search and review of official portal description and provincial government pages."
+      },
+      {
+        "language": "English",
+        "query": "My Tho Vietnam official cadastral parcel map GIS land registration office public map",
+        "scope": "Cross-check public layer and geometry endpoint availability.",
+        "result": "Search-indexed official portal confirms a parcel data layer from the provincial Land Registration Office, current through October 2024. The viewer request timed out; no geometry response was verified.",
+        "method": "Separate English-language search and read-only viewer request; timeout recorded as access failure, not provider absence.",
+        "actualResultUrls": [
+          "https://gismytho.vbgis.vn/ban-do-tra-cuu-thong-tin-quy-hoach",
+          "https://gdal.gov.vn/"
+        ],
+        "executionMethod": "Separate English-language search and read-only viewer request; timeout recorded as access failure, not provider absence."
+      }
+    ],
+    "officialSources": [
+      {
+        "url": "https://gismytho.vbgis.vn/ban-do-tra-cuu-thong-tin-quy-hoach",
+        "observation": "Official Mỹ Tho Urban Information Management System map description says parcel data is supplied by the Tiền Giang Land Registration Office and updated through October 2024; the viewer interface includes map-sheet search. Direct inspection timed out."
+      },
+      {
+        "url": "https://tiengiang.gov.vn/van-ban/-/vanbanconfig/TXBVj3DpVeEO/Detail_Document_Config/31215685",
+        "observation": "Tiền Giang provincial government record identifies the city and provincial context for land administration. It is supplementary; parcel-layer attribution comes from the official GIS page."
+      },
+      {
+        "url": "https://giskhdt.tiengiang.gov.vn/bando",
+        "observation": "Tiền Giang Department of Planning and Investment public project map; thematic project map, not parcel cadastre."
+      }
+    ]
+  },
+  "rootPrimaryReadback": {
+    "url": "https://gismytho.vbgis.vn/ban-do-tra-cuu-thong-tin-quy-hoach",
+    "fetch": "error",
+    "reason": "<urlopen error timed out>"
+  },
+  "rootReviewNote": "Reviewed the specific local primary evidence, its jurisdiction, source dates and public access limits. Failed readbacks are retained as transport/access outcomes rather than absence. No full public parcel geometry was verified for this city in the bounded discovery pass.",
+  "rootReviewedAt": "2026-10-09T05:07:19.594016+00:00"
+}

@@ -1,0 +1,118 @@
+{
+  "schemaVersion": 1,
+  "kind": "city_parcel_source_research",
+  "checkedAt": "2026-10-09",
+  "name": "Yingkou",
+  "country": "China",
+  "countryCode": "CN",
+  "populationUnit": "persons",
+  "status": "complete",
+  "registryFound": true,
+  "registryBasis": "The supplied WUP code 10170 and point [40.6674879479192, 122.246025468315] identify Yingkou in Liaoning. The official city bureau’s registry-center notice describes real-estate-record query results available through the service counter, self-service terminals, Liaoshitong, and Yingkou Government Service Network; an official bureau interview says access to real-estate registration materials is limited by law to right holders, interested parties, and authorized state bodies. The Yingkou Natural Resources Bureau sponsors a public TianDiTu city map with vector basemap services, but no cadastral parcel layer or safe feature schema was exposed. This entry is distinct from the later WUP row #677, code 9940, also named Yingkou, with point [27.5516903804313, 109.958032960774] in Hunan; the latter is not used here.",
+  "registryEvidenceUrls": [
+    "https://zrzyj.yingkou.gov.cn/",
+    "https://zrzyj.yingkou.gov.cn/007/007002/20220711/738fcb9b-44fb-4375-87de-39583d3f509a.html",
+    "https://zrzyj.yingkou.gov.cn/govxxgk/zrzyj/2017-06-13/a055c9dd-3a27-421a-bc64-2bcf47843ceb.html",
+    "https://liaoning.tianditu.gov.cn/yingkou",
+    "https://www.yingkou.gov.cn/govxxgk/ykszf/2022-11-03/9766dda8-a54e-40fb-b803-0901c19e9b99.html"
+  ],
+  "verifiedSample": false,
+  "publicParcelGeometryFound": false,
+  "runtimeReadiness": "not_enabled_no_verified_public_geometry",
+  "wupCityCode": 10170,
+  "cityId": "wup2025:10170",
+  "centerLatLon": [
+    40.6674879479192,
+    122.246025468315
+  ],
+  "point": [
+    40.6674879479192,
+    122.246025468315
+  ],
+  "rank": 673,
+  "queueRank": 673,
+  "population2025": 786031,
+  "population2025k": 786.031,
+  "populationPlausibility2025": "High",
+  "pointBasis": "UN WUP 2025 population-weighted settlement centroid; this is not a municipal boundary or a parcel-coverage claim.",
+  "technicalBlocker": "The official map portal exposed general map layers, not parcel vectors. Real-estate record access is a record-query service with statutory requester categories; no anonymous geometry-only schema or field allowlist was verified. No property identifier, owner, title, address, or person query was submitted.",
+  "scopeLimits": "Official public-page/document discovery only. No owner, address, tax, personal-identity, credential, account, title, cadastral-number, CPF, or property-specific lookup was submitted or retained. No full parcel geometry was retained. The supplied WUP point is not treated as a legal boundary.",
+  "remainingUncertainty": "Whether the Yingkou Natural Resources Bureau has a public cadastral layer beyond the TianDiTu basemaps; whether the WUP point corresponds to a specific district/revenue unit. The city-name collision with the Hunan WUP row is intentionally left separate.",
+  "nextStep": "Search only city-specific official map services and published schemas; keep WUP 10170 tied to Liaoning and do not reassign the point or evidence to WUP 9940 in Hunan.",
+  "priorAttemptState": "pending",
+  "priorAttemptEvidence": [],
+  "research": {
+    "executedQueries": [
+      {
+        "language": "English",
+        "query": "Yingkou Liaoning city official real estate registration center cadastral map public parcel GIS",
+        "result": "The English-language search did not surface a city-owned English parcel-data portal. Official Chinese Yingkou sources were reviewed: they confirm the local real-estate registration center and a city Natural Resources Bureau-sponsored TianDiTu base-map platform, but no open parcel geometry schema.",
+        "urls": [
+          "https://zrzyj.yingkou.gov.cn/",
+          "https://liaoning.tianditu.gov.cn/yingkou"
+        ],
+        "scope": "Find first-party city-specific registry/cadastre evidence and safe anonymous geometry-only routes; do not submit identifiers.",
+        "method": "Separate language-specific search followed by official city/agency page or document review; no identity, ownership, address or property-specific query submitted."
+      },
+      {
+        "language": "Chinese",
+        "query": "营口市不动产登记中心 地籍图 宗地图查询 官方 营口市自然资源局 天地图",
+        "result": "营口市不动产登记中心公布登记信息查询渠道；官方访谈说明不动产登记资料查询限于权利人、利害关系人及依法授权机关。营口天地图提供矢量底图等公共地图服务，但未发现地籍宗地数据图层或安全匿名字段方案。此处按 WUP 10170 与 [40.6674879479192,122.246025468315] 指向辽宁营口，不与湖南省 WUP 9940 的同名项混淆。",
+        "urls": [
+          "https://zrzyj.yingkou.gov.cn/007/007002/20220711/738fcb9b-44fb-4375-87de-39583d3f509a.html",
+          "https://zrzyj.yingkou.gov.cn/govxxgk/zrzyj/2017-06-13/a055c9dd-3a27-421a-bc64-2bcf47843ceb.html",
+          "https://liaoning.tianditu.gov.cn/yingkou"
+        ],
+        "scope": "Find first-party city-specific registry/cadastre evidence and safe anonymous geometry-only routes; do not submit identifiers.",
+        "method": "Separate language-specific search followed by official city/agency page or document review; no identity, ownership, address or property-specific query submitted."
+      }
+    ],
+    "officialSources": [
+      {
+        "url": "https://zrzyj.yingkou.gov.cn/",
+        "observation": "Official Yingkou Municipal Bureau of Natural Resources portal; the publisher is city-local and its notices identify the Yingkou Real Estate Registration Center."
+      },
+      {
+        "url": "https://zrzyj.yingkou.gov.cn/007/007002/20220711/738fcb9b-44fb-4375-87de-39583d3f509a.html",
+        "observation": "The city bureau notice from the Yingkou Real Estate Registration Center says query-result formats are used for manual service-counter queries, self-service terminals, Liaoshitong, and the Yingkou Government Service Network. It describes record-query channels, not open parcel vectors."
+      },
+      {
+        "url": "https://zrzyj.yingkou.gov.cn/govxxgk/zrzyj/2017-06-13/a055c9dd-3a27-421a-bc64-2bcf47843ceb.html",
+        "observation": "The official bureau’s public interview states that right holders and interested parties may query/copy real-estate registration materials under the applicable rules; it does not establish anonymous access."
+      },
+      {
+        "url": "https://liaoning.tianditu.gov.cn/yingkou",
+        "observation": "The public Yingkou geographic-information service platform lists vector map, imagery, terrain, and other base map services; it is sponsored by Yingkou’s Natural Resources Bureau. No cadastral parcel layer/schema was exposed by the reviewed public page."
+      },
+      {
+        "url": "https://www.yingkou.gov.cn/govxxgk/ykszf/2022-11-03/9766dda8-a54e-40fb-b803-0901c19e9b99.html",
+        "observation": "Yingkou Government’s natural-resources plan documents the city’s unified real-estate registration and natural-resource information/database and mapping work; it does not publish a safe anonymous parcel layer."
+      }
+    ],
+    "metadataReviewFile": "yingkou-service-review.json"
+  },
+  "source": {
+    "sourceId": "cn-yingkou-registry-review",
+    "name": "Yingkou local registry/cadastre route review",
+    "operator": "Yingkou Municipal Bureau of Natural Resources; Yingkou Real Estate Registration Center",
+    "url": "https://zrzyj.yingkou.gov.cn/",
+    "scope": "The supplied WUP code 10170 and point [40.6674879479192, 122.246025468315] identify Yingkou in Liaoning. The official city bureau’s registry-center notice describes real-estate-record query results available through the service counter, self-service terminals, Liaoshitong, and Yingkou Government Service Network; an official bureau interview says access to real-estate registration materials is limited by law to right holders, interested parties, and authorized state bodies. The Yingkou Natural Resources Bureau sponsors a public TianDiTu city map with vector basemap services, but no cadastral parcel layer or safe feature schema was exposed. This entry is distinct from the later WUP row #677, code 9940, also named Yingkou, with point [27.5516903804313, 109.958032960774] in Hunan; the latter is not used here.",
+    "nativeIdField": null,
+    "attributesRequested": [],
+    "identityBasis": "No safe parcel feature identifier retrieved.",
+    "geometryStatus": "city_registry_basis_only_no_safe_public_geometry_contract"
+  },
+  "coverageAssessment": {
+    "verifiedOpenScope": "The supplied WUP code 10170 and point [40.6674879479192, 122.246025468315] identify Yingkou in Liaoning. The official city bureau’s registry-center notice describes real-estate-record query results available through the service counter, self-service terminals, Liaoshitong, and Yingkou Government Service Network; an official bureau interview says access to real-estate registration materials is limited by law to right holders, interested parties, and authorized state bodies. The Yingkou Natural Resources Bureau sponsors a public TianDiTu city map with vector basemap services, but no cadastral parcel layer or safe feature schema was exposed. This entry is distinct from the later WUP row #677, code 9940, also named Yingkou, with point [27.5516903804313, 109.958032960774] in Hunan; the latter is not used here.",
+    "notEstablished": [
+      "anonymous safe full-polygon access",
+      "complete citywide cadastral coverage",
+      "runtime source binding"
+    ],
+    "wupPointRelation": "No parcel geometry was returned or asserted."
+  },
+  "publicParcelGeometryCandidateFound": false,
+  "identityNote": "This record is WUP code 10170 at [40.6674879479192, 122.246025468315] in Liaoning. Do not merge it with WUP code 9940 (rank 677), the separate same-name row at [27.5516903804313, 109.958032960774] in Hunan.",
+  "rootReviewedAt": "2026-10-09T02:33:40.013985+00:00",
+  "sourceIds": []
+}

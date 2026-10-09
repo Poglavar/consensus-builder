@@ -1,0 +1,113 @@
+{
+  "schemaVersion": 1,
+  "kind": "city_parcel_source_research",
+  "checkedAt": "2026-10-09",
+  "name": "Barquisimeto",
+  "country": "Venezuela (Bolivarian Republic of)",
+  "countryCode": "VE",
+  "populationUnit": "persons",
+  "status": "complete",
+  "registryFound": true,
+  "registryBasis": "Barquisimeto is the municipal seat of Iribarren, and the Municipality’s SEMAT portal directs residents to register urban properties for municipal taxation. The municipal notice states this tax registration is distinct from issuing a cadastral certificate, which is a function of the Municipal Cadastre Directorate. The public routes reviewed are account/form based and request taxpayer/property documents; no anonymous parcel geometry endpoint was found.",
+  "registryEvidenceUrls": [
+    "https://sematiribarren.com.ve/login",
+    "https://sematiribarren.com.ve/register",
+    "https://iribarren.sigat.net/documentos/volantes/como_registrar_tu_inmuebles_en_iribarren_sin_cedula_catastral_o_certificado_de_empadronamiento.pdf",
+    "https://contraloriadebarquisimeto.gob.ve/index.php",
+    "https://contraloriadebarquisimeto.gob.ve/images/baselegal/Ordenanza_CMI.pdf"
+  ],
+  "verifiedSample": false,
+  "publicParcelGeometryFound": false,
+  "runtimeReadiness": "not_enabled_no_verified_public_geometry",
+  "wupCityCode": 2528,
+  "cityId": "wup2025:2528",
+  "centerLatLon": [
+    10.0618885776618,
+    -69.3538664500531
+  ],
+  "rank": 651,
+  "queueRank": 651,
+  "population2025": 812384,
+  "population2025k": 812.384,
+  "populationPlausibility2025": "High",
+  "pointBasis": "UN WUP 2025 population-weighted settlement centroid; this is not a municipal boundary or a parcel-coverage claim.",
+  "technicalBlocker": "Municipal property-tax registration and a separate cadastral office are evidenced, but the service is user/property-specific and account based. No anonymous parcel geometry endpoint, safe field schema, or complete citywide coverage was verified.",
+  "scopeLimits": "Bounded source discovery only. Official evidence confirms local registry/land-record services only where stated in registryBasis; it does not establish complete citywide cadastral coverage or parcel geometry at the WUP point. No owner, address, tax, personal-identity, credential, account, or property-identifier lookup was submitted or retained. No parcel geometry or feature attributes were retained.",
+  "remainingUncertainty": "Municipal property-tax registration and a separate cadastral office are evidenced, but the service is user/property-specific and account based. No anonymous parcel geometry endpoint, safe field schema, or complete citywide coverage was verified.",
+  "research": {
+    "executedQueries": [
+      {
+        "language": "English",
+        "query": "Barquisimeto Venezuela official municipal cadastre parcel map Iribarren cadastral certificate GIS",
+        "scope": "Find first-party local registry/cadastre evidence and safe anonymous geometry-only routes; do not submit identity or property identifiers.",
+        "result": "Found the Iribarren municipal SEMAT portal and its municipal notice describing urban-property tax registration. The notice explicitly distinguishes taxpayer registration from a cadastral certificate issued by the Municipal Cadastre Directorate. Portal registration/login and forms require personal and property documentation; no anonymous parcel-vector endpoint or safe geometry schema was found.",
+        "actualResultUrls": [
+          "https://sematiribarren.com.ve/login",
+          "https://sematiribarren.com.ve/register",
+          "https://iribarren.sigat.net/documentos/volantes/como_registrar_tu_inmuebles_en_iribarren_sin_cedula_catastral_o_certificado_de_empadronamiento.pdf",
+          "https://contraloriadebarquisimeto.gob.ve/index.php",
+          "https://contraloriadebarquisimeto.gob.ve/images/baselegal/Ordenanza_CMI.pdf"
+        ]
+      },
+      {
+        "language": "Spanish",
+        "query": "Barquisimeto catastro municipal Iribarren cédula catastral parcelas mapa geográfico oficial",
+        "scope": "Find first-party local registry/cadastre evidence and safe anonymous geometry-only routes; do not submit identity or property identifiers.",
+        "result": "El portal municipal SEMAT de Iribarren y un aviso municipal describen el registro tributario de inmuebles urbanos y aclaran que no emite la cédula catastral; ese trámite corresponde a la Dirección de Catastro Municipal. El portal requiere cuenta y datos/documentos del contribuyente y del inmueble. No se verificó un servicio anónimo de polígonos parcelarios.",
+        "actualResultUrls": [
+          "https://sematiribarren.com.ve/login",
+          "https://sematiribarren.com.ve/register",
+          "https://iribarren.sigat.net/documentos/volantes/como_registrar_tu_inmuebles_en_iribarren_sin_cedula_catastral_o_certificado_de_empadronamiento.pdf",
+          "https://contraloriadebarquisimeto.gob.ve/index.php",
+          "https://contraloriadebarquisimeto.gob.ve/images/baselegal/Ordenanza_CMI.pdf"
+        ]
+      }
+    ],
+    "officialSources": [
+      {
+        "url": "https://sematiribarren.com.ve/login",
+        "observation": "SEMAT identifies itself as the Alcaldía de Iribarren; the public portal has registration and login flows. No account was created and no user or property data was submitted."
+      },
+      {
+        "url": "https://sematiribarren.com.ve/register",
+        "observation": "SEMAT’s municipal notice for property registration without a cadastral certificate says tax registration is exclusively for tax purposes and does not issue or renew a cadastral certificate; that is handled by the Municipal Cadastre Directorate. The form instructions request taxpayer identity and property documents; no form was submitted."
+      },
+      {
+        "url": "https://iribarren.sigat.net/documentos/volantes/como_registrar_tu_inmuebles_en_iribarren_sin_cedula_catastral_o_certificado_de_empadronamiento.pdf",
+        "observation": "The Municipal Comptroller of Iribarren’s official site is local-government context and links to SEMAT."
+      },
+      {
+        "url": "https://contraloriadebarquisimeto.gob.ve/index.php",
+        "observation": "The municipal catastro ordinance PDF under the Municipal Comptroller site was not fetchable during review, so no exact coverage or public map schema is inferred from it."
+      }
+    ],
+    "metadataReviewFile": "barquisimeto-service-review.json"
+  },
+  "source": {
+    "sourceId": "ve-barquisimeto-registry-review",
+    "name": "Barquisimeto local registry/cadastre route review",
+    "operator": "Barquisimeto local land/registry authority (as qualified in registryBasis)",
+    "url": "https://sematiribarren.com.ve/login",
+    "scope": "Municipal property-tax registration and a separate cadastral office are evidenced, but the service is user/property-specific and account based. No anonymous parcel geometry endpoint, safe field schema, or complete citywide coverage was verified.",
+    "nativeIdField": null,
+    "attributesRequested": [],
+    "identityBasis": "No safe parcel feature identifier was retrieved.",
+    "geometryStatus": "city_registry_basis_only_no_public_geometry_contract"
+  },
+  "coverageAssessment": {
+    "verifiedOpenScope": "Municipal property-tax registration and a separate cadastral office are evidenced, but the service is user/property-specific and account based. No anonymous parcel geometry endpoint, safe field schema, or complete citywide coverage was verified.",
+    "notEstablished": [
+      "anonymous full-polygon access",
+      "complete citywide cadastral coverage",
+      "runtime source binding"
+    ],
+    "wupPointRelation": "No parcel geometry was returned or asserted."
+  },
+  "priorEvidenceFiles": [],
+  "sourceIds": [],
+  "point": [
+    10.0618885776618,
+    -69.3538664500531
+  ],
+  "rootReviewedAt": "2026-10-09T02:15:55.042537+00:00"
+}

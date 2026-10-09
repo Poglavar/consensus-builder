@@ -1,0 +1,110 @@
+{
+  "schemaVersion": 1,
+  "kind": "city_parcel_source_research",
+  "checkedAt": "2026-10-09",
+  "name": "Duhok",
+  "country": "Iraq",
+  "countryCode": "IQ",
+  "populationUnit": "persons",
+  "status": "complete",
+  "registryFound": true,
+  "registryBasis": "The Kurdistan Region Ministry of Justice identifies the Duhok Property Registration Directorate and an owner-initiated registry-copy service. The service requires proof of identity and does not provide a public parcel map; no exact WUP-point geometry is verified.",
+  "registryEvidenceUrls": [
+    "https://service.gov.krd/ar/service/moj-01-ar"
+  ],
+  "verifiedSample": false,
+  "publicParcelGeometryFound": false,
+  "runtimeReadiness": "not_enabled_no_verified_public_geometry",
+  "wupCityCode": 854,
+  "cityId": "wup2025:854",
+  "centerLatLon": [
+    36.8591069037562,
+    42.9313758535802
+  ],
+  "rank": 535,
+  "queueRank": 535,
+  "population2025": 969701,
+  "population2025k": 969.701,
+  "pointBasis": "UN WUP 2025 population-weighted settlement centroid; this is not a municipal boundary or a parcel-coverage claim.",
+  "technicalBlocker": "No city-specific public map endpoint or safe geometry schema was found. The in-person registration-copy service requires owner appearance and identity proof; no personal/property lookup was attempted.",
+  "scopeLimits": "Local registry service evidence exists, but the retrieved source is an identity-mediated records workflow, not an anonymous parcel map. No exact WUP point coverage or feature geometry was verified.",
+  "remainingUncertainty": "Whether Duhok has a separate public cadastral viewer and whether any registry coverage includes the exact WUP locator remain unverified.",
+  "research": {
+    "executedQueries": [
+      {
+        "language": "Arabic",
+        "query": "دهوك خريطة عقارية تسجيل العقاري دائرة التسجيل العقاري GIS رسمي",
+        "scope": "Find Duhok’s local property registration directorate and public parcel map/GIS.",
+        "result": "Official Kurdistan Region Ministry of Justice service identifies the Duhok Property Registration Directorate and an owner-initiated registration-copy process requiring proof of identity; it does not expose a public parcel map.",
+        "actualResultUrls": [
+          "https://service.gov.krd/ar/service/moj-01-ar"
+        ],
+        "executionMethod": "Separate Arabic-language search and KRG Ministry of Justice service review."
+      },
+      {
+        "language": "English",
+        "query": "Duhok Iraq official land registry cadastral parcel map GIS government",
+        "scope": "Find city-specific registry and anonymous parcel geometry.",
+        "result": "Search corroborated the local property-registration office but found no public anonymous parcel layer. Iraq Ministry of Justice online property-map request evidence applies only to selected Baghdad registries, not Duhok.",
+        "actualResultUrls": [
+          "https://service.gov.krd/ar/service/moj-01-ar"
+        ],
+        "executionMethod": "Separate English-language search and official KRG/Iraq service review."
+      }
+    ],
+    "officialSources": [
+      {
+        "url": "https://service.gov.krd/ar/service/moj-01-ar",
+        "observation": "Official Kurdistan Region Ministry of Justice page lists the Duhok Property Registration Directorate. Registration-copy service is an owner-initiated process requiring personal appearance and proof of identity; no public GIS/map service is provided on the page."
+      }
+    ]
+  },
+  "source": {
+    "sourceId": "iq-krg-duhok-property-registration-directorate",
+    "name": "Duhok Property Registration Directorate",
+    "operator": "Kurdistan Region Ministry of Justice",
+    "url": "https://service.gov.krd/ar/service/moj-01-ar",
+    "serviceType": "Local property-registration directorate and in-person registry-copy service; no anonymous parcel geometry route verified",
+    "geometryType": null,
+    "coordinateReferenceSystem": null,
+    "nativeIdFields": [],
+    "directGeometryQueryVerified": false,
+    "directMetadataSchemaVerified": false,
+    "scope": "KRG Ministry of Justice identifies Duhok local property-registration office. The reviewed service is owner/identity-mediated and does not publish anonymous parcel geometry. No WUP-point footprint is established.",
+    "identityBasis": null,
+    "attributesRequested": [],
+    "sampleCount": 0,
+    "geometryStatus": "not_verified"
+  },
+  "coverageAssessment": {
+    "claimedScope": "City/authority-scope evidence is limited to the official source described below.",
+    "verifiedOpenScope": "Local registry service evidence exists, but the retrieved source is an identity-mediated records workflow, not an anonymous parcel map. No exact WUP point coverage or feature geometry was verified.",
+    "citywideVerified": false,
+    "countrywideVerified": false
+  },
+  "priorEvidenceFiles": [],
+  "populationPlausibility2025": "Moderate",
+  "sourceIds": [],
+  "adapterReady": false,
+  "runtimeAssessment": {
+    "status": "not_enabled",
+    "reason": "held_identity_mediated_service: No city-specific public map endpoint or safe geometry schema was found. The in-person registration-copy service requires owner appearance and identity proof; no personal/property lookup was attempted."
+  },
+  "accessReview": {
+    "publicAnonymousGeometryVerified": false,
+    "completeGeoreferencedPolygonCount": 0,
+    "geometryRetained": false,
+    "ownerAddressTaxOrPersonLookupRequested": false,
+    "authenticationOrCredentialsUsed": false,
+    "captchaOrPersonalFormSubmitted": false,
+    "routeInspectionStatus": "city_registry_source_review_no_public_geometry",
+    "reason": "No city-specific public map endpoint or safe geometry schema was found. The in-person registration-copy service requires owner appearance and identity proof; no personal/property lookup was attempted.",
+    "nativeIdsUsed": null,
+    "sampleFile": null
+  },
+  "point": [
+    36.8591069037562,
+    42.9313758535802
+  ],
+  "rootReviewedAt": "2026-10-09T01:23:12.168688+00:00"
+}

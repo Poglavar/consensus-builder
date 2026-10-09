@@ -1,0 +1,66 @@
+{
+  "schemaVersion": "1.0",
+  "checkedAt": "2026-10-09",
+  "cityRecord": "city-3615-yaroslavl.json",
+  "purpose": "Document first-party local registry/map evidence and bounded anonymous geometry access review.",
+  "scopeLimits": {
+    "maxFullPolygonsRetainedInCityRecord": 0,
+    "maxFullPolygonsRetainedInReview": 0,
+    "maxFullPolygonsRetainedInRepository": 0,
+    "ownerOrAddressDataRetained": false,
+    "credentialsOrTokenValuesRetained": false,
+    "citywideCompletenessAsserted": false
+  },
+  "assessment": "Yaroslavl regional authority says the public cadastral map is on NSDI; the local Rosreestr territorial administration performs cadastral registration functions in Yaroslavl Oblast. No direct target geometry sample was verified.",
+  "registryAssessment": "The Rosreestr Public Cadastral Map was migrated to the national NSDI platform; the Yaroslavl regional administration’s Rosreestr page identifies the territorial registry authority for Yaroslavl Oblast. The public map supports parcel reference lookup, but no anonymous geometry response was directly verified in this review.",
+  "officialPrimarySources": [
+    {
+      "url": "https://nspd.gov.ru/map",
+      "observation": "Yaroslavl regional authority says the public cadastral map is on NSDI; the local Rosreestr territorial administration performs cadastral registration functions in Yaroslavl Oblast. No direct target geometry sample was verified."
+    },
+    {
+      "url": "https://pop.admpereslavl.ru/publichnaya-kadastrovaya-karta-teper-dostupna-na-cifrovoy-platfo",
+      "observation": "Yaroslavl regional authority says the public cadastral map is on NSDI; the local Rosreestr territorial administration performs cadastral registration functions in Yaroslavl Oblast. No direct target geometry sample was verified."
+    },
+    {
+      "url": "https://yamo.adm.yar.ru/gos_organ/rosreestr.php",
+      "observation": "Yaroslavl regional authority says the public cadastral map is on NSDI; the local Rosreestr territorial administration performs cadastral registration functions in Yaroslavl Oblast. No direct target geometry sample was verified."
+    }
+  ],
+  "searchQueries": [
+    {
+      "language": "English",
+      "query": "Yaroslavl Russian Federation official cadastre cadastral parcel map GIS land registry",
+      "scope": "Identify city-specific land registry/cadastre context and any anonymous full-parcel geometry.",
+      "result": "Yaroslavl regional authority says the public cadastral map is on NSDI; the local Rosreestr territorial administration performs cadastral registration functions in Yaroslavl Oblast. No direct target geometry sample was verified.",
+      "actualResultUrls": [
+        "https://nspd.gov.ru/map",
+        "https://pop.admpereslavl.ru/publichnaya-kadastrovaya-karta-teper-dostupna-na-cifrovoy-platfo",
+        "https://yamo.adm.yar.ru/gos_organ/rosreestr.php"
+      ],
+      "executionMethod": "Separate English search and official-source review; no owner, address, title, tax, token, account, applicant, or property identifier was queried."
+    },
+    {
+      "language": "Russian",
+      "query": "Ярославль публичная кадастровая карта НСПД земельные участки официальный Росреестр",
+      "scope": "Identify city-specific land registry/cadastre context and any anonymous full-parcel geometry.",
+      "result": "Yaroslavl regional authority says the public cadastral map is on NSDI; the local Rosreestr territorial administration performs cadastral registration functions in Yaroslavl Oblast. No direct target geometry sample was verified.",
+      "actualResultUrls": [
+        "https://nspd.gov.ru/map",
+        "https://pop.admpereslavl.ru/publichnaya-kadastrovaya-karta-teper-dostupna-na-cifrovoy-platfo",
+        "https://yamo.adm.yar.ru/gos_organ/rosreestr.php"
+      ],
+      "executionMethod": "Separate local-language search and official-source review; no owner, address, title, tax, token, account, applicant, or property identifier was queried."
+    }
+  ],
+  "geometryDecision": "No full parcel geometry retained; no qualifying full polygon response was verified.",
+  "coverageAssessment": {
+    "claimedScope": "The Rosreestr Public Cadastral Map was migrated to the national NSDI platform; the Yaroslavl regional administration’s Rosreestr page identifies the territorial registry authority for Yaroslavl Oblast. The public map supports parcel reference lookup, but no anonymous geometry response was directly verified in this review.",
+    "verifiedOpenScope": "No citywide parcel coverage or WUP-point parcel presence is asserted.",
+    "citywideVerified": false,
+    "countrywideVerified": false,
+    "geometryVerified": false
+  },
+  "attempts": [],
+  "remainingUncertainty": "Public anonymous parcel geometry, exact WUP-point coverage, and citywide coverage remain unverified."
+}

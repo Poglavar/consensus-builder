@@ -1,0 +1,99 @@
+{
+  "schemaVersion": "1.0",
+  "checkedAt": "2026-10-09",
+  "cityRecord": "city-9188-anshun.json",
+  "purpose": "Document separate English/local-language searches, first-party local registry/cadastre evidence, and bounded anonymous geometry discovery.",
+  "scopeLimits": {
+    "maxFullPolygonsRetainedInCityRecord": 0,
+    "maxFullPolygonsRetainedInReview": 0,
+    "maxFullPolygonsRetainedInRepository": 0,
+    "ownerOrAddressDataRetained": false,
+    "credentialsOrTokenValuesRetained": false,
+    "citywideCompletenessAsserted": false
+  },
+  "assessment": "First-party Anshun Natural Resources Bureau evidence establishes local real-estate-registration platform responsibility. The official site was slow/unavailable to the web fetcher, and no anonymous parcel vector API or feature response was identified.",
+  "registryAssessment": "First-party registry, cadastral or land-administration custodian route identified as described in the cited official-source observations; public safe geometry remains unverified.",
+  "officialPrimarySources": [
+    {
+      "url": "https://zrzyj.anshun.gov.cn/",
+      "observation": "Official Anshun Natural Resources Bureau website; the host timed out when opened during this pass."
+    },
+    {
+      "url": "https://zrzyj.anshun.gov.cn/zwgk/zfxxgk/xxgkml/czxx/bmczjsjsgjf/202407/P020241011359873265702.pdf",
+      "observation": "Official bureau profile/budget document states the bureau works to establish a unified city natural-resource and real-estate registration information platform. No public query schema or parcel geometry was documented in the result."
+    }
+  ],
+  "searchQueries": [
+    {
+      "language": "English",
+      "query": "Anshun official natural resources real estate registration cadastral map public GIS parcel service",
+      "resultUrls": [
+        "https://zrzyj.anshun.gov.cn/",
+        "https://zrzyj.anshun.gov.cn/zwgk/zfxxgk/xxgkml/czxx/bmczjsjsgjf/202407/P020241011359873265702.pdf"
+      ],
+      "result": "The English query surfaced Anshun Natural Resources Bureau material about the city real-estate registration platform; the bureau website itself timed out.",
+      "scope": "Identify first-party local registry and public parcel geometry; preserve the unchanged WUP settlement locator and avoid owner or address attributes."
+    },
+    {
+      "language": "Chinese",
+      "query": "安顺市 自然资源局 不动产登记 地籍图 官方 查询",
+      "resultUrls": [
+        "https://zrzyj.anshun.gov.cn/",
+        "https://zrzyj.anshun.gov.cn/zwgk/zfxxgk/xxgkml/czxx/bmczjsjsgjf/202407/P020241011359873265702.pdf"
+      ],
+      "result": "The Chinese query surfaced an official bureau document stating the goal of a unified natural-resource and real-estate registration information platform. No public parcel feature route was documented.",
+      "scope": "Find first-party local-language registry/cadastral routes and any anonymous safe parcel geometry service near the unchanged WUP point."
+    }
+  ],
+  "geometryDecision": {
+    "verified": false,
+    "sourceId": null,
+    "sampleCount": 0,
+    "sampleFile": null,
+    "nativeId": null,
+    "nativeIdField": null,
+    "exactWupPointTest": "No source-native full polygon was returned at the WUP point. publicParcelGeometryFound:false means unverified here, not confirmed absence.",
+    "requestEvidence": []
+  },
+  "coverageAssessment": {
+    "claimedScope": "First-party Anshun Natural Resources Bureau evidence establishes local real-estate-registration platform responsibility. The official site was slow/unavailable to the web fetcher, and no anonymous parcel vector API or feature response was identified.",
+    "verifiedOpenScope": "No full parcel geometry was verified and no citywide coverage is asserted.",
+    "citywideVerified": false,
+    "countrywideVerified": false,
+    "geometryVerified": false
+  },
+  "attempts": [
+    {
+      "url": "https://zrzyj.anshun.gov.cn/",
+      "result": "Official Anshun Natural Resources Bureau website; the host timed out when opened during this pass."
+    },
+    {
+      "url": "https://zrzyj.anshun.gov.cn/zwgk/zfxxgk/xxgkml/czxx/bmczjsjsgjf/202407/P020241011359873265702.pdf",
+      "result": "Official bureau profile/budget document states the bureau works to establish a unified city natural-resource and real-estate registration information platform. No public query schema or parcel geometry was documented in the result."
+    }
+  ],
+  "remainingUncertainty": "The existence and public exposure of the municipal registration platform is unresolved; no geometry-only schema or point response was verified.",
+  "nextStep": "Use the official source catalog or documented map-service metadata if available; request only safe parcel identifiers and geometry, never owner or address fields.",
+  "runtimeAssessment": "not enabled; no verified full-parcel geometry",
+  "cohort": "overnight-next-1101-1200",
+  "cohortState": "research_complete_pending_root_review",
+  "integrationState": "not_integrated",
+  "rootPrimaryChecks": [
+    {
+      "wupCityCode": 9188,
+      "url": "https://zrzyj.anshun.gov.cn/",
+      "checkedAt": "2026-10-09T07:10:39.364979+00:00",
+      "method": "Anonymous read-only GET, standard TLS where advertised; no credentials or property values",
+      "httpStatus": null,
+      "transportOutcome": "<urlopen error timed out>"
+    }
+  ],
+  "rootReviewedAt": "2026-10-09T07:13:02.981057+00:00",
+  "rootReview": {
+    "checkedAt": "2026-10-09T07:13:02.981057+00:00",
+    "decision": "Reviewed city identity, canonical population/point, separate searches and saved source/request evidence. No full public parcel geometry verified in this pass.",
+    "custodyScope": "First-party Anshun Natural Resources Bureau evidence establishes local real-estate-registration platform responsibility. The official site was slow/unavailable to the web fetcher, and no anonymous parcel vector API or feature response was identified.",
+    "transportFailuresDoNotProveAbsence": true,
+    "geometryClaimScope": "Investigation outcome only; no worldwide or citywide absence asserted."
+  }
+}

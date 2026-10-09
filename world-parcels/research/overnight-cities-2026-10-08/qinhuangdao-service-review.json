@@ -1,0 +1,52 @@
+{
+  "schemaVersion": "1.0",
+  "checkedAt": "2026-10-09",
+  "cityRecord": "city-9796-qinhuangdao.json",
+  "purpose": "Document first-party local registry/map evidence and bounded anonymous geometry access review.",
+  "scopeLimits": {
+    "maxFullPolygonsRetainedInCityRecord": 0,
+    "maxFullPolygonsRetainedInReview": 0,
+    "maxFullPolygonsRetainedInRepository": 0,
+    "ownerOrAddressDataRetained": false,
+    "credentialsOrTokenValuesRetained": false,
+    "citywideCompletenessAsserted": false
+  },
+  "assessment": "The official government Q&A identifies Qinhuangdao’s municipal real-estate registration center and directs residents to the municipal bureau registration portal for service guides. Its online information search accepts a certificate number, property-unit number, or address and returns property facts/restriction status; owner queries require identity verification. No search, certificate scan, address, or unit number was supplied. No geometry-only route was verified.",
+  "registryAssessment": "An official Qinglong Manchu Autonomous County government Q&A specifically names the Qinhuangdao Municipal Natural Resources and Planning Bureau portal and Qinhuangdao Real Estate Registration Center, and describes the city’s registration workflow. This is city-specific institutional evidence, but the city bureau page itself was not retrievable in the bounded review. It does not establish a public geometry route.",
+  "officialPrimarySources": [
+    {
+      "url": "https://www.chinaqinglong.gov.cn/single/28/52450.html",
+      "observation": "Official Qinglong County government Q&A names the Qinhuangdao Municipal Natural Resources and Planning Bureau portal and city real-estate registration center; it states citywide transfer/mortgage registration service and directs users to the bureau for guides. It also explains property information searches by title/unit/address and identity verification for owner queries; no query was made."
+    },
+    {
+      "url": "https://zyghj.qhd.gov.cn/qhd/bdcdj/",
+      "observation": "The official Qinhuangdao Natural Resources and Planning Bureau registration portal is identified by the government Q&A, but the direct web fetch was inaccessible in this review. No HTTP status is inferred."
+    }
+  ],
+  "searchQueries": [
+    {
+      "language": "English",
+      "query": "Qinhuangdao official land registry cadastral map GIS parcel Natural Resources official",
+      "result": "Found city real-estate registration services and a municipal information portal via official government service guidance; its queries are keyed to a property certificate/unit/address and return property details. No property lookup was made.",
+      "method": "Separate English-language search and official government service-guide review.",
+      "scope": "Locate current official city-bound registry, cadastral map, or safe public geometry service."
+    },
+    {
+      "language": "Chinese",
+      "query": "秦皇岛市 自然资源和规划局 不动产登记中心 地籍图 查询 官方",
+      "result": "Official Qinglong County government Q&A refers to Qinhuangdao city bureau portal and registration center. It describes address/title/unit queries and identity-verified owner lookup; the direct city portal did not open in this review.",
+      "method": "Separate Chinese-language search; official government Q&A reviewed, no form or property query submitted.",
+      "scope": "Locate current official city-bound registry, cadastral map, or safe public geometry service."
+    }
+  ],
+  "geometryDecision": "No parcel geometry retained; no anonymous public geometry-only point-level response was verified.",
+  "coverageAssessment": {
+    "claimedScope": "An official Qinglong Manchu Autonomous County government Q&A specifically names the Qinhuangdao Municipal Natural Resources and Planning Bureau portal and Qinhuangdao Real Estate Registration Center, and describes the city’s registration workflow. This is city-specific institutional evidence, but the city bureau page itself was not retrievable in the bounded review. It does not establish a public geometry route.",
+    "verifiedOpenScope": "The discoverable lookup routes require an object/location key, expose property attributes, or use account/application workflows; no geometry-only response verified.",
+    "citywideVerified": false,
+    "countrywideVerified": false,
+    "geometryVerified": false
+  },
+  "attempts": [],
+  "remainingUncertainty": "Whether the city bureau publishes a separate anonymous geometry-only cadastral layer independent of its property-information lookup."
+}

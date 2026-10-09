@@ -1,0 +1,105 @@
+{
+  "name": "Gorakhpur",
+  "country": "India",
+  "countryCode": "IN",
+  "rank": 330,
+  "point": [
+    26.764319221432,
+    83.3817044964574
+  ],
+  "population2025": 1519206,
+  "schemaVersion": 1,
+  "kind": "city_parcel_source_research",
+  "checkedAt": "2026-10-09",
+  "populationUnit": "persons",
+  "status": "complete",
+  "verifiedSample": false,
+  "publicParcelGeometryFound": false,
+  "runtimeReadiness": "not_enabled_no_verified_public_geometry",
+  "priorEvidenceFiles": [],
+  "scopeLimits": "The ranked UN World Urbanization Prospects 2025 population-weighted locator is not a municipal boundary or parcel identity. Official local/state property or cadastral services were identified, but no point-specific public parcel polygon was verified. No full geometry is retained.",
+  "pointBasis": "UN WUP 2025 population-weighted settlement centroid; this is not a municipal boundary or a parcel-coverage claim.",
+  "registryFound": true,
+  "registryBasis": "Official Gorakhpur district land-records service directs users to Uttar Pradesh’s official land-record system; the state Board of Revenue documents revenue-village maps, khasra, and plot-boundary records. The district Bhulekh dashboard provides Gorakhpur-specific village map/georeferencing coverage statistics. The point is a city settlement locator, and the dashboard is district/tehsil-wide rather than point-specific.",
+  "resultCategory": "local_registry_or_cadastral_viewer_confirmed_public_parcel_geometry_unverified",
+  "technicalBlocker": "The official BhuNaksha shell is not evidence of this locator’s urban/revenue-village map. Correct village extent/point identification could not be resolved anonymously; previous two-level map-info attempt failed at an upstream GIS-code endpoint.",
+  "remainingUncertainty": "Whether the WUP city point lies inside a georeferenced Gorakhpur revenue village or a distinct urban cadastral map; whether the public BhuNaksha geometry service covers the exact locality.",
+  "nextStep": "Resolve the exact selected revenue village or official urban GIS map for the WUP point, then make a bounded geometry-only query if an anonymous endpoint is available.",
+  "freshResearch": {
+    "executedQueries": [
+      {
+        "language": "English",
+        "query": "Gorakhpur official cadastral parcel map land records BhuNaksha Uttar Pradesh district public GIS",
+        "result": "Official Gorakhpur district land-records page links the UP land-record system. The official UP BhuNaksha shell exposes district/tehsil/village/plot selectors, but defaults to Agra and does not establish this point’s selected village or mapped extent. Official dashboard shows district-wide scanned and georeferenced village-map counts, not exact point coverage.",
+        "method": "Separate English web search followed by official public-page and viewer review."
+      },
+      {
+        "language": "Hindi",
+        "query": "गोरखपुर आधिकारिक भू नक्शा खसरा नक्शा भूलेख राजस्व ग्राम नक्शा",
+        "result": "गोरखपुर जिला भूमि अभिलेख सेवा उत्तर प्रदेश भूलेख से जोड़ती है। आधिकारिक भू नक्शा पोर्टल में जिला/तहसील/ग्राम/प्लॉट चयन है, लेकिन प्रारंभिक दृश्य आगरा पर खुलता है। गोरखपुर डैशबोर्ड जिले और तहसील के स्तर पर भू-नक्शों की स्थिति बताता है; इससे इस शहर-बिंदु पर कवरेज सिद्ध नहीं होता।",
+        "method": "Separate native-language web search and official public-page review."
+      }
+    ],
+    "officialSources": [
+      {
+        "url": "https://gorakhpur.nic.in/service/land-records/",
+        "observation": "Official Gorakhpur district land-records page; links the state land-record service."
+      },
+      {
+        "url": "https://upbhunaksha.gov.in/upbhunaksha/",
+        "observation": "Official Uttar Pradesh BhuNaksha viewer; district/tehsil/village/plot selectors are present; default selection is Agra."
+      },
+      {
+        "url": "https://upbhulekh.gov.in/GeoDashboard/public_report?distCode=188",
+        "observation": "Official dashboard for Gorakhpur district: reported revenue-village map scanning and georeferencing status; these are district-wide figures, not a point coverage test."
+      },
+      {
+        "url": "https://bor.up.nic.in/",
+        "observation": "Official Uttar Pradesh Board of Revenue land-record system and map context."
+      }
+    ],
+    "viewerAndServiceTrace": {
+      "attempted": true,
+      "summary": "The official viewer shell was inspected. Its initial extent is Agra. A two-level Gorakhpur Sadar map-info attempt failed because the upstream GIS-code creation route returned HTTP 403/500; no confirmed village was selected and no valid parcel response was obtained. The district dashboard’s aggregate georeferencing counts are not evidence of coverage at the ranked urban point.",
+      "fullPolygonLimit": 3,
+      "fullPolygonsRetained": 0,
+      "ownerOrAddressDataRequested": false,
+      "credentialsOrTokenValuesRetained": false
+    },
+    "attemptedGeometry": {
+      "attempted": false,
+      "status": "no feature query",
+      "retainedFeatures": 0,
+      "fieldsRequested": [],
+      "geometryRetained": false
+    }
+  },
+  "registryEvidenceUrls": [
+    "https://gorakhpur.nic.in/service/land-records/",
+    "https://upbhunaksha.gov.in/upbhunaksha/",
+    "https://upbhulekh.gov.in/GeoDashboard/public_report?distCode=188",
+    "https://bor.up.nic.in/"
+  ],
+  "sourceIds": [],
+  "coverageAssessment": {
+    "claimedScope": "Official Gorakhpur district land-records service directs users to Uttar Pradesh’s official land-record system; the state Board of Revenue documents revenue-village maps, khasra, and plot-boundary records. The district Bhulekh dashboard provides Gorakhpur-specific village map/georeferencing coverage statistics. The point is a city settlement locator, and the dashboard is district/tehsil-wide rather than point-specific.",
+    "verifiedOpenScope": "The official BhuNaksha shell is not evidence of this locator’s urban/revenue-village map. Correct village extent/point identification could not be resolved anonymously; previous two-level map-info attempt failed at an upstream GIS-code endpoint.",
+    "citywideVerified": false,
+    "countrywideVerified": false
+  },
+  "source": {
+    "name": "Gorakhpur local cadastral/land-record evidence",
+    "operator": "Local public authority identified in official sources",
+    "url": "https://gorakhpur.nic.in/service/land-records/",
+    "scope": "Official Gorakhpur district land-records service directs users to Uttar Pradesh’s official land-record system; the state Board of Revenue documents revenue-village maps, khasra, and plot-boundary records. The district Bhulekh dashboard provides Gorakhpur-specific village map/georeferencing coverage statistics. The point is a city settlement locator, and the dashboard is district/tehsil-wide rather than point-specific."
+  },
+  "wupCityCode": 10399,
+  "cityId": "wup2025:10399",
+  "queueRank": 330,
+  "populationPlausibility2025": "High",
+  "centerLatLon": [
+    26.764319221432,
+    83.3817044964574
+  ],
+  "rootReviewedAt": "2026-10-08T22:39:59.726347+00:00"
+}

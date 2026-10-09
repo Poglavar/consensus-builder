@@ -1,0 +1,91 @@
+{
+  "schemaVersion": 1,
+  "checkedAt": "2026-10-09",
+  "sourceId": "in-bokaro-city-cadastre",
+  "purpose": "Review city-local registry/cadastral basis and safe anonymous geometry-only routes.",
+  "primaryPublisher": "https://bokaro.nic.in/service/land-record/",
+  "sourceUrl": "https://bokaro.nic.in/service/land-record/",
+  "registryFound": true,
+  "registryBasis": "The official Bokaro District Administration land-record page directs citizens to Jharkhand Jharbhoomi and identifies a Revenue Section located in Bokaro city. JSAC publishes a Bokaro district survey-sheet inventory, confirming local cadastral-map holdings. The citizen plot-map service reports a registration requirement; no anonymous vector geometry was verified.",
+  "officialSources": [
+    {
+      "url": "https://bokaro.nic.in/service/land-record/",
+      "observation": "The official Bokaro District Administration land-record page directs citizens to Jharkhand Jharbhoomi and identifies a Revenue Section located in Bokaro city. JSAC publishes a Bokaro district survey-sheet inventory, confirming local cadastral-map holdings. The citizen plot-map service reports a registration requirement; no anonymous vector geometry was verified."
+    },
+    {
+      "url": "https://jharbhoomi.jharkhand.gov.in/",
+      "observation": "Official city/state map service route; no private lookup performed."
+    },
+    {
+      "url": "https://jsac.jharkhand.gov.in/map_sheet/bk.html",
+      "observation": "Official city/state map service route; no private lookup performed."
+    },
+    {
+      "url": "https://services.india.gov.in/service/detail/jharbhunaksha-is-an-digitized-maps-of-the-plots-to-the-citizens-jharkhand-1",
+      "observation": "Official city/state map service route; no private lookup performed."
+    }
+  ],
+  "searchQueries": [
+    {
+      "language": "English",
+      "query": "Bokaro Jharkhand official land records cadastral maps Jharbhoomi city revenue section",
+      "scope": "Find city-local land registry/cadastre source and an anonymous full-polygon geometry route.",
+      "result": "Bokaro district administration links to the state land-record system and identifies the city Revenue Section. JSAC lists surveyed village map-sheet inventories for Bokaro district. JharBhuNaksha is described on the government service directory as a plot-map service with registration required. No login or parcel lookup was attempted; no anonymous full-polygon schema was verified.",
+      "actualResultUrls": [
+        "https://bokaro.nic.in/service/land-record/",
+        "https://jharbhoomi.jharkhand.gov.in/",
+        "https://jsac.jharkhand.gov.in/map_sheet/bk.html",
+        "https://services.india.gov.in/service/detail/jharbhunaksha-is-an-digitized-maps-of-the-plots-to-the-citizens-jharkhand-1"
+      ]
+    },
+    {
+      "language": "Hindi",
+      "query": "बोकारो झारखंड भू नक्शा जमीन रिकॉर्ड आधिकारिक cadastral map",
+      "scope": "Find city-local land registry/cadastre source and an anonymous full-polygon geometry route.",
+      "result": "बोकारो जिला प्रशासन का आधिकारिक पृष्ठ झारभूमि पोर्टल और बोकारो शहर में राजस्व अनुभाग बताता है। JSAC की बोकारो जिला सूची में गांव-वार सर्वे मानचित्र शीट सूचीबद्ध हैं। सरकारी सेवा निर्देशिका भू-नक्शा को प्लॉट मानचित्र सेवा बताती है और पंजीकरण आवश्यक दिखाती है। कोई लॉगिन या भूखंड खोज नहीं की गई; खुला पूर्ण-पॉलीगॉन स्कीमा सत्यापित नहीं हुआ।",
+      "actualResultUrls": [
+        "https://bokaro.nic.in/service/land-record/",
+        "https://jharbhoomi.jharkhand.gov.in/",
+        "https://jsac.jharkhand.gov.in/map_sheet/bk.html",
+        "https://services.india.gov.in/service/detail/jharbhunaksha-is-an-digitized-maps-of-the-plots-to-the-citizens-jharkhand-1"
+      ]
+    }
+  ],
+  "accessReview": {
+    "publicAnonymousGeometryVerified": false,
+    "completeGeoreferencedPolygonCount": 0,
+    "geometryRetained": false,
+    "ownerAddressTaxOrPersonLookupRequested": false,
+    "authenticationOrCredentialsUsed": false,
+    "captchaOrPersonalFormSubmitted": false,
+    "routeInspectionStatus": "city_land_record_source_found_no_public_geometry_contract",
+    "reason": "The official district land-record link and survey-sheet catalog establish local land-record/cartographic holdings. The map-download service is registration-based and no public anonymous vector geometry route was verified.",
+    "nativeIdsUsed": "No parcel feature identifier retrieved."
+  },
+  "requestEvidence": [
+    {
+      "url": "https://bokaro.nic.in/service/land-record/",
+      "method": "public official page review",
+      "status": "status_not_exposed_by_web_open",
+      "httpStatusObtained": false,
+      "observation": "The official Bokaro District Administration land-record page directs citizens to Jharkhand Jharbhoomi and identifies a Revenue Section located in Bokaro city. JSAC publishes a Bokaro district survey-sheet inventory, confirming local cadastral-map holdings. The citizen plot-map service reports a registration requirement; no anonymous vector geometry was verified."
+    },
+    {
+      "url": "https://jharbhoomi.jharkhand.gov.in/",
+      "method": "official map-service discovery",
+      "status": "status_not_exposed_by_web_search",
+      "httpStatusObtained": false,
+      "observation": "Official state cadastral/map portal identified; no target-city feature query or personal/property lookup was performed."
+    },
+    {
+      "url": "https://services.india.gov.in/service/detail/jharbhunaksha-is-an-digitized-maps-of-the-plots-to-the-citizens-jharkhand-1",
+      "method": "government service catalog review",
+      "status": "status_not_exposed_by_web_search",
+      "httpStatusObtained": false,
+      "observation": "The catalog describes digitized plot maps and states registration is required; no credentials were entered."
+    }
+  ],
+  "technicalBlocker": "The official district land-record link and survey-sheet catalog establish local land-record/cartographic holdings. The map-download service is registration-based and no public anonymous vector geometry route was verified.",
+  "sampleDisposition": "No parcel geometry or feature attributes retained.",
+  "remainingUncertainty": "Whether registered citizen map outputs are georeferenced vectors, which revenue village contains the WUP point, and whether urban Bokaro is covered by the listed village sheets."
+}

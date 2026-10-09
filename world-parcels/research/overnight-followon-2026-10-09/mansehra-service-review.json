@@ -1,0 +1,75 @@
+{
+  "schemaVersion": "1.0",
+  "checkedAt": "2026-10-09",
+  "cityRecord": "city-6959-mansehra.json",
+  "purpose": "Document first-party local registry/map evidence and bounded anonymous geometry access review.",
+  "scopeLimits": {
+    "maxFullPolygonsRetainedInCityRecord": 0,
+    "maxFullPolygonsRetainedInReview": 0,
+    "maxFullPolygonsRetainedInRepository": 0,
+    "ownerOrAddressDataRetained": false,
+    "credentialsOrTokenValuesRetained": false,
+    "citywideCompletenessAsserted": false
+  },
+  "assessment": "The provincial Revenue Department identifies Mansehra in its phased district land-record computerization program; the official provincial budget also lists the district revenue administration. No anonymous public geometry-only parcel route was verified.",
+  "registryAssessment": "Khyber Pakhtunkhwa Revenue Department places Mansehra in its district land-record digitization program. The source describes district-level record work, not public parcel geometry; local land-record custody is supported.",
+  "officialPrimarySources": [
+    {
+      "url": "https://revenue.kp.gov.pk/computerization-of-land-record-in-18-districts/",
+      "observation": "The provincial Revenue Department identifies Mansehra in its phased district land-record computerization program; the official provincial budget also lists the district revenue administration. No anonymous public geometry-only parcel route was verified."
+    },
+    {
+      "url": "https://www.pakp.gov.pk/wp-content/uploads/2024/05/f.-Estimates-of-Receipts-2023-24.pdf",
+      "observation": "The provincial Revenue Department identifies Mansehra in its phased district land-record computerization program; the official provincial budget also lists the district revenue administration. No anonymous public geometry-only parcel route was verified."
+    }
+  ],
+  "searchQueries": [
+    {
+      "language": "English",
+      "query": "Mansehra Pakistan official land records revenue department cadastral map",
+      "result": "The provincial Revenue Department identifies Mansehra in its phased district land-record computerization program; the official provincial budget also lists the district revenue administration. No anonymous public geometry-only parcel route was verified.",
+      "method": "Separate official-source search and review.",
+      "scope": "Identify first-party registry custody and public geometry route.",
+      "actualResultUrls": [
+        "https://revenue.kp.gov.pk/computerization-of-land-record-in-18-districts/",
+        "https://www.pakp.gov.pk/wp-content/uploads/2024/05/f.-Estimates-of-Receipts-2023-24.pdf"
+      ]
+    },
+    {
+      "language": "Urdu",
+      "query": "مانسہرہ زمین ریکارڈ لینڈ ریکارڈ خیبر پختونخوا سرکاری",
+      "result": "The provincial Revenue Department identifies Mansehra in its phased district land-record computerization program; the official provincial budget also lists the district revenue administration. No anonymous public geometry-only parcel route was verified.",
+      "method": "Separate official-source search and review.",
+      "scope": "Identify first-party registry custody and public geometry route.",
+      "actualResultUrls": [
+        "https://revenue.kp.gov.pk/computerization-of-land-record-in-18-districts/",
+        "https://www.pakp.gov.pk/wp-content/uploads/2024/05/f.-Estimates-of-Receipts-2023-24.pdf"
+      ]
+    }
+  ],
+  "geometryDecision": "No full polygon retained: no safe anonymous geometry-only route was verified.",
+  "coverageAssessment": {
+    "claimedScope": "Khyber Pakhtunkhwa Revenue Department places Mansehra in its district land-record digitization program. The source describes district-level record work, not public parcel geometry; local land-record custody is supported.",
+    "verifiedOpenScope": "The provincial Revenue Department identifies Mansehra in its phased district land-record computerization program; the official provincial budget also lists the district revenue administration. No anonymous public geometry-only parcel route was verified.",
+    "citywideVerified": false,
+    "countrywideVerified": false,
+    "geometryVerified": false
+  },
+  "attempts": [
+    {
+      "url": "https://revenue.kp.gov.pk/computerization-of-land-record-in-18-districts/",
+      "result": "Official source reviewed; no property-specific lookup or identifying information was submitted."
+    },
+    {
+      "url": "https://www.pakp.gov.pk/wp-content/uploads/2024/05/f.-Estimates-of-Receipts-2023-24.pdf",
+      "result": "Official source reviewed; no property-specific lookup or identifying information was submitted."
+    }
+  ],
+  "remainingUncertainty": "Citywide completeness and adapter/runtime suitability remain unqualified; local registry evidence does not establish full public geometry availability.",
+  "geometryEvidence": {
+    "sampleFile": null,
+    "featureCount": 0,
+    "query": "No geometry request made; reviewed official HTML/search evidence only."
+  },
+  "runtimeAssessment": "Not enabled; root may perform full adapter qualification."
+}

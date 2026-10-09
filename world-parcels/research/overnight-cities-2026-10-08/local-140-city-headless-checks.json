@@ -1,0 +1,35 @@
+{
+  "schemaVersion": 1,
+  "checkedAt": "2026-10-08T23:08:27.496162+00:00",
+  "purpose": "Relevant fast headless checks at the 140-city local configuration milestone; no browser test suite was run.",
+  "vitest": {
+    "version": "4.1.11",
+    "testFileCount": 13,
+    "testsPassed": 185,
+    "failed": 0,
+    "files": [
+      "catastro-wfs-source.test.js",
+      "coverage-evidence-consistency.test.js",
+      "frontend-city-source-integrations.test.js",
+      "frontend-globe-coverage-ui.test.js",
+      "frontend-world-coverage.test.js",
+      "gml-parcel-reader.test.js",
+      "hamburg-alkis-source.test.js",
+      "parcel-coverage-report.test.js",
+      "parcel-report-evidence.test.js",
+      "parcel-source-city-metric.test.js",
+      "parcel-source-concurrency.test.js",
+      "world-coverage-build.test.js",
+      "world-coverage-geography.test.js"
+    ]
+  },
+  "nodeQueueTests": {
+    "testFile": "scripts/tests/overnight-city-queue-classification.test.mjs",
+    "passed": 5,
+    "failed": 0
+  },
+  "configuredCities": 140,
+  "executableProviders": 125,
+  "reviewedCitiesThisRun": 117,
+  "releaseState": "local_uncommitted_undeployed"
+}

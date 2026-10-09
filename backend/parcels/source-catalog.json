@@ -48,7 +48,7 @@
       "queryMode": "point",
       "capabilities": {
         "point": true,
-        "exactId": false,
+        "exactId": true,
         "bbox": false,
         "areaEnumeration": false
       },
@@ -288,7 +288,7 @@
       "maxBboxKm2": 25,
       "countryCode": "FR",
       "metricSrid": 32631,
-      "scope": "IGN assembly of vectorised DGFiP cadastral parcels across France; bounded Paris and Lyon globe entries are enabled and verified. Non-vectorised areas and cadastral alignment gaps remain possible.",
+      "scope": "IGN assembly of vectorised DGFiP cadastral parcels across France; bounded Paris, Lyon, Marseille and Lille metropolitan-settlement entries are enabled. Each added city has separate bounded evidence in additionalCityEvidence and cityScopes. Non-vectorised areas and cadastral alignment gaps remain possible.",
       "evidenceFile": "research/paris-live-wfs.json",
       "attribution": "IGN/DGFiP, Parcellaire Express (PCI), catalogue and updates linked; accessed October 2, 2026. Licence Ouverte 2.0. Adapted to WGS84.",
       "licenceUrl": "https://www.data.gouv.fr/pages/legal/licences/etalab-2.0",
@@ -296,8 +296,22 @@
       "parcelNumberField": "numero",
       "cityIds": [
         "paris",
-        "lyon"
-      ]
+        "lyon",
+        "marseille",
+        "lille",
+        "toulouse",
+        "bordeaux"
+      ],
+      "additionalCityEvidence": {
+        "marseille": "research/overnight-cities-2026-10-08/marseille-ign-root-acceptance.json",
+        "lille": "research/overnight-cities-2026-10-08/lille-ign-root-acceptance.json",
+        "toulouse": "research/overnight-cities-2026-10-08/toulouse-ign-root-acceptance.json",
+        "bordeaux": "research/overnight-cities-2026-10-08/bordeaux-ign-root-acceptance.json"
+      },
+      "cityScopes": {
+        "marseille": "331 valid, distinct official cadastral polygons verified in thirteen local 0.001-degree cells around the unchanged WUP settlement locator. Complete pages, forced three-row pagination, all 331 fresh native cadastral-reference reads, valid synthetic absence, footprint and source binding passed. Independent GEOS in EPSG:32631 found no invalid polygons, duplicate geometry, overlaps above 0.01 m² or operation errors. Marseille commune; the unchanged WUP point lies within returned parcel geometry. Wider municipal completeness, legal boundary accuracy and long-term identifier continuity remain unverified.",
+        "lille": "281 valid, distinct official cadastral polygons verified in thirteen local 0.001-degree cells around the unchanged WUP settlement locator. Complete pages, forced three-row pagination, all 281 fresh native cadastral-reference reads, valid synthetic absence, footprint and source binding passed. Independent GEOS in EPSG:32631 found no invalid polygons, duplicate geometry, overlaps above 0.01 m² or operation errors. Lille metropolitan settlement locator near Marcq-en-Barœul, which is a separate commune. The initial query restricted to Lille commune 59350 returned no parcel at the WUP point; the existing nationwide IGN provider verifies nearby ground at the unchanged locator without that municipal restriction. Wider municipal completeness, legal boundary accuracy and long-term identifier continuity remain unverified."
+      }
     },
     {
       "id": "au-vic-vicmap-parcel",
@@ -404,7 +418,7 @@
       "maxBboxKm2": 25,
       "countryCode": "NL",
       "metricSrid": 32631,
-      "scope": "Current Dutch cadastral map, bounded Amsterdam, Rotterdam and The Hague city entries. Indicative boundaries; wider coverage requires the separate national review.",
+      "scope": "Shared public cadastral-reference provider with separately qualified bounded city entries: Amsterdam, Rotterdam, The Hague and Utrecht. Each city scope and evidence file records its own geometry, identity and runtime checks. No citywide or countrywide completeness, legal title, survey accuracy or currentness is asserted.",
       "evidenceFile": "research/amsterdam-live.json",
       "attribution": "Kadaster / PDOK, Kadastrale Kaart, CC BY 4.0. Adapted to WGS84.",
       "licenceUrl": "https://creativecommons.org/licenses/by/4.0/",
@@ -412,13 +426,18 @@
       "cityIds": [
         "amsterdam",
         "rotterdam",
-        "thehague"
+        "thehague",
+        "utrecht"
       ],
       "additionalCityEvidence": {
-        "thehague": "research/world-capitals-2026-10-08/the-hague-acceptance.json"
+        "thehague": "research/world-capitals-2026-10-08/the-hague-acceptance.json",
+        "utrecht": "research/overnight-followon-2026-10-09/utrecht-root-acceptance.json"
       },
       "cityScopes": {
-        "thehague": "139 complete current (G) native cadastral references in 13 The Hague cells. Bounded city entry on the existing Dutch provider; indicative boundaries and no legal-title or survey guarantee."
+        "thehague": "139 complete current (G) native cadastral references in 13 The Hague cells. Bounded city entry on the existing Dutch provider; indicative boundaries and no legal-title or survey guarantee.",
+        "utrecht": "212 distinct full native cadastral-reference polygons around the unchanged WUP settlement locator across thirteen bounded cells. Independent EPSG:32631 GEOS audit of all212 grid and footprint polygons found no invalidity, duplicate geometry, positive-area overlaps above0.01m² or operation errors. Forced three-row paging, all212 fresh exact native-ID reads, explicit absence, footprint lookup and source binding passed. Published native identities and full geometry preserved without repair. This bounded evidence does not establish citywide completeness, legal title, positional accuracy or currentness. Only publisher current(G) native cadastral references are selected. Original exact locator lies outside the three retained nearby parcels; bounded coverage is local reference geometry.",
+        "amsterdam": "Bounded original city evidence; see research/amsterdam-live.json and research/rotterdam-live.json. Indicative cadastral boundaries; whole-city completeness unverified.",
+        "rotterdam": "Bounded original city evidence; see research/amsterdam-live.json and research/rotterdam-live.json. Indicative cadastral boundaries; whole-city completeness unverified."
       }
     },
     {
@@ -484,7 +503,7 @@
       "maxBboxKm2": 25,
       "countryCode": "DE",
       "metricSrid": 32632,
-      "scope": "North Rhine-Westphalia ALKIS cadastral map; bounded Essen, Cologne and Dortmund globe entries enabled. Other German states need separate sources. The named flstkennz identity is serialized as GeoJSON feature.id; objid and aktualit remain version metadata.",
+      "scope": "North Rhine-Westphalia ALKIS cadastral-reference map; bounded Essen, Cologne, Dortmund, Düsseldorf and Bonn globe entries enabled. Native flstkennz identity is serialized as GeoJSON feature.id; objid and aktualit remain version metadata. Wider municipal completeness and legal survey accuracy remain unverified.",
       "evidenceFile": "research/dortmund-live-2026-10-03.json",
       "attribution": "Bezirksregierung Köln / Geobasis NRW, ALKIS simplified schema. Datenlizenz Deutschland – Zero 2.0. Adapted to WGS84.",
       "licenceUrl": "https://www.govdata.de/dl-de/zero-2-0",
@@ -492,8 +511,20 @@
       "cityIds": [
         "essen",
         "cologne",
-        "dortmund"
-      ]
+        "dortmund",
+        "dusseldorf",
+        "bonn",
+        "wuppertal"
+      ],
+      "additionalCityEvidence": {
+        "dusseldorf": "research/overnight-cities-2026-10-08/dusseldorf-nrw-root-acceptance.json",
+        "bonn": "research/overnight-cities-2026-10-08/bonn-nrw-root-acceptance.json",
+        "wuppertal": "research/overnight-cities-2026-10-08/wuppertal-nrw-root-acceptance.json"
+      },
+      "cityScopes": {
+        "dusseldorf": "162 valid, distinct NRW ALKIS cadastral polygons verified in thirteen local 0.001-degree cells around the unchanged Düsseldorf WUP locator. Complete offset paging, forced three-row pages, all 162 fresh native cadastral-reference reads, valid synthetic absence, footprint and source binding passed. Independent GEOS in EPSG:32632 found no invalid polygons, duplicate geometry, overlaps above 0.01 m² or operation errors. The existing North Rhine-Westphalia provider is reused. Wider municipal completeness, legal boundary accuracy and long-term identifier continuity remain unverified.",
+        "bonn": "79 valid distinct NRW ALKIS cadastral-reference polygons verified in thirteen bounded 0.001-degree cells around the unchanged Bonn WUP settlement locator. The existing shared North Rhine-Westphalia OGC API provider is reused. Complete offset paging, forced three-row pages, all 79 fresh native cadastral-reference reads, explicit absence, footprint and source binding passed in 25 requests. Independent metric EPSG:32632 GEOS found all geometries valid and distinct, with no sampled overlaps above 0.01 m² or operation errors. Wider municipal completeness, legal title, survey accuracy and long-term key continuity remain unverified."
+      }
     },
     {
       "id": "us-ca-sf-datasf-active-parcels",
@@ -1259,7 +1290,7 @@
       "evidenceFile": "research/batch-seven-live-cities-2026-10-04.json",
       "licenceNote": "Source conditions are informational; users choose their source and intended use.",
       "id": "es-dgc-inspire-cp-wfs",
-      "name": "Dirección General del Catastro — Madrid and Barcelona",
+      "name": "Dirección General del Catastro — Madrid, Barcelona and Valencia",
       "adapter": "catastro-wfs",
       "endpoint": "https://ovc.catastro.meh.es/INSPIRE/wfsCP.aspx",
       "idField": "nationalCadastralReference",
@@ -1271,13 +1302,15 @@
       "parcelNumberField": "nationalCadastralReference",
       "cityIds": [
         "madrid",
-        "barcelona"
+        "barcelona",
+        "valenciaspain"
       ],
       "countryCode": "ES",
       "metricSrid": 25830,
       "metricSridByCity": {
         "madrid": 25830,
-        "barcelona": 25831
+        "barcelona": 25831,
+        "valenciaspain": 25830
       },
       "maxResponseBytes": 8388608,
       "bbox": [
@@ -1288,11 +1321,16 @@
       ],
       "catalogueUrl": "https://www.catastro.hacienda.gob.es/webinspire/",
       "attribution": "Dirección General del Catastro, INSPIRE Cadastral Parcels. Adapted to WGS84.",
-      "scope": "Bounded samples in Madrid and Barcelona; national or municipality-wide completeness is not claimed.",
+      "scope": "Bounded samples in Madrid, Barcelona and Valencia; national or municipality-wide completeness is not claimed.",
       "caveats": [
         "Official WFS does not implement offset paging. Requests omit count/startIndex and require actual members to equal numberMatched.",
-        "A truncated, malformed or exception response is unavailable, never an empty success."
-      ]
+        "Truncated, malformed, general or mismatched exception responses remain unavailable. Exact GetParcel absence is recognized only from a complete OWS1.1 missing-parcel message matching the requested reference and zone.",
+        "All runtime query methods share one request slot because simultaneous public WFS reads reproduce connection resets."
+      ],
+      "additionalCityEvidence": {
+        "valenciaspain": "research/overnight-cities-2026-10-08/valencia-spain-acceptance.json"
+      },
+      "maxConcurrentQueries": 1
     },
     {
       "idType": "string",
@@ -4385,19 +4423,22 @@
       "countryCode": "NZ",
       "metricSrid": 32760,
       "cityIds": [
-        "wellington"
+        "wellington",
+        "auckland"
       ],
       "maxConcurrentQueries": 2,
       "scope": "174 current primary parcel references in 13 Wellington cells, all valid with no sampled overlaps. LINZ parcel data through a public ArcGIS publication; primary parcels only, no historic/pending records. Wider runtime coverage unverified.",
       "evidenceFile": "research/world-capitals-2026-10-08/wellington-acceptance.json",
-      "catalogueUrl": "https://data.linz.govt.nz/layer/50823-nz-primary-parcels/",
+      "catalogueUrl": "https://data.linz.govt.nz/layer/50772-nz-primary-parcels/",
       "attribution": "Toitū Te Whenua Land Information New Zealand primary parcels; public ArcGIS publication. Retain LINZ attribution and published CC BY conditions.",
       "licenceNote": "Toitū Te Whenua Land Information New Zealand primary parcels; public ArcGIS publication. Retain LINZ attribution and published CC BY conditions.",
       "additionalCityEvidence": {
-        "wellington": "research/world-capitals-2026-10-08/wellington-acceptance.json"
+        "wellington": "research/world-capitals-2026-10-08/wellington-acceptance.json",
+        "auckland": "research/overnight-cities-2026-10-08/auckland-linz-root-acceptance.json"
       },
       "cityScopes": {
-        "wellington": "174 current primary parcel references in 13 Wellington cells, all valid with no sampled overlaps. LINZ parcel data through a public ArcGIS publication; primary parcels only, no historic/pending records. Wider runtime coverage unverified."
+        "wellington": "174 current primary parcel references in 13 Wellington cells, all valid with no sampled overlaps. LINZ parcel data through a public ArcGIS publication; primary parcels only, no historic/pending records. Wider runtime coverage unverified.",
+        "auckland": "Auckland city-scoped verification of the shared LINZ current primary-parcel publication. The initial 13 aligned cells and four adjacent pans were expanded to 30 cells, a wider viewport and four pans around the unchanged WUP locator, yielding 184 distinct full parcel geometries. All 47 checks passed with the existing runtime descriptor: page size 100, native id identity, OBJECTID transport manifests, and safe appellation/topology labels. Forced three-row paging completed in 48 geometry pages; all 184 fresh native-id reads reproduced geometry; explicit absence, full footprint lookup and complete proposal binding passed. The WUP-containing native parcel 5211850 also matched its prior full geometry. GEOS in EPSG:32760 found no invalid polygons, duplicate geometry, sampled overlaps above 0.01 m² or operation errors. The shared Wellington runtime settings are retained. Current primary parcels only; non-primary interests, historic/pending parcels, whole-city completeness, source publication freshness and identity continuity after revision remain unverified. Retain LINZ attribution and CC BY 4.0 conditions; source accuracy notices remain informational."
       }
     },
     {
@@ -4558,6 +4599,1518 @@
         "eastjerusalem": "6 complete source parcel rows in 13 separate city cells; fresh shared-identity and footprint/binding checks pass. Provider OBJECTID references are not statutory parcel numbers. Wider completeness and legal currentness unverified. Geographic city scope does not express a political boundary or recognition claim. Large exact-ID batches can be slow (40 rows took 85 seconds); original transient timeouts are retained in evidence.",
         "jerusalem": "123 complete source parcel rows in 13 separate city cells; fresh shared-identity and footprint/binding checks pass. Provider OBJECTID references are not statutory parcel numbers. Wider completeness and legal currentness unverified. Geographic city scope does not express a political boundary or recognition claim. Large exact-ID batches can be slow (40 rows took 85 seconds); original transient timeouts are retained in evidence."
       }
+    },
+    {
+      "id": "us-pa-philadelphia-dor-active-ground",
+      "name": "Philadelphia Department of Records active ground parcels",
+      "adapter": "arcgis",
+      "endpoint": "https://services.arcgis.com/fLeGjb7u4uXqeF9q/arcgis/rest/services/DOR_Parcel/FeatureServer/0",
+      "idField": "mapreg",
+      "objectIdField": "objectid",
+      "idType": "string",
+      "idPrefix": "US-PA-PHILADELPHIA-DOR-",
+      "outFields": [
+        "objectid",
+        "mapreg",
+        "status",
+        "elev_flag"
+      ],
+      "attributeFilters": {
+        "status": 1,
+        "elev_flag": 0
+      },
+      "pageSize": 100,
+      "maxFeatures": 10000,
+      "maxBboxKm2": 1,
+      "countryCode": "US",
+      "metricSrid": 32618,
+      "cityIds": [
+        "philadelphia"
+      ],
+      "maxConcurrentQueries": 2,
+      "scope": "500 valid, distinct active no-elevation DOR parcel polygons verified in thirteen local cells around the selected Philadelphia locator. Complete pages and all fresh exact-ID geometry hashes agree. Five narrow boundary slivers remain (maximum 0.78% of the smaller parcel); no geometry repair applied. Broader city completeness and legal boundary accuracy are unverified.",
+      "evidenceFile": "research/overnight-cities-2026-10-08/philadelphia-dor-acceptance.json",
+      "operator": "City of Philadelphia Department of Records / CityGeo",
+      "catalogueUrl": "https://opendataphilly.org/datasets/department-of-records-property-parcels/",
+      "attribution": "Philadelphia Department of Records / CityGeo · active ground parcels; reference boundaries.",
+      "licenceNote": "City of Philadelphia public-use data, provided as is; reference boundaries do not replace recorded deeds or surveys. Source notices are informational."
+    },
+    {
+      "id": "us-nv-clark-assessor-parcels",
+      "name": "Clark County Assessor parcel polygons",
+      "adapter": "arcgis",
+      "endpoint": "https://maps.clarkcountynv.gov/arcgis/rest/services/GISMO/AssessorMap/FeatureServer/1",
+      "idField": "APN",
+      "idType": "string",
+      "objectIdField": "OID",
+      "idPrefix": "US-NV-CLARK-",
+      "outFields": [
+        "OID",
+        "APN"
+      ],
+      "pageSize": 2000,
+      "maxFeatures": 10000,
+      "maxBboxKm2": 1,
+      "countryCode": "US",
+      "metricSrid": 32611,
+      "cityIds": [
+        "lasvegas"
+      ],
+      "maxConcurrentQueries": 2,
+      "scope": "90 valid, distinct Clark County assessor parcel polygons verified in thirteen local cells around the Las Vegas WUP settlement locator, with no sampled overlaps above 0.01 m². Forced paging, fresh exact geometry hashes, explicit absence, footprint and complete binding passed across recorded retries. Intermittent HTTP 500 responses remain documented. County coverage near this point does not establish municipal-only, citywide or countywide completeness.",
+      "evidenceFile": "research/overnight-cities-2026-10-08/las-vegas-effective-acceptance.json",
+      "operator": "Clark County Assessor / Geographic Information Systems Management Office (GISMO)",
+      "catalogueUrl": "https://maps.clarkcountynv.gov/arcgis/rest/services/GISMO/AssessorMap/FeatureServer/1",
+      "attribution": "Clark County Assessor / GISMO · parcel reference polygons",
+      "licenceNote": "Public county parcel service; publisher conditions are informational. Assessor map references do not establish legal title or survey accuracy."
+    },
+    {
+      "adapter": "arcgis",
+      "id": "mo-dscc-cad-lote",
+      "endpoint": "https://cadastre.gis.gov.mo/arcgis/rest/services/Cadastre_Project/Cad_lote/MapServer/0",
+      "idField": "OBJECTID",
+      "objectIdField": "OBJECTID",
+      "idType": "integer",
+      "idPrefix": "MO-DSCC-CAD-",
+      "outFields": [
+        "OBJECTID"
+      ],
+      "pageSize": 500,
+      "maxFeatures": 5000,
+      "maxBboxKm2": 1,
+      "maxResponseBytes": 4194304,
+      "maxTotalResponseBytes": 25165824,
+      "projection": "EPSG:32649",
+      "name": "Macao DSCC Cad_lote cadastral reference polygons",
+      "countryCode": "MO",
+      "metricSrid": 32649,
+      "cityIds": [
+        "macau"
+      ],
+      "maxConcurrentQueries": 2,
+      "scope": "28 valid, distinct official Cad_lote parcel polygons verified in thirteen local cells around the explicit in-Macao center [22.1940052, 113.5442146]. Complete pages, fresh exact-ID hashes, absence, footprint and source binding pass, with no sampled overlaps above 0.01 m². This covers the Macao side of the Macau–Zhuhai settlement only. The ranked WUP point is outside Macao SAR; Zhuhai and wider municipal coverage remain unverified.",
+      "evidenceFile": "research/overnight-cities-2026-10-08/macau-dscc-acceptance.json",
+      "operator": "Direcção dos Serviços de Cartografia e Cadastro (DSCC), Macao SAR",
+      "catalogueUrl": "https://cadastre.gis.gov.mo/MGSP_Cad/port/main.html?type=1",
+      "attribution": "Macao DSCC · cadastral reference polygons · sampled Macao-side coverage",
+      "licenceNote": "Public official cadastral information network; source conditions informational. Bounded sample does not establish legal title, survey accuracy or completeness."
+    },
+    {
+      "id": "us-ca-sangis-parcels-reference",
+      "name": "SanGIS unstacked parcel reference polygons",
+      "adapter": "arcgis",
+      "endpoint": "https://gis-public.sandiegocounty.gov/arcgis/rest/services/DPW/LEAMS_Reference/MapServer/16",
+      "idField": "PARCELID",
+      "objectIdField": "OBJECTID",
+      "idType": "integer",
+      "idPrefix": "US-CA-SANGIS-PARCEL-",
+      "outFields": [
+        "OBJECTID",
+        "PARCELID",
+        "SUB_TYPE"
+      ],
+      "pageSize": 100,
+      "maxFeatures": 10000,
+      "maxBboxKm2": 1,
+      "countryCode": "US",
+      "metricSrid": 32611,
+      "projection": "EPSG:32611",
+      "cityIds": [
+        "sandiego"
+      ],
+      "maxConcurrentQueries": 2,
+      "operator": "SanGIS (City and County of San Diego joint-powers GIS agency); public county DPW service",
+      "catalogueUrl": "https://www.sangis.org/",
+      "attribution": "SanGIS / County of San Diego · unstacked reference parcel polygons",
+      "licenceNote": "Public official GIS reference data; source conditions informational. Sample does not establish legal title, survey accuracy or municipal completeness.",
+      "scope": "129 valid, distinct official SanGIS unstacked reference polygons audited in thirteen bounded local cells near the WUP 2025 San Diego settlement locator. All required real-adapter checks passed across recorded attempts with explicit provider-timeout retries. No sampled overlaps above 0.01 m², duplicate geometry or invalid polygons were found. This is bounded San Diego-area source verification, not municipality-wide completeness or legal survey evidence. SanGIS uses one reference polygon per tax parcel; selected APNs may change, so runtime identity uses native PARCELID rather than APN.",
+      "evidenceFile": "research/overnight-cities-2026-10-08/san-diego-sangis-effective-acceptance.json"
+    },
+    {
+      "id": "br-sg-prefeitura-geoserver-lote-cadastro",
+      "name": "São Gonçalo municipal cadastral lots (GeoServer WFS)",
+      "adapter": "wfs",
+      "endpoint": "https://geoserver.pmsg.rj.gov.br/ows",
+      "featureType": "SaoGoncalo:lote_a_cadastro_sg",
+      "idField": "id",
+      "idType": "integer",
+      "idPrefix": "BR-SG-CAD-",
+      "geometryField": "geom",
+      "requestProperties": true,
+      "outFields": [
+        "id"
+      ],
+      "pageSize": 1000,
+      "maxFeatures": 10000,
+      "maxBboxKm2": 25,
+      "countryCode": "BR",
+      "metricSrid": 31983,
+      "scope": "90 valid, distinct municipal cadastral polygons verified in thirteen bounded local cells around the WUP 2025 São Gonçalo settlement locator. Complete paging, fresh native-ID reads, explicit absence, footprint and binding checks passed. Independent GEOS audits found no sampled overlaps above 0.01 m², duplicate geometry, invalid polygons or operation errors. The exact WUP point returned no parcel; verification covers nearby mapped parcels, not exact-point or municipality-wide completeness. Native numeric id was stable during live re-reads; long-term ID permanence is undocumented.",
+      "cityIds": [
+        "saogoncalo"
+      ],
+      "maxConcurrentQueries": 2,
+      "projection": "EPSG:31983",
+      "operator": "Prefeitura Municipal de São Gonçalo",
+      "catalogueUrl": "https://topovision.pmsg.rj.gov.br/",
+      "attribution": "Prefeitura Municipal de São Gonçalo · municipal cadastral lots",
+      "licenceNote": "Public municipal GIS; publisher conditions informational. Bounded geometry verification is not legal title or municipality-wide completeness.",
+      "evidenceFile": "research/overnight-cities-2026-10-08/sao-goncalo-public-cadastre-acceptance.json"
+    },
+    {
+      "id": "de-hh-alkis-flurstueck",
+      "name": "Hamburg simplified ALKIS cadastral parcels",
+      "adapter": "hamburg-alkis-wfs",
+      "endpoint": "https://geodienste.hamburg.de/WFS_HH_ALKIS_vereinfacht",
+      "featureType": "ave:Flurstueck",
+      "idField": "flstkennz",
+      "idType": "string",
+      "idPrefix": "DE-HH-ALKIS-",
+      "idPattern": "^02[0-9_]{18}$",
+      "outFields": [
+        "flstkennz",
+        "oid"
+      ],
+      "pageSize": 100,
+      "maxFeatures": 5000,
+      "maxBboxKm2": 1,
+      "countryCode": "DE",
+      "metricSrid": 25832,
+      "operator": "Landesbetrieb Geoinformation und Vermessung Hamburg",
+      "cityIds": [
+        "hamburg"
+      ],
+      "maxConcurrentQueries": 2,
+      "catalogueUrl": "https://api.hamburg.de/datasets/v1/alkis_vereinfacht",
+      "attribution": "LGV Hamburg · ALKIS cadastral parcels",
+      "licenceNote": "Datenlizenz Deutschland Namensnennung 2.0; publisher terms informational. Geometry verification is local and not a legal title determination.",
+      "evidenceFile": "research/overnight-cities-2026-10-08/hamburg-alkis-acceptance.json",
+      "scope": "67 valid, distinct ALKIS cadastral polygons verified in thirteen local cells around the WUP Hamburg settlement locator. Provider-generated GeoJSON preserves the original curved boundaries; exact geographic Intersects filters avoid native projected-envelope false positives. Stable counts before and after pages, fresh native cadastral-reference reads, explicit absence, footprint and binding passed. Independent GEOS found no invalid polygons, duplicate geometry or overlaps above 0.01 m² in the sample. Citywide completeness, legal boundary accuracy and long-term ID permanence remain unverified."
+    },
+    {
+      "id": "us-tx-bexar-bcad-public-archive-2022-propid",
+      "adapter": "arcgis",
+      "endpoint": "https://services7.arcgis.com/Q6vsXnxTnYcWB7qg/ArcGIS/rest/services/BEXAR_PARCELS/FeatureServer/0",
+      "idField": "Prop_ID",
+      "idType": "string",
+      "idPattern": "^[0-9]{1,10}$",
+      "objectIdField": "OBJECTID",
+      "idPrefix": "US-TX-BEXAR-BCAD-2022-",
+      "outFields": [
+        "OBJECTID",
+        "Prop_ID"
+      ],
+      "pageSize": 500,
+      "maxFeatures": 5000,
+      "maxBboxKm2": 25,
+      "name": "San Antonio Bexar CAD parcels · public 2022 archive",
+      "cityIds": [
+        "sanantonio"
+      ],
+      "countryCode": "US",
+      "metricSrid": 26914,
+      "projection": "EPSG:26914",
+      "maxConcurrentQueries": 2,
+      "operator": "Guadalupe-Blanco River Authority ArcGIS organization (public publisher); underlying parcel attribution is Bexar CAD via TNRIS",
+      "catalogueUrl": "https://gbra.maps.arcgis.com/home/item.html?id=ddc97094771f45be81fc6cd4842a1901",
+      "attribution": "Bexar CAD via TNRIS · public GBRA archive (2022)",
+      "licenceNote": "Public GBRA-hosted archival mirror credited to Bexar CAD via TNRIS; January 2022 acquisition. Source age and legal/survey disclaimers informational; local sample does not establish current assessor state or citywide completeness.",
+      "evidenceFile": "research/overnight-cities-2026-10-08/san-antonio-acceptance.json",
+      "scope": "115 unique full parcel polygons returned through 13 bounded 0.001-degree cells around the WUP locator. All 13 viewport reads, forced 3-row paging (18 features across six pages), 115 fresh exact-ID reads, explicit absent-ID semantics, a footprint query, and source binding passed through the existing ArcGIS adapter. All fresh geometries matched viewport hashes. The exact WUP locator is outside all retained polygons. This verifies a local sample only; city-boundary coverage and citywide completeness remain unverified. The GBRA-hosted item is a 2022 TNRIS-acquired snapshot attributed to Bexar CAD, not a live BCAD/SARA feed. The sample does not establish current assessor state, city boundary coverage, or legal survey accuracy."
+    },
+    {
+      "id": "us-tx-dallas-taxparcels",
+      "name": "City of Dallas certified tax parcels",
+      "adapter": "arcgis",
+      "endpoint": "https://gis.dallascityhall.com/arcgis/rest/services/Basemap/DallasTaxParcels/FeatureServer/0",
+      "objectIdField": "OBJECTID",
+      "idPrefix": "US-TX-DALLAS-",
+      "outFields": [
+        "OBJECTID",
+        "COUNTY",
+        "GIS_ACCT",
+        "APPRAISALYEAR"
+      ],
+      "pageSize": 1000,
+      "maxFeatures": 10000,
+      "maxBboxKm2": 1,
+      "boundsQueryMode": "object-ids",
+      "idsQueryMode": "object-ids",
+      "countryCode": "US",
+      "metricSrid": 32614,
+      "cityIds": [
+        "dallas"
+      ],
+      "operator": "City of Dallas GIS Services; county appraisal districts",
+      "catalogueUrl": "https://www.dallascounty.org/departments/pubworks/GIS.php",
+      "licenceNote": "Public municipal parcel data; appraisal and survey disclaimers informational. Bounded audit is not legal title determination.",
+      "evidenceFile": "research/overnight-cities-2026-10-08/dallas-taxparcels-acceptance.json",
+      "idField": "GIS_ACCT",
+      "idType": "string",
+      "idPattern": "^[A-Za-z0-9]{1,17}$",
+      "scope": "115 valid, distinct City of Dallas tax-parcel polygons verified in thirteen bounded cells around the ranked WUP locator. Complete object-ID manifests, forced three-row paging, all fresh GIS_ACCT reads, explicit absence, footprint and binding passed. Independent GEOS found no invalid polygons, duplicate geometry, sampled overlaps above 0.01 m² or operation errors. GIS_ACCT is the advertised display/account field; county metadata is blank on one sampled record and is not synthesized. Native account identity is verified only within this sample and these live re-reads. Citywide completeness, present legal boundaries and permanence of accounts are unverified.",
+      "attribution": "City of Dallas GIS · certified county tax parcels"
+    },
+    {
+      "id": "us-ca-oakland-parcels",
+      "adapter": "arcgis",
+      "endpoint": "https://gismaps.oaklandca.gov/oaklandgis/rest/services/Parcel/MapServer/0",
+      "idField": "APN_1",
+      "idType": "string",
+      "objectIdField": "OBJECTID",
+      "idPrefix": "US-CA-OAK-",
+      "outFields": [
+        "OBJECTID",
+        "APN_1"
+      ],
+      "pageSize": 1000,
+      "maxFeatures": 5000,
+      "maxBboxKm2": 25,
+      "boundsQueryMode": "object-ids",
+      "idsQueryMode": "object-ids",
+      "name": "City of Oakland GIS parcels",
+      "countryCode": "US",
+      "metricSrid": 32610,
+      "cityIds": [
+        "oakland"
+      ],
+      "operator": "City of Oakland GIS; county parcel boundaries",
+      "catalogueUrl": "https://gismaps.oaklandca.gov/oaklandgis/rest/services/Parcel/MapServer/0",
+      "licenceNote": "Public municipal GIS layer; publisher survey and legal-boundary limitations informational.",
+      "evidenceFile": "research/overnight-cities-2026-10-08/oakland-acceptance.json",
+      "scope": "203 distinct City of Oakland GIS parcel references verified through complete object-ID manifests across thirteen bounded cells around the ranked WUP locator, forced three-row paging, all 203 fresh APN_1 geometry reads, explicit absence, footprint and binding. Independent GEOS audit in EPSG:32610 found all 203 geometries valid and nonempty, with no duplicate geometry, sampled overlap above 0.01 m² or operation errors. Source describes county parcels clipped to Oakland limits; citywide completeness, current legal boundaries and permanent native-key uniqueness are not inferred.",
+      "attribution": "City of Oakland GIS · county parcels clipped to city"
+    },
+    {
+      "id": "us-wa-king-county-parcel-boundary",
+      "adapter": "arcgis",
+      "endpoint": "https://services.arcgis.com/ZOyb2t4B0UYuYNYH/ArcGIS/rest/services/Parcel_Boundary/FeatureServer/0",
+      "idPrefix": "US-WA-KC-",
+      "idField": "PIN",
+      "objectIdField": "OBJECTID",
+      "idType": "string",
+      "idPattern": "^[0-9]{10}$",
+      "outFields": [
+        "PIN",
+        "OBJECTID"
+      ],
+      "pageSize": 1000,
+      "maxFeatures": 2000,
+      "maxBboxKm2": 1,
+      "boundsQueryMode": "object-ids",
+      "idsQueryMode": "object-ids",
+      "name": "Seattle GIS King County parcel boundaries",
+      "countryCode": "US",
+      "metricSrid": 32610,
+      "cityIds": [
+        "seattle"
+      ],
+      "operator": "City of Seattle GIS; King County Assessor parcel source",
+      "catalogueUrl": "https://gismaps.kingcounty.gov/parcelviewer2/",
+      "licenceNote": "Public municipal and county GIS parcel references; approximate lot lines and legal/survey disclaimers informational.",
+      "evidenceFile": "research/overnight-cities-2026-10-08/seattle-parcels-acceptance.json",
+      "scope": "106 valid, distinct City of Seattle-hosted King County parcel references verified in thirteen bounded cells around the ranked WUP locator. Complete object-ID manifests, forced three-row paging, all 106 fresh PIN geometry reads, explicit absence, footprint and binding passed. Independent GEOS audit in EPSG:32610 found no invalid geometries, duplicates, sampled overlaps above 0.01 m² or operation errors. The publisher describes its CGDB spatial extent, which extends north and south of Seattle; the source is not restricted to current municipal limits. Citywide completeness, legal survey accuracy and permanent PIN uniqueness beyond this sample are unverified.",
+      "attribution": "City of Seattle GIS · King County parcel boundaries"
+    },
+    {
+      "id": "us-az-mesa-city-parcels",
+      "adapter": "arcgis",
+      "endpoint": "https://services2.arcgis.com/1gVyYKfYgW5Nxb1V/arcgis/rest/services/Parcels/FeatureServer/0",
+      "idPrefix": "US-MESA-CITY-",
+      "idField": "APN",
+      "objectIdField": "OBJECTID",
+      "idType": "string",
+      "outFields": [
+        "OBJECTID",
+        "APN"
+      ],
+      "pageSize": 1000,
+      "maxFeatures": 2000,
+      "maxBboxKm2": 1,
+      "boundsQueryMode": "object-ids",
+      "idsQueryMode": "object-ids",
+      "name": "City of Mesa GIS parcel boundaries",
+      "operator": "City of Mesa GIS",
+      "catalogueUrl": "https://opengis.mesaaz.gov/",
+      "attribution": "City of Mesa GIS parcel boundaries · adapted",
+      "countryCode": "US",
+      "metricSrid": 32612,
+      "cityIds": [
+        "mesa"
+      ],
+      "evidenceFile": "research/overnight-cities-2026-10-08/mesa-parcels-acceptance.json",
+      "scope": "23 valid, distinct City of Mesa-hosted parcel polygons verified in thirteen bounded cells around [33.3793,-111.8075], approximately 1.1 km north of the unchanged ranked WUP locator. The WUP point returned an explicit empty collection. Complete object-ID manifests, forced three-row paging, all 23 fresh APN geometry reads, explicit absence, footprint and binding passed. Independent GEOS audit in EPSG:32612 found no invalid geometries, duplicates, sampled overlaps above 0.01 m² or operation errors. The app starts at the tested nearby parcel-covered reference; citywide completeness, legal title, survey accuracy and APN uniqueness outside this sample are unverified.",
+      "licenceNote": "Public city GIS reference polygons; source conditions and legal/survey disclaimers informational."
+    },
+    {
+      "id": "us-fl-fort-lauderdale-taxparcels-ground",
+      "name": "Fort Lauderdale ground tax-parcel boundaries",
+      "adapter": "arcgis",
+      "endpoint": "https://gis.fortlauderdale.gov/server/rest/services/TaxParcel/MapServer/0",
+      "idField": "OBJECTID",
+      "objectIdField": "OBJECTID",
+      "idType": "integer",
+      "idPrefix": "US-FL-FORT-LAUDERDALE-ROW-",
+      "parcelNumberField": "PARCELID",
+      "outFields": [
+        "OBJECTID",
+        "PARCELID",
+        "RECORDTYPE"
+      ],
+      "pageSize": 500,
+      "maxFeatures": 20000,
+      "maxBboxKm2": 1,
+      "countryCode": "US",
+      "metricSrid": 32617,
+      "cityIds": [
+        "fortlauderdale"
+      ],
+      "operator": "City of Fort Lauderdale GIS",
+      "catalogueUrl": "https://gis.fortlauderdale.gov/server/rest/services/TaxParcel/MapServer",
+      "attribution": "City of Fort Lauderdale GIS · ground tax-parcel boundaries · adapted",
+      "attributeFilters": {
+        "RECORDTYPE": "Parcel"
+      },
+      "boundsQueryMode": "object-ids",
+      "idsQueryMode": "object-ids",
+      "evidenceFile": "research/overnight-cities-2026-10-08/fort-lauderdale-acceptance.json",
+      "scope": "46 valid, distinct Fort Lauderdale ground Parcel records verified in thirteen bounded cells around the unchanged ranked WUP locator. The publisher-defined RECORDTYPE=Parcel filter excludes redundant Condo Unit rows and is enforced on every query. OBJECTID is the unique service row identity; PARCELID is a non-unique display label. Complete object-ID manifests, forced three-row paging (26 rows over nine pages), all 46 fresh identity reads, explicit absence, footprint and binding passed. Independent GEOS audit in EPSG:32617 found no invalid geometries, duplicates, sampled overlaps above 0.01 m² or operation errors. This is municipal tax-parcel geometry; citywide completeness, legal title, survey accuracy and permanent service-row identity are unverified.",
+      "licenceNote": "Public city GIS reference polygons; source conditions and legal/survey disclaimers informational."
+    },
+    {
+      "id": "za-csg-dffe-erven",
+      "adapter": "arcgis",
+      "endpoint": "https://dffeportal.environment.gov.za/hosting/rest/services/CSG_Cadaster/CSG_Cadastral_Data/MapServer/2",
+      "idPrefix": "ZA-CSG-DFFE-ERVEN-",
+      "idField": "PRCL_KEY",
+      "objectIdField": "OBJECTID",
+      "idType": "string",
+      "outFields": [
+        "OBJECTID",
+        "PRCL_KEY",
+        "PRCL_TYPE",
+        "LSTATUS",
+        "WSTATUS"
+      ],
+      "queryFormat": "esri-json",
+      "pageSize": 1000,
+      "maxFeatures": 2000,
+      "maxBboxKm2": 1,
+      "boundsQueryMode": "object-ids",
+      "idsQueryMode": "object-ids",
+      "name": "Chief Surveyor-General public Erven polygons",
+      "operator": "Chief Surveyor-General; Department of Forestry, Fisheries and the Environment service host",
+      "catalogueUrl": "https://csg.dlrrd.gov.za/data.htm",
+      "attribution": "Chief Surveyor-General · DFFE hosted Erven · adapted",
+      "countryCode": "ZA",
+      "metricSrid": 32735,
+      "cityIds": [
+        "klipgat",
+        "evaton"
+      ],
+      "evidenceFile": "research/overnight-cities-2026-10-08/klipgat-csg-acceptance.json",
+      "scope": "Public Chief Surveyor-General Erven reference polygons hosted by DFFE; separately qualified bounded Klipgat and Evaton settlement views. Complete native PRCL_KEY identity and Esri straight-ring geometry are preserved. Each city retains its own extent and geometry-quality evidence; wider coverage, current legal title and survey accuracy remain unverified.",
+      "licenceNote": "Public government cadastral/reference map polygons; source notices informational. Legal survey accuracy and title are unverified.",
+      "additionalCityEvidence": {
+        "evaton": "research/overnight-cities-2026-10-08/evaton-csg-root-acceptance.json"
+      },
+      "cityScopes": {
+        "evaton": "46 valid distinct Chief Surveyor-General Erven references verified in thirteen bounded 0.001-degree cells around the unchanged Evaton WUP settlement locator. Complete object-ID manifests, forced three-row geometry pages, all 46 fresh native PRCL_KEY reads, explicit absence, footprint and binding passed in 59 requests through the existing strict Esri JSON reader. Independent EPSG:32735 GEOS found no invalid geometries, exact duplicates or operation errors, and one 0.0130704 m² boundary overlap. A fresh original native EPSG:4148 response reproduces that overlap as a strip under one millimetre wide over about 54 metres; both full polygons retain it without repair or exclusion and are accepted for bounded reference use. The publisher states its web dataset is beta/not current and coordinates are not legal values; currentness, legal title, survey accuracy and wider citywide completeness remain unverified."
+      }
+    },
+    {
+      "id": "za-ekurhuleni-stands",
+      "adapter": "arcgis",
+      "endpoint": "https://gis.ekurhuleni.gov.za/arcgis/rest/services/Ekurhuleni/Ekurhuleni_Propety_Data_Map/MapServer/1",
+      "idPrefix": "ZA-EKU-STAND-",
+      "idField": "GIS_KEY",
+      "objectIdField": "OBJECTID",
+      "idType": "string",
+      "outFields": [
+        "OBJECTID",
+        "GIS_KEY",
+        "TOWNSHIP_CODE",
+        "PROPNO",
+        "PTNO",
+        "SG_CODE"
+      ],
+      "pageSize": 1000,
+      "maxFeatures": 3000,
+      "maxBboxKm2": 1,
+      "boundsSrid": 4326,
+      "boundsProjection": "EPSG:4326",
+      "boundsQueryMode": "object-ids",
+      "idsQueryMode": "object-ids",
+      "nativeGeometryMode": "parts",
+      "disjointParts": true,
+      "partMatchFields": [
+        "TOWNSHIP_CODE",
+        "PROPNO",
+        "PTNO",
+        "SG_CODE"
+      ],
+      "name": "City of Ekurhuleni municipal stands — Tembisa sample",
+      "operator": "City of Ekurhuleni Geographic Information Systems",
+      "catalogueUrl": "https://gis.ekurhuleni.gov.za/",
+      "attribution": "City of Ekurhuleni GIS · municipal stands · adapted",
+      "countryCode": "ZA",
+      "metricSrid": 32735,
+      "cityIds": [
+        "tembisa"
+      ],
+      "evidenceFile": "research/overnight-cities-2026-10-08/tembisa-parcels-acceptance.json",
+      "scope": "231 valid, distinct Ekurhuleni municipal stand references verified in thirteen bounded 0.001-degree cells around the unchanged Tembisa WUP locator. GIS_KEY supplies native identity; every source component is retained and administrative references must agree. Complete object-ID manifests, three-row paging of the 45-row viewport and its full component refresh (fifteen geometry pages each), all 231 fresh identity reads, explicit absence, footprint and binding passed. Independent GEOS audit in EPSG:32735 found no invalid geometries, duplicates, sampled overlaps above 0.01 m² or operation errors. Stand S850000000000900000 retains eight disjoint components totalling about 1.963 km²; matching township/property/portion/SG references support its shared source identity. It is not excluded by size, flattened, clipped or repaired. Coverage, title, survey accuracy and identity beyond this bounded evidence are unverified.",
+      "licenceNote": "Public government cadastral/reference map polygons; source notices informational. Legal survey accuracy and title are unverified."
+    },
+    {
+      "id": "br-vitoria-lotes",
+      "adapter": "arcgis",
+      "endpoint": "https://gis.vitoria.es.gov.br/arcgis/rest/services/MapaBaseImobiliario/MapServer/101",
+      "idPrefix": "BR-VIX-LOTE-",
+      "idFields": [
+        "codGeo",
+        "codLote"
+      ],
+      "idFieldTypes": {
+        "codGeo": "string",
+        "codLote": "integer"
+      },
+      "objectIdField": "OBJECTID",
+      "outFields": [
+        "OBJECTID",
+        "codGeo",
+        "codLote",
+        "codGeoPoligono"
+      ],
+      "pageSize": 1000,
+      "maxFeatures": 3000,
+      "maxBboxKm2": 1,
+      "boundsSrid": 31984,
+      "boundsProjection": "+proj=utm +zone=24 +south +ellps=GRS80 +units=m +no_defs",
+      "boundsQueryMode": "object-ids",
+      "idsQueryMode": "object-ids",
+      "name": "Vitória municipal Lote — central reference",
+      "operator": "Prefeitura Municipal de Vitória",
+      "catalogueUrl": "https://gis.vitoria.es.gov.br/arcgis/rest/services/MapaBaseImobiliario/MapServer/101",
+      "attribution": "Prefeitura Municipal de Vitória · Mapa Base Imobiliário Lote · adapted",
+      "countryCode": "BR",
+      "metricSrid": 32724,
+      "cityIds": [
+        "vitoria"
+      ],
+      "evidenceFile": "research/overnight-cities-2026-10-08/vitoria-lotes-root-acceptance.json",
+      "scope": "127 valid, distinct municipal Lote references verified in thirteen bounded 0.001-degree cells at the separately identified central Vitória reference [-20.3155,-40.3128]. The unchanged WUP locator has no exact-point parcel. Complete object-ID manifests, 31-row forced three-row paging over eleven geometry pages, all 127 fresh composite codGeo/codLote identities, explicit absence, footprint and binding passed in 21 checks. Native EPSG:31984 re-reads confirm four tiny source boundary-sliver pairs totaling 0.37279 m²; the largest pair is 0.17233 m², the largest fraction is 0.03197% of the smaller parcel, and overlap-part inscribed diameters are 0.00092–0.01331 m (GEOS tolerance 0.0001 m). Root accepts these documented narrow slivers for bounded reference use, consistent with the Philadelphia review. All original coordinates remain unchanged; no repair, clipping, snapping or selective deletion. Citywide completeness, source-wide identity uniqueness, survey accuracy and legal-title extent remain unverified.",
+      "licenceNote": "Public municipal property-base map; source notices informational. Original boundary slivers preserved; legal title and survey accuracy unverified.",
+      "maxConcurrentQueries": 2
+    },
+    {
+      "id": "mx-juarez-predios",
+      "adapter": "arcgis",
+      "endpoint": "https://sigimip.org.mx/server/rest/services/CartografiaBase/FeatureServer/3",
+      "idPrefix": "MX-JUA-PREDIO-",
+      "idField": "GlobalID",
+      "objectIdField": "OBJECTID",
+      "idType": "string",
+      "parcelNumberField": "clavetxt",
+      "outFields": [
+        "OBJECTID",
+        "GlobalID",
+        "clavetxt"
+      ],
+      "pageSize": 1000,
+      "maxFeatures": 3000,
+      "maxBboxKm2": 1,
+      "boundsSrid": 32613,
+      "boundsProjection": "+proj=utm +zone=13 +datum=WGS84 +units=m +no_defs",
+      "boundsQueryMode": "object-ids",
+      "idsQueryMode": "object-ids",
+      "maxConcurrentQueries": 2,
+      "name": "IMIP Ciudad Juárez municipal Predios",
+      "operator": "Instituto Municipal de Investigación y Planeación (IMIP), Municipio de Juárez",
+      "catalogueUrl": "https://www.imip.org.mx/sigem/",
+      "attribution": "IMIP Ciudad Juárez · CartografiaBase Predios · adapted",
+      "countryCode": "MX",
+      "metricSrid": 32613,
+      "cityIds": [
+        "ciudadjuarez"
+      ],
+      "evidenceFile": "research/overnight-cities-2026-10-08/juarez-globalid-effective-acceptance.json",
+      "scope": "203 valid, distinct IMIP municipal Predios geometries verified in thirteen bounded 0.001-degree cells around the unchanged Ciudad Juárez WUP locator, which lies in a returned full polygon. GlobalID is the publisher-declared per-feature identity; OBJECTID is transport identity, and clavetxt remains only a label. The earlier clavetxt-based full-grid exact read matched 23,424 source rows because the label 0 is repeated, so that descriptor is rejected without filtering out such rows. Complete object-ID manifests, forced three-row paging of 31 source features over eleven geometry pages, all 203 fresh GlobalID reads, valid synthetic UUID absence, footprint and binding passed. Independent GEOS in EPSG:32613 found all 203 valid, nonduplicate and no sampled positive-area overlaps above 0.01 m² or operation errors. A malformed non-UUID absence probe correctly returned HTTP 400 and is preserved separately. All source shapes and labels remain unchanged. Citywide completeness, GlobalID continuity after publisher replacement, survey accuracy and legal-title semantics remain unverified.",
+      "licenceNote": "Public municipal parcel-reference cartography; notices informational. Legal title, survey accuracy and GlobalID continuity after publisher replacement unverified."
+    },
+    {
+      "id": "ca-calgary-assessment-parcel",
+      "name": "Calgary assessed registered-parcel geometries",
+      "adapter": "socrata",
+      "endpoint": "https://data.calgary.ca/resource/4bsw-nn7w.json",
+      "idPrefix": "CA-CALGARY-CPID-",
+      "idField": "cpid",
+      "idType": "string",
+      "idPattern": "^[0-9A-Za-z]{1,32}$",
+      "objectIdField": ":id",
+      "geometryField": "multipolygon",
+      "versionField": "mod_date",
+      "outFields": [
+        "cpid",
+        ":id",
+        "mod_date"
+      ],
+      "pageSize": 200,
+      "maxFeatures": 3000,
+      "maxBboxKm2": 1,
+      "countryCode": "CA",
+      "operator": "The City of Calgary Open Data",
+      "catalogueUrl": "https://data.calgary.ca/Government/Current-Year-Property-Assessments-Parcel-/4bsw-nn7w",
+      "attribution": "City of Calgary · assessed registered-parcel geometry · adapted",
+      "metricSrid": 32611,
+      "cityIds": [
+        "calgary"
+      ],
+      "evidenceFile": "research/overnight-cities-2026-10-08/calgary-root-protocol-acceptance.json",
+      "scope": "181 valid distinct assessed registered-parcel geometries verified in thirteen bounded 0.001-degree cells around Calgary’s unchanged WUP locator. City metadata says these lands have registered parcels at Alberta Land Titles and excludes titled parking/storage units, machinery/equipment and linear property. This safe-field assessment geometry source is distinct from the paid municipal Ownership Parcel Fabric. Complete forced three-row pagination, all 181 fresh CPID reads, explicit absence, footprint and source binding passed in 22 checks/75 requests. The original ArcGIS-oriented harness falsely reported pagination failure because it did not log Socrata row arrays; that run remains preserved and a corrected fresh logger verifies 33 features over eleven nonempty pages. Independent GEOS found no invalid or duplicate geometries, sampled overlaps above 0.01 square metres or operation errors. The exact WUP point returned no intersecting feature; nearby examples are explicitly nearby. Source geometry is unchanged. The annual dataset is replaced each January; CPID continuity after replacement, wider coverage, legal title and survey accuracy remain unverified. Only geometry, CPID, transport row ID and modification date are requested.",
+      "licenceNote": "Public City open-data geometry; map notices informational. Annual replacement and CPID continuity unverified.",
+      "maxConcurrentQueries": 2
+    },
+    {
+      "id": "ar-rosario-section9-parcel",
+      "adapter": "geojson-snapshot",
+      "endpoint": "https://datosabiertos.rosario.gob.ar/sites/default/files/resources/parcelas_seccion9_json.csv",
+      "idPrefix": "AR-ROS-S9-MSLINK-",
+      "idFields": [
+        "MSLINK"
+      ],
+      "parcelNumberField": "MSLINK",
+      "outFields": [
+        "MSLINK",
+        "SECCION",
+        "MANZANA",
+        "GRAFICO",
+        "SD",
+        "SP"
+      ],
+      "snapshotFormat": "csv-geojson",
+      "csvGeometryField": "GEOJSON",
+      "csvFields": [
+        "MSLINK",
+        "SECCION",
+        "MANZANA",
+        "GRAFICO",
+        "SD",
+        "SP",
+        "PASILLO",
+        "CARPETA",
+        "GEOJSON"
+      ],
+      "maxSnapshotBytes": 12582912,
+      "maxSnapshotFeatures": 20000,
+      "expectedSnapshotFeatures": 15854,
+      "expectedEtag": "\"4e90aa-65d416a9ab2ee\"",
+      "maxFeatures": 3000,
+      "maxBboxKm2": 1,
+      "name": "Rosario municipal parcel Section 9",
+      "operator": "Municipalidad de Rosario",
+      "catalogueUrl": "https://datosabiertos.rosario.gob.ar/api/1/metastore/schemas/dataset/items/0b4f7e3e-ac2e-4f32-b523-a974c6209e3f",
+      "attribution": "Municipalidad de Rosario · Section 9 parcels · ODC Attribution 1.0 · adapted",
+      "countryCode": "AR",
+      "metricSrid": 32720,
+      "cityIds": [
+        "rosario"
+      ],
+      "evidenceFile": "research/overnight-cities-2026-10-08/rosario-section9-protocol-acceptance.json",
+      "scope": "Rosario municipal cadastral Section 9 only. The 7 October 2026 public CSV snapshot contains 15,854 distinct MSLINK strings and full embedded WGS84 polygons. Its exact strong ETag and feature count are pinned; unexpected revisions fail closed pending review. Thirteen aligned cells plus four pans around the unchanged WUP locator verified 826 distinct full geometries; all 826 fresh exact-ID reads reproduce geometry after a separate complete 5,148,842-byte HTTP 200 download. The WUP-containing parcel passes full footprint lookup and complete proposal binding. GEOS in EPSG:32720 found no invalid polygons, duplicate geometry, sampled overlaps above 0.01 m² or operation errors. Only geometry and six cadastral/code identifiers are retained; the CSV parser preserves string identity and rejects schema drift, invalid embedded geometry and malformed rows. No equality with differently formatted GML identifiers is claimed. Other sections, citywide completeness, legal title, survey accuracy and identity continuity after replacement remain unverified.",
+      "licenceNote": "ODC Attribution 1.0 per official catalogue; Section 9 only, 7 October 2026 CSV revision. Legal title and survey accuracy unverified.",
+      "maxConcurrentQueries": 1
+    },
+    {
+      "id": "us-mn-hennepin-county-parcels-metroc",
+      "name": "Hennepin County Parcels (Metropolitan Council public layer)",
+      "adapter": "arcgis",
+      "endpoint": "https://arcgis.metc.state.mn.us/data1/rest/services/parcels/Parcels_2025/FeatureServer/3",
+      "idField": "COUNTY_PIN",
+      "idType": "string",
+      "objectIdField": "OBJECTID",
+      "idPrefix": "us-mn-hennepin:",
+      "outFields": [
+        "OBJECTID",
+        "COUNTY_PIN"
+      ],
+      "pageSize": 1000,
+      "idBatchSize": 80,
+      "maxFeatures": 3000,
+      "maxBboxKm2": 1,
+      "boundsQueryMode": "object-ids",
+      "idsQueryMode": "object-ids",
+      "boundsSrid": 26915,
+      "boundsProjection": "+proj=utm +zone=15 +ellps=GRS80 +units=m +no_defs",
+      "countryCode": "US",
+      "metricSrid": 26915,
+      "cityIds": [
+        "minneapolis"
+      ],
+      "operator": "Hennepin County GIS and Survey Division; public query service hosted by Metropolitan Council",
+      "catalogueUrl": "https://gis.data.mn.gov/maps/hennepin%3A%3Acounty-parcels/about",
+      "attribution": "Hennepin County GIS / Metropolitan Council · assessment parcels · adapted",
+      "evidenceFile": "research/overnight-cities-2026-10-08/minneapolis-hennepin-root-acceptance.json",
+      "scope": "Hennepin County assessment parcels on the Minneapolis side of the combined Minneapolis–Saint Paul settlement. Thirteen aligned cells plus four adjacent pans and an expanded 35-view check around the unchanged WUP locator yielded 10 distinct full county parcel geometries. Native EPSG:26915 count and object-ID manifests agreed, forced three-row paging completed, all 10 fresh COUNTY_PIN reads reproduced geometry, and explicit absence, full footprint lookup and complete proposal binding passed. GEOS in EPSG:26915 found no invalid polygons, duplicate geometry, sampled overlaps above 0.01 m² or operation errors. Only OBJECTID transport keys and native COUNTY_PIN identifiers accompany geometry. The exact WUP point returned no parcel; nearby verified polygons remain usable. Hennepin metadata describes taxed, tax-exempt and stacked multi-PID assessment parcels; the small sampled area contains no stacked duplicates, while broader county completeness and topology remain unverified. The endpoint is named Parcels_2025; its current revision and identity continuity after replacement were not established. Saint Paul/Ramsey coverage remains a separate source. Published survey and legal-use notices are retained as scope information.",
+      "licenceNote": "Public county assessment dataset; retain Hennepin County and Metropolitan Council attribution and published non-survey/legal-use notices.",
+      "maxConcurrentQueries": 1
+    },
+    {
+      "id": "hk-landsd-csdi-lot",
+      "endpoint": "https://portal.csdi.gov.hk/server/rest/services/common/landsd_rcd_1637217253134_22729/FeatureServer/0",
+      "idField": "LotCSUID",
+      "idType": "string",
+      "objectIdField": "OBJECTID",
+      "idPrefix": "HK-LANDSD-CSDI-LOT-CSUID-",
+      "outFields": [
+        "LotCSUID",
+        "OBJECTID",
+        "LotID"
+      ],
+      "pageSize": 5,
+      "maxFeatures": 2000,
+      "maxBboxKm2": 1,
+      "boundsQueryMode": "object-ids",
+      "idsQueryMode": "single-equality",
+      "idBatchSize": 1,
+      "name": "Lands Department CSDI Lot polygons",
+      "adapter": "arcgis",
+      "cityIds": [
+        "tuenmun"
+      ],
+      "operator": "Hong Kong Lands Department / Common Spatial Data Infrastructure Portal",
+      "catalogueUrl": "https://data.gov.hk/en-data/dataset/hk-landsd-openmap-landsd-lot/resource/92d24214-a295-4b8e-8d3f-27e9226e1287",
+      "attribution": "Hong Kong Lands Department · CSDI Lots · adapted",
+      "parcelNumberField": "LotID",
+      "evidenceFile": "research/overnight-cities-2026-10-08/tuen-mun-csdi-root-acceptance.json",
+      "licenceNote": "Retain Hong Kong Lands Department attribution and published approximate-boundary and survey notices.",
+      "scope": "Public Lands Department CSDI Lot polygons in the Tuen Mun neighborhood. The dataset represents land sold or granted for specified uses and does not form a complete parcel fabric. Thirteen aligned 0.001° cells and four adjacent pans passed the real adapter with source count and object-ID manifests; a 29-window source check plus footprint neighbors yielded 127 distinct full polygons. All 127 fresh LotCSUID equality reads reproduced IDs and geometry, a valid absent ID returned empty, forced three-row object-ID batches completed, and the exact-WUP parcel passed full footprint retrieval and actual runtime proposal binding. GEOS in EPSG:32650 found no invalid polygons, duplicate geometry or positive-area overlaps above 0.01 m² in the bounded union. One conservative source bbox candidate lies about 0.04 m outside a cell; full geometry is preserved, with no snapping or clipping. Offset paging omitted that candidate, and multi-ID IN reads returned HTTP 403; the enabled descriptor uses object-ID manifests and one native LotCSUID equality per ID. Only LotCSUID, OBJECTID transport keys and LotID labels accompany geometry. Citywide completeness and identity continuity across quarterly replacements remain unverified. Published legal and survey notices are retained as scope information.",
+      "maxConcurrentQueries": 1
+    },
+    {
+      "id": "de-bw-lgl-alkis-flurstueck",
+      "name": "Baden-Württemberg LGL ALKIS cadastral parcels",
+      "adapter": "wfs",
+      "endpoint": "https://owsproxy.lgl-bw.de/owsproxy/wfs/WFS_LGL-BW_ALKIS",
+      "featureType": "nora:v_al_flurstueck",
+      "idField": "flurstueckskennzeichen",
+      "idType": "string",
+      "idPattern": "^08[0-9]{18}$",
+      "idPrefix": "DE-BW-ALKIS-",
+      "outFields": [
+        "flurstueckskennzeichen",
+        "gml_id",
+        "gemeinde_id",
+        "gemeinde_name"
+      ],
+      "requestProperties": true,
+      "geometryField": "geom",
+      "pageSize": 100,
+      "maxFeatures": 3000,
+      "maxBboxKm2": 1,
+      "countryCode": "DE",
+      "metricSrid": 32632,
+      "cityIds": [
+        "stuttgart"
+      ],
+      "scope": "78 valid, distinct official cadastral polygons verified in thirteen local 0.001-degree cells around the unchanged WUP settlement locator. Complete pages, forced three-row pagination, all 78 fresh native cadastral-reference reads, valid synthetic absence, footprint and source binding passed. Independent GEOS in EPSG:32632 found no invalid polygons, duplicate geometry, overlaps above 0.01 m² or operation errors. Stuttgart parcels returned through the Baden-Württemberg LGL ALKIS service; nearby valid ground is verified, without requiring the settlement centroid itself to fall inside a parcel. Wider municipal completeness, legal boundary accuracy and long-term identifier continuity remain unverified.",
+      "evidenceFile": "research/overnight-cities-2026-10-08/stuttgart-lgl-root-acceptance.json",
+      "operator": "Landesamt für Geoinformation und Landentwicklung Baden-Württemberg (LGL)",
+      "catalogueUrl": "https://www.lgl-bw.de/Produkte/Geodatendienste/ALKIS-Daten/index.html",
+      "licenceNote": "Official LGL owner-free ALKIS parcel geometry; publisher conditions informational. Legal title, boundary survey accuracy and citywide completeness are unverified.",
+      "attribution": "LGL Baden-Württemberg · ALKIS Flurstücke · adapted",
+      "maxConcurrentQueries": 2,
+      "cityScopes": {
+        "stuttgart": "78 valid, distinct official cadastral polygons verified in thirteen local 0.001-degree cells around the unchanged WUP settlement locator. Complete pages, forced three-row pagination, all 78 fresh native cadastral-reference reads, valid synthetic absence, footprint and source binding passed. Independent GEOS in EPSG:32632 found no invalid polygons, duplicate geometry, overlaps above 0.01 m² or operation errors. Stuttgart parcels returned through the Baden-Württemberg LGL ALKIS service; nearby valid ground is verified, without requiring the settlement centroid itself to fall inside a parcel. Wider municipal completeness, legal boundary accuracy and long-term identifier continuity remain unverified."
+      }
+    },
+    {
+      "id": "de-frankfurt-alkis-flurstueck",
+      "name": "Frankfurt municipal ALKIS cadastral parcels",
+      "adapter": "frankfurt-wfs",
+      "endpoint": "https://geowebdienste.frankfurt.de/SGK_Flurstuecke",
+      "featureType": "Amt62_Flurstuecke:Flurstueck",
+      "idField": "FSK",
+      "idType": "string",
+      "idPrefix": "DE-FFM-",
+      "parcelNumberField": "FSK",
+      "outFields": [
+        "FSK",
+        "OBJECTID"
+      ],
+      "maxBboxKm2": 1,
+      "maxFeatures": 3000,
+      "pageSize": 100,
+      "idBatchSize": 40,
+      "maxResponseBytes": 8388608,
+      "maxTotalResponseBytes": 33554432,
+      "countryCode": "DE",
+      "metricSrid": 32632,
+      "cityIds": [
+        "frankfurt"
+      ],
+      "operator": "Stadt Frankfurt am Main — Stadtvermessungsamt",
+      "catalogueUrl": "https://frankfurt.de/themen/planen-bauen-und-wohnen/planen/geoinformationen",
+      "attribution": "Stadt Frankfurt am Main · ALKIS Flurstücke · adapted",
+      "licenceNote": "Datenlizenz Deutschland Namensnennung 2.0; publisher conditions informational. Bounded parcel cartography does not establish title, citywide completeness or survey accuracy.",
+      "maxConcurrentQueries": 2,
+      "scope": "191 valid, distinct Frankfurt municipal cadastral polygons verified in thirteen local 0.001-degree cells around the unchanged WUP settlement locator. The service-advertised GEOJSON response preserves native EPSG:25832 boundaries, transformed with an explicit ETRS89 projection. FSK is native cadastral identity; OBJECTID/GmlID remain transport identity. Stable hit counts before and after all pages, strict default OBJECTID order, forced three-row pagination, all 191 fresh native FSK reads through FES equality, valid synthetic absence, footprint and source binding passed. Independent GEOS in EPSG:32632 found no invalid polygons, duplicate geometry, overlaps above 0.01 m² or operation errors. Unsupported application/json and sorting requests, and the different POST serializer, remain documented; the executable profile uses only supported GET operations. Wider municipal completeness, legal boundary accuracy and long-term identifier continuity remain unverified.",
+      "evidenceFile": "research/overnight-cities-2026-10-08/frankfurt-wfs-root-acceptance.json"
+    },
+    {
+      "id": "us-fl-pinellas-parcels",
+      "name": "Pinellas County public Land Polygon parcels",
+      "adapter": "arcgis",
+      "endpoint": "https://maps.pinellas.gov/gis/rest/services/AGO/Parcels/MapServer/0",
+      "idField": "PGIS.PGIS.ParcelsPublic.PARCELID",
+      "objectIdField": "PGIS.PGIS.ParcelsPublic.OBJECTID",
+      "idType": "string",
+      "idPattern": "^[0-9]{18}$",
+      "idPrefix": "US-FL-PINELLAS-",
+      "outFields": [
+        "PGIS.PGIS.ParcelsPublic.OBJECTID",
+        "PGIS.PGIS.ParcelsPublic.PARCELID",
+        "PGIS.PGIS.ParcelsPublic.PARCELSUBTYPE"
+      ],
+      "pageSize": 100,
+      "maxFeatures": 3000,
+      "maxBboxKm2": 1,
+      "countryCode": "US",
+      "metricSrid": 32617,
+      "cityIds": [
+        "saintpetersburgfl"
+      ],
+      "maxConcurrentQueries": 2,
+      "responseSrid": 3857,
+      "attributeFilters": {
+        "PGIS.PGIS.ParcelsPublic.PARCELSUBTYPE": 0
+      },
+      "boundsQueryMode": "object-ids",
+      "idsQueryMode": "object-ids",
+      "geometryPrecision": 6,
+      "operator": "Pinellas County GIS / Property Appraiser",
+      "scope": "38 valid distinct Pinellas County land polygons verified in thirteen local 0.001-degree cells around the unchanged Saint Petersburg metropolitan WUP locator in Florida. Complete object-ID manifests, forced three-row batches, all 38 fresh native PARCELID reads, valid absence, footprint and binding passed. Publisher-coded PARCELSUBTYPE=0 is Land Polygon; unit/subsurface/discrepancy classes are outside this explicit ground scope, which is enforced on every returned feature. Qualified joined column names are retained exactly. Native EPSG:3857 GeoJSON is requested with the documented geometryPrecision=6 parameter (one micrometre in response metres), retained without local rounding, and transformed explicitly only after CRS/precision verification. Earlier unfiltered/float-serialization failures remain preserved. Independent EPSG:32617 GEOS found no invalid/duplicate geometries and two narrow overlaps totalling 0.27016 m². Original unrounded native responses reproduce both as boundary slivers about 3.5 millimetres wide; they remain unchanged and are accepted for bounded reference use. The county feed covers nearby metropolitan ground, including the exact WUP point, without establishing Saint Petersburg municipal-only or citywide coverage, legal title, survey accuracy or long-term key continuity.",
+      "evidenceFile": "research/overnight-cities-2026-10-08/pinellas-root-ground-precision-acceptance.json",
+      "catalogueUrl": "https://www.pcpao.gov/learn-about/FAQs",
+      "licenceNote": "Official public parcel reference geometry; publisher conditions are informational. No legal title or citywide completeness is asserted.",
+      "attribution": "Pinellas County public Land Polygon parcels · adapted",
+      "parcelNumberField": "PGIS.PGIS.ParcelsPublic.PARCELID"
+    },
+    {
+      "id": "us-mi-detroit-parcels",
+      "name": "Detroit Office of the Assessor current parcels",
+      "adapter": "arcgis",
+      "endpoint": "https://services2.arcgis.com/qvkbeam7Wirps6zC/arcgis/rest/services/Parcels_Current/FeatureServer/0",
+      "idField": "parcel_number",
+      "objectIdField": "object_id",
+      "idType": "string",
+      "idPrefix": "US-MI-DETROIT-",
+      "outFields": [
+        "object_id",
+        "parcel_number"
+      ],
+      "pageSize": 100,
+      "maxFeatures": 3000,
+      "maxBboxKm2": 1,
+      "countryCode": "US",
+      "metricSrid": 32617,
+      "cityIds": [
+        "detroit"
+      ],
+      "maxConcurrentQueries": 2,
+      "operator": "City of Detroit Office of the Assessor",
+      "scope": "200 valid distinct Detroit Office of the Assessor current parcel polygons verified in thirteen local 0.001-degree cells around the unchanged WUP locator. Complete viewports, ten forced three-row pages, all 200 fresh native parcel_number reads, valid synthetic absence, footprint and source binding passed in 32 public requests. Native parcel numbers retain their dots, hyphens and combined-lot suffixes exactly; object_id is transport paging identity only. Only these two schema-verified safe identifiers and full geometry are queried or retained. Independent metric EPSG:32617 GEOS found no invalid polygons, duplicate geometry, overlaps above 0.01 m² or operation errors. The exact WUP point lies in source geometry. Wider municipal completeness, title, survey accuracy and long-term key continuity remain unverified.",
+      "evidenceFile": "research/overnight-cities-2026-10-08/detroit-root-acceptance.json",
+      "catalogueUrl": "https://data.detroitmi.gov/maps/detroitmi::parcels-2",
+      "licenceNote": "Official public parcel reference geometry; publisher conditions are informational. No legal title or citywide completeness is asserted.",
+      "attribution": "Detroit Office of the Assessor current parcels · adapted",
+      "parcelNumberField": "parcel_number"
+    },
+    {
+      "id": "my-penang-forestry-cadastral-lots",
+      "name": "JUPEM Penang cadastral lots (Forestry GIS host)",
+      "adapter": "arcgis",
+      "endpoint": "https://geoformatik.forestry.gov.my/arcgis/rest/services/PULAU_PINANG_SDE/MapServer/45",
+      "idField": "UPI",
+      "objectIdField": "FID",
+      "idType": "string",
+      "idPrefix": "MY-PENANG-",
+      "outFields": [
+        "FID",
+        "UPI",
+        "MUKIM",
+        "PA",
+        "LOT",
+        "KELUASAN"
+      ],
+      "pageSize": 500,
+      "maxFeatures": 3000,
+      "maxBboxKm2": 1,
+      "countryCode": "MY",
+      "metricSrid": 32647,
+      "cityIds": [
+        "georgetown",
+        "bukit_mertajam"
+      ],
+      "boundsQueryMode": "object-ids",
+      "idsQueryMode": "object-ids",
+      "maxConcurrentQueries": 2,
+      "caCertificate": "certificates/globalsign-rsa-ov-ssl-ca-2018.pem",
+      "operator": "Department of Survey and Mapping Malaysia (JUPEM); Department of Forestry GIS service host",
+      "catalogueUrl": "https://geoformatik.forestry.gov.my/arcgis/rest/services/PULAU_PINANG_SDE/MapServer/45",
+      "attribution": "JUPEM · Penang cadastral lots · Forestry GIS host · adapted",
+      "licenceNote": "Public government cadastral-reference polygons credited JUPEM 2020. Source notices and dataset date informational; legal title, currentness and survey accuracy unverified.",
+      "evidenceFile": "research/overnight-cities-2026-10-08/georgetown-forestry-root-acceptance.json",
+      "scope": "Shared public cadastral-reference provider with separately qualified bounded city entries: George Town metropolitan locator and Bukit Mertajam. Each city scope and evidence file records its own geometry, identity and runtime checks. No citywide or countrywide completeness, legal title, survey accuracy or currentness is asserted.",
+      "additionalCityEvidence": {
+        "bukit_mertajam": "research/overnight-followon-2026-10-09/bukit-mertajam-root-acceptance.json"
+      },
+      "cityScopes": {
+        "bukit_mertajam": "18 distinct full native cadastral-reference polygons around the unchanged WUP settlement locator across thirteen bounded cells. Independent EPSG:32647 GEOS audit of all19 grid and footprint polygons found no invalidity, duplicate geometry, positive-area overlaps above0.01m² or operation errors. Forced three-row paging, all19 fresh exact native-ID reads, explicit absence, footprint lookup and source binding passed. Published native identities and full geometry preserved without repair. This bounded evidence does not establish citywide completeness, legal title, positional accuracy or currentness. The Forestry government GIS host credits JUPEM2020; its official GlobalSign intermediate certificate is supplied with normal certificate and hostname verification. Source age and notices are informational.",
+        "georgetown": "143 valid distinct JUPEM Penang cadastral-reference lots verified in thirteen bounded 0.001-degree cells around the unchanged George Town metropolitan WUP locator. The Forestry government GIS host supplies native UPI identity and FID transport IDs; variable-length native UPI strings are preserved without padding, truncation or substitution. Complete object-ID manifests, forced three-row geometry pages (56 parcels over 19 pages), all 143 fresh native-ID reads, explicit absence, footprint and source binding passed in 80 requests. Independent metric EPSG:32647 GEOS found all geometries valid and distinct, with no sampled overlaps above 0.01 m² or operation errors. The missing TLS intermediate is supplied from the official GlobalSign CA with certificate and hostname verification enabled for every runtime request; no runtime verification bypass is used. The publisher credits JUPEM 2020 and declares source CRS as ArcGIS WKID 102062; explicit EPSG:4326 output is retained unchanged. This is bounded metropolitan reference geometry, without claims of George Town municipal-only or citywide completeness, legal title, currentness, survey accuracy or long-term key continuity."
+      }
+    },
+    {
+      "id": "gr-thessaloniki-municipal-kaek",
+      "name": "Thessaloniki public cadastral parcels (KAEK)",
+      "adapter": "arcgis",
+      "endpoint": "https://maps.thessaloniki.gr/server/rest/services/DataMapImage/MapServer/160",
+      "idField": "KAEK",
+      "objectIdField": "OBJECTID",
+      "idType": "string",
+      "idPrefix": "GR-THESS-KAEK-",
+      "outFields": [
+        "OBJECTID",
+        "KAEK"
+      ],
+      "pageSize": 1000,
+      "maxFeatures": 3000,
+      "maxBboxKm2": 1,
+      "countryCode": "GR",
+      "metricSrid": 32634,
+      "cityIds": [
+        "thessaloniki"
+      ],
+      "maxConcurrentQueries": 2,
+      "operator": "Municipality of Thessaloniki GIS",
+      "scope": "368 valid distinct cadastral-reference polygons verified in thirteen bounded 0.001-degree cells around the unchanged Thessaloniki WUP settlement locator. Complete bounded paging, forced three-row pages, all 368 fresh native parcel-identity reads, explicit absence, footprint and source binding passed in 78 requests. Independent metric EPSG:32634 GEOS found all geometries valid and distinct, with no sampled overlaps above 0.01 m² or operation errors. The municipal KAEK strings include Greek alphabetic characters and are preserved unchanged; declared source CRS is EPSG:2100 and requested output EPSG:4326. The municipal reference layer is distinct from the national legal register. Wider municipal completeness, legal title, currentness, survey accuracy and long-term key continuity remain unverified.",
+      "evidenceFile": "research/overnight-cities-2026-10-08/thessaloniki-root-acceptance.json",
+      "attribution": "Municipality of Thessaloniki GIS · public cadastral reference polygons · adapted to WGS84",
+      "catalogueUrl": "https://maps.thessaloniki.gr/server/rest/services/DataMapImage/MapServer/160",
+      "licenceNote": "Public bounded access verified. Publisher conditions and legal/survey limitations are informational; public reference geometry does not establish legal title or cadastral accuracy."
+    },
+    {
+      "id": "es-bizkaia-parcelas-rest",
+      "name": "Bizkaia public cadastral Parcelas",
+      "adapter": "arcgis",
+      "endpoint": "https://geo.bizkaia.eus/arcgisserverinspire/rest/services/LurraldeAntolamendua_PlanificacionTerritorial/Katastro_Catastro_WFS/MapServer/6",
+      "idFields": [
+        "Codigo_Municipio",
+        "Codigo_Poligono",
+        "Codigo_Parcela"
+      ],
+      "idFieldTypes": {
+        "Codigo_Municipio": "integer",
+        "Codigo_Poligono": "integer",
+        "Codigo_Parcela": "integer"
+      },
+      "objectIdField": "OBJECTID",
+      "idPrefix": "ES-BIZKAIA-",
+      "outFields": [
+        "OBJECTID",
+        "Codigo_Municipio",
+        "Codigo_Poligono",
+        "Codigo_Parcela"
+      ],
+      "pageSize": 1000,
+      "maxFeatures": 3000,
+      "maxBboxKm2": 1,
+      "countryCode": "ES",
+      "metricSrid": 32630,
+      "cityIds": [
+        "bilbao"
+      ],
+      "maxConcurrentQueries": 2,
+      "operator": "Diputación Foral de Bizkaia / GeoBizkaia",
+      "scope": "79 valid distinct cadastral-reference polygons verified in thirteen bounded 0.001-degree cells around the unchanged Bilbao WUP settlement locator. Complete bounded paging, forced three-row pages, all 79 fresh native parcel-identity reads, explicit absence, footprint and source binding passed in 27 requests. Independent metric EPSG:32630 GEOS found all geometries valid and distinct, with no sampled overlaps above 0.01 m² or operation errors. The separate Bizkaia foral cadastre uses the native municipality/polygon/parcel integer tuple; OBJECTID is only a transport key. A fresh EPSG:25830 REST tuple query matches the prior official WFS sample to below 0.000001 metres without editing coordinates. Requested EPSG:4326 geometry is retained unchanged. Wider municipal completeness, legal title, currentness, survey accuracy and long-term key continuity remain unverified.",
+      "evidenceFile": "research/overnight-cities-2026-10-08/bilbao-bizkaia-root-acceptance.json",
+      "attribution": "Diputación Foral de Bizkaia / GeoBizkaia · public cadastral reference polygons · adapted to WGS84",
+      "catalogueUrl": "https://opendatabizkaia.eus/es/catalogo/parcelario-catastral-de-bizkaia",
+      "licenceNote": "Official OpenData resource states CC BY 4.0; Bizkaia INSPIRE portal states CC BY 3.0 ES. Public bounded access verified; publisher attribution retained. These public reference polygons do not establish legal title or survey accuracy."
+    },
+    {
+      "id": "us-wi-milwaukee-county-taxparcel-map-id",
+      "name": "Milwaukee County public cadastral polygons",
+      "adapter": "arcgis",
+      "endpoint": "https://services2.arcgis.com/s1wgJQKbKJihhhaT/ArcGIS/rest/services/Cadastral/FeatureServer/7",
+      "idField": "Map_ID",
+      "idType": "integer",
+      "objectIdField": "OBJECTID",
+      "idPrefix": "US-WI-MILWAUKEE-MAP-",
+      "outFields": [
+        "OBJECTID",
+        "Map_ID",
+        "Parcel_Key",
+        "Parcel_Type",
+        "Overlap"
+      ],
+      "pageSize": 1000,
+      "maxFeatures": 3000,
+      "maxBboxKm2": 1,
+      "countryCode": "US",
+      "metricSrid": 32616,
+      "cityIds": [
+        "milwaukee"
+      ],
+      "maxConcurrentQueries": 2,
+      "operator": "Milwaukee County Land Information Office / Register of Deeds",
+      "scope": "146 valid distinct county cadastral-reference polygons verified in thirteen bounded 0.001-degree cells around the unchanged Milwaukee WUP settlement locator. Map_ID is the non-null integer field explicitly labelled GIS Polygon ID; null Parcel_Key values do not substitute a tax-account identifier or block public reference geometry. Complete bounded paging, forced three-row pages, all 146 fresh Map_ID reads, explicit absence, footprint and source binding passed in 30 requests. Independent metric EPSG:32616 GEOS found all geometries valid and distinct, with no sampled overlaps above 0.01 m² or operation errors. All three original nearby samples match fresh complete geometry unchanged. The exact WUP point itself returned no intersecting parcel; usable nearby coverage is verified. Native source CRS is EPSG:6609 (ArcGIS WKID103191); requested EPSG:4326 output is retained unchanged. Map_ID is public source geometry identity; legal-title identity, citywide completeness, survey accuracy, currentness and long-term key continuity remain unverified.",
+      "evidenceFile": "research/overnight-cities-2026-10-08/milwaukee-county-root-acceptance.json",
+      "attribution": "Milwaukee County Land Information Office / Register of Deeds · cadastral reference polygons · adapted",
+      "catalogueUrl": "https://county.milwaukee.gov/EN/Administrative-Services/Land-Information-Office",
+      "licenceNote": "Public anonymous bounded access and county attribution verified. Publisher reuse/currentness/legal-coordinate conditions are informational; this reference layer does not establish legal title or survey accuracy."
+    },
+    {
+      "id": "pl-krakow-msip-egib-parcels",
+      "name": "Kraków MSIP public EGiB parcels",
+      "adapter": "arcgis",
+      "endpoint": "https://msip3.um.krakow.pl/server/rest/services/Pobieranie/Dzialki/MapServer/0",
+      "idField": "id_dzialki",
+      "idType": "string",
+      "objectIdField": "id",
+      "idPrefix": "PL-KRAKOW-EGIB-",
+      "outFields": [
+        "id",
+        "id_dzialki",
+        "numer_dzialki"
+      ],
+      "pageSize": 1000,
+      "maxFeatures": 3000,
+      "maxBboxKm2": 1,
+      "countryCode": "PL",
+      "metricSrid": 32634,
+      "cityIds": [
+        "krakow"
+      ],
+      "maxConcurrentQueries": 2,
+      "operator": "City of Kraków Geodesy Department / MSIP",
+      "scope": "56 valid distinct EGiB parcel polygons verified in thirteen bounded 0.001-degree cells around the unchanged Kraków WUP settlement locator. Native id_dzialki values including slash suffixes are preserved unchanged. Complete bounded paging, forced three-row pages, all 56 fresh native-ID reads, explicit absence, footprint and source binding passed in 25 requests. Independent metric EPSG:32634 GEOS found all geometries valid and distinct, with no sampled overlaps above 0.01 m² or operation errors. The original exact-point sample matches fresh full geometry unchanged. Native source CRS is EPSG:2178; requested EPSG:4326 output is retained unchanged. Citywide completeness, survey accuracy, legal title, currentness and long-term identity continuity remain unverified.",
+      "evidenceFile": "research/overnight-cities-2026-10-08/krakow-msip-root-acceptance.json",
+      "attribution": "City of Kraków MSIP · public EGiB cadastral polygons · adapted",
+      "catalogueUrl": "https://msip.krakow.pl/dataset/1562",
+      "licenceNote": "Anonymous bounded public geometry access and publisher attribution verified. City reuse/currentness/legal-coordinate conditions are informational; this reference layer does not establish legal title or survey accuracy. Personal fields are excluded."
+    },
+    {
+      "id": "us-ca-fresno-county-parcels",
+      "name": "Fresno County public parcel polygons",
+      "adapter": "arcgis",
+      "endpoint": "https://gisprod10.co.fresno.ca.us/server/rest/services/Hosted/Parcels/FeatureServer/0",
+      "idField": "apn",
+      "idType": "string",
+      "objectIdField": "fid",
+      "idPrefix": "US-CA-FRESNO-APN-",
+      "outFields": [
+        "fid",
+        "apn"
+      ],
+      "pageSize": 1000,
+      "maxFeatures": 3000,
+      "maxBboxKm2": 1,
+      "countryCode": "US",
+      "metricSrid": 32611,
+      "cityIds": [
+        "fresno"
+      ],
+      "maxConcurrentQueries": 2,
+      "operator": "Fresno County Assessor / GIS",
+      "scope": "106 valid distinct county parcel polygons verified in thirteen bounded 0.001-degree cells around the unchanged Fresno WUP settlement locator. Source-native string apn values are preserved unchanged; fid is used only for transport paging. Complete bounded paging, forced three-row pages, all 106 fresh native-ID reads, explicit absence, footprint and source binding passed in 25 requests. Independent metric EPSG:32611 GEOS found all geometries valid and distinct, with no sampled overlaps above 0.01 m² or operation errors. The original exact-point sample matches fresh full geometry unchanged. Native source CRS is EPSG:3857 (ArcGIS WKID102100); requested EPSG:4326 output is retained unchanged. County parcel reference identity is established; citywide completeness, survey accuracy, legal title, currentness and long-term identity continuity remain unverified.",
+      "evidenceFile": "research/overnight-cities-2026-10-08/fresno-county-root-acceptance.json",
+      "attribution": "Fresno County Assessor / GIS · public parcel reference polygons · adapted",
+      "catalogueUrl": "https://www.fresnocountyca.gov/Departments/Assessor/Mapping",
+      "licenceNote": "Anonymous bounded public geometry access and county attribution verified. Publisher reuse/currentness/legal-coordinate conditions are informational; this reference layer does not establish legal title or survey accuracy. Personal fields are excluded."
+    },
+    {
+      "id": "ca-winnipeg-assessment-gisid",
+      "name": "Winnipeg public assessment parcel footprints",
+      "adapter": "socrata",
+      "endpoint": "https://data.winnipeg.ca/resource/d4mq-wa44.json",
+      "idField": "gisid",
+      "idType": "string",
+      "idPrefix": "CA-WINNIPEG-GISID-",
+      "geometryField": "geometry",
+      "objectIdField": ":id",
+      "versionField": ":updated_at",
+      "outFields": [
+        "gisid",
+        ":id",
+        ":updated_at"
+      ],
+      "pageSize": 200,
+      "maxFeatures": 3000,
+      "maxBboxKm2": 1,
+      "countryCode": "CA",
+      "metricSrid": 32614,
+      "cityIds": [
+        "winnipeg"
+      ],
+      "maxConcurrentQueries": 2,
+      "operator": "City of Winnipeg Assessment and Taxation Department",
+      "scope": "32 valid distinct public parcel-reference polygons verified in thirteen bounded 0.001-degree cells around the unchanged WUP settlement locator. Complete bounded paging, all 32 fresh native-ID reads, explicit absence, footprint and source binding passed in 60 requests. Independent metric EPSG:32614 GEOS found all geometries valid and distinct, with no sampled overlaps above 0.01 m² or operation errors. Source-native GISID identifies public assessment ground footprints, distinct from property roll/account identifiers and certified survey/title parcels. Counted Socrata paging verifies publication revision before and after each read; identical rows for one GISID are collapsed only when complete geometry is identical. Only GISID, transport row ID, row revision and geometry are requested. The exact point returned no feature; two saved nearby samples match fresh full geometry unchanged. Citywide completeness, legal title, survey accuracy, currentness and long-term identity continuity remain unverified.",
+      "evidenceFile": "research/overnight-cities-2026-10-08/winnipeg-assessment-root-acceptance.json",
+      "attribution": "City of Winnipeg Assessment and Taxation Department · public parcel-reference geometry · adapted",
+      "catalogueUrl": "https://data.winnipeg.ca/Assessment-Taxation-Corporate/Assessment-Parcels/d4mq-wa44",
+      "licenceNote": "Anonymous bounded public geometry and publisher attribution verified. Publisher reuse/currentness/legal-coordinate conditions are informational. This reference geometry does not establish legal title or survey accuracy; personal fields are excluded."
+    },
+    {
+      "id": "hk-landsd-csdi-lot-polygons",
+      "name": "Hong Kong Lands Department CSDI lots",
+      "adapter": "arcgis",
+      "endpoint": "https://portal.csdi.gov.hk/server/rest/services/common/landsd_rcd_1637217253134_22729/FeatureServer/0",
+      "idField": "LotID",
+      "idType": "integer",
+      "idPrefix": "HK-CSDI-LOT-",
+      "objectIdField": "OBJECTID",
+      "outFields": [
+        "OBJECTID",
+        "LotID",
+        "LotCSUID"
+      ],
+      "pageSize": 1000,
+      "maxFeatures": 3000,
+      "maxBboxKm2": 1,
+      "countryCode": "HK",
+      "metricSrid": 32650,
+      "cityIds": [
+        "shatin"
+      ],
+      "maxConcurrentQueries": 2,
+      "operator": "Hong Kong Lands Department",
+      "scope": "3 valid distinct public parcel-reference polygons verified in thirteen bounded 0.001-degree cells around the unchanged WUP settlement locator. Complete bounded paging, all 3 fresh native-ID reads, explicit absence, footprint and source binding passed in 20 requests. Independent metric EPSG:32650 GEOS found all geometries valid and distinct, with no sampled overlaps above 0.01 m² or operation errors. Source-native integer LotID is preserved unchanged; OBJECTID is used only for transport paging. The initial generic three-row pagination test could not exercise paging in these sparse cells and is retained separately; a fresh run forced one-row pages on a two-lot cell and reproduced both full geometries. Native source CRS is EPSG:2326 (ArcGIS WKID102140); requested EPSG:4326 output is unchanged. The exact point returned no lot; the original nearby full polygon matches fresh full geometry exactly. This is the CSDI Lot collection, separate from the existing private-lot index API. Citywide completeness, legal title, survey accuracy, currentness and long-term identity continuity remain unverified.",
+      "evidenceFile": "research/overnight-cities-2026-10-08/sha-tin-csdi-root-acceptance.json",
+      "attribution": "Hong Kong Lands Department · public parcel-reference geometry · adapted",
+      "catalogueUrl": "https://portal.csdi.gov.hk/csdi-webpage/dataset/landsd_rcd_1637217253134_22729",
+      "licenceNote": "Anonymous bounded public geometry and publisher attribution verified. Publisher reuse/currentness/legal-coordinate conditions are informational. This reference geometry does not establish legal title or survey accuracy; personal fields are excluded."
+    },
+    {
+      "id": "pk-pulse-okara-parcels",
+      "name": "Punjab PULSE Okara cadastral reference polygons",
+      "adapter": "pulse-public",
+      "endpoint": "https://gismaps.punjab-zameen.gov.pk/arcgis/rest/services/VendorMaps/Punjab_Cdastral_Maps/MapServer/25",
+      "idField": "OBJECTID",
+      "idType": "integer",
+      "objectIdField": "OBJECTID",
+      "idPrefix": "PK-PULSE-OKARA-",
+      "outFields": [
+        "OBJECTID"
+      ],
+      "pageSize": 1000,
+      "maxFeatures": 3000,
+      "maxBboxKm2": 1,
+      "boundsQueryMode": "object-ids",
+      "idsQueryMode": "object-ids",
+      "boundsSrid": 3857,
+      "boundsProjection": "EPSG:3857",
+      "countryCode": "PK",
+      "metricSrid": 32643,
+      "cityIds": [
+        "okara"
+      ],
+      "operator": "Punjab PULSE / Punjab Land Records Authority",
+      "scope": "15 valid distinct public cadastral-reference polygons verified in thirteen bounded 0.001-degree cells around the unchanged WUP settlement locator. Complete bounded manifest paging, forced three-row pages, all 15 fresh source-ID reads, explicit absence, footprint and source binding passed in 58 requests. Independent metric EPSG:32643 GEOS found all geometries valid and distinct, with no sampled overlaps above 0.01 m² or operation errors. Public source-native OBJECTID is the cadastral-reference geometry identity, not a legal Khasra/Mouza key. Returned legal key fields are zero and are not promoted to legal identifiers. The real runtime adapter uses the documented anonymous public-viewer reader bootstrap; reader tokens stay in memory, simultaneous reads share one bootstrap, and renewal occurs within thirty seconds because publisher expiry omits a timezone. All request evidence omits token values. Six headless reader tests verify renewal, coalescing, endpoint confinement, unchanged geometry, blocked responses and safe errors. Native source CRS is EPSG:3857 (ArcGIS WKID102100). The original exact-point sample is topologically identical to fresh complete geometry: ring coordinate order differs, while projected symmetric difference and Hausdorff distance are both zero. Citywide completeness, legal title, survey accuracy, currentness and long-term GIS key continuity remain unverified.",
+      "evidenceFile": "research/overnight-cities-2026-10-08/okara-public-runtime-root-acceptance.json",
+      "attribution": "Punjab PULSE / Punjab Land Records Authority · cadastral-reference polygons · adapted",
+      "catalogueUrl": "https://lis.pulse.gop.pk/",
+      "licenceNote": "Anonymous bounded public geometry and publisher attribution verified. Publisher reuse/currentness/legal-coordinate conditions are informational. This reference geometry does not establish legal title or survey accuracy. Personal fields and reader token values are excluded.",
+      "maxConcurrentQueries": 2
+    },
+    {
+      "id": "zm-nsdi-zilmis-lots",
+      "name": "Zambia NSDI ZILMIS lot polygons",
+      "adapter": "arcgis",
+      "endpoint": "https://www.map.gov.zm/arcgis/rest/services/NSDI_Vector/CadasterNew/MapServer/0",
+      "idField": "SDE.Lots.OBJECTID",
+      "idType": "integer",
+      "idPrefix": "ZM-NSDI-LOT-",
+      "objectIdField": "SDE.Lots.OBJECTID",
+      "outFields": [
+        "SDE.Lots.OBJECTID",
+        "SDE.Lots.UPID"
+      ],
+      "pageSize": 1000,
+      "maxFeatures": 3000,
+      "maxBboxKm2": 1,
+      "countryCode": "ZM",
+      "metricSrid": 32735,
+      "cityIds": [
+        "kitwe"
+      ],
+      "maxConcurrentQueries": 6,
+      "boundsQueryMode": "object-ids",
+      "idsQueryMode": "object-ids",
+      "boundsSrid": 32735,
+      "boundsProjection": "+proj=utm +zone=35 +south +datum=WGS84 +units=m +no_defs",
+      "parcelNumberField": "SDE.Lots.UPID",
+      "operator": "Government of Zambia National Spatial Data Infrastructure / ZILMIS",
+      "scope": "31 valid distinct public cadastral-reference polygons verified in thirteen bounded 0.001-degree cells around the unchanged WUP settlement locator. Complete bounded manifest paging, forced three-row pages, all 31 fresh source-ID reads, explicit absence, footprint and source binding passed in 54 requests. Independent metric EPSG:32735 GEOS found all geometries valid and distinct, with no sampled overlaps above 0.01 m² or operation errors. Source-native SDE.Lots.OBJECTID is the unique GIS reference identity; the original UPID label is retained unchanged. The first UPID identity qualification is preserved as failed: one blank UPID matched 38,736 records and cannot serve as a unique native parcel key. A fresh run using source OIDs preserves all sampled geometry and passes every query check. Provider offset pagination is unsupported; complete count-checked object-ID manifests and bounded object-ID batches are used instead. Native source CRS is EPSG:32735. The exact WUP point returned no lot; all three original nearby UPID-labelled samples match fresh full source geometry exactly. Citywide completeness, legal title, survey accuracy, currentness and long-term GIS key continuity remain unverified.",
+      "evidenceFile": "research/overnight-cities-2026-10-08/kitwe-zilmis-oid-root-acceptance.json",
+      "attribution": "Government of Zambia National Spatial Data Infrastructure / ZILMIS · cadastral-reference polygons · adapted",
+      "catalogueUrl": "https://www.map.gov.zm/arcgis/rest/services/NSDI_Vector/CadasterNew/MapServer",
+      "licenceNote": "Anonymous bounded public geometry and publisher attribution verified. Publisher reuse/currentness/legal-coordinate conditions are informational. This reference geometry does not establish legal title or survey accuracy. Personal fields and reader token values are excluded."
+    },
+    {
+      "id": "it-sicilia-sitr-cadastral-parcels",
+      "name": "Sicilia SITR public cadastral parcels",
+      "adapter": "arcgis",
+      "endpoint": "https://map.sitr.regione.sicilia.it/gis/rest/services/catasto/cartografia_catastale/MapServer/4",
+      "idFields": [
+        "COMUNE",
+        "SEZIONE",
+        "FOGLIO",
+        "ALLEGATO",
+        "SVILUPPO",
+        "NUMERO"
+      ],
+      "idFieldTypes": {
+        "COMUNE": "string",
+        "SEZIONE": "string",
+        "FOGLIO": "string",
+        "ALLEGATO": "string",
+        "SVILUPPO": "string",
+        "NUMERO": "string"
+      },
+      "objectIdField": "OBJECTID",
+      "idPrefix": "IT-SICILIA-PARCEL-",
+      "parcelNumberField": "NUMERO",
+      "outFields": [
+        "OBJECTID",
+        "COMUNE",
+        "SEZIONE",
+        "FOGLIO",
+        "ALLEGATO",
+        "SVILUPPO",
+        "NUMERO",
+        "LIVELLO",
+        "ORIGINE"
+      ],
+      "pageSize": 1000,
+      "maxFeatures": 3000,
+      "maxBboxKm2": 1,
+      "countryCode": "IT",
+      "metricSrid": 32633,
+      "cityIds": [
+        "palermo"
+      ],
+      "maxConcurrentQueries": 2,
+      "idBatchSize": 1,
+      "scope": "390 valid distinct cadastral-reference polygons verified in thirteen bounded 0.001-degree cells around the unchanged WUP settlement locator. Complete counted paging, forced three-row geometry pages, all 390 fresh exact native identities, explicit absence, footprint and source binding passed in 424 requests. Independent metric EPSG:32633 GEOS found all polygons valid and distinct, with no sampled overlaps above 0.01 m² or operation errors. The regional SITR layer publishes native cadastral COMUNE, SEZIONE, FOGLIO, ALLEGATO, SVILUPPO and NUMERO fields. Their six-component reference preserves every literal fixed-width blank, independently of source OBJECTID. A regression test first failed and then passed for that native fixed-width composite identity. Source EPSG:25833 output is faithfully served in EPSG:4326. The original exact-point OBJECTID5685467 sample maps to G273 / blank / 125 / blank / blank / 298 and matches fresh complete geometry exactly. Large composite ID requests timed out and are preserved as failed; a fresh run with configured idBatchSize=1 verifies every short native-identity GET without hidden retries. Published revision/update dates remain informational; their consistency and legal currentness are unverified. Legal title, survey accuracy, currentness, long-term key continuity and wider municipal completeness remain unverified.",
+      "operator": "Regione Siciliana / Sistema Informativo Territoriale Regionale",
+      "evidenceFile": "research/overnight-cities-2026-10-08/palermo-sitr-single-id-root-acceptance.json",
+      "catalogueUrl": "https://www.sitr.regione.sicilia.it/",
+      "licenceNote": "Public publisher geometry and attribution verified; provider conditions remain informational. Geometry does not establish legal title, survey accuracy or currentness. Personal fields excluded.",
+      "cityScopes": {
+        "palermo": "390 valid distinct cadastral-reference polygons verified in thirteen bounded 0.001-degree cells around the unchanged WUP settlement locator. Complete counted paging, forced three-row geometry pages, all 390 fresh exact native identities, explicit absence, footprint and source binding passed in 424 requests. Independent metric EPSG:32633 GEOS found all polygons valid and distinct, with no sampled overlaps above 0.01 m² or operation errors. The regional SITR layer publishes native cadastral COMUNE, SEZIONE, FOGLIO, ALLEGATO, SVILUPPO and NUMERO fields. Their six-component reference preserves every literal fixed-width blank, independently of source OBJECTID. A regression test first failed and then passed for that native fixed-width composite identity. Source EPSG:25833 output is faithfully served in EPSG:4326. The original exact-point OBJECTID5685467 sample maps to G273 / blank / 125 / blank / blank / 298 and matches fresh complete geometry exactly. Large composite ID requests timed out and are preserved as failed; a fresh run with configured idBatchSize=1 verifies every short native-identity GET without hidden retries. Published revision/update dates remain informational; their consistency and legal currentness are unverified. Legal title, survey accuracy, currentness, long-term key continuity and wider municipal completeness remain unverified."
+      },
+      "attribution": "Regione Siciliana SITR · cadastral-reference polygons · adapted"
+    },
+    {
+      "id": "us-tx-el-paso-city-gis-parcels",
+      "name": "City of El Paso GIS Parcels (EPCAD source, GIS OID namespace)",
+      "adapter": "arcgis",
+      "endpoint": "https://gis.elpasotexas.gov/arcgis/rest/services/Deeds/FeatureServer/0",
+      "idField": "OBJECTID",
+      "objectIdField": "OBJECTID",
+      "idPrefix": "US-TX-ELPASO-OBJECTID-",
+      "idType": "integer",
+      "outFields": [
+        "OBJECTID"
+      ],
+      "pageSize": 1000,
+      "maxFeatures": 3000,
+      "maxBboxKm2": 1,
+      "countryCode": "US",
+      "metricSrid": 32613,
+      "cityIds": [
+        "elpaso"
+      ],
+      "maxConcurrentQueries": 2,
+      "boundsQueryMode": "object-ids",
+      "idsQueryMode": "object-ids",
+      "operator": "City of El Paso GIS; EPCAD county parcel source",
+      "scope": "79 valid, distinct EPCAD-source parcel reference polygons served by City of El Paso GIS, qualified in thirteen bounded cells around the unchanged WUP population-settlement locator. Complete native count and object-ID manifests, forced three-row pages, all fresh GIS-ID reads, explicit absence, footprint and binding pass. Metric EPSG32613 topology found no sampled overlaps or errors. A fresh native parcel contains the locator, which is also within the official city limits. The layer is county-source/city-publisher ground geometry, not a city-only or legal-title coverage guarantee.",
+      "evidenceFile": "research/overnight-cities-2026-10-08/el-paso-manifest-root-acceptance.json",
+      "attribution": "El Paso public parcel reference map · adapted",
+      "catalogueUrl": "https://opendata.elpasotexas.gov/",
+      "licenceNote": "Anonymous bounded public reference geometry and attribution verified. Source GIS identity is not a statutory property key. Legal title, survey accuracy, currentness and whole-city completeness remain unverified; personal attributes are excluded."
+    },
+    {
+      "id": "us-palm-beach-county-pao-parcels-ground-oid",
+      "name": "Palm Beach County Property Appraiser parcel polygons using service OID",
+      "adapter": "arcgis",
+      "endpoint": "https://gis.pbcgov.org/arcgis/rest/services/Parcels/PARCEL_PROPERTY_USE_PAPA/MapServer/14",
+      "idField": "OBJECTID",
+      "idType": "integer",
+      "objectIdField": "OBJECTID",
+      "idPrefix": "US-PBC-OID-",
+      "outFields": [
+        "OBJECTID"
+      ],
+      "pageSize": 2000,
+      "maxFeatures": 3000,
+      "maxBboxKm2": 1,
+      "boundsQueryMode": "object-ids",
+      "idsQueryMode": "object-ids",
+      "countryCode": "US",
+      "metricSrid": 32617,
+      "cityIds": [
+        "westpalmbeach"
+      ],
+      "maxConcurrentQueries": 2,
+      "operator": "Palm Beach County Property Appraiser / County GIS",
+      "scope": "114 valid distinct Palm Beach County Property Appraiser GIS reference polygons in thirteen bounded cells around the unchanged UN WUP West Palm Beach settlement locator. Native count/OID manifests, forced three-row pages, fresh GIS-ID geometry reads, explicit absence, footprint and binding pass. Metric EPSG32617 topology found no sampled overlap or errors. The county sample contains the locator; the separate municipal parcel layer extent excludes it. This serves the WUP settlement location using county ground and makes no West Palm Beach municipal-only coverage claim. Documented PCN/PARID is nonunique across geometry features, so it is not the runtime key.",
+      "evidenceFile": "research/overnight-cities-2026-10-08/west-palm-beach-county-ground-acceptance.json",
+      "attribution": "West Palm Beach public parcel reference map · adapted",
+      "catalogueUrl": "https://pbcpao.gov/departments/gis.htm",
+      "licenceNote": "Anonymous bounded public reference geometry and attribution verified. Source GIS identity is not a statutory property key. Legal title, survey accuracy, currentness and whole-city completeness remain unverified; personal attributes are excluded."
+    },
+    {
+      "adapter": "gml-wfs",
+      "id": "lodz-gml-wfs",
+      "endpoint": "https://igeodeta.log.lodz.pl/cgi-bin/lodz-egib",
+      "featureType": "ms:dzialki",
+      "idField": "ID_DZIALKI",
+      "geometryField": "msGeometry",
+      "responseCrs": "EPSG:3857",
+      "idPrefix": "PL-LODZ-",
+      "idType": "string",
+      "parcelNumberField": "ID_DZIALKI",
+      "outFields": [
+        "ID_DZIALKI"
+      ],
+      "maxBboxKm2": 1,
+      "pageSize": 50,
+      "maxFeatures": 300,
+      "maxResponseBytes": 1048576,
+      "maxTotalResponseBytes": 8388608,
+      "timeoutMs": 12000,
+      "countryCode": "PL",
+      "metricSrid": 32634,
+      "cityIds": [
+        "lodz"
+      ],
+      "maxConcurrentQueries": 2,
+      "name": "Łódź municipal EGiB cadastral parcel polygons",
+      "operator": "City of Łódź / InterSIT EGiB",
+      "scope": "89 valid distinct native EGiB cadastral polygons across thirteen bounded cells around the unchanged Łódź WUP population-settlement locator. Exact FES polygon intersection is identical for before/after hit counts and all pages. Forced three-row paging, fresh reads of every native ID in batches of eight, explicit absence, full footprint lookup and source binding pass. Metric EPSG32634 topology found no sampled invalidity, duplicate geometry, positive-area overlaps or operation errors. The original point-containing sample remains unchanged and independently matches the fresh full polygon. This is bounded reference geometry, without a citywide completeness, legal-title or survey-accuracy guarantee.",
+      "evidenceFile": "research/overnight-cities-2026-10-08/lodz-intersects-batched-root-acceptance.json",
+      "attribution": "Łódź InterSIT EGiB parcel geometry · adapted",
+      "catalogueUrl": "https://nowa.mapa.lodz.pl/dla-profesjonalistow/",
+      "licenceNote": "Anonymous bounded parcel geometry and publisher attribution verified. ID_DZIALKI is the published cadastral parcel identifier. Source legal title, positional accuracy, currentness, reuse conditions and whole-city completeness remain informational and unverified; personal attributes are excluded."
+    },
+    {
+      "adapter": "gml-wfs",
+      "id": "dresden-saxony-gml-wfs",
+      "endpoint": "https://geodienste.sachsen.de/aaa/public_alkis/vereinf/wfs",
+      "featureType": "ave:Flurstueck",
+      "idField": "flstkennz",
+      "geometryField": "geometrie",
+      "responseCrs": "EPSG:25833",
+      "idPrefix": "DE-SN-",
+      "idType": "string",
+      "parcelNumberField": "flstkennz",
+      "outFields": [
+        "flstkennz"
+      ],
+      "maxBboxKm2": 1,
+      "pageSize": 50,
+      "maxFeatures": 300,
+      "maxResponseBytes": 1048576,
+      "maxTotalResponseBytes": 8388608,
+      "timeoutMs": 12000,
+      "countryCode": "DE",
+      "metricSrid": 32633,
+      "cityIds": [
+        "dresden",
+        "leipzig"
+      ],
+      "maxConcurrentQueries": 2,
+      "name": "GeoSN Saxony simplified ALKIS cadastral parcel polygons",
+      "operator": "Landesamt für Geobasisinformation Sachsen (GeoSN)",
+      "scope": "GeoSN public simplified ALKIS cadastral polygons in separately qualified bounded Dresden and Leipzig views. Published flstkennz identities and full native parcel geometry are preserved. Each city has independent completeness, fresh-identity, footprint, binding and metric topology evidence. Wider citywide completeness, legal title, survey accuracy and source currentness remain unverified.",
+      "evidenceFile": "research/overnight-cities-2026-10-08/dresden-saxony-gml-root-acceptance.json",
+      "attribution": "GeoSN Saxony ALKIS parcel geometry · adapted",
+      "catalogueUrl": "https://www.geodaten.sachsen.de/alkis-wfs-4968.html",
+      "licenceNote": "Anonymous bounded no-owner ALKIS geometry and source attribution verified. flstkennz is the published cadastral parcel key including underscores and letters. Source legal title, positional accuracy, currentness, reuse conditions and whole-city completeness remain informational and unverified. Only parcel identity and geometry retained.",
+      "additionalCityEvidence": {
+        "leipzig": "research/overnight-followon-2026-10-09/leipzig-saxony-gml-root-acceptance.json"
+      },
+      "cityScopes": {
+        "dresden": "Eleven valid distinct native ALKIS cadastral polygons across thirteen bounded cells around the unchanged Dresden WUP settlement locator; 27 distinct full polygons across grid and footprint queries independently audited in metric EPSG32633. Before/after hit counts use the identical projected FES intersection predicate. Forced three-row paging, fresh exact native-ID reads of all 27 polygons in eight-key batches, explicit absence, full footprint lookup and source binding passed. Independent GEOS checks found no sampled invalidity, duplicate geometry, positive-area overlaps or operation errors. Full source geometry and published parcel keys are preserved. This bounded reference evidence does not establish citywide completeness, legal title or survey accuracy.",
+        "leipzig": "180 distinct full native ALKIS parcels around the unchanged Leipzig WUP locator across thirteen bounded cells; all 180 grid and footprint geometries independently audited in EPSG32633 with no invalidity, duplicate geometry, positive-area overlaps above0.01m2 or operation errors. Forced three-row paging, fresh exact native-ID reads, explicit absence, footprint lookup and source binding passed. Published source parcel keys and complete geometry are preserved. This bounded evidence does not establish citywide completeness, survey accuracy, legal title or currentness."
+      }
+    },
+    {
+      "id": "br-joinville-simgeo-lotes",
+      "name": "Joinville SIMGeo municipal cadastral lot polygons",
+      "adapter": "arcgis",
+      "endpoint": "https://geo.joinville.sc.gov.br/server/rest/services/simgeo/lotes/MapServer/3",
+      "idField": "iq",
+      "objectIdField": "objectid",
+      "parcelNumberField": "iq",
+      "idType": "string",
+      "idPrefix": "BR-JOINVILLE-IQ-",
+      "outFields": [
+        "objectid",
+        "iq"
+      ],
+      "pageSize": 100,
+      "maxFeatures": 3000,
+      "maxBboxKm2": 1,
+      "countryCode": "BR",
+      "metricSrid": 32722,
+      "cityIds": [
+        "joinville"
+      ],
+      "maxConcurrentQueries": 2,
+      "boundsQueryMode": "object-ids",
+      "idsQueryMode": "object-ids",
+      "operator": "Prefeitura Municipal de Joinville",
+      "scope": "201 distinct full native municipal lot polygons around the unchanged Joinville WUP locator across thirteen bounded cells; all grid and footprint geometries independently audited in EPSG32722. No invalidity, duplicate geometry or operation errors. One 0.01436m² shared-edge overlap was independently reproduced in native EPSG31982, with a maximum rectangle width below0.6mm; preserved without repair as a bounded reference-data caveat. Forced three-row paging, all201 fresh exact native-key reads, explicit absence, footprint lookup and source binding passed. This evidence does not establish citywide completeness, positional accuracy, legal title or currentness.",
+      "evidenceFile": "research/overnight-followon-2026-10-09/joinville-simgeo-root-acceptance.json",
+      "attribution": "Prefeitura Municipal de Joinville SIMGeo lot polygons · adapted",
+      "catalogueUrl": "https://www.joinville.sc.gov.br/servicos/acessar-sistema-de-informacoes-municipais-georreferenciadas-simgeo/",
+      "licenceNote": "Anonymous geometry-only bounded queries verified; published iq cadastral keys and full source geometry retained. Legal title, positional accuracy, source currentness and reuse conditions remain informational and unverified. No owner or address attributes requested."
+    },
+    {
+      "id": "br-juiz-de-fora-sisurb-lotes",
+      "name": "Juiz de Fora SISURB municipal cadastral lots",
+      "adapter": "arcgis",
+      "endpoint": "https://sisurb.pjf.mg.gov.br/server/rest/services/uso_cad_lotes/MapServer/158",
+      "idField": "geocodigo",
+      "objectIdField": "OBJECTID",
+      "parcelNumberField": "geocodigo",
+      "idType": "string",
+      "idPrefix": "BR-JF-SISURB-",
+      "outFields": [
+        "OBJECTID",
+        "geocodigo"
+      ],
+      "pageSize": 100,
+      "maxFeatures": 3000,
+      "maxBboxKm2": 1,
+      "countryCode": "BR",
+      "metricSrid": 32723,
+      "cityIds": [
+        "juiz_de_fora"
+      ],
+      "maxConcurrentQueries": 2,
+      "boundsQueryMode": "object-ids",
+      "idsQueryMode": "object-ids",
+      "operator": "Prefeitura Municipal de Juiz de Fora",
+      "scope": "170 distinct full native cadastral-reference polygons around the unchanged WUP settlement locator across thirteen bounded cells. Independent EPSG:32723 GEOS audit of all170 grid and footprint polygons found no invalidity, duplicate geometry, positive-area overlaps above0.01m² or operation errors. Forced three-row paging, all170 fresh exact native-ID reads, explicit absence, footprint lookup and source binding passed. Published native identities and full geometry preserved without repair. This bounded evidence does not establish citywide completeness, legal title, positional accuracy or currentness. Published geocodigo keys are used independently of source OBJECTID; exact locator parcel OBJECTID70049 has native keyLT104196.",
+      "evidenceFile": "research/overnight-followon-2026-10-09/juiz-de-fora-sisurb-root-acceptance.json",
+      "attribution": "Prefeitura Municipal de Juiz de Fora · cadastral-reference geometry · adapted",
+      "catalogueUrl": "https://sisurb.pjf.mg.gov.br/server/rest/services/uso_cad_lotes/MapServer",
+      "licenceNote": "Anonymous bounded safe parcel identities and unmodified full geometry verified. Dataset dates, source terms, legal title, positional accuracy, currentness and whole-city completeness remain informational and unverified. Personal attributes excluded."
+    },
+    {
+      "id": "es-malaga-municipal-parcel-snapshot",
+      "name": "Málaga municipal cartographic parcel polygons",
+      "adapter": "geojson-snapshot",
+      "endpoint": "https://datosabiertos.malaga.eu/recursos/urbanismoEInfraestructura/planimetria/callejero/da_cartografiaParcela-4326.geojson",
+      "idFields": [
+        "ID_PARCELA"
+      ],
+      "outFields": [
+        "ID_PARCELA"
+      ],
+      "parcelNumberField": "ID_PARCELA",
+      "idPrefix": "ES-MALAGA-PARCELA-",
+      "maxSnapshotBytes": 67108864,
+      "maxSnapshotFeatures": 60000,
+      "expectedSnapshotFeatures": 58631,
+      "expectedEtag": "\"314864d-65d53018af75b-gzip\"",
+      "maxFeatures": 3000,
+      "maxBboxKm2": 1,
+      "countryCode": "ES",
+      "metricSrid": 32630,
+      "cityIds": [
+        "malaga"
+      ],
+      "maxConcurrentQueries": 1,
+      "operator": "Ayuntamiento de Málaga",
+      "evidenceFile": "research/overnight-followon-2026-10-09/malaga-snapshot-root-acceptance.json",
+      "scope": "145 distinct unmodified full municipal cartographic parcel polygons around the unchanged WUP locator passed thirteen bounded grid cells, complete footprint lookup and source binding. Two independent anonymous downloads returned the complete 58,631-feature EPSG:4326 snapshot with identical decoded body hashes and the runtime gzip representation ETag. All 145 fresh exact native ID_PARCELA reads and explicit absence passed. Independent EPSG:32630 GEOS audit found no invalid polygons, duplicate geometry, overlaps above 0.01 m² or operation errors in this bounded union. The exact locator lies inside ID_PARCELA 4196772. Snapshot revisions fail closed pending review; this does not establish citywide completeness, legal title, survey accuracy or currentness.",
+      "catalogueUrl": "https://datosabiertos.malaga.eu/tr/dataset/sistema-de-informacion-cartografica-parcela",
+      "attribution": "Ayuntamiento de Málaga · municipal cartographic parcel polygons · CC BY 4.0 · adapted",
+      "licenceNote": "CC BY 4.0 per municipal catalogue. Published cartographic polygons do not establish legal title or survey accuracy.",
+      "licenceUrl": "https://datosabiertos.malaga.eu/tr/dataset/sistema-de-informacion-cartografica-parcela"
+    },
+    {
+      "endpoint": "https://gis.bakersfieldcity.us/webmaps/rest/services/General/Cadastre/MapServer/1",
+      "adapter": "arcgis",
+      "idField": "APN_ID",
+      "idType": "string",
+      "idPrefix": "US-BAKERSFIELD-APN-",
+      "objectIdField": "OBJECTID",
+      "outFields": [
+        "OBJECTID",
+        "APN_ID"
+      ],
+      "boundsQueryMode": "object-ids",
+      "idsQueryMode": "object-ids",
+      "pageSize": 100,
+      "maxFeatures": 3000,
+      "boundsSrid": 2229,
+      "boundsProjection": "+proj=lcc +lat_0=33.5 +lon_0=-118 +lat_1=35.4666666666667 +lat_2=34.0333333333333 +x_0=2000000.0001016 +y_0=500000.0001016 +ellps=GRS80 +towgs84=0,0,0,0,0,0,0 +units=us-ft +no_defs +type=crs",
+      "id": "us-bakersfield-municipal-cadastral-parcels",
+      "name": "Bakersfield municipal cadastral parcel polygons",
+      "operator": "City of Bakersfield GIS",
+      "countryCode": "US",
+      "cityIds": [
+        "bakersfield"
+      ],
+      "metricSrid": 32611,
+      "maxBboxKm2": 1,
+      "maxConcurrentQueries": 1,
+      "scope": "119 distinct native APN references passed thirteen 0.001-degree cells around the unchanged Bakersfield WUP locator, complete native-projected bounds manifests and all fresh exact native identity reads. A separate 1 km metric-square envelope supplied 761 full source polygons; an independent root EPSG:32611 GEOS audit found all valid and distinct, with no overlaps above 0.01 m² or operation errors. APN_ID strings are preserved independently of OBJECTID transport keys; APN 14734302 maps to OBJECTID 127663 and contains the locator. Forced three-feature paging, explicit absence, full footprint and source binding passed. Native EPSG:2229 bounds projection resolves the previously inconsistent WGS84 count/manifests without changing geometry. Earlier failed probes are retained in the acceptance record. This bounded evidence does not establish citywide completeness, legal title, accuracy or currentness.",
+      "evidenceFile": "research/overnight-followon-2026-10-09/bakersfield-native-bounds-requalification-acceptance.json",
+      "catalogueUrl": "https://gis.bakersfieldcity.us/webmaps/rest/services/General/Cadastre/MapServer/1",
+      "attribution": "City of Bakersfield GIS · cadastral parcel APN references · adapted",
+      "licenceNote": "Source terms and age are informational; legal title, survey accuracy and currentness unverified."
+    },
+    {
+      "id": "poznan-gml-wfs",
+      "name": "Poznań municipal EGiB parcel polygons",
+      "adapter": "gml-wfs",
+      "endpoint": "https://portal.geopoz.poznan.pl/wmsegib",
+      "featureType": "ms:dzialki",
+      "idField": "ID_DZIALKI",
+      "geometryField": "MSGEOMETRY",
+      "responseCrs": "EPSG:2177",
+      "idPrefix": "PL-POZNAN-",
+      "idType": "string",
+      "parcelNumberField": "ID_DZIALKI",
+      "outFields": [
+        "ID_DZIALKI"
+      ],
+      "maxBboxKm2": 1,
+      "pageSize": 100,
+      "maxFeatures": 3000,
+      "maxResponseBytes": 2097152,
+      "maxTotalResponseBytes": 16777216,
+      "timeoutMs": 15000,
+      "countryCode": "PL",
+      "metricSrid": 2180,
+      "cityIds": [
+        "poznan"
+      ],
+      "maxConcurrentQueries": 1,
+      "operator": "City of Poznań / GEOPOZ municipal geodesy and cadastre office",
+      "scope": "51 valid, distinct native EGiB parcel polygons across thirteen bounded cells around the unchanged Poznań WUP settlement locator. Before/after hit counts, all feature pages, forced three-row pagination, fresh exact reads of every ID, explicit absence, footprint lookup and one-parcel proposal binding pass. Independent EPSG:2180 full-polygon topology audit found no invalidity, duplicate geometry, overlaps above 0.01 m² or operation errors. This verifies bounded reference geometry, without asserting whole-city completeness.",
+      "evidenceFile": "research/overnight-next-2026-10-09/poznan-root-acceptance.json",
+      "attribution": "Poznań GEOPOZ EGiB parcel geometry · adapted",
+      "catalogueUrl": "https://geopoz.poznan.pl/",
+      "licenceNote": "Anonymous bounded parcel geometry and publisher attribution verified. ID_DZIALKI is the published cadastral identifier. Publisher conditions and source currency remain informational; personal and KW record fields are excluded."
     }
   ]
 }

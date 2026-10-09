@@ -1,0 +1,133 @@
+{
+  "schemaVersion": "1.0",
+  "checkedAt": "2026-10-09",
+  "cityRecord": "city-1774-kitwe.json",
+  "purpose": "Document city-local registry evidence and schema-first anonymous public geometry review.",
+  "scopeLimits": {
+    "maxFullPolygonsRetainedInCityRecord": 3,
+    "maxFullPolygonsRetainedInReview": 0,
+    "ownerOrAddressDataRetained": false,
+    "credentialsOrTokenValuesRetained": false,
+    "citywideCompletenessAsserted": false
+  },
+  "assessment": "Zambia’s government NSDI service `NSDI_Vector/CadasterNew/MapServer/0` identifies its `Lots` parcel layer as “Lots from ZILMIS”. The layer has Polygon geometry, EPSG:32735 source coordinates, public query capability and safe native `SDE.Lots.UPID` (“Plot ID”). Kitwe City Council separately lists planning/land-use services. A bounded 100 m query around the WUP point found four transport IDs and a safe-field fetch retained three full polygons with only UPID. No owner/address/account attributes or transport OIDs were retained. Official Zambia NSDI REST metadata identifies the `Lots` polygon layer and describes its source as ZILMIS. Its schema includes native UPID plot IDs, survey reference/area/date and land-use fields; no owner/address/account field is needed. Exact WUP point returned no parcel IDs; a 100 m native-coordinate buffer returned four transport IDs, and a fetch of three of them returned three complete Polygons with only UPID requested.",
+  "registryAssessment": "Zambia’s government NSDI service `NSDI_Vector/CadasterNew/MapServer/0` identifies its `Lots` parcel layer as “Lots from ZILMIS”. The layer has Polygon geometry, EPSG:32735 source coordinates, public query capability and safe native `SDE.Lots.UPID` (“Plot ID”). Kitwe City Council separately lists planning/land-use services. A bounded 100 m query around the WUP point found four transport IDs and a safe-field fetch retained three full polygons with only UPID. No owner/address/account attributes or transport OIDs were retained.",
+  "officialPrimarySources": [
+    {
+      "url": "https://www.map.gov.zm/arcgis/rest/services/NSDI_Vector/CadasterNew/MapServer",
+      "observation": "Official Zambia NSDI REST metadata identifies the `Lots` polygon layer and describes its source as ZILMIS. Its schema includes native UPID plot IDs, survey reference/area/date and land-use fields; no owner/address/account field is needed. Exact WUP point returned no parcel IDs; a 100 m native-coordinate buffer returned four transport IDs, and a fetch of three of them returned three complete Polygons with only UPID requested."
+    },
+    {
+      "url": "https://www.map.gov.zm/arcgis/rest/services/NSDI_Vector/CadasterNew/MapServer/0?f=pjson",
+      "observation": "Official Zambia NSDI REST metadata identifies the `Lots` polygon layer and describes its source as ZILMIS. Its schema includes native UPID plot IDs, survey reference/area/date and land-use fields; no owner/address/account field is needed. Exact WUP point returned no parcel IDs; a 100 m native-coordinate buffer returned four transport IDs, and a fetch of three of them returned three complete Polygons with only UPID requested."
+    },
+    {
+      "url": "https://www.kitwecouncil.gov.zm/",
+      "observation": "Official Zambia NSDI REST metadata identifies the `Lots` polygon layer and describes its source as ZILMIS. Its schema includes native UPID plot IDs, survey reference/area/date and land-use fields; no owner/address/account field is needed. Exact WUP point returned no parcel IDs; a 100 m native-coordinate buffer returned four transport IDs, and a fetch of three of them returned three complete Polygons with only UPID requested."
+    },
+    {
+      "url": "https://www.kitwecouncil.gov.zm/?page_id=770",
+      "observation": "Official Zambia NSDI REST metadata identifies the `Lots` polygon layer and describes its source as ZILMIS. Its schema includes native UPID plot IDs, survey reference/area/date and land-use fields; no owner/address/account field is needed. Exact WUP point returned no parcel IDs; a 100 m native-coordinate buffer returned four transport IDs, and a fetch of three of them returned three complete Polygons with only UPID requested."
+    }
+  ],
+  "searchQueries": [
+    {
+      "language": "English",
+      "query": "Kitwe Zambia official cadastral parcel map land registry GIS City Council",
+      "result": "Official Zambia NSDI REST metadata identifies the `Lots` polygon layer and describes its source as ZILMIS. Its schema includes native UPID plot IDs, survey reference/area/date and land-use fields; no owner/address/account field is needed. Exact WUP point returned no parcel IDs; a 100 m native-coordinate buffer returned four transport IDs, and a fetch of three of them returned three complete Polygons with only UPID requested.",
+      "method": "Separate language-specific search and official source/service review."
+    },
+    {
+      "language": "Bemba",
+      "query": "Kitwe cadastral map land registry parcels Bemba ubutaka amapepa official",
+      "result": "Official Zambia NSDI REST metadata identifies the `Lots` polygon layer and describes its source as ZILMIS. Its schema includes native UPID plot IDs, survey reference/area/date and land-use fields; no owner/address/account field is needed. Exact WUP point returned no parcel IDs; a 100 m native-coordinate buffer returned four transport IDs, and a fetch of three of them returned three complete Polygons with only UPID requested.",
+      "method": "Separate language-specific search and official source/service review."
+    }
+  ],
+  "geometryDecision": "Retained only the safe native GIS key plus up to three complete nearby public polygons.",
+  "coverageAssessment": {
+    "claimedScope": "Zambia’s government NSDI service `NSDI_Vector/CadasterNew/MapServer/0` identifies its `Lots` parcel layer as “Lots from ZILMIS”. The layer has Polygon geometry, EPSG:32735 source coordinates, public query capability and safe native `SDE.Lots.UPID` (“Plot ID”). Kitwe City Council separately lists planning/land-use services. A bounded 100 m query around the WUP point found four transport IDs and a safe-field fetch retained three full polygons with only UPID. No owner/address/account attributes or transport OIDs were retained.",
+    "verifiedOpenScope": "Official Zambia NSDI REST metadata identifies the `Lots` polygon layer and describes its source as ZILMIS. Its schema includes native UPID plot IDs, survey reference/area/date and land-use fields; no owner/address/account field is needed. Exact WUP point returned no parcel IDs; a 100 m native-coordinate buffer returned four transport IDs, and a fetch of three of them returned three complete Polygons with only UPID requested.",
+    "citywideVerified": false,
+    "countrywideVerified": false
+  },
+  "attempts": [
+    {
+      "source": "https://www.map.gov.zm/arcgis/rest/services/NSDI_Vector/CadasterNew/MapServer",
+      "outcome": "Official source/schema review only.",
+      "fieldsRequested": [],
+      "sensitiveFieldsRequested": false
+    },
+    {
+      "source": "https://www.map.gov.zm/arcgis/rest/services/NSDI_Vector/CadasterNew/MapServer/0?f=pjson",
+      "outcome": "HTTP 200 Layer metadata: polygon geometry, native EPSG:32735, safe UPID plot ID; no owner/address fields needed.",
+      "fieldsRequested": [],
+      "sensitiveFieldsRequested": false
+    },
+    {
+      "source": "https://www.kitwecouncil.gov.zm/",
+      "outcome": "Official source/schema review only.",
+      "fieldsRequested": [],
+      "sensitiveFieldsRequested": false
+    },
+    {
+      "source": "https://www.kitwecouncil.gov.zm/?page_id=770",
+      "outcome": "Official source/schema review only.",
+      "fieldsRequested": [],
+      "sensitiveFieldsRequested": false
+    },
+    {
+      "source": "https://www.map.gov.zm/arcgis/rest/services/NSDI_Vector/CadasterNew/MapServer/0/query",
+      "httpStatus": 200,
+      "featureCount": 0,
+      "outcome": "Exact point-ID query in native EPSG:32735 returned objectIds:null. First EPSG:4326 ID request timed out; no feature attributes requested.",
+      "fieldsRequested": [],
+      "sensitiveFieldsRequested": false
+    },
+    {
+      "source": "https://www.map.gov.zm/arcgis/rest/services/NSDI_Vector/CadasterNew/MapServer/0/query (100 m distance query, native EPSG:32735)",
+      "httpStatus": 200,
+      "featureCount": 4,
+      "outcome": "Four transport-only object IDs found in buffer; values not retained.",
+      "fieldsRequested": [],
+      "sensitiveFieldsRequested": false
+    },
+    {
+      "source": "https://www.map.gov.zm/arcgis/rest/services/NSDI_Vector/CadasterNew/MapServer/0/query (fetch only three buffered objects, GeoJSON)",
+      "httpStatus": 200,
+      "featureCount": 3,
+      "outcome": "Three complete Polygon features returned, only UPID attribute requested, and retained in sample; transport OIDs omitted. Initial resultRecordCount parameter was unsupported by this service (“Pagination is not supported”).",
+      "fieldsRequested": [
+        "SDE.Lots.UPID",
+        "geometry"
+      ],
+      "sensitiveFieldsRequested": false
+    }
+  ],
+  "remainingUncertainty": "The point is not itself in a returned lot; whole-city coverage, legal cadastral meaning of UPID, and source completeness were not assessed.",
+  "runtimeAssessment": {
+    "status": "not_assessed",
+    "reason": "No runtime adapter/contract test was performed."
+  },
+  "technicalBlocker": "Exact WUP point had no intersecting parcel. A nearby bounded 100 m sample did return three polygons; this is a sample only and does not qualify runtime or citywide completeness.",
+  "schemaReview": {
+    "service": "NSDI_Vector/CadasterNew/MapServer/0",
+    "geometryType": "esriGeometryPolygon",
+    "sourceCrs": "EPSG:32735",
+    "outputCrs": "EPSG:4326 GeoJSON",
+    "safeNativeIdentity": "SDE.Lots.UPID (Plot ID)",
+    "excludedFields": [
+      "SDE.Lots.OBJECTID (transport-only)",
+      "SDE.Lots.PID",
+      "SDE.Lots.SRREF",
+      "SDE.Lots.SURVEY_AREA",
+      "SDE.Lots.SURVEY_DATE",
+      "SDE.Lots.LANDUSE",
+      "SDE.Lots.OBJ_ID",
+      "SDE.Lots.LANDTYPE",
+      "SDE.V_LAND_TYPE_USE.*",
+      "SDE.Lots.COUNTRYCODE"
+    ],
+    "schemaNote": "Layer metadata describes lots as sourced from ZILMIS. Query fetched up to three feature IDs from a 100 m native-coordinate search and returned only UPID plus geometry."
+  }
+}

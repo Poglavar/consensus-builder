@@ -1,0 +1,283 @@
+{
+  "schemaVersion": 1,
+  "kind": "city_parcel_source_research",
+  "checkedAt": "2026-10-08",
+  "country": "Türkiye",
+  "countryCode": "TR",
+  "populationUnit": "persons",
+  "status": "partial_point_geometry_verified_quality_issue_present",
+  "verifiedSample": true,
+  "publicParcelGeometryFound": true,
+  "runtimeReadiness": "point_lookup_only_partial_city_coverage_quality_issue",
+  "priorEvidenceFiles": [],
+  "scopeLimits": "The WUP point is a population-cluster locator, not an official city boundary or parcel identity. TKGM provides single-point identify and exact-ID lookup, not area enumeration through this adapter. Geometry confirms parcels only at queried points; no citywide completeness or WUP coverage is inferred. No owner/address/personal data were saved.",
+  "wupCityCode": 3124,
+  "queueRank": 216,
+  "name": "Bursa",
+  "centerLatLon": [
+    40.2050411327084,
+    29.0470015858534
+  ],
+  "population2025": 2281622,
+  "pointBasis": "UN WUP 2025 population-weighted settlement centroid; this is not a municipal boundary or a parcel-coverage claim.",
+  "registryFound": true,
+  "registryBasis": "Official TKGM point lookups returned complete parcel polygons at nine nearby Bursa sample points; Bursa Metropolitan Municipality also documents a municipal parcel/address viewer. The WUP point and separately selected central sample locator were no-hits; citywide coverage is unqualified.",
+  "resultCategory": "verified_public_point_query_full_polygon_partial_city_probe_quality_issue",
+  "research": {
+    "executedQueries": [
+      {
+        "language": "English",
+        "query": "Bursa Türkiye official cadastral parcel GIS public parcel query polygon service municipal",
+        "scope": "Locate an official municipal or national public parcel service and test for polygon availability.",
+        "result": "Found the Bursa Kent Rehberi and national TKGM parcel query; no full-polygon API was identified.",
+        "actualResultUrls": [
+          "https://kentrehberi.bursa.bel.tr/",
+          "https://www.tkgm.gov.tr/e-hizmetler/sik-kullanilanlar/parsel-sorgulama"
+        ],
+        "executionMethod": "Web search in English and city/country language; official portals directly inspected where recorded."
+      },
+      {
+        "language": "Turkish",
+        "query": "Bursa resmi parsel sorgu kent rehberi kadastro GIS belediye",
+        "scope": "Find official Bursa parcel search and municipal cadastral GIS.",
+        "result": "Official municipal guide offers address/parcel search; TKGM provides point-based parcel lookup and parcel details. No geometry sample verified at WUP point.",
+        "actualResultUrls": [
+          "https://kentrehberi.bursa.bel.tr/",
+          "https://www.tkgm.gov.tr/e-hizmetler/sik-kullanilanlar/parsel-sorgulama"
+        ],
+        "executionMethod": "Web search in English and city/country language; official portals directly inspected where recorded."
+      }
+    ],
+    "officialSources": [
+      {
+        "url": "https://kentrehberi.bursa.bel.tr/",
+        "observation": "Official Bursa Metropolitan Municipality Kent Rehberi, prepared by municipal GIS staff; interface includes address/parcel search, orthophoto and terrain. Disclaimer frames it as informational, not an authoritative registration record. No feature service was extracted or queried."
+      },
+      {
+        "url": "https://www.bursa.bel.tr/haber/buyuksehirden-bursaya-kent-rehberi--37135",
+        "observation": "Municipal announcement describes city guide and its parcel/address search; it does not document a public parcel-vector API."
+      },
+      {
+        "url": "https://www.tkgm.gov.tr/e-hizmetler/sik-kullanilanlar/parsel-sorgulama",
+        "observation": "Official national TKGM parcel query; describes parcel/coordinate/area lookup and map-oriented outputs. Owner identity data is not part of this probe."
+      }
+    ],
+    "candidateSources": [
+      {
+        "url": "https://kentrehberi.bursa.bel.tr/",
+        "type": "official municipal map viewer",
+        "assessment": "Candidate for further viewer inspection; parcel search exists but public geometry response not yet verified."
+      },
+      {
+        "url": "https://cbsapi.tkgm.gov.tr/megsiswebapi.v3.1/api/parsel/{latitude}/{longitude}",
+        "type": "official national point lookup",
+        "assessment": "Accepted for point geometry: 8 of 13 probes returned polygons; exact IDs were checked. No bounds or citywide completeness."
+      }
+    ],
+    "requestsAndEndpointChecks": [
+      {
+        "url": "https://kentrehberi.bursa.bel.tr/",
+        "method": "GET",
+        "httpStatus": 200,
+        "contentType": "text/html",
+        "observation": "Municipal map viewer opened; parcel/address search UI exists, but no public parcel-feature response tested."
+      },
+      {
+        "url": "https://cbsapi.tkgm.gov.tr/megsiswebapi.v3.1/api/parsel/40.2050411327084/29.0470015858534",
+        "method": "GET",
+        "httpStatus": 404,
+        "checkedAt": "2026-10-08T21:08:09Z",
+        "contentType": "application/geo+json, application/json",
+        "observation": "HTTP 404: adapter returned a structured empty point-query result after validating the provider no-hit message; this is point-level only."
+      },
+      {
+        "url": "https://cbsapi.tkgm.gov.tr/megsiswebapi.v3.1/api/parsel/40.195/29.06",
+        "method": "GET",
+        "httpStatus": 404,
+        "checkedAt": "2026-10-08T21:08:09Z",
+        "contentType": "application/geo+json, application/json",
+        "observation": "HTTP 404: adapter returned a structured empty point-query result after validating the provider no-hit message; this is point-level only."
+      },
+      {
+        "url": "https://cbsapi.tkgm.gov.tr/megsiswebapi.v3.1/api/parsel/40.18/29.06",
+        "method": "GET",
+        "httpStatus": 200,
+        "checkedAt": "2026-10-08T21:08:09Z",
+        "contentType": "application/geo+json, application/json",
+        "observation": "HTTP 200: adapter returned a complete WGS84 Polygon and verified the queried point lies inside or on its boundary."
+      },
+      {
+        "url": "https://cbsapi.tkgm.gov.tr/megsiswebapi.v3.1/api/parsel/40.19/29.04",
+        "method": "GET",
+        "httpStatus": 200,
+        "checkedAt": "2026-10-08T21:08:09Z",
+        "contentType": "application/geo+json, application/json",
+        "observation": "HTTP 200: adapter returned a complete WGS84 Polygon and verified the queried point lies inside or on its boundary."
+      },
+      {
+        "url": "https://cbsapi.tkgm.gov.tr/megsiswebapi.v3.1/api/parsel/40.2/29.03",
+        "method": "GET",
+        "httpStatus": 200,
+        "checkedAt": "2026-10-08T21:08:09Z",
+        "contentType": "application/geo+json, application/json",
+        "observation": "HTTP 200: adapter returned a complete WGS84 Polygon and verified the queried point lies inside or on its boundary."
+      },
+      {
+        "url": "https://cbsapi.tkgm.gov.tr/megsiswebapi.v3.1/api/parsel/40.21/29.05",
+        "method": "GET",
+        "httpStatus": 200,
+        "checkedAt": "2026-10-08T21:08:09Z",
+        "contentType": "application/geo+json, application/json",
+        "observation": "HTTP 200: adapter returned a complete WGS84 Polygon and verified the queried point lies inside or on its boundary."
+      },
+      {
+        "url": "https://cbsapi.tkgm.gov.tr/megsiswebapi.v3.1/api/parsel/40.22/29.06",
+        "method": "GET",
+        "httpStatus": 200,
+        "checkedAt": "2026-10-08T21:08:09Z",
+        "contentType": "application/geo+json, application/json",
+        "observation": "HTTP 200: adapter returned a complete WGS84 Polygon and verified the queried point lies inside or on its boundary."
+      },
+      {
+        "url": "https://cbsapi.tkgm.gov.tr/megsiswebapi.v3.1/api/parsel/40.2/29.07",
+        "method": "GET",
+        "httpStatus": 200,
+        "checkedAt": "2026-10-08T21:08:09Z",
+        "contentType": "application/geo+json, application/json",
+        "observation": "HTTP 200: adapter returned a complete WGS84 Polygon and verified the queried point lies inside or on its boundary."
+      },
+      {
+        "url": "https://cbsapi.tkgm.gov.tr/megsiswebapi.v3.1/api/parsel/40.19/29.08",
+        "method": "GET",
+        "httpStatus": 404,
+        "checkedAt": "2026-10-08T21:08:09Z",
+        "contentType": "application/geo+json, application/json",
+        "observation": "HTTP 404: adapter returned a structured empty point-query result after validating the provider no-hit message; this is point-level only."
+      },
+      {
+        "url": "https://cbsapi.tkgm.gov.tr/megsiswebapi.v3.1/api/parsel/40.18/29.04",
+        "method": "GET",
+        "httpStatus": 200,
+        "checkedAt": "2026-10-08T21:08:09Z",
+        "contentType": "application/geo+json, application/json",
+        "observation": "HTTP 200: adapter returned a complete WGS84 Polygon and verified the queried point lies inside or on its boundary."
+      },
+      {
+        "url": "https://cbsapi.tkgm.gov.tr/megsiswebapi.v3.1/api/parsel/40.21/29.08",
+        "method": "GET",
+        "httpStatus": 404,
+        "checkedAt": "2026-10-08T21:08:09Z",
+        "contentType": "application/geo+json, application/json",
+        "observation": "HTTP 404: adapter returned a structured empty point-query result after validating the provider no-hit message; this is point-level only."
+      },
+      {
+        "url": "https://cbsapi.tkgm.gov.tr/megsiswebapi.v3.1/api/parsel/40.22/29.04",
+        "method": "GET",
+        "httpStatus": 200,
+        "checkedAt": "2026-10-08T21:08:09Z",
+        "contentType": "application/geo+json, application/json",
+        "observation": "HTTP 200: adapter returned a complete WGS84 Polygon and verified the queried point lies inside or on its boundary."
+      },
+      {
+        "url": "https://cbsapi.tkgm.gov.tr/megsiswebapi.v3.1/api/parsel/40.2/29.09",
+        "method": "GET",
+        "httpStatus": 200,
+        "checkedAt": "2026-10-08T21:08:09Z",
+        "contentType": "application/geo+json, application/json",
+        "observation": "HTTP 200: adapter returned a complete WGS84 Polygon and verified the queried point lies inside or on its boundary."
+      }
+    ],
+    "coverageAssessment": {
+      "claimedScope": "Point query only; Bursa citywide extent is not claimed.",
+      "verifiedOpenScope": "Full polygons returned for 9 of 13 explicit point probes; exact-ID queries returned matching geometry hashes. The WUP and selected central points were no-hits.",
+      "wupPointCoveredByVerifiedParcelGeometry": false,
+      "citywideVerified": false,
+      "countrywideVerified": false,
+      "geometryVerified": true,
+      "candidateLayerCount": null,
+      "completeCityManifestAvailable": false,
+      "pointProbeCallCount": 13,
+      "pointFeatureHitCount": 9
+    },
+    "blocker": "TKGM provides point identify and exact-ID lookup but rejects bounds/geometry queries with 422 before network access. One of nine sampled polygons self-intersects in native and EPSG:32635 coordinates; no geometry repair was applied. Citywide parcel completeness remains unqualified.",
+    "remainingUncertainty": "The WUP locator and separately chosen central locator returned structured no-hits; nine nearby sample locations returned complete polygons. No official boundary, area-enumeration endpoint, or parcel count is available from this adapter. One sampled source polygon is topologically invalid."
+  },
+  "cityId": "wup2025:3124",
+  "verifiedParcelResponse": {
+    "sourceId": "tr-tkgm-parselsorgu-api",
+    "endpoint": "https://cbsapi.tkgm.gov.tr/megsiswebapi.v3.1/api/parsel",
+    "method": "GET",
+    "samplePointCalls": 13,
+    "polygonHits": 9,
+    "uniquePointIDs": 9,
+    "exactIdReturned": 9,
+    "identicalPointToIdGeometryHashes": 9,
+    "retainedFullPolygonCount": 3,
+    "fullPolygonFile": "bursa-service-review.json",
+    "wupPointHit": false,
+    "selectedCentralLocatorHit": false,
+    "citywideComplete": false,
+    "adapterPointNoHitCaveat": "Four provider 404s at point locations are returned as structured empty results after strict decimal-comma normalization; they are not network errors or citywide absences."
+  },
+  "source": {
+    "sourceId": "tr-tkgm-parselsorgu-api",
+    "name": "TKGM MEGSİS public parcel point lookup",
+    "operator": "Türkiye Cumhuriyeti Tapu ve Kadastro Genel Müdürlüğü (TKGM)",
+    "endpointPattern": "https://cbsapi.tkgm.gov.tr/megsiswebapi.v3.1/api/parsel/{latitude}/{longitude}",
+    "serviceType": "Public point-identify JSON API; exact-ID retrieval also available in repository adapter",
+    "outputCrs": "WGS 84 longitude/latitude",
+    "nativeIdFields": [
+      "mahalleId",
+      "adaNo",
+      "parselNo"
+    ],
+    "coverage": "Point lookup only; no bounds, enumeration or citywide coverage established."
+  },
+  "coverageAssessment": {
+    "claimedScope": "Point query only; Bursa citywide extent is not claimed.",
+    "verifiedOpenScope": "Full polygons returned for 9 of 13 explicit point probes; exact-ID queries returned matching geometry hashes. The WUP and selected central points were no-hits.",
+    "wupPointCoveredByVerifiedParcelGeometry": false,
+    "citywideVerified": false,
+    "countrywideVerified": false,
+    "geometryVerified": true,
+    "candidateLayerCount": null,
+    "completeCityManifestAvailable": false,
+    "pointProbeCallCount": 13,
+    "pointFeatureHitCount": 9
+  },
+  "technicalBlocker": "TKGM provides point identify and exact-ID lookup but rejects bounds/geometry queries with 422 before network access. One of nine sampled polygons self-intersects in native and EPSG:32635 coordinates; no geometry repair was applied. Citywide parcel completeness remains unqualified.",
+  "remainingUncertainty": "The WUP locator and separately chosen central locator returned structured no-hits; nine nearby sample locations returned complete polygons. No official boundary, area-enumeration endpoint, or parcel count is available from this adapter. One sampled source polygon is topologically invalid.",
+  "nextStep": "Keep the provider limited to explicitly requested point/exact-ID retrieval; if reused, expose its point-only scope and preserve the source geometry quality warning.",
+  "serviceReviewFile": "bursa-service-review.json",
+  "acceptanceFile": "bursa-acceptance.json",
+  "geometryQualityAuditFile": "bursa-quality.json",
+  "geometryQualitySummary": {
+    "features": 9,
+    "validNonempty": 8,
+    "invalid": 1,
+    "invalidId": "TR-TKGM-166827-101-1",
+    "nativeReason": "Ring Self-intersection at [29.01618 40.14278]",
+    "metricReason": "Ring Self-intersection[671747.59105167 4445553.18266901]",
+    "duplicatePairs": 0,
+    "positiveAreaOverlapPairs": 0,
+    "repairApplied": false,
+    "qualityFile": "bursa-quality.json",
+    "tempNativeFile": "/private/tmp/overnight-cities-2026-10-08/bursa-wgs84.geojson"
+  },
+  "municipalVectorAlternativeFound": false,
+  "sourceIds": [
+    "tr-tkgm-parselsorgu-api"
+  ],
+  "runtimeAssessment": {
+    "status": "held_quality_review",
+    "reason": "Nine full public parcel polygons pass point and exact-ID retrieval with matching hashes, and structured point no-hits now work. One polygon self-intersects in a fresh native WGS84 reread and the projected audit; no repair or undocumented exclusion was applied. Point lookup has no area enumeration, which is a capability limitation rather than the quality hold.",
+    "evidenceFile": "research/overnight-cities-2026-10-08/bursa-acceptance.json",
+    "qualityFile": "research/overnight-cities-2026-10-08/bursa-quality.json"
+  },
+  "populationPlausibility2025": "High",
+  "rootReviewedAt": "2026-10-08T21:10:04.693505+00:00",
+  "point": [
+    40.2050411327084,
+    29.0470015858534
+  ]
+}

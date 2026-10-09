@@ -1,0 +1,91 @@
+{
+  "schemaVersion": "1.0",
+  "checkedAt": "2026-10-09",
+  "cityRecord": "city-477-bukit-mertajam.json",
+  "purpose": "Document first-party local registry/map evidence and bounded anonymous geometry access review.",
+  "scopeLimits": {
+    "maxFullPolygonsRetainedInCityRecord": 1,
+    "maxFullPolygonsRetainedInReview": 0,
+    "maxFullPolygonsRetainedInRepository": 1,
+    "ownerOrAddressDataRetained": false,
+    "credentialsOrTokenValuesRetained": false,
+    "citywideCompletenessAsserted": false
+  },
+  "assessment": "The official Penang Seberang Perai Tengah District and Land Office says its district includes Bukit Mertajam and gives its Bukit Mertajam office address. A JUPEM-credited Penang cadastral lot layer returned one complete polygon intersecting the exact WUP point with only UPI and FID requested. This verifies a local land office and a point-matched parcel reference, without asserting full municipal coverage or legal boundary accuracy.",
+  "registryAssessment": "The official Penang Seberang Perai Tengah District and Land Office says its district includes Bukit Mertajam and gives its Bukit Mertajam office address. A JUPEM-credited Penang cadastral lot layer returned one complete polygon intersecting the exact WUP point with only UPI and FID requested. This verifies a local land office and a point-matched parcel reference, without asserting full municipal coverage or legal boundary accuracy.",
+  "officialPrimarySources": [
+    {
+      "url": "https://portalpdt.penang.gov.my/index.php/profil/pejabat-daerah-dan-tanah-seberang-perai-tengah",
+      "observation": "The official Penang Seberang Perai Tengah District and Land Office says its district includes Bukit Mertajam and gives its Bukit Mertajam office address. A JUPEM-credited Penang cadastral lot layer returned one complete polygon intersecting the exact WUP point with only UPI and FID requested. This verifies a local land office and a point-matched parcel reference, without asserting full municipal coverage or legal boundary accuracy."
+    },
+    {
+      "url": "https://geoformatik.forestry.gov.my/arcgis/rest/services/PULAU_PINANG_SDE/MapServer/45",
+      "observation": "The official Penang Seberang Perai Tengah District and Land Office says its district includes Bukit Mertajam and gives its Bukit Mertajam office address. A JUPEM-credited Penang cadastral lot layer returned one complete polygon intersecting the exact WUP point with only UPI and FID requested. This verifies a local land office and a point-matched parcel reference, without asserting full municipal coverage or legal boundary accuracy."
+    },
+    {
+      "url": "https://www.mygeoportal.gov.my/sites/default/files/dokumen_upi/KOD%20DAN%20NAMA%20SEMPADAN%20PENTADBIRIAN%20TANAH_Pulau%20Pinang.pdf",
+      "observation": "The official Penang Seberang Perai Tengah District and Land Office says its district includes Bukit Mertajam and gives its Bukit Mertajam office address. A JUPEM-credited Penang cadastral lot layer returned one complete polygon intersecting the exact WUP point with only UPI and FID requested. This verifies a local land office and a point-matched parcel reference, without asserting full municipal coverage or legal boundary accuracy."
+    },
+    {
+      "url": "https://www.jupem.gov.my/",
+      "observation": "The official Penang Seberang Perai Tengah District and Land Office says its district includes Bukit Mertajam and gives its Bukit Mertajam office address. A JUPEM-credited Penang cadastral lot layer returned one complete polygon intersecting the exact WUP point with only UPI and FID requested. This verifies a local land office and a point-matched parcel reference, without asserting full municipal coverage or legal boundary accuracy."
+    }
+  ],
+  "searchQueries": [
+    {
+      "language": "English",
+      "query": "Bukit Mertajam Penang official cadastral lot map JUPEM land office registry",
+      "result": "The official district/land office page places Bukit Mertajam in Seberang Perai Tengah; JUPEM’s official site advertises MyLot for online lot location/boundaries. A JUPEM-credited cadastral polygon layer returned one exact-point hit.",
+      "method": "Separate English-language discovery search followed by first-party page review.",
+      "scope": "Identify first-party city-bound registry/cadastre custody and safe public parcel geometry."
+    },
+    {
+      "language": "Malay",
+      "query": "Bukit Mertajam tanah kadaster lot Pejabat Daerah dan Tanah Seberang Perai Tengah Pulau Pinang",
+      "result": "Portal rasmi menyatakan Bukit Mertajam ialah bandar utama dalam Daerah Seberang Perai Tengah dan menunjukkan pejabat tanah daerah di Bukit Mertajam. Lapisan kadaster yang dikreditkan kepada JUPEM memberikan satu poligon yang meliputi titik WUP tepat dengan medan UPI dan FID sahaja.",
+      "method": "Separate local-language discovery search followed by first-party page review.",
+      "scope": "Identify first-party city-bound registry/cadastre custody and safe public parcel geometry."
+    }
+  ],
+  "geometryDecision": "Retained one complete exact-point polygon with FID, native UPI, and geometry only. The WUP point lies inside the closed returned ring. Runtime remains held pending source-terms review.",
+  "coverageAssessment": {
+    "claimedScope": "The official Penang Seberang Perai Tengah District and Land Office says its district includes Bukit Mertajam and gives its Bukit Mertajam office address. A JUPEM-credited Penang cadastral lot layer returned one complete polygon intersecting the exact WUP point with only UPI and FID requested. This verifies a local land office and a point-matched parcel reference, without asserting full municipal coverage or legal boundary accuracy.",
+    "verifiedOpenScope": "One exact-point polygon only; broader coverage was not assessed.",
+    "citywideVerified": false,
+    "countrywideVerified": false,
+    "geometryVerified": true
+  },
+  "attempts": [],
+  "requests": [
+    {
+      "url": "https://geoformatik.forestry.gov.my/arcgis/rest/services/PULAU_PINANG_SDE/MapServer/45?f=pjson",
+      "method": "GET",
+      "normalTlsVerification": true,
+      "httpStatus": 200,
+      "contentType": "application/json",
+      "bytesRead": 4612,
+      "observation": "Layer metadata: Polygon geometry; safe ID fields FID and UPI; layer CRS WKID 102062. Field names were inspected, but no parcel attribute rows were read."
+    },
+    {
+      "url": "https://geoformatik.forestry.gov.my/arcgis/rest/services/PULAU_PINANG_SDE/MapServer/45/query",
+      "method": "GET",
+      "normalTlsVerification": true,
+      "httpStatus": 200,
+      "contentType": "application/json",
+      "bytesRead": 2490,
+      "queryGeometry": "Exact WUP point [lon=100.428386608375, lat=5.37430818562544], inSR 4326; spatialRel intersects; outFields FID,UPI; returnGeometry true; outSR 4326.",
+      "returnedFeatures": 1,
+      "returnedAttributes": [
+        "FID",
+        "UPI"
+      ],
+      "retainedGeometry": "one closed Polygon, 53 coordinate pairs"
+    }
+  ],
+  "portals": [
+    {
+      "homeUrl": "https://portalpdt.penang.gov.my/index.php/profil/pejabat-daerah-dan-tanah-seberang-perai-tengah",
+      "observation": "The state/district land office identifies the local district and its inclusion of Bukit Mertajam. The GIS query was limited to the assigned WUP point and allowlisted ID fields plus geometry."
+    }
+  ]
+}

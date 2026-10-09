@@ -1,0 +1,117 @@
+{
+  "name": "Shunyi",
+  "country": "China",
+  "countryCode": "CN",
+  "rank": 1091,
+  "point": [
+    40.1207397377579,
+    116.624109694272
+  ],
+  "freshResearch": {
+    "queries": [
+      {
+        "language": "English",
+        "query": "Shunyi China official cadastral parcel map land registry GIS parcel polygons natural resources bureau",
+        "scope": "Identify first-party city/local registry and public parcel geometry; check the WUP point without sensitive property attributes.",
+        "result": "Beijing’s official service map identifies Shunyi District Real Estate Registration Center and its district registration scope. No public parcel-vector service schema or safe anonymous geometry response for the WUP point was verified.",
+        "executionMethod": "Separate English-language web search followed by official-source review.",
+        "actualResultUrls": [
+          "https://map.beijing.gov.cn/place?categoryId=bdcdj&placeId=66a8a146e4a9ed67df28602a"
+        ]
+      },
+      {
+        "language": "Chinese",
+        "query": "北京市顺义区 不动产登记中心 地籍图 地块查询 官方",
+        "scope": "Find first-party local-language registry/cadastral service and safe anonymous feature geometry near the unchanged WUP point.",
+        "result": "Beijing’s official service map identifies Shunyi District Real Estate Registration Center and its district registration scope. No public parcel-vector service schema or safe anonymous geometry response for the WUP point was verified.",
+        "executionMethod": "Separate local-language web search followed by official-source review.",
+        "actualResultUrls": [
+          "https://map.beijing.gov.cn/place?categoryId=bdcdj&placeId=66a8a146e4a9ed67df28602a"
+        ]
+      }
+    ],
+    "portals": [
+      {
+        "name": "Beijing 12345 registration-center directory entry",
+        "operator": "China",
+        "homeUrl": "https://map.beijing.gov.cn/place?categoryId=bdcdj&placeId=66a8a146e4a9ed67df28602a",
+        "observation": "Official municipal map directory identifies Shunyi District Real Estate Registration Center, with administrative coverage and the city natural-resources commission as data source."
+      }
+    ],
+    "requests": [],
+    "historicalContext": []
+  },
+  "status": "complete",
+  "verifiedParcelResponse": null,
+  "source": {
+    "sourceId": null,
+    "name": "Beijing 12345 registration-center directory entry",
+    "url": "https://map.beijing.gov.cn/place?categoryId=bdcdj&placeId=66a8a146e4a9ed67df28602a",
+    "operator": null,
+    "serviceType": "Official local registry/service reviewed; no anonymous safe full-parcel geometry response verified.",
+    "layer": null,
+    "geometryType": null,
+    "outputCrs": null,
+    "nativeIdField": null,
+    "nativeIdEvidence": null,
+    "attributesRequested": [],
+    "sampleCount": 0,
+    "sampleFile": null,
+    "directGeometryQueryVerified": false,
+    "directMetadataSchemaVerified": false,
+    "geometryStatus": "not_verified",
+    "operatorNote": "Use the registryBasis and linked primary evidence for the verified institution; the previous country label was not an operator."
+  },
+  "coverageAssessment": {
+    "claimedScope": "Beijing’s official service map identifies Shunyi District Real Estate Registration Center and its district registration scope. No public parcel-vector service schema or safe anonymous geometry response for the WUP point was verified.",
+    "verifiedOpenScope": "No anonymous full parcel geometry response verified in this investigation.",
+    "countrywideVerified": false,
+    "citywideVerified": false
+  },
+  "registryFound": true,
+  "verifiedSample": false,
+  "resultCategory": "no_verified_public_geometry",
+  "technicalBlocker": "No anonymous safe-ID full-geometry endpoint or response was verified.",
+  "remainingUncertainty": "Public feature geometry and point-specific cadastral coverage remain unverified.",
+  "nextStep": "Revisit only if a public safe geometry response or point-specific map evidence becomes available.",
+  "schemaVersion": "1.0",
+  "checkedAt": "2026-10-09",
+  "wupCityCode": 9102,
+  "cityId": "wup2025:9102",
+  "runtimeReadiness": "not_enabled_no_verified_public_geometry",
+  "adapterReady": false,
+  "centerLatLon": [
+    40.1207397377579,
+    116.624109694272
+  ],
+  "population2025k": 507.591,
+  "populationUnit": "persons",
+  "queueRank": 1091,
+  "population2025": 507591,
+  "populationPlausibility2025": "Moderate",
+  "pointBasis": "UN WUP2025 population-weighted settlement locator; not a municipal boundary or parcel-coverage claim.",
+  "publicParcelGeometryFound": false,
+  "sourceIds": [],
+  "registryEvidenceUrls": [
+    "https://map.beijing.gov.cn/place?categoryId=bdcdj&placeId=66a8a146e4a9ed67df28602a"
+  ],
+  "runtimeAssessment": {
+    "status": "not_enabled_no_verified_public_geometry",
+    "reason": "No anonymous safe-ID full-geometry endpoint or response was verified."
+  },
+  "scopeLimits": "Beijing’s official service map identifies Shunyi District Real Estate Registration Center and its district registration scope. No public parcel-vector service schema or safe anonymous geometry response for the WUP point was verified.",
+  "sampleFile": null,
+  "cohort": "overnight-followon-1001-1100",
+  "priorCheck": {
+    "attemptState": "pending",
+    "attemptEvidence": [],
+    "possiblePriorMatches": []
+  },
+  "rootReviewedAt": "2026-10-09T06:45:08.823796+00:00",
+  "registryBasis": "Beijing’s official service map identifies Shunyi District Real Estate Registration Center and its district registration scope. No public parcel-vector service schema or safe anonymous geometry response for the WUP point was verified.",
+  "rootReview": {
+    "checkedAt": "2026-10-09T06:45:08.823796+00:00",
+    "basis": "Reviewed city-specific English/local-language attempts, local-custody basis, source routes and documented responses. Public geometry remains unverified; access failures and unknown custody do not establish absence.",
+    "primarySourceAuditFile": "research/overnight-followon-2026-10-09/unreviewed-primary-source-audit.json"
+  }
+}

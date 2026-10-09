@@ -1,0 +1,120 @@
+{
+  "schemaVersion": 1,
+  "kind": "city_parcel_source_research",
+  "checkedAt": "2026-10-09",
+  "name": "Patiala",
+  "country": "India",
+  "countryCode": "IN",
+  "populationUnit": "persons",
+  "status": "complete",
+  "registryFound": true,
+  "registryBasis": "The District Patiala government identifies Punjab land-record services, a Patiala PLRS office at the district complex, and links its official land-record service. The Government of Punjab cadastral-map portal exposes village-wise map selectors for district, tehsil, and village. The inspected public shell exposes no parcel geometry response schema, stable-ID allowlist, or CRS; no selector was submitted and no map/features were requested.",
+  "registryEvidenceUrls": [
+    "https://patiala.nic.in/service/punjab-land-records/",
+    "https://patiala.nic.in/",
+    "https://jamabandi.punjab.gov.in/CadastralMap.aspx",
+    "https://dilrmp.gov.in/dilrmpold/MapULPIN/tehsil-level/48"
+  ],
+  "verifiedSample": false,
+  "publicParcelGeometryFound": false,
+  "runtimeReadiness": "not_enabled_no_verified_public_geometry",
+  "wupCityCode": 7376,
+  "cityId": "wup2025:7376",
+  "centerLatLon": [
+    30.3443977725584,
+    76.3994600406635
+  ],
+  "rank": 746,
+  "queueRank": 746,
+  "population2025": 718308,
+  "population2025k": 718.308,
+  "populationPlausibility2025": "High",
+  "pointBasis": "UN WUP 2025 population-weighted settlement centroid; this is not a municipal boundary or a parcel-coverage claim.",
+  "technicalBlocker": "The District Patiala portal lists a PLRS office at the Patiala district office and links to Punjab land-records services. The official Punjab Cadastral Map page is labeled village-wise and exposes district/tehsil/village selectors plus unrelated jamabandi navigation including owner-name, khewat, khasra, mutation and registered-deed searches. The static page provides no safe feature schema/attribute allowlist or CRS, and no form or map request was submitted. The DILRMP tehsil dashboard provides status statistics only, not parcel geometries. No owner/record/registration lookup was performed.",
+  "scopeLimits": "No owner, address, taxpayer, title, parcel-record, account, or protected-attribute lookup was performed. No geometry or attributes were retained.",
+  "remainingUncertainty": "City-level land-record and state cadastral-map services are confirmed, but the public map shell did not expose a geometry-only response with safe stable IDs. Any cadastral map output may be raster or include parcel records; current geometry/identity cannot be established from the inspected page. No parcel coverage at the WUP point is asserted.",
+  "research": {
+    "executedQueries": [
+      {
+        "language": "English",
+        "query": "Patiala India official land records cadastral map parcel registry Punjab government",
+        "scope": "Verify city-bound registry evidence and look for an anonymous parcel geometry route with an explicit safe geometry and stable-ID schema.",
+        "result": "District Patiala official land-record service and the Government of Punjab village-wise Cadastral Map page are confirmed. The latter requires district/tehsil/village selection but does not expose a safe feature schema in the inspected shell.",
+        "actualResultUrls": [
+          "https://patiala.nic.in/service/punjab-land-records/",
+          "https://patiala.nic.in/",
+          "https://jamabandi.punjab.gov.in/CadastralMap.aspx",
+          "https://dilrmp.gov.in/dilrmpold/MapULPIN/tehsil-level/48"
+        ],
+        "executionMethod": "English-language web search, followed by review of official source pages; no feature or property query."
+      },
+      {
+        "language": "Punjabi",
+        "query": "ਪਟਿਆਲਾ ਜ਼ਮੀਨ ਰਿਕਾਰਡ ਕੈਡਸਟ੍ਰਲ ਨਕਸ਼ਾ ਸਰਕਾਰੀ ਪੰਜਾਬ",
+        "scope": "Verify city-bound registry evidence and look for an anonymous parcel geometry route with an explicit safe geometry and stable-ID schema.",
+        "result": "ਪੰਜਾਬ ਸਰਕਾਰ ਦੇ ਜਮਾਬੰਦੀ ਪੋਰਟਲ ਉੱਤੇ ਪਿੰਡ-ਵਾਰ Cadastral Map ਚੋਣਾਂ (ਜ਼ਿਲ੍ਹਾ, ਤਹਿਸੀਲ, ਪਿੰਡ) ਦਿਖਦੀਆਂ ਹਨ; ਪਰ ਜਿਓਮੈਟਰੀ ਅਤੇ ਸੁਰੱਖਿਅਤ ਸਥਿਰ ID ਦਾ ਸਕੀਮਾ ਨਹੀਂ ਮਿਲਿਆ। ਕੋਈ ਚੋਣ ਜਾਂ ਰਿਕਾਰਡ ਖੋਜ ਨਹੀਂ ਕੀਤੀ।",
+        "actualResultUrls": [
+          "https://patiala.nic.in/service/punjab-land-records/",
+          "https://patiala.nic.in/",
+          "https://jamabandi.punjab.gov.in/CadastralMap.aspx",
+          "https://dilrmp.gov.in/dilrmpold/MapULPIN/tehsil-level/48"
+        ],
+        "executionMethod": "Local-language web search, followed by review of official source pages; no feature or property query."
+      }
+    ],
+    "officialSources": [
+      {
+        "url": "https://patiala.nic.in/service/punjab-land-records/",
+        "observation": "Official District Patiala land-record service identifies the Punjab Land Records Society and lists the PLRS office at Room 314, District Office Patiala."
+      },
+      {
+        "url": "https://jamabandi.punjab.gov.in/CadastralMap.aspx",
+        "observation": "Government of Punjab portal labels a village-wise Cadastral Map and publicly shows district/tehsil/village selectors. The static shell does not describe feature attributes, geometry format, stable IDs, or CRS; no selector was submitted."
+      },
+      {
+        "url": "https://dilrmp.gov.in/dilrmpold/MapULPIN/tehsil-level/48",
+        "observation": "Government of India DILRMP page provides Patiala tehsil-level digitization/georeferencing/parcel status statistics only; it is not parcel geometry."
+      }
+    ],
+    "metadataReviewFile": "patiala-service-review.json",
+    "routeInspectionFile": "temporary route audit outside repository"
+  },
+  "source": {
+    "sourceId": null,
+    "name": null,
+    "operator": null,
+    "url": null,
+    "serviceType": "No verified anonymous geometry-only parcel endpoint in this review.",
+    "geometryType": null,
+    "coordinateReferenceSystem": null,
+    "nativeIdFields": [],
+    "directGeometryQueryVerified": false,
+    "directMetadataSchemaVerified": false,
+    "scope": "City-level land-record and state cadastral-map services are confirmed, but the public map shell did not expose a geometry-only response with safe stable IDs. Any cadastral map output may be raster or include parcel records; current geometry/identity cannot be established from the inspected page. No parcel coverage at the WUP point is asserted."
+  },
+  "coverageAssessment": {
+    "status": "unknown",
+    "basis": "City-level land-record and state cadastral-map services are confirmed, but the public map shell did not expose a geometry-only response with safe stable IDs. Any cadastral map output may be raster or include parcel records; current geometry/identity cannot be established from the inspected page. No parcel coverage at the WUP point is asserted.",
+    "wupPointParcelPresence": "not_established",
+    "citywideCompleteness": "not_asserted",
+    "geographicScopeCaveat": "No parcel-geometry coverage extent was established."
+  },
+  "runtimeAssessment": {
+    "status": "not_enabled_no_verified_safe_geometry_schema",
+    "reason": "City-level land-record and state cadastral-map services are confirmed, but the public map shell did not expose a geometry-only response with safe stable IDs. Any cadastral map output may be raster or include parcel records; current geometry/identity cannot be established from the inspected page. No parcel coverage at the WUP point is asserted."
+  },
+  "rootReview": "pending",
+  "rootPrimaryReadback": {
+    "url": "https://patiala.nic.in/service/punjab-land-records/",
+    "fetch": 200,
+    "contentType": "text/html; charset=UTF-8",
+    "title": "\n        Check your Land Records | District Patiala, Government of Punjab | India    "
+  },
+  "rootReviewNote": "Reviewed the local primary institution/service evidence and stated geometry/access/identity limits. Fresh page readback failures are preserved separately and do not imply absent data; matching primary indexed text supplements the direct readback where available. No public geometry was verified for this city.",
+  "point": [
+    30.3443977725584,
+    76.3994600406635
+  ],
+  "rootReviewedAt": "2026-10-09T03:06:11.183980+00:00",
+  "sourceIds": []
+}

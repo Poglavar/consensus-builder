@@ -1,0 +1,91 @@
+{
+  "schemaVersion": 1,
+  "kind": "city_parcel_source_research",
+  "checkedAt": "2026-10-09",
+  "name": "Tampico",
+  "nativeName": "Tampico",
+  "country": "Mexico",
+  "countryCode": "MX",
+  "populationUnit": "persons",
+  "status": "complete",
+  "registryFound": true,
+  "registryBasis": "Tampico’s official municipal digital-services portal lists municipal Catastro procedures, including parcel subdivision and property-tax services. This establishes a city registry function but not an open parcel geometry layer; no tax/account procedure was submitted.",
+  "registryEvidenceUrls": [
+    "https://tampicodigital.gob.mx/",
+    "https://www.tampicodigital.gob.mx/pdf/urban/8.%20SUBDIVISI%C3%93N%20DE%20PREDIO.pdf"
+  ],
+  "verifiedSample": false,
+  "publicParcelGeometryFound": false,
+  "sampleGeometryFile": null,
+  "runtimeReadiness": "not_enabled_no_verified_public_geometry",
+  "wupCityCode": 6540,
+  "cityId": "wup2025:6540",
+  "centerLatLon": [
+    22.2691719657344,
+    -97.8583570919743
+  ],
+  "rank": 901,
+  "queueRank": 901,
+  "population2025": 603035,
+  "population2025k": 603.035,
+  "populationPlausibility2025": "Moderate",
+  "pointBasis": "UN WUP 2025 population-weighted settlement centroid; this is not a municipal boundary or a parcel-coverage claim.",
+  "technicalBlocker": "No public geometry-only municipal parcel API or safe identifier schema found.",
+  "scopeLimits": "Official city portal lists Catastro office services and a subdivision procedure document. No parcel map/vector route or safe feature schema was verified.",
+  "remainingUncertainty": "Municipal registry completeness, parcel map availability and WUP-point coverage remain unresolved.",
+  "research": {
+    "executedQueries": [
+      {
+        "language": "English",
+        "query": "Tampico Mexico official municipal cadastre parcel map GIS",
+        "result": "The official Tampico digital portal lists Catastro services; no public geometry endpoint found.",
+        "method": "English-language search followed by official-source review.",
+        "scope": "Identify city-specific registry/cadastral evidence and a safe public parcel geometry route."
+      },
+      {
+        "language": "Spanish",
+        "query": "Catastro Tampico mapa catastral predial oficial Ayuntamiento",
+        "result": "El portal municipal oficial ofrece trámites de Catastro; no se identificó un servicio público seguro de geometría parcelaria.",
+        "method": "Local-language search followed by official-source review. Separate English and local-language searches plus official-source review; no owner, address, title, tax, account, applicant, or personal fields were queried.",
+        "scope": "Identify city-specific registry/cadastral evidence and a safe public parcel geometry route."
+      }
+    ],
+    "officialSources": [
+      {
+        "url": "https://tampicodigital.gob.mx/",
+        "observation": "Tampico’s official municipal digital-services portal lists municipal Catastro procedures, including parcel subdivision and property-tax services. This establishes a city registry function but not an open parcel geometry layer; no tax/account procedure was submitted."
+      },
+      {
+        "url": "https://www.tampicodigital.gob.mx/pdf/urban/8.%20SUBDIVISI%C3%93N%20DE%20PREDIO.pdf",
+        "observation": "Tampico’s official municipal digital-services portal lists municipal Catastro procedures, including parcel subdivision and property-tax services. This establishes a city registry function but not an open parcel geometry layer; no tax/account procedure was submitted."
+      }
+    ],
+    "metadataReviewFile": "tampico-service-review.json",
+    "routeInspectionFile": "/tmp/overnight-cities-2026-10-08/city-6540-tampico-route-inspection.json"
+  },
+  "coverageAssessment": {
+    "claimedScope": "Tampico’s official municipal digital-services portal lists municipal Catastro procedures, including parcel subdivision and property-tax services. This establishes a city registry function but not an open parcel geometry layer; no tax/account procedure was submitted.",
+    "verifiedOpenScope": "No public parcel geometry or WUP-point parcel presence is asserted.",
+    "citywideVerified": false,
+    "countrywideVerified": false,
+    "geometryVerified": false
+  },
+  "runtimeAssessment": {
+    "enabled": false,
+    "reason": "Root qualification remains separate; local sample/endpoint evidence alone does not authorize runtime configuration.",
+    "status": "not_enabled_no_verified_public_geometry"
+  },
+  "sourceIds": [],
+  "rootPrimaryReadback": {
+    "url": "https://tampicodigital.gob.mx/",
+    "fetch": 200,
+    "contentType": "text/html; charset=UTF-8",
+    "title": "Inicio - Tampico Digital"
+  },
+  "rootReviewNote": "Reviewed the specific primary institution/service evidence and its geographical, access and date limits. Direct readback failures are preserved separately from indexed primary evidence. No public full parcel geometry was verified for this city in this discovery pass.",
+  "rootReviewedAt": "2026-10-09T04:20:40.565226+00:00",
+  "point": [
+    22.2691719657344,
+    -97.8583570919743
+  ]
+}

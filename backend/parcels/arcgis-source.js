@@ -3,8 +3,8 @@ import { bbox as geometryBbox, booleanIntersects, feature as geoFeature } from '
 import { HttpError } from '../utils/helpers.js';
 import proj4 from 'proj4';
 import { upstreamError, providerHttpError, validateBounds, validateGeometry, canonicalParcelFeature, createParcelAttributeFilter } from './source-contract.js';
-import { encodeSnapshotNativeId as encodeCompositeId, decodeSnapshotNativeId as decodeCompositeId } from './geojson-snapshot-source.js';
 import { retainParcel } from './parcel-components.js';
+import { parseEsriParcelCollection } from './esri-parcel-reader.js';
 export { validateBounds } from './source-contract.js';
 
 export function createArcgisParcelSource(descriptor, { fetchImpl = globalThis.fetch } = {}) {
@@ -18,30 +18,42 @@ export function createArcgisParcelSource(descriptor, { fetchImpl = globalThis.fe
     const idQueryBraces = descriptor.idQueryBraces === true;
     const guidPattern = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i;
     const identifier = /^[A-Za-z_][A-Za-z0-9_]*$/;
+    // Joined ArcGIS layers publish qualified column names; accept only identifier segments.
+    const columnName = value => typeof value === 'string'
+        && /^[A-Za-z_][A-Za-z0-9_]*(?:\.[A-Za-z_][A-Za-z0-9_]*){0,7}$/.test(value);
     const idFields = descriptor.idFields;
     const composite = idFields !== undefined;
-    if (!id || !idPrefix || (!composite && !identifier.test(idField)) || !identifier.test(objectIdField)
+    const responseSrid = descriptor.responseSrid;
+    const geometryPrecision = descriptor.geometryPrecision;
+    if (!id || !idPrefix || !Array.isArray(outFields) || !outFields.length
+        || outFields.some(field => !columnName(field))
+        || (!composite && (!columnName(idField) || !outFields.includes(idField)))
+        || !columnName(objectIdField) || !outFields.includes(objectIdField)
         || (composite && (!Array.isArray(idFields) || idFields.length < 2 || idFields.length > 8
             || new Set(idFields).size !== idFields.length
-            || idFields.some(field => typeof field !== 'string' || !identifier.test(field) || !outFields.includes(field))
+            || idFields.some(field => !columnName(field) || !outFields.includes(field))
             || !descriptor.idFieldTypes || Object.keys(descriptor.idFieldTypes).length !== idFields.length
             || idFields.some(field => !['integer', 'string'].includes(descriptor.idFieldTypes[field]))
             || idField !== undefined || descriptor.idType !== undefined || idPattern || idQueryBraces))
         || (!composite && descriptor.idFieldTypes !== undefined)
-        || (descriptor.parcelNumberField && (!identifier.test(descriptor.parcelNumberField) || !outFields.includes(descriptor.parcelNumberField)))
+        || (descriptor.parcelNumberField && (!columnName(descriptor.parcelNumberField) || !outFields.includes(descriptor.parcelNumberField)))
         || !['integer', 'string'].includes(idType)
         || !Number.isInteger(idBatchSize) || idBatchSize < 1 || idBatchSize > 80
         || (descriptor.idQueryBraces !== undefined && typeof descriptor.idQueryBraces !== 'boolean')
         || (idQueryBraces && idType !== 'string')
         || ![undefined, 'offset', 'object-ids'].includes(descriptor.boundsQueryMode)
         || ![undefined, 'offset', 'object-ids', 'single-equality'].includes(descriptor.idsQueryMode)
+        || ![undefined, 'geojson', 'esri-json'].includes(descriptor.queryFormat)
+        || (responseSrid !== undefined && (responseSrid !== 3857 || descriptor.queryFormat === 'esri-json'))
+        || (geometryPrecision !== undefined && (responseSrid !== 3857
+            || !Number.isInteger(geometryPrecision) || geometryPrecision < 6 || geometryPrecision > 8))
         || (descriptor.idsQueryMode === 'single-equality' && (composite || idBatchSize !== 1))
         || ![undefined, 'parts'].includes(descriptor.nativeGeometryMode)
         || (descriptor.nativeGeometryMode === 'parts' && (descriptor.boundsQueryMode !== 'object-ids' || descriptor.idsQueryMode !== 'object-ids'))
         || (descriptor.disjointParts !== undefined && (typeof descriptor.disjointParts !== 'boolean' || descriptor.nativeGeometryMode !== 'parts'))
         || (descriptor.partMatchFields !== undefined && (descriptor.nativeGeometryMode !== 'parts'
             || !Array.isArray(descriptor.partMatchFields) || !descriptor.partMatchFields.length || descriptor.partMatchFields.length > 8
-            || descriptor.partMatchFields.some(field => typeof field !== 'string' || !identifier.test(field) || !outFields.includes(field))))
+            || descriptor.partMatchFields.some(field => !columnName(field) || !outFields.includes(field))))
         || (descriptor.partsCoordinatePrecision !== undefined && (descriptor.nativeGeometryMode !== 'parts'
             || !Number.isInteger(descriptor.partsCoordinatePrecision) || descriptor.partsCoordinatePrecision < 7 || descriptor.partsCoordinatePrecision > 12))
         || (descriptor.boundsSrid !== undefined && (!Number.isInteger(descriptor.boundsSrid) || descriptor.boundsSrid <= 0
@@ -49,6 +61,22 @@ export function createArcgisParcelSource(descriptor, { fetchImpl = globalThis.fe
         || (descriptor.boundsProjection !== undefined && descriptor.boundsSrid === undefined)
         || new URL(endpoint).protocol !== 'https:') throw new Error('Invalid ArcGIS parcel source descriptor.');
     const boundsProjection = descriptor.boundsSrid === undefined ? null : proj4('EPSG:4326', descriptor.boundsProjection);
+    const responseProjection = responseSrid === 3857 ? proj4('EPSG:3857', 'EPSG:4326') : null;
+
+    function responseGeometry(geometry) {
+        if (!responseProjection) return geometry;
+        try {
+            if (!geometry || !['Polygon', 'MultiPolygon'].includes(geometry.type)) throw new Error();
+            const polygons = geometry.type === 'Polygon' ? [geometry.coordinates] : geometry.coordinates;
+            const coordinates = polygons.map(polygon => polygon.map(ring => ring.map(point => {
+                if (!Array.isArray(point) || point.length !== 2 || point.some(value =>
+                    typeof value !== 'number' || !Number.isFinite(value) || Math.abs(value) > 20037508.34278925
+                    || (geometryPrecision !== undefined && Number(value.toFixed(geometryPrecision)) !== value))) throw new Error();
+                return responseProjection.forward(point);
+            })));
+            return { type: geometry.type, coordinates: geometry.type === 'Polygon' ? coordinates[0] : coordinates };
+        } catch (_) { throw upstreamError('ArcGIS parcel provider returned invalid projected polygon geometry.'); }
+    }
 
     function validNativeId(value, type = idType) {
         const text = String(value ?? '');
@@ -56,6 +84,19 @@ export function createArcgisParcelSource(descriptor, { fetchImpl = globalThis.fe
             && text.length <= 256 && (!idPattern || idPattern.test(text))
             && (!idQueryBraces || guidPattern.test(text));
         return /^(0|[1-9][0-9]*)$/.test(text) && Number.isSafeInteger(Number(text));
+    }
+
+    // Fixed-width cadastral fields can contain a literal blank section. Preserve every
+    // source component exactly; the snapshot namespace codec intentionally rejects spaces.
+    const encodeCompositeId = values => values.map(value =>
+        encodeURIComponent(String(value)).replaceAll('~', '%7E')).join('~');
+    function decodeCompositeId(value) {
+        if (typeof value !== 'string' || value.length > 4096) throw new Error('Invalid composite parcel ID.');
+        const parts = value.split('~').map(decodeURIComponent);
+        if (parts.length !== idFields.length || parts.some((part, index) =>
+            !validNativeId(part, descriptor.idFieldTypes[idFields[index]]))
+            || encodeCompositeId(parts) !== value) throw new Error('Invalid composite parcel ID.');
+        return parts;
     }
 
     function nativeIdFromProperties(props) {
@@ -70,7 +111,7 @@ export function createArcgisParcelSource(descriptor, { fetchImpl = globalThis.fe
         }
         try {
             const encoded = encodeCompositeId(values);
-            decodeCompositeId(encoded, idFields.length);
+            decodeCompositeId(encoded);
             return encoded;
         }
         catch (_) { throw upstreamError('Parcel provider returned a missing or invalid native parcel ID.'); }
@@ -129,13 +170,21 @@ export function createArcgisParcelSource(descriptor, { fetchImpl = globalThis.fe
         for (;;) {
             const search = new URLSearchParams({
                 where: baseWhere, outFields: outFields.join(','), returnGeometry: 'true',
-                outSR: '4326', f: 'geojson',
+                outSR: String(responseSrid ?? 4326), f: descriptor.queryFormat === 'esri-json' ? 'json' : 'geojson',
+                ...(geometryPrecision === undefined ? {} : { geometryPrecision: String(geometryPrecision) }),
+                ...(descriptor.queryFormat === 'esri-json' ? { returnTrueCurves: 'true' } : {}),
                 ...(expectedObjects ? {} : { orderByFields: objectIdField,
                     resultRecordCount: String(pageSize), resultOffset: String(offset) }), ...params
             });
             if (attributeFilter.where && params.where) search.set('where', `(${baseWhere}) AND (${params.where})`);
-            const payload = await request(search);
+            const raw = await request(search);
+            const payload = descriptor.queryFormat === 'esri-json' ? parseEsriParcelCollection(raw) : raw;
             if (payload.type !== 'FeatureCollection' || !Array.isArray(payload.features)) throw upstreamError('Parcel provider returned an invalid FeatureCollection.');
+            if (responseProjection && payload.features.length && (payload.crs?.type !== 'name' || ![
+                'EPSG:3857', 'urn:ogc:def:crs:EPSG::3857', 'http://www.opengis.net/def/crs/EPSG/0/3857'
+            ].includes(payload.crs?.properties?.name))) {
+                throw upstreamError('ArcGIS parcel provider omitted or changed its projected response CRS.');
+            }
             const page = descriptor.nativeGeometryMode === 'parts'
                 ? [...payload.features].sort((a, b) => Number(a.properties?.[objectIdField]) - Number(b.properties?.[objectIdField]))
                 : payload.features;
@@ -145,14 +194,15 @@ export function createArcgisParcelSource(descriptor, { fetchImpl = globalThis.fe
                 if (!attributeFilter.matches(props)) throw upstreamError('Parcel provider returned a record outside the configured ground status.');
                 if (descriptor.partMatchFields?.some(field => !Object.hasOwn(props, field))) throw upstreamError('Parcel provider omitted parcel administrative references.');
                 const nativeId = nativeIdFromProperties(props);
-                if (!validateGeometry(feature.geometry)) throw upstreamError('Parcel provider returned invalid polygon geometry.');
+                const geometry = responseGeometry(feature.geometry);
+                if (!validateGeometry(geometry)) throw upstreamError('Parcel provider returned invalid polygon geometry.');
                 const objectId = props[objectIdField];
                 if (objectId === undefined || objectId === null || seenObjects.has(String(objectId))
                     || (expectedObjects && !expectedObjects.has(String(objectId)))) {
                     throw upstreamError('Parcel provider pagination repeated or omitted an object ID.');
                 }
                 seenObjects.add(String(objectId));
-                const canonical = canonicalParcelFeature(descriptor, feature, nativeId);
+                const canonical = canonicalParcelFeature(descriptor, { ...feature, geometry }, nativeId);
                 if (descriptor.partsCoordinatePrecision !== undefined) {
                     const factor = 10 ** descriptor.partsCoordinatePrecision;
                     const round = value => Array.isArray(value) ? value.map(round) : Math.round(value * factor) / factor;
@@ -246,7 +296,7 @@ export function createArcgisParcelSource(descriptor, { fetchImpl = globalThis.fe
             const tail = value.slice(idPrefix.length);
             if (composite) {
                 let parts;
-                try { parts = decodeCompositeId(tail, idFields.length); }
+                try { parts = decodeCompositeId(tail); }
                 catch (_) { throw new HttpError(400, 'Invalid parcel ID.'); }
                 return '(' + parts.map((part, index) => {
                     const field = idFields[index], type = descriptor.idFieldTypes[field];

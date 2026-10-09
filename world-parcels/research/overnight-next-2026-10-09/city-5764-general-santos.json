@@ -1,0 +1,147 @@
+{
+  "name": "General Santos",
+  "country": "Philippines",
+  "countryCode": "PH",
+  "rank": 1110,
+  "point": [
+    6.10145257665392,
+    125.150288822539
+  ],
+  "freshResearch": {
+    "queries": [
+      {
+        "language": "English",
+        "query": "General Santos official cadastral maps land registration DENR LRA geospatial parcel map Philippines city",
+        "scope": "Identify first-party local registry and public parcel geometry; preserve the unchanged WUP settlement locator and avoid owner or address attributes.",
+        "result": "The English search found the official national Geoportal’s General Santos existing land-use map and city land/assessor offices. Land use is not cadastral parcels.",
+        "executionMethod": "Separate English-language web search followed by first-party source review.",
+        "actualResultUrls": [
+          "https://gensantos.gov.ph/departments/",
+          "https://www.geoportal.gov.ph/",
+          "https://www.foi.gov.ph/requests/shapefiles-of-cadastral-map-of-general-santos-city-and-sarangani-province-with-boundaries/"
+        ]
+      },
+      {
+        "language": "Filipino",
+        "query": "Lungsod ng General Santos opisyal na mapa kadastral rehistro ng lupa tanggapan ng assessor",
+        "scope": "Find first-party local-language registry/cadastral routes and any anonymous safe parcel geometry service near the unchanged WUP point.",
+        "result": "The Filipino search surfaced the official City Assessor and city-office directory, but no public parcel-geometry portal.",
+        "executionMethod": "Separate Filipino-language web search followed by first-party source review.",
+        "actualResultUrls": [
+          "https://gensantos.gov.ph/departments/",
+          "https://www.geoportal.gov.ph/",
+          "https://www.foi.gov.ph/requests/shapefiles-of-cadastral-map-of-general-santos-city-and-sarangani-province-with-boundaries/"
+        ]
+      }
+    ],
+    "portals": [
+      {
+        "name": "https://gensantos.gov.ph/departments/",
+        "operator": "Philippines",
+        "homeUrl": "https://gensantos.gov.ph/departments/",
+        "observation": "Official General Santos city directory lists City Housing and Land Management Office and City Assessor’s Office."
+      },
+      {
+        "name": "https://www.geoportal.gov.ph/",
+        "operator": "Philippines",
+        "homeUrl": "https://www.geoportal.gov.ph/",
+        "observation": "Official Philippine Geoportal lists an Existing Land Use Map for General Santos; that thematic land-use layer is not parcel cadastre."
+      },
+      {
+        "name": "https://www.foi.gov.ph/requests/shapefiles-of-cadastral-map-of-general-santos-city-and-sarangani-province-with-boundaries/",
+        "operator": "Philippines",
+        "homeUrl": "https://www.foi.gov.ph/requests/shapefiles-of-cadastral-map-of-general-santos-city-and-sarangani-province-with-boundaries/",
+        "observation": "Official FOI record says DENR Central Office did not hold the requested General Santos/Sarangani cadastral shapefile in 2023 and referred the requester to DENR Region XII; this does not establish current availability."
+      }
+    ],
+    "requests": [],
+    "historicalContext": []
+  },
+  "status": "complete",
+  "verifiedParcelResponse": null,
+  "source": {
+    "sourceId": null,
+    "name": "https://gensantos.gov.ph/departments/",
+    "url": "https://gensantos.gov.ph/departments/",
+    "operator": null,
+    "serviceType": "Official registry/cadastral route reviewed; no anonymous safe full-parcel geometry response verified.",
+    "layer": null,
+    "geometryType": null,
+    "outputCrs": null,
+    "nativeIdField": null,
+    "nativeIdEvidence": null,
+    "attributesRequested": [],
+    "sampleCount": 0,
+    "sampleFile": null,
+    "directGeometryQueryVerified": false,
+    "directMetadataSchemaVerified": false,
+    "geometryStatus": "not_verified",
+    "operatorNote": "See first-party evidence and access limits in registryBasis and linked sources."
+  },
+  "coverageAssessment": {
+    "claimedScope": "City office directory confirms local housing/land and assessor offices. National Geoportal has General Santos existing land use, not a parcel fabric. An official FOI response previously said the requested cadastral shapefile was not held at central DENR. No anonymous parcel geometry endpoint was found.",
+    "verifiedOpenScope": "No anonymous full parcel geometry response was verified in this investigation.",
+    "countrywideVerified": false,
+    "citywideVerified": false
+  },
+  "registryFound": true,
+  "verifiedSample": false,
+  "resultCategory": "official_local_registry_geometry_unverified",
+  "technicalBlocker": "No anonymous safe-ID full-geometry endpoint and schema was verified; where an official map or registry portal exists, its service behavior or public feature response was not established.",
+  "remainingUncertainty": "Regional cadastral data availability and the current parcel-map route remain unresolved; no point query was made.",
+  "nextStep": "Revisit only if an official public geometry endpoint and safe minimal-field response are documented; then test the unchanged WUP point with safe identifiers and geometry only.",
+  "schemaVersion": "1.0",
+  "checkedAt": "2026-10-09",
+  "wupCityCode": 5764,
+  "cityId": "wup2025:5764",
+  "runtimeReadiness": "not_enabled_no_verified_public_geometry",
+  "adapterReady": false,
+  "centerLatLon": [
+    6.10145257665392,
+    125.150288822539
+  ],
+  "population2025k": 498.098,
+  "populationUnit": "persons",
+  "queueRank": 1110,
+  "population2025": 498098,
+  "populationPlausibility2025": "Moderate",
+  "pointBasis": "UN WUP 2025 population-weighted settlement point (latitude, longitude); not a municipal boundary or a parcel-coverage claim.",
+  "publicParcelGeometryFound": false,
+  "sourceIds": [],
+  "registryBasis": "City office directory confirms local housing/land and assessor offices. National Geoportal has General Santos existing land use, not a parcel fabric. An official FOI response previously said the requested cadastral shapefile was not held at central DENR. No anonymous parcel geometry endpoint was found.",
+  "registryEvidenceUrls": [
+    "https://gensantos.gov.ph/departments/",
+    "https://www.geoportal.gov.ph/",
+    "https://www.foi.gov.ph/requests/shapefiles-of-cadastral-map-of-general-santos-city-and-sarangani-province-with-boundaries/"
+  ],
+  "runtimeAssessment": {
+    "status": "not_enabled_no_verified_public_geometry",
+    "reason": "No anonymous safe-ID full-geometry endpoint and schema was verified; where an official map or registry portal exists, its service behavior or public feature response was not established."
+  },
+  "cohort": "overnight-next-1101-1200",
+  "cohortState": "root_reviewed_integrated_locally",
+  "integrationState": "integrated_locally",
+  "rootReviewedAt": "2026-10-09T07:13:02.981057+00:00",
+  "rootPrimaryChecks": [
+    {
+      "wupCityCode": 5764,
+      "url": "https://gensantos.gov.ph/departments/",
+      "checkedAt": "2026-10-09T07:10:39.364895+00:00",
+      "method": "Anonymous read-only GET, standard TLS where advertised; no credentials or property values",
+      "httpStatus": 200,
+      "finalUrl": "https://gensantos.gov.ph/departments/",
+      "contentType": "text/html; charset=UTF-8",
+      "bytesRead": 423770,
+      "sha256": "91f708b4317f4494e6778ccdb5c5cfa797136698db0c15e35e872fecfb6c7a84",
+      "complete": true
+    }
+  ],
+  "rootReview": {
+    "checkedAt": "2026-10-09T07:13:02.981057+00:00",
+    "decision": "Reviewed city identity, canonical population/point, separate searches and saved source/request evidence. No full public parcel geometry verified in this pass.",
+    "custodyScope": "City office directory confirms local housing/land and assessor offices. National Geoportal has General Santos existing land use, not a parcel fabric. An official FOI response previously said the requested cadastral shapefile was not held at central DENR. No anonymous parcel geometry endpoint was found.",
+    "transportFailuresDoNotProveAbsence": true,
+    "geometryClaimScope": "Investigation outcome only; no worldwide or citywide absence asserted."
+  },
+  "integratedAt": "2026-10-09T07:14:03.673112+00:00"
+}

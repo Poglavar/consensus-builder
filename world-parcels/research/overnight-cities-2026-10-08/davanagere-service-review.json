@@ -1,0 +1,39 @@
+{
+  "schemaVersion": "1.0",
+  "checkedAt": "2026-10-09",
+  "cityRecord": "city-9475-davanagere.json",
+  "purpose": "Local registry and public parcel-geometry source review. Queries were separated by English and local language. No owner, address, tax, or private property fields were queried or retained.",
+  "scopeLimits": {
+    "maxFullPolygonsRetainedInCityRecord": 0,
+    "maxFullPolygonsRetainedInReview": 0,
+    "maxFullPolygonsRetainedInRepository": 0,
+    "ownerOrAddressDataRetained": false,
+    "credentialsOrPrivateRecordLookupsUsed": false,
+    "citywideCompletenessAsserted": false
+  },
+  "assessment": "Davanagere district administration links citizens to the state Bhoomi land-records service and identifies the local Deputy Commissioner office. State land-record / revenue-map systems are parcel-number and administrative-unit oriented; this review did not verify an anonymous geometry-only feature API for the urban WUP point. Survey of India’s city/district program inventory identifies ongoing NAKSHA urban land-record work, not an open parcel layer. No full polygon was returned; geometry presence remains unverified.",
+  "officialPrimarySources": [
+    {
+      "url": "https://davanagere.nic.in/en/service/bhoomi/",
+      "observation": "Davanagere district administration links citizens to the state Bhoomi land-records service and identifies the local Deputy Commissioner office. State land-record / revenue-map systems are parcel-number and administrative-unit oriented; this review did not verify an anonymous geometry-only feature API for the urban WUP point. Survey of India’s city/district program inventory identifies ongoing NAKSHA urban land-record work, not an open parcel layer."
+    }
+  ],
+  "searches": [
+    {
+      "language": "English",
+      "query": "Davanagere official cadastral map land records Bhoomi Karnataka parcel GIS district"
+    },
+    {
+      "language": "Kannada",
+      "query": "ದಾವಣಗೆರೆ ಭೂಮಿ ಭೂ ದಾಖಲೆ ಭೂ ನಕ್ಷೆ ಅಧಿಕೃತ ಜಿಲ್ಲಾಡಳಿತ"
+    }
+  ],
+  "geometryEvidence": null,
+  "decision": {
+    "registryFound": true,
+    "publicParcelGeometryFound": null,
+    "verifiedSample": false,
+    "adapterReady": false
+  },
+  "nextStep": "Trace and inspect a public feature-service schema before any geometry request; restrict any future query to stable safe IDs and geometry."
+}

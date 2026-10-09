@@ -1,0 +1,63 @@
+{
+  "checkedAt": "2026-10-09",
+  "purpose": "Reproduce two narrow boundary slivers in original unrounded native-coordinate responses; keep full shapes temporary and only safe hashes/IDs in repository.",
+  "responseSrid": 3857,
+  "sourceGroundClass": {
+    "field": "PGIS.PGIS.ParcelsPublic.PARCELSUBTYPE",
+    "value": 0,
+    "publisherDomainLabel": "Land Polygon"
+  },
+  "nativeRequestPrecision": "No geometryPrecision parameter; no local rounding or repair",
+  "nativeFeatures": [
+    {
+      "parcelId": "183016697684004803",
+      "sourceObjectId": 402167,
+      "nativeGeometrySha256": "9fd41bffeb16856e514f30500497ab10237d7cd6f7edd42a14e4da2fca8854dd",
+      "valid": true
+    },
+    {
+      "parcelId": "183016697684004808",
+      "sourceObjectId": 937672,
+      "nativeGeometrySha256": "dae0a776e7bcde23a084e855c69ccb08bb9ba799408eba969aa808dc436b3988",
+      "valid": true
+    },
+    {
+      "parcelId": "183016822730010010",
+      "sourceObjectId": 1012039,
+      "nativeGeometrySha256": "7a4cfef482959eb96fd85482127c11f50098751d20e720d13c2303d84534f263",
+      "valid": true
+    }
+  ],
+  "edgeOverlapReview": [
+    {
+      "nativeKeys": [
+        "183016697684004803",
+        "183016822730010010"
+      ],
+      "native3857OverlapM2": 0.33113486793427394,
+      "metric32617OverlapM2": 0.2577789540021739,
+      "minimumRectangleEdgesM": [
+        0.003400799649046409,
+        0.0034814945312438865,
+        93.02730572598608,
+        93.02735469067753
+      ]
+    },
+    {
+      "nativeKeys": [
+        "183016697684004808",
+        "183016822730010010"
+      ],
+      "native3857OverlapM2": 0.013518185928396804,
+      "metric32617OverlapM2": 0.010523444716330523,
+      "minimumRectangleEdgesM": [
+        0.003354965741331905,
+        0.0033549658577438305,
+        6.188803905701509,
+        6.188803905702569
+      ]
+    }
+  ],
+  "rootDecision": "approved_for_bounded_reference_ground",
+  "reason": "Both overlaps reproduce in native source coordinates as narrow edge slivers approximately 3.5 millimetres wide, with no invalid or duplicate geometry in the complete 38-parcel audit. Consistent with other documented bounded sliver acceptances. No polygon exclusion or repair."
+}

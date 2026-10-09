@@ -1,0 +1,60 @@
+{
+  "schemaVersion": "1.0",
+  "checkedAt": "2026-10-09",
+  "cityRecord": "city-11301-rourkela.json",
+  "purpose": "Document first-party local land/property registry or map evidence and bounded anonymous parcel-geometry access review.",
+  "scopeLimits": {
+    "maxFullPolygonsRetainedInCityRecord": 0,
+    "maxFullPolygonsRetainedInReview": 0,
+    "maxFullPolygonsRetainedInRepository": 0,
+    "ownerOrAddressDataRetained": false,
+    "credentialsOrTokenValuesRetained": false,
+    "citywideCompletenessAsserted": false
+  },
+  "assessment": "Odisha’s official public land-map workflow and Rourkela municipal mapping are confirmed, but access is parcel-specific and a safe anonymous full-polygon interface was not verified. No property, owner, address, plot, khatian or title lookup was submitted. No full parcel geometry was retained.",
+  "officialPrimarySources": [
+    {
+      "url": "https://bhulekh.ori.nic.in/frmmapview.aspx",
+      "observation": "Official Bhulekh public Map View form requires District, Tahasil, Village, RI Circle and Plot No; reviewed without submitting a property/plot identifier."
+    },
+    {
+      "url": "https://bhulekh.ori.nic.in/FAQ.aspx",
+      "observation": "Official Revenue and Disaster Management Department/NIC FAQ confirms plot details and maps are available through MapView; it is a location/plot-specific lookup."
+    },
+    {
+      "url": "https://app3bhunakshaodisha.nic.in/bhunaksha/",
+      "observation": "Official Odisha BhuNaksha viewer exposes location selectors (district, tehsil, RI, village, sheet) and Plot Info; no schema-first parcel vector response was established."
+    },
+    {
+      "url": "https://sujogportal.odisha.gov.in/rourkela/city/maps/",
+      "observation": "Official Rourkela Municipal Corporation page provides a local city map and topographic map, not a cadastral vector download."
+    },
+    {
+      "url": "https://rda-rourkela.in/",
+      "observation": "Rourkela Development Authority is a local Government of Odisha development body covering Rourkela civil township and industrial complex; no public parcel GIS schema is documented."
+    }
+  ],
+  "attempts": [
+    {
+      "url": "https://bhulekh.ori.nic.in/frmmapview.aspx",
+      "method": "GET official map-view form (no selectors submitted)",
+      "result": "Form exposes required location and plot-number fields; no query was made."
+    },
+    {
+      "url": "https://app3bhunakshaodisha.nic.in/bhunaksha/",
+      "method": "GET official map viewer shell",
+      "result": "Selectors and Plot Info panel visible; no village/plot feature request, geometry payload, or API schema inspected."
+    }
+  ],
+  "registryBasis": "Odisha’s official public land-map workflow and Rourkela municipal mapping are confirmed, but access is parcel-specific and a safe anonymous full-polygon interface was not verified.",
+  "geometryDisposition": "No full geometry sample: the reviewed evidence does not establish a safe anonymous schema and appropriate city coverage.",
+  "rootRegistryReview": {
+    "checkedAt": "2026-10-09T02:33:39.945567+00:00",
+    "basis": "Official Sundargarh district administration lists Rourkela tahasil and its local Tahasildar office. Its public benchmark-valuation document explicitly names Rourkela tahasil and the SR Office, Panposh registration office. These establish a local revenue/registration function; the state Bhulekh/BhuNaksha map route remains unqualified for anonymous full geometry and exact settlement-point jurisdiction is unverified.",
+    "primaryUrls": [
+      "https://sundargarh.odisha.gov.in/en/about-district/administrative-setup/tahasil-list",
+      "https://sundargarh.odisha.gov.in/en/about-district/who-who",
+      "https://sundargarh.odisha.gov.in/sites/default/files/2023-07/2018073071.pdf"
+    ]
+  }
+}

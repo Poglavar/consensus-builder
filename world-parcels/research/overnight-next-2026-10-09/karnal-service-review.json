@@ -1,0 +1,85 @@
+{
+  "schemaVersion": "1.0",
+  "checkedAt": "2026-10-09",
+  "cityRecord": "city-8099-karnal.json",
+  "purpose": "Document first-party local registry/map evidence and bounded anonymous parcel geometry access review.",
+  "scopeLimits": {
+    "maxFullPolygonsRetainedInCityRecord": 0,
+    "maxFullPolygonsRetainedInReview": 0,
+    "maxFullPolygonsRetainedInRepository": 0,
+    "ownerOrAddressDataRetained": false,
+    "credentialsOrTokenValuesRetained": false,
+    "citywideCompletenessAsserted": false
+  },
+  "assessment": "Official city/municipality property GIS and land-record service exist, but public anonymous parcel geometry was not verified.",
+  "registryAssessment": "Official city/municipality property GIS and land-record service exist, but public anonymous parcel geometry was not verified.",
+  "officialPrimarySources": [
+    {
+      "url": "https://gis.ulbharyana.gov.in/",
+      "operator": "Directorate of Urban Local Bodies, Haryana GIS portal",
+      "observation": "Official municipal GIS mapping portal describes municipality-property/ward mapping and display-only usage; administrative interface requires login/OTP."
+    },
+    {
+      "url": "https://www.ulbharyana.gov.in/Karnal/251",
+      "operator": "Karnal municipal portal, Haryana",
+      "observation": "Official city page lists Urban Land Records service."
+    }
+  ],
+  "searchQueries": [
+    {
+      "language": "Hindi",
+      "query": "करनाल हरियाणा भू नक्शा जमाबंदी जिला प्रशासन भूमि अभिलेख official",
+      "result": "Official city/municipality property GIS and land-record service exist, but public anonymous parcel geometry was not verified.",
+      "method": "Separate local-language web search followed by official-source review.",
+      "scope": "Identify first-party local land-registry/cadastral sources and safe anonymous parcel geometry.",
+      "actualResultUrls": [
+        "https://gis.ulbharyana.gov.in/",
+        "https://www.ulbharyana.gov.in/Karnal/251"
+      ]
+    },
+    {
+      "language": "English",
+      "query": "Karnal Haryana official cadastral map land records GIS municipal property parcel",
+      "result": "Official city/municipality property GIS and land-record service exist, but public anonymous parcel geometry was not verified.",
+      "method": "Separate English-language web search followed by official-source review.",
+      "scope": "Identify first-party local land-registry/cadastral sources and safe anonymous parcel geometry.",
+      "actualResultUrls": [
+        "https://gis.ulbharyana.gov.in/",
+        "https://www.ulbharyana.gov.in/Karnal/251"
+      ]
+    }
+  ],
+  "geometryDecision": "No full parcel polygon retained; no safe anonymous geometry response was verified.",
+  "coverageAssessment": {
+    "claimedScope": "Official city/municipality property GIS and land-record service exist, but public anonymous parcel geometry was not verified.",
+    "verifiedOpenScope": null,
+    "citywideVerified": false,
+    "countrywideVerified": false,
+    "geometryVerified": false
+  },
+  "attempts": [
+    {
+      "url": "https://gis.ulbharyana.gov.in/",
+      "result": "Anonymous read-only GET returned HTTP 200 (text/html; charset=UTF-8), 50209 bytes read; title: DULBGIS. SHA-256 of bytes read: bbaef27e8b886ea1bacfbeeca56813789b45e34d829fb87fb87980c27eb4db0a. No cookies, credentials, or property-specific parameters were sent."
+    },
+    {
+      "url": "https://gis.ulbharyana.gov.in/",
+      "result": "Official municipal GIS mapping portal describes municipality-property/ward mapping and display-only usage; administrative interface requires login/OTP."
+    },
+    {
+      "url": "https://www.ulbharyana.gov.in/Karnal/251",
+      "result": "Official city page lists Urban Land Records service."
+    }
+  ],
+  "remainingUncertainty": "Exact jurisdiction/point mapping and anonymous public vector geometry remain unverified.",
+  "geometryEvidence": null,
+  "runtimeAssessment": "not enabled; root may run full adapter qualification.",
+  "rootReviewedAt": "2026-10-09T07:13:02.981057+00:00",
+  "rootReview": {
+    "checkedAt": "2026-10-09T07:13:02.981057+00:00",
+    "decision": "Reviewed city identity, canonical population/point, separate searches and saved source/request evidence. No full public parcel geometry verified in this pass.",
+    "custodyScope": "Official city/municipality property GIS and land-record service exist, but public anonymous parcel geometry was not verified.",
+    "transportFailuresDoNotProveAbsence": true,
+    "geometryClaimScope": "Investigation outcome only; no worldwide or citywide absence asserted."
+  }
+}

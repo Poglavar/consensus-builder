@@ -1,0 +1,45 @@
+{
+  "type": "FeatureCollection",
+  "name": "Palm Beach County PAO polygon at WUP locator (not city-layer-bound)",
+  "sourceFile": "/private/tmp/wpb-pbc-point-safe.geojson",
+  "features": [
+    {
+      "type": "Feature",
+      "id": 367302,
+      "properties": {
+        "OBJECTID": 367302
+      },
+      "geometry": {
+        "type": "Polygon",
+        "coordinates": [
+          [
+            [
+              -80.10167189103598,
+              26.62230293577325
+            ],
+            [
+              -80.10119408162794,
+              26.622285015938765
+            ],
+            [
+              -80.1011823307657,
+              26.622576171542534
+            ],
+            [
+              -80.10166014197037,
+              26.622594093740563
+            ],
+            [
+              -80.10167129904622,
+              26.622317644105284
+            ],
+            [
+              -80.10167189103598,
+              26.62230293577325
+            ]
+          ]
+        ]
+      }
+    }
+  ]
+}

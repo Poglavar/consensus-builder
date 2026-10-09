@@ -8,6 +8,7 @@ const descriptor = {
 };
 const native = '0245708VK4704C';
 const bounds = [-3.704, 40.416, -3.703, 40.417];
+const missing = key => `<?xml version='1.0' encoding="ISO-8859-1" standalone="no"?><ExceptionReport xmlns="http://www.opengis.net/ows/1.1" version="2.0.0"><Exception exceptionCode="OperationProcessingFailed"><ExceptionText><![CDATA[No se ha encontrado la parcela ${key} para el huso 25830]]></ExceptionText></Exception></ExceptionReport>`;
 function gml({ key = native, matched = 1, returned = 1, zone = 30 } = {}) {
     const member = `<w:member><cp:CadastralParcel><cp:nationalCadastralReference>${key}</cp:nationalCadastralReference><cp:owner>discard</cp:owner><cp:geometry><g:MultiSurface srsName="urn:ogc:def:crs:EPSG::258${zone}"><g:surfaceMember><g:Polygon><g:exterior><g:LinearRing><g:posList>440000 4474000 440010 4474000 440010 4474010 440000 4474010 440000 4474000</g:posList></g:LinearRing></g:exterior></g:Polygon></g:surfaceMember></g:MultiSurface></cp:geometry></cp:CadastralParcel></w:member>`;
     return `<w:FeatureCollection xmlns:w="http://www.opengis.net/wfs/2.0" xmlns:cp="http://inspire.ec.europa.eu/schemas/cp/4.0" xmlns:g="http://www.opengis.net/gml/3.2" numberMatched="${matched}" numberReturned="${returned}">${returned ? member : ''}</w:FeatureCollection>`;
@@ -43,6 +44,32 @@ describe('Spanish cadastral GML WFS', () => {
     it('reports absence only from an explicit complete empty collection', async () => {
         const result = await createCatastroWfsParcelSource(descriptor, { fetchImpl: async () => new Response(gml({ matched: 0, returned: 0 })) }).queryIds(['ES-DGC-' + native]);
         expect(result).toMatchObject({ complete: true, features: [], absentIds: ['ES-DGC-' + native] });
+    });
+    it('recognizes the official exact-reference missing message and does not cache absence', async () => {
+        const fetchImpl = vi.fn(async () => new Response(missing(native)));
+        const source = createCatastroWfsParcelSource(descriptor, { fetchImpl });
+        for (let i = 0; i < 2; i++) {
+            expect(await source.queryIds(['ES-DGC-' + native])).toMatchObject({
+                complete: true, features: [], absentIds: ['ES-DGC-' + native]
+            });
+        }
+        expect(fetchImpl).toHaveBeenCalledTimes(2);
+        await expect(source.queryBounds(bounds)).rejects.toMatchObject({ code: 'parcel-source-unavailable' });
+    });
+    it.each([
+        missing('0521307DF3802B'),
+        missing(native).replace('25830]]', '25831]]'),
+        missing(native).replace('OperationProcessingFailed', 'NoApplicableCode'),
+        missing(native).replaceAll('http://www.opengis.net/ows/1.1', 'https://example.org/ows'),
+        missing(native).replace('</ExceptionReport>', '<Exception exceptionCode="OperationProcessingFailed"><ExceptionText>Upstream failed</ExceptionText></Exception></ExceptionReport>'),
+        missing(native).replace(']]></ExceptionText>', ']]><other/></ExceptionText>'),
+        missing(native).replace('</ExceptionReport>', ''),
+        missing(native).replace('<ExceptionReport', '<!DOCTYPE ExceptionReport [<!ENTITY external SYSTEM "https://example.org/entity">]><ExceptionReport'),
+        missing(native).replace(`No se ha encontrado la parcela ${native} para el huso 25830`, 'Service temporarily unavailable'),
+        '<html><body>No se ha encontrado la parcela ' + native + ' para el huso 25830</body></html>'
+    ])('keeps mismatched, ambiguous and malformed absence replies unavailable', async body => {
+        await expect(createCatastroWfsParcelSource(descriptor, { fetchImpl: async () => new Response(body) })
+            .queryIds(['ES-DGC-' + native])).rejects.toMatchObject({ code: 'parcel-source-unavailable' });
     });
     it('rejects exact replies for a different native reference', async () => {
         await expect(createCatastroWfsParcelSource(descriptor, { fetchImpl: async () => new Response(gml({ key: '0521307DF3802B' })) }).queryIds(['ES-DGC-' + native])).rejects.toMatchObject({ code: 'parcel-source-unavailable' });

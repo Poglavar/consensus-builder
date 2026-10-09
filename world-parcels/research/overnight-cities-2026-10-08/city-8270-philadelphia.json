@@ -1,0 +1,106 @@
+{
+  "schemaVersion": 1,
+  "kind": "city_parcel_source_research",
+  "checkedAt": "2026-10-08",
+  "cityId": "wup2025:8270",
+  "wupCityCode": 8270,
+  "queueRank": 225,
+  "name": "Philadelphia",
+  "country": "United States of America",
+  "countryCode": "US",
+  "centerLatLon": [
+    39.9809715945293,
+    -75.1611281567456
+  ],
+  "population2025": 2232420,
+  "populationUnit": "persons",
+  "pointBasis": "UN WUP 2025 population-weighted settlement centroid; this is not a municipal boundary or a parcel-coverage claim.",
+  "status": "complete",
+  "registryFound": true,
+  "registryBasis": "City public-data catalogue directly links its Department of Records full parcel-polygon service derived from recorded deeds.",
+  "verifiedSample": true,
+  "publicParcelGeometryFound": true,
+  "runtimeReadiness": "enabled",
+  "sourceIds": [
+    "us-pa-philadelphia-dor-active-ground"
+  ],
+  "source": {
+    "sourceId": "us-pa-philadelphia-dor-active-ground",
+    "name": "Philadelphia Department of Records active ground parcels",
+    "operator": "City of Philadelphia Department of Records / CityGeo",
+    "url": "https://services.arcgis.com/fLeGjb7u4uXqeF9q/arcgis/rest/services/DOR_Parcel/FeatureServer/0",
+    "serviceType": "ArcGIS FeatureServer query",
+    "nativeIdField": "mapreg",
+    "outputCrs": "EPSG:4326",
+    "scope": "500 valid, distinct active no-elevation DOR parcel polygons verified in thirteen local cells around the selected Philadelphia locator. Complete pages and all fresh exact-ID geometry hashes agree. Five narrow boundary slivers remain (maximum 0.78% of the smaller parcel); no geometry repair applied. Broader city completeness and legal boundary accuracy are unverified."
+  },
+  "verifiedParcelResponse": {
+    "httpStatus": 200,
+    "featureCount": 70,
+    "rawSampleRetainedInTemporaryCache": true,
+    "safeAttributes": "objectid,mapreg,basereg,geoid,inactdate,status",
+    "sampleMeaning": "A bounded .001degree square at the population centroid returned full parcel shapes, including inactive rows. Runtime candidate scope will be tested separately with documented status1active/elev_flag0no-elevation filter.",
+    "fullGeometryReturned": true
+  },
+  "research": {
+    "executedQueries": [
+      {
+        "language": "English",
+        "query": "Philadelphia official city parcels tax parcel polygons ArcGIS FeatureServer open data atlas property boundaries"
+      },
+      {
+        "language": "English",
+        "query": "site.phila.gov \"DOR Parcels\" \"ArcGIS\""
+      },
+      {
+        "language": "English",
+        "query": "Philadelphia DOR parcel \"status\" \"inactive\" 1 2 3 mapreg"
+      }
+    ],
+    "officialSources": [
+      {
+        "url": "https://www.phila.gov/departments/office-of-innovation-and-technology/citygeo/",
+        "observation": "City GIS authority publishes municipal open geographic data and its Atlas map."
+      },
+      {
+        "url": "https://opendataphilly.org/datasets/department-of-records-property-parcels/",
+        "observation": "Direct public service link; describes recorded-deed parcel boundaries and weekly updates, public use/free."
+      },
+      {
+        "url": "https://services.arcgis.com/fLeGjb7u4uXqeF9q/arcgis/rest/services/DOR_Parcel/FeatureServer/0",
+        "observation": "City FeatureServer publishes full parcel polygons and preserves inactive recorded descriptions."
+      },
+      {
+        "url": "https://pasda.psu.edu/uci/FullMetadataDisplay.aspx?file=PhiladelphiaTransparcels201201.xml",
+        "observation": "Publisher metadata supplied to the Pennsylvania spatial-data repository documents status1active/status2inactive/status3remainder/status9merged, and elev_flag0no-elevation/1elevatedrights. Historical field dictionary; current live viewer semantics still require cross-check."
+      }
+    ]
+  },
+  "coverageAssessment": {
+    "verifiedOpenScope": "500 valid, distinct active no-elevation DOR parcel polygons verified in thirteen local cells around the selected Philadelphia locator. Complete pages and all fresh exact-ID geometry hashes agree. Five narrow boundary slivers remain (maximum 0.78% of the smaller parcel); no geometry repair applied. Broader city completeness and legal boundary accuracy are unverified.",
+    "countrywideVerified": false,
+    "citywideVerified": false
+  },
+  "appCityId": "philadelphia",
+  "resultCategory": "verified_public_geometry_runtime_enabled",
+  "scopeLimits": "500 valid, distinct active no-elevation DOR parcel polygons verified in thirteen local cells around the selected Philadelphia locator. Complete pages and all fresh exact-ID geometry hashes agree. Five narrow boundary slivers remain (maximum 0.78% of the smaller parcel); no geometry repair applied. Broader city completeness and legal boundary accuracy are unverified.",
+  "runtimeAssessment": {
+    "status": "enabled",
+    "reason": "500 valid, distinct active no-elevation DOR parcel polygons verified in thirteen local cells around the selected Philadelphia locator. Complete pages and all fresh exact-ID geometry hashes agree. Five narrow boundary slivers remain (maximum 0.78% of the smaller parcel); no geometry repair applied. Broader city completeness and legal boundary accuracy are unverified.",
+    "acceptanceFile": "research/overnight-cities-2026-10-08/philadelphia-dor-acceptance.json",
+    "qualityFile": "research/overnight-cities-2026-10-08/philadelphia-dor-quality.json",
+    "qualityReviewFile": "research/overnight-cities-2026-10-08/philadelphia-dor-overlap-review.json"
+  },
+  "runtimeQualification": {
+    "sourceId": "us-pa-philadelphia-dor-active-ground",
+    "status": "enabled",
+    "acceptanceFile": "research/overnight-cities-2026-10-08/philadelphia-dor-acceptance.json",
+    "qualityFile": "research/overnight-cities-2026-10-08/philadelphia-dor-quality.json"
+  },
+  "populationPlausibility2025": "High",
+  "rootReviewedAt": "2026-10-08T21:07:40.999192+00:00",
+  "point": [
+    39.9809715945293,
+    -75.1611281567456
+  ]
+}

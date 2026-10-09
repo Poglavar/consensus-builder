@@ -1,0 +1,1154 @@
+{
+  "schemaVersion": 1,
+  "purpose": "Independent GEOS topology check of complete runtime parcels projected to metric coordinates; no repair applied. Counts are bounded sample evidence, not whole-city guarantees.",
+  "library": "Shapely 2.2.0",
+  "metricCrs": "EPSG:32632",
+  "featureCount": 162,
+  "validNonemptyCount": 162,
+  "invalidFeatures": [],
+  "exactDuplicateGeometryPairs": [],
+  "positiveAreaOverlapPairsAbove0_01M2": [],
+  "sumPairwiseOverlapM2": 0,
+  "operationErrors": [],
+  "areaM2": {
+    "min": 0.05839300001422455,
+    "median": 355.45666525337066,
+    "max": 20100.958977293652
+  },
+  "features": [
+    {
+      "id": "DE-NRW-05346600300046______",
+      "areaM2": 5813.467240443305,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "DE-NRW-05346600300840______",
+      "areaM2": 13201.341869756656,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "DE-NRW-05346600300025______",
+      "areaM2": 311.44624549170817,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "DE-NRW-05346600300026______",
+      "areaM2": 295.584061490869,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "DE-NRW-05346600300027______",
+      "areaM2": 200.56572949790402,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "DE-NRW-05346600300028______",
+      "areaM2": 151.33305849367107,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "DE-NRW-05346600300034______",
+      "areaM2": 208.04056799724833,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "DE-NRW-05346600300036______",
+      "areaM2": 548.6720795186912,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "DE-NRW-05346600300037______",
+      "areaM2": 333.94196745752913,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "DE-NRW-05346600300029______",
+      "areaM2": 326.61834201700395,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "DE-NRW-05346600300030______",
+      "areaM2": 155.05208550476345,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "DE-NRW-05346600300031______",
+      "areaM2": 195.12278800690277,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "DE-NRW-05346600300032______",
+      "areaM2": 259.39144000348995,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "DE-NRW-05346600300033______",
+      "areaM2": 207.58990299174124,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "DE-NRW-05346600300022______",
+      "areaM2": 482.8377910066392,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "DE-NRW-05346600300024______",
+      "areaM2": 294.77688152197203,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "DE-NRW-05346600300023______",
+      "areaM2": 383.5140139986679,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "DE-NRW-05346600300035______",
+      "areaM2": 408.7264435048551,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "DE-NRW-05346500500030______",
+      "areaM2": 949.6590990028458,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "DE-NRW-05346500500031______",
+      "areaM2": 677.5294910045001,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "DE-NRW-05346500500032______",
+      "areaM2": 303.86452049930074,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "DE-NRW-05346500500033______",
+      "areaM2": 721.4548089717863,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "DE-NRW-05346500500028______",
+      "areaM2": 158.0022270114625,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "DE-NRW-05346500500002______",
+      "areaM2": 215.5223695079732,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "DE-NRW-05346500500003______",
+      "areaM2": 199.50188297018505,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "DE-NRW-05346500500029______",
+      "areaM2": 471.99830198151324,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "DE-NRW-05346500500034______",
+      "areaM2": 438.7793015001234,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "DE-NRW-05346500500050______",
+      "areaM2": 8006.681723933486,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "DE-NRW-05346500500390______",
+      "areaM2": 14958.330924892314,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "DE-NRW-05346500600082______",
+      "areaM2": 8575.094837371797,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "DE-NRW-05346500600005______",
+      "areaM2": 262.9220515097513,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "DE-NRW-05346500600006______",
+      "areaM2": 952.1182774935562,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "DE-NRW-05346500600618______",
+      "areaM2": 523.7718659844945,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "DE-NRW-05346500600617______",
+      "areaM2": 2084.251541979749,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "DE-NRW-05346500600003______",
+      "areaM2": 487.98990850329983,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "DE-NRW-05346500600004______",
+      "areaM2": 511.7568490012696,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "DE-NRW-05346500600106______",
+      "areaM2": 6263.258095459008,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "DE-NRW-05346500600022______",
+      "areaM2": 929.8324754950279,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "DE-NRW-05346500600023______",
+      "areaM2": 558.0122199962208,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "DE-NRW-05346500600025______",
+      "areaM2": 324.42425600667076,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "DE-NRW-05346300500589______",
+      "areaM2": 4170.783866461009,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "DE-NRW-05346300500588______",
+      "areaM2": 700.7496944690718,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "DE-NRW-05346300500612______",
+      "areaM2": 3125.86957195208,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "DE-NRW-05346300500494______",
+      "areaM2": 227.05931100539095,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "DE-NRW-05346300500495______",
+      "areaM2": 323.34282252920065,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "DE-NRW-05346300500496______",
+      "areaM2": 297.3244454815061,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "DE-NRW-05346300500497______",
+      "areaM2": 213.45515597923503,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "DE-NRW-05346300500499______",
+      "areaM2": 247.8701324769663,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "DE-NRW-05346300500500______",
+      "areaM2": 737.857209011542,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "DE-NRW-05346300500584______",
+      "areaM2": 1301.8502114861124,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "DE-NRW-05346300500587______",
+      "areaM2": 20100.958977293652,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "DE-NRW-05346300500585______",
+      "areaM2": 2226.9427330078615,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "DE-NRW-05346300500586______",
+      "areaM2": 1293.1436019856787,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "DE-NRW-05346300500498______",
+      "areaM2": 204.47888849509314,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "DE-NRW-05346600300838______",
+      "areaM2": 14.273463004681211,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "DE-NRW-05346600300839______",
+      "areaM2": 1.948370999758058,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "DE-NRW-05346300500610______",
+      "areaM2": 140.44030199608824,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "DE-NRW-05346300500611______",
+      "areaM2": 0.05839300001422455,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "DE-NRW-05346300500337______",
+      "areaM2": 271.5230259933942,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "DE-NRW-05346300500334______",
+      "areaM2": 293.2020860070155,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "DE-NRW-05346300500335______",
+      "areaM2": 151.9163320164027,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "DE-NRW-05346300500336______",
+      "areaM2": 316.06396699243834,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "DE-NRW-05346300500340______",
+      "areaM2": 430.14744498860904,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "DE-NRW-05346300500341______",
+      "areaM2": 743.3916139788224,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "DE-NRW-05346300500342______",
+      "areaM2": 383.93028599232656,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "DE-NRW-05346300500343______",
+      "areaM2": 382.9555669918898,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "DE-NRW-05346300500344______",
+      "areaM2": 354.1184349980069,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "DE-NRW-05346300500530______",
+      "areaM2": 340.10381949164577,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "DE-NRW-05346300500524______",
+      "areaM2": 434.8048114965851,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "DE-NRW-05346300500583______",
+      "areaM2": 6886.506358847761,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "DE-NRW-05346300500582______",
+      "areaM2": 633.2454631466438,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "DE-NRW-05346300500606______",
+      "areaM2": 7518.47906688285,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "DE-NRW-05346300500333______",
+      "areaM2": 276.8717099905157,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "DE-NRW-05346300500605______",
+      "areaM2": 9953.004048442392,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "DE-NRW-05346300500325______",
+      "areaM2": 154.9338735167021,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "DE-NRW-05346300500326______",
+      "areaM2": 261.02406450838896,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "DE-NRW-05346300500298______",
+      "areaM2": 401.52316451375265,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "DE-NRW-05346300500328______",
+      "areaM2": 238.49503648773185,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "DE-NRW-05346300500329______",
+      "areaM2": 1614.6418735069833,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "DE-NRW-05346300500345______",
+      "areaM2": 186.7583450044487,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "DE-NRW-05346300500346______",
+      "areaM2": 296.74689947917284,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "DE-NRW-05346300500331______",
+      "areaM2": 499.7954084839623,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "DE-NRW-05346300500324______",
+      "areaM2": 242.34140550207908,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "DE-NRW-05346300500327______",
+      "areaM2": 166.07087496563693,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "DE-NRW-05346300500330______",
+      "areaM2": 706.8418530091939,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "DE-NRW-05346300500323______",
+      "areaM2": 293.11113898915,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "DE-NRW-05346300500332______",
+      "areaM2": 187.80817699321187,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "DE-NRW-05346300500548______",
+      "areaM2": 2746.087675839803,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "DE-NRW-05346300500462______",
+      "areaM2": 707.7138515117633,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "DE-NRW-05346300500463______",
+      "areaM2": 263.96725349520995,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "DE-NRW-05346300500421______",
+      "areaM2": 542.606304527683,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "DE-NRW-05346300500464______",
+      "areaM2": 109.14086400209632,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "DE-NRW-05346300500465______",
+      "areaM2": 224.21280500446832,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "DE-NRW-05346300500468______",
+      "areaM2": 491.01208201685125,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "DE-NRW-05346300500469______",
+      "areaM2": 662.3067355065104,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "DE-NRW-05346300500567______",
+      "areaM2": 1816.5274035013254,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "DE-NRW-05346300500466______",
+      "areaM2": 1153.1256619700905,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "DE-NRW-05346300500467______",
+      "areaM2": 389.2379440041283,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "DE-NRW-05346300500470______",
+      "areaM2": 916.019808968592,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "DE-NRW-05346300500603______",
+      "areaM2": 1927.1871049638366,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "DE-NRW-05346300500359______",
+      "areaM2": 374.8043005137423,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "DE-NRW-05346300500360______",
+      "areaM2": 147.90295098593822,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "DE-NRW-05346300500361______",
+      "areaM2": 279.7882144909338,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "DE-NRW-05346300500362______",
+      "areaM2": 252.3828684964725,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "DE-NRW-05346300500364______",
+      "areaM2": 237.11296650212796,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "DE-NRW-05346300500541______",
+      "areaM2": 275.0172349519206,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "DE-NRW-05346300500542______",
+      "areaM2": 172.1313210161957,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "DE-NRW-05346300500544______",
+      "areaM2": 195.8629640303476,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "DE-NRW-05346300500568______",
+      "areaM2": 134.48529749534924,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "DE-NRW-05346300500569______",
+      "areaM2": 224.5080224999759,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "DE-NRW-05346300500593______",
+      "areaM2": 220.49247400795556,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "DE-NRW-05346300500351______",
+      "areaM2": 242.84095801217086,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "DE-NRW-05346300500369______",
+      "areaM2": 319.74688049240575,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "DE-NRW-05346300500370______",
+      "areaM2": 218.36429148917904,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "DE-NRW-05346300500371______",
+      "areaM2": 1747.3164974759204,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "DE-NRW-05346300500539______",
+      "areaM2": 9.057659500321789,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "DE-NRW-05346300500366______",
+      "areaM2": 163.48336000155632,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "DE-NRW-05346300500368______",
+      "areaM2": 336.9224184961561,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "DE-NRW-05346300500365______",
+      "areaM2": 425.07887649844326,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "DE-NRW-05346300500607______",
+      "areaM2": 11.71745149771505,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "DE-NRW-05346500500025______",
+      "areaM2": 270.98484198686447,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "DE-NRW-05346500500035______",
+      "areaM2": 391.703999492458,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "DE-NRW-05346500500036______",
+      "areaM2": 359.81812499200015,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "DE-NRW-05346500500037______",
+      "areaM2": 336.1668234932459,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "DE-NRW-05346500500038______",
+      "areaM2": 155.96958751498164,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "DE-NRW-05346500500039______",
+      "areaM2": 157.3740529662735,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "DE-NRW-05346500500026______",
+      "areaM2": 1762.7645154896081,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "DE-NRW-05346500500027______",
+      "areaM2": 1230.4328460507973,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "DE-NRW-05346500500042______",
+      "areaM2": 418.3650995091865,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "DE-NRW-05346500500429______",
+      "areaM2": 1511.4664444872924,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "DE-NRW-05346300500375______",
+      "areaM2": 153.44856399440715,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "DE-NRW-05346300500376______",
+      "areaM2": 403.26539250261186,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "DE-NRW-05346300500379______",
+      "areaM2": 505.44110099065654,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "DE-NRW-05346300500380______",
+      "areaM2": 1047.2726044813323,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "DE-NRW-05346300500381______",
+      "areaM2": 1303.8695009350408,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "DE-NRW-05346300500382______",
+      "areaM2": 223.4121900117893,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "DE-NRW-05346300500410______",
+      "areaM2": 351.3895139603509,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "DE-NRW-05346300500411______",
+      "areaM2": 315.44261451590864,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "DE-NRW-05346300500378______",
+      "areaM2": 401.6544774790213,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "DE-NRW-05346300500377______",
+      "areaM2": 265.20926001179504,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "DE-NRW-05346600300042______",
+      "areaM2": 774.6495354871413,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "DE-NRW-05346600300830______",
+      "areaM2": 695.7885754975509,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "DE-NRW-05346300500487______",
+      "areaM2": 507.9156065041874,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "DE-NRW-05346300500488______",
+      "areaM2": 327.75475398721994,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "DE-NRW-05346300500489______",
+      "areaM2": 289.4061340153737,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "DE-NRW-05346300500490______",
+      "areaM2": 356.79489550873444,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "DE-NRW-05346300500491______",
+      "areaM2": 273.5554410022926,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "DE-NRW-05346300500492______",
+      "areaM2": 1069.6875065399697,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "DE-NRW-05346600300038______",
+      "areaM2": 1041.9110269899809,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "DE-NRW-05346300500312______",
+      "areaM2": 470.5677119760542,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "DE-NRW-05346300500313______",
+      "areaM2": 557.2637965163447,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "DE-NRW-05346300500299______",
+      "areaM2": 198.66070200633393,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "DE-NRW-05346300500300______",
+      "areaM2": 736.302073992046,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "DE-NRW-05346300500301______",
+      "areaM2": 281.2889949850113,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "DE-NRW-05346300500315______",
+      "areaM2": 205.54602851882348,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "DE-NRW-05346300500316______",
+      "areaM2": 431.05100847422483,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "DE-NRW-05346300500317______",
+      "areaM2": 326.02984448373803,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "DE-NRW-05346300500322______",
+      "areaM2": 334.5311664915986,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "DE-NRW-05346300500590______",
+      "areaM2": 407.7960569934632,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "DE-NRW-05346300500591______",
+      "areaM2": 987.8316120038315,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "DE-NRW-05346300500314______",
+      "areaM2": 1083.0146180008235,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "DE-NRW-05346300500320______",
+      "areaM2": 572.1452780138277,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    }
+  ]
+}

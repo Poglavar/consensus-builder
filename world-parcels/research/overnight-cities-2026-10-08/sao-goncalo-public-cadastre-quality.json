@@ -1,0 +1,59 @@
+{
+  "schemaVersion": "1.0",
+  "checkedAt": "2026-10-09",
+  "city": "S\u00e3o Gon\u00e7alo",
+  "sourceId": "BR-RJ-SAO-GONCALO-GEOSERVER-LOTE-CADASTRO",
+  "method": "GEOS 3.14.1 `isValid`/`area` over 90 full geometries returned by the adapter; geometries and WGS84 metric cache remain in /tmp.",
+  "featureCount": 90,
+  "uniqueIds": 90,
+  "geometryTypes": [
+    "Polygon"
+  ],
+  "validCount": 90,
+  "invalidCount": 0,
+  "emptyCount": 0,
+  "metricCrs": "EPSG:31983 (SIRGAS 2000 / UTM zone 23S)",
+  "areaM2": {
+    "min": 320.9588979100829,
+    "max": 28692.346389076207,
+    "sum": 73201.1
+  },
+  "sampleFile": "sao-goncalo-public-cadastre-samples.geojson",
+  "fullGeometryCache": "/tmp/overnight-cities-2026-10-08/sao-goncalo-public-cadastre-cache.geojson",
+  "duplicateObservationAssessment": {
+    "viewportCells": 13,
+    "rawNativeIdObservations": 139,
+    "uniqueNativeIds": 90,
+    "repeatObservationCountAfterNativeIdDeduplication": 49,
+    "nativeIdsObservedInMultipleCells": 34,
+    "duplicateNativeIdObservationPairs": 67,
+    "exactDuplicateGeometryHashesAcrossDistinctNativeIds": 0,
+    "interpretation": "The repeated observations are the same source parcels returned by adjacent viewport bboxes; canonical IDs were deduplicated before pairwise topology checks."
+  },
+  "pairwiseTopology": {
+    "distinctNativeIdPairsCompared": 4005,
+    "geosIntersectsPairs": 133,
+    "positiveAreaOverlapPairsAboveThreshold": 0,
+    "overlapThresholdM2": 0.01,
+    "maxPositiveIntersectionAreaM2": 0,
+    "operationErrors": 0,
+    "geosVersion": "3.14.1",
+    "method": "GEOS intersects on all 4,005 unordered unique-ID pairs; intersection/area evaluated for all intersecting pairs in EPSG:31983."
+  },
+  "nativeIdVerification": {
+    "nativeSourceIdField": "id",
+    "nativeSourceIdType": "integer",
+    "nativeSourceIdExample": "1039986",
+    "freshExactIdQueryReturnedSameGeometrySha256": "e706eb9878bbc63ecc0def0e001cd7026117cd305d89e55cef1083ee430addec",
+    "gmlFeatureIdField": "feature.id (e.g. lote_a_cadastro_sg.fid--...)",
+    "gmlFeatureIdBehavior": "The GML/GeoServer feature.id changed across viewport/fresh-ID requests for the same native id; do not persist or use it as parcel identity.",
+    "persistenceLimit": "The numeric native id was stable across this qualification and exact-ID re-fetch; long-term provider permanence semantics are undocumented."
+  },
+  "sampleCenter": {
+    "latLon": [
+      -22.8357484330541,
+      -43.0260274875774
+    ],
+    "basis": "The 13 approximately 100 m grid cells were centered on the ranked WUP locator; no alternate sample center was used. Exact point probe is empty."
+  }
+}

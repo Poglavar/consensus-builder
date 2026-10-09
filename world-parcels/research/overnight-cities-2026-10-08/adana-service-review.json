@@ -1,0 +1,63 @@
+{
+  "schemaVersion": "1.0",
+  "checkedAt": "2026-10-09",
+  "cityRecord": "city-5750-adana.json",
+  "purpose": "Document first-party local registry/map evidence and bounded anonymous parcel-geometry access review.",
+  "scopeLimits": {
+    "maxFullPolygonsRetainedInCityRecord": 0,
+    "maxFullPolygonsRetainedInReview": 0,
+    "maxFullPolygonsRetainedInRepository": 0,
+    "ownerOrAddressDataRetained": false,
+    "credentialsOrTokenValuesRetained": false,
+    "citywideCompletenessAsserted": false
+  },
+  "assessment": "Official TKGM and Adana Governorate pages document the Adana Cadastre Directorate and the public national parcel-query service. One anonymous exact-point request to the inspected TKGM point endpoint returned HTTP 403; no retry/bypass or personal-attribute access was attempted, and no absence is inferred.",
+  "registryAssessment": "TKGM and Adana official pages identify the Adana Cadastre Directorate and land-registry offices; the national parcel-query service is official. Exact-point API access returned HTTP 403, which leaves parcel presence and coverage unresolved.",
+  "officialPrimarySources": [
+    {
+      "url": "https://www.tkgm.gov.tr/e-hizmetler/sik-kullanilanlar/parsel-sorgulama",
+      "observation": "TKGM and Adana official pages identify the Adana Cadastre Directorate and land-registry offices; the national parcel-query service is official. Exact-point API access returned HTTP 403, which leaves parcel presence and coverage unresolved."
+    },
+    {
+      "url": "https://www.tkgm.gov.tr/kurumsal/organizasyon-yapisi/tasra-teskilati",
+      "observation": "TKGM and Adana official pages identify the Adana Cadastre Directorate and land-registry offices; the national parcel-query service is official. Exact-point API access returned HTTP 403, which leaves parcel presence and coverage unresolved."
+    },
+    {
+      "url": "https://adana.gov.tr/yoneticilerimiz-gorev-dagilimi",
+      "observation": "TKGM and Adana official pages identify the Adana Cadastre Directorate and land-registry offices; the national parcel-query service is official. Exact-point API access returned HTTP 403, which leaves parcel presence and coverage unresolved."
+    }
+  ],
+  "searchQueries": [
+    {
+      "language": "English",
+      "query": "Adana official title registry cadastral office land parcels Tapu ve Kadastro Adana Bölge Müdürlüğü",
+      "result": "Official TKGM and Adana Governorate pages document the Adana Cadastre Directorate and the public national parcel-query service. One anonymous exact-point request to the inspected TKGM point endpoint returned HTTP 403; no retry/bypass or personal-attribute access was attempted, and no absence is inferred.",
+      "method": "Separate English-language source search and first-party source/service review; no owner, address, account, token or personal-property attributes requested.",
+      "scope": "Locate primary city/local cadastral or land-registry evidence and any safe public parcel-geometry endpoint."
+    },
+    {
+      "language": "Turkish",
+      "query": "Adapter contract uses mahalleId, adaNo, parselNo; values not returned because HTTP 403.",
+      "result": "Official TKGM and Adana Governorate pages document the Adana Cadastre Directorate and the public national parcel-query service. One anonymous exact-point request to the inspected TKGM point endpoint returned HTTP 403; no retry/bypass or personal-attribute access was attempted, and no absence is inferred.",
+      "method": "Separate native/local-language query and first-party source review. For Ogale, searched a Nigerian Pidgin/place-name variant because no standardized Eleme-language registry query term was identified.",
+      "scope": "Find primary local-language evidence for the same registry/map question."
+    }
+  ],
+  "geometryDecision": {
+    "publicParcelGeometryFound": null,
+    "decision": "No geometry retained; public anonymous geometry was not verified."
+  },
+  "coverageAssessment": {
+    "citywideCompletenessAsserted": false,
+    "scope": "Exact unchanged WUP settlement point and reviewed official sources only.",
+    "limits": "No complete citywide source extent or coverage was verified."
+  },
+  "attempts": [
+    {
+      "url": "https://cbsapi.tkgm.gov.tr/megsiswebapi.v3.1/api/parsel/35.27607428462/37.0133674018056",
+      "method": "Anonymous GET exact unchanged WUP latitude/longitude via inspected TKGM point adapter",
+      "result": "HTTP 403 Forbidden. No response feature retained; access failure is not treated as no parcel."
+    }
+  ],
+  "remainingUncertainty": "No anonymous safe-feature response was verified; registry coverage at the exact WUP point remains unresolved."
+}

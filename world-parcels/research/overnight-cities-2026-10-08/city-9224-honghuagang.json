@@ -1,0 +1,118 @@
+{
+  "schemaVersion": 1,
+  "kind": "city_parcel_source_research",
+  "checkedAt": "2026-10-09",
+  "name": "Honghuagang",
+  "country": "China",
+  "countryCode": "CN",
+  "populationUnit": "persons",
+  "status": "complete",
+  "registryFound": true,
+  "registryBasis": "The official Zunyi-area service portal identifies a Honghuagang real-estate registration subcenter. This proves a local registration service exists, but does not establish any public parcel geometry coverage.",
+  "registryEvidenceUrls": [
+    "https://zwfw.guizhou.gov.cn/eptemp.aspx?areacode=520300"
+  ],
+  "verifiedSample": false,
+  "publicParcelGeometryFound": false,
+  "runtimeReadiness": "not_enabled_no_verified_public_geometry",
+  "wupCityCode": 9224,
+  "cityId": "wup2025:9224",
+  "centerLatLon": [
+    27.6985880293552,
+    106.938738689058
+  ],
+  "rank": 483,
+  "queueRank": 483,
+  "population2025": 1062992,
+  "population2025k": 1062.992,
+  "pointBasis": "UN WUP 2025 population-weighted settlement centroid; this is not a municipal boundary or a parcel-coverage claim.",
+  "technicalBlocker": "The Guizhou provincial government service portal identifies Zunyi real-estate registration services and a Honghuagang subcenter. This establishes a city/district-bound registration service, but searches and public portal inspection did not identify an anonymous cadastral map, parcel-vector schema, or geometry endpoint. No private application or record was queried.",
+  "scopeLimits": "City/district-specific registration-service evidence only; no public parcel geometry, map viewer, or schema was verified.",
+  "remainingUncertainty": "A public feature geometry response and exact point parcel coverage remain unverified.",
+  "research": {
+    "executedQueries": [
+      {
+        "language": "English",
+        "query": "Honghuagang District Zunyi real estate registration center public cadastral map parcels",
+        "scope": "Find current city-specific registration/map evidence and safe anonymous geometry routes.",
+        "result": "The Guizhou provincial government service portal identifies Zunyi real-estate registration services and a Honghuagang subcenter. This establishes a city/district-bound registration service, but searches and public portal inspection did not identify an anonymous cadastral map, parcel-vector schema, or geometry endpoint. No private application or record was queried.",
+        "actualResultUrls": [
+          "https://zwfw.guizhou.gov.cn/eptemp.aspx?areacode=520300"
+        ],
+        "executionMethod": "English-language web search plus direct inspection of public official/local source routes."
+      },
+      {
+        "language": "Chinese",
+        "query": "红花岗区 不动产登记中心 红花岗分中心 地籍图 地块 公开 GIS",
+        "scope": "Find current local-language registration/map evidence and safe anonymous geometry routes.",
+        "result": "The Guizhou provincial government service portal identifies Zunyi real-estate registration services and a Honghuagang subcenter. This establishes a city/district-bound registration service, but searches and public portal inspection did not identify an anonymous cadastral map, parcel-vector schema, or geometry endpoint. No private application or record was queried.",
+        "actualResultUrls": [
+          "https://zwfw.guizhou.gov.cn/eptemp.aspx?areacode=520300"
+        ],
+        "executionMethod": "Local-language web search and review of public official source listings; no personal or property lookup."
+      }
+    ]
+  },
+  "source": {
+    "sourceId": "cn-honghuagang-registry-map-review",
+    "name": "Honghuagang local registry/map source",
+    "operator": "Guizhou Provincial Government Service Portal / Zunyi real estate registration system",
+    "url": "https://zwfw.guizhou.gov.cn/eptemp.aspx?areacode=520300",
+    "scope": "City/district-specific registration-service evidence only; no public parcel geometry, map viewer, or schema was verified.",
+    "nativeIdField": null,
+    "attributesRequested": [],
+    "identityBasis": "No native feature identifier was obtained.",
+    "geometryStatus": "no_target_geometry_verified"
+  },
+  "coverageAssessment": {
+    "verifiedOpenScope": "City/district-specific registration-service evidence only; no public parcel geometry, map viewer, or schema was verified.",
+    "citywideVerified": false,
+    "countrywideVerified": false
+  },
+  "priorEvidenceFiles": [],
+  "populationPlausibility2025": "Moderate",
+  "sourceIds": [],
+  "point": [
+    27.6985880293552,
+    106.938738689058
+  ],
+  "sampleFile": null,
+  "sampleFeatureCount": 0,
+  "sampleCrs": null,
+  "geometryEvidence": null,
+  "runtimeAssessment": {
+    "status": "not_enabled_no_verified_public_geometry",
+    "reason": "The Guizhou provincial government service portal identifies Zunyi real-estate registration services and a Honghuagang subcenter. This establishes a city/district-bound registration service, but searches and public portal inspection did not identify an anonymous cadastral map, parcel-vector schema, or geometry endpoint. No private application or record was queried."
+  },
+  "freshResearch": {
+    "executedQueries": [
+      {
+        "language": "English",
+        "query": "Honghuagang District Zunyi real estate registration center public cadastral map parcels",
+        "scope": "Find current city-specific registration/map evidence and safe anonymous geometry routes.",
+        "result": "The Guizhou provincial government service portal identifies Zunyi real-estate registration services and a Honghuagang subcenter. This establishes a city/district-bound registration service, but searches and public portal inspection did not identify an anonymous cadastral map, parcel-vector schema, or geometry endpoint. No private application or record was queried.",
+        "actualResultUrls": [
+          "https://zwfw.guizhou.gov.cn/eptemp.aspx?areacode=520300"
+        ],
+        "executionMethod": "English-language web search plus direct inspection of public official/local source routes."
+      },
+      {
+        "language": "Chinese",
+        "query": "红花岗区 不动产登记中心 红花岗分中心 地籍图 地块 公开 GIS",
+        "scope": "Find current local-language registration/map evidence and safe anonymous geometry routes.",
+        "result": "The Guizhou provincial government service portal identifies Zunyi real-estate registration services and a Honghuagang subcenter. This establishes a city/district-bound registration service, but searches and public portal inspection did not identify an anonymous cadastral map, parcel-vector schema, or geometry endpoint. No private application or record was queried.",
+        "actualResultUrls": [
+          "https://zwfw.guizhou.gov.cn/eptemp.aspx?areacode=520300"
+        ],
+        "executionMethod": "Local-language web search and review of public official source listings; no personal or property lookup."
+      }
+    ],
+    "officialSources": [
+      {
+        "url": "https://zwfw.guizhou.gov.cn/eptemp.aspx?areacode=520300",
+        "observation": "Official or linked source reviewed in the city/service evidence record."
+      }
+    ]
+  },
+  "rootReviewedAt": "2026-10-09T00:36:07.367105+00:00"
+}

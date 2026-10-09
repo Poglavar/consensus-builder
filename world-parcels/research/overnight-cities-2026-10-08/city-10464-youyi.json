@@ -1,0 +1,116 @@
+{
+  "schemaVersion": 1,
+  "kind": "city_parcel_source_research",
+  "checkedAt": "2026-10-09",
+  "name": "Youyi",
+  "country": "China",
+  "countryCode": "CN",
+  "populationUnit": "persons",
+  "status": "complete",
+  "registryFound": true,
+  "registryBasis": "Primary Dalian Jinpu New Area government pages identify Youyi Subdistrict (友谊街道) as a local administrative unit and identify the Jinpu Real Estate Registration Center’s local registration work. This resolves the WUP name as Youyi Subdistrict in Jinpu, Dalian, rather than a different settlement called Youyi. The available evidence is a local registry/administrative match; it does not independently locate the exact WUP centroid inside a cadastral coverage boundary.",
+  "registryEvidenceUrls": [
+    "https://www.dljp.gov.cn/govxxgk/youyijiedao/2026-03-06/a21d668b-29ee-4080-86ef-8d741be572a7.html",
+    "https://www.dljp.gov.cn/dt/001006/001006003/001006003001/001006003001014/20240613/7a64436b-a443-4f14-9c8c-a0a7e164c2c3.html",
+    "https://liaoning.tianditu.gov.cn/dalian/"
+  ],
+  "verifiedSample": false,
+  "publicParcelGeometryFound": false,
+  "runtimeReadiness": "not_enabled_no_verified_public_geometry",
+  "wupCityCode": 10464,
+  "cityId": "wup2025:10464",
+  "centerLatLon": [
+    39.1137815632164,
+    121.704444587171
+  ],
+  "rank": 794,
+  "queueRank": 794,
+  "population2025": 680993,
+  "population2025k": 680.993,
+  "populationPlausibility2025": "Moderate",
+  "pointBasis": "UN WUP 2025 population-weighted settlement centroid; this is not a municipal boundary or a parcel-coverage claim.",
+  "technicalBlocker": "No public anonymous parcel feature layer with a verified geometry-and-safe-ID schema was identified. Public basemaps and generic city map layers are not full parcel geometry.",
+  "scopeLimits": "The WUP settlement identity is resolved to Youyi Subdistrict in Dalian Jinpu New Area, but no official cadastral boundary/coverage polygon was overlaid against the exact centroid. The subdistrict registration evidence does not prove a parcel at the point or citywide coverage.",
+  "remainingUncertainty": "The WUP settlement identity is resolved to Youyi Subdistrict in Dalian Jinpu New Area, but no official cadastral boundary/coverage polygon was overlaid against the exact centroid. The subdistrict registration evidence does not prove a parcel at the point or citywide coverage.",
+  "research": {
+    "executedQueries": [
+      {
+        "language": "English",
+        "query": "Youyi Dalian Jinpu official real estate registration center cadastral map",
+        "scope": "Identify city-local registry evidence and a safe anonymous parcel geometry route; do not query owner, address, tax-account, personal or title data.",
+        "result": "Official Dalian/Jinpu sources identify Youyi Subdistrict and a Jinpu real-estate registration center. The Dalian public Tianditu map presents general basemap/vector/imagery/terrain services; no parcel feature schema or geometry-only route was found.",
+        "actualResultUrls": [
+          "https://www.dljp.gov.cn/govxxgk/youyijiedao/2026-03-06/a21d668b-29ee-4080-86ef-8d741be572a7.html",
+          "https://www.dljp.gov.cn/dt/001006/001006003/001006003001/001006003001014/20240613/7a64436b-a443-4f14-9c8c-a0a7e164c2c3.html",
+          "https://liaoning.tianditu.gov.cn/dalian/"
+        ],
+        "executionMethod": "Separate English/local-language public-source searches and review of official public pages; no personal parcel lookup."
+      },
+      {
+        "language": "Chinese",
+        "query": "大连 金普新区 友谊街道 不动产登记中心 地籍图 官方",
+        "scope": "Identify city-local registry evidence and a safe anonymous parcel geometry route; do not query owner, address, tax-account, personal or title data.",
+        "result": "金普新区政府确认友谊街道及其辖区管理职责，官方自然资源页面列出金普新区不动产登记中心业务。大连天地图公开页面展示通用底图、矢量、影像、地形等，没有核实地籍地块图层或只返回几何和稳定编号的匿名接口。",
+        "actualResultUrls": [
+          "https://www.dljp.gov.cn/govxxgk/youyijiedao/2026-03-06/a21d668b-29ee-4080-86ef-8d741be572a7.html",
+          "https://www.dljp.gov.cn/dt/001006/001006003/001006003001/001006003001014/20240613/7a64436b-a443-4f14-9c8c-a0a7e164c2c3.html",
+          "https://liaoning.tianditu.gov.cn/dalian/"
+        ],
+        "executionMethod": "Separate English/local-language public-source searches and review of official public pages; no personal parcel lookup."
+      }
+    ],
+    "officialSources": [
+      {
+        "url": "https://www.dljp.gov.cn/govxxgk/youyijiedao/2026-03-06/a21d668b-29ee-4080-86ef-8d741be572a7.html",
+        "observation": "Jinpu government identifies Youyi Subdistrict (友谊街道), its local government office and subdistrict administrative remit."
+      },
+      {
+        "url": "https://www.dljp.gov.cn/dt/001006/001006003/001006003001/001006003001014/20240613/7a64436b-a443-4f14-9c8c-a0a7e164c2c3.html",
+        "observation": "Official Jinpu Natural Resources page documents the Jinpu Real Estate Registration Center and local registration services."
+      },
+      {
+        "url": "https://liaoning.tianditu.gov.cn/dalian/",
+        "observation": "Official Dalian map portal presents general map services; no publicly documented parcel feature schema/geometry endpoint was verified."
+      }
+    ],
+    "metadataReviewFile": "youyi-service-review.json",
+    "routeInspectionFile": "/tmp/overnight-cities-2026-10-08/city-10464-route-inspection.json"
+  },
+  "source": {
+    "sourceId": null,
+    "name": null,
+    "operator": null,
+    "url": null,
+    "serviceType": "No verified anonymous geometry-only parcel feature endpoint in this review.",
+    "geometryType": null,
+    "coordinateReferenceSystem": null,
+    "nativeIdFields": [],
+    "directGeometryQueryVerified": false,
+    "directMetadataSchemaVerified": false,
+    "scope": "The WUP settlement identity is resolved to Youyi Subdistrict in Dalian Jinpu New Area, but no official cadastral boundary/coverage polygon was overlaid against the exact centroid. The subdistrict registration evidence does not prove a parcel at the point or citywide coverage."
+  },
+  "coverageAssessment": {
+    "citywideCompletenessAsserted": false,
+    "wupPointParcelPresenceAsserted": false,
+    "basis": "No parcel features were received; registry evidence and map/service descriptions are not parcel coverage claims."
+  },
+  "runtimeAssessment": {
+    "state": "not_enabled_no_verified_public_geometry",
+    "reason": "No complete public parcel polygon was verified under a schema that returns only geometry and safe identifiers.",
+    "status": "not_enabled_no_verified_public_geometry"
+  },
+  "rootReview": "pending",
+  "rootReviewNote": "Root reviewed primary local institutional/service evidence and retained the actual access, coverage and identity limits. Direct readback errors are distinct from indexed primary evidence and do not prove absent data. No public full geometry was verified for this city.",
+  "point": [
+    39.1137815632164,
+    121.704444587171
+  ],
+  "sourceIds": [],
+  "rootPrimarySupplement": "Primary Jinpu government registration-center source and Youyi administrative page were reviewed; the exact WUP point was not overlaid against a legal subdistrict boundary.",
+  "rootPrimaryReadback": {
+    "url": "https://www.dljp.gov.cn/govxxgk/youyijiedao/2026-03-06/a21d668b-29ee-4080-86ef-8d741be572a7.html",
+    "fetch": "error",
+    "reason": "The read operation timed out"
+  },
+  "rootReviewedAt": "2026-10-09T03:28:12.559388+00:00"
+}

@@ -1,0 +1,134 @@
+{
+  "name": "Sheffield",
+  "country": "United Kingdom",
+  "countryCode": "GB",
+  "rank": 1001,
+  "point": [
+    53.3706060761954,
+    -1.45914222195097
+  ],
+  "freshResearch": {
+    "queries": [
+      {
+        "language": "English",
+        "query": "Sheffield UK official cadastral parcel map property GIS land registry polygons council open data",
+        "scope": "Identify HM Land Registry local-authority open INSPIRE partitions, confirm Sheffield inclusion, and review point-specific geometry availability.",
+        "result": "HM Land Registry publishes monthly INSPIRE Index Polygons as a free OGL GML dataset, partitioned by local authority; the current 2026-09-06 listing names Sheffield City Council and provides a ZIP containing the GML. The polygons cover freehold registered property only, are indicative extents, and each has a documented Land Registry INSPIRE ID. The public archive was not downloaded or spatially filtered during this packet pass, so no feature geometry or point hit is verified; this does not imply geometry is absent.",
+        "executionMethod": "Separate English-language search and official page review; a distinct city-specific English query was run for the UK-local-language requirement."
+      },
+      {
+        "language": "English",
+        "query": "HM Land Registry Sheffield title plan cadastral parcel map registered land official",
+        "scope": "Identify HM Land Registry local-authority open INSPIRE partitions, confirm Sheffield inclusion, and review point-specific geometry availability.",
+        "result": "HM Land Registry publishes monthly INSPIRE Index Polygons as a free OGL GML dataset, partitioned by local authority; the current 2026-09-06 listing names Sheffield City Council and provides a ZIP containing the GML. The polygons cover freehold registered property only, are indicative extents, and each has a documented Land Registry INSPIRE ID. The public archive was not downloaded or spatially filtered during this packet pass, so no feature geometry or point hit is verified; this does not imply geometry is absent.",
+        "executionMethod": "Separate English-language search and official page review; a distinct city-specific English query was run for the UK-local-language requirement."
+      }
+    ],
+    "portals": [
+      {
+        "name": "HM Land Registry INSPIRE Index Polygons — Sheffield City Council partition",
+        "operator": "HM Land Registry, England and Wales",
+        "homeUrl": "https://use-land-property-data.service.gov.uk/datasets/inspire/download",
+        "observation": "HM Land Registry publishes monthly INSPIRE Index Polygons as a free OGL GML dataset, partitioned by local authority; the current 2026-09-06 listing names Sheffield City Council and provides a ZIP containing the GML. The polygons cover freehold registered property only, are indicative extents, and each has a documented Land Registry INSPIRE ID. The public archive was not downloaded or spatially filtered during this packet pass, so no feature geometry or point hit is verified; this does not imply geometry is absent."
+      }
+    ],
+    "requests": [
+      {
+        "url": "https://use-land-property-data.service.gov.uk/datasets/inspire/download/Sheffield_City_Council.zip",
+        "httpStatus": 200,
+        "anonymousCookieSessionRequired": true,
+        "initialCookielessRedirectLoop": true,
+        "archiveBytes": 28341363
+      }
+    ],
+    "historicalContext": [
+      {
+        "observation": "HM Land Registry publishes monthly INSPIRE Index Polygons as a free OGL GML dataset, partitioned by local authority; the current 2026-09-06 listing names Sheffield City Council and provides a ZIP containing the GML. The polygons cover freehold registered property only, are indicative extents, and each has a documented Land Registry INSPIRE ID. The public archive was not downloaded or spatially filtered during this packet pass, so no feature geometry or point hit is verified; this does not imply geometry is absent.",
+        "supersededBy": "Root downloaded the current2026-10-04 archive and audited actual native geometry."
+      }
+    ]
+  },
+  "status": "complete",
+  "verifiedParcelResponse": {
+    "httpStatus": 200,
+    "returnedSourceRows": 172021,
+    "boundedFullPolygonCount": 554,
+    "retainedFullPolygonCount": 3,
+    "nativeParcelIdentifiers": [
+      "27535317",
+      "55793458",
+      "27585748"
+    ],
+    "wupPointContained": true,
+    "qualityFile": "sheffield-hmlr-root-quality.json",
+    "reviewFile": "sheffield-hmlr-root-review.json"
+  },
+  "source": {
+    "sourceId": "gb-hmlr-inspire-index-sheffield",
+    "name": "HM Land Registry INSPIRE Index Polygons — Sheffield City Council partition",
+    "url": "https://use-land-property-data.service.gov.uk/datasets/inspire/download/Sheffield_City_Council.zip",
+    "operator": "HM Land Registry",
+    "serviceType": "Public monthly ZIP/GML archive retrieved HTTP200 using source-issued anonymous cookies.",
+    "layer": "Sheffield City Council authority partition",
+    "geometryType": "Polygon (dataset-level documentation; response schema not inspected)",
+    "outputCrs": "Native EPSG27700; retained GeoJSON EPSG4326",
+    "nativeIdField": "INSPIREID",
+    "nativeIdEvidence": "172021 parsed native source rows; safe INSPIREID and GEOMETRY allowlist only.",
+    "attributesRequested": [],
+    "sampleCount": 3,
+    "sampleFile": "city-4792-sheffield-samples.geojson",
+    "directGeometryQueryVerified": true,
+    "directMetadataSchemaVerified": true,
+    "geometryStatus": "verified_native_geometry_runtime_held"
+  },
+  "coverageAssessment": {
+    "claimedScope": "The HMLR dataset is partitioned by local authority and the current download listing names Sheffield City Council. It covers indicative freehold registered-property extents in the local authority partition, not all tenures or legal boundaries.",
+    "verifiedOpenScope": "The complete 2026-10-04 Sheffield public HMLR GML archive contains172021 source rows; 554 unmodified full native polygons intersect the 1km square around the unchanged WUP locator. Native INSPIREID27535317 covers the exact point. Three valid ID-and-full-geometry samples retained. Independent EPSG27700 audit found0invalid polygons,3duplicate geometry pairs,80positive-area overlap pairs above0.01m2,5443.90m2 summed pairwise overlap and0operation errors. Indicative registered-freehold index extents are partial tenure coverage; they do not establish complete citywide cadastral fabric.",
+    "countrywideVerified": false,
+    "citywideVerified": false
+  },
+  "registryFound": true,
+  "verifiedSample": true,
+  "resultCategory": "verified_public_geometry_runtime_held",
+  "technicalBlocker": "Native sampled geometry has duplicate extents and material positive-area overlaps under distinct INSPIRE IDs. Current adapters do not support this172021-row189835374-byte GML archive as bounded live parcel retrieval. No filtered subset, geometry repair or runtime adapter enabled.",
+  "remainingUncertainty": "Native index geometry conflicts and bounded runtime retrieval are unresolved; citywide cadastral completeness remains unverified.",
+  "nextStep": "Keep the safe verified samples and native topology hold; proceed down the roster.",
+  "schemaVersion": "1.0",
+  "checkedAt": "2026-10-09",
+  "wupCityCode": 4792,
+  "cityId": "wup2025:4792",
+  "runtimeReadiness": "held_native_geometry_conflicts",
+  "adapterReady": false,
+  "centerLatLon": [
+    53.3706060761954,
+    -1.45914222195097
+  ],
+  "population2025k": 549.695,
+  "populationUnit": "persons",
+  "queueRank": 1001,
+  "population2025": 549695,
+  "populationPlausibility2025": "High",
+  "pointBasis": "UN WUP 2025 population-weighted settlement centroid; this is not a municipal boundary or a parcel-coverage claim.",
+  "publicParcelGeometryFound": true,
+  "sourceIds": [],
+  "registryBasis": "The complete 2026-10-04 Sheffield public HMLR GML archive contains172021 source rows; 554 unmodified full native polygons intersect the 1km square around the unchanged WUP locator. Native INSPIREID27535317 covers the exact point. Three valid ID-and-full-geometry samples retained. Independent EPSG27700 audit found0invalid polygons,3duplicate geometry pairs,80positive-area overlap pairs above0.01m2,5443.90m2 summed pairwise overlap and0operation errors. Indicative registered-freehold index extents are partial tenure coverage; they do not establish complete citywide cadastral fabric.",
+  "registryEvidenceUrls": [
+    "https://use-land-property-data.service.gov.uk/datasets/inspire/download",
+    "https://www.gov.uk/guidance/inspire-index-polygons-spatial-data",
+    "https://use-land-property-data.service.gov.uk/datasets/inspire/download/Sheffield_City_Council.zip"
+  ],
+  "runtimeAssessment": {
+    "status": "held_native_geometry_conflicts",
+    "reason": "Native sampled geometry has duplicate extents and material positive-area overlaps under distinct INSPIRE IDs. Current adapters do not support this172021-row189835374-byte GML archive as bounded live parcel retrieval. No filtered subset, geometry repair or runtime adapter enabled."
+  },
+  "scopeLimits": "The complete 2026-10-04 Sheffield public HMLR GML archive contains172021 source rows; 554 unmodified full native polygons intersect the 1km square around the unchanged WUP locator. Native INSPIREID27535317 covers the exact point. Three valid ID-and-full-geometry samples retained. Independent EPSG27700 audit found0invalid polygons,3duplicate geometry pairs,80positive-area overlap pairs above0.01m2,5443.90m2 summed pairwise overlap and0operation errors. Indicative registered-freehold index extents are partial tenure coverage; they do not establish complete citywide cadastral fabric.",
+  "sampleFile": "city-4792-sheffield-samples.geojson",
+  "cohort": "overnight-followon-1001-1100",
+  "priorCheck": {
+    "attemptState": "pending",
+    "attemptEvidence": [],
+    "possiblePriorMatches": []
+  },
+  "rootReviewedAt": "2026-10-09T05:45:07.249008+00:00",
+  "rootReviewNote": "Reviewed exact immutable WUP identity, separate multilingual discovery, cited city custody and actual source observations. The complete 2026-10-04 Sheffield public HMLR GML archive contains172021 source rows; 554 unmodified full native polygons intersect the 1km square around the unchanged WUP locator. Native INSPIREID27535317 covers the exact point. Three valid ID-and-full-geometry samples retained. Independent EPSG27700 audit found0invalid polygons,3duplicate geometry pairs,80positive-area overlap pairs above0.01m2,5443.90m2 summed pairwise overlap and0operation errors. Indicative registered-freehold index extents are partial tenure coverage; they do not establish complete citywide cadastral fabric."
+}

@@ -1,0 +1,56 @@
+{
+  "type": "FeatureCollection",
+  "source": "Utah County Government TaxParcels_mobile MapServer layer 21",
+  "sourceCrs": "EPSG:3857",
+  "coordinateOrder": "easting,northing metres",
+  "geometryModified": false,
+  "propertiesRetained": [
+    "OBJECTID",
+    "PARCELID"
+  ],
+  "features": [
+    {
+      "type": "Feature",
+      "id": 4695463,
+      "properties": {
+        "OBJECTID": 4695463,
+        "PARCELID": "350180070"
+      },
+      "geometry": {
+        "type": "Polygon",
+        "coordinates": [
+          [
+            [
+              -12436045.4393253,
+              4910802.746656328
+            ],
+            [
+              -12436001.544362456,
+              4910802.767827314
+            ],
+            [
+              -12436001.393019838,
+              4910793.034209332
+            ],
+            [
+              -12436001.056747593,
+              4910771.403966098
+            ],
+            [
+              -12436044.951703722,
+              4910771.382797159
+            ],
+            [
+              -12436045.28793996,
+              4910793.0130390795
+            ],
+            [
+              -12436045.4393253,
+              4910802.746656328
+            ]
+          ]
+        ]
+      }
+    }
+  ]
+}

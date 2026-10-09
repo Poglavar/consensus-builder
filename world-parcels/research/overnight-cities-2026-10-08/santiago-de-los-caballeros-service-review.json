@@ -1,0 +1,59 @@
+{
+  "schemaVersion": 1,
+  "checkedAt": "2026-10-09",
+  "sourceId": null,
+  "purpose": "Service review for WUP2025 rank 792 Santiago de los Caballeros (city code 779); local registry evidence and safe anonymous full-polygon access status.",
+  "primaryPublisher": "Dominican Republic",
+  "sourceUrl": "https://ri.gob.do/?page_id=331",
+  "registryFound": true,
+  "registryBasis": "The Dominican Republic’s official Registro Inmobiliario identifies its Dirección Regional de Mensuras Catastrales Norte as headquartered in Santiago de los Caballeros and gives it jurisdiction over Santiago Province. This is city-specific institutional evidence for the ranked settlement. The same agency publishes a public national parcel-viewer, but its page requires a security-verification step and the advertised downloads/table do not establish a safe geometry-and-ID-only response contract.",
+  "officialSources": [
+    {
+      "url": "https://ri.gob.do/?page_id=331",
+      "observation": "Official Registro Inmobiliario directory identifies the North Regional Cadastral Survey Directorate, headquartered in Santiago de los Caballeros, with jurisdiction over Santiago Province."
+    },
+    {
+      "url": "https://servicios.ri.gob.do/ConsultaParcelario",
+      "observation": "Anonymous public page offers coordinate/positional input, parcel-status checkboxes and KML/Excel downloads, then displays a security-verification step before consultation. No query was submitted; the page alone does not establish a safe response-field allowlist."
+    },
+    {
+      "url": "https://ri.gob.do/wp-content/uploads/download/Instructivo%20para%20la%20nueva%20consulta%20del%20parcelario.pdf",
+      "observation": "Official instructions describe map click or coordinate/positional search, parcel layers and export buttons. They do not specify a geometry-only schema."
+    }
+  ],
+  "searchQueries": [
+    {
+      "language": "English",
+      "query": "Santiago de los Caballeros Dominican Republic official cadastral registry parcel map public geometry",
+      "result": "Official Registro Inmobiliario sources identify the North Regional Cadastral Survey Directorate in Santiago and describe the national public cadastral viewer. The viewer advertises coordinate/positional lookup, KML and Excel downloads, and a security verification step; no safe field allowlist was verified and no query was submitted.",
+      "urls": [
+        "https://ri.gob.do/?page_id=331",
+        "https://servicios.ri.gob.do/ConsultaParcelario"
+      ]
+    },
+    {
+      "language": "Spanish",
+      "query": "site:ri.gob.do Santiago de los Caballeros Dirección Regional de Mensuras Catastrales consulta parcelario catastral",
+      "result": "La Dirección Regional de Mensuras Catastrales Norte tiene sede en Santiago de los Caballeros y jurisdicción sobre Santiago. La consulta parcelaria admite coordenadas/designación posicional y ofrece KML/Excel, pero exige verificación de seguridad y no expone un esquema que garantice solo geometría e identificadores; no se envió consulta.",
+      "urls": [
+        "https://ri.gob.do/?page_id=331",
+        "https://servicios.ri.gob.do/ConsultaParcelario",
+        "https://ri.gob.do/wp-content/uploads/download/Instructivo%20para%20la%20nueva%20consulta%20del%20parcelario.pdf"
+      ]
+    }
+  ],
+  "accessReview": {
+    "publicAnonymousGeometryVerified": false,
+    "completeGeoreferencedPolygonCount": 0,
+    "geometryRetained": false,
+    "ownerAddressTaxOrPersonLookupRequested": false,
+    "authenticationOrCredentialsUsed": false,
+    "captchaOrPersonalFormSubmitted": false,
+    "routeInspectionStatus": "no_safe_public_geometry_contract_verified",
+    "reason": "A local cadastral registry and public parcel-viewing page are verified, but the public page requires security verification and advertises KML/Excel outputs without a verified geometry-plus-safe-ID-only schema. No target-point request or download was made; no complete polygon was retained."
+  },
+  "requestEvidence": [],
+  "technicalBlocker": "A local cadastral registry and public parcel-viewing page are verified, but the public page requires security verification and advertises KML/Excel outputs without a verified geometry-plus-safe-ID-only schema. No target-point request or download was made; no complete polygon was retained.",
+  "sampleDisposition": "No parcel polygons or parcel feature attributes retained.",
+  "remainingUncertainty": "Coverage at the exact WUP point, output attributes and public geometry endpoint/schema remain unverified. The national viewer is not evidence of citywide completeness."
+}

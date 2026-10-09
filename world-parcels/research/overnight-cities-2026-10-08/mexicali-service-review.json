@@ -1,0 +1,79 @@
+{
+  "schemaVersion": "1.0",
+  "checkedAt": "2026-10-09",
+  "cityRecord": "city-1340-mexicali.json",
+  "purpose": "City-specific official registry/map evidence and bounded anonymous parcel-geometry review.",
+  "scopeLimits": {
+    "maxFullPolygonsRetainedInCityRecord": 3,
+    "maxFullPolygonsRetainedInReview": 3,
+    "maxFullPolygonsRetainedInRepository": 3,
+    "ownerOrAddressDataRetained": false,
+    "credentialsOrTokenValuesRetained": false,
+    "citywideCompletenessAsserted": false
+  },
+  "assessment": "Official city sources confirm a local municipal Catastro department and a cadastral consultation route, but that lookup is login-gated. The public IMIP geovisor does not establish an anonymous parcel-vector layer. No polygon response or absence was inferred.",
+  "registryAssessment": "The official Ayuntamiento de Mexicali identifies the Dirección de Administración Urbana as responsible for municipal cadastral authority and lists its Departamento de Catastro. The official municipal cadastral consultation URL redirects to a username/password login. The city’s open IMIP geovisor presents planning/territorial layers but no parcel feature schema was found; no feature geometry was requested.",
+  "officialPrimarySources": [
+    {
+      "url": "https://mexicali.gob.mx/portalmexicali/dependencia/dau",
+      "observation": "Official municipal page identifies the Dirección de Administración Urbana’s cadastral jurisdiction and its Departamento de Catastro."
+    },
+    {
+      "url": "https://www.mexicali.gob.mx/webpub/consultacatastro/Consulta.aspx",
+      "observation": "Official municipal Catastro consultation route redirects to a username/password login form; no credentials were entered and no parcel query was made."
+    },
+    {
+      "url": "https://www.mexicali.gob.mx/portalmexicali/predial",
+      "observation": "Official city Predial page explains that account lookup uses a cadastral key; it is an account/payment service, not evidence of a public polygon layer."
+    },
+    {
+      "url": "https://www.mexicali.gob.mx/sitioimip/geovisor",
+      "observation": "Official IMIP Geovisor describes public urban-planning and territorial geospatial information; no cadastral parcel vector service was identified in the reviewed map layers."
+    }
+  ],
+  "searchQueries": [
+    {
+      "language": "English",
+      "query": "Mexicali official cadastral parcel map GIS property cadastre municipality",
+      "result": "Official municipal sources identify the city Catastro department and cadastral lookup by clave catastral. The cadastral consultation page redirects to a login form; the public IMIP geovisor advertises urban-planning/territorial layers, but no parcel-vector schema or anonymous polygon endpoint was identified.",
+      "method": "Separate language-specific search and official-source review."
+    },
+    {
+      "language": "Spanish",
+      "query": "Mexicali catastro municipal mapa predial cartografía catastral oficial ayuntamiento",
+      "result": "El Ayuntamiento identifica la Dirección de Administración Urbana y el Departamento de Catastro; la consulta catastral oficial redirige a inicio de sesión con usuario y contraseña. El geovisor público del IMIP presenta capas territoriales y de planeación, pero no se verificó un servicio vectorial catastral anónimo.",
+      "method": "Separate language-specific search and official-source review."
+    }
+  ],
+  "serviceChecks": [
+    {
+      "method": "GET",
+      "url": "https://www.mexicali.gob.mx/webpub/consultacatastro/Consulta.aspx",
+      "httpStatus": "redirected_to_login",
+      "contentType": "text/html",
+      "observation": "Official cadastral lookup resolves to Login.aspx with Usuario and Contraseña fields. No authenticated access or feature query was attempted."
+    }
+  ],
+  "geometryEvidence": {
+    "file": null,
+    "featureCount": 0,
+    "attributes": [],
+    "geometryType": null,
+    "crs": null,
+    "exactLocatorFeature": false
+  },
+  "privacy": "No owner, address, title, account, tax or identity attributes were requested or retained. No login credentials or private token values were used.",
+  "runtimeAssessment": {
+    "status": "not_enabled_no_verified_public_geometry",
+    "reason": "The official Ayuntamiento de Mexicali identifies the Dirección de Administración Urbana as responsible for municipal cadastral authority and lists its Departamento de Catastro. The official municipal cadastral consultation URL redirects to a username/password login. The city’s open IMIP geovisor presents planning/territorial layers but no parcel feature schema was found; no feature geometry was requested."
+  },
+  "geometryAttempt": {
+    "attempted": true,
+    "status": "Official cadastral lookup resolves to Login.aspx with Usuario and Contraseña fields. No authenticated access or feature query was attempted.",
+    "fullPolygonLimit": 3,
+    "fullPolygonsRetained": 0,
+    "fieldsRequested": [],
+    "geometryRetained": false
+  },
+  "remainingUncertainty": "Whether any separate official public cadastral map or safe vector service exists apart from the login-gated consultation portal; exact schema and city coverage."
+}

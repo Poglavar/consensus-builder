@@ -1,0 +1,46 @@
+{
+  "schemaVersion": 1,
+  "kind": "city_parcel_service_review",
+  "checkedAt": "2026-10-09",
+  "status": "complete",
+  "name": "Zucheng (Zhucheng)",
+  "country": "China",
+  "countryCode": "CN",
+  "rank": 831,
+  "wupCityCode": 10638,
+  "point": [
+    36.0004921652046,
+    119.393532008317
+  ],
+  "registryFound": null,
+  "registryBasis": "No city-first-party evidence establishing Zhucheng’s local real-property registration institution or public cadastral service was verified in this bounded review. A non-first-party local-chronicle result describes a 2015 registration-center opening, but is not used to set registryFound=true. The official Zhucheng government host did not yield a direct page response in the inspection.",
+  "registryEvidenceUrls": [],
+  "verifiedSample": false,
+  "publicParcelGeometryFound": false,
+  "returnedFullPolygonCount": 0,
+  "uniqueFullPolygonCount": 0,
+  "wupPointContained": null,
+  "portals": [
+    {
+      "name": "No verified public parcel portal. The official city homepage was not retrievable by direct request; no viewer/API was identified in official search results.",
+      "operator": "Official local, regional or national agency as identified in the source pages",
+      "homeUrl": "https://www.zhucheng.gov.cn/",
+      "observation": "Official Zhucheng government homepage was attempted over HTTPS but the connection timed out before an HTTP response."
+    }
+  ],
+  "requests": [
+    {
+      "url": "https://www.zhucheng.gov.cn/",
+      "method": "anonymous HTTPS GET",
+      "httpStatus": null,
+      "contentType": null,
+      "observation": "Connection timed out before any HTTP headers or body. No route status is inferred."
+    }
+  ],
+  "limitations": "No city-specific first-party registry or anonymous parcel geometry/schema route was verified. No interaction with registration forms or property-specific services occurred.",
+  "scopeLimits": "No protected or personal/property-specific information queried; no anonymous full geometry and stable-ID allowlist verified. No completeness claim.",
+  "runtimeAssessment": {
+    "status": "not_assessed_no_verified_geometry_schema",
+    "reason": "No city-specific first-party registry or anonymous parcel geometry/schema route was verified. No interaction with registration forms or property-specific services occurred."
+  }
+}

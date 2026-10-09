@@ -1,0 +1,163 @@
+{
+  "schemaVersion": 1,
+  "kind": "city_parcel_source_research",
+  "checkedAt": "2026-10-09",
+  "country": "India",
+  "countryCode": "IN",
+  "populationUnit": "persons",
+  "status": "complete",
+  "verifiedSample": false,
+  "publicParcelGeometryFound": false,
+  "runtimeReadiness": "not_enabled_no_verified_public_geometry",
+  "priorEvidenceFiles": [],
+  "scopeLimits": "The WUP point is a population-cluster locator, not an official municipal boundary or parcel identity. Bihar BhuNaksha is a statewide cadastral viewer; finding the local village in revenue indexing does not verify that a mapsheet covers this point. A WMS/highlighted raster view is not full parcel-vector geometry. No owner, address, tax, or account data was requested or saved; no login, CAPTCHA, credential, or token was used.",
+  "wupCityCode": 10971,
+  "queueRank": 246,
+  "name": "Mehsi",
+  "centerLatLon": [
+    26.33679442714,
+    85.3712532128365
+  ],
+  "population2025": 2018610,
+  "pointBasis": "UN WUP 2025 population-weighted settlement centroid; this is not a municipal boundary or a parcel-coverage claim.",
+  "registryFound": true,
+  "registryBasis": "The Government of Bihar Directorate of Land Records & Survey operates the BhuNaksha cadastral-map viewer. The live selector resolved East Champaran district 02 → Chakia subdivision 04 → Mehsi circle 16 and city-named Mauzas Main Mehsi (0734), Kasba Mehsi (0737), and Purani Mehsi (0730). This establishes local map indexing. The selected public viewer exposes extent/georeferencing and WMS display, but no parcel polygon was returned; the WUP locator is not tied to any village or map sheet.",
+  "resultCategory": "official_mehsi_cadastral_sheet_and_plot_identify_verified_vector_geometry_unavailable",
+  "research": {
+    "executedQueries": [
+      {
+        "language": "English",
+        "query": "Mehsi Bihar official cadastral parcel map GIS land records East Champaran",
+        "scope": "Find official local cadastral map and revenue-record coverage for Mehsi.",
+        "result": "Search identified the Government of Bihar BhuNaksha viewer as the official cadastral mapping system and the Bihar land-revenue Mauja-wise report as an official village index. The city/village match is plausible, but the WUP point was not identified against a selected village map and no parcel polygon was returned.",
+        "actualResultUrls": [
+          "https://bhunaksha.bihar.gov.in/10/index.jsp",
+          "https://www.bhulagan.bihar.gov.in/reports/MaujaWiseReport.aspx"
+        ],
+        "executionMethod": "Web search and official portal/viewer review; bounded public selector inspection recorded in prior service tracing."
+      },
+      {
+        "language": "Hindi",
+        "query": "मेहसी बिहार भू नक्शा खसरा नक्शा पूर्वी चंपारण सरकारी",
+        "scope": "Check Hindi-language government evidence for Mehsi cadastral maps and land-record indexing.",
+        "result": "Official Bihar BhuNaksha describes digitized cadastral maps and its public selector includes district, subdivision, circle, Mauza, survey type, map instance, and sheet fields. Bihar’s official Mauja-wise report is the local revenue index. Exact WUP-point coverage and parcel geometry remain unverified.",
+        "actualResultUrls": [
+          "https://bhunaksha.bihar.gov.in/10/index.jsp",
+          "https://www.bhulagan.bihar.gov.in/reports/MaujaWiseReport.aspx"
+        ],
+        "executionMethod": "Separate Hindi-language web search and review of the official Bihar map viewer and land-revenue index."
+      }
+    ],
+    "officialSources": [
+      {
+        "url": "https://bhunaksha.bihar.gov.in/10/index.jsp",
+        "operator": "Directorate of Land Records & Survey, Government of Bihar / National Informatics Centre",
+        "observation": "Official Bihar BhuNaksha portal describes digitized cadastral maps. Its live public selector was followed to East Champaran 02 → Chakia 04 → Mehsi circle 16 and city-named Mauzas Main Mehsi 0734, Kasba Mehsi 0737, and Purani Mehsi 0730. Client traces expose map-info and WMS routes; no full parcel vector was verified."
+      },
+      {
+        "url": "https://www.bhulagan.bihar.gov.in/reports/MaujaWiseReport.aspx",
+        "operator": "Government of Bihar land-revenue portal",
+        "observation": "Official Mauja-wise report indexes East Champaran circle/village records including Mehsi. This establishes local record indexing only, not geospatial coverage at the WUP point."
+      }
+    ],
+    "requests": [
+      {
+        "url": "https://bhunaksha.bihar.gov.in/10/indexmain.jsp",
+        "method": "GET",
+        "httpStatus": 200,
+        "contentType": "text/html",
+        "observation": "Official viewer live UI resolved East Champaran district 02 → Chakia subdivision 04 → Mehsi circle 16 → Main Mehsi Mauza 0734 → Cadastral Survey (CS) → CS Map 06 → sheet 00. This is a named local cadastral map independent of the WUP centroid."
+      },
+      {
+        "url": "https://bhunaksha.bihar.gov.in/rest/MapInfo/getVVVVExtentGeoref",
+        "method": "POST",
+        "httpStatus": 200,
+        "contentType": "application/json",
+        "requestBody": "state=10&gisLevels=02,04,16,0734,CS,06,00,&srs=0",
+        "responseFieldsRetained": [
+          "epsg",
+          "xmin",
+          "ymin",
+          "xmax",
+          "ymax",
+          "gisCode",
+          "attribution"
+        ],
+        "observation": "Official selected Main Mehsi CS sheet response: EPSG:32645; xmin 312447.31749583624; ymin 2916320.83622262; xmax 313785.41989247856; ymax 2918241.180299062; gisCode CS02041607341400600. Bounds are ordered and valid. Attribution identifies Mehsi circle, Mauza Main Mehsi(140), Cadastral Survey, CS Map, sheet 00."
+      },
+      {
+        "url": "https://bhunaksha.bihar.gov.in/rest/MapInfo/getPlotAtXY",
+        "method": "POST",
+        "httpStatus": 200,
+        "contentType": "application/json",
+        "requestBody": "state=10&giscode=CS02041607341400600&x=313116.3686941574&y=2917281.00826084",
+        "responseFieldsRetained": [
+          "id",
+          "kide"
+        ],
+        "observation": "The request used the exact midpoint of the valid official EPSG:32645 extent as an interior local validation point: x=313116.3686941574, y=2917281.00826084. The official plot-identify route returned `id=3ZLTxJhdQLS-B6ve_aHBmQ`, `kide=335`; no owner/name/address fields were requested or retained. This establishes map/plot identification, not a full polygon response."
+      },
+      {
+        "url": "https://bhunaksha.bihar.gov.in/10/index.js",
+        "method": "GET",
+        "httpStatus": 200,
+        "contentType": "text/javascript",
+        "responseBytes": 43159,
+        "observation": "Official viewer client inspection confirms plot-identify calls `rest/MapInfo/getPlotAtXY`, then renders selected and same-owner plots with WMS image layers (`PLOT_LIST`/`SAME_OWNER_PLOT_LIST`) and calls ScalarDatahandler for attributes. The client advertises no full-polygon, GeoJSON, or WFS route; WMS is raster imagery, so no geometry was counted."
+      },
+      {
+        "url": "https://bhunaksha.bihar.gov.in/rest/MapInfo/getVVVVExtentGeoref",
+        "method": "POST (multiple bounded public selector choices)",
+        "httpStatus": 200,
+        "contentType": "application/json",
+        "observation": "Earlier bounded extent checks for Kasba Mehsi revisional sheets 01–04, Purani Mehsi revisional sheet 00, and Purani Mehsi cadastral sheets 01–02 returned EPSG:32645 extents with easting around 311–313 km. Some responses were malformed; the valid Purani/Kasba extents were about 24–26 km west of the WUP point. Those checks do not affect Main Mehsi CS sheet 00's valid local map extent or its selected plot response."
+      }
+    ],
+    "coverageAssessment": {
+      "claimedScope": "No citywide polygon scope is claimed. A local, named Main Mehsi cadastral sheet and one plot-identify result are verified.",
+      "verifiedOpenScope": "Official Main Mehsi CS Map sheet 00 has a valid EPSG:32645 extent; its extent midpoint resolves to one local plot identifier through the advertised official identify route. The resulting visualization is WMS only; no full parcel polygon was retrieved.",
+      "citywideVerified": false,
+      "countrywideVerified": false,
+      "geometryVerified": false
+    },
+    "technicalBlocker": "The Bihar viewer’s map-identify workflow requires a selected map extent and plot-identify coordinate; the observed map display uses WMS. The available evidence did not resolve the WUP point to the precise Mauza/sheet or expose a full-vector parcel response, so no parcel query was counted as verified.",
+    "remainingUncertainty": "Whether the WUP point falls within the Mehsi Mauza map coverage; which circle/subdivision and sheet apply at that coordinate; availability of any public full-polygon vector export behind the map viewer."
+  },
+  "verifiedParcelResponse": {
+    "httpStatus": 200,
+    "contentType": "application/json",
+    "endpoint": "https://bhunaksha.bihar.gov.in/rest/MapInfo/getPlotAtXY",
+    "mapCode": "CS02041607341400600",
+    "point": {
+      "x": 313116.3686941574,
+      "y": 2917281.00826084,
+      "crs": "EPSG:32645"
+    },
+    "safeIdentifierFields": {
+      "id": "3ZLTxJhdQLS-B6ve_aHBmQ",
+      "kide": "335"
+    },
+    "fullPolygonReturned": false,
+    "geometryNote": "Identify response contains IDs only. Official client then draws PLOT_LIST highlight using WMS image; no full geometry was returned."
+  },
+  "source": null,
+  "cityId": "wup2025:10971",
+  "populationPlausibility2025": "Moderate",
+  "technicalBlocker": "Main Mehsi's correctly selected Cadastral Survey sheet 00 has a valid official EPSG:32645 extent and its interior point resolves through the viewer's advertised getPlotAtXY route to a parcel identifier. However, the official client then renders plot boundaries only with WMS image layers; its client routes expose no full polygon/GeoJSON/WFS response. Thus this local map is spatially validated, while sample geometry remains unverified.",
+  "remainingUncertainty": "Whether Bihar BhuNaksha exposes a separate public vector endpoint outside the inspected official viewer client. The verified local point is on a Main Mehsi map sheet and is intentionally distinct from the unchanged UN WUP settlement centroid.",
+  "nextStep": "If the official viewer later advertises a vector endpoint, request only the identified plot geometry and safe cadastral identifiers; retain at most three full polygons.",
+  "localValidationPoint": {
+    "x": 313116.3686941574,
+    "y": 2917281.00826084,
+    "crs": "EPSG:32645",
+    "basis": "Midpoint of the exact official Main Mehsi CS Map sheet 00 extent returned by rest/MapInfo/getVVVVExtentGeoref; used only as local map point, not substituted for WUP settlement centroid.",
+    "mapCode": "CS02041607341400600",
+    "mapName": "Main Mehsi (Mauza 0734), Cadastral Survey Map 06, sheet 00"
+  },
+  "rootReviewedAt": "2026-10-08T21:46:22.040221+00:00",
+  "sourceIds": [],
+  "point": [
+    26.33679442714,
+    85.3712532128365
+  ]
+}

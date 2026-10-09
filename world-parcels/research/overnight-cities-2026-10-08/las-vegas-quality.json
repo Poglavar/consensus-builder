@@ -1,0 +1,566 @@
+{
+  "schemaVersion": 1,
+  "purpose": "Independent GEOS topology check of complete runtime parcels projected to metric coordinates; no repair applied. Counts are bounded sample evidence, not whole-city guarantees.",
+  "library": "Shapely 2.2.0",
+  "metricCrs": "EPSG:32611",
+  "featureCount": 78,
+  "validNonemptyCount": 78,
+  "invalidFeatures": [],
+  "exactDuplicateGeometryPairs": [],
+  "positiveAreaOverlapPairsAbove0_01M2": [],
+  "sumPairwiseOverlapM2": 0,
+  "operationErrors": [],
+  "areaM2": {
+    "min": 2.972320111380946,
+    "median": 1846.9541331565756,
+    "max": 50207.76568011861
+  },
+  "features": [
+    {
+      "id": "US-NV-CLARK-16204311032",
+      "areaM2": 729.4831345116679,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "US-NV-CLARK-16204311033",
+      "areaM2": 918.1957501572263,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "US-NV-CLARK-16204301004",
+      "areaM2": 1229.485651770878,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "US-NV-CLARK-16204301019",
+      "areaM2": 852.5883561329587,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "US-NV-CLARK-16204301014",
+      "areaM2": 1233.6182956974449,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "US-NV-CLARK-16204311034",
+      "areaM2": 2004.7481319754727,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "US-NV-CLARK-16204399005",
+      "areaM2": 36933.375511540944,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "US-NV-CLARK-16204399011",
+      "areaM2": 379.40571969145526,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "US-NV-CLARK-16204399013",
+      "areaM2": 404.6294205211663,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "US-NV-CLARK-16204301030",
+      "areaM2": 382.6096753512351,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "US-NV-CLARK-16204301021",
+      "areaM2": 812.4694439162349,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "US-NV-CLARK-16204702003",
+      "areaM2": 1876.3929953507102,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "US-NV-CLARK-16204702004",
+      "areaM2": 2193.9361048601518,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "US-NV-CLARK-16204701002",
+      "areaM2": 1269.0871861460193,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "US-NV-CLARK-16204302008",
+      "areaM2": 3224.169635895839,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "US-NV-CLARK-16204702002",
+      "areaM2": 3843.0073610097575,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "US-NV-CLARK-16204399006",
+      "areaM2": 6778.393243779224,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "US-NV-CLARK-16204399012",
+      "areaM2": 476.40391305746994,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "US-NV-CLARK-16204799029",
+      "areaM2": 943.5783375455396,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "US-NV-CLARK-16204301029",
+      "areaM2": 396.30621034073,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "US-NV-CLARK-16204799003",
+      "areaM2": 2754.741924328122,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "US-NV-CLARK-16204799027",
+      "areaM2": 68.94819300005813,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "US-NV-CLARK-16204711003",
+      "areaM2": 1435.5213474501018,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "US-NV-CLARK-16204703002",
+      "areaM2": 3167.7917906208913,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "US-NV-CLARK-16204703003",
+      "areaM2": 4049.53300193255,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "US-NV-CLARK-16204703004",
+      "areaM2": 4053.194905720416,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "US-NV-CLARK-16204702001",
+      "areaM2": 3461.33351800685,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "US-NV-CLARK-16204799012",
+      "areaM2": 5913.951189168472,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "US-NV-CLARK-16204399004",
+      "areaM2": 566.4923822130172,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "US-NV-CLARK-16204699026",
+      "areaM2": 669.4519554241551,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "US-NV-CLARK-16204603002",
+      "areaM2": 785.8865773147402,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "US-NV-CLARK-16204699019",
+      "areaM2": 6302.434459094809,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "US-NV-CLARK-16204799001",
+      "areaM2": 1434.7938789030982,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "US-NV-CLARK-16204299035",
+      "areaM2": 7246.675657032516,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "US-NV-CLARK-16204299024",
+      "areaM2": 6791.214039035052,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "US-NV-CLARK-16204699018",
+      "areaM2": 11315.566490152716,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "US-NV-CLARK-16204603003",
+      "areaM2": 4975.7257132626655,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "US-NV-CLARK-16204210079",
+      "areaM2": 1865.2255580113156,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "US-NV-CLARK-16204210080",
+      "areaM2": 1875.767086125792,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "US-NV-CLARK-16204210083",
+      "areaM2": 1989.0773069731167,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "US-NV-CLARK-16204210058",
+      "areaM2": 3497.297052813841,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "US-NV-CLARK-16204210057",
+      "areaM2": 3520.1365281235703,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "US-NV-CLARK-16204210135",
+      "areaM2": 3013.1705653085264,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "US-NV-CLARK-16204210143",
+      "areaM2": 258.35094488651833,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "US-NV-CLARK-16204299001",
+      "areaM2": 50207.76568011861,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "US-NV-CLARK-16204210145",
+      "areaM2": 1462.1730777542436,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "US-NV-CLARK-16204299043",
+      "areaM2": 3857.9453184061413,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "US-NV-CLARK-16204699030",
+      "areaM2": 17.147879221300155,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "US-NV-CLARK-16204299030",
+      "areaM2": 51.20853097623845,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "US-NV-CLARK-16204299023",
+      "areaM2": 203.24530491797785,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "US-NV-CLARK-16204299038",
+      "areaM2": 497.9370313455151,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "US-NV-CLARK-16204699055",
+      "areaM2": 848.2053598201884,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "US-NV-CLARK-16204699056",
+      "areaM2": 335.76558070582945,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "US-NV-CLARK-16204210056",
+      "areaM2": 3210.67993516586,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "US-NV-CLARK-16204699035",
+      "areaM2": 673.7237109046779,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "US-NV-CLARK-16204299039",
+      "areaM2": 111.02364191122422,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "US-NV-CLARK-16204699017",
+      "areaM2": 5650.660333351448,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "US-NV-CLARK-16204210144",
+      "areaM2": 43.731072289826606,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "US-NV-CLARK-16204299042",
+      "areaM2": 125.98862435951733,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "US-NV-CLARK-16204602008",
+      "areaM2": 307.00161679036097,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "US-NV-CLARK-16204602009",
+      "areaM2": 8808.125662683304,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "US-NV-CLARK-16204302009",
+      "areaM2": 2241.6103258458324,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "US-NV-CLARK-16204302002",
+      "areaM2": 2530.9741480943835,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "US-NV-CLARK-16204703014",
+      "areaM2": 5527.864643875098,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "US-NV-CLARK-16204302003",
+      "areaM2": 2835.605436972653,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "US-NV-CLARK-16204703009",
+      "areaM2": 4861.496264853019,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "US-NV-CLARK-16204601007",
+      "areaM2": 460.7650020228808,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "US-NV-CLARK-16204210054",
+      "areaM2": 1784.1703395367167,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "US-NV-CLARK-16204601006",
+      "areaM2": 1828.6827083018354,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "US-NV-CLARK-16204601005",
+      "areaM2": 3444.7164758015833,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "US-NV-CLARK-16204210055",
+      "areaM2": 3543.0932663793155,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "US-NV-CLARK-16204699022",
+      "areaM2": 2.972320111380946,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "US-NV-CLARK-16204699023",
+      "areaM2": 135.4004201023221,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "US-NV-CLARK-16204699024",
+      "areaM2": 163.47302114873136,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "US-NV-CLARK-16204604001",
+      "areaM2": 2205.0511548183804,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "US-NV-CLARK-16204703001",
+      "areaM2": 6171.470346058941,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "US-NV-CLARK-16204604002",
+      "areaM2": 7509.452999375541,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "US-NV-CLARK-16204799028",
+      "areaM2": 306.2749866028015,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    }
+  ]
+}

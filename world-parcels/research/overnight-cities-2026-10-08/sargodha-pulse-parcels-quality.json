@@ -1,0 +1,69 @@
+{
+  "schemaVersion": 1,
+  "purpose": "Independent GEOS topology check of complete runtime parcels projected to metric coordinates; no repair applied. Counts are bounded sample evidence, not whole-city guarantees.",
+  "library": "Shapely 2.2.0",
+  "metricCrs": "EPSG:32643",
+  "featureCount": 7,
+  "validNonemptyCount": 7,
+  "invalidFeatures": [],
+  "exactDuplicateGeometryPairs": [],
+  "positiveAreaOverlapPairsAbove0_01M2": [],
+  "sumPairwiseOverlapM2": 0,
+  "operationErrors": [],
+  "areaM2": {
+    "min": 2023.4379196875375,
+    "median": 12103.077185974053,
+    "max": 155672.6182637122
+  },
+  "features": [
+    {
+      "id": "PK-PULSE-SARGODHA-8559909",
+      "areaM2": 143682.7042842148,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "PK-PULSE-SARGODHA-8560005",
+      "areaM2": 155672.6182637122,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "PK-PULSE-SARGODHA-8559908",
+      "areaM2": 2750.096684720139,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "PK-PULSE-SARGODHA-8559976",
+      "areaM2": 12103.077185974053,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "PK-PULSE-SARGODHA-8559992",
+      "areaM2": 35837.2907852713,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "PK-PULSE-SARGODHA-8559826",
+      "areaM2": 2023.4379196875375,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "PK-PULSE-SARGODHA-8559833",
+      "areaM2": 2248.258903207864,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    }
+  ]
+}

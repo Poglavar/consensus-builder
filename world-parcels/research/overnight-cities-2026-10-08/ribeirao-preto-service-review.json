@@ -1,0 +1,98 @@
+{
+  "schemaVersion": "1.0",
+  "checkedAt": "2026-10-09",
+  "cityRecord": "city-6636-ribeirao-preto.json",
+  "purpose": "Read-only local registry and public parcel geometry source discovery; parent owns any runtime qualification.",
+  "scopeLimits": {
+    "maxFullPolygonsRetainedInCityRecord": 0,
+    "maxFullPolygonsRetainedInReview": 0,
+    "maxFullPolygonsRetainedAcrossCityReview": 1,
+    "ownerOrAddressDataRetained": false,
+    "accountCredentialsOrPublicTokenValuesRetained": false,
+    "citywideCompletenessAsserted": false
+  },
+  "assessment": "No adapter or citywide/13-cell quality qualification performed; parent owns runtime qualification. The service includes additional fields including cadastro, address and lot attributes, but the query explicitly requested gid only.",
+  "registryAssessment": "Municipal Geoportal and Planning Department pages describe the lot division base and urban cadastral map; official city service states the current base is preliminary and not a substitute for recorded plans.",
+  "searchQueries": [
+    {
+      "language": "Portuguese (Brazilian)",
+      "query": "Ribeirão Preto cadastro imobiliário mapa lotes parcelas geoprocessamento oficial prefeitura",
+      "scope": "Find current official municipal lot map and safe full-geometry route.",
+      "result": "Official city pages describe a free Geoportal with property location and current “base imobiliária” lot division. The public ArcGIS MapServer exposes a Lote polygon layer. An exact WUP-point query returned one full polygon with only gid (system OID) requested; no cadastral, address, or IPTU fields were requested.",
+      "actualResultUrls": [
+        "https://www.ribeiraopreto.sp.gov.br/portal/noticia/prefeitura-de-ribeirao-preto-lanca-geoportal-para-modernizar-acesso-a-informacoes-geograficas-e-urbanisticas",
+        "https://www.ribeiraopreto.sp.gov.br/portal/planejamento/pdu-10-depto-urbanismo",
+        "https://webgis.ribeiraopreto.sp.gov.br/portal/sharing/rest/content/items/d0dc6fc2453a46998d8f55995e4ac4b0/data?f=json",
+        "https://webgis.ribeiraopreto.sp.gov.br/server/rest/services/GeoPortal/Geoportal_Cadastro_Coderp/MapServer/0?f=pjson"
+      ],
+      "executionMethod": "Separate language-specific web search and first-party source/service review; no property-specific record lookup."
+    },
+    {
+      "language": "English",
+      "query": "Ribeirao Preto official municipal geoportal cadastro urbano lot parcel GIS map service",
+      "scope": "Confirm that the city owns the current parcel map and discover service geometry schema.",
+      "result": "The Prefeitura department page confirms a current municipal lot-division base in the Geoportal; the viewer item data binds the Cadastro Urbano map to the municipal MapServer layer Lote.",
+      "actualResultUrls": [
+        "https://www.ribeiraopreto.sp.gov.br/portal/planejamento/pdu-10-depto-urbanismo",
+        "https://www.ribeiraopreto.sp.gov.br/portal/noticia/prefeitura-de-ribeirao-preto-lanca-geoportal-para-modernizar-acesso-a-informacoes-geograficas-e-urbanisticas"
+      ],
+      "executionMethod": "Separate language-specific web search and first-party source/service review; no property-specific record lookup."
+    }
+  ],
+  "officialPrimarySources": [
+    {
+      "url": "https://www.ribeiraopreto.sp.gov.br/portal/noticia/prefeitura-de-ribeirao-preto-lanca-geoportal-para-modernizar-acesso-a-informacoes-geograficas-e-urbanisticas",
+      "observation": "City news calls the Geoportal free/public and says it shows property, block/lot and cadastro urbano."
+    },
+    {
+      "url": "https://www.ribeiraopreto.sp.gov.br/portal/planejamento/pdu-10-depto-urbanismo",
+      "observation": "Planning Department says the current lot-division base is available in Geoportal; warns maps are preliminary and may not reflect later amalgamations/subdivisions."
+    }
+  ],
+  "serviceChecks": [
+    {
+      "url": "https://webgis.ribeiraopreto.sp.gov.br/portal/sharing/rest/portals/self?f=json",
+      "method": "GET",
+      "status": 200,
+      "observation": "ArcGIS Portal reports public access."
+    },
+    {
+      "url": "https://webgis.ribeiraopreto.sp.gov.br/portal/sharing/rest/search?q=%22Cadastro%20Urbano%22&f=json&num=20",
+      "method": "GET",
+      "status": 200,
+      "observation": "Three public results; municipal Cadastro Urbano Web Map item d0dc6fc2453a46998d8f55995e4ac4b0 is the map consumed by the application."
+    },
+    {
+      "url": "https://webgis.ribeiraopreto.sp.gov.br/server/rest/services/GeoPortal/Geoportal_Cadastro_Coderp/MapServer?f=pjson",
+      "method": "GET",
+      "status": 200,
+      "observation": "Municipal service lists layer 0 Lote and layer 7 Quadra plus thematic layers."
+    },
+    {
+      "url": "https://webgis.ribeiraopreto.sp.gov.br/server/rest/services/GeoPortal/Geoportal_Cadastro_Coderp/MapServer/0?f=pjson",
+      "method": "GET",
+      "status": 200,
+      "observation": "Lote is esriGeometryPolygon, EPSG:31983; schema has gid OID and other cadastral/address fields. Query selected gid only."
+    },
+    {
+      "url": "https://webgis.ribeiraopreto.sp.gov.br/server/rest/services/GeoPortal/Geoportal_Cadastro_Coderp/MapServer/0/query",
+      "method": "GET exact WUP point; outFields=gid; returnGeometry=true; outSR=4326; f=geojson",
+      "status": 200,
+      "observation": "One full Polygon returned, gid only; the locator is inside the polygon."
+    }
+  ],
+  "geometryEvidence": {
+    "decision": "One full official municipal Lote polygon retained with only its system OID and geometry.",
+    "sampleFile": "city-6636-ribeirao-preto-samples.geojson",
+    "featureCount": 1,
+    "outputFields": [
+      "gid"
+    ],
+    "fullPolygonLimit": 1
+  },
+  "privacy": "No owner, address, IPTU/cadastro account, tax or valuation fields requested or retained.",
+  "runtimeAssessment": "Not qualified; parent owns runtime qualification.",
+  "technicalBlocker": "No adapter or citywide/13-cell quality qualification performed; parent owns runtime qualification. The service includes additional fields including cadastro, address and lot attributes, but the query explicitly requested gid only.",
+  "remainingUncertainty": "How this tax/urban-mapping lot layer aligns with registered title boundaries, update date/coverage throughout city, and whether its native OID is stable across revisions.",
+  "nextStep": "Parent may qualify this anonymous GIS layer; keep legal/title-boundary semantics separate from the city’s preliminary lot-map disclaimer."
+}

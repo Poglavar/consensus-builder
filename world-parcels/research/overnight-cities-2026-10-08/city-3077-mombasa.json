@@ -1,0 +1,102 @@
+{
+  "name": "Mombasa",
+  "country": "Kenya",
+  "countryCode": "KE",
+  "rank": 348,
+  "point": [
+    -4.03450971081934,
+    39.6612554560132
+  ],
+  "freshResearch": {
+    "queries": [
+      {
+        "language": "Swahili",
+        "query": "ramani za ardhi Mombasa Kaunti usajili wa ardhi viwanja huduma rasmi",
+        "scope": "Search for county-local parcel records, cadastral maps, and public geometry.",
+        "result": "The Swahili-language search did not surface a Mombasa-specific official parcel-map service. Follow-up first-party county sources identify a county land-administration department and a Land Rates service, but not public parcel vectors.",
+        "actualResultUrls": [
+          "https://web.mombasa.go.ke/lands-housing-urban-planning/",
+          "https://eportal.mombasa.go.ke/"
+        ],
+        "executionMethod": "Separate Swahili-language search followed by first-party county-page inspection; no account or property lookup."
+      },
+      {
+        "language": "English",
+        "query": "Mombasa County cadastral parcel map land rates public GIS official parcel boundaries",
+        "scope": "Cross-check county property registry activity and anonymous map geometry.",
+        "result": "Mombasa County ePortal offers Land Rates account actions including paying annual rates, printing statements and property updates/transfers; account creation requires National ID or business registration. The county land department is local. A 2020 county GIS RFP describes planned cadastral digitization and public web maps, not proof of a currently operating public geometry service. No anonymous parcel vectors were found.",
+        "actualResultUrls": [
+          "https://eportal.mombasa.go.ke/",
+          "https://web.mombasa.go.ke/lands-housing-urban-planning/",
+          "https://www.mombasa.go.ke/wp-content/uploads/2020/12/RFP-CONSULTANCY-SERVICES-FOR-MOMBASA-COUNTY-SPATIAL-PLANNING.pdf"
+        ],
+        "executionMethod": "Separate English-language search and first-party county portal/department/procurement inspection; no login."
+      }
+    ],
+    "portals": [
+      {
+        "name": "Mombasa County ePortal Land Rates",
+        "operator": "County Government of Mombasa",
+        "homeUrl": "https://eportal.mombasa.go.ke/",
+        "observation": "Local property-account service supports annual-rate payment, statement printing, and property updates/transfers; account registration requires National ID or business registration."
+      },
+      {
+        "name": "Lands, Housing and Urban Planning",
+        "operator": "County Government of Mombasa",
+        "homeUrl": "https://web.mombasa.go.ke/lands-housing-urban-planning/",
+        "observation": "Confirms county-local land administration department."
+      },
+      {
+        "name": "County Spatial Planning GIS RFP (2020)",
+        "operator": "County Government of Mombasa",
+        "homeUrl": "https://www.mombasa.go.ke/wp-content/uploads/2020/12/RFP-CONSULTANCY-SERVICES-FOR-MOMBASA-COUNTY-SPATIAL-PLANNING.pdf",
+        "observation": "Describes planned cadastral digitization and public web maps; does not establish current service availability."
+      }
+    ],
+    "requests": []
+  },
+  "status": "complete",
+  "verifiedParcelResponse": {
+    "attempted": false,
+    "fullGeometrySampleCount": 0,
+    "bounded": true,
+    "pointLocated": false,
+    "note": "No full parcel geometry was verified."
+  },
+  "source": {
+    "operator": "County Government of Mombasa",
+    "endpoint": null,
+    "featureType": null,
+    "geometryField": null,
+    "nativeIdField": null,
+    "requestedAttributes": [],
+    "personalAttributesRequested": false
+  },
+  "coverageAssessment": "No public parcel-vector coverage verified.",
+  "registryFound": true,
+  "registryBasis": "County Land Rates confirms a local property-account registry/service. It is not evidence of an open land-title register or public cadastral geometry.",
+  "verifiedSample": false,
+  "publicParcelGeometryFound": false,
+  "resultCategory": "county_property_account_service_no_public_parcel_geometry_found",
+  "technicalBlocker": "The Land Rates functions are account-gated and require identity/business registration; no public vector map was found.",
+  "remainingUncertainty": "The 2020 GIS RFP documents intended work only. No public geometry route or current completion status was verified; national registry sources were not used as local proof.",
+  "sourceIds": [],
+  "nextStep": "Ask the County land department whether a current public parcel-map or non-personal GIS export exists.",
+  "schemaVersion": 1,
+  "checkedAt": "2026-10-09",
+  "wupCityCode": 3077,
+  "cityId": "wup2025:3077",
+  "queueRank": 348,
+  "population2025": 1456207,
+  "population2025k": 1456.207,
+  "populationPlausibility2025": "High",
+  "populationUnit": "persons",
+  "pointBasis": "UN WUP 2025 population-weighted settlement centroid; this is not a municipal boundary or a parcel-coverage claim.",
+  "centerLatLon": [
+    -4.03450971081934,
+    39.6612554560132
+  ],
+  "runtimeReadiness": "not_enabled_no_verified_public_geometry",
+  "adapterReady": false,
+  "rootReviewedAt": "2026-10-08T23:01:54.520804+00:00"
+}

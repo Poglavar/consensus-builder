@@ -1,0 +1,740 @@
+{
+  "schemaVersion": 1,
+  "purpose": "Independent GEOS topology check of complete runtime parcels projected to metric coordinates; no repair applied. Counts are bounded sample evidence, not whole-city guarantees.",
+  "library": "Shapely 2.1.2",
+  "metricCrs": "EPSG:32643",
+  "featureCount": 81,
+  "validNonemptyCount": 81,
+  "invalidFeatures": [],
+  "exactDuplicateGeometryPairs": [],
+  "positiveAreaOverlapPairsAbove0_01M2": [
+    {
+      "ids": [
+        "KZ-ALMATY-PKK-20311024012",
+        "KZ-ALMATY-PKK-20311024090"
+      ],
+      "overlapM2": 0.049664731840064036,
+      "fractionOfSmaller": 2.8495944184198836e-06
+    },
+    {
+      "ids": [
+        "KZ-ALMATY-PKK-20311024012",
+        "KZ-ALMATY-PKK-20311024003"
+      ],
+      "overlapM2": 0.17162102039047086,
+      "fractionOfSmaller": 0.0002589441720844482
+    },
+    {
+      "ids": [
+        "KZ-ALMATY-PKK-20311024012",
+        "KZ-ALMATY-PKK-20311023386"
+      ],
+      "overlapM2": 0.04979634519149556,
+      "fractionOfSmaller": 0.000110572780918982
+    },
+    {
+      "ids": [
+        "KZ-ALMATY-PKK-20311024028",
+        "KZ-ALMATY-PKK-20311023128"
+      ],
+      "overlapM2": 0.011624530310407909,
+      "fractionOfSmaller": 8.419139068450137e-06
+    },
+    {
+      "ids": [
+        "KZ-ALMATY-PKK-20311023078",
+        "KZ-ALMATY-PKK-20311023099"
+      ],
+      "overlapM2": 0.15412856439686334,
+      "fractionOfSmaller": 0.0003192371267248229
+    },
+    {
+      "ids": [
+        "KZ-ALMATY-PKK-20311023245",
+        "KZ-ALMATY-PKK-20311023025"
+      ],
+      "overlapM2": 56.29238491495347,
+      "fractionOfSmaller": 0.07648032454153492
+    },
+    {
+      "ids": [
+        "KZ-ALMATY-PKK-20311023317",
+        "KZ-ALMATY-PKK-20311023198"
+      ],
+      "overlapM2": 0.11265951392031434,
+      "fractionOfSmaller": 0.00015394839926615998
+    },
+    {
+      "ids": [
+        "KZ-ALMATY-PKK-20311023360",
+        "KZ-ALMATY-PKK-20311023198"
+      ],
+      "overlapM2": 0.024461694318155258,
+      "fractionOfSmaller": 3.4943488385155655e-05
+    },
+    {
+      "ids": [
+        "KZ-ALMATY-PKK-20311023141",
+        "KZ-ALMATY-PKK-20311023060"
+      ],
+      "overlapM2": 0.0903005643913537,
+      "fractionOfSmaller": 0.00017044735393084785
+    },
+    {
+      "ids": [
+        "KZ-ALMATY-PKK-20311023141",
+        "KZ-ALMATY-PKK-20311023212"
+      ],
+      "overlapM2": 0.010074157312768223,
+      "fractionOfSmaller": 1.1920341554007516e-05
+    },
+    {
+      "ids": [
+        "KZ-ALMATY-PKK-20311023305",
+        "KZ-ALMATY-PKK-20311023290"
+      ],
+      "overlapM2": 0.016507103048730223,
+      "fractionOfSmaller": 2.1244896861122578e-05
+    },
+    {
+      "ids": [
+        "KZ-ALMATY-PKK-20311023290",
+        "KZ-ALMATY-PKK-20311023264"
+      ],
+      "overlapM2": 0.09339000885124449,
+      "fractionOfSmaller": 0.00014116323383344802
+    },
+    {
+      "ids": [
+        "KZ-ALMATY-PKK-20311023275",
+        "KZ-ALMATY-PKK-20311023241"
+      ],
+      "overlapM2": 0.11505192049071322,
+      "fractionOfSmaller": 0.00016373305067095094
+    },
+    {
+      "ids": [
+        "KZ-ALMATY-PKK-20311023052",
+        "KZ-ALMATY-PKK-20311023062"
+      ],
+      "overlapM2": 36.81689001695528,
+      "fractionOfSmaller": 0.055009467205008204
+    },
+    {
+      "ids": [
+        "KZ-ALMATY-PKK-20311023278",
+        "KZ-ALMATY-PKK-20311023228"
+      ],
+      "overlapM2": 52.46518249945723,
+      "fractionOfSmaller": 0.07816982568061988
+    },
+    {
+      "ids": [
+        "KZ-ALMATY-PKK-20311023169",
+        "KZ-ALMATY-PKK-20311023311"
+      ],
+      "overlapM2": 0.3634906252801218,
+      "fractionOfSmaller": 0.0005200024990343531
+    },
+    {
+      "ids": [
+        "KZ-ALMATY-PKK-20311023228",
+        "KZ-ALMATY-PKK-20311023311"
+      ],
+      "overlapM2": 3.13707655827373,
+      "fractionOfSmaller": 0.004167455782927624
+    },
+    {
+      "ids": [
+        "KZ-ALMATY-PKK-20311023227",
+        "KZ-ALMATY-PKK-20311023311"
+      ],
+      "overlapM2": 20.111538840746054,
+      "fractionOfSmaller": 0.025062008230438474
+    },
+    {
+      "ids": [
+        "KZ-ALMATY-PKK-20311023227",
+        "KZ-ALMATY-PKK-20311023329"
+      ],
+      "overlapM2": 35.63035453748479,
+      "fractionOfSmaller": 0.04740407256023244
+    }
+  ],
+  "sumPairwiseOverlapM2": 205.71619814761323,
+  "operationErrors": [],
+  "areaM2": {
+    "min": 0.639698719265158,
+    "median": 699.0170738700784,
+    "max": 50347.489480382326
+  },
+  "features": [
+    {
+      "id": "KZ-ALMATY-PKK-20311024128",
+      "areaM2": 39553.41596246006,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "KZ-ALMATY-PKK-20311024010",
+      "areaM2": 43817.94579464395,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "KZ-ALMATY-PKK-20311024012",
+      "areaM2": 50347.489480382326,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "KZ-ALMATY-PKK-20311023368",
+      "areaM2": 231.86811237273753,
+      "valid": true,
+      "empty": false,
+      "parts": 68
+    },
+    {
+      "id": "KZ-ALMATY-PKK-20311024089",
+      "areaM2": 394.86103934701697,
+      "valid": true,
+      "empty": false,
+      "parts": 99
+    },
+    {
+      "id": "KZ-ALMATY-PKK-20311024090",
+      "areaM2": 17428.701965104006,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "KZ-ALMATY-PKK-20311024080",
+      "areaM2": 7752.410240336803,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "KZ-ALMATY-PKK-20311024076",
+      "areaM2": 1427.6236400259277,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "KZ-ALMATY-PKK-20311023084",
+      "areaM2": 1084.9519753870368,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "KZ-ALMATY-PKK-20311023433",
+      "areaM2": 1408.685272030687,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "KZ-ALMATY-PKK-20311024028",
+      "areaM2": 1380.726724656402,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "KZ-ALMATY-PKK-20311024003",
+      "areaM2": 662.7722841142025,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "KZ-ALMATY-PKK-20311024109",
+      "areaM2": 5.830024356269026,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "KZ-ALMATY-PKK-20311023143",
+      "areaM2": 360.7555274568431,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "KZ-ALMATY-PKK-20311023160",
+      "areaM2": 367.9114161159129,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "KZ-ALMATY-PKK-20311023078",
+      "areaM2": 482.80275536284853,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "KZ-ALMATY-PKK-20311023390",
+      "areaM2": 0.6397786789469423,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "KZ-ALMATY-PKK-20311023297",
+      "areaM2": 912.8595420281904,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "KZ-ALMATY-PKK-20311023128",
+      "areaM2": 1604.121855029538,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "KZ-ALMATY-PKK-20311023319",
+      "areaM2": 299.49980491459195,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "KZ-ALMATY-PKK-20311023328",
+      "areaM2": 379.5983304241339,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "KZ-ALMATY-PKK-20311023322",
+      "areaM2": 341.5388709877131,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "KZ-ALMATY-PKK-20311023378",
+      "areaM2": 16.252559528484294,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "KZ-ALMATY-PKK-20311023363",
+      "areaM2": 329.9201731405323,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "KZ-ALMATY-PKK-20311023351",
+      "areaM2": 408.69863202498635,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "KZ-ALMATY-PKK-20311023331",
+      "areaM2": 756.4313315036403,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "KZ-ALMATY-PKK-20311023389",
+      "areaM2": 0.639698719265158,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "KZ-ALMATY-PKK-20311023240",
+      "areaM2": 423.4128115400328,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "KZ-ALMATY-PKK-20311023101",
+      "areaM2": 508.26053452949617,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "KZ-ALMATY-PKK-20311023137",
+      "areaM2": 512.4609111978801,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "KZ-ALMATY-PKK-20311023355",
+      "areaM2": 2029.4521852976745,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "KZ-ALMATY-PKK-20311023243",
+      "areaM2": 623.9348297048381,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "KZ-ALMATY-PKK-20311023136",
+      "areaM2": 564.5386258888411,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "KZ-ALMATY-PKK-20311023144",
+      "areaM2": 890.729602705907,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "KZ-ALMATY-PKK-20311023341",
+      "areaM2": 690.051484109845,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "KZ-ALMATY-PKK-20311023120",
+      "areaM2": 938.0901412155546,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "KZ-ALMATY-PKK-20311023245",
+      "areaM2": 870.3787993354939,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "KZ-ALMATY-PKK-20311023039",
+      "areaM2": 593.5271018125821,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "KZ-ALMATY-PKK-20311023317",
+      "areaM2": 731.8004893674688,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "KZ-ALMATY-PKK-20311023360",
+      "areaM2": 700.0358421154893,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "KZ-ALMATY-PKK-20311023198",
+      "areaM2": 930.4284289302241,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "KZ-ALMATY-PKK-20311023316",
+      "areaM2": 434.0245712814241,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "KZ-ALMATY-PKK-20311023178",
+      "areaM2": 969.3124514137604,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "KZ-ALMATY-PKK-20311023026",
+      "areaM2": 868.8078983381438,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "KZ-ALMATY-PKK-20311023450",
+      "areaM2": 21.006535602504407,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "KZ-ALMATY-PKK-20311023018",
+      "areaM2": 909.8689334427526,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "KZ-ALMATY-PKK-20311023385",
+      "areaM2": 79.73721724389144,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "KZ-ALMATY-PKK-20311023141",
+      "areaM2": 845.1232095259367,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "KZ-ALMATY-PKK-20311023305",
+      "areaM2": 870.3346830934734,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "KZ-ALMATY-PKK-20311023290",
+      "areaM2": 776.9914420689727,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "KZ-ALMATY-PKK-20311023211",
+      "areaM2": 436.04402145880067,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "KZ-ALMATY-PKK-20311023021",
+      "areaM2": 591.741003955705,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "KZ-ALMATY-PKK-20311023386",
+      "areaM2": 450.34903506661317,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "KZ-ALMATY-PKK-20311023212",
+      "areaM2": 913.5439698722263,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "KZ-ALMATY-PKK-20311023231",
+      "areaM2": 394.65690971336033,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "KZ-ALMATY-PKK-20311023060",
+      "areaM2": 529.7856628973514,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "KZ-ALMATY-PKK-20311023264",
+      "areaM2": 661.5745921592519,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "KZ-ALMATY-PKK-20311023275",
+      "areaM2": 702.6798805693138,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "KZ-ALMATY-PKK-20311023052",
+      "areaM2": 940.5601560841396,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "KZ-ALMATY-PKK-20311023278",
+      "areaM2": 671.1692400826803,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "KZ-ALMATY-PKK-20311023169",
+      "areaM2": 699.0170738700784,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "KZ-ALMATY-PKK-20311023403",
+      "areaM2": 0.6397396191304219,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "KZ-ALMATY-PKK-20311023228",
+      "areaM2": 752.7558111414306,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "KZ-ALMATY-PKK-20311023282",
+      "areaM2": 698.6611989306829,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "KZ-ALMATY-PKK-20311023303",
+      "areaM2": 766.0073067242989,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "KZ-ALMATY-PKK-20311023281",
+      "areaM2": 695.6882670610381,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "KZ-ALMATY-PKK-20311023241",
+      "areaM2": 727.6515622098332,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "KZ-ALMATY-PKK-20311023062",
+      "areaM2": 669.2827959912212,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "KZ-ALMATY-PKK-20311023181",
+      "areaM2": 731.716097219478,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "KZ-ALMATY-PKK-20311023025",
+      "areaM2": 736.0374743752848,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "KZ-ALMATY-PKK-20311023227",
+      "areaM2": 802.471160963073,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "KZ-ALMATY-PKK-20311023311",
+      "areaM2": 1203.7362222768104,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "KZ-ALMATY-PKK-20311023329",
+      "areaM2": 751.6306640576554,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "KZ-ALMATY-PKK-20311023219",
+      "areaM2": 739.228775201969,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "KZ-ALMATY-PKK-20311024082",
+      "areaM2": 11025.252788899392,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "KZ-ALMATY-PKK-20311023250",
+      "areaM2": 484.8395943327796,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "KZ-ALMATY-PKK-20311023099",
+      "areaM2": 1066.736557315088,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "KZ-ALMATY-PKK-20311023168",
+      "areaM2": 549.2428763145615,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "KZ-ALMATY-PKK-20311023323",
+      "areaM2": 560.3866830495986,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "KZ-ALMATY-PKK-20311023161",
+      "areaM2": 165.5253416824981,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "KZ-ALMATY-PKK-20311023083",
+      "areaM2": 10012.427749238737,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    }
+  ]
+}

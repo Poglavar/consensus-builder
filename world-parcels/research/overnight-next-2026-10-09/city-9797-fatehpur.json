@@ -1,0 +1,139 @@
+{
+  "schemaVersion": 1,
+  "kind": "city_parcel_source_research",
+  "checkedAt": "2026-10-09",
+  "rank": 1120,
+  "population2025k": 494.897,
+  "population2025Unit": "thousands",
+  "populationPlausibility": "Low",
+  "verifiedParcelResponse": null,
+  "source": {
+    "name": "District Fatehpur, Government of Uttar Pradesh",
+    "url": "https://fatehpur.nic.in/service/land-records/",
+    "operator": "District Fatehpur, Government of Uttar Pradesh",
+    "serviceType": "official service/map evidence; vector access not verified",
+    "layer": "not verified",
+    "geometryType": "not verified",
+    "nativeIdField": null
+  },
+  "registryFound": true,
+  "verifiedSample": false,
+  "targetGeometryEvidence": "none",
+  "nativeIdReadiness": "not_verified",
+  "cityId": "wup2025:9797",
+  "wupCityCode": 9797,
+  "name": "Fatehpur",
+  "country": "India",
+  "countryCode": "IN",
+  "centerLatLon": [
+    25.9251756744223,
+    80.8077313465368
+  ],
+  "pointBasis": "UN WUP 2025 population-weighted settlement point (latitude, longitude); not a municipal boundary or a parcel-coverage claim.",
+  "resultCategory": "official_registry_route_geometry_unverified",
+  "priorEvidence": [],
+  "priorBlocker": null,
+  "nativeLanguageSearches": [
+    {
+      "languageScript": "Hindi",
+      "exactQuery": "फतेहपुर उत्तर प्रदेश भू नक्शा भूमि अभिलेख आधिकारिक फतेहपुर तहसील",
+      "date": "2026-10-09",
+      "executionMethod": "web.run search_query; independent local-language query",
+      "resultUrls": [
+        "https://fatehpur.nic.in/service/land-records/",
+        "https://upbhulekh.gov.in/GeoDashboard/public_report?distCode=172"
+      ],
+      "summary": "Official district/tehsil land records are established for Fatehpur district; exact municipal versus rural survey unit at the WUP point remains unresolved."
+    },
+    {
+      "languageScript": "English",
+      "exactQuery": "Fatehpur Uttar Pradesh official land records cadastral map registry GIS city",
+      "date": "2026-10-09",
+      "executionMethod": "web.run search_query; independent English query",
+      "resultUrls": [
+        "https://fatehpur.nic.in/service/land-records/",
+        "https://upbhulekh.gov.in/GeoDashboard/public_report?distCode=172"
+      ],
+      "summary": "Official district/tehsil land records are established for Fatehpur district; exact municipal versus rural survey unit at the WUP point remains unresolved."
+    }
+  ],
+  "officialAndRelevantLeads": [
+    {
+      "url": "https://fatehpur.nic.in/service/land-records/",
+      "operator": "District Fatehpur, Government of Uttar Pradesh",
+      "observation": "Official district land-records page routes to state Bhulekh service; it does not resolve the WUP point to a city village."
+    },
+    {
+      "url": "https://upbhulekh.gov.in/GeoDashboard/public_report?distCode=172",
+      "operator": "Revenue Board, Government of Uttar Pradesh",
+      "observation": "Cadastral-map georeferencing dashboard for district 172 (Fatehpur), with tehsil/village-level status. Not itself parcel geometry."
+    }
+  ],
+  "requestsAndEndpointChecks": [
+    {
+      "url": "https://fatehpur.nic.in/service/land-records/",
+      "method": "Anonymous read-only GET; redirect-following; 15 s read timeout; no cookies or credentials",
+      "httpStatus": 200,
+      "finalUrl": "https://fatehpur.nic.in/service/land-records/",
+      "contentType": "text/html; charset=UTF-8",
+      "bytesRead": 129337,
+      "sha256OfReadBytes": "5652323969a7015bfbe12b1ad7b8510e918f27af9ac9cff2b94c2d84e1df8d27",
+      "title": "Land Records | District Fatehpur, Government of Uttar Pradesh | India",
+      "assessment": "Primary landing/source page responded successfully. The response establishes only the source description summarized above; it does not itself verify a public parcel feature geometry except where separately reported."
+    },
+    {
+      "url": "https://fatehpur.nic.in/service/land-records/",
+      "method": "GET via search result/page review",
+      "httpStatus": "accessible in web search/open",
+      "contentType": "not independently captured",
+      "assessment": "Official district land-records page routes to state Bhulekh service; it does not resolve the WUP point to a city village."
+    },
+    {
+      "url": "https://upbhulekh.gov.in/GeoDashboard/public_report?distCode=172",
+      "method": "GET via search result/page review",
+      "httpStatus": "accessible in web search/open",
+      "contentType": "not independently captured",
+      "assessment": "Cadastral-map georeferencing dashboard for district 172 (Fatehpur), with tehsil/village-level status. Not itself parcel geometry."
+    }
+  ],
+  "coverageAssessment": {
+    "claimedScope": "Official district/tehsil land records are established for Fatehpur district; exact municipal versus rural survey unit at the WUP point remains unresolved.",
+    "verifiedOpenScope": null,
+    "citywideVerified": false,
+    "countrywideVerified": false,
+    "geometryVerified": false
+  },
+  "blocker": "Public map requires exact district/tehsil/village selection. The WUP center has not been mapped to a village; no feature query or parcel geometry was made.",
+  "remainingUncertainty": "Official district/tehsil land records are established for Fatehpur district; exact municipal versus rural survey unit at the WUP point remains unresolved.",
+  "nextStep": "Public map requires exact district/tehsil/village selection. The WUP center has not been mapped to a village; no feature query or parcel geometry was made.",
+  "runtimeReadiness": "not_enabled_no_verified_public_geometry",
+  "adapterReady": false,
+  "schemaVersionNote": "Research evidence only; no runtime adapter configured.",
+  "population2025": 494897,
+  "populationUnit": "persons",
+  "populationPlausibility2025": "Low",
+  "publicParcelGeometryFound": false,
+  "sourceIds": [],
+  "registryBasis": "Official district/tehsil land records are established for Fatehpur district; exact municipal versus rural survey unit at the WUP point remains unresolved.",
+  "registryEvidenceUrls": [
+    "https://fatehpur.nic.in/service/land-records/",
+    "https://upbhulekh.gov.in/GeoDashboard/public_report?distCode=172"
+  ],
+  "technicalBlocker": "Public map requires exact district/tehsil/village selection. The WUP center has not been mapped to a village; no feature query or parcel geometry was made.",
+  "runtimeAssessment": {
+    "status": "not_enabled_no_verified_public_geometry",
+    "reason": "Public map requires exact district/tehsil/village selection. The WUP center has not been mapped to a village; no feature query or parcel geometry was made."
+  },
+  "rootReviewedAt": "2026-10-09T07:13:02.981057+00:00",
+  "cohort": "overnight-next-1101-1200",
+  "cohortState": "root_reviewed_integrated_locally",
+  "integrationState": "integrated_locally",
+  "rootReview": {
+    "checkedAt": "2026-10-09T07:13:02.981057+00:00",
+    "decision": "Reviewed city identity, canonical population/point, separate searches and saved source/request evidence. No full public parcel geometry verified in this pass.",
+    "custodyScope": "Official district/tehsil land records are established for Fatehpur district; exact municipal versus rural survey unit at the WUP point remains unresolved.",
+    "transportFailuresDoNotProveAbsence": true,
+    "geometryClaimScope": "Investigation outcome only; no worldwide or citywide absence asserted."
+  },
+  "integratedAt": "2026-10-09T07:14:03.673112+00:00"
+}

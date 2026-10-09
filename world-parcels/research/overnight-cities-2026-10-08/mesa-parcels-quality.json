@@ -1,0 +1,181 @@
+{
+  "schemaVersion": 1,
+  "purpose": "Independent GEOS topology check of complete runtime parcels projected to metric coordinates; no repair applied. Counts are bounded sample evidence, not whole-city guarantees.",
+  "library": "Shapely 2.2.0",
+  "metricCrs": "EPSG:32612",
+  "featureCount": 23,
+  "validNonemptyCount": 23,
+  "invalidFeatures": [],
+  "exactDuplicateGeometryPairs": [],
+  "positiveAreaOverlapPairsAbove0_01M2": [],
+  "sumPairwiseOverlapM2": 0,
+  "operationErrors": [],
+  "areaM2": {
+    "min": 2781.257626707447,
+    "median": 6722.099233807038,
+    "max": 81137.22713204709
+  },
+  "features": [
+    {
+      "id": "US-MESA-CITY-30212519A",
+      "areaM2": 35629.33946915447,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "US-MESA-CITY-30212002V",
+      "areaM2": 4318.622459551528,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "US-MESA-CITY-30212520",
+      "areaM2": 3628.8236365958564,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "US-MESA-CITY-31401005",
+      "areaM2": 3735.226780442936,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "US-MESA-CITY-31401001",
+      "areaM2": 5342.1417136734135,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "US-MESA-CITY-31401002",
+      "areaM2": 3568.518014242694,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "US-MESA-CITY-31401006",
+      "areaM2": 6199.987084766884,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "US-MESA-CITY-13911001N",
+      "areaM2": 7086.998579179215,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "US-MESA-CITY-13911001P",
+      "areaM2": 4069.1682468868726,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "US-MESA-CITY-13911094",
+      "areaM2": 7108.8072137001745,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "US-MESA-CITY-13911095",
+      "areaM2": 6722.099233807038,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "US-MESA-CITY-13911097C",
+      "areaM2": 24919.894155439735,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "US-MESA-CITY-13911001R",
+      "areaM2": 3080.078457757099,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "US-MESA-CITY-13910020",
+      "areaM2": 13524.762720330902,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "US-MESA-CITY-13910021",
+      "areaM2": 2781.257626707447,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "US-MESA-CITY-13911001Q",
+      "areaM2": 7994.218540059394,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "US-MESA-CITY-13910016",
+      "areaM2": 81137.22713204709,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "US-MESA-CITY-13910019",
+      "areaM2": 9368.68226533747,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "US-MESA-CITY-13910018A",
+      "areaM2": 24555.170075676084,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "US-MESA-CITY-13911001K",
+      "areaM2": 6355.898181256417,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "US-MESA-CITY-13911097B",
+      "areaM2": 31887.52050132445,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "US-MESA-CITY-13910017",
+      "areaM2": 5589.9488286668975,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "US-MESA-CITY-13910022",
+      "areaM2": 7701.698196884097,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    }
+  ]
+}

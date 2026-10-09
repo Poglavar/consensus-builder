@@ -1,0 +1,95 @@
+{
+  "schemaVersion": 1,
+  "checkedAt": "2026-10-09",
+  "sourceId": "af-kandahar-registry-review",
+  "purpose": "Review city-local registry basis and anonymous geometry-only routes without querying personal/property attributes.",
+  "primaryPublisher": "Kandahar Municipality; Ministry of Urban Development and Housing / Land Management Affairs",
+  "sourceUrl": "https://kandahar-m.gov.af/ps/node/433",
+  "registryFound": true,
+  "registryBasis": "Kandahar Municipality publishes a city master plan and separate plans for each of its 15 nahias, establishing local planning-map coverage but not cadastral polygons. Afghanistan’s Ministry of Urban Development and Housing says its Land Management Affairs unit is responsible for cadastre surveying, deed registration and informal-urban-area registration; its Pashto land magazine reports 3,696 informal houses surveyed and registered in Kandahar city, a limited regularization program rather than a complete city register. No anonymous parcel geometry service or schema was found.",
+  "officialSources": [
+    {
+      "url": "https://kandahar-m.gov.af/ps/node/433",
+      "observation": "Kandahar Municipality’s Pashto page links a city master plan and plans for all 15 municipal nahias. These are planning maps, not proof of cadastral parcel geometry."
+    },
+    {
+      "url": "https://mudh.gov.af/sites/default/files/2019-11/ARAZI%20Magazine%20Volume%20%2310.pdf",
+      "observation": "The Ministry’s Pashto land magazine reports that 3,696 informal houses in Kandahar city had been surveyed and registered through the informal-urban-settlement registration program. This is limited program evidence, not citywide cadastral completeness."
+    },
+    {
+      "url": "https://www.mudh.gov.af/index.php/en/dm-land-management-affairs",
+      "observation": "The Ministry describes its Geodesy, Cadaster and Deed directorate responsibilities, including cadastral survey, registering deeds and land-management information, and registration of informal urban areas. This establishes institutional remit but is national-level."
+    },
+    {
+      "url": "https://ndc.gov.af/archives/2965",
+      "observation": "National Development Corporation material describes construction of a provincial land-and-deeds directorate facility in Kandahar city (Nahia 10); this is local office evidence, not an open dataset."
+    }
+  ],
+  "searchQueries": [
+    {
+      "language": "English",
+      "query": "Kandahar city Afghanistan official land registry cadastre map parcel deed registration municipality",
+      "result": "Official Ministry material documents the national cadastre/deed remit and a Kandahar land-and-deeds directorate facility; official municipality plans cover the city nahias. No anonymous full-parcel geometry service or schema was identified.",
+      "urls": [
+        "https://www.mudh.gov.af/index.php/en/dm-land-management-affairs",
+        "https://ndc.gov.af/archives/2965",
+        "https://kandahar-m.gov.af/ps/node/433"
+      ],
+      "scope": "Find official city-specific registry/cadastre evidence and safe anonymous geometry-only routes; do not submit identifiers."
+    },
+    {
+      "language": "Pashto",
+      "query": "کندهار ښار د ځمکو ثبت کادستر نقشه ښاروالۍ رسمي",
+      "result": "Kandahar Municipality publishes master plans for the city and each of 15 nahias. The Ministry’s Pashto land magazine reports a bounded informal-settlement survey/registration effort in Kandahar city (3,696 houses). Neither source publishes a safe anonymous parcel-vector schema.",
+      "urls": [
+        "https://kandahar-m.gov.af/ps/node/433",
+        "https://mudh.gov.af/sites/default/files/2019-11/ARAZI%20Magazine%20Volume%20%2310.pdf"
+      ],
+      "scope": "Find official city-specific registry/cadastre evidence and safe anonymous geometry-only routes; do not submit identifiers."
+    }
+  ],
+  "accessReview": {
+    "publicAnonymousGeometryVerified": false,
+    "completeGeoreferencedPolygonCount": 0,
+    "geometryRetained": false,
+    "ownerAddressTaxOrPersonLookupRequested": false,
+    "authenticationOrCredentialsUsed": false,
+    "captchaOrPersonalFormSubmitted": false,
+    "routeInspectionStatus": "city_local_records_verified_no_public_geometry_contract",
+    "reason": "The official maps found are master plans, while the registration evidence is a limited program and institutional office remit. No public anonymous parcel layer or safe geometry-only attribute allowlist was exposed; no local owner/property lookup was submitted.",
+    "nativeIdsUsed": "No safe parcel feature identifier retrieved; no feature attributes requested."
+  },
+  "requestEvidence": [
+    {
+      "url": "https://kandahar-m.gov.af/ps/node/433",
+      "method": "official public page/document review",
+      "status": "status_not_exposed_by_web_open",
+      "httpStatusObtained": false,
+      "observation": "Kandahar Municipality’s Pashto page links a city master plan and plans for all 15 municipal nahias. These are planning maps, not proof of cadastral parcel geometry."
+    },
+    {
+      "url": "https://mudh.gov.af/sites/default/files/2019-11/ARAZI%20Magazine%20Volume%20%2310.pdf",
+      "method": "official public page/document review",
+      "status": "status_not_exposed_by_web_open",
+      "httpStatusObtained": false,
+      "observation": "The Ministry’s Pashto land magazine reports that 3,696 informal houses in Kandahar city had been surveyed and registered through the informal-urban-settlement registration program. This is limited program evidence, not citywide cadastral completeness."
+    },
+    {
+      "url": "https://www.mudh.gov.af/index.php/en/dm-land-management-affairs",
+      "method": "official public page/document review",
+      "status": "status_not_exposed_by_web_open",
+      "httpStatusObtained": false,
+      "observation": "The Ministry describes its Geodesy, Cadaster and Deed directorate responsibilities, including cadastral survey, registering deeds and land-management information, and registration of informal urban areas. This establishes institutional remit but is national-level."
+    },
+    {
+      "url": "https://ndc.gov.af/archives/2965",
+      "method": "official public page/document review",
+      "status": "status_not_exposed_by_web_open",
+      "httpStatusObtained": false,
+      "observation": "National Development Corporation material describes construction of a provincial land-and-deeds directorate facility in Kandahar city (Nahia 10); this is local office evidence, not an open dataset."
+    }
+  ],
+  "technicalBlocker": "The official maps found are master plans, while the registration evidence is a limited program and institutional office remit. No public anonymous parcel layer or safe geometry-only attribute allowlist was exposed; no local owner/property lookup was submitted.",
+  "sampleDisposition": "No parcel geometry or feature attributes retained.",
+  "remainingUncertainty": "Whether the Kandahar provincial land-and-deeds directorate or municipality exposes any public parcel geometry, and the spatial completeness of the informal-settlement registration program."
+}

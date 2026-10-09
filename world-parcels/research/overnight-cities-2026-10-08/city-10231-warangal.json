@@ -1,0 +1,87 @@
+{
+  "name": "Warangal",
+  "country": "India",
+  "countryCode": "IN",
+  "rank": 628,
+  "point": [
+    17.9888821397654,
+    79.5732974014154
+  ],
+  "population2025": 837561,
+  "populationUnit": "persons",
+  "population2025k": 837.561,
+  "populationPlausibility2025": "High",
+  "schemaVersion": 1,
+  "checkedAt": "2026-10-09",
+  "status": "complete",
+  "registryFound": true,
+  "registryBasis": "The official Warangal District government land-records page links to Telangana’s integrated land registry and identifies the local Tahsil/Collectorate. Telangana’s official Bhu Bharati GIS describes parcel-information map interaction; however, no safe public geometry response has been verified at this locator.",
+  "registryEvidenceUrls": [
+    "https://warangal.telangana.gov.in/te/service/%E0%B0%AD%E0%B1%82%E0%B0%AE%E0%B0%BF-%E0%B0%B0%E0%B0%BF%E0%B0%95%E0%B0%BE%E0%B0%B0%E0%B1%8D%E0%B0%A1%E0%B1%81%E0%B0%B2%E0%B1%81/",
+    "https://bhubharati.telangana.gov.in/gis/",
+    "https://tgrac.telangana.gov.in/arcgis/rest/services/LIS_Folder/LandInformationSystem_Query/MapServer",
+    "https://bhubharati.telangana.gov.in/pilot/getFarmerModulesBL"
+  ],
+  "publicParcelGeometryFound": false,
+  "verifiedSample": false,
+  "verifiedParcelResponse": null,
+  "freshResearch": {
+    "queries": [
+      {
+        "language": "Telugu",
+        "query": "వరంగల్ భూమి రికార్డులు భూ భారతి కడాస్ట్రల్ పటం అధికారిక సేవలు",
+        "scope": "Locate Warangal-specific official land records and inspect public cadastral geometry safely.",
+        "result": "Warangal District government links citizens to Telangana land records; official Bhu Bharati GIS advertises parcel information on map click. TGRAC layer 0 is polygon cadastral boundary with safe survey field Base_Syno, while layer 1 exposes personal farmer fields. A point-only layer-0 query requested FID,Base_Syno and geometry, but the service returned HTTP 400 for unsupported GeoJSON and timed out with its documented JSON response.",
+        "actualResultUrls": [
+          "https://warangal.telangana.gov.in/te/service/%E0%B0%AD%E0%B1%82%E0%B0%AE%E0%B0%BF-%E0%B0%B0%E0%B0%BF%E0%B0%95%E0%B0%BE%E0%B0%B0%E0%B1%8D%E0%B0%A1%E0%B1%81%E0%B0%B2%E0%B1%81/",
+          "https://bhubharati.telangana.gov.in/gis/",
+          "https://tgrac.telangana.gov.in/arcgis/rest/services/LIS_Folder/LandInformationSystem_Query/MapServer/0"
+        ],
+        "executionMethod": "Separate language-specific search followed by official-source/service review. Only anonymous public technical tests were attempted where safe."
+      },
+      {
+        "language": "English",
+        "query": "Warangal Telangana official cadastral parcel map GIS Bhu Bharati land registry",
+        "scope": "Locate Warangal-specific official land records and inspect public cadastral geometry safely.",
+        "result": "The official state GIS metadata shows a regional polygon cadastral layer whose extent covers the point. The bounded exact-point geometry attempt did not return feature data. No owner/farmer attributes were requested, and the separate personal-data point layer was not queried.",
+        "actualResultUrls": [
+          "https://warangal.telangana.gov.in/te/service/%E0%B0%AD%E0%B1%82%E0%B0%AE%E0%B0%BF-%E0%B0%B0%E0%B0%BF%E0%B0%95%E0%B0%ార్డులు/",
+          "https://bhubharati.telangana.gov.in/gis/",
+          "https://tgrac.telangana.gov.in/arcgis/rest/services/LIS_Folder/LandInformationSystem_Query/MapServer"
+        ],
+        "executionMethod": "Separate language-specific search followed by official-source/service review. Only anonymous public technical tests were attempted where safe."
+      }
+    ]
+  },
+  "scopeLimits": "Layer 0 metadata shows polygon features with a Base_Syno survey-number field and service extent covering the locator. A single exact-point query limited to FID,Base_Syno and geometry returned HTTP 400 for unsupported GeoJSON output; the equivalent documented JSON query timed out. The separate dharani_data layer exposes FarmerName and MobileNo fields and was not queried. No parcel geometry or feature identifier was retained.",
+  "pointBasis": "UN WUP 2025 population-weighted settlement centroid; this is not a municipal boundary or a parcel-coverage claim.",
+  "source": {
+    "sourceId": "IN-TG-BHUBHARATI-CADASTRAL-GIS",
+    "name": "Telangana Bhu Bharati GIS / TGRAC LandInformationSystem_Query layer",
+    "url": "https://tgrac.telangana.gov.in/arcgis/rest/services/LIS_Folder/LandInformationSystem_Query/MapServer",
+    "operator": "Government of Telangana / Telangana State Remote Sensing Applications Centre",
+    "serviceType": "Public ArcGIS REST MapServer; Bhu Bharati GIS page offers parcel click interaction",
+    "layer": "TS Cadastral Boundary 30 cm (MapServer layer 0); dharani_data (layer 1, not queried because metadata exposes farmer personal fields)",
+    "geometryType": "Layer 0 Polygon; layer 1 Point",
+    "outputCrs": "EPSG:4326",
+    "nativeIdField": "Base_Syno (layer 0 safe survey identifier; only FID,Base_Syno were requested in bounded attempt)"
+  },
+  "wupCityCode": 10231,
+  "cityId": "wup2025:10231",
+  "queueRank": 628,
+  "sourceIds": [],
+  "adapterReady": false,
+  "runtimeReadiness": "not_enabled_no_verified_public_geometry",
+  "technicalBlocker": "Layer 0 metadata shows polygon features with a Base_Syno survey-number field and service extent covering the locator. A single exact-point query limited to FID,Base_Syno and geometry returned HTTP 400 for unsupported GeoJSON output; the equivalent documented JSON query timed out. The separate dharani_data layer exposes FarmerName and MobileNo fields and was not queried. No parcel geometry or feature identifier was retained.",
+  "remainingUncertainty": "Whether the WUP locator falls within a public parcel service’s queryable coverage and whether any candidate service supports safe stable identifiers and repeatable bounded geometry retrieval.",
+  "coverageAssessment": {
+    "verifiedOpenScope": "No anonymous parcel polygon was retained for this city.",
+    "citywideVerified": false,
+    "countrywideVerified": false
+  },
+  "centerLatLon": [
+    17.9888821397654,
+    79.5732974014154
+  ],
+  "rootReviewedAt": "2026-10-09T02:09:36.300766+00:00"
+}

@@ -1,0 +1,203 @@
+{
+  "schemaVersion": 1,
+  "kind": "city_parcel_source_research",
+  "checkedAt": "2026-10-09",
+  "name": "Glasgow",
+  "country": "United Kingdom",
+  "countryCode": "GB",
+  "populationUnit": "persons",
+  "status": "complete",
+  "registryFound": true,
+  "registryBasis": "Registers of Scotland publishes a Glasgow City Council INSPIRE cadastral-parcel partition. Geometry-only inspection verifies three current indicative registered-title extent polygons covering the exact WUP point; this is not a legal-boundary or complete parcel-coverage assertion.",
+  "registryEvidenceUrls": [
+    "https://www.data.gov.uk/dataset/29a78bcd-2ab3-4f15-92fc-7fd9cb3d470a/ros-cadastral-parcels-dataset",
+    "https://ros-inspire.themapcloud.com/assets/files/INSPIRE_dataset_specification_v1.5_March2025.pdf",
+    "https://ros-inspire.themapcloud.com/"
+  ],
+  "verifiedSample": true,
+  "publicParcelGeometryFound": true,
+  "runtimeReadiness": "held_snapshot_format_and_geometry_review",
+  "wupCityCode": 797,
+  "cityId": "wup2025:797",
+  "centerLatLon": [
+    55.8570386788448,
+    -4.29019010667301
+  ],
+  "rank": 533,
+  "queueRank": 533,
+  "population2025": 970320,
+  "population2025k": 970.32,
+  "pointBasis": "UN WUP 2025 population-weighted settlement centroid; this is not a municipal boundary or a parcel-coverage claim.",
+  "technicalBlocker": "The archive has 114,802 nonblank distinct INSPIRE IDs. All three retained native EPSG:27700 polygons are valid and cover the ranked point, but every pair has substantial positive-area overlap (see independent geometry review). No reviewed shapefile snapshot reader, fresh-file identity lookup, bounded viewport completeness or proposal binding is qualified. The runtime remains held without repairing or excluding source polygons. Indicative-title and partial-coverage notices describe scope and do not determine eligibility; server paging is not required for a complete static snapshot.",
+  "scopeLimits": "Registers of Scotland publishes the Glasgow City Council (`GLA`) INSPIRE cadastral-parcel archive, updated 27 August 2026. The 37,268,375-byte public ZIP contains an EPSG:27700 `GLA_bng` Polygon shapefile and DBF with `inspireid` as a 23-character string key. A bounded anonymous GET fetched the full public archive. Reading only the INSPIRE ID column found 114,802 nonblank, distinct IDs; SHP/DBF counts match. Geometry-only selection retained three valid complete polygons, each covering the exact WUP point; GEOS reports pairwise intersections/overlaps among the three. The source states these are indicative registered title extents, with gaps/overlaps and titles absent; it is not exact legal boundary evidence or a complete cadastral coverage claim. The official publisher estimates approximately 30% of titles are not represented in the dataset; this is a partial registered-title product.",
+  "remainingUncertainty": "The title extent product omits a material fraction of titles, may contain gaps/overlaps, and is not an exact legal boundary source. Runtime source refresh and feature identity continuity are also unqualified. The official specification estimates approximately 30% of titles are absent from this product.",
+  "research": {
+    "executedQueries": [
+      {
+        "language": "English",
+        "query": "Glasgow Scotland official land registry cadastral parcel map land title Registers of Scotland",
+        "scope": "Find the Scottish authority, city-specific parcel source, public data partition, and feature schema.",
+        "result": "Found Registers of Scotland and its INSPIRE cadastral-parcel dataset; the public Glasgow City Council authority partition provides a shapefile ZIP with a public INSPIRE identifier and full polygons.",
+        "actualResultUrls": [
+          "https://www.data.gov.uk/dataset/29a78bcd-2ab3-4f15-92fc-7fd9cb3d470a/ros-cadastral-parcels-dataset",
+          "https://ros-inspire.themapcloud.com/"
+        ],
+        "executionMethod": "Separate English-language web search and direct official source inspection."
+      },
+      {
+        "language": "Scottish Gaelic",
+        "query": "Glaschu mapaichean catastra clàr fearainn Scotland ScotLIS",
+        "scope": "Search Scottish Gaelic terms for Glasgow cadastral maps and land register services.",
+        "result": "No separate Gaelic-language cadastral portal was found; results were corroborated against the official Registers of Scotland parcel dataset and public Glasgow authority partition.",
+        "actualResultUrls": [
+          "https://www.data.gov.uk/dataset/29a78bcd-2ab3-4f15-92fc-7fd9cb3d470a/ros-cadastral-parcels-dataset",
+          "https://ros-inspire.themapcloud.com/"
+        ],
+        "executionMethod": "Separate Scottish Gaelic-language discovery search; official source checked in English."
+      }
+    ],
+    "officialSources": [
+      {
+        "url": "https://www.data.gov.uk/dataset/29a78bcd-2ab3-4f15-92fc-7fd9cb3d470a/ros-cadastral-parcels-dataset",
+        "observation": "Official dataset listing identifies Registers of Scotland cadastral parcels, all-Scotland scope and quarterly updates; the Glasgow City Council partition is separately downloadable. Listing indicates update 27 Aug 2026."
+      },
+      {
+        "url": "https://ros-inspire.themapcloud.com/assets/files/INSPIRE_dataset_specification_v1.5_March2025.pdf",
+        "observation": "Official specification describes the schema, `inspireid` as the parcel identifier, polygons as indicative title ground parcels, and warns that gaps/overlaps and missing titles are expected; the data does not define legal boundaries."
+      },
+      {
+        "url": "https://ros-inspire.themapcloud.com/",
+        "observation": "Official Registers of Scotland INSPIRE download service lists the Glasgow authority code GLA and provides the public archive endpoint. Service page presents Open Government Licence 3 terms."
+      }
+    ],
+    "datasetCounts": {
+      "sourceRecords": 114802,
+      "inspireidNonblank": 114802,
+      "inspireidMissing": 0,
+      "inspireidDistinct": 114802,
+      "inspireidDuplicateValues": 0,
+      "deletedDbfRows": 0,
+      "sampleFeatures": 3
+    },
+    "sampleAudit": {
+      "sampleFile": "samples/glasgow-ros-inspire-gla-wup533.geojson",
+      "nativeCoordinates": "Three selected complete source geometries preserved transiently in /tmp/glasgow-gla-native-selected.json as EPSG:27700; only inspireid values were read from DBF records.",
+      "nativeGeosQa": "research/overnight-cities-2026-10-08/glasgow-root-geometry-review.json",
+      "archiveSha256": "5a111900923210e2c0ec3351ff8873bf1d920f57f270b002e451cf3f05766cb0",
+      "features": [
+        {
+          "inspireid": "gb.ros.lr.SCT0000107107",
+          "distanceToWupM": 0,
+          "vertexCount": 120,
+          "isValid": true,
+          "areaSquareM": 74551.2438,
+          "coversWup": true
+        },
+        {
+          "inspireid": "gb.ros.lr.SCT0005869008",
+          "distanceToWupM": 0,
+          "vertexCount": 120,
+          "isValid": true,
+          "areaSquareM": 74516.64095,
+          "coversWup": true
+        },
+        {
+          "inspireid": "gb.ros.lr.SCT0006813307",
+          "distanceToWupM": 0,
+          "vertexCount": 124,
+          "isValid": true,
+          "areaSquareM": 74591.3945,
+          "coversWup": true
+        }
+      ],
+      "pairwiseOverlap": "GEOS `intersects` and `overlaps` returned true for each selected pair. Retained without interpretation as legal parcel topology."
+    }
+  },
+  "source": {
+    "sourceId": "gb-ros-inspire-cadastralparcel-glasgow",
+    "name": "Registers of Scotland INSPIRE Cadastral Parcels — Glasgow City Council",
+    "operator": "Registers of Scotland, Scotland",
+    "url": "https://ros-inspire.themapcloud.com/maps/download/ros-cp.cadastralparcel/GLA",
+    "serviceType": "Anonymous public authority-partition shapefile ZIP download",
+    "responseFormat": "ZIP containing BNG and ETRS89 shapefile parts",
+    "geometryType": "Polygon",
+    "coordinateReferenceSystem": "EPSG:27700 (GLA_bng native sample; parallel ETRS89 files also published)",
+    "nativeIdFields": [
+      "inspireid"
+    ],
+    "directGeometryQueryVerified": true,
+    "directMetadataSchemaVerified": true,
+    "scope": "Registers of Scotland publishes the Glasgow City Council (`GLA`) INSPIRE cadastral-parcel archive, updated 27 August 2026. The 37,268,375-byte public ZIP contains an EPSG:27700 `GLA_bng` Polygon shapefile and DBF with `inspireid` as a 23-character string key. A bounded anonymous GET fetched the full public archive. Reading only the INSPIRE ID column found 114,802 nonblank, distinct IDs; SHP/DBF counts match. Geometry-only selection retained three valid complete polygons, each covering the exact WUP point; GEOS reports pairwise intersections/overlaps among the three. The source states these are indicative registered title extents, with gaps/overlaps and titles absent; it is not exact legal boundary evidence or a complete cadastral coverage claim.",
+    "identityBasis": "The public DBF schema declares `inspireid` as a 23-character string. Only that column was read; all 114,802 IDs were nonblank and distinct.",
+    "attributesRequested": [
+      "inspireid"
+    ],
+    "sampleCount": 3,
+    "sampleFile": "samples/glasgow-ros-inspire-gla-wup533.geojson",
+    "archiveDate": "2026-08-25 component timestamp; data listing updated 2026-08-27",
+    "archiveSha256": "5a111900923210e2c0ec3351ff8873bf1d920f57f270b002e451cf3f05766cb0",
+    "httpEtag": "\"5444a416a7e848a874ddaf29108acd4b-3\"",
+    "httpLastModified": "2026-08-26T14:49:52Z",
+    "geometryStatus": "three_complete_polygons_contain_WUP; pairwise_overlap_observed"
+  },
+  "coverageAssessment": {
+    "claimedScope": "City/authority-scope evidence is limited to the official source described below.",
+    "verifiedOpenScope": "The official Glasgow authority partition contains 114,802 indicative registered-title polygons; only the three selected public geometry features are retained. The dataset is partial and may contain gaps and overlaps. Publisher estimates approximately 30% of titles absent; all listed coverage remains indicative.",
+    "citywideVerified": false,
+    "countrywideVerified": false
+  },
+  "priorEvidenceFiles": [],
+  "populationPlausibility2025": "High",
+  "sourceIds": [
+    "gb-ros-inspire-cadastralparcel-glasgow"
+  ],
+  "adapterReady": false,
+  "runtimeAssessment": {
+    "status": "held_snapshot_format_and_geometry_review",
+    "reason": "The archive has 114,802 nonblank distinct INSPIRE IDs. All three retained native EPSG:27700 polygons are valid and cover the ranked point, but every pair has substantial positive-area overlap (see independent geometry review). No reviewed shapefile snapshot reader, fresh-file identity lookup, bounded viewport completeness or proposal binding is qualified. The runtime remains held without repairing or excluding source polygons. Indicative-title and partial-coverage notices describe scope and do not determine eligibility; server paging is not required for a complete static snapshot.",
+    "qualityFile": "research/overnight-cities-2026-10-08/glasgow-root-geometry-review.json",
+    "evidenceFile": "research/overnight-cities-2026-10-08/glasgow-service-review.json"
+  },
+  "accessReview": {
+    "publicAnonymousGeometryVerified": true,
+    "completeGeoreferencedPolygonCount": 3,
+    "geometryRetained": true,
+    "ownerAddressTaxOrPersonLookupRequested": false,
+    "authenticationOrCredentialsUsed": false,
+    "captchaOrPersonalFormSubmitted": false,
+    "routeInspectionStatus": "geometry_only_public_archive_verified",
+    "reason": "The existing repository GML snapshot reader does not read the shapefile download. No bounded viewport/exact-ID runtime contract, paging behavior, or proposal-binding qualification is established; adapter readiness remains held for unsupported shapefile format.",
+    "nativeIdsUsed": "The public DBF schema declares `inspireid` as a 23-character string. Only that column was read; all 114,802 IDs were nonblank and distinct.",
+    "sampleFile": "samples/glasgow-ros-inspire-gla-wup533.geojson"
+  },
+  "requestEvidence": [
+    {
+      "url": "https://ros-inspire.themapcloud.com/maps/download/ros-cp.cadastralparcel/GLA",
+      "method": "GET Range bytes=0-65535 then bounded full ZIP range",
+      "status": 206,
+      "contentType": "application/zip",
+      "bytes": 37268375,
+      "observation": "Official public GLA archive downloaded anonymously with a single bounded range under 64 MiB. It contains BNG/ETRS89 SHP, SHX, DBF and PRJ members. Redirect target query values were not retained."
+    },
+    {
+      "url": "https://ros-inspire.themapcloud.com/maps/download/ros-cp.cadastralparcel/GLA",
+      "method": "GET Range bytes=0-0, header inspection",
+      "status": 206,
+      "contentType": "application/zip",
+      "bytes": 1,
+      "observation": "Content-Range total 37,268,375 bytes; ETag `\"5444a416a7e848a874ddaf29108acd4b-3\"`; Last-Modified 26 Aug 2026. Signed redirect URL and query parameters were discarded."
+    },
+    {
+      "url": "https://ros-inspire.themapcloud.com/assets/files/INSPIRE_dataset_specification_v1.5_March2025.pdf",
+      "method": "Official specification inspection",
+      "status": 200,
+      "contentType": "application/pdf",
+      "observation": "Confirms Polygon schema, `inspireid` identity, indicative title extent meaning, and gaps/overlaps/partial-title coverage limitations."
+    }
+  ],
+  "point": [
+    55.8570386788448,
+    -4.29019010667301
+  ],
+  "rootReviewedAt": "2026-10-09T01:23:12.168688+00:00"
+}

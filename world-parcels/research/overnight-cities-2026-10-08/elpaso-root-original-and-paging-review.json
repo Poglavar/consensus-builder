@@ -1,0 +1,18 @@
+{
+  "checkedAt": "2026-10-09T04:34:42.785219+00:00",
+  "priorOffsetUniqueParcels": 78,
+  "freshManifestUniqueParcels": 79,
+  "addedNativeIds": [
+    "US-TX-ELPASO-OBJECTID-129058"
+  ],
+  "removedNativeIds": [],
+  "allSharedRawGeometryArraysMatch": true,
+  "originalSampleId": 128625,
+  "originalSampleRawArraysMatch": true,
+  "originalSampleContainsWupPoint": false,
+  "freshPointContainingNativeId": 130036,
+  "freshPointContainingNativeGeometryUnchanged": true,
+  "confirmedDirectEmptyResponseUrl": "https://gis.elpasotexas.gov/arcgis/rest/services/Deeds/FeatureServer/0/query?where=1%3D1&geometry=-106.3665%2C31.7858%2C-106.3632%2C31.7877&geometryType=esriGeometryEnvelope&inSR=4326&spatialRel=esriSpatialRelIntersects&outFields=OBJECTID&returnGeometry=true&outSR=4326&resultRecordCount=1&f=geojson",
+  "directResponseObservation": "HTTP200 empty standalone offset result. A second candidate request has no persisted status/body and is not claimed empty. The actual admitted descriptor requires native count+OID manifests and exact geometry coverage.",
+  "decision": "Native manifest mode includes the original nearby parcel that offset mode omitted; all shared geometries match unchanged. Source GIS OIDs remain reference-layer keys, not cadastral statutory identifiers."
+}

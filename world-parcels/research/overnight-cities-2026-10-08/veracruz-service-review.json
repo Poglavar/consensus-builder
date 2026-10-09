@@ -1,0 +1,76 @@
+{
+  "schemaVersion": 1,
+  "checkedAt": "2026-10-09",
+  "sourceId": "mx-veracruz-official-parcel-research",
+  "purpose": "Service review for WUP2025 rank 811 Veracruz (city code 6604); local registry evidence and safe anonymous full-polygon access status.",
+  "primaryPublisher": "H. Ayuntamiento de Veracruz; Dirección de Planeación Catastral",
+  "sourceUrl": "https://miveracruz.veracruzmunicipio.gob.mx/ver_ficha/28ddf490-ed37-11ea-b002-157e18c7cb76",
+  "registryFound": true,
+  "registryBasis": "The official Ayuntamiento de Veracruz portal identifies a municipal Dirección de Planeación Catastral and a city cadastral-registration procedure for urban, suburban and rural property. It requires applicant identity, proof of title, sketch/coordinates and municipal payment; this verifies the local cadastral service but is not a public anonymous geometry route.",
+  "officialSources": [
+    {
+      "url": "https://miveracruz.veracruzmunicipio.gob.mx/ver_ficha/28ddf490-ed37-11ea-b002-157e18c7cb76",
+      "observation": "Official city procedure page names Dirección de Planeación Catastral and specifies a paid cadastral document process for urban/suburban/rural property, requiring applicant identity, title evidence, location plan/coordinates and payment. No form was completed."
+    },
+    {
+      "url": "https://www.veracruz.gob.mx/finanzas/plano-manzanero-de-localidades-catastradas/",
+      "observation": "Official state finance service describes paid retrieval of cadastral block plans from its archive; it does not expose anonymous vector features."
+    },
+    {
+      "url": "https://repositorio.veracruz.gob.mx/finanzas/wp-content/uploads/sites/2/2019/07/LEY-DE-CATASTRO-DEL-ESTADO-DE-VERACRUZ-DE-IGNACIO-DE-LA-LLAVE.pdf",
+      "observation": "State cadastral law outlines municipal/state cadastral cartography and cadastral registration responsibilities; not used as a geometry source."
+    }
+  ],
+  "searchQueries": [
+    {
+      "language": "English",
+      "query": "Veracruz Mexico city official cadastral registry map parcels spatial GIS",
+      "scope": "Find official local registry and anonymous parcel geometry route.",
+      "result": "The local Ayuntamiento’s cadastral procedure is a paid cédula/registration service, not a public map: it requests an official ID, title/possession proof, coordinates/plan and municipal payment. State documentation describes printed or paid cadastral mapping products. No anonymous vector schema was found and no form was submitted.",
+      "urls": [
+        "https://miveracruz.veracruzmunicipio.gob.mx/ver_ficha/28ddf490-ed37-11ea-b002-157e18c7cb76",
+        "https://www.veracruz.gob.mx/finanzas/"
+      ]
+    },
+    {
+      "language": "Spanish",
+      "query": "site:veracruzmunicipio.gob.mx catastro Veracruz municipio mapa catastral",
+      "scope": "Find first-party local registry and map service details.",
+      "result": "The local Ayuntamiento’s cadastral procedure is a paid cédula/registration service, not a public map: it requests an official ID, title/possession proof, coordinates/plan and municipal payment. State documentation describes printed or paid cadastral mapping products. No anonymous vector schema was found and no form was submitted.",
+      "urls": [
+        "https://miveracruz.veracruzmunicipio.gob.mx/ver_ficha/28ddf490-ed37-11ea-b002-157e18c7cb76",
+        "https://www.veracruz.gob.mx/finanzas/"
+      ]
+    }
+  ],
+  "accessReview": {
+    "publicAnonymousGeometryVerified": false,
+    "completeGeoreferencedPolygonCount": 0,
+    "geometryRetained": false,
+    "ownerAddressTaxOrPersonLookupRequested": false,
+    "authenticationOrCredentialsUsed": false,
+    "captchaOrPersonalFormSubmitted": false,
+    "routeInspectionStatus": "no_public_geometry_contract_verified",
+    "reason": "The city cadastral workflow is applicant- and property-document-based, and the public mapping products found are request/fee-based. No anonymous geometry-only schema or feature endpoint was verified."
+  },
+  "requestEvidence": [
+    {
+      "url": "https://miveracruz.veracruzmunicipio.gob.mx/ver_ficha/28ddf490-ed37-11ea-b002-157e18c7cb76",
+      "method": "GET official public page/document inspection",
+      "result": "Official city procedure page names Dirección de Planeación Catastral and specifies a paid cadastral document process for urban/suburban/rural property, requiring applicant identity, title evidence, location plan/coordinates and payment. No form was completed."
+    },
+    {
+      "url": "https://www.veracruz.gob.mx/finanzas/plano-manzanero-de-localidades-catastradas/",
+      "method": "GET official public page/document inspection",
+      "result": "Official state finance service describes paid retrieval of cadastral block plans from its archive; it does not expose anonymous vector features."
+    },
+    {
+      "url": "https://repositorio.veracruz.gob.mx/finanzas/wp-content/uploads/sites/2/2019/07/LEY-DE-CATASTRO-DEL-ESTADO-DE-VERACRUZ-DE-IGNACIO-DE-LA-LLAVE.pdf",
+      "method": "GET official public page/document inspection",
+      "result": "State cadastral law outlines municipal/state cadastral cartography and cadastral registration responsibilities; not used as a geometry source."
+    }
+  ],
+  "technicalBlocker": "The city cadastral workflow is applicant- and property-document-based, and the public mapping products found are request/fee-based. No anonymous geometry-only schema or feature endpoint was verified.",
+  "sampleDisposition": "No parcel geometry or feature attributes retained.",
+  "remainingUncertainty": "Whether a separately published public municipal GIS includes parcel polygons; none was found in the official pages searched."
+}

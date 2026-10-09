@@ -1,0 +1,62 @@
+{
+  "schemaVersion": "1.0",
+  "checkedAt": "2026-10-09",
+  "cityRecord": "city-5868-dongsheng.json",
+  "purpose": "Document first-party local registry/map evidence and bounded anonymous geometry access review.",
+  "scopeLimits": {
+    "maxFullPolygonsRetainedInCityRecord": 0,
+    "maxFullPolygonsRetainedInReview": 0,
+    "maxFullPolygonsRetainedInRepository": 0,
+    "ownerOrAddressDataRetained": false,
+    "credentialsOrTokenValuesRetained": false,
+    "citywideCompletenessAsserted": false
+  },
+  "assessment": "The Ordos Natural Resources Bureau publishes a Dongsheng/Kangbashi land-registration guide and the Ordos city government service portal lists real-property registration services. The Dongsheng guide’s cadastral-map retrieval is tied to scanning a property-certificate QR code through an official account, so it does not establish an anonymous geometry route. This is city/district-bound custody evidence, not evidence that the WUP point or the wider city has open parcel geometry.",
+  "registryAssessment": "The Ordos Natural Resources Bureau publishes a Dongsheng/Kangbashi land-registration guide and the Ordos city government service portal lists real-property registration services. The Dongsheng guide’s cadastral-map retrieval is tied to scanning a property-certificate QR code through an official account, so it does not establish an anonymous geometry route. This is city/district-bound custody evidence, not evidence that the WUP point or the wider city has open parcel geometry.",
+  "officialPrimarySources": [
+    {
+      "url": "https://zrzyj.ordos.gov.cn/zxgz/bdcdjcth/yshj/202605/t20260514_1652641.html",
+      "observation": "The Ordos Natural Resources Bureau publishes a Dongsheng/Kangbashi land-registration guide and the Ordos city government service portal lists real-property registration services. The Dongsheng guide’s cadastral-map retrieval is tied to scanning a property-certificate QR code through an official account, so it does not establish an anonymous geometry route. This is city/district-bound custody evidence, not evidence that the WUP point or the wider city has open parcel geometry."
+    },
+    {
+      "url": "https://zwfw.ordos.gov.cn/portal/bszn/view.shtml?serviceOid=ff80808175ba741a0175bb7fec341891",
+      "observation": "The Ordos Natural Resources Bureau publishes a Dongsheng/Kangbashi land-registration guide and the Ordos city government service portal lists real-property registration services. The Dongsheng guide’s cadastral-map retrieval is tied to scanning a property-certificate QR code through an official account, so it does not establish an anonymous geometry route. This is city/district-bound custody evidence, not evidence that the WUP point or the wider city has open parcel geometry."
+    }
+  ],
+  "searchQueries": [
+    {
+      "language": "English",
+      "query": "Dongsheng Ordos China official land registry cadastre map natural resources bureau",
+      "result": "The official Ordos Natural Resources Bureau directly identifies registration procedures for Dongsheng and Kangbashi; the cadastral map workflow is certificate-linked.",
+      "method": "Separate English-language discovery search followed by first-party page review.",
+      "scope": "Identify first-party city-bound registry/cadastre custody and safe public parcel geometry."
+    },
+    {
+      "language": "Chinese",
+      "query": "东胜区 不动产登记 地籍图 鄂尔多斯 自然资源局",
+      "result": "The official Ordos Natural Resources Bureau guide covers Dongsheng and Kangbashi registration and says cadastral-map retrieval uses the QR code on a property certificate and an official WeChat service. No anonymous geometry route was established.",
+      "method": "Separate local-language discovery search followed by first-party page review.",
+      "scope": "Identify first-party city-bound registry/cadastre custody and safe public parcel geometry."
+    }
+  ],
+  "geometryDecision": "No parcel geometry retained; no qualifying safe exact-point public polygon was verified.",
+  "coverageAssessment": {
+    "claimedScope": "The Ordos Natural Resources Bureau publishes a Dongsheng/Kangbashi land-registration guide and the Ordos city government service portal lists real-property registration services. The Dongsheng guide’s cadastral-map retrieval is tied to scanning a property-certificate QR code through an official account, so it does not establish an anonymous geometry route. This is city/district-bound custody evidence, not evidence that the WUP point or the wider city has open parcel geometry.",
+    "verifiedOpenScope": "No public anonymous point-level parcel polygon verified at the exact WUP locator. No citywide coverage is asserted.",
+    "citywideVerified": false,
+    "countrywideVerified": false,
+    "geometryVerified": false
+  },
+  "attempts": [],
+  "requests": [],
+  "portals": [
+    {
+      "homeUrl": "https://zrzyj.ordos.gov.cn/zxgz/bdcdjcth/yshj/202605/t20260514_1652641.html",
+      "observation": "The Ordos Natural Resources Bureau publishes a Dongsheng/Kangbashi land-registration guide and the Ordos city government service portal lists real-property registration services. The Dongsheng guide’s cadastral-map retrieval is tied to scanning a property-certificate QR code through an official account, so it does not establish an anonymous geometry route. This is city/district-bound custody evidence, not evidence that the WUP point or the wider city has open parcel geometry."
+    },
+    {
+      "homeUrl": "https://zwfw.ordos.gov.cn/portal/bszn/view.shtml?serviceOid=ff80808175ba741a0175bb7fec341891",
+      "observation": "The Ordos Natural Resources Bureau publishes a Dongsheng/Kangbashi land-registration guide and the Ordos city government service portal lists real-property registration services. The Dongsheng guide’s cadastral-map retrieval is tied to scanning a property-certificate QR code through an official account, so it does not establish an anonymous geometry route. This is city/district-bound custody evidence, not evidence that the WUP point or the wider city has open parcel geometry."
+    }
+  ]
+}

@@ -1,0 +1,100 @@
+{
+  "schemaVersion": 1,
+  "kind": "city_parcel_source_research",
+  "checkedAt": "2026-10-09",
+  "name": "Nanyang",
+  "country": "China",
+  "countryCode": "CN",
+  "populationUnit": "persons",
+  "status": "complete",
+  "registryFound": true,
+  "registryBasis": "The Nanyang Real Estate Registration Service Center and the Nanyang Natural Resources and Planning Bureau publish city-local real-estate registration services. The official guidance limits record queries to rights holders or interested parties and requires a stated reason and identity documents; no anonymous parcel geometry service was verified.",
+  "registryEvidenceUrls": [
+    "https://fcglzx.nanyang.gov.cn/",
+    "https://nygtzy.nanyang.gov.cn/ztzl/bdcdj/",
+    "https://fcglzx.nanyang.gov.cn/2024/05-31/410740.html"
+  ],
+  "verifiedSample": false,
+  "publicParcelGeometryFound": false,
+  "runtimeReadiness": "not_enabled_no_verified_public_geometry",
+  "wupCityCode": 9682,
+  "cityId": "wup2025:9682",
+  "centerLatLon": [
+    32.9909995603011,
+    112.534403881991
+  ],
+  "rank": 678,
+  "queueRank": 678,
+  "population2025": 782146,
+  "population2025k": 782.146,
+  "pointBasis": "UN WUP 2025 population-weighted settlement centroid; this is not a municipal boundary or a parcel-coverage claim.",
+  "technicalBlocker": "Reviewed official city registration pages did not expose an anonymous full-parcel geometry endpoint. The documented record-query path is restricted to rights holders/interested parties and identity documentation.",
+  "scopeLimits": "City-local official registry and service guidance inspected. No sign-in, identity workflow, owner/address/tax field, or property-specific lookup was used. The web page fetch tool returned 403 for both official city registry pages, so their public content was assessed from search results; no status is claimed for a direct browser GET.",
+  "remainingUncertainty": "A separate public planning map may exist, but no city-specific anonymous parcel feature schema or geometry route was verified.",
+  "research": {
+    "executedQueries": [
+      {
+        "language": "English",
+        "query": "Nanyang Henan official real estate registration center cadastral parcel map public GIS",
+        "scope": "Find city-specific official property registry and safe public full parcel geometry.",
+        "result": "Official city registration-center and natural-resources pages confirm local registry services. The reviewed sources describe rights-holder/interested-party query limits; no safe anonymous parcel geometry route was found.",
+        "actualResultUrls": [
+          "https://fcglzx.nanyang.gov.cn/",
+          "https://nygtzy.nanyang.gov.cn/ztzl/bdcdj/",
+          "https://fcglzx.nanyang.gov.cn/2024/05-31/410740.html"
+        ],
+        "executionMethod": "Web search in the stated language followed by review of official public sources."
+      },
+      {
+        "language": "Chinese (Simplified)",
+        "query": "南阳市 不动产登记中心 地籍图 查询 地图 官方 南阳市自然资源和规划局",
+        "scope": "Find city-specific official property registry and safe public full parcel geometry.",
+        "result": "南阳市不动产登记服务中心及市自然资源和规划局公开登记服务信息。登记资料查询限权利人或利害关系人并要求理由及身份证明；未验证匿名宗地几何服务。",
+        "actualResultUrls": [
+          "https://fcglzx.nanyang.gov.cn/",
+          "https://nygtzy.nanyang.gov.cn/ztzl/bdcdj/",
+          "https://fcglzx.nanyang.gov.cn/2024/05-31/410740.html"
+        ],
+        "executionMethod": "Web search in the stated language followed by review of official public sources."
+      }
+    ],
+    "officialSources": [
+      {
+        "url": "https://fcglzx.nanyang.gov.cn/",
+        "observation": "Official Nanyang Real Estate Registration Service Center portal establishes a city-local registration institution and public service remit."
+      },
+      {
+        "url": "https://nygtzy.nanyang.gov.cn/ztzl/bdcdj/",
+        "observation": "Official Nanyang Natural Resources and Planning Bureau real-estate registration section."
+      },
+      {
+        "url": "https://fcglzx.nanyang.gov.cn/2024/05-31/410740.html",
+        "observation": "Official service guidance states access conditions for registration-record queries; no record query was made."
+      }
+    ],
+    "metadataReviewFile": "nanyang-service-review.json",
+    "routeInspectionFile": "/tmp/overnight-cities-2026-10-08/city-9682-nanyang-route-inspection.json"
+  },
+  "source": {
+    "sourceId": "cn-nanyang-official-local-registry-review",
+    "name": "Nanyang official registry and public mapping route review",
+    "operator": "Nanyang city/district or state official authority",
+    "url": "https://fcglzx.nanyang.gov.cn/",
+    "scope": "City-specific registry evidence reviewed; no anonymous full-parcel polygon endpoint verified.",
+    "nativeIdField": null,
+    "geometryStatus": "not_verified"
+  },
+  "coverageAssessment": {
+    "verifiedOpenScope": "Official public registry/service information reviewed. No anonymous full parcel geometry was obtained and no sample was retained.",
+    "citywideVerified": false,
+    "countrywideVerified": false
+  },
+  "priorEvidenceFiles": [],
+  "populationPlausibility2025": "Moderate",
+  "rootReviewedAt": "2026-10-09T02:33:40.013985+00:00",
+  "sourceIds": [],
+  "point": [
+    32.9909995603011,
+    112.534403881991
+  ]
+}

@@ -1,0 +1,13 @@
+{
+  "schemaVersion": "1.0",
+  "checkedAt": "2026-10-09",
+  "cityRecord": "city-8394-nashik.json",
+  "purpose": "Read-only source discovery and bounded public-service validation; no runtime or global changes.",
+  "scopeLimits": {
+    "maxFullPolygonsRetainedInThisCityReport": 0,
+    "maxFullPolygonsRetainedAcrossCityReview": 0,
+    "ownerOrAddressDataRetained": false,
+    "accountCredentialsOrPublicTokenValuesRetained": false
+  },
+  "assessment": "The raw normal-TLS request to the official viewer timed out before receiving an HTTP response. The reader's ‘400 Redirect loop detected’ is recorded separately as a reader error, not as an origin status. No viewer shell, JavaScript/config routes, or geometry response could be inspected. Remaining uncertainty: whether the endpoint is reachable elsewhere and whether it exposes anonymous parcel vectors for Nashik urban survey."
+}

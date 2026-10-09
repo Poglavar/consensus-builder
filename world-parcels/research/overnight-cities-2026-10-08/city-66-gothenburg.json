@@ -1,0 +1,126 @@
+{
+  "name": "Gothenburg",
+  "country": "Sweden",
+  "countryCode": "SE",
+  "rank": 973,
+  "point": [
+    57.7046412819882,
+    11.9716507406045
+  ],
+  "population2025": 562945,
+  "population2025k": 562.945,
+  "populationPlausibility2025": "High",
+  "schemaVersion": 1,
+  "kind": "city_parcel_source_research",
+  "checkedAt": "2026-10-09",
+  "populationUnit": "persons",
+  "status": "complete",
+  "verifiedSample": false,
+  "publicParcelGeometryFound": false,
+  "runtimeReadiness": "not_enabled_no_verified_public_geometry",
+  "adapterReady": false,
+  "priorEvidenceFiles": [],
+  "priorCheck": {
+    "attemptState": "pending",
+    "attemptEvidence": [],
+    "possiblePriorMatches": [],
+    "resolvedPriorMatches": []
+  },
+  "pointBasis": "UN WUP 2025 population-weighted settlement centroid; this is not a municipal boundary or a parcel-coverage claim.",
+  "registryFound": true,
+  "registryBasis": "Göteborgs Stad explicitly maintains a continuously updated Fastighetskarta for all of Göteborg; Lantmäteriet documents property geometry datasets. The municipal Geodataavdelning is the specific local custodian.",
+  "registryEvidenceUrls": [
+    "https://goteborg.se/wps/portal/start/bygga-bo-och-leva-hallbart/lantmateri-kartor-och-matning/kartor-och-geodata/kartprodukter/fastighetskarta",
+    "https://www.lantmateriet.se/sv/geodata/vara-produkter/produktlista/fastighetsindelning-direkt",
+    "https://geotorget.lantmateriet.se/dokument/projects/fastighetsindelning-direkt/released/1.0/"
+  ],
+  "resultCategory": "citywide_parcel_geometry_product_confirmed_request_or_legal_access_required_no_sample",
+  "remainingUncertainty": "No city-specific native feature query was made; public-access conditions/allowed purpose and exact API licensing approval are not resolved for this project. No sample or runtime readiness established.",
+  "scopeLimits": "No citywide completeness is asserted. No owner/address/account/token values retained. At most three complete native parcel geometries may be retained for this city; none was obtained.",
+  "verifiedParcelResponse": null,
+  "source": {
+    "sourceId": "SE-GOTEBORG-FASTIGHETSKARTA",
+    "name": "Göteborgs Stad Fastighetskarta and Lantmäteriet Fastighetsindelning Direkt",
+    "operator": "Göteborgs Stad Geodataavdelning; national property-geometry provider Lantmäteriet",
+    "url": "https://goteborg.se/wps/portal/start/bygga-bo-och-leva-hallbart/lantmateri-kartor-och-matning/kartor-och-geodata/kartprodukter/fastighetskarta",
+    "serviceType": "Municipal property map covers the entire city, is continuously updated and is orderable in vector/CAD formats against the city fee schedule. National Lantmäteriet also offers an API product containing property and joint-property geometries, free of charge but subject to legal-purpose approval and access provisioning. No full polygon sample was queried.",
+    "geometryType": "Property-area polygons (city product and national API product).",
+    "outputCrs": "Not resolved in the checked city product page.",
+    "nativeIdField": "Swedish real-property designation (fastighetsbeteckning); vector product schema not inspected."
+  },
+  "sourceIds": [],
+  "wupCityCode": 66,
+  "cityId": "wup2025:66",
+  "queueRank": 973,
+  "centerLatLon": [
+    57.7046412819882,
+    11.9716507406045
+  ],
+  "technicalBlocker": "Official city map covers the full municipality, continuously updated and exports DWG/DXF/TAB/MIF; city charges its map fee. Lantmäteriet Fastighetsindelning Direkt includes property geometries and is free API, but requires legal-purpose review and product access. Public map viewer itself is not a verified anonymous full-feature endpoint.",
+  "coverageAssessment": {
+    "claimedScope": "Göteborg municipal Fastighetskarta covers all of Göteborg and is continuously updated; Lantmäteriet’s API product includes property geometries.",
+    "verifiedOpenScope": "Full property-map products exist and include vector formats; the city offers them by order with a fee, while the national API is free but subject to legal review/access approval. No anonymous vector response was observed and no city sample was retained.",
+    "countrywideVerified": false,
+    "citywideVerified": false,
+    "geometryVerified": false
+  },
+  "runtimeAssessment": {
+    "status": "not_enabled_no_verified_full_polygon_sample",
+    "reason": "Official city map covers the full municipality, continuously updated and exports DWG/DXF/TAB/MIF; city charges its map fee. Lantmäteriet Fastighetsindelning Direkt includes property geometries and is free API, but requires legal-purpose review and product access. Public map viewer itself is not a verified anonymous full-feature endpoint."
+  },
+  "research": {
+    "executedQueries": [
+      {
+        "language": "Swedish",
+        "query": "Göteborg fastighetskarta fastighetsgränser geodata öppna data beställa kartor kommun",
+        "scope": "Find current local property-map custodian, coverage, update cycle and vector formats.",
+        "result": "Göteborgs Stad states Fastighetskarta covers all of Göteborg, is continuously updated, includes property boundaries/points/designations/rights and is orderable as DWG, DXF, TAB or MIF under the city fee schedule.",
+        "method": "Separate Swedish-language search and city/agency service-page review.",
+        "actualResultUrls": [
+          "https://goteborg.se/wps/portal/start/bygga-bo-och-leva-hallbart/lantmateri-kartor-och-matning/kartor-och-geodata/kartprodukter/fastighetskarta",
+          "https://goteborg.se/wps/portal?uri=gbglnk%3Agbg.page.755190e0-e92a-427a-8713-291da1e4685a"
+        ],
+        "executionMethod": "Separate Swedish-language search and city/agency service-page review."
+      },
+      {
+        "language": "English",
+        "query": "Gothenburg cadastral property boundaries parcel geometry public vector API city official GIS",
+        "scope": "Cross-check anonymous geometry access and national public data conditions.",
+        "result": "Göteborg municipal fastighetskarta is citywide but ordered under fee. Lantmäteriet documents a free Fastighetsindelning Direkt API with property geometries, subject to legal-purpose review and access provisioning; no anonymous feature query was made.",
+        "method": "Separate English-language search and official city/national product documentation review.",
+        "actualResultUrls": [
+          "https://geotorget.lantmateriet.se/dokument/projects/fastighetsindelning-direkt/released/1.0/",
+          "https://www2.lantmateriet.se/sv/geotorget-produktstod/om-tillhandahallandet/",
+          "https://data.goteborg.se/"
+        ],
+        "executionMethod": "Separate English-language search and official city/national product documentation review."
+      }
+    ],
+    "officialSources": [
+      {
+        "url": "https://goteborg.se/wps/portal/start/bygga-bo-och-leva-hallbart/lantmateri-kartor-och-matning/kartor-och-geodata/kartprodukter/fastighetskarta",
+        "observation": "Göteborgs Stad states the Fastighetskarta covers the entire municipality, is continuously updated and contains property boundaries, boundary points, designations and rights; formats include DWG, DXF, TAB and MIF; order by fee through Geodataavdelningen."
+      },
+      {
+        "url": "https://geotorget.lantmateriet.se/dokument/projects/fastighetsindelning-direkt/released/1.0/",
+        "observation": "Lantmäteriet documents an API product containing property and joint-property geometries, daily updated and free, but subject to legal-use review and access provisioning; it is not a browser map."
+      },
+      {
+        "url": "https://www2.lantmateriet.se/sv/geotorget-produktstod/om-tillhandahallandet/",
+        "observation": "Lantmäteriet describes access/legal provisions for high-value geodata products and APIs."
+      },
+      {
+        "url": "https://data.goteborg.se/",
+        "observation": "City open-data platform says API use requires registering an application/API key; inspected open-data catalogue did not list the cadastral Fastighetskarta as a free public dataset."
+      }
+    ]
+  },
+  "rootPrimaryReadback": {
+    "url": "https://goteborg.se/wps/portal/start/bygga-bo-och-leva-hallbart/lantmateri-kartor-och-matning/kartor-och-geodata/kartprodukter/fastighetskarta",
+    "fetch": 200,
+    "contentType": "text/html; charset=UTF-8",
+    "title": "Fastighetskarta - Göteborgs Stad"
+  },
+  "rootReviewNote": "Reviewed the specific local primary evidence, its jurisdiction, source dates and public access limits. Failed readbacks are retained as transport/access outcomes rather than absence. No full public parcel geometry was verified for this city in the bounded discovery pass.",
+  "rootReviewedAt": "2026-10-09T05:07:19.594016+00:00"
+}

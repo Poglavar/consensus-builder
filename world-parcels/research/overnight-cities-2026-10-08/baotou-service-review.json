@@ -1,0 +1,13 @@
+{
+  "schemaVersion": "1.0",
+  "checkedAt": "2026-10-09",
+  "cityRecord": "city-5486-baotou.json",
+  "purpose": "Read-only city source research and bounded public-service validation.",
+  "scopeLimits": {
+    "maxFullPolygonsRetainedInThisCityReport": 0,
+    "maxFullPolygonsRetainedAcrossCityReview": 0,
+    "ownerOrAddressDataRetained": false,
+    "accountCredentialsOrPublicTokenValuesRetained": false
+  },
+  "assessment": "No anonymous parcel request was attempted because local government documents tie cadastral viewing to the owner and identity verification. No credentials or property references supplied."
+}

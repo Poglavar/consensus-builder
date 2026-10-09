@@ -1,0 +1,54 @@
+{
+  "schemaVersion": "1.0",
+  "checkedAt": "2026-10-09",
+  "cityRecord": "city-9701-ballari.json",
+  "purpose": "Document first-party local land-registry/map evidence and bounded anonymous geometry-route review.",
+  "scopeLimits": {
+    "maxFullPolygonsRetainedInCityRecord": 3,
+    "maxFullPolygonsRetainedInReview": 3,
+    "maxFullPolygonsRetainedInRepository": 3,
+    "ownerOrAddressDataRetained": false,
+    "credentialsOrTokenValuesRetained": false,
+    "citywideCompletenessAsserted": false
+  },
+  "assessment": "Bhoomi is documented as an RTC/record service. No public parcel geometry API, feature schema or exact WUP-point coverage was verified.",
+  "registryAssessment": "The official district page links state Bhoomi record services and explicitly places the respective Taluka land-record offices in Ballari city.",
+  "officialPrimarySources": [
+    {
+      "url": "https://ballari.nic.in/en/service/land-records-bhoomi/",
+      "observation": "Official Ballari district page links Karnataka Bhoomi and says Pahani/RTC records are delivered online for a fee; it lists the respective Taluka offices in Ballari."
+    },
+    {
+      "url": "https://ballari.nic.in/en/",
+      "observation": "Official district site identifies Ballari as district headquarters and lists land records among government services."
+    },
+    {
+      "url": "https://landrecords.karnataka.gov.in/",
+      "observation": "Karnataka land-record portal linked by Ballari district; no anonymous full-polygon schema was verified in this review."
+    }
+  ],
+  "searchQueries": [
+    {
+      "language": "English",
+      "query": "Ballari Karnataka official land records Bhoomi cadastral parcel map",
+      "result": "District page links Bhoomi land records and identifies the respective Taluka offices in Ballari; the service is record delivery rather than an exposed public vector schema.",
+      "method": "Separate local-language/English discovery and first-party public-page review."
+    },
+    {
+      "language": "Kannada",
+      "query": "ಬಳ್ಳಾರಿ ಭೂ ದಾಖಲೆ ಭೂಮಿ ಪಹಣಿ ನಕ್ಷೆ ಅಧಿಕೃತ",
+      "result": "Official district Bhoomi page describes paid RTC record access and Ballari Taluka offices; no anonymous full-polygon service was found.",
+      "method": "Separate local-language/English discovery and first-party public-page review."
+    }
+  ],
+  "serviceChecks": [
+    {
+      "url": "https://landrecords.karnataka.gov.in/",
+      "method": "Public page/catalogue review; no property-specific query",
+      "observation": "Reviewed official district and state service descriptions; did not request RTC/owner/plot-specific records."
+    }
+  ],
+  "geometryEvidence": null,
+  "privacy": "No parcel features or sensitive attributes retained; no owner/address/property-specific lookup submitted.",
+  "runtimeAssessment": "not_enabled"
+}

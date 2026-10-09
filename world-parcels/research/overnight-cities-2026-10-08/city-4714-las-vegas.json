@@ -1,0 +1,174 @@
+{
+  "name": "Las Vegas",
+  "country": "United States",
+  "countryCode": "US",
+  "rank": 232,
+  "point": [
+    36.1515806137119,
+    -115.164472767125
+  ],
+  "freshResearch": {
+    "queries": [
+      {
+        "language": "English",
+        "query": "site:clarkcountynv.gov GIS parcel polygons ArcGIS assessor parcels official Las Vegas",
+        "scope": "Identify official county parcel geometry coverage relevant to Las Vegas.",
+        "result": "Official Clark County Assessor/GISMO ArcGIS layer is polygon geometry with APN and OID fields; query formats include GeoJSON and pagination.",
+        "actualResultUrls": "https://maps.clarkcountynv.gov/arcgis/rest/services/GISMO/AssessorMap/FeatureServer/1",
+        "executionMethod": "Web search; exact query in stated language."
+      },
+      {
+        "language": "English",
+        "query": "Clark County Nevada GIS Assessor parcel polygon feature service official ArcGIS Las Vegas",
+        "scope": "Find a public, anonymous, full-geometry parcel endpoint.",
+        "result": "The AssessorMap FeatureServer/1 endpoint returned full polygons in bounded viewport queries. No owner fields were requested.",
+        "actualResultUrls": "https://maps.clarkcountynv.gov/arcgis/rest/services/GISMO/AssessorMap/FeatureServer/1",
+        "executionMethod": "Web search; exact query in stated language."
+      }
+    ],
+    "portals": [
+      {
+        "name": "Clark County Assessor/GISMO AssessorMap FeatureServer layer 1",
+        "operator": "Clark County Assessor and GIS Management Office (GISMO)",
+        "homeUrl": "https://maps.clarkcountynv.gov/arcgis/rest/services/GISMO/AssessorMap/FeatureServer/1",
+        "observation": "Official polygon parcel layer queried anonymously with outFields limited to OID and APN. Adapter returned 78 unique parcels across 11 of 13 0.001-degree viewport cells around the WUP centroid; two cells returned HTTP 500. Forced pageSize=3 returned 20/20 geometries across seven pages with exact hashes. Fresh exact-ID retrieval covered all 78 records, and a deliberately absent APN was reported absent. Selected parcel footprint and source binding passed. These are bounded viewport observations, not total city/county counts."
+      }
+    ],
+    "requests": [
+      {
+        "url": "https://maps.clarkcountynv.gov/arcgis/rest/services/GISMO/AssessorMap/FeatureServer/1/query",
+        "method": "GET",
+        "httpStatus": 200,
+        "contentType": "application/geo+json",
+        "observation": "Initial bounded query near exact WUP point returned three complete Polygon features; only OID/APN requested. IDs: 16204399004, 16204699026, 16204701002."
+      },
+      {
+        "url": "https://maps.clarkcountynv.gov/arcgis/rest/services/GISMO/AssessorMap/FeatureServer/1/query",
+        "method": "GET",
+        "httpStatus": "mixed 200 and 500",
+        "observation": "Runner exercised 13 viewport cells; 11 passed, returning 78 unique complete polygons; cells viewport-3 and viewport-11 failed with HTTP 500. 11 successful cells were complete and geometries stayed within their query envelopes."
+      },
+      {
+        "url": "https://maps.clarkcountynv.gov/arcgis/rest/services/GISMO/AssessorMap/FeatureServer/1/query",
+        "method": "GET",
+        "httpStatus": 200,
+        "observation": "Forced three-row pagination passed (20 features, 7 geometry pages, hashes stable); fresh exact-ID requests passed for all 78; explicit absent identifier US-NV-CLARK-999999999999999 returned absent; footprint query and source-binding passed. Run details in las-vegas-acceptance.json."
+      }
+    ],
+    "runnerOutputs": [
+      "las-vegas-effective-acceptance.json",
+      "las-vegas-final-acceptance.json",
+      "las-vegas-final-quality.json",
+      "las-vegas-retry-attempts.json",
+      "las-vegas-adapter-sample.geojson"
+    ],
+    "qualityAudit": {
+      "status": "passed",
+      "library": "Shapely 2.2.0 / GEOS",
+      "featureCount": 90,
+      "validNonemptyCount": 90,
+      "invalidFeatures": 0,
+      "duplicateGeometryPairs": 0,
+      "positiveAreaOverlapPairs": 0,
+      "metricCrs": "EPSG:32611",
+      "areaM2": {
+        "min": 2.9723,
+        "median": 1846.9541,
+        "max": 50207.7657
+      },
+      "report": "las-vegas-final-quality.json"
+    },
+    "retrySummary": {
+      "requalificationCells": 13,
+      "completeSuccessfulCellsInSecondRun": 12,
+      "secondRunFailedCell": "viewport-6",
+      "targetedRetriesPassed": [
+        "viewport-3",
+        "viewport-11",
+        "viewport-6",
+        "source-binding"
+      ],
+      "all13CellsHadAtLeastOneCompleteSuccessfulResponse": true,
+      "priorHttp500BodyHashAvailable": false,
+      "details": "las-vegas-retry-attempts.json",
+      "finalRunUniqueParcels": 90,
+      "finalRunSuccessfulViewportCount": 13,
+      "finalRunPaginationRetryPassed": true
+    }
+  },
+  "status": "complete",
+  "verifiedParcelResponse": {
+    "sampleFile": "las-vegas-adapter-sample.geojson",
+    "retainedFullExamples": 3,
+    "verifiedUniqueParcels": 90
+  },
+  "source": {
+    "id": "us-nv-clark-assessor-parcels",
+    "operator": "Clark County Assessor / GISMO",
+    "url": "https://maps.clarkcountynv.gov/arcgis/rest/services/GISMO/AssessorMap/FeatureServer/1",
+    "geometryType": "Polygon",
+    "idField": "APN",
+    "outFields": [
+      "OID",
+      "APN"
+    ],
+    "coverage": "Clark County assessor parcel layer; this bounded test does not establish a Las Vegas municipal-only scope.",
+    "maxBboxKm2": 1,
+    "queryScopeNote": "Qualification requests use 0.001-degree boxes (less than 1 km²); candidate cap is set to 1 km².",
+    "scope": "90 valid, distinct Clark County assessor parcel polygons verified in thirteen local cells around the Las Vegas WUP settlement locator, with no sampled overlaps above 0.01 m². Forced paging, fresh exact geometry hashes, explicit absence, footprint and complete binding passed across recorded retries. Intermittent HTTP 500 responses remain documented. County coverage near this point does not establish municipal-only, citywide or countywide completeness."
+  },
+  "coverageAssessment": {
+    "claimedScope": "Clark County Assessor parcel polygons include the Las Vegas WUP centroid and adjacent 0.001-degree viewports.",
+    "verifiedOpenScope": "90 valid, distinct Clark County assessor parcel polygons verified in thirteen local cells around the Las Vegas WUP settlement locator, with no sampled overlaps above 0.01 m². Forced paging, fresh exact geometry hashes, explicit absence, footprint and complete binding passed across recorded retries. Intermittent HTTP 500 responses remain documented. County coverage near this point does not establish municipal-only, citywide or countywide completeness.",
+    "countrywideVerified": false,
+    "citywideVerified": false
+  },
+  "registryFound": true,
+  "verifiedSample": true,
+  "resultCategory": "verified_public_geometry_runtime_enabled",
+  "technicalBlocker": null,
+  "remainingUncertainty": "The bounded sample does not establish whole-city/county counts or municipal boundaries; intermittent server errors occurred during some attempts, though each affected check later passed.",
+  "nextStep": "Use the qualified bounded county service locally, with publisher errors surfaced explicitly; broader city/county completeness remains unverified.",
+  "schemaVersion": 1,
+  "checkedAt": "2026-10-09",
+  "wupCityCode": 4714,
+  "cityId": "wup2025:4714",
+  "runtimeReadiness": "enabled",
+  "adapterReady": true,
+  "centerLatLon": [
+    36.1515806137119,
+    -115.164472767125
+  ],
+  "queueRank": 232,
+  "population2025": 2183655,
+  "populationUnit": "persons",
+  "pointBasis": "UN WUP 2025 population-weighted settlement centroid; this is not a municipal boundary or a parcel-coverage claim.",
+  "publicParcelGeometryFound": true,
+  "sourceIds": [
+    "us-nv-clark-assessor-parcels"
+  ],
+  "registryBasis": "Official parcel feature service and successful geometry/API tests establish public parcel data availability; this does not establish cadastral legal status or city-boundary coverage.",
+  "verifiedSampleIds": [
+    "US-NV-CLARK-16204399004",
+    "US-NV-CLARK-16204699026",
+    "US-NV-CLARK-16204701002"
+  ],
+  "serviceReliability": "Intermittent HTTP 500 responses occurred and are retained in the attempts record. Their historical response-body hashes are unavailable; successful retry bodies are hashed. Availability remains subject to publisher errors.",
+  "appCityId": "lasvegas",
+  "scopeLimits": "90 valid, distinct Clark County assessor parcel polygons verified in thirteen local cells around the Las Vegas WUP settlement locator, with no sampled overlaps above 0.01 m². Forced paging, fresh exact geometry hashes, explicit absence, footprint and complete binding passed across recorded retries. Intermittent HTTP 500 responses remain documented. County coverage near this point does not establish municipal-only, citywide or countywide completeness.",
+  "runtimeAssessment": {
+    "status": "enabled",
+    "reason": "90 valid, distinct Clark County assessor parcel polygons verified in thirteen local cells around the Las Vegas WUP settlement locator, with no sampled overlaps above 0.01 m². Forced paging, fresh exact geometry hashes, explicit absence, footprint and complete binding passed across recorded retries. Intermittent HTTP 500 responses remain documented. County coverage near this point does not establish municipal-only, citywide or countywide completeness.",
+    "acceptanceFile": "research/overnight-cities-2026-10-08/las-vegas-effective-acceptance.json",
+    "qualityFile": "research/overnight-cities-2026-10-08/las-vegas-final-quality.json",
+    "qualityReviewFile": "research/overnight-cities-2026-10-08/las-vegas-retry-attempts.json"
+  },
+  "runtimeQualification": {
+    "sourceId": "us-nv-clark-assessor-parcels",
+    "status": "enabled",
+    "acceptanceFile": "research/overnight-cities-2026-10-08/las-vegas-effective-acceptance.json",
+    "qualityFile": "research/overnight-cities-2026-10-08/las-vegas-final-quality.json"
+  },
+  "populationPlausibility2025": "Moderate",
+  "rootReviewedAt": "2026-10-08T21:25:23.474999+00:00"
+}

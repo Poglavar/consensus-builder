@@ -1,0 +1,67 @@
+{
+  "schemaVersion": "1.0",
+  "checkedAt": "2026-10-09",
+  "cityRecord": "city-1772-kebkabiya.json",
+  "purpose": "Document first-party local registry/map evidence and schema-first anonymous geometry review.",
+  "scopeLimits": {
+    "maxFullPolygonsRetainedInCityRecord": 0,
+    "maxFullPolygonsRetainedInReview": 0,
+    "maxFullPolygonsRetainedInRepository": 0,
+    "ownerOrAddressDataRetained": false,
+    "credentialsOrTokenValuesRetained": false,
+    "citywideCompletenessAsserted": false
+  },
+  "assessment": "The official Judiciary site lists Kebkabiya as a North Darfur partial-court location and says the national land-registration system has offices across Sudanese states. No source located ties a land-registration office to Kebkabiya specifically. No public geometry endpoint or schema was found. City-level land-registry branch not directly verified; no anonymous public parcel-vector schema or geometry was identified.",
+  "registryAssessment": "The Sudan Judiciary describes a statewide land-registration directorate with offices across states and separately lists Kebkabiya among North Darfur partial courts. The official sources do not identify a land-registry office in Kebkabiya or establish that the local court handles title registration; therefore city-level registry presence remains unresolved.",
+  "officialPrimarySources": [
+    {
+      "url": "https://sj.gov.sd/ar/content/page/%D8%A7%D9%84%D8%A7%D8%AC%D9%87%D8%B2%D8%A9-%D8%A7%D9%84%D9%82%D8%B6%D8%A7%D8%A6%D9%8A%D8%A9",
+      "observation": "The Sudan Judiciary describes a statewide land-registration directorate with offices across states and separately lists Kebkabiya among North Darfur partial courts. The official sources do not identify a land-registry office in Kebkabiya or establish that the local court handles title registration; therefore city-level registry presence remains unresolved."
+    },
+    {
+      "url": "https://sj.gov.sd/ar/content/page/%D8%A5%D8%AF%D8%A7%D8%B1%D8%A9-%D8%AA%D8%B3%D8%AC%D9%8A%D9%84%D8%A7%D8%AA-%D8%A7%D9%84%D8%A7%D8%B1%D8%A7%D8%B6%D9%8A",
+      "observation": "The Sudan Judiciary describes a statewide land-registration directorate with offices across states and separately lists Kebkabiya among North Darfur partial courts. The official sources do not identify a land-registry office in Kebkabiya or establish that the local court handles title registration; therefore city-level registry presence remains unresolved."
+    }
+  ],
+  "searchQueries": [
+    {
+      "language": "English",
+      "query": "Kebkabiya Sudan official land registry cadastral office land records North Darfur",
+      "result": "The official Judiciary site lists Kebkabiya as a North Darfur partial-court location and says the national land-registration system has offices across Sudanese states. No source located ties a land-registration office to Kebkabiya specifically. No public geometry endpoint or schema was found.",
+      "method": "Separate English-language search and official source review."
+    },
+    {
+      "language": "Arabic",
+      "query": "كبكابية السودان مكتب تسجيلات الأراضي المساحة السجل العقاري شمال دارفور رسمي",
+      "result": "The official Judiciary site lists Kebkabiya as a North Darfur partial-court location and says the national land-registration system has offices across Sudanese states. No source located ties a land-registration office to Kebkabiya specifically. No public geometry endpoint or schema was found.",
+      "method": "Separate local-language search and official source review."
+    }
+  ],
+  "geometryDecision": "No parcel geometry retained; no anonymous schema-safe exact-point geometry response was verified.",
+  "coverageAssessment": {
+    "claimedScope": "The Sudan Judiciary describes a statewide land-registration directorate with offices across states and separately lists Kebkabiya among North Darfur partial courts. The official sources do not identify a land-registry office in Kebkabiya or establish that the local court handles title registration; therefore city-level registry presence remains unresolved.",
+    "verifiedOpenScope": "The official Judiciary site lists Kebkabiya as a North Darfur partial-court location and says the national land-registration system has offices across Sudanese states. No source located ties a land-registration office to Kebkabiya specifically. No public geometry endpoint or schema was found.",
+    "citywideVerified": false,
+    "countrywideVerified": false
+  },
+  "attempts": [
+    {
+      "source": "https://sj.gov.sd/ar/content/page/%D8%A7%D9%84%D8%A7%D8%AC%D9%87%D8%B2%D8%A9-%D8%A7%D9%84%D9%82%D8%B6%D8%A7%D8%A6%D9%8A%D8%A9",
+      "outcome": "Metadata/source review only; no feature or individual property lookup made.",
+      "fieldsRequested": [],
+      "sensitiveFieldsRequested": false
+    },
+    {
+      "source": "https://sj.gov.sd/ar/content/page/%D8%A5%D8%AF%D8%A7%D8%B1%D8%A9-%D8%AA%D8%B3%D8%AC%D9%8A%D9%84%D8%A7%D8%AA-%D8%A7%D9%84%D8%A7%D8%B1%D8%A7%D8%B6%D9%8A",
+      "outcome": "Metadata/source review only; no feature or individual property lookup made.",
+      "fieldsRequested": [],
+      "sensitiveFieldsRequested": false
+    }
+  ],
+  "remainingUncertainty": "Whether Kebkabiya has a local land-registration office and whether any public geometry service covers the WUP point remain unknown.",
+  "runtimeAssessment": {
+    "status": "not_assessed",
+    "reason": "No adapter or runtime contract was tested."
+  },
+  "technicalBlocker": "City-level land-registry branch not directly verified; no anonymous public parcel-vector schema or geometry was identified."
+}

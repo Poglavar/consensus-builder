@@ -1,0 +1,45 @@
+{
+  "schemaVersion": 1,
+  "checkedAt": "2026-10-09",
+  "cityRecord": "city-3114-oyo.json",
+  "purpose": "City-specific official registry/cadastre and safe anonymous parcel-geometry discovery.",
+  "scopeLimits": {
+    "maxFullPolygonsRetainedInCityRecord": 3,
+    "maxFullPolygonsRetainedInReview": 3,
+    "maxFullPolygonsRetainedInRepository": 3,
+    "ownerOrAddressDataRetained": false,
+    "credentialsOrTokenValuesRetained": false,
+    "citywideCompletenessAsserted": false
+  },
+  "assessment": "Official primary pages identify an active land-allocation and title workflow for Oyo Town GRA and aggregate Land Use Charge records for Oyo West and Oyo East. This establishes a city-local property-record service; the broader OyoGISS point/address description is not treated as cadastral polygon coverage. No personal property search was made.",
+  "registryAssessment": "City-local evidence is explicit: the Oyo State Ministry of Lands lists an implemented “Oyo Town GRA, Oyo” land-allocation service, with plot selection, allocation letter and Certificate of Occupancy workflow; its current Land Use Charge table separately lists Oyo West and Oyo East property records. This supports a local government property-record/land service for Oyo town, distinct from Ibadan and the state namesake. It does not establish a general citywide cadastral polygon layer, exact WUP-locator jurisdiction, or anonymous parcel geometry.",
+  "searchQueries": [
+    {
+      "language": "Yoruba",
+      "query": "Oyo ilu ilẹ̀ ilẹ̀ cadastral map ìforúkọsílẹ̀ ilẹ̀ GIS osise Oyo State Nigeria",
+      "scope": "Locate a city-local land registry/cadastre and verify whether anonymous safe parcel geometry is available.",
+      "result": "Root-review follow-up checked the official Oyo State Ministry of Lands service pages for Oyo Town (the Nigerian city). The GRA service explicitly lists Oyo Town GRA and describes online plot selection/allocation/Certificate of Occupancy workflow; the Land Use Charge table separately lists Oyo West and Oyo East. This is local property-record/land service evidence, not parcel polygon coverage. No name, survey-plan, property, or address lookup was made.",
+      "actualResultUrls": [
+        "https://lands.oyostate.gov.ng/land-application.html",
+        "https://lands.oyostate.gov.ng/land-use-charge.html",
+        "https://lands.oyostate.gov.ng/oyo-giss.html"
+      ],
+      "executionMethod": "Separate Yoruba and English searches, then direct review of official Oyo State Ministry of Lands service pages identifying Oyo Town GRA and Oyo East/West entries. No named-property or survey-plan search was submitted."
+    },
+    {
+      "language": "English",
+      "query": "Oyo Nigeria official cadastral parcel map land registry survey map Oyo town",
+      "scope": "Locate a city-local land registry/cadastre and verify whether anonymous safe parcel geometry is available.",
+      "result": "Root-review follow-up checked the official Oyo State Ministry of Lands service pages for Oyo Town (the Nigerian city). The GRA service explicitly lists Oyo Town GRA and describes online plot selection/allocation/Certificate of Occupancy workflow; the Land Use Charge table separately lists Oyo West and Oyo East. This is local property-record/land service evidence, not parcel polygon coverage. No name, survey-plan, property, or address lookup was made.",
+      "actualResultUrls": [
+        "https://lands.oyostate.gov.ng/land-application.html",
+        "https://lands.oyostate.gov.ng/land-use-charge.html",
+        "https://lands.oyostate.gov.ng/oyo-giss.html"
+      ],
+      "executionMethod": "Separate Yoruba and English searches, then direct review of official Oyo State Ministry of Lands service pages identifying Oyo Town GRA and Oyo East/West entries. No named-property or survey-plan search was submitted."
+    }
+  ],
+  "geometryEvidence": null,
+  "privacy": "No owner, address, taxpayer, account, applicant, title, or other personal/property values were queried or retained. No credentials or token values were used.",
+  "runtimeAssessment": "not_assessed"
+}

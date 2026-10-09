@@ -1,0 +1,58 @@
+{
+  "schemaVersion": "1.0",
+  "checkedAt": "2026-10-09",
+  "cityRecord": "city-10549-deoria.json",
+  "purpose": "Document first-party local land-registry/map evidence and bounded anonymous geometry-route review.",
+  "scopeLimits": {
+    "maxFullPolygonsRetainedInCityRecord": 3,
+    "maxFullPolygonsRetainedInReview": 3,
+    "maxFullPolygonsRetainedInRepository": 3,
+    "ownerOrAddressDataRetained": false,
+    "credentialsOrTokenValuesRetained": false,
+    "citywideCompletenessAsserted": false
+  },
+  "assessment": "State map-digitization indicators describe district/revenue-village progress but do not identify the WUP point’s village or prove the point is covered. No public full-polygon response was verified.",
+  "registryAssessment": "The district collectorate page documents a Revenue Record Keeper maintaining land records and identifies the local district revenue structure; Deoria Sadar is an official tehsil.",
+  "officialPrimarySources": [
+    {
+      "url": "https://deoria.nic.in/collectrate/",
+      "observation": "Official district collectorate page states the Revenue Record Keeper maintains land-record files including Khasra/Khatauni and that copies are requested through a records process."
+    },
+    {
+      "url": "https://deoria.nic.in/contact-details/",
+      "observation": "Official district contact page lists the SDM and Tehsildar for Deoria Sadar."
+    },
+    {
+      "url": "https://deoria.nic.in/hi/%E0%A4%A4%E0%A4%B9%E0%A4%B8%E0%A5%80%E0%A4%B2/",
+      "observation": "Official Hindi district page names Deoria Sadar among the district tehsils."
+    },
+    {
+      "url": "https://upbhunaksha.gov.in/home/",
+      "observation": "Uttar Pradesh public cadastral-map portal landing page; this review did not resolve the WUP point to a revenue village or verify anonymous feature schema/response."
+    }
+  ],
+  "searchQueries": [
+    {
+      "language": "English",
+      "query": "Deoria Uttar Pradesh official land records cadastral map BhuNaksha Deoria Sadar",
+      "result": "District administration identifies Deoria Sadar revenue offices and record-keeping; statewide map-digitization dashboard indicates progress but not exact-point parcel coverage.",
+      "method": "Separate local-language/English discovery and first-party public-page review."
+    },
+    {
+      "language": "Hindi",
+      "query": "देवरिया सदर तहसील भू अभिलेख खसरा खतौनी नक्शा आधिकारिक",
+      "result": "Official district pages describe revenue-record offices and Deoria Sadar; no safe anonymous vector schema or point result was verified.",
+      "method": "Separate local-language/English discovery and first-party public-page review."
+    }
+  ],
+  "serviceChecks": [
+    {
+      "url": "https://upbhunaksha.gov.in/home/",
+      "method": "Public page/catalogue review; no property-specific query",
+      "observation": "Reviewed public district pages and map portal landing page only; no login or owner/plot/identity query."
+    }
+  ],
+  "geometryEvidence": null,
+  "privacy": "No parcel features or sensitive attributes retained; no owner/address/property-specific lookup submitted.",
+  "runtimeAssessment": "not_enabled"
+}

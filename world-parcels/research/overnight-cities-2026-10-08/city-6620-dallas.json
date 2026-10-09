@@ -1,0 +1,142 @@
+{
+  "schemaVersion": 1,
+  "kind": "city_parcel_source_research",
+  "wupCityCode": 6620,
+  "cityId": "wup2025:6620",
+  "name": "Dallas",
+  "country": "United States of America",
+  "countryCode": "US",
+  "rank": 329,
+  "queueRank": 329,
+  "point": [
+    32.8728161029652,
+    -96.7273020350225
+  ],
+  "centerLatLon": [
+    32.8728161029652,
+    -96.7273020350225
+  ],
+  "population2025": 1521118,
+  "populationUnit": "persons",
+  "populationPlausibility2025": "Moderate",
+  "pointBasis": "UN WUP 2025 population-weighted settlement centroid; this is not a municipal boundary or a parcel-coverage claim.",
+  "checkedAt": "2026-10-08T22:38:20.954982+00:00",
+  "status": "complete",
+  "registryFound": true,
+  "registryBasis": "Dallas County’s first-party public-works GIS page directs parcel users to Dallas Central Appraisal District. The City of Dallas GIS publishes a tax-parcel service expressly covering the city and a one-mile buffer, using certified data from its five county appraisal districts.",
+  "registryEvidenceUrls": [
+    "https://www.dallascounty.org/departments/pubworks/GIS.php",
+    "https://gis.dallascityhall.com/arcgis/rest/services/Basemap/DallasTaxParcels/FeatureServer/0"
+  ],
+  "verifiedSample": true,
+  "publicParcelGeometryFound": true,
+  "runtimeReadiness": "enabled",
+  "adapterReady": true,
+  "sourceIds": [
+    "us-tx-dallas-taxparcels"
+  ],
+  "scopeLimits": "115 valid, distinct City of Dallas tax-parcel polygons verified in thirteen bounded cells around the ranked WUP locator. Complete object-ID manifests, forced three-row paging, all fresh GIS_ACCT reads, explicit absence, footprint and binding passed. Independent GEOS found no invalid polygons, duplicate geometry, sampled overlaps above 0.01 m² or operation errors. GIS_ACCT is the advertised display/account field; county metadata is blank on one sampled record and is not synthesized. Native account identity is verified only within this sample and these live re-reads. Citywide completeness, present legal boundaries and permanence of accounts are unverified.",
+  "coverageAssessment": {
+    "claimedScope": "Tax parcels from county appraisal districsts: Dallas, Collin, Denton, Kaufman and Rockwall. Most recent certified data used.",
+    "verifiedOpenScope": "115 valid, distinct City of Dallas tax-parcel polygons verified in thirteen bounded cells around the ranked WUP locator. Complete object-ID manifests, forced three-row paging, all fresh GIS_ACCT reads, explicit absence, footprint and binding passed. Independent GEOS found no invalid polygons, duplicate geometry, sampled overlaps above 0.01 m² or operation errors. GIS_ACCT is the advertised display/account field; county metadata is blank on one sampled record and is not synthesized. Native account identity is verified only within this sample and these live re-reads. Citywide completeness, present legal boundaries and permanence of accounts are unverified.",
+    "citywideVerified": false,
+    "countrywideVerified": false
+  },
+  "source": {
+    "sourceId": "us-tx-dallas-taxparcels",
+    "name": "City of Dallas certified tax parcels",
+    "operator": "City of Dallas GIS Services; county appraisal districts",
+    "url": "https://gis.dallascityhall.com/arcgis/rest/services/Basemap/DallasTaxParcels/FeatureServer/0",
+    "nativeIdField": "GIS_ACCT",
+    "nativeIdType": "string",
+    "transportObjectIdField": "OBJECTID",
+    "nativeCrs": "EPSG:2276 (US survey feet)",
+    "outputCrs": "EPSG:4326",
+    "scope": "115 valid, distinct City of Dallas tax-parcel polygons verified in thirteen bounded cells around the ranked WUP locator. Complete object-ID manifests, forced three-row paging, all fresh GIS_ACCT reads, explicit absence, footprint and binding passed. Independent GEOS found no invalid polygons, duplicate geometry, sampled overlaps above 0.01 m² or operation errors. GIS_ACCT is the advertised display/account field; county metadata is blank on one sampled record and is not synthesized. Native account identity is verified only within this sample and these live re-reads. Citywide completeness, present legal boundaries and permanence of accounts are unverified."
+  },
+  "freshResearch": {
+    "queries": [
+      {
+        "language": "English",
+        "query": "Dallas official county appraisal district parcel polygon GIS download FeatureServer DCAD parcels",
+        "result": "First-party county GIS guidance names DCAD; official city parcel-service metadata describes certified tax parcels for city and one-mile buffer.",
+        "actualResultUrls": [
+          "https://www.dallascounty.org/departments/pubworks/GIS.php",
+          "https://dcadwebdev.dallascad.org/GISDataProducts.aspx",
+          "https://gis.dallascityhall.com/arcgis/rest/services/Basemap/DallasTaxParcels/FeatureServer/0"
+        ]
+      },
+      {
+        "language": "English",
+        "query": "Dallas city GIS cadastral parcels public ArcGIS parcel polygons",
+        "result": "The City of Dallas Basemap/DallasTaxParcels service publishes public full Polygon geometry and advertises GIS_ACCT display/account identity, OBJECTID paging identity, and complete query operations.",
+        "actualResultUrls": [
+          "https://gis.dallascityhall.com/arcgis/rest/services/Basemap/DallasTaxParcels/FeatureServer/0",
+          "https://gis.dallascityhall.com/arcgis/rest/services/Basemap/DallasTaxParcels/FeatureServer"
+        ]
+      }
+    ],
+    "nativeLanguageNote": "English is the primary local official language; both separate actual queries were in English.",
+    "requests": [
+      {
+        "url": "https://gis.dallascityhall.com/arcgis/rest/services/Basemap/DallasTaxParcels/FeatureServer/0?f=pjson",
+        "method": "GET",
+        "httpStatus": 200,
+        "observation": "Polygon Feature Layer; OBJECTID paging field, GIS_ACCT string length17; SupportsPagination true. Safe schema inspected before geometry queries."
+      },
+      {
+        "checkedAt": "2026-10-08T22:26:50.247Z",
+        "url": "https://gis.dallascityhall.com/arcgis/rest/services/Basemap/DallasTaxParcels/FeatureServer/0/query?f=geojson&where=1%3D1&geometry=-96.727502035%2C32.872616103%2C-96.727102035%2C32.873016103&geometryType=esriGeometryEnvelope&inSR=4326&outSR=4326&spatialRel=esriSpatialRelIntersects&outFields=OBJECTID%2CGIS_ACCT%2CACCT%2CCOUNTY%2CAPPRAISALYEAR&returnGeometry=true&orderByFields=OBJECTID+ASC&resultRecordCount=3",
+        "status": 200,
+        "bytes": 2394
+      }
+    ],
+    "safeOutFields": [
+      "OBJECTID",
+      "COUNTY",
+      "GIS_ACCT",
+      "APPRAISALYEAR"
+    ],
+    "ownerAddressFieldsRequested": false,
+    "candidateHistory": [
+      {
+        "identity": "COUNTY+GIS_ACCT",
+        "outcome": "Five cells rejected a legitimate record with empty COUNTY and APPRAISALYEAR=0; no metadata value was synthesized."
+      },
+      {
+        "identity": "GIS_ACCT",
+        "outcome": "The service’s advertised GIS display/account field; all13 cells and115fresh identities passed without excluding the record."
+      }
+    ],
+    "sampleFile": "dallas-taxparcels-adapter-sample.geojson",
+    "acceptanceFile": "dallas-taxparcels-acceptance.json",
+    "qualityFile": "dallas-taxparcels-quality.json"
+  },
+  "verifiedParcelResponse": {
+    "httpStatus": 200,
+    "responseType": "GeoJSON",
+    "responseCrs": "EPSG:4326",
+    "uniqueFullPolygonCount": 115,
+    "retainedFullPolygonCount": 3,
+    "limitations": "115 valid, distinct City of Dallas tax-parcel polygons verified in thirteen bounded cells around the ranked WUP locator. Complete object-ID manifests, forced three-row paging, all fresh GIS_ACCT reads, explicit absence, footprint and binding passed. Independent GEOS found no invalid polygons, duplicate geometry, sampled overlaps above 0.01 m² or operation errors. GIS_ACCT is the advertised display/account field; county metadata is blank on one sampled record and is not synthesized. Native account identity is verified only within this sample and these live re-reads. Citywide completeness, present legal boundaries and permanence of accounts are unverified."
+  },
+  "resultCategory": "verified_public_geometry_runtime_enabled",
+  "technicalBlocker": null,
+  "remainingUncertainty": "Countywide/native account uniqueness and citywide completeness beyond this bounded set; source legal-boundary accuracy and long-term account permanence.",
+  "nextStep": "Integrate reviewed source and verify normal parcel selection locally.",
+  "appCityId": "dallas",
+  "runtimeAssessment": {
+    "status": "enabled",
+    "reason": "115 valid, distinct City of Dallas tax-parcel polygons verified in thirteen bounded cells around the ranked WUP locator. Complete object-ID manifests, forced three-row paging, all fresh GIS_ACCT reads, explicit absence, footprint and binding passed. Independent GEOS found no invalid polygons, duplicate geometry, sampled overlaps above 0.01 m² or operation errors. GIS_ACCT is the advertised display/account field; county metadata is blank on one sampled record and is not synthesized. Native account identity is verified only within this sample and these live re-reads. Citywide completeness, present legal boundaries and permanence of accounts are unverified.",
+    "acceptanceFile": "research/overnight-cities-2026-10-08/dallas-taxparcels-acceptance.json",
+    "qualityFile": "research/overnight-cities-2026-10-08/dallas-taxparcels-quality.json",
+    "qualityReviewFile": "research/overnight-cities-2026-10-08/dallas-service-review.json"
+  },
+  "runtimeQualification": {
+    "sourceId": "us-tx-dallas-taxparcels",
+    "status": "enabled",
+    "acceptanceFile": "research/overnight-cities-2026-10-08/dallas-taxparcels-acceptance.json",
+    "qualityFile": "research/overnight-cities-2026-10-08/dallas-taxparcels-quality.json"
+  },
+  "rootReviewedAt": "2026-10-08T22:38:21.119777+00:00"
+}

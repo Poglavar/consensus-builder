@@ -1,0 +1,3272 @@
+{
+  "schemaVersion": 1,
+  "purpose": "Independent GEOS topology check of complete runtime parcels projected to metric coordinates; no repair applied. Counts are bounded sample evidence, not whole-city guarantees.",
+  "library": "Shapely 2.2.0",
+  "metricCrs": "EPSG:32720",
+  "featureCount": 440,
+  "validNonemptyCount": 418,
+  "invalidFeatures": [
+    {
+      "id": "AR-CORDOBA-MUNI-211395",
+      "reason": "Self-intersection[385163.170840549 6525330.57562232]",
+      "empty": false
+    },
+    {
+      "id": "AR-CORDOBA-MUNI-363376",
+      "reason": "Ring Self-intersection[385148.970621474 6525324.87675925]",
+      "empty": false
+    },
+    {
+      "id": "AR-CORDOBA-MUNI-313259",
+      "reason": "Too few points in geometry component[385423.713108095 6525416.57722176]",
+      "empty": false
+    },
+    {
+      "id": "AR-CORDOBA-MUNI-22342",
+      "reason": "Self-intersection[385156.773128051 6525480.16193136]",
+      "empty": false
+    },
+    {
+      "id": "AR-CORDOBA-MUNI-32469",
+      "reason": "Ring Self-intersection[385251.848505175 6525481.20602235]",
+      "empty": false
+    },
+    {
+      "id": "AR-CORDOBA-MUNI-206917",
+      "reason": "Too few points in geometry component[385157.138456023 6525446.90892421]",
+      "empty": false
+    },
+    {
+      "id": "AR-CORDOBA-MUNI-294056",
+      "reason": "Ring Self-intersection[385232.224961516 6525536.41894113]",
+      "empty": false
+    },
+    {
+      "id": "AR-CORDOBA-MUNI-32462",
+      "reason": "Too few points in geometry component[385308.893723719 6525481.83206168]",
+      "empty": false
+    },
+    {
+      "id": "AR-CORDOBA-MUNI-88760",
+      "reason": "Too few points in geometry component[385356.188274788 6525504.52218596]",
+      "empty": false
+    },
+    {
+      "id": "AR-CORDOBA-MUNI-387755",
+      "reason": "Ring Self-intersection[385346.194429994 6525548.75523555]",
+      "empty": false
+    },
+    {
+      "id": "AR-CORDOBA-MUNI-43612",
+      "reason": "Too few points in geometry component[385451.385282113 6525494.48012706]",
+      "empty": false
+    },
+    {
+      "id": "AR-CORDOBA-MUNI-73530",
+      "reason": "Too few points in geometry component[385432.613160515 6525472.10308173]",
+      "empty": false
+    },
+    {
+      "id": "AR-CORDOBA-MUNI-38584",
+      "reason": "Ring Self-intersection[385145.438845562 6525646.32249097]",
+      "empty": false
+    },
+    {
+      "id": "AR-CORDOBA-MUNI-200778",
+      "reason": "Too few points in geometry component[385297.92672273 6525614.73972338]",
+      "empty": false
+    },
+    {
+      "id": "AR-CORDOBA-MUNI-200783",
+      "reason": "Too few points in geometry component[385278.78976817 6525625.61539636]",
+      "empty": false
+    },
+    {
+      "id": "AR-CORDOBA-MUNI-261858",
+      "reason": "Too few points in geometry component[385316.334041977 6525670.36999615]",
+      "empty": false
+    },
+    {
+      "id": "AR-CORDOBA-MUNI-94177",
+      "reason": "Too few points in geometry component[385374.474134614 6525571.23669123]",
+      "empty": false
+    },
+    {
+      "id": "AR-CORDOBA-MUNI-99411",
+      "reason": "Self-intersection[385383.981750033 6525571.34093879]",
+      "empty": false
+    },
+    {
+      "id": "AR-CORDOBA-MUNI-124996",
+      "reason": "Too few points in geometry component[385306.339904858 6525714.60300703]",
+      "empty": false
+    },
+    {
+      "id": "AR-CORDOBA-MUNI-296659",
+      "reason": "Too few points in geometry component[385343.641502344 6525781.52614429]",
+      "empty": false
+    },
+    {
+      "id": "AR-CORDOBA-MUNI-300541",
+      "reason": "Self-intersection[385061.697734813 6525479.11697527]",
+      "empty": false
+    },
+    {
+      "id": "AR-CORDOBA-MUNI-243643",
+      "reason": "Too few points in geometry component[385488.808349084 6525550.31843542]",
+      "empty": false
+    }
+  ],
+  "exactDuplicateGeometryPairs": [],
+  "positiveAreaOverlapPairsAbove0_01M2": [
+    {
+      "ids": [
+        "AR-CORDOBA-MUNI-211394",
+        "AR-CORDOBA-MUNI-211396"
+      ],
+      "overlapM2": 26.348932763907943,
+      "fractionOfSmaller": 0.16666613484045156
+    },
+    {
+      "ids": [
+        "AR-CORDOBA-MUNI-79038",
+        "AR-CORDOBA-MUNI-79039"
+      ],
+      "overlapM2": 52.6988827966272,
+      "fractionOfSmaller": 1.0000000000000002
+    },
+    {
+      "ids": [
+        "AR-CORDOBA-MUNI-243642",
+        "AR-CORDOBA-MUNI-327038"
+      ],
+      "overlapM2": 316.19346428972756,
+      "fractionOfSmaller": 1.0
+    }
+  ],
+  "sumPairwiseOverlapM2": 395.2412798502627,
+  "operationErrors": [
+    {
+      "ids": [
+        "AR-CORDOBA-MUNI-35451",
+        "AR-CORDOBA-MUNI-211395"
+      ],
+      "error": "TopologyException: side location conflict at 385163.17084054946 6525330.5756223174. This can occur if the input geometry is invalid."
+    },
+    {
+      "ids": [
+        "AR-CORDOBA-MUNI-211394",
+        "AR-CORDOBA-MUNI-211395"
+      ],
+      "error": "TopologyException: side location conflict at 385163.17084054946 6525330.5756223174. This can occur if the input geometry is invalid."
+    },
+    {
+      "ids": [
+        "AR-CORDOBA-MUNI-211395",
+        "AR-CORDOBA-MUNI-363376"
+      ],
+      "error": "TopologyException: side location conflict at 385163.17084054946 6525330.5756223174. This can occur if the input geometry is invalid."
+    },
+    {
+      "ids": [
+        "AR-CORDOBA-MUNI-211395",
+        "AR-CORDOBA-MUNI-211396"
+      ],
+      "error": "TopologyException: side location conflict at 385163.17084054946 6525330.5756223174. This can occur if the input geometry is invalid."
+    },
+    {
+      "ids": [
+        "AR-CORDOBA-MUNI-211395",
+        "AR-CORDOBA-MUNI-363377"
+      ],
+      "error": "TopologyException: side location conflict at 385163.17084054946 6525330.5756223174. This can occur if the input geometry is invalid."
+    }
+  ],
+  "areaM2": {
+    "min": 0.0,
+    "median": 210.79451535839655,
+    "max": 20130.448813367224
+  },
+  "features": [
+    {
+      "id": "AR-CORDOBA-MUNI-35451",
+      "areaM2": 18128.157941277444,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "AR-CORDOBA-MUNI-36418",
+      "areaM2": 210.79272338803344,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "AR-CORDOBA-MUNI-36419",
+      "areaM2": 158.09421767755182,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "AR-CORDOBA-MUNI-36420",
+      "areaM2": 158.0944772904458,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "AR-CORDOBA-MUNI-36421",
+      "areaM2": 158.09441694733547,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "AR-CORDOBA-MUNI-36422",
+      "areaM2": 158.09409572787163,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "AR-CORDOBA-MUNI-36423",
+      "areaM2": 210.79194882751608,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "AR-CORDOBA-MUNI-36424",
+      "areaM2": 105.39604085059477,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "AR-CORDOBA-MUNI-36427",
+      "areaM2": 105.39616804687775,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "AR-CORDOBA-MUNI-36428",
+      "areaM2": 210.7919621302874,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "AR-CORDOBA-MUNI-36429",
+      "areaM2": 210.79246897837635,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "AR-CORDOBA-MUNI-36430",
+      "areaM2": 158.0942865165502,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "AR-CORDOBA-MUNI-82478",
+      "areaM2": 210.79154791511456,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "AR-CORDOBA-MUNI-107238",
+      "areaM2": 158.09460778596255,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "AR-CORDOBA-MUNI-211389",
+      "areaM2": 210.79155925320123,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "AR-CORDOBA-MUNI-211390",
+      "areaM2": 316.18734769628554,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "AR-CORDOBA-MUNI-211391",
+      "areaM2": 316.18753820035215,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "AR-CORDOBA-MUNI-211392",
+      "areaM2": 316.1875552403661,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "AR-CORDOBA-MUNI-211393",
+      "areaM2": 421.5834148729328,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "AR-CORDOBA-MUNI-211394",
+      "areaM2": 158.09410105497201,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "AR-CORDOBA-MUNI-211395",
+      "areaM2": 0.00012252797733547371,
+      "valid": false,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "AR-CORDOBA-MUNI-211396",
+      "areaM2": 368.88600272610927,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "AR-CORDOBA-MUNI-363376",
+      "areaM2": 316.18738693362155,
+      "valid": false,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "AR-CORDOBA-MUNI-363377",
+      "areaM2": 263.4902761880595,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "AR-CORDOBA-MUNI-36425",
+      "areaM2": 158.09383609675564,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "AR-CORDOBA-MUNI-36426",
+      "areaM2": 526.9783670952174,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "AR-CORDOBA-MUNI-36431",
+      "areaM2": 52.697928189753966,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "AR-CORDOBA-MUNI-36432",
+      "areaM2": 105.39584104858702,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "AR-CORDOBA-MUNI-36433",
+      "areaM2": 210.79157081523795,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "AR-CORDOBA-MUNI-36434",
+      "areaM2": 105.39596824467944,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "AR-CORDOBA-MUNI-36435",
+      "areaM2": 210.7916944789448,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "AR-CORDOBA-MUNI-328763",
+      "areaM2": 210.79384672025827,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "AR-CORDOBA-MUNI-328764",
+      "areaM2": 52.69852385511136,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "AR-CORDOBA-MUNI-328765",
+      "areaM2": 316.18993049649725,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "AR-CORDOBA-MUNI-328766",
+      "areaM2": 316.1904144304085,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "AR-CORDOBA-MUNI-328767",
+      "areaM2": 210.79354373241742,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "AR-CORDOBA-MUNI-328772",
+      "areaM2": 210.79385808405092,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "AR-CORDOBA-MUNI-328773",
+      "areaM2": 316.19079593397043,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "AR-CORDOBA-MUNI-328774",
+      "areaM2": 105.39694018317911,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "AR-CORDOBA-MUNI-328775",
+      "areaM2": 158.0957483463467,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "AR-CORDOBA-MUNI-328776",
+      "areaM2": 210.79411242574818,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "AR-CORDOBA-MUNI-350612",
+      "areaM2": 20130.448813367224,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "AR-CORDOBA-MUNI-11718",
+      "areaM2": 526.9837043925561,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "AR-CORDOBA-MUNI-11719",
+      "areaM2": 316.1894263469914,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "AR-CORDOBA-MUNI-75644",
+      "areaM2": 105.39686688601026,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "AR-CORDOBA-MUNI-75645",
+      "areaM2": 263.49195234427884,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "AR-CORDOBA-MUNI-127138",
+      "areaM2": 105.39679256087061,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "AR-CORDOBA-MUNI-127139",
+      "areaM2": 158.09530823283532,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "AR-CORDOBA-MUNI-127140",
+      "areaM2": 316.1905744709906,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "AR-CORDOBA-MUNI-226757",
+      "areaM2": 158.0953537698552,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "AR-CORDOBA-MUNI-226758",
+      "areaM2": 579.6825735210002,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "AR-CORDOBA-MUNI-226759",
+      "areaM2": 105.39666134381243,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "AR-CORDOBA-MUNI-226760",
+      "areaM2": 316.1897871891559,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "AR-CORDOBA-MUNI-226761",
+      "areaM2": 158.0948726166466,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "AR-CORDOBA-MUNI-313258",
+      "areaM2": 210.79307238280452,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "AR-CORDOBA-MUNI-313259",
+      "areaM2": 0.0,
+      "valid": false,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "AR-CORDOBA-MUNI-313260",
+      "areaM2": 316.18974351824613,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "AR-CORDOBA-MUNI-22342",
+      "areaM2": 105.39713458894886,
+      "valid": false,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "AR-CORDOBA-MUNI-22343",
+      "areaM2": 105.39735336250706,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "AR-CORDOBA-MUNI-32469",
+      "areaM2": 158.09612196823443,
+      "valid": false,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "AR-CORDOBA-MUNI-50524",
+      "areaM2": 105.39801244986138,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "AR-CORDOBA-MUNI-120149",
+      "areaM2": 210.79635538451402,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "AR-CORDOBA-MUNI-131384",
+      "areaM2": 474.28760094878646,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "AR-CORDOBA-MUNI-140464",
+      "areaM2": 105.39819554190258,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "AR-CORDOBA-MUNI-140465",
+      "areaM2": 210.7961748233223,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "AR-CORDOBA-MUNI-206917",
+      "areaM2": 0.0,
+      "valid": false,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "AR-CORDOBA-MUNI-206918",
+      "areaM2": 158.09572390610907,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "AR-CORDOBA-MUNI-275348",
+      "areaM2": 158.09686696126712,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "AR-CORDOBA-MUNI-275350",
+      "areaM2": 263.4948095531496,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "AR-CORDOBA-MUNI-275351",
+      "areaM2": 474.2902894643332,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "AR-CORDOBA-MUNI-275352",
+      "areaM2": 210.79579657818238,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "AR-CORDOBA-MUNI-275353",
+      "areaM2": 210.79552520416303,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "AR-CORDOBA-MUNI-275354",
+      "areaM2": 316.1932789934036,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "AR-CORDOBA-MUNI-275355",
+      "areaM2": 316.1929150491392,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "AR-CORDOBA-MUNI-275356",
+      "areaM2": 263.4946677590809,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "AR-CORDOBA-MUNI-275357",
+      "areaM2": 210.7957852423839,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "AR-CORDOBA-MUNI-275358",
+      "areaM2": 263.4942007874922,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "AR-CORDOBA-MUNI-275359",
+      "areaM2": 737.7824622245514,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "AR-CORDOBA-MUNI-294054",
+      "areaM2": 52.69892260202268,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "AR-CORDOBA-MUNI-294055",
+      "areaM2": 210.7960454673755,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "AR-CORDOBA-MUNI-294056",
+      "areaM2": 105.39808031432285,
+      "valid": false,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "AR-CORDOBA-MUNI-294057",
+      "areaM2": 158.09697103914456,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "AR-CORDOBA-MUNI-328753",
+      "areaM2": 316.1921306419282,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "AR-CORDOBA-MUNI-328754",
+      "areaM2": 316.1930336029611,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "AR-CORDOBA-MUNI-328755",
+      "areaM2": 210.79510725363235,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "AR-CORDOBA-MUNI-328756",
+      "areaM2": 158.09573118095767,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "AR-CORDOBA-MUNI-328757",
+      "areaM2": 316.19265201908877,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "AR-CORDOBA-MUNI-328758",
+      "areaM2": 210.7950103316198,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "AR-CORDOBA-MUNI-328759",
+      "areaM2": 210.79450030159256,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "AR-CORDOBA-MUNI-328760",
+      "areaM2": 263.493250502013,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "AR-CORDOBA-MUNI-328761",
+      "areaM2": 105.39707304094688,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "AR-CORDOBA-MUNI-328769",
+      "areaM2": 368.89064199101034,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "AR-CORDOBA-MUNI-328770",
+      "areaM2": 316.1926697006377,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "AR-CORDOBA-MUNI-328771",
+      "areaM2": 210.79536162625186,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "AR-CORDOBA-MUNI-328779",
+      "areaM2": 210.79537301656472,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "AR-CORDOBA-MUNI-332057",
+      "areaM2": 105.39811213411967,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "AR-CORDOBA-MUNI-32456",
+      "areaM2": 210.7947961372675,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "AR-CORDOBA-MUNI-32457",
+      "areaM2": 316.19178679700264,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "AR-CORDOBA-MUNI-32458",
+      "areaM2": 316.1914228794922,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "AR-CORDOBA-MUNI-32459",
+      "areaM2": 210.79478477411823,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "AR-CORDOBA-MUNI-32460",
+      "areaM2": 316.1921683111379,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "AR-CORDOBA-MUNI-32461",
+      "areaM2": 316.1918043998191,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "AR-CORDOBA-MUNI-32462",
+      "areaM2": 0.0,
+      "valid": false,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "AR-CORDOBA-MUNI-32463",
+      "areaM2": 210.79453041520054,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "AR-CORDOBA-MUNI-32464",
+      "areaM2": 105.39702765672546,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "AR-CORDOBA-MUNI-32465",
+      "areaM2": 105.3972483920002,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "AR-CORDOBA-MUNI-32466",
+      "areaM2": 316.19140527302386,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "AR-CORDOBA-MUNI-50522",
+      "areaM2": 263.4952079312651,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "AR-CORDOBA-MUNI-50523",
+      "areaM2": 105.39805064173311,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "AR-CORDOBA-MUNI-79036",
+      "areaM2": 263.49494279554125,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "AR-CORDOBA-MUNI-88754",
+      "areaM2": 263.4940126177248,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "AR-CORDOBA-MUNI-88756",
+      "areaM2": 210.79519138589643,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "AR-CORDOBA-MUNI-88757",
+      "areaM2": 263.49360913146023,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "AR-CORDOBA-MUNI-88759",
+      "areaM2": 105.39770037417775,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "AR-CORDOBA-MUNI-88760",
+      "areaM2": 0.0,
+      "valid": false,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "AR-CORDOBA-MUNI-88762",
+      "areaM2": 210.79492570174267,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "AR-CORDOBA-MUNI-88763",
+      "areaM2": 105.39747966788539,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "AR-CORDOBA-MUNI-88764",
+      "areaM2": 316.19276122435815,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "AR-CORDOBA-MUNI-113975",
+      "areaM2": 105.39772207883031,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "AR-CORDOBA-MUNI-113976",
+      "areaM2": 210.7956334655315,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "AR-CORDOBA-MUNI-120146",
+      "areaM2": 105.39807019181714,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "AR-CORDOBA-MUNI-120148",
+      "areaM2": 105.39817152213357,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "AR-CORDOBA-MUNI-136250",
+      "areaM2": 368.8921097797222,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "AR-CORDOBA-MUNI-136252",
+      "areaM2": 263.4945596648581,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "AR-CORDOBA-MUNI-136253",
+      "areaM2": 316.1930413302056,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "AR-CORDOBA-MUNI-136254",
+      "areaM2": 210.7953550158653,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "AR-CORDOBA-MUNI-328180",
+      "areaM2": 421.5915573630897,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "AR-CORDOBA-MUNI-328762",
+      "areaM2": 105.39729376197423,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "AR-CORDOBA-MUNI-328777",
+      "areaM2": 316.1911775160404,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "AR-CORDOBA-MUNI-328778",
+      "areaM2": 316.1915413993081,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "AR-CORDOBA-MUNI-334228",
+      "areaM2": 158.09689231827792,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "AR-CORDOBA-MUNI-334229",
+      "areaM2": 210.79597350708053,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "AR-CORDOBA-MUNI-334230",
+      "areaM2": 105.39780201522174,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "AR-CORDOBA-MUNI-334231",
+      "areaM2": 210.79561642482196,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "AR-CORDOBA-MUNI-387755",
+      "areaM2": 1053.9834441642997,
+      "valid": false,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "AR-CORDOBA-MUNI-32467",
+      "areaM2": 263.4924756195965,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "AR-CORDOBA-MUNI-32468",
+      "areaM2": 105.39711332858587,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "AR-CORDOBA-MUNI-43609",
+      "areaM2": 421.5894113508339,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "AR-CORDOBA-MUNI-43610",
+      "areaM2": 52.6987606908404,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "AR-CORDOBA-MUNI-43612",
+      "areaM2": 0.0,
+      "valid": false,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "AR-CORDOBA-MUNI-69769",
+      "areaM2": 105.39732796429294,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "AR-CORDOBA-MUNI-69770",
+      "areaM2": 210.79477019043927,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "AR-CORDOBA-MUNI-69771",
+      "areaM2": 158.0960378116196,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "AR-CORDOBA-MUNI-69772",
+      "areaM2": 316.19276159590885,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "AR-CORDOBA-MUNI-73526",
+      "areaM2": 210.79418535307767,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "AR-CORDOBA-MUNI-73527",
+      "areaM2": 105.39752562463367,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "AR-CORDOBA-MUNI-73528",
+      "areaM2": 316.19204959192786,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "AR-CORDOBA-MUNI-73529",
+      "areaM2": 210.79483499832466,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "AR-CORDOBA-MUNI-73530",
+      "areaM2": 0.0,
+      "valid": false,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "AR-CORDOBA-MUNI-73531",
+      "areaM2": 316.19148093707764,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "AR-CORDOBA-MUNI-79032",
+      "areaM2": 210.79611083462117,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "AR-CORDOBA-MUNI-79034",
+      "areaM2": 368.89306865640907,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "AR-CORDOBA-MUNI-79037",
+      "areaM2": 158.09681313860858,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "AR-CORDOBA-MUNI-79038",
+      "areaM2": 52.698882796627196,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "AR-CORDOBA-MUNI-79039",
+      "areaM2": 158.09664414603958,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "AR-CORDOBA-MUNI-88753",
+      "areaM2": 105.39733852018183,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "AR-CORDOBA-MUNI-88755",
+      "areaM2": 210.79456302195808,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "AR-CORDOBA-MUNI-88758",
+      "areaM2": 316.1917871204214,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "AR-CORDOBA-MUNI-88761",
+      "areaM2": 316.1923797215436,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "AR-CORDOBA-MUNI-90981",
+      "areaM2": 105.39696533220419,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "AR-CORDOBA-MUNI-90982",
+      "areaM2": 263.49276373180703,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "AR-CORDOBA-MUNI-90984",
+      "areaM2": 105.39718604350294,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "AR-CORDOBA-MUNI-99412",
+      "areaM2": 316.19426091278496,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "AR-CORDOBA-MUNI-99413",
+      "areaM2": 316.1938113365228,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "AR-CORDOBA-MUNI-99414",
+      "areaM2": 210.79573898161905,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "AR-CORDOBA-MUNI-127137",
+      "areaM2": 316.1911431609412,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "AR-CORDOBA-MUNI-136247",
+      "areaM2": 263.4938243046184,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "AR-CORDOBA-MUNI-136248",
+      "areaM2": 105.39765280619753,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "AR-CORDOBA-MUNI-136249",
+      "areaM2": 158.096680276307,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "AR-CORDOBA-MUNI-136251",
+      "areaM2": 105.39756148428901,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "AR-CORDOBA-MUNI-137730",
+      "areaM2": 158.0965113287178,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "AR-CORDOBA-MUNI-206290",
+      "areaM2": 105.39769008346838,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "AR-CORDOBA-MUNI-206291",
+      "areaM2": 316.19366804271715,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "AR-CORDOBA-MUNI-206292",
+      "areaM2": 158.0964910149919,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "AR-CORDOBA-MUNI-206293",
+      "areaM2": 158.09693638467132,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "AR-CORDOBA-MUNI-206294",
+      "areaM2": 158.09680693873221,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "AR-CORDOBA-MUNI-35019",
+      "areaM2": 210.79700622000007,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "AR-CORDOBA-MUNI-35020",
+      "areaM2": 105.39845745158782,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "AR-CORDOBA-MUNI-35023",
+      "areaM2": 158.09764903600743,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "AR-CORDOBA-MUNI-35026",
+      "areaM2": 105.3986781345722,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "AR-CORDOBA-MUNI-35027",
+      "areaM2": 158.09760338533147,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "AR-CORDOBA-MUNI-35028",
+      "areaM2": 210.7970105151087,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "AR-CORDOBA-MUNI-38578",
+      "areaM2": 158.09841253024706,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "AR-CORDOBA-MUNI-38579",
+      "areaM2": 158.0984582084245,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "AR-CORDOBA-MUNI-38580",
+      "areaM2": 210.7979714112514,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "AR-CORDOBA-MUNI-38581",
+      "areaM2": 210.7982257746918,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "AR-CORDOBA-MUNI-38582",
+      "areaM2": 105.39899685587999,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "AR-CORDOBA-MUNI-38583",
+      "areaM2": 316.1975209903964,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "AR-CORDOBA-MUNI-38584",
+      "areaM2": 105.39934670607617,
+      "valid": false,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "AR-CORDOBA-MUNI-38585",
+      "areaM2": 105.39921756397385,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "AR-CORDOBA-MUNI-38586",
+      "areaM2": 316.1971393849871,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "AR-CORDOBA-MUNI-104881",
+      "areaM2": 105.39901703270714,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "AR-CORDOBA-MUNI-104882",
+      "areaM2": 105.39906261360204,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "AR-CORDOBA-MUNI-104883",
+      "areaM2": 210.7983325650411,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "AR-CORDOBA-MUNI-120147",
+      "areaM2": 210.79648612198943,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "AR-CORDOBA-MUNI-129078",
+      "areaM2": 158.09813622300405,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "AR-CORDOBA-MUNI-129079",
+      "areaM2": 210.7977283800572,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "AR-CORDOBA-MUNI-129080",
+      "areaM2": 105.39897232293126,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "AR-CORDOBA-MUNI-132519",
+      "areaM2": 316.1960567653635,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "AR-CORDOBA-MUNI-132520",
+      "areaM2": 158.0980905744397,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "AR-CORDOBA-MUNI-132522",
+      "areaM2": 158.09832943337472,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "AR-CORDOBA-MUNI-132523",
+      "areaM2": 316.1968770746434,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "AR-CORDOBA-MUNI-132524",
+      "areaM2": 210.79779653636382,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "AR-CORDOBA-MUNI-132525",
+      "areaM2": 210.79778515545803,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "AR-CORDOBA-MUNI-132526",
+      "areaM2": 105.3987765412916,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "AR-CORDOBA-MUNI-132527",
+      "areaM2": 210.79754213444573,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "AR-CORDOBA-MUNI-140466",
+      "areaM2": 105.39830407433556,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "AR-CORDOBA-MUNI-140467",
+      "areaM2": 105.39819961222469,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "AR-CORDOBA-MUNI-140468",
+      "areaM2": 158.09745642136315,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "AR-CORDOBA-MUNI-156974",
+      "areaM2": 105.39832273172367,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "AR-CORDOBA-MUNI-156975",
+      "areaM2": 105.39832677598865,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "AR-CORDOBA-MUNI-156976",
+      "areaM2": 316.19465230286613,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "AR-CORDOBA-MUNI-156977",
+      "areaM2": 105.39843287080119,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "AR-CORDOBA-MUNI-200785",
+      "areaM2": 263.49687446276903,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "AR-CORDOBA-MUNI-249823",
+      "areaM2": 263.4982017260764,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "AR-CORDOBA-MUNI-249825",
+      "areaM2": 105.39942083435477,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "AR-CORDOBA-MUNI-249827",
+      "areaM2": 105.39918697663944,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "AR-CORDOBA-MUNI-251861",
+      "areaM2": 210.7970106801439,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "AR-CORDOBA-MUNI-251862",
+      "areaM2": 158.09782400558672,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "AR-CORDOBA-MUNI-264684",
+      "areaM2": 105.39862889002802,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "AR-CORDOBA-MUNI-264685",
+      "areaM2": 105.39862482006747,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "AR-CORDOBA-MUNI-264686",
+      "areaM2": 210.79747402047718,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "AR-CORDOBA-MUNI-264687",
+      "areaM2": 316.19555856226964,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "AR-CORDOBA-MUNI-264688",
+      "areaM2": 105.39884352359476,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "AR-CORDOBA-MUNI-264689",
+      "areaM2": 158.0982655433005,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "AR-CORDOBA-MUNI-332049",
+      "areaM2": 105.39833842543757,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "AR-CORDOBA-MUNI-332050",
+      "areaM2": 105.39823713236198,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "AR-CORDOBA-MUNI-332053",
+      "areaM2": 210.7966892567419,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "AR-CORDOBA-MUNI-332055",
+      "areaM2": 158.09739510048732,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "AR-CORDOBA-MUNI-342892",
+      "areaM2": 158.09878015399474,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "AR-CORDOBA-MUNI-13703",
+      "areaM2": 105.3984692797679,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "AR-CORDOBA-MUNI-13704",
+      "areaM2": 210.7967222896846,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "AR-CORDOBA-MUNI-13705",
+      "areaM2": 158.0977036241533,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "AR-CORDOBA-MUNI-49604",
+      "areaM2": 316.1970237666061,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "AR-CORDOBA-MUNI-49605",
+      "areaM2": 105.39890261710458,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "AR-CORDOBA-MUNI-49606",
+      "areaM2": 105.39889855771861,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "AR-CORDOBA-MUNI-49607",
+      "areaM2": 316.196379825368,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "AR-CORDOBA-MUNI-79033",
+      "areaM2": 105.39813435579579,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "AR-CORDOBA-MUNI-79035",
+      "areaM2": 105.3980744148136,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "AR-CORDOBA-MUNI-94179",
+      "areaM2": 210.79656645856622,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "AR-CORDOBA-MUNI-94182",
+      "areaM2": 210.79635812804364,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "AR-CORDOBA-MUNI-94186",
+      "areaM2": 158.09724759921193,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "AR-CORDOBA-MUNI-104884",
+      "areaM2": 105.39927441939143,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "AR-CORDOBA-MUNI-200777",
+      "areaM2": 210.79715157401017,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "AR-CORDOBA-MUNI-200778",
+      "areaM2": 0.0,
+      "valid": false,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "AR-CORDOBA-MUNI-200779",
+      "areaM2": 316.1959606442419,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "AR-CORDOBA-MUNI-200780",
+      "areaM2": 210.79742862409387,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "AR-CORDOBA-MUNI-200781",
+      "areaM2": 263.4964074994266,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "AR-CORDOBA-MUNI-200782",
+      "areaM2": 210.79718561369629,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "AR-CORDOBA-MUNI-200783",
+      "areaM2": 0.0,
+      "valid": false,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "AR-CORDOBA-MUNI-200784",
+      "areaM2": 210.7974399643438,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "AR-CORDOBA-MUNI-247558",
+      "areaM2": 105.39868796797685,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "AR-CORDOBA-MUNI-247559",
+      "areaM2": 158.09839435783897,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "AR-CORDOBA-MUNI-247560",
+      "areaM2": 105.39902796956495,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "AR-CORDOBA-MUNI-247561",
+      "areaM2": 210.79784656306003,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "AR-CORDOBA-MUNI-247562",
+      "areaM2": 105.3988072705721,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "AR-CORDOBA-MUNI-247563",
+      "areaM2": 263.49711219141176,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "AR-CORDOBA-MUNI-247564",
+      "areaM2": 105.39900104258038,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "AR-CORDOBA-MUNI-247565",
+      "areaM2": 105.39903929192697,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "AR-CORDOBA-MUNI-247566",
+      "areaM2": 158.09863319617,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "AR-CORDOBA-MUNI-247567",
+      "areaM2": 210.79808958815414,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "AR-CORDOBA-MUNI-251863",
+      "areaM2": 105.39838932328387,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "AR-CORDOBA-MUNI-251864",
+      "areaM2": 105.39826781163521,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "AR-CORDOBA-MUNI-251865",
+      "areaM2": 105.39848849861424,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "AR-CORDOBA-MUNI-251866",
+      "areaM2": 263.4958708573056,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "AR-CORDOBA-MUNI-251867",
+      "areaM2": 316.19476572796384,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "AR-CORDOBA-MUNI-251868",
+      "areaM2": 105.39861003525067,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "AR-CORDOBA-MUNI-251869",
+      "areaM2": 316.19531676287215,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "AR-CORDOBA-MUNI-261853",
+      "areaM2": 263.4976487813023,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "AR-CORDOBA-MUNI-261854",
+      "areaM2": 210.79859024417453,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "AR-CORDOBA-MUNI-261855",
+      "areaM2": 105.3991490784854,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "AR-CORDOBA-MUNI-261856",
+      "areaM2": 210.79828718003512,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "AR-CORDOBA-MUNI-261857",
+      "areaM2": 210.79827583953426,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "AR-CORDOBA-MUNI-261858",
+      "areaM2": 0.0,
+      "valid": false,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "AR-CORDOBA-MUNI-261859",
+      "areaM2": 210.7982644952262,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "AR-CORDOBA-MUNI-261860",
+      "areaM2": 105.39911323323327,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "AR-CORDOBA-MUNI-261861",
+      "areaM2": 158.09888820393292,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "AR-CORDOBA-MUNI-287761",
+      "areaM2": 105.3985624228931,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "AR-CORDOBA-MUNI-30102",
+      "areaM2": 210.79750194284927,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "AR-CORDOBA-MUNI-30103",
+      "areaM2": 52.69932767733311,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "AR-CORDOBA-MUNI-30104",
+      "areaM2": 52.699472689459576,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "AR-CORDOBA-MUNI-30105",
+      "areaM2": 52.69932991155254,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "AR-CORDOBA-MUNI-94173",
+      "areaM2": 210.79696175622178,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "AR-CORDOBA-MUNI-94174",
+      "areaM2": 158.0974437197479,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "AR-CORDOBA-MUNI-94176",
+      "areaM2": 210.796764094244,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "AR-CORDOBA-MUNI-94177",
+      "areaM2": 0.0,
+      "valid": false,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "AR-CORDOBA-MUNI-94178",
+      "areaM2": 210.7965557549596,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "AR-CORDOBA-MUNI-94187",
+      "areaM2": 52.69921299454004,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "AR-CORDOBA-MUNI-94188",
+      "areaM2": 105.3985830724446,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "AR-CORDOBA-MUNI-99408",
+      "areaM2": 210.79645964900345,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "AR-CORDOBA-MUNI-99409",
+      "areaM2": 158.09757062056306,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "AR-CORDOBA-MUNI-99410",
+      "areaM2": 421.5927771900822,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "AR-CORDOBA-MUNI-99411",
+      "areaM2": 0.0,
+      "valid": false,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "AR-CORDOBA-MUNI-211067",
+      "areaM2": 210.79812846078036,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "AR-CORDOBA-MUNI-211068",
+      "areaM2": 210.79813977603376,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "AR-CORDOBA-MUNI-211069",
+      "areaM2": 210.7981511119792,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "AR-CORDOBA-MUNI-211070",
+      "areaM2": 158.09885309667771,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "AR-CORDOBA-MUNI-211071",
+      "areaM2": 316.19740894620645,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "AR-CORDOBA-MUNI-229634",
+      "areaM2": 158.09880743229638,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "AR-CORDOBA-MUNI-243646",
+      "areaM2": 316.19431203511255,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "AR-CORDOBA-MUNI-269815",
+      "areaM2": 158.09857146504754,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "AR-CORDOBA-MUNI-287762",
+      "areaM2": 52.69933334950948,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "AR-CORDOBA-MUNI-287763",
+      "areaM2": 158.0980622064906,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "AR-CORDOBA-MUNI-287764",
+      "areaM2": 105.39877546381709,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "AR-CORDOBA-MUNI-287765",
+      "areaM2": 105.39898604142277,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "AR-CORDOBA-MUNI-287766",
+      "areaM2": 316.19664227247915,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "AR-CORDOBA-MUNI-287767",
+      "areaM2": 210.7972072972616,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "AR-CORDOBA-MUNI-359645",
+      "areaM2": 263.497246301715,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "AR-CORDOBA-MUNI-373341",
+      "areaM2": 210.79735703297584,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "AR-CORDOBA-MUNI-378181",
+      "areaM2": 210.79706090274732,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "AR-CORDOBA-MUNI-378182",
+      "areaM2": 210.79715939013923,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "AR-CORDOBA-MUNI-378183",
+      "areaM2": 210.79725851281222,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "AR-CORDOBA-MUNI-383000",
+      "areaM2": 52.699262380720185,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "AR-CORDOBA-MUNI-383073",
+      "areaM2": 105.39883844268653,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "AR-CORDOBA-MUNI-387817",
+      "areaM2": 105.39873143225697,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "AR-CORDOBA-MUNI-29203",
+      "areaM2": 263.4866346977441,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "AR-CORDOBA-MUNI-29204",
+      "areaM2": 421.5789501487642,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "AR-CORDOBA-MUNI-29205",
+      "areaM2": 632.3725271581491,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "AR-CORDOBA-MUNI-29206",
+      "areaM2": 526.9773589312358,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "AR-CORDOBA-MUNI-29208",
+      "areaM2": 1580.9263471972522,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "AR-CORDOBA-MUNI-29209",
+      "areaM2": 421.58009330689896,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "AR-CORDOBA-MUNI-29210",
+      "areaM2": 421.5820102341195,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "AR-CORDOBA-MUNI-106012",
+      "areaM2": 158.09278799874426,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "AR-CORDOBA-MUNI-106013",
+      "areaM2": 368.8849920800237,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "AR-CORDOBA-MUNI-106014",
+      "areaM2": 210.79139586348452,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "AR-CORDOBA-MUNI-106015",
+      "areaM2": 474.28009589521673,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "AR-CORDOBA-MUNI-118282",
+      "areaM2": 421.5815281367361,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "AR-CORDOBA-MUNI-118283",
+      "areaM2": 316.1864239262321,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "AR-CORDOBA-MUNI-118284",
+      "areaM2": 316.18661830324174,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "AR-CORDOBA-MUNI-118285",
+      "areaM2": 105.39577092735352,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "AR-CORDOBA-MUNI-118286",
+      "areaM2": 421.5808470632238,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "AR-CORDOBA-MUNI-118287",
+      "areaM2": 52.69759157614888,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "AR-CORDOBA-MUNI-118288",
+      "areaM2": 474.2775930992155,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "AR-CORDOBA-MUNI-301150",
+      "areaM2": 210.7893830806804,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "AR-CORDOBA-MUNI-301151",
+      "areaM2": 210.78950814341349,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "AR-CORDOBA-MUNI-301152",
+      "areaM2": 210.7897397969282,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "AR-CORDOBA-MUNI-301153",
+      "areaM2": 210.78975114445115,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "AR-CORDOBA-MUNI-301154",
+      "areaM2": 526.9746958874011,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "AR-CORDOBA-MUNI-301155",
+      "areaM2": 105.39481197835634,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "AR-CORDOBA-MUNI-25692",
+      "areaM2": 105.39943802040733,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "AR-CORDOBA-MUNI-25694",
+      "areaM2": 210.79899021673583,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "AR-CORDOBA-MUNI-25695",
+      "areaM2": 158.0990000399133,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "AR-CORDOBA-MUNI-55191",
+      "areaM2": 316.200795031397,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "AR-CORDOBA-MUNI-55217",
+      "areaM2": 105.40015970756265,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "AR-CORDOBA-MUNI-58245",
+      "areaM2": 105.399707767204,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "AR-CORDOBA-MUNI-58246",
+      "areaM2": 158.0995619326235,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "AR-CORDOBA-MUNI-58247",
+      "areaM2": 105.39992238897766,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "AR-CORDOBA-MUNI-58248",
+      "areaM2": 210.79920249809058,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "AR-CORDOBA-MUNI-58249",
+      "areaM2": 158.09988385646423,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "AR-CORDOBA-MUNI-58250",
+      "areaM2": 210.79963179590322,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "AR-CORDOBA-MUNI-63962",
+      "areaM2": 105.39972639518462,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "AR-CORDOBA-MUNI-104885",
+      "areaM2": 158.09891132309278,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "AR-CORDOBA-MUNI-104886",
+      "areaM2": 210.79876189461703,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "AR-CORDOBA-MUNI-124988",
+      "areaM2": 263.49846079444586,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "AR-CORDOBA-MUNI-124989",
+      "areaM2": 316.1985704143507,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "AR-CORDOBA-MUNI-124990",
+      "areaM2": 105.39934670684593,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "AR-CORDOBA-MUNI-124991",
+      "areaM2": 210.79892545150008,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "AR-CORDOBA-MUNI-124992",
+      "areaM2": 105.39956738870559,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "AR-CORDOBA-MUNI-124993",
+      "areaM2": 210.79856095048845,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "AR-CORDOBA-MUNI-124994",
+      "areaM2": 263.49903505564333,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "AR-CORDOBA-MUNI-124995",
+      "areaM2": 210.79916843260486,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "AR-CORDOBA-MUNI-124996",
+      "areaM2": 0.0,
+      "valid": false,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "AR-CORDOBA-MUNI-132685",
+      "areaM2": 158.10020767430828,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "AR-CORDOBA-MUNI-132686",
+      "areaM2": 105.40035327374076,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "AR-CORDOBA-MUNI-132687",
+      "areaM2": 210.80049027058936,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "AR-CORDOBA-MUNI-132688",
+      "areaM2": 105.40013863165241,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "AR-CORDOBA-MUNI-137415",
+      "areaM2": 105.39978770164605,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "AR-CORDOBA-MUNI-137416",
+      "areaM2": 263.49899742907587,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "AR-CORDOBA-MUNI-137417",
+      "areaM2": 105.3996885175685,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "AR-CORDOBA-MUNI-137418",
+      "areaM2": 105.39979551858276,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "AR-CORDOBA-MUNI-137419",
+      "areaM2": 210.79947976284336,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "AR-CORDOBA-MUNI-137420",
+      "areaM2": 105.39956702096384,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "AR-CORDOBA-MUNI-137421",
+      "areaM2": 210.79934340276117,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "AR-CORDOBA-MUNI-137423",
+      "areaM2": 263.49957166235475,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "AR-CORDOBA-MUNI-167693",
+      "areaM2": 210.80077870264938,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "AR-CORDOBA-MUNI-167696",
+      "areaM2": 263.5007915173431,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "AR-CORDOBA-MUNI-233627",
+      "areaM2": 210.80001566147482,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "AR-CORDOBA-MUNI-233628",
+      "areaM2": 105.40012385343519,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "AR-CORDOBA-MUNI-233629",
+      "areaM2": 158.1000211720712,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "AR-CORDOBA-MUNI-233630",
+      "areaM2": 210.8003186869064,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "AR-CORDOBA-MUNI-233632",
+      "areaM2": 158.09976349691414,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "AR-CORDOBA-MUNI-233633",
+      "areaM2": 105.40011252111911,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "AR-CORDOBA-MUNI-233634",
+      "areaM2": 316.199824245357,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "AR-CORDOBA-MUNI-233635",
+      "areaM2": 105.39989180121981,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "AR-CORDOBA-MUNI-265769",
+      "areaM2": 105.39994508364174,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "AR-CORDOBA-MUNI-265770",
+      "areaM2": 210.79966579374562,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "AR-CORDOBA-MUNI-265771",
+      "areaM2": 105.39994101395693,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "AR-CORDOBA-MUNI-265772",
+      "areaM2": 158.0995893009061,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "AR-CORDOBA-MUNI-296657",
+      "areaM2": 316.20046815955067,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "AR-CORDOBA-MUNI-296658",
+      "areaM2": 210.8004336064085,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "AR-CORDOBA-MUNI-296659",
+      "areaM2": 0.0,
+      "valid": false,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "AR-CORDOBA-MUNI-296660",
+      "areaM2": 158.10051502012993,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "AR-CORDOBA-MUNI-296661",
+      "areaM2": 210.8004562547893,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "AR-CORDOBA-MUNI-296662",
+      "areaM2": 158.10046594196933,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "AR-CORDOBA-MUNI-296663",
+      "areaM2": 210.80044493511474,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "AR-CORDOBA-MUNI-311749",
+      "areaM2": 316.200151137945,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "AR-CORDOBA-MUNI-11928",
+      "areaM2": 474.2900973171813,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "AR-CORDOBA-MUNI-11929",
+      "areaM2": 474.2910038592497,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "AR-CORDOBA-MUNI-11930",
+      "areaM2": 105.39825799294873,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "AR-CORDOBA-MUNI-11931",
+      "areaM2": 263.4954905803444,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "AR-CORDOBA-MUNI-61054",
+      "areaM2": 210.79523594508748,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "AR-CORDOBA-MUNI-131385",
+      "areaM2": 105.39741394471687,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "AR-CORDOBA-MUNI-131386",
+      "areaM2": 263.49358762923134,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "AR-CORDOBA-MUNI-162328",
+      "areaM2": 158.09720435230312,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "AR-CORDOBA-MUNI-162331",
+      "areaM2": 52.69909087407735,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "AR-CORDOBA-MUNI-162335",
+      "areaM2": 158.09701701354032,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "AR-CORDOBA-MUNI-184841",
+      "areaM2": 105.39809941830968,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "AR-CORDOBA-MUNI-206915",
+      "areaM2": 316.1915978698158,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "AR-CORDOBA-MUNI-206916",
+      "areaM2": 105.3973710039137,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "AR-CORDOBA-MUNI-206919",
+      "areaM2": 210.79468068657206,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "AR-CORDOBA-MUNI-225555",
+      "areaM2": 737.7855352549602,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "AR-CORDOBA-MUNI-246031",
+      "areaM2": 526.984716530876,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "AR-CORDOBA-MUNI-246032",
+      "areaM2": 316.1918483143443,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "AR-CORDOBA-MUNI-246033",
+      "areaM2": 158.09620757147258,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "AR-CORDOBA-MUNI-246034",
+      "areaM2": 368.8910908238063,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "AR-CORDOBA-MUNI-246035",
+      "areaM2": 105.39765295855518,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "AR-CORDOBA-MUNI-275349",
+      "areaM2": 316.19418593550273,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "AR-CORDOBA-MUNI-300530",
+      "areaM2": 632.3823189680356,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "AR-CORDOBA-MUNI-300532",
+      "areaM2": 263.49382839744885,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "AR-CORDOBA-MUNI-300533",
+      "areaM2": 158.09649363629444,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "AR-CORDOBA-MUNI-300535",
+      "areaM2": 210.7948142831783,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "AR-CORDOBA-MUNI-300536",
+      "areaM2": 316.1906914352252,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "AR-CORDOBA-MUNI-300537",
+      "areaM2": 210.79438500440347,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "AR-CORDOBA-MUNI-300538",
+      "areaM2": 210.794252088076,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "AR-CORDOBA-MUNI-300540",
+      "areaM2": 368.89109002703,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "AR-CORDOBA-MUNI-300541",
+      "areaM2": 0.0,
+      "valid": false,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "AR-CORDOBA-MUNI-319205",
+      "areaM2": 474.29200349055884,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "AR-CORDOBA-MUNI-328768",
+      "areaM2": 474.28995484959523,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "AR-CORDOBA-MUNI-43608",
+      "areaM2": 210.79458068220205,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "AR-CORDOBA-MUNI-43611",
+      "areaM2": 316.19186223128133,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "AR-CORDOBA-MUNI-90983",
+      "areaM2": 316.19104480275286,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "AR-CORDOBA-MUNI-137731",
+      "areaM2": 210.79521902886285,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "AR-CORDOBA-MUNI-137732",
+      "areaM2": 316.1928373076804,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "AR-CORDOBA-MUNI-137733",
+      "areaM2": 263.4943931409492,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "AR-CORDOBA-MUNI-243642",
+      "areaM2": 316.19346428972756,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "AR-CORDOBA-MUNI-243643",
+      "areaM2": 0.0,
+      "valid": false,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "AR-CORDOBA-MUNI-243644",
+      "areaM2": 158.09697598820838,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "AR-CORDOBA-MUNI-243645",
+      "areaM2": 316.1938281548581,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "AR-CORDOBA-MUNI-327037",
+      "areaM2": 105.39775815138765,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "AR-CORDOBA-MUNI-327038",
+      "areaM2": 632.3870272701731,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    }
+  ]
+}

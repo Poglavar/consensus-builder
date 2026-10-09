@@ -1,0 +1,132 @@
+{
+  "name": "Johor Bahru",
+  "country": "Malaysia",
+  "countryCode": "MY",
+  "rank": 288,
+  "point": [
+    1.51437766777779,
+    103.755955802362
+  ],
+  "population2025": 1695838,
+  "schemaVersion": 1,
+  "kind": "city_parcel_source_research",
+  "checkedAt": "2026-10-09",
+  "populationUnit": "persons",
+  "status": "complete",
+  "verifiedSample": false,
+  "publicParcelGeometryFound": false,
+  "runtimeReadiness": "not_enabled_no_verified_public_geometry",
+  "priorEvidenceFiles": [],
+  "scopeLimits": "The WUP locator is a settlement centroid. The city cadastral layer is positively identified and the query was centered on the exact point, but public feature geometry is token-gated; exact parcel coverage was not verified. GeoJohor public viewer TLS validation failed in the inspected client and was not bypassed. No parcel geometry or owner/address data retained.",
+  "pointBasis": "UN WUP 2025 population-weighted settlement centroid; this is not a municipal boundary or a parcel-coverage claim.",
+  "registryFound": true,
+  "registryBasis": "The City Council of Johor Bahru GeoJB public ArcGIS portal exposes a public item titled LOT KADASTER. Its app configuration names a Lot JUPEM FeatureServer layer and describes the data as the National Digital Cadastral Database provided by JUPEM. A bounded anonymous query at the ranked point returned ArcGIS HTTP 499 Token Required; no token or login was attempted.",
+  "resultCategory": "official_city_cadastral_layer_token_gated_no_public_geometry",
+  "research": {
+    "executedQueries": [
+      {
+        "language": "English",
+        "query": "Johor Bahru official cadastral parcel map Johor Bahru City Council GeoJB Lot JUPEM official GeoJohor",
+        "scope": "Find actual city-specific cadastral/land-record sources and public parcel geometry.",
+        "result": "Official GeoJB portal and its public ArcGIS item expose a city cadastral app/layer backed by JUPEM data. The exact bounded anonymous query returned HTTP 499 Token Required.",
+        "actualResultUrls": [
+          "https://geojb.gov.my/",
+          "https://geojb.gov.my/gisportal/sharing/rest/content/items/21cceffcc9e54cb8998f064c7dcf5efa?f=json",
+          "https://geojb.gov.my/gisportal/sharing/rest/content/items/21cceffcc9e54cb8998f064c7dcf5efa/data?f=json",
+          "https://geojb.gov.my/gisserver/rest/services/GEOJB/LotJUPEM/FeatureServer/0/query",
+          "https://geoportal.johor.gov.my/petaawam/pkpj/jbahru"
+        ],
+        "executionMethod": "Separate web search in the stated language followed by official-source and public viewer/service inspection."
+      },
+      {
+        "language": "Malay",
+        "query": "peta kadaster lot tanah Johor Bahru rasmi GeoJohor JUPEM kadlot tanah",
+        "scope": "Find actual city-specific cadastral/land-record sources and public parcel geometry.",
+        "result": "Malay-language search identified the same official local GeoJB and GeoJohor cadastral-map services. GeoJB’s public item metadata/config provides the actual Lot JUPEM layer; its bounded query requires a token.",
+        "actualResultUrls": [
+          "https://geojb.gov.my/",
+          "https://geojb.gov.my/gisportal/sharing/rest/content/items/21cceffcc9e54cb8998f064c7dcf5efa?f=json",
+          "https://geojb.gov.my/gisportal/sharing/rest/content/items/21cceffcc9e54cb8998f064c7dcf5efa/data?f=json",
+          "https://geojb.gov.my/gisserver/rest/services/GEOJB/LotJUPEM/FeatureServer/0/query",
+          "https://geoportal.johor.gov.my/petaawam/pkpj/jbahru"
+        ],
+        "executionMethod": "Separate web search in the stated language followed by official-source and public viewer/service inspection."
+      }
+    ],
+    "officialSources": [
+      {
+        "url": "https://geojb.gov.my/",
+        "observation": "Official MBJB local GIS portal, with public GIS apps and open-data materials."
+      },
+      {
+        "url": "https://geojb.gov.my/gisportal/sharing/rest/content/items/21cceffcc9e54cb8998f064c7dcf5efa?f=json",
+        "method": "GET",
+        "httpStatus": 200,
+        "contentType": "application/json",
+        "observation": "Public ArcGIS item metadata: title LOT KADASTER; app item ID 21cceffcc9e54cb8998f064c7dcf5efa."
+      },
+      {
+        "url": "https://geojb.gov.my/gisportal/sharing/rest/content/items/21cceffcc9e54cb8998f064c7dcf5efa/data?f=json",
+        "method": "GET",
+        "httpStatus": 200,
+        "contentType": "application/json",
+        "observation": "Public web-map config names layer LotJUPEM_3376, title Lot JUPEM, service https://geojb.gov.my/gisserver/rest/services/GEOJB/LotJUPEM/FeatureServer/0; data description identifies JUPEM’s National Digital Cadastral Database, Aug 2020."
+      },
+      {
+        "url": "https://geojb.gov.my/gisserver/rest/services/GEOJB/LotJUPEM/FeatureServer/0/query",
+        "method": "GET",
+        "httpStatus": 499,
+        "contentType": "application/json",
+        "requestSummary": "Safe bounded point envelope around 103.755955802362,1.51437766777779; outFields=OBJECTID; returnGeometry=true; resultRecordCount=3.",
+        "observation": "ArcGIS response: Token Required. No credential or token was supplied."
+      },
+      {
+        "url": "https://geoportal.johor.gov.my/petaawam/pkpj/jbahru",
+        "observation": "Official GeoJohor public map page advertises a Kadlot layer; inspection returned 502 / certificate-date error in available clients and TLS was not bypassed."
+      }
+    ],
+    "viewerAndServiceTrace": {
+      "viewerUrl": "https://geojb.gov.my/",
+      "itemUrl": "https://geojb.gov.my/gisportal/sharing/rest/content/items/21cceffcc9e54cb8998f064c7dcf5efa/data?f=json",
+      "apiBase": "https://geojb.gov.my/gisserver/rest/services/GEOJB/LotJUPEM/FeatureServer/0",
+      "observedClientRoutes": [
+        "GET /sharing/rest/content/items/{itemId}?f=json",
+        "GET /sharing/rest/content/items/{itemId}/data?f=json",
+        "GET /FeatureServer/0/query"
+      ],
+      "layer": "LotJUPEM_3376 / Lot JUPEM",
+      "notes": "The public app config exposes the exact cadastral FeatureServer layer. A safe point-envelope query returned HTTP 499 Token Required. No credentials or token values were requested, supplied, or retained."
+    }
+  },
+  "verifiedParcelResponse": null,
+  "source": {
+    "sourceId": "MY-JOHOR-BAHRU-GEOJB-LOT-JUPEM",
+    "name": "MBJB GeoJB LOT KADASTER (JUPEM Lot layer)",
+    "url": "https://geojb.gov.my/gisportal/sharing/rest/content/items/21cceffcc9e54cb8998f064c7dcf5efa?f=json",
+    "operator": "Johor Bahru City Council (MBJB); data source JUPEM",
+    "serviceType": "Official local cadastral feature layer; layer identified from public app config, but anonymous query returns token-required error.",
+    "layer": "LotJUPEM_3376 / Lot JUPEM",
+    "geometryType": "Polygon (cadastral lot layer; no feature geometry returned)",
+    "outputCrs": null,
+    "nativeIdField": "OBJECTID (safe query field only; cadastral lot id not verified)",
+    "nativeIdEvidence": "The app config identifies the service layer; the bounded query returned 499 before exposing feature attributes."
+  },
+  "wupCityCode": 2974,
+  "cityId": "wup2025:2974",
+  "queueRank": 288,
+  "populationPlausibility2025": "Moderate",
+  "centerLatLon": [
+    1.51437766777779,
+    103.755955802362
+  ],
+  "sourceIds": [],
+  "adapterReady": false,
+  "technicalBlocker": "The WUP locator is a settlement centroid. The city cadastral layer is positively identified and the query was centered on the exact point, but public feature geometry is token-gated; exact parcel coverage was not verified. GeoJohor public viewer TLS validation failed in the inspected client and was not bypassed. No parcel geometry or owner/address data retained.",
+  "remainingUncertainty": "Whether a different current anonymous full-polygon service exists in this city; none was verified in the inspected sources.",
+  "coverageAssessment": {
+    "verifiedOpenScope": "The WUP locator is a settlement centroid. The city cadastral layer is positively identified and the query was centered on the exact point, but public feature geometry is token-gated; exact parcel coverage was not verified. GeoJohor public viewer TLS validation failed in the inspected client and was not bypassed. No parcel geometry or owner/address data retained.",
+    "citywideVerified": false,
+    "countrywideVerified": false
+  },
+  "rootReviewedAt": "2026-10-08T21:54:55.714575+00:00"
+}

@@ -1,0 +1,98 @@
+{
+  "schemaVersion": 1,
+  "kind": "city_parcel_source_research",
+  "checkedAt": "2026-10-09",
+  "name": "Ma'anshan",
+  "country": "China",
+  "countryCode": "CN",
+  "populationUnit": "persons",
+  "status": "complete",
+  "registryFound": true,
+  "registryBasis": "An official government-published list of real-estate registration service centers explicitly names 马鞍山市不动产登记中心 under Anhui, supporting city-specific registry existence. The local natural-resources site was not reachable in a bounded standard-TLS inspection, so local operational details were not independently verified.",
+  "registryEvidenceUrls": [
+    "https://www.zhanjiang.gov.cn/attachment/0/243/243382/2000761.pdf",
+    "https://zrzyhgh.mas.gov.cn/"
+  ],
+  "verifiedSample": false,
+  "publicParcelGeometryFound": false,
+  "runtimeReadiness": "not_enabled_no_verified_public_geometry",
+  "wupCityCode": 11282,
+  "cityId": "wup2025:11282",
+  "centerLatLon": [
+    31.6904904352474,
+    118.502581956824
+  ],
+  "rank": 558,
+  "queueRank": 558,
+  "population2025": 929836,
+  "population2025k": 929.836,
+  "pointBasis": "UN WUP 2025 population-weighted settlement centroid; this is not a municipal boundary or a parcel-coverage claim.",
+  "technicalBlocker": "The official city natural-resources host did not respond in bounded standard-TLS requests, and no anonymous parcel vector endpoint or schema was verified. The city registration-center identity comes from an official government-published listing rather than the local service portal. Runtime remains disabled.",
+  "scopeLimits": "Registry existence is supported by the official named city-center listing; local page availability and service scope could not be independently confirmed. No public parcel geometry or citywide coverage was verified.",
+  "remainingUncertainty": "The official city natural-resources host did not respond in bounded standard-TLS requests, and no anonymous parcel vector endpoint or schema was verified. The city registration-center identity comes from an official government-published listing rather than the local service portal. Runtime remains disabled.",
+  "research": {
+    "executedQueries": [
+      {
+        "language": "English",
+        "query": "Ma'anshan China official real estate registration center cadastral map GIS parcel data",
+        "scope": "Find exact-city registry evidence and safe public geometry routes.",
+        "result": "An official government-hosted service-center list explicitly names Ma’anshan Real Estate Registration Center. The city natural-resources site did not respond in a bounded direct standard-TLS request; no public parcel schema or geometry endpoint was verified.",
+        "actualResultUrls": [
+          "https://www.zhanjiang.gov.cn/attachment/0/243/243382/2000761.pdf",
+          "https://zrzyhgh.mas.gov.cn/"
+        ]
+      },
+      {
+        "language": "Chinese",
+        "query": "马鞍山市 不动产登记中心 官方 不动产 地籍 地图 GIS",
+        "scope": "核实马鞍山市本地登记机构，并查找匿名公开地块几何服务。",
+        "result": "政府网站发布的登记服务中心名单明确列出“马鞍山市不动产登记中心”（安徽）。马鞍山市自然资源和规划局域名在限定的标准 TLS 直接访问中未取得 HTTP 响应；未验证公开地块要素、字段模式或几何接口。",
+        "actualResultUrls": [
+          "https://www.zhanjiang.gov.cn/attachment/0/243/243382/2000761.pdf",
+          "https://zrzyhgh.mas.gov.cn/",
+          "https://www.mas.gov.cn/"
+        ]
+      }
+    ],
+    "officialSources": [
+      {
+        "url": "https://www.zhanjiang.gov.cn/attachment/0/243/243382/2000761.pdf",
+        "observation": "Government-hosted official list includes the named Ma’anshan Real Estate Registration Center under Anhui; it supports institutional existence but is not the local center’s own operational portal."
+      },
+      {
+        "url": "https://zrzyhgh.mas.gov.cn/",
+        "observation": "Ma’anshan Natural Resources and Planning domain; bounded anonymous direct HTTPS requests timed out without an HTTP status. No bypass or alternate TLS mode used."
+      },
+      {
+        "url": "https://www.mas.gov.cn/",
+        "observation": "Official city-domain landing page was not available through web inspection at review time; no source content or geometry was retrieved."
+      }
+    ],
+    "metadataReviewFile": "maanshan-service-review.json",
+    "routeInspectionFile": "/tmp/overnight-cities-2026-10-08/city-11282-maanshan-route-inspection.json"
+  },
+  "source": {
+    "sourceId": "cn-maanshan-public-registry-review",
+    "name": "Ma'anshan city-local registry and public-map review",
+    "operator": "https://www.zhanjiang.gov.cn/attachment/0/243/243382/2000761.pdf",
+    "url": "https://www.zhanjiang.gov.cn/attachment/0/243/243382/2000761.pdf",
+    "scope": "Registry existence is supported by the official named city-center listing; local page availability and service scope could not be independently confirmed. No public parcel geometry or citywide coverage was verified.",
+    "nativeIdField": null,
+    "attributesRequested": [],
+    "identityBasis": "No parcel feature identifier was requested or retained.",
+    "geometryStatus": "no_public_geometry_verified"
+  },
+  "coverageAssessment": {
+    "verifiedOpenScope": "Registry existence is supported by the official named city-center listing; local page availability and service scope could not be independently confirmed. No public parcel geometry or citywide coverage was verified.",
+    "citywideVerified": false,
+    "countrywideVerified": false
+  },
+  "priorEvidenceFiles": [],
+  "populationPlausibility2025": "High",
+  "sourceIds": [],
+  "point": [
+    31.6904904352474,
+    118.502581956824
+  ],
+  "rootReviewedAt": "2026-10-09T01:31:18.479128+00:00"
+}

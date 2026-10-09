@@ -1,0 +1,10 @@
+{
+  "schemaVersion": 1,
+  "checkedAt": "2026-10-09T02:58:21.098803+00:00",
+  "decision": "approved_by_root",
+  "scope": "79 valid distinct cadastral-reference polygons verified in thirteen bounded 0.001-degree cells around the unchanged Bilbao WUP settlement locator. Complete bounded paging, forced three-row pages, all 79 fresh native parcel-identity reads, explicit absence, footprint and source binding passed in 27 requests. Independent metric EPSG:32630 GEOS found all geometries valid and distinct, with no sampled overlaps above 0.01 m² or operation errors. The separate Bizkaia foral cadastre uses the native municipality/polygon/parcel integer tuple; OBJECTID is only a transport key. A fresh EPSG:25830 REST tuple query matches the prior official WFS sample to below 0.000001 metres without editing coordinates. Requested EPSG:4326 geometry is retained unchanged. Wider municipal completeness, legal title, currentness, survey accuracy and long-term key continuity remain unverified.",
+  "sourceCoordinatesModified": false,
+  "acceptanceFile": "bilbao-bizkaia-root-acceptance.json",
+  "qualityFile": "bilbao-bizkaia-root-quality.json",
+  "nativeIdentityEvidenceFile": "bilbao-root-native-identity-review.json"
+}

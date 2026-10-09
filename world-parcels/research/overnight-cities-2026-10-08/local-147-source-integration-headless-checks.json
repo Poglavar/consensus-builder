@@ -1,0 +1,34 @@
+{
+  "schemaVersion": 1,
+  "checkedAt": "2026-10-09T00:04:00Z",
+  "configuredAppCities": 147,
+  "executableProviders": 131,
+  "success": true,
+  "testCount": 26,
+  "passedTests": 26,
+  "failedTests": 0,
+  "testFiles": [
+    {
+      "file": "backend/test/coverage-evidence-consistency.test.js",
+      "status": "passed",
+      "tests": 5
+    },
+    {
+      "file": "backend/test/frontend-city-source-integrations.test.js",
+      "status": "passed",
+      "tests": 3
+    },
+    {
+      "file": "backend/test/parcel-source-city-metric.test.js",
+      "status": "passed",
+      "tests": 2
+    },
+    {
+      "file": "backend/test/world-coverage-build.test.js",
+      "status": "passed",
+      "tests": 16
+    }
+  ],
+  "priorFullHeadlessCheckFile": "research/overnight-cities-2026-10-08/local-146-city-headless-checks.json",
+  "priorFailure": "The initial integration run found a stale generated world-coverage.json; rebuilding the generated coverage and report resolved the mismatch."
+}

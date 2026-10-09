@@ -1,0 +1,23 @@
+{
+  "schemaVersion": 1,
+  "checkedAt": "2026-10-08T21:48:39.974811+00:00",
+  "city": "macau",
+  "url": "http://localhost:5638/?city=macau&backend=http%3A%2F%2Flocalhost%3A5640&reduceMotion=1",
+  "localUncommittedUndeployed": true,
+  "browserMode": "Dedicated headed Chrome with anti-throttling flags",
+  "sourceId": "mo-dscc-cad-lote",
+  "loadedParcelLayers": 33,
+  "reportedLoadedParcels": 33,
+  "selectedParcelId": "MO-DSCC-CAD-88",
+  "realPointerClick": {
+    "x": 729,
+    "y": 717
+  },
+  "detailsOpened": true,
+  "displayedNativeReferenceMatched": true,
+  "uncaughtPageErrors": [],
+  "sourceAlerts": [],
+  "browserClosed": true,
+  "screenshotCaptured": false,
+  "limitations": "Manual check confirms local source wiring and parcel interaction at the explicit in-Macao reference; Zhuhai and whole-city completeness remain unverified."
+}

@@ -1,0 +1,4552 @@
+{
+  "schemaVersion": 1,
+  "purpose": "Independent GEOS topology check of complete runtime parcels projected to metric coordinates; no repair applied. Counts are bounded sample evidence, not whole-city guarantees.",
+  "library": "Shapely 2.2.0",
+  "metricCrs": "EPSG:27700",
+  "featureCount": 554,
+  "validNonemptyCount": 554,
+  "invalidFeatures": [],
+  "exactDuplicateGeometryPairs": [
+    [
+      "27481044",
+      "27481043"
+    ],
+    [
+      "27481044",
+      "27481041"
+    ],
+    [
+      "27481043",
+      "27481041"
+    ]
+  ],
+  "positiveAreaOverlapPairsAbove0_01M2": [
+    {
+      "ids": [
+        "52600293",
+        "27622645"
+      ],
+      "overlapM2": 0.01308201341374457,
+      "fractionOfSmaller": 5.798818789423829e-05
+    },
+    {
+      "ids": [
+        "58092898",
+        "27596927"
+      ],
+      "overlapM2": 295.2131499996736,
+      "fractionOfSmaller": 1.0000000000000002
+    },
+    {
+      "ids": [
+        "58092898",
+        "27595960"
+      ],
+      "overlapM2": 0.037400000286253635,
+      "fractionOfSmaller": 0.00012667207660158034
+    },
+    {
+      "ids": [
+        "27595960",
+        "27594973"
+      ],
+      "overlapM2": 1.5342003215110545,
+      "fractionOfSmaller": 0.005239440704724395
+    },
+    {
+      "ids": [
+        "27606451",
+        "27598071"
+      ],
+      "overlapM2": 0.23285000002090817,
+      "fractionOfSmaller": 0.00023028756187918646
+    },
+    {
+      "ids": [
+        "27604033",
+        "27604897"
+      ],
+      "overlapM2": 2.0419500000201634,
+      "fractionOfSmaller": 0.010292309581314902
+    },
+    {
+      "ids": [
+        "54260433",
+        "27593927"
+      ],
+      "overlapM2": 0.3377560669579415,
+      "fractionOfSmaller": 8.570255264494032e-05
+    },
+    {
+      "ids": [
+        "27594015",
+        "27593927"
+      ],
+      "overlapM2": 0.048317142778311443,
+      "fractionOfSmaller": 2.6251267211404804e-05
+    },
+    {
+      "ids": [
+        "50369927",
+        "27623315"
+      ],
+      "overlapM2": 1.225202007121175,
+      "fractionOfSmaller": 0.00026822689114267955
+    },
+    {
+      "ids": [
+        "27618187",
+        "27629213"
+      ],
+      "overlapM2": 4.492181501618569,
+      "fractionOfSmaller": 0.00027494298813565416
+    },
+    {
+      "ids": [
+        "27618187",
+        "27623315"
+      ],
+      "overlapM2": 2.146326980560658,
+      "fractionOfSmaller": 0.0004698838314215246
+    },
+    {
+      "ids": [
+        "27618187",
+        "64051746"
+      ],
+      "overlapM2": 1.1842447898153219,
+      "fractionOfSmaller": 7.24814438327098e-05
+    },
+    {
+      "ids": [
+        "27623315",
+        "27629213"
+      ],
+      "overlapM2": 0.8158407600934461,
+      "fractionOfSmaller": 0.00017860763325186336
+    },
+    {
+      "ids": [
+        "61770817",
+        "27629213"
+      ],
+      "overlapM2": 2.146343500006756,
+      "fractionOfSmaller": 0.0005700497657745947
+    },
+    {
+      "ids": [
+        "27603221",
+        "27629213"
+      ],
+      "overlapM2": 302.33767798031244,
+      "fractionOfSmaller": 0.6157946478425534
+    },
+    {
+      "ids": [
+        "64051746",
+        "50117189"
+      ],
+      "overlapM2": 0.1947808092036798,
+      "fractionOfSmaller": 8.5865491823223e-06
+    },
+    {
+      "ids": [
+        "64051746",
+        "45514227"
+      ],
+      "overlapM2": 0.011432344397863529,
+      "fractionOfSmaller": 2.6377609597575718e-06
+    },
+    {
+      "ids": [
+        "64051746",
+        "27629213"
+      ],
+      "overlapM2": 0.04321400449092283,
+      "fractionOfSmaller": 1.916295887022211e-06
+    },
+    {
+      "ids": [
+        "64051746",
+        "27611667"
+      ],
+      "overlapM2": 0.37439000007296214,
+      "fractionOfSmaller": 5.1289709486213414e-05
+    },
+    {
+      "ids": [
+        "45514227",
+        "50117189"
+      ],
+      "overlapM2": 0.0348146947998638,
+      "fractionOfSmaller": 8.032721861153638e-06
+    },
+    {
+      "ids": [
+        "27602391",
+        "63686759"
+      ],
+      "overlapM2": 0.012464948111443164,
+      "fractionOfSmaller": 7.953234479963974e-06
+    },
+    {
+      "ids": [
+        "27600349",
+        "48674052"
+      ],
+      "overlapM2": 0.08749999955034582,
+      "fractionOfSmaller": 4.479157082804873e-06
+    },
+    {
+      "ids": [
+        "27600349",
+        "27601440"
+      ],
+      "overlapM2": 3.7901896904169847,
+      "fractionOfSmaller": 0.016052556448314385
+    },
+    {
+      "ids": [
+        "27600349",
+        "58206496"
+      ],
+      "overlapM2": 6.413470162707073,
+      "fractionOfSmaller": 0.05389807180295958
+    },
+    {
+      "ids": [
+        "64670676",
+        "63788976"
+      ],
+      "overlapM2": 0.031882499824147814,
+      "fractionOfSmaller": 2.2755942008394236e-06
+    },
+    {
+      "ids": [
+        "63788976",
+        "27643092"
+      ],
+      "overlapM2": 0.14052550030072375,
+      "fractionOfSmaller": 5.546915233053896e-06
+    },
+    {
+      "ids": [
+        "27611667",
+        "27601440"
+      ],
+      "overlapM2": 0.031502612577088196,
+      "fractionOfSmaller": 0.00013342273288898419
+    },
+    {
+      "ids": [
+        "27611667",
+        "57691686"
+      ],
+      "overlapM2": 0.01894019446072892,
+      "fractionOfSmaller": 0.00011299000884589101
+    },
+    {
+      "ids": [
+        "27611667",
+        "55793458"
+      ],
+      "overlapM2": 0.016535727118560082,
+      "fractionOfSmaller": 2.265318624666698e-06
+    },
+    {
+      "ids": [
+        "63935760",
+        "57691658"
+      ],
+      "overlapM2": 0.019762379925012473,
+      "fractionOfSmaller": 0.00013251299112975406
+    },
+    {
+      "ids": [
+        "57691686",
+        "59130153"
+      ],
+      "overlapM2": 0.04507188330177549,
+      "fractionOfSmaller": 0.0002688817426625611
+    },
+    {
+      "ids": [
+        "50117189",
+        "45838860"
+      ],
+      "overlapM2": 0.25367499990367237,
+      "fractionOfSmaller": 2.0020167463472635e-05
+    },
+    {
+      "ids": [
+        "50117189",
+        "27629213"
+      ],
+      "overlapM2": 0.3603349996937591,
+      "fractionOfSmaller": 1.5978812563143566e-05
+    },
+    {
+      "ids": [
+        "55917040",
+        "50122214"
+      ],
+      "overlapM2": 0.04970950008262011,
+      "fractionOfSmaller": 9.585675116117976e-05
+    },
+    {
+      "ids": [
+        "27576550",
+        "27578670"
+      ],
+      "overlapM2": 0.23303500002462882,
+      "fractionOfSmaller": 0.001811288579267392
+    },
+    {
+      "ids": [
+        "59012838",
+        "58248374"
+      ],
+      "overlapM2": 0.016664035259110834,
+      "fractionOfSmaller": 0.00010745409150885283
+    },
+    {
+      "ids": [
+        "27558630",
+        "27585748"
+      ],
+      "overlapM2": 0.03131800208493328,
+      "fractionOfSmaller": 5.2969634068841e-06
+    },
+    {
+      "ids": [
+        "27558630",
+        "54118443"
+      ],
+      "overlapM2": 0.21659639722007606,
+      "fractionOfSmaller": 0.006539005916302346
+    },
+    {
+      "ids": [
+        "58626156",
+        "58191098"
+      ],
+      "overlapM2": 0.010609999981723961,
+      "fractionOfSmaller": 6.315552191761873e-05
+    },
+    {
+      "ids": [
+        "57969517",
+        "57775063"
+      ],
+      "overlapM2": 2.0289728984030977,
+      "fractionOfSmaller": 0.012138398062777065
+    },
+    {
+      "ids": [
+        "57222925",
+        "60083084"
+      ],
+      "overlapM2": 0.5003861543174464,
+      "fractionOfSmaller": 0.004019422866775368
+    },
+    {
+      "ids": [
+        "62795207",
+        "27528507"
+      ],
+      "overlapM2": 9.94146949823092,
+      "fractionOfSmaller": 0.0008919107407355652
+    },
+    {
+      "ids": [
+        "62795207",
+        "27544445"
+      ],
+      "overlapM2": 1.847775000833039,
+      "fractionOfSmaller": 6.727127059745568e-05
+    },
+    {
+      "ids": [
+        "27528507",
+        "27523404"
+      ],
+      "overlapM2": 0.19941535679800154,
+      "fractionOfSmaller": 0.0002081572717541207
+    },
+    {
+      "ids": [
+        "63575271",
+        "27502757"
+      ],
+      "overlapM2": 0.19818277262380618,
+      "fractionOfSmaller": 0.0024021816204987394
+    },
+    {
+      "ids": [
+        "27504841",
+        "27504875"
+      ],
+      "overlapM2": 12.508674999801896,
+      "fractionOfSmaller": 0.10813316802380225
+    },
+    {
+      "ids": [
+        "27501777",
+        "27502250"
+      ],
+      "overlapM2": 0.018587007129063693,
+      "fractionOfSmaller": 0.00020624911188054653
+    },
+    {
+      "ids": [
+        "27501777",
+        "27498927"
+      ],
+      "overlapM2": 0.05371015695654667,
+      "fractionOfSmaller": 0.0005959900964330528
+    },
+    {
+      "ids": [
+        "27499931",
+        "27500291"
+      ],
+      "overlapM2": 9.649637000334756,
+      "fractionOfSmaller": 0.09820927879126987
+    },
+    {
+      "ids": [
+        "62625765",
+        "55931789"
+      ],
+      "overlapM2": 0.11673684589235254,
+      "fractionOfSmaller": 0.0002341836565409834
+    },
+    {
+      "ids": [
+        "27514568",
+        "27518167"
+      ],
+      "overlapM2": 0.018256690261518042,
+      "fractionOfSmaller": 2.137997683318076e-06
+    },
+    {
+      "ids": [
+        "61061868",
+        "62623911"
+      ],
+      "overlapM2": 0.09190299971933391,
+      "fractionOfSmaller": 0.0005304115485825458
+    },
+    {
+      "ids": [
+        "55931789",
+        "27540974"
+      ],
+      "overlapM2": 0.5738786417430657,
+      "fractionOfSmaller": 0.001151247472097139
+    },
+    {
+      "ids": [
+        "55793458",
+        "27585748"
+      ],
+      "overlapM2": 0.08666395550432972,
+      "fractionOfSmaller": 8.483901394527775e-06
+    },
+    {
+      "ids": [
+        "62008904",
+        "63307475"
+      ],
+      "overlapM2": 217.236688760506,
+      "fractionOfSmaller": 0.9999802558423491
+    },
+    {
+      "ids": [
+        "63307475",
+        "62031655"
+      ],
+      "overlapM2": 0.13180314534260626,
+      "fractionOfSmaller": 0.0006402290130154682
+    },
+    {
+      "ids": [
+        "27493226",
+        "27493359"
+      ],
+      "overlapM2": 0.05957322538133722,
+      "fractionOfSmaller": 0.0005676659684547703
+    },
+    {
+      "ids": [
+        "27481044",
+        "27481043"
+      ],
+      "overlapM2": 10.689400999897813,
+      "fractionOfSmaller": 1.0000000000000002
+    },
+    {
+      "ids": [
+        "27481044",
+        "27481041"
+      ],
+      "overlapM2": 10.689400999897813,
+      "fractionOfSmaller": 1.0000000000000002
+    },
+    {
+      "ids": [
+        "27481044",
+        "27481045"
+      ],
+      "overlapM2": 10.590947914854016,
+      "fractionOfSmaller": 0.9991856672133516
+    },
+    {
+      "ids": [
+        "27481043",
+        "27481041"
+      ],
+      "overlapM2": 10.689400999897813,
+      "fractionOfSmaller": 1.0000000000000002
+    },
+    {
+      "ids": [
+        "27481043",
+        "27481045"
+      ],
+      "overlapM2": 10.590947914854016,
+      "fractionOfSmaller": 0.9991856672133516
+    },
+    {
+      "ids": [
+        "27481041",
+        "27481045"
+      ],
+      "overlapM2": 10.590947914854016,
+      "fractionOfSmaller": 0.9991856672133516
+    },
+    {
+      "ids": [
+        "27484669",
+        "27482024"
+      ],
+      "overlapM2": 0.05315399997545545,
+      "fractionOfSmaller": 0.018788811963040688
+    },
+    {
+      "ids": [
+        "27486556",
+        "54651023"
+      ],
+      "overlapM2": 0.012184253290291791,
+      "fractionOfSmaller": 0.00013330291802253342
+    },
+    {
+      "ids": [
+        "27482730",
+        "27482850"
+      ],
+      "overlapM2": 0.015724470074668595,
+      "fractionOfSmaller": 0.0002527999250612302
+    },
+    {
+      "ids": [
+        "27489919",
+        "27489542"
+      ],
+      "overlapM2": 0.24476514999999513,
+      "fractionOfSmaller": 0.0014042719623381969
+    },
+    {
+      "ids": [
+        "27486814",
+        "54810633"
+      ],
+      "overlapM2": 0.15858843459907623,
+      "fractionOfSmaller": 0.000455627421510232
+    },
+    {
+      "ids": [
+        "55681796",
+        "55681615"
+      ],
+      "overlapM2": 0.3364700001104959,
+      "fractionOfSmaller": 0.00014801348336219031
+    },
+    {
+      "ids": [
+        "54516238",
+        "27501002"
+      ],
+      "overlapM2": 0.02235107178119725,
+      "fractionOfSmaller": 7.067062275815234e-05
+    },
+    {
+      "ids": [
+        "60271298",
+        "48208762"
+      ],
+      "overlapM2": 4491.018824545164,
+      "fractionOfSmaller": 0.9999743437953068
+    },
+    {
+      "ids": [
+        "57965167",
+        "27491646"
+      ],
+      "overlapM2": 0.039229133856965866,
+      "fractionOfSmaller": 1.3632650963235784e-05
+    },
+    {
+      "ids": [
+        "57965167",
+        "46755534"
+      ],
+      "overlapM2": 3.5513877222200096,
+      "fractionOfSmaller": 0.0013955986858764887
+    },
+    {
+      "ids": [
+        "27466240",
+        "27467132"
+      ],
+      "overlapM2": 2.2247955731949975,
+      "fractionOfSmaller": 0.01897884243591046
+    },
+    {
+      "ids": [
+        "62693991",
+        "27469263"
+      ],
+      "overlapM2": 0.02679146752865037,
+      "fractionOfSmaller": 0.00044779515218959547
+    },
+    {
+      "ids": [
+        "58031495",
+        "27477581"
+      ],
+      "overlapM2": 0.050675000005157234,
+      "fractionOfSmaller": 0.00041577138054343314
+    },
+    {
+      "ids": [
+        "27464310",
+        "58856386"
+      ],
+      "overlapM2": 0.22718925788423422,
+      "fractionOfSmaller": 0.002338089455999587
+    },
+    {
+      "ids": [
+        "27466506",
+        "27466978"
+      ],
+      "overlapM2": 0.010654999997873092,
+      "fractionOfSmaller": 0.00012843221687424718
+    },
+    {
+      "ids": [
+        "27464790",
+        "27462825"
+      ],
+      "overlapM2": 0.06729307631371366,
+      "fractionOfSmaller": 0.00032185271627181873
+    },
+    {
+      "ids": [
+        "27466544",
+        "27464476"
+      ],
+      "overlapM2": 0.4951448518926818,
+      "fractionOfSmaller": 0.0008851988913985191
+    }
+  ],
+  "sumPairwiseOverlapM2": 5443.903528311624,
+  "operationErrors": [],
+  "areaM2": {
+    "min": 0.5944479999909857,
+    "median": 188.0928477498741,
+    "max": 207841.9310624972
+  },
+  "features": [
+    {
+      "id": "27594071",
+      "areaM2": 1158.6997499997242,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "27593397",
+      "areaM2": 1135.0842500010065,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "27623488",
+      "areaM2": 265.60938450017255,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "27625858",
+      "areaM2": 239.06554049980895,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "27626176",
+      "areaM2": 223.21832499964032,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "27626370",
+      "areaM2": 762.4575000004083,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "27626614",
+      "areaM2": 202.6554999997106,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "27626931",
+      "areaM2": 182.60050000042997,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "27627279",
+      "areaM2": 199.29470000063446,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "52468977",
+      "areaM2": 241.24612499892615,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "27631005",
+      "areaM2": 1412.3124999996346,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "52600293",
+      "areaM2": 225.5978999999826,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "27629345",
+      "areaM2": 512.7227464998866,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "27630136",
+      "areaM2": 521.393574999759,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "27633405",
+      "areaM2": 866.8450000007009,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "27631913",
+      "areaM2": 185.6125000005719,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "27632077",
+      "areaM2": 293.26142499940505,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "27632431",
+      "areaM2": 133.4225334996908,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "27604670",
+      "areaM2": 315.1932999996831,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "27602653",
+      "areaM2": 302.5617000005168,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "27601509",
+      "areaM2": 358.5324999996152,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "27600189",
+      "areaM2": 360.3583250004612,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "27599059",
+      "areaM2": 358.85142999952024,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "27597924",
+      "areaM2": 355.92625000037344,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "27606017",
+      "areaM2": 377.4349999997741,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "58092898",
+      "areaM2": 295.2505499999598,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "27596927",
+      "areaM2": 295.21314999967353,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "27595960",
+      "areaM2": 309.9258289997972,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "27594973",
+      "areaM2": 292.8175749994973,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "64040125",
+      "areaM2": 305.181700000935,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "27593093",
+      "areaM2": 310.36342499901036,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "27592044",
+      "areaM2": 283.2487500000151,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "27591238",
+      "areaM2": 272.48625000038044,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "27590202",
+      "areaM2": 279.4462500005867,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "27589304",
+      "areaM2": 285.6149999999901,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "27586388",
+      "areaM2": 296.3824999998306,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "27585297",
+      "areaM2": 290.1966250007248,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "51641179",
+      "areaM2": 340.5034249993725,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "27606451",
+      "areaM2": 1011.1271235007735,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "27607934",
+      "areaM2": 1195.9983499987352,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "27598071",
+      "areaM2": 2124.4421809990363,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "27607213",
+      "areaM2": 1198.3471000004356,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "27604033",
+      "areaM2": 1121.4755500001047,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "27603677",
+      "areaM2": 1511.0825000008376,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "27600717",
+      "areaM2": 1689.3761249993283,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "27599897",
+      "areaM2": 1853.4362499999104,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "54488179",
+      "areaM2": 1779.0795000006503,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "27605696",
+      "areaM2": 199.40352150007362,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "27595957",
+      "areaM2": 1591.4651139990183,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "27604897",
+      "areaM2": 198.39570349955335,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "27602203",
+      "areaM2": 199.26200600011282,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "27601502",
+      "areaM2": 188.52614399999234,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "27611692",
+      "areaM2": 602.3112170004728,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "27612329",
+      "areaM2": 503.24114999959875,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "27612847",
+      "areaM2": 534.565099999956,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "27613156",
+      "areaM2": 1169.8644999993223,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "27614679",
+      "areaM2": 1133.3274999993803,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "27615935",
+      "areaM2": 708.3137500002035,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "48206776",
+      "areaM2": 1515.3291495009303,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "55031747",
+      "areaM2": 674.4427499992903,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "27618925",
+      "areaM2": 970.4912499993727,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "27622833",
+      "areaM2": 1990.989149999187,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "27619953",
+      "areaM2": 539.7732560008787,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "55805976",
+      "areaM2": 77.358914499846,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "27620926",
+      "areaM2": 536.7429940001689,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "27621799",
+      "areaM2": 426.4074999991992,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "27623060",
+      "areaM2": 249.417538999244,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "27622645",
+      "areaM2": 381.29624999931053,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "54260433",
+      "areaM2": 3941.0269185007974,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "27594015",
+      "areaM2": 1840.564205499389,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "54260565",
+      "areaM2": 6506.606551000663,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "27611984",
+      "areaM2": 390.3362499999714,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "27620275",
+      "areaM2": 369.50882500030866,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "27621613",
+      "areaM2": 97.80544449992755,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "27621614",
+      "areaM2": 417.2874999991606,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "27627593",
+      "areaM2": 920.8150000000729,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "27623184",
+      "areaM2": 388.4075000005263,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "27626275",
+      "areaM2": 418.86249999948194,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "27632353",
+      "areaM2": 672.3237499999277,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "52506364",
+      "areaM2": 367.921250000415,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "27628641",
+      "areaM2": 408.13375000028554,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "27630688",
+      "areaM2": 498.00214849991863,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "50369927",
+      "areaM2": 4625.767661500674,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "27618187",
+      "areaM2": 16338.592709999104,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "27623315",
+      "areaM2": 4567.782156001077,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "61770817",
+      "areaM2": 3765.1861800000265,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "45904311",
+      "areaM2": 19406.505774999026,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "50139883",
+      "areaM2": 36051.97553549846,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "27603221",
+      "areaM2": 490.9715909996253,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "64051746",
+      "areaM2": 22684.410822998372,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "45514227",
+      "areaM2": 4334.109334499453,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "64225030",
+      "areaM2": 192.38048249963364,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "41010380",
+      "areaM2": 2282.1162245006212,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "27602391",
+      "areaM2": 1567.2803490008037,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "63780322",
+      "areaM2": 160.8528259997031,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "63628943",
+      "areaM2": 171.82750750054322,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "63749926",
+      "areaM2": 180.36353700004352,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "63748296",
+      "areaM2": 161.48840899949383,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "48102837",
+      "areaM2": 58.387308999922126,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "62944244",
+      "areaM2": 220.693904499662,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "63785957",
+      "areaM2": 314.28516249982096,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "62949705",
+      "areaM2": 236.41051949982946,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "63688955",
+      "areaM2": 179.8300719994553,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "63688447",
+      "areaM2": 222.4872905002909,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "62956294",
+      "areaM2": 236.6465390006549,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "62956236",
+      "areaM2": 0.5944479999909857,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "63280338",
+      "areaM2": 279.24160499985373,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "27600349",
+      "areaM2": 19534.925418501472,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "48674052",
+      "areaM2": 207841.9310624972,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "64670676",
+      "areaM2": 14010.626240999807,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "63788976",
+      "areaM2": 47915.71524550395,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "63045349",
+      "areaM2": 302.4940369995071,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "63686250",
+      "areaM2": 242.8448780001918,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "62976236",
+      "areaM2": 235.1108940002669,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "63726900",
+      "areaM2": 315.75750099999397,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "27611667",
+      "areaM2": 7299.514928498425,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "64822593",
+      "areaM2": 217.2784055000231,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "63689273",
+      "areaM2": 283.65837600009706,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "27601440",
+      "areaM2": 236.11128250011402,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "48349690",
+      "areaM2": 5452.342939498697,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "58206496",
+      "areaM2": 118.99257149965251,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "63935760",
+      "areaM2": 150.8578540000025,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "57691658",
+      "areaM2": 149.13541499988895,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "57691686",
+      "areaM2": 167.62716150028604,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "59130153",
+      "areaM2": 1074.3599810001274,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "63279717",
+      "areaM2": 225.85414999978315,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "63686813",
+      "areaM2": 226.1509774999078,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "63788978",
+      "areaM2": 3761.7998690002614,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "58286924",
+      "areaM2": 115.25011599975977,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "63935793",
+      "areaM2": 24.507353500038707,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "63935759",
+      "areaM2": 147.18953750030627,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "51500488",
+      "areaM2": 105.70904399948357,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "63935794",
+      "areaM2": 123.72599150023073,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "59130154",
+      "areaM2": 1059.754167000285,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "59027041",
+      "areaM2": 131.06719999994354,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "59130684",
+      "areaM2": 123.20360049974641,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "27643092",
+      "areaM2": 25333.990947497565,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "50117189",
+      "areaM2": 29721.374023001903,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "27629213",
+      "areaM2": 22550.799583499786,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "27580581",
+      "areaM2": 186.70007900036308,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "27581408",
+      "areaM2": 165.05432449968703,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "27472162",
+      "areaM2": 792.8357940004885,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "27471923",
+      "areaM2": 2388.9706700001348,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "57815256",
+      "areaM2": 240.28639549997487,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "27502463",
+      "areaM2": 2303.7109165018405,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "57816205",
+      "areaM2": 603.799880498162,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "62672753",
+      "areaM2": 2822.661899499863,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "58189358",
+      "areaM2": 165.5556990000756,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "57777234",
+      "areaM2": 31816.675496502787,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "27565902",
+      "areaM2": 5502.827457999517,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "63686759",
+      "areaM2": 68144.63251950042,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "55917040",
+      "areaM2": 9442.181298501215,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "27561763",
+      "areaM2": 712.0470920002102,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "50122214",
+      "areaM2": 518.5811064995863,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "45838860",
+      "areaM2": 12670.972926001225,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "61082588",
+      "areaM2": 219.39675599975516,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "61808467",
+      "areaM2": 265.5134990003129,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "27560483",
+      "areaM2": 181.66459999992463,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "55936191",
+      "areaM2": 15369.361431999221,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "27564016",
+      "areaM2": 125.55482499992343,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "27569879",
+      "areaM2": 118.49000000006228,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "27570713",
+      "areaM2": 121.82696499988987,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "27571074",
+      "areaM2": 115.82424999964672,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "27574338",
+      "areaM2": 145.42999999971568,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "27576550",
+      "areaM2": 128.6570249997844,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "27578670",
+      "areaM2": 141.33775000016868,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "27576782",
+      "areaM2": 424.5444549998035,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "59012838",
+      "areaM2": 155.0805095005427,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "27578573",
+      "areaM2": 521.5037499999894,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "58248374",
+      "areaM2": 162.692772500221,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "57129503",
+      "areaM2": 243.52373550001192,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "58436904",
+      "areaM2": 151.72685099991847,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "58625210",
+      "areaM2": 200.9122385002746,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "57086968",
+      "areaM2": 179.08964000025634,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "27574834",
+      "areaM2": 411.3049999996528,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "57340348",
+      "areaM2": 141.07888799965448,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "57340335",
+      "areaM2": 140.42277749998775,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "57507427",
+      "areaM2": 166.8792745000498,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "58765609",
+      "areaM2": 192.49481549962198,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "57507690",
+      "areaM2": 146.6173540001269,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "27572690",
+      "areaM2": 350.69375000047876,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "57087919",
+      "areaM2": 128.28329299988962,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "58758433",
+      "areaM2": 192.01768350037838,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "57533892",
+      "areaM2": 138.93297349965772,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "27571016",
+      "areaM2": 312.54624999963505,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "57577880",
+      "areaM2": 136.27673500011866,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "57088040",
+      "areaM2": 128.23512000002378,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "57534720",
+      "areaM2": 138.8220680002346,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "62980324",
+      "areaM2": 135.42077550025036,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "59882703",
+      "areaM2": 192.91866999990563,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "57506233",
+      "areaM2": 138.4965799998985,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "57578106",
+      "areaM2": 137.99075900009532,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "57456895",
+      "areaM2": 137.34367349958217,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "57087699",
+      "areaM2": 176.84892050033073,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "57459398",
+      "areaM2": 134.74603150036197,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "57776103",
+      "areaM2": 138.68559349972745,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "57340695",
+      "areaM2": 138.64403599969518,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "64482409",
+      "areaM2": 211.40178799938394,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "57776501",
+      "areaM2": 136.6158995001317,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "57507029",
+      "areaM2": 136.9721795001011,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "27558630",
+      "areaM2": 5912.44448550115,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "54118443",
+      "areaM2": 33.12374999999331,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "27578566",
+      "areaM2": 7901.901098999695,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "59494086",
+      "areaM2": 1573.7409790002962,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "27551327",
+      "areaM2": 31063.477606499433,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "27593927",
+      "areaM2": 41707.57427249888,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "63788975",
+      "areaM2": 52.505103000264384,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "54260564",
+      "areaM2": 11146.921870999127,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "27583395",
+      "areaM2": 360.0275000004834,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "27582418",
+      "areaM2": 358.45749999915097,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "27581562",
+      "areaM2": 386.8950000015899,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "27580569",
+      "areaM2": 401.58374999907187,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "27579563",
+      "areaM2": 421.58625000050995,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "47774475",
+      "areaM2": 382.0725000002762,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "27570939",
+      "areaM2": 308.7037500001525,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "27569019",
+      "areaM2": 241.12749999987952,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "27565883",
+      "areaM2": 268.0137500001071,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "27564943",
+      "areaM2": 279.11250000001314,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "58247908",
+      "areaM2": 214.15754499998823,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "57907643",
+      "areaM2": 173.0348164999665,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "58190544",
+      "areaM2": 187.42062300033615,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "27576499",
+      "areaM2": 265.6287499996068,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "58626156",
+      "areaM2": 181.210762499613,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "58191098",
+      "areaM2": 167.99797800046443,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "58146597",
+      "areaM2": 164.82318700001792,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "57962674",
+      "areaM2": 163.6960380004194,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "57969517",
+      "areaM2": 167.15326749952558,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "57775063",
+      "areaM2": 196.42635649965513,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "27576613",
+      "areaM2": 308.0158950002586,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "58248929",
+      "areaM2": 152.91197600001945,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "57961842",
+      "areaM2": 144.2932074996097,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "57969901",
+      "areaM2": 157.8686510002571,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "58249234",
+      "areaM2": 159.29942699948754,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "64486503",
+      "areaM2": 136.58228299987022,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "57068777",
+      "areaM2": 13118.165307500358,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "27569423",
+      "areaM2": 447.28500000036934,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "57748705",
+      "areaM2": 138.2413440001382,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "57456705",
+      "areaM2": 139.5999549998481,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "57578547",
+      "areaM2": 130.9252719994275,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "57131218",
+      "areaM2": 182.74919950021666,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "57471202",
+      "areaM2": 139.60301449977857,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "57557232",
+      "areaM2": 248.0973515007173,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "57088269",
+      "areaM2": 147.5199094997176,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "57506433",
+      "areaM2": 138.46497449992438,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "57222925",
+      "areaM2": 342.984471999811,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "60083084",
+      "areaM2": 124.492040500055,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "57222115",
+      "areaM2": 124.96260399962236,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "61121640",
+      "areaM2": 133.53713800057554,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "57507747",
+      "areaM2": 139.10436849978532,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "57414231",
+      "areaM2": 162.34916099980904,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "57326125",
+      "areaM2": 181.8499700003133,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "57634434",
+      "areaM2": 130.35810700013894,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "57229386",
+      "areaM2": 151.7015384999446,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "57229269",
+      "areaM2": 129.04564250020965,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "57551078",
+      "areaM2": 139.98371049959735,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "57317249",
+      "areaM2": 139.1088399998744,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "57271451",
+      "areaM2": 171.15316649978334,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "57229755",
+      "areaM2": 179.32809250020185,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "57271450",
+      "areaM2": 420.23978499971855,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "60585375",
+      "areaM2": 123.82663650039075,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "57271452",
+      "areaM2": 182.73671399989163,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "60799713",
+      "areaM2": 160.72981000020437,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "57325679",
+      "areaM2": 148.32750149977704,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "57325795",
+      "areaM2": 246.56616449983227,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "57229591",
+      "areaM2": 123.0938269998417,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "57238040",
+      "areaM2": 123.68228600018426,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "57507884",
+      "areaM2": 125.99978999987981,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "57230480",
+      "areaM2": 235.7292279999731,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "27527206",
+      "areaM2": 12126.449059999855,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "62795207",
+      "areaM2": 30937.89542199836,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "27528507",
+      "areaM2": 11146.260544000308,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "27523404",
+      "areaM2": 958.0033169994404,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "27544445",
+      "areaM2": 27467.520449999123,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "27514207",
+      "areaM2": 1489.3932705002735,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "27548575",
+      "areaM2": 440.40172799993223,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "55917039",
+      "areaM2": 58.79238650019454,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "55917986",
+      "areaM2": 5.087499999983993,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "63575271",
+      "areaM2": 94.0209805000096,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "27503716",
+      "areaM2": 94.77076000007457,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "27504841",
+      "areaM2": 130.31138349969336,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "27505060",
+      "areaM2": 122.79260250017585,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "27504875",
+      "areaM2": 115.67842900014257,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "27502067",
+      "areaM2": 4.185215999975728,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "27504911",
+      "areaM2": 123.05133049998736,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "27505106",
+      "areaM2": 109.49874999969353,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "27504963",
+      "areaM2": 114.12720899974828,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "27504615",
+      "areaM2": 102.89624999995954,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "27504995",
+      "areaM2": 102.75552500009732,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "27505017",
+      "areaM2": 97.00367499952918,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "27505159",
+      "areaM2": 157.98417199980054,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "27500443",
+      "areaM2": 129.78505000006697,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "27500842",
+      "areaM2": 83.60819999987373,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "27501296",
+      "areaM2": 80.37701749991751,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "63159179",
+      "areaM2": 153.01770500032472,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "27501777",
+      "areaM2": 90.11921050030385,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "27502250",
+      "areaM2": 101.36764499974862,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "27497727",
+      "areaM2": 146.81820500045447,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "27502757",
+      "areaM2": 82.50116099991624,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "57949704",
+      "areaM2": 85.2495815000839,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "27498474",
+      "areaM2": 90.97830649983848,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "27498927",
+      "areaM2": 91.50147450028139,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "27499520",
+      "areaM2": 103.50994449966802,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "27499931",
+      "areaM2": 101.33278800059328,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "27500291",
+      "areaM2": 98.25585850033289,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "27500852",
+      "areaM2": 106.08999600021426,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "27501169",
+      "areaM2": 88.7909499993925,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "27501636",
+      "areaM2": 98.24994800013692,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "27501694",
+      "areaM2": 84.27069600026381,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "27501747",
+      "areaM2": 84.44251599971724,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "27502065",
+      "areaM2": 133.58500000004483,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "62625765",
+      "areaM2": 31850.161989998523,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "57734225",
+      "areaM2": 316.06151700067954,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "62677949",
+      "areaM2": 243.92651050006126,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "27514568",
+      "areaM2": 26763.498768501508,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "62624551",
+      "areaM2": 209.60273449954175,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "62677441",
+      "areaM2": 211.57542449956574,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "62674554",
+      "areaM2": 230.14543750051362,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "27528518",
+      "areaM2": 5316.022551998938,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "27517387",
+      "areaM2": 4351.432648503022,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "61640286",
+      "areaM2": 203.51609400045749,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "62997136",
+      "areaM2": 264.449324000201,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "61277680",
+      "areaM2": 173.30339649990512,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "61819950",
+      "areaM2": 188.39655949952612,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "61061868",
+      "areaM2": 173.26734299985065,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "27518167",
+      "areaM2": 8539.153434995535,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "61749598",
+      "areaM2": 187.78913600022207,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "62623911",
+      "areaM2": 176.55311499985615,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "55931789",
+      "areaM2": 498.4841709990252,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "55793458",
+      "areaM2": 10215.10640850082,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "61754099",
+      "areaM2": 149.75256850017624,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "61748002",
+      "areaM2": 173.1798269996695,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "62678952",
+      "areaM2": 172.20862900026998,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "61780425",
+      "areaM2": 234.12580149942835,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "62008904",
+      "areaM2": 217.2409780006239,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "63307475",
+      "areaM2": 217.4364320005756,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "62031655",
+      "areaM2": 205.86874799974402,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "27529000",
+      "areaM2": 923.7080000002611,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "27528140",
+      "areaM2": 1507.878040999541,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "27540974",
+      "areaM2": 8168.649171498949,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "27575832",
+      "areaM2": 822.829999999401,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "27527249",
+      "areaM2": 465.6407750005749,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "27535317",
+      "areaM2": 7531.806927500928,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "27585748",
+      "areaM2": 15153.429816998723,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "27527026",
+      "areaM2": 920.2613089997456,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "27494989",
+      "areaM2": 88.30926850011141,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "27495509",
+      "areaM2": 98.63145149993636,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "27495863",
+      "areaM2": 87.51237349997983,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "27496240",
+      "areaM2": 89.30910100002139,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "27493226",
+      "areaM2": 106.05282000018282,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "27481131",
+      "areaM2": 113.26891949973574,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "27493359",
+      "areaM2": 104.944154999286,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "27483789",
+      "areaM2": 63.121622500081116,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "57977660",
+      "areaM2": 117.90612050033072,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "27483900",
+      "areaM2": 63.5489910000142,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "27481044",
+      "areaM2": 10.689400999897812,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "27481043",
+      "areaM2": 10.689400999897812,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "27481041",
+      "areaM2": 10.689400999897812,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "27481045",
+      "areaM2": 10.599579499965525,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "59569273",
+      "areaM2": 244.89757550030612,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "58701746",
+      "areaM2": 120.57290000009526,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "27490731",
+      "areaM2": 130.70526050012705,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "27484074",
+      "areaM2": 72.03124199988841,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "27489922",
+      "areaM2": 131.21321450015105,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "27488926",
+      "areaM2": 102.11270950008172,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "27488218",
+      "areaM2": 99.94696200001164,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "27491874",
+      "areaM2": 7.63269449990794,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "27487463",
+      "areaM2": 105.5037594997707,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "59502011",
+      "areaM2": 62.74702600026988,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "27492776",
+      "areaM2": 86.93624999997584,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "58031496",
+      "areaM2": 63.20057949972505,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "27484456",
+      "areaM2": 62.65149999983311,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "27482600",
+      "areaM2": 445.62017499949593,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "27484669",
+      "areaM2": 109.52544100015115,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "27482024",
+      "areaM2": 2.829024000028008,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "27481750",
+      "areaM2": 2.654456000003096,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "27482848",
+      "areaM2": 1.200561000001167,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "27484804",
+      "areaM2": 62.27999999998748,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "27483388",
+      "areaM2": 63.757499999912106,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "27484821",
+      "areaM2": 40.51735000002342,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "27490647",
+      "areaM2": 173.421249999993,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "57963133",
+      "areaM2": 212.77749999988387,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "27486192",
+      "areaM2": 6.072113500073589,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "27481150",
+      "areaM2": 121.2865065001613,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "63414919",
+      "areaM2": 138.63376699949882,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "63414862",
+      "areaM2": 20.261126999869543,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "27486556",
+      "areaM2": 91.40275000005758,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "27491205",
+      "areaM2": 96.33080150040266,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "63414865",
+      "areaM2": 6.678913000049186,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "54651023",
+      "areaM2": 385.2016474998876,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "27481751",
+      "areaM2": 154.7207914999425,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "27491643",
+      "areaM2": 112.35870999999399,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "27491809",
+      "areaM2": 116.77241249952058,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "27482177",
+      "areaM2": 74.3116059998878,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "27491932",
+      "areaM2": 112.20639699991538,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "27479990",
+      "areaM2": 167.07945350031895,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "27482331",
+      "areaM2": 74.64625150018696,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "27492067",
+      "areaM2": 109.92308000031481,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "27482474",
+      "areaM2": 66.11662399999146,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "57216255",
+      "areaM2": 264.62005000012664,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "27482586",
+      "areaM2": 72.362643500042,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "27482730",
+      "areaM2": 68.94924999994359,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "27492480",
+      "areaM2": 119.89582300020689,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "27482850",
+      "areaM2": 62.201244999815565,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "27482972",
+      "areaM2": 67.75138050033061,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "27488012",
+      "areaM2": 59.95991499965179,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "27483114",
+      "areaM2": 61.45292499980682,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "27488078",
+      "areaM2": 68.00566600044446,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "27480060",
+      "areaM2": 1.857587499997398,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "27488125",
+      "areaM2": 3.2764749999964318,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "27492869",
+      "areaM2": 113.83286249996183,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "27488179",
+      "areaM2": 1.9612609999666737,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "27488319",
+      "areaM2": 68.59569799985533,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "27492981",
+      "areaM2": 111.72463750019325,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "27488450",
+      "areaM2": 62.36374999991355,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "27493122",
+      "areaM2": 114.18024999992696,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "27483650",
+      "areaM2": 73.418749999805,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "27495841",
+      "areaM2": 1284.272776000774,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "27489919",
+      "areaM2": 215.54312049982573,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "27516417",
+      "areaM2": 8781.864449999388,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "27489542",
+      "areaM2": 174.30038950036894,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "27489103",
+      "areaM2": 185.77726400005895,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "59883646",
+      "areaM2": 231.80790999950926,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "27488158",
+      "areaM2": 207.58604800061804,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "27487779",
+      "areaM2": 213.1195020000431,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "27487283",
+      "areaM2": 221.6369774992659,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "27486814",
+      "areaM2": 348.06604500101366,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "55681796",
+      "areaM2": 2273.2388459985823,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "54810633",
+      "areaM2": 2724.7630245006,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "60515188",
+      "areaM2": 3279.1094615009742,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "55681615",
+      "areaM2": 2785.6825000004574,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "54516238",
+      "areaM2": 1113.7070830006237,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "60271298",
+      "areaM2": 4491.134049999655,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "48208762",
+      "areaM2": 4493.186219999476,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "27485199",
+      "areaM2": 1353.8637500002835,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "27501002",
+      "areaM2": 316.27104600007084,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "27487057",
+      "areaM2": 99.0458530000435,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "27501563",
+      "areaM2": 3176.1314955009425,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "27528376",
+      "areaM2": 312.66956699961634,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "57965167",
+      "areaM2": 3636.199796999238,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "27491646",
+      "areaM2": 2877.5866089990923,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "48208658",
+      "areaM2": 233.6876974999602,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "27516550",
+      "areaM2": 2943.8662930004893,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "46755534",
+      "areaM2": 2544.7055504997156,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "27481512",
+      "areaM2": 455.3774749996135,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "52842671",
+      "areaM2": 7393.56974449968,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "27513540",
+      "areaM2": 9.33930000000859,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "57965168",
+      "areaM2": 11.701321499830977,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "58766978",
+      "areaM2": 192.20705400032,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "27501790",
+      "areaM2": 294.8682859996583,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "58765918",
+      "areaM2": 248.73983399971422,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "27474021",
+      "areaM2": 10460.070456999609,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "27462914",
+      "areaM2": 281.95500000063214,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "27475260",
+      "areaM2": 4452.8125000004065,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "27464375",
+      "areaM2": 195.7329999996232,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "27465451",
+      "areaM2": 151.82225000010547,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "27466240",
+      "areaM2": 117.22504050011989,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "27467132",
+      "areaM2": 121.31493800020871,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "27468188",
+      "areaM2": 146.0925750004171,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "27469291",
+      "areaM2": 158.05412499960102,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "27470016",
+      "areaM2": 110.78696349948761,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "27470852",
+      "areaM2": 120.61938650060074,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "27471877",
+      "areaM2": 137.91749999972848,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "27471878",
+      "areaM2": 138.310000000282,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "57186658",
+      "areaM2": 21.082629000022617,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "27476341",
+      "areaM2": 31.772744500478193,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "27483565",
+      "areaM2": 2741.5757814996987,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "60087566",
+      "areaM2": 2263.3432419982664,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "27480369",
+      "areaM2": 101.54352799995063,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "27480913",
+      "areaM2": 108.5222434998317,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "27480484",
+      "areaM2": 88.16337199980647,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "27480809",
+      "areaM2": 100.38131550020579,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "27480668",
+      "areaM2": 104.28390950064045,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "55172055",
+      "areaM2": 2011.4942950006205,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "27490453",
+      "areaM2": 4029.9658075000784,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "55151481",
+      "areaM2": 3074.4385969998048,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "57772733",
+      "areaM2": 5613.988488999591,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "60262936",
+      "areaM2": 82.18499999971158,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "27463059",
+      "areaM2": 56.294474499646505,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "27465566",
+      "areaM2": 46.18499999998516,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "27465832",
+      "areaM2": 47.29125000020926,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "60115044",
+      "areaM2": 47.977500000308794,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "27466275",
+      "areaM2": 47.39125000003755,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "56430677",
+      "areaM2": 52.17414500007326,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "62693991",
+      "areaM2": 67.97746800031844,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "27470708",
+      "areaM2": 75.73874999974039,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "64505060",
+      "areaM2": 61.028349999986446,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "27470182",
+      "areaM2": 47.087796999766624,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "27469263",
+      "areaM2": 59.82973999974641,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "27469943",
+      "areaM2": 53.01256850015313,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "58031494",
+      "areaM2": 1239.0300790005062,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "27474817",
+      "areaM2": 85.57125000019529,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "27475894",
+      "areaM2": 140.68584200034329,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "59501845",
+      "areaM2": 90.4096709999116,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "27482030",
+      "areaM2": 147.97398999998288,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "58031495",
+      "areaM2": 121.88188599927821,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "27481900",
+      "areaM2": 134.10545849975426,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "27477581",
+      "areaM2": 139.5267830000522,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "27478266",
+      "areaM2": 148.90262700028177,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "27480226",
+      "areaM2": 171.74735000005703,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "27478168",
+      "areaM2": 19.00820299998654,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "27479218",
+      "areaM2": 132.8748934997272,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "27462313",
+      "areaM2": 5124.075375500482,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "58334421",
+      "areaM2": 42194.98530650078,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "53786746",
+      "areaM2": 8951.41018499935,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "27477974",
+      "areaM2": 11608.402730500715,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "27463683",
+      "areaM2": 737.509601999971,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "27464310",
+      "areaM2": 97.16876199978653,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "58856386",
+      "areaM2": 98.95595599985452,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "27465363",
+      "areaM2": 81.04999999978463,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "27465871",
+      "areaM2": 93.99730000008506,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "27466506",
+      "areaM2": 98.2579300001109,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "27466978",
+      "areaM2": 82.96204999954026,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "27497718",
+      "areaM2": 18064.48730849725,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "27472677",
+      "areaM2": 70.58085699994609,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "47095701",
+      "areaM2": 1801.253749999301,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "59933977",
+      "areaM2": 21.082549999939268,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "27477194",
+      "areaM2": 952.7690999996405,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "27464790",
+      "areaM2": 839.2893814996029,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "53916745",
+      "areaM2": 633.5542005003572,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "27462825",
+      "areaM2": 209.0803430003732,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "27465937",
+      "areaM2": 76.20246949972011,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "27466320",
+      "areaM2": 81.73500850007675,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "27476222",
+      "areaM2": 2112.1509890003636,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "27476845",
+      "areaM2": 221.13626600013885,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "27472354",
+      "areaM2": 67.11875000027504,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "27472770",
+      "areaM2": 93.3300000001068,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "27466638",
+      "areaM2": 46.09750000007247,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "27471951",
+      "areaM2": 94.90374999981489,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "27470984",
+      "areaM2": 89.44500000002124,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "61137422",
+      "areaM2": 46.19124999998516,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "27464346",
+      "areaM2": 109.09625000011816,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "27482828",
+      "areaM2": 2330.0182900012,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "57772732",
+      "areaM2": 1513.7137500002714,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "27471918",
+      "areaM2": 158.3090755002185,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "27457378",
+      "areaM2": 2075.1147269994567,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "27484210",
+      "areaM2": 2364.391317001496,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "27463494",
+      "areaM2": 132.21047700001733,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "27466661",
+      "areaM2": 77.43739549973871,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "27462097",
+      "areaM2": 387.5234020000208,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "27469247",
+      "areaM2": 985.2877610012201,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "27463392",
+      "areaM2": 1.5907770000038453,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "27463521",
+      "areaM2": 1.8188039999979995,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "44802621",
+      "areaM2": 277.89504250039437,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "27477671",
+      "areaM2": 405.0497999993951,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "27461167",
+      "areaM2": 2395.371167500005,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "27476637",
+      "areaM2": 73.11112400042542,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "27480183",
+      "areaM2": 86.31121650032881,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "27469841",
+      "areaM2": 3819.9221084982614,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "27479976",
+      "areaM2": 103.12275699983088,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "62399800",
+      "areaM2": 2182.372186999557,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "27471666",
+      "areaM2": 1851.3362499996936,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "27466544",
+      "areaM2": 559.360000000007,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "27464476",
+      "areaM2": 702.1758250004566,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "27461857",
+      "areaM2": 1299.1539460006784,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    }
+  ]
+}

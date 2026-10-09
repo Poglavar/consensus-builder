@@ -1,0 +1,60 @@
+{
+  "schemaVersion": "1.0",
+  "checkedAt": "2026-10-09",
+  "cityRecord": "city-10092-jining.json",
+  "purpose": "Document first-party local registry/map evidence and bounded anonymous geometry access review.",
+  "scopeLimits": {
+    "maxFullPolygonsRetainedInCityRecord": 0,
+    "maxFullPolygonsRetainedInReview": 0,
+    "maxFullPolygonsRetainedInRepository": 0,
+    "ownerOrAddressDataRetained": false,
+    "credentialsOrTokenValuesRetained": false,
+    "citywideCompletenessAsserted": false
+  },
+  "assessment": "City-specific Jining, Shandong registration and cadastral-map services are confirmed by the municipal bureau. The public route selects a parcel or building and returns address/location plus registration and rights-related attributes; the written notice also describes queries by specific address. No point, address, or parcel query was made, and no geometry endpoint with an allowlisted output was verified.",
+  "registryAssessment": "Official Jining Natural Resources and Planning Bureau publications explicitly document city real-estate registration and a public cadastral-map visualization/lookup service. The queue point at 35.40986 N, 116.58646 E is Jining, Shandong (济宁市), not Jining/集宁 in Inner Mongolia. The advertised service reveals parcel location, unit/certificate numbers, rights, and encumbrance status; it is not a safe geometry-only endpoint.",
+  "officialPrimarySources": [
+    {
+      "url": "https://nrp.jining.gov.cn/art/2020/9/16/art_73989_2709097.html",
+      "observation": "Official Jining Natural Resources and Planning Bureau notice says public cadastral-zone/subzone information is available through Tianditu Shandong, and an address-specific registration lookup returns location, area, rights and encumbrance information. No address or parcel was queried."
+    },
+    {
+      "url": "https://nrp.jining.gov.cn/art/2024/2/1/art_60570_2725228.html",
+      "observation": "Official municipal bureau describes its city real-estate registration and cadastral-map visualization, in which selecting a parcel/building can display property location, unit number, certificate number and other registration information. No selection was made."
+    },
+    {
+      "url": "https://nrp.jining.gov.cn/col/col60885/index.html",
+      "observation": "Official bureau map-services page links to standard map services, Shandong geographic-information catalogue and Tianditu; it does not itself supply a geometry-only parcel feature endpoint."
+    },
+    {
+      "url": "https://www.jining.gov.cn/",
+      "observation": "Official Jining municipal government portal identifies the municipal jurisdiction and administration; the coordinates uniquely place this candidate at Jining in Shandong rather than Jining/集宁 in Inner Mongolia."
+    }
+  ],
+  "searchQueries": [
+    {
+      "language": "English",
+      "query": "Jining Shandong official GIS cadastral parcel map land registry government",
+      "result": "Found the Jining Natural Resources and Planning Bureau’s map services and official descriptions of city cadastral map and registration-information visualization. Its click/address lookup returns property attributes, so no feature was queried.",
+      "method": "Separate English-language search and official municipal bureau page review.",
+      "scope": "Locate current official city-bound registry, cadastral map, or public geometry service."
+    },
+    {
+      "language": "Chinese",
+      "query": "济宁市不动产登记 地籍查询 地图服务 官方 济宁",
+      "result": "Official Jining bureau documents city land-cadastral map viewing and property-info search; the latter can disclose location, unit/certificate identifiers and rights/encumbrance information. No map selection or address search was performed.",
+      "method": "Separate Chinese-language search followed by official Jining municipal bureau page review.",
+      "scope": "Locate current official city-bound registry, cadastral map, or public geometry service."
+    }
+  ],
+  "geometryDecision": "No parcel geometry retained; no anonymous public point-level full-polygon response was verified.",
+  "coverageAssessment": {
+    "claimedScope": "Official Jining Natural Resources and Planning Bureau publications explicitly document city real-estate registration and a public cadastral-map visualization/lookup service. The queue point at 35.40986 N, 116.58646 E is Jining, Shandong (济宁市), not Jining/集宁 in Inner Mongolia. The advertised service reveals parcel location, unit/certificate numbers, rights, and encumbrance status; it is not a safe geometry-only endpoint.",
+    "verifiedOpenScope": "No geometry-only service or point-level response verified; candidate map/query flows either expose parcel identifiers/property attributes or require application/account steps.",
+    "citywideVerified": false,
+    "countrywideVerified": false,
+    "geometryVerified": false
+  },
+  "attempts": [],
+  "remainingUncertainty": "Whether Tianditu’s public thematic cadastral layer has a separate non-identifying geometry-only route; it was not queried."
+}

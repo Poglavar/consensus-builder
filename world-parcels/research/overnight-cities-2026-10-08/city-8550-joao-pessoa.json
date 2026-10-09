@@ -1,0 +1,127 @@
+{
+  "schemaVersion": 1,
+  "kind": "city_parcel_source_research",
+  "checkedAt": "2026-10-09",
+  "name": "João Pessoa",
+  "country": "Brazil",
+  "countryCode": "BR",
+  "populationUnit": "persons",
+  "status": "complete",
+  "registryFound": true,
+  "registryBasis": "The city’s official Filipeia atlas publishes a municipal Lotes layer and advertises a citywide shape/CSV download. The linked archive was inaccessible by anonymous HTTPS (403), so no public geometry or schema was verified.",
+  "registryEvidenceUrls": [
+    "https://filipeia.joaopessoa.pb.gov.br/",
+    "https://www.joaopessoa.pb.gov.br/wp-content/uploads/2026/04/seplan-carta-de-servicos-2026.pdf"
+  ],
+  "verifiedSample": false,
+  "publicParcelGeometryFound": false,
+  "runtimeReadiness": "not_enabled_no_verified_public_geometry",
+  "wupCityCode": 8550,
+  "cityId": "wup2025:8550",
+  "centerLatLon": [
+    -7.14544434305855,
+    -34.8805157633982
+  ],
+  "rank": 482,
+  "queueRank": 482,
+  "population2025": 1064481,
+  "population2025k": 1064.481,
+  "pointBasis": "UN WUP 2025 population-weighted settlement centroid; this is not a municipal boundary or a parcel-coverage claim.",
+  "technicalBlocker": "The municipal Filipeia atlas identifies an official Lotes layer and advertises a shapefile/CSV download (188,703 lots). The official download link returned HTTP 403 to an anonymous range request; the map page also could not be fetched directly from the shell. The public service charter describes property-related applications as login/identity workflows, which were not accessed. No schema, anonymous feature route, or target geometry was verified.",
+  "scopeLimits": "Municipal parcel layer existence is verified, but the actual archive and feature geometry were inaccessible. Atlas service includes tax inscription UI and login-based property workflows; no such lookups were made.",
+  "remainingUncertainty": "A public feature geometry response and exact point parcel coverage remain unverified.",
+  "research": {
+    "executedQueries": [
+      {
+        "language": "English",
+        "query": "João Pessoa official municipal cadastral lot shapefile public GIS parcels Filipeia",
+        "scope": "Find current city-specific registration/map evidence and safe anonymous geometry routes.",
+        "result": "The municipal Filipeia atlas identifies an official Lotes layer and advertises a shapefile/CSV download (188,703 lots). The official download link returned HTTP 403 to an anonymous range request; the map page also could not be fetched directly from the shell. The public service charter describes property-related applications as login/identity workflows, which were not accessed. No schema, anonymous feature route, or target geometry was verified.",
+        "actualResultUrls": [
+          "https://filipeia.joaopessoa.pb.gov.br/",
+          "https://www.joaopessoa.pb.gov.br/wp-content/uploads/2026/04/seplan-carta-de-servicos-2026.pdf"
+        ],
+        "executionMethod": "English-language web search plus direct inspection of public official/local source routes."
+      },
+      {
+        "language": "Portuguese",
+        "query": "João Pessoa dados geográficos Lotes shapefile Filipeia prefeitura cadastro lotes",
+        "scope": "Find current local-language registration/map evidence and safe anonymous geometry routes.",
+        "result": "The municipal Filipeia atlas identifies an official Lotes layer and advertises a shapefile/CSV download (188,703 lots). The official download link returned HTTP 403 to an anonymous range request; the map page also could not be fetched directly from the shell. The public service charter describes property-related applications as login/identity workflows, which were not accessed. No schema, anonymous feature route, or target geometry was verified.",
+        "actualResultUrls": [
+          "https://filipeia.joaopessoa.pb.gov.br/",
+          "https://www.joaopessoa.pb.gov.br/wp-content/uploads/2026/04/seplan-carta-de-servicos-2026.pdf"
+        ],
+        "executionMethod": "Local-language web search and review of public official source listings; no personal or property lookup."
+      }
+    ]
+  },
+  "source": {
+    "sourceId": "br-joao-pessoa-registry-map-review",
+    "name": "João Pessoa local registry/map source",
+    "operator": "Municipality of João Pessoa, SEPLAN / Filipeia",
+    "url": "https://filipeia.joaopessoa.pb.gov.br/",
+    "scope": "Municipal parcel layer existence is verified, but the actual archive and feature geometry were inaccessible. Atlas service includes tax inscription UI and login-based property workflows; no such lookups were made.",
+    "nativeIdField": null,
+    "attributesRequested": [],
+    "identityBasis": "No native feature identifier was obtained.",
+    "geometryStatus": "no_target_geometry_verified"
+  },
+  "coverageAssessment": {
+    "verifiedOpenScope": "Municipal parcel layer existence is verified, but the actual archive and feature geometry were inaccessible. Atlas service includes tax inscription UI and login-based property workflows; no such lookups were made.",
+    "citywideVerified": false,
+    "countrywideVerified": false
+  },
+  "priorEvidenceFiles": [],
+  "populationPlausibility2025": "High",
+  "sourceIds": [],
+  "point": [
+    -7.14544434305855,
+    -34.8805157633982
+  ],
+  "sampleFile": null,
+  "sampleFeatureCount": 0,
+  "sampleCrs": null,
+  "geometryEvidence": null,
+  "runtimeAssessment": {
+    "status": "not_enabled_no_verified_public_geometry",
+    "reason": "The municipal Filipeia atlas identifies an official Lotes layer and advertises a shapefile/CSV download (188,703 lots). The official download link returned HTTP 403 to an anonymous range request; the map page also could not be fetched directly from the shell. The public service charter describes property-related applications as login/identity workflows, which were not accessed. No schema, anonymous feature route, or target geometry was verified."
+  },
+  "freshResearch": {
+    "executedQueries": [
+      {
+        "language": "English",
+        "query": "João Pessoa official municipal cadastral lot shapefile public GIS parcels Filipeia",
+        "scope": "Find current city-specific registration/map evidence and safe anonymous geometry routes.",
+        "result": "The municipal Filipeia atlas identifies an official Lotes layer and advertises a shapefile/CSV download (188,703 lots). The official download link returned HTTP 403 to an anonymous range request; the map page also could not be fetched directly from the shell. The public service charter describes property-related applications as login/identity workflows, which were not accessed. No schema, anonymous feature route, or target geometry was verified.",
+        "actualResultUrls": [
+          "https://filipeia.joaopessoa.pb.gov.br/",
+          "https://www.joaopessoa.pb.gov.br/wp-content/uploads/2026/04/seplan-carta-de-servicos-2026.pdf"
+        ],
+        "executionMethod": "English-language web search plus direct inspection of public official/local source routes."
+      },
+      {
+        "language": "Portuguese",
+        "query": "João Pessoa dados geográficos Lotes shapefile Filipeia prefeitura cadastro lotes",
+        "scope": "Find current local-language registration/map evidence and safe anonymous geometry routes.",
+        "result": "The municipal Filipeia atlas identifies an official Lotes layer and advertises a shapefile/CSV download (188,703 lots). The official download link returned HTTP 403 to an anonymous range request; the map page also could not be fetched directly from the shell. The public service charter describes property-related applications as login/identity workflows, which were not accessed. No schema, anonymous feature route, or target geometry was verified.",
+        "actualResultUrls": [
+          "https://filipeia.joaopessoa.pb.gov.br/",
+          "https://www.joaopessoa.pb.gov.br/wp-content/uploads/2026/04/seplan-carta-de-servicos-2026.pdf"
+        ],
+        "executionMethod": "Local-language web search and review of public official source listings; no personal or property lookup."
+      }
+    ],
+    "officialSources": [
+      {
+        "url": "https://filipeia.joaopessoa.pb.gov.br/",
+        "observation": "Official or linked source reviewed in the city/service evidence record."
+      },
+      {
+        "url": "https://www.joaopessoa.pb.gov.br/wp-content/uploads/2026/04/seplan-carta-de-servicos-2026.pdf",
+        "observation": "Official or linked source reviewed in the city/service evidence record."
+      }
+    ]
+  },
+  "rootReviewedAt": "2026-10-09T00:36:07.367105+00:00"
+}

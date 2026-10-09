@@ -1,0 +1,64 @@
+{
+  "schemaVersion": "1.0",
+  "checkedAt": "2026-10-09",
+  "purpose": "Read-only city source research and bounded public-service validation; no global/runtime/catalog integration.",
+  "scopeLimits": {
+    "maxFullPolygonsRetainedInThisCityReport": 0,
+    "ownerOrAddressDataRetained": false,
+    "accountCredentialsOrPublicTokenValuesRetained": false
+  },
+  "cityRecord": "city-2059-angeles.json",
+  "assessment": "The City Assessor and government FOI pages establish cadastral/property-record administration, but the observed access is through official document procedures or request-based release. No public anonymous parcel-vector service was identified.",
+  "registryAssessment": "The City of Angeles City Assessor provides tax-declaration document services; the city/cadastral-map request is managed through government procedures. This confirms local records but not public full-polygon geometry.",
+  "searchQueries": [
+    {
+      "language": "English",
+      "query": "Angeles City Philippines official parcel cadastre map GIS land registry lots city government",
+      "scope": "Find an official city assessor/cadastral source and anonymous parcel map.",
+      "result": "Search located the City Assessor process for a certified copy of a tax declaration and national FOI records responding to cadastral-map requests. No city-operated anonymous parcel-vector map or feature endpoint was found. Los Angeles County map hits were a false geographic match and excluded.",
+      "actualResultUrls": [
+        "https://angelescity.gov.ph/",
+        "https://www.angelescity.gov.ph/assets/pdf/citizen_charter/tax_fees/issuance-of-certified-true-copy-of-tax-declaration.pdf",
+        "https://www.foi.gov.ph/requests/cadastral-map-of-angeles-city/"
+      ],
+      "executionMethod": "Separate English-language web searches and official city / government page review."
+    },
+    {
+      "language": "Filipino (Tagalog)",
+      "query": "Angeles City Pampanga mapa ng lupa kadastral City Assessor opisyal cadastral map",
+      "scope": "Check Filipino-language city and government results for public cadastral maps.",
+      "result": "The Filipino query returned the official City of Angeles site and government FOI requests for a cadastral map, but no anonymous parcel-vector viewer or downloadable full polygons. The City Assessor service is a document request rather than a public GIS feature service.",
+      "actualResultUrls": [
+        "https://angelescity.gov.ph/",
+        "https://www.foi.gov.ph/requests/cadastral-map-of-angeles-city-of-pampanga/"
+      ],
+      "executionMethod": "Separate Filipino-language web search; official city and government results inspected."
+    }
+  ],
+  "officialSources": [
+    {
+      "url": "https://angelescity.gov.ph/",
+      "operator": "City Government of Angeles",
+      "observation": "Official city portal identifies the City of Angeles, Pampanga; no public parcel-vector layer was listed in the inspected portal."
+    },
+    {
+      "url": "https://www.angelescity.gov.ph/assets/pdf/citizen_charter/tax_fees/issuance-of-certified-true-copy-of-tax-declaration.pdf",
+      "operator": "City Assessor, City Government of Angeles",
+      "observation": "Citizen charter describes an in-person certified-copy-of-tax-declaration service requiring qualifying interest/title documents and a fee; it is not an anonymous GIS endpoint."
+    },
+    {
+      "url": "https://www.foi.gov.ph/requests/cadastral-map-of-angeles-city-of-pampanga/",
+      "operator": "Philippines Freedom of Information portal / Land Management Bureau",
+      "observation": "Government FOI page records a cadastral-map request for Angeles City, Pampanga; request-based map access is not an anonymous parcel-vector service."
+    }
+  ],
+  "geometryDecision": "No geometry request was made because no city parcel-vector endpoint was advertised. Public city map references and assessor records do not establish a complete parcel-polygon source.",
+  "coverageAssessment": {
+    "claimedScope": "No parcel-polygon scope is claimed.",
+    "verifiedOpenScope": "City Assessor registry/document service and government cadastral-map request evidence only.",
+    "citywideVerified": false,
+    "countrywideVerified": false,
+    "geometryVerified": false
+  },
+  "remainingUncertainty": "A separate local cadastral GIS could exist outside indexed city pages."
+}

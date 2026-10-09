@@ -1,0 +1,72 @@
+{
+  "schemaVersion": "1.0",
+  "checkedAt": "2026-10-09",
+  "cityRecord": "city-12132-tainan.json",
+  "purpose": "Document city-scope registry evidence and bounded public parcel-geometry route review.",
+  "scopeLimits": {
+    "maxFullPolygonsRetainedInCityRecord": 3,
+    "maxFullPolygonsRetainedInReview": 3,
+    "maxFullPolygonsRetainedInRepository": 3,
+    "ownerOrAddressDataRetained": false,
+    "credentialsOrTokenValuesRetained": false,
+    "citywideCompletenessAsserted": false
+  },
+  "assessment": "The City has a clear public-facing cadastral viewer and a documented official WFS operation. However, the WFS is selected by section/parcel or broad township/city; no exact parcel ID or output-field allowlist was confirmed, and a township-wide query would exceed the bounded scope.",
+  "registryAssessment": "The official city land bureau publishes cadastral map services and TNGIS cadastral WFS documentation. This establishes municipal cadastre services, not legal title or exact WUP point coverage.",
+  "officialPrimarySources": [
+    {
+      "url": "https://ldgis.tainan.gov.tw/TNLDWS/",
+      "observation": "Official city service index describes SV3 as cadastral WFS geometry by parcel, section, or township/city; output may use TWD97 (EPSG:3826) or WGS84 (EPSG:4326). It also describes SV1 XY lookup, which returns sensitive ownership and title attributes and was excluded."
+    },
+    {
+      "url": "https://ldgis.tainan.gov.tw/TNLDWS/TNGIS_WS.asmx?op=SV3",
+      "observation": "Official SV3 operation documentation lists QM, QD, EPSG parameters and WFS operation; examples are parcel, section, or township/city selection."
+    },
+    {
+      "url": "https://ldgis.tainan.gov.tw/TNLDWS/demo/service/SV3.aspx",
+      "observation": "Official trial page documents modes QM=1 by SEC+NO, QM=2 by SEC, QM=3 by TOWN, and output EPSG codes 3826/4326; it does not document output-field selection."
+    },
+    {
+      "url": "https://landmap.tainan.gov.tw/gis/",
+      "observation": "Official city interactive map provides land/section parcel search and identifies map features; no exact WUP-point parcel ID was derived."
+    },
+    {
+      "url": "https://data.gov.tw/en/datasets/167135",
+      "observation": "Taiwan open data portal describes Tainan’s digital cadastral map, section/admin attributes, and WMS services from multiple local land offices; annual dataset entry, not an exact parcel response."
+    }
+  ],
+  "searchQueries": [
+    {
+      "language": "Traditional Chinese",
+      "query": "臺南市 地籍圖 地號 查詢 地政局 地籍資訊 官方",
+      "result": "Found the city land bureau’s public cadastral map viewer, official TNGIS cadastral WFS documentation, and open-data cadastral-map listings.",
+      "method": "Separate Traditional Chinese-language discovery search and official first-party page review."
+    },
+    {
+      "language": "English",
+      "query": "Tainan City official cadastral map parcel GIS land administration public map",
+      "result": "Official Tainan open-data portal lists the 112th-year digital cadastral map with WMS resources from city land offices.",
+      "method": "Separate English-language discovery search."
+    }
+  ],
+  "serviceChecks": [
+    {
+      "url": "https://ldgis.tainan.gov.tw/TNLDWS/",
+      "method": "Official service index review",
+      "observation": "SV3 cadastral WFS query is described by parcel, section, or township/city; EPSG:3826 or 4326 supported."
+    },
+    {
+      "url": "https://ldgis.tainan.gov.tw/TNLDWS/TNGIS_WS.asmx?op=SV3",
+      "method": "Operation/parameter documentation review",
+      "observation": "QM/QD/EPSG required. Example scopes include a single lot, one section, or a whole township/city. No unbounded query issued."
+    },
+    {
+      "url": "https://ldgis.tainan.gov.tw/TNLDWS/",
+      "method": "Separate SV1 capability review",
+      "observation": "XY mode returns land ownership, land descriptors, other rights, and building ownership/registration fields; deliberately not invoked."
+    }
+  ],
+  "geometryEvidence": null,
+  "privacy": "Did not invoke SV1 XY identification because it returns ownership/title tables. No cadastral WFS request was made without a safely scoped identifier; no geometry or owner/parcel attributes retained.",
+  "runtimeAssessment": "not_enabled_no_verified_public_geometry"
+}

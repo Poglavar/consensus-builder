@@ -1,0 +1,113 @@
+{
+  "schemaVersion": 1,
+  "kind": "city_parcel_source_research",
+  "checkedAt": "2026-10-09",
+  "name": "Nellore",
+  "country": "India",
+  "countryCode": "IN",
+  "populationUnit": "persons",
+  "status": "complete",
+  "registryFound": true,
+  "registryBasis": "The Sri Potti Sriramulu Nellore District administration documents local revenue-land administration, survey operations, and Nellore Urban and Nellore Rural Tahsildar offices; the Andhra Pradesh government’s BhuNaksha portal identifies itself as the state Survey, Settlements and Land Records cadastral-mapping system. The city municipal portal separately offers property-tax mutation services. These are relevant local/state records workflows, but no anonymous full-polygon schema or exact WUP-point coverage was verified.",
+  "registryEvidenceUrls": [
+    "https://spsnellore.ap.gov.in/revenue-land-administration/",
+    "https://bhunaksha.ap.gov.in/",
+    "https://nellore.cdma.ap.gov.in/ulbprofile/nellore/home",
+    "https://nellore.cdma.ap.gov.in/ulbprofile/nellore/gis-map"
+  ],
+  "verifiedSample": false,
+  "publicParcelGeometryFound": false,
+  "runtimeReadiness": "not_enabled_no_verified_public_geometry",
+  "wupCityCode": 10629,
+  "cityId": "wup2025:10629",
+  "centerLatLon": [
+    14.4430335956059,
+    79.9807996993364
+  ],
+  "rank": 731,
+  "queueRank": 731,
+  "population2025": 732235,
+  "population2025k": 732.235,
+  "populationPlausibility2025": "High",
+  "pointBasis": "UN WUP 2025 population-weighted settlement centroid; this is not a municipal boundary or a parcel-coverage claim.",
+  "technicalBlocker": "The official BhuNaksha service landing page identifies the cadastral system but no anonymous full-polygon response, native parcel-key field, CRS/schema, or exact point coverage was verified. No plot-specific feature request was made.",
+  "scopeLimits": "Official Nellore district sources confirm local revenue-land administration and survey offices, and the Andhra Pradesh government identifies BhuNaksha as its cadastral mapping system. The municipal portal’s property-tax mutation service is distinct from cadastral geometry. No anonymous full-polygon schema or exact-point coverage was verified, and no full geometry was retained. No owner/address or identity data queried.",
+  "priorEvidenceFiles": [],
+  "research": {
+    "executedQueries": [
+      {
+        "language": "Telugu",
+        "query": "నెల్లూరు భూ రికార్డులు భూనక్ష సర్వే సెటిల్మెంట్ ల్యాండ్ రికార్డ్స్ అధికారిక",
+        "scope": "Verify Nellore-local survey/revenue administration and the official cadastral-map route; do not submit plot or owner identifiers.",
+        "result": "Official district revenue-land materials identify Nellore Urban and Nellore Rural mandals and survey operations; the AP BhuNaksha portal is the state cadastral-mapping system. No anonymous citywide feature schema or point-bounded polygon response was verified.",
+        "actualResultUrls": [
+          "https://spsnellore.ap.gov.in/revenue-land-administration/",
+          "https://bhunaksha.ap.gov.in/",
+          "https://nellore.cdma.ap.gov.in/ulbprofile/nellore/home"
+        ],
+        "executionMethod": "Separate language-specific web searches followed by official-source inspection; no personal, owner, address, or property-specific query inputs submitted."
+      },
+      {
+        "language": "English",
+        "query": "Nellore Andhra Pradesh official land records cadastral map Bhunaksha Nellore Urban Tahsildar",
+        "scope": "Cross-check local registry/survey responsibilities and distinguish municipal tax mutation from cadastral geometry.",
+        "result": "The district government page documents land-record maintenance and survey work, and lists Nellore Urban and Rural Tahsildar offices. The state BhuNaksha landing page describes a cadastral mapping system; its safe geometry schema and WUP-point coverage were not inspected or verified. Nellore’s CDMA portal lists property tax and mutation services, which are municipal tax workflows rather than cadastral parcel geometry.",
+        "actualResultUrls": [
+          "https://spsnellore.ap.gov.in/revenue-land-administration/",
+          "https://bhunaksha.ap.gov.in/",
+          "https://nellore.cdma.ap.gov.in/ulbprofile/nellore/home",
+          "https://nellore.cdma.ap.gov.in/ulbprofile/nellore/gis-map"
+        ],
+        "executionMethod": "Separate language-specific web searches followed by official-source inspection; no personal, owner, address, or property-specific query inputs submitted."
+      }
+    ],
+    "officialSources": [
+      {
+        "url": "https://spsnellore.ap.gov.in/revenue-land-administration/",
+        "observation": "Official district-government page documents maintenance of land records, survey operations by Mandal Surveyors, and Nellore Urban/Nellore Rural Tahsildar offices."
+      },
+      {
+        "url": "https://bhunaksha.ap.gov.in/",
+        "observation": "Official Government of Andhra Pradesh Survey, Settlements and Land Records BhuNaksha portal describes state cadastral mapping and geo-referenced spatial data; no city/plot query or vector schema was inspected."
+      },
+      {
+        "url": "https://nellore.cdma.ap.gov.in/ulbprofile/nellore/home",
+        "observation": "Official Andhra Pradesh municipal-administration portal for Nellore lists property-tax services including mutation; these municipal services are not evidence of parcel polygons."
+      },
+      {
+        "url": "https://nellore.cdma.ap.gov.in/ulbprofile/nellore/gis-map",
+        "observation": "Official Nellore municipal GIS page displays a local base map and Sachivalayam search interface, not a cadastral parcel layer."
+      },
+      {
+        "url": "https://dilrmp.gov.in/dilrmpold/State-RoR-Web",
+        "observation": "Government of India Department of Land Resources portal lists Andhra Pradesh’s land-record and BhuNaksha systems; used only as cross-check for state system identity."
+      }
+    ]
+  },
+  "sourceIds": [],
+  "coverageAssessment": {
+    "claimedScope": "The Sri Potti Sriramulu Nellore District administration documents local revenue-land administration, survey operations, and Nellore Urban and Nellore Rural Tahsildar offices; the Andhra Pradesh government’s BhuNaksha portal identifies itself as the state Survey, Settlements and Land Records cadastral-mapping system. The city municipal portal separately offers property-tax mutation services. These are relevant local/state records workflows, but no anonymous full-polygon schema or exact WUP-point coverage was verified.",
+    "verifiedOpenScope": "Official city-local registry/cadastre service is documented; anonymous full-polygon geometry and its schema have not been verified.",
+    "citywideVerified": false,
+    "countrywideVerified": false
+  },
+  "runtimeAssessment": {
+    "status": "not_ready_no_verified_anonymous_geometry",
+    "reason": "The official BhuNaksha service landing page identifies the cadastral system but no anonymous full-polygon response, native parcel-key field, CRS/schema, or exact point coverage was verified. No plot-specific feature request was made.",
+    "evidenceFile": "research/overnight-cities-2026-10-08/nellore-service-review.json"
+  },
+  "publicParcelGeometryCandidateFound": false,
+  "resultCategory": "city_registry_confirmed_geometry_unverified",
+  "rootPrimaryReadback": {
+    "url": "https://spsnellore.ap.gov.in/revenue-land-administration/",
+    "fetch": 200,
+    "contentType": "text/html; charset=UTF-8",
+    "title": "\n        REVENUE LAND ADMINISTRATION | Sri Potti Sriramulu Nellore District, Government of Andhra Pradesh | India    "
+  },
+  "rootReviewNote": "Reviewed the local primary institution/service evidence and stated geometry/access/identity limits. Fresh page readback failures are preserved separately and do not imply absent data; matching primary indexed text supplements the direct readback where available. No public geometry was verified for this city.",
+  "point": [
+    14.4430335956059,
+    79.9807996993364
+  ],
+  "rootReviewedAt": "2026-10-09T03:06:11.183980+00:00"
+}

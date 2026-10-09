@@ -1,0 +1,119 @@
+{
+  "name": "Medina",
+  "country": "Saudi Arabia",
+  "countryCode": "SA",
+  "rank": 354,
+  "point": [
+    24.4602821430081,
+    39.6039655495235
+  ],
+  "population2025": 1432287,
+  "schemaVersion": 1,
+  "kind": "city_parcel_source_research",
+  "checkedAt": "2026-10-09",
+  "populationUnit": "persons",
+  "status": "complete",
+  "verifiedSample": false,
+  "publicParcelGeometryFound": false,
+  "runtimeReadiness": "not_enabled_no_verified_public_geometry",
+  "priorEvidenceFiles": [],
+  "scopeLimits": "The UN WUP 2025 point is a settlement-population locator, not an official city boundary, property identity, or completeness statement. No owner, address, applicant, or tax data was requested or retained; no account credentials, CAPTCHA, or token was used. The municipal GeoPortal advertises land parcels, but the ArcGIS land feature layer returned HTTP 499 Token Required to anonymous metadata requests. No token or authenticated path was used.",
+  "pointBasis": "UN WUP 2025 population-weighted settlement centroid; this is not a municipal boundary or a parcel-coverage claim.",
+  "registryFound": true,
+  "registryBasis": "Medina Municipality’s official GeoPortal announcement lists approved land parcels, land-use and plan layers as part of its municipal geospatial information. The advertised ArcGIS land layer is not anonymously inspectable: direct REST metadata calls returned HTTP 499 Token Required.",
+  "resultCategory": "city_geoportal_advertises_land_parcels_but_arcgis_service_requires_token",
+  "research": {
+    "executedQueries": [
+      {
+        "language": "English",
+        "query": "Medina Saudi Arabia official municipal public geoportal cadastral land parcels GIS",
+        "scope": "Locate Medina Municipality’s public geospatial portal and any anonymous full parcel geometry.",
+        "result": "Medina Municipality’s official GeoPortal announcement describes approved land parcels and planning/land-use layers. The municipal ArcGIS land layer is identifiable, but direct unauthenticated REST metadata requests returned HTTP 499 Token Required; no feature query was made and no token was sought.",
+        "actualResultUrls": [
+          "https://www.amana-md.gov.sa/NewsCenter/Details/2394",
+          "https://geomed.amana-md.gov.sa/Portal/apps/sites/#/home?&locale=ar",
+          "https://geomed.amana-md.gov.sa/arcgis/rest/services/GeoExplorer/GeoExplorerForPrinceSite/MapServer/21"
+        ],
+        "executionMethod": "Separate English-language search; official municipal portal, service notice and anonymous REST metadata response review."
+      },
+      {
+        "language": "Arabic",
+        "query": "مدينة المدينة المنورة خريطة قطع الأراضي السجل العقاري GIS الأمانة بلدية رسمي",
+        "scope": "البحث عن بوابة بلدية رسمية وبيانات عامة لحدود الأراضي والقطع.",
+        "result": "أعلنت أمانة منطقة المدينة المنورة أن بوابتها الجيومكانية تعرض قطع الأراضي المعتمدة وطبقات استعمالات الأراضي والمخططات. لكن طلب بيانات طبقة الأراضي عبر REST دون مصادقة أعاد HTTP 499، لذلك لم تُطلب أي هندسة ولم يُستخدم رمز دخول.",
+        "actualResultUrls": [
+          "https://www.amana-md.gov.sa/NewsCenter/Details/2394",
+          "https://geomed.amana-md.gov.sa/Portal/apps/sites/#/home?&locale=ar"
+        ],
+        "executionMethod": "بحث عربي منفصل ومراجعة البوابة البلدية الرسمية ونتيجة طلب REST مجهول الهوية."
+      }
+    ],
+    "officialSources": [
+      {
+        "url": "https://www.amana-md.gov.sa/NewsCenter/Details/2394",
+        "operator": "Medina Region Municipality (Al-Madinah Al-Munawwarah Municipality)",
+        "observation": "Official 2024 announcement describes the public GeoPortal, including approved land parcels, land uses, residential plan boundaries and city urban extent."
+      },
+      {
+        "url": "https://geomed.amana-md.gov.sa/Portal/apps/sites/#/home?&locale=ar",
+        "operator": "Medina Municipality GeoPortal",
+        "observation": "Official portal provides geospatial and municipal information and map browsing for users; its advertised parcel layer could not be anonymously queried through the underlying REST layer."
+      },
+      {
+        "url": "https://www.amana-md.gov.sa/MDWebsite/Service/ServiceCard/2202",
+        "operator": "Medina Municipality",
+        "observation": "Municipal survey-decision service card requires sign-in via national single sign-on; it is a separate administrative service and not used for geometry access."
+      },
+      {
+        "url": "https://geomed.amana-md.gov.sa/arcgis/rest/services/GeoExplorer/GeoExplorerForPrinceSite/MapServer/21",
+        "operator": "Medina Municipality ArcGIS Enterprise",
+        "observation": "Layer metadata identifies a land parcel layer, but anonymous REST requests returned HTTP 499 Token Required; no request was made with a token."
+      }
+    ],
+    "requests": [
+      {
+        "url": "https://geomed.amana-md.gov.sa/arcgis/rest/services/GeoExplorer/GeoExplorerForPrinceSite/MapServer?f=pjson",
+        "method": "GET",
+        "httpStatus": 499,
+        "contentType": "application/json",
+        "observation": "Anonymous MapServer metadata request returned Token Required."
+      },
+      {
+        "url": "https://geomed.amana-md.gov.sa/arcgis/rest/services/GeoExplorer/GeoExplorerForPrinceSite/MapServer/21?f=pjson",
+        "method": "GET",
+        "httpStatus": 499,
+        "contentType": "application/json",
+        "observation": "Anonymous request to the advertised land layer returned Token Required. No feature query or token use followed."
+      },
+      {
+        "url": "https://geomed.amana-md.gov.sa/Portal/apps/sites/#/home?&locale=ar",
+        "method": "Public portal page review",
+        "observation": "Official GeoPortal page advertises municipal geospatial information. Public bundles inspected did not reveal an anonymous parcel-vector route."
+      }
+    ],
+    "coverageAssessment": {
+      "claimedScope": "No parcel-polygon scope is claimed.",
+      "verifiedOpenScope": "Municipal GeoPortal advertising and layer metadata discovery only; anonymous layer metadata is token-gated and no feature geometry was returned.",
+      "citywideVerified": false,
+      "countrywideVerified": false,
+      "geometryVerified": false
+    },
+    "technicalBlocker": "The candidate municipal ArcGIS layer requires a token even for anonymous REST metadata retrieval (HTTP 499). No token was sought, reused or stored.",
+    "remainingUncertainty": "Whether the GeoPortal has a separate anonymous vector endpoint for approved land parcels, and whether any anonymous feature query would be permitted."
+  },
+  "verifiedParcelResponse": null,
+  "source": null,
+  "cityId": "wup2025:728",
+  "populationPlausibility2025": "Moderate",
+  "technicalBlocker": "The official municipal GeoPortal advertises parcel layers, but its ArcGIS REST service rejects anonymous metadata requests with 499 Token Required.",
+  "remainingUncertainty": "A separate unauthenticated public full-polygon layer may exist but was not identified.",
+  "nextStep": "If revisited, locate a separately documented anonymous official vector service; do not attempt to obtain or reuse an authentication token.",
+  "sourceIds": [],
+  "wupCityCode": 728,
+  "queueRank": 354,
+  "centerLatLon": [
+    24.4602821430081,
+    39.6039655495235
+  ],
+  "rootReviewedAt": "2026-10-08T23:01:54.520804+00:00"
+}

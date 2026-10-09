@@ -3,6 +3,7 @@ import { bbox as geometryBbox, bboxPolygon, booleanIntersects, feature as geoFea
 import { HttpError } from '../utils/helpers.js';
 import { canonicalParcelFeature, upstreamError, providerHttpError, validateBounds, validateGeometry } from './source-contract.js';
 import { retainParcel } from './parcel-components.js';
+import { CSV_GEOJSON_FIELDS, readCsvGeojsonParcelSnapshot } from './csv-geojson-parcel-reader.js';
 
 const caches = new WeakMap();
 const CACHE_MS = 5 * 60 * 1000;
@@ -98,6 +99,7 @@ export function decodeSnapshotNativeId(value, componentCount) {
 export function createGeojsonSnapshotParcelSource(descriptor, { fetchImpl = fetch, now = Date.now } = {}) {
     if (descriptor.snapshots !== undefined) return createMultiSnapshotSource(descriptor, { fetchImpl, now });
     const { id, endpoint, idPrefix, idFields, outFields } = descriptor;
+    const snapshotFormat = descriptor.snapshotFormat ?? 'geojson';
     const maxSnapshotBytes = descriptor.maxSnapshotBytes ?? 3 * 1024 * 1024;
     const maxSnapshotFeatures = descriptor.maxSnapshotFeatures ?? 5000;
     const maxFeatures = descriptor.maxFeatures ?? 10000;
@@ -117,6 +119,14 @@ export function createGeojsonSnapshotParcelSource(descriptor, { fetchImpl = fetc
         && descriptor.partMatchFields.every(field => typeof field === 'string' && identifier.test(field)
             && Array.isArray(outFields) && outFields.includes(field)));
     if (!id || !idPrefix || url.protocol !== 'https:' || url.username || url.password
+        || !['geojson', 'csv-geojson'].includes(snapshotFormat)
+        || (snapshotFormat === 'csv-geojson' && (!Array.isArray(descriptor.csvFields)
+            || descriptor.csvFields.length !== CSV_GEOJSON_FIELDS.length
+            || descriptor.csvFields.some((field, index) => field !== CSV_GEOJSON_FIELDS[index])
+            || descriptor.csvGeometryField !== 'GEOJSON'
+            || !Array.isArray(idFields) || !Array.isArray(outFields)
+            || new Set(outFields).size !== outFields.length
+            || [...idFields, ...outFields].some(field => !CSV_GEOJSON_FIELDS.includes(field) || field === 'GEOJSON')))
         || typeof fetchImpl !== 'function' || typeof now !== 'function'
         || !Array.isArray(idFields) || !idFields.length || idFields.length > 8
         || new Set(idFields).size !== idFields.length || idFields.some(field => typeof field !== 'string' || !field)
@@ -151,7 +161,8 @@ export function createGeojsonSnapshotParcelSource(descriptor, { fetchImpl = fetc
         try {
             const response = await fetchImpl(endpoint, { signal,
                 ...(hasRequestForm ? { method: 'POST', body: new URLSearchParams(requestForm).toString() } : {}),
-                headers: { Accept: 'application/geo+json, application/json',
+                headers: { Accept: snapshotFormat === 'csv-geojson'
+                    ? 'text/csv, application/geo+json, application/json' : 'application/geo+json, application/json',
                     ...(hasRequestForm ? { 'Content-Type': 'application/x-www-form-urlencoded' } : {}) } });
             if (!response.ok || response.status !== 200) throw providerHttpError(response);
             if (response.url && new URL(response.url).protocol !== 'https:') throw upstreamError('Snapshot redirected outside HTTPS.');
@@ -177,7 +188,16 @@ export function createGeojsonSnapshotParcelSource(descriptor, { fetchImpl = fetc
             const bytes = new Uint8Array(length);
             let offset = 0;
             for (const chunk of chunks) { bytes.set(chunk, offset); offset += chunk.byteLength; }
-            const collection = JSON.parse(new TextDecoder('utf-8', { fatal: true }).decode(bytes));
+            const text = new TextDecoder('utf-8', { fatal: true }).decode(bytes);
+            let collection;
+            try {
+                collection = snapshotFormat === 'csv-geojson'
+                    ? readCsvGeojsonParcelSnapshot(text, descriptor)
+                    : JSON.parse(text);
+            } catch (_) {
+                throw upstreamError(snapshotFormat === 'csv-geojson'
+                    ? 'Invalid parcel CSV snapshot.' : 'Invalid parcel GeoJSON snapshot.');
+            }
             if (collection.type !== 'FeatureCollection' || !Array.isArray(collection.features)) throw upstreamError('Invalid parcel snapshot collection.');
             if (collection.exceededTransferLimit === true || collection.complete === false) throw upstreamError('Parcel snapshot reports incomplete coverage.');
             const crs = collection.crs?.properties?.name;
@@ -227,7 +247,6 @@ export function createGeojsonSnapshotParcelSource(descriptor, { fetchImpl = fetc
     async function snapshot() {
         if (state.snapshot && now() < state.expires) return state.snapshot;
         if (!state.pending) {
-            state.snapshot = null;
             state.pending = load().then(value => {
                 state.snapshot = value; state.expires = now() + CACHE_MS; return value;
             }).finally(() => { state.pending = null; });

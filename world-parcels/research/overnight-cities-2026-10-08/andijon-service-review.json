@@ -1,0 +1,60 @@
+{
+  "schemaVersion": "1.0",
+  "checkedAt": "2026-10-09",
+  "cityRecord": "city-4738-andijon.json",
+  "purpose": "Document first-party local registry/map evidence and bounded anonymous geometry access review.",
+  "scopeLimits": {
+    "maxFullPolygonsRetainedInCityRecord": 0,
+    "maxFullPolygonsRetainedInReview": 0,
+    "maxFullPolygonsRetainedInRepository": 0,
+    "ownerOrAddressDataRetained": false,
+    "credentialsOrTokenValuesRetained": false,
+    "citywideCompletenessAsserted": false
+  },
+  "assessment": "A city-specific cadastre office is listed in the national cadastral agency’s official directory. The regional office portal found during research is a login page, and no public geometry schema or anonymous feature service was verified. No authentication or property-record lookup was attempted.",
+  "registryAssessment": "The official State Cadastre Chamber directory lists a distinct Andijon city office and the regional cadastral office in Andijon. Official cadastral-agency materials also discuss Andijon city land/cadastral activity. This verifies a city-local cadastre institution, not point-level public parcel access.",
+  "officialPrimarySources": [
+    {
+      "url": "https://uzdkp.uz/",
+      "observation": "Official State Cadastre Chamber directory explicitly lists Andijon shahar office and Andijon regional office. This confirms local cadastral administration only; no public parcel geometry is exposed by the directory."
+    },
+    {
+      "url": "https://andkadastrai.uz/",
+      "observation": "Official Andijon regional cadastral chamber portal presents a login/password screen; no account was created or login attempted."
+    },
+    {
+      "url": "https://digital.gov.uz/oz/kadastr/general-menu/6418",
+      "observation": "Official Ministry of Digital Technologies directory lists the regional cadastre office in Andijon city."
+    },
+    {
+      "url": "https://gov.uz/oz/kadastr/news/view/116911",
+      "observation": "Official cadastral agency news gives Andijon region’s 2026 planned inventory campaign at mahalla level; it does not establish public vector coverage."
+    }
+  ],
+  "searchQueries": [
+    {
+      "language": "English",
+      "query": "Andijon Uzbekistan official cadastral map land registry GIS city",
+      "result": "Found the official national State Cadastre Chamber directory and official agency pages for Andijon; the surfaced regional office portal requires login and no public parcel map was verified.",
+      "method": "Separate English-language search followed by official cadastre directory review.",
+      "scope": "Locate current official city-bound registry, cadastral map, or public geometry service."
+    },
+    {
+      "language": "Uzbek",
+      "query": "Andijon shahar kadastr rasmiy Davlat kadastrlari palatasi xarita",
+      "result": "The official national cadastral directory lists Andijon shahar office, and official government results describe Andijon city cadastral work. No anonymous geometry route or schema was exposed.",
+      "method": "Separate Uzbek-language search and official cadastral-agency directory review.",
+      "scope": "Locate current official city-bound registry, cadastral map, or public geometry service."
+    }
+  ],
+  "geometryDecision": "No parcel geometry retained; no anonymous public point-level full-polygon response was verified.",
+  "coverageAssessment": {
+    "claimedScope": "The official State Cadastre Chamber directory lists a distinct Andijon city office and the regional cadastral office in Andijon. Official cadastral-agency materials also discuss Andijon city land/cadastral activity. This verifies a city-local cadastre institution, not point-level public parcel access.",
+    "verifiedOpenScope": "No geometry-only service or point-level response verified; candidate map/query flows either expose parcel identifiers/property attributes or require application/account steps.",
+    "citywideVerified": false,
+    "countrywideVerified": false,
+    "geometryVerified": false
+  },
+  "attempts": [],
+  "remainingUncertainty": "Whether the city or regional cadastre office provides a separate public geometry-only map outside the official pages reviewed."
+}

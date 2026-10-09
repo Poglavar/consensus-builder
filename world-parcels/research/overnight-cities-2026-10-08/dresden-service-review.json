@@ -1,0 +1,83 @@
+{
+  "schemaVersion": "1.0",
+  "checkedAt": "2026-10-09",
+  "cityRecord": "city-5626-dresden.json",
+  "purpose": "Document first-party local registry/map evidence and bounded anonymous parcel-geometry access review.",
+  "scopeLimits": {
+    "maxFullPolygonsRetainedInCityRecord": 0,
+    "maxFullPolygonsRetainedInReview": 0,
+    "maxFullPolygonsRetainedInRepository": 0,
+    "ownerOrAddressDataRetained": false,
+    "credentialsOrTokenValuesRetained": false,
+    "citywideCompletenessAsserted": false
+  },
+  "assessment": "Authoritative state cadastral dataset includes Dresden and safe no-owner parcel data. Bounded WFS capability is documented, but no geometry response was requested/retained in this packet. The WFS page offers GML or Shapefile; no direct GeoJSON/compatible response was available in the inspected documentation. No city subset was downloaded or feature response retained; no geometry QA or runtime qualification was performed.",
+  "registryAssessment": "GeoSN publishes Saxony’s official ALKIS land cadastre, explicitly including the City of Dresden as a municipality choice. Data describe cadastral parcel polygons without ownership data. The WFS supports bounded spatial selection and municipal parcel datasets, but the public form documents output only as GML or Shapefile; no full safe feature response was obtained or retained for this packet.",
+  "officialPrimarySources": [
+    {
+      "url": "https://www.geodaten.sachsen.de/liegenschaftskataster-3990.html",
+      "observation": "Official GeoSN page identifies the official Saxony land cadastre, statewide parcel/gemarkung dataset, and downloadable ALKIS parcel data without owner information."
+    },
+    {
+      "url": "https://www.geodaten.sachsen.de/alkis-wfs-4968.html",
+      "observation": "Official WFS page documents parcel selection and bounded point-distance/bbox queries; available output formats are GML or Shapefile."
+    },
+    {
+      "url": "https://geoportal.sachsen.de/portal/dokumente/WFS_ALKIS_Anwendungsbeschreibung.pdf",
+      "observation": "Official GeoSN WFS manual includes Dresden municipality and example schema/queries."
+    }
+  ],
+  "searchQueries": [
+    {
+      "language": "English",
+      "query": "Dresden Germany official cadastral parcel polygon ALKIS public WFS registry",
+      "scope": "Locate the city/local land registry or cadastral source and assess anonymous public polygon geometry.",
+      "result": "The WFS page offers GML or Shapefile; no direct GeoJSON/compatible response was available in the inspected documentation. No city subset was downloaded or feature response retained; no geometry QA or runtime qualification was performed. Official registry evidence: GeoSN publishes Saxony’s official ALKIS land cadastre, explicitly including the City of Dresden as a municipality choice. Data describe cadastral parcel polygons without ownership data. The WFS supports bounded spatial selection and municipal parcel datasets, but the public form documents output only as GML or Shapefile; no full safe feature response was obtained or retained for this packet.",
+      "actualResultUrls": [
+        "https://www.geodaten.sachsen.de/liegenschaftskataster-3990.html",
+        "https://www.geodaten.sachsen.de/alkis-wfs-4968.html",
+        "https://geoportal.sachsen.de/portal/dokumente/WFS_ALKIS_Anwendungsbeschreibung.pdf"
+      ],
+      "executionMethod": "Separate English-language web search, followed by review of first-party source pages and service metadata."
+    },
+    {
+      "language": "German",
+      "query": "Dresden Flurstück Flurstücke ALKIS WFS Sachsen GeoSN amtlich",
+      "scope": "Find first-party local-language land registration, cadastral map or city-specific parcel service evidence.",
+      "result": "The WFS page offers GML or Shapefile; no direct GeoJSON/compatible response was available in the inspected documentation. No city subset was downloaded or feature response retained; no geometry QA or runtime qualification was performed. Official registry evidence: GeoSN publishes Saxony’s official ALKIS land cadastre, explicitly including the City of Dresden as a municipality choice. Data describe cadastral parcel polygons without ownership data. The WFS supports bounded spatial selection and municipal parcel datasets, but the public form documents output only as GML or Shapefile; no full safe feature response was obtained or retained for this packet.",
+      "actualResultUrls": [
+        "https://www.geodaten.sachsen.de/liegenschaftskataster-3990.html",
+        "https://www.geodaten.sachsen.de/alkis-wfs-4968.html",
+        "https://geoportal.sachsen.de/portal/dokumente/WFS_ALKIS_Anwendungsbeschreibung.pdf"
+      ],
+      "executionMethod": "Separate German-language web search, followed by review of first-party source pages; no personal property query."
+    }
+  ],
+  "geometryDecision": {
+    "publicParcelGeometryFound": null,
+    "decision": "No full anonymous parcel feature response was obtained. No geometry sample is retained; exact point geometry remains unverified."
+  },
+  "coverageAssessment": {
+    "citywideCompletenessAsserted": false,
+    "scope": "Reviewed official local sources and the exact unchanged WUP locator only; no citywide parcel completeness is claimed.",
+    "limits": "The official service is statewide and includes Dresden, but no WUP-point sample was retrieved; this record does not assert exact parcel coverage or citywide completeness."
+  },
+  "attempts": [
+    {
+      "url": "https://www.geodaten.sachsen.de/liegenschaftskataster-3990.html",
+      "method": "Official public source/service review",
+      "result": "Official GeoSN page identifies the official Saxony land cadastre, statewide parcel/gemarkung dataset, and downloadable ALKIS parcel data without owner information."
+    },
+    {
+      "url": "https://www.geodaten.sachsen.de/alkis-wfs-4968.html",
+      "method": "Official public source/service review",
+      "result": "Official WFS page documents parcel selection and bounded point-distance/bbox queries; available output formats are GML or Shapefile."
+    },
+    {
+      "url": "https://geoportal.sachsen.de/portal/dokumente/WFS_ALKIS_Anwendungsbeschreibung.pdf",
+      "method": "Official public source/service review",
+      "result": "Official GeoSN WFS manual includes Dresden municipality and example schema/queries."
+    }
+  ],
+  "remainingUncertainty": "The official service is statewide and includes Dresden, but no WUP-point sample was retrieved; this record does not assert exact parcel coverage or citywide completeness."
+}

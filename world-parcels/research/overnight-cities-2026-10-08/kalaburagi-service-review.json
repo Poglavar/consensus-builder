@@ -1,0 +1,66 @@
+{
+  "schemaVersion": "1.0",
+  "checkedAt": "2026-10-09",
+  "cityRecord": "city-9525-kalaburagi.json",
+  "purpose": "Document city-scope registry evidence and bounded public parcel-geometry route review.",
+  "scopeLimits": {
+    "maxFullPolygonsRetainedInCityRecord": 3,
+    "maxFullPolygonsRetainedInReview": 3,
+    "maxFullPolygonsRetainedInRepository": 3,
+    "ownerOrAddressDataRetained": false,
+    "credentialsOrTokenValuesRetained": false,
+    "citywideCompletenessAsserted": false
+  },
+  "assessment": "Local city survey and registration offices are verified. Karnataka/DILRMP land-record services are record workflows, and the public pages reviewed did not expose anonymous full parcel polygons.",
+  "registryAssessment": "Kalaburagi’s official district administration lists the city DDLR/land-records office and district registrar and links its Revenue services to Bhoomi land records. A Karnataka Legislative Council government reply lists an Assistant Director of Land Records City Survey, Kalaburagi and a Kalaburagi Sub-Registrar Office. This city-specific office evidence confirms registry/survey activity; the district-level modernization tables do not prove city parcel coverage.",
+  "officialPrimarySources": [
+    {
+      "url": "https://kalaburagi.nic.in/en/alldepts/",
+      "observation": "Kalaburagi’s official district administration lists the city DDLR/land-records office and district registrar and links its Revenue services to Bhoomi land records. A Karnataka Legislative Council government reply lists an Assistant Director of Land Records City Survey, Kalaburagi and a Kalaburagi Sub-Registrar Office. This city-specific office evidence confirms registry/survey activity; the district-level modernization tables do not prove city parcel coverage."
+    },
+    {
+      "url": "https://kalaburagi.nic.in/en/service-category/revenue/",
+      "observation": "The Government of Karnataka district portal lists the Deputy Director of Land Records at Mini Vidhan Soudh, Kalaburagi, District Registrar Department and the Bhoomi land-record service. A state legislative answer names an Assistant Director of Land Records City Survey Kalaburagi and the city Sub-Registrar Office. DILRMP public pages report status at Kalaburagi district/taluk scope; they are status tables, not geometry. No owner/plot lookup was run and no safe feature schema was found."
+    },
+    {
+      "url": "https://kla.kar.nic.in/council/Replies/unstarred/20032025/usq1481%2820032025%29.pdf",
+      "observation": "The Government of Karnataka district portal lists the Deputy Director of Land Records at Mini Vidhan Soudh, Kalaburagi, District Registrar Department and the Bhoomi land-record service. A state legislative answer names an Assistant Director of Land Records City Survey Kalaburagi and the city Sub-Registrar Office. DILRMP public pages report status at Kalaburagi district/taluk scope; they are status tables, not geometry. No owner/plot lookup was run and no safe feature schema was found."
+    },
+    {
+      "url": "https://dilrmp.gov.in/dilrmpold/MapULPIN/tehsil-level/558",
+      "observation": "The Government of Karnataka district portal lists the Deputy Director of Land Records at Mini Vidhan Soudh, Kalaburagi, District Registrar Department and the Bhoomi land-record service. A state legislative answer names an Assistant Director of Land Records City Survey Kalaburagi and the city Sub-Registrar Office. DILRMP public pages report status at Kalaburagi district/taluk scope; they are status tables, not geometry. No owner/plot lookup was run and no safe feature schema was found."
+    },
+    {
+      "url": "https://dilrmp.gov.in/dilrmpold/PhyscialComponent/sro/tehsil-level/558",
+      "observation": "The Government of Karnataka district portal lists the Deputy Director of Land Records at Mini Vidhan Soudh, Kalaburagi, District Registrar Department and the Bhoomi land-record service. A state legislative answer names an Assistant Director of Land Records City Survey Kalaburagi and the city Sub-Registrar Office. DILRMP public pages report status at Kalaburagi district/taluk scope; they are status tables, not geometry. No owner/plot lookup was run and no safe feature schema was found."
+    }
+  ],
+  "searchQueries": [
+    {
+      "language": "English",
+      "query": "Kalaburagi Karnataka official city survey land records office cadastral property card map",
+      "result": "Local city survey and registration offices are verified. Karnataka/DILRMP land-record services are record workflows, and the public pages reviewed did not expose anonymous full parcel polygons.",
+      "method": "Separate English and local-language official-source-focused search."
+    },
+    {
+      "language": "Kannada",
+      "query": "ಕಲಬುರಗಿ ನಗರ ಭೂ ದಾಖಲೆ ಸಿಟಿ ಸರ್ವೆ ಕಚೇರಿ ಭೂ ದಾಖಲೆಗಳು ನಕ್ಷೆ ಅಧಿಕೃತ",
+      "result": "Local city survey and registration offices are verified. Karnataka/DILRMP land-record services are record workflows, and the public pages reviewed did not expose anonymous full parcel polygons.",
+      "method": "Separate English and local-language official-source-focused search."
+    }
+  ],
+  "serviceChecks": [],
+  "geometryEvidence": null,
+  "accessReview": {
+    "publicAnonymousGeometryVerified": false,
+    "completeGeoreferencedPolygonCount": 0,
+    "geometryRetained": false,
+    "ownerAddressTaxOrPersonLookupRequested": false,
+    "authenticationOrCredentialsUsed": false,
+    "captchaOrPersonalFormSubmitted": false,
+    "routeInspectionStatus": "not_verified",
+    "reason": "The Government of Karnataka district portal lists the Deputy Director of Land Records at Mini Vidhan Soudh, Kalaburagi, District Registrar Department and the Bhoomi land-record service. A state legislative answer names an Assistant Director of Land Records City Survey Kalaburagi and the city Sub-Registrar Office. DILRMP public pages report status at Kalaburagi district/taluk scope; they are status tables, not geometry. No owner/plot lookup was run and no safe feature schema was found."
+  },
+  "privacy": "No parcel/property lookup, owner/address/tax-account query, login, or personal data was used.",
+  "runtimeAssessment": "not_enabled_no_verified_public_geometry"
+}

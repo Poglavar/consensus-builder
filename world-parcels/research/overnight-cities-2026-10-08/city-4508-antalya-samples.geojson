@@ -1,0 +1,152 @@
+{
+  "type": "FeatureCollection",
+  "features": [
+    {
+      "type": "Feature",
+      "id": "TR-TKGM-136130-11018-16",
+      "geometry": {
+        "type": "Polygon",
+        "coordinates": [
+          [
+            [
+              30.72191,
+              36.9243
+            ],
+            [
+              30.7218,
+              36.9243
+            ],
+            [
+              30.72159,
+              36.92429
+            ],
+            [
+              30.7216,
+              36.9241
+            ],
+            [
+              30.72193,
+              36.92413
+            ],
+            [
+              30.72191,
+              36.9243
+            ]
+          ]
+        ]
+      },
+      "properties": {
+        "parcelId": "TR-TKGM-136130-11018-16",
+        "id": "TR-TKGM-136130-11018-16",
+        "sourceId": "tr-tkgm-parselsorgu-api",
+        "sourceParcelId": "136130-11018-16",
+        "parcelNumber": "16",
+        "cadMunicipalityName": null,
+        "ownershipType": "unknown",
+        "sourceProperties": {
+          "mahalleId": "136130",
+          "adaNo": "11018",
+          "parselNo": "16"
+        }
+      }
+    },
+    {
+      "type": "Feature",
+      "id": "TR-TKGM-136130-11017-15",
+      "geometry": {
+        "type": "Polygon",
+        "coordinates": [
+          [
+            [
+              30.7226,
+              36.92394
+            ],
+            [
+              30.72242,
+              36.92392
+            ],
+            [
+              30.72243,
+              36.92388
+            ],
+            [
+              30.72247,
+              36.92361
+            ],
+            [
+              30.72264,
+              36.92363
+            ],
+            [
+              30.7226,
+              36.92394
+            ]
+          ]
+        ]
+      },
+      "properties": {
+        "parcelId": "TR-TKGM-136130-11017-15",
+        "id": "TR-TKGM-136130-11017-15",
+        "sourceId": "tr-tkgm-parselsorgu-api",
+        "sourceParcelId": "136130-11017-15",
+        "parcelNumber": "15",
+        "cadMunicipalityName": null,
+        "ownershipType": "unknown",
+        "sourceProperties": {
+          "mahalleId": "136130",
+          "adaNo": "11017",
+          "parselNo": "15"
+        }
+      }
+    },
+    {
+      "type": "Feature",
+      "id": "TR-TKGM-136130-11008-19",
+      "geometry": {
+        "type": "Polygon",
+        "coordinates": [
+          [
+            [
+              30.72149,
+              36.92381
+            ],
+            [
+              30.72105,
+              36.92377
+            ],
+            [
+              30.72106,
+              36.92373
+            ],
+            [
+              30.72109,
+              36.92348
+            ],
+            [
+              30.72151,
+              36.92352
+            ],
+            [
+              30.72149,
+              36.92381
+            ]
+          ]
+        ]
+      },
+      "properties": {
+        "parcelId": "TR-TKGM-136130-11008-19",
+        "id": "TR-TKGM-136130-11008-19",
+        "sourceId": "tr-tkgm-parselsorgu-api",
+        "sourceParcelId": "136130-11008-19",
+        "parcelNumber": "19",
+        "cadMunicipalityName": null,
+        "ownershipType": "unknown",
+        "sourceProperties": {
+          "mahalleId": "136130",
+          "adaNo": "11008",
+          "parselNo": "19"
+        }
+      }
+    }
+  ]
+}

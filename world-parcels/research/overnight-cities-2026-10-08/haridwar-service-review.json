@@ -1,0 +1,61 @@
+{
+  "schemaVersion": "1.0",
+  "checkedAt": "2026-10-09",
+  "cityRecord": "city-8644-haridwar.json",
+  "purpose": "Document city-scope registry evidence and bounded public parcel-geometry route review.",
+  "scopeLimits": {
+    "maxFullPolygonsRetainedInCityRecord": 3,
+    "maxFullPolygonsRetainedInReview": 3,
+    "maxFullPolygonsRetainedInRepository": 3,
+    "ownerOrAddressDataRetained": false,
+    "credentialsOrTokenValuesRetained": false,
+    "citywideCompletenessAsserted": false
+  },
+  "assessment": "The Haridwar District Administration links its local land-record service to state Bhulekh and identifies the local collectorate/tehsil. No public geometry schema or parcel-map service was documented.",
+  "registryAssessment": "The official Haridwar District Administration land-record service page explicitly links the state Bhulekh record service and locates the Collectorate at Roshnabad, Haridwar; the Hindi official page confirms the same service and place. Uttarakhand’s official Stamps and Registration Department documents property registration and offers statewide registered-document search, but the reviewed local page is land-record service evidence, not a city parcel API. No safe geometry route/schema was verified.",
+  "officialPrimarySources": [
+    {
+      "url": "https://haridwar.nic.in/service/land-records/",
+      "observation": "Official Haridwar District Administration page says land-record nakal is available through the state Bhulekh portal and gives the Collectorate location/jurisdictions."
+    },
+    {
+      "url": "https://haridwar.nic.in/hi/service/%E0%A4%AD%E0%A5%82%E0%A4%AE%E0%A4%BF-%E0%A4%B0%E0%A4%BF%E0%A4%95%E0%A5%89%E0%A4%B0%E0%A5%8D%E0%A4%A1%E0%A5%8D%E0%A4%B8/",
+      "observation": "Official Hindi Haridwar District Administration land-record service page repeats the local Bhulekh link and collectorate/tehsil scope."
+    },
+    {
+      "url": "https://registration.uk.gov.in/",
+      "observation": "Official Uttarakhand Department of Stamps and Registration lists property transaction registration and registered-document e-search; its described workflows are record services, not geometry feeds."
+    }
+  ],
+  "searchQueries": [
+    {
+      "language": "English",
+      "query": "Haridwar district official land records registry cadastral parcel map India",
+      "result": "The Haridwar District Administration links its local land-record service to state Bhulekh and identifies the local collectorate/tehsil. No public geometry schema or parcel-map service was documented.",
+      "method": "English-language search followed by primary-source review."
+    },
+    {
+      "language": "Hindi",
+      "query": "हरिद्वार जिला आधिकारिक भूमि रिकॉर्ड भूलेख खसरा खतौनी कैडस्ट्रल नक्शा",
+      "result": "हरिद्वार जिला प्रशासन का आधिकारिक भूमि रिकॉर्ड पृष्ठ भूलेख सेवा को जोड़ता है और रोशनाबाद स्थित कलेक्ट्रेट/तहसील का उल्लेख करता है। कोई सुरक्षित, केवल ज्यामिति वाला सार्वजनिक पार्सल स्कीमा नहीं मिला।",
+      "method": "Local-language search followed by primary-source review."
+    }
+  ],
+  "serviceChecks": [],
+  "geometryEvidence": null,
+  "accessReview": {
+    "publicAnonymousGeometryVerified": false,
+    "completeGeoreferencedPolygonCount": 0,
+    "geometryRetained": false,
+    "ownerAddressTaxOrPersonLookupRequested": false,
+    "authenticationOrCredentialsUsed": false,
+    "captchaOrPersonalFormSubmitted": false,
+    "routeInspectionStatus": "schema_unverified",
+    "reason": "The English and Hindi district government pages document land-record “nakal” via the state Bhulekh portal and identify the Haridwar Collectorate/tehsil jurisdiction. The linked Bhulekh portal uses plain HTTP and is a land-record service; it was not accessed. Uttarakhand Stamps and Registration describes e-search of registered documents and property transaction registration, which is record-centric. No anonymous parcel geometry schema, stable-ID allowlist, or CRS was found; no record or map query was made."
+  },
+  "privacy": "No owner/address/tax/account/property-record query, login, or private attribute extraction was performed. No geometry retained.",
+  "runtimeAssessment": {
+    "status": "not_enabled_no_verified_safe_geometry_schema",
+    "reason": "Official local-government evidence confirms land records associated with Haridwar, but the state revenue and registration services are broader than the urban settlement. No city-specific parcel geometry endpoint or WUP-point parcel coverage was established."
+  }
+}

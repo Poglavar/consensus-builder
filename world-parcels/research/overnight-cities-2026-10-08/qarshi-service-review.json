@@ -1,0 +1,39 @@
+{
+  "schemaVersion": "1.0",
+  "checkedAt": "2026-10-09",
+  "cityRecord": "city-2276-qarshi.json",
+  "purpose": "Local registry and public parcel-geometry source review. Queries were separated by English and local language. No owner, address, tax, or private property fields were queried or retained.",
+  "scopeLimits": {
+    "maxFullPolygonsRetainedInCityRecord": 0,
+    "maxFullPolygonsRetainedInReview": 0,
+    "maxFullPolygonsRetainedInRepository": 0,
+    "ownerOrAddressDataRetained": false,
+    "credentialsOrPrivateRecordLookupsUsed": false,
+    "citywideCompletenessAsserted": false
+  },
+  "assessment": "An official Qarshi city decision listed land parcels for online auction with cadastral numbers and local neighborhood names, confirming cadastral administration for city land. Uzbekistan’s official National Geo-information Portal provides a cadastral-number search and official map platform, but the layer list is not exposed until interaction/sign-in and no anonymous geometry-only query was verified. No auction parcel was queried or retained. No full polygon was returned; geometry presence remains unverified.",
+  "officialPrimarySources": [
+    {
+      "url": "https://gov.uz/oz/qarshish/sections/view/65875",
+      "observation": "An official Qarshi city decision listed land parcels for online auction with cadastral numbers and local neighborhood names, confirming cadastral administration for city land. Uzbekistan’s official National Geo-information Portal provides a cadastral-number search and official map platform, but the layer list is not exposed until interaction/sign-in and no anonymous geometry-only query was verified. No auction parcel was queried or retained."
+    }
+  ],
+  "searches": [
+    {
+      "language": "English",
+      "query": "Qarshi Uzbekistan official cadastral map land registry parcel GIS city hokimiyat"
+    },
+    {
+      "language": "Uzbek",
+      "query": "Қарши кадастр харитаси ер участкалари расмий Қарши шаҳар ҳокимлиги кадастр"
+    }
+  ],
+  "geometryEvidence": null,
+  "decision": {
+    "registryFound": true,
+    "publicParcelGeometryFound": null,
+    "verifiedSample": false,
+    "adapterReady": false
+  },
+  "nextStep": "Trace and inspect a public feature-service schema before any geometry request; restrict any future query to stable safe IDs and geometry."
+}

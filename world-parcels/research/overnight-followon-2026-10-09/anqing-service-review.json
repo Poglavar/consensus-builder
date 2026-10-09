@@ -1,0 +1,65 @@
+{
+  "schemaVersion": "1.0",
+  "checkedAt": "2026-10-09",
+  "cityRecord": "city-11168-anqing.json",
+  "purpose": "Document first-party local registry/map evidence and bounded anonymous geometry access review.",
+  "scopeLimits": {
+    "maxFullPolygonsRetainedInCityRecord": 0,
+    "maxFullPolygonsRetainedInReview": 0,
+    "maxFullPolygonsRetainedInRepository": 0,
+    "ownerOrAddressDataRetained": false,
+    "credentialsOrTokenValuesRetained": false,
+    "citywideCompletenessAsserted": false
+  },
+  "assessment": "Anqing municipal government material includes real-estate registration among city public-service processes. Searches did not identify a city-specific registration-center page or public vector geometry source; the local registry basis is therefore limited to the city administration’s explicit responsibility and no parcel-level access was attempted.",
+  "registryAssessment": "City-government material references real-estate registration service, but does not establish which local entity holds registry custody; assessment left unresolved.",
+  "officialPrimarySources": [
+    {
+      "url": "https://tzcjj.anqing.gov.cn/tzzc/fzgh/2004189185.html",
+      "observation": "Anqing municipal government material includes real-estate registration among city public-service processes. Searches did not identify a city-specific registration-center page or public vector geometry source; the local registry basis is therefore limited to the city administration’s explicit responsibility and no parcel-level access was attempted."
+    }
+  ],
+  "searchQueries": [
+    {
+      "language": "English",
+      "query": "Anqing China official real estate registration center cadastral map natural resources bureau",
+      "result": "Anqing municipal government material includes real-estate registration among city public-service processes. Searches did not identify a city-specific registration-center page or public vector geometry source; the local registry basis is therefore limited to the city administration’s explicit responsibility and no parcel-level access was attempted.",
+      "method": "Separate official-source search and review.",
+      "scope": "Identify first-party registry custody and public geometry route.",
+      "actualResultUrls": [
+        "https://tzcjj.anqing.gov.cn/tzzc/fzgh/2004189185.html"
+      ]
+    },
+    {
+      "language": "Chinese",
+      "query": "安庆市 不动产登记中心 地籍图 自然资源和规划局 官方",
+      "result": "Anqing municipal government material includes real-estate registration among city public-service processes. Searches did not identify a city-specific registration-center page or public vector geometry source; the local registry basis is therefore limited to the city administration’s explicit responsibility and no parcel-level access was attempted.",
+      "method": "Separate official-source search and review.",
+      "scope": "Identify first-party registry custody and public geometry route.",
+      "actualResultUrls": [
+        "https://tzcjj.anqing.gov.cn/tzzc/fzgh/2004189185.html"
+      ]
+    }
+  ],
+  "geometryDecision": "No full polygon retained: no safe anonymous geometry-only route was verified.",
+  "coverageAssessment": {
+    "claimedScope": "City-government material references real-estate registration service, but does not establish which local entity holds registry custody; assessment left unresolved.",
+    "verifiedOpenScope": "Anqing municipal government material includes real-estate registration among city public-service processes. Searches did not identify a city-specific registration-center page or public vector geometry source; the local registry basis is therefore limited to the city administration’s explicit responsibility and no parcel-level access was attempted.",
+    "citywideVerified": false,
+    "countrywideVerified": false,
+    "geometryVerified": false
+  },
+  "attempts": [
+    {
+      "url": "https://tzcjj.anqing.gov.cn/tzzc/fzgh/2004189185.html",
+      "result": "Official source reviewed; no property-specific lookup or identifying information was submitted."
+    }
+  ],
+  "remainingUncertainty": "Citywide completeness and adapter/runtime suitability remain unqualified; local registry evidence does not establish full public geometry availability.",
+  "geometryEvidence": {
+    "sampleFile": null,
+    "featureCount": 0,
+    "query": "No geometry request made; reviewed official HTML/search evidence only."
+  },
+  "runtimeAssessment": "Not enabled; root may perform full adapter qualification."
+}

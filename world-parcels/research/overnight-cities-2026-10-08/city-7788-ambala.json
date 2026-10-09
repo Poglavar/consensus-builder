@@ -1,0 +1,130 @@
+{
+  "name": "Ambala",
+  "country": "India",
+  "countryCode": "IN",
+  "rank": 876,
+  "point": [
+    30.3602255228363,
+    76.8141196644984
+  ],
+  "freshResearch": {
+    "queries": [
+      {
+        "language": "Hindi",
+        "query": "अंबाला हरियाणा भू नक्शा cadastral map land records आधिकारिक नक्शा",
+        "scope": "Find district/city first-party land record and parcel-map services; determine anonymous geometry access.",
+        "result": "Official Ambala district land-record service routes to Haryana Jamabandi. Official Haryana DULBGIS describes property and ward/colony mapping across municipal bodies, but the portal exposes mobile/OTP sign-in; the separate HARSAC EODB land-record app also requires public-login OTP. No public full polygon was queried.",
+        "urls": [
+          "https://ambala.gov.in/service/jamabandi-portal/",
+          "https://gis.ulbharyana.gov.in/",
+          "https://hsac.in/eodb/"
+        ]
+      },
+      {
+        "language": "English",
+        "query": "Ambala Haryana official cadastral parcel map GIS property land records public viewer",
+        "scope": "Verify local urban parcel map and authentication requirements.",
+        "result": "District Ambala describes official Jamabandi records; Haryana Urban Local Bodies says GIS mapping covers municipal properties; HARSAC’s EODB system advertises cadastral maps but requires mobile/OTP login to access land records. No login was attempted.",
+        "urls": [
+          "https://ambala.gov.in/service/jamabandi-portal/",
+          "https://gis.ulbharyana.gov.in/",
+          "https://hsac.in/eodb/"
+        ]
+      }
+    ],
+    "officialSources": [
+      {
+        "url": "https://ambala.gov.in/service/jamabandi-portal/",
+        "observation": "District Ambala says the Haryana Revenue Department portal provides land record, mutation and Jamabandi lookup."
+      },
+      {
+        "url": "https://gis.ulbharyana.gov.in/",
+        "observation": "ULB portal says properties, wards/colonies and municipal boundaries are mapped for all Haryana municipalities; disclaimer says data are display-only; login screen requests mobile/OTP."
+      },
+      {
+        "url": "https://hsac.in/eodb/",
+        "observation": "HARSAC page advertises digital cadastral land records; map access is behind mobile/OTP public-login workflow."
+      }
+    ],
+    "serviceChecks": [
+      {
+        "url": "https://ambala.gov.in/service/jamabandi-portal/",
+        "method": "Official public page review",
+        "status": 200,
+        "observation": "Links state Jamabandi land records; no parcel-specific lookup performed."
+      },
+      {
+        "url": "https://gis.ulbharyana.gov.in/",
+        "method": "Official viewer page review via current indexed page",
+        "status": 200,
+        "observation": "Displays property GIS description and OTP sign-in; no unauthenticated vector request made."
+      },
+      {
+        "url": "https://hsac.in/eodb/",
+        "method": "Official landing page review via current indexed page",
+        "status": 200,
+        "observation": "Records login shown with registered mobile and OTP; no auth attempted."
+      }
+    ],
+    "geometryDecision": "No full city-bound parcel polygon retained.",
+    "serviceReviewFile": "ambala-service-review.json"
+  },
+  "status": "complete",
+  "source": {
+    "sourceId": "in-haryana-dulbgis",
+    "name": "Haryana Urban Geo Spatial Data / HARSAC EODB land-record system",
+    "url": "https://gis.ulbharyana.gov.in/",
+    "operator": "Department of Urban Local Bodies Haryana; HARSAC",
+    "serviceType": "Urban property GIS and digitized land-record map services; authenticated/OTP routes only.",
+    "geometryType": "Property mapping advertised; no full vector response sampled",
+    "coordinateCrs": null
+  },
+  "coverageAssessment": {
+    "claimedScope": "Haryana-wide municipal property map program including urban properties; Ambala district official Jamabandi record service.",
+    "verifiedOpenScope": "State portal says property mapping spans all municipalities. The DULBGIS data terms describe display-only data; the application exposes department mobile/OTP login and HARSAC EODB requests registered mobile plus OTP. No anonymous map query or geometry response was exposed.",
+    "citywideVerified": false,
+    "countrywideVerified": false
+  },
+  "registryFound": true,
+  "verifiedSample": false,
+  "resultCategory": "local_registry_service_no_public_full_geometry_sample",
+  "technicalBlocker": "Publicly described geometry/record map workflows require account/mobile OTP; no account was used. Public district Jamabandi portal advertises lookups by owner, khewat and khasra; no parcel-specific record was searched.",
+  "remainingUncertainty": "Whether the Ambala municipal geospatial map has a public no-login vector layer distinct from the OTP-gated property apps; current data coverage for WUP locator remains unknown.",
+  "nextStep": "Parent may assess any documented anonymous municipal data service, without entering a personal phone/OTP.",
+  "schemaVersion": 1,
+  "checkedAt": "2026-10-09",
+  "wupCityCode": 7788,
+  "cityId": "wup2025:7788",
+  "runtimeReadiness": "not_enabled_no_verified_public_geometry",
+  "adapterReady": false,
+  "centerLatLon": [
+    30.3602255228363,
+    76.8141196644984
+  ],
+  "queueRank": 876,
+  "population2025": 615565,
+  "populationPlausibility2025": "Moderate",
+  "populationUnit": "persons",
+  "pointBasis": "UN WUP 2025 population-weighted settlement centroid; this is not a municipal boundary or a parcel-coverage claim.",
+  "publicParcelGeometryFound": false,
+  "sourceIds": [],
+  "registryBasis": "The district-linked Haryana Jamabandi service and state Urban Local Bodies mapping program document local land records/property GIS. The statewide descriptions do not establish a no-login public parcel geometry layer at the Ambala WUP point.",
+  "registryEvidenceUrls": [
+    "https://ambala.gov.in/service/jamabandi-portal/",
+    "https://gis.ulbharyana.gov.in/",
+    "https://hsac.in/eodb/"
+  ],
+  "verifiedParcelResponse": null,
+  "runtimeAssessment": {
+    "status": "not_assessed_no_public_full_geometry",
+    "reason": "Source discovery only; parent owns runtime qualification. No application/backend/catalog/global configuration was changed."
+  },
+  "rootPrimaryReadback": {
+    "url": "https://ambala.gov.in/service/jamabandi-portal/",
+    "fetch": 200,
+    "contentType": "text/html; charset=UTF-8",
+    "title": "\n        Jamabandi Portal | District Ambala,Government of Haryana | India    "
+  },
+  "rootReviewNote": "Reviewed the specific primary institution/service evidence and its geographical, access and date limits. Direct readback failures are preserved separately from indexed primary evidence. No public full parcel geometry was verified for this city in this discovery pass.",
+  "rootReviewedAt": "2026-10-09T04:20:40.565226+00:00"
+}

@@ -1,0 +1,360 @@
+{
+  "purpose": "Actual production TKGM adapter point/exact lookup qualification; area enumeration and footprint coverage remain explicitly unsupported.",
+  "sourceId": "tr-tkgm-parselsorgu-api",
+  "cityCode": 5107,
+  "centerLonLat": [
+    32.4868496516476,
+    37.864475900001
+  ],
+  "allTestsPassed": false,
+  "distinctFeatures": 7,
+  "checks": [
+    {
+      "name": "bounded point lookup",
+      "point": [
+        32.4868496516476,
+        37.864475900001
+      ],
+      "count": 1,
+      "complete": true,
+      "stable": true,
+      "passed": true
+    },
+    {
+      "name": "bounded point lookup",
+      "point": [
+        32.487149651647606,
+        37.864475900001
+      ],
+      "count": 1,
+      "complete": true,
+      "stable": true,
+      "passed": true
+    },
+    {
+      "name": "bounded point lookup",
+      "point": [
+        32.4865496516476,
+        37.864475900001
+      ],
+      "count": 1,
+      "complete": true,
+      "stable": true,
+      "passed": true
+    },
+    {
+      "name": "bounded point lookup",
+      "point": [
+        32.4868496516476,
+        37.864775900001
+      ],
+      "count": 1,
+      "complete": true,
+      "stable": true,
+      "passed": true
+    },
+    {
+      "name": "bounded point lookup",
+      "point": [
+        32.4868496516476,
+        37.864175900000994
+      ],
+      "count": 1,
+      "complete": true,
+      "stable": true,
+      "passed": true
+    },
+    {
+      "name": "bounded point lookup",
+      "point": [
+        32.4874496516476,
+        37.865075900000996
+      ],
+      "count": 1,
+      "complete": true,
+      "stable": true,
+      "passed": true
+    },
+    {
+      "name": "bounded point lookup",
+      "point": [
+        32.486249651647604,
+        37.865075900000996
+      ],
+      "count": 1,
+      "complete": true,
+      "stable": true,
+      "passed": true
+    },
+    {
+      "name": "bounded point lookup",
+      "point": [
+        32.4874496516476,
+        37.863875900001
+      ],
+      "count": 1,
+      "complete": true,
+      "stable": true,
+      "passed": true
+    },
+    {
+      "name": "bounded point lookup",
+      "point": [
+        32.486249651647604,
+        37.863875900001
+      ],
+      "count": 1,
+      "complete": true,
+      "stable": true,
+      "passed": true
+    },
+    {
+      "name": "bounded point lookup",
+      "point": [
+        32.4878496516476,
+        37.864475900001
+      ],
+      "count": 0,
+      "complete": true,
+      "stable": true,
+      "passed": true
+    },
+    {
+      "name": "bounded point lookup",
+      "point": [
+        32.485849651647605,
+        37.864475900001
+      ],
+      "passed": false,
+      "error": "TKGM parcel provider is unavailable.",
+      "status": 502,
+      "code": "parcel-source-unavailable"
+    },
+    {
+      "name": "bounded point lookup",
+      "point": [
+        32.4868496516476,
+        37.865475900000995
+      ],
+      "passed": false,
+      "error": "TKGM parcel provider is unavailable.",
+      "status": 502,
+      "code": "parcel-source-unavailable"
+    },
+    {
+      "name": "bounded point lookup",
+      "point": [
+        32.4868496516476,
+        37.863475900001
+      ],
+      "count": 1,
+      "complete": true,
+      "stable": true,
+      "passed": true
+    },
+    {
+      "name": "bounded point lookup",
+      "point": [
+        32.4883496516476,
+        37.864475900001
+      ],
+      "passed": false,
+      "error": "TKGM parcel provider is unavailable.",
+      "status": 502,
+      "code": "parcel-source-unavailable"
+    },
+    {
+      "name": "bounded point lookup",
+      "point": [
+        32.4853496516476,
+        37.864475900001
+      ],
+      "count": 0,
+      "complete": true,
+      "stable": true,
+      "passed": true
+    },
+    {
+      "name": "bounded point lookup",
+      "point": [
+        32.4868496516476,
+        37.865975900001
+      ],
+      "count": 1,
+      "complete": true,
+      "stable": true,
+      "passed": true
+    },
+    {
+      "name": "bounded point lookup",
+      "point": [
+        32.4868496516476,
+        37.862975900001
+      ],
+      "count": 1,
+      "complete": true,
+      "stable": true,
+      "passed": true
+    },
+    {
+      "name": "fresh exact-ID reread",
+      "id": "TR-TKGM-128083-2088-4",
+      "passed": true
+    },
+    {
+      "name": "fresh exact-ID reread",
+      "id": "TR-TKGM-128083-133-42",
+      "passed": true
+    },
+    {
+      "name": "fresh exact-ID reread",
+      "id": "TR-TKGM-128083-812-81",
+      "passed": true
+    },
+    {
+      "name": "fresh exact-ID reread",
+      "id": "TR-TKGM-128086-41159-2",
+      "passed": true
+    },
+    {
+      "name": "fresh exact-ID reread",
+      "id": "TR-TKGM-128083-2088-3",
+      "passed": true
+    },
+    {
+      "name": "fresh exact-ID reread",
+      "id": "TR-TKGM-128083-27909-1",
+      "passed": true
+    },
+    {
+      "name": "fresh exact-ID reread",
+      "id": "TR-TKGM-128086-1892-75",
+      "passed": false,
+      "error": "TKGM parcel provider is unavailable.",
+      "status": 502,
+      "code": "parcel-source-unavailable"
+    },
+    {
+      "name": "valid-format absent ID",
+      "passed": false,
+      "error": "TKGM parcel provider is unavailable.",
+      "status": 502,
+      "code": "parcel-source-unavailable"
+    },
+    {
+      "name": "queryBounds explicitly unsupported",
+      "passed": true,
+      "status": 422,
+      "code": "parcel-source-area-unsupported"
+    },
+    {
+      "name": "queryGeometry explicitly unsupported",
+      "passed": true,
+      "status": 422,
+      "code": "parcel-source-area-unsupported"
+    }
+  ],
+  "requests": [
+    {
+      "url": "https://cbsapi.tkgm.gov.tr/megsiswebapi.v3.1/api/parsel/37.864475900001/32.4868496516476",
+      "method": "GET",
+      "status": 200
+    },
+    {
+      "url": "https://cbsapi.tkgm.gov.tr/megsiswebapi.v3.1/api/parsel/37.864475900001/32.487149651647606",
+      "method": "GET",
+      "status": 200
+    },
+    {
+      "url": "https://cbsapi.tkgm.gov.tr/megsiswebapi.v3.1/api/parsel/37.864475900001/32.4865496516476",
+      "method": "GET",
+      "status": 200
+    },
+    {
+      "url": "https://cbsapi.tkgm.gov.tr/megsiswebapi.v3.1/api/parsel/37.864775900001/32.4868496516476",
+      "method": "GET",
+      "status": 200
+    },
+    {
+      "url": "https://cbsapi.tkgm.gov.tr/megsiswebapi.v3.1/api/parsel/37.864175900000994/32.4868496516476",
+      "method": "GET",
+      "status": 200
+    },
+    {
+      "url": "https://cbsapi.tkgm.gov.tr/megsiswebapi.v3.1/api/parsel/37.865075900000996/32.4874496516476",
+      "method": "GET",
+      "status": 200
+    },
+    {
+      "url": "https://cbsapi.tkgm.gov.tr/megsiswebapi.v3.1/api/parsel/37.865075900000996/32.486249651647604",
+      "method": "GET",
+      "status": 200
+    },
+    {
+      "url": "https://cbsapi.tkgm.gov.tr/megsiswebapi.v3.1/api/parsel/37.863875900001/32.4874496516476",
+      "method": "GET",
+      "status": 200
+    },
+    {
+      "url": "https://cbsapi.tkgm.gov.tr/megsiswebapi.v3.1/api/parsel/37.863875900001/32.486249651647604",
+      "method": "GET",
+      "status": 200
+    },
+    {
+      "url": "https://cbsapi.tkgm.gov.tr/megsiswebapi.v3.1/api/parsel/37.864475900001/32.4878496516476",
+      "method": "GET",
+      "status": 404
+    },
+    {
+      "url": "https://cbsapi.tkgm.gov.tr/megsiswebapi.v3.1/api/parsel/37.863475900001/32.4868496516476",
+      "method": "GET",
+      "status": 200
+    },
+    {
+      "url": "https://cbsapi.tkgm.gov.tr/megsiswebapi.v3.1/api/parsel/37.864475900001/32.4853496516476",
+      "method": "GET",
+      "status": 404
+    },
+    {
+      "url": "https://cbsapi.tkgm.gov.tr/megsiswebapi.v3.1/api/parsel/37.865975900001/32.4868496516476",
+      "method": "GET",
+      "status": 200
+    },
+    {
+      "url": "https://cbsapi.tkgm.gov.tr/megsiswebapi.v3.1/api/parsel/37.862975900001/32.4868496516476",
+      "method": "GET",
+      "status": 200
+    },
+    {
+      "url": "https://cbsapi.tkgm.gov.tr/megsiswebapi.v3.1/api/parsel/128083/2088/4",
+      "method": "GET",
+      "status": 200
+    },
+    {
+      "url": "https://cbsapi.tkgm.gov.tr/megsiswebapi.v3.1/api/parsel/128083/133/42",
+      "method": "GET",
+      "status": 200
+    },
+    {
+      "url": "https://cbsapi.tkgm.gov.tr/megsiswebapi.v3.1/api/parsel/128083/812/81",
+      "method": "GET",
+      "status": 200
+    },
+    {
+      "url": "https://cbsapi.tkgm.gov.tr/megsiswebapi.v3.1/api/parsel/128086/41159/2",
+      "method": "GET",
+      "status": 200
+    },
+    {
+      "url": "https://cbsapi.tkgm.gov.tr/megsiswebapi.v3.1/api/parsel/128083/2088/3",
+      "method": "GET",
+      "status": 200
+    },
+    {
+      "url": "https://cbsapi.tkgm.gov.tr/megsiswebapi.v3.1/api/parsel/128083/27909/1",
+      "method": "GET",
+      "status": 200
+    }
+  ],
+  "scope": "17 bounded points around the ranked Konya locator, fresh exact-ID rereads, valid absent ID and explicit area rejection; no area completeness claim."
+}

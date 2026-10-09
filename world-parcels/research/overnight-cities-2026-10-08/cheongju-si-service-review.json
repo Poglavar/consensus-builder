@@ -1,0 +1,97 @@
+{
+  "schemaVersion": "1.0",
+  "checkedAt": "2026-10-09",
+  "cityRecord": "city-2057-cheongju-si.json",
+  "purpose": "Document first-party local registry/map evidence and schema-first anonymous geometry review.",
+  "scopeLimits": {
+    "maxFullPolygonsRetainedInCityRecord": 0,
+    "maxFullPolygonsRetainedInReview": 0,
+    "maxFullPolygonsRetainedInRepository": 0,
+    "ownerOrAddressDataRetained": false,
+    "credentialsOrTokenValuesRetained": false,
+    "citywideCompletenessAsserted": false
+  },
+  "assessment": "Cheongju City’s official Mapmoa GIS, managed by the city’s Cadastral Information Division, provides citywide map layers and real-estate information. The city says it presents land-register, public land-price, land-use and history information. This confirms a local cadastral-information custodian and parcel-map candidate, but not an anonymous schema-safe parcel-vector service. The official map viewer and its user guide were reviewed, but no public vector service schema that allows requesting polygon geometry with only safe native cadastral keys was confirmed. No property-specific query or owner lookup was made.",
+  "registryAssessment": "Cheongju City’s official Mapmoa GIS, managed by the city’s Cadastral Information Division, provides citywide map layers and real-estate information. The city says it presents land-register, public land-price, land-use and history information. This confirms a local cadastral-information custodian and parcel-map candidate, but not an anonymous schema-safe parcel-vector service.",
+  "officialPrimarySources": [
+    {
+      "url": "https://map.cheongju.go.kr/intro.do",
+      "observation": "Official city pages identify Mapmoa as a citywide geospatial service and describe parcel-related land information; the service is a map/display and property-info candidate. No anonymous feature schema or safe field allowlist was confirmed, so no parcel geometry was requested or retained."
+    },
+    {
+      "url": "https://map.cheongju.go.kr/main.do",
+      "observation": "Official city pages identify Mapmoa as a citywide geospatial service and describe parcel-related land information; the service is a map/display and property-info candidate. No anonymous feature schema or safe field allowlist was confirmed, so no parcel geometry was requested or retained."
+    },
+    {
+      "url": "https://www.cheongju.go.kr/www/selectBbsNttView.do?bbsNo=40&key=23485&nttNo=235501",
+      "observation": "Official city pages identify Mapmoa as a citywide geospatial service and describe parcel-related land information; the service is a map/display and property-info candidate. No anonymous feature schema or safe field allowlist was confirmed, so no parcel geometry was requested or retained."
+    },
+    {
+      "url": "https://map.cheongju.go.kr/cp_manual.pdf",
+      "observation": "Official city pages identify Mapmoa as a citywide geospatial service and describe parcel-related land information; the service is a map/display and property-info candidate. No anonymous feature schema or safe field allowlist was confirmed, so no parcel geometry was requested or retained."
+    },
+    {
+      "url": "https://data.go.kr/data/15057570/openapi.do",
+      "observation": "Official city pages identify Mapmoa as a citywide geospatial service and describe parcel-related land information; the service is a map/display and property-info candidate. No anonymous feature schema or safe field allowlist was confirmed, so no parcel geometry was requested or retained."
+    }
+  ],
+  "searchQueries": [
+    {
+      "language": "English",
+      "query": "Cheongju official city GIS cadastral parcel map public vector service real estate information",
+      "result": "Official city pages identify Mapmoa as a citywide geospatial service and describe parcel-related land information; the service is a map/display and property-info candidate. No anonymous feature schema or safe field allowlist was confirmed, so no parcel geometry was requested or retained.",
+      "method": "Separate English-language search and official source review."
+    },
+    {
+      "language": "Korean",
+      "query": "청주시 지도모아 연속지적도 지적정보 공개 GIS 서비스 지적정보과",
+      "result": "Official city pages identify Mapmoa as a citywide geospatial service and describe parcel-related land information; the service is a map/display and property-info candidate. No anonymous feature schema or safe field allowlist was confirmed, so no parcel geometry was requested or retained.",
+      "method": "Separate local-language search and official source review."
+    }
+  ],
+  "geometryDecision": "No parcel geometry retained; no safe anonymous parcel polygon response was verified.",
+  "coverageAssessment": {
+    "claimedScope": "Cheongju City’s official Mapmoa GIS, managed by the city’s Cadastral Information Division, provides citywide map layers and real-estate information. The city says it presents land-register, public land-price, land-use and history information. This confirms a local cadastral-information custodian and parcel-map candidate, but not an anonymous schema-safe parcel-vector service.",
+    "verifiedOpenScope": "Official city pages identify Mapmoa as a citywide geospatial service and describe parcel-related land information; the service is a map/display and property-info candidate. No anonymous feature schema or safe field allowlist was confirmed, so no parcel geometry was requested or retained.",
+    "citywideVerified": false,
+    "countrywideVerified": false
+  },
+  "attempts": [
+    {
+      "source": "https://map.cheongju.go.kr/intro.do",
+      "outcome": "Official municipal map or user-guide review; no safe public parcel vector schema verified.",
+      "fieldsRequested": [],
+      "sensitiveFieldsRequested": false
+    },
+    {
+      "source": "https://map.cheongju.go.kr/main.do",
+      "outcome": "Official municipal map or user-guide review; no safe public parcel vector schema verified.",
+      "fieldsRequested": [],
+      "sensitiveFieldsRequested": false
+    },
+    {
+      "source": "https://www.cheongju.go.kr/www/selectBbsNttView.do?bbsNo=40&key=23485&nttNo=235501",
+      "outcome": "Official primary-source review; no feature geometry or individual property lookup.",
+      "fieldsRequested": [],
+      "sensitiveFieldsRequested": false
+    },
+    {
+      "source": "https://map.cheongju.go.kr/cp_manual.pdf",
+      "outcome": "Official municipal map or user-guide review; no safe public parcel vector schema verified.",
+      "fieldsRequested": [],
+      "sensitiveFieldsRequested": false
+    },
+    {
+      "source": "https://data.go.kr/data/15057570/openapi.do",
+      "outcome": "Official primary-source review; no feature geometry or individual property lookup.",
+      "fieldsRequested": [],
+      "sensitiveFieldsRequested": false
+    }
+  ],
+  "remainingUncertainty": "Whether Mapmoa or the national continuous-cadastral-map API offers anonymous geometry with a safely restricted field set at this point remains unverified.",
+  "runtimeAssessment": {
+    "status": "not_assessed",
+    "reason": "No adapter or runtime contract was tested."
+  },
+  "technicalBlocker": "The official map viewer and its user guide were reviewed, but no public vector service schema that allows requesting polygon geometry with only safe native cadastral keys was confirmed. No property-specific query or owner lookup was made."
+}

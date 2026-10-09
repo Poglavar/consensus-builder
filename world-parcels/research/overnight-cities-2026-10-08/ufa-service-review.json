@@ -1,0 +1,43 @@
+{
+  "schemaVersion": "1.0",
+  "checkedAt": "2026-10-09",
+  "cityRecord": "city-7015-ufa.json",
+  "purpose": "Read-only official city registry and public map service review; no property lookup.",
+  "scopeLimits": {
+    "maxFullPolygonsRetainedInThisCityReport": 0,
+    "maxFullPolygonsRetainedAcrossCityReview": 0,
+    "ownerOrAddressDataRetained": false,
+    "credentialsOrPrivateTokensRetained": false
+  },
+  "assessment": "The national EGRN public cadastral map is delivered through NSPD; Ufa’s official Administration land and property office handles city land schemes and cadastral work. No public feature service with a privacy-safe geometry/ID schema was established.",
+  "officialEvidence": [
+    {
+      "url": "https://t.me/s/rosreestr_news/2517",
+      "observation": "Rosreestr states that the Public Cadastral Map is on NSPD and available without authorization or payment."
+    },
+    {
+      "url": "https://uzio-ufa.ru/index.php",
+      "observation": "Official Ufa land/property administration publishes city land procedures, cadastral works and land schemes."
+    },
+    {
+      "url": "https://uzio-ufa.ru/funktsii-upravleniya/53-uslugi-upravleniya/573-utverzhdenie-skhem-raspolozheniya-zemelnykh-uchastkov-na-kadastrovom-plane-ili-kadastrovoj-karte-sootvetstvuyushchej-territorii-v-gorodskom-okruge-gorod-ufa-respubliki-bashkortostan",
+      "observation": "Official municipal procedure concerns preparation/approval of Ufa land-plot schemes on cadastral plans/maps."
+    },
+    {
+      "url": "https://gorodufa.ru/about/info/news/27082026-izveshchenie-o-provedenii-zasedaniya-soglasitelnoy-komissii/",
+      "observation": "Official city notice documents current comprehensive cadastral work in Ufa."
+    }
+  ],
+  "serviceTrace": {
+    "mapUrl": "https://nspd.gov.ru/map",
+    "observation": "The NSPD public map is officially documented as anonymous, but no safe vector feature schema was verified. Direct shell attempts to load the map timed out in this environment; that is not evidence of origin failure.",
+    "metadataOnlyRequests": []
+  },
+  "geometryValidation": {
+    "schemaConfirmed": false,
+    "featureQueryMade": false,
+    "retainedFullPolygonCount": 0,
+    "reason": "Only official national map documentation and city/region land records were reviewed. No safe public vector endpoint/schema was established; no parcel lookup was made."
+  },
+  "runtimeBlocker": "The NSPD public map is officially documented as anonymous, but no safe vector feature schema was verified. Direct shell attempts to load the map timed out in this environment; that is not evidence of origin failure."
+}

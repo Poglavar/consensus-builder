@@ -1,0 +1,182 @@
+{
+  "schemaVersion": 1,
+  "city": "Las Vegas",
+  "descriptorId": "us-nv-clark-assessor-parcels",
+  "outFields": [
+    "OID",
+    "APN"
+  ],
+  "maxBboxKm2ForRequalification": 1,
+  "attempts": [
+    {
+      "run": "initial-2026-10-08T21:14Z",
+      "name": "viewport-3",
+      "bbox": [
+        -115.166,
+        36.151,
+        -115.165,
+        36.152
+      ],
+      "status": 500,
+      "contentType": "text/html; charset=utf-8",
+      "byteLength": 697,
+      "responseSha256": null,
+      "note": "Initial runner recorded status, content type, and length but did not persist or hash the raw body. It is not possible to recover the exact original payload hash after the response."
+    },
+    {
+      "run": "initial-2026-10-08T21:14Z",
+      "name": "viewport-11",
+      "bbox": [
+        -115.167,
+        36.151,
+        -115.166,
+        36.152
+      ],
+      "status": 500,
+      "contentType": "text/html; charset=utf-8",
+      "byteLength": 697,
+      "responseSha256": null,
+      "note": "Initial runner recorded status, content type, and length but did not persist or hash the raw body. It is not possible to recover the exact original payload hash after the response."
+    },
+    {
+      "run": "targeted-retry-2026-10-08T21:17:45Z",
+      "name": "viewport-3",
+      "bbox": [
+        -115.166,
+        36.151,
+        -115.165,
+        36.152
+      ],
+      "status": 200,
+      "contentType": "application/geo+json; charset=UTF-8",
+      "byteLength": 25522,
+      "responseSha256": "6acc68a15a05eb2b772ccea0a6a189f9b5302486bd60945f8d4f61e9659780ea",
+      "complete": true,
+      "count": 13
+    },
+    {
+      "run": "targeted-retry-2026-10-08T21:17:47Z",
+      "name": "viewport-11",
+      "bbox": [
+        -115.167,
+        36.151,
+        -115.166,
+        36.152
+      ],
+      "status": 200,
+      "contentType": "application/geo+json; charset=UTF-8",
+      "byteLength": 52328,
+      "responseSha256": "b3e132928a07ad2fc9c9311d4b594ced7ae3bd83ec8c49f338c9e75b59c41e0e",
+      "complete": true,
+      "count": 17
+    },
+    {
+      "run": "requalification-2026-10-08T21:18Z",
+      "name": "viewport-6",
+      "bbox": [
+        -115.166,
+        36.152,
+        -115.165,
+        36.153
+      ],
+      "status": 500,
+      "contentType": "text/html; charset=utf-8",
+      "byteLength": 697,
+      "responseSha256": null,
+      "note": "This distinct HTTP 500 arose on the 1 km\u00b2-limited full rerun; the exact response body was not hashed by the runner. Targeted repeat below passed."
+    },
+    {
+      "run": "requalification-2026-10-08T21:18Z",
+      "name": "source-binding",
+      "status": 500,
+      "contentType": "text/html; charset=utf-8",
+      "byteLength": 697,
+      "responseSha256": null,
+      "note": "The binding query failed transiently; the exact raw error body was not hashed by the runner. Targeted repeat below passed."
+    },
+    {
+      "run": "targeted-retry-2026-10-08T21:19Z",
+      "name": "viewport-6",
+      "bbox": [
+        -115.166,
+        36.152,
+        -115.165,
+        36.153
+      ],
+      "status": 200,
+      "contentType": "application/geo+json; charset=UTF-8",
+      "byteLength": 36368,
+      "responseSha256": "7c315d4b450f6dd3cb659762bae81fb8b0aab9e5772fca6432f65496ec66551c",
+      "complete": true,
+      "count": 11
+    },
+    {
+      "run": "targeted-retry-2026-10-08T21:19Z",
+      "name": "source-binding",
+      "status": 200,
+      "contentType": "application/geo+json; charset=UTF-8",
+      "byteLength": 37475,
+      "responseSha256": "10106eaf0f729aae5f48830b218199bf9316a86709e56a1aa3daa25953e0c922",
+      "complete": true,
+      "coverage": "complete",
+      "boundParcelCount": 1
+    },
+    {
+      "run": "final-qualification-2026-10-08T21:20Z",
+      "name": "viewport-grid-0-through-12",
+      "status": "all 200",
+      "completeViewportCount": 13,
+      "uniqueParcels": 90,
+      "maxBboxKm2": 1,
+      "note": "All 13 cells returned complete geometry."
+    },
+    {
+      "run": "final-qualification-2026-10-08T21:20Z",
+      "name": "forced-three-row-pages",
+      "bbox": [
+        -115.165,
+        36.152,
+        -115.164,
+        36.153
+      ],
+      "status": 500,
+      "contentType": "text/html; charset=utf-8",
+      "byteLength": 697,
+      "responseSha256": null,
+      "note": "Final runner recorded the failure but did not retain/hash response bytes; exact body hash unavailable."
+    },
+    {
+      "run": "targeted-page-retry-2026-10-08T21:20:52Z",
+      "name": "forced-three-row-pages",
+      "bbox": [
+        -115.165,
+        36.152,
+        -115.164,
+        36.153
+      ],
+      "status": 200,
+      "contentType": "application/geo+json; charset=UTF-8",
+      "pageSize": 3,
+      "pageCount": 7,
+      "featureCount": 20,
+      "pageResponseSha256": [
+        "327b150d499bad4b62e97ed32d7cae812f92654f97c8f9b0af0c024a58b40870",
+        "f7cf2330010a86835b96ecc1fd7058e5f12dd53453cad656cd7c5c5b650fc6e2",
+        "9214d7c2fea1d014e9488fc7aeeb69cf96861ea8c89d43437e0624fdbfa98c17",
+        "685e70c25d18b2848b3d8f589aaf49fc42c3206b49ee1c58f7a9d2dc7045fdd3",
+        "ec447c1dc6b3b0083af9e8c6a4eb935ac5562224e40ae5a5decad400a1202639",
+        "56b0dcc41e4a647c3d5a1865fea0705086cd4e11b57b4b95d349fc6014821373",
+        "216bfc826ac32ba59dbf78eb8f17f61f5567c1fe0b981bbc3f1ea45d830e945d"
+      ],
+      "geometryHashesMatch": true
+    }
+  ],
+  "note": "Payloads from successful HTTP 200 attempts were hashed from the unmodified response bytes. The initial HTTP 500 response bodies were not retained, so their body hashes cannot be truthfully reconstructed; their recorded metadata is preserved exactly. Subsequent targeted retries returned complete GeoJSON and no ArcGIS JSON error object.",
+  "logicalQualification": {
+    "all13ViewportCellsHadCompleteSuccessfulResponse": true,
+    "forcedThreeRowPaginationPassedOnTargetedRetry": true,
+    "exactIdsAbsenceFootprintAndBindingPassed": true,
+    "geometryQualityPassed": true,
+    "originalHttp500ResponseBodyHashesUnavailable": true
+  }
+}

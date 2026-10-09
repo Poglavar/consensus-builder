@@ -1,0 +1,56 @@
+{
+  "schemaVersion": "1.0",
+  "checkedAt": "2026-10-09",
+  "cityRecord": "city-11711-kharagpur.json",
+  "purpose": "Document first-party local land/property registry or map evidence and bounded anonymous parcel-geometry access review.",
+  "scopeLimits": {
+    "maxFullPolygonsRetainedInCityRecord": 0,
+    "maxFullPolygonsRetainedInReview": 0,
+    "maxFullPolygonsRetainedInRepository": 0,
+    "ownerOrAddressDataRetained": false,
+    "credentialsOrTokenValuesRetained": false,
+    "citywideCompletenessAsserted": false
+  },
+  "assessment": "The WUP point identifies Kharagpur in West Bengal. State land-map services and local valuation administration are confirmed, but anonymous geometry is not; the industrial-park map is limited and must not be generalized to the city. No property, owner, address, plot, khatian or title lookup was submitted. No full parcel geometry was retained.",
+  "officialPrimarySources": [
+    {
+      "url": "https://banglarbhumi.gov.in/",
+      "observation": "Official West Bengal Land and Land Reforms portal lists plot-map requests and Mouza Map Availability Details among state land-record services."
+    },
+    {
+      "url": "https://udma.wb.gov.in/page/cms/know_your_property_procedure_a353e3",
+      "observation": "Official West Bengal Urban Development and Municipal Affairs procedure says Know Your Property viewing requires OTP-based registration, then district, block, mouza and plot/khatian selection."
+    },
+    {
+      "url": "https://wb.nic.in/profile/",
+      "observation": "NIC West Bengal describes the eBhuchitra/Banglarbhumi project as real-time RoR and plot information, with digitally signed plot maps available as a citizen service."
+    },
+    {
+      "url": "https://wbiidc.wb.gov.in/DigitalSurvey/Kharagpur/MOUZAMAP/PDF/MOUZA%20MAP-Model.pdf",
+      "observation": "Official West Bengal Industrial Infrastructure Development Corporation map is a field-survey cadastral drawing for Kharagpur Industrial Park, specifically named mouzas and industrial units; limited project area, not a citywide parcel layer."
+    },
+    {
+      "url": "https://westbengalvaluationboard.wb.gov.in/home/",
+      "observation": "West Bengal Valuation Board has a local Kharagpur Municipality valuation notice among its municipal land/building valuation records; this is municipal valuation administration, not vector parcel geometry."
+    }
+  ],
+  "attempts": [
+    {
+      "url": "https://banglarbhumi.gov.in/",
+      "method": "GET official land-record portal listing",
+      "result": "Plot Map Request and Mouza Map Availability services shown; no plot lookup submitted."
+    },
+    {
+      "url": "https://udma.wb.gov.in/page/cms/know_your_property_procedure_a353e3",
+      "method": "GET official property-record procedure",
+      "result": "OTP account, district/block/mouza and specific plot/khatian required; stopped without registering or entering identifiers."
+    },
+    {
+      "url": "https://wbiidc.wb.gov.in/DigitalSurvey/Kharagpur/MOUZAMAP/PDF/MOUZA%20MAP-Model.pdf",
+      "method": "GET indexed official map description",
+      "result": "Map is limited to Kharagpur Industrial Park and named mouzas; not used as citywide coverage."
+    }
+  ],
+  "registryBasis": "The WUP point identifies Kharagpur in West Bengal. State land-map services and local valuation administration are confirmed, but anonymous geometry is not; the industrial-park map is limited and must not be generalized to the city.",
+  "geometryDisposition": "No full geometry sample: the reviewed evidence does not establish a safe anonymous schema and appropriate city coverage."
+}

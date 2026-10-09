@@ -1,0 +1,86 @@
+{
+  "schemaVersion": 1,
+  "checkedAt": "2026-10-09",
+  "sourceId": "ae-al-ain-city-registry",
+  "purpose": "Review city-local registry basis and anonymous geometry-only routes without querying personal/property attributes.",
+  "primaryPublisher": "https://dmt.gov.ae/drm",
+  "sourceUrl": "https://dmt.gov.ae/drm",
+  "registryFound": true,
+  "registryBasis": "The official Al Ain Municipality/DMT site offers a city-specific Request Plot Plan service backed by its Land Management System. Official municipality material documents the Qusimati spatial-data system tracking each plot location and status. This verifies municipal plot records, not an anonymous full-polygon export.",
+  "officialSources": [
+    {
+      "url": "https://dmt.gov.ae/drm",
+      "observation": "The official Al Ain Municipality/DMT site offers a city-specific Request Plot Plan service backed by its Land Management System. Official municipality material documents the Qusimati spatial-data system tracking each plot location and status. This verifies municipal plot records, not an anonymous full-polygon export."
+    },
+    {
+      "url": "https://dmt.gov.ae/ar-AE/aam/Media-Centre/News/T-Qusimati-system-to-monitor-the-status-of-citizens-lands",
+      "observation": "The official Al Ain Municipality/DMT site offers a city-specific Request Plot Plan service backed by its Land Management System. Official municipality material documents the Qusimati spatial-data system tracking each plot location and status. This verifies municipal plot records, not an anonymous full-polygon export."
+    },
+    {
+      "url": "https://myland.dmt.gov.ae/index.html?x=53.700672&y=23.674154",
+      "observation": "Public map or portal was inspected only for exposed functions; no coordinate, address, plot number or personal query was submitted."
+    },
+    {
+      "url": "https://am.abudhabi.ae/mServices/home/ServicesPerUserType?l=ar",
+      "observation": "Official service listing names land/map services; no user-specific request was submitted."
+    },
+    {
+      "url": "https://am.abudhabi.ae/mServices/home/ServicesPerUserType?l=en",
+      "observation": "Official service listing names land/map services; no user-specific request was submitted."
+    }
+  ],
+  "searchQueries": [
+    {
+      "language": "English",
+      "query": "Al Ain official parcel map land plot map GIS land management system DMT",
+      "scope": "Find a city-local registry/map basis and a safe anonymous geometry-only polygon route.",
+      "result": "Official Al Ain Municipality/DMT describes a city-specific plot-plan request backed by the Land Management System, and the MyLand public map has Plot Search plus address/street/district/Al Ain plot-address inputs. Indexed interface content exposes administrative and development/investment layers, but no safe anonymous full-polygon endpoint was established. No address, plot number or owner identity was submitted.",
+      "actualResultUrls": [
+        "https://dmt.gov.ae/drm",
+        "https://myland.dmt.gov.ae/index.html?x=53.700672&y=23.674154"
+      ]
+    },
+    {
+      "language": "Arabic",
+      "query": "العين خريطة الأراضي قطع الأراضي نظام مكاني قسيمتي خريطة قطعة أرض بلدية مدينة العين",
+      "scope": "Find a city-local registry/map basis and a safe anonymous geometry-only polygon route.",
+      "result": "توضح بلدية مدينة العين أن نظام «قسيمتي» يتابع حالة الأرض وموقع القسيمة ضمن إدارة البيانات المكانية، لكن الوصول يعتمد على رقم الهوية ورقم الأرض. كما تعرض بوابة الخدمات خرائط مدينة العين وإصدار خريطة ومعرفة موقع الأرض. لم يُدخل أي رقم أو هوية ولم يتم فحص سجل عقاري فردي؛ لم يظهر مسار مجهول للحصول على مضلع كامل.",
+      "actualResultUrls": [
+        "https://www.dmt.gov.ae/ar-AE/aam/Media-Centre/News/T-Qusimati-system-to-monitor-the-status-of-citizens-lands",
+        "https://am.abudhabi.ae/mServices/home/ServicesPerUserType?l=ar"
+      ]
+    }
+  ],
+  "accessReview": {
+    "publicAnonymousGeometryVerified": false,
+    "completeGeoreferencedPolygonCount": 0,
+    "geometryRetained": false,
+    "ownerAddressTaxOrPersonLookupRequested": false,
+    "authenticationOrCredentialsUsed": false,
+    "captchaOrPersonalFormSubmitted": false,
+    "routeInspectionStatus": "city_registry_confirmed_no_public_geometry_contract",
+    "reason": "The city plot-plan and Qusimati workflows are tied to requested plans or identity/plot identifiers. MyLand is a public interactive map, but no full anonymous parcel polygon and safe feature-attribute schema was verified.",
+    "nativeIdsUsed": "No safe parcel feature identifier retrieved; no parcel attributes requested."
+  },
+  "requestEvidence": [
+    {
+      "url": "https://dmt.gov.ae/drm",
+      "method": "official public-page review",
+      "status": "status_not_exposed_by_web_open",
+      "httpStatusObtained": false,
+      "contentType": "unavailable",
+      "observation": "The official Al Ain Municipality/DMT site offers a city-specific Request Plot Plan service backed by its Land Management System. Official municipality material documents the Qusimati spatial-data system tracking each plot location and status. This verifies municipal plot records, not an anonymous full-polygon export."
+    },
+    {
+      "url": "https://dmt.gov.ae/ar-AE/aam/Media-Centre/News/T-Qusimati-system-to-monitor-the-status-of-citizens-lands",
+      "method": "official public-page review",
+      "status": "status_not_exposed_by_web_open",
+      "httpStatusObtained": false,
+      "contentType": "unavailable",
+      "observation": "Official local land-service or records evidence reviewed; no individual parcel query made."
+    }
+  ],
+  "technicalBlocker": "The city plot-plan and Qusimati workflows are tied to requested plans or identity/plot identifiers. MyLand is a public interactive map, but no full anonymous parcel polygon and safe feature-attribute schema was verified.",
+  "sampleDisposition": "No parcel geometry or feature attributes retained.",
+  "remainingUncertainty": "Whether MyLand exposes parcel polygons through a public anonymous service independent of its plot-search workflow; exact plot coverage at the UN population-weighted point; municipal coverage completeness."
+}

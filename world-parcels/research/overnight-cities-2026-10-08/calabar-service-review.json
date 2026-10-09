@@ -1,0 +1,70 @@
+{
+  "schemaVersion": 1,
+  "checkedAt": "2026-10-09",
+  "sourceId": null,
+  "purpose": "Service review for WUP2025 rank 807 Calabar (city code 8459); city-local registry evidence and safe anonymous full-polygon access status.",
+  "primaryPublisher": "Nigeria",
+  "sourceUrl": "https://mol.crossriverstate.gov.ng/organisation-structure/land-department",
+  "registryFound": true,
+  "registryBasis": "Cross River State Ministry of Lands identifies the Land Department as custodian of land registration/title records and locates it in Calabar. The official CRGIA, based in Calabar, manages state land/geospatial information, surveying and C-of-O services; state budget materials also identify cadastral-survey work in Calabar Municipal. This is local office and city-area evidence, while the registry mandate covers the wider state.",
+  "officialSources": [
+    {
+      "url": "https://mol.crossriverstate.gov.ng/organisation-structure/land-department",
+      "observation": "Official Cross River Ministry of Lands says its Land Department maintains land records and is custodian of registration/title records across the State; its listed location is Calabar."
+    },
+    {
+      "url": "https://crgia.crossriverstate.gov.ng/",
+      "observation": "Official CRGIA describes state-wide land/geospatial data management, survey information, C-of-O processing and geospatial products; no anonymous parcel feature schema appears in the public landing page."
+    },
+    {
+      "url": "https://www.crossriverstate.gov.ng/download/Bureau%20of%20Statistics/STATISTICAL%20YEAR%20BOOK%202024%20EDITION.pdf",
+      "observation": "Official state yearbook map includes Calabar Municipal and Calabar South as distinct urban local-government areas."
+    },
+    {
+      "url": "https://crgia.portal.crossriverstate.gov.ng/",
+      "observation": "Public agency portal landing page shows a username/password login form; no authentication was attempted."
+    }
+  ],
+  "searchQueries": [
+    {
+      "language": "English",
+      "query": "Calabar Nigeria official land registry cadastral GIS CRGIA public parcel map",
+      "result": "Cross River State’s official Ministry of Lands identifies its Land Department and state land registry in Calabar; CRGIA manages geospatial and land-record services. The publicly accessible agency shell links application/services, while its separate portal is a username/password sign-in page. No login or parcel request was attempted; no safe public geometry schema was found.",
+      "urls": [
+        "https://mol.crossriverstate.gov.ng/organisation-structure/land-department",
+        "https://crgia.crossriverstate.gov.ng/",
+        "https://crgia.portal.crossriverstate.gov.ng/"
+      ]
+    },
+    {
+      "language": "Efik (search context)",
+      "query": "Efik Calabar land registry GIS cadastral map CRGIA public parcels",
+      "result": "No Efik-language public cadastral dataset or geometry endpoint surfaced. Official English-language Cross River government sources identify the Calabar-based land department/CRGIA and the state-wide registry scope; the public portal requires sign-in. No account, form or parcel lookup was used.",
+      "urls": [
+        "https://crgia.crossriverstate.gov.ng/",
+        "https://mol.crossriverstate.gov.ng/organisation-structure/land-department",
+        "https://www.crossriverstate.gov.ng/download/Bureau%20of%20Statistics/STATISTICAL%20YEAR%20BOOK%202024%20EDITION.pdf"
+      ]
+    }
+  ],
+  "accessReview": {
+    "publicAnonymousGeometryVerified": false,
+    "completeGeoreferencedPolygonCount": 0,
+    "geometryRetained": false,
+    "ownerAddressTaxOrPersonLookupRequested": false,
+    "authenticationOrCredentialsUsed": false,
+    "captchaOrPersonalFormSubmitted": false,
+    "routeInspectionStatus": "no_safe_public_geometry_contract_verified",
+    "reason": "The government agency/registry is located in Calabar, but its online CRGIA portal is authentication-gated and the public site documents service/application workflows rather than anonymous feature geometry. No personal or parcel form was submitted."
+  },
+  "requestEvidence": [
+    {
+      "route": "No anonymous full-polygon route with a safe schema was verified.",
+      "status": "not_queried",
+      "result": "No geometry or feature attributes received/retained."
+    }
+  ],
+  "technicalBlocker": "The government agency/registry is located in Calabar, but its online CRGIA portal is authentication-gated and the public site documents service/application workflows rather than anonymous feature geometry. No personal or parcel form was submitted.",
+  "sampleDisposition": "No parcel polygons or parcel feature attributes retained.",
+  "remainingUncertainty": "Registry authority is state-wide, not exclusively Calabar. No safe public geometry schema, parcel at the WUP point, or citywide Calabar coverage was verified."
+}

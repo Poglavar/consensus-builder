@@ -78,7 +78,11 @@ async function installSupportRpcFixture(page: import('@playwright/test').Page, a
       getBalance: async () => 2_000_000_000,
       getTokenAccountBalance: async () => ({ value: { amount: '50000000', decimals: 6 } }),
       getLatestBlockhash: async () => ({ blockhash: 'EkSnNWid2cvwEVnVx9aBqpiCpY1QoUW63D2Hp31e4gwJ', lastValidBlockHeight: 99 }),
-      simulateTransaction: async () => ({ value: { err: null, logs: [] } }),
+      simulateTransaction: async (_tx: unknown, config?: unknown) => {
+        // Mirrors web3.js 1.x: a legacy Transaction takes signers here, never a config object.
+        if (config !== undefined && !Array.isArray(config)) throw new Error('Invalid arguments');
+        return { value: { err: null, logs: [] } };
+      },
       sendRawTransaction: async () => { events.push('send'); return '5N2o4X1mockSignature'; },
       confirmTransaction: async () => { events.push('confirm'); return { value: { err: null } }; },
     };

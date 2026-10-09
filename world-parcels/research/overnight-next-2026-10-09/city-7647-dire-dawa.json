@@ -1,0 +1,127 @@
+{
+  "name": "Dire Dawa",
+  "country": "Ethiopia",
+  "countryCode": "ET",
+  "rank": 1146,
+  "point": [
+    9.6009375885552,
+    41.8538213860115
+  ],
+  "freshResearch": {
+    "queries": [
+      {
+        "language": "English",
+        "query": "Dire Dawa Ethiopia official land registration cadastral map city cadastre",
+        "scope": "Identify first-party local land-registry/cadastral custody and anonymous public parcel geometry. Preserve the exact WUP settlement point; do not submit owner, address, tax, account, lot/plot or applicant identifiers.",
+        "result": "English-language first-party and relevant source discovery; each listed official source was reviewed before use.",
+        "actualResultUrls": [
+          "https://www.ddldmb.gov.et/",
+          "https://data.moa.gov.et/dataset/diredawa-city-administration-boundary"
+        ]
+      },
+      {
+        "language": "Amharic",
+        "query": "ድሬዳዋ የመሬት ልማት ማኔጅመንት ካዳስተር የመሬት አስተዳደር",
+        "scope": "Identify first-party local land-registry/cadastral custody and anonymous public parcel geometry. Preserve the exact WUP settlement point; do not submit owner, address, tax, account, lot/plot or applicant identifiers.",
+        "result": "The Amharic search did not surface a Dire Dawa-specific first-party parcel registry page; the city Land Administration Office was found through English search.",
+        "actualResultUrls": [],
+        "executionMethod": "Separate local-language web search followed by first-party source review."
+      }
+    ],
+    "portals": [
+      {
+        "url": "https://www.ddldmb.gov.et/",
+        "operator": "Dire Dawa Land Administration Office",
+        "observation": "Official city land-administration office identifies local institutional custody; no parcel feature API was found."
+      },
+      {
+        "url": "https://data.moa.gov.et/dataset/diredawa-city-administration-boundary",
+        "operator": "Ethiopian Ministry of Agriculture data portal",
+        "observation": "Published WFS/KML/shapefile is the Dire Dawa city administrative boundary only, not parcel cadastre."
+      }
+    ],
+    "requests": [
+      {
+        "url": "https://www.ddldmb.gov.et/",
+        "method": "anonymous read-only GET; redirect-following; standard TLS; no credentials, cookies or property selectors",
+        "httpStatus": 200,
+        "contentType": "text/html; charset=UTF-8",
+        "bytesRead": 55585,
+        "assessment": "Direct official-source GET; response supports only the page/application description recorded in the source review."
+      }
+    ],
+    "historicalContext": []
+  },
+  "status": "complete",
+  "verifiedParcelResponse": null,
+  "source": {
+    "sourceId": null,
+    "name": "https://www.ddldmb.gov.et/",
+    "url": "https://www.ddldmb.gov.et/",
+    "operator": "Dire Dawa Land Administration Office",
+    "serviceType": "Official local registry/cadastral/map evidence reviewed; no safe full-parcel geometry was retained.",
+    "layer": null,
+    "geometryType": null,
+    "outputCrs": null,
+    "nativeIdField": null,
+    "nativeIdEvidence": null,
+    "attributesRequested": [],
+    "sampleCount": 0,
+    "sampleFile": null,
+    "directGeometryQueryVerified": false,
+    "directMetadataSchemaVerified": false,
+    "geometryStatus": "not_verified",
+    "operatorNote": "See first-party evidence and access limitations in registryBasis, freshResearch and service review."
+  },
+  "coverageAssessment": {
+    "claimedScope": "The city has a dedicated Land Administration Office. The public ministry dataset is an administrative boundary; no parcel-level geometry is published in the checked sources.",
+    "verifiedOpenScope": "No anonymous safe full parcel geometry response was verified in this investigation.",
+    "countrywideVerified": false,
+    "citywideVerified": false
+  },
+  "registryFound": true,
+  "verifiedSample": false,
+  "resultCategory": "official_local_registry_geometry_unverified",
+  "technicalBlocker": "No safe anonymous full-geometry response at the unchanged WUP point was verified; map/custody evidence does not establish runtime readiness.",
+  "remainingUncertainty": "The city has a dedicated Land Administration Office. The public ministry dataset is an administrative boundary; no parcel-level geometry is published in the checked sources. Public parcel geometry and extent at the exact WUP point remain unverified.",
+  "nextStep": "Revisit only if an official schema-backed public full-geometry route is documented; request safe IDs and geometry only.",
+  "schemaVersion": "1.0",
+  "checkedAt": "2026-10-09",
+  "wupCityCode": 7647,
+  "cityId": "wup2025:7647",
+  "runtimeReadiness": "not_enabled_no_verified_public_geometry",
+  "adapterReady": false,
+  "centerLatLon": [
+    9.6009375885552,
+    41.8538213860115
+  ],
+  "population2025k": 483.674,
+  "populationUnit": "persons",
+  "queueRank": 1146,
+  "population2025": 483674,
+  "populationPlausibility2025": "Moderate",
+  "pointBasis": "UN WUP 2025 population-weighted settlement point (latitude, longitude); not a municipal boundary or a parcel-coverage claim.",
+  "publicParcelGeometryFound": false,
+  "sourceIds": [],
+  "registryBasis": "The city has a dedicated Land Administration Office. The public ministry dataset is an administrative boundary; no parcel-level geometry is published in the checked sources.",
+  "registryEvidenceUrls": [
+    "https://www.ddldmb.gov.et/",
+    "https://data.moa.gov.et/dataset/diredawa-city-administration-boundary"
+  ],
+  "runtimeAssessment": {
+    "status": "not_enabled_no_verified_public_geometry",
+    "reason": "No safe anonymous full-geometry response at the unchanged WUP point was verified; map/custody evidence does not establish runtime readiness."
+  },
+  "cohort": "overnight-next-1101-1200",
+  "cohortState": "root_reviewed_integrated_locally",
+  "integrationState": "integrated_locally",
+  "rootReviewedAt": "2026-10-09T07:13:02.981057+00:00",
+  "rootReview": {
+    "checkedAt": "2026-10-09T07:13:02.981057+00:00",
+    "decision": "Reviewed city identity, canonical population/point, separate searches and saved source/request evidence. No full public parcel geometry verified in this pass.",
+    "custodyScope": "The city has a dedicated Land Administration Office. The public ministry dataset is an administrative boundary; no parcel-level geometry is published in the checked sources.",
+    "transportFailuresDoNotProveAbsence": true,
+    "geometryClaimScope": "Investigation outcome only; no worldwide or citywide absence asserted."
+  },
+  "integratedAt": "2026-10-09T07:14:03.673112+00:00"
+}

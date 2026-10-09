@@ -1,0 +1,23 @@
+{
+  "checkedAt": "2026-10-09T01:53:11.650529+00:00",
+  "city": "stuttgart",
+  "sourceId": "de-bw-lgl-alkis-flurstueck",
+  "result": "passed_manual_headed_app_check",
+  "loadedParcels": 109,
+  "visibleCenterCount": 10,
+  "selectedParcelId": "DE-BW-ALKIS-08146000001271000200",
+  "detailsIdMatchesSelection": true,
+  "pointerClick": {
+    "x": 393,
+    "y": 596,
+    "pointLatLon": [
+      48.7942297,
+      9.20061405
+    ],
+    "pointBasis": "point on verified visible Stuttgart parcel near unchanged settlement locator"
+  },
+  "mapBounds": "9.199561178684236,48.79383735746493,9.202779829502107,48.795282709814124",
+  "uncaughtPageErrors": 0,
+  "sourceUnavailableWarnings": [],
+  "browserClosed": true
+}

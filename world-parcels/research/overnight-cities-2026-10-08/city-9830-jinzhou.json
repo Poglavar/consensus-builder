@@ -1,0 +1,115 @@
+{
+  "schemaVersion": 1,
+  "kind": "city_parcel_source_research",
+  "checkedAt": "2026-10-09",
+  "name": "Jinzhou",
+  "country": "China",
+  "countryCode": "CN",
+  "populationUnit": "persons",
+  "status": "complete",
+  "registryFound": true,
+  "registryBasis": "Official Liaoning government sources identify the Jinzhou Natural Resources Service Center (Jinzhou Real Estate Registration Center) and city-level registration services. Published booking/workflow descriptions involve unified identity authentication; no parcel, applicant or owner lookup was attempted. No public anonymous parcel-vector route was verified.",
+  "registryEvidenceUrls": [
+    "https://ysj.ln.gov.cn/ysj/gdgz/jz/F6F07B3A976F4126A6198D06D437A63A/index.shtml",
+    "https://ysj.ln.gov.cn/ysj/gdgz/jz/C5608CC6D147485E98A81D4006ED2201/index.shtml",
+    "https://ysj.ln.gov.cn/ysj/gdgz/jz/39E5A03A52EA4CEE893814D503CF5EB4/index.shtml",
+    "http://www.jzsbdc.com/"
+  ],
+  "verifiedSample": false,
+  "publicParcelGeometryFound": false,
+  "runtimeReadiness": "not_enabled_no_verified_public_geometry",
+  "wupCityCode": 9830,
+  "cityId": "wup2025:9830",
+  "centerLatLon": [
+    41.1187673928394,
+    121.153510818657
+  ],
+  "rank": 612,
+  "queueRank": 612,
+  "population2025": 854575,
+  "population2025k": 854.575,
+  "pointBasis": "UN WUP 2025 population-weighted settlement centroid; this is not a municipal boundary or a parcel-coverage claim.",
+  "resultCategory": "city_registry_confirmed_no_public_geometry",
+  "technicalBlocker": "Official city-level registration sources establish the institution; the registration web workflows use applicant identity, and no anonymous geometry-only route was identified.",
+  "scopeLimits": "Official Liaoning government sources identify the Jinzhou Natural Resources Service Center (Jinzhou Real Estate Registration Center) and city-level registration services. Published booking/workflow descriptions involve unified identity authentication; no parcel, applicant or owner lookup was attempted. No public anonymous parcel-vector route was verified. No full public parcel polygon geometry is retained.",
+  "remainingUncertainty": "No geometry-only schema or public anonymous vector route was verified; institutional evidence does not by itself establish complete citywide polygon coverage.",
+  "research": {
+    "executedQueries": [
+      {
+        "language": "English",
+        "query": "Jinzhou Liaoning official real estate registration center cadastral parcel map GIS",
+        "scope": "Find Jinzhou city-bound registry evidence and public geometry-only parcel routes.",
+        "result": "Liaoning government reporting identifies Jinzhou’s natural-resources service/real-estate registration center and city registration services. The cited official service portal was not accessible via standard HTTPS inspection; workflow reporting indicates identity-authenticated booking. No public anonymous geometry schema was found.",
+        "actualResultUrls": [
+          "https://ysj.ln.gov.cn/ysj/gdgz/jz/F6F07B3A976F4126A6198D06D437A63A/index.shtml",
+          "https://ysj.ln.gov.cn/ysj/gdgz/jz/C5608CC6D147485E98A81D4006ED2201/index.shtml",
+          "https://ysj.ln.gov.cn/ysj/gdgz/jz/39E5A03A52EA4CEE893814D503CF5EB4/index.shtml",
+          "http://www.jzsbdc.com/"
+        ],
+        "executionMethod": "Separate public English/local-language search and public-page review; no property or identity query."
+      },
+      {
+        "language": "Chinese",
+        "query": "锦州市 不动产登记中心 锦州市自然资源服务中心 地籍图 公开地图 GIS",
+        "scope": "核实锦州市本地不动产登记机构，并查找匿名、仅几何的公开宗地服务。",
+        "result": "辽宁省政府自然资源相关页面明确锦州市自然资源服务中心（市不动产登记中心）及市级登记服务。公开资料未确认匿名宗地矢量接口；预约/业务办理涉及统一身份认证。未访问认证页面或查询具体不动产。",
+        "actualResultUrls": [
+          "https://ysj.ln.gov.cn/ysj/gdgz/jz/F6F07B3A976F4126A6198D06D437A63A/index.shtml",
+          "https://ysj.ln.gov.cn/ysj/gdgz/jz/C5608CC6D147485E98A81D4006ED2201/index.shtml",
+          "https://ysj.ln.gov.cn/ysj/gdgz/jz/39E5A03A52EA4CEE893814D503CF5EB4/index.shtml",
+          "http://www.jzsbdc.com/"
+        ],
+        "executionMethod": "Separate public English/local-language search and public-page review; no property or identity query."
+      }
+    ],
+    "officialSources": [
+      {
+        "url": "https://ysj.ln.gov.cn/ysj/gdgz/jz/F6F07B3A976F4126A6198D06D437A63A/index.shtml",
+        "observation": "Official Liaoning government coverage identifies Jinzhou’s Natural Resources Service Center (Jinzhou Real Estate Registration Center) and its services; a booking workflow was described as real-name/authenticated."
+      },
+      {
+        "url": "https://ysj.ln.gov.cn/ysj/gdgz/jz/C5608CC6D147485E98A81D4006ED2201/index.shtml",
+        "observation": "Official Liaoning government article describes the Jinzhou municipal real-estate registration process as an applicant submission with identity verification; no application was attempted."
+      },
+      {
+        "url": "https://ysj.ln.gov.cn/ysj/gdgz/jz/39E5A03A52EA4CEE893814D503CF5EB4/index.shtml",
+        "observation": "Official provincial reporting says Jinzhou has a unified municipal real-estate registration platform and municipal service coverage."
+      },
+      {
+        "url": "http://www.jzsbdc.com/",
+        "observation": "Registration-center portal URL cited by official provincial reporting; not opened because only HTTP was published and anonymous vector scope was not established."
+      }
+    ]
+  },
+  "source": {
+    "sourceId": "cn-jinzhou-real-estate-registration-center",
+    "name": "Jinzhou local land-registry and public-geometry review",
+    "operator": "Jinzhou Natural Resources Service Center (Jinzhou Real Estate Registration Center)",
+    "url": "https://ysj.ln.gov.cn/ysj/gdgz/jz/F6F07B3A976F4126A6198D06D437A63A/index.shtml",
+    "scope": "Official Liaoning government sources identify the Jinzhou Natural Resources Service Center (Jinzhou Real Estate Registration Center) and city-level registration services. Published booking/workflow descriptions involve unified identity authentication; no parcel, applicant or owner lookup was attempted. No public anonymous parcel-vector route was verified.",
+    "nativeIdField": null,
+    "attributesRequested": [],
+    "identityBasis": "No native parcel identifier queried or retained.",
+    "geometryStatus": "no_public_geometry_verified"
+  },
+  "coverageAssessment": {
+    "verifiedOpenScope": "City-bound registry/service evidence was found.",
+    "citywideVerified": false,
+    "countrywideVerified": false
+  },
+  "priorEvidenceFiles": [],
+  "populationPlausibility2025": "High",
+  "sourceIds": [],
+  "point": [
+    41.1187673928394,
+    121.153510818657
+  ],
+  "sampleFile": null,
+  "sampleFeatureCount": 0,
+  "sampleCrs": null,
+  "runtimeAssessment": {
+    "status": "no_public_geometry_verified_runtime_not_enabled",
+    "reason": "Official city-level registration sources establish the institution; the registration web workflows use applicant identity, and no anonymous geometry-only route was identified."
+  },
+  "rootReviewedAt": "2026-10-09T02:05:58.056454+00:00"
+}

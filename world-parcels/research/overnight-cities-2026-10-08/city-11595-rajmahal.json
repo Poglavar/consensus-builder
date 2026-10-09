@@ -1,0 +1,154 @@
+{
+  "name": "Rajmahal",
+  "country": "India",
+  "countryCode": "IN",
+  "rank": 885,
+  "point": [
+    24.9657355306793,
+    87.8738487322802
+  ],
+  "population2025": 612055,
+  "population2025k": 612.055,
+  "populationPlausibility2025": "Low",
+  "schemaVersion": 1,
+  "kind": "city_parcel_source_research",
+  "checkedAt": "2026-10-09",
+  "populationUnit": "persons",
+  "status": "complete",
+  "verifiedSample": false,
+  "publicParcelGeometryFound": false,
+  "runtimeReadiness": "not_enabled_no_verified_public_geometry",
+  "priorEvidenceFiles": [],
+  "priorCheck": {
+    "attemptState": "pending",
+    "attemptEvidence": [],
+    "possiblePriorMatches": []
+  },
+  "pointBasis": "UN WUP 2025 population-weighted settlement centroid; this is not a municipal boundary or a parcel-coverage claim.",
+  "registryFound": true,
+  "registryBasis": "Official Sahibganj district pages identify Rajmahal block/circle, its villages and the Circle Officer; district revenue pages publish circle-wise records. Jharkhand’s official service portal describes digitized plot maps, but access requires registration.",
+  "registryEvidenceUrls": [
+    "https://sahibganj.nic.in/revenue-dept/",
+    "https://sahibganj.nic.in/subdivision-blocks/",
+    "https://sahibganj.nic.in/village-panchayats/",
+    "https://sahibganj.nic.in/divisions/bdo_co/",
+    "https://services.india.gov.in/service/detail/jharbhunaksha-is-an-digitized-maps-of-the-plots-to-the-citizens-jharkhand-1",
+    "https://jharbhunaksha.jharkhand.gov.in/"
+  ],
+  "resultCategory": "local_revenue_land_records_evidenced_no_public_geometry_verified",
+  "remainingUncertainty": "No mouza/village match for the WUP point was established, and the registered JharBhuNaksha geometry service was not accessed.",
+  "scopeLimits": "Research is limited to official sources and the exact unchanged WUP settlement locator. No owner, address, personal-property, tax, account, token or credential data requested or retained. No citywide completeness claimed.",
+  "verifiedParcelResponse": null,
+  "source": {
+    "sourceId": "IN-11595-rajmahal-cadastre-review",
+    "name": "Sahibganj district Revenue Department and Jharkhand JharBhuNaksha",
+    "url": "https://jharbhunaksha.jharkhand.gov.in/",
+    "operator": "India",
+    "serviceType": "Revenue records and registered digitized plot-map service; no anonymous geometry response verified.",
+    "layer": null,
+    "geometryType": null,
+    "outputCrs": null,
+    "nativeIdField": null,
+    "nativeIdEvidence": "No feature response returned; native identifier not verified."
+  },
+  "wupCityCode": 11595,
+  "cityId": "wup2025:11595",
+  "queueRank": 885,
+  "centerLatLon": [
+    24.9657355306793,
+    87.8738487322802
+  ],
+  "sourceIds": [],
+  "adapterReady": false,
+  "technicalBlocker": "Research evidence only; no runtime adapter qualification performed.",
+  "coverageAssessment": {
+    "claimedScope": "Official Sahibganj district pages identify Rajmahal block/circle, its villages and the Circle Officer; district revenue pages publish circle-wise records. Jharkhand’s official service portal describes digitized plot maps, but access requires registration.",
+    "verifiedOpenScope": "No parcel geometry scope verified.",
+    "countrywideVerified": false,
+    "citywideVerified": false
+  },
+  "research": {
+    "queries": [
+      {
+        "language": "English",
+        "query": "Rajmahal Sahibganj official cadastral plot map land records Jharkhand GIS",
+        "scope": "Identify official local registry/cadastre evidence and public parcel geometry.",
+        "result": "District sources establish Rajmahal Circle and local revenue-record administration. National service portal describes Jharkhand digitized plot maps; JharBhuNaksha was inaccessible and requires registration.",
+        "actualResultUrls": [
+          "https://sahibganj.nic.in/revenue-dept/",
+          "https://sahibganj.nic.in/subdivision-blocks/",
+          "https://sahibganj.nic.in/village-panchayats/",
+          "https://sahibganj.nic.in/divisions/bdo_co/",
+          "https://services.india.gov.in/service/detail/jharbhunaksha-is-an-digitized-maps-of-the-plots-to-the-citizens-jharkhand-1",
+          "https://jharbhunaksha.jharkhand.gov.in/"
+        ],
+        "executionMethod": "Separate English and local-language source searches followed by official-source/service inspection; no personal/property identifiers or gated account access."
+      },
+      {
+        "language": "Hindi",
+        "query": "राजमहल साहिबगंज भू नक्शा खाता प्लॉट नक्शा आधिकारिक",
+        "scope": "Identify official local registry/cadastre evidence and public parcel geometry.",
+        "result": "साहिबगंज जिला स्रोत राजमहल अंचल और राजस्व अभिलेख सेवा की पुष्टि करते हैं। झारखंड भू-नक्शा सेवा पंजीकरण आधारित है; सार्वजनिक ज्यामिति सत्यापित नहीं हुई।",
+        "actualResultUrls": [
+          "https://sahibganj.nic.in/revenue-dept/",
+          "https://sahibganj.nic.in/subdivision-blocks/",
+          "https://sahibganj.nic.in/village-panchayats/",
+          "https://sahibganj.nic.in/divisions/bdo_co/",
+          "https://services.india.gov.in/service/detail/jharbhunaksha-is-an-digitized-maps-of-the-plots-to-the-citizens-jharkhand-1",
+          "https://jharbhunaksha.jharkhand.gov.in/"
+        ],
+        "executionMethod": "Separate English and local-language source searches followed by official-source/service inspection; no personal/property identifiers or gated account access."
+      }
+    ],
+    "officialSources": [
+      {
+        "url": "https://sahibganj.nic.in/revenue-dept/",
+        "observation": "Official Sahibganj district pages identify Rajmahal block/circle, its villages and the Circle Officer; district revenue pages publish circle-wise records. Jharkhand’s official service portal describes digitized plot maps, but access requires registration."
+      },
+      {
+        "url": "https://sahibganj.nic.in/subdivision-blocks/",
+        "observation": "Official Sahibganj district pages identify Rajmahal block/circle, its villages and the Circle Officer; district revenue pages publish circle-wise records. Jharkhand’s official service portal describes digitized plot maps, but access requires registration."
+      },
+      {
+        "url": "https://sahibganj.nic.in/village-panchayats/",
+        "observation": "Official Sahibganj district pages identify Rajmahal block/circle, its villages and the Circle Officer; district revenue pages publish circle-wise records. Jharkhand’s official service portal describes digitized plot maps, but access requires registration."
+      },
+      {
+        "url": "https://sahibganj.nic.in/divisions/bdo_co/",
+        "observation": "Official Sahibganj district pages identify Rajmahal block/circle, its villages and the Circle Officer; district revenue pages publish circle-wise records. Jharkhand’s official service portal describes digitized plot maps, but access requires registration."
+      },
+      {
+        "url": "https://services.india.gov.in/service/detail/jharbhunaksha-is-an-digitized-maps-of-the-plots-to-the-citizens-jharkhand-1",
+        "observation": "Official Sahibganj district pages identify Rajmahal block/circle, its villages and the Circle Officer; district revenue pages publish circle-wise records. Jharkhand’s official service portal describes digitized plot maps, but access requires registration."
+      },
+      {
+        "url": "https://jharbhunaksha.jharkhand.gov.in/",
+        "observation": "Official Sahibganj district pages identify Rajmahal block/circle, its villages and the Circle Officer; district revenue pages publish circle-wise records. Jharkhand’s official service portal describes digitized plot maps, but access requires registration."
+      }
+    ],
+    "requests": [
+      {
+        "url": "https://sahibganj.nic.in/revenue-dept/",
+        "method": "GET official district revenue page",
+        "observation": "Circle-wise land/revenue records are linked; no anonymous geometry response."
+      },
+      {
+        "url": "https://jharbhunaksha.jharkhand.gov.in/",
+        "method": "GET official Jharkhand plot-map portal",
+        "observation": "Portal timed out during public access; no login or registered parcel lookup was attempted."
+      }
+    ]
+  },
+  "runtimeAssessment": {
+    "status": "not_enabled_no_verified_public_geometry",
+    "reason": "Research evidence only; no runtime adapter qualification performed."
+  },
+  "rootPrimaryReadback": {
+    "url": "https://sahibganj.nic.in/revenue-dept/",
+    "fetch": 200,
+    "contentType": "text/html; charset=UTF-8",
+    "title": "\n        Revenue & Land Reforms | District Sahibganj, Government of Jharkhand | India    "
+  },
+  "rootReviewNote": "Reviewed the specific primary institution/service evidence and its geographical, access and date limits. Direct readback failures are preserved separately from indexed primary evidence. No public full parcel geometry was verified for this city in this discovery pass.",
+  "rootReviewedAt": "2026-10-09T04:20:40.565226+00:00"
+}

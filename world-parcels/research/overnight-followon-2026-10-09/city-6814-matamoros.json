@@ -1,0 +1,117 @@
+{
+  "schemaVersion": "1.0",
+  "cityId": "wup2025:6814",
+  "wupCityCode": 6814,
+  "name": "Matamoros",
+  "country": "Mexico",
+  "countryCode": "MX",
+  "rank": 1023,
+  "queueRank": 1023,
+  "point": [
+    25.8469787250848,
+    -97.5065825409057
+  ],
+  "centerLatLon": [
+    25.8469787250848,
+    -97.5065825409057
+  ],
+  "pointBasis": "UN WUP2025 population-weighted settlement centroid; not a municipal boundary or parcel-coverage claim.",
+  "population2025": 540236,
+  "population2025k": 540.236,
+  "populationUnit": "persons",
+  "populationPlausibility2025": "Moderate",
+  "cohort": "overnight-followon-1001-1100",
+  "checkedAt": "2026-10-09",
+  "status": "complete",
+  "registryFound": true,
+  "registryBasis": "The Matamoros Tamaulipas municipal development plan and council minutes explicitly document the municipal Catastro service, map modernization and local cadastral valuation board. The Matamoros Coahuila cadastral page is a different jurisdiction and is excluded. A historical state city-map PDF is not a verified full georeferenced parcel feature response.",
+  "registryEvidenceUrls": [
+    "https://transparencia.matamoros.gob.mx/sitio/wp-content/uploads/2023/01/PMD-2021-2024-.pdf",
+    "https://transparencia.matamoros.gob.mx/wp-content/uploads/2025/04/CUARTA-SESION-ORDINARIA-DEL-AYUNTAMIENTO-27-DIC-2024.pdf",
+    "https://www.tamaulipas.gob.mx/informaciongeografica/wp-content/uploads/sites/41/2018/05/matamoros_localidad.pdf"
+  ],
+  "verifiedSample": false,
+  "publicParcelGeometryFound": false,
+  "sourceIds": [],
+  "adapterReady": false,
+  "runtimeReadiness": "not_enabled_no_verified_public_geometry",
+  "technicalBlocker": "No correct-city, anonymous ID-and-complete-polygon response was established after fresh multilingual discovery and primary-source inspection. This is an unverified access finding, not a claim that public geometry or a registry does not exist.",
+  "scopeLimits": "No full source-native public polygon response was verified in this fresh city investigation; registry custody, map publication and technical geometry retrieval remain separate findings.",
+  "resultCategory": "registry_found_public_geometry_unverified",
+  "coverageAssessment": {
+    "claimedScope": "The Matamoros Tamaulipas municipal development plan and council minutes explicitly document the municipal Catastro service, map modernization and local cadastral valuation board. The Matamoros Coahuila cadastral page is a different jurisdiction and is excluded. A historical state city-map PDF is not a verified full georeferenced parcel feature response.",
+    "verifiedOpenScope": "No full source-native public polygon response was verified in this fresh city investigation; registry custody, map publication and technical geometry retrieval remain separate findings.",
+    "citywideVerified": false,
+    "countrywideVerified": false
+  },
+  "runtimeAssessment": {
+    "status": "not_enabled",
+    "reason": "No correct-city, anonymous ID-and-complete-polygon response was established after fresh multilingual discovery and primary-source inspection. This is an unverified access finding, not a claim that public geometry or a registry does not exist."
+  },
+  "freshResearch": {
+    "queries": [
+      {
+        "language": "English",
+        "query": "Matamoros Tamaulipas cadastral parcels municipal GIS map official",
+        "scope": "Fresh city-specific registry and public parcel geometry discovery.",
+        "result": "The Matamoros Tamaulipas municipal development plan and council minutes explicitly document the municipal Catastro service, map modernization and local cadastral valuation board. The Matamoros Coahuila cadastral page is a different jurisdiction and is excluded. A historical state city-map PDF is not a verified full georeferenced parcel feature response.",
+        "actualResultUrls": [
+          "https://transparencia.matamoros.gob.mx/sitio/wp-content/uploads/2023/01/PMD-2021-2024-.pdf",
+          "https://transparencia.matamoros.gob.mx/wp-content/uploads/2025/04/CUARTA-SESION-ORDINARIA-DEL-AYUNTAMIENTO-27-DIC-2024.pdf",
+          "https://www.tamaulipas.gob.mx/informaciongeografica/wp-content/uploads/sites/41/2018/05/matamoros_localidad.pdf"
+        ],
+        "executionMethod": "Executed web search; first-party pages and documented interfaces inspected."
+      },
+      {
+        "language": "Spanish",
+        "query": "Matamoros catastro municipal predios mapa catastral oficial",
+        "scope": "Independent local-language search for local custody and anonymous cadastral geometry.",
+        "result": "The Matamoros Tamaulipas municipal development plan and council minutes explicitly document the municipal Catastro service, map modernization and local cadastral valuation board. The Matamoros Coahuila cadastral page is a different jurisdiction and is excluded. A historical state city-map PDF is not a verified full georeferenced parcel feature response.",
+        "actualResultUrls": [
+          "https://transparencia.matamoros.gob.mx/sitio/wp-content/uploads/2023/01/PMD-2021-2024-.pdf",
+          "https://transparencia.matamoros.gob.mx/wp-content/uploads/2025/04/CUARTA-SESION-ORDINARIA-DEL-AYUNTAMIENTO-27-DIC-2024.pdf",
+          "https://www.tamaulipas.gob.mx/informaciongeografica/wp-content/uploads/sites/41/2018/05/matamoros_localidad.pdf"
+        ],
+        "executionMethod": "Separately executed web search; actual first-party results inspected."
+      }
+    ],
+    "requests": [
+      {
+        "checkedAt": "2026-10-09T05:29:16.612650+00:00",
+        "url": "https://transparencia.matamoros.gob.mx/sitio/wp-content/uploads/2023/01/PMD-2021-2024-.pdf",
+        "normalTlsVerification": true,
+        "httpStatus": 200,
+        "contentType": "application/pdf",
+        "finalUrl": "https://transparencia.matamoros.gob.mx/sitio/wp-content/uploads/2023/01/PMD-2021-2024-.pdf",
+        "bytesRead": 2000001,
+        "boundedReadIncomplete": true,
+        "sha256": "92c3b6aceca0b78df10df8b53a873b81213304600c0c51959eb090ef9ea484e1"
+      }
+    ],
+    "portals": [
+      {
+        "homeUrl": "https://transparencia.matamoros.gob.mx/sitio/wp-content/uploads/2023/01/PMD-2021-2024-.pdf",
+        "observation": "The Matamoros Tamaulipas municipal development plan and council minutes explicitly document the municipal Catastro service, map modernization and local cadastral valuation board. The Matamoros Coahuila cadastral page is a different jurisdiction and is excluded. A historical state city-map PDF is not a verified full georeferenced parcel feature response."
+      },
+      {
+        "homeUrl": "https://transparencia.matamoros.gob.mx/wp-content/uploads/2025/04/CUARTA-SESION-ORDINARIA-DEL-AYUNTAMIENTO-27-DIC-2024.pdf",
+        "observation": "The Matamoros Tamaulipas municipal development plan and council minutes explicitly document the municipal Catastro service, map modernization and local cadastral valuation board. The Matamoros Coahuila cadastral page is a different jurisdiction and is excluded. A historical state city-map PDF is not a verified full georeferenced parcel feature response."
+      },
+      {
+        "homeUrl": "https://www.tamaulipas.gob.mx/informaciongeografica/wp-content/uploads/sites/41/2018/05/matamoros_localidad.pdf",
+        "observation": "The Matamoros Tamaulipas municipal development plan and council minutes explicitly document the municipal Catastro service, map modernization and local cadastral valuation board. The Matamoros Coahuila cadastral page is a different jurisdiction and is excluded. A historical state city-map PDF is not a verified full georeferenced parcel feature response."
+      }
+    ],
+    "historicalContext": []
+  },
+  "remainingUncertainty": "Public geometry completeness and runtime access remain unqualified; survey accuracy, legal title and source currentness are not independently established.",
+  "nextStep": "Retain the documented technical finding and proceed down the population roster; no executable provider enabled.",
+  "priorEvidenceFiles": [],
+  "priorCheck": {
+    "attemptState": "pending",
+    "attemptEvidence": [],
+    "possiblePriorMatches": []
+  },
+  "rootReviewNote": "The Matamoros Tamaulipas municipal development plan and council minutes explicitly document the municipal Catastro service, map modernization and local cadastral valuation board. The Matamoros Coahuila cadastral page is a different jurisdiction and is excluded. A historical state city-map PDF is not a verified full georeferenced parcel feature response. No full source-native public polygon response was verified in this fresh city investigation; registry custody, map publication and technical geometry retrieval remain separate findings.",
+  "rootReviewedAt": "2026-10-09T05:33:34.746161+00:00"
+}

@@ -1,0 +1,114 @@
+{
+  "schemaVersion": "1.0",
+  "cityId": "wup2025:11168",
+  "wupCityCode": 11168,
+  "name": "Anqing",
+  "country": "China",
+  "countryCode": "CN",
+  "rank": 1100,
+  "queueRank": 1100,
+  "point": [
+    30.5275601701332,
+    117.056377147388
+  ],
+  "centerLatLon": [
+    30.5275601701332,
+    117.056377147388
+  ],
+  "pointBasis": "UN WUP2025 population-weighted settlement locator; not a municipal boundary or parcel-coverage claim.",
+  "population2025": 503036,
+  "population2025k": 503.036,
+  "populationUnit": "persons",
+  "populationPlausibility2025": "High",
+  "cohort": "overnight-followon-1001-1100",
+  "checkedAt": "2026-10-09",
+  "status": "complete",
+  "registryFound": true,
+  "registryBasis": "The city-hosted municipal-organ-affairs page, authored by the Anqing Municipal Natural Resources and Planning Bureau, directly names its real-estate registration center and describes it performing land-registration work. The local public procurement announcement also names the Anqing Real Estate Registration Center as buyer for its registration-archive digitization project.",
+  "registryEvidenceUrls": [
+    "https://www.aqjgdj.gov.cn/News/show/27553.html",
+    "https://www.aqjgdj.gov.cn/News/show/25358.html",
+    "https://www.aqsygjy.com/jyxx/002003/002003004/20260626/623e0d07-c38a-4b39-bf8c-582386d88fb1.html"
+  ],
+  "verifiedSample": false,
+  "publicParcelGeometryFound": false,
+  "sourceIds": [],
+  "adapterReady": false,
+  "runtimeReadiness": "not_enabled_no_verified_public_geometry",
+  "technicalBlocker": "Anqing local registration-center custody is confirmed; no anonymous parcel-vector service or safe full-geometry response was verified.",
+  "scopeLimits": {
+    "maxFullPolygonsRetained": 0,
+    "ownerOrAddressDataRetained": false,
+    "credentialsOrTokenValuesRetained": false,
+    "citywideCompletenessAsserted": false
+  },
+  "resultCategory": "no_verified_public_geometry",
+  "coverageAssessment": {
+    "claimedScope": "Anqing Municipal Government material explicitly includes real-estate registration among city public-service processes, but the reviewed evidence did not identify the local registration center or establish its custody. City-specific registry custody remains unresolved.",
+    "verifiedOpenScope": "No anonymous full parcel geometry response verified in this investigation.",
+    "citywideVerified": false,
+    "countrywideVerified": false,
+    "geometryVerified": false
+  },
+  "runtimeAssessment": {
+    "status": "not_enabled_no_verified_public_geometry",
+    "reason": "Anqing local registration-center custody is confirmed; no anonymous parcel-vector service or safe full-geometry response was verified."
+  },
+  "freshResearch": {
+    "queries": [
+      {
+        "language": "English",
+        "query": "Anqing China official real estate registration center cadastral map natural resources bureau",
+        "scope": "Identify first-party city-bound registry custody and safely accessible public parcel geometry.",
+        "result": "Anqing municipal government material includes real-estate registration among city public-service processes. Searches did not identify a city-specific registration-center page or public vector geometry source; the local registry basis is therefore limited to the city administration’s explicit responsibility and no parcel-level access was attempted.",
+        "actualResultUrls": [
+          "https://tzcjj.anqing.gov.cn/tzzc/fzgh/2004189185.html"
+        ],
+        "executionMethod": "Separate English-language web search and official-source review."
+      },
+      {
+        "language": "Chinese",
+        "query": "安庆市 不动产登记中心 地籍图 自然资源和规划局 官方",
+        "scope": "Identify first-party city-bound registry custody and safely accessible public parcel geometry.",
+        "result": "Anqing municipal government material includes real-estate registration among city public-service processes. Searches did not identify a city-specific registration-center page or public vector geometry source; the local registry basis is therefore limited to the city administration’s explicit responsibility and no parcel-level access was attempted.",
+        "actualResultUrls": [
+          "https://tzcjj.anqing.gov.cn/tzzc/fzgh/2004189185.html"
+        ],
+        "executionMethod": "Separate local-language web search and official-source review."
+      }
+    ],
+    "portals": [
+      {
+        "name": "https://tzcjj.anqing.gov.cn/tzzc/fzgh/2004189185.html",
+        "operator": "Relevant local public authority",
+        "homeUrl": "https://tzcjj.anqing.gov.cn/tzzc/fzgh/2004189185.html",
+        "observation": "Anqing municipal government material includes real-estate registration among city public-service processes. Searches did not identify a city-specific registration-center page or public vector geometry source; the local registry basis is therefore limited to the city administration’s explicit responsibility and no parcel-level access was attempted."
+      }
+    ],
+    "requests": [],
+    "historicalContext": []
+  },
+  "source": {
+    "sourceId": "CN-ANQING-MUNICIPAL-REGISTRATION-SERVICE",
+    "name": "Anqing official parcel/registry source",
+    "url": "https://tzcjj.anqing.gov.cn/tzzc/fzgh/2004189185.html",
+    "operator": null,
+    "serviceType": "Official local registry custody evidence reviewed; public parcel geometry remains unverified",
+    "layer": null,
+    "geometryType": null,
+    "outputCrs": null,
+    "nativeIdField": null,
+    "nativeIdEvidence": "Anqing Municipal Government’s 2026 business-environment plan explicitly treats real-estate registration as a municipal public-service process and assigns city departments to improve those services. This city-government evidence supports local registry administration; no parcel geometry route was found.",
+    "attributesRequested": [],
+    "sampleCount": 0,
+    "sampleFile": null,
+    "operatorNote": "Use the registryBasis and linked primary evidence for the verified institution; the previous country label was not an operator."
+  },
+  "custodyFollowthroughFile": "research/overnight-followon-2026-10-09/anqing-root-custody-followthrough.json",
+  "rootReviewedAt": "2026-10-09T06:45:08.823796+00:00",
+  "rootReview": {
+    "checkedAt": "2026-10-09T06:45:08.823796+00:00",
+    "basis": "Reviewed city-specific English/local-language attempts, local-custody basis, source routes and documented responses. Public geometry remains unverified; access failures and unknown custody do not establish absence.",
+    "primarySourceAuditFile": "research/overnight-followon-2026-10-09/unreviewed-primary-source-audit.json"
+  }
+}

@@ -1,0 +1,83 @@
+{
+  "name": "Okayama",
+  "country": "Japan",
+  "countryCode": "JP",
+  "rank": 643,
+  "point": [
+    34.6169543575771,
+    133.865200080945
+  ],
+  "population2025": 817266,
+  "populationUnit": "persons",
+  "population2025k": 817.266,
+  "populationPlausibility2025": "Moderate",
+  "schemaVersion": 1,
+  "checkedAt": "2026-10-09",
+  "status": "complete",
+  "registryFound": true,
+  "registryBasis": "Okayama City officially advertises a Shapefile open-data download of its parcel-reference map, dated 2026-01-01. The city explicitly says it is for fixed-asset taxation reference and does not prove legal boundary, exact shape/location, or rights. The linked public Kintone viewer routed to a waiting-room page and no archive was retrieved, so no sample/schema was verified.",
+  "registryEvidenceUrls": [
+    "https://www.city.okayama.jp/kurashi/0000074086.html",
+    "https://f5d44204.viewer.kintoneapp.com/public/08288fcabb58677c9737844a6a2d9fb4ad2a52184f9f1df8459807124913f3cf"
+  ],
+  "publicParcelGeometryFound": false,
+  "verifiedSample": false,
+  "verifiedParcelResponse": null,
+  "freshResearch": {
+    "queries": [
+      {
+        "language": "Japanese",
+        "query": "岡山市 地番参考図 シェープファイル オープンデータ 公式",
+        "scope": "Locate city-specific registry/cadastre sources and verify anonymous safe public parcel geometry.",
+        "result": "Official city page advertises a Shapefile open-data parcel-reference map dated 2026-01-01 and warns it is tax reference only. The linked viewer redirected to its waiting-room page; no archive, schema or feature was retrieved.",
+        "actualResultUrls": [
+          "https://www.city.okayama.jp/kurashi/0000074086.html",
+          "https://www.city.okayama.jp/kurashi/0000074086.html"
+        ],
+        "executionMethod": "Separate language-specific search followed by official-source review; no personal lookup or owner/address field request."
+      },
+      {
+        "language": "English",
+        "query": "Okayama City Japan official parcel reference map Shapefile open data cadastral GIS",
+        "scope": "Locate city-specific registry/cadastre sources and verify anonymous safe public parcel geometry.",
+        "result": "The city confirms an open-data Shapefile of parcel-reference polygons. The linked public viewer served a waiting-room page in the attempted fetch; no bounded sample or schema was verified.",
+        "actualResultUrls": [
+          "https://www.city.okayama.jp/kurashi/0000074086.html",
+          "https://www.city.okayama.jp/kurashi/0000074086.html"
+        ],
+        "executionMethod": "Separate language-specific search followed by official-source review; no personal lookup or owner/address field request."
+      }
+    ]
+  },
+  "scopeLimits": "Public SHP availability is explicitly advertised, but the linked viewer served a waiting-room page; the archive was not downloaded and no DBF fields, geometry, CRS or sample IDs were inspected. No geometry is retained. The map is only a tax reference and not evidence of rights or legal parcel boundaries.",
+  "pointBasis": "UN WUP 2025 population-weighted settlement centroid; this is not a municipal boundary or a parcel-coverage claim.",
+  "source": {
+    "sourceId": "JP-OKAYAMA-CITY-CHIBAN-REFERENCE",
+    "name": "Okayama City 地番参考図 (tax parcel-reference map, 2026-01-01 snapshot)",
+    "url": "https://www.city.okayama.jp/kurashi/0000074086.html",
+    "operator": "Okayama City Tax Department, Taxation Management Division",
+    "serviceType": "Official open-data Shapefile download linked through public-viewer/waiting-room page; archive not retrieved in this attempt",
+    "layer": "地番参考図 / parcel-reference polygons (advertised Shapefile)",
+    "geometryType": "Polygon shapefile advertised; exact schema not inspected",
+    "outputCrs": "unverified; SHP/PRJ archive not retrieved",
+    "nativeIdField": "unverified; DBF values not read"
+  },
+  "wupCityCode": 4011,
+  "cityId": "wup2025:4011",
+  "queueRank": 643,
+  "sourceIds": [],
+  "adapterReady": false,
+  "runtimeReadiness": "not_enabled_no_verified_public_geometry",
+  "technicalBlocker": "Public SHP availability is explicitly advertised, but the linked viewer served a waiting-room page; the archive was not downloaded and no DBF fields, geometry, CRS or sample IDs were inspected. No geometry is retained. The map is only a tax reference and not evidence of rights or legal parcel boundaries.",
+  "remainingUncertainty": "Exact locator coverage, safe source-native identifier and bounded anonymous geometry retrieval are unverified.",
+  "coverageAssessment": {
+    "verifiedOpenScope": "No parcel geometry sample was retained.",
+    "citywideVerified": false,
+    "countrywideVerified": false
+  },
+  "centerLatLon": [
+    34.6169543575771,
+    133.865200080945
+  ],
+  "rootReviewedAt": "2026-10-09T02:12:55.238180+00:00"
+}

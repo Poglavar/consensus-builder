@@ -1,0 +1,86 @@
+{
+  "schemaVersion": "1.0",
+  "checkedAt": "2026-10-09",
+  "cityRecord": "city-1580-wroclaw.json",
+  "purpose": "Document first-party local registry/map evidence and bounded anonymous geometry access review.",
+  "scopeLimits": {
+    "maxFullPolygonsRetainedInCityRecord": 0,
+    "maxFullPolygonsRetainedInReview": 0,
+    "maxFullPolygonsRetainedInRepository": 1,
+    "ownerOrAddressDataRetained": false,
+    "credentialsOrTokenValuesRetained": false,
+    "citywideCompletenessAsserted": false
+  },
+  "assessment": "The official Wrocław city GIS parcel layer is a public polygon feature service. A bounded point query at the unchanged WUP locator returned one polygon (OBJECTID 1130; ID_SWDE 026401_1.0001.1449), and point-in-ring evaluation confirmed the locator lies inside it. One full Polygon with only these safe identifiers and geometry was retained. This is a point sample, not a citywide completeness or topology claim.",
+  "registryAssessment": "First-party sources establish a local registry/cadastre custodian.",
+  "officialPrimarySources": [
+    {
+      "url": "https://geoportal.wroclaw.pl/mapy/wlasnosci/",
+      "observation": "Official city geoportal describes parcel map and identifiers and states weekly updates."
+    },
+    {
+      "url": "https://bip.zgkikm.wroc.pl/zgk/ogloszenia-i-komunikaty/22289%2CInformacja-o-dostosowaniu-bazy-danych-ewidencji-gruntow-i-budynkow.html",
+      "observation": "Official city geodetic office notice on the local land and building register."
+    },
+    {
+      "url": "https://gis.um.wroc.pl/portal_srv/rest/services/Działki/MapServer/0",
+      "observation": "Official city ArcGIS layer metadata: polygon features in EPSG:2177; safe fields OBJECTID and ID_SWDE."
+    }
+  ],
+  "searchQueries": [
+    {
+      "language": "English",
+      "query": "Wrocław Poland official cadastral parcel map land registry GIS parcel polygons natural resources bureau",
+      "result": "The official Wrocław city GIS parcel layer is a public polygon feature service. A bounded point query at the unchanged WUP locator returned one polygon (OBJECTID 1130; ID_SWDE 026401_1.0001.1449), and point-in-ring evaluation confirmed the locator lies inside it. One full Polygon with only these safe identifiers and geometry was retained. This is a point sample, not a citywide completeness or topology claim.",
+      "method": "Separate English-language web search followed by official-source review.",
+      "scope": "Identify first-party city/local registry and public parcel geometry; check the WUP point without sensitive property attributes.",
+      "actualResultUrls": [
+        "https://geoportal.wroclaw.pl/mapy/wlasnosci/",
+        "https://bip.zgkikm.wroc.pl/zgk/ogloszenia-i-komunikaty/22289%2CInformacja-o-dostosowaniu-bazy-danych-ewidencji-gruntow-i-budynkow.html",
+        "https://gis.um.wroc.pl/portal_srv/rest/services/Działki/MapServer/0"
+      ]
+    },
+    {
+      "language": "Polish",
+      "query": "Wrocław działki ewidencyjne mapa ewidencyjna geoportal usługa ArcGIS oficjalny",
+      "result": "The official Wrocław city GIS parcel layer is a public polygon feature service. A bounded point query at the unchanged WUP locator returned one polygon (OBJECTID 1130; ID_SWDE 026401_1.0001.1449), and point-in-ring evaluation confirmed the locator lies inside it. One full Polygon with only these safe identifiers and geometry was retained. This is a point sample, not a citywide completeness or topology claim.",
+      "method": "Separate local-language web search followed by official-source review.",
+      "scope": "Find first-party local-language registry/cadastral service and safe anonymous feature geometry near the unchanged WUP point.",
+      "actualResultUrls": [
+        "https://geoportal.wroclaw.pl/mapy/wlasnosci/",
+        "https://bip.zgkikm.wroc.pl/zgk/ogloszenia-i-komunikaty/22289%2CInformacja-o-dostosowaniu-bazy-danych-ewidencji-gruntow-i-budynkow.html",
+        "https://gis.um.wroc.pl/portal_srv/rest/services/Działki/MapServer/0"
+      ]
+    }
+  ],
+  "geometryDecision": "One bounded, full polygon with safe source IDs is retained in the city sample GeoJSON; no citywide claim.",
+  "coverageAssessment": {
+    "claimedScope": "The official Wrocław city GIS parcel layer is a public polygon feature service. A bounded point query at the unchanged WUP locator returned one polygon (OBJECTID 1130; ID_SWDE 026401_1.0001.1449), and point-in-ring evaluation confirmed the locator lies inside it. One full Polygon with only these safe identifiers and geometry was retained. This is a point sample, not a citywide completeness or topology claim.",
+    "verifiedOpenScope": "The official Wrocław city GIS parcel layer is a public polygon feature service. A bounded point query at the unchanged WUP locator returned one polygon (OBJECTID 1130; ID_SWDE 026401_1.0001.1449), and point-in-ring evaluation confirmed the locator lies inside it. One full Polygon with only these safe identifiers and geometry was retained. This is a point sample, not a citywide completeness or topology claim.",
+    "citywideVerified": false,
+    "countrywideVerified": false,
+    "geometryVerified": true
+  },
+  "attempts": [
+    {
+      "url": "https://gis.um.wroc.pl/portal_srv/rest/services/Działki/MapServer/0",
+      "result": "Official feature-layer metadata confirmed polygon geometry, EPSG:2177 and query capability."
+    },
+    {
+      "url": "https://gis.um.wroc.pl/portal_srv/rest/services/Działki/MapServer/0/query?f=geojson&where=1%3D1&geometry=17.0226844994164%2C51.1052197969447&geometryType=esriGeometryPoint&inSR=4326&spatialRel=esriSpatialRelIntersects&outFields=OBJECTID%2CID_SWDE&returnGeometry=true&outSR=4326&resultRecordCount=3",
+      "result": "HTTP 200; one full polygon intersects the exact WUP point. Returned only OBJECTID and ID_SWDE with geometry; point-in-ring confirmed containment."
+    }
+  ],
+  "remainingUncertainty": "Citywide completeness and full parcel-fabric topology were not evaluated; only the exact point feature was sampled.",
+  "geometryEvidence": {
+    "sampleFile": "city-1580-wroclaw-samples.geojson",
+    "featureCount": 1,
+    "safeFields": [
+      "OBJECTID",
+      "ID_SWDE"
+    ],
+    "queryUrl": "https://gis.um.wroc.pl/portal_srv/rest/services/Działki/MapServer/0/query",
+    "wupPointContained": true
+  },
+  "runtimeAssessment": "verified geometry retained; runtime not enabled"
+}

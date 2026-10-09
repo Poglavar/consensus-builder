@@ -1,0 +1,99 @@
+{
+  "schemaVersion": "1.0",
+  "kind": "parcel_source_service_review",
+  "checkedAt": "2026-10-09",
+  "cityRecord": "city-6625-diyarbakir.json",
+  "city": "Diyarbakir",
+  "countryCode": "TR",
+  "wupCityCode": 6625,
+  "rank": 825,
+  "registryFound": true,
+  "registryEvidenceUrls": [
+    "https://www.tkgm.gov.tr/e-hizmetler/sik-kullanilanlar/parsel-sorgulama",
+    "https://www.tkgm.gov.tr/diyarbakir-bm/bagli-mudurlukler?tid=137",
+    "https://cbs.diyarbakir.bel.tr/imardurumu/"
+  ],
+  "publicAnonymousGeometryVerified": false,
+  "completeGeoreferencedPolygonCount": 0,
+  "geometryRetained": false,
+  "ownerAddressTaxOrPersonLookupRequested": false,
+  "authenticationOrCredentialsUsed": false,
+  "captchaOrPersonalFormSubmitted": false,
+  "accessReview": {
+    "publicAnonymousGeometryVerified": false,
+    "completeGeoreferencedPolygonCount": 0,
+    "geometryRetained": false,
+    "ownerOrAddressDataRetained": false,
+    "credentialsOrTokenValuesRetained": false,
+    "routeInspectionStatus": "official_local_registry_verified_no_safe_public_geometry_contract",
+    "reason": "Official local registry/cadastre candidate verified, but the single bounded exact-point request was blocked before any feature response; geometry and runtime readiness remain unverified.",
+    "nativeIdsUsed": "No safe parcel feature identifier was confirmed; no feature attributes requested."
+  },
+  "searchQueries": [
+    {
+      "language": "English",
+      "query": "Diyarbakir official cadastral parcel map TKGM public parcel query Diyarbakir tapu registry",
+      "result": "Official TKGM documentation describes public parcel location and basic attributes; the Diyarbakir directorate directory lists local title/cadastre offices. The existing exact-point adapter request was blocked with HTTP 403, so no parcel was returned.",
+      "method": "Separate English web search and official-source review, followed by one bounded exact-point request through the existing adapter."
+    },
+    {
+      "language": "Turkish",
+      "query": "Diyarbakır resmi parsel sorgu kadastro tapu müdürlüğü harita",
+      "result": "The search surfaced official TKGM public parcel-query documentation and the Diyarbakir regional office directory. The municipal E-İmar tool is a planning-status service. No anonymous parcel feature schema was exposed; the exact-point request remained HTTP 403.",
+      "method": "Separate Turkish web search and official-source review; no owner or title query."
+    }
+  ],
+  "officialPrimarySources": [
+    {
+      "url": "https://www.tkgm.gov.tr/e-hizmetler/sik-kullanilanlar/parsel-sorgulama",
+      "observation": "TKGM describes its official public parcel viewer, with location/admin and block/parcel search and basic parcel attributes; it states that owner name and Turkish identity number are not searchable."
+    },
+    {
+      "url": "https://www.tkgm.gov.tr/diyarbakir-bm/bagli-mudurlukler?tid=137",
+      "observation": "Official Diyarbakir Regional Directorate directory lists Bağlar Tapu Müdürlüğü/Diyarbakır and related local offices."
+    },
+    {
+      "url": "https://cbs.diyarbakir.bel.tr/imardurumu/",
+      "observation": "Municipal E-İmar offers parcel-based planning status/address/parcel search; it is a planning-status service, not verified cadastral parcel geometry."
+    }
+  ],
+  "requestEvidence": [
+    {
+      "url": "https://www.tkgm.gov.tr/e-hizmetler/sik-kullanilanlar/parsel-sorgulama",
+      "method": "official public page or document review; no property-specific service request",
+      "status": "official_source_reviewed",
+      "observation": "TKGM describes its official public parcel viewer, with location/admin and block/parcel search and basic parcel attributes; it states that owner name and Turkish identity number are not searchable."
+    },
+    {
+      "url": "https://www.tkgm.gov.tr/diyarbakir-bm/bagli-mudurlukler?tid=137",
+      "method": "official public page or document review; no property-specific service request",
+      "status": "official_source_reviewed",
+      "observation": "Official Diyarbakir Regional Directorate directory lists Bağlar Tapu Müdürlüğü/Diyarbakır and related local offices."
+    },
+    {
+      "url": "https://cbs.diyarbakir.bel.tr/imardurumu/",
+      "method": "official public page or document review; no property-specific service request",
+      "status": "official_source_reviewed",
+      "observation": "Municipal E-İmar offers parcel-based planning status/address/parcel search; it is a planning-status service, not verified cadastral parcel geometry."
+    },
+    {
+      "url": "https://www.tkgm.gov.tr/e-hizmetler/sik-kullanilanlar/parsel-sorgulama",
+      "method": "one exact WUP point request through existing approved TKGM point-source adapter",
+      "status": "HTTP 403 / parcel-source-blocked",
+      "observation": "Upstream returned HTTP 403 before a parcel feature response. No retry, authentication, or access-control workaround was attempted; zero geometry retained."
+    }
+  ],
+  "technicalBlocker": "The existing TKGM point-source adapter was run once at the exact WUP point after confirming the source’s safe field contract. The upstream returned HTTP 403 (parcel-source-blocked); no features or schema response were available. No retry, authentication, or access-control workaround was attempted.",
+  "sampleDisposition": "No parcel geometry or parcel attributes retained.",
+  "coverageAssessment": {
+    "claimedScope": "TKGM documents its public parcel viewer and its official Diyarbakir regional directory lists local title/cadastre offices. The city municipality also provides a parcel-based zoning-status query. This establishes local registry and planning services, but not an accessible anonymous geometry response for the WUP point.",
+    "verifiedOpenScope": "The existing TKGM point-source adapter was run once at the exact WUP point after confirming the source’s safe field contract. The upstream returned HTTP 403 (parcel-source-blocked); no features or schema response were available. No retry, authentication, or access-control workaround was attempted.",
+    "citywideVerified": false,
+    "countrywideVerified": false
+  },
+  "runtimeAssessment": {
+    "status": "not_assessed",
+    "reason": "No safe public feature schema/geometry contract was verified."
+  },
+  "remainingUncertainty": "Whether another first-party service exposes anonymous parcel geometry and which safe native identifier/CRS it uses remain unresolved."
+}

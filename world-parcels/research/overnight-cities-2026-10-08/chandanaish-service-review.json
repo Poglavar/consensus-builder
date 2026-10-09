@@ -1,0 +1,62 @@
+{
+  "schemaVersion": 1,
+  "kind": "parcel_source_service_review",
+  "checkedAt": "2026-10-09",
+  "city": "Chandanaish",
+  "countryCode": "BD",
+  "wupCityCode": 7601,
+  "rank": 560,
+  "registryFound": true,
+  "registryEvidenceUrls": [
+    "https://acl.chandanaish.chittagong.gov.bd/",
+    "https://sr.chandanaish.chittagong.gov.bd/pages/office-process-maps",
+    "https://pourashava.chandanaish.chittagong.gov.bd/",
+    "https://map.land.gov.bd/"
+  ],
+  "publicAnonymousGeometryVerified": false,
+  "completeGeoreferencedPolygonCount": 0,
+  "geometryRetained": false,
+  "ownerAddressTaxOrPersonLookupRequested": false,
+  "authenticationOrCredentialsUsed": false,
+  "captchaOrPersonalFormSubmitted": false,
+  "accessReview": {
+    "publicAnonymousGeometryVerified": false,
+    "completeGeoreferencedPolygonCount": 0,
+    "geometryRetained": false,
+    "ownerAddressTaxOrPersonLookupRequested": false,
+    "authenticationOrCredentialsUsed": false,
+    "captchaOrPersonalFormSubmitted": false,
+    "routeInspectionStatus": "city_registry_verified_no_geometry_contract",
+    "reason": "Official local offices and static ward maps are available, but no public anonymous parcel-vector schema or geometry endpoint was identified. The national zoning site is a plot-oriented selector interface and was not queried. Runtime remains disabled.",
+    "nativeIdsUsed": "No safe parcel feature identifier read; no feature attributes requested."
+  },
+  "requestEvidence": [
+    {
+      "url": "https://acl.chandanaish.chittagong.gov.bd/",
+      "method": "public official page inspection",
+      "status": "accessible",
+      "observation": "Official local Upazila Land Office page; informational office and service links only."
+    },
+    {
+      "url": "https://sr.chandanaish.chittagong.gov.bd/pages/office-process-maps",
+      "method": "public official page inspection",
+      "status": "accessible",
+      "observation": "Lists land-document service procedures; did not submit feedback form, request a deed search, or query records."
+    },
+    {
+      "url": "https://pourashava.chandanaish.chittagong.gov.bd/",
+      "method": "public official page inspection",
+      "status": "accessible",
+      "observation": "Links ward-map PDFs; no vector schema or parcel layer inspected."
+    },
+    {
+      "url": "https://map.land.gov.bd/",
+      "method": "public official page inspection",
+      "status": "accessible",
+      "observation": "Page exposes Division/District/Upazila/Mouza/Sheet/Plot selectors. No value was selected or submitted."
+    }
+  ],
+  "technicalBlocker": "Official local offices and static ward maps are available, but no public anonymous parcel-vector schema or geometry endpoint was identified. The national zoning site is a plot-oriented selector interface and was not queried. Runtime remains disabled.",
+  "sampleDisposition": "No parcel geometry or parcel attributes retained.",
+  "remainingUncertainty": "Official local offices and static ward maps are available, but no public anonymous parcel-vector schema or geometry endpoint was identified. The national zoning site is a plot-oriented selector interface and was not queried. Runtime remains disabled."
+}

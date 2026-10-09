@@ -1,4 +1,4 @@
-// Astana's official public EGKN PKK parcel view, scoped to Esil district.
+// Official public EGKN PKK parcel views in their published district projections.
 import proj4 from 'proj4';
 import { bbox as geometryBbox, booleanIntersects, feature as geoFeature } from '@turf/turf';
 import { HttpError } from '../utils/helpers.js';
@@ -8,15 +8,16 @@ const ENDPOINT = 'https://map.gov4c.kz/geoserver/wfs';
 const VIEWER = 'https://map.gov4c.kz/egkn/';
 const FEATURE_TYPE = 'egkn:u_view';
 const DISTRICT_ID = 254;
-const SOURCE_CRS = 'EPSG:32642';
-const SOURCE_CRS_URN = 'urn:ogc:def:crs:EPSG::32642';
+// These view/projection pairs were verified against the current official viewer.
+const DISTRICTS = new Map([
+    [254, { projection: 'EPSG:32642', idPrefix: 'KZ-ASTANA-PKK-' }],
+    [244, { projection: 'EPSG:32643', idPrefix: 'KZ-ALMATY-PKK-' }]
+]);
 const NATIVE_PATTERN = /^[0-9]{1,32}$/;
 const MAX_ID_FILTER_TERMS = 20;
 const OUT_FIELDS = ['gid', 'kad_nomer'];
 const FES_NS = 'http://www.opengis.net/fes/2.0';
 const USER_AGENT = 'Mozilla/5.0';
-const toMetric = proj4('EPSG:4326', SOURCE_CRS);
-const toWgs84 = proj4(SOURCE_CRS, 'EPSG:4326');
 
 function stableJson(value) {
     if (Array.isArray(value)) return `[${value.map(stableJson).join(',')}]`;
@@ -38,13 +39,13 @@ function idFilter(codes) {
 }
 
 function transformCoordinates(value, transform, depth, coordinateDepth) {
-    if (!Array.isArray(value) || !value.length) throw upstreamError('Astana PKK returned malformed coordinates.');
+    if (!Array.isArray(value) || !value.length) throw upstreamError('Kazakhstan PKK returned malformed coordinates.');
     if (depth === coordinateDepth) {
         if (value.length < 2 || !Number.isFinite(value[0]) || !Number.isFinite(value[1])) {
-            throw upstreamError('Astana PKK returned malformed coordinates.');
+            throw upstreamError('Kazakhstan PKK returned malformed coordinates.');
         }
         const point = transform.forward(value.slice(0, 2));
-        if (!point.every(Number.isFinite)) throw upstreamError('Astana PKK coordinates could not be projected.');
+        if (!point.every(Number.isFinite)) throw upstreamError('Kazakhstan PKK coordinates could not be projected.');
         return [...point, ...value.slice(2)];
     }
     return value.map(item => transformCoordinates(item, transform, depth + 1, coordinateDepth));
@@ -60,18 +61,18 @@ function validProjectedGeometry(geometry) {
         && ring[0][0] === ring.at(-1)[0] && ring[0][1] === ring.at(-1)[1]));
 }
 
-function projectGeometry(geometry) {
-    if (!validProjectedGeometry(geometry)) throw upstreamError('Astana PKK returned geometry outside EPSG:32642.');
+function projectGeometry(geometry, toWgs84) {
+    if (!validProjectedGeometry(geometry)) throw upstreamError('Kazakhstan PKK returned geometry outside its native UTM projection.');
     const coordinateDepth = geometry.type === 'Polygon' ? 2 : 3;
     const projected = { type: geometry.type, coordinates: transformCoordinates(geometry.coordinates, toWgs84, 0, coordinateDepth) };
-    if (!validateGeometry(projected)) throw upstreamError('Astana PKK returned invalid projected parcel geometry.');
+    if (!validateGeometry(projected)) throw upstreamError('Kazakhstan PKK returned invalid projected parcel geometry.');
     return projected;
 }
 
-function projectBounds(bounds) {
+function projectBounds(bounds, toMetric) {
     const [west, south, east, north] = bounds;
     const corners = [[west, south], [west, north], [east, south], [east, north]].map(point => toMetric.forward(point));
-    if (corners.some(point => !point.every(Number.isFinite))) throw new HttpError(400, 'Bbox could not be projected to Astana PKK coordinates.');
+    if (corners.some(point => !point.every(Number.isFinite))) throw new HttpError(400, 'Bbox could not be projected to Kazakhstan PKK coordinates.');
     return [Math.min(...corners.map(point => point[0])), Math.min(...corners.map(point => point[1])),
         Math.max(...corners.map(point => point[0])), Math.max(...corners.map(point => point[1]))];
 }
@@ -79,6 +80,8 @@ function projectBounds(bounds) {
 export function createKazakhstanPkkSource(descriptor, { fetchImpl = globalThis.fetch } = {}) {
     const { id, idPrefix } = descriptor || {};
     const districtId = descriptor?.districtId ?? DISTRICT_ID;
+    const district = DISTRICTS.get(districtId);
+    const sourceCrs = district?.projection;
     const pageSize = descriptor?.pageSize ?? 1000;
     const maxFeatures = descriptor?.maxFeatures ?? 10000;
     const maxResponseBytes = descriptor?.maxResponseBytes ?? 4 * 1024 * 1024;
@@ -88,11 +91,11 @@ export function createKazakhstanPkkSource(descriptor, { fetchImpl = globalThis.f
     const timeoutMs = descriptor?.timeoutMs ?? 15000;
     if (!descriptor || typeof descriptor !== 'object' || typeof id !== 'string' || !id
         || descriptor.endpoint !== ENDPOINT || descriptor.featureType !== FEATURE_TYPE
-        || districtId !== DISTRICT_ID || typeof idPrefix !== 'string' || idPrefix !== 'KZ-ASTANA-PKK-'
+        || !district || typeof idPrefix !== 'string' || idPrefix !== district.idPrefix
         || (descriptor.idField !== undefined && descriptor.idField !== 'kad_nomer')
         || (descriptor.outFields !== undefined && (!Array.isArray(descriptor.outFields)
             || stableJson([...descriptor.outFields].sort()) !== stableJson([...OUT_FIELDS].sort())))
-        || (descriptor.projection !== undefined && descriptor.projection !== SOURCE_CRS)
+        || (descriptor.projection !== undefined && descriptor.projection !== sourceCrs)
         || !Number.isSafeInteger(pageSize) || pageSize < 1 || pageSize > 1000
         || !Number.isSafeInteger(maxFeatures) || maxFeatures < pageSize || maxFeatures > 20000
         || !Number.isSafeInteger(maxResponseBytes) || maxResponseBytes < 1024 || maxResponseBytes > 8 * 1024 * 1024
@@ -101,15 +104,19 @@ export function createKazakhstanPkkSource(descriptor, { fetchImpl = globalThis.f
         || !Number.isSafeInteger(maxPages) || maxPages < 1 || maxPages > 250
         || !Number.isSafeInteger(timeoutMs) || timeoutMs < 1000 || timeoutMs > 15000
         || typeof fetchImpl !== 'function') {
-        throw new Error('Invalid Astana PKK parcel source descriptor.');
+        throw new Error('Invalid Kazakhstan PKK parcel source descriptor.');
     }
+
+    const sourceCrsUrn = `urn:ogc:def:crs:EPSG::${sourceCrs.split(':')[1]}`;
+    const toMetric = proj4('EPSG:4326', sourceCrs);
+    const toWgs84 = proj4(sourceCrs, 'EPSG:4326');
 
     const outputDescriptor = { ...descriptor, outFields: OUT_FIELDS, idField: 'kad_nomer', parcelNumberField: 'kad_nomer' };
 
     async function readJson(response, state, signal) {
         const declared = Number(response.headers?.get?.('content-length'));
-        if (Number.isFinite(declared) && declared > maxResponseBytes) throw upstreamError('Astana PKK response exceeds the byte limit.');
-        if (!response.body?.getReader) throw upstreamError('Astana PKK returned no readable response.');
+        if (Number.isFinite(declared) && declared > maxResponseBytes) throw upstreamError('Kazakhstan PKK response exceeds the byte limit.');
+        if (!response.body?.getReader) throw upstreamError('Kazakhstan PKK returned no readable response.');
         const reader = response.body.getReader();
         const chunks = [];
         let size = 0;
@@ -120,34 +127,34 @@ export function createKazakhstanPkkSource(descriptor, { fetchImpl = globalThis.f
                 size += value.byteLength;
                 state.totalBytes += value.byteLength;
                 if (size > maxResponseBytes || state.totalBytes > maxTotalResponseBytes) {
-                    throw upstreamError('Astana PKK response exceeds the byte limit.');
+                    throw upstreamError('Kazakhstan PKK response exceeds the byte limit.');
                 }
                 chunks.push(Buffer.from(value));
             }
         } catch (error) {
             try { await reader.cancel(); } catch { /* The stream may already be closed. */ }
             if (error?.status) throw error;
-            if (signal.aborted || ['AbortError', 'TimeoutError'].includes(error?.name)) throw upstreamError('Astana PKK request timed out.', 504);
-            throw upstreamError('Astana PKK response was interrupted.');
+            if (signal.aborted || ['AbortError', 'TimeoutError'].includes(error?.name)) throw upstreamError('Kazakhstan PKK request timed out.', 504);
+            throw upstreamError('Kazakhstan PKK response was interrupted.');
         } finally { reader.releaseLock(); }
         try { return JSON.parse(Buffer.concat(chunks, size).toString('utf8')); }
-        catch { throw upstreamError('Astana PKK returned invalid GeoJSON.'); }
+        catch { throw upstreamError('Kazakhstan PKK returned invalid GeoJSON.'); }
     }
 
     function makeUrl({ bbox, filter, startIndex }) {
         const params = new URLSearchParams({
             service: 'WFS', version: '2.0.0', request: 'GetFeature', typename: FEATURE_TYPE,
-            outputFormat: 'application/json', srsname: SOURCE_CRS, propertyname: 'gid,kad_nomer,geom',
+            outputFormat: 'application/json', srsname: sourceCrs, propertyname: 'gid,kad_nomer,geom',
             count: String(pageSize), startIndex: String(startIndex), sortBy: 'gid',
             viewparams: `district_id:${districtId}`,
-            ...(bbox ? { bbox: `${bbox.join(',')},${SOURCE_CRS}` } : {}),
+            ...(bbox ? { bbox: `${bbox.join(',')},${sourceCrs}` } : {}),
             ...(filter ? { filter } : {})
         });
         return `${ENDPOINT}?${params}`;
     }
 
     async function query({ bbox, codes, operationSignal, operationState }) {
-        const metricBounds = bbox ? projectBounds(bbox) : undefined;
+        const metricBounds = bbox ? projectBounds(bbox, toMetric) : undefined;
         const filter = codes ? idFilter(codes) : undefined;
         const state = operationState ?? { totalBytes: 0 };
         const signal = operationSignal ?? AbortSignal.timeout(timeoutMs);
@@ -157,7 +164,7 @@ export function createKazakhstanPkkSource(descriptor, { fetchImpl = globalThis.f
         let matched;
         let pageCount = 0;
         for (;;) {
-            if (++pageCount > maxPages) throw upstreamError('Astana PKK exceeded the page limit.');
+            if (++pageCount > maxPages) throw upstreamError('Kazakhstan PKK exceeded the page limit.');
             let payload;
             try {
                 const response = await fetchImpl(makeUrl({ bbox: metricBounds, filter, startIndex }), { signal, redirect: 'error', headers: {
@@ -167,8 +174,8 @@ export function createKazakhstanPkkSource(descriptor, { fetchImpl = globalThis.f
                 payload = await readJson(response, state, signal);
             } catch (error) {
                 if (error?.status) throw error;
-                if (signal.aborted || ['AbortError', 'TimeoutError'].includes(error?.name)) throw upstreamError('Astana PKK request timed out.', 504);
-                throw upstreamError('Astana PKK is unavailable.');
+                if (signal.aborted || ['AbortError', 'TimeoutError'].includes(error?.name)) throw upstreamError('Kazakhstan PKK request timed out.', 504);
+                throw upstreamError('Kazakhstan PKK is unavailable.');
             }
             const page = payload?.features;
             const counts = ['numberMatched', 'totalFeatures'].filter(key => payload?.[key] !== undefined).map(key => payload[key]);
@@ -177,43 +184,43 @@ export function createKazakhstanPkkSource(descriptor, { fetchImpl = globalThis.f
                 && Array.isArray(page) && page.length === 0 && pageMatched === 0
                 && payload?.numberReturned === 0;
             const validCrs = (payload?.crs?.type === 'name'
-                && [SOURCE_CRS_URN, SOURCE_CRS].includes(payload.crs.properties?.name)) || emptyWithoutCrs;
+                && [sourceCrsUrn, sourceCrs].includes(payload.crs.properties?.name)) || emptyWithoutCrs;
             if (payload?.type !== 'FeatureCollection' || !Array.isArray(page) || page.length > pageSize
                 || !counts.length || counts.some(value => !Number.isSafeInteger(value) || value < 0 || value !== pageMatched)
                 || payload.numberReturned !== page.length || (matched !== undefined && pageMatched !== matched)
                 || !validCrs) {
-                throw upstreamError('Astana PKK returned incomplete or inconsistent GeoJSON metadata.');
+                throw upstreamError('Kazakhstan PKK returned incomplete or inconsistent GeoJSON metadata.');
             }
             matched = pageMatched;
             if (matched > maxFeatures || startIndex + page.length > matched || startIndex + page.length > maxFeatures) {
-                throw upstreamError('Astana PKK query exceeds its match or parcel limit.');
+                throw upstreamError('Kazakhstan PKK query exceeds its match or parcel limit.');
             }
-            if (page.length === 0 && startIndex < matched) throw upstreamError('Astana PKK ended pagination before its match count.');
+            if (page.length === 0 && startIndex < matched) throw upstreamError('Kazakhstan PKK ended pagination before its match count.');
             for (const feature of page) {
                 const properties = feature?.properties;
                 const gid = properties?.gid;
                 const nativeId = properties?.kad_nomer;
-                if (!Number.isSafeInteger(gid) || gid < 0 || seenGids.has(gid)) throw upstreamError('Astana PKK repeated or omitted a stable transport gid.');
+                if (!Number.isSafeInteger(gid) || gid < 0 || seenGids.has(gid)) throw upstreamError('Kazakhstan PKK repeated or omitted a stable transport gid.');
                 seenGids.add(gid);
-                if (typeof nativeId !== 'string' || !NATIVE_PATTERN.test(nativeId)) throw upstreamError('Astana PKK returned an invalid native cadastre key.');
-                if (codes && !codes.includes(nativeId)) throw upstreamError('Astana PKK returned an unrequested native cadastre key.');
-                if (!validProjectedGeometry(feature.geometry)) throw upstreamError('Astana PKK returned geometry outside EPSG:32642.');
+                if (typeof nativeId !== 'string' || !NATIVE_PATTERN.test(nativeId)) throw upstreamError('Kazakhstan PKK returned an invalid native cadastre key.');
+                if (codes && !codes.includes(nativeId)) throw upstreamError('Kazakhstan PKK returned an unrequested native cadastre key.');
+                if (!validProjectedGeometry(feature.geometry)) throw upstreamError('Kazakhstan PKK returned geometry outside its native UTM projection.');
                 const sourceExtent = geometryBbox(feature.geometry);
                 // The public view can overfetch beyond its BBOX. Validate and count every row,
                 // then remove envelope misses locally without changing any parcel boundary.
                 const intersectsBounds = !metricBounds || !(sourceExtent[2] < metricBounds[0] || sourceExtent[0] > metricBounds[2]
                     || sourceExtent[3] < metricBounds[1] || sourceExtent[1] > metricBounds[3]);
-                const geometry = projectGeometry(feature.geometry);
+                const geometry = projectGeometry(feature.geometry, toWgs84);
                 const safeFeature = { geometry, properties: { gid, kad_nomer: nativeId } };
                 const canonical = canonicalParcelFeature(outputDescriptor, safeFeature, nativeId);
                 const signature = stableJson({ geometry: canonical.geometry, properties: canonical.properties.sourceProperties });
                 const previous = byNativeId.get(nativeId);
-                if (previous && previous.signature !== signature) throw upstreamError('Astana PKK returned conflicting rows for one native cadastre key.');
+                if (previous && previous.signature !== signature) throw upstreamError('Kazakhstan PKK returned conflicting rows for one native cadastre key.');
                 if (!previous) byNativeId.set(nativeId, { canonical, signature, intersectsBounds });
             }
             startIndex += page.length;
             if (startIndex === matched) break;
-            if (page.length === 0) throw upstreamError('Astana PKK returned an empty page before completion.');
+            if (page.length === 0) throw upstreamError('Kazakhstan PKK returned an empty page before completion.');
         }
         return [...byNativeId.values()].filter(item => item.intersectsBounds).map(item => item.canonical);
     }
@@ -227,12 +234,12 @@ export function createKazakhstanPkkSource(descriptor, { fetchImpl = globalThis.f
     }
 
     async function queryIds(ids) {
-        if (!Array.isArray(ids) || !ids.length || ids.length > 80) throw new HttpError(400, 'Provide between 1 and 80 Astana parcel IDs.');
+        if (!Array.isArray(ids) || !ids.length || ids.length > 80) throw new HttpError(400, 'Provide between 1 and 80 PKK parcel IDs.');
         const unique = [...new Set(ids)];
         const codes = unique.map(value => {
             if (typeof value !== 'string' || !value.startsWith(idPrefix)) throw new HttpError(400, 'Parcel ID belongs to a different source.');
             const code = value.slice(idPrefix.length);
-            if (!NATIVE_PATTERN.test(code)) throw new HttpError(400, 'Invalid Astana cadastral ID.');
+            if (!NATIVE_PATTERN.test(code)) throw new HttpError(400, 'Invalid PKK cadastral ID.');
             return code;
         });
         const state = { totalBytes: 0 };
@@ -241,7 +248,7 @@ export function createKazakhstanPkkSource(descriptor, { fetchImpl = globalThis.f
         for (let offset = 0; offset < codes.length; offset += MAX_ID_FILTER_TERMS) {
             const batch = await query({ codes: codes.slice(offset, offset + MAX_ID_FILTER_TERMS), operationSignal: signal, operationState: state });
             for (const feature of batch) byId.set(feature.id, feature);
-            if (byId.size > maxFeatures) throw upstreamError('Astana PKK query exceeds its parcel limit.');
+            if (byId.size > maxFeatures) throw upstreamError('Kazakhstan PKK query exceeds its parcel limit.');
         }
         const features = [...byId.values()];
         const present = new Set(features.map(feature => feature.id));

@@ -1,0 +1,104 @@
+{
+  "schemaVersion": "1.0",
+  "kind": "parcel_source_service_review",
+  "checkedAt": "2026-10-09",
+  "cityRecord": "city-11561-siliguri.json",
+  "city": "Siliguri",
+  "countryCode": "IN",
+  "wupCityCode": 11561,
+  "rank": 827,
+  "registryFound": true,
+  "registryEvidenceUrls": [
+    "https://sjda.org/MouzaMaps",
+    "https://udma.wb.gov.in/page/cms/know_your_property_procedure_a353e3",
+    "https://www.siligurismc.in/assessment-and-mutation.php",
+    "https://sjda.org/"
+  ],
+  "publicAnonymousGeometryVerified": false,
+  "completeGeoreferencedPolygonCount": 0,
+  "geometryRetained": false,
+  "ownerAddressTaxOrPersonLookupRequested": false,
+  "authenticationOrCredentialsUsed": false,
+  "captchaOrPersonalFormSubmitted": false,
+  "accessReview": {
+    "publicAnonymousGeometryVerified": false,
+    "completeGeoreferencedPolygonCount": 0,
+    "geometryRetained": false,
+    "ownerOrAddressDataRetained": false,
+    "credentialsOrTokenValuesRetained": false,
+    "routeInspectionStatus": "official_local_registry_verified_no_safe_public_geometry_contract",
+    "reason": "Official local property and cadastral-map procedures are documented, but source map data is access-restricted and the state property viewer requires OTP/plot inputs; no public anonymous geometry contract was verified.",
+    "nativeIdsUsed": "No safe parcel feature identifier was confirmed; no feature attributes requested."
+  },
+  "searchQueries": [
+    {
+      "language": "English",
+      "query": "Siliguri official cadastral parcel map land records mouza map public GIS Siliguri Jalpaiguri Development Authority",
+      "result": "SJDA indexes RS mouza maps for Matigara/Naxalbari blocks in Siliguri subdivision but marks them privileged for applicants. UDMA property/encumbrance access requires OTP and plot/khatian selection. SMC lists assessment and mutation procedures. No anonymous feature schema or geometry was available.",
+      "method": "Separate English web search and official-source/service review; no login or restricted map access."
+    },
+    {
+      "language": "Bengali",
+      "query": "শিলিগুড়ি সরকারী জমির মানচিত্র ভূমি দপ্তর মৌজা মানচিত্র দাগ",
+      "result": "The search identified the official SJDA mouza-map index and West Bengal land-map/plot services. SJDA’s Siliguri map page is limited to applicants and expressly restricts unrelated use; the official property service requires OTP registration. No anonymous schema-safe parcel geometry was identified.",
+      "method": "Separate Bengali web search and official-source review; no map files or personal/property queries."
+    }
+  ],
+  "officialPrimarySources": [
+    {
+      "url": "https://sjda.org/MouzaMaps",
+      "observation": "Official Siliguri Jalpaiguri Development Authority page indexes RS mouza maps under Matigara and Naxalbari blocks of the Siliguri subdivision for land-use/development-permission applicants. The page expressly labels the information privileged and restricts copying/distribution; no maps were accessed or retained."
+    },
+    {
+      "url": "https://udma.wb.gov.in/page/cms/know_your_property_procedure_a353e3",
+      "observation": "West Bengal UDMA documents a Know Your Property/encumbrance service requiring OTP registration, then district, block/BLLRO, mouza and plot or khatian selection; not an anonymous geometry service."
+    },
+    {
+      "url": "https://www.siligurismc.in/assessment-and-mutation.php",
+      "observation": "Siliguri Municipal Corporation lists local holding mutation and property assessment services and document requirements; this is municipal assessment/administration, not proof of cadastral vector coverage."
+    },
+    {
+      "url": "https://sjda.org/",
+      "observation": "Official SJDA describes its statutory planning role in the Siliguri-Jalpaiguri planning area."
+    }
+  ],
+  "requestEvidence": [
+    {
+      "url": "https://sjda.org/MouzaMaps",
+      "method": "official public page or document review; no property-specific service request",
+      "status": "official_source_reviewed",
+      "observation": "Official Siliguri Jalpaiguri Development Authority page indexes RS mouza maps under Matigara and Naxalbari blocks of the Siliguri subdivision for land-use/development-permission applicants. The page expressly labels the information privileged and restricts copying/distribution; no maps were accessed or retained."
+    },
+    {
+      "url": "https://udma.wb.gov.in/page/cms/know_your_property_procedure_a353e3",
+      "method": "official public page or document review; no property-specific service request",
+      "status": "official_source_reviewed",
+      "observation": "West Bengal UDMA documents a Know Your Property/encumbrance service requiring OTP registration, then district, block/BLLRO, mouza and plot or khatian selection; not an anonymous geometry service."
+    },
+    {
+      "url": "https://www.siligurismc.in/assessment-and-mutation.php",
+      "method": "official public page or document review; no property-specific service request",
+      "status": "official_source_reviewed",
+      "observation": "Siliguri Municipal Corporation lists local holding mutation and property assessment services and document requirements; this is municipal assessment/administration, not proof of cadastral vector coverage."
+    },
+    {
+      "url": "https://sjda.org/",
+      "method": "official public page or document review; no property-specific service request",
+      "status": "official_source_reviewed",
+      "observation": "Official SJDA describes its statutory planning role in the Siliguri-Jalpaiguri planning area."
+    }
+  ],
+  "technicalBlocker": "The state Know Your Property procedure requires OTP-based registration and plot/khatian inputs. The local SJDA map page restricts its maps to relevant applicants and prohibits unrelated copying/distribution. No map content was downloaded, no property lookup was attempted, and no anonymous vector schema was found.",
+  "sampleDisposition": "No parcel geometry or parcel attributes retained.",
+  "coverageAssessment": {
+    "claimedScope": "First-party Siliguri sources document municipal property assessment/mutation, a West Bengal property/encumbrance portal keyed by block, mouza and plot/khatian, and SJDA indexing of cadastral RS mouza maps for permission applicants. The map page labels its content privileged; it was not accessed or copied. This establishes local property/cadastral procedures but not anonymous geometry access at the WUP point.",
+    "verifiedOpenScope": "The state Know Your Property procedure requires OTP-based registration and plot/khatian inputs. The local SJDA map page restricts its maps to relevant applicants and prohibits unrelated copying/distribution. No map content was downloaded, no property lookup was attempted, and no anonymous vector schema was found.",
+    "citywideVerified": false,
+    "countrywideVerified": false
+  },
+  "runtimeAssessment": {
+    "status": "not_assessed",
+    "reason": "No safe public feature schema/geometry contract was verified."
+  },
+  "remainingUncertainty": "Whether another first-party service exposes anonymous parcel geometry and which safe native identifier/CRS it uses remain unresolved."
+}

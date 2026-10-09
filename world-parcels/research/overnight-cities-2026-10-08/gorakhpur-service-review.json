@@ -1,0 +1,50 @@
+{
+  "schemaVersion": "1.0",
+  "checkedAt": "2026-10-09",
+  "cityRecord": "city-10399-gorakhpur.json",
+  "purpose": "Document first-party local registry/viewer evidence and bounded anonymous geometry access review.",
+  "scopeLimits": {
+    "maxFullPolygonsRetainedInCityRecord": 0,
+    "maxFullPolygonsRetainedInReview": 0,
+    "maxFullPolygonsRetainedInRepository": 0,
+    "ownerOrAddressDataRetained": false,
+    "credentialsOrTokenValuesRetained": false,
+    "citywideCompletenessAsserted": false
+  },
+  "assessment": "The official viewer shell was inspected. Its initial extent is Agra. A two-level Gorakhpur Sadar map-info attempt failed because the upstream GIS-code creation route returned HTTP 403/500; no confirmed village was selected and no valid parcel response was obtained. The district dashboard’s aggregate georeferencing counts are not evidence of coverage at the ranked urban point. Whether the WUP city point lies inside a georeferenced Gorakhpur revenue village or a distinct urban cadastral map; whether the public BhuNaksha geometry service covers the exact locality.",
+  "officialPrimarySources": [
+    {
+      "url": "https://gorakhpur.nic.in/service/land-records/",
+      "observation": "Official Gorakhpur district land-records page; links the state land-record service."
+    },
+    {
+      "url": "https://upbhunaksha.gov.in/upbhunaksha/",
+      "observation": "Official Uttar Pradesh BhuNaksha viewer; district/tehsil/village/plot selectors are present; default selection is Agra."
+    },
+    {
+      "url": "https://upbhulekh.gov.in/GeoDashboard/public_report?distCode=188",
+      "observation": "Official dashboard for Gorakhpur district: reported revenue-village map scanning and georeferencing status; these are district-wide figures, not a point coverage test."
+    },
+    {
+      "url": "https://bor.up.nic.in/",
+      "observation": "Official Uttar Pradesh Board of Revenue land-record system and map context."
+    }
+  ],
+  "attempts": [
+    {
+      "url": "https://upbhunaksha.gov.in/upbhunaksha/",
+      "method": "GET via official web viewer reader",
+      "result": "Viewer page loaded with Agra district/tehsil/village as default, so no Gorakhpur geometry inferred."
+    },
+    {
+      "url": "https://upbhulekh.gov.in/GeoDashboard/public_report?distCode=188",
+      "method": "GET via official web search/open",
+      "result": "Official dashboard reports village map scanning/georeferencing counts for Gorakhpur district and tehsil; aggregate only, no point-specific test."
+    },
+    {
+      "url": "https://upbhunaksha.gov.in/bhunakshaserver/MapInfo/getVVVVExtentGeoref",
+      "method": "POST from earlier public two-level district/tehsil attempt",
+      "result": "HTTP 500; server trace referenced HTTP 403 from upstream GIS-code creation route. No valid village extent or feature was obtained."
+    }
+  ]
+}

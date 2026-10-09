@@ -1,0 +1,130 @@
+{
+  "name": "Acapulco",
+  "country": "Mexico",
+  "countryCode": "MX",
+  "rank": 768,
+  "point": [
+    16.8781918527816,
+    -99.8616372043014
+  ],
+  "population2025": 699888,
+  "schemaVersion": 1,
+  "kind": "city_parcel_source_research",
+  "checkedAt": "2026-10-09",
+  "populationUnit": "persons",
+  "status": "complete",
+  "verifiedSample": false,
+  "publicParcelGeometryFound": false,
+  "runtimeReadiness": "not_enabled_no_verified_public_geometry",
+  "priorEvidenceFiles": [],
+  "scopeLimits": "Bounded city-source review only. No citywide completeness is claimed. At most three complete public parcel polygons are retained. No owner or address fields and no credentials or token values are retained.",
+  "pointBasis": "UN WUP 2025 population-weighted settlement centroid; this is not a municipal boundary or a parcel-coverage claim.",
+  "registryFound": true,
+  "registryBasis": "The official municipal portal identifies a Dirección de Catastro e Impuesto Predial and lists its local office/contact. The 2026 municipal revenue law describes prints of verified/cadastrally registered parcel locations through digital cartography and a separate planimetric restitution vector coverage for not-yet-verified urban parcels. This confirms municipal cadastral activity, not a public vector download.",
+  "resultCategory": "municipal_cadastre_confirmed_no_public_vector_verified",
+  "technicalBlocker": "No anonymous full-parcel feature service or vector schema was found in the official city materials inspected. The official Risk Atlas is a hazard/planning interface and its “predios” counts/layers do not establish cadastral parcel geometry.",
+  "remainingUncertainty": "Whether the municipal digital cartography is available through an unlisted public service or only through paid/in-person print and cadastral procedures. No WUP point parcel response was obtained.",
+  "research": {
+    "executedQueries": [
+      {
+        "language": "Spanish",
+        "query": "Acapulco Guerrero catastro municipal cartografía predial digital mapa consulta predios sitio oficial",
+        "scope": "Find city-specific cadastre evidence and an anonymous safe full-polygon schema.",
+        "result": "Official city portal identifies Catastro e Impuesto Predial, and the 2026 municipal fee schedule documents printed parcel locations from digital cartography. No vector service/schema was identified; the Risk Atlas is not cadastral parcel coverage.",
+        "actualResultUrls": [
+          "https://acapulco.gob.mx/predial/",
+          "https://acapulco.gob.mx/transparencia/descargar.php?d=%2Ftransparencia%2Fwp-content%2Fuploads%2Ffinanzas%2Finfofinanciera%2FPeriodico_Oficial_Ley_Ingresos_2026.pdf",
+          "https://acapulco.gob.mx/pcivil/mapa_atlasdigital.html"
+        ],
+        "executionMethod": "Separate Spanish-language discovery plus official municipal service and map inspection."
+      },
+      {
+        "language": "English",
+        "query": "Acapulco Mexico official municipal cadastral parcel map GIS digital cartography property tax",
+        "scope": "Cross-check local registry and public GIS publication.",
+        "result": "No separate official public parcel-geometry service was found; municipal cadastre office and cartography documentation provide registry evidence.",
+        "actualResultUrls": [
+          "https://acapulco.gob.mx/predial/",
+          "https://acapulco.gob.mx/pcivil/mapa_atlasdigital.html"
+        ],
+        "executionMethod": "Separate English-language discovery followed by official-source inspection."
+      }
+    ],
+    "officialSources": [
+      {
+        "url": "https://acapulco.gob.mx/predial/",
+        "httpStatus": 200,
+        "observation": "Official city page lists the Dirección de Catastro e Impuesto Predial and its downtown office/contact for balance questions and clarifications."
+      },
+      {
+        "url": "https://acapulco.gob.mx/transparencia/descargar.php?d=%2Ftransparencia%2Fwp-content%2Fuploads%2Ffinanzas%2Finfofinanciera%2FPeriodico_Oficial_Ley_Ingresos_2026.pdf",
+        "observation": "2026 municipal revenue law lists fees for printed locations of already verified/cadastrally registered urban parcels via digital cartography, plus a distinct planimetric restitution vector coverage for unverified parcels."
+      },
+      {
+        "url": "https://acapulco.gob.mx/transparencia/wp-content/uploads/marcojuridico/leyes/Ley_266_Catastro_Municipal_Guerrero.pdf",
+        "observation": "Guerrero municipal cadastral law establishes cadastral/parcel map registers and the fields that may be held in cadastral records; it is not a published city vector service."
+      },
+      {
+        "url": "https://acapulco.gob.mx/pcivil/mapa_atlasdigital.html",
+        "observation": "Official interactive risk atlas contains hazard and planning layers with some parcel-related counts; it does not expose or establish a municipal cadastral parcel polygon layer."
+      }
+    ],
+    "viewerAndServiceTrace": {
+      "viewerUrl": "https://acapulco.gob.mx/pcivil/mapa_atlasdigital.html",
+      "apiBase": null,
+      "observedClientRoutes": [],
+      "notes": "Reviewed city Risk Atlas and the official Catastro/Predial service and fee documentation. No cadastral parcel feature schema/API was exposed. The city homepage map links to a general city map, not a cadastral parcel download."
+    }
+  },
+  "verifiedParcelResponse": null,
+  "source": {
+    "sourceId": "mx-acapulco-municipal-catastro",
+    "name": "Dirección de Catastro e Impuesto Predial de Acapulco de Juárez",
+    "url": "https://acapulco.gob.mx/predial/",
+    "operator": "H. Ayuntamiento Constitucional de Acapulco de Juárez, Guerrero",
+    "serviceType": "Municipal cadastre and property-tax office with local service/collection offices; official fee schedule documents printed parcel locations from digital cadastral cartography. No anonymous public parcel-vector endpoint was verified.",
+    "layer": null,
+    "geometryType": null,
+    "outputCrs": null,
+    "nativeIdField": null,
+    "nativeIdEvidence": "Municipal cadastre law defines cadastral keys and parcel map registers, but no public feature response or safe layer schema was inspected.",
+    "directGeometryQueryVerified": false,
+    "directMetadataSchemaVerified": false,
+    "personalAttributesRequested": false,
+    "scope": "Acapulco de Juárez municipal cadastre service evidence. Risk Atlas layers were not treated as parcel geometry."
+  },
+  "wupCityCode": 4567,
+  "cityId": "wup2025:4567",
+  "queueRank": 768,
+  "populationPlausibility2025": "High",
+  "centerLatLon": [
+    16.8781918527816,
+    -99.8616372043014
+  ],
+  "sourceIds": [],
+  "adapterReady": false,
+  "runtimeAssessment": {
+    "status": "not_enabled",
+    "reason": "City-specific registry source is confirmed, but a safe anonymous full-polygon response was not verified; no adapter or runtime integration was qualified."
+  },
+  "coverageAssessment": {
+    "claimedScope": "Official city registry/cadastre evidence only; no anonymous full-polygon response verified.",
+    "verifiedOpenScope": "Acapulco de Juárez municipal cadastre service evidence. Risk Atlas layers were not treated as parcel geometry.",
+    "citywideVerified": false,
+    "countrywideVerified": false
+  },
+  "registryEvidenceUrls": [
+    "https://acapulco.gob.mx/predial/",
+    "https://acapulco.gob.mx/transparencia/descargar.php?d=%2Ftransparencia%2Fwp-content%2Fuploads%2Ffinanzas%2Finfofinanciera%2FPeriodico_Oficial_Ley_Ingresos_2026.pdf",
+    "https://acapulco.gob.mx/transparencia/wp-content/uploads/marcojuridico/leyes/Ley_266_Catastro_Municipal_Guerrero.pdf",
+    "https://acapulco.gob.mx/pcivil/mapa_atlasdigital.html"
+  ],
+  "rootPrimaryReadback": {
+    "url": "https://acapulco.gob.mx/predial/",
+    "fetch": 200,
+    "contentType": "text/html; charset=UTF-8",
+    "title": "Agencias Recaudadoras de Impuestos &#8211; H. Ayuntamiento Constitucional de Acapulco de Juárez"
+  },
+  "rootReviewNote": "Root reviewed primary local institutional/service evidence and retained the actual access, coverage and identity limits. Direct readback errors are distinct from indexed primary evidence and do not prove absent data. No public full geometry was verified for this city.",
+  "rootReviewedAt": "2026-10-09T03:28:12.559388+00:00"
+}

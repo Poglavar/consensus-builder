@@ -1,0 +1,65 @@
+{
+  "schemaVersion": "1.0",
+  "checkedAt": "2026-10-09",
+  "cityRecord": "city-7656-aboh.json",
+  "purpose": "Document first-party local registry/map evidence and bounded anonymous geometry access review.",
+  "scopeLimits": {
+    "maxFullPolygonsRetainedInCityRecord": 0,
+    "maxFullPolygonsRetainedInReview": 0,
+    "maxFullPolygonsRetainedInRepository": 0,
+    "ownerOrAddressDataRetained": false,
+    "credentialsOrTokenValuesRetained": false,
+    "citywideCompletenessAsserted": false
+  },
+  "assessment": "Official Imo Ministry pages document land administration and IGIS services but do not link an anonymous parcel map or geometry API. No endpoint was found to query safely. Whether the state IGIS or a local land office provides registry coverage for Aboh Mbaise; no city-specific first-party evidence was found.",
+  "registryAssessment": "The Imo State ministry documents land administration and IGIS, but no city-specific Aboh Mbaise registry, local office record or parcel source was verified. State-level functions alone do not establish coverage of this settlement.",
+  "officialPrimarySources": [
+    {
+      "url": "https://lands.im.gov.ng/services",
+      "observation": "Official Imo State Ministry page describing land administration, title verification, survey/mapping, and IGIS digital land-registry/geospatial database services."
+    },
+    {
+      "url": "https://lands.im.gov.ng/department",
+      "observation": "Official ministry department page describing Land Administration responsibilities."
+    },
+    {
+      "url": "https://lands.im.gov.ng/contact",
+      "observation": "Official ministry contact page identifies the responsible state ministry and Owerri office; no parcel viewer linked."
+    }
+  ],
+  "searchQueries": [
+    {
+      "language": "English",
+      "query": "Aboh Mbaise Imo State official land registry cadastral map GIS land records government",
+      "result": "Found the Imo State Ministry of Lands service and department pages describing land administration, survey/mapping and IGIS, but not a public map URL or parcel vector endpoint.",
+      "method": "Separate English-language search followed by official ministry page review."
+    },
+    {
+      "language": "Igbo/local search terms",
+      "query": "Aboh Mbaise cadastral map land registry Imo State land records official GIS",
+      "result": "Search results did not identify a local-government parcel map; official Imo Ministry service and department pages were the relevant local-government sources.",
+      "method": "Separate local-area search; the result set was primarily English because official public land records are published in English."
+    }
+  ],
+  "geometryDecision": "No parcel geometry retained; the exact point-level public response was unavailable or unverified.",
+  "coverageAssessment": {
+    "claimedScope": "The Imo State ministry documents land administration and IGIS, but no city-specific Aboh Mbaise registry, local office record or parcel source was verified. State-level functions alone do not establish coverage of this settlement.",
+    "verifiedOpenScope": "Official Imo Ministry pages document land administration and IGIS services but do not link an anonymous parcel map or geometry API. No endpoint was found to query safely.",
+    "citywideVerified": false,
+    "countrywideVerified": false,
+    "geometryVerified": false
+  },
+  "attempts": [
+    {
+      "url": "https://lands.im.gov.ng/",
+      "method": "GET official ministry home page and public links review",
+      "result": "HTTP 200. Homepage links to ministry information and service pages; no anonymous cadastral viewer link found."
+    },
+    {
+      "url": "https://lands.im.gov.ng/services",
+      "method": "GET official services page and public links review",
+      "result": "HTTP 200. IGIS and digital land registry functions described; no parcel feature endpoint exposed."
+    }
+  ],
+  "remainingUncertainty": "Whether IGIS has a separate public map outside the official ministry pages, and whether its coverage extends to the exact Aboh Mbaise locator."
+}

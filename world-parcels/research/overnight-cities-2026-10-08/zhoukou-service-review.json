@@ -1,0 +1,78 @@
+{
+  "schemaVersion": "1.0",
+  "checkedAt": "2026-10-09",
+  "cityRecord": "city-10012-zhoukou.json",
+  "purpose": "Document city-scope registry evidence and bounded public parcel-geometry route review.",
+  "scopeLimits": {
+    "maxFullPolygonsRetainedInCityRecord": 0,
+    "maxFullPolygonsRetainedInReview": 0,
+    "maxFullPolygonsRetainedInRepository": 0,
+    "ownerOrAddressDataRetained": false,
+    "credentialsOrTokenValuesRetained": false,
+    "citywideCompletenessAsserted": false
+  },
+  "assessment": "The official Zhoukou Natural Resources and Planning Bureau publishes local real-property registration service guidance, and current Zhoukou government material describes city parcel-map lookup by a QR code attached to a property certificate. This verifies city-local registration and parcel-map activity, but the documented parcel map is tied to a specific certificate; no anonymous generic parcel geometry service or safe public schema was verified.",
+  "registryAssessment": "The official Zhoukou Natural Resources and Planning Bureau publishes local real-property registration service guidance, and current Zhoukou government material describes city parcel-map lookup by a QR code attached to a property certificate. This verifies city-local registration and parcel-map activity, but the documented parcel map is tied to a specific certificate; no anonymous generic parcel geometry service or safe public schema was verified.",
+  "officialPrimarySources": [
+    {
+      "url": "https://zrzyhghj.zhoukou.gov.cn/sitesources/zrzyj/page_pc/fw/bdcdjzn/article7b5f27c4b75c4215b028d7e5be703ac5.html",
+      "observation": "Official Zhoukou Natural Resources and Planning Bureau registration guide documents local real-property registration and applicant/legal-interest procedures."
+    },
+    {
+      "url": "https://www.zhoukou.gov.cn/page_pc/xwzx/zkyw/article28372389a4144b808367bc9ab4c7141f.html",
+      "observation": "Official Zhoukou government article describes parcel-map lookup using the QR code on a property certificate; it is not an anonymous public parcel query."
+    },
+    {
+      "url": "https://zrzyhghj.zhoukou.gov.cn/sitesources/zrzyj/page_pc/dt/sjdt/articlecab1ce8d7c714a2a815a3badd3165bd0.html",
+      "observation": "Official bureau report confirms city cadastral-map construction and registration activity."
+    }
+  ],
+  "searchQueries": [
+    {
+      "language": "Chinese (Simplified)",
+      "query": "周口市 不动产登记 地籍图 房产证 二维码 宗地图 官方",
+      "result": "周口市自然资源和规划局公布不动产登记办事指南；市政府材料介绍通过不动产权证书二维码查询宗地图。该流程依赖特定证书二维码，不是通用匿名地块图层；未核实公开几何接口或 WUP 点覆盖。",
+      "urls": [
+        "https://zrzyhghj.zhoukou.gov.cn/sitesources/zrzyj/page_pc/fw/bdcdjzn/article7b5f27c4b75c4215b028d7e5be703ac5.html",
+        "https://www.zhoukou.gov.cn/page_pc/xwzx/zkyw/article28372389a4144b808367bc9ab4c7141f.html",
+        "https://zrzyhghj.zhoukou.gov.cn/sitesources/zrzyj/page_pc/dt/sjdt/articlecab1ce8d7c714a2a815a3badd3165bd0.html"
+      ],
+      "scope": "Verify city-local registry/cadastre evidence and inspect safe anonymous geometry routes."
+    },
+    {
+      "language": "English",
+      "query": "Zhoukou China official real estate registration parcel map cadastral QR code public GIS",
+      "result": "Official city sources confirm a real-property registration bureau and parcel-map activity. The publicized map lookup is accessed through a QR code attached to an individual property certificate, not a generic anonymous parcel layer; no public geometry schema or exact-point coverage was verified.",
+      "urls": [
+        "https://zrzyhghj.zhoukou.gov.cn/sitesources/zrzyj/page_pc/fw/bdcdjzn/article7b5f27c4b75c4215b028d7e5be703ac5.html",
+        "https://www.zhoukou.gov.cn/page_pc/xwzx/zkyw/article28372389a4144b808367bc9ab4c7141f.html",
+        "https://zrzyhghj.zhoukou.gov.cn/sitesources/zrzyj/page_pc/dt/sjdt/articlecab1ce8d7c714a2a815a3badd3165bd0.html"
+      ],
+      "scope": "Cross-check source identity, service availability, and public full geometry at the WUP point."
+    }
+  ],
+  "serviceChecks": [
+    {
+      "url": "https://zrzyhghj.zhoukou.gov.cn/sitesources/zrzyj/page_pc/fw/bdcdjzn/article7b5f27c4b75c4215b028d7e5be703ac5.html",
+      "method": "GET public official source/schema or bounded exact-WUP feature query; no personal or property-specific input",
+      "result": "Official Zhoukou source reviewed; city parcel-map activity is described, but map retrieval relies on an individual property certificate QR code."
+    },
+    {
+      "url": "https://www.zhoukou.gov.cn/page_pc/xwzx/zkyw/article28372389a4144b808367bc9ab4c7141f.html",
+      "method": "GET public official source/schema or bounded exact-WUP feature query; no personal or property-specific input",
+      "result": "Official Zhoukou source reviewed; city parcel-map activity is described, but map retrieval relies on an individual property certificate QR code."
+    },
+    {
+      "url": "https://zrzyhghj.zhoukou.gov.cn/sitesources/zrzyj/page_pc/dt/sjdt/articlecab1ce8d7c714a2a815a3badd3165bd0.html",
+      "method": "GET public official source/schema or bounded exact-WUP feature query; no personal or property-specific input",
+      "result": "Official Zhoukou source reviewed; city parcel-map activity is described, but map retrieval relies on an individual property certificate QR code."
+    }
+  ],
+  "geometryEvidence": null,
+  "privacy": "No owner, address, account, taxpayer, applicant, assessment, sale, or identity fields were requested or retained; no account-like token value was stored.",
+  "runtimeAssessment": {
+    "status": "not_ready_no_verified_anonymous_geometry",
+    "reason": "No generic anonymous parcel geometry service or safe feature schema was verified. The publicized map flow is linked to an individual property certificate QR code; no such property-specific query was attempted."
+  },
+  "geometryDisposition": "No full geometry sample retained because no safe anonymous full-polygon schema and valid feature identity at the WUP point were verified."
+}

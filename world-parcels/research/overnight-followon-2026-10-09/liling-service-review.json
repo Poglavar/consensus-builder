@@ -1,0 +1,75 @@
+{
+  "schemaVersion": "1.0",
+  "checkedAt": "2026-10-09",
+  "cityRecord": "city-10828-liling.json",
+  "purpose": "Document independent city-specific registry source review and bounded anonymous geometry access investigation.",
+  "scopeLimits": {
+    "maxFullPolygonsRetainedInCityRecord": 0,
+    "maxFullPolygonsRetainedInReview": 0,
+    "maxFullPolygonsRetainedInRepository": 3,
+    "ownerOrAddressDataRetained": false,
+    "credentialsOrTokenValuesRetained": false,
+    "citywideCompletenessAsserted": false
+  },
+  "assessment": "The official-source search found registration/counter services but no public cadastral parcel viewer, endpoint, schema or anonymous geometry response.",
+  "registryAssessment": "The Hunan Provincial Department of Natural Resources and Hunan Government report Liling City’s real-estate registration center and Liling Natural Resources Bureau activity; this is direct city-specific registry evidence.",
+  "officialPrimarySources": [
+    {
+      "title": "Hunan Natural Resources Dept. report on Liling registration window",
+      "url": "https://zrzyt.hunan.gov.cn/xxgk/gzdt/sxxx/202409/t20240925_33462925.html",
+      "observation": "Official provincial natural-resources report identifies Liling City Civil Center real-estate registration window and local registration center."
+    },
+    {
+      "title": "Hunan Government report on Liling Natural Resources Bureau",
+      "url": "https://www.hunan.gov.cn/hnszf/hnyw/szdt/202509/t20250917_33806182.html",
+      "observation": "Official provincial government article describes Liling Natural Resources Bureau and Liling real-estate registration center services."
+    },
+    {
+      "title": "Hunan Government Services real-estate registration guide",
+      "url": "https://zwfw-new.hunan.gov.cn/onething/v3/bszn.jsp?param=f5c242c1143e6d1dba1267f695bde74e_96304a05189e0911912b6bcc15b811fbdf896a47d1d6a94241e6f8e5d3e0f0b952b3cc5a4a79b615a65a280ac444f345f4b63fbfa6f787eb7fe2369b356a51b9a5e0732dd1c0437574457fd9cd837b337e830af7af8eb82668c1efd3fa6b214414ac42745e8f08029c3626a0a29d22dc462a270435cf75467d3b5b552496fc83999bcb7cc55cde040dd8bd133895bed6594f3ba71881629dc79fa354816c5241c126a3d9a9dd7698a6b68a9e972651f8ba6fcd160833e27e05ea91b7e40a6a61d2d2fc80f00d0cd1d902ade1e1f4acfe16368075f5414694",
+      "observation": "Generic provincial service guide; confirms registration service, not parcel geometry."
+    }
+  ],
+  "searchQueries": [
+    {
+      "language": "English",
+      "query": "Liling China official land registration cadastral parcel map GIS natural resources bureau",
+      "executionMethod": "Executed web search",
+      "resultUrls": [
+        "https://zrzyt.hunan.gov.cn/xxgk/gzdt/sxxx/202409/t20240925_33462925.html",
+        "https://www.hunan.gov.cn/hnszf/hnyw/szdt/202509/t20250917_33806182.html",
+        "https://zwfw-new.hunan.gov.cn/onething/v3/bszn.jsp?param=f5c242c1143e6d1dba1267f695bde74e_96304a05189e0911912b6bcc15b811fbdf896a47d1d6a94241e6f8e5d3e0f0b952b3cc5a4a79b615a65a280ac444f345f4b63fbfa6f787eb7fe2369b356a51b9a5e0732dd1c0437574457fd9cd837b337e830af7af8eb82668c1efd3fa6b214414ac42745e8f08029c3626a0a29d22dc462a270435cf75467d3b5b552496fc83999bcb7cc55cde040dd8bd133895bed6594f3ba71881629dc79fa354816c5241c126a3d9a9dd7698a6b68a9e972651f8ba6fcd160833e27e05ea91b7e40a6a61d2d2fc80f00d0cd1d902ade1e1f4acfe16368075f5414694"
+      ]
+    },
+    {
+      "language": "Chinese",
+      "query": "醴陵市 不动产登记中心 自然资源局 官方 房产登记 地籍图",
+      "executionMethod": "Executed web search",
+      "resultUrls": [
+        "https://zrzyt.hunan.gov.cn/xxgk/gzdt/sxxx/202409/t20240925_33462925.html",
+        "https://www.hunan.gov.cn/hnszf/hnyw/szdt/202509/t20250917_33806182.html",
+        "https://zwfw-new.hunan.gov.cn/onething/v3/bszn.jsp?param=f5c242c1143e6d1dba1267f695bde74e_96304a05189e0911912b6bcc15b811fbdf896a47d1d6a94241e6f8e5d3e0f0b952b3cc5a4a79b615a65a280ac444f345f4b63fbfa6f787eb7fe2369b356a51b9a5e0732dd1c0437574457fd9cd837b337e830af7af8eb82668c1efd3fa6b214414ac42745e8f08029c3626a0a29d22dc462a270435cf75467d3b5b552496fc83999bcb7cc55cde040dd8bd133895bed6594f3ba71881629dc79fa354816c5241c126a3d9a9dd7698a6b68a9e972651f8ba6fcd160833e27e05ea91b7e40a6a61d2d2fc80f00d0cd1d902ade1e1f4acfe16368075f5414694"
+      ]
+    }
+  ],
+  "geometryDecision": {
+    "publicParcelGeometryFound": false,
+    "sampleFile": null,
+    "details": "The official-source search found registration/counter services but no public cadastral parcel viewer, endpoint, schema or anonymous geometry response."
+  },
+  "coverageAssessment": {
+    "claimedScope": "The Hunan Provincial Department of Natural Resources and Hunan Government report Liling City’s real-estate registration center and Liling Natural Resources Bureau activity; this is direct city-specific registry evidence.",
+    "verifiedOpenScope": "The official-source search found registration/counter services but no public cadastral parcel viewer, endpoint, schema or anonymous geometry response.",
+    "citywideVerified": false,
+    "countrywideVerified": false
+  },
+  "attempts": [
+    {
+      "attempt": "official source/UI and public service inspection",
+      "result": "The official-source search found registration/counter services but no public cadastral parcel viewer, endpoint, schema or anonymous geometry response.",
+      "credentialsUsed": false,
+      "personalPropertyFieldsRequested": false
+    }
+  ],
+  "remainingUncertainty": "No city parcel-map endpoint or point-to-parcel result was found; this is not a claim that no data exist."
+}

@@ -1,0 +1,68 @@
+{
+  "schemaVersion": "1.0",
+  "checkedAt": "2026-10-09",
+  "cityRecord": "city-700-lviv.json",
+  "purpose": "Read-only local registry and parcel-service discovery; no runtime or global changes.",
+  "scopeLimits": {
+    "maxFullPolygonsRetainedInThisCityReport": 0,
+    "maxFullPolygonsRetainedAcrossCityReview": 0,
+    "ownerOrAddressDataRetained": false,
+    "accountCredentialsOrPublicTokenValuesRetained": false
+  },
+  "assessment": "Official regional StateGeoCadastre page describes public cadastral map contents, parcel-location search, and its map.land.gov.ua link. The linked map.land.gov.ua route could not be opened by the research tool, and no anonymous geometry service schema was available for safe inspection. No coordinate/property query was made.",
+  "searchQueries": [
+    {
+      "language": "English",
+      "query": "Lviv Ukraine public cadastral map official land parcels cadastral map service",
+      "result": "The official Lviv regional office of Derzhgeokadastr describes Ukraine’s public cadastral map, including parcel boundaries and location-based search by oblast, district, and settlement. Its linked map.land.gov.ua service route was inaccessible to the web research tool, so no live service schema or geometry was verified.",
+      "method": "Separate language-specific search and official source/service review; no property-specific lookup."
+    },
+    {
+      "language": "Ukrainian",
+      "query": "Львівська область публічна кадастрова карта офіційний Держгеокадастр Львів міська рада кадастр",
+      "result": "Офіційна сторінка Головного управління Держгеокадастру у Львівській області описує публічну кадастрову карту з межами ділянок і пошуком за місцем розташування (область, район, населений пункт). Посилання на map.land.gov.ua недоступне інструменту дослідження, тому актуальну схему сервісу та геометрію не перевірено.",
+      "method": "Separate language-specific search and official source/service review; no property-specific lookup."
+    }
+  ],
+  "officialPrimarySources": [
+    {
+      "url": "https://lvivska.land.gov.ua/mapua/",
+      "observation": "Official regional StateGeoCadastre page describes public cadastral map contents, parcel-location search, and its map.land.gov.ua link."
+    },
+    {
+      "url": "https://land.gov.ua/faq/",
+      "observation": "Official StateGeoCadastre FAQ describes the public cadastral map as graphical representation of registered parcels and cautions that cadastral data are not address-searchable."
+    },
+    {
+      "url": "https://map.land.gov.ua/",
+      "observation": "The linked public map root could not be opened by the research web tool; no live service status or feature response was established."
+    }
+  ],
+  "attempts": [
+    {
+      "source": "https://lvivska.land.gov.ua/mapua/",
+      "outcome": "Official regional StateGeoCadastre page describes public cadastral map contents, parcel-location search, and its map.land.gov.ua link.",
+      "fieldsRequested": [],
+      "sensitiveFieldsRequested": false
+    },
+    {
+      "source": "https://land.gov.ua/faq/",
+      "outcome": "Official StateGeoCadastre FAQ describes the public cadastral map as graphical representation of registered parcels and cautions that cadastral data are not address-searchable.",
+      "fieldsRequested": [],
+      "sensitiveFieldsRequested": false
+    },
+    {
+      "source": "https://map.land.gov.ua/",
+      "outcome": "The linked public map root could not be opened by the research web tool; no live service status or feature response was established.",
+      "fieldsRequested": [],
+      "sensitiveFieldsRequested": false
+    }
+  ],
+  "geometryDecision": "No geometry retained; no public parcel feature response with a verified safe native identifier and complete geometry was obtained.",
+  "remainingUncertainty": "Whether the public viewer currently serves feature geometries or has access restrictions could not be established from the reachable official materials.",
+  "runtimeAssessment": {
+    "status": "not_assessed",
+    "reason": "No runtime adapter or contract test was performed."
+  },
+  "technicalBlocker": "The linked map.land.gov.ua route could not be opened by the research tool, and no anonymous geometry service schema was available for safe inspection. No coordinate/property query was made."
+}

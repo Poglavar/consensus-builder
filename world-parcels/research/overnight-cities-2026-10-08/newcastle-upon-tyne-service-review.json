@@ -1,0 +1,65 @@
+{
+  "schemaVersion": "1.0",
+  "checkedAt": "2026-10-09",
+  "cityRecord": "city-4536-newcastle-upon-tyne.json",
+  "purpose": "Document city-scope registry evidence and bounded public parcel-geometry route review.",
+  "scopeLimits": {
+    "maxFullPolygonsRetainedInCityRecord": 3,
+    "maxFullPolygonsRetainedInReview": 3,
+    "maxFullPolygonsRetainedInRepository": 3,
+    "ownerOrAddressDataRetained": false,
+    "credentialsOrTokenValuesRetained": false,
+    "citywideCompletenessAsserted": false
+  },
+  "assessment": "Official registry dataset and public download service verified; Newcastle geometry file/schema/sample not retrieved in this review.",
+  "registryAssessment": "HM Land Registry publishes the INSPIRE Index Polygons open dataset as per-local-authority files for registered freehold property locations in England and Wales. The dataset is city-relevant by local-authority partition, but this review did not retrieve Newcastle’s file or inspect its feature schema.",
+  "officialPrimarySources": [
+    {
+      "url": "https://www.data.gov.uk/dataset/811bcf4c-fbbf-4597-aa9c-3d5bd3bfd455/inspire-index-polygons-spatial-data",
+      "observation": "HM Land Registry publishes the INSPIRE Index Polygons open dataset as per-local-authority files for registered freehold property locations in England and Wales. The dataset is city-relevant by local-authority partition, but this review did not retrieve Newcastle’s file or inspect its feature schema."
+    },
+    {
+      "url": "https://use-land-property-data.service.gov.uk/datasets/inspire/download",
+      "observation": "HM Land Registry describes INSPIRE Index Polygons as a subset locating freehold registered property and states that separate files are provided for each local authority; the dataset is OGL and updated 8 July 2026. Its official Download Service link redirects in a loop in the web reader, so no HTTP status, city-file URL, feature schema, identifier, CRS, or geometry sample is asserted."
+    },
+    {
+      "url": "https://use-land-property-data.service.gov.uk/datasets/nps/tech-spec/1?back=true",
+      "observation": "HM Land Registry describes INSPIRE Index Polygons as a subset locating freehold registered property and states that separate files are provided for each local authority; the dataset is OGL and updated 8 July 2026. Its official Download Service link redirects in a loop in the web reader, so no HTTP status, city-file URL, feature schema, identifier, CRS, or geometry sample is asserted."
+    }
+  ],
+  "searchQueries": [
+    {
+      "language": "English",
+      "query": "Newcastle upon Tyne HM Land Registry INSPIRE Index Polygons local authority GML download",
+      "result": "Official registry dataset and public download service verified; Newcastle geometry file/schema/sample not retrieved in this review.",
+      "method": "Separate official-source-focused web search."
+    },
+    {
+      "language": "English",
+      "query": "site:data.gov.uk/dataset/811bcf4c-fbbf-4597-aa9c-3d5bd3bfd455 Newcastle local authority file GML",
+      "result": "Official registry dataset and public download service verified; Newcastle geometry file/schema/sample not retrieved in this review.",
+      "method": "Separate official-source-focused web search."
+    }
+  ],
+  "serviceChecks": [],
+  "geometryEvidence": null,
+  "accessReview": {
+    "publicAnonymousGeometryVerified": false,
+    "completeGeoreferencedPolygonCount": 0,
+    "geometryRetained": false,
+    "ownerAddressTaxOrPersonLookupRequested": false,
+    "authenticationOrCredentialsUsed": false,
+    "captchaOrPersonalFormSubmitted": false,
+    "routeInspectionStatus": "not_verified",
+    "reason": "HM Land Registry describes INSPIRE Index Polygons as a subset locating freehold registered property and states that separate files are provided for each local authority; the dataset is OGL and updated 8 July 2026. Its official Download Service link redirects in a loop in the web reader, so no HTTP status, city-file URL, feature schema, identifier, CRS, or geometry sample is asserted."
+  },
+  "privacy": "No parcel, owner, address, tax-account, or personal-data lookup was made. No credentials or CAPTCHA were used.",
+  "runtimeAssessment": "not_enabled_no_verified_public_geometry",
+  "rootRegistryReview": {
+    "checkedAt": "2026-10-09T02:44:16.698315+00:00",
+    "primaryUrls": [
+      "https://new.newcastle.gov.uk/planning-building-development/local-land-charges/official-searches"
+    ],
+    "basis": "Newcastle City Council explicitly offers searches of its local land-charges register and describes its LLC1 records. This is a concrete city-local land/property record service, distinct from the national HM Land Registry INSPIRE index dataset. Newcastle’s INSPIRE file/schema and any anonymous full-parcel geometry remain unverified."
+  }
+}

@@ -1,0 +1,145 @@
+{
+  "schemaVersion": 1,
+  "kind": "city_parcel_source_research",
+  "name": "Dhanbad",
+  "country": "India",
+  "countryCode": "IN",
+  "rank": 245,
+  "queueRank": 245,
+  "wupCityCode": 11445,
+  "cityId": "wup2025:11445",
+  "checkedAt": "2026-10-09",
+  "status": "complete",
+  "population2025": 2020181,
+  "populationUnit": "persons",
+  "populationPlausibility2025": "High",
+  "centerLatLon": [
+    23.7713639550489,
+    86.4146057192282
+  ],
+  "point": [
+    23.7713639550489,
+    86.4146057192282
+  ],
+  "pointBasis": "UN WUP 2025 population-weighted settlement centroid; this is not a municipal boundary or a parcel-coverage claim.",
+  "registryFound": true,
+  "registryBasis": "Dhanbad District Administration explicitly offers land-record services through Jharbhoomi and locates the service at the DC Office in Dhanbad. The official DILRMP map-digitization report identifies Dhanbad district cadastral-map and parcel processing; this does not establish full geometry at the population settlement locator.",
+  "registryEvidenceUrls": [
+    "https://dhanbad.nic.in/service/land-records/",
+    "https://dilrmp.gov.in/dilrmpold/MapULPIN/tehsil-level/354"
+  ],
+  "verifiedSample": false,
+  "publicParcelGeometryFound": false,
+  "adapterReady": false,
+  "runtimeReadiness": "not_enabled_no_verified_public_geometry",
+  "sourceIds": [],
+  "source": {
+    "name": "Jharbhoomi / JharBhuNaksha public land-record and cadastral mapping portals",
+    "operator": "Department of Revenue, Registration and Land Reforms, Government of Jharkhand / NIC",
+    "url": "https://jharbhunaksha.jharkhand.gov.in/",
+    "geometryType": null,
+    "layer": null,
+    "nativeIdField": null,
+    "outputCrs": null
+  },
+  "freshResearch": {
+    "queries": [
+      {
+        "language": "English",
+        "query": "Dhanbad official cadastral parcel map Jharbhu Naksha public land records",
+        "executionMethod": "Executed English web search; official district land-record page opened and directly retrieved; linked state portal requested.",
+        "actualResultUrls": [
+          "https://dhanbad.nic.in/service/land-records/",
+          "https://dilrmp.gov.in/dilrmpold/MapULPIN/tehsil-level/354"
+        ],
+        "result": "The official city-district service directs users to the state land-record portal. DILRMP documents Dhanbad cadastral processing, but no native public polygon response was retrieved."
+      },
+      {
+        "language": "Hindi",
+        "query": "धनबाद भू नक्शा झारखण्ड जमीन नक्शा जारभू नक्शा आधिकारिक",
+        "executionMethod": "Executed separate Hindi web search and reviewed official district/state mapping leads.",
+        "actualResultUrls": [
+          "https://dhanbad.nic.in/hi/",
+          "https://jharbhoomi.jharkhand.gov.in/"
+        ],
+        "result": "Official Dhanbad and state land-record service leads found; linked state hosts did not respond to direct verified-TLS requests in this environment."
+      },
+      {
+        "language": "English",
+        "query": "site:gov.in \"JharBhuNaksha\" \"https\"",
+        "executionMethod": "Executed follow-up official-host search to identify the mapping portal independently of the textual land-record service.",
+        "actualResultUrls": [
+          "https://dilrmp.gov.in/dilrmpold/physcial/report/pdf/stateror",
+          "https://cdnbbsr.s3waas.gov.in/s3955cb567b6e38f4c6b3f28cc857fc38c/uploads/2021/09/2023092289.pdf"
+        ],
+        "result": "Official DILRMP and NIC materials publish https://jharbhunaksha.jharkhand.gov.in/ as the cadastral map portal. Its direct public home request also failed connection timeout, so no viewer bootstrap, layer schema or georeferenced parcel could be inspected."
+      }
+    ],
+    "requests": [
+      {
+        "url": "https://jharbhoomi.jharkhand.gov.in/",
+        "error": "fetch failed",
+        "cause": "UND_ERR_CONNECT_TIMEOUT"
+      },
+      {
+        "url": "https://dhanbad.nic.in/service/land-records/",
+        "resolvedUrl": "https://dhanbad.nic.in/service/land-records/",
+        "status": 200,
+        "bytes": 124512,
+        "sha256": "35e3bcb57bc0a2616f0eff7239955a9b16ae2ee196d75d6a6c792e8c265318c3",
+        "links": [
+          "https://dhanbad.nic.in/wp-content/themes/dbim-theme/js/jquery.min.js",
+          "https://dhanbad.nic.in/wp-content/themes/dbim-theme/js/jquery-migrate.min.js",
+          "https://dhanbad.nic.in/wp-content/themes/dbim-theme/js/core.min.js",
+          "https://dhanbad.nic.in/wp-content/plugins/awaas-accessibility/js/external.js",
+          "https://dhanbad.nic.in/wp-content/plugins/awaas-accessibility/js/accessibility.js",
+          "https://dhanbad.nic.in/wp-content/themes/dbim-theme/js/html5shiv.min.js",
+          "https://dhanbad.nic.in/wp-content/themes/dbim-theme/js/respond.min.js",
+          "https://dhanbad.nic.in/map-of-district/",
+          "https://dhanbad.nic.in/site-map/",
+          "https://dhanbad.nic.in/wp-content/plugins/common_utility/js/common.js",
+          "https://dhanbad.nic.in/wp-content/themes/dbim-theme/js/jquery.flexslider.js",
+          "https://dhanbad.nic.in/wp-content/themes/dbim-theme/js/easyResponsiveTabs.js",
+          "https://dhanbad.nic.in/wp-content/themes/dbim-theme/js/jquery.fancybox.js",
+          "https://dhanbad.nic.in/wp-content/themes/dbim-theme/js/style.switcher.js",
+          "https://dhanbad.nic.in/wp-content/themes/dbim-theme/js/menu.js",
+          "https://dhanbad.nic.in/wp-content/themes/dbim-theme/js/table.min.js",
+          "https://dhanbad.nic.in/wp-content/themes/dbim-theme/js/custom.js",
+          "https://dhanbad.nic.in/wp-content/themes/dbim-theme/js/extra.js"
+        ]
+      },
+      {
+        "url": "https://services.india.gov.in/service/detail/jharbhunaksha-is-an-digitized-maps-of-the-plots-to-the-citizens-jharkhand-1",
+        "error": "fetch failed",
+        "cause": "UND_ERR_CONNECT_TIMEOUT"
+      },
+      {
+        "url": "https://jharbhunaksha.jharkhand.gov.in/",
+        "error": "fetch failed",
+        "cause": "UND_ERR_CONNECT_TIMEOUT"
+      }
+    ],
+    "webFetchAttempts": [
+      {
+        "url": "https://jharbhoomi.jharkhand.gov.in/",
+        "result": "Web tool reported fetch timeout."
+      },
+      {
+        "url": "https://services.india.gov.in/service/detail/jharbhunaksha-is-an-digitized-maps-of-the-plots-to-the-citizens-jharkhand-1",
+        "result": "Indexed historic service describes citizen plot-map viewing/download. Current web open redirects to general India services page, so the old detail page is not asserted to remain live."
+      }
+    ],
+    "unqualifiedLead": "A third-party offline viewer describes hierarchy and extent APIs for the official WMS. It is an implementation lead only; its hierarchy, extents and raster renderings were not treated as full cadastral parcel geometry or city coverage."
+  },
+  "coverageAssessment": {
+    "claimedScope": "Dhanbad land-record administration and Jharkhand cadastral map services.",
+    "verifiedOpenScope": "Official district land-service information retrieved; state textual and cadastral map hosts timed out before a response. No parcel feature or point-scope geometry was returned.",
+    "citywideVerified": false,
+    "countrywideVerified": false
+  },
+  "resultCategory": "official_city_registry_public_geometry_not_verified",
+  "technicalBlocker": "The district landing page was reachable, but direct verified-TLS requests to the linked Jharbhoomi and separately documented JharBhuNaksha portal timed out before an HTTP response. Public parcel geometry protocol and coordinate reference could not be checked.",
+  "remainingUncertainty": "Availability of complete georeferenced urban parcel polygons at the Dhanbad WUP locator remains unverified; district cadastral-processing figures do not prove point coverage.",
+  "nextStep": "When the documented cadastral viewer is reachable, inspect its actual public selector, extent and feature routes, resolve the selected local map coordinate reference, and retrieve bounded full polygons without substituting a raster or extent rectangle.",
+  "rootReviewedAt": "2026-10-08T21:28:38.502067+00:00"
+}

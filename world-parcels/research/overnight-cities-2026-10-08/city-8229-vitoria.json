@@ -1,0 +1,179 @@
+{
+  "name": "Vitória",
+  "country": "Brazil",
+  "countryCode": "BR",
+  "rank": 419,
+  "point": [
+    -20.3291778419217,
+    -40.3424142412328
+  ],
+  "freshResearch": {
+    "queries": [
+      {
+        "language": "Portuguese",
+        "query": "Vitória ES prefeitura mapa lotes cadastrais GIS serviço ArcGIS mapa base imobiliário",
+        "scope": "Find the official municipal parcel layer and anonymous full geometry endpoint.",
+        "result": "Official municipal ArcGIS exposes a public Lote polygon layer (MapServer layer 101) in the city’s Mapa Base Imobiliário. The queued WUP point returned an empty feature collection; a central Vitória point returned current full polygons. Layer has 51,643 records and supports JSON/GeoJSON/PBF queries.",
+        "actualResultUrls": [
+          "https://gis.vitoria.es.gov.br/arcgis/rest/services/MapaBaseImobiliario/MapServer/101",
+          "https://www.vitoria.es.gov.br/",
+          "https://sistemas7.vitoria.es.gov.br/ControleImobiliarioWEB/Default.aspx"
+        ],
+        "executionMethod": "Official source search and read-only service inspection."
+      },
+      {
+        "language": "English",
+        "query": "Vitoria Brazil official municipal cadastral lots parcel map public ArcGIS",
+        "scope": "Cross-check public layer, ownership, and data-access distinction.",
+        "result": "The city-hosted ArcGIS layer is attributable to Vitória municipal mapping and serves full parcel polygons. The separate property-control portal is an administrative workflow and was not used for property-owner queries.",
+        "actualResultUrls": [
+          "https://gis.vitoria.es.gov.br/arcgis/rest/services/MapaBaseImobiliario/MapServer/101",
+          "https://sistemas7.vitoria.es.gov.br/ControleImobiliarioWEB/Default.aspx"
+        ],
+        "executionMethod": "Official source search and read-only service inspection."
+      }
+    ],
+    "portals": [
+      {
+        "name": "Mapa Base Imobiliário de Vitória – Lote",
+        "operator": "Prefeitura Municipal de Vitória; municipal ArcGIS service",
+        "homeUrl": "https://gis.vitoria.es.gov.br/arcgis/rest/services/MapaBaseImobiliario/MapServer/101",
+        "observation": "Public polygon layer in EPSG:31984 with 51,643 records, full municipal extent, JSON/GeoJSON/PBF query support. Safe attributes used were OBJECTID, codGeo, codLote and codGeoPoligono only."
+      },
+      {
+        "name": "Espelho do Cadastro Imobiliário",
+        "operator": "Prefeitura Municipal de Vitória",
+        "homeUrl": "https://sistemas7.vitoria.es.gov.br/ControleImobiliarioWEB/Default.aspx",
+        "observation": "Confirms municipal property-cadastre context; separate administrative portal was not queried for personal or property records."
+      }
+    ],
+    "requests": [
+      {
+        "url": "https://gis.vitoria.es.gov.br/arcgis/rest/services/MapaBaseImobiliario/MapServer/101",
+        "method": "GET",
+        "httpStatus": 200,
+        "contentType": "application/json",
+        "observation": "Layer metadata reports Lote polygon geometry, EPSG:31984, 51,643 records, object-ID query, JSON/GeoJSON/PBF formats."
+      },
+      {
+        "url": "https://gis.vitoria.es.gov.br/arcgis/rest/services/MapaBaseImobiliario/MapServer/101/query?where=1%3D1&geometry=-40.3424142412328%2C-20.3291778419217&geometryType=esriGeometryPoint&inSR=4326&spatialRel=esriSpatialRelIntersects&f=json&returnCountOnly=true",
+        "method": "GET",
+        "httpStatus": 200,
+        "contentType": "application/json",
+        "observation": "Exact WUP point query returned zero parcels."
+      },
+      {
+        "url": "https://gis.vitoria.es.gov.br/arcgis/rest/services/MapaBaseImobiliario/MapServer/101/query?where=1%3D1&outFields=OBJECTID%2CcodGeo%2CcodLote%2CcodGeoPoligono&returnGeometry=true&outSR=4326&f=geojson&objectIds=42271",
+        "method": "GET",
+        "httpStatus": 200,
+        "contentType": "application/geo+json; charset=UTF-8",
+        "observation": "Returns full polygon for safe composite identity codGeo=44208, codLote=17729. Native IDs are municipality parcel/lot fields; OBJECTID is transport/paging only."
+      }
+    ],
+    "historicalContext": []
+  },
+  "status": "complete",
+  "verifiedParcelResponse": {
+    "url": "https://gis.vitoria.es.gov.br/arcgis/rest/services/MapaBaseImobiliario/MapServer/101/query?where=1%3D1&outFields=OBJECTID%2CcodGeo%2CcodLote%2CcodGeoPoligono&returnGeometry=true&outSR=4326&f=geojson&objectIds=42271",
+    "httpStatus": 200,
+    "contentType": "application/geo+json; charset=UTF-8",
+    "featureCount": 1,
+    "featureId": "BR-VIX-LOTE-44208~17729",
+    "geometryType": "Polygon",
+    "coordinateCount": 20,
+    "fullGeometryReturned": true,
+    "clipped": false,
+    "locationBasis": "Bounded local sample near city center; queried at [-40.3128,-20.3155], not at WUP point [-40.3424142,-20.3291778]. WUP exact point returned zero.",
+    "attributePolicy": "Only OBJECTID, codGeo, codLote, codGeoPoligono requested; no owner/address fields."
+  },
+  "source": {
+    "id": "br-vitoria-lotes",
+    "adapter": "arcgis",
+    "name": "Vitória municipal Mapa Base Imobiliário Lote",
+    "operator": "Prefeitura Municipal de Vitória",
+    "endpoint": "https://gis.vitoria.es.gov.br/arcgis/rest/services/MapaBaseImobiliario/MapServer/101",
+    "layer": "Lote (MapServer layer 101)",
+    "geometryType": "esriGeometryPolygon",
+    "coordinateReferenceSystem": "EPSG:31984; query responses GeoJSON in EPSG:4326",
+    "idPrefix": "BR-VIX-LOTE-",
+    "idFields": [
+      "codGeo",
+      "codLote"
+    ],
+    "idFieldTypes": {
+      "codGeo": "string",
+      "codLote": "integer"
+    },
+    "objectIdField": "OBJECTID",
+    "outFields": [
+      "OBJECTID",
+      "codGeo",
+      "codLote",
+      "codGeoPoligono"
+    ],
+    "pageSize": 3,
+    "maxFeatures": 1000,
+    "maxBboxKm2": 1,
+    "boundsSrid": 31984,
+    "boundsProjection": "+proj=utm +zone=24 +south +ellps=GRS80 +units=m +no_defs",
+    "boundsQueryMode": "object-ids",
+    "idsQueryMode": "object-ids",
+    "directGeometryQueryVerified": true,
+    "personalAttributesRequested": false,
+    "sampleFile": "vitoria-lotes-samples.geojson",
+    "acceptanceFile": "vitoria-lotes-acceptance.json",
+    "qualityFile": "vitoria-lotes-quality.json",
+    "scope": "127 valid, distinct municipal Lote references verified in thirteen bounded 0.001-degree cells at the separately identified central Vitória reference [-20.3155,-40.3128]. The unchanged WUP locator has no exact-point parcel. Complete object-ID manifests, 31-row forced three-row paging over eleven geometry pages, all 127 fresh composite codGeo/codLote identities, explicit absence, footprint and binding passed in 21 checks. Native EPSG:31984 re-reads confirm four tiny source boundary-sliver pairs totaling 0.37279 m²; the largest pair is 0.17233 m², the largest fraction is 0.03197% of the smaller parcel, and overlap-part inscribed diameters are 0.00092–0.01331 m (GEOS tolerance 0.0001 m). Root accepts these documented narrow slivers for bounded reference use, consistent with the Philadelphia review. All original coordinates remain unchanged; no repair, clipping, snapping or selective deletion. Citywide completeness, source-wide identity uniqueness, survey accuracy and legal-title extent remain unverified."
+  },
+  "coverageAssessment": {
+    "claimedScope": "Municipal property-base Lote polygon layer; service extent is the municipality and layer contains 51,643 records.",
+    "verifiedOpenScope": "127 valid, distinct municipal Lote references verified in thirteen bounded 0.001-degree cells at the separately identified central Vitória reference [-20.3155,-40.3128]. The unchanged WUP locator has no exact-point parcel. Complete object-ID manifests, 31-row forced three-row paging over eleven geometry pages, all 127 fresh composite codGeo/codLote identities, explicit absence, footprint and binding passed in 21 checks. Native EPSG:31984 re-reads confirm four tiny source boundary-sliver pairs totaling 0.37279 m²; the largest pair is 0.17233 m², the largest fraction is 0.03197% of the smaller parcel, and overlap-part inscribed diameters are 0.00092–0.01331 m (GEOS tolerance 0.0001 m). Root accepts these documented narrow slivers for bounded reference use, consistent with the Philadelphia review. All original coordinates remain unchanged; no repair, clipping, snapping or selective deletion. Citywide completeness, source-wide identity uniqueness, survey accuracy and legal-title extent remain unverified.",
+    "countrywideVerified": false,
+    "citywideVerified": false
+  },
+  "registryFound": true,
+  "verifiedSample": true,
+  "resultCategory": "verified_public_geometry_runtime_enabled",
+  "technicalBlocker": null,
+  "remainingUncertainty": "Four native boundary sliver pairs are preserved and disclosed. WUP point is empty; app reference is central Vitória. Wider coverage, identity stability and legal-title/survey semantics remain unverified.",
+  "nextStep": "Verify the enabled bounded source in the local app.",
+  "schemaVersion": 1,
+  "checkedAt": "2026-10-08T23:34:23Z",
+  "wupCityCode": 8229,
+  "cityId": "wup2025:8229",
+  "runtimeReadiness": "enabled",
+  "adapterReady": true,
+  "centerLatLon": [
+    -20.3291778419217,
+    -40.3424142412328
+  ],
+  "queueRank": 419,
+  "population2025": 1226500,
+  "populationPlausibility2025": "High",
+  "populationUnit": "persons",
+  "pointBasis": "UN WUP 2025 population-weighted settlement centroid; this is not a municipal boundary or a parcel-coverage claim.",
+  "publicParcelGeometryFound": true,
+  "rootReviewedAt": "2026-10-08T23:48:32.668566+00:00",
+  "sourceIds": [
+    "br-vitoria-lotes"
+  ],
+  "runtimeAssessment": {
+    "status": "enabled",
+    "reason": "127 valid, distinct municipal Lote references verified in thirteen bounded 0.001-degree cells at the separately identified central Vitória reference [-20.3155,-40.3128]. The unchanged WUP locator has no exact-point parcel. Complete object-ID manifests, 31-row forced three-row paging over eleven geometry pages, all 127 fresh composite codGeo/codLote identities, explicit absence, footprint and binding passed in 21 checks. Native EPSG:31984 re-reads confirm four tiny source boundary-sliver pairs totaling 0.37279 m²; the largest pair is 0.17233 m², the largest fraction is 0.03197% of the smaller parcel, and overlap-part inscribed diameters are 0.00092–0.01331 m (GEOS tolerance 0.0001 m). Root accepts these documented narrow slivers for bounded reference use, consistent with the Philadelphia review. All original coordinates remain unchanged; no repair, clipping, snapping or selective deletion. Citywide completeness, source-wide identity uniqueness, survey accuracy and legal-title extent remain unverified.",
+    "acceptanceFile": "research/overnight-cities-2026-10-08/vitoria-lotes-root-acceptance.json",
+    "qualityFile": "research/overnight-cities-2026-10-08/vitoria-lotes-root-quality.json",
+    "qualityReviewFile": "research/overnight-cities-2026-10-08/vitoria-service-review.json"
+  },
+  "registryBasis": "Official municipal Mapa Base Imobiliário Lote layer is a public parcel-shaped municipal property-base feature layer. The separate property-control portal confirms the city maintains an urban property cadastre; legal registry status is not asserted.",
+  "registryEvidenceUrls": [
+    "https://gis.vitoria.es.gov.br/arcgis/rest/services/MapaBaseImobiliario/MapServer/101"
+  ],
+  "appCityId": "vitoria",
+  "scopeLimits": "127 valid, distinct municipal Lote references verified in thirteen bounded 0.001-degree cells at the separately identified central Vitória reference [-20.3155,-40.3128]. The unchanged WUP locator has no exact-point parcel. Complete object-ID manifests, 31-row forced three-row paging over eleven geometry pages, all 127 fresh composite codGeo/codLote identities, explicit absence, footprint and binding passed in 21 checks. Native EPSG:31984 re-reads confirm four tiny source boundary-sliver pairs totaling 0.37279 m²; the largest pair is 0.17233 m², the largest fraction is 0.03197% of the smaller parcel, and overlap-part inscribed diameters are 0.00092–0.01331 m (GEOS tolerance 0.0001 m). Root accepts these documented narrow slivers for bounded reference use, consistent with the Philadelphia review. All original coordinates remain unchanged; no repair, clipping, snapping or selective deletion. Citywide completeness, source-wide identity uniqueness, survey accuracy and legal-title extent remain unverified.",
+  "runtimeQualification": {
+    "sourceId": "br-vitoria-lotes",
+    "status": "enabled",
+    "acceptanceFile": "research/overnight-cities-2026-10-08/vitoria-lotes-root-acceptance.json",
+    "qualityFile": "research/overnight-cities-2026-10-08/vitoria-lotes-root-quality.json"
+  }
+}

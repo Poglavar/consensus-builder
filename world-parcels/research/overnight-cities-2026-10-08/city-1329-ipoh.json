@@ -1,0 +1,96 @@
+{
+  "schemaVersion": 1,
+  "kind": "city_parcel_source_research",
+  "checkedAt": "2026-10-09",
+  "name": "Ipoh",
+  "country": "Malaysia",
+  "countryCode": "MY",
+  "populationUnit": "persons",
+  "status": "complete",
+  "registryFound": true,
+  "registryBasis": "The Ipoh District and Land Office e-Tanah page documents the local land office and online services, and Ipoh City Council’s GIS page describes geospatial attribute-table data for the whole Ipoh area. The GIS page requires login; no anonymous cadastral layer or parcel-vector schema was verified.",
+  "registryEvidenceUrls": [
+    "https://ptg.perak.gov.my/portal/en/web/ipoh/perkhidmatan-atas-talian",
+    "https://gis.mbi.gov.my/"
+  ],
+  "verifiedSample": false,
+  "publicParcelGeometryFound": false,
+  "runtimeReadiness": "not_enabled_no_verified_public_geometry",
+  "wupCityCode": 1329,
+  "cityId": "wup2025:1329",
+  "centerLatLon": [
+    4.60296445909964,
+    101.095970212901
+  ],
+  "rank": 638,
+  "queueRank": 638,
+  "population2025": 823097,
+  "population2025k": 823.097,
+  "pointBasis": "UN WUP 2025 population-weighted settlement centroid; this is not a municipal boundary or a parcel-coverage claim.",
+  "technicalBlocker": "Local land-office services and a city GIS portal are verified, but the GIS portal is login-gated. No anonymous full-polygon endpoint, safe field schema, or complete citywide cadastral coverage was verified.",
+  "scopeLimits": "Source discovery only. Official evidence confirms local registry/land-record services only where stated in registryBasis; it does not establish complete citywide cadastral coverage or parcel geometry at the WUP point. No owner, address, tax, personal-identity, credential or account lookup was submitted or retained. No parcel geometry or feature attributes were retained.",
+  "remainingUncertainty": "Local land-office services and a city GIS portal are verified, but the GIS portal is login-gated. No anonymous full-polygon endpoint, safe field schema, or complete citywide cadastral coverage was verified.",
+  "research": {
+    "executedQueries": [
+      {
+        "language": "English",
+        "query": "Ipoh Perak official land office cadastral map GIS parcel land registry",
+        "scope": "Find first-party local registry/cadastre evidence and safe anonymous geometry-only routes; do not submit identity or property identifiers.",
+        "result": "The Ipoh District and Land Office e-Tanah page documents local online land services. Ipoh City Council GIS describes geospatial attribute-table data across Ipoh but requires login. No anonymous parcel geometry route was verified.",
+        "actualResultUrls": [
+          "https://ptg.perak.gov.my/portal/en/web/ipoh/perkhidmatan-atas-talian",
+          "https://gis.mbi.gov.my/"
+        ]
+      },
+      {
+        "language": "Malay",
+        "query": "Pejabat Tanah dan Daerah Ipoh rekod tanah peta kadaster lot GIS rasmi",
+        "scope": "Find first-party local registry/cadastre evidence and safe anonymous geometry-only routes; do not submit identity or property identifiers.",
+        "result": "Laman e-Tanah Pejabat Daerah dan Tanah Ipoh mengesahkan perkhidmatan tanah tempatan. Laman GIS Majlis Bandaraya Ipoh menyatakan data geospatial bagi seluruh Ipoh tetapi memerlukan log masuk. Tiada laluan geometri lot tanpa nama disahkan.",
+        "actualResultUrls": [
+          "https://ptg.perak.gov.my/portal/en/web/ipoh/perkhidmatan-atas-talian",
+          "https://gis.mbi.gov.my/"
+        ]
+      }
+    ],
+    "officialSources": [
+      {
+        "url": "https://ptg.perak.gov.my/portal/en/web/ipoh/perkhidmatan-atas-talian",
+        "observation": "Ipoh City Council GIS page says the system contains geospatial data displayed through attribute tables for the whole Ipoh, Perak area and shows a LOGIN requirement. No login was used."
+      },
+      {
+        "url": "https://gis.mbi.gov.my/",
+        "observation": "Perak e-Tanah page is specifically the Ipoh District and Land Office online-services page; it documents local land-office online services, not public vector geometry."
+      }
+    ],
+    "metadataReviewFile": "ipoh-service-review.json"
+  },
+  "source": {
+    "sourceId": "my-ipoh-registry-review",
+    "name": "Ipoh local registry/cadastre route review",
+    "operator": "Ipoh local land/registry authority (as qualified in registryBasis)",
+    "url": "https://ptg.perak.gov.my/portal/en/web/ipoh/perkhidmatan-atas-talian",
+    "scope": "Local land-office services and a city GIS portal are verified, but the GIS portal is login-gated. No anonymous full-polygon endpoint, safe field schema, or complete citywide cadastral coverage was verified.",
+    "nativeIdField": null,
+    "attributesRequested": [],
+    "identityBasis": "No safe parcel feature identifier was retrieved.",
+    "geometryStatus": "city_registry_basis_only_no_public_geometry_contract"
+  },
+  "coverageAssessment": {
+    "verifiedOpenScope": "Local land-office services and a city GIS portal are verified, but the GIS portal is login-gated. No anonymous full-polygon endpoint, safe field schema, or complete citywide cadastral coverage was verified.",
+    "notEstablished": [
+      "anonymous full-polygon access",
+      "complete citywide cadastral coverage",
+      "runtime source binding"
+    ],
+    "wupPointRelation": "No parcel geometry was returned or asserted."
+  },
+  "priorEvidenceFiles": [],
+  "populationPlausibility2025": "Moderate",
+  "sourceIds": [],
+  "point": [
+    4.60296445909964,
+    101.095970212901
+  ],
+  "rootReviewedAt": "2026-10-09T02:09:36.300766+00:00"
+}

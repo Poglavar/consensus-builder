@@ -1,0 +1,141 @@
+{
+  "schemaVersion": 1,
+  "kind": "city_parcel_source_research",
+  "checkedAt": "2026-10-09",
+  "populationUnit": "persons",
+  "status": "complete",
+  "pointBasis": "UN WUP 2025 population-weighted settlement centroid; this is not a municipal boundary or a parcel-coverage claim.",
+  "priorEvidenceFiles": [],
+  "sourceIds": [
+    "us-ca-fresno-county-parcels"
+  ],
+  "name": "Fresno",
+  "country": "United States",
+  "countryCode": "US",
+  "registryFound": true,
+  "registryBasis": "Fresno County Assessor and GIS sources document parcel mapping and a public county parcel FeatureServer. Its layer schema exposes APN and geometry without owner/address fields; the exact WUP locator intersects one full polygon. This establishes county GIS coverage at the locator, not citywide completeness or legal-survey accuracy.",
+  "registryEvidenceUrls": [
+    "https://www.fresnocountyca.gov/Departments/Assessor/Mapping",
+    "https://gisportal.co.fresno.ca.us/portal/home/",
+    "https://gisprod10.co.fresno.ca.us/server/rest/services/Hosted/Parcels/FeatureServer/0?f=pjson",
+    "https://gisprod10.co.fresno.ca.us/server/rest/services/Hosted/Parcels/FeatureServer/0/query"
+  ],
+  "verifiedSample": true,
+  "publicParcelGeometryFound": true,
+  "publicParcelGeometryCandidateFound": true,
+  "runtimeReadiness": "enabled",
+  "wupCityCode": 4099,
+  "cityId": "wup2025:4099",
+  "centerLatLon": [
+    36.7922501389848,
+    -119.77157818531
+  ],
+  "point": [
+    36.7922501389848,
+    -119.77157818531
+  ],
+  "rank": 785,
+  "queueRank": 785,
+  "population2025": 685330,
+  "population2025k": 685.33,
+  "populationPlausibility2025": "Low",
+  "scopeLimits": "106 valid distinct county parcel polygons verified in thirteen bounded 0.001-degree cells around the unchanged Fresno WUP settlement locator. Source-native string apn values are preserved unchanged; fid is used only for transport paging. Complete bounded paging, forced three-row pages, all 106 fresh native-ID reads, explicit absence, footprint and source binding passed in 25 requests. Independent metric EPSG:32611 GEOS found all geometries valid and distinct, with no sampled overlaps above 0.01 m² or operation errors. The original exact-point sample matches fresh full geometry unchanged. Native source CRS is EPSG:3857 (ArcGIS WKID102100); requested EPSG:4326 output is retained unchanged. County parcel reference identity is established; citywide completeness, survey accuracy, legal title, currentness and long-term identity continuity remain unverified.",
+  "remainingUncertainty": "Citywide completeness, legal title, currentness, survey accuracy and long-term identity continuity remain unverified.",
+  "research": {
+    "executedQueries": [
+      {
+        "language": "English (local government terminology)",
+        "query": "Fresno County assessor parcel map public GIS APN cadastral parcels official",
+        "scope": "Verify city-local land registry/cadastre evidence and inspect public anonymous parcel geometry without property-specific inputs.",
+        "result": "Same English-language local-government query terms: official Fresno County Assessor mapping and County GIS services were inspected. The sample comes from the County service, not the City service.",
+        "actualResultUrls": [
+          "https://www.fresnocountyca.gov/Departments/Assessor/Mapping",
+          "https://gisportal.co.fresno.ca.us/portal/home/",
+          "https://gisprod10.co.fresno.ca.us/server/rest/services/Hosted/Parcels/FeatureServer/0?f=pjson",
+          "https://gisprod10.co.fresno.ca.us/server/rest/services/Hosted/Parcels/FeatureServer/0/query"
+        ],
+        "executionMethod": "Language-specific web search and first-party source inspection; public service routes were tested only with city-level or exact WUP locator inputs."
+      },
+      {
+        "language": "English",
+        "query": "Fresno County California official GIS public parcel map APN polygon FeatureServer",
+        "scope": "Cross-check local registry/map evidence and distinguish an identified public parcel feature from general/topographic or application-only records.",
+        "result": "County Assessor mapping and GIS portal identify public parcel mapping. The public polygon layer schema contains APN but no owner/address fields; a bounded query at the exact WUP point returned one polygon. A separate City endpoint returned an ArcGIS service-not-started error and was not used.",
+        "actualResultUrls": [
+          "https://www.fresnocountyca.gov/Departments/Assessor/Mapping",
+          "https://gisportal.co.fresno.ca.us/portal/home/",
+          "https://gisprod10.co.fresno.ca.us/server/rest/services/Hosted/Parcels/FeatureServer/0?f=pjson",
+          "https://gisprod10.co.fresno.ca.us/server/rest/services/Hosted/Parcels/FeatureServer/0/query"
+        ],
+        "executionMethod": "English-language web search and first-party source/service inspection; no personal, owner, address, or property-specific query inputs submitted."
+      }
+    ],
+    "officialSources": [
+      {
+        "url": "https://www.fresnocountyca.gov/Departments/Assessor/Mapping",
+        "observation": "Official Fresno County Assessor mapping page describes APNs as real-property identifiers and links GIS parcel resources."
+      },
+      {
+        "url": "https://gisportal.co.fresno.ca.us/portal/home/",
+        "observation": "Official Fresno County GIS portal catalogs public hosted parcel GIS data."
+      },
+      {
+        "url": "https://gisprod10.co.fresno.ca.us/server/rest/services/Hosted/Parcels/FeatureServer/0?f=pjson",
+        "observation": "Public ArcGIS layer metadata returned HTTP 200 and identifies a polygon layer with safe APN and geometry fields; owner/address data were not requested."
+      },
+      {
+        "url": "https://gisprod10.co.fresno.ca.us/server/rest/services/Hosted/Parcels/FeatureServer/0/query",
+        "observation": "Exact WUP-point query returned HTTP 200 with one full polygon and APN 43614106. Geometry is retained separately without service attributes."
+      }
+    ]
+  },
+  "source": {
+    "name": "Fresno County public parcel polygons",
+    "urls": [
+      "https://www.fresnocountyca.gov/Departments/Assessor/Mapping",
+      "https://gisportal.co.fresno.ca.us/portal/home/",
+      "https://gisprod10.co.fresno.ca.us/server/rest/services/Hosted/Parcels/FeatureServer/0?f=pjson",
+      "https://gisprod10.co.fresno.ca.us/server/rest/services/Hosted/Parcels/FeatureServer/0/query"
+    ],
+    "operator": "Fresno County Assessor / GIS",
+    "url": "https://gisprod10.co.fresno.ca.us/server/rest/services/Hosted/Parcels/FeatureServer/0",
+    "serviceType": "ArcGIS public parcel polygons",
+    "nativeIdField": "apn",
+    "nativeIdEvidence": "Layer schema string apn; original APN 43614106 sample matches fresh full native-ID geometry. All 106 sampled identities verified fresh.",
+    "requestedAttributes": [
+      "fid",
+      "apn"
+    ],
+    "personalAttributesRequested": false,
+    "directGeometryQueryVerified": true,
+    "directMetadataSchemaVerified": true,
+    "scope": "106 valid distinct county parcel polygons verified in thirteen bounded 0.001-degree cells around the unchanged Fresno WUP settlement locator. Source-native string apn values are preserved unchanged; fid is used only for transport paging. Complete bounded paging, forced three-row pages, all 106 fresh native-ID reads, explicit absence, footprint and source binding passed in 25 requests. Independent metric EPSG:32611 GEOS found all geometries valid and distinct, with no sampled overlaps above 0.01 m² or operation errors. The original exact-point sample matches fresh full geometry unchanged. Native source CRS is EPSG:3857 (ArcGIS WKID102100); requested EPSG:4326 output is retained unchanged. County parcel reference identity is established; citywide completeness, survey accuracy, legal title, currentness and long-term identity continuity remain unverified."
+  },
+  "coverageAssessment": {
+    "claimedScope": "Fresno County Assessor and GIS sources document parcel mapping and a public county parcel FeatureServer. Its layer schema exposes APN and geometry without owner/address fields; the exact WUP locator intersects one full polygon. This establishes county GIS coverage at the locator, not citywide completeness or legal-survey accuracy.",
+    "verifiedOpenScope": "106 valid distinct county parcel polygons verified in thirteen bounded 0.001-degree cells around the unchanged Fresno WUP settlement locator. Source-native string apn values are preserved unchanged; fid is used only for transport paging. Complete bounded paging, forced three-row pages, all 106 fresh native-ID reads, explicit absence, footprint and source binding passed in 25 requests. Independent metric EPSG:32611 GEOS found all geometries valid and distinct, with no sampled overlaps above 0.01 m² or operation errors. The original exact-point sample matches fresh full geometry unchanged. Native source CRS is EPSG:3857 (ArcGIS WKID102100); requested EPSG:4326 output is retained unchanged. County parcel reference identity is established; citywide completeness, survey accuracy, legal title, currentness and long-term identity continuity remain unverified.",
+    "citywideVerified": false,
+    "countrywideVerified": false
+  },
+  "runtimeAssessment": {
+    "status": "enabled",
+    "reason": "106 valid distinct county parcel polygons verified in thirteen bounded 0.001-degree cells around the unchanged Fresno WUP settlement locator. Source-native string apn values are preserved unchanged; fid is used only for transport paging. Complete bounded paging, forced three-row pages, all 106 fresh native-ID reads, explicit absence, footprint and source binding passed in 25 requests. Independent metric EPSG:32611 GEOS found all geometries valid and distinct, with no sampled overlaps above 0.01 m² or operation errors. The original exact-point sample matches fresh full geometry unchanged. Native source CRS is EPSG:3857 (ArcGIS WKID102100); requested EPSG:4326 output is retained unchanged. County parcel reference identity is established; citywide completeness, survey accuracy, legal title, currentness and long-term identity continuity remain unverified.",
+    "acceptanceFile": "research/overnight-cities-2026-10-08/fresno-county-root-acceptance.json",
+    "qualityFile": "research/overnight-cities-2026-10-08/fresno-county-root-quality.json",
+    "qualityReviewFile": "research/overnight-cities-2026-10-08/fresno-root-quality-review.json"
+  },
+  "resultCategory": "verified_public_geometry_runtime_enabled",
+  "sampleFile": "research/overnight-cities-2026-10-08/city-4099-fresno-samples.geojson",
+  "sampleFeatureCount": 1,
+  "sampleCrs": "EPSG:4326",
+  "geometryEvidence": "The official Fresno County parcel FeatureServer layer 0 is esriGeometryPolygon and its schema includes APN plus geometry, with no owner/address fields. The exact WUP locator query returned one full polygon (APN 43614106); only APN and geometry were retained. This is county map evidence, not a citywide completeness or legal-boundary claim.",
+  "adapterReady": true,
+  "appCityId": "fresno",
+  "runtimeQualification": {
+    "sourceId": "us-ca-fresno-county-parcels",
+    "status": "enabled",
+    "acceptanceFile": "research/overnight-cities-2026-10-08/fresno-county-root-acceptance.json",
+    "qualityFile": "research/overnight-cities-2026-10-08/fresno-county-root-quality.json"
+  },
+  "rootReviewedAt": "2026-10-09T03:20:11.881013+00:00"
+}

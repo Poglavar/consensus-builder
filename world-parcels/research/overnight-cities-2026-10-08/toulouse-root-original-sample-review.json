@@ -1,0 +1,32 @@
+{
+  "schemaVersion": 1,
+  "sampleFile": "samples/toulouse-ign-pci-near-wup839.geojson",
+  "features": [
+    {
+      "nativeOriginalProperties": {
+        "idu": "31555827AD0628"
+      },
+      "runtimeId": "FR-PCI-31555827AD0628",
+      "rawCoordinateArraysIdentical": true,
+      "topologicallyIdentical": true,
+      "metricSrid": 32631,
+      "hausdorffDistanceM": 0.0,
+      "symmetricDifferenceM2": 0.0,
+      "sourceCoordinatesModified": false
+    },
+    {
+      "nativeOriginalProperties": {
+        "idu": "31555828AB0562"
+      },
+      "runtimeId": "FR-PCI-31555828AB0562",
+      "rawCoordinateArraysIdentical": true,
+      "topologicallyIdentical": true,
+      "metricSrid": 32631,
+      "hausdorffDistanceM": 0.0,
+      "symmetricDifferenceM2": 0.0,
+      "sourceCoordinatesModified": false
+    }
+  ],
+  "fullGeometryRetainedInReview": false,
+  "sourceCoordinatesModified": false
+}

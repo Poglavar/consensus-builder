@@ -1,0 +1,54 @@
+{
+  "schemaVersion": "1.0",
+  "checkedAt": "2026-10-09",
+  "cityRecord": "city-4483-amritsar.json",
+  "purpose": "Document first-party local registry/map evidence and bounded anonymous geometry access review.",
+  "scopeLimits": {
+    "maxFullPolygonsRetainedInCityRecord": 0,
+    "maxFullPolygonsRetainedInReview": 0,
+    "maxFullPolygonsRetainedInRepository": 0,
+    "ownerOrAddressDataRetained": false,
+    "credentialsOrTokenValuesRetained": false,
+    "citywideCompletenessAsserted": false
+  },
+  "assessment": "Punjab’s official viewer exposes public parcel lookup routes. At the WUP city point, the Amritsar-1 central hierarchy resolves to a patwar with no map-backed village entries; nearby unbacked urban villages are marked hasData=false. No exact point parcel geometry was returned or retained.",
+  "registryAssessment": "Viewer confirms Amritsar-1 and Amritsar-2 hierarchies. Central Amritsar-1 point vicinity has no map-backed village under the selected urban patwar; no city-center parcel geometry verified.",
+  "officialPrimarySources": [
+    {
+      "url": "https://amritsar.nic.in/fard-online/",
+      "observation": "District administration says land records are publicly accessible through Punjab Land Records / FARD Online."
+    },
+    {
+      "url": "https://gisbhunaksha.punjab.gov.in/",
+      "observation": "Official Punjab BhuNaksha viewer exposes anonymous hierarchy, map-extent and coordinate-to-plot endpoints."
+    },
+    {
+      "url": "https://jamabandi.punjab.gov.in/CadastralMap.aspx/TermsAndConditions.aspx",
+      "observation": "Punjab Land Records bilingual service provides a village-wise cadastral map selector and viewing-only terms."
+    }
+  ],
+  "searchQueries": [
+    {
+      "language": "English",
+      "query": "Amritsar official cadastral parcel map land records Punjab India jamabandi bhunaksha GIS official",
+      "result": "Punjab’s official viewer exposes public parcel lookup routes. At the WUP city point, the Amritsar-1 central hierarchy resolves to a patwar with no map-backed village entries; nearby unbacked urban villages are marked hasData=false. No exact point parcel geometry was returned or retained.",
+      "method": "Separate web search followed by direct review of relevant official sources."
+    },
+    {
+      "language": "Punjabi",
+      "query": "ਅੰਮ੍ਰਿਤਸਰ ਸਰਕਾਰੀ ਭੂ ਨਕਸ਼ਾ ਜਮਾਬੰਦੀ ਪੰਜਾਬ ਭੂ ਅਭਿਲੇਖ ਨਕਸ਼ਾ",
+      "result": "Punjab’s official viewer exposes public parcel lookup routes. At the WUP city point, the Amritsar-1 central hierarchy resolves to a patwar with no map-backed village entries; nearby unbacked urban villages are marked hasData=false. No exact point parcel geometry was returned or retained.",
+      "method": "Separate web search followed by direct review of relevant official sources."
+    }
+  ],
+  "serviceChecks": [
+    {
+      "url": "https://gisbhunaksha.punjab.gov.in/rest/Levels/ListsAfterLevel",
+      "method": "POST",
+      "httpStatus": 200,
+      "observation": "Anonymous hierarchy confirmed state 03 / Amritsar district 02, tehsils 016 and 017. Exact central Amritsar-1 path resolves to Patwar 031 Bharariwal; with hasmap=true it has no map-backed villages. With hasmap=false, the visible central villages are marked hasData=false."
+    }
+  ],
+  "geometryEvidence": null,
+  "runtimeAssessment": "not_enabled_no_verified_public_geometry"
+}

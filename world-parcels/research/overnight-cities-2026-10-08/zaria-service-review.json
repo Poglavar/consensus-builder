@@ -1,0 +1,83 @@
+{
+  "schemaVersion": "1.0",
+  "checkedAt": "2026-10-09",
+  "cityRecord": "city-8055-zaria.json",
+  "purpose": "Document city-scope registry/cadastre evidence, identity resolution, and bounded safe-geometry route review.",
+  "scopeLimits": {
+    "maxFullPolygonsRetainedInCityRecord": 3,
+    "maxFullPolygonsRetainedInReview": 3,
+    "maxFullPolygonsRetainedInRepository": 3,
+    "ownerOrAddressDataRetained": false,
+    "credentialsOrTokenValuesRetained": false,
+    "citywideCompletenessAsserted": false
+  },
+  "assessment": "The KADGIS portal advertises parcel boundaries, but its cadastral dataset catalog describes registered-user request/licensing and ownership attributes; no safe anonymous geometry-only schema was verified.",
+  "registryAssessment": "Kaduna State Government identifies KADGIS as the state land-administration and digital registry authority; its official 2017 land-use regulation includes Zaria Metro land-administration areas. The current KADGIS site advertises interactive parcel boundaries, while its data catalog says parcel downloads with ownership attributes are limited to registered users/requested licensed access. No safe anonymous feature schema was verified.",
+  "officialPrimarySources": [
+    {
+      "url": "https://kdsg.gov.ng/kaduna-geographic-information-service/",
+      "observation": "Kaduna State Government identifies KADGIS as the state land-administration and digital registry authority; its official 2017 land-use regulation includes Zaria Metro land-administration areas. The current KADGIS site advertises interactive parcel boundaries, while its data catalog says parcel downloads with ownership attributes are limited to registered users/requested licensed access. No safe anonymous feature schema was verified."
+    },
+    {
+      "url": "https://kdsg.gov.ng/kdsg-has-allocated-4359-plots-as-it-pursues-accelerated-development/",
+      "observation": "Official supporting source reviewed; it does not provide a verified safe anonymous geometry response for the exact WUP point."
+    },
+    {
+      "url": "https://www.kadgis.org/wp-content/uploads/2019/09/Kaduna-Land-Use-Regulations-2017_compressed.pdf",
+      "observation": "Official supporting source reviewed; it does not provide a verified safe anonymous geometry response for the exact WUP point."
+    },
+    {
+      "url": "https://kadgis.kdsg.gov.ng/",
+      "observation": "Official supporting source reviewed; it does not provide a verified safe anonymous geometry response for the exact WUP point."
+    },
+    {
+      "url": "https://kadgis.kdsg.gov.ng/resources/",
+      "observation": "Official supporting source reviewed; it does not provide a verified safe anonymous geometry response for the exact WUP point."
+    }
+  ],
+  "searchQueries": [
+    {
+      "language": "Hausa",
+      "query": "Zaria taswirar filaye rijistar fili cadastral hukuma Kaduna KADGIS",
+      "result": "Takardun Gwamnatin Jihar Kaduna sun tabbatar da KADGIS da yankin gudanar da filaye na Zaria Metro. Shafin KADGIS yana nuna iyakokin filaye, amma sauke bayanan cadastral na buƙatar rajista/lasisi kuma kundin bayanan ya ce akwai siffofin mallaka; ba a sami ko aika buƙatar geometry-only ba.",
+      "actualResultUrls": [
+        "https://kdsg.gov.ng/kaduna-geographic-information-service/",
+        "https://kdsg.gov.ng/kdsg-has-allocated-4359-plots-as-it-pursues-accelerated-development/",
+        "https://www.kadgis.org/wp-content/uploads/2019/09/Kaduna-Land-Use-Regulations-2017_compressed.pdf",
+        "https://kadgis.kdsg.gov.ng/",
+        "https://kadgis.kdsg.gov.ng/resources/"
+      ],
+      "method": "Separate English and Hausa discovery; reviewed Kaduna State/KADGIS primary publications and portal descriptions. No file-number, coordinate property search, account, or download request."
+    },
+    {
+      "language": "English",
+      "query": "Zaria official Kaduna KADGIS land registry cadastral parcel map",
+      "result": "Official Kaduna State materials establish KADGIS and Zaria’s metropolitan land-administration area. The KADGIS portal advertises parcel boundaries, but cadastral download is request/licence based and its catalog describes ownership attributes; no geometry-only anonymous schema was exposed or queried.",
+      "actualResultUrls": [
+        "https://kdsg.gov.ng/kaduna-geographic-information-service/",
+        "https://kdsg.gov.ng/kdsg-has-allocated-4359-plots-as-it-pursues-accelerated-development/",
+        "https://www.kadgis.org/wp-content/uploads/2019/09/Kaduna-Land-Use-Regulations-2017_compressed.pdf",
+        "https://kadgis.kdsg.gov.ng/",
+        "https://kadgis.kdsg.gov.ng/resources/"
+      ],
+      "method": "Separate English and Hausa discovery; reviewed Kaduna State/KADGIS primary publications and portal descriptions. No file-number, coordinate property search, account, or download request."
+    }
+  ],
+  "serviceChecks": [],
+  "geometryEvidence": null,
+  "accessReview": {
+    "publicAnonymousGeometryVerified": false,
+    "completeGeoreferencedPolygonCount": 0,
+    "geometryRetained": false,
+    "ownerAddressTaxOrPersonLookupRequested": false,
+    "authenticationOrCredentialsUsed": false,
+    "captchaOrPersonalFormSubmitted": false,
+    "routeInspectionStatus": "schema_unverified",
+    "reason": "The KADGIS portal advertises parcel boundaries, but its cadastral dataset catalog describes registered-user request/licensing and ownership attributes; no safe anonymous geometry-only schema was verified."
+  },
+  "privacy": "No owner, address, applicant, taxpayer, title, protected attribute, or property-record lookup was made. No geometry was retained.",
+  "runtimeAssessment": {
+    "status": "not_enabled_no_verified_safe_geometry_schema",
+    "reason": "The KADGIS portal advertises parcel boundaries, but its cadastral dataset catalog describes registered-user request/licensing and ownership attributes; no safe anonymous geometry-only schema was verified."
+  }
+}

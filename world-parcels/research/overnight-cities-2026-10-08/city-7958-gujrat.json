@@ -1,0 +1,119 @@
+{
+  "schemaVersion": 1,
+  "kind": "city_parcel_source_research",
+  "checkedAt": "2026-10-09",
+  "name": "Gujrat",
+  "country": "Pakistan",
+  "countryCode": "PK",
+  "populationUnit": "persons",
+  "status": "complete",
+  "registryFound": true,
+  "registryBasis": "Official District Gujrat sources identify a Gujrat Land Record Center, and Punjab Land Records Authority (PLRA) provides provincial land-record services. The official PULSE map offers a public-user path and a Parcels layer, with a disclaimer that displayed parcel lines are indicative; complete parcel details are login-gated. Anonymous ArcGIS metadata requests to the advertised parcel-related services returned Token Required, so no feature schema or geometry was retrieved.",
+  "registryEvidenceUrls": [
+    "https://gujrat.punjab.gov.pk/land_record_center",
+    "https://www.punjab-zameen.gov.pk/",
+    "https://lis.pulse.gop.pk/"
+  ],
+  "verifiedSample": false,
+  "publicParcelGeometryFound": false,
+  "runtimeReadiness": "not_enabled_no_verified_public_geometry",
+  "wupCityCode": 7958,
+  "cityId": "wup2025:7958",
+  "centerLatLon": [
+    32.5753609335184,
+    74.0736640584094
+  ],
+  "rank": 619,
+  "queueRank": 619,
+  "population2025": 846968,
+  "population2025k": 846.968,
+  "pointBasis": "UN WUP 2025 population-weighted settlement centroid; this is not a municipal boundary or a parcel-coverage claim.",
+  "resultCategory": "city_registry_confirmed_public_map_metadata_token_required",
+  "technicalBlocker": "The PULSE map advertises parcel lines for public viewing, but all parcel-related ArcGIS metadata paths inspected require a token and complete details are login-gated. No safe anonymous vector schema was verified.",
+  "scopeLimits": "Official District Gujrat sources identify a Gujrat Land Record Center, and Punjab Land Records Authority (PLRA) provides provincial land-record services. The official PULSE map offers a public-user path and a Parcels layer, with a disclaimer that displayed parcel lines are indicative; complete parcel details are login-gated. Anonymous ArcGIS metadata requests to the advertised parcel-related services returned Token Required, so no feature schema or geometry was retrieved. No full parcel polygon geometry was retained.",
+  "remainingUncertainty": "Public map/catalog indicators do not establish that anonymous feature geometry can be retrieved with an approved field allowlist or that its coverage is complete.",
+  "research": {
+    "executedQueries": [
+      {
+        "language": "English",
+        "query": "Gujrat Punjab Pakistan official land record center cadastral map GIS parcels PULSE",
+        "scope": "Confirm Gujrat-city/district registry evidence and inspect public geometry metadata without parcel lookup.",
+        "result": "The official District Gujrat portal lists a Gujrat Land Record Center; PLRA identifies province land-record services. PULSE provides a public-user map with a Parcels layer and an indicative-boundary disclaimer, while complete parcel details are login-gated. Public ArcGIS layer metadata requests returned Token Required; no selector, login, or feature query was used.",
+        "actualResultUrls": [
+          "https://gujrat.punjab.gov.pk/land_record_center",
+          "https://www.punjab-zameen.gov.pk/",
+          "https://lis.pulse.gop.pk/"
+        ],
+        "executionMethod": "Separate English and local-language public search/page review; no parcel or identity lookup."
+      },
+      {
+        "language": "Urdu",
+        "query": "گجرات پنجاب پاکستان لینڈ ریکارڈ سنٹر کادستر نقشہ سرکاری PULSE",
+        "scope": "گجرات کے مقامی لینڈ ریکارڈ ادارے کی تصدیق اور صرف جیومیٹری کے محفوظ عوامی راستے کی جانچ۔",
+        "result": "ضلع گجرات کی سرکاری ویب سائٹ لینڈ ریکارڈ سنٹر کا اندراج دکھاتی ہے۔ پنجاب کے PULSE نقشے میں عوامی صارف کا راستہ اور Parcels تہہ درج ہے، مگر مکمل تفصیلات لاگ اِن تک محدود ہیں اور نقشے کی حدود کو صرف اشارتی بتایا گیا ہے۔ سروس میٹاڈیٹا نے ٹوکن طلب کیا؛ کوئی موضع، پلاٹ یا ملکیتی تلاش نہیں کی گئی۔",
+        "actualResultUrls": [
+          "https://gujrat.punjab.gov.pk/land_record_center",
+          "https://lis.pulse.gop.pk/"
+        ],
+        "executionMethod": "Separate English and local-language public search/page review; no parcel or identity lookup."
+      }
+    ],
+    "officialSources": [
+      {
+        "url": "https://gujrat.punjab.gov.pk/land_record_center",
+        "observation": "Official District Gujrat page is titled “Inauguration of Land Record Center Gujrat”; direct web-page fetch timed out, so indexed page content is the available evidence."
+      },
+      {
+        "url": "https://www.punjab-zameen.gov.pk/",
+        "observation": "Official Punjab Land Records Authority portal describes digital land record and registration services across Punjab; used as jurisdictional context, not as citywide polygon coverage proof."
+      },
+      {
+        "url": "https://lis.pulse.gop.pk/",
+        "observation": "Official PULSE public map page (anonymous HTTPS GET 200) displays public-user mode, a Parcels layer, and a disclaimer that lines are indicative and not legal boundaries; complete parcel details are login-gated."
+      },
+      {
+        "url": "https://gismaps.punjab-zameen.gov.pk/arcgis/rest/services/Punjab/Pulse_Map/MapServer",
+        "observation": "Anonymous metadata GET returned ArcGIS 404 Service not found."
+      },
+      {
+        "url": "https://gismaps.punjab-zameen.gov.pk/arcgis/rest/services/VendorMaps/Punjab_Cdastral_Maps/MapServer?f=pjson",
+        "observation": "Anonymous metadata GET returned ArcGIS error 499 Token Required. No token was sought, reused or supplied."
+      },
+      {
+        "url": "https://gismaps.punjab-zameen.gov.pk/arcgis/rest/services/GPC/GPC_Parcels/MapServer?f=pjson",
+        "observation": "Anonymous metadata GET returned ArcGIS error 499 Token Required. No token was sought, reused or supplied."
+      }
+    ]
+  },
+  "source": {
+    "sourceId": "pk-gujrat-land-record-center-pulse-review",
+    "name": "Gujrat local land-registration and public-geometry review",
+    "operator": "District Gujrat administration; Punjab Land Records Authority and PULSE",
+    "url": "https://gujrat.punjab.gov.pk/land_record_center",
+    "scope": "Official District Gujrat sources identify a Gujrat Land Record Center, and Punjab Land Records Authority (PLRA) provides provincial land-record services. The official PULSE map offers a public-user path and a Parcels layer, with a disclaimer that displayed parcel lines are indicative; complete parcel details are login-gated. Anonymous ArcGIS metadata requests to the advertised parcel-related services returned Token Required, so no feature schema or geometry was retrieved.",
+    "nativeIdField": null,
+    "attributesRequested": [],
+    "identityBasis": "No native parcel identifier queried or retained.",
+    "geometryStatus": "no_geometry_response_verified"
+  },
+  "coverageAssessment": {
+    "verifiedOpenScope": "Local registry/cadastral office evidence was found; public vector geometry was not safely verified.",
+    "citywideVerified": false,
+    "countrywideVerified": false
+  },
+  "priorEvidenceFiles": [],
+  "populationPlausibility2025": "Moderate",
+  "sourceIds": [],
+  "point": [
+    32.5753609335184,
+    74.0736640584094
+  ],
+  "sampleFile": null,
+  "sampleFeatureCount": 0,
+  "sampleCrs": null,
+  "runtimeAssessment": {
+    "status": "no_public_geometry_verified_runtime_not_enabled",
+    "reason": "The PULSE map advertises parcel lines for public viewing, but all parcel-related ArcGIS metadata paths inspected require a token and complete details are login-gated. No safe anonymous vector schema was verified."
+  },
+  "rootReviewedAt": "2026-10-09T02:08:28.000160+00:00"
+}

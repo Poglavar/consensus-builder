@@ -1,0 +1,87 @@
+{
+  "name": "Jinhua",
+  "country": "China",
+  "countryCode": "CN",
+  "rank": 512,
+  "point": [
+    29.1040332615263,
+    119.637290338675
+  ],
+  "population2025": 998519,
+  "population2025k": 998.519,
+  "populationUnit": "persons",
+  "schemaVersion": 1,
+  "kind": "city_parcel_source_research",
+  "checkedAt": "2026-10-09",
+  "status": "complete",
+  "verifiedSample": false,
+  "publicParcelGeometryFound": false,
+  "runtimeReadiness": "not_enabled_no_verified_public_geometry",
+  "adapterReady": false,
+  "priorEvidenceFiles": [],
+  "scopeLimits": "Official municipal natural-resources and immovable-property registration responsibilities and city-level registration policy were found. Jinhua’s official open-data portal was reviewed for spatial datasets; no public parcel feature schema or bounded geometry service was established. The WUP point was not matched to a district/street parcel; no owner or property query was made.",
+  "pointBasis": "UN WUP 2025 population-weighted settlement centroid; this is not a municipal boundary or a parcel-coverage claim.",
+  "registryFound": true,
+  "registryBasis": "Jinhua’s official city natural-resources and planning authority is assigned natural-resource and immovable-property title registration responsibilities; Jinhua government bulletins document city-level immovable-property registration rules. These establish a local registry custodian, not open parcel-vector coverage.",
+  "resultCategory": "official_city_registry_responsibility_no_public_parcel_geometry_verified",
+  "technicalBlocker": "No public anonymous cadastral layer or safe feature endpoint was exposed in the reviewed official services.",
+  "remainingUncertainty": "Whether the exact WUP coordinate has an urban-district parcel match and whether a public map layer exists outside the reviewed city portal.",
+  "nextStep": "Identify an official, anonymous parcel-map service and inspect its schema before any bounded feature query.",
+  "freshResearch": {
+    "executedQueries": [
+      {
+        "language": "Chinese",
+        "query": "金华市 自然资源和规划局 不动产 地籍图 地块 查询 官方",
+        "scope": "Find Jinhua city natural-resource registration and public cadastral-map services.",
+        "result": "Official Jinhua government material identifies the city natural-resources and planning bureau and city immovable-property registration activity. The official open-data portal is available, but no anonymous parcel-vector service for the WUP point was identified.",
+        "urls": [
+          "https://www.jinhua.gov.cn/module/download/downfile.jsp?classid=0&filename=238d85601fba404496e624aec4aeb932.pdf",
+          "https://open.data.jinhua.gov.cn/",
+          "http://zrzyj.jinhua.gov.cn/"
+        ],
+        "method": "Separate Chinese-language search and review of first-party city-government and open-data sources."
+      },
+      {
+        "language": "English",
+        "query": "Jinhua China official municipal cadastral parcel map natural resources GIS cadastral service",
+        "scope": "Cross-check the city bureau and whether public parcel geometry is exposed.",
+        "result": "The official Jinhua government/open-data sources point to city natural-resource registration and spatial-data publishing, but did not expose an anonymous cadastral parcel layer or exact-point geometry response. The bureau homepage timed out when opened; no service is inferred from that failure.",
+        "urls": [
+          "https://www.jinhua.gov.cn/",
+          "https://open.data.jinhua.gov.cn/",
+          "http://zrzyj.jinhua.gov.cn/"
+        ],
+        "method": "Separate English-language discovery search and official portal review."
+      }
+    ]
+  },
+  "verifiedParcelResponse": null,
+  "source": {
+    "sourceId": "CN-JINHUA-LOCAL-REGISTRY-RESEARCH",
+    "name": "Jinhua official local land-record/cadastral service evidence",
+    "url": "https://www.jinhua.gov.cn/module/download/downfile.jsp?classid=0&filename=238d85601fba404496e624aec4aeb932.pdf",
+    "operator": "Local city/district natural-resource and land-record authorities",
+    "serviceType": "Official local registry/map service pathway identified; public parcel feature geometry not verified.",
+    "layer": null,
+    "geometryType": null,
+    "outputCrs": null,
+    "nativeIdField": null,
+    "nativeIdEvidence": "No feature response returned; a parcel-level native identifier and feature schema remain unverified."
+  },
+  "wupCityCode": 11782,
+  "cityId": "wup2025:11782",
+  "queueRank": 512,
+  "populationPlausibility2025": "High",
+  "centerLatLon": [
+    29.1040332615263,
+    119.637290338675
+  ],
+  "sourceIds": [],
+  "rootReviewedAt": "2026-10-09T01:10:35.212195+00:00",
+  "registryEvidenceUrls": [
+    "https://www.jinhua.gov.cn/module/download/downfile.jsp?classid=0&filename=238d85601fba404496e624aec4aeb932.pdf",
+    "https://open.data.jinhua.gov.cn/",
+    "http://zrzyj.jinhua.gov.cn/",
+    "https://www.jinhua.gov.cn/"
+  ]
+}

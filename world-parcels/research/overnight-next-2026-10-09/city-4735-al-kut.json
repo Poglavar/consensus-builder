@@ -1,0 +1,139 @@
+{
+  "schemaVersion": 1,
+  "kind": "city_parcel_source_research",
+  "checkedAt": "2026-10-09",
+  "rank": 1132,
+  "population2025k": 491.247,
+  "population2025Unit": "thousands",
+  "populationPlausibility": "High",
+  "verifiedParcelResponse": null,
+  "source": {
+    "name": "Iraq Ministry of Justice",
+    "url": "https://www.moj.gov.iq/view.9289/",
+    "operator": "Iraq Ministry of Justice",
+    "serviceType": "official service/map evidence; vector access not verified",
+    "layer": "not verified",
+    "geometryType": "not verified",
+    "nativeIdField": null
+  },
+  "registryFound": null,
+  "verifiedSample": false,
+  "targetGeometryEvidence": "none",
+  "nativeIdReadiness": "not_verified",
+  "cityId": "wup2025:4735",
+  "wupCityCode": 4735,
+  "name": "Al-Kut",
+  "country": "Iraq",
+  "countryCode": "IQ",
+  "centerLatLon": [
+    32.5154837858206,
+    45.8273335618953
+  ],
+  "pointBasis": "UN WUP 2025 population-weighted settlement point (latitude, longitude); not a municipal boundary or a parcel-coverage claim.",
+  "resultCategory": "no_local_custody_evidence",
+  "priorEvidence": [],
+  "priorBlocker": null,
+  "nativeLanguageSearches": [
+    {
+      "languageScript": "Arabic",
+      "exactQuery": "الكوت واسط خارطة عقارية التسجيل العقاري مديرية التسجيل العقاري الكوت رسمي",
+      "date": "2026-10-09",
+      "executionMethod": "web.run search_query; independent local-language query",
+      "resultUrls": [
+        "https://www.moj.gov.iq/view.9289/",
+        "https://ur.gov.iq/index/show-eservice/40227/10049/cat"
+      ],
+      "summary": "National Baghdad-only e-service is explicitly excluded as evidence for Al-Kut. Search surfaced a third-party directory mentioning Kut land-registration offices, which is not used to claim primary local custody."
+    },
+    {
+      "languageScript": "English",
+      "exactQuery": "Al Kut Iraq official cadastral map property registry Wasit real estate registration directorate GIS",
+      "date": "2026-10-09",
+      "executionMethod": "web.run search_query; independent English query",
+      "resultUrls": [
+        "https://www.moj.gov.iq/view.9289/",
+        "https://ur.gov.iq/index/show-eservice/40227/10049/cat"
+      ],
+      "summary": "National Baghdad-only e-service is explicitly excluded as evidence for Al-Kut. Search surfaced a third-party directory mentioning Kut land-registration offices, which is not used to claim primary local custody."
+    }
+  ],
+  "officialAndRelevantLeads": [
+    {
+      "url": "https://www.moj.gov.iq/view.9289/",
+      "operator": "Iraq Ministry of Justice",
+      "observation": "2025 national note says e-deed/property-map services are in select Baghdad directorates only; does not establish Al-Kut access."
+    },
+    {
+      "url": "https://ur.gov.iq/index/show-eservice/40227/10049/cat",
+      "operator": "Ur official government services portal",
+      "observation": "Property deed/map service requires owner/agent identity verification and is currently Baghdad-scoped; not a public vector service."
+    }
+  ],
+  "requestsAndEndpointChecks": [
+    {
+      "url": "https://www.moj.gov.iq/view.9289/",
+      "method": "Anonymous read-only GET; redirect-following; 15 s read timeout; no cookies or credentials",
+      "httpStatus": 200,
+      "finalUrl": "https://www.moj.gov.iq/view.9289/",
+      "contentType": "text/html; charset=UTF-8",
+      "bytesRead": 56305,
+      "sha256OfReadBytes": "e923e4367cd711709f07ab7e49df7999f9c6152d997bd17d1e866ede0ad6a217",
+      "title": "وزارة العدل - جمهورية العراق",
+      "assessment": "Primary landing/source page responded successfully. The response establishes only the source description summarized above; it does not itself verify a public parcel feature geometry except where separately reported."
+    },
+    {
+      "url": "https://www.moj.gov.iq/view.9289/",
+      "method": "GET via search result/page review",
+      "httpStatus": "accessible in web search/open",
+      "contentType": "not independently captured",
+      "assessment": "2025 national note says e-deed/property-map services are in select Baghdad directorates only; does not establish Al-Kut access."
+    },
+    {
+      "url": "https://ur.gov.iq/index/show-eservice/40227/10049/cat",
+      "method": "GET via search result/page review",
+      "httpStatus": "accessible in web search/open",
+      "contentType": "not independently captured",
+      "assessment": "Property deed/map service requires owner/agent identity verification and is currently Baghdad-scoped; not a public vector service."
+    }
+  ],
+  "coverageAssessment": {
+    "claimedScope": "National Baghdad-only e-service is explicitly excluded as evidence for Al-Kut. Search surfaced a third-party directory mentioning Kut land-registration offices, which is not used to claim primary local custody.",
+    "verifiedOpenScope": null,
+    "citywideVerified": false,
+    "countrywideVerified": false,
+    "geometryVerified": false
+  },
+  "blocker": "No verified Ministry of Justice primary source for a Kut directorate or anonymous public parcel service.",
+  "remainingUncertainty": "National Baghdad-only e-service is explicitly excluded as evidence for Al-Kut. Search surfaced a third-party directory mentioning Kut land-registration offices, which is not used to claim primary local custody.",
+  "nextStep": "No verified Ministry of Justice primary source for a Kut directorate or anonymous public parcel service.",
+  "runtimeReadiness": "not_enabled_no_verified_public_geometry",
+  "adapterReady": false,
+  "schemaVersionNote": "Research evidence only; no runtime adapter configured.",
+  "population2025": 491247,
+  "populationUnit": "persons",
+  "populationPlausibility2025": "High",
+  "publicParcelGeometryFound": false,
+  "sourceIds": [],
+  "registryBasis": "National Baghdad-only e-service is explicitly excluded as evidence for Al-Kut. Search surfaced a third-party directory mentioning Kut land-registration offices, which is not used to claim primary local custody.",
+  "registryEvidenceUrls": [
+    "https://www.moj.gov.iq/view.9289/",
+    "https://ur.gov.iq/index/show-eservice/40227/10049/cat"
+  ],
+  "technicalBlocker": "No verified Ministry of Justice primary source for a Kut directorate or anonymous public parcel service.",
+  "runtimeAssessment": {
+    "status": "not_enabled_no_verified_public_geometry",
+    "reason": "No verified Ministry of Justice primary source for a Kut directorate or anonymous public parcel service."
+  },
+  "rootReviewedAt": "2026-10-09T07:13:02.981057+00:00",
+  "cohort": "overnight-next-1101-1200",
+  "cohortState": "root_reviewed_integrated_locally",
+  "integrationState": "integrated_locally",
+  "rootReview": {
+    "checkedAt": "2026-10-09T07:13:02.981057+00:00",
+    "decision": "Reviewed city identity, canonical population/point, separate searches and saved source/request evidence. No full public parcel geometry verified in this pass.",
+    "custodyScope": "National Baghdad-only e-service is explicitly excluded as evidence for Al-Kut. Search surfaced a third-party directory mentioning Kut land-registration offices, which is not used to claim primary local custody.",
+    "transportFailuresDoNotProveAbsence": true,
+    "geometryClaimScope": "Investigation outcome only; no worldwide or citywide absence asserted."
+  },
+  "integratedAt": "2026-10-09T07:14:03.673112+00:00"
+}

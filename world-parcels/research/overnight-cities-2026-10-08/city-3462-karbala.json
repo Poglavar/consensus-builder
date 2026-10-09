@@ -1,0 +1,112 @@
+{
+  "schemaVersion": 1,
+  "kind": "city_parcel_source_research",
+  "checkedAt": "2026-10-09",
+  "name": "Karbala",
+  "country": "Iraq",
+  "countryCode": "IQ",
+  "populationUnit": "persons",
+  "status": "complete",
+  "registryFound": true,
+  "registryBasis": "Iraq Ministry of Justice lists the first and second Karbala real-estate registration directorates on its official public contact page. Ministry notices also document Karbala city/directorate services and new registration branches. This is city-bound registry evidence, not evidence of an anonymous public parcel-vector dataset.",
+  "registryEvidenceUrls": [
+    "https://moj.gov.iq/contact_us.php",
+    "https://www.moj.gov.iq/view.9455/",
+    "https://www.moj.gov.iq/view.8999/",
+    "https://www.moj.gov.iq/tashkelat.7/"
+  ],
+  "verifiedSample": false,
+  "publicParcelGeometryFound": false,
+  "runtimeReadiness": "not_enabled_no_verified_public_geometry",
+  "wupCityCode": 3462,
+  "cityId": "wup2025:3462",
+  "centerLatLon": [
+    32.6061671474031,
+    44.0170278471943
+  ],
+  "rank": 501,
+  "queueRank": 501,
+  "population2025": 1022893,
+  "population2025k": 1022.893,
+  "pointBasis": "UN WUP 2025 population-weighted settlement centroid; this is not a municipal boundary or a parcel-coverage claim.",
+  "technicalBlocker": "Official pages establish Karbala registration directorates, but the reviewed public material did not expose a safe anonymous parcel-vector endpoint or geometry-only schema. No property identifier, address, owner, tax, applicant, or account lookup was submitted. No polygon sample was retained.",
+  "scopeLimits": "Iraq Ministry of Justice lists the first and second Karbala real-estate registration directorates on its official public contact page. Ministry notices also document Karbala city/directorate services and new registration branches. This is city-bound registry evidence, not evidence of an anonymous public parcel-vector dataset. No public anonymous parcel polygons were retained; the route review is limited to the official informational/map-product sources listed.",
+  "remainingUncertainty": "A public map or spatial export could exist behind an uninspected local workflow; citywide anonymous geometry, schema, native safe IDs, and coverage remain unverified.",
+  "research": {
+    "executedQueries": [
+      {
+        "language": "English",
+        "query": "Karbala Iraq official land registry cadastral parcel map GIS Ministry of Justice",
+        "scope": "Find city-specific registration evidence and an anonymous geometry-only public map route.",
+        "result": "The official Iraq Ministry of Justice public contact page lists Karbala real-estate registration directorates; official notices discuss branches/services. No public vector parcel endpoint was identified in those pages.",
+        "actualResultUrls": [
+          "https://moj.gov.iq/contact_us.php",
+          "https://www.moj.gov.iq/view.9455/",
+          "https://www.moj.gov.iq/view.8999/"
+        ],
+        "executionMethod": "Local-language and English-language search plus review of official pages; no private lookup."
+      },
+      {
+        "language": "Arabic",
+        "query": "كربلاء مديرية التسجيل العقاري خارطة عقارية كادستر GIS دائرة عقارات",
+        "scope": "البحث عن دليل التسجيل العقاري المحلي ومسار عام آمن لهندسة القطع.",
+        "result": "تؤكد صفحات وزارة العدل العراقية وجود مديريتَي تسجيل عقاري في كربلاء وشُعب محلية. لم يظهر في الصفحات العامة التي تمت مراجعتها رابط لطبقة متجهة عامة لحدود القطع؛ لم تُستخدم خدمات الاستعلام الخاصة أو بيانات العقارات.",
+        "actualResultUrls": [
+          "https://moj.gov.iq/contact_us.php",
+          "https://www.moj.gov.iq/view.9455/",
+          "https://www.moj.gov.iq/view.8999/"
+        ],
+        "executionMethod": "Local-language and English-language search plus review of official pages; no private lookup."
+      }
+    ],
+    "officialSources": [
+      {
+        "url": "https://moj.gov.iq/contact_us.php",
+        "observation": "Official Ministry of Justice contact listing includes “Karbala Holy 1” and “Karbala Holy 2” real-estate registration directorates."
+      },
+      {
+        "url": "https://www.moj.gov.iq/view.9455/",
+        "observation": "Official ministry notice dated 2025-07-10 documents a fourth registration section in the Karbala Second directorate."
+      },
+      {
+        "url": "https://www.moj.gov.iq/view.8999/",
+        "observation": "Official ministry notice documents the Al-Hur real-estate registration directorate within Karbala Governorate; supports local institutional coverage only."
+      },
+      {
+        "url": "https://www.moj.gov.iq/tashkelat.7/",
+        "observation": "Official Ministry of Justice page describes the national Real Estate Registration Department and its directorates; used only as institutional context."
+      }
+    ]
+  },
+  "source": {
+    "sourceId": "iq-karbala-ministry-of-justice-real-estate-registration",
+    "name": "Karbala local land-registration and public-map source review",
+    "operator": "Iraq Ministry of Justice / General Real Estate Registration Department",
+    "url": "https://moj.gov.iq/contact_us.php",
+    "scope": "Iraq Ministry of Justice lists the first and second Karbala real-estate registration directorates on its official public contact page. Ministry notices also document Karbala city/directorate services and new registration branches. This is city-bound registry evidence, not evidence of an anonymous public parcel-vector dataset. No complete public parcel geometry was verified.",
+    "nativeIdField": null,
+    "attributesRequested": [],
+    "identityBasis": "No native parcel identifier queried or retained.",
+    "geometryStatus": "no_public_geometry_verified"
+  },
+  "coverageAssessment": {
+    "verifiedOpenScope": "Official local or jurisdictional registry/survey evidence was found; no anonymous full parcel polygons were verified.",
+    "citywideVerified": false,
+    "countrywideVerified": false
+  },
+  "priorEvidenceFiles": [],
+  "populationPlausibility2025": "High",
+  "sourceIds": [],
+  "point": [
+    32.6061671474031,
+    44.0170278471943
+  ],
+  "sampleFile": null,
+  "sampleFeatureCount": 0,
+  "sampleCrs": null,
+  "runtimeAssessment": {
+    "status": "no_public_geometry_verified_runtime_not_enabled",
+    "reason": "Official pages establish Karbala registration directorates, but the reviewed public material did not expose a safe anonymous parcel-vector endpoint or geometry-only schema. No property identifier, address, owner, tax, applicant, or account lookup was submitted. No polygon sample was retained."
+  },
+  "rootReviewedAt": "2026-10-09T01:02:36.862973+00:00"
+}

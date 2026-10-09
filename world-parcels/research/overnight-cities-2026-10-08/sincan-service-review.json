@@ -1,0 +1,67 @@
+{
+  "schemaVersion": "1.0",
+  "checkedAt": "2026-10-09",
+  "cityRecord": "city-4837-sincan.json",
+  "purpose": "Document city-local registry evidence and bounded anonymous parcel-vector access review.",
+  "scopeLimits": {
+    "maxFullPolygonsRetainedInCityRecord": 0,
+    "maxFullPolygonsRetainedInReview": 0,
+    "maxFullPolygonsRetainedInRepository": 0,
+    "ownerOrAddressDataRetained": false,
+    "credentialsOrTokenValuesRetained": false,
+    "citywideCompletenessAsserted": false
+  },
+  "assessment": "Sincan Municipality advertises local e-İmar/e-Çap planning services and parcelation notices. The linked public guide is an amenity directory, its GIS host timed out, and the e-Devlet e-İmar route requires authentication. No vector geometry was requested.",
+  "registryAssessment": "Local municipal land/planning records are confirmed; point-specific coverage and public parcel vector availability are not. ",
+  "officialPrimarySources": [
+    {
+      "url": "https://www.sincan.bel.tr/kentrehberi",
+      "observation": "Official Sincan Municipality Kent Rehberi page; its listed categories are public facilities and civic amenities, not parcels."
+    },
+    {
+      "url": "https://sincan.bel.tr/",
+      "observation": "Official municipal homepage lists E-İmar, E-Çap/road level, cadastral-plan notices, and a city guide."
+    },
+    {
+      "url": "https://www.turkiye.gov.tr/sincan-belediyesi-eimar-8569",
+      "observation": "Official e-Devlet Sincan e-İmar service requires identity authentication before use; no sign-in or submission attempted."
+    },
+    {
+      "url": "https://cbs.sincan.bel.tr/",
+      "observation": "Municipality-linked map subdomain; direct and web-reader requests timed out."
+    }
+  ],
+  "searchQueries": [
+    {
+      "language": "Turkish",
+      "query": "Sincan Belediyesi parsel sorgu harita imar durumu resmi",
+      "result": "The municipality advertises Kent Rehberi and E-İmar / E-Çap and road-level services. The public Kent Rehberi is an amenity directory rather than a cadastral parcel viewer; the e-İmar route requires e-Devlet authentication.",
+      "method": "Separate Turkish-language search and official municipal/e-Devlet page review."
+    },
+    {
+      "language": "English",
+      "query": "Sincan Ankara official municipal parcel map cadastral GIS public viewer",
+      "result": "The official municipal site links to its cbs.sincan.bel.tr Kent Rehberi, but the public content lists civic amenities. Direct viewer navigation timed out; no parcel-vector schema or geometry was verified.",
+      "method": "Separate English-language discovery and official municipal viewer inspection."
+    }
+  ],
+  "serviceChecks": [
+    {
+      "url": "https://cbs.sincan.bel.tr/",
+      "method": "GET ordinary public viewer navigation",
+      "httpStatus": null,
+      "observation": "Timed out; no service schema loaded."
+    },
+    {
+      "url": "https://www.turkiye.gov.tr/sincan-belediyesi-eimar-8569",
+      "method": "official e-Devlet service page review",
+      "httpStatus": null,
+      "observation": "Page states identity verification is required; no login attempted or record queried."
+    }
+  ],
+  "geometryEvidence": null,
+  "qualification": null,
+  "privacy": "Requests used only declared safe identifiers and geometry. No owner, address, tax, account, or other property record values were requested.",
+  "rootDecision": "pending_root_review",
+  "runtimeAssessment": "not_enabled_no_verified_public_geometry"
+}

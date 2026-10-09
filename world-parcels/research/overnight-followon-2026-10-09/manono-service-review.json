@@ -1,0 +1,62 @@
+{
+  "schemaVersion": "1.0",
+  "checkedAt": "2026-10-09",
+  "cityRecord": "city-6683-manono.json",
+  "purpose": "Document first-party local registry/map evidence and bounded anonymous geometry access review.",
+  "scopeLimits": {
+    "maxFullPolygonsRetainedInCityRecord": 0,
+    "maxFullPolygonsRetainedInReview": 0,
+    "maxFullPolygonsRetainedInRepository": 0,
+    "ownerOrAddressDataRetained": false,
+    "credentialsOrTokenValuesRetained": false,
+    "citywideCompletenessAsserted": false
+  },
+  "assessment": "The DRC Ministry of Land Affairs lists Manono as one of Tanganyika Province’s cadastral/land-registration circumscriptions. That directly establishes a city-named registry jurisdiction, but the public ministry request form requires applicant identification and property/holder details and was not submitted. No anonymous public parcel geometry route was verified.",
+  "registryAssessment": "The DRC Ministry of Land Affairs lists Manono as one of Tanganyika Province’s cadastral/land-registration circumscriptions. That directly establishes a city-named registry jurisdiction, but the public ministry request form requires applicant identification and property/holder details and was not submitted. No anonymous public parcel geometry route was verified.",
+  "officialPrimarySources": [
+    {
+      "url": "https://affairesfoncieres.gouv.cd/secretariat/circonscriptions",
+      "observation": "The DRC Ministry of Land Affairs lists Manono as one of Tanganyika Province’s cadastral/land-registration circumscriptions. That directly establishes a city-named registry jurisdiction, but the public ministry request form requires applicant identification and property/holder details and was not submitted. No anonymous public parcel geometry route was verified."
+    },
+    {
+      "url": "https://www.affairesfoncieres.gouv.cd/services-fonciers/demandes",
+      "observation": "The DRC Ministry of Land Affairs lists Manono as one of Tanganyika Province’s cadastral/land-registration circumscriptions. That directly establishes a city-named registry jurisdiction, but the public ministry request form requires applicant identification and property/holder details and was not submitted. No anonymous public parcel geometry route was verified."
+    }
+  ],
+  "searchQueries": [
+    {
+      "language": "English",
+      "query": "Manono Tanganyika DRC official land cadastral office land registry",
+      "result": "The official DRC Land Affairs Ministry lists Manono under Tanganyika’s cadastral circumscriptions. Its record-search form requests personal and property identifiers and was not used.",
+      "method": "Separate English-language discovery search followed by first-party page review.",
+      "scope": "Identify first-party city-bound registry/cadastre custody and safe public parcel geometry."
+    },
+    {
+      "language": "French",
+      "query": "Manono cadastre foncier parcellaire circonscription foncière ministère affaires foncières RDC",
+      "result": "Le ministère des Affaires foncières classe Manono parmi les circonscriptions foncières de la province du Tanganyika. Le formulaire public de recherche demande une identité du demandeur et des données de localisation/identification du bien; aucune demande n’a été remplie et aucune géométrie publique anonyme n’a été vérifiée.",
+      "method": "Separate local-language discovery search followed by first-party page review.",
+      "scope": "Identify first-party city-bound registry/cadastre custody and safe public parcel geometry."
+    }
+  ],
+  "geometryDecision": "No parcel geometry retained; no qualifying safe exact-point public polygon was verified.",
+  "coverageAssessment": {
+    "claimedScope": "The DRC Ministry of Land Affairs lists Manono as one of Tanganyika Province’s cadastral/land-registration circumscriptions. That directly establishes a city-named registry jurisdiction, but the public ministry request form requires applicant identification and property/holder details and was not submitted. No anonymous public parcel geometry route was verified.",
+    "verifiedOpenScope": "No public anonymous point-level parcel polygon verified at the exact WUP locator. No citywide coverage is asserted.",
+    "citywideVerified": false,
+    "countrywideVerified": false,
+    "geometryVerified": false
+  },
+  "attempts": [],
+  "requests": [],
+  "portals": [
+    {
+      "homeUrl": "https://affairesfoncieres.gouv.cd/secretariat/circonscriptions",
+      "observation": "The DRC Ministry of Land Affairs lists Manono as one of Tanganyika Province’s cadastral/land-registration circumscriptions. That directly establishes a city-named registry jurisdiction, but the public ministry request form requires applicant identification and property/holder details and was not submitted. No anonymous public parcel geometry route was verified."
+    },
+    {
+      "homeUrl": "https://www.affairesfoncieres.gouv.cd/services-fonciers/demandes",
+      "observation": "The DRC Ministry of Land Affairs lists Manono as one of Tanganyika Province’s cadastral/land-registration circumscriptions. That directly establishes a city-named registry jurisdiction, but the public ministry request form requires applicant identification and property/holder details and was not submitted. No anonymous public parcel geometry route was verified."
+    }
+  ]
+}

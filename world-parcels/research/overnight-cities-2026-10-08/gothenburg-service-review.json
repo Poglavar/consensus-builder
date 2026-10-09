@@ -1,0 +1,60 @@
+{
+  "schemaVersion": "1.0",
+  "checkedAt": "2026-10-09",
+  "cityRecord": "city-66-gothenburg.json",
+  "purpose": "Document first-party local cadastral/registry evidence and bounded anonymous geometry access review.",
+  "scopeLimits": {
+    "maxFullPolygonsRetainedInCityRecord": 3,
+    "maxFullPolygonsRetainedInReview": 0,
+    "maxFullPolygonsRetainedInRepository": 24,
+    "ownerOrAddressDataRetained": false,
+    "credentialsOrTokenValuesRetained": false,
+    "citywideCompletenessAsserted": false
+  },
+  "assessment": "Official city map covers the full municipality, continuously updated and exports DWG/DXF/TAB/MIF; city charges its map fee. Lantmäteriet Fastighetsindelning Direkt includes property geometries and is free API, but requires legal-purpose review and product access. Public map viewer itself is not a verified anonymous full-feature endpoint.",
+  "registryAssessment": "Göteborgs Stad explicitly maintains a continuously updated Fastighetskarta for all of Göteborg; Lantmäteriet documents property geometry datasets. The municipal Geodataavdelning is the specific local custodian.",
+  "officialPrimarySources": [
+    {
+      "url": "https://goteborg.se/wps/portal/start/bygga-bo-och-leva-hallbart/lantmateri-kartor-och-matning/kartor-och-geodata/kartprodukter/fastighetskarta",
+      "observation": "Göteborgs Stad states the Fastighetskarta covers the entire municipality, is continuously updated and contains property boundaries, boundary points, designations and rights; formats include DWG, DXF, TAB and MIF; order by fee through Geodataavdelningen."
+    },
+    {
+      "url": "https://geotorget.lantmateriet.se/dokument/projects/fastighetsindelning-direkt/released/1.0/",
+      "observation": "Lantmäteriet documents an API product containing property and joint-property geometries, daily updated and free, but subject to legal-use review and access provisioning; it is not a browser map."
+    },
+    {
+      "url": "https://www2.lantmateriet.se/sv/geotorget-produktstod/om-tillhandahallandet/",
+      "observation": "Lantmäteriet describes access/legal provisions for high-value geodata products and APIs."
+    },
+    {
+      "url": "https://data.goteborg.se/",
+      "observation": "City open-data platform says API use requires registering an application/API key; inspected open-data catalogue did not list the cadastral Fastighetskarta as a free public dataset."
+    }
+  ],
+  "searchQueries": [
+    {
+      "language": "Swedish",
+      "query": "Göteborg fastighetskarta fastighetsgränser geodata öppna data beställa kartor kommun",
+      "result": "Göteborgs Stad states Fastighetskarta covers all of Göteborg, is continuously updated, includes property boundaries/points/designations/rights and is orderable as DWG, DXF, TAB or MIF under the city fee schedule.",
+      "method": "Separate Swedish-language search and city/agency service-page review.",
+      "scope": "Find current local property-map custodian, coverage, update cycle and vector formats."
+    },
+    {
+      "language": "English",
+      "query": "Gothenburg cadastral property boundaries parcel geometry public vector API city official GIS",
+      "result": "Göteborg municipal fastighetskarta is citywide but ordered under fee. Lantmäteriet documents a free Fastighetsindelning Direkt API with property geometries, subject to legal-purpose review and access provisioning; no anonymous feature query was made.",
+      "method": "Separate English-language search and official city/national product documentation review.",
+      "scope": "Cross-check anonymous geometry access and national public data conditions."
+    }
+  ],
+  "geometryDecision": "No complete full polygon with a safely validated native parcel identifier was retained. The public viewer advertises/displays parcel geometry, but an exact WUP-point sample was not verified.",
+  "coverageAssessment": {
+    "claimedScope": "Göteborg municipal Fastighetskarta covers all of Göteborg and is continuously updated; Lantmäteriet’s API product includes property geometries.",
+    "verifiedOpenScope": "Full property-map products exist and include vector formats; the city offers them by order with a fee, while the national API is free but subject to legal review/access approval. No anonymous vector response was observed and no city sample was retained.",
+    "citywideVerified": false,
+    "countrywideVerified": false,
+    "geometryVerified": false
+  },
+  "attempts": [],
+  "remainingUncertainty": "No city-specific native feature query was made; public-access conditions/allowed purpose and exact API licensing approval are not resolved for this project. No sample or runtime readiness established."
+}

@@ -1,0 +1,86 @@
+{
+  "schemaVersion": "1.0",
+  "cityId": "wup2025:5656",
+  "wupCityCode": 5656,
+  "name": "Port Sudan",
+  "country": "Sudan",
+  "countryCode": "SD",
+  "rank": 1074,
+  "queueRank": 1074,
+  "point": [
+    19.619263378643,
+    37.1975808137419
+  ],
+  "centerLatLon": [
+    19.619263378643,
+    37.1975808137419
+  ],
+  "pointBasis": "UN WUP2025 population-weighted settlement locator; not a municipal boundary or parcel-coverage claim.",
+  "population2025": 517023,
+  "population2025k": 517.023,
+  "populationUnit": "persons",
+  "populationPlausibility2025": "Moderate",
+  "cohort": "overnight-followon-1069-1076",
+  "checkedAt": "2026-10-09",
+  "status": "complete",
+  "registryFound": null,
+  "registryBasis": "The Sudan Judiciary describes the national Land Registrations Directorate and says branch offices operate across Sudanese states; the Sudan National Information Center describes a national WMS/WFS spatial portal. Neither inspected official source binds the local registry or any parcel layer specifically to Port Sudan, so city-specific custody remains undetermined. No parcel attributes or geometry were queried.",
+  "registryEvidenceUrls": [
+    "https://sj.gov.sd/ar/content/page/%D8%A5%D8%AF%D8%A7%D8%B1%D8%A9-%D8%AA%D8%B3%D8%AC%D9%8A%D9%84%D8%A7%D8%AA-%D8%A7%D9%84%D8%A7%D8%B1%D8%A7%D8%B6%D9%8A",
+    "https://nic.gov.sd/public/projectDetails/3"
+  ],
+  "verifiedSample": false,
+  "publicParcelGeometryFound": false,
+  "sourceIds": [],
+  "adapterReady": false,
+  "runtimeReadiness": "not_enabled_no_verified_public_geometry",
+  "technicalBlocker": "No source-native anonymous response containing a complete polygon at the exact WUP point was verified in this city-specific investigation. This is an unverified access finding, not a claim that public parcel geometry does not exist.",
+  "scopeLimits": "Local registry/cadastre custody and safe public geometry are assessed separately. No complete parcel geometry at the exact WUP point was retained; no citywide or countrywide coverage is asserted.",
+  "resultCategory": "no_verified_public_geometry",
+  "remainingUncertainty": "Exact WUP point coverage and source completeness remain unverified; no citywide or countrywide completeness claim is made.",
+  "nextStep": "Root review can retain this city-specific custody evidence and pursue a source-native public feature route only if one is identified.",
+  "coverageAssessment": {
+    "claimedScope": "The Sudan Judiciary describes the national Land Registrations Directorate and says branch offices operate across Sudanese states; the Sudan National Information Center describes a national WMS/WFS spatial portal. Neither inspected official source binds the local registry or any parcel layer specifically to Port Sudan, so city-specific custody remains undetermined. No parcel attributes or geometry were queried.",
+    "verifiedOpenScope": "No anonymous full parcel geometry response verified in this investigation.",
+    "citywideVerified": false,
+    "countrywideVerified": false
+  },
+  "runtimeAssessment": {
+    "status": "not_enabled_no_verified_public_geometry",
+    "reason": "No source-native anonymous response containing a complete polygon at the exact WUP point was verified in this city-specific investigation. This is an unverified access finding, not a claim that public parcel geometry does not exist."
+  },
+  "freshResearch": {
+    "queries": [
+      {
+        "language": "English",
+        "query": "Port Sudan Sudan official cadastral land registry cadastre municipality",
+        "scope": "Identify first-party city-bound registry/cadastre custody and safe public parcel geometry.",
+        "result": "The Judiciary describes the national land-registration system and branches in Sudanese states, and the National Information Center advertises national WMS/WFS maps. The inspected official pages do not establish Port Sudan-specific custody or a city layer.",
+        "actualResultUrls": [
+          "https://sj.gov.sd/ar/content/page/%D8%A5%D8%AF%D8%A7%D8%B1%D8%A9-%D8%AA%D8%B3%D8%AC%D9%8A%D9%84%D8%A7%D8%AA-%D8%A7%D9%84%D8%A7%D8%B1%D8%A7%D8%B6%D9%8A",
+          "https://nic.gov.sd/public/projectDetails/3"
+        ],
+        "executionMethod": "Separate fresh web search in this language; first-party pages/search results reviewed."
+      },
+      {
+        "language": "Arabic",
+        "query": "بورتسودان وزارة التخطيط العمراني الأراضي المساحة كادستر خرائط",
+        "scope": "Identify first-party city-bound registry/cadastre custody and safe public parcel geometry.",
+        "result": "تصف بوابة السودان المكانية خدمات وطنية WMS/WFS، لكن الصفحة لا تحدد مكتب تسجيل أو طبقة قطع أراضٍ خاصة ببورتسودان. لم يتم العثور على مصدر أولي يربط الحفظ العقاري محلياً بالمدينة، ولذلك تبقى هذه النقطة غير محسومة.",
+        "actualResultUrls": [
+          "https://sj.gov.sd/ar/content/page/%D8%A5%D8%AF%D8%A7%D8%B1%D8%A9-%D8%AA%D8%B3%D8%AC%D9%8A%D9%84%D8%A7%D8%AA-%D8%A7%D9%84%D8%A7%D8%B1%D8%A7%D8%B6%D9%8A",
+          "https://nic.gov.sd/public/projectDetails/3"
+        ],
+        "executionMethod": "Separate fresh web search in this language; first-party pages/search results reviewed."
+      }
+    ]
+  },
+  "source": null,
+  "verifiedParcelResponse": null,
+  "rootReviewedAt": "2026-10-09T06:45:08.823796+00:00",
+  "rootReview": {
+    "checkedAt": "2026-10-09T06:45:08.823796+00:00",
+    "basis": "Reviewed city-specific English/local-language attempts, local-custody basis, source routes and documented responses. Public geometry remains unverified; access failures and unknown custody do not establish absence.",
+    "primarySourceAuditFile": "research/overnight-followon-2026-10-09/unreviewed-primary-source-audit.json"
+  }
+}

@@ -1,0 +1,71 @@
+{
+  "schemaVersion": "1.0",
+  "checkedAt": "2026-10-09",
+  "cityRecord": "city-6007-tianshui.json",
+  "purpose": "Document first-party local registry/map evidence and bounded anonymous geometry access review.",
+  "scopeLimits": {
+    "maxFullPolygonsRetainedInCityRecord": 0,
+    "maxFullPolygonsRetainedInReview": 0,
+    "maxFullPolygonsRetainedInRepository": 0,
+    "ownerOrAddressDataRetained": false,
+    "credentialsOrTokenValuesRetained": false,
+    "citywideCompletenessAsserted": false
+  },
+  "assessment": "The municipal Natural Resources Bureau provides local land and real-estate registration services. Review of the bureau and service-guide pages did not identify an anonymous parcel-vector endpoint, safe geometry schema, or a feature response at the unchanged WUP point.",
+  "registryAssessment": "First-party sources establish a local registry/cadastre custodian.",
+  "officialPrimarySources": [
+    {
+      "url": "https://www.tianshui.gov.cn/zrzy/",
+      "observation": "Official municipal bureau site; local administrative custodian."
+    },
+    {
+      "url": "https://www.tianshui.gov.cn/zrzy/bsfw/fwzn/td.htm",
+      "observation": "Municipal bureau lists land and real-estate registration service guidance; no public parcel feature endpoint documented."
+    }
+  ],
+  "searchQueries": [
+    {
+      "language": "English",
+      "query": "Tianshui China official cadastral parcel map land registry GIS parcel polygons natural resources bureau",
+      "result": "The municipal Natural Resources Bureau provides local land and real-estate registration services. Review of the bureau and service-guide pages did not identify an anonymous parcel-vector endpoint, safe geometry schema, or a feature response at the unchanged WUP point.",
+      "method": "Separate English-language web search followed by official-source review.",
+      "scope": "Identify first-party city/local registry and public parcel geometry; check the WUP point without sensitive property attributes.",
+      "actualResultUrls": [
+        "https://www.tianshui.gov.cn/zrzy/",
+        "https://www.tianshui.gov.cn/zrzy/bsfw/fwzn/td.htm"
+      ]
+    },
+    {
+      "language": "Chinese",
+      "query": "天水市 自然资源局 不动产登记 地籍图 土地登记 官方",
+      "result": "The municipal Natural Resources Bureau provides local land and real-estate registration services. Review of the bureau and service-guide pages did not identify an anonymous parcel-vector endpoint, safe geometry schema, or a feature response at the unchanged WUP point.",
+      "method": "Separate local-language web search followed by official-source review.",
+      "scope": "Find first-party local-language registry/cadastral service and safe anonymous feature geometry near the unchanged WUP point.",
+      "actualResultUrls": [
+        "https://www.tianshui.gov.cn/zrzy/",
+        "https://www.tianshui.gov.cn/zrzy/bsfw/fwzn/td.htm"
+      ]
+    }
+  ],
+  "geometryDecision": "No full polygon retained; no safe anonymous geometry response was verified.",
+  "coverageAssessment": {
+    "claimedScope": "The municipal Natural Resources Bureau provides local land and real-estate registration services. Review of the bureau and service-guide pages did not identify an anonymous parcel-vector endpoint, safe geometry schema, or a feature response at the unchanged WUP point.",
+    "verifiedOpenScope": "The municipal Natural Resources Bureau provides local land and real-estate registration services. Review of the bureau and service-guide pages did not identify an anonymous parcel-vector endpoint, safe geometry schema, or a feature response at the unchanged WUP point.",
+    "citywideVerified": false,
+    "countrywideVerified": false,
+    "geometryVerified": false
+  },
+  "attempts": [
+    {
+      "url": "https://www.tianshui.gov.cn/zrzy/",
+      "result": "Official municipal bureau site; local administrative custodian."
+    },
+    {
+      "url": "https://www.tianshui.gov.cn/zrzy/bsfw/fwzn/td.htm",
+      "result": "Municipal bureau lists land and real-estate registration service guidance; no public parcel feature endpoint documented."
+    }
+  ],
+  "remainingUncertainty": "No public full-parcel geometry service or point-level feature coverage was verified.",
+  "geometryEvidence": null,
+  "runtimeAssessment": "not enabled; no verified full-parcel geometry"
+}

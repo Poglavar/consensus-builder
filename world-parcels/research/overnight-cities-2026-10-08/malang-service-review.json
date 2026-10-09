@@ -1,0 +1,13 @@
+{
+  "schemaVersion": "1.0",
+  "checkedAt": "2026-10-09",
+  "cityRecord": "city-7737-malang.json",
+  "purpose": "Read-only source discovery and bounded public-service validation; no runtime or global changes.",
+  "scopeLimits": {
+    "maxFullPolygonsRetainedInThisCityReport": 0,
+    "maxFullPolygonsRetainedAcrossCityReview": 0,
+    "ownerOrAddressDataRetained": false,
+    "accountCredentialsOrPublicTokenValuesRetained": false
+  },
+  "assessment": "The point lies within the catalog’s nationwide bounding rectangle, which is only a coarse extent, not proof of local coverage. No exact Malang village/urban parcel match, public feature, geometry or identifier was verified. No owner or address fields were requested or retained."
+}

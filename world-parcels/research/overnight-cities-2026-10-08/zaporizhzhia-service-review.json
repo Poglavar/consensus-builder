@@ -1,0 +1,89 @@
+{
+  "schemaVersion": "1.0",
+  "checkedAt": "2026-10-09",
+  "cityRecord": "city-3947-zaporizhzhia.json",
+  "purpose": "Document local registry evidence, language-specific searches and bounded anonymous geometry-route review.",
+  "scopeLimits": {
+    "maxFullPolygonsRetainedInCityRecord": 0,
+    "maxFullPolygonsRetainedInReview": 0,
+    "ownerOrAddressDataRetained": false,
+    "credentialsOrTokenValuesRetained": false,
+    "citywideCompletenessAsserted": false
+  },
+  "assessment": "Unknown for a local property/title register. The City Architecture and Urban Development Department runs an urban-planning cadastre and city geoportal; the portal also links Ukraine’s national Public Cadastral Map. These sources do not establish a municipal land-rights/cadastral registry or city-owned parcel-vector layer. No city-specific public parcel-vector layer or geometry-only response verified. The planning geoportal and linked national cadastral map are not substitutes for local parcel-record evidence.",
+  "registryAssessment": "Unknown for a local property/title register. The City Architecture and Urban Development Department runs an urban-planning cadastre and city geoportal; the portal also links Ukraine’s national Public Cadastral Map. These sources do not establish a municipal land-rights/cadastral registry or city-owned parcel-vector layer.",
+  "officialPrimarySources": [
+    {
+      "url": "https://datamzp.gov.ua/geoportal",
+      "observation": "Official city geoportal lists general plan, zoning, detailed plans, thematic maps and a link to Ukraine’s national public cadastral map."
+    },
+    {
+      "url": "https://datamzp.gov.ua/mistobudivniy-kadastr",
+      "observation": "City Architecture and Urban Development Department describes the urban-planning cadastre for municipal planning information."
+    },
+    {
+      "url": "https://datamzp.gov.ua/geoportal/plan-zonuvannya/map",
+      "observation": "Official zoning-map page embeds the city planning geoportal; it is not a verified property-rights parcel service."
+    }
+  ],
+  "searchQueries": [
+    {
+      "language": "English",
+      "query": "Zaporizhzhia official city geoportal cadastral parcel map land registry Ukraine",
+      "scope": "Find local registry/cadastral custodian and public parcel geometry, bound to this city.",
+      "result": "Official city geoportal presents planning documentation, thematic maps and a link to the national public cadastral map. No city-specific property-record custodian or safe local parcel-vector endpoint was confirmed.",
+      "actualResultUrls": [
+        "https://datamzp.gov.ua/geoportal",
+        "https://datamzp.gov.ua/mistobudivniy-kadastr",
+        "https://datamzp.gov.ua/geoportal/plan-zonuvannya/map"
+      ],
+      "executionMethod": "Separate English-language web search followed by official source and public service review; no owner or property fields requested."
+    },
+    {
+      "language": "Ukrainian",
+      "query": "site:datamzp.gov.ua геопортал Запоріжжя кадастрова карта земельні ділянки містобудівний кадастр",
+      "scope": "Find local registry/cadastral custodian and public parcel geometry, bound to this city.",
+      "result": "Ukrainian-language search confirmed the city planning cadastre and zoning-map application. The linked national public map was not treated as city-specific registry evidence, and no parcel feature was requested.",
+      "actualResultUrls": [
+        "https://datamzp.gov.ua/geoportal",
+        "https://datamzp.gov.ua/mistobudivniy-kadastr",
+        "https://datamzp.gov.ua/geoportal/plan-zonuvannya/map"
+      ],
+      "executionMethod": "Separate local-language web search followed by official-source review; no owner or property fields requested."
+    }
+  ],
+  "geometryDecision": {
+    "publicParcelGeometryFound": false,
+    "verifiedSample": false,
+    "decision": "No city-specific public parcel-vector layer or geometry-only response verified. The planning geoportal and linked national cadastral map are not substitutes for local parcel-record evidence."
+  },
+  "coverageAssessment": {
+    "citywideCompletenessAsserted": false,
+    "scope": "Exact unchanged WUP locator and reviewed city-specific official sources only.",
+    "limits": "No citywide source extent or coverage was verified."
+  },
+  "attempts": [
+    {
+      "url": "https://datamzp.gov.ua/geoportal",
+      "method": "Official website/service metadata review",
+      "result": "Official city geoportal lists general plan, zoning, detailed plans, thematic maps and a link to Ukraine’s national public cadastral map."
+    },
+    {
+      "url": "https://datamzp.gov.ua/mistobudivniy-kadastr",
+      "method": "Official website/service metadata review",
+      "result": "City Architecture and Urban Development Department describes the urban-planning cadastre for municipal planning information."
+    },
+    {
+      "url": "https://datamzp.gov.ua/geoportal/plan-zonuvannya/map",
+      "method": "Official website/service metadata review",
+      "result": "Official zoning-map page embeds the city planning geoportal; it is not a verified property-rights parcel service."
+    }
+  ],
+  "sourceCandidate": null,
+  "privacyReview": {
+    "ownerAddressTaxOrAccountValuesRequested": false,
+    "propertyDetailsSubmitted": false,
+    "credentialsOrTokensRetained": false
+  },
+  "sampleGeometryFile": null
+}

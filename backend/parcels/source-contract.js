@@ -109,7 +109,10 @@ export function canonicalParcelFeature(descriptor, feature, nativeId) {
 export function createParcelAttributeFilter(descriptor) {
     const nonNullFields = descriptor.attributeNotNull === undefined ? [] : descriptor.attributeNotNull;
     const nullFields = descriptor.attributeNull === undefined ? [] : descriptor.attributeNull;
-    const validField = field => typeof field === 'string' && /^[A-Za-z_][A-Za-z0-9_]*$/.test(field)
+    const fieldPattern = descriptor.adapter === 'arcgis'
+        ? /^[A-Za-z_][A-Za-z0-9_]*(?:\.[A-Za-z_][A-Za-z0-9_]*){0,7}$/
+        : /^[A-Za-z_][A-Za-z0-9_]*$/;
+    const validField = field => typeof field === 'string' && fieldPattern.test(field)
         && descriptor.outFields.includes(field);
     const entries = Object.entries(descriptor.attributeFilters || {}).map(([field, value]) =>
         [field, Array.isArray(value) ? value : [value], false]);
@@ -118,11 +121,13 @@ export function createParcelAttributeFilter(descriptor) {
     if (!Array.isArray(nonNullFields) || nonNullFields.length > 80 || nonNullFields.some(field => !validField(field))
         || !Array.isArray(nullFields) || nullFields.length > 80 || nullFields.some(field => !validField(field) || nonNullFields.includes(field))
         || entries.some(([field, values, exclude]) => !validField(field)
-        || !values.length || values.length > 80 || values.some(value => typeof value !== 'boolean' && (typeof value !== 'string' || (!value && !exclude) || value.length > 256)))) {
+        || !values.length || values.length > 80 || values.some(value => typeof value !== 'boolean'
+            && !Number.isSafeInteger(value) && (typeof value !== 'string' || (!value && !exclude) || value.length > 256)))) {
         throw new Error('Invalid parcel attribute filter.');
     }
     const where = entries.map(([field, values, exclude]) => {
-        const literals = values.map(value => typeof value === 'boolean' ? String(value) : `'${value.replaceAll("'", "''")}'`);
+        const literals = values.map(value => typeof value === 'boolean' || Number.isSafeInteger(value)
+            ? String(value) : `'${value.replaceAll("'", "''")}'`);
         return literals.length === 1 ? `${field} ${exclude ? '<>' : '='} ${literals[0]}`
             : `${field} ${exclude ? 'NOT IN' : 'IN'} (${literals.join(',')})`;
     }).concat(nonNullFields.map(field => `${field} IS NOT NULL`), nullFields.map(field => `${field} IS NULL`)).join(' AND ');

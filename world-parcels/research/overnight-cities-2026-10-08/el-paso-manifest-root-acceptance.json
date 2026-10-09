@@ -1,0 +1,4003 @@
+{
+  "schemaVersion": 1,
+  "purpose": "Live city parcel qualification with unmodified responses through the repository adapter; IDs and hashes retained, full geometries confined to temporary audit cache except three public samples.",
+  "checkedAt": "2026-10-09T04:29:04.038Z",
+  "city": "el-paso-manifest-root",
+  "descriptor": {
+    "id": "us-tx-el-paso-city-gis-parcels",
+    "name": "City of El Paso GIS Parcels (EPCAD source, GIS OID namespace)",
+    "adapter": "arcgis",
+    "endpoint": "https://gis.elpasotexas.gov/arcgis/rest/services/Deeds/FeatureServer/0",
+    "idField": "OBJECTID",
+    "objectIdField": "OBJECTID",
+    "idPrefix": "US-TX-ELPASO-OBJECTID-",
+    "idType": "integer",
+    "outFields": [
+      "OBJECTID"
+    ],
+    "pageSize": 1000,
+    "maxFeatures": 3000,
+    "maxBboxKm2": 1,
+    "countryCode": "US",
+    "metricSrid": 32613,
+    "cityIds": [
+      "elpaso"
+    ],
+    "maxConcurrentQueries": 2,
+    "boundsQueryMode": "object-ids",
+    "idsQueryMode": "object-ids"
+  },
+  "grid": [
+    {
+      "name": "viewport-0",
+      "bbox": [
+        -106.366,
+        31.785,
+        -106.365,
+        31.786
+      ],
+      "kind": "aligned-grid"
+    },
+    {
+      "name": "viewport-1",
+      "bbox": [
+        -106.365,
+        31.785,
+        -106.364,
+        31.786
+      ],
+      "kind": "aligned-grid"
+    },
+    {
+      "name": "viewport-2",
+      "bbox": [
+        -106.364,
+        31.785,
+        -106.363,
+        31.786
+      ],
+      "kind": "aligned-grid"
+    },
+    {
+      "name": "viewport-3",
+      "bbox": [
+        -106.366,
+        31.786,
+        -106.365,
+        31.787
+      ],
+      "kind": "aligned-grid"
+    },
+    {
+      "name": "viewport-4",
+      "bbox": [
+        -106.365,
+        31.786,
+        -106.364,
+        31.787
+      ],
+      "kind": "aligned-grid"
+    },
+    {
+      "name": "viewport-5",
+      "bbox": [
+        -106.364,
+        31.786,
+        -106.363,
+        31.787
+      ],
+      "kind": "aligned-grid"
+    },
+    {
+      "name": "viewport-6",
+      "bbox": [
+        -106.366,
+        31.787,
+        -106.365,
+        31.788
+      ],
+      "kind": "aligned-grid"
+    },
+    {
+      "name": "viewport-7",
+      "bbox": [
+        -106.365,
+        31.787,
+        -106.364,
+        31.788
+      ],
+      "kind": "aligned-grid"
+    },
+    {
+      "name": "viewport-8",
+      "bbox": [
+        -106.364,
+        31.787,
+        -106.363,
+        31.788
+      ],
+      "kind": "aligned-grid"
+    },
+    {
+      "name": "viewport-9",
+      "bbox": [
+        -106.365,
+        31.784,
+        -106.364,
+        31.785
+      ],
+      "kind": "adjacent-pan"
+    },
+    {
+      "name": "viewport-10",
+      "bbox": [
+        -106.365,
+        31.788,
+        -106.364,
+        31.789
+      ],
+      "kind": "adjacent-pan"
+    },
+    {
+      "name": "viewport-11",
+      "bbox": [
+        -106.367,
+        31.786,
+        -106.366,
+        31.787
+      ],
+      "kind": "adjacent-pan"
+    },
+    {
+      "name": "viewport-12",
+      "bbox": [
+        -106.363,
+        31.786,
+        -106.362,
+        31.787
+      ],
+      "kind": "adjacent-pan"
+    }
+  ],
+  "tests": [
+    {
+      "name": "viewport-0",
+      "passed": true,
+      "elapsedMs": 1365,
+      "requestIndexes": [
+        0,
+        2
+      ],
+      "bbox": [
+        -106.366,
+        31.785,
+        -106.365,
+        31.786
+      ],
+      "complete": true,
+      "count": 18,
+      "ids": [
+        {
+          "id": "US-TX-ELPASO-OBJECTID-127722",
+          "geometrySha256": "2c8a08530309e8c49e0af6c3bc4a9c9bb7a215d41ec452718cc00a43f0d9f8d1"
+        },
+        {
+          "id": "US-TX-ELPASO-OBJECTID-127752",
+          "geometrySha256": "75732bf2ab18ce38d22f31b9719efad107c5cf24a70d4a8f76feb20ea796aa41"
+        },
+        {
+          "id": "US-TX-ELPASO-OBJECTID-127910",
+          "geometrySha256": "d84cebe32de8e924e7096b4c149a87b997a19a4bffee19b5f944f86b226a393a"
+        },
+        {
+          "id": "US-TX-ELPASO-OBJECTID-127912",
+          "geometrySha256": "db425a2f6e3e49dedfd7ad9b28916f9857013cfe02497eecee6309def5c6e785"
+        },
+        {
+          "id": "US-TX-ELPASO-OBJECTID-127941",
+          "geometrySha256": "f101c3a870287e390ed5cf38124c3a441ad3ccb3fb9ca8d16324b349d5820576"
+        },
+        {
+          "id": "US-TX-ELPASO-OBJECTID-128113",
+          "geometrySha256": "bf9298690049e048eded13fa2df986b3907bf14ab06183d6d6f459678e5ff832"
+        },
+        {
+          "id": "US-TX-ELPASO-OBJECTID-128139",
+          "geometrySha256": "bc2a4d90c59abb6e2bc3e82b691c8b738e8bcd1552669097d609b3a12dd0de00"
+        },
+        {
+          "id": "US-TX-ELPASO-OBJECTID-128359",
+          "geometrySha256": "6c963bee93a3c4804cafa2e147df253c2b685ae3eda389180ec1b8651c51c1a9"
+        },
+        {
+          "id": "US-TX-ELPASO-OBJECTID-128388",
+          "geometrySha256": "b4fdbc9bd92b9450214a7f717a85a7e72e3d4610e21f9b0886609740cfbfe8e4"
+        },
+        {
+          "id": "US-TX-ELPASO-OBJECTID-128394",
+          "geometrySha256": "879637259753999bffb2a74dda400beeb42ad938211d9ba29b8ef80058286db4"
+        },
+        {
+          "id": "US-TX-ELPASO-OBJECTID-128584",
+          "geometrySha256": "868d4e7f04bb5f14ccee50125372960541c73facc243ceffc0fd59ecf8bfe046"
+        },
+        {
+          "id": "US-TX-ELPASO-OBJECTID-128625",
+          "geometrySha256": "d99a226ce04cf3125807532b021c2ebfc4f47cd96fa040506a006193780d8d31"
+        },
+        {
+          "id": "US-TX-ELPASO-OBJECTID-128815",
+          "geometrySha256": "5e0a9107bc83b868611d4bbca7a67f8233b249c8d201406100b82de20906ebdb"
+        },
+        {
+          "id": "US-TX-ELPASO-OBJECTID-128859",
+          "geometrySha256": "d621d439aaf9b82540d47bb00fba21abe56ef9b2589b7210124535f138f6bddc"
+        },
+        {
+          "id": "US-TX-ELPASO-OBJECTID-129047",
+          "geometrySha256": "a4d0fd534bd71fa991250926b80fecd7db835c3fd3db9245003bc3e1163017a0"
+        },
+        {
+          "id": "US-TX-ELPASO-OBJECTID-129105",
+          "geometrySha256": "d23cbbe4cd244730e17a68c961d71fb96aa55be96706b0d6112644c7e7ce1e1b"
+        },
+        {
+          "id": "US-TX-ELPASO-OBJECTID-129287",
+          "geometrySha256": "34e7719f2cd7f28ef0075cb9d7fb0e4c0ee6bea3d36a550d6e724938f09b0280"
+        },
+        {
+          "id": "US-TX-ELPASO-OBJECTID-129327",
+          "geometrySha256": "dae3e5e66c03bd9429b210854a7296ca72e310eded8ac011733c39d7e1641ba1"
+        }
+      ]
+    },
+    {
+      "name": "viewport-1",
+      "passed": true,
+      "elapsedMs": 704,
+      "requestIndexes": [
+        3,
+        5
+      ],
+      "bbox": [
+        -106.365,
+        31.785,
+        -106.364,
+        31.786
+      ],
+      "complete": true,
+      "count": 17,
+      "ids": [
+        {
+          "id": "US-TX-ELPASO-OBJECTID-127725",
+          "geometrySha256": "eb3137a28c6d1877740802a9ff0a3f90158775acb3187e8cab344287f61d2ed7"
+        },
+        {
+          "id": "US-TX-ELPASO-OBJECTID-127746",
+          "geometrySha256": "ad6e066051409a88129654e7794f0de99fd213a968a03b444909912675dde94c"
+        },
+        {
+          "id": "US-TX-ELPASO-OBJECTID-127910",
+          "geometrySha256": "d84cebe32de8e924e7096b4c149a87b997a19a4bffee19b5f944f86b226a393a"
+        },
+        {
+          "id": "US-TX-ELPASO-OBJECTID-127944",
+          "geometrySha256": "04075a8d2954ea2762af6a863927ac8931497f0bd934e967921e2b90328dfcdd"
+        },
+        {
+          "id": "US-TX-ELPASO-OBJECTID-128113",
+          "geometrySha256": "bf9298690049e048eded13fa2df986b3907bf14ab06183d6d6f459678e5ff832"
+        },
+        {
+          "id": "US-TX-ELPASO-OBJECTID-128137",
+          "geometrySha256": "f2d7a6e45ba12827e3c765732549f88303068df4bc11efac5ee650ac9b7f64e2"
+        },
+        {
+          "id": "US-TX-ELPASO-OBJECTID-128203",
+          "geometrySha256": "006cd460bdf454db11e34a9044e38b7b2be43ae8934f993e41e4df4893848fdd"
+        },
+        {
+          "id": "US-TX-ELPASO-OBJECTID-128394",
+          "geometrySha256": "879637259753999bffb2a74dda400beeb42ad938211d9ba29b8ef80058286db4"
+        },
+        {
+          "id": "US-TX-ELPASO-OBJECTID-128480",
+          "geometrySha256": "b2e8c4faa7b7a8ef3ad5799595dbc9d4af14a6d5e36b88f697dce507755906d5"
+        },
+        {
+          "id": "US-TX-ELPASO-OBJECTID-128625",
+          "geometrySha256": "d99a226ce04cf3125807532b021c2ebfc4f47cd96fa040506a006193780d8d31"
+        },
+        {
+          "id": "US-TX-ELPASO-OBJECTID-128704",
+          "geometrySha256": "0e21f95676c2494aa0f58d0b5026ef44355811bf35be0e45573eb9a4f6c89838"
+        },
+        {
+          "id": "US-TX-ELPASO-OBJECTID-128750",
+          "geometrySha256": "b881b340079ec5bb1bc10935971ce6a5711ecc81031860639449a6df5d896d89"
+        },
+        {
+          "id": "US-TX-ELPASO-OBJECTID-128859",
+          "geometrySha256": "d621d439aaf9b82540d47bb00fba21abe56ef9b2589b7210124535f138f6bddc"
+        },
+        {
+          "id": "US-TX-ELPASO-OBJECTID-128953",
+          "geometrySha256": "bb4200a4fe99a70d2620804bfe119aceb21a50fa2eb9bdf34c9f8fff314833e5"
+        },
+        {
+          "id": "US-TX-ELPASO-OBJECTID-128997",
+          "geometrySha256": "5a16d85885e0bc44c4902c851952c914cb5b634a1553f1f2ef7fd885f20d7d49"
+        },
+        {
+          "id": "US-TX-ELPASO-OBJECTID-129181",
+          "geometrySha256": "8af665c745b19a34b8807885b10e0e3f38de4ccb33b44e084d0b5775bb6b1ce8"
+        },
+        {
+          "id": "US-TX-ELPASO-OBJECTID-129238",
+          "geometrySha256": "8bbdb3cb949edf547f0e64812b42a2af31343dda70e21f45e05c15d4d681b25e"
+        }
+      ]
+    },
+    {
+      "name": "viewport-2",
+      "passed": true,
+      "elapsedMs": 693,
+      "requestIndexes": [
+        6,
+        8
+      ],
+      "bbox": [
+        -106.364,
+        31.785,
+        -106.363,
+        31.786
+      ],
+      "complete": true,
+      "count": 13,
+      "ids": [
+        {
+          "id": "US-TX-ELPASO-OBJECTID-127495",
+          "geometrySha256": "d9cb71cafe69e4753ed873f11be27d05f0d2f191788ba378da43ed5dd2e706cd"
+        },
+        {
+          "id": "US-TX-ELPASO-OBJECTID-127623",
+          "geometrySha256": "21e703fe0cd37b5e3633199645b323e624c315203274fc948bce24a28f7ba683"
+        },
+        {
+          "id": "US-TX-ELPASO-OBJECTID-127746",
+          "geometrySha256": "ad6e066051409a88129654e7794f0de99fd213a968a03b444909912675dde94c"
+        },
+        {
+          "id": "US-TX-ELPASO-OBJECTID-127791",
+          "geometrySha256": "6bd743fe966dc9e15011d79e59b06014735718d0c8a4c07975f191af15d00276"
+        },
+        {
+          "id": "US-TX-ELPASO-OBJECTID-127988",
+          "geometrySha256": "e33c0b1bd6a96f56219661afdb138d68e84eed549daf3c550a7f76f9869ec233"
+        },
+        {
+          "id": "US-TX-ELPASO-OBJECTID-128023",
+          "geometrySha256": "80e09abebcffdcfcf652798f2ba4376e3725a43ee3885cabb294eb50a6898aa5"
+        },
+        {
+          "id": "US-TX-ELPASO-OBJECTID-128203",
+          "geometrySha256": "006cd460bdf454db11e34a9044e38b7b2be43ae8934f993e41e4df4893848fdd"
+        },
+        {
+          "id": "US-TX-ELPASO-OBJECTID-128252",
+          "geometrySha256": "f3ec36aab11c872237425c7c649ca8d7f368d06667836615d53062e50f2a6811"
+        },
+        {
+          "id": "US-TX-ELPASO-OBJECTID-128480",
+          "geometrySha256": "b2e8c4faa7b7a8ef3ad5799595dbc9d4af14a6d5e36b88f697dce507755906d5"
+        },
+        {
+          "id": "US-TX-ELPASO-OBJECTID-128513",
+          "geometrySha256": "cb56a34de786d757516ef122cc39077db13704bdbc42453c901c58f56f3b7932"
+        },
+        {
+          "id": "US-TX-ELPASO-OBJECTID-128750",
+          "geometrySha256": "b881b340079ec5bb1bc10935971ce6a5711ecc81031860639449a6df5d896d89"
+        },
+        {
+          "id": "US-TX-ELPASO-OBJECTID-128997",
+          "geometrySha256": "5a16d85885e0bc44c4902c851952c914cb5b634a1553f1f2ef7fd885f20d7d49"
+        },
+        {
+          "id": "US-TX-ELPASO-OBJECTID-353371",
+          "geometrySha256": "465b2875967ea1f6bfbe55b04bf36f91b7348dfa324e72992ce4e253c0c95d76"
+        }
+      ]
+    },
+    {
+      "name": "viewport-3",
+      "passed": true,
+      "elapsedMs": 747,
+      "requestIndexes": [
+        9,
+        11
+      ],
+      "bbox": [
+        -106.366,
+        31.786,
+        -106.365,
+        31.787
+      ],
+      "complete": true,
+      "count": 17,
+      "ids": [
+        {
+          "id": "US-TX-ELPASO-OBJECTID-129047",
+          "geometrySha256": "a4d0fd534bd71fa991250926b80fecd7db835c3fd3db9245003bc3e1163017a0"
+        },
+        {
+          "id": "US-TX-ELPASO-OBJECTID-129105",
+          "geometrySha256": "d23cbbe4cd244730e17a68c961d71fb96aa55be96706b0d6112644c7e7ce1e1b"
+        },
+        {
+          "id": "US-TX-ELPASO-OBJECTID-129181",
+          "geometrySha256": "8af665c745b19a34b8807885b10e0e3f38de4ccb33b44e084d0b5775bb6b1ce8"
+        },
+        {
+          "id": "US-TX-ELPASO-OBJECTID-129287",
+          "geometrySha256": "34e7719f2cd7f28ef0075cb9d7fb0e4c0ee6bea3d36a550d6e724938f09b0280"
+        },
+        {
+          "id": "US-TX-ELPASO-OBJECTID-129327",
+          "geometrySha256": "dae3e5e66c03bd9429b210854a7296ca72e310eded8ac011733c39d7e1641ba1"
+        },
+        {
+          "id": "US-TX-ELPASO-OBJECTID-129416",
+          "geometrySha256": "e2c8e898f70a6531932c55a1fea7c15f7f8af9a91305e0b0085b5a5d86b6ea52"
+        },
+        {
+          "id": "US-TX-ELPASO-OBJECTID-129556",
+          "geometrySha256": "3a856729f70f16917d23e01497477fb681d092cc4be74cd2351abf51ec003657"
+        },
+        {
+          "id": "US-TX-ELPASO-OBJECTID-129658",
+          "geometrySha256": "8a698859a99af6cf9f0eb7cdf885e72a84a6d1c42be6cff3a5435b4444512d6b"
+        },
+        {
+          "id": "US-TX-ELPASO-OBJECTID-129935",
+          "geometrySha256": "00d731061c9890148fd5344bd434705eeecca09a0072d77992527e2260d4f3b8"
+        },
+        {
+          "id": "US-TX-ELPASO-OBJECTID-130036",
+          "geometrySha256": "cc047e9654fc758e31da08ce951571025d94bd4e671ca3a4a0dc8dcba3aeaaf5"
+        },
+        {
+          "id": "US-TX-ELPASO-OBJECTID-130077",
+          "geometrySha256": "7f8c0cd89546836f1e5339254ada0a1437a2502467ef6f34060537000a40ef78"
+        },
+        {
+          "id": "US-TX-ELPASO-OBJECTID-130181",
+          "geometrySha256": "160ce22147042ceefee002b3bf464b7841b83af24db309e5a611e0299281cbeb"
+        },
+        {
+          "id": "US-TX-ELPASO-OBJECTID-130336",
+          "geometrySha256": "fdfc02e0683d291576de86c10447f22c042a9c3ce19998c56f84ea65ddbeda0f"
+        },
+        {
+          "id": "US-TX-ELPASO-OBJECTID-130435",
+          "geometrySha256": "4ff86ba08569f33d4c1dd087e826173238334dcfb9c048fbbc0d3e5c0673e3af"
+        },
+        {
+          "id": "US-TX-ELPASO-OBJECTID-130621",
+          "geometrySha256": "108d2bbe3ec662bd01f941f16e5f9c5ca0a4741ed31f38896457ba76198e33a7"
+        },
+        {
+          "id": "US-TX-ELPASO-OBJECTID-130698",
+          "geometrySha256": "3cb09325a08a54720420018222a6e5673e6bd548e9b927d17f565d8ce38b1d6c"
+        },
+        {
+          "id": "US-TX-ELPASO-OBJECTID-130920",
+          "geometrySha256": "6334eb9071167e2f3e87e2b989167472d51a62e0dad757d18122927785a5197b"
+        }
+      ]
+    },
+    {
+      "name": "viewport-4",
+      "passed": true,
+      "elapsedMs": 689,
+      "requestIndexes": [
+        12,
+        14
+      ],
+      "bbox": [
+        -106.365,
+        31.786,
+        -106.364,
+        31.787
+      ],
+      "complete": true,
+      "count": 11,
+      "ids": [
+        {
+          "id": "US-TX-ELPASO-OBJECTID-128953",
+          "geometrySha256": "bb4200a4fe99a70d2620804bfe119aceb21a50fa2eb9bdf34c9f8fff314833e5"
+        },
+        {
+          "id": "US-TX-ELPASO-OBJECTID-128997",
+          "geometrySha256": "5a16d85885e0bc44c4902c851952c914cb5b634a1553f1f2ef7fd885f20d7d49"
+        },
+        {
+          "id": "US-TX-ELPASO-OBJECTID-129181",
+          "geometrySha256": "8af665c745b19a34b8807885b10e0e3f38de4ccb33b44e084d0b5775bb6b1ce8"
+        },
+        {
+          "id": "US-TX-ELPASO-OBJECTID-129238",
+          "geometrySha256": "8bbdb3cb949edf547f0e64812b42a2af31343dda70e21f45e05c15d4d681b25e"
+        },
+        {
+          "id": "US-TX-ELPASO-OBJECTID-129416",
+          "geometrySha256": "e2c8e898f70a6531932c55a1fea7c15f7f8af9a91305e0b0085b5a5d86b6ea52"
+        },
+        {
+          "id": "US-TX-ELPASO-OBJECTID-129502",
+          "geometrySha256": "1d106839200857b6762ea88e109d2385ee1bf2fe987d001e02f759076168549b"
+        },
+        {
+          "id": "US-TX-ELPASO-OBJECTID-129658",
+          "geometrySha256": "8a698859a99af6cf9f0eb7cdf885e72a84a6d1c42be6cff3a5435b4444512d6b"
+        },
+        {
+          "id": "US-TX-ELPASO-OBJECTID-129784",
+          "geometrySha256": "6021250eb75136aba35308e41da61ea6bfae056e69cc3ee848fe8bdb37125701"
+        },
+        {
+          "id": "US-TX-ELPASO-OBJECTID-130036",
+          "geometrySha256": "cc047e9654fc758e31da08ce951571025d94bd4e671ca3a4a0dc8dcba3aeaaf5"
+        },
+        {
+          "id": "US-TX-ELPASO-OBJECTID-130336",
+          "geometrySha256": "fdfc02e0683d291576de86c10447f22c042a9c3ce19998c56f84ea65ddbeda0f"
+        },
+        {
+          "id": "US-TX-ELPASO-OBJECTID-353371",
+          "geometrySha256": "465b2875967ea1f6bfbe55b04bf36f91b7348dfa324e72992ce4e253c0c95d76"
+        }
+      ]
+    },
+    {
+      "name": "viewport-5",
+      "passed": true,
+      "elapsedMs": 704,
+      "requestIndexes": [
+        15,
+        17
+      ],
+      "bbox": [
+        -106.364,
+        31.786,
+        -106.363,
+        31.787
+      ],
+      "complete": true,
+      "count": 4,
+      "ids": [
+        {
+          "id": "US-TX-ELPASO-OBJECTID-128750",
+          "geometrySha256": "b881b340079ec5bb1bc10935971ce6a5711ecc81031860639449a6df5d896d89"
+        },
+        {
+          "id": "US-TX-ELPASO-OBJECTID-128997",
+          "geometrySha256": "5a16d85885e0bc44c4902c851952c914cb5b634a1553f1f2ef7fd885f20d7d49"
+        },
+        {
+          "id": "US-TX-ELPASO-OBJECTID-129238",
+          "geometrySha256": "8bbdb3cb949edf547f0e64812b42a2af31343dda70e21f45e05c15d4d681b25e"
+        },
+        {
+          "id": "US-TX-ELPASO-OBJECTID-353371",
+          "geometrySha256": "465b2875967ea1f6bfbe55b04bf36f91b7348dfa324e72992ce4e253c0c95d76"
+        }
+      ]
+    },
+    {
+      "name": "viewport-6",
+      "passed": true,
+      "elapsedMs": 710,
+      "requestIndexes": [
+        18,
+        20
+      ],
+      "bbox": [
+        -106.366,
+        31.787,
+        -106.365,
+        31.788
+      ],
+      "complete": true,
+      "count": 10,
+      "ids": [
+        {
+          "id": "US-TX-ELPASO-OBJECTID-130336",
+          "geometrySha256": "fdfc02e0683d291576de86c10447f22c042a9c3ce19998c56f84ea65ddbeda0f"
+        },
+        {
+          "id": "US-TX-ELPASO-OBJECTID-130435",
+          "geometrySha256": "4ff86ba08569f33d4c1dd087e826173238334dcfb9c048fbbc0d3e5c0673e3af"
+        },
+        {
+          "id": "US-TX-ELPASO-OBJECTID-130621",
+          "geometrySha256": "108d2bbe3ec662bd01f941f16e5f9c5ca0a4741ed31f38896457ba76198e33a7"
+        },
+        {
+          "id": "US-TX-ELPASO-OBJECTID-130698",
+          "geometrySha256": "3cb09325a08a54720420018222a6e5673e6bd548e9b927d17f565d8ce38b1d6c"
+        },
+        {
+          "id": "US-TX-ELPASO-OBJECTID-130920",
+          "geometrySha256": "6334eb9071167e2f3e87e2b989167472d51a62e0dad757d18122927785a5197b"
+        },
+        {
+          "id": "US-TX-ELPASO-OBJECTID-130994",
+          "geometrySha256": "c647b5dd1f8987c7c0ae1fe466486bbd3cb46587265187721a5b63c83cd084a8"
+        },
+        {
+          "id": "US-TX-ELPASO-OBJECTID-131176",
+          "geometrySha256": "04f7d457895da2dddd8ae60b5ea76d0f01b8352db4bf743e0da32a15d297154a"
+        },
+        {
+          "id": "US-TX-ELPASO-OBJECTID-131450",
+          "geometrySha256": "16ccad2f415c2f1d31e260eb6f6d9e4f511d7bf04951476d67b9188f6fb761c0"
+        },
+        {
+          "id": "US-TX-ELPASO-OBJECTID-131740",
+          "geometrySha256": "3b5e0adf534edd4299b3fda5b9bdc12fdbfe98d0bd5430f303fdf815ecc8ef06"
+        },
+        {
+          "id": "US-TX-ELPASO-OBJECTID-353371",
+          "geometrySha256": "465b2875967ea1f6bfbe55b04bf36f91b7348dfa324e72992ce4e253c0c95d76"
+        }
+      ]
+    },
+    {
+      "name": "viewport-7",
+      "passed": true,
+      "elapsedMs": 704,
+      "requestIndexes": [
+        21,
+        23
+      ],
+      "bbox": [
+        -106.365,
+        31.787,
+        -106.364,
+        31.788
+      ],
+      "complete": true,
+      "count": 2,
+      "ids": [
+        {
+          "id": "US-TX-ELPASO-OBJECTID-130336",
+          "geometrySha256": "fdfc02e0683d291576de86c10447f22c042a9c3ce19998c56f84ea65ddbeda0f"
+        },
+        {
+          "id": "US-TX-ELPASO-OBJECTID-353371",
+          "geometrySha256": "465b2875967ea1f6bfbe55b04bf36f91b7348dfa324e72992ce4e253c0c95d76"
+        }
+      ]
+    },
+    {
+      "name": "viewport-8",
+      "passed": true,
+      "elapsedMs": 694,
+      "requestIndexes": [
+        24,
+        26
+      ],
+      "bbox": [
+        -106.364,
+        31.787,
+        -106.363,
+        31.788
+      ],
+      "complete": true,
+      "count": 1,
+      "ids": [
+        {
+          "id": "US-TX-ELPASO-OBJECTID-353371",
+          "geometrySha256": "465b2875967ea1f6bfbe55b04bf36f91b7348dfa324e72992ce4e253c0c95d76"
+        }
+      ]
+    },
+    {
+      "name": "viewport-9",
+      "passed": true,
+      "elapsedMs": 792,
+      "requestIndexes": [
+        27,
+        29
+      ],
+      "bbox": [
+        -106.365,
+        31.784,
+        -106.364,
+        31.785
+      ],
+      "complete": true,
+      "count": 18,
+      "ids": [
+        {
+          "id": "US-TX-ELPASO-OBJECTID-126463",
+          "geometrySha256": "927cd653ebe3af3dc75c3eb34cecf180ddfbc91129de293a3e8bc5e6c457e0c7"
+        },
+        {
+          "id": "US-TX-ELPASO-OBJECTID-126498",
+          "geometrySha256": "fdd68c8444b0078ba474388d718d0497d752ab504f5c505b0357c0932074e813"
+        },
+        {
+          "id": "US-TX-ELPASO-OBJECTID-126655",
+          "geometrySha256": "d362513522241613cb7c991c60a65d8c0de25ae935409935e5196b2ffcc9e8c1"
+        },
+        {
+          "id": "US-TX-ELPASO-OBJECTID-126700",
+          "geometrySha256": "f61ff60e2b69f3c996ccf3494875f1c95b0ac3066399cadc7a97da032b74e339"
+        },
+        {
+          "id": "US-TX-ELPASO-OBJECTID-126854",
+          "geometrySha256": "d0d8c19e160d4262652f452d495bbc46528474c8e83e5af2686a02c6c493802f"
+        },
+        {
+          "id": "US-TX-ELPASO-OBJECTID-126868",
+          "geometrySha256": "87915b712a3d97ad7331ae89ad31159c0db5b73c7ca89e5caa0c0616b996cba3"
+        },
+        {
+          "id": "US-TX-ELPASO-OBJECTID-126892",
+          "geometrySha256": "496bd329e97783e143883482a890aab04037075510c94910c610da8db016a510"
+        },
+        {
+          "id": "US-TX-ELPASO-OBJECTID-127058",
+          "geometrySha256": "175f339b509a1a45a4e9c2a5fe00654d4e2024b351f6b2315ce980b7465bd77f"
+        },
+        {
+          "id": "US-TX-ELPASO-OBJECTID-127088",
+          "geometrySha256": "3faefacb40c0fc85af5d49656305817e5b6e85f519af7e223a6cffdbb733b9e0"
+        },
+        {
+          "id": "US-TX-ELPASO-OBJECTID-127280",
+          "geometrySha256": "e00f35de5bca4abb7860707510065782ba2f92aacbcd94711c5cfcdda57ff763"
+        },
+        {
+          "id": "US-TX-ELPASO-OBJECTID-127284",
+          "geometrySha256": "c386b6595ffceaba14cb18c7849ed651aae3bca8f658cf93680422b285b75b90"
+        },
+        {
+          "id": "US-TX-ELPASO-OBJECTID-127310",
+          "geometrySha256": "2e2b7f99b4714e773bde374be3d32550076ba7dc64d998b8c7c6788ced98a2ab"
+        },
+        {
+          "id": "US-TX-ELPASO-OBJECTID-127492",
+          "geometrySha256": "ab13eed5f7ee93cbe351edb5fed1b6541581b1eff4f6f3aaa7399aad09ecec97"
+        },
+        {
+          "id": "US-TX-ELPASO-OBJECTID-127495",
+          "geometrySha256": "d9cb71cafe69e4753ed873f11be27d05f0d2f191788ba378da43ed5dd2e706cd"
+        },
+        {
+          "id": "US-TX-ELPASO-OBJECTID-127725",
+          "geometrySha256": "eb3137a28c6d1877740802a9ff0a3f90158775acb3187e8cab344287f61d2ed7"
+        },
+        {
+          "id": "US-TX-ELPASO-OBJECTID-127746",
+          "geometrySha256": "ad6e066051409a88129654e7794f0de99fd213a968a03b444909912675dde94c"
+        },
+        {
+          "id": "US-TX-ELPASO-OBJECTID-127910",
+          "geometrySha256": "d84cebe32de8e924e7096b4c149a87b997a19a4bffee19b5f944f86b226a393a"
+        },
+        {
+          "id": "US-TX-ELPASO-OBJECTID-127944",
+          "geometrySha256": "04075a8d2954ea2762af6a863927ac8931497f0bd934e967921e2b90328dfcdd"
+        }
+      ]
+    },
+    {
+      "name": "viewport-10",
+      "passed": true,
+      "elapsedMs": 745,
+      "requestIndexes": [
+        30,
+        32
+      ],
+      "bbox": [
+        -106.365,
+        31.788,
+        -106.364,
+        31.789
+      ],
+      "complete": true,
+      "count": 1,
+      "ids": [
+        {
+          "id": "US-TX-ELPASO-OBJECTID-353371",
+          "geometrySha256": "465b2875967ea1f6bfbe55b04bf36f91b7348dfa324e72992ce4e253c0c95d76"
+        }
+      ]
+    },
+    {
+      "name": "viewport-11",
+      "passed": true,
+      "elapsedMs": 709,
+      "requestIndexes": [
+        33,
+        35
+      ],
+      "bbox": [
+        -106.367,
+        31.786,
+        -106.366,
+        31.787
+      ],
+      "complete": true,
+      "count": 16,
+      "ids": [
+        {
+          "id": "US-TX-ELPASO-OBJECTID-129047",
+          "geometrySha256": "a4d0fd534bd71fa991250926b80fecd7db835c3fd3db9245003bc3e1163017a0"
+        },
+        {
+          "id": "US-TX-ELPASO-OBJECTID-129058",
+          "geometrySha256": "57a215903b8d492a4b774a3f7c0664e6f964af1d74efebab44bb937963df27b7"
+        },
+        {
+          "id": "US-TX-ELPASO-OBJECTID-129287",
+          "geometrySha256": "34e7719f2cd7f28ef0075cb9d7fb0e4c0ee6bea3d36a550d6e724938f09b0280"
+        },
+        {
+          "id": "US-TX-ELPASO-OBJECTID-129320",
+          "geometrySha256": "a74e17c32fbe3cff0818950010101de90ec345538cd26694305b5e333ae62c2f"
+        },
+        {
+          "id": "US-TX-ELPASO-OBJECTID-129556",
+          "geometrySha256": "3a856729f70f16917d23e01497477fb681d092cc4be74cd2351abf51ec003657"
+        },
+        {
+          "id": "US-TX-ELPASO-OBJECTID-129563",
+          "geometrySha256": "f9f1bb62edffe99f2efe2695ff362e9cff4aec04ff79a385b2d6e74bafd06599"
+        },
+        {
+          "id": "US-TX-ELPASO-OBJECTID-129761",
+          "geometrySha256": "663e8677e7be0829bfd38fb5c8bde36defdf76f0bba3bbcd65627d62eabe8604"
+        },
+        {
+          "id": "US-TX-ELPASO-OBJECTID-130027",
+          "geometrySha256": "26d87b4088a0369946f5c42340da79ac02d2672cd201935d4f644f2496bad004"
+        },
+        {
+          "id": "US-TX-ELPASO-OBJECTID-130077",
+          "geometrySha256": "7f8c0cd89546836f1e5339254ada0a1437a2502467ef6f34060537000a40ef78"
+        },
+        {
+          "id": "US-TX-ELPASO-OBJECTID-130288",
+          "geometrySha256": "b2a225cb18c541af4009b73bcee7d297ef0a638d67fc5bcd10d91154bb2886dc"
+        },
+        {
+          "id": "US-TX-ELPASO-OBJECTID-130376",
+          "geometrySha256": "b0783c1d837a6a1234449c09857a78af92f96ea2cf663f3c795609fd8aa93c6a"
+        },
+        {
+          "id": "US-TX-ELPASO-OBJECTID-130545",
+          "geometrySha256": "b370e7129a67681ae0f1832a2600b53aeb4a18e044f02817f7f2a1e7b62b3b7f"
+        },
+        {
+          "id": "US-TX-ELPASO-OBJECTID-130589",
+          "geometrySha256": "579ac40ec0217790ae7d53a087b4fe440d9c4532007c58af4b0ac207d52d9fab"
+        },
+        {
+          "id": "US-TX-ELPASO-OBJECTID-130698",
+          "geometrySha256": "3cb09325a08a54720420018222a6e5673e6bd548e9b927d17f565d8ce38b1d6c"
+        },
+        {
+          "id": "US-TX-ELPASO-OBJECTID-130869",
+          "geometrySha256": "ae4aa50cec6e16b9c4cb99b39102942a5a322eeae202fdef036586f5a64d9f22"
+        },
+        {
+          "id": "US-TX-ELPASO-OBJECTID-130994",
+          "geometrySha256": "c647b5dd1f8987c7c0ae1fe466486bbd3cb46587265187721a5b63c83cd084a8"
+        }
+      ]
+    },
+    {
+      "name": "viewport-12",
+      "passed": true,
+      "elapsedMs": 709,
+      "requestIndexes": [
+        36,
+        38
+      ],
+      "bbox": [
+        -106.363,
+        31.786,
+        -106.362,
+        31.787
+      ],
+      "complete": true,
+      "count": 1,
+      "ids": [
+        {
+          "id": "US-TX-ELPASO-OBJECTID-353371",
+          "geometrySha256": "465b2875967ea1f6bfbe55b04bf36f91b7348dfa324e72992ce4e253c0c95d76"
+        }
+      ]
+    },
+    {
+      "name": "forced-three-row-pages",
+      "passed": true,
+      "elapsedMs": 1883,
+      "requestIndexes": [
+        39,
+        46
+      ],
+      "count": 18,
+      "geometryPages": 6,
+      "pageSize": 3,
+      "allGeometryHashesMatch": true
+    },
+    {
+      "name": "fresh-ids-0",
+      "passed": true,
+      "elapsedMs": 696,
+      "requestIndexes": [
+        47,
+        49
+      ],
+      "count": 40,
+      "ids": [
+        "US-TX-ELPASO-OBJECTID-126463",
+        "US-TX-ELPASO-OBJECTID-126498",
+        "US-TX-ELPASO-OBJECTID-126655",
+        "US-TX-ELPASO-OBJECTID-126700",
+        "US-TX-ELPASO-OBJECTID-126854",
+        "US-TX-ELPASO-OBJECTID-126868",
+        "US-TX-ELPASO-OBJECTID-126892",
+        "US-TX-ELPASO-OBJECTID-127058",
+        "US-TX-ELPASO-OBJECTID-127088",
+        "US-TX-ELPASO-OBJECTID-127280",
+        "US-TX-ELPASO-OBJECTID-127284",
+        "US-TX-ELPASO-OBJECTID-127310",
+        "US-TX-ELPASO-OBJECTID-127492",
+        "US-TX-ELPASO-OBJECTID-127495",
+        "US-TX-ELPASO-OBJECTID-127623",
+        "US-TX-ELPASO-OBJECTID-127722",
+        "US-TX-ELPASO-OBJECTID-127725",
+        "US-TX-ELPASO-OBJECTID-127746",
+        "US-TX-ELPASO-OBJECTID-127752",
+        "US-TX-ELPASO-OBJECTID-127791",
+        "US-TX-ELPASO-OBJECTID-127910",
+        "US-TX-ELPASO-OBJECTID-127912",
+        "US-TX-ELPASO-OBJECTID-127941",
+        "US-TX-ELPASO-OBJECTID-127944",
+        "US-TX-ELPASO-OBJECTID-127988",
+        "US-TX-ELPASO-OBJECTID-128023",
+        "US-TX-ELPASO-OBJECTID-128113",
+        "US-TX-ELPASO-OBJECTID-128137",
+        "US-TX-ELPASO-OBJECTID-128139",
+        "US-TX-ELPASO-OBJECTID-128203",
+        "US-TX-ELPASO-OBJECTID-128252",
+        "US-TX-ELPASO-OBJECTID-128359",
+        "US-TX-ELPASO-OBJECTID-128388",
+        "US-TX-ELPASO-OBJECTID-128394",
+        "US-TX-ELPASO-OBJECTID-128480",
+        "US-TX-ELPASO-OBJECTID-128513",
+        "US-TX-ELPASO-OBJECTID-128584",
+        "US-TX-ELPASO-OBJECTID-128625",
+        "US-TX-ELPASO-OBJECTID-128704",
+        "US-TX-ELPASO-OBJECTID-128750"
+      ],
+      "allGeometryHashesMatch": true,
+      "absentIds": []
+    },
+    {
+      "name": "fresh-ids-40",
+      "passed": true,
+      "elapsedMs": 930,
+      "requestIndexes": [
+        50,
+        52
+      ],
+      "count": 39,
+      "ids": [
+        "US-TX-ELPASO-OBJECTID-128815",
+        "US-TX-ELPASO-OBJECTID-128859",
+        "US-TX-ELPASO-OBJECTID-128953",
+        "US-TX-ELPASO-OBJECTID-128997",
+        "US-TX-ELPASO-OBJECTID-129047",
+        "US-TX-ELPASO-OBJECTID-129058",
+        "US-TX-ELPASO-OBJECTID-129105",
+        "US-TX-ELPASO-OBJECTID-129181",
+        "US-TX-ELPASO-OBJECTID-129238",
+        "US-TX-ELPASO-OBJECTID-129287",
+        "US-TX-ELPASO-OBJECTID-129320",
+        "US-TX-ELPASO-OBJECTID-129327",
+        "US-TX-ELPASO-OBJECTID-129416",
+        "US-TX-ELPASO-OBJECTID-129502",
+        "US-TX-ELPASO-OBJECTID-129556",
+        "US-TX-ELPASO-OBJECTID-129563",
+        "US-TX-ELPASO-OBJECTID-129658",
+        "US-TX-ELPASO-OBJECTID-129761",
+        "US-TX-ELPASO-OBJECTID-129784",
+        "US-TX-ELPASO-OBJECTID-129935",
+        "US-TX-ELPASO-OBJECTID-130027",
+        "US-TX-ELPASO-OBJECTID-130036",
+        "US-TX-ELPASO-OBJECTID-130077",
+        "US-TX-ELPASO-OBJECTID-130181",
+        "US-TX-ELPASO-OBJECTID-130288",
+        "US-TX-ELPASO-OBJECTID-130336",
+        "US-TX-ELPASO-OBJECTID-130376",
+        "US-TX-ELPASO-OBJECTID-130435",
+        "US-TX-ELPASO-OBJECTID-130545",
+        "US-TX-ELPASO-OBJECTID-130589",
+        "US-TX-ELPASO-OBJECTID-130621",
+        "US-TX-ELPASO-OBJECTID-130698",
+        "US-TX-ELPASO-OBJECTID-130869",
+        "US-TX-ELPASO-OBJECTID-130920",
+        "US-TX-ELPASO-OBJECTID-130994",
+        "US-TX-ELPASO-OBJECTID-131176",
+        "US-TX-ELPASO-OBJECTID-131450",
+        "US-TX-ELPASO-OBJECTID-131740",
+        "US-TX-ELPASO-OBJECTID-353371"
+      ],
+      "allGeometryHashesMatch": true,
+      "absentIds": []
+    },
+    {
+      "name": "explicit-absence",
+      "passed": true,
+      "elapsedMs": 455,
+      "requestIndexes": [
+        53,
+        54
+      ],
+      "absentIds": [
+        "US-TX-ELPASO-OBJECTID-2147483647"
+      ],
+      "complete": true
+    },
+    {
+      "name": "footprint",
+      "passed": true,
+      "elapsedMs": 693,
+      "requestIndexes": [
+        55,
+        57
+      ],
+      "selectedParcelId": "US-TX-ELPASO-OBJECTID-129935",
+      "count": 5,
+      "allGeometryHashesMatch": true
+    },
+    {
+      "name": "source-binding",
+      "passed": true,
+      "elapsedMs": 704,
+      "requestIndexes": [
+        58,
+        60
+      ],
+      "selectedParcelId": "US-TX-ELPASO-OBJECTID-129935",
+      "coverage": "complete",
+      "siteM2": 943.89,
+      "boundParcels": 1
+    }
+  ],
+  "requests": [
+    {
+      "test": "viewport-0",
+      "url": "https://gis.elpasotexas.gov/arcgis/rest/services/Deeds/FeatureServer/0/query?where=1%3D1&geometry=-106.366%2C31.785%2C-106.365%2C31.786&geometryType=esriGeometryEnvelope&inSR=4326&spatialRel=esriSpatialRelIntersects&f=json&returnCountOnly=true",
+      "method": "GET",
+      "checkedAt": "2026-10-09T04:29:04.040Z",
+      "httpStatus": 200,
+      "contentType": "application/json; charset=UTF-8",
+      "bytes": 12,
+      "count": 18
+    },
+    {
+      "test": "viewport-0",
+      "url": "https://gis.elpasotexas.gov/arcgis/rest/services/Deeds/FeatureServer/0/query?where=1%3D1&geometry=-106.366%2C31.785%2C-106.365%2C31.786&geometryType=esriGeometryEnvelope&inSR=4326&spatialRel=esriSpatialRelIntersects&f=json&returnIdsOnly=true",
+      "method": "GET",
+      "checkedAt": "2026-10-09T04:29:04.746Z",
+      "httpStatus": 200,
+      "contentType": "application/json; charset=UTF-8",
+      "bytes": 172,
+      "objectIdFieldName": "OBJECTID",
+      "objectIds": [
+        127722,
+        127752,
+        127910,
+        127912,
+        127941,
+        128113,
+        128139,
+        128359,
+        128388,
+        128394,
+        128584,
+        128625,
+        128815,
+        128859,
+        129047,
+        129105,
+        129287,
+        129327
+      ]
+    },
+    {
+      "test": "viewport-0",
+      "url": "https://gis.elpasotexas.gov/arcgis/rest/services/Deeds/FeatureServer/0/query?where=1%3D1&outFields=OBJECTID&returnGeometry=true&outSR=4326&f=geojson&objectIds=127722%2C127752%2C127910%2C127912%2C127941%2C128113%2C128139%2C128359%2C128388%2C128394%2C128584%2C128625%2C128815%2C128859%2C129047%2C129105%2C129287%2C129327",
+      "method": "GET",
+      "checkedAt": "2026-10-09T04:29:05.115Z",
+      "httpStatus": 200,
+      "contentType": "application/geo+json; charset=UTF-8",
+      "bytes": 6498,
+      "features": [
+        {
+          "transportId": 127722,
+          "properties": {
+            "OBJECTID": 127722
+          },
+          "geometrySha256": "2c8a08530309e8c49e0af6c3bc4a9c9bb7a215d41ec452718cc00a43f0d9f8d1"
+        },
+        {
+          "transportId": 127752,
+          "properties": {
+            "OBJECTID": 127752
+          },
+          "geometrySha256": "75732bf2ab18ce38d22f31b9719efad107c5cf24a70d4a8f76feb20ea796aa41"
+        },
+        {
+          "transportId": 127910,
+          "properties": {
+            "OBJECTID": 127910
+          },
+          "geometrySha256": "d84cebe32de8e924e7096b4c149a87b997a19a4bffee19b5f944f86b226a393a"
+        },
+        {
+          "transportId": 127912,
+          "properties": {
+            "OBJECTID": 127912
+          },
+          "geometrySha256": "db425a2f6e3e49dedfd7ad9b28916f9857013cfe02497eecee6309def5c6e785"
+        },
+        {
+          "transportId": 127941,
+          "properties": {
+            "OBJECTID": 127941
+          },
+          "geometrySha256": "f101c3a870287e390ed5cf38124c3a441ad3ccb3fb9ca8d16324b349d5820576"
+        },
+        {
+          "transportId": 128113,
+          "properties": {
+            "OBJECTID": 128113
+          },
+          "geometrySha256": "bf9298690049e048eded13fa2df986b3907bf14ab06183d6d6f459678e5ff832"
+        },
+        {
+          "transportId": 128139,
+          "properties": {
+            "OBJECTID": 128139
+          },
+          "geometrySha256": "bc2a4d90c59abb6e2bc3e82b691c8b738e8bcd1552669097d609b3a12dd0de00"
+        },
+        {
+          "transportId": 128359,
+          "properties": {
+            "OBJECTID": 128359
+          },
+          "geometrySha256": "6c963bee93a3c4804cafa2e147df253c2b685ae3eda389180ec1b8651c51c1a9"
+        },
+        {
+          "transportId": 128388,
+          "properties": {
+            "OBJECTID": 128388
+          },
+          "geometrySha256": "b4fdbc9bd92b9450214a7f717a85a7e72e3d4610e21f9b0886609740cfbfe8e4"
+        },
+        {
+          "transportId": 128394,
+          "properties": {
+            "OBJECTID": 128394
+          },
+          "geometrySha256": "879637259753999bffb2a74dda400beeb42ad938211d9ba29b8ef80058286db4"
+        },
+        {
+          "transportId": 128584,
+          "properties": {
+            "OBJECTID": 128584
+          },
+          "geometrySha256": "868d4e7f04bb5f14ccee50125372960541c73facc243ceffc0fd59ecf8bfe046"
+        },
+        {
+          "transportId": 128625,
+          "properties": {
+            "OBJECTID": 128625
+          },
+          "geometrySha256": "d99a226ce04cf3125807532b021c2ebfc4f47cd96fa040506a006193780d8d31"
+        },
+        {
+          "transportId": 128815,
+          "properties": {
+            "OBJECTID": 128815
+          },
+          "geometrySha256": "5e0a9107bc83b868611d4bbca7a67f8233b249c8d201406100b82de20906ebdb"
+        },
+        {
+          "transportId": 128859,
+          "properties": {
+            "OBJECTID": 128859
+          },
+          "geometrySha256": "d621d439aaf9b82540d47bb00fba21abe56ef9b2589b7210124535f138f6bddc"
+        },
+        {
+          "transportId": 129047,
+          "properties": {
+            "OBJECTID": 129047
+          },
+          "geometrySha256": "a4d0fd534bd71fa991250926b80fecd7db835c3fd3db9245003bc3e1163017a0"
+        },
+        {
+          "transportId": 129105,
+          "properties": {
+            "OBJECTID": 129105
+          },
+          "geometrySha256": "d23cbbe4cd244730e17a68c961d71fb96aa55be96706b0d6112644c7e7ce1e1b"
+        },
+        {
+          "transportId": 129287,
+          "properties": {
+            "OBJECTID": 129287
+          },
+          "geometrySha256": "34e7719f2cd7f28ef0075cb9d7fb0e4c0ee6bea3d36a550d6e724938f09b0280"
+        },
+        {
+          "transportId": 129327,
+          "properties": {
+            "OBJECTID": 129327
+          },
+          "geometrySha256": "dae3e5e66c03bd9429b210854a7296ca72e310eded8ac011733c39d7e1641ba1"
+        }
+      ]
+    },
+    {
+      "test": "viewport-1",
+      "url": "https://gis.elpasotexas.gov/arcgis/rest/services/Deeds/FeatureServer/0/query?where=1%3D1&geometry=-106.365%2C31.785%2C-106.364%2C31.786&geometryType=esriGeometryEnvelope&inSR=4326&spatialRel=esriSpatialRelIntersects&f=json&returnCountOnly=true",
+      "method": "GET",
+      "checkedAt": "2026-10-09T04:29:05.405Z",
+      "httpStatus": 200,
+      "contentType": "application/json; charset=UTF-8",
+      "bytes": 12,
+      "count": 17
+    },
+    {
+      "test": "viewport-1",
+      "url": "https://gis.elpasotexas.gov/arcgis/rest/services/Deeds/FeatureServer/0/query?where=1%3D1&geometry=-106.365%2C31.785%2C-106.364%2C31.786&geometryType=esriGeometryEnvelope&inSR=4326&spatialRel=esriSpatialRelIntersects&f=json&returnIdsOnly=true",
+      "method": "GET",
+      "checkedAt": "2026-10-09T04:29:05.637Z",
+      "httpStatus": 200,
+      "contentType": "application/json; charset=UTF-8",
+      "bytes": 165,
+      "objectIdFieldName": "OBJECTID",
+      "objectIds": [
+        127725,
+        127746,
+        127910,
+        127944,
+        128113,
+        128137,
+        128203,
+        128394,
+        128480,
+        128625,
+        128704,
+        128750,
+        128859,
+        128953,
+        128997,
+        129181,
+        129238
+      ]
+    },
+    {
+      "test": "viewport-1",
+      "url": "https://gis.elpasotexas.gov/arcgis/rest/services/Deeds/FeatureServer/0/query?where=1%3D1&outFields=OBJECTID&returnGeometry=true&outSR=4326&f=geojson&objectIds=127725%2C127746%2C127910%2C127944%2C128113%2C128137%2C128203%2C128394%2C128480%2C128625%2C128704%2C128750%2C128859%2C128953%2C128997%2C129181%2C129238",
+      "method": "GET",
+      "checkedAt": "2026-10-09T04:29:05.864Z",
+      "httpStatus": 200,
+      "contentType": "application/geo+json; charset=UTF-8",
+      "bytes": 5789,
+      "features": [
+        {
+          "transportId": 127725,
+          "properties": {
+            "OBJECTID": 127725
+          },
+          "geometrySha256": "eb3137a28c6d1877740802a9ff0a3f90158775acb3187e8cab344287f61d2ed7"
+        },
+        {
+          "transportId": 127746,
+          "properties": {
+            "OBJECTID": 127746
+          },
+          "geometrySha256": "ad6e066051409a88129654e7794f0de99fd213a968a03b444909912675dde94c"
+        },
+        {
+          "transportId": 127910,
+          "properties": {
+            "OBJECTID": 127910
+          },
+          "geometrySha256": "d84cebe32de8e924e7096b4c149a87b997a19a4bffee19b5f944f86b226a393a"
+        },
+        {
+          "transportId": 127944,
+          "properties": {
+            "OBJECTID": 127944
+          },
+          "geometrySha256": "04075a8d2954ea2762af6a863927ac8931497f0bd934e967921e2b90328dfcdd"
+        },
+        {
+          "transportId": 128113,
+          "properties": {
+            "OBJECTID": 128113
+          },
+          "geometrySha256": "bf9298690049e048eded13fa2df986b3907bf14ab06183d6d6f459678e5ff832"
+        },
+        {
+          "transportId": 128137,
+          "properties": {
+            "OBJECTID": 128137
+          },
+          "geometrySha256": "f2d7a6e45ba12827e3c765732549f88303068df4bc11efac5ee650ac9b7f64e2"
+        },
+        {
+          "transportId": 128203,
+          "properties": {
+            "OBJECTID": 128203
+          },
+          "geometrySha256": "006cd460bdf454db11e34a9044e38b7b2be43ae8934f993e41e4df4893848fdd"
+        },
+        {
+          "transportId": 128394,
+          "properties": {
+            "OBJECTID": 128394
+          },
+          "geometrySha256": "879637259753999bffb2a74dda400beeb42ad938211d9ba29b8ef80058286db4"
+        },
+        {
+          "transportId": 128480,
+          "properties": {
+            "OBJECTID": 128480
+          },
+          "geometrySha256": "b2e8c4faa7b7a8ef3ad5799595dbc9d4af14a6d5e36b88f697dce507755906d5"
+        },
+        {
+          "transportId": 128625,
+          "properties": {
+            "OBJECTID": 128625
+          },
+          "geometrySha256": "d99a226ce04cf3125807532b021c2ebfc4f47cd96fa040506a006193780d8d31"
+        },
+        {
+          "transportId": 128704,
+          "properties": {
+            "OBJECTID": 128704
+          },
+          "geometrySha256": "0e21f95676c2494aa0f58d0b5026ef44355811bf35be0e45573eb9a4f6c89838"
+        },
+        {
+          "transportId": 128750,
+          "properties": {
+            "OBJECTID": 128750
+          },
+          "geometrySha256": "b881b340079ec5bb1bc10935971ce6a5711ecc81031860639449a6df5d896d89"
+        },
+        {
+          "transportId": 128859,
+          "properties": {
+            "OBJECTID": 128859
+          },
+          "geometrySha256": "d621d439aaf9b82540d47bb00fba21abe56ef9b2589b7210124535f138f6bddc"
+        },
+        {
+          "transportId": 128953,
+          "properties": {
+            "OBJECTID": 128953
+          },
+          "geometrySha256": "bb4200a4fe99a70d2620804bfe119aceb21a50fa2eb9bdf34c9f8fff314833e5"
+        },
+        {
+          "transportId": 128997,
+          "properties": {
+            "OBJECTID": 128997
+          },
+          "geometrySha256": "5a16d85885e0bc44c4902c851952c914cb5b634a1553f1f2ef7fd885f20d7d49"
+        },
+        {
+          "transportId": 129181,
+          "properties": {
+            "OBJECTID": 129181
+          },
+          "geometrySha256": "8af665c745b19a34b8807885b10e0e3f38de4ccb33b44e084d0b5775bb6b1ce8"
+        },
+        {
+          "transportId": 129238,
+          "properties": {
+            "OBJECTID": 129238
+          },
+          "geometrySha256": "8bbdb3cb949edf547f0e64812b42a2af31343dda70e21f45e05c15d4d681b25e"
+        }
+      ]
+    },
+    {
+      "test": "viewport-2",
+      "url": "https://gis.elpasotexas.gov/arcgis/rest/services/Deeds/FeatureServer/0/query?where=1%3D1&geometry=-106.364%2C31.785%2C-106.363%2C31.786&geometryType=esriGeometryEnvelope&inSR=4326&spatialRel=esriSpatialRelIntersects&f=json&returnCountOnly=true",
+      "method": "GET",
+      "checkedAt": "2026-10-09T04:29:06.109Z",
+      "httpStatus": 200,
+      "contentType": "application/json; charset=UTF-8",
+      "bytes": 12,
+      "count": 13
+    },
+    {
+      "test": "viewport-2",
+      "url": "https://gis.elpasotexas.gov/arcgis/rest/services/Deeds/FeatureServer/0/query?where=1%3D1&geometry=-106.364%2C31.785%2C-106.363%2C31.786&geometryType=esriGeometryEnvelope&inSR=4326&spatialRel=esriSpatialRelIntersects&f=json&returnIdsOnly=true",
+      "method": "GET",
+      "checkedAt": "2026-10-09T04:29:06.340Z",
+      "httpStatus": 200,
+      "contentType": "application/json; charset=UTF-8",
+      "bytes": 137,
+      "objectIdFieldName": "OBJECTID",
+      "objectIds": [
+        127495,
+        127623,
+        127746,
+        127791,
+        127988,
+        128023,
+        128203,
+        128252,
+        128480,
+        128513,
+        128750,
+        128997,
+        353371
+      ]
+    },
+    {
+      "test": "viewport-2",
+      "url": "https://gis.elpasotexas.gov/arcgis/rest/services/Deeds/FeatureServer/0/query?where=1%3D1&outFields=OBJECTID&returnGeometry=true&outSR=4326&f=geojson&objectIds=127495%2C127623%2C127746%2C127791%2C127988%2C128023%2C128203%2C128252%2C128480%2C128513%2C128750%2C128997%2C353371",
+      "method": "GET",
+      "checkedAt": "2026-10-09T04:29:06.571Z",
+      "httpStatus": 200,
+      "contentType": "application/geo+json; charset=UTF-8",
+      "bytes": 8401,
+      "features": [
+        {
+          "transportId": 127495,
+          "properties": {
+            "OBJECTID": 127495
+          },
+          "geometrySha256": "d9cb71cafe69e4753ed873f11be27d05f0d2f191788ba378da43ed5dd2e706cd"
+        },
+        {
+          "transportId": 127623,
+          "properties": {
+            "OBJECTID": 127623
+          },
+          "geometrySha256": "21e703fe0cd37b5e3633199645b323e624c315203274fc948bce24a28f7ba683"
+        },
+        {
+          "transportId": 127746,
+          "properties": {
+            "OBJECTID": 127746
+          },
+          "geometrySha256": "ad6e066051409a88129654e7794f0de99fd213a968a03b444909912675dde94c"
+        },
+        {
+          "transportId": 127791,
+          "properties": {
+            "OBJECTID": 127791
+          },
+          "geometrySha256": "6bd743fe966dc9e15011d79e59b06014735718d0c8a4c07975f191af15d00276"
+        },
+        {
+          "transportId": 127988,
+          "properties": {
+            "OBJECTID": 127988
+          },
+          "geometrySha256": "e33c0b1bd6a96f56219661afdb138d68e84eed549daf3c550a7f76f9869ec233"
+        },
+        {
+          "transportId": 128023,
+          "properties": {
+            "OBJECTID": 128023
+          },
+          "geometrySha256": "80e09abebcffdcfcf652798f2ba4376e3725a43ee3885cabb294eb50a6898aa5"
+        },
+        {
+          "transportId": 128203,
+          "properties": {
+            "OBJECTID": 128203
+          },
+          "geometrySha256": "006cd460bdf454db11e34a9044e38b7b2be43ae8934f993e41e4df4893848fdd"
+        },
+        {
+          "transportId": 128252,
+          "properties": {
+            "OBJECTID": 128252
+          },
+          "geometrySha256": "f3ec36aab11c872237425c7c649ca8d7f368d06667836615d53062e50f2a6811"
+        },
+        {
+          "transportId": 128480,
+          "properties": {
+            "OBJECTID": 128480
+          },
+          "geometrySha256": "b2e8c4faa7b7a8ef3ad5799595dbc9d4af14a6d5e36b88f697dce507755906d5"
+        },
+        {
+          "transportId": 128513,
+          "properties": {
+            "OBJECTID": 128513
+          },
+          "geometrySha256": "cb56a34de786d757516ef122cc39077db13704bdbc42453c901c58f56f3b7932"
+        },
+        {
+          "transportId": 128750,
+          "properties": {
+            "OBJECTID": 128750
+          },
+          "geometrySha256": "b881b340079ec5bb1bc10935971ce6a5711ecc81031860639449a6df5d896d89"
+        },
+        {
+          "transportId": 128997,
+          "properties": {
+            "OBJECTID": 128997
+          },
+          "geometrySha256": "5a16d85885e0bc44c4902c851952c914cb5b634a1553f1f2ef7fd885f20d7d49"
+        },
+        {
+          "transportId": 353371,
+          "properties": {
+            "OBJECTID": 353371
+          },
+          "geometrySha256": "465b2875967ea1f6bfbe55b04bf36f91b7348dfa324e72992ce4e253c0c95d76"
+        }
+      ]
+    },
+    {
+      "test": "viewport-3",
+      "url": "https://gis.elpasotexas.gov/arcgis/rest/services/Deeds/FeatureServer/0/query?where=1%3D1&geometry=-106.366%2C31.786%2C-106.365%2C31.787&geometryType=esriGeometryEnvelope&inSR=4326&spatialRel=esriSpatialRelIntersects&f=json&returnCountOnly=true",
+      "method": "GET",
+      "checkedAt": "2026-10-09T04:29:06.803Z",
+      "httpStatus": 200,
+      "contentType": "application/json; charset=UTF-8",
+      "bytes": 12,
+      "count": 17
+    },
+    {
+      "test": "viewport-3",
+      "url": "https://gis.elpasotexas.gov/arcgis/rest/services/Deeds/FeatureServer/0/query?where=1%3D1&geometry=-106.366%2C31.786%2C-106.365%2C31.787&geometryType=esriGeometryEnvelope&inSR=4326&spatialRel=esriSpatialRelIntersects&f=json&returnIdsOnly=true",
+      "method": "GET",
+      "checkedAt": "2026-10-09T04:29:07.037Z",
+      "httpStatus": 200,
+      "contentType": "application/json; charset=UTF-8",
+      "bytes": 165,
+      "objectIdFieldName": "OBJECTID",
+      "objectIds": [
+        129047,
+        129105,
+        129181,
+        129287,
+        129327,
+        129416,
+        129556,
+        129658,
+        129935,
+        130036,
+        130077,
+        130181,
+        130336,
+        130435,
+        130621,
+        130698,
+        130920
+      ]
+    },
+    {
+      "test": "viewport-3",
+      "url": "https://gis.elpasotexas.gov/arcgis/rest/services/Deeds/FeatureServer/0/query?where=1%3D1&outFields=OBJECTID&returnGeometry=true&outSR=4326&f=geojson&objectIds=129047%2C129105%2C129181%2C129287%2C129327%2C129416%2C129556%2C129658%2C129935%2C130036%2C130077%2C130181%2C130336%2C130435%2C130621%2C130698%2C130920",
+      "method": "GET",
+      "checkedAt": "2026-10-09T04:29:07.270Z",
+      "httpStatus": 200,
+      "contentType": "application/geo+json; charset=UTF-8",
+      "bytes": 6962,
+      "features": [
+        {
+          "transportId": 129047,
+          "properties": {
+            "OBJECTID": 129047
+          },
+          "geometrySha256": "a4d0fd534bd71fa991250926b80fecd7db835c3fd3db9245003bc3e1163017a0"
+        },
+        {
+          "transportId": 129105,
+          "properties": {
+            "OBJECTID": 129105
+          },
+          "geometrySha256": "d23cbbe4cd244730e17a68c961d71fb96aa55be96706b0d6112644c7e7ce1e1b"
+        },
+        {
+          "transportId": 129181,
+          "properties": {
+            "OBJECTID": 129181
+          },
+          "geometrySha256": "8af665c745b19a34b8807885b10e0e3f38de4ccb33b44e084d0b5775bb6b1ce8"
+        },
+        {
+          "transportId": 129287,
+          "properties": {
+            "OBJECTID": 129287
+          },
+          "geometrySha256": "34e7719f2cd7f28ef0075cb9d7fb0e4c0ee6bea3d36a550d6e724938f09b0280"
+        },
+        {
+          "transportId": 129327,
+          "properties": {
+            "OBJECTID": 129327
+          },
+          "geometrySha256": "dae3e5e66c03bd9429b210854a7296ca72e310eded8ac011733c39d7e1641ba1"
+        },
+        {
+          "transportId": 129416,
+          "properties": {
+            "OBJECTID": 129416
+          },
+          "geometrySha256": "e2c8e898f70a6531932c55a1fea7c15f7f8af9a91305e0b0085b5a5d86b6ea52"
+        },
+        {
+          "transportId": 129556,
+          "properties": {
+            "OBJECTID": 129556
+          },
+          "geometrySha256": "3a856729f70f16917d23e01497477fb681d092cc4be74cd2351abf51ec003657"
+        },
+        {
+          "transportId": 129658,
+          "properties": {
+            "OBJECTID": 129658
+          },
+          "geometrySha256": "8a698859a99af6cf9f0eb7cdf885e72a84a6d1c42be6cff3a5435b4444512d6b"
+        },
+        {
+          "transportId": 129935,
+          "properties": {
+            "OBJECTID": 129935
+          },
+          "geometrySha256": "00d731061c9890148fd5344bd434705eeecca09a0072d77992527e2260d4f3b8"
+        },
+        {
+          "transportId": 130036,
+          "properties": {
+            "OBJECTID": 130036
+          },
+          "geometrySha256": "cc047e9654fc758e31da08ce951571025d94bd4e671ca3a4a0dc8dcba3aeaaf5"
+        },
+        {
+          "transportId": 130077,
+          "properties": {
+            "OBJECTID": 130077
+          },
+          "geometrySha256": "7f8c0cd89546836f1e5339254ada0a1437a2502467ef6f34060537000a40ef78"
+        },
+        {
+          "transportId": 130181,
+          "properties": {
+            "OBJECTID": 130181
+          },
+          "geometrySha256": "160ce22147042ceefee002b3bf464b7841b83af24db309e5a611e0299281cbeb"
+        },
+        {
+          "transportId": 130336,
+          "properties": {
+            "OBJECTID": 130336
+          },
+          "geometrySha256": "fdfc02e0683d291576de86c10447f22c042a9c3ce19998c56f84ea65ddbeda0f"
+        },
+        {
+          "transportId": 130435,
+          "properties": {
+            "OBJECTID": 130435
+          },
+          "geometrySha256": "4ff86ba08569f33d4c1dd087e826173238334dcfb9c048fbbc0d3e5c0673e3af"
+        },
+        {
+          "transportId": 130621,
+          "properties": {
+            "OBJECTID": 130621
+          },
+          "geometrySha256": "108d2bbe3ec662bd01f941f16e5f9c5ca0a4741ed31f38896457ba76198e33a7"
+        },
+        {
+          "transportId": 130698,
+          "properties": {
+            "OBJECTID": 130698
+          },
+          "geometrySha256": "3cb09325a08a54720420018222a6e5673e6bd548e9b927d17f565d8ce38b1d6c"
+        },
+        {
+          "transportId": 130920,
+          "properties": {
+            "OBJECTID": 130920
+          },
+          "geometrySha256": "6334eb9071167e2f3e87e2b989167472d51a62e0dad757d18122927785a5197b"
+        }
+      ]
+    },
+    {
+      "test": "viewport-4",
+      "url": "https://gis.elpasotexas.gov/arcgis/rest/services/Deeds/FeatureServer/0/query?where=1%3D1&geometry=-106.365%2C31.786%2C-106.364%2C31.787&geometryType=esriGeometryEnvelope&inSR=4326&spatialRel=esriSpatialRelIntersects&f=json&returnCountOnly=true",
+      "method": "GET",
+      "checkedAt": "2026-10-09T04:29:07.550Z",
+      "httpStatus": 200,
+      "contentType": "application/json; charset=UTF-8",
+      "bytes": 12,
+      "count": 11
+    },
+    {
+      "test": "viewport-4",
+      "url": "https://gis.elpasotexas.gov/arcgis/rest/services/Deeds/FeatureServer/0/query?where=1%3D1&geometry=-106.365%2C31.786%2C-106.364%2C31.787&geometryType=esriGeometryEnvelope&inSR=4326&spatialRel=esriSpatialRelIntersects&f=json&returnIdsOnly=true",
+      "method": "GET",
+      "checkedAt": "2026-10-09T04:29:07.781Z",
+      "httpStatus": 200,
+      "contentType": "application/json; charset=UTF-8",
+      "bytes": 123,
+      "objectIdFieldName": "OBJECTID",
+      "objectIds": [
+        128953,
+        128997,
+        129181,
+        129238,
+        129416,
+        129502,
+        129658,
+        129784,
+        130036,
+        130336,
+        353371
+      ]
+    },
+    {
+      "test": "viewport-4",
+      "url": "https://gis.elpasotexas.gov/arcgis/rest/services/Deeds/FeatureServer/0/query?where=1%3D1&outFields=OBJECTID&returnGeometry=true&outSR=4326&f=geojson&objectIds=128953%2C128997%2C129181%2C129238%2C129416%2C129502%2C129658%2C129784%2C130036%2C130336%2C353371",
+      "method": "GET",
+      "checkedAt": "2026-10-09T04:29:08.008Z",
+      "httpStatus": 200,
+      "contentType": "application/geo+json; charset=UTF-8",
+      "bytes": 6787,
+      "features": [
+        {
+          "transportId": 128953,
+          "properties": {
+            "OBJECTID": 128953
+          },
+          "geometrySha256": "bb4200a4fe99a70d2620804bfe119aceb21a50fa2eb9bdf34c9f8fff314833e5"
+        },
+        {
+          "transportId": 128997,
+          "properties": {
+            "OBJECTID": 128997
+          },
+          "geometrySha256": "5a16d85885e0bc44c4902c851952c914cb5b634a1553f1f2ef7fd885f20d7d49"
+        },
+        {
+          "transportId": 129181,
+          "properties": {
+            "OBJECTID": 129181
+          },
+          "geometrySha256": "8af665c745b19a34b8807885b10e0e3f38de4ccb33b44e084d0b5775bb6b1ce8"
+        },
+        {
+          "transportId": 129238,
+          "properties": {
+            "OBJECTID": 129238
+          },
+          "geometrySha256": "8bbdb3cb949edf547f0e64812b42a2af31343dda70e21f45e05c15d4d681b25e"
+        },
+        {
+          "transportId": 129416,
+          "properties": {
+            "OBJECTID": 129416
+          },
+          "geometrySha256": "e2c8e898f70a6531932c55a1fea7c15f7f8af9a91305e0b0085b5a5d86b6ea52"
+        },
+        {
+          "transportId": 129502,
+          "properties": {
+            "OBJECTID": 129502
+          },
+          "geometrySha256": "1d106839200857b6762ea88e109d2385ee1bf2fe987d001e02f759076168549b"
+        },
+        {
+          "transportId": 129658,
+          "properties": {
+            "OBJECTID": 129658
+          },
+          "geometrySha256": "8a698859a99af6cf9f0eb7cdf885e72a84a6d1c42be6cff3a5435b4444512d6b"
+        },
+        {
+          "transportId": 129784,
+          "properties": {
+            "OBJECTID": 129784
+          },
+          "geometrySha256": "6021250eb75136aba35308e41da61ea6bfae056e69cc3ee848fe8bdb37125701"
+        },
+        {
+          "transportId": 130036,
+          "properties": {
+            "OBJECTID": 130036
+          },
+          "geometrySha256": "cc047e9654fc758e31da08ce951571025d94bd4e671ca3a4a0dc8dcba3aeaaf5"
+        },
+        {
+          "transportId": 130336,
+          "properties": {
+            "OBJECTID": 130336
+          },
+          "geometrySha256": "fdfc02e0683d291576de86c10447f22c042a9c3ce19998c56f84ea65ddbeda0f"
+        },
+        {
+          "transportId": 353371,
+          "properties": {
+            "OBJECTID": 353371
+          },
+          "geometrySha256": "465b2875967ea1f6bfbe55b04bf36f91b7348dfa324e72992ce4e253c0c95d76"
+        }
+      ]
+    },
+    {
+      "test": "viewport-5",
+      "url": "https://gis.elpasotexas.gov/arcgis/rest/services/Deeds/FeatureServer/0/query?where=1%3D1&geometry=-106.364%2C31.786%2C-106.363%2C31.787&geometryType=esriGeometryEnvelope&inSR=4326&spatialRel=esriSpatialRelIntersects&f=json&returnCountOnly=true",
+      "method": "GET",
+      "checkedAt": "2026-10-09T04:29:08.241Z",
+      "httpStatus": 200,
+      "contentType": "application/json; charset=UTF-8",
+      "bytes": 11,
+      "count": 4
+    },
+    {
+      "test": "viewport-5",
+      "url": "https://gis.elpasotexas.gov/arcgis/rest/services/Deeds/FeatureServer/0/query?where=1%3D1&geometry=-106.364%2C31.786%2C-106.363%2C31.787&geometryType=esriGeometryEnvelope&inSR=4326&spatialRel=esriSpatialRelIntersects&f=json&returnIdsOnly=true",
+      "method": "GET",
+      "checkedAt": "2026-10-09T04:29:08.479Z",
+      "httpStatus": 200,
+      "contentType": "application/json; charset=UTF-8",
+      "bytes": 74,
+      "objectIdFieldName": "OBJECTID",
+      "objectIds": [
+        128750,
+        128997,
+        129238,
+        353371
+      ]
+    },
+    {
+      "test": "viewport-5",
+      "url": "https://gis.elpasotexas.gov/arcgis/rest/services/Deeds/FeatureServer/0/query?where=1%3D1&outFields=OBJECTID&returnGeometry=true&outSR=4326&f=geojson&objectIds=128750%2C128997%2C129238%2C353371",
+      "method": "GET",
+      "checkedAt": "2026-10-09T04:29:08.708Z",
+      "httpStatus": 200,
+      "contentType": "application/geo+json; charset=UTF-8",
+      "bytes": 4410,
+      "features": [
+        {
+          "transportId": 128750,
+          "properties": {
+            "OBJECTID": 128750
+          },
+          "geometrySha256": "b881b340079ec5bb1bc10935971ce6a5711ecc81031860639449a6df5d896d89"
+        },
+        {
+          "transportId": 128997,
+          "properties": {
+            "OBJECTID": 128997
+          },
+          "geometrySha256": "5a16d85885e0bc44c4902c851952c914cb5b634a1553f1f2ef7fd885f20d7d49"
+        },
+        {
+          "transportId": 129238,
+          "properties": {
+            "OBJECTID": 129238
+          },
+          "geometrySha256": "8bbdb3cb949edf547f0e64812b42a2af31343dda70e21f45e05c15d4d681b25e"
+        },
+        {
+          "transportId": 353371,
+          "properties": {
+            "OBJECTID": 353371
+          },
+          "geometrySha256": "465b2875967ea1f6bfbe55b04bf36f91b7348dfa324e72992ce4e253c0c95d76"
+        }
+      ]
+    },
+    {
+      "test": "viewport-6",
+      "url": "https://gis.elpasotexas.gov/arcgis/rest/services/Deeds/FeatureServer/0/query?where=1%3D1&geometry=-106.366%2C31.787%2C-106.365%2C31.788&geometryType=esriGeometryEnvelope&inSR=4326&spatialRel=esriSpatialRelIntersects&f=json&returnCountOnly=true",
+      "method": "GET",
+      "checkedAt": "2026-10-09T04:29:08.947Z",
+      "httpStatus": 200,
+      "contentType": "application/json; charset=UTF-8",
+      "bytes": 12,
+      "count": 10
+    },
+    {
+      "test": "viewport-6",
+      "url": "https://gis.elpasotexas.gov/arcgis/rest/services/Deeds/FeatureServer/0/query?where=1%3D1&geometry=-106.366%2C31.787%2C-106.365%2C31.788&geometryType=esriGeometryEnvelope&inSR=4326&spatialRel=esriSpatialRelIntersects&f=json&returnIdsOnly=true",
+      "method": "GET",
+      "checkedAt": "2026-10-09T04:29:09.178Z",
+      "httpStatus": 200,
+      "contentType": "application/json; charset=UTF-8",
+      "bytes": 116,
+      "objectIdFieldName": "OBJECTID",
+      "objectIds": [
+        130336,
+        130435,
+        130621,
+        130698,
+        130920,
+        130994,
+        131176,
+        131450,
+        131740,
+        353371
+      ]
+    },
+    {
+      "test": "viewport-6",
+      "url": "https://gis.elpasotexas.gov/arcgis/rest/services/Deeds/FeatureServer/0/query?where=1%3D1&outFields=OBJECTID&returnGeometry=true&outSR=4326&f=geojson&objectIds=130336%2C130435%2C130621%2C130698%2C130920%2C130994%2C131176%2C131450%2C131740%2C353371",
+      "method": "GET",
+      "checkedAt": "2026-10-09T04:29:09.409Z",
+      "httpStatus": 200,
+      "contentType": "application/geo+json; charset=UTF-8",
+      "bytes": 6678,
+      "features": [
+        {
+          "transportId": 130336,
+          "properties": {
+            "OBJECTID": 130336
+          },
+          "geometrySha256": "fdfc02e0683d291576de86c10447f22c042a9c3ce19998c56f84ea65ddbeda0f"
+        },
+        {
+          "transportId": 130435,
+          "properties": {
+            "OBJECTID": 130435
+          },
+          "geometrySha256": "4ff86ba08569f33d4c1dd087e826173238334dcfb9c048fbbc0d3e5c0673e3af"
+        },
+        {
+          "transportId": 130621,
+          "properties": {
+            "OBJECTID": 130621
+          },
+          "geometrySha256": "108d2bbe3ec662bd01f941f16e5f9c5ca0a4741ed31f38896457ba76198e33a7"
+        },
+        {
+          "transportId": 130698,
+          "properties": {
+            "OBJECTID": 130698
+          },
+          "geometrySha256": "3cb09325a08a54720420018222a6e5673e6bd548e9b927d17f565d8ce38b1d6c"
+        },
+        {
+          "transportId": 130920,
+          "properties": {
+            "OBJECTID": 130920
+          },
+          "geometrySha256": "6334eb9071167e2f3e87e2b989167472d51a62e0dad757d18122927785a5197b"
+        },
+        {
+          "transportId": 130994,
+          "properties": {
+            "OBJECTID": 130994
+          },
+          "geometrySha256": "c647b5dd1f8987c7c0ae1fe466486bbd3cb46587265187721a5b63c83cd084a8"
+        },
+        {
+          "transportId": 131176,
+          "properties": {
+            "OBJECTID": 131176
+          },
+          "geometrySha256": "04f7d457895da2dddd8ae60b5ea76d0f01b8352db4bf743e0da32a15d297154a"
+        },
+        {
+          "transportId": 131450,
+          "properties": {
+            "OBJECTID": 131450
+          },
+          "geometrySha256": "16ccad2f415c2f1d31e260eb6f6d9e4f511d7bf04951476d67b9188f6fb761c0"
+        },
+        {
+          "transportId": 131740,
+          "properties": {
+            "OBJECTID": 131740
+          },
+          "geometrySha256": "3b5e0adf534edd4299b3fda5b9bdc12fdbfe98d0bd5430f303fdf815ecc8ef06"
+        },
+        {
+          "transportId": 353371,
+          "properties": {
+            "OBJECTID": 353371
+          },
+          "geometrySha256": "465b2875967ea1f6bfbe55b04bf36f91b7348dfa324e72992ce4e253c0c95d76"
+        }
+      ]
+    },
+    {
+      "test": "viewport-7",
+      "url": "https://gis.elpasotexas.gov/arcgis/rest/services/Deeds/FeatureServer/0/query?where=1%3D1&geometry=-106.365%2C31.787%2C-106.364%2C31.788&geometryType=esriGeometryEnvelope&inSR=4326&spatialRel=esriSpatialRelIntersects&f=json&returnCountOnly=true",
+      "method": "GET",
+      "checkedAt": "2026-10-09T04:29:09.658Z",
+      "httpStatus": 200,
+      "contentType": "application/json; charset=UTF-8",
+      "bytes": 11,
+      "count": 2
+    },
+    {
+      "test": "viewport-7",
+      "url": "https://gis.elpasotexas.gov/arcgis/rest/services/Deeds/FeatureServer/0/query?where=1%3D1&geometry=-106.365%2C31.787%2C-106.364%2C31.788&geometryType=esriGeometryEnvelope&inSR=4326&spatialRel=esriSpatialRelIntersects&f=json&returnIdsOnly=true",
+      "method": "GET",
+      "checkedAt": "2026-10-09T04:29:09.893Z",
+      "httpStatus": 200,
+      "contentType": "application/json; charset=UTF-8",
+      "bytes": 60,
+      "objectIdFieldName": "OBJECTID",
+      "objectIds": [
+        130336,
+        353371
+      ]
+    },
+    {
+      "test": "viewport-7",
+      "url": "https://gis.elpasotexas.gov/arcgis/rest/services/Deeds/FeatureServer/0/query?where=1%3D1&outFields=OBJECTID&returnGeometry=true&outSR=4326&f=geojson&objectIds=130336%2C353371",
+      "method": "GET",
+      "checkedAt": "2026-10-09T04:29:10.131Z",
+      "httpStatus": 200,
+      "contentType": "application/geo+json; charset=UTF-8",
+      "bytes": 3816,
+      "features": [
+        {
+          "transportId": 130336,
+          "properties": {
+            "OBJECTID": 130336
+          },
+          "geometrySha256": "fdfc02e0683d291576de86c10447f22c042a9c3ce19998c56f84ea65ddbeda0f"
+        },
+        {
+          "transportId": 353371,
+          "properties": {
+            "OBJECTID": 353371
+          },
+          "geometrySha256": "465b2875967ea1f6bfbe55b04bf36f91b7348dfa324e72992ce4e253c0c95d76"
+        }
+      ]
+    },
+    {
+      "test": "viewport-8",
+      "url": "https://gis.elpasotexas.gov/arcgis/rest/services/Deeds/FeatureServer/0/query?where=1%3D1&geometry=-106.364%2C31.787%2C-106.363%2C31.788&geometryType=esriGeometryEnvelope&inSR=4326&spatialRel=esriSpatialRelIntersects&f=json&returnCountOnly=true",
+      "method": "GET",
+      "checkedAt": "2026-10-09T04:29:10.362Z",
+      "httpStatus": 200,
+      "contentType": "application/json; charset=UTF-8",
+      "bytes": 11,
+      "count": 1
+    },
+    {
+      "test": "viewport-8",
+      "url": "https://gis.elpasotexas.gov/arcgis/rest/services/Deeds/FeatureServer/0/query?where=1%3D1&geometry=-106.364%2C31.787%2C-106.363%2C31.788&geometryType=esriGeometryEnvelope&inSR=4326&spatialRel=esriSpatialRelIntersects&f=json&returnIdsOnly=true",
+      "method": "GET",
+      "checkedAt": "2026-10-09T04:29:10.594Z",
+      "httpStatus": 200,
+      "contentType": "application/json; charset=UTF-8",
+      "bytes": 53,
+      "objectIdFieldName": "OBJECTID",
+      "objectIds": [
+        353371
+      ]
+    },
+    {
+      "test": "viewport-8",
+      "url": "https://gis.elpasotexas.gov/arcgis/rest/services/Deeds/FeatureServer/0/query?where=1%3D1&outFields=OBJECTID&returnGeometry=true&outSR=4326&f=geojson&objectIds=353371",
+      "method": "GET",
+      "checkedAt": "2026-10-09T04:29:10.825Z",
+      "httpStatus": 200,
+      "contentType": "application/geo+json; charset=UTF-8",
+      "bytes": 3459,
+      "features": [
+        {
+          "transportId": 353371,
+          "properties": {
+            "OBJECTID": 353371
+          },
+          "geometrySha256": "465b2875967ea1f6bfbe55b04bf36f91b7348dfa324e72992ce4e253c0c95d76"
+        }
+      ]
+    },
+    {
+      "test": "viewport-9",
+      "url": "https://gis.elpasotexas.gov/arcgis/rest/services/Deeds/FeatureServer/0/query?where=1%3D1&geometry=-106.365%2C31.784%2C-106.364%2C31.785&geometryType=esriGeometryEnvelope&inSR=4326&spatialRel=esriSpatialRelIntersects&f=json&returnCountOnly=true",
+      "method": "GET",
+      "checkedAt": "2026-10-09T04:29:11.057Z",
+      "httpStatus": 200,
+      "contentType": "application/json; charset=UTF-8",
+      "bytes": 12,
+      "count": 18
+    },
+    {
+      "test": "viewport-9",
+      "url": "https://gis.elpasotexas.gov/arcgis/rest/services/Deeds/FeatureServer/0/query?where=1%3D1&geometry=-106.365%2C31.784%2C-106.364%2C31.785&geometryType=esriGeometryEnvelope&inSR=4326&spatialRel=esriSpatialRelIntersects&f=json&returnIdsOnly=true",
+      "method": "GET",
+      "checkedAt": "2026-10-09T04:29:11.289Z",
+      "httpStatus": 200,
+      "contentType": "application/json; charset=UTF-8",
+      "bytes": 172,
+      "objectIdFieldName": "OBJECTID",
+      "objectIds": [
+        126463,
+        126498,
+        126655,
+        126700,
+        126854,
+        126868,
+        126892,
+        127058,
+        127088,
+        127280,
+        127284,
+        127310,
+        127492,
+        127495,
+        127725,
+        127746,
+        127910,
+        127944
+      ]
+    },
+    {
+      "test": "viewport-9",
+      "url": "https://gis.elpasotexas.gov/arcgis/rest/services/Deeds/FeatureServer/0/query?where=1%3D1&outFields=OBJECTID&returnGeometry=true&outSR=4326&f=geojson&objectIds=126463%2C126498%2C126655%2C126700%2C126854%2C126868%2C126892%2C127058%2C127088%2C127280%2C127284%2C127310%2C127492%2C127495%2C127725%2C127746%2C127910%2C127944",
+      "method": "GET",
+      "checkedAt": "2026-10-09T04:29:11.524Z",
+      "httpStatus": 200,
+      "contentType": "application/geo+json; charset=UTF-8",
+      "bytes": 6392,
+      "features": [
+        {
+          "transportId": 126463,
+          "properties": {
+            "OBJECTID": 126463
+          },
+          "geometrySha256": "927cd653ebe3af3dc75c3eb34cecf180ddfbc91129de293a3e8bc5e6c457e0c7"
+        },
+        {
+          "transportId": 126498,
+          "properties": {
+            "OBJECTID": 126498
+          },
+          "geometrySha256": "fdd68c8444b0078ba474388d718d0497d752ab504f5c505b0357c0932074e813"
+        },
+        {
+          "transportId": 126655,
+          "properties": {
+            "OBJECTID": 126655
+          },
+          "geometrySha256": "d362513522241613cb7c991c60a65d8c0de25ae935409935e5196b2ffcc9e8c1"
+        },
+        {
+          "transportId": 126700,
+          "properties": {
+            "OBJECTID": 126700
+          },
+          "geometrySha256": "f61ff60e2b69f3c996ccf3494875f1c95b0ac3066399cadc7a97da032b74e339"
+        },
+        {
+          "transportId": 126854,
+          "properties": {
+            "OBJECTID": 126854
+          },
+          "geometrySha256": "d0d8c19e160d4262652f452d495bbc46528474c8e83e5af2686a02c6c493802f"
+        },
+        {
+          "transportId": 126868,
+          "properties": {
+            "OBJECTID": 126868
+          },
+          "geometrySha256": "87915b712a3d97ad7331ae89ad31159c0db5b73c7ca89e5caa0c0616b996cba3"
+        },
+        {
+          "transportId": 126892,
+          "properties": {
+            "OBJECTID": 126892
+          },
+          "geometrySha256": "496bd329e97783e143883482a890aab04037075510c94910c610da8db016a510"
+        },
+        {
+          "transportId": 127058,
+          "properties": {
+            "OBJECTID": 127058
+          },
+          "geometrySha256": "175f339b509a1a45a4e9c2a5fe00654d4e2024b351f6b2315ce980b7465bd77f"
+        },
+        {
+          "transportId": 127088,
+          "properties": {
+            "OBJECTID": 127088
+          },
+          "geometrySha256": "3faefacb40c0fc85af5d49656305817e5b6e85f519af7e223a6cffdbb733b9e0"
+        },
+        {
+          "transportId": 127280,
+          "properties": {
+            "OBJECTID": 127280
+          },
+          "geometrySha256": "e00f35de5bca4abb7860707510065782ba2f92aacbcd94711c5cfcdda57ff763"
+        },
+        {
+          "transportId": 127284,
+          "properties": {
+            "OBJECTID": 127284
+          },
+          "geometrySha256": "c386b6595ffceaba14cb18c7849ed651aae3bca8f658cf93680422b285b75b90"
+        },
+        {
+          "transportId": 127310,
+          "properties": {
+            "OBJECTID": 127310
+          },
+          "geometrySha256": "2e2b7f99b4714e773bde374be3d32550076ba7dc64d998b8c7c6788ced98a2ab"
+        },
+        {
+          "transportId": 127492,
+          "properties": {
+            "OBJECTID": 127492
+          },
+          "geometrySha256": "ab13eed5f7ee93cbe351edb5fed1b6541581b1eff4f6f3aaa7399aad09ecec97"
+        },
+        {
+          "transportId": 127495,
+          "properties": {
+            "OBJECTID": 127495
+          },
+          "geometrySha256": "d9cb71cafe69e4753ed873f11be27d05f0d2f191788ba378da43ed5dd2e706cd"
+        },
+        {
+          "transportId": 127725,
+          "properties": {
+            "OBJECTID": 127725
+          },
+          "geometrySha256": "eb3137a28c6d1877740802a9ff0a3f90158775acb3187e8cab344287f61d2ed7"
+        },
+        {
+          "transportId": 127746,
+          "properties": {
+            "OBJECTID": 127746
+          },
+          "geometrySha256": "ad6e066051409a88129654e7794f0de99fd213a968a03b444909912675dde94c"
+        },
+        {
+          "transportId": 127910,
+          "properties": {
+            "OBJECTID": 127910
+          },
+          "geometrySha256": "d84cebe32de8e924e7096b4c149a87b997a19a4bffee19b5f944f86b226a393a"
+        },
+        {
+          "transportId": 127944,
+          "properties": {
+            "OBJECTID": 127944
+          },
+          "geometrySha256": "04075a8d2954ea2762af6a863927ac8931497f0bd934e967921e2b90328dfcdd"
+        }
+      ]
+    },
+    {
+      "test": "viewport-10",
+      "url": "https://gis.elpasotexas.gov/arcgis/rest/services/Deeds/FeatureServer/0/query?where=1%3D1&geometry=-106.365%2C31.788%2C-106.364%2C31.789&geometryType=esriGeometryEnvelope&inSR=4326&spatialRel=esriSpatialRelIntersects&f=json&returnCountOnly=true",
+      "method": "GET",
+      "checkedAt": "2026-10-09T04:29:11.850Z",
+      "httpStatus": 200,
+      "contentType": "application/json; charset=UTF-8",
+      "bytes": 11,
+      "count": 1
+    },
+    {
+      "test": "viewport-10",
+      "url": "https://gis.elpasotexas.gov/arcgis/rest/services/Deeds/FeatureServer/0/query?where=1%3D1&geometry=-106.365%2C31.788%2C-106.364%2C31.789&geometryType=esriGeometryEnvelope&inSR=4326&spatialRel=esriSpatialRelIntersects&f=json&returnIdsOnly=true",
+      "method": "GET",
+      "checkedAt": "2026-10-09T04:29:12.102Z",
+      "httpStatus": 200,
+      "contentType": "application/json; charset=UTF-8",
+      "bytes": 53,
+      "objectIdFieldName": "OBJECTID",
+      "objectIds": [
+        353371
+      ]
+    },
+    {
+      "test": "viewport-10",
+      "url": "https://gis.elpasotexas.gov/arcgis/rest/services/Deeds/FeatureServer/0/query?where=1%3D1&outFields=OBJECTID&returnGeometry=true&outSR=4326&f=geojson&objectIds=353371",
+      "method": "GET",
+      "checkedAt": "2026-10-09T04:29:12.359Z",
+      "httpStatus": 200,
+      "contentType": "application/geo+json; charset=UTF-8",
+      "bytes": 3459,
+      "features": [
+        {
+          "transportId": 353371,
+          "properties": {
+            "OBJECTID": 353371
+          },
+          "geometrySha256": "465b2875967ea1f6bfbe55b04bf36f91b7348dfa324e72992ce4e253c0c95d76"
+        }
+      ]
+    },
+    {
+      "test": "viewport-11",
+      "url": "https://gis.elpasotexas.gov/arcgis/rest/services/Deeds/FeatureServer/0/query?where=1%3D1&geometry=-106.367%2C31.786%2C-106.366%2C31.787&geometryType=esriGeometryEnvelope&inSR=4326&spatialRel=esriSpatialRelIntersects&f=json&returnCountOnly=true",
+      "method": "GET",
+      "checkedAt": "2026-10-09T04:29:12.596Z",
+      "httpStatus": 200,
+      "contentType": "application/json; charset=UTF-8",
+      "bytes": 12,
+      "count": 16
+    },
+    {
+      "test": "viewport-11",
+      "url": "https://gis.elpasotexas.gov/arcgis/rest/services/Deeds/FeatureServer/0/query?where=1%3D1&geometry=-106.367%2C31.786%2C-106.366%2C31.787&geometryType=esriGeometryEnvelope&inSR=4326&spatialRel=esriSpatialRelIntersects&f=json&returnIdsOnly=true",
+      "method": "GET",
+      "checkedAt": "2026-10-09T04:29:12.826Z",
+      "httpStatus": 200,
+      "contentType": "application/json; charset=UTF-8",
+      "bytes": 158,
+      "objectIdFieldName": "OBJECTID",
+      "objectIds": [
+        129047,
+        129058,
+        129287,
+        129320,
+        129556,
+        129563,
+        129761,
+        130027,
+        130077,
+        130288,
+        130376,
+        130545,
+        130589,
+        130698,
+        130869,
+        130994
+      ]
+    },
+    {
+      "test": "viewport-11",
+      "url": "https://gis.elpasotexas.gov/arcgis/rest/services/Deeds/FeatureServer/0/query?where=1%3D1&outFields=OBJECTID&returnGeometry=true&outSR=4326&f=geojson&objectIds=129047%2C129058%2C129287%2C129320%2C129556%2C129563%2C129761%2C130027%2C130077%2C130288%2C130376%2C130545%2C130589%2C130698%2C130869%2C130994",
+      "method": "GET",
+      "checkedAt": "2026-10-09T04:29:13.061Z",
+      "httpStatus": 200,
+      "contentType": "application/geo+json; charset=UTF-8",
+      "bytes": 7365,
+      "features": [
+        {
+          "transportId": 129047,
+          "properties": {
+            "OBJECTID": 129047
+          },
+          "geometrySha256": "a4d0fd534bd71fa991250926b80fecd7db835c3fd3db9245003bc3e1163017a0"
+        },
+        {
+          "transportId": 129058,
+          "properties": {
+            "OBJECTID": 129058
+          },
+          "geometrySha256": "57a215903b8d492a4b774a3f7c0664e6f964af1d74efebab44bb937963df27b7"
+        },
+        {
+          "transportId": 129287,
+          "properties": {
+            "OBJECTID": 129287
+          },
+          "geometrySha256": "34e7719f2cd7f28ef0075cb9d7fb0e4c0ee6bea3d36a550d6e724938f09b0280"
+        },
+        {
+          "transportId": 129320,
+          "properties": {
+            "OBJECTID": 129320
+          },
+          "geometrySha256": "a74e17c32fbe3cff0818950010101de90ec345538cd26694305b5e333ae62c2f"
+        },
+        {
+          "transportId": 129556,
+          "properties": {
+            "OBJECTID": 129556
+          },
+          "geometrySha256": "3a856729f70f16917d23e01497477fb681d092cc4be74cd2351abf51ec003657"
+        },
+        {
+          "transportId": 129563,
+          "properties": {
+            "OBJECTID": 129563
+          },
+          "geometrySha256": "f9f1bb62edffe99f2efe2695ff362e9cff4aec04ff79a385b2d6e74bafd06599"
+        },
+        {
+          "transportId": 129761,
+          "properties": {
+            "OBJECTID": 129761
+          },
+          "geometrySha256": "663e8677e7be0829bfd38fb5c8bde36defdf76f0bba3bbcd65627d62eabe8604"
+        },
+        {
+          "transportId": 130027,
+          "properties": {
+            "OBJECTID": 130027
+          },
+          "geometrySha256": "26d87b4088a0369946f5c42340da79ac02d2672cd201935d4f644f2496bad004"
+        },
+        {
+          "transportId": 130077,
+          "properties": {
+            "OBJECTID": 130077
+          },
+          "geometrySha256": "7f8c0cd89546836f1e5339254ada0a1437a2502467ef6f34060537000a40ef78"
+        },
+        {
+          "transportId": 130288,
+          "properties": {
+            "OBJECTID": 130288
+          },
+          "geometrySha256": "b2a225cb18c541af4009b73bcee7d297ef0a638d67fc5bcd10d91154bb2886dc"
+        },
+        {
+          "transportId": 130376,
+          "properties": {
+            "OBJECTID": 130376
+          },
+          "geometrySha256": "b0783c1d837a6a1234449c09857a78af92f96ea2cf663f3c795609fd8aa93c6a"
+        },
+        {
+          "transportId": 130545,
+          "properties": {
+            "OBJECTID": 130545
+          },
+          "geometrySha256": "b370e7129a67681ae0f1832a2600b53aeb4a18e044f02817f7f2a1e7b62b3b7f"
+        },
+        {
+          "transportId": 130589,
+          "properties": {
+            "OBJECTID": 130589
+          },
+          "geometrySha256": "579ac40ec0217790ae7d53a087b4fe440d9c4532007c58af4b0ac207d52d9fab"
+        },
+        {
+          "transportId": 130698,
+          "properties": {
+            "OBJECTID": 130698
+          },
+          "geometrySha256": "3cb09325a08a54720420018222a6e5673e6bd548e9b927d17f565d8ce38b1d6c"
+        },
+        {
+          "transportId": 130869,
+          "properties": {
+            "OBJECTID": 130869
+          },
+          "geometrySha256": "ae4aa50cec6e16b9c4cb99b39102942a5a322eeae202fdef036586f5a64d9f22"
+        },
+        {
+          "transportId": 130994,
+          "properties": {
+            "OBJECTID": 130994
+          },
+          "geometrySha256": "c647b5dd1f8987c7c0ae1fe466486bbd3cb46587265187721a5b63c83cd084a8"
+        }
+      ]
+    },
+    {
+      "test": "viewport-12",
+      "url": "https://gis.elpasotexas.gov/arcgis/rest/services/Deeds/FeatureServer/0/query?where=1%3D1&geometry=-106.363%2C31.786%2C-106.362%2C31.787&geometryType=esriGeometryEnvelope&inSR=4326&spatialRel=esriSpatialRelIntersects&f=json&returnCountOnly=true",
+      "method": "GET",
+      "checkedAt": "2026-10-09T04:29:13.306Z",
+      "httpStatus": 200,
+      "contentType": "application/json; charset=UTF-8",
+      "bytes": 11,
+      "count": 1
+    },
+    {
+      "test": "viewport-12",
+      "url": "https://gis.elpasotexas.gov/arcgis/rest/services/Deeds/FeatureServer/0/query?where=1%3D1&geometry=-106.363%2C31.786%2C-106.362%2C31.787&geometryType=esriGeometryEnvelope&inSR=4326&spatialRel=esriSpatialRelIntersects&f=json&returnIdsOnly=true",
+      "method": "GET",
+      "checkedAt": "2026-10-09T04:29:13.550Z",
+      "httpStatus": 200,
+      "contentType": "application/json; charset=UTF-8",
+      "bytes": 53,
+      "objectIdFieldName": "OBJECTID",
+      "objectIds": [
+        353371
+      ]
+    },
+    {
+      "test": "viewport-12",
+      "url": "https://gis.elpasotexas.gov/arcgis/rest/services/Deeds/FeatureServer/0/query?where=1%3D1&outFields=OBJECTID&returnGeometry=true&outSR=4326&f=geojson&objectIds=353371",
+      "method": "GET",
+      "checkedAt": "2026-10-09T04:29:13.778Z",
+      "httpStatus": 200,
+      "contentType": "application/geo+json; charset=UTF-8",
+      "bytes": 3459,
+      "features": [
+        {
+          "transportId": 353371,
+          "properties": {
+            "OBJECTID": 353371
+          },
+          "geometrySha256": "465b2875967ea1f6bfbe55b04bf36f91b7348dfa324e72992ce4e253c0c95d76"
+        }
+      ]
+    },
+    {
+      "test": "forced-three-row-pages",
+      "url": "https://gis.elpasotexas.gov/arcgis/rest/services/Deeds/FeatureServer/0/query?where=1%3D1&geometry=-106.366%2C31.785%2C-106.365%2C31.786&geometryType=esriGeometryEnvelope&inSR=4326&spatialRel=esriSpatialRelIntersects&f=json&returnCountOnly=true",
+      "method": "GET",
+      "checkedAt": "2026-10-09T04:29:14.017Z",
+      "httpStatus": 200,
+      "contentType": "application/json; charset=UTF-8",
+      "bytes": 12,
+      "count": 18
+    },
+    {
+      "test": "forced-three-row-pages",
+      "url": "https://gis.elpasotexas.gov/arcgis/rest/services/Deeds/FeatureServer/0/query?where=1%3D1&geometry=-106.366%2C31.785%2C-106.365%2C31.786&geometryType=esriGeometryEnvelope&inSR=4326&spatialRel=esriSpatialRelIntersects&f=json&returnIdsOnly=true",
+      "method": "GET",
+      "checkedAt": "2026-10-09T04:29:14.254Z",
+      "httpStatus": 200,
+      "contentType": "application/json; charset=UTF-8",
+      "bytes": 172,
+      "objectIdFieldName": "OBJECTID",
+      "objectIds": [
+        127722,
+        127752,
+        127910,
+        127912,
+        127941,
+        128113,
+        128139,
+        128359,
+        128388,
+        128394,
+        128584,
+        128625,
+        128815,
+        128859,
+        129047,
+        129105,
+        129287,
+        129327
+      ]
+    },
+    {
+      "test": "forced-three-row-pages",
+      "url": "https://gis.elpasotexas.gov/arcgis/rest/services/Deeds/FeatureServer/0/query?where=1%3D1&outFields=OBJECTID&returnGeometry=true&outSR=4326&f=geojson&objectIds=127722%2C127752%2C127910",
+      "method": "GET",
+      "checkedAt": "2026-10-09T04:29:14.487Z",
+      "httpStatus": 200,
+      "contentType": "application/geo+json; charset=UTF-8",
+      "bytes": 1031,
+      "features": [
+        {
+          "transportId": 127722,
+          "properties": {
+            "OBJECTID": 127722
+          },
+          "geometrySha256": "2c8a08530309e8c49e0af6c3bc4a9c9bb7a215d41ec452718cc00a43f0d9f8d1"
+        },
+        {
+          "transportId": 127752,
+          "properties": {
+            "OBJECTID": 127752
+          },
+          "geometrySha256": "75732bf2ab18ce38d22f31b9719efad107c5cf24a70d4a8f76feb20ea796aa41"
+        },
+        {
+          "transportId": 127910,
+          "properties": {
+            "OBJECTID": 127910
+          },
+          "geometrySha256": "d84cebe32de8e924e7096b4c149a87b997a19a4bffee19b5f944f86b226a393a"
+        }
+      ]
+    },
+    {
+      "test": "forced-three-row-pages",
+      "url": "https://gis.elpasotexas.gov/arcgis/rest/services/Deeds/FeatureServer/0/query?where=1%3D1&outFields=OBJECTID&returnGeometry=true&outSR=4326&f=geojson&objectIds=127912%2C127941%2C128113",
+      "method": "GET",
+      "checkedAt": "2026-10-09T04:29:14.716Z",
+      "httpStatus": 200,
+      "contentType": "application/geo+json; charset=UTF-8",
+      "bytes": 1033,
+      "features": [
+        {
+          "transportId": 127912,
+          "properties": {
+            "OBJECTID": 127912
+          },
+          "geometrySha256": "db425a2f6e3e49dedfd7ad9b28916f9857013cfe02497eecee6309def5c6e785"
+        },
+        {
+          "transportId": 127941,
+          "properties": {
+            "OBJECTID": 127941
+          },
+          "geometrySha256": "f101c3a870287e390ed5cf38124c3a441ad3ccb3fb9ca8d16324b349d5820576"
+        },
+        {
+          "transportId": 128113,
+          "properties": {
+            "OBJECTID": 128113
+          },
+          "geometrySha256": "bf9298690049e048eded13fa2df986b3907bf14ab06183d6d6f459678e5ff832"
+        }
+      ]
+    },
+    {
+      "test": "forced-three-row-pages",
+      "url": "https://gis.elpasotexas.gov/arcgis/rest/services/Deeds/FeatureServer/0/query?where=1%3D1&outFields=OBJECTID&returnGeometry=true&outSR=4326&f=geojson&objectIds=128139%2C128359%2C128388",
+      "method": "GET",
+      "checkedAt": "2026-10-09T04:29:14.954Z",
+      "httpStatus": 200,
+      "contentType": "application/geo+json; charset=UTF-8",
+      "bytes": 1024,
+      "features": [
+        {
+          "transportId": 128139,
+          "properties": {
+            "OBJECTID": 128139
+          },
+          "geometrySha256": "bc2a4d90c59abb6e2bc3e82b691c8b738e8bcd1552669097d609b3a12dd0de00"
+        },
+        {
+          "transportId": 128359,
+          "properties": {
+            "OBJECTID": 128359
+          },
+          "geometrySha256": "6c963bee93a3c4804cafa2e147df253c2b685ae3eda389180ec1b8651c51c1a9"
+        },
+        {
+          "transportId": 128388,
+          "properties": {
+            "OBJECTID": 128388
+          },
+          "geometrySha256": "b4fdbc9bd92b9450214a7f717a85a7e72e3d4610e21f9b0886609740cfbfe8e4"
+        }
+      ]
+    },
+    {
+      "test": "forced-three-row-pages",
+      "url": "https://gis.elpasotexas.gov/arcgis/rest/services/Deeds/FeatureServer/0/query?where=1%3D1&outFields=OBJECTID&returnGeometry=true&outSR=4326&f=geojson&objectIds=128394%2C128584%2C128625",
+      "method": "GET",
+      "checkedAt": "2026-10-09T04:29:15.185Z",
+      "httpStatus": 200,
+      "contentType": "application/geo+json; charset=UTF-8",
+      "bytes": 1111,
+      "features": [
+        {
+          "transportId": 128394,
+          "properties": {
+            "OBJECTID": 128394
+          },
+          "geometrySha256": "879637259753999bffb2a74dda400beeb42ad938211d9ba29b8ef80058286db4"
+        },
+        {
+          "transportId": 128584,
+          "properties": {
+            "OBJECTID": 128584
+          },
+          "geometrySha256": "868d4e7f04bb5f14ccee50125372960541c73facc243ceffc0fd59ecf8bfe046"
+        },
+        {
+          "transportId": 128625,
+          "properties": {
+            "OBJECTID": 128625
+          },
+          "geometrySha256": "d99a226ce04cf3125807532b021c2ebfc4f47cd96fa040506a006193780d8d31"
+        }
+      ]
+    },
+    {
+      "test": "forced-three-row-pages",
+      "url": "https://gis.elpasotexas.gov/arcgis/rest/services/Deeds/FeatureServer/0/query?where=1%3D1&outFields=OBJECTID&returnGeometry=true&outSR=4326&f=geojson&objectIds=128815%2C128859%2C129047",
+      "method": "GET",
+      "checkedAt": "2026-10-09T04:29:15.427Z",
+      "httpStatus": 200,
+      "contentType": "application/geo+json; charset=UTF-8",
+      "bytes": 1069,
+      "features": [
+        {
+          "transportId": 128815,
+          "properties": {
+            "OBJECTID": 128815
+          },
+          "geometrySha256": "5e0a9107bc83b868611d4bbca7a67f8233b249c8d201406100b82de20906ebdb"
+        },
+        {
+          "transportId": 128859,
+          "properties": {
+            "OBJECTID": 128859
+          },
+          "geometrySha256": "d621d439aaf9b82540d47bb00fba21abe56ef9b2589b7210124535f138f6bddc"
+        },
+        {
+          "transportId": 129047,
+          "properties": {
+            "OBJECTID": 129047
+          },
+          "geometrySha256": "a4d0fd534bd71fa991250926b80fecd7db835c3fd3db9245003bc3e1163017a0"
+        }
+      ]
+    },
+    {
+      "test": "forced-three-row-pages",
+      "url": "https://gis.elpasotexas.gov/arcgis/rest/services/Deeds/FeatureServer/0/query?where=1%3D1&outFields=OBJECTID&returnGeometry=true&outSR=4326&f=geojson&objectIds=129105%2C129287%2C129327",
+      "method": "GET",
+      "checkedAt": "2026-10-09T04:29:15.668Z",
+      "httpStatus": 200,
+      "contentType": "application/geo+json; charset=UTF-8",
+      "bytes": 1435,
+      "features": [
+        {
+          "transportId": 129105,
+          "properties": {
+            "OBJECTID": 129105
+          },
+          "geometrySha256": "d23cbbe4cd244730e17a68c961d71fb96aa55be96706b0d6112644c7e7ce1e1b"
+        },
+        {
+          "transportId": 129287,
+          "properties": {
+            "OBJECTID": 129287
+          },
+          "geometrySha256": "34e7719f2cd7f28ef0075cb9d7fb0e4c0ee6bea3d36a550d6e724938f09b0280"
+        },
+        {
+          "transportId": 129327,
+          "properties": {
+            "OBJECTID": 129327
+          },
+          "geometrySha256": "dae3e5e66c03bd9429b210854a7296ca72e310eded8ac011733c39d7e1641ba1"
+        }
+      ]
+    },
+    {
+      "test": "fresh-ids-0",
+      "url": "https://gis.elpasotexas.gov/arcgis/rest/services/Deeds/FeatureServer/0/query?where=OBJECTID+IN+%28126463%2C126498%2C126655%2C126700%2C126854%2C126868%2C126892%2C127058%2C127088%2C127280%2C127284%2C127310%2C127492%2C127495%2C127623%2C127722%2C127725%2C127746%2C127752%2C127791%2C127910%2C127912%2C127941%2C127944%2C127988%2C128023%2C128113%2C128137%2C128139%2C128203%2C128252%2C128359%2C128388%2C128394%2C128480%2C128513%2C128584%2C128625%2C128704%2C128750%29&f=json&returnCountOnly=true",
+      "method": "GET",
+      "checkedAt": "2026-10-09T04:29:15.901Z",
+      "httpStatus": 200,
+      "contentType": "application/json; charset=UTF-8",
+      "bytes": 12,
+      "count": 40
+    },
+    {
+      "test": "fresh-ids-0",
+      "url": "https://gis.elpasotexas.gov/arcgis/rest/services/Deeds/FeatureServer/0/query?where=OBJECTID+IN+%28126463%2C126498%2C126655%2C126700%2C126854%2C126868%2C126892%2C127058%2C127088%2C127280%2C127284%2C127310%2C127492%2C127495%2C127623%2C127722%2C127725%2C127746%2C127752%2C127791%2C127910%2C127912%2C127941%2C127944%2C127988%2C128023%2C128113%2C128137%2C128139%2C128203%2C128252%2C128359%2C128388%2C128394%2C128480%2C128513%2C128584%2C128625%2C128704%2C128750%29&f=json&returnIdsOnly=true",
+      "method": "GET",
+      "checkedAt": "2026-10-09T04:29:16.131Z",
+      "httpStatus": 200,
+      "contentType": "application/json; charset=UTF-8",
+      "bytes": 326,
+      "objectIdFieldName": "OBJECTID",
+      "objectIds": [
+        126463,
+        126498,
+        126655,
+        126700,
+        126854,
+        126868,
+        126892,
+        127058,
+        127088,
+        127280,
+        127284,
+        127310,
+        127492,
+        127495,
+        127623,
+        127722,
+        127725,
+        127746,
+        127752,
+        127791,
+        127910,
+        127912,
+        127941,
+        127944,
+        127988,
+        128023,
+        128113,
+        128137,
+        128139,
+        128203,
+        128252,
+        128359,
+        128388,
+        128394,
+        128480,
+        128513,
+        128584,
+        128625,
+        128704,
+        128750
+      ]
+    },
+    {
+      "test": "fresh-ids-0",
+      "url": "https://gis.elpasotexas.gov/arcgis/rest/services/Deeds/FeatureServer/0/query?where=1%3D1&outFields=OBJECTID&returnGeometry=true&outSR=4326&f=geojson&objectIds=126463%2C126498%2C126655%2C126700%2C126854%2C126868%2C126892%2C127058%2C127088%2C127280%2C127284%2C127310%2C127492%2C127495%2C127623%2C127722%2C127725%2C127746%2C127752%2C127791%2C127910%2C127912%2C127941%2C127944%2C127988%2C128023%2C128113%2C128137%2C128139%2C128203%2C128252%2C128359%2C128388%2C128394%2C128480%2C128513%2C128584%2C128625%2C128704%2C128750",
+      "method": "GET",
+      "checkedAt": "2026-10-09T04:29:16.361Z",
+      "httpStatus": 200,
+      "contentType": "application/geo+json; charset=UTF-8",
+      "bytes": 14615,
+      "features": [
+        {
+          "transportId": 126463,
+          "properties": {
+            "OBJECTID": 126463
+          },
+          "geometrySha256": "927cd653ebe3af3dc75c3eb34cecf180ddfbc91129de293a3e8bc5e6c457e0c7"
+        },
+        {
+          "transportId": 126498,
+          "properties": {
+            "OBJECTID": 126498
+          },
+          "geometrySha256": "fdd68c8444b0078ba474388d718d0497d752ab504f5c505b0357c0932074e813"
+        },
+        {
+          "transportId": 126655,
+          "properties": {
+            "OBJECTID": 126655
+          },
+          "geometrySha256": "d362513522241613cb7c991c60a65d8c0de25ae935409935e5196b2ffcc9e8c1"
+        },
+        {
+          "transportId": 126700,
+          "properties": {
+            "OBJECTID": 126700
+          },
+          "geometrySha256": "f61ff60e2b69f3c996ccf3494875f1c95b0ac3066399cadc7a97da032b74e339"
+        },
+        {
+          "transportId": 126854,
+          "properties": {
+            "OBJECTID": 126854
+          },
+          "geometrySha256": "d0d8c19e160d4262652f452d495bbc46528474c8e83e5af2686a02c6c493802f"
+        },
+        {
+          "transportId": 126868,
+          "properties": {
+            "OBJECTID": 126868
+          },
+          "geometrySha256": "87915b712a3d97ad7331ae89ad31159c0db5b73c7ca89e5caa0c0616b996cba3"
+        },
+        {
+          "transportId": 126892,
+          "properties": {
+            "OBJECTID": 126892
+          },
+          "geometrySha256": "496bd329e97783e143883482a890aab04037075510c94910c610da8db016a510"
+        },
+        {
+          "transportId": 127058,
+          "properties": {
+            "OBJECTID": 127058
+          },
+          "geometrySha256": "175f339b509a1a45a4e9c2a5fe00654d4e2024b351f6b2315ce980b7465bd77f"
+        },
+        {
+          "transportId": 127088,
+          "properties": {
+            "OBJECTID": 127088
+          },
+          "geometrySha256": "3faefacb40c0fc85af5d49656305817e5b6e85f519af7e223a6cffdbb733b9e0"
+        },
+        {
+          "transportId": 127280,
+          "properties": {
+            "OBJECTID": 127280
+          },
+          "geometrySha256": "e00f35de5bca4abb7860707510065782ba2f92aacbcd94711c5cfcdda57ff763"
+        },
+        {
+          "transportId": 127284,
+          "properties": {
+            "OBJECTID": 127284
+          },
+          "geometrySha256": "c386b6595ffceaba14cb18c7849ed651aae3bca8f658cf93680422b285b75b90"
+        },
+        {
+          "transportId": 127310,
+          "properties": {
+            "OBJECTID": 127310
+          },
+          "geometrySha256": "2e2b7f99b4714e773bde374be3d32550076ba7dc64d998b8c7c6788ced98a2ab"
+        },
+        {
+          "transportId": 127492,
+          "properties": {
+            "OBJECTID": 127492
+          },
+          "geometrySha256": "ab13eed5f7ee93cbe351edb5fed1b6541581b1eff4f6f3aaa7399aad09ecec97"
+        },
+        {
+          "transportId": 127495,
+          "properties": {
+            "OBJECTID": 127495
+          },
+          "geometrySha256": "d9cb71cafe69e4753ed873f11be27d05f0d2f191788ba378da43ed5dd2e706cd"
+        },
+        {
+          "transportId": 127623,
+          "properties": {
+            "OBJECTID": 127623
+          },
+          "geometrySha256": "21e703fe0cd37b5e3633199645b323e624c315203274fc948bce24a28f7ba683"
+        },
+        {
+          "transportId": 127722,
+          "properties": {
+            "OBJECTID": 127722
+          },
+          "geometrySha256": "2c8a08530309e8c49e0af6c3bc4a9c9bb7a215d41ec452718cc00a43f0d9f8d1"
+        },
+        {
+          "transportId": 127725,
+          "properties": {
+            "OBJECTID": 127725
+          },
+          "geometrySha256": "eb3137a28c6d1877740802a9ff0a3f90158775acb3187e8cab344287f61d2ed7"
+        },
+        {
+          "transportId": 127746,
+          "properties": {
+            "OBJECTID": 127746
+          },
+          "geometrySha256": "ad6e066051409a88129654e7794f0de99fd213a968a03b444909912675dde94c"
+        },
+        {
+          "transportId": 127752,
+          "properties": {
+            "OBJECTID": 127752
+          },
+          "geometrySha256": "75732bf2ab18ce38d22f31b9719efad107c5cf24a70d4a8f76feb20ea796aa41"
+        },
+        {
+          "transportId": 127791,
+          "properties": {
+            "OBJECTID": 127791
+          },
+          "geometrySha256": "6bd743fe966dc9e15011d79e59b06014735718d0c8a4c07975f191af15d00276"
+        },
+        {
+          "transportId": 127910,
+          "properties": {
+            "OBJECTID": 127910
+          },
+          "geometrySha256": "d84cebe32de8e924e7096b4c149a87b997a19a4bffee19b5f944f86b226a393a"
+        },
+        {
+          "transportId": 127912,
+          "properties": {
+            "OBJECTID": 127912
+          },
+          "geometrySha256": "db425a2f6e3e49dedfd7ad9b28916f9857013cfe02497eecee6309def5c6e785"
+        },
+        {
+          "transportId": 127941,
+          "properties": {
+            "OBJECTID": 127941
+          },
+          "geometrySha256": "f101c3a870287e390ed5cf38124c3a441ad3ccb3fb9ca8d16324b349d5820576"
+        },
+        {
+          "transportId": 127944,
+          "properties": {
+            "OBJECTID": 127944
+          },
+          "geometrySha256": "04075a8d2954ea2762af6a863927ac8931497f0bd934e967921e2b90328dfcdd"
+        },
+        {
+          "transportId": 127988,
+          "properties": {
+            "OBJECTID": 127988
+          },
+          "geometrySha256": "e33c0b1bd6a96f56219661afdb138d68e84eed549daf3c550a7f76f9869ec233"
+        },
+        {
+          "transportId": 128023,
+          "properties": {
+            "OBJECTID": 128023
+          },
+          "geometrySha256": "80e09abebcffdcfcf652798f2ba4376e3725a43ee3885cabb294eb50a6898aa5"
+        },
+        {
+          "transportId": 128113,
+          "properties": {
+            "OBJECTID": 128113
+          },
+          "geometrySha256": "bf9298690049e048eded13fa2df986b3907bf14ab06183d6d6f459678e5ff832"
+        },
+        {
+          "transportId": 128137,
+          "properties": {
+            "OBJECTID": 128137
+          },
+          "geometrySha256": "f2d7a6e45ba12827e3c765732549f88303068df4bc11efac5ee650ac9b7f64e2"
+        },
+        {
+          "transportId": 128139,
+          "properties": {
+            "OBJECTID": 128139
+          },
+          "geometrySha256": "bc2a4d90c59abb6e2bc3e82b691c8b738e8bcd1552669097d609b3a12dd0de00"
+        },
+        {
+          "transportId": 128203,
+          "properties": {
+            "OBJECTID": 128203
+          },
+          "geometrySha256": "006cd460bdf454db11e34a9044e38b7b2be43ae8934f993e41e4df4893848fdd"
+        },
+        {
+          "transportId": 128252,
+          "properties": {
+            "OBJECTID": 128252
+          },
+          "geometrySha256": "f3ec36aab11c872237425c7c649ca8d7f368d06667836615d53062e50f2a6811"
+        },
+        {
+          "transportId": 128359,
+          "properties": {
+            "OBJECTID": 128359
+          },
+          "geometrySha256": "6c963bee93a3c4804cafa2e147df253c2b685ae3eda389180ec1b8651c51c1a9"
+        },
+        {
+          "transportId": 128388,
+          "properties": {
+            "OBJECTID": 128388
+          },
+          "geometrySha256": "b4fdbc9bd92b9450214a7f717a85a7e72e3d4610e21f9b0886609740cfbfe8e4"
+        },
+        {
+          "transportId": 128394,
+          "properties": {
+            "OBJECTID": 128394
+          },
+          "geometrySha256": "879637259753999bffb2a74dda400beeb42ad938211d9ba29b8ef80058286db4"
+        },
+        {
+          "transportId": 128480,
+          "properties": {
+            "OBJECTID": 128480
+          },
+          "geometrySha256": "b2e8c4faa7b7a8ef3ad5799595dbc9d4af14a6d5e36b88f697dce507755906d5"
+        },
+        {
+          "transportId": 128513,
+          "properties": {
+            "OBJECTID": 128513
+          },
+          "geometrySha256": "cb56a34de786d757516ef122cc39077db13704bdbc42453c901c58f56f3b7932"
+        },
+        {
+          "transportId": 128584,
+          "properties": {
+            "OBJECTID": 128584
+          },
+          "geometrySha256": "868d4e7f04bb5f14ccee50125372960541c73facc243ceffc0fd59ecf8bfe046"
+        },
+        {
+          "transportId": 128625,
+          "properties": {
+            "OBJECTID": 128625
+          },
+          "geometrySha256": "d99a226ce04cf3125807532b021c2ebfc4f47cd96fa040506a006193780d8d31"
+        },
+        {
+          "transportId": 128704,
+          "properties": {
+            "OBJECTID": 128704
+          },
+          "geometrySha256": "0e21f95676c2494aa0f58d0b5026ef44355811bf35be0e45573eb9a4f6c89838"
+        },
+        {
+          "transportId": 128750,
+          "properties": {
+            "OBJECTID": 128750
+          },
+          "geometrySha256": "b881b340079ec5bb1bc10935971ce6a5711ecc81031860639449a6df5d896d89"
+        }
+      ]
+    },
+    {
+      "test": "fresh-ids-40",
+      "url": "https://gis.elpasotexas.gov/arcgis/rest/services/Deeds/FeatureServer/0/query?where=OBJECTID+IN+%28128815%2C128859%2C128953%2C128997%2C129047%2C129058%2C129105%2C129181%2C129238%2C129287%2C129320%2C129327%2C129416%2C129502%2C129556%2C129563%2C129658%2C129761%2C129784%2C129935%2C130027%2C130036%2C130077%2C130181%2C130288%2C130336%2C130376%2C130435%2C130545%2C130589%2C130621%2C130698%2C130869%2C130920%2C130994%2C131176%2C131450%2C131740%2C353371%29&f=json&returnCountOnly=true",
+      "method": "GET",
+      "checkedAt": "2026-10-09T04:29:16.598Z",
+      "httpStatus": 200,
+      "contentType": "application/json; charset=UTF-8",
+      "bytes": 12,
+      "count": 39
+    },
+    {
+      "test": "fresh-ids-40",
+      "url": "https://gis.elpasotexas.gov/arcgis/rest/services/Deeds/FeatureServer/0/query?where=OBJECTID+IN+%28128815%2C128859%2C128953%2C128997%2C129047%2C129058%2C129105%2C129181%2C129238%2C129287%2C129320%2C129327%2C129416%2C129502%2C129556%2C129563%2C129658%2C129761%2C129784%2C129935%2C130027%2C130036%2C130077%2C130181%2C130288%2C130336%2C130376%2C130435%2C130545%2C130589%2C130621%2C130698%2C130869%2C130920%2C130994%2C131176%2C131450%2C131740%2C353371%29&f=json&returnIdsOnly=true",
+      "method": "GET",
+      "checkedAt": "2026-10-09T04:29:16.850Z",
+      "httpStatus": 200,
+      "contentType": "application/json; charset=UTF-8",
+      "bytes": 319,
+      "objectIdFieldName": "OBJECTID",
+      "objectIds": [
+        128815,
+        128859,
+        128953,
+        128997,
+        129047,
+        129058,
+        129105,
+        129181,
+        129238,
+        129287,
+        129320,
+        129327,
+        129416,
+        129502,
+        129556,
+        129563,
+        129658,
+        129761,
+        129784,
+        129935,
+        130027,
+        130036,
+        130077,
+        130181,
+        130288,
+        130336,
+        130376,
+        130435,
+        130545,
+        130589,
+        130621,
+        130698,
+        130869,
+        130920,
+        130994,
+        131176,
+        131450,
+        131740,
+        353371
+      ]
+    },
+    {
+      "test": "fresh-ids-40",
+      "url": "https://gis.elpasotexas.gov/arcgis/rest/services/Deeds/FeatureServer/0/query?where=1%3D1&outFields=OBJECTID&returnGeometry=true&outSR=4326&f=geojson&objectIds=128815%2C128859%2C128953%2C128997%2C129047%2C129058%2C129105%2C129181%2C129238%2C129287%2C129320%2C129327%2C129416%2C129502%2C129556%2C129563%2C129658%2C129761%2C129784%2C129935%2C130027%2C130036%2C130077%2C130181%2C130288%2C130336%2C130376%2C130435%2C130545%2C130589%2C130621%2C130698%2C130869%2C130920%2C130994%2C131176%2C131450%2C131740%2C353371",
+      "method": "GET",
+      "checkedAt": "2026-10-09T04:29:17.086Z",
+      "httpStatus": 200,
+      "contentType": "application/geo+json; charset=UTF-8",
+      "bytes": 18396,
+      "features": [
+        {
+          "transportId": 128815,
+          "properties": {
+            "OBJECTID": 128815
+          },
+          "geometrySha256": "5e0a9107bc83b868611d4bbca7a67f8233b249c8d201406100b82de20906ebdb"
+        },
+        {
+          "transportId": 128859,
+          "properties": {
+            "OBJECTID": 128859
+          },
+          "geometrySha256": "d621d439aaf9b82540d47bb00fba21abe56ef9b2589b7210124535f138f6bddc"
+        },
+        {
+          "transportId": 128953,
+          "properties": {
+            "OBJECTID": 128953
+          },
+          "geometrySha256": "bb4200a4fe99a70d2620804bfe119aceb21a50fa2eb9bdf34c9f8fff314833e5"
+        },
+        {
+          "transportId": 128997,
+          "properties": {
+            "OBJECTID": 128997
+          },
+          "geometrySha256": "5a16d85885e0bc44c4902c851952c914cb5b634a1553f1f2ef7fd885f20d7d49"
+        },
+        {
+          "transportId": 129047,
+          "properties": {
+            "OBJECTID": 129047
+          },
+          "geometrySha256": "a4d0fd534bd71fa991250926b80fecd7db835c3fd3db9245003bc3e1163017a0"
+        },
+        {
+          "transportId": 129058,
+          "properties": {
+            "OBJECTID": 129058
+          },
+          "geometrySha256": "57a215903b8d492a4b774a3f7c0664e6f964af1d74efebab44bb937963df27b7"
+        },
+        {
+          "transportId": 129105,
+          "properties": {
+            "OBJECTID": 129105
+          },
+          "geometrySha256": "d23cbbe4cd244730e17a68c961d71fb96aa55be96706b0d6112644c7e7ce1e1b"
+        },
+        {
+          "transportId": 129181,
+          "properties": {
+            "OBJECTID": 129181
+          },
+          "geometrySha256": "8af665c745b19a34b8807885b10e0e3f38de4ccb33b44e084d0b5775bb6b1ce8"
+        },
+        {
+          "transportId": 129238,
+          "properties": {
+            "OBJECTID": 129238
+          },
+          "geometrySha256": "8bbdb3cb949edf547f0e64812b42a2af31343dda70e21f45e05c15d4d681b25e"
+        },
+        {
+          "transportId": 129287,
+          "properties": {
+            "OBJECTID": 129287
+          },
+          "geometrySha256": "34e7719f2cd7f28ef0075cb9d7fb0e4c0ee6bea3d36a550d6e724938f09b0280"
+        },
+        {
+          "transportId": 129320,
+          "properties": {
+            "OBJECTID": 129320
+          },
+          "geometrySha256": "a74e17c32fbe3cff0818950010101de90ec345538cd26694305b5e333ae62c2f"
+        },
+        {
+          "transportId": 129327,
+          "properties": {
+            "OBJECTID": 129327
+          },
+          "geometrySha256": "dae3e5e66c03bd9429b210854a7296ca72e310eded8ac011733c39d7e1641ba1"
+        },
+        {
+          "transportId": 129416,
+          "properties": {
+            "OBJECTID": 129416
+          },
+          "geometrySha256": "e2c8e898f70a6531932c55a1fea7c15f7f8af9a91305e0b0085b5a5d86b6ea52"
+        },
+        {
+          "transportId": 129502,
+          "properties": {
+            "OBJECTID": 129502
+          },
+          "geometrySha256": "1d106839200857b6762ea88e109d2385ee1bf2fe987d001e02f759076168549b"
+        },
+        {
+          "transportId": 129556,
+          "properties": {
+            "OBJECTID": 129556
+          },
+          "geometrySha256": "3a856729f70f16917d23e01497477fb681d092cc4be74cd2351abf51ec003657"
+        },
+        {
+          "transportId": 129563,
+          "properties": {
+            "OBJECTID": 129563
+          },
+          "geometrySha256": "f9f1bb62edffe99f2efe2695ff362e9cff4aec04ff79a385b2d6e74bafd06599"
+        },
+        {
+          "transportId": 129658,
+          "properties": {
+            "OBJECTID": 129658
+          },
+          "geometrySha256": "8a698859a99af6cf9f0eb7cdf885e72a84a6d1c42be6cff3a5435b4444512d6b"
+        },
+        {
+          "transportId": 129761,
+          "properties": {
+            "OBJECTID": 129761
+          },
+          "geometrySha256": "663e8677e7be0829bfd38fb5c8bde36defdf76f0bba3bbcd65627d62eabe8604"
+        },
+        {
+          "transportId": 129784,
+          "properties": {
+            "OBJECTID": 129784
+          },
+          "geometrySha256": "6021250eb75136aba35308e41da61ea6bfae056e69cc3ee848fe8bdb37125701"
+        },
+        {
+          "transportId": 129935,
+          "properties": {
+            "OBJECTID": 129935
+          },
+          "geometrySha256": "00d731061c9890148fd5344bd434705eeecca09a0072d77992527e2260d4f3b8"
+        },
+        {
+          "transportId": 130027,
+          "properties": {
+            "OBJECTID": 130027
+          },
+          "geometrySha256": "26d87b4088a0369946f5c42340da79ac02d2672cd201935d4f644f2496bad004"
+        },
+        {
+          "transportId": 130036,
+          "properties": {
+            "OBJECTID": 130036
+          },
+          "geometrySha256": "cc047e9654fc758e31da08ce951571025d94bd4e671ca3a4a0dc8dcba3aeaaf5"
+        },
+        {
+          "transportId": 130077,
+          "properties": {
+            "OBJECTID": 130077
+          },
+          "geometrySha256": "7f8c0cd89546836f1e5339254ada0a1437a2502467ef6f34060537000a40ef78"
+        },
+        {
+          "transportId": 130181,
+          "properties": {
+            "OBJECTID": 130181
+          },
+          "geometrySha256": "160ce22147042ceefee002b3bf464b7841b83af24db309e5a611e0299281cbeb"
+        },
+        {
+          "transportId": 130288,
+          "properties": {
+            "OBJECTID": 130288
+          },
+          "geometrySha256": "b2a225cb18c541af4009b73bcee7d297ef0a638d67fc5bcd10d91154bb2886dc"
+        },
+        {
+          "transportId": 130336,
+          "properties": {
+            "OBJECTID": 130336
+          },
+          "geometrySha256": "fdfc02e0683d291576de86c10447f22c042a9c3ce19998c56f84ea65ddbeda0f"
+        },
+        {
+          "transportId": 130376,
+          "properties": {
+            "OBJECTID": 130376
+          },
+          "geometrySha256": "b0783c1d837a6a1234449c09857a78af92f96ea2cf663f3c795609fd8aa93c6a"
+        },
+        {
+          "transportId": 130435,
+          "properties": {
+            "OBJECTID": 130435
+          },
+          "geometrySha256": "4ff86ba08569f33d4c1dd087e826173238334dcfb9c048fbbc0d3e5c0673e3af"
+        },
+        {
+          "transportId": 130545,
+          "properties": {
+            "OBJECTID": 130545
+          },
+          "geometrySha256": "b370e7129a67681ae0f1832a2600b53aeb4a18e044f02817f7f2a1e7b62b3b7f"
+        },
+        {
+          "transportId": 130589,
+          "properties": {
+            "OBJECTID": 130589
+          },
+          "geometrySha256": "579ac40ec0217790ae7d53a087b4fe440d9c4532007c58af4b0ac207d52d9fab"
+        },
+        {
+          "transportId": 130621,
+          "properties": {
+            "OBJECTID": 130621
+          },
+          "geometrySha256": "108d2bbe3ec662bd01f941f16e5f9c5ca0a4741ed31f38896457ba76198e33a7"
+        },
+        {
+          "transportId": 130698,
+          "properties": {
+            "OBJECTID": 130698
+          },
+          "geometrySha256": "3cb09325a08a54720420018222a6e5673e6bd548e9b927d17f565d8ce38b1d6c"
+        },
+        {
+          "transportId": 130869,
+          "properties": {
+            "OBJECTID": 130869
+          },
+          "geometrySha256": "ae4aa50cec6e16b9c4cb99b39102942a5a322eeae202fdef036586f5a64d9f22"
+        },
+        {
+          "transportId": 130920,
+          "properties": {
+            "OBJECTID": 130920
+          },
+          "geometrySha256": "6334eb9071167e2f3e87e2b989167472d51a62e0dad757d18122927785a5197b"
+        },
+        {
+          "transportId": 130994,
+          "properties": {
+            "OBJECTID": 130994
+          },
+          "geometrySha256": "c647b5dd1f8987c7c0ae1fe466486bbd3cb46587265187721a5b63c83cd084a8"
+        },
+        {
+          "transportId": 131176,
+          "properties": {
+            "OBJECTID": 131176
+          },
+          "geometrySha256": "04f7d457895da2dddd8ae60b5ea76d0f01b8352db4bf743e0da32a15d297154a"
+        },
+        {
+          "transportId": 131450,
+          "properties": {
+            "OBJECTID": 131450
+          },
+          "geometrySha256": "16ccad2f415c2f1d31e260eb6f6d9e4f511d7bf04951476d67b9188f6fb761c0"
+        },
+        {
+          "transportId": 131740,
+          "properties": {
+            "OBJECTID": 131740
+          },
+          "geometrySha256": "3b5e0adf534edd4299b3fda5b9bdc12fdbfe98d0bd5430f303fdf815ecc8ef06"
+        },
+        {
+          "transportId": 353371,
+          "properties": {
+            "OBJECTID": 353371
+          },
+          "geometrySha256": "465b2875967ea1f6bfbe55b04bf36f91b7348dfa324e72992ce4e253c0c95d76"
+        }
+      ]
+    },
+    {
+      "test": "explicit-absence",
+      "url": "https://gis.elpasotexas.gov/arcgis/rest/services/Deeds/FeatureServer/0/query?where=OBJECTID+IN+%282147483647%29&f=json&returnCountOnly=true",
+      "method": "GET",
+      "checkedAt": "2026-10-09T04:29:17.530Z",
+      "httpStatus": 200,
+      "contentType": "application/json; charset=UTF-8",
+      "bytes": 11,
+      "count": 0
+    },
+    {
+      "test": "explicit-absence",
+      "url": "https://gis.elpasotexas.gov/arcgis/rest/services/Deeds/FeatureServer/0/query?where=OBJECTID+IN+%282147483647%29&f=json&returnIdsOnly=true",
+      "method": "GET",
+      "checkedAt": "2026-10-09T04:29:17.759Z",
+      "httpStatus": 200,
+      "contentType": "application/json; charset=UTF-8",
+      "bytes": 49,
+      "objectIdFieldName": "OBJECTID",
+      "objectIds": null
+    },
+    {
+      "test": "footprint",
+      "url": "https://gis.elpasotexas.gov/arcgis/rest/services/Deeds/FeatureServer/0/query?where=1%3D1&geometry=-106.36554185006517%2C31.78635178163177%2C-106.36508282365223%2C31.78675069883559&geometryType=esriGeometryEnvelope&inSR=4326&spatialRel=esriSpatialRelIntersects&f=json&returnCountOnly=true",
+      "method": "GET",
+      "checkedAt": "2026-10-09T04:29:17.987Z",
+      "httpStatus": 200,
+      "contentType": "application/json; charset=UTF-8",
+      "bytes": 11,
+      "count": 5
+    },
+    {
+      "test": "footprint",
+      "url": "https://gis.elpasotexas.gov/arcgis/rest/services/Deeds/FeatureServer/0/query?where=1%3D1&geometry=-106.36554185006517%2C31.78635178163177%2C-106.36508282365223%2C31.78675069883559&geometryType=esriGeometryEnvelope&inSR=4326&spatialRel=esriSpatialRelIntersects&f=json&returnIdsOnly=true",
+      "method": "GET",
+      "checkedAt": "2026-10-09T04:29:18.220Z",
+      "httpStatus": 200,
+      "contentType": "application/json; charset=UTF-8",
+      "bytes": 81,
+      "objectIdFieldName": "OBJECTID",
+      "objectIds": [
+        129658,
+        129935,
+        130036,
+        130181,
+        130336
+      ]
+    },
+    {
+      "test": "footprint",
+      "url": "https://gis.elpasotexas.gov/arcgis/rest/services/Deeds/FeatureServer/0/query?where=1%3D1&outFields=OBJECTID&returnGeometry=true&outSR=4326&f=geojson&objectIds=129658%2C129935%2C130036%2C130181%2C130336",
+      "method": "GET",
+      "checkedAt": "2026-10-09T04:29:18.451Z",
+      "httpStatus": 200,
+      "contentType": "application/geo+json; charset=UTF-8",
+      "bytes": 1825,
+      "features": [
+        {
+          "transportId": 129658,
+          "properties": {
+            "OBJECTID": 129658
+          },
+          "geometrySha256": "8a698859a99af6cf9f0eb7cdf885e72a84a6d1c42be6cff3a5435b4444512d6b"
+        },
+        {
+          "transportId": 129935,
+          "properties": {
+            "OBJECTID": 129935
+          },
+          "geometrySha256": "00d731061c9890148fd5344bd434705eeecca09a0072d77992527e2260d4f3b8"
+        },
+        {
+          "transportId": 130036,
+          "properties": {
+            "OBJECTID": 130036
+          },
+          "geometrySha256": "cc047e9654fc758e31da08ce951571025d94bd4e671ca3a4a0dc8dcba3aeaaf5"
+        },
+        {
+          "transportId": 130181,
+          "properties": {
+            "OBJECTID": 130181
+          },
+          "geometrySha256": "160ce22147042ceefee002b3bf464b7841b83af24db309e5a611e0299281cbeb"
+        },
+        {
+          "transportId": 130336,
+          "properties": {
+            "OBJECTID": 130336
+          },
+          "geometrySha256": "fdfc02e0683d291576de86c10447f22c042a9c3ce19998c56f84ea65ddbeda0f"
+        }
+      ]
+    },
+    {
+      "test": "source-binding",
+      "url": "https://gis.elpasotexas.gov/arcgis/rest/services/Deeds/FeatureServer/0/query?where=1%3D1&geometry=-106.36554185006517%2C31.78635178163177%2C-106.36508282365223%2C31.78675069883559&geometryType=esriGeometryEnvelope&inSR=4326&spatialRel=esriSpatialRelIntersects&f=json&returnCountOnly=true",
+      "method": "GET",
+      "checkedAt": "2026-10-09T04:29:18.681Z",
+      "httpStatus": 200,
+      "contentType": "application/json; charset=UTF-8",
+      "bytes": 11,
+      "count": 5
+    },
+    {
+      "test": "source-binding",
+      "url": "https://gis.elpasotexas.gov/arcgis/rest/services/Deeds/FeatureServer/0/query?where=1%3D1&geometry=-106.36554185006517%2C31.78635178163177%2C-106.36508282365223%2C31.78675069883559&geometryType=esriGeometryEnvelope&inSR=4326&spatialRel=esriSpatialRelIntersects&f=json&returnIdsOnly=true",
+      "method": "GET",
+      "checkedAt": "2026-10-09T04:29:18.909Z",
+      "httpStatus": 200,
+      "contentType": "application/json; charset=UTF-8",
+      "bytes": 81,
+      "objectIdFieldName": "OBJECTID",
+      "objectIds": [
+        129658,
+        129935,
+        130036,
+        130181,
+        130336
+      ]
+    },
+    {
+      "test": "source-binding",
+      "url": "https://gis.elpasotexas.gov/arcgis/rest/services/Deeds/FeatureServer/0/query?where=1%3D1&outFields=OBJECTID&returnGeometry=true&outSR=4326&f=geojson&objectIds=129658%2C129935%2C130036%2C130181%2C130336",
+      "method": "GET",
+      "checkedAt": "2026-10-09T04:29:19.140Z",
+      "httpStatus": 200,
+      "contentType": "application/geo+json; charset=UTF-8",
+      "bytes": 1825,
+      "features": [
+        {
+          "transportId": 129658,
+          "properties": {
+            "OBJECTID": 129658
+          },
+          "geometrySha256": "8a698859a99af6cf9f0eb7cdf885e72a84a6d1c42be6cff3a5435b4444512d6b"
+        },
+        {
+          "transportId": 129935,
+          "properties": {
+            "OBJECTID": 129935
+          },
+          "geometrySha256": "00d731061c9890148fd5344bd434705eeecca09a0072d77992527e2260d4f3b8"
+        },
+        {
+          "transportId": 130036,
+          "properties": {
+            "OBJECTID": 130036
+          },
+          "geometrySha256": "cc047e9654fc758e31da08ce951571025d94bd4e671ca3a4a0dc8dcba3aeaaf5"
+        },
+        {
+          "transportId": 130181,
+          "properties": {
+            "OBJECTID": 130181
+          },
+          "geometrySha256": "160ce22147042ceefee002b3bf464b7841b83af24db309e5a611e0299281cbeb"
+        },
+        {
+          "transportId": 130336,
+          "properties": {
+            "OBJECTID": 130336
+          },
+          "geometrySha256": "fdfc02e0683d291576de86c10447f22c042a9c3ce19998c56f84ea65ddbeda0f"
+        }
+      ]
+    }
+  ],
+  "qualityFile": "research/overnight-cities-2026-10-08/el-paso-manifest-root-quality.json",
+  "uniqueParcels": 79,
+  "requestCount": 61,
+  "allTestsPassed": true,
+  "finishedAt": "2026-10-09T04:29:19.388Z",
+  "qualityStatus": "passed_bounded_ground_topology",
+  "nativeObjectIdManifest": {
+    "service": "https://gis.elpasotexas.gov/arcgis/rest/services/Deeds/FeatureServer/0/query",
+    "mode": "ArcGIS returnIdsOnly=true per 0.001-degree viewport",
+    "idField": "OBJECTID",
+    "viewportCount": 13,
+    "nativeCountSum": 129,
+    "uniqueObjectIdCount": 79,
+    "uniqueObjectIds": [
+      126463,
+      126498,
+      126655,
+      126700,
+      126854,
+      126868,
+      126892,
+      127058,
+      127088,
+      127280,
+      127284,
+      127310,
+      127492,
+      127495,
+      127623,
+      127722,
+      127725,
+      127746,
+      127752,
+      127791,
+      127910,
+      127912,
+      127941,
+      127944,
+      127988,
+      128023,
+      128113,
+      128137,
+      128139,
+      128203,
+      128252,
+      128359,
+      128388,
+      128394,
+      128480,
+      128513,
+      128584,
+      128625,
+      128704,
+      128750,
+      128815,
+      128859,
+      128953,
+      128997,
+      129047,
+      129058,
+      129105,
+      129181,
+      129238,
+      129287,
+      129320,
+      129327,
+      129416,
+      129502,
+      129556,
+      129563,
+      129658,
+      129761,
+      129784,
+      129935,
+      130027,
+      130036,
+      130077,
+      130181,
+      130288,
+      130336,
+      130376,
+      130435,
+      130545,
+      130589,
+      130621,
+      130698,
+      130869,
+      130920,
+      130994,
+      131176,
+      131450,
+      131740,
+      353371
+    ],
+    "uniqueObjectIdsSha256": "4e0477644a689caa603900ad33e86f1416a621a5c7e56fb240c9d9b922a15db5",
+    "perViewport": [
+      {
+        "cell": "viewport-0",
+        "bbox4326": "-106.366,31.785,-106.365,31.786",
+        "count": 18,
+        "objectIdFieldName": "OBJECTID",
+        "objectIds": [
+          127722,
+          127752,
+          127910,
+          127912,
+          127941,
+          128113,
+          128139,
+          128359,
+          128388,
+          128394,
+          128584,
+          128625,
+          128815,
+          128859,
+          129047,
+          129105,
+          129287,
+          129327
+        ],
+        "manifestSha256": "6a29344b44d0b7b6b365c25cd46ca6381c6309582c4ec47990e0e2c24f5b7980",
+        "httpStatus": 200
+      },
+      {
+        "cell": "viewport-1",
+        "bbox4326": "-106.365,31.785,-106.364,31.786",
+        "count": 17,
+        "objectIdFieldName": "OBJECTID",
+        "objectIds": [
+          127725,
+          127746,
+          127910,
+          127944,
+          128113,
+          128137,
+          128203,
+          128394,
+          128480,
+          128625,
+          128704,
+          128750,
+          128859,
+          128953,
+          128997,
+          129181,
+          129238
+        ],
+        "manifestSha256": "e675d4e3621a5efd70f77fa51baf5e638b23e8290d5208f38d79b1aba4a6c8cf",
+        "httpStatus": 200
+      },
+      {
+        "cell": "viewport-2",
+        "bbox4326": "-106.364,31.785,-106.363,31.786",
+        "count": 13,
+        "objectIdFieldName": "OBJECTID",
+        "objectIds": [
+          127495,
+          127623,
+          127746,
+          127791,
+          127988,
+          128023,
+          128203,
+          128252,
+          128480,
+          128513,
+          128750,
+          128997,
+          353371
+        ],
+        "manifestSha256": "b7ce9ec81d62a6220414e5c7fffcd3ffadf722b6327c54db170c632eebef2820",
+        "httpStatus": 200
+      },
+      {
+        "cell": "viewport-3",
+        "bbox4326": "-106.366,31.786,-106.365,31.787",
+        "count": 17,
+        "objectIdFieldName": "OBJECTID",
+        "objectIds": [
+          129047,
+          129105,
+          129181,
+          129287,
+          129327,
+          129416,
+          129556,
+          129658,
+          129935,
+          130036,
+          130077,
+          130181,
+          130336,
+          130435,
+          130621,
+          130698,
+          130920
+        ],
+        "manifestSha256": "94fa802aeee7292c59793f6a484fcfa6203922dd682029ac2445b1016e4b97cc",
+        "httpStatus": 200
+      },
+      {
+        "cell": "viewport-4",
+        "bbox4326": "-106.365,31.786,-106.364,31.787",
+        "count": 11,
+        "objectIdFieldName": "OBJECTID",
+        "objectIds": [
+          128953,
+          128997,
+          129181,
+          129238,
+          129416,
+          129502,
+          129658,
+          129784,
+          130036,
+          130336,
+          353371
+        ],
+        "manifestSha256": "a2269340de336353dcaab5adb6c0c7e2d806e7ea986c6fab8c2074d9c76f312c",
+        "httpStatus": 200
+      },
+      {
+        "cell": "viewport-5",
+        "bbox4326": "-106.364,31.786,-106.363,31.787",
+        "count": 4,
+        "objectIdFieldName": "OBJECTID",
+        "objectIds": [
+          128750,
+          128997,
+          129238,
+          353371
+        ],
+        "manifestSha256": "92cf8e56f90e7ca98ff4bcb3353c5c6fe513f30c4f53d70d7273009b820ce980",
+        "httpStatus": 200
+      },
+      {
+        "cell": "viewport-6",
+        "bbox4326": "-106.366,31.787,-106.365,31.788",
+        "count": 10,
+        "objectIdFieldName": "OBJECTID",
+        "objectIds": [
+          130336,
+          130435,
+          130621,
+          130698,
+          130920,
+          130994,
+          131176,
+          131450,
+          131740,
+          353371
+        ],
+        "manifestSha256": "1101b3b9ad6ca18c47fea24f0cec25e087640a7284d8d8860ff97c66808951b1",
+        "httpStatus": 200
+      },
+      {
+        "cell": "viewport-7",
+        "bbox4326": "-106.365,31.787,-106.364,31.788",
+        "count": 2,
+        "objectIdFieldName": "OBJECTID",
+        "objectIds": [
+          130336,
+          353371
+        ],
+        "manifestSha256": "a195c00526e769273e91d1f9e9a9c03fa6bafbddf334484e5391c17ea3fe46cb",
+        "httpStatus": 200
+      },
+      {
+        "cell": "viewport-8",
+        "bbox4326": "-106.364,31.787,-106.363,31.788",
+        "count": 1,
+        "objectIdFieldName": "OBJECTID",
+        "objectIds": [
+          353371
+        ],
+        "manifestSha256": "59143c7527e2adefd36854e15b6eb8b513e23798540e5131a6d1fe96e2e9b304",
+        "httpStatus": 200
+      },
+      {
+        "cell": "viewport-9",
+        "bbox4326": "-106.365,31.784,-106.364,31.785",
+        "count": 18,
+        "objectIdFieldName": "OBJECTID",
+        "objectIds": [
+          126463,
+          126498,
+          126655,
+          126700,
+          126854,
+          126868,
+          126892,
+          127058,
+          127088,
+          127280,
+          127284,
+          127310,
+          127492,
+          127495,
+          127725,
+          127746,
+          127910,
+          127944
+        ],
+        "manifestSha256": "8505edb84760192d0b0f0d74c40d5e38577ea2fee1d0a302f92e8cb755849b67",
+        "httpStatus": 200
+      },
+      {
+        "cell": "viewport-10",
+        "bbox4326": "-106.365,31.788,-106.364,31.789",
+        "count": 1,
+        "objectIdFieldName": "OBJECTID",
+        "objectIds": [
+          353371
+        ],
+        "manifestSha256": "59143c7527e2adefd36854e15b6eb8b513e23798540e5131a6d1fe96e2e9b304",
+        "httpStatus": 200
+      },
+      {
+        "cell": "viewport-11",
+        "bbox4326": "-106.367,31.786,-106.366,31.787",
+        "count": 16,
+        "objectIdFieldName": "OBJECTID",
+        "objectIds": [
+          129047,
+          129058,
+          129287,
+          129320,
+          129556,
+          129563,
+          129761,
+          130027,
+          130077,
+          130288,
+          130376,
+          130545,
+          130589,
+          130698,
+          130869,
+          130994
+        ],
+        "manifestSha256": "20dad4d03645a9cebb02e8c7bcdb45b95ae60bbe87eafec3c7f572fa1bbeadca",
+        "httpStatus": 200
+      },
+      {
+        "cell": "viewport-12",
+        "bbox4326": "-106.363,31.786,-106.362,31.787",
+        "count": 1,
+        "objectIdFieldName": "OBJECTID",
+        "objectIds": [
+          353371
+        ],
+        "manifestSha256": "59143c7527e2adefd36854e15b6eb8b513e23798540e5131a6d1fe96e2e9b304",
+        "httpStatus": 200
+      }
+    ]
+  },
+  "nativeObjectIdManifestReconcilesWithGeometry": true
+}

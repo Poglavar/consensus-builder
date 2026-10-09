@@ -1,0 +1,120 @@
+{
+  "name": "Durg",
+  "country": "India",
+  "countryCode": "IN",
+  "rank": 365,
+  "point": [
+    21.2027375218162,
+    81.3601334317403
+  ],
+  "freshResearch": {
+    "queries": [
+      {
+        "language": "Hindi",
+        "query": "दुर्ग छत्तीसगढ़ भू नक्शा तहसील दुर्ग जमीन नक्शा आधिकारिक",
+        "scope": "Confirm the local revenue/cadastral map service and whether full vectors are public.",
+        "result": "The Durg District Administration land-map page routes residents to the state Revenue Department. The state BhuNaksha viewer has public district/tehsil/RI/village selectors, and the public API returns a Durg district selector (code 43) and Durg tehsil (code 01) with map data. Client source renders village and selected plots through WMS image layers; no full parcel-vector endpoint was exposed in the inspected code.",
+        "actualResultUrls": [
+          "https://durg.gov.in/service/भू-नक्‍शा/",
+          "https://revenue.cg.nic.in/bhunaksha/",
+          "https://revenue.cg.nic.in/bhunaksha/rest/Levels/ListsAfterLevel"
+        ],
+        "executionMethod": "Separate Hindi-language search, official Durg district page, public viewer HTML/JS, and anonymous administrative selector requests only. No plot detail or owner fields requested."
+      },
+      {
+        "language": "English",
+        "query": "Durg Chhattisgarh cadastral parcel map official BhuNaksha land records public GIS",
+        "scope": "Cross-check local registry evidence, map coverage, and vector availability.",
+        "result": "The official district page identifies Bhuiyan/BhuNaksha as the route for land record and cadastral-map services. The Government of India DILRMP dashboard lists Durg tehsils and digitized cadastral-map status; the local public viewer itself uses WMS images, not returned full geometries. No full polygon sample was verified.",
+        "actualResultUrls": [
+          "https://durg.gov.in/service/भू-नक्‍शा/",
+          "https://revenue.cg.nic.in/bhunaksha/",
+          "https://dilrmp.gov.in/dilrmpold/MapULPIN/tehsil-level/409"
+        ],
+        "executionMethod": "Separate English-language search with first-party district and state viewer inspection plus read-only public selector metadata."
+      }
+    ],
+    "portals": [
+      {
+        "name": "Durg District BhuNaksha service page",
+        "operator": "District Administration, Government of Chhattisgarh",
+        "homeUrl": "https://durg.gov.in/service/भू-नक्‍शा/",
+        "observation": "Links the district to state Revenue Department land/cadastral-map services."
+      },
+      {
+        "name": "Chhattisgarh BhuNaksha viewer",
+        "operator": "Chhattisgarh Revenue and Disaster Management Department / NIC",
+        "homeUrl": "https://revenue.cg.nic.in/bhunaksha/",
+        "observation": "Public district, tehsil, RI and village selectors. Durg district code 43 and Durg tehsil code 01 returned by viewer selectors. Parcel maps are served as WMS images; no full-vector response route was found in the inspected client."
+      },
+      {
+        "name": "DILRMP Durg map digitization status",
+        "operator": "Department of Land Resources, Government of India",
+        "homeUrl": "https://dilrmp.gov.in/dilrmpold/MapULPIN/tehsil-level/409",
+        "observation": "Lists Durg tehsil map digitization/geo-reference status as national context; local district/state pages provide the city-local service evidence."
+      }
+    ],
+    "requests": [
+      {
+        "purpose": "BhuNaksha public viewer HTML",
+        "method": "GET",
+        "httpStatus": 200,
+        "contentType": "text/html;charset=UTF-8",
+        "result": "HTML loads public selector and map client."
+      },
+      {
+        "purpose": "District/tehsil selectors",
+        "method": "POST",
+        "httpStatus": 200,
+        "contentType": "application/json",
+        "result": "State 22 selector returned Durg district code 43; district 43 selector returned Durg tehsil code 01 among map-enabled options."
+      }
+    ]
+  },
+  "status": "complete",
+  "verifiedParcelResponse": {
+    "attempted": false,
+    "fullGeometrySampleCount": 0,
+    "bounded": true,
+    "pointLocated": false,
+    "note": "No complete public parcel polygon sample was verified."
+  },
+  "source": {
+    "operator": "District Administration, Government of Chhattisgarh",
+    "endpoint": "https://revenue.cg.nic.in/bhunaksha/",
+    "requestedAttributes": [],
+    "personalAttributesRequested": false,
+    "viewerType": "WMS raster map viewer",
+    "stateCode": "22",
+    "districtCode": "43",
+    "tehsilCode": "01",
+    "geometryResponse": "No full vector response in the inspected client; map layers render WMS imagery."
+  },
+  "coverageAssessment": "No public full-polygon coverage verified for the WUP point.",
+  "registryFound": true,
+  "registryBasis": "Official Durg district administration routes residents to the Chhattisgarh land-record and BhuNaksha service; public viewer selectors contain the Durg district and tehsil.",
+  "verifiedSample": false,
+  "publicParcelGeometryFound": false,
+  "resultCategory": "local_cadastral_map_viewer_raster_only_no_full_vector_found",
+  "technicalBlocker": "The viewer’s exposed map rendering is WMS imagery and plot lookup. No anonymous full parcel geometry endpoint was found; plot detail calls were not made.",
+  "remainingUncertainty": "The selected district/tehsil does not identify a village or prove the WUP coordinate’s cadastral coverage. State dashboard coverage is contextual and may not reflect urban survey completion.",
+  "sourceIds": [],
+  "nextStep": "If vector geometry is required, ask the district/state revenue office for a public non-personal export or a documented vector service.",
+  "schemaVersion": 1,
+  "checkedAt": "2026-10-09",
+  "wupCityCode": 10435,
+  "cityId": "wup2025:10435",
+  "queueRank": 365,
+  "population2025": 1393235,
+  "population2025k": 1393.235,
+  "populationPlausibility2025": "High",
+  "populationUnit": "persons",
+  "pointBasis": "UN WUP 2025 population-weighted settlement centroid; this is not a municipal boundary or a parcel-coverage claim.",
+  "centerLatLon": [
+    21.2027375218162,
+    81.3601334317403
+  ],
+  "runtimeReadiness": "not_enabled_no_verified_public_geometry",
+  "adapterReady": false,
+  "rootReviewedAt": "2026-10-08T23:02:54.805434+00:00"
+}

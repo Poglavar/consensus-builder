@@ -1,0 +1,121 @@
+{
+  "name": "Kharameh",
+  "country": "Iran (Islamic Republic of)",
+  "countryCode": "IR",
+  "rank": 523,
+  "point": [
+    29.5022543341903,
+    53.3099597513754
+  ],
+  "population2025": 983056,
+  "population2025k": 983.056,
+  "schemaVersion": 1,
+  "kind": "city_parcel_source_research",
+  "checkedAt": "2026-10-09",
+  "populationUnit": "persons",
+  "status": "complete",
+  "verifiedSample": false,
+  "publicParcelGeometryFound": false,
+  "runtimeReadiness": "not_enabled_no_verified_public_geometry",
+  "priorEvidenceFiles": [],
+  "scopeLimits": "No trusted public Kharameh city/county parcel-map endpoint, schema, or WUP-point feature was verified. A secondary source mentions a Kharameh document-registration office, but it is old and non-governmental, so it is not treated as evidence of a current digital map service. No geometry was requested or retained.",
+  "pointBasis": "UN WUP 2025 population-weighted settlement centroid; this is not a municipal boundary or a parcel-coverage claim.",
+  "registryFound": null,
+  "registryBasis": "Reviewed official national sources and separate Persian and English searches did not establish a Kharameh-local cadastral map, registry office or parcel inventory. City-specific registry presence remains unestablished; this is not affirmative evidence of absence.",
+  "resultCategory": "no_city_scope_registry_or_public_geometry_verified",
+  "technicalBlocker": "No city-specific primary-source parcel-map or registry interface was found; no safe geometry endpoint could be selected for a bounded query.",
+  "remainingUncertainty": "Whether the local land-registry office has a current city-specific cadastral viewer, and whether any available records cover the WUP locator, remain unverified.",
+  "nextStep": "Root review; verify a safe, bounded city-specific geometry service and exact WUP locator coverage before any runtime qualification.",
+  "freshResearch": {
+    "executedQueries": [
+      {
+        "language": "Persian",
+        "query": "خرامه شیراز نقشه کاداستر زمین املاک ثبت اسناد نقشه قطعه شهرداری",
+        "result": "No trusted official city/county parcel viewer or geometry endpoint surfaced; results were mainly secondary or unrelated.",
+        "method": "Separate Persian-language discovery search; first-party-source filtering."
+      },
+      {
+        "language": "English",
+        "query": "Kharameh Iran cadastral parcel map land registry official GIS Shiraz Fars cadastral",
+        "result": "No official local parcel-map endpoint found; surfaced national or non-primary material.",
+        "method": "Separate English-language discovery search."
+      },
+      {
+        "language": "Persian",
+        "query": "site:ssaa.ir خرامه ثبت اسناد املاک شهرستان اداره ثبت",
+        "result": "No indexed first-party local registry result surfaced.",
+        "method": "Targeted Persian search restricted to the national registration authority domain."
+      },
+      {
+        "language": "Persian",
+        "query": "site:fars.gov.ir خرامه ثبت اسناد املاک نقشه کاداستر",
+        "result": "No indexed first-party city parcel-map result surfaced.",
+        "method": "Targeted Persian search restricted to Fars provincial government."
+      }
+    ],
+    "officialSources": [
+      {
+        "url": "https://www.ssaa.ir/",
+        "observation": "The national Registration Organization is not evidence of Kharameh-specific map coverage; no locality-specific public parcel service was found from the reviewed search results."
+      }
+    ],
+    "viewerAndServiceTrace": {
+      "attempted": true,
+      "summary": "The searches did not establish a city-specific public parcel-map source. No geometry request was made, and a non-governmental report of a local registration office is not sufficient to claim verified city-scope geometry availability.",
+      "geometryStatus": "No safe bounded feature geometry returned or retained.",
+      "fullPolygonLimit": 3,
+      "fullPolygonsRetained": 0,
+      "ownerOrAddressDataRequested": false,
+      "credentialsOrTokenValuesRetained": false
+    },
+    "attemptedGeometry": {
+      "attempted": true,
+      "status": "No city-specific primary-source parcel-map or registry interface was found; no safe geometry endpoint could be selected for a bounded query.",
+      "retainedFeatures": 0,
+      "fieldsRequested": [],
+      "geometryRetained": false,
+      "geojsonFile": null
+    }
+  },
+  "sourceIds": [],
+  "queueRank": 523,
+  "wupCityCode": 6718,
+  "cityId": "wup2025:6718",
+  "populationPlausibility2025": "Moderate",
+  "centerLatLon": [
+    29.5022543341903,
+    53.3099597513754
+  ],
+  "adapterReady": false,
+  "source": {
+    "sourceId": null,
+    "name": null,
+    "operator": null,
+    "url": null,
+    "serviceType": "No local public service verified.",
+    "geometryType": null,
+    "coordinateReferenceSystem": null,
+    "nativeIdFields": [],
+    "directGeometryQueryVerified": false,
+    "directMetadataSchemaVerified": false,
+    "scope": "No trusted public Kharameh city/county parcel-map endpoint, schema, or WUP-point feature was verified. A secondary source mentions a Kharameh document-registration office, but it is old and non-governmental, so it is not treated as evidence of a current digital map service. No geometry was requested or retained."
+  },
+  "coverageAssessment": {
+    "claimedScope": "City-specific registry/map evidence only; no geometry coverage asserted.",
+    "verifiedOpenScope": "No bounded anonymous parcel feature geometry verified.",
+    "citywideVerified": false,
+    "countrywideVerified": false
+  },
+  "registryEvidenceUrls": [
+    "https://www.ssaa.ir/"
+  ],
+  "runtimeAssessment": {
+    "status": "not_enabled",
+    "reason": "No city-specific primary-source parcel-map or registry interface was found; no safe geometry endpoint could be selected for a bounded query."
+  },
+  "rootReview": {
+    "registryDecision": "unestablished",
+    "reason": "No verified local primary-source evidence, rather than documented local registry absence."
+  },
+  "rootReviewedAt": "2026-10-09T01:14:01.434685+00:00"
+}

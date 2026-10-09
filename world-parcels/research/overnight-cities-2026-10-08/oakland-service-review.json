@@ -1,0 +1,43 @@
+{
+  "schemaVersion": "1.0",
+  "checkedAt": "2026-10-09",
+  "cityRecord": "city-1542-oakland.json",
+  "purpose": "Read-only city source research and bounded public-service validation.",
+  "scopeLimits": {
+    "maxFullPolygonsRetainedInThisCityReport": 3,
+    "maxFullPolygonsRetainedAcrossCityReview": 3,
+    "ownerOrAddressDataRetained": false,
+    "accountCredentialsOrPublicTokenValuesRetained": false
+  },
+  "assessment": "203 distinct City of Oakland GIS parcel references verified through complete object-ID manifests across thirteen bounded cells around the ranked WUP locator, forced three-row paging, all 203 fresh APN_1 geometry reads, explicit absence, footprint and binding. Independent GEOS audit in EPSG:32610 found all 203 geometries valid and nonempty, with no duplicate geometry, sampled overlap above 0.01 m² or operation errors. Source describes county parcels clipped to Oakland limits; citywide completeness, current legal boundaries and permanent native-key uniqueness are not inferred.",
+  "sourceUrl": "https://gismaps.oaklandca.gov/oaklandgis/rest/services/Parcel/MapServer/0",
+  "acceptanceFile": "oakland-acceptance.json",
+  "qualityFile": "oakland-quality.json",
+  "independentAudit": "203 valid; zero invalid, duplicates, material overlaps or operation errors in EPSG:32610.",
+  "fullPolygonSampleFile": "oakland-adapter-sample.geojson",
+  "fullPolygonsRetained": 3,
+  "ownerOrAddressDataRequested": false,
+  "rootDecision": "approved_for_bounded_local_runtime",
+  "nativeIdentity": "APN_1 preserved as the published parcel reference string, including spaces. OBJECTID is transport/paging identity only.",
+  "safeOutFields": [
+    "OBJECTID",
+    "APN_1"
+  ],
+  "qualificationHistory": {
+    "initialOffsetOnlyRun": {
+      "uniqueParcels": 204,
+      "freshExactIdCount": 204,
+      "metricCrs": "EPSG:3857",
+      "disposition": "Superseded by explicit-manifest qualification; raw original evidence retained in temporary audit storage."
+    },
+    "rootManifestRun": {
+      "uniqueParcels": 203,
+      "freshExactIdCount": 203,
+      "metricCrs": "EPSG:32610",
+      "requestCount": 77,
+      "allTestsPassed": true
+    },
+    "initialOnlyNativeId": "046 543500200",
+    "limitation": "The two runs have different bounded candidate sets; no source deletion or citywide completeness is inferred."
+  }
+}

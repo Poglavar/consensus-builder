@@ -1,0 +1,145 @@
+{
+  "type": "FeatureCollection",
+  "features": [
+    {
+      "type": "Feature",
+      "id": "US-CA-OAK-044 496902700",
+      "geometry": {
+        "type": "Polygon",
+        "coordinates": [
+          [
+            [
+              -122.17191369339486,
+              37.74514779093074
+            ],
+            [
+              -122.17213340079795,
+              37.745443456776265
+            ],
+            [
+              -122.17228253045438,
+              37.74537393622
+            ],
+            [
+              -122.1720628329088,
+              37.74507827414947
+            ],
+            [
+              -122.17198826146549,
+              37.74511303258819
+            ],
+            [
+              -122.17191369339486,
+              37.74514779093074
+            ]
+          ]
+        ]
+      },
+      "properties": {
+        "parcelId": "US-CA-OAK-044 496902700",
+        "id": "US-CA-OAK-044 496902700",
+        "sourceId": "us-ca-oakland-parcels",
+        "sourceParcelId": "044 496902700",
+        "parcelNumber": "044 496902700",
+        "cadMunicipalityName": null,
+        "ownershipType": "unknown",
+        "sourceProperties": {
+          "OBJECTID": 5270384,
+          "APN_1": "044 496902700"
+        }
+      }
+    },
+    {
+      "type": "Feature",
+      "id": "US-CA-OAK-044 496901400",
+      "geometry": {
+        "type": "Polygon",
+        "coordinates": [
+          [
+            [
+              -122.17199117056933,
+              37.74471163627722
+            ],
+            [
+              -122.17221196085346,
+              37.74500875825042
+            ],
+            [
+              -122.1723238073892,
+              37.74495662220005
+            ],
+            [
+              -122.17243565596338,
+              37.744904481584804
+            ],
+            [
+              -122.17221475522244,
+              37.744607206634996
+            ],
+            [
+              -122.17199117056933,
+              37.74471163627722
+            ]
+          ]
+        ]
+      },
+      "properties": {
+        "parcelId": "US-CA-OAK-044 496901400",
+        "id": "US-CA-OAK-044 496901400",
+        "sourceId": "us-ca-oakland-parcels",
+        "sourceParcelId": "044 496901400",
+        "parcelNumber": "044 496901400",
+        "cadMunicipalityName": null,
+        "ownershipType": "unknown",
+        "sourceProperties": {
+          "OBJECTID": 5270477,
+          "APN_1": "044 496901400"
+        }
+      }
+    },
+    {
+      "type": "Feature",
+      "id": "US-CA-OAK-044 496901300",
+      "geometry": {
+        "type": "Polygon",
+        "coordinates": [
+          [
+            [
+              -122.17184211349688,
+              37.74478125272447
+            ],
+            [
+              -122.1720628329088,
+              37.74507827414947
+            ],
+            [
+              -122.17221196085346,
+              37.74500875825042
+            ],
+            [
+              -122.17199117056933,
+              37.74471163627722
+            ],
+            [
+              -122.17184211349688,
+              37.74478125272447
+            ]
+          ]
+        ]
+      },
+      "properties": {
+        "parcelId": "US-CA-OAK-044 496901300",
+        "id": "US-CA-OAK-044 496901300",
+        "sourceId": "us-ca-oakland-parcels",
+        "sourceParcelId": "044 496901300",
+        "parcelNumber": "044 496901300",
+        "cadMunicipalityName": null,
+        "ownershipType": "unknown",
+        "sourceProperties": {
+          "OBJECTID": 5270480,
+          "APN_1": "044 496901300"
+        }
+      }
+    }
+  ]
+}

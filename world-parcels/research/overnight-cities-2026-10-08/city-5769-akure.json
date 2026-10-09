@@ -1,0 +1,95 @@
+{
+  "name": "Akure",
+  "country": "Nigeria",
+  "countryCode": "NG",
+  "rank": 766,
+  "point": [
+    7.25049694461023,
+    5.19224595695161
+  ],
+  "population2025": 700747,
+  "population2025k": 700.747,
+  "populationPlausibility2025": "Low",
+  "schemaVersion": 1,
+  "kind": "city_parcel_source_research",
+  "checkedAt": "2026-10-09",
+  "status": "complete",
+  "populationUnit": "persons",
+  "pointBasis": "UN WUP 2025 population-weighted settlement centroid; this is not a municipal boundary or a parcel-coverage claim.",
+  "centerLatLon": [
+    7.25049694461023,
+    5.19224595695161
+  ],
+  "adapterReady": false,
+  "coverageAssessment": {
+    "verifiedOpenScope": "Official Ondo State material confirms the Akure-based land-registration office and digitization work, but no official public parcel geometry service or safe schema was identified. A non-government portal claiming map/ownership features was not used.",
+    "citywideVerified": false,
+    "countrywideVerified": false
+  },
+  "runtimeAssessment": {
+    "status": "not_assessed",
+    "reason": "Whether an official Ondo State public parcel-geometry service exists and covers the WUP point remains unresolved. No runtime adapter checks were performed."
+  },
+  "scopeLimits": "This is a scoped source review only. It does not establish citywide or countrywide parcel completeness, title, survey accuracy, or runtime suitability.",
+  "registryFound": true,
+  "registryBasis": "The Ondo State Government land-registration publication describes state land-title registration and digitization and identifies the Ministry of Lands and Housing / Deemed Rights Department office in Akure. No anonymous official parcel-vector endpoint or schema was found. An unverified non-government portal was excluded.",
+  "registryEvidenceUrls": [
+    "https://ondostate.gov.ng/wp-content/uploads/2022/11/ONDO-STATE-LAND-REGISTRATION-1.pdf",
+    "https://mepb.on.gov.ng/meet-us/ondo-state-profile/"
+  ],
+  "publicParcelGeometryFound": false,
+  "verifiedSample": false,
+  "verifiedParcelResponse": null,
+  "resultCategory": "official_local_registry_confirmed_geometry_unverified",
+  "technicalBlocker": "No anonymous official vector endpoint or safe feature schema was found; no geometry query was made.",
+  "remainingUncertainty": "Whether an official Ondo State public parcel-geometry service exists and covers the WUP point remains unresolved.",
+  "freshResearch": {
+    "queries": [
+      {
+        "language": "English",
+        "query": "Akure official land registry cadastral parcel map Ondo State land registration GIS",
+        "scope": "Identify primary city-specific registry evidence and an anonymous safe parcel-geometry schema.",
+        "result": "Official Ondo State material confirms the Akure-based land-registration office and digitization work, but no official public parcel geometry service or safe schema was identified. A non-government portal claiming map/ownership features was not used.",
+        "actualResultUrls": [
+          "https://ondostate.gov.ng/wp-content/uploads/2022/11/ONDO-STATE-LAND-REGISTRATION-1.pdf",
+          "https://mepb.on.gov.ng/meet-us/ondo-state-profile/"
+        ],
+        "executionMethod": "Separate English-language search; inspect only official sources and service metadata. No owner/address/account fields requested."
+      },
+      {
+        "language": "Yoruba",
+        "query": "Akure ilẹ̀ àkọsílẹ̀ ilẹ̀ maapu kadastral Ondo State ilẹ̀ iforúkọsílẹ̀",
+        "scope": "Identify primary local-language city-specific registry/map evidence and verify safe public geometry access.",
+        "result": "Official Ondo State material confirms the Akure-based land-registration office and digitization work, but no official public parcel geometry service or safe schema was identified. A non-government portal claiming map/ownership features was not used.",
+        "actualResultUrls": [
+          "https://ondostate.gov.ng/wp-content/uploads/2022/11/ONDO-STATE-LAND-REGISTRATION-1.pdf",
+          "https://mepb.on.gov.ng/meet-us/ondo-state-profile/"
+        ],
+        "executionMethod": "Separate local-language search; inspect only official sources. No personal property lookup or sensitive fields requested."
+      }
+    ]
+  },
+  "source": {
+    "sourceId": "NG-ONDO-AKURE-LAND-REGISTRATION",
+    "name": "Ondo State land-registration publication",
+    "url": "https://ondostate.gov.ng/wp-content/uploads/2022/11/ONDO-STATE-LAND-REGISTRATION-1.pdf",
+    "operator": "Ondo State Government / Ministry of Lands and Housing",
+    "serviceType": "Official land-registration and digitization evidence; no public vector layer verified.",
+    "layer": null,
+    "geometryType": null,
+    "outputCrs": null,
+    "nativeIdField": null
+  },
+  "wupCityCode": 5769,
+  "cityId": "wup2025:5769",
+  "queueRank": 766,
+  "rootPrimaryReadback": {
+    "url": "https://ondostate.gov.ng/wp-content/uploads/2022/11/ONDO-STATE-LAND-REGISTRATION-1.pdf",
+    "fetch": 200,
+    "contentType": "application/pdf"
+  },
+  "rootReviewNote": "Root reviewed primary local institutional/service evidence and retained the actual access, coverage and identity limits. Direct readback errors are distinct from indexed primary evidence and do not prove absent data. No public full geometry was verified for this city.",
+  "rootReviewedAt": "2026-10-09T03:28:12.559388+00:00",
+  "runtimeReadiness": "not_enabled_no_verified_public_geometry",
+  "sourceIds": []
+}

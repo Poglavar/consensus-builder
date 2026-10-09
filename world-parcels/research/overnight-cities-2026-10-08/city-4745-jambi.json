@@ -1,0 +1,115 @@
+{
+  "name": "Jambi",
+  "country": "Indonesia",
+  "countryCode": "ID",
+  "rank": 525,
+  "point": [
+    -1.62111152837151,
+    103.603228443795
+  ],
+  "population2025": 980534,
+  "population2025k": 980.534,
+  "schemaVersion": 1,
+  "kind": "city_parcel_source_research",
+  "checkedAt": "2026-10-09",
+  "populationUnit": "persons",
+  "status": "complete",
+  "verifiedSample": false,
+  "publicParcelGeometryFound": false,
+  "runtimeReadiness": "not_enabled_no_verified_public_geometry",
+  "priorEvidenceFiles": [],
+  "scopeLimits": "Official municipal SMARTGIS identifies 226,124 PBB-P2 objects and 62,620 objects mapped at review time, so substantial tax-parcel coverage is incomplete. The public UI displays taxpayer name, address, NPWP, tax object number, land/building values, and related property fields. No feature request was made because the service did not document safe field selection and the available public panel explicitly exposes personal and tax attributes. Exact WUP locator coverage and polygon schema remain unverified.",
+  "pointBasis": "UN WUP 2025 population-weighted settlement centroid; this is not a municipal boundary or a parcel-coverage claim.",
+  "registryFound": true,
+  "registryBasis": "The City of Jambi’s official BPPRD SMARTGIS system explicitly manages PBB-P2 parcel tax objects as digital mapped polygons and reports mapped/unmapped object counts. This establishes a municipal fiscal cadastre, not a formal land-title registry or full legal parcel coverage.",
+  "resultCategory": "municipal_tax_parcel_mapping_found_sensitive_property_data_blocks_safe_geometry",
+  "technicalBlocker": "Public map UI is tied to taxpayer and tax-assessment data; no public field-filtered geometry-only endpoint/schema was verified. No query or taxpayer lookup was submitted.",
+  "remainingUncertainty": "Whether the exact WUP point intersects a mapped PBB-P2 parcel, whether tax polygons match legal-title parcel boundaries, and whether a safe geometry-only public route exists remain unverified.",
+  "nextStep": "Root review; verify a safe, bounded city-specific geometry service and exact WUP locator coverage before any runtime qualification.",
+  "freshResearch": {
+    "executedQueries": [
+      {
+        "language": "Indonesian",
+        "query": "Kota Jambi peta bidang tanah ATR BPN BHUMI kadaster GIS pertanahan resmi",
+        "result": "Found the city-run SMARTGIS PBB-P2 map; national BHUMI documentation describes an open spatial land platform but requires public-information request for official reference use.",
+        "method": "Separate Indonesian-language discovery search; municipal and national first-party reviews."
+      },
+      {
+        "language": "English",
+        "query": "Jambi city Indonesia official cadastral parcel map land office ATR/BPN map GIS",
+        "result": "No separate English-language title-cadastral feature source found; official city tax map is the local mapping candidate.",
+        "method": "Separate English-language discovery search."
+      }
+    ],
+    "officialSources": [
+      {
+        "url": "https://petapajak.jambikota.go.id/",
+        "observation": "Official Kota Jambi BPPRD page describes SMARTGIS PBB-P2 for mapped tax objects; reports mapped and unmapped counts and states the system manages spatial parcel objects."
+      },
+      {
+        "url": "https://petapajak.jambikota.go.id/peta",
+        "observation": "Public viewer panel exposes NOP, Letak OP, Wajib Pajak, NPWP, address, land/building areas, and assessment values; no map feature query was submitted."
+      },
+      {
+        "url": "https://bhumi.atrbpn.go.id/bantuan/landing",
+        "observation": "National ATR/BPN BHUMI documentation describes a public interactive spatial platform and says official reference use requires a public-information request; this is not city-specific geometry coverage."
+      }
+    ],
+    "viewerAndServiceTrace": {
+      "attempted": true,
+      "summary": "The official city SMARTGIS is direct evidence of local mapped PBB-P2 parcel objects, but the public viewer explicitly renders personal and tax details. No anonymous parcel geometry was requested or retained because no safe field-only path was documented.",
+      "geometryStatus": "No safe bounded feature geometry returned or retained.",
+      "fullPolygonLimit": 3,
+      "fullPolygonsRetained": 0,
+      "ownerOrAddressDataRequested": false,
+      "credentialsOrTokenValuesRetained": false
+    },
+    "attemptedGeometry": {
+      "attempted": true,
+      "status": "Public map UI is tied to taxpayer and tax-assessment data; no public field-filtered geometry-only endpoint/schema was verified. No query or taxpayer lookup was submitted.",
+      "retainedFeatures": 0,
+      "fieldsRequested": [],
+      "geometryRetained": false,
+      "geojsonFile": null
+    }
+  },
+  "sourceIds": [],
+  "queueRank": 525,
+  "wupCityCode": 4745,
+  "cityId": "wup2025:4745",
+  "populationPlausibility2025": "High",
+  "centerLatLon": [
+    -1.62111152837151,
+    103.603228443795
+  ],
+  "adapterReady": false,
+  "source": {
+    "sourceId": "id-jambi-city-pbb-p2-smartgis",
+    "name": "SMARTGIS PBB-P2 Kota Jambi",
+    "operator": "Badan Pengelolaan Pajak dan Retribusi Daerah Kota Jambi",
+    "url": "https://petapajak.jambikota.go.id/",
+    "serviceType": "Municipal fiscal parcel mapping and property-tax object management; safe geometry-only query route not verified.",
+    "geometryType": null,
+    "coordinateReferenceSystem": null,
+    "nativeIdFields": [],
+    "directGeometryQueryVerified": false,
+    "directMetadataSchemaVerified": false,
+    "scope": "Official municipal SMARTGIS identifies 226,124 PBB-P2 objects and 62,620 objects mapped at review time, so substantial tax-parcel coverage is incomplete. The public UI displays taxpayer name, address, NPWP, tax object number, land/building values, and related property fields. No feature request was made because the service did not document safe field selection and the available public panel explicitly exposes personal and tax attributes. Exact WUP locator coverage and polygon schema remain unverified."
+  },
+  "coverageAssessment": {
+    "claimedScope": "City-specific registry/map evidence only; no geometry coverage asserted.",
+    "verifiedOpenScope": "No bounded anonymous parcel feature geometry verified.",
+    "citywideVerified": false,
+    "countrywideVerified": false
+  },
+  "registryEvidenceUrls": [
+    "https://petapajak.jambikota.go.id/",
+    "https://petapajak.jambikota.go.id/peta",
+    "https://bhumi.atrbpn.go.id/bantuan/landing"
+  ],
+  "runtimeAssessment": {
+    "status": "not_enabled",
+    "reason": "Public map UI is tied to taxpayer and tax-assessment data; no public field-filtered geometry-only endpoint/schema was verified. No query or taxpayer lookup was submitted."
+  },
+  "rootReviewedAt": "2026-10-09T01:14:01.434685+00:00"
+}

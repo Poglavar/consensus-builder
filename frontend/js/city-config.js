@@ -3764,6 +3764,1431 @@
             sidebar: { disabledSections: ['parcelBlocks', 'roads', 'areaMonitor'] },
             parcelBuilder: { url: 'https://urbangametheory.xyz/codechecker/' }
         },
+        philadelphia: {
+            id: 'philadelphia',
+            label: translateCityText('city.labels.philadelphia', 'Philadelphia, United States'),
+            currency: { locale: 'en-US', code: 'USD' },
+            map: {
+                initialView: { type: 'center', zoom: SHARED_DEFAULT_ZOOM },
+                defaultCenter: [39.9809715945293, -75.1611281567456], defaultZoom: SHARED_DEFAULT_ZOOM,
+                parcelZoomRange: { min: 17, max: Infinity }, latLngPadding: 0.08
+            },
+            projection: {
+                datasetCrs: 'EPSG:4326', definition: '+proj=longlat +datum=WGS84 +no_defs',
+                metricCrs: 'EPSG:32618',
+                metricDefinition: '+proj=utm +zone=18 +datum=WGS84 +units=m +no_defs +type=crs',
+                fallbackLatLng: [39.9809715945293, -75.1611281567456], fallbackDataset: [-75.1611281567456, 39.9809715945293]
+            },
+            parcels: {
+                strategy: 'grid', gridSize: 0.001, source: 'parcel-source',
+                sourceId: 'us-pa-philadelphia-dor-active-ground', idPrefix: 'US-PA-PHILADELPHIA-DOR-',
+                requiresBackend: true, ownership: false, liveRadiusKm: 3,
+                attribution: '<a href="https://opendataphilly.org/datasets/department-of-records-property-parcels/">Philadelphia Department of Records active ground parcels</a> · active ground parcels · adapted'
+            },
+            buildings: { source: 'osm' },
+            sidebar: { disabledSections: ['parcelBlocks', 'roads', 'areaMonitor'] },
+            parcelBuilder: { url: 'https://urbangametheory.xyz/codechecker/' }
+        },
+        lasvegas: {
+            id: 'lasvegas',
+            label: translateCityText('city.labels.lasvegas', 'Las Vegas, United States'),
+            currency: { locale: 'en-US', code: 'USD' },
+            map: {
+                initialView: { type: 'center', zoom: SHARED_DEFAULT_ZOOM },
+                defaultCenter: [36.1515806137119, -115.164472767125], defaultZoom: SHARED_DEFAULT_ZOOM,
+                parcelZoomRange: { min: 17, max: Infinity }, latLngPadding: 0.08
+            },
+            projection: {
+                datasetCrs: 'EPSG:4326', definition: '+proj=longlat +datum=WGS84 +no_defs',
+                metricCrs: 'EPSG:32611',
+                metricDefinition: '+proj=utm +zone=11 +datum=WGS84 +units=m +no_defs +type=crs',
+                fallbackLatLng: [36.1515806137119, -115.164472767125], fallbackDataset: [-115.164472767125, 36.1515806137119]
+            },
+            parcels: {
+                strategy: 'grid', gridSize: 0.001, source: 'parcel-source',
+                sourceId: 'us-nv-clark-assessor-parcels', idPrefix: 'US-NV-CLARK-',
+                requiresBackend: true, ownership: false, liveRadiusKm: 3,
+                attribution: '<a href="https://maps.clarkcountynv.gov/arcgis/rest/services/GISMO/AssessorMap/FeatureServer/1">Clark County Assessor parcel polygons</a> · adapted'
+            },
+            buildings: { source: 'osm' },
+            sidebar: { disabledSections: ['parcelBlocks', 'roads', 'areaMonitor'] },
+            parcelBuilder: { url: 'https://urbangametheory.xyz/codechecker/' }
+        },
+        macau: {
+            id: 'macau',
+            label: translateCityText('city.labels.macau', 'Macau, China, Macao SAR'),
+            currency: { locale: 'pt-MO', code: 'MOP' },
+            map: {
+                initialView: { type: 'center', zoom: SHARED_DEFAULT_ZOOM },
+                defaultCenter: [22.1940052, 113.5442146], defaultZoom: SHARED_DEFAULT_ZOOM,
+                parcelZoomRange: { min: 17, max: Infinity }, latLngPadding: 0.08
+            },
+            projection: {
+                datasetCrs: 'EPSG:4326', definition: '+proj=longlat +datum=WGS84 +no_defs',
+                metricCrs: 'EPSG:32649',
+                metricDefinition: '+proj=utm +zone=49 +datum=WGS84 +units=m +no_defs +type=crs',
+                fallbackLatLng: [22.1940052, 113.5442146], fallbackDataset: [113.5442146, 22.1940052]
+            },
+            parcels: {
+                strategy: 'grid', gridSize: 0.001, source: 'parcel-source',
+                sourceId: 'mo-dscc-cad-lote', idPrefix: 'MO-DSCC-CAD-',
+                requiresBackend: true, ownership: false, liveRadiusKm: 3,
+                attribution: '<a href="https://cadastre.gis.gov.mo/MGSP_Cad/port/main.html?type=1">Macao DSCC Cad_lote cadastral reference polygons</a> · adapted'
+            },
+            buildings: { source: 'osm' },
+            sidebar: { disabledSections: ['parcelBlocks', 'roads', 'areaMonitor'] },
+            parcelBuilder: { url: 'https://urbangametheory.xyz/codechecker/' }
+        },
+        sandiego: {
+            id: 'sandiego',
+            label: translateCityText('city.labels.sandiego', 'San Diego, United States'),
+            currency: { locale: 'en-US', code: 'USD' },
+            map: {
+                initialView: { type: 'center', zoom: SHARED_DEFAULT_ZOOM },
+                defaultCenter: [32.728932496022, -117.086972512462], defaultZoom: SHARED_DEFAULT_ZOOM,
+                parcelZoomRange: { min: 17, max: Infinity }, latLngPadding: 0.08
+            },
+            projection: {
+                datasetCrs: 'EPSG:4326', definition: '+proj=longlat +datum=WGS84 +no_defs',
+                metricCrs: 'EPSG:32611',
+                metricDefinition: '+proj=utm +zone=11 +datum=WGS84 +units=m +no_defs +type=crs',
+                fallbackLatLng: [32.728932496022, -117.086972512462], fallbackDataset: [-117.086972512462, 32.728932496022]
+            },
+            parcels: {
+                strategy: 'grid', gridSize: 0.001, source: 'parcel-source',
+                sourceId: 'us-ca-sangis-parcels-reference', idPrefix: 'US-CA-SANGIS-PARCEL-',
+                requiresBackend: true, ownership: false, liveRadiusKm: 3,
+                attribution: '<a href="https://www.sangis.org/">SanGIS unstacked parcel reference polygons</a> · adapted'
+            },
+            buildings: { source: 'osm' },
+            sidebar: { disabledSections: ['parcelBlocks', 'roads', 'areaMonitor'] },
+            parcelBuilder: { url: 'https://urbangametheory.xyz/codechecker/' }
+        },
+        saogoncalo: {
+            id: 'saogoncalo',
+            label: translateCityText('city.labels.saogoncalo', 'São Gonçalo, Brazil'),
+            currency: { locale: 'pt-BR', code: 'BRL' },
+            map: {
+                initialView: { type: 'center', zoom: SHARED_DEFAULT_ZOOM },
+                defaultCenter: [-22.8357484330541, -43.0260274875774], defaultZoom: SHARED_DEFAULT_ZOOM,
+                parcelZoomRange: { min: 17, max: Infinity }, latLngPadding: 0.08
+            },
+            projection: {
+                datasetCrs: 'EPSG:4326', definition: '+proj=longlat +datum=WGS84 +no_defs',
+                metricCrs: 'EPSG:31983',
+                metricDefinition: '+proj=utm +zone=23 +south +ellps=GRS80 +towgs84=0,0,0,0,0,0,0 +units=m +no_defs +type=crs',
+                fallbackLatLng: [-22.8357484330541, -43.0260274875774], fallbackDataset: [-43.0260274875774, -22.8357484330541]
+            },
+            parcels: {
+                strategy: 'grid', gridSize: 0.001, source: 'parcel-source',
+                sourceId: 'br-sg-prefeitura-geoserver-lote-cadastro', idPrefix: 'BR-SG-CAD-',
+                requiresBackend: true, ownership: false, liveRadiusKm: 3,
+                attribution: '<a href="https://topovision.pmsg.rj.gov.br/">São Gonçalo municipal cadastral lots (GeoServer WFS)</a> · adapted'
+            },
+            buildings: { source: 'osm' },
+            sidebar: { disabledSections: ['parcelBlocks', 'roads', 'areaMonitor'] },
+            parcelBuilder: { url: 'https://urbangametheory.xyz/codechecker/' }
+        },
+        hamburg: {
+            id: 'hamburg',
+            label: translateCityText('city.labels.hamburg', 'Hamburg, Germany'),
+            currency: { locale: 'de-DE', code: 'EUR' },
+            map: {
+                initialView: { type: 'center', zoom: SHARED_DEFAULT_ZOOM },
+                defaultCenter: [53.5745088975748, 9.99288544960732], defaultZoom: SHARED_DEFAULT_ZOOM,
+                parcelZoomRange: { min: 17, max: Infinity }, latLngPadding: 0.08
+            },
+            projection: {
+                datasetCrs: 'EPSG:4326', definition: '+proj=longlat +datum=WGS84 +no_defs',
+                metricCrs: 'EPSG:25832',
+                metricDefinition: '+proj=utm +zone=32 +ellps=GRS80 +units=m +no_defs +type=crs',
+                fallbackLatLng: [53.5745088975748, 9.99288544960732], fallbackDataset: [9.99288544960732, 53.5745088975748]
+            },
+            parcels: {
+                strategy: 'grid', gridSize: 0.001, source: 'parcel-source',
+                sourceId: 'de-hh-alkis-flurstueck', idPrefix: 'DE-HH-ALKIS-',
+                requiresBackend: true, ownership: false, liveRadiusKm: 3,
+                attribution: '<a href="https://api.hamburg.de/datasets/v1/alkis_vereinfacht">Hamburg simplified ALKIS cadastral parcels</a> · adapted'
+            },
+            buildings: { source: 'osm' },
+            sidebar: { disabledSections: ['parcelBlocks', 'roads', 'areaMonitor'] },
+            parcelBuilder: { url: 'https://urbangametheory.xyz/codechecker/' }
+        },
+        sanantonio: {
+            id: 'sanantonio',
+            label: translateCityText('city.labels.sanantonio', 'San Antonio, United States'),
+            currency: { locale: 'en-US', code: 'USD' },
+            map: {
+                initialView: { type: 'center', zoom: SHARED_DEFAULT_ZOOM },
+                defaultCenter: [29.464389001765, -98.5436537993289], defaultZoom: SHARED_DEFAULT_ZOOM,
+                parcelZoomRange: { min: 17, max: Infinity }, latLngPadding: 0.08
+            },
+            projection: {
+                datasetCrs: 'EPSG:4326', definition: '+proj=longlat +datum=WGS84 +no_defs',
+                metricCrs: 'EPSG:26914',
+                metricDefinition: '+proj=utm +zone=14 +datum=NAD83 +units=m +no_defs +type=crs',
+                fallbackLatLng: [29.464389001765, -98.5436537993289], fallbackDataset: [-98.5436537993289, 29.464389001765]
+            },
+            parcels: {
+                strategy: 'grid', gridSize: 0.001, source: 'parcel-source',
+                sourceId: 'us-tx-bexar-bcad-public-archive-2022-propid', idPrefix: 'US-TX-BEXAR-BCAD-2022-',
+                requiresBackend: true, ownership: false, liveRadiusKm: 3,
+                attribution: '<a href="https://gbra.maps.arcgis.com/home/item.html?id=ddc97094771f45be81fc6cd4842a1901">San Antonio Bexar CAD parcels · public 2022 archive</a> · adapted'
+            },
+            buildings: { source: 'osm' },
+            sidebar: { disabledSections: ['parcelBlocks', 'roads', 'areaMonitor'] },
+            parcelBuilder: { url: 'https://urbangametheory.xyz/codechecker/' }
+        },
+        dallas: {
+            id: 'dallas',
+            label: translateCityText('city.labels.dallas', 'Dallas, United States'),
+            currency: { locale: 'en-US', code: 'USD' },
+            map: {
+                initialView: { type: 'center', zoom: SHARED_DEFAULT_ZOOM },
+                defaultCenter: [32.8728161029652, -96.7273020350225], defaultZoom: SHARED_DEFAULT_ZOOM,
+                parcelZoomRange: { min: 17, max: Infinity }, latLngPadding: 0.08
+            },
+            projection: {
+                datasetCrs: 'EPSG:4326', definition: '+proj=longlat +datum=WGS84 +no_defs',
+                metricCrs: 'EPSG:32614',
+                metricDefinition: '+proj=utm +zone=14 +datum=WGS84 +units=m +no_defs +type=crs',
+                fallbackLatLng: [32.8728161029652, -96.7273020350225], fallbackDataset: [-96.7273020350225, 32.8728161029652]
+            },
+            parcels: {
+                strategy: 'grid', gridSize: 0.001, source: 'parcel-source',
+                sourceId: 'us-tx-dallas-taxparcels', idPrefix: 'US-TX-DALLAS-',
+                requiresBackend: true, ownership: false, liveRadiusKm: 3,
+                attribution: '<a href="https://www.dallascounty.org/departments/pubworks/GIS.php">City of Dallas certified tax parcels</a> · adapted'
+            },
+            buildings: { source: 'osm' },
+            sidebar: { disabledSections: ['parcelBlocks', 'roads', 'areaMonitor'] },
+            parcelBuilder: { url: 'https://urbangametheory.xyz/codechecker/' }
+        },
+        oakland: {
+            id: 'oakland',
+            label: translateCityText('city.labels.oakland', 'Oakland, United States'),
+            currency: { locale: 'en-US', code: 'USD' },
+            map: {
+                initialView: { type: 'center', zoom: SHARED_DEFAULT_ZOOM },
+                defaultCenter: [37.7460795032621, -122.171539055455], defaultZoom: SHARED_DEFAULT_ZOOM,
+                parcelZoomRange: { min: 17, max: Infinity }, latLngPadding: 0.08
+            },
+            projection: {
+                datasetCrs: 'EPSG:4326', definition: '+proj=longlat +datum=WGS84 +no_defs',
+                metricCrs: 'EPSG:32610',
+                metricDefinition: '+proj=utm +zone=10 +datum=WGS84 +units=m +no_defs +type=crs',
+                fallbackLatLng: [37.7460795032621, -122.171539055455], fallbackDataset: [-122.171539055455, 37.7460795032621]
+            },
+            parcels: {
+                strategy: 'grid', gridSize: 0.001, source: 'parcel-source',
+                sourceId: 'us-ca-oakland-parcels', idPrefix: 'US-CA-OAK-',
+                requiresBackend: true, ownership: false, liveRadiusKm: 3,
+                attribution: '<a href="https://gismaps.oaklandca.gov/oaklandgis/rest/services/Parcel/MapServer/0">City of Oakland GIS parcels</a> · adapted'
+            },
+            buildings: { source: 'osm' },
+            sidebar: { disabledSections: ['parcelBlocks', 'roads', 'areaMonitor'] },
+            parcelBuilder: { url: 'https://urbangametheory.xyz/codechecker/' }
+        },
+        seattle: {
+            id: 'seattle',
+            label: translateCityText('city.labels.seattle', 'Seattle, United States'),
+            currency: { locale: 'en-US', code: 'USD' },
+            map: {
+                initialView: { type: 'center', zoom: SHARED_DEFAULT_ZOOM },
+                defaultCenter: [47.680804084804, -122.278326020363], defaultZoom: SHARED_DEFAULT_ZOOM,
+                parcelZoomRange: { min: 17, max: Infinity }, latLngPadding: 0.08
+            },
+            projection: {
+                datasetCrs: 'EPSG:4326', definition: '+proj=longlat +datum=WGS84 +no_defs',
+                metricCrs: 'EPSG:32610',
+                metricDefinition: '+proj=utm +zone=10 +datum=WGS84 +units=m +no_defs +type=crs',
+                fallbackLatLng: [47.680804084804, -122.278326020363], fallbackDataset: [-122.278326020363, 47.680804084804]
+            },
+            parcels: {
+                strategy: 'grid', gridSize: 0.001, source: 'parcel-source',
+                sourceId: 'us-wa-king-county-parcel-boundary', idPrefix: 'US-WA-KC-',
+                requiresBackend: true, ownership: false, liveRadiusKm: 3,
+                attribution: '<a href="https://gismaps.kingcounty.gov/parcelviewer2/">Seattle GIS King County parcel boundaries</a> · adapted'
+            },
+            buildings: { source: 'osm' },
+            sidebar: { disabledSections: ['parcelBlocks', 'roads', 'areaMonitor'] },
+            parcelBuilder: { url: 'https://urbangametheory.xyz/codechecker/' }
+        },
+        mesa: {
+            id: 'mesa',
+            label: translateCityText('city.labels.mesa', 'Mesa, United States'),
+            currency: { locale: 'en-US', code: 'USD' },
+            map: {
+                initialView: { type: 'center', zoom: SHARED_DEFAULT_ZOOM },
+                defaultCenter: [33.3793, -111.8075], defaultZoom: SHARED_DEFAULT_ZOOM,
+                parcelZoomRange: { min: 17, max: Infinity }, latLngPadding: 0.08
+            },
+            projection: {
+                datasetCrs: 'EPSG:4326', definition: '+proj=longlat +datum=WGS84 +no_defs',
+                metricCrs: 'EPSG:32612',
+                metricDefinition: '+proj=utm +zone=12 +datum=WGS84 +units=m +no_defs +type=crs',
+                fallbackLatLng: [33.3793, -111.8075], fallbackDataset: [-111.8075, 33.3793]
+            },
+            parcels: {
+                strategy: 'grid', gridSize: 0.001, source: 'parcel-source',
+                sourceId: 'us-az-mesa-city-parcels', idPrefix: 'US-MESA-CITY-',
+                requiresBackend: true, ownership: false, liveRadiusKm: 3,
+                attribution: '<a href="https://opengis.mesaaz.gov/">City of Mesa GIS parcel boundaries</a> · adapted'
+            },
+            buildings: { source: 'osm' },
+            sidebar: { disabledSections: ['parcelBlocks', 'roads', 'areaMonitor'] },
+            parcelBuilder: { url: 'https://urbangametheory.xyz/codechecker/' }
+        },
+        fortlauderdale: {
+            id: 'fortlauderdale',
+            label: translateCityText('city.labels.fortlauderdale', 'Fort Lauderdale, United States'),
+            currency: { locale: 'en-US', code: 'USD' },
+            map: {
+                initialView: { type: 'center', zoom: SHARED_DEFAULT_ZOOM },
+                defaultCenter: [26.2136403895659, -80.2006810091933], defaultZoom: SHARED_DEFAULT_ZOOM,
+                parcelZoomRange: { min: 17, max: Infinity }, latLngPadding: 0.08
+            },
+            projection: {
+                datasetCrs: 'EPSG:4326', definition: '+proj=longlat +datum=WGS84 +no_defs',
+                metricCrs: 'EPSG:32617',
+                metricDefinition: '+proj=utm +zone=17 +datum=WGS84 +units=m +no_defs +type=crs',
+                fallbackLatLng: [26.2136403895659, -80.2006810091933], fallbackDataset: [-80.2006810091933, 26.2136403895659]
+            },
+            parcels: {
+                strategy: 'grid', gridSize: 0.001, source: 'parcel-source',
+                sourceId: 'us-fl-fort-lauderdale-taxparcels-ground', idPrefix: 'US-FL-FORT-LAUDERDALE-ROW-',
+                requiresBackend: true, ownership: false, liveRadiusKm: 3,
+                attribution: '<a href="https://gis.fortlauderdale.gov/server/rest/services/TaxParcel/MapServer">Fort Lauderdale ground tax-parcel boundaries</a> · adapted'
+            },
+            buildings: { source: 'osm' },
+            sidebar: { disabledSections: ['parcelBlocks', 'roads', 'areaMonitor'] },
+            parcelBuilder: { url: 'https://urbangametheory.xyz/codechecker/' }
+        },
+        valenciaspain: {
+            id: 'valenciaspain',
+            label: translateCityText('city.labels.valenciaspain', 'Valencia, Spain'),
+            currency: { locale: 'es-ES', code: 'EUR' },
+            map: {
+                initialView: { type: 'center', zoom: SHARED_DEFAULT_ZOOM },
+                defaultCenter: [39.4704332385683, -0.39271003219546], defaultZoom: SHARED_DEFAULT_ZOOM,
+                parcelZoomRange: { min: 17, max: Infinity }, latLngPadding: 0.08
+            },
+            projection: {
+                datasetCrs: 'EPSG:4326', definition: '+proj=longlat +datum=WGS84 +no_defs',
+                metricCrs: 'EPSG:25830',
+                metricDefinition: '+proj=utm +zone=30 +ellps=GRS80 +units=m +no_defs',
+                fallbackLatLng: [39.4704332385683, -0.39271003219546], fallbackDataset: [-0.39271003219546, 39.4704332385683]
+            },
+            parcels: {
+                strategy: 'grid', gridSize: 0.001, source: 'parcel-source',
+                sourceId: 'es-dgc-inspire-cp-wfs', idPrefix: 'ES-DGC-',
+                requiresBackend: true, ownership: false, liveRadiusKm: 3,
+                attribution: '<a href="https://www.catastro.hacienda.gob.es/webinspire/">Dirección General del Catastro — Madrid, Barcelona and Valencia</a> · adapted'
+            },
+            buildings: { source: 'osm' },
+            sidebar: { disabledSections: ['parcelBlocks', 'roads', 'areaMonitor'] },
+            parcelBuilder: { url: 'https://urbangametheory.xyz/codechecker/' }
+        },
+        klipgat: {
+            id: 'klipgat',
+            label: translateCityText('city.labels.klipgat', 'Klipgat, South Africa'),
+            currency: { locale: 'en-ZA', code: 'ZAR' },
+            map: {
+                initialView: { type: 'center', zoom: SHARED_DEFAULT_ZOOM },
+                defaultCenter: [-25.4785970466047, 28.1150225708436], defaultZoom: SHARED_DEFAULT_ZOOM,
+                parcelZoomRange: { min: 17, max: Infinity }, latLngPadding: 0.08
+            },
+            projection: {
+                datasetCrs: 'EPSG:4326', definition: '+proj=longlat +datum=WGS84 +no_defs',
+                metricCrs: 'EPSG:32735',
+                metricDefinition: '+proj=utm +zone=35 +south +datum=WGS84 +units=m +no_defs +type=crs',
+                fallbackLatLng: [-25.4785970466047, 28.1150225708436], fallbackDataset: [28.1150225708436, -25.4785970466047]
+            },
+            parcels: {
+                strategy: 'grid', gridSize: 0.001, source: 'parcel-source',
+                sourceId: 'za-csg-dffe-erven', idPrefix: 'ZA-CSG-DFFE-ERVEN-',
+                requiresBackend: true, ownership: false, liveRadiusKm: 3,
+                attribution: '<a href="https://csg.dlrrd.gov.za/data.htm">Chief Surveyor-General public Erven polygons</a> · adapted'
+            },
+            buildings: { source: 'osm' },
+            sidebar: { disabledSections: ['parcelBlocks', 'roads', 'areaMonitor'] },
+            parcelBuilder: { url: 'https://urbangametheory.xyz/codechecker/' }
+        },
+        tembisa: {
+            id: 'tembisa',
+            label: translateCityText('city.labels.tembisa', 'Tembisa, South Africa'),
+            currency: { locale: 'en-ZA', code: 'ZAR' },
+            map: {
+                initialView: { type: 'center', zoom: SHARED_DEFAULT_ZOOM },
+                defaultCenter: [-26.0160233303594, 28.2050144110193], defaultZoom: SHARED_DEFAULT_ZOOM,
+                parcelZoomRange: { min: 17, max: Infinity }, latLngPadding: 0.08
+            },
+            projection: {
+                datasetCrs: 'EPSG:4326', definition: '+proj=longlat +datum=WGS84 +no_defs',
+                metricCrs: 'EPSG:32735',
+                metricDefinition: '+proj=utm +zone=35 +south +datum=WGS84 +units=m +no_defs +type=crs',
+                fallbackLatLng: [-26.0160233303594, 28.2050144110193], fallbackDataset: [28.2050144110193, -26.0160233303594]
+            },
+            parcels: {
+                strategy: 'grid', gridSize: 0.001, source: 'parcel-source',
+                sourceId: 'za-ekurhuleni-stands', idPrefix: 'ZA-EKU-STAND-',
+                requiresBackend: true, ownership: false, liveRadiusKm: 3,
+                attribution: '<a href="https://gis.ekurhuleni.gov.za/">City of Ekurhuleni municipal stands — Tembisa sample</a> · adapted'
+            },
+            buildings: { source: 'osm' },
+            sidebar: { disabledSections: ['parcelBlocks', 'roads', 'areaMonitor'] },
+            parcelBuilder: { url: 'https://urbangametheory.xyz/codechecker/' }
+        },
+        vitoria: {
+            id: 'vitoria',
+            label: translateCityText('city.labels.vitoria', 'Vitória, Brazil'),
+            currency: { locale: 'pt-BR', code: 'BRL' },
+            map: {
+                initialView: { type: 'center', zoom: SHARED_DEFAULT_ZOOM },
+                defaultCenter: [-20.3155, -40.3128], defaultZoom: SHARED_DEFAULT_ZOOM,
+                parcelZoomRange: { min: 17, max: Infinity }, latLngPadding: 0.08
+            },
+            projection: {
+                datasetCrs: 'EPSG:4326', definition: '+proj=longlat +datum=WGS84 +no_defs',
+                metricCrs: 'EPSG:32724',
+                metricDefinition: '+proj=utm +zone=24 +south +datum=WGS84 +units=m +no_defs +type=crs',
+                fallbackLatLng: [-20.3155, -40.3128], fallbackDataset: [-40.3128, -20.3155]
+            },
+            parcels: {
+                strategy: 'grid', gridSize: 0.001, source: 'parcel-source',
+                sourceId: 'br-vitoria-lotes', idPrefix: 'BR-VIX-LOTE-',
+                requiresBackend: true, ownership: false, liveRadiusKm: 3,
+                attribution: '<a href="https://gis.vitoria.es.gov.br/arcgis/rest/services/MapaBaseImobiliario/MapServer/101">Vitória municipal Lote — central reference</a> · adapted'
+            },
+            buildings: { source: 'osm' },
+            sidebar: { disabledSections: ['parcelBlocks', 'roads', 'areaMonitor'] },
+            parcelBuilder: { url: 'https://urbangametheory.xyz/codechecker/' }
+        },
+        ciudadjuarez: {
+            id: 'ciudadjuarez',
+            label: translateCityText('city.labels.ciudadjuarez', 'Ciudad Juárez, Mexico'),
+            currency: { locale: 'es-MX', code: 'MXN' },
+            map: {
+                initialView: { type: 'center', zoom: SHARED_DEFAULT_ZOOM },
+                defaultCenter: [31.6633818209033, -106.421992448914], defaultZoom: SHARED_DEFAULT_ZOOM,
+                parcelZoomRange: { min: 17, max: Infinity }, latLngPadding: 0.08
+            },
+            projection: {
+                datasetCrs: 'EPSG:4326', definition: '+proj=longlat +datum=WGS84 +no_defs',
+                metricCrs: 'EPSG:32613',
+                metricDefinition: '+proj=utm +zone=13 +datum=WGS84 +units=m +no_defs +type=crs',
+                fallbackLatLng: [31.6633818209033, -106.421992448914], fallbackDataset: [-106.421992448914, 31.6633818209033]
+            },
+            parcels: {
+                strategy: 'grid', gridSize: 0.001, source: 'parcel-source',
+                sourceId: 'mx-juarez-predios', idPrefix: 'MX-JUA-PREDIO-',
+                requiresBackend: true, ownership: false, liveRadiusKm: 3,
+                attribution: '<a href="https://www.imip.org.mx/sigem/">IMIP Ciudad Juárez municipal Predios</a> · adapted'
+            },
+            buildings: { source: 'osm' },
+            sidebar: { disabledSections: ['parcelBlocks', 'roads', 'areaMonitor'] },
+            parcelBuilder: { url: 'https://urbangametheory.xyz/codechecker/' }
+        },
+        calgary: {
+            id: 'calgary',
+            label: translateCityText('city.labels.calgary', 'Calgary, Canada'),
+            currency: { locale: 'en-CA', code: 'CAD' },
+            map: {
+                initialView: { type: 'center', zoom: SHARED_DEFAULT_ZOOM },
+                defaultCenter: [51.0353306517676, -114.105700735457], defaultZoom: SHARED_DEFAULT_ZOOM,
+                parcelZoomRange: { min: 17, max: Infinity }, latLngPadding: 0.08
+            },
+            projection: {
+                datasetCrs: 'EPSG:4326', definition: '+proj=longlat +datum=WGS84 +no_defs',
+                metricCrs: 'EPSG:32611',
+                metricDefinition: '+proj=utm +zone=11 +datum=WGS84 +units=m +no_defs +type=crs',
+                fallbackLatLng: [51.0353306517676, -114.105700735457], fallbackDataset: [-114.105700735457, 51.0353306517676]
+            },
+            parcels: {
+                strategy: 'grid', gridSize: 0.001, source: 'parcel-source',
+                sourceId: 'ca-calgary-assessment-parcel', idPrefix: 'CA-CALGARY-CPID-',
+                requiresBackend: true, ownership: false, liveRadiusKm: 3,
+                attribution: '<a href="https://data.calgary.ca/Government/Current-Year-Property-Assessments-Parcel-/4bsw-nn7w">Calgary assessed registered-parcel geometries</a> · adapted'
+            },
+            buildings: { source: 'osm' },
+            sidebar: { disabledSections: ['parcelBlocks', 'roads', 'areaMonitor'] },
+            parcelBuilder: { url: 'https://urbangametheory.xyz/codechecker/' }
+        },
+        rosario: {
+            id: 'rosario',
+            label: translateCityText('city.labels.rosario', 'Rosario, Argentina'),
+            currency: { locale: 'es-AR', code: 'ARS' },
+            map: {
+                initialView: { type: 'center', zoom: SHARED_DEFAULT_ZOOM },
+                defaultCenter: [-32.9481688811101, -60.6765246060875], defaultZoom: SHARED_DEFAULT_ZOOM,
+                parcelZoomRange: { min: 17, max: Infinity }, latLngPadding: 0.08
+            },
+            projection: {
+                datasetCrs: 'EPSG:4326', definition: '+proj=longlat +datum=WGS84 +no_defs',
+                metricCrs: 'EPSG:32720',
+                metricDefinition: '+proj=utm +zone=20 +south +datum=WGS84 +units=m +no_defs +type=crs',
+                fallbackLatLng: [-32.9481688811101, -60.6765246060875], fallbackDataset: [-60.6765246060875, -32.9481688811101]
+            },
+            parcels: {
+                strategy: 'grid', gridSize: 0.001, source: 'parcel-source',
+                sourceId: 'ar-rosario-section9-parcel', idPrefix: 'AR-ROS-S9-MSLINK-',
+                requiresBackend: true, ownership: false, liveRadiusKm: 3,
+                attribution: '<a href="https://datosabiertos.rosario.gob.ar/api/1/metastore/schemas/dataset/items/0b4f7e3e-ac2e-4f32-b523-a974c6209e3f">Rosario municipal parcel Section 9</a> · adapted'
+            },
+            buildings: { source: 'osm' },
+            sidebar: { disabledSections: ['parcelBlocks', 'roads', 'areaMonitor'] },
+            parcelBuilder: { url: 'https://urbangametheory.xyz/codechecker/' }
+        },
+        minneapolis: {
+            id: 'minneapolis',
+            label: translateCityText('city.labels.minneapolis', 'Minneapolis, United States'),
+            currency: { locale: 'en-US', code: 'USD' },
+            map: {
+                initialView: { type: 'center', zoom: SHARED_DEFAULT_ZOOM },
+                defaultCenter: [44.9726015122978, -93.2378207757913], defaultZoom: SHARED_DEFAULT_ZOOM,
+                parcelZoomRange: { min: 17, max: Infinity }, latLngPadding: 0.08
+            },
+            projection: {
+                datasetCrs: 'EPSG:4326', definition: '+proj=longlat +datum=WGS84 +no_defs',
+                metricCrs: 'EPSG:26915',
+                metricDefinition: '+proj=utm +zone=15 +datum=NAD83 +units=m +no_defs +type=crs',
+                fallbackLatLng: [44.9726015122978, -93.2378207757913], fallbackDataset: [-93.2378207757913, 44.9726015122978]
+            },
+            parcels: {
+                strategy: 'grid', gridSize: 0.001, source: 'parcel-source',
+                sourceId: 'us-mn-hennepin-county-parcels-metroc', idPrefix: 'us-mn-hennepin:',
+                requiresBackend: true, ownership: false, liveRadiusKm: 3,
+                attribution: '<a href="https://gis.data.mn.gov/maps/hennepin%3A%3Acounty-parcels/about">Hennepin County Parcels (Metropolitan Council public layer)</a> · adapted'
+            },
+            buildings: { source: 'osm' },
+            sidebar: { disabledSections: ['parcelBlocks', 'roads', 'areaMonitor'] },
+            parcelBuilder: { url: 'https://urbangametheory.xyz/codechecker/' }
+        },
+        auckland: {
+            id: 'auckland',
+            label: translateCityText('city.labels.auckland', 'Auckland, New Zealand'),
+            currency: { locale: 'en-NZ', code: 'NZD' },
+            map: {
+                initialView: { type: 'center', zoom: SHARED_DEFAULT_ZOOM },
+                defaultCenter: [-36.9024908859156, 174.777123817482], defaultZoom: SHARED_DEFAULT_ZOOM,
+                parcelZoomRange: { min: 17, max: Infinity }, latLngPadding: 0.08
+            },
+            projection: {
+                datasetCrs: 'EPSG:4326', definition: '+proj=longlat +datum=WGS84 +no_defs',
+                metricCrs: 'EPSG:32760',
+                metricDefinition: '+proj=utm +zone=60 +south +datum=WGS84 +units=m +no_defs +type=crs',
+                fallbackLatLng: [-36.9024908859156, 174.777123817482], fallbackDataset: [174.777123817482, -36.9024908859156]
+            },
+            parcels: {
+                strategy: 'grid', gridSize: 0.001, source: 'parcel-source',
+                sourceId: 'nz-linz-primary-parcels-arcgis', idPrefix: 'nz-linz:',
+                requiresBackend: true, ownership: false, liveRadiusKm: 3,
+                attribution: '<a href="https://data.linz.govt.nz/layer/50772-nz-primary-parcels/">LINZ primary parcels — public ArcGIS publication</a> · adapted'
+            },
+            buildings: { source: 'osm' },
+            sidebar: { disabledSections: ['parcelBlocks', 'roads', 'areaMonitor'] },
+            parcelBuilder: { url: 'https://urbangametheory.xyz/codechecker/' }
+        },
+        tuenmun: {
+            id: 'tuenmun',
+            label: translateCityText('city.labels.tuenmun', 'Tuen Mun, Hong Kong'),
+            currency: { locale: 'en-HK', code: 'HKD' },
+            map: {
+                initialView: { type: 'center', zoom: SHARED_DEFAULT_ZOOM },
+                defaultCenter: [22.4266355780752, 113.996366842382], defaultZoom: SHARED_DEFAULT_ZOOM,
+                parcelZoomRange: { min: 17, max: Infinity }, latLngPadding: 0.08
+            },
+            projection: {
+                datasetCrs: 'EPSG:4326', definition: '+proj=longlat +datum=WGS84 +no_defs',
+                metricCrs: 'EPSG:32650',
+                metricDefinition: '+proj=utm +zone=50 +datum=WGS84 +units=m +no_defs +type=crs',
+                fallbackLatLng: [22.4266355780752, 113.996366842382], fallbackDataset: [113.996366842382, 22.4266355780752]
+            },
+            parcels: {
+                strategy: 'grid', gridSize: 0.001, source: 'parcel-source',
+                sourceId: 'hk-landsd-csdi-lot', idPrefix: 'HK-LANDSD-CSDI-LOT-CSUID-',
+                requiresBackend: true, ownership: false, liveRadiusKm: 3,
+                attribution: '<a href="https://data.gov.hk/en-data/dataset/hk-landsd-openmap-landsd-lot/resource/92d24214-a295-4b8e-8d3f-27e9226e1287">Lands Department CSDI Lot polygons</a> · adapted'
+            },
+            buildings: { source: 'osm' },
+            sidebar: { disabledSections: ['parcelBlocks', 'roads', 'areaMonitor'] },
+            parcelBuilder: { url: 'https://urbangametheory.xyz/codechecker/' }
+        },
+        dusseldorf: {
+            id: 'dusseldorf',
+            label: translateCityText('city.labels.dusseldorf', 'Düsseldorf, Germany'),
+            currency: { locale: 'de-DE', code: 'EUR' },
+            map: {
+                initialView: { type: 'center', zoom: SHARED_DEFAULT_ZOOM },
+                defaultCenter: [51.2180376209965, 6.78255471417581], defaultZoom: SHARED_DEFAULT_ZOOM,
+                parcelZoomRange: { min: 17, max: Infinity }, latLngPadding: 0.08
+            },
+            projection: {
+                datasetCrs: 'EPSG:4326', definition: '+proj=longlat +datum=WGS84 +no_defs',
+                metricCrs: 'EPSG:32632',
+                metricDefinition: '+proj=utm +zone=32 +datum=WGS84 +units=m +no_defs +type=crs',
+                fallbackLatLng: [51.2180376209965, 6.78255471417581], fallbackDataset: [6.78255471417581, 51.2180376209965]
+            },
+            parcels: {
+                strategy: 'grid', gridSize: 0.001, source: 'parcel-source',
+                sourceId: 'de-nrw-lika-flurstueck', idPrefix: 'DE-NRW-',
+                requiresBackend: true, ownership: false, liveRadiusKm: 3,
+                attribution: '<a href="https://ogc-api.nrw.de/lika/v1/collections/flurstueck?f=json">Geobasis NRW ALKIS parcels</a> · adapted'
+            },
+            buildings: { source: 'osm' },
+            sidebar: { disabledSections: ['parcelBlocks', 'roads', 'areaMonitor'] },
+            parcelBuilder: { url: 'https://urbangametheory.xyz/codechecker/' }
+        },
+        marseille: {
+            id: 'marseille',
+            label: translateCityText('city.labels.marseille', 'Marseille, France'),
+            currency: { locale: 'fr-FR', code: 'EUR' },
+            map: {
+                initialView: { type: 'center', zoom: SHARED_DEFAULT_ZOOM },
+                defaultCenter: [43.3060785068726, 5.40046021068172], defaultZoom: SHARED_DEFAULT_ZOOM,
+                parcelZoomRange: { min: 17, max: Infinity }, latLngPadding: 0.08
+            },
+            projection: {
+                datasetCrs: 'EPSG:4326', definition: '+proj=longlat +datum=WGS84 +no_defs',
+                metricCrs: 'EPSG:32631',
+                metricDefinition: '+proj=utm +zone=31 +datum=WGS84 +units=m +no_defs +type=crs',
+                fallbackLatLng: [43.3060785068726, 5.40046021068172], fallbackDataset: [5.40046021068172, 43.3060785068726]
+            },
+            parcels: {
+                strategy: 'grid', gridSize: 0.001, source: 'parcel-source',
+                sourceId: 'fr-ign-parcellaire-express', idPrefix: 'FR-PCI-',
+                requiresBackend: true, ownership: false, liveRadiusKm: 3,
+                attribution: '<a href="https://www.data.gouv.fr/datasets/parcellaire-express-pci">France IGN/DGFiP Parcellaire Express (PCI)</a> · adapted'
+            },
+            buildings: { source: 'osm' },
+            sidebar: { disabledSections: ['parcelBlocks', 'roads', 'areaMonitor'] },
+            parcelBuilder: { url: 'https://urbangametheory.xyz/codechecker/' }
+        },
+        lille: {
+            id: 'lille',
+            label: translateCityText('city.labels.lille', 'Lille, France'),
+            currency: { locale: 'fr-FR', code: 'EUR' },
+            map: {
+                initialView: { type: 'center', zoom: SHARED_DEFAULT_ZOOM },
+                defaultCenter: [50.6588228758037, 3.10526733091648], defaultZoom: SHARED_DEFAULT_ZOOM,
+                parcelZoomRange: { min: 17, max: Infinity }, latLngPadding: 0.08
+            },
+            projection: {
+                datasetCrs: 'EPSG:4326', definition: '+proj=longlat +datum=WGS84 +no_defs',
+                metricCrs: 'EPSG:32631',
+                metricDefinition: '+proj=utm +zone=31 +datum=WGS84 +units=m +no_defs +type=crs',
+                fallbackLatLng: [50.6588228758037, 3.10526733091648], fallbackDataset: [3.10526733091648, 50.6588228758037]
+            },
+            parcels: {
+                strategy: 'grid', gridSize: 0.001, source: 'parcel-source',
+                sourceId: 'fr-ign-parcellaire-express', idPrefix: 'FR-PCI-',
+                requiresBackend: true, ownership: false, liveRadiusKm: 3,
+                attribution: '<a href="https://www.data.gouv.fr/datasets/parcellaire-express-pci">France IGN/DGFiP Parcellaire Express (PCI)</a> · adapted'
+            },
+            buildings: { source: 'osm' },
+            sidebar: { disabledSections: ['parcelBlocks', 'roads', 'areaMonitor'] },
+            parcelBuilder: { url: 'https://urbangametheory.xyz/codechecker/' }
+        },
+        stuttgart: {
+            id: 'stuttgart',
+            label: translateCityText('city.labels.stuttgart', 'Stuttgart, Germany'),
+            currency: { locale: 'de-DE', code: 'EUR' },
+            map: {
+                initialView: { type: 'center', zoom: SHARED_DEFAULT_ZOOM },
+                defaultCenter: [48.7945602765168, 9.20116965816696], defaultZoom: SHARED_DEFAULT_ZOOM,
+                parcelZoomRange: { min: 17, max: Infinity }, latLngPadding: 0.08
+            },
+            projection: {
+                datasetCrs: 'EPSG:4326', definition: '+proj=longlat +datum=WGS84 +no_defs',
+                metricCrs: 'EPSG:32632',
+                metricDefinition: '+proj=utm +zone=32 +datum=WGS84 +units=m +no_defs +type=crs',
+                fallbackLatLng: [48.7945602765168, 9.20116965816696], fallbackDataset: [9.20116965816696, 48.7945602765168]
+            },
+            parcels: {
+                strategy: 'grid', gridSize: 0.001, source: 'parcel-source',
+                sourceId: 'de-bw-lgl-alkis-flurstueck', idPrefix: 'DE-BW-ALKIS-',
+                requiresBackend: true, ownership: false, liveRadiusKm: 3,
+                attribution: '<a href="https://www.lgl-bw.de/Produkte/Geodatendienste/ALKIS-Daten/index.html">Baden-Württemberg LGL ALKIS cadastral parcels</a> · adapted'
+            },
+            buildings: { source: 'osm' },
+            sidebar: { disabledSections: ['parcelBlocks', 'roads', 'areaMonitor'] },
+            parcelBuilder: { url: 'https://urbangametheory.xyz/codechecker/' }
+        },
+        frankfurt: {
+            id: 'frankfurt',
+            label: translateCityText('city.labels.frankfurt', 'Frankfurt, Germany'),
+            currency: { locale: 'de-DE', code: 'EUR' },
+            map: {
+                initialView: { type: 'center', zoom: SHARED_DEFAULT_ZOOM },
+                defaultCenter: [50.1196449235525, 8.67155930482746], defaultZoom: SHARED_DEFAULT_ZOOM,
+                parcelZoomRange: { min: 17, max: Infinity }, latLngPadding: 0.08
+            },
+            projection: {
+                datasetCrs: 'EPSG:4326', definition: '+proj=longlat +datum=WGS84 +no_defs',
+                metricCrs: 'EPSG:32632',
+                metricDefinition: '+proj=utm +zone=32 +datum=WGS84 +units=m +no_defs +type=crs',
+                fallbackLatLng: [50.1196449235525, 8.67155930482746], fallbackDataset: [8.67155930482746, 50.1196449235525]
+            },
+            parcels: {
+                strategy: 'grid', gridSize: 0.001, source: 'parcel-source',
+                sourceId: 'de-frankfurt-alkis-flurstueck', idPrefix: 'DE-FFM-',
+                requiresBackend: true, ownership: false, liveRadiusKm: 3,
+                attribution: '<a href="https://frankfurt.de/themen/planen-bauen-und-wohnen/planen/geoinformationen">Frankfurt municipal ALKIS cadastral parcels</a> · adapted'
+            },
+            buildings: { source: 'osm' },
+            sidebar: { disabledSections: ['parcelBlocks', 'roads', 'areaMonitor'] },
+            parcelBuilder: { url: 'https://urbangametheory.xyz/codechecker/' }
+        },
+        saintpetersburgfl: {
+            id: 'saintpetersburgfl',
+            label: translateCityText('city.labels.saintpetersburgfl', 'Saint Petersburg, Florida, USA'),
+            currency: { locale: 'en-US', code: 'USD' },
+            map: {
+                initialView: { type: 'center', zoom: SHARED_DEFAULT_ZOOM },
+                defaultCenter: [27.8713699437531, -82.7305763266337], defaultZoom: SHARED_DEFAULT_ZOOM,
+                parcelZoomRange: { min: 17, max: Infinity }, latLngPadding: 0.08
+            },
+            projection: {
+                datasetCrs: 'EPSG:4326', definition: '+proj=longlat +datum=WGS84 +no_defs',
+                metricCrs: 'EPSG:32617',
+                metricDefinition: '+proj=utm +zone=17 +datum=WGS84 +units=m +no_defs +type=crs',
+                fallbackLatLng: [27.8713699437531, -82.7305763266337], fallbackDataset: [-82.7305763266337, 27.8713699437531]
+            },
+            parcels: {
+                strategy: 'grid', gridSize: 0.001, source: 'parcel-source',
+                sourceId: 'us-fl-pinellas-parcels', idPrefix: 'US-FL-PINELLAS-',
+                requiresBackend: true, ownership: false, liveRadiusKm: 3,
+                attribution: '<a href="https://www.pcpao.gov/learn-about/FAQs">Pinellas County public Land Polygon parcels</a> · adapted'
+            },
+            buildings: { source: 'osm' },
+            sidebar: { disabledSections: ['parcelBlocks', 'roads', 'areaMonitor'] },
+            parcelBuilder: { url: 'https://urbangametheory.xyz/codechecker/' }
+        },
+        detroit: {
+            id: 'detroit',
+            label: translateCityText('city.labels.detroit', 'Detroit, USA'),
+            currency: { locale: 'en-US', code: 'USD' },
+            map: {
+                initialView: { type: 'center', zoom: SHARED_DEFAULT_ZOOM },
+                defaultCenter: [42.418131146732, -83.1544751389422], defaultZoom: SHARED_DEFAULT_ZOOM,
+                parcelZoomRange: { min: 17, max: Infinity }, latLngPadding: 0.08
+            },
+            projection: {
+                datasetCrs: 'EPSG:4326', definition: '+proj=longlat +datum=WGS84 +no_defs',
+                metricCrs: 'EPSG:32617',
+                metricDefinition: '+proj=utm +zone=17 +datum=WGS84 +units=m +no_defs +type=crs',
+                fallbackLatLng: [42.418131146732, -83.1544751389422], fallbackDataset: [-83.1544751389422, 42.418131146732]
+            },
+            parcels: {
+                strategy: 'grid', gridSize: 0.001, source: 'parcel-source',
+                sourceId: 'us-mi-detroit-parcels', idPrefix: 'US-MI-DETROIT-',
+                requiresBackend: true, ownership: false, liveRadiusKm: 3,
+                attribution: '<a href="https://data.detroitmi.gov/maps/detroitmi::parcels-2">Detroit Office of the Assessor current parcels</a> · adapted'
+            },
+            buildings: { source: 'osm' },
+            sidebar: { disabledSections: ['parcelBlocks', 'roads', 'areaMonitor'] },
+            parcelBuilder: { url: 'https://urbangametheory.xyz/codechecker/' }
+        },
+        evaton: {
+            id: 'evaton',
+            label: translateCityText('city.labels.evaton', 'Evaton, South Africa'),
+            currency: { locale: 'en-ZA', code: 'ZAR' },
+            map: {
+                initialView: { type: 'center', zoom: SHARED_DEFAULT_ZOOM },
+                defaultCenter: [-26.525228941691, 27.8512191216245], defaultZoom: SHARED_DEFAULT_ZOOM,
+                parcelZoomRange: { min: 17, max: Infinity }, latLngPadding: 0.08
+            },
+            projection: {
+                datasetCrs: 'EPSG:4326', definition: '+proj=longlat +datum=WGS84 +no_defs',
+                metricCrs: 'EPSG:32735',
+                metricDefinition: '+proj=utm +zone=35 +south +datum=WGS84 +units=m +no_defs +type=crs',
+                fallbackLatLng: [-26.525228941691, 27.8512191216245], fallbackDataset: [27.8512191216245, -26.525228941691]
+            },
+            parcels: {
+                strategy: 'grid', gridSize: 0.001, source: 'parcel-source',
+                sourceId: 'za-csg-dffe-erven', idPrefix: 'ZA-CSG-DFFE-ERVEN-',
+                requiresBackend: true, ownership: false, liveRadiusKm: 3,
+                attribution: '<a href="https://csg.dlrrd.gov.za/data.htm">Chief Surveyor-General public Erven polygons</a> · adapted'
+            },
+            buildings: { source: 'osm' },
+            sidebar: { disabledSections: ['parcelBlocks', 'roads', 'areaMonitor'] },
+            parcelBuilder: { url: 'https://urbangametheory.xyz/codechecker/' }
+        },
+        bonn: {
+            id: 'bonn',
+            label: translateCityText('city.labels.bonn', 'Bonn, Germany'),
+            currency: { locale: 'de-DE', code: 'EUR' },
+            map: {
+                initialView: { type: 'center', zoom: SHARED_DEFAULT_ZOOM },
+                defaultCenter: [50.7822226933759, 7.09388726064463], defaultZoom: SHARED_DEFAULT_ZOOM,
+                parcelZoomRange: { min: 17, max: Infinity }, latLngPadding: 0.08
+            },
+            projection: {
+                datasetCrs: 'EPSG:4326', definition: '+proj=longlat +datum=WGS84 +no_defs',
+                metricCrs: 'EPSG:32632',
+                metricDefinition: '+proj=utm +zone=32 +datum=WGS84 +units=m +no_defs +type=crs',
+                fallbackLatLng: [50.7822226933759, 7.09388726064463], fallbackDataset: [7.09388726064463, 50.7822226933759]
+            },
+            parcels: {
+                strategy: 'grid', gridSize: 0.001, source: 'parcel-source',
+                sourceId: 'de-nrw-lika-flurstueck', idPrefix: 'DE-NRW-',
+                requiresBackend: true, ownership: false, liveRadiusKm: 3,
+                attribution: '<a href="https://ogc-api.nrw.de/lika/v1/collections/flurstueck?f=json">Geobasis NRW ALKIS parcels</a> · adapted'
+            },
+            buildings: { source: 'osm' },
+            sidebar: { disabledSections: ['parcelBlocks', 'roads', 'areaMonitor'] },
+            parcelBuilder: { url: 'https://urbangametheory.xyz/codechecker/' }
+        },
+        georgetown: {
+            id: 'georgetown',
+            label: translateCityText('city.labels.georgetown', 'George Town, Penang, Malaysia'),
+            currency: { locale: 'en-MY', code: 'MYR' },
+            map: {
+                initialView: { type: 'center', zoom: SHARED_DEFAULT_ZOOM },
+                defaultCenter: [5.37296693960077, 100.295715284095], defaultZoom: SHARED_DEFAULT_ZOOM,
+                parcelZoomRange: { min: 17, max: Infinity }, latLngPadding: 0.08
+            },
+            projection: {
+                datasetCrs: 'EPSG:4326', definition: '+proj=longlat +datum=WGS84 +no_defs',
+                metricCrs: 'EPSG:32647',
+                metricDefinition: '+proj=utm +zone=47 +datum=WGS84 +units=m +no_defs +type=crs',
+                fallbackLatLng: [5.37296693960077, 100.295715284095], fallbackDataset: [100.295715284095, 5.37296693960077]
+            },
+            parcels: {
+                strategy: 'grid', gridSize: 0.001, source: 'parcel-source',
+                sourceId: 'my-penang-forestry-cadastral-lots', idPrefix: 'MY-PENANG-',
+                requiresBackend: true, ownership: false, liveRadiusKm: 3,
+                attribution: '<a href="https://geoformatik.forestry.gov.my/arcgis/rest/services/PULAU_PINANG_SDE/MapServer/45">JUPEM Penang cadastral lots (Forestry GIS host)</a> · adapted'
+            },
+            buildings: { source: 'osm' },
+            sidebar: { disabledSections: ['parcelBlocks', 'roads', 'areaMonitor'] },
+            parcelBuilder: { url: 'https://urbangametheory.xyz/codechecker/' }
+        },
+        thessaloniki: {
+            id: 'thessaloniki',
+            label: translateCityText('city.labels.thessaloniki', 'Thessaloniki, Greece'),
+            currency: { locale: 'el-GR', code: 'EUR' },
+            map: {
+                initialView: { type: 'center', zoom: SHARED_DEFAULT_ZOOM },
+                defaultCenter: [40.6343408556323, 22.945560253649], defaultZoom: SHARED_DEFAULT_ZOOM,
+                parcelZoomRange: { min: 17, max: Infinity }, latLngPadding: 0.08
+            },
+            projection: {
+                datasetCrs: 'EPSG:4326', definition: '+proj=longlat +datum=WGS84 +no_defs',
+                metricCrs: 'EPSG:32634',
+                metricDefinition: '+proj=utm +zone=34 +datum=WGS84 +units=m +no_defs +type=crs',
+                fallbackLatLng: [40.6343408556323, 22.945560253649], fallbackDataset: [22.945560253649, 40.6343408556323]
+            },
+            parcels: {
+                strategy: 'grid', gridSize: 0.001, source: 'parcel-source',
+                sourceId: 'gr-thessaloniki-municipal-kaek', idPrefix: 'GR-THESS-KAEK-',
+                requiresBackend: true, ownership: false, liveRadiusKm: 3,
+                attribution: '<a href="https://maps.thessaloniki.gr/server/rest/services/DataMapImage/MapServer/160">Thessaloniki public cadastral parcels (KAEK)</a> · adapted'
+            },
+            buildings: { source: 'osm' },
+            sidebar: { disabledSections: ['parcelBlocks', 'roads', 'areaMonitor'] },
+            parcelBuilder: { url: 'https://urbangametheory.xyz/codechecker/' }
+        },
+        bilbao: {
+            id: 'bilbao',
+            label: translateCityText('city.labels.bilbao', 'Bilbao, Spain'),
+            currency: { locale: 'es-ES', code: 'EUR' },
+            map: {
+                initialView: { type: 'center', zoom: SHARED_DEFAULT_ZOOM },
+                defaultCenter: [43.2826941093508, -2.95997002575274], defaultZoom: SHARED_DEFAULT_ZOOM,
+                parcelZoomRange: { min: 17, max: Infinity }, latLngPadding: 0.08
+            },
+            projection: {
+                datasetCrs: 'EPSG:4326', definition: '+proj=longlat +datum=WGS84 +no_defs',
+                metricCrs: 'EPSG:32630',
+                metricDefinition: '+proj=utm +zone=30 +datum=WGS84 +units=m +no_defs +type=crs',
+                fallbackLatLng: [43.2826941093508, -2.95997002575274], fallbackDataset: [-2.95997002575274, 43.2826941093508]
+            },
+            parcels: {
+                strategy: 'grid', gridSize: 0.001, source: 'parcel-source',
+                sourceId: 'es-bizkaia-parcelas-rest', idPrefix: 'ES-BIZKAIA-',
+                requiresBackend: true, ownership: false, liveRadiusKm: 3,
+                attribution: '<a href="https://opendatabizkaia.eus/es/catalogo/parcelario-catastral-de-bizkaia">Bizkaia public cadastral Parcelas</a> · adapted'
+            },
+            buildings: { source: 'osm' },
+            sidebar: { disabledSections: ['parcelBlocks', 'roads', 'areaMonitor'] },
+            parcelBuilder: { url: 'https://urbangametheory.xyz/codechecker/' }
+        },
+        milwaukee: {
+            id: 'milwaukee',
+            label: translateCityText('city.labels.milwaukee', 'Milwaukee, United States'),
+            currency: { locale: 'en-US', code: 'USD' },
+            map: {
+                initialView: { type: 'center', zoom: SHARED_DEFAULT_ZOOM },
+                defaultCenter: [43.0472023941442, -87.9561409333908], defaultZoom: SHARED_DEFAULT_ZOOM,
+                parcelZoomRange: { min: 17, max: Infinity }, latLngPadding: 0.08
+            },
+            projection: {
+                datasetCrs: 'EPSG:4326', definition: '+proj=longlat +datum=WGS84 +no_defs',
+                metricCrs: 'EPSG:32616',
+                metricDefinition: '+proj=utm +zone=16 +datum=WGS84 +units=m +no_defs +type=crs',
+                fallbackLatLng: [43.0472023941442, -87.9561409333908], fallbackDataset: [-87.9561409333908, 43.0472023941442]
+            },
+            parcels: {
+                strategy: 'grid', gridSize: 0.001, source: 'parcel-source',
+                sourceId: 'us-wi-milwaukee-county-taxparcel-map-id', idPrefix: 'US-WI-MILWAUKEE-MAP-',
+                requiresBackend: true, ownership: false, liveRadiusKm: 3,
+                attribution: '<a href="https://county.milwaukee.gov/EN/Administrative-Services/Land-Information-Office">Milwaukee County public cadastral polygons</a> · adapted'
+            },
+            buildings: { source: 'osm' },
+            sidebar: { disabledSections: ['parcelBlocks', 'roads', 'areaMonitor'] },
+            parcelBuilder: { url: 'https://urbangametheory.xyz/codechecker/' }
+        },
+        krakow: {
+            id: 'krakow',
+            label: translateCityText('city.labels.krakow', 'Kraków, Poland'),
+            currency: { locale: 'pl-PL', code: 'PLN' },
+            map: {
+                initialView: { type: 'center', zoom: SHARED_DEFAULT_ZOOM },
+                defaultCenter: [50.0549669396486, 19.9647598843061], defaultZoom: SHARED_DEFAULT_ZOOM,
+                parcelZoomRange: { min: 17, max: Infinity }, latLngPadding: 0.08
+            },
+            projection: {
+                datasetCrs: 'EPSG:4326', definition: '+proj=longlat +datum=WGS84 +no_defs',
+                metricCrs: 'EPSG:32634',
+                metricDefinition: '+proj=utm +zone=34 +datum=WGS84 +units=m +no_defs +type=crs',
+                fallbackLatLng: [50.0549669396486, 19.9647598843061], fallbackDataset: [19.9647598843061, 50.0549669396486]
+            },
+            parcels: {
+                strategy: 'grid', gridSize: 0.001, source: 'parcel-source',
+                sourceId: 'pl-krakow-msip-egib-parcels', idPrefix: 'PL-KRAKOW-EGIB-',
+                requiresBackend: true, ownership: false, liveRadiusKm: 3,
+                attribution: '<a href="https://msip.krakow.pl/dataset/1562">Kraków MSIP public EGiB parcels</a> · adapted'
+            },
+            buildings: { source: 'osm' },
+            sidebar: { disabledSections: ['parcelBlocks', 'roads', 'areaMonitor'] },
+            parcelBuilder: { url: 'https://urbangametheory.xyz/codechecker/' }
+        },
+        fresno: {
+            id: 'fresno',
+            label: translateCityText('city.labels.fresno', 'Fresno, United States'),
+            currency: { locale: 'en-US', code: 'USD' },
+            map: {
+                initialView: { type: 'center', zoom: SHARED_DEFAULT_ZOOM },
+                defaultCenter: [36.7922501389848, -119.77157818531], defaultZoom: SHARED_DEFAULT_ZOOM,
+                parcelZoomRange: { min: 17, max: Infinity }, latLngPadding: 0.08
+            },
+            projection: {
+                datasetCrs: 'EPSG:4326', definition: '+proj=longlat +datum=WGS84 +no_defs',
+                metricCrs: 'EPSG:32611',
+                metricDefinition: '+proj=utm +zone=11 +datum=WGS84 +units=m +no_defs +type=crs',
+                fallbackLatLng: [36.7922501389848, -119.77157818531], fallbackDataset: [-119.77157818531, 36.7922501389848]
+            },
+            parcels: {
+                strategy: 'grid', gridSize: 0.001, source: 'parcel-source',
+                sourceId: 'us-ca-fresno-county-parcels', idPrefix: 'US-CA-FRESNO-APN-',
+                requiresBackend: true, ownership: false, liveRadiusKm: 3,
+                attribution: '<a href="https://www.fresnocountyca.gov/Departments/Assessor/Mapping">Fresno County public parcel polygons</a> · adapted'
+            },
+            buildings: { source: 'osm' },
+            sidebar: { disabledSections: ['parcelBlocks', 'roads', 'areaMonitor'] },
+            parcelBuilder: { url: 'https://urbangametheory.xyz/codechecker/' }
+        },
+        winnipeg: {
+            id: 'winnipeg',
+            label: translateCityText('city.labels.winnipeg', 'Winnipeg, Canada'),
+            currency: { locale: 'en-CA', code: 'CAD' },
+            map: {
+                initialView: { type: 'center', zoom: SHARED_DEFAULT_ZOOM },
+                defaultCenter: [49.8912776896545, -97.1447622935792], defaultZoom: SHARED_DEFAULT_ZOOM,
+                parcelZoomRange: { min: 17, max: Infinity }, latLngPadding: 0.08
+            },
+            projection: {
+                datasetCrs: 'EPSG:4326', definition: '+proj=longlat +datum=WGS84 +no_defs',
+                metricCrs: 'EPSG:32614',
+                metricDefinition: '+proj=utm +zone=14 +datum=WGS84 +units=m +no_defs +type=crs',
+                fallbackLatLng: [49.8912776896545, -97.1447622935792], fallbackDataset: [-97.1447622935792, 49.8912776896545]
+            },
+            parcels: {
+                strategy: 'grid', gridSize: 0.001, source: 'parcel-source',
+                sourceId: 'ca-winnipeg-assessment-gisid', idPrefix: 'CA-WINNIPEG-GISID-',
+                requiresBackend: true, ownership: false, liveRadiusKm: 3,
+                attribution: '<a href="https://data.winnipeg.ca/Assessment-Taxation-Corporate/Assessment-Parcels/d4mq-wa44">Winnipeg public assessment parcel footprints</a> · adapted'
+            },
+            buildings: { source: 'osm' },
+            sidebar: { disabledSections: ['parcelBlocks', 'roads', 'areaMonitor'] },
+            parcelBuilder: { url: 'https://urbangametheory.xyz/codechecker/' }
+        },
+        shatin: {
+            id: 'shatin',
+            label: translateCityText('city.labels.shatin', 'Sha Tin, Hong Kong'),
+            currency: { locale: 'en-HK', code: 'HKD' },
+            map: {
+                initialView: { type: 'center', zoom: SHARED_DEFAULT_ZOOM },
+                defaultCenter: [22.3934460524814, 114.204022607849], defaultZoom: SHARED_DEFAULT_ZOOM,
+                parcelZoomRange: { min: 17, max: Infinity }, latLngPadding: 0.08
+            },
+            projection: {
+                datasetCrs: 'EPSG:4326', definition: '+proj=longlat +datum=WGS84 +no_defs',
+                metricCrs: 'EPSG:32650',
+                metricDefinition: '+proj=utm +zone=50 +datum=WGS84 +units=m +no_defs +type=crs',
+                fallbackLatLng: [22.3934460524814, 114.204022607849], fallbackDataset: [114.204022607849, 22.3934460524814]
+            },
+            parcels: {
+                strategy: 'grid', gridSize: 0.001, source: 'parcel-source',
+                sourceId: 'hk-landsd-csdi-lot-polygons', idPrefix: 'HK-CSDI-LOT-',
+                requiresBackend: true, ownership: false, liveRadiusKm: 3,
+                attribution: '<a href="https://portal.csdi.gov.hk/csdi-webpage/dataset/landsd_rcd_1637217253134_22729">Hong Kong Lands Department CSDI lots</a> · adapted'
+            },
+            buildings: { source: 'osm' },
+            sidebar: { disabledSections: ['parcelBlocks', 'roads', 'areaMonitor'] },
+            parcelBuilder: { url: 'https://urbangametheory.xyz/codechecker/' }
+        },
+        okara: {
+            id: 'okara',
+            label: translateCityText('city.labels.okara', 'Okara, Pakistan'),
+            currency: { locale: 'en-PK', code: 'PKR' },
+            map: {
+                initialView: { type: 'center', zoom: SHARED_DEFAULT_ZOOM },
+                defaultCenter: [30.8083288852812, 73.4521453260116], defaultZoom: SHARED_DEFAULT_ZOOM,
+                parcelZoomRange: { min: 17, max: Infinity }, latLngPadding: 0.08
+            },
+            projection: {
+                datasetCrs: 'EPSG:4326', definition: '+proj=longlat +datum=WGS84 +no_defs',
+                metricCrs: 'EPSG:32643',
+                metricDefinition: '+proj=utm +zone=43 +datum=WGS84 +units=m +no_defs +type=crs',
+                fallbackLatLng: [30.8083288852812, 73.4521453260116], fallbackDataset: [73.4521453260116, 30.8083288852812]
+            },
+            parcels: {
+                strategy: 'grid', gridSize: 0.001, source: 'parcel-source',
+                sourceId: 'pk-pulse-okara-parcels', idPrefix: 'PK-PULSE-OKARA-',
+                requiresBackend: true, ownership: false, liveRadiusKm: 3,
+                attribution: '<a href="https://lis.pulse.gop.pk/">Punjab PULSE Okara cadastral reference polygons</a> · adapted'
+            },
+            buildings: { source: 'osm' },
+            sidebar: { disabledSections: ['parcelBlocks', 'roads', 'areaMonitor'] },
+            parcelBuilder: { url: 'https://urbangametheory.xyz/codechecker/' }
+        },
+        kitwe: {
+            id: 'kitwe',
+            label: translateCityText('city.labels.kitwe', 'Kitwe, Zambia'),
+            currency: { locale: 'en-ZM', code: 'ZMW' },
+            map: {
+                initialView: { type: 'center', zoom: SHARED_DEFAULT_ZOOM },
+                defaultCenter: [-12.8099306286313, 28.222405935667], defaultZoom: SHARED_DEFAULT_ZOOM,
+                parcelZoomRange: { min: 17, max: Infinity }, latLngPadding: 0.08
+            },
+            projection: {
+                datasetCrs: 'EPSG:4326', definition: '+proj=longlat +datum=WGS84 +no_defs',
+                metricCrs: 'EPSG:32735',
+                metricDefinition: '+proj=utm +zone=35 +south +datum=WGS84 +units=m +no_defs +type=crs',
+                fallbackLatLng: [-12.8099306286313, 28.222405935667], fallbackDataset: [28.222405935667, -12.8099306286313]
+            },
+            parcels: {
+                strategy: 'grid', gridSize: 0.001, source: 'parcel-source',
+                sourceId: 'zm-nsdi-zilmis-lots', idPrefix: 'ZM-NSDI-LOT-',
+                requiresBackend: true, ownership: false, liveRadiusKm: 3,
+                attribution: '<a href="https://www.map.gov.zm/arcgis/rest/services/NSDI_Vector/CadasterNew/MapServer">Zambia NSDI ZILMIS lot polygons</a> · adapted'
+            },
+            buildings: { source: 'osm' },
+            sidebar: { disabledSections: ['parcelBlocks', 'roads', 'areaMonitor'] },
+            parcelBuilder: { url: 'https://urbangametheory.xyz/codechecker/' }
+        },
+        wuppertal: {
+            id: 'wuppertal',
+            label: translateCityText('city.labels.wuppertal', 'Wuppertal, Germany'),
+            currency: { locale: 'de-DE', code: 'EUR' },
+            map: {
+                initialView: { type: 'center', zoom: SHARED_DEFAULT_ZOOM },
+                defaultCenter: [51.2196383633976, 7.10247286125364], defaultZoom: SHARED_DEFAULT_ZOOM,
+                parcelZoomRange: { min: 17, max: Infinity }, latLngPadding: 0.08
+            },
+            projection: {
+                datasetCrs: 'EPSG:4326', definition: '+proj=longlat +datum=WGS84 +no_defs',
+                metricCrs: 'EPSG:32632',
+                metricDefinition: '+proj=utm +zone=32 +datum=WGS84 +units=m +no_defs +type=crs',
+                fallbackLatLng: [51.2196383633976, 7.10247286125364], fallbackDataset: [7.10247286125364, 51.2196383633976]
+            },
+            parcels: {
+                strategy: 'grid', gridSize: 0.001, source: 'parcel-source',
+                sourceId: 'de-nrw-lika-flurstueck', idPrefix: 'DE-NRW-',
+                requiresBackend: true, ownership: false, liveRadiusKm: 3,
+                attribution: '<a href="https://ogc-api.nrw.de/lika/v1/collections/flurstueck?f=json">Geobasis NRW ALKIS parcels</a> · adapted'
+            },
+            buildings: { source: 'osm' },
+            sidebar: { disabledSections: ['parcelBlocks', 'roads', 'areaMonitor'] },
+            parcelBuilder: { url: 'https://urbangametheory.xyz/codechecker/' }
+        },
+        palermo: {
+            id: 'palermo',
+            label: translateCityText('city.labels.palermo', 'Palermo, Italy'),
+            currency: { locale: 'it-IT', code: 'EUR' },
+            map: {
+                initialView: { type: 'center', zoom: SHARED_DEFAULT_ZOOM },
+                defaultCenter: [38.1207651044272, 13.3478178274778], defaultZoom: SHARED_DEFAULT_ZOOM,
+                parcelZoomRange: { min: 17, max: Infinity }, latLngPadding: 0.08
+            },
+            projection: {
+                datasetCrs: 'EPSG:4326', definition: '+proj=longlat +datum=WGS84 +no_defs',
+                metricCrs: 'EPSG:32633',
+                metricDefinition: '+proj=utm +zone=33 +datum=WGS84 +units=m +no_defs +type=crs',
+                fallbackLatLng: [38.1207651044272, 13.3478178274778], fallbackDataset: [13.3478178274778, 38.1207651044272]
+            },
+            parcels: {
+                strategy: 'grid', gridSize: 0.001, source: 'parcel-source',
+                sourceId: 'it-sicilia-sitr-cadastral-parcels', idPrefix: 'IT-SICILIA-PARCEL-',
+                requiresBackend: true, ownership: false, liveRadiusKm: 3,
+                attribution: '<a href="https://www.sitr.regione.sicilia.it/">Sicilia SITR public cadastral parcels</a> · adapted'
+            },
+            buildings: { source: 'osm' },
+            sidebar: { disabledSections: ['parcelBlocks', 'roads', 'areaMonitor'] },
+            parcelBuilder: { url: 'https://urbangametheory.xyz/codechecker/' }
+        },
+        toulouse: {
+            id: 'toulouse',
+            label: translateCityText('city.labels.toulouse', 'Toulouse, France'),
+            currency: { locale: 'fr-FR', code: 'EUR' },
+            map: {
+                initialView: { type: 'center', zoom: SHARED_DEFAULT_ZOOM },
+                defaultCenter: [43.6041456701446, 1.42516148294357], defaultZoom: SHARED_DEFAULT_ZOOM,
+                parcelZoomRange: { min: 17, max: Infinity }, latLngPadding: 0.08
+            },
+            projection: {
+                datasetCrs: 'EPSG:4326', definition: '+proj=longlat +datum=WGS84 +no_defs',
+                metricCrs: 'EPSG:32631',
+                metricDefinition: '+proj=utm +zone=31 +datum=WGS84 +units=m +no_defs +type=crs',
+                fallbackLatLng: [43.6041456701446, 1.42516148294357], fallbackDataset: [1.42516148294357, 43.6041456701446]
+            },
+            parcels: {
+                strategy: 'grid', gridSize: 0.001, source: 'parcel-source',
+                sourceId: 'fr-ign-parcellaire-express', idPrefix: 'FR-PCI-',
+                requiresBackend: true, ownership: false, liveRadiusKm: 3,
+                attribution: '<a href="https://www.data.gouv.fr/datasets/parcellaire-express-pci">France IGN/DGFiP Parcellaire Express (PCI)</a> · adapted'
+            },
+            buildings: { source: 'osm' },
+            sidebar: { disabledSections: ['parcelBlocks', 'roads', 'areaMonitor'] },
+            parcelBuilder: { url: 'https://urbangametheory.xyz/codechecker/' }
+        },
+        bordeaux: {
+            id: 'bordeaux',
+            label: translateCityText('city.labels.bordeaux', 'Bordeaux, France'),
+            currency: { locale: 'fr-FR', code: 'EUR' },
+            map: {
+                initialView: { type: 'center', zoom: SHARED_DEFAULT_ZOOM },
+                defaultCenter: [44.8360390353827, -0.592897717816896], defaultZoom: SHARED_DEFAULT_ZOOM,
+                parcelZoomRange: { min: 17, max: Infinity }, latLngPadding: 0.08
+            },
+            projection: {
+                datasetCrs: 'EPSG:4326', definition: '+proj=longlat +datum=WGS84 +no_defs',
+                metricCrs: 'EPSG:32630',
+                metricDefinition: '+proj=utm +zone=30 +datum=WGS84 +units=m +no_defs +type=crs',
+                fallbackLatLng: [44.8360390353827, -0.592897717816896], fallbackDataset: [-0.592897717816896, 44.8360390353827]
+            },
+            parcels: {
+                strategy: 'grid', gridSize: 0.001, source: 'parcel-source',
+                sourceId: 'fr-ign-parcellaire-express', idPrefix: 'FR-PCI-',
+                requiresBackend: true, ownership: false, liveRadiusKm: 3,
+                attribution: '<a href="https://www.data.gouv.fr/datasets/parcellaire-express-pci">France IGN/DGFiP Parcellaire Express (PCI)</a> · adapted'
+            },
+            buildings: { source: 'osm' },
+            sidebar: { disabledSections: ['parcelBlocks', 'roads', 'areaMonitor'] },
+            parcelBuilder: { url: 'https://urbangametheory.xyz/codechecker/' }
+        },
+        elpaso: {
+            id: 'elpaso',
+            label: translateCityText('city.labels.elpaso', 'El Paso'),
+            currency: { locale: 'en-US', code: 'USD' },
+            map: {
+                initialView: { type: 'center', zoom: SHARED_DEFAULT_ZOOM },
+                defaultCenter: [31.7867212643232, -106.36486464215], defaultZoom: SHARED_DEFAULT_ZOOM,
+                parcelZoomRange: { min: 17, max: Infinity }, latLngPadding: 0.08
+            },
+            projection: {
+                datasetCrs: 'EPSG:4326', definition: '+proj=longlat +datum=WGS84 +no_defs',
+                metricCrs: 'EPSG:32613',
+                metricDefinition: '+proj=utm +zone=13 +datum=WGS84 +units=m +no_defs +type=crs',
+                fallbackLatLng: [31.7867212643232, -106.36486464215], fallbackDataset: [-106.36486464215, 31.7867212643232]
+            },
+            parcels: {
+                strategy: 'grid', gridSize: 0.001, source: 'parcel-source',
+                sourceId: 'us-tx-el-paso-city-gis-parcels', idPrefix: 'US-TX-ELPASO-OBJECTID-',
+                requiresBackend: true, ownership: false, liveRadiusKm: 3,
+                attribution: '<a href="https://opendata.elpasotexas.gov/">City of El Paso GIS Parcels (EPCAD source, GIS OID namespace)</a> · adapted'
+            },
+            buildings: { source: 'osm' },
+            sidebar: { disabledSections: ['parcelBlocks', 'roads', 'areaMonitor'] },
+            parcelBuilder: { url: 'https://urbangametheory.xyz/codechecker/' }
+        },
+        westpalmbeach: {
+            id: 'westpalmbeach',
+            label: translateCityText('city.labels.westpalmbeach', 'West Palm Beach'),
+            currency: { locale: 'en-US', code: 'USD' },
+            map: {
+                initialView: { type: 'center', zoom: SHARED_DEFAULT_ZOOM },
+                defaultCenter: [26.6223516519297, -80.1012894536897], defaultZoom: SHARED_DEFAULT_ZOOM,
+                parcelZoomRange: { min: 17, max: Infinity }, latLngPadding: 0.08
+            },
+            projection: {
+                datasetCrs: 'EPSG:4326', definition: '+proj=longlat +datum=WGS84 +no_defs',
+                metricCrs: 'EPSG:32617',
+                metricDefinition: '+proj=utm +zone=17 +datum=WGS84 +units=m +no_defs +type=crs',
+                fallbackLatLng: [26.6223516519297, -80.1012894536897], fallbackDataset: [-80.1012894536897, 26.6223516519297]
+            },
+            parcels: {
+                strategy: 'grid', gridSize: 0.001, source: 'parcel-source',
+                sourceId: 'us-palm-beach-county-pao-parcels-ground-oid', idPrefix: 'US-PBC-OID-',
+                requiresBackend: true, ownership: false, liveRadiusKm: 3,
+                attribution: '<a href="https://pbcpao.gov/departments/gis.htm">Palm Beach County Property Appraiser parcel polygons using service OID</a> · adapted'
+            },
+            buildings: { source: 'osm' },
+            sidebar: { disabledSections: ['parcelBlocks', 'roads', 'areaMonitor'] },
+            parcelBuilder: { url: 'https://urbangametheory.xyz/codechecker/' }
+        },
+        lodz: {
+            id: 'lodz',
+            label: translateCityText('city.labels.lodz', 'Łódź'),
+            currency: { locale: 'pl-PL', code: 'PLN' },
+            map: {
+                initialView: { type: 'center', zoom: SHARED_DEFAULT_ZOOM },
+                defaultCenter: [51.7666527325011, 19.4560942606722], defaultZoom: SHARED_DEFAULT_ZOOM,
+                parcelZoomRange: { min: 17, max: Infinity }, latLngPadding: 0.08
+            },
+            projection: {
+                datasetCrs: 'EPSG:4326', definition: '+proj=longlat +datum=WGS84 +no_defs',
+                metricCrs: 'EPSG:32634',
+                metricDefinition: '+proj=utm +zone=34 +datum=WGS84 +units=m +no_defs +type=crs',
+                fallbackLatLng: [51.7666527325011, 19.4560942606722], fallbackDataset: [19.4560942606722, 51.7666527325011]
+            },
+            parcels: {
+                strategy: 'grid', gridSize: 0.001, source: 'parcel-source',
+                sourceId: 'lodz-gml-wfs', idPrefix: 'PL-LODZ-',
+                requiresBackend: true, ownership: false, liveRadiusKm: 3,
+                attribution: '<a href="https://nowa.mapa.lodz.pl/dla-profesjonalistow/">Łódź municipal EGiB cadastral parcel polygons</a> · adapted'
+            },
+            buildings: { source: 'osm' },
+            sidebar: { disabledSections: ['parcelBlocks', 'roads', 'areaMonitor'] },
+            parcelBuilder: { url: 'https://urbangametheory.xyz/codechecker/' }
+        },
+        poznan: {
+            id: 'poznan',
+            label: translateCityText('city.labels.poznan', 'Poznań'),
+            currency: { locale: 'pl-PL', code: 'PLN' },
+            map: {
+                initialView: { type: 'center', zoom: SHARED_DEFAULT_ZOOM },
+                defaultCenter: [52.4033374848812, 16.9139953760299], defaultZoom: SHARED_DEFAULT_ZOOM,
+                parcelZoomRange: { min: 17, max: Infinity }, latLngPadding: 0.08
+            },
+            projection: {
+                datasetCrs: 'EPSG:4326', definition: '+proj=longlat +datum=WGS84 +no_defs',
+                metricCrs: 'EPSG:2180',
+                metricDefinition: '+proj=tmerc +lat_0=0 +lon_0=19 +k=0.9993 +x_0=500000 +y_0=-5300000 +ellps=GRS80 +units=m +no_defs',
+                fallbackLatLng: [52.4033374848812, 16.9139953760299], fallbackDataset: [16.9139953760299, 52.4033374848812]
+            },
+            parcels: {
+                strategy: 'grid', gridSize: 0.001, source: 'parcel-source',
+                sourceId: 'poznan-gml-wfs', idPrefix: 'PL-POZNAN-',
+                requiresBackend: true, ownership: false, liveRadiusKm: 3,
+                attribution: '<a href="https://geopoz.poznan.pl/">Poznań municipal EGiB cadastral parcel polygons</a> · adapted'
+            },
+            buildings: { source: 'osm' },
+            sidebar: { disabledSections: ['parcelBlocks', 'roads', 'areaMonitor'] },
+            parcelBuilder: { url: 'https://urbangametheory.xyz/codechecker/' }
+        },
+        dresden: {
+            id: 'dresden',
+            label: translateCityText('city.labels.dresden', 'Dresden'),
+            currency: { locale: 'de-DE', code: 'EUR' },
+            map: {
+                initialView: { type: 'center', zoom: SHARED_DEFAULT_ZOOM },
+                defaultCenter: [51.0412590520933, 13.7515873602205], defaultZoom: SHARED_DEFAULT_ZOOM,
+                parcelZoomRange: { min: 17, max: Infinity }, latLngPadding: 0.08
+            },
+            projection: {
+                datasetCrs: 'EPSG:4326', definition: '+proj=longlat +datum=WGS84 +no_defs',
+                metricCrs: 'EPSG:32633',
+                metricDefinition: '+proj=utm +zone=33 +datum=WGS84 +units=m +no_defs +type=crs',
+                fallbackLatLng: [51.0412590520933, 13.7515873602205], fallbackDataset: [13.7515873602205, 51.0412590520933]
+            },
+            parcels: {
+                strategy: 'grid', gridSize: 0.001, source: 'parcel-source',
+                sourceId: 'dresden-saxony-gml-wfs', idPrefix: 'DE-SN-',
+                requiresBackend: true, ownership: false, liveRadiusKm: 3,
+                attribution: '<a href="https://www.geodaten.sachsen.de/alkis-wfs-4968.html">GeoSN Saxony simplified ALKIS cadastral parcel polygons</a> · adapted'
+            },
+            buildings: { source: 'osm' },
+            sidebar: { disabledSections: ['parcelBlocks', 'roads', 'areaMonitor'] },
+            parcelBuilder: { url: 'https://urbangametheory.xyz/codechecker/' }
+        },
+        leipzig: {
+            id: 'leipzig',
+            label: translateCityText('city.labels.leipzig', 'Leipzig'),
+            currency: { locale: 'de-DE', code: 'EUR' },
+            map: {
+                initialView: { type: 'center', zoom: SHARED_DEFAULT_ZOOM },
+                defaultCenter: [51.3403873460544, 12.3749392867142], defaultZoom: SHARED_DEFAULT_ZOOM,
+                parcelZoomRange: { min: 17, max: Infinity }, latLngPadding: 0.08
+            },
+            projection: {
+                datasetCrs: 'EPSG:4326', definition: '+proj=longlat +datum=WGS84 +no_defs',
+                metricCrs: 'EPSG:32633',
+                metricDefinition: '+proj=utm +zone=33 +datum=WGS84 +units=m +no_defs +type=crs',
+                fallbackLatLng: [51.3403873460544, 12.3749392867142], fallbackDataset: [12.3749392867142, 51.3403873460544]
+            },
+            parcels: {
+                strategy: 'grid', gridSize: 0.001, source: 'parcel-source',
+                sourceId: 'dresden-saxony-gml-wfs', idPrefix: 'DE-SN-',
+                requiresBackend: true, ownership: false, liveRadiusKm: 3,
+                attribution: '<a href="https://www.geodaten.sachsen.de/alkis-wfs-4968.html">GeoSN Saxony simplified ALKIS cadastral parcel polygons</a> · adapted'
+            },
+            buildings: { source: 'osm' },
+            sidebar: { disabledSections: ['parcelBlocks', 'roads', 'areaMonitor'] },
+            parcelBuilder: { url: 'https://urbangametheory.xyz/codechecker/' }
+        },
+        joinville: {
+            id: 'joinville',
+            label: translateCityText('city.labels.joinville', 'Joinville'),
+            currency: { locale: 'pt-BR', code: 'BRL' },
+            map: {
+                initialView: { type: 'center', zoom: SHARED_DEFAULT_ZOOM },
+                defaultCenter: [-26.3054119242896, -48.8298392070888], defaultZoom: SHARED_DEFAULT_ZOOM,
+                parcelZoomRange: { min: 17, max: Infinity }, latLngPadding: 0.08
+            },
+            projection: {
+                datasetCrs: 'EPSG:4326', definition: '+proj=longlat +datum=WGS84 +no_defs',
+                metricCrs: 'EPSG:32722',
+                metricDefinition: '+proj=utm +zone=22 +south +datum=WGS84 +units=m +no_defs +type=crs',
+                fallbackLatLng: [-26.3054119242896, -48.8298392070888], fallbackDataset: [-48.8298392070888, -26.3054119242896]
+            },
+            parcels: {
+                strategy: 'grid', gridSize: 0.001, source: 'parcel-source',
+                sourceId: 'br-joinville-simgeo-lotes', idPrefix: 'BR-JOINVILLE-IQ-',
+                requiresBackend: true, ownership: false, liveRadiusKm: 3,
+                attribution: '<a href="https://www.joinville.sc.gov.br/servicos/acessar-sistema-de-informacoes-municipais-georreferenciadas-simgeo/">Joinville SIMGeo municipal cadastral lot polygons</a> · adapted'
+            },
+            buildings: { source: 'osm' },
+            sidebar: { disabledSections: ['parcelBlocks', 'roads', 'areaMonitor'] },
+            parcelBuilder: { url: 'https://urbangametheory.xyz/codechecker/' }
+        },
+        utrecht: {
+            id: 'utrecht',
+            label: translateCityText('city.labels.utrecht', 'Utrecht'),
+            currency: { locale: 'nl-NL', code: 'EUR' },
+            map: {
+                initialView: { type: 'center', zoom: SHARED_DEFAULT_ZOOM },
+                defaultCenter: [52.0840427734495, 5.08101362175478], defaultZoom: SHARED_DEFAULT_ZOOM,
+                parcelZoomRange: { min: 17, max: Infinity }, latLngPadding: 0.08
+            },
+            projection: {
+                datasetCrs: 'EPSG:4326', definition: '+proj=longlat +datum=WGS84 +no_defs',
+                metricCrs: 'EPSG:32631',
+                metricDefinition: '+proj=utm +zone=31 +datum=WGS84 +units=m +no_defs +type=crs',
+                fallbackLatLng: [52.0840427734495, 5.08101362175478], fallbackDataset: [5.08101362175478, 52.0840427734495]
+            },
+            parcels: {
+                strategy: 'grid', gridSize: 0.001, source: 'parcel-source',
+                sourceId: 'nl-pdok-brk-kadastrale-kaart', idPrefix: 'NL-BRK-',
+                requiresBackend: true, ownership: false, liveRadiusKm: 3,
+                attribution: '<a href="https://www.pdok.nl/ogc-apis/-/article/kadastrale-kaart">Netherlands Kadaster / PDOK cadastral map</a> · adapted'
+            },
+            buildings: { source: 'osm' },
+            sidebar: { disabledSections: ['parcelBlocks', 'roads', 'areaMonitor'] },
+            parcelBuilder: { url: 'https://urbangametheory.xyz/codechecker/' }
+        },
+        bukit_mertajam: {
+            id: 'bukit_mertajam',
+            label: translateCityText('city.labels.bukit_mertajam', 'Bukit Mertajam'),
+            currency: { locale: 'ms-MY', code: 'MYR' },
+            map: {
+                initialView: { type: 'center', zoom: SHARED_DEFAULT_ZOOM },
+                defaultCenter: [5.37430818562544, 100.428386608375], defaultZoom: SHARED_DEFAULT_ZOOM,
+                parcelZoomRange: { min: 17, max: Infinity }, latLngPadding: 0.08
+            },
+            projection: {
+                datasetCrs: 'EPSG:4326', definition: '+proj=longlat +datum=WGS84 +no_defs',
+                metricCrs: 'EPSG:32647',
+                metricDefinition: '+proj=utm +zone=47 +datum=WGS84 +units=m +no_defs +type=crs',
+                fallbackLatLng: [5.37430818562544, 100.428386608375], fallbackDataset: [100.428386608375, 5.37430818562544]
+            },
+            parcels: {
+                strategy: 'grid', gridSize: 0.001, source: 'parcel-source',
+                sourceId: 'my-penang-forestry-cadastral-lots', idPrefix: 'MY-PENANG-',
+                requiresBackend: true, ownership: false, liveRadiusKm: 3,
+                attribution: '<a href="https://geoformatik.forestry.gov.my/arcgis/rest/services/PULAU_PINANG_SDE/MapServer/45">JUPEM Penang cadastral lots (Forestry GIS host)</a> · adapted'
+            },
+            buildings: { source: 'osm' },
+            sidebar: { disabledSections: ['parcelBlocks', 'roads', 'areaMonitor'] },
+            parcelBuilder: { url: 'https://urbangametheory.xyz/codechecker/' }
+        },
+        juiz_de_fora: {
+            id: 'juiz_de_fora',
+            label: translateCityText('city.labels.juiz_de_fora', 'Juiz de Fora'),
+            currency: { locale: 'pt-BR', code: 'BRL' },
+            map: {
+                initialView: { type: 'center', zoom: SHARED_DEFAULT_ZOOM },
+                defaultCenter: [-21.7520452174457, -43.3632723968038], defaultZoom: SHARED_DEFAULT_ZOOM,
+                parcelZoomRange: { min: 17, max: Infinity }, latLngPadding: 0.08
+            },
+            projection: {
+                datasetCrs: 'EPSG:4326', definition: '+proj=longlat +datum=WGS84 +no_defs',
+                metricCrs: 'EPSG:32723',
+                metricDefinition: '+proj=utm +zone=23 +south +datum=WGS84 +units=m +no_defs +type=crs',
+                fallbackLatLng: [-21.7520452174457, -43.3632723968038], fallbackDataset: [-43.3632723968038, -21.7520452174457]
+            },
+            parcels: {
+                strategy: 'grid', gridSize: 0.001, source: 'parcel-source',
+                sourceId: 'br-juiz-de-fora-sisurb-lotes', idPrefix: 'BR-JF-SISURB-',
+                requiresBackend: true, ownership: false, liveRadiusKm: 3,
+                attribution: '<a href="https://sisurb.pjf.mg.gov.br/server/rest/services/uso_cad_lotes/MapServer">Juiz de Fora SISURB municipal cadastral lots</a> · adapted'
+            },
+            buildings: { source: 'osm' },
+            sidebar: { disabledSections: ['parcelBlocks', 'roads', 'areaMonitor'] },
+            parcelBuilder: { url: 'https://urbangametheory.xyz/codechecker/' }
+        },
+        malaga: {
+            id: 'malaga',
+            label: translateCityText('city.labels.malaga', 'Málaga'),
+            currency: { locale: 'es-ES', code: 'EUR' },
+            map: {
+                initialView: { type: 'center', zoom: SHARED_DEFAULT_ZOOM },
+                defaultCenter: [36.719979707331, -4.43788341316648], defaultZoom: SHARED_DEFAULT_ZOOM,
+                parcelZoomRange: { min: 17, max: Infinity }, latLngPadding: 0.08
+            },
+            projection: {
+                datasetCrs: 'EPSG:4326', definition: '+proj=longlat +datum=WGS84 +no_defs',
+                metricCrs: 'EPSG:32630',
+                metricDefinition: '+proj=utm +zone=30 +datum=WGS84 +units=m +no_defs +type=crs',
+                fallbackLatLng: [36.719979707331, -4.43788341316648], fallbackDataset: [-4.43788341316648, 36.719979707331]
+            },
+            parcels: {
+                strategy: 'grid', gridSize: 0.001, source: 'parcel-source',
+                sourceId: 'es-malaga-municipal-parcel-snapshot', idPrefix: 'ES-MALAGA-PARCELA-',
+                requiresBackend: true, ownership: false, liveRadiusKm: 3,
+                attribution: '<a href="https://datosabiertos.malaga.eu/tr/dataset/sistema-de-informacion-cartografica-parcela">Ayuntamiento de Málaga municipal parcel polygons</a> · CC BY 4.0 · adapted'
+            },
+            buildings: { source: 'osm' },
+            sidebar: { disabledSections: ['parcelBlocks', 'roads', 'areaMonitor'] },
+            parcelBuilder: { url: 'https://urbangametheory.xyz/codechecker/' }
+        },
+        bakersfield: {
+            id: 'bakersfield',
+            label: translateCityText('city.labels.bakersfield', 'Bakersfield'),
+            currency: { locale: 'en-US', code: 'USD' },
+            map: {
+                initialView: { type: 'center', zoom: SHARED_DEFAULT_ZOOM },
+                defaultCenter: [35.3492651317935, -119.024876869726], defaultZoom: SHARED_DEFAULT_ZOOM,
+                parcelZoomRange: { min: 17, max: Infinity }, latLngPadding: 0.08
+            },
+            projection: {
+                datasetCrs: 'EPSG:4326', definition: '+proj=longlat +datum=WGS84 +no_defs',
+                metricCrs: 'EPSG:32611',
+                metricDefinition: '+proj=utm +zone=11 +datum=WGS84 +units=m +no_defs +type=crs',
+                fallbackLatLng: [35.3492651317935, -119.024876869726], fallbackDataset: [-119.024876869726, 35.3492651317935]
+            },
+            parcels: {
+                strategy: 'grid', gridSize: 0.001, source: 'parcel-source',
+                sourceId: 'us-bakersfield-municipal-cadastral-parcels', idPrefix: 'US-BAKERSFIELD-APN-',
+                requiresBackend: true, ownership: false, liveRadiusKm: 3,
+                attribution: '<a href="https://gis.bakersfieldcity.us/webmaps/rest/services/General/Cadastre/MapServer">City of Bakersfield cadastral parcel polygons</a> · adapted'
+            },
+            buildings: { source: 'osm' },
+            sidebar: { disabledSections: ['parcelBlocks', 'roads', 'areaMonitor'] },
+            parcelBuilder: { url: 'https://urbangametheory.xyz/codechecker/' }
+        },
         // Not a city: the generic place-without-parcels view (see EXPLORE_CITY_ID above). Left out
         // of getAvailableCities/findNearestCity, the search box city list, the stored-city pointer and
         // scripts/build-world-coverage.mjs (which skips `explore: true`).

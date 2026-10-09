@@ -1,0 +1,24 @@
+{
+  "checkedAt": "2026-10-09T05:48:51.669720+00:00",
+  "testFiles": 7,
+  "tests": 115,
+  "passed": true,
+  "runner": "Vitest4.1.11",
+  "files": [
+    "parcel-catalog-startup.test.js",
+    "parcel-coverage-report.test.js",
+    "parcel-report-evidence.test.js",
+    "coverage-evidence-consistency.test.js",
+    "world-coverage-build.test.js",
+    "frontend-world-coverage.test.js",
+    "gml-wfs-source.test.js"
+  ],
+  "scope": "Follow-up runtime catalog, report/evidence consistency, frontend coverage and existing GML adapter checks after32follow-on integrations and Leipzig enablement. Earlier25files457tests remain the broader overnight baseline.",
+  "invocationCorrection": "Initial node --test invocation was incompatible with Vitest imports; rerun with the project Vitest runner passed115tests.",
+  "configuredCities": 180,
+  "catalogSources": 154,
+  "registryCities": 1215,
+  "reportCities": 1304,
+  "reportCheckedCities": 1223,
+  "reportWarnings": []
+}

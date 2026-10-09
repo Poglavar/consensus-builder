@@ -1,0 +1,146 @@
+{
+  "name": "Querétaro",
+  "country": "Mexico",
+  "countryCode": "MX",
+  "rank": 590,
+  "point": [
+    20.6002049395571,
+    -100.415212704548
+  ],
+  "freshResearch": {
+    "queries": [
+      {
+        "language": "Spanish",
+        "query": "Querétaro mapa catastral parcelas IDECATQ predios urbanos catastro municipal servicio WMS",
+        "result": "El Instituto Registral y Catastral estatal publica IDECATQ. El selector identifica Querétaro como municipio 14 y su capa urbana M14_PA aparece en el catálogo WMS con extensión que cubre el punto WUP. El servicio WFS responde que está deshabilitado. La herramienta Identify está ligada a una cédula catastral registral con campos personales y valuatorios; no se solicitó información de predios.",
+        "urls": [
+          "https://catastroedo.queretaro.gob.mx/Qsig/?mun=14",
+          "https://catastroedo.queretaro.gob.mx/tramites.php",
+          "https://rppc.queretaro.gob.mx/portal/index.php?v=portal-ciudadano",
+          "https://municipiodequeretaro.gob.mx/secretarias/secretaria-de-desarrollo-urbano/cartas-urbanas/",
+          "https://municipiodequeretaro.gob.mx/municipio/repositorios/gacetas-2024-2027/Gaceta-No.2-Tomo-III.pdf"
+        ]
+      },
+      {
+        "language": "English",
+        "query": "Querétaro official municipal cadastral map urban parcel WMS feature service",
+        "result": "The state cadastral institute publishes a public map with a Querétaro urban parcel layer (M14_PA). WMS capabilities provide map metadata and display coverage only. WFS is disabled, while the identify workflow links a selected cadastral key to an owner/address/value cédula. No feature query or geometry was requested.",
+        "urls": [
+          "https://catastroedo.queretaro.gob.mx/Qsig/?mun=14",
+          "https://catastroedo.queretaro.gob.mx/tramites.php",
+          "https://rppc.queretaro.gob.mx/portal/index.php?v=portal-ciudadano",
+          "https://municipiodequeretaro.gob.mx/secretarias/secretaria-de-desarrollo-urbano/cartas-urbanas/",
+          "https://municipiodequeretaro.gob.mx/municipio/repositorios/gacetas-2024-2027/Gaceta-No.2-Tomo-III.pdf"
+        ]
+      }
+    ],
+    "portals": [
+      {
+        "url": "https://catastroedo.queretaro.gob.mx/Qsig/?mun=14",
+        "observation": "Official IDECATQ public viewer; municipality selector identifies Querétaro as code 14 and the client configures urban parcel layer M14_PA."
+      },
+      {
+        "url": "https://catastroedo.queretaro.gob.mx/tramites.php",
+        "observation": "Official state cadastral institution lists cadastral-record and cartography services."
+      },
+      {
+        "url": "https://rppc.queretaro.gob.mx/portal/index.php?v=portal-ciudadano",
+        "observation": "Official state registry/cadastre portal describes citizen cadastral and registry services."
+      },
+      {
+        "url": "https://municipiodequeretaro.gob.mx/secretarias/secretaria-de-desarrollo-urbano/cartas-urbanas/",
+        "observation": "Official municipality planning map page and land-use lookup."
+      },
+      {
+        "url": "https://municipiodequeretaro.gob.mx/municipio/repositorios/gacetas-2024-2027/Gaceta-No.2-Tomo-III.pdf",
+        "observation": "Municipal instrument assigns local cadastral-registrar functions over parcels in the municipality."
+      }
+    ],
+    "requests": [
+      {
+        "url": "https://catastroedo.queretaro.gob.mx/Qsig/?mun=14",
+        "method": "GET",
+        "httpStatus": 200,
+        "contentType": "text/html",
+        "responseBytes": 863752,
+        "observation": "IDECATQ viewer shell; municipality selector contains QUERÉTARO code 14. Client JavaScript configures public WMS and urban parcel layer M14_PA."
+      },
+      {
+        "url": "https://catastroedo.queretaro.gob.mx/geoserver/queretaro/wms?service=WMS&request=GetCapabilities",
+        "method": "GET",
+        "httpStatus": 200,
+        "contentType": "text/xml",
+        "responseBytes": 517775,
+        "observation": "WMS Capabilities declares queryable M14_PA layer in EPSG:32614 and CRS:84, extent [-100.5895544,20.5377089,-100.3258632,20.9241908]. WUP point falls inside the bounding extent only; no parcel hit was tested."
+      },
+      {
+        "url": "https://catastroedo.queretaro.gob.mx/geoserver/queretaro/wfs?service=WFS&request=GetCapabilities",
+        "method": "GET",
+        "httpStatus": 200,
+        "contentType": "application/xml",
+        "responseBytes": 496,
+        "observation": "OGC exception report states “Service WFS is disabled”; no vector feature request was made."
+      }
+    ]
+  },
+  "status": "complete",
+  "verifiedParcelResponse": {
+    "httpStatus": null,
+    "featureType": null,
+    "responseType": null,
+    "responseCrs": null,
+    "returnedFullPolygonCount": 0,
+    "uniqueFullPolygonCount": 0,
+    "wupPointContained": null,
+    "limitations": "No public, anonymous full-polygon response with privacy-safe selected attributes was retrieved or retained."
+  },
+  "source": {
+    "id": "city-MX-5096-overnight-research",
+    "name": "Querétaro city cadastral source review",
+    "operator": "Instituto Registral y Catastral del Estado de Querétaro (IRCQ), Government of Querétaro; municipal Dirección de Catastro",
+    "url": "https://catastroedo.queretaro.gob.mx/Qsig/?mun=14",
+    "format": "Official public cadastral map/registry and municipal land records; no safe full-vector API verified",
+    "access": "Public source and layer-metadata review only; no account login, owner search, address search, cadastral-key search, or feature identify query used.",
+    "nativeIdField": null,
+    "geometryCrs": null
+  },
+  "coverageAssessment": {
+    "claimedScope": "State map metadata lists Querétaro urban parcel layer M14_PA whose rectangular extent contains the WUP point; extent is not a parcel containment result.",
+    "verifiedOpenScope": "Public registry/map activity is confirmed, but anonymous privacy-safe full polygon retrieval is not verified.",
+    "countrywideVerified": false,
+    "citywideVerified": false
+  },
+  "registryFound": true,
+  "registryBasis": "The state Instituto Registral y Catastral operates IDECATQ with Querétaro municipal urban-parcel layer M14_PA; the municipal Dirección de Catastro administers local cadastral records. The WMS is public, but WFS is explicitly disabled. Public Identify links to cadastral cédula fields including owner, address and valuation; no feature query was made. The informational disclaimer is not the access limitation.",
+  "verifiedSample": false,
+  "publicParcelGeometryFound": false,
+  "resultCategory": "city_local_registry_or_public_cadastre_documented_no_verified_safe_vector",
+  "technicalBlocker": "Public WMS map metadata confirms layer M14_PA but does not return full polygon geometry. The WFS endpoint explicitly reports “Service WFS is disabled”; the WMS Identify route can expose owner, address and value attributes, so it was not queried.",
+  "remainingUncertainty": "Whether a documented anonymous feature route can return full geometry with only safe native parcel identifiers is unresolved; the WUP point is not matched to any parcel.",
+  "nextStep": "If further research is warranted, use a documented public feature service only after confirming a property-safe field projection; never use identify/cédula/search functions that expose owner, address or tax data.",
+  "sourceIds": [],
+  "schemaVersion": 1,
+  "checkedAt": "2026-10-09",
+  "wupCityCode": 5096,
+  "cityId": "wup2025:5096",
+  "queueRank": 590,
+  "population2025": 880361,
+  "populationPlausibility2025": "Moderate",
+  "populationUnit": "persons",
+  "pointBasis": "UN WUP 2025 population-weighted settlement centroid; this is not a municipal boundary or a parcel-coverage claim.",
+  "centerLatLon": [
+    20.6002049395571,
+    -100.415212704548
+  ],
+  "runtimeReadiness": "not_enabled_no_verified_public_geometry",
+  "adapterReady": false,
+  "scopeLimits": "Source discovery only. No owner/address/property value or account data retained; no parcel-level lookup or geometry was performed.",
+  "registryEvidenceUrls": [
+    "https://catastroedo.queretaro.gob.mx/Qsig/?mun=14",
+    "https://catastroedo.queretaro.gob.mx/tramites.php",
+    "https://rppc.queretaro.gob.mx/portal/index.php?v=portal-ciudadano",
+    "https://municipiodequeretaro.gob.mx/secretarias/secretaria-de-desarrollo-urbano/cartas-urbanas/",
+    "https://municipiodequeretaro.gob.mx/municipio/repositorios/gacetas-2024-2027/Gaceta-No.2-Tomo-III.pdf"
+  ],
+  "rootReviewedAt": "2026-10-09T01:48:28.723986+00:00"
+}

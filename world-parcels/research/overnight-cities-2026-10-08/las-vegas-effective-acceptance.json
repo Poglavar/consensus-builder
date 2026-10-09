@@ -1,0 +1,1181 @@
+{
+  "schemaVersion": 1,
+  "kind": "effective_qualification_summary",
+  "checkedAt": "2026-10-08T21:25:11.658757+00:00",
+  "city": "lasvegas",
+  "descriptor": {
+    "id": "us-nv-clark-assessor-parcels",
+    "name": "Clark County Assessor Parcels",
+    "adapter": "arcgis",
+    "endpoint": "https://maps.clarkcountynv.gov/arcgis/rest/services/GISMO/AssessorMap/FeatureServer/1",
+    "idField": "APN",
+    "idType": "string",
+    "objectIdField": "OID",
+    "idPrefix": "US-NV-CLARK-",
+    "outFields": [
+      "OID",
+      "APN"
+    ],
+    "pageSize": 2000,
+    "maxFeatures": 10000,
+    "maxBboxKm2": 1,
+    "countryCode": "US",
+    "metricSrid": 32611
+  },
+  "grid": [
+    {
+      "name": "viewport-0",
+      "bbox": [
+        -115.166,
+        36.15,
+        -115.165,
+        36.151
+      ],
+      "kind": "aligned-grid"
+    },
+    {
+      "name": "viewport-1",
+      "bbox": [
+        -115.165,
+        36.15,
+        -115.164,
+        36.151
+      ],
+      "kind": "aligned-grid"
+    },
+    {
+      "name": "viewport-2",
+      "bbox": [
+        -115.164,
+        36.15,
+        -115.163,
+        36.151
+      ],
+      "kind": "aligned-grid"
+    },
+    {
+      "name": "viewport-3",
+      "bbox": [
+        -115.166,
+        36.151,
+        -115.165,
+        36.152
+      ],
+      "kind": "aligned-grid"
+    },
+    {
+      "name": "viewport-4",
+      "bbox": [
+        -115.165,
+        36.151,
+        -115.164,
+        36.152
+      ],
+      "kind": "aligned-grid"
+    },
+    {
+      "name": "viewport-5",
+      "bbox": [
+        -115.164,
+        36.151,
+        -115.163,
+        36.152
+      ],
+      "kind": "aligned-grid"
+    },
+    {
+      "name": "viewport-6",
+      "bbox": [
+        -115.166,
+        36.152,
+        -115.165,
+        36.153
+      ],
+      "kind": "aligned-grid"
+    },
+    {
+      "name": "viewport-7",
+      "bbox": [
+        -115.165,
+        36.152,
+        -115.164,
+        36.153
+      ],
+      "kind": "aligned-grid"
+    },
+    {
+      "name": "viewport-8",
+      "bbox": [
+        -115.164,
+        36.152,
+        -115.163,
+        36.153
+      ],
+      "kind": "aligned-grid"
+    },
+    {
+      "name": "viewport-9",
+      "bbox": [
+        -115.165,
+        36.149,
+        -115.164,
+        36.15
+      ],
+      "kind": "adjacent-pan"
+    },
+    {
+      "name": "viewport-10",
+      "bbox": [
+        -115.165,
+        36.153,
+        -115.164,
+        36.154
+      ],
+      "kind": "adjacent-pan"
+    },
+    {
+      "name": "viewport-11",
+      "bbox": [
+        -115.167,
+        36.151,
+        -115.166,
+        36.152
+      ],
+      "kind": "adjacent-pan"
+    },
+    {
+      "name": "viewport-12",
+      "bbox": [
+        -115.163,
+        36.151,
+        -115.162,
+        36.152
+      ],
+      "kind": "adjacent-pan"
+    }
+  ],
+  "tests": [
+    {
+      "name": "viewport-0",
+      "passed": true,
+      "evidenceFile": "las-vegas-final-acceptance.json",
+      "retried": false,
+      "bbox": [
+        -115.166,
+        36.15,
+        -115.165,
+        36.151
+      ],
+      "complete": true,
+      "count": 9,
+      "ids": [
+        {
+          "id": "US-NV-CLARK-16204311032",
+          "geometrySha256": "1813dcd13cb86604936b75983b62d4ce7691a28e5129008f09d3793fb4f4524f"
+        },
+        {
+          "id": "US-NV-CLARK-16204311033",
+          "geometrySha256": "4169ca2717accab9a9f7106f08ae2af4e0d97f177722c0a3c27bfaee15f68178"
+        },
+        {
+          "id": "US-NV-CLARK-16204301004",
+          "geometrySha256": "76a76acfe6af4cf0ccad981f186811bd4d040446ce2fbf7460d06773f409aa64"
+        },
+        {
+          "id": "US-NV-CLARK-16204301019",
+          "geometrySha256": "1aaaa76592f3b317a7f5dbb216f247b7d89cc1811bdc5ca769e2c10c5dd31501"
+        },
+        {
+          "id": "US-NV-CLARK-16204301014",
+          "geometrySha256": "a00480c70febe1bad89c44ce4cbd98fe74a28144c1929649882d824938f9fe84"
+        },
+        {
+          "id": "US-NV-CLARK-16204311034",
+          "geometrySha256": "887824c57ff45f786b0e51bd356933a21b8ae0b23903525fc408e3c60a076913"
+        },
+        {
+          "id": "US-NV-CLARK-16204399005",
+          "geometrySha256": "92dfadc169e5d6332d19bcce8a3ed968e7f2665a9811b2f8acef92274881ef0d"
+        },
+        {
+          "id": "US-NV-CLARK-16204399011",
+          "geometrySha256": "79fb18746e630d82c4fc6d168c135a6b59138194738dce834b00cb01600e14c9"
+        },
+        {
+          "id": "US-NV-CLARK-16204399013",
+          "geometrySha256": "92d0842540b98c5fcc6008ae68cd94d7f6b4602a4b7588e6f62a11a2f5e7511e"
+        }
+      ]
+    },
+    {
+      "name": "viewport-1",
+      "passed": true,
+      "evidenceFile": "las-vegas-final-acceptance.json",
+      "retried": false,
+      "bbox": [
+        -115.165,
+        36.15,
+        -115.164,
+        36.151
+      ],
+      "complete": true,
+      "count": 17,
+      "ids": [
+        {
+          "id": "US-NV-CLARK-16204301030",
+          "geometrySha256": "56d81b50ab59a2d82f282048a929f55525285668abba7b91f6aaccb5e6318d4d"
+        },
+        {
+          "id": "US-NV-CLARK-16204301019",
+          "geometrySha256": "1aaaa76592f3b317a7f5dbb216f247b7d89cc1811bdc5ca769e2c10c5dd31501"
+        },
+        {
+          "id": "US-NV-CLARK-16204301014",
+          "geometrySha256": "a00480c70febe1bad89c44ce4cbd98fe74a28144c1929649882d824938f9fe84"
+        },
+        {
+          "id": "US-NV-CLARK-16204301021",
+          "geometrySha256": "0db84fb2e9acbba1d3e7c1bd7383731ad7bfabb941c3a516b4fa14491dabdaa6"
+        },
+        {
+          "id": "US-NV-CLARK-16204702003",
+          "geometrySha256": "9859ffb34ae299170367735da41bfa64ab6e13a41947fa03a7e860655f288e91"
+        },
+        {
+          "id": "US-NV-CLARK-16204702004",
+          "geometrySha256": "c84a6ed1ecb60904be4cf640ba9e36a09d61d2e41db94d61c14ae1c29bf1a03d"
+        },
+        {
+          "id": "US-NV-CLARK-16204701002",
+          "geometrySha256": "ae1973dee20f0b582cf9542640c2e7cccb21f8a138d5107ead3f94de81575561"
+        },
+        {
+          "id": "US-NV-CLARK-16204302008",
+          "geometrySha256": "0b9626f37a8b202f5239d5df57cd7f01954f07a47180b933ea7550b10dcbe676"
+        },
+        {
+          "id": "US-NV-CLARK-16204702002",
+          "geometrySha256": "efb77909a235ff7e3cd5235f59642c700ca46c3580f8d2047e289967eed8ba7a"
+        },
+        {
+          "id": "US-NV-CLARK-16204399006",
+          "geometrySha256": "df4734f074006cce846f791c822989e3c4742911bc0b5ccdb2ea7eff43e3f4c2"
+        },
+        {
+          "id": "US-NV-CLARK-16204399005",
+          "geometrySha256": "92dfadc169e5d6332d19bcce8a3ed968e7f2665a9811b2f8acef92274881ef0d"
+        },
+        {
+          "id": "US-NV-CLARK-16204399011",
+          "geometrySha256": "79fb18746e630d82c4fc6d168c135a6b59138194738dce834b00cb01600e14c9"
+        },
+        {
+          "id": "US-NV-CLARK-16204399012",
+          "geometrySha256": "2afea6d1b84e8127fcdad85543b16d4ebfa3f8c0454972900bd36303a389d306"
+        },
+        {
+          "id": "US-NV-CLARK-16204799029",
+          "geometrySha256": "afb4ebb52804e3a9413b34a4c6b36a75df58cf6ab7f35892169f9b9a7df6e202"
+        },
+        {
+          "id": "US-NV-CLARK-16204399013",
+          "geometrySha256": "92d0842540b98c5fcc6008ae68cd94d7f6b4602a4b7588e6f62a11a2f5e7511e"
+        },
+        {
+          "id": "US-NV-CLARK-16204301029",
+          "geometrySha256": "f4525ef87f0a28871d0653e4b004d9c5410a198d3dfb19392dd04de0cf43ceec"
+        },
+        {
+          "id": "US-NV-CLARK-16204799003",
+          "geometrySha256": "c716349ec0c524663b33d7d2e931dd415b5e0e0680e4b4da634798d1b35d4b36"
+        }
+      ]
+    },
+    {
+      "name": "viewport-2",
+      "passed": true,
+      "evidenceFile": "las-vegas-final-acceptance.json",
+      "retried": false,
+      "bbox": [
+        -115.164,
+        36.15,
+        -115.163,
+        36.151
+      ],
+      "complete": true,
+      "count": 11,
+      "ids": [
+        {
+          "id": "US-NV-CLARK-16204799027",
+          "geometrySha256": "b7521ee51505e052cf5f9ce3130c4b991e8ee6d0250463bd7176ca70226904da"
+        },
+        {
+          "id": "US-NV-CLARK-16204711003",
+          "geometrySha256": "d9a4af411051234ec5ed92765442f6d435fff091cae563a1917ee33cfdfb1537"
+        },
+        {
+          "id": "US-NV-CLARK-16204702003",
+          "geometrySha256": "9859ffb34ae299170367735da41bfa64ab6e13a41947fa03a7e860655f288e91"
+        },
+        {
+          "id": "US-NV-CLARK-16204702004",
+          "geometrySha256": "c84a6ed1ecb60904be4cf640ba9e36a09d61d2e41db94d61c14ae1c29bf1a03d"
+        },
+        {
+          "id": "US-NV-CLARK-16204703002",
+          "geometrySha256": "bdaf6e17aae0a91a76f4a3d2b621ef2a999fa120690852309a46db150c8f4356"
+        },
+        {
+          "id": "US-NV-CLARK-16204702002",
+          "geometrySha256": "efb77909a235ff7e3cd5235f59642c700ca46c3580f8d2047e289967eed8ba7a"
+        },
+        {
+          "id": "US-NV-CLARK-16204703003",
+          "geometrySha256": "996f8dabe7cf4b027421ab946b3fbace26cabfd0e1e730912d4df2f867b2c3b2"
+        },
+        {
+          "id": "US-NV-CLARK-16204703004",
+          "geometrySha256": "8d78a71b291295ee54a604a90efbdaec825006fa5cfb97023ccc4172578acf5e"
+        },
+        {
+          "id": "US-NV-CLARK-16204702001",
+          "geometrySha256": "18c70f6ebeba42635fd0e40c1087723ef6c3a651e893de1ff359058817851c0b"
+        },
+        {
+          "id": "US-NV-CLARK-16204799012",
+          "geometrySha256": "a63444a1585c1a7144de707a2269141224a80d18952b46fedd55217a89463dce"
+        },
+        {
+          "id": "US-NV-CLARK-16204799003",
+          "geometrySha256": "c716349ec0c524663b33d7d2e931dd415b5e0e0680e4b4da634798d1b35d4b36"
+        }
+      ]
+    },
+    {
+      "name": "viewport-3",
+      "passed": true,
+      "evidenceFile": "las-vegas-final-acceptance.json",
+      "retried": false,
+      "bbox": [
+        -115.166,
+        36.151,
+        -115.165,
+        36.152
+      ],
+      "complete": true,
+      "count": 13,
+      "ids": [
+        {
+          "id": "US-NV-CLARK-16204399004",
+          "geometrySha256": "665a3bd20efd0f1287b65a2b51de93193035927cbe787a72561edf33f3066959"
+        },
+        {
+          "id": "US-NV-CLARK-16204311035",
+          "geometrySha256": "f58bc1330393acc72adffd7d426514d18eb2756c1223ec61c9d77e6a19b5b56d"
+        },
+        {
+          "id": "US-NV-CLARK-16204299037",
+          "geometrySha256": "7e274735b12ccc25420fbc73720c0beab4b247474b9c2f61ddacd42bf2142bf5"
+        },
+        {
+          "id": "US-NV-CLARK-16204210083",
+          "geometrySha256": "0a75364e66f1484657a12c0cc1fba526369e0e68015c709d48fc4b173a7d6048"
+        },
+        {
+          "id": "US-NV-CLARK-16204311034",
+          "geometrySha256": "887824c57ff45f786b0e51bd356933a21b8ae0b23903525fc408e3c60a076913"
+        },
+        {
+          "id": "US-NV-CLARK-16204399005",
+          "geometrySha256": "92dfadc169e5d6332d19bcce8a3ed968e7f2665a9811b2f8acef92274881ef0d"
+        },
+        {
+          "id": "US-NV-CLARK-16204210135",
+          "geometrySha256": "30f413ecc80b525aeb7ce1e9c542fd41b5a270e75fda2b13a05dcc8886a20c12"
+        },
+        {
+          "id": "US-NV-CLARK-16204299035",
+          "geometrySha256": "23599db51f6ed58ba46e0bb9f548ae8e21e5d69db0d552cc9a9e23d645fbffa0"
+        },
+        {
+          "id": "US-NV-CLARK-16204399003",
+          "geometrySha256": "62ac951cb65e451248a010b91d7f5f7067f7c6d4c32a7bfb9d890b3a8bd77912"
+        },
+        {
+          "id": "US-NV-CLARK-16204210084",
+          "geometrySha256": "bf23cce5eeeeb08d77c795c007dcfbf1237eb175f6c629e14d0c6ccac473a54b"
+        },
+        {
+          "id": "US-NV-CLARK-16204299024",
+          "geometrySha256": "3506fb784946fc7e19afb5fd51a6f5feae8b848eb9aa4252653a03627ce38c87"
+        },
+        {
+          "id": "US-NV-CLARK-16204210145",
+          "geometrySha256": "5498bd12f66ac0b98c1469cb3863a94a2c8da5710cd4ade282db102707a8fb6b"
+        },
+        {
+          "id": "US-NV-CLARK-16204299043",
+          "geometrySha256": "3a7caee2879964ab1b358843bcf2a6ceb6ac7fe5b09754bb4b2569699ae2e996"
+        }
+      ]
+    },
+    {
+      "name": "viewport-4",
+      "passed": true,
+      "evidenceFile": "las-vegas-final-acceptance.json",
+      "retried": false,
+      "bbox": [
+        -115.165,
+        36.151,
+        -115.164,
+        36.152
+      ],
+      "complete": true,
+      "count": 12,
+      "ids": [
+        {
+          "id": "US-NV-CLARK-16204399004",
+          "geometrySha256": "665a3bd20efd0f1287b65a2b51de93193035927cbe787a72561edf33f3066959"
+        },
+        {
+          "id": "US-NV-CLARK-16204699026",
+          "geometrySha256": "03329a80b17e5edba5f563ef6ca661e63dcce4d726f1c4aebf5a83255aaa6189"
+        },
+        {
+          "id": "US-NV-CLARK-16204701002",
+          "geometrySha256": "ae1973dee20f0b582cf9542640c2e7cccb21f8a138d5107ead3f94de81575561"
+        },
+        {
+          "id": "US-NV-CLARK-16204603002",
+          "geometrySha256": "57e9fffa72cf6c2afe79012d5a0e4dd7b63c70be744d17dc9a5961a13989ca15"
+        },
+        {
+          "id": "US-NV-CLARK-16204699019",
+          "geometrySha256": "424cc16b6007c3fb144a0ffdf89c9b169eaad23a2937461c11041ac71292307c"
+        },
+        {
+          "id": "US-NV-CLARK-16204399005",
+          "geometrySha256": "92dfadc169e5d6332d19bcce8a3ed968e7f2665a9811b2f8acef92274881ef0d"
+        },
+        {
+          "id": "US-NV-CLARK-16204799001",
+          "geometrySha256": "9bbc623ebff78c636caf5636b481c7f0f75ccee863bfcf6d9daedfc8f012c879"
+        },
+        {
+          "id": "US-NV-CLARK-16204799029",
+          "geometrySha256": "afb4ebb52804e3a9413b34a4c6b36a75df58cf6ab7f35892169f9b9a7df6e202"
+        },
+        {
+          "id": "US-NV-CLARK-16204299035",
+          "geometrySha256": "23599db51f6ed58ba46e0bb9f548ae8e21e5d69db0d552cc9a9e23d645fbffa0"
+        },
+        {
+          "id": "US-NV-CLARK-16204799003",
+          "geometrySha256": "c716349ec0c524663b33d7d2e931dd415b5e0e0680e4b4da634798d1b35d4b36"
+        },
+        {
+          "id": "US-NV-CLARK-16204299024",
+          "geometrySha256": "3506fb784946fc7e19afb5fd51a6f5feae8b848eb9aa4252653a03627ce38c87"
+        },
+        {
+          "id": "US-NV-CLARK-16204699018",
+          "geometrySha256": "75e593d56659bf970f3541a2eca9801a2ed942fcbe4836e8695fb8ebf6de0c79"
+        }
+      ]
+    },
+    {
+      "name": "viewport-5",
+      "passed": true,
+      "evidenceFile": "las-vegas-final-acceptance.json",
+      "retried": false,
+      "bbox": [
+        -115.164,
+        36.151,
+        -115.163,
+        36.152
+      ],
+      "complete": true,
+      "count": 9,
+      "ids": [
+        {
+          "id": "US-NV-CLARK-16204699026",
+          "geometrySha256": "03329a80b17e5edba5f563ef6ca661e63dcce4d726f1c4aebf5a83255aaa6189"
+        },
+        {
+          "id": "US-NV-CLARK-16204603002",
+          "geometrySha256": "57e9fffa72cf6c2afe79012d5a0e4dd7b63c70be744d17dc9a5961a13989ca15"
+        },
+        {
+          "id": "US-NV-CLARK-16204699019",
+          "geometrySha256": "424cc16b6007c3fb144a0ffdf89c9b169eaad23a2937461c11041ac71292307c"
+        },
+        {
+          "id": "US-NV-CLARK-16204799001",
+          "geometrySha256": "9bbc623ebff78c636caf5636b481c7f0f75ccee863bfcf6d9daedfc8f012c879"
+        },
+        {
+          "id": "US-NV-CLARK-16204603003",
+          "geometrySha256": "8fa74ab03de21352490fd7a4d35a6a26553dcc748f3f35f717d7d6a3bcd19378"
+        },
+        {
+          "id": "US-NV-CLARK-16204702001",
+          "geometrySha256": "18c70f6ebeba42635fd0e40c1087723ef6c3a651e893de1ff359058817851c0b"
+        },
+        {
+          "id": "US-NV-CLARK-16204799012",
+          "geometrySha256": "a63444a1585c1a7144de707a2269141224a80d18952b46fedd55217a89463dce"
+        },
+        {
+          "id": "US-NV-CLARK-16204799003",
+          "geometrySha256": "c716349ec0c524663b33d7d2e931dd415b5e0e0680e4b4da634798d1b35d4b36"
+        },
+        {
+          "id": "US-NV-CLARK-16204699018",
+          "geometrySha256": "75e593d56659bf970f3541a2eca9801a2ed942fcbe4836e8695fb8ebf6de0c79"
+        }
+      ]
+    },
+    {
+      "name": "viewport-6",
+      "passed": true,
+      "evidenceFile": "las-vegas-final-acceptance.json",
+      "retried": false,
+      "bbox": [
+        -115.166,
+        36.152,
+        -115.165,
+        36.153
+      ],
+      "complete": true,
+      "count": 11,
+      "ids": [
+        {
+          "id": "US-NV-CLARK-16204210079",
+          "geometrySha256": "ddf332085005b24a1b425cfc16bf129d39cc54c8d5c69fdc359cd62d90a75d49"
+        },
+        {
+          "id": "US-NV-CLARK-16204210080",
+          "geometrySha256": "77a853d16baba1d73de9cda6ef563c1e19fb5df2049a26a8a5f2d9f501006f00"
+        },
+        {
+          "id": "US-NV-CLARK-16204210083",
+          "geometrySha256": "0a75364e66f1484657a12c0cc1fba526369e0e68015c709d48fc4b173a7d6048"
+        },
+        {
+          "id": "US-NV-CLARK-16204210058",
+          "geometrySha256": "c4342d436dfbdb2862c7101c7060e40d0c7e22dd4362fe3cd73abf1d39aab7ce"
+        },
+        {
+          "id": "US-NV-CLARK-16204210057",
+          "geometrySha256": "1a2c8f708f87b609786fdd85a628a7a1cdab78e6a7b5efcaccc6f1a262bfa95f"
+        },
+        {
+          "id": "US-NV-CLARK-16204210135",
+          "geometrySha256": "30f413ecc80b525aeb7ce1e9c542fd41b5a270e75fda2b13a05dcc8886a20c12"
+        },
+        {
+          "id": "US-NV-CLARK-16204210143",
+          "geometrySha256": "aca9232b27613a7ab22f1c173537fcc67c533ccc73720136ad82a010f9e22f0a"
+        },
+        {
+          "id": "US-NV-CLARK-16204299001",
+          "geometrySha256": "b875073760b86301711f191d8af7af4322f41f4f9c2e10dd4de5bfb639af6289"
+        },
+        {
+          "id": "US-NV-CLARK-16204299024",
+          "geometrySha256": "3506fb784946fc7e19afb5fd51a6f5feae8b848eb9aa4252653a03627ce38c87"
+        },
+        {
+          "id": "US-NV-CLARK-16204210145",
+          "geometrySha256": "5498bd12f66ac0b98c1469cb3863a94a2c8da5710cd4ade282db102707a8fb6b"
+        },
+        {
+          "id": "US-NV-CLARK-16204299043",
+          "geometrySha256": "3a7caee2879964ab1b358843bcf2a6ceb6ac7fe5b09754bb4b2569699ae2e996"
+        }
+      ]
+    },
+    {
+      "name": "viewport-7",
+      "passed": true,
+      "evidenceFile": "las-vegas-final-acceptance.json",
+      "retried": false,
+      "bbox": [
+        -115.165,
+        36.152,
+        -115.164,
+        36.153
+      ],
+      "complete": true,
+      "count": 20,
+      "ids": [
+        {
+          "id": "US-NV-CLARK-16204699030",
+          "geometrySha256": "58fd4883956c77fa34315d8e46ad138519a7292bdfa87fc935889a815939a7d4"
+        },
+        {
+          "id": "US-NV-CLARK-16204299030",
+          "geometrySha256": "c79be8ef6f948f84c08dac4470c58d2e15907778ba7e66cfd8266f55c80df295"
+        },
+        {
+          "id": "US-NV-CLARK-16204299023",
+          "geometrySha256": "05c7b6fa68e75c62324eef2e8154f15a3e268b4c543b1967bfb3c0867c65f3a9"
+        },
+        {
+          "id": "US-NV-CLARK-16204210057",
+          "geometrySha256": "1a2c8f708f87b609786fdd85a628a7a1cdab78e6a7b5efcaccc6f1a262bfa95f"
+        },
+        {
+          "id": "US-NV-CLARK-16204299038",
+          "geometrySha256": "0c8e303e8f0def4f2aa636bcefeb3f8cd024e60a4bd0cb51627b14aa346e8261"
+        },
+        {
+          "id": "US-NV-CLARK-16204699055",
+          "geometrySha256": "a7c6edb16221e98553809a5822dbe53c579806f6f0264e593d929a088335868a"
+        },
+        {
+          "id": "US-NV-CLARK-16204699056",
+          "geometrySha256": "9f72fbf47e3a7a7ed34ec2ba7549f0b0a6ebf49e527cbc0a1ca795d99dd0c6a6"
+        },
+        {
+          "id": "US-NV-CLARK-16204210056",
+          "geometrySha256": "0280d8c86d284ba710692a53d6d0a9d0a8560b4dc05ab420edb01d1f0bf61ef0"
+        },
+        {
+          "id": "US-NV-CLARK-16204699035",
+          "geometrySha256": "0925b123dd06f89cc1c0e5202ef594f600d9e5a93ad8265c56d823e77dda7c3e"
+        },
+        {
+          "id": "US-NV-CLARK-16204210135",
+          "geometrySha256": "30f413ecc80b525aeb7ce1e9c542fd41b5a270e75fda2b13a05dcc8886a20c12"
+        },
+        {
+          "id": "US-NV-CLARK-16204299039",
+          "geometrySha256": "c847e57326732c8c7906d2d00c589733f29860905df8cc7af57426188c97d204"
+        },
+        {
+          "id": "US-NV-CLARK-16204210143",
+          "geometrySha256": "aca9232b27613a7ab22f1c173537fcc67c533ccc73720136ad82a010f9e22f0a"
+        },
+        {
+          "id": "US-NV-CLARK-16204299001",
+          "geometrySha256": "b875073760b86301711f191d8af7af4322f41f4f9c2e10dd4de5bfb639af6289"
+        },
+        {
+          "id": "US-NV-CLARK-16204299024",
+          "geometrySha256": "3506fb784946fc7e19afb5fd51a6f5feae8b848eb9aa4252653a03627ce38c87"
+        },
+        {
+          "id": "US-NV-CLARK-16204699017",
+          "geometrySha256": "a0ce6e8597ec63fe72521eeada3d1279a7674c965b0df1aea3bc8a491bcaf1e3"
+        },
+        {
+          "id": "US-NV-CLARK-16204699018",
+          "geometrySha256": "75e593d56659bf970f3541a2eca9801a2ed942fcbe4836e8695fb8ebf6de0c79"
+        },
+        {
+          "id": "US-NV-CLARK-16204210145",
+          "geometrySha256": "5498bd12f66ac0b98c1469cb3863a94a2c8da5710cd4ade282db102707a8fb6b"
+        },
+        {
+          "id": "US-NV-CLARK-16204210144",
+          "geometrySha256": "8d4db34633431f53d9fb6d63375231ea6facbdbc4e1b4691699fa419f2c0aade"
+        },
+        {
+          "id": "US-NV-CLARK-16204299042",
+          "geometrySha256": "ea28c7aa5b51043a33c8fb4d5cda7b4c22a985f33444791261594217499fb6ac"
+        },
+        {
+          "id": "US-NV-CLARK-16204299043",
+          "geometrySha256": "3a7caee2879964ab1b358843bcf2a6ceb6ac7fe5b09754bb4b2569699ae2e996"
+        }
+      ]
+    },
+    {
+      "name": "viewport-8",
+      "passed": true,
+      "evidenceFile": "las-vegas-final-acceptance.json",
+      "retried": false,
+      "bbox": [
+        -115.164,
+        36.152,
+        -115.163,
+        36.153
+      ],
+      "complete": true,
+      "count": 5,
+      "ids": [
+        {
+          "id": "US-NV-CLARK-16204602008",
+          "geometrySha256": "9e153ba24899a8703bfa1f7861c5ce6794c02587d0ca4dd299725b0192a57564"
+        },
+        {
+          "id": "US-NV-CLARK-16204699019",
+          "geometrySha256": "424cc16b6007c3fb144a0ffdf89c9b169eaad23a2937461c11041ac71292307c"
+        },
+        {
+          "id": "US-NV-CLARK-16204602009",
+          "geometrySha256": "e55518fe89b8f274416f63f91fb3fc60ab0f4a5b317fb237291cf0db358629e4"
+        },
+        {
+          "id": "US-NV-CLARK-16204699017",
+          "geometrySha256": "a0ce6e8597ec63fe72521eeada3d1279a7674c965b0df1aea3bc8a491bcaf1e3"
+        },
+        {
+          "id": "US-NV-CLARK-16204699018",
+          "geometrySha256": "75e593d56659bf970f3541a2eca9801a2ed942fcbe4836e8695fb8ebf6de0c79"
+        }
+      ]
+    },
+    {
+      "name": "viewport-9",
+      "passed": true,
+      "evidenceFile": "las-vegas-final-acceptance.json",
+      "retried": false,
+      "bbox": [
+        -115.165,
+        36.149,
+        -115.164,
+        36.15
+      ],
+      "complete": true,
+      "count": 10,
+      "ids": [
+        {
+          "id": "US-NV-CLARK-16204301014",
+          "geometrySha256": "a00480c70febe1bad89c44ce4cbd98fe74a28144c1929649882d824938f9fe84"
+        },
+        {
+          "id": "US-NV-CLARK-16204702004",
+          "geometrySha256": "c84a6ed1ecb60904be4cf640ba9e36a09d61d2e41db94d61c14ae1c29bf1a03d"
+        },
+        {
+          "id": "US-NV-CLARK-16204302009",
+          "geometrySha256": "40993909580f7dddca1f4d06831a78d4b0038d164458c6f060b9a3f4187ec2b5"
+        },
+        {
+          "id": "US-NV-CLARK-16204302002",
+          "geometrySha256": "4de8a9ee659a2526477a7ba79c5023faf85274704cb80b20808407d4118e975c"
+        },
+        {
+          "id": "US-NV-CLARK-16204703014",
+          "geometrySha256": "95707dc7aa2afd9ffbf97ce1c2067c381911b7e9b3bd4b338854c8fa1304bd42"
+        },
+        {
+          "id": "US-NV-CLARK-16204302003",
+          "geometrySha256": "802bcd08d6ae34d8d038df208264a71595302b6d1b80e87ec391b6f7b6b6a196"
+        },
+        {
+          "id": "US-NV-CLARK-16204302008",
+          "geometrySha256": "0b9626f37a8b202f5239d5df57cd7f01954f07a47180b933ea7550b10dcbe676"
+        },
+        {
+          "id": "US-NV-CLARK-16204703009",
+          "geometrySha256": "f3a0c967113f0dbed65ce6dc6f98dec184f9cf52e6372b3c79760bd89ad65f49"
+        },
+        {
+          "id": "US-NV-CLARK-16204399006",
+          "geometrySha256": "df4734f074006cce846f791c822989e3c4742911bc0b5ccdb2ea7eff43e3f4c2"
+        },
+        {
+          "id": "US-NV-CLARK-16204799012",
+          "geometrySha256": "a63444a1585c1a7144de707a2269141224a80d18952b46fedd55217a89463dce"
+        }
+      ]
+    },
+    {
+      "name": "viewport-10",
+      "passed": true,
+      "evidenceFile": "las-vegas-final-acceptance.json",
+      "retried": false,
+      "bbox": [
+        -115.165,
+        36.153,
+        -115.164,
+        36.154
+      ],
+      "complete": true,
+      "count": 12,
+      "ids": [
+        {
+          "id": "US-NV-CLARK-16204601007",
+          "geometrySha256": "8620e3405e20e1fd7d3f57cb91935db1114326714b2264aba892f50fec98d46f"
+        },
+        {
+          "id": "US-NV-CLARK-16204210054",
+          "geometrySha256": "a5722c6058a279afd2e62295f6d4aa82e9ad46687fdf1ffcf95e84c258933ad2"
+        },
+        {
+          "id": "US-NV-CLARK-16204601006",
+          "geometrySha256": "4ec19765a368b02eacdb3338afeb9629b158ad85c1f05ba995af81cd41541667"
+        },
+        {
+          "id": "US-NV-CLARK-16204601005",
+          "geometrySha256": "878377915ff7a2ed3e6cfb62eddd98c28c87271f9d5b1f55790599a494b4d776"
+        },
+        {
+          "id": "US-NV-CLARK-16204210057",
+          "geometrySha256": "1a2c8f708f87b609786fdd85a628a7a1cdab78e6a7b5efcaccc6f1a262bfa95f"
+        },
+        {
+          "id": "US-NV-CLARK-16204210055",
+          "geometrySha256": "c998b0828b13db56159a4dd5c44486b537725ea297631c53118d70d989daf37c"
+        },
+        {
+          "id": "US-NV-CLARK-16204299038",
+          "geometrySha256": "0c8e303e8f0def4f2aa636bcefeb3f8cd024e60a4bd0cb51627b14aa346e8261"
+        },
+        {
+          "id": "US-NV-CLARK-16204699055",
+          "geometrySha256": "a7c6edb16221e98553809a5822dbe53c579806f6f0264e593d929a088335868a"
+        },
+        {
+          "id": "US-NV-CLARK-16204210056",
+          "geometrySha256": "0280d8c86d284ba710692a53d6d0a9d0a8560b4dc05ab420edb01d1f0bf61ef0"
+        },
+        {
+          "id": "US-NV-CLARK-16204699035",
+          "geometrySha256": "0925b123dd06f89cc1c0e5202ef594f600d9e5a93ad8265c56d823e77dda7c3e"
+        },
+        {
+          "id": "US-NV-CLARK-16204299001",
+          "geometrySha256": "b875073760b86301711f191d8af7af4322f41f4f9c2e10dd4de5bfb639af6289"
+        },
+        {
+          "id": "US-NV-CLARK-16204699017",
+          "geometrySha256": "a0ce6e8597ec63fe72521eeada3d1279a7674c965b0df1aea3bc8a491bcaf1e3"
+        }
+      ]
+    },
+    {
+      "name": "viewport-11",
+      "passed": true,
+      "evidenceFile": "las-vegas-final-acceptance.json",
+      "retried": false,
+      "bbox": [
+        -115.167,
+        36.151,
+        -115.166,
+        36.152
+      ],
+      "complete": true,
+      "count": 17,
+      "ids": [
+        {
+          "id": "US-NV-CLARK-16204311041",
+          "geometrySha256": "7fe3e9d580a70c60284c7814aadbfd70941ff43cf30ed6861cf5c351cdc2eb0f"
+        },
+        {
+          "id": "US-NV-CLARK-16204311042",
+          "geometrySha256": "ecffba6a65a357b48d7af7977f516d4f9e02fd098390b860067c749ea37d212d"
+        },
+        {
+          "id": "US-NV-CLARK-16204311035",
+          "geometrySha256": "f58bc1330393acc72adffd7d426514d18eb2756c1223ec61c9d77e6a19b5b56d"
+        },
+        {
+          "id": "US-NV-CLARK-16204311037",
+          "geometrySha256": "1d54c886d9a1c77e8397d04f9da738d252de41d1b125aab0b088d530266075bf"
+        },
+        {
+          "id": "US-NV-CLARK-16204311036",
+          "geometrySha256": "76271f856f8e932c38a4b9b0df0f2dd24b73e184d8b009e00424ac7a55eaacec"
+        },
+        {
+          "id": "US-NV-CLARK-16204299037",
+          "geometrySha256": "7e274735b12ccc25420fbc73720c0beab4b247474b9c2f61ddacd42bf2142bf5"
+        },
+        {
+          "id": "US-NV-CLARK-16204299022",
+          "geometrySha256": "92166a868cd3c9ce17aaf552f9bb4c11ebeb48dad2a41569a895fc757bea7c39"
+        },
+        {
+          "id": "US-NV-CLARK-16204210083",
+          "geometrySha256": "0a75364e66f1484657a12c0cc1fba526369e0e68015c709d48fc4b173a7d6048"
+        },
+        {
+          "id": "US-NV-CLARK-16204311034",
+          "geometrySha256": "887824c57ff45f786b0e51bd356933a21b8ae0b23903525fc408e3c60a076913"
+        },
+        {
+          "id": "US-NV-CLARK-16204210086",
+          "geometrySha256": "30763e27e044d5224f5cbf445aa147de960c34a93b032dc5d774c0d2e7d931e1"
+        },
+        {
+          "id": "US-NV-CLARK-16204299040",
+          "geometrySha256": "9ad92685f68530918dafa1b0548498cb68c26647a5a17504cae26d7349f96741"
+        },
+        {
+          "id": "US-NV-CLARK-16204299035",
+          "geometrySha256": "23599db51f6ed58ba46e0bb9f548ae8e21e5d69db0d552cc9a9e23d645fbffa0"
+        },
+        {
+          "id": "US-NV-CLARK-16204299001",
+          "geometrySha256": "b875073760b86301711f191d8af7af4322f41f4f9c2e10dd4de5bfb639af6289"
+        },
+        {
+          "id": "US-NV-CLARK-16204399003",
+          "geometrySha256": "62ac951cb65e451248a010b91d7f5f7067f7c6d4c32a7bfb9d890b3a8bd77912"
+        },
+        {
+          "id": "US-NV-CLARK-16204210084",
+          "geometrySha256": "bf23cce5eeeeb08d77c795c007dcfbf1237eb175f6c629e14d0c6ccac473a54b"
+        },
+        {
+          "id": "US-NV-CLARK-16204210133",
+          "geometrySha256": "e023224f968aad9e62a3b4ac8262f81f5166a373f5b0f7219ab29b03bff94c88"
+        },
+        {
+          "id": "US-NV-CLARK-16204299043",
+          "geometrySha256": "3a7caee2879964ab1b358843bcf2a6ceb6ac7fe5b09754bb4b2569699ae2e996"
+        }
+      ]
+    },
+    {
+      "name": "viewport-12",
+      "passed": true,
+      "evidenceFile": "las-vegas-final-acceptance.json",
+      "retried": false,
+      "bbox": [
+        -115.163,
+        36.151,
+        -115.162,
+        36.152
+      ],
+      "complete": true,
+      "count": 14,
+      "ids": [
+        {
+          "id": "US-NV-CLARK-16204699022",
+          "geometrySha256": "547e97e6b7ca25e50684491baa90fc18227cf92c3bdf8c1c15c8136454aaf7d4"
+        },
+        {
+          "id": "US-NV-CLARK-16204699023",
+          "geometrySha256": "9667c90d1c794985c7d9b91318e89c75545ce71e6d64c87ec99749b0d75b1115"
+        },
+        {
+          "id": "US-NV-CLARK-16204699024",
+          "geometrySha256": "4b1a82dab24a4c56d9665e31ca5fe89c11bf565d5cf6ee456007674929cba7dd"
+        },
+        {
+          "id": "US-NV-CLARK-16204699026",
+          "geometrySha256": "03329a80b17e5edba5f563ef6ca661e63dcce4d726f1c4aebf5a83255aaa6189"
+        },
+        {
+          "id": "US-NV-CLARK-16204604001",
+          "geometrySha256": "1179c25b405298b9fa839ac92bd9ba395e8b6534699747426b0c7894a0639d0b"
+        },
+        {
+          "id": "US-NV-CLARK-16204703002",
+          "geometrySha256": "bdaf6e17aae0a91a76f4a3d2b621ef2a999fa120690852309a46db150c8f4356"
+        },
+        {
+          "id": "US-NV-CLARK-16204703001",
+          "geometrySha256": "42c9260f91bb3643c32e4aaa4c1d238dd2b1b5b09bf3df22c4f3491e78189717"
+        },
+        {
+          "id": "US-NV-CLARK-16204699019",
+          "geometrySha256": "424cc16b6007c3fb144a0ffdf89c9b169eaad23a2937461c11041ac71292307c"
+        },
+        {
+          "id": "US-NV-CLARK-16204604002",
+          "geometrySha256": "56c9cabb83a117969123f4c9d5229b3489b07eca80a084a503b92e246ecad4b7"
+        },
+        {
+          "id": "US-NV-CLARK-16204799001",
+          "geometrySha256": "9bbc623ebff78c636caf5636b481c7f0f75ccee863bfcf6d9daedfc8f012c879"
+        },
+        {
+          "id": "US-NV-CLARK-16204799028",
+          "geometrySha256": "b8083b54b072ef3fa16643a381c5c3f07a8787cd229d481451b45e1d15ace889"
+        },
+        {
+          "id": "US-NV-CLARK-16204603003",
+          "geometrySha256": "8fa74ab03de21352490fd7a4d35a6a26553dcc748f3f35f717d7d6a3bcd19378"
+        },
+        {
+          "id": "US-NV-CLARK-16204799012",
+          "geometrySha256": "a63444a1585c1a7144de707a2269141224a80d18952b46fedd55217a89463dce"
+        },
+        {
+          "id": "US-NV-CLARK-16204799003",
+          "geometrySha256": "c716349ec0c524663b33d7d2e931dd415b5e0e0680e4b4da634798d1b35d4b36"
+        }
+      ]
+    },
+    {
+      "name": "forced-three-row-pages",
+      "passed": true,
+      "evidenceFile": "las-vegas-retry-attempts.json",
+      "retried": true,
+      "count": 20,
+      "geometryPages": 7,
+      "pageSize": 3,
+      "allGeometryHashesMatch": true
+    },
+    {
+      "name": "fresh-ids-0",
+      "passed": true,
+      "evidenceFile": "las-vegas-final-acceptance.json",
+      "retried": false,
+      "count": 40,
+      "ids": [
+        "US-NV-CLARK-16204210054",
+        "US-NV-CLARK-16204210055",
+        "US-NV-CLARK-16204210056",
+        "US-NV-CLARK-16204210057",
+        "US-NV-CLARK-16204210058",
+        "US-NV-CLARK-16204210079",
+        "US-NV-CLARK-16204210080",
+        "US-NV-CLARK-16204210083",
+        "US-NV-CLARK-16204210084",
+        "US-NV-CLARK-16204210086",
+        "US-NV-CLARK-16204210133",
+        "US-NV-CLARK-16204210135",
+        "US-NV-CLARK-16204210143",
+        "US-NV-CLARK-16204210144",
+        "US-NV-CLARK-16204210145",
+        "US-NV-CLARK-16204299001",
+        "US-NV-CLARK-16204299022",
+        "US-NV-CLARK-16204299023",
+        "US-NV-CLARK-16204299024",
+        "US-NV-CLARK-16204299030",
+        "US-NV-CLARK-16204299035",
+        "US-NV-CLARK-16204299037",
+        "US-NV-CLARK-16204299038",
+        "US-NV-CLARK-16204299039",
+        "US-NV-CLARK-16204299040",
+        "US-NV-CLARK-16204299042",
+        "US-NV-CLARK-16204299043",
+        "US-NV-CLARK-16204301004",
+        "US-NV-CLARK-16204301014",
+        "US-NV-CLARK-16204301019",
+        "US-NV-CLARK-16204301021",
+        "US-NV-CLARK-16204301029",
+        "US-NV-CLARK-16204301030",
+        "US-NV-CLARK-16204302002",
+        "US-NV-CLARK-16204302003",
+        "US-NV-CLARK-16204302008",
+        "US-NV-CLARK-16204302009",
+        "US-NV-CLARK-16204311032",
+        "US-NV-CLARK-16204311033",
+        "US-NV-CLARK-16204311034"
+      ],
+      "allGeometryHashesMatch": true,
+      "absentIds": []
+    },
+    {
+      "name": "fresh-ids-40",
+      "passed": true,
+      "evidenceFile": "las-vegas-final-acceptance.json",
+      "retried": false,
+      "count": 40,
+      "ids": [
+        "US-NV-CLARK-16204311035",
+        "US-NV-CLARK-16204311036",
+        "US-NV-CLARK-16204311037",
+        "US-NV-CLARK-16204311041",
+        "US-NV-CLARK-16204311042",
+        "US-NV-CLARK-16204399003",
+        "US-NV-CLARK-16204399004",
+        "US-NV-CLARK-16204399005",
+        "US-NV-CLARK-16204399006",
+        "US-NV-CLARK-16204399011",
+        "US-NV-CLARK-16204399012",
+        "US-NV-CLARK-16204399013",
+        "US-NV-CLARK-16204601005",
+        "US-NV-CLARK-16204601006",
+        "US-NV-CLARK-16204601007",
+        "US-NV-CLARK-16204602008",
+        "US-NV-CLARK-16204602009",
+        "US-NV-CLARK-16204603002",
+        "US-NV-CLARK-16204603003",
+        "US-NV-CLARK-16204604001",
+        "US-NV-CLARK-16204604002",
+        "US-NV-CLARK-16204699017",
+        "US-NV-CLARK-16204699018",
+        "US-NV-CLARK-16204699019",
+        "US-NV-CLARK-16204699022",
+        "US-NV-CLARK-16204699023",
+        "US-NV-CLARK-16204699024",
+        "US-NV-CLARK-16204699026",
+        "US-NV-CLARK-16204699030",
+        "US-NV-CLARK-16204699035",
+        "US-NV-CLARK-16204699055",
+        "US-NV-CLARK-16204699056",
+        "US-NV-CLARK-16204701002",
+        "US-NV-CLARK-16204702001",
+        "US-NV-CLARK-16204702002",
+        "US-NV-CLARK-16204702003",
+        "US-NV-CLARK-16204702004",
+        "US-NV-CLARK-16204703001",
+        "US-NV-CLARK-16204703002",
+        "US-NV-CLARK-16204703003"
+      ],
+      "allGeometryHashesMatch": true,
+      "absentIds": []
+    },
+    {
+      "name": "fresh-ids-80",
+      "passed": true,
+      "evidenceFile": "las-vegas-final-acceptance.json",
+      "retried": false,
+      "count": 10,
+      "ids": [
+        "US-NV-CLARK-16204703004",
+        "US-NV-CLARK-16204703009",
+        "US-NV-CLARK-16204703014",
+        "US-NV-CLARK-16204711003",
+        "US-NV-CLARK-16204799001",
+        "US-NV-CLARK-16204799003",
+        "US-NV-CLARK-16204799012",
+        "US-NV-CLARK-16204799027",
+        "US-NV-CLARK-16204799028",
+        "US-NV-CLARK-16204799029"
+      ],
+      "allGeometryHashesMatch": true,
+      "absentIds": []
+    },
+    {
+      "name": "explicit-absence",
+      "passed": true,
+      "evidenceFile": "las-vegas-final-acceptance.json",
+      "retried": false,
+      "absentIds": [
+        "US-NV-CLARK-999999999999999"
+      ],
+      "complete": true
+    },
+    {
+      "name": "footprint",
+      "passed": true,
+      "evidenceFile": "las-vegas-final-acceptance.json",
+      "retried": false,
+      "selectedParcelId": "US-NV-CLARK-16204210133",
+      "count": 6,
+      "allGeometryHashesMatch": true
+    },
+    {
+      "name": "source-binding",
+      "passed": true,
+      "evidenceFile": "las-vegas-final-acceptance.json",
+      "retried": false,
+      "selectedParcelId": "US-NV-CLARK-16204210133",
+      "coverage": "complete",
+      "siteM2": 1693.87,
+      "boundParcels": 1
+    }
+  ],
+  "uniqueParcels": 90,
+  "allTestsPassed": true,
+  "interpretation": "Every required logical check has an observed successful unmodified-adapter response. This summary combines the final run with its explicit forced-pagination retry; it does not assert a failure-free single run. The raw final acceptance retains its false allTestsPassed value and original HTTP 500.",
+  "rawAcceptanceFiles": [
+    "las-vegas-acceptance.json",
+    "las-vegas-retry-acceptance.json",
+    "las-vegas-final-acceptance.json"
+  ],
+  "attemptsFile": "las-vegas-retry-attempts.json",
+  "qualityFile": "las-vegas-final-quality.json",
+  "qualityStatus": "approved_by_root",
+  "serviceReliability": "Intermittent HTTP 500 responses occurred and are retained in the attempts record. Their historical response-body hashes are unavailable; successful retry bodies are hashed. Availability remains subject to publisher errors."
+}

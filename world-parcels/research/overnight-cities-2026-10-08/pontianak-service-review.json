@@ -1,0 +1,44 @@
+{
+  "schemaVersion": 1,
+  "checkedAt": "2026-10-09",
+  "cityRecord": "city-6903-pontianak.json",
+  "purpose": "City-specific official registry/cadastre and safe anonymous parcel-geometry discovery.",
+  "scopeLimits": {
+    "maxFullPolygonsRetainedInCityRecord": 3,
+    "maxFullPolygonsRetainedInReview": 3,
+    "maxFullPolygonsRetainedInRepository": 3,
+    "ownerOrAddressDataRetained": false,
+    "credentialsOrTokenValuesRetained": false,
+    "citywideCompletenessAsserted": false
+  },
+  "assessment": "The city Geoportal is a public GeoNode catalogue with WFS/WMS capabilities, but its visible and indexed materials did not identify a parcel layer. Official city sources confirm local land-office activity and mapping, but no anonymous parcel feature response or schema was found.",
+  "registryAssessment": "Pontianak City’s official Geoportal publishes geospatial information from city agencies, and the city government identifies the municipal ATR/BPN land office as the land-registration authority. No publicly available parcel-cadastre layer was identified in the Geoportal search.",
+  "searchQueries": [
+    {
+      "language": "Indonesian",
+      "query": "Pontianak peta persil tanah kadaster resmi Geoportal Kota Pontianak bidang tanah",
+      "scope": "Locate city-specific registry/cadastre evidence and verify anonymous bounded parcel geometry without private fields.",
+      "result": "Official city Geoportal exposes a public GeoNode catalogue and generic WFS guidance; searches did not identify a parcel/cadastral layer or feature schema.",
+      "actualResultUrls": [
+        "https://geoportal.pontianak.go.id/",
+        "https://geoportal.pontianak.go.id/developer/",
+        "https://www.pontianak.go.id/pontianak-hari-ini/berita/Empat-Kelurahan-Ditetapkan-BPN-sebagai-Kelurahan-Lengkap"
+      ],
+      "executionMethod": "Separate local-language and English discovery followed by official-source review; no personal property lookup or owner/address value request."
+    },
+    {
+      "language": "English",
+      "query": "Pontianak Indonesia official parcel cadastral map public GIS land registry",
+      "scope": "Locate city-specific registry/cadastre evidence and verify anonymous bounded parcel geometry without private fields.",
+      "result": "English-language searches identified the municipal geospatial portal and official ATR/BPN land-registration activity, but no city parcel feature layer or anonymous geometry endpoint.",
+      "actualResultUrls": [
+        "https://geoportal.pontianak.go.id/",
+        "https://www.pontianak.go.id/"
+      ],
+      "executionMethod": "Separate local-language and English discovery followed by official-source review; no personal property lookup or owner/address value request."
+    }
+  ],
+  "geometryEvidence": null,
+  "privacy": "No owner/address/assessment values or private parcel records were requested, queried, or retained. No parcel polygon was retained.",
+  "runtimeAssessment": "not_assessed"
+}

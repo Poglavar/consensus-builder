@@ -1,0 +1,60 @@
+{
+  "schemaVersion": "1.0",
+  "checkedAt": "2026-10-09",
+  "cityRecord": "city-1219-chapainawabganj.json",
+  "purpose": "Document first-party local registry/map evidence and bounded anonymous geometry access review.",
+  "scopeLimits": {
+    "maxFullPolygonsRetainedInCityRecord": 0,
+    "maxFullPolygonsRetainedInReview": 0,
+    "maxFullPolygonsRetainedInRepository": 0,
+    "ownerOrAddressDataRetained": false,
+    "credentialsOrTokenValuesRetained": false,
+    "citywideCompletenessAsserted": false
+  },
+  "assessment": "The official district government lists the Sadar Upazila Land Office and cadastral/revenue services. National map and Khatian portals require administrative/plot selectors and can return khatian/owner attributes; no input was submitted and no owner/property data retained.",
+  "registryAssessment": "Chapainawabganj District’s official website identifies Upazila Land Offices for the Sadar and other subdistricts, and the official district office lists its Revenue/land administration. This supports a local land-registry/revenue function. The national DLRS map interface exposes plot/khatian results including owner fields, so no selector or plot was submitted.",
+  "officialPrimarySources": [
+    {
+      "url": "https://chapainawabganj.gov.bd/pages/static-pages/697fb33635ce18e1c06cb20f",
+      "observation": "Chapainawabganj District’s official website identifies Upazila Land Offices for the Sadar and other subdistricts, and the official district office lists its Revenue/land administration. This supports a local land-registry/revenue function. The national DLRS map interface exposes plot/khatian results including owner fields, so no selector or plot was submitted."
+    },
+    {
+      "url": "https://www.chapainawabganj.gov.bd/en/site/page/ORCb-%E0%A6%AF%E0%A7%8B%E0%A6%97%E0%A6%BE%E0%A6%AF%E0%A7%8B%E0%A6%97",
+      "observation": "Chapainawabganj District’s official website identifies Upazila Land Offices for the Sadar and other subdistricts, and the official district office lists its Revenue/land administration. This supports a local land-registry/revenue function. The national DLRS map interface exposes plot/khatian results including owner fields, so no selector or plot was submitted."
+    },
+    {
+      "url": "https://settlement.gov.bd/Map/MapSearch",
+      "observation": "Chapainawabganj District’s official website identifies Upazila Land Offices for the Sadar and other subdistricts, and the official district office lists its Revenue/land administration. This supports a local land-registry/revenue function. The national DLRS map interface exposes plot/khatian results including owner fields, so no selector or plot was submitted."
+    },
+    {
+      "url": "https://settlement.gov.bd/Khatian/",
+      "observation": "Chapainawabganj District’s official website identifies Upazila Land Offices for the Sadar and other subdistricts, and the official district office lists its Revenue/land administration. This supports a local land-registry/revenue function. The national DLRS map interface exposes plot/khatian results including owner fields, so no selector or plot was submitted."
+    }
+  ],
+  "searchQueries": [
+    {
+      "language": "English",
+      "query": "Chapainawabganj Bangladesh official Sadar land office cadastral plot map records",
+      "result": "Official district sources identify Upazila land offices; the public DLRS map’s displayed schema includes owner/khatian results, so no plot was queried.",
+      "method": "Separate English/local-language search and official-source review.",
+      "scope": "Identify current city-specific registry and safe public parcel geometry."
+    },
+    {
+      "language": "Bangla",
+      "query": "চাঁপাইনবাবগঞ্জ সদর উপজেলা ভূমি অফিস সরকারি খতিয়ান মানচিত্র ভূমি রেকর্ড",
+      "result": "Official district portal lists the Sadar land office. National settlement map selectors and owner-bearing output were inspected only as interface metadata; no identifiers were submitted.",
+      "method": "Separate English/local-language search and official-source review.",
+      "scope": "Identify current city-specific registry and safe public parcel geometry."
+    }
+  ],
+  "geometryDecision": "No parcel geometry retained; no qualifying point-level sample was available for retention.",
+  "coverageAssessment": {
+    "claimedScope": "Chapainawabganj District’s official website identifies Upazila Land Offices for the Sadar and other subdistricts, and the official district office lists its Revenue/land administration. This supports a local land-registry/revenue function. The national DLRS map interface exposes plot/khatian results including owner fields, so no selector or plot was submitted.",
+    "verifiedOpenScope": "No citywide parcel coverage or WUP-point parcel presence is asserted.",
+    "citywideVerified": false,
+    "countrywideVerified": false,
+    "geometryVerified": false
+  },
+  "attempts": [],
+  "remainingUncertainty": "A separate geometry-only parcel layer may exist, but none was verified. No exact parcel presence or citywide coverage is claimed."
+}

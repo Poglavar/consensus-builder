@@ -1,0 +1,101 @@
+{
+  "schemaVersion": "1.0",
+  "checkedAt": "2026-10-09",
+  "city": "Genoa",
+  "wupCityCode": 1162,
+  "rank": 1042,
+  "pointLatLon": [
+    44.4175972269902,
+    8.92090513587392
+  ],
+  "population2025Persons": 532509,
+  "searchQueries": [
+    {
+      "language": "English",
+      "query": "Genoa Genova cadastral parcels WFS dataset data.europa.eu age-d_d969_genova WFS endpoint",
+      "executionMethod": "Separate English-language search followed by catalog and official-source review.",
+      "result": "The Italian spatial-data catalog record for cadastral cartography of Comune di Genova lists a WFS distribution modified 2025-01-27, links the Agenzia delle Entrate WFS endpoint, and reports an EPSG:6706 dataset extent containing the unchanged WUP point. The linked endpoint returned HTTP 403 for both GetCapabilities and a bounded exact-point GetFeature request; no layer schema or geometry response could be read.",
+      "actualResultUrls": [
+        "https://data.europa.eu/data/datasets/age-d_d969_genova?locale=it",
+        "https://dati.gov.it/node/view-dataset/dataset?id=9d74351a-eb63-4f64-848a-69770e9722b2",
+        "https://www.comune.genova.it/tutti-gli-argomenti/cartografia/geoservizi",
+        "https://wfs.cartografia.agenziaentrate.gov.it/inspire/wfs/owfs01.php?SERVICE=WFS&REQUEST=GetCapabilities&VERSION=2.0.0"
+      ]
+    },
+    {
+      "language": "Italian",
+      "query": "Genova particelle catastali WFS servizio catastale comune Genova AGEA WFS dati.europa",
+      "executionMethod": "Separate Italian-language search followed by catalog and official-source review.",
+      "result": "Il catalogo italiano dei dati territoriali elenca la Cartografia catastale del Comune di Genova e una distribuzione WFS aggiornata il 27 gennaio 2025, collegata al servizio dell'Agenzia delle Entrate. L'endpoint restituisce HTTP 403 sia a GetCapabilities sia a una richiesta GetFeature limitata al punto WUP e ai campi identificativo geometria; schema e geometria non sono stati restituiti.",
+      "actualResultUrls": [
+        "https://data.europa.eu/data/datasets/age-d_d969_genova?locale=it",
+        "https://geodati.gov.it/geoportale/visualizzazione-metadati/scheda-metadati?metadataid=age%3AS_0000_ITALIA",
+        "https://www.comune.genova.it/tutti-gli-argomenti/cartografia/geoservizi",
+        "https://wfs.cartografia.agenziaentrate.gov.it/inspire/wfs/owfs01.php?SERVICE=WFS&REQUEST=GetCapabilities&VERSION=2.0.0"
+      ]
+    }
+  ],
+  "officialSources": [
+    {
+      "url": "https://data.europa.eu/data/datasets/age-d_d969_genova?locale=it",
+      "role": "Dataset record for Cartografia catastale - Comune di GENOVA.",
+      "observation": "Lists a WFS distribution modified 2025-01-27, identifies Agenzia delle Entrate as contact, gives EPSG:6706 and a bounding extent containing the WUP point. Catalog existence and extent do not prove successful feature access."
+    },
+    {
+      "url": "https://dati.gov.it/node/view-dataset/dataset?id=9d74351a-eb63-4f64-848a-69770e9722b2",
+      "role": "Italian government open-data catalogue record for national cadastral cartography service.",
+      "observation": "Lists the official Agenzia delle Entrate WFS endpoint and service description."
+    },
+    {
+      "url": "https://geodati.gov.it/geoportale/visualizzazione-metadati/scheda-metadati?metadataid=age%3AS_0000_ITALIA",
+      "role": "Italian National Spatial Data Directory metadata for cadastral cartography.",
+      "observation": "Identifies Agenzia delle Entrate as resource owner, RDN2008-6706, and the national WFS GetCapabilities URL."
+    },
+    {
+      "url": "https://www.comune.genova.it/tutti-gli-argomenti/cartografia/geoservizi",
+      "role": "Comune di Genova local geoservices page.",
+      "observation": "Documents municipal WMS/WFS and current local GIS service. It is a separate municipal route from the national Agency WFS inspected here."
+    }
+  ],
+  "linkedDistribution": {
+    "format": "WFS",
+    "modified": "2025-01-27",
+    "datasetIdentifier": "age:D_D969_GENOVA",
+    "accessUrl": "https://wfs.cartografia.agenziaentrate.gov.it/inspire/wfs/owfs01.php?SERVICE=WFS&REQUEST=GetCapabilities&VERSION=2.0.0",
+    "serviceEndpoint": "https://wfs.cartografia.agenziaentrate.gov.it/inspire/wfs/owfs01.php",
+    "datasetCrsMetadata": "EPSG:6706",
+    "datasetExtentLonLat": [
+      8.6658325,
+      44.3786664,
+      9.0956892,
+      44.5198436
+    ],
+    "wupPointInsideCatalogExtent": true,
+    "catalogExtentIsNotFeatureEvidence": true
+  },
+  "attempts": [
+    {
+      "operation": "WFS 2.0.0 GetCapabilities",
+      "url": "https://wfs.cartografia.agenziaentrate.gov.it/inspire/wfs/owfs01.php?SERVICE=WFS&REQUEST=GetCapabilities&VERSION=2.0.0",
+      "httpStatus": 403,
+      "response": "Akamai-style Access Denied HTML; no capabilities or feature-type list returned."
+    },
+    {
+      "operation": "WFS 2.0.0 GetFeature",
+      "url": "https://wfs.cartografia.agenziaentrate.gov.it/inspire/wfs/owfs01.php?language=ita&SERVICE=WFS&VERSION=2.0.0&TYPENAMES=CP%3ACadastralParcel&SRSNAME=urn%3Aogc%3Adef%3Acrs%3AEPSG%3A%3A6706&BBOX=44.4174972269902%2C8.92080513587392%2C44.4176972269902%2C8.92100513587392%2Curn%3Aogc%3Adef%3Acrs%3AEPSG%3A%3A6706&REQUEST=GetFeature&COUNT=3&PROPERTYNAME=CP%3AinspireId%2CCP%3Ageometry",
+      "httpStatus": 403,
+      "response": "Akamai-style Access Denied HTML; no features or schema returned. Request was bounded around the exact WUP point, count limited to 3, with only the intended INSPIRE identifier and geometry property names; those property names could not be validated because service access was denied."
+    },
+    {
+      "operation": "Web-reader open of catalogued GetCapabilities URL",
+      "url": "https://wfs.cartografia.agenziaentrate.gov.it/inspire/wfs/owfs01.php?SERVICE=WFS&REQUEST=GetCapabilities&VERSION=2.0.0",
+      "httpStatus": 403,
+      "response": "Web reader also reported 403 Forbidden."
+    }
+  ],
+  "geometryDecision": "No full polygon retained. The cataloged national WFS route is distinct from the municipal restricted layer, but this environment received HTTP 403 before the WFS schema or feature response could be inspected.",
+  "geometryVerified": false,
+  "retainedFullPolygonCount": 0,
+  "remainingUncertainty": "The data.europa record's municipal extent covers the WUP locator, but exact parcel hit, live WFS schema/native feature CRS, and public feature access remain unverified. The 403 documents this investigation's response and does not prove general service absence.",
+  "nonInference": "Do not infer that all Genoa cadastral geometry is inaccessible solely from the municipal reserved-layer label; the national WFS distribution exists but was separately attempted and blocked here."
+}

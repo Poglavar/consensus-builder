@@ -1,0 +1,52 @@
+{
+  "schemaVersion": "1.0",
+  "checkedAt": "2026-10-09",
+  "cityRecord": "city-5892-cipanas.json",
+  "purpose": "Document first-party local registry/map evidence and bounded anonymous geometry access review.",
+  "scopeLimits": {
+    "maxFullPolygonsRetainedInCityRecord": 0,
+    "maxFullPolygonsRetainedInReview": 0,
+    "maxFullPolygonsRetainedInRepository": 0,
+    "ownerOrAddressDataRetained": false,
+    "credentialsOrTokenValuesRetained": false,
+    "citywideCompletenessAsserted": false
+  },
+  "assessment": "Cipanas is tied to the official Cianjur village and local land office. No public anonymous parcel geometry schema was found. The low WUP plausibility and broad settlement extent remain identity/coverage caveats.",
+  "registryAssessment": "The official Cipanas Village website identifies the WUP place as Desa Cipanas, Kecamatan Cipanas, Kabupaten Cianjur. The official ATR/BPN site identifies a Kantor Pertanahan Kabupaten Cianjur. This supports local land-registry context for the Cianjur locality, though the office’s exact service footprint and the WUP settlement extent are not separately documented.",
+  "officialPrimarySources": [
+    {
+      "url": "https://www.cipanas.desa.id/",
+      "observation": "The official Cipanas Village website identifies the WUP place as Desa Cipanas, Kecamatan Cipanas, Kabupaten Cianjur. The official ATR/BPN site identifies a Kantor Pertanahan Kabupaten Cianjur. This supports local land-registry context for the Cianjur locality, though the office’s exact service footprint and the WUP settlement extent are not separately documented."
+    },
+    {
+      "url": "https://kab-cianjur.atrbpn.go.id/",
+      "observation": "The official Cipanas Village website identifies the WUP place as Desa Cipanas, Kecamatan Cipanas, Kabupaten Cianjur. The official ATR/BPN site identifies a Kantor Pertanahan Kabupaten Cianjur. This supports local land-registry context for the Cianjur locality, though the office’s exact service footprint and the WUP settlement extent are not separately documented."
+    }
+  ],
+  "searchQueries": [
+    {
+      "language": "English",
+      "query": "Cipanas Cianjur Indonesia official land registry cadastral map parcel GIS",
+      "result": "Official Cipanas village and Cianjur land-office sources establish locality/registry context; no public geometry schema found.",
+      "method": "Separate English/local-language search and official-source review.",
+      "scope": "Identify current city-specific registry and safe public parcel geometry."
+    },
+    {
+      "language": "Indonesian",
+      "query": "Desa Cipanas Cianjur peta wilayah pertanahan sertifikat tanah Kantor Pertanahan resmi",
+      "result": "Official village page identifies Cipanas in Cianjur; local ATR/BPN page lists land services. No parcel map query or personal service was used.",
+      "method": "Separate English/local-language search and official-source review.",
+      "scope": "Identify current city-specific registry and safe public parcel geometry."
+    }
+  ],
+  "geometryDecision": "No parcel geometry retained; no qualifying point-level sample was available for retention.",
+  "coverageAssessment": {
+    "claimedScope": "The official Cipanas Village website identifies the WUP place as Desa Cipanas, Kecamatan Cipanas, Kabupaten Cianjur. The official ATR/BPN Cianjur Land Office publishes land-registration services for Kabupaten Cianjur. This supports a local land-registry basis for the Cianjur locality, while the WUP population plausibility is low and the exact settlement extent remains unverified.",
+    "verifiedOpenScope": "No citywide parcel coverage or WUP-point parcel presence is asserted.",
+    "citywideVerified": false,
+    "countrywideVerified": false,
+    "geometryVerified": false
+  },
+  "attempts": [],
+  "remainingUncertainty": "WUP population plausibility is low. The precise settlement extent and the Cianjur land office service footprint remain unresolved."
+}

@@ -1,0 +1,133 @@
+{
+  "name": "Tiruchirappalli",
+  "country": "India",
+  "countryCode": "IN",
+  "rank": 376,
+  "point": [
+    10.799998777933,
+    78.7066825512881
+  ],
+  "freshResearch": {
+    "queries": [
+      {
+        "language": "Tamil",
+        "query": "திருச்சிராப்பள்ளி நில அளவை பதிவேடு நகர நில அளவை TSLR FMB நில வரைபடம் அதிகாரப்பூர்வ e சேவை",
+        "scope": "Find city-specific town-survey land records and a safe anonymous full-vector map endpoint.",
+        "result": "The Tiruchirappalli District Administration Tamil land-services page links the state e-services for Patta/FMB/Chitta/Town Survey Land Register extracts and identifies the Survey and Settlement Department at the Tiruchirappalli Collectorate. The city corporation’s official planning page describes a local Town Survey Section staffed by survey officers and field assistants; it does not advertise parcel-vector downloads or a GIS feature service.",
+        "actualResultUrls": [
+          "https://tiruchirappalli.nic.in/ta/service/%E0%AE%87%E0%AE%A3%E0%AF%88%E0%AE%AF%E0%AE%B5%E0%AE%B4%E0%AE%BF-%E0%AE%9A%E0%AF%87%E0%AE%B5%E0%AF%88%E0%AE%95%E0%AE%B3%E0%AF%8D-%E0%AE%8E%E0%AE%99%E0%AF%8D%E0%AE%95%E0%AF%87%E0%AE%AF%E0%AF%81/",
+          "https://www.trichycorporation.gov.in/planningdept"
+        ],
+        "executionMethod": "Tamil-language search and inspection of the district Tamil service page and city corporation Town Survey description; no survey numbers or record values were submitted."
+      },
+      {
+        "language": "English",
+        "query": "Tiruchirappalli official urban cadastral parcel map TSLR FMB city survey GIS public viewer",
+        "scope": "Cross-check the local registry jurisdiction and whether the advertised service returns full public geometry.",
+        "result": "The English district land-service page links Patta/FMB/Chitta/TSLR extracts and lists the local Survey and Settlement Department. The official city corporation identifies a Town Survey Section responsible for survey work and land-dispute support. These are city-local record and survey services; no anonymous vector endpoint or feature schema was advertised. The linked Tamil Nadu e-services shell timed out in this environment, so no provider-down claim is made.",
+        "actualResultUrls": [
+          "https://tiruchirappalli.nic.in/service/e-services-anytime-anywhere-land/",
+          "http://eservices.tn.gov.in/eservicesnew/home.html",
+          "https://www.trichycorporation.gov.in/planningdept"
+        ],
+        "executionMethod": "English-language search plus direct public GET to the district page and a bounded GET attempt to the linked state e-services homepage; no land-record lookup was submitted."
+      }
+    ],
+    "portals": [
+      {
+        "name": "Tiruchirappalli District e-Services – Land",
+        "operator": "Tiruchirappalli District Administration / Tamil Nadu Survey and Settlement Department",
+        "homeUrl": "https://tiruchirappalli.nic.in/service/e-services-anytime-anywhere-land/",
+        "observation": "Lists Patta/FMB/Chitta/TSLR extracts and identifies the local Survey and Settlement Department at the Collectorate; links to the state e-services portal."
+      },
+      {
+        "name": "Tiruchirappalli City Corporation Town Survey Section",
+        "operator": "Tiruchirappalli City Municipal Corporation",
+        "homeUrl": "https://www.trichycorporation.gov.in/planningdept",
+        "observation": "The city says its Town Survey Section includes local survey officers and field assistants. The page describes survey administration, not a public vector map service."
+      },
+      {
+        "name": "Tamil Nadu e-Services (Anytime/Anywhere) – Land",
+        "operator": "Government of Tamil Nadu",
+        "homeUrl": "http://eservices.tn.gov.in/eservicesnew/home.html",
+        "observation": "Advertised state workflow for FMB and TSLR extracts; direct shell did not respond within the local timeout. No property or owner lookup was attempted."
+      }
+    ],
+    "requests": [
+      {
+        "url": "https://tiruchirappalli.nic.in/service/e-services-anytime-anywhere-land/",
+        "method": "GET direct shell",
+        "status": 200,
+        "type": "text/html; charset=UTF-8",
+        "observation": "District land-services page with official state e-services link and local Survey and Settlement department contact."
+      },
+      {
+        "url": "http://eservices.tn.gov.in/eservicesnew/home.html",
+        "method": "GET direct shell",
+        "status": null,
+        "type": null,
+        "observation": "Direct request timed out locally after 10 seconds; no HTTP response and no provider-down conclusion."
+      },
+      {
+        "url": "https://www.trichycorporation.gov.in/planningdept",
+        "method": "GET direct shell",
+        "status": null,
+        "type": null,
+        "observation": "Local shell DNS lookup returned ENOTFOUND; official page content is available via search indexing. Not interpreted as provider downtime."
+      },
+      {
+        "url": "https://www.trichycorporation.gov.in/mapwardsz2",
+        "method": "GET web inspection",
+        "status": 200,
+        "type": "text/html",
+        "observation": "Official city ward map lists ward/zone maps; this is municipal administrative mapping, not cadastral parcel geometry."
+      }
+    ]
+  },
+  "status": "complete",
+  "verifiedParcelResponse": {
+    "attempted": true,
+    "fullGeometrySampleCount": 0,
+    "bounded": false,
+    "pointLocated": false,
+    "note": "No anonymous full-vector parcel query produced geometry; see recorded official public routes and their request outcomes."
+  },
+  "source": {
+    "operator": "Tiruchirappalli District Administration / Tamil Nadu Survey and Settlement Department",
+    "endpoint": "https://tiruchirappalli.nic.in/service/e-services-anytime-anywhere-land/",
+    "requestedAttributes": [],
+    "personalAttributesRequested": false,
+    "serviceType": "Town Survey Land Register (TSLR) and FMB record/extract service",
+    "geometryType": null,
+    "nativeIdFields": [],
+    "directGeometryQueryVerified": false,
+    "directMetadataSchemaVerified": false
+  },
+  "coverageAssessment": "City-specific TSLR/FMB and local survey services are confirmed. The WUP point was not resolved to a survey parcel and no full public vector geometry was returned.",
+  "registryFound": true,
+  "registryBasis": "The district administration explicitly offers urban TSLR extracts and FMB/land records and identifies the district Survey and Settlement Department; the city corporation confirms a local Town Survey Section. This establishes city-specific survey records, not an open geometry feed.",
+  "verifiedSample": false,
+  "publicParcelGeometryFound": false,
+  "resultCategory": "local_town_survey_and_tslr_service_no_public_vector_endpoint_verified",
+  "technicalBlocker": "The linked public state portal did not return an HTTP response in this environment, and the local pages advertise extracts and administrative survey services rather than a public parcel-vector endpoint. No property details or owner fields were submitted.",
+  "remainingUncertainty": "Whether the linked e-service provides a downloadable urban sketch for a known, non-sensitive survey number and whether any vector response exists are unverified. Current district content links only to record/extract workflows.",
+  "nextStep": "If an anonymous published vector or documented full-geometry route becomes available, test it on a small bounded area; keep TSLR/FMB extracts separate from open parcel geometry.",
+  "sourceIds": [],
+  "schemaVersion": 1,
+  "checkedAt": "2026-10-09",
+  "wupCityCode": 10415,
+  "cityId": "wup2025:10415",
+  "queueRank": 376,
+  "population2025": 1349040,
+  "population2025k": 1349.04,
+  "populationPlausibility2025": "High",
+  "populationUnit": "persons",
+  "pointBasis": "UN WUP 2025 population-weighted settlement centroid; this is not a municipal boundary or a parcel-coverage claim.",
+  "centerLatLon": [
+    10.799998777933,
+    78.7066825512881
+  ],
+  "runtimeReadiness": "not_enabled_no_verified_public_geometry",
+  "adapterReady": false,
+  "rootReviewedAt": "2026-10-08T23:19:47.932570+00:00"
+}

@@ -1,0 +1,103 @@
+{
+  "schemaVersion": 1,
+  "kind": "city_parcel_source_research",
+  "checkedAt": "2026-10-09",
+  "name": "Port Said",
+  "country": "Egypt",
+  "countryCode": "EG",
+  "populationUnit": "persons",
+  "status": "complete",
+  "registryFound": true,
+  "registryBasis": "The Port Said Governorate-hosted citizen-services handbook documents the local Real Estate Publicity/Documentation office and services for registering documents and obtaining registered-document records/certificates. This confirms a local real-estate registration service, but the handbook and local GIS/utility-network information do not expose public parcel geometry.",
+  "registryEvidenceUrls": [
+    "https://portsaid.gov.eg/Upload/DocumentLibrary/AttachmentA/63/final.pdf",
+    "https://pundc.info/",
+    "https://portsaid.gov.eg/"
+  ],
+  "verifiedSample": false,
+  "publicParcelGeometryFound": false,
+  "runtimeReadiness": "not_enabled_no_verified_public_geometry",
+  "wupCityCode": 7111,
+  "cityId": "wup2025:7111",
+  "centerLatLon": [
+    31.256895161242,
+    32.2844236446961
+  ],
+  "rank": 615,
+  "queueRank": 615,
+  "population2025": 849767,
+  "population2025k": 849.767,
+  "pointBasis": "UN WUP 2025 population-weighted settlement centroid; this is not a municipal boundary or a parcel-coverage claim.",
+  "technicalBlocker": "The local handbook establishes document-registration services, while available GIS evidence concerns utilities/land use rather than cadastral parcels. No anonymous full-polygon endpoint or safe parcel schema was verified.",
+  "scopeLimits": "Source discovery only. Evidence establishes local registration or land-record services as qualified in registryBasis; citywide cadastre coverage and public vector access are not established. No owner, address, tax, personal-identity, credential or account lookup was submitted or retained. No full parcel geometry was retained.",
+  "remainingUncertainty": "Whether a separate anonymous public parcel-vector service exists and whether the relevant record units cover the settlement point remain unverified.",
+  "research": {
+    "executedQueries": [
+      {
+        "language": "English",
+        "query": "Port Said Egypt official real estate publicity registration office cadastral parcel map GIS",
+        "scope": "Find primary city-local registry/cadastre evidence and anonymous geometry-only routes; do not submit property identifiers.",
+        "result": "The Port Said Governorate-hosted citizen-services handbook documents the local Real Estate Publicity/Documentation office and services for registering documents and obtaining registered-document records/certificates. This confirms a local real-estate registration service, but the handbook and local GIS/utility-network information do not expose public parcel geometry. No anonymous full-polygon schema was verified.",
+        "actualResultUrls": [
+          "https://portsaid.gov.eg/Upload/DocumentLibrary/AttachmentA/63/final.pdf",
+          "https://pundc.info/",
+          "https://portsaid.gov.eg/"
+        ]
+      },
+      {
+        "language": "Arabic",
+        "query": "بورسعيد مكتب الشهر العقاري تسجيل العقارات خريطة مساحية GIS رسمي",
+        "scope": "Find first-party native-language local registry/cadastre evidence and safe anonymous geometry-only routes.",
+        "result": "The Port Said Governorate-hosted citizen-services handbook documents the local Real Estate Publicity/Documentation office and services for registering documents and obtaining registered-document records/certificates. This confirms a local real-estate registration service, but the handbook and local GIS/utility-network information do not expose public parcel geometry. No anonymous full-polygon schema was verified.",
+        "actualResultUrls": [
+          "https://portsaid.gov.eg/Upload/DocumentLibrary/AttachmentA/63/final.pdf",
+          "https://pundc.info/",
+          "https://portsaid.gov.eg/"
+        ]
+      }
+    ],
+    "officialSources": [
+      {
+        "url": "https://portsaid.gov.eg/Upload/DocumentLibrary/AttachmentA/63/final.pdf",
+        "observation": "The Port Said Governorate-hosted citizen-services handbook documents the local Real Estate Publicity/Documentation office and services for registering documents and obtaining registered-document records/certificates. This confirms a local real-estate registration service, but the handbook and local GIS/utility-network information do not expose public parcel geometry."
+      },
+      {
+        "url": "https://pundc.info/",
+        "observation": "The Port Said Governorate-hosted citizen-services handbook documents the local Real Estate Publicity/Documentation office and services for registering documents and obtaining registered-document records/certificates. This confirms a local real-estate registration service, but the handbook and local GIS/utility-network information do not expose public parcel geometry."
+      },
+      {
+        "url": "https://portsaid.gov.eg/",
+        "observation": "The Port Said Governorate-hosted citizen-services handbook documents the local Real Estate Publicity/Documentation office and services for registering documents and obtaining registered-document records/certificates. This confirms a local real-estate registration service, but the handbook and local GIS/utility-network information do not expose public parcel geometry."
+      }
+    ],
+    "metadataReviewFile": "port-said-service-review.json"
+  },
+  "source": {
+    "sourceId": "eg-port-said-registry-review",
+    "name": "Port Said local registry/cadastre route review",
+    "operator": "Port Said Real Estate Publicity/Documentation Office (as listed in the Port Said Governorate citizen-services handbook)",
+    "url": "https://portsaid.gov.eg/Upload/DocumentLibrary/AttachmentA/63/final.pdf",
+    "scope": "The Port Said Governorate-hosted citizen-services handbook documents the local Real Estate Publicity/Documentation office and services for registering documents and obtaining registered-document records/certificates. This confirms a local real-estate registration service, but the handbook and local GIS/utility-network information do not expose public parcel geometry.",
+    "nativeIdField": null,
+    "attributesRequested": [],
+    "identityBasis": "No safe parcel feature identifier was retrieved.",
+    "geometryStatus": "city_registry_basis_only_no_public_geometry_contract"
+  },
+  "coverageAssessment": {
+    "verifiedOpenScope": "The Port Said Governorate-hosted citizen-services handbook documents the local Real Estate Publicity/Documentation office and services for registering documents and obtaining registered-document records/certificates. This confirms a local real-estate registration service, but the handbook and local GIS/utility-network information do not expose public parcel geometry.",
+    "notEstablished": [
+      "anonymous full-polygon access",
+      "complete citywide cadastral coverage",
+      "runtime source binding"
+    ],
+    "wupPointRelation": "No parcel geometry was returned or asserted."
+  },
+  "priorEvidenceFiles": [],
+  "populationPlausibility2025": "High",
+  "sourceIds": [],
+  "point": [
+    31.256895161242,
+    32.2844236446961
+  ],
+  "rootReviewedAt": "2026-10-09T02:05:58.056454+00:00"
+}

@@ -1,0 +1,105 @@
+{
+  "schemaVersion": "1.0",
+  "cityId": "wup2025:2104",
+  "wupCityCode": 2104,
+  "name": "Ndola",
+  "country": "Zambia",
+  "countryCode": "ZM",
+  "rank": 1034,
+  "queueRank": 1034,
+  "point": [
+    -12.9804626774729,
+    28.6303843611918
+  ],
+  "centerLatLon": [
+    -12.9804626774729,
+    28.6303843611918
+  ],
+  "pointBasis": "UN WUP2025 population-weighted settlement centroid; not a municipal boundary or parcel-coverage claim.",
+  "population2025": 535108,
+  "population2025k": 535.108,
+  "populationUnit": "persons",
+  "populationPlausibility2025": "Low",
+  "cohort": "overnight-followon-1001-1100",
+  "checkedAt": "2026-10-09",
+  "status": "complete",
+  "registryFound": true,
+  "registryBasis": "Ndola City Council’s official service pages say its estate-management function processes land applications and maintains the deeds register, while property rates apply to planned council-jurisdiction property with official plot numbers. This establishes city-specific property/land administration. The reviewed sources do not expose an anonymous parcel-geometry service.",
+  "registryEvidenceUrls": [
+    "https://www.ndolacouncil.gov.zm/?page_id=770",
+    "https://www.ndolacouncil.gov.zm/?page_id=792"
+  ],
+  "verifiedSample": false,
+  "publicParcelGeometryFound": false,
+  "sourceIds": [],
+  "adapterReady": false,
+  "runtimeReadiness": "not_enabled_no_verified_public_geometry",
+  "technicalBlocker": "No source-native, anonymous response containing a stable parcel identifier and complete polygon tied to the WUP point was verified in this city-specific investigation. This is an unverified access finding, not a claim that public geometry does not exist.",
+  "scopeLimits": "No full parcel geometry was retained. Local registry/cadastre custody and public geometry access are treated as separate findings; no citywide or countrywide parcel coverage is claimed.",
+  "resultCategory": "local_land_administration_registry_no_open_polygon",
+  "coverageAssessment": {
+    "claimedScope": "Ndola City Council’s official service pages say its estate-management function processes land applications and maintains the deeds register, while property rates apply to planned council-jurisdiction property with official plot numbers. This establishes city-specific property/land administration. The reviewed sources do not expose an anonymous parcel-geometry service.",
+    "verifiedOpenScope": "No complete source-native anonymous parcel polygon was verified at the WUP point.",
+    "citywideVerified": false,
+    "countrywideVerified": false
+  },
+  "runtimeAssessment": {
+    "status": "not_enabled_no_verified_public_geometry",
+    "reason": "No source-native, anonymous response containing a stable parcel identifier and complete polygon tied to the WUP point was verified in this city-specific investigation. This is an unverified access finding, not a claim that public geometry does not exist."
+  },
+  "freshResearch": {
+    "queries": [
+      {
+        "language": "English",
+        "query": "Ndola Zambia city council land registry cadastral plot register official",
+        "scope": "Fresh city-specific discovery of local registry/cadastre custody and safe public parcel geometry.",
+        "result": "Ndola City Council documents estate management and deeds-register duties, and its property-rates page requires an official plot number; a public anonymous map-feature response was not found.",
+        "actualResultUrls": [
+          "https://www.ndolacouncil.gov.zm/?page_id=770",
+          "https://www.ndolacouncil.gov.zm/?page_id=792",
+          "https://www.mlnr.gov.zm/"
+        ],
+        "executionMethod": "Executed as a fresh web search; official search results/pages were reviewed."
+      },
+      {
+        "language": "Bemba",
+        "query": "Ndola icitungu cintu cakulanda ubutaka registry ubutaka plot council",
+        "scope": "Independent local-language search for city-specific registry/cadastre custody and anonymous parcel geometry.",
+        "result": "Ichilinganino mu Bemba calibombele pa “Ndola” ne “ubutaka/registry/plot/council” tacisanga amapepala ya council mu lulimi lwa Bemba; ubufyashi bwa pa website ya Ndola City Council mu Lungeleshi bwalanda ukuti council isunga deeds register no kupanga land applications.",
+        "actualResultUrls": [
+          "https://www.ndolacouncil.gov.zm/?page_id=770",
+          "https://www.ndolacouncil.gov.zm/?page_id=792",
+          "https://www.mlnr.gov.zm/"
+        ],
+        "executionMethod": "Executed as a separate fresh web search in the local language; official search results/pages were reviewed."
+      }
+    ],
+    "requests": [
+      {
+        "checkedAt": "2026-10-09T05:42:09.703713+00:00",
+        "url": "https://www.ndolacouncil.gov.zm/?page_id=770",
+        "normalTlsVerification": true,
+        "httpStatus": null,
+        "errorType": "URLError",
+        "error": "<urlopen error [SSL: CERTIFICATE_VERIFY_FAILED] certificate verify failed: unable to get local issuer certificate (_ssl.c:1082)>"
+      }
+    ],
+    "portals": [
+      {
+        "homeUrl": "https://www.ndolacouncil.gov.zm/",
+        "observation": "First-party municipal portal identified, but no safe anonymous full-polygon point query was verified."
+      }
+    ],
+    "historicalContext": []
+  },
+  "remainingUncertainty": "A public anonymous complete-polygon service tied to the WUP point was not established; council plot-management records and the national land registry are administrative sources rather than verified geometry services.",
+  "nextStep": "Retain the bounded custody and geometry findings. Root review may qualify a documented source-native map route before enabling any provider.",
+  "priorEvidenceFiles": [],
+  "priorCheck": {
+    "attemptState": "pending",
+    "attemptEvidence": [],
+    "possiblePriorMatches": []
+  },
+  "rootReviewedAt": "2026-10-09T05:45:07.249008+00:00",
+  "rootReviewNote": "Reviewed exact immutable WUP identity, separate multilingual discovery, cited city custody and actual source observations. Ndola City Council’s official service pages say its estate-management function processes land applications and maintains the deeds register, while property rates apply to planned council-jurisdiction property with official plot numbers. This establishes city-specific property/land administration. The reviewed sources do not expose an anonymous parcel-geometry service."
+}

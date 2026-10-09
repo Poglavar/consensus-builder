@@ -1,0 +1,102 @@
+{
+  "schemaVersion": "1.0",
+  "kind": "parcel_source_service_review",
+  "checkedAt": "2026-10-09",
+  "cityRecord": "city-3083-mazar-i-sharif.json",
+  "city": "Mazar i sharif",
+  "countryCode": "AF",
+  "wupCityCode": 3083,
+  "rank": 834,
+  "registryFound": true,
+  "registryEvidenceUrls": [
+    "https://mudh.gov.af/index.php/dr/%D8%A8%D8%B1%D9%86%D8%A7%D9%85%D8%AC-%D8%AB%D8%A8%D8%AA-%D8%B3%D8%A7%D8%AD%D8%A7%D8%AA-%D8%BA%DB%8C%D8%B1-%D8%B1%D8%B3%D9%85%DB%8C-%D8%B4%D9%87%D8%B1%DB%8C",
+    "https://www.mudh.gov.af/index.php/dr/%DB%B2%DB%B4%DB%B5%DB%B1-%D8%B3%D9%86%D8%AF-%D9%85%D9%84%DA%A9%DB%8C%D8%AA-%D8%AF%D8%B1-%D8%B4%D9%87%D8%B1-%D9%85%D8%B2%D8%A7%D8%B1-%D8%B4%D8%B1%DB%8C%D9%81-%D8%AA%D9%88%D8%B2%DB%8C%D8%B9-%D8%B4%D8%AF-0",
+    "https://mudh.gov.af/sites/default/files/2019-11/ARAZI%20Magazine%20Volume%20%237%20for%20website_0.pdf"
+  ],
+  "publicAnonymousGeometryVerified": false,
+  "completeGeoreferencedPolygonCount": 0,
+  "geometryRetained": false,
+  "ownerAddressTaxOrPersonLookupRequested": false,
+  "authenticationOrCredentialsUsed": false,
+  "captchaOrPersonalFormSubmitted": false,
+  "scopeLimits": {
+    "maxFullPolygonsRetainedInCityRecord": 3,
+    "maxFullPolygonsRetainedInReview": 0,
+    "ownerOrAddressDataRetained": false,
+    "credentialsOrTokenValuesRetained": false,
+    "citywideCompletenessAsserted": false
+  },
+  "searchQueries": [
+    {
+      "language": "English",
+      "query": "Mazar-i-Sharif official cadastral map Afghanistan land registry parcel map government",
+      "result": "Official MUDH/Arazi reports describe survey and registration of informal/unplanned urban homes in Mazar-i-Sharif and the issue of property certificates. The evidence is historical and does not provide an anonymous feature service/schema or establish coverage at the WUP point.",
+      "method": "Separate English web search and first-party ministry source review; no property-specific request."
+    },
+    {
+      "language": "Dari",
+      "query": "مزار شریف نقشه کادستر ثبت اراضی وزارت شهرسازی افغانستان",
+      "result": "Official MUDH/Arazi sources report Mazar-specific urban survey/registration activity and title-certificate distribution. They are historical program accounts and expose no anonymous parcel-vector service or safe feature schema.",
+      "method": "Separate Dari web search and official ministry review; no household or property-specific request."
+    }
+  ],
+  "officialPrimarySources": [
+    {
+      "url": "https://mudh.gov.af/index.php/dr/%D8%A8%D8%B1%D9%86%D8%A7%D9%85%D8%AC-%D8%AB%D8%A8%D8%AA-%D8%B3%D8%A7%D8%AD%D8%A7%D8%AA-%D8%BA%DB%8C%D8%B1-%D8%B1%D8%B3%D9%85%DB%8C-%D8%B4%D9%87%D8%B1%DB%8C",
+      "observation": "Ministry program page lists Mazar-i-Sharif among cities where urban informal-area homes were surveyed/registered and title certificates distributed; dated program context is historical."
+    },
+    {
+      "url": "https://www.mudh.gov.af/index.php/dr/%DB%B2%DB%B4%DB%B5%DB%B1-%D8%B3%D9%86%D8%AF-%D9%85%D9%84%DA%A9%DB%8C%D8%AA-%D8%AF%D8%B1-%D8%B4%D9%87%D8%B1-%D9%85%D8%B2%D8%A7%D8%B1-%D8%B4%D8%B1%DB%8C%D9%81-%D8%AA%D9%88%D8%B2%DB%8C%D8%B9-%D8%B4%D8%AF-0",
+      "observation": "Official article reports distribution of 2,451 property certificates in Mazar-i-Sharif under the informal urban-area registration program; it does not publish parcel geometry."
+    },
+    {
+      "url": "https://mudh.gov.af/sites/default/files/2019-11/ARAZI%20Magazine%20Volume%20%237%20for%20website_0.pdf",
+      "observation": "Official ministry/Arazi publication reports city survey and registration of homes in Mazar; historical program evidence only."
+    }
+  ],
+  "requestEvidence": [
+    {
+      "url": "https://mudh.gov.af/index.php/dr/%D8%A8%D8%B1%D9%86%D8%A7%D9%85%D8%AC-%D8%AB%D8%A8%D8%AA-%D8%B3%D8%A7%D8%AD%D8%A7%D8%AA-%D8%BA%DB%8C%D8%B1-%D8%B1%D8%B3%D9%85%DB%8C-%D8%B4%D9%87%D8%B1%DB%8C",
+      "method": "official source metadata/service-page review; no property-specific query",
+      "status": "official_source_reviewed",
+      "observation": "Ministry program page lists Mazar-i-Sharif among cities where urban informal-area homes were surveyed/registered and title certificates distributed; dated program context is historical."
+    },
+    {
+      "url": "https://www.mudh.gov.af/index.php/dr/%DB%B2%DB%B4%DB%B5%DB%B1-%D8%B3%D9%86%D8%AF-%D9%85%D9%84%DA%A9%DB%8C%D8%AA-%D8%AF%D8%B1-%D8%B4%D9%87%D8%B1-%D9%85%D8%B2%D8%A7%D8%B1-%D8%B4%D8%B1%DB%8C%D9%81-%D8%AA%D9%88%D8%B2%DB%8C%D8%B9-%D8%B4%D8%AF-0",
+      "method": "official source metadata/service-page review; no property-specific query",
+      "status": "official_source_reviewed",
+      "observation": "Official article reports distribution of 2,451 property certificates in Mazar-i-Sharif under the informal urban-area registration program; it does not publish parcel geometry."
+    },
+    {
+      "url": "https://mudh.gov.af/sites/default/files/2019-11/ARAZI%20Magazine%20Volume%20%237%20for%20website_0.pdf",
+      "method": "official source metadata/service-page review; no property-specific query",
+      "status": "official_source_reviewed",
+      "observation": "Official ministry/Arazi publication reports city survey and registration of homes in Mazar; historical program evidence only."
+    }
+  ],
+  "accessReview": {
+    "publicAnonymousGeometryVerified": false,
+    "completeGeoreferencedPolygonCount": 0,
+    "geometryRetained": false,
+    "ownerAddressTaxOrPersonLookupRequested": false,
+    "authenticationOrCredentialsUsed": false,
+    "captchaOrPersonalFormSubmitted": false,
+    "routeInspectionStatus": "official_local_registry_service_review_no_public_geometry_contract",
+    "reason": "First-party Afghan ministry sources document survey/registration programs in Mazar-i-Sharif, but no public anonymous parcel-map/vector endpoint or feature schema was found. The surfaced program reports are historical; current boundary coverage and the WUP point’s registered status remain unverified. No household, owner or property-specific record was queried.",
+    "nativeIdsUsed": "No safe native feature identifier was confirmed; no feature attributes requested."
+  },
+  "geometryDecision": "No geometry retained; no safe anonymous full-polygon response was available.",
+  "technicalBlocker": "First-party Afghan ministry sources document survey/registration programs in Mazar-i-Sharif, but no public anonymous parcel-map/vector endpoint or feature schema was found. The surfaced program reports are historical; current boundary coverage and the WUP point’s registered status remain unverified. No household, owner or property-specific record was queried.",
+  "sampleDisposition": "No parcel geometry or parcel attributes retained.",
+  "coverageAssessment": {
+    "claimedScope": "Official Afghan Ministry of Urban Development and Housing/Arazi materials describe city-specific survey, registration and title-certificate programs in Mazar-i-Sharif. These reports document historical programs, including unplanned-area household survey/registration, not the exact WUP point or current parcel-map coverage. No public anonymous parcel-vector source or schema was identified.",
+    "verifiedOpenScope": "First-party Afghan ministry sources document survey/registration programs in Mazar-i-Sharif, but no public anonymous parcel-map/vector endpoint or feature schema was found. The surfaced program reports are historical; current boundary coverage and the WUP point’s registered status remain unverified. No household, owner or property-specific record was queried.",
+    "citywideVerified": false,
+    "countrywideVerified": false
+  },
+  "runtimeAssessment": {
+    "status": "not_assessed",
+    "reason": "Source discovery only; runtime qualification was not performed."
+  },
+  "remainingUncertainty": "Historical program records do not establish currentness, complete formal-cadastre coverage, exact locator coverage, or geometry availability."
+}

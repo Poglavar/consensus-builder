@@ -1,0 +1,98 @@
+{
+  "schemaVersion": 1,
+  "checkedAt": "2026-10-09",
+  "sourceId": "in-bakhtiyarpur-registry-review",
+  "purpose": "Review city-local registry basis and anonymous geometry-only routes without querying personal/property attributes.",
+  "primaryPublisher": "Nagar Parishad Bakhtiyarpur / Directorate of Land Records & Survey, Bihar",
+  "sourceUrl": "https://nagarparishadbakhtiyarpur.net/",
+  "registryFound": true,
+  "registryBasis": "The Bakhtiyarpur Nagar Parishad page identifies the local municipal council and offers property and mutation services. Bihar’s official Directorate of Land Records & Survey and BhuNaksha portals provide revenue-map and cadastral-map services, but the public pages require selecting survey units and do not establish a city-specific open feature schema or complete geometry coverage for Bakhtiyarpur.",
+  "officialSources": [
+    {
+      "url": "https://nagarparishadbakhtiyarpur.net/",
+      "observation": "The Bakhtiyarpur Nagar Parishad page identifies the local municipal council and offers property and mutation services. Bihar’s official Directorate of Land Records & Survey and BhuNaksha portals provide revenue-map and cadastral-map services, but the public pages require selecting survey units and do not establish a city-specific open feature schema or complete geometry coverage for Bakhtiyarpur."
+    },
+    {
+      "url": "https://bhunaksha.bihar.gov.in/10/index.jsp",
+      "observation": "The Bakhtiyarpur Nagar Parishad page identifies the local municipal council and offers property and mutation services. Bihar’s official Directorate of Land Records & Survey and BhuNaksha portals provide revenue-map and cadastral-map services, but the public pages require selecting survey units and do not establish a city-specific open feature schema or complete geometry coverage for Bakhtiyarpur."
+    },
+    {
+      "url": "https://dlrs.bihar.gov.in/services.html",
+      "observation": "The Bakhtiyarpur Nagar Parishad page identifies the local municipal council and offers property and mutation services. Bihar’s official Directorate of Land Records & Survey and BhuNaksha portals provide revenue-map and cadastral-map services, but the public pages require selecting survey units and do not establish a city-specific open feature schema or complete geometry coverage for Bakhtiyarpur."
+    },
+    {
+      "url": "https://biharbhumi.bihar.gov.in/",
+      "observation": "The Bakhtiyarpur Nagar Parishad page identifies the local municipal council and offers property and mutation services. Bihar’s official Directorate of Land Records & Survey and BhuNaksha portals provide revenue-map and cadastral-map services, but the public pages require selecting survey units and do not establish a city-specific open feature schema or complete geometry coverage for Bakhtiyarpur."
+    }
+  ],
+  "searchQueries": [
+    {
+      "language": "English",
+      "query": "Bakhtiyarpur Bihar Nagar Parishad official land records cadastral parcel map BhuNaksha",
+      "scope": "Find official local registry/cadastre evidence and safe anonymous geometry-only routes; do not submit identifiers.",
+      "result": "The Bakhtiyarpur Nagar Parishad page identifies the local municipal council and offers property and mutation services. Bihar’s official Directorate of Land Records & Survey and BhuNaksha portals provide revenue-map and cadastral-map services, but the public pages require selecting survey units and do not establish a city-specific open feature schema or complete geometry coverage for Bakhtiyarpur.",
+      "actualResultUrls": [
+        "https://nagarparishadbakhtiyarpur.net/",
+        "https://bhunaksha.bihar.gov.in/10/index.jsp",
+        "https://dlrs.bihar.gov.in/services.html",
+        "https://biharbhumi.bihar.gov.in/"
+      ]
+    },
+    {
+      "language": "Hindi",
+      "query": "बख्तियारपुर भूमि रिकॉर्ड भू नक्शा नगर परिषद बिहार राजस्व नक्शा सरकारी",
+      "scope": "Find native-language local registry/cadastre evidence and safe anonymous geometry-only routes.",
+      "result": "The Bakhtiyarpur Nagar Parishad page identifies the local municipal council and offers property and mutation services. Bihar’s official Directorate of Land Records & Survey and BhuNaksha portals provide revenue-map and cadastral-map services, but the public pages require selecting survey units and do not establish a city-specific open feature schema or complete geometry coverage for Bakhtiyarpur.",
+      "actualResultUrls": [
+        "https://nagarparishadbakhtiyarpur.net/",
+        "https://bhunaksha.bihar.gov.in/10/index.jsp",
+        "https://dlrs.bihar.gov.in/services.html",
+        "https://biharbhumi.bihar.gov.in/"
+      ]
+    }
+  ],
+  "accessReview": {
+    "publicAnonymousGeometryVerified": false,
+    "completeGeoreferencedPolygonCount": 0,
+    "geometryRetained": false,
+    "ownerAddressTaxOrPersonLookupRequested": false,
+    "authenticationOrCredentialsUsed": false,
+    "captchaOrPersonalFormSubmitted": false,
+    "routeInspectionStatus": "city_local_records_verified_no_public_geometry_contract",
+    "reason": "The city-specific portal exposes municipal property/mutation workflows; the Bihar cadastral viewer is a survey-unit/plot-oriented map service. No safe anonymous full-polygon response or schema was verified for this settlement, and no plot or owner lookup was submitted.",
+    "nativeIdsUsed": "No safe parcel feature identifier retrieved; no feature attributes requested."
+  },
+  "requestEvidence": [
+    {
+      "url": "https://nagarparishadbakhtiyarpur.net/",
+      "method": "official public page/document review",
+      "status": "status_not_exposed_by_web_open",
+      "httpStatusObtained": false,
+      "observation": "The Bakhtiyarpur Nagar Parishad page identifies the local municipal council and offers property and mutation services. Bihar’s official Directorate of Land Records & Survey and BhuNaksha portals provide revenue-map and cadastral-map services, but the public pages require selecting survey units and do not establish a city-specific open feature schema or complete geometry coverage for Bakhtiyarpur."
+    },
+    {
+      "url": "https://bhunaksha.bihar.gov.in/10/index.jsp",
+      "method": "official public page/document review",
+      "status": "status_not_exposed_by_web_open",
+      "httpStatusObtained": false,
+      "observation": "The Bakhtiyarpur Nagar Parishad page identifies the local municipal council and offers property and mutation services. Bihar’s official Directorate of Land Records & Survey and BhuNaksha portals provide revenue-map and cadastral-map services, but the public pages require selecting survey units and do not establish a city-specific open feature schema or complete geometry coverage for Bakhtiyarpur."
+    },
+    {
+      "url": "https://dlrs.bihar.gov.in/services.html",
+      "method": "official public page/document review",
+      "status": "status_not_exposed_by_web_open",
+      "httpStatusObtained": false,
+      "observation": "The Bakhtiyarpur Nagar Parishad page identifies the local municipal council and offers property and mutation services. Bihar’s official Directorate of Land Records & Survey and BhuNaksha portals provide revenue-map and cadastral-map services, but the public pages require selecting survey units and do not establish a city-specific open feature schema or complete geometry coverage for Bakhtiyarpur."
+    },
+    {
+      "url": "https://biharbhumi.bihar.gov.in/",
+      "method": "official public page/document review",
+      "status": "status_not_exposed_by_web_open",
+      "httpStatusObtained": false,
+      "observation": "The Bakhtiyarpur Nagar Parishad page identifies the local municipal council and offers property and mutation services. Bihar’s official Directorate of Land Records & Survey and BhuNaksha portals provide revenue-map and cadastral-map services, but the public pages require selecting survey units and do not establish a city-specific open feature schema or complete geometry coverage for Bakhtiyarpur."
+    }
+  ],
+  "technicalBlocker": "The city-specific portal exposes municipal property/mutation workflows; the Bihar cadastral viewer is a survey-unit/plot-oriented map service. No safe anonymous full-polygon response or schema was verified for this settlement, and no plot or owner lookup was submitted.",
+  "sampleDisposition": "No parcel geometry or feature attributes retained.",
+  "remainingUncertainty": "Whether an anonymous city-scoped full-polygon service exists and whether the WUP point corresponds to the named local record unit remain unverified."
+}

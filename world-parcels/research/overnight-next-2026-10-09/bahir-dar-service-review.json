@@ -1,0 +1,152 @@
+{
+  "schemaVersion": "1.0",
+  "checkedAt": "2026-10-09",
+  "cityRecord": "city-3814-bahir-dar.json",
+  "purpose": "Document separate English/local-language searches, first-party local registry/cadastre evidence, and bounded anonymous geometry discovery.",
+  "scopeLimits": {
+    "maxFullPolygonsRetainedInCityRecord": 0,
+    "maxFullPolygonsRetainedInReview": 0,
+    "maxFullPolygonsRetainedInRepository": 0,
+    "ownerOrAddressDataRetained": false,
+    "credentialsOrTokenValuesRetained": false,
+    "citywideCompletenessAsserted": false
+  },
+  "assessment": "The official city directory lists a House Development and Administration Office, while regional/federal sources describe broader land and cadastre responsibilities. None identifies a Bahir Dar city cadastral/registration custodian or public parcel service. Registry custody and point coverage remain unconfirmed; no parcel geometry was verified. No full parcel polygons or owner/address data were retained.",
+  "registryAssessment": "The city office directory does not describe the House Development and Administration Office as a cadastral or property-registration custodian. The federal ministry and regional portal provide general jurisdictional context only. This is insufficient to confirm city-specific registry custody and does not prove absence.",
+  "officialPrimarySources": [
+    {
+      "url": "https://bahirdar.gov.et/en/sub_administration",
+      "observation": "Official Bahir Dar City Administration directory lists a House Development and Administration Office. The page does not identify it as a land-rights registry or cadastral office."
+    },
+    {
+      "url": "https://mui.gov.et/land-and-cadastre-ceo/",
+      "observation": "Federal Ministry of Urban and Infrastructure describes general urban land/cadastre administration responsibilities across cities; no Bahir Dar office or local service is specified. Direct open timed out."
+    },
+    {
+      "url": "https://amhara.gov.et/",
+      "observation": "Official Amhara regional portal advertises general land/housing services and lists Bahir Dar as regional capital. It does not identify a Bahir Dar city cadastral/registration custodian or parcel map."
+    },
+    {
+      "url": "https://justice.gov.et/en/directives/urban-cadastral-survey-directive-no-735-2013/",
+      "observation": "National urban cadastral survey directive; regulatory framework only, not evidence of a Bahir Dar registry or map service."
+    }
+  ],
+  "searchQueries": [
+    {
+      "language": "English",
+      "query": "Bahir Dar official land administration urban parcel cadastre cadastral map city land registry Ethiopia",
+      "resultUrls": [
+        "https://bahirdar.gov.et/en/sub_administration",
+        "https://mui.gov.et/land-and-cadastre-ceo/",
+        "https://justice.gov.et/en/directives/urban-cadastral-survey-directive-no-735-2013/"
+      ],
+      "result": "The English search found the official Bahir Dar city office directory and national land/cadastre administration pages; these establish administrative context, not public parcel geometry.",
+      "scope": "Identify first-party local registry and public parcel geometry; preserve the unchanged WUP settlement locator and avoid owner or address attributes."
+    },
+    {
+      "language": "Amharic",
+      "query": "ባህር ዳር የመሬት ምዝገባ ካዳስተር ኦፊሴላዊ",
+      "resultUrls": [
+        "https://bahirdar.gov.et/en/sub_administration",
+        "https://mui.gov.et/land-and-cadastre-ceo/",
+        "https://justice.gov.et/en/directives/urban-cadastral-survey-directive-no-735-2013/"
+      ],
+      "result": "The Amharic query did not locate a first-party city cadastral viewer or public feature schema. The available official city directory includes a House Development and Administration Office.",
+      "scope": "Find first-party local-language registry/cadastral routes and any anonymous safe parcel geometry service near the unchanged WUP point."
+    }
+  ],
+  "geometryDecision": {
+    "verified": false,
+    "sourceId": null,
+    "sampleCount": 0,
+    "sampleFile": null,
+    "nativeId": null,
+    "nativeIdField": null,
+    "exactWupPointTest": "No source-native full polygon was returned at the WUP point. publicParcelGeometryFound:false means unverified here, not confirmed absence.",
+    "requestEvidence": []
+  },
+  "coverageAssessment": {
+    "claimedScope": "The official city directory identifies a House Development and Administration Office, and national government sources establish urban land/cadastre responsibilities. No Bahir Dar public cadastral map or anonymous parcel feature endpoint was verified.",
+    "verifiedOpenScope": "No full parcel geometry was verified and no citywide coverage is asserted.",
+    "citywideVerified": false,
+    "countrywideVerified": false,
+    "geometryVerified": false
+  },
+  "attempts": [
+    {
+      "url": "https://bahirdar.gov.et/en/sub_administration",
+      "result": "Official Bahir Dar City Administration directory includes a House Development and Administration Office among city offices; it does not describe public parcel geometry."
+    },
+    {
+      "url": "https://mui.gov.et/land-and-cadastre-ceo/",
+      "result": "Official federal ministry Land and Cadastre executive office describes urban land development and administration responsibilities."
+    },
+    {
+      "url": "https://justice.gov.et/en/directives/urban-cadastral-survey-directive-no-735-2013/",
+      "result": "Official Ministry of Justice publishes the urban cadastral survey directive; this is a national regulatory framework, not a city parcel service."
+    }
+  ],
+  "remainingUncertainty": "Which Bahir Dar city or Amhara regional office is the legal custodian of urban land registration/cadastre, and whether a current public parcel map covers the WUP locator.",
+  "nextStep": "Use the official source catalog or documented map-service metadata if available; request only safe parcel identifiers and geometry, never owner or address fields.",
+  "runtimeAssessment": "not enabled; no verified full-parcel geometry",
+  "cohort": "overnight-next-1101-1200",
+  "cohortState": "research_complete_pending_root_review",
+  "integrationState": "not_integrated",
+  "followthroughSearches": [
+    {
+      "language": "English",
+      "query": "Bahir Dar official city land administration cadastral registry property registration office cadastre site:bahirdar.gov.et OR site:amhara.gov.et",
+      "resultUrls": [
+        "https://bahirdar.gov.et/en/sub_administration",
+        "https://amhara.gov.et/",
+        "https://mui.gov.et/land-and-cadastre-ceo/"
+      ],
+      "result": "Official city directory identifies a housing/development office but not a cadastral/registration unit; regional portal describes general land/housing services without naming a local custodian."
+    },
+    {
+      "language": "Amharic",
+      "query": "ባህር ዳር የከተማ መሬት አስተዳደር ቢሮ ካዳስተር ምዝገባ",
+      "resultUrls": [
+        "https://bahirdar.gov.et/en/sub_administration",
+        "https://amhara.gov.et/"
+      ],
+      "result": "No first-party Amharic city cadastral/registration service was located; the available city directory is administrative context only."
+    }
+  ],
+  "followthroughAttempts": [
+    {
+      "url": "https://bahirdar.gov.et/en/sub_administration",
+      "method": "official city directory page review",
+      "result": "HTTP content reviewed; lists House Development and Administration Office but does not define it as a registry/cadastre."
+    },
+    {
+      "url": "https://amhara.gov.et/",
+      "method": "official regional portal review",
+      "result": "General regional land/housing services advertised; no Bahir Dar local cadastre custodian identified."
+    },
+    {
+      "url": "https://mui.gov.et/land-and-cadastre-ceo/",
+      "method": "official federal ministry page open",
+      "result": "Timed out in fetcher; search-indexed text concerns general national urban land administration, not city custody."
+    }
+  ],
+  "registryDecision": "registryFound:null because city/local registry custody is unconfirmed; this is not a negative finding.",
+  "rootPrimaryChecks": [
+    {
+      "wupCityCode": 3814,
+      "url": "https://bahirdar.gov.et/en/sub_administration",
+      "checkedAt": "2026-10-09T07:10:42.345010+00:00",
+      "method": "Anonymous read-only GET, standard TLS where advertised; no credentials or property values",
+      "httpStatus": null,
+      "transportOutcome": "<urlopen error [Errno 8] nodename nor servname provided, or not known>"
+    }
+  ],
+  "rootReviewedAt": "2026-10-09T07:13:02.981057+00:00",
+  "rootReview": {
+    "checkedAt": "2026-10-09T07:13:02.981057+00:00",
+    "decision": "Reviewed city identity, canonical population/point, separate searches and saved source/request evidence. No full public parcel geometry verified in this pass.",
+    "custodyScope": "The city office directory does not describe the House Development and Administration Office as a cadastral or property-registration custodian. The federal ministry and regional portal provide general jurisdictional context only. This is insufficient to confirm city-specific registry custody and does not prove absence.",
+    "transportFailuresDoNotProveAbsence": true,
+    "geometryClaimScope": "Investigation outcome only; no worldwide or citywide absence asserted."
+  }
+}

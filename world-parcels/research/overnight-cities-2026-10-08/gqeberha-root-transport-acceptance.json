@@ -1,0 +1,214 @@
+{
+  "schemaVersion": 1,
+  "purpose": "Live city parcel qualification with unmodified responses through the repository adapter; IDs and hashes retained, full geometries confined to temporary audit cache except three public samples.",
+  "checkedAt": "2026-10-09T03:51:28.733Z",
+  "city": "gqeberha-csg-root",
+  "descriptor": {
+    "id": "za-csg-dffe-erven",
+    "adapter": "arcgis",
+    "endpoint": "https://dffeportal.environment.gov.za/hosting/rest/services/CSG_Cadaster/CSG_Cadastral_Data/MapServer/2",
+    "idPrefix": "ZA-CSG-DFFE-ERVEN-",
+    "idField": "PRCL_KEY",
+    "objectIdField": "OBJECTID",
+    "idType": "string",
+    "outFields": [
+      "OBJECTID",
+      "PRCL_KEY",
+      "PRCL_TYPE",
+      "LSTATUS",
+      "WSTATUS"
+    ],
+    "queryFormat": "esri-json",
+    "pageSize": 1000,
+    "maxFeatures": 2000,
+    "maxBboxKm2": 1,
+    "boundsQueryMode": "object-ids",
+    "idsQueryMode": "object-ids",
+    "name": "Chief Surveyor-General public Erven polygons",
+    "operator": "Chief Surveyor-General; Department of Forestry, Fisheries and the Environment service host",
+    "catalogueUrl": "https://csg.dlrrd.gov.za/data.htm",
+    "attribution": "Chief Surveyor-General \u00b7 DFFE hosted Erven \u00b7 adapted",
+    "countryCode": "ZA",
+    "metricSrid": 32735,
+    "cityIds": [
+      "gqeberha"
+    ],
+    "evidenceFile": "research/overnight-cities-2026-10-08/klipgat-csg-acceptance.json",
+    "scope": "Public Chief Surveyor-General Erven reference polygons hosted by DFFE; separately qualified bounded Klipgat and Evaton settlement views. Complete native PRCL_KEY identity and Esri straight-ring geometry are preserved. Each city retains its own extent and geometry-quality evidence; wider coverage, current legal title and survey accuracy remain unverified.",
+    "licenceNote": "Public government cadastral/reference map polygons; source notices informational. Legal survey accuracy and title are unverified.",
+    "additionalCityEvidence": {
+      "evaton": "research/overnight-cities-2026-10-08/evaton-csg-root-acceptance.json"
+    },
+    "cityScopes": {
+      "evaton": "46 valid distinct Chief Surveyor-General Erven references verified in thirteen bounded 0.001-degree cells around the unchanged Evaton WUP settlement locator. Complete object-ID manifests, forced three-row geometry pages, all 46 fresh native PRCL_KEY reads, explicit absence, footprint and binding passed in 59 requests through the existing strict Esri JSON reader. Independent EPSG:32735 GEOS found no invalid geometries, exact duplicates or operation errors, and one 0.0130704 m\u00b2 boundary overlap. A fresh original native EPSG:4148 response reproduces that overlap as a strip under one millimetre wide over about 54 metres; both full polygons retain it without repair or exclusion and are accepted for bounded reference use. The publisher states its web dataset is beta/not current and coordinates are not legal values; currentness, legal title, survey accuracy and wider citywide completeness remain unverified."
+    }
+  },
+  "grid": [
+    {
+      "name": "viewport-0",
+      "bbox": [
+        25.549,
+        -33.887,
+        25.55,
+        -33.886
+      ],
+      "kind": "aligned-grid"
+    },
+    {
+      "name": "viewport-1",
+      "bbox": [
+        25.55,
+        -33.887,
+        25.551,
+        -33.886
+      ],
+      "kind": "aligned-grid"
+    },
+    {
+      "name": "viewport-2",
+      "bbox": [
+        25.551,
+        -33.887,
+        25.552,
+        -33.886
+      ],
+      "kind": "aligned-grid"
+    },
+    {
+      "name": "viewport-3",
+      "bbox": [
+        25.549,
+        -33.886,
+        25.55,
+        -33.885
+      ],
+      "kind": "aligned-grid"
+    },
+    {
+      "name": "viewport-4",
+      "bbox": [
+        25.55,
+        -33.886,
+        25.551,
+        -33.885
+      ],
+      "kind": "aligned-grid"
+    },
+    {
+      "name": "viewport-5",
+      "bbox": [
+        25.551,
+        -33.886,
+        25.552,
+        -33.885
+      ],
+      "kind": "aligned-grid"
+    }
+  ],
+  "tests": [
+    {
+      "name": "viewport-0",
+      "passed": false,
+      "elapsedMs": 15005,
+      "requestIndexes": [
+        0,
+        0
+      ],
+      "error": "Parcel provider timed out.",
+      "code": "parcel-source-unavailable"
+    },
+    {
+      "name": "viewport-1",
+      "passed": false,
+      "elapsedMs": 15003,
+      "requestIndexes": [
+        1,
+        1
+      ],
+      "error": "Parcel provider timed out.",
+      "code": "parcel-source-unavailable"
+    },
+    {
+      "name": "viewport-2",
+      "passed": false,
+      "elapsedMs": 15000,
+      "requestIndexes": [
+        2,
+        2
+      ],
+      "error": "Parcel provider timed out.",
+      "code": "parcel-source-unavailable"
+    },
+    {
+      "name": "viewport-3",
+      "passed": false,
+      "elapsedMs": 15004,
+      "requestIndexes": [
+        3,
+        3
+      ],
+      "error": "Parcel provider timed out.",
+      "code": "parcel-source-unavailable"
+    },
+    {
+      "name": "viewport-4",
+      "passed": false,
+      "elapsedMs": 15003,
+      "requestIndexes": [
+        4,
+        4
+      ],
+      "error": "Parcel provider timed out.",
+      "code": "parcel-source-unavailable"
+    }
+  ],
+  "requests": [
+    {
+      "test": "viewport-0",
+      "url": "https://dffeportal.environment.gov.za/hosting/rest/services/CSG_Cadaster/CSG_Cadastral_Data/MapServer/2/query?where=1%3D1&geometry=25.549%2C-33.887%2C25.55%2C-33.886&geometryType=esriGeometryEnvelope&inSR=4326&spatialRel=esriSpatialRelIntersects&f=json&returnCountOnly=true",
+      "method": "GET",
+      "checkedAt": "2026-10-09T03:51:28.735Z",
+      "error": "The operation was aborted due to timeout"
+    },
+    {
+      "test": "viewport-1",
+      "url": "https://dffeportal.environment.gov.za/hosting/rest/services/CSG_Cadaster/CSG_Cadastral_Data/MapServer/2/query?where=1%3D1&geometry=25.55%2C-33.887%2C25.551%2C-33.886&geometryType=esriGeometryEnvelope&inSR=4326&spatialRel=esriSpatialRelIntersects&f=json&returnCountOnly=true",
+      "method": "GET",
+      "checkedAt": "2026-10-09T03:51:43.741Z",
+      "error": "The operation was aborted due to timeout"
+    },
+    {
+      "test": "viewport-2",
+      "url": "https://dffeportal.environment.gov.za/hosting/rest/services/CSG_Cadaster/CSG_Cadastral_Data/MapServer/2/query?where=1%3D1&geometry=25.551%2C-33.887%2C25.552%2C-33.886&geometryType=esriGeometryEnvelope&inSR=4326&spatialRel=esriSpatialRelIntersects&f=json&returnCountOnly=true",
+      "method": "GET",
+      "checkedAt": "2026-10-09T03:51:58.744Z",
+      "error": "The operation was aborted due to timeout"
+    },
+    {
+      "test": "viewport-3",
+      "url": "https://dffeportal.environment.gov.za/hosting/rest/services/CSG_Cadaster/CSG_Cadastral_Data/MapServer/2/query?where=1%3D1&geometry=25.549%2C-33.886%2C25.55%2C-33.885&geometryType=esriGeometryEnvelope&inSR=4326&spatialRel=esriSpatialRelIntersects&f=json&returnCountOnly=true",
+      "method": "GET",
+      "checkedAt": "2026-10-09T03:52:13.745Z",
+      "error": "The operation was aborted due to timeout"
+    },
+    {
+      "test": "viewport-4",
+      "url": "https://dffeportal.environment.gov.za/hosting/rest/services/CSG_Cadaster/CSG_Cadastral_Data/MapServer/2/query?where=1%3D1&geometry=25.55%2C-33.886%2C25.551%2C-33.885&geometryType=esriGeometryEnvelope&inSR=4326&spatialRel=esriSpatialRelIntersects&f=json&returnCountOnly=true",
+      "method": "GET",
+      "checkedAt": "2026-10-09T03:52:28.748Z",
+      "error": "The operation was aborted due to timeout"
+    },
+    {
+      "test": "viewport-5",
+      "url": "https://dffeportal.environment.gov.za/hosting/rest/services/CSG_Cadaster/CSG_Cadastral_Data/MapServer/2/query?where=1%3D1&geometry=25.551%2C-33.886%2C25.552%2C-33.885&geometryType=esriGeometryEnvelope&inSR=4326&spatialRel=esriSpatialRelIntersects&f=json&returnCountOnly=true",
+      "method": "GET",
+      "checkedAt": "2026-10-09T03:52:43.751Z"
+    }
+  ],
+  "qualityFile": "research/overnight-cities-2026-10-09/gqeberha-csg-root-quality.json",
+  "allTestsPassed": false,
+  "qualityStatus": "held_transport_incomplete",
+  "rootStoppedAfterRepeatedTransportFailure": true,
+  "uniqueParcels": 0,
+  "requestCount": 6
+}

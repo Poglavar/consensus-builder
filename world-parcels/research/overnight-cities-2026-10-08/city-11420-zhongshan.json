@@ -1,0 +1,91 @@
+{
+  "schemaVersion": 1,
+  "kind": "city_parcel_source_research",
+  "checkedAt": "2026-10-09",
+  "name": "Zhongshan",
+  "country": "China",
+  "countryCode": "CN",
+  "populationUnit": "persons",
+  "status": "complete",
+  "registryFound": true,
+  "registryBasis": "Zhongshan’s Natural Resources Bureau publicly announced its “One Map” platform for public planning and cadastral/property-natural-attribute queries. The live public shell and its client configuration are directly reachable. The client combines cadastral identification/detail data and does not document a geometry-only layer schema or an attribute-filtered vector endpoint.",
+  "registryEvidenceUrls": [
+    "https://www.zs.gov.cn/zrzyj/gggs/content/post_2335819.html",
+    "http://120.234.108.57:8081/onemap-search/index.html#/homeSearch/"
+  ],
+  "verifiedSample": false,
+  "publicParcelGeometryFound": false,
+  "runtimeReadiness": "not_enabled_no_verified_public_geometry",
+  "wupCityCode": 11420,
+  "cityId": "wup2025:11420",
+  "centerLatLon": [
+    22.525709844265,
+    113.384462521754
+  ],
+  "rank": 385,
+  "queueRank": 385,
+  "population2025": 1326078,
+  "population2025k": 1326.078,
+  "populationPlausibility2025": "Moderate",
+  "pointBasis": "UN WUP 2025 population-weighted settlement centroid; this is not a municipal boundary or a parcel-coverage claim.",
+  "technicalBlocker": "The live client exposes cadastral search/identify routes whose data contract is a general POST payload and whose feature-detail workflow includes parcel and property attributes. No geometry-only field-selection schema or public OGC/vector service was verified. No search, click-identify, parcel/unit-code lookup, building-name lookup, or export was submitted.",
+  "scopeLimits": "Inspected the official Natural Resources Bureau announcement, anonymous map shell, Global.js configuration, and app bundle. The cadastral interface advertises searches by parcel code, real-estate unit number, or building name and coordinate identify; these are property-identification paths, not a verified geometry-only route. No login, credentials, property names, addresses, legal parcel identifiers, owners, or feature attributes were queried.",
+  "remainingUncertainty": "Whether an anonymous map-view geometry endpoint exists behind the public viewer independently of its cadastral search/identify/detail paths; whether a safe field-filtered vector schema can be obtained from the advertised map service.",
+  "research": {
+    "executedQueries": [
+      {
+        "language": "Chinese",
+        "query": "中山市自然资源一图通平台 地籍 地图 公开 查询",
+        "result": "Official Natural Resources Bureau announcement confirms the public map platform and its cadastral/planning function."
+      },
+      {
+        "language": "English",
+        "query": "Zhongshan China official cadastral parcel map natural resources bureau one map",
+        "result": "Located the municipal One Map announcement and direct platform URL; the client code exposes identify/search routes but no geometry-only schema."
+      }
+    ],
+    "officialSources": [
+      {
+        "url": "https://www.zs.gov.cn/zrzyj/gggs/content/post_2335819.html",
+        "observation": "Official Zhongshan Natural Resources Bureau announcement (2023-10-26) says its One Map platform provides public planning and cadastral lookups, including planning-parcel and property natural-attribute information; gives the live platform URL."
+      },
+      {
+        "url": "http://120.234.108.57:8081/onemap-search/index.html#/homeSearch/",
+        "observation": "Anonymous GET returned HTTP 200, 12,361 bytes. Shell links `Global.js` and `app.6192e5f5.js`; direct client assets returned HTTP 200."
+      },
+      {
+        "url": "http://120.234.108.57:8081/onemap-search/static/config/Global.js",
+        "observation": "HTTP 200, 5,589 bytes; static configuration identifies the Natural Resources One Map service and cadastral search categories. No credentials or token values were retained."
+      },
+      {
+        "url": "http://120.234.108.57:8081/onemap-search/js/app.6192e5f5.js?v=1.0",
+        "observation": "HTTP 200, 123,991 bytes. Client strings expose `/search/getParcelInExtent`, `/search/getIdentifyParcel`, `/search/getGhInExtent` and `/search/getIdentifyGh`; the cadastral detail path uses a property-detail index and exposes combined geometry and detail UI. No API payload was submitted."
+      }
+    ],
+    "metadataReviewFile": "zhongshan-service-review.json",
+    "routeInspectionFile": "/tmp/overnight-cities-2026-10-08/city-11420-zhongshan-route-inspection.json"
+  },
+  "source": {
+    "sourceId": "cn-zhongshan-natural-resources-one-map",
+    "name": "Zhongshan Natural Resources One Map public service platform",
+    "operator": "Zhongshan Municipal Natural Resources Bureau",
+    "url": "http://120.234.108.57:8081/onemap-search/index.html#/homeSearch/",
+    "scope": "The live client exposes cadastral search/identify routes whose data contract is a general POST payload and whose feature-detail workflow includes parcel and property attributes. No geometry-only field-selection schema or public OGC/vector service was verified. No search, click-identify, parcel/unit-code lookup, building-name lookup, or export was submitted.",
+    "nativeIdField": null,
+    "attributesRequested": [],
+    "identityBasis": "No parcel feature was requested or returned; no native parcel identifier was examined.",
+    "geometryStatus": "no_qualifying_anonymous_geometry_route"
+  },
+  "coverageAssessment": {
+    "verifiedOpenScope": "Official local registry/land-office presence and public map routes were inspected. No anonymous parcel polygon geometry was verified for the target city; this is an access result, not a claim that the registry lacks parcel records.",
+    "citywideVerified": false,
+    "countrywideVerified": false
+  },
+  "priorEvidenceFiles": [],
+  "point": [
+    22.525709844265,
+    113.384462521754
+  ],
+  "rootReviewedAt": "2026-10-08T23:27:05.916367+00:00",
+  "sourceIds": []
+}

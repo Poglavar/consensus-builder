@@ -1,0 +1,41 @@
+{
+  "schemaVersion": 1,
+  "purpose": "Independent GEOS topology check of complete runtime parcels projected to metric coordinates; no repair applied. Counts are bounded sample evidence, not whole-city guarantees.",
+  "library": "Shapely 2.2.0",
+  "metricCrs": "EPSG:32650",
+  "featureCount": 3,
+  "validNonemptyCount": 3,
+  "invalidFeatures": [],
+  "exactDuplicateGeometryPairs": [],
+  "positiveAreaOverlapPairsAbove0_01M2": [],
+  "sumPairwiseOverlapM2": 0,
+  "operationErrors": [],
+  "areaM2": {
+    "min": 13649.875317952517,
+    "median": 14252.113841156503,
+    "max": 728720.3804391754
+  },
+  "features": [
+    {
+      "id": "HK-CSDI-LOT-1800240769",
+      "areaM2": 13649.875317952517,
+      "valid": true,
+      "empty": false,
+      "parts": 2
+    },
+    {
+      "id": "HK-CSDI-LOT-1800242950",
+      "areaM2": 14252.113841156503,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "HK-CSDI-LOT-1910159279",
+      "areaM2": 728720.3804391754,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    }
+  ]
+}

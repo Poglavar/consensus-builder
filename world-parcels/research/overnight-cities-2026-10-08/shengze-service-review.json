@@ -1,0 +1,60 @@
+{
+  "schemaVersion": "1.0",
+  "checkedAt": "2026-10-09",
+  "cityRecord": "city-11728-shengze.json",
+  "purpose": "Document first-party local cadastral/registry evidence and bounded anonymous geometry access review.",
+  "scopeLimits": {
+    "maxFullPolygonsRetainedInCityRecord": 3,
+    "maxFullPolygonsRetainedInReview": 0,
+    "maxFullPolygonsRetainedInRepository": 24,
+    "ownerOrAddressDataRetained": false,
+    "credentialsOrTokenValuesRetained": false,
+    "citywideCompletenessAsserted": false
+  },
+  "assessment": "Public official sources confirm local cadastral work and records. Shengze government reporting describes an internal land/resource management system that incorporates parcel maps for administrative workflows, not an open public parcel API. Public real-estate-registration service locations are listed, but no anonymous vector geometry was identified.",
+  "registryAssessment": "Official Wujiang District government page identifies the Shengze Natural Resources Office and states that it manages land rights, assists with land and cadastral surveys/registration, and provides archive query services. This is specific local-custodian evidence.",
+  "officialPrimarySources": [
+    {
+      "url": "https://www.wujiang.gov.cn/zgwj/zgjxsdw/201708/4139f518c7d24c478d324be12b89d7e3.shtml",
+      "observation": "Wujiang District government names the Shengze Natural Resources Office, gives its location, and states it manages local land rights, supports land/cadastral and change surveys, registration/certificates, and archive queries."
+    },
+    {
+      "url": "https://www.wujiang.gov.cn/zgwj/zfhcxjslm/wj2021_bmfw.shtml",
+      "observation": "Official district convenience-services page lists the Shengze town real-estate registration service counter and address."
+    },
+    {
+      "url": "https://cgj.suzhou.gov.cn/srsz/qxdt/202306/443be487d2db40cd8d9ff9da7f8a7fe8.shtml",
+      "observation": "Suzhou City Management Bureau report describes Shengze internal operational systems using parcel maps (宗地图) as part of land/resource management workflows; this is not a public geometry service."
+    },
+    {
+      "url": "https://www.wujiang.gov.cn/zgwj/ggkjgh/nav_list_2.shtml",
+      "observation": "Official Wujiang land-space planning portal publishes Shengze town planning notices; planning polygons are not cadastral parcel geometry."
+    }
+  ],
+  "searchQueries": [
+    {
+      "language": "Simplified Chinese",
+      "query": "盛泽镇 地籍图 宗地 不动产登记 自然资源所 地图 官方",
+      "result": "Wujiang District government identifies the Shengze Natural Resources Office and its land-rights, cadastral-survey, registration and archive-query duties. Public district material describes parcel maps inside management systems, but not as a public map service.",
+      "method": "Separate Chinese-language search and official Wujiang district/town source review.",
+      "scope": "Find Shengze-specific natural-resource/cadastre custodian and public parcel geometry portal."
+    },
+    {
+      "language": "English",
+      "query": "Shengze China cadastral parcel map land registry GIS official Wujiang Suzhou",
+      "result": "English search did not identify an official public parcel vector service for Shengze. Official Chinese district pages show local cadastral duties and registration services; parcel-map system references are administrative/internal.",
+      "method": "Separate English-language search followed by Chinese official-source verification.",
+      "scope": "Cross-check public parcel vector/map access and locality-specific records."
+    }
+  ],
+  "geometryDecision": "No complete full polygon with a safely validated native parcel identifier was retained. The inspected sources did not expose an anonymous public full-polygon feature response.",
+  "coverageAssessment": {
+    "claimedScope": "Shengze Natural Resources Office has local land-rights, cadastral-survey, registration and archive-query duties. No public GIS geometry is claimed.",
+    "verifiedOpenScope": "Inspected district pages provide office/cadastral-service information and planning notices; the reported parcel-map system is operational/administrative and not an anonymous public geometry service.",
+    "citywideVerified": false,
+    "countrywideVerified": false,
+    "geometryVerified": false
+  },
+  "attempts": [],
+  "remainingUncertainty": "Whether a separate public Shengze parcel viewer or access service exists; local government system coverage and the WUP point relation to current town boundaries were not resolved."
+}

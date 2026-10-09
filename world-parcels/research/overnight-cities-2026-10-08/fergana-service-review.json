@@ -1,0 +1,45 @@
+{
+  "schemaVersion": 1,
+  "checkedAt": "2026-10-09",
+  "cityRecord": "city-4554-fergana.json",
+  "purpose": "City-specific official registry/cadastre and safe anonymous parcel-geometry discovery.",
+  "scopeLimits": {
+    "maxFullPolygonsRetainedInCityRecord": 3,
+    "maxFullPolygonsRetainedInReview": 3,
+    "maxFullPolygonsRetainedInRepository": 3,
+    "ownerOrAddressDataRetained": false,
+    "credentialsOrTokenValuesRetained": false,
+    "citywideCompletenessAsserted": false
+  },
+  "assessment": "Official agency sources identify a Fergana City cadastral office and a national geospatial portal. The portal’s initial view showed no loaded layer list and a terms/login panel; no acceptance, authentication, or parcel query was performed.",
+  "registryAssessment": "The official Fergana regional government and Cadastre Agency sources identify a Fergana City cadastral office and the national agency’s land/property rights-registration remit. The National Geoportal offers cadastral search controls, but its public layer/schema and a safe anonymous feature response were not verified.",
+  "searchQueries": [
+    {
+      "language": "Uzbek",
+      "query": "Fargʻona shahar kadastr yer uchastkasi xaritasi Kadastr agentligi rasmiy",
+      "scope": "Locate a city-local land registry/cadastre and verify whether anonymous safe parcel geometry is available.",
+      "result": "Separate Uzbek and English searches found the official Fergana city-office listing and national Cadastre Agency/geoportal. The portal showed cadastral search controls but no loaded layer/schema and a terms/login panel; no feature request or terms acceptance was made.",
+      "actualResultUrls": [
+        "https://kadastr.uz/ru/news/news-01-14-10-2023",
+        "https://gov.uz/oz/kadastr/pages/about",
+        "https://open.ngis.uz/"
+      ],
+      "executionMethod": "Separate Uzbek and English searches followed by official-source and public portal review; no consent or login was submitted."
+    },
+    {
+      "language": "English",
+      "query": "Fergana Uzbekistan cadastral map land parcel GIS official cadastre agency",
+      "scope": "Locate a city-local land registry/cadastre and verify whether anonymous safe parcel geometry is available.",
+      "result": "Separate Uzbek and English searches found the official Fergana city-office listing and national Cadastre Agency/geoportal. The portal showed cadastral search controls but no loaded layer/schema and a terms/login panel; no feature request or terms acceptance was made.",
+      "actualResultUrls": [
+        "https://kadastr.uz/ru/news/news-01-14-10-2023",
+        "https://gov.uz/oz/kadastr/pages/about",
+        "https://open.ngis.uz/"
+      ],
+      "executionMethod": "Separate Uzbek and English searches followed by official-source and public portal review; no consent or login was submitted."
+    }
+  ],
+  "geometryEvidence": null,
+  "privacy": "No owner, address, taxpayer, account, applicant, title, or other personal/property values were queried or retained. No credentials or token values were used.",
+  "runtimeAssessment": "not_assessed"
+}

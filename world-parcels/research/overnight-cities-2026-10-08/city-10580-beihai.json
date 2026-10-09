@@ -1,0 +1,104 @@
+{
+  "name": "Beihai",
+  "country": "China",
+  "countryCode": "CN",
+  "rank": 951,
+  "point": [
+    21.4818101454114,
+    109.151254850922
+  ],
+  "freshResearch": {
+    "queries": [
+      {
+        "language": "English",
+        "query": "Beihai China official cadastral parcel map land registry GIS natural resources bureau",
+        "scope": "Find a local custodian, public parcel-map entry point, and safe geometry interface.",
+        "result": "Official city-level public-service portal is identified as managed by the Beihai Natural Resources Bureau and Real Estate Registration Center. Site is a local registration service; no public parcel-vector schema or anonymous geometry-only route was verified in this review.",
+        "actualResultUrls": [
+          "https://www.bhsbdcdjzx.com/"
+        ],
+        "executionMethod": "Separate English-language web search; official public source review."
+      },
+      {
+        "language": "Chinese",
+        "query": "北海市 不动产登记中心 地籍图查询 宗地 官方 北海自然资源",
+        "scope": "Find first-party city/local-language registry, cadastral mapping and parcel-service evidence.",
+        "result": "Official city-level public-service portal is identified as managed by the Beihai Natural Resources Bureau and Real Estate Registration Center. Site is a local registration service; no public parcel-vector schema or anonymous geometry-only route was verified in this review.",
+        "actualResultUrls": [
+          "https://www.bhsbdcdjzx.com/"
+        ],
+        "executionMethod": "Separate Chinese-language web search and first-party portal review."
+      }
+    ],
+    "portals": [
+      {
+        "name": "Beihai Natural Resources Bureau / Beihai Real Estate Registration Center public-service site",
+        "operator": "Beihai Natural Resources Bureau / Beihai Real Estate Registration Center",
+        "homeUrl": "https://www.bhsbdcdjzx.com/",
+        "observation": "Official city-level public-service portal is identified as managed by the Beihai Natural Resources Bureau and Real Estate Registration Center. Site is a local registration service; no public parcel-vector schema or anonymous geometry-only route was verified in this review."
+      }
+    ],
+    "requests": [],
+    "historicalContext": []
+  },
+  "status": "complete",
+  "verifiedParcelResponse": null,
+  "source": {
+    "sourceId": "CN-10580-LOCAL-PARCEL-RESEARCH",
+    "name": "Beihai Natural Resources Bureau / Beihai Real Estate Registration Center public-service site",
+    "url": "https://www.bhsbdcdjzx.com/",
+    "operator": "Beihai Natural Resources Bureau / Beihai Real Estate Registration Center",
+    "serviceType": "Official local registry/cadastre evidence reviewed; no anonymous geometry-only feature response verified.",
+    "layer": null,
+    "geometryType": null,
+    "outputCrs": null,
+    "nativeIdField": null,
+    "nativeIdEvidence": null
+  },
+  "coverageAssessment": {
+    "claimedScope": "Local registration service is established. The public portal does not establish that the WUP locator is covered by an open parcel vector layer.",
+    "verifiedOpenScope": "Official city-level public-service portal is identified as managed by the Beihai Natural Resources Bureau and Real Estate Registration Center. Site is a local registration service; no public parcel-vector schema or anonymous geometry-only route was verified in this review.",
+    "countrywideVerified": false,
+    "citywideVerified": false
+  },
+  "registryFound": true,
+  "verifiedSample": false,
+  "resultCategory": "official_registry_geometry_unverified",
+  "technicalBlocker": "No public geometry-only feature endpoint/schema was verified; the public service portal may expose transaction/registration functions that are identifier- or applicant-based. No parcel search or record request was submitted.",
+  "remainingUncertainty": "Exact city-boundary and parcel-layer coverage at the WUP point are unverified. No full polygon was returned.",
+  "nextStep": "Revisit only if a public source publishes a schema with safe stable identifiers and an anonymous geometry-only query; keep any future sample bounded and field-allowlisted.",
+  "schemaVersion": "1.0",
+  "checkedAt": "2026-10-09",
+  "wupCityCode": 10580,
+  "cityId": "wup2025:10580",
+  "runtimeReadiness": "not_enabled_no_verified_public_geometry",
+  "adapterReady": false,
+  "centerLatLon": [
+    21.4818101454114,
+    109.151254850922
+  ],
+  "population2025k": 577.338,
+  "populationUnit": "persons",
+  "queueRank": 951,
+  "population2025": 577338,
+  "populationPlausibility2025": "High",
+  "pointBasis": "UN WUP 2025 population-weighted settlement centroid; this is not a municipal boundary or a parcel-coverage claim.",
+  "publicParcelGeometryFound": false,
+  "sourceIds": [],
+  "registryBasis": "Official city-level public-service portal is identified as managed by the Beihai Natural Resources Bureau and Real Estate Registration Center. Site is a local registration service; no public parcel-vector schema or anonymous geometry-only route was verified in this review.",
+  "registryEvidenceUrls": [
+    "https://www.bhsbdcdjzx.com/"
+  ],
+  "runtimeAssessment": {
+    "status": "not_enabled_no_verified_public_geometry",
+    "reason": "No public geometry-only feature endpoint/schema was verified; the public service portal may expose transaction/registration functions that are identifier- or applicant-based. No parcel search or record request was submitted."
+  },
+  "rootPrimaryReadback": {
+    "url": "https://www.bhsbdcdjzx.com/",
+    "fetch": 200,
+    "contentType": "text/html; charset=utf-8",
+    "title": "北海市不动产登记综合服务平台"
+  },
+  "rootReviewNote": "Reviewed the specific local primary evidence, its jurisdiction, source dates and public access limits. Failed readbacks are retained as transport/access outcomes rather than absence. No full public parcel geometry was verified for this city in the bounded discovery pass.",
+  "rootReviewedAt": "2026-10-09T05:07:19.594016+00:00"
+}

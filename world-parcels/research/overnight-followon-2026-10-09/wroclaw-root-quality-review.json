@@ -1,0 +1,11 @@
+{
+  "checkedAt": "2026-10-09T06:43:29.219514+00:00",
+  "decision": "held_native_invalid_geometry",
+  "basis": "The public municipal parcel service returns full geometry, but an independently fetched native EPSG:2177 parcel (OBJECTID 1150; ID_SWDE 026401_1.0001.1434) is invalid: Ring Self-intersection[6431379.179 5663867.811]. Original source rings remain unmodified; no repair, filtering or replacement was used. Runtime is held for native geometry invalidity; local public geometry remains verified. This one native conflict is sufficient to reject the current runtime candidate and does not describe citywide prevalence.",
+  "nativeFeatureId": "026401_1.0001.1434",
+  "nativeCrs": "EPSG:2177",
+  "nativeValidity": false,
+  "nativeValidityReason": "Ring Self-intersection[6431379.179 5663867.811]",
+  "geometryChangedOrRepaired": false,
+  "evidenceFile": "research/overnight-followon-2026-10-09/wroclaw-1580-1434-native-source-evidence.json"
+}

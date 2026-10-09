@@ -1,0 +1,127 @@
+{
+  "name": "Taichung",
+  "country": "Taiwan",
+  "countryCode": "TW",
+  "rank": 220,
+  "point": [
+    24.1538291726609,
+    120.672380870346
+  ],
+  "freshResearch": {
+    "queries": [
+      {
+        "language": "Traditional Chinese",
+        "query": "臺中市 地籍圖 地籍範圍 WKT 查詢 地號 空間查詢",
+        "scope": "Find city-run cadastral parcel services and public feature query methods.",
+        "result": "The official city map bootstrap includes a viewer key and SPQUERY pattern for G97_B_LNPAR_P. A bounded query at the WUP point, using the city viewer Referer and Origin headers with the public client key, returned service error code 002: API key invalid. No parcel identifiers or feature data were returned. Official LANDPARWKT documentation describes polygon WKT by AA48/AA49.",
+        "actualResultUrls": [
+          "https://gismap.taichung.gov.tw/address/",
+          "https://giscloud.taichung.gov.tw/md/mdread.cfm?qid=9%5C9.1.20_%E5%9C%B0%E7%B1%8D%E7%AF%84%E5%9C%8DWKT%E6%9F%A5%E8%A9%A2%E6%9C%8D%E5%8B%99",
+          "https://giscloud.taichung.gov.tw/dashboard/getSummary.cfm?type=WMS"
+        ],
+        "executionMethod": "Traditional Chinese search; public viewer HTML and JS inspection; bounded official SPQUERY test."
+      },
+      {
+        "language": "English",
+        "query": "Taichung cadastral parcel public WKT API viewer key city GIS cloud",
+        "scope": "Cross-check geometry endpoint and access requirements.",
+        "result": "Official city documentation exposes LANDPARWKT returning polygon WKT for a cadastral section and parcel number. The public viewer example key was retried with the viewer Origin and Referer headers; the service still rejected it as invalid, so no parcel ID could be passed to LANDPARWKT.",
+        "actualResultUrls": [
+          "https://giscloud.taichung.gov.tw/md/mdread.cfm?qid=9%5C9.1.20_%E5%9C%B0%E7%B1%8D%E7%AF%84%E5%9C%8DWKT%E6%9F%A5%E8%A9%A2%E6%9C%8D%E5%8B%99"
+        ],
+        "executionMethod": "Official English/translated service documentation and direct service request."
+      }
+    ],
+    "portals": [
+      {
+        "name": "Taichung GIS Cloud cadastral map layer",
+        "operator": "Taichung City Government GIS Cloud",
+        "homeUrl": "https://giscloud.taichung.gov.tw/dashboard/getSummary.cfm?type=WMS",
+        "observation": "The official inventory lists the cadastral map layer. WMS endpoint is key-gated, and documented SPQUERY uses point/circle/rectangle/WKT with up to 5000 rows but the schema does not show full polygons."
+      }
+    ],
+    "requests": [
+      {
+        "url": "https://gismap.taichung.gov.tw/address/index.html",
+        "method": "GET",
+        "httpStatus": 200,
+        "contentType": "text/html",
+        "observation": "Public city map UI; references JS API bootstrap app id TAI_108."
+      },
+      {
+        "url": "https://gismap.taichung.gov.tw/mapguide/Maps/service.cfm?_debug=true&_args={\"_s\":\"jsApi\",\"_r\":\"map\",\"apikey\":\"TAI_108\"}",
+        "method": "GET",
+        "httpStatus": 200,
+        "contentType": "application/javascript",
+        "observation": "Public viewer JS bootstrap returns successfully and exposes a service app id/token for its own viewer (token omitted from this record). A parcel SPQUERY pattern is embedded in viewer code."
+      },
+      {
+        "url": "https://giscloud.taichung.gov.tw/embed/webapi.cfm?SERVICE=SPQUERY&LAYER=G97_B_LNPAR_P&COLS=ADMIT%2CKCNT%2CAA48%2CAA49&POINT=216707.125%2C2672098.386",
+        "method": "GET",
+        "httpStatus": 200,
+        "contentType": "text/html;charset=UTF-8",
+        "observation": "WUP coordinate transformed to EPSG:3826; request used key available from the public viewer source (key omitted here). Service replied JSON-encoded error code 002: this caller URL/IP is not permitted. No feature data returned."
+      },
+      {
+        "url": "https://giscloud.taichung.gov.tw/md/mdread.cfm?qid=9%5C9.1.20_%E5%9C%B0%E7%B1%8D%E7%AF%84%E5%9C%8DWKT%E6%9F%A5%E8%A9%A2%E6%9C%8D%E5%8B%99",
+        "method": "GET",
+        "httpStatus": 200,
+        "contentType": "text/html",
+        "observation": "Official docs for LANDPARWKT; key + section and parcel codes required; response includes WKT polygon."
+      },
+      {
+        "url": "https://giscloud.taichung.gov.tw/embed/webapi.cfm?SERVICE=SPQUERY&LAYER=G97_B_LNPAR_P&COLS=ADMIT%2CKCNT%2CAA48%2CAA49&POINT=216707.125%2C2672098.386",
+        "method": "GET",
+        "httpStatus": 200,
+        "contentType": "application/json",
+        "observation": "Retried with Referer https://gismap.taichung.gov.tw/address/ and Origin https://gismap.taichung.gov.tw (and separately Referer only), using only the public viewer client key; both responses are JSON-encoded service error code 002: API KEY invalid. No IDs or parcel data returned; key omitted."
+      }
+    ],
+    "historicalContext": []
+  },
+  "status": "complete",
+  "verifiedParcelResponse": null,
+  "source": {
+    "sourceId": "TW-12126-PUBLIC-CADASTRE",
+    "name": "Taichung GIS Cloud cadastral map layer",
+    "url": "https://giscloud.taichung.gov.tw/dashboard/getSummary.cfm?type=WMS",
+    "operator": "Taichung City Government GIS Cloud",
+    "serviceType": "Public city viewer documents a parcel SPQUERY pattern and LANDPARWKT full-polygon API by parcel identifiers. The viewer’s embedded example key was tested with matching public Referer/Origin headers, but the API reports key invalid.",
+    "layer": "GWH/Layers/ORA/G97_B_LNPAR_P (地籍圖); LANDPARWKT service",
+    "geometryType": "POLYGON WKT supported by official LANDPARWKT service; city sample not retrieved",
+    "outputCrs": null,
+    "nativeIdField": "AA48 cadastral section code, AA49 parcel number",
+    "nativeIdEvidence": "Official LANDPARWKT docs require AA48 section code and AA49 parcel number. The city viewer SPQUERY retry with matching Origin/Referer failed with error code 002 (API key invalid), so no parcel identifier was obtained."
+  },
+  "coverageAssessment": {
+    "claimedScope": "The official inventory lists the cadastral map layer. WMS endpoint is key-gated, and documented SPQUERY uses point/circle/rectangle/WKT with up to 5000 rows but the schema does not show full polygons.",
+    "verifiedOpenScope": "Official polygon retrieval API is documented. The WUP-point query with public viewer headers returned service error 002 (API key invalid); no Taichung geometry was retrieved.",
+    "countrywideVerified": false
+  },
+  "registryFound": true,
+  "verifiedSample": false,
+  "resultCategory": "public_cadastral_wms_geometry_not_verified",
+  "technicalBlocker": "The public viewer JavaScript supplies an example app key and parcel SPQUERY pattern; official docs promise LANDPARWKT full polygons. The example key is rejected as invalid even with matching viewer Referer/Origin, so no parcel ID can be queried.",
+  "remainingUncertainty": "Whether a valid public key can be obtained through the city application process; WUP-point parcel identification and actual full geometry output from an authorized caller.",
+  "nextStep": "Obtain a valid city-approved GIS Cloud API key through the documented application path, query the WUP location for AA48/AA49, then test LANDPARWKT full polygon retrieval.",
+  "schemaVersion": 1,
+  "checkedAt": "2026-10-09",
+  "wupCityCode": 12126,
+  "cityId": "wup2025:12126",
+  "runtimeReadiness": "not_enabled_no_verified_public_geometry",
+  "adapterReady": false,
+  "centerLatLon": [
+    24.1538291726609,
+    120.672380870346
+  ],
+  "population2025k": 2268.685,
+  "populationUnit": "persons",
+  "queueRank": 220,
+  "population2025": 2268685,
+  "populationPlausibility2025": "Moderate",
+  "pointBasis": "UN WUP 2025 population-weighted settlement centroid; this is not a municipal boundary or a parcel-coverage claim.",
+  "publicParcelGeometryFound": false,
+  "rootReviewedAt": "2026-10-08T21:10:04.693505+00:00",
+  "sourceIds": [],
+  "registryBasis": "City-specific registry evidence is documented in the discovery record."
+}

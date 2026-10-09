@@ -1,0 +1,123 @@
+{
+  "name": "Donetsk",
+  "country": "Ukraine",
+  "countryCode": "UA",
+  "rank": 758,
+  "point": [
+    47.9955306054976,
+    37.8033447160055
+  ],
+  "freshResearch": {
+    "queries": [
+      {
+        "language": "Ukrainian",
+        "query": "Донецьк земельний кадастр реєстрація земельних ділянок публічна кадастрова карта Держгеокадастр",
+        "scope": "Search for city-specific first-party registry/cadastre evidence and a public full-geometry route.",
+        "result": "The official Donetsk Oblast StateGeoCadastre has a current cadastral-registration section and notices. It says access to the State Land Cadastre is suspended for territories in the applicable combat/temporarily occupied list; the official national geospatial portal states its public section has been restricted since 24 February 2022. This distinguishes an active regional agency from current in-city/public access.",
+        "actualResultUrls": [
+          "https://donetska.land.gov.ua/icat/kadastr-i-reiestratsiia-napriamy-diialnosti/",
+          "https://donetska.land.gov.ua/info/shhodo-vedennya-ta-funkczionuvannya-derzhavnogo-zemelnogo-kadastru-v-umovah-voyennogo-stanu/",
+          "https://donetska.land.gov.ua/derzhgeokadastr-zabezpechyv-vprovadzhennya-funkczionalu-shhodo-derzhavnoyi-reyestracziyi-zemelnyh-dilyanok-na-yakyh-roztashovani-zhytlovi-budynky-na-terytoriyah-tymchasovo-okupovanyh-abo-na-yakyh-v/",
+          "https://nsdi.gov.ua/",
+          "https://e.land.gov.ua/services"
+        ],
+        "executionMethod": "Separate local-language search and official-source/page review."
+      },
+      {
+        "language": "English",
+        "query": "Donetsk Ukraine official public cadastral map land registry current occupied territory public access",
+        "scope": "Cross-check city identity, official registry evidence and anonymous complete polygon access.",
+        "result": "Official Donetsk regional StateGeoCadastre pages confirm regional land-cadastre functions and wartime restrictions. The national geoportal currently presents a login/restriction notice for public access; no anonymous current full-geometry endpoint was verified.",
+        "actualResultUrls": [
+          "https://donetska.land.gov.ua/icat/kadastr-i-reiestratsiia-napriamy-diialnosti/",
+          "https://donetska.land.gov.ua/info/shhodo-vedennya-ta-funkczionuvannya-derzhavnogo-zemelnogo-kadastru-v-umovah-voyennogo-stanu/",
+          "https://donetska.land.gov.ua/derzhgeokadastr-zabezpechyv-vprovadzhennya-funkczionalu-shhodo-derzhavnoyi-reyestracziyi-zemelnyh-dilyanok-na-yakyh-roztashovani-zhytlovi-budynky-na-terytoriyah-tymchasovo-okupovanyh-abo-na-yakyh-v/",
+          "https://nsdi.gov.ua/",
+          "https://e.land.gov.ua/services"
+        ],
+        "executionMethod": "Separate English-language search and official-source/page review."
+      }
+    ],
+    "portals": [
+      {
+        "name": "Official city/regional land-administration evidence",
+        "operator": "Official agency named by the cited sources",
+        "homeUrl": "https://donetska.land.gov.ua/icat/kadastr-i-reiestratsiia-napriamy-diialnosti/",
+        "observation": "The official Donetsk Oblast StateGeoCadastre maintains a dedicated cadastral and registration service section. Its current wartime notice describes suspension of user access to the state cadastre for listed combat or occupied administrative units; its 2026 notice describes a narrow new registration workflow for certain residential land plots in occupied/hostilities territories. This confirms registry administration, not an operating public registry in occupied Donetsk city."
+      }
+    ],
+    "requests": [],
+    "historicalContext": [
+      "Older Ukrainian Public Cadastral Map documentation and historic public-map availability are not evidence of present accessibility. The current National Geoportal login page says its public portion has been restricted since 24 February 2022; current regional DGC materials distinguish its ongoing agency remit from access limitations for listed occupied/hostilities territories."
+    ]
+  },
+  "status": "complete",
+  "verifiedParcelResponse": null,
+  "source": {
+    "sourceId": "UA-CITY-4547-OFFICIAL-REGISTRY-REVIEW",
+    "name": "Donetsk official registry/cadastre review",
+    "url": "https://donetska.land.gov.ua/icat/kadastr-i-reiestratsiia-napriamy-diialnosti/",
+    "operator": "Official local or regional agency documented by cited source.",
+    "serviceType": "Official registry/cadastre service evidence; no verified anonymous full-geometry parcel endpoint.",
+    "layer": "No safe public complete parcel vector layer verified.",
+    "geometryType": "none verified",
+    "outputCrs": "unknown",
+    "nativeIdField": "unknown",
+    "nativeIdEvidence": "No public parcel feature response was retrieved."
+  },
+  "coverageAssessment": {
+    "claimedScope": "Regional/national cadastral administration and public-access restrictions only. Donetsk city is not treated as currently served by an on-site Ukrainian municipal office. Current locality status and user-facing access are restricted; no WUP-centroid coverage claim.",
+    "verifiedOpenScope": "Official registry and/or map service evidence only. No anonymous complete parcel polygons or citywide coverage were verified. WUP point is population-weighted settlement centroid, not a parcel or jurisdiction boundary.",
+    "citywideVerified": false,
+    "countrywideVerified": false
+  },
+  "registryFound": true,
+  "registryBasis": "The official Donetsk Oblast StateGeoCadastre maintains a dedicated cadastral and registration service section. Its current wartime notice describes suspension of user access to the state cadastre for listed combat or occupied administrative units; its 2026 notice describes a narrow new registration workflow for certain residential land plots in occupied/hostilities territories. This confirms registry administration, not an operating public registry in occupied Donetsk city.",
+  "registryEvidenceUrls": [
+    "https://donetska.land.gov.ua/icat/kadastr-i-reiestratsiia-napriamy-diialnosti/",
+    "https://donetska.land.gov.ua/info/shhodo-vedennya-ta-funkczionuvannya-derzhavnogo-zemelnogo-kadastru-v-umovah-voyennogo-stanu/",
+    "https://donetska.land.gov.ua/derzhgeokadastr-zabezpechyv-vprovadzhennya-funkczionalu-shhodo-derzhavnoyi-reyestracziyi-zemelnyh-dilyanok-na-yakyh-roztashovani-zhytlovi-budynky-na-terytoriyah-tymchasovo-okupovanyh-abo-na-yakyh-v/",
+    "https://nsdi.gov.ua/",
+    "https://e.land.gov.ua/services"
+  ],
+  "verifiedSample": false,
+  "publicParcelGeometryFound": false,
+  "resultCategory": "official_registry_workflow_no_public_geometry",
+  "technicalBlocker": "The official National Geoportal login page states that access to its public portion has been restricted since 24 February 2022; official e-land services require authorization and warn that registrar-processed requests for active-hostility/temporarily occupied areas are delayed until the access-restriction list changes.",
+  "remainingUncertainty": "Historic cadastral records may exist, but present availability and spatial coverage for the city are unverified. Any historic national public cadastral map availability is not evidence of present public access.",
+  "nextStep": "Reassess only after official public access for the city is restored or an official anonymous full-geometry service is documented.",
+  "schemaVersion": 1,
+  "checkedAt": "2026-10-09T03:45:00Z",
+  "wupCityCode": 4547,
+  "cityId": "wup2025:4547",
+  "runtimeReadiness": "not_enabled_no_verified_public_geometry",
+  "adapterReady": false,
+  "centerLatLon": [
+    47.9955306054976,
+    37.8033447160055
+  ],
+  "queueRank": 758,
+  "population2025": 705832,
+  "population2025k": 705.832,
+  "populationPlausibility2025": "Moderate",
+  "populationUnit": "persons",
+  "pointBasis": "UN WUP 2025 population-weighted settlement centroid; this is not a municipal boundary or a parcel-coverage claim.",
+  "sourceIds": [],
+  "runtimeAssessment": {
+    "status": "hold",
+    "reason": "The official National Geoportal login page states that access to its public portion has been restricted since 24 February 2022; official e-land services require authorization and warn that registrar-processed requests for active-hostility/temporarily occupied areas are delayed until the access-restriction list changes."
+  },
+  "scopeLimits": [
+    "No parcel-specific, owner, address, title, tax, or person query was made.",
+    "No anonymous complete parcel geometry verified; no geometry sample retained.",
+    "Do not interpret the WUP point as a legal boundary or cadastral parcel."
+  ],
+  "rootPrimaryReadback": {
+    "url": "https://donetska.land.gov.ua/icat/kadastr-i-reiestratsiia-napriamy-diialnosti/",
+    "fetch": 200,
+    "contentType": "text/html; charset=UTF-8",
+    "title": "Кадастр і реєстрація &#8211; Головне управління Держгеокадастру у Донецькій області"
+  },
+  "rootReviewNote": "Reviewed the local primary institution/service evidence and stated geometry/access/identity limits. Fresh page readback failures are preserved separately and do not imply absent data; matching primary indexed text supplements the direct readback where available. No public geometry was verified for this city.",
+  "rootReviewedAt": "2026-10-09T03:06:11.183980+00:00"
+}

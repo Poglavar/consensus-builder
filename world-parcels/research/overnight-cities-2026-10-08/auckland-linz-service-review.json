@@ -1,0 +1,21 @@
+{
+  "schemaVersion": 1,
+  "checkedAt": "2026-10-09",
+  "rootDecision": "approved_for_bounded_runtime",
+  "assessment": "Auckland city-scoped verification of the shared LINZ current primary-parcel publication. The initial 13 aligned cells and four adjacent pans were expanded to 30 cells, a wider viewport and four pans around the unchanged WUP locator, yielding 184 distinct full parcel geometries. All 47 checks passed with the existing runtime descriptor: page size 100, native id identity, OBJECTID transport manifests, and safe appellation/topology labels. Forced three-row paging completed in 48 geometry pages; all 184 fresh native-id reads reproduced geometry; explicit absence, full footprint lookup and complete proposal binding passed. The WUP-containing native parcel 5211850 also matched its prior full geometry. GEOS in EPSG:32760 found no invalid polygons, duplicate geometry, sampled overlaps above 0.01 m² or operation errors. The shared Wellington runtime settings are retained. Current primary parcels only; non-primary interests, historic/pending parcels, whole-city completeness, source publication freshness and identity continuity after revision remain unverified. Retain LINZ attribution and CC BY 4.0 conditions; source accuracy notices remain informational.",
+  "acceptanceFile": "auckland-linz-root-acceptance.json",
+  "qualityFile": "auckland-linz-root-quality.json",
+  "sampleFeatureCount": 184,
+  "schemaReviewedBeforeGeometry": true,
+  "fieldsRetained": [
+    "OBJECTID",
+    "id",
+    "appellation",
+    "topology_type"
+  ],
+  "sourcePolygonSamplesRetained": 1,
+  "existingSharedRuntimeProfileRetained": true,
+  "catalogueUrl": "https://data.linz.govt.nz/layer/50772-nz-primary-parcels/",
+  "catalogueReview": "Official LINZ metadata explicitly links this current-primary-parcel publication to its ArcGIS services and identifies id as its primary key. Corrected old catalogue link metadata to the current verified layer50772; no owner/title-interest attributes were queried.",
+  "browserCheckFile": "research/overnight-cities-2026-10-08/auckland-browser-check.json"
+}

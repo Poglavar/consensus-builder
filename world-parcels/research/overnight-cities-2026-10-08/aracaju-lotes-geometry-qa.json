@@ -1,0 +1,31 @@
+{
+  "schemaVersion": 1,
+  "checkedAt": "2026-10-09",
+  "source": "https://geoserver.fazenda.aracaju.se.gov.br/ows",
+  "typeName": "Limites_Municipais:malha_lote",
+  "sampleFile": "aracaju-lotes-wup-sample.geojson",
+  "retainedFeatureCount": 3,
+  "geosVersion": "3.14.1",
+  "validityResults": [
+    "true",
+    "true",
+    "true"
+  ],
+  "pointCoverage": {
+    "wupPointLatLon": [
+      -10.9162241835343,
+      -37.0728016989164
+    ],
+    "containedByReturnedFeatures": [
+      false,
+      false,
+      false
+    ],
+    "interpretation": "The sample is from a bounded neighborhood query; the WUP population centroid is not asserted to be a parcel location."
+  },
+  "providerCountEvidence": {
+    "numberMatched": 62,
+    "numberReturned": 3
+  },
+  "scope": "Geometry-only QA; no citywide coverage or legal-title assertion."
+}

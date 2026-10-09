@@ -1,0 +1,1456 @@
+{
+  "schemaVersion": 1,
+  "purpose": "Live city parcel qualification with unmodified responses through the repository adapter; IDs and hashes retained, full geometries confined to temporary audit cache except three public samples.",
+  "checkedAt": "2026-10-09T00:21:24.741Z",
+  "city": "sargodha-pulse-parcels",
+  "descriptor": {
+    "id": "pk-pulse-sargodha-parcels",
+    "name": "Punjab PULSE cadastral polygons layer 30",
+    "adapter": "arcgis",
+    "endpoint": "https://gismaps.punjab-zameen.gov.pk/arcgis/rest/services/VendorMaps/Punjab_Cdastral_Maps/MapServer/30",
+    "idField": "OBJECTID",
+    "idType": "integer",
+    "objectIdField": "OBJECTID",
+    "idPrefix": "PK-PULSE-SARGODHA-",
+    "outFields": [
+      "OBJECTID"
+    ],
+    "pageSize": 1000,
+    "maxFeatures": 3000,
+    "maxBboxKm2": 1,
+    "boundsQueryMode": "object-ids",
+    "idsQueryMode": "object-ids",
+    "boundsSrid": 3857,
+    "boundsProjection": "EPSG:3857",
+    "countryCode": "PK",
+    "metricSrid": 32643,
+    "cityIds": [
+      "sargodha"
+    ]
+  },
+  "grid": [
+    {
+      "name": "viewport-0",
+      "bbox": [
+        72.68,
+        32.073,
+        72.681,
+        32.074
+      ],
+      "kind": "aligned-grid"
+    },
+    {
+      "name": "viewport-1",
+      "bbox": [
+        72.681,
+        32.073,
+        72.682,
+        32.074
+      ],
+      "kind": "aligned-grid"
+    },
+    {
+      "name": "viewport-2",
+      "bbox": [
+        72.682,
+        32.073,
+        72.683,
+        32.074
+      ],
+      "kind": "aligned-grid"
+    },
+    {
+      "name": "viewport-3",
+      "bbox": [
+        72.68,
+        32.074,
+        72.681,
+        32.075
+      ],
+      "kind": "aligned-grid"
+    },
+    {
+      "name": "viewport-4",
+      "bbox": [
+        72.681,
+        32.074,
+        72.682,
+        32.075
+      ],
+      "kind": "aligned-grid"
+    },
+    {
+      "name": "viewport-5",
+      "bbox": [
+        72.682,
+        32.074,
+        72.683,
+        32.075
+      ],
+      "kind": "aligned-grid"
+    },
+    {
+      "name": "viewport-6",
+      "bbox": [
+        72.68,
+        32.075,
+        72.681,
+        32.076
+      ],
+      "kind": "aligned-grid"
+    },
+    {
+      "name": "viewport-7",
+      "bbox": [
+        72.681,
+        32.075,
+        72.682,
+        32.076
+      ],
+      "kind": "aligned-grid"
+    },
+    {
+      "name": "viewport-8",
+      "bbox": [
+        72.682,
+        32.075,
+        72.683,
+        32.076
+      ],
+      "kind": "aligned-grid"
+    },
+    {
+      "name": "viewport-9",
+      "bbox": [
+        72.681,
+        32.072,
+        72.682,
+        32.073
+      ],
+      "kind": "adjacent-pan"
+    },
+    {
+      "name": "viewport-10",
+      "bbox": [
+        72.681,
+        32.076,
+        72.682,
+        32.077
+      ],
+      "kind": "adjacent-pan"
+    },
+    {
+      "name": "viewport-11",
+      "bbox": [
+        72.679,
+        32.074,
+        72.68,
+        32.075
+      ],
+      "kind": "adjacent-pan"
+    },
+    {
+      "name": "viewport-12",
+      "bbox": [
+        72.683,
+        32.074,
+        72.684,
+        32.075
+      ],
+      "kind": "adjacent-pan"
+    }
+  ],
+  "tests": [
+    {
+      "name": "viewport-0",
+      "passed": true,
+      "elapsedMs": 3244,
+      "requestIndexes": [
+        0,
+        2
+      ],
+      "bbox": [
+        72.68,
+        32.073,
+        72.681,
+        32.074
+      ],
+      "complete": true,
+      "count": 2,
+      "ids": [
+        {
+          "id": "PK-PULSE-SARGODHA-8559909",
+          "geometrySha256": "66295076dea8b1e4fd44a4d0fb4225ab2a62c64ccca8cd4b0881b00283b32ace"
+        },
+        {
+          "id": "PK-PULSE-SARGODHA-8560005",
+          "geometrySha256": "1f7d9363ae10a843263dbf527f5e9d8f1cf87910117756e942c435362d4f41aa"
+        }
+      ]
+    },
+    {
+      "name": "viewport-1",
+      "passed": true,
+      "elapsedMs": 1590,
+      "requestIndexes": [
+        3,
+        5
+      ],
+      "bbox": [
+        72.681,
+        32.073,
+        72.682,
+        32.074
+      ],
+      "complete": true,
+      "count": 1,
+      "ids": [
+        {
+          "id": "PK-PULSE-SARGODHA-8559909",
+          "geometrySha256": "66295076dea8b1e4fd44a4d0fb4225ab2a62c64ccca8cd4b0881b00283b32ace"
+        }
+      ]
+    },
+    {
+      "name": "viewport-2",
+      "passed": true,
+      "elapsedMs": 1582,
+      "requestIndexes": [
+        6,
+        8
+      ],
+      "bbox": [
+        72.682,
+        32.073,
+        72.683,
+        32.074
+      ],
+      "complete": true,
+      "count": 1,
+      "ids": [
+        {
+          "id": "PK-PULSE-SARGODHA-8559909",
+          "geometrySha256": "66295076dea8b1e4fd44a4d0fb4225ab2a62c64ccca8cd4b0881b00283b32ace"
+        }
+      ]
+    },
+    {
+      "name": "viewport-3",
+      "passed": true,
+      "elapsedMs": 1389,
+      "requestIndexes": [
+        9,
+        11
+      ],
+      "bbox": [
+        72.68,
+        32.074,
+        72.681,
+        32.075
+      ],
+      "complete": true,
+      "count": 2,
+      "ids": [
+        {
+          "id": "PK-PULSE-SARGODHA-8559909",
+          "geometrySha256": "66295076dea8b1e4fd44a4d0fb4225ab2a62c64ccca8cd4b0881b00283b32ace"
+        },
+        {
+          "id": "PK-PULSE-SARGODHA-8560005",
+          "geometrySha256": "1f7d9363ae10a843263dbf527f5e9d8f1cf87910117756e942c435362d4f41aa"
+        }
+      ]
+    },
+    {
+      "name": "viewport-4",
+      "passed": true,
+      "elapsedMs": 1215,
+      "requestIndexes": [
+        12,
+        14
+      ],
+      "bbox": [
+        72.681,
+        32.074,
+        72.682,
+        32.075
+      ],
+      "complete": true,
+      "count": 2,
+      "ids": [
+        {
+          "id": "PK-PULSE-SARGODHA-8559909",
+          "geometrySha256": "66295076dea8b1e4fd44a4d0fb4225ab2a62c64ccca8cd4b0881b00283b32ace"
+        },
+        {
+          "id": "PK-PULSE-SARGODHA-8560005",
+          "geometrySha256": "1f7d9363ae10a843263dbf527f5e9d8f1cf87910117756e942c435362d4f41aa"
+        }
+      ]
+    },
+    {
+      "name": "viewport-5",
+      "passed": true,
+      "elapsedMs": 1350,
+      "requestIndexes": [
+        15,
+        17
+      ],
+      "bbox": [
+        72.682,
+        32.074,
+        72.683,
+        32.075
+      ],
+      "complete": true,
+      "count": 1,
+      "ids": [
+        {
+          "id": "PK-PULSE-SARGODHA-8559909",
+          "geometrySha256": "66295076dea8b1e4fd44a4d0fb4225ab2a62c64ccca8cd4b0881b00283b32ace"
+        }
+      ]
+    },
+    {
+      "name": "viewport-6",
+      "passed": true,
+      "elapsedMs": 1520,
+      "requestIndexes": [
+        18,
+        20
+      ],
+      "bbox": [
+        72.68,
+        32.075,
+        72.681,
+        32.076
+      ],
+      "complete": true,
+      "count": 1,
+      "ids": [
+        {
+          "id": "PK-PULSE-SARGODHA-8560005",
+          "geometrySha256": "1f7d9363ae10a843263dbf527f5e9d8f1cf87910117756e942c435362d4f41aa"
+        }
+      ]
+    },
+    {
+      "name": "viewport-7",
+      "passed": true,
+      "elapsedMs": 1430,
+      "requestIndexes": [
+        21,
+        23
+      ],
+      "bbox": [
+        72.681,
+        32.075,
+        72.682,
+        32.076
+      ],
+      "complete": true,
+      "count": 2,
+      "ids": [
+        {
+          "id": "PK-PULSE-SARGODHA-8559909",
+          "geometrySha256": "66295076dea8b1e4fd44a4d0fb4225ab2a62c64ccca8cd4b0881b00283b32ace"
+        },
+        {
+          "id": "PK-PULSE-SARGODHA-8560005",
+          "geometrySha256": "1f7d9363ae10a843263dbf527f5e9d8f1cf87910117756e942c435362d4f41aa"
+        }
+      ]
+    },
+    {
+      "name": "viewport-8",
+      "passed": true,
+      "elapsedMs": 1444,
+      "requestIndexes": [
+        24,
+        26
+      ],
+      "bbox": [
+        72.682,
+        32.075,
+        72.683,
+        32.076
+      ],
+      "complete": true,
+      "count": 2,
+      "ids": [
+        {
+          "id": "PK-PULSE-SARGODHA-8559909",
+          "geometrySha256": "66295076dea8b1e4fd44a4d0fb4225ab2a62c64ccca8cd4b0881b00283b32ace"
+        },
+        {
+          "id": "PK-PULSE-SARGODHA-8560005",
+          "geometrySha256": "1f7d9363ae10a843263dbf527f5e9d8f1cf87910117756e942c435362d4f41aa"
+        }
+      ]
+    },
+    {
+      "name": "viewport-9",
+      "passed": true,
+      "elapsedMs": 1392,
+      "requestIndexes": [
+        27,
+        29
+      ],
+      "bbox": [
+        72.681,
+        32.072,
+        72.682,
+        32.073
+      ],
+      "complete": true,
+      "count": 4,
+      "ids": [
+        {
+          "id": "PK-PULSE-SARGODHA-8559908",
+          "geometrySha256": "3fe7b30ffe183449b9e4f9977fd41c8f3ed6b9b85f0700772c8886445136ded9"
+        },
+        {
+          "id": "PK-PULSE-SARGODHA-8559909",
+          "geometrySha256": "66295076dea8b1e4fd44a4d0fb4225ab2a62c64ccca8cd4b0881b00283b32ace"
+        },
+        {
+          "id": "PK-PULSE-SARGODHA-8559976",
+          "geometrySha256": "54e9650113128f44d04f2f7563934697d5d55ae66ef6096d9670fc3f53ebc55b"
+        },
+        {
+          "id": "PK-PULSE-SARGODHA-8559992",
+          "geometrySha256": "5cd3a6ab372ff18dbaac5aea000ad8e538a6d27dcc1384696b04cfde4f042b04"
+        }
+      ]
+    },
+    {
+      "name": "viewport-10",
+      "passed": true,
+      "elapsedMs": 1624,
+      "requestIndexes": [
+        30,
+        32
+      ],
+      "bbox": [
+        72.681,
+        32.076,
+        72.682,
+        32.077
+      ],
+      "complete": true,
+      "count": 3,
+      "ids": [
+        {
+          "id": "PK-PULSE-SARGODHA-8559826",
+          "geometrySha256": "3f08a0f728b7c8e978a5fb8f92a6e2318195f70ac25000f9d2a73048a001462c"
+        },
+        {
+          "id": "PK-PULSE-SARGODHA-8559833",
+          "geometrySha256": "7773c1d2573396600bb90a7b684edf5a9eeed24d785c9f5a1c0c9a8199b9e08f"
+        },
+        {
+          "id": "PK-PULSE-SARGODHA-8560005",
+          "geometrySha256": "1f7d9363ae10a843263dbf527f5e9d8f1cf87910117756e942c435362d4f41aa"
+        }
+      ]
+    },
+    {
+      "name": "viewport-11",
+      "passed": true,
+      "elapsedMs": 904,
+      "requestIndexes": [
+        33,
+        35
+      ],
+      "bbox": [
+        72.679,
+        32.074,
+        72.68,
+        32.075
+      ],
+      "complete": true,
+      "count": 1,
+      "ids": [
+        {
+          "id": "PK-PULSE-SARGODHA-8560005",
+          "geometrySha256": "1f7d9363ae10a843263dbf527f5e9d8f1cf87910117756e942c435362d4f41aa"
+        }
+      ]
+    },
+    {
+      "name": "viewport-12",
+      "passed": true,
+      "elapsedMs": 1281,
+      "requestIndexes": [
+        36,
+        38
+      ],
+      "bbox": [
+        72.683,
+        32.074,
+        72.684,
+        32.075
+      ],
+      "complete": true,
+      "count": 1,
+      "ids": [
+        {
+          "id": "PK-PULSE-SARGODHA-8559909",
+          "geometrySha256": "66295076dea8b1e4fd44a4d0fb4225ab2a62c64ccca8cd4b0881b00283b32ace"
+        }
+      ]
+    },
+    {
+      "name": "forced-three-row-pages",
+      "passed": true,
+      "elapsedMs": 1491,
+      "requestIndexes": [
+        39,
+        42
+      ],
+      "count": 4,
+      "geometryPages": 2,
+      "pageSize": 3,
+      "allGeometryHashesMatch": true
+    },
+    {
+      "name": "fresh-ids-0",
+      "passed": true,
+      "elapsedMs": 1065,
+      "requestIndexes": [
+        43,
+        45
+      ],
+      "count": 7,
+      "ids": [
+        "PK-PULSE-SARGODHA-8559826",
+        "PK-PULSE-SARGODHA-8559833",
+        "PK-PULSE-SARGODHA-8559908",
+        "PK-PULSE-SARGODHA-8559909",
+        "PK-PULSE-SARGODHA-8559976",
+        "PK-PULSE-SARGODHA-8559992",
+        "PK-PULSE-SARGODHA-8560005"
+      ],
+      "allGeometryHashesMatch": true,
+      "absentIds": []
+    },
+    {
+      "name": "explicit-absence",
+      "passed": true,
+      "elapsedMs": 606,
+      "requestIndexes": [
+        46,
+        47
+      ],
+      "absentIds": [
+        "PK-PULSE-SARGODHA-2147483647"
+      ],
+      "complete": true
+    },
+    {
+      "name": "footprint",
+      "passed": false,
+      "elapsedMs": 599,
+      "requestIndexes": [
+        48,
+        49
+      ],
+      "error": "Parcel provider returned an incomplete or invalid object-ID list.",
+      "code": "parcel-source-unavailable"
+    },
+    {
+      "name": "source-binding",
+      "passed": false,
+      "elapsedMs": 1254,
+      "requestIndexes": [
+        50,
+        51
+      ],
+      "error": "Parcel provider returned an incomplete or invalid object-ID list.",
+      "code": "parcel-source-unavailable"
+    }
+  ],
+  "requests": [
+    {
+      "test": "viewport-0",
+      "url": "https://gismaps.punjab-zameen.gov.pk/arcgis/rest/services/VendorMaps/Punjab_Cdastral_Maps/MapServer/30/query?where=1%3D1&geometry=8090700.5908551235%2C3772896.830602766%2C8090811.910345916%2C3773028.201556292&geometryType=esriGeometryEnvelope&inSR=3857&spatialRel=esriSpatialRelIntersects&f=json&returnCountOnly=true",
+      "method": "GET",
+      "checkedAt": "2026-10-09T00:21:24.743Z",
+      "httpStatus": 200,
+      "contentType": "application/json;charset=UTF-8",
+      "bytes": 11,
+      "count": 2
+    },
+    {
+      "test": "viewport-0",
+      "url": "https://gismaps.punjab-zameen.gov.pk/arcgis/rest/services/VendorMaps/Punjab_Cdastral_Maps/MapServer/30/query?where=1%3D1&geometry=8090700.5908551235%2C3772896.830602766%2C8090811.910345916%2C3773028.201556292&geometryType=esriGeometryEnvelope&inSR=3857&spatialRel=esriSpatialRelIntersects&f=json&returnIdsOnly=true",
+      "method": "GET",
+      "checkedAt": "2026-10-09T00:21:27.249Z",
+      "httpStatus": 200,
+      "contentType": "application/json;charset=UTF-8",
+      "bytes": 62,
+      "objectIdFieldName": "OBJECTID",
+      "objectIds": [
+        8559909,
+        8560005
+      ]
+    },
+    {
+      "test": "viewport-0",
+      "url": "https://gismaps.punjab-zameen.gov.pk/arcgis/rest/services/VendorMaps/Punjab_Cdastral_Maps/MapServer/30/query?where=1%3D1&outFields=OBJECTID&returnGeometry=true&outSR=4326&f=geojson&objectIds=8559909%2C8560005",
+      "method": "GET",
+      "checkedAt": "2026-10-09T00:21:27.680Z",
+      "httpStatus": 200,
+      "contentType": "application/geo+json;charset=UTF-8",
+      "bytes": 2138,
+      "features": [
+        {
+          "transportId": 8559909,
+          "properties": {
+            "OBJECTID": 8559909
+          },
+          "geometrySha256": "66295076dea8b1e4fd44a4d0fb4225ab2a62c64ccca8cd4b0881b00283b32ace"
+        },
+        {
+          "transportId": 8560005,
+          "properties": {
+            "OBJECTID": 8560005
+          },
+          "geometrySha256": "1f7d9363ae10a843263dbf527f5e9d8f1cf87910117756e942c435362d4f41aa"
+        }
+      ]
+    },
+    {
+      "test": "viewport-1",
+      "url": "https://gismaps.punjab-zameen.gov.pk/arcgis/rest/services/VendorMaps/Punjab_Cdastral_Maps/MapServer/30/query?where=1%3D1&geometry=8090811.910345916%2C3772896.830602766%2C8090923.22983671%2C3773028.201556292&geometryType=esriGeometryEnvelope&inSR=3857&spatialRel=esriSpatialRelIntersects&f=json&returnCountOnly=true",
+      "method": "GET",
+      "checkedAt": "2026-10-09T00:21:27.988Z",
+      "httpStatus": 200,
+      "contentType": "application/json;charset=UTF-8",
+      "bytes": 11,
+      "count": 1
+    },
+    {
+      "test": "viewport-1",
+      "url": "https://gismaps.punjab-zameen.gov.pk/arcgis/rest/services/VendorMaps/Punjab_Cdastral_Maps/MapServer/30/query?where=1%3D1&geometry=8090811.910345916%2C3772896.830602766%2C8090923.22983671%2C3773028.201556292&geometryType=esriGeometryEnvelope&inSR=3857&spatialRel=esriSpatialRelIntersects&f=json&returnIdsOnly=true",
+      "method": "GET",
+      "checkedAt": "2026-10-09T00:21:28.720Z",
+      "httpStatus": 200,
+      "contentType": "application/json;charset=UTF-8",
+      "bytes": 54,
+      "objectIdFieldName": "OBJECTID",
+      "objectIds": [
+        8559909
+      ]
+    },
+    {
+      "test": "viewport-1",
+      "url": "https://gismaps.punjab-zameen.gov.pk/arcgis/rest/services/VendorMaps/Punjab_Cdastral_Maps/MapServer/30/query?where=1%3D1&outFields=OBJECTID&returnGeometry=true&outSR=4326&f=geojson&objectIds=8559909",
+      "method": "GET",
+      "checkedAt": "2026-10-09T00:21:29.136Z",
+      "httpStatus": 200,
+      "contentType": "application/geo+json;charset=UTF-8",
+      "bytes": 1030,
+      "features": [
+        {
+          "transportId": 8559909,
+          "properties": {
+            "OBJECTID": 8559909
+          },
+          "geometrySha256": "66295076dea8b1e4fd44a4d0fb4225ab2a62c64ccca8cd4b0881b00283b32ace"
+        }
+      ]
+    },
+    {
+      "test": "viewport-2",
+      "url": "https://gismaps.punjab-zameen.gov.pk/arcgis/rest/services/VendorMaps/Punjab_Cdastral_Maps/MapServer/30/query?where=1%3D1&geometry=8090923.22983671%2C3772896.830602766%2C8091034.549327504%2C3773028.201556292&geometryType=esriGeometryEnvelope&inSR=3857&spatialRel=esriSpatialRelIntersects&f=json&returnCountOnly=true",
+      "method": "GET",
+      "checkedAt": "2026-10-09T00:21:29.579Z",
+      "httpStatus": 200,
+      "contentType": "application/json;charset=UTF-8",
+      "bytes": 11,
+      "count": 1
+    },
+    {
+      "test": "viewport-2",
+      "url": "https://gismaps.punjab-zameen.gov.pk/arcgis/rest/services/VendorMaps/Punjab_Cdastral_Maps/MapServer/30/query?where=1%3D1&geometry=8090923.22983671%2C3772896.830602766%2C8091034.549327504%2C3773028.201556292&geometryType=esriGeometryEnvelope&inSR=3857&spatialRel=esriSpatialRelIntersects&f=json&returnIdsOnly=true",
+      "method": "GET",
+      "checkedAt": "2026-10-09T00:21:30.268Z",
+      "httpStatus": 200,
+      "contentType": "application/json;charset=UTF-8",
+      "bytes": 54,
+      "objectIdFieldName": "OBJECTID",
+      "objectIds": [
+        8559909
+      ]
+    },
+    {
+      "test": "viewport-2",
+      "url": "https://gismaps.punjab-zameen.gov.pk/arcgis/rest/services/VendorMaps/Punjab_Cdastral_Maps/MapServer/30/query?where=1%3D1&outFields=OBJECTID&returnGeometry=true&outSR=4326&f=geojson&objectIds=8559909",
+      "method": "GET",
+      "checkedAt": "2026-10-09T00:21:30.681Z",
+      "httpStatus": 200,
+      "contentType": "application/geo+json;charset=UTF-8",
+      "bytes": 1030,
+      "features": [
+        {
+          "transportId": 8559909,
+          "properties": {
+            "OBJECTID": 8559909
+          },
+          "geometrySha256": "66295076dea8b1e4fd44a4d0fb4225ab2a62c64ccca8cd4b0881b00283b32ace"
+        }
+      ]
+    },
+    {
+      "test": "viewport-3",
+      "url": "https://gismaps.punjab-zameen.gov.pk/arcgis/rest/services/VendorMaps/Punjab_Cdastral_Maps/MapServer/30/query?where=1%3D1&geometry=8090700.5908551235%2C3773028.201556292%2C8090811.910345916%2C3773159.573946681&geometryType=esriGeometryEnvelope&inSR=3857&spatialRel=esriSpatialRelIntersects&f=json&returnCountOnly=true",
+      "method": "GET",
+      "checkedAt": "2026-10-09T00:21:31.161Z",
+      "httpStatus": 200,
+      "contentType": "application/json;charset=UTF-8",
+      "bytes": 11,
+      "count": 2
+    },
+    {
+      "test": "viewport-3",
+      "url": "https://gismaps.punjab-zameen.gov.pk/arcgis/rest/services/VendorMaps/Punjab_Cdastral_Maps/MapServer/30/query?where=1%3D1&geometry=8090700.5908551235%2C3773028.201556292%2C8090811.910345916%2C3773159.573946681&geometryType=esriGeometryEnvelope&inSR=3857&spatialRel=esriSpatialRelIntersects&f=json&returnIdsOnly=true",
+      "method": "GET",
+      "checkedAt": "2026-10-09T00:21:31.807Z",
+      "httpStatus": 200,
+      "contentType": "application/json;charset=UTF-8",
+      "bytes": 62,
+      "objectIdFieldName": "OBJECTID",
+      "objectIds": [
+        8559909,
+        8560005
+      ]
+    },
+    {
+      "test": "viewport-3",
+      "url": "https://gismaps.punjab-zameen.gov.pk/arcgis/rest/services/VendorMaps/Punjab_Cdastral_Maps/MapServer/30/query?where=1%3D1&outFields=OBJECTID&returnGeometry=true&outSR=4326&f=geojson&objectIds=8559909%2C8560005",
+      "method": "GET",
+      "checkedAt": "2026-10-09T00:21:32.107Z",
+      "httpStatus": 200,
+      "contentType": "application/geo+json;charset=UTF-8",
+      "bytes": 2138,
+      "features": [
+        {
+          "transportId": 8559909,
+          "properties": {
+            "OBJECTID": 8559909
+          },
+          "geometrySha256": "66295076dea8b1e4fd44a4d0fb4225ab2a62c64ccca8cd4b0881b00283b32ace"
+        },
+        {
+          "transportId": 8560005,
+          "properties": {
+            "OBJECTID": 8560005
+          },
+          "geometrySha256": "1f7d9363ae10a843263dbf527f5e9d8f1cf87910117756e942c435362d4f41aa"
+        }
+      ]
+    },
+    {
+      "test": "viewport-4",
+      "url": "https://gismaps.punjab-zameen.gov.pk/arcgis/rest/services/VendorMaps/Punjab_Cdastral_Maps/MapServer/30/query?where=1%3D1&geometry=8090811.910345916%2C3773028.201556292%2C8090923.22983671%2C3773159.573946681&geometryType=esriGeometryEnvelope&inSR=3857&spatialRel=esriSpatialRelIntersects&f=json&returnCountOnly=true",
+      "method": "GET",
+      "checkedAt": "2026-10-09T00:21:32.550Z",
+      "httpStatus": 200,
+      "contentType": "application/json;charset=UTF-8",
+      "bytes": 11,
+      "count": 2
+    },
+    {
+      "test": "viewport-4",
+      "url": "https://gismaps.punjab-zameen.gov.pk/arcgis/rest/services/VendorMaps/Punjab_Cdastral_Maps/MapServer/30/query?where=1%3D1&geometry=8090811.910345916%2C3773028.201556292%2C8090923.22983671%2C3773159.573946681&geometryType=esriGeometryEnvelope&inSR=3857&spatialRel=esriSpatialRelIntersects&f=json&returnIdsOnly=true",
+      "method": "GET",
+      "checkedAt": "2026-10-09T00:21:33.216Z",
+      "httpStatus": 200,
+      "contentType": "application/json;charset=UTF-8",
+      "bytes": 62,
+      "objectIdFieldName": "OBJECTID",
+      "objectIds": [
+        8559909,
+        8560005
+      ]
+    },
+    {
+      "test": "viewport-4",
+      "url": "https://gismaps.punjab-zameen.gov.pk/arcgis/rest/services/VendorMaps/Punjab_Cdastral_Maps/MapServer/30/query?where=1%3D1&outFields=OBJECTID&returnGeometry=true&outSR=4326&f=geojson&objectIds=8559909%2C8560005",
+      "method": "GET",
+      "checkedAt": "2026-10-09T00:21:33.499Z",
+      "httpStatus": 200,
+      "contentType": "application/geo+json;charset=UTF-8",
+      "bytes": 2138,
+      "features": [
+        {
+          "transportId": 8559909,
+          "properties": {
+            "OBJECTID": 8559909
+          },
+          "geometrySha256": "66295076dea8b1e4fd44a4d0fb4225ab2a62c64ccca8cd4b0881b00283b32ace"
+        },
+        {
+          "transportId": 8560005,
+          "properties": {
+            "OBJECTID": 8560005
+          },
+          "geometrySha256": "1f7d9363ae10a843263dbf527f5e9d8f1cf87910117756e942c435362d4f41aa"
+        }
+      ]
+    },
+    {
+      "test": "viewport-5",
+      "url": "https://gismaps.punjab-zameen.gov.pk/arcgis/rest/services/VendorMaps/Punjab_Cdastral_Maps/MapServer/30/query?where=1%3D1&geometry=8090923.22983671%2C3773028.201556292%2C8091034.549327504%2C3773159.573946681&geometryType=esriGeometryEnvelope&inSR=3857&spatialRel=esriSpatialRelIntersects&f=json&returnCountOnly=true",
+      "method": "GET",
+      "checkedAt": "2026-10-09T00:21:33.766Z",
+      "httpStatus": 200,
+      "contentType": "application/json;charset=UTF-8",
+      "bytes": 11,
+      "count": 1
+    },
+    {
+      "test": "viewport-5",
+      "url": "https://gismaps.punjab-zameen.gov.pk/arcgis/rest/services/VendorMaps/Punjab_Cdastral_Maps/MapServer/30/query?where=1%3D1&geometry=8090923.22983671%2C3773028.201556292%2C8091034.549327504%2C3773159.573946681&geometryType=esriGeometryEnvelope&inSR=3857&spatialRel=esriSpatialRelIntersects&f=json&returnIdsOnly=true",
+      "method": "GET",
+      "checkedAt": "2026-10-09T00:21:34.438Z",
+      "httpStatus": 200,
+      "contentType": "application/json;charset=UTF-8",
+      "bytes": 54,
+      "objectIdFieldName": "OBJECTID",
+      "objectIds": [
+        8559909
+      ]
+    },
+    {
+      "test": "viewport-5",
+      "url": "https://gismaps.punjab-zameen.gov.pk/arcgis/rest/services/VendorMaps/Punjab_Cdastral_Maps/MapServer/30/query?where=1%3D1&outFields=OBJECTID&returnGeometry=true&outSR=4326&f=geojson&objectIds=8559909",
+      "method": "GET",
+      "checkedAt": "2026-10-09T00:21:34.742Z",
+      "httpStatus": 200,
+      "contentType": "application/geo+json;charset=UTF-8",
+      "bytes": 1030,
+      "features": [
+        {
+          "transportId": 8559909,
+          "properties": {
+            "OBJECTID": 8559909
+          },
+          "geometrySha256": "66295076dea8b1e4fd44a4d0fb4225ab2a62c64ccca8cd4b0881b00283b32ace"
+        }
+      ]
+    },
+    {
+      "test": "viewport-6",
+      "url": "https://gismaps.punjab-zameen.gov.pk/arcgis/rest/services/VendorMaps/Punjab_Cdastral_Maps/MapServer/30/query?where=1%3D1&geometry=8090700.5908551235%2C3773159.573946681%2C8090811.910345916%2C3773290.9477740033&geometryType=esriGeometryEnvelope&inSR=3857&spatialRel=esriSpatialRelIntersects&f=json&returnCountOnly=true",
+      "method": "GET",
+      "checkedAt": "2026-10-09T00:21:35.116Z",
+      "httpStatus": 200,
+      "contentType": "application/json;charset=UTF-8",
+      "bytes": 11,
+      "count": 1
+    },
+    {
+      "test": "viewport-6",
+      "url": "https://gismaps.punjab-zameen.gov.pk/arcgis/rest/services/VendorMaps/Punjab_Cdastral_Maps/MapServer/30/query?where=1%3D1&geometry=8090700.5908551235%2C3773159.573946681%2C8090811.910345916%2C3773290.9477740033&geometryType=esriGeometryEnvelope&inSR=3857&spatialRel=esriSpatialRelIntersects&f=json&returnIdsOnly=true",
+      "method": "GET",
+      "checkedAt": "2026-10-09T00:21:35.835Z",
+      "httpStatus": 200,
+      "contentType": "application/json;charset=UTF-8",
+      "bytes": 54,
+      "objectIdFieldName": "OBJECTID",
+      "objectIds": [
+        8560005
+      ]
+    },
+    {
+      "test": "viewport-6",
+      "url": "https://gismaps.punjab-zameen.gov.pk/arcgis/rest/services/VendorMaps/Punjab_Cdastral_Maps/MapServer/30/query?where=1%3D1&outFields=OBJECTID&returnGeometry=true&outSR=4326&f=geojson&objectIds=8560005",
+      "method": "GET",
+      "checkedAt": "2026-10-09T00:21:36.229Z",
+      "httpStatus": 200,
+      "contentType": "application/geo+json;charset=UTF-8",
+      "bytes": 1149,
+      "features": [
+        {
+          "transportId": 8560005,
+          "properties": {
+            "OBJECTID": 8560005
+          },
+          "geometrySha256": "1f7d9363ae10a843263dbf527f5e9d8f1cf87910117756e942c435362d4f41aa"
+        }
+      ]
+    },
+    {
+      "test": "viewport-7",
+      "url": "https://gismaps.punjab-zameen.gov.pk/arcgis/rest/services/VendorMaps/Punjab_Cdastral_Maps/MapServer/30/query?where=1%3D1&geometry=8090811.910345916%2C3773159.573946681%2C8090923.22983671%2C3773290.9477740033&geometryType=esriGeometryEnvelope&inSR=3857&spatialRel=esriSpatialRelIntersects&f=json&returnCountOnly=true",
+      "method": "GET",
+      "checkedAt": "2026-10-09T00:21:36.636Z",
+      "httpStatus": 200,
+      "contentType": "application/json;charset=UTF-8",
+      "bytes": 11,
+      "count": 2
+    },
+    {
+      "test": "viewport-7",
+      "url": "https://gismaps.punjab-zameen.gov.pk/arcgis/rest/services/VendorMaps/Punjab_Cdastral_Maps/MapServer/30/query?where=1%3D1&geometry=8090811.910345916%2C3773159.573946681%2C8090923.22983671%2C3773290.9477740033&geometryType=esriGeometryEnvelope&inSR=3857&spatialRel=esriSpatialRelIntersects&f=json&returnIdsOnly=true",
+      "method": "GET",
+      "checkedAt": "2026-10-09T00:21:37.368Z",
+      "httpStatus": 200,
+      "contentType": "application/json;charset=UTF-8",
+      "bytes": 62,
+      "objectIdFieldName": "OBJECTID",
+      "objectIds": [
+        8559909,
+        8560005
+      ]
+    },
+    {
+      "test": "viewport-7",
+      "url": "https://gismaps.punjab-zameen.gov.pk/arcgis/rest/services/VendorMaps/Punjab_Cdastral_Maps/MapServer/30/query?where=1%3D1&outFields=OBJECTID&returnGeometry=true&outSR=4326&f=geojson&objectIds=8559909%2C8560005",
+      "method": "GET",
+      "checkedAt": "2026-10-09T00:21:37.658Z",
+      "httpStatus": 200,
+      "contentType": "application/geo+json;charset=UTF-8",
+      "bytes": 2138,
+      "features": [
+        {
+          "transportId": 8559909,
+          "properties": {
+            "OBJECTID": 8559909
+          },
+          "geometrySha256": "66295076dea8b1e4fd44a4d0fb4225ab2a62c64ccca8cd4b0881b00283b32ace"
+        },
+        {
+          "transportId": 8560005,
+          "properties": {
+            "OBJECTID": 8560005
+          },
+          "geometrySha256": "1f7d9363ae10a843263dbf527f5e9d8f1cf87910117756e942c435362d4f41aa"
+        }
+      ]
+    },
+    {
+      "test": "viewport-8",
+      "url": "https://gismaps.punjab-zameen.gov.pk/arcgis/rest/services/VendorMaps/Punjab_Cdastral_Maps/MapServer/30/query?where=1%3D1&geometry=8090923.22983671%2C3773159.573946681%2C8091034.549327504%2C3773290.9477740033&geometryType=esriGeometryEnvelope&inSR=3857&spatialRel=esriSpatialRelIntersects&f=json&returnCountOnly=true",
+      "method": "GET",
+      "checkedAt": "2026-10-09T00:21:38.067Z",
+      "httpStatus": 200,
+      "contentType": "application/json;charset=UTF-8",
+      "bytes": 11,
+      "count": 2
+    },
+    {
+      "test": "viewport-8",
+      "url": "https://gismaps.punjab-zameen.gov.pk/arcgis/rest/services/VendorMaps/Punjab_Cdastral_Maps/MapServer/30/query?where=1%3D1&geometry=8090923.22983671%2C3773159.573946681%2C8091034.549327504%2C3773290.9477740033&geometryType=esriGeometryEnvelope&inSR=3857&spatialRel=esriSpatialRelIntersects&f=json&returnIdsOnly=true",
+      "method": "GET",
+      "checkedAt": "2026-10-09T00:21:38.708Z",
+      "httpStatus": 200,
+      "contentType": "application/json;charset=UTF-8",
+      "bytes": 62,
+      "objectIdFieldName": "OBJECTID",
+      "objectIds": [
+        8559909,
+        8560005
+      ]
+    },
+    {
+      "test": "viewport-8",
+      "url": "https://gismaps.punjab-zameen.gov.pk/arcgis/rest/services/VendorMaps/Punjab_Cdastral_Maps/MapServer/30/query?where=1%3D1&outFields=OBJECTID&returnGeometry=true&outSR=4326&f=geojson&objectIds=8559909%2C8560005",
+      "method": "GET",
+      "checkedAt": "2026-10-09T00:21:39.101Z",
+      "httpStatus": 200,
+      "contentType": "application/geo+json;charset=UTF-8",
+      "bytes": 2138,
+      "features": [
+        {
+          "transportId": 8559909,
+          "properties": {
+            "OBJECTID": 8559909
+          },
+          "geometrySha256": "66295076dea8b1e4fd44a4d0fb4225ab2a62c64ccca8cd4b0881b00283b32ace"
+        },
+        {
+          "transportId": 8560005,
+          "properties": {
+            "OBJECTID": 8560005
+          },
+          "geometrySha256": "1f7d9363ae10a843263dbf527f5e9d8f1cf87910117756e942c435362d4f41aa"
+        }
+      ]
+    },
+    {
+      "test": "viewport-9",
+      "url": "https://gismaps.punjab-zameen.gov.pk/arcgis/rest/services/VendorMaps/Punjab_Cdastral_Maps/MapServer/30/query?where=1%3D1&geometry=8090811.910345916%2C3772765.461086036%2C8090923.22983671%2C3772896.830602766&geometryType=esriGeometryEnvelope&inSR=3857&spatialRel=esriSpatialRelIntersects&f=json&returnCountOnly=true",
+      "method": "GET",
+      "checkedAt": "2026-10-09T00:21:39.512Z",
+      "httpStatus": 200,
+      "contentType": "application/json;charset=UTF-8",
+      "bytes": 11,
+      "count": 4
+    },
+    {
+      "test": "viewport-9",
+      "url": "https://gismaps.punjab-zameen.gov.pk/arcgis/rest/services/VendorMaps/Punjab_Cdastral_Maps/MapServer/30/query?where=1%3D1&geometry=8090811.910345916%2C3772765.461086036%2C8090923.22983671%2C3772896.830602766&geometryType=esriGeometryEnvelope&inSR=3857&spatialRel=esriSpatialRelIntersects&f=json&returnIdsOnly=true",
+      "method": "GET",
+      "checkedAt": "2026-10-09T00:21:40.193Z",
+      "httpStatus": 200,
+      "contentType": "application/json;charset=UTF-8",
+      "bytes": 78,
+      "objectIdFieldName": "OBJECTID",
+      "objectIds": [
+        8559908,
+        8559909,
+        8559976,
+        8559992
+      ]
+    },
+    {
+      "test": "viewport-9",
+      "url": "https://gismaps.punjab-zameen.gov.pk/arcgis/rest/services/VendorMaps/Punjab_Cdastral_Maps/MapServer/30/query?where=1%3D1&outFields=OBJECTID&returnGeometry=true&outSR=4326&f=geojson&objectIds=8559908%2C8559909%2C8559976%2C8559992",
+      "method": "GET",
+      "checkedAt": "2026-10-09T00:21:40.601Z",
+      "httpStatus": 200,
+      "contentType": "application/geo+json;charset=UTF-8",
+      "bytes": 4514,
+      "features": [
+        {
+          "transportId": 8559908,
+          "properties": {
+            "OBJECTID": 8559908
+          },
+          "geometrySha256": "3fe7b30ffe183449b9e4f9977fd41c8f3ed6b9b85f0700772c8886445136ded9"
+        },
+        {
+          "transportId": 8559909,
+          "properties": {
+            "OBJECTID": 8559909
+          },
+          "geometrySha256": "66295076dea8b1e4fd44a4d0fb4225ab2a62c64ccca8cd4b0881b00283b32ace"
+        },
+        {
+          "transportId": 8559976,
+          "properties": {
+            "OBJECTID": 8559976
+          },
+          "geometrySha256": "54e9650113128f44d04f2f7563934697d5d55ae66ef6096d9670fc3f53ebc55b"
+        },
+        {
+          "transportId": 8559992,
+          "properties": {
+            "OBJECTID": 8559992
+          },
+          "geometrySha256": "5cd3a6ab372ff18dbaac5aea000ad8e538a6d27dcc1384696b04cfde4f042b04"
+        }
+      ]
+    },
+    {
+      "test": "viewport-10",
+      "url": "https://gismaps.punjab-zameen.gov.pk/arcgis/rest/services/VendorMaps/Punjab_Cdastral_Maps/MapServer/30/query?where=1%3D1&geometry=8090811.910345916%2C3773290.9477740033%2C8090923.22983671%2C3773422.3230383326&geometryType=esriGeometryEnvelope&inSR=3857&spatialRel=esriSpatialRelIntersects&f=json&returnCountOnly=true",
+      "method": "GET",
+      "checkedAt": "2026-10-09T00:21:40.905Z",
+      "httpStatus": 200,
+      "contentType": "application/json;charset=UTF-8",
+      "bytes": 11,
+      "count": 3
+    },
+    {
+      "test": "viewport-10",
+      "url": "https://gismaps.punjab-zameen.gov.pk/arcgis/rest/services/VendorMaps/Punjab_Cdastral_Maps/MapServer/30/query?where=1%3D1&geometry=8090811.910345916%2C3773290.9477740033%2C8090923.22983671%2C3773422.3230383326&geometryType=esriGeometryEnvelope&inSR=3857&spatialRel=esriSpatialRelIntersects&f=json&returnIdsOnly=true",
+      "method": "GET",
+      "checkedAt": "2026-10-09T00:21:41.785Z",
+      "httpStatus": 200,
+      "contentType": "application/json;charset=UTF-8",
+      "bytes": 70,
+      "objectIdFieldName": "OBJECTID",
+      "objectIds": [
+        8559826,
+        8559833,
+        8560005
+      ]
+    },
+    {
+      "test": "viewport-10",
+      "url": "https://gismaps.punjab-zameen.gov.pk/arcgis/rest/services/VendorMaps/Punjab_Cdastral_Maps/MapServer/30/query?where=1%3D1&outFields=OBJECTID&returnGeometry=true&outSR=4326&f=geojson&objectIds=8559826%2C8559833%2C8560005",
+      "method": "GET",
+      "checkedAt": "2026-10-09T00:21:42.203Z",
+      "httpStatus": 200,
+      "contentType": "application/geo+json;charset=UTF-8",
+      "bytes": 2091,
+      "features": [
+        {
+          "transportId": 8559826,
+          "properties": {
+            "OBJECTID": 8559826
+          },
+          "geometrySha256": "3f08a0f728b7c8e978a5fb8f92a6e2318195f70ac25000f9d2a73048a001462c"
+        },
+        {
+          "transportId": 8559833,
+          "properties": {
+            "OBJECTID": 8559833
+          },
+          "geometrySha256": "7773c1d2573396600bb90a7b684edf5a9eeed24d785c9f5a1c0c9a8199b9e08f"
+        },
+        {
+          "transportId": 8560005,
+          "properties": {
+            "OBJECTID": 8560005
+          },
+          "geometrySha256": "1f7d9363ae10a843263dbf527f5e9d8f1cf87910117756e942c435362d4f41aa"
+        }
+      ]
+    },
+    {
+      "test": "viewport-11",
+      "url": "https://gismaps.punjab-zameen.gov.pk/arcgis/rest/services/VendorMaps/Punjab_Cdastral_Maps/MapServer/30/query?where=1%3D1&geometry=8090589.271364329%2C3773028.201556292%2C8090700.5908551235%2C3773159.573946681&geometryType=esriGeometryEnvelope&inSR=3857&spatialRel=esriSpatialRelIntersects&f=json&returnCountOnly=true",
+      "method": "GET",
+      "checkedAt": "2026-10-09T00:21:42.531Z",
+      "httpStatus": 200,
+      "contentType": "application/json;charset=UTF-8",
+      "bytes": 11,
+      "count": 1
+    },
+    {
+      "test": "viewport-11",
+      "url": "https://gismaps.punjab-zameen.gov.pk/arcgis/rest/services/VendorMaps/Punjab_Cdastral_Maps/MapServer/30/query?where=1%3D1&geometry=8090589.271364329%2C3773028.201556292%2C8090700.5908551235%2C3773159.573946681&geometryType=esriGeometryEnvelope&inSR=3857&spatialRel=esriSpatialRelIntersects&f=json&returnIdsOnly=true",
+      "method": "GET",
+      "checkedAt": "2026-10-09T00:21:42.829Z",
+      "httpStatus": 200,
+      "contentType": "application/json;charset=UTF-8",
+      "bytes": 54,
+      "objectIdFieldName": "OBJECTID",
+      "objectIds": [
+        8560005
+      ]
+    },
+    {
+      "test": "viewport-11",
+      "url": "https://gismaps.punjab-zameen.gov.pk/arcgis/rest/services/VendorMaps/Punjab_Cdastral_Maps/MapServer/30/query?where=1%3D1&outFields=OBJECTID&returnGeometry=true&outSR=4326&f=geojson&objectIds=8560005",
+      "method": "GET",
+      "checkedAt": "2026-10-09T00:21:43.128Z",
+      "httpStatus": 200,
+      "contentType": "application/geo+json;charset=UTF-8",
+      "bytes": 1149,
+      "features": [
+        {
+          "transportId": 8560005,
+          "properties": {
+            "OBJECTID": 8560005
+          },
+          "geometrySha256": "1f7d9363ae10a843263dbf527f5e9d8f1cf87910117756e942c435362d4f41aa"
+        }
+      ]
+    },
+    {
+      "test": "viewport-12",
+      "url": "https://gismaps.punjab-zameen.gov.pk/arcgis/rest/services/VendorMaps/Punjab_Cdastral_Maps/MapServer/30/query?where=1%3D1&geometry=8091034.549327504%2C3773028.201556292%2C8091145.868818296%2C3773159.573946681&geometryType=esriGeometryEnvelope&inSR=3857&spatialRel=esriSpatialRelIntersects&f=json&returnCountOnly=true",
+      "method": "GET",
+      "checkedAt": "2026-10-09T00:21:43.435Z",
+      "httpStatus": 200,
+      "contentType": "application/json;charset=UTF-8",
+      "bytes": 11,
+      "count": 1
+    },
+    {
+      "test": "viewport-12",
+      "url": "https://gismaps.punjab-zameen.gov.pk/arcgis/rest/services/VendorMaps/Punjab_Cdastral_Maps/MapServer/30/query?where=1%3D1&geometry=8091034.549327504%2C3773028.201556292%2C8091145.868818296%2C3773159.573946681&geometryType=esriGeometryEnvelope&inSR=3857&spatialRel=esriSpatialRelIntersects&f=json&returnIdsOnly=true",
+      "method": "GET",
+      "checkedAt": "2026-10-09T00:21:43.791Z",
+      "httpStatus": 200,
+      "contentType": "application/json;charset=UTF-8",
+      "bytes": 54,
+      "objectIdFieldName": "OBJECTID",
+      "objectIds": [
+        8559909
+      ]
+    },
+    {
+      "test": "viewport-12",
+      "url": "https://gismaps.punjab-zameen.gov.pk/arcgis/rest/services/VendorMaps/Punjab_Cdastral_Maps/MapServer/30/query?where=1%3D1&outFields=OBJECTID&returnGeometry=true&outSR=4326&f=geojson&objectIds=8559909",
+      "method": "GET",
+      "checkedAt": "2026-10-09T00:21:44.173Z",
+      "httpStatus": 200,
+      "contentType": "application/geo+json;charset=UTF-8",
+      "bytes": 1030,
+      "features": [
+        {
+          "transportId": 8559909,
+          "properties": {
+            "OBJECTID": 8559909
+          },
+          "geometrySha256": "66295076dea8b1e4fd44a4d0fb4225ab2a62c64ccca8cd4b0881b00283b32ace"
+        }
+      ]
+    },
+    {
+      "test": "forced-three-row-pages",
+      "url": "https://gismaps.punjab-zameen.gov.pk/arcgis/rest/services/VendorMaps/Punjab_Cdastral_Maps/MapServer/30/query?where=1%3D1&geometry=8090811.910345916%2C3772765.461086036%2C8090923.22983671%2C3772896.830602766&geometryType=esriGeometryEnvelope&inSR=3857&spatialRel=esriSpatialRelIntersects&f=json&returnCountOnly=true",
+      "method": "GET",
+      "checkedAt": "2026-10-09T00:21:44.718Z",
+      "httpStatus": 200,
+      "contentType": "application/json;charset=UTF-8",
+      "bytes": 11,
+      "count": 4
+    },
+    {
+      "test": "forced-three-row-pages",
+      "url": "https://gismaps.punjab-zameen.gov.pk/arcgis/rest/services/VendorMaps/Punjab_Cdastral_Maps/MapServer/30/query?where=1%3D1&geometry=8090811.910345916%2C3772765.461086036%2C8090923.22983671%2C3772896.830602766&geometryType=esriGeometryEnvelope&inSR=3857&spatialRel=esriSpatialRelIntersects&f=json&returnIdsOnly=true",
+      "method": "GET",
+      "checkedAt": "2026-10-09T00:21:45.075Z",
+      "httpStatus": 200,
+      "contentType": "application/json;charset=UTF-8",
+      "bytes": 78,
+      "objectIdFieldName": "OBJECTID",
+      "objectIds": [
+        8559908,
+        8559909,
+        8559976,
+        8559992
+      ]
+    },
+    {
+      "test": "forced-three-row-pages",
+      "url": "https://gismaps.punjab-zameen.gov.pk/arcgis/rest/services/VendorMaps/Punjab_Cdastral_Maps/MapServer/30/query?where=1%3D1&outFields=OBJECTID&returnGeometry=true&outSR=4326&f=geojson&objectIds=8559908%2C8559909%2C8559976",
+      "method": "GET",
+      "checkedAt": "2026-10-09T00:21:45.388Z",
+      "httpStatus": 200,
+      "contentType": "application/geo+json;charset=UTF-8",
+      "bytes": 2133,
+      "features": [
+        {
+          "transportId": 8559908,
+          "properties": {
+            "OBJECTID": 8559908
+          },
+          "geometrySha256": "3fe7b30ffe183449b9e4f9977fd41c8f3ed6b9b85f0700772c8886445136ded9"
+        },
+        {
+          "transportId": 8559909,
+          "properties": {
+            "OBJECTID": 8559909
+          },
+          "geometrySha256": "66295076dea8b1e4fd44a4d0fb4225ab2a62c64ccca8cd4b0881b00283b32ace"
+        },
+        {
+          "transportId": 8559976,
+          "properties": {
+            "OBJECTID": 8559976
+          },
+          "geometrySha256": "54e9650113128f44d04f2f7563934697d5d55ae66ef6096d9670fc3f53ebc55b"
+        }
+      ]
+    },
+    {
+      "test": "forced-three-row-pages",
+      "url": "https://gismaps.punjab-zameen.gov.pk/arcgis/rest/services/VendorMaps/Punjab_Cdastral_Maps/MapServer/30/query?where=1%3D1&outFields=OBJECTID&returnGeometry=true&outSR=4326&f=geojson&objectIds=8559992",
+      "method": "GET",
+      "checkedAt": "2026-10-09T00:21:45.772Z",
+      "httpStatus": 200,
+      "contentType": "application/geo+json;charset=UTF-8",
+      "bytes": 2422,
+      "features": [
+        {
+          "transportId": 8559992,
+          "properties": {
+            "OBJECTID": 8559992
+          },
+          "geometrySha256": "5cd3a6ab372ff18dbaac5aea000ad8e538a6d27dcc1384696b04cfde4f042b04"
+        }
+      ]
+    },
+    {
+      "test": "fresh-ids-0",
+      "url": "https://gismaps.punjab-zameen.gov.pk/arcgis/rest/services/VendorMaps/Punjab_Cdastral_Maps/MapServer/30/query?where=OBJECTID+IN+%288559826%2C8559833%2C8559908%2C8559909%2C8559976%2C8559992%2C8560005%29&f=json&returnCountOnly=true",
+      "method": "GET",
+      "checkedAt": "2026-10-09T00:21:46.209Z",
+      "httpStatus": 200,
+      "contentType": "application/json;charset=UTF-8",
+      "bytes": 11,
+      "count": 7
+    },
+    {
+      "test": "fresh-ids-0",
+      "url": "https://gismaps.punjab-zameen.gov.pk/arcgis/rest/services/VendorMaps/Punjab_Cdastral_Maps/MapServer/30/query?where=OBJECTID+IN+%288559826%2C8559833%2C8559908%2C8559909%2C8559976%2C8559992%2C8560005%29&f=json&returnIdsOnly=true",
+      "method": "GET",
+      "checkedAt": "2026-10-09T00:21:46.566Z",
+      "httpStatus": 200,
+      "contentType": "application/json;charset=UTF-8",
+      "bytes": 102,
+      "objectIdFieldName": "OBJECTID",
+      "objectIds": [
+        8559826,
+        8559833,
+        8559908,
+        8559909,
+        8559976,
+        8559992,
+        8560005
+      ]
+    },
+    {
+      "test": "fresh-ids-0",
+      "url": "https://gismaps.punjab-zameen.gov.pk/arcgis/rest/services/VendorMaps/Punjab_Cdastral_Maps/MapServer/30/query?where=1%3D1&outFields=OBJECTID&returnGeometry=true&outSR=4326&f=geojson&objectIds=8559826%2C8559833%2C8559908%2C8559909%2C8559976%2C8559992%2C8560005",
+      "method": "GET",
+      "checkedAt": "2026-10-09T00:21:46.902Z",
+      "httpStatus": 200,
+      "contentType": "application/geo+json;charset=UTF-8",
+      "bytes": 6564,
+      "features": [
+        {
+          "transportId": 8559826,
+          "properties": {
+            "OBJECTID": 8559826
+          },
+          "geometrySha256": "3f08a0f728b7c8e978a5fb8f92a6e2318195f70ac25000f9d2a73048a001462c"
+        },
+        {
+          "transportId": 8559833,
+          "properties": {
+            "OBJECTID": 8559833
+          },
+          "geometrySha256": "7773c1d2573396600bb90a7b684edf5a9eeed24d785c9f5a1c0c9a8199b9e08f"
+        },
+        {
+          "transportId": 8559908,
+          "properties": {
+            "OBJECTID": 8559908
+          },
+          "geometrySha256": "3fe7b30ffe183449b9e4f9977fd41c8f3ed6b9b85f0700772c8886445136ded9"
+        },
+        {
+          "transportId": 8559909,
+          "properties": {
+            "OBJECTID": 8559909
+          },
+          "geometrySha256": "66295076dea8b1e4fd44a4d0fb4225ab2a62c64ccca8cd4b0881b00283b32ace"
+        },
+        {
+          "transportId": 8559976,
+          "properties": {
+            "OBJECTID": 8559976
+          },
+          "geometrySha256": "54e9650113128f44d04f2f7563934697d5d55ae66ef6096d9670fc3f53ebc55b"
+        },
+        {
+          "transportId": 8559992,
+          "properties": {
+            "OBJECTID": 8559992
+          },
+          "geometrySha256": "5cd3a6ab372ff18dbaac5aea000ad8e538a6d27dcc1384696b04cfde4f042b04"
+        },
+        {
+          "transportId": 8560005,
+          "properties": {
+            "OBJECTID": 8560005
+          },
+          "geometrySha256": "1f7d9363ae10a843263dbf527f5e9d8f1cf87910117756e942c435362d4f41aa"
+        }
+      ]
+    },
+    {
+      "test": "explicit-absence",
+      "url": "https://gismaps.punjab-zameen.gov.pk/arcgis/rest/services/VendorMaps/Punjab_Cdastral_Maps/MapServer/30/query?where=OBJECTID+IN+%282147483647%29&f=json&returnCountOnly=true",
+      "method": "GET",
+      "checkedAt": "2026-10-09T00:21:47.273Z",
+      "httpStatus": 200,
+      "contentType": "application/json;charset=UTF-8",
+      "bytes": 11,
+      "count": 0
+    },
+    {
+      "test": "explicit-absence",
+      "url": "https://gismaps.punjab-zameen.gov.pk/arcgis/rest/services/VendorMaps/Punjab_Cdastral_Maps/MapServer/30/query?where=OBJECTID+IN+%282147483647%29&f=json&returnIdsOnly=true",
+      "method": "GET",
+      "checkedAt": "2026-10-09T00:21:47.586Z",
+      "httpStatus": 200,
+      "contentType": "application/json;charset=UTF-8",
+      "bytes": 49,
+      "objectIdFieldName": "OBJECTID",
+      "objectIds": null
+    },
+    {
+      "test": "footprint",
+      "url": "https://gismaps.punjab-zameen.gov.pk/arcgis/rest/services/VendorMaps/Punjab_Cdastral_Maps/MapServer/30/query?where=1%3D1&geometry=8090659.911800003%2C3772768.0153999985%2C8091082.6055000005%2C3772891.7286000014&geometryType=esriGeometryEnvelope&inSR=3857&spatialRel=esriSpatialRelIntersects&f=json&returnCountOnly=true",
+      "method": "GET",
+      "checkedAt": "2026-10-09T00:21:47.880Z",
+      "httpStatus": 200,
+      "contentType": "application/json;charset=UTF-8",
+      "bytes": 12,
+      "count": 11
+    },
+    {
+      "test": "footprint",
+      "url": "https://gismaps.punjab-zameen.gov.pk/arcgis/rest/services/VendorMaps/Punjab_Cdastral_Maps/MapServer/30/query?where=1%3D1&geometry=8090659.911800003%2C3772768.0153999985%2C8091082.6055000005%2C3772891.7286000014&geometryType=esriGeometryEnvelope&inSR=3857&spatialRel=esriSpatialRelIntersects&f=json&returnIdsOnly=true",
+      "method": "GET",
+      "checkedAt": "2026-10-09T00:21:48.182Z",
+      "httpStatus": 200,
+      "contentType": "application/json;charset=UTF-8",
+      "bytes": 126,
+      "objectIdFieldName": "OBJECTID",
+      "objectIds": [
+        8559608,
+        8559871,
+        8559874,
+        8559875,
+        8559908,
+        8559909,
+        8559944,
+        8559976,
+        8559992,
+        8560017
+      ]
+    },
+    {
+      "test": "source-binding",
+      "url": "https://gismaps.punjab-zameen.gov.pk/arcgis/rest/services/VendorMaps/Punjab_Cdastral_Maps/MapServer/30/query?where=1%3D1&geometry=8090659.911800003%2C3772768.0153999985%2C8091082.6055000005%2C3772891.7286000014&geometryType=esriGeometryEnvelope&inSR=3857&spatialRel=esriSpatialRelIntersects&f=json&returnCountOnly=true",
+      "method": "GET",
+      "checkedAt": "2026-10-09T00:21:48.480Z",
+      "httpStatus": 200,
+      "contentType": "application/json;charset=UTF-8",
+      "bytes": 12,
+      "count": 11
+    },
+    {
+      "test": "source-binding",
+      "url": "https://gismaps.punjab-zameen.gov.pk/arcgis/rest/services/VendorMaps/Punjab_Cdastral_Maps/MapServer/30/query?where=1%3D1&geometry=8090659.911800003%2C3772768.0153999985%2C8091082.6055000005%2C3772891.7286000014&geometryType=esriGeometryEnvelope&inSR=3857&spatialRel=esriSpatialRelIntersects&f=json&returnIdsOnly=true",
+      "method": "GET",
+      "checkedAt": "2026-10-09T00:21:49.293Z",
+      "httpStatus": 200,
+      "contentType": "application/json;charset=UTF-8",
+      "bytes": 126,
+      "objectIdFieldName": "OBJECTID",
+      "objectIds": [
+        8559608,
+        8559871,
+        8559874,
+        8559875,
+        8559908,
+        8559909,
+        8559944,
+        8559976,
+        8559992,
+        8560017
+      ]
+    }
+  ],
+  "qualityFile": "research/overnight-cities-2026-10-08/sargodha-pulse-parcels-quality.json",
+  "publicViewerBootstrap": {
+    "path": "/api/gis/token",
+    "httpStatus": 200,
+    "success": true,
+    "responseKeys": [
+      "success",
+      "token",
+      "expiresAt",
+      "error"
+    ],
+    "hasPublicReaderToken": true
+  },
+  "uniqueParcels": 7,
+  "requestCount": 52,
+  "allTestsPassed": false,
+  "finishedAt": "2026-10-09T00:21:49.735Z",
+  "qualityStatus": "pending-independent-topology-check"
+}

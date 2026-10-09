@@ -1,0 +1,195 @@
+{
+  "schemaVersion": 1,
+  "kind": "city_parcel_source_research",
+  "checkedAt": "2026-10-09",
+  "name": "Bilbao",
+  "country": "Spain",
+  "countryCode": "ES",
+  "populationUnit": "persons",
+  "status": "complete",
+  "registryFound": true,
+  "registryBasis": "The Diputación Foral de Bizkaia publishes its own public cadastral parcel WFS, separate from the Spanish national Catastro. Its advertised EPSG:25830 parcel extent covers the supplied Bilbao WUP point. The actual schema was inspected first and a 2 m bbox query around that point returned one full parcel polygon. Only cadastral IDs and geometry are retained; no area, building, owner, address or legal-title attributes are retained.",
+  "registryEvidenceUrls": [
+    "https://opendatabizkaia.eus/es/catalogo/parcelario-catastral-de-bizkaia",
+    "https://www.opendatabizkaia.eus/es/catalogo/parcelario-catastral/recurso/parcelario-catastral-wfs",
+    "https://www.bizkaia.eus/es/inspirebizkaia",
+    "https://www.bizkaia.eus/es/web/geobizkaia/servicios-estandar",
+    "https://geo.bizkaia.eus/arcgisserverinspire/services/LurraldeAntolamendua_PlanificacionTerritorial/Katastro_Catastro_WFS/MapServer/WFSServer"
+  ],
+  "verifiedSample": true,
+  "publicParcelGeometryFound": true,
+  "runtimeReadiness": "enabled",
+  "wupCityCode": 4021,
+  "cityId": "wup2025:4021",
+  "centerLatLon": [
+    43.2826941093508,
+    -2.95997002575274
+  ],
+  "rank": 721,
+  "queueRank": 721,
+  "population2025": 741795,
+  "population2025k": 741.795,
+  "pointBasis": "UN WUP 2025 population-weighted settlement centroid; this is not a municipal boundary or a parcel-coverage claim.",
+  "scopeLimits": "79 valid distinct cadastral-reference polygons verified in thirteen bounded 0.001-degree cells around the unchanged Bilbao WUP settlement locator. Complete bounded paging, forced three-row pages, all 79 fresh native parcel-identity reads, explicit absence, footprint and source binding passed in 27 requests. Independent metric EPSG:32630 GEOS found all geometries valid and distinct, with no sampled overlaps above 0.01 m² or operation errors. The separate Bizkaia foral cadastre uses the native municipality/polygon/parcel integer tuple; OBJECTID is only a transport key. A fresh EPSG:25830 REST tuple query matches the prior official WFS sample to below 0.000001 metres without editing coordinates. Requested EPSG:4326 geometry is retained unchanged. Wider municipal completeness, legal title, currentness, survey accuracy and long-term key continuity remain unverified.",
+  "priorEvidenceFiles": [],
+  "resultCategory": "verified_public_geometry_runtime_enabled",
+  "sampleGeometryFile": "samples/bilbao-parcel-wup4021.geojson",
+  "research": {
+    "executedQueries": [
+      {
+        "language": "English",
+        "query": "Bilbao Bizkaia foral cadastre cadastral parcels official WFS GeoBizkaia parcel schema",
+        "scope": "Find the exact Bilbao/Bizkaia local cadastre, identify the public parcel feature schema and safe IDs, then issue at most one bounded geometry-only parcel query.",
+        "result": "The separate Bizkaia foral cadastre publishes a public parcel WFS. Schema was inspected before feature retrieval; the Bilbao WUP point is within the advertised parcel layer bbox.",
+        "actualResultUrls": [
+          "https://opendatabizkaia.eus/es/catalogo/parcelario-catastral-de-bizkaia",
+          "https://www.opendatabizkaia.eus/es/catalogo/parcelario-catastral/recurso/parcelario-catastral-wfs",
+          "https://www.bizkaia.eus/es/inspirebizkaia",
+          "https://www.bizkaia.eus/es/web/geobizkaia/servicios-estandar",
+          "https://geo.bizkaia.eus/arcgisserverinspire/services/LurraldeAntolamendua_PlanificacionTerritorial/Katastro_Catastro_WFS/MapServer/WFSServer"
+        ],
+        "executionMethod": "Language-specific public web search; official source inspection; GetCapabilities and DescribeFeatureType schema-first fetch; one anonymous WFS GET for a 2 m x 2 m bbox around the correctly transformed supplied coordinate."
+      },
+      {
+        "language": "Spanish",
+        "query": "Bilbao parcelas catastrales catastro foral Bizkaia WFS esquema oficial Bilbao",
+        "scope": "Find the exact Bilbao/Bizkaia local cadastre, identify the public parcel feature schema and safe IDs, then issue at most one bounded geometry-only parcel query.",
+        "result": "El catastro foral de Bizkaia publica un WFS público de parcelas. Se inspeccionó el esquema antes de solicitar entidades; el punto WUP de Bilbao está dentro de la extensión anunciada.",
+        "actualResultUrls": [
+          "https://opendatabizkaia.eus/es/catalogo/parcelario-catastral-de-bizkaia",
+          "https://www.opendatabizkaia.eus/es/catalogo/parcelario-catastral/recurso/parcelario-catastral-wfs",
+          "https://www.bizkaia.eus/es/inspirebizkaia",
+          "https://www.bizkaia.eus/es/web/geobizkaia/servicios-estandar",
+          "https://geo.bizkaia.eus/arcgisserverinspire/services/LurraldeAntolamendua_PlanificacionTerritorial/Katastro_Catastro_WFS/MapServer/WFSServer"
+        ],
+        "executionMethod": "Language-specific public web search; official source inspection; GetCapabilities and DescribeFeatureType schema-first fetch; one anonymous WFS GET for a 2 m x 2 m bbox around the correctly transformed supplied coordinate."
+      },
+      {
+        "language": "Basque",
+        "query": "Bilboko Bizkaiko foru katastroko partzelak WFS katastro mapa ofiziala",
+        "scope": "Find the exact Bilbao/Bizkaia local cadastre, identify the public parcel feature schema and safe IDs, then issue at most one bounded geometry-only parcel query.",
+        "result": "Bilbao eta Bizkaiko partzela-katastroaren WFS foru-iturri ofizialean aurkitu da; eskema ikuskatu da geometria eskatu aurretik.",
+        "actualResultUrls": [
+          "https://opendatabizkaia.eus/es/catalogo/parcelario-catastral-de-bizkaia",
+          "https://www.opendatabizkaia.eus/es/catalogo/parcelario-catastral/recurso/parcelario-catastral-wfs",
+          "https://www.bizkaia.eus/es/inspirebizkaia",
+          "https://www.bizkaia.eus/es/web/geobizkaia/servicios-estandar",
+          "https://geo.bizkaia.eus/arcgisserverinspire/services/LurraldeAntolamendua_PlanificacionTerritorial/Katastro_Catastro_WFS/MapServer/WFSServer"
+        ],
+        "executionMethod": "Language-specific public web search; official source inspection; GetCapabilities and DescribeFeatureType schema-first fetch; one anonymous WFS GET for a 2 m x 2 m bbox around the correctly transformed supplied coordinate."
+      }
+    ],
+    "officialSources": [
+      {
+        "url": "https://opendatabizkaia.eus/es/catalogo/parcelario-catastral-de-bizkaia",
+        "observation": "Official Diputación Foral de Bizkaia dataset description identifies the Foral Catastro, states the WFS is a feature service for Bizkaia cadastral parcels, provides a WFS resource, public access and CC BY 4.0. Dataset update listed 20 April 2026."
+      },
+      {
+        "url": "https://www.opendatabizkaia.eus/es/catalogo/parcelario-catastral/recurso/parcelario-catastral-wfs",
+        "observation": "Official dataset-resource page identifies the exact parcel WFS, “servicio de entidades”, public access and CC BY 4.0; resource page last modified 27 June 2025."
+      },
+      {
+        "url": "https://www.bizkaia.eus/es/inspirebizkaia",
+        "observation": "Official Bizkaia INSPIRE portal separates cadastral parcel/address WFS (Annex I) from building WFS (Annex III), documents city/territory service scope and CC BY 3.0 ES terms. Parcel service used here; no building/admin-boundary layer used."
+      },
+      {
+        "url": "https://www.bizkaia.eus/es/web/geobizkaia/servicios-estandar",
+        "observation": "Official GeoBizkaia OGC catalog lists cadastral parcel WMS and other mapping services; the separate official OpenData/INSPIRE WFS is the vector download source."
+      },
+      {
+        "url": "https://geo.bizkaia.eus/arcgisserverinspire/services/LurraldeAntolamendua_PlanificacionTerritorial/Katastro_Catastro_WFS/MapServer/WFSServer",
+        "observation": "Anonymous official WFS GetCapabilities returned HTTP 200, text/xml. `Katastro_Catastro_WFS:Parcelas` advertises EPSG:25830 (default), EPSG:4326 and EPSG:3857; Bilbao coordinates are inside its advertised WGS84 bounding box."
+      }
+    ]
+  },
+  "geometrySample": {
+    "sourceId": "es-bizkaia-foral-parcelas-wfs",
+    "sourceName": "Bizkaia official cadastral parcel WFS",
+    "featureType": "Katastro_Catastro_WFS:Parcelas",
+    "nativeGeometryField": "SHAPE",
+    "nativeGeometryType": "gml:MultiSurface (Polygon surface member)",
+    "safeIdFields": [
+      "OBJECTID",
+      "Codigo_Mun",
+      "Codigo_Pol",
+      "Codigo_Par"
+    ],
+    "sourceCrs": "EPSG:25830",
+    "queryUrl": "https://geo.bizkaia.eus/arcgisserverinspire/services/LurraldeAntolamendua_PlanificacionTerritorial/Katastro_Catastro_WFS/MapServer/WFSServer?service=WFS&version=2.0.0&request=GetFeature&typeNames=Katastro_Catastro_WFS%3AParcelas&propertyName=OBJECTID%2CCodigo_Mun%2CCodigo_Pol%2CCodigo_Par%2CSHAPE&count=3&srsName=urn%3Aogc%3Adef%3Acrs%3AEPSG%3A%3A25830&bbox=503246.779%2C4792208.052%2C503248.779%2C4792210.052%2Curn%3Aogc%3Adef%3Acrs%3AEPSG%3A%3A25830",
+    "queryCrs": "EPSG:25830",
+    "bboxEpsg25830": [
+      503246.779,
+      4792208.052,
+      503248.779,
+      4792210.052
+    ],
+    "queryLimit": 3,
+    "httpStatus": 200,
+    "contentType": "application/xml;charset=UTF-8",
+    "numberMatched": 1,
+    "numberReturned": 1,
+    "sampleFeatures": [
+      {
+        "featureId": "Parcelas.74763",
+        "objectid": 74763,
+        "codigo_mun": 20,
+        "codigo_pol": 1106,
+        "codigo_par": 2010,
+        "containsWupPoint": true
+      }
+    ],
+    "schemaFirst": "DescribeFeatureType inspected before feature request. Parcelas fields were OBJECTID:int, Codigo_Mun:int, Codigo_Pol:int, Codigo_Par:int, SHAPE:gml:MultiSurfacePropertyType, Area:double. Safe allowlist was OBJECTID + three cadastral code IDs + SHAPE; Area present in response was discarded.",
+    "fullNativeGeometryRetained": true
+  },
+  "runtimeAssessment": {
+    "status": "enabled",
+    "reason": "79 valid distinct cadastral-reference polygons verified in thirteen bounded 0.001-degree cells around the unchanged Bilbao WUP settlement locator. Complete bounded paging, forced three-row pages, all 79 fresh native parcel-identity reads, explicit absence, footprint and source binding passed in 27 requests. Independent metric EPSG:32630 GEOS found all geometries valid and distinct, with no sampled overlaps above 0.01 m² or operation errors. The separate Bizkaia foral cadastre uses the native municipality/polygon/parcel integer tuple; OBJECTID is only a transport key. A fresh EPSG:25830 REST tuple query matches the prior official WFS sample to below 0.000001 metres without editing coordinates. Requested EPSG:4326 geometry is retained unchanged. Wider municipal completeness, legal title, currentness, survey accuracy and long-term key continuity remain unverified.",
+    "acceptanceFile": "research/overnight-cities-2026-10-08/bilbao-bizkaia-root-acceptance.json",
+    "qualityFile": "research/overnight-cities-2026-10-08/bilbao-bizkaia-root-quality.json",
+    "qualityReviewFile": "research/overnight-cities-2026-10-08/bilbao-root-quality-review.json"
+  },
+  "source": {
+    "name": "Bizkaia public cadastral Parcelas",
+    "operator": "Diputación Foral de Bizkaia / GeoBizkaia",
+    "url": "https://geo.bizkaia.eus/arcgisserverinspire/rest/services/LurraldeAntolamendua_PlanificacionTerritorial/Katastro_Catastro_WFS/MapServer/6",
+    "serviceType": "ArcGIS public cadastral polygons",
+    "nativeIdFields": [
+      "Codigo_Municipio",
+      "Codigo_Poligono",
+      "Codigo_Parcela"
+    ],
+    "requestedAttributes": [
+      "OBJECTID",
+      "Codigo_Municipio",
+      "Codigo_Poligono",
+      "Codigo_Parcela"
+    ],
+    "personalAttributesRequested": false,
+    "directGeometryQueryVerified": true,
+    "directMetadataSchemaVerified": true,
+    "scope": "79 valid distinct cadastral-reference polygons verified in thirteen bounded 0.001-degree cells around the unchanged Bilbao WUP settlement locator. Complete bounded paging, forced three-row pages, all 79 fresh native parcel-identity reads, explicit absence, footprint and source binding passed in 27 requests. Independent metric EPSG:32630 GEOS found all geometries valid and distinct, with no sampled overlaps above 0.01 m² or operation errors. The separate Bizkaia foral cadastre uses the native municipality/polygon/parcel integer tuple; OBJECTID is only a transport key. A fresh EPSG:25830 REST tuple query matches the prior official WFS sample to below 0.000001 metres without editing coordinates. Requested EPSG:4326 geometry is retained unchanged. Wider municipal completeness, legal title, currentness, survey accuracy and long-term key continuity remain unverified."
+  },
+  "coverageAssessment": {
+    "citywideVerified": false,
+    "countrywideVerified": false,
+    "verifiedOpenScope": "79 valid distinct cadastral-reference polygons verified in thirteen bounded 0.001-degree cells around the unchanged Bilbao WUP settlement locator. Complete bounded paging, forced three-row pages, all 79 fresh native parcel-identity reads, explicit absence, footprint and source binding passed in 27 requests. Independent metric EPSG:32630 GEOS found all geometries valid and distinct, with no sampled overlaps above 0.01 m² or operation errors. The separate Bizkaia foral cadastre uses the native municipality/polygon/parcel integer tuple; OBJECTID is only a transport key. A fresh EPSG:25830 REST tuple query matches the prior official WFS sample to below 0.000001 metres without editing coordinates. Requested EPSG:4326 geometry is retained unchanged. Wider municipal completeness, legal title, currentness, survey accuracy and long-term key continuity remain unverified."
+  },
+  "adapterReady": true,
+  "remainingUncertainty": "Wider municipal completeness, currentness, legal title, survey accuracy and long-term key continuity remain unverified.",
+  "appCityId": "bilbao",
+  "sourceIds": [
+    "es-bizkaia-parcelas-rest"
+  ],
+  "runtimeQualification": {
+    "sourceId": "es-bizkaia-parcelas-rest",
+    "status": "enabled",
+    "acceptanceFile": "research/overnight-cities-2026-10-08/bilbao-bizkaia-root-acceptance.json",
+    "qualityFile": "research/overnight-cities-2026-10-08/bilbao-bizkaia-root-quality.json"
+  },
+  "populationPlausibility2025": "Moderate",
+  "point": [
+    43.2826941093508,
+    -2.95997002575274
+  ],
+  "rootReviewedAt": "2026-10-09T03:03:34.580378+00:00"
+}

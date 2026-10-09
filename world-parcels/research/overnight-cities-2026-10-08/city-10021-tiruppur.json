@@ -1,0 +1,93 @@
+{
+  "name": "Tiruppur",
+  "country": "India",
+  "countryCode": "IN",
+  "rank": 408,
+  "point": [
+    11.1116840937943,
+    77.343115788433
+  ],
+  "freshResearch": {
+    "queries": [
+      {
+        "language": "English",
+        "query": "Tiruppur official cadastral map land records Tamil Nadu e-services taluk survey map urban parcel",
+        "scope": "Find official city land registry/cadastral sources and inspect anonymous map or parcel geometry routes.",
+        "result": "Tiruppur has an official land-records service and urban TSLR/FMB extract workflow. The published entry route is record-keyed (town/block/ward/survey/subdivision); it exposes no anonymous coordinate-to-parcel lookup or vector geometry schema. No record-specific identifier was submitted, so no private record was requested and no polygon was retained.",
+        "actualResultUrls": [
+          "https://tiruppur.nic.in/service/e-services-anytime-anywhere-land/",
+          "https://services.india.gov.in/service/detail/e-services-of-land-records-tamil-nadu",
+          "https://eservices.tn.gov.in/eservicesnew/home.html"
+        ],
+        "executionMethod": "Separate English/local-language search followed by first-party official page review and bounded anonymous service-route inspection where available."
+      },
+      {
+        "language": "Tamil",
+        "query": "திருப்பூர் அதிகாரப்பூர்வ நில வரைபடம் பட்டா FMB நகர் நில அளவை மின்னணு சேவை",
+        "scope": "Find official city land registry/cadastral sources and inspect anonymous map or parcel geometry routes.",
+        "result": "Tiruppur has an official land-records service and urban TSLR/FMB extract workflow. The published entry route is record-keyed (town/block/ward/survey/subdivision); it exposes no anonymous coordinate-to-parcel lookup or vector geometry schema. No record-specific identifier was submitted, so no private record was requested and no polygon was retained.",
+        "actualResultUrls": [
+          "https://tiruppur.nic.in/service/e-services-anytime-anywhere-land/",
+          "https://services.india.gov.in/service/detail/e-services-of-land-records-tamil-nadu",
+          "https://eservices.tn.gov.in/eservicesnew/home.html"
+        ],
+        "executionMethod": "Separate English/local-language search followed by first-party official page review and bounded anonymous service-route inspection where available."
+      }
+    ]
+  },
+  "status": "complete",
+  "verifiedParcelResponse": null,
+  "source": {
+    "sourceId": "IN-10021-PUBLIC-CADASTRE",
+    "name": "Tamil Nadu e-Services (Anytime / Anywhere) — Tiruppur Survey & Land Records",
+    "url": "https://tiruppur.nic.in/service/e-services-anytime-anywhere-land/",
+    "operator": "Government of Tamil Nadu, Tiruppur District Survey & Land Records",
+    "serviceType": "Public land-record document/extract service (Patta/FMB/Chitta/TSLR/A-Register); no anonymous geometry service verified",
+    "layer": "No anonymous full-vector parcel layer verified",
+    "geometryType": "Not verified",
+    "outputCrs": null,
+    "nativeIdField": "Urban town/block/ward/survey/subdivision identifiers are used to locate records",
+    "nativeIdEvidence": "District-specific Survey & Land Records office and official land record routes confirmed. Public parcel-vector coverage at the WUP point is unverified."
+  },
+  "coverageAssessment": {
+    "claimedScope": "District-specific Survey & Land Records office and official land record routes confirmed. Public parcel-vector coverage at the WUP point is unverified.",
+    "verifiedOpenScope": "District-specific Survey & Land Records office and official land record routes confirmed. Public parcel-vector coverage at the WUP point is unverified.",
+    "countrywideVerified": false
+  },
+  "registryFound": true,
+  "verifiedSample": false,
+  "resultCategory": "official_registry_geometry_not_verified",
+  "technicalBlocker": "Tiruppur has an official land-records service and urban TSLR/FMB extract workflow. The published entry route is record-keyed (town/block/ward/survey/subdivision); it exposes no anonymous coordinate-to-parcel lookup or vector geometry schema. No record-specific identifier was submitted, so no private record was requested and no polygon was retained.",
+  "remainingUncertainty": "Whether the official survey/map service will publish public, map-backed cadastral geometry for the exact settlement point; this review makes no citywide completeness claim.",
+  "nextStep": "Recheck only if an official public point-to-parcel or map-backed vector service becomes available for the city point.",
+  "schemaVersion": 1,
+  "checkedAt": "2026-10-09",
+  "wupCityCode": 10021,
+  "cityId": "wup2025:10021",
+  "runtimeReadiness": "not_enabled_no_verified_public_geometry",
+  "adapterReady": false,
+  "centerLatLon": [
+    11.1116840937943,
+    77.343115788433
+  ],
+  "population2025k": 1242.837,
+  "populationUnit": "persons",
+  "queueRank": 408,
+  "population2025": 1242837,
+  "populationPlausibility2025": "Moderate",
+  "pointBasis": "UN WUP 2025 population-weighted settlement centroid; this is not a municipal boundary or a parcel-coverage claim.",
+  "publicParcelGeometryFound": false,
+  "sourceIds": [],
+  "registryBasis": "The official district land-service page lists Patta/FMB/Chitta/TSLR extracts and explicitly locates the Assistant Director, Survey & Land Records at the District Collectorate in Tiruppur city. City-located land-record services are confirmed; public vector coverage is unverified.",
+  "registryEvidenceUrls": [
+    "https://tiruppur.nic.in/service/e-services-anytime-anywhere-land/"
+  ],
+  "rootSupplementalResearch": [
+    {
+      "checkedAt": "2026-10-08T23:47:22.432021+00:00",
+      "url": "https://tiruppur.nic.in/service/e-services-anytime-anywhere-land/",
+      "observation": "The official district land-service page lists Patta/FMB/Chitta/TSLR extracts and explicitly locates the Assistant Director, Survey & Land Records at the District Collectorate in Tiruppur city. City-located land-record services are confirmed; public vector coverage is unverified."
+    }
+  ],
+  "rootReviewedAt": "2026-10-08T23:47:22.529967+00:00"
+}

@@ -1,0 +1,101 @@
+{
+  "schemaVersion": 1,
+  "kind": "city_parcel_source_research",
+  "checkedAt": "2026-10-09",
+  "country": "China",
+  "countryCode": "CN",
+  "populationUnit": "persons",
+  "status": "complete",
+  "verifiedSample": false,
+  "publicParcelGeometryFound": false,
+  "runtimeReadiness": "not_enabled_no_verified_public_geometry",
+  "priorEvidenceFiles": [],
+  "scopeLimits": "The ranked UN WUP 2025 population-weighted settlement point is a locator, not an official municipal boundary, parcel identity, or coverage guarantee. No owner, address, tax, or account data was retained; no credential, login, CAPTCHA, or private token was used.",
+  "wupCityCode": 5486,
+  "queueRank": 340,
+  "name": "Baotou",
+  "centerLatLon": [
+    40.6602852395616,
+    109.844265063593
+  ],
+  "population2025": 1491964,
+  "pointBasis": "UN WUP 2025 population-weighted settlement centroid; this is not a municipal boundary or a parcel-coverage claim.",
+  "registryFound": true,
+  "registryBasis": "Official Baotou Natural Resources and Planning Bureau pages identify the municipal property-rights survey/mapping institute and land-title registration bureau. The municipal government describes cadastral-map access only for an owner’s own property after identity verification; the official housing bureau likewise says property query requires login and real-person authentication. The public 天地图·包头 description covers basic maps/POIs, not parcel polygons.",
+  "resultCategory": "city_registry_documented_identity_gated_no_public_vector_geometry",
+  "research": {
+    "executedQueries": [
+      {
+        "language": "English",
+        "query": "Baotou China official cadastral map land parcel GIS land registry 不动产登记 地籍图 宗地",
+        "scope": "Search for a city-specific registry, cadastral map or public parcel-vector service.",
+        "result": "Search located official city registry and natural-resources pages. Cadastral-map access described for an owner’s own property requires identity verification.",
+        "actualResultUrls": [
+          "https://baotou.gov.cn/zfxxgk/fdzdgknr/fd_xzgfxwj/zhzw/202510/t20251002_662243.html",
+          "https://zfhcxjsj.baotou.gov.cn/ywdt/ywdt_tzgg/202606/t20260630_932945.html",
+          "https://zrzyj.baotou.gov.cn/zwgk/fdzdgknr/jgjj/jsdw/202509/t20250928_594817.html",
+          "https://zrzyj.baotou.gov.cn/gzdt/yshj/202509/t20250930_611049.html"
+        ],
+        "executionMethod": "Separate web search and official-source review."
+      },
+      {
+        "language": "Simplified Chinese",
+        "query": "包头市 自然资源局 不动产登记 地籍图 宗地 查询 GIS 官方地图",
+        "scope": "Search for a city-specific registry, cadastral map or public parcel-vector service.",
+        "result": "官方页面说明不动产权利人经身份核验后可查询本人不动产的自然状况、限制信息和宗地图；登记查询需要登录及实人认证。天地图·包头仅说明基础地图和兴趣点浏览，未提供公开宗地矢量接口。",
+        "actualResultUrls": [
+          "https://baotou.gov.cn/zfxxgk/fdzdgknr/fd_xzgfxwj/zhzw/202510/t20251002_662243.html",
+          "https://zfhcxjsj.baotou.gov.cn/ywdt/ywdt_tzgg/202606/t20260630_932945.html",
+          "https://zrzyj.baotou.gov.cn/zwgk/fdzdgknr/jgjj/jsdw/202509/t20250928_594817.html",
+          "https://zrzyj.baotou.gov.cn/gzdt/yshj/202509/t20250930_611049.html"
+        ],
+        "executionMethod": "Separate web search and official-source review."
+      }
+    ],
+    "officialSources": [
+      {
+        "url": "https://baotou.gov.cn/zfxxgk/fdzdgknr/fd_xzgfxwj/zhzw/202510/t20251002_662243.html",
+        "operator": "Baotou Municipal People’s Government",
+        "observation": "Official procedure says property holders can query their own property natural status/restrictions and cadastral map following identity verification."
+      },
+      {
+        "url": "https://zfhcxjsj.baotou.gov.cn/ywdt/ywdt_tzgg/202606/t20260630_932945.html",
+        "operator": "Baotou Municipal Housing and Urban-Rural Development Bureau",
+        "observation": "Property-proof inquiry requires the municipal registration-center WeChat channel, login and real-person authentication."
+      },
+      {
+        "url": "https://zrzyj.baotou.gov.cn/zwgk/fdzdgknr/jgjj/jsdw/202509/t20250928_594817.html",
+        "operator": "Baotou Municipal Natural Resources Bureau",
+        "observation": "Technical institute responsibilities include municipal resource/property-rights surveys, mapping and the geographic-information public platform."
+      },
+      {
+        "url": "https://zrzyj.baotou.gov.cn/gzdt/yshj/202509/t20250930_611049.html",
+        "operator": "Baotou Municipal Natural Resources Bureau",
+        "observation": "Official 天地图·包头 description is a public basic-map/POI service; page does not identify cadastral parcel geometry."
+      }
+    ],
+    "requests": [],
+    "coverageAssessment": {
+      "claimedScope": "No complete municipal coverage is claimed.",
+      "verifiedOpenScope": "No anonymous city parcel polygons verified. City-local registry or mapping evidence is described above.",
+      "citywideVerified": false,
+      "countrywideVerified": false,
+      "geometryVerified": false
+    },
+    "technicalBlocker": "Official city property map query is personal/record-specific and requires real-person authentication; the public city map provides basic map/POI browse only. No anonymous parcel vector endpoint was identified.",
+    "remainingUncertainty": "Whether a separate city open-data cadastral layer exists outside the inspected official registry and public-map pages; no anonymous feature service or map API was found."
+  },
+  "verifiedParcelResponse": null,
+  "source": null,
+  "cityId": "wup2025:5486",
+  "populationPlausibility2025": "Moderate",
+  "sourceIds": [],
+  "technicalBlocker": "Official city property map query is personal/record-specific and requires real-person authentication; the public city map provides basic map/POI browse only. No anonymous parcel vector endpoint was identified.",
+  "remainingUncertainty": "Whether a separate city open-data cadastral layer exists outside the inspected official registry and public-map pages; no anonymous feature service or map API was found.",
+  "nextStep": "Retain as research only unless a safe, anonymous, city-local polygon endpoint can be inspected and verified.",
+  "rootReviewedAt": "2026-10-08T22:44:29.461431+00:00",
+  "point": [
+    40.6602852395616,
+    109.844265063593
+  ]
+}

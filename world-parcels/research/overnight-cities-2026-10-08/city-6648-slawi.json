@@ -1,0 +1,110 @@
+{
+  "name": "Slawi",
+  "country": "Indonesia",
+  "countryCode": "ID",
+  "rank": 282,
+  "point": [
+    -6.9230649273606,
+    109.097193694724
+  ],
+  "freshResearch": {
+    "queries": [
+      {
+        "language": "Indonesian",
+        "query": "Slawi peta bidang tanah GIS kadaster BPN Kabupaten Tegal kantor pertanahan resmi",
+        "scope": "Find a Slawi/Tegal-specific land registry and any anonymous parcel geometry endpoint.",
+        "result": "Official Kabupaten Tegal sources document the Kantor Pertanahan in Slawi and local cadastral map registration/integration with PBB-P2. The BHUMI public app advertises map searching, but its inspected client routes parcel data through login/token bootstrap; no anonymous full-vector request was made or verified.",
+        "actualResultUrls": [
+          "https://kab-tegal.atrbpn.go.id/berita",
+          "https://setda.tegalkab.go.id/2024/01/19/tingkatkan-target-penerimaan-pbb-p2-lewat-sinkronisasi-peta-bidang-bpn",
+          "https://bhumi.atrbpn.go.id/peta"
+        ],
+        "executionMethod": "Web search and public-source inspection"
+      },
+      {
+        "language": "Indonesian",
+        "query": "site:tegalkab.go.id Slawi peta bidang tanah GIS kadaster peta persil BPN Kabupaten Tegal",
+        "scope": "Search the regency government for local parcel map and cadastral evidence.",
+        "result": "Found a local-government report describing synchronization of Kantor Pertanahan parcel maps with tax objects; 745,771 of 775,224 regency plots were mapped at the time of the 2024 report. This is regency-level coverage, not an anonymous vector export or a Slawi-only geometry sample.",
+        "actualResultUrls": [
+          "https://setda.tegalkab.go.id/2024/01/19/tingkatkan-target-penerimaan-pbb-p2-lewat-sinkronisasi-peta-bidang-bpn"
+        ],
+        "executionMethod": "Web search and public-source inspection"
+      },
+      {
+        "language": "English",
+        "query": "Slawi Indonesia official land registry cadastral parcel map Tegal Regency GIS BPN",
+        "scope": "Cross-check English-language local office and public map references.",
+        "result": "Official local sources confirm the land office location in Slawi; no anonymous public parcel polygon service was found.",
+        "actualResultUrls": [
+          "https://kab-tegal.atrbpn.go.id/berita"
+        ],
+        "executionMethod": "Web search and public-source inspection"
+      }
+    ],
+    "portals": [
+      {
+        "name": "Kantor Pertanahan Kabupaten Tegal",
+        "operator": "Indonesia ATR/BPN",
+        "homeUrl": "https://kab-tegal.atrbpn.go.id/berita",
+        "observation": "Official office page locates the land office at Jl. A. Yani No. 7, Slawi. This supports local registry presence, not public feature geometry."
+      },
+      {
+        "name": "BHUMI ATR/BPN",
+        "operator": "Ministry of Agrarian Affairs and Spatial Planning / National Land Agency",
+        "homeUrl": "https://bhumi.atrbpn.go.id/peta",
+        "observation": "Public map UI discovered, but inspected parcel APIs use authentication/bootstrap tokens. No login, token flow, or protected data request was attempted."
+      }
+    ],
+    "requests": [
+      {
+        "url": "https://kab-tegal.atrbpn.go.id/berita",
+        "method": "GET",
+        "httpStatus": 200,
+        "contentType": "text/html",
+        "observation": "Official Kantor Pertanahan Kab. Tegal page confirms location and local office."
+      },
+      {
+        "url": "https://setda.tegalkab.go.id/2024/01/19/tingkatkan-target-penerimaan-pbb-p2-lewat-sinkronisasi-peta-bidang-bpn",
+        "method": "GET via web index",
+        "httpStatus": 200,
+        "contentType": "text/html",
+        "observation": "Local-government report says BPN parcel maps are used for synchronization with tax records and states 745,771/775,224 mapped plots at report date."
+      }
+    ],
+    "observedCandidate": "The national BHUMI client exposes a map UI but the inspected routes require auth/bootstrap; no public anonymous polygon endpoint verified."
+  },
+  "status": "complete",
+  "verifiedParcelResponse": null,
+  "source": null,
+  "coverageAssessment": {
+    "claimedScope": "Kantor Pertanahan Kabupaten Tegal serves the regency and is physically located in Slawi; official local reporting describes parcel-map coverage/integration at regency level.",
+    "verifiedOpenScope": "Registry existence and historical parcel-map program are verified. No anonymous full-polygon feature response or Slawi-specific coverage was verified.",
+    "countrywideVerified": false
+  },
+  "registryFound": true,
+  "verifiedSample": false,
+  "resultCategory": "registry_evidence_no_public_geometry",
+  "technicalBlocker": "No anonymous city-scoped full-polygon service verified. The BHUMI map client’s inspected data routes depend on login/token bootstrap; credentialed calls were outside this public-read check.",
+  "remainingUncertainty": "Whether an unauthenticated Slawi-specific feature API or export exists outside the inspected BHUMI client; regency mapping totals do not establish coverage at the WUP centroid.",
+  "nextStep": "Ask the local land office whether a public anonymous vector endpoint exists; if a true public route is identified, run bounded polygon and completeness checks before use.",
+  "schemaVersion": 1,
+  "checkedAt": "2026-10-09",
+  "wupCityCode": 6648,
+  "cityId": "wup2025:6648",
+  "runtimeReadiness": "not_enabled_no_verified_public_geometry",
+  "adapterReady": false,
+  "centerLatLon": [
+    -6.9230649273606,
+    109.097193694724
+  ],
+  "queueRank": 282,
+  "population2025": 1733437,
+  "populationPlausibility2025": "High",
+  "populationUnit": "persons",
+  "pointBasis": "UN WUP 2025 population-weighted settlement centroid; this is not a municipal boundary or a parcel-coverage claim.",
+  "publicParcelGeometryFound": false,
+  "sourceIds": [],
+  "registryBasis": "Official ATR/BPN local office page plus Kabupaten Tegal government report documenting parcel-map registry activity and tax-data integration.",
+  "rootReviewedAt": "2026-10-08T22:06:54.103695+00:00"
+}

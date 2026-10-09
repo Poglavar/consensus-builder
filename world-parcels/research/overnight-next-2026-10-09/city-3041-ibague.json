@@ -1,0 +1,139 @@
+{
+  "schemaVersion": 1,
+  "kind": "city_parcel_source_research",
+  "checkedAt": "2026-10-09",
+  "rank": 1122,
+  "population2025k": 494.316,
+  "population2025Unit": "thousands",
+  "populationPlausibility": "High",
+  "verifiedParcelResponse": null,
+  "source": {
+    "name": "IGAC/ICDE official metadata catalog",
+    "url": "https://metadatos.icde.gov.co/geonetwork/srv/api/records/14132317",
+    "operator": "IGAC/ICDE official metadata catalog",
+    "serviceType": "official service/map evidence; vector access not verified",
+    "layer": "not verified",
+    "geometryType": "not verified",
+    "nativeIdField": null
+  },
+  "registryFound": true,
+  "verifiedSample": false,
+  "targetGeometryEvidence": "none",
+  "nativeIdReadiness": "not_verified",
+  "cityId": "wup2025:3041",
+  "wupCityCode": 3041,
+  "name": "Ibagué",
+  "country": "Colombia",
+  "countryCode": "CO",
+  "centerLatLon": [
+    4.440260219627,
+    -75.2066767463464
+  ],
+  "pointBasis": "UN WUP 2025 population-weighted settlement point (latitude, longitude); not a municipal boundary or a parcel-coverage claim.",
+  "resultCategory": "official_registry_route_geometry_unverified",
+  "priorEvidence": [],
+  "priorBlocker": null,
+  "nativeLanguageSearches": [
+    {
+      "languageScript": "Spanish",
+      "exactQuery": "Ibagué catastro multipropósito geoportal predial mapa predios oficial Alcaldía de Ibagué",
+      "date": "2026-10-09",
+      "executionMethod": "web.run search_query; independent local-language query",
+      "resultUrls": [
+        "https://metadatos.icde.gov.co/geonetwork/srv/api/records/14132317",
+        "https://www.ibague.gov.co/app/planeacion/estratificacion/"
+      ],
+      "summary": "Official IGAC catalog identifies municipal urban cadastral mapping, but publication is 2010 and license/acquisition conditions limit public reuse. Currentness and free vector access are not verified."
+    },
+    {
+      "languageScript": "English",
+      "exactQuery": "Ibague official municipal cadastral parcel map GIS land registry Colombia public data",
+      "date": "2026-10-09",
+      "executionMethod": "web.run search_query; independent English query",
+      "resultUrls": [
+        "https://metadatos.icde.gov.co/geonetwork/srv/api/records/14132317",
+        "https://www.ibague.gov.co/app/planeacion/estratificacion/"
+      ],
+      "summary": "Official IGAC catalog identifies municipal urban cadastral mapping, but publication is 2010 and license/acquisition conditions limit public reuse. Currentness and free vector access are not verified."
+    }
+  ],
+  "officialAndRelevantLeads": [
+    {
+      "url": "https://metadatos.icde.gov.co/geonetwork/srv/api/records/14132317",
+      "operator": "IGAC/ICDE official metadata catalog",
+      "observation": "Metadata describes urban cadastral vector map for Ibagué municipality, including urban and corregimiento scope. Publication date 2010; metadata refreshed 2025-12-19; acquisition by purchase/request; license restricts modification/distribution/commercial use."
+    },
+    {
+      "url": "https://www.ibague.gov.co/app/planeacion/estratificacion/",
+      "operator": "Ibagué municipal planning portal",
+      "observation": "Predio/ficha lookup workflow; no parcel query submitted and no vector geometry returned."
+    }
+  ],
+  "requestsAndEndpointChecks": [
+    {
+      "url": "https://metadatos.icde.gov.co/geonetwork/srv/api/records/14132317",
+      "method": "Anonymous read-only GET; redirect-following; 15 s read timeout; no cookies or credentials",
+      "httpStatus": 200,
+      "finalUrl": "https://metadatos.icde.gov.co/geonetwork/srv/api/records/14132317",
+      "contentType": "text/html;charset=UTF-8",
+      "bytesRead": 185032,
+      "sha256OfReadBytes": "7421e797ed8b8c92dfedfac2f70c97453d08cc3705f90fa6fb9bc40878b752d8",
+      "title": "Mapa Digital Catastral Urbano. Municipio de Ibagué. Departamento de Tolima. Escala 1: 500. Año 2010.",
+      "assessment": "Primary landing/source page responded successfully. The response establishes only the source description summarized above; it does not itself verify a public parcel feature geometry except where separately reported."
+    },
+    {
+      "url": "https://metadatos.icde.gov.co/geonetwork/srv/api/records/14132317",
+      "method": "GET via search result/page review",
+      "httpStatus": "accessible in web search/open",
+      "contentType": "not independently captured",
+      "assessment": "Metadata describes urban cadastral vector map for Ibagué municipality, including urban and corregimiento scope. Publication date 2010; metadata refreshed 2025-12-19; acquisition by purchase/request; license restricts modification/distribution/commercial use."
+    },
+    {
+      "url": "https://www.ibague.gov.co/app/planeacion/estratificacion/",
+      "method": "GET via search result/page review",
+      "httpStatus": "accessible in web search/open",
+      "contentType": "not independently captured",
+      "assessment": "Predio/ficha lookup workflow; no parcel query submitted and no vector geometry returned."
+    }
+  ],
+  "coverageAssessment": {
+    "claimedScope": "Official IGAC catalog identifies municipal urban cadastral mapping, but publication is 2010 and license/acquisition conditions limit public reuse. Currentness and free vector access are not verified.",
+    "verifiedOpenScope": null,
+    "citywideVerified": false,
+    "countrywideVerified": false,
+    "geometryVerified": false
+  },
+  "blocker": "Vector dataset is not openly fetched under reviewed terms; city property lookup is record-specific. No geometry retained due license/access uncertainty.",
+  "remainingUncertainty": "Official IGAC catalog identifies municipal urban cadastral mapping, but publication is 2010 and license/acquisition conditions limit public reuse. Currentness and free vector access are not verified.",
+  "nextStep": "Vector dataset is not openly fetched under reviewed terms; city property lookup is record-specific. No geometry retained due license/access uncertainty.",
+  "runtimeReadiness": "not_enabled_no_verified_public_geometry",
+  "adapterReady": false,
+  "schemaVersionNote": "Research evidence only; no runtime adapter configured.",
+  "population2025": 494316,
+  "populationUnit": "persons",
+  "populationPlausibility2025": "High",
+  "publicParcelGeometryFound": false,
+  "sourceIds": [],
+  "registryBasis": "Official IGAC catalog identifies municipal urban cadastral mapping, but publication is 2010 and license/acquisition conditions limit public reuse. Currentness and free vector access are not verified.",
+  "registryEvidenceUrls": [
+    "https://metadatos.icde.gov.co/geonetwork/srv/api/records/14132317",
+    "https://www.ibague.gov.co/app/planeacion/estratificacion/"
+  ],
+  "technicalBlocker": "Vector dataset is not openly fetched under reviewed terms; city property lookup is record-specific. No geometry retained due license/access uncertainty.",
+  "runtimeAssessment": {
+    "status": "not_enabled_no_verified_public_geometry",
+    "reason": "Vector dataset is not openly fetched under reviewed terms; city property lookup is record-specific. No geometry retained due license/access uncertainty."
+  },
+  "rootReviewedAt": "2026-10-09T07:13:02.981057+00:00",
+  "cohort": "overnight-next-1101-1200",
+  "cohortState": "root_reviewed_integrated_locally",
+  "integrationState": "integrated_locally",
+  "rootReview": {
+    "checkedAt": "2026-10-09T07:13:02.981057+00:00",
+    "decision": "Reviewed city identity, canonical population/point, separate searches and saved source/request evidence. No full public parcel geometry verified in this pass.",
+    "custodyScope": "Official IGAC catalog identifies municipal urban cadastral mapping, but publication is 2010 and license/acquisition conditions limit public reuse. Currentness and free vector access are not verified.",
+    "transportFailuresDoNotProveAbsence": true,
+    "geometryClaimScope": "Investigation outcome only; no worldwide or citywide absence asserted."
+  },
+  "integratedAt": "2026-10-09T07:14:03.673112+00:00"
+}

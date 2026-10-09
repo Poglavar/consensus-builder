@@ -1,0 +1,122 @@
+{
+  "name": "Beni",
+  "country": "Democratic Republic of the Congo",
+  "countryCode": "CD",
+  "rank": 258,
+  "wupCityCode": 7409,
+  "cityId": "wup2025:7409",
+  "pop2025k": 1923.7,
+  "point": [
+    0.49649909672824,
+    29.4625008450889
+  ],
+  "plausibility": "Low",
+  "freshResearch": {
+    "queries": [
+      {
+        "language": "French",
+        "query": "Beni ville Nord-Kivu division cadastre foncier registre parcellaire demande recherche foncière officiel",
+        "scope": "Find Beni-Ville-specific land-register and parcel-search services.",
+        "result": "The Ministry of Land Affairs official search form selects Province and then Circonscription foncière; its public JavaScript maps Nord-Kivu to Beni-Ville and Beni-Territoire as separate jurisdictions. The workflow searches charges, mortgages, or fiscal status by commune/locality and property references and requires applicant identification/documents before submission. I inspected the route and options but submitted no form and no parcel values. No public map or polygon service was found.",
+        "actualResultUrls": [
+          "https://www.affairesfoncieres.gouv.cd/services-fonciers/demandes",
+          "https://www.affairesfoncieres.gouv.cd/",
+          "https://servicepublic.gouv.cd/service/4671"
+        ],
+        "executionMethod": "French-language primary-source search, official ministry form inspection, and read-only inspection of its client JavaScript to verify the Beni-Ville selector; no identity or property details submitted."
+      },
+      {
+        "language": "English",
+        "query": "Beni DRC official land registry cadastre city parcel search service Beni-Ville North Kivu",
+        "scope": "Cross-check English source coverage and the city-level registry route.",
+        "result": "The Ministry’s official search form explicitly provides a Nord-Kivu > Beni-Ville circonscription and identifies property-reference fields for land searches. The government service catalog describes cadastral/title-register consultation through a formal request to the local Conservateur or Cadastre. The form requires applicant identity documents and is not a public geometry viewer; no full parcel polygon response was observed.",
+        "actualResultUrls": [
+          "https://www.affairesfoncieres.gouv.cd/services-fonciers/demandes",
+          "https://servicepublic.gouv.cd/service/4671"
+        ],
+        "executionMethod": "English cross-check with official Ministry and public-service catalogue pages; inspected the local-city selector but did not submit the identity-based request."
+      }
+    ],
+    "portals": [
+      {
+        "name": "Demande de recherche foncière",
+        "operator": "Ministère des Affaires Foncières, République démocratique du Congo",
+        "homeUrl": "https://www.affairesfoncieres.gouv.cd/services-fonciers/demandes",
+        "observation": "Live official search form identifies Beni-Ville under Nord-Kivu as a separate land-registration jurisdiction. Search fields include commune/territory, neighborhood/locality, property-reference and title/registry references. The workflow requires applicant identity and supporting documents; it is not an anonymous vector map."
+      },
+      {
+        "name": "Consultation des registres fonciers, immobiliers et cadastraux",
+        "operator": "Ministère des Affaires Foncières / CMRAP public-services catalogue",
+        "homeUrl": "https://servicepublic.gouv.cd/service/4671",
+        "observation": "Official catalogue describes access to cadastral and land-title registers by request to the Conservateur des Titres Immobiliers or Chief of Cadastre Division; fees and formal review apply."
+      }
+    ],
+    "requests": [
+      {
+        "url": "https://www.affairesfoncieres.gouv.cd/services-fonciers/demandes",
+        "method": "GET",
+        "httpStatus": 200,
+        "contentType": "text/html; charset=utf-8",
+        "observation": "Official five-step land-search form is live; shows identity, property location/reference, and supporting-document fields."
+      },
+      {
+        "url": "https://www.affairesfoncieres.gouv.cd/_next/static/chunks/017nm5z0goura.js",
+        "method": "GET",
+        "httpStatus": 200,
+        "contentType": "application/javascript",
+        "observation": "Official client code contains Nord-Kivu circonscription options including Beni-Ville and Beni-Territoire; no form was submitted."
+      },
+      {
+        "url": "https://servicepublic.gouv.cd/service/4671",
+        "method": "GET",
+        "httpStatus": 200,
+        "contentType": "text/html; charset=utf-8",
+        "observation": "Public-service catalogue documents formal consultation of cadastral and real-estate registers through a local Conservateur or Cadastre office; no geometry API."
+      }
+    ],
+    "historicalContext": []
+  },
+  "status": "complete",
+  "verifiedParcelResponse": null,
+  "source": {
+    "sourceId": "CD-NK-BENI-VILLE-LAND-SEARCH",
+    "name": "Beni-Ville land-register search via Ministry of Land Affairs",
+    "url": "https://www.affairesfoncieres.gouv.cd/services-fonciers/demandes",
+    "operator": "Ministère des Affaires Foncières, RDC",
+    "serviceType": "City-specific formal land-register search for charges, mortgages, or fiscal status; locality and property references selected in a ministry workflow.",
+    "layer": null,
+    "geometryType": "No public feature geometry endpoint observed.",
+    "outputCrs": null,
+    "nativeIdField": "Circonscription foncière (Beni-Ville), commune/territory, locality, property reference, title/registry/volume/folio",
+    "nativeIdEvidence": "Official client code lists Beni-Ville under Nord-Kivu. The official form supplies locality and parcel/title reference fields."
+  },
+  "coverageAssessment": {
+    "claimedScope": "The Ministry search workflow provides an explicit Beni-Ville land-registration jurisdiction and property-record query service.",
+    "verifiedOpenScope": "The Beni-Ville option and formal register-search workflow are verified. No parcel values were submitted, and no anonymous map or full polygon feature service was identified.",
+    "countrywideVerified": false
+  },
+  "registryFound": true,
+  "verifiedSample": false,
+  "resultCategory": "official_city_registry_no_public_geometry",
+  "technicalBlocker": "The official service is a formal identity/document-supported land-register request, not an anonymous spatial viewer; no public full-feature endpoint was found.",
+  "remainingUncertainty": "Whether the Ministry or local Cadastre office offers a separate public map service for Beni-Ville; no geometry at the WUP point has been verified.",
+  "nextStep": "If a public Beni-Ville map viewer is identified, resolve the WUP point and capture a complete parcel feature; otherwise retain this as registry-only evidence.",
+  "schemaVersion": 1,
+  "checkedAt": "2026-10-09",
+  "runtimeReadiness": "not_enabled_no_verified_public_geometry",
+  "adapterReady": false,
+  "centerLatLon": [
+    0.49649909672824,
+    29.4625008450889
+  ],
+  "population2025k": 1923.7,
+  "queueRank": 258,
+  "population2025": 1923700,
+  "populationPlausibility2025": "Low",
+  "populationUnit": "persons",
+  "pointBasis": "UN WUP 2025 population-weighted settlement centroid; this is not a municipal boundary or a parcel-coverage claim.",
+  "publicParcelGeometryFound": false,
+  "sourceIds": [],
+  "registryBasis": "The official Ministry of Land Affairs search form’s client options place Beni-Ville as a distinct circonscription under Nord-Kivu, separate from Beni-Territoire. The form searches local property/title/registry references and is a formal registry-search workflow, not a public geometry viewer.",
+  "rootReviewedAt": "2026-10-08T21:36:07.696017+00:00"
+}

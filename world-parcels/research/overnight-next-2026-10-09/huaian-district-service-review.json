@@ -1,0 +1,104 @@
+{
+  "schemaVersion": "1.0",
+  "checkedAt": "2026-10-09",
+  "cityRecord": "city-11114-huaian-district.json",
+  "purpose": "Document separate English/local-language research, local land-registry custody scope, direct anonymous request outcomes and safe geometry limits.",
+  "scopeLimits": {
+    "maxFullPolygonsRetainedInCityRecord": 0,
+    "maxFullPolygonsRetainedInReview": 0,
+    "maxFullPolygonsRetainedInRepository": 0,
+    "ownerOrAddressDataRetained": false,
+    "credentialsOrTokenValuesRetained": false,
+    "citywideCompletenessAsserted": false
+  },
+  "assessment": "Huai’an municipal bureau and Huai’an District official sources describe real-estate/cadastral-registration responsibilities and a district service window.",
+  "registryAssessment": "Local or jurisdictionally local land/cadastral custodian supported at the limited scope stated; public geometry and runtime readiness remain separate.",
+  "officialPrimarySources": [
+    {
+      "url": "https://www.huaian.gov.cn/col/13052_374664/art/16172064/1617948483048fTqD6cS5.html",
+      "operator": "Huai’an Municipal Natural Resources and Planning Bureau",
+      "observation": "Official city page assigns unified real-estate registration and cadastral work to the municipal bureau."
+    },
+    {
+      "url": "https://ssl.huaian.gov.cn/letterClientController/info.do?letterId=2c94938e93f91403019537d1696e7469&view=%2Fcms%2Fletter%2Fclient%2FletterInfo_haq.jsp",
+      "operator": "Huai’an District Government",
+      "observation": "Official district response identifies the local real-estate registration service window; no parcel geometry service is given."
+    }
+  ],
+  "searchQueries": [
+    {
+      "language": "English",
+      "query": "Huai an District China official natural resources cadastral real estate registration map",
+      "result": "Separate English-language source discovery; only cited first-party sources are used as evidence.",
+      "method": "Separate English-language search followed by official-source review.",
+      "actualResultUrls": [
+        "https://www.huaian.gov.cn/col/13052_374664/art/16172064/1617948483048fTqD6cS5.html",
+        "https://ssl.huaian.gov.cn/letterClientController/info.do?letterId=2c94938e93f91403019537d1696e7469&view=%2Fcms%2Fletter%2Fclient%2FletterInfo_haq.jsp"
+      ],
+      "scope": "Identify city-local land registry/cadastral custody and anonymous public parcel geometry. Preserve the exact WUP settlement point. Do not submit owner, address, tax, account, applicant, or private-property values. Public geographic selectors and public native parcel IDs are permitted."
+    },
+    {
+      "language": "Chinese",
+      "query": "淮安区 自然资源和规划局 不动产登记 地籍图 官方",
+      "result": "Separate local-language search followed by first-party source review; cited official sources are relevant to the locality and stated scope.",
+      "method": "Separate local-language web search followed by first-party source review.",
+      "actualResultUrls": [
+        "https://www.huaian.gov.cn/col/13052_374664/art/16172064/1617948483048fTqD6cS5.html"
+      ],
+      "scope": "Identify city-local land registry/cadastral custody and anonymous public parcel geometry. Preserve the exact WUP settlement point. Do not submit owner, address, tax, account, applicant, or private-property values. Public geographic selectors and public native parcel IDs are permitted."
+    }
+  ],
+  "geometryDecision": {
+    "verified": false,
+    "sourceId": null,
+    "sampleCount": 0,
+    "sampleFile": null,
+    "nativeId": null,
+    "nativeIdField": null,
+    "exactWupPointTest": "No source-native full polygon was returned at the exact unchanged WUP point. publicParcelGeometryFound:false means unverified in this investigation, not confirmed absence.",
+    "requestEvidence": [
+      {
+        "url": "https://www.huaian.gov.cn/col/13052_374664/art/16172064/1617948483048fTqD6cS5.html",
+        "method": "GET; anonymous; standard TLS; redirect-following; no credentials or property-value selectors",
+        "httpStatus": 200,
+        "contentType": "text/html; charset=utf-8",
+        "bytesRead": 54375,
+        "assessment": "Official municipal bureau responsibility page."
+      },
+      {
+        "url": "https://ssl.huaian.gov.cn/letterClientController/info.do?letterId=2c94938e93f91403019537d1696e7469&view=%2Fcms%2Fletter%2Fclient%2FletterInfo_haq.jsp",
+        "method": "GET; anonymous; standard TLS; redirect-following; no credentials or property-value selectors",
+        "httpStatus": 200,
+        "contentType": "text/html;charset=UTF-8",
+        "bytesRead": 5543,
+        "assessment": "Official district registration-window information."
+      }
+    ]
+  },
+  "coverageAssessment": {
+    "claimedScope": "Huai’an municipal bureau and Huai’an District official sources describe real-estate/cadastral-registration responsibilities and a district service window.",
+    "verifiedOpenScope": "No safe source-native full parcel polygon was returned in this investigation.",
+    "citywideVerified": false,
+    "countrywideVerified": false,
+    "geometryVerified": false
+  },
+  "attempts": [
+    "HTTP 200 text/html; charset=utf-8; 54375 response bytes. Official municipal bureau responsibility page.",
+    "HTTP 200 text/html;charset=UTF-8; 5543 response bytes. Official district registration-window information."
+  ],
+  "remainingUncertainty": "Huai’an municipal bureau and Huai’an District official sources describe real-estate/cadastral-registration responsibilities and a district service window. Public parcel geometry, coverage, legal/title scope and currentness beyond the evidence stated remain unverified.",
+  "nextStep": "Keep runtime disabled until root review determines whether the official source and returned geometry meet adapter criteria.",
+  "runtimeAssessment": {
+    "status": "not_enabled_no_verified_public_geometry",
+    "reason": "District and city sources establish registration responsibility but no public polygon feature service was identified."
+  },
+  "cohort": "overnight-next-1101-1200",
+  "cohortState": "research_complete_pending_root_review",
+  "integrationState": "not_integrated",
+  "rootReviewedAt": "2026-10-09T07:25:02.908399+00:00",
+  "rootReview": {
+    "checkedAt": "2026-10-09T07:25:02.908399+00:00",
+    "decision": "Reviewed canonical identity, primary custody scope, separate search and direct-source request evidence. No public full parcel geometry verified; unresolved local custody preserved as null.",
+    "sourceEvidenceLimits": "Transport failure or lack of a verified route is not evidence that parcel geometry does not exist."
+  }
+}

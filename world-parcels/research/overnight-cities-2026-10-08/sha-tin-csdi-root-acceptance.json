@@ -1,0 +1,885 @@
+{
+  "schemaVersion": 1,
+  "purpose": "Live city parcel qualification with unmodified responses through the repository adapter; IDs and hashes retained, full geometries confined to temporary audit cache except three public samples.",
+  "checkedAt": "2026-10-09T03:30:13.494Z",
+  "city": "sha-tin-csdi-root",
+  "descriptor": {
+    "id": "hk-landsd-csdi-lot-polygons",
+    "name": "Hong Kong Lands Department CSDI lots",
+    "adapter": "arcgis",
+    "endpoint": "https://portal.csdi.gov.hk/server/rest/services/common/landsd_rcd_1637217253134_22729/FeatureServer/0",
+    "idField": "LotID",
+    "idType": "integer",
+    "idPrefix": "HK-CSDI-LOT-",
+    "objectIdField": "OBJECTID",
+    "outFields": [
+      "OBJECTID",
+      "LotID",
+      "LotCSUID"
+    ],
+    "pageSize": 1000,
+    "maxFeatures": 3000,
+    "maxBboxKm2": 1,
+    "countryCode": "HK",
+    "metricSrid": 32650,
+    "cityIds": [
+      "shatin"
+    ],
+    "maxConcurrentQueries": 2,
+    "operator": "Hong Kong Lands Department",
+    "scope": "3 valid distinct public parcel-reference polygons verified in thirteen bounded 0.001-degree cells around the unchanged WUP settlement locator. Complete bounded paging, all 3 fresh native-ID reads, explicit absence, footprint and source binding passed in 20 requests. Independent metric EPSG:32650 GEOS found all geometries valid and distinct, with no sampled overlaps above 0.01 m² or operation errors. Source-native integer LotID is preserved unchanged; OBJECTID is used only for transport paging. The initial generic three-row pagination test could not exercise paging in these sparse cells and is retained separately; a fresh run forced one-row pages on a two-lot cell and reproduced both full geometries. Native source CRS is EPSG:2326 (ArcGIS WKID102140); requested EPSG:4326 output is unchanged. The exact point returned no lot; the original nearby full polygon matches fresh full geometry exactly. This is the CSDI Lot collection, separate from the existing private-lot index API. Citywide completeness, legal title, survey accuracy, currentness and long-term identity continuity remain unverified.",
+    "evidenceFile": "research/overnight-cities-2026-10-08/sha-tin-csdi-root-acceptance.json",
+    "attribution": "Hong Kong Lands Department · public parcel-reference geometry · adapted",
+    "catalogueUrl": "https://portal.csdi.gov.hk/csdi-webpage/dataset/landsd_rcd_1637217253134_22729",
+    "licenceNote": "Anonymous bounded public geometry and publisher attribution verified. Publisher reuse/currentness/legal-coordinate conditions are informational. This reference geometry does not establish legal title or survey accuracy; personal fields are excluded."
+  },
+  "grid": [
+    {
+      "name": "viewport-0",
+      "bbox": [
+        114.203,
+        22.392,
+        114.204,
+        22.393
+      ],
+      "kind": "aligned-grid"
+    },
+    {
+      "name": "viewport-1",
+      "bbox": [
+        114.204,
+        22.392,
+        114.205,
+        22.393
+      ],
+      "kind": "aligned-grid"
+    },
+    {
+      "name": "viewport-2",
+      "bbox": [
+        114.205,
+        22.392,
+        114.206,
+        22.393
+      ],
+      "kind": "aligned-grid"
+    },
+    {
+      "name": "viewport-3",
+      "bbox": [
+        114.203,
+        22.393,
+        114.204,
+        22.394
+      ],
+      "kind": "aligned-grid"
+    },
+    {
+      "name": "viewport-4",
+      "bbox": [
+        114.204,
+        22.393,
+        114.205,
+        22.394
+      ],
+      "kind": "aligned-grid"
+    },
+    {
+      "name": "viewport-5",
+      "bbox": [
+        114.205,
+        22.393,
+        114.206,
+        22.394
+      ],
+      "kind": "aligned-grid"
+    },
+    {
+      "name": "viewport-6",
+      "bbox": [
+        114.203,
+        22.394,
+        114.204,
+        22.395
+      ],
+      "kind": "aligned-grid"
+    },
+    {
+      "name": "viewport-7",
+      "bbox": [
+        114.204,
+        22.394,
+        114.205,
+        22.395
+      ],
+      "kind": "aligned-grid"
+    },
+    {
+      "name": "viewport-8",
+      "bbox": [
+        114.205,
+        22.394,
+        114.206,
+        22.395
+      ],
+      "kind": "aligned-grid"
+    },
+    {
+      "name": "viewport-9",
+      "bbox": [
+        114.204,
+        22.391,
+        114.205,
+        22.392
+      ],
+      "kind": "adjacent-pan"
+    },
+    {
+      "name": "viewport-10",
+      "bbox": [
+        114.204,
+        22.395,
+        114.205,
+        22.396
+      ],
+      "kind": "adjacent-pan"
+    },
+    {
+      "name": "viewport-11",
+      "bbox": [
+        114.202,
+        22.393,
+        114.203,
+        22.394
+      ],
+      "kind": "adjacent-pan"
+    },
+    {
+      "name": "viewport-12",
+      "bbox": [
+        114.206,
+        22.393,
+        114.207,
+        22.394
+      ],
+      "kind": "adjacent-pan"
+    }
+  ],
+  "tests": [
+    {
+      "name": "viewport-0",
+      "passed": true,
+      "elapsedMs": 2083,
+      "requestIndexes": [
+        0,
+        0
+      ],
+      "bbox": [
+        114.203,
+        22.392,
+        114.204,
+        22.393
+      ],
+      "complete": true,
+      "count": 0,
+      "ids": []
+    },
+    {
+      "name": "viewport-1",
+      "passed": true,
+      "elapsedMs": 1524,
+      "requestIndexes": [
+        1,
+        1
+      ],
+      "bbox": [
+        114.204,
+        22.392,
+        114.205,
+        22.393
+      ],
+      "complete": true,
+      "count": 0,
+      "ids": []
+    },
+    {
+      "name": "viewport-2",
+      "passed": true,
+      "elapsedMs": 611,
+      "requestIndexes": [
+        2,
+        2
+      ],
+      "bbox": [
+        114.205,
+        22.392,
+        114.206,
+        22.393
+      ],
+      "complete": true,
+      "count": 2,
+      "ids": [
+        {
+          "id": "HK-CSDI-LOT-1800240769",
+          "geometrySha256": "b26cd18abd4ba053383938c0d05fe401cc506d3881ebb98f28792ceaabe21de3"
+        },
+        {
+          "id": "HK-CSDI-LOT-1800242950",
+          "geometrySha256": "7fd678f3fc16cbebba638a4313088c28fff519f5d530aa080efa21a5c1f655ca"
+        }
+      ]
+    },
+    {
+      "name": "viewport-3",
+      "passed": true,
+      "elapsedMs": 412,
+      "requestIndexes": [
+        3,
+        3
+      ],
+      "bbox": [
+        114.203,
+        22.393,
+        114.204,
+        22.394
+      ],
+      "complete": true,
+      "count": 1,
+      "ids": [
+        {
+          "id": "HK-CSDI-LOT-1910159279",
+          "geometrySha256": "a6c6ae14d99c7b3c85dc424af6b7af656ae600fc2498279ca0701d7cb3299526"
+        }
+      ]
+    },
+    {
+      "name": "viewport-4",
+      "passed": true,
+      "elapsedMs": 469,
+      "requestIndexes": [
+        4,
+        4
+      ],
+      "bbox": [
+        114.204,
+        22.393,
+        114.205,
+        22.394
+      ],
+      "complete": true,
+      "count": 0,
+      "ids": []
+    },
+    {
+      "name": "viewport-5",
+      "passed": true,
+      "elapsedMs": 663,
+      "requestIndexes": [
+        5,
+        5
+      ],
+      "bbox": [
+        114.205,
+        22.393,
+        114.206,
+        22.394
+      ],
+      "complete": true,
+      "count": 0,
+      "ids": []
+    },
+    {
+      "name": "viewport-6",
+      "passed": true,
+      "elapsedMs": 445,
+      "requestIndexes": [
+        6,
+        6
+      ],
+      "bbox": [
+        114.203,
+        22.394,
+        114.204,
+        22.395
+      ],
+      "complete": true,
+      "count": 1,
+      "ids": [
+        {
+          "id": "HK-CSDI-LOT-1910159279",
+          "geometrySha256": "a6c6ae14d99c7b3c85dc424af6b7af656ae600fc2498279ca0701d7cb3299526"
+        }
+      ]
+    },
+    {
+      "name": "viewport-7",
+      "passed": true,
+      "elapsedMs": 526,
+      "requestIndexes": [
+        7,
+        7
+      ],
+      "bbox": [
+        114.204,
+        22.394,
+        114.205,
+        22.395
+      ],
+      "complete": true,
+      "count": 1,
+      "ids": [
+        {
+          "id": "HK-CSDI-LOT-1910159279",
+          "geometrySha256": "a6c6ae14d99c7b3c85dc424af6b7af656ae600fc2498279ca0701d7cb3299526"
+        }
+      ]
+    },
+    {
+      "name": "viewport-8",
+      "passed": true,
+      "elapsedMs": 405,
+      "requestIndexes": [
+        8,
+        8
+      ],
+      "bbox": [
+        114.205,
+        22.394,
+        114.206,
+        22.395
+      ],
+      "complete": true,
+      "count": 0,
+      "ids": []
+    },
+    {
+      "name": "viewport-9",
+      "passed": true,
+      "elapsedMs": 424,
+      "requestIndexes": [
+        9,
+        9
+      ],
+      "bbox": [
+        114.204,
+        22.391,
+        114.205,
+        22.392
+      ],
+      "complete": true,
+      "count": 1,
+      "ids": [
+        {
+          "id": "HK-CSDI-LOT-1800242950",
+          "geometrySha256": "7fd678f3fc16cbebba638a4313088c28fff519f5d530aa080efa21a5c1f655ca"
+        }
+      ]
+    },
+    {
+      "name": "viewport-10",
+      "passed": true,
+      "elapsedMs": 728,
+      "requestIndexes": [
+        10,
+        10
+      ],
+      "bbox": [
+        114.204,
+        22.395,
+        114.205,
+        22.396
+      ],
+      "complete": true,
+      "count": 1,
+      "ids": [
+        {
+          "id": "HK-CSDI-LOT-1910159279",
+          "geometrySha256": "a6c6ae14d99c7b3c85dc424af6b7af656ae600fc2498279ca0701d7cb3299526"
+        }
+      ]
+    },
+    {
+      "name": "viewport-11",
+      "passed": true,
+      "elapsedMs": 417,
+      "requestIndexes": [
+        11,
+        11
+      ],
+      "bbox": [
+        114.202,
+        22.393,
+        114.203,
+        22.394
+      ],
+      "complete": true,
+      "count": 0,
+      "ids": []
+    },
+    {
+      "name": "viewport-12",
+      "passed": true,
+      "elapsedMs": 409,
+      "requestIndexes": [
+        12,
+        12
+      ],
+      "bbox": [
+        114.206,
+        22.393,
+        114.207,
+        22.394
+      ],
+      "complete": true,
+      "count": 1,
+      "ids": [
+        {
+          "id": "HK-CSDI-LOT-1800240769",
+          "geometrySha256": "b26cd18abd4ba053383938c0d05fe401cc506d3881ebb98f28792ceaabe21de3"
+        }
+      ]
+    },
+    {
+      "name": "forced-one-row-pages",
+      "passed": true,
+      "elapsedMs": 2059,
+      "requestIndexes": [
+        13,
+        15
+      ],
+      "count": 2,
+      "geometryPages": 2,
+      "pageSize": 1,
+      "allGeometryHashesMatch": true
+    },
+    {
+      "name": "fresh-ids-0",
+      "passed": true,
+      "elapsedMs": 425,
+      "requestIndexes": [
+        16,
+        16
+      ],
+      "count": 3,
+      "ids": [
+        "HK-CSDI-LOT-1800240769",
+        "HK-CSDI-LOT-1800242950",
+        "HK-CSDI-LOT-1910159279"
+      ],
+      "allGeometryHashesMatch": true,
+      "absentIds": []
+    },
+    {
+      "name": "explicit-absence",
+      "passed": true,
+      "elapsedMs": 585,
+      "requestIndexes": [
+        17,
+        17
+      ],
+      "absentIds": [
+        "HK-CSDI-LOT-2147483647"
+      ],
+      "complete": true
+    },
+    {
+      "name": "footprint",
+      "passed": true,
+      "elapsedMs": 437,
+      "requestIndexes": [
+        18,
+        18
+      ],
+      "selectedParcelId": "HK-CSDI-LOT-1800242950",
+      "count": 1,
+      "allGeometryHashesMatch": true
+    },
+    {
+      "name": "source-binding",
+      "passed": true,
+      "elapsedMs": 676,
+      "requestIndexes": [
+        19,
+        19
+      ],
+      "selectedParcelId": "HK-CSDI-LOT-1800242950",
+      "coverage": "complete",
+      "siteM2": 14302.45,
+      "boundParcels": 1
+    }
+  ],
+  "requests": [
+    {
+      "test": "viewport-0",
+      "url": "https://portal.csdi.gov.hk/server/rest/services/common/landsd_rcd_1637217253134_22729/FeatureServer/0/query?where=1%3D1&outFields=OBJECTID%2CLotID%2CLotCSUID&returnGeometry=true&outSR=4326&f=geojson&orderByFields=OBJECTID&resultRecordCount=1000&resultOffset=0&geometry=114.203%2C22.392%2C114.204%2C22.393&geometryType=esriGeometryEnvelope&inSR=4326&spatialRel=esriSpatialRelIntersects",
+      "method": "GET",
+      "checkedAt": "2026-10-09T03:30:13.499Z",
+      "httpStatus": 200,
+      "contentType": "application/geo+json;charset=UTF-8",
+      "bytes": 42,
+      "features": []
+    },
+    {
+      "test": "viewport-1",
+      "url": "https://portal.csdi.gov.hk/server/rest/services/common/landsd_rcd_1637217253134_22729/FeatureServer/0/query?where=1%3D1&outFields=OBJECTID%2CLotID%2CLotCSUID&returnGeometry=true&outSR=4326&f=geojson&orderByFields=OBJECTID&resultRecordCount=1000&resultOffset=0&geometry=114.204%2C22.392%2C114.205%2C22.393&geometryType=esriGeometryEnvelope&inSR=4326&spatialRel=esriSpatialRelIntersects",
+      "method": "GET",
+      "checkedAt": "2026-10-09T03:30:15.582Z",
+      "httpStatus": 200,
+      "contentType": "application/geo+json;charset=UTF-8",
+      "bytes": 42,
+      "features": []
+    },
+    {
+      "test": "viewport-2",
+      "url": "https://portal.csdi.gov.hk/server/rest/services/common/landsd_rcd_1637217253134_22729/FeatureServer/0/query?where=1%3D1&outFields=OBJECTID%2CLotID%2CLotCSUID&returnGeometry=true&outSR=4326&f=geojson&orderByFields=OBJECTID&resultRecordCount=1000&resultOffset=0&geometry=114.205%2C22.392%2C114.206%2C22.393&geometryType=esriGeometryEnvelope&inSR=4326&spatialRel=esriSpatialRelIntersects",
+      "method": "GET",
+      "checkedAt": "2026-10-09T03:30:17.107Z",
+      "httpStatus": 200,
+      "contentType": "application/geo+json;charset=UTF-8",
+      "bytes": 1591,
+      "features": [
+        {
+          "transportId": 160649,
+          "properties": {
+            "OBJECTID": 160649,
+            "LotID": 1800240769,
+            "LotCSUID": "732000348"
+          },
+          "geometrySha256": "b26cd18abd4ba053383938c0d05fe401cc506d3881ebb98f28792ceaabe21de3"
+        },
+        {
+          "transportId": 171075,
+          "properties": {
+            "OBJECTID": 171075,
+            "LotID": 1800242950,
+            "LotCSUID": "732000270"
+          },
+          "geometrySha256": "7fd678f3fc16cbebba638a4313088c28fff519f5d530aa080efa21a5c1f655ca"
+        }
+      ]
+    },
+    {
+      "test": "viewport-3",
+      "url": "https://portal.csdi.gov.hk/server/rest/services/common/landsd_rcd_1637217253134_22729/FeatureServer/0/query?where=1%3D1&outFields=OBJECTID%2CLotID%2CLotCSUID&returnGeometry=true&outSR=4326&f=geojson&orderByFields=OBJECTID&resultRecordCount=1000&resultOffset=0&geometry=114.203%2C22.393%2C114.204%2C22.394&geometryType=esriGeometryEnvelope&inSR=4326&spatialRel=esriSpatialRelIntersects",
+      "method": "GET",
+      "checkedAt": "2026-10-09T03:30:17.719Z",
+      "httpStatus": 200,
+      "contentType": "application/geo+json;charset=UTF-8",
+      "bytes": 5258,
+      "features": [
+        {
+          "transportId": 367394,
+          "properties": {
+            "OBJECTID": 367394,
+            "LotID": 1910159279,
+            "LotCSUID": "732000590    &EXT"
+          },
+          "geometrySha256": "a6c6ae14d99c7b3c85dc424af6b7af656ae600fc2498279ca0701d7cb3299526"
+        }
+      ]
+    },
+    {
+      "test": "viewport-4",
+      "url": "https://portal.csdi.gov.hk/server/rest/services/common/landsd_rcd_1637217253134_22729/FeatureServer/0/query?where=1%3D1&outFields=OBJECTID%2CLotID%2CLotCSUID&returnGeometry=true&outSR=4326&f=geojson&orderByFields=OBJECTID&resultRecordCount=1000&resultOffset=0&geometry=114.204%2C22.393%2C114.205%2C22.394&geometryType=esriGeometryEnvelope&inSR=4326&spatialRel=esriSpatialRelIntersects",
+      "method": "GET",
+      "checkedAt": "2026-10-09T03:30:18.131Z",
+      "httpStatus": 200,
+      "contentType": "application/geo+json;charset=UTF-8",
+      "bytes": 42,
+      "features": []
+    },
+    {
+      "test": "viewport-5",
+      "url": "https://portal.csdi.gov.hk/server/rest/services/common/landsd_rcd_1637217253134_22729/FeatureServer/0/query?where=1%3D1&outFields=OBJECTID%2CLotID%2CLotCSUID&returnGeometry=true&outSR=4326&f=geojson&orderByFields=OBJECTID&resultRecordCount=1000&resultOffset=0&geometry=114.205%2C22.393%2C114.206%2C22.394&geometryType=esriGeometryEnvelope&inSR=4326&spatialRel=esriSpatialRelIntersects",
+      "method": "GET",
+      "checkedAt": "2026-10-09T03:30:18.601Z",
+      "httpStatus": 200,
+      "contentType": "application/geo+json;charset=UTF-8",
+      "bytes": 42,
+      "features": []
+    },
+    {
+      "test": "viewport-6",
+      "url": "https://portal.csdi.gov.hk/server/rest/services/common/landsd_rcd_1637217253134_22729/FeatureServer/0/query?where=1%3D1&outFields=OBJECTID%2CLotID%2CLotCSUID&returnGeometry=true&outSR=4326&f=geojson&orderByFields=OBJECTID&resultRecordCount=1000&resultOffset=0&geometry=114.203%2C22.394%2C114.204%2C22.395&geometryType=esriGeometryEnvelope&inSR=4326&spatialRel=esriSpatialRelIntersects",
+      "method": "GET",
+      "checkedAt": "2026-10-09T03:30:19.265Z",
+      "httpStatus": 200,
+      "contentType": "application/geo+json;charset=UTF-8",
+      "bytes": 5258,
+      "features": [
+        {
+          "transportId": 367394,
+          "properties": {
+            "OBJECTID": 367394,
+            "LotID": 1910159279,
+            "LotCSUID": "732000590    &EXT"
+          },
+          "geometrySha256": "a6c6ae14d99c7b3c85dc424af6b7af656ae600fc2498279ca0701d7cb3299526"
+        }
+      ]
+    },
+    {
+      "test": "viewport-7",
+      "url": "https://portal.csdi.gov.hk/server/rest/services/common/landsd_rcd_1637217253134_22729/FeatureServer/0/query?where=1%3D1&outFields=OBJECTID%2CLotID%2CLotCSUID&returnGeometry=true&outSR=4326&f=geojson&orderByFields=OBJECTID&resultRecordCount=1000&resultOffset=0&geometry=114.204%2C22.394%2C114.205%2C22.395&geometryType=esriGeometryEnvelope&inSR=4326&spatialRel=esriSpatialRelIntersects",
+      "method": "GET",
+      "checkedAt": "2026-10-09T03:30:19.710Z",
+      "httpStatus": 200,
+      "contentType": "application/geo+json;charset=UTF-8",
+      "bytes": 5258,
+      "features": [
+        {
+          "transportId": 367394,
+          "properties": {
+            "OBJECTID": 367394,
+            "LotID": 1910159279,
+            "LotCSUID": "732000590    &EXT"
+          },
+          "geometrySha256": "a6c6ae14d99c7b3c85dc424af6b7af656ae600fc2498279ca0701d7cb3299526"
+        }
+      ]
+    },
+    {
+      "test": "viewport-8",
+      "url": "https://portal.csdi.gov.hk/server/rest/services/common/landsd_rcd_1637217253134_22729/FeatureServer/0/query?where=1%3D1&outFields=OBJECTID%2CLotID%2CLotCSUID&returnGeometry=true&outSR=4326&f=geojson&orderByFields=OBJECTID&resultRecordCount=1000&resultOffset=0&geometry=114.205%2C22.394%2C114.206%2C22.395&geometryType=esriGeometryEnvelope&inSR=4326&spatialRel=esriSpatialRelIntersects",
+      "method": "GET",
+      "checkedAt": "2026-10-09T03:30:20.237Z",
+      "httpStatus": 200,
+      "contentType": "application/geo+json;charset=UTF-8",
+      "bytes": 42,
+      "features": []
+    },
+    {
+      "test": "viewport-9",
+      "url": "https://portal.csdi.gov.hk/server/rest/services/common/landsd_rcd_1637217253134_22729/FeatureServer/0/query?where=1%3D1&outFields=OBJECTID%2CLotID%2CLotCSUID&returnGeometry=true&outSR=4326&f=geojson&orderByFields=OBJECTID&resultRecordCount=1000&resultOffset=0&geometry=114.204%2C22.391%2C114.205%2C22.392&geometryType=esriGeometryEnvelope&inSR=4326&spatialRel=esriSpatialRelIntersects",
+      "method": "GET",
+      "checkedAt": "2026-10-09T03:30:20.642Z",
+      "httpStatus": 200,
+      "contentType": "application/geo+json;charset=UTF-8",
+      "bytes": 550,
+      "features": [
+        {
+          "transportId": 171075,
+          "properties": {
+            "OBJECTID": 171075,
+            "LotID": 1800242950,
+            "LotCSUID": "732000270"
+          },
+          "geometrySha256": "7fd678f3fc16cbebba638a4313088c28fff519f5d530aa080efa21a5c1f655ca"
+        }
+      ]
+    },
+    {
+      "test": "viewport-10",
+      "url": "https://portal.csdi.gov.hk/server/rest/services/common/landsd_rcd_1637217253134_22729/FeatureServer/0/query?where=1%3D1&outFields=OBJECTID%2CLotID%2CLotCSUID&returnGeometry=true&outSR=4326&f=geojson&orderByFields=OBJECTID&resultRecordCount=1000&resultOffset=0&geometry=114.204%2C22.395%2C114.205%2C22.396&geometryType=esriGeometryEnvelope&inSR=4326&spatialRel=esriSpatialRelIntersects",
+      "method": "GET",
+      "checkedAt": "2026-10-09T03:30:21.068Z",
+      "httpStatus": 200,
+      "contentType": "application/geo+json;charset=UTF-8",
+      "bytes": 5258,
+      "features": [
+        {
+          "transportId": 367394,
+          "properties": {
+            "OBJECTID": 367394,
+            "LotID": 1910159279,
+            "LotCSUID": "732000590    &EXT"
+          },
+          "geometrySha256": "a6c6ae14d99c7b3c85dc424af6b7af656ae600fc2498279ca0701d7cb3299526"
+        }
+      ]
+    },
+    {
+      "test": "viewport-11",
+      "url": "https://portal.csdi.gov.hk/server/rest/services/common/landsd_rcd_1637217253134_22729/FeatureServer/0/query?where=1%3D1&outFields=OBJECTID%2CLotID%2CLotCSUID&returnGeometry=true&outSR=4326&f=geojson&orderByFields=OBJECTID&resultRecordCount=1000&resultOffset=0&geometry=114.202%2C22.393%2C114.203%2C22.394&geometryType=esriGeometryEnvelope&inSR=4326&spatialRel=esriSpatialRelIntersects",
+      "method": "GET",
+      "checkedAt": "2026-10-09T03:30:21.797Z",
+      "httpStatus": 200,
+      "contentType": "application/geo+json;charset=UTF-8",
+      "bytes": 42,
+      "features": []
+    },
+    {
+      "test": "viewport-12",
+      "url": "https://portal.csdi.gov.hk/server/rest/services/common/landsd_rcd_1637217253134_22729/FeatureServer/0/query?where=1%3D1&outFields=OBJECTID%2CLotID%2CLotCSUID&returnGeometry=true&outSR=4326&f=geojson&orderByFields=OBJECTID&resultRecordCount=1000&resultOffset=0&geometry=114.206%2C22.393%2C114.207%2C22.394&geometryType=esriGeometryEnvelope&inSR=4326&spatialRel=esriSpatialRelIntersects",
+      "method": "GET",
+      "checkedAt": "2026-10-09T03:30:22.216Z",
+      "httpStatus": 200,
+      "contentType": "application/geo+json;charset=UTF-8",
+      "bytes": 1082,
+      "features": [
+        {
+          "transportId": 160649,
+          "properties": {
+            "OBJECTID": 160649,
+            "LotID": 1800240769,
+            "LotCSUID": "732000348"
+          },
+          "geometrySha256": "b26cd18abd4ba053383938c0d05fe401cc506d3881ebb98f28792ceaabe21de3"
+        }
+      ]
+    },
+    {
+      "test": "forced-one-row-pages",
+      "url": "https://portal.csdi.gov.hk/server/rest/services/common/landsd_rcd_1637217253134_22729/FeatureServer/0/query?where=1%3D1&outFields=OBJECTID%2CLotID%2CLotCSUID&returnGeometry=true&outSR=4326&f=geojson&orderByFields=OBJECTID&resultRecordCount=1&resultOffset=0&geometry=114.205%2C22.392%2C114.206%2C22.393&geometryType=esriGeometryEnvelope&inSR=4326&spatialRel=esriSpatialRelIntersects",
+      "method": "GET",
+      "checkedAt": "2026-10-09T03:30:22.625Z",
+      "httpStatus": 200,
+      "contentType": "application/geo+json;charset=UTF-8",
+      "bytes": 1155,
+      "exceededTransferLimit": true,
+      "features": [
+        {
+          "transportId": 160649,
+          "properties": {
+            "OBJECTID": 160649,
+            "LotID": 1800240769,
+            "LotCSUID": "732000348"
+          },
+          "geometrySha256": "b26cd18abd4ba053383938c0d05fe401cc506d3881ebb98f28792ceaabe21de3"
+        }
+      ]
+    },
+    {
+      "test": "forced-one-row-pages",
+      "url": "https://portal.csdi.gov.hk/server/rest/services/common/landsd_rcd_1637217253134_22729/FeatureServer/0/query?where=1%3D1&outFields=OBJECTID%2CLotID%2CLotCSUID&returnGeometry=true&outSR=4326&f=geojson&orderByFields=OBJECTID&resultRecordCount=1&resultOffset=1&geometry=114.205%2C22.392%2C114.206%2C22.393&geometryType=esriGeometryEnvelope&inSR=4326&spatialRel=esriSpatialRelIntersects",
+      "method": "GET",
+      "checkedAt": "2026-10-09T03:30:23.641Z",
+      "httpStatus": 200,
+      "contentType": "application/geo+json;charset=UTF-8",
+      "bytes": 550,
+      "features": [
+        {
+          "transportId": 171075,
+          "properties": {
+            "OBJECTID": 171075,
+            "LotID": 1800242950,
+            "LotCSUID": "732000270"
+          },
+          "geometrySha256": "7fd678f3fc16cbebba638a4313088c28fff519f5d530aa080efa21a5c1f655ca"
+        }
+      ]
+    },
+    {
+      "test": "forced-one-row-pages",
+      "url": "https://portal.csdi.gov.hk/server/rest/services/common/landsd_rcd_1637217253134_22729/FeatureServer/0/query?where=1%3D1&outFields=OBJECTID%2CLotID%2CLotCSUID&returnGeometry=true&outSR=4326&f=geojson&orderByFields=OBJECTID&resultRecordCount=1&resultOffset=2&geometry=114.205%2C22.392%2C114.206%2C22.393&geometryType=esriGeometryEnvelope&inSR=4326&spatialRel=esriSpatialRelIntersects",
+      "method": "GET",
+      "checkedAt": "2026-10-09T03:30:24.243Z",
+      "httpStatus": 200,
+      "contentType": "application/geo+json;charset=UTF-8",
+      "bytes": 42,
+      "features": []
+    },
+    {
+      "test": "fresh-ids-0",
+      "url": "https://portal.csdi.gov.hk/server/rest/services/common/landsd_rcd_1637217253134_22729/FeatureServer/0/query?where=LotID+IN+%281800240769%2C1800242950%2C1910159279%29&outFields=OBJECTID%2CLotID%2CLotCSUID&returnGeometry=true&outSR=4326&f=geojson&orderByFields=OBJECTID&resultRecordCount=1000&resultOffset=0",
+      "method": "GET",
+      "checkedAt": "2026-10-09T03:30:24.687Z",
+      "httpStatus": 200,
+      "contentType": "application/geo+json;charset=UTF-8",
+      "bytes": 6808,
+      "features": [
+        {
+          "transportId": 160649,
+          "properties": {
+            "OBJECTID": 160649,
+            "LotID": 1800240769,
+            "LotCSUID": "732000348"
+          },
+          "geometrySha256": "b26cd18abd4ba053383938c0d05fe401cc506d3881ebb98f28792ceaabe21de3"
+        },
+        {
+          "transportId": 171075,
+          "properties": {
+            "OBJECTID": 171075,
+            "LotID": 1800242950,
+            "LotCSUID": "732000270"
+          },
+          "geometrySha256": "7fd678f3fc16cbebba638a4313088c28fff519f5d530aa080efa21a5c1f655ca"
+        },
+        {
+          "transportId": 367394,
+          "properties": {
+            "OBJECTID": 367394,
+            "LotID": 1910159279,
+            "LotCSUID": "732000590    &EXT"
+          },
+          "geometrySha256": "a6c6ae14d99c7b3c85dc424af6b7af656ae600fc2498279ca0701d7cb3299526"
+        }
+      ]
+    },
+    {
+      "test": "explicit-absence",
+      "url": "https://portal.csdi.gov.hk/server/rest/services/common/landsd_rcd_1637217253134_22729/FeatureServer/0/query?where=LotID+IN+%282147483647%29&outFields=OBJECTID%2CLotID%2CLotCSUID&returnGeometry=true&outSR=4326&f=geojson&orderByFields=OBJECTID&resultRecordCount=1000&resultOffset=0",
+      "method": "GET",
+      "checkedAt": "2026-10-09T03:30:25.112Z",
+      "httpStatus": 200,
+      "contentType": "application/geo+json;charset=UTF-8",
+      "bytes": 42,
+      "features": []
+    },
+    {
+      "test": "footprint",
+      "url": "https://portal.csdi.gov.hk/server/rest/services/common/landsd_rcd_1637217253134_22729/FeatureServer/0/query?where=1%3D1&outFields=OBJECTID%2CLotID%2CLotCSUID&returnGeometry=true&outSR=4326&f=geojson&orderByFields=OBJECTID&resultRecordCount=1000&resultOffset=0&geometry=114.20433453731142%2C22.390465230370378%2C114.20582376081956%2C22.39214441138256&geometryType=esriGeometryEnvelope&inSR=4326&spatialRel=esriSpatialRelIntersects",
+      "method": "GET",
+      "checkedAt": "2026-10-09T03:30:25.699Z",
+      "httpStatus": 200,
+      "contentType": "application/geo+json;charset=UTF-8",
+      "bytes": 981,
+      "features": [
+        {
+          "transportId": 133360,
+          "properties": {
+            "OBJECTID": 133360,
+            "LotID": 1800244991,
+            "LotCSUID": "732000288"
+          },
+          "geometrySha256": "e18c7a5c08dc40772feb12657818b1386c9e582da4039b70505f517cddd4faee"
+        },
+        {
+          "transportId": 171075,
+          "properties": {
+            "OBJECTID": 171075,
+            "LotID": 1800242950,
+            "LotCSUID": "732000270"
+          },
+          "geometrySha256": "7fd678f3fc16cbebba638a4313088c28fff519f5d530aa080efa21a5c1f655ca"
+        }
+      ]
+    },
+    {
+      "test": "source-binding",
+      "url": "https://portal.csdi.gov.hk/server/rest/services/common/landsd_rcd_1637217253134_22729/FeatureServer/0/query?where=1%3D1&outFields=OBJECTID%2CLotID%2CLotCSUID&returnGeometry=true&outSR=4326&f=geojson&orderByFields=OBJECTID&resultRecordCount=1000&resultOffset=0&geometry=114.20433453731142%2C22.390465230370378%2C114.20582376081956%2C22.39214441138256&geometryType=esriGeometryEnvelope&inSR=4326&spatialRel=esriSpatialRelIntersects",
+      "method": "GET",
+      "checkedAt": "2026-10-09T03:30:26.137Z",
+      "httpStatus": 200,
+      "contentType": "application/geo+json;charset=UTF-8",
+      "bytes": 981,
+      "features": [
+        {
+          "transportId": 133360,
+          "properties": {
+            "OBJECTID": 133360,
+            "LotID": 1800244991,
+            "LotCSUID": "732000288"
+          },
+          "geometrySha256": "e18c7a5c08dc40772feb12657818b1386c9e582da4039b70505f517cddd4faee"
+        },
+        {
+          "transportId": 171075,
+          "properties": {
+            "OBJECTID": 171075,
+            "LotID": 1800242950,
+            "LotCSUID": "732000270"
+          },
+          "geometrySha256": "7fd678f3fc16cbebba638a4313088c28fff519f5d530aa080efa21a5c1f655ca"
+        }
+      ]
+    }
+  ],
+  "qualityFile": "research/overnight-cities-2026-10-08/sha-tin-csdi-root-quality.json",
+  "uniqueParcels": 3,
+  "requestCount": 20,
+  "allTestsPassed": true,
+  "finishedAt": "2026-10-09T03:30:26.815Z",
+  "qualityStatus": "approved_by_root"
+}

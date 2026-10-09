@@ -1,0 +1,19 @@
+{
+  "checkedAt": "2026-10-09T04:17:43.239219+00:00",
+  "appCityId": "palermo",
+  "url": "http://localhost:5638/?city=palermo&backend=http%3A%2F%2F127.0.0.1%3A5640&reduceMotion=1&lang=en",
+  "headedBrowser": true,
+  "loadedParcels": 660,
+  "visibleParcels": 164,
+  "parcelFetchFinished": true,
+  "selectedParcelId": "IT-SICILIA-PARCEL-G273~%20~125~%20~%20~298",
+  "pointerCoordinates": [
+    643,
+    421
+  ],
+  "detailsMatchesNativeId": true,
+  "uncaughtPageErrors": [],
+  "browserClosed": true,
+  "scope": "Actual initial viewport; no citywide completeness claim.",
+  "browserCloseConfirmedAt": "2026-10-09T04:19:31.541970+00:00"
+}

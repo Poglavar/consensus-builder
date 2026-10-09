@@ -1,0 +1,94 @@
+{
+  "schemaVersion": 1,
+  "kind": "bounded_tampa_parcel_source_candidate_review",
+  "checkedAt": "2026-10-09",
+  "cityId": "wup2025:7159",
+  "queueRank": 994,
+  "wupCityPointLatLon": [
+    28.0030986140797,
+    -82.4702888424246
+  ],
+  "purpose": "Check an official alternative parcel service for a bounded full-polygon sample without querying owner, address, tax, account, or property-value attributes.",
+  "primaryAlternative": {
+    "url": "https://maps.hillsboroughcounty.org/arcgis1a/rest/services/SDEMapServices/ParcelPublishing/FeatureServer/12",
+    "queryUrl": "https://maps.hillsboroughcounty.org/arcgis1a/rest/services/SDEMapServices/ParcelPublishing/FeatureServer/12/query",
+    "operatorEvidence": "Hillsborough County Property Appraiser",
+    "metadataObservedViaOfficialRESTDirectory": true,
+    "geometryType": "esriGeometryPolygon",
+    "spatialReference": "EPSG:2237 (Florida West State Plane, NAD83, US feet)",
+    "supportsGeoJSON": true,
+    "nativeIdentifierFieldRequested": "OBJECTID",
+    "otherSensitiveFieldsObservedInSchemaButNotRequested": [
+      "FOLIO",
+      "OWNER",
+      "ADDR_1",
+      "PIN"
+    ],
+    "updateStatement": "Source metadata says this dissolved parcel shapefile/service is updated weekly on Sunday morning.",
+    "scope": "Hillsborough County parcel data; spatially broader than Tampa municipal boundaries. No citywide guarantee is made."
+  },
+  "exactBoundedRequest": {
+    "method": "GET",
+    "geometry": {
+      "type": "Point",
+      "coordinates": [
+        -82.4702888424246,
+        28.0030986140797
+      ]
+    },
+    "geometryType": "esriGeometryPoint",
+    "inSR": 4326,
+    "spatialRel": "esriSpatialRelIntersects",
+    "outFields": "OBJECTID",
+    "returnGeometry": true,
+    "outSR": 4326,
+    "format": "geojson",
+    "resultRecordCount": 3,
+    "remoteHttpStatus": null,
+    "toolOutcome": "Direct shell request produced no response text; web open reported this query URL was not accessible via that tool. No remote HTTP response was observed, so no provider status is inferred.",
+    "featureCount": null,
+    "nativeIds": [],
+    "geometryHashesSha256": [],
+    "geometryRetained": false
+  },
+  "originalTampaEndpoint": {
+    "url": "https://arcgis.tampagov.net/arcgis/rest/services/Parcels/TaxParcel/FeatureServer/0/query",
+    "priorStatus": 403,
+    "notRetried": true
+  },
+  "result": "Official county alternative metadata and count retrieval could not complete under bounded normal-TLS requests. No OID field, feature count, native ID, or geometry has been verified; preserve as unknown. No full geometry request was made without a verified OID field.",
+  "escalatedReadback": {
+    "normalTlsEnabled": true,
+    "maxTimeoutSeconds": 15,
+    "maxResponseBytes": 3145728,
+    "metadataRequest": {
+      "url": "https://maps.hillsboroughcounty.org/arcgis/rest/services/SDEMapServices/ParcelPublishing/FeatureServer/12?f=pjson",
+      "httpStatus": null,
+      "responseBytes": 0,
+      "exception": "Deadline: 15 second total deadline exceeded",
+      "metadataResponsePath": "/private/tmp/TMP09/tampa-feature-layer-metadata.json"
+    },
+    "wupPointCountRequest": {
+      "url": "https://maps.hillsboroughcounty.org/arcgis/rest/services/SDEMapServices/ParcelPublishing/FeatureServer/12/query?geometry=-82.4702888424246%2C28.0030986140797&geometryType=esriGeometryPoint&inSR=4326&spatialRel=esriSpatialRelIntersects&returnCountOnly=true&f=json",
+      "curlReturnCode": 28,
+      "curlReportedCode": "000",
+      "httpStatus": null,
+      "contentType": "",
+      "responseBytes": 0,
+      "stderr": "curl: (28) Connection timed out after 15006 milliseconds",
+      "count": null,
+      "responsePath": "/private/tmp/TMP09/tampa-wup-point-count.json"
+    },
+    "fullGeometryRequest": {
+      "attempted": false,
+      "reason": "No verified ObjectID field was available because metadata request returned no response; count request also timed out before an HTTP response.",
+      "featureCount": null,
+      "nativeIds": [],
+      "geometryHashesSha256": [],
+      "geometryRetained": false
+    },
+    "interpretation": "Transport did not yield an HTTP response. curl code 000 is a client-side no-response value, not an HTTP status. No provider outage or geometry absence is inferred.",
+    "originalTampaEndpointRetried": false
+  },
+  "rootReviewNote": "The public county alternative did not return any HTTP response to the bounded normal-TLS metadata or exact-point count request. Curl transport status000 is not a remote HTTP status. No safe native OID or geometry was established, and the City of Tampa geographic-access notice was not bypassed."
+}

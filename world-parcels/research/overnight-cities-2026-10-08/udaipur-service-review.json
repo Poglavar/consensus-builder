@@ -1,0 +1,60 @@
+{
+  "schemaVersion": "1.0",
+  "checkedAt": "2026-10-09",
+  "cityRecord": "city-6990-udaipur.json",
+  "purpose": "Document first-party local registry/map evidence and bounded anonymous geometry access review.",
+  "scopeLimits": {
+    "maxFullPolygonsRetainedInCityRecord": 0,
+    "maxFullPolygonsRetainedInReview": 0,
+    "maxFullPolygonsRetainedInRepository": 0,
+    "ownerOrAddressDataRetained": false,
+    "credentialsOrTokenValuesRetained": false,
+    "citywideCompletenessAsserted": false
+  },
+  "assessment": "Udaipur Development Authority publishes city property and planning services. The Rajasthan E-Mapping viewer uses khasra/village boundaries and displays Khasra ID, DLC rates and coordinates for a selected record; no selector was submitted and no parcel was clicked. Static UDA plan documents are planning/layout products, not a verified current parcel feature service. No safe geometry-only public route was verified.",
+  "registryAssessment": "The official Udaipur Development Authority offers city-specific Property ID, property name-transfer, mutation, subdivision, and land-layout services. Rajasthan’s state E-Mapping portal shows urban khasra selection and explicitly exposes a Khasra ID and land-rate information, so it is not a safe geometry-only response. These sources establish city development/property administration, but not open parcel coverage at this point.",
+  "officialPrimarySources": [
+    {
+      "url": "https://uitudaipur.org/uda/onlineservices/",
+      "observation": "Official Udaipur Development Authority page lists Property ID Creation, Name Transfer, Online Mutation, Subdivision and Reconstitution, and other UDA property services."
+    },
+    {
+      "url": "https://uitudaipur.org/uda/plan/",
+      "observation": "Official UDA planning page lists master/zonal/layout and GIS zonal plan products and displays an informational-use acknowledgement; no acknowledgement was submitted."
+    },
+    {
+      "url": "https://gis.rajasthan.gov.in/dlcinfo/?areaType=Urban",
+      "observation": "Official Rajasthan E-Mapping page says it uses khasra/village boundaries and is viewing-only; its selected-khasra panel includes Khasra ID and DLC rate fields. No search was submitted or parcel selected."
+    },
+    {
+      "url": "https://landrevenue.rajasthan.gov.in/content/landrevenuenew/en/board-of-revenue-for-raj-dep/about-us/section/cadstralmap.html",
+      "observation": "Official Board of Revenue page documents cadastral-map digitization statewide; this is not by itself evidence of point coverage."
+    }
+  ],
+  "searchQueries": [
+    {
+      "language": "English",
+      "query": "Udaipur official Rajasthan cadastral parcel map GIS UIT land records Udaipur",
+      "result": "Found UDA city-specific property services and planning maps, plus Rajasthan’s E-Mapping viewer. The viewer is selection-based and presents khasra identifiers/rates; no public geometry-only route was verified.",
+      "method": "Separate English-language search and official UDA/Rajasthan portal page review.",
+      "scope": "Locate current official city-bound registry, cadastral map, or public geometry service."
+    },
+    {
+      "language": "Hindi",
+      "query": "site:uitudaipur.org उदयपुर भू नक्शा कडेस्ट्रल नक्शा संपत्ति official",
+      "result": "Found official UDA planning/layout map pages and property ID services. No anonymous geometry-only cadastral response was confirmed.",
+      "method": "Separate Hindi-language search and official UDA page review.",
+      "scope": "Locate current official city-bound registry, cadastral map, or public geometry service."
+    }
+  ],
+  "geometryDecision": "No parcel geometry retained; no anonymous public point-level full-polygon response was verified.",
+  "coverageAssessment": {
+    "claimedScope": "The official Udaipur Development Authority offers city-specific Property ID, property name-transfer, mutation, subdivision, and land-layout services. Rajasthan’s state E-Mapping portal shows urban khasra selection and explicitly exposes a Khasra ID and land-rate information, so it is not a safe geometry-only response. These sources establish city development/property administration, but not open parcel coverage at this point.",
+    "verifiedOpenScope": "No geometry-only service or point-level response verified; candidate map/query flows either expose parcel identifiers/property attributes or require application/account steps.",
+    "citywideVerified": false,
+    "countrywideVerified": false,
+    "geometryVerified": false
+  },
+  "attempts": [],
+  "remainingUncertainty": "Whether a separate public UDA cadastral feature service exposes geometry without khasra identifiers or property/tax data."
+}

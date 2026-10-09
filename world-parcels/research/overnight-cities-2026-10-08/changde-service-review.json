@@ -1,0 +1,64 @@
+{
+  "schemaVersion": 1,
+  "kind": "city_parcel_service_review",
+  "checkedAt": "2026-10-09",
+  "status": "complete",
+  "name": "Changde",
+  "country": "China",
+  "countryCode": "CN",
+  "rank": 833,
+  "wupCityCode": 10112,
+  "point": [
+    29.0401422607343,
+    111.692519729142
+  ],
+  "registryFound": true,
+  "registryBasis": "Changde Natural Resources and Planning Bureau and the Changde Real Estate Registration Center publish city-specific registration service notices. The documented online information-query route requires account registration and real-name verification; it is not an anonymous cadastral geometry API.",
+  "registryEvidenceUrls": [
+    "https://www.changde.gov.cn/cdzx/bmdt/content_78211517",
+    "https://zrzyhghj.changde.gov.cn/slzq/ztzl1__xwzx/ztzl/fzjs/content_1091558",
+    "https://zrzyhghj.changde.gov.cn/xwzx/tzgg/content_78210747"
+  ],
+  "verifiedSample": false,
+  "publicParcelGeometryFound": false,
+  "returnedFullPolygonCount": 0,
+  "uniqueFullPolygonCount": 0,
+  "wupPointContained": null,
+  "portals": [
+    {
+      "name": "Changde Real Estate Registration Center online information services; official documentation describes a verified-account workflow, not anonymous public geometry.",
+      "operator": "Official local, regional or national agency as identified in the source pages",
+      "homeUrl": "https://www.changde.gov.cn/cdzx/bmdt/content_78211517",
+      "observation": "Changde municipal government article (2026-07-21) says its Real Estate Registration Center’s online real-property-information service is accessed through its official WeChat account after account registration and real-name verification; no query was submitted."
+    }
+  ],
+  "requests": [
+    {
+      "url": "https://www.changde.gov.cn/cdzx/bmdt/content_78211517",
+      "method": "GET / public indexed-page inspection",
+      "httpStatus": null,
+      "contentType": null,
+      "observation": "Changde municipal government article (2026-07-21) says its Real Estate Registration Center’s online real-property-information service is accessed through its official WeChat account after account registration and real-name verification; no query was submitted."
+    },
+    {
+      "url": "https://zrzyhghj.changde.gov.cn/slzq/ztzl1__xwzx/ztzl/fzjs/content_1091558",
+      "method": "GET / public indexed-page inspection",
+      "httpStatus": null,
+      "contentType": null,
+      "observation": "Changde Natural Resources and Planning Bureau registration-center notice (2024-10-14) documents local online registration channels and identifies the municipal service hall."
+    },
+    {
+      "url": "https://zrzyhghj.changde.gov.cn/xwzx/tzgg/content_78210747",
+      "method": "GET / public indexed-page inspection",
+      "httpStatus": null,
+      "contentType": null,
+      "observation": "Bureau’s 2026 notice describes city registry system integration into Hunan’s provincial platform, confirming active local registration infrastructure; it does not document anonymous parcel geometries."
+    }
+  ],
+  "limitations": "The described information-query route requires registration and real-name verification. No anonymous public parcel geometry endpoint, safe geometry+ID allowlist, or exact WUP-point hit was verified.",
+  "scopeLimits": "No protected or personal/property-specific information queried; no anonymous full geometry and stable-ID allowlist verified. No completeness claim.",
+  "runtimeAssessment": {
+    "status": "not_assessed_no_verified_geometry_schema",
+    "reason": "The described information-query route requires registration and real-name verification. No anonymous public parcel geometry endpoint, safe geometry+ID allowlist, or exact WUP-point hit was verified."
+  }
+}

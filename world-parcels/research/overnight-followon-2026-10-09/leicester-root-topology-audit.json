@@ -1,0 +1,179 @@
+{
+  "schemaVersion": "1.0",
+  "title": "Leicester HM Land Registry INSPIRE local topology audit",
+  "auditedAt": "2026-10-09",
+  "source": {
+    "url": "https://use-land-property-data.service.gov.uk/datasets/inspire/download/Leicester_City_Council.zip",
+    "request": "Anonymous GET through the site ordinary cookie flow; no account, API key, or property-specific input.",
+    "httpStatus": 200,
+    "contentType": "application/force-download",
+    "responseBytes": 14594724,
+    "archiveSha256": "d8b1815580fc35955485190036befd9a9a37e8e1167373fa461f37538ba59247",
+    "archivePath": "tmp/overnight-cities-2026-10-09/leicester-city-council-hmlr-inspire.zip",
+    "gmlMember": "Land_Registry_Cadastral_Parcels.gml",
+    "gmlTimestamp": "2026-10-04T02:22:09.596Z",
+    "sourceFeatureCount": 110414,
+    "nativeCrs": "EPSG:27700",
+    "readFields": [
+      "INSPIREID",
+      "GEOMETRY"
+    ],
+    "fieldsNotReadOrRetained": "All other property attributes and their values were left unread by the audit; no owner/address data were retained."
+  },
+  "method": {
+    "geometrySelection": "Select complete source geometries that intersect the stated 1 km square; do not clip to the square.",
+    "geometryValidation": "Shapely/GEOS validity check on each complete native geometry.",
+    "pairCheck": "STRtree candidate pairs on complete source geometries; each unordered pair tested once with exact topological equality and intersection area.",
+    "positiveOverlapThresholdM2": 0.01,
+    "scope": "No repair, simplification, clipping, deduplication, or clean-subset selection; counts describe all local candidates.",
+    "auditScript": "tmp/overnight-cities-2026-10-09/audit-leicester-root-topology.py"
+  },
+  "window": {
+    "reproducedPriorWindow": {
+      "boundsMetersEpsg27700": [
+        458767.36184217216,
+        303542.92059304944,
+        459767.36184217216,
+        304542.92059304944
+      ],
+      "widthMeters": 1000,
+      "heightMeters": 1000,
+      "candidateCompleteGeometryCount": 1662,
+      "validGeometryCount": 1662,
+      "invalidGeometryCount": 0,
+      "uniqueInspireIdCount": 1662,
+      "topologicalDuplicatePairCount": 6,
+      "positiveOverlapPairCount": 207,
+      "totalPairwiseOverlapAreaM2": 14089.25619443004,
+      "intersectionOperationErrors": 0,
+      "wupPointCoveringIds": [
+        "42889273"
+      ],
+      "description": "This reproduces the bounds supplied in the earlier Leicester review and returns its 1,662-feature count."
+    },
+    "independentLocalProjTransform": {
+      "inputWupPointLatLon": [
+        52.6309139939256,
+        -1.125767851843
+      ],
+      "projectedCenterEastingNorthingMeters": [
+        459266.854724551,
+        304040.890552977
+      ],
+      "boundsMetersEpsg27700": [
+        458766.854724551,
+        303540.890552977,
+        459766.854724551,
+        304540.890552977
+      ],
+      "widthMeters": 1000,
+      "heightMeters": 1000,
+      "coordinateOperation": "PROJ 9.8.1 EPSG:4326 to EPSG:27700 best available operation; axis-ordered geographic input latitude, longitude.",
+      "statedOperationAccuracyMeters": 1,
+      "candidateCompleteGeometryCount": 1661,
+      "validGeometryCount": 1661,
+      "invalidGeometryCount": 0,
+      "uniqueInspireIdCount": 1661,
+      "topologicalDuplicatePairCount": 6,
+      "positiveOverlapPairCount": 207,
+      "totalPairwiseOverlapAreaM2": 14089.25619443004,
+      "intersectionOperationErrors": 0,
+      "wupPointCoveringIds": [
+        "42889273"
+      ]
+    },
+    "reconciliation": "The supplied prior-window center is (459267.36184217216, 304042.92059304944), while the installed PROJ transformation yields (459266.854724551, 304040.890552977), approximately 0.51 m west and 2.03 m south of the supplied center. The resulting candidate counts differ by one; both windows produce the same validity, duplicate, overlap-pair, and total-overlap results. The PROJ operation reports 1 m accuracy, so sub-meter exactness is not asserted."
+  },
+  "conflicts": {
+    "duplicatePairIds": [
+      {
+        "ids": [
+          "29707256",
+          "29707255"
+        ],
+        "areaM2": 766.5052450005746
+      },
+      {
+        "ids": [
+          "29707256",
+          "29707257"
+        ],
+        "areaM2": 766.5052450005746
+      },
+      {
+        "ids": [
+          "29707256",
+          "29707254"
+        ],
+        "areaM2": 766.5052450005746
+      },
+      {
+        "ids": [
+          "29707257",
+          "29707255"
+        ],
+        "areaM2": 766.5052450005746
+      },
+      {
+        "ids": [
+          "29707257",
+          "29707254"
+        ],
+        "areaM2": 766.5052450005746
+      },
+      {
+        "ids": [
+          "29707255",
+          "29707254"
+        ],
+        "areaM2": 766.5052450005746
+      }
+    ],
+    "duplicateClusterNote": "The six equal-geometry pairs form a four-feature duplicate cluster with INSPIREIDs 29707254, 29707255, 29707256, and 29707257; each polygon area is approximately 766.505245 m2.",
+    "largestNonDuplicateOverlapExamples": [
+      {
+        "ids": [
+          "51913747",
+          "51913756"
+        ],
+        "areaM2": 2284.7631819974836,
+        "fractionOfSmaller": 0.9999962867182245
+      },
+      {
+        "ids": [
+          "51913747",
+          "51913931"
+        ],
+        "areaM2": 2284.5586074975704,
+        "fractionOfSmaller": 1.0
+      },
+      {
+        "ids": [
+          "51913756",
+          "51913931"
+        ],
+        "areaM2": 2284.5539467585745,
+        "fractionOfSmaller": 0.9999979598951935
+      },
+      {
+        "ids": [
+          "29695578",
+          "57939735"
+        ],
+        "areaM2": 679.4383980508297,
+        "fractionOfSmaller": 0.9997939046645183
+      },
+      {
+        "ids": [
+          "54182159",
+          "41949358"
+        ],
+        "areaM2": 520.344955169423,
+        "fractionOfSmaller": 0.921509796079507
+      }
+    ],
+    "overlapInterpretation": "Pairwise intersection areas are summed per pair and therefore may count the same shared area more than once when three or more polygons overlap."
+  },
+  "sourceLimit": "HM Land Registry describes INSPIRE index polygons as indicative extents of registered freehold property, not authoritative legal boundaries or a complete representation of all land parcels.",
+  "geometryChangedOrRepaired": false
+}

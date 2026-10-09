@@ -1,0 +1,95 @@
+{
+  "schemaVersion": 1,
+  "kind": "city_parcel_source_research",
+  "checkedAt": "2026-10-09",
+  "name": "Damietta",
+  "country": "Egypt",
+  "countryCode": "EG",
+  "populationUnit": "persons",
+  "status": "complete",
+  "registryFound": true,
+  "registryBasis": "The Egyptian Survey Authority (ESA) identifies its Damietta Survey Directorate and an ESA–Damietta Governorate cooperation protocol for surveying and digitizing the governorate’s state-land inventory. This establishes a local surveying/maps institution and a city/gubernatorial land-record project, but not a public parcel service for the WUP point, private-title registry access, or anonymous full geometry.",
+  "registryEvidenceUrls": [
+    "https://www.esa.gov.eg/NewsContent2.aspx?id=1522",
+    "https://www.esa.gov.eg/main.aspx",
+    "https://www.esa.gov.eg/sellingmaproomdigital.aspx"
+  ],
+  "verifiedSample": false,
+  "publicParcelGeometryFound": false,
+  "runtimeReadiness": "not_enabled_no_verified_public_geometry",
+  "wupCityCode": 6774,
+  "cityId": "wup2025:6774",
+  "centerLatLon": [
+    31.4315710467193,
+    31.8131696119135
+  ],
+  "rank": 719,
+  "queueRank": 719,
+  "population2025": 743111,
+  "population2025k": 743.111,
+  "pointBasis": "UN WUP 2025 population-weighted settlement centroid; this is not a municipal boundary or a parcel-coverage claim.",
+  "technicalBlocker": "No anonymous full-polygon geometry response and schema-safe parcel route were verified at the supplied WUP locator.",
+  "scopeLimits": "The WUP point is a settlement centroid, not a parcel identity. ESA’s official Damietta cooperation material covers surveying and digitizing state-owned land records at governorate scope; a 2025 project also shows the local survey directorate produces official maps. Neither source proves anonymous, complete, private-parcel geometry at the WUP point. ESA digital maps are request-based; no geometry request was made. No owner/address or identity data retained.",
+  "priorEvidenceFiles": [],
+  "resultCategory": "local_survey_records_exist_no_public_parcel_geometry",
+  "research": {
+    "executedQueries": [
+      {
+        "language": "English",
+        "query": "Damietta Egypt official cadastral parcel map ESA survey directorate property registry GIS",
+        "scope": "Find city-specific official registry/cadastre evidence and safe anonymous parcel geometry; do not submit owner, address, identity or property-specific query data.",
+        "result": "Official ESA primary source confirms Damietta local survey work and a state-land digitization protocol, but no public parcel geometry schema or exact-point coverage surfaced.",
+        "actualResultUrls": [
+          "https://www.esa.gov.eg/NewsContent2.aspx?id=1522",
+          "https://www.esa.gov.eg/main.aspx",
+          "https://www.esa.gov.eg/sellingmaproomdigital.aspx"
+        ],
+        "executionMethod": "Separate English and local-language searches followed by first-party-source inspection; no personal/property-specific lookup submitted."
+      },
+      {
+        "language": "Arabic",
+        "query": "دمياط الهيئة المصرية العامة للمساحة مديرية المساحة خرائط مساحية سجل عيني قطع الأراضي رسمي",
+        "scope": "Find city-specific official registry/cadastre evidence and safe anonymous parcel geometry; do not submit owner, address, identity or property-specific query data.",
+        "result": "مصدر الهيئة المصرية العامة للمساحة يذكر مديرية المساحة بدمياط وبروتوكولاً لحصر ورفع وميكنة أملاك الدولة بالمحافظة. لم يظهر عارض عام يتيح هندسة قطع الأراضي، ولم يُجرَ استعلام عن عقار أو مالك.",
+        "actualResultUrls": [
+          "https://www.esa.gov.eg/NewsContent2.aspx?id=1522",
+          "https://www.esa.gov.eg/main.aspx",
+          "https://www.esa.gov.eg/sellingmaproomdigital.aspx"
+        ],
+        "executionMethod": "Separate English and local-language searches followed by first-party-source inspection; no personal/property-specific lookup submitted."
+      }
+    ],
+    "officialSources": [
+      {
+        "url": "https://www.esa.gov.eg/NewsContent2.aspx?id=1522",
+        "observation": "First-party Egyptian Survey Authority report names the Governor of Damietta and the Director of the Damietta Survey Directorate in a protocol for a comprehensive land inventory, precise surveying and digitization of state-owned lands in Damietta Governorate. The project is for state lands, not evidence of open private parcel coverage."
+      },
+      {
+        "url": "https://www.esa.gov.eg/main.aspx",
+        "observation": "Official ESA overview describes its surveying, map-production and property-record mapping mandate and map services; general national mandate alone does not establish parcel coverage at Damietta’s WUP point."
+      },
+      {
+        "url": "https://www.esa.gov.eg/sellingmaproomdigital.aspx",
+        "observation": "Official ESA digital-map service description is a request-based map-product path; no anonymous vector geometry endpoint is described."
+      }
+    ]
+  },
+  "runtimeAssessment": {
+    "status": "not_enabled_no_verified_public_geometry",
+    "reason": "No anonymous full-polygon geometry response and schema-safe parcel route were verified at the supplied WUP locator."
+  },
+  "rootPrimaryReadback": {
+    "url": "https://www.esa.gov.eg/NewsContent2.aspx?id=1522",
+    "fetch": 200,
+    "contentType": "text/html; charset=utf-8",
+    "title": "الهيئة المصرية العامة للمساحة"
+  },
+  "rootReviewNote": "Reviewed the local primary institution/service evidence and stated geometry/access/identity limits. Fresh page readback failures are preserved separately and do not imply absent data; matching primary indexed text supplements the direct readback where available. No public geometry was verified for this city.",
+  "populationPlausibility2025": "High",
+  "point": [
+    31.4315710467193,
+    31.8131696119135
+  ],
+  "rootReviewedAt": "2026-10-09T03:06:11.183980+00:00",
+  "sourceIds": []
+}

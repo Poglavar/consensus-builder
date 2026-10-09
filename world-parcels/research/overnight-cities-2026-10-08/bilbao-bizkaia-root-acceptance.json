@@ -1,0 +1,4106 @@
+{
+  "schemaVersion": 1,
+  "purpose": "Live city parcel qualification with unmodified responses through the repository adapter; IDs and hashes retained, full geometries confined to temporary audit cache except three public samples.",
+  "checkedAt": "2026-10-09T02:50:32.919Z",
+  "city": "bilbao-bizkaia-root",
+  "descriptor": {
+    "id": "es-bizkaia-parcelas-rest",
+    "name": "Bizkaia public cadastral Parcelas",
+    "adapter": "arcgis",
+    "endpoint": "https://geo.bizkaia.eus/arcgisserverinspire/rest/services/LurraldeAntolamendua_PlanificacionTerritorial/Katastro_Catastro_WFS/MapServer/6",
+    "idFields": [
+      "Codigo_Municipio",
+      "Codigo_Poligono",
+      "Codigo_Parcela"
+    ],
+    "idFieldTypes": {
+      "Codigo_Municipio": "integer",
+      "Codigo_Poligono": "integer",
+      "Codigo_Parcela": "integer"
+    },
+    "objectIdField": "OBJECTID",
+    "idPrefix": "ES-BIZKAIA-",
+    "outFields": [
+      "OBJECTID",
+      "Codigo_Municipio",
+      "Codigo_Poligono",
+      "Codigo_Parcela"
+    ],
+    "pageSize": 1000,
+    "maxFeatures": 3000,
+    "maxBboxKm2": 1,
+    "countryCode": "ES",
+    "metricSrid": 32630,
+    "cityIds": [
+      "bilbao"
+    ],
+    "maxConcurrentQueries": 2,
+    "operator": "Diputación Foral de Bizkaia / GeoBizkaia",
+    "scope": "79 valid distinct cadastral-reference polygons verified in thirteen bounded 0.001-degree cells around the unchanged Bilbao WUP settlement locator. Complete bounded paging, forced three-row pages, all 79 fresh native parcel-identity reads, explicit absence, footprint and source binding passed in 27 requests. Independent metric EPSG:32630 GEOS found all geometries valid and distinct, with no sampled overlaps above 0.01 m² or operation errors. The separate Bizkaia foral cadastre uses the native municipality/polygon/parcel integer tuple; OBJECTID is only a transport key. A fresh EPSG:25830 REST tuple query matches the prior official WFS sample to below 0.000001 metres without editing coordinates. Requested EPSG:4326 geometry is retained unchanged. Wider municipal completeness, legal title, currentness, survey accuracy and long-term key continuity remain unverified.",
+    "evidenceFile": "research/overnight-cities-2026-10-08/bilbao-bizkaia-root-acceptance.json",
+    "attribution": "Diputación Foral de Bizkaia / GeoBizkaia · public cadastral reference polygons · adapted to WGS84",
+    "catalogueUrl": "https://opendatabizkaia.eus/es/catalogo/parcelario-catastral-de-bizkaia",
+    "licenceNote": "Official OpenData resource states CC BY 4.0; Bizkaia INSPIRE portal states CC BY 3.0 ES. Public bounded access verified; publisher attribution retained. These public reference polygons do not establish legal title or survey accuracy."
+  },
+  "grid": [
+    {
+      "name": "viewport-0",
+      "bbox": [
+        -2.961,
+        43.281,
+        -2.96,
+        43.282
+      ],
+      "kind": "aligned-grid"
+    },
+    {
+      "name": "viewport-1",
+      "bbox": [
+        -2.96,
+        43.281,
+        -2.959,
+        43.282
+      ],
+      "kind": "aligned-grid"
+    },
+    {
+      "name": "viewport-2",
+      "bbox": [
+        -2.959,
+        43.281,
+        -2.958,
+        43.282
+      ],
+      "kind": "aligned-grid"
+    },
+    {
+      "name": "viewport-3",
+      "bbox": [
+        -2.961,
+        43.282,
+        -2.96,
+        43.283
+      ],
+      "kind": "aligned-grid"
+    },
+    {
+      "name": "viewport-4",
+      "bbox": [
+        -2.96,
+        43.282,
+        -2.959,
+        43.283
+      ],
+      "kind": "aligned-grid"
+    },
+    {
+      "name": "viewport-5",
+      "bbox": [
+        -2.959,
+        43.282,
+        -2.958,
+        43.283
+      ],
+      "kind": "aligned-grid"
+    },
+    {
+      "name": "viewport-6",
+      "bbox": [
+        -2.961,
+        43.283,
+        -2.96,
+        43.284
+      ],
+      "kind": "aligned-grid"
+    },
+    {
+      "name": "viewport-7",
+      "bbox": [
+        -2.96,
+        43.283,
+        -2.959,
+        43.284
+      ],
+      "kind": "aligned-grid"
+    },
+    {
+      "name": "viewport-8",
+      "bbox": [
+        -2.959,
+        43.283,
+        -2.958,
+        43.284
+      ],
+      "kind": "aligned-grid"
+    },
+    {
+      "name": "viewport-9",
+      "bbox": [
+        -2.96,
+        43.28,
+        -2.959,
+        43.281
+      ],
+      "kind": "adjacent-pan"
+    },
+    {
+      "name": "viewport-10",
+      "bbox": [
+        -2.96,
+        43.284,
+        -2.959,
+        43.285
+      ],
+      "kind": "adjacent-pan"
+    },
+    {
+      "name": "viewport-11",
+      "bbox": [
+        -2.962,
+        43.282,
+        -2.961,
+        43.283
+      ],
+      "kind": "adjacent-pan"
+    },
+    {
+      "name": "viewport-12",
+      "bbox": [
+        -2.958,
+        43.282,
+        -2.957,
+        43.283
+      ],
+      "kind": "adjacent-pan"
+    }
+  ],
+  "tests": [
+    {
+      "name": "viewport-0",
+      "passed": true,
+      "elapsedMs": 5075,
+      "requestIndexes": [
+        0,
+        0
+      ],
+      "bbox": [
+        -2.961,
+        43.281,
+        -2.96,
+        43.282
+      ],
+      "complete": true,
+      "count": 24,
+      "ids": [
+        {
+          "id": "ES-BIZKAIA-20~1105~3020",
+          "geometrySha256": "8618d03cd96b864a733d50468c531338f8c9eb6160a514d95c453c5d32bb1f48"
+        },
+        {
+          "id": "ES-BIZKAIA-20~1105~3019",
+          "geometrySha256": "136f7ee5ab1436b6593162fbf96448ae7d288c3308479d4cf4bc0fc99df901f0"
+        },
+        {
+          "id": "ES-BIZKAIA-20~1105~3022",
+          "geometrySha256": "3ae6777d2321e16c1e2c9fac189bc462550ee8342a7bf8b9b986b2e8d64c3969"
+        },
+        {
+          "id": "ES-BIZKAIA-20~1105~3021",
+          "geometrySha256": "eab5262bae32218722bb278b3e0cb0037236fa7bffbc69db27594932ff77dffc"
+        },
+        {
+          "id": "ES-BIZKAIA-20~1105~3008",
+          "geometrySha256": "12cf640eab67b24b883c107e3e41fb30b5eddad672ab93b4f9570f5937d733e8"
+        },
+        {
+          "id": "ES-BIZKAIA-20~1105~3009",
+          "geometrySha256": "4945ed8daa56b3f5cf13da8613ec6170cf80bc28fb393d61341de8dedefaf469"
+        },
+        {
+          "id": "ES-BIZKAIA-20~1105~3014",
+          "geometrySha256": "496a8a3fe6e2808e183dc6cc4e860da3043b1e1d2e5597afea1c07c5761cc8a5"
+        },
+        {
+          "id": "ES-BIZKAIA-20~1105~3016",
+          "geometrySha256": "324bf8c119bbd1fa54f541ad8d7f054df48c979d36f3211c6a6e222c05f692fb"
+        },
+        {
+          "id": "ES-BIZKAIA-20~1105~3018",
+          "geometrySha256": "0a30215d0dadb6131f247c90ab90b0d3b541941e118cdc161c387de2d1b1440b"
+        },
+        {
+          "id": "ES-BIZKAIA-20~1105~3023",
+          "geometrySha256": "d2c66091321a4c2869379fef5ee36eb4973f72d38045f2d1ab79de8d3c442064"
+        },
+        {
+          "id": "ES-BIZKAIA-20~1105~3010",
+          "geometrySha256": "f8198be4d7317b2d0418a6cd29ab0c67d6a5923c00f713cd4e53b527c1b57ae4"
+        },
+        {
+          "id": "ES-BIZKAIA-20~1105~3011",
+          "geometrySha256": "03ee9a53cacdbe849ebd5687aab467615c662837a66f33532bba7403ccc0a4ed"
+        },
+        {
+          "id": "ES-BIZKAIA-20~1105~3012",
+          "geometrySha256": "0218684ec3248d5f1b3f911c3dbaf937625f5c82e94b70e14b2d7ce93d1d8ecc"
+        },
+        {
+          "id": "ES-BIZKAIA-20~1105~3013",
+          "geometrySha256": "e98445d6f7fa61af5e36d597a9783d90f5f288c304d9518ba45c6f957b2fd16a"
+        },
+        {
+          "id": "ES-BIZKAIA-20~1105~3006",
+          "geometrySha256": "e1e21810fc20e720f5399dab6342b27c2288947897eb9ce161b691566222b739"
+        },
+        {
+          "id": "ES-BIZKAIA-20~1105~3007",
+          "geometrySha256": "1b07704223b1ac3befd76e6bc3582b8a00a3638a71e6157a215dded65a36cc84"
+        },
+        {
+          "id": "ES-BIZKAIA-20~1105~3015",
+          "geometrySha256": "a673170225071fbb96384e0afedc5a6571dc22a43dde4e95418bac19e67fc01f"
+        },
+        {
+          "id": "ES-BIZKAIA-20~1105~3017",
+          "geometrySha256": "a22db3a846f4eaedf0727af4992969bee3083c264a63a1b17487aa215edfd3e5"
+        },
+        {
+          "id": "ES-BIZKAIA-20~1105~3024",
+          "geometrySha256": "256ab6b5bbe62404ffffcbb2b941d385f03660b8d27789db840ae20671ddebcf"
+        },
+        {
+          "id": "ES-BIZKAIA-20~1104~71001",
+          "geometrySha256": "41bc7cffee9cbbbaa4db09f54f4b9b41c8ce8ca31ca7bab1a8bc692c0007ab82"
+        },
+        {
+          "id": "ES-BIZKAIA-20~1109~70001",
+          "geometrySha256": "9aadea11d111c699157371d15cd077c6508139581de8e030406b2317b4261957"
+        },
+        {
+          "id": "ES-BIZKAIA-20~1105~70001",
+          "geometrySha256": "d0cadcfe2ec7690565fdf704f5cb2c88c796af61c58d88a3080e28e82e985f24"
+        },
+        {
+          "id": "ES-BIZKAIA-20~1109~3005",
+          "geometrySha256": "44eac5717ee86256567cc863eadd19670e4d68b1ef2ae3b44fc527c31025300d"
+        },
+        {
+          "id": "ES-BIZKAIA-20~1104~3003",
+          "geometrySha256": "be380e72e5d52478be695d0e83eeb45b420fbf9adc10be8be718687a453b16af"
+        }
+      ]
+    },
+    {
+      "name": "viewport-1",
+      "passed": true,
+      "elapsedMs": 158,
+      "requestIndexes": [
+        1,
+        1
+      ],
+      "bbox": [
+        -2.96,
+        43.281,
+        -2.959,
+        43.282
+      ],
+      "complete": true,
+      "count": 19,
+      "ids": [
+        {
+          "id": "ES-BIZKAIA-20~7~243",
+          "geometrySha256": "48acd8fa6c66cd243179368cde3e8cce3b8ef288f402e37feddd255e920188a9"
+        },
+        {
+          "id": "ES-BIZKAIA-20~7~142",
+          "geometrySha256": "1ae7b219bf2a19508e407e4604d072c59e625b41ec574c12a6ae83a937aaa8c1"
+        },
+        {
+          "id": "ES-BIZKAIA-20~7~144",
+          "geometrySha256": "b7e7ad8e5b0df984ee3f8dfcd769122938e32c132fe0b2d4ec13d19e162b9a7d"
+        },
+        {
+          "id": "ES-BIZKAIA-20~7~143",
+          "geometrySha256": "d82c1ca80e986698199551b97c980ebe3fdd837544ab27bf1a652c227d067a33"
+        },
+        {
+          "id": "ES-BIZKAIA-20~1105~3019",
+          "geometrySha256": "136f7ee5ab1436b6593162fbf96448ae7d288c3308479d4cf4bc0fc99df901f0"
+        },
+        {
+          "id": "ES-BIZKAIA-20~1105~3016",
+          "geometrySha256": "324bf8c119bbd1fa54f541ad8d7f054df48c979d36f3211c6a6e222c05f692fb"
+        },
+        {
+          "id": "ES-BIZKAIA-20~1109~70001",
+          "geometrySha256": "9aadea11d111c699157371d15cd077c6508139581de8e030406b2317b4261957"
+        },
+        {
+          "id": "ES-BIZKAIA-20~1109~1004",
+          "geometrySha256": "cd032df677d3d8fa23c649a7944ddb57256541a86f92148a10cc60445c144c39"
+        },
+        {
+          "id": "ES-BIZKAIA-20~1109~1005",
+          "geometrySha256": "01ff31b4bfd3b8455c30ed2da9c57dffa765503004e3eee6db64a05d3bb8a948"
+        },
+        {
+          "id": "ES-BIZKAIA-20~1109~1006",
+          "geometrySha256": "c74f050245dab74e7ffdd0195677b99d307e662324022972da34b0d0905c0615"
+        },
+        {
+          "id": "ES-BIZKAIA-20~1109~2001",
+          "geometrySha256": "4e810809d21ae63295325c42d63a5b8581c4919c9dba9febbb8db0ee71522341"
+        },
+        {
+          "id": "ES-BIZKAIA-20~1105~70001",
+          "geometrySha256": "d0cadcfe2ec7690565fdf704f5cb2c88c796af61c58d88a3080e28e82e985f24"
+        },
+        {
+          "id": "ES-BIZKAIA-20~1109~1002",
+          "geometrySha256": "a595c80a00be3073769c90c62e59c658e15cdcb9e81eab43cca281657351d746"
+        },
+        {
+          "id": "ES-BIZKAIA-20~1109~2002",
+          "geometrySha256": "6d9add732dcd0c8882be9e0c696177b95141a6baa339c1473a13c21c4136b158"
+        },
+        {
+          "id": "ES-BIZKAIA-20~1109~2004",
+          "geometrySha256": "01c9eaf85e192b6cd15521e1e89da47d7359df88cfa04dd1f0b29657ed2942c7"
+        },
+        {
+          "id": "ES-BIZKAIA-20~1109~2005",
+          "geometrySha256": "4dd2d087b952a5dab5bebea1d4663591a42e366a86119acc74fd71fcad7dbd9b"
+        },
+        {
+          "id": "ES-BIZKAIA-20~1109~1003",
+          "geometrySha256": "af5dd71bf6959d4ff3917fc2bf6950eb47cc9557ebfeb7b853bb0e808559a570"
+        },
+        {
+          "id": "ES-BIZKAIA-20~1109~3005",
+          "geometrySha256": "44eac5717ee86256567cc863eadd19670e4d68b1ef2ae3b44fc527c31025300d"
+        },
+        {
+          "id": "ES-BIZKAIA-20~1109~2003",
+          "geometrySha256": "c9497d25ec8b7407e98b6cf5f34259f79361784cf647563d7d5427a36cb79dcc"
+        }
+      ]
+    },
+    {
+      "name": "viewport-2",
+      "passed": true,
+      "elapsedMs": 167,
+      "requestIndexes": [
+        2,
+        2
+      ],
+      "bbox": [
+        -2.959,
+        43.281,
+        -2.958,
+        43.282
+      ],
+      "complete": true,
+      "count": 11,
+      "ids": [
+        {
+          "id": "ES-BIZKAIA-20~7~147",
+          "geometrySha256": "675c771dc427674560d44f887b4090de8cce25026b0794d2b6c7dd0b7a1b2d34"
+        },
+        {
+          "id": "ES-BIZKAIA-20~7~145",
+          "geometrySha256": "1c30fd2400171fd25cbd5b98584c873d0c7e40b83c14f7f36b9478382c39e853"
+        },
+        {
+          "id": "ES-BIZKAIA-20~7~146",
+          "geometrySha256": "9d66827b8d579b14e280929426ddf25017f43c48362ac3d5e048f422b0c0730a"
+        },
+        {
+          "id": "ES-BIZKAIA-20~7~243",
+          "geometrySha256": "48acd8fa6c66cd243179368cde3e8cce3b8ef288f402e37feddd255e920188a9"
+        },
+        {
+          "id": "ES-BIZKAIA-20~7~148",
+          "geometrySha256": "fccd0eb40355b84024847b29847b8e777a20d8ff3d4b85d1df233fe9540159a2"
+        },
+        {
+          "id": "ES-BIZKAIA-20~7~142",
+          "geometrySha256": "1ae7b219bf2a19508e407e4604d072c59e625b41ec574c12a6ae83a937aaa8c1"
+        },
+        {
+          "id": "ES-BIZKAIA-20~7~144",
+          "geometrySha256": "b7e7ad8e5b0df984ee3f8dfcd769122938e32c132fe0b2d4ec13d19e162b9a7d"
+        },
+        {
+          "id": "ES-BIZKAIA-20~7~143",
+          "geometrySha256": "d82c1ca80e986698199551b97c980ebe3fdd837544ab27bf1a652c227d067a33"
+        },
+        {
+          "id": "ES-BIZKAIA-20~1109~70001",
+          "geometrySha256": "9aadea11d111c699157371d15cd077c6508139581de8e030406b2317b4261957"
+        },
+        {
+          "id": "ES-BIZKAIA-20~1109~2004",
+          "geometrySha256": "01c9eaf85e192b6cd15521e1e89da47d7359df88cfa04dd1f0b29657ed2942c7"
+        },
+        {
+          "id": "ES-BIZKAIA-20~1109~2005",
+          "geometrySha256": "4dd2d087b952a5dab5bebea1d4663591a42e366a86119acc74fd71fcad7dbd9b"
+        }
+      ]
+    },
+    {
+      "name": "viewport-3",
+      "passed": true,
+      "elapsedMs": 162,
+      "requestIndexes": [
+        3,
+        3
+      ],
+      "bbox": [
+        -2.961,
+        43.282,
+        -2.96,
+        43.283
+      ],
+      "complete": true,
+      "count": 23,
+      "ids": [
+        {
+          "id": "ES-BIZKAIA-20~7~243",
+          "geometrySha256": "48acd8fa6c66cd243179368cde3e8cce3b8ef288f402e37feddd255e920188a9"
+        },
+        {
+          "id": "ES-BIZKAIA-20~1105~3002",
+          "geometrySha256": "3aa1ec3abcdb8cc9d4920373f05cfae8e73a9358e2b8af84ad4264aeb937b32d"
+        },
+        {
+          "id": "ES-BIZKAIA-20~1105~3004",
+          "geometrySha256": "68d0a0ce9730911ac48f898135e24d7492d19d04b30f42b76df3d19b45ec8611"
+        },
+        {
+          "id": "ES-BIZKAIA-20~1105~3003",
+          "geometrySha256": "ba009e84776bd31c168c0b7ddd9562ae9c40040d68edfcbfcd850df63494a8c6"
+        },
+        {
+          "id": "ES-BIZKAIA-20~1105~3005",
+          "geometrySha256": "94530d65fea89d7c21290d354f9d24d8672c1712de556bdc95cff01c7e95c78b"
+        },
+        {
+          "id": "ES-BIZKAIA-20~1105~2002",
+          "geometrySha256": "84d24383fd18b31749153c29fd1caed0b133544c2db76d0bda60cf683a20f29e"
+        },
+        {
+          "id": "ES-BIZKAIA-20~1105~3008",
+          "geometrySha256": "12cf640eab67b24b883c107e3e41fb30b5eddad672ab93b4f9570f5937d733e8"
+        },
+        {
+          "id": "ES-BIZKAIA-20~1105~3009",
+          "geometrySha256": "4945ed8daa56b3f5cf13da8613ec6170cf80bc28fb393d61341de8dedefaf469"
+        },
+        {
+          "id": "ES-BIZKAIA-20~1105~3010",
+          "geometrySha256": "f8198be4d7317b2d0418a6cd29ab0c67d6a5923c00f713cd4e53b527c1b57ae4"
+        },
+        {
+          "id": "ES-BIZKAIA-20~1105~2001",
+          "geometrySha256": "ca3191355d8659582cbdc2ed7c091c3f6ace999ca1f35e449fd3621e04b6e0ce"
+        },
+        {
+          "id": "ES-BIZKAIA-20~1105~3001",
+          "geometrySha256": "4d4ef204e071b490cb588d0e4036e78e6715a8e649c5ee63807aa0ebdbb6c4d6"
+        },
+        {
+          "id": "ES-BIZKAIA-20~1105~3006",
+          "geometrySha256": "e1e21810fc20e720f5399dab6342b27c2288947897eb9ce161b691566222b739"
+        },
+        {
+          "id": "ES-BIZKAIA-20~1105~3007",
+          "geometrySha256": "1b07704223b1ac3befd76e6bc3582b8a00a3638a71e6157a215dded65a36cc84"
+        },
+        {
+          "id": "ES-BIZKAIA-20~1106~2005",
+          "geometrySha256": "97382621066300ae0611149e064f3d349284d2fa8ceb3b6718e08f58ddeae3b3"
+        },
+        {
+          "id": "ES-BIZKAIA-20~1106~2006",
+          "geometrySha256": "5148eeaa6fbb5837418c2d4a3e2e6f4eb40a86e699cc8dfb279b633abed18116"
+        },
+        {
+          "id": "ES-BIZKAIA-20~1106~2008",
+          "geometrySha256": "f585bbf1224e18846347dd7f82fe63262368582468b8611d416aa1e577de2e19"
+        },
+        {
+          "id": "ES-BIZKAIA-20~1106~2010",
+          "geometrySha256": "02b416d880640395264e6870fb7971cd0520265f11aa143068c94fe7a2743ebe"
+        },
+        {
+          "id": "ES-BIZKAIA-20~1106~2007",
+          "geometrySha256": "ed44389a7fcd18fa0ffc42e1ec92bac321f9059005d4bb926795beee568e9e35"
+        },
+        {
+          "id": "ES-BIZKAIA-20~1106~2009",
+          "geometrySha256": "d1f500628b0830a99f79a7012bdce317f384194f9b06fc49410f8bcc477fe309"
+        },
+        {
+          "id": "ES-BIZKAIA-20~1106~70001",
+          "geometrySha256": "7d0b0b6e9bf4a6d8f1db5dbd58e21860c49cb6b8e3635b1191749984327b1fc2"
+        },
+        {
+          "id": "ES-BIZKAIA-20~1109~70001",
+          "geometrySha256": "9aadea11d111c699157371d15cd077c6508139581de8e030406b2317b4261957"
+        },
+        {
+          "id": "ES-BIZKAIA-20~1105~70001",
+          "geometrySha256": "d0cadcfe2ec7690565fdf704f5cb2c88c796af61c58d88a3080e28e82e985f24"
+        },
+        {
+          "id": "ES-BIZKAIA-20~1109~1001",
+          "geometrySha256": "2d3edd9c5a83fed49fb6b3f166b53a9f64cfca67a71a7c89637881780db4e6e2"
+        }
+      ]
+    },
+    {
+      "name": "viewport-4",
+      "passed": true,
+      "elapsedMs": 167,
+      "requestIndexes": [
+        4,
+        4
+      ],
+      "bbox": [
+        -2.96,
+        43.282,
+        -2.959,
+        43.283
+      ],
+      "complete": true,
+      "count": 14,
+      "ids": [
+        {
+          "id": "ES-BIZKAIA-20~7~136",
+          "geometrySha256": "ca076d54a92fb10beb98cd1f0afb2509170345bccaacdc0f38319712f94b8e04"
+        },
+        {
+          "id": "ES-BIZKAIA-20~7~141",
+          "geometrySha256": "93c1aa99dd4b272c7789773f2b394c48d5712f05f372b161ab023b4a4847c5db"
+        },
+        {
+          "id": "ES-BIZKAIA-20~7~140",
+          "geometrySha256": "1620da88c2b303533e7f5868a1fb89d24c0141001b9045f03d9fd65de52dd221"
+        },
+        {
+          "id": "ES-BIZKAIA-20~7~243",
+          "geometrySha256": "48acd8fa6c66cd243179368cde3e8cce3b8ef288f402e37feddd255e920188a9"
+        },
+        {
+          "id": "ES-BIZKAIA-20~7~142",
+          "geometrySha256": "1ae7b219bf2a19508e407e4604d072c59e625b41ec574c12a6ae83a937aaa8c1"
+        },
+        {
+          "id": "ES-BIZKAIA-20~7~143",
+          "geometrySha256": "d82c1ca80e986698199551b97c980ebe3fdd837544ab27bf1a652c227d067a33"
+        },
+        {
+          "id": "ES-BIZKAIA-20~1106~2008",
+          "geometrySha256": "f585bbf1224e18846347dd7f82fe63262368582468b8611d416aa1e577de2e19"
+        },
+        {
+          "id": "ES-BIZKAIA-20~1106~2010",
+          "geometrySha256": "02b416d880640395264e6870fb7971cd0520265f11aa143068c94fe7a2743ebe"
+        },
+        {
+          "id": "ES-BIZKAIA-20~1106~2007",
+          "geometrySha256": "ed44389a7fcd18fa0ffc42e1ec92bac321f9059005d4bb926795beee568e9e35"
+        },
+        {
+          "id": "ES-BIZKAIA-20~1106~70001",
+          "geometrySha256": "7d0b0b6e9bf4a6d8f1db5dbd58e21860c49cb6b8e3635b1191749984327b1fc2"
+        },
+        {
+          "id": "ES-BIZKAIA-20~1109~70001",
+          "geometrySha256": "9aadea11d111c699157371d15cd077c6508139581de8e030406b2317b4261957"
+        },
+        {
+          "id": "ES-BIZKAIA-20~1109~1002",
+          "geometrySha256": "a595c80a00be3073769c90c62e59c658e15cdcb9e81eab43cca281657351d746"
+        },
+        {
+          "id": "ES-BIZKAIA-20~1109~1001",
+          "geometrySha256": "2d3edd9c5a83fed49fb6b3f166b53a9f64cfca67a71a7c89637881780db4e6e2"
+        },
+        {
+          "id": "ES-BIZKAIA-20~1109~1003",
+          "geometrySha256": "af5dd71bf6959d4ff3917fc2bf6950eb47cc9557ebfeb7b853bb0e808559a570"
+        }
+      ]
+    },
+    {
+      "name": "viewport-5",
+      "passed": true,
+      "elapsedMs": 159,
+      "requestIndexes": [
+        5,
+        5
+      ],
+      "bbox": [
+        -2.959,
+        43.282,
+        -2.958,
+        43.283
+      ],
+      "complete": true,
+      "count": 5,
+      "ids": [
+        {
+          "id": "ES-BIZKAIA-20~7~136",
+          "geometrySha256": "ca076d54a92fb10beb98cd1f0afb2509170345bccaacdc0f38319712f94b8e04"
+        },
+        {
+          "id": "ES-BIZKAIA-20~7~141",
+          "geometrySha256": "93c1aa99dd4b272c7789773f2b394c48d5712f05f372b161ab023b4a4847c5db"
+        },
+        {
+          "id": "ES-BIZKAIA-20~7~142",
+          "geometrySha256": "1ae7b219bf2a19508e407e4604d072c59e625b41ec574c12a6ae83a937aaa8c1"
+        },
+        {
+          "id": "ES-BIZKAIA-20~7~144",
+          "geometrySha256": "b7e7ad8e5b0df984ee3f8dfcd769122938e32c132fe0b2d4ec13d19e162b9a7d"
+        },
+        {
+          "id": "ES-BIZKAIA-20~7~143",
+          "geometrySha256": "d82c1ca80e986698199551b97c980ebe3fdd837544ab27bf1a652c227d067a33"
+        }
+      ]
+    },
+    {
+      "name": "viewport-6",
+      "passed": true,
+      "elapsedMs": 191,
+      "requestIndexes": [
+        6,
+        6
+      ],
+      "bbox": [
+        -2.961,
+        43.283,
+        -2.96,
+        43.284
+      ],
+      "complete": true,
+      "count": 12,
+      "ids": [
+        {
+          "id": "ES-BIZKAIA-20~7~133",
+          "geometrySha256": "7788d2663292cf5bb87f56704683d2187814ec9ee96ae08bd540d0ac4fd5755b"
+        },
+        {
+          "id": "ES-BIZKAIA-20~7~136",
+          "geometrySha256": "ca076d54a92fb10beb98cd1f0afb2509170345bccaacdc0f38319712f94b8e04"
+        },
+        {
+          "id": "ES-BIZKAIA-20~7~139",
+          "geometrySha256": "66a778d969b99871375a8e0fc85f5c8f6179acfb7feafbea19bf84ef72222e42"
+        },
+        {
+          "id": "ES-BIZKAIA-20~7~135",
+          "geometrySha256": "1dd9ac51a986bde06b625553684393aea8be02841c0d386532187ab576dcd71a"
+        },
+        {
+          "id": "ES-BIZKAIA-20~7~243",
+          "geometrySha256": "48acd8fa6c66cd243179368cde3e8cce3b8ef288f402e37feddd255e920188a9"
+        },
+        {
+          "id": "ES-BIZKAIA-20~1106~2003",
+          "geometrySha256": "ebd1c136b6faae3f25c9c33a789924dd7154aa6714438bc287758f86ee6f245c"
+        },
+        {
+          "id": "ES-BIZKAIA-20~1106~2004",
+          "geometrySha256": "fea75a659d4491dbf29821e35b40e7d74b3a1ac829b21decdcc04b6c67095656"
+        },
+        {
+          "id": "ES-BIZKAIA-20~1106~2005",
+          "geometrySha256": "97382621066300ae0611149e064f3d349284d2fa8ceb3b6718e08f58ddeae3b3"
+        },
+        {
+          "id": "ES-BIZKAIA-20~1106~2006",
+          "geometrySha256": "5148eeaa6fbb5837418c2d4a3e2e6f4eb40a86e699cc8dfb279b633abed18116"
+        },
+        {
+          "id": "ES-BIZKAIA-20~1106~2007",
+          "geometrySha256": "ed44389a7fcd18fa0ffc42e1ec92bac321f9059005d4bb926795beee568e9e35"
+        },
+        {
+          "id": "ES-BIZKAIA-20~1106~70001",
+          "geometrySha256": "7d0b0b6e9bf4a6d8f1db5dbd58e21860c49cb6b8e3635b1191749984327b1fc2"
+        },
+        {
+          "id": "ES-BIZKAIA-20~1105~70001",
+          "geometrySha256": "d0cadcfe2ec7690565fdf704f5cb2c88c796af61c58d88a3080e28e82e985f24"
+        }
+      ]
+    },
+    {
+      "name": "viewport-7",
+      "passed": true,
+      "elapsedMs": 169,
+      "requestIndexes": [
+        7,
+        7
+      ],
+      "bbox": [
+        -2.96,
+        43.283,
+        -2.959,
+        43.284
+      ],
+      "complete": true,
+      "count": 7,
+      "ids": [
+        {
+          "id": "ES-BIZKAIA-20~7~126",
+          "geometrySha256": "90057b596c7d5a8a4a12cabea374f37a3539d69791f1879b2acf4e51e52c67ad"
+        },
+        {
+          "id": "ES-BIZKAIA-20~7~133",
+          "geometrySha256": "7788d2663292cf5bb87f56704683d2187814ec9ee96ae08bd540d0ac4fd5755b"
+        },
+        {
+          "id": "ES-BIZKAIA-20~7~137",
+          "geometrySha256": "8b4027f0821e315e8a8c25f83c54af85c00bb627b22966b329a66f960def6168"
+        },
+        {
+          "id": "ES-BIZKAIA-20~7~136",
+          "geometrySha256": "ca076d54a92fb10beb98cd1f0afb2509170345bccaacdc0f38319712f94b8e04"
+        },
+        {
+          "id": "ES-BIZKAIA-20~7~139",
+          "geometrySha256": "66a778d969b99871375a8e0fc85f5c8f6179acfb7feafbea19bf84ef72222e42"
+        },
+        {
+          "id": "ES-BIZKAIA-20~7~140",
+          "geometrySha256": "1620da88c2b303533e7f5868a1fb89d24c0141001b9045f03d9fd65de52dd221"
+        },
+        {
+          "id": "ES-BIZKAIA-20~7~243",
+          "geometrySha256": "48acd8fa6c66cd243179368cde3e8cce3b8ef288f402e37feddd255e920188a9"
+        }
+      ]
+    },
+    {
+      "name": "viewport-8",
+      "passed": true,
+      "elapsedMs": 165,
+      "requestIndexes": [
+        8,
+        8
+      ],
+      "bbox": [
+        -2.959,
+        43.283,
+        -2.958,
+        43.284
+      ],
+      "complete": true,
+      "count": 6,
+      "ids": [
+        {
+          "id": "ES-BIZKAIA-20~7~137",
+          "geometrySha256": "8b4027f0821e315e8a8c25f83c54af85c00bb627b22966b329a66f960def6168"
+        },
+        {
+          "id": "ES-BIZKAIA-20~7~136",
+          "geometrySha256": "ca076d54a92fb10beb98cd1f0afb2509170345bccaacdc0f38319712f94b8e04"
+        },
+        {
+          "id": "ES-BIZKAIA-20~7~256",
+          "geometrySha256": "4638d45f0072751da8cec15e44cb56e6028fe877646fc7f2c05006608c8525d8"
+        },
+        {
+          "id": "ES-BIZKAIA-20~7~141",
+          "geometrySha256": "93c1aa99dd4b272c7789773f2b394c48d5712f05f372b161ab023b4a4847c5db"
+        },
+        {
+          "id": "ES-BIZKAIA-20~7~140",
+          "geometrySha256": "1620da88c2b303533e7f5868a1fb89d24c0141001b9045f03d9fd65de52dd221"
+        },
+        {
+          "id": "ES-BIZKAIA-20~7~261",
+          "geometrySha256": "09dd9a36ad2aae6db67dcadc3d634d2739c61da62b3968784604cd5aef9f902f"
+        }
+      ]
+    },
+    {
+      "name": "viewport-9",
+      "passed": true,
+      "elapsedMs": 164,
+      "requestIndexes": [
+        9,
+        9
+      ],
+      "bbox": [
+        -2.96,
+        43.28,
+        -2.959,
+        43.281
+      ],
+      "complete": true,
+      "count": 8,
+      "ids": [
+        {
+          "id": "ES-BIZKAIA-20~1109~70001",
+          "geometrySha256": "9aadea11d111c699157371d15cd077c6508139581de8e030406b2317b4261957"
+        },
+        {
+          "id": "ES-BIZKAIA-20~1109~2004",
+          "geometrySha256": "01c9eaf85e192b6cd15521e1e89da47d7359df88cfa04dd1f0b29657ed2942c7"
+        },
+        {
+          "id": "ES-BIZKAIA-20~1109~2009",
+          "geometrySha256": "f7977c490f7674388a8304b206873ae7dde12c193801b129dfb5c7b1aa680bb8"
+        },
+        {
+          "id": "ES-BIZKAIA-20~1109~2005",
+          "geometrySha256": "4dd2d087b952a5dab5bebea1d4663591a42e366a86119acc74fd71fcad7dbd9b"
+        },
+        {
+          "id": "ES-BIZKAIA-20~1109~2006",
+          "geometrySha256": "b78941b9856ba6ab27f5164f4d9f6275970e30587ddfed9a0632a1efb0feca36"
+        },
+        {
+          "id": "ES-BIZKAIA-20~1109~2007",
+          "geometrySha256": "be51450976040ab2fb3f44f380b9075c61c6b0dec5bf0ac413c46aa830a87a7d"
+        },
+        {
+          "id": "ES-BIZKAIA-20~1109~2008",
+          "geometrySha256": "f22b6fc40434406a854c30ab969ea8a155b8a7b06759ec6c393470f5dfd2f4b0"
+        },
+        {
+          "id": "ES-BIZKAIA-20~1109~3005",
+          "geometrySha256": "44eac5717ee86256567cc863eadd19670e4d68b1ef2ae3b44fc527c31025300d"
+        }
+      ]
+    },
+    {
+      "name": "viewport-10",
+      "passed": true,
+      "elapsedMs": 167,
+      "requestIndexes": [
+        10,
+        10
+      ],
+      "bbox": [
+        -2.96,
+        43.284,
+        -2.959,
+        43.285
+      ],
+      "complete": true,
+      "count": 6,
+      "ids": [
+        {
+          "id": "ES-BIZKAIA-20~7~126",
+          "geometrySha256": "90057b596c7d5a8a4a12cabea374f37a3539d69791f1879b2acf4e51e52c67ad"
+        },
+        {
+          "id": "ES-BIZKAIA-20~7~255",
+          "geometrySha256": "75d3a533f16ac6948b27bcbd929dcd7c95b730595c76573db0d7d71a387ef671"
+        },
+        {
+          "id": "ES-BIZKAIA-20~7~133",
+          "geometrySha256": "7788d2663292cf5bb87f56704683d2187814ec9ee96ae08bd540d0ac4fd5755b"
+        },
+        {
+          "id": "ES-BIZKAIA-20~7~137",
+          "geometrySha256": "8b4027f0821e315e8a8c25f83c54af85c00bb627b22966b329a66f960def6168"
+        },
+        {
+          "id": "ES-BIZKAIA-20~7~136",
+          "geometrySha256": "ca076d54a92fb10beb98cd1f0afb2509170345bccaacdc0f38319712f94b8e04"
+        },
+        {
+          "id": "ES-BIZKAIA-20~7~261",
+          "geometrySha256": "09dd9a36ad2aae6db67dcadc3d634d2739c61da62b3968784604cd5aef9f902f"
+        }
+      ]
+    },
+    {
+      "name": "viewport-11",
+      "passed": true,
+      "elapsedMs": 162,
+      "requestIndexes": [
+        11,
+        11
+      ],
+      "bbox": [
+        -2.962,
+        43.282,
+        -2.961,
+        43.283
+      ],
+      "complete": true,
+      "count": 9,
+      "ids": [
+        {
+          "id": "ES-BIZKAIA-20~1105~3005",
+          "geometrySha256": "94530d65fea89d7c21290d354f9d24d8672c1712de556bdc95cff01c7e95c78b"
+        },
+        {
+          "id": "ES-BIZKAIA-20~1105~2002",
+          "geometrySha256": "84d24383fd18b31749153c29fd1caed0b133544c2db76d0bda60cf683a20f29e"
+        },
+        {
+          "id": "ES-BIZKAIA-20~1105~3009",
+          "geometrySha256": "4945ed8daa56b3f5cf13da8613ec6170cf80bc28fb393d61341de8dedefaf469"
+        },
+        {
+          "id": "ES-BIZKAIA-20~1105~2001",
+          "geometrySha256": "ca3191355d8659582cbdc2ed7c091c3f6ace999ca1f35e449fd3621e04b6e0ce"
+        },
+        {
+          "id": "ES-BIZKAIA-20~1104~72001",
+          "geometrySha256": "74b118e36f18caf5388673fa3822d0320b787ec8e20c10a7d5f747b8849593df"
+        },
+        {
+          "id": "ES-BIZKAIA-20~1104~70001",
+          "geometrySha256": "a2b713a480c4f31c2c29ba0d5065c4b4ebaabbaaeebffeb5b33fcb5332cd342c"
+        },
+        {
+          "id": "ES-BIZKAIA-20~1105~70001",
+          "geometrySha256": "d0cadcfe2ec7690565fdf704f5cb2c88c796af61c58d88a3080e28e82e985f24"
+        },
+        {
+          "id": "ES-BIZKAIA-20~1104~3006",
+          "geometrySha256": "332851bf37f8308b001964d3a736c5bd058431c1a903e8c68ca58460fadaf8d1"
+        },
+        {
+          "id": "ES-BIZKAIA-20~1104~2001",
+          "geometrySha256": "2c5adf4e7fa8c7b2c69fa306356a9192f2efef536aab99f4e6579f39486252b6"
+        }
+      ]
+    },
+    {
+      "name": "viewport-12",
+      "passed": true,
+      "elapsedMs": 179,
+      "requestIndexes": [
+        12,
+        12
+      ],
+      "bbox": [
+        -2.958,
+        43.282,
+        -2.957,
+        43.283
+      ],
+      "complete": true,
+      "count": 6,
+      "ids": [
+        {
+          "id": "ES-BIZKAIA-20~7~141",
+          "geometrySha256": "93c1aa99dd4b272c7789773f2b394c48d5712f05f372b161ab023b4a4847c5db"
+        },
+        {
+          "id": "ES-BIZKAIA-20~7~261",
+          "geometrySha256": "09dd9a36ad2aae6db67dcadc3d634d2739c61da62b3968784604cd5aef9f902f"
+        },
+        {
+          "id": "ES-BIZKAIA-20~7~148",
+          "geometrySha256": "fccd0eb40355b84024847b29847b8e777a20d8ff3d4b85d1df233fe9540159a2"
+        },
+        {
+          "id": "ES-BIZKAIA-20~7~142",
+          "geometrySha256": "1ae7b219bf2a19508e407e4604d072c59e625b41ec574c12a6ae83a937aaa8c1"
+        },
+        {
+          "id": "ES-BIZKAIA-20~7~144",
+          "geometrySha256": "b7e7ad8e5b0df984ee3f8dfcd769122938e32c132fe0b2d4ec13d19e162b9a7d"
+        },
+        {
+          "id": "ES-BIZKAIA-20~5~325",
+          "geometrySha256": "ffa2b5e73a8d280aea0b9efd5b3cfdea8dae2c821fdfff1b2739e988d974725e"
+        }
+      ]
+    },
+    {
+      "name": "forced-three-row-pages",
+      "passed": true,
+      "elapsedMs": 1464,
+      "requestIndexes": [
+        13,
+        21
+      ],
+      "count": 24,
+      "geometryPages": 8,
+      "pageSize": 3,
+      "allGeometryHashesMatch": true
+    },
+    {
+      "name": "fresh-ids-0",
+      "passed": true,
+      "elapsedMs": 402,
+      "requestIndexes": [
+        22,
+        22
+      ],
+      "count": 40,
+      "ids": [
+        "ES-BIZKAIA-20~1104~2001",
+        "ES-BIZKAIA-20~1104~3003",
+        "ES-BIZKAIA-20~1104~3006",
+        "ES-BIZKAIA-20~1104~70001",
+        "ES-BIZKAIA-20~1104~71001",
+        "ES-BIZKAIA-20~1104~72001",
+        "ES-BIZKAIA-20~1105~2001",
+        "ES-BIZKAIA-20~1105~2002",
+        "ES-BIZKAIA-20~1105~3001",
+        "ES-BIZKAIA-20~1105~3002",
+        "ES-BIZKAIA-20~1105~3003",
+        "ES-BIZKAIA-20~1105~3004",
+        "ES-BIZKAIA-20~1105~3005",
+        "ES-BIZKAIA-20~1105~3006",
+        "ES-BIZKAIA-20~1105~3007",
+        "ES-BIZKAIA-20~1105~3008",
+        "ES-BIZKAIA-20~1105~3009",
+        "ES-BIZKAIA-20~1105~3010",
+        "ES-BIZKAIA-20~1105~3011",
+        "ES-BIZKAIA-20~1105~3012",
+        "ES-BIZKAIA-20~1105~3013",
+        "ES-BIZKAIA-20~1105~3014",
+        "ES-BIZKAIA-20~1105~3015",
+        "ES-BIZKAIA-20~1105~3016",
+        "ES-BIZKAIA-20~1105~3017",
+        "ES-BIZKAIA-20~1105~3018",
+        "ES-BIZKAIA-20~1105~3019",
+        "ES-BIZKAIA-20~1105~3020",
+        "ES-BIZKAIA-20~1105~3021",
+        "ES-BIZKAIA-20~1105~3022",
+        "ES-BIZKAIA-20~1105~3023",
+        "ES-BIZKAIA-20~1105~3024",
+        "ES-BIZKAIA-20~1105~70001",
+        "ES-BIZKAIA-20~1106~2003",
+        "ES-BIZKAIA-20~1106~2004",
+        "ES-BIZKAIA-20~1106~2005",
+        "ES-BIZKAIA-20~1106~2006",
+        "ES-BIZKAIA-20~1106~2007",
+        "ES-BIZKAIA-20~1106~2008",
+        "ES-BIZKAIA-20~1106~2009"
+      ],
+      "allGeometryHashesMatch": true,
+      "absentIds": []
+    },
+    {
+      "name": "fresh-ids-40",
+      "passed": true,
+      "elapsedMs": 479,
+      "requestIndexes": [
+        23,
+        23
+      ],
+      "count": 39,
+      "ids": [
+        "ES-BIZKAIA-20~1106~2010",
+        "ES-BIZKAIA-20~1106~70001",
+        "ES-BIZKAIA-20~1109~1001",
+        "ES-BIZKAIA-20~1109~1002",
+        "ES-BIZKAIA-20~1109~1003",
+        "ES-BIZKAIA-20~1109~1004",
+        "ES-BIZKAIA-20~1109~1005",
+        "ES-BIZKAIA-20~1109~1006",
+        "ES-BIZKAIA-20~1109~2001",
+        "ES-BIZKAIA-20~1109~2002",
+        "ES-BIZKAIA-20~1109~2003",
+        "ES-BIZKAIA-20~1109~2004",
+        "ES-BIZKAIA-20~1109~2005",
+        "ES-BIZKAIA-20~1109~2006",
+        "ES-BIZKAIA-20~1109~2007",
+        "ES-BIZKAIA-20~1109~2008",
+        "ES-BIZKAIA-20~1109~2009",
+        "ES-BIZKAIA-20~1109~3005",
+        "ES-BIZKAIA-20~1109~70001",
+        "ES-BIZKAIA-20~5~325",
+        "ES-BIZKAIA-20~7~126",
+        "ES-BIZKAIA-20~7~133",
+        "ES-BIZKAIA-20~7~135",
+        "ES-BIZKAIA-20~7~136",
+        "ES-BIZKAIA-20~7~137",
+        "ES-BIZKAIA-20~7~139",
+        "ES-BIZKAIA-20~7~140",
+        "ES-BIZKAIA-20~7~141",
+        "ES-BIZKAIA-20~7~142",
+        "ES-BIZKAIA-20~7~143",
+        "ES-BIZKAIA-20~7~144",
+        "ES-BIZKAIA-20~7~145",
+        "ES-BIZKAIA-20~7~146",
+        "ES-BIZKAIA-20~7~147",
+        "ES-BIZKAIA-20~7~148",
+        "ES-BIZKAIA-20~7~243",
+        "ES-BIZKAIA-20~7~255",
+        "ES-BIZKAIA-20~7~256",
+        "ES-BIZKAIA-20~7~261"
+      ],
+      "allGeometryHashesMatch": true,
+      "absentIds": []
+    },
+    {
+      "name": "explicit-absence",
+      "passed": true,
+      "elapsedMs": 317,
+      "requestIndexes": [
+        24,
+        24
+      ],
+      "absentIds": [
+        "ES-BIZKAIA-9999~9999~9999"
+      ],
+      "complete": true
+    },
+    {
+      "name": "footprint",
+      "passed": true,
+      "elapsedMs": 172,
+      "requestIndexes": [
+        25,
+        25
+      ],
+      "selectedParcelId": "ES-BIZKAIA-20~1109~2002",
+      "count": 4,
+      "allGeometryHashesMatch": true
+    },
+    {
+      "name": "source-binding",
+      "passed": true,
+      "elapsedMs": 216,
+      "requestIndexes": [
+        26,
+        26
+      ],
+      "selectedParcelId": "ES-BIZKAIA-20~1109~2002",
+      "coverage": "complete",
+      "siteM2": 396.75,
+      "boundParcels": 1
+    }
+  ],
+  "requests": [
+    {
+      "test": "viewport-0",
+      "url": "https://geo.bizkaia.eus/arcgisserverinspire/rest/services/LurraldeAntolamendua_PlanificacionTerritorial/Katastro_Catastro_WFS/MapServer/6/query?where=1%3D1&outFields=OBJECTID%2CCodigo_Municipio%2CCodigo_Poligono%2CCodigo_Parcela&returnGeometry=true&outSR=4326&f=geojson&orderByFields=OBJECTID&resultRecordCount=1000&resultOffset=0&geometry=-2.961%2C43.281%2C-2.96%2C43.282&geometryType=esriGeometryEnvelope&inSR=4326&spatialRel=esriSpatialRelIntersects",
+      "method": "GET",
+      "checkedAt": "2026-10-09T02:50:32.920Z",
+      "httpStatus": 200,
+      "contentType": "application/geo+json;charset=UTF-8",
+      "bytes": 27396,
+      "features": [
+        {
+          "transportId": 72649,
+          "properties": {
+            "OBJECTID": 72649,
+            "Codigo_Municipio": 20,
+            "Codigo_Poligono": 1105,
+            "Codigo_Parcela": 3020
+          },
+          "geometrySha256": "8618d03cd96b864a733d50468c531338f8c9eb6160a514d95c453c5d32bb1f48"
+        },
+        {
+          "transportId": 72650,
+          "properties": {
+            "OBJECTID": 72650,
+            "Codigo_Municipio": 20,
+            "Codigo_Poligono": 1105,
+            "Codigo_Parcela": 3019
+          },
+          "geometrySha256": "136f7ee5ab1436b6593162fbf96448ae7d288c3308479d4cf4bc0fc99df901f0"
+        },
+        {
+          "transportId": 72651,
+          "properties": {
+            "OBJECTID": 72651,
+            "Codigo_Municipio": 20,
+            "Codigo_Poligono": 1105,
+            "Codigo_Parcela": 3022
+          },
+          "geometrySha256": "3ae6777d2321e16c1e2c9fac189bc462550ee8342a7bf8b9b986b2e8d64c3969"
+        },
+        {
+          "transportId": 72652,
+          "properties": {
+            "OBJECTID": 72652,
+            "Codigo_Municipio": 20,
+            "Codigo_Poligono": 1105,
+            "Codigo_Parcela": 3021
+          },
+          "geometrySha256": "eab5262bae32218722bb278b3e0cb0037236fa7bffbc69db27594932ff77dffc"
+        },
+        {
+          "transportId": 72709,
+          "properties": {
+            "OBJECTID": 72709,
+            "Codigo_Municipio": 20,
+            "Codigo_Poligono": 1105,
+            "Codigo_Parcela": 3008
+          },
+          "geometrySha256": "12cf640eab67b24b883c107e3e41fb30b5eddad672ab93b4f9570f5937d733e8"
+        },
+        {
+          "transportId": 72710,
+          "properties": {
+            "OBJECTID": 72710,
+            "Codigo_Municipio": 20,
+            "Codigo_Poligono": 1105,
+            "Codigo_Parcela": 3009
+          },
+          "geometrySha256": "4945ed8daa56b3f5cf13da8613ec6170cf80bc28fb393d61341de8dedefaf469"
+        },
+        {
+          "transportId": 72711,
+          "properties": {
+            "OBJECTID": 72711,
+            "Codigo_Municipio": 20,
+            "Codigo_Poligono": 1105,
+            "Codigo_Parcela": 3014
+          },
+          "geometrySha256": "496a8a3fe6e2808e183dc6cc4e860da3043b1e1d2e5597afea1c07c5761cc8a5"
+        },
+        {
+          "transportId": 72712,
+          "properties": {
+            "OBJECTID": 72712,
+            "Codigo_Municipio": 20,
+            "Codigo_Poligono": 1105,
+            "Codigo_Parcela": 3016
+          },
+          "geometrySha256": "324bf8c119bbd1fa54f541ad8d7f054df48c979d36f3211c6a6e222c05f692fb"
+        },
+        {
+          "transportId": 72713,
+          "properties": {
+            "OBJECTID": 72713,
+            "Codigo_Municipio": 20,
+            "Codigo_Poligono": 1105,
+            "Codigo_Parcela": 3018
+          },
+          "geometrySha256": "0a30215d0dadb6131f247c90ab90b0d3b541941e118cdc161c387de2d1b1440b"
+        },
+        {
+          "transportId": 72714,
+          "properties": {
+            "OBJECTID": 72714,
+            "Codigo_Municipio": 20,
+            "Codigo_Poligono": 1105,
+            "Codigo_Parcela": 3023
+          },
+          "geometrySha256": "d2c66091321a4c2869379fef5ee36eb4973f72d38045f2d1ab79de8d3c442064"
+        },
+        {
+          "transportId": 72741,
+          "properties": {
+            "OBJECTID": 72741,
+            "Codigo_Municipio": 20,
+            "Codigo_Poligono": 1105,
+            "Codigo_Parcela": 3010
+          },
+          "geometrySha256": "f8198be4d7317b2d0418a6cd29ab0c67d6a5923c00f713cd4e53b527c1b57ae4"
+        },
+        {
+          "transportId": 72742,
+          "properties": {
+            "OBJECTID": 72742,
+            "Codigo_Municipio": 20,
+            "Codigo_Poligono": 1105,
+            "Codigo_Parcela": 3011
+          },
+          "geometrySha256": "03ee9a53cacdbe849ebd5687aab467615c662837a66f33532bba7403ccc0a4ed"
+        },
+        {
+          "transportId": 72743,
+          "properties": {
+            "OBJECTID": 72743,
+            "Codigo_Municipio": 20,
+            "Codigo_Poligono": 1105,
+            "Codigo_Parcela": 3012
+          },
+          "geometrySha256": "0218684ec3248d5f1b3f911c3dbaf937625f5c82e94b70e14b2d7ce93d1d8ecc"
+        },
+        {
+          "transportId": 72744,
+          "properties": {
+            "OBJECTID": 72744,
+            "Codigo_Municipio": 20,
+            "Codigo_Poligono": 1105,
+            "Codigo_Parcela": 3013
+          },
+          "geometrySha256": "e98445d6f7fa61af5e36d597a9783d90f5f288c304d9518ba45c6f957b2fd16a"
+        },
+        {
+          "transportId": 73341,
+          "properties": {
+            "OBJECTID": 73341,
+            "Codigo_Municipio": 20,
+            "Codigo_Poligono": 1105,
+            "Codigo_Parcela": 3006
+          },
+          "geometrySha256": "e1e21810fc20e720f5399dab6342b27c2288947897eb9ce161b691566222b739"
+        },
+        {
+          "transportId": 73342,
+          "properties": {
+            "OBJECTID": 73342,
+            "Codigo_Municipio": 20,
+            "Codigo_Poligono": 1105,
+            "Codigo_Parcela": 3007
+          },
+          "geometrySha256": "1b07704223b1ac3befd76e6bc3582b8a00a3638a71e6157a215dded65a36cc84"
+        },
+        {
+          "transportId": 73343,
+          "properties": {
+            "OBJECTID": 73343,
+            "Codigo_Municipio": 20,
+            "Codigo_Poligono": 1105,
+            "Codigo_Parcela": 3015
+          },
+          "geometrySha256": "a673170225071fbb96384e0afedc5a6571dc22a43dde4e95418bac19e67fc01f"
+        },
+        {
+          "transportId": 73344,
+          "properties": {
+            "OBJECTID": 73344,
+            "Codigo_Municipio": 20,
+            "Codigo_Poligono": 1105,
+            "Codigo_Parcela": 3017
+          },
+          "geometrySha256": "a22db3a846f4eaedf0727af4992969bee3083c264a63a1b17487aa215edfd3e5"
+        },
+        {
+          "transportId": 73350,
+          "properties": {
+            "OBJECTID": 73350,
+            "Codigo_Municipio": 20,
+            "Codigo_Poligono": 1105,
+            "Codigo_Parcela": 3024
+          },
+          "geometrySha256": "256ab6b5bbe62404ffffcbb2b941d385f03660b8d27789db840ae20671ddebcf"
+        },
+        {
+          "transportId": 75712,
+          "properties": {
+            "OBJECTID": 75712,
+            "Codigo_Municipio": 20,
+            "Codigo_Poligono": 1104,
+            "Codigo_Parcela": 71001
+          },
+          "geometrySha256": "41bc7cffee9cbbbaa4db09f54f4b9b41c8ce8ca31ca7bab1a8bc692c0007ab82"
+        },
+        {
+          "transportId": 75824,
+          "properties": {
+            "OBJECTID": 75824,
+            "Codigo_Municipio": 20,
+            "Codigo_Poligono": 1109,
+            "Codigo_Parcela": 70001
+          },
+          "geometrySha256": "9aadea11d111c699157371d15cd077c6508139581de8e030406b2317b4261957"
+        },
+        {
+          "transportId": 76021,
+          "properties": {
+            "OBJECTID": 76021,
+            "Codigo_Municipio": 20,
+            "Codigo_Poligono": 1105,
+            "Codigo_Parcela": 70001
+          },
+          "geometrySha256": "d0cadcfe2ec7690565fdf704f5cb2c88c796af61c58d88a3080e28e82e985f24"
+        },
+        {
+          "transportId": 78969,
+          "properties": {
+            "OBJECTID": 78969,
+            "Codigo_Municipio": 20,
+            "Codigo_Poligono": 1109,
+            "Codigo_Parcela": 3005
+          },
+          "geometrySha256": "44eac5717ee86256567cc863eadd19670e4d68b1ef2ae3b44fc527c31025300d"
+        },
+        {
+          "transportId": 79224,
+          "properties": {
+            "OBJECTID": 79224,
+            "Codigo_Municipio": 20,
+            "Codigo_Poligono": 1104,
+            "Codigo_Parcela": 3003
+          },
+          "geometrySha256": "be380e72e5d52478be695d0e83eeb45b420fbf9adc10be8be718687a453b16af"
+        }
+      ]
+    },
+    {
+      "test": "viewport-1",
+      "url": "https://geo.bizkaia.eus/arcgisserverinspire/rest/services/LurraldeAntolamendua_PlanificacionTerritorial/Katastro_Catastro_WFS/MapServer/6/query?where=1%3D1&outFields=OBJECTID%2CCodigo_Municipio%2CCodigo_Poligono%2CCodigo_Parcela&returnGeometry=true&outSR=4326&f=geojson&orderByFields=OBJECTID&resultRecordCount=1000&resultOffset=0&geometry=-2.96%2C43.281%2C-2.959%2C43.282&geometryType=esriGeometryEnvelope&inSR=4326&spatialRel=esriSpatialRelIntersects",
+      "method": "GET",
+      "checkedAt": "2026-10-09T02:50:37.997Z",
+      "httpStatus": 200,
+      "contentType": "application/geo+json;charset=UTF-8",
+      "bytes": 32675,
+      "features": [
+        {
+          "transportId": 70902,
+          "properties": {
+            "OBJECTID": 70902,
+            "Codigo_Municipio": 20,
+            "Codigo_Poligono": 7,
+            "Codigo_Parcela": 243
+          },
+          "geometrySha256": "48acd8fa6c66cd243179368cde3e8cce3b8ef288f402e37feddd255e920188a9"
+        },
+        {
+          "transportId": 71788,
+          "properties": {
+            "OBJECTID": 71788,
+            "Codigo_Municipio": 20,
+            "Codigo_Poligono": 7,
+            "Codigo_Parcela": 142
+          },
+          "geometrySha256": "1ae7b219bf2a19508e407e4604d072c59e625b41ec574c12a6ae83a937aaa8c1"
+        },
+        {
+          "transportId": 71789,
+          "properties": {
+            "OBJECTID": 71789,
+            "Codigo_Municipio": 20,
+            "Codigo_Poligono": 7,
+            "Codigo_Parcela": 144
+          },
+          "geometrySha256": "b7e7ad8e5b0df984ee3f8dfcd769122938e32c132fe0b2d4ec13d19e162b9a7d"
+        },
+        {
+          "transportId": 71790,
+          "properties": {
+            "OBJECTID": 71790,
+            "Codigo_Municipio": 20,
+            "Codigo_Poligono": 7,
+            "Codigo_Parcela": 143
+          },
+          "geometrySha256": "d82c1ca80e986698199551b97c980ebe3fdd837544ab27bf1a652c227d067a33"
+        },
+        {
+          "transportId": 72650,
+          "properties": {
+            "OBJECTID": 72650,
+            "Codigo_Municipio": 20,
+            "Codigo_Poligono": 1105,
+            "Codigo_Parcela": 3019
+          },
+          "geometrySha256": "136f7ee5ab1436b6593162fbf96448ae7d288c3308479d4cf4bc0fc99df901f0"
+        },
+        {
+          "transportId": 72712,
+          "properties": {
+            "OBJECTID": 72712,
+            "Codigo_Municipio": 20,
+            "Codigo_Poligono": 1105,
+            "Codigo_Parcela": 3016
+          },
+          "geometrySha256": "324bf8c119bbd1fa54f541ad8d7f054df48c979d36f3211c6a6e222c05f692fb"
+        },
+        {
+          "transportId": 75824,
+          "properties": {
+            "OBJECTID": 75824,
+            "Codigo_Municipio": 20,
+            "Codigo_Poligono": 1109,
+            "Codigo_Parcela": 70001
+          },
+          "geometrySha256": "9aadea11d111c699157371d15cd077c6508139581de8e030406b2317b4261957"
+        },
+        {
+          "transportId": 76015,
+          "properties": {
+            "OBJECTID": 76015,
+            "Codigo_Municipio": 20,
+            "Codigo_Poligono": 1109,
+            "Codigo_Parcela": 1004
+          },
+          "geometrySha256": "cd032df677d3d8fa23c649a7944ddb57256541a86f92148a10cc60445c144c39"
+        },
+        {
+          "transportId": 76016,
+          "properties": {
+            "OBJECTID": 76016,
+            "Codigo_Municipio": 20,
+            "Codigo_Poligono": 1109,
+            "Codigo_Parcela": 1005
+          },
+          "geometrySha256": "01ff31b4bfd3b8455c30ed2da9c57dffa765503004e3eee6db64a05d3bb8a948"
+        },
+        {
+          "transportId": 76017,
+          "properties": {
+            "OBJECTID": 76017,
+            "Codigo_Municipio": 20,
+            "Codigo_Poligono": 1109,
+            "Codigo_Parcela": 1006
+          },
+          "geometrySha256": "c74f050245dab74e7ffdd0195677b99d307e662324022972da34b0d0905c0615"
+        },
+        {
+          "transportId": 76018,
+          "properties": {
+            "OBJECTID": 76018,
+            "Codigo_Municipio": 20,
+            "Codigo_Poligono": 1109,
+            "Codigo_Parcela": 2001
+          },
+          "geometrySha256": "4e810809d21ae63295325c42d63a5b8581c4919c9dba9febbb8db0ee71522341"
+        },
+        {
+          "transportId": 76021,
+          "properties": {
+            "OBJECTID": 76021,
+            "Codigo_Municipio": 20,
+            "Codigo_Poligono": 1105,
+            "Codigo_Parcela": 70001
+          },
+          "geometrySha256": "d0cadcfe2ec7690565fdf704f5cb2c88c796af61c58d88a3080e28e82e985f24"
+        },
+        {
+          "transportId": 76074,
+          "properties": {
+            "OBJECTID": 76074,
+            "Codigo_Municipio": 20,
+            "Codigo_Poligono": 1109,
+            "Codigo_Parcela": 1002
+          },
+          "geometrySha256": "a595c80a00be3073769c90c62e59c658e15cdcb9e81eab43cca281657351d746"
+        },
+        {
+          "transportId": 76075,
+          "properties": {
+            "OBJECTID": 76075,
+            "Codigo_Municipio": 20,
+            "Codigo_Poligono": 1109,
+            "Codigo_Parcela": 2002
+          },
+          "geometrySha256": "6d9add732dcd0c8882be9e0c696177b95141a6baa339c1473a13c21c4136b158"
+        },
+        {
+          "transportId": 76076,
+          "properties": {
+            "OBJECTID": 76076,
+            "Codigo_Municipio": 20,
+            "Codigo_Poligono": 1109,
+            "Codigo_Parcela": 2004
+          },
+          "geometrySha256": "01c9eaf85e192b6cd15521e1e89da47d7359df88cfa04dd1f0b29657ed2942c7"
+        },
+        {
+          "transportId": 76378,
+          "properties": {
+            "OBJECTID": 76378,
+            "Codigo_Municipio": 20,
+            "Codigo_Poligono": 1109,
+            "Codigo_Parcela": 2005
+          },
+          "geometrySha256": "4dd2d087b952a5dab5bebea1d4663591a42e366a86119acc74fd71fcad7dbd9b"
+        },
+        {
+          "transportId": 78968,
+          "properties": {
+            "OBJECTID": 78968,
+            "Codigo_Municipio": 20,
+            "Codigo_Poligono": 1109,
+            "Codigo_Parcela": 1003
+          },
+          "geometrySha256": "af5dd71bf6959d4ff3917fc2bf6950eb47cc9557ebfeb7b853bb0e808559a570"
+        },
+        {
+          "transportId": 78969,
+          "properties": {
+            "OBJECTID": 78969,
+            "Codigo_Municipio": 20,
+            "Codigo_Poligono": 1109,
+            "Codigo_Parcela": 3005
+          },
+          "geometrySha256": "44eac5717ee86256567cc863eadd19670e4d68b1ef2ae3b44fc527c31025300d"
+        },
+        {
+          "transportId": 78970,
+          "properties": {
+            "OBJECTID": 78970,
+            "Codigo_Municipio": 20,
+            "Codigo_Poligono": 1109,
+            "Codigo_Parcela": 2003
+          },
+          "geometrySha256": "c9497d25ec8b7407e98b6cf5f34259f79361784cf647563d7d5427a36cb79dcc"
+        }
+      ]
+    },
+    {
+      "test": "viewport-2",
+      "url": "https://geo.bizkaia.eus/arcgisserverinspire/rest/services/LurraldeAntolamendua_PlanificacionTerritorial/Katastro_Catastro_WFS/MapServer/6/query?where=1%3D1&outFields=OBJECTID%2CCodigo_Municipio%2CCodigo_Poligono%2CCodigo_Parcela&returnGeometry=true&outSR=4326&f=geojson&orderByFields=OBJECTID&resultRecordCount=1000&resultOffset=0&geometry=-2.959%2C43.281%2C-2.958%2C43.282&geometryType=esriGeometryEnvelope&inSR=4326&spatialRel=esriSpatialRelIntersects",
+      "method": "GET",
+      "checkedAt": "2026-10-09T02:50:38.156Z",
+      "httpStatus": 200,
+      "contentType": "application/geo+json;charset=UTF-8",
+      "bytes": 25054,
+      "features": [
+        {
+          "transportId": 70013,
+          "properties": {
+            "OBJECTID": 70013,
+            "Codigo_Municipio": 20,
+            "Codigo_Poligono": 7,
+            "Codigo_Parcela": 147
+          },
+          "geometrySha256": "675c771dc427674560d44f887b4090de8cce25026b0794d2b6c7dd0b7a1b2d34"
+        },
+        {
+          "transportId": 70014,
+          "properties": {
+            "OBJECTID": 70014,
+            "Codigo_Municipio": 20,
+            "Codigo_Poligono": 7,
+            "Codigo_Parcela": 145
+          },
+          "geometrySha256": "1c30fd2400171fd25cbd5b98584c873d0c7e40b83c14f7f36b9478382c39e853"
+        },
+        {
+          "transportId": 70015,
+          "properties": {
+            "OBJECTID": 70015,
+            "Codigo_Municipio": 20,
+            "Codigo_Poligono": 7,
+            "Codigo_Parcela": 146
+          },
+          "geometrySha256": "9d66827b8d579b14e280929426ddf25017f43c48362ac3d5e048f422b0c0730a"
+        },
+        {
+          "transportId": 70902,
+          "properties": {
+            "OBJECTID": 70902,
+            "Codigo_Municipio": 20,
+            "Codigo_Poligono": 7,
+            "Codigo_Parcela": 243
+          },
+          "geometrySha256": "48acd8fa6c66cd243179368cde3e8cce3b8ef288f402e37feddd255e920188a9"
+        },
+        {
+          "transportId": 71688,
+          "properties": {
+            "OBJECTID": 71688,
+            "Codigo_Municipio": 20,
+            "Codigo_Poligono": 7,
+            "Codigo_Parcela": 148
+          },
+          "geometrySha256": "fccd0eb40355b84024847b29847b8e777a20d8ff3d4b85d1df233fe9540159a2"
+        },
+        {
+          "transportId": 71788,
+          "properties": {
+            "OBJECTID": 71788,
+            "Codigo_Municipio": 20,
+            "Codigo_Poligono": 7,
+            "Codigo_Parcela": 142
+          },
+          "geometrySha256": "1ae7b219bf2a19508e407e4604d072c59e625b41ec574c12a6ae83a937aaa8c1"
+        },
+        {
+          "transportId": 71789,
+          "properties": {
+            "OBJECTID": 71789,
+            "Codigo_Municipio": 20,
+            "Codigo_Poligono": 7,
+            "Codigo_Parcela": 144
+          },
+          "geometrySha256": "b7e7ad8e5b0df984ee3f8dfcd769122938e32c132fe0b2d4ec13d19e162b9a7d"
+        },
+        {
+          "transportId": 71790,
+          "properties": {
+            "OBJECTID": 71790,
+            "Codigo_Municipio": 20,
+            "Codigo_Poligono": 7,
+            "Codigo_Parcela": 143
+          },
+          "geometrySha256": "d82c1ca80e986698199551b97c980ebe3fdd837544ab27bf1a652c227d067a33"
+        },
+        {
+          "transportId": 75824,
+          "properties": {
+            "OBJECTID": 75824,
+            "Codigo_Municipio": 20,
+            "Codigo_Poligono": 1109,
+            "Codigo_Parcela": 70001
+          },
+          "geometrySha256": "9aadea11d111c699157371d15cd077c6508139581de8e030406b2317b4261957"
+        },
+        {
+          "transportId": 76076,
+          "properties": {
+            "OBJECTID": 76076,
+            "Codigo_Municipio": 20,
+            "Codigo_Poligono": 1109,
+            "Codigo_Parcela": 2004
+          },
+          "geometrySha256": "01c9eaf85e192b6cd15521e1e89da47d7359df88cfa04dd1f0b29657ed2942c7"
+        },
+        {
+          "transportId": 76378,
+          "properties": {
+            "OBJECTID": 76378,
+            "Codigo_Municipio": 20,
+            "Codigo_Poligono": 1109,
+            "Codigo_Parcela": 2005
+          },
+          "geometrySha256": "4dd2d087b952a5dab5bebea1d4663591a42e366a86119acc74fd71fcad7dbd9b"
+        }
+      ]
+    },
+    {
+      "test": "viewport-3",
+      "url": "https://geo.bizkaia.eus/arcgisserverinspire/rest/services/LurraldeAntolamendua_PlanificacionTerritorial/Katastro_Catastro_WFS/MapServer/6/query?where=1%3D1&outFields=OBJECTID%2CCodigo_Municipio%2CCodigo_Poligono%2CCodigo_Parcela&returnGeometry=true&outSR=4326&f=geojson&orderByFields=OBJECTID&resultRecordCount=1000&resultOffset=0&geometry=-2.961%2C43.282%2C-2.96%2C43.283&geometryType=esriGeometryEnvelope&inSR=4326&spatialRel=esriSpatialRelIntersects",
+      "method": "GET",
+      "checkedAt": "2026-10-09T02:50:38.326Z",
+      "httpStatus": 200,
+      "contentType": "application/geo+json;charset=UTF-8",
+      "bytes": 40820,
+      "features": [
+        {
+          "transportId": 70902,
+          "properties": {
+            "OBJECTID": 70902,
+            "Codigo_Municipio": 20,
+            "Codigo_Poligono": 7,
+            "Codigo_Parcela": 243
+          },
+          "geometrySha256": "48acd8fa6c66cd243179368cde3e8cce3b8ef288f402e37feddd255e920188a9"
+        },
+        {
+          "transportId": 72645,
+          "properties": {
+            "OBJECTID": 72645,
+            "Codigo_Municipio": 20,
+            "Codigo_Poligono": 1105,
+            "Codigo_Parcela": 3002
+          },
+          "geometrySha256": "3aa1ec3abcdb8cc9d4920373f05cfae8e73a9358e2b8af84ad4264aeb937b32d"
+        },
+        {
+          "transportId": 72646,
+          "properties": {
+            "OBJECTID": 72646,
+            "Codigo_Municipio": 20,
+            "Codigo_Poligono": 1105,
+            "Codigo_Parcela": 3004
+          },
+          "geometrySha256": "68d0a0ce9730911ac48f898135e24d7492d19d04b30f42b76df3d19b45ec8611"
+        },
+        {
+          "transportId": 72647,
+          "properties": {
+            "OBJECTID": 72647,
+            "Codigo_Municipio": 20,
+            "Codigo_Poligono": 1105,
+            "Codigo_Parcela": 3003
+          },
+          "geometrySha256": "ba009e84776bd31c168c0b7ddd9562ae9c40040d68edfcbfcd850df63494a8c6"
+        },
+        {
+          "transportId": 72648,
+          "properties": {
+            "OBJECTID": 72648,
+            "Codigo_Municipio": 20,
+            "Codigo_Poligono": 1105,
+            "Codigo_Parcela": 3005
+          },
+          "geometrySha256": "94530d65fea89d7c21290d354f9d24d8672c1712de556bdc95cff01c7e95c78b"
+        },
+        {
+          "transportId": 72708,
+          "properties": {
+            "OBJECTID": 72708,
+            "Codigo_Municipio": 20,
+            "Codigo_Poligono": 1105,
+            "Codigo_Parcela": 2002
+          },
+          "geometrySha256": "84d24383fd18b31749153c29fd1caed0b133544c2db76d0bda60cf683a20f29e"
+        },
+        {
+          "transportId": 72709,
+          "properties": {
+            "OBJECTID": 72709,
+            "Codigo_Municipio": 20,
+            "Codigo_Poligono": 1105,
+            "Codigo_Parcela": 3008
+          },
+          "geometrySha256": "12cf640eab67b24b883c107e3e41fb30b5eddad672ab93b4f9570f5937d733e8"
+        },
+        {
+          "transportId": 72710,
+          "properties": {
+            "OBJECTID": 72710,
+            "Codigo_Municipio": 20,
+            "Codigo_Poligono": 1105,
+            "Codigo_Parcela": 3009
+          },
+          "geometrySha256": "4945ed8daa56b3f5cf13da8613ec6170cf80bc28fb393d61341de8dedefaf469"
+        },
+        {
+          "transportId": 72741,
+          "properties": {
+            "OBJECTID": 72741,
+            "Codigo_Municipio": 20,
+            "Codigo_Poligono": 1105,
+            "Codigo_Parcela": 3010
+          },
+          "geometrySha256": "f8198be4d7317b2d0418a6cd29ab0c67d6a5923c00f713cd4e53b527c1b57ae4"
+        },
+        {
+          "transportId": 73339,
+          "properties": {
+            "OBJECTID": 73339,
+            "Codigo_Municipio": 20,
+            "Codigo_Poligono": 1105,
+            "Codigo_Parcela": 2001
+          },
+          "geometrySha256": "ca3191355d8659582cbdc2ed7c091c3f6ace999ca1f35e449fd3621e04b6e0ce"
+        },
+        {
+          "transportId": 73340,
+          "properties": {
+            "OBJECTID": 73340,
+            "Codigo_Municipio": 20,
+            "Codigo_Poligono": 1105,
+            "Codigo_Parcela": 3001
+          },
+          "geometrySha256": "4d4ef204e071b490cb588d0e4036e78e6715a8e649c5ee63807aa0ebdbb6c4d6"
+        },
+        {
+          "transportId": 73341,
+          "properties": {
+            "OBJECTID": 73341,
+            "Codigo_Municipio": 20,
+            "Codigo_Poligono": 1105,
+            "Codigo_Parcela": 3006
+          },
+          "geometrySha256": "e1e21810fc20e720f5399dab6342b27c2288947897eb9ce161b691566222b739"
+        },
+        {
+          "transportId": 73342,
+          "properties": {
+            "OBJECTID": 73342,
+            "Codigo_Municipio": 20,
+            "Codigo_Poligono": 1105,
+            "Codigo_Parcela": 3007
+          },
+          "geometrySha256": "1b07704223b1ac3befd76e6bc3582b8a00a3638a71e6157a215dded65a36cc84"
+        },
+        {
+          "transportId": 74687,
+          "properties": {
+            "OBJECTID": 74687,
+            "Codigo_Municipio": 20,
+            "Codigo_Poligono": 1106,
+            "Codigo_Parcela": 2005
+          },
+          "geometrySha256": "97382621066300ae0611149e064f3d349284d2fa8ceb3b6718e08f58ddeae3b3"
+        },
+        {
+          "transportId": 74688,
+          "properties": {
+            "OBJECTID": 74688,
+            "Codigo_Municipio": 20,
+            "Codigo_Poligono": 1106,
+            "Codigo_Parcela": 2006
+          },
+          "geometrySha256": "5148eeaa6fbb5837418c2d4a3e2e6f4eb40a86e699cc8dfb279b633abed18116"
+        },
+        {
+          "transportId": 74762,
+          "properties": {
+            "OBJECTID": 74762,
+            "Codigo_Municipio": 20,
+            "Codigo_Poligono": 1106,
+            "Codigo_Parcela": 2008
+          },
+          "geometrySha256": "f585bbf1224e18846347dd7f82fe63262368582468b8611d416aa1e577de2e19"
+        },
+        {
+          "transportId": 74763,
+          "properties": {
+            "OBJECTID": 74763,
+            "Codigo_Municipio": 20,
+            "Codigo_Poligono": 1106,
+            "Codigo_Parcela": 2010
+          },
+          "geometrySha256": "02b416d880640395264e6870fb7971cd0520265f11aa143068c94fe7a2743ebe"
+        },
+        {
+          "transportId": 75204,
+          "properties": {
+            "OBJECTID": 75204,
+            "Codigo_Municipio": 20,
+            "Codigo_Poligono": 1106,
+            "Codigo_Parcela": 2007
+          },
+          "geometrySha256": "ed44389a7fcd18fa0ffc42e1ec92bac321f9059005d4bb926795beee568e9e35"
+        },
+        {
+          "transportId": 75205,
+          "properties": {
+            "OBJECTID": 75205,
+            "Codigo_Municipio": 20,
+            "Codigo_Poligono": 1106,
+            "Codigo_Parcela": 2009
+          },
+          "geometrySha256": "d1f500628b0830a99f79a7012bdce317f384194f9b06fc49410f8bcc477fe309"
+        },
+        {
+          "transportId": 75713,
+          "properties": {
+            "OBJECTID": 75713,
+            "Codigo_Municipio": 20,
+            "Codigo_Poligono": 1106,
+            "Codigo_Parcela": 70001
+          },
+          "geometrySha256": "7d0b0b6e9bf4a6d8f1db5dbd58e21860c49cb6b8e3635b1191749984327b1fc2"
+        },
+        {
+          "transportId": 75824,
+          "properties": {
+            "OBJECTID": 75824,
+            "Codigo_Municipio": 20,
+            "Codigo_Poligono": 1109,
+            "Codigo_Parcela": 70001
+          },
+          "geometrySha256": "9aadea11d111c699157371d15cd077c6508139581de8e030406b2317b4261957"
+        },
+        {
+          "transportId": 76021,
+          "properties": {
+            "OBJECTID": 76021,
+            "Codigo_Municipio": 20,
+            "Codigo_Poligono": 1105,
+            "Codigo_Parcela": 70001
+          },
+          "geometrySha256": "d0cadcfe2ec7690565fdf704f5cb2c88c796af61c58d88a3080e28e82e985f24"
+        },
+        {
+          "transportId": 78967,
+          "properties": {
+            "OBJECTID": 78967,
+            "Codigo_Municipio": 20,
+            "Codigo_Poligono": 1109,
+            "Codigo_Parcela": 1001
+          },
+          "geometrySha256": "2d3edd9c5a83fed49fb6b3f166b53a9f64cfca67a71a7c89637881780db4e6e2"
+        }
+      ]
+    },
+    {
+      "test": "viewport-4",
+      "url": "https://geo.bizkaia.eus/arcgisserverinspire/rest/services/LurraldeAntolamendua_PlanificacionTerritorial/Katastro_Catastro_WFS/MapServer/6/query?where=1%3D1&outFields=OBJECTID%2CCodigo_Municipio%2CCodigo_Poligono%2CCodigo_Parcela&returnGeometry=true&outSR=4326&f=geojson&orderByFields=OBJECTID&resultRecordCount=1000&resultOffset=0&geometry=-2.96%2C43.282%2C-2.959%2C43.283&geometryType=esriGeometryEnvelope&inSR=4326&spatialRel=esriSpatialRelIntersects",
+      "method": "GET",
+      "checkedAt": "2026-10-09T02:50:38.492Z",
+      "httpStatus": 200,
+      "contentType": "application/geo+json;charset=UTF-8",
+      "bytes": 32662,
+      "features": [
+        {
+          "transportId": 70007,
+          "properties": {
+            "OBJECTID": 70007,
+            "Codigo_Municipio": 20,
+            "Codigo_Poligono": 7,
+            "Codigo_Parcela": 136
+          },
+          "geometrySha256": "ca076d54a92fb10beb98cd1f0afb2509170345bccaacdc0f38319712f94b8e04"
+        },
+        {
+          "transportId": 70009,
+          "properties": {
+            "OBJECTID": 70009,
+            "Codigo_Municipio": 20,
+            "Codigo_Poligono": 7,
+            "Codigo_Parcela": 141
+          },
+          "geometrySha256": "93c1aa99dd4b272c7789773f2b394c48d5712f05f372b161ab023b4a4847c5db"
+        },
+        {
+          "transportId": 70012,
+          "properties": {
+            "OBJECTID": 70012,
+            "Codigo_Municipio": 20,
+            "Codigo_Poligono": 7,
+            "Codigo_Parcela": 140
+          },
+          "geometrySha256": "1620da88c2b303533e7f5868a1fb89d24c0141001b9045f03d9fd65de52dd221"
+        },
+        {
+          "transportId": 70902,
+          "properties": {
+            "OBJECTID": 70902,
+            "Codigo_Municipio": 20,
+            "Codigo_Poligono": 7,
+            "Codigo_Parcela": 243
+          },
+          "geometrySha256": "48acd8fa6c66cd243179368cde3e8cce3b8ef288f402e37feddd255e920188a9"
+        },
+        {
+          "transportId": 71788,
+          "properties": {
+            "OBJECTID": 71788,
+            "Codigo_Municipio": 20,
+            "Codigo_Poligono": 7,
+            "Codigo_Parcela": 142
+          },
+          "geometrySha256": "1ae7b219bf2a19508e407e4604d072c59e625b41ec574c12a6ae83a937aaa8c1"
+        },
+        {
+          "transportId": 71790,
+          "properties": {
+            "OBJECTID": 71790,
+            "Codigo_Municipio": 20,
+            "Codigo_Poligono": 7,
+            "Codigo_Parcela": 143
+          },
+          "geometrySha256": "d82c1ca80e986698199551b97c980ebe3fdd837544ab27bf1a652c227d067a33"
+        },
+        {
+          "transportId": 74762,
+          "properties": {
+            "OBJECTID": 74762,
+            "Codigo_Municipio": 20,
+            "Codigo_Poligono": 1106,
+            "Codigo_Parcela": 2008
+          },
+          "geometrySha256": "f585bbf1224e18846347dd7f82fe63262368582468b8611d416aa1e577de2e19"
+        },
+        {
+          "transportId": 74763,
+          "properties": {
+            "OBJECTID": 74763,
+            "Codigo_Municipio": 20,
+            "Codigo_Poligono": 1106,
+            "Codigo_Parcela": 2010
+          },
+          "geometrySha256": "02b416d880640395264e6870fb7971cd0520265f11aa143068c94fe7a2743ebe"
+        },
+        {
+          "transportId": 75204,
+          "properties": {
+            "OBJECTID": 75204,
+            "Codigo_Municipio": 20,
+            "Codigo_Poligono": 1106,
+            "Codigo_Parcela": 2007
+          },
+          "geometrySha256": "ed44389a7fcd18fa0ffc42e1ec92bac321f9059005d4bb926795beee568e9e35"
+        },
+        {
+          "transportId": 75713,
+          "properties": {
+            "OBJECTID": 75713,
+            "Codigo_Municipio": 20,
+            "Codigo_Poligono": 1106,
+            "Codigo_Parcela": 70001
+          },
+          "geometrySha256": "7d0b0b6e9bf4a6d8f1db5dbd58e21860c49cb6b8e3635b1191749984327b1fc2"
+        },
+        {
+          "transportId": 75824,
+          "properties": {
+            "OBJECTID": 75824,
+            "Codigo_Municipio": 20,
+            "Codigo_Poligono": 1109,
+            "Codigo_Parcela": 70001
+          },
+          "geometrySha256": "9aadea11d111c699157371d15cd077c6508139581de8e030406b2317b4261957"
+        },
+        {
+          "transportId": 76074,
+          "properties": {
+            "OBJECTID": 76074,
+            "Codigo_Municipio": 20,
+            "Codigo_Poligono": 1109,
+            "Codigo_Parcela": 1002
+          },
+          "geometrySha256": "a595c80a00be3073769c90c62e59c658e15cdcb9e81eab43cca281657351d746"
+        },
+        {
+          "transportId": 78967,
+          "properties": {
+            "OBJECTID": 78967,
+            "Codigo_Municipio": 20,
+            "Codigo_Poligono": 1109,
+            "Codigo_Parcela": 1001
+          },
+          "geometrySha256": "2d3edd9c5a83fed49fb6b3f166b53a9f64cfca67a71a7c89637881780db4e6e2"
+        },
+        {
+          "transportId": 78968,
+          "properties": {
+            "OBJECTID": 78968,
+            "Codigo_Municipio": 20,
+            "Codigo_Poligono": 1109,
+            "Codigo_Parcela": 1003
+          },
+          "geometrySha256": "af5dd71bf6959d4ff3917fc2bf6950eb47cc9557ebfeb7b853bb0e808559a570"
+        }
+      ]
+    },
+    {
+      "test": "viewport-5",
+      "url": "https://geo.bizkaia.eus/arcgisserverinspire/rest/services/LurraldeAntolamendua_PlanificacionTerritorial/Katastro_Catastro_WFS/MapServer/6/query?where=1%3D1&outFields=OBJECTID%2CCodigo_Municipio%2CCodigo_Poligono%2CCodigo_Parcela&returnGeometry=true&outSR=4326&f=geojson&orderByFields=OBJECTID&resultRecordCount=1000&resultOffset=0&geometry=-2.959%2C43.282%2C-2.958%2C43.283&geometryType=esriGeometryEnvelope&inSR=4326&spatialRel=esriSpatialRelIntersects",
+      "method": "GET",
+      "checkedAt": "2026-10-09T02:50:38.663Z",
+      "httpStatus": 200,
+      "contentType": "application/geo+json;charset=UTF-8",
+      "bytes": 6603,
+      "features": [
+        {
+          "transportId": 70007,
+          "properties": {
+            "OBJECTID": 70007,
+            "Codigo_Municipio": 20,
+            "Codigo_Poligono": 7,
+            "Codigo_Parcela": 136
+          },
+          "geometrySha256": "ca076d54a92fb10beb98cd1f0afb2509170345bccaacdc0f38319712f94b8e04"
+        },
+        {
+          "transportId": 70009,
+          "properties": {
+            "OBJECTID": 70009,
+            "Codigo_Municipio": 20,
+            "Codigo_Poligono": 7,
+            "Codigo_Parcela": 141
+          },
+          "geometrySha256": "93c1aa99dd4b272c7789773f2b394c48d5712f05f372b161ab023b4a4847c5db"
+        },
+        {
+          "transportId": 71788,
+          "properties": {
+            "OBJECTID": 71788,
+            "Codigo_Municipio": 20,
+            "Codigo_Poligono": 7,
+            "Codigo_Parcela": 142
+          },
+          "geometrySha256": "1ae7b219bf2a19508e407e4604d072c59e625b41ec574c12a6ae83a937aaa8c1"
+        },
+        {
+          "transportId": 71789,
+          "properties": {
+            "OBJECTID": 71789,
+            "Codigo_Municipio": 20,
+            "Codigo_Poligono": 7,
+            "Codigo_Parcela": 144
+          },
+          "geometrySha256": "b7e7ad8e5b0df984ee3f8dfcd769122938e32c132fe0b2d4ec13d19e162b9a7d"
+        },
+        {
+          "transportId": 71790,
+          "properties": {
+            "OBJECTID": 71790,
+            "Codigo_Municipio": 20,
+            "Codigo_Poligono": 7,
+            "Codigo_Parcela": 143
+          },
+          "geometrySha256": "d82c1ca80e986698199551b97c980ebe3fdd837544ab27bf1a652c227d067a33"
+        }
+      ]
+    },
+    {
+      "test": "viewport-6",
+      "url": "https://geo.bizkaia.eus/arcgisserverinspire/rest/services/LurraldeAntolamendua_PlanificacionTerritorial/Katastro_Catastro_WFS/MapServer/6/query?where=1%3D1&outFields=OBJECTID%2CCodigo_Municipio%2CCodigo_Poligono%2CCodigo_Parcela&returnGeometry=true&outSR=4326&f=geojson&orderByFields=OBJECTID&resultRecordCount=1000&resultOffset=0&geometry=-2.961%2C43.283%2C-2.96%2C43.284&geometryType=esriGeometryEnvelope&inSR=4326&spatialRel=esriSpatialRelIntersects",
+      "method": "GET",
+      "checkedAt": "2026-10-09T02:50:38.824Z",
+      "httpStatus": 200,
+      "contentType": "application/geo+json;charset=UTF-8",
+      "bytes": 26781,
+      "features": [
+        {
+          "transportId": 70005,
+          "properties": {
+            "OBJECTID": 70005,
+            "Codigo_Municipio": 20,
+            "Codigo_Poligono": 7,
+            "Codigo_Parcela": 133
+          },
+          "geometrySha256": "7788d2663292cf5bb87f56704683d2187814ec9ee96ae08bd540d0ac4fd5755b"
+        },
+        {
+          "transportId": 70007,
+          "properties": {
+            "OBJECTID": 70007,
+            "Codigo_Municipio": 20,
+            "Codigo_Poligono": 7,
+            "Codigo_Parcela": 136
+          },
+          "geometrySha256": "ca076d54a92fb10beb98cd1f0afb2509170345bccaacdc0f38319712f94b8e04"
+        },
+        {
+          "transportId": 70010,
+          "properties": {
+            "OBJECTID": 70010,
+            "Codigo_Municipio": 20,
+            "Codigo_Poligono": 7,
+            "Codigo_Parcela": 139
+          },
+          "geometrySha256": "66a778d969b99871375a8e0fc85f5c8f6179acfb7feafbea19bf84ef72222e42"
+        },
+        {
+          "transportId": 70011,
+          "properties": {
+            "OBJECTID": 70011,
+            "Codigo_Municipio": 20,
+            "Codigo_Poligono": 7,
+            "Codigo_Parcela": 135
+          },
+          "geometrySha256": "1dd9ac51a986bde06b625553684393aea8be02841c0d386532187ab576dcd71a"
+        },
+        {
+          "transportId": 70902,
+          "properties": {
+            "OBJECTID": 70902,
+            "Codigo_Municipio": 20,
+            "Codigo_Poligono": 7,
+            "Codigo_Parcela": 243
+          },
+          "geometrySha256": "48acd8fa6c66cd243179368cde3e8cce3b8ef288f402e37feddd255e920188a9"
+        },
+        {
+          "transportId": 74685,
+          "properties": {
+            "OBJECTID": 74685,
+            "Codigo_Municipio": 20,
+            "Codigo_Poligono": 1106,
+            "Codigo_Parcela": 2003
+          },
+          "geometrySha256": "ebd1c136b6faae3f25c9c33a789924dd7154aa6714438bc287758f86ee6f245c"
+        },
+        {
+          "transportId": 74686,
+          "properties": {
+            "OBJECTID": 74686,
+            "Codigo_Municipio": 20,
+            "Codigo_Poligono": 1106,
+            "Codigo_Parcela": 2004
+          },
+          "geometrySha256": "fea75a659d4491dbf29821e35b40e7d74b3a1ac829b21decdcc04b6c67095656"
+        },
+        {
+          "transportId": 74687,
+          "properties": {
+            "OBJECTID": 74687,
+            "Codigo_Municipio": 20,
+            "Codigo_Poligono": 1106,
+            "Codigo_Parcela": 2005
+          },
+          "geometrySha256": "97382621066300ae0611149e064f3d349284d2fa8ceb3b6718e08f58ddeae3b3"
+        },
+        {
+          "transportId": 74688,
+          "properties": {
+            "OBJECTID": 74688,
+            "Codigo_Municipio": 20,
+            "Codigo_Poligono": 1106,
+            "Codigo_Parcela": 2006
+          },
+          "geometrySha256": "5148eeaa6fbb5837418c2d4a3e2e6f4eb40a86e699cc8dfb279b633abed18116"
+        },
+        {
+          "transportId": 75204,
+          "properties": {
+            "OBJECTID": 75204,
+            "Codigo_Municipio": 20,
+            "Codigo_Poligono": 1106,
+            "Codigo_Parcela": 2007
+          },
+          "geometrySha256": "ed44389a7fcd18fa0ffc42e1ec92bac321f9059005d4bb926795beee568e9e35"
+        },
+        {
+          "transportId": 75713,
+          "properties": {
+            "OBJECTID": 75713,
+            "Codigo_Municipio": 20,
+            "Codigo_Poligono": 1106,
+            "Codigo_Parcela": 70001
+          },
+          "geometrySha256": "7d0b0b6e9bf4a6d8f1db5dbd58e21860c49cb6b8e3635b1191749984327b1fc2"
+        },
+        {
+          "transportId": 76021,
+          "properties": {
+            "OBJECTID": 76021,
+            "Codigo_Municipio": 20,
+            "Codigo_Poligono": 1105,
+            "Codigo_Parcela": 70001
+          },
+          "geometrySha256": "d0cadcfe2ec7690565fdf704f5cb2c88c796af61c58d88a3080e28e82e985f24"
+        }
+      ]
+    },
+    {
+      "test": "viewport-7",
+      "url": "https://geo.bizkaia.eus/arcgisserverinspire/rest/services/LurraldeAntolamendua_PlanificacionTerritorial/Katastro_Catastro_WFS/MapServer/6/query?where=1%3D1&outFields=OBJECTID%2CCodigo_Municipio%2CCodigo_Poligono%2CCodigo_Parcela&returnGeometry=true&outSR=4326&f=geojson&orderByFields=OBJECTID&resultRecordCount=1000&resultOffset=0&geometry=-2.96%2C43.283%2C-2.959%2C43.284&geometryType=esriGeometryEnvelope&inSR=4326&spatialRel=esriSpatialRelIntersects",
+      "method": "GET",
+      "checkedAt": "2026-10-09T02:50:39.021Z",
+      "httpStatus": 200,
+      "contentType": "application/geo+json;charset=UTF-8",
+      "bytes": 20092,
+      "features": [
+        {
+          "transportId": 70001,
+          "properties": {
+            "OBJECTID": 70001,
+            "Codigo_Municipio": 20,
+            "Codigo_Poligono": 7,
+            "Codigo_Parcela": 126
+          },
+          "geometrySha256": "90057b596c7d5a8a4a12cabea374f37a3539d69791f1879b2acf4e51e52c67ad"
+        },
+        {
+          "transportId": 70005,
+          "properties": {
+            "OBJECTID": 70005,
+            "Codigo_Municipio": 20,
+            "Codigo_Poligono": 7,
+            "Codigo_Parcela": 133
+          },
+          "geometrySha256": "7788d2663292cf5bb87f56704683d2187814ec9ee96ae08bd540d0ac4fd5755b"
+        },
+        {
+          "transportId": 70006,
+          "properties": {
+            "OBJECTID": 70006,
+            "Codigo_Municipio": 20,
+            "Codigo_Poligono": 7,
+            "Codigo_Parcela": 137
+          },
+          "geometrySha256": "8b4027f0821e315e8a8c25f83c54af85c00bb627b22966b329a66f960def6168"
+        },
+        {
+          "transportId": 70007,
+          "properties": {
+            "OBJECTID": 70007,
+            "Codigo_Municipio": 20,
+            "Codigo_Poligono": 7,
+            "Codigo_Parcela": 136
+          },
+          "geometrySha256": "ca076d54a92fb10beb98cd1f0afb2509170345bccaacdc0f38319712f94b8e04"
+        },
+        {
+          "transportId": 70010,
+          "properties": {
+            "OBJECTID": 70010,
+            "Codigo_Municipio": 20,
+            "Codigo_Poligono": 7,
+            "Codigo_Parcela": 139
+          },
+          "geometrySha256": "66a778d969b99871375a8e0fc85f5c8f6179acfb7feafbea19bf84ef72222e42"
+        },
+        {
+          "transportId": 70012,
+          "properties": {
+            "OBJECTID": 70012,
+            "Codigo_Municipio": 20,
+            "Codigo_Poligono": 7,
+            "Codigo_Parcela": 140
+          },
+          "geometrySha256": "1620da88c2b303533e7f5868a1fb89d24c0141001b9045f03d9fd65de52dd221"
+        },
+        {
+          "transportId": 70902,
+          "properties": {
+            "OBJECTID": 70902,
+            "Codigo_Municipio": 20,
+            "Codigo_Poligono": 7,
+            "Codigo_Parcela": 243
+          },
+          "geometrySha256": "48acd8fa6c66cd243179368cde3e8cce3b8ef288f402e37feddd255e920188a9"
+        }
+      ]
+    },
+    {
+      "test": "viewport-8",
+      "url": "https://geo.bizkaia.eus/arcgisserverinspire/rest/services/LurraldeAntolamendua_PlanificacionTerritorial/Katastro_Catastro_WFS/MapServer/6/query?where=1%3D1&outFields=OBJECTID%2CCodigo_Municipio%2CCodigo_Poligono%2CCodigo_Parcela&returnGeometry=true&outSR=4326&f=geojson&orderByFields=OBJECTID&resultRecordCount=1000&resultOffset=0&geometry=-2.959%2C43.283%2C-2.958%2C43.284&geometryType=esriGeometryEnvelope&inSR=4326&spatialRel=esriSpatialRelIntersects",
+      "method": "GET",
+      "checkedAt": "2026-10-09T02:50:39.193Z",
+      "httpStatus": 200,
+      "contentType": "application/geo+json;charset=UTF-8",
+      "bytes": 14755,
+      "features": [
+        {
+          "transportId": 70006,
+          "properties": {
+            "OBJECTID": 70006,
+            "Codigo_Municipio": 20,
+            "Codigo_Poligono": 7,
+            "Codigo_Parcela": 137
+          },
+          "geometrySha256": "8b4027f0821e315e8a8c25f83c54af85c00bb627b22966b329a66f960def6168"
+        },
+        {
+          "transportId": 70007,
+          "properties": {
+            "OBJECTID": 70007,
+            "Codigo_Municipio": 20,
+            "Codigo_Poligono": 7,
+            "Codigo_Parcela": 136
+          },
+          "geometrySha256": "ca076d54a92fb10beb98cd1f0afb2509170345bccaacdc0f38319712f94b8e04"
+        },
+        {
+          "transportId": 70008,
+          "properties": {
+            "OBJECTID": 70008,
+            "Codigo_Municipio": 20,
+            "Codigo_Poligono": 7,
+            "Codigo_Parcela": 256
+          },
+          "geometrySha256": "4638d45f0072751da8cec15e44cb56e6028fe877646fc7f2c05006608c8525d8"
+        },
+        {
+          "transportId": 70009,
+          "properties": {
+            "OBJECTID": 70009,
+            "Codigo_Municipio": 20,
+            "Codigo_Poligono": 7,
+            "Codigo_Parcela": 141
+          },
+          "geometrySha256": "93c1aa99dd4b272c7789773f2b394c48d5712f05f372b161ab023b4a4847c5db"
+        },
+        {
+          "transportId": 70012,
+          "properties": {
+            "OBJECTID": 70012,
+            "Codigo_Municipio": 20,
+            "Codigo_Poligono": 7,
+            "Codigo_Parcela": 140
+          },
+          "geometrySha256": "1620da88c2b303533e7f5868a1fb89d24c0141001b9045f03d9fd65de52dd221"
+        },
+        {
+          "transportId": 71194,
+          "properties": {
+            "OBJECTID": 71194,
+            "Codigo_Municipio": 20,
+            "Codigo_Poligono": 7,
+            "Codigo_Parcela": 261
+          },
+          "geometrySha256": "09dd9a36ad2aae6db67dcadc3d634d2739c61da62b3968784604cd5aef9f902f"
+        }
+      ]
+    },
+    {
+      "test": "viewport-9",
+      "url": "https://geo.bizkaia.eus/arcgisserverinspire/rest/services/LurraldeAntolamendua_PlanificacionTerritorial/Katastro_Catastro_WFS/MapServer/6/query?where=1%3D1&outFields=OBJECTID%2CCodigo_Municipio%2CCodigo_Poligono%2CCodigo_Parcela&returnGeometry=true&outSR=4326&f=geojson&orderByFields=OBJECTID&resultRecordCount=1000&resultOffset=0&geometry=-2.96%2C43.28%2C-2.959%2C43.281&geometryType=esriGeometryEnvelope&inSR=4326&spatialRel=esriSpatialRelIntersects",
+      "method": "GET",
+      "checkedAt": "2026-10-09T02:50:39.364Z",
+      "httpStatus": 200,
+      "contentType": "application/geo+json;charset=UTF-8",
+      "bytes": 16482,
+      "features": [
+        {
+          "transportId": 75824,
+          "properties": {
+            "OBJECTID": 75824,
+            "Codigo_Municipio": 20,
+            "Codigo_Poligono": 1109,
+            "Codigo_Parcela": 70001
+          },
+          "geometrySha256": "9aadea11d111c699157371d15cd077c6508139581de8e030406b2317b4261957"
+        },
+        {
+          "transportId": 76076,
+          "properties": {
+            "OBJECTID": 76076,
+            "Codigo_Municipio": 20,
+            "Codigo_Poligono": 1109,
+            "Codigo_Parcela": 2004
+          },
+          "geometrySha256": "01c9eaf85e192b6cd15521e1e89da47d7359df88cfa04dd1f0b29657ed2942c7"
+        },
+        {
+          "transportId": 76077,
+          "properties": {
+            "OBJECTID": 76077,
+            "Codigo_Municipio": 20,
+            "Codigo_Poligono": 1109,
+            "Codigo_Parcela": 2009
+          },
+          "geometrySha256": "f7977c490f7674388a8304b206873ae7dde12c193801b129dfb5c7b1aa680bb8"
+        },
+        {
+          "transportId": 76378,
+          "properties": {
+            "OBJECTID": 76378,
+            "Codigo_Municipio": 20,
+            "Codigo_Poligono": 1109,
+            "Codigo_Parcela": 2005
+          },
+          "geometrySha256": "4dd2d087b952a5dab5bebea1d4663591a42e366a86119acc74fd71fcad7dbd9b"
+        },
+        {
+          "transportId": 76379,
+          "properties": {
+            "OBJECTID": 76379,
+            "Codigo_Municipio": 20,
+            "Codigo_Poligono": 1109,
+            "Codigo_Parcela": 2006
+          },
+          "geometrySha256": "b78941b9856ba6ab27f5164f4d9f6275970e30587ddfed9a0632a1efb0feca36"
+        },
+        {
+          "transportId": 76381,
+          "properties": {
+            "OBJECTID": 76381,
+            "Codigo_Municipio": 20,
+            "Codigo_Poligono": 1109,
+            "Codigo_Parcela": 2007
+          },
+          "geometrySha256": "be51450976040ab2fb3f44f380b9075c61c6b0dec5bf0ac413c46aa830a87a7d"
+        },
+        {
+          "transportId": 76382,
+          "properties": {
+            "OBJECTID": 76382,
+            "Codigo_Municipio": 20,
+            "Codigo_Poligono": 1109,
+            "Codigo_Parcela": 2008
+          },
+          "geometrySha256": "f22b6fc40434406a854c30ab969ea8a155b8a7b06759ec6c393470f5dfd2f4b0"
+        },
+        {
+          "transportId": 78969,
+          "properties": {
+            "OBJECTID": 78969,
+            "Codigo_Municipio": 20,
+            "Codigo_Poligono": 1109,
+            "Codigo_Parcela": 3005
+          },
+          "geometrySha256": "44eac5717ee86256567cc863eadd19670e4d68b1ef2ae3b44fc527c31025300d"
+        }
+      ]
+    },
+    {
+      "test": "viewport-10",
+      "url": "https://geo.bizkaia.eus/arcgisserverinspire/rest/services/LurraldeAntolamendua_PlanificacionTerritorial/Katastro_Catastro_WFS/MapServer/6/query?where=1%3D1&outFields=OBJECTID%2CCodigo_Municipio%2CCodigo_Poligono%2CCodigo_Parcela&returnGeometry=true&outSR=4326&f=geojson&orderByFields=OBJECTID&resultRecordCount=1000&resultOffset=0&geometry=-2.96%2C43.284%2C-2.959%2C43.285&geometryType=esriGeometryEnvelope&inSR=4326&spatialRel=esriSpatialRelIntersects",
+      "method": "GET",
+      "checkedAt": "2026-10-09T02:50:39.531Z",
+      "httpStatus": 200,
+      "contentType": "application/geo+json;charset=UTF-8",
+      "bytes": 20044,
+      "features": [
+        {
+          "transportId": 70001,
+          "properties": {
+            "OBJECTID": 70001,
+            "Codigo_Municipio": 20,
+            "Codigo_Poligono": 7,
+            "Codigo_Parcela": 126
+          },
+          "geometrySha256": "90057b596c7d5a8a4a12cabea374f37a3539d69791f1879b2acf4e51e52c67ad"
+        },
+        {
+          "transportId": 70004,
+          "properties": {
+            "OBJECTID": 70004,
+            "Codigo_Municipio": 20,
+            "Codigo_Poligono": 7,
+            "Codigo_Parcela": 255
+          },
+          "geometrySha256": "75d3a533f16ac6948b27bcbd929dcd7c95b730595c76573db0d7d71a387ef671"
+        },
+        {
+          "transportId": 70005,
+          "properties": {
+            "OBJECTID": 70005,
+            "Codigo_Municipio": 20,
+            "Codigo_Poligono": 7,
+            "Codigo_Parcela": 133
+          },
+          "geometrySha256": "7788d2663292cf5bb87f56704683d2187814ec9ee96ae08bd540d0ac4fd5755b"
+        },
+        {
+          "transportId": 70006,
+          "properties": {
+            "OBJECTID": 70006,
+            "Codigo_Municipio": 20,
+            "Codigo_Poligono": 7,
+            "Codigo_Parcela": 137
+          },
+          "geometrySha256": "8b4027f0821e315e8a8c25f83c54af85c00bb627b22966b329a66f960def6168"
+        },
+        {
+          "transportId": 70007,
+          "properties": {
+            "OBJECTID": 70007,
+            "Codigo_Municipio": 20,
+            "Codigo_Poligono": 7,
+            "Codigo_Parcela": 136
+          },
+          "geometrySha256": "ca076d54a92fb10beb98cd1f0afb2509170345bccaacdc0f38319712f94b8e04"
+        },
+        {
+          "transportId": 71194,
+          "properties": {
+            "OBJECTID": 71194,
+            "Codigo_Municipio": 20,
+            "Codigo_Poligono": 7,
+            "Codigo_Parcela": 261
+          },
+          "geometrySha256": "09dd9a36ad2aae6db67dcadc3d634d2739c61da62b3968784604cd5aef9f902f"
+        }
+      ]
+    },
+    {
+      "test": "viewport-11",
+      "url": "https://geo.bizkaia.eus/arcgisserverinspire/rest/services/LurraldeAntolamendua_PlanificacionTerritorial/Katastro_Catastro_WFS/MapServer/6/query?where=1%3D1&outFields=OBJECTID%2CCodigo_Municipio%2CCodigo_Poligono%2CCodigo_Parcela&returnGeometry=true&outSR=4326&f=geojson&orderByFields=OBJECTID&resultRecordCount=1000&resultOffset=0&geometry=-2.962%2C43.282%2C-2.961%2C43.283&geometryType=esriGeometryEnvelope&inSR=4326&spatialRel=esriSpatialRelIntersects",
+      "method": "GET",
+      "checkedAt": "2026-10-09T02:50:39.704Z",
+      "httpStatus": 200,
+      "contentType": "application/geo+json;charset=UTF-8",
+      "bytes": 14889,
+      "features": [
+        {
+          "transportId": 72648,
+          "properties": {
+            "OBJECTID": 72648,
+            "Codigo_Municipio": 20,
+            "Codigo_Poligono": 1105,
+            "Codigo_Parcela": 3005
+          },
+          "geometrySha256": "94530d65fea89d7c21290d354f9d24d8672c1712de556bdc95cff01c7e95c78b"
+        },
+        {
+          "transportId": 72708,
+          "properties": {
+            "OBJECTID": 72708,
+            "Codigo_Municipio": 20,
+            "Codigo_Poligono": 1105,
+            "Codigo_Parcela": 2002
+          },
+          "geometrySha256": "84d24383fd18b31749153c29fd1caed0b133544c2db76d0bda60cf683a20f29e"
+        },
+        {
+          "transportId": 72710,
+          "properties": {
+            "OBJECTID": 72710,
+            "Codigo_Municipio": 20,
+            "Codigo_Poligono": 1105,
+            "Codigo_Parcela": 3009
+          },
+          "geometrySha256": "4945ed8daa56b3f5cf13da8613ec6170cf80bc28fb393d61341de8dedefaf469"
+        },
+        {
+          "transportId": 73339,
+          "properties": {
+            "OBJECTID": 73339,
+            "Codigo_Municipio": 20,
+            "Codigo_Poligono": 1105,
+            "Codigo_Parcela": 2001
+          },
+          "geometrySha256": "ca3191355d8659582cbdc2ed7c091c3f6ace999ca1f35e449fd3621e04b6e0ce"
+        },
+        {
+          "transportId": 75595,
+          "properties": {
+            "OBJECTID": 75595,
+            "Codigo_Municipio": 20,
+            "Codigo_Poligono": 1104,
+            "Codigo_Parcela": 72001
+          },
+          "geometrySha256": "74b118e36f18caf5388673fa3822d0320b787ec8e20c10a7d5f747b8849593df"
+        },
+        {
+          "transportId": 75596,
+          "properties": {
+            "OBJECTID": 75596,
+            "Codigo_Municipio": 20,
+            "Codigo_Poligono": 1104,
+            "Codigo_Parcela": 70001
+          },
+          "geometrySha256": "a2b713a480c4f31c2c29ba0d5065c4b4ebaabbaaeebffeb5b33fcb5332cd342c"
+        },
+        {
+          "transportId": 76021,
+          "properties": {
+            "OBJECTID": 76021,
+            "Codigo_Municipio": 20,
+            "Codigo_Poligono": 1105,
+            "Codigo_Parcela": 70001
+          },
+          "geometrySha256": "d0cadcfe2ec7690565fdf704f5cb2c88c796af61c58d88a3080e28e82e985f24"
+        },
+        {
+          "transportId": 76173,
+          "properties": {
+            "OBJECTID": 76173,
+            "Codigo_Municipio": 20,
+            "Codigo_Poligono": 1104,
+            "Codigo_Parcela": 3006
+          },
+          "geometrySha256": "332851bf37f8308b001964d3a736c5bd058431c1a903e8c68ca58460fadaf8d1"
+        },
+        {
+          "transportId": 79222,
+          "properties": {
+            "OBJECTID": 79222,
+            "Codigo_Municipio": 20,
+            "Codigo_Poligono": 1104,
+            "Codigo_Parcela": 2001
+          },
+          "geometrySha256": "2c5adf4e7fa8c7b2c69fa306356a9192f2efef536aab99f4e6579f39486252b6"
+        }
+      ]
+    },
+    {
+      "test": "viewport-12",
+      "url": "https://geo.bizkaia.eus/arcgisserverinspire/rest/services/LurraldeAntolamendua_PlanificacionTerritorial/Katastro_Catastro_WFS/MapServer/6/query?where=1%3D1&outFields=OBJECTID%2CCodigo_Municipio%2CCodigo_Poligono%2CCodigo_Parcela&returnGeometry=true&outSR=4326&f=geojson&orderByFields=OBJECTID&resultRecordCount=1000&resultOffset=0&geometry=-2.958%2C43.282%2C-2.957%2C43.283&geometryType=esriGeometryEnvelope&inSR=4326&spatialRel=esriSpatialRelIntersects",
+      "method": "GET",
+      "checkedAt": "2026-10-09T02:50:39.872Z",
+      "httpStatus": 200,
+      "contentType": "application/geo+json;charset=UTF-8",
+      "bytes": 22546,
+      "features": [
+        {
+          "transportId": 70009,
+          "properties": {
+            "OBJECTID": 70009,
+            "Codigo_Municipio": 20,
+            "Codigo_Poligono": 7,
+            "Codigo_Parcela": 141
+          },
+          "geometrySha256": "93c1aa99dd4b272c7789773f2b394c48d5712f05f372b161ab023b4a4847c5db"
+        },
+        {
+          "transportId": 71194,
+          "properties": {
+            "OBJECTID": 71194,
+            "Codigo_Municipio": 20,
+            "Codigo_Poligono": 7,
+            "Codigo_Parcela": 261
+          },
+          "geometrySha256": "09dd9a36ad2aae6db67dcadc3d634d2739c61da62b3968784604cd5aef9f902f"
+        },
+        {
+          "transportId": 71688,
+          "properties": {
+            "OBJECTID": 71688,
+            "Codigo_Municipio": 20,
+            "Codigo_Poligono": 7,
+            "Codigo_Parcela": 148
+          },
+          "geometrySha256": "fccd0eb40355b84024847b29847b8e777a20d8ff3d4b85d1df233fe9540159a2"
+        },
+        {
+          "transportId": 71788,
+          "properties": {
+            "OBJECTID": 71788,
+            "Codigo_Municipio": 20,
+            "Codigo_Poligono": 7,
+            "Codigo_Parcela": 142
+          },
+          "geometrySha256": "1ae7b219bf2a19508e407e4604d072c59e625b41ec574c12a6ae83a937aaa8c1"
+        },
+        {
+          "transportId": 71789,
+          "properties": {
+            "OBJECTID": 71789,
+            "Codigo_Municipio": 20,
+            "Codigo_Poligono": 7,
+            "Codigo_Parcela": 144
+          },
+          "geometrySha256": "b7e7ad8e5b0df984ee3f8dfcd769122938e32c132fe0b2d4ec13d19e162b9a7d"
+        },
+        {
+          "transportId": 71866,
+          "properties": {
+            "OBJECTID": 71866,
+            "Codigo_Municipio": 20,
+            "Codigo_Poligono": 5,
+            "Codigo_Parcela": 325
+          },
+          "geometrySha256": "ffa2b5e73a8d280aea0b9efd5b3cfdea8dae2c821fdfff1b2739e988d974725e"
+        }
+      ]
+    },
+    {
+      "test": "forced-three-row-pages",
+      "url": "https://geo.bizkaia.eus/arcgisserverinspire/rest/services/LurraldeAntolamendua_PlanificacionTerritorial/Katastro_Catastro_WFS/MapServer/6/query?where=1%3D1&outFields=OBJECTID%2CCodigo_Municipio%2CCodigo_Poligono%2CCodigo_Parcela&returnGeometry=true&outSR=4326&f=geojson&orderByFields=OBJECTID&resultRecordCount=3&resultOffset=0&geometry=-2.961%2C43.281%2C-2.96%2C43.282&geometryType=esriGeometryEnvelope&inSR=4326&spatialRel=esriSpatialRelIntersects",
+      "method": "GET",
+      "checkedAt": "2026-10-09T02:50:40.062Z",
+      "httpStatus": 200,
+      "contentType": "application/geo+json;charset=UTF-8",
+      "bytes": 1583,
+      "exceededTransferLimit": true,
+      "features": [
+        {
+          "transportId": 72649,
+          "properties": {
+            "OBJECTID": 72649,
+            "Codigo_Municipio": 20,
+            "Codigo_Poligono": 1105,
+            "Codigo_Parcela": 3020
+          },
+          "geometrySha256": "8618d03cd96b864a733d50468c531338f8c9eb6160a514d95c453c5d32bb1f48"
+        },
+        {
+          "transportId": 72650,
+          "properties": {
+            "OBJECTID": 72650,
+            "Codigo_Municipio": 20,
+            "Codigo_Poligono": 1105,
+            "Codigo_Parcela": 3019
+          },
+          "geometrySha256": "136f7ee5ab1436b6593162fbf96448ae7d288c3308479d4cf4bc0fc99df901f0"
+        },
+        {
+          "transportId": 72651,
+          "properties": {
+            "OBJECTID": 72651,
+            "Codigo_Municipio": 20,
+            "Codigo_Poligono": 1105,
+            "Codigo_Parcela": 3022
+          },
+          "geometrySha256": "3ae6777d2321e16c1e2c9fac189bc462550ee8342a7bf8b9b986b2e8d64c3969"
+        }
+      ]
+    },
+    {
+      "test": "forced-three-row-pages",
+      "url": "https://geo.bizkaia.eus/arcgisserverinspire/rest/services/LurraldeAntolamendua_PlanificacionTerritorial/Katastro_Catastro_WFS/MapServer/6/query?where=1%3D1&outFields=OBJECTID%2CCodigo_Municipio%2CCodigo_Poligono%2CCodigo_Parcela&returnGeometry=true&outSR=4326&f=geojson&orderByFields=OBJECTID&resultRecordCount=3&resultOffset=3&geometry=-2.961%2C43.281%2C-2.96%2C43.282&geometryType=esriGeometryEnvelope&inSR=4326&spatialRel=esriSpatialRelIntersects",
+      "method": "GET",
+      "checkedAt": "2026-10-09T02:50:40.220Z",
+      "httpStatus": 200,
+      "contentType": "application/geo+json;charset=UTF-8",
+      "bytes": 1666,
+      "exceededTransferLimit": true,
+      "features": [
+        {
+          "transportId": 72652,
+          "properties": {
+            "OBJECTID": 72652,
+            "Codigo_Municipio": 20,
+            "Codigo_Poligono": 1105,
+            "Codigo_Parcela": 3021
+          },
+          "geometrySha256": "eab5262bae32218722bb278b3e0cb0037236fa7bffbc69db27594932ff77dffc"
+        },
+        {
+          "transportId": 72709,
+          "properties": {
+            "OBJECTID": 72709,
+            "Codigo_Municipio": 20,
+            "Codigo_Poligono": 1105,
+            "Codigo_Parcela": 3008
+          },
+          "geometrySha256": "12cf640eab67b24b883c107e3e41fb30b5eddad672ab93b4f9570f5937d733e8"
+        },
+        {
+          "transportId": 72710,
+          "properties": {
+            "OBJECTID": 72710,
+            "Codigo_Municipio": 20,
+            "Codigo_Poligono": 1105,
+            "Codigo_Parcela": 3009
+          },
+          "geometrySha256": "4945ed8daa56b3f5cf13da8613ec6170cf80bc28fb393d61341de8dedefaf469"
+        }
+      ]
+    },
+    {
+      "test": "forced-three-row-pages",
+      "url": "https://geo.bizkaia.eus/arcgisserverinspire/rest/services/LurraldeAntolamendua_PlanificacionTerritorial/Katastro_Catastro_WFS/MapServer/6/query?where=1%3D1&outFields=OBJECTID%2CCodigo_Municipio%2CCodigo_Poligono%2CCodigo_Parcela&returnGeometry=true&outSR=4326&f=geojson&orderByFields=OBJECTID&resultRecordCount=3&resultOffset=6&geometry=-2.961%2C43.281%2C-2.96%2C43.282&geometryType=esriGeometryEnvelope&inSR=4326&spatialRel=esriSpatialRelIntersects",
+      "method": "GET",
+      "checkedAt": "2026-10-09T02:50:40.381Z",
+      "httpStatus": 200,
+      "contentType": "application/geo+json;charset=UTF-8",
+      "bytes": 1667,
+      "exceededTransferLimit": true,
+      "features": [
+        {
+          "transportId": 72711,
+          "properties": {
+            "OBJECTID": 72711,
+            "Codigo_Municipio": 20,
+            "Codigo_Poligono": 1105,
+            "Codigo_Parcela": 3014
+          },
+          "geometrySha256": "496a8a3fe6e2808e183dc6cc4e860da3043b1e1d2e5597afea1c07c5761cc8a5"
+        },
+        {
+          "transportId": 72712,
+          "properties": {
+            "OBJECTID": 72712,
+            "Codigo_Municipio": 20,
+            "Codigo_Poligono": 1105,
+            "Codigo_Parcela": 3016
+          },
+          "geometrySha256": "324bf8c119bbd1fa54f541ad8d7f054df48c979d36f3211c6a6e222c05f692fb"
+        },
+        {
+          "transportId": 72713,
+          "properties": {
+            "OBJECTID": 72713,
+            "Codigo_Municipio": 20,
+            "Codigo_Poligono": 1105,
+            "Codigo_Parcela": 3018
+          },
+          "geometrySha256": "0a30215d0dadb6131f247c90ab90b0d3b541941e118cdc161c387de2d1b1440b"
+        }
+      ]
+    },
+    {
+      "test": "forced-three-row-pages",
+      "url": "https://geo.bizkaia.eus/arcgisserverinspire/rest/services/LurraldeAntolamendua_PlanificacionTerritorial/Katastro_Catastro_WFS/MapServer/6/query?where=1%3D1&outFields=OBJECTID%2CCodigo_Municipio%2CCodigo_Poligono%2CCodigo_Parcela&returnGeometry=true&outSR=4326&f=geojson&orderByFields=OBJECTID&resultRecordCount=3&resultOffset=9&geometry=-2.961%2C43.281%2C-2.96%2C43.282&geometryType=esriGeometryEnvelope&inSR=4326&spatialRel=esriSpatialRelIntersects",
+      "method": "GET",
+      "checkedAt": "2026-10-09T02:50:40.544Z",
+      "httpStatus": 200,
+      "contentType": "application/geo+json;charset=UTF-8",
+      "bytes": 1748,
+      "exceededTransferLimit": true,
+      "features": [
+        {
+          "transportId": 72714,
+          "properties": {
+            "OBJECTID": 72714,
+            "Codigo_Municipio": 20,
+            "Codigo_Poligono": 1105,
+            "Codigo_Parcela": 3023
+          },
+          "geometrySha256": "d2c66091321a4c2869379fef5ee36eb4973f72d38045f2d1ab79de8d3c442064"
+        },
+        {
+          "transportId": 72741,
+          "properties": {
+            "OBJECTID": 72741,
+            "Codigo_Municipio": 20,
+            "Codigo_Poligono": 1105,
+            "Codigo_Parcela": 3010
+          },
+          "geometrySha256": "f8198be4d7317b2d0418a6cd29ab0c67d6a5923c00f713cd4e53b527c1b57ae4"
+        },
+        {
+          "transportId": 72742,
+          "properties": {
+            "OBJECTID": 72742,
+            "Codigo_Municipio": 20,
+            "Codigo_Poligono": 1105,
+            "Codigo_Parcela": 3011
+          },
+          "geometrySha256": "03ee9a53cacdbe849ebd5687aab467615c662837a66f33532bba7403ccc0a4ed"
+        }
+      ]
+    },
+    {
+      "test": "forced-three-row-pages",
+      "url": "https://geo.bizkaia.eus/arcgisserverinspire/rest/services/LurraldeAntolamendua_PlanificacionTerritorial/Katastro_Catastro_WFS/MapServer/6/query?where=1%3D1&outFields=OBJECTID%2CCodigo_Municipio%2CCodigo_Poligono%2CCodigo_Parcela&returnGeometry=true&outSR=4326&f=geojson&orderByFields=OBJECTID&resultRecordCount=3&resultOffset=12&geometry=-2.961%2C43.281%2C-2.96%2C43.282&geometryType=esriGeometryEnvelope&inSR=4326&spatialRel=esriSpatialRelIntersects",
+      "method": "GET",
+      "checkedAt": "2026-10-09T02:50:40.705Z",
+      "httpStatus": 200,
+      "contentType": "application/geo+json;charset=UTF-8",
+      "bytes": 1581,
+      "exceededTransferLimit": true,
+      "features": [
+        {
+          "transportId": 72743,
+          "properties": {
+            "OBJECTID": 72743,
+            "Codigo_Municipio": 20,
+            "Codigo_Poligono": 1105,
+            "Codigo_Parcela": 3012
+          },
+          "geometrySha256": "0218684ec3248d5f1b3f911c3dbaf937625f5c82e94b70e14b2d7ce93d1d8ecc"
+        },
+        {
+          "transportId": 72744,
+          "properties": {
+            "OBJECTID": 72744,
+            "Codigo_Municipio": 20,
+            "Codigo_Poligono": 1105,
+            "Codigo_Parcela": 3013
+          },
+          "geometrySha256": "e98445d6f7fa61af5e36d597a9783d90f5f288c304d9518ba45c6f957b2fd16a"
+        },
+        {
+          "transportId": 73341,
+          "properties": {
+            "OBJECTID": 73341,
+            "Codigo_Municipio": 20,
+            "Codigo_Poligono": 1105,
+            "Codigo_Parcela": 3006
+          },
+          "geometrySha256": "e1e21810fc20e720f5399dab6342b27c2288947897eb9ce161b691566222b739"
+        }
+      ]
+    },
+    {
+      "test": "forced-three-row-pages",
+      "url": "https://geo.bizkaia.eus/arcgisserverinspire/rest/services/LurraldeAntolamendua_PlanificacionTerritorial/Katastro_Catastro_WFS/MapServer/6/query?where=1%3D1&outFields=OBJECTID%2CCodigo_Municipio%2CCodigo_Poligono%2CCodigo_Parcela&returnGeometry=true&outSR=4326&f=geojson&orderByFields=OBJECTID&resultRecordCount=3&resultOffset=15&geometry=-2.961%2C43.281%2C-2.96%2C43.282&geometryType=esriGeometryEnvelope&inSR=4326&spatialRel=esriSpatialRelIntersects",
+      "method": "GET",
+      "checkedAt": "2026-10-09T02:50:40.865Z",
+      "httpStatus": 200,
+      "contentType": "application/geo+json;charset=UTF-8",
+      "bytes": 1582,
+      "exceededTransferLimit": true,
+      "features": [
+        {
+          "transportId": 73342,
+          "properties": {
+            "OBJECTID": 73342,
+            "Codigo_Municipio": 20,
+            "Codigo_Poligono": 1105,
+            "Codigo_Parcela": 3007
+          },
+          "geometrySha256": "1b07704223b1ac3befd76e6bc3582b8a00a3638a71e6157a215dded65a36cc84"
+        },
+        {
+          "transportId": 73343,
+          "properties": {
+            "OBJECTID": 73343,
+            "Codigo_Municipio": 20,
+            "Codigo_Poligono": 1105,
+            "Codigo_Parcela": 3015
+          },
+          "geometrySha256": "a673170225071fbb96384e0afedc5a6571dc22a43dde4e95418bac19e67fc01f"
+        },
+        {
+          "transportId": 73344,
+          "properties": {
+            "OBJECTID": 73344,
+            "Codigo_Municipio": 20,
+            "Codigo_Poligono": 1105,
+            "Codigo_Parcela": 3017
+          },
+          "geometrySha256": "a22db3a846f4eaedf0727af4992969bee3083c264a63a1b17487aa215edfd3e5"
+        }
+      ]
+    },
+    {
+      "test": "forced-three-row-pages",
+      "url": "https://geo.bizkaia.eus/arcgisserverinspire/rest/services/LurraldeAntolamendua_PlanificacionTerritorial/Katastro_Catastro_WFS/MapServer/6/query?where=1%3D1&outFields=OBJECTID%2CCodigo_Municipio%2CCodigo_Poligono%2CCodigo_Parcela&returnGeometry=true&outSR=4326&f=geojson&orderByFields=OBJECTID&resultRecordCount=3&resultOffset=18&geometry=-2.961%2C43.281%2C-2.96%2C43.282&geometryType=esriGeometryEnvelope&inSR=4326&spatialRel=esriSpatialRelIntersects",
+      "method": "GET",
+      "checkedAt": "2026-10-09T02:50:41.032Z",
+      "httpStatus": 200,
+      "contentType": "application/geo+json;charset=UTF-8",
+      "bytes": 10903,
+      "exceededTransferLimit": true,
+      "features": [
+        {
+          "transportId": 73350,
+          "properties": {
+            "OBJECTID": 73350,
+            "Codigo_Municipio": 20,
+            "Codigo_Poligono": 1105,
+            "Codigo_Parcela": 3024
+          },
+          "geometrySha256": "256ab6b5bbe62404ffffcbb2b941d385f03660b8d27789db840ae20671ddebcf"
+        },
+        {
+          "transportId": 75712,
+          "properties": {
+            "OBJECTID": 75712,
+            "Codigo_Municipio": 20,
+            "Codigo_Poligono": 1104,
+            "Codigo_Parcela": 71001
+          },
+          "geometrySha256": "41bc7cffee9cbbbaa4db09f54f4b9b41c8ce8ca31ca7bab1a8bc692c0007ab82"
+        },
+        {
+          "transportId": 75824,
+          "properties": {
+            "OBJECTID": 75824,
+            "Codigo_Municipio": 20,
+            "Codigo_Poligono": 1109,
+            "Codigo_Parcela": 70001
+          },
+          "geometrySha256": "9aadea11d111c699157371d15cd077c6508139581de8e030406b2317b4261957"
+        }
+      ]
+    },
+    {
+      "test": "forced-three-row-pages",
+      "url": "https://geo.bizkaia.eus/arcgisserverinspire/rest/services/LurraldeAntolamendua_PlanificacionTerritorial/Katastro_Catastro_WFS/MapServer/6/query?where=1%3D1&outFields=OBJECTID%2CCodigo_Municipio%2CCodigo_Poligono%2CCodigo_Parcela&returnGeometry=true&outSR=4326&f=geojson&orderByFields=OBJECTID&resultRecordCount=3&resultOffset=21&geometry=-2.961%2C43.281%2C-2.96%2C43.282&geometryType=esriGeometryEnvelope&inSR=4326&spatialRel=esriSpatialRelIntersects",
+      "method": "GET",
+      "checkedAt": "2026-10-09T02:50:41.200Z",
+      "httpStatus": 200,
+      "contentType": "application/geo+json;charset=UTF-8",
+      "bytes": 7464,
+      "features": [
+        {
+          "transportId": 76021,
+          "properties": {
+            "OBJECTID": 76021,
+            "Codigo_Municipio": 20,
+            "Codigo_Poligono": 1105,
+            "Codigo_Parcela": 70001
+          },
+          "geometrySha256": "d0cadcfe2ec7690565fdf704f5cb2c88c796af61c58d88a3080e28e82e985f24"
+        },
+        {
+          "transportId": 78969,
+          "properties": {
+            "OBJECTID": 78969,
+            "Codigo_Municipio": 20,
+            "Codigo_Poligono": 1109,
+            "Codigo_Parcela": 3005
+          },
+          "geometrySha256": "44eac5717ee86256567cc863eadd19670e4d68b1ef2ae3b44fc527c31025300d"
+        },
+        {
+          "transportId": 79224,
+          "properties": {
+            "OBJECTID": 79224,
+            "Codigo_Municipio": 20,
+            "Codigo_Poligono": 1104,
+            "Codigo_Parcela": 3003
+          },
+          "geometrySha256": "be380e72e5d52478be695d0e83eeb45b420fbf9adc10be8be718687a453b16af"
+        }
+      ]
+    },
+    {
+      "test": "forced-three-row-pages",
+      "url": "https://geo.bizkaia.eus/arcgisserverinspire/rest/services/LurraldeAntolamendua_PlanificacionTerritorial/Katastro_Catastro_WFS/MapServer/6/query?where=1%3D1&outFields=OBJECTID%2CCodigo_Municipio%2CCodigo_Poligono%2CCodigo_Parcela&returnGeometry=true&outSR=4326&f=geojson&orderByFields=OBJECTID&resultRecordCount=3&resultOffset=24&geometry=-2.961%2C43.281%2C-2.96%2C43.282&geometryType=esriGeometryEnvelope&inSR=4326&spatialRel=esriSpatialRelIntersects",
+      "method": "GET",
+      "checkedAt": "2026-10-09T02:50:41.357Z",
+      "httpStatus": 200,
+      "contentType": "application/geo+json;charset=UTF-8",
+      "bytes": 42,
+      "features": []
+    },
+    {
+      "test": "fresh-ids-0",
+      "url": "https://geo.bizkaia.eus/arcgisserverinspire/rest/services/LurraldeAntolamendua_PlanificacionTerritorial/Katastro_Catastro_WFS/MapServer/6/query",
+      "method": "POST",
+      "body": "where=%28Codigo_Municipio+%3D+20+AND+Codigo_Poligono+%3D+1104+AND+Codigo_Parcela+%3D+2001%29+OR+%28Codigo_Municipio+%3D+20+AND+Codigo_Poligono+%3D+1104+AND+Codigo_Parcela+%3D+3003%29+OR+%28Codigo_Municipio+%3D+20+AND+Codigo_Poligono+%3D+1104+AND+Codigo_Parcela+%3D+3006%29+OR+%28Codigo_Municipio+%3D+20+AND+Codigo_Poligono+%3D+1104+AND+Codigo_Parcela+%3D+70001%29+OR+%28Codigo_Municipio+%3D+20+AND+Codigo_Poligono+%3D+1104+AND+Codigo_Parcela+%3D+71001%29+OR+%28Codigo_Municipio+%3D+20+AND+Codigo_Poligono+%3D+1104+AND+Codigo_Parcela+%3D+72001%29+OR+%28Codigo_Municipio+%3D+20+AND+Codigo_Poligono+%3D+1105+AND+Codigo_Parcela+%3D+2001%29+OR+%28Codigo_Municipio+%3D+20+AND+Codigo_Poligono+%3D+1105+AND+Codigo_Parcela+%3D+2002%29+OR+%28Codigo_Municipio+%3D+20+AND+Codigo_Poligono+%3D+1105+AND+Codigo_Parcela+%3D+3001%29+OR+%28Codigo_Municipio+%3D+20+AND+Codigo_Poligono+%3D+1105+AND+Codigo_Parcela+%3D+3002%29+OR+%28Codigo_Municipio+%3D+20+AND+Codigo_Poligono+%3D+1105+AND+Codigo_Parcela+%3D+3003%29+OR+%28Codigo_Municipio+%3D+20+AND+Codigo_Poligono+%3D+1105+AND+Codigo_Parcela+%3D+3004%29+OR+%28Codigo_Municipio+%3D+20+AND+Codigo_Poligono+%3D+1105+AND+Codigo_Parcela+%3D+3005%29+OR+%28Codigo_Municipio+%3D+20+AND+Codigo_Poligono+%3D+1105+AND+Codigo_Parcela+%3D+3006%29+OR+%28Codigo_Municipio+%3D+20+AND+Codigo_Poligono+%3D+1105+AND+Codigo_Parcela+%3D+3007%29+OR+%28Codigo_Municipio+%3D+20+AND+Codigo_Poligono+%3D+1105+AND+Codigo_Parcela+%3D+3008%29+OR+%28Codigo_Municipio+%3D+20+AND+Codigo_Poligono+%3D+1105+AND+Codigo_Parcela+%3D+3009%29+OR+%28Codigo_Municipio+%3D+20+AND+Codigo_Poligono+%3D+1105+AND+Codigo_Parcela+%3D+3010%29+OR+%28Codigo_Municipio+%3D+20+AND+Codigo_Poligono+%3D+1105+AND+Codigo_Parcela+%3D+3011%29+OR+%28Codigo_Municipio+%3D+20+AND+Codigo_Poligono+%3D+1105+AND+Codigo_Parcela+%3D+3012%29+OR+%28Codigo_Municipio+%3D+20+AND+Codigo_Poligono+%3D+1105+AND+Codigo_Parcela+%3D+3013%29+OR+%28Codigo_Municipio+%3D+20+AND+Codigo_Poligono+%3D+1105+AND+Codigo_Parcela+%3D+3014%29+OR+%28Codigo_Municipio+%3D+20+AND+Codigo_Poligono+%3D+1105+AND+Codigo_Parcela+%3D+3015%29+OR+%28Codigo_Municipio+%3D+20+AND+Codigo_Poligono+%3D+1105+AND+Codigo_Parcela+%3D+3016%29+OR+%28Codigo_Municipio+%3D+20+AND+Codigo_Poligono+%3D+1105+AND+Codigo_Parcela+%3D+3017%29+OR+%28Codigo_Municipio+%3D+20+AND+Codigo_Poligono+%3D+1105+AND+Codigo_Parcela+%3D+3018%29+OR+%28Codigo_Municipio+%3D+20+AND+Codigo_Poligono+%3D+1105+AND+Codigo_Parcela+%3D+3019%29+OR+%28Codigo_Municipio+%3D+20+AND+Codigo_Poligono+%3D+1105+AND+Codigo_Parcela+%3D+3020%29+OR+%28Codigo_Municipio+%3D+20+AND+Codigo_Poligono+%3D+1105+AND+Codigo_Parcela+%3D+3021%29+OR+%28Codigo_Municipio+%3D+20+AND+Codigo_Poligono+%3D+1105+AND+Codigo_Parcela+%3D+3022%29+OR+%28Codigo_Municipio+%3D+20+AND+Codigo_Poligono+%3D+1105+AND+Codigo_Parcela+%3D+3023%29+OR+%28Codigo_Municipio+%3D+20+AND+Codigo_Poligono+%3D+1105+AND+Codigo_Parcela+%3D+3024%29+OR+%28Codigo_Municipio+%3D+20+AND+Codigo_Poligono+%3D+1105+AND+Codigo_Parcela+%3D+70001%29+OR+%28Codigo_Municipio+%3D+20+AND+Codigo_Poligono+%3D+1106+AND+Codigo_Parcela+%3D+2003%29+OR+%28Codigo_Municipio+%3D+20+AND+Codigo_Poligono+%3D+1106+AND+Codigo_Parcela+%3D+2004%29+OR+%28Codigo_Municipio+%3D+20+AND+Codigo_Poligono+%3D+1106+AND+Codigo_Parcela+%3D+2005%29+OR+%28Codigo_Municipio+%3D+20+AND+Codigo_Poligono+%3D+1106+AND+Codigo_Parcela+%3D+2006%29+OR+%28Codigo_Municipio+%3D+20+AND+Codigo_Poligono+%3D+1106+AND+Codigo_Parcela+%3D+2007%29+OR+%28Codigo_Municipio+%3D+20+AND+Codigo_Poligono+%3D+1106+AND+Codigo_Parcela+%3D+2008%29+OR+%28Codigo_Municipio+%3D+20+AND+Codigo_Poligono+%3D+1106+AND+Codigo_Parcela+%3D+2009%29&outFields=OBJECTID%2CCodigo_Municipio%2CCodigo_Poligono%2CCodigo_Parcela&returnGeometry=true&outSR=4326&f=geojson&orderByFields=OBJECTID&resultRecordCount=1000&resultOffset=0",
+      "checkedAt": "2026-10-09T02:50:41.529Z",
+      "httpStatus": 200,
+      "contentType": "application/geo+json;charset=UTF-8",
+      "bytes": 32117,
+      "features": [
+        {
+          "transportId": 72645,
+          "properties": {
+            "OBJECTID": 72645,
+            "Codigo_Municipio": 20,
+            "Codigo_Poligono": 1105,
+            "Codigo_Parcela": 3002
+          },
+          "geometrySha256": "3aa1ec3abcdb8cc9d4920373f05cfae8e73a9358e2b8af84ad4264aeb937b32d"
+        },
+        {
+          "transportId": 72646,
+          "properties": {
+            "OBJECTID": 72646,
+            "Codigo_Municipio": 20,
+            "Codigo_Poligono": 1105,
+            "Codigo_Parcela": 3004
+          },
+          "geometrySha256": "68d0a0ce9730911ac48f898135e24d7492d19d04b30f42b76df3d19b45ec8611"
+        },
+        {
+          "transportId": 72647,
+          "properties": {
+            "OBJECTID": 72647,
+            "Codigo_Municipio": 20,
+            "Codigo_Poligono": 1105,
+            "Codigo_Parcela": 3003
+          },
+          "geometrySha256": "ba009e84776bd31c168c0b7ddd9562ae9c40040d68edfcbfcd850df63494a8c6"
+        },
+        {
+          "transportId": 72648,
+          "properties": {
+            "OBJECTID": 72648,
+            "Codigo_Municipio": 20,
+            "Codigo_Poligono": 1105,
+            "Codigo_Parcela": 3005
+          },
+          "geometrySha256": "94530d65fea89d7c21290d354f9d24d8672c1712de556bdc95cff01c7e95c78b"
+        },
+        {
+          "transportId": 72649,
+          "properties": {
+            "OBJECTID": 72649,
+            "Codigo_Municipio": 20,
+            "Codigo_Poligono": 1105,
+            "Codigo_Parcela": 3020
+          },
+          "geometrySha256": "8618d03cd96b864a733d50468c531338f8c9eb6160a514d95c453c5d32bb1f48"
+        },
+        {
+          "transportId": 72650,
+          "properties": {
+            "OBJECTID": 72650,
+            "Codigo_Municipio": 20,
+            "Codigo_Poligono": 1105,
+            "Codigo_Parcela": 3019
+          },
+          "geometrySha256": "136f7ee5ab1436b6593162fbf96448ae7d288c3308479d4cf4bc0fc99df901f0"
+        },
+        {
+          "transportId": 72651,
+          "properties": {
+            "OBJECTID": 72651,
+            "Codigo_Municipio": 20,
+            "Codigo_Poligono": 1105,
+            "Codigo_Parcela": 3022
+          },
+          "geometrySha256": "3ae6777d2321e16c1e2c9fac189bc462550ee8342a7bf8b9b986b2e8d64c3969"
+        },
+        {
+          "transportId": 72652,
+          "properties": {
+            "OBJECTID": 72652,
+            "Codigo_Municipio": 20,
+            "Codigo_Poligono": 1105,
+            "Codigo_Parcela": 3021
+          },
+          "geometrySha256": "eab5262bae32218722bb278b3e0cb0037236fa7bffbc69db27594932ff77dffc"
+        },
+        {
+          "transportId": 72708,
+          "properties": {
+            "OBJECTID": 72708,
+            "Codigo_Municipio": 20,
+            "Codigo_Poligono": 1105,
+            "Codigo_Parcela": 2002
+          },
+          "geometrySha256": "84d24383fd18b31749153c29fd1caed0b133544c2db76d0bda60cf683a20f29e"
+        },
+        {
+          "transportId": 72709,
+          "properties": {
+            "OBJECTID": 72709,
+            "Codigo_Municipio": 20,
+            "Codigo_Poligono": 1105,
+            "Codigo_Parcela": 3008
+          },
+          "geometrySha256": "12cf640eab67b24b883c107e3e41fb30b5eddad672ab93b4f9570f5937d733e8"
+        },
+        {
+          "transportId": 72710,
+          "properties": {
+            "OBJECTID": 72710,
+            "Codigo_Municipio": 20,
+            "Codigo_Poligono": 1105,
+            "Codigo_Parcela": 3009
+          },
+          "geometrySha256": "4945ed8daa56b3f5cf13da8613ec6170cf80bc28fb393d61341de8dedefaf469"
+        },
+        {
+          "transportId": 72711,
+          "properties": {
+            "OBJECTID": 72711,
+            "Codigo_Municipio": 20,
+            "Codigo_Poligono": 1105,
+            "Codigo_Parcela": 3014
+          },
+          "geometrySha256": "496a8a3fe6e2808e183dc6cc4e860da3043b1e1d2e5597afea1c07c5761cc8a5"
+        },
+        {
+          "transportId": 72712,
+          "properties": {
+            "OBJECTID": 72712,
+            "Codigo_Municipio": 20,
+            "Codigo_Poligono": 1105,
+            "Codigo_Parcela": 3016
+          },
+          "geometrySha256": "324bf8c119bbd1fa54f541ad8d7f054df48c979d36f3211c6a6e222c05f692fb"
+        },
+        {
+          "transportId": 72713,
+          "properties": {
+            "OBJECTID": 72713,
+            "Codigo_Municipio": 20,
+            "Codigo_Poligono": 1105,
+            "Codigo_Parcela": 3018
+          },
+          "geometrySha256": "0a30215d0dadb6131f247c90ab90b0d3b541941e118cdc161c387de2d1b1440b"
+        },
+        {
+          "transportId": 72714,
+          "properties": {
+            "OBJECTID": 72714,
+            "Codigo_Municipio": 20,
+            "Codigo_Poligono": 1105,
+            "Codigo_Parcela": 3023
+          },
+          "geometrySha256": "d2c66091321a4c2869379fef5ee36eb4973f72d38045f2d1ab79de8d3c442064"
+        },
+        {
+          "transportId": 72741,
+          "properties": {
+            "OBJECTID": 72741,
+            "Codigo_Municipio": 20,
+            "Codigo_Poligono": 1105,
+            "Codigo_Parcela": 3010
+          },
+          "geometrySha256": "f8198be4d7317b2d0418a6cd29ab0c67d6a5923c00f713cd4e53b527c1b57ae4"
+        },
+        {
+          "transportId": 72742,
+          "properties": {
+            "OBJECTID": 72742,
+            "Codigo_Municipio": 20,
+            "Codigo_Poligono": 1105,
+            "Codigo_Parcela": 3011
+          },
+          "geometrySha256": "03ee9a53cacdbe849ebd5687aab467615c662837a66f33532bba7403ccc0a4ed"
+        },
+        {
+          "transportId": 72743,
+          "properties": {
+            "OBJECTID": 72743,
+            "Codigo_Municipio": 20,
+            "Codigo_Poligono": 1105,
+            "Codigo_Parcela": 3012
+          },
+          "geometrySha256": "0218684ec3248d5f1b3f911c3dbaf937625f5c82e94b70e14b2d7ce93d1d8ecc"
+        },
+        {
+          "transportId": 72744,
+          "properties": {
+            "OBJECTID": 72744,
+            "Codigo_Municipio": 20,
+            "Codigo_Poligono": 1105,
+            "Codigo_Parcela": 3013
+          },
+          "geometrySha256": "e98445d6f7fa61af5e36d597a9783d90f5f288c304d9518ba45c6f957b2fd16a"
+        },
+        {
+          "transportId": 73339,
+          "properties": {
+            "OBJECTID": 73339,
+            "Codigo_Municipio": 20,
+            "Codigo_Poligono": 1105,
+            "Codigo_Parcela": 2001
+          },
+          "geometrySha256": "ca3191355d8659582cbdc2ed7c091c3f6ace999ca1f35e449fd3621e04b6e0ce"
+        },
+        {
+          "transportId": 73340,
+          "properties": {
+            "OBJECTID": 73340,
+            "Codigo_Municipio": 20,
+            "Codigo_Poligono": 1105,
+            "Codigo_Parcela": 3001
+          },
+          "geometrySha256": "4d4ef204e071b490cb588d0e4036e78e6715a8e649c5ee63807aa0ebdbb6c4d6"
+        },
+        {
+          "transportId": 73341,
+          "properties": {
+            "OBJECTID": 73341,
+            "Codigo_Municipio": 20,
+            "Codigo_Poligono": 1105,
+            "Codigo_Parcela": 3006
+          },
+          "geometrySha256": "e1e21810fc20e720f5399dab6342b27c2288947897eb9ce161b691566222b739"
+        },
+        {
+          "transportId": 73342,
+          "properties": {
+            "OBJECTID": 73342,
+            "Codigo_Municipio": 20,
+            "Codigo_Poligono": 1105,
+            "Codigo_Parcela": 3007
+          },
+          "geometrySha256": "1b07704223b1ac3befd76e6bc3582b8a00a3638a71e6157a215dded65a36cc84"
+        },
+        {
+          "transportId": 73343,
+          "properties": {
+            "OBJECTID": 73343,
+            "Codigo_Municipio": 20,
+            "Codigo_Poligono": 1105,
+            "Codigo_Parcela": 3015
+          },
+          "geometrySha256": "a673170225071fbb96384e0afedc5a6571dc22a43dde4e95418bac19e67fc01f"
+        },
+        {
+          "transportId": 73344,
+          "properties": {
+            "OBJECTID": 73344,
+            "Codigo_Municipio": 20,
+            "Codigo_Poligono": 1105,
+            "Codigo_Parcela": 3017
+          },
+          "geometrySha256": "a22db3a846f4eaedf0727af4992969bee3083c264a63a1b17487aa215edfd3e5"
+        },
+        {
+          "transportId": 73350,
+          "properties": {
+            "OBJECTID": 73350,
+            "Codigo_Municipio": 20,
+            "Codigo_Poligono": 1105,
+            "Codigo_Parcela": 3024
+          },
+          "geometrySha256": "256ab6b5bbe62404ffffcbb2b941d385f03660b8d27789db840ae20671ddebcf"
+        },
+        {
+          "transportId": 74685,
+          "properties": {
+            "OBJECTID": 74685,
+            "Codigo_Municipio": 20,
+            "Codigo_Poligono": 1106,
+            "Codigo_Parcela": 2003
+          },
+          "geometrySha256": "ebd1c136b6faae3f25c9c33a789924dd7154aa6714438bc287758f86ee6f245c"
+        },
+        {
+          "transportId": 74686,
+          "properties": {
+            "OBJECTID": 74686,
+            "Codigo_Municipio": 20,
+            "Codigo_Poligono": 1106,
+            "Codigo_Parcela": 2004
+          },
+          "geometrySha256": "fea75a659d4491dbf29821e35b40e7d74b3a1ac829b21decdcc04b6c67095656"
+        },
+        {
+          "transportId": 74687,
+          "properties": {
+            "OBJECTID": 74687,
+            "Codigo_Municipio": 20,
+            "Codigo_Poligono": 1106,
+            "Codigo_Parcela": 2005
+          },
+          "geometrySha256": "97382621066300ae0611149e064f3d349284d2fa8ceb3b6718e08f58ddeae3b3"
+        },
+        {
+          "transportId": 74688,
+          "properties": {
+            "OBJECTID": 74688,
+            "Codigo_Municipio": 20,
+            "Codigo_Poligono": 1106,
+            "Codigo_Parcela": 2006
+          },
+          "geometrySha256": "5148eeaa6fbb5837418c2d4a3e2e6f4eb40a86e699cc8dfb279b633abed18116"
+        },
+        {
+          "transportId": 74762,
+          "properties": {
+            "OBJECTID": 74762,
+            "Codigo_Municipio": 20,
+            "Codigo_Poligono": 1106,
+            "Codigo_Parcela": 2008
+          },
+          "geometrySha256": "f585bbf1224e18846347dd7f82fe63262368582468b8611d416aa1e577de2e19"
+        },
+        {
+          "transportId": 75204,
+          "properties": {
+            "OBJECTID": 75204,
+            "Codigo_Municipio": 20,
+            "Codigo_Poligono": 1106,
+            "Codigo_Parcela": 2007
+          },
+          "geometrySha256": "ed44389a7fcd18fa0ffc42e1ec92bac321f9059005d4bb926795beee568e9e35"
+        },
+        {
+          "transportId": 75205,
+          "properties": {
+            "OBJECTID": 75205,
+            "Codigo_Municipio": 20,
+            "Codigo_Poligono": 1106,
+            "Codigo_Parcela": 2009
+          },
+          "geometrySha256": "d1f500628b0830a99f79a7012bdce317f384194f9b06fc49410f8bcc477fe309"
+        },
+        {
+          "transportId": 75595,
+          "properties": {
+            "OBJECTID": 75595,
+            "Codigo_Municipio": 20,
+            "Codigo_Poligono": 1104,
+            "Codigo_Parcela": 72001
+          },
+          "geometrySha256": "74b118e36f18caf5388673fa3822d0320b787ec8e20c10a7d5f747b8849593df"
+        },
+        {
+          "transportId": 75596,
+          "properties": {
+            "OBJECTID": 75596,
+            "Codigo_Municipio": 20,
+            "Codigo_Poligono": 1104,
+            "Codigo_Parcela": 70001
+          },
+          "geometrySha256": "a2b713a480c4f31c2c29ba0d5065c4b4ebaabbaaeebffeb5b33fcb5332cd342c"
+        },
+        {
+          "transportId": 75712,
+          "properties": {
+            "OBJECTID": 75712,
+            "Codigo_Municipio": 20,
+            "Codigo_Poligono": 1104,
+            "Codigo_Parcela": 71001
+          },
+          "geometrySha256": "41bc7cffee9cbbbaa4db09f54f4b9b41c8ce8ca31ca7bab1a8bc692c0007ab82"
+        },
+        {
+          "transportId": 76021,
+          "properties": {
+            "OBJECTID": 76021,
+            "Codigo_Municipio": 20,
+            "Codigo_Poligono": 1105,
+            "Codigo_Parcela": 70001
+          },
+          "geometrySha256": "d0cadcfe2ec7690565fdf704f5cb2c88c796af61c58d88a3080e28e82e985f24"
+        },
+        {
+          "transportId": 76173,
+          "properties": {
+            "OBJECTID": 76173,
+            "Codigo_Municipio": 20,
+            "Codigo_Poligono": 1104,
+            "Codigo_Parcela": 3006
+          },
+          "geometrySha256": "332851bf37f8308b001964d3a736c5bd058431c1a903e8c68ca58460fadaf8d1"
+        },
+        {
+          "transportId": 79222,
+          "properties": {
+            "OBJECTID": 79222,
+            "Codigo_Municipio": 20,
+            "Codigo_Poligono": 1104,
+            "Codigo_Parcela": 2001
+          },
+          "geometrySha256": "2c5adf4e7fa8c7b2c69fa306356a9192f2efef536aab99f4e6579f39486252b6"
+        },
+        {
+          "transportId": 79224,
+          "properties": {
+            "OBJECTID": 79224,
+            "Codigo_Municipio": 20,
+            "Codigo_Poligono": 1104,
+            "Codigo_Parcela": 3003
+          },
+          "geometrySha256": "be380e72e5d52478be695d0e83eeb45b420fbf9adc10be8be718687a453b16af"
+        }
+      ]
+    },
+    {
+      "test": "fresh-ids-40",
+      "url": "https://geo.bizkaia.eus/arcgisserverinspire/rest/services/LurraldeAntolamendua_PlanificacionTerritorial/Katastro_Catastro_WFS/MapServer/6/query",
+      "method": "POST",
+      "body": "where=%28Codigo_Municipio+%3D+20+AND+Codigo_Poligono+%3D+1106+AND+Codigo_Parcela+%3D+2010%29+OR+%28Codigo_Municipio+%3D+20+AND+Codigo_Poligono+%3D+1106+AND+Codigo_Parcela+%3D+70001%29+OR+%28Codigo_Municipio+%3D+20+AND+Codigo_Poligono+%3D+1109+AND+Codigo_Parcela+%3D+1001%29+OR+%28Codigo_Municipio+%3D+20+AND+Codigo_Poligono+%3D+1109+AND+Codigo_Parcela+%3D+1002%29+OR+%28Codigo_Municipio+%3D+20+AND+Codigo_Poligono+%3D+1109+AND+Codigo_Parcela+%3D+1003%29+OR+%28Codigo_Municipio+%3D+20+AND+Codigo_Poligono+%3D+1109+AND+Codigo_Parcela+%3D+1004%29+OR+%28Codigo_Municipio+%3D+20+AND+Codigo_Poligono+%3D+1109+AND+Codigo_Parcela+%3D+1005%29+OR+%28Codigo_Municipio+%3D+20+AND+Codigo_Poligono+%3D+1109+AND+Codigo_Parcela+%3D+1006%29+OR+%28Codigo_Municipio+%3D+20+AND+Codigo_Poligono+%3D+1109+AND+Codigo_Parcela+%3D+2001%29+OR+%28Codigo_Municipio+%3D+20+AND+Codigo_Poligono+%3D+1109+AND+Codigo_Parcela+%3D+2002%29+OR+%28Codigo_Municipio+%3D+20+AND+Codigo_Poligono+%3D+1109+AND+Codigo_Parcela+%3D+2003%29+OR+%28Codigo_Municipio+%3D+20+AND+Codigo_Poligono+%3D+1109+AND+Codigo_Parcela+%3D+2004%29+OR+%28Codigo_Municipio+%3D+20+AND+Codigo_Poligono+%3D+1109+AND+Codigo_Parcela+%3D+2005%29+OR+%28Codigo_Municipio+%3D+20+AND+Codigo_Poligono+%3D+1109+AND+Codigo_Parcela+%3D+2006%29+OR+%28Codigo_Municipio+%3D+20+AND+Codigo_Poligono+%3D+1109+AND+Codigo_Parcela+%3D+2007%29+OR+%28Codigo_Municipio+%3D+20+AND+Codigo_Poligono+%3D+1109+AND+Codigo_Parcela+%3D+2008%29+OR+%28Codigo_Municipio+%3D+20+AND+Codigo_Poligono+%3D+1109+AND+Codigo_Parcela+%3D+2009%29+OR+%28Codigo_Municipio+%3D+20+AND+Codigo_Poligono+%3D+1109+AND+Codigo_Parcela+%3D+3005%29+OR+%28Codigo_Municipio+%3D+20+AND+Codigo_Poligono+%3D+1109+AND+Codigo_Parcela+%3D+70001%29+OR+%28Codigo_Municipio+%3D+20+AND+Codigo_Poligono+%3D+5+AND+Codigo_Parcela+%3D+325%29+OR+%28Codigo_Municipio+%3D+20+AND+Codigo_Poligono+%3D+7+AND+Codigo_Parcela+%3D+126%29+OR+%28Codigo_Municipio+%3D+20+AND+Codigo_Poligono+%3D+7+AND+Codigo_Parcela+%3D+133%29+OR+%28Codigo_Municipio+%3D+20+AND+Codigo_Poligono+%3D+7+AND+Codigo_Parcela+%3D+135%29+OR+%28Codigo_Municipio+%3D+20+AND+Codigo_Poligono+%3D+7+AND+Codigo_Parcela+%3D+136%29+OR+%28Codigo_Municipio+%3D+20+AND+Codigo_Poligono+%3D+7+AND+Codigo_Parcela+%3D+137%29+OR+%28Codigo_Municipio+%3D+20+AND+Codigo_Poligono+%3D+7+AND+Codigo_Parcela+%3D+139%29+OR+%28Codigo_Municipio+%3D+20+AND+Codigo_Poligono+%3D+7+AND+Codigo_Parcela+%3D+140%29+OR+%28Codigo_Municipio+%3D+20+AND+Codigo_Poligono+%3D+7+AND+Codigo_Parcela+%3D+141%29+OR+%28Codigo_Municipio+%3D+20+AND+Codigo_Poligono+%3D+7+AND+Codigo_Parcela+%3D+142%29+OR+%28Codigo_Municipio+%3D+20+AND+Codigo_Poligono+%3D+7+AND+Codigo_Parcela+%3D+143%29+OR+%28Codigo_Municipio+%3D+20+AND+Codigo_Poligono+%3D+7+AND+Codigo_Parcela+%3D+144%29+OR+%28Codigo_Municipio+%3D+20+AND+Codigo_Poligono+%3D+7+AND+Codigo_Parcela+%3D+145%29+OR+%28Codigo_Municipio+%3D+20+AND+Codigo_Poligono+%3D+7+AND+Codigo_Parcela+%3D+146%29+OR+%28Codigo_Municipio+%3D+20+AND+Codigo_Poligono+%3D+7+AND+Codigo_Parcela+%3D+147%29+OR+%28Codigo_Municipio+%3D+20+AND+Codigo_Poligono+%3D+7+AND+Codigo_Parcela+%3D+148%29+OR+%28Codigo_Municipio+%3D+20+AND+Codigo_Poligono+%3D+7+AND+Codigo_Parcela+%3D+243%29+OR+%28Codigo_Municipio+%3D+20+AND+Codigo_Poligono+%3D+7+AND+Codigo_Parcela+%3D+255%29+OR+%28Codigo_Municipio+%3D+20+AND+Codigo_Poligono+%3D+7+AND+Codigo_Parcela+%3D+256%29+OR+%28Codigo_Municipio+%3D+20+AND+Codigo_Poligono+%3D+7+AND+Codigo_Parcela+%3D+261%29&outFields=OBJECTID%2CCodigo_Municipio%2CCodigo_Poligono%2CCodigo_Parcela&returnGeometry=true&outSR=4326&f=geojson&orderByFields=OBJECTID&resultRecordCount=1000&resultOffset=0",
+      "checkedAt": "2026-10-09T02:50:41.937Z",
+      "httpStatus": 200,
+      "contentType": "application/geo+json;charset=UTF-8",
+      "bytes": 73279,
+      "features": [
+        {
+          "transportId": 70001,
+          "properties": {
+            "OBJECTID": 70001,
+            "Codigo_Municipio": 20,
+            "Codigo_Poligono": 7,
+            "Codigo_Parcela": 126
+          },
+          "geometrySha256": "90057b596c7d5a8a4a12cabea374f37a3539d69791f1879b2acf4e51e52c67ad"
+        },
+        {
+          "transportId": 70004,
+          "properties": {
+            "OBJECTID": 70004,
+            "Codigo_Municipio": 20,
+            "Codigo_Poligono": 7,
+            "Codigo_Parcela": 255
+          },
+          "geometrySha256": "75d3a533f16ac6948b27bcbd929dcd7c95b730595c76573db0d7d71a387ef671"
+        },
+        {
+          "transportId": 70005,
+          "properties": {
+            "OBJECTID": 70005,
+            "Codigo_Municipio": 20,
+            "Codigo_Poligono": 7,
+            "Codigo_Parcela": 133
+          },
+          "geometrySha256": "7788d2663292cf5bb87f56704683d2187814ec9ee96ae08bd540d0ac4fd5755b"
+        },
+        {
+          "transportId": 70006,
+          "properties": {
+            "OBJECTID": 70006,
+            "Codigo_Municipio": 20,
+            "Codigo_Poligono": 7,
+            "Codigo_Parcela": 137
+          },
+          "geometrySha256": "8b4027f0821e315e8a8c25f83c54af85c00bb627b22966b329a66f960def6168"
+        },
+        {
+          "transportId": 70007,
+          "properties": {
+            "OBJECTID": 70007,
+            "Codigo_Municipio": 20,
+            "Codigo_Poligono": 7,
+            "Codigo_Parcela": 136
+          },
+          "geometrySha256": "ca076d54a92fb10beb98cd1f0afb2509170345bccaacdc0f38319712f94b8e04"
+        },
+        {
+          "transportId": 70008,
+          "properties": {
+            "OBJECTID": 70008,
+            "Codigo_Municipio": 20,
+            "Codigo_Poligono": 7,
+            "Codigo_Parcela": 256
+          },
+          "geometrySha256": "4638d45f0072751da8cec15e44cb56e6028fe877646fc7f2c05006608c8525d8"
+        },
+        {
+          "transportId": 70009,
+          "properties": {
+            "OBJECTID": 70009,
+            "Codigo_Municipio": 20,
+            "Codigo_Poligono": 7,
+            "Codigo_Parcela": 141
+          },
+          "geometrySha256": "93c1aa99dd4b272c7789773f2b394c48d5712f05f372b161ab023b4a4847c5db"
+        },
+        {
+          "transportId": 70010,
+          "properties": {
+            "OBJECTID": 70010,
+            "Codigo_Municipio": 20,
+            "Codigo_Poligono": 7,
+            "Codigo_Parcela": 139
+          },
+          "geometrySha256": "66a778d969b99871375a8e0fc85f5c8f6179acfb7feafbea19bf84ef72222e42"
+        },
+        {
+          "transportId": 70011,
+          "properties": {
+            "OBJECTID": 70011,
+            "Codigo_Municipio": 20,
+            "Codigo_Poligono": 7,
+            "Codigo_Parcela": 135
+          },
+          "geometrySha256": "1dd9ac51a986bde06b625553684393aea8be02841c0d386532187ab576dcd71a"
+        },
+        {
+          "transportId": 70012,
+          "properties": {
+            "OBJECTID": 70012,
+            "Codigo_Municipio": 20,
+            "Codigo_Poligono": 7,
+            "Codigo_Parcela": 140
+          },
+          "geometrySha256": "1620da88c2b303533e7f5868a1fb89d24c0141001b9045f03d9fd65de52dd221"
+        },
+        {
+          "transportId": 70013,
+          "properties": {
+            "OBJECTID": 70013,
+            "Codigo_Municipio": 20,
+            "Codigo_Poligono": 7,
+            "Codigo_Parcela": 147
+          },
+          "geometrySha256": "675c771dc427674560d44f887b4090de8cce25026b0794d2b6c7dd0b7a1b2d34"
+        },
+        {
+          "transportId": 70014,
+          "properties": {
+            "OBJECTID": 70014,
+            "Codigo_Municipio": 20,
+            "Codigo_Poligono": 7,
+            "Codigo_Parcela": 145
+          },
+          "geometrySha256": "1c30fd2400171fd25cbd5b98584c873d0c7e40b83c14f7f36b9478382c39e853"
+        },
+        {
+          "transportId": 70015,
+          "properties": {
+            "OBJECTID": 70015,
+            "Codigo_Municipio": 20,
+            "Codigo_Poligono": 7,
+            "Codigo_Parcela": 146
+          },
+          "geometrySha256": "9d66827b8d579b14e280929426ddf25017f43c48362ac3d5e048f422b0c0730a"
+        },
+        {
+          "transportId": 70902,
+          "properties": {
+            "OBJECTID": 70902,
+            "Codigo_Municipio": 20,
+            "Codigo_Poligono": 7,
+            "Codigo_Parcela": 243
+          },
+          "geometrySha256": "48acd8fa6c66cd243179368cde3e8cce3b8ef288f402e37feddd255e920188a9"
+        },
+        {
+          "transportId": 71194,
+          "properties": {
+            "OBJECTID": 71194,
+            "Codigo_Municipio": 20,
+            "Codigo_Poligono": 7,
+            "Codigo_Parcela": 261
+          },
+          "geometrySha256": "09dd9a36ad2aae6db67dcadc3d634d2739c61da62b3968784604cd5aef9f902f"
+        },
+        {
+          "transportId": 71688,
+          "properties": {
+            "OBJECTID": 71688,
+            "Codigo_Municipio": 20,
+            "Codigo_Poligono": 7,
+            "Codigo_Parcela": 148
+          },
+          "geometrySha256": "fccd0eb40355b84024847b29847b8e777a20d8ff3d4b85d1df233fe9540159a2"
+        },
+        {
+          "transportId": 71788,
+          "properties": {
+            "OBJECTID": 71788,
+            "Codigo_Municipio": 20,
+            "Codigo_Poligono": 7,
+            "Codigo_Parcela": 142
+          },
+          "geometrySha256": "1ae7b219bf2a19508e407e4604d072c59e625b41ec574c12a6ae83a937aaa8c1"
+        },
+        {
+          "transportId": 71789,
+          "properties": {
+            "OBJECTID": 71789,
+            "Codigo_Municipio": 20,
+            "Codigo_Poligono": 7,
+            "Codigo_Parcela": 144
+          },
+          "geometrySha256": "b7e7ad8e5b0df984ee3f8dfcd769122938e32c132fe0b2d4ec13d19e162b9a7d"
+        },
+        {
+          "transportId": 71790,
+          "properties": {
+            "OBJECTID": 71790,
+            "Codigo_Municipio": 20,
+            "Codigo_Poligono": 7,
+            "Codigo_Parcela": 143
+          },
+          "geometrySha256": "d82c1ca80e986698199551b97c980ebe3fdd837544ab27bf1a652c227d067a33"
+        },
+        {
+          "transportId": 71866,
+          "properties": {
+            "OBJECTID": 71866,
+            "Codigo_Municipio": 20,
+            "Codigo_Poligono": 5,
+            "Codigo_Parcela": 325
+          },
+          "geometrySha256": "ffa2b5e73a8d280aea0b9efd5b3cfdea8dae2c821fdfff1b2739e988d974725e"
+        },
+        {
+          "transportId": 74763,
+          "properties": {
+            "OBJECTID": 74763,
+            "Codigo_Municipio": 20,
+            "Codigo_Poligono": 1106,
+            "Codigo_Parcela": 2010
+          },
+          "geometrySha256": "02b416d880640395264e6870fb7971cd0520265f11aa143068c94fe7a2743ebe"
+        },
+        {
+          "transportId": 75713,
+          "properties": {
+            "OBJECTID": 75713,
+            "Codigo_Municipio": 20,
+            "Codigo_Poligono": 1106,
+            "Codigo_Parcela": 70001
+          },
+          "geometrySha256": "7d0b0b6e9bf4a6d8f1db5dbd58e21860c49cb6b8e3635b1191749984327b1fc2"
+        },
+        {
+          "transportId": 75824,
+          "properties": {
+            "OBJECTID": 75824,
+            "Codigo_Municipio": 20,
+            "Codigo_Poligono": 1109,
+            "Codigo_Parcela": 70001
+          },
+          "geometrySha256": "9aadea11d111c699157371d15cd077c6508139581de8e030406b2317b4261957"
+        },
+        {
+          "transportId": 76015,
+          "properties": {
+            "OBJECTID": 76015,
+            "Codigo_Municipio": 20,
+            "Codigo_Poligono": 1109,
+            "Codigo_Parcela": 1004
+          },
+          "geometrySha256": "cd032df677d3d8fa23c649a7944ddb57256541a86f92148a10cc60445c144c39"
+        },
+        {
+          "transportId": 76016,
+          "properties": {
+            "OBJECTID": 76016,
+            "Codigo_Municipio": 20,
+            "Codigo_Poligono": 1109,
+            "Codigo_Parcela": 1005
+          },
+          "geometrySha256": "01ff31b4bfd3b8455c30ed2da9c57dffa765503004e3eee6db64a05d3bb8a948"
+        },
+        {
+          "transportId": 76017,
+          "properties": {
+            "OBJECTID": 76017,
+            "Codigo_Municipio": 20,
+            "Codigo_Poligono": 1109,
+            "Codigo_Parcela": 1006
+          },
+          "geometrySha256": "c74f050245dab74e7ffdd0195677b99d307e662324022972da34b0d0905c0615"
+        },
+        {
+          "transportId": 76018,
+          "properties": {
+            "OBJECTID": 76018,
+            "Codigo_Municipio": 20,
+            "Codigo_Poligono": 1109,
+            "Codigo_Parcela": 2001
+          },
+          "geometrySha256": "4e810809d21ae63295325c42d63a5b8581c4919c9dba9febbb8db0ee71522341"
+        },
+        {
+          "transportId": 76074,
+          "properties": {
+            "OBJECTID": 76074,
+            "Codigo_Municipio": 20,
+            "Codigo_Poligono": 1109,
+            "Codigo_Parcela": 1002
+          },
+          "geometrySha256": "a595c80a00be3073769c90c62e59c658e15cdcb9e81eab43cca281657351d746"
+        },
+        {
+          "transportId": 76075,
+          "properties": {
+            "OBJECTID": 76075,
+            "Codigo_Municipio": 20,
+            "Codigo_Poligono": 1109,
+            "Codigo_Parcela": 2002
+          },
+          "geometrySha256": "6d9add732dcd0c8882be9e0c696177b95141a6baa339c1473a13c21c4136b158"
+        },
+        {
+          "transportId": 76076,
+          "properties": {
+            "OBJECTID": 76076,
+            "Codigo_Municipio": 20,
+            "Codigo_Poligono": 1109,
+            "Codigo_Parcela": 2004
+          },
+          "geometrySha256": "01c9eaf85e192b6cd15521e1e89da47d7359df88cfa04dd1f0b29657ed2942c7"
+        },
+        {
+          "transportId": 76077,
+          "properties": {
+            "OBJECTID": 76077,
+            "Codigo_Municipio": 20,
+            "Codigo_Poligono": 1109,
+            "Codigo_Parcela": 2009
+          },
+          "geometrySha256": "f7977c490f7674388a8304b206873ae7dde12c193801b129dfb5c7b1aa680bb8"
+        },
+        {
+          "transportId": 76378,
+          "properties": {
+            "OBJECTID": 76378,
+            "Codigo_Municipio": 20,
+            "Codigo_Poligono": 1109,
+            "Codigo_Parcela": 2005
+          },
+          "geometrySha256": "4dd2d087b952a5dab5bebea1d4663591a42e366a86119acc74fd71fcad7dbd9b"
+        },
+        {
+          "transportId": 76379,
+          "properties": {
+            "OBJECTID": 76379,
+            "Codigo_Municipio": 20,
+            "Codigo_Poligono": 1109,
+            "Codigo_Parcela": 2006
+          },
+          "geometrySha256": "b78941b9856ba6ab27f5164f4d9f6275970e30587ddfed9a0632a1efb0feca36"
+        },
+        {
+          "transportId": 76381,
+          "properties": {
+            "OBJECTID": 76381,
+            "Codigo_Municipio": 20,
+            "Codigo_Poligono": 1109,
+            "Codigo_Parcela": 2007
+          },
+          "geometrySha256": "be51450976040ab2fb3f44f380b9075c61c6b0dec5bf0ac413c46aa830a87a7d"
+        },
+        {
+          "transportId": 76382,
+          "properties": {
+            "OBJECTID": 76382,
+            "Codigo_Municipio": 20,
+            "Codigo_Poligono": 1109,
+            "Codigo_Parcela": 2008
+          },
+          "geometrySha256": "f22b6fc40434406a854c30ab969ea8a155b8a7b06759ec6c393470f5dfd2f4b0"
+        },
+        {
+          "transportId": 78967,
+          "properties": {
+            "OBJECTID": 78967,
+            "Codigo_Municipio": 20,
+            "Codigo_Poligono": 1109,
+            "Codigo_Parcela": 1001
+          },
+          "geometrySha256": "2d3edd9c5a83fed49fb6b3f166b53a9f64cfca67a71a7c89637881780db4e6e2"
+        },
+        {
+          "transportId": 78968,
+          "properties": {
+            "OBJECTID": 78968,
+            "Codigo_Municipio": 20,
+            "Codigo_Poligono": 1109,
+            "Codigo_Parcela": 1003
+          },
+          "geometrySha256": "af5dd71bf6959d4ff3917fc2bf6950eb47cc9557ebfeb7b853bb0e808559a570"
+        },
+        {
+          "transportId": 78969,
+          "properties": {
+            "OBJECTID": 78969,
+            "Codigo_Municipio": 20,
+            "Codigo_Poligono": 1109,
+            "Codigo_Parcela": 3005
+          },
+          "geometrySha256": "44eac5717ee86256567cc863eadd19670e4d68b1ef2ae3b44fc527c31025300d"
+        },
+        {
+          "transportId": 78970,
+          "properties": {
+            "OBJECTID": 78970,
+            "Codigo_Municipio": 20,
+            "Codigo_Poligono": 1109,
+            "Codigo_Parcela": 2003
+          },
+          "geometrySha256": "c9497d25ec8b7407e98b6cf5f34259f79361784cf647563d7d5427a36cb79dcc"
+        }
+      ]
+    },
+    {
+      "test": "explicit-absence",
+      "url": "https://geo.bizkaia.eus/arcgisserverinspire/rest/services/LurraldeAntolamendua_PlanificacionTerritorial/Katastro_Catastro_WFS/MapServer/6/query?where=%28Codigo_Municipio+%3D+9999+AND+Codigo_Poligono+%3D+9999+AND+Codigo_Parcela+%3D+9999%29&outFields=OBJECTID%2CCodigo_Municipio%2CCodigo_Poligono%2CCodigo_Parcela&returnGeometry=true&outSR=4326&f=geojson&orderByFields=OBJECTID&resultRecordCount=1000&resultOffset=0",
+      "method": "GET",
+      "checkedAt": "2026-10-09T02:50:42.421Z",
+      "httpStatus": 200,
+      "contentType": "application/geo+json;charset=UTF-8",
+      "bytes": 42,
+      "features": []
+    },
+    {
+      "test": "footprint",
+      "url": "https://geo.bizkaia.eus/arcgisserverinspire/rest/services/LurraldeAntolamendua_PlanificacionTerritorial/Katastro_Catastro_WFS/MapServer/6/query?where=1%3D1&outFields=OBJECTID%2CCodigo_Municipio%2CCodigo_Poligono%2CCodigo_Parcela&returnGeometry=true&outSR=4326&f=geojson&orderByFields=OBJECTID&resultRecordCount=1000&resultOffset=0&geometry=-2.959467599359196%2C43.281154005147314%2C-2.9590634721108584%2C43.28135992979057&geometryType=esriGeometryEnvelope&inSR=4326&spatialRel=esriSpatialRelIntersects",
+      "method": "GET",
+      "checkedAt": "2026-10-09T02:50:42.750Z",
+      "httpStatus": 200,
+      "contentType": "application/geo+json;charset=UTF-8",
+      "bytes": 10570,
+      "features": [
+        {
+          "transportId": 75824,
+          "properties": {
+            "OBJECTID": 75824,
+            "Codigo_Municipio": 20,
+            "Codigo_Poligono": 1109,
+            "Codigo_Parcela": 70001
+          },
+          "geometrySha256": "9aadea11d111c699157371d15cd077c6508139581de8e030406b2317b4261957"
+        },
+        {
+          "transportId": 76018,
+          "properties": {
+            "OBJECTID": 76018,
+            "Codigo_Municipio": 20,
+            "Codigo_Poligono": 1109,
+            "Codigo_Parcela": 2001
+          },
+          "geometrySha256": "4e810809d21ae63295325c42d63a5b8581c4919c9dba9febbb8db0ee71522341"
+        },
+        {
+          "transportId": 76075,
+          "properties": {
+            "OBJECTID": 76075,
+            "Codigo_Municipio": 20,
+            "Codigo_Poligono": 1109,
+            "Codigo_Parcela": 2002
+          },
+          "geometrySha256": "6d9add732dcd0c8882be9e0c696177b95141a6baa339c1473a13c21c4136b158"
+        },
+        {
+          "transportId": 78970,
+          "properties": {
+            "OBJECTID": 78970,
+            "Codigo_Municipio": 20,
+            "Codigo_Poligono": 1109,
+            "Codigo_Parcela": 2003
+          },
+          "geometrySha256": "c9497d25ec8b7407e98b6cf5f34259f79361784cf647563d7d5427a36cb79dcc"
+        }
+      ]
+    },
+    {
+      "test": "source-binding",
+      "url": "https://geo.bizkaia.eus/arcgisserverinspire/rest/services/LurraldeAntolamendua_PlanificacionTerritorial/Katastro_Catastro_WFS/MapServer/6/query?where=1%3D1&outFields=OBJECTID%2CCodigo_Municipio%2CCodigo_Poligono%2CCodigo_Parcela&returnGeometry=true&outSR=4326&f=geojson&orderByFields=OBJECTID&resultRecordCount=1000&resultOffset=0&geometry=-2.959467599359196%2C43.281154005147314%2C-2.9590634721108584%2C43.28135992979057&geometryType=esriGeometryEnvelope&inSR=4326&spatialRel=esriSpatialRelIntersects",
+      "method": "GET",
+      "checkedAt": "2026-10-09T02:50:42.928Z",
+      "httpStatus": 200,
+      "contentType": "application/geo+json;charset=UTF-8",
+      "bytes": 10570,
+      "features": [
+        {
+          "transportId": 75824,
+          "properties": {
+            "OBJECTID": 75824,
+            "Codigo_Municipio": 20,
+            "Codigo_Poligono": 1109,
+            "Codigo_Parcela": 70001
+          },
+          "geometrySha256": "9aadea11d111c699157371d15cd077c6508139581de8e030406b2317b4261957"
+        },
+        {
+          "transportId": 76018,
+          "properties": {
+            "OBJECTID": 76018,
+            "Codigo_Municipio": 20,
+            "Codigo_Poligono": 1109,
+            "Codigo_Parcela": 2001
+          },
+          "geometrySha256": "4e810809d21ae63295325c42d63a5b8581c4919c9dba9febbb8db0ee71522341"
+        },
+        {
+          "transportId": 76075,
+          "properties": {
+            "OBJECTID": 76075,
+            "Codigo_Municipio": 20,
+            "Codigo_Poligono": 1109,
+            "Codigo_Parcela": 2002
+          },
+          "geometrySha256": "6d9add732dcd0c8882be9e0c696177b95141a6baa339c1473a13c21c4136b158"
+        },
+        {
+          "transportId": 78970,
+          "properties": {
+            "OBJECTID": 78970,
+            "Codigo_Municipio": 20,
+            "Codigo_Poligono": 1109,
+            "Codigo_Parcela": 2003
+          },
+          "geometrySha256": "c9497d25ec8b7407e98b6cf5f34259f79361784cf647563d7d5427a36cb79dcc"
+        }
+      ]
+    }
+  ],
+  "qualityFile": "research/overnight-cities-2026-10-08/bilbao-bizkaia-root-quality.json",
+  "uniqueParcels": 79,
+  "requestCount": 27,
+  "allTestsPassed": true,
+  "finishedAt": "2026-10-09T02:50:43.153Z",
+  "qualityStatus": "approved_by_root"
+}

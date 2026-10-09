@@ -1,0 +1,118 @@
+{
+  "schemaVersion": "1.0",
+  "cityId": "wup2025:5363",
+  "wupCityCode": 5363,
+  "name": "Constantine",
+  "country": "Algeria",
+  "countryCode": "DZ",
+  "rank": 1063,
+  "queueRank": 1063,
+  "point": [
+    36.3613062875049,
+    6.61738654427891
+  ],
+  "centerLatLon": [
+    36.3613062875049,
+    6.61738654427891
+  ],
+  "pointBasis": "UN WUP2025 population-weighted settlement locator; not a municipal boundary or parcel-coverage claim.",
+  "population2025": 519932,
+  "population2025k": 519.932,
+  "populationUnit": "persons",
+  "populationPlausibility2025": "High",
+  "cohort": "overnight-followon-1001-1100",
+  "checkedAt": "2026-10-09",
+  "status": "complete",
+  "registryFound": true,
+  "registryBasis": "The Algerian Ministry of Finance publication and its Treasury-hosted official circular identify Constantine East and West cadastral/land-conservation directorates, which are local registration/cadastre authorities.",
+  "registryEvidenceUrls": [
+    "https://www.mf.gov.dz/images/pdf/publication/2022_S2C.pdf",
+    "https://tresor.mf.gov.dz/wp-content/uploads/2024/04/Circulaire-n%C2%B0-01-du-20-janvier-2022-fr.pdf"
+  ],
+  "verifiedSample": false,
+  "publicParcelGeometryFound": false,
+  "sourceIds": [],
+  "adapterReady": false,
+  "runtimeReadiness": "not_enabled_no_verified_public_geometry",
+  "technicalBlocker": "No anonymous parcel geometry service was identified.",
+  "scopeLimits": "Searches found office and organizational evidence but no anonymous map service, feature schema or full parcel geometry response.",
+  "resultCategory": "no_verified_public_geometry",
+  "coverageAssessment": {
+    "claimedScope": "The Algerian Ministry of Finance publication and its Treasury-hosted official circular identify Constantine East and West cadastral/land-conservation directorates, which are local registration/cadastre authorities.",
+    "verifiedOpenScope": "No anonymous full parcel geometry response verified in this investigation.",
+    "citywideVerified": false,
+    "countrywideVerified": false
+  },
+  "runtimeAssessment": {
+    "status": "not_enabled_no_verified_public_geometry",
+    "reason": "No anonymous parcel geometry service was identified."
+  },
+  "freshResearch": {
+    "queries": [
+      {
+        "language": "English",
+        "query": "Constantine Algeria official cadastral parcel map land registry cadastre local wilaya service",
+        "scope": "Fresh independent city-specific registry/cadastral-map search.",
+        "result": "Found local registry evidence but no verified full public parcel polygon response in this investigation.",
+        "actualResultUrls": [
+          "https://www.mf.gov.dz/images/pdf/publication/2022_S2C.pdf",
+          "https://tresor.mf.gov.dz/wp-content/uploads/2024/04/Circulaire-n%C2%B0-01-du-20-janvier-2022-fr.pdf"
+        ],
+        "executionMethod": "Executed web search independently; first-party primary sources/service metadata inspected where available."
+      },
+      {
+        "language": "Arabic",
+        "query": "قسنطينة الجزائر مديرية مسح الأراضي والحفظ العقاري المحافظة العقارية موقع رسمي",
+        "scope": "Fresh independent city-specific registry/cadastral-map search.",
+        "result": "Found local registry evidence but no verified full public parcel polygon response in this investigation.",
+        "actualResultUrls": [
+          "https://www.mf.gov.dz/images/pdf/publication/2022_S2C.pdf",
+          "https://tresor.mf.gov.dz/wp-content/uploads/2024/04/Circulaire-n%C2%B0-01-du-20-janvier-2022-fr.pdf"
+        ],
+        "executionMethod": "Executed web search independently; first-party primary sources/service metadata inspected where available."
+      },
+      {
+        "language": "French",
+        "query": "Constantine Algérie cadastre conservation foncière direction de wilaya officielle",
+        "scope": "Fresh independent city-specific registry/cadastral-map search.",
+        "result": "Found local registry evidence but no verified full public parcel polygon response in this investigation.",
+        "actualResultUrls": [
+          "https://www.mf.gov.dz/images/pdf/publication/2022_S2C.pdf",
+          "https://tresor.mf.gov.dz/wp-content/uploads/2024/04/Circulaire-n%C2%B0-01-du-20-janvier-2022-fr.pdf"
+        ],
+        "executionMethod": "Executed web search independently; first-party primary sources/service metadata inspected where available."
+      }
+    ],
+    "officialSources": [
+      {
+        "title": "Algerian Ministry of Finance, Official Gazette/circular PDF",
+        "url": "https://www.mf.gov.dz/images/pdf/publication/2022_S2C.pdf",
+        "observation": "Official finance ministry text enumerates the Direction du cadastre et de la conservation foncière for Constantine, including Constantine Est and Ouest offices."
+      },
+      {
+        "title": "Official cadastral/conservation organization list, hosted by Ministry of Finance",
+        "url": "https://tresor.mf.gov.dz/wp-content/uploads/2024/04/Circulaire-n%C2%B0-01-du-20-janvier-2022-fr.pdf",
+        "observation": "Identifies Constantine Est/West cadastral and land-conservation directorates; no public parcel endpoint described."
+      }
+    ],
+    "viewerAndServiceTrace": "Searches found office and organizational evidence but no anonymous map service, feature schema or full parcel geometry response.",
+    "attemptedGeometry": "No safe full polygon query returned in this investigation.",
+    "sensitiveFieldsRequested": false,
+    "credentialsUsed": false
+  },
+  "remainingUncertainty": "The public availability of cadastral records or digital map geometry for the exact locator remains unverified.",
+  "nextStep": "Resolve the exact administrative/cadastral locality and qualify a bounded source-native parcel query only if a safe public geometry service is available.",
+  "priorEvidenceFiles": [],
+  "priorCheck": {
+    "attemptState": "pending",
+    "attemptEvidence": [],
+    "possiblePriorMatches": []
+  },
+  "sampleFile": null,
+  "rootReviewedAt": "2026-10-09T06:45:08.823796+00:00",
+  "rootReview": {
+    "checkedAt": "2026-10-09T06:45:08.823796+00:00",
+    "basis": "Reviewed city-specific English/local-language attempts, local-custody basis, source routes and documented responses. Public geometry remains unverified; access failures and unknown custody do not establish absence.",
+    "primarySourceAuditFile": "research/overnight-followon-2026-10-09/unreviewed-primary-source-audit.json"
+  }
+}

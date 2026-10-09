@@ -1,0 +1,8 @@
+{
+  "checkedAt": "2026-10-09",
+  "rootDecision": "held_snapshot_identity_and_geometry_review",
+  "assessment": "The official public map contains embedded Esri polygon feature collections, which current runtime snapshot adapters do not read. The GAZA layer has 1,187 source features; one polygon could not be assigned unambiguously by the strict ring reader, and ten of the other 1,186 polygons are invalid. Safe snapshot-local FID/OBJECTID identities, native legal-ID semantics, replacement continuity, arbitrary footprint queries and actual runtime binding remain unqualified. No geometry was repaired.",
+  "scope": "Public Palestine Land Authority map snapshot, GAZA cadastral layer only. Schema was reviewed before retaining any feature values. Three full valid nearby polygons are retained with only FID and OBJECTID plus layer identity; their distances to the unchanged WUP locator are 142–227 metres in the source Web Mercator plane. None contains that exact locator. The official 2022 map announcement describes land-lot classifications and digital cadastral mapping; public application metadata dates the inspected application to 2023. The observed snapshot is historical and its current revision was not established. It does not establish complete Gaza city or Gaza Strip coverage. Other map layers and free-text classification/note values are excluded from retained samples.",
+  "schemaFile": "gaza-public-map-schema-review.json",
+  "geometryFile": "gaza-safe-layer-geometry-review.json"
+}

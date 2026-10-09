@@ -1,0 +1,112 @@
+{
+  "schemaVersion": "1.0",
+  "checkedAt": "2026-10-09",
+  "cityRecord": "city-4099-fresno.json",
+  "purpose": "Document city-scope registry evidence and bounded public parcel-geometry route review.",
+  "scopeLimits": {
+    "maxFullPolygonsRetainedInCityRecord": 1,
+    "maxFullPolygonsRetainedInReview": 0,
+    "maxFullPolygonsRetainedInRepository": 1,
+    "ownerOrAddressDataRetained": false,
+    "credentialsOrTokenValuesRetained": false,
+    "citywideCompletenessAsserted": false
+  },
+  "assessment": "Fresno County Assessor and GIS sources document parcel mapping and a public county parcel FeatureServer. Its layer schema exposes APN and geometry without owner/address fields; the exact WUP locator intersects one full polygon. This establishes county GIS coverage at the locator, not citywide completeness or legal-survey accuracy.",
+  "registryAssessment": "Fresno County Assessor and GIS sources document parcel mapping and a public county parcel FeatureServer. Its layer schema exposes APN and geometry without owner/address fields; the exact WUP locator intersects one full polygon. This establishes county GIS coverage at the locator, not citywide completeness or legal-survey accuracy.",
+  "officialPrimarySources": [
+    {
+      "url": "https://www.fresnocountyca.gov/Departments/Assessor/Mapping",
+      "observation": "Official Fresno County Assessor mapping page describes APNs as real-property identifiers and links GIS parcel resources."
+    },
+    {
+      "url": "https://gisportal.co.fresno.ca.us/portal/home/",
+      "observation": "Official Fresno County GIS portal catalogs public hosted parcel GIS data."
+    },
+    {
+      "url": "https://gisprod10.co.fresno.ca.us/server/rest/services/Hosted/Parcels/FeatureServer/0?f=pjson",
+      "observation": "Public ArcGIS layer metadata returned HTTP 200 and identifies a polygon layer with safe APN and geometry fields; owner/address data were not requested."
+    },
+    {
+      "url": "https://gisprod10.co.fresno.ca.us/server/rest/services/Hosted/Parcels/FeatureServer/0/query",
+      "observation": "Exact WUP-point query returned HTTP 200 with one full polygon and APN 43614106. Geometry is retained separately without service attributes."
+    }
+  ],
+  "searchQueries": [
+    {
+      "language": "English (local government terminology)",
+      "query": "Fresno County assessor parcel map public GIS APN cadastral parcels official",
+      "result": "Same English-language local-government query terms: official Fresno County Assessor mapping and County GIS services were inspected. The sample comes from the County service, not the City service.",
+      "urls": [
+        "https://www.fresnocountyca.gov/Departments/Assessor/Mapping",
+        "https://gisportal.co.fresno.ca.us/portal/home/",
+        "https://gisprod10.co.fresno.ca.us/server/rest/services/Hosted/Parcels/FeatureServer/0?f=pjson",
+        "https://gisprod10.co.fresno.ca.us/server/rest/services/Hosted/Parcels/FeatureServer/0/query"
+      ],
+      "scope": "Verify city-local registry/cadastre evidence and inspect safe anonymous geometry routes."
+    },
+    {
+      "language": "English",
+      "query": "Fresno County California official GIS public parcel map APN polygon FeatureServer",
+      "result": "County Assessor mapping and GIS portal identify public parcel mapping. The public polygon layer schema contains APN but no owner/address fields; a bounded query at the exact WUP point returned one polygon. A separate City endpoint returned an ArcGIS service-not-started error and was not used.",
+      "urls": [
+        "https://www.fresnocountyca.gov/Departments/Assessor/Mapping",
+        "https://gisportal.co.fresno.ca.us/portal/home/",
+        "https://gisprod10.co.fresno.ca.us/server/rest/services/Hosted/Parcels/FeatureServer/0?f=pjson",
+        "https://gisprod10.co.fresno.ca.us/server/rest/services/Hosted/Parcels/FeatureServer/0/query"
+      ],
+      "scope": "Cross-check source identity, service availability, and public full geometry at the WUP point."
+    }
+  ],
+  "serviceChecks": [
+    {
+      "url": "https://www.fresnocountyca.gov/Departments/Assessor/Mapping",
+      "method": "GET public official source/schema or bounded exact-WUP feature query; no personal or property-specific input",
+      "result": "Official county assessor mapping page; describes APN and parcel GIS resources."
+    },
+    {
+      "url": "https://gisportal.co.fresno.ca.us/portal/home/",
+      "method": "GET public official source/schema or bounded exact-WUP feature query; no personal or property-specific input",
+      "result": "Official Fresno County GIS portal catalog reviewed; it identifies public hosted parcel GIS resources."
+    },
+    {
+      "url": "https://gisprod10.co.fresno.ca.us/server/rest/services/Hosted/Parcels/FeatureServer/0?f=pjson",
+      "method": "GET public official source/schema or bounded exact-WUP feature query; no personal or property-specific input",
+      "result": "HTTP 200 ArcGIS layer metadata: esriGeometryPolygon; fields reviewed; APN/geometry retained, owner/address fields not requested."
+    },
+    {
+      "url": "https://gisprod10.co.fresno.ca.us/server/rest/services/Hosted/Parcels/FeatureServer/0/query",
+      "method": "GET public official source/schema or bounded exact-WUP feature query; no personal or property-specific input",
+      "result": "HTTP 200 bounded exact-WUP query returned one full polygon (APN 43614106); only APN and geometry retained."
+    }
+  ],
+  "geometryEvidence": {
+    "status": "verified_exact_point_full_polygon",
+    "source": "Fresno County hosted Parcels FeatureServer layer 0",
+    "geometryType": "Polygon",
+    "crs": "EPSG:4326",
+    "queryPoint": [
+      36.7922501389848,
+      -119.77157818531
+    ],
+    "nativeKeyField": "APN",
+    "nativeKeyValue": "43614106",
+    "sampleFile": "city-4099-fresno-samples.geojson",
+    "sampleFeatureCount": 1,
+    "fieldsRetained": [
+      "APN",
+      "geometry"
+    ],
+    "fieldsExcluded": [
+      "owner",
+      "address",
+      "account or tax identifiers"
+    ],
+    "fullPolygonResponse": true
+  },
+  "privacy": "No owner, address, account, taxpayer, applicant, assessment, sale, or identity fields were requested or retained; no account-like token value was stored.",
+  "runtimeAssessment": {
+    "status": "geometry_candidate_review_required_runtime_not_enabled",
+    "reason": "One safe county parcel polygon was received at the WUP locator, but runtime integration still needs source-contract and policy review; citywide completeness and legal survey accuracy are unknown."
+  },
+  "geometryDisposition": "One full polygon sample retained because official layer schema and safe APN identity were verified before the exact WUP query. Citywide completeness and legal-boundary status remain unverified."
+}

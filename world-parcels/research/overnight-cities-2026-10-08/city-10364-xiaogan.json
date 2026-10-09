@@ -1,0 +1,115 @@
+{
+  "name": "Xiaogan",
+  "country": "China",
+  "countryCode": "CN",
+  "rank": 755,
+  "point": [
+    30.9321600856904,
+    113.921305106521
+  ],
+  "freshResearch": {
+    "queries": [
+      {
+        "language": "Chinese (Simplified)",
+        "query": "孝感 不动产登记 地籍图 可视化查询 孝感市自然资源和城乡建设局",
+        "scope": "Search for city-specific first-party registry/cadastre evidence and a public full-geometry route.",
+        "result": "Official Hubei Natural Resources Department pages attributed to Xiaogan agencies document the city’s immovable-property registration center, cadastre/registration-map visual query service, and continued city registration activity in 2026. The visual-query service uses privacy-desensitized data and connects to government service platforms; no anonymous full-parcel vector route was verified.",
+        "actualResultUrls": [
+          "https://zrzyt.hubei.gov.cn/bmdt/ztzl/jjbdcdj/bdckpzs/202606/t20260603_5950639.shtml",
+          "https://zrzyt.hubei.gov.cn/bmdt/ztzl/fgfgg/szdt/202011/t20201118_3036393.shtml",
+          "https://zrzyt.hubei.gov.cn/bmdt/ztzl/fgfczl/sxdtfg/202512/t20251205_5827824.shtml"
+        ],
+        "executionMethod": "Separate local-language search and official-source/page review."
+      },
+      {
+        "language": "English",
+        "query": "Xiaogan China official land registry cadastral map public parcel geometry GIS",
+        "scope": "Cross-check city identity, official registry evidence and anonymous complete polygon access.",
+        "result": "First-party Hubei government sources confirm Xiaogan-specific property registration and cadastral-map services. The inspected service description does not establish anonymous download or full parcel geometry.",
+        "actualResultUrls": [
+          "https://zrzyt.hubei.gov.cn/bmdt/ztzl/jjbdcdj/bdckpzs/202606/t20260603_5950639.shtml",
+          "https://zrzyt.hubei.gov.cn/bmdt/ztzl/fgfgg/szdt/202011/t20201118_3036393.shtml",
+          "https://zrzyt.hubei.gov.cn/bmdt/ztzl/fgfczl/sxdtfg/202512/t20251205_5827824.shtml"
+        ],
+        "executionMethod": "Separate English-language search and official-source/page review."
+      }
+    ],
+    "portals": [
+      {
+        "name": "Official city/regional land-administration evidence",
+        "operator": "Official agency named by the cited sources",
+        "homeUrl": "https://zrzyt.hubei.gov.cn/bmdt/ztzl/jjbdcdj/bdckpzs/202606/t20260603_5950639.shtml",
+        "observation": "Official Hubei Natural Resources Department records identify Xiaogan’s municipal property-registration center and report city immovable-property registration and cadastral-map visual-query service. They describe a privacy-desensitized query product, not an anonymous vector dataset."
+      }
+    ],
+    "requests": [],
+    "historicalContext": []
+  },
+  "status": "complete",
+  "verifiedParcelResponse": null,
+  "source": {
+    "sourceId": "CN-CITY-10364-OFFICIAL-REGISTRY-REVIEW",
+    "name": "Xiaogan official registry/cadastre review",
+    "url": "https://zrzyt.hubei.gov.cn/bmdt/ztzl/jjbdcdj/bdckpzs/202606/t20260603_5950639.shtml",
+    "operator": "Official local or regional agency documented by cited source.",
+    "serviceType": "Official registry/cadastre service evidence; no verified anonymous full-geometry parcel endpoint.",
+    "layer": "No safe public complete parcel vector layer verified.",
+    "geometryType": "none verified",
+    "outputCrs": "unknown",
+    "nativeIdField": "unknown",
+    "nativeIdEvidence": "No public parcel feature response was retrieved."
+  },
+  "coverageAssessment": {
+    "claimedScope": "City-specific property-registration and visualized cadastral-map service evidence. This does not establish citywide public vector geometry; service access/identity conditions apply.",
+    "verifiedOpenScope": "Official registry and/or map service evidence only. No anonymous complete parcel polygons or citywide coverage were verified. WUP point is population-weighted settlement centroid, not a parcel or jurisdiction boundary.",
+    "citywideVerified": false,
+    "countrywideVerified": false
+  },
+  "registryFound": true,
+  "registryBasis": "Official Hubei Natural Resources Department records identify Xiaogan’s municipal property-registration center and report city immovable-property registration and cadastral-map visual-query service. They describe a privacy-desensitized query product, not an anonymous vector dataset.",
+  "registryEvidenceUrls": [
+    "https://zrzyt.hubei.gov.cn/bmdt/ztzl/jjbdcdj/bdckpzs/202606/t20260603_5950639.shtml",
+    "https://zrzyt.hubei.gov.cn/bmdt/ztzl/fgfgg/szdt/202011/t20201118_3036393.shtml",
+    "https://zrzyt.hubei.gov.cn/bmdt/ztzl/fgfczl/sxdtfg/202512/t20251205_5827824.shtml"
+  ],
+  "verifiedSample": false,
+  "publicParcelGeometryFound": false,
+  "resultCategory": "official_registry_workflow_no_public_geometry",
+  "technicalBlocker": "The official city-specific cadastral visual-query service is delivered through government-service platforms and its published description states privacy-desensitized registration data; no anonymous full-polygon API or downloadable vector schema was exposed.",
+  "remainingUncertainty": "Whether a separate anonymous public parcel-vector endpoint exists outside the described service remains unknown.",
+  "nextStep": "Continue only if an official anonymous full-geometry route is documented; otherwise maintain the access-limited registry record.",
+  "schemaVersion": 1,
+  "checkedAt": "2026-10-09T03:45:00Z",
+  "wupCityCode": 10364,
+  "cityId": "wup2025:10364",
+  "runtimeReadiness": "not_enabled_no_verified_public_geometry",
+  "adapterReady": false,
+  "centerLatLon": [
+    30.9321600856904,
+    113.921305106521
+  ],
+  "queueRank": 755,
+  "population2025": 711726,
+  "population2025k": 711.726,
+  "populationPlausibility2025": "Moderate",
+  "populationUnit": "persons",
+  "pointBasis": "UN WUP 2025 population-weighted settlement centroid; this is not a municipal boundary or a parcel-coverage claim.",
+  "sourceIds": [],
+  "runtimeAssessment": {
+    "status": "hold",
+    "reason": "The official city-specific cadastral visual-query service is delivered through government-service platforms and its published description states privacy-desensitized registration data; no anonymous full-polygon API or downloadable vector schema was exposed."
+  },
+  "scopeLimits": [
+    "No parcel-specific, owner, address, title, tax, or person query was made.",
+    "No anonymous complete parcel geometry verified; no geometry sample retained.",
+    "Do not interpret the WUP point as a legal boundary or cadastral parcel."
+  ],
+  "rootPrimaryReadback": {
+    "url": "https://zrzyt.hubei.gov.cn/bmdt/ztzl/jjbdcdj/bdckpzs/202606/t20260603_5950639.shtml",
+    "fetch": 200,
+    "contentType": "text/html",
+    "title": "十载砥砺奋进，为民初心如磐——孝感市不动产登记中心成立10周年--湖北省自然资源厅"
+  },
+  "rootReviewNote": "Reviewed the local primary institution/service evidence and stated geometry/access/identity limits. Fresh page readback failures are preserved separately and do not imply absent data; matching primary indexed text supplements the direct readback where available. No public geometry was verified for this city.",
+  "rootReviewedAt": "2026-10-09T03:06:11.183980+00:00"
+}

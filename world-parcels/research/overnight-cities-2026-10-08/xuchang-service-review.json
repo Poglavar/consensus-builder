@@ -1,0 +1,45 @@
+{
+  "schemaVersion": "1.0",
+  "checkedAt": "2026-10-09",
+  "cityRecord": "city-9770-xuchang.json",
+  "purpose": "Read-only city-specific source discovery and bounded access review; no runtime or global changes.",
+  "scopeLimits": {
+    "maxFullPolygonsRetainedInThisCityReport": 0,
+    "maxFullPolygonsRetainedAcrossCityReview": 0,
+    "ownerOrAddressDataRetained": false,
+    "accountCredentialsOrPublicTokenValuesRetained": false
+  },
+  "assessment": "The city’s formal title-registration center and protected property/map services are verified. They are not evidence of a public parcel-vector feed. The public Tianditu shell is a general geospatial map and API calls require developer authorization.",
+  "officialEvidence": [
+    {
+      "url": "https://zrzyhghj.xuchang.gov.cn/ywdh/secondpage.html",
+      "observation": "Official city bureau links the local Real Estate Registration Center guide and registration documents."
+    },
+    {
+      "url": "https://zrzyhghj.xuchang.gov.cn/gtdt/001001/20250115/37758dff-917a-42f0-8f60-07ab227a9158.html",
+      "observation": "City bureau describes identity-matched property queries and certificate-linked parcel map access for rights holders."
+    },
+    {
+      "url": "https://henan.tianditu.gov.cn/xuchang/",
+      "observation": "Public map/API terms call for developer authorization; no parcel service was identified."
+    }
+  ],
+  "serviceTrace": {
+    "viewer": {
+      "url": "https://henan.tianditu.gov.cn/xuchang/",
+      "routes": [
+        "Public city map `map.htm` provides generic map interactions.",
+        "Official bureau information/property query is through its WeChat service with identity matching; parcel attachments are linked to the rights-holder’s electronic certificate.",
+        "Tianditu API/service calls require developer authorization."
+      ],
+      "notes": "No account, identity, certificate, or API key was used; no parcel feature request was made."
+    },
+    "notes": "Formal city title registry is confirmed; public parcel access and WUP point coverage are not."
+  },
+  "geometryValidation": {
+    "schemaConfirmed": false,
+    "featureQueryMade": false,
+    "retainedFullPolygonCount": 0,
+    "reason": "No anonymous full-polygon route with an explicit safe attribute schema was documented. No query was made to the identity-gated registry or developer-authorized map API."
+  }
+}

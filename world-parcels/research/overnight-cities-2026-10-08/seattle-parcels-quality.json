@@ -1,0 +1,762 @@
+{
+  "schemaVersion": 1,
+  "purpose": "Independent GEOS topology check of complete runtime parcels projected to metric coordinates; no repair applied. Counts are bounded sample evidence, not whole-city guarantees.",
+  "library": "Shapely 2.2.0",
+  "metricCrs": "EPSG:32610",
+  "featureCount": 106,
+  "validNonemptyCount": 106,
+  "invalidFeatures": [],
+  "exactDuplicateGeometryPairs": [],
+  "positiveAreaOverlapPairsAbove0_01M2": [],
+  "sumPairwiseOverlapM2": 0,
+  "operationErrors": [],
+  "areaM2": {
+    "min": 466.9582099886585,
+    "median": 576.2810663851956,
+    "max": 36943.776457083906
+  },
+  "features": [
+    {
+      "id": "US-WA-KC-8934600105",
+      "areaM2": 574.2723755346428,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "US-WA-KC-5273200080",
+      "areaM2": 493.86379687883505,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "US-WA-KC-5273200060",
+      "areaM2": 512.4019696914359,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "US-WA-KC-5273200050",
+      "areaM2": 513.8874915875385,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "US-WA-KC-0381000305",
+      "areaM2": 556.0605637367984,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "US-WA-KC-0381000295",
+      "areaM2": 594.648754442585,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "US-WA-KC-8934600110",
+      "areaM2": 574.2333144217228,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "US-WA-KC-0381000300",
+      "areaM2": 563.1854851819296,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "US-WA-KC-7974200350",
+      "areaM2": 36943.776457083906,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "US-WA-KC-5273200055",
+      "areaM2": 513.1411373964887,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "US-WA-KC-5273200075",
+      "areaM2": 494.69027799625576,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "US-WA-KC-5273200085",
+      "areaM2": 493.0430716823555,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "US-WA-KC-8934600055",
+      "areaM2": 575.4106764179818,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "US-WA-KC-5273200070",
+      "areaM2": 484.91255573216006,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "US-WA-KC-5273200036",
+      "areaM2": 557.2122904649339,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "US-WA-KC-5273200031",
+      "areaM2": 809.3269446718783,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "US-WA-KC-2603560000",
+      "areaM2": 582.8915480419779,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "US-WA-KC-8934600060",
+      "areaM2": 575.4947959208719,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "US-WA-KC-8934600085",
+      "areaM2": 582.1459402882897,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "US-WA-KC-5273200034",
+      "areaM2": 516.0413387551542,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "US-WA-KC-5273200047",
+      "areaM2": 538.9235938183878,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "US-WA-KC-5273200065",
+      "areaM2": 486.9567832582256,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "US-WA-KC-8934600030",
+      "areaM2": 580.3952187521108,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "US-WA-KC-8934600005",
+      "areaM2": 576.9795395905091,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "US-WA-KC-5273200026",
+      "areaM2": 466.9582099886585,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "US-WA-KC-8934600010",
+      "areaM2": 576.9599334198786,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "US-WA-KC-8934600035",
+      "areaM2": 580.3933507809058,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "US-WA-KC-7974200700",
+      "areaM2": 6729.854139432798,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "US-WA-KC-7974200250",
+      "areaM2": 36941.92969049726,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "US-WA-KC-5273200010",
+      "areaM2": 511.2279441697223,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "US-WA-KC-5273200005",
+      "areaM2": 535.075125944858,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "US-WA-KC-5273200015",
+      "areaM2": 526.6817895334245,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "US-WA-KC-5273200020",
+      "areaM2": 526.9113731636091,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "US-WA-KC-5273200027",
+      "areaM2": 920.9796926997401,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "US-WA-KC-8926600140",
+      "areaM2": 596.0413997834509,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "US-WA-KC-8926600135",
+      "areaM2": 612.5003317246425,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "US-WA-KC-8926600145",
+      "areaM2": 745.1090703537755,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "US-WA-KC-0431500365",
+      "areaM2": 660.6671572423197,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "US-WA-KC-0431500350",
+      "areaM2": 705.5959360065293,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "US-WA-KC-0429000185",
+      "areaM2": 525.621066600132,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "US-WA-KC-0429000175",
+      "areaM2": 542.8592007607112,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "US-WA-KC-0429000080",
+      "areaM2": 579.4587406577318,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "US-WA-KC-0429000070",
+      "areaM2": 536.086208824293,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "US-WA-KC-0429000030",
+      "areaM2": 536.1302679751072,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "US-WA-KC-0429000035",
+      "areaM2": 536.1917322573438,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "US-WA-KC-0429000040",
+      "areaM2": 559.5647263821375,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "US-WA-KC-0429000075",
+      "areaM2": 536.1559826238672,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "US-WA-KC-0429000180",
+      "areaM2": 525.1892651145047,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "US-WA-KC-0431500355",
+      "areaM2": 596.4742119929007,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "US-WA-KC-0431500360",
+      "areaM2": 604.2203000024433,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "US-WA-KC-0431500370",
+      "areaM2": 787.9263532227712,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "US-WA-KC-0429000205",
+      "areaM2": 527.8047985068456,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "US-WA-KC-0429000195",
+      "areaM2": 526.5806172001494,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "US-WA-KC-0429000165",
+      "areaM2": 582.6623779620463,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "US-WA-KC-0429000155",
+      "areaM2": 597.0448454173456,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "US-WA-KC-0429000115",
+      "areaM2": 536.4095330204402,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "US-WA-KC-0429000110",
+      "areaM2": 590.3049704659568,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "US-WA-KC-0429000120",
+      "areaM2": 509.55962401510175,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "US-WA-KC-0429000160",
+      "areaM2": 484.72789264722235,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "US-WA-KC-0429000170",
+      "areaM2": 492.4096570391579,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "US-WA-KC-0429000190",
+      "areaM2": 526.0328610610677,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "US-WA-KC-0429000200",
+      "areaM2": 527.2152365541276,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "US-WA-KC-8934100020",
+      "areaM2": 650.177263963634,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "US-WA-KC-8934100010",
+      "areaM2": 620.1311011234377,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "US-WA-KC-0429000240",
+      "areaM2": 605.4125298629315,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "US-WA-KC-0429000235",
+      "areaM2": 580.856982343974,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "US-WA-KC-0429000230",
+      "areaM2": 621.2357396679904,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "US-WA-KC-0429000225",
+      "areaM2": 549.3161377065476,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "US-WA-KC-0429000215",
+      "areaM2": 599.7179864971404,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "US-WA-KC-8934100005",
+      "areaM2": 597.2544321756039,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "US-WA-KC-8934100015",
+      "areaM2": 641.5905844245602,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "US-WA-KC-8934100025",
+      "areaM2": 685.336886235073,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "US-WA-KC-0429000210",
+      "areaM2": 527.7742569524133,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "US-WA-KC-0429000220",
+      "areaM2": 935.8881371131732,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "US-WA-KC-8934600090",
+      "areaM2": 581.3936724374696,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "US-WA-KC-8934600075",
+      "areaM2": 604.502319283233,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "US-WA-KC-8934600065",
+      "areaM2": 575.5488164079835,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "US-WA-KC-8927600055",
+      "areaM2": 646.4456165456068,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "US-WA-KC-8927600025",
+      "areaM2": 643.7334128244308,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "US-WA-KC-8927600035",
+      "areaM2": 643.8410323570735,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "US-WA-KC-8927600030",
+      "areaM2": 643.7900382804282,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "US-WA-KC-8927600050",
+      "areaM2": 645.4916890656577,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "US-WA-KC-8927600060",
+      "areaM2": 647.4099800611834,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "US-WA-KC-8934600070",
+      "areaM2": 575.6021993505126,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "US-WA-KC-8934600095",
+      "areaM2": 580.6415150196476,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "US-WA-KC-8934600100",
+      "areaM2": 609.3486782516436,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "US-WA-KC-0429000140",
+      "areaM2": 611.2551195156865,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "US-WA-KC-0429000105",
+      "areaM2": 590.6991434505849,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "US-WA-KC-0429000090",
+      "areaM2": 558.3340065364933,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "US-WA-KC-0429000055",
+      "areaM2": 535.8974438889693,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "US-WA-KC-0429000045",
+      "areaM2": 561.9154767413447,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "US-WA-KC-0429000050",
+      "areaM2": 540.3367524332964,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "US-WA-KC-0429000060",
+      "areaM2": 535.9592112060573,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "US-WA-KC-0429000065",
+      "areaM2": 536.0299868817302,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "US-WA-KC-0429000085",
+      "areaM2": 511.85262728088253,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "US-WA-KC-0429000095",
+      "areaM2": 591.4309156346956,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "US-WA-KC-0429000100",
+      "areaM2": 591.0512059969487,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "US-WA-KC-0429000125",
+      "areaM2": 571.9222314978709,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "US-WA-KC-0429000135",
+      "areaM2": 528.9364294216913,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "US-WA-KC-0429000145",
+      "areaM2": 587.5583315525012,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "US-WA-KC-0429000150",
+      "areaM2": 582.6905673181191,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "US-WA-KC-0429000130",
+      "areaM2": 514.8508847094922,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "US-WA-KC-8926600205",
+      "areaM2": 595.8300545495963,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "US-WA-KC-8926600160",
+      "areaM2": 548.3534886667019,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "US-WA-KC-8926600150",
+      "areaM2": 652.4226489428521,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "US-WA-KC-8926600155",
+      "areaM2": 606.6558799528277,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    }
+  ]
+}

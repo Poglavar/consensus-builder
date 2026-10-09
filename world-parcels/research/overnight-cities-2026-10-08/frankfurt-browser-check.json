@@ -1,0 +1,14 @@
+{
+  "checkedAt": "2026-10-09T02:03:00.521634+00:00",
+  "appCityId": "frankfurt",
+  "url": "http://localhost:5638/?city=frankfurt&backend=http%3A%2F%2F127.0.0.1%3A5640&reduceMotion=1&lang=en",
+  "headedBrowser": true,
+  "loadedParcels": 333,
+  "visibleParcels": 89,
+  "selectionMethod": "Real pointer move/down/up at [600,409], then Details menu item",
+  "selectedParcelId": "DE-FFM-060463118000810002__",
+  "detailsHeading": "Parcel Copy to clipboard: DE-FFM-060463118000810002__",
+  "detailsMatchesSelectedParcel": true,
+  "uncaughtErrors": [],
+  "browserClosed": true
+}

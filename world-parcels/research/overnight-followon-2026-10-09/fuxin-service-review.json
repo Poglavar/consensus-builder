@@ -1,0 +1,81 @@
+{
+  "schemaVersion": "1.0",
+  "checkedAt": "2026-10-09",
+  "cityRecord": "city-9732-fuxin.json",
+  "purpose": "Document first-party local registry/map evidence and bounded anonymous geometry access review.",
+  "scopeLimits": {
+    "maxFullPolygonsRetainedInCityRecord": 0,
+    "maxFullPolygonsRetainedInReview": 0,
+    "maxFullPolygonsRetainedInRepository": 0,
+    "ownerOrAddressDataRetained": false,
+    "credentialsOrTokenValuesRetained": false,
+    "citywideCompletenessAsserted": false
+  },
+  "assessment": "Official city sources identify the Fuxin Natural Resources Bureau and local real-estate registration center. The registry-information search notice requires an eligible applicant and application, so no identity-based search was attempted. No anonymous parcel geometry endpoint or safe point-feature response was verified.",
+  "registryAssessment": "First-party sources establish a local registry/cadastre custodian.",
+  "officialPrimarySources": [
+    {
+      "url": "https://zrzy.fuxin.gov.cn/",
+      "observation": "Official municipal bureau portal and local registry information."
+    },
+    {
+      "url": "https://www.fuxin.gov.cn/content/2020/528760.html",
+      "observation": "Municipal government report identifies the local real-estate registration center and district offices."
+    },
+    {
+      "url": "https://www.fuxin.gov.cn/content/2023/771727.html",
+      "observation": "Official notice says registry-information searches require rights-holder/interested-party identification and an application; no such search was submitted."
+    }
+  ],
+  "searchQueries": [
+    {
+      "language": "English",
+      "query": "Fuxin China official cadastral parcel map land registry GIS parcel polygons natural resources bureau",
+      "result": "Official city sources identify the Fuxin Natural Resources Bureau and local real-estate registration center. The registry-information search notice requires an eligible applicant and application, so no identity-based search was attempted. No anonymous parcel geometry endpoint or safe point-feature response was verified.",
+      "method": "Separate English-language web search followed by official-source review.",
+      "scope": "Identify first-party city/local registry and public parcel geometry; check the WUP point without sensitive property attributes.",
+      "actualResultUrls": [
+        "https://zrzy.fuxin.gov.cn/",
+        "https://www.fuxin.gov.cn/content/2020/528760.html",
+        "https://www.fuxin.gov.cn/content/2023/771727.html"
+      ]
+    },
+    {
+      "language": "Chinese",
+      "query": "阜新市 自然资源局 不动产登记中心 地籍图 查询 官方",
+      "result": "Official city sources identify the Fuxin Natural Resources Bureau and local real-estate registration center. The registry-information search notice requires an eligible applicant and application, so no identity-based search was attempted. No anonymous parcel geometry endpoint or safe point-feature response was verified.",
+      "method": "Separate local-language web search followed by official-source review.",
+      "scope": "Find first-party local-language registry/cadastral service and safe anonymous feature geometry near the unchanged WUP point.",
+      "actualResultUrls": [
+        "https://zrzy.fuxin.gov.cn/",
+        "https://www.fuxin.gov.cn/content/2020/528760.html",
+        "https://www.fuxin.gov.cn/content/2023/771727.html"
+      ]
+    }
+  ],
+  "geometryDecision": "No full polygon retained; no safe anonymous geometry response was verified.",
+  "coverageAssessment": {
+    "claimedScope": "Official city sources identify the Fuxin Natural Resources Bureau and local real-estate registration center. The registry-information search notice requires an eligible applicant and application, so no identity-based search was attempted. No anonymous parcel geometry endpoint or safe point-feature response was verified.",
+    "verifiedOpenScope": "Official city sources identify the Fuxin Natural Resources Bureau and local real-estate registration center. The registry-information search notice requires an eligible applicant and application, so no identity-based search was attempted. No anonymous parcel geometry endpoint or safe point-feature response was verified.",
+    "citywideVerified": false,
+    "countrywideVerified": false,
+    "geometryVerified": false
+  },
+  "attempts": [
+    {
+      "url": "https://zrzy.fuxin.gov.cn/",
+      "result": "Official municipal bureau portal and local registry information."
+    },
+    {
+      "url": "https://www.fuxin.gov.cn/content/2020/528760.html",
+      "result": "Municipal government report identifies the local real-estate registration center and district offices."
+    },
+    {
+      "url": "https://www.fuxin.gov.cn/content/2023/771727.html",
+      "result": "Official notice says registry-information searches require rights-holder/interested-party identification and an application; no such search was submitted."
+    }
+  ],
+  "remainingUncertainty": "The exact urban parcel coverage and any safe anonymous geometry service at the WUP point are unknown.",
+  "geometryEvidence": null,
+  "runtimeAssessment": "not enabled; no verified full-parcel geometry"
+}

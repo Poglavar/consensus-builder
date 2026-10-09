@@ -1,0 +1,110 @@
+{
+  "schemaVersion": 1,
+  "kind": "city_parcel_source_research",
+  "checkedAt": "2026-10-09",
+  "name": "Boumerdes",
+  "country": "Algeria",
+  "countryCode": "DZ",
+  "populationUnit": "persons",
+  "status": "complete",
+  "registryFound": true,
+  "registryBasis": "Algeria’s DGDN publishes the official cadastral-extract request form. Wilaya de Boumerdes public notices identify the local Direction du Cadastre et de la Conservation Foncière as a participant in cadastral/land administration. No public anonymous geometry endpoint was verified.",
+  "registryEvidenceUrls": [
+    "https://www.dgdn.gov.dz/assets2/img/DocumentCad/demande_extrait_cadastral_fran%C3%A7ais.pdf",
+    "https://www.wilaya-boumerdes.dz/ar/article/legacy-620"
+  ],
+  "verifiedSample": false,
+  "publicParcelGeometryFound": false,
+  "runtimeReadiness": "not_enabled_no_verified_public_geometry",
+  "wupCityCode": 3892,
+  "cityId": "wup2025:3892",
+  "centerLatLon": [
+    36.7264140148029,
+    3.37087898253386
+  ],
+  "rank": 998,
+  "queueRank": 998,
+  "population2025": 550700,
+  "population2025k": 550.7,
+  "populationPlausibility": "Moderate",
+  "pointBasis": "UN WUP 2025 population-weighted settlement centroid; this is not a municipal boundary or a parcel-coverage claim.",
+  "technicalBlocker": "The national DGDN document routes cadastral extracts through the cadastre/conservation service; Wilaya Boumerdes identifies the local cadastral/conservation directorate in its official notices. No vector parcel layer or target geometry sample verified.",
+  "scopeLimits": "Algeria’s DGDN publishes the official cadastral-extract request form. Wilaya de Boumerdes public notices identify the local Direction du Cadastre et de la Conservation Foncière as a participant in cadastral/land administration. No public anonymous geometry endpoint was verified.",
+  "remainingUncertainty": "The exact parcel coverage of the WUP settlement centroid and the complete public geometry coverage in the locality remain unverified.",
+  "research": {
+    "executedQueries": [
+      {
+        "language": "English",
+        "query": "Boumerdes Algeria official cadastre cadastral parcel map GIS land registry",
+        "scope": "Identify city-specific land registry/cadastre context and any anonymous full-parcel geometry.",
+        "result": "The national DGDN document routes cadastral extracts through the cadastre/conservation service; Wilaya Boumerdes identifies the local cadastral/conservation directorate in its official notices. No vector parcel layer or target geometry sample verified.",
+        "actualResultUrls": [
+          "https://www.dgdn.gov.dz/assets2/img/DocumentCad/demande_extrait_cadastral_fran%C3%A7ais.pdf",
+          "https://www.wilaya-boumerdes.dz/ar/article/legacy-620"
+        ],
+        "executionMethod": "Separate English search and official-source review; no owner, address, title, tax, token, account, applicant, or property identifier was queried."
+      },
+      {
+        "language": "French",
+        "query": "Boumerdes cadastre parcelles plan cadastral Direction du Cadastre conservation foncière officiel",
+        "scope": "Identify city-specific land registry/cadastre context and any anonymous full-parcel geometry.",
+        "result": "The national DGDN document routes cadastral extracts through the cadastre/conservation service; Wilaya Boumerdes identifies the local cadastral/conservation directorate in its official notices. No vector parcel layer or target geometry sample verified.",
+        "actualResultUrls": [
+          "https://www.dgdn.gov.dz/assets2/img/DocumentCad/demande_extrait_cadastral_fran%C3%A7ais.pdf",
+          "https://www.wilaya-boumerdes.dz/ar/article/legacy-620"
+        ],
+        "executionMethod": "Separate local-language search and official-source review; no owner, address, title, tax, token, account, applicant, or property identifier was queried."
+      }
+    ],
+    "officialSources": [
+      {
+        "url": "https://www.dgdn.gov.dz/assets2/img/DocumentCad/demande_extrait_cadastral_fran%C3%A7ais.pdf",
+        "observation": "The national DGDN document routes cadastral extracts through the cadastre/conservation service; Wilaya Boumerdes identifies the local cadastral/conservation directorate in its official notices. No vector parcel layer or target geometry sample verified."
+      },
+      {
+        "url": "https://www.wilaya-boumerdes.dz/ar/article/legacy-620",
+        "observation": "The national DGDN document routes cadastral extracts through the cadastre/conservation service; Wilaya Boumerdes identifies the local cadastral/conservation directorate in its official notices. No vector parcel layer or target geometry sample verified."
+      }
+    ],
+    "metadataReviewFile": "boumerdes-service-review.json"
+  },
+  "source": {
+    "sourceId": null,
+    "name": null,
+    "operator": null,
+    "url": null,
+    "serviceType": "Official cadastral/property-record service identified; anonymous full geometry not verified in this review.",
+    "geometryType": null,
+    "coordinateReferenceSystem": null,
+    "nativeIdFields": [],
+    "directGeometryQueryVerified": false,
+    "directMetadataSchemaVerified": false,
+    "scope": "Algeria’s DGDN publishes the official cadastral-extract request form. Wilaya de Boumerdes public notices identify the local Direction du Cadastre et de la Conservation Foncière as a participant in cadastral/land administration. No public anonymous geometry endpoint was verified."
+  },
+  "coverageAssessment": {
+    "claimedScope": "Algeria’s DGDN publishes the official cadastral-extract request form. Wilaya de Boumerdes public notices identify the local Direction du Cadastre et de la Conservation Foncière as a participant in cadastral/land administration. No public anonymous geometry endpoint was verified.",
+    "verifiedOpenScope": "No full parcel geometry retained; no citywide coverage is inferred.",
+    "citywideVerified": false,
+    "countrywideVerified": false,
+    "geometryVerified": false
+  },
+  "runtimeAssessment": {
+    "status": "not_enabled_no_verified_public_geometry",
+    "reason": "The national DGDN document routes cadastral extracts through the cadastre/conservation service; Wilaya Boumerdes identifies the local cadastral/conservation directorate in its official notices. No vector parcel layer or target geometry sample verified."
+  },
+  "rootReview": "pending",
+  "rootPrimaryReadback": {
+    "url": "https://www.wilaya-boumerdes.dz/ar/article/legacy-620",
+    "fetch": 200,
+    "contentType": "text/html; charset=utf-8",
+    "title": "إجتماعات — ولاية بومرداس"
+  },
+  "rootReviewNote": "Root reviewed the exact primary institutional evidence and specific local jurisdiction, preserving source dates, application/access limits and failed readbacks. Registry presence and public full parcel geometry are separate findings. No public full geometry was verified in this city discovery record.",
+  "rootReviewedAt": "2026-10-09T05:10:15.053712+00:00",
+  "populationPlausibility2025": "Moderate",
+  "point": [
+    36.7264140148029,
+    3.37087898253386
+  ],
+  "sourceIds": []
+}

@@ -1,0 +1,128 @@
+{
+  "name": "Maoming",
+  "country": "China",
+  "countryCode": "CN",
+  "rank": 908,
+  "point": [
+    21.6841953478939,
+    110.912411952005
+  ],
+  "population2025": 599504,
+  "population2025k": 599.504,
+  "populationPlausibility2025": "High",
+  "schemaVersion": 1,
+  "kind": "city_parcel_source_research",
+  "checkedAt": "2026-10-09",
+  "populationUnit": "persons",
+  "status": "complete",
+  "verifiedSample": false,
+  "publicParcelGeometryFound": false,
+  "runtimeReadiness": "not_enabled_no_verified_public_geometry",
+  "priorEvidenceFiles": [],
+  "priorCheck": {
+    "attemptState": "pending",
+    "attemptEvidence": [],
+    "possiblePriorMatches": []
+  },
+  "pointBasis": "UN WUP 2025 population-weighted settlement centroid; this is not a municipal boundary or a parcel-coverage claim.",
+  "registryFound": true,
+  "registryBasis": "The Guangdong Government Service portal at the Maoming jurisdiction lists real-estate registration-record inquiry. A local Maoming report says the registration center issues electronic certificates and electronic registration proofs, with cadastral parcel plans attached by QR code and accessed through the holder’s certificate; this is not an anonymous GIS layer. No public vector parcel service was found.",
+  "registryEvidenceUrls": [
+    "https://www.gdzwfw.gov.cn/portal/index?region=440900"
+  ],
+  "resultCategory": "municipal_registry_evidenced_map_access_owner_certificate_bound",
+  "scopeLimits": "Research uses official public sources and preserves the exact unchanged WUP locator. No owner, address, account, tax, personal-property, credential or token data requested or retained. No citywide completeness asserted.",
+  "remainingUncertainty": "The QR-linked certificate attachment is not a public geometry feed; whether an unpublished or authenticated municipal GIS exists is unknown.",
+  "research": {
+    "executedQueries": [
+      {
+        "language": "English",
+        "query": "Maoming China official municipal cadastral parcel map GIS land registry",
+        "scope": "Identify first-party registry/cadastre evidence and anonymous public parcel geometry.",
+        "result": "English search found no city parcel GIS. The provincial official portal lists registration-record inquiry under Maoming; municipal news coverage describes certificate QR-linked cadastral sketch access, not a public vector service.",
+        "actualResultUrls": [
+          "https://www.gdzwfw.gov.cn/portal/index?region=440900",
+          "https://gdxk.southcn.com/mm/xwbd/content/post_737257.html"
+        ],
+        "executionMethod": "English-language web search followed by official-source/service inspection; no gated or property-specific queries."
+      },
+      {
+        "language": "Chinese",
+        "query": "茂名市 地籍图 宗地图 不动产登记 GIS 自然资源局 官方",
+        "scope": "Identify first-party registry/cadastre evidence and anonymous public parcel geometry in a local language.",
+        "result": "广东政务服务网茂名市专区列有不动产登记资料查询；茂名登记中心电子证照附有宗地图并由证书二维码查询。未发现公开矢量地块服务。",
+        "actualResultUrls": [
+          "https://www.gdzwfw.gov.cn/portal/index?region=440900",
+          "https://gdxk.southcn.com/mm/xwbd/content/post_737257.html"
+        ],
+        "executionMethod": "Separate local-language web search followed by official-source/service inspection; no gated or property-specific queries."
+      }
+    ],
+    "officialSources": [
+      {
+        "url": "https://www.gdzwfw.gov.cn/portal/index?region=440900",
+        "observation": "Official provincial service portal is scoped to Maoming and lists the real-estate registration-record inquiry service; this is registry evidence, not a parcel-geometry endpoint."
+      }
+    ],
+    "requests": [
+      {
+        "url": "https://www.gdzwfw.gov.cn/portal/index?region=440900",
+        "method": "GET official Guangdong Government Service portal for Maoming",
+        "result": "Portal identifies Maoming and lists real-estate registration-record inquiry; no anonymous parcel map endpoint linked."
+      },
+      {
+        "url": "https://gdxk.southcn.com/mm/xwbd/content/post_737257.html",
+        "method": "GET local Maoming report on the registration center",
+        "result": "Reports electronic registration certificates and cadastral sketch/house plan access via QR code on the certificate; no parcel query submitted."
+      }
+    ],
+    "supplementalSources": [
+      {
+        "url": "https://gdxk.southcn.com/mm/xwbd/content/post_737257.html",
+        "sourceType": "local news report (not a primary government source)",
+        "observation": "Reports that the Maoming Registration Center issues electronic certificates with QR-linked cadastral sketch attachments; retained only as supplemental workflow context."
+      }
+    ]
+  },
+  "verifiedParcelResponse": null,
+  "source": {
+    "sourceId": "CN-11006-maoming-cadastre-review",
+    "name": "Maoming Real Estate Registration Center / Guangdong Government Service portal",
+    "url": "https://www.gdzwfw.gov.cn/portal/index?region=440900",
+    "operator": "China",
+    "serviceType": "Official registration-record inquiry and electronic cadastral map attachments delivered through electronic certificates; no anonymous parcel layer identified.",
+    "layer": null,
+    "geometryType": null,
+    "outputCrs": null,
+    "nativeIdField": null,
+    "nativeIdEvidence": "No feature response returned; native feature identity and geometry at the WUP point were not verified."
+  },
+  "wupCityCode": 11006,
+  "cityId": "wup2025:11006",
+  "queueRank": 908,
+  "centerLatLon": [
+    21.6841953478939,
+    110.912411952005
+  ],
+  "sourceIds": [],
+  "adapterReady": false,
+  "technicalBlocker": "Research packet only; no runtime adapter qualification performed.",
+  "coverageAssessment": {
+    "claimedScope": "The Guangdong Government Service portal at the Maoming jurisdiction lists real-estate registration-record inquiry. A local Maoming report says the registration center issues electronic certificates and electronic registration proofs, with cadastral parcel plans attached by QR code and accessed through the holder’s certificate; this is not an anonymous GIS layer. No public vector parcel service was found.",
+    "verifiedOpenScope": "No parcel geometry verified at the exact WUP settlement point.",
+    "countrywideVerified": false,
+    "citywideVerified": false
+  },
+  "runtimeAssessment": {
+    "status": "not_enabled_no_verified_public_geometry",
+    "reason": "Research packet only; no runtime adapter qualification performed."
+  },
+  "rootPrimaryReadback": {
+    "url": "https://www.gdzwfw.gov.cn/portal/index?region=440900",
+    "fetch": 200,
+    "contentType": "text/html",
+    "title": "广东政务服务网"
+  },
+  "rootReviewNote": "Reviewed the specific primary institution/service evidence and its geographical, access and date limits. Direct readback failures are preserved separately from indexed primary evidence. No public full parcel geometry was verified for this city in this discovery pass.",
+  "rootReviewedAt": "2026-10-09T04:20:40.565226+00:00"
+}

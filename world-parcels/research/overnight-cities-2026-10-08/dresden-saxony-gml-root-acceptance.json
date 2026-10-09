@@ -1,0 +1,2870 @@
+{
+  "schemaVersion": 1,
+  "purpose": "Live city parcel qualification with unmodified responses through the repository adapter; IDs and hashes retained, full geometries confined to temporary audit cache except three public samples.",
+  "checkedAt": "2026-10-09T05:16:11.018Z",
+  "city": "dresden-saxony-gml-root",
+  "descriptor": {
+    "adapter": "gml-wfs",
+    "id": "dresden-saxony-gml-wfs",
+    "endpoint": "https://geodienste.sachsen.de/aaa/public_alkis/vereinf/wfs",
+    "featureType": "ave:Flurstueck",
+    "idField": "flstkennz",
+    "geometryField": "geometrie",
+    "responseCrs": "EPSG:25833",
+    "idPrefix": "DE-SN-",
+    "idType": "string",
+    "parcelNumberField": "flstkennz",
+    "outFields": [
+      "flstkennz"
+    ],
+    "maxBboxKm2": 1,
+    "pageSize": 50,
+    "maxFeatures": 300,
+    "maxResponseBytes": 1048576,
+    "maxTotalResponseBytes": 8388608,
+    "timeoutMs": 12000,
+    "countryCode": "DE",
+    "metricSrid": 32633,
+    "cityIds": [
+      "dresden"
+    ],
+    "maxConcurrentQueries": 2,
+    "name": "GeoSN Saxony simplified ALKIS cadastral parcel polygons",
+    "operator": "Landesamt f\u00fcr Geobasisinformation Sachsen (GeoSN)"
+  },
+  "grid": [
+    {
+      "name": "viewport-0",
+      "bbox": [
+        13.75,
+        51.04,
+        13.751,
+        51.041
+      ],
+      "kind": "aligned-grid"
+    },
+    {
+      "name": "viewport-1",
+      "bbox": [
+        13.751,
+        51.04,
+        13.752,
+        51.041
+      ],
+      "kind": "aligned-grid"
+    },
+    {
+      "name": "viewport-2",
+      "bbox": [
+        13.752,
+        51.04,
+        13.753,
+        51.041
+      ],
+      "kind": "aligned-grid"
+    },
+    {
+      "name": "viewport-3",
+      "bbox": [
+        13.75,
+        51.041,
+        13.751,
+        51.042
+      ],
+      "kind": "aligned-grid"
+    },
+    {
+      "name": "viewport-4",
+      "bbox": [
+        13.751,
+        51.041,
+        13.752,
+        51.042
+      ],
+      "kind": "aligned-grid"
+    },
+    {
+      "name": "viewport-5",
+      "bbox": [
+        13.752,
+        51.041,
+        13.753,
+        51.042
+      ],
+      "kind": "aligned-grid"
+    },
+    {
+      "name": "viewport-6",
+      "bbox": [
+        13.75,
+        51.042,
+        13.751,
+        51.043
+      ],
+      "kind": "aligned-grid"
+    },
+    {
+      "name": "viewport-7",
+      "bbox": [
+        13.751,
+        51.042,
+        13.752,
+        51.043
+      ],
+      "kind": "aligned-grid"
+    },
+    {
+      "name": "viewport-8",
+      "bbox": [
+        13.752,
+        51.042,
+        13.753,
+        51.043
+      ],
+      "kind": "aligned-grid"
+    },
+    {
+      "name": "viewport-9",
+      "bbox": [
+        13.751,
+        51.039,
+        13.752,
+        51.04
+      ],
+      "kind": "adjacent-pan"
+    },
+    {
+      "name": "viewport-10",
+      "bbox": [
+        13.751,
+        51.043,
+        13.752,
+        51.044
+      ],
+      "kind": "adjacent-pan"
+    },
+    {
+      "name": "viewport-11",
+      "bbox": [
+        13.749,
+        51.041,
+        13.75,
+        51.042
+      ],
+      "kind": "adjacent-pan"
+    },
+    {
+      "name": "viewport-12",
+      "bbox": [
+        13.753,
+        51.041,
+        13.754,
+        51.042
+      ],
+      "kind": "adjacent-pan"
+    }
+  ],
+  "tests": [
+    {
+      "name": "viewport-0",
+      "passed": true,
+      "elapsedMs": 790,
+      "requestIndexes": [
+        0,
+        2
+      ],
+      "bbox": [
+        13.75,
+        51.04,
+        13.751,
+        51.041
+      ],
+      "complete": true,
+      "count": 1,
+      "ids": [
+        {
+          "id": "DE-SN-140209___00622001800",
+          "geometrySha256": "20d3133bf17a53275d117b0c9fff4529e93bffe0bd618c15a126b7d1944299e7"
+        }
+      ]
+    },
+    {
+      "name": "viewport-1",
+      "passed": true,
+      "elapsedMs": 447,
+      "requestIndexes": [
+        3,
+        5
+      ],
+      "bbox": [
+        13.751,
+        51.04,
+        13.752,
+        51.041
+      ],
+      "complete": true,
+      "count": 1,
+      "ids": [
+        {
+          "id": "DE-SN-140209___00622001800",
+          "geometrySha256": "20d3133bf17a53275d117b0c9fff4529e93bffe0bd618c15a126b7d1944299e7"
+        }
+      ]
+    },
+    {
+      "name": "viewport-2",
+      "passed": true,
+      "elapsedMs": 452,
+      "requestIndexes": [
+        6,
+        8
+      ],
+      "bbox": [
+        13.752,
+        51.04,
+        13.753,
+        51.041
+      ],
+      "complete": true,
+      "count": 1,
+      "ids": [
+        {
+          "id": "DE-SN-140209___00622001800",
+          "geometrySha256": "20d3133bf17a53275d117b0c9fff4529e93bffe0bd618c15a126b7d1944299e7"
+        }
+      ]
+    },
+    {
+      "name": "viewport-3",
+      "passed": true,
+      "elapsedMs": 458,
+      "requestIndexes": [
+        9,
+        11
+      ],
+      "bbox": [
+        13.75,
+        51.041,
+        13.751,
+        51.042
+      ],
+      "complete": true,
+      "count": 4,
+      "ids": [
+        {
+          "id": "DE-SN-140209___00256____03",
+          "geometrySha256": "be9c4078ac68dd94180f95b036f22312540c01c23b8ee5ca79ec2dd3228601e2"
+        },
+        {
+          "id": "DE-SN-140209___00622001002",
+          "geometrySha256": "2c91f6326e41f1d56f52b9db2a0380f2ea9d37d14db9ab5a7c6892a3f5419dca"
+        },
+        {
+          "id": "DE-SN-140209___00622001800",
+          "geometrySha256": "20d3133bf17a53275d117b0c9fff4529e93bffe0bd618c15a126b7d1944299e7"
+        },
+        {
+          "id": "DE-SN-140209___00972____00",
+          "geometrySha256": "6ab55a8d44999dec2ed26499db7dda3ca0227f94cbd087ed089e71f29a7a307f"
+        }
+      ]
+    },
+    {
+      "name": "viewport-4",
+      "passed": true,
+      "elapsedMs": 458,
+      "requestIndexes": [
+        12,
+        14
+      ],
+      "bbox": [
+        13.751,
+        51.041,
+        13.752,
+        51.042
+      ],
+      "complete": true,
+      "count": 2,
+      "ids": [
+        {
+          "id": "DE-SN-140209___00622001002",
+          "geometrySha256": "2c91f6326e41f1d56f52b9db2a0380f2ea9d37d14db9ab5a7c6892a3f5419dca"
+        },
+        {
+          "id": "DE-SN-140209___00622001800",
+          "geometrySha256": "20d3133bf17a53275d117b0c9fff4529e93bffe0bd618c15a126b7d1944299e7"
+        }
+      ]
+    },
+    {
+      "name": "viewport-5",
+      "passed": true,
+      "elapsedMs": 452,
+      "requestIndexes": [
+        15,
+        17
+      ],
+      "bbox": [
+        13.752,
+        51.041,
+        13.753,
+        51.042
+      ],
+      "complete": true,
+      "count": 2,
+      "ids": [
+        {
+          "id": "DE-SN-140209___00622001002",
+          "geometrySha256": "2c91f6326e41f1d56f52b9db2a0380f2ea9d37d14db9ab5a7c6892a3f5419dca"
+        },
+        {
+          "id": "DE-SN-140209___00622001800",
+          "geometrySha256": "20d3133bf17a53275d117b0c9fff4529e93bffe0bd618c15a126b7d1944299e7"
+        }
+      ]
+    },
+    {
+      "name": "viewport-6",
+      "passed": true,
+      "elapsedMs": 458,
+      "requestIndexes": [
+        18,
+        20
+      ],
+      "bbox": [
+        13.75,
+        51.042,
+        13.751,
+        51.043
+      ],
+      "complete": true,
+      "count": 7,
+      "ids": [
+        {
+          "id": "DE-SN-140209___00248000101",
+          "geometrySha256": "33c02535d7ab38d915349f1bcb78f0a704002bc8aeb310e22705974235af460d"
+        },
+        {
+          "id": "DE-SN-140209___00256000200",
+          "geometrySha256": "4465a7e2c6c5ed4c2da38235477becbc485a0419fc984a23d98467b72a5400d4"
+        },
+        {
+          "id": "DE-SN-140209___00256____03",
+          "geometrySha256": "be9c4078ac68dd94180f95b036f22312540c01c23b8ee5ca79ec2dd3228601e2"
+        },
+        {
+          "id": "DE-SN-140209___00622001800",
+          "geometrySha256": "20d3133bf17a53275d117b0c9fff4529e93bffe0bd618c15a126b7d1944299e7"
+        },
+        {
+          "id": "DE-SN-140209___00972____00",
+          "geometrySha256": "6ab55a8d44999dec2ed26499db7dda3ca0227f94cbd087ed089e71f29a7a307f"
+        },
+        {
+          "id": "DE-SN-140209___00975____00",
+          "geometrySha256": "3c7884663febc7dc6c928d2aaec4689d8455746ed2b6e593ad8979a19309bef8"
+        },
+        {
+          "id": "DE-SN-140209___00976____01",
+          "geometrySha256": "2a8c85378ea0ed0e81bb4aeb7f49785509103b4ae7591947cfba4957d7b5735c"
+        }
+      ]
+    },
+    {
+      "name": "viewport-7",
+      "passed": true,
+      "elapsedMs": 455,
+      "requestIndexes": [
+        21,
+        23
+      ],
+      "bbox": [
+        13.751,
+        51.042,
+        13.752,
+        51.043
+      ],
+      "complete": true,
+      "count": 6,
+      "ids": [
+        {
+          "id": "DE-SN-140209___00248000101",
+          "geometrySha256": "33c02535d7ab38d915349f1bcb78f0a704002bc8aeb310e22705974235af460d"
+        },
+        {
+          "id": "DE-SN-140209___00622001103",
+          "geometrySha256": "1b967883bd7e86384e65f5110141bda635101fb3085c4c8ef9c426b6a80d815a"
+        },
+        {
+          "id": "DE-SN-140209___00622001800",
+          "geometrySha256": "20d3133bf17a53275d117b0c9fff4529e93bffe0bd618c15a126b7d1944299e7"
+        },
+        {
+          "id": "DE-SN-140209___00972____00",
+          "geometrySha256": "6ab55a8d44999dec2ed26499db7dda3ca0227f94cbd087ed089e71f29a7a307f"
+        },
+        {
+          "id": "DE-SN-140209___00975____00",
+          "geometrySha256": "3c7884663febc7dc6c928d2aaec4689d8455746ed2b6e593ad8979a19309bef8"
+        },
+        {
+          "id": "DE-SN-140209___00976____01",
+          "geometrySha256": "2a8c85378ea0ed0e81bb4aeb7f49785509103b4ae7591947cfba4957d7b5735c"
+        }
+      ]
+    },
+    {
+      "name": "viewport-8",
+      "passed": true,
+      "elapsedMs": 454,
+      "requestIndexes": [
+        24,
+        26
+      ],
+      "bbox": [
+        13.752,
+        51.042,
+        13.753,
+        51.043
+      ],
+      "complete": true,
+      "count": 2,
+      "ids": [
+        {
+          "id": "DE-SN-140209___00622001103",
+          "geometrySha256": "1b967883bd7e86384e65f5110141bda635101fb3085c4c8ef9c426b6a80d815a"
+        },
+        {
+          "id": "DE-SN-140209___00622001800",
+          "geometrySha256": "20d3133bf17a53275d117b0c9fff4529e93bffe0bd618c15a126b7d1944299e7"
+        }
+      ]
+    },
+    {
+      "name": "viewport-9",
+      "passed": true,
+      "elapsedMs": 449,
+      "requestIndexes": [
+        27,
+        29
+      ],
+      "bbox": [
+        13.751,
+        51.039,
+        13.752,
+        51.04
+      ],
+      "complete": true,
+      "count": 2,
+      "ids": [
+        {
+          "id": "DE-SN-140209___00622001800",
+          "geometrySha256": "20d3133bf17a53275d117b0c9fff4529e93bffe0bd618c15a126b7d1944299e7"
+        },
+        {
+          "id": "DE-SN-140209___00890000100",
+          "geometrySha256": "b730c26ece0513e1e0d4f85be3b7c732e34f7dbdc319b7cc482f87fab754924f"
+        }
+      ]
+    },
+    {
+      "name": "viewport-10",
+      "passed": true,
+      "elapsedMs": 455,
+      "requestIndexes": [
+        30,
+        32
+      ],
+      "bbox": [
+        13.751,
+        51.043,
+        13.752,
+        51.044
+      ],
+      "complete": true,
+      "count": 4,
+      "ids": [
+        {
+          "id": "DE-SN-140209___00248000a05",
+          "geometrySha256": "5a159b313f63384ab3c53ec75ac9b09013b66d249dfc15c63a285a33a776cdaa"
+        },
+        {
+          "id": "DE-SN-140209___00622001800",
+          "geometrySha256": "20d3133bf17a53275d117b0c9fff4529e93bffe0bd618c15a126b7d1944299e7"
+        },
+        {
+          "id": "DE-SN-140209___00972____00",
+          "geometrySha256": "6ab55a8d44999dec2ed26499db7dda3ca0227f94cbd087ed089e71f29a7a307f"
+        },
+        {
+          "id": "DE-SN-140209___00975____00",
+          "geometrySha256": "3c7884663febc7dc6c928d2aaec4689d8455746ed2b6e593ad8979a19309bef8"
+        }
+      ]
+    },
+    {
+      "name": "viewport-11",
+      "passed": true,
+      "elapsedMs": 453,
+      "requestIndexes": [
+        33,
+        35
+      ],
+      "bbox": [
+        13.749,
+        51.041,
+        13.75,
+        51.042
+      ],
+      "complete": true,
+      "count": 4,
+      "ids": [
+        {
+          "id": "DE-SN-140209___00256000200",
+          "geometrySha256": "4465a7e2c6c5ed4c2da38235477becbc485a0419fc984a23d98467b72a5400d4"
+        },
+        {
+          "id": "DE-SN-140209___00256____03",
+          "geometrySha256": "be9c4078ac68dd94180f95b036f22312540c01c23b8ee5ca79ec2dd3228601e2"
+        },
+        {
+          "id": "DE-SN-140209___00622001800",
+          "geometrySha256": "20d3133bf17a53275d117b0c9fff4529e93bffe0bd618c15a126b7d1944299e7"
+        },
+        {
+          "id": "DE-SN-140209___00972____00",
+          "geometrySha256": "6ab55a8d44999dec2ed26499db7dda3ca0227f94cbd087ed089e71f29a7a307f"
+        }
+      ]
+    },
+    {
+      "name": "viewport-12",
+      "passed": true,
+      "elapsedMs": 451,
+      "requestIndexes": [
+        36,
+        38
+      ],
+      "bbox": [
+        13.753,
+        51.041,
+        13.754,
+        51.042
+      ],
+      "complete": true,
+      "count": 1,
+      "ids": [
+        {
+          "id": "DE-SN-140209___00622001800",
+          "geometrySha256": "20d3133bf17a53275d117b0c9fff4529e93bffe0bd618c15a126b7d1944299e7"
+        }
+      ]
+    },
+    {
+      "name": "forced-three-row-pages",
+      "passed": true,
+      "elapsedMs": 796,
+      "requestIndexes": [
+        39,
+        43
+      ],
+      "count": 7,
+      "geometryPages": 3,
+      "pageSize": 3,
+      "allGeometryHashesMatch": true
+    },
+    {
+      "name": "fresh-ids-0",
+      "passed": true,
+      "elapsedMs": 925,
+      "requestIndexes": [
+        44,
+        49
+      ],
+      "count": 11,
+      "ids": [
+        "DE-SN-140209___00248000101",
+        "DE-SN-140209___00248000a05",
+        "DE-SN-140209___00256000200",
+        "DE-SN-140209___00256____03",
+        "DE-SN-140209___00622001002",
+        "DE-SN-140209___00622001103",
+        "DE-SN-140209___00622001800",
+        "DE-SN-140209___00890000100",
+        "DE-SN-140209___00972____00",
+        "DE-SN-140209___00975____00",
+        "DE-SN-140209___00976____01"
+      ],
+      "allGeometryHashesMatch": true,
+      "absentIds": []
+    },
+    {
+      "name": "explicit-absence",
+      "passed": true,
+      "elapsedMs": 278,
+      "requestIndexes": [
+        50,
+        51
+      ],
+      "absentIds": [
+        "DE-SN-140209___99999999999"
+      ],
+      "complete": true
+    },
+    {
+      "name": "footprint",
+      "passed": true,
+      "elapsedMs": 667,
+      "requestIndexes": [
+        52,
+        55
+      ],
+      "selectedParcelId": "DE-SN-140209___00972____00",
+      "count": 23,
+      "allGeometryHashesMatch": true
+    },
+    {
+      "name": "source-binding",
+      "passed": true,
+      "elapsedMs": 780,
+      "requestIndexes": [
+        56,
+        59
+      ],
+      "selectedParcelId": "DE-SN-140209___00972____00",
+      "coverage": "complete",
+      "siteM2": 25157.32,
+      "boundParcels": 1
+    }
+  ],
+  "requests": [
+    {
+      "test": "viewport-0",
+      "url": "https://geodienste.sachsen.de/aaa/public_alkis/vereinf/wfs?service=WFS&version=2.0.0&request=GetFeature&typeNames=ave%3AFlurstueck&srsName=urn%3Aogc%3Adef%3Acrs%3AEPSG%3A%3A25833&outputFormat=application%2Fgml%2Bxml%3B+version%3D3.2&propertyName=ave%3Aflstkennz%2Cave%3Ageometrie&sortBy=ave%3Aflstkennz+A&namespaces=xmlns%28ave%2Chttp%3A%2F%2Frepository.gdi-de.org%2Fschemas%2Fadv%2Fprodukt%2Falkis-vereinfacht%2F2.0%29&filter=%3Cfes%3AFilter+xmlns%3Afes%3D%22http%3A%2F%2Fwww.opengis.net%2Ffes%2F2.0%22+xmlns%3Aave%3D%22http%3A%2F%2Frepository.gdi-de.org%2Fschemas%2Fadv%2Fprodukt%2Falkis-vereinfacht%2F2.0%22+xmlns%3Agml%3D%22http%3A%2F%2Fwww.opengis.net%2Fgml%2F3.2%22%3E%3Cfes%3AIntersects%3E%3Cfes%3AValueReference%3Eave%3Ageometrie%3C%2Ffes%3AValueReference%3E%3Cgml%3APolygon+srsName%3D%22urn%3Aogc%3Adef%3Acrs%3AEPSG%3A%3A25833%22%3E%3Cgml%3Aexterior%3E%3Cgml%3ALinearRing%3E%3Cgml%3AposList+srsDimension%3D%222%22%3E412364.88846239576+5655015.251655064+412436.87945165194+5655015.251655064+412436.87945165194+5655127.63970045+412364.88846239576+5655127.63970045+412364.88846239576+5655015.251655064%3C%2Fgml%3AposList%3E%3C%2Fgml%3ALinearRing%3E%3C%2Fgml%3Aexterior%3E%3C%2Fgml%3APolygon%3E%3C%2Ffes%3AIntersects%3E%3C%2Ffes%3AFilter%3E&resultType=hits",
+      "method": "GET",
+      "checkedAt": "2026-10-09T05:16:11.021Z",
+      "httpStatus": 200,
+      "contentType": "application/gml+xml; version=3.2.1; charset=utf-8",
+      "bytes": 365,
+      "numberMatched": 1,
+      "numberMatchedUnknown": false,
+      "numberReturned": 0,
+      "features": []
+    },
+    {
+      "test": "viewport-0",
+      "url": "https://geodienste.sachsen.de/aaa/public_alkis/vereinf/wfs?service=WFS&version=2.0.0&request=GetFeature&typeNames=ave%3AFlurstueck&srsName=urn%3Aogc%3Adef%3Acrs%3AEPSG%3A%3A25833&outputFormat=application%2Fgml%2Bxml%3B+version%3D3.2&propertyName=ave%3Aflstkennz%2Cave%3Ageometrie&sortBy=ave%3Aflstkennz+A&namespaces=xmlns%28ave%2Chttp%3A%2F%2Frepository.gdi-de.org%2Fschemas%2Fadv%2Fprodukt%2Falkis-vereinfacht%2F2.0%29&filter=%3Cfes%3AFilter+xmlns%3Afes%3D%22http%3A%2F%2Fwww.opengis.net%2Ffes%2F2.0%22+xmlns%3Aave%3D%22http%3A%2F%2Frepository.gdi-de.org%2Fschemas%2Fadv%2Fprodukt%2Falkis-vereinfacht%2F2.0%22+xmlns%3Agml%3D%22http%3A%2F%2Fwww.opengis.net%2Fgml%2F3.2%22%3E%3Cfes%3AIntersects%3E%3Cfes%3AValueReference%3Eave%3Ageometrie%3C%2Ffes%3AValueReference%3E%3Cgml%3APolygon+srsName%3D%22urn%3Aogc%3Adef%3Acrs%3AEPSG%3A%3A25833%22%3E%3Cgml%3Aexterior%3E%3Cgml%3ALinearRing%3E%3Cgml%3AposList+srsDimension%3D%222%22%3E412364.88846239576+5655015.251655064+412436.87945165194+5655015.251655064+412436.87945165194+5655127.63970045+412364.88846239576+5655127.63970045+412364.88846239576+5655015.251655064%3C%2Fgml%3AposList%3E%3C%2Fgml%3ALinearRing%3E%3C%2Fgml%3Aexterior%3E%3C%2Fgml%3APolygon%3E%3C%2Ffes%3AIntersects%3E%3C%2Ffes%3AFilter%3E&count=1&startIndex=0",
+      "method": "GET",
+      "checkedAt": "2026-10-09T05:16:11.461Z",
+      "httpStatus": 200,
+      "contentType": "application/gml+xml; version=3.2.1; charset=utf-8",
+      "bytes": 7961,
+      "numberMatchedUnknown": true,
+      "numberReturned": 1,
+      "features": [
+        {
+          "transportId": "140209___00622001800",
+          "properties": {
+            "flstkennz": "140209___00622001800"
+          },
+          "geometrySha256": "20d3133bf17a53275d117b0c9fff4529e93bffe0bd618c15a126b7d1944299e7"
+        }
+      ]
+    },
+    {
+      "test": "viewport-0",
+      "url": "https://geodienste.sachsen.de/aaa/public_alkis/vereinf/wfs?service=WFS&version=2.0.0&request=GetFeature&typeNames=ave%3AFlurstueck&srsName=urn%3Aogc%3Adef%3Acrs%3AEPSG%3A%3A25833&outputFormat=application%2Fgml%2Bxml%3B+version%3D3.2&propertyName=ave%3Aflstkennz%2Cave%3Ageometrie&sortBy=ave%3Aflstkennz+A&namespaces=xmlns%28ave%2Chttp%3A%2F%2Frepository.gdi-de.org%2Fschemas%2Fadv%2Fprodukt%2Falkis-vereinfacht%2F2.0%29&filter=%3Cfes%3AFilter+xmlns%3Afes%3D%22http%3A%2F%2Fwww.opengis.net%2Ffes%2F2.0%22+xmlns%3Aave%3D%22http%3A%2F%2Frepository.gdi-de.org%2Fschemas%2Fadv%2Fprodukt%2Falkis-vereinfacht%2F2.0%22+xmlns%3Agml%3D%22http%3A%2F%2Fwww.opengis.net%2Fgml%2F3.2%22%3E%3Cfes%3AIntersects%3E%3Cfes%3AValueReference%3Eave%3Ageometrie%3C%2Ffes%3AValueReference%3E%3Cgml%3APolygon+srsName%3D%22urn%3Aogc%3Adef%3Acrs%3AEPSG%3A%3A25833%22%3E%3Cgml%3Aexterior%3E%3Cgml%3ALinearRing%3E%3Cgml%3AposList+srsDimension%3D%222%22%3E412364.88846239576+5655015.251655064+412436.87945165194+5655015.251655064+412436.87945165194+5655127.63970045+412364.88846239576+5655127.63970045+412364.88846239576+5655015.251655064%3C%2Fgml%3AposList%3E%3C%2Fgml%3ALinearRing%3E%3C%2Fgml%3Aexterior%3E%3C%2Fgml%3APolygon%3E%3C%2Ffes%3AIntersects%3E%3C%2Ffes%3AFilter%3E&resultType=hits",
+      "method": "GET",
+      "checkedAt": "2026-10-09T05:16:11.659Z",
+      "httpStatus": 200,
+      "contentType": "application/gml+xml; version=3.2.1; charset=utf-8",
+      "bytes": 365,
+      "numberMatched": 1,
+      "numberMatchedUnknown": false,
+      "numberReturned": 0,
+      "features": []
+    },
+    {
+      "test": "viewport-1",
+      "url": "https://geodienste.sachsen.de/aaa/public_alkis/vereinf/wfs?service=WFS&version=2.0.0&request=GetFeature&typeNames=ave%3AFlurstueck&srsName=urn%3Aogc%3Adef%3Acrs%3AEPSG%3A%3A25833&outputFormat=application%2Fgml%2Bxml%3B+version%3D3.2&propertyName=ave%3Aflstkennz%2Cave%3Ageometrie&sortBy=ave%3Aflstkennz+A&namespaces=xmlns%28ave%2Chttp%3A%2F%2Frepository.gdi-de.org%2Fschemas%2Fadv%2Fprodukt%2Falkis-vereinfacht%2F2.0%29&filter=%3Cfes%3AFilter+xmlns%3Afes%3D%22http%3A%2F%2Fwww.opengis.net%2Ffes%2F2.0%22+xmlns%3Aave%3D%22http%3A%2F%2Frepository.gdi-de.org%2Fschemas%2Fadv%2Fprodukt%2Falkis-vereinfacht%2F2.0%22+xmlns%3Agml%3D%22http%3A%2F%2Fwww.opengis.net%2Fgml%2F3.2%22%3E%3Cfes%3AIntersects%3E%3Cfes%3AValueReference%3Eave%3Ageometrie%3C%2Ffes%3AValueReference%3E%3Cgml%3APolygon+srsName%3D%22urn%3Aogc%3Adef%3Acrs%3AEPSG%3A%3A25833%22%3E%3Cgml%3Aexterior%3E%3Cgml%3ALinearRing%3E%3Cgml%3AposList+srsDimension%3D%222%22%3E412434.9942366105+5655014.0635998+412506.9837217185+5655014.0635998+412506.9837217185+5655126.450702215+412434.9942366105+5655126.450702215+412434.9942366105+5655014.0635998%3C%2Fgml%3AposList%3E%3C%2Fgml%3ALinearRing%3E%3C%2Fgml%3Aexterior%3E%3C%2Fgml%3APolygon%3E%3C%2Ffes%3AIntersects%3E%3C%2Ffes%3AFilter%3E&resultType=hits",
+      "method": "GET",
+      "checkedAt": "2026-10-09T05:16:11.812Z",
+      "httpStatus": 200,
+      "contentType": "application/gml+xml; version=3.2.1; charset=utf-8",
+      "bytes": 365,
+      "numberMatched": 1,
+      "numberMatchedUnknown": false,
+      "numberReturned": 0,
+      "features": []
+    },
+    {
+      "test": "viewport-1",
+      "url": "https://geodienste.sachsen.de/aaa/public_alkis/vereinf/wfs?service=WFS&version=2.0.0&request=GetFeature&typeNames=ave%3AFlurstueck&srsName=urn%3Aogc%3Adef%3Acrs%3AEPSG%3A%3A25833&outputFormat=application%2Fgml%2Bxml%3B+version%3D3.2&propertyName=ave%3Aflstkennz%2Cave%3Ageometrie&sortBy=ave%3Aflstkennz+A&namespaces=xmlns%28ave%2Chttp%3A%2F%2Frepository.gdi-de.org%2Fschemas%2Fadv%2Fprodukt%2Falkis-vereinfacht%2F2.0%29&filter=%3Cfes%3AFilter+xmlns%3Afes%3D%22http%3A%2F%2Fwww.opengis.net%2Ffes%2F2.0%22+xmlns%3Aave%3D%22http%3A%2F%2Frepository.gdi-de.org%2Fschemas%2Fadv%2Fprodukt%2Falkis-vereinfacht%2F2.0%22+xmlns%3Agml%3D%22http%3A%2F%2Fwww.opengis.net%2Fgml%2F3.2%22%3E%3Cfes%3AIntersects%3E%3Cfes%3AValueReference%3Eave%3Ageometrie%3C%2Ffes%3AValueReference%3E%3Cgml%3APolygon+srsName%3D%22urn%3Aogc%3Adef%3Acrs%3AEPSG%3A%3A25833%22%3E%3Cgml%3Aexterior%3E%3Cgml%3ALinearRing%3E%3Cgml%3AposList+srsDimension%3D%222%22%3E412434.9942366105+5655014.0635998+412506.9837217185+5655014.0635998+412506.9837217185+5655126.450702215+412434.9942366105+5655126.450702215+412434.9942366105+5655014.0635998%3C%2Fgml%3AposList%3E%3C%2Fgml%3ALinearRing%3E%3C%2Fgml%3Aexterior%3E%3C%2Fgml%3APolygon%3E%3C%2Ffes%3AIntersects%3E%3C%2Ffes%3AFilter%3E&count=1&startIndex=0",
+      "method": "GET",
+      "checkedAt": "2026-10-09T05:16:11.959Z",
+      "httpStatus": 200,
+      "contentType": "application/gml+xml; version=3.2.1; charset=utf-8",
+      "bytes": 7961,
+      "numberMatchedUnknown": true,
+      "numberReturned": 1,
+      "features": [
+        {
+          "transportId": "140209___00622001800",
+          "properties": {
+            "flstkennz": "140209___00622001800"
+          },
+          "geometrySha256": "20d3133bf17a53275d117b0c9fff4529e93bffe0bd618c15a126b7d1944299e7"
+        }
+      ]
+    },
+    {
+      "test": "viewport-1",
+      "url": "https://geodienste.sachsen.de/aaa/public_alkis/vereinf/wfs?service=WFS&version=2.0.0&request=GetFeature&typeNames=ave%3AFlurstueck&srsName=urn%3Aogc%3Adef%3Acrs%3AEPSG%3A%3A25833&outputFormat=application%2Fgml%2Bxml%3B+version%3D3.2&propertyName=ave%3Aflstkennz%2Cave%3Ageometrie&sortBy=ave%3Aflstkennz+A&namespaces=xmlns%28ave%2Chttp%3A%2F%2Frepository.gdi-de.org%2Fschemas%2Fadv%2Fprodukt%2Falkis-vereinfacht%2F2.0%29&filter=%3Cfes%3AFilter+xmlns%3Afes%3D%22http%3A%2F%2Fwww.opengis.net%2Ffes%2F2.0%22+xmlns%3Aave%3D%22http%3A%2F%2Frepository.gdi-de.org%2Fschemas%2Fadv%2Fprodukt%2Falkis-vereinfacht%2F2.0%22+xmlns%3Agml%3D%22http%3A%2F%2Fwww.opengis.net%2Fgml%2F3.2%22%3E%3Cfes%3AIntersects%3E%3Cfes%3AValueReference%3Eave%3Ageometrie%3C%2Ffes%3AValueReference%3E%3Cgml%3APolygon+srsName%3D%22urn%3Aogc%3Adef%3Acrs%3AEPSG%3A%3A25833%22%3E%3Cgml%3Aexterior%3E%3Cgml%3ALinearRing%3E%3Cgml%3AposList+srsDimension%3D%222%22%3E412434.9942366105+5655014.0635998+412506.9837217185+5655014.0635998+412506.9837217185+5655126.450702215+412434.9942366105+5655126.450702215+412434.9942366105+5655014.0635998%3C%2Fgml%3AposList%3E%3C%2Fgml%3ALinearRing%3E%3C%2Fgml%3Aexterior%3E%3C%2Fgml%3APolygon%3E%3C%2Ffes%3AIntersects%3E%3C%2Ffes%3AFilter%3E&resultType=hits",
+      "method": "GET",
+      "checkedAt": "2026-10-09T05:16:12.112Z",
+      "httpStatus": 200,
+      "contentType": "application/gml+xml; version=3.2.1; charset=utf-8",
+      "bytes": 365,
+      "numberMatched": 1,
+      "numberMatchedUnknown": false,
+      "numberReturned": 0,
+      "features": []
+    },
+    {
+      "test": "viewport-2",
+      "url": "https://geodienste.sachsen.de/aaa/public_alkis/vereinf/wfs?service=WFS&version=2.0.0&request=GetFeature&typeNames=ave%3AFlurstueck&srsName=urn%3Aogc%3Adef%3Acrs%3AEPSG%3A%3A25833&outputFormat=application%2Fgml%2Bxml%3B+version%3D3.2&propertyName=ave%3Aflstkennz%2Cave%3Ageometrie&sortBy=ave%3Aflstkennz+A&namespaces=xmlns%28ave%2Chttp%3A%2F%2Frepository.gdi-de.org%2Fschemas%2Fadv%2Fprodukt%2Falkis-vereinfacht%2F2.0%29&filter=%3Cfes%3AFilter+xmlns%3Afes%3D%22http%3A%2F%2Fwww.opengis.net%2Ffes%2F2.0%22+xmlns%3Aave%3D%22http%3A%2F%2Frepository.gdi-de.org%2Fschemas%2Fadv%2Fprodukt%2Falkis-vereinfacht%2F2.0%22+xmlns%3Agml%3D%22http%3A%2F%2Fwww.opengis.net%2Fgml%2F3.2%22%3E%3Cfes%3AIntersects%3E%3Cfes%3AValueReference%3Eave%3Ageometrie%3C%2Ffes%3AValueReference%3E%3Cgml%3APolygon+srsName%3D%22urn%3Aogc%3Adef%3Acrs%3AEPSG%3A%3A25833%22%3E%3Cgml%3Aexterior%3E%3Cgml%3ALinearRing%3E%3Cgml%3AposList+srsDimension%3D%222%22%3E412505.1000163864+5655012.876496331+412577.08799734205+5655012.876496331+412577.08799734205+5655125.262655769+412505.1000163864+5655125.262655769+412505.1000163864+5655012.876496331%3C%2Fgml%3AposList%3E%3C%2Fgml%3ALinearRing%3E%3C%2Fgml%3Aexterior%3E%3C%2Fgml%3APolygon%3E%3C%2Ffes%3AIntersects%3E%3C%2Ffes%3AFilter%3E&resultType=hits",
+      "method": "GET",
+      "checkedAt": "2026-10-09T05:16:12.259Z",
+      "httpStatus": 200,
+      "contentType": "application/gml+xml; version=3.2.1; charset=utf-8",
+      "bytes": 365,
+      "numberMatched": 1,
+      "numberMatchedUnknown": false,
+      "numberReturned": 0,
+      "features": []
+    },
+    {
+      "test": "viewport-2",
+      "url": "https://geodienste.sachsen.de/aaa/public_alkis/vereinf/wfs?service=WFS&version=2.0.0&request=GetFeature&typeNames=ave%3AFlurstueck&srsName=urn%3Aogc%3Adef%3Acrs%3AEPSG%3A%3A25833&outputFormat=application%2Fgml%2Bxml%3B+version%3D3.2&propertyName=ave%3Aflstkennz%2Cave%3Ageometrie&sortBy=ave%3Aflstkennz+A&namespaces=xmlns%28ave%2Chttp%3A%2F%2Frepository.gdi-de.org%2Fschemas%2Fadv%2Fprodukt%2Falkis-vereinfacht%2F2.0%29&filter=%3Cfes%3AFilter+xmlns%3Afes%3D%22http%3A%2F%2Fwww.opengis.net%2Ffes%2F2.0%22+xmlns%3Aave%3D%22http%3A%2F%2Frepository.gdi-de.org%2Fschemas%2Fadv%2Fprodukt%2Falkis-vereinfacht%2F2.0%22+xmlns%3Agml%3D%22http%3A%2F%2Fwww.opengis.net%2Fgml%2F3.2%22%3E%3Cfes%3AIntersects%3E%3Cfes%3AValueReference%3Eave%3Ageometrie%3C%2Ffes%3AValueReference%3E%3Cgml%3APolygon+srsName%3D%22urn%3Aogc%3Adef%3Acrs%3AEPSG%3A%3A25833%22%3E%3Cgml%3Aexterior%3E%3Cgml%3ALinearRing%3E%3Cgml%3AposList+srsDimension%3D%222%22%3E412505.1000163864+5655012.876496331+412577.08799734205+5655012.876496331+412577.08799734205+5655125.262655769+412505.1000163864+5655125.262655769+412505.1000163864+5655012.876496331%3C%2Fgml%3AposList%3E%3C%2Fgml%3ALinearRing%3E%3C%2Fgml%3Aexterior%3E%3C%2Fgml%3APolygon%3E%3C%2Ffes%3AIntersects%3E%3C%2Ffes%3AFilter%3E&count=1&startIndex=0",
+      "method": "GET",
+      "checkedAt": "2026-10-09T05:16:12.408Z",
+      "httpStatus": 200,
+      "contentType": "application/gml+xml; version=3.2.1; charset=utf-8",
+      "bytes": 7961,
+      "numberMatchedUnknown": true,
+      "numberReturned": 1,
+      "features": [
+        {
+          "transportId": "140209___00622001800",
+          "properties": {
+            "flstkennz": "140209___00622001800"
+          },
+          "geometrySha256": "20d3133bf17a53275d117b0c9fff4529e93bffe0bd618c15a126b7d1944299e7"
+        }
+      ]
+    },
+    {
+      "test": "viewport-2",
+      "url": "https://geodienste.sachsen.de/aaa/public_alkis/vereinf/wfs?service=WFS&version=2.0.0&request=GetFeature&typeNames=ave%3AFlurstueck&srsName=urn%3Aogc%3Adef%3Acrs%3AEPSG%3A%3A25833&outputFormat=application%2Fgml%2Bxml%3B+version%3D3.2&propertyName=ave%3Aflstkennz%2Cave%3Ageometrie&sortBy=ave%3Aflstkennz+A&namespaces=xmlns%28ave%2Chttp%3A%2F%2Frepository.gdi-de.org%2Fschemas%2Fadv%2Fprodukt%2Falkis-vereinfacht%2F2.0%29&filter=%3Cfes%3AFilter+xmlns%3Afes%3D%22http%3A%2F%2Fwww.opengis.net%2Ffes%2F2.0%22+xmlns%3Aave%3D%22http%3A%2F%2Frepository.gdi-de.org%2Fschemas%2Fadv%2Fprodukt%2Falkis-vereinfacht%2F2.0%22+xmlns%3Agml%3D%22http%3A%2F%2Fwww.opengis.net%2Fgml%2F3.2%22%3E%3Cfes%3AIntersects%3E%3Cfes%3AValueReference%3Eave%3Ageometrie%3C%2Ffes%3AValueReference%3E%3Cgml%3APolygon+srsName%3D%22urn%3Aogc%3Adef%3Acrs%3AEPSG%3A%3A25833%22%3E%3Cgml%3Aexterior%3E%3Cgml%3ALinearRing%3E%3Cgml%3AposList+srsDimension%3D%222%22%3E412505.1000163864+5655012.876496331+412577.08799734205+5655012.876496331+412577.08799734205+5655125.262655769+412505.1000163864+5655125.262655769+412505.1000163864+5655012.876496331%3C%2Fgml%3AposList%3E%3C%2Fgml%3ALinearRing%3E%3C%2Fgml%3Aexterior%3E%3C%2Fgml%3APolygon%3E%3C%2Ffes%3AIntersects%3E%3C%2Ffes%3AFilter%3E&resultType=hits",
+      "method": "GET",
+      "checkedAt": "2026-10-09T05:16:12.564Z",
+      "httpStatus": 200,
+      "contentType": "application/gml+xml; version=3.2.1; charset=utf-8",
+      "bytes": 365,
+      "numberMatched": 1,
+      "numberMatchedUnknown": false,
+      "numberReturned": 0,
+      "features": []
+    },
+    {
+      "test": "viewport-3",
+      "url": "https://geodienste.sachsen.de/aaa/public_alkis/vereinf/wfs?service=WFS&version=2.0.0&request=GetFeature&typeNames=ave%3AFlurstueck&srsName=urn%3Aogc%3Adef%3Acrs%3AEPSG%3A%3A25833&outputFormat=application%2Fgml%2Bxml%3B+version%3D3.2&propertyName=ave%3Aflstkennz%2Cave%3Ageometrie&sortBy=ave%3Aflstkennz+A&namespaces=xmlns%28ave%2Chttp%3A%2F%2Frepository.gdi-de.org%2Fschemas%2Fadv%2Fprodukt%2Falkis-vereinfacht%2F2.0%29&filter=%3Cfes%3AFilter+xmlns%3Afes%3D%22http%3A%2F%2Fwww.opengis.net%2Ffes%2F2.0%22+xmlns%3Aave%3D%22http%3A%2F%2Frepository.gdi-de.org%2Fschemas%2Fadv%2Fprodukt%2Falkis-vereinfacht%2F2.0%22+xmlns%3Agml%3D%22http%3A%2F%2Fwww.opengis.net%2Fgml%2F3.2%22%3E%3Cfes%3AIntersects%3E%3Cfes%3AValueReference%3Eave%3Ageometrie%3C%2Ffes%3AValueReference%3E%3Cgml%3APolygon+srsName%3D%22urn%3Aogc%3Adef%3Acrs%3AEPSG%3A%3A25833%22%3E%3Cgml%3Aexterior%3E%3Cgml%3ALinearRing%3E%3Cgml%3AposList+srsDimension%3D%222%22%3E412366.7751871473+5655126.450702215+412438.76469360804+5655126.450702215+412438.76469360804+5655238.838757004+412366.7751871473+5655238.838757004+412366.7751871473+5655126.450702215%3C%2Fgml%3AposList%3E%3C%2Fgml%3ALinearRing%3E%3C%2Fgml%3Aexterior%3E%3C%2Fgml%3APolygon%3E%3C%2Ffes%3AIntersects%3E%3C%2Ffes%3AFilter%3E&resultType=hits",
+      "method": "GET",
+      "checkedAt": "2026-10-09T05:16:12.712Z",
+      "httpStatus": 200,
+      "contentType": "application/gml+xml; version=3.2.1; charset=utf-8",
+      "bytes": 365,
+      "numberMatched": 4,
+      "numberMatchedUnknown": false,
+      "numberReturned": 0,
+      "features": []
+    },
+    {
+      "test": "viewport-3",
+      "url": "https://geodienste.sachsen.de/aaa/public_alkis/vereinf/wfs?service=WFS&version=2.0.0&request=GetFeature&typeNames=ave%3AFlurstueck&srsName=urn%3Aogc%3Adef%3Acrs%3AEPSG%3A%3A25833&outputFormat=application%2Fgml%2Bxml%3B+version%3D3.2&propertyName=ave%3Aflstkennz%2Cave%3Ageometrie&sortBy=ave%3Aflstkennz+A&namespaces=xmlns%28ave%2Chttp%3A%2F%2Frepository.gdi-de.org%2Fschemas%2Fadv%2Fprodukt%2Falkis-vereinfacht%2F2.0%29&filter=%3Cfes%3AFilter+xmlns%3Afes%3D%22http%3A%2F%2Fwww.opengis.net%2Ffes%2F2.0%22+xmlns%3Aave%3D%22http%3A%2F%2Frepository.gdi-de.org%2Fschemas%2Fadv%2Fprodukt%2Falkis-vereinfacht%2F2.0%22+xmlns%3Agml%3D%22http%3A%2F%2Fwww.opengis.net%2Fgml%2F3.2%22%3E%3Cfes%3AIntersects%3E%3Cfes%3AValueReference%3Eave%3Ageometrie%3C%2Ffes%3AValueReference%3E%3Cgml%3APolygon+srsName%3D%22urn%3Aogc%3Adef%3Acrs%3AEPSG%3A%3A25833%22%3E%3Cgml%3Aexterior%3E%3Cgml%3ALinearRing%3E%3Cgml%3AposList+srsDimension%3D%222%22%3E412366.7751871473+5655126.450702215+412438.76469360804+5655126.450702215+412438.76469360804+5655238.838757004+412366.7751871473+5655238.838757004+412366.7751871473+5655126.450702215%3C%2Fgml%3AposList%3E%3C%2Fgml%3ALinearRing%3E%3C%2Fgml%3Aexterior%3E%3C%2Fgml%3APolygon%3E%3C%2Ffes%3AIntersects%3E%3C%2Ffes%3AFilter%3E&count=4&startIndex=0",
+      "method": "GET",
+      "checkedAt": "2026-10-09T05:16:12.858Z",
+      "httpStatus": 200,
+      "contentType": "application/gml+xml; version=3.2.1; charset=utf-8",
+      "bytes": 14223,
+      "numberMatchedUnknown": true,
+      "numberReturned": 4,
+      "features": [
+        {
+          "transportId": "140209___00256____03",
+          "properties": {
+            "flstkennz": "140209___00256____03"
+          },
+          "geometrySha256": "be9c4078ac68dd94180f95b036f22312540c01c23b8ee5ca79ec2dd3228601e2"
+        },
+        {
+          "transportId": "140209___00622001002",
+          "properties": {
+            "flstkennz": "140209___00622001002"
+          },
+          "geometrySha256": "2c91f6326e41f1d56f52b9db2a0380f2ea9d37d14db9ab5a7c6892a3f5419dca"
+        },
+        {
+          "transportId": "140209___00622001800",
+          "properties": {
+            "flstkennz": "140209___00622001800"
+          },
+          "geometrySha256": "20d3133bf17a53275d117b0c9fff4529e93bffe0bd618c15a126b7d1944299e7"
+        },
+        {
+          "transportId": "140209___00972____00",
+          "properties": {
+            "flstkennz": "140209___00972____00"
+          },
+          "geometrySha256": "6ab55a8d44999dec2ed26499db7dda3ca0227f94cbd087ed089e71f29a7a307f"
+        }
+      ]
+    },
+    {
+      "test": "viewport-3",
+      "url": "https://geodienste.sachsen.de/aaa/public_alkis/vereinf/wfs?service=WFS&version=2.0.0&request=GetFeature&typeNames=ave%3AFlurstueck&srsName=urn%3Aogc%3Adef%3Acrs%3AEPSG%3A%3A25833&outputFormat=application%2Fgml%2Bxml%3B+version%3D3.2&propertyName=ave%3Aflstkennz%2Cave%3Ageometrie&sortBy=ave%3Aflstkennz+A&namespaces=xmlns%28ave%2Chttp%3A%2F%2Frepository.gdi-de.org%2Fschemas%2Fadv%2Fprodukt%2Falkis-vereinfacht%2F2.0%29&filter=%3Cfes%3AFilter+xmlns%3Afes%3D%22http%3A%2F%2Fwww.opengis.net%2Ffes%2F2.0%22+xmlns%3Aave%3D%22http%3A%2F%2Frepository.gdi-de.org%2Fschemas%2Fadv%2Fprodukt%2Falkis-vereinfacht%2F2.0%22+xmlns%3Agml%3D%22http%3A%2F%2Fwww.opengis.net%2Fgml%2F3.2%22%3E%3Cfes%3AIntersects%3E%3Cfes%3AValueReference%3Eave%3Ageometrie%3C%2Ffes%3AValueReference%3E%3Cgml%3APolygon+srsName%3D%22urn%3Aogc%3Adef%3Acrs%3AEPSG%3A%3A25833%22%3E%3Cgml%3Aexterior%3E%3Cgml%3ALinearRing%3E%3Cgml%3AposList+srsDimension%3D%222%22%3E412366.7751871473+5655126.450702215+412438.76469360804+5655126.450702215+412438.76469360804+5655238.838757004+412366.7751871473+5655238.838757004+412366.7751871473+5655126.450702215%3C%2Fgml%3AposList%3E%3C%2Fgml%3ALinearRing%3E%3C%2Fgml%3Aexterior%3E%3C%2Fgml%3APolygon%3E%3C%2Ffes%3AIntersects%3E%3C%2Ffes%3AFilter%3E&resultType=hits",
+      "method": "GET",
+      "checkedAt": "2026-10-09T05:16:13.020Z",
+      "httpStatus": 200,
+      "contentType": "application/gml+xml; version=3.2.1; charset=utf-8",
+      "bytes": 365,
+      "numberMatched": 4,
+      "numberMatchedUnknown": false,
+      "numberReturned": 0,
+      "features": []
+    },
+    {
+      "test": "viewport-4",
+      "url": "https://geodienste.sachsen.de/aaa/public_alkis/vereinf/wfs?service=WFS&version=2.0.0&request=GetFeature&typeNames=ave%3AFlurstueck&srsName=urn%3Aogc%3Adef%3Acrs%3AEPSG%3A%3A25833&outputFormat=application%2Fgml%2Bxml%3B+version%3D3.2&propertyName=ave%3Aflstkennz%2Cave%3Ageometrie&sortBy=ave%3Aflstkennz+A&namespaces=xmlns%28ave%2Chttp%3A%2F%2Frepository.gdi-de.org%2Fschemas%2Fadv%2Fprodukt%2Falkis-vereinfacht%2F2.0%29&filter=%3Cfes%3AFilter+xmlns%3Afes%3D%22http%3A%2F%2Fwww.opengis.net%2Ffes%2F2.0%22+xmlns%3Aave%3D%22http%3A%2F%2Frepository.gdi-de.org%2Fschemas%2Fadv%2Fprodukt%2Falkis-vereinfacht%2F2.0%22+xmlns%3Agml%3D%22http%3A%2F%2Fwww.opengis.net%2Fgml%2F3.2%22%3E%3Cfes%3AIntersects%3E%3Cfes%3AValueReference%3Eave%3Ageometrie%3C%2Ffes%3AValueReference%3E%3Cgml%3APolygon+srsName%3D%22urn%3Aogc%3Adef%3Acrs%3AEPSG%3A%3A25833%22%3E%3Cgml%3Aexterior%3E%3Cgml%3ALinearRing%3E%3Cgml%3AposList+srsDimension%3D%222%22%3E412436.87945165194+5655125.262655769+412508.8674539437+5655125.262655769+412508.8674539437+5655237.649767596+412436.87945165194+5655237.649767596+412436.87945165194+5655125.262655769%3C%2Fgml%3AposList%3E%3C%2Fgml%3ALinearRing%3E%3C%2Fgml%3Aexterior%3E%3C%2Fgml%3APolygon%3E%3C%2Ffes%3AIntersects%3E%3C%2Ffes%3AFilter%3E&resultType=hits",
+      "method": "GET",
+      "checkedAt": "2026-10-09T05:16:13.171Z",
+      "httpStatus": 200,
+      "contentType": "application/gml+xml; version=3.2.1; charset=utf-8",
+      "bytes": 365,
+      "numberMatched": 2,
+      "numberMatchedUnknown": false,
+      "numberReturned": 0,
+      "features": []
+    },
+    {
+      "test": "viewport-4",
+      "url": "https://geodienste.sachsen.de/aaa/public_alkis/vereinf/wfs?service=WFS&version=2.0.0&request=GetFeature&typeNames=ave%3AFlurstueck&srsName=urn%3Aogc%3Adef%3Acrs%3AEPSG%3A%3A25833&outputFormat=application%2Fgml%2Bxml%3B+version%3D3.2&propertyName=ave%3Aflstkennz%2Cave%3Ageometrie&sortBy=ave%3Aflstkennz+A&namespaces=xmlns%28ave%2Chttp%3A%2F%2Frepository.gdi-de.org%2Fschemas%2Fadv%2Fprodukt%2Falkis-vereinfacht%2F2.0%29&filter=%3Cfes%3AFilter+xmlns%3Afes%3D%22http%3A%2F%2Fwww.opengis.net%2Ffes%2F2.0%22+xmlns%3Aave%3D%22http%3A%2F%2Frepository.gdi-de.org%2Fschemas%2Fadv%2Fprodukt%2Falkis-vereinfacht%2F2.0%22+xmlns%3Agml%3D%22http%3A%2F%2Fwww.opengis.net%2Fgml%2F3.2%22%3E%3Cfes%3AIntersects%3E%3Cfes%3AValueReference%3Eave%3Ageometrie%3C%2Ffes%3AValueReference%3E%3Cgml%3APolygon+srsName%3D%22urn%3Aogc%3Adef%3Acrs%3AEPSG%3A%3A25833%22%3E%3Cgml%3Aexterior%3E%3Cgml%3ALinearRing%3E%3Cgml%3AposList+srsDimension%3D%222%22%3E412436.87945165194+5655125.262655769+412508.8674539437+5655125.262655769+412508.8674539437+5655237.649767596+412436.87945165194+5655237.649767596+412436.87945165194+5655125.262655769%3C%2Fgml%3AposList%3E%3C%2Fgml%3ALinearRing%3E%3C%2Fgml%3Aexterior%3E%3C%2Fgml%3APolygon%3E%3C%2Ffes%3AIntersects%3E%3C%2Ffes%3AFilter%3E&count=2&startIndex=0",
+      "method": "GET",
+      "checkedAt": "2026-10-09T05:16:13.322Z",
+      "httpStatus": 200,
+      "contentType": "application/gml+xml; version=3.2.1; charset=utf-8",
+      "bytes": 8988,
+      "numberMatchedUnknown": true,
+      "numberReturned": 2,
+      "features": [
+        {
+          "transportId": "140209___00622001002",
+          "properties": {
+            "flstkennz": "140209___00622001002"
+          },
+          "geometrySha256": "2c91f6326e41f1d56f52b9db2a0380f2ea9d37d14db9ab5a7c6892a3f5419dca"
+        },
+        {
+          "transportId": "140209___00622001800",
+          "properties": {
+            "flstkennz": "140209___00622001800"
+          },
+          "geometrySha256": "20d3133bf17a53275d117b0c9fff4529e93bffe0bd618c15a126b7d1944299e7"
+        }
+      ]
+    },
+    {
+      "test": "viewport-4",
+      "url": "https://geodienste.sachsen.de/aaa/public_alkis/vereinf/wfs?service=WFS&version=2.0.0&request=GetFeature&typeNames=ave%3AFlurstueck&srsName=urn%3Aogc%3Adef%3Acrs%3AEPSG%3A%3A25833&outputFormat=application%2Fgml%2Bxml%3B+version%3D3.2&propertyName=ave%3Aflstkennz%2Cave%3Ageometrie&sortBy=ave%3Aflstkennz+A&namespaces=xmlns%28ave%2Chttp%3A%2F%2Frepository.gdi-de.org%2Fschemas%2Fadv%2Fprodukt%2Falkis-vereinfacht%2F2.0%29&filter=%3Cfes%3AFilter+xmlns%3Afes%3D%22http%3A%2F%2Fwww.opengis.net%2Ffes%2F2.0%22+xmlns%3Aave%3D%22http%3A%2F%2Frepository.gdi-de.org%2Fschemas%2Fadv%2Fprodukt%2Falkis-vereinfacht%2F2.0%22+xmlns%3Agml%3D%22http%3A%2F%2Fwww.opengis.net%2Fgml%2F3.2%22%3E%3Cfes%3AIntersects%3E%3Cfes%3AValueReference%3Eave%3Ageometrie%3C%2Ffes%3AValueReference%3E%3Cgml%3APolygon+srsName%3D%22urn%3Aogc%3Adef%3Acrs%3AEPSG%3A%3A25833%22%3E%3Cgml%3Aexterior%3E%3Cgml%3ALinearRing%3E%3Cgml%3AposList+srsDimension%3D%222%22%3E412436.87945165194+5655125.262655769+412508.8674539437+5655125.262655769+412508.8674539437+5655237.649767596+412436.87945165194+5655237.649767596+412436.87945165194+5655125.262655769%3C%2Fgml%3AposList%3E%3C%2Fgml%3ALinearRing%3E%3C%2Fgml%3Aexterior%3E%3C%2Fgml%3APolygon%3E%3C%2Ffes%3AIntersects%3E%3C%2Ffes%3AFilter%3E&resultType=hits",
+      "method": "GET",
+      "checkedAt": "2026-10-09T05:16:13.481Z",
+      "httpStatus": 200,
+      "contentType": "application/gml+xml; version=3.2.1; charset=utf-8",
+      "bytes": 365,
+      "numberMatched": 2,
+      "numberMatchedUnknown": false,
+      "numberReturned": 0,
+      "features": []
+    },
+    {
+      "test": "viewport-5",
+      "url": "https://geodienste.sachsen.de/aaa/public_alkis/vereinf/wfs?service=WFS&version=2.0.0&request=GetFeature&typeNames=ave%3AFlurstueck&srsName=urn%3Aogc%3Adef%3Acrs%3AEPSG%3A%3A25833&outputFormat=application%2Fgml%2Bxml%3B+version%3D3.2&propertyName=ave%3Aflstkennz%2Cave%3Ageometrie&sortBy=ave%3Aflstkennz+A&namespaces=xmlns%28ave%2Chttp%3A%2F%2Frepository.gdi-de.org%2Fschemas%2Fadv%2Fprodukt%2Falkis-vereinfacht%2F2.0%29&filter=%3Cfes%3AFilter+xmlns%3Afes%3D%22http%3A%2F%2Fwww.opengis.net%2Ffes%2F2.0%22+xmlns%3Aave%3D%22http%3A%2F%2Frepository.gdi-de.org%2Fschemas%2Fadv%2Fprodukt%2Falkis-vereinfacht%2F2.0%22+xmlns%3Agml%3D%22http%3A%2F%2Fwww.opengis.net%2Fgml%2F3.2%22%3E%3Cfes%3AIntersects%3E%3Cfes%3AValueReference%3Eave%3Ageometrie%3C%2Ffes%3AValueReference%3E%3Cgml%3APolygon+srsName%3D%22urn%3Aogc%3Adef%3Acrs%3AEPSG%3A%3A25833%22%3E%3Cgml%3Aexterior%3E%3Cgml%3ALinearRing%3E%3Cgml%3AposList+srsDimension%3D%222%22%3E412506.9837217185+5655124.07556111+412578.97021983715+5655124.07556111+412578.97021983715+5655236.461729969+412506.9837217185+5655236.461729969+412506.9837217185+5655124.07556111%3C%2Fgml%3AposList%3E%3C%2Fgml%3ALinearRing%3E%3C%2Fgml%3Aexterior%3E%3C%2Fgml%3APolygon%3E%3C%2Ffes%3AIntersects%3E%3C%2Ffes%3AFilter%3E&resultType=hits",
+      "method": "GET",
+      "checkedAt": "2026-10-09T05:16:13.630Z",
+      "httpStatus": 200,
+      "contentType": "application/gml+xml; version=3.2.1; charset=utf-8",
+      "bytes": 365,
+      "numberMatched": 2,
+      "numberMatchedUnknown": false,
+      "numberReturned": 0,
+      "features": []
+    },
+    {
+      "test": "viewport-5",
+      "url": "https://geodienste.sachsen.de/aaa/public_alkis/vereinf/wfs?service=WFS&version=2.0.0&request=GetFeature&typeNames=ave%3AFlurstueck&srsName=urn%3Aogc%3Adef%3Acrs%3AEPSG%3A%3A25833&outputFormat=application%2Fgml%2Bxml%3B+version%3D3.2&propertyName=ave%3Aflstkennz%2Cave%3Ageometrie&sortBy=ave%3Aflstkennz+A&namespaces=xmlns%28ave%2Chttp%3A%2F%2Frepository.gdi-de.org%2Fschemas%2Fadv%2Fprodukt%2Falkis-vereinfacht%2F2.0%29&filter=%3Cfes%3AFilter+xmlns%3Afes%3D%22http%3A%2F%2Fwww.opengis.net%2Ffes%2F2.0%22+xmlns%3Aave%3D%22http%3A%2F%2Frepository.gdi-de.org%2Fschemas%2Fadv%2Fprodukt%2Falkis-vereinfacht%2F2.0%22+xmlns%3Agml%3D%22http%3A%2F%2Fwww.opengis.net%2Fgml%2F3.2%22%3E%3Cfes%3AIntersects%3E%3Cfes%3AValueReference%3Eave%3Ageometrie%3C%2Ffes%3AValueReference%3E%3Cgml%3APolygon+srsName%3D%22urn%3Aogc%3Adef%3Acrs%3AEPSG%3A%3A25833%22%3E%3Cgml%3Aexterior%3E%3Cgml%3ALinearRing%3E%3Cgml%3AposList+srsDimension%3D%222%22%3E412506.9837217185+5655124.07556111+412578.97021983715+5655124.07556111+412578.97021983715+5655236.461729969+412506.9837217185+5655236.461729969+412506.9837217185+5655124.07556111%3C%2Fgml%3AposList%3E%3C%2Fgml%3ALinearRing%3E%3C%2Fgml%3Aexterior%3E%3C%2Fgml%3APolygon%3E%3C%2Ffes%3AIntersects%3E%3C%2Ffes%3AFilter%3E&count=2&startIndex=0",
+      "method": "GET",
+      "checkedAt": "2026-10-09T05:16:13.778Z",
+      "httpStatus": 200,
+      "contentType": "application/gml+xml; version=3.2.1; charset=utf-8",
+      "bytes": 8988,
+      "numberMatchedUnknown": true,
+      "numberReturned": 2,
+      "features": [
+        {
+          "transportId": "140209___00622001002",
+          "properties": {
+            "flstkennz": "140209___00622001002"
+          },
+          "geometrySha256": "2c91f6326e41f1d56f52b9db2a0380f2ea9d37d14db9ab5a7c6892a3f5419dca"
+        },
+        {
+          "transportId": "140209___00622001800",
+          "properties": {
+            "flstkennz": "140209___00622001800"
+          },
+          "geometrySha256": "20d3133bf17a53275d117b0c9fff4529e93bffe0bd618c15a126b7d1944299e7"
+        }
+      ]
+    },
+    {
+      "test": "viewport-5",
+      "url": "https://geodienste.sachsen.de/aaa/public_alkis/vereinf/wfs?service=WFS&version=2.0.0&request=GetFeature&typeNames=ave%3AFlurstueck&srsName=urn%3Aogc%3Adef%3Acrs%3AEPSG%3A%3A25833&outputFormat=application%2Fgml%2Bxml%3B+version%3D3.2&propertyName=ave%3Aflstkennz%2Cave%3Ageometrie&sortBy=ave%3Aflstkennz+A&namespaces=xmlns%28ave%2Chttp%3A%2F%2Frepository.gdi-de.org%2Fschemas%2Fadv%2Fprodukt%2Falkis-vereinfacht%2F2.0%29&filter=%3Cfes%3AFilter+xmlns%3Afes%3D%22http%3A%2F%2Fwww.opengis.net%2Ffes%2F2.0%22+xmlns%3Aave%3D%22http%3A%2F%2Frepository.gdi-de.org%2Fschemas%2Fadv%2Fprodukt%2Falkis-vereinfacht%2F2.0%22+xmlns%3Agml%3D%22http%3A%2F%2Fwww.opengis.net%2Fgml%2F3.2%22%3E%3Cfes%3AIntersects%3E%3Cfes%3AValueReference%3Eave%3Ageometrie%3C%2Ffes%3AValueReference%3E%3Cgml%3APolygon+srsName%3D%22urn%3Aogc%3Adef%3Acrs%3AEPSG%3A%3A25833%22%3E%3Cgml%3Aexterior%3E%3Cgml%3ALinearRing%3E%3Cgml%3AposList+srsDimension%3D%222%22%3E412506.9837217185+5655124.07556111+412578.97021983715+5655124.07556111+412578.97021983715+5655236.461729969+412506.9837217185+5655236.461729969+412506.9837217185+5655124.07556111%3C%2Fgml%3AposList%3E%3C%2Fgml%3ALinearRing%3E%3C%2Fgml%3Aexterior%3E%3C%2Fgml%3APolygon%3E%3C%2Ffes%3AIntersects%3E%3C%2Ffes%3AFilter%3E&resultType=hits",
+      "method": "GET",
+      "checkedAt": "2026-10-09T05:16:13.934Z",
+      "httpStatus": 200,
+      "contentType": "application/gml+xml; version=3.2.1; charset=utf-8",
+      "bytes": 365,
+      "numberMatched": 2,
+      "numberMatchedUnknown": false,
+      "numberReturned": 0,
+      "features": []
+    },
+    {
+      "test": "viewport-6",
+      "url": "https://geodienste.sachsen.de/aaa/public_alkis/vereinf/wfs?service=WFS&version=2.0.0&request=GetFeature&typeNames=ave%3AFlurstueck&srsName=urn%3Aogc%3Adef%3Acrs%3AEPSG%3A%3A25833&outputFormat=application%2Fgml%2Bxml%3B+version%3D3.2&propertyName=ave%3Aflstkennz%2Cave%3Ageometrie&sortBy=ave%3Aflstkennz+A&namespaces=xmlns%28ave%2Chttp%3A%2F%2Frepository.gdi-de.org%2Fschemas%2Fadv%2Fprodukt%2Falkis-vereinfacht%2F2.0%29&filter=%3Cfes%3AFilter+xmlns%3Afes%3D%22http%3A%2F%2Fwww.opengis.net%2Ffes%2F2.0%22+xmlns%3Aave%3D%22http%3A%2F%2Frepository.gdi-de.org%2Fschemas%2Fadv%2Fprodukt%2Falkis-vereinfacht%2F2.0%22+xmlns%3Agml%3D%22http%3A%2F%2Fwww.opengis.net%2Fgml%2F3.2%22%3E%3Cfes%3AIntersects%3E%3Cfes%3AValueReference%3Eave%3Ageometrie%3C%2Ffes%3AValueReference%3E%3Cgml%3APolygon+srsName%3D%22urn%3Aogc%3Adef%3Acrs%3AEPSG%3A%3A25833%22%3E%3Cgml%3Aexterior%3E%3Cgml%3ALinearRing%3E%3Cgml%3AposList+srsDimension%3D%222%22%3E412368.6619388352+5655237.649767596+412440.6499624783+5655237.649767596+412440.6499624783+5655350.037831785+412368.6619388352+5655350.037831785+412368.6619388352+5655237.649767596%3C%2Fgml%3AposList%3E%3C%2Fgml%3ALinearRing%3E%3C%2Fgml%3Aexterior%3E%3C%2Fgml%3APolygon%3E%3C%2Ffes%3AIntersects%3E%3C%2Ffes%3AFilter%3E&resultType=hits",
+      "method": "GET",
+      "checkedAt": "2026-10-09T05:16:14.082Z",
+      "httpStatus": 200,
+      "contentType": "application/gml+xml; version=3.2.1; charset=utf-8",
+      "bytes": 365,
+      "numberMatched": 7,
+      "numberMatchedUnknown": false,
+      "numberReturned": 0,
+      "features": []
+    },
+    {
+      "test": "viewport-6",
+      "url": "https://geodienste.sachsen.de/aaa/public_alkis/vereinf/wfs?service=WFS&version=2.0.0&request=GetFeature&typeNames=ave%3AFlurstueck&srsName=urn%3Aogc%3Adef%3Acrs%3AEPSG%3A%3A25833&outputFormat=application%2Fgml%2Bxml%3B+version%3D3.2&propertyName=ave%3Aflstkennz%2Cave%3Ageometrie&sortBy=ave%3Aflstkennz+A&namespaces=xmlns%28ave%2Chttp%3A%2F%2Frepository.gdi-de.org%2Fschemas%2Fadv%2Fprodukt%2Falkis-vereinfacht%2F2.0%29&filter=%3Cfes%3AFilter+xmlns%3Afes%3D%22http%3A%2F%2Fwww.opengis.net%2Ffes%2F2.0%22+xmlns%3Aave%3D%22http%3A%2F%2Frepository.gdi-de.org%2Fschemas%2Fadv%2Fprodukt%2Falkis-vereinfacht%2F2.0%22+xmlns%3Agml%3D%22http%3A%2F%2Fwww.opengis.net%2Fgml%2F3.2%22%3E%3Cfes%3AIntersects%3E%3Cfes%3AValueReference%3Eave%3Ageometrie%3C%2Ffes%3AValueReference%3E%3Cgml%3APolygon+srsName%3D%22urn%3Aogc%3Adef%3Acrs%3AEPSG%3A%3A25833%22%3E%3Cgml%3Aexterior%3E%3Cgml%3ALinearRing%3E%3Cgml%3AposList+srsDimension%3D%222%22%3E412368.6619388352+5655237.649767596+412440.6499624783+5655237.649767596+412440.6499624783+5655350.037831785+412368.6619388352+5655350.037831785+412368.6619388352+5655237.649767596%3C%2Fgml%3AposList%3E%3C%2Fgml%3ALinearRing%3E%3C%2Fgml%3Aexterior%3E%3C%2Fgml%3APolygon%3E%3C%2Ffes%3AIntersects%3E%3C%2Ffes%3AFilter%3E&count=7&startIndex=0",
+      "method": "GET",
+      "checkedAt": "2026-10-09T05:16:14.230Z",
+      "httpStatus": 200,
+      "contentType": "application/gml+xml; version=3.2.1; charset=utf-8",
+      "bytes": 18858,
+      "numberMatchedUnknown": true,
+      "numberReturned": 7,
+      "features": [
+        {
+          "transportId": "140209___00248000101",
+          "properties": {
+            "flstkennz": "140209___00248000101"
+          },
+          "geometrySha256": "33c02535d7ab38d915349f1bcb78f0a704002bc8aeb310e22705974235af460d"
+        },
+        {
+          "transportId": "140209___00256000200",
+          "properties": {
+            "flstkennz": "140209___00256000200"
+          },
+          "geometrySha256": "4465a7e2c6c5ed4c2da38235477becbc485a0419fc984a23d98467b72a5400d4"
+        },
+        {
+          "transportId": "140209___00256____03",
+          "properties": {
+            "flstkennz": "140209___00256____03"
+          },
+          "geometrySha256": "be9c4078ac68dd94180f95b036f22312540c01c23b8ee5ca79ec2dd3228601e2"
+        },
+        {
+          "transportId": "140209___00622001800",
+          "properties": {
+            "flstkennz": "140209___00622001800"
+          },
+          "geometrySha256": "20d3133bf17a53275d117b0c9fff4529e93bffe0bd618c15a126b7d1944299e7"
+        },
+        {
+          "transportId": "140209___00972____00",
+          "properties": {
+            "flstkennz": "140209___00972____00"
+          },
+          "geometrySha256": "6ab55a8d44999dec2ed26499db7dda3ca0227f94cbd087ed089e71f29a7a307f"
+        },
+        {
+          "transportId": "140209___00975____00",
+          "properties": {
+            "flstkennz": "140209___00975____00"
+          },
+          "geometrySha256": "3c7884663febc7dc6c928d2aaec4689d8455746ed2b6e593ad8979a19309bef8"
+        },
+        {
+          "transportId": "140209___00976____01",
+          "properties": {
+            "flstkennz": "140209___00976____01"
+          },
+          "geometrySha256": "2a8c85378ea0ed0e81bb4aeb7f49785509103b4ae7591947cfba4957d7b5735c"
+        }
+      ]
+    },
+    {
+      "test": "viewport-6",
+      "url": "https://geodienste.sachsen.de/aaa/public_alkis/vereinf/wfs?service=WFS&version=2.0.0&request=GetFeature&typeNames=ave%3AFlurstueck&srsName=urn%3Aogc%3Adef%3Acrs%3AEPSG%3A%3A25833&outputFormat=application%2Fgml%2Bxml%3B+version%3D3.2&propertyName=ave%3Aflstkennz%2Cave%3Ageometrie&sortBy=ave%3Aflstkennz+A&namespaces=xmlns%28ave%2Chttp%3A%2F%2Frepository.gdi-de.org%2Fschemas%2Fadv%2Fprodukt%2Falkis-vereinfacht%2F2.0%29&filter=%3Cfes%3AFilter+xmlns%3Afes%3D%22http%3A%2F%2Fwww.opengis.net%2Ffes%2F2.0%22+xmlns%3Aave%3D%22http%3A%2F%2Frepository.gdi-de.org%2Fschemas%2Fadv%2Fprodukt%2Falkis-vereinfacht%2F2.0%22+xmlns%3Agml%3D%22http%3A%2F%2Fwww.opengis.net%2Fgml%2F3.2%22%3E%3Cfes%3AIntersects%3E%3Cfes%3AValueReference%3Eave%3Ageometrie%3C%2Ffes%3AValueReference%3E%3Cgml%3APolygon+srsName%3D%22urn%3Aogc%3Adef%3Acrs%3AEPSG%3A%3A25833%22%3E%3Cgml%3Aexterior%3E%3Cgml%3ALinearRing%3E%3Cgml%3AposList+srsDimension%3D%222%22%3E412368.6619388352+5655237.649767596+412440.6499624783+5655237.649767596+412440.6499624783+5655350.037831785+412368.6619388352+5655350.037831785+412368.6619388352+5655237.649767596%3C%2Fgml%3AposList%3E%3C%2Fgml%3ALinearRing%3E%3C%2Fgml%3Aexterior%3E%3C%2Fgml%3APolygon%3E%3C%2Ffes%3AIntersects%3E%3C%2Ffes%3AFilter%3E&resultType=hits",
+      "method": "GET",
+      "checkedAt": "2026-10-09T05:16:14.391Z",
+      "httpStatus": 200,
+      "contentType": "application/gml+xml; version=3.2.1; charset=utf-8",
+      "bytes": 365,
+      "numberMatched": 7,
+      "numberMatchedUnknown": false,
+      "numberReturned": 0,
+      "features": []
+    },
+    {
+      "test": "viewport-7",
+      "url": "https://geodienste.sachsen.de/aaa/public_alkis/vereinf/wfs?service=WFS&version=2.0.0&request=GetFeature&typeNames=ave%3AFlurstueck&srsName=urn%3Aogc%3Adef%3Acrs%3AEPSG%3A%3A25833&outputFormat=application%2Fgml%2Bxml%3B+version%3D3.2&propertyName=ave%3Aflstkennz%2Cave%3Ageometrie&sortBy=ave%3Aflstkennz+A&namespaces=xmlns%28ave%2Chttp%3A%2F%2Frepository.gdi-de.org%2Fschemas%2Fadv%2Fprodukt%2Falkis-vereinfacht%2F2.0%29&filter=%3Cfes%3AFilter+xmlns%3Afes%3D%22http%3A%2F%2Fwww.opengis.net%2Ffes%2F2.0%22+xmlns%3Aave%3D%22http%3A%2F%2Frepository.gdi-de.org%2Fschemas%2Fadv%2Fprodukt%2Falkis-vereinfacht%2F2.0%22+xmlns%3Agml%3D%22http%3A%2F%2Fwww.opengis.net%2Fgml%2F3.2%22%3E%3Cfes%3AIntersects%3E%3Cfes%3AValueReference%3Eave%3Ageometrie%3C%2Ffes%3AValueReference%3E%3Cgml%3APolygon+srsName%3D%22urn%3Aogc%3Adef%3Acrs%3AEPSG%3A%3A25833%22%3E%3Cgml%3Aexterior%3E%3Cgml%3ALinearRing%3E%3Cgml%3AposList+srsDimension%3D%222%22%3E412438.76469360804+5655236.461729969+412510.7512130615+5655236.461729969+412510.7512130615+5655348.848851207+412438.76469360804+5655348.848851207+412438.76469360804+5655236.461729969%3C%2Fgml%3AposList%3E%3C%2Fgml%3ALinearRing%3E%3C%2Fgml%3Aexterior%3E%3C%2Fgml%3APolygon%3E%3C%2Ffes%3AIntersects%3E%3C%2Ffes%3AFilter%3E&resultType=hits",
+      "method": "GET",
+      "checkedAt": "2026-10-09T05:16:14.542Z",
+      "httpStatus": 200,
+      "contentType": "application/gml+xml; version=3.2.1; charset=utf-8",
+      "bytes": 365,
+      "numberMatched": 7,
+      "numberMatchedUnknown": false,
+      "numberReturned": 0,
+      "features": []
+    },
+    {
+      "test": "viewport-7",
+      "url": "https://geodienste.sachsen.de/aaa/public_alkis/vereinf/wfs?service=WFS&version=2.0.0&request=GetFeature&typeNames=ave%3AFlurstueck&srsName=urn%3Aogc%3Adef%3Acrs%3AEPSG%3A%3A25833&outputFormat=application%2Fgml%2Bxml%3B+version%3D3.2&propertyName=ave%3Aflstkennz%2Cave%3Ageometrie&sortBy=ave%3Aflstkennz+A&namespaces=xmlns%28ave%2Chttp%3A%2F%2Frepository.gdi-de.org%2Fschemas%2Fadv%2Fprodukt%2Falkis-vereinfacht%2F2.0%29&filter=%3Cfes%3AFilter+xmlns%3Afes%3D%22http%3A%2F%2Fwww.opengis.net%2Ffes%2F2.0%22+xmlns%3Aave%3D%22http%3A%2F%2Frepository.gdi-de.org%2Fschemas%2Fadv%2Fprodukt%2Falkis-vereinfacht%2F2.0%22+xmlns%3Agml%3D%22http%3A%2F%2Fwww.opengis.net%2Fgml%2F3.2%22%3E%3Cfes%3AIntersects%3E%3Cfes%3AValueReference%3Eave%3Ageometrie%3C%2Ffes%3AValueReference%3E%3Cgml%3APolygon+srsName%3D%22urn%3Aogc%3Adef%3Acrs%3AEPSG%3A%3A25833%22%3E%3Cgml%3Aexterior%3E%3Cgml%3ALinearRing%3E%3Cgml%3AposList+srsDimension%3D%222%22%3E412438.76469360804+5655236.461729969+412510.7512130615+5655236.461729969+412510.7512130615+5655348.848851207+412438.76469360804+5655348.848851207+412438.76469360804+5655236.461729969%3C%2Fgml%3AposList%3E%3C%2Fgml%3ALinearRing%3E%3C%2Fgml%3Aexterior%3E%3C%2Fgml%3APolygon%3E%3C%2Ffes%3AIntersects%3E%3C%2Ffes%3AFilter%3E&count=7&startIndex=0",
+      "method": "GET",
+      "checkedAt": "2026-10-09T05:16:14.688Z",
+      "httpStatus": 200,
+      "contentType": "application/gml+xml; version=3.2.1; charset=utf-8",
+      "bytes": 17949,
+      "numberMatchedUnknown": true,
+      "numberReturned": 7,
+      "features": [
+        {
+          "transportId": "140209___00248000101",
+          "properties": {
+            "flstkennz": "140209___00248000101"
+          },
+          "geometrySha256": "33c02535d7ab38d915349f1bcb78f0a704002bc8aeb310e22705974235af460d"
+        },
+        {
+          "transportId": "140209___00622001002",
+          "properties": {
+            "flstkennz": "140209___00622001002"
+          },
+          "geometrySha256": "2c91f6326e41f1d56f52b9db2a0380f2ea9d37d14db9ab5a7c6892a3f5419dca"
+        },
+        {
+          "transportId": "140209___00622001103",
+          "properties": {
+            "flstkennz": "140209___00622001103"
+          },
+          "geometrySha256": "1b967883bd7e86384e65f5110141bda635101fb3085c4c8ef9c426b6a80d815a"
+        },
+        {
+          "transportId": "140209___00622001800",
+          "properties": {
+            "flstkennz": "140209___00622001800"
+          },
+          "geometrySha256": "20d3133bf17a53275d117b0c9fff4529e93bffe0bd618c15a126b7d1944299e7"
+        },
+        {
+          "transportId": "140209___00972____00",
+          "properties": {
+            "flstkennz": "140209___00972____00"
+          },
+          "geometrySha256": "6ab55a8d44999dec2ed26499db7dda3ca0227f94cbd087ed089e71f29a7a307f"
+        },
+        {
+          "transportId": "140209___00975____00",
+          "properties": {
+            "flstkennz": "140209___00975____00"
+          },
+          "geometrySha256": "3c7884663febc7dc6c928d2aaec4689d8455746ed2b6e593ad8979a19309bef8"
+        },
+        {
+          "transportId": "140209___00976____01",
+          "properties": {
+            "flstkennz": "140209___00976____01"
+          },
+          "geometrySha256": "2a8c85378ea0ed0e81bb4aeb7f49785509103b4ae7591947cfba4957d7b5735c"
+        }
+      ]
+    },
+    {
+      "test": "viewport-7",
+      "url": "https://geodienste.sachsen.de/aaa/public_alkis/vereinf/wfs?service=WFS&version=2.0.0&request=GetFeature&typeNames=ave%3AFlurstueck&srsName=urn%3Aogc%3Adef%3Acrs%3AEPSG%3A%3A25833&outputFormat=application%2Fgml%2Bxml%3B+version%3D3.2&propertyName=ave%3Aflstkennz%2Cave%3Ageometrie&sortBy=ave%3Aflstkennz+A&namespaces=xmlns%28ave%2Chttp%3A%2F%2Frepository.gdi-de.org%2Fschemas%2Fadv%2Fprodukt%2Falkis-vereinfacht%2F2.0%29&filter=%3Cfes%3AFilter+xmlns%3Afes%3D%22http%3A%2F%2Fwww.opengis.net%2Ffes%2F2.0%22+xmlns%3Aave%3D%22http%3A%2F%2Frepository.gdi-de.org%2Fschemas%2Fadv%2Fprodukt%2Falkis-vereinfacht%2F2.0%22+xmlns%3Agml%3D%22http%3A%2F%2Fwww.opengis.net%2Fgml%2F3.2%22%3E%3Cfes%3AIntersects%3E%3Cfes%3AValueReference%3Eave%3Ageometrie%3C%2Ffes%3AValueReference%3E%3Cgml%3APolygon+srsName%3D%22urn%3Aogc%3Adef%3Acrs%3AEPSG%3A%3A25833%22%3E%3Cgml%3Aexterior%3E%3Cgml%3ALinearRing%3E%3Cgml%3AposList+srsDimension%3D%222%22%3E412438.76469360804+5655236.461729969+412510.7512130615+5655236.461729969+412510.7512130615+5655348.848851207+412438.76469360804+5655348.848851207+412438.76469360804+5655236.461729969%3C%2Fgml%3AposList%3E%3C%2Fgml%3ALinearRing%3E%3C%2Fgml%3Aexterior%3E%3C%2Fgml%3APolygon%3E%3C%2Ffes%3AIntersects%3E%3C%2Ffes%3AFilter%3E&resultType=hits",
+      "method": "GET",
+      "checkedAt": "2026-10-09T05:16:14.848Z",
+      "httpStatus": 200,
+      "contentType": "application/gml+xml; version=3.2.1; charset=utf-8",
+      "bytes": 365,
+      "numberMatched": 7,
+      "numberMatchedUnknown": false,
+      "numberReturned": 0,
+      "features": []
+    },
+    {
+      "test": "viewport-8",
+      "url": "https://geodienste.sachsen.de/aaa/public_alkis/vereinf/wfs?service=WFS&version=2.0.0&request=GetFeature&typeNames=ave%3AFlurstueck&srsName=urn%3Aogc%3Adef%3Acrs%3AEPSG%3A%3A25833&outputFormat=application%2Fgml%2Bxml%3B+version%3D3.2&propertyName=ave%3Aflstkennz%2Cave%3Ageometrie&sortBy=ave%3Aflstkennz+A&namespaces=xmlns%28ave%2Chttp%3A%2F%2Frepository.gdi-de.org%2Fschemas%2Fadv%2Fprodukt%2Falkis-vereinfacht%2F2.0%29&filter=%3Cfes%3AFilter+xmlns%3Afes%3D%22http%3A%2F%2Fwww.opengis.net%2Ffes%2F2.0%22+xmlns%3Aave%3D%22http%3A%2F%2Frepository.gdi-de.org%2Fschemas%2Fadv%2Fprodukt%2Falkis-vereinfacht%2F2.0%22+xmlns%3Agml%3D%22http%3A%2F%2Fwww.opengis.net%2Fgml%2F3.2%22%3E%3Cfes%3AIntersects%3E%3Cfes%3AValueReference%3Eave%3Ageometrie%3C%2Ffes%3AValueReference%3E%3Cgml%3APolygon+srsName%3D%22urn%3Aogc%3Adef%3Acrs%3AEPSG%3A%3A25833%22%3E%3Cgml%3Aexterior%3E%3Cgml%3ALinearRing%3E%3Cgml%3AposList+srsDimension%3D%222%22%3E412508.8674539437+5655235.274644121+412580.85246920335+5655235.274644121+412580.85246920335+5655347.660822399+412508.8674539437+5655347.660822399+412508.8674539437+5655235.274644121%3C%2Fgml%3AposList%3E%3C%2Fgml%3ALinearRing%3E%3C%2Fgml%3Aexterior%3E%3C%2Fgml%3APolygon%3E%3C%2Ffes%3AIntersects%3E%3C%2Ffes%3AFilter%3E&resultType=hits",
+      "method": "GET",
+      "checkedAt": "2026-10-09T05:16:14.996Z",
+      "httpStatus": 200,
+      "contentType": "application/gml+xml; version=3.2.1; charset=utf-8",
+      "bytes": 365,
+      "numberMatched": 3,
+      "numberMatchedUnknown": false,
+      "numberReturned": 0,
+      "features": []
+    },
+    {
+      "test": "viewport-8",
+      "url": "https://geodienste.sachsen.de/aaa/public_alkis/vereinf/wfs?service=WFS&version=2.0.0&request=GetFeature&typeNames=ave%3AFlurstueck&srsName=urn%3Aogc%3Adef%3Acrs%3AEPSG%3A%3A25833&outputFormat=application%2Fgml%2Bxml%3B+version%3D3.2&propertyName=ave%3Aflstkennz%2Cave%3Ageometrie&sortBy=ave%3Aflstkennz+A&namespaces=xmlns%28ave%2Chttp%3A%2F%2Frepository.gdi-de.org%2Fschemas%2Fadv%2Fprodukt%2Falkis-vereinfacht%2F2.0%29&filter=%3Cfes%3AFilter+xmlns%3Afes%3D%22http%3A%2F%2Fwww.opengis.net%2Ffes%2F2.0%22+xmlns%3Aave%3D%22http%3A%2F%2Frepository.gdi-de.org%2Fschemas%2Fadv%2Fprodukt%2Falkis-vereinfacht%2F2.0%22+xmlns%3Agml%3D%22http%3A%2F%2Fwww.opengis.net%2Fgml%2F3.2%22%3E%3Cfes%3AIntersects%3E%3Cfes%3AValueReference%3Eave%3Ageometrie%3C%2Ffes%3AValueReference%3E%3Cgml%3APolygon+srsName%3D%22urn%3Aogc%3Adef%3Acrs%3AEPSG%3A%3A25833%22%3E%3Cgml%3Aexterior%3E%3Cgml%3ALinearRing%3E%3Cgml%3AposList+srsDimension%3D%222%22%3E412508.8674539437+5655235.274644121+412580.85246920335+5655235.274644121+412580.85246920335+5655347.660822399+412508.8674539437+5655347.660822399+412508.8674539437+5655235.274644121%3C%2Fgml%3AposList%3E%3C%2Fgml%3ALinearRing%3E%3C%2Fgml%3Aexterior%3E%3C%2Fgml%3APolygon%3E%3C%2Ffes%3AIntersects%3E%3C%2Ffes%3AFilter%3E&count=3&startIndex=0",
+      "method": "GET",
+      "checkedAt": "2026-10-09T05:16:15.142Z",
+      "httpStatus": 200,
+      "contentType": "application/gml+xml; version=3.2.1; charset=utf-8",
+      "bytes": 12575,
+      "numberMatchedUnknown": true,
+      "numberReturned": 3,
+      "features": [
+        {
+          "transportId": "140209___00622001103",
+          "properties": {
+            "flstkennz": "140209___00622001103"
+          },
+          "geometrySha256": "1b967883bd7e86384e65f5110141bda635101fb3085c4c8ef9c426b6a80d815a"
+        },
+        {
+          "transportId": "140209___00622001800",
+          "properties": {
+            "flstkennz": "140209___00622001800"
+          },
+          "geometrySha256": "20d3133bf17a53275d117b0c9fff4529e93bffe0bd618c15a126b7d1944299e7"
+        },
+        {
+          "transportId": "140209___00972____00",
+          "properties": {
+            "flstkennz": "140209___00972____00"
+          },
+          "geometrySha256": "6ab55a8d44999dec2ed26499db7dda3ca0227f94cbd087ed089e71f29a7a307f"
+        }
+      ]
+    },
+    {
+      "test": "viewport-8",
+      "url": "https://geodienste.sachsen.de/aaa/public_alkis/vereinf/wfs?service=WFS&version=2.0.0&request=GetFeature&typeNames=ave%3AFlurstueck&srsName=urn%3Aogc%3Adef%3Acrs%3AEPSG%3A%3A25833&outputFormat=application%2Fgml%2Bxml%3B+version%3D3.2&propertyName=ave%3Aflstkennz%2Cave%3Ageometrie&sortBy=ave%3Aflstkennz+A&namespaces=xmlns%28ave%2Chttp%3A%2F%2Frepository.gdi-de.org%2Fschemas%2Fadv%2Fprodukt%2Falkis-vereinfacht%2F2.0%29&filter=%3Cfes%3AFilter+xmlns%3Afes%3D%22http%3A%2F%2Fwww.opengis.net%2Ffes%2F2.0%22+xmlns%3Aave%3D%22http%3A%2F%2Frepository.gdi-de.org%2Fschemas%2Fadv%2Fprodukt%2Falkis-vereinfacht%2F2.0%22+xmlns%3Agml%3D%22http%3A%2F%2Fwww.opengis.net%2Fgml%2F3.2%22%3E%3Cfes%3AIntersects%3E%3Cfes%3AValueReference%3Eave%3Ageometrie%3C%2Ffes%3AValueReference%3E%3Cgml%3APolygon+srsName%3D%22urn%3Aogc%3Adef%3Acrs%3AEPSG%3A%3A25833%22%3E%3Cgml%3Aexterior%3E%3Cgml%3ALinearRing%3E%3Cgml%3AposList+srsDimension%3D%222%22%3E412508.8674539437+5655235.274644121+412580.85246920335+5655235.274644121+412580.85246920335+5655347.660822399+412508.8674539437+5655347.660822399+412508.8674539437+5655235.274644121%3C%2Fgml%3AposList%3E%3C%2Fgml%3ALinearRing%3E%3C%2Fgml%3Aexterior%3E%3C%2Fgml%3APolygon%3E%3C%2Ffes%3AIntersects%3E%3C%2Ffes%3AFilter%3E&resultType=hits",
+      "method": "GET",
+      "checkedAt": "2026-10-09T05:16:15.300Z",
+      "httpStatus": 200,
+      "contentType": "application/gml+xml; version=3.2.1; charset=utf-8",
+      "bytes": 365,
+      "numberMatched": 3,
+      "numberMatchedUnknown": false,
+      "numberReturned": 0,
+      "features": []
+    },
+    {
+      "test": "viewport-9",
+      "url": "https://geodienste.sachsen.de/aaa/public_alkis/vereinf/wfs?service=WFS&version=2.0.0&request=GetFeature&typeNames=ave%3AFlurstueck&srsName=urn%3Aogc%3Adef%3Acrs%3AEPSG%3A%3A25833&outputFormat=application%2Fgml%2Bxml%3B+version%3D3.2&propertyName=ave%3Aflstkennz%2Cave%3Ageometrie&sortBy=ave%3Aflstkennz+A&namespaces=xmlns%28ave%2Chttp%3A%2F%2Frepository.gdi-de.org%2Fschemas%2Fadv%2Fprodukt%2Falkis-vereinfacht%2F2.0%29&filter=%3Cfes%3AFilter+xmlns%3Afes%3D%22http%3A%2F%2Fwww.opengis.net%2Ffes%2F2.0%22+xmlns%3Aave%3D%22http%3A%2F%2Frepository.gdi-de.org%2Fschemas%2Fadv%2Fprodukt%2Falkis-vereinfacht%2F2.0%22+xmlns%3Agml%3D%22http%3A%2F%2Fwww.opengis.net%2Fgml%2F3.2%22%3E%3Cfes%3AIntersects%3E%3Cfes%3AValueReference%3Eave%3Ageometrie%3C%2Ffes%3AValueReference%3E%3Cgml%3APolygon+srsName%3D%22urn%3Aogc%3Adef%3Acrs%3AEPSG%3A%3A25833%22%3E%3Cgml%3Aexterior%3E%3Cgml%3ALinearRing%3E%3Cgml%3AposList+srsDimension%3D%222%22%3E412433.1090484843+5654902.8645620635+412505.1000163864+5654902.8645620635+412505.1000163864+5655015.251655064+412433.1090484843+5655015.251655064+412433.1090484843+5654902.8645620635%3C%2Fgml%3AposList%3E%3C%2Fgml%3ALinearRing%3E%3C%2Fgml%3Aexterior%3E%3C%2Fgml%3APolygon%3E%3C%2Ffes%3AIntersects%3E%3C%2Ffes%3AFilter%3E&resultType=hits",
+      "method": "GET",
+      "checkedAt": "2026-10-09T05:16:15.451Z",
+      "httpStatus": 200,
+      "contentType": "application/gml+xml; version=3.2.1; charset=utf-8",
+      "bytes": 365,
+      "numberMatched": 2,
+      "numberMatchedUnknown": false,
+      "numberReturned": 0,
+      "features": []
+    },
+    {
+      "test": "viewport-9",
+      "url": "https://geodienste.sachsen.de/aaa/public_alkis/vereinf/wfs?service=WFS&version=2.0.0&request=GetFeature&typeNames=ave%3AFlurstueck&srsName=urn%3Aogc%3Adef%3Acrs%3AEPSG%3A%3A25833&outputFormat=application%2Fgml%2Bxml%3B+version%3D3.2&propertyName=ave%3Aflstkennz%2Cave%3Ageometrie&sortBy=ave%3Aflstkennz+A&namespaces=xmlns%28ave%2Chttp%3A%2F%2Frepository.gdi-de.org%2Fschemas%2Fadv%2Fprodukt%2Falkis-vereinfacht%2F2.0%29&filter=%3Cfes%3AFilter+xmlns%3Afes%3D%22http%3A%2F%2Fwww.opengis.net%2Ffes%2F2.0%22+xmlns%3Aave%3D%22http%3A%2F%2Frepository.gdi-de.org%2Fschemas%2Fadv%2Fprodukt%2Falkis-vereinfacht%2F2.0%22+xmlns%3Agml%3D%22http%3A%2F%2Fwww.opengis.net%2Fgml%2F3.2%22%3E%3Cfes%3AIntersects%3E%3Cfes%3AValueReference%3Eave%3Ageometrie%3C%2Ffes%3AValueReference%3E%3Cgml%3APolygon+srsName%3D%22urn%3Aogc%3Adef%3Acrs%3AEPSG%3A%3A25833%22%3E%3Cgml%3Aexterior%3E%3Cgml%3ALinearRing%3E%3Cgml%3AposList+srsDimension%3D%222%22%3E412433.1090484843+5654902.8645620635+412505.1000163864+5654902.8645620635+412505.1000163864+5655015.251655064+412433.1090484843+5655015.251655064+412433.1090484843+5654902.8645620635%3C%2Fgml%3AposList%3E%3C%2Fgml%3ALinearRing%3E%3C%2Fgml%3Aexterior%3E%3C%2Fgml%3APolygon%3E%3C%2Ffes%3AIntersects%3E%3C%2Ffes%3AFilter%3E&count=2&startIndex=0",
+      "method": "GET",
+      "checkedAt": "2026-10-09T05:16:15.598Z",
+      "httpStatus": 200,
+      "contentType": "application/gml+xml; version=3.2.1; charset=utf-8",
+      "bytes": 9800,
+      "numberMatchedUnknown": true,
+      "numberReturned": 2,
+      "features": [
+        {
+          "transportId": "140209___00622001800",
+          "properties": {
+            "flstkennz": "140209___00622001800"
+          },
+          "geometrySha256": "20d3133bf17a53275d117b0c9fff4529e93bffe0bd618c15a126b7d1944299e7"
+        },
+        {
+          "transportId": "140209___00890000100",
+          "properties": {
+            "flstkennz": "140209___00890000100"
+          },
+          "geometrySha256": "b730c26ece0513e1e0d4f85be3b7c732e34f7dbdc319b7cc482f87fab754924f"
+        }
+      ]
+    },
+    {
+      "test": "viewport-9",
+      "url": "https://geodienste.sachsen.de/aaa/public_alkis/vereinf/wfs?service=WFS&version=2.0.0&request=GetFeature&typeNames=ave%3AFlurstueck&srsName=urn%3Aogc%3Adef%3Acrs%3AEPSG%3A%3A25833&outputFormat=application%2Fgml%2Bxml%3B+version%3D3.2&propertyName=ave%3Aflstkennz%2Cave%3Ageometrie&sortBy=ave%3Aflstkennz+A&namespaces=xmlns%28ave%2Chttp%3A%2F%2Frepository.gdi-de.org%2Fschemas%2Fadv%2Fprodukt%2Falkis-vereinfacht%2F2.0%29&filter=%3Cfes%3AFilter+xmlns%3Afes%3D%22http%3A%2F%2Fwww.opengis.net%2Ffes%2F2.0%22+xmlns%3Aave%3D%22http%3A%2F%2Frepository.gdi-de.org%2Fschemas%2Fadv%2Fprodukt%2Falkis-vereinfacht%2F2.0%22+xmlns%3Agml%3D%22http%3A%2F%2Fwww.opengis.net%2Fgml%2F3.2%22%3E%3Cfes%3AIntersects%3E%3Cfes%3AValueReference%3Eave%3Ageometrie%3C%2Ffes%3AValueReference%3E%3Cgml%3APolygon+srsName%3D%22urn%3Aogc%3Adef%3Acrs%3AEPSG%3A%3A25833%22%3E%3Cgml%3Aexterior%3E%3Cgml%3ALinearRing%3E%3Cgml%3AposList+srsDimension%3D%222%22%3E412433.1090484843+5654902.8645620635+412505.1000163864+5654902.8645620635+412505.1000163864+5655015.251655064+412433.1090484843+5655015.251655064+412433.1090484843+5654902.8645620635%3C%2Fgml%3AposList%3E%3C%2Fgml%3ALinearRing%3E%3C%2Fgml%3Aexterior%3E%3C%2Fgml%3APolygon%3E%3C%2Ffes%3AIntersects%3E%3C%2Ffes%3AFilter%3E&resultType=hits",
+      "method": "GET",
+      "checkedAt": "2026-10-09T05:16:15.754Z",
+      "httpStatus": 200,
+      "contentType": "application/gml+xml; version=3.2.1; charset=utf-8",
+      "bytes": 365,
+      "numberMatched": 2,
+      "numberMatchedUnknown": false,
+      "numberReturned": 0,
+      "features": []
+    },
+    {
+      "test": "viewport-10",
+      "url": "https://geodienste.sachsen.de/aaa/public_alkis/vereinf/wfs?service=WFS&version=2.0.0&request=GetFeature&typeNames=ave%3AFlurstueck&srsName=urn%3Aogc%3Adef%3Acrs%3AEPSG%3A%3A25833&outputFormat=application%2Fgml%2Bxml%3B+version%3D3.2&propertyName=ave%3Aflstkennz%2Cave%3Ageometrie&sortBy=ave%3Aflstkennz+A&namespaces=xmlns%28ave%2Chttp%3A%2F%2Frepository.gdi-de.org%2Fschemas%2Fadv%2Fprodukt%2Falkis-vereinfacht%2F2.0%29&filter=%3Cfes%3AFilter+xmlns%3Afes%3D%22http%3A%2F%2Fwww.opengis.net%2Ffes%2F2.0%22+xmlns%3Aave%3D%22http%3A%2F%2Frepository.gdi-de.org%2Fschemas%2Fadv%2Fprodukt%2Falkis-vereinfacht%2F2.0%22+xmlns%3Agml%3D%22http%3A%2F%2Fwww.opengis.net%2Fgml%2F3.2%22%3E%3Cfes%3AIntersects%3E%3Cfes%3AValueReference%3Eave%3Ageometrie%3C%2Ffes%3AValueReference%3E%3Cgml%3APolygon+srsName%3D%22urn%3Aogc%3Adef%3Acrs%3AEPSG%3A%3A25833%22%3E%3Cgml%3Aexterior%3E%3Cgml%3ALinearRing%3E%3Cgml%3AposList+srsDimension%3D%222%22%3E412440.6499624783+5655347.660822399+412512.6349990714+5655347.660822399+412512.6349990714+5655460.047953047+412440.6499624783+5655460.047953047+412440.6499624783+5655347.660822399%3C%2Fgml%3AposList%3E%3C%2Fgml%3ALinearRing%3E%3C%2Fgml%3Aexterior%3E%3C%2Fgml%3APolygon%3E%3C%2Ffes%3AIntersects%3E%3C%2Ffes%3AFilter%3E&resultType=hits",
+      "method": "GET",
+      "checkedAt": "2026-10-09T05:16:15.900Z",
+      "httpStatus": 200,
+      "contentType": "application/gml+xml; version=3.2.1; charset=utf-8",
+      "bytes": 365,
+      "numberMatched": 5,
+      "numberMatchedUnknown": false,
+      "numberReturned": 0,
+      "features": []
+    },
+    {
+      "test": "viewport-10",
+      "url": "https://geodienste.sachsen.de/aaa/public_alkis/vereinf/wfs?service=WFS&version=2.0.0&request=GetFeature&typeNames=ave%3AFlurstueck&srsName=urn%3Aogc%3Adef%3Acrs%3AEPSG%3A%3A25833&outputFormat=application%2Fgml%2Bxml%3B+version%3D3.2&propertyName=ave%3Aflstkennz%2Cave%3Ageometrie&sortBy=ave%3Aflstkennz+A&namespaces=xmlns%28ave%2Chttp%3A%2F%2Frepository.gdi-de.org%2Fschemas%2Fadv%2Fprodukt%2Falkis-vereinfacht%2F2.0%29&filter=%3Cfes%3AFilter+xmlns%3Afes%3D%22http%3A%2F%2Fwww.opengis.net%2Ffes%2F2.0%22+xmlns%3Aave%3D%22http%3A%2F%2Frepository.gdi-de.org%2Fschemas%2Fadv%2Fprodukt%2Falkis-vereinfacht%2F2.0%22+xmlns%3Agml%3D%22http%3A%2F%2Fwww.opengis.net%2Fgml%2F3.2%22%3E%3Cfes%3AIntersects%3E%3Cfes%3AValueReference%3Eave%3Ageometrie%3C%2Ffes%3AValueReference%3E%3Cgml%3APolygon+srsName%3D%22urn%3Aogc%3Adef%3Acrs%3AEPSG%3A%3A25833%22%3E%3Cgml%3Aexterior%3E%3Cgml%3ALinearRing%3E%3Cgml%3AposList+srsDimension%3D%222%22%3E412440.6499624783+5655347.660822399+412512.6349990714+5655347.660822399+412512.6349990714+5655460.047953047+412440.6499624783+5655460.047953047+412440.6499624783+5655347.660822399%3C%2Fgml%3AposList%3E%3C%2Fgml%3ALinearRing%3E%3C%2Fgml%3Aexterior%3E%3C%2Fgml%3APolygon%3E%3C%2Ffes%3AIntersects%3E%3C%2Ffes%3AFilter%3E&count=5&startIndex=0",
+      "method": "GET",
+      "checkedAt": "2026-10-09T05:16:16.049Z",
+      "httpStatus": 200,
+      "contentType": "application/gml+xml; version=3.2.1; charset=utf-8",
+      "bytes": 16313,
+      "numberMatchedUnknown": true,
+      "numberReturned": 5,
+      "features": [
+        {
+          "transportId": "140209___00248000101",
+          "properties": {
+            "flstkennz": "140209___00248000101"
+          },
+          "geometrySha256": "33c02535d7ab38d915349f1bcb78f0a704002bc8aeb310e22705974235af460d"
+        },
+        {
+          "transportId": "140209___00248000a05",
+          "properties": {
+            "flstkennz": "140209___00248000a05"
+          },
+          "geometrySha256": "5a159b313f63384ab3c53ec75ac9b09013b66d249dfc15c63a285a33a776cdaa"
+        },
+        {
+          "transportId": "140209___00622001800",
+          "properties": {
+            "flstkennz": "140209___00622001800"
+          },
+          "geometrySha256": "20d3133bf17a53275d117b0c9fff4529e93bffe0bd618c15a126b7d1944299e7"
+        },
+        {
+          "transportId": "140209___00972____00",
+          "properties": {
+            "flstkennz": "140209___00972____00"
+          },
+          "geometrySha256": "6ab55a8d44999dec2ed26499db7dda3ca0227f94cbd087ed089e71f29a7a307f"
+        },
+        {
+          "transportId": "140209___00975____00",
+          "properties": {
+            "flstkennz": "140209___00975____00"
+          },
+          "geometrySha256": "3c7884663febc7dc6c928d2aaec4689d8455746ed2b6e593ad8979a19309bef8"
+        }
+      ]
+    },
+    {
+      "test": "viewport-10",
+      "url": "https://geodienste.sachsen.de/aaa/public_alkis/vereinf/wfs?service=WFS&version=2.0.0&request=GetFeature&typeNames=ave%3AFlurstueck&srsName=urn%3Aogc%3Adef%3Acrs%3AEPSG%3A%3A25833&outputFormat=application%2Fgml%2Bxml%3B+version%3D3.2&propertyName=ave%3Aflstkennz%2Cave%3Ageometrie&sortBy=ave%3Aflstkennz+A&namespaces=xmlns%28ave%2Chttp%3A%2F%2Frepository.gdi-de.org%2Fschemas%2Fadv%2Fprodukt%2Falkis-vereinfacht%2F2.0%29&filter=%3Cfes%3AFilter+xmlns%3Afes%3D%22http%3A%2F%2Fwww.opengis.net%2Ffes%2F2.0%22+xmlns%3Aave%3D%22http%3A%2F%2Frepository.gdi-de.org%2Fschemas%2Fadv%2Fprodukt%2Falkis-vereinfacht%2F2.0%22+xmlns%3Agml%3D%22http%3A%2F%2Fwww.opengis.net%2Fgml%2F3.2%22%3E%3Cfes%3AIntersects%3E%3Cfes%3AValueReference%3Eave%3Ageometrie%3C%2Ffes%3AValueReference%3E%3Cgml%3APolygon+srsName%3D%22urn%3Aogc%3Adef%3Acrs%3AEPSG%3A%3A25833%22%3E%3Cgml%3Aexterior%3E%3Cgml%3ALinearRing%3E%3Cgml%3AposList+srsDimension%3D%222%22%3E412440.6499624783+5655347.660822399+412512.6349990714+5655347.660822399+412512.6349990714+5655460.047953047+412440.6499624783+5655460.047953047+412440.6499624783+5655347.660822399%3C%2Fgml%3AposList%3E%3C%2Fgml%3ALinearRing%3E%3C%2Fgml%3Aexterior%3E%3C%2Fgml%3APolygon%3E%3C%2Ffes%3AIntersects%3E%3C%2Ffes%3AFilter%3E&resultType=hits",
+      "method": "GET",
+      "checkedAt": "2026-10-09T05:16:16.206Z",
+      "httpStatus": 200,
+      "contentType": "application/gml+xml; version=3.2.1; charset=utf-8",
+      "bytes": 365,
+      "numberMatched": 5,
+      "numberMatchedUnknown": false,
+      "numberReturned": 0,
+      "features": []
+    },
+    {
+      "test": "viewport-11",
+      "url": "https://geodienste.sachsen.de/aaa/public_alkis/vereinf/wfs?service=WFS&version=2.0.0&request=GetFeature&typeNames=ave%3AFlurstueck&srsName=urn%3Aogc%3Adef%3Acrs%3AEPSG%3A%3A25833&outputFormat=application%2Fgml%2Bxml%3B+version%3D3.2&propertyName=ave%3Aflstkennz%2Cave%3Ageometrie&sortBy=ave%3Aflstkennz+A&namespaces=xmlns%28ave%2Chttp%3A%2F%2Frepository.gdi-de.org%2Fschemas%2Fadv%2Fprodukt%2Falkis-vereinfacht%2F2.0%29&filter=%3Cfes%3AFilter+xmlns%3Afes%3D%22http%3A%2F%2Fwww.opengis.net%2Ffes%2F2.0%22+xmlns%3Aave%3D%22http%3A%2F%2Frepository.gdi-de.org%2Fschemas%2Fadv%2Fprodukt%2Falkis-vereinfacht%2F2.0%22+xmlns%3Agml%3D%22http%3A%2F%2Fwww.opengis.net%2Fgml%2F3.2%22%3E%3Cfes%3AIntersects%3E%3Cfes%3AValueReference%3Eave%3Ageometrie%3C%2Ffes%3AValueReference%3E%3Cgml%3APolygon+srsName%3D%22urn%3Aogc%3Adef%3Acrs%3AEPSG%3A%3A25833%22%3E%3Cgml%3Aexterior%3E%3Cgml%3ALinearRing%3E%3Cgml%3AposList+srsDimension%3D%222%22%3E412296.67092820903+5655127.63970045+412368.6619388352+5655127.63970045+412368.6619388352+5655240.028698193+412296.67092820903+5655240.028698193+412296.67092820903+5655127.63970045%3C%2Fgml%3AposList%3E%3C%2Fgml%3ALinearRing%3E%3C%2Fgml%3Aexterior%3E%3C%2Fgml%3APolygon%3E%3C%2Ffes%3AIntersects%3E%3C%2Ffes%3AFilter%3E&resultType=hits",
+      "method": "GET",
+      "checkedAt": "2026-10-09T05:16:16.356Z",
+      "httpStatus": 200,
+      "contentType": "application/gml+xml; version=3.2.1; charset=utf-8",
+      "bytes": 365,
+      "numberMatched": 4,
+      "numberMatchedUnknown": false,
+      "numberReturned": 0,
+      "features": []
+    },
+    {
+      "test": "viewport-11",
+      "url": "https://geodienste.sachsen.de/aaa/public_alkis/vereinf/wfs?service=WFS&version=2.0.0&request=GetFeature&typeNames=ave%3AFlurstueck&srsName=urn%3Aogc%3Adef%3Acrs%3AEPSG%3A%3A25833&outputFormat=application%2Fgml%2Bxml%3B+version%3D3.2&propertyName=ave%3Aflstkennz%2Cave%3Ageometrie&sortBy=ave%3Aflstkennz+A&namespaces=xmlns%28ave%2Chttp%3A%2F%2Frepository.gdi-de.org%2Fschemas%2Fadv%2Fprodukt%2Falkis-vereinfacht%2F2.0%29&filter=%3Cfes%3AFilter+xmlns%3Afes%3D%22http%3A%2F%2Fwww.opengis.net%2Ffes%2F2.0%22+xmlns%3Aave%3D%22http%3A%2F%2Frepository.gdi-de.org%2Fschemas%2Fadv%2Fprodukt%2Falkis-vereinfacht%2F2.0%22+xmlns%3Agml%3D%22http%3A%2F%2Fwww.opengis.net%2Fgml%2F3.2%22%3E%3Cfes%3AIntersects%3E%3Cfes%3AValueReference%3Eave%3Ageometrie%3C%2Ffes%3AValueReference%3E%3Cgml%3APolygon+srsName%3D%22urn%3Aogc%3Adef%3Acrs%3AEPSG%3A%3A25833%22%3E%3Cgml%3Aexterior%3E%3Cgml%3ALinearRing%3E%3Cgml%3AposList+srsDimension%3D%222%22%3E412296.67092820903+5655127.63970045+412368.6619388352+5655127.63970045+412368.6619388352+5655240.028698193+412296.67092820903+5655240.028698193+412296.67092820903+5655127.63970045%3C%2Fgml%3AposList%3E%3C%2Fgml%3ALinearRing%3E%3C%2Fgml%3Aexterior%3E%3C%2Fgml%3APolygon%3E%3C%2Ffes%3AIntersects%3E%3C%2Ffes%3AFilter%3E&count=4&startIndex=0",
+      "method": "GET",
+      "checkedAt": "2026-10-09T05:16:16.502Z",
+      "httpStatus": 200,
+      "contentType": "application/gml+xml; version=3.2.1; charset=utf-8",
+      "bytes": 14511,
+      "numberMatchedUnknown": true,
+      "numberReturned": 4,
+      "features": [
+        {
+          "transportId": "140209___00256000200",
+          "properties": {
+            "flstkennz": "140209___00256000200"
+          },
+          "geometrySha256": "4465a7e2c6c5ed4c2da38235477becbc485a0419fc984a23d98467b72a5400d4"
+        },
+        {
+          "transportId": "140209___00256____03",
+          "properties": {
+            "flstkennz": "140209___00256____03"
+          },
+          "geometrySha256": "be9c4078ac68dd94180f95b036f22312540c01c23b8ee5ca79ec2dd3228601e2"
+        },
+        {
+          "transportId": "140209___00622001800",
+          "properties": {
+            "flstkennz": "140209___00622001800"
+          },
+          "geometrySha256": "20d3133bf17a53275d117b0c9fff4529e93bffe0bd618c15a126b7d1944299e7"
+        },
+        {
+          "transportId": "140209___00972____00",
+          "properties": {
+            "flstkennz": "140209___00972____00"
+          },
+          "geometrySha256": "6ab55a8d44999dec2ed26499db7dda3ca0227f94cbd087ed089e71f29a7a307f"
+        }
+      ]
+    },
+    {
+      "test": "viewport-11",
+      "url": "https://geodienste.sachsen.de/aaa/public_alkis/vereinf/wfs?service=WFS&version=2.0.0&request=GetFeature&typeNames=ave%3AFlurstueck&srsName=urn%3Aogc%3Adef%3Acrs%3AEPSG%3A%3A25833&outputFormat=application%2Fgml%2Bxml%3B+version%3D3.2&propertyName=ave%3Aflstkennz%2Cave%3Ageometrie&sortBy=ave%3Aflstkennz+A&namespaces=xmlns%28ave%2Chttp%3A%2F%2Frepository.gdi-de.org%2Fschemas%2Fadv%2Fprodukt%2Falkis-vereinfacht%2F2.0%29&filter=%3Cfes%3AFilter+xmlns%3Afes%3D%22http%3A%2F%2Fwww.opengis.net%2Ffes%2F2.0%22+xmlns%3Aave%3D%22http%3A%2F%2Frepository.gdi-de.org%2Fschemas%2Fadv%2Fprodukt%2Falkis-vereinfacht%2F2.0%22+xmlns%3Agml%3D%22http%3A%2F%2Fwww.opengis.net%2Fgml%2F3.2%22%3E%3Cfes%3AIntersects%3E%3Cfes%3AValueReference%3Eave%3Ageometrie%3C%2Ffes%3AValueReference%3E%3Cgml%3APolygon+srsName%3D%22urn%3Aogc%3Adef%3Acrs%3AEPSG%3A%3A25833%22%3E%3Cgml%3Aexterior%3E%3Cgml%3ALinearRing%3E%3Cgml%3AposList+srsDimension%3D%222%22%3E412296.67092820903+5655127.63970045+412368.6619388352+5655127.63970045+412368.6619388352+5655240.028698193+412296.67092820903+5655240.028698193+412296.67092820903+5655127.63970045%3C%2Fgml%3AposList%3E%3C%2Fgml%3ALinearRing%3E%3C%2Fgml%3Aexterior%3E%3C%2Fgml%3APolygon%3E%3C%2Ffes%3AIntersects%3E%3C%2Ffes%3AFilter%3E&resultType=hits",
+      "method": "GET",
+      "checkedAt": "2026-10-09T05:16:16.660Z",
+      "httpStatus": 200,
+      "contentType": "application/gml+xml; version=3.2.1; charset=utf-8",
+      "bytes": 365,
+      "numberMatched": 4,
+      "numberMatchedUnknown": false,
+      "numberReturned": 0,
+      "features": []
+    },
+    {
+      "test": "viewport-12",
+      "url": "https://geodienste.sachsen.de/aaa/public_alkis/vereinf/wfs?service=WFS&version=2.0.0&request=GetFeature&typeNames=ave%3AFlurstueck&srsName=urn%3Aogc%3Adef%3Acrs%3AEPSG%3A%3A25833&outputFormat=application%2Fgml%2Bxml%3B+version%3D3.2&propertyName=ave%3Aflstkennz%2Cave%3Ageometrie&sortBy=ave%3Aflstkennz+A&namespaces=xmlns%28ave%2Chttp%3A%2F%2Frepository.gdi-de.org%2Fschemas%2Fadv%2Fprodukt%2Falkis-vereinfacht%2F2.0%29&filter=%3Cfes%3AFilter+xmlns%3Afes%3D%22http%3A%2F%2Fwww.opengis.net%2Ffes%2F2.0%22+xmlns%3Aave%3D%22http%3A%2F%2Frepository.gdi-de.org%2Fschemas%2Fadv%2Fprodukt%2Falkis-vereinfacht%2F2.0%22+xmlns%3Agml%3D%22http%3A%2F%2Fwww.opengis.net%2Fgml%2F3.2%22%3E%3Cfes%3AIntersects%3E%3Cfes%3AValueReference%3Eave%3Ageometrie%3C%2Ffes%3AValueReference%3E%3Cgml%3APolygon+srsName%3D%22urn%3Aogc%3Adef%3Acrs%3AEPSG%3A%3A25833%22%3E%3Cgml%3Aexterior%3E%3Cgml%3ALinearRing%3E%3Cgml%3AposList+srsDimension%3D%222%22%3E412577.08799734205+5655122.889418236+412649.07299128425+5655122.889418236+412649.07299128425+5655235.274644121+412577.08799734205+5655235.274644121+412577.08799734205+5655122.889418236%3C%2Fgml%3AposList%3E%3C%2Fgml%3ALinearRing%3E%3C%2Fgml%3Aexterior%3E%3C%2Fgml%3APolygon%3E%3C%2Ffes%3AIntersects%3E%3C%2Ffes%3AFilter%3E&resultType=hits",
+      "method": "GET",
+      "checkedAt": "2026-10-09T05:16:16.810Z",
+      "httpStatus": 200,
+      "contentType": "application/gml+xml; version=3.2.1; charset=utf-8",
+      "bytes": 365,
+      "numberMatched": 1,
+      "numberMatchedUnknown": false,
+      "numberReturned": 0,
+      "features": []
+    },
+    {
+      "test": "viewport-12",
+      "url": "https://geodienste.sachsen.de/aaa/public_alkis/vereinf/wfs?service=WFS&version=2.0.0&request=GetFeature&typeNames=ave%3AFlurstueck&srsName=urn%3Aogc%3Adef%3Acrs%3AEPSG%3A%3A25833&outputFormat=application%2Fgml%2Bxml%3B+version%3D3.2&propertyName=ave%3Aflstkennz%2Cave%3Ageometrie&sortBy=ave%3Aflstkennz+A&namespaces=xmlns%28ave%2Chttp%3A%2F%2Frepository.gdi-de.org%2Fschemas%2Fadv%2Fprodukt%2Falkis-vereinfacht%2F2.0%29&filter=%3Cfes%3AFilter+xmlns%3Afes%3D%22http%3A%2F%2Fwww.opengis.net%2Ffes%2F2.0%22+xmlns%3Aave%3D%22http%3A%2F%2Frepository.gdi-de.org%2Fschemas%2Fadv%2Fprodukt%2Falkis-vereinfacht%2F2.0%22+xmlns%3Agml%3D%22http%3A%2F%2Fwww.opengis.net%2Fgml%2F3.2%22%3E%3Cfes%3AIntersects%3E%3Cfes%3AValueReference%3Eave%3Ageometrie%3C%2Ffes%3AValueReference%3E%3Cgml%3APolygon+srsName%3D%22urn%3Aogc%3Adef%3Acrs%3AEPSG%3A%3A25833%22%3E%3Cgml%3Aexterior%3E%3Cgml%3ALinearRing%3E%3Cgml%3AposList+srsDimension%3D%222%22%3E412577.08799734205+5655122.889418236+412649.07299128425+5655122.889418236+412649.07299128425+5655235.274644121+412577.08799734205+5655235.274644121+412577.08799734205+5655122.889418236%3C%2Fgml%3AposList%3E%3C%2Fgml%3ALinearRing%3E%3C%2Fgml%3Aexterior%3E%3C%2Fgml%3APolygon%3E%3C%2Ffes%3AIntersects%3E%3C%2Ffes%3AFilter%3E&count=1&startIndex=0",
+      "method": "GET",
+      "checkedAt": "2026-10-09T05:16:16.959Z",
+      "httpStatus": 200,
+      "contentType": "application/gml+xml; version=3.2.1; charset=utf-8",
+      "bytes": 7961,
+      "numberMatchedUnknown": true,
+      "numberReturned": 1,
+      "features": [
+        {
+          "transportId": "140209___00622001800",
+          "properties": {
+            "flstkennz": "140209___00622001800"
+          },
+          "geometrySha256": "20d3133bf17a53275d117b0c9fff4529e93bffe0bd618c15a126b7d1944299e7"
+        }
+      ]
+    },
+    {
+      "test": "viewport-12",
+      "url": "https://geodienste.sachsen.de/aaa/public_alkis/vereinf/wfs?service=WFS&version=2.0.0&request=GetFeature&typeNames=ave%3AFlurstueck&srsName=urn%3Aogc%3Adef%3Acrs%3AEPSG%3A%3A25833&outputFormat=application%2Fgml%2Bxml%3B+version%3D3.2&propertyName=ave%3Aflstkennz%2Cave%3Ageometrie&sortBy=ave%3Aflstkennz+A&namespaces=xmlns%28ave%2Chttp%3A%2F%2Frepository.gdi-de.org%2Fschemas%2Fadv%2Fprodukt%2Falkis-vereinfacht%2F2.0%29&filter=%3Cfes%3AFilter+xmlns%3Afes%3D%22http%3A%2F%2Fwww.opengis.net%2Ffes%2F2.0%22+xmlns%3Aave%3D%22http%3A%2F%2Frepository.gdi-de.org%2Fschemas%2Fadv%2Fprodukt%2Falkis-vereinfacht%2F2.0%22+xmlns%3Agml%3D%22http%3A%2F%2Fwww.opengis.net%2Fgml%2F3.2%22%3E%3Cfes%3AIntersects%3E%3Cfes%3AValueReference%3Eave%3Ageometrie%3C%2Ffes%3AValueReference%3E%3Cgml%3APolygon+srsName%3D%22urn%3Aogc%3Adef%3Acrs%3AEPSG%3A%3A25833%22%3E%3Cgml%3Aexterior%3E%3Cgml%3ALinearRing%3E%3Cgml%3AposList+srsDimension%3D%222%22%3E412577.08799734205+5655122.889418236+412649.07299128425+5655122.889418236+412649.07299128425+5655235.274644121+412577.08799734205+5655235.274644121+412577.08799734205+5655122.889418236%3C%2Fgml%3AposList%3E%3C%2Fgml%3ALinearRing%3E%3C%2Fgml%3Aexterior%3E%3C%2Fgml%3APolygon%3E%3C%2Ffes%3AIntersects%3E%3C%2Ffes%3AFilter%3E&resultType=hits",
+      "method": "GET",
+      "checkedAt": "2026-10-09T05:16:17.114Z",
+      "httpStatus": 200,
+      "contentType": "application/gml+xml; version=3.2.1; charset=utf-8",
+      "bytes": 365,
+      "numberMatched": 1,
+      "numberMatchedUnknown": false,
+      "numberReturned": 0,
+      "features": []
+    },
+    {
+      "test": "forced-three-row-pages",
+      "url": "https://geodienste.sachsen.de/aaa/public_alkis/vereinf/wfs?service=WFS&version=2.0.0&request=GetFeature&typeNames=ave%3AFlurstueck&srsName=urn%3Aogc%3Adef%3Acrs%3AEPSG%3A%3A25833&outputFormat=application%2Fgml%2Bxml%3B+version%3D3.2&propertyName=ave%3Aflstkennz%2Cave%3Ageometrie&sortBy=ave%3Aflstkennz+A&namespaces=xmlns%28ave%2Chttp%3A%2F%2Frepository.gdi-de.org%2Fschemas%2Fadv%2Fprodukt%2Falkis-vereinfacht%2F2.0%29&filter=%3Cfes%3AFilter+xmlns%3Afes%3D%22http%3A%2F%2Fwww.opengis.net%2Ffes%2F2.0%22+xmlns%3Aave%3D%22http%3A%2F%2Frepository.gdi-de.org%2Fschemas%2Fadv%2Fprodukt%2Falkis-vereinfacht%2F2.0%22+xmlns%3Agml%3D%22http%3A%2F%2Fwww.opengis.net%2Fgml%2F3.2%22%3E%3Cfes%3AIntersects%3E%3Cfes%3AValueReference%3Eave%3Ageometrie%3C%2Ffes%3AValueReference%3E%3Cgml%3APolygon+srsName%3D%22urn%3Aogc%3Adef%3Acrs%3AEPSG%3A%3A25833%22%3E%3Cgml%3Aexterior%3E%3Cgml%3ALinearRing%3E%3Cgml%3AposList+srsDimension%3D%222%22%3E412368.6619388352+5655237.649767596+412440.6499624783+5655237.649767596+412440.6499624783+5655350.037831785+412368.6619388352+5655350.037831785+412368.6619388352+5655237.649767596%3C%2Fgml%3AposList%3E%3C%2Fgml%3ALinearRing%3E%3C%2Fgml%3Aexterior%3E%3C%2Fgml%3APolygon%3E%3C%2Ffes%3AIntersects%3E%3C%2Ffes%3AFilter%3E&resultType=hits",
+      "method": "GET",
+      "checkedAt": "2026-10-09T05:16:17.261Z",
+      "httpStatus": 200,
+      "contentType": "application/gml+xml; version=3.2.1; charset=utf-8",
+      "bytes": 365,
+      "numberMatched": 7,
+      "numberMatchedUnknown": false,
+      "numberReturned": 0,
+      "features": []
+    },
+    {
+      "test": "forced-three-row-pages",
+      "url": "https://geodienste.sachsen.de/aaa/public_alkis/vereinf/wfs?service=WFS&version=2.0.0&request=GetFeature&typeNames=ave%3AFlurstueck&srsName=urn%3Aogc%3Adef%3Acrs%3AEPSG%3A%3A25833&outputFormat=application%2Fgml%2Bxml%3B+version%3D3.2&propertyName=ave%3Aflstkennz%2Cave%3Ageometrie&sortBy=ave%3Aflstkennz+A&namespaces=xmlns%28ave%2Chttp%3A%2F%2Frepository.gdi-de.org%2Fschemas%2Fadv%2Fprodukt%2Falkis-vereinfacht%2F2.0%29&filter=%3Cfes%3AFilter+xmlns%3Afes%3D%22http%3A%2F%2Fwww.opengis.net%2Ffes%2F2.0%22+xmlns%3Aave%3D%22http%3A%2F%2Frepository.gdi-de.org%2Fschemas%2Fadv%2Fprodukt%2Falkis-vereinfacht%2F2.0%22+xmlns%3Agml%3D%22http%3A%2F%2Fwww.opengis.net%2Fgml%2F3.2%22%3E%3Cfes%3AIntersects%3E%3Cfes%3AValueReference%3Eave%3Ageometrie%3C%2Ffes%3AValueReference%3E%3Cgml%3APolygon+srsName%3D%22urn%3Aogc%3Adef%3Acrs%3AEPSG%3A%3A25833%22%3E%3Cgml%3Aexterior%3E%3Cgml%3ALinearRing%3E%3Cgml%3AposList+srsDimension%3D%222%22%3E412368.6619388352+5655237.649767596+412440.6499624783+5655237.649767596+412440.6499624783+5655350.037831785+412368.6619388352+5655350.037831785+412368.6619388352+5655237.649767596%3C%2Fgml%3AposList%3E%3C%2Fgml%3ALinearRing%3E%3C%2Fgml%3Aexterior%3E%3C%2Fgml%3APolygon%3E%3C%2Ffes%3AIntersects%3E%3C%2Ffes%3AFilter%3E&count=3&startIndex=0",
+      "method": "GET",
+      "checkedAt": "2026-10-09T05:16:17.412Z",
+      "httpStatus": 200,
+      "contentType": "application/gml+xml; version=3.2.1; charset=utf-8",
+      "bytes": 5973,
+      "numberMatchedUnknown": true,
+      "numberReturned": 3,
+      "features": [
+        {
+          "transportId": "140209___00248000101",
+          "properties": {
+            "flstkennz": "140209___00248000101"
+          },
+          "geometrySha256": "33c02535d7ab38d915349f1bcb78f0a704002bc8aeb310e22705974235af460d"
+        },
+        {
+          "transportId": "140209___00256000200",
+          "properties": {
+            "flstkennz": "140209___00256000200"
+          },
+          "geometrySha256": "4465a7e2c6c5ed4c2da38235477becbc485a0419fc984a23d98467b72a5400d4"
+        },
+        {
+          "transportId": "140209___00256____03",
+          "properties": {
+            "flstkennz": "140209___00256____03"
+          },
+          "geometrySha256": "be9c4078ac68dd94180f95b036f22312540c01c23b8ee5ca79ec2dd3228601e2"
+        }
+      ]
+    },
+    {
+      "test": "forced-three-row-pages",
+      "url": "https://geodienste.sachsen.de/aaa/public_alkis/vereinf/wfs?service=WFS&version=2.0.0&request=GetFeature&typeNames=ave%3AFlurstueck&srsName=urn%3Aogc%3Adef%3Acrs%3AEPSG%3A%3A25833&outputFormat=application%2Fgml%2Bxml%3B+version%3D3.2&propertyName=ave%3Aflstkennz%2Cave%3Ageometrie&sortBy=ave%3Aflstkennz+A&namespaces=xmlns%28ave%2Chttp%3A%2F%2Frepository.gdi-de.org%2Fschemas%2Fadv%2Fprodukt%2Falkis-vereinfacht%2F2.0%29&filter=%3Cfes%3AFilter+xmlns%3Afes%3D%22http%3A%2F%2Fwww.opengis.net%2Ffes%2F2.0%22+xmlns%3Aave%3D%22http%3A%2F%2Frepository.gdi-de.org%2Fschemas%2Fadv%2Fprodukt%2Falkis-vereinfacht%2F2.0%22+xmlns%3Agml%3D%22http%3A%2F%2Fwww.opengis.net%2Fgml%2F3.2%22%3E%3Cfes%3AIntersects%3E%3Cfes%3AValueReference%3Eave%3Ageometrie%3C%2Ffes%3AValueReference%3E%3Cgml%3APolygon+srsName%3D%22urn%3Aogc%3Adef%3Acrs%3AEPSG%3A%3A25833%22%3E%3Cgml%3Aexterior%3E%3Cgml%3ALinearRing%3E%3Cgml%3AposList+srsDimension%3D%222%22%3E412368.6619388352+5655237.649767596+412440.6499624783+5655237.649767596+412440.6499624783+5655350.037831785+412368.6619388352+5655350.037831785+412368.6619388352+5655237.649767596%3C%2Fgml%3AposList%3E%3C%2Fgml%3ALinearRing%3E%3C%2Fgml%3Aexterior%3E%3C%2Fgml%3APolygon%3E%3C%2Ffes%3AIntersects%3E%3C%2Ffes%3AFilter%3E&count=3&startIndex=3",
+      "method": "GET",
+      "checkedAt": "2026-10-09T05:16:17.570Z",
+      "httpStatus": 200,
+      "contentType": "application/gml+xml; version=3.2.1; charset=utf-8",
+      "bytes": 12960,
+      "numberMatchedUnknown": true,
+      "numberReturned": 3,
+      "features": [
+        {
+          "transportId": "140209___00622001800",
+          "properties": {
+            "flstkennz": "140209___00622001800"
+          },
+          "geometrySha256": "20d3133bf17a53275d117b0c9fff4529e93bffe0bd618c15a126b7d1944299e7"
+        },
+        {
+          "transportId": "140209___00972____00",
+          "properties": {
+            "flstkennz": "140209___00972____00"
+          },
+          "geometrySha256": "6ab55a8d44999dec2ed26499db7dda3ca0227f94cbd087ed089e71f29a7a307f"
+        },
+        {
+          "transportId": "140209___00975____00",
+          "properties": {
+            "flstkennz": "140209___00975____00"
+          },
+          "geometrySha256": "3c7884663febc7dc6c928d2aaec4689d8455746ed2b6e593ad8979a19309bef8"
+        }
+      ]
+    },
+    {
+      "test": "forced-three-row-pages",
+      "url": "https://geodienste.sachsen.de/aaa/public_alkis/vereinf/wfs?service=WFS&version=2.0.0&request=GetFeature&typeNames=ave%3AFlurstueck&srsName=urn%3Aogc%3Adef%3Acrs%3AEPSG%3A%3A25833&outputFormat=application%2Fgml%2Bxml%3B+version%3D3.2&propertyName=ave%3Aflstkennz%2Cave%3Ageometrie&sortBy=ave%3Aflstkennz+A&namespaces=xmlns%28ave%2Chttp%3A%2F%2Frepository.gdi-de.org%2Fschemas%2Fadv%2Fprodukt%2Falkis-vereinfacht%2F2.0%29&filter=%3Cfes%3AFilter+xmlns%3Afes%3D%22http%3A%2F%2Fwww.opengis.net%2Ffes%2F2.0%22+xmlns%3Aave%3D%22http%3A%2F%2Frepository.gdi-de.org%2Fschemas%2Fadv%2Fprodukt%2Falkis-vereinfacht%2F2.0%22+xmlns%3Agml%3D%22http%3A%2F%2Fwww.opengis.net%2Fgml%2F3.2%22%3E%3Cfes%3AIntersects%3E%3Cfes%3AValueReference%3Eave%3Ageometrie%3C%2Ffes%3AValueReference%3E%3Cgml%3APolygon+srsName%3D%22urn%3Aogc%3Adef%3Acrs%3AEPSG%3A%3A25833%22%3E%3Cgml%3Aexterior%3E%3Cgml%3ALinearRing%3E%3Cgml%3AposList+srsDimension%3D%222%22%3E412368.6619388352+5655237.649767596+412440.6499624783+5655237.649767596+412440.6499624783+5655350.037831785+412368.6619388352+5655350.037831785+412368.6619388352+5655237.649767596%3C%2Fgml%3AposList%3E%3C%2Fgml%3ALinearRing%3E%3C%2Fgml%3Aexterior%3E%3C%2Fgml%3APolygon%3E%3C%2Ffes%3AIntersects%3E%3C%2Ffes%3AFilter%3E&count=1&startIndex=6",
+      "method": "GET",
+      "checkedAt": "2026-10-09T05:16:17.731Z",
+      "httpStatus": 200,
+      "contentType": "application/gml+xml; version=3.2.1; charset=utf-8",
+      "bytes": 2547,
+      "numberMatchedUnknown": true,
+      "numberReturned": 1,
+      "features": [
+        {
+          "transportId": "140209___00976____01",
+          "properties": {
+            "flstkennz": "140209___00976____01"
+          },
+          "geometrySha256": "2a8c85378ea0ed0e81bb4aeb7f49785509103b4ae7591947cfba4957d7b5735c"
+        }
+      ]
+    },
+    {
+      "test": "forced-three-row-pages",
+      "url": "https://geodienste.sachsen.de/aaa/public_alkis/vereinf/wfs?service=WFS&version=2.0.0&request=GetFeature&typeNames=ave%3AFlurstueck&srsName=urn%3Aogc%3Adef%3Acrs%3AEPSG%3A%3A25833&outputFormat=application%2Fgml%2Bxml%3B+version%3D3.2&propertyName=ave%3Aflstkennz%2Cave%3Ageometrie&sortBy=ave%3Aflstkennz+A&namespaces=xmlns%28ave%2Chttp%3A%2F%2Frepository.gdi-de.org%2Fschemas%2Fadv%2Fprodukt%2Falkis-vereinfacht%2F2.0%29&filter=%3Cfes%3AFilter+xmlns%3Afes%3D%22http%3A%2F%2Fwww.opengis.net%2Ffes%2F2.0%22+xmlns%3Aave%3D%22http%3A%2F%2Frepository.gdi-de.org%2Fschemas%2Fadv%2Fprodukt%2Falkis-vereinfacht%2F2.0%22+xmlns%3Agml%3D%22http%3A%2F%2Fwww.opengis.net%2Fgml%2F3.2%22%3E%3Cfes%3AIntersects%3E%3Cfes%3AValueReference%3Eave%3Ageometrie%3C%2Ffes%3AValueReference%3E%3Cgml%3APolygon+srsName%3D%22urn%3Aogc%3Adef%3Acrs%3AEPSG%3A%3A25833%22%3E%3Cgml%3Aexterior%3E%3Cgml%3ALinearRing%3E%3Cgml%3AposList+srsDimension%3D%222%22%3E412368.6619388352+5655237.649767596+412440.6499624783+5655237.649767596+412440.6499624783+5655350.037831785+412368.6619388352+5655350.037831785+412368.6619388352+5655237.649767596%3C%2Fgml%3AposList%3E%3C%2Fgml%3ALinearRing%3E%3C%2Fgml%3Aexterior%3E%3C%2Fgml%3APolygon%3E%3C%2Ffes%3AIntersects%3E%3C%2Ffes%3AFilter%3E&resultType=hits",
+      "method": "GET",
+      "checkedAt": "2026-10-09T05:16:17.901Z",
+      "httpStatus": 200,
+      "contentType": "application/gml+xml; version=3.2.1; charset=utf-8",
+      "bytes": 365,
+      "numberMatched": 7,
+      "numberMatchedUnknown": false,
+      "numberReturned": 0,
+      "features": []
+    },
+    {
+      "test": "fresh-ids-0",
+      "url": "https://geodienste.sachsen.de/aaa/public_alkis/vereinf/wfs?service=WFS&version=2.0.0&request=GetFeature&typeNames=ave%3AFlurstueck&srsName=urn%3Aogc%3Adef%3Acrs%3AEPSG%3A%3A25833&outputFormat=application%2Fgml%2Bxml%3B+version%3D3.2&propertyName=ave%3Aflstkennz%2Cave%3Ageometrie&sortBy=ave%3Aflstkennz+A&namespaces=xmlns%28ave%2Chttp%3A%2F%2Frepository.gdi-de.org%2Fschemas%2Fadv%2Fprodukt%2Falkis-vereinfacht%2F2.0%29&filter=%3Cfes%3AFilter+xmlns%3Afes%3D%22http%3A%2F%2Fwww.opengis.net%2Ffes%2F2.0%22+xmlns%3Aave%3D%22http%3A%2F%2Frepository.gdi-de.org%2Fschemas%2Fadv%2Fprodukt%2Falkis-vereinfacht%2F2.0%22%3E%3Cfes%3AOr%3E%3Cfes%3APropertyIsEqualTo%3E%3Cfes%3AValueReference%3Eave%3Aflstkennz%3C%2Ffes%3AValueReference%3E%3Cfes%3ALiteral%3E140209___00248000101%3C%2Ffes%3ALiteral%3E%3C%2Ffes%3APropertyIsEqualTo%3E%3Cfes%3APropertyIsEqualTo%3E%3Cfes%3AValueReference%3Eave%3Aflstkennz%3C%2Ffes%3AValueReference%3E%3Cfes%3ALiteral%3E140209___00248000a05%3C%2Ffes%3ALiteral%3E%3C%2Ffes%3APropertyIsEqualTo%3E%3Cfes%3APropertyIsEqualTo%3E%3Cfes%3AValueReference%3Eave%3Aflstkennz%3C%2Ffes%3AValueReference%3E%3Cfes%3ALiteral%3E140209___00256000200%3C%2Ffes%3ALiteral%3E%3C%2Ffes%3APropertyIsEqualTo%3E%3Cfes%3APropertyIsEqualTo%3E%3Cfes%3AValueReference%3Eave%3Aflstkennz%3C%2Ffes%3AValueReference%3E%3Cfes%3ALiteral%3E140209___00256____03%3C%2Ffes%3ALiteral%3E%3C%2Ffes%3APropertyIsEqualTo%3E%3Cfes%3APropertyIsEqualTo%3E%3Cfes%3AValueReference%3Eave%3Aflstkennz%3C%2Ffes%3AValueReference%3E%3Cfes%3ALiteral%3E140209___00622001002%3C%2Ffes%3ALiteral%3E%3C%2Ffes%3APropertyIsEqualTo%3E%3Cfes%3APropertyIsEqualTo%3E%3Cfes%3AValueReference%3Eave%3Aflstkennz%3C%2Ffes%3AValueReference%3E%3Cfes%3ALiteral%3E140209___00622001103%3C%2Ffes%3ALiteral%3E%3C%2Ffes%3APropertyIsEqualTo%3E%3Cfes%3APropertyIsEqualTo%3E%3Cfes%3AValueReference%3Eave%3Aflstkennz%3C%2Ffes%3AValueReference%3E%3Cfes%3ALiteral%3E140209___00622001800%3C%2Ffes%3ALiteral%3E%3C%2Ffes%3APropertyIsEqualTo%3E%3Cfes%3APropertyIsEqualTo%3E%3Cfes%3AValueReference%3Eave%3Aflstkennz%3C%2Ffes%3AValueReference%3E%3Cfes%3ALiteral%3E140209___00890000100%3C%2Ffes%3ALiteral%3E%3C%2Ffes%3APropertyIsEqualTo%3E%3C%2Ffes%3AOr%3E%3C%2Ffes%3AFilter%3E&resultType=hits",
+      "method": "GET",
+      "checkedAt": "2026-10-09T05:16:18.058Z",
+      "httpStatus": 200,
+      "contentType": "application/gml+xml; version=3.2.1; charset=utf-8",
+      "bytes": 365,
+      "numberMatched": 8,
+      "numberMatchedUnknown": false,
+      "numberReturned": 0,
+      "features": []
+    },
+    {
+      "test": "fresh-ids-0",
+      "url": "https://geodienste.sachsen.de/aaa/public_alkis/vereinf/wfs?service=WFS&version=2.0.0&request=GetFeature&typeNames=ave%3AFlurstueck&srsName=urn%3Aogc%3Adef%3Acrs%3AEPSG%3A%3A25833&outputFormat=application%2Fgml%2Bxml%3B+version%3D3.2&propertyName=ave%3Aflstkennz%2Cave%3Ageometrie&sortBy=ave%3Aflstkennz+A&namespaces=xmlns%28ave%2Chttp%3A%2F%2Frepository.gdi-de.org%2Fschemas%2Fadv%2Fprodukt%2Falkis-vereinfacht%2F2.0%29&filter=%3Cfes%3AFilter+xmlns%3Afes%3D%22http%3A%2F%2Fwww.opengis.net%2Ffes%2F2.0%22+xmlns%3Aave%3D%22http%3A%2F%2Frepository.gdi-de.org%2Fschemas%2Fadv%2Fprodukt%2Falkis-vereinfacht%2F2.0%22%3E%3Cfes%3AOr%3E%3Cfes%3APropertyIsEqualTo%3E%3Cfes%3AValueReference%3Eave%3Aflstkennz%3C%2Ffes%3AValueReference%3E%3Cfes%3ALiteral%3E140209___00248000101%3C%2Ffes%3ALiteral%3E%3C%2Ffes%3APropertyIsEqualTo%3E%3Cfes%3APropertyIsEqualTo%3E%3Cfes%3AValueReference%3Eave%3Aflstkennz%3C%2Ffes%3AValueReference%3E%3Cfes%3ALiteral%3E140209___00248000a05%3C%2Ffes%3ALiteral%3E%3C%2Ffes%3APropertyIsEqualTo%3E%3Cfes%3APropertyIsEqualTo%3E%3Cfes%3AValueReference%3Eave%3Aflstkennz%3C%2Ffes%3AValueReference%3E%3Cfes%3ALiteral%3E140209___00256000200%3C%2Ffes%3ALiteral%3E%3C%2Ffes%3APropertyIsEqualTo%3E%3Cfes%3APropertyIsEqualTo%3E%3Cfes%3AValueReference%3Eave%3Aflstkennz%3C%2Ffes%3AValueReference%3E%3Cfes%3ALiteral%3E140209___00256____03%3C%2Ffes%3ALiteral%3E%3C%2Ffes%3APropertyIsEqualTo%3E%3Cfes%3APropertyIsEqualTo%3E%3Cfes%3AValueReference%3Eave%3Aflstkennz%3C%2Ffes%3AValueReference%3E%3Cfes%3ALiteral%3E140209___00622001002%3C%2Ffes%3ALiteral%3E%3C%2Ffes%3APropertyIsEqualTo%3E%3Cfes%3APropertyIsEqualTo%3E%3Cfes%3AValueReference%3Eave%3Aflstkennz%3C%2Ffes%3AValueReference%3E%3Cfes%3ALiteral%3E140209___00622001103%3C%2Ffes%3ALiteral%3E%3C%2Ffes%3APropertyIsEqualTo%3E%3Cfes%3APropertyIsEqualTo%3E%3Cfes%3AValueReference%3Eave%3Aflstkennz%3C%2Ffes%3AValueReference%3E%3Cfes%3ALiteral%3E140209___00622001800%3C%2Ffes%3ALiteral%3E%3C%2Ffes%3APropertyIsEqualTo%3E%3Cfes%3APropertyIsEqualTo%3E%3Cfes%3AValueReference%3Eave%3Aflstkennz%3C%2Ffes%3AValueReference%3E%3Cfes%3ALiteral%3E140209___00890000100%3C%2Ffes%3ALiteral%3E%3C%2Ffes%3APropertyIsEqualTo%3E%3C%2Ffes%3AOr%3E%3C%2Ffes%3AFilter%3E&count=8&startIndex=0",
+      "method": "GET",
+      "checkedAt": "2026-10-09T05:16:18.197Z",
+      "httpStatus": 200,
+      "contentType": "application/gml+xml; version=3.2.1; charset=utf-8",
+      "bytes": 18346,
+      "numberMatchedUnknown": true,
+      "numberReturned": 8,
+      "features": [
+        {
+          "transportId": "140209___00248000101",
+          "properties": {
+            "flstkennz": "140209___00248000101"
+          },
+          "geometrySha256": "33c02535d7ab38d915349f1bcb78f0a704002bc8aeb310e22705974235af460d"
+        },
+        {
+          "transportId": "140209___00248000a05",
+          "properties": {
+            "flstkennz": "140209___00248000a05"
+          },
+          "geometrySha256": "5a159b313f63384ab3c53ec75ac9b09013b66d249dfc15c63a285a33a776cdaa"
+        },
+        {
+          "transportId": "140209___00256000200",
+          "properties": {
+            "flstkennz": "140209___00256000200"
+          },
+          "geometrySha256": "4465a7e2c6c5ed4c2da38235477becbc485a0419fc984a23d98467b72a5400d4"
+        },
+        {
+          "transportId": "140209___00256____03",
+          "properties": {
+            "flstkennz": "140209___00256____03"
+          },
+          "geometrySha256": "be9c4078ac68dd94180f95b036f22312540c01c23b8ee5ca79ec2dd3228601e2"
+        },
+        {
+          "transportId": "140209___00622001002",
+          "properties": {
+            "flstkennz": "140209___00622001002"
+          },
+          "geometrySha256": "2c91f6326e41f1d56f52b9db2a0380f2ea9d37d14db9ab5a7c6892a3f5419dca"
+        },
+        {
+          "transportId": "140209___00622001103",
+          "properties": {
+            "flstkennz": "140209___00622001103"
+          },
+          "geometrySha256": "1b967883bd7e86384e65f5110141bda635101fb3085c4c8ef9c426b6a80d815a"
+        },
+        {
+          "transportId": "140209___00622001800",
+          "properties": {
+            "flstkennz": "140209___00622001800"
+          },
+          "geometrySha256": "20d3133bf17a53275d117b0c9fff4529e93bffe0bd618c15a126b7d1944299e7"
+        },
+        {
+          "transportId": "140209___00890000100",
+          "properties": {
+            "flstkennz": "140209___00890000100"
+          },
+          "geometrySha256": "b730c26ece0513e1e0d4f85be3b7c732e34f7dbdc319b7cc482f87fab754924f"
+        }
+      ]
+    },
+    {
+      "test": "fresh-ids-0",
+      "url": "https://geodienste.sachsen.de/aaa/public_alkis/vereinf/wfs?service=WFS&version=2.0.0&request=GetFeature&typeNames=ave%3AFlurstueck&srsName=urn%3Aogc%3Adef%3Acrs%3AEPSG%3A%3A25833&outputFormat=application%2Fgml%2Bxml%3B+version%3D3.2&propertyName=ave%3Aflstkennz%2Cave%3Ageometrie&sortBy=ave%3Aflstkennz+A&namespaces=xmlns%28ave%2Chttp%3A%2F%2Frepository.gdi-de.org%2Fschemas%2Fadv%2Fprodukt%2Falkis-vereinfacht%2F2.0%29&filter=%3Cfes%3AFilter+xmlns%3Afes%3D%22http%3A%2F%2Fwww.opengis.net%2Ffes%2F2.0%22+xmlns%3Aave%3D%22http%3A%2F%2Frepository.gdi-de.org%2Fschemas%2Fadv%2Fprodukt%2Falkis-vereinfacht%2F2.0%22%3E%3Cfes%3AOr%3E%3Cfes%3APropertyIsEqualTo%3E%3Cfes%3AValueReference%3Eave%3Aflstkennz%3C%2Ffes%3AValueReference%3E%3Cfes%3ALiteral%3E140209___00248000101%3C%2Ffes%3ALiteral%3E%3C%2Ffes%3APropertyIsEqualTo%3E%3Cfes%3APropertyIsEqualTo%3E%3Cfes%3AValueReference%3Eave%3Aflstkennz%3C%2Ffes%3AValueReference%3E%3Cfes%3ALiteral%3E140209___00248000a05%3C%2Ffes%3ALiteral%3E%3C%2Ffes%3APropertyIsEqualTo%3E%3Cfes%3APropertyIsEqualTo%3E%3Cfes%3AValueReference%3Eave%3Aflstkennz%3C%2Ffes%3AValueReference%3E%3Cfes%3ALiteral%3E140209___00256000200%3C%2Ffes%3ALiteral%3E%3C%2Ffes%3APropertyIsEqualTo%3E%3Cfes%3APropertyIsEqualTo%3E%3Cfes%3AValueReference%3Eave%3Aflstkennz%3C%2Ffes%3AValueReference%3E%3Cfes%3ALiteral%3E140209___00256____03%3C%2Ffes%3ALiteral%3E%3C%2Ffes%3APropertyIsEqualTo%3E%3Cfes%3APropertyIsEqualTo%3E%3Cfes%3AValueReference%3Eave%3Aflstkennz%3C%2Ffes%3AValueReference%3E%3Cfes%3ALiteral%3E140209___00622001002%3C%2Ffes%3ALiteral%3E%3C%2Ffes%3APropertyIsEqualTo%3E%3Cfes%3APropertyIsEqualTo%3E%3Cfes%3AValueReference%3Eave%3Aflstkennz%3C%2Ffes%3AValueReference%3E%3Cfes%3ALiteral%3E140209___00622001103%3C%2Ffes%3ALiteral%3E%3C%2Ffes%3APropertyIsEqualTo%3E%3Cfes%3APropertyIsEqualTo%3E%3Cfes%3AValueReference%3Eave%3Aflstkennz%3C%2Ffes%3AValueReference%3E%3Cfes%3ALiteral%3E140209___00622001800%3C%2Ffes%3ALiteral%3E%3C%2Ffes%3APropertyIsEqualTo%3E%3Cfes%3APropertyIsEqualTo%3E%3Cfes%3AValueReference%3Eave%3Aflstkennz%3C%2Ffes%3AValueReference%3E%3Cfes%3ALiteral%3E140209___00890000100%3C%2Ffes%3ALiteral%3E%3C%2Ffes%3APropertyIsEqualTo%3E%3C%2Ffes%3AOr%3E%3C%2Ffes%3AFilter%3E&resultType=hits",
+      "method": "GET",
+      "checkedAt": "2026-10-09T05:16:18.362Z",
+      "httpStatus": 200,
+      "contentType": "application/gml+xml; version=3.2.1; charset=utf-8",
+      "bytes": 365,
+      "numberMatched": 8,
+      "numberMatchedUnknown": false,
+      "numberReturned": 0,
+      "features": []
+    },
+    {
+      "test": "fresh-ids-0",
+      "url": "https://geodienste.sachsen.de/aaa/public_alkis/vereinf/wfs?service=WFS&version=2.0.0&request=GetFeature&typeNames=ave%3AFlurstueck&srsName=urn%3Aogc%3Adef%3Acrs%3AEPSG%3A%3A25833&outputFormat=application%2Fgml%2Bxml%3B+version%3D3.2&propertyName=ave%3Aflstkennz%2Cave%3Ageometrie&sortBy=ave%3Aflstkennz+A&namespaces=xmlns%28ave%2Chttp%3A%2F%2Frepository.gdi-de.org%2Fschemas%2Fadv%2Fprodukt%2Falkis-vereinfacht%2F2.0%29&filter=%3Cfes%3AFilter+xmlns%3Afes%3D%22http%3A%2F%2Fwww.opengis.net%2Ffes%2F2.0%22+xmlns%3Aave%3D%22http%3A%2F%2Frepository.gdi-de.org%2Fschemas%2Fadv%2Fprodukt%2Falkis-vereinfacht%2F2.0%22%3E%3Cfes%3AOr%3E%3Cfes%3APropertyIsEqualTo%3E%3Cfes%3AValueReference%3Eave%3Aflstkennz%3C%2Ffes%3AValueReference%3E%3Cfes%3ALiteral%3E140209___00972____00%3C%2Ffes%3ALiteral%3E%3C%2Ffes%3APropertyIsEqualTo%3E%3Cfes%3APropertyIsEqualTo%3E%3Cfes%3AValueReference%3Eave%3Aflstkennz%3C%2Ffes%3AValueReference%3E%3Cfes%3ALiteral%3E140209___00975____00%3C%2Ffes%3ALiteral%3E%3C%2Ffes%3APropertyIsEqualTo%3E%3Cfes%3APropertyIsEqualTo%3E%3Cfes%3AValueReference%3Eave%3Aflstkennz%3C%2Ffes%3AValueReference%3E%3Cfes%3ALiteral%3E140209___00976____01%3C%2Ffes%3ALiteral%3E%3C%2Ffes%3APropertyIsEqualTo%3E%3C%2Ffes%3AOr%3E%3C%2Ffes%3AFilter%3E&resultType=hits",
+      "method": "GET",
+      "checkedAt": "2026-10-09T05:16:18.519Z",
+      "httpStatus": 200,
+      "contentType": "application/gml+xml; version=3.2.1; charset=utf-8",
+      "bytes": 365,
+      "numberMatched": 3,
+      "numberMatchedUnknown": false,
+      "numberReturned": 0,
+      "features": []
+    },
+    {
+      "test": "fresh-ids-0",
+      "url": "https://geodienste.sachsen.de/aaa/public_alkis/vereinf/wfs?service=WFS&version=2.0.0&request=GetFeature&typeNames=ave%3AFlurstueck&srsName=urn%3Aogc%3Adef%3Acrs%3AEPSG%3A%3A25833&outputFormat=application%2Fgml%2Bxml%3B+version%3D3.2&propertyName=ave%3Aflstkennz%2Cave%3Ageometrie&sortBy=ave%3Aflstkennz+A&namespaces=xmlns%28ave%2Chttp%3A%2F%2Frepository.gdi-de.org%2Fschemas%2Fadv%2Fprodukt%2Falkis-vereinfacht%2F2.0%29&filter=%3Cfes%3AFilter+xmlns%3Afes%3D%22http%3A%2F%2Fwww.opengis.net%2Ffes%2F2.0%22+xmlns%3Aave%3D%22http%3A%2F%2Frepository.gdi-de.org%2Fschemas%2Fadv%2Fprodukt%2Falkis-vereinfacht%2F2.0%22%3E%3Cfes%3AOr%3E%3Cfes%3APropertyIsEqualTo%3E%3Cfes%3AValueReference%3Eave%3Aflstkennz%3C%2Ffes%3AValueReference%3E%3Cfes%3ALiteral%3E140209___00972____00%3C%2Ffes%3ALiteral%3E%3C%2Ffes%3APropertyIsEqualTo%3E%3Cfes%3APropertyIsEqualTo%3E%3Cfes%3AValueReference%3Eave%3Aflstkennz%3C%2Ffes%3AValueReference%3E%3Cfes%3ALiteral%3E140209___00975____00%3C%2Ffes%3ALiteral%3E%3C%2Ffes%3APropertyIsEqualTo%3E%3Cfes%3APropertyIsEqualTo%3E%3Cfes%3AValueReference%3Eave%3Aflstkennz%3C%2Ffes%3AValueReference%3E%3Cfes%3ALiteral%3E140209___00976____01%3C%2Ffes%3ALiteral%3E%3C%2Ffes%3APropertyIsEqualTo%3E%3C%2Ffes%3AOr%3E%3C%2Ffes%3AFilter%3E&count=3&startIndex=0",
+      "method": "GET",
+      "checkedAt": "2026-10-09T05:16:18.665Z",
+      "httpStatus": 200,
+      "contentType": "application/gml+xml; version=3.2.1; charset=utf-8",
+      "bytes": 7546,
+      "numberMatchedUnknown": true,
+      "numberReturned": 3,
+      "features": [
+        {
+          "transportId": "140209___00972____00",
+          "properties": {
+            "flstkennz": "140209___00972____00"
+          },
+          "geometrySha256": "6ab55a8d44999dec2ed26499db7dda3ca0227f94cbd087ed089e71f29a7a307f"
+        },
+        {
+          "transportId": "140209___00975____00",
+          "properties": {
+            "flstkennz": "140209___00975____00"
+          },
+          "geometrySha256": "3c7884663febc7dc6c928d2aaec4689d8455746ed2b6e593ad8979a19309bef8"
+        },
+        {
+          "transportId": "140209___00976____01",
+          "properties": {
+            "flstkennz": "140209___00976____01"
+          },
+          "geometrySha256": "2a8c85378ea0ed0e81bb4aeb7f49785509103b4ae7591947cfba4957d7b5735c"
+        }
+      ]
+    },
+    {
+      "test": "fresh-ids-0",
+      "url": "https://geodienste.sachsen.de/aaa/public_alkis/vereinf/wfs?service=WFS&version=2.0.0&request=GetFeature&typeNames=ave%3AFlurstueck&srsName=urn%3Aogc%3Adef%3Acrs%3AEPSG%3A%3A25833&outputFormat=application%2Fgml%2Bxml%3B+version%3D3.2&propertyName=ave%3Aflstkennz%2Cave%3Ageometrie&sortBy=ave%3Aflstkennz+A&namespaces=xmlns%28ave%2Chttp%3A%2F%2Frepository.gdi-de.org%2Fschemas%2Fadv%2Fprodukt%2Falkis-vereinfacht%2F2.0%29&filter=%3Cfes%3AFilter+xmlns%3Afes%3D%22http%3A%2F%2Fwww.opengis.net%2Ffes%2F2.0%22+xmlns%3Aave%3D%22http%3A%2F%2Frepository.gdi-de.org%2Fschemas%2Fadv%2Fprodukt%2Falkis-vereinfacht%2F2.0%22%3E%3Cfes%3AOr%3E%3Cfes%3APropertyIsEqualTo%3E%3Cfes%3AValueReference%3Eave%3Aflstkennz%3C%2Ffes%3AValueReference%3E%3Cfes%3ALiteral%3E140209___00972____00%3C%2Ffes%3ALiteral%3E%3C%2Ffes%3APropertyIsEqualTo%3E%3Cfes%3APropertyIsEqualTo%3E%3Cfes%3AValueReference%3Eave%3Aflstkennz%3C%2Ffes%3AValueReference%3E%3Cfes%3ALiteral%3E140209___00975____00%3C%2Ffes%3ALiteral%3E%3C%2Ffes%3APropertyIsEqualTo%3E%3Cfes%3APropertyIsEqualTo%3E%3Cfes%3AValueReference%3Eave%3Aflstkennz%3C%2Ffes%3AValueReference%3E%3Cfes%3ALiteral%3E140209___00976____01%3C%2Ffes%3ALiteral%3E%3C%2Ffes%3APropertyIsEqualTo%3E%3C%2Ffes%3AOr%3E%3C%2Ffes%3AFilter%3E&resultType=hits",
+      "method": "GET",
+      "checkedAt": "2026-10-09T05:16:18.842Z",
+      "httpStatus": 200,
+      "contentType": "application/gml+xml; version=3.2.1; charset=utf-8",
+      "bytes": 365,
+      "numberMatched": 3,
+      "numberMatchedUnknown": false,
+      "numberReturned": 0,
+      "features": []
+    },
+    {
+      "test": "explicit-absence",
+      "url": "https://geodienste.sachsen.de/aaa/public_alkis/vereinf/wfs?service=WFS&version=2.0.0&request=GetFeature&typeNames=ave%3AFlurstueck&srsName=urn%3Aogc%3Adef%3Acrs%3AEPSG%3A%3A25833&outputFormat=application%2Fgml%2Bxml%3B+version%3D3.2&propertyName=ave%3Aflstkennz%2Cave%3Ageometrie&sortBy=ave%3Aflstkennz+A&namespaces=xmlns%28ave%2Chttp%3A%2F%2Frepository.gdi-de.org%2Fschemas%2Fadv%2Fprodukt%2Falkis-vereinfacht%2F2.0%29&filter=%3Cfes%3AFilter+xmlns%3Afes%3D%22http%3A%2F%2Fwww.opengis.net%2Ffes%2F2.0%22+xmlns%3Aave%3D%22http%3A%2F%2Frepository.gdi-de.org%2Fschemas%2Fadv%2Fprodukt%2Falkis-vereinfacht%2F2.0%22%3E%3Cfes%3APropertyIsEqualTo%3E%3Cfes%3AValueReference%3Eave%3Aflstkennz%3C%2Ffes%3AValueReference%3E%3Cfes%3ALiteral%3E140209___99999999999%3C%2Ffes%3ALiteral%3E%3C%2Ffes%3APropertyIsEqualTo%3E%3C%2Ffes%3AFilter%3E&resultType=hits",
+      "method": "GET",
+      "checkedAt": "2026-10-09T05:16:18.983Z",
+      "httpStatus": 200,
+      "contentType": "application/gml+xml; version=3.2.1; charset=utf-8",
+      "bytes": 365,
+      "numberMatched": 0,
+      "numberMatchedUnknown": false,
+      "numberReturned": 0,
+      "features": []
+    },
+    {
+      "test": "explicit-absence",
+      "url": "https://geodienste.sachsen.de/aaa/public_alkis/vereinf/wfs?service=WFS&version=2.0.0&request=GetFeature&typeNames=ave%3AFlurstueck&srsName=urn%3Aogc%3Adef%3Acrs%3AEPSG%3A%3A25833&outputFormat=application%2Fgml%2Bxml%3B+version%3D3.2&propertyName=ave%3Aflstkennz%2Cave%3Ageometrie&sortBy=ave%3Aflstkennz+A&namespaces=xmlns%28ave%2Chttp%3A%2F%2Frepository.gdi-de.org%2Fschemas%2Fadv%2Fprodukt%2Falkis-vereinfacht%2F2.0%29&filter=%3Cfes%3AFilter+xmlns%3Afes%3D%22http%3A%2F%2Fwww.opengis.net%2Ffes%2F2.0%22+xmlns%3Aave%3D%22http%3A%2F%2Frepository.gdi-de.org%2Fschemas%2Fadv%2Fprodukt%2Falkis-vereinfacht%2F2.0%22%3E%3Cfes%3APropertyIsEqualTo%3E%3Cfes%3AValueReference%3Eave%3Aflstkennz%3C%2Ffes%3AValueReference%3E%3Cfes%3ALiteral%3E140209___99999999999%3C%2Ffes%3ALiteral%3E%3C%2Ffes%3APropertyIsEqualTo%3E%3C%2Ffes%3AFilter%3E&resultType=hits",
+      "method": "GET",
+      "checkedAt": "2026-10-09T05:16:19.123Z",
+      "httpStatus": 200,
+      "contentType": "application/gml+xml; version=3.2.1; charset=utf-8",
+      "bytes": 365,
+      "numberMatched": 0,
+      "numberMatchedUnknown": false,
+      "numberReturned": 0,
+      "features": []
+    },
+    {
+      "test": "footprint",
+      "url": "https://geodienste.sachsen.de/aaa/public_alkis/vereinf/wfs?service=WFS&version=2.0.0&request=GetFeature&typeNames=ave%3AFlurstueck&srsName=urn%3Aogc%3Adef%3Acrs%3AEPSG%3A%3A25833&outputFormat=application%2Fgml%2Bxml%3B+version%3D3.2&propertyName=ave%3Aflstkennz%2Cave%3Ageometrie&sortBy=ave%3Aflstkennz+A&namespaces=xmlns%28ave%2Chttp%3A%2F%2Frepository.gdi-de.org%2Fschemas%2Fadv%2Fprodukt%2Falkis-vereinfacht%2F2.0%29&filter=%3Cfes%3AFilter+xmlns%3Afes%3D%22http%3A%2F%2Fwww.opengis.net%2Ffes%2F2.0%22+xmlns%3Aave%3D%22http%3A%2F%2Frepository.gdi-de.org%2Fschemas%2Fadv%2Fprodukt%2Falkis-vereinfacht%2F2.0%22+xmlns%3Agml%3D%22http%3A%2F%2Fwww.opengis.net%2Fgml%2F3.2%22%3E%3Cfes%3AIntersects%3E%3Cfes%3AValueReference%3Eave%3Ageometrie%3C%2Ffes%3AValueReference%3E%3Cgml%3APolygon+srsName%3D%22urn%3Aogc%3Adef%3Acrs%3AEPSG%3A%3A25833%22%3E%3Cgml%3Aexterior%3E%3Cgml%3ALinearRing%3E%3Cgml%3AposList+srsDimension%3D%222%22%3E412124.73009886686+5654832.741481501+412733.40062549233+5654832.741481501+412733.40062549233+5655694.045226043+412124.73009886686+5655694.045226043+412124.73009886686+5654832.741481501%3C%2Fgml%3AposList%3E%3C%2Fgml%3ALinearRing%3E%3C%2Fgml%3Aexterior%3E%3C%2Fgml%3APolygon%3E%3C%2Ffes%3AIntersects%3E%3C%2Ffes%3AFilter%3E&resultType=hits",
+      "method": "GET",
+      "checkedAt": "2026-10-09T05:16:19.263Z",
+      "httpStatus": 200,
+      "contentType": "application/gml+xml; version=3.2.1; charset=utf-8",
+      "bytes": 366,
+      "numberMatched": 74,
+      "numberMatchedUnknown": false,
+      "numberReturned": 0,
+      "features": []
+    },
+    {
+      "test": "footprint",
+      "url": "https://geodienste.sachsen.de/aaa/public_alkis/vereinf/wfs?service=WFS&version=2.0.0&request=GetFeature&typeNames=ave%3AFlurstueck&srsName=urn%3Aogc%3Adef%3Acrs%3AEPSG%3A%3A25833&outputFormat=application%2Fgml%2Bxml%3B+version%3D3.2&propertyName=ave%3Aflstkennz%2Cave%3Ageometrie&sortBy=ave%3Aflstkennz+A&namespaces=xmlns%28ave%2Chttp%3A%2F%2Frepository.gdi-de.org%2Fschemas%2Fadv%2Fprodukt%2Falkis-vereinfacht%2F2.0%29&filter=%3Cfes%3AFilter+xmlns%3Afes%3D%22http%3A%2F%2Fwww.opengis.net%2Ffes%2F2.0%22+xmlns%3Aave%3D%22http%3A%2F%2Frepository.gdi-de.org%2Fschemas%2Fadv%2Fprodukt%2Falkis-vereinfacht%2F2.0%22+xmlns%3Agml%3D%22http%3A%2F%2Fwww.opengis.net%2Fgml%2F3.2%22%3E%3Cfes%3AIntersects%3E%3Cfes%3AValueReference%3Eave%3Ageometrie%3C%2Ffes%3AValueReference%3E%3Cgml%3APolygon+srsName%3D%22urn%3Aogc%3Adef%3Acrs%3AEPSG%3A%3A25833%22%3E%3Cgml%3Aexterior%3E%3Cgml%3ALinearRing%3E%3Cgml%3AposList+srsDimension%3D%222%22%3E412124.73009886686+5654832.741481501+412733.40062549233+5654832.741481501+412733.40062549233+5655694.045226043+412124.73009886686+5655694.045226043+412124.73009886686+5654832.741481501%3C%2Fgml%3AposList%3E%3C%2Fgml%3ALinearRing%3E%3C%2Fgml%3Aexterior%3E%3C%2Fgml%3APolygon%3E%3C%2Ffes%3AIntersects%3E%3C%2Ffes%3AFilter%3E&count=50&startIndex=0",
+      "method": "GET",
+      "checkedAt": "2026-10-09T05:16:19.414Z",
+      "httpStatus": 200,
+      "contentType": "application/gml+xml; version=3.2.1; charset=utf-8",
+      "bytes": 79257,
+      "numberMatchedUnknown": true,
+      "numberReturned": 50,
+      "features": [
+        {
+          "transportId": "140208___01174001800",
+          "properties": {
+            "flstkennz": "140208___01174001800"
+          },
+          "geometrySha256": "fe0a2097ff5b5c46c6b9c3f504ec95fa865b7e839f5e02ed835affad7bbe6631"
+        },
+        {
+          "transportId": "140208___01264000202",
+          "properties": {
+            "flstkennz": "140208___01264000202"
+          },
+          "geometrySha256": "03afea2fa26ebec007ac3a932e1fb2ac626c2b270d27268b98169b3a42769213"
+        },
+        {
+          "transportId": "140208___01264000401",
+          "properties": {
+            "flstkennz": "140208___01264000401"
+          },
+          "geometrySha256": "b4a4c1ee31a28c81b6136a055910bf137a9e96e355aae3714f7dff8286227f07"
+        },
+        {
+          "transportId": "140208___01275____01",
+          "properties": {
+            "flstkennz": "140208___01275____01"
+          },
+          "geometrySha256": "1eddeea30b3cd19eaecc777097522fbbbedde6694923f241113bcd77e3f64caa"
+        },
+        {
+          "transportId": "140208___01276000101",
+          "properties": {
+            "flstkennz": "140208___01276000101"
+          },
+          "geometrySha256": "d12ac8e8cc2fb847a9fca16e47539493baebbc6f0fbe84bc7c640e3988d40105"
+        },
+        {
+          "transportId": "140208___01276000201",
+          "properties": {
+            "flstkennz": "140208___01276000201"
+          },
+          "geometrySha256": "43c39ad7c7bba02b86b3d786f160182ead53692d2cadad15c29c63c019bf2fda"
+        },
+        {
+          "transportId": "140208___01276000301",
+          "properties": {
+            "flstkennz": "140208___01276000301"
+          },
+          "geometrySha256": "1817f9a6fb45e88ef7b06206c5ce811681c5211115939c4ff5944106fc4be16a"
+        },
+        {
+          "transportId": "140208___01276000401",
+          "properties": {
+            "flstkennz": "140208___01276000401"
+          },
+          "geometrySha256": "ad8b727f0af6da584711db1b94f9a8e91040507fe805b9fbf18fd9d43669644a"
+        },
+        {
+          "transportId": "140208___01276000501",
+          "properties": {
+            "flstkennz": "140208___01276000501"
+          },
+          "geometrySha256": "d9634a02e75c825092568df5be7023f36fd848b945f1f9e3784c1d08c32324cf"
+        },
+        {
+          "transportId": "140208___01276000601",
+          "properties": {
+            "flstkennz": "140208___01276000601"
+          },
+          "geometrySha256": "4c272286942b9e8ca4fc508b1d3a2a7b74ebb3b228ed508b808bdb565fd54b4f"
+        },
+        {
+          "transportId": "140208___01276000g01",
+          "properties": {
+            "flstkennz": "140208___01276000g01"
+          },
+          "geometrySha256": "9ce5640d289139efd7a82612c05c32f575a7c9466af9fbdf6c23df2d8aba3a4c"
+        },
+        {
+          "transportId": "140208___01276000h01",
+          "properties": {
+            "flstkennz": "140208___01276000h01"
+          },
+          "geometrySha256": "87d8f7b7f1955fbf7e989f85fd112aa3b09bc7efaba37e9105216de81b481a50"
+        },
+        {
+          "transportId": "140208___01276000i01",
+          "properties": {
+            "flstkennz": "140208___01276000i01"
+          },
+          "geometrySha256": "62d717a5cf67cd8e069ceec6c41ca58eec1eed1d0aa1b7388dc13c1edc4331ad"
+        },
+        {
+          "transportId": "140208___01277000101",
+          "properties": {
+            "flstkennz": "140208___01277000101"
+          },
+          "geometrySha256": "3fcfc1e0ae533b02bc22235989ea5030936c388d181547a29eab1b3e6218d0a8"
+        },
+        {
+          "transportId": "140208___01280000101",
+          "properties": {
+            "flstkennz": "140208___01280000101"
+          },
+          "geometrySha256": "0fd0932ce0dbe69e6772ccbe861df0137ed059c7e031236623fffc035bb800ae"
+        },
+        {
+          "transportId": "140208___01284000q01",
+          "properties": {
+            "flstkennz": "140208___01284000q01"
+          },
+          "geometrySha256": "fae533d26019a84c7b6cf5f780812160b633ba8d3bd52d6bd6a9b02a46ffe083"
+        },
+        {
+          "transportId": "140208___01307000303",
+          "properties": {
+            "flstkennz": "140208___01307000303"
+          },
+          "geometrySha256": "5d2898058237cc478bc1e7e9acad54a1ad2d567960aa449d189dd0b992184420"
+        },
+        {
+          "transportId": "140208___01307000502",
+          "properties": {
+            "flstkennz": "140208___01307000502"
+          },
+          "geometrySha256": "34f9c989504f3f116ccab985317805b88e0ec901c8f55a675e0e5be9fb45a39a"
+        },
+        {
+          "transportId": "140208___01307000703",
+          "properties": {
+            "flstkennz": "140208___01307000703"
+          },
+          "geometrySha256": "9ea011b5bb5c5deef7470762dc8079ad46168dc48b614126e474e5cbd1bfcf5e"
+        },
+        {
+          "transportId": "140208___01307000801",
+          "properties": {
+            "flstkennz": "140208___01307000801"
+          },
+          "geometrySha256": "4687769f45b5bea2fa8c8cc42ebee8672c7236524973c16bb650967982a06486"
+        },
+        {
+          "transportId": "140208___01307000902",
+          "properties": {
+            "flstkennz": "140208___01307000902"
+          },
+          "geometrySha256": "e4103363378a757675f35e7725f0aca617c95e1cd9427936dbcfa722743eafc6"
+        },
+        {
+          "transportId": "140208___01307001202",
+          "properties": {
+            "flstkennz": "140208___01307001202"
+          },
+          "geometrySha256": "744606abecc06b84b20aa2b6374fc11df9aed1583dee08430151b61cb578e720"
+        },
+        {
+          "transportId": "140208___01307001300",
+          "properties": {
+            "flstkennz": "140208___01307001300"
+          },
+          "geometrySha256": "792534744db05dba980af0a8c796a9d620d8bba2c94d228d77868aeea962eb9e"
+        },
+        {
+          "transportId": "140208___01324000300",
+          "properties": {
+            "flstkennz": "140208___01324000300"
+          },
+          "geometrySha256": "06ae4f67c27ca311e8a425bab5ff306f2bb1016d52ead03f0c199a205dd849fc"
+        },
+        {
+          "transportId": "140208___01324000402",
+          "properties": {
+            "flstkennz": "140208___01324000402"
+          },
+          "geometrySha256": "9c4581c50e9c8c0989e9846d493952d175aed7cfdbe88e02b7642fac9bc12329"
+        },
+        {
+          "transportId": "140208___02673000100",
+          "properties": {
+            "flstkennz": "140208___02673000100"
+          },
+          "geometrySha256": "fbe17ef21fa4b0729861bcc78c41f610172a5b4c4b7e07476b89a3dab219be17"
+        },
+        {
+          "transportId": "140208___02677000100",
+          "properties": {
+            "flstkennz": "140208___02677000100"
+          },
+          "geometrySha256": "774ecaa90ca2b4684611c5531a7415d77a3afe1423cf7c98f3bad2358f143fdf"
+        },
+        {
+          "transportId": "140208___02834____01",
+          "properties": {
+            "flstkennz": "140208___02834____01"
+          },
+          "geometrySha256": "40aa025c08083c582598c17d42186ae5d0116da2a7006469385a0c03fc413aad"
+        },
+        {
+          "transportId": "140208___02835____01",
+          "properties": {
+            "flstkennz": "140208___02835____01"
+          },
+          "geometrySha256": "247822abb9f04ef9e347ea90efe00a38e01173c2a4360f21001189e962420b1b"
+        },
+        {
+          "transportId": "140208___02836____01",
+          "properties": {
+            "flstkennz": "140208___02836____01"
+          },
+          "geometrySha256": "d4d2b8a7e26b29ee0d91b1f35e951439842caebdc87d74c40afd237a57bdaf1a"
+        },
+        {
+          "transportId": "140208___02837____00",
+          "properties": {
+            "flstkennz": "140208___02837____00"
+          },
+          "geometrySha256": "59d92f120e577b8943bfa1efe97efb8b94629996f29eb87e9ee70409e7642ea0"
+        },
+        {
+          "transportId": "140208___02838000201",
+          "properties": {
+            "flstkennz": "140208___02838000201"
+          },
+          "geometrySha256": "74547477a5becaa3c76f3f3a7f67c4b6e2f86e814481f75077b4b93c9a5d5543"
+        },
+        {
+          "transportId": "140208___02838000301",
+          "properties": {
+            "flstkennz": "140208___02838000301"
+          },
+          "geometrySha256": "d70badd75fad747f944084fcf3518db7b294cfe96e244c41b6acf916bf5db240"
+        },
+        {
+          "transportId": "140208___02839000101",
+          "properties": {
+            "flstkennz": "140208___02839000101"
+          },
+          "geometrySha256": "c325fd0ccde67e907da8dffb4e3c4faa4222f9e8a008f604edd67c0064f42337"
+        },
+        {
+          "transportId": "140208___02840000200",
+          "properties": {
+            "flstkennz": "140208___02840000200"
+          },
+          "geometrySha256": "772f535c2fa2d2e6d4fcb1b0ff57339550b85c84bd2b3b545ae6f890417def12"
+        },
+        {
+          "transportId": "140208___02841____02",
+          "properties": {
+            "flstkennz": "140208___02841____02"
+          },
+          "geometrySha256": "ca0ecbec1a70c52bfc674e697d63c65b16c5d8ea18a84bf36a181b875031c506"
+        },
+        {
+          "transportId": "140208___03175____00",
+          "properties": {
+            "flstkennz": "140208___03175____00"
+          },
+          "geometrySha256": "f5b0ac45e5ca31f569a1259919369c814c966de8961efe9c200ba941698abeaa"
+        },
+        {
+          "transportId": "140208___03176____00",
+          "properties": {
+            "flstkennz": "140208___03176____00"
+          },
+          "geometrySha256": "e1481a5e95548af832c5dc07239274637b2cb6b8cab35194a64d16b04d29ffcc"
+        },
+        {
+          "transportId": "140208___03180____00",
+          "properties": {
+            "flstkennz": "140208___03180____00"
+          },
+          "geometrySha256": "ccd8770c0daaa4ed0867457e440be843e0e808b8cfdd8e4927146e2be58fb3bb"
+        },
+        {
+          "transportId": "140209___00232000607",
+          "properties": {
+            "flstkennz": "140209___00232000607"
+          },
+          "geometrySha256": "9d14c12b189cd6c30a2c3094c1c4239b8ee67871fb9cf1075ee451058a546bf9"
+        },
+        {
+          "transportId": "140209___00232000700",
+          "properties": {
+            "flstkennz": "140209___00232000700"
+          },
+          "geometrySha256": "92ba87d8419bde48b87779ae4fe8827af28a54da8771f3b6400bde25c94d0985"
+        },
+        {
+          "transportId": "140209___00232000800",
+          "properties": {
+            "flstkennz": "140209___00232000800"
+          },
+          "geometrySha256": "6742aa644063b1fd93dc494a635f7d6bf1b803f14677bdacc1695c4682673883"
+        },
+        {
+          "transportId": "140209___00239000402",
+          "properties": {
+            "flstkennz": "140209___00239000402"
+          },
+          "geometrySha256": "5e3d3a39acc9a24333a48356630e61e24f3c35d8369dc3db99c546fabfb9ae38"
+        },
+        {
+          "transportId": "140209___00239000601",
+          "properties": {
+            "flstkennz": "140209___00239000601"
+          },
+          "geometrySha256": "5b31936f36a71a03c16c83f891ea4662bddb2a68ef945d392af6089180576eae"
+        },
+        {
+          "transportId": "140209___00239000801",
+          "properties": {
+            "flstkennz": "140209___00239000801"
+          },
+          "geometrySha256": "ef340f4ea89961d5485a2c5d9092a0ff0cb7932fc75672e14a36074747a9af06"
+        },
+        {
+          "transportId": "140209___00239000901",
+          "properties": {
+            "flstkennz": "140209___00239000901"
+          },
+          "geometrySha256": "ac4fc95611ea6cc9a1944b3d4d5bc5f964c892053ed859f563f91aed1aa99470"
+        },
+        {
+          "transportId": "140209___00248000101",
+          "properties": {
+            "flstkennz": "140209___00248000101"
+          },
+          "geometrySha256": "33c02535d7ab38d915349f1bcb78f0a704002bc8aeb310e22705974235af460d"
+        },
+        {
+          "transportId": "140209___00248000a05",
+          "properties": {
+            "flstkennz": "140209___00248000a05"
+          },
+          "geometrySha256": "5a159b313f63384ab3c53ec75ac9b09013b66d249dfc15c63a285a33a776cdaa"
+        },
+        {
+          "transportId": "140209___00256000200",
+          "properties": {
+            "flstkennz": "140209___00256000200"
+          },
+          "geometrySha256": "4465a7e2c6c5ed4c2da38235477becbc485a0419fc984a23d98467b72a5400d4"
+        },
+        {
+          "transportId": "140209___00256000300",
+          "properties": {
+            "flstkennz": "140209___00256000300"
+          },
+          "geometrySha256": "67d01f56885b05533723eaddaf2ff1e37244a428f6116da0719cee0fb8d9d65f"
+        }
+      ]
+    },
+    {
+      "test": "footprint",
+      "url": "https://geodienste.sachsen.de/aaa/public_alkis/vereinf/wfs?service=WFS&version=2.0.0&request=GetFeature&typeNames=ave%3AFlurstueck&srsName=urn%3Aogc%3Adef%3Acrs%3AEPSG%3A%3A25833&outputFormat=application%2Fgml%2Bxml%3B+version%3D3.2&propertyName=ave%3Aflstkennz%2Cave%3Ageometrie&sortBy=ave%3Aflstkennz+A&namespaces=xmlns%28ave%2Chttp%3A%2F%2Frepository.gdi-de.org%2Fschemas%2Fadv%2Fprodukt%2Falkis-vereinfacht%2F2.0%29&filter=%3Cfes%3AFilter+xmlns%3Afes%3D%22http%3A%2F%2Fwww.opengis.net%2Ffes%2F2.0%22+xmlns%3Aave%3D%22http%3A%2F%2Frepository.gdi-de.org%2Fschemas%2Fadv%2Fprodukt%2Falkis-vereinfacht%2F2.0%22+xmlns%3Agml%3D%22http%3A%2F%2Fwww.opengis.net%2Fgml%2F3.2%22%3E%3Cfes%3AIntersects%3E%3Cfes%3AValueReference%3Eave%3Ageometrie%3C%2Ffes%3AValueReference%3E%3Cgml%3APolygon+srsName%3D%22urn%3Aogc%3Adef%3Acrs%3AEPSG%3A%3A25833%22%3E%3Cgml%3Aexterior%3E%3Cgml%3ALinearRing%3E%3Cgml%3AposList+srsDimension%3D%222%22%3E412124.73009886686+5654832.741481501+412733.40062549233+5654832.741481501+412733.40062549233+5655694.045226043+412124.73009886686+5655694.045226043+412124.73009886686+5654832.741481501%3C%2Fgml%3AposList%3E%3C%2Fgml%3ALinearRing%3E%3C%2Fgml%3Aexterior%3E%3C%2Fgml%3APolygon%3E%3C%2Ffes%3AIntersects%3E%3C%2Ffes%3AFilter%3E&count=24&startIndex=50",
+      "method": "GET",
+      "checkedAt": "2026-10-09T05:16:19.593Z",
+      "httpStatus": 200,
+      "contentType": "application/gml+xml; version=3.2.1; charset=utf-8",
+      "bytes": 49377,
+      "numberMatchedUnknown": true,
+      "numberReturned": 24,
+      "features": [
+        {
+          "transportId": "140209___00256____03",
+          "properties": {
+            "flstkennz": "140209___00256____03"
+          },
+          "geometrySha256": "be9c4078ac68dd94180f95b036f22312540c01c23b8ee5ca79ec2dd3228601e2"
+        },
+        {
+          "transportId": "140209___00259000100",
+          "properties": {
+            "flstkennz": "140209___00259000100"
+          },
+          "geometrySha256": "e80d977823a05f5409f6d2373c5b6f3ee35c18b79b9707f5f0e36f5ecb912a20"
+        },
+        {
+          "transportId": "140209___00259000501",
+          "properties": {
+            "flstkennz": "140209___00259000501"
+          },
+          "geometrySha256": "b86ded65cf289cb410f0f1cf6451a17163b6b1d54113319e7aa745f567ab7c4d"
+        },
+        {
+          "transportId": "140209___00622000400",
+          "properties": {
+            "flstkennz": "140209___00622000400"
+          },
+          "geometrySha256": "e5bd44e664bd8b23b0e0409432725a6589429e8854362d0251a411dc7a19fa94"
+        },
+        {
+          "transportId": "140209___00622001002",
+          "properties": {
+            "flstkennz": "140209___00622001002"
+          },
+          "geometrySha256": "2c91f6326e41f1d56f52b9db2a0380f2ea9d37d14db9ab5a7c6892a3f5419dca"
+        },
+        {
+          "transportId": "140209___00622001103",
+          "properties": {
+            "flstkennz": "140209___00622001103"
+          },
+          "geometrySha256": "1b967883bd7e86384e65f5110141bda635101fb3085c4c8ef9c426b6a80d815a"
+        },
+        {
+          "transportId": "140209___00622001800",
+          "properties": {
+            "flstkennz": "140209___00622001800"
+          },
+          "geometrySha256": "20d3133bf17a53275d117b0c9fff4529e93bffe0bd618c15a126b7d1944299e7"
+        },
+        {
+          "transportId": "140209___00890000100",
+          "properties": {
+            "flstkennz": "140209___00890000100"
+          },
+          "geometrySha256": "b730c26ece0513e1e0d4f85be3b7c732e34f7dbdc319b7cc482f87fab754924f"
+        },
+        {
+          "transportId": "140209___00951000400",
+          "properties": {
+            "flstkennz": "140209___00951000400"
+          },
+          "geometrySha256": "55ee19e618ff1e9d22833f1196b57bd9a4e7ec1b3eaafb72228d1d7e8e6cc266"
+        },
+        {
+          "transportId": "140209___00971000101",
+          "properties": {
+            "flstkennz": "140209___00971000101"
+          },
+          "geometrySha256": "d43f26b7966e80eaff043c6bc1a3261a87d38d6c885c847502643e0cdc43f251"
+        },
+        {
+          "transportId": "140209___00972____00",
+          "properties": {
+            "flstkennz": "140209___00972____00"
+          },
+          "geometrySha256": "6ab55a8d44999dec2ed26499db7dda3ca0227f94cbd087ed089e71f29a7a307f"
+        },
+        {
+          "transportId": "140209___00975____00",
+          "properties": {
+            "flstkennz": "140209___00975____00"
+          },
+          "geometrySha256": "3c7884663febc7dc6c928d2aaec4689d8455746ed2b6e593ad8979a19309bef8"
+        },
+        {
+          "transportId": "140209___00976____01",
+          "properties": {
+            "flstkennz": "140209___00976____01"
+          },
+          "geometrySha256": "2a8c85378ea0ed0e81bb4aeb7f49785509103b4ae7591947cfba4957d7b5735c"
+        },
+        {
+          "transportId": "140209___00979____00",
+          "properties": {
+            "flstkennz": "140209___00979____00"
+          },
+          "geometrySha256": "ca5e1a2c9474f9b063a9d49de4d3adea85ae1e52b6725c577db4eb11cf873394"
+        },
+        {
+          "transportId": "140209___00980000300",
+          "properties": {
+            "flstkennz": "140209___00980000300"
+          },
+          "geometrySha256": "91fbdfc2f9673b2385e872ea8ec126c97387a21c7de051a801940fa49ce2a6d9"
+        },
+        {
+          "transportId": "140209___00980000400",
+          "properties": {
+            "flstkennz": "140209___00980000400"
+          },
+          "geometrySha256": "c0be2771acff27b3ebc4274c52f6dc8bd6beca9c186c063e15818e6ad5555c8b"
+        },
+        {
+          "transportId": "140209___01245000100",
+          "properties": {
+            "flstkennz": "140209___01245000100"
+          },
+          "geometrySha256": "e530fc9035ee684bdc950aa782aa324e7d0c72b1d38c73136ddbe3ee3cc86949"
+        },
+        {
+          "transportId": "140209___01246____01",
+          "properties": {
+            "flstkennz": "140209___01246____01"
+          },
+          "geometrySha256": "bf8645013820db699c44fbd7c27997086500708217ed6e77424376e3db820338"
+        },
+        {
+          "transportId": "140209___01247____03",
+          "properties": {
+            "flstkennz": "140209___01247____03"
+          },
+          "geometrySha256": "c131cbce29838aa579ad5fbd6368d8c44586d8b44bacee4a37050601b0ed3892"
+        },
+        {
+          "transportId": "140209___01249000100",
+          "properties": {
+            "flstkennz": "140209___01249000100"
+          },
+          "geometrySha256": "5d1828c7c27e0b8d79b15effcc7cfa44d75ca3927162e4345d8469a24d05966a"
+        },
+        {
+          "transportId": "140209___01250____00",
+          "properties": {
+            "flstkennz": "140209___01250____00"
+          },
+          "geometrySha256": "0beb2b5d55c3cc588012c7a30c3c83cacabdf43f34995636eb38bf5e9e778fff"
+        },
+        {
+          "transportId": "140209___01296____00",
+          "properties": {
+            "flstkennz": "140209___01296____00"
+          },
+          "geometrySha256": "b9909befd95276a0d16c1bc1dc71d3b656bf09fc57ca06d84f857d152f1c18c0"
+        },
+        {
+          "transportId": "140209___01297____00",
+          "properties": {
+            "flstkennz": "140209___01297____00"
+          },
+          "geometrySha256": "723ca18c2bf05117f0c6ee451421db2bdb55e627e90d62d2c7bd57145fa35b68"
+        },
+        {
+          "transportId": "140209___01298____00",
+          "properties": {
+            "flstkennz": "140209___01298____00"
+          },
+          "geometrySha256": "2f19b3f1c0a100272072d6b43b79be20341fae2cf3232800c85608a9e87b25c0"
+        }
+      ]
+    },
+    {
+      "test": "footprint",
+      "url": "https://geodienste.sachsen.de/aaa/public_alkis/vereinf/wfs?service=WFS&version=2.0.0&request=GetFeature&typeNames=ave%3AFlurstueck&srsName=urn%3Aogc%3Adef%3Acrs%3AEPSG%3A%3A25833&outputFormat=application%2Fgml%2Bxml%3B+version%3D3.2&propertyName=ave%3Aflstkennz%2Cave%3Ageometrie&sortBy=ave%3Aflstkennz+A&namespaces=xmlns%28ave%2Chttp%3A%2F%2Frepository.gdi-de.org%2Fschemas%2Fadv%2Fprodukt%2Falkis-vereinfacht%2F2.0%29&filter=%3Cfes%3AFilter+xmlns%3Afes%3D%22http%3A%2F%2Fwww.opengis.net%2Ffes%2F2.0%22+xmlns%3Aave%3D%22http%3A%2F%2Frepository.gdi-de.org%2Fschemas%2Fadv%2Fprodukt%2Falkis-vereinfacht%2F2.0%22+xmlns%3Agml%3D%22http%3A%2F%2Fwww.opengis.net%2Fgml%2F3.2%22%3E%3Cfes%3AIntersects%3E%3Cfes%3AValueReference%3Eave%3Ageometrie%3C%2Ffes%3AValueReference%3E%3Cgml%3APolygon+srsName%3D%22urn%3Aogc%3Adef%3Acrs%3AEPSG%3A%3A25833%22%3E%3Cgml%3Aexterior%3E%3Cgml%3ALinearRing%3E%3Cgml%3AposList+srsDimension%3D%222%22%3E412124.73009886686+5654832.741481501+412733.40062549233+5654832.741481501+412733.40062549233+5655694.045226043+412124.73009886686+5655694.045226043+412124.73009886686+5654832.741481501%3C%2Fgml%3AposList%3E%3C%2Fgml%3ALinearRing%3E%3C%2Fgml%3Aexterior%3E%3C%2Fgml%3APolygon%3E%3C%2Ffes%3AIntersects%3E%3C%2Ffes%3AFilter%3E&resultType=hits",
+      "method": "GET",
+      "checkedAt": "2026-10-09T05:16:19.770Z",
+      "httpStatus": 200,
+      "contentType": "application/gml+xml; version=3.2.1; charset=utf-8",
+      "bytes": 366,
+      "numberMatched": 74,
+      "numberMatchedUnknown": false,
+      "numberReturned": 0,
+      "features": []
+    },
+    {
+      "test": "source-binding",
+      "url": "https://geodienste.sachsen.de/aaa/public_alkis/vereinf/wfs?service=WFS&version=2.0.0&request=GetFeature&typeNames=ave%3AFlurstueck&srsName=urn%3Aogc%3Adef%3Acrs%3AEPSG%3A%3A25833&outputFormat=application%2Fgml%2Bxml%3B+version%3D3.2&propertyName=ave%3Aflstkennz%2Cave%3Ageometrie&sortBy=ave%3Aflstkennz+A&namespaces=xmlns%28ave%2Chttp%3A%2F%2Frepository.gdi-de.org%2Fschemas%2Fadv%2Fprodukt%2Falkis-vereinfacht%2F2.0%29&filter=%3Cfes%3AFilter+xmlns%3Afes%3D%22http%3A%2F%2Fwww.opengis.net%2Ffes%2F2.0%22+xmlns%3Aave%3D%22http%3A%2F%2Frepository.gdi-de.org%2Fschemas%2Fadv%2Fprodukt%2Falkis-vereinfacht%2F2.0%22+xmlns%3Agml%3D%22http%3A%2F%2Fwww.opengis.net%2Fgml%2F3.2%22%3E%3Cfes%3AIntersects%3E%3Cfes%3AValueReference%3Eave%3Ageometrie%3C%2Ffes%3AValueReference%3E%3Cgml%3APolygon+srsName%3D%22urn%3Aogc%3Adef%3Acrs%3AEPSG%3A%3A25833%22%3E%3Cgml%3Aexterior%3E%3Cgml%3ALinearRing%3E%3Cgml%3AposList+srsDimension%3D%222%22%3E412124.73009886686+5654832.741481501+412733.40062549233+5654832.741481501+412733.40062549233+5655694.045226043+412124.73009886686+5655694.045226043+412124.73009886686+5654832.741481501%3C%2Fgml%3AposList%3E%3C%2Fgml%3ALinearRing%3E%3C%2Fgml%3Aexterior%3E%3C%2Fgml%3APolygon%3E%3C%2Ffes%3AIntersects%3E%3C%2Ffes%3AFilter%3E&resultType=hits",
+      "method": "GET",
+      "checkedAt": "2026-10-09T05:16:19.931Z",
+      "httpStatus": 200,
+      "contentType": "application/gml+xml; version=3.2.1; charset=utf-8",
+      "bytes": 366,
+      "numberMatched": 74,
+      "numberMatchedUnknown": false,
+      "numberReturned": 0,
+      "features": []
+    },
+    {
+      "test": "source-binding",
+      "url": "https://geodienste.sachsen.de/aaa/public_alkis/vereinf/wfs?service=WFS&version=2.0.0&request=GetFeature&typeNames=ave%3AFlurstueck&srsName=urn%3Aogc%3Adef%3Acrs%3AEPSG%3A%3A25833&outputFormat=application%2Fgml%2Bxml%3B+version%3D3.2&propertyName=ave%3Aflstkennz%2Cave%3Ageometrie&sortBy=ave%3Aflstkennz+A&namespaces=xmlns%28ave%2Chttp%3A%2F%2Frepository.gdi-de.org%2Fschemas%2Fadv%2Fprodukt%2Falkis-vereinfacht%2F2.0%29&filter=%3Cfes%3AFilter+xmlns%3Afes%3D%22http%3A%2F%2Fwww.opengis.net%2Ffes%2F2.0%22+xmlns%3Aave%3D%22http%3A%2F%2Frepository.gdi-de.org%2Fschemas%2Fadv%2Fprodukt%2Falkis-vereinfacht%2F2.0%22+xmlns%3Agml%3D%22http%3A%2F%2Fwww.opengis.net%2Fgml%2F3.2%22%3E%3Cfes%3AIntersects%3E%3Cfes%3AValueReference%3Eave%3Ageometrie%3C%2Ffes%3AValueReference%3E%3Cgml%3APolygon+srsName%3D%22urn%3Aogc%3Adef%3Acrs%3AEPSG%3A%3A25833%22%3E%3Cgml%3Aexterior%3E%3Cgml%3ALinearRing%3E%3Cgml%3AposList+srsDimension%3D%222%22%3E412124.73009886686+5654832.741481501+412733.40062549233+5654832.741481501+412733.40062549233+5655694.045226043+412124.73009886686+5655694.045226043+412124.73009886686+5654832.741481501%3C%2Fgml%3AposList%3E%3C%2Fgml%3ALinearRing%3E%3C%2Fgml%3Aexterior%3E%3C%2Fgml%3APolygon%3E%3C%2Ffes%3AIntersects%3E%3C%2Ffes%3AFilter%3E&count=50&startIndex=0",
+      "method": "GET",
+      "checkedAt": "2026-10-09T05:16:20.088Z",
+      "httpStatus": 200,
+      "contentType": "application/gml+xml; version=3.2.1; charset=utf-8",
+      "bytes": 79257,
+      "numberMatchedUnknown": true,
+      "numberReturned": 50,
+      "features": [
+        {
+          "transportId": "140208___01174001800",
+          "properties": {
+            "flstkennz": "140208___01174001800"
+          },
+          "geometrySha256": "fe0a2097ff5b5c46c6b9c3f504ec95fa865b7e839f5e02ed835affad7bbe6631"
+        },
+        {
+          "transportId": "140208___01264000202",
+          "properties": {
+            "flstkennz": "140208___01264000202"
+          },
+          "geometrySha256": "03afea2fa26ebec007ac3a932e1fb2ac626c2b270d27268b98169b3a42769213"
+        },
+        {
+          "transportId": "140208___01264000401",
+          "properties": {
+            "flstkennz": "140208___01264000401"
+          },
+          "geometrySha256": "b4a4c1ee31a28c81b6136a055910bf137a9e96e355aae3714f7dff8286227f07"
+        },
+        {
+          "transportId": "140208___01275____01",
+          "properties": {
+            "flstkennz": "140208___01275____01"
+          },
+          "geometrySha256": "1eddeea30b3cd19eaecc777097522fbbbedde6694923f241113bcd77e3f64caa"
+        },
+        {
+          "transportId": "140208___01276000101",
+          "properties": {
+            "flstkennz": "140208___01276000101"
+          },
+          "geometrySha256": "d12ac8e8cc2fb847a9fca16e47539493baebbc6f0fbe84bc7c640e3988d40105"
+        },
+        {
+          "transportId": "140208___01276000201",
+          "properties": {
+            "flstkennz": "140208___01276000201"
+          },
+          "geometrySha256": "43c39ad7c7bba02b86b3d786f160182ead53692d2cadad15c29c63c019bf2fda"
+        },
+        {
+          "transportId": "140208___01276000301",
+          "properties": {
+            "flstkennz": "140208___01276000301"
+          },
+          "geometrySha256": "1817f9a6fb45e88ef7b06206c5ce811681c5211115939c4ff5944106fc4be16a"
+        },
+        {
+          "transportId": "140208___01276000401",
+          "properties": {
+            "flstkennz": "140208___01276000401"
+          },
+          "geometrySha256": "ad8b727f0af6da584711db1b94f9a8e91040507fe805b9fbf18fd9d43669644a"
+        },
+        {
+          "transportId": "140208___01276000501",
+          "properties": {
+            "flstkennz": "140208___01276000501"
+          },
+          "geometrySha256": "d9634a02e75c825092568df5be7023f36fd848b945f1f9e3784c1d08c32324cf"
+        },
+        {
+          "transportId": "140208___01276000601",
+          "properties": {
+            "flstkennz": "140208___01276000601"
+          },
+          "geometrySha256": "4c272286942b9e8ca4fc508b1d3a2a7b74ebb3b228ed508b808bdb565fd54b4f"
+        },
+        {
+          "transportId": "140208___01276000g01",
+          "properties": {
+            "flstkennz": "140208___01276000g01"
+          },
+          "geometrySha256": "9ce5640d289139efd7a82612c05c32f575a7c9466af9fbdf6c23df2d8aba3a4c"
+        },
+        {
+          "transportId": "140208___01276000h01",
+          "properties": {
+            "flstkennz": "140208___01276000h01"
+          },
+          "geometrySha256": "87d8f7b7f1955fbf7e989f85fd112aa3b09bc7efaba37e9105216de81b481a50"
+        },
+        {
+          "transportId": "140208___01276000i01",
+          "properties": {
+            "flstkennz": "140208___01276000i01"
+          },
+          "geometrySha256": "62d717a5cf67cd8e069ceec6c41ca58eec1eed1d0aa1b7388dc13c1edc4331ad"
+        },
+        {
+          "transportId": "140208___01277000101",
+          "properties": {
+            "flstkennz": "140208___01277000101"
+          },
+          "geometrySha256": "3fcfc1e0ae533b02bc22235989ea5030936c388d181547a29eab1b3e6218d0a8"
+        },
+        {
+          "transportId": "140208___01280000101",
+          "properties": {
+            "flstkennz": "140208___01280000101"
+          },
+          "geometrySha256": "0fd0932ce0dbe69e6772ccbe861df0137ed059c7e031236623fffc035bb800ae"
+        },
+        {
+          "transportId": "140208___01284000q01",
+          "properties": {
+            "flstkennz": "140208___01284000q01"
+          },
+          "geometrySha256": "fae533d26019a84c7b6cf5f780812160b633ba8d3bd52d6bd6a9b02a46ffe083"
+        },
+        {
+          "transportId": "140208___01307000303",
+          "properties": {
+            "flstkennz": "140208___01307000303"
+          },
+          "geometrySha256": "5d2898058237cc478bc1e7e9acad54a1ad2d567960aa449d189dd0b992184420"
+        },
+        {
+          "transportId": "140208___01307000502",
+          "properties": {
+            "flstkennz": "140208___01307000502"
+          },
+          "geometrySha256": "34f9c989504f3f116ccab985317805b88e0ec901c8f55a675e0e5be9fb45a39a"
+        },
+        {
+          "transportId": "140208___01307000703",
+          "properties": {
+            "flstkennz": "140208___01307000703"
+          },
+          "geometrySha256": "9ea011b5bb5c5deef7470762dc8079ad46168dc48b614126e474e5cbd1bfcf5e"
+        },
+        {
+          "transportId": "140208___01307000801",
+          "properties": {
+            "flstkennz": "140208___01307000801"
+          },
+          "geometrySha256": "4687769f45b5bea2fa8c8cc42ebee8672c7236524973c16bb650967982a06486"
+        },
+        {
+          "transportId": "140208___01307000902",
+          "properties": {
+            "flstkennz": "140208___01307000902"
+          },
+          "geometrySha256": "e4103363378a757675f35e7725f0aca617c95e1cd9427936dbcfa722743eafc6"
+        },
+        {
+          "transportId": "140208___01307001202",
+          "properties": {
+            "flstkennz": "140208___01307001202"
+          },
+          "geometrySha256": "744606abecc06b84b20aa2b6374fc11df9aed1583dee08430151b61cb578e720"
+        },
+        {
+          "transportId": "140208___01307001300",
+          "properties": {
+            "flstkennz": "140208___01307001300"
+          },
+          "geometrySha256": "792534744db05dba980af0a8c796a9d620d8bba2c94d228d77868aeea962eb9e"
+        },
+        {
+          "transportId": "140208___01324000300",
+          "properties": {
+            "flstkennz": "140208___01324000300"
+          },
+          "geometrySha256": "06ae4f67c27ca311e8a425bab5ff306f2bb1016d52ead03f0c199a205dd849fc"
+        },
+        {
+          "transportId": "140208___01324000402",
+          "properties": {
+            "flstkennz": "140208___01324000402"
+          },
+          "geometrySha256": "9c4581c50e9c8c0989e9846d493952d175aed7cfdbe88e02b7642fac9bc12329"
+        },
+        {
+          "transportId": "140208___02673000100",
+          "properties": {
+            "flstkennz": "140208___02673000100"
+          },
+          "geometrySha256": "fbe17ef21fa4b0729861bcc78c41f610172a5b4c4b7e07476b89a3dab219be17"
+        },
+        {
+          "transportId": "140208___02677000100",
+          "properties": {
+            "flstkennz": "140208___02677000100"
+          },
+          "geometrySha256": "774ecaa90ca2b4684611c5531a7415d77a3afe1423cf7c98f3bad2358f143fdf"
+        },
+        {
+          "transportId": "140208___02834____01",
+          "properties": {
+            "flstkennz": "140208___02834____01"
+          },
+          "geometrySha256": "40aa025c08083c582598c17d42186ae5d0116da2a7006469385a0c03fc413aad"
+        },
+        {
+          "transportId": "140208___02835____01",
+          "properties": {
+            "flstkennz": "140208___02835____01"
+          },
+          "geometrySha256": "247822abb9f04ef9e347ea90efe00a38e01173c2a4360f21001189e962420b1b"
+        },
+        {
+          "transportId": "140208___02836____01",
+          "properties": {
+            "flstkennz": "140208___02836____01"
+          },
+          "geometrySha256": "d4d2b8a7e26b29ee0d91b1f35e951439842caebdc87d74c40afd237a57bdaf1a"
+        },
+        {
+          "transportId": "140208___02837____00",
+          "properties": {
+            "flstkennz": "140208___02837____00"
+          },
+          "geometrySha256": "59d92f120e577b8943bfa1efe97efb8b94629996f29eb87e9ee70409e7642ea0"
+        },
+        {
+          "transportId": "140208___02838000201",
+          "properties": {
+            "flstkennz": "140208___02838000201"
+          },
+          "geometrySha256": "74547477a5becaa3c76f3f3a7f67c4b6e2f86e814481f75077b4b93c9a5d5543"
+        },
+        {
+          "transportId": "140208___02838000301",
+          "properties": {
+            "flstkennz": "140208___02838000301"
+          },
+          "geometrySha256": "d70badd75fad747f944084fcf3518db7b294cfe96e244c41b6acf916bf5db240"
+        },
+        {
+          "transportId": "140208___02839000101",
+          "properties": {
+            "flstkennz": "140208___02839000101"
+          },
+          "geometrySha256": "c325fd0ccde67e907da8dffb4e3c4faa4222f9e8a008f604edd67c0064f42337"
+        },
+        {
+          "transportId": "140208___02840000200",
+          "properties": {
+            "flstkennz": "140208___02840000200"
+          },
+          "geometrySha256": "772f535c2fa2d2e6d4fcb1b0ff57339550b85c84bd2b3b545ae6f890417def12"
+        },
+        {
+          "transportId": "140208___02841____02",
+          "properties": {
+            "flstkennz": "140208___02841____02"
+          },
+          "geometrySha256": "ca0ecbec1a70c52bfc674e697d63c65b16c5d8ea18a84bf36a181b875031c506"
+        },
+        {
+          "transportId": "140208___03175____00",
+          "properties": {
+            "flstkennz": "140208___03175____00"
+          },
+          "geometrySha256": "f5b0ac45e5ca31f569a1259919369c814c966de8961efe9c200ba941698abeaa"
+        },
+        {
+          "transportId": "140208___03176____00",
+          "properties": {
+            "flstkennz": "140208___03176____00"
+          },
+          "geometrySha256": "e1481a5e95548af832c5dc07239274637b2cb6b8cab35194a64d16b04d29ffcc"
+        },
+        {
+          "transportId": "140208___03180____00",
+          "properties": {
+            "flstkennz": "140208___03180____00"
+          },
+          "geometrySha256": "ccd8770c0daaa4ed0867457e440be843e0e808b8cfdd8e4927146e2be58fb3bb"
+        },
+        {
+          "transportId": "140209___00232000607",
+          "properties": {
+            "flstkennz": "140209___00232000607"
+          },
+          "geometrySha256": "9d14c12b189cd6c30a2c3094c1c4239b8ee67871fb9cf1075ee451058a546bf9"
+        },
+        {
+          "transportId": "140209___00232000700",
+          "properties": {
+            "flstkennz": "140209___00232000700"
+          },
+          "geometrySha256": "92ba87d8419bde48b87779ae4fe8827af28a54da8771f3b6400bde25c94d0985"
+        },
+        {
+          "transportId": "140209___00232000800",
+          "properties": {
+            "flstkennz": "140209___00232000800"
+          },
+          "geometrySha256": "6742aa644063b1fd93dc494a635f7d6bf1b803f14677bdacc1695c4682673883"
+        },
+        {
+          "transportId": "140209___00239000402",
+          "properties": {
+            "flstkennz": "140209___00239000402"
+          },
+          "geometrySha256": "5e3d3a39acc9a24333a48356630e61e24f3c35d8369dc3db99c546fabfb9ae38"
+        },
+        {
+          "transportId": "140209___00239000601",
+          "properties": {
+            "flstkennz": "140209___00239000601"
+          },
+          "geometrySha256": "5b31936f36a71a03c16c83f891ea4662bddb2a68ef945d392af6089180576eae"
+        },
+        {
+          "transportId": "140209___00239000801",
+          "properties": {
+            "flstkennz": "140209___00239000801"
+          },
+          "geometrySha256": "ef340f4ea89961d5485a2c5d9092a0ff0cb7932fc75672e14a36074747a9af06"
+        },
+        {
+          "transportId": "140209___00239000901",
+          "properties": {
+            "flstkennz": "140209___00239000901"
+          },
+          "geometrySha256": "ac4fc95611ea6cc9a1944b3d4d5bc5f964c892053ed859f563f91aed1aa99470"
+        },
+        {
+          "transportId": "140209___00248000101",
+          "properties": {
+            "flstkennz": "140209___00248000101"
+          },
+          "geometrySha256": "33c02535d7ab38d915349f1bcb78f0a704002bc8aeb310e22705974235af460d"
+        },
+        {
+          "transportId": "140209___00248000a05",
+          "properties": {
+            "flstkennz": "140209___00248000a05"
+          },
+          "geometrySha256": "5a159b313f63384ab3c53ec75ac9b09013b66d249dfc15c63a285a33a776cdaa"
+        },
+        {
+          "transportId": "140209___00256000200",
+          "properties": {
+            "flstkennz": "140209___00256000200"
+          },
+          "geometrySha256": "4465a7e2c6c5ed4c2da38235477becbc485a0419fc984a23d98467b72a5400d4"
+        },
+        {
+          "transportId": "140209___00256000300",
+          "properties": {
+            "flstkennz": "140209___00256000300"
+          },
+          "geometrySha256": "67d01f56885b05533723eaddaf2ff1e37244a428f6116da0719cee0fb8d9d65f"
+        }
+      ]
+    },
+    {
+      "test": "source-binding",
+      "url": "https://geodienste.sachsen.de/aaa/public_alkis/vereinf/wfs?service=WFS&version=2.0.0&request=GetFeature&typeNames=ave%3AFlurstueck&srsName=urn%3Aogc%3Adef%3Acrs%3AEPSG%3A%3A25833&outputFormat=application%2Fgml%2Bxml%3B+version%3D3.2&propertyName=ave%3Aflstkennz%2Cave%3Ageometrie&sortBy=ave%3Aflstkennz+A&namespaces=xmlns%28ave%2Chttp%3A%2F%2Frepository.gdi-de.org%2Fschemas%2Fadv%2Fprodukt%2Falkis-vereinfacht%2F2.0%29&filter=%3Cfes%3AFilter+xmlns%3Afes%3D%22http%3A%2F%2Fwww.opengis.net%2Ffes%2F2.0%22+xmlns%3Aave%3D%22http%3A%2F%2Frepository.gdi-de.org%2Fschemas%2Fadv%2Fprodukt%2Falkis-vereinfacht%2F2.0%22+xmlns%3Agml%3D%22http%3A%2F%2Fwww.opengis.net%2Fgml%2F3.2%22%3E%3Cfes%3AIntersects%3E%3Cfes%3AValueReference%3Eave%3Ageometrie%3C%2Ffes%3AValueReference%3E%3Cgml%3APolygon+srsName%3D%22urn%3Aogc%3Adef%3Acrs%3AEPSG%3A%3A25833%22%3E%3Cgml%3Aexterior%3E%3Cgml%3ALinearRing%3E%3Cgml%3AposList+srsDimension%3D%222%22%3E412124.73009886686+5654832.741481501+412733.40062549233+5654832.741481501+412733.40062549233+5655694.045226043+412124.73009886686+5655694.045226043+412124.73009886686+5654832.741481501%3C%2Fgml%3AposList%3E%3C%2Fgml%3ALinearRing%3E%3C%2Fgml%3Aexterior%3E%3C%2Fgml%3APolygon%3E%3C%2Ffes%3AIntersects%3E%3C%2Ffes%3AFilter%3E&count=24&startIndex=50",
+      "method": "GET",
+      "checkedAt": "2026-10-09T05:16:20.284Z",
+      "httpStatus": 200,
+      "contentType": "application/gml+xml; version=3.2.1; charset=utf-8",
+      "bytes": 49377,
+      "numberMatchedUnknown": true,
+      "numberReturned": 24,
+      "features": [
+        {
+          "transportId": "140209___00256____03",
+          "properties": {
+            "flstkennz": "140209___00256____03"
+          },
+          "geometrySha256": "be9c4078ac68dd94180f95b036f22312540c01c23b8ee5ca79ec2dd3228601e2"
+        },
+        {
+          "transportId": "140209___00259000100",
+          "properties": {
+            "flstkennz": "140209___00259000100"
+          },
+          "geometrySha256": "e80d977823a05f5409f6d2373c5b6f3ee35c18b79b9707f5f0e36f5ecb912a20"
+        },
+        {
+          "transportId": "140209___00259000501",
+          "properties": {
+            "flstkennz": "140209___00259000501"
+          },
+          "geometrySha256": "b86ded65cf289cb410f0f1cf6451a17163b6b1d54113319e7aa745f567ab7c4d"
+        },
+        {
+          "transportId": "140209___00622000400",
+          "properties": {
+            "flstkennz": "140209___00622000400"
+          },
+          "geometrySha256": "e5bd44e664bd8b23b0e0409432725a6589429e8854362d0251a411dc7a19fa94"
+        },
+        {
+          "transportId": "140209___00622001002",
+          "properties": {
+            "flstkennz": "140209___00622001002"
+          },
+          "geometrySha256": "2c91f6326e41f1d56f52b9db2a0380f2ea9d37d14db9ab5a7c6892a3f5419dca"
+        },
+        {
+          "transportId": "140209___00622001103",
+          "properties": {
+            "flstkennz": "140209___00622001103"
+          },
+          "geometrySha256": "1b967883bd7e86384e65f5110141bda635101fb3085c4c8ef9c426b6a80d815a"
+        },
+        {
+          "transportId": "140209___00622001800",
+          "properties": {
+            "flstkennz": "140209___00622001800"
+          },
+          "geometrySha256": "20d3133bf17a53275d117b0c9fff4529e93bffe0bd618c15a126b7d1944299e7"
+        },
+        {
+          "transportId": "140209___00890000100",
+          "properties": {
+            "flstkennz": "140209___00890000100"
+          },
+          "geometrySha256": "b730c26ece0513e1e0d4f85be3b7c732e34f7dbdc319b7cc482f87fab754924f"
+        },
+        {
+          "transportId": "140209___00951000400",
+          "properties": {
+            "flstkennz": "140209___00951000400"
+          },
+          "geometrySha256": "55ee19e618ff1e9d22833f1196b57bd9a4e7ec1b3eaafb72228d1d7e8e6cc266"
+        },
+        {
+          "transportId": "140209___00971000101",
+          "properties": {
+            "flstkennz": "140209___00971000101"
+          },
+          "geometrySha256": "d43f26b7966e80eaff043c6bc1a3261a87d38d6c885c847502643e0cdc43f251"
+        },
+        {
+          "transportId": "140209___00972____00",
+          "properties": {
+            "flstkennz": "140209___00972____00"
+          },
+          "geometrySha256": "6ab55a8d44999dec2ed26499db7dda3ca0227f94cbd087ed089e71f29a7a307f"
+        },
+        {
+          "transportId": "140209___00975____00",
+          "properties": {
+            "flstkennz": "140209___00975____00"
+          },
+          "geometrySha256": "3c7884663febc7dc6c928d2aaec4689d8455746ed2b6e593ad8979a19309bef8"
+        },
+        {
+          "transportId": "140209___00976____01",
+          "properties": {
+            "flstkennz": "140209___00976____01"
+          },
+          "geometrySha256": "2a8c85378ea0ed0e81bb4aeb7f49785509103b4ae7591947cfba4957d7b5735c"
+        },
+        {
+          "transportId": "140209___00979____00",
+          "properties": {
+            "flstkennz": "140209___00979____00"
+          },
+          "geometrySha256": "ca5e1a2c9474f9b063a9d49de4d3adea85ae1e52b6725c577db4eb11cf873394"
+        },
+        {
+          "transportId": "140209___00980000300",
+          "properties": {
+            "flstkennz": "140209___00980000300"
+          },
+          "geometrySha256": "91fbdfc2f9673b2385e872ea8ec126c97387a21c7de051a801940fa49ce2a6d9"
+        },
+        {
+          "transportId": "140209___00980000400",
+          "properties": {
+            "flstkennz": "140209___00980000400"
+          },
+          "geometrySha256": "c0be2771acff27b3ebc4274c52f6dc8bd6beca9c186c063e15818e6ad5555c8b"
+        },
+        {
+          "transportId": "140209___01245000100",
+          "properties": {
+            "flstkennz": "140209___01245000100"
+          },
+          "geometrySha256": "e530fc9035ee684bdc950aa782aa324e7d0c72b1d38c73136ddbe3ee3cc86949"
+        },
+        {
+          "transportId": "140209___01246____01",
+          "properties": {
+            "flstkennz": "140209___01246____01"
+          },
+          "geometrySha256": "bf8645013820db699c44fbd7c27997086500708217ed6e77424376e3db820338"
+        },
+        {
+          "transportId": "140209___01247____03",
+          "properties": {
+            "flstkennz": "140209___01247____03"
+          },
+          "geometrySha256": "c131cbce29838aa579ad5fbd6368d8c44586d8b44bacee4a37050601b0ed3892"
+        },
+        {
+          "transportId": "140209___01249000100",
+          "properties": {
+            "flstkennz": "140209___01249000100"
+          },
+          "geometrySha256": "5d1828c7c27e0b8d79b15effcc7cfa44d75ca3927162e4345d8469a24d05966a"
+        },
+        {
+          "transportId": "140209___01250____00",
+          "properties": {
+            "flstkennz": "140209___01250____00"
+          },
+          "geometrySha256": "0beb2b5d55c3cc588012c7a30c3c83cacabdf43f34995636eb38bf5e9e778fff"
+        },
+        {
+          "transportId": "140209___01296____00",
+          "properties": {
+            "flstkennz": "140209___01296____00"
+          },
+          "geometrySha256": "b9909befd95276a0d16c1bc1dc71d3b656bf09fc57ca06d84f857d152f1c18c0"
+        },
+        {
+          "transportId": "140209___01297____00",
+          "properties": {
+            "flstkennz": "140209___01297____00"
+          },
+          "geometrySha256": "723ca18c2bf05117f0c6ee451421db2bdb55e627e90d62d2c7bd57145fa35b68"
+        },
+        {
+          "transportId": "140209___01298____00",
+          "properties": {
+            "flstkennz": "140209___01298____00"
+          },
+          "geometrySha256": "2f19b3f1c0a100272072d6b43b79be20341fae2cf3232800c85608a9e87b25c0"
+        }
+      ]
+    },
+    {
+      "test": "source-binding",
+      "url": "https://geodienste.sachsen.de/aaa/public_alkis/vereinf/wfs?service=WFS&version=2.0.0&request=GetFeature&typeNames=ave%3AFlurstueck&srsName=urn%3Aogc%3Adef%3Acrs%3AEPSG%3A%3A25833&outputFormat=application%2Fgml%2Bxml%3B+version%3D3.2&propertyName=ave%3Aflstkennz%2Cave%3Ageometrie&sortBy=ave%3Aflstkennz+A&namespaces=xmlns%28ave%2Chttp%3A%2F%2Frepository.gdi-de.org%2Fschemas%2Fadv%2Fprodukt%2Falkis-vereinfacht%2F2.0%29&filter=%3Cfes%3AFilter+xmlns%3Afes%3D%22http%3A%2F%2Fwww.opengis.net%2Ffes%2F2.0%22+xmlns%3Aave%3D%22http%3A%2F%2Frepository.gdi-de.org%2Fschemas%2Fadv%2Fprodukt%2Falkis-vereinfacht%2F2.0%22+xmlns%3Agml%3D%22http%3A%2F%2Fwww.opengis.net%2Fgml%2F3.2%22%3E%3Cfes%3AIntersects%3E%3Cfes%3AValueReference%3Eave%3Ageometrie%3C%2Ffes%3AValueReference%3E%3Cgml%3APolygon+srsName%3D%22urn%3Aogc%3Adef%3Acrs%3AEPSG%3A%3A25833%22%3E%3Cgml%3Aexterior%3E%3Cgml%3ALinearRing%3E%3Cgml%3AposList+srsDimension%3D%222%22%3E412124.73009886686+5654832.741481501+412733.40062549233+5654832.741481501+412733.40062549233+5655694.045226043+412124.73009886686+5655694.045226043+412124.73009886686+5654832.741481501%3C%2Fgml%3AposList%3E%3C%2Fgml%3ALinearRing%3E%3C%2Fgml%3Aexterior%3E%3C%2Fgml%3APolygon%3E%3C%2Ffes%3AIntersects%3E%3C%2Ffes%3AFilter%3E&resultType=hits",
+      "method": "GET",
+      "checkedAt": "2026-10-09T05:16:20.461Z",
+      "httpStatus": 200,
+      "contentType": "application/gml+xml; version=3.2.1; charset=utf-8",
+      "bytes": 366,
+      "numberMatched": 74,
+      "numberMatchedUnknown": false,
+      "numberReturned": 0,
+      "features": []
+    }
+  ],
+  "qualityFile": "research/overnight-cities-2026-10-08/dresden-saxony-gml-root-quality.json",
+  "uniqueParcels": 11,
+  "requestCount": 60,
+  "allTestsPassed": true,
+  "finishedAt": "2026-10-09T05:16:20.713Z",
+  "qualityStatus": "approved-independent-topology-check"
+}

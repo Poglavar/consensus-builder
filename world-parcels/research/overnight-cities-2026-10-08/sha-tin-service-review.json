@@ -1,0 +1,95 @@
+{
+  "schemaVersion": 1,
+  "checkedAt": "2026-10-09",
+  "sourceId": "hk-landsd-csdi-lot-polygons",
+  "purpose": "Service review for WUP2025 rank 806 Sha Tin (city code 11590); city-local registry evidence and safe anonymous full-polygon access status.",
+  "primaryPublisher": "Hong Kong Lands Department",
+  "sourceUrl": "https://www.landsd.gov.hk/tc/about-us/contact-us.html",
+  "registryFound": true,
+  "registryBasis": "Hong Kong Lands Department and Land Registry provide local land/cadastral services; the Lands Department has a Sha Tin District Lands Office. The CSDI Lands Department Lot dataset is an official public Polygon Feature Layer (EPSG:2326) with safe identifiers OBJECTID, LotID, LotCSUID. A restricted exact-point query found no intersecting lot; a 200 m envelope returned one complete nearby polygon 52.02 m from the WUP point.",
+  "officialSources": [
+    {
+      "url": "https://www.landsd.gov.hk/tc/about-us/contact-us.html",
+      "observation": "Official Lands Department contact page lists the Sha Tin District Lands Office."
+    },
+    {
+      "url": "https://www.landreg.gov.hk/en/faq/faq_iris_2.htm",
+      "observation": "Official Land Registry explains its public IRIS land-record ordering and map-based lot/PRN lookup; this is a records service rather than the polygon source."
+    },
+    {
+      "url": "https://portal.csdi.gov.hk/csdi-webpage/dataset/landsd_rcd_1637217253134_22729",
+      "observation": "Official CSDI dataset “Lot,” provided by Lands Department and categorized as Land Parcel Framework spatial data."
+    },
+    {
+      "url": "https://portal.csdi.gov.hk/server/rest/services/common/landsd_rcd_1637217253134_22729/FeatureServer/0?f=pjson",
+      "observation": "Anonymous service/layer metadata GET returned HTTP 200. Polygon layer in EPSG:2326; fields: OBJECTID (OID), Shape__Length/Area, LotID (integer), LotCSUID (string). Query return fields were restricted to OBJECTID,LotID,LotCSUID."
+    },
+    {
+      "url": "https://www.hkmapservice.gov.hk/OneStopSystem/map-search?locale=en",
+      "observation": "Official LandsD map-service notice describes displayed parcel polygons as approximate-location aids, not legal boundary indications; this is an accuracy caveat, not a blocker to recording sample geometry."
+    }
+  ],
+  "searchQueries": [
+    {
+      "language": "English",
+      "query": "Sha Tin Hong Kong official Lands Department land registry cadastral lot map API polygon data",
+      "result": "LandsD lists Sha Tin District Lands Office and its open CSDI Lot dataset. Public layer metadata confirms a Polygon Feature Layer in EPSG:2326 with fields OBJECTID, LotID and LotCSUID as safe identifiers plus only geometry length/area. A WUP-point intersection request returned zero features; a bounded 200 m envelope returned one full nearby polygon after allowlisting only the three identifiers.",
+      "urls": [
+        "https://www.landsd.gov.hk/en/spatial-data/geospatial-infomation-services/geospatial-portals.html",
+        "https://portal.csdi.gov.hk/csdi-webpage/dataset/landsd_rcd_1637217253134_22729",
+        "https://portal.csdi.gov.hk/server/rest/services/common/landsd_rcd_1637217253134_22729/FeatureServer/0?f=pjson"
+      ]
+    },
+    {
+      "language": "Traditional Chinese",
+      "query": "香港 沙田 地政處 土地註冊 地段地籍圖 LandsD Lot API 官方",
+      "result": "地政總署列有沙田地政處；CSDI 官方「地段」資料集由地政總署提供。圖層結構只有安全地段識別碼與幾何量測欄位；以排除其他欄位的方式查詢，WUP 點位未命中，200 米範圍內返回一個完整相鄰地段多邊形。",
+      "urls": [
+        "https://www.landsd.gov.hk/tc/about-us/contact-us.html",
+        "https://portal.csdi.gov.hk/csdi-webpage/dataset/landsd_rcd_1637217253134_22729",
+        "https://portal.csdi.gov.hk/server/rest/services/common/landsd_rcd_1637217253134_22729/FeatureServer/0?f=pjson"
+      ]
+    }
+  ],
+  "accessReview": {
+    "publicAnonymousGeometryVerified": true,
+    "completeGeoreferencedPolygonCount": 1,
+    "geometryRetained": true,
+    "ownerAddressTaxOrPersonLookupRequested": false,
+    "authenticationOrCredentialsUsed": false,
+    "captchaOrPersonalFormSubmitted": false,
+    "routeInspectionStatus": "safe_schema_and_nearby_geometry_verified_point_query_empty",
+    "reason": "One complete public polygon and safe identifiers were verified, but the WUP point itself did not intersect a lot in the point query. This is a nearby sample rather than evidence that the weighted centroid lies on a parcel. Runtime integration and citywide completeness are not assessed."
+  },
+  "requestEvidence": [
+    {
+      "url": "https://portal.csdi.gov.hk/server/rest/services/common/landsd_rcd_1637217253134_22729/FeatureServer?f=pjson",
+      "method": "GET",
+      "status": 200,
+      "observation": "Official anonymous ArcGIS service metadata; no parcel feature data read. Located Polygon layer 0 in EPSG:2326."
+    },
+    {
+      "url": "https://portal.csdi.gov.hk/server/rest/services/common/landsd_rcd_1637217253134_22729/FeatureServer/0?f=pjson",
+      "method": "GET",
+      "status": 200,
+      "observation": "Layer schema: OBJECTID, Shape__Length, Shape__Area, LotID, LotCSUID; only OBJECTID/LotID/LotCSUID allowlisted for feature requests."
+    },
+    {
+      "url": "https://portal.csdi.gov.hk/server/rest/services/common/landsd_rcd_1637217253134_22729/FeatureServer/0/query",
+      "method": "GET",
+      "status": 200,
+      "request": "Point intersection at queued WUP point transformed to EPSG:2326; outFields=OBJECTID,LotID,LotCSUID; outSR=4326; returnGeometry=true.",
+      "result": "FeatureCollection with zero features; 42-byte response."
+    },
+    {
+      "url": "https://portal.csdi.gov.hk/server/rest/services/common/landsd_rcd_1637217253134_22729/FeatureServer/0/query",
+      "method": "GET",
+      "status": 200,
+      "request": "200 m by 200 m envelope centered at queued WUP point in EPSG:2326; outFields=OBJECTID,LotID,LotCSUID; outSR=4326; returnGeometry=true; resultRecordCount=3.",
+      "result": "One Polygon returned, OBJECTID=367394, LotID=1910159279, LotCSUID preserved; 127 vertices, closed ring, distance 52.02 m from WUP point; full geometry retained in repo sample."
+    }
+  ],
+  "technicalBlocker": "One complete public polygon and safe identifiers were verified, but the WUP point itself did not intersect a lot in the point query. This is a nearby sample rather than evidence that the weighted centroid lies on a parcel. Runtime integration and citywide completeness are not assessed.",
+  "sampleDisposition": "samples/sha-tin-wup806-nearby-lot.geojson",
+  "remainingUncertainty": "One nearby polygon was retained; no parcel was returned at the exact point. LandsD map products carry an approximate-location disclaimer, and the sample does not establish legal boundary accuracy or territory-wide completeness."
+}

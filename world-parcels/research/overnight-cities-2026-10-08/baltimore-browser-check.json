@@ -1,0 +1,50 @@
+{
+  "checkedAt": "2026-10-09T00:30:28.404Z",
+  "city": "baltimore",
+  "detailsVerified": false,
+  "failedParcelResponses": [
+    {
+      "body": "{\"error\":\"Parcel provider returned an incomplete or invalid object-ID list.\",\"code\":\"parcel-source-unavailable\",\"sourceId\":\"us-md-baltimore-city-parcel\",\"retryAfterSeconds\":30}",
+      "status": 502,
+      "url": "http://localhost:5640/parcel-sources/us-md-baltimore-city-parcel?bbox=-76.624%2C39.322%2C-76.623%2C39.323"
+    },
+    {
+      "body": "{\"error\":\"Parcel provider returned an incomplete or invalid object-ID list.\",\"code\":\"parcel-source-unavailable\",\"sourceId\":\"us-md-baltimore-city-parcel\",\"retryAfterSeconds\":30}",
+      "status": 502,
+      "url": "http://localhost:5640/parcel-sources/us-md-baltimore-city-parcel?bbox=-76.624%2C39.325%2C-76.623%2C39.326"
+    },
+    {
+      "body": "{\"error\":\"Parcel provider returned an incomplete or invalid object-ID list.\",\"code\":\"parcel-source-unavailable\",\"sourceId\":\"us-md-baltimore-city-parcel\",\"retryAfterSeconds\":30}",
+      "status": 502,
+      "url": "http://localhost:5640/parcel-sources/us-md-baltimore-city-parcel?bbox=-76.624%2C39.326%2C-76.623%2C39.327"
+    },
+    {
+      "body": "{\"error\":\"Parcel provider returned an incomplete or invalid object-ID list.\",\"code\":\"parcel-source-unavailable\",\"sourceId\":\"us-md-baltimore-city-parcel\",\"retryAfterSeconds\":30}",
+      "status": 502,
+      "url": "http://localhost:5640/parcel-sources/us-md-baltimore-city-parcel?bbox=-76.623%2C39.322%2C-76.622%2C39.323"
+    },
+    {
+      "body": "{\"error\":\"Parcel provider returned an incomplete or invalid object-ID list.\",\"code\":\"parcel-source-unavailable\",\"sourceId\":\"us-md-baltimore-city-parcel\",\"retryAfterSeconds\":30}",
+      "status": 502,
+      "url": "http://localhost:5640/parcel-sources/us-md-baltimore-city-parcel?bbox=-76.623%2C39.323%2C-76.622%2C39.324"
+    }
+  ],
+  "loadedParcels": 187,
+  "mapBounds": "-76.62650585174562,39.3233676678199,-76.62328720092775,39.3250649220902",
+  "pointerSelectionAttempt": {
+    "id": "US-MD-BALTIMORE-OBJECTID-31357",
+    "label": "3559 001",
+    "loaded": 183,
+    "visible": 85
+  },
+  "sourceWarnings": [
+    "Load OSM roads, then colour the enclosed blocks. Parcel data is optional.",
+    "Load OSM roads, then colour the enclosed blocks. Parcel data is optional.",
+    "This parcel source is temporarily unavailable. 183 parcels are loaded in memory, 102 of them in this view; they stay on the map. Retry or choose another source.Choose how to continueDismiss source warning"
+  ],
+  "visibleCenterCount": 85,
+  "result": "failed_wider_native_manifest",
+  "browserClosed": true,
+  "uncaughtPageErrors": 0,
+  "sequentialProviderProbe": "baltimore-wider-native-probe.json"
+}

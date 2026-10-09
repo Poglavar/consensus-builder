@@ -1,0 +1,33 @@
+{
+  "featureCount": 127,
+  "invalidFeatures": 0,
+  "exactDuplicateGeometryPairs": 0,
+  "positiveAreaOverlapPairsAbove0_01M2": 0,
+  "operationErrors": 0,
+  "nativeQuality": {
+    "analysisCrs": "EPSG:32650 (metres)",
+    "geosVersion": "3.14.1",
+    "projVersion": "9.8.1",
+    "featureCount": 127,
+    "featureSet": "125 unique OIDs in all 29 direct source windows (including the required target 13 + four pan windows), plus 2 additional neighboring footprint-intersection polygons; no filtering or repair",
+    "all29WindowUnionCount": 125,
+    "all29WindowUnionIncluded": true,
+    "extraFootprintOids": [
+      "243056",
+      "243058"
+    ],
+    "uniqueObjectIdCount": 127,
+    "uniqueLotCSUIDCount": 127,
+    "uniqueLotIDCount": 127,
+    "invalidGeometryCount": 0,
+    "exactDuplicateGeometryGroups": [],
+    "duplicateLotCSUIDGroups": [],
+    "duplicateLotIDGroups": [],
+    "positiveAreaOverlapThresholdM2": 0.01,
+    "positiveAreaOverlapPairCount": 0,
+    "positiveAreaOverlapPairs": [],
+    "repairsOrFilteringApplied": false
+  },
+  "analysisCrs": "EPSG:32650",
+  "noRepairOrFiltering": true
+}

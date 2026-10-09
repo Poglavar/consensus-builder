@@ -1,0 +1,216 @@
+{
+  "schemaVersion": 1,
+  "kind": "city_parcel_source_research",
+  "checkedAt": "2026-10-09",
+  "rank": 1121,
+  "population2025k": 494.839,
+  "population2025Unit": "thousands",
+  "populationPlausibility": "High",
+  "verifiedParcelResponse": {
+    "url": "https://portal.geopoz.poznan.pl/wmsegib",
+    "httpStatus": 200,
+    "contentType": "application/xml",
+    "featureCount": 93,
+    "distinctNativeIds": 51,
+    "verifiedFeatureIds": [
+      "306401_1.0051.AR_44.27/14",
+      "306401_1.0051.AR_44.16",
+      "306401_1.0051.AR_44.22/4"
+    ],
+    "nativeIdField": "ID_DZIALKI",
+    "sampleFile": "poznan-parcel-samples.geojson",
+    "requestFilter": "Actual fixed Poznań GML WFS profile; EPSG:2177; bounded 13-cell 0.001° grid around the saved WUP center plus independent exact-ID batches; WFS 2.0; only ID_DZIALKI and MSGEOMETRY requested; anonymous; no KW/owner/address fields requested.",
+    "qualificationFile": "poznan-root-acceptance.json",
+    "featureRowsAcrossGrid": 93,
+    "requestScope": "Aggregate of thirteen bounded runtime viewport queries; featureCount denotes returned grid rows, not one response or unique geometry."
+  },
+  "source": {
+    "name": "GEOPOZ, Poznań geodesy and cadastre office",
+    "url": "https://geopoz.poznan.pl/",
+    "operator": "GEOPOZ, Poznań geodesy and cadastre office",
+    "serviceType": "Public WFS 2.0",
+    "layer": "ms:dzialki",
+    "geometryType": "Polygon",
+    "nativeIdField": "ID_DZIALKI",
+    "sourceId": "poznan-gml-wfs",
+    "sampleFile": "poznan-parcel-samples.geojson",
+    "sampleCount": 3,
+    "directGeometryQueryVerified": true
+  },
+  "registryFound": true,
+  "verifiedSample": true,
+  "targetGeometryEvidence": "The actual adapter returned a fresh complete parcel set for the 13 bounded grid cells (93 response rows, 51 distinct native IDs). Exactly one polygon, 306401_1.0051.AR_44.27/14, covers the saved WUP point. A complete 13-feature target-footprint query returned this same full geometry and the binding engine assigned the target proposal footprint completely to that single parcel. The prior 40 m query used an invalid axis order and is not evidence of absence.",
+  "nativeIdReadiness": "candidate_verified_public_code",
+  "cityId": "wup2025:1381",
+  "wupCityCode": 1381,
+  "name": "Poznan",
+  "country": "Poland",
+  "countryCode": "PL",
+  "centerLatLon": [
+    52.4033374848812,
+    16.9139953760299
+  ],
+  "pointBasis": "UN WUP 2025 population-weighted settlement point (latitude, longitude); not a municipal boundary or a parcel-coverage claim.",
+  "resultCategory": "verified_public_parcel_geometry_runtime_enabled",
+  "priorEvidence": [],
+  "priorBlocker": null,
+  "nativeLanguageSearches": [
+    {
+      "languageScript": "Polish",
+      "exactQuery": "Poznań mapa ewidencyjna działki geoportal EGiB miejski official WFS",
+      "date": "2026-10-09",
+      "executionMethod": "web.run search_query; independent local-language query",
+      "resultUrls": [
+        "https://geopoz.poznan.pl/",
+        "https://portal.geopoz.poznan.pl/wmsegib",
+        "https://www.geoportal.gov.pl/pl/dane/ewidencja-gruntow-i-budynkow-egib/"
+      ],
+      "summary": "Poznań city EGiB parcel layer confirmed by official city WFS capabilities; citywide coverage and currency are not proven beyond service description."
+    },
+    {
+      "languageScript": "English",
+      "exactQuery": "Poznan Poland official cadastral parcel map EGiB city geoportal WFS",
+      "date": "2026-10-09",
+      "executionMethod": "web.run search_query; independent English query",
+      "resultUrls": [
+        "https://geopoz.poznan.pl/",
+        "https://portal.geopoz.poznan.pl/wmsegib",
+        "https://www.geoportal.gov.pl/pl/dane/ewidencja-gruntow-i-budynkow-egib/"
+      ],
+      "summary": "Poznań city EGiB parcel layer confirmed by official city WFS capabilities; citywide coverage and currency are not proven beyond service description."
+    }
+  ],
+  "officialAndRelevantLeads": [
+    {
+      "url": "https://geopoz.poznan.pl/",
+      "operator": "GEOPOZ, Poznań geodesy and cadastre office",
+      "observation": "Official municipal geodesy/cadastre office and portal operator."
+    },
+    {
+      "url": "https://portal.geopoz.poznan.pl/wmsegib",
+      "operator": "GEOPOZ WFS for EGiB",
+      "observation": "Official city WFS service title “Poznań serwis wfs dla EGiB”; capabilities document explicitly says data for city of Poznań; layer ms:dzialki."
+    },
+    {
+      "url": "https://www.geoportal.gov.pl/pl/dane/ewidencja-gruntow-i-budynkow-egib/",
+      "operator": "Head Office of Geodesy and Cartography (Poland)",
+      "observation": "National EGiB description says local powiat/city-with-powiat-rights maintains cadastral register."
+    }
+  ],
+  "requestsAndEndpointChecks": [
+    {
+      "url": "https://geopoz.poznan.pl/",
+      "method": "Anonymous read-only GET; redirect-following; 15 s read timeout; no cookies or credentials",
+      "httpStatus": 200,
+      "finalUrl": "https://geopoz.poznan.pl/",
+      "contentType": "text/html; charset=UTF-8",
+      "bytesRead": 26299,
+      "sha256OfReadBytes": "e71b5caa494e42dc2a3cbc8ec751b1997108b1e62b55dca3982f580a0b343141",
+      "title": "Zarząd Geodezji i Katastru Miejskiego GEOPOZ",
+      "assessment": "Primary landing/source page responded successfully. The response establishes only the source description summarized above; it does not itself verify a public parcel feature geometry except where separately reported."
+    },
+    {
+      "url": "https://geopoz.poznan.pl/",
+      "method": "GET via search result/page review",
+      "httpStatus": "accessible in web search/open",
+      "contentType": "not independently captured",
+      "assessment": "Official municipal geodesy/cadastre office and portal operator."
+    },
+    {
+      "url": "https://portal.geopoz.poznan.pl/wmsegib",
+      "method": "GET via search result/page review",
+      "httpStatus": "accessible in web search/open",
+      "contentType": "not independently captured",
+      "assessment": "Official city WFS service title “Poznań serwis wfs dla EGiB”; capabilities document explicitly says data for city of Poznań; layer ms:dzialki."
+    },
+    {
+      "url": "https://www.geoportal.gov.pl/pl/dane/ewidencja-gruntow-i-budynkow-egib/",
+      "method": "GET via search result/page review",
+      "httpStatus": "accessible in web search/open",
+      "contentType": "not independently captured",
+      "assessment": "National EGiB description says local powiat/city-with-powiat-rights maintains cadastral register."
+    },
+    {
+      "url": "https://portal.geopoz.poznan.pl/wmsegib?service=WFS&version=2.0.0&request=GetCapabilities",
+      "method": "GET",
+      "httpStatus": 200,
+      "contentType": "application/xml",
+      "assessment": "Capabilities title identifies Poznań EGiB WFS, layer ms:dzialki, default CRS EPSG:2177."
+    },
+    {
+      "url": "https://portal.geopoz.poznan.pl/wmsegib?service=WFS&version=2.0.0&request=DescribeFeatureType&typeNames=ms%3Adzialki",
+      "method": "GET",
+      "httpStatus": 200,
+      "contentType": "application/xml",
+      "assessment": "Schema exposes MSGEOMETRY and ID_DZIALKI plus sensitive/record-linked fields; only ID_DZIALKI and geometry requested in sample query."
+    },
+    {
+      "url": "https://portal.geopoz.poznan.pl/wmsegib?service=WFS&version=2.0.0&request=GetFeature&typeNames=ms%3Adzialki&outputFormat=application%2Fjson",
+      "method": "GET",
+      "httpStatus": 200,
+      "contentType": "application/xml",
+      "assessment": "OGC exception: JSON output format unsupported; retried default GML output."
+    },
+    {
+      "url": "https://portal.geopoz.poznan.pl/wmsegib?service=WFS&version=2.0.0&request=GetFeature&typeNames=ms%3Adzialki&srsName=urn%3Aogc%3Adef%3Acrs%3AEPSG%3A%3A2177&bbox=5808311.14%2C6426074.35%2C5808351.14%2C6426114.35%2Curn%3Aogc%3Adef%3Acrs%3AEPSG%3A%3A2177&count=3&propertyName=ID_DZIALKI%2CMSGEOMETRY",
+      "method": "GET",
+      "httpStatus": 200,
+      "contentType": "application/xml",
+      "assessment": "Historical 40 m bbox returned zero with incorrect KVP coordinate order; superseded and not evidence of absent point coverage. Correct FES native-axis queries find the point-containing parcel."
+    },
+    {
+      "url": "https://portal.geopoz.poznan.pl/wmsegib",
+      "method": "Actual backend GML WFS adapter requests; anonymous read-only, bounded cells and exact safe ID filters",
+      "httpStatus": 200,
+      "contentType": "application/xml",
+      "requestCount": 73,
+      "featureRowsAcrossGrid": 93,
+      "uniqueIds": 51,
+      "assessment": "All runtime qualification requests returned HTTP 200. Exact response fields were ID_DZIALKI and MSGEOMETRY only. Full count/page/fresh-ID request audit is in poznan-runtime-candidate-evidence.json."
+    }
+  ],
+  "coverageAssessment": {
+    "claimedScope": "Official Poznań city EGiB parcel layer; only bounded tested cells and target footprint have been verified.",
+    "verifiedOpenScope": "Thirteen 0.001° cells around the UN WUP 2025 point and exact fresh reads of the 51 unique returned native IDs; the point-containing polygon and complete proposal-footprint binding were verified.",
+    "citywideVerified": false,
+    "countrywideVerified": false,
+    "geometryVerified": true
+  },
+  "blocker": null,
+  "remainingUncertainty": "The WUP centroid is a demographic locator, not a city boundary; testing does not prove full municipal or national coverage. The endpoint response confirms geometry and identifiers, not legal title, source licensing, completeness, or future availability.",
+  "nextStep": "Continue the population-ranked queue; retain bounded scope and anonymous minimal-field runtime behavior.",
+  "runtimeReadiness": "enabled",
+  "adapterReady": true,
+  "schemaVersionNote": "Reviewed city evidence and local runtime admission; additions remain uncommitted and undeployed.",
+  "population2025": 494839,
+  "populationUnit": "persons",
+  "populationPlausibility2025": "High",
+  "rootReviewedAt": "2026-10-09T07:19:42.539920+00:00",
+  "publicParcelGeometryFound": true,
+  "sourceIds": [
+    "poznan-gml-wfs"
+  ],
+  "appCityId": "poznan",
+  "registryBasis": "GEOPOZ is the municipal cadastral/geodesy custodian; its official city EGiB WFS returns the qualified bounded parcel geometry.",
+  "registryEvidenceUrls": [
+    "https://geopoz.poznan.pl/",
+    "https://portal.geopoz.poznan.pl/wmsegib"
+  ],
+  "runtimeAssessment": {
+    "status": "enabled",
+    "reason": "51 valid, distinct native EGiB parcel polygons across thirteen bounded cells around the unchanged Poznań WUP settlement locator. Before/after hit counts, all feature pages, forced three-row pagination, fresh exact reads of every ID, explicit absence, footprint lookup and one-parcel proposal binding pass. Independent EPSG:2180 full-polygon topology audit found no invalidity, duplicate geometry, overlaps above 0.01 m² or operation errors. This verifies bounded reference geometry, without asserting whole-city completeness."
+  },
+  "technicalBlocker": null,
+  "cohort": "overnight-next-1101-1200",
+  "cohortState": "root_reviewed_integrated_locally",
+  "integrationState": "integrated_locally",
+  "sampleFile": "poznan-parcel-samples.geojson",
+  "rootReview": {
+    "checkedAt": "2026-10-09T07:19:42.539920+00:00",
+    "decision": "Approved bounded local runtime admission after real adapter qualification and independent complete-polygon audit.",
+    "evidenceFile": "poznan-root-acceptance.json",
+    "qualityFile": "poznan-root-quality.json",
+    "scope": "51 valid, distinct native EGiB parcel polygons across thirteen bounded cells around the unchanged Poznań WUP settlement locator. Before/after hit counts, all feature pages, forced three-row pagination, fresh exact reads of every ID, explicit absence, footprint lookup and one-parcel proposal binding pass. Independent EPSG:2180 full-polygon topology audit found no invalidity, duplicate geometry, overlaps above 0.01 m² or operation errors. This verifies bounded reference geometry, without asserting whole-city completeness."
+  },
+  "integratedAt": "2026-10-09T07:19:42.814457+00:00"
+}

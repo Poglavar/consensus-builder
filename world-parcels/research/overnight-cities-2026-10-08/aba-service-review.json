@@ -1,0 +1,62 @@
+{
+  "schemaVersion": "1.0",
+  "checkedAt": "2026-10-09",
+  "cityRecord": "city-7785-aba.json",
+  "purpose": "Document first-party local land/property registry or map evidence and bounded anonymous parcel-geometry access review.",
+  "scopeLimits": {
+    "maxFullPolygonsRetainedInCityRecord": 0,
+    "maxFullPolygonsRetainedInReview": 0,
+    "maxFullPolygonsRetainedInRepository": 0,
+    "ownerOrAddressDataRetained": false,
+    "credentialsOrTokenValuesRetained": false,
+    "citywideCompletenessAsserted": false
+  },
+  "assessment": "Reviewed public official Abia property-service pages and the Ministry of Lands & Housing service listing. The state property workflow is an application interface, not an anonymous public map; registration steps ask for property/land references and identity/title documents. GIS mapping/survey is provided on request after submission of a survey plan and proof of ownership. No coordinates, owner records or private application endpoints were queried. No public parcel geometry route or viewer JavaScript was exposed by the reviewed pages. Whether Abia maintains an unpublished or authenticated city-level parcel GIS that covers the ranked WUP locator; whether any public vector service is available upon request.",
+  "officialPrimarySources": [
+    {
+      "url": "https://services.abiastate.gov.ng/services/property",
+      "observation": "Official Abia State Government services catalog: property registration, certificate-of-occupancy, land use charges and transfer services; responsible agency shown as Ministry of Lands and Survey."
+    },
+    {
+      "url": "https://services.abiastate.gov.ng/apply/property/step/1",
+      "observation": "Official registration workflow requests property address/land reference and advances through identity and document steps; not a public parcel viewer. No application was submitted."
+    },
+    {
+      "url": "https://landsandhousing.abiastate.gov.ng/services/",
+      "observation": "Official Abia Ministry of Lands & Housing describes title registration and GIS mapping/survey services, requiring ownership/survey documentation."
+    }
+  ],
+  "attempts": [
+    {
+      "url": "https://services.abiastate.gov.ng/services/property",
+      "method": "GET official property-service catalog",
+      "result": "HTTP/web search page confirms state property registration and responsible lands agency; no map/geometry endpoint."
+    },
+    {
+      "url": "https://services.abiastate.gov.ng/apply/property/step/1",
+      "method": "GET public application form without submission",
+      "result": "Form asks for property address or land/plot reference and includes identity/document stages; stopped before entering any data."
+    },
+    {
+      "url": "https://landsandhousing.abiastate.gov.ng/services/",
+      "method": "GET official ministry services listing",
+      "result": "GIS mapping/survey and title registration are application services requiring survey plan and proof of ownership; no public vector map."
+    }
+  ],
+  "rootSupplementalLocalBinding": {
+    "queries": [
+      {
+        "language": "English",
+        "query": "site:landsandhousing.abiastate.gov.ng Aba land registry cadastral office"
+      },
+      {
+        "language": "English",
+        "query": "site:abiastate.gov.ng \"Parcellation of Mbaisi Layout\" \"Aba\""
+      }
+    ],
+    "source": "https://abiastate.gov.ng/wp-content/uploads/2026/02/ABIA-STATE-2026-APPROVED-ESTIMATES.pdf",
+    "access": "Primary official budget indexed text reviewed through web search; no claim that the entire PDF was downloaded. Separate C-of-O procedure PDF direct GET returned HTTP403.",
+    "observation": "City-specific ministry parcellation project at Ogbor Hill, Aba; budget row names Aba North and reports prior-year performance."
+  },
+  "rootRegistryBasis": "Abia State land-registration and GIS services are documented. City-specific land-parcellation activity is independently identified in the official 2026 approved budget: the Ministry of Lands project at Mbaisi Layout, Ogbor Hill, Aba is coded to Aba North and includes reported 2025 performance. This confirms local parcel administration, not an anonymous map or complete city registry."
+}

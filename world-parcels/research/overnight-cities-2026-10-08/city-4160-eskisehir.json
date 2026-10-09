@@ -1,0 +1,116 @@
+{
+  "schemaVersion": 1,
+  "kind": "city_parcel_source_research",
+  "checkedAt": "2026-10-09",
+  "country": "Türkiye",
+  "countryCode": "TR",
+  "populationUnit": "persons",
+  "status": "complete",
+  "verifiedSample": false,
+  "publicParcelGeometryFound": false,
+  "runtimeReadiness": "not_enabled_no_verified_public_geometry",
+  "adapterReady": false,
+  "priorEvidenceFiles": [],
+  "scopeLimits": "The WUP point is a population-weighted settlement locator, not a municipal boundary. A point hit does not establish citywide coverage. No personal owner, address, tax, account or applicant data was requested or retained; no authentication or account credential was used.",
+  "wupCityCode": 4160,
+  "queueRank": 694,
+  "name": "Eskisehir",
+  "centerLatLon": [
+    39.7626964176253,
+    30.5498458711481
+  ],
+  "population2025": 766333,
+  "population2025k": 766.333,
+  "populationPlausibility2025": "High",
+  "pointBasis": "UN WUP 2025 population-weighted settlement centroid; this is not a municipal boundary or a parcel-coverage claim.",
+  "registryFound": true,
+  "registryBasis": "Eskişehir’s cadastral and title registry offices are confirmed by official TKGM sources. The shared public parcel service is documented, but today’s exact city point response was rate-limited before returning a feature.",
+  "registryEvidenceUrls": [
+    "https://www.tkgm.gov.tr/eskisehir-bm/bagli-mudurlukler",
+    "https://www.tkgm.gov.tr/eskisehir-bm/iletisim",
+    "https://www.tkgm.gov.tr/e-hizmetler/sik-kullanilanlar/parsel-sorgulama"
+  ],
+  "resultCategory": "city_registry_confirmed_public_endpoint_rate_limited",
+  "technicalBlocker": "The TKGM endpoint returned HTTP 403 with an explicit daily query limit exceeded message at both the exact WUP point and a non-property control point. No parcel geometry or locality metadata was returned, so this is a temporary rate-limit blocker, not evidence of absent city coverage.",
+  "remainingUncertainty": "Whether the exact WUP point intersects an indexed parcel and what administrative/locality labels the service returns; no exact absence response or full polygon could be confirmed.",
+  "nextStep": "Retry after the service quota window resets, then inspect only a valid, full, closed polygon response and safe locality/parcel-key fields. Do not interpret a fresh throttle response as no coverage.",
+  "research": {
+    "executedQueries": [
+      {
+        "language": "Turkish",
+        "query": "Eskişehir resmi tapu kadastro müdürlüğü parsel sorgu Eskişehir Kadastro Müdürlüğü",
+        "scope": "Verify city-specific cadastre and test the official anonymous parcel point endpoint at the WUP point.",
+        "result": "TKGM’s official Eskişehir Regional Directorate list identifies Eskişehir Kadastro Müdürlüğü and central Odunpazarı and Tepebaşı title offices. The official TKGM parcel page documents the public free viewer, polygon-oriented parcel lookup/download options and prohibits owner-name/T.C. identity searches. A direct request to the shared public point API at the exact WUP coordinate returned HTTP 403 with “Günlük sorgu limitini aştınız” (daily query limit exceeded); a bounded control request at (0,0) got the same response. No Eskişehir polygon or city-specific API locality response could be verified during this request window.",
+        "actualResultUrls": [
+          "https://www.tkgm.gov.tr/eskisehir-bm/bagli-mudurlukler",
+          "https://www.tkgm.gov.tr/e-hizmetler/sik-kullanilanlar/parsel-sorgulama",
+          "https://cbsapi.tkgm.gov.tr/megsiswebapi.v3.1/api/parsel/39.7626964176253/30.5498458711481"
+        ]
+      },
+      {
+        "language": "English",
+        "query": "Eskişehir Türkiye official cadastre parcel map TKGM Tepebasi Odunpazari",
+        "scope": "Cross-check official local registry evidence and viewer documentation.",
+        "result": "Official TKGM pages confirm city offices and a public parcel-coordinate viewer. The exact WUP point request was rate-limited; no claim is made that the point is outside the cadastre.",
+        "actualResultUrls": [
+          "https://www.tkgm.gov.tr/eskisehir-bm/bagli-mudurlukler",
+          "https://www.tkgm.gov.tr/e-hizmetler/sik-kullanilanlar/parsel-sorgulama"
+        ]
+      }
+    ],
+    "officialSources": [
+      {
+        "url": "https://www.tkgm.gov.tr/eskisehir-bm/bagli-mudurlukler",
+        "observation": "Official TKGM Eskişehir Regional Directorate lists Eskişehir Kadastro Müdürlüğü plus central Odunpazarı and Tepebaşı Tapu Müdürlükleri."
+      },
+      {
+        "url": "https://www.tkgm.gov.tr/eskisehir-bm/iletisim",
+        "observation": "Official regional office contact page places TKGM Eskişehir Regional Directorate in Tepebaşı, Eskişehir."
+      },
+      {
+        "url": "https://www.tkgm.gov.tr/e-hizmetler/sik-kullanilanlar/parsel-sorgulama",
+        "observation": "Official TKGM public page describes parcel location, adjacent parcels, area, coordinates and KML/PDF output; its query instructions use parcel locality and block/parcel numbers and explicitly disallow owner-name or Turkish ID queries."
+      }
+    ],
+    "requestsAndEndpointChecks": [
+      {
+        "url": "https://cbsapi.tkgm.gov.tr/megsiswebapi.v3.1/api/parsel/39.7626964176253/30.5498458711481",
+        "method": "GET anonymous exact ranked WUP point; browser-like headers also tested",
+        "result": "HTTP 403, application error body: “Günlük sorgu limitini aştınız.” No polygon/metadata returned."
+      },
+      {
+        "url": "https://cbsapi.tkgm.gov.tr/megsiswebapi.v3.1/api/parsel/0/0",
+        "method": "GET bounded control point (0,0), no property locator",
+        "result": "HTTP 403 with the same daily-query-limit message. This supports request throttling, not a city coverage/absence conclusion."
+      }
+    ],
+    "coverageAssessment": {
+      "verifiedOpenScope": "Eskişehir’s cadastral and title registry offices are confirmed by official TKGM sources. The shared public parcel service is documented, but today’s exact city point response was rate-limited before returning a feature.",
+      "citywideVerified": false,
+      "countrywideVerified": false,
+      "geometryVerified": false
+    }
+  },
+  "cityId": "wup2025:4160",
+  "point": [
+    39.7626964176253,
+    30.5498458711481
+  ],
+  "sourceIds": [],
+  "verifiedParcelResponse": null,
+  "source": {
+    "sourceId": "tr-eskisehir-official-parcel-source",
+    "name": "TKGM Parsel Sorgu",
+    "operator": "Tapu ve Kadastro Genel Müdürlüğü (TKGM), Republic of Türkiye",
+    "url": "https://parselsorgu.tkgm.gov.tr/",
+    "responseFormat": "TKGM JSON GeoJSON full Polygon point lookup; currently rate limited at exact city point",
+    "nativeIdFields": null,
+    "scope": "The TKGM endpoint returned HTTP 403 with an explicit daily query limit exceeded message at both the exact WUP point and a non-property control point. No parcel geometry or locality metadata was returned, so this is a temporary rate-limit blocker, not evidence of absent city coverage."
+  },
+  "runtimeAssessment": {
+    "status": "held_provider_rate_limit",
+    "reason": "The TKGM endpoint returned HTTP 403 with an explicit daily query limit exceeded message at both the exact WUP point and a non-property control point. No parcel geometry or locality metadata was returned, so this is a temporary rate-limit blocker, not evidence of absent city coverage.",
+    "evidenceFile": "research/overnight-cities-2026-10-08/eskisehir-service-review.json"
+  },
+  "rootReviewedAt": "2026-10-09T02:35:39.834493+00:00"
+}

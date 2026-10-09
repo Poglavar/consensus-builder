@@ -1,0 +1,64 @@
+{
+  "schemaVersion": "1.0",
+  "checkedAt": "2026-10-09",
+  "cityRecord": "city-1101-quetta.json",
+  "purpose": "Document local registry evidence and bounded public parcel-geometry route review.",
+  "scopeLimits": {
+    "maxFullPolygonsRetainedInCityRecord": 3,
+    "maxFullPolygonsRetainedInReview": 3,
+    "maxFullPolygonsRetainedInRepository": 3,
+    "ownerOrAddressDataRetained": false,
+    "credentialsOrTokenValuesRetained": false,
+    "citywideCompletenessAsserted": false
+  },
+  "assessment": "No bounded geometry request was made because no trusted public feature endpoint/schema could be established. Direct public page review of the Board project endpoint returned compromised injected content; no credentials, tokens, cookies or property-specific data were used.",
+  "registryAssessment": "Official provincial budget documents identify a Director Land Records/Settlement Office in Quetta, and official government search results state that Quetta is included in phase-I land-record computerization. The Board of Revenue project page currently renders compromised injected content on direct inspection, so its details are not relied on as trusted evidence.",
+  "officialPrimarySources": [
+    {
+      "url": "https://balochistan.gov.pk/wp-content/uploads/2025/09/DEVELOOPMENT-2025-26.pdf",
+      "observation": "Official 2025–26 provincial budget documents list the Quetta land-record/settlement office; official Board of Revenue search result indicates Quetta phase-I land-record digitization. This supports local registry activity, not anonymous map coverage."
+    },
+    {
+      "url": "https://balochistan.gov.pk/wp-content/uploads/2025/06/PSDP-2025-26.pdf",
+      "observation": "Official service or administrative reference; it does not establish citywide parcel coverage."
+    },
+    {
+      "url": "https://bor.balochistan.gov.pk/blrmis-project/",
+      "observation": "Official service or administrative reference; it does not establish citywide parcel coverage."
+    },
+    {
+      "url": "https://bor.balochistan.gov.pk/objectives/",
+      "observation": "Official service or administrative reference; it does not establish citywide parcel coverage."
+    }
+  ],
+  "searchQueries": [
+    {
+      "language": "Urdu",
+      "query": "کوئٹہ بلوچستان زمین ریکارڈ cadastral map official survey land records",
+      "result": "Found provincial Board of Revenue references to land records and settlement services; no safe anonymous geometry endpoint verified.",
+      "method": "Separate Urdu-language discovery search."
+    },
+    {
+      "language": "Urdu",
+      "query": "کوئٹہ بورڈ آف ریونیو زمین ریکارڈ GIS سروے نقشہ عوامی ویب سائٹ",
+      "result": "Search surfaced the Board of Revenue BLRMIS project result and official Balochistan revenue references; a direct project page inspection showed compromised injected content, so only government gateway/budget evidence is used.",
+      "method": "Separate Urdu-language discovery search and official-source review."
+    },
+    {
+      "language": "English",
+      "query": "Quetta official land records GIS map Board of Revenue Balochistan cadastral",
+      "result": "Official government search result says Quetta is one of four phase-I BLRMIS districts; no clean public parcel feature schema/query was established.",
+      "method": "Additional English discovery search."
+    }
+  ],
+  "serviceChecks": [
+    {
+      "url": "https://balochistan.gov.pk/",
+      "method": "Public official page/service review; no property-specific query",
+      "observation": "No bounded geometry request was made because no trusted public feature endpoint/schema could be established. Direct public page review of the Board project endpoint returned compromised injected content; no credentials, tokens, cookies or property-specific data were used."
+    }
+  ],
+  "geometryEvidence": null,
+  "privacy": "No owner or address attributes were requested or retained; no credentials or tokens retained.",
+  "runtimeAssessment": "not_enabled_no_verified_public_geometry"
+}

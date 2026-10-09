@@ -1,0 +1,112 @@
+{
+  "schemaVersion": "1.0",
+  "cityId": "wup2025:4255",
+  "wupCityCode": 4255,
+  "name": "Shabqadar",
+  "country": "Pakistan",
+  "countryCode": "PK",
+  "rank": 1060,
+  "queueRank": 1060,
+  "point": [
+    34.2133457088446,
+    71.5476062840775
+  ],
+  "centerLatLon": [
+    34.2133457088446,
+    71.5476062840775
+  ],
+  "pointBasis": "UN WUP2025 population-weighted settlement locator; not a municipal boundary or parcel-coverage claim.",
+  "population2025": 521259,
+  "population2025k": 521.259,
+  "populationUnit": "persons",
+  "populationPlausibility2025": "High",
+  "cohort": "overnight-followon-1001-1100",
+  "checkedAt": "2026-10-09",
+  "status": "complete",
+  "registryFound": true,
+  "registryBasis": "The official Khyber Pakhtunkhwa Land Records SDC online appointment portal lists Shabqadar as a locality option; the Revenue & Estate Department documents land-record services and district digitization. This establishes local service coverage but not an anonymous parcel-geometry endpoint.",
+  "registryEvidenceUrls": [
+    "https://kplr.gkp.pk/",
+    "https://revenue.kp.gov.pk/latest-home/",
+    "https://revenue.kp.gov.pk/computerization-of-land-record-in-18-districts/",
+    "https://sdlr.kp.gov.pk/"
+  ],
+  "verifiedSample": false,
+  "publicParcelGeometryFound": false,
+  "sourceIds": [],
+  "adapterReady": false,
+  "runtimeReadiness": "not_enabled_no_verified_public_geometry",
+  "technicalBlocker": "An official SDC portal offers local Shabqadar land-record service but does not expose safe anonymous parcel geometry. No full polygon response was verified.",
+  "scopeLimits": "An official SDC portal offers local Shabqadar land-record service but does not expose safe anonymous parcel geometry. No full polygon response was verified. No citywide completeness is asserted.",
+  "resultCategory": "no_verified_public_geometry",
+  "coverageAssessment": {
+    "claimedScope": "The official Khyber Pakhtunkhwa Land Records SDC online appointment portal lists Shabqadar as a locality option; the Revenue & Estate Department documents land-record services and district digitization. This establishes local service coverage but not an anonymous parcel-geometry endpoint.",
+    "verifiedOpenScope": "No anonymous full parcel geometry response verified in this investigation.",
+    "citywideVerified": false,
+    "countrywideVerified": false
+  },
+  "runtimeAssessment": {
+    "status": "not_enabled_no_verified_public_geometry",
+    "reason": "An official SDC portal offers local Shabqadar land-record service but does not expose safe anonymous parcel geometry. No full polygon response was verified."
+  },
+  "freshResearch": {
+    "queries": [
+      {
+        "language": "English",
+        "query": "Shabqadar Pakistan cadastral land registry mapping official Khyber Pakhtunkhwa",
+        "scope": "Independent fresh city-specific registry and anonymous parcel-geometry search.",
+        "result": "An official SDC portal offers local Shabqadar land-record service but does not expose safe anonymous parcel geometry. No full polygon response was verified.",
+        "actualResultUrls": [
+          "https://kplr.gkp.pk/",
+          "https://revenue.kp.gov.pk/latest-home/",
+          "https://revenue.kp.gov.pk/computerization-of-land-record-in-18-districts/",
+          "https://sdlr.kp.gov.pk/"
+        ],
+        "executionMethod": "Executed web search; first-party source pages or official service metadata inspected."
+      },
+      {
+        "language": "Urdu",
+        "query": "شبقدر اراضی ریکارڈ کیڈسٹرل نقشہ محکمہ مال خیبر پختونخوا",
+        "scope": "Independent fresh city-specific registry and anonymous parcel-geometry search.",
+        "result": "An official SDC portal offers local Shabqadar land-record service but does not expose safe anonymous parcel geometry. No full polygon response was verified.",
+        "actualResultUrls": [
+          "https://kplr.gkp.pk/",
+          "https://revenue.kp.gov.pk/latest-home/",
+          "https://revenue.kp.gov.pk/computerization-of-land-record-in-18-districts/",
+          "https://sdlr.kp.gov.pk/"
+        ],
+        "executionMethod": "Executed web search; first-party source pages or official service metadata inspected."
+      }
+    ],
+    "requests": [],
+    "portals": [
+      {
+        "url": "https://kplr.gkp.pk/",
+        "observation": "Official Khyber Pakhtunkhwa Land Records appointment portal lists Shabqadar in its service locality choices; this is an application/service selector, not a public feature geometry API."
+      },
+      {
+        "url": "https://revenue.kp.gov.pk/latest-home/",
+        "observation": "Official Revenue & Estate Department describes provincial land-record services and digital initiatives; public parcel vector schema/geometry route not established."
+      },
+      {
+        "url": "https://sdlr.kp.gov.pk/",
+        "observation": "Official settlement/digitization project site focuses on merged districts; no evidence that its project extent covers Shabqadar, so it is not used as proof of local geometry."
+      }
+    ],
+    "historicalContext": []
+  },
+  "remainingUncertainty": "An official SDC portal offers local Shabqadar land-record service but does not expose safe anonymous parcel geometry. No full polygon response was verified.",
+  "nextStep": "Root may perform independent source/adapter qualification; no runtime enablement is implied.",
+  "priorEvidenceFiles": [],
+  "priorCheck": {
+    "attemptState": "pending",
+    "attemptEvidence": [],
+    "possiblePriorMatches": []
+  },
+  "rootReviewedAt": "2026-10-09T06:45:08.823796+00:00",
+  "rootReview": {
+    "checkedAt": "2026-10-09T06:45:08.823796+00:00",
+    "basis": "Reviewed city-specific English/local-language attempts, local-custody basis, source routes and documented responses. Public geometry remains unverified; access failures and unknown custody do not establish absence.",
+    "primarySourceAuditFile": "research/overnight-followon-2026-10-09/unreviewed-primary-source-audit.json"
+  }
+}

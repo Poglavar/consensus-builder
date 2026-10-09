@@ -1,0 +1,79 @@
+{
+  "schemaVersion": "1.0",
+  "checkedAt": "2026-10-09",
+  "cityRecord": "city-10977-rajamahendravaram.json",
+  "purpose": "Document first-party local registry/map evidence and bounded anonymous geometry access review.",
+  "scopeLimits": {
+    "maxFullPolygonsRetainedInCityRecord": 3,
+    "maxFullPolygonsRetainedInReview": 0,
+    "maxFullPolygonsRetainedInRepository": 24,
+    "ownerOrAddressDataRetained": false,
+    "credentialsOrTokenValuesRetained": false,
+    "citywideCompletenessAsserted": false
+  },
+  "assessment": "Official state cadastral-map service and local revenue/survey offices are identified. The AP Bhunaksha web shell timed out along this network path before map metadata or a target village could be inspected. No point-level parcel coverage or full geometry is verified.",
+  "registryAssessment": "The official East Godavari district directory lists the Rajahmundry Urban Tahsildar, and the Telugu district page describes the mandal surveyor role in land survey and records. The Andhra Pradesh Bhunaksha site is an official public-facing cadastral mapping system integrated with land-record services. This confirms local land-record administration, but no anonymous full parcel geometry was verified.",
+  "officialPrimarySources": [
+    {
+      "url": "https://eastgodavari.ap.gov.in/mandals/",
+      "observation": "The official East Godavari district directory lists the Rajahmundry Urban Tahsildar, and the Telugu district page describes the mandal surveyor role in land survey and records. The Andhra Pradesh Bhunaksha site is an official public-facing cadastral mapping system integrated with land-record services. This confirms local land-record administration, but no anonymous full parcel geometry was verified."
+    },
+    {
+      "url": "https://eastgodavari.ap.gov.in/te/%E0%B0%AE%E0%B0%82%E0%B0%A1%E0%B0%B2%E0%B0%AE%E0%B1%81/",
+      "observation": "The official East Godavari district directory lists the Rajahmundry Urban Tahsildar, and the Telugu district page describes the mandal surveyor role in land survey and records. The Andhra Pradesh Bhunaksha site is an official public-facing cadastral mapping system integrated with land-record services. This confirms local land-record administration, but no anonymous full parcel geometry was verified."
+    },
+    {
+      "url": "https://bhunaksha.ap.gov.in/",
+      "observation": "The official East Godavari district directory lists the Rajahmundry Urban Tahsildar, and the Telugu district page describes the mandal surveyor role in land survey and records. The Andhra Pradesh Bhunaksha site is an official public-facing cadastral mapping system integrated with land-record services. This confirms local land-record administration, but no anonymous full parcel geometry was verified."
+    },
+    {
+      "url": "https://bhudhaar.ap.gov.in/",
+      "observation": "The official East Godavari district directory lists the Rajahmundry Urban Tahsildar, and the Telugu district page describes the mandal surveyor role in land survey and records. The Andhra Pradesh Bhunaksha site is an official public-facing cadastral mapping system integrated with land-record services. This confirms local land-record administration, but no anonymous full parcel geometry was verified."
+    }
+  ],
+  "searchQueries": [
+    {
+      "language": "Telugu",
+      "query": "రాజమహేంద్రవరం తహసిల్దార్ భూమి రికార్డులు సర్వే కార్యాలయం అధికారిక భూ నక్షా",
+      "result": "The official East Godavari Telugu mandal page describes Tahsildar and Mandal Surveyor duties and lists Rajamahendravaram Urban/Rural. Andhra Pradesh Bhunaksha is the state cadastral-map system. The public AP map shell timed out from this network path; no target parcel geometry was seen.",
+      "method": "Separate Telugu search followed by official state/district source review and public map-shell access attempt.",
+      "scope": "Find first-party local revenue/survey and cadastral-map service sources."
+    },
+    {
+      "language": "English",
+      "query": "Rajamahendravaram official land records cadastral map survey Tahsildar Andhra Pradesh",
+      "result": "East Godavari district lists the Rajahmundry Urban Tahsildar; the state Bhunaksha portal describes public cadastral mapping and links land-record systems. RMC/CDMA property-tax services are administrative billing workflows, not parcel vector evidence. No safe full-polygon response was obtained.",
+      "method": "Separate English search; checked official district, state cadastral, municipal and CDMA service pages.",
+      "scope": "Cross-check the local office and public parcel-map route in English."
+    }
+  ],
+  "geometryDecision": "No parcel geometry retained. No qualifying complete full polygon at a safely validated native parcel ID was returned.",
+  "coverageAssessment": {
+    "claimedScope": "Andhra Pradesh revenue land records and cadastral-map services, with Rajamahendravaram Urban/Rural Tahsildar jurisdiction listed by the East Godavari administration.",
+    "verifiedOpenScope": "Official state cadastral-map service and local revenue/survey offices are identified. The AP Bhunaksha web shell timed out along this network path before map metadata or a target village could be inspected. No point-level parcel coverage or full geometry is verified.",
+    "citywideVerified": false,
+    "countrywideVerified": false,
+    "geometryVerified": false
+  },
+  "attempts": [
+    {
+      "url": "https://bhunaksha.ap.gov.in/",
+      "method": "GET",
+      "status": "connection_timeout_before_http_response",
+      "observation": "Direct shell request timed out locally; this is not treated as evidence that the origin is down."
+    },
+    {
+      "url": "https://eastgodavari.ap.gov.in/mandals/",
+      "method": "GET / official page review",
+      "observation": "Official East Godavari list includes Rajahmundry Urban and a Tahsildar; the Telugu district page also describes survey/land-record duties."
+    },
+    {
+      "url": "https://rajahmundry.cdma.ap.gov.in/services",
+      "method": "GET",
+      "httpStatus": 200,
+      "contentType": "text/html; charset=UTF-8",
+      "observation": "Municipal property/land-tax service information; not a cadastral geometry endpoint."
+    }
+  ],
+  "remainingUncertainty": "Whether a public AP Bhunaksha route serves Rajamahendravaram urban cadastral polygons; which village/survey unit contains the WUP settlement centroid; whether geometry is fully public."
+}

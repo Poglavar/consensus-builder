@@ -1,0 +1,71 @@
+{
+  "name": "Nasiriyah",
+  "country": "Iraq",
+  "countryCode": "IQ",
+  "rank": 647,
+  "point": [
+    31.0488176702249,
+    46.2537761868002
+  ],
+  "freshResearch": {
+    "queries": [
+      {
+        "language": "English",
+        "query": "Nasiriyah Iraq official real estate registration directorate cadastral map GIS",
+        "result": "Official governorate evidence confirms local real-estate registration participation; no anonymous city parcel-map route was found.",
+        "method": "English search across governorate and Ministry of Justice sources."
+      },
+      {
+        "language": "Arabic",
+        "query": "الناصرية ذي قار التسجيل العقاري مسح عقاري رسمي خريطة عقار",
+        "result": "Official Dhi Qar Governorate material documents city registration involvement and urban survey work; the public geometry route was not verified.",
+        "method": "Separate Arabic search followed by official governorate/MOJ page review."
+      }
+    ],
+    "portals": [
+      {
+        "name": "Nasiriyah local or regional public registry/map sources",
+        "operator": "Official public sources listed below where available",
+        "homeUrl": "https://thiqar.gov.iq/النائب-الأول/الغزي-يكشف-تفاصيل-آلية-منح-فرص-المطور-العقاري-وتحويل-خمسة-طلبات-للاستثمار",
+        "observation": "City-specific real-estate registration involvement is documented by the governorate, while the Iraqi Ministry of Justice electronic property-map service announcement names only Baghdad directorates. No Nasiriyah anonymous geometry route was verified."
+      }
+    ],
+    "requests": []
+  },
+  "status": "complete",
+  "verifiedParcelResponse": null,
+  "source": null,
+  "coverageAssessment": {
+    "claimedScope": "The official Dhi Qar Governorate reports a committee involving the Nasiriyah Municipality director and real-estate registration leadership in city development matters; the governorate also reports urban survey/registration work in Nasiriyah. This establishes local registry involvement, not open parcel coverage.",
+    "verifiedOpenScope": "No public parcel geometry or anonymous point-level feature response was verified.",
+    "countrywideVerified": false
+  },
+  "registryFound": true,
+  "verifiedSample": false,
+  "resultCategory": "no_verified_sample_candidate_citywide",
+  "technicalBlocker": "No public Nasiriyah geometry service was identified; the announced electronic map service is restricted to selected Baghdad offices.",
+  "remainingUncertainty": "Whether a separate city-specific public feature service exists outside the governorate and Ministry pages reviewed.",
+  "nextStep": "If public geometry is required, verify a distinct official city-specific geometry-only service; do not use owner, address, holding, tax, or applicant lookups.",
+  "schemaVersion": 1,
+  "checkedAt": "2026-10-09",
+  "wupCityCode": 5015,
+  "cityId": "wup2025:5015",
+  "runtimeReadiness": "not_enabled_no_verified_public_geometry",
+  "adapterReady": false,
+  "centerLatLon": [
+    31.0488176702249,
+    46.2537761868002
+  ],
+  "queueRank": 647,
+  "population2025": 813799,
+  "populationPlausibility2025": "Moderate",
+  "populationUnit": "persons",
+  "pointBasis": "UN WUP 2025 population-weighted settlement centroid; this is not a municipal boundary or a parcel-coverage claim.",
+  "publicParcelGeometryFound": false,
+  "sourceIds": [],
+  "registryBasis": "The official Dhi Qar Governorate reports a committee involving the Nasiriyah Municipality director and real-estate registration leadership in city development matters; the governorate also reports urban survey/registration work in Nasiriyah. This establishes local registry involvement, not open parcel coverage.",
+  "registryEvidenceUrls": [
+    "https://thiqar.gov.iq/النائب-الأول/الغزي-يكشف-تفاصيل-آلية-منح-فرص-المطور-العقاري-وتحويل-خمسة-طلبات-للاستثمار"
+  ],
+  "rootReviewedAt": "2026-10-09T02:15:55.042537+00:00"
+}

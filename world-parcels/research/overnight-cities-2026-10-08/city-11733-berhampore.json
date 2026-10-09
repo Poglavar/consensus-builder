@@ -1,0 +1,125 @@
+{
+  "name": "Berhampore",
+  "country": "India",
+  "countryCode": "IN",
+  "rank": 465,
+  "point": [
+    24.0883878031898,
+    88.2575070019003
+  ],
+  "population2025": 1109144,
+  "population2025k": 1109.144,
+  "schemaVersion": 1,
+  "kind": "city_parcel_source_research",
+  "checkedAt": "2026-10-09",
+  "populationUnit": "persons",
+  "status": "complete",
+  "verifiedSample": false,
+  "publicParcelGeometryFound": false,
+  "runtimeReadiness": "not_enabled_no_verified_public_geometry",
+  "priorEvidenceFiles": [],
+  "scopeLimits": "The Murshidabad district administration directs citizens to West Bengal’s Banglarbhumi land-record service and lists its land-records service at the Berhampore SDO. Banglarbhumi advertises Plot Map Request and Mouza Map Request under Citizen Services, whose homepage says users must log in. No anonymous plot/mouza vector response, local Mouza assignment or exact parcel geometry was obtained. The Berhampore municipality site gives municipal context but no machine-readable boundary used here; the WUP point is not independently assigned to a ward or Mouza.",
+  "pointBasis": "UN WUP 2025 population-weighted settlement centroid; this is not a municipal boundary or a parcel-coverage claim.",
+  "registryFound": true,
+  "registryBasis": "Official district Land Records service page explicitly places the SDO land-service office in the city of Berhampore and directs users to Banglarbhumi. This establishes local service/registry presence, while public map geometry and coverage at the WUP point remain unverified.",
+  "resultCategory": "district_land_records_found_no_anonymous_parcel_geometry_verified",
+  "technicalBlocker": "Banglarbhumi’s public homepage identifies map services as login-gated Citizen Services; its host timed out when the page was opened and no public geometry endpoint was verified.",
+  "remainingUncertainty": "Exact point-to-Mouza/ward jurisdiction, online map availability for the relevant Mouza, and any anonymous vector endpoint remain unverified. State land-record access is broader than a city-specific cadastral API.",
+  "nextStep": "Root review the state service evidence; if a city-specific geometry source is needed, first establish the WUP point’s Mouza/municipal jurisdiction and an official public map endpoint.",
+  "freshResearch": {
+    "executedQueries": [
+      {
+        "language": "English",
+        "query": "Berhampore Murshidabad official land records cadastral map plot map Banglarbhumi",
+        "result": "Found district land-record service directing citizens to Banglarbhumi and Berhampore municipal context; no public vector endpoint found.",
+        "method": "Separate English-language discovery search and official page review."
+      },
+      {
+        "language": "Bengali",
+        "query": "বহরমপুর মুর্শিদাবাদ মৌজা নকশা ভূমি ও ভূমি সংস্কার দপ্তর",
+        "result": "Found the district’s Bengali land-record page, which points to the West Bengal state portal; no target-specific Mouza or public vector geometry was obtained.",
+        "method": "Separate Bengali-language discovery search."
+      }
+    ],
+    "officialSources": [
+      {
+        "url": "https://murshidabad.gov.in/service/land-records/",
+        "observation": "Murshidabad District administration says citizens access Land & Land Reforms Department services through Banglarbhumi and lists the Berhampore SDO office."
+      },
+      {
+        "url": "https://murshidabad.gov.in/bn/service/%E0%A6%9C%E0%A6%AE%E0%A6%BF-%E0%A6%B0%E0%A7%87%E0%A6%95%E0%A6%B0%E0%A7%8D%E0%A6%A1/",
+        "observation": "Bengali district page repeats the same official land-service portal and Berhampore location."
+      },
+      {
+        "url": "https://banglarbhumi.gov.in/",
+        "observation": "State Land & Land Reforms portal lists Plot Map Request, Mouza Map Request and Mouza Map Availability Details; page instructs users to log in before using Citizen Services."
+      },
+      {
+        "url": "https://berhamporemunicipality.org.in/Default.aspx?PageId=514",
+        "observation": "Municipality page lists the civic body’s area/ward context; it did not provide a vector boundary or parcel data used in this review."
+      },
+      {
+        "url": "https://planning.wb.gov.in/departmentdetails/11",
+        "observation": "West Bengal Planning and Statistics describes state/district GIS administrative layers including Mouza boundaries; it is not a parcel layer."
+      }
+    ],
+    "viewerAndServiceTrace": {
+      "attempted": true,
+      "summary": "Reviewed official district English and Bengali land-record pages and the state Banglarbhumi homepage. State page lists plot and mouza map request functions under login-gated Citizen Services; the page open attempt timed out. No login, CAPTCHA, map request, or owner/title record lookup was attempted.",
+      "geometryStatus": "No anonymous parcel feature/geometry response verified",
+      "fullPolygonLimit": 3,
+      "fullPolygonsRetained": 0,
+      "ownerOrAddressDataRequested": false,
+      "credentialsOrTokenValuesRetained": false
+    },
+    "attemptedGeometry": {
+      "attempted": true,
+      "status": "No anonymous endpoint or feature payload verified; official Citizen Services login required",
+      "retainedFeatures": 0,
+      "fieldsRequested": [],
+      "geometryRetained": false,
+      "geojsonFile": null
+    }
+  },
+  "sourceIds": [],
+  "queueRank": 465,
+  "wupCityCode": 11733,
+  "cityId": "wup2025:11733",
+  "populationPlausibility2025": "Moderate",
+  "centerLatLon": [
+    24.0883878031898,
+    88.2575070019003
+  ],
+  "adapterReady": false,
+  "source": {
+    "sourceId": "in-west-bengal-banglarbhumi-land-records",
+    "name": "Banglarbhumi land-record and plot/mouza-map services",
+    "operator": "Land & Land Reforms and Refugee Relief and Rehabilitation Department, Government of West Bengal",
+    "url": "https://banglarbhumi.gov.in/",
+    "serviceType": "Land records and login-based map request/record services; no anonymous vector feature API verified.",
+    "geometryType": null,
+    "coordinateReferenceSystem": null,
+    "nativeIdFields": [],
+    "directGeometryQueryVerified": false,
+    "directMetadataSchemaVerified": false,
+    "scope": "Statewide land-record service; exact Mouza selection and geometry for the Berhampore WUP point were not verified."
+  },
+  "coverageAssessment": {
+    "claimedScope": "West Bengal state land records include plot/mouza map services; no local point coverage claim.",
+    "verifiedOpenScope": "No anonymous parcel vector feature returned.",
+    "citywideVerified": false,
+    "countrywideVerified": false
+  },
+  "registryEvidenceUrls": [
+    "https://murshidabad.gov.in/service/land-records/",
+    "https://murshidabad.gov.in/bn/service/%E0%A6%9C%E0%A6%AE%E0%A6%BF-%E0%A6%B0%E0%A7%87%E0%A6%95%E0%A6%B0%E0%A7%8D%E0%A6%A1/",
+    "https://banglarbhumi.gov.in/",
+    "https://berhamporemunicipality.org.in/Default.aspx?PageId=514",
+    "https://planning.wb.gov.in/departmentdetails/11"
+  ],
+  "runtimeAssessment": {
+    "status": "not_enabled",
+    "reason": "No anonymous parcel geometry or point-to-Mouza coverage verified; map requests reside in login-gated Citizen Services."
+  },
+  "rootReviewedAt": "2026-10-09T00:27:07.816662+00:00"
+}

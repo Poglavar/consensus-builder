@@ -1,0 +1,99 @@
+{
+  "schemaVersion": 1,
+  "kind": "city_parcel_source_research",
+  "checkedAt": "2026-10-09",
+  "populationUnit": "persons",
+  "status": "complete",
+  "pointBasis": "UN WUP 2025 population-weighted settlement centroid; this is not a municipal boundary or a parcel-coverage claim.",
+  "priorEvidenceFiles": [],
+  "sourceIds": [],
+  "name": "Zucheng (Zhucheng)",
+  "country": "China",
+  "countryCode": "CN",
+  "registryFound": null,
+  "registryBasis": "No city-first-party evidence establishing Zhucheng’s local real-property registration institution or public cadastral service was verified in this bounded review. A non-first-party local-chronicle result describes a 2015 registration-center opening, but is not used to set registryFound=true. The official Zhucheng government host did not yield a direct page response in the inspection.",
+  "registryEvidenceUrls": [
+    "https://www.zhucheng.gov.cn/"
+  ],
+  "verifiedSample": false,
+  "publicParcelGeometryFound": false,
+  "publicParcelGeometryCandidateFound": false,
+  "runtimeReadiness": "not_enabled_no_verified_public_geometry",
+  "wupCityCode": 10638,
+  "cityId": "wup2025:10638",
+  "centerLatLon": [
+    36.0004921652046,
+    119.393532008317
+  ],
+  "point": [
+    36.0004921652046,
+    119.393532008317
+  ],
+  "rank": 831,
+  "queueRank": 831,
+  "population2025": 654599,
+  "population2025k": 654.599,
+  "populationPlausibility2025": "Moderate",
+  "notes": "5",
+  "coverageAssessment": {
+    "claimedScope": "No city-first-party evidence establishing Zhucheng’s local real-property registration institution or public cadastral service was verified in this bounded review. A non-first-party local-chronicle result describes a 2015 registration-center opening, but is not used to set registryFound=true. The official Zhucheng government host did not yield a direct page response in the inspection.",
+    "verifiedOpenScope": "No anonymous full parcel polygon with a safe stable identifier was verified; the documented routes are map-level only, application-based or identity-gated as described above.",
+    "citywideVerified": false,
+    "countrywideVerified": false
+  },
+  "research": {
+    "executedQueries": [
+      {
+        "language": "Chinese (Simplified)",
+        "query": "诸城市政府 不动产登记中心 自然资源和规划局 地籍图 官方",
+        "scope": "Verify city-specific registry/cadastral evidence and inspect whether an anonymous public parcel geometry route is documented.",
+        "result": "Search results did not provide a verifiable Zhucheng government first-party page establishing a local registry or a public cadastral map/service. One non-first-party local-chronicle result reports a historical registration-center opening, but it is insufficient for this first-party evidence threshold. No parcel query was made.",
+        "actualResultUrls": [
+          "https://www.zhucheng.gov.cn/"
+        ],
+        "executionMethod": "Language-specific web search plus first-party public source review; no owner, address, tax, applicant, account or property-specific data was queried."
+      },
+      {
+        "language": "English",
+        "query": "Zhucheng China official real estate registration center cadastral parcel map GIS",
+        "scope": "Verify city-specific registry/cadastral evidence and inspect whether an anonymous public parcel geometry route is documented.",
+        "result": "No city-first-party source establishing an anonymous parcel map or safe geometry schema was found in the reviewed results. The official city host direct request timed out without HTTP headers or body; this is not an HTTP status or proof of service absence.",
+        "actualResultUrls": [
+          "https://www.zhucheng.gov.cn/"
+        ],
+        "executionMethod": "Language-specific web search plus first-party public source review; no owner, address, tax, applicant, account or property-specific data was queried."
+      }
+    ],
+    "officialSources": [
+      {
+        "url": "https://www.zhucheng.gov.cn/",
+        "observation": "Official city homepage was attempted by direct HTTPS; the connection timed out before HTTP headers or body were received. No registry or map content could be confirmed from this readback."
+      }
+    ]
+  },
+  "source": {
+    "name": "No verified public parcel portal. The official city homepage was not retrievable by direct request; no viewer/API was identified in official search results.",
+    "urls": [
+      "https://www.zhucheng.gov.cn/"
+    ],
+    "geometryType": null,
+    "outputCrs": null,
+    "nativeIdField": null
+  },
+  "technicalBlocker": "No city-specific first-party registry or anonymous parcel geometry/schema route was verified. No interaction with registration forms or property-specific services occurred.",
+  "scopeLimits": "Bounded review of public first-party sources. No owner, address, tax/account, applicant, identity, or property-specific data was queried or retained. No citywide completeness or legal/survey accuracy is asserted.",
+  "remainingUncertainty": "Whether Zhucheng currently has a municipal/county-level registration office and a separate public cadastral viewer remains unresolved; no evidence is inferred from nearby cities, national systems or the WUP point.",
+  "resultCategory": "local_registry_unresolved_no_public_geometry_verified",
+  "runtimeAssessment": {
+    "status": "not_ready_no_verified_anonymous_geometry",
+    "reason": "No city-specific first-party registry or anonymous parcel geometry/schema route was verified. No interaction with registration forms or property-specific services occurred."
+  },
+  "rootRegistryDecisionNote": "A third-party historical opening report and an official-host transport failure do not independently establish local registry presence. Kept unestablished rather than absent.",
+  "rootPrimaryReadback": {
+    "url": "https://www.zhucheng.gov.cn/",
+    "fetch": "error",
+    "reason": "<urlopen error timed out>"
+  },
+  "rootReviewNote": "Reviewed the specific primary institution/service evidence and its geographical, access and date limits. Direct readback failures are preserved separately from indexed primary evidence. No public full parcel geometry was verified for this city in this discovery pass.",
+  "rootReviewedAt": "2026-10-09T03:57:46.837098+00:00"
+}

@@ -1,0 +1,129 @@
+{
+  "schemaVersion": 1,
+  "kind": "city_parcel_source_research",
+  "checkedAt": "2026-10-09",
+  "name": "Shangqiu",
+  "country": "China",
+  "countryCode": "CN",
+  "populationUnit": "persons",
+  "status": "complete",
+  "registryFound": true,
+  "registryBasis": "The Shangqiu Real Estate Registration and Transaction Center publishes city-local land-registration, cadastral-map, and parcel-map query pages. The cadastral-map page links to a separate public map viewer; parcel-map query uses a real-property unit/address plus applicant, purpose, and captcha. The map viewer shell did not return an HTTP response in this environment, and no full polygon schema or response was verified.",
+  "registryEvidenceUrls": [
+    "https://sqsbdc.cn/",
+    "https://sqsbdc.cn/Query_zdt.aspx",
+    "https://sqsbdc.cn/Query_djt.aspx",
+    "https://sqsbdc.cn/index_article.aspx?category_id=24&channel_id=9",
+    "https://sqsbdc.cn/index_article.aspx?category_id=25&channel_id=9",
+    "http://222.138.172.5:8222/"
+  ],
+  "verifiedSample": false,
+  "publicParcelGeometryFound": false,
+  "publicParcelGeometryCandidateFound": true,
+  "runtimeReadiness": "not_enabled_no_verified_public_geometry",
+  "wupCityCode": 10070,
+  "cityId": "wup2025:10070",
+  "centerLatLon": [
+    34.4187578038864,
+    115.636926898849
+  ],
+  "point": [
+    34.4187578038864,
+    115.636926898849
+  ],
+  "rank": 803,
+  "queueRank": 803,
+  "population2025": 676590,
+  "population2025k": 676.59,
+  "populationPlausibility2025": "Moderate",
+  "pointBasis": "UN WUP 2025 population-weighted settlement centroid; this is not a municipal boundary or a parcel-coverage claim.",
+  "technicalBlocker": "The linked map viewer and per-record parcel-map query did not yield a public safe full-polygon schema or exact-WUP response. No identity, captcha or property query was attempted.",
+  "scopeLimits": "Bounded public-source and anonymous service review only. No owner, address, applicant, account, taxpayer, identity or property-specific query inputs were submitted. No geometry sample is retained.",
+  "remainingUncertainty": "The separate linked cadastral map viewer’s service schema and exact-point coverage remain unverified. The record-search workflow is per-property and was not used.",
+  "research": {
+    "executedQueries": [
+      {
+        "language": "Chinese (Simplified)",
+        "query": "商丘市不动产登记交易中心 地籍图查询 宗地图 宗地登记 官方",
+        "scope": "Verify city-local registry/cadastre activity and inspect anonymous public parcel-map geometry without owner/address/account/property-specific inputs.",
+        "result": "商丘市不动产登记交易中心提供土地登记、地籍图、宗地图等查询入口。宗地图表单要求不动产单元号/房屋坐落、申请人、查询用途及验证码；地籍图页需选择地籍区类别并链接到地图应用。未提交任何地块/申请人信息，地图服务未返回可核验的几何响应。",
+        "actualResultUrls": [
+          "https://sqsbdc.cn/",
+          "https://sqsbdc.cn/Query_zdt.aspx",
+          "https://sqsbdc.cn/Query_djt.aspx",
+          "https://sqsbdc.cn/index_article.aspx?category_id=24&channel_id=9",
+          "https://sqsbdc.cn/index_article.aspx?category_id=25&channel_id=9",
+          "http://222.138.172.5:8222/"
+        ],
+        "executionMethod": "Separate local-language web search followed by first-party source inspection and route/schema checks. No personal or property-specific inputs were submitted."
+      },
+      {
+        "language": "English",
+        "query": "Shangqiu China official real estate registration cadastral map parcel map public GIS land registry",
+        "scope": "Cross-check local institution identity and determine whether full public parcel geometry can be verified at the WUP point.",
+        "result": "Official city registration-center pages identify land-registration, cadastral-map, and parcel-map query services. The parcel-map form requests a property unit/address, applicant, purpose, and captcha. The cadastral map page links to a separate map host, but no full polygon/schema was verified.",
+        "actualResultUrls": [
+          "https://sqsbdc.cn/",
+          "https://sqsbdc.cn/Query_zdt.aspx",
+          "https://sqsbdc.cn/Query_djt.aspx",
+          "https://sqsbdc.cn/index_article.aspx?category_id=24&channel_id=9",
+          "https://sqsbdc.cn/index_article.aspx?category_id=25&channel_id=9",
+          "http://222.138.172.5:8222/"
+        ],
+        "executionMethod": "Separate English-language web search followed by official source/service inspection; no personal or property-specific inputs were submitted."
+      }
+    ],
+    "officialSources": [
+      {
+        "url": "https://sqsbdc.cn/Query_zdt.aspx",
+        "observation": "Official Shangqiu Real Estate Registration and Transaction Center parcel-map query page; fields require property unit/address, applicant, purpose and captcha. No property-specific query was submitted."
+      },
+      {
+        "url": "https://sqsbdc.cn/Query_djt.aspx",
+        "observation": "Official center cadastral-map page offers cadastral district/subdistrict type and a purpose field; the query link leads to a separate viewer at http://222.138.172.5:8222/."
+      },
+      {
+        "url": "https://sqsbdc.cn/index_article.aspx?category_id=24&channel_id=9",
+        "observation": "Official city center organization page lists the local registry institution and service center."
+      },
+      {
+        "url": "https://sqsbdc.cn/index_article.aspx?category_id=25&channel_id=9",
+        "observation": "Official city center page describes its real-estate registration/transaction surveying service center."
+      }
+    ]
+  },
+  "source": {
+    "name": "Shangqiu Real Estate Registration and Transaction Center",
+    "urls": [
+      "https://sqsbdc.cn/",
+      "https://sqsbdc.cn/Query_zdt.aspx",
+      "https://sqsbdc.cn/Query_djt.aspx",
+      "https://sqsbdc.cn/index_article.aspx?category_id=24&channel_id=9",
+      "https://sqsbdc.cn/index_article.aspx?category_id=25&channel_id=9",
+      "http://222.138.172.5:8222/"
+    ]
+  },
+  "coverageAssessment": {
+    "claimedScope": "The Shangqiu Real Estate Registration and Transaction Center publishes city-local land-registration, cadastral-map, and parcel-map query pages. The cadastral-map page links to a separate public map viewer; parcel-map query uses a real-property unit/address plus applicant, purpose, and captcha. The map viewer shell did not return an HTTP response in this environment, and no full polygon schema or response was verified.",
+    "verifiedOpenScope": "City-level registration/cadastral query services are verified; no generic public polygon schema or exact-point response is verified.",
+    "citywideVerified": false,
+    "countrywideVerified": false
+  },
+  "runtimeAssessment": {
+    "status": "not_ready_no_verified_exact_point_full_polygon",
+    "reason": "The linked map viewer and per-record parcel-map query did not yield a public safe full-polygon schema or exact-WUP response. No identity, captcha or property query was attempted.",
+    "evidenceFile": "research/overnight-cities-2026-10-08/shangqiu-service-review.json"
+  },
+  "resultCategory": "city_registry_cadastral_map_service_candidate_geometry_unverified",
+  "priorEvidenceFiles": [],
+  "sourceIds": [],
+  "serviceCandidateNote": "Official public map/query candidate exists, but no full polygon response at the WUP point was verified.",
+  "rootPrimaryReadback": {
+    "url": "https://sqsbdc.cn/",
+    "fetch": 200,
+    "contentType": "text/html; charset=utf-8",
+    "title": "商丘市不动产登记交易中心 "
+  },
+  "rootReviewNote": "Reviewed the specific primary institution/service evidence and its geographical, access and date limits. Direct readback failures are preserved separately from indexed primary evidence. No public full parcel geometry was verified for this city in this discovery pass.",
+  "rootReviewedAt": "2026-10-09T03:57:46.837098+00:00"
+}

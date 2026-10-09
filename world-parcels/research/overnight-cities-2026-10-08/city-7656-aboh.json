@@ -1,0 +1,101 @@
+{
+  "name": "Aboh Mbaise",
+  "country": "Nigeria",
+  "countryCode": "NG",
+  "rank": 367,
+  "point": [
+    5.53767764603471,
+    7.29719797147584
+  ],
+  "population2025": 1374320,
+  "schemaVersion": 1,
+  "kind": "city_parcel_source_research",
+  "checkedAt": "2026-10-09",
+  "populationUnit": "persons",
+  "status": "complete",
+  "verifiedSample": false,
+  "publicParcelGeometryFound": false,
+  "runtimeReadiness": "not_enabled_no_verified_public_geometry",
+  "priorEvidenceFiles": [],
+  "scopeLimits": "The WUP locator identifies the Aboh Mbaise urban area; it is not a local-government boundary or a parcel address. The Imo ministry advertises IGIS and geospatial database services, but no public anonymous map endpoint or feature-service URL for Aboh Mbaise was exposed in the reviewed official pages. No credentials, property applications or individual title lookups were used.",
+  "pointBasis": "UN WUP 2025 population-weighted settlement centroid; this is not a municipal boundary or a parcel-coverage claim.",
+  "registryFound": null,
+  "registryBasis": "The Imo State ministry documents land administration and IGIS, but no city-specific Aboh Mbaise registry, local office record or parcel source was verified. State-level functions alone do not establish coverage of this settlement.",
+  "resultCategory": "official_state_land_services_city_coverage_unconfirmed",
+  "technicalBlocker": "Official Imo Ministry pages document land administration and IGIS services but do not link an anonymous parcel map or geometry API. No endpoint was found to query safely.",
+  "remainingUncertainty": "Whether the state IGIS or a local land office provides registry coverage for Aboh Mbaise; no city-specific first-party evidence was found.",
+  "nextStep": "Locate a publicly documented Imo IGIS viewer and confirm it is anonymous and returns geometry before attempting a bounded query.",
+  "freshResearch": {
+    "executedQueries": [
+      {
+        "language": "English",
+        "query": "Aboh Mbaise Imo State official land registry cadastral map GIS land records government",
+        "result": "Found the Imo State Ministry of Lands service and department pages describing land administration, survey/mapping and IGIS, but not a public map URL or parcel vector endpoint.",
+        "method": "Separate English-language search followed by official ministry page review."
+      },
+      {
+        "language": "Igbo/local search terms",
+        "query": "Aboh Mbaise cadastral map land registry Imo State land records official GIS",
+        "result": "Search results did not identify a local-government parcel map; official Imo Ministry service and department pages were the relevant local-government sources.",
+        "method": "Separate local-area search; the result set was primarily English because official public land records are published in English."
+      }
+    ],
+    "officialSources": [
+      {
+        "url": "https://lands.im.gov.ng/services",
+        "observation": "Official Imo State Ministry page describing land administration, title verification, survey/mapping, and IGIS digital land-registry/geospatial database services."
+      },
+      {
+        "url": "https://lands.im.gov.ng/department",
+        "observation": "Official ministry department page describing Land Administration responsibilities."
+      },
+      {
+        "url": "https://lands.im.gov.ng/contact",
+        "observation": "Official ministry contact page identifies the responsible state ministry and Owerri office; no parcel viewer linked."
+      }
+    ],
+    "viewerAndServiceTrace": {
+      "attempted": true,
+      "summary": "Official Imo Ministry pages document land administration and IGIS services but do not link an anonymous parcel map or geometry API. No endpoint was found to query safely.",
+      "fullPolygonLimit": 3,
+      "fullPolygonsRetained": 0,
+      "ownerOrAddressDataRequested": false,
+      "credentialsOrTokenValuesRetained": false
+    },
+    "attemptedGeometry": {
+      "attempted": false,
+      "status": "no public parcel geometry endpoint found",
+      "retainedFeatures": 0,
+      "fieldsRequested": [],
+      "geometryRetained": false,
+      "geojsonFile": null
+    }
+  },
+  "registryEvidenceUrls": [
+    "https://lands.im.gov.ng/services",
+    "https://lands.im.gov.ng/department",
+    "https://lands.im.gov.ng/contact"
+  ],
+  "sourceIds": [],
+  "coverageAssessment": {
+    "claimedScope": "The Imo State ministry documents land administration and IGIS, but no city-specific Aboh Mbaise registry, local office record or parcel source was verified. State-level functions alone do not establish coverage of this settlement.",
+    "verifiedOpenScope": "Official Imo Ministry pages document land administration and IGIS services but do not link an anonymous parcel map or geometry API. No endpoint was found to query safely.",
+    "citywideVerified": false,
+    "countrywideVerified": false
+  },
+  "source": {
+    "name": "Aboh Mbaise official cadastral / parcel evidence",
+    "operator": "Official Imo State Ministry page describing land administration, title verification, survey/mapping, and IGIS digital land-registry/geospatial database services.",
+    "url": "https://lands.im.gov.ng/services",
+    "scope": "The WUP locator identifies the Aboh Mbaise urban area; it is not a local-government boundary or a parcel address. The Imo ministry advertises IGIS and geospatial database services, but no public anonymous map endpoint or feature-service URL for Aboh Mbaise was exposed in the reviewed official pages. No credentials, property applications or individual title lookups were used."
+  },
+  "wupCityCode": 7656,
+  "cityId": "wup2025:7656",
+  "queueRank": 367,
+  "populationPlausibility2025": "Moderate",
+  "centerLatLon": [
+    5.53767764603471,
+    7.29719797147584
+  ],
+  "rootReviewedAt": "2026-10-08T23:19:47.932570+00:00"
+}

@@ -1,0 +1,148 @@
+{
+  "name": "Krakow",
+  "country": "Poland",
+  "countryCode": "PL",
+  "rank": 770,
+  "point": [
+    50.0549669396486,
+    19.9647598843061
+  ],
+  "population2025": 699015,
+  "schemaVersion": 1,
+  "kind": "city_parcel_source_research",
+  "checkedAt": "2026-10-09",
+  "populationUnit": "persons",
+  "status": "complete",
+  "verifiedSample": true,
+  "publicParcelGeometryFound": true,
+  "runtimeReadiness": "enabled",
+  "priorEvidenceFiles": [],
+  "scopeLimits": "56 valid distinct EGiB parcel polygons verified in thirteen bounded 0.001-degree cells around the unchanged Kraków WUP settlement locator. Native id_dzialki values including slash suffixes are preserved unchanged. Complete bounded paging, forced three-row pages, all 56 fresh native-ID reads, explicit absence, footprint and source binding passed in 25 requests. Independent metric EPSG:32634 GEOS found all geometries valid and distinct, with no sampled overlaps above 0.01 m² or operation errors. The original exact-point sample matches fresh full geometry unchanged. Native source CRS is EPSG:2178; requested EPSG:4326 output is retained unchanged. Citywide completeness, survey accuracy, legal title, currentness and long-term identity continuity remain unverified.",
+  "pointBasis": "UN WUP 2025 population-weighted settlement centroid; this is not a municipal boundary or a parcel-coverage claim.",
+  "registryFound": true,
+  "registryBasis": "The city’s official MSIP catalog identifies an EGiB cadastral parcel vector dataset owned by the Mayor of Kraków and published by the Geodesy Department. The city BIP metadata names EGiB and a daily update path. The published feature schema contains parcel key, parcel number, unit/precinct names, area, import date, and geometry, with no owner or address field.",
+  "resultCategory": "verified_public_geometry_runtime_enabled",
+  "remainingUncertainty": "No citywide query, pagination, freshness, topological or legal-title assessment was performed; the sampled geometry is a public cadastre representation, not a guarantee of title or survey accuracy.",
+  "research": {
+    "executedQueries": [
+      {
+        "language": "Polish",
+        "query": "Kraków działki ewidencyjne WFS Działki dane przestrzenne MSIP oficjalny polski",
+        "scope": "Find city-owned parcel publication, native schema and public polygon service.",
+        "result": "Official city MSIP catalog publishes vector EGiB parcel data in EPSG:2178 and provides WFS/downloads; exact point query returned one full polygon.",
+        "actualResultUrls": [
+          "https://msip.krakow.pl/dataset/1562",
+          "https://msip3.um.krakow.pl/server/services/Pobieranie/Dzialki/MapServer/WFSServer"
+        ],
+        "executionMethod": "Separate Polish-language discovery and official city catalog, schema and bounded API inspection."
+      },
+      {
+        "language": "English",
+        "query": "Krakow official EGiB parcel WFS Geoportal cadastral polygons city GIS",
+        "scope": "Cross-check national and city EGiB guidance and service limitations.",
+        "result": "Official Geoportal explains EGiB responsibilities and WFS geometry; city metadata confirms the local service and its public vector fields.",
+        "actualResultUrls": [
+          "https://www.geoportal.gov.pl/pl/dane/ewidencja-gruntow-i-budynkow-egib/",
+          "https://msip.krakow.pl/dataset/1562"
+        ],
+        "executionMethod": "Separate English-language discovery followed by official national and local service review."
+      }
+    ],
+    "officialSources": [
+      {
+        "url": "https://msip.krakow.pl/dataset/1562",
+        "observation": "Official MSIP catalog publishes the cadastral parcels as vector data in EPSG:2178, with SHP/DXF/JSON downloads and WMS/WFS links; data owner is Mayor of Kraków / City Geodesy Department. Terms restrict personal data and otherwise refer to city reuse rules."
+      },
+      {
+        "url": "https://msip.krakow.pl/dataset/3207",
+        "observation": "Official city catalog describes the WMS as EGiB parcel data without personal data and identifies the City Geodesy Department as owner."
+      },
+      {
+        "url": "https://www.bip.krakow.pl/?dok_id=116045&metka=1",
+        "observation": "City BIP EGiB metadata identifies the Geodesy Department, subject data including parcels and daily updating from PZGiK object data; its listed WMS format is image output."
+      },
+      {
+        "url": "https://www.geoportal.gov.pl/pl/dane/ewidencja-gruntow-i-budynkow-egib/",
+        "observation": "Official national Geoportal explains EGiB custodianship by starosts/cities with county rights, daily aggregated WFS and that WFS returns full parcel/building geometries subject to the county feeds."
+      }
+    ],
+    "viewerAndServiceTrace": {
+      "viewerUrl": "https://msip.krakow.pl/dataset/1562",
+      "apiBase": "https://msip3.um.krakow.pl/server/services/Pobieranie/Dzialki/MapServer/WFSServer",
+      "observedClientRoutes": [
+        "WFS GetCapabilities",
+        "WFS DescribeFeatureType",
+        "ArcGIS REST layer metadata /0?f=pjson",
+        "/0/query"
+      ],
+      "notes": "WFS GetCapabilities and DescribeFeatureType HTTP 200. Layer is dzialki_ewidencyjne, EPSG:2178, polygon; schema contains safe parcel identifiers, area, date and geometry but no owner/address fields. Exact-point query through the official service returned one full polygon. Requested only id_dzialki, numer_dzialki, pow_graf and geometry; output transformed to EPSG:4326."
+    }
+  },
+  "verifiedParcelResponse": {
+    "source": "Kraków MSIP EGiB parcel polygon layer",
+    "queryPoint": [
+      50.0549669396486,
+      19.9647598843061
+    ],
+    "queryCrs": "EPSG:4326",
+    "request": "GET point intersection; outFields=id_dzialki,numer_dzialki,pow_graf; returnGeometry=true; resultRecordCount=3",
+    "httpStatus": 200,
+    "featureCount": 1,
+    "nativeParcelId": "126105_9.0017.270/57",
+    "areaM2": 2022.92004,
+    "geometryType": "Polygon",
+    "geometryFile": "city-3608-krakow-samples.geojson",
+    "geometrySha256": "d07429c94b14c0aacd8a300fd8ed03ee3740c564fe2d8df8b636ba8e0a2a512a",
+    "retainedFullGeometryInCityRecord": false,
+    "adapterQualification": null
+  },
+  "source": {
+    "sourceId": "pl-krakow-msip-egib-parcels",
+    "name": "Kraków MSIP EGiB Działki ewidencyjne",
+    "url": "https://msip.krakow.pl/dataset/1562",
+    "operator": "Prezydent Miasta Krakowa, Urząd Miasta Krakowa Wydział Geodezji",
+    "serviceType": "Official city vector parcel dataset and anonymous WFS/ArcGIS feature service. City catalog lists SHP, DXF and JSON downloads and WMS/WFS access; sample obtained through the public REST-backed polygon layer.",
+    "layer": "Dzialki:dzialki_ewidencyjne (MapServer layer 0)",
+    "geometryType": "Polygon/MultiPolygon",
+    "outputCrs": "EPSG:4326 requested from native EPSG:2178 service",
+    "nativeIdField": "id_dzialki",
+    "nativeIdEvidence": "Official DescribeFeatureType and REST layer schema expose id_dzialki and numer_dzialki plus area and geometry; exact point query returned native id_dzialki 126105_9.0017.270/57.",
+    "directGeometryQueryVerified": true,
+    "directMetadataSchemaVerified": true,
+    "personalAttributesRequested": false,
+    "scope": "56 valid distinct EGiB parcel polygons verified in thirteen bounded 0.001-degree cells around the unchanged Kraków WUP settlement locator. Native id_dzialki values including slash suffixes are preserved unchanged. Complete bounded paging, forced three-row pages, all 56 fresh native-ID reads, explicit absence, footprint and source binding passed in 25 requests. Independent metric EPSG:32634 GEOS found all geometries valid and distinct, with no sampled overlaps above 0.01 m² or operation errors. The original exact-point sample matches fresh full geometry unchanged. Native source CRS is EPSG:2178; requested EPSG:4326 output is retained unchanged. Citywide completeness, survey accuracy, legal title, currentness and long-term identity continuity remain unverified."
+  },
+  "wupCityCode": 3608,
+  "cityId": "wup2025:3608",
+  "queueRank": 770,
+  "populationPlausibility2025": "High",
+  "centerLatLon": [
+    50.0549669396486,
+    19.9647598843061
+  ],
+  "sourceIds": [
+    "pl-krakow-msip-egib-parcels"
+  ],
+  "adapterReady": true,
+  "runtimeAssessment": {
+    "status": "enabled",
+    "reason": "56 valid distinct EGiB parcel polygons verified in thirteen bounded 0.001-degree cells around the unchanged Kraków WUP settlement locator. Native id_dzialki values including slash suffixes are preserved unchanged. Complete bounded paging, forced three-row pages, all 56 fresh native-ID reads, explicit absence, footprint and source binding passed in 25 requests. Independent metric EPSG:32634 GEOS found all geometries valid and distinct, with no sampled overlaps above 0.01 m² or operation errors. The original exact-point sample matches fresh full geometry unchanged. Native source CRS is EPSG:2178; requested EPSG:4326 output is retained unchanged. Citywide completeness, survey accuracy, legal title, currentness and long-term identity continuity remain unverified.",
+    "acceptanceFile": "research/overnight-cities-2026-10-08/krakow-msip-root-acceptance.json",
+    "qualityFile": "research/overnight-cities-2026-10-08/krakow-msip-root-quality.json",
+    "qualityReviewFile": "research/overnight-cities-2026-10-08/krakow-root-quality-review.json"
+  },
+  "coverageAssessment": {
+    "claimedScope": "One full parcel intersects the exact Kraków WUP locator.",
+    "verifiedOpenScope": "56 valid distinct EGiB parcel polygons verified in thirteen bounded 0.001-degree cells around the unchanged Kraków WUP settlement locator. Native id_dzialki values including slash suffixes are preserved unchanged. Complete bounded paging, forced three-row pages, all 56 fresh native-ID reads, explicit absence, footprint and source binding passed in 25 requests. Independent metric EPSG:32634 GEOS found all geometries valid and distinct, with no sampled overlaps above 0.01 m² or operation errors. The original exact-point sample matches fresh full geometry unchanged. Native source CRS is EPSG:2178; requested EPSG:4326 output is retained unchanged. Citywide completeness, survey accuracy, legal title, currentness and long-term identity continuity remain unverified.",
+    "citywideVerified": false,
+    "countrywideVerified": false
+  },
+  "appCityId": "krakow",
+  "runtimeQualification": {
+    "sourceId": "pl-krakow-msip-egib-parcels",
+    "status": "enabled",
+    "acceptanceFile": "research/overnight-cities-2026-10-08/krakow-msip-root-acceptance.json",
+    "qualityFile": "research/overnight-cities-2026-10-08/krakow-msip-root-quality.json"
+  },
+  "rootReviewedAt": "2026-10-09T03:19:30.908964+00:00"
+}

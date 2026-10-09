@@ -1,0 +1,108 @@
+{
+  "name": "Saharanpur",
+  "country": "India",
+  "countryCode": "IN",
+  "rank": 401,
+  "point": [
+    29.964015284905,
+    77.5478862895801
+  ],
+  "population2025": 1275279,
+  "population2025k": 1275.279,
+  "populationPlausibility2025": "Moderate",
+  "populationUnit": "persons",
+  "schemaVersion": 1,
+  "kind": "city_parcel_source_research",
+  "checkedAt": "2026-10-09",
+  "status": "complete",
+  "verifiedSample": false,
+  "publicParcelGeometryFound": false,
+  "runtimeReadiness": "not_enabled_no_verified_public_geometry",
+  "priorEvidenceFiles": [],
+  "scopeLimits": "The WUP point is a settlement locator, not a municipal boundary. District-level land-record availability and village-map digitization do not establish city parcel coverage. No login, parcel-number or owner query was attempted.",
+  "pointBasis": "UN WUP 2025 population-weighted settlement centroid; this is not a municipal boundary or a parcel-coverage claim.",
+  "wupCityCode": 8376,
+  "cityId": "wup2025:8376",
+  "queueRank": 401,
+  "centerLatLon": [
+    29.964015284905,
+    77.5478862895801
+  ],
+  "registryFound": true,
+  "registryBasis": "The district land-record service explicitly identifies its location as Tehsil Headquarter, City Saharanpur, and links official UP Bhulekh. This city-specific service establishes local land-record activity, without verifying public parcel polygons.",
+  "resultCategory": "district_land_records_confirmed_city_public_geometry_not_verified",
+  "technicalBlocker": "The city GIS viewer is login-gated. State land-map routes are village/patta workflows; no anonymous city-level full-polygon response was confirmed.",
+  "remainingUncertainty": "Whether authenticated municipal GIS offers urban geometry and whether a public urban-survey layer exists for the WUP point.",
+  "nextStep": "Use only a documented anonymous city parcel-vector service if found; do not query the login viewer.",
+  "sourceIds": [],
+  "research": {
+    "executedQueries": [
+      {
+        "language": "English",
+        "query": "Saharanpur official land records cadastral map GIS city parcel public viewer",
+        "result": "District Administration page directs to UP Bhulekh. Smart City GIS shell requires login. State land-map digitization dashboard indicates revenue-village/tehsil coverage, not city polygons.",
+        "actualResultUrls": [
+          "https://saharanpur.nic.in/service/land-records/",
+          "https://gis.saharanpursmartcity.com/SSCL/Login.aspx",
+          "https://upbhulekh.gov.in/GeoDashboard/public_report?distCode=132"
+        ],
+        "executionMethod": "Separate native/English-language search and first-party page review; no login, owner, address, or property query."
+      },
+      {
+        "language": "Hindi",
+        "query": "सहारनपुर तहसील भू नक्शा खसरा मानचित्र आधिकारिक भूमि अभिलेख",
+        "result": "Official Hindi district land-records page points to UP Bhulekh; the official digitization dashboard is village/tehsil based and does not verify city parcel vectors. Smart City GIS is login-gated.",
+        "actualResultUrls": [
+          "https://saharanpur.nic.in/hi/service/%E0%A4%AD%E0%A5%82%E0%A4%AE%E0%A4%BF-%E0%A4%B0%E0%A4%BF%E0%A4%95%E0%A5%89%E0%A4%B0%E0%A5%8D%E0%A4%A1%E0%A5%8D%E0%A4%B8/",
+          "https://gis.saharanpursmartcity.com/SSCL/Login.aspx",
+          "https://upbhulekh.gov.in/GeoDashboard/public_report?distCode=132"
+        ],
+        "executionMethod": "Separate native/English-language search and first-party page review; no login, owner, address, or property query."
+      }
+    ],
+    "officialSources": [
+      {
+        "url": "https://saharanpur.nic.in/service/land-records/",
+        "observation": "Official district land-record page links to UP Bhulekh."
+      },
+      {
+        "url": "https://saharanpur.nic.in/hi/service/%E0%A4%AD%E0%A5%82%E0%A4%AE%E0%A4%BF-%E0%A4%B0%E0%A4%BF%E0%A4%95%E0%A9%89%E0%A4%B0%E0%A5%8D%E0%A4%A1%E0%A5%8D%E0%A4%B8/",
+        "observation": "Official Hindi district page provides same state land-record link."
+      },
+      {
+        "url": "https://upbhulekh.gov.in/GeoDashboard/public_report?distCode=132",
+        "observation": "Official dashboard reports Saharanpur district/tehsil/village digitization progress; it does not establish city parcel-vector coverage."
+      },
+      {
+        "url": "https://gis.saharanpursmartcity.com/SSCL/Login.aspx",
+        "observation": "Smart City GIS login page presents username/password gate; no login attempted."
+      }
+    ],
+    "viewerAndServiceTrace": {
+      "attempted": true,
+      "summary": "Inspected official land-record links, public digitization dashboard and current Smart City map shell. Login-gated; no anonymous geometry route surfaced.",
+      "fullPolygonLimit": 3,
+      "fullPolygonsRetained": 0,
+      "ownerOrAddressDataRequested": false,
+      "credentialsOrTokenValuesRetained": false
+    },
+    "attemptedGeometry": {
+      "fullPolygonLimit": 3,
+      "fullPolygonsRetained": 0,
+      "outcome": "No anonymous full parcel polygon verified for Saharanpur city."
+    }
+  },
+  "verifiedParcelResponse": null,
+  "source": null,
+  "registryEvidenceUrls": [
+    "https://saharanpur.nic.in/service/land-records/"
+  ],
+  "rootSupplementalResearch": [
+    {
+      "checkedAt": "2026-10-08T23:47:22.431383+00:00",
+      "url": "https://saharanpur.nic.in/service/land-records/",
+      "observation": "The district land-record service explicitly identifies its location as Tehsil Headquarter, City Saharanpur, and links official UP Bhulekh. This city-specific service establishes local land-record activity, without verifying public parcel polygons."
+    }
+  ],
+  "rootReviewedAt": "2026-10-08T23:47:22.529967+00:00"
+}

@@ -1,0 +1,45 @@
+{
+  "schemaVersion": 1,
+  "city": "Porto Alegre",
+  "wupCityCode": 5995,
+  "sourceId": "br-poa-smf-fiscal-parcels",
+  "checkedAt": "2026-10-09",
+  "sourceUrl": "https://gis-smamus.portoalegre.rs.gov.br/server/rest/services/01_PUBLICACOES/dmweb_lotes_fiscais/FeatureServer/0",
+  "evidence": {
+    "serviceMetadata": "HTTP 200, polygon layer; GeoJSON and pagination supported; safe fields objectid,id_lotes,setor,qtd.",
+    "sample": "Exact WUP point query returned complete Polygon id_lotes 170121; geometry response is unclipped.",
+    "adapterQualification": "Existing real ArcGIS adapter passed 13/13 bounded cells, forced three-row pages (49 IDs / 34 geometry pages), exact-ID reads (139 IDs), explicit absence, footprint and binding.",
+    "retainedGeometryPolicy": "Exactly three full geometries remain in porto-alegre-adapter-sample.geojson; all other polygon geometry is confined to /private/tmp."
+  },
+  "qualityAssessment": {
+    "audit": "Independent GEOS/Shapely 2.1.2 audit of 139 unmodified unique shapes.",
+    "validNonempty": 139,
+    "invalid": 0,
+    "exactDuplicatePairs": 0,
+    "positiveAreaOverlapPairs": 20,
+    "sumOverlapM2": 27473.939013126972,
+    "operationErrors": 0,
+    "detail": "Largest pair is ~27,187 m² between IDs 75489 and 156806; native source returns duplicate-like records for 75489 under multiple object IDs. Several distinct-ID overlaps also remain. Bounded native safe-ID+geometry follow-up confirms near-coincident duplicates and distinct-ID overlaps; no published status/lifecycle/grouping semantics explain them."
+  },
+  "disposition": "verified_geometry_sample_runtime_hold",
+  "runtimeReadiness": "held_protocol_review",
+  "blocker": "Do not filter, repair or select by arbitrary type/year/status. Hold runtime integration pending a source-owner contract explaining how duplicate object IDs and overlapping fiscal lot IDs should be grouped or interpreted. City identity is confirmed by the exact WUP city code and fresh local research; source topology and repeated native IDs remain unresolved.",
+  "nextStep": "Obtain and document source lifecycle/grouping semantics, then re-run qualification and independent topology audit with the same unfiltered source scope.",
+  "evidenceFiles": [
+    "research/overnight-cities-2026-10-08/porto-alegre-acceptance.json",
+    "research/overnight-cities-2026-10-08/porto-alegre-quality.json",
+    "research/overnight-cities-2026-10-08/porto-alegre-adapter-sample.geojson"
+  ],
+  "overlapFollowupRequest": {
+    "url": "https://gis-smamus.portoalegre.rs.gov.br/server/rest/services/01_PUBLICACOES/dmweb_lotes_fiscais/FeatureServer/0/query?where=id_lotes+IN+%2875489%2C156806%2C69191%2C68633%2C165601%2C75983%29&outFields=objectid%2Cid_lotes&returnGeometry=true&outSR=4326&f=geojson",
+    "method": "GET",
+    "httpStatus": 200,
+    "contentType": "application/geo+json; charset=UTF-8",
+    "featureCount": 8,
+    "requestedAttributes": [
+      "objectid",
+      "id_lotes"
+    ],
+    "geometryReturned": true
+  }
+}

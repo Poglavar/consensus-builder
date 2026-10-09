@@ -1,0 +1,138 @@
+{
+  "name": "Huludao",
+  "country": "China",
+  "countryCode": "CN",
+  "rank": 1117,
+  "point": [
+    40.7736582403664,
+    120.832721697372
+  ],
+  "freshResearch": {
+    "queries": [
+      {
+        "language": "English",
+        "query": "Huludao official natural resources bureau cadastral map official real estate registration parcels",
+        "scope": "Identify first-party local registry and public parcel geometry; preserve the unchanged WUP settlement locator and avoid owner or address attributes.",
+        "result": "The English search did not surface a public cadastral geometry endpoint for Huludao.",
+        "executionMethod": "Separate English-language web search followed by first-party source review.",
+        "actualResultUrls": [
+          "https://www.ln.gov.cn/web/qmzx/yhyshjzt/dt/2026012216261718086/index.shtml",
+          "https://www.ln.gov.cn/web/ywdt/qsgd/ass_2_1/2023082408593497369/index.shtml"
+        ]
+      },
+      {
+        "language": "Chinese",
+        "query": "葫芦岛市 自然资源局 地籍图 不动产登记 官方 地图",
+        "scope": "Find first-party local-language registry/cadastral routes and any anonymous safe parcel geometry service near the unchanged WUP point.",
+        "result": "The Chinese search found Liaoning government reports on Huludao Natural Resources Bureau’s registration services and internal integrated “one map” asset-management system. This does not establish public parcel access.",
+        "executionMethod": "Separate Chinese-language web search followed by first-party source review.",
+        "actualResultUrls": [
+          "https://www.ln.gov.cn/web/qmzx/yhyshjzt/dt/2026012216261718086/index.shtml",
+          "https://www.ln.gov.cn/web/ywdt/qsgd/ass_2_1/2023082408593497369/index.shtml"
+        ]
+      }
+    ],
+    "portals": [
+      {
+        "name": "https://www.ln.gov.cn/web/qmzx/yhyshjzt/dt/2026012216261718086/index.shtml",
+        "operator": "China",
+        "homeUrl": "https://www.ln.gov.cn/web/qmzx/yhyshjzt/dt/2026012216261718086/index.shtml",
+        "observation": "Liaoning government page quoting Huludao Natural Resources Bureau describes online real-estate registration services, including property-file inquiry and registration certificates; no public parcel vector endpoint."
+      },
+      {
+        "name": "https://www.ln.gov.cn/web/ywdt/qsgd/ass_2_1/2023082408593497369/index.shtml",
+        "operator": "China",
+        "homeUrl": "https://www.ln.gov.cn/web/ywdt/qsgd/ass_2_1/2023082408593497369/index.shtml",
+        "observation": "Liaoning government report says Huludao Natural Resources Bureau integrated natural-resource inventory, land supply, real-estate registration and spatial information into an internal “one map” management system; management platform visibility does not establish public parcel geometry."
+      }
+    ],
+    "requests": [],
+    "historicalContext": []
+  },
+  "status": "complete",
+  "verifiedParcelResponse": null,
+  "source": {
+    "sourceId": null,
+    "name": "https://www.ln.gov.cn/web/qmzx/yhyshjzt/dt/2026012216261718086/index.shtml",
+    "url": "https://www.ln.gov.cn/web/qmzx/yhyshjzt/dt/2026012216261718086/index.shtml",
+    "operator": null,
+    "serviceType": "Official registry/cadastral route reviewed; no anonymous safe full-parcel geometry response verified.",
+    "layer": null,
+    "geometryType": null,
+    "outputCrs": null,
+    "nativeIdField": null,
+    "nativeIdEvidence": null,
+    "attributesRequested": [],
+    "sampleCount": 0,
+    "sampleFile": null,
+    "directGeometryQueryVerified": false,
+    "directMetadataSchemaVerified": false,
+    "geometryStatus": "not_verified",
+    "operatorNote": "See first-party evidence and access limits in registryBasis and linked sources."
+  },
+  "coverageAssessment": {
+    "claimedScope": "Official Liaoning government reports establish the Huludao Natural Resources Bureau as custodian of real-estate registration and describe an integrated internal natural-resource management map. Online registration services focus on property files and certificates; no anonymous cadastral geometry layer was documented.",
+    "verifiedOpenScope": "No anonymous full parcel geometry response was verified in this investigation.",
+    "countrywideVerified": false,
+    "citywideVerified": false
+  },
+  "registryFound": true,
+  "verifiedSample": false,
+  "resultCategory": "official_local_registry_geometry_unverified",
+  "technicalBlocker": "No anonymous safe-ID full-geometry endpoint and schema was verified; where an official map or registry portal exists, its service behavior or public feature response was not established.",
+  "remainingUncertainty": "Internal management mapping should not be inferred to be publicly accessible; no geometry schema or exact-point response was verified.",
+  "nextStep": "Revisit only if an official public geometry endpoint and safe minimal-field response are documented; then test the unchanged WUP point with safe identifiers and geometry only.",
+  "schemaVersion": "1.0",
+  "checkedAt": "2026-10-09",
+  "wupCityCode": 9846,
+  "cityId": "wup2025:9846",
+  "runtimeReadiness": "not_enabled_no_verified_public_geometry",
+  "adapterReady": false,
+  "centerLatLon": [
+    40.7736582403664,
+    120.832721697372
+  ],
+  "population2025k": 495.819,
+  "populationUnit": "persons",
+  "queueRank": 1117,
+  "population2025": 495819,
+  "populationPlausibility2025": "High",
+  "pointBasis": "UN WUP 2025 population-weighted settlement point (latitude, longitude); not a municipal boundary or a parcel-coverage claim.",
+  "publicParcelGeometryFound": false,
+  "sourceIds": [],
+  "registryBasis": "Official Liaoning government reports establish the Huludao Natural Resources Bureau as custodian of real-estate registration and describe an integrated internal natural-resource management map. Online registration services focus on property files and certificates; no anonymous cadastral geometry layer was documented.",
+  "registryEvidenceUrls": [
+    "https://www.ln.gov.cn/web/qmzx/yhyshjzt/dt/2026012216261718086/index.shtml",
+    "https://www.ln.gov.cn/web/ywdt/qsgd/ass_2_1/2023082408593497369/index.shtml"
+  ],
+  "runtimeAssessment": {
+    "status": "not_enabled_no_verified_public_geometry",
+    "reason": "No anonymous safe-ID full-geometry endpoint and schema was verified; where an official map or registry portal exists, its service behavior or public feature response was not established."
+  },
+  "cohort": "overnight-next-1101-1200",
+  "cohortState": "root_reviewed_integrated_locally",
+  "integrationState": "integrated_locally",
+  "rootReviewedAt": "2026-10-09T07:13:02.981057+00:00",
+  "rootPrimaryChecks": [
+    {
+      "wupCityCode": 9846,
+      "url": "https://www.ln.gov.cn/web/qmzx/yhyshjzt/dt/2026012216261718086/index.shtml",
+      "checkedAt": "2026-10-09T07:10:44.195057+00:00",
+      "method": "Anonymous read-only GET, standard TLS where advertised; no credentials or property values",
+      "httpStatus": 200,
+      "finalUrl": "https://www.ln.gov.cn/web/qmzx/yhyshjzt/dt/2026012216261718086/index.shtml",
+      "contentType": "text/html",
+      "bytesRead": 21161,
+      "sha256": "d0b5007750e4607bf78efa46a8631093da7da02bb4ff1b9c445cacda72015c2b",
+      "complete": true
+    }
+  ],
+  "rootReview": {
+    "checkedAt": "2026-10-09T07:13:02.981057+00:00",
+    "decision": "Reviewed city identity, canonical population/point, separate searches and saved source/request evidence. No full public parcel geometry verified in this pass.",
+    "custodyScope": "Official Liaoning government reports establish the Huludao Natural Resources Bureau as custodian of real-estate registration and describe an integrated internal natural-resource management map. Online registration services focus on property files and certificates; no anonymous cadastral geometry layer was documented.",
+    "transportFailuresDoNotProveAbsence": true,
+    "geometryClaimScope": "Investigation outcome only; no worldwide or citywide absence asserted."
+  },
+  "integratedAt": "2026-10-09T07:14:03.673112+00:00"
+}

@@ -1,0 +1,115 @@
+{
+  "schemaVersion": 1,
+  "kind": "city_parcel_source_research",
+  "checkedAt": "2026-10-09",
+  "populationUnit": "persons",
+  "status": "complete",
+  "pointBasis": "UN WUP 2025 population-weighted settlement centroid; this is not a municipal boundary or a parcel-coverage claim.",
+  "priorEvidenceFiles": [],
+  "sourceIds": [],
+  "name": "Rangpur",
+  "country": "Bangladesh",
+  "countryCode": "BD",
+  "registryFound": true,
+  "registryBasis": "Official Rangpur Metropolitan Revenue Circle Land Office lists land-record/map services and a Sadar sub-registry office. DLRS MapSearch exposes draft mouza parcel-view routes, but no geometry-only field allowlist is verified.",
+  "registryEvidenceUrls": [
+    "https://aclrmrc.rangpur.gov.bd/",
+    "https://settlement.gov.bd/",
+    "https://settlement.gov.bd/map/mapsearch"
+  ],
+  "verifiedSample": false,
+  "publicParcelGeometryFound": false,
+  "publicParcelGeometryCandidateFound": true,
+  "runtimeReadiness": "not_enabled_no_verified_public_geometry",
+  "wupCityCode": 2716,
+  "cityId": "wup2025:2716",
+  "centerLatLon": [
+    25.7478972294139,
+    89.2481940533704
+  ],
+  "point": [
+    25.7478972294139,
+    89.2481940533704
+  ],
+  "rank": 842,
+  "queueRank": 842,
+  "population2025": 641327,
+  "population2025k": 641.327,
+  "populationPlausibility2025": "High",
+  "notes": null,
+  "coverageAssessment": {
+    "claimedScope": "Official Rangpur Metropolitan Revenue Circle Land Office lists land-record/map services and a Sadar sub-registry office. DLRS MapSearch exposes draft mouza parcel-view routes, but no geometry-only field allowlist is verified.",
+    "verifiedOpenScope": "No anonymous full parcel polygon with safe stable ID was verified; findings and limits are described in source and service review.",
+    "citywideVerified": false,
+    "countrywideVerified": false
+  },
+  "research": {
+    "executedQueries": [
+      {
+        "language": "Bengali",
+        "query": "রংপুর মহানগর রাজস্ব সার্কেল ভূমি অফিস ভূমি রেকর্ড ও ম্যাপ মৌজা সরকারি",
+        "scope": "Confirm city-local registry evidence and inspect whether anonymous parcel geometry is documented.",
+        "result": "Official city land office lists Land Records & Map services. DLRS MapSearch static client defines parcel polygon/tile routes, but a separate endpoint displays khatian owner data; no selector, parcel or map-data query was sent.",
+        "actualResultUrls": [
+          "https://aclrmrc.rangpur.gov.bd/",
+          "https://settlement.gov.bd/",
+          "https://settlement.gov.bd/map/mapsearch"
+        ],
+        "executionMethod": "Separate English/local-language public-source searches and first-party static/page review; no owner, address, tax, account or property-specific query."
+      },
+      {
+        "language": "English",
+        "query": "Rangpur Bangladesh official city land records map cadastral parcel GIS DLRS",
+        "scope": "Confirm city-local registry evidence and inspect whether anonymous parcel geometry is documented.",
+        "result": "Client exposes parcel GeoJSON/vector tiles plus owner-detail route. Geometry schema and safe allowlist unknown; no parcel/tile was requested.",
+        "actualResultUrls": [
+          "https://aclrmrc.rangpur.gov.bd/",
+          "https://settlement.gov.bd/",
+          "https://settlement.gov.bd/map/mapsearch"
+        ],
+        "executionMethod": "Separate English/local-language public-source searches and first-party static/page review; no owner, address, tax, account or property-specific query."
+      }
+    ],
+    "officialSources": [
+      {
+        "url": "https://aclrmrc.rangpur.gov.bd/",
+        "observation": "Official Rangpur Metropolitan Revenue Circle Land Office lists Land Records & Map and a Sadar sub-registry office."
+      },
+      {
+        "url": "https://settlement.gov.bd/",
+        "observation": "Official DLRS portal describes draft survey records/maps and warns khatians may change during survey."
+      },
+      {
+        "url": "https://settlement.gov.bd/map/mapsearch",
+        "observation": "MapSearch HTML HTTP 200 (67,055 bytes), static JS HTTP 200 (139,619 bytes); client defines sheet GeoJSON and tile routes plus separate khatian-owner details. No selector/data route called."
+      }
+    ]
+  },
+  "source": {
+    "name": "Bangladesh DLRS public settlement survey MapSearch and Rangpur Metropolitan Revenue Circle Land Office.",
+    "urls": [
+      "https://aclrmrc.rangpur.gov.bd/",
+      "https://settlement.gov.bd/",
+      "https://settlement.gov.bd/map/mapsearch"
+    ],
+    "geometryType": null,
+    "outputCrs": null,
+    "nativeIdField": null
+  },
+  "technicalBlocker": "Public client exposes GeoJSON/vector-tile routes but no safe geometry+ID allowlist; separate parcel-to-khatian route presents owner fields. No data route called.",
+  "scopeLimits": "Bounded public-source review. No owner, address, tax/account, applicant, identity or property-specific data queried or retained. No completeness or legal/survey accuracy claim.",
+  "remainingUncertainty": "Whether tile/GeoJSON contains only geometry and safe IDs is unknown; WUP hit, mouza match, completeness and current status unverified. DLRS calls visible records draft.",
+  "resultCategory": "local_land_office_and_public_parcel_map_candidate_schema_unverified",
+  "runtimeAssessment": {
+    "status": "not_ready_no_verified_anonymous_geometry",
+    "reason": "Public client exposes GeoJSON/vector-tile routes but no safe geometry+ID allowlist; separate parcel-to-khatian route presents owner fields. No data route called."
+  },
+  "rootPrimaryReadback": {
+    "url": "https://aclrmrc.rangpur.gov.bd/",
+    "fetch": 200,
+    "contentType": "text/html; charset=utf-8",
+    "title": "হোম | রংপুর মহানগর রাজস্ব সার্কেল ভূমি অফিস, রংপুর"
+  },
+  "rootReviewNote": "Reviewed the specific primary institution/service evidence and its geographical, access and date limits. Direct readback failures are preserved separately from indexed primary evidence. No public full parcel geometry was verified for this city in this discovery pass.",
+  "rootReviewedAt": "2026-10-09T04:12:31.737456+00:00"
+}

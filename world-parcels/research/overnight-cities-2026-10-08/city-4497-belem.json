@@ -1,0 +1,111 @@
+{
+  "name": "Belém",
+  "country": "Brazil",
+  "countryCode": "BR",
+  "rank": 233,
+  "point": [
+    -1.38970580631718,
+    -48.4396741951685
+  ],
+  "freshResearch": {
+    "queries": [
+      {
+        "language": "Portuguese",
+        "query": "Belém PA Geoportal cadastro imobiliário parcelamento GIS SEFIN prefeitura mapa lote polígono",
+        "scope": "Locate city official cadastral parcel map or anonymous polygon endpoint.",
+        "result": "Official municipal SEFIN service provides property information lookup by property sequence, registration number, or address; it does not publish parcel polygon geometry.",
+        "actualResultUrls": "https://prefeitura.belem.pa.gov.br/servicos/imovel-consulta-de-dados-do-imovel/",
+        "executionMethod": "Web search; exact query in stated language."
+      },
+      {
+        "language": "Portuguese",
+        "query": "site:belem.pa.gov.br geoportal cadastro imobiliário cartografia mapas geoprocessamento lotes",
+        "scope": "Check municipal mapping and cadastral survey materials.",
+        "result": "Official city news describes a cartographic/cadastral update program, but no live parcel feature service or downloadable polygon layer was found.",
+        "actualResultUrls": "https://agencia.belem.pa.gov.br/belem-tera-base-cartografica-atualizada-com-tecnologia-digital/",
+        "executionMethod": "Web search; exact query in stated language."
+      },
+      {
+        "language": "Portuguese",
+        "query": "Belém PA Prefeitura Geoportal ArcGIS parcelas cadastro imobiliário WMS WFS",
+        "scope": "Search for official public geospatial service endpoints.",
+        "result": "No city-specific public parcel vector endpoint surfaced in official sources reviewed.",
+        "actualResultUrls": "https://prefeitura.belem.pa.gov.br/",
+        "executionMethod": "Web search; exact query in stated language."
+      },
+      {
+        "language": "English",
+        "query": "Belém Pará official land registry property cadastre parcel map GIS Prefeitura",
+        "scope": "Cross-check English discovery for city-specific official parcel geometry services.",
+        "result": "Results resolve to Belém Prefeitura’s SEFIN property-information lookup page and tax/official services; no public cadastral polygon layer surfaced.",
+        "actualResultUrls": [
+          "https://prefeitura.belem.pa.gov.br/servicos/imovel-consulta-de-dados-do-imovel/",
+          "https://financas.belem.pa.gov.br/"
+        ],
+        "executionMethod": "Web search; English query."
+      }
+    ],
+    "portals": [
+      {
+        "name": "SEFIN Imóvel – Consulta de Dados do Imóvel",
+        "operator": "Prefeitura Municipal de Belém, Secretaria Municipal de Finanças",
+        "homeUrl": "https://prefeitura.belem.pa.gov.br/servicos/imovel-consulta-de-dados-do-imovel/",
+        "observation": "Official service permits citizen property information lookup by sequence, registration number or address; this is an attribute lookup workflow and does not provide parcel geometry."
+      },
+      {
+        "name": "Belém municipal cartographic update",
+        "operator": "Prefeitura Municipal de Belém",
+        "homeUrl": "https://agencia.belem.pa.gov.br/belem-tera-base-cartografica-atualizada-com-tecnologia-digital/",
+        "observation": "Official news confirms a digital cartographic update initiative; it does not expose a current public parcel polygon service."
+      }
+    ],
+    "requests": [
+      {
+        "url": "https://prefeitura.belem.pa.gov.br/servicos/imovel-consulta-de-dados-do-imovel/",
+        "method": "GET via official indexed page",
+        "httpStatus": 200,
+        "contentType": "text/html",
+        "observation": "SEFIN citizen service page specifies registration/address lookup inputs, no map or polygon response."
+      },
+      {
+        "url": "https://financas.belem.pa.gov.br/",
+        "method": "GET",
+        "httpStatus": null,
+        "observation": "Direct host request timed out; no session or credentials used."
+      }
+    ]
+  },
+  "status": "complete",
+  "verifiedParcelResponse": null,
+  "source": null,
+  "coverageAssessment": {
+    "claimedScope": "Municipal SEFIN provides property-record lookup and city reported cartographic-update work; no public parcel vector extent is confirmed.",
+    "verifiedOpenScope": "No anonymous full parcel geometry or city-specific polygon service was verified.",
+    "countrywideVerified": false
+  },
+  "registryFound": true,
+  "verifiedSample": false,
+  "resultCategory": "no_verified_sample_candidate_citywide",
+  "technicalBlocker": "The information service is lookup-oriented; direct municipal finance portal request timed out, and no public polygon endpoint was found.",
+  "remainingUncertainty": "Whether city geodata is exposed through a separate municipal or vendor portal remains uncertain; no polygon sample supports coverage claims.",
+  "nextStep": "Check official municipal and CODEM geospatial portals for a documented feature-service endpoint or public vector download.",
+  "schemaVersion": 1,
+  "checkedAt": "2026-10-09",
+  "wupCityCode": 4497,
+  "cityId": "wup2025:4497",
+  "runtimeReadiness": "not_enabled_no_verified_public_geometry",
+  "adapterReady": false,
+  "centerLatLon": [
+    -1.38970580631718,
+    -48.4396741951685
+  ],
+  "queueRank": 233,
+  "population2025": 2180454,
+  "populationUnit": "persons",
+  "pointBasis": "UN WUP 2025 population-weighted settlement centroid; this is not a municipal boundary or a parcel-coverage claim.",
+  "publicParcelGeometryFound": false,
+  "sourceIds": [],
+  "registryBasis": "Belém Prefeitura’s SEFIN identifies an official online property-information service, but it is not a public parcel geometry source.",
+  "populationPlausibility2025": "High",
+  "rootReviewedAt": "2026-10-08T21:25:23.474999+00:00"
+}

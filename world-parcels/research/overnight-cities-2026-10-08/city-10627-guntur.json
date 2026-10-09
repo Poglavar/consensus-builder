@@ -1,0 +1,122 @@
+{
+  "schemaVersion": 1,
+  "kind": "city_parcel_source_research",
+  "checkedAt": "2026-10-09",
+  "country": "India",
+  "countryCode": "IN",
+  "populationUnit": "persons",
+  "status": "complete",
+  "verifiedSample": false,
+  "publicParcelGeometryFound": false,
+  "runtimeReadiness": "not_enabled_no_verified_public_geometry",
+  "priorEvidenceFiles": [],
+  "scopeLimits": "The UN WUP point is a population-weighted settlement locator, not an official municipal boundary or parcel identity. No owner, address, tax amount or account lookup was made. Geometry samples, when present, contain only polygons plus limited cadastral identifiers.",
+  "wupCityCode": 10627,
+  "queueRank": 606,
+  "name": "Guntur",
+  "centerLatLon": [
+    16.3038679621897,
+    80.4316089652946
+  ],
+  "point": [
+    16.3038679621897,
+    80.4316089652946
+  ],
+  "population2025": 862068,
+  "population2025k": 862.068,
+  "pointBasis": "UN WUP 2025 population-weighted settlement centroid; this is not a municipal boundary or a parcel-coverage claim.",
+  "registryFound": true,
+  "registryBasis": "The official district land-record page provides local Pattadhar passbook and land-record services. The collectorate page identifies Land Revenue, Land Administration and Land Reforms sections; its official directory locates the collectorate in Guntur city. These city-based revenue institutions and the statewide Bhunaksha system confirm a local land-record service, without establishing Guntur-specific anonymous polygon availability.",
+  "registryEvidenceUrls": [
+    "https://guntur.ap.gov.in/service/land-records/",
+    "https://bhunaksha.ap.gov.in/",
+    "https://bhudhaar.ap.gov.in/",
+    "https://guntur.ap.gov.in/collectorate/",
+    "https://guntur.ap.gov.in/about-district/whos-who/"
+  ],
+  "resultCategory": "official_city_land_record_services_no_verified_public_parcel_geometry",
+  "research": {
+    "executedQueries": [
+      {
+        "language": "English",
+        "query": "Guntur Andhra Pradesh official cadastral map land records Bhunaksha urban survey parcels",
+        "method": "web search and official-page/service review",
+        "checkedAt": "2026-10-09"
+      },
+      {
+        "language": "Telugu",
+        "query": "గుంటూరు అధికారిక భూ రికార్డులు భూనక్ష పట్టాదారు పాస్‌బుక్ నగర సర్వే మ్యాప్",
+        "method": "web search and official-page/service review",
+        "checkedAt": "2026-10-09"
+      }
+    ],
+    "officialSources": [
+      {
+        "url": "https://guntur.ap.gov.in/service/land-records/",
+        "observation": "The official Guntur District Administration land-records page documents local Pattadhar passbook and land-record services through MeeSeva. The official Andhra Pradesh Bhunaksha portal describes government cadastral mapping integrated with land records; this confirms a local land-record service and state cadastral system, but no Guntur-specific open feature response was verified."
+      },
+      {
+        "url": "https://bhunaksha.ap.gov.in/",
+        "observation": "Official map/land-record route inspected for service and schema evidence only; no owner or personal lookup."
+      },
+      {
+        "url": "https://bhudhaar.ap.gov.in/",
+        "observation": "Official map/land-record route inspected for service and schema evidence only; no owner or personal lookup."
+      },
+      {
+        "url": "https://guntur.ap.gov.in/collectorate/",
+        "observation": "The official district land-record page provides local Pattadhar passbook and land-record services. The collectorate page identifies Land Revenue, Land Administration and Land Reforms sections; its official directory locates the collectorate in Guntur city. These city-based revenue institutions and the statewide Bhunaksha system confirm a local land-record service, without establishing Guntur-specific anonymous polygon availability."
+      },
+      {
+        "url": "https://guntur.ap.gov.in/about-district/whos-who/",
+        "observation": "The official district land-record page provides local Pattadhar passbook and land-record services. The collectorate page identifies Land Revenue, Land Administration and Land Reforms sections; its official directory locates the collectorate in Guntur city. These city-based revenue institutions and the statewide Bhunaksha system confirm a local land-record service, without establishing Guntur-specific anonymous polygon availability."
+      }
+    ],
+    "requestsAndEndpointChecks": [
+      {
+        "url": "https://guntur.ap.gov.in/service/land-records/",
+        "method": "public official page review",
+        "status": "status_not_exposed_by_web_open",
+        "httpStatusObtained": false,
+        "observation": "The official Guntur District Administration land-records page documents local Pattadhar passbook and land-record services through MeeSeva. The official Andhra Pradesh Bhunaksha portal describes government cadastral mapping integrated with land records; this confirms a local land-record service and state cadastral system, but no Guntur-specific open feature response was verified."
+      },
+      {
+        "url": "https://bhunaksha.ap.gov.in/",
+        "method": "official map-service discovery",
+        "status": "status_not_exposed_by_web_search",
+        "httpStatusObtained": false,
+        "observation": "Official state cadastral/map portal identified; no target-city feature query or personal/property lookup was performed."
+      },
+      {
+        "url": "https://bhunaksha.ap.gov.in/",
+        "method": "public official map page open",
+        "status": "400 Timeout fetching",
+        "httpStatusObtained": true,
+        "observation": "The web-open layer timed out before viewer content was retrieved. This is not evidence of an origin outage; no map request or record lookup was submitted."
+      }
+    ],
+    "coverageAssessment": {
+      "verifiedOpenScope": "The official Guntur District Administration land-records page documents local Pattadhar passbook and land-record services through MeeSeva. The official Andhra Pradesh Bhunaksha portal describes government cadastral mapping integrated with land records; this confirms a local land-record service and state cadastral system, but no Guntur-specific open feature response was verified.",
+      "citywideVerified": false,
+      "countrywideVerified": false,
+      "geometryVerified": false,
+      "geometrySampleCount": 0,
+      "wupPointMatched": null
+    },
+    "blocker": "Official city-district land-record services and the statewide Bhunaksha cadastre are confirmed, but no anonymous Guntur full-polygon route/schema was verified. The viewer fetch timed out at the web-open layer, which is not evidence that the origin is unavailable.",
+    "remainingUncertainty": "Whether the Bhunaksha interface exposes georeferenced vectors or only maps/documents; whether the WUP locator falls within the municipal survey coverage; citywide completeness."
+  },
+  "cityId": "wup2025:10627",
+  "populationPlausibility2025": "High",
+  "rootLocalRegistryReview": {
+    "checkedAt": "2026-10-09T02:05:57.838965+00:00",
+    "basis": "The official district land-record page provides local Pattadhar passbook and land-record services. The collectorate page identifies Land Revenue, Land Administration and Land Reforms sections; its official directory locates the collectorate in Guntur city. These city-based revenue institutions and the statewide Bhunaksha system confirm a local land-record service, without establishing Guntur-specific anonymous polygon availability.",
+    "urls": [
+      "https://guntur.ap.gov.in/collectorate/",
+      "https://guntur.ap.gov.in/about-district/whos-who/"
+    ],
+    "evidenceLimit": "Institutional scope/address and cadastral map inventory only; no personal or parcel-record values retained."
+  },
+  "rootReviewedAt": "2026-10-09T02:05:58.056454+00:00",
+  "sourceIds": []
+}

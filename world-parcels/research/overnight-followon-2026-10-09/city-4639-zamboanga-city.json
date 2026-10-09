@@ -1,0 +1,119 @@
+{
+  "schemaVersion": "1.0",
+  "cityId": "wup2025:4639",
+  "wupCityCode": 4639,
+  "name": "Zamboanga City",
+  "country": "Philippines",
+  "countryCode": "PH",
+  "rank": 1081,
+  "queueRank": 1081,
+  "point": [
+    6.92616381763987,
+    122.079242780674
+  ],
+  "centerLatLon": [
+    6.92616381763987,
+    122.079242780674
+  ],
+  "pointBasis": "UN WUP2025 population-weighted settlement locator; not a municipal boundary or parcel-coverage claim.",
+  "population2025": 513813,
+  "population2025k": 513.813,
+  "populationUnit": "persons",
+  "populationPlausibility2025": "High",
+  "cohort": "overnight-followon-1001-1100",
+  "checkedAt": "2026-10-09",
+  "status": "complete",
+  "registryFound": true,
+  "registryBasis": "The official City Assessor describes permanent local real-property assessment records, tax mapping of all 98 barangays, parcel/property index numbers, and public issuance of tax maps. This is municipal assessment-cadastre custody, not proof of the legal title registry or a full open parcel vector layer.",
+  "registryEvidenceUrls": [
+    "https://zamboangacity.gov.ph/office-of-the-city-assessor/",
+    "https://zamboangacity.gov.ph/wp-content/uploads/2026/03/LGU-ZAMBOANGA_CITIZENS-CHARTER-1ST-EDITION-2026_compressed.pdf",
+    "https://zamboangacity.gov.ph/map/"
+  ],
+  "verifiedSample": false,
+  "publicParcelGeometryFound": false,
+  "sourceIds": [],
+  "adapterReady": false,
+  "runtimeReadiness": "not_enabled_no_verified_public_geometry",
+  "technicalBlocker": "No anonymous source-native full polygon and exact identity response has been verified. The current research does not establish that public parcel geometry is absent.",
+  "scopeLimits": "No full parcel polygon or personal property attributes retained. The exact UN WUP2025 weighted settlement point is a search locator only; it is not a parcel-coverage claim. No complete native parcel polygon was verified; `publicParcelGeometryFound:false` records an unverified result, not proof that no public geometry exists.",
+  "resultCategory": "no_verified_public_geometry",
+  "coverageAssessment": {
+    "claimedScope": "The official City Assessor describes permanent local real-property assessment records, tax mapping of all 98 barangays, parcel/property index numbers, and public issuance of tax maps. This is municipal assessment-cadastre custody, not proof of the legal title registry or a full open parcel vector layer.",
+    "verifiedOpenScope": "No anonymous full parcel geometry response verified in this investigation.",
+    "citywideVerified": false,
+    "countrywideVerified": false
+  },
+  "runtimeAssessment": {
+    "status": "not_enabled_no_verified_public_geometry",
+    "reason": "No anonymous source-native full polygon and exact identity response has been verified. The current research does not establish that public parcel geometry is absent."
+  },
+  "freshResearch": {
+    "queries": [
+      {
+        "language": "English",
+        "query": "Zamboanga City land cadastral parcels land management office survey title map City Government of Zamboanga GIS",
+        "scope": "Fresh city-specific registry-custody and anonymous parcel-geometry discovery.",
+        "result": "The assessor confirms local tax-map custody and public paper-map service, but not a public feature service for full parcel polygons. NAMRIA/Geoportal material is source-ground context only; no city physical cadastral layer was verified. No polygon query was made.",
+        "actualResultUrls": [
+          "https://zamboangacity.gov.ph/office-of-the-city-assessor/",
+          "https://zamboangacity.gov.ph/wp-content/uploads/2026/03/LGU-ZAMBOANGA_CITIZENS-CHARTER-1ST-EDITION-2026_compressed.pdf",
+          "https://zamboangacity.gov.ph/map/"
+        ],
+        "executionMethod": "Separately executed web search; first-party sources inspected."
+      },
+      {
+        "language": "Filipino",
+        "query": "Zamboanga City Office of the City Assessor mapa ng buwis tax mapping lupa",
+        "scope": "Independent local-language search for local custody and anonymous full-parcel geometry.",
+        "result": "The assessor confirms local tax-map custody and public paper-map service, but not a public feature service for full parcel polygons. NAMRIA/Geoportal material is source-ground context only; no city physical cadastral layer was verified. No polygon query was made.",
+        "actualResultUrls": [
+          "https://zamboangacity.gov.ph/office-of-the-city-assessor/",
+          "https://zamboangacity.gov.ph/wp-content/uploads/2026/03/LGU-ZAMBOANGA_CITIZENS-CHARTER-1ST-EDITION-2026_compressed.pdf",
+          "https://zamboangacity.gov.ph/map/"
+        ],
+        "executionMethod": "Separately executed native/local-language web search; first-party results inspected."
+      }
+    ],
+    "requests": [
+      {
+        "url": "https://zamboangacity.gov.ph/office-of-the-city-assessor/",
+        "method": "GET (bounded read)",
+        "httpStatus": 200,
+        "contentType": "text/html; charset=UTF-8",
+        "bytesRead": 50000,
+        "assessment": "Official city-local tax mapping and real-property record responsibilities; not an anonymous feature API."
+      }
+    ],
+    "portals": [
+      {
+        "homeUrl": "https://zamboangacity.gov.ph/office-of-the-city-assessor/",
+        "observation": "Official City Assessor page: permanent property records, tax-mapping division, barangay maps, section-index maps, parcel/property index numbers, and property-location services."
+      },
+      {
+        "homeUrl": "https://zamboangacity.gov.ph/wp-content/uploads/2026/03/LGU-ZAMBOANGA_CITIZENS-CHARTER-1ST-EDITION-2026_compressed.pdf",
+        "observation": "Official 2026 City Citizen’s Charter describes public issuance of tax maps through the City Assessor Tax Mapping Division; request workflow is document-based."
+      },
+      {
+        "homeUrl": "https://zamboangacity.gov.ph/map/",
+        "observation": "Official city map page; a municipal map link alone is not treated as parcel-vector evidence."
+      }
+    ],
+    "historicalContext": []
+  },
+  "remainingUncertainty": "Legal title-record custodian and anonymous full parcel polygons remain unverified; municipal tax maps are requested through an office service and may be attribute- or access-restricted.",
+  "nextStep": "Confirm whether the City Assessor or a city geoportal provides a public downloadable/vector tax-map layer without owner/address fields.",
+  "priorEvidenceFiles": [],
+  "priorCheck": {
+    "attemptState": "pending",
+    "attemptEvidence": [],
+    "possiblePriorMatches": []
+  },
+  "verifiedParcelResponse": null,
+  "rootReviewedAt": "2026-10-09T06:45:08.823796+00:00",
+  "rootReview": {
+    "checkedAt": "2026-10-09T06:45:08.823796+00:00",
+    "basis": "Reviewed city-specific English/local-language attempts, local-custody basis, source routes and documented responses. Public geometry remains unverified; access failures and unknown custody do not establish absence.",
+    "primarySourceAuditFile": "research/overnight-followon-2026-10-09/unreviewed-primary-source-audit.json"
+  }
+}

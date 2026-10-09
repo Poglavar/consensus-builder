@@ -1,0 +1,107 @@
+{
+  "schemaVersion": "1.0",
+  "cityId": "wup2025:3270",
+  "wupCityCode": 3270,
+  "name": "Durango",
+  "country": "Mexico",
+  "countryCode": "MX",
+  "rank": 1019,
+  "queueRank": 1019,
+  "point": [
+    24.0275652358912,
+    -104.648631083189
+  ],
+  "centerLatLon": [
+    24.0275652358912,
+    -104.648631083189
+  ],
+  "pointBasis": "UN WUP2025 population-weighted settlement centroid; not a municipal boundary or parcel-coverage claim.",
+  "population2025": 541787,
+  "population2025k": 541.787,
+  "populationUnit": "persons",
+  "populationPlausibility2025": "Moderate",
+  "cohort": "overnight-followon-1001-1100",
+  "checkedAt": "2026-10-09",
+  "status": "complete",
+  "registryFound": true,
+  "registryBasis": "Durango municipal regulations identify the Subdirección de Propiedad Inmobiliaria as the local cadastral office and describe municipal parcel mapping and registration functions. The separate INEGI2016 statewide social-property atlas and Durango Colorado ArcGIS parcel service do not establish public Mexico-city cadastral polygon retrieval.",
+  "registryEvidenceUrls": [
+    "https://www.municipiodurango.gob.mx/wp-content/uploads/2025/08/CATASTRO-1.pdf",
+    "https://intram.municipiodurango.gob.mx/reglamentos/"
+  ],
+  "verifiedSample": false,
+  "publicParcelGeometryFound": false,
+  "sourceIds": [],
+  "adapterReady": false,
+  "runtimeReadiness": "not_enabled_no_verified_public_geometry",
+  "technicalBlocker": "No correct-city, anonymous ID-and-complete-polygon response was established after fresh multilingual discovery and primary-source inspection. This is an unverified access finding, not a claim that public geometry or a registry does not exist.",
+  "scopeLimits": "No full source-native public polygon response was verified in this fresh city investigation; registry custody, map publication and technical geometry retrieval remain separate findings.",
+  "resultCategory": "registry_found_public_geometry_unverified",
+  "coverageAssessment": {
+    "claimedScope": "Durango municipal regulations identify the Subdirección de Propiedad Inmobiliaria as the local cadastral office and describe municipal parcel mapping and registration functions. The separate INEGI2016 statewide social-property atlas and Durango Colorado ArcGIS parcel service do not establish public Mexico-city cadastral polygon retrieval.",
+    "verifiedOpenScope": "No full source-native public polygon response was verified in this fresh city investigation; registry custody, map publication and technical geometry retrieval remain separate findings.",
+    "citywideVerified": false,
+    "countrywideVerified": false
+  },
+  "runtimeAssessment": {
+    "status": "not_enabled",
+    "reason": "No correct-city, anonymous ID-and-complete-polygon response was established after fresh multilingual discovery and primary-source inspection. This is an unverified access finding, not a claim that public geometry or a registry does not exist."
+  },
+  "freshResearch": {
+    "queries": [
+      {
+        "language": "English",
+        "query": "Durango Mexico municipal cadastral parcel polygons public GIS WFS",
+        "scope": "Fresh city-specific registry and public parcel geometry discovery.",
+        "result": "Durango municipal regulations identify the Subdirección de Propiedad Inmobiliaria as the local cadastral office and describe municipal parcel mapping and registration functions. The separate INEGI2016 statewide social-property atlas and Durango Colorado ArcGIS parcel service do not establish public Mexico-city cadastral polygon retrieval.",
+        "actualResultUrls": [
+          "https://www.municipiodurango.gob.mx/wp-content/uploads/2025/08/CATASTRO-1.pdf",
+          "https://intram.municipiodurango.gob.mx/reglamentos/"
+        ],
+        "executionMethod": "Executed web search; first-party pages and documented interfaces inspected."
+      },
+      {
+        "language": "Spanish",
+        "query": "Durango catastro municipal cartografia catastral predios mapa oficial",
+        "scope": "Independent local-language search for local custody and anonymous cadastral geometry.",
+        "result": "Durango municipal regulations identify the Subdirección de Propiedad Inmobiliaria as the local cadastral office and describe municipal parcel mapping and registration functions. The separate INEGI2016 statewide social-property atlas and Durango Colorado ArcGIS parcel service do not establish public Mexico-city cadastral polygon retrieval.",
+        "actualResultUrls": [
+          "https://www.municipiodurango.gob.mx/wp-content/uploads/2025/08/CATASTRO-1.pdf",
+          "https://intram.municipiodurango.gob.mx/reglamentos/"
+        ],
+        "executionMethod": "Separately executed web search; actual first-party results inspected."
+      }
+    ],
+    "requests": [
+      {
+        "checkedAt": "2026-10-09T05:29:16.612287+00:00",
+        "url": "https://www.municipiodurango.gob.mx/wp-content/uploads/2025/08/CATASTRO-1.pdf",
+        "normalTlsVerification": true,
+        "httpStatus": null,
+        "errorType": "URLError",
+        "error": "<urlopen error [SSL: CERTIFICATE_VERIFY_FAILED] certificate verify failed: unable to get local issuer certificate (_ssl.c:1082)>"
+      }
+    ],
+    "portals": [
+      {
+        "homeUrl": "https://www.municipiodurango.gob.mx/wp-content/uploads/2025/08/CATASTRO-1.pdf",
+        "observation": "Durango municipal regulations identify the Subdirección de Propiedad Inmobiliaria as the local cadastral office and describe municipal parcel mapping and registration functions. The separate INEGI2016 statewide social-property atlas and Durango Colorado ArcGIS parcel service do not establish public Mexico-city cadastral polygon retrieval."
+      },
+      {
+        "homeUrl": "https://intram.municipiodurango.gob.mx/reglamentos/",
+        "observation": "Durango municipal regulations identify the Subdirección de Propiedad Inmobiliaria as the local cadastral office and describe municipal parcel mapping and registration functions. The separate INEGI2016 statewide social-property atlas and Durango Colorado ArcGIS parcel service do not establish public Mexico-city cadastral polygon retrieval."
+      }
+    ],
+    "historicalContext": []
+  },
+  "remainingUncertainty": "Public geometry completeness and runtime access remain unqualified; survey accuracy, legal title and source currentness are not independently established.",
+  "nextStep": "Retain the documented technical finding and proceed down the population roster; no executable provider enabled.",
+  "priorEvidenceFiles": [],
+  "priorCheck": {
+    "attemptState": "pending",
+    "attemptEvidence": [],
+    "possiblePriorMatches": []
+  },
+  "rootReviewNote": "Durango municipal regulations identify the Subdirección de Propiedad Inmobiliaria as the local cadastral office and describe municipal parcel mapping and registration functions. The separate INEGI2016 statewide social-property atlas and Durango Colorado ArcGIS parcel service do not establish public Mexico-city cadastral polygon retrieval. No full source-native public polygon response was verified in this fresh city investigation; registry custody, map publication and technical geometry retrieval remain separate findings.",
+  "rootReviewedAt": "2026-10-09T05:33:34.746161+00:00"
+}

@@ -1,0 +1,132 @@
+{
+  "name": "Dera Ghazi Khan",
+  "country": "Pakistan",
+  "countryCode": "PK",
+  "rank": 956,
+  "point": [
+    30.0445003323282,
+    70.6428509076853
+  ],
+  "freshResearch": {
+    "queries": [
+      {
+        "language": "English",
+        "query": "Dera Ghazi Khan official cadastral map Punjab land records PULSE PLRA GIS public viewer",
+        "scope": "Find a local custodian, public parcel-map entry point, and safe geometry interface.",
+        "result": "Official Punjab PULSE public viewer advertises cadastral maps and includes Dera Ghazi Khan in its district selector; its public view labels property lines as indicative, while complete parcel details require login. No login or owner/parcel search was attempted. PLRA provides land-record service centers. No full vector geometry-only endpoint was verified.",
+        "actualResultUrls": [
+          "https://lis.pulse.gop.pk/"
+        ],
+        "executionMethod": "Separate English-language web search; official public source review."
+      },
+      {
+        "language": "Urdu/Punjabi",
+        "query": "ڈیرہ غازی خان زمین کا ریکارڈ خسرہ نقشہ سرکاری پنجاب لینڈ ریکارڈز اتھارٹی",
+        "scope": "Find first-party city/local-language registry, cadastral mapping and parcel-service evidence.",
+        "result": "Official Punjab PULSE public viewer advertises cadastral maps and includes Dera Ghazi Khan in its district selector; its public view labels property lines as indicative, while complete parcel details require login. No login or owner/parcel search was attempted. PLRA provides land-record service centers. No full vector geometry-only endpoint was verified.",
+        "actualResultUrls": [
+          "https://lis.pulse.gop.pk/"
+        ],
+        "executionMethod": "Separate Urdu/Punjabi-language web search and first-party portal review."
+      }
+    ],
+    "portals": [
+      {
+        "name": "Punjab Land Records Authority / Punjab Urban Land Systems and related Dera Ghazi Khan land-record offices",
+        "operator": "Government of Punjab / Punjab Land Records Authority (PLRA)",
+        "homeUrl": "https://lis.pulse.gop.pk/",
+        "observation": "Official Punjab PULSE public viewer advertises cadastral maps and includes Dera Ghazi Khan in its district selector; its public view labels property lines as indicative, while complete parcel details require login. No login or owner/parcel search was attempted. PLRA provides land-record service centers. No full vector geometry-only endpoint was verified."
+      }
+    ],
+    "requests": [],
+    "historicalContext": []
+  },
+  "status": "complete",
+  "verifiedParcelResponse": null,
+  "source": {
+    "sourceId": "PK-6583-LOCAL-PARCEL-RESEARCH",
+    "name": "Punjab Land Records Authority / Punjab Urban Land Systems and related Dera Ghazi Khan land-record offices",
+    "url": "https://lis.pulse.gop.pk/",
+    "operator": "Government of Punjab / Punjab Land Records Authority (PLRA)",
+    "serviceType": "Official local registry/cadastre evidence reviewed; no anonymous geometry-only feature response verified.",
+    "layer": null,
+    "geometryType": null,
+    "outputCrs": null,
+    "nativeIdField": null,
+    "nativeIdEvidence": null
+  },
+  "coverageAssessment": {
+    "claimedScope": "Punjab land-record mapping and Dera Ghazi Khan’s selectable district scope are evidenced, but an anonymous geometry response at the WUP coordinate is not.",
+    "verifiedOpenScope": "Official Punjab PULSE public viewer advertises cadastral maps and includes Dera Ghazi Khan in its district selector; its public view labels property lines as indicative, while complete parcel details require login. No login or owner/parcel search was attempted. PLRA provides land-record service centers. No full vector geometry-only endpoint was verified.",
+    "countrywideVerified": false,
+    "citywideVerified": false
+  },
+  "registryFound": true,
+  "verifiedSample": false,
+  "resultCategory": "official_registry_geometry_unverified",
+  "technicalBlocker": "The official district layer schema is verified, but the bounded exact-point and central-cell queries returned no geometry. The zero-count ID manifest was null, so complete absence was not established. No citywide absence or parcel coverage is inferred.",
+  "remainingUncertainty": "The selector confirms district availability, not exact city-village extent or open vector feature access.",
+  "nextStep": "Revisit only if a public source publishes a schema with safe stable identifiers and an anonymous geometry-only query; keep any future sample bounded and field-allowlisted.",
+  "schemaVersion": "1.0",
+  "checkedAt": "2026-10-09",
+  "wupCityCode": 6583,
+  "cityId": "wup2025:6583",
+  "runtimeReadiness": "not_enabled_no_verified_public_geometry",
+  "adapterReady": false,
+  "centerLatLon": [
+    30.0445003323282,
+    70.6428509076853
+  ],
+  "population2025k": 572.505,
+  "populationUnit": "persons",
+  "queueRank": 956,
+  "population2025": 572505,
+  "populationPlausibility2025": "High",
+  "pointBasis": "UN WUP 2025 population-weighted settlement centroid; this is not a municipal boundary or a parcel-coverage claim.",
+  "publicParcelGeometryFound": false,
+  "sourceIds": [],
+  "registryBasis": "Official Punjab PULSE public viewer advertises cadastral maps and includes Dera Ghazi Khan in its district selector; its public view labels property lines as indicative, while complete parcel details require login. No login or owner/parcel search was attempted. PLRA provides land-record service centers. No full vector geometry-only endpoint was verified.",
+  "registryEvidenceUrls": [
+    "https://lis.pulse.gop.pk/"
+  ],
+  "runtimeAssessment": {
+    "status": "not_enabled_no_verified_public_geometry",
+    "reason": "The official district layer schema is verified, but the bounded exact-point and central-cell queries returned no geometry. The zero-count ID manifest was null, so complete absence was not established. No citywide absence or parcel coverage is inferred."
+  },
+  "rootPublicLayerPreflight": {
+    "checkedAt": "2026-10-09",
+    "endpoint": "https://gismaps.punjab-zameen.gov.pk/arcgis/rest/services/VendorMaps/Punjab_Cdastral_Maps/MapServer/6",
+    "name": "Dera Ghazi Khan",
+    "geometryType": "esriGeometryPolygon",
+    "nativeCrs": "EPSG:3857",
+    "nativeOidField": "OBJECTID_1",
+    "nativeOidEvidence": "Schema esriFieldTypeOID and returnIdsOnly objectIdFieldName agree; layer metadata objectIdField is null.",
+    "queries": [
+      {
+        "scope": "1 meter exact-WUP envelope",
+        "count": 0,
+        "objectIds": null,
+        "completeAbsenceProven": false
+      },
+      {
+        "scope": "0.001 degree point-centered envelope",
+        "outFields": [
+          "OBJECTID_1"
+        ],
+        "outSR": 4326,
+        "httpStatus": 200,
+        "featureCount": 0,
+        "geometryVerified": false
+      }
+    ],
+    "access": "Official anonymous public reader bootstrap; token used only in memory; normal TLS; no personal-field values retained."
+  },
+  "rootPrimaryReadback": {
+    "url": "https://lis.pulse.gop.pk/",
+    "fetch": 200,
+    "contentType": "text/html; charset=utf-8",
+    "title": "PULSE - PUNJAB URBAN LAND SYSTEMS ENHANCEMENT"
+  },
+  "rootReviewNote": "Reviewed the specific local primary evidence, its jurisdiction, source dates and public access limits. Failed readbacks are retained as transport/access outcomes rather than absence. No full public parcel geometry was verified for this city in the bounded discovery pass.",
+  "rootReviewedAt": "2026-10-09T05:07:19.594016+00:00"
+}

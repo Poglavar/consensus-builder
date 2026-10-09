@@ -1,0 +1,172 @@
+{
+  "name": "Cirebon",
+  "country": "Indonesia",
+  "countryCode": "ID",
+  "rank": 318,
+  "point": [
+    -6.71888637851167,
+    108.517123333245
+  ],
+  "freshResearch": {
+    "queries": [
+      {
+        "language": "Indonesian",
+        "query": "Peta bidang tanah Kota Cirebon Kantor Pertanahan WFS GeoServer Satu Peta resmi",
+        "scope": "Confirm a first-party local cadastral source and test its public parcel geometry service.",
+        "result": "The official Kota Cirebon Satu Peta portal lists public parcel-boundary datasets for all five kecamatan, owned by Kantor Pertanahan Kota Cirebon and revised in 2025. The public API exposes WFS download URLs and the layer schemas expose a full MultiPolygon geometry field. Three geometry-only records were returned from the Kejaksan city-core layer. A small query at the WUP point returned no feature in any of the six listed parcel mapsets; the published City of Cirebon extent starts about 122 m east of the WUP longitude.",
+        "actualResultUrls": [
+          "https://cirebonkota.go.id/layanan/satu-peta-kota-cirebon",
+          "https://satupeta.cirebonkota.go.id/",
+          "https://satupeta.cirebonkota.go.id/api/mapset?limit=100",
+          "https://geoserver.cirebonkota.go.id/geoserver/bpn/ows"
+        ],
+        "executionMethod": "Separate Indonesian-language search; read-only public API catalog, layer metadata, WFS schema, small resultType=hits BBOX requests and a three-feature geometry-only WFS query."
+      },
+      {
+        "language": "English",
+        "query": "Cirebon city official public cadastral parcel map GeoServer WFS land office",
+        "scope": "Cross-check that the catalog layers are cadastral parcels and locally operated rather than a general land-use map.",
+        "result": "Official city pages describe Satu Peta as a public integrated geospatial portal. Its approved datasets identify Kantor Pertanahan Kota Cirebon as the owner and describe parcel boundaries, shape, area and position. Geometry was confirmed in a separate city-core window, not at the ranked WUP point.",
+        "actualResultUrls": [
+          "https://cirebonkota.go.id/layanan/satu-peta-kota-cirebon",
+          "https://satupeta.cirebonkota.go.id/",
+          "https://geoserver.cirebonkota.go.id/geoserver/bpn/ows"
+        ],
+        "executionMethod": "Separate English-language search followed by first-party municipal catalog and read-only WFS inspection."
+      }
+    ],
+    "portals": [
+      {
+        "name": "Satu Peta Kota Cirebon",
+        "operator": "Pemerintah Kota Cirebon; public city geospatial portal",
+        "homeUrl": "https://satupeta.cirebonkota.go.id/",
+        "observation": "The city catalog lists six active/approved parcel datasets, including five kecamatan layers and a separate Kesambi kelurahan layer. The dataset records name Kantor Pertanahan Kota Cirebon as owner, revision year 2025, public classification, Polygon mapset type and GeoServer WMS/WFS services."
+      },
+      {
+        "name": "Kantor Pertanahan Kota Cirebon parcel layers",
+        "operator": "Kantor Pertanahan Kota Cirebon (local land office, ATR/BPN)",
+        "homeUrl": "https://geoserver.cirebonkota.go.id/geoserver/bpn/ows",
+        "observation": "Public WFS layers include bpn:Persil_Kec_Kejaksan, bpn:Persil_Kec_Kesambi, bpn:Persil_Kec_Lemahwungkuk, bpn:Persil_Kec_Pekalipan and bpn:Persil_Kec_Harjamukti. The inspected schema exposes geom as MultiPolygon plus descriptive parcel attributes. Only geom was requested; sample properties were omitted."
+      },
+      {
+        "name": "Official City of Cirebon boundary metadata",
+        "operator": "Indonesian National Geospatial Information Network / City of Cirebon metadata record",
+        "homeUrl": "https://tanahair.indonesia.go.id/sdi/dataset/batas_kota_cirebon",
+        "observation": "The published bounding envelope begins at longitude 108.518230847; ranked WUP longitude is 108.517123333245, about 122 m west. This is an extent check, not a replacement parcel or boundary geometry."
+      }
+    ],
+    "requests": [
+      {
+        "url": "https://satupeta.cirebonkota.go.id/api/mapset?count=true",
+        "method": "GET",
+        "httpStatus": 200,
+        "contentType": "application/json",
+        "observation": "Anonymous catalog count endpoint returned 66 mapsets."
+      },
+      {
+        "url": "https://satupeta.cirebonkota.go.id/api/mapset?limit=100",
+        "method": "GET",
+        "httpStatus": 200,
+        "contentType": "application/json",
+        "observation": "Returned 66 mapsets. Parcel mapsets list public WFS SHAPE-ZIP endpoints and public WMS preview services; five district parcel layers cover the five city kecamatan."
+      },
+      {
+        "url": "https://geoserver.cirebonkota.go.id/geoserver/bpn/ows?service=WFS&version=1.1.0&request=DescribeFeatureType&typeName=bpn%3APersil_Kec_Kejaksan",
+        "method": "GET",
+        "httpStatus": 200,
+        "contentType": "text/xml; subtype=gml/3.1.1",
+        "observation": "Schema identifies geom as a gml:MultiPolygonPropertyType. Other attributes include administrative and parcel identifiers; none were requested in the sample."
+      },
+      {
+        "url": "https://geoserver.cirebonkota.go.id/geoserver/bpn/ows?service=WFS&version=2.0.0&request=GetFeature&typeNames=bpn%3APersil_Kec_Kejaksan&resultType=hits&bbox=96027.51%2C757937.22%2C96127.51%2C758037.22%2CEPSG%3A23835",
+        "method": "GET",
+        "httpStatus": 200,
+        "contentType": "text/xml",
+        "observation": "A 100 m by 100 m projected city-core query matched 12 features and returned zero records in hits mode."
+      },
+      {
+        "url": "https://geoserver.cirebonkota.go.id/geoserver/bpn/ows?service=WFS&version=1.1.0&request=GetFeature&typeName=bpn%3APersil_Kec_Kejaksan&outputFormat=application%2Fjson&maxFeatures=3&srsName=EPSG%3A4326&propertyName=geom&bbox=96027.51%2C757937.22%2C96127.51%2C758037.22%2CEPSG%3A23835",
+        "method": "GET",
+        "httpStatus": 200,
+        "contentType": "application/json;charset=UTF-8",
+        "observation": "WFS returned three full MultiPolygon features, totalFeatures=12, numberReturned=3. Query requested only geom; sanitized repo sample retains only anonymous GeoServer feature IDs and geometry."
+      },
+      {
+        "url": "https://geoserver.cirebonkota.go.id/geoserver/bpn/ows?service=WFS&version=2.0.0&request=GetFeature&typeNames=bpn%3APersil_Kec_Kejaksan&count=1&startIndex=3&srsName=EPSG%3A4326&propertyName=geom&bbox=96027.51%2C757937.22%2C96127.51%2C758037.22%2CEPSG%3A23835&outputFormat=application%2Fjson",
+        "method": "GET",
+        "httpStatus": 200,
+        "contentType": "application/json;charset=UTF-8",
+        "observation": "Temporary geometry-only page-offset probe returned one feature at startIndex=3; its feature ID differed from all three saved IDs."
+      },
+      {
+        "url": "https://geoserver.cirebonkota.go.id/geoserver/bpn/ows?service=WFS&version=2.0.0&request=GetFeature&typeNames=bpn%3APersil_Kec_Kejaksan&resultType=hits&bbox=108.515123333245%2C-6.7208863785%2C108.519123333245%2C-6.7168863785%2Curn%3Aogc%3Adef%3Acrs%3AOGC%3A1.3%3ACRS84",
+        "method": "GET",
+        "httpStatus": 200,
+        "contentType": "text/xml",
+        "observation": "The WUP-point neighborhood query returned numberMatched=0 and numberReturned=0. Equivalent small projected windows returned zero across the five city district layers and the separate Kesambi kelurahan layer."
+      }
+    ],
+    "executionMethod": "Official Indonesian and English sources, public Satu Peta metadata and anonymous WFS GET requests; geometry-only sample; no account, parcel ID, owner or address query."
+  },
+  "status": "complete",
+  "verifiedParcelResponse": {
+    "httpStatus": 200,
+    "featureType": "MultiPolygon",
+    "responseType": "GeoJSON",
+    "responseCrs": "EPSG:4326",
+    "returnedFullPolygonCount": 3,
+    "uniqueFullPolygonCount": 3,
+    "wupPointContained": false,
+    "limitations": "Three full geometries remain verified from a bounded Kejaksan city-core window about 4.88 km from the WUP centroid. The local WFS DescribeFeatureType marks its native nib field optional; the existing WFS adapter could page a dense cell, but qualification failed because some features lack nib and distinct geometries conflict under repeated nib values. Exact native-ID retrieval is not reliable, so no runtime adapter is qualified. The WUP point being outside the municipal extent is retained as context, not used as the adapter gate."
+  },
+  "source": {
+    "sourceId": "ID-CIREBON-BPN-WFS-PERSIL",
+    "name": "Kantor Pertanahan Kota Cirebon parcel layers via Satu Peta",
+    "operator": "Kantor Pertanahan Kota Cirebon / Pemerintah Kota Cirebon",
+    "url": "https://geoserver.cirebonkota.go.id/geoserver/bpn/ows",
+    "serviceType": "Public OGC WFS and WMS; catalog also advertises SHAPE-ZIP",
+    "geometryType": "MultiPolygon",
+    "outputCrs": "EPSG:4326",
+    "nativeIdField": "nib (published optional string, observed null/missing and non-unique for distinct geometries); GeoServer transport feature IDs are separately present but are not a WFS schema attribute supported by the existing adapter’s queryIds contract."
+  },
+  "coverageAssessment": {
+    "claimedScope": "Five publicly listed and approved district parcel mapsets cover the five administrative kecamatan of Kota Cirebon; each is attributed in the city catalog to the local Kantor Pertanahan Kota Cirebon and revision year 2025.",
+    "verifiedOpenScope": "Three full geometry-only parcels retrieved from a bounded Kejaksan city-core window. The local land-office source and full polygons are verified. The existing adapter paged dense windows but failed on missing and conflicting native nib values during its 13-cell qualification; exact-ID behavior is not qualified. WUP neighborhood hit counts were zero, but this point mismatch is not the adapter gate.",
+    "countrywideVerified": false,
+    "citywideVerified": false
+  },
+  "registryFound": true,
+  "registryBasis": "First-party Kota Cirebon Satu Peta catalog lists approved, public parcel-boundary datasets owned by the local Kantor Pertanahan Kota Cirebon. The exposed WFS returns full MultiPolygon geometry in the city core.",
+  "verifiedSample": true,
+  "publicParcelGeometryFound": true,
+  "resultCategory": "official_local_bpn_wfs_full_polygons_non_wup_city_core_verified",
+  "technicalBlocker": "The existing WFS adapter requires a stable unique native attribute for queryIds. The public schema marks nib optional; bounded 13-cell queries exposed missing native IDs and the adapter rejected conflicting geometry under repeated nib values during fresh-ID reads. GeoServer transport FIDs are present, but the existing adapter does not use them as durable parcel IDs.",
+  "remainingUncertainty": "Whether the publisher can expose a complete, stable unique cadastral key (or whether a separately reviewed adapter should use GeoServer FIDs); coverage and completeness outside the bounded Kejaksan sample window remain unverified.",
+  "nextStep": "Keep the source and three verified city-core polygons as research evidence. Do not enable runtime with the current adapter. Root can decide whether a source-specific FID adapter is appropriate after reviewing the recorded WFS contract and acceptance evidence.",
+  "schemaVersion": 1,
+  "checkedAt": "2026-10-09",
+  "wupCityCode": 6427,
+  "cityId": "wup2025:6427",
+  "queueRank": 318,
+  "population2025k": 1566.821,
+  "population2025": 1566821,
+  "populationPlausibility2025": "High",
+  "populationUnit": "persons",
+  "pointBasis": "UN WUP 2025 population-weighted settlement centroid; this is not a municipal boundary or a parcel-coverage claim.",
+  "centerLatLon": [
+    -6.71888637851167,
+    108.517123333245
+  ],
+  "runtimeReadiness": "held_native_identity",
+  "adapterReady": false,
+  "sourceIds": [
+    "ID-CIREBON-BPN-WFS-PERSIL"
+  ],
+  "adapterQualificationArtifact": "cirebon-wfs-adapter-acceptance.json",
+  "runtimeAssessment": {
+    "status": "held_native_identity",
+    "reason": "The existing WFS adapter requires a stable unique native attribute for queryIds. The public schema marks nib optional; bounded 13-cell queries exposed missing native IDs and the adapter rejected conflicting geometry under repeated nib values during fresh-ID reads. GeoServer transport FIDs are present, but the existing adapter does not use them as durable parcel IDs.",
+    "evidenceFile": "research/overnight-cities-2026-10-08/cirebon-wfs-adapter-acceptance.json"
+  },
+  "rootReviewedAt": "2026-10-08T22:39:33.725772+00:00"
+}

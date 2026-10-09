@@ -1,0 +1,85 @@
+{
+  "schemaVersion": 1,
+  "checkedAt": "2026-10-08T23:29:49.774524+00:00",
+  "result": "passed",
+  "purpose": "Relevant fast headless checks after Mesa, Fort Lauderdale and Valencia integration, precise DGC absence parsing and shared-provider concurrency correction. No browser-driving test suite run.",
+  "vitest": {
+    "fileCount": 12,
+    "passedTests": 265,
+    "failedTests": 0,
+    "files": [
+      {
+        "file": "backend/test/arcgis-composite-parcel-adapter.test.js",
+        "passedTests": 18,
+        "status": "passed"
+      },
+      {
+        "file": "backend/test/arcgis-parcel-adapter.test.js",
+        "passedTests": 93,
+        "status": "passed"
+      },
+      {
+        "file": "backend/test/catastro-wfs-source.test.js",
+        "passedTests": 24,
+        "status": "passed"
+      },
+      {
+        "file": "backend/test/coverage-evidence-consistency.test.js",
+        "passedTests": 5,
+        "status": "passed"
+      },
+      {
+        "file": "backend/test/frontend-world-coverage.test.js",
+        "passedTests": 56,
+        "status": "passed"
+      },
+      {
+        "file": "backend/test/gml-parcel-reader.test.js",
+        "passedTests": 29,
+        "status": "passed"
+      },
+      {
+        "file": "backend/test/parcel-attribute-filter.test.js",
+        "passedTests": 2,
+        "status": "passed"
+      },
+      {
+        "file": "backend/test/parcel-source-city-metric.test.js",
+        "passedTests": 2,
+        "status": "passed"
+      },
+      {
+        "file": "backend/test/world-coverage-build.test.js",
+        "passedTests": 16,
+        "status": "passed"
+      },
+      {
+        "file": "backend/test/world-coverage-geography.test.js",
+        "passedTests": 8,
+        "status": "passed"
+      },
+      {
+        "file": "backend/test/frontend-city-source-integrations.test.js",
+        "passedTests": 3,
+        "status": "passed"
+      },
+      {
+        "file": "backend/test/parcel-source-concurrency.test.js",
+        "passedTests": 9,
+        "status": "passed"
+      }
+    ]
+  },
+  "nodeTests": {
+    "file": "scripts/tests/overnight-city-queue-classification.test.mjs",
+    "passedTests": 5,
+    "failedTests": 0
+  },
+  "diffWhitespaceCheck": "passed",
+  "localConfiguration": {
+    "appCities": 143,
+    "executableProviders": 127,
+    "enabledThisRun": 13
+  },
+  "releaseState": "local_uncommitted_undeployed"
+}

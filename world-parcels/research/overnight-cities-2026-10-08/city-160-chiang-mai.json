@@ -1,0 +1,99 @@
+{
+  "name": "Chiang Mai",
+  "country": "Thailand",
+  "countryCode": "TH",
+  "rank": 864,
+  "point": [
+    18.7782807782154,
+    98.9988206765246
+  ],
+  "population2025": 626629,
+  "population2025k": 626.629,
+  "populationUnit": "persons",
+  "populationPlausibility2025": "Moderate",
+  "schemaVersion": 1,
+  "kind": "city_parcel_source_research",
+  "checkedAt": "2026-10-09",
+  "status": "complete",
+  "registryFound": true,
+  "registryBasis": "Official Chiang Mai Provincial Land Office page links LandsMaps, e-LandsPublic, and land-office registration/survey services.",
+  "registryEvidenceUrls": [
+    "https://www.dol.go.th/chiangmai/home/",
+    "https://www.dol.go.th/home/",
+    "https://landsmaps.dol.go.th/"
+  ],
+  "publicParcelGeometryFound": false,
+  "verifiedSample": false,
+  "runtimeReadiness": "not_enabled_no_verified_public_geometry",
+  "adapterReady": false,
+  "priorEvidenceFiles": [],
+  "scopeLimits": "City-local source discovery only. No full parcel geometry was retained. No owner, address, account/tax identifier, credential, or token value was requested or retained. Citywide/countrywide completeness and runtime suitability are not assessed.",
+  "pointBasis": "UN WUP 2025 population-weighted settlement centroid; this is not a municipal boundary or a parcel-coverage claim.",
+  "resultCategory": "official_local_registry_candidate_geometry_unverified",
+  "technicalBlocker": "The official LandsMaps site could not be reached within the research tool timeout, and no live schema-safe geometry endpoint could be inspected. No parcel query was made.",
+  "remainingUncertainty": "Whether LandsMaps exposes anonymous full parcel polygons in this district, and the native safe identifier it uses, remains unverified.",
+  "nextStep": "No runtime qualification was attempted. If more discovery is needed, inspect first-party service metadata and retain geometry only after confirming a safe native feature identifier.",
+  "freshResearch": {
+    "queries": [
+      {
+        "language": "English",
+        "query": "Chiang Mai Thailand official land department LandsMaps public parcel map GIS",
+        "scope": "Find city-local registration/cadastral-map evidence and determine whether anonymous schema-safe parcel geometry is available.",
+        "result": "The official Chiang Mai Provincial Land Office links to LandsMaps for nationwide land-plot searches; Department of Lands public materials describe parcel location/shape services. The LandsMaps root timed out in the research tool, so no live schema or geometry response was available.",
+        "actualResultUrls": [
+          "https://www.dol.go.th/chiangmai/home/",
+          "https://www.dol.go.th/home/",
+          "https://landsmaps.dol.go.th/"
+        ],
+        "executionMethod": "Separate language-specific web search and official source review; no owner/property-specific query."
+      },
+      {
+        "language": "Thai",
+        "query": "ที่ดิน เชียงใหม่ ค้นหารูปแปลงที่ดิน LandsMaps กรมที่ดิน official",
+        "scope": "Find city-local registration/cadastral-map evidence and determine whether anonymous schema-safe parcel geometry is available.",
+        "result": "เว็บไซต์สำนักงานที่ดินจังหวัดเชียงใหม่ของกรมที่ดินมีลิงก์บริการค้นหารูปแปลงที่ดิน LandsMaps; เอกสารของกรมระบุว่าบริการใช้ตรวจสอบตำแหน่งและรูปแปลงทั่วประเทศ แต่หน้า LandsMaps หมดเวลารอในเครื่องมือวิจัย จึงยังตรวจสอบสคีมาข้อมูลหรือเรขาคณิตไม่ได้.",
+        "actualResultUrls": [
+          "https://www.dol.go.th/chiangmai/home/",
+          "https://www.dol.go.th/home/",
+          "https://landsmaps.dol.go.th/"
+        ],
+        "executionMethod": "Separate language-specific web search and official source review; no owner/property-specific query."
+      }
+    ]
+  },
+  "officialSources": [
+    {
+      "url": "https://www.dol.go.th/chiangmai/home/",
+      "observation": "Official Chiang Mai Provincial Land Office page links LandsMaps, e-LandsPublic, and land-office registration/survey services."
+    },
+    {
+      "url": "https://www.dol.go.th/home/",
+      "observation": "Official Department of Lands portal lists LandsMaps as a public-facing land-plot search service."
+    },
+    {
+      "url": "https://landsmaps.dol.go.th/",
+      "observation": "The public map root timed out in the research tool; no service schema or feature request was obtained."
+    }
+  ],
+  "verifiedParcelResponse": null,
+  "wupCityCode": 160,
+  "cityId": "wup2025:160",
+  "queueRank": 864,
+  "centerLatLon": [
+    18.7782807782154,
+    98.9988206765246
+  ],
+  "sourceIds": [],
+  "runtimeAssessment": {
+    "status": "not_enabled_no_verified_public_geometry",
+    "reason": "The official LandsMaps site could not be reached within the research tool timeout, and no live schema-safe geometry endpoint could be inspected. No parcel query was made."
+  },
+  "rootPrimaryReadback": {
+    "url": "https://www.dol.go.th/chiangmai/home/",
+    "fetch": 200,
+    "contentType": "text/html; charset=UTF-8",
+    "title": "สำนักงานที่ดินจังหวัดเชียงใหม่"
+  },
+  "rootReviewNote": "Reviewed the specific primary institution/service evidence and its geographical, access and date limits. Direct readback failures are preserved separately from indexed primary evidence. No public full parcel geometry was verified for this city in this discovery pass.",
+  "rootReviewedAt": "2026-10-09T04:12:31.737456+00:00"
+}

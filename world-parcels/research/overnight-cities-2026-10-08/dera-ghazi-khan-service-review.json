@@ -1,0 +1,39 @@
+{
+  "schemaVersion": "1.0",
+  "checkedAt": "2026-10-09",
+  "cityRecord": "city-6583-dera-ghazi-khan.json",
+  "purpose": "City-specific registry and public parcel-geometry source review. No owner, address, tax, or private property fields were requested or retained.",
+  "scopeLimits": {
+    "maxFullPolygonsRetainedInCityRecord": 0,
+    "maxFullPolygonsRetainedInReview": 0,
+    "maxFullPolygonsRetainedInRepository": 0,
+    "ownerOrAddressDataRetained": false,
+    "credentialsOrPrivateRecordLookupsUsed": false,
+    "citywideCompletenessAsserted": false
+  },
+  "assessment": "Official Punjab PULSE public viewer advertises cadastral maps and includes Dera Ghazi Khan in its district selector; its public view labels property lines as indicative, while complete parcel details require login. No login or owner/parcel search was attempted. PLRA provides land-record service centers. No full vector geometry-only endpoint was verified. No geometry feature was retained; geometry evidence remains unverified.",
+  "officialPrimarySources": [
+    {
+      "url": "https://lis.pulse.gop.pk/",
+      "observation": "Official Punjab PULSE public viewer advertises cadastral maps and includes Dera Ghazi Khan in its district selector; its public view labels property lines as indicative, while complete parcel details require login. No login or owner/parcel search was attempted. PLRA provides land-record service centers. No full vector geometry-only endpoint was verified."
+    }
+  ],
+  "searches": [
+    {
+      "language": "English",
+      "query": "Dera Ghazi Khan official cadastral map Punjab land records PULSE PLRA GIS public viewer"
+    },
+    {
+      "language": "Urdu/Punjabi",
+      "query": "ڈیرہ غازی خان زمین کا ریکارڈ خسرہ نقشہ سرکاری پنجاب لینڈ ریکارڈز اتھارٹی"
+    }
+  ],
+  "geometryEvidence": null,
+  "decision": {
+    "registryFound": true,
+    "publicParcelGeometryFound": null,
+    "verifiedSample": false,
+    "adapterReady": false
+  },
+  "nextStep": "If a clearly public feature endpoint is later documented, inspect schema first and query only safe stable IDs plus geometry in a bounded viewport."
+}

@@ -1,0 +1,9 @@
+{
+  "checkedAt": "2026-10-09T06:46:30.956530+00:00",
+  "decision": "held_native_geometry_conflicts",
+  "basis": "The official Midlothian county archive was retrieved anonymously and audited in native EPSG:27700. All 3148 bounding-box candidates were valid; 2222 full polygons intersect the 1 km WUP-centered circle. The exact locator has no covering polygon; the nearest same-ID source feature is about 2.96 m away. The local index contains 1709 positive-area overlap pairs, including 1259 of at least 1 m² and a maximum 14313.205 m². RoS explicitly permits overlapping and stacked polygons in this index model. The source is valid in that model, but is incompatible with exclusive 2D ground-parcel rendering until those source semantics are represented. No geometry repair, removal or substitution was used.",
+  "nativeGeometryInvalid": false,
+  "runtimeModelIncompatible": true,
+  "geometryChangedOrRepaired": false,
+  "qualityFile": "research/overnight-followon-2026-10-09/edinburgh-download-discovery.json"
+}

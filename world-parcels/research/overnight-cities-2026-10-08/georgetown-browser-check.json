@@ -1,0 +1,15 @@
+{
+  "checkedAt": "2026-10-09T02:58:21.098803+00:00",
+  "appCityId": "georgetown",
+  "url": "http://localhost:5638/?city=georgetown&backend=http%3A%2F%2F127.0.0.1%3A5640&reduceMotion=1&lang=en",
+  "headedBrowser": true,
+  "loadedParcels": 233,
+  "visibleParcels": 137,
+  "parcelFetchFinished": true,
+  "selectionMethod": "Real pointer move/down/up at [600,409], then Details menu item",
+  "selectedParcelId": "MY-PENANG-07040100010579",
+  "detailsHeading": "Parcel Copy to clipboard: MY-PENANG-07040100010579",
+  "detailsMatchesSelectedParcel": true,
+  "uncaughtErrors": [],
+  "browserClosed": true
+}

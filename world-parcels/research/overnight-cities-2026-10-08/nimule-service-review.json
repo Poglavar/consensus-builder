@@ -1,0 +1,63 @@
+{
+  "schemaVersion": "1.0",
+  "checkedAt": "2026-10-09",
+  "cityRecord": "city-1403-nimule.json",
+  "purpose": "Document first-party local registry/map evidence and bounded anonymous geometry access review.",
+  "scopeLimits": {
+    "maxFullPolygonsRetainedInCityRecord": 3,
+    "maxFullPolygonsRetainedInReview": 0,
+    "maxFullPolygonsRetainedInRepository": 24,
+    "ownerOrAddressDataRetained": false,
+    "credentialsOrTokenValuesRetained": false,
+    "citywideCompletenessAsserted": false
+  },
+  "assessment": "The government-hosted 2024 ESIA describes the local Land Board and Town Council as primary land administrators; the Land Act provides the national legal framework. No Nimule public registry viewer, parcel vector layer, native ID workflow, or full geometry was verified.",
+  "registryAssessment": "A 2024 environmental and social impact report hosted by the Government of South Sudan states that Nimule land is primarily administered by a local Land Board and Town Council, while the formal multi-level land-administration reforms are incomplete. This confirms local land governance but not a statutory registry, parcel database, or public cadastral service.",
+  "officialPrimarySources": [
+    {
+      "url": "https://mofp.gov.ss/wp-content/uploads/2024/07/C4007224-Final-Full-ESIA-Report-SOUTH-SUDAN_18-July-2024.pdf",
+      "observation": "A 2024 environmental and social impact report hosted by the Government of South Sudan states that Nimule land is primarily administered by a local Land Board and Town Council, while the formal multi-level land-administration reforms are incomplete. This confirms local land governance but not a statutory registry, parcel database, or public cadastral service."
+    },
+    {
+      "url": "https://www.mofp.gov.ss/laws/LandAct2009.pdf",
+      "observation": "A 2024 environmental and social impact report hosted by the Government of South Sudan states that Nimule land is primarily administered by a local Land Board and Town Council, while the formal multi-level land-administration reforms are incomplete. This confirms local land governance but not a statutory registry, parcel database, or public cadastral service."
+    }
+  ],
+  "searchQueries": [
+    {
+      "language": "English (Madi-specific search)",
+      "query": "Nimule Madi land administration survey registry cadastral map official South Sudan",
+      "result": "The government-hosted 2024 ESIA describes the Nimule Land Board and Town Council as the primary local land administrators, but no public parcel map or registry service was located. The 2009 Land Act describes national land governance without a Nimule geometry endpoint.",
+      "method": "Separate Madi-context search in English, followed by South Sudan government source review; no Madi-language query text was invented.",
+      "scope": "Find local Nimule/Madi land-board, survey and parcel-map sources."
+    },
+    {
+      "language": "English",
+      "query": "Nimule South Sudan official land records map survey Land Board Town Council cadastral",
+      "result": "The ESIA confirms local land administration and describes the countrywide reform framework; it does not identify a digital register, local survey portal, or anonymous parcel geometry route.",
+      "method": "Separate English search and official government report/legislation review.",
+      "scope": "Cross-check the local land-governance structure and public map services."
+    }
+  ],
+  "geometryDecision": "No parcel geometry retained. No qualifying complete full polygon at a safely validated native parcel ID was returned.",
+  "coverageAssessment": {
+    "claimedScope": "Local community and municipal land administration in Nimule; no claim of complete formal cadastral coverage.",
+    "verifiedOpenScope": "The government-hosted 2024 ESIA describes the local Land Board and Town Council as primary land administrators; the Land Act provides the national legal framework. No Nimule public registry viewer, parcel vector layer, native ID workflow, or full geometry was verified.",
+    "citywideVerified": false,
+    "countrywideVerified": false,
+    "geometryVerified": false
+  },
+  "attempts": [
+    {
+      "url": "https://mofp.gov.ss/wp-content/uploads/2024/07/C4007224-Final-Full-ESIA-Report-SOUTH-SUDAN_18-July-2024.pdf",
+      "method": "official report review",
+      "observation": "Nimule land is described as primarily administered by a community Land Board and Town Council; no parcel service is described."
+    },
+    {
+      "url": "https://www.mofp.gov.ss/laws/LandAct2009.pdf",
+      "method": "official legislation review",
+      "observation": "National land governance framework; does not provide Nimule-specific feature data or a public map API."
+    }
+  ],
+  "remainingUncertainty": "Whether Nimule has a formal statutory land registry or survey archive in addition to the reported community Land Board; exact settlement extent and whether it intersects a documented parcel dataset."
+}

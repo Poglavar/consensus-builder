@@ -1,0 +1,127 @@
+{
+  "schemaVersion": 1,
+  "kind": "city_parcel_source_research",
+  "checkedAt": "2026-10-09",
+  "name": "M'bour",
+  "country": "Senegal",
+  "countryCode": "SN",
+  "populationUnit": "persons",
+  "status": "complete",
+  "registryFound": true,
+  "registryBasis": "DGID’s official 2022 magazine explicitly names the Bureau du Cadastre de Mbour and the Bureau des Domaines de Mbour. The current official contact page lists CSF Mbour, and its 2024 official land-service report identifies Mbour as the pilot area for lease/title regularization. These establish specific local cadastre/domain administration; a public anonymous full-polygon endpoint was not verified. Historic office evidence does not prove current parcel-data completeness.",
+  "registryEvidenceUrls": [
+    "https://www.dgid.sn/",
+    "https://www.dgid.sn/particuliers",
+    "https://www.dgid.sn/contact",
+    "https://www.dgid.sn/wp-content/uploads/2022/10/Magazine-ID-N%C2%B032_juillet_aou%CC%82t_septembre-2022-1_compressed.pdf",
+    "https://www.dgid.sn/articles/ceremonie-de-lancement-officiel-de-lannee-fiscale-2024"
+  ],
+  "verifiedSample": false,
+  "publicParcelGeometryFound": false,
+  "runtimeReadiness": "not_enabled_no_verified_public_geometry",
+  "wupCityCode": 205,
+  "cityId": "wup2025:205",
+  "centerLatLon": [
+    14.4317955342878,
+    -16.9795052399782
+  ],
+  "rank": 992,
+  "queueRank": 992,
+  "population2025": 553170,
+  "population2025k": 553.17,
+  "populationPlausibility": "Moderate",
+  "pointBasis": "UN WUP 2025 population-weighted settlement centroid; this is not a municipal boundary or a parcel-coverage claim.",
+  "technicalBlocker": "DGID identifies cadastral/land-domain functions and certified Extrait de plan cadastral / NICAD services. No anonymous public vector parcel endpoint or Mbour-targeted full geometry was verified.",
+  "scopeLimits": "The Senegal DGID is the national authority for cadastre and land domain records and offers certified cadastral plan extracts; the reviewed service information indicates request-based certified documents rather than an anonymous parcel geometry API. Local Mbour coverage/office assignment was not proven by the available primary map evidence.",
+  "remainingUncertainty": "The exact parcel coverage of the WUP settlement centroid and the complete public geometry coverage in the locality remain unverified.",
+  "research": {
+    "executedQueries": [
+      {
+        "language": "English",
+        "query": "M'bour Senegal official cadastre cadastral parcel map GIS land registry",
+        "scope": "Identify city-specific land registry/cadastre context and any anonymous full-parcel geometry.",
+        "result": "DGID identifies cadastral/land-domain functions and certified Extrait de plan cadastral / NICAD services. No anonymous public vector parcel endpoint or Mbour-targeted full geometry was verified.",
+        "actualResultUrls": [
+          "https://www.dgid.sn/",
+          "https://www.dgid.sn/particuliers"
+        ],
+        "executionMethod": "Separate English search and official-source review; no owner, address, title, tax, token, account, applicant, or property identifier was queried."
+      },
+      {
+        "language": "French",
+        "query": "M'bour cadastre parcelles carte cadastrale DGID Sénégal officiel service fiscal Mbour",
+        "scope": "Identify city-specific land registry/cadastre context and any anonymous full-parcel geometry.",
+        "result": "DGID identifies cadastral/land-domain functions and certified Extrait de plan cadastral / NICAD services. No anonymous public vector parcel endpoint or Mbour-targeted full geometry was verified.",
+        "actualResultUrls": [
+          "https://www.dgid.sn/",
+          "https://www.dgid.sn/particuliers"
+        ],
+        "executionMethod": "Separate local-language search and official-source review; no owner, address, title, tax, token, account, applicant, or property identifier was queried."
+      }
+    ],
+    "officialSources": [
+      {
+        "url": "https://www.dgid.sn/",
+        "observation": "DGID identifies cadastral/land-domain functions and certified Extrait de plan cadastral / NICAD services. No anonymous public vector parcel endpoint or Mbour-targeted full geometry was verified."
+      },
+      {
+        "url": "https://www.dgid.sn/particuliers",
+        "observation": "DGID identifies cadastral/land-domain functions and certified Extrait de plan cadastral / NICAD services. No anonymous public vector parcel endpoint or Mbour-targeted full geometry was verified."
+      }
+    ],
+    "metadataReviewFile": "mbour-service-review.json"
+  },
+  "source": {
+    "sourceId": null,
+    "name": null,
+    "operator": null,
+    "url": null,
+    "serviceType": "Official cadastral/property-record service identified; anonymous full geometry not verified in this review.",
+    "geometryType": null,
+    "coordinateReferenceSystem": null,
+    "nativeIdFields": [],
+    "directGeometryQueryVerified": false,
+    "directMetadataSchemaVerified": false,
+    "scope": "The Senegal DGID is the national authority for cadastre and land domain records and offers certified cadastral plan extracts; the reviewed service information indicates request-based certified documents rather than an anonymous parcel geometry API. Local Mbour coverage/office assignment was not proven by the available primary map evidence."
+  },
+  "coverageAssessment": {
+    "claimedScope": "The Senegal DGID is the national authority for cadastre and land domain records and offers certified cadastral plan extracts; the reviewed service information indicates request-based certified documents rather than an anonymous parcel geometry API. Local Mbour coverage/office assignment was not proven by the available primary map evidence.",
+    "verifiedOpenScope": "No full parcel geometry retained; no citywide coverage is inferred.",
+    "citywideVerified": false,
+    "countrywideVerified": false,
+    "geometryVerified": false
+  },
+  "runtimeAssessment": {
+    "status": "not_enabled_no_verified_public_geometry",
+    "reason": "DGID identifies cadastral/land-domain functions and certified Extrait de plan cadastral / NICAD services. No anonymous public vector parcel endpoint or Mbour-targeted full geometry was verified."
+  },
+  "rootReview": "pending",
+  "discoveryRegistryAssessment": {
+    "registryFound": true,
+    "registryBasis": "The Senegal DGID is the national authority for cadastre and land domain records and offers certified cadastral plan extracts; the reviewed service information indicates request-based certified documents rather than an anonymous parcel geometry API. Local Mbour coverage/office assignment was not proven by the available primary map evidence."
+  },
+  "rootPrimarySupplement": {
+    "urls": [
+      "https://www.dgid.sn/contact",
+      "https://www.dgid.sn/wp-content/uploads/2022/10/Magazine-ID-N%C2%B032_juillet_aou%CC%82t_septembre-2022-1_compressed.pdf",
+      "https://www.dgid.sn/articles/ceremonie-de-lancement-officiel-de-lannee-fiscale-2024"
+    ],
+    "method": "Independent root exact primary-source web search/readback; publication and city scope separated.",
+    "localCustodianEstablished": true,
+    "geometryVerified": false
+  },
+  "rootPrimaryReadback": {
+    "url": "https://www.dgid.sn/particuliers",
+    "fetch": 200,
+    "contentType": "text/html; charset=utf-8",
+    "title": "Espace Particuliers - Fiscalité et démarches foncières | DGID Sénégal"
+  },
+  "rootReviewNote": "Root reviewed the exact primary institutional evidence and specific local jurisdiction, preserving source dates, application/access limits and failed readbacks. Registry presence and public full parcel geometry are separate findings. No public full geometry was verified in this city discovery record.",
+  "rootReviewedAt": "2026-10-09T05:10:15.053712+00:00",
+  "populationPlausibility2025": "Moderate",
+  "point": [
+    14.4317955342878,
+    -16.9795052399782
+  ],
+  "sourceIds": []
+}

@@ -1,0 +1,517 @@
+{
+  "schemaVersion": 1,
+  "checkedAt": "2026-10-09T06:31:14.879Z",
+  "city": "malaga-snapshot-root",
+  "descriptor": {
+    "id": "es-malaga-municipal-parcel-snapshot",
+    "name": "Málaga municipal cartographic parcel polygons",
+    "adapter": "geojson-snapshot",
+    "endpoint": "https://datosabiertos.malaga.eu/recursos/urbanismoEInfraestructura/planimetria/callejero/da_cartografiaParcela-4326.geojson",
+    "idFields": [
+      "ID_PARCELA"
+    ],
+    "outFields": [
+      "ID_PARCELA"
+    ],
+    "parcelNumberField": "ID_PARCELA",
+    "idPrefix": "ES-MALAGA-PARCELA-",
+    "maxSnapshotBytes": 67108864,
+    "maxSnapshotFeatures": 60000,
+    "expectedSnapshotFeatures": 58631,
+    "expectedEtag": "\"314864d-65d53018af75b\"",
+    "maxFeatures": 3000,
+    "maxBboxKm2": 1,
+    "countryCode": "ES",
+    "metricSrid": 32630,
+    "cityIds": [
+      "malaga"
+    ],
+    "maxConcurrentQueries": 1
+  },
+  "purpose": "Real snapshot adapter; two independent complete public downloads verify revision, complete count and unchanged identities. Only ID_PARCELA and full geometry retained in temporary caches.",
+  "grid": [
+    {
+      "name": "viewport-0",
+      "bbox": [
+        -4.439,
+        36.718,
+        -4.438,
+        36.719
+      ]
+    },
+    {
+      "name": "viewport-1",
+      "bbox": [
+        -4.438,
+        36.718,
+        -4.437,
+        36.719
+      ]
+    },
+    {
+      "name": "viewport-2",
+      "bbox": [
+        -4.437,
+        36.718,
+        -4.436,
+        36.719
+      ]
+    },
+    {
+      "name": "viewport-3",
+      "bbox": [
+        -4.439,
+        36.719,
+        -4.438,
+        36.72
+      ]
+    },
+    {
+      "name": "viewport-4",
+      "bbox": [
+        -4.438,
+        36.719,
+        -4.437,
+        36.72
+      ]
+    },
+    {
+      "name": "viewport-5",
+      "bbox": [
+        -4.437,
+        36.719,
+        -4.436,
+        36.72
+      ]
+    },
+    {
+      "name": "viewport-6",
+      "bbox": [
+        -4.439,
+        36.72,
+        -4.438,
+        36.721
+      ]
+    },
+    {
+      "name": "viewport-7",
+      "bbox": [
+        -4.438,
+        36.72,
+        -4.437,
+        36.721
+      ]
+    },
+    {
+      "name": "viewport-8",
+      "bbox": [
+        -4.437,
+        36.72,
+        -4.436,
+        36.721
+      ]
+    },
+    {
+      "name": "viewport-9",
+      "bbox": [
+        -4.438,
+        36.717,
+        -4.437,
+        36.718
+      ]
+    },
+    {
+      "name": "viewport-10",
+      "bbox": [
+        -4.438,
+        36.721,
+        -4.437,
+        36.722
+      ]
+    },
+    {
+      "name": "viewport-11",
+      "bbox": [
+        -4.44,
+        36.719,
+        -4.439,
+        36.72
+      ]
+    },
+    {
+      "name": "viewport-12",
+      "bbox": [
+        -4.436,
+        36.719,
+        -4.435,
+        36.72
+      ]
+    }
+  ],
+  "tests": [
+    {
+      "name": "viewport-0",
+      "passed": false,
+      "error": "Parcel snapshot revision does not match its verified release."
+    },
+    {
+      "name": "viewport-1",
+      "passed": false,
+      "error": "Parcel snapshot revision does not match its verified release."
+    },
+    {
+      "name": "viewport-2",
+      "passed": false,
+      "error": "Parcel snapshot revision does not match its verified release."
+    },
+    {
+      "name": "viewport-3",
+      "passed": false,
+      "error": "Parcel snapshot revision does not match its verified release."
+    },
+    {
+      "name": "viewport-4",
+      "passed": false,
+      "error": "Parcel snapshot revision does not match its verified release."
+    },
+    {
+      "name": "viewport-5",
+      "passed": false,
+      "error": "Parcel snapshot revision does not match its verified release."
+    },
+    {
+      "name": "viewport-6",
+      "passed": false,
+      "error": "Parcel snapshot revision does not match its verified release."
+    },
+    {
+      "name": "viewport-7",
+      "passed": false,
+      "error": "Parcel snapshot revision does not match its verified release."
+    },
+    {
+      "name": "viewport-8",
+      "passed": false,
+      "error": "Parcel snapshot revision does not match its verified release."
+    },
+    {
+      "name": "viewport-9",
+      "passed": false,
+      "error": "Parcel snapshot revision does not match its verified release."
+    },
+    {
+      "name": "viewport-10",
+      "passed": false,
+      "error": "Parcel snapshot revision does not match its verified release."
+    },
+    {
+      "name": "viewport-11",
+      "passed": false,
+      "error": "Parcel snapshot revision does not match its verified release."
+    },
+    {
+      "name": "viewport-12",
+      "passed": false,
+      "error": "Parcel snapshot revision does not match its verified release."
+    },
+    {
+      "name": "complete-snapshot-protocol",
+      "passed": false,
+      "error": "Complete snapshot count, revision or declared bytes differ"
+    },
+    {
+      "name": "footprint",
+      "passed": false,
+      "error": "Original locator parcel missing or point outside"
+    },
+    {
+      "name": "source-binding",
+      "passed": false,
+      "error": "No original locator parcel"
+    },
+    {
+      "name": "fresh-snapshot-protocol",
+      "passed": false,
+      "error": "Complete snapshot count, revision or declared bytes differ"
+    },
+    {
+      "name": "explicit-absence",
+      "passed": false,
+      "error": "Parcel snapshot revision does not match its verified release."
+    }
+  ],
+  "requests": [
+    {
+      "stage": "first",
+      "url": "https://datosabiertos.malaga.eu/recursos/urbanismoEInfraestructura/planimetria/callejero/da_cartografiaParcela-4326.geojson",
+      "checkedAt": "2026-10-09T06:31:14.884Z",
+      "httpStatus": 200,
+      "etag": "\"314864d-65d53018af75b-gzip\"",
+      "last-modified": "Thu, 08 Oct 2026 12:02:29 GMT",
+      "content-length": null,
+      "content-type": "application/geo+json",
+      "bytes": 51676749,
+      "bodySha256": "3bfa7dd54a2dab51153b778fac0758502656704c12771ef972b31d6c86ab6e23",
+      "featureCount": 58631,
+      "crs": {
+        "type": "name",
+        "properties": {
+          "name": "urn:ogc:def:crs:EPSG::4326"
+        }
+      }
+    },
+    {
+      "stage": "first",
+      "url": "https://datosabiertos.malaga.eu/recursos/urbanismoEInfraestructura/planimetria/callejero/da_cartografiaParcela-4326.geojson",
+      "checkedAt": "2026-10-09T06:31:22.408Z",
+      "httpStatus": 200,
+      "etag": "\"314864d-65d53018af75b-gzip\"",
+      "last-modified": "Thu, 08 Oct 2026 12:02:29 GMT",
+      "content-length": null,
+      "content-type": "application/geo+json",
+      "bytes": 51676749,
+      "bodySha256": "3bfa7dd54a2dab51153b778fac0758502656704c12771ef972b31d6c86ab6e23",
+      "featureCount": 58631,
+      "crs": {
+        "type": "name",
+        "properties": {
+          "name": "urn:ogc:def:crs:EPSG::4326"
+        }
+      }
+    },
+    {
+      "stage": "first",
+      "url": "https://datosabiertos.malaga.eu/recursos/urbanismoEInfraestructura/planimetria/callejero/da_cartografiaParcela-4326.geojson",
+      "checkedAt": "2026-10-09T06:31:29.563Z",
+      "httpStatus": 200,
+      "etag": "\"314864d-65d53018af75b-gzip\"",
+      "last-modified": "Thu, 08 Oct 2026 12:02:29 GMT",
+      "content-length": null,
+      "content-type": "application/geo+json",
+      "bytes": 51676749,
+      "bodySha256": "3bfa7dd54a2dab51153b778fac0758502656704c12771ef972b31d6c86ab6e23",
+      "featureCount": 58631,
+      "crs": {
+        "type": "name",
+        "properties": {
+          "name": "urn:ogc:def:crs:EPSG::4326"
+        }
+      }
+    },
+    {
+      "stage": "first",
+      "url": "https://datosabiertos.malaga.eu/recursos/urbanismoEInfraestructura/planimetria/callejero/da_cartografiaParcela-4326.geojson",
+      "checkedAt": "2026-10-09T06:31:36.888Z",
+      "httpStatus": 200,
+      "etag": "\"314864d-65d53018af75b-gzip\"",
+      "last-modified": "Thu, 08 Oct 2026 12:02:29 GMT",
+      "content-length": null,
+      "content-type": "application/geo+json",
+      "bytes": 51676749,
+      "bodySha256": "3bfa7dd54a2dab51153b778fac0758502656704c12771ef972b31d6c86ab6e23",
+      "featureCount": 58631,
+      "crs": {
+        "type": "name",
+        "properties": {
+          "name": "urn:ogc:def:crs:EPSG::4326"
+        }
+      }
+    },
+    {
+      "stage": "first",
+      "url": "https://datosabiertos.malaga.eu/recursos/urbanismoEInfraestructura/planimetria/callejero/da_cartografiaParcela-4326.geojson",
+      "checkedAt": "2026-10-09T06:31:44.072Z",
+      "httpStatus": 200,
+      "etag": "\"314864d-65d53018af75b-gzip\"",
+      "last-modified": "Thu, 08 Oct 2026 12:02:29 GMT",
+      "content-length": null,
+      "content-type": "application/geo+json",
+      "bytes": 51676749,
+      "bodySha256": "3bfa7dd54a2dab51153b778fac0758502656704c12771ef972b31d6c86ab6e23",
+      "featureCount": 58631,
+      "crs": {
+        "type": "name",
+        "properties": {
+          "name": "urn:ogc:def:crs:EPSG::4326"
+        }
+      }
+    },
+    {
+      "stage": "first",
+      "url": "https://datosabiertos.malaga.eu/recursos/urbanismoEInfraestructura/planimetria/callejero/da_cartografiaParcela-4326.geojson",
+      "checkedAt": "2026-10-09T06:31:51.228Z",
+      "httpStatus": 200,
+      "etag": "\"314864d-65d53018af75b-gzip\"",
+      "last-modified": "Thu, 08 Oct 2026 12:02:29 GMT",
+      "content-length": null,
+      "content-type": "application/geo+json",
+      "bytes": 51676749,
+      "bodySha256": "3bfa7dd54a2dab51153b778fac0758502656704c12771ef972b31d6c86ab6e23",
+      "featureCount": 58631,
+      "crs": {
+        "type": "name",
+        "properties": {
+          "name": "urn:ogc:def:crs:EPSG::4326"
+        }
+      }
+    },
+    {
+      "stage": "first",
+      "url": "https://datosabiertos.malaga.eu/recursos/urbanismoEInfraestructura/planimetria/callejero/da_cartografiaParcela-4326.geojson",
+      "checkedAt": "2026-10-09T06:31:58.625Z",
+      "httpStatus": 200,
+      "etag": "\"314864d-65d53018af75b-gzip\"",
+      "last-modified": "Thu, 08 Oct 2026 12:02:29 GMT",
+      "content-length": null,
+      "content-type": "application/geo+json",
+      "bytes": 51676749,
+      "bodySha256": "3bfa7dd54a2dab51153b778fac0758502656704c12771ef972b31d6c86ab6e23",
+      "featureCount": 58631,
+      "crs": {
+        "type": "name",
+        "properties": {
+          "name": "urn:ogc:def:crs:EPSG::4326"
+        }
+      }
+    },
+    {
+      "stage": "first",
+      "url": "https://datosabiertos.malaga.eu/recursos/urbanismoEInfraestructura/planimetria/callejero/da_cartografiaParcela-4326.geojson",
+      "checkedAt": "2026-10-09T06:32:05.900Z",
+      "httpStatus": 200,
+      "etag": "\"314864d-65d53018af75b-gzip\"",
+      "last-modified": "Thu, 08 Oct 2026 12:02:29 GMT",
+      "content-length": null,
+      "content-type": "application/geo+json",
+      "bytes": 51676749,
+      "bodySha256": "3bfa7dd54a2dab51153b778fac0758502656704c12771ef972b31d6c86ab6e23",
+      "featureCount": 58631,
+      "crs": {
+        "type": "name",
+        "properties": {
+          "name": "urn:ogc:def:crs:EPSG::4326"
+        }
+      }
+    },
+    {
+      "stage": "first",
+      "url": "https://datosabiertos.malaga.eu/recursos/urbanismoEInfraestructura/planimetria/callejero/da_cartografiaParcela-4326.geojson",
+      "checkedAt": "2026-10-09T06:32:13.003Z",
+      "httpStatus": 200,
+      "etag": "\"314864d-65d53018af75b-gzip\"",
+      "last-modified": "Thu, 08 Oct 2026 12:02:29 GMT",
+      "content-length": null,
+      "content-type": "application/geo+json",
+      "bytes": 51676749,
+      "bodySha256": "3bfa7dd54a2dab51153b778fac0758502656704c12771ef972b31d6c86ab6e23",
+      "featureCount": 58631,
+      "crs": {
+        "type": "name",
+        "properties": {
+          "name": "urn:ogc:def:crs:EPSG::4326"
+        }
+      }
+    },
+    {
+      "stage": "first",
+      "url": "https://datosabiertos.malaga.eu/recursos/urbanismoEInfraestructura/planimetria/callejero/da_cartografiaParcela-4326.geojson",
+      "checkedAt": "2026-10-09T06:32:20.729Z",
+      "httpStatus": 200,
+      "etag": "\"314864d-65d53018af75b-gzip\"",
+      "last-modified": "Thu, 08 Oct 2026 12:02:29 GMT",
+      "content-length": null,
+      "content-type": "application/geo+json",
+      "bytes": 51676749,
+      "bodySha256": "3bfa7dd54a2dab51153b778fac0758502656704c12771ef972b31d6c86ab6e23",
+      "featureCount": 58631,
+      "crs": {
+        "type": "name",
+        "properties": {
+          "name": "urn:ogc:def:crs:EPSG::4326"
+        }
+      }
+    },
+    {
+      "stage": "first",
+      "url": "https://datosabiertos.malaga.eu/recursos/urbanismoEInfraestructura/planimetria/callejero/da_cartografiaParcela-4326.geojson",
+      "checkedAt": "2026-10-09T06:32:28.002Z",
+      "httpStatus": 200,
+      "etag": "\"314864d-65d53018af75b-gzip\"",
+      "last-modified": "Thu, 08 Oct 2026 12:02:29 GMT",
+      "content-length": null,
+      "content-type": "application/geo+json",
+      "bytes": 51676749,
+      "bodySha256": "3bfa7dd54a2dab51153b778fac0758502656704c12771ef972b31d6c86ab6e23",
+      "featureCount": 58631,
+      "crs": {
+        "type": "name",
+        "properties": {
+          "name": "urn:ogc:def:crs:EPSG::4326"
+        }
+      }
+    },
+    {
+      "stage": "first",
+      "url": "https://datosabiertos.malaga.eu/recursos/urbanismoEInfraestructura/planimetria/callejero/da_cartografiaParcela-4326.geojson",
+      "checkedAt": "2026-10-09T06:32:35.077Z",
+      "httpStatus": 200,
+      "etag": "\"314864d-65d53018af75b-gzip\"",
+      "last-modified": "Thu, 08 Oct 2026 12:02:29 GMT",
+      "content-length": null,
+      "content-type": "application/geo+json",
+      "bytes": 51676749,
+      "bodySha256": "3bfa7dd54a2dab51153b778fac0758502656704c12771ef972b31d6c86ab6e23",
+      "featureCount": 58631,
+      "crs": {
+        "type": "name",
+        "properties": {
+          "name": "urn:ogc:def:crs:EPSG::4326"
+        }
+      }
+    },
+    {
+      "stage": "first",
+      "url": "https://datosabiertos.malaga.eu/recursos/urbanismoEInfraestructura/planimetria/callejero/da_cartografiaParcela-4326.geojson",
+      "checkedAt": "2026-10-09T06:32:42.147Z",
+      "httpStatus": 200,
+      "etag": "\"314864d-65d53018af75b-gzip\"",
+      "last-modified": "Thu, 08 Oct 2026 12:02:29 GMT",
+      "content-length": null,
+      "content-type": "application/geo+json",
+      "bytes": 51676749,
+      "bodySha256": "3bfa7dd54a2dab51153b778fac0758502656704c12771ef972b31d6c86ab6e23",
+      "featureCount": 58631,
+      "crs": {
+        "type": "name",
+        "properties": {
+          "name": "urn:ogc:def:crs:EPSG::4326"
+        }
+      }
+    },
+    {
+      "stage": "fresh-independent",
+      "url": "https://datosabiertos.malaga.eu/recursos/urbanismoEInfraestructura/planimetria/callejero/da_cartografiaParcela-4326.geojson",
+      "checkedAt": "2026-10-09T06:32:49.201Z",
+      "httpStatus": 200,
+      "etag": "\"314864d-65d53018af75b-gzip\"",
+      "last-modified": "Thu, 08 Oct 2026 12:02:29 GMT",
+      "content-length": null,
+      "content-type": "application/geo+json",
+      "bytes": 51676749,
+      "bodySha256": "3bfa7dd54a2dab51153b778fac0758502656704c12771ef972b31d6c86ab6e23",
+      "featureCount": 58631,
+      "crs": {
+        "type": "name",
+        "properties": {
+          "name": "urn:ogc:def:crs:EPSG::4326"
+        }
+      }
+    }
+  ],
+  "qualityFile": "research/overnight-followon-2026-10-09/malaga-snapshot-root-quality.json",
+  "uniqueParcels": 0,
+  "requestCount": 14,
+  "allTestsPassed": false,
+  "finishedAt": "2026-10-09T06:32:56.767Z",
+  "qualityStatus": "pending-independent-topology-review"
+}

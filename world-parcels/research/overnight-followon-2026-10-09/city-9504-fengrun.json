@@ -1,0 +1,84 @@
+{
+  "schemaVersion": "1.0",
+  "cityId": "wup2025:9504",
+  "wupCityCode": 9504,
+  "name": "Fengrun",
+  "country": "China",
+  "countryCode": "CN",
+  "rank": 1028,
+  "queueRank": 1028,
+  "point": [
+    39.8344824261578,
+    118.156946354816
+  ],
+  "centerLatLon": [
+    39.8344824261578,
+    118.156946354816
+  ],
+  "pointBasis": "UN WUP2025 population-weighted settlement centroid; not a municipal boundary or parcel-coverage claim.",
+  "population2025": 538206,
+  "population2025k": 538.206,
+  "populationUnit": "persons",
+  "populationPlausibility2025": "High",
+  "cohort": "overnight-followon-1001-1100",
+  "checkedAt": "2026-10-09",
+  "status": "complete",
+  "registryFound": null,
+  "registryBasis": "A fresh English search and a separate Chinese-language search found the Tangshan municipal government’s Fengrun district information page but did not establish a first-party Fengrun real-estate registry or cadastral custodian. Local registry custody therefore remains unknown; no negative existence claim is made.",
+  "registryEvidenceUrls": [],
+  "verifiedSample": false,
+  "publicParcelGeometryFound": false,
+  "sourceIds": [],
+  "adapterReady": false,
+  "runtimeReadiness": "not_enabled_no_verified_public_geometry",
+  "technicalBlocker": "No source-native, anonymous response containing a stable parcel identifier and complete polygon tied to the WUP point was verified in this city-specific investigation. This is an unverified access finding, not a claim that public geometry does not exist.",
+  "scopeLimits": "No full parcel geometry was retained. Local registry/cadastre custody and public geometry access are treated as separate findings; no citywide or countrywide parcel coverage is claimed.",
+  "resultCategory": "city_specific_registry_unestablished",
+  "coverageAssessment": {
+    "claimedScope": "A fresh English search and a separate Chinese-language search found the Tangshan municipal government’s Fengrun district information page but did not establish a first-party Fengrun real-estate registry or cadastral custodian. Local registry custody therefore remains unknown; no negative existence claim is made.",
+    "verifiedOpenScope": "No complete source-native anonymous parcel polygon was verified at the WUP point.",
+    "citywideVerified": false,
+    "countrywideVerified": false
+  },
+  "runtimeAssessment": {
+    "status": "not_enabled_no_verified_public_geometry",
+    "reason": "No source-native, anonymous response containing a stable parcel identifier and complete polygon tied to the WUP point was verified in this city-specific investigation. This is an unverified access finding, not a claim that public geometry does not exist."
+  },
+  "freshResearch": {
+    "queries": [
+      {
+        "language": "English",
+        "query": "Fengrun District Tangshan official land registry real estate registration district branch",
+        "scope": "Fresh city-specific discovery of local registry/cadastre custody and safe public parcel geometry.",
+        "result": "Tangshan’s official municipal portal has a Fengrun district news page, but the search did not return a first-party Fengrun registry, cadastral portal or safe public parcel-feature service.",
+        "actualResultUrls": [
+          "https://www.tangshan.gov.cn/zhuzhan/zw_sdzdxq_fengrun/index_5.html"
+        ],
+        "executionMethod": "Executed as a fresh web search; official search results/pages were reviewed."
+      },
+      {
+        "language": "Chinese",
+        "query": "丰润区 不动产登记中心 地籍图 丰润区自然资源和规划局 官方",
+        "scope": "Independent local-language search for city-specific registry/cadastre custody and anonymous parcel geometry.",
+        "result": "The Chinese-language search did not establish an official Fengrun real-estate registration/cadastral service; municipal context is available from the official Tangshan portal, but city-specific registry custody remains unknown.",
+        "actualResultUrls": [
+          "https://www.tangshan.gov.cn/zhuzhan/zw_sdzdxq_fengrun/index_5.html"
+        ],
+        "executionMethod": "Executed as a separate fresh web search in the local language; official search results/pages were reviewed."
+      }
+    ],
+    "requests": [],
+    "portals": [],
+    "historicalContext": []
+  },
+  "remainingUncertainty": "The WUP settlement’s local registry/cadastre custodian, precise local jurisdiction and public parcel-geometry access remain unverified.",
+  "nextStep": "Retain the bounded custody and geometry findings. Root review may qualify a documented source-native map route before enabling any provider.",
+  "priorEvidenceFiles": [],
+  "priorCheck": {
+    "attemptState": "pending",
+    "attemptEvidence": [],
+    "possiblePriorMatches": []
+  },
+  "rootReviewedAt": "2026-10-09T05:45:07.249008+00:00",
+  "rootReviewNote": "Reviewed exact immutable WUP identity, separate multilingual discovery, cited city custody and actual source observations. A fresh English search and a separate Chinese-language search found the Tangshan municipal government’s Fengrun district information page but did not establish a first-party Fengrun real-estate registry or cadastral custodian. Local registry custody therefore remains unknown; no negative existence claim is made."
+}

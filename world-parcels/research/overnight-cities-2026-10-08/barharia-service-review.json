@@ -1,0 +1,118 @@
+{
+  "schemaVersion": 1,
+  "checkedAt": "2026-10-09",
+  "sourceId": "in-barharia-registry-map-review",
+  "purpose": "City-specific registry/map source review and bounded safe route inspection for the WUP ranked settlement point.",
+  "primaryPublisher": "Government of Bihar, Department of Revenue and Land Reforms / Directorate of Land Records and Survey",
+  "sourceUrl": "https://siwan.nic.in/subdivision-blocks/",
+  "registryFound": true,
+  "registryBasis": "Government of Bihar district administration identifies Barharia as a block/circle under Siwan Sadar, while the official Bihar BhuNaksha viewer’s anonymous hierarchy includes Siwan/Siwan Sadar/Barharia circle and mauza. This confirms local map inventory presence, but not exact WUP-point geometry.",
+  "officialSources": [
+    {
+      "url": "https://siwan.nic.in/subdivision-blocks/",
+      "observation": "Official district site lists Barharia block under Siwan Sadar subdivision."
+    },
+    {
+      "url": "https://siwan.nic.in/village-panchayats/",
+      "observation": "Official district administrative table lists Barharia panchayat/block."
+    },
+    {
+      "url": "https://dlrs.bihar.gov.in/services.html",
+      "observation": "Directorate of Land Records and Survey site lists public Online Map service."
+    },
+    {
+      "url": "https://bhunaksha.bihar.gov.in/",
+      "observation": "Public official BhuNaksha Bihar landing page and map viewer; anonymous state selector value 10."
+    },
+    {
+      "url": "https://bhunaksha.bihar.gov.in/10/index.js",
+      "observation": "Public client script documents the WMS image layers and plot selection/detail calls. It does not expose a vector geometry-only response contract; feature routes were not invoked."
+    }
+  ],
+  "searchQueries": [
+    {
+      "language": "English",
+      "query": "Barharia Siwan Bihar official cadastral map land records GIS public revenue map",
+      "scope": "Find a city-specific primary registry source and a safe anonymous geometry-only route.",
+      "result": "The official Siwan district site places Barharia block under the Siwan Sadar subdivision and lists Barharia panchayat. The official Bihar BhuNaksha portal is anonymous; its selector hierarchy lists Siwan district, Siwan Sadar subdivision, Barharia circle (code 09), and Barharia mauza (code 0723). Static client code shows the map rendered via WMS and plot click/search calls return plot IDs/details through separate routes. No feature/plot query was made and no vector geometry-only endpoint or full polygons were verified. WMS GetCapabilities returned HTTP 500.",
+      "actualResultUrls": [
+        "https://siwan.nic.in/subdivision-blocks/",
+        "https://siwan.nic.in/village-panchayats/",
+        "https://dlrs.bihar.gov.in/services.html",
+        "https://bhunaksha.bihar.gov.in/"
+      ],
+      "executionMethod": "English-language web search plus direct anonymous inspection of official public routes."
+    },
+    {
+      "language": "Hindi",
+      "query": "बरहरिया सिवान भू-नक्शा राजस्व नक्शा बिहार सरकारी",
+      "scope": "Find a city-specific primary registry source and a safe anonymous geometry-only route.",
+      "result": "The official Siwan district site places Barharia block under the Siwan Sadar subdivision and lists Barharia panchayat. The official Bihar BhuNaksha portal is anonymous; its selector hierarchy lists Siwan district, Siwan Sadar subdivision, Barharia circle (code 09), and Barharia mauza (code 0723). Static client code shows the map rendered via WMS and plot click/search calls return plot IDs/details through separate routes. No feature/plot query was made and no vector geometry-only endpoint or full polygons were verified. WMS GetCapabilities returned HTTP 500.",
+      "actualResultUrls": [
+        "https://siwan.nic.in/subdivision-blocks/",
+        "https://siwan.nic.in/village-panchayats/",
+        "https://dlrs.bihar.gov.in/services.html",
+        "https://bhunaksha.bihar.gov.in/"
+      ],
+      "executionMethod": "Local-language search plus review of primary public official pages; no parcel-specific or private lookup."
+    }
+  ],
+  "accessReview": {
+    "publicAnonymousGeometryVerified": false,
+    "completeGeoreferencedPolygonCount": 0,
+    "geometryRetained": false,
+    "ownerAddressTaxOrPersonLookupRequested": false,
+    "authenticationOrCredentialsUsed": false,
+    "captchaOrPersonalFormSubmitted": false,
+    "routeInspectionStatus": "inspected_no_geometry_only_vector_response",
+    "reason": "Static viewer HTML and JavaScript inspected before requests. Only state selector transition and administrative level OP=2 selectors were used. WMS capabilities request returned 500. WMS rendering and plot selection/detail routes were not invoked.",
+    "nativeIdsUsed": "none",
+    "sampleFile": null
+  },
+  "requestEvidence": [
+    {
+      "url": "https://bhunaksha.bihar.gov.in/",
+      "method": "GET",
+      "status": 200,
+      "contentType": "text/html;charset=UTF-8",
+      "bytes": 18579,
+      "observation": "Anonymous public landing page; final URL resolved to /10/index.jsp."
+    },
+    {
+      "url": "https://bhunaksha.bihar.gov.in/10/indexmain.jsp",
+      "method": "POST",
+      "status": 200,
+      "contentType": "text/html;charset=UTF-8",
+      "bytes": 21687,
+      "observation": "Public View Map transition with only static state=10 selector; no parcel identifier or personal data."
+    },
+    {
+      "url": "https://bhunaksha.bihar.gov.in/10/index.js",
+      "method": "GET",
+      "status": 200,
+      "contentType": "text/javascript",
+      "bytes": 43159,
+      "observation": "Static client inspection found WMS layers VILLAGE_MAP and PLOT_LIST; plot clicks route to MapInfo/getPlotAtXY and ScalarDatahandler OP4, which were not called."
+    },
+    {
+      "url": "https://bhunaksha.bihar.gov.in/ScalarDatahandler",
+      "method": "POST OP=2",
+      "status": 200,
+      "contentType": "text/html;charset=UTF-8",
+      "observation": "Administrative selectors only: Siwan district code 16 -> Siwan Sadar code 01 -> Barharia circle code 09 -> Barharia mauza code 0723. No parcel number was selected."
+    },
+    {
+      "url": "https://bhunaksha.bihar.gov.in/WMS?SERVICE=WMS&REQUEST=GetCapabilities",
+      "method": "GET",
+      "status": 500,
+      "observation": "WMS metadata request failed; no GetFeature or GetFeatureInfo query made."
+    }
+  ],
+  "technicalBlocker": "Static viewer HTML and JavaScript inspected before requests. Only state selector transition and administrative level OP=2 selectors were used. WMS capabilities request returned 500. WMS rendering and plot selection/detail routes were not invoked.",
+  "sampleDisposition": "No full parcel polygons retained; no geometry-only feature response verified.",
+  "remainingUncertainty": "No complete georeferenced polygon or native feature ID was verified at the WUP point; public map viewers may provide display-only or identity-dependent workflows not tested.",
+  "viewerClientInspection": {
+    "candidateMapFound": true,
+    "clientInspection": "Static viewer HTML and JavaScript inspected before requests. Only state selector transition and administrative level OP=2 selectors were used. WMS capabilities request returned 500. WMS rendering and plot selection/detail routes were not invoked."
+  }
+}

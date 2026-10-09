@@ -1,0 +1,116 @@
+{
+  "schemaVersion": 1,
+  "kind": "city_parcel_source_research",
+  "checkedAt": "2026-10-09",
+  "name": "El Paso",
+  "nativeName": "El Paso",
+  "country": "United States of America",
+  "countryCode": "US",
+  "populationUnit": "persons",
+  "status": "complete",
+  "registryFound": true,
+  "registryBasis": "The City of El Paso Open Data Hub says parcel shapefiles are maintained by El Paso Central Appraisal District (EPCAD); the City GIS exposes a public Parcels polygon layer. A bounded query returned one safe OBJECTID and polygon near the WUP point. This is not a citywide completeness or legal-title claim.",
+  "registryEvidenceUrls": [
+    "https://opendata.elpasotexas.gov/",
+    "https://epcad.org/OpenGovernment",
+    "https://gis.elpasotexas.gov/arcgis/rest/services/Deeds/FeatureServer/0"
+  ],
+  "verifiedSample": true,
+  "publicParcelGeometryFound": true,
+  "sampleGeometryFile": "city-5303-el-paso-samples.geojson",
+  "runtimeReadiness": "enabled",
+  "wupCityCode": 5303,
+  "cityId": "wup2025:5303",
+  "centerLatLon": [
+    31.7867212643232,
+    -106.36486464215
+  ],
+  "rank": 898,
+  "queueRank": 898,
+  "population2025": 605731,
+  "population2025k": 605.731,
+  "populationPlausibility2025": "Moderate",
+  "pointBasis": "UN WUP 2025 population-weighted settlement centroid; this is not a municipal boundary or a parcel-coverage claim.",
+  "technicalBlocker": null,
+  "scopeLimits": "79 valid, distinct EPCAD-source parcel reference polygons served by City of El Paso GIS, qualified in thirteen bounded cells around the unchanged WUP population-settlement locator. Complete native count and object-ID manifests, forced three-row pages, all fresh GIS-ID reads, explicit absence, footprint and binding pass. Metric EPSG32613 topology found no sampled overlaps or errors. A fresh native parcel contains the locator, which is also within the official city limits. The layer is county-source/city-publisher ground geometry, not a city-only or legal-title coverage guarantee.",
+  "remainingUncertainty": "Legal title, survey accuracy, currentness and full settlement or municipality completeness remain unverified.",
+  "research": {
+    "executedQueries": [
+      {
+        "language": "English",
+        "query": "El Paso official GIS parcel layer open data appraisal district parcel geometry",
+        "result": "Official city open-data source links parcel mapping to EPCAD; City GIS publishes a Parcels polygon layer and a bounded geometry-only sample.",
+        "method": "English-language search followed by official-source review.",
+        "scope": "Identify city-specific registry/cadastral evidence and a safe public parcel geometry route."
+      },
+      {
+        "language": "English (local official source)",
+        "query": "El Paso GIS parcelas datos abiertos EPCAD parcelas mapa oficial",
+        "result": "La fuente municipal enlaza los datos de parcelas del EPCAD; el GIS de la ciudad publica una capa poligonal y una muestra limitada solo a geometría e identificador.",
+        "method": "Local-language search followed by official-source review. Separate English and local-language searches plus official-source review; no owner, address, title, tax, account, applicant, or personal fields were queried.",
+        "scope": "Identify city-specific registry/cadastral evidence and a safe public parcel geometry route."
+      }
+    ],
+    "officialSources": [
+      {
+        "url": "https://opendata.elpasotexas.gov/",
+        "observation": "The City of El Paso Open Data Hub says parcel shapefiles are maintained by El Paso Central Appraisal District (EPCAD); the City GIS exposes a public Parcels polygon layer. A bounded query returned one safe OBJECTID and polygon near the WUP point. This is not a citywide completeness or legal-title claim."
+      },
+      {
+        "url": "https://epcad.org/OpenGovernment",
+        "observation": "The City of El Paso Open Data Hub says parcel shapefiles are maintained by El Paso Central Appraisal District (EPCAD); the City GIS exposes a public Parcels polygon layer. A bounded query returned one safe OBJECTID and polygon near the WUP point. This is not a citywide completeness or legal-title claim."
+      },
+      {
+        "url": "https://gis.elpasotexas.gov/arcgis/rest/services/Deeds/FeatureServer/0",
+        "observation": "The City of El Paso Open Data Hub says parcel shapefiles are maintained by El Paso Central Appraisal District (EPCAD); the City GIS exposes a public Parcels polygon layer. A bounded query returned one safe OBJECTID and polygon near the WUP point. This is not a citywide completeness or legal-title claim."
+      }
+    ],
+    "metadataReviewFile": "el-paso-service-review.json",
+    "routeInspectionFile": "/tmp/overnight-cities-2026-10-08/city-5303-el-paso-route-inspection.json"
+  },
+  "coverageAssessment": {
+    "claimedScope": "The City of El Paso Open Data Hub says parcel shapefiles are maintained by El Paso Central Appraisal District (EPCAD); the City GIS exposes a public Parcels polygon layer. A bounded query returned one safe OBJECTID and polygon near the WUP point. This is not a citywide completeness or legal-title claim.",
+    "verifiedOpenScope": "79 valid, distinct EPCAD-source parcel reference polygons served by City of El Paso GIS, qualified in thirteen bounded cells around the unchanged WUP population-settlement locator. Complete native count and object-ID manifests, forced three-row pages, all fresh GIS-ID reads, explicit absence, footprint and binding pass. Metric EPSG32613 topology found no sampled overlaps or errors. A fresh native parcel contains the locator, which is also within the official city limits. The layer is county-source/city-publisher ground geometry, not a city-only or legal-title coverage guarantee.",
+    "citywideVerified": false,
+    "countrywideVerified": false,
+    "geometryVerified": true
+  },
+  "runtimeAssessment": {
+    "status": "enabled",
+    "reason": "79 valid, distinct EPCAD-source parcel reference polygons served by City of El Paso GIS, qualified in thirteen bounded cells around the unchanged WUP population-settlement locator. Complete native count and object-ID manifests, forced three-row pages, all fresh GIS-ID reads, explicit absence, footprint and binding pass. Metric EPSG32613 topology found no sampled overlaps or errors. A fresh native parcel contains the locator, which is also within the official city limits. The layer is county-source/city-publisher ground geometry, not a city-only or legal-title coverage guarantee.",
+    "acceptanceFile": "research/overnight-cities-2026-10-08/el-paso-manifest-root-acceptance.json",
+    "qualityFile": "research/overnight-cities-2026-10-08/el-paso-manifest-root-quality.json",
+    "qualityReviewFile": "research/overnight-cities-2026-10-08/elpaso-root-quality-review.json"
+  },
+  "rootSampleCorrection": "Original retained GIS OID 128625 is a nearby parcel and remains unchanged. A second unchanged native sample, OID 130036, contains the WUP point; full raw coordinates come from the fresh manifest response.",
+  "sampleFile": "city-5303-el-paso-samples.geojson",
+  "source": {
+    "sourceId": "us-tx-el-paso-city-gis-parcels",
+    "name": "City of El Paso GIS Parcels (EPCAD source, GIS OID namespace)",
+    "url": "https://gis.elpasotexas.gov/arcgis/rest/services/Deeds/FeatureServer/0",
+    "operator": "City of El Paso GIS; EPCAD county parcel source",
+    "serviceType": "Public ArcGIS polygon service; bounded full geometry and safe GIS OBJECTID only.",
+    "nativeIdField": "OBJECTID",
+    "geometryType": "Polygon/MultiPolygon",
+    "coordinateCrs": "EPSG:4326 output",
+    "update": "Currentness not independently established.",
+    "scope": "79 valid, distinct EPCAD-source parcel reference polygons served by City of El Paso GIS, qualified in thirteen bounded cells around the unchanged WUP population-settlement locator. Complete native count and object-ID manifests, forced three-row pages, all fresh GIS-ID reads, explicit absence, footprint and binding pass. Metric EPSG32613 topology found no sampled overlaps or errors. A fresh native parcel contains the locator, which is also within the official city limits. The layer is county-source/city-publisher ground geometry, not a city-only or legal-title coverage guarantee."
+  },
+  "adapterReady": true,
+  "appCityId": "elpaso",
+  "sourceIds": [
+    "us-tx-el-paso-city-gis-parcels"
+  ],
+  "resultCategory": "verified_public_geometry_runtime_enabled",
+  "runtimeQualification": {
+    "sourceId": "us-tx-el-paso-city-gis-parcels",
+    "status": "enabled",
+    "acceptanceFile": "research/overnight-cities-2026-10-08/el-paso-manifest-root-acceptance.json",
+    "qualityFile": "research/overnight-cities-2026-10-08/el-paso-manifest-root-quality.json"
+  },
+  "point": [
+    31.7867212643232,
+    -106.36486464215
+  ],
+  "rootReviewedAt": "2026-10-09T04:40:32.554561+00:00"
+}

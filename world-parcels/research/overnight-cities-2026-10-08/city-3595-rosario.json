@@ -1,0 +1,156 @@
+{
+  "schemaVersion": 1,
+  "kind": "city_parcel_source_research",
+  "checkedAt": "2026-10-09",
+  "name": "Rosario",
+  "country": "Argentina",
+  "countryCode": "AR",
+  "rank": 445,
+  "queueRank": 445,
+  "cityId": "wup2025:3595",
+  "wupCityCode": 3595,
+  "centerLatLon": [
+    -32.9481688811101,
+    -60.6765246060875
+  ],
+  "point": [
+    -32.9481688811101,
+    -60.6765246060875
+  ],
+  "population2025": 1151717,
+  "populationUnit": "persons",
+  "populationPlausibility2025": "Moderate",
+  "pointBasis": "UN WUP 2025 population-weighted settlement centroid; this is not a municipal boundary or a parcel-coverage claim.",
+  "status": "complete",
+  "registryFound": true,
+  "registryBasis": "Official Municipalidad de Rosario Infomapa publishes city cadastral cartography, and its municipal open-data catalogue publishes full parcel polygons by cadastral section. A retained Section 9 polygon contains the unchanged WUP locator.",
+  "registryEvidenceUrls": [
+    "https://www.rosario.gob.ar/inicio/node/16057",
+    "https://infomapa.rosario.gob.ar/emapa/mapa.htm",
+    "https://datosabiertos.rosario.gob.ar/api/1/metastore/schemas/dataset/items/0b4f7e3e-ac2e-4f32-b523-a974c6209e3f"
+  ],
+  "verifiedSample": true,
+  "publicParcelGeometryFound": true,
+  "verifiedSampleFile": "samples/rosario-section9-parcels.geojson",
+  "runtimeReadiness": "enabled",
+  "adapterReady": true,
+  "sourceIds": [
+    "ar-rosario-section9-parcel"
+  ],
+  "resultCategory": "verified_public_geometry_runtime_enabled",
+  "technicalBlocker": null,
+  "remainingUncertainty": "Section 9 only; other cadastral sections, legal title, survey accuracy, and identity continuity across publisher replacements remain unverified. CSV MSLINK strings are preserved exactly; no equality with GML identifiers is claimed.",
+  "nextStep": "Inspect enabled local source in headed app.",
+  "coverageAssessment": {
+    "claimedScope": "Official municipal parcel cartography published by cadastral section.",
+    "verifiedOpenScope": "Rosario municipal cadastral Section 9 only. The 7 October 2026 public CSV snapshot contains 15,854 distinct MSLINK strings and full embedded WGS84 polygons. Its exact strong ETag and feature count are pinned; unexpected revisions fail closed pending review. Thirteen aligned cells plus four pans around the unchanged WUP locator verified 826 distinct full geometries; all 826 fresh exact-ID reads reproduce geometry after a separate complete 5,148,842-byte HTTP 200 download. The WUP-containing parcel passes full footprint lookup and complete proposal binding. GEOS in EPSG:32720 found no invalid polygons, duplicate geometry, sampled overlaps above 0.01 m² or operation errors. Only geometry and six cadastral/code identifiers are retained; the CSV parser preserves string identity and rejects schema drift, invalid embedded geometry and malformed rows. No equality with differently formatted GML identifiers is claimed. Other sections, citywide completeness, legal title, survey accuracy and identity continuity after replacement remain unverified.",
+    "citywideVerified": false,
+    "countrywideVerified": false
+  },
+  "source": {
+    "name": "Rosario Section 9 municipal parcel CSV",
+    "operator": "Municipalidad de Rosario",
+    "url": "https://datosabiertos.rosario.gob.ar/sites/default/files/resources/parcelas_seccion9_json.csv",
+    "geometryType": "Polygon/MultiPolygon embedded in CSV GEOJSON",
+    "nativeIdFields": [
+      "MSLINK"
+    ],
+    "requestedAttributes": [
+      "MSLINK",
+      "SECCION",
+      "MANZANA",
+      "GRAFICO",
+      "SD",
+      "SP"
+    ],
+    "personalAttributesRequested": false,
+    "csvFields": [
+      "MSLINK",
+      "SECCION",
+      "MANZANA",
+      "GRAFICO",
+      "SD",
+      "SP",
+      "PASILLO",
+      "CARPETA",
+      "GEOJSON"
+    ],
+    "outputCrs": "EPSG:4326 longitude/latitude",
+    "scope": "Rosario municipal cadastral Section 9 only. The 7 October 2026 public CSV snapshot contains 15,854 distinct MSLINK strings and full embedded WGS84 polygons. Its exact strong ETag and feature count are pinned; unexpected revisions fail closed pending review. Thirteen aligned cells plus four pans around the unchanged WUP locator verified 826 distinct full geometries; all 826 fresh exact-ID reads reproduce geometry after a separate complete 5,148,842-byte HTTP 200 download. The WUP-containing parcel passes full footprint lookup and complete proposal binding. GEOS in EPSG:32720 found no invalid polygons, duplicate geometry, sampled overlaps above 0.01 m² or operation errors. Only geometry and six cadastral/code identifiers are retained; the CSV parser preserves string identity and rejects schema drift, invalid embedded geometry and malformed rows. No equality with differently formatted GML identifiers is claimed. Other sections, citywide completeness, legal title, survey accuracy and identity continuity after replacement remain unverified.",
+    "catalogueDatasetId": "0b4f7e3e-ac2e-4f32-b523-a974c6209e3f",
+    "catalogueModified": "2026-10-07T12:03:44-03:00",
+    "licenceUrl": "https://opendatacommons.org/licenses/by/1.0/",
+    "nativeIdEvidence": "The complete selected CSV revision has 15,854 distinct MSLINK strings. All 826 bounded native IDs reproduce full geometry after a fresh revision-matched download."
+  },
+  "freshResearch": {
+    "executedQueries": [
+      {
+        "language": "English",
+        "query": "Rosario official cadastral parcel boundaries public GIS Infomapa WFS",
+        "result": "Official city Infomapa cadastral cartography and public WMS/WFS discovered; selected safe WFS requests returned attributes with no polygon geometry."
+      },
+      {
+        "language": "English",
+        "query": "Rosario Infomapa catastro parcelas datos abiertos WFS geometría",
+        "result": "Official DKAN catalogue publishes 21 cadastral-section files in CSV with embedded full GeoJSON. Section 9 includes the WUP locator."
+      }
+    ],
+    "officialSources": [
+      {
+        "url": "https://www.rosario.gob.ar/inicio/node/16057",
+        "observation": "City cadastral cartography, Infomapa reference and separate paid formal cadastral report workflow; no formal report requested."
+      },
+      {
+        "url": "https://infomapa.rosario.gob.ar/emapa/mapa.htm",
+        "observation": "Public official map uses OpenLayers and native EPSG:22185 WMS. Parcelas WFS advertised Polygon schema, but inspected selected responses omit msGeometry."
+      },
+      {
+        "url": "https://datosabiertos.rosario.gob.ar/api/1/metastore/schemas/dataset/items?show-reference-ids",
+        "observation": "Public catalogue metadata only; Parcelas CSV dataset 0b4f7e3e-ac2e-4f32-b523-a974c6209e3f declares ODC Attribution 1.0 and per-section downloads."
+      },
+      {
+        "url": "https://datosabiertos.rosario.gob.ar/sites/default/files/resources/parcelas_seccion9_json.csv",
+        "observation": "Public safe schema confirmed before full download; complete file contains 15,854 distinct MSLINK IDs and full embedded polygons."
+      }
+    ],
+    "viewerAndServiceTrace": {
+      "attempted": true,
+      "geometryAttempted": true,
+      "summary": "WMS/WFS capabilities and schema reviewed. WFS native/WGS84 point-sized bounds returned no full polygon; no envelope substituted. Public CSV header then reviewed before download. GEOJSON geometries parsed unmodified; unrelated code fields discarded. GML prefix inspected only; internal advertised service URL not queried.",
+      "ownerOrAddressDataRequested": false,
+      "credentialsOrTokenValuesRetained": false,
+      "fullPolygonsRetained": 3
+    },
+    "attemptedGeometry": {
+      "attempted": true,
+      "status": "HTTP 200 public CSV; 3 bounded full source polygon samples retained",
+      "retainedFeatures": 3,
+      "fieldsRequested": [
+        "MSLINK",
+        "SECCION",
+        "MANZANA",
+        "GRAFICO",
+        "SD",
+        "SP"
+      ],
+      "geometryRetained": true,
+      "geojsonFile": "samples/rosario-section9-parcels.geojson"
+    }
+  },
+  "scopeLimits": "Rosario municipal cadastral Section 9 only. The 7 October 2026 public CSV snapshot contains 15,854 distinct MSLINK strings and full embedded WGS84 polygons. Its exact strong ETag and feature count are pinned; unexpected revisions fail closed pending review. Thirteen aligned cells plus four pans around the unchanged WUP locator verified 826 distinct full geometries; all 826 fresh exact-ID reads reproduce geometry after a separate complete 5,148,842-byte HTTP 200 download. The WUP-containing parcel passes full footprint lookup and complete proposal binding. GEOS in EPSG:32720 found no invalid polygons, duplicate geometry, sampled overlaps above 0.01 m² or operation errors. Only geometry and six cadastral/code identifiers are retained; the CSV parser preserves string identity and rejects schema drift, invalid embedded geometry and malformed rows. No equality with differently formatted GML identifiers is claimed. Other sections, citywide completeness, legal title, survey accuracy and identity continuity after replacement remain unverified.",
+  "appCityId": "rosario",
+  "runtimeAssessment": {
+    "status": "enabled",
+    "reason": "Rosario municipal cadastral Section 9 only. The 7 October 2026 public CSV snapshot contains 15,854 distinct MSLINK strings and full embedded WGS84 polygons. Its exact strong ETag and feature count are pinned; unexpected revisions fail closed pending review. Thirteen aligned cells plus four pans around the unchanged WUP locator verified 826 distinct full geometries; all 826 fresh exact-ID reads reproduce geometry after a separate complete 5,148,842-byte HTTP 200 download. The WUP-containing parcel passes full footprint lookup and complete proposal binding. GEOS in EPSG:32720 found no invalid polygons, duplicate geometry, sampled overlaps above 0.01 m² or operation errors. Only geometry and six cadastral/code identifiers are retained; the CSV parser preserves string identity and rejects schema drift, invalid embedded geometry and malformed rows. No equality with differently formatted GML identifiers is claimed. Other sections, citywide completeness, legal title, survey accuracy and identity continuity after replacement remain unverified.",
+    "acceptanceFile": "research/overnight-cities-2026-10-08/rosario-section9-protocol-acceptance.json",
+    "qualityFile": "research/overnight-cities-2026-10-08/rosario-section9-protocol-quality.json",
+    "qualityReviewFile": "research/overnight-cities-2026-10-08/rosario-service-review.json"
+  },
+  "runtimeQualification": {
+    "sourceId": "ar-rosario-section9-parcel",
+    "status": "enabled",
+    "acceptanceFile": "research/overnight-cities-2026-10-08/rosario-section9-protocol-acceptance.json",
+    "qualityFile": "research/overnight-cities-2026-10-08/rosario-section9-protocol-quality.json"
+  },
+  "rootReviewedAt": "2026-10-09T00:27:07.816662+00:00"
+}

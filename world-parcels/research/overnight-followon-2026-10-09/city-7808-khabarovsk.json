@@ -1,0 +1,119 @@
+{
+  "name": "Khabarovsk",
+  "country": "Russian Federation",
+  "countryCode": "RU",
+  "rank": 1014,
+  "point": [
+    48.4691305963455,
+    135.087813411231
+  ],
+  "freshResearch": {
+    "queries": [
+      {
+        "language": "English",
+        "query": "Khabarovsk Russia official cadastral parcel registry map public geospatial portal",
+        "scope": "Find local registry/cadastre and safe public full-polygon route.",
+        "result": "Municipal act identifies Khabarovsk Geoportal, but public map layer is adjacent-territory/beautification responsibility, not parcels. Krai GISOgd regulation describes cadastral parcel number, area and location, with EGRN map base. Hosts timed out locally without HTTP response; not evidence of origin outage. No full parcel geometry obtained.",
+        "executionMethod": "Separate English search and first-party review."
+      },
+      {
+        "language": "Russian",
+        "query": "Хабаровск официальный кадастровый учет земельных участков Росреестр геопортал",
+        "scope": "Find local-language registry/cadastre evidence and public geometry.",
+        "result": "Municipal act identifies Khabarovsk Geoportal, but public map layer is adjacent-territory/beautification responsibility, not parcels. Krai GISOgd regulation describes cadastral parcel number, area and location, with EGRN map base. Hosts timed out locally without HTTP response; not evidence of origin outage. No full parcel geometry obtained.",
+        "executionMethod": "Separate native-language search and first-party review."
+      }
+    ],
+    "portals": [
+      {
+        "name": "Khabarovsk municipal Geoportal and Khabarovsk Krai GISOgd",
+        "operator": "Khabarovsk City Administration; Khabarovsk Krai Government GISOgd",
+        "homeUrl": "https://geoportal.khabarovskadm.ru/",
+        "observation": "Municipal act identifies Khabarovsk Geoportal, but public map layer is adjacent-territory/beautification responsibility, not parcels. Krai GISOgd regulation describes cadastral parcel number, area and location, with EGRN map base. Hosts timed out locally without HTTP response; not evidence of origin outage. No full parcel geometry obtained."
+      }
+    ],
+    "requests": [
+      {
+        "observation": "HTTPS opens to city Geoportal and city site timed out locally (no HTTP status); the municipal act describes adjacent beautification areas. No parcel layer inferred."
+      }
+    ],
+    "historicalContext": []
+  },
+  "status": "complete",
+  "verifiedParcelResponse": null,
+  "source": {
+    "sourceId": "RU-7808-LOCAL-CADASTRE-REVIEW",
+    "name": "Khabarovsk municipal Geoportal and Khabarovsk Krai GISOgd",
+    "url": "https://geoportal.khabarovskadm.ru/",
+    "operator": "Khabarovsk City Administration; Khabarovsk Krai Government GISOgd",
+    "serviceType": "Official local registry/cadastre reviewed; no safe anonymous full-polygon response verified.",
+    "layer": null,
+    "geometryType": null,
+    "outputCrs": null,
+    "nativeIdField": null,
+    "nativeIdEvidence": null
+  },
+  "coverageAssessment": {
+    "claimedScope": "HTTPS opens to city Geoportal and city site timed out locally (no HTTP status); the municipal act describes adjacent beautification areas. No parcel layer inferred.",
+    "verifiedOpenScope": "Municipal act identifies Khabarovsk Geoportal, but public map layer is adjacent-territory/beautification responsibility, not parcels. Krai GISOgd regulation describes cadastral parcel number, area and location, with EGRN map base. Hosts timed out locally without HTTP response; not evidence of origin outage. No full parcel geometry obtained.",
+    "countrywideVerified": false,
+    "citywideVerified": false
+  },
+  "registryFound": null,
+  "verifiedSample": false,
+  "resultCategory": "city_specific_registry_unestablished",
+  "technicalBlocker": "City portal hosts timed out locally without HTTP status; described map layer is non-cadastral. Regional parcel-vector endpoint unverified.",
+  "remainingUncertainty": "Parcel presence at WUP point and any public feature endpoint remain unverified.",
+  "nextStep": "If official source later exposes a documented feature service, inspect schema and make a bounded full-geometry query.",
+  "schemaVersion": "1.0",
+  "checkedAt": "2026-10-09",
+  "wupCityCode": 7808,
+  "cityId": "wup2025:7808",
+  "runtimeReadiness": "not_enabled_no_verified_public_geometry",
+  "adapterReady": false,
+  "centerLatLon": [
+    48.4691305963455,
+    135.087813411231
+  ],
+  "population2025k": 543.422,
+  "populationUnit": "persons",
+  "queueRank": 1014,
+  "population2025": 543422,
+  "populationPlausibility2025": "High",
+  "pointBasis": "UN WUP 2025 population-weighted settlement centroid; not a municipal boundary or parcel-coverage claim.",
+  "publicParcelGeometryFound": false,
+  "sourceIds": [],
+  "registryBasis": "City Geoportal and secondary copies of regional cadastral regulations are leads, but the reviewed primary portal produced no accessible registry/cadastre schema and the municipal thematic map is adjacent-territory/beautification data. Additional fresh official-domain searches did not verify a city-specific cadastral custodian page. Local registry custody remains unestablished by this packet; this does not imply a registry is absent.",
+  "registryEvidenceUrls": [
+    "https://geoportal.khabarovskadm.ru/",
+    "https://base.garant.ru/73491609/53f89421bbdaf741eb2d1ecc4ddb4c33/",
+    "https://www.khabarovsk-gov.ru/doc/62479"
+  ],
+  "runtimeAssessment": {
+    "status": "not_enabled_no_verified_public_geometry",
+    "reason": "City portal hosts timed out locally without HTTP status; described map layer is non-cadastral. Regional parcel-vector endpoint unverified."
+  },
+  "cohort": "overnight-followon-1001-1100",
+  "priorCheck": {
+    "attemptState": "pending",
+    "attemptEvidence": [],
+    "possiblePriorMatches": []
+  },
+  "rootPreviousRegistryBasis": "HTTPS opens to city Geoportal and city site timed out locally (no HTTP status); the municipal act describes adjacent beautification areas. No parcel layer inferred.",
+  "rootAdditionalQueries": [
+    {
+      "language": "Russian",
+      "query": "Хабаровск Росреестра site:khabarovskadm.ru"
+    },
+    {
+      "language": "Russian",
+      "query": "Хабаровск Росреестра site:adm.khv.ru"
+    },
+    {
+      "language": "Russian",
+      "query": "Хабаровск филиал site:kadastr.ru"
+    }
+  ],
+  "rootReviewedAt": "2026-10-09T05:45:07.249008+00:00",
+  "rootReviewNote": "Reviewed exact immutable WUP identity, separate multilingual discovery, cited city custody and actual source observations. City Geoportal and secondary copies of regional cadastral regulations are leads, but the reviewed primary portal produced no accessible registry/cadastre schema and the municipal thematic map is adjacent-territory/beautification data. Additional fresh official-domain searches did not verify a city-specific cadastral custodian page. Local registry custody remains unestablished by this packet; this does not imply a registry is absent."
+}

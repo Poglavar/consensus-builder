@@ -1,0 +1,47 @@
+{
+  "schemaVersion": "1.0",
+  "checkedAt": "2026-10-09",
+  "cityRecord": "city-3991-kharkiv.json",
+  "purpose": "Document first-party local registry/map evidence and bounded anonymous geometry access review.",
+  "scopeLimits": {
+    "maxFullPolygonsRetainedInCityRecord": 0,
+    "maxFullPolygonsRetainedInReview": 0,
+    "maxFullPolygonsRetainedInRepository": 0,
+    "ownerOrAddressDataRetained": false,
+    "credentialsOrTokenValuesRetained": false,
+    "citywideCompletenessAsserted": false
+  },
+  "assessment": "City-specific municipal urban-planning cadastre is documented, but reviewed public city layers contain no parcel geometry. The state public cadastral map was reported unavailable; the national geoportal redirects to login. No anonymous, safe, city parcel geometry route was verified.",
+  "registryAssessment": "Kharkiv municipal cadastre exists, but this review verified no public parcel-vector coverage at the WUP point; the open city map exposes non-parcel municipal themes.",
+  "officialPrimarySources": [
+    {
+      "url": "https://dma.city.kharkiv.ua/pro-kadastr/",
+      "observation": "Kharkiv City Council Department of Urban Planning and Architecture describes the municipal urban-planning cadastre service and its role in receiving, registering and supplying non-restricted cadastral information."
+    },
+    {
+      "url": "https://smart.khmr.gov.ua/opendataportal",
+      "observation": "Official city open map portal lists thematic municipal datasets; reviewed portal does not expose parcel geometry."
+    },
+    {
+      "url": "https://kharkivska.land.gov.ua/info/administratyvni-posluhy-holovnoho-upravlinnia-derzhheokadastru-u-kharkivskii-oblasti/",
+      "observation": "Regional State GeoCadastre page describes public cadastral-map services and says the public cadastral map is temporarily unavailable; service requires registration for relevant records."
+    }
+  ],
+  "searchQueries": [
+    {
+      "language": "English",
+      "query": "Kharkiv official cadastral map land registry GIS parcel map Ukraine Держгеокадастр кадастрова карта Харків офіційний",
+      "result": "City-specific municipal urban-planning cadastre is documented, but reviewed public city layers contain no parcel geometry. The state public cadastral map was reported unavailable; the national geoportal redirects to login. No anonymous, safe, city parcel geometry route was verified.",
+      "method": "Separate web search followed by direct review of relevant official sources."
+    },
+    {
+      "language": "Ukrainian",
+      "query": "Харків офіційна кадастрова карта земельні ділянки Держгеокадастр Харківська міська рада земельний кадастр",
+      "result": "City-specific municipal urban-planning cadastre is documented, but reviewed public city layers contain no parcel geometry. The state public cadastral map was reported unavailable; the national geoportal redirects to login. No anonymous, safe, city parcel geometry route was verified.",
+      "method": "Separate web search followed by direct review of relevant official sources."
+    }
+  ],
+  "serviceChecks": [],
+  "geometryEvidence": null,
+  "runtimeAssessment": "not_enabled_no_verified_public_geometry"
+}

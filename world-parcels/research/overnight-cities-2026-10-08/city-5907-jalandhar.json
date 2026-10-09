@@ -1,0 +1,109 @@
+{
+  "name": "Jalandhar",
+  "country": "India",
+  "countryCode": "IN",
+  "rank": 433,
+  "point": [
+    31.3297337169024,
+    75.5707801353332
+  ],
+  "population2025": 1192763,
+  "population2025k": 1192.763,
+  "schemaVersion": 1,
+  "kind": "city_parcel_source_research",
+  "checkedAt": "2026-10-09",
+  "populationUnit": "persons",
+  "status": "complete",
+  "verifiedSample": false,
+  "publicParcelGeometryFound": false,
+  "runtimeReadiness": "not_enabled_no_verified_public_geometry",
+  "priorEvidenceFiles": [],
+  "scopeLimits": "One central Jalandhar-1 branch has five map-backed village extents east/northeast of locator. Other branches and citywide coverage were not exhaustively checked.",
+  "pointBasis": "UN WUP 2025 population-weighted settlement centroid; this is not a municipal boundary or a parcel-coverage claim.",
+  "registryFound": true,
+  "registryBasis": "Official Punjab BhuNaksha viewer exposes Jalandhar district and local cadastral hierarchy; this confirms a public map workflow, not coverage at the WUP point.",
+  "resultCategory": "official_local_cadastral_viewer_confirmed_selected_branch_not_reaching_locator",
+  "technicalBlocker": "Exact village was not resolved and selected extents do not overlap locator, so no point-to-plot query was made.",
+  "remainingUncertainty": "Other tehsils/patwars may cover locator; municipal boundary inclusion is unverified.",
+  "nextStep": "If pursued, enumerate official nearby selectors; request geometry only after matching a map-backed extent.",
+  "freshResearch": {
+    "executedQueries": [
+      {
+        "language": "Punjabi",
+        "query": "ਜਲੰਧਰ ਭੂ ਨਕਸ਼ਾ ਕੈਡਾਸਟ੍ਰਲ ਨਕਸ਼ਾ ਅਧਿਕਾਰਿਕ ਜਲੰਧਰ ਨਗਰ ਨਿਗਮ",
+        "result": "Punjab’s official viewer exposes Jalandhar hierarchy. Five selected central Jalandhar-1 map-backed extents do not reach locator.",
+        "method": "Separate Punjabi search and anonymous viewer selector request."
+      },
+      {
+        "language": "English",
+        "query": "Jalandhar official cadastral parcel map land records Punjab BhuNaksha GIS",
+        "result": "Official hierarchy and Jalandhar-1/-2 administration confirmed; no target geometry retained.",
+        "method": "Separate English-language search and viewer review."
+      }
+    ],
+    "officialSources": [
+      {
+        "url": "https://gisbhunaksha.punjab.gov.in/",
+        "observation": "Official Punjab public cadastral viewer with anonymous hierarchy and map extent services."
+      },
+      {
+        "url": "https://jamabandi.punjab.gov.in/CadastralMap.aspx/TermsAndConditions.aspx",
+        "observation": "Official Punjab village-wise cadastral map and viewing-only terms."
+      },
+      {
+        "url": "https://jalandhar.nic.in/administrative-setup/",
+        "observation": "District portal identifies Jalandhar-1 and Jalandhar-2."
+      },
+      {
+        "url": "https://jalandharmc.org/",
+        "observation": "Municipal page labels draft cadastral map; not treated as live vector service."
+      }
+    ],
+    "viewerAndServiceTrace": {
+      "attempted": true,
+      "summary": "Anonymous hierarchy and selected extent calls confirmed state 03/district 01/Jalandhar-1/Kanungo 012/Patwar 117. Five map-backed village extents lie at UTM43N easting 557.3–558.3 km; WUP transforms to x=554.302 km, y=3466.286 km. Only this branch was inspected.",
+      "geometryStatus": "not queried; inspected extents do not reach locator and exact village unresolved",
+      "fullPolygonLimit": 3,
+      "fullPolygonsRetained": 0,
+      "ownerOrAddressDataRequested": false,
+      "credentialsOrTokenValuesRetained": false
+    },
+    "attemptedGeometry": {
+      "attempted": true,
+      "status": "not queried; inspected extents do not reach locator and exact village unresolved",
+      "retainedFeatures": 0,
+      "fieldsRequested": [],
+      "geometryRetained": false,
+      "geojsonFile": null
+    }
+  },
+  "sourceIds": [],
+  "queueRank": 433,
+  "wupCityCode": 5907,
+  "cityId": "wup2025:5907",
+  "populationPlausibility2025": "High",
+  "centerLatLon": [
+    31.3297337169024,
+    75.5707801353332
+  ],
+  "verifiedSampleFile": null,
+  "adapterReady": false,
+  "source": {
+    "name": "Punjab BhuNaksha village cadastral viewer",
+    "operator": "Government of Punjab land-record service",
+    "url": "https://gisbhunaksha.punjab.gov.in/",
+    "geometryType": "Polygon viewer layer; no target geometry fetched",
+    "nativeIdFields": [],
+    "requestedAttributes": [],
+    "personalAttributesRequested": false,
+    "directGeometryQueryVerified": false,
+    "directMetadataSchemaVerified": true
+  },
+  "registryEvidenceUrls": [
+    "https://gisbhunaksha.punjab.gov.in/",
+    "https://jamabandi.punjab.gov.in/CadastralMap.aspx/TermsAndConditions.aspx",
+    "https://jalandhar.nic.in/administrative-setup/",
+    "https://jalandharmc.org/"
+  ],
+  "rootReviewedAt": "2026-10-09T00:04:16.022419+00:00"
+}

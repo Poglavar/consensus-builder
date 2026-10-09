@@ -1,0 +1,76 @@
+{
+  "schemaVersion": "1.0",
+  "checkedAt": "2026-10-09",
+  "cityRecord": "city-10367-mirzapur.json",
+  "purpose": "Document city-specific first-party registry evidence, service-access limits and bounded public parcel-geometry route review.",
+  "scopeLimits": {
+    "maxFullPolygonsRetainedInCityRecord": 3,
+    "maxFullPolygonsRetainedInReview": 3,
+    "maxFullPolygonsRetainedInRepository": 3,
+    "ownerOrAddressDataRetained": false,
+    "credentialsOrTokenValuesRetained": false,
+    "citywideCompletenessAsserted": false
+  },
+  "assessment": "Mirzapur District Administration says land records are digitized and available online for Mirzapur and links UP Bhulekh. The UP Bhulekh public dashboard reports cadastral map linkage/georeferencing by tehsil; the state BhuNaksha viewer supports village-map and plot-number selection. The public viewer’s plot lookup is keyed by GIS/village code plus plot number and may return plot details; without a verified full-geometry response schema, no parcel-specific request or sample was retained.",
+  "registryAssessment": "Mirzapur District Administration says land records are digitized and available online for Mirzapur and links UP Bhulekh. The UP Bhulekh public dashboard reports cadastral map linkage/georeferencing by tehsil; the state BhuNaksha viewer supports village-map and plot-number selection.",
+  "officialPrimarySources": [
+    {
+      "url": "https://mirzapur.nic.in/service/land-records/",
+      "observation": "Mirzapur District Administration says land records are digitized and available online for Mirzapur and links UP Bhulekh. The UP Bhulekh public dashboard reports cadastral map linkage/georeferencing by tehsil; the state BhuNaksha viewer supports village-map and plot-number selection."
+    },
+    {
+      "url": "https://upbhunaksha.gov.in/",
+      "observation": "The district service page and state map digitization records establish district land-record services, not exact WUP-point parcel coverage or citywide completeness."
+    },
+    {
+      "url": "https://upbhulekh.gov.in/GeoDashboard/public_report?distCode=199",
+      "observation": "The district service page and state map digitization records establish district land-record services, not exact WUP-point parcel coverage or citywide completeness."
+    },
+    {
+      "url": "https://dilrmp.gov.in/dilrmpold/PhyscialComponent/mapDigitization/tehsil-level/199",
+      "observation": "The district service page and state map digitization records establish district land-record services, not exact WUP-point parcel coverage or citywide completeness."
+    }
+  ],
+  "searchQueries": [
+    {
+      "language": "Hindi",
+      "query": "मिर्जापुर भूमि अभिलेख भू नक्शा खतौनी कैडस्ट्रल नक्शा आधिकारिक",
+      "result": "Mirzapur district administration links public digitized land records, and the official UP cadastral map dashboard reports maps digitized and geo-referenced across Mirzapur tehsils. The public BhuNaksha viewer requires district/tehsil/village selection and a plot-number lookup to identify a plot; no safe full-geometry response schema was verified.",
+      "method": "Separate local-language official-source-focused search."
+    },
+    {
+      "language": "English",
+      "query": "Mirzapur Uttar Pradesh official cadastral map public parcel geometry land registry",
+      "result": "The district administration and state viewer confirm a public plot-map workflow and district land-record availability. A bounded map-route inspection found lookup endpoints keyed by selected village/GIS code and plot number; no full parcel vector schema was verified.",
+      "method": "Separate English-language official-source-focused search."
+    }
+  ],
+  "serviceChecks": [
+    {
+      "url": "https://upbhunaksha.gov.in/",
+      "method": "GET official public viewer shell and static JS review",
+      "observed": "HTTP 200. Viewer exposes location selectors District/Tehsil/Village and plot number. Static client references levelvalue, getVVVVExtentGeoref, getPlotAtXY, getPlotByPlotNo, and getPlotInfo routes; plot lookups require selected GIS/village code and plot number. No parcel request was made and no full vector response schema was verified."
+    },
+    {
+      "url": "https://upbhulekh.gov.in/GeoDashboard/public_report?distCode=199",
+      "method": "GET official district dashboard",
+      "observed": "Dashboard lists digitized/georeferenced cadastral maps by Mirzapur tehsil; these aggregate counts do not establish the WUP-centroid parcel."
+    }
+  ],
+  "geometryEvidence": null,
+  "accessReview": {
+    "publicAnonymousGeometryVerified": false,
+    "completeGeoreferencedPolygonCount": 0,
+    "geometryRetained": false,
+    "ownerAddressTaxOrPersonLookupRequested": false,
+    "authenticationOrCredentialsUsed": false,
+    "captchaOrPersonalFormSubmitted": false,
+    "routeInspectionStatus": "schema_unverified",
+    "reason": "The public viewer’s plot lookup is keyed by GIS/village code plus plot number and may return plot details; without a verified full-geometry response schema, no parcel-specific request or sample was retained."
+  },
+  "privacy": "No owner/address/title/tax/person lookup, login, or geometry retention was performed.",
+  "runtimeAssessment": {
+    "status": "hold",
+    "reason": "The public viewer’s plot lookup is keyed by GIS/village code plus plot number and may return plot details; without a verified full-geometry response schema, no parcel-specific request or sample was retained."
+  }
+}

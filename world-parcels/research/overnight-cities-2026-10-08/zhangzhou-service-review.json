@@ -1,0 +1,101 @@
+{
+  "schemaVersion": "1.0",
+  "checkedAt": "2026-10-09",
+  "cityRecord": "city-11930-zhangzhou.json",
+  "purpose": "Document first-party local registry/map evidence and bounded anonymous geometry access review.",
+  "scopeLimits": {
+    "maxFullPolygonsRetainedInCityRecord": 0,
+    "maxFullPolygonsRetainedInReview": 0,
+    "maxFullPolygonsRetainedInRepository": 0,
+    "ownerOrAddressDataRetained": false,
+    "credentialsOrTokenValuesRetained": false,
+    "citywideCompletenessAsserted": false
+  },
+  "assessment": "Official sources describe Zhangzhou Land Supermarket as a WeChat mini-program marketplace for selected marketed low-efficiency land, not as a cadastral registry layer. The April 2025 launch listed 208 parcels; a November 2025 official follow-up reported 350 listed and 19 transacted, showing that the count is time-dependent. Published descriptions and the public screenshot show map browsing/location and listing cards, but no parcel-boundary geometry, safe native parcel-ID field, or anonymous vector schema was verified. An ordinary anonymous GET to the linked municipal bureau host timed out. No parcel geometry was retained.",
+  "registryAssessment": "Municipal registration and planning systems are confirmed; the selected, time-varying Land Supermarket listings does not establish all-parcel or WUP-point cadastral coverage.",
+  "officialPrimarySources": [
+    {
+      "url": "https://zrzyt.fujian.gov.cn/",
+      "observation": "Fujian Provincial Department of Natural Resources identifies the official Zhangzhou Natural Resources Bureau site, Fujian online real-property registration application system, and Tianditu Fujian links."
+    },
+    {
+      "url": "https://zrzyt.fujian.gov.cn/ztzl/sxzygwzxsqzx/zyzxzx/202504/t20250408_6843357.htm",
+      "observation": "Official launch article (April 2025) reports an initial 208 selected marketed parcels and describes map browsing/listing details; later official reporting shows the supply count changes over time."
+    },
+    {
+      "url": "https://zrzyt.fujian.gov.cn/zwgk/xwdt/zrzyyw/202304/t20230426_6157198.htm",
+      "observation": "Provincial natural-resources report describes Zhangzhou’s “One Map” system holding 106 categories/512 data types for municipal/county operational planning and resource administration; it is described as an internal management system, not a public cadastre."
+    },
+    {
+      "url": "https://www.fjsbdcdj.com/",
+      "observation": "Provincial natural-resources homepage links this official Fujian online real-property registration application system; the site did not resolve in the web page reader, and no account/authentication was attempted."
+    },
+    {
+      "url": "https://zrzyj.zhangzhou.gov.cn/",
+      "observation": "Official Zhangzhou Natural Resources Bureau site linked from the provincial department. It timed out through the public page reader; its anonymous parcel service/schema could not be inspected."
+    },
+    {
+      "url": "https://zrzyt.fujian.gov.cn/ztzl/sxzygwzxsqzx/zyzxzx/202511/t20251117_7034898.htm",
+      "observation": "Official November 2025 follow-up reports 350 Land Supermarket listings and 19 transactions, confirming that marketplace inventory is time-dependent."
+    },
+    {
+      "url": "https://www.fujian.gov.cn/zwgk/ztzl/sxzygwzxsgzx/flsxkmh/202508/t20250822_6994483.htm",
+      "observation": "Official Fujian Government description says the Land Supermarket offers selected rights-clear low-efficiency land with location, area, use, current-use status, and map/remote-sensing functions; this is a marketed supply inventory, not a complete cadastral layer."
+    },
+    {
+      "url": "https://zrzyt.fujian.gov.cn/zwgk/zfxxgkzl/zfxxgkml/qtyzdgkxx/jytabl/tnull_6921339.htm",
+      "observation": "Official provincial answer identifies 漳州土地超市 as a WeChat mini-program; no standalone public web client or API schema was documented in the reviewed source."
+    },
+    {
+      "url": "https://zrzyt.fujian.gov.cn/ztzl/sxzygwzxsqzx/zyzxzx/202504/W020250408669358697827.jpg",
+      "observation": "Official launch screenshot fetched anonymously (HTTP 200) shows a map with location markers and listing cards; it does not establish parcel-boundary vectors or an API schema."
+    }
+  ],
+  "searchQueries": [
+    {
+      "language": "English",
+      "query": "Zhangzhou official cadastral parcel map land registry GIS service Fujian natural resources bureau",
+      "result": "Zhangzhou has an official municipal natural-resources bureau and real-property registration services. The publicly documented “Land Supermarket” is a limited marketplace for a first batch of 208 marketed land parcels with map location, not an all-parcels cadastral viewer. The city “One Map” system serves planning and resource-management workflows. The official bureau and Fujian registration application sites were not readable through the public page reader, and no anonymous parcel geometry route/schema was found. No parcel geometry was retained.",
+      "method": "Separate web search followed by official portal and bounded anonymous route review."
+    },
+    {
+      "language": "Chinese",
+      "query": "漳州市自然资源局 不动产登记 地籍图 查询 官方 地图 GIS",
+      "result": "Zhangzhou has an official municipal natural-resources bureau and real-property registration services. The publicly documented “Land Supermarket” is a limited marketplace for a first batch of 208 marketed land parcels with map location, not an all-parcels cadastral viewer. The city “One Map” system serves planning and resource-management workflows. The official bureau and Fujian registration application sites were not readable through the public page reader, and no anonymous parcel geometry route/schema was found. No parcel geometry was retained.",
+      "method": "Separate web search followed by official portal and bounded anonymous route review."
+    },
+    {
+      "language": "Chinese follow-up",
+      "query": "漳州 不动产登记 网上办事大厅 地籍图公众查询 官方 土地超市 地图",
+      "result": "Official sources describe Zhangzhou Land Supermarket as a WeChat mini-program marketplace for selected marketed low-efficiency land, not as a cadastral registry layer. The April 2025 launch listed 208 parcels; a November 2025 official follow-up reported 350 listed and 19 transacted, showing that the count is time-dependent. Published descriptions and the public screenshot show map browsing/location and listing cards, but no parcel-boundary geometry, safe native parcel-ID field, or anonymous vector schema was verified. An ordinary anonymous GET to the linked municipal bureau host timed out. No parcel geometry was retained.",
+      "method": "Separate web search followed by official portal and bounded anonymous route review."
+    }
+  ],
+  "serviceChecks": [
+    {
+      "url": "https://zrzyj.zhangzhou.gov.cn/",
+      "method": "GET official municipal bureau page",
+      "httpStatus": null,
+      "observation": "The provincial natural-resources department links this as the Zhangzhou bureau site; public page reader timed out fetching the host."
+    },
+    {
+      "url": "https://www.fjsbdcdj.com/",
+      "method": "GET official provincial registration application page",
+      "httpStatus": null,
+      "observation": "Official Fujian Provincial Department homepage links the provincial online real-property registration application system; public page reader could not resolve/fetch the target. No sign-in or application attempted."
+    },
+    {
+      "url": "https://zrzyt.fujian.gov.cn/ztzl/sxzygwzxsqzx/zyzxzx/202511/t20251117_7034898.htm",
+      "method": "GET official provincial follow-up article",
+      "httpStatus": 200,
+      "observation": "Reports 350 listed parcels and 19 transactions as of November 2025; marketplace inventory is dynamic and selected, not evidence of a complete cadastral parcel layer."
+    },
+    {
+      "url": "https://zrzyj.zhangzhou.gov.cn/",
+      "method": "GET official municipal bureau host (anonymous, ordinary HTTPS request)",
+      "httpStatus": null,
+      "observation": "A bounded anonymous request timed out. The official article identifies the client as a WeChat mini-program, but no standalone public viewer URL, client bundle, service schema, safe native-ID field, or anonymous geometry response was verified. No login or access-control workaround was attempted."
+    }
+  ],
+  "geometryEvidence": null
+}

@@ -1,0 +1,86 @@
+{
+  "name": "Pontianak",
+  "country": "Indonesia",
+  "countryCode": "ID",
+  "rank": 655,
+  "point": [
+    -0.0527393958677588,
+    109.345304722825
+  ],
+  "population2025": 808759,
+  "populationUnit": "persons",
+  "population2025k": 808.759,
+  "populationPlausibility2025": "High",
+  "schemaVersion": 1,
+  "checkedAt": "2026-10-09",
+  "status": "complete",
+  "registryFound": true,
+  "registryBasis": "Pontianak City’s official Geoportal publishes geospatial information from city agencies, and the city government identifies the municipal ATR/BPN land office as the land-registration authority. No publicly available parcel-cadastre layer was identified in the Geoportal search.",
+  "registryEvidenceUrls": [
+    "https://geoportal.pontianak.go.id/",
+    "https://geoportal.pontianak.go.id/developer/",
+    "https://www.pontianak.go.id/pontianak-hari-ini/berita/Empat-Kelurahan-Ditetapkan-BPN-sebagai-Kelurahan-Lengkap",
+    "https://www.pontianak.go.id/"
+  ],
+  "publicParcelGeometryFound": false,
+  "verifiedSample": false,
+  "verifiedParcelResponse": null,
+  "freshResearch": {
+    "queries": [
+      {
+        "language": "Indonesian",
+        "query": "Pontianak peta persil tanah kadaster resmi Geoportal Kota Pontianak bidang tanah",
+        "scope": "Locate city-specific registry/cadastre evidence and verify anonymous bounded parcel geometry without private fields.",
+        "result": "Official city Geoportal exposes a public GeoNode catalogue and generic WFS guidance; searches did not identify a parcel/cadastral layer or feature schema.",
+        "actualResultUrls": [
+          "https://geoportal.pontianak.go.id/",
+          "https://geoportal.pontianak.go.id/developer/",
+          "https://www.pontianak.go.id/pontianak-hari-ini/berita/Empat-Kelurahan-Ditetapkan-BPN-sebagai-Kelurahan-Lengkap"
+        ],
+        "executionMethod": "Separate local-language and English discovery followed by official-source review; no personal property lookup or owner/address value request."
+      },
+      {
+        "language": "English",
+        "query": "Pontianak Indonesia official parcel cadastral map public GIS land registry",
+        "scope": "Locate city-specific registry/cadastre evidence and verify anonymous bounded parcel geometry without private fields.",
+        "result": "English-language searches identified the municipal geospatial portal and official ATR/BPN land-registration activity, but no city parcel feature layer or anonymous geometry endpoint.",
+        "actualResultUrls": [
+          "https://geoportal.pontianak.go.id/",
+          "https://www.pontianak.go.id/"
+        ],
+        "executionMethod": "Separate local-language and English discovery followed by official-source review; no personal property lookup or owner/address value request."
+      }
+    ]
+  },
+  "scopeLimits": "The city portal’s dataset catalogue is JavaScript-backed and did not expose a parcel-specific dataset in the available search results. General geospatial services and land-office presence do not establish open parcel geometry or exact WUP-point coverage.",
+  "pointBasis": "UN WUP 2025 population-weighted settlement centroid; this is not a municipal boundary or a parcel-coverage claim.",
+  "source": {
+    "sourceId": "ID-PONTIANAK-GEOPORTAL-LAND-RECORDS",
+    "name": "Pontianak City Geoportal and local land-registration authority",
+    "url": "https://geoportal.pontianak.go.id/",
+    "operator": "Pontianak City Government / Kantor Pertanahan Kota Pontianak (ATR/BPN)",
+    "serviceType": "Public city GeoNode catalogue of city geospatial data; no cadastral layer identified",
+    "layer": "City datasets and services; parcel-cadastre layer/schema not identified",
+    "geometryType": "unknown",
+    "outputCrs": "unknown",
+    "nativeIdField": "unknown"
+  },
+  "wupCityCode": 6903,
+  "cityId": "wup2025:6903",
+  "queueRank": 655,
+  "sourceIds": [],
+  "adapterReady": false,
+  "runtimeReadiness": "not_enabled_no_verified_public_geometry",
+  "technicalBlocker": "The city portal’s dataset catalogue is JavaScript-backed and did not expose a parcel-specific dataset in the available search results. General geospatial services and land-office presence do not establish open parcel geometry or exact WUP-point coverage.",
+  "remainingUncertainty": "Anonymous locator coverage, geometry service behavior and bounded parcel responses are unverified.",
+  "coverageAssessment": {
+    "verifiedOpenScope": "No parcel geometry sample was retained.",
+    "citywideVerified": false,
+    "countrywideVerified": false
+  },
+  "centerLatLon": [
+    -0.0527393958677588,
+    109.345304722825
+  ],
+  "rootReviewedAt": "2026-10-09T02:23:14.725507+00:00"
+}

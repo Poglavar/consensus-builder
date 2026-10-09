@@ -1,0 +1,95 @@
+{
+  "schemaVersion": 1,
+  "checkedAt": "2026-10-09",
+  "cityRecord": "city-659-agadir.json",
+  "purpose": "City-specific official property-registration/cadastre and bounded anonymous parcel-geometry review.",
+  "scopeLimits": {
+    "maxFullPolygonsRetainedInCityRecord": 3,
+    "maxFullPolygonsRetainedInReview": 3,
+    "maxFullPolygonsRetainedInRepository": 3,
+    "ownerOrAddressDataRetained": false,
+    "credentialsOrTokenValuesRetained": false,
+    "citywideCompletenessAsserted": false
+  },
+  "assessment": "Official ANCFCC material confirms a local Agadir land-registry and cadastre office and a national cadastre/plan mandate. Its public cadastral-plan order form is title-specific and collects personal/contact data with CAPTCHA and payment steps; no anonymous parcel geometry was retrieved.",
+  "registryAssessment": "The ANCFCC service directory lists an Agadir Conservation Foncière office and a separate Cadastre office at Place des administrations publiques. ANCFCC states it maintains the national cadastre and supplies cadastral data in digital or analog form. The online form located here is a request for an existing titled parcel plan, not an anonymous WUP-coordinate query.",
+  "searchQueries": [
+    {
+      "language": "French",
+      "query": "Agadir cadastre parcelles cadastrales ANCFCC service local cartographie plan cadastral officiel",
+      "scope": "Locate official Agadir registry/cadastre services and assess anonymous parcel geometry availability.",
+      "result": "ANCFCC’s official service network lists both Conservation Foncière and Cadastre offices in Agadir. The cadastral-plan portal is a request workflow requiring applicant personal details, a land-title number, contact verification/CAPTCHA and payment; it is not an anonymous coordinate query. No public parcel feature geometry was verified.",
+      "actualResultUrls": [
+        "https://www.ancfcc.gov.ma/ReseauBlocsFonciers/",
+        "https://www.ancfcc.gov.ma/cadastre/",
+        "https://www.ancfcc.gov.ma/Plancadastralpage",
+        "https://www.ancfcc.gov.ma/Content/carto/PLAN-CATALOGUE-2022.pdf",
+        "https://site.agadir.ma/"
+      ],
+      "executionMethod": "Separate French-language search followed by review of ANCFCC and the Agadir municipal portal; no personal/title data or form submission."
+    },
+    {
+      "language": "Arabic",
+      "query": "أكادير المسح العقاري المحافظة العقارية مخطط cadastral خريطة قطع أرض رسمية ANCFCC",
+      "scope": "Locate official Agadir registry/cadastre services and assess anonymous parcel geometry availability.",
+      "result": "تعرض الشبكة الرسمية للوكالة ANCFCC مصلحة المحافظة العقارية ومصلحة المسح العقاري في أكادير. طلب المخطط العقاري عبر الإنترنت يتطلب بيانات مقدم الطلب ورقم الرسم العقاري ورقم هاتف ورمز تحقق وأداء، لذلك لا يمثل استعلامًا جغرافيًا مجهول الهوية. لم يتم التحقق من واجهة عامة لهندسة القطع.",
+      "actualResultUrls": [
+        "https://www.ancfcc.gov.ma/arprésentation/réseau-des-blocs-fonciers/",
+        "https://www.ancfcc.gov.ma/ar",
+        "https://www.ancfcc.gov.ma/cadastre/",
+        "https://www.ancfcc.gov.ma/Plancadastralpage",
+        "https://site.agadir.ma/"
+      ],
+      "executionMethod": "بحث منفصل باللغة العربية ومراجعة مصادر ANCFCC الرسمية وصفحة الجماعة؛ لم تُرسل بيانات شخصية أو رقم رسم ولم يُرسل أي نموذج."
+    }
+  ],
+  "officialPrimarySources": [
+    {
+      "url": "https://www.ancfcc.gov.ma/ReseauBlocsFonciers/",
+      "observation": "ANCFCC service directory lists Agadir Conservation Foncière at Quartier Administratif and Cadastre at Place des administrations publiques."
+    },
+    {
+      "url": "https://www.ancfcc.gov.ma/cadastre/",
+      "observation": "ANCFCC states it establishes and maintains the national cadastre, preserves cadastral archives, and provides cadastral data in digital or analog form."
+    },
+    {
+      "url": "https://www.ancfcc.gov.ma/Plancadastralpage",
+      "observation": "Online plan-cadastral request asks for applicant name/identity/address, title number, contact phone, CAPTCHA, legal-notice acceptance and payment; not used or submitted."
+    },
+    {
+      "url": "https://www.ancfcc.gov.ma/Content/carto/PLAN-CATALOGUE-2022.pdf",
+      "observation": "ANCFCC product catalog lists city cartography and Agadir plan products, but describes cartographic products rather than anonymous parcel-level API access."
+    },
+    {
+      "url": "https://site.agadir.ma/",
+      "observation": "Official Agadir municipal portal provides general administrative procedures and urban-development information; no parcel-vector service was identified there."
+    }
+  ],
+  "viewerAndServiceTrace": {
+    "viewerUrl": "https://www.ancfcc.gov.ma/Plancadastralpage",
+    "apiBase": null,
+    "observedClientRoutes": [],
+    "notes": "The ANCFCC landing page provides a title-specific plan order workflow; this review did not fill its form, accept legal notices, enter title/identity data, or make a paid request. No public feature-service route was identified."
+  },
+  "geometryEvidence": {
+    "url": null,
+    "httpStatus": null,
+    "contentType": null,
+    "featureType": null,
+    "nativeCrs": null,
+    "responseCount": 0,
+    "responseNumberMatched": "not queried",
+    "requestLimit": 0,
+    "requestFilter": "No anonymous parcel query; no title number available or requested.",
+    "requestedFields": [],
+    "safeFieldsRetained": [],
+    "featureIds": [],
+    "nativeParcelIdentifier": null,
+    "wupPointContained": false,
+    "sampleGeometryFile": null,
+    "sampleSha256": null,
+    "limitations": "No public parcel feature response was obtained."
+  },
+  "privacy": "No owner/address information, applicant personal information, title number, CAPTCHA or credentials were submitted or retained.",
+  "runtimeAssessment": "not_enabled_no_verified_public_geometry"
+}

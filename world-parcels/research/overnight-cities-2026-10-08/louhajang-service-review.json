@@ -1,0 +1,83 @@
+{
+  "schemaVersion": "1.0",
+  "checkedAt": "2026-10-09",
+  "cityRecord": "city-6213-louhajang.json",
+  "purpose": "Document city-scope registry/cadastre evidence and bounded public parcel-geometry route review.",
+  "scopeLimits": {
+    "maxFullPolygonsRetainedInCityRecord": 3,
+    "maxFullPolygonsRetainedInReview": 3,
+    "maxFullPolygonsRetainedInRepository": 3,
+    "ownerOrAddressDataRetained": false,
+    "credentialsOrTokenValuesRetained": false,
+    "citywideCompletenessAsserted": false
+  },
+  "assessment": "The official map portal uses plot/mouza identifiers and exposes ownership-related record fields; without a safe geometry-only schema, no feature request was made.",
+  "registryAssessment": "The official Louhajang Upazila Land Office site identifies the local Assistant Commissioner (Land) office and links land-service workflows; a government land-record map portal provides mouza/sheet/dag search but its interface includes ownership-related records. No feature schema allowing geometry-only retrieval was verified, so no parcel query was made.",
+  "officialPrimarySources": [
+    {
+      "url": "https://acl.louhajanj.munshiganj.gov.bd/",
+      "observation": "The official Louhajang Upazila Land Office site identifies the local Assistant Commissioner (Land) office and links land-service workflows; a government land-record map portal provides mouza/sheet/dag search but its interface includes ownership-related records. No feature schema allowing geometry-only retrieval was verified, so no parcel query was made."
+    },
+    {
+      "url": "https://munshiganj.gov.bd/views/employee-list?designationId=8",
+      "observation": "Official supporting source reviewed for local service/registry context; it does not provide a verified anonymous parcel geometry schema."
+    },
+    {
+      "url": "https://settlement.gov.bd/",
+      "observation": "Official supporting source reviewed for local service/registry context; it does not provide a verified anonymous parcel geometry schema."
+    },
+    {
+      "url": "https://settlement.gov.bd/Map/MapSearch",
+      "observation": "Official supporting source reviewed for local service/registry context; it does not provide a verified anonymous parcel geometry schema."
+    },
+    {
+      "url": "https://land.gov.bd/",
+      "observation": "Official supporting source reviewed for local service/registry context; it does not provide a verified anonymous parcel geometry schema."
+    }
+  ],
+  "searchQueries": [
+    {
+      "language": "Bangla",
+      "query": "লৌহজং উপজেলা ভূমি অফিস মৌজা ম্যাপ খতিয়ান জেলা মুন্সীগঞ্জ সরকারি",
+      "result": "সরকারি লৌহজং উপজেলা ভূমি অফিস ও জাতীয় ভূমি/জরিপ মানচিত্র সেবা শনাক্ত হয়েছে। মানচিত্র অনুসন্ধান দাগ/মৌজা-নির্ভর এবং মালিকানা-সম্পর্কিত তথ্যও দেখায়; কেবল জ্যামিতির নিরাপদ স্কিমা যাচাই করা যায়নি।",
+      "actualResultUrls": [
+        "https://acl.louhajanj.munshiganj.gov.bd/",
+        "https://munshiganj.gov.bd/views/employee-list?designationId=8",
+        "https://settlement.gov.bd/",
+        "https://settlement.gov.bd/Map/MapSearch",
+        "https://land.gov.bd/"
+      ],
+      "method": "Separate English and Bangla discovery; reviewed official upazila office and land-portal descriptions. No dag/plot lookup or personal record search."
+    },
+    {
+      "language": "English",
+      "query": "Louhajang official mouza map land survey upazila land office Munshiganj Bangladesh",
+      "result": "Official local land office and national survey/map services were identified. The national map interface is identifier-based and presents ownership-related record fields; no safe geometry-only feature schema was available.",
+      "actualResultUrls": [
+        "https://acl.louhajanj.munshiganj.gov.bd/",
+        "https://munshiganj.gov.bd/views/employee-list?designationId=8",
+        "https://settlement.gov.bd/",
+        "https://settlement.gov.bd/Map/MapSearch",
+        "https://land.gov.bd/"
+      ],
+      "method": "Separate English and Bangla discovery; reviewed official upazila office and land-portal descriptions. No dag/plot lookup or personal record search."
+    }
+  ],
+  "serviceChecks": [],
+  "geometryEvidence": null,
+  "accessReview": {
+    "publicAnonymousGeometryVerified": false,
+    "completeGeoreferencedPolygonCount": 0,
+    "geometryRetained": false,
+    "ownerAddressTaxOrPersonLookupRequested": false,
+    "authenticationOrCredentialsUsed": false,
+    "captchaOrPersonalFormSubmitted": false,
+    "routeInspectionStatus": "schema_unverified",
+    "reason": "The official map portal uses plot/mouza identifiers and exposes ownership-related record fields; without a safe geometry-only schema, no feature request was made."
+  },
+  "privacy": "No owner, address, applicant, taxpayer, title, protected attribute, or property-record lookup was made. No geometry was retained.",
+  "runtimeAssessment": {
+    "status": "not_enabled_no_verified_safe_geometry_schema",
+    "reason": "The official map portal uses plot/mouza identifiers and exposes ownership-related record fields; without a safe geometry-only schema, no feature request was made."
+  }
+}

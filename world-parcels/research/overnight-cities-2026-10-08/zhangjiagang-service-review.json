@@ -1,0 +1,56 @@
+{
+  "schemaVersion": "1.0",
+  "checkedAt": "2026-10-09",
+  "cityRecord": "city-11576-zhangjiagang.json",
+  "purpose": "Document first-party local registry/map evidence and bounded anonymous geometry access review.",
+  "scopeLimits": {
+    "maxFullPolygonsRetainedInCityRecord": 0,
+    "maxFullPolygonsRetainedInReview": 0,
+    "maxFullPolygonsRetainedInRepository": 0,
+    "ownerOrAddressDataRetained": false,
+    "credentialsOrTokenValuesRetained": false,
+    "citywideCompletenessAsserted": false
+  },
+  "assessment": "A city-specific cadastral map and real-property lookup service exists, but its official description requires unified government identity authentication and real-name verification. It can return property and registration status fields, so this review stopped at the public service description and did not inspect transaction routes, submit a query, or retain geometry. Anonymous public vector access is not established.",
+  "registryAssessment": "A city-specific cadastral map and real-property lookup service exists, but its official description requires unified government identity authentication and real-name verification. It can return property and registration status fields, so this review stopped at the public service description and did not inspect transaction routes, submit a query, or retain geometry. Anonymous public vector access is not established.",
+  "officialPrimarySources": [
+    {
+      "url": "https://www.zjg.gov.cn/zjg/zffw_zxxx/202406/1be57f218f8849eaa0ae3e79c34d1985.shtml",
+      "observation": "City Natural Resources and Planning Bureau article explicitly describes the city’s online real-property registration information and cadastral-map visualization service. It uses Jiangsu unified government identity authentication and real-name verification before entry. Query modes include unit/parcel code, fuzzy location and map clicking; results can expose property, registration, mortgage and other status fields. No login or data query was attempted."
+    },
+    {
+      "url": "https://www.zjg.gov.cn/zjgszwz/nsjgktdhrmgdgmtdtkkqdttf/202412/42a3131aef3448b4a2411df31c3a230e.shtml",
+      "observation": "City bureau responsibilities include unifying natural-resource and real-property registration, cadastral surveys, registration information platform and record management."
+    },
+    {
+      "url": "https://jiangsu.tianditu.gov.cn/",
+      "observation": "Linked municipal Tianditu map portal; no public parcel schema was verified in this review."
+    }
+  ],
+  "searchQueries": [
+    {
+      "language": "English",
+      "query": "Zhangjiagang official cadastral parcel map real estate registration public GIS",
+      "result": "A city-specific cadastral map and real-property lookup service exists, but its official description requires unified government identity authentication and real-name verification. It can return property and registration status fields, so this review stopped at the public service description and did not inspect transaction routes, submit a query, or retain geometry. Anonymous public vector access is not established.",
+      "method": "Separate local-language and English web searches followed by official page review; no personal or property records searched."
+    },
+    {
+      "language": "Chinese",
+      "query": "张家港 不动产登记 地籍图 在线可视化检索 自然资源和规划局",
+      "result": "A city-specific cadastral map and real-property lookup service exists, but its official description requires unified government identity authentication and real-name verification. It can return property and registration status fields, so this review stopped at the public service description and did not inspect transaction routes, submit a query, or retain geometry. Anonymous public vector access is not established.",
+      "method": "Separate local-language and English web searches followed by official page review; no personal or property records searched."
+    }
+  ],
+  "serviceChecks": [
+    {
+      "url": "https://www.zjg.gov.cn/zjg/zffw_zxxx/202406/1be57f218f8849eaa0ae3e79c34d1985.shtml",
+      "method": "GET anonymous official article",
+      "httpStatus": 200,
+      "observation": "Article confirms cadastral map visualization service behind unified government authentication and real-name verification. No service route entered and no query submitted."
+    }
+  ],
+  "geometryEvidence": null,
+  "temporaryEvidence": [
+    "/tmp/overnight-cities-2026-10-08/city-11576-route-inspection.json"
+  ]
+}

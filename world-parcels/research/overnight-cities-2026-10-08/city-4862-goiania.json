@@ -1,0 +1,195 @@
+{
+  "name": "Goiânia",
+  "country": "Brazil",
+  "countryCode": "BR",
+  "rank": 214,
+  "point": [
+    -16.7044742060347,
+    -49.2865080463885
+  ],
+  "freshResearch": {
+    "queries": [
+      {
+        "language": "Portuguese",
+        "query": "Goiânia mapa cadastral lote parcelário prefeitura mapa digital oficial MUBDG",
+        "scope": "Find the official Goiânia lot/parcel map and public vector query.",
+        "result": "The City of Goiânia geoprocessing service page, managed by SEPLAN, links the Geo 360° map viewer. The older MUBDG page describes version 9 with 391 bairros, 17,505 blocks, 310,134 lots and 9,171 streets. The current linked viewer page opened without readable feature content; a WUP-centered map URL could not be fetched.",
+        "actualResultUrls": [
+          "https://www.goiania.go.gov.br/sing_servicos/geoprocessamento/",
+          "https://www.goiania.go.gov.br/html/geoprocessamento/mapa2.htm",
+          "https://portal-goiania.geo360.com.br/"
+        ],
+        "executionMethod": "Web search plus read-only inspection of the city service page and linked map."
+      },
+      {
+        "language": "Portuguese",
+        "query": "site:goiania.go.gov.br MUBDG SIGGO lote quadra geoprocessamento parcel map",
+        "scope": "Check parcel counts, the source custodian, and access/usage conditions.",
+        "result": "Official MUBDG page reports lots and blocks in the city map. The municipal geoprocessing page documents a map-cutout request workflow. A published SIGGO use term says the spatial database is for municipal departments and third-party use requires permission; redistribution is restricted. No current public full-polygon endpoint or open-data license was verified.",
+        "actualResultUrls": [
+          "https://www.goiania.go.gov.br/html/geoprocessamento/mapa2.htm",
+          "https://www.goiania.go.gov.br/html/seplam/informacoes/geoprocessamento.htm",
+          "https://portalmapa.goiania.go.gov.br/helpsiggo/HelpSIGGO/_termo_de_compromisso.htm"
+        ],
+        "executionMethod": "Web search; Portuguese query."
+      },
+      {
+        "language": "English",
+        "query": "Goiânia city cadastral lots official parcel map Geo 360 MUBDG",
+        "scope": "Cross-check English references and official city viewer routes.",
+        "result": "The official municipal service page confirms the Geo 360° viewer; no English-language separate parcel API or public data download was found.",
+        "actualResultUrls": [
+          "https://www.goiania.go.gov.br/sing_servicos/geoprocessamento/",
+          "https://portal-goiania.geo360.com.br/"
+        ],
+        "executionMethod": "Web search; English query."
+      }
+    ],
+    "portals": [
+      {
+        "name": "Mapa Geo 360° Goiânia",
+        "operator": "Prefeitura de Goiânia, Secretaria Municipal de Planejamento e Urbanismo Estratégico (SEPLAN)",
+        "homeUrl": "https://portal-goiania.geo360.com.br/",
+        "observation": "HTTP 200 viewer shell is linked by the official city service page. Bundle/API discovery confirms the public ICAD Lote polygon layer and full-geometry retrieval; WUP locator queries were empty."
+      },
+      {
+        "name": "Mapa Urbano Básico Digital de Goiânia (MUBDG)",
+        "operator": "Prefeitura de Goiânia, city geoprocessing department / SEPLAN",
+        "homeUrl": "https://www.goiania.go.gov.br/html/geoprocessamento/mapa2.htm",
+        "observation": "Official page reports MUBDG v9 totals of 310,134 lots and 17,505 blocks. Current legal status and reuse terms for the public ICAD geometry have not been confirmed."
+      }
+    ],
+    "requests": [
+      {
+        "url": "https://portal-goiania.geo360.com.br/icad/map/-49.2865080463885,-16.7044742060347,17/list",
+        "method": "GET",
+        "httpStatus": 200,
+        "contentType": "text/html",
+        "observation": "City-centered viewer shell returned HTTP 200; its JavaScript bundle supplied the live API root."
+      },
+      {
+        "url": "https://portal-goiania.geo360.com.br/main.js",
+        "method": "GET",
+        "httpStatus": 200,
+        "contentType": "application/javascript",
+        "observation": "HTTP 200, 1,054,233-byte SPA bundle; identifies Goiânia API and anonymous reader-token bootstrap."
+      },
+      {
+        "url": "https://apis-goiania.geo360.com.br/plataforma/camadas?showIcad=true&publicoIcad=true&noForms=true",
+        "method": "GET",
+        "httpStatus": 200,
+        "contentType": "application/json",
+        "observation": "HTTP 200; 196 active public ICAD layers. Layer 23548 is Lote, POLYGON, table/representation lote, publicoIcad=true."
+      },
+      {
+        "url": "https://apis-goiania.geo360.com.br/plataforma/camadas/23548",
+        "method": "GET",
+        "httpStatus": 200,
+        "contentType": "application/json",
+        "observation": "HTTP 200; confirms layer metadata and extent SRID 3857."
+      },
+      {
+        "url": "https://apis-goiania.geo360.com.br/plataforma/projetos/3404/extent",
+        "method": "GET",
+        "httpStatus": 200,
+        "contentType": "application/json",
+        "observation": "HTTP 200; project extent covers Goiânia, approximately longitude -49.3966 to -49.178 and latitude -17.082 to -16.579."
+      },
+      {
+        "url": "https://apis-goiania.geo360.com.br/plataforma/geometrias/intersect-geom?ids=23548&wkt=SRID%3D4326%3BPOINT(-49.2865080463885%20-16.7044742060347)",
+        "method": "GET",
+        "httpStatus": 200,
+        "contentType": "application/json",
+        "observation": "HTTP 200; returns {\"23548\":[]} at WUP point. Same empty result for a ±0.002° WUP bbox, viewer opening point, and manual central fallback point."
+      },
+      {
+        "url": "https://apis-goiania.geo360.com.br/plataforma/geometrias/intersect-geom?ids=23548&wkt=SRID%3D4326%3BPOINT(-49.29338%20-16.71996)",
+        "method": "GET",
+        "httpStatus": 200,
+        "contentType": "application/json",
+        "observation": "HTTP 200; returns {\"23548\":[47189959]}. Response is layer-keyed geometry IDs; no paging fields are returned."
+      },
+      {
+        "url": "https://apis-goiania.geo360.com.br/plataforma/geometrias/47189959",
+        "method": "GET",
+        "httpStatus": 200,
+        "contentType": "application/json",
+        "observation": "HTTP 200, 25,394-byte JSON record; full un-clipped POLYGON WKT has five ring coordinates. Personal/audit fields were not retained."
+      }
+    ],
+    "historicalContext": [
+      {
+        "url": "https://www.goiania.go.gov.br/html/seplam/informacoes/geoprocessamento.htm",
+        "observation": "Older official geoprocessing page describes requesting a free MUBDG map cutout from the department; it is not a live public feature API and may be stale."
+      },
+      {
+        "url": "https://portalmapa.goiania.go.gov.br/helpsiggo/HelpSIGGO/_termo_de_compromisso.htm",
+        "observation": "Published SIGGO terms restrict database use to municipal departments and require permission for third-party use; redistribution is prohibited absent written consent."
+      }
+    ]
+  },
+  "status": "complete",
+  "verifiedParcelResponse": {
+    "url": "https://apis-goiania.geo360.com.br/plataforma/geometrias/47189959",
+    "httpStatus": 200,
+    "contentType": "application/json",
+    "featureCount": 1,
+    "featureId": "47189959",
+    "geometryType": "POLYGON",
+    "coordinateCount": 5,
+    "geometryWkt": "POLYGON ((-49.293449628137736 -16.719925197063716, -49.29346236233939 -16.720055285888677, -49.29330955191954 -16.7200051474979, -49.29332653085508 -16.719870993360473, -49.293449628137736 -16.719925197063716))",
+    "fullGeometryReturned": true,
+    "clipped": false,
+    "locationBasis": "Selected from a small query around (-49.29338,-16.71996), approximately 2.2 km southwest of the WUP point; WUP, viewer-opening, and manual central locator queries returned no intersection.",
+    "attributePolicy": "Geometry only; owner/address/audit attributes omitted."
+  },
+  "source": {
+    "sourceId": "BR-GO-GOIANIA-GEO360-ICAD-LOTE",
+    "name": "Goiânia Geo 360° public ICAD layer Lote",
+    "url": "https://portal-goiania.geo360.com.br/",
+    "operator": "Official service owner: Prefeitura de Goiânia, SEPLAN. Platform brand is Geo 360; Topocart identifies GEO360 as its GIS platform and a 2026 city report mentions the Topocart Geo 360 contract. API is hosted on apis-goiania.geo360.com.br.",
+    "serviceType": "Public-reader GET JSON API. Active viewer query: intersect-geom(ids,wkt) returning geometry IDs, followed by geometrias/{id} full record. A separate geometrias/camada/{id}?bbox= route returned full shapes in bounded probes; completeness semantics are unverified.",
+    "layer": "23548 (Lote; representation/table lote; project 3404 Base Cartográfica ICADPADRAO)",
+    "geometryType": "POLYGON",
+    "outputCrs": "WGS 84 longitude/latitude in returned WKT; layer metadata extent SRID 3857",
+    "nativeIdField": "Geo 360 geometry ID",
+    "nativeIdEvidence": "Intersection and bbox-list responses return current-namespace geometry ID 47189959, readable at /plataforma/geometrias/47189959. This is a stable lookup key for the observed sample, not asserted to be a legal cadastral parcel number."
+  },
+  "coverageAssessment": {
+    "claimedScope": "Municipal MUBDG describes blocks and lots; current city-linked Geo 360 ICAD layer 23548 is a public Lote polygon layer.",
+    "verifiedOpenScope": "A full public Goiânia Lote polygon was retrieved from layer 23548. Queries at the WUP point and nearby ±0.002° bbox were empty; the verified sample is ~2.2 km southwest of the WUP point, so it does not establish coverage at the population center.",
+    "countrywideVerified": false
+  },
+  "registryFound": true,
+  "verifiedSample": true,
+  "resultCategory": "verified_public_geometry_runtime_candidate",
+  "technicalBlocker": "Bounded public sample reads work, but the candidate bbox-list route has no observed count, cursor, or complete ID-manifest contract. Citywide query completeness and coverage are not qualified. The empty WUP-point and ±0.002° intersections describe that locator only; they do not negate the verified city sample.",
+  "remainingUncertainty": "Citywide geometry coverage and enumeration completeness; whether WUP-center parcels exist in the layer; official cadastral meaning of Geo 360 geometry IDs; public data-use terms remain informational and unconfirmed.",
+  "nextStep": "Finish bounded protocol and coverage qualification, especially completeness and truncation behavior, before using this service in a runtime adapter. Use geometry ID 47189959 in its current Geo 360 namespace for the verified sample; no native cadastral-number gate is assumed.",
+  "schemaVersion": 1,
+  "checkedAt": "2026-10-09",
+  "wupCityCode": 4862,
+  "cityId": "wup2025:4862",
+  "runtimeReadiness": "held_protocol_review",
+  "adapterReady": false,
+  "centerLatLon": [
+    -16.7044742060347,
+    -49.2865080463885
+  ],
+  "queueRank": 214,
+  "population2025": 2320596,
+  "populationPlausibility2025": "Moderate",
+  "populationUnit": "persons",
+  "pointBasis": "UN WUP 2025 population-weighted settlement centroid; this is not a municipal boundary or a parcel-coverage claim.",
+  "publicParcelGeometryFound": true,
+  "rootReviewedAt": "2026-10-08T20:54:18.632578+00:00",
+  "sourceIds": [
+    "br-goiania-geo360-icad-lote"
+  ],
+  "runtimeAssessment": {
+    "status": "held_protocol_review",
+    "reason": "Bounded public sample reads work, but the candidate bbox-list route has no observed count, cursor, or complete ID-manifest contract. Citywide query completeness and coverage are not qualified. The empty WUP-point and ±0.002° intersections describe that locator only; they do not negate the verified city sample.",
+    "evidenceFile": "research/overnight-cities-2026-10-08/goiania-service-review.json"
+  },
+  "registryBasis": "The official Goiânia geoprocessing page directly links the Geo360 public viewer; its public Lote layer returned a full city parcel polygon."
+}

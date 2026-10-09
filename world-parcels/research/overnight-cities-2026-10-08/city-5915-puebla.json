@@ -1,0 +1,133 @@
+{
+  "name": "Puebla",
+  "country": "Mexico",
+  "countryCode": "MX",
+  "rank": 255,
+  "wupCityCode": 5915,
+  "cityId": "wup2025:5915",
+  "pop2025k": 1947.971,
+  "point": [
+    19.0430350801074,
+    -98.2032596830628
+  ],
+  "plausibility": "Moderate",
+  "freshResearch": {
+    "queries": [
+      {
+        "language": "Spanish",
+        "query": "mapa catastral predial Puebla consulta predio parcelas catastro municipal oficial",
+        "scope": "Find Puebla-specific cadastral registry and public parcel map access.",
+        "result": "The Municipality of Puebla identifies a municipal Dirección de Catastro and documents cadastral registration/certificate and cartographic-plan workflows. The city GIS REST catalog lists layer 103, “PREDIOS CATASTRO USO DE SUELO”; its title suggests parcel/land-use content but does not establish that geometries are parcel boundaries. A read-only layer-schema request failed during TLS negotiation before HTTP response. A corrected bounded WUP-point query used explicit inSR=4326, outSR=4326, outFields=OBJECTID, and resultRecordCount=3; it failed at the same TLS step. No complete parcel polygon was received.",
+        "actualResultUrls": [
+          "https://memorias.pueblacapital.gob.mx/xv-tramites-y-servicios/387-tesoreria-municipal/3194-direccion-de-catastro",
+          "https://gobiernoabierto.pueblacapital.gob.mx/transparencia_file/tesoreria/77.fracc01/man_proc_catastro.pdf",
+          "https://sicammpt.pueblacapital.gob.mx/server/rest/services/C_H_PUE/MapServer"
+        ],
+        "executionMethod": "Spanish-language search and municipal Catastro procedure review, followed by public REST metadata/layer inspection and a bounded point query at the WUP centroid."
+      },
+      {
+        "language": "English",
+        "query": "Puebla Mexico official municipal cadastral parcel registry GIS map query predio boundary",
+        "scope": "Verify English primary sources and inspect the city GIS layer response.",
+        "result": "The city Catastro procedures describe cadastral registration and cartographic plans. The municipal REST catalog exposes a named Predios Catastro Uso de Suelo layer, but it may contain land-use thematic objects rather than parcel polygons. The layer schema request and one bounded WUP-point feature query (explicit EPSG:4326 input/output, OBJECTID only, three-result cap) both failed before HTTP response because the direct host closed the TLS handshake. No full polygon or parcel attribute was obtained.",
+        "actualResultUrls": [
+          "https://gobiernoabierto.pueblacapital.gob.mx/transparencia_file/tesoreria/77.fracc01/man_proc_catastro.pdf",
+          "https://sicammpt.pueblacapital.gob.mx/server/rest/services/C_H_PUE/MapServer/103"
+        ],
+        "executionMethod": "English query with official municipal procedure and GIS REST follow-through; direct bounded query failed before a service result."
+      }
+    ],
+    "portals": [
+      {
+        "name": "Dirección de Catastro Municipal de Puebla",
+        "operator": "Tesorería Municipal, Ayuntamiento del Municipio de Puebla",
+        "homeUrl": "https://memorias.pueblacapital.gob.mx/xv-tramites-y-servicios/387-tesoreria-municipal/3194-direccion-de-catastro",
+        "observation": "Municipal information identifies the Catastro office and its technological multi-purpose cadastre platform. The 2024 procedure manual describes cadastral registration certificates, map composition and delivery, and GIS/cartography handling. This confirms a city-specific registry, not an anonymous feature endpoint."
+      },
+      {
+        "name": "Puebla municipal GIS REST service",
+        "operator": "Municipio de Puebla",
+        "homeUrl": "https://sicammpt.pueblacapital.gob.mx/server/rest/services/C_H_PUE/MapServer",
+        "observation": "The public catalog names layer 103 “PREDIOS CATASTRO USO DE SUELO”. No feature response was obtained. Because it is a combined land-use theme, it is not treated as a verified cadastral parcel polygon layer."
+      }
+    ],
+    "requests": [
+      {
+        "url": "https://memorias.pueblacapital.gob.mx/xv-tramites-y-servicios/387-tesoreria-municipal/3194-direccion-de-catastro",
+        "method": "GET",
+        "httpStatus": 200,
+        "contentType": "text/html",
+        "observation": "Municipal Catastro page describes the office and its multi-purpose cadastre platform."
+      },
+      {
+        "url": "https://gobiernoabierto.pueblacapital.gob.mx/transparencia_file/tesoreria/77.fracc01/man_proc_catastro.pdf",
+        "method": "GET",
+        "httpStatus": 200,
+        "contentType": "application/pdf",
+        "observation": "Municipal Catastro procedure manual, revision 2024. Procedures include cadastral registration certificates and cartographic plans."
+      },
+      {
+        "url": "https://sicammpt.pueblacapital.gob.mx/server/rest/services/C_H_PUE/MapServer",
+        "method": "GET",
+        "httpStatus": 200,
+        "contentType": "text/html",
+        "observation": "Public REST catalog lists municipal layers including layer 103 PREDIOS CATASTRO USO DE SUELO."
+      },
+      {
+        "url": "https://sicammpt.pueblacapital.gob.mx/server/rest/services/C_H_PUE/MapServer/103?f=pjson",
+        "method": "GET",
+        "observation": "Read-only layer metadata/schema request failed before HTTP response: LibreSSL reported SSL_ERROR_SYSCALL during TLS negotiation; the web fetch tool also marked the URL inaccessible. No object-ID field or geometry type could be inspected."
+      },
+      {
+        "url": "https://sicammpt.pueblacapital.gob.mx/server/rest/services/C_H_PUE/MapServer/103/query?where=1%3D1&geometry=-98.2032596830628%2C19.0430350801074&geometryType=esriGeometryPoint&inSR=4326&spatialRel=esriSpatialRelIntersects&outFields=OBJECTID&returnGeometry=true&outSR=4326&resultRecordCount=3&f=json",
+        "method": "GET",
+        "observation": "One bounded WUP-point query with explicit input/output WKID 4326, only OBJECTID requested, full geometry enabled, and a three-record cap failed before HTTP response: LibreSSL reported SSL_ERROR_SYSCALL during TLS negotiation. No result, geometry, or attributes were received."
+      }
+    ],
+    "historicalContext": [],
+    "supersededAttemptNote": "An earlier point probe omitted the input CRS and requested all fields, but TLS negotiation failed before any response or attributes were obtained. It was superseded by the explicitly EPSG:4326, OBJECTID-only, three-result probe. No owner or contact values were received or retained."
+  },
+  "status": "complete",
+  "verifiedParcelResponse": null,
+  "source": {
+    "sourceId": "MX-PUE-PUEBLA-MUNICIPAL-CATASTRO",
+    "name": "Municipal Catastro and georeferenced map records",
+    "url": "https://memorias.pueblacapital.gob.mx/xv-tramites-y-servicios/387-tesoreria-municipal/3194-direccion-de-catastro",
+    "operator": "Dirección de Catastro, Tesorería Municipal, Ayuntamiento del Municipio de Puebla",
+    "serviceType": "Municipal cadastral registration, cartographic-plan procedures, and city GIS. Public layer 103 is a land-use thematic candidate; no full parcel polygon verified.",
+    "layer": "Municipal Catastro procedures; REST candidate layer 103 “PREDIOS CATASTRO USO DE SUELO”",
+    "geometryType": "No full parcel geometry response observed.",
+    "outputCrs": null,
+    "nativeIdField": "Municipal cadastral key / predial account (not queried)",
+    "nativeIdEvidence": "Municipal Catastro manual and service catalog describe assignment of cadastral keys, parcel mapping, and cartographic-plan products."
+  },
+  "coverageAssessment": {
+    "claimedScope": "Puebla Municipality maintains a municipal Catastro and city georeferenced map; the REST catalog exposes a land-use theme referring to cadastral predios.",
+    "verifiedOpenScope": "The city registry and map workflow are confirmed. The target point query failed before returning features; the thematic layer is not accepted as a parcel-boundary layer without geometry metadata and a full feature response.",
+    "countrywideVerified": false
+  },
+  "registryFound": true,
+  "verifiedSample": false,
+  "resultCategory": "official_city_registry_geometry_not_verified",
+  "technicalBlocker": "The municipal REST host closed the direct TLS handshake for the bounded feature query; the web fetch of the specific layer returned 502. No full feature response was available for inspection.",
+  "remainingUncertainty": "Whether layer 103 carries complete parcel polygons or only land-use thematic units; whether the WUP point intersects a public full-polygon layer; current public access to the georeferenced map.",
+  "nextStep": "Retry the city REST query from a normal browser path and inspect layer 103 metadata/geometry before treating it as a parcel source.",
+  "schemaVersion": 1,
+  "checkedAt": "2026-10-09",
+  "runtimeReadiness": "not_enabled_no_verified_public_geometry",
+  "adapterReady": false,
+  "centerLatLon": [
+    19.0430350801074,
+    -98.2032596830628
+  ],
+  "population2025k": 1947.971,
+  "queueRank": 255,
+  "population2025": 1947971,
+  "populationPlausibility2025": "Moderate",
+  "populationUnit": "persons",
+  "pointBasis": "UN WUP 2025 population-weighted settlement centroid; this is not a municipal boundary or a parcel-coverage claim.",
+  "publicParcelGeometryFound": false,
+  "sourceIds": [],
+  "registryBasis": "The 2024 Municipality of Puebla Catastro procedure manual documents municipal cadastral registration, parcel-linked GIS/cartography work, and composition/delivery of cadastral plans. This establishes a city-specific Catastro registry. Layer 103 remains an unverified land-use theme candidate because its schema and geometry response could not be fetched.",
+  "rootReviewedAt": "2026-10-08T21:36:07.696017+00:00"
+}

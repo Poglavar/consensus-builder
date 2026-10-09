@@ -1,0 +1,6464 @@
+{
+  "schemaVersion": 1,
+  "purpose": "Independent GEOS topology check of complete runtime parcels projected to metric coordinates; no repair applied. Counts are bounded sample evidence, not whole-city guarantees.",
+  "library": "Shapely 2.2.0",
+  "metricCrs": "EPSG:32618",
+  "featureCount": 917,
+  "validNonemptyCount": 917,
+  "invalidFeatures": [],
+  "exactDuplicateGeometryPairs": [],
+  "positiveAreaOverlapPairsAbove0_01M2": [
+    {
+      "ids": [
+        "CO-AMCO-TERRAIN-NPN-660010105000000540027000000000",
+        "CO-AMCO-TERRAIN-NPN-660010105000000540125900000000"
+      ],
+      "overlapM2": 211.99749487490354,
+      "fractionOfSmaller": 1.0000000000000002
+    },
+    {
+      "ids": [
+        "CO-AMCO-TERRAIN-NPN-660010105000000540036000000000",
+        "CO-AMCO-TERRAIN-NPN-660010105000000540125900000000"
+      ],
+      "overlapM2": 201.70706323177856,
+      "fractionOfSmaller": 0.9999999999999997
+    },
+    {
+      "ids": [
+        "CO-AMCO-TERRAIN-NPN-660010105000000540125900000000",
+        "CO-AMCO-TERRAIN-NPN-660010105000000540124000000000"
+      ],
+      "overlapM2": 42.22339216796369,
+      "fractionOfSmaller": 1.0
+    }
+  ],
+  "sumPairwiseOverlapM2": 455.9279502746458,
+  "operationErrors": [],
+  "areaM2": {
+    "min": 9.984584016901438,
+    "median": 101.06855051057828,
+    "max": 6608.540804237295
+  },
+  "features": [
+    {
+      "id": "CO-AMCO-TERRAIN-NPN-660010105000001410013000000000",
+      "areaM2": 100.38868501496987,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "CO-AMCO-TERRAIN-NPN-660010105000001410016000000000",
+      "areaM2": 76.9211170981275,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "CO-AMCO-TERRAIN-NPN-660010105000002140001000000000",
+      "areaM2": 111.11059916920075,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "CO-AMCO-TERRAIN-NPN-660010105000001410011000000000",
+      "areaM2": 113.5637191961615,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "CO-AMCO-TERRAIN-NPN-660010105000002140015000000000",
+      "areaM2": 70.95741025865775,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "CO-AMCO-TERRAIN-NPN-660010105000001420021000000000",
+      "areaM2": 60.90343826096529,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "CO-AMCO-TERRAIN-NPN-660010105000001420034000000000",
+      "areaM2": 58.21843077421347,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "CO-AMCO-TERRAIN-NPN-660010105000001420028000000000",
+      "areaM2": 56.8662340954183,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "CO-AMCO-TERRAIN-NPN-660010105000001410032000000000",
+      "areaM2": 88.55568803127242,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "CO-AMCO-TERRAIN-NPN-660010105000001390017000000000",
+      "areaM2": 84.94305888748607,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "CO-AMCO-TERRAIN-NPN-660010105000001430028000000000",
+      "areaM2": 147.26748980981452,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "CO-AMCO-TERRAIN-NPN-660010105000001420008000000000",
+      "areaM2": 89.31146656730003,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "CO-AMCO-TERRAIN-NPN-660010105000001420025000000000",
+      "areaM2": 57.32213774801484,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "CO-AMCO-TERRAIN-NPN-660010105000001420035000000000",
+      "areaM2": 60.48570586123371,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "CO-AMCO-TERRAIN-NPN-660010105000001410022000000000",
+      "areaM2": 86.38308869384655,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "CO-AMCO-TERRAIN-NPN-660010105000002140014000000000",
+      "areaM2": 72.96425926601344,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "CO-AMCO-TERRAIN-NPN-660010105000001410015000000000",
+      "areaM2": 52.05127641351008,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "CO-AMCO-TERRAIN-NPN-660010105000001410002000000000",
+      "areaM2": 92.20136134765883,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "CO-AMCO-TERRAIN-NPN-660010105000001420022000000000",
+      "areaM2": 58.962532523680906,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "CO-AMCO-TERRAIN-NPN-660010105000001680901900000000",
+      "areaM2": 213.5073624308514,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "CO-AMCO-TERRAIN-NPN-660010105000001430032000000000",
+      "areaM2": 72.91251395261611,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "CO-AMCO-TERRAIN-NPN-660010105000001430001000000000",
+      "areaM2": 105.20561552906918,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "CO-AMCO-TERRAIN-NPN-660010105000001430033000000000",
+      "areaM2": 35.517954870424134,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "CO-AMCO-TERRAIN-NPN-660010105000002140008000000000",
+      "areaM2": 73.75810599714467,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "CO-AMCO-TERRAIN-NPN-660010105000001420029000000000",
+      "areaM2": 61.57025391411314,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "CO-AMCO-TERRAIN-NPN-660010105000001420012000000000",
+      "areaM2": 87.68350364387506,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "CO-AMCO-TERRAIN-NPN-660010105000001420004000000000",
+      "areaM2": 110.8158515381561,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "CO-AMCO-TERRAIN-NPN-660010105000001440039000000000",
+      "areaM2": 74.0454011672495,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "CO-AMCO-TERRAIN-NPN-660010105000001410005000000000",
+      "areaM2": 105.76093757186605,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "CO-AMCO-TERRAIN-NPN-660010105000001410023000000000",
+      "areaM2": 108.59426257101725,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "CO-AMCO-TERRAIN-NPN-660010105000001420023000000000",
+      "areaM2": 59.10039789997494,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "CO-AMCO-TERRAIN-NPN-660010105000002140007000000000",
+      "areaM2": 81.55434498226029,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "CO-AMCO-TERRAIN-NPN-660010105000002140011000000000",
+      "areaM2": 114.0958368421673,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "CO-AMCO-TERRAIN-NPN-660010105000001410025000000000",
+      "areaM2": 108.63707494255927,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "CO-AMCO-TERRAIN-NPN-660010105000001410014000000000",
+      "areaM2": 116.11683639231796,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "CO-AMCO-TERRAIN-NPN-660010105000001420033000000000",
+      "areaM2": 54.89616036301265,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "CO-AMCO-TERRAIN-NPN-660010105000002140005000000000",
+      "areaM2": 54.26895966224054,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "CO-AMCO-TERRAIN-NPN-660010105000001680003000000000",
+      "areaM2": 88.05288627608681,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "CO-AMCO-TERRAIN-NPN-660010105000002140003000000000",
+      "areaM2": 84.1540299220185,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "CO-AMCO-TERRAIN-NPN-660010105000001420010000000000",
+      "areaM2": 73.54351800845855,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "CO-AMCO-TERRAIN-NPN-660010105000001390016000000000",
+      "areaM2": 67.36003998098752,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "CO-AMCO-TERRAIN-NPN-660010105000001410009000000000",
+      "areaM2": 147.43371738966147,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "CO-AMCO-TERRAIN-NPN-660010105000001390019000000000",
+      "areaM2": 84.52222300641571,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "CO-AMCO-TERRAIN-NPN-660010105000001410024000000000",
+      "areaM2": 113.93730831795621,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "CO-AMCO-TERRAIN-NPN-660010105000001410019000000000",
+      "areaM2": 142.1353337896831,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "CO-AMCO-TERRAIN-NPN-660010105000001420001000000000",
+      "areaM2": 74.52848657237409,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "CO-AMCO-TERRAIN-NPN-660010105000001410004000000000",
+      "areaM2": 120.02698021584511,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "CO-AMCO-TERRAIN-NPN-660010105000001680027000000000",
+      "areaM2": 55.154596997642535,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "CO-AMCO-TERRAIN-NPN-660010105000001410031000000000",
+      "areaM2": 78.92608494049412,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "CO-AMCO-TERRAIN-NPN-660010105000001420032000000000",
+      "areaM2": 55.084163672021084,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "CO-AMCO-TERRAIN-NPN-660010105000001390018000000000",
+      "areaM2": 85.4218079782935,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "CO-AMCO-TERRAIN-NPN-660010105000002140002000000000",
+      "areaM2": 101.68083841634349,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "CO-AMCO-TERRAIN-NPN-660010105000001390020000000000",
+      "areaM2": 107.59991535649694,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "CO-AMCO-TERRAIN-NPN-660010105000001420031000000000",
+      "areaM2": 61.79536695126914,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "CO-AMCO-TERRAIN-NPN-660010105000001680024000000000",
+      "areaM2": 119.39410216896218,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "CO-AMCO-TERRAIN-NPN-660010105000001420013000000000",
+      "areaM2": 85.80119795805207,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "CO-AMCO-TERRAIN-NPN-660010105000001420003000000000",
+      "areaM2": 87.55707390814622,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "CO-AMCO-TERRAIN-NPN-660010105000001420024000000000",
+      "areaM2": 55.60829822084811,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "CO-AMCO-TERRAIN-NPN-660010105000001410033000000000",
+      "areaM2": 86.7887827090145,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "CO-AMCO-TERRAIN-NPN-660010105000001410034000000000",
+      "areaM2": 111.75029190761961,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "CO-AMCO-TERRAIN-NPN-660010105000001690001000000000",
+      "areaM2": 89.91965078834723,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "CO-AMCO-TERRAIN-NPN-660010105000001410018000000000",
+      "areaM2": 70.50341617442598,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "CO-AMCO-TERRAIN-NPN-660010105000001410006000000000",
+      "areaM2": 111.57911114735622,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "CO-AMCO-TERRAIN-NPN-660010105000001430031000000000",
+      "areaM2": 74.32546833003407,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "CO-AMCO-TERRAIN-NPN-660010105000001680026000000000",
+      "areaM2": 55.67601946691782,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "CO-AMCO-TERRAIN-NPN-660010105000001420036000000000",
+      "areaM2": 54.28143694461948,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "CO-AMCO-TERRAIN-NPN-660010105000001400019000000000",
+      "areaM2": 88.47205815048092,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "CO-AMCO-TERRAIN-NPN-660010105000001410021000000000",
+      "areaM2": 85.05007178264461,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "CO-AMCO-TERRAIN-NPN-660010105000001410010000000000",
+      "areaM2": 107.47592250653443,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "CO-AMCO-TERRAIN-NPN-660010105000001410026000000000",
+      "areaM2": 115.2050584440811,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "CO-AMCO-TERRAIN-NPN-660010105000001420017000000000",
+      "areaM2": 69.73795608003273,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "CO-AMCO-TERRAIN-NPN-660010105000001420018000000000",
+      "areaM2": 97.04029872423264,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "CO-AMCO-TERRAIN-NPN-660010105000001410012000000000",
+      "areaM2": 110.38485043015945,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "CO-AMCO-TERRAIN-NPN-660010105000001420037000000000",
+      "areaM2": 54.33624854822331,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "CO-AMCO-TERRAIN-NPN-660010105000001410007000000000",
+      "areaM2": 109.92781341853743,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "CO-AMCO-TERRAIN-NPN-660010105000001420026000000000",
+      "areaM2": 57.38052512858599,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "CO-AMCO-TERRAIN-NPN-660010105000001410028000000000",
+      "areaM2": 117.68124901260357,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "CO-AMCO-TERRAIN-NPN-660010105000001420016000000000",
+      "areaM2": 60.713158921116026,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "CO-AMCO-TERRAIN-NPN-660010105000001430029000000000",
+      "areaM2": 78.73240498798621,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "CO-AMCO-TERRAIN-NPN-660010105000001410020000000000",
+      "areaM2": 118.01523297446374,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "CO-AMCO-TERRAIN-NPN-660010105000001400017000000000",
+      "areaM2": 100.73521161643372,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "CO-AMCO-TERRAIN-NPN-660010105000001680002000000000",
+      "areaM2": 59.129922133881514,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "CO-AMCO-TERRAIN-NPN-660010105000001400901900000000",
+      "areaM2": 71.72297364753423,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "CO-AMCO-TERRAIN-NPN-660010105000001410029000000000",
+      "areaM2": 100.33237289492313,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "CO-AMCO-TERRAIN-NPN-660010105000001420014000000000",
+      "areaM2": 101.10800398078985,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "CO-AMCO-TERRAIN-NPN-660010105000001410030000000000",
+      "areaM2": 117.25890159015067,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "CO-AMCO-TERRAIN-NPN-660010105000001410008000000000",
+      "areaM2": 135.24351506253245,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "CO-AMCO-TERRAIN-NPN-660010105000001420015000000000",
+      "areaM2": 76.91914742204803,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "CO-AMCO-TERRAIN-NPN-660010105000001440038000000000",
+      "areaM2": 72.08797859797342,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "CO-AMCO-TERRAIN-NPN-660010105000001400015000000000",
+      "areaM2": 102.21756399284148,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "CO-AMCO-TERRAIN-NPN-660010105000001420006000000000",
+      "areaM2": 70.25591789427179,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "CO-AMCO-TERRAIN-NPN-660010105000001440040000000000",
+      "areaM2": 70.96748390154126,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "CO-AMCO-TERRAIN-NPN-660010105000001440037000000000",
+      "areaM2": 83.88758407484909,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "CO-AMCO-TERRAIN-NPN-660010105000001420002000000000",
+      "areaM2": 84.54736241447058,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "CO-AMCO-TERRAIN-NPN-660010105000001420007000000000",
+      "areaM2": 114.63674540133088,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "CO-AMCO-TERRAIN-NPN-660010105000001420040000000000",
+      "areaM2": 74.8421990889435,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "CO-AMCO-TERRAIN-NPN-660010105000001420038000000000",
+      "areaM2": 85.68071469059838,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "CO-AMCO-TERRAIN-NPN-660010105000001430030000000000",
+      "areaM2": 74.98947577901046,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "CO-AMCO-TERRAIN-NPN-660010105000002140004000000000",
+      "areaM2": 55.82522828000305,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "CO-AMCO-TERRAIN-NPN-660010105000002140006000000000",
+      "areaM2": 84.75336085733048,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "CO-AMCO-TERRAIN-NPN-660010105000001440001000000000",
+      "areaM2": 144.99414891397288,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "CO-AMCO-TERRAIN-NPN-660010105000001420030000000000",
+      "areaM2": 55.33023056691407,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "CO-AMCO-TERRAIN-NPN-660010105000001680001000000000",
+      "areaM2": 93.26603733816647,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "CO-AMCO-TERRAIN-NPN-660010105000001410027000000000",
+      "areaM2": 115.1297668596697,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "CO-AMCO-TERRAIN-NPN-660010105000001420011000000000",
+      "areaM2": 84.13075478655055,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "CO-AMCO-TERRAIN-NPN-660010105000001420019000000000",
+      "areaM2": 136.58797349919223,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "CO-AMCO-TERRAIN-NPN-660010105000001410017000000000",
+      "areaM2": 71.968056440007,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "CO-AMCO-TERRAIN-NPN-660010105000001680004000000000",
+      "areaM2": 106.36381480481032,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "CO-AMCO-TERRAIN-NPN-660010105000001420009000000000",
+      "areaM2": 86.33360449721353,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "CO-AMCO-TERRAIN-NPN-660010105000002140009000000000",
+      "areaM2": 67.44767813843075,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "CO-AMCO-TERRAIN-NPN-660010105000001690901900000000",
+      "areaM2": 426.5061538938708,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "CO-AMCO-TERRAIN-NPN-660010105000001410003000000000",
+      "areaM2": 89.53933785337826,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "CO-AMCO-TERRAIN-NPN-660010105000001400016000000000",
+      "areaM2": 101.69970572685096,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "CO-AMCO-TERRAIN-NPN-660010105000001410035000000000",
+      "areaM2": 85.48308414494701,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "CO-AMCO-TERRAIN-NPN-660010105000001420039000000000",
+      "areaM2": 106.61483260555096,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "CO-AMCO-TERRAIN-NPN-660010105000001420005000000000",
+      "areaM2": 72.63843742434533,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "CO-AMCO-TERRAIN-NPN-660010105000001420020000000000",
+      "areaM2": 62.37571408014979,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "CO-AMCO-TERRAIN-NPN-660010105000001420027000000000",
+      "areaM2": 61.33940369024922,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "CO-AMCO-TERRAIN-NPN-660010105000001440032000000000",
+      "areaM2": 56.09753868376917,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "CO-AMCO-TERRAIN-NPN-660010105000001440029000000000",
+      "areaM2": 53.7193828546676,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "CO-AMCO-TERRAIN-NPN-660010105000001440036000000000",
+      "areaM2": 63.40131387549039,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "CO-AMCO-TERRAIN-NPN-660010105000001700001000000000",
+      "areaM2": 213.8952943748086,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "CO-AMCO-TERRAIN-NPN-660010105000001430018000000000",
+      "areaM2": 73.41981803493738,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "CO-AMCO-TERRAIN-NPN-660010105000001450026000000000",
+      "areaM2": 125.93939806908851,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "CO-AMCO-TERRAIN-NPN-660010105000001440901900000000",
+      "areaM2": 75.47943564844768,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "CO-AMCO-TERRAIN-NPN-660010105000001440019000000000",
+      "areaM2": 71.91868418572109,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "CO-AMCO-TERRAIN-NPN-660010105000001440021000000000",
+      "areaM2": 58.82853149814055,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "CO-AMCO-TERRAIN-NPN-660010105000001440003000000000",
+      "areaM2": 98.59830786205302,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "CO-AMCO-TERRAIN-NPN-660010105000001440024000000000",
+      "areaM2": 56.71034262928274,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "CO-AMCO-TERRAIN-NPN-660010105000001440004000000000",
+      "areaM2": 86.4668505115475,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "CO-AMCO-TERRAIN-NPN-660010105000001450030000000000",
+      "areaM2": 67.09494085814634,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "CO-AMCO-TERRAIN-NPN-660010105000001700002000000000",
+      "areaM2": 93.0519699667971,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "CO-AMCO-TERRAIN-NPN-660010105000001440027000000000",
+      "areaM2": 61.6134682216303,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "CO-AMCO-TERRAIN-NPN-660010105000001440008000000000",
+      "areaM2": 84.93773936781884,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "CO-AMCO-TERRAIN-NPN-660010105000001440022000000000",
+      "areaM2": 57.521477786508264,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "CO-AMCO-TERRAIN-NPN-660010105000001430005000000000",
+      "areaM2": 107.87615833513226,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "CO-AMCO-TERRAIN-NPN-660010105000001440007000000000",
+      "areaM2": 71.69037969253897,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "CO-AMCO-TERRAIN-NPN-660010105000001440025000000000",
+      "areaM2": 59.33850263691793,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "CO-AMCO-TERRAIN-NPN-660010105000001430015000000000",
+      "areaM2": 104.45748198262578,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "CO-AMCO-TERRAIN-NPN-660010105000001460026000000000",
+      "areaM2": 70.63494918736166,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "CO-AMCO-TERRAIN-NPN-660010105000001430012000000000",
+      "areaM2": 125.62732089929236,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "CO-AMCO-TERRAIN-NPN-660010105000001710003000000000",
+      "areaM2": 76.14103298149386,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "CO-AMCO-TERRAIN-NPN-660010105000001460027000000000",
+      "areaM2": 85.05675595883923,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "CO-AMCO-TERRAIN-NPN-660010105000001200028000000000",
+      "areaM2": 275.92313648646046,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "CO-AMCO-TERRAIN-NPN-660010105000001430013000000000",
+      "areaM2": 140.8978444573159,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "CO-AMCO-TERRAIN-NPN-660010105000001710004000000000",
+      "areaM2": 99.76668856800251,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "CO-AMCO-TERRAIN-NPN-660010105000001430014000000000",
+      "areaM2": 86.12650045806278,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "CO-AMCO-TERRAIN-NPN-660010105000001710001000000000",
+      "areaM2": 83.55921213834715,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "CO-AMCO-TERRAIN-NPN-660010105000001430002000000000",
+      "areaM2": 69.41396929011842,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "CO-AMCO-TERRAIN-NPN-660010105000001460004000000000",
+      "areaM2": 115.59950719961675,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "CO-AMCO-TERRAIN-NPN-660010105000001440016000000000",
+      "areaM2": 73.03176473548854,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "CO-AMCO-TERRAIN-NPN-660010105000001440014000000000",
+      "areaM2": 104.17593969562185,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "CO-AMCO-TERRAIN-NPN-660010105000001440033000000000",
+      "areaM2": 57.60465724987047,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "CO-AMCO-TERRAIN-NPN-660010105000001450029000000000",
+      "areaM2": 106.41267356527938,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "CO-AMCO-TERRAIN-NPN-660010105000001430022000000000",
+      "areaM2": 89.50577068636319,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "CO-AMCO-TERRAIN-NPN-660010105000001430027000000000",
+      "areaM2": 179.06352275123945,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "CO-AMCO-TERRAIN-NPN-660010105000001440010000000000",
+      "areaM2": 88.6296994803803,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "CO-AMCO-TERRAIN-NPN-660010105000001450003000000000",
+      "areaM2": 96.92041808593525,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "CO-AMCO-TERRAIN-NPN-660010105000001700004000000000",
+      "areaM2": 118.29620314638873,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "CO-AMCO-TERRAIN-NPN-660010105000001440018000000000",
+      "areaM2": 57.85587068842658,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "CO-AMCO-TERRAIN-NPN-660010105000001430016000000000",
+      "areaM2": 103.83142375143456,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "CO-AMCO-TERRAIN-NPN-660010105000001450902900000000",
+      "areaM2": 85.9455776162028,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "CO-AMCO-TERRAIN-NPN-660010105000001450028000000000",
+      "areaM2": 93.63757938322188,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "CO-AMCO-TERRAIN-NPN-660010105000001460028000000000",
+      "areaM2": 95.62198752376771,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "CO-AMCO-TERRAIN-NPN-660010105000001430024000000000",
+      "areaM2": 108.56226487618963,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "CO-AMCO-TERRAIN-NPN-660010105000001460003000000000",
+      "areaM2": 110.00907058351122,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "CO-AMCO-TERRAIN-NPN-660010105000001430026000000000",
+      "areaM2": 182.28439403444648,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "CO-AMCO-TERRAIN-NPN-660010105000001440012000000000",
+      "areaM2": 90.63362763779148,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "CO-AMCO-TERRAIN-NPN-660010105000001700003000000000",
+      "areaM2": 84.07609787869161,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "CO-AMCO-TERRAIN-NPN-660010105000001430009000000000",
+      "areaM2": 106.62607834028962,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "CO-AMCO-TERRAIN-NPN-660010105000001430011000000000",
+      "areaM2": 168.45189479503807,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "CO-AMCO-TERRAIN-NPN-660010105000001440017000000000",
+      "areaM2": 70.26514228781535,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "CO-AMCO-TERRAIN-NPN-660010105000001460024000000000",
+      "areaM2": 87.63868968874485,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "CO-AMCO-TERRAIN-NPN-660010105000001440026000000000",
+      "areaM2": 58.1153203779647,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "CO-AMCO-TERRAIN-NPN-660010105000001440009000000000",
+      "areaM2": 85.13227533029648,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "CO-AMCO-TERRAIN-NPN-660010105000001430003000000000",
+      "areaM2": 70.31619455480902,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "CO-AMCO-TERRAIN-NPN-660010105000001430025000000000",
+      "areaM2": 144.6416724230134,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "CO-AMCO-TERRAIN-NPN-660010105000001440005000000000",
+      "areaM2": 70.5140388923229,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "CO-AMCO-TERRAIN-NPN-660010105000001440031000000000",
+      "areaM2": 56.25053329486554,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "CO-AMCO-TERRAIN-NPN-660010105000001440035000000000",
+      "areaM2": 59.82058518957746,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "CO-AMCO-TERRAIN-NPN-660010105000001450002000000000",
+      "areaM2": 96.23796649595478,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "CO-AMCO-TERRAIN-NPN-660010105000001460002000000000",
+      "areaM2": 92.36995988209273,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "CO-AMCO-TERRAIN-NPN-660010105000001460029000000000",
+      "areaM2": 54.366684132521215,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "CO-AMCO-TERRAIN-NPN-660010105000001440030000000000",
+      "areaM2": 48.557237036068315,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "CO-AMCO-TERRAIN-NPN-660010105000001440034000000000",
+      "areaM2": 56.33204058055202,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "CO-AMCO-TERRAIN-NPN-660010105000001430006000000000",
+      "areaM2": 125.91063812203818,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "CO-AMCO-TERRAIN-NPN-660010105000001430023000000000",
+      "areaM2": 85.59359841091242,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "CO-AMCO-TERRAIN-NPN-660010105000001710002000000000",
+      "areaM2": 75.35284456652745,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "CO-AMCO-TERRAIN-NPN-660010105000001460005000000000",
+      "areaM2": 71.69373800404267,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "CO-AMCO-TERRAIN-NPN-660010105000001440023000000000",
+      "areaM2": 60.646484913659705,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "CO-AMCO-TERRAIN-NPN-660010105000001700031000000000",
+      "areaM2": 170.46503452161204,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "CO-AMCO-TERRAIN-NPN-660010105000001430008000000000",
+      "areaM2": 124.96770206197027,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "CO-AMCO-TERRAIN-NPN-660010105000001710030000000000",
+      "areaM2": 62.70405403460929,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "CO-AMCO-TERRAIN-NPN-660010105000001430010000000000",
+      "areaM2": 141.76706025205854,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "CO-AMCO-TERRAIN-NPN-660010105000001430019000000000",
+      "areaM2": 95.95881508415165,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "CO-AMCO-TERRAIN-NPN-660010105000001430021000000000",
+      "areaM2": 110.36967996955883,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "CO-AMCO-TERRAIN-NPN-660010105000001440011000000000",
+      "areaM2": 92.3920593594312,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "CO-AMCO-TERRAIN-NPN-660010105000001460001000000000",
+      "areaM2": 92.66167998532977,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "CO-AMCO-TERRAIN-NPN-660010105000001460025000000000",
+      "areaM2": 75.56608080165103,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "CO-AMCO-TERRAIN-NPN-660010105000001430020000000000",
+      "areaM2": 173.16794569922828,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "CO-AMCO-TERRAIN-NPN-660010105000001430017000000000",
+      "areaM2": 110.57946230173124,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "CO-AMCO-TERRAIN-NPN-660010105000001440015000000000",
+      "areaM2": 84.74284710164825,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "CO-AMCO-TERRAIN-NPN-660010105000001440020000000000",
+      "areaM2": 126.40936391246485,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "CO-AMCO-TERRAIN-NPN-660010105000001440028000000000",
+      "areaM2": 56.01371034197847,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "CO-AMCO-TERRAIN-NPN-660010105000001450001000000000",
+      "areaM2": 139.70982318914469,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "CO-AMCO-TERRAIN-NPN-660010105000001450031000000000",
+      "areaM2": 78.69755471310032,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "CO-AMCO-TERRAIN-NPN-660010105000001430901900000000",
+      "areaM2": 110.91517162738923,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "CO-AMCO-TERRAIN-NPN-660010105000001190027000000000",
+      "areaM2": 188.89130886841997,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "CO-AMCO-TERRAIN-NPN-660010105000001440006000000000",
+      "areaM2": 74.16738823803881,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "CO-AMCO-TERRAIN-NPN-660010105000001440002000000000",
+      "areaM2": 89.52814936158589,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "CO-AMCO-TERRAIN-NPN-660010105000001430007000000000",
+      "areaM2": 70.75695177145273,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "CO-AMCO-TERRAIN-NPN-660010105000001450021000000000",
+      "areaM2": 70.76123579253547,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "CO-AMCO-TERRAIN-NPN-660010105000001480902900000000",
+      "areaM2": 77.46739259207476,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "CO-AMCO-TERRAIN-NPN-660010105000001200024000000000",
+      "areaM2": 210.2046697687506,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "CO-AMCO-TERRAIN-NPN-660010105000001450024000000000",
+      "areaM2": 171.42952618962178,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "CO-AMCO-TERRAIN-NPN-660010105000001720001000000000",
+      "areaM2": 161.26235893414147,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "CO-AMCO-TERRAIN-NPN-660010105000001470010000000000",
+      "areaM2": 49.88116640222148,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "CO-AMCO-TERRAIN-NPN-660010105000001470006000000000",
+      "areaM2": 122.93103312242833,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "CO-AMCO-TERRAIN-NPN-660010105000001450019000000000",
+      "areaM2": 69.4936007754865,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "CO-AMCO-TERRAIN-NPN-660010105000001210020000000000",
+      "areaM2": 114.91511310462097,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "CO-AMCO-TERRAIN-NPN-660010105000001470005000000000",
+      "areaM2": 126.36658136015917,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "CO-AMCO-TERRAIN-NPN-660010105000001200026000000000",
+      "areaM2": 99.58770110390611,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "CO-AMCO-TERRAIN-NPN-660010105000001450020000000000",
+      "areaM2": 126.89891991505392,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "CO-AMCO-TERRAIN-NPN-660010105000001470901900000000",
+      "areaM2": 120.0261186819819,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "CO-AMCO-TERRAIN-NPN-660010105000001460015000000000",
+      "areaM2": 219.56287072084797,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "CO-AMCO-TERRAIN-NPN-660010105000001470004000000000",
+      "areaM2": 125.65900239639183,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "CO-AMCO-TERRAIN-NPN-660010105000001460011000000000",
+      "areaM2": 89.31043064022607,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "CO-AMCO-TERRAIN-NPN-660010105000001460006000000000",
+      "areaM2": 146.09885480971087,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "CO-AMCO-TERRAIN-NPN-660010105000001200021000000000",
+      "areaM2": 42.394605789389686,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "CO-AMCO-TERRAIN-NPN-660010105000001450901900000000",
+      "areaM2": 101.1628060305113,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "CO-AMCO-TERRAIN-NPN-660010105000001460901900000000",
+      "areaM2": 307.11901578723376,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "CO-AMCO-TERRAIN-NPN-660010105000001460012000000000",
+      "areaM2": 135.26881428323213,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "CO-AMCO-TERRAIN-NPN-660010105000001460022000000000",
+      "areaM2": 92.33553432394879,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "CO-AMCO-TERRAIN-NPN-660010105000001450010000000000",
+      "areaM2": 103.95742297101837,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "CO-AMCO-TERRAIN-NPN-660010105000001450023000000000",
+      "areaM2": 171.44031159472217,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "CO-AMCO-TERRAIN-NPN-660010105000001210021000000000",
+      "areaM2": 137.77593511820376,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "CO-AMCO-TERRAIN-NPN-660010105000001210024000000000",
+      "areaM2": 405.8124693014392,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "CO-AMCO-TERRAIN-NPN-660010105000001460021000000000",
+      "areaM2": 96.10457135133137,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "CO-AMCO-TERRAIN-NPN-660010105000001450014000000000",
+      "areaM2": 95.47637516869638,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "CO-AMCO-TERRAIN-NPN-660010105000001450016000000000",
+      "areaM2": 171.78939263468988,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "CO-AMCO-TERRAIN-NPN-660010105000001460016000000000",
+      "areaM2": 128.4640176297356,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "CO-AMCO-TERRAIN-NPN-660010105000001210268000000000",
+      "areaM2": 78.89457534730666,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "CO-AMCO-TERRAIN-NPN-660010105000001460009000000000",
+      "areaM2": 89.81865052778772,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "CO-AMCO-TERRAIN-NPN-660010105000001480042000000000",
+      "areaM2": 77.96398265859317,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "CO-AMCO-TERRAIN-NPN-660010105000001200020000000000",
+      "areaM2": 91.32597607917342,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "CO-AMCO-TERRAIN-NPN-660010105000001480040000000000",
+      "areaM2": 74.17231832450278,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "CO-AMCO-TERRAIN-NPN-660010105000001450025000000000",
+      "areaM2": 84.76850304595135,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "CO-AMCO-TERRAIN-NPN-660010105000001460018000000000",
+      "areaM2": 71.0185248801269,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "CO-AMCO-TERRAIN-NPN-660010105000001480030000000000",
+      "areaM2": 62.73273185738084,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "CO-AMCO-TERRAIN-NPN-660010105000001450013000000000",
+      "areaM2": 85.06883738962173,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "CO-AMCO-TERRAIN-NPN-660010105000001460010000000000",
+      "areaM2": 96.32932323986907,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "CO-AMCO-TERRAIN-NPN-660010105000001200019000000000",
+      "areaM2": 195.78518457261666,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "CO-AMCO-TERRAIN-NPN-660010105000001460019000000000",
+      "areaM2": 74.09564239667013,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "CO-AMCO-TERRAIN-NPN-660010105000001480032000000000",
+      "areaM2": 79.90055627356702,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "CO-AMCO-TERRAIN-NPN-660010105000001470011000000000",
+      "areaM2": 61.76458640695049,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "CO-AMCO-TERRAIN-NPN-660010105000001480025000000000",
+      "areaM2": 170.63509885216448,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "CO-AMCO-TERRAIN-NPN-660010105000001200025000000000",
+      "areaM2": 103.96515635298849,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "CO-AMCO-TERRAIN-NPN-660010105000001480034000000000",
+      "areaM2": 134.97846520106458,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "CO-AMCO-TERRAIN-NPN-660010105000001480035000000000",
+      "areaM2": 105.52547550307276,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "CO-AMCO-TERRAIN-NPN-660010105000001450015000000000",
+      "areaM2": 99.10136207734499,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "CO-AMCO-TERRAIN-NPN-660010105000001450005000000000",
+      "areaM2": 182.47209751129375,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "CO-AMCO-TERRAIN-NPN-660010105000001470002000000000",
+      "areaM2": 102.51692159084133,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "CO-AMCO-TERRAIN-NPN-660010105000001460008000000000",
+      "areaM2": 88.07495656134338,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "CO-AMCO-TERRAIN-NPN-660010105000001450006000000000",
+      "areaM2": 118.42685407827895,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "CO-AMCO-TERRAIN-NPN-660010105000001470001000000000",
+      "areaM2": 123.71504929262213,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "CO-AMCO-TERRAIN-NPN-660010105000001200023000000000",
+      "areaM2": 245.37620236501513,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "CO-AMCO-TERRAIN-NPN-660010105000001480024000000000",
+      "areaM2": 138.78361633474077,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "CO-AMCO-TERRAIN-NPN-660010105000001450012000000000",
+      "areaM2": 101.60020684980425,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "CO-AMCO-TERRAIN-NPN-660010105000001450008000000000",
+      "areaM2": 91.1199494275523,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "CO-AMCO-TERRAIN-NPN-660010105000001450018000000000",
+      "areaM2": 70.31917995370948,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "CO-AMCO-TERRAIN-NPN-660010105000001460020000000000",
+      "areaM2": 86.24511104959007,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "CO-AMCO-TERRAIN-NPN-660010105000001470008000000000",
+      "areaM2": 105.99637302106778,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "CO-AMCO-TERRAIN-NPN-660010105000001480038000000000",
+      "areaM2": 73.25567741884605,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "CO-AMCO-TERRAIN-NPN-660010105000001200022000000000",
+      "areaM2": 113.96216699503493,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "CO-AMCO-TERRAIN-NPN-660010105000001470014000000000",
+      "areaM2": 20.77049242765822,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "CO-AMCO-TERRAIN-NPN-660010105000001470007000000000",
+      "areaM2": 61.576393006719336,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "CO-AMCO-TERRAIN-NPN-660010105000001470015000000000",
+      "areaM2": 17.269520922475156,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "CO-AMCO-TERRAIN-NPN-660010105000001450004000000000",
+      "areaM2": 178.08584278137337,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "CO-AMCO-TERRAIN-NPN-660010105000001480036000000000",
+      "areaM2": 84.00538271768342,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "CO-AMCO-TERRAIN-NPN-660010105000001200027000000000",
+      "areaM2": 102.39607441285236,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "CO-AMCO-TERRAIN-NPN-660010105000001480031000000000",
+      "areaM2": 97.23689769785555,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "CO-AMCO-TERRAIN-NPN-660010105000001450007000000000",
+      "areaM2": 89.62009913615952,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "CO-AMCO-TERRAIN-NPN-660010105000001460030900000000",
+      "areaM2": 99.56203578856208,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "CO-AMCO-TERRAIN-NPN-660010105000001460007000000000",
+      "areaM2": 74.61832578663821,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "CO-AMCO-TERRAIN-NPN-660010105000001460023000000000",
+      "areaM2": 78.7859146041038,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "CO-AMCO-TERRAIN-NPN-660010105000001210019000000000",
+      "areaM2": 119.59438143164061,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "CO-AMCO-TERRAIN-NPN-660010105000001480037000000000",
+      "areaM2": 92.00096632529485,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "CO-AMCO-TERRAIN-NPN-660010105000001210022000000000",
+      "areaM2": 110.57668429456304,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "CO-AMCO-TERRAIN-NPN-660010105000001480027000000000",
+      "areaM2": 124.47603809684743,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "CO-AMCO-TERRAIN-NPN-660010105000001480026000000000",
+      "areaM2": 191.30770630642377,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "CO-AMCO-TERRAIN-NPN-660010105000001450022000000000",
+      "areaM2": 106.99075629052409,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "CO-AMCO-TERRAIN-NPN-660010105000001480013000000000",
+      "areaM2": 396.52846320125326,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "CO-AMCO-TERRAIN-NPN-660010105000001450011000000000",
+      "areaM2": 101.96573192385091,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "CO-AMCO-TERRAIN-NPN-660010105000001480039000000000",
+      "areaM2": 81.41299590481401,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "CO-AMCO-TERRAIN-NPN-660010105000001480033000000000",
+      "areaM2": 111.50463948917609,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "CO-AMCO-TERRAIN-NPN-660010105000001470009000000000",
+      "areaM2": 68.0833972969675,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "CO-AMCO-TERRAIN-NPN-660010105000001480029000000000",
+      "areaM2": 75.7857409424435,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "CO-AMCO-TERRAIN-NPN-660010105000001450009000000000",
+      "areaM2": 195.09138604929984,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "CO-AMCO-TERRAIN-NPN-660010105000001480028000000000",
+      "areaM2": 65.13986393208637,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "CO-AMCO-TERRAIN-NPN-660010105000001180008000000000",
+      "areaM2": 141.74477638446083,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "CO-AMCO-TERRAIN-NPN-660010105000001180031000000000",
+      "areaM2": 125.24909690048337,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "CO-AMCO-TERRAIN-NPN-660010105000001180903900000000",
+      "areaM2": 359.9272955959759,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "CO-AMCO-TERRAIN-NPN-660010105000001180012000000000",
+      "areaM2": 100.07822243800298,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "CO-AMCO-TERRAIN-NPN-660010105000001170033000000000",
+      "areaM2": 63.57907511814937,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "CO-AMCO-TERRAIN-NPN-660010105000001180004000000000",
+      "areaM2": 176.89802088044044,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "CO-AMCO-TERRAIN-NPN-660010105000001180014000000000",
+      "areaM2": 105.04597754748944,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "CO-AMCO-TERRAIN-NPN-660010105000001180010000000000",
+      "areaM2": 176.07794497026762,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "CO-AMCO-TERRAIN-NPN-660010105000001180029000000000",
+      "areaM2": 143.4848050890286,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "CO-AMCO-TERRAIN-NPN-660010105000000960031000000000",
+      "areaM2": 263.97399036565974,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "CO-AMCO-TERRAIN-NPN-660010105000001160014000000000",
+      "areaM2": 76.7353924784311,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "CO-AMCO-TERRAIN-NPN-660010105000001180039000000000",
+      "areaM2": 127.99909697954182,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "CO-AMCO-TERRAIN-NPN-660010105000001180023000000000",
+      "areaM2": 59.334077293854335,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "CO-AMCO-TERRAIN-NPN-660010105000000960025000000000",
+      "areaM2": 651.3941916460273,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "CO-AMCO-TERRAIN-NPN-660010105000001180011000000000",
+      "areaM2": 129.8583960269576,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "CO-AMCO-TERRAIN-NPN-660010105000001410001000000000",
+      "areaM2": 89.71175306690637,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "CO-AMCO-TERRAIN-NPN-660010105000001180016000000000",
+      "areaM2": 163.20238707443372,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "CO-AMCO-TERRAIN-NPN-660010105000001180030000000000",
+      "areaM2": 145.5908694145226,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "CO-AMCO-TERRAIN-NPN-660010105000001180003000000000",
+      "areaM2": 139.71536597061484,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "CO-AMCO-TERRAIN-NPN-660010105000001180027000000000",
+      "areaM2": 103.51059243473541,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "CO-AMCO-TERRAIN-NPN-660010105000000960026000000000",
+      "areaM2": 164.68928599184582,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "CO-AMCO-TERRAIN-NPN-660010105000001180045000000000",
+      "areaM2": 69.15781829192412,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "CO-AMCO-TERRAIN-NPN-660010105000001180034000000000",
+      "areaM2": 78.30626708489042,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "CO-AMCO-TERRAIN-NPN-660010105000001180013000000000",
+      "areaM2": 106.7272795353699,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "CO-AMCO-TERRAIN-NPN-660010105000001180017000000000",
+      "areaM2": 177.32047779354215,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "CO-AMCO-TERRAIN-NPN-660010105000001170013000000000",
+      "areaM2": 97.94703856858494,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "CO-AMCO-TERRAIN-NPN-660010105000000960023000000000",
+      "areaM2": 114.60257442922952,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "CO-AMCO-TERRAIN-NPN-660010105000000960029000000000",
+      "areaM2": 293.3523160529663,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "CO-AMCO-TERRAIN-NPN-660010105000001170014000000000",
+      "areaM2": 101.60760027849233,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "CO-AMCO-TERRAIN-NPN-660010105000001170017000000000",
+      "areaM2": 70.47381490132791,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "CO-AMCO-TERRAIN-NPN-660010105000001180026000000000",
+      "areaM2": 59.083799458332834,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "CO-AMCO-TERRAIN-NPN-660010105000001160019000000000",
+      "areaM2": 171.58684566530223,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "CO-AMCO-TERRAIN-NPN-660010105000001180046000000000",
+      "areaM2": 68.67237257945732,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "CO-AMCO-TERRAIN-NPN-660010105000001170018000000000",
+      "areaM2": 66.79330370489528,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "CO-AMCO-TERRAIN-NPN-660010105000000960032000000000",
+      "areaM2": 228.74820464901455,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "CO-AMCO-TERRAIN-NPN-660010105000001180006000000000",
+      "areaM2": 153.20610921319516,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "CO-AMCO-TERRAIN-NPN-660010105000001180901900000000",
+      "areaM2": 277.15814846241557,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "CO-AMCO-TERRAIN-NPN-660010105000001180036000000000",
+      "areaM2": 103.46771161108506,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "CO-AMCO-TERRAIN-NPN-660010105000001180042000000000",
+      "areaM2": 184.14140040928126,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "CO-AMCO-TERRAIN-NPN-660010105000001180022000000000",
+      "areaM2": 88.4044531076492,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "CO-AMCO-TERRAIN-NPN-660010105000001160012000000000",
+      "areaM2": 80.80888681001244,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "CO-AMCO-TERRAIN-NPN-660010105000001160017000000000",
+      "areaM2": 86.03747918821027,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "CO-AMCO-TERRAIN-NPN-660010105000001180007000000000",
+      "areaM2": 117.9453432915886,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "CO-AMCO-TERRAIN-NPN-660010105000001160018000000000",
+      "areaM2": 135.05089878876228,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "CO-AMCO-TERRAIN-NPN-660010105000000960030000000000",
+      "areaM2": 184.91887658668077,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "CO-AMCO-TERRAIN-NPN-660010105000000960006900000000",
+      "areaM2": 679.3885770398981,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "CO-AMCO-TERRAIN-NPN-660010105000001180025000000000",
+      "areaM2": 70.41608804559637,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "CO-AMCO-TERRAIN-NPN-660010105000001180032000000000",
+      "areaM2": 863.3708562640477,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "CO-AMCO-TERRAIN-NPN-660010105000001180044000000000",
+      "areaM2": 64.86390572617628,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "CO-AMCO-TERRAIN-NPN-660010105000001180002000000000",
+      "areaM2": 96.84228314156393,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "CO-AMCO-TERRAIN-NPN-660010105000001170012000000000",
+      "areaM2": 42.10883220954482,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "CO-AMCO-TERRAIN-NPN-660010105000001180040000000000",
+      "areaM2": 103.98640233522678,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "CO-AMCO-TERRAIN-NPN-660010105000001160015000000000",
+      "areaM2": 75.70854301686784,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "CO-AMCO-TERRAIN-NPN-660010105000001180018000000000",
+      "areaM2": 164.1831080550288,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "CO-AMCO-TERRAIN-NPN-660010105000001180001000000000",
+      "areaM2": 79.65532776918558,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "CO-AMCO-TERRAIN-NPN-660010105000001180037000000000",
+      "areaM2": 146.56831333661736,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "CO-AMCO-TERRAIN-NPN-660010105000001180019000000000",
+      "areaM2": 155.4066151580143,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "CO-AMCO-TERRAIN-NPN-660010105000001180024000000000",
+      "areaM2": 81.84582101710838,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "CO-AMCO-TERRAIN-NPN-660010105000001180902900000000",
+      "areaM2": 112.98736369014263,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "CO-AMCO-TERRAIN-NPN-660010105000001180041000000000",
+      "areaM2": 185.2330020205028,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "CO-AMCO-TERRAIN-NPN-660010105000000960034000000000",
+      "areaM2": 45.925718012501754,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "CO-AMCO-TERRAIN-NPN-660010105000001180005000000000",
+      "areaM2": 96.96363325556892,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "CO-AMCO-TERRAIN-NPN-660010105000001180009000000000",
+      "areaM2": 142.73414369308117,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "CO-AMCO-TERRAIN-NPN-660010105000001170016000000000",
+      "areaM2": 80.13536661286808,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "CO-AMCO-TERRAIN-NPN-660010105000001160020000000000",
+      "areaM2": 148.96322519732837,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "CO-AMCO-TERRAIN-NPN-660010105000001180038000000000",
+      "areaM2": 115.1993562932409,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "CO-AMCO-TERRAIN-NPN-660010105000001390015000000000",
+      "areaM2": 95.92955851305517,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "CO-AMCO-TERRAIN-NPN-660010105000001160013000000000",
+      "areaM2": 78.76492612732527,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "CO-AMCO-TERRAIN-NPN-660010105000001180028000000000",
+      "areaM2": 97.91342121114862,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "CO-AMCO-TERRAIN-NPN-660010105000001160016000000000",
+      "areaM2": 95.53791906030142,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "CO-AMCO-TERRAIN-NPN-660010105000001170015000000000",
+      "areaM2": 76.08110830907987,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "CO-AMCO-TERRAIN-NPN-660010105000001180033000000000",
+      "areaM2": 248.70375017526638,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "CO-AMCO-TERRAIN-NPN-660010105000001180015000000000",
+      "areaM2": 194.68954501699838,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "CO-AMCO-TERRAIN-NPN-660010105000001180035000000000",
+      "areaM2": 118.13741545070056,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "CO-AMCO-TERRAIN-NPN-660010105000000960033000000000",
+      "areaM2": 132.86716060081537,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "CO-AMCO-TERRAIN-NPN-660010105000000960024000000000",
+      "areaM2": 61.745702620054445,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "CO-AMCO-TERRAIN-NPN-660010105000001190020000000000",
+      "areaM2": 437.556850896786,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "CO-AMCO-TERRAIN-NPN-660010105000001190012000000000",
+      "areaM2": 130.12923295656813,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "CO-AMCO-TERRAIN-NPN-660010105000001190041000000000",
+      "areaM2": 141.6649272498977,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "CO-AMCO-TERRAIN-NPN-660010105000001190023000000000",
+      "areaM2": 218.52276240316453,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "CO-AMCO-TERRAIN-NPN-660010105000001190009000000000",
+      "areaM2": 259.93376633628003,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "CO-AMCO-TERRAIN-NPN-660010105000001190043000000000",
+      "areaM2": 130.46097041816265,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "CO-AMCO-TERRAIN-NPN-660010105000001190030000000000",
+      "areaM2": 91.10372639573448,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "CO-AMCO-TERRAIN-NPN-660010105000001190002000000000",
+      "areaM2": 60.28377000420702,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "CO-AMCO-TERRAIN-NPN-660010105000001190018000000000",
+      "areaM2": 34.37345716440117,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "CO-AMCO-TERRAIN-NPN-660010105000001190026000000000",
+      "areaM2": 103.46862182858236,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "CO-AMCO-TERRAIN-NPN-660010105000001200030900000000",
+      "areaM2": 1302.1299770917828,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "CO-AMCO-TERRAIN-NPN-660010105000001190017000000000",
+      "areaM2": 36.440381322890154,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "CO-AMCO-TERRAIN-NPN-660010105000001190003000000000",
+      "areaM2": 60.46767535188163,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "CO-AMCO-TERRAIN-NPN-660010105000001190006000000000",
+      "areaM2": 185.50678810491263,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "CO-AMCO-TERRAIN-NPN-660010105000001190021000000000",
+      "areaM2": 150.01266477509154,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "CO-AMCO-TERRAIN-NPN-660010105000001190015000000000",
+      "areaM2": 122.06983633269746,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "CO-AMCO-TERRAIN-NPN-660010105000001200001000000000",
+      "areaM2": 164.46204050804158,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "CO-AMCO-TERRAIN-NPN-660010105000000970023000000000",
+      "areaM2": 269.6737887068484,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "CO-AMCO-TERRAIN-NPN-660010105000000970024000000000",
+      "areaM2": 266.7829231276447,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "CO-AMCO-TERRAIN-NPN-660010105000001190042000000000",
+      "areaM2": 575.813008481965,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "CO-AMCO-TERRAIN-NPN-660010105000000970021000000000",
+      "areaM2": 175.699032740514,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "CO-AMCO-TERRAIN-NPN-660010105000001190013000000000",
+      "areaM2": 136.78283025012848,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "CO-AMCO-TERRAIN-NPN-660010105000001190008000000000",
+      "areaM2": 125.59008248335857,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "CO-AMCO-TERRAIN-NPN-660010105000001190034000000000",
+      "areaM2": 89.70379813032956,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "CO-AMCO-TERRAIN-NPN-660010105000001200037000000000",
+      "areaM2": 351.9705077711346,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "CO-AMCO-TERRAIN-NPN-660010105000001190046000000000",
+      "areaM2": 26.24734183857459,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "CO-AMCO-TERRAIN-NPN-660010105000001190004000000000",
+      "areaM2": 150.04098146386607,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "CO-AMCO-TERRAIN-NPN-660010105000001190029000000000",
+      "areaM2": 92.68082446137745,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "CO-AMCO-TERRAIN-NPN-660010105000001190037000000000",
+      "areaM2": 234.5970715710542,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "CO-AMCO-TERRAIN-NPN-660010105000001190032000000000",
+      "areaM2": 151.49131982744797,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "CO-AMCO-TERRAIN-NPN-660010105000001190016000000000",
+      "areaM2": 35.830161193253815,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "CO-AMCO-TERRAIN-NPN-660010105000000970017000000000",
+      "areaM2": 560.0224384744998,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "CO-AMCO-TERRAIN-NPN-660010105000001190022000000000",
+      "areaM2": 153.79148668566856,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "CO-AMCO-TERRAIN-NPN-660010105000001200029000000000",
+      "areaM2": 96.3647999923085,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "CO-AMCO-TERRAIN-NPN-660010105000001190007000000000",
+      "areaM2": 138.64471868618995,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "CO-AMCO-TERRAIN-NPN-660010105000000970027000000000",
+      "areaM2": 149.51865527114103,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "CO-AMCO-TERRAIN-NPN-660010105000001190031000000000",
+      "areaM2": 88.06409933090751,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "CO-AMCO-TERRAIN-NPN-660010105000001190038000000000",
+      "areaM2": 252.786283152115,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "CO-AMCO-TERRAIN-NPN-660010105000001190040000000000",
+      "areaM2": 212.24863348474923,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "CO-AMCO-TERRAIN-NPN-660010105000001190001000000000",
+      "areaM2": 89.7233039447747,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "CO-AMCO-TERRAIN-NPN-660010105000001190045000000000",
+      "areaM2": 67.78924691657744,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "CO-AMCO-TERRAIN-NPN-660010105000001190019000000000",
+      "areaM2": 38.29763271003082,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "CO-AMCO-TERRAIN-NPN-660010105000001190005000000000",
+      "areaM2": 180.08807847524264,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "CO-AMCO-TERRAIN-NPN-660010105000001190033000000000",
+      "areaM2": 84.89664643577366,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "CO-AMCO-TERRAIN-NPN-660010105000000970019000000000",
+      "areaM2": 126.48337864125793,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "CO-AMCO-TERRAIN-NPN-660010105000001200039000000000",
+      "areaM2": 152.48319264230096,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "CO-AMCO-TERRAIN-NPN-660010105000001190044000000000",
+      "areaM2": 68.90172985260446,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "CO-AMCO-TERRAIN-NPN-660010105000001190035000000000",
+      "areaM2": 45.05356825093136,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "CO-AMCO-TERRAIN-NPN-660010105000001190011000000000",
+      "areaM2": 186.9619751825145,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "CO-AMCO-TERRAIN-NPN-660010105000001190024000000000",
+      "areaM2": 173.81102531407686,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "CO-AMCO-TERRAIN-NPN-660010105000000970026000000000",
+      "areaM2": 137.57497699612537,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "CO-AMCO-TERRAIN-NPN-660010105000001190014000000000",
+      "areaM2": 189.70463924640973,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "CO-AMCO-TERRAIN-NPN-660010105000001190028000000000",
+      "areaM2": 87.12979003547653,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "CO-AMCO-TERRAIN-NPN-660010105000000980001000000000",
+      "areaM2": 6608.540804237295,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "CO-AMCO-TERRAIN-NPN-660010105000001190010000000000",
+      "areaM2": 166.93581992859512,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "CO-AMCO-TERRAIN-NPN-660010105000000970018000000000",
+      "areaM2": 385.84242490919763,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "CO-AMCO-TERRAIN-NPN-660010105000000970025000000000",
+      "areaM2": 144.91553318867741,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "CO-AMCO-TERRAIN-NPN-660010105000000970022000000000",
+      "areaM2": 293.5998301075749,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "CO-AMCO-TERRAIN-NPN-660010105000000970020000000000",
+      "areaM2": 121.84056713230554,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "CO-AMCO-TERRAIN-NPN-660010105000001190025000000000",
+      "areaM2": 291.35664723921974,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "CO-AMCO-TERRAIN-NPN-660010105000001190039000000000",
+      "areaM2": 141.79013247019836,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "CO-AMCO-TERRAIN-NPN-660010105000001200902900000000",
+      "areaM2": 167.4954905995372,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "CO-AMCO-TERRAIN-NPN-660010105000001210026000000000",
+      "areaM2": 540.7432699788687,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "CO-AMCO-TERRAIN-NPN-660010105000001210029000000000",
+      "areaM2": 293.59872167757266,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "CO-AMCO-TERRAIN-NPN-660010105000001200011000000000",
+      "areaM2": 302.6740747543002,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "CO-AMCO-TERRAIN-NPN-660010105000001200017000000000",
+      "areaM2": 283.7640920863418,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "CO-AMCO-TERRAIN-NPN-660010105000001210003000000000",
+      "areaM2": 142.0502434957384,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "CO-AMCO-TERRAIN-NPN-660010105000001210028000000000",
+      "areaM2": 197.04248336440202,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "CO-AMCO-TERRAIN-NPN-660010105000001200013000000000",
+      "areaM2": 289.3105323187463,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "CO-AMCO-TERRAIN-NPN-660010105000001200003000000000",
+      "areaM2": 53.12062740847394,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "CO-AMCO-TERRAIN-NPN-660010105000001200005000000000",
+      "areaM2": 122.79908255864645,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "CO-AMCO-TERRAIN-NPN-660010105000001200012000000000",
+      "areaM2": 175.30284214241698,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "CO-AMCO-TERRAIN-NPN-660010105000001200015000000000",
+      "areaM2": 206.93741629021784,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "CO-AMCO-TERRAIN-NPN-660010105000000990026000000000",
+      "areaM2": 292.77017722111844,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "CO-AMCO-TERRAIN-NPN-660010105000001210002000000000",
+      "areaM2": 229.62272609663262,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "CO-AMCO-TERRAIN-NPN-660010105000000990023000000000",
+      "areaM2": 183.14680467473175,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "CO-AMCO-TERRAIN-NPN-660010105000001210001000000000",
+      "areaM2": 210.19170600894628,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "CO-AMCO-TERRAIN-NPN-660010105000000990022000000000",
+      "areaM2": 159.28237238233794,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "CO-AMCO-TERRAIN-NPN-660010105000001210025000000000",
+      "areaM2": 346.80773308383044,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "CO-AMCO-TERRAIN-NPN-660010105000001200018000000000",
+      "areaM2": 201.97677460942427,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "CO-AMCO-TERRAIN-NPN-660010105000000990027000000000",
+      "areaM2": 297.36892165597754,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "CO-AMCO-TERRAIN-NPN-660010105000001200016000000000",
+      "areaM2": 220.12509645884657,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "CO-AMCO-TERRAIN-NPN-660010105000001200006000000000",
+      "areaM2": 122.58083620450293,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "CO-AMCO-TERRAIN-NPN-660010105000001200008000000000",
+      "areaM2": 73.78235362242583,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "CO-AMCO-TERRAIN-NPN-660010105000001200014000000000",
+      "areaM2": 204.01081226855095,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "CO-AMCO-TERRAIN-NPN-660010105000000990025000000000",
+      "areaM2": 181.2769771878325,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "CO-AMCO-TERRAIN-NPN-660010105000001200004000000000",
+      "areaM2": 126.39057658007444,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "CO-AMCO-TERRAIN-NPN-660010105000001200009000000000",
+      "areaM2": 171.69493405146426,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "CO-AMCO-TERRAIN-NPN-660010105000000990024000000000",
+      "areaM2": 176.95397766201796,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "CO-AMCO-TERRAIN-NPN-660010105000001200002000000000",
+      "areaM2": 96.96308919610404,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "CO-AMCO-TERRAIN-NPN-660010105000001210903900000000",
+      "areaM2": 996.7766645451671,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "CO-AMCO-TERRAIN-NPN-660010105000000740036000000000",
+      "areaM2": 20.717634460302083,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "CO-AMCO-TERRAIN-NPN-660010105000000960005000000000",
+      "areaM2": 159.73697656112444,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "CO-AMCO-TERRAIN-NPN-660010105000000730017000000000",
+      "areaM2": 133.8346093427762,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "CO-AMCO-TERRAIN-NPN-660010105000000740025000000000",
+      "areaM2": 215.66679557738448,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "CO-AMCO-TERRAIN-NPN-660010105000000740026000000000",
+      "areaM2": 314.9936623006248,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "CO-AMCO-TERRAIN-NPN-660010105000000740020000000000",
+      "areaM2": 177.9011747721075,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "CO-AMCO-TERRAIN-NPN-660010105000000960044000000000",
+      "areaM2": 38.13842278261928,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "CO-AMCO-TERRAIN-NPN-660010105000000730023000000000",
+      "areaM2": 178.61798527529334,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "CO-AMCO-TERRAIN-NPN-660010105000000950005000000000",
+      "areaM2": 43.23012079646667,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "CO-AMCO-TERRAIN-NPN-660010105000000950003000000000",
+      "areaM2": 93.00923902149827,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "CO-AMCO-TERRAIN-NPN-660010105000000950021000000000",
+      "areaM2": 88.59205485618216,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "CO-AMCO-TERRAIN-NPN-660010105000000960008000000000",
+      "areaM2": 305.0935246195765,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "CO-AMCO-TERRAIN-NPN-660010105000000960009000000000",
+      "areaM2": 249.58306210596947,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "CO-AMCO-TERRAIN-NPN-660010105000000730021900000000",
+      "areaM2": 210.52572777028894,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "CO-AMCO-TERRAIN-NPN-660010105000000950025000000000",
+      "areaM2": 142.44618805584673,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "CO-AMCO-TERRAIN-NPN-660010105000000730902900000000",
+      "areaM2": 21.07119940753432,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "CO-AMCO-TERRAIN-NPN-660010105000000960037000000000",
+      "areaM2": 58.69581232208541,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "CO-AMCO-TERRAIN-NPN-660010105000000960015000000000",
+      "areaM2": 116.42846347841771,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "CO-AMCO-TERRAIN-NPN-660010105000000950030000000000",
+      "areaM2": 85.09684048316326,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "CO-AMCO-TERRAIN-NPN-660010105000000960042000000000",
+      "areaM2": 29.972495268651365,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "CO-AMCO-TERRAIN-NPN-660010105000000950007000000000",
+      "areaM2": 64.66330503938012,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "CO-AMCO-TERRAIN-NPN-660010105000000960021000000000",
+      "areaM2": 85.06119466675642,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "CO-AMCO-TERRAIN-NPN-660010105000000960001000000000",
+      "areaM2": 83.66161239905779,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "CO-AMCO-TERRAIN-NPN-660010105000000740018000000000",
+      "areaM2": 176.69064765900765,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "CO-AMCO-TERRAIN-NPN-660010105000000950015000000000",
+      "areaM2": 78.99276375567379,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "CO-AMCO-TERRAIN-NPN-660010105000000730018000000000",
+      "areaM2": 20.402990971101698,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "CO-AMCO-TERRAIN-NPN-660010105000000960017000000000",
+      "areaM2": 214.20195622803422,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "CO-AMCO-TERRAIN-NPN-660010105000000950032000000000",
+      "areaM2": 72.41006105437538,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "CO-AMCO-TERRAIN-NPN-660010105000000960013000000000",
+      "areaM2": 97.84388427772059,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "CO-AMCO-TERRAIN-NPN-660010105000000950027000000000",
+      "areaM2": 122.31543385022681,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "CO-AMCO-TERRAIN-NPN-660010105000000960002000000000",
+      "areaM2": 192.25999869224222,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "CO-AMCO-TERRAIN-NPN-660010105000000960003000000000",
+      "areaM2": 266.4687165298331,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "CO-AMCO-TERRAIN-NPN-660010105000000960040000000000",
+      "areaM2": 73.78280653266631,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "CO-AMCO-TERRAIN-NPN-660010105000000950013000000000",
+      "areaM2": 57.842365631657486,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "CO-AMCO-TERRAIN-NPN-660010105000000950002000000000",
+      "areaM2": 75.98610458948707,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "CO-AMCO-TERRAIN-NPN-660010105000000950001000000000",
+      "areaM2": 173.63520010703704,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "CO-AMCO-TERRAIN-NPN-660010105000000950016000000000",
+      "areaM2": 72.66648651670135,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "CO-AMCO-TERRAIN-NPN-660010105000000740023000000000",
+      "areaM2": 329.32997631200124,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "CO-AMCO-TERRAIN-NPN-660010105000000950004000000000",
+      "areaM2": 51.53730004198303,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "CO-AMCO-TERRAIN-NPN-660010105000000950020000000000",
+      "areaM2": 72.64179297696003,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "CO-AMCO-TERRAIN-NPN-660010105000000950017000000000",
+      "areaM2": 79.82051210439718,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "CO-AMCO-TERRAIN-NPN-660010105000000960016000000000",
+      "areaM2": 124.0373609125679,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "CO-AMCO-TERRAIN-NPN-660010105000000960018000000000",
+      "areaM2": 153.65577282588103,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "CO-AMCO-TERRAIN-NPN-660010105000000950012000000000",
+      "areaM2": 91.65001237054122,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "CO-AMCO-TERRAIN-NPN-660010105000000740037000000000",
+      "areaM2": 69.8894129531511,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "CO-AMCO-TERRAIN-NPN-660010105000000960014000000000",
+      "areaM2": 115.16490277679544,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "CO-AMCO-TERRAIN-NPN-660010105000000960043000000000",
+      "areaM2": 45.89361084718253,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "CO-AMCO-TERRAIN-NPN-660010105000000730022000000000",
+      "areaM2": 179.69201403412112,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "CO-AMCO-TERRAIN-NPN-660010105000000730040000000000",
+      "areaM2": 152.3043771349443,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "CO-AMCO-TERRAIN-NPN-660010105000000950031000000000",
+      "areaM2": 69.83219784882672,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "CO-AMCO-TERRAIN-NPN-660010105000000950033000000000",
+      "areaM2": 77.20143036524765,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "CO-AMCO-TERRAIN-NPN-660010105000000950008000000000",
+      "areaM2": 118.51676622604914,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "CO-AMCO-TERRAIN-NPN-660010105000000960038000000000",
+      "areaM2": 105.51217263297751,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "CO-AMCO-TERRAIN-NPN-660010105000000960039000000000",
+      "areaM2": 172.26270959525212,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "CO-AMCO-TERRAIN-NPN-660010105000000950034000000000",
+      "areaM2": 35.53942422487652,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "CO-AMCO-TERRAIN-NPN-660010105000000950014000000000",
+      "areaM2": 77.41571308195394,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "CO-AMCO-TERRAIN-NPN-660010105000000740022000000000",
+      "areaM2": 105.91314418674935,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "CO-AMCO-TERRAIN-NPN-660010105000000960045000000000",
+      "areaM2": 43.47155593161334,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "CO-AMCO-TERRAIN-NPN-660010105000000950009000000000",
+      "areaM2": 121.16029600068978,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "CO-AMCO-TERRAIN-NPN-660010105000000960020000000000",
+      "areaM2": 83.92989074034705,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "CO-AMCO-TERRAIN-NPN-660010105000000950011000000000",
+      "areaM2": 112.95304805432018,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "CO-AMCO-TERRAIN-NPN-660010105000000960012000000000",
+      "areaM2": 145.69692641186884,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "CO-AMCO-TERRAIN-NPN-660010105000000950026000000000",
+      "areaM2": 128.8107884177534,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "CO-AMCO-TERRAIN-NPN-660010105000000950028000000000",
+      "areaM2": 134.70500841138832,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "CO-AMCO-TERRAIN-NPN-660010105000000960011000000000",
+      "areaM2": 248.0894779586995,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "CO-AMCO-TERRAIN-NPN-660010105000000960019000000000",
+      "areaM2": 87.29675852421366,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "CO-AMCO-TERRAIN-NPN-660010105000000960041000000000",
+      "areaM2": 72.01842126890361,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "CO-AMCO-TERRAIN-NPN-660010105000000960901900000000",
+      "areaM2": 297.5210471555939,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "CO-AMCO-TERRAIN-NPN-660010105000000960004000000000",
+      "areaM2": 327.44643278793677,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "CO-AMCO-TERRAIN-NPN-660010105000000740024000000000",
+      "areaM2": 208.8105873091286,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "CO-AMCO-TERRAIN-NPN-660010105000000950901900000000",
+      "areaM2": 103.31265049666828,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "CO-AMCO-TERRAIN-NPN-660010105000000950018000000000",
+      "areaM2": 71.54715439638713,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "CO-AMCO-TERRAIN-NPN-660010105000000950029000000000",
+      "areaM2": 99.70340071215732,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "CO-AMCO-TERRAIN-NPN-660010105000000950010000000000",
+      "areaM2": 107.58625931624653,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "CO-AMCO-TERRAIN-NPN-660010105000000950006000000000",
+      "areaM2": 132.4309150008477,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "CO-AMCO-TERRAIN-NPN-660010105000000960022000000000",
+      "areaM2": 93.26928100504824,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "CO-AMCO-TERRAIN-NPN-660010105000000960035000000000",
+      "areaM2": 64.25059291273945,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "CO-AMCO-TERRAIN-NPN-660010105000000960036000000000",
+      "areaM2": 35.25732207575068,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "CO-AMCO-TERRAIN-NPN-660010105000000740019000000000",
+      "areaM2": 91.76879105092273,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "CO-AMCO-TERRAIN-NPN-660010105000000740027000000000",
+      "areaM2": 1111.377484386477,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "CO-AMCO-TERRAIN-NPN-660010105000000970011000000000",
+      "areaM2": 105.75596411101769,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "CO-AMCO-TERRAIN-NPN-660010105000000970902900000000",
+      "areaM2": 357.5872523775302,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "CO-AMCO-TERRAIN-NPN-660010105000000970032000000000",
+      "areaM2": 124.16618605345204,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "CO-AMCO-TERRAIN-NPN-660010105000000970009000000000",
+      "areaM2": 59.86633304423156,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "CO-AMCO-TERRAIN-NPN-660010105000000750025000000000",
+      "areaM2": 63.27257169293149,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "CO-AMCO-TERRAIN-NPN-660010105000000970039000000000",
+      "areaM2": 110.72132908799615,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "CO-AMCO-TERRAIN-NPN-660010105000000970035000000000",
+      "areaM2": 58.22672243937961,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "CO-AMCO-TERRAIN-NPN-660010105000000970002000000000",
+      "areaM2": 268.6785060841186,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "CO-AMCO-TERRAIN-NPN-660010105000000970007000000000",
+      "areaM2": 132.63328020296754,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "CO-AMCO-TERRAIN-NPN-660010105000000750021000000000",
+      "areaM2": 217.89927598886004,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "CO-AMCO-TERRAIN-NPN-660010105000000970029000000000",
+      "areaM2": 136.66653521092996,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "CO-AMCO-TERRAIN-NPN-660010105000000750029000000000",
+      "areaM2": 81.73501954754724,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "CO-AMCO-TERRAIN-NPN-660010105000000970028000000000",
+      "areaM2": 131.56159728234002,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "CO-AMCO-TERRAIN-NPN-660010105000000970901900000000",
+      "areaM2": 905.1446173487187,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "CO-AMCO-TERRAIN-NPN-660010105000000750017000000000",
+      "areaM2": 1598.2124243297183,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "CO-AMCO-TERRAIN-NPN-660010105000000970012000000000",
+      "areaM2": 106.47214548041522,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "CO-AMCO-TERRAIN-NPN-660010105000000970001000000000",
+      "areaM2": 249.51777217865566,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "CO-AMCO-TERRAIN-NPN-660010105000000750023000000000",
+      "areaM2": 268.62660265701516,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "CO-AMCO-TERRAIN-NPN-660010105000000970005000000000",
+      "areaM2": 190.78709411716463,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "CO-AMCO-TERRAIN-NPN-660010105000000970014000000000",
+      "areaM2": 106.15424293377224,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "CO-AMCO-TERRAIN-NPN-660010105000000970033000000000",
+      "areaM2": 122.69337802946148,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "CO-AMCO-TERRAIN-NPN-660010105000000970031000000000",
+      "areaM2": 134.90790716365268,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "CO-AMCO-TERRAIN-NPN-660010105000000970030000000000",
+      "areaM2": 137.3237219487176,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "CO-AMCO-TERRAIN-NPN-660010105000000970006000000000",
+      "areaM2": 134.0314473421589,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "CO-AMCO-TERRAIN-NPN-660010105000000970015000000000",
+      "areaM2": 104.09897657715979,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "CO-AMCO-TERRAIN-NPN-660010105000000750019000000000",
+      "areaM2": 240.40496940188683,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "CO-AMCO-TERRAIN-NPN-660010105000000750024000000000",
+      "areaM2": 64.01335073339573,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "CO-AMCO-TERRAIN-NPN-660010105000000750020000000000",
+      "areaM2": 271.9948221714028,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "CO-AMCO-TERRAIN-NPN-660010105000000970034000000000",
+      "areaM2": 63.77028737919727,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "CO-AMCO-TERRAIN-NPN-660010105000000750018000000000",
+      "areaM2": 181.84038703468087,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "CO-AMCO-TERRAIN-NPN-660010105000000740021000000000",
+      "areaM2": 64.57696098685554,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "CO-AMCO-TERRAIN-NPN-660010105000000750022000000000",
+      "areaM2": 125.88314710747812,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "CO-AMCO-TERRAIN-NPN-660010105000000970010000000000",
+      "areaM2": 49.750203460245544,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "CO-AMCO-TERRAIN-NPN-660010105000000970003000000000",
+      "areaM2": 508.6117960613773,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "CO-AMCO-TERRAIN-NPN-660010105000000760902900000000",
+      "areaM2": 243.40075212459223,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "CO-AMCO-TERRAIN-NPN-660010105000000760904900000000",
+      "areaM2": 198.8990117322238,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "CO-AMCO-TERRAIN-NPN-660010105000000760023000000000",
+      "areaM2": 196.15878955241993,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "CO-AMCO-TERRAIN-NPN-660010105000000760905900000000",
+      "areaM2": 426.51292436304163,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "CO-AMCO-TERRAIN-NPN-660010105000000770027000000000",
+      "areaM2": 74.90910564063863,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "CO-AMCO-TERRAIN-NPN-660010105000000760903900000000",
+      "areaM2": 123.53300349897047,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "CO-AMCO-TERRAIN-NPN-660010105000000760059000000000",
+      "areaM2": 204.6503801084834,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "CO-AMCO-TERRAIN-NPN-660010105000000760020000000000",
+      "areaM2": 235.75417494376018,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "CO-AMCO-TERRAIN-NPN-660010105000000760025000000000",
+      "areaM2": 164.68240107815305,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "CO-AMCO-TERRAIN-NPN-660010105000000760018000000000",
+      "areaM2": 358.10940955574927,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "CO-AMCO-TERRAIN-NPN-660010105000000990028000000000",
+      "areaM2": 286.65115179347595,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "CO-AMCO-TERRAIN-NPN-660010105000000990903900000000",
+      "areaM2": 333.63980929633027,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "CO-AMCO-TERRAIN-NPN-660010105000000760906900000000",
+      "areaM2": 531.8238621952999,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "CO-AMCO-TERRAIN-NPN-660010105000000770022000000000",
+      "areaM2": 183.47402405101948,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "CO-AMCO-TERRAIN-NPN-660010105000000770025000000000",
+      "areaM2": 85.93719156629325,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "CO-AMCO-TERRAIN-NPN-660010105000000760022000000000",
+      "areaM2": 185.86712999884418,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "CO-AMCO-TERRAIN-NPN-660010105000000770026000000000",
+      "areaM2": 86.90328942327831,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "CO-AMCO-TERRAIN-NPN-660010105000000760031000000000",
+      "areaM2": 69.53643684208626,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "CO-AMCO-TERRAIN-NPN-660010105000000760021000000000",
+      "areaM2": 158.27022340879049,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "CO-AMCO-TERRAIN-NPN-660010105000000760030000000000",
+      "areaM2": 163.98122164961862,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "CO-AMCO-TERRAIN-NPN-660010105000000760006000000000",
+      "areaM2": 200.90193014843106,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "CO-AMCO-TERRAIN-NPN-660010105000000760019000000000",
+      "areaM2": 305.11053990237826,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "CO-AMCO-TERRAIN-NPN-660010105000000760026000000000",
+      "areaM2": 69.07496109017688,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "CO-AMCO-TERRAIN-NPN-660010105000000770024000000000",
+      "areaM2": 82.26593284133207,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "CO-AMCO-TERRAIN-NPN-660010105000000760028000000000",
+      "areaM2": 299.2323155151309,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "CO-AMCO-TERRAIN-NPN-660010105000000760033000000000",
+      "areaM2": 188.52546087650862,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "CO-AMCO-TERRAIN-NPN-660010105000000770903900000000",
+      "areaM2": 228.93420962449085,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "CO-AMCO-TERRAIN-NPN-660010105000000760035000000000",
+      "areaM2": 130.88418169006098,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "CO-AMCO-TERRAIN-NPN-660010105000000760024000000000",
+      "areaM2": 141.0726459067042,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "CO-AMCO-TERRAIN-NPN-660010105000000770023000000000",
+      "areaM2": 137.69781185890943,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "CO-AMCO-TERRAIN-NPN-660010105000000990002000000000",
+      "areaM2": 199.9322179702939,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "CO-AMCO-TERRAIN-NPN-660010105000001700011000000000",
+      "areaM2": 58.54617990781907,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "CO-AMCO-TERRAIN-NPN-660010105000001700019000000000",
+      "areaM2": 84.49427789706989,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "CO-AMCO-TERRAIN-NPN-660010105000001970018000000000",
+      "areaM2": 106.01362484379739,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "CO-AMCO-TERRAIN-NPN-660010105000001690020000000000",
+      "areaM2": 88.18815635438663,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "CO-AMCO-TERRAIN-NPN-660010105000001690022000000000",
+      "areaM2": 58.80226744805862,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "CO-AMCO-TERRAIN-NPN-660010105000001700030000000000",
+      "areaM2": 71.72118950624974,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "CO-AMCO-TERRAIN-NPN-660010105000001690004000000000",
+      "areaM2": 62.585636630061735,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "CO-AMCO-TERRAIN-NPN-660010105000001700029000000000",
+      "areaM2": 73.88939536434974,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "CO-AMCO-TERRAIN-NPN-660010105000001970028000000000",
+      "areaM2": 203.97395123138094,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "CO-AMCO-TERRAIN-NPN-660010105000001710016000000000",
+      "areaM2": 96.76196340907828,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "CO-AMCO-TERRAIN-NPN-660010105000001710903900000000",
+      "areaM2": 63.13674297390289,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "CO-AMCO-TERRAIN-NPN-660010105000001960003000000000",
+      "areaM2": 1372.4845337294314,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "CO-AMCO-TERRAIN-NPN-660010105000001690007000000000",
+      "areaM2": 71.99813181826589,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "CO-AMCO-TERRAIN-NPN-660010105000001960001000000000",
+      "areaM2": 171.83118210255307,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "CO-AMCO-TERRAIN-NPN-660010105000001700023000000000",
+      "areaM2": 73.01518187488679,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "CO-AMCO-TERRAIN-NPN-660010105000001710011000000000",
+      "areaM2": 102.07503969238998,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "CO-AMCO-TERRAIN-NPN-660010105000001700012000000000",
+      "areaM2": 91.35111890074232,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "CO-AMCO-TERRAIN-NPN-660010105000001700020000000000",
+      "areaM2": 121.98565046790803,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "CO-AMCO-TERRAIN-NPN-660010105000001710010000000000",
+      "areaM2": 82.88901790917267,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "CO-AMCO-TERRAIN-NPN-660010105000001970023000000000",
+      "areaM2": 58.25947623193856,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "CO-AMCO-TERRAIN-NPN-660010105000001710023000000000",
+      "areaM2": 91.44518895742182,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "CO-AMCO-TERRAIN-NPN-660010105000001970021000000000",
+      "areaM2": 81.89941704882044,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "CO-AMCO-TERRAIN-NPN-660010105000001710013000000000",
+      "areaM2": 81.3331180691533,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "CO-AMCO-TERRAIN-NPN-660010105000001700026000000000",
+      "areaM2": 69.7860973164797,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "CO-AMCO-TERRAIN-NPN-660010105000001710017000000000",
+      "areaM2": 82.55035807614675,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "CO-AMCO-TERRAIN-NPN-660010105000001710020000000000",
+      "areaM2": 55.30628629144626,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "CO-AMCO-TERRAIN-NPN-660010105000001960009000000000",
+      "areaM2": 288.1379511816375,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "CO-AMCO-TERRAIN-NPN-660010105000001970027000000000",
+      "areaM2": 137.43394933155463,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "CO-AMCO-TERRAIN-NPN-660010105000001690016000000000",
+      "areaM2": 103.83280869321467,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "CO-AMCO-TERRAIN-NPN-660010105000001700028000000000",
+      "areaM2": 70.70361531243012,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "CO-AMCO-TERRAIN-NPN-660010105000001690019000000000",
+      "areaM2": 78.96104490443487,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "CO-AMCO-TERRAIN-NPN-660010105000001690009000000000",
+      "areaM2": 76.39028985478029,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "CO-AMCO-TERRAIN-NPN-660010105000001710005000000000",
+      "areaM2": 164.1915785344967,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "CO-AMCO-TERRAIN-NPN-660010105000001690017000000000",
+      "areaM2": 108.61472336906454,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "CO-AMCO-TERRAIN-NPN-660010105000001690003000000000",
+      "areaM2": 73.64769230128552,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "CO-AMCO-TERRAIN-NPN-660010105000001690021000000000",
+      "areaM2": 60.334484630576746,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "CO-AMCO-TERRAIN-NPN-660010105000001960010000000000",
+      "areaM2": 249.1180253241103,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "CO-AMCO-TERRAIN-NPN-660010105000001700022000000000",
+      "areaM2": 58.54406403494407,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "CO-AMCO-TERRAIN-NPN-660010105000001690013000000000",
+      "areaM2": 63.16375022043814,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "CO-AMCO-TERRAIN-NPN-660010105000001700021000000000",
+      "areaM2": 60.92325528687032,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "CO-AMCO-TERRAIN-NPN-660010105000001710019000000000",
+      "areaM2": 9.984584016901438,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "CO-AMCO-TERRAIN-NPN-660010105000001700024000000000",
+      "areaM2": 98.96411503120531,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "CO-AMCO-TERRAIN-NPN-660010105000001700006000000000",
+      "areaM2": 99.72941100041069,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "CO-AMCO-TERRAIN-NPN-660010105000001700007000000000",
+      "areaM2": 94.8440626711179,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "CO-AMCO-TERRAIN-NPN-660010105000001700015000000000",
+      "areaM2": 42.264459257282375,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "CO-AMCO-TERRAIN-NPN-660010105000001700005000000000",
+      "areaM2": 100.04156473658502,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "CO-AMCO-TERRAIN-NPN-660010105000001700013000000000",
+      "areaM2": 57.4872682346422,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "CO-AMCO-TERRAIN-NPN-660010105000001710028000000000",
+      "areaM2": 76.20485766826708,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "CO-AMCO-TERRAIN-NPN-660010105000001710029000000000",
+      "areaM2": 100.78784751144495,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "CO-AMCO-TERRAIN-NPN-660010105000001690023000000000",
+      "areaM2": 72.83018026059645,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "CO-AMCO-TERRAIN-NPN-660010105000001690005000000000",
+      "areaM2": 79.58412999254956,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "CO-AMCO-TERRAIN-NPN-660010105000001690018000000000",
+      "areaM2": 89.06469943950705,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "CO-AMCO-TERRAIN-NPN-660010105000001700017000000000",
+      "areaM2": 76.84380304070011,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "CO-AMCO-TERRAIN-NPN-660010105000001710009000000000",
+      "areaM2": 81.2718168321498,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "CO-AMCO-TERRAIN-NPN-660010105000001690008000000000",
+      "areaM2": 104.61036721629837,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "CO-AMCO-TERRAIN-NPN-660010105000001690015000000000",
+      "areaM2": 65.53332301186427,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "CO-AMCO-TERRAIN-NPN-660010105000001970019000000000",
+      "areaM2": 84.5582923135915,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "CO-AMCO-TERRAIN-NPN-660010105000001700009000000000",
+      "areaM2": 56.89513251506141,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "CO-AMCO-TERRAIN-NPN-660010105000001710904900000000",
+      "areaM2": 46.37353605646738,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "CO-AMCO-TERRAIN-NPN-660010105000001700016000000000",
+      "areaM2": 101.87077295768431,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "CO-AMCO-TERRAIN-NPN-660010105000001690024000000000",
+      "areaM2": 117.22663779686737,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "CO-AMCO-TERRAIN-NPN-660010105000001710024000000000",
+      "areaM2": 68.36152924087853,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "CO-AMCO-TERRAIN-NPN-660010105000001970024000000000",
+      "areaM2": 63.20356334648807,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "CO-AMCO-TERRAIN-NPN-660010105000001690014000000000",
+      "areaM2": 57.32030554792047,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "CO-AMCO-TERRAIN-NPN-660010105000001690011000000000",
+      "areaM2": 74.05392924100306,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "CO-AMCO-TERRAIN-NPN-660010105000001700018000000000",
+      "areaM2": 79.89050701879827,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "CO-AMCO-TERRAIN-NPN-660010105000001710012000000000",
+      "areaM2": 83.1565930074725,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "CO-AMCO-TERRAIN-NPN-660010105000001960901900000000",
+      "areaM2": 164.5253641555428,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "CO-AMCO-TERRAIN-NPN-660010105000001690012000000000",
+      "areaM2": 118.26632520557001,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "CO-AMCO-TERRAIN-NPN-660010105000001960012000000000",
+      "areaM2": 217.20723257153196,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "CO-AMCO-TERRAIN-NPN-660010105000001710015000000000",
+      "areaM2": 95.02147409105451,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "CO-AMCO-TERRAIN-NPN-660010105000001690006000000000",
+      "areaM2": 58.455152787084046,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "CO-AMCO-TERRAIN-NPN-660010105000001690002000000000",
+      "areaM2": 95.0713477425974,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "CO-AMCO-TERRAIN-NPN-660010105000001710018000000000",
+      "areaM2": 61.01232323116196,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "CO-AMCO-TERRAIN-NPN-660010105000001700010000000000",
+      "areaM2": 58.251644595683665,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "CO-AMCO-TERRAIN-NPN-660010105000001710901900000000",
+      "areaM2": 65.12811759566407,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "CO-AMCO-TERRAIN-NPN-660010105000001970001000000000",
+      "areaM2": 63.810321625364224,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "CO-AMCO-TERRAIN-NPN-660010105000001690010000000000",
+      "areaM2": 75.82902312735169,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "CO-AMCO-TERRAIN-NPN-660010105000001960011000000000",
+      "areaM2": 256.17961802060285,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "CO-AMCO-TERRAIN-NPN-660010105000001700008000000000",
+      "areaM2": 71.72400361667145,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "CO-AMCO-TERRAIN-NPN-660010105000001710902900000000",
+      "areaM2": 63.94486877690207,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "CO-AMCO-TERRAIN-NPN-660010105000001700027000000000",
+      "areaM2": 68.91642782688348,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "CO-AMCO-TERRAIN-NPN-660010105000001710027000000000",
+      "areaM2": 74.24941314381537,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "CO-AMCO-TERRAIN-NPN-660010105000001700014000000000",
+      "areaM2": 55.93566559357367,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "CO-AMCO-TERRAIN-NPN-660010105000001710006000000000",
+      "areaM2": 98.98376531287404,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "CO-AMCO-TERRAIN-NPN-660010105000001710008000000000",
+      "areaM2": 158.6292134995427,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "CO-AMCO-TERRAIN-NPN-660010105000001960002000000000",
+      "areaM2": 936.4400107388757,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "CO-AMCO-TERRAIN-NPN-660010105000001700025000000000",
+      "areaM2": 70.80742493542648,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "CO-AMCO-TERRAIN-NPN-660010105000001710014000000000",
+      "areaM2": 101.06855051057828,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "CO-AMCO-TERRAIN-NPN-660010105000001970002000000000",
+      "areaM2": 67.02356791667587,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "CO-AMCO-TERRAIN-NPN-660010105000001970020000000000",
+      "areaM2": 83.17793149848634,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "CO-AMCO-TERRAIN-NPN-660010105000001960004000000000",
+      "areaM2": 96.74848015379574,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "CO-AMCO-TERRAIN-NPN-660010105000001970022000000000",
+      "areaM2": 95.4302277687587,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "CO-AMCO-TERRAIN-NPN-660010105000001710025000000000",
+      "areaM2": 43.55316520819679,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "CO-AMCO-TERRAIN-NPN-660010105000000540019000000000",
+      "areaM2": 164.03190585087415,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "CO-AMCO-TERRAIN-NPN-660010105000000530904900000000",
+      "areaM2": 102.78028884225006,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "CO-AMCO-TERRAIN-NPN-660010105000000740006000000000",
+      "areaM2": 684.374603547344,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "CO-AMCO-TERRAIN-NPN-660010105000000750027000000000",
+      "areaM2": 71.21900893918735,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "CO-AMCO-TERRAIN-NPN-660010105000000750903900000000",
+      "areaM2": 94.98371040092174,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "CO-AMCO-TERRAIN-NPN-660010105000000540024000000000",
+      "areaM2": 187.65790049612457,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "CO-AMCO-TERRAIN-NPN-660010105000000740014000000000",
+      "areaM2": 68.0930538221405,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "CO-AMCO-TERRAIN-NPN-660010105000000750012000000000",
+      "areaM2": 77.62634024337301,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "CO-AMCO-TERRAIN-NPN-660010105000000750016000000000",
+      "areaM2": 81.95923769979562,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "CO-AMCO-TERRAIN-NPN-660010105000000540907900000000",
+      "areaM2": 151.80985116229007,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "CO-AMCO-TERRAIN-NPN-660010105000000750013000000000",
+      "areaM2": 77.09431363682107,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "CO-AMCO-TERRAIN-NPN-660010105000000530028000000000",
+      "areaM2": 252.72383367521311,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "CO-AMCO-TERRAIN-NPN-660010105000000750002000000000",
+      "areaM2": 107.89031747150734,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "CO-AMCO-TERRAIN-NPN-660010105000000540035000000000",
+      "areaM2": 53.74313547064185,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "CO-AMCO-TERRAIN-NPN-660010105000000540028000000000",
+      "areaM2": 115.46562819270193,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "CO-AMCO-TERRAIN-NPN-660010105000000750014000000000",
+      "areaM2": 97.67957959814218,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "CO-AMCO-TERRAIN-NPN-660010105000000750007000000000",
+      "areaM2": 262.6090475869331,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "CO-AMCO-TERRAIN-NPN-660010105000000740013000000000",
+      "areaM2": 43.80073337775178,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "CO-AMCO-TERRAIN-NPN-660010105000000540007000000000",
+      "areaM2": 206.71106958656742,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "CO-AMCO-TERRAIN-NPN-660010105000000540015000000000",
+      "areaM2": 155.5585226966392,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "CO-AMCO-TERRAIN-NPN-660010105000000530024000000000",
+      "areaM2": 112.12676549950699,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "CO-AMCO-TERRAIN-NPN-660010105000000540009000000000",
+      "areaM2": 311.59710415178745,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "CO-AMCO-TERRAIN-NPN-660010105000000750026000000000",
+      "areaM2": 92.07365351146741,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "CO-AMCO-TERRAIN-NPN-660010105000000530029000000000",
+      "areaM2": 236.4334557346709,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "CO-AMCO-TERRAIN-NPN-660010105000000750006000000000",
+      "areaM2": 364.2415196758161,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "CO-AMCO-TERRAIN-NPN-660010105000000540901900000000",
+      "areaM2": 585.6762952081583,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "CO-AMCO-TERRAIN-NPN-660010105000000540025000000000",
+      "areaM2": 207.86036897130688,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "CO-AMCO-TERRAIN-NPN-660010105000000540905900000000",
+      "areaM2": 354.4693266336857,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "CO-AMCO-TERRAIN-NPN-660010105000000740012000000000",
+      "areaM2": 45.25147046790475,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "CO-AMCO-TERRAIN-NPN-660010105000000540008000000000",
+      "areaM2": 359.3257539633027,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "CO-AMCO-TERRAIN-NPN-660010105000000540034000000000",
+      "areaM2": 47.18618015708858,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "CO-AMCO-TERRAIN-NPN-660010105000000750901900000000",
+      "areaM2": 458.75554609770944,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "CO-AMCO-TERRAIN-NPN-660010105000000750011000000000",
+      "areaM2": 62.60667383169403,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "CO-AMCO-TERRAIN-NPN-660010105000000540006000000000",
+      "areaM2": 236.76179520325113,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "CO-AMCO-TERRAIN-NPN-660010105000000540031000000000",
+      "areaM2": 29.65321965134753,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "CO-AMCO-TERRAIN-NPN-660010105000000750003000000000",
+      "areaM2": 225.97816239205233,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "CO-AMCO-TERRAIN-NPN-660010105000000750009000000000",
+      "areaM2": 81.13790484288349,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "CO-AMCO-TERRAIN-NPN-660010105000000540027000000000",
+      "areaM2": 211.9974948749035,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "CO-AMCO-TERRAIN-NPN-660010105000000740016000000000",
+      "areaM2": 73.30297590728617,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "CO-AMCO-TERRAIN-NPN-660010105000000540032000000000",
+      "areaM2": 36.94614095002792,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "CO-AMCO-TERRAIN-NPN-660010105000000740009000000000",
+      "areaM2": 79.04253633431803,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "CO-AMCO-TERRAIN-NPN-660010105000000530025000000000",
+      "areaM2": 134.26457681005593,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "CO-AMCO-TERRAIN-NPN-660010105000000540022000000000",
+      "areaM2": 123.10216407332376,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "CO-AMCO-TERRAIN-NPN-660010105000000540026000000000",
+      "areaM2": 235.45611331969343,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "CO-AMCO-TERRAIN-NPN-660010105000000740015000000000",
+      "areaM2": 67.26305988092005,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "CO-AMCO-TERRAIN-NPN-660010105000000750902900000000",
+      "areaM2": 260.7249947004996,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "CO-AMCO-TERRAIN-NPN-660010105000000540902900000000",
+      "areaM2": 117.62241929019943,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "CO-AMCO-TERRAIN-NPN-660010105000000530023000000000",
+      "areaM2": 81.13777307035059,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "CO-AMCO-TERRAIN-NPN-660010105000000530027000000000",
+      "areaM2": 96.48050792538533,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "CO-AMCO-TERRAIN-NPN-660010105000000540904900000000",
+      "areaM2": 145.40836888711377,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "CO-AMCO-TERRAIN-NPN-660010105000000750004000000000",
+      "areaM2": 447.81445840591414,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "CO-AMCO-TERRAIN-NPN-660010105000000540030000000000",
+      "areaM2": 47.42087964391784,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "CO-AMCO-TERRAIN-NPN-660010105000000530026000000000",
+      "areaM2": 184.42454301200692,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "CO-AMCO-TERRAIN-NPN-660010105000000540014000000000",
+      "areaM2": 174.8691552435904,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "CO-AMCO-TERRAIN-NPN-660010105000000750015000000000",
+      "areaM2": 80.06781263102722,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "CO-AMCO-TERRAIN-NPN-660010105000000540036000000000",
+      "areaM2": 201.70706323177862,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "CO-AMCO-TERRAIN-NPN-660010105000000740011000000000",
+      "areaM2": 43.95195367038749,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "CO-AMCO-TERRAIN-NPN-660010105000000740010000000000",
+      "areaM2": 44.39264605400109,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "CO-AMCO-TERRAIN-NPN-660010105000000540125900000000",
+      "areaM2": 455.92795027464547,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "CO-AMCO-TERRAIN-NPN-660010105000000540124000000000",
+      "areaM2": 42.22339216796369,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "CO-AMCO-TERRAIN-NPN-660010105000000740007000000000",
+      "areaM2": 180.1521283456409,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "CO-AMCO-TERRAIN-NPN-660010105000000740017000000000",
+      "areaM2": 493.3087990853558,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "CO-AMCO-TERRAIN-NPN-660010105000000750005000000000",
+      "areaM2": 310.96548337055657,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "CO-AMCO-TERRAIN-NPN-660010105000000540029000000000",
+      "areaM2": 96.8559834437939,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "CO-AMCO-TERRAIN-NPN-660010105000000750010000000000",
+      "areaM2": 14.570312324690535,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "CO-AMCO-TERRAIN-NPN-660010105000000530902900000000",
+      "areaM2": 230.36316167013536,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "CO-AMCO-TERRAIN-NPN-660010105000000540033000000000",
+      "areaM2": 85.21186391955992,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "CO-AMCO-TERRAIN-NPN-660010105000000740008000000000",
+      "areaM2": 143.12597368654684,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "CO-AMCO-TERRAIN-NPN-660010105000001150017000000000",
+      "areaM2": 84.43375947428652,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "CO-AMCO-TERRAIN-NPN-660010105000001370014000000000",
+      "areaM2": 145.09203155571586,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "CO-AMCO-TERRAIN-NPN-660010105000001370019000000000",
+      "areaM2": 127.76636055905198,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "CO-AMCO-TERRAIN-NPN-660010105000001370020000000000",
+      "areaM2": 103.30859956819225,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "CO-AMCO-TERRAIN-NPN-660010105000001170007000000000",
+      "areaM2": 89.07728495646913,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "CO-AMCO-TERRAIN-NPN-660010105000001150013000000000",
+      "areaM2": 88.41041043856342,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "CO-AMCO-TERRAIN-NPN-660010105000001170020000000000",
+      "areaM2": 73.15285234016714,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "CO-AMCO-TERRAIN-NPN-660010105000001160029000000000",
+      "areaM2": 87.4783233363687,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "CO-AMCO-TERRAIN-NPN-660010105000001170031000000000",
+      "areaM2": 71.64827804825961,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "CO-AMCO-TERRAIN-NPN-660010105000001140011000000000",
+      "areaM2": 121.31283550242823,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "CO-AMCO-TERRAIN-NPN-660010105000001170023000000000",
+      "areaM2": 77.27945770748761,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "CO-AMCO-TERRAIN-NPN-660010105000001150009000000000",
+      "areaM2": 86.36057969730905,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "CO-AMCO-TERRAIN-NPN-660010105000001160003000000000",
+      "areaM2": 94.9981439551152,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "CO-AMCO-TERRAIN-NPN-660010105000001140018000000000",
+      "areaM2": 117.36257325696474,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "CO-AMCO-TERRAIN-NPN-660010105000001170011000000000",
+      "areaM2": 86.46004771973175,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "CO-AMCO-TERRAIN-NPN-660010105000001150020000000000",
+      "areaM2": 70.1226818958587,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "CO-AMCO-TERRAIN-NPN-660010105000001140009000000000",
+      "areaM2": 94.0458832720486,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "CO-AMCO-TERRAIN-NPN-660010105000001370016000000000",
+      "areaM2": 87.9757881871083,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "CO-AMCO-TERRAIN-NPN-660010105000001160009000000000",
+      "areaM2": 95.77291361700094,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "CO-AMCO-TERRAIN-NPN-660010105000001150011000000000",
+      "areaM2": 91.9208700713751,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "CO-AMCO-TERRAIN-NPN-660010105000001150012000000000",
+      "areaM2": 93.40890874756148,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "CO-AMCO-TERRAIN-NPN-660010105000001390013000000000",
+      "areaM2": 82.73602709014094,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "CO-AMCO-TERRAIN-NPN-660010105000001370011000000000",
+      "areaM2": 104.4110837149692,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "CO-AMCO-TERRAIN-NPN-660010105000001160010000000000",
+      "areaM2": 91.544882512934,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "CO-AMCO-TERRAIN-NPN-660010105000001170003000000000",
+      "areaM2": 116.64820785829741,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "CO-AMCO-TERRAIN-NPN-660010105000001170026000000000",
+      "areaM2": 76.0915907597519,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "CO-AMCO-TERRAIN-NPN-660010105000001370013000000000",
+      "areaM2": 144.27297898589714,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "CO-AMCO-TERRAIN-NPN-660010105000001150016000000000",
+      "areaM2": 86.2760431814924,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "CO-AMCO-TERRAIN-NPN-660010105000001370012000000000",
+      "areaM2": 132.20705055910824,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "CO-AMCO-TERRAIN-NPN-660010105000001390003000000000",
+      "areaM2": 83.3804145396327,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "CO-AMCO-TERRAIN-NPN-660010105000001170025000000000",
+      "areaM2": 74.54737539004128,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "CO-AMCO-TERRAIN-NPN-660010105000001140901900000000",
+      "areaM2": 73.25931004320542,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "CO-AMCO-TERRAIN-NPN-660010105000001160028000000000",
+      "areaM2": 86.32471064670165,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "CO-AMCO-TERRAIN-NPN-660010105000001390001000000000",
+      "areaM2": 124.44341054811248,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "CO-AMCO-TERRAIN-NPN-660010105000001390007000000000",
+      "areaM2": 129.3641172980424,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "CO-AMCO-TERRAIN-NPN-660010105000001390033000000000",
+      "areaM2": 147.24304762895227,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "CO-AMCO-TERRAIN-NPN-660010105000001140902900000000",
+      "areaM2": 138.05809852720628,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "CO-AMCO-TERRAIN-NPN-660010105000001170028000000000",
+      "areaM2": 123.62717484725167,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "CO-AMCO-TERRAIN-NPN-660010105000001390006000000000",
+      "areaM2": 117.03548114355843,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "CO-AMCO-TERRAIN-NPN-660010105000001160030000000000",
+      "areaM2": 82.85069976337705,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "CO-AMCO-TERRAIN-NPN-660010105000001160006000000000",
+      "areaM2": 88.11839833951234,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "CO-AMCO-TERRAIN-NPN-660010105000001170019000000000",
+      "areaM2": 76.56778259462192,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "CO-AMCO-TERRAIN-NPN-660010105000001140019000000000",
+      "areaM2": 105.27376133134963,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "CO-AMCO-TERRAIN-NPN-660010105000001170009000000000",
+      "areaM2": 91.09310524540346,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "CO-AMCO-TERRAIN-NPN-660010105000001170029000000000",
+      "areaM2": 143.63481430170873,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "CO-AMCO-TERRAIN-NPN-660010105000001390010000000000",
+      "areaM2": 71.43586032094957,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "CO-AMCO-TERRAIN-NPN-660010105000001170008000000000",
+      "areaM2": 92.11922802672198,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "CO-AMCO-TERRAIN-NPN-660010105000001140010000000000",
+      "areaM2": 60.292236140587036,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "CO-AMCO-TERRAIN-NPN-660010105000001140015000000000",
+      "areaM2": 59.39146912179513,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "CO-AMCO-TERRAIN-NPN-660010105000001160024000000000",
+      "areaM2": 70.34150498281731,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "CO-AMCO-TERRAIN-NPN-660010105000001170022000000000",
+      "areaM2": 116.00676992460828,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "CO-AMCO-TERRAIN-NPN-660010105000001140012000000000",
+      "areaM2": 101.97468726493967,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "CO-AMCO-TERRAIN-NPN-660010105000001140016000000000",
+      "areaM2": 63.27416045202548,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "CO-AMCO-TERRAIN-NPN-660010105000001150010000000000",
+      "areaM2": 88.89052055625697,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "CO-AMCO-TERRAIN-NPN-660010105000001390032000000000",
+      "areaM2": 84.8539019797924,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "CO-AMCO-TERRAIN-NPN-660010105000001170006000000000",
+      "areaM2": 119.98201777013297,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "CO-AMCO-TERRAIN-NPN-660010105000001170004000000000",
+      "areaM2": 107.28303167467196,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "CO-AMCO-TERRAIN-NPN-660010105000001390002000000000",
+      "areaM2": 105.3974729044193,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "CO-AMCO-TERRAIN-NPN-660010105000001390014000000000",
+      "areaM2": 85.32237902325919,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "CO-AMCO-TERRAIN-NPN-660010105000001170032000000000",
+      "areaM2": 141.55976425851816,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "CO-AMCO-TERRAIN-NPN-660010105000001150019000000000",
+      "areaM2": 82.1450901786137,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "CO-AMCO-TERRAIN-NPN-660010105000001160004000000000",
+      "areaM2": 94.19841553879533,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "CO-AMCO-TERRAIN-NPN-660010105000001370015000000000",
+      "areaM2": 89.67923202575017,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "CO-AMCO-TERRAIN-NPN-660010105000001160005000000000",
+      "areaM2": 90.30321100630059,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "CO-AMCO-TERRAIN-NPN-660010105000001170021000000000",
+      "areaM2": 108.86402995028357,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "CO-AMCO-TERRAIN-NPN-660010105000001140008000000000",
+      "areaM2": 83.07425519044087,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "CO-AMCO-TERRAIN-NPN-660010105000001160001000000000",
+      "areaM2": 153.25631589843476,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "CO-AMCO-TERRAIN-NPN-660010105000001390005000000000",
+      "areaM2": 115.77935193419562,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "CO-AMCO-TERRAIN-NPN-660010105000001170005000000000",
+      "areaM2": 119.79566129455306,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "CO-AMCO-TERRAIN-NPN-660010105000001160901900000000",
+      "areaM2": 91.39436051534057,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "CO-AMCO-TERRAIN-NPN-660010105000001170010000000000",
+      "areaM2": 90.5693963417245,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "CO-AMCO-TERRAIN-NPN-660010105000001390009000000000",
+      "areaM2": 77.19478838094281,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "CO-AMCO-TERRAIN-NPN-660010105000001160022000000000",
+      "areaM2": 121.15179106873171,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "CO-AMCO-TERRAIN-NPN-660010105000001160027000000000",
+      "areaM2": 90.38477960566694,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "CO-AMCO-TERRAIN-NPN-660010105000001160008000000000",
+      "areaM2": 90.92822484025024,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "CO-AMCO-TERRAIN-NPN-660010105000001390004000000000",
+      "areaM2": 123.49753471531703,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "CO-AMCO-TERRAIN-NPN-660010105000001150014000000000",
+      "areaM2": 98.57103154466638,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "CO-AMCO-TERRAIN-NPN-660010105000001150021000000000",
+      "areaM2": 117.82877248135556,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "CO-AMCO-TERRAIN-NPN-660010105000001160023000000000",
+      "areaM2": 82.9597418367427,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "CO-AMCO-TERRAIN-NPN-660010105000001140013000000000",
+      "areaM2": 135.36386343422262,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "CO-AMCO-TERRAIN-NPN-660010105000001170030000000000",
+      "areaM2": 90.402604463582,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "CO-AMCO-TERRAIN-NPN-660010105000001160002000000000",
+      "areaM2": 97.5736854671747,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "CO-AMCO-TERRAIN-NPN-660010105000001160011000000000",
+      "areaM2": 84.4153724333438,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "CO-AMCO-TERRAIN-NPN-660010105000001170024000000000",
+      "areaM2": 73.68315224378294,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "CO-AMCO-TERRAIN-NPN-660010105000001160902900000000",
+      "areaM2": 120.69139831732235,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "CO-AMCO-TERRAIN-NPN-660010105000001150018000000000",
+      "areaM2": 147.37550861315083,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "CO-AMCO-TERRAIN-NPN-660010105000001390008000000000",
+      "areaM2": 117.51529380170244,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "CO-AMCO-TERRAIN-NPN-660010105000001150015000000000",
+      "areaM2": 101.61859992079154,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "CO-AMCO-TERRAIN-NPN-660010105000001170027000000000",
+      "areaM2": 116.38479784774131,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "CO-AMCO-TERRAIN-NPN-660010105000001160031000000000",
+      "areaM2": 41.97257087476189,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "CO-AMCO-TERRAIN-NPN-660010105000001140017000000000",
+      "areaM2": 208.5028275221078,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "CO-AMCO-TERRAIN-NPN-660010105000001170001000000000",
+      "areaM2": 87.49121874762355,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "CO-AMCO-TERRAIN-NPN-660010105000001170002000000000",
+      "areaM2": 60.2305751921508,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "CO-AMCO-TERRAIN-NPN-660010105000001160007000000000",
+      "areaM2": 84.85259360796786,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "CO-AMCO-TERRAIN-NPN-660010105000001160025000000000",
+      "areaM2": 151.6778078649386,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "CO-AMCO-TERRAIN-NPN-660010105000001220028000000000",
+      "areaM2": 349.3204282022681,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "CO-AMCO-TERRAIN-NPN-660010105000000990907900000000",
+      "areaM2": 239.34943736612482,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "CO-AMCO-TERRAIN-NPN-660010105000001220031000000000",
+      "areaM2": 65.40243107106856,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "CO-AMCO-TERRAIN-NPN-660010105000001220004000000000",
+      "areaM2": 531.1047577448276,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "CO-AMCO-TERRAIN-NPN-660010105000001000017000000000",
+      "areaM2": 218.4508512036239,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "CO-AMCO-TERRAIN-NPN-660010105000001000003000000000",
+      "areaM2": 414.78696292771,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "CO-AMCO-TERRAIN-NPN-660010105000001000023000000000",
+      "areaM2": 159.6342894183543,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "CO-AMCO-TERRAIN-NPN-660010105000001000025000000000",
+      "areaM2": 133.6381261510525,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "CO-AMCO-TERRAIN-NPN-660010105000001210901900000000",
+      "areaM2": 1041.6370450137565,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "CO-AMCO-TERRAIN-NPN-660010105000001220025000000000",
+      "areaM2": 54.44149288851601,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "CO-AMCO-TERRAIN-NPN-660010105000001000016000000000",
+      "areaM2": 220.81379079603434,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "CO-AMCO-TERRAIN-NPN-660010105000001210902900000000",
+      "areaM2": 206.5908060453921,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "CO-AMCO-TERRAIN-NPN-660010105000001000022000000000",
+      "areaM2": 155.00997649452466,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "CO-AMCO-TERRAIN-NPN-660010105000001220002000000000",
+      "areaM2": 167.31902604731957,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "CO-AMCO-TERRAIN-NPN-660010105000001220003000000000",
+      "areaM2": 351.0366492936478,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "CO-AMCO-TERRAIN-NPN-660010105000001220021000000000",
+      "areaM2": 408.7564904137573,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "CO-AMCO-TERRAIN-NPN-660010105000001000004000000000",
+      "areaM2": 418.56562522022654,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "CO-AMCO-TERRAIN-NPN-660010105000001220022000000000",
+      "areaM2": 250.54205441443344,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "CO-AMCO-TERRAIN-NPN-660010105000000990021000000000",
+      "areaM2": 173.27103518015866,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "CO-AMCO-TERRAIN-NPN-660010105000001220029000000000",
+      "areaM2": 67.4942244235958,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "CO-AMCO-TERRAIN-NPN-660010105000001210007000000000",
+      "areaM2": 181.69806883966513,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "CO-AMCO-TERRAIN-NPN-660010105000000990018000000000",
+      "areaM2": 72.02514639848705,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "CO-AMCO-TERRAIN-NPN-660010105000001000020000000000",
+      "areaM2": 156.38888993642462,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "CO-AMCO-TERRAIN-NPN-660010105000001210012000000000",
+      "areaM2": 63.916049495991096,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "CO-AMCO-TERRAIN-NPN-660010105000000990901900000000",
+      "areaM2": 291.13766435803484,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "CO-AMCO-TERRAIN-NPN-660010105000001220019000000000",
+      "areaM2": 298.9810387811014,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "CO-AMCO-TERRAIN-NPN-660010105000001220023000000000",
+      "areaM2": 279.61029363927634,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "CO-AMCO-TERRAIN-NPN-660010105000001220027000000000",
+      "areaM2": 164.63159999119588,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "CO-AMCO-TERRAIN-NPN-660010105000001220020000000000",
+      "areaM2": 200.12311382323205,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "CO-AMCO-TERRAIN-NPN-660010105000001210009000000000",
+      "areaM2": 149.00502995686114,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "CO-AMCO-TERRAIN-NPN-660010105000000990019000000000",
+      "areaM2": 268.86640291602055,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "CO-AMCO-TERRAIN-NPN-660010105000001220026000000000",
+      "areaM2": 252.40240859384693,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "CO-AMCO-TERRAIN-NPN-660010105000001210008000000000",
+      "areaM2": 140.0189849120125,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "CO-AMCO-TERRAIN-NPN-660010105000000990013000000000",
+      "areaM2": 434.3635615957811,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "CO-AMCO-TERRAIN-NPN-660010105000001220011000000000",
+      "areaM2": 409.6535950298329,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "CO-AMCO-TERRAIN-NPN-660010105000001220901900000000",
+      "areaM2": 73.62886821114388,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "CO-AMCO-TERRAIN-NPN-660010105000001000018000000000",
+      "areaM2": 110.99697145505161,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "CO-AMCO-TERRAIN-NPN-660010105000001220903900000000",
+      "areaM2": 130.15173283733324,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "CO-AMCO-TERRAIN-NPN-660010105000001210010000000000",
+      "areaM2": 147.23069462539956,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "CO-AMCO-TERRAIN-NPN-660010105000001210269000000000",
+      "areaM2": 170.13449588281435,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "CO-AMCO-TERRAIN-NPN-660010105000000990906900000000",
+      "areaM2": 276.57646490499485,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "CO-AMCO-TERRAIN-NPN-660010105000001220012000000000",
+      "areaM2": 312.25829019738626,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "CO-AMCO-TERRAIN-NPN-660010105000001220032000000000",
+      "areaM2": 58.04555068410661,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "CO-AMCO-TERRAIN-NPN-660010105000001000024000000000",
+      "areaM2": 244.3530808162939,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "CO-AMCO-TERRAIN-NPN-660010105000000990014000000000",
+      "areaM2": 282.6961444970661,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "CO-AMCO-TERRAIN-NPN-660010105000001220030000000000",
+      "areaM2": 86.5461168847717,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "CO-AMCO-TERRAIN-NPN-660010105000001000019000000000",
+      "areaM2": 254.78385483079919,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "CO-AMCO-TERRAIN-NPN-660010105000001000021000000000",
+      "areaM2": 163.26676036499336,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "CO-AMCO-TERRAIN-NPN-660010105000000990020000000000",
+      "areaM2": 234.41193739974474,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    }
+  ]
+}

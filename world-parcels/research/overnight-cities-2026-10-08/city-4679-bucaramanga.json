@@ -1,0 +1,130 @@
+{
+  "name": "Bucaramanga",
+  "country": "Colombia",
+  "countryCode": "CO",
+  "rank": 555,
+  "point": [
+    7.10309112438528,
+    -73.1126708968967
+  ],
+  "population2025": 939291,
+  "populationUnit": "persons",
+  "population2025k": 939.291,
+  "populationPlausibility2025": "Moderate",
+  "schemaVersion": 1,
+  "checkedAt": "2026-10-09",
+  "status": "complete",
+  "registryFound": true,
+  "registryBasis": "AMB is the official metropolitan cadastral manager and its official cadastral pages offer a parcel viewer and services for Bucaramanga. The official urban Predios feature layer covers the WUP point.",
+  "registryEvidenceUrls": [
+    "https://www.amb.gov.co/consultas-catastro/",
+    "https://mapa.amb.gov.co/server/rest/services/VISOR/MAPA_BASE_VECTORIAL_105_Definitivo/MapServer",
+    "https://mapa.amb.gov.co/server/rest/services/VISOR/MAPA_BASE_VECTORIAL_105_Definitivo/MapServer/18"
+  ],
+  "publicParcelGeometryFound": true,
+  "verifiedSample": true,
+  "verifiedParcelResponse": {
+    "url": "https://mapa.amb.gov.co/server/rest/services/VISOR/MAPA_BASE_VECTORIAL_105_Definitivo/MapServer/18/query",
+    "httpStatus": 200,
+    "contentType": "text/plain",
+    "layerId": 18,
+    "featureCount": 1,
+    "returnedFullPolygonCount": 1,
+    "uniqueFullPolygonCount": 1,
+    "featureId": "44901",
+    "nativeIdField": "OBJECTID_1",
+    "nativeCadastralIdField": "codigo",
+    "nativeCadastralId": "680010102000001570001000000000",
+    "query": {
+      "geometryType": "esriGeometryPoint",
+      "geometry": {
+        "x": -73.1126708968967,
+        "y": 7.10309112438528,
+        "spatialReference": {
+          "wkid": 4326
+        }
+      },
+      "inSR": 4326,
+      "outSR": 4326,
+      "where": "1=1",
+      "outFields": "OBJECTID_1,codigo",
+      "returnGeometry": true,
+      "resultRecordCount": 3,
+      "f": "geojson"
+    },
+    "wupPointContained": true,
+    "geometrySampleCount": 1,
+    "limitations": "One anonymous point-intersecting feature was verified at the ranked locator. This is a one-point sample and does not prove citywide completeness. AMB ItemInfo includes “Todos los derechos reservados - AMB”; retained for source/reuse review, not interpreted as an automatic suitability decision."
+  },
+  "freshResearch": {
+    "queries": [
+      {
+        "language": "English",
+        "query": "Bucaramanga catastro multipropósito oficial mapa predios gestor catastral área metropolitana Bucaramanga GIS",
+        "scope": "Find city cadastral services and public parcel geometry with safe stable IDs.",
+        "result": "The official AMB cadastral viewer and public ArcGIS service expose the urban Predios polygon layer. A bounded point query at the ranked WUP location returned one polygon covering the exact point; only OBJECTID_1 and codigo were requested and retained.",
+        "actualResultUrls": [
+          "https://www.amb.gov.co/consultas-catastro/",
+          "https://mapa.amb.gov.co/server/rest/services/VISOR/MAPA_BASE_VECTORIAL_105_Definitivo/MapServer",
+          "https://mapa.amb.gov.co/server/rest/services/VISOR/MAPA_BASE_VECTORIAL_105_Definitivo/MapServer/18"
+        ],
+        "executionMethod": "Separate English web search, official service metadata review, and one anonymous bounded ArcGIS point query limited to a single feature and two allowlisted fields."
+      },
+      {
+        "language": "Spanish",
+        "query": "Bucaramanga catastro mapa predial oficial gestor catastral AMB IGAC visor catastral",
+        "scope": "Identificar el gestor catastral local y comprobar si existe geometría predial pública en el punto clasificado.",
+        "result": "El AMB publica su visor y la capa urbana Predios. La consulta puntual anónima devolvió un polígono que contiene el punto WUP; la respuesta conservada solo incluye OBJECTID_1, codigo y geometría.",
+        "actualResultUrls": [
+          "https://www.amb.gov.co/consultas-catastro/",
+          "https://mapa.amb.gov.co/server/rest/services/VISOR/MAPA_BASE_VECTORIAL_105_Definitivo/MapServer/18"
+        ],
+        "executionMethod": "Búsqueda en español independiente, revisión de metadatos oficiales y una consulta ArcGIS pública limitada al punto y a campos seguros."
+      }
+    ]
+  },
+  "source": {
+    "sourceId": "co-amb-bucaramanga-predios",
+    "name": "AMB MAPA_BASE_VECTORIAL_105_Definitivo – Predios",
+    "url": "https://mapa.amb.gov.co/server/rest/services/VISOR/MAPA_BASE_VECTORIAL_105_Definitivo/MapServer/18",
+    "operator": "Área Metropolitana de Bucaramanga (AMB)",
+    "serviceType": "Public ArcGIS feature layer for urban cadastral parcels; bounded anonymous query returned a full polygon at the exact WUP point",
+    "layer": "Predios (MapServer layer 18)",
+    "geometryType": "Polygon",
+    "outputCrs": "EPSG:4326 (GeoJSON response); native layer spatial reference WGS 1984",
+    "nativeIdField": "OBJECTID_1; codigo (30-digit cadastral identifier)",
+    "nativeIdEvidence": "OBJECTID_1 uniquely identifies native map records across the bounded protocol audit. One cadastral codigo repeats for two parts with non-overlapping interiors and a shared boundary. The current generic ArcGIS identity path rejects the differing parts; the code is not treated as a one-record-per-parcel key.",
+    "scope": "Using the cadastral codigo as identity failed on one bounded viewport: two original map records (OBJECTID_1 44608 and 45458) have different polygon parts with non-overlapping interiors and a shared boundary under the same code. A separate native-record audit passed all bounded viewport, three-row paging, fresh exact-ID, absence, footprint and binding checks for 259 unique OBJECTID_1 records. All 259 geometries are valid, but a different pair (45091 and 44584) overlaps by 0.334 m² in independent metric GEOS QA. Runtime remains held for cadastral component identity and source-topology review, with no source repair or feature exclusion. Public access/reuse notices remain scope information."
+  },
+  "coverageAssessment": {
+    "claimedScope": "AMB is the official metropolitan cadastral manager and its official cadastral pages offer a parcel viewer and services for Bucaramanga. The official urban Predios feature layer covers the WUP point.",
+    "verifiedOpenScope": "One public urban parcel polygon covers the exact WUP point; no citywide completeness claim.",
+    "countrywideVerified": false
+  },
+  "resultCategory": "verified_public_geometry_runtime_held",
+  "technicalBlocker": "The native codigo contract now passes all bounded runtime checks with complete native parts: 259 source records assemble 258 cadastral parcels, including two touching records for one code. No identifier substitution or shape repair is needed. Independent GEOS still finds a 0.3338069837 m² triangular overlap between two different parcel codes; its minimum rotated rectangle has sides about 0.934 m and 0.715 m. This is a source-boundary conflict, not a thin floating-point edge. Runtime remains held until a faithful ground interpretation can handle it; no source parcel was excluded, clipped or moved.",
+  "remainingUncertainty": "Citywide completeness and persistence of provider identifiers are not established.",
+  "pointBasis": "UN WUP 2025 population-weighted settlement centroid; this is not a municipal boundary or a parcel-coverage claim.",
+  "wupCityCode": 4679,
+  "cityId": "wup2025:4679",
+  "centerLatLon": [
+    7.10309112438528,
+    -73.1126708968967
+  ],
+  "queueRank": 555,
+  "sourceIds": [
+    "co-amb-bucaramanga-predios"
+  ],
+  "runtimeReadiness": "held_source_boundary_conflict",
+  "adapterReady": false,
+  "sampleGeometryFile": "samples/bucaramanga-amb-wup555.geojson",
+  "sampleGeometrySha256": "91a10bfe53baaff4900663c27c3a95a0bcd56732248c6fe17b413f50fc060f8e",
+  "runtimeAssessment": {
+    "status": "held_source_boundary_conflict",
+    "reason": "The native codigo contract now passes all bounded runtime checks with complete native parts: 259 source records assemble 258 cadastral parcels, including two touching records for one code. No identifier substitution or shape repair is needed. Independent GEOS still finds a 0.3338069837 m² triangular overlap between two different parcel codes; its minimum rotated rectangle has sides about 0.934 m and 0.715 m. This is a source-boundary conflict, not a thin floating-point edge. Runtime remains held until a faithful ground interpretation can handle it; no source parcel was excluded, clipped or moved.",
+    "evidenceFile": "research/overnight-cities-2026-10-08/bucaramanga-service-review.json",
+    "acceptanceFile": "research/overnight-cities-2026-10-08/bucaramanga-root-complete-parts-acceptance.json",
+    "qualityFile": "research/overnight-cities-2026-10-08/bucaramanga-root-complete-parts-quality.json"
+  },
+  "rootReviewedAt": "2026-10-09T01:41:16.717862+00:00"
+}

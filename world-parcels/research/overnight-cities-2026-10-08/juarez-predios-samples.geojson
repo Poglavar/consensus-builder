@@ -1,0 +1,148 @@
+{
+  "type": "FeatureCollection",
+  "features": [
+    {
+      "type": "Feature",
+      "id": "MX-JUA-PREDIO-{4F3D5B33-FD07-4E37-BFB4-34F5E56C65EF}",
+      "geometry": {
+        "type": "Polygon",
+        "coordinates": [
+          [
+            [
+              -106.42195578781502,
+              31.66365465462297
+            ],
+            [
+              -106.42209362974036,
+              31.663661045101378
+            ],
+            [
+              -106.42211379800216,
+              31.66338241223522
+            ],
+            [
+              -106.42197525369774,
+              31.66337572198153
+            ],
+            [
+              -106.42195578781502,
+              31.66365465462297
+            ]
+          ]
+        ]
+      },
+      "properties": {
+        "parcelId": "MX-JUA-PREDIO-{4F3D5B33-FD07-4E37-BFB4-34F5E56C65EF}",
+        "id": "MX-JUA-PREDIO-{4F3D5B33-FD07-4E37-BFB4-34F5E56C65EF}",
+        "sourceId": "mx-juarez-predios",
+        "sourceParcelId": "{4F3D5B33-FD07-4E37-BFB4-34F5E56C65EF}",
+        "parcelNumber": "1-184-075-010",
+        "cadMunicipalityName": null,
+        "ownershipType": "unknown",
+        "sourceProperties": {
+          "OBJECTID": 18702,
+          "GlobalID": "{4F3D5B33-FD07-4E37-BFB4-34F5E56C65EF}",
+          "clavetxt": "1-184-075-010"
+        }
+      }
+    },
+    {
+      "type": "Feature",
+      "id": "MX-JUA-PREDIO-{D2F2D020-8669-4C2F-B6AA-23930CFA8F51}",
+      "geometry": {
+        "type": "Polygon",
+        "coordinates": [
+          [
+            [
+              -106.42189329890522,
+              31.66233255147833
+            ],
+            [
+              -106.42202675498177,
+              31.662337661241683
+            ],
+            [
+              -106.42204289753641,
+              31.66205446074489
+            ],
+            [
+              -106.42191166965704,
+              31.66205276046807
+            ],
+            [
+              -106.42189329890522,
+              31.66233255147833
+            ]
+          ]
+        ]
+      },
+      "properties": {
+        "parcelId": "MX-JUA-PREDIO-{D2F2D020-8669-4C2F-B6AA-23930CFA8F51}",
+        "id": "MX-JUA-PREDIO-{D2F2D020-8669-4C2F-B6AA-23930CFA8F51}",
+        "sourceId": "mx-juarez-predios",
+        "sourceParcelId": "{D2F2D020-8669-4C2F-B6AA-23930CFA8F51}",
+        "parcelNumber": "1-184-084-015",
+        "cadMunicipalityName": null,
+        "ownershipType": "unknown",
+        "sourceProperties": {
+          "OBJECTID": 15168,
+          "GlobalID": "{D2F2D020-8669-4C2F-B6AA-23930CFA8F51}",
+          "clavetxt": "1-184-084-015"
+        }
+      }
+    },
+    {
+      "type": "Feature",
+      "id": "MX-JUA-PREDIO-{CAA13AE6-B72B-47C7-94C1-192F5308F600}",
+      "geometry": {
+        "type": "Polygon",
+        "coordinates": [
+          [
+            [
+              -106.42202675498177,
+              31.662337661241683
+            ],
+            [
+              -106.42216405770722,
+              31.662342917431197
+            ],
+            [
+              -106.42217394750352,
+              31.66217261632937
+            ],
+            [
+              -106.42218034230993,
+              31.66206249111443
+            ],
+            [
+              -106.4221299727726,
+              31.662058542021196
+            ],
+            [
+              -106.42204289753641,
+              31.66205446074489
+            ],
+            [
+              -106.42202675498177,
+              31.662337661241683
+            ]
+          ]
+        ]
+      },
+      "properties": {
+        "parcelId": "MX-JUA-PREDIO-{CAA13AE6-B72B-47C7-94C1-192F5308F600}",
+        "id": "MX-JUA-PREDIO-{CAA13AE6-B72B-47C7-94C1-192F5308F600}",
+        "sourceId": "mx-juarez-predios",
+        "sourceParcelId": "{CAA13AE6-B72B-47C7-94C1-192F5308F600}",
+        "parcelNumber": "1-184-084-009",
+        "cadMunicipalityName": null,
+        "ownershipType": "unknown",
+        "sourceProperties": {
+          "OBJECTID": 15181,
+          "GlobalID": "{CAA13AE6-B72B-47C7-94C1-192F5308F600}",
+          "clavetxt": "1-184-084-009"
+        }
+      }
+    }
+  ]
+}

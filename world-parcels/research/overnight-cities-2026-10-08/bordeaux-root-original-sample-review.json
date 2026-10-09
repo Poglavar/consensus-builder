@@ -1,0 +1,20 @@
+{
+  "schemaVersion": 1,
+  "sampleFile": "city-1566-bordeaux-samples.geojson",
+  "features": [
+    {
+      "nativeOriginalProperties": {
+        "idu": "33063000IX0001"
+      },
+      "runtimeId": "FR-PCI-33063000IX0001",
+      "rawCoordinateArraysIdentical": true,
+      "topologicallyIdentical": true,
+      "metricSrid": 32630,
+      "hausdorffDistanceM": 0.0,
+      "symmetricDifferenceM2": 0.0,
+      "sourceCoordinatesModified": false
+    }
+  ],
+  "fullGeometryRetainedInReview": false,
+  "sourceCoordinatesModified": false
+}

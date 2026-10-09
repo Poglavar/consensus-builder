@@ -1,0 +1,62 @@
+{
+  "schemaVersion": "1.0",
+  "checkedAt": "2026-10-09",
+  "cityRecord": "city-7373-tyumen.json",
+  "purpose": "Document first-party local registry/map evidence and bounded anonymous geometry access review.",
+  "scopeLimits": {
+    "maxFullPolygonsRetainedInCityRecord": 0,
+    "maxFullPolygonsRetainedInReview": 0,
+    "maxFullPolygonsRetainedInRepository": 0,
+    "ownerOrAddressDataRetained": false,
+    "credentialsOrTokenValuesRetained": false,
+    "citywideCompletenessAsserted": false
+  },
+  "assessment": "Official regional service portal and federal registry map are public informational sources. No anonymous geometry-only public feature route or safe parcel schema was verified; no map search was submitted.",
+  "registryAssessment": "The official Tyumen regional government services portal provides regional land/real-estate services and the Rosreestr/NSPD public map identifies the state cadastral mapping context. This supports local regional registry context for Tyumen, but the city-specific service footprint and public geometry access at the WUP point were not verified.",
+  "officialPrimarySources": [
+    {
+      "url": "https://uslugi.admtyumen.ru/",
+      "observation": "The official Tyumen regional government services portal provides regional land/real-estate services and the Rosreestr/NSPD public map identifies the state cadastral mapping context. This supports local regional registry context for Tyumen, but the city-specific service footprint and public geometry access at the WUP point were not verified."
+    },
+    {
+      "url": "https://rosreestr.gov.ru/",
+      "observation": "The official Tyumen regional government services portal provides regional land/real-estate services and the Rosreestr/NSPD public map identifies the state cadastral mapping context. This supports local regional registry context for Tyumen, but the city-specific service footprint and public geometry access at the WUP point were not verified."
+    },
+    {
+      "url": "https://nspd.gov.ru/",
+      "observation": "The official Tyumen regional government services portal provides regional land/real-estate services and the Rosreestr/NSPD public map identifies the state cadastral mapping context. This supports local regional registry context for Tyumen, but the city-specific service footprint and public geometry access at the WUP point were not verified."
+    }
+  ],
+  "searchQueries": [
+    {
+      "language": "English",
+      "query": "Tyumen Russia official land registry cadastral parcel map GIS",
+      "result": "Official Tyumen regional services and Rosreestr sources establish registry/mapping context; no safe feature endpoint found.",
+      "method": "English-language search and official-source review.",
+      "scope": "Identify current city-specific registry and safe public parcel geometry."
+    },
+    {
+      "language": "Russian",
+      "query": "Тюмень Росреестр кадастровая карта публичная официальный сайт земельные участки",
+      "result": "Официальный портал услуг Тюменской области и Росреестр подтверждают регистрационный и картографический контекст; безопасный сервис геометрии не найден.",
+      "method": "Local-language search and official-source review.",
+      "scope": "Identify current city-specific registry and safe public parcel geometry."
+    }
+  ],
+  "geometryDecision": "No parcel geometry retained; no qualifying public geometry-only sample was available.",
+  "coverageAssessment": {
+    "claimedScope": "The official Tyumen regional government services portal provides regional land/real-estate services and the Rosreestr/NSPD public map identifies the state cadastral mapping context. This supports local regional registry context for Tyumen, but the city-specific service footprint and public geometry access at the WUP point were not verified.",
+    "verifiedOpenScope": "No citywide coverage or WUP-point parcel presence is asserted.",
+    "citywideVerified": false,
+    "countrywideVerified": false,
+    "geometryVerified": false
+  },
+  "attempts": [
+    {
+      "kind": "static-source-and-route-review",
+      "httpStatus": "not asserted",
+      "result": "Official source pages and public map/service references reviewed. No public geometry request was sent because a safe feature endpoint and geometry/identifier schema were not verified."
+    }
+  ],
+  "remainingUncertainty": "City-office/service scope and parcel-layer coverage at the WUP point remain unknown."
+}

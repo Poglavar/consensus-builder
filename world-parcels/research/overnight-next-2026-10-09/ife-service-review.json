@@ -1,0 +1,85 @@
+{
+  "schemaVersion": "1.0",
+  "checkedAt": "2026-10-09",
+  "cityRecord": "city-4465-ife.json",
+  "purpose": "Document first-party local registry/map evidence and bounded anonymous parcel geometry access review.",
+  "scopeLimits": {
+    "maxFullPolygonsRetainedInCityRecord": 0,
+    "maxFullPolygonsRetainedInReview": 0,
+    "maxFullPolygonsRetainedInRepository": 0,
+    "ownerOrAddressDataRetained": false,
+    "credentialsOrTokenValuesRetained": false,
+    "citywideCompletenessAsserted": false
+  },
+  "assessment": "Osun State land/survey administration and Ile-Ife survey work are evidenced. Private-property registry and public citywide parcel coverage are not verified.",
+  "registryAssessment": "Osun State land/survey administration and Ile-Ife survey work are evidenced. Private-property registry and public citywide parcel coverage are not verified.",
+  "officialPrimarySources": [
+    {
+      "url": "https://www.osunstate.gov.ng/ministries/office-of-surveyor-general/",
+      "operator": "Osun State Office of Surveyor-General",
+      "observation": "Official office lists cadastral/legal and GIS divisions and land surveying/map tasks; source references Ile-Ife work but does not define exact local registry coverage."
+    },
+    {
+      "url": "https://www.osunstate.gov.ng/mdas/ministries-2/lands-physical-planning-and-urban-development/",
+      "operator": "Osun State Ministry of Lands, Physical Planning and Urban Development",
+      "observation": "Official ministry handles state land administration/registration; city-specific parcel data coverage not enumerated."
+    }
+  ],
+  "searchQueries": [
+    {
+      "language": "Yoruba",
+      "query": "Ife ilẹ̀ ìforúkọsílẹ̀ ilẹ̀ GIS mapa ilẹ̀ ìjọba ilẹ̀ Osun Ife",
+      "result": "Osun State land/survey administration and Ile-Ife survey work are evidenced. Private-property registry and public citywide parcel coverage are not verified.",
+      "method": "Separate local-language web search followed by official-source review.",
+      "scope": "Identify first-party local land-registry/cadastral sources and safe anonymous parcel geometry.",
+      "actualResultUrls": [
+        "https://www.osunstate.gov.ng/ministries/office-of-surveyor-general/",
+        "https://www.osunstate.gov.ng/mdas/ministries-2/lands-physical-planning-and-urban-development/"
+      ]
+    },
+    {
+      "language": "English",
+      "query": "Ife Nigeria official cadastral survey land registry GIS property map Osun State",
+      "result": "Osun State land/survey administration and Ile-Ife survey work are evidenced. Private-property registry and public citywide parcel coverage are not verified.",
+      "method": "Separate English-language web search followed by official-source review.",
+      "scope": "Identify first-party local land-registry/cadastral sources and safe anonymous parcel geometry.",
+      "actualResultUrls": [
+        "https://www.osunstate.gov.ng/ministries/office-of-surveyor-general/",
+        "https://www.osunstate.gov.ng/mdas/ministries-2/lands-physical-planning-and-urban-development/"
+      ]
+    }
+  ],
+  "geometryDecision": "No full parcel polygon retained; no safe anonymous geometry response was verified.",
+  "coverageAssessment": {
+    "claimedScope": "Osun State land/survey administration and Ile-Ife survey work are evidenced. Private-property registry and public citywide parcel coverage are not verified.",
+    "verifiedOpenScope": null,
+    "citywideVerified": false,
+    "countrywideVerified": false,
+    "geometryVerified": false
+  },
+  "attempts": [
+    {
+      "url": "https://www.osunstate.gov.ng/ministries/office-of-surveyor-general/",
+      "result": "Anonymous read-only GET returned HTTP 200 (text/html; charset=UTF-8), 366727 bytes read; title: Office Of Surveyor General &#8211; Osun State Official Website. SHA-256 of bytes read: 6ae453b3a87bf34c5821ebcae46284ba51f26dc46ce856268247d972221efd0. No cookies, credentials, or property-specific parameters were sent."
+    },
+    {
+      "url": "https://www.osunstate.gov.ng/ministries/office-of-surveyor-general/",
+      "result": "Official office lists cadastral/legal and GIS divisions and land surveying/map tasks; source references Ile-Ife work but does not define exact local registry coverage."
+    },
+    {
+      "url": "https://www.osunstate.gov.ng/mdas/ministries-2/lands-physical-planning-and-urban-development/",
+      "result": "Official ministry handles state land administration/registration; city-specific parcel data coverage not enumerated."
+    }
+  ],
+  "remainingUncertainty": "Exact jurisdiction/point mapping and anonymous public vector geometry remain unverified.",
+  "geometryEvidence": null,
+  "runtimeAssessment": "not enabled; root may run full adapter qualification.",
+  "rootReviewedAt": "2026-10-09T07:13:02.981057+00:00",
+  "rootReview": {
+    "checkedAt": "2026-10-09T07:13:02.981057+00:00",
+    "decision": "Reviewed city identity, canonical population/point, separate searches and saved source/request evidence. No full public parcel geometry verified in this pass.",
+    "custodyScope": "Osun State land/survey administration and Ile-Ife survey work are evidenced. Private-property registry and public citywide parcel coverage are not verified.",
+    "transportFailuresDoNotProveAbsence": true,
+    "geometryClaimScope": "Investigation outcome only; no worldwide or citywide absence asserted."
+  }
+}

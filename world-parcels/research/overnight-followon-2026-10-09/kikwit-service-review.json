@@ -1,0 +1,77 @@
+{
+  "schemaVersion": "1.0",
+  "checkedAt": "2026-10-09",
+  "cityRecord": "city-2756-kikwit.json",
+  "purpose": "Document first-party local registry/map evidence and bounded anonymous geometry access review.",
+  "scopeLimits": {
+    "maxFullPolygonsRetainedInCityRecord": 0,
+    "maxFullPolygonsRetainedInReview": 0,
+    "maxFullPolygonsRetainedInRepository": 0,
+    "ownerOrAddressDataRetained": false,
+    "credentialsOrTokenValuesRetained": false,
+    "citywideCompletenessAsserted": false
+  },
+  "assessment": "The official Ministry of Land Affairs lists Kikwit I and Kikwit II as land/cadastral jurisdictions in Kwilu. The official public-services catalogue describes cadastral and property-register access through the Conservateur des Titres Immobiliers or Cadastre Division, via formal paid requests. No public map or anonymous feature endpoint was found.",
+  "registryAssessment": "Kikwit I and Kikwit II are explicitly named in the ministry’s current jurisdiction listing; public procedures are office-based requests rather than map data. No WUP-point cadastral polygon coverage is claimed.",
+  "officialPrimarySources": [
+    {
+      "url": "https://affairesfoncieres.gouv.cd/secretariat/circonscriptions",
+      "observation": "The official Ministry of Land Affairs lists Kikwit I and Kikwit II as land/cadastral jurisdictions in Kwilu. The official public-services catalogue describes cadastral and property-register access through the Conservateur des Titres Immobiliers or Cadastre Division, via formal paid requests. No public map or anonymous feature endpoint was found."
+    },
+    {
+      "url": "https://servicepublic.gouv.cd/service/4671",
+      "observation": "The official Ministry of Land Affairs lists Kikwit I and Kikwit II as land/cadastral jurisdictions in Kwilu. The official public-services catalogue describes cadastral and property-register access through the Conservateur des Titres Immobiliers or Cadastre Division, via formal paid requests. No public map or anonymous feature endpoint was found."
+    },
+    {
+      "url": "https://servicepublic.gouv.cd/service/4642",
+      "observation": "The official Ministry of Land Affairs lists Kikwit I and Kikwit II as land/cadastral jurisdictions in Kwilu. The official public-services catalogue describes cadastral and property-register access through the Conservateur des Titres Immobiliers or Cadastre Division, via formal paid requests. No public map or anonymous feature endpoint was found."
+    },
+    {
+      "url": "https://www.affairesfoncieres.gouv.cd/",
+      "observation": "The official Ministry of Land Affairs lists Kikwit I and Kikwit II as land/cadastral jurisdictions in Kwilu. The official public-services catalogue describes cadastral and property-register access through the Conservateur des Titres Immobiliers or Cadastre Division, via formal paid requests. No public map or anonymous feature endpoint was found."
+    }
+  ],
+  "searchQueries": [
+    {
+      "language": "English",
+      "query": "Kikwit Democratic Republic of Congo official land registry cadastre map parcel GIS cadastral",
+      "result": "The official Ministry of Land Affairs lists Kikwit I and Kikwit II as land/cadastral jurisdictions in Kwilu. The official public-services catalogue describes cadastral and property-register access through the Conservateur des Titres Immobiliers or Cadastre Division, via formal paid requests. No public map or anonymous feature endpoint was found.",
+      "method": "Separate English-language web search followed by first-party page review.",
+      "scope": "Identify current first-party local registry/cadastre and safe public parcel geometry."
+    },
+    {
+      "language": "French",
+      "query": "Kikwit cadastre officiel circonscription foncière titres immobiliers Kwilu parcelles",
+      "result": "The official Ministry of Land Affairs lists Kikwit I and Kikwit II as land/cadastral jurisdictions in Kwilu. The official public-services catalogue describes cadastral and property-register access through the Conservateur des Titres Immobiliers or Cadastre Division, via formal paid requests. No public map or anonymous feature endpoint was found.",
+      "method": "Separate local-language web search followed by first-party page review.",
+      "scope": "Find first-party local-language registry, cadastral map or land-service evidence, and confirm locality."
+    }
+  ],
+  "geometryDecision": "No parcel geometry retained; no qualifying safe point-level sample was available for retention.",
+  "coverageAssessment": {
+    "claimedScope": "Kikwit I and Kikwit II are explicitly named in the ministry’s current jurisdiction listing; public procedures are office-based requests rather than map data. No WUP-point cadastral polygon coverage is claimed.",
+    "verifiedOpenScope": "No public anonymous WUP-point parcel response or citywide parcel coverage is asserted.",
+    "citywideVerified": false,
+    "countrywideVerified": false,
+    "geometryVerified": false
+  },
+  "attempts": [
+    {
+      "url": "https://affairesfoncieres.gouv.cd/secretariat/circonscriptions",
+      "result": "Official page reviewed for service scope; no anonymous coordinate geometry query was made because the published workflow/API did not expose a safe point-query path."
+    },
+    {
+      "url": "https://servicepublic.gouv.cd/service/4671",
+      "result": "Official page reviewed for service scope; no anonymous coordinate geometry query was made because the published workflow/API did not expose a safe point-query path."
+    },
+    {
+      "url": "https://servicepublic.gouv.cd/service/4642",
+      "result": "Official page reviewed for service scope; no anonymous coordinate geometry query was made because the published workflow/API did not expose a safe point-query path."
+    },
+    {
+      "url": "https://www.affairesfoncieres.gouv.cd/",
+      "result": "Official page reviewed for service scope; no anonymous coordinate geometry query was made because the published workflow/API did not expose a safe point-query path."
+    }
+  ],
+  "remainingUncertainty": "Exact coverage at the WUP point and registered parcel presence were not verified; ministry evidence establishes local administrative registries only."
+}

@@ -1,0 +1,56 @@
+{
+  "schemaVersion": "1.0",
+  "checkedAt": "2026-10-09",
+  "cityRecord": "city-2170-sfax.json",
+  "purpose": "Document first-party local registry/map evidence and bounded anonymous geometry access review.",
+  "scopeLimits": {
+    "maxFullPolygonsRetainedInCityRecord": 0,
+    "maxFullPolygonsRetainedInReview": 0,
+    "maxFullPolygonsRetainedInRepository": 0,
+    "ownerOrAddressDataRetained": false,
+    "credentialsOrTokenValuesRetained": false,
+    "citywideCompletenessAsserted": false
+  },
+  "assessment": "The official CPF has a Sfax regional office; its online services are title/application-based, and no map schema was verified. The city municipality hosts planning documents, not an anonymous parcel geometry service. WUP plausibility is low.",
+  "registryAssessment": "Tunisia’s official Office of Land Ownership (CPF) lists a regional land-registration administration in Sfax. This confirms a local registration institution, but the source’s scope is regional and does not establish citywide parcel coverage. Its online title services require title/application identifiers or identity and were not used.",
+  "officialPrimarySources": [
+    {
+      "url": "https://www.cpf.gov.tn/CPFWebSiteFinal/Arabe/Conservateurs.php",
+      "observation": "Tunisia’s official Office of Land Ownership (CPF) lists a regional land-registration administration in Sfax. This confirms a local registration institution, but the source’s scope is regional and does not establish citywide parcel coverage. Its online title services require title/application identifiers or identity and were not used."
+    },
+    {
+      "url": "https://www.cpf.gov.tn/CPFWebSite/Arabe/SrvEnLigne.php",
+      "observation": "Tunisia’s official Office of Land Ownership (CPF) lists a regional land-registration administration in Sfax. This confirms a local registration institution, but the source’s scope is regional and does not establish citywide parcel coverage. Its online title services require title/application identifiers or identity and were not used."
+    },
+    {
+      "url": "https://www.commune-sfax.gov.tn/",
+      "observation": "Tunisia’s official Office of Land Ownership (CPF) lists a regional land-registration administration in Sfax. This confirms a local registration institution, but the source’s scope is regional and does not establish citywide parcel coverage. Its online title services require title/application identifiers or identity and were not used."
+    }
+  ],
+  "searchQueries": [
+    {
+      "language": "English",
+      "query": "Sfax Tunisia official land registry cadastral map municipal cadastre",
+      "result": "Official CPF source identifies a Sfax regional office; no anonymous parcel geometry schema found.",
+      "method": "Separate English/local-language search and official-source review.",
+      "scope": "Identify current city-specific registry and safe public parcel geometry."
+    },
+    {
+      "language": "Arabic",
+      "query": "صفاقس الديوان الوطني للملكية العقارية الإدارة الجهوية الملكية العقارية خريطة مساحية رسمي",
+      "result": "Official CPF lists Sfax regional land-registration administration. Online services are registry-title workflows; no title, receipt, person, or property was queried.",
+      "method": "Separate English/local-language search and official-source review.",
+      "scope": "Identify current city-specific registry and safe public parcel geometry."
+    }
+  ],
+  "geometryDecision": "No parcel geometry retained; no qualifying point-level sample was available for retention.",
+  "coverageAssessment": {
+    "claimedScope": "Tunisia’s official Office of Land Ownership (CPF) lists a regional land-registration administration in Sfax. This confirms a local registration institution, but the source’s scope is regional and does not establish citywide parcel coverage. Its online title services require title/application identifiers or identity and were not used.",
+    "verifiedOpenScope": "No citywide parcel coverage or WUP-point parcel presence is asserted.",
+    "citywideVerified": false,
+    "countrywideVerified": false,
+    "geometryVerified": false
+  },
+  "attempts": [],
+  "remainingUncertainty": "Regional registry scope, urban cadastre completeness, and WUP settlement extent remain unverified."
+}

@@ -1,0 +1,118 @@
+{
+  "schemaVersion": 1,
+  "checkedAt": "2026-10-09",
+  "name": "Benin City",
+  "country": "Nigeria",
+  "countryCode": "NG",
+  "rank": 271,
+  "point": [
+    6.33883337882111,
+    5.61021714507832
+  ],
+  "population2025k": 1845.432,
+  "queueRank": 271,
+  "population2025": 1845432,
+  "populationPlausibility2025": "Low",
+  "populationUnit": "persons",
+  "pointBasis": "UN WUP 2025 population-weighted settlement centroid; this is not a municipal boundary or a parcel-coverage claim.",
+  "wupCityCode": 6186,
+  "cityId": "wup2025:6186",
+  "centerLatLon": [
+    6.33883337882111,
+    5.61021714507832
+  ],
+  "freshResearch": {
+    "queries": [
+      {
+        "language": "English",
+        "query": "Benin City official land registry cadastral map Edo GIS parcel map",
+        "scope": "Find official Benin City land registration and parcel mapping services.",
+        "result": "EDOGIS Map Viewer asks the user to enter a plot file number and identifies its location at Sapele Road, Benin City. Edo State Government describes EDOGIS and land-administration agencies at its Benin City hub. EDOGIS also publishes an official request form for GIS Charting Map products by LGA/Town/City/District, and a property-registration guideline. The map viewer’s iframe was not resolvable through the public fetch path, so no anonymous parcel feature or full polygon was obtained.",
+        "actualResultUrls": [
+          "https://www.edogis.org/map-viewer/",
+          "https://www.edogis.org/wp-content/uploads/2018/09/EDOGIS-Map-Request-Form.pdf",
+          "https://edostate.gov.ng/obaseki-commissions-built-environment-hub-names-gis-building-after-nigerias-first-surveyor-general-omoigui/",
+          "https://edostate.gov.ng/wp-content/uploads/2022/12/Property-Registration-Guideline_Individual-EdoGIS-1.pdf"
+        ],
+        "executionMethod": "English-language web search of official EDOGIS and Edo State Government pages; attempted direct map-viewer open."
+      },
+      {
+        "language": "Edo",
+        "query": "Oka Edo na Osanobua EdoGIS land map plot registration Benin City",
+        "scope": "Check for Edo-language city land-map and registration sources.",
+        "result": "No Edo-language official parcel-service result was identified. The official EDOGIS sources and viewer are in English, and no separate native-language public map endpoint was found.",
+        "actualResultUrls": [
+          "https://www.edogis.org/map-viewer/"
+        ],
+        "executionMethod": "Edo-language query plus English official EDOGIS source review."
+      }
+    ],
+    "portals": [
+      {
+        "name": "EDOGIS Map Viewer and map-product request service",
+        "operator": "Edo State Geographic Information Service (EDOGIS), Edo State Government",
+        "homeUrl": "https://www.edogis.org/map-viewer/",
+        "observation": "Viewer requires a plot file number before search; separate official map-request form offers GIS charting maps for an LGA/town/city/district. This is evidence of a city-relevant registry/map service but not proof of anonymous feature geometry."
+      },
+      {
+        "name": "Edo State individual property registration guideline",
+        "operator": "Edo State Government / EDOGIS",
+        "homeUrl": "https://edostate.gov.ng/wp-content/uploads/2022/12/Property-Registration-Guideline_Individual-EdoGIS-1.pdf",
+        "observation": "Guideline places EDOGIS Customer Service Centre at 102 Sapele Road, Benin City and describes cadastral vetting and Right-of-Occupancy registration."
+      }
+    ],
+    "requests": [
+      {
+        "url": "https://www.edogis.org/map-viewer/",
+        "method": "GET",
+        "observation": "Official viewer content returned in web search results: asks for a plot file number and lists Benin City address. Direct web open returned a fetcher 502 without origin HTTP response; no iframe/API response was obtained."
+      },
+      {
+        "url": "https://edostate.gov.ng/wp-content/uploads/2022/12/Property-Registration-Guideline_Individual-EdoGIS-1.pdf",
+        "method": "GET",
+        "observation": "Official PDF text returned in search result; it describes city EDOGIS registry and cadastral vetting. No parcel geometry queried."
+      },
+      {
+        "name": "benin-city",
+        "url": "https://www.edogis.org/map-viewer/",
+        "checkedAt": "2026-10-08T21:46:49.020Z",
+        "method": "GET",
+        "error": "fetch failed",
+        "cause": "ERR_SSL_TLSV1_ALERT_INTERNAL_ERROR",
+        "observation": "Fresh ordinary direct Node HTTPS attempt independently confirms this local access path failure; it does not establish publisher downtime. No credentials, alternate TLS settings or gated query were attempted."
+      }
+    ],
+    "historicalContext": []
+  },
+  "status": "complete",
+  "verifiedParcelResponse": null,
+  "source": {
+    "sourceId": "NG-EDO-BENIN-EDOGIS",
+    "name": "EDOGIS city map viewer and registration service",
+    "url": "https://www.edogis.org/map-viewer/",
+    "operator": "Edo State Geographic Information Service (EDOGIS), Edo State Government",
+    "serviceType": "Plot-file-number map lookup and map-product request; official property-registration/cadastral vetting workflow.",
+    "layer": null,
+    "geometryType": "No full geometry response obtained.",
+    "outputCrs": null,
+    "nativeIdField": "Plot file number (required by viewer).",
+    "nativeIdEvidence": "Official map viewer explicitly requests a plot file number; official map request form includes area of interest by LGA/town/city/district."
+  },
+  "coverageAssessment": {
+    "claimedScope": "EDOGIS land administration and mapping services operate in Benin City and statewide Edo State.",
+    "verifiedOpenScope": "Official city service and plot-file lookup are confirmed, but public feature geometry access and coverage at the WUP point were not verified.",
+    "countrywideVerified": false
+  },
+  "registryFound": true,
+  "registryBasis": "Primary Edo State/EDOGIS sources document the city registry, registration processing with cadastral vetting, and a map viewer keyed by plot file number. No anonymous vector output is confirmed.",
+  "verifiedSample": false,
+  "publicParcelGeometryFound": false,
+  "sourceIds": [],
+  "resultCategory": "official_registry_geometry_not_verified",
+  "technicalBlocker": "The inspected official source has no verified public full-polygon response; direct anonymous access from this environment failed with ERR_SSL_TLSV1_ALERT_INTERNAL_ERROR.",
+  "remainingUncertainty": "Whether the embedded viewer returns full polygons or rendered map output after plot lookup; city coverage at the WUP centroid; public access terms for charting products.",
+  "nextStep": "Inspect the live EDOGIS iframe from an ordinary browser, determine whether it offers a public full-polygon response, and resolve a non-sensitive plot identifier only if already public and safe.",
+  "runtimeReadiness": "not_enabled_no_verified_public_geometry",
+  "adapterReady": false,
+  "rootReviewedAt": "2026-10-08T21:48:56.829799+00:00"
+}

@@ -1,0 +1,89 @@
+{
+  "schemaVersion": "1.0",
+  "cityId": "wup2025:9969",
+  "wupCityCode": 9969,
+  "name": "Satna",
+  "country": "India",
+  "countryCode": "IN",
+  "rank": 1070,
+  "queueRank": 1070,
+  "point": [
+    24.5735978558098,
+    80.8378688313549
+  ],
+  "centerLatLon": [
+    24.5735978558098,
+    80.8378688313549
+  ],
+  "pointBasis": "UN WUP2025 population-weighted settlement locator; not a municipal boundary or parcel-coverage claim.",
+  "population2025": 517402,
+  "population2025k": 517.402,
+  "populationUnit": "persons",
+  "populationPlausibility2025": "High",
+  "cohort": "overnight-followon-1069-1076",
+  "checkedAt": "2026-10-09",
+  "status": "complete",
+  "registryFound": true,
+  "registryBasis": "Satna district’s official land-records pages state that the district’s 2,125 villages’ spatial and non-spatial records are published through MP Bhulekh, and identify a Lok Sewa Kendra at the Satna tehsil office. This confirms local land-record service custody; the public Bhu-Naksha user-facing workflow requires district/subdivision/tehsil/village selection, and no safe geometry-only point response was verified.",
+  "registryEvidenceUrls": [
+    "https://satna.nic.in/en/service/land-records/",
+    "https://satna.nic.in/service/%E0%A4%AD%E0%A5%82%E0%A4%AE%E0%A4%BF-%E0%A4%B0%E0%A4%BF%E0%A4%95%E0%A5%89%E0%A4%B0%E0%A5%8D%E0%A4%A1%E0%A5%8D%E0%A4%B8/",
+    "https://mpbhulekh.gov.in/"
+  ],
+  "verifiedSample": false,
+  "publicParcelGeometryFound": false,
+  "sourceIds": [],
+  "adapterReady": false,
+  "runtimeReadiness": "not_enabled_no_verified_public_geometry",
+  "technicalBlocker": "No source-native anonymous response containing a complete polygon at the exact WUP point was verified in this city-specific investigation. This is an unverified access finding, not a claim that public parcel geometry does not exist.",
+  "scopeLimits": "Local registry/cadastre custody and safe public geometry are assessed separately. No complete parcel geometry at the exact WUP point was retained; no citywide or countrywide coverage is asserted.",
+  "resultCategory": "no_verified_public_geometry",
+  "remainingUncertainty": "Exact WUP point coverage and source completeness remain unverified; no citywide or countrywide completeness claim is made.",
+  "nextStep": "Root review can retain this city-specific custody evidence and pursue a source-native public feature route only if one is identified.",
+  "coverageAssessment": {
+    "claimedScope": "Satna district’s official land-records pages state that the district’s 2,125 villages’ spatial and non-spatial records are published through MP Bhulekh, and identify a Lok Sewa Kendra at the Satna tehsil office. This confirms local land-record service custody; the public Bhu-Naksha user-facing workflow requires district/subdivision/tehsil/village selection, and no safe geometry-only point response was verified.",
+    "verifiedOpenScope": "No anonymous full parcel geometry response verified in this investigation.",
+    "citywideVerified": false,
+    "countrywideVerified": false
+  },
+  "runtimeAssessment": {
+    "status": "not_enabled_no_verified_public_geometry",
+    "reason": "No source-native anonymous response containing a complete polygon at the exact WUP point was verified in this city-specific investigation. This is an unverified access finding, not a claim that public parcel geometry does not exist."
+  },
+  "freshResearch": {
+    "queries": [
+      {
+        "language": "English",
+        "query": "Satna Madhya Pradesh official land records cadastral map Bhu Naksha registry",
+        "scope": "Identify first-party city-bound registry/cadastre custody and safe public parcel geometry.",
+        "result": "Satna’s official district land-records page names the public MP Bhulekh portal, local tehsil service centre and district spatial/non-spatial records. No safe geometry-only exact-point route was verified.",
+        "actualResultUrls": [
+          "https://satna.nic.in/en/service/land-records/",
+          "https://satna.nic.in/service/%E0%A4%AD%E0%A5%82%E0%A4%AE%E0%A4%BF-%E0%A4%B0%E0%A4%BF%E0%A4%95%E0%A5%89%E0%A4%B0%E0%A5%8D%E0%A4%A1%E0%A5%8D%E0%A4%B8/",
+          "https://mpbhulekh.gov.in/"
+        ],
+        "executionMethod": "Separate fresh web search in this language; first-party pages/search results reviewed."
+      },
+      {
+        "language": "Hindi",
+        "query": "सतना जिला भूमि अभिलेख भू नक्शा तहसील आधिकारिक मध्य प्रदेश",
+        "scope": "Identify first-party city-bound registry/cadastre custody and safe public parcel geometry.",
+        "result": "सतना जिले की आधिकारिक वेबसाइट जिले की 2,125 ग्रामों की स्थानिक और गैर-स्थानिक भूमि जानकारी को MP Bhulekh पर उपलब्ध बताती है और सतना तहसील कार्यालय में लोक सेवा केंद्र का उल्लेख करती है। सुरक्षित, केवल पहचान और ज्यामिति वाला बिंदु-आधारित बहुभुज उत्तर सत्यापित नहीं हुआ।",
+        "actualResultUrls": [
+          "https://satna.nic.in/en/service/land-records/",
+          "https://satna.nic.in/service/%E0%A4%AD%E0%A5%82%E0%A4%AE%E0%A4%BF-%E0%A4%B0%E0%A4%BF%E0%A4%95%E0%A5%89%E0%A4%B0%E0%A5%8D%E0%A4%A1%E0%A5%8D%E0%A4%B8/",
+          "https://mpbhulekh.gov.in/"
+        ],
+        "executionMethod": "Separate fresh web search in this language; first-party pages/search results reviewed."
+      }
+    ]
+  },
+  "source": null,
+  "verifiedParcelResponse": null,
+  "rootReviewedAt": "2026-10-09T06:45:08.823796+00:00",
+  "rootReview": {
+    "checkedAt": "2026-10-09T06:45:08.823796+00:00",
+    "basis": "Reviewed city-specific English/local-language attempts, local-custody basis, source routes and documented responses. Public geometry remains unverified; access failures and unknown custody do not establish absence.",
+    "primarySourceAuditFile": "research/overnight-followon-2026-10-09/unreviewed-primary-source-audit.json"
+  }
+}

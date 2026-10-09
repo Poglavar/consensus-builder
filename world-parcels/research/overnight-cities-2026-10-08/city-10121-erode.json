@@ -1,0 +1,111 @@
+{
+  "name": "Erode",
+  "country": "India",
+  "countryCode": "IN",
+  "rank": 579,
+  "point": [
+    11.3663983243794,
+    77.7110771506127
+  ],
+  "freshResearch": {
+    "queries": [
+      {
+        "language": "Tamil",
+        "query": "ஈரோடு நகர நில அளவை பதிவேடு TSLR FMB நில பதிவுகள் அதிகாரப்பூர்வ இணைய சேவை",
+        "result": "ஈரோடு மாவட்டப் பக்கம் பட்டா/FMB/சிட்டா/TSLR இணையச் சேவையையும் மாவட்ட உதவி இயக்குநர் நில அளவை பதிவுகள் அலுவலகத்தையும் இணைக்கிறது. நகர்ப்புறத் தேடலுக்கு நகரம்/பிளாக்/வார்டு/சர்வே/உட்பிரிவு விவரம் தேவை என அரசின் சேவை விளக்கம் கூறுகிறது.",
+        "urls": [
+          "https://erode.nic.in/service/e-services-anywhere-anytime-land-records/",
+          "https://erode.nic.in/survey-and-land-records/",
+          "https://services.india.gov.in/service/detail/e-services-of-land-records-tamil-nadu",
+          "https://clip.tn.gov.in/clip/index.html"
+        ]
+      },
+      {
+        "language": "English",
+        "query": "Erode official urban TSLR FMB land records portal cadastral parcel map",
+        "result": "District administration identifies an Erode survey office and publishes Erode-town urban Tamil Nilam correlation details. The government service descriptor requires urban Town, Block, Ward, Survey Number and Sub-Division. No anonymous full-polygon endpoint or safe feature schema was verified.",
+        "urls": [
+          "https://erode.nic.in/service/e-services-anywhere-anytime-land-records/",
+          "https://erode.nic.in/survey-and-land-records/",
+          "https://services.india.gov.in/service/detail/e-services-of-land-records-tamil-nadu",
+          "https://clip.tn.gov.in/clip/index.html"
+        ]
+      }
+    ],
+    "portals": [
+      {
+        "url": "https://erode.nic.in/service/e-services-anywhere-anytime-land-records/",
+        "observation": "Erode District Administration publishes Erode-town urban survey correlation records and identifies a local Survey and Land Records office; state services offer urban TSLR extracts."
+      },
+      {
+        "url": "https://erode.nic.in/survey-and-land-records/",
+        "observation": "Erode District Administration publishes Erode-town urban survey correlation records and identifies a local Survey and Land Records office; state services offer urban TSLR extracts."
+      },
+      {
+        "url": "https://services.india.gov.in/service/detail/e-services-of-land-records-tamil-nadu",
+        "observation": "Erode District Administration publishes Erode-town urban survey correlation records and identifies a local Survey and Land Records office; state services offer urban TSLR extracts."
+      }
+    ],
+    "requests": []
+  },
+  "status": "complete",
+  "verifiedParcelResponse": {
+    "httpStatus": null,
+    "featureType": null,
+    "responseType": null,
+    "responseCrs": null,
+    "returnedFullPolygonCount": 0,
+    "uniqueFullPolygonCount": 0,
+    "wupPointContained": null,
+    "limitations": "No public full-polygon feature response was retrieved or retained."
+  },
+  "source": {
+    "operator": "Tamil Nadu Survey and Land Records / Erode Assistant Director of Survey and Land Records",
+    "url": "https://clip.tn.gov.in/clip/index.html",
+    "format": "Official Patta/FMB/Chitta/TSLR attribute-selected extracts and urban Tamil Nilam correlation PDFs; no public vector schema verified",
+    "nativeIdField": null,
+    "basis": "Erode District Administration publishes Erode-town urban survey correlation records and identifies a local Survey and Land Records office; state services offer urban TSLR extracts.",
+    "urls": [
+      "https://erode.nic.in/service/e-services-anywhere-anytime-land-records/",
+      "https://erode.nic.in/survey-and-land-records/",
+      "https://services.india.gov.in/service/detail/e-services-of-land-records-tamil-nadu"
+    ]
+  },
+  "coverageAssessment": {
+    "claimedScope": "Official local cadastral or urban land-record services are documented for Erode.",
+    "verifiedOpenScope": "Official local record service is confirmed, but no anonymous full-polygon endpoint or safe feature schema was verified.",
+    "countrywideVerified": false,
+    "citywideVerified": false
+  },
+  "registryFound": true,
+  "registryBasis": "Erode District Administration publishes Erode-town urban survey correlation records and identifies a local Survey and Land Records office; state services offer urban TSLR extracts.",
+  "verifiedSample": false,
+  "publicParcelGeometryFound": false,
+  "resultCategory": "city_local_registry_documented_no_verified_open_vector",
+  "technicalBlocker": "No anonymous public vector/full-polygon endpoint was verified; attribute/document flows require user-specific survey/property information.",
+  "remainingUncertainty": "Whether another anonymous public city parcel geometry route exists, and exact cadastral-unit coverage of the population centroid, remain unverified.",
+  "nextStep": "If further review is necessary, inspect public help/manual pages only; do not submit an owner or parcel identifier.",
+  "sourceIds": [],
+  "schemaVersion": 1,
+  "checkedAt": "2026-10-09",
+  "wupCityCode": 10121,
+  "cityId": "wup2025:10121",
+  "queueRank": 579,
+  "population2025": 892758,
+  "populationPlausibility2025": "Moderate",
+  "populationUnit": "persons",
+  "pointBasis": "UN WUP 2025 population-weighted settlement centroid; this is not a municipal boundary or a parcel-coverage claim.",
+  "centerLatLon": [
+    11.3663983243794,
+    77.7110771506127
+  ],
+  "runtimeReadiness": "not_enabled_no_verified_public_geometry",
+  "adapterReady": false,
+  "scopeLimits": "Source discovery only. No owner/address data, personal details, credentials, private tokens, or property lookup responses retained. Up to three full city-scoped polygons are retained when schema-safe.",
+  "registryEvidenceUrls": [
+    "https://erode.nic.in/service/e-services-anywhere-anytime-land-records/",
+    "https://erode.nic.in/survey-and-land-records/",
+    "https://services.india.gov.in/service/detail/e-services-of-land-records-tamil-nadu"
+  ],
+  "rootReviewedAt": "2026-10-09T01:44:14.672457+00:00"
+}

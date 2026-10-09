@@ -1,0 +1,65 @@
+{
+  "schemaVersion": "1.0",
+  "checkedAt": "2026-10-09",
+  "cityRecord": "city-5147-kohat.json",
+  "purpose": "Document first-party local registry/map evidence and bounded anonymous geometry access review.",
+  "scopeLimits": {
+    "maxFullPolygonsRetainedInCityRecord": 0,
+    "maxFullPolygonsRetainedInReview": 0,
+    "maxFullPolygonsRetainedInRepository": 0,
+    "ownerOrAddressDataRetained": false,
+    "credentialsOrTokenValuesRetained": false,
+    "citywideCompletenessAsserted": false
+  },
+  "assessment": "The provincial Revenue Department names Kohat in its district land-record computerization program and reports the status of digitized mauzas. This supports district-level registry/revenue-record custody. No anonymous public vector geometry endpoint for the WUP point was verified; no owner or parcel lookup was submitted.",
+  "registryAssessment": "Khyber Pakhtunkhwa Revenue Department identifies Kohat among districts with a digitized land-record program and reports operational mauzas; this is district-bound evidence of local revenue land-record custody. No public parcel geometry was verified.",
+  "officialPrimarySources": [
+    {
+      "url": "https://revenue.kp.gov.pk/computerization-of-land-record-in-18-districts/",
+      "observation": "The provincial Revenue Department names Kohat in its district land-record computerization program and reports the status of digitized mauzas. This supports district-level registry/revenue-record custody. No anonymous public vector geometry endpoint for the WUP point was verified; no owner or parcel lookup was submitted."
+    }
+  ],
+  "searchQueries": [
+    {
+      "language": "English",
+      "query": "Kohat Pakistan official land records cadastral map revenue department",
+      "result": "The provincial Revenue Department names Kohat in its district land-record computerization program and reports the status of digitized mauzas. This supports district-level registry/revenue-record custody. No anonymous public vector geometry endpoint for the WUP point was verified; no owner or parcel lookup was submitted.",
+      "method": "Separate official-source search and review.",
+      "scope": "Identify first-party registry custody and public geometry route.",
+      "actualResultUrls": [
+        "https://revenue.kp.gov.pk/computerization-of-land-record-in-18-districts/"
+      ]
+    },
+    {
+      "language": "Urdu",
+      "query": "کوہاٹ زمین ریکارڈ لینڈ ریکارڈ دفتر خیبر پختونخوا سرکاری",
+      "result": "The provincial Revenue Department names Kohat in its district land-record computerization program and reports the status of digitized mauzas. This supports district-level registry/revenue-record custody. No anonymous public vector geometry endpoint for the WUP point was verified; no owner or parcel lookup was submitted.",
+      "method": "Separate official-source search and review.",
+      "scope": "Identify first-party registry custody and public geometry route.",
+      "actualResultUrls": [
+        "https://revenue.kp.gov.pk/computerization-of-land-record-in-18-districts/"
+      ]
+    }
+  ],
+  "geometryDecision": "No full polygon retained: no safe anonymous geometry-only route was verified.",
+  "coverageAssessment": {
+    "claimedScope": "Khyber Pakhtunkhwa Revenue Department identifies Kohat among districts with a digitized land-record program and reports operational mauzas; this is district-bound evidence of local revenue land-record custody. No public parcel geometry was verified.",
+    "verifiedOpenScope": "The provincial Revenue Department names Kohat in its district land-record computerization program and reports the status of digitized mauzas. This supports district-level registry/revenue-record custody. No anonymous public vector geometry endpoint for the WUP point was verified; no owner or parcel lookup was submitted.",
+    "citywideVerified": false,
+    "countrywideVerified": false,
+    "geometryVerified": false
+  },
+  "attempts": [
+    {
+      "url": "https://revenue.kp.gov.pk/computerization-of-land-record-in-18-districts/",
+      "result": "Official source reviewed; no property-specific lookup or identifying information was submitted."
+    }
+  ],
+  "remainingUncertainty": "Citywide completeness and adapter/runtime suitability remain unqualified; local registry evidence does not establish full public geometry availability.",
+  "geometryEvidence": {
+    "sampleFile": null,
+    "featureCount": 0,
+    "query": "No geometry request made; reviewed official HTML/search evidence only."
+  },
+  "runtimeAssessment": "Not enabled; root may perform full adapter qualification."
+}

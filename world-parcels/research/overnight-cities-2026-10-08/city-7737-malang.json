@@ -1,0 +1,109 @@
+{
+  "name": "Malang",
+  "country": "Indonesia",
+  "countryCode": "ID",
+  "rank": 265,
+  "point": [
+    -7.94836903264178,
+    112.629844590389
+  ],
+  "population2025": 1899616,
+  "schemaVersion": 1,
+  "kind": "city_parcel_source_research",
+  "checkedAt": "2026-10-09",
+  "populationUnit": "persons",
+  "status": "complete",
+  "verifiedSample": false,
+  "publicParcelGeometryFound": false,
+  "runtimeReadiness": "not_enabled_no_verified_public_geometry",
+  "priorEvidenceFiles": [],
+  "scopeLimits": "The point lies within the catalog’s nationwide bounding rectangle, which is only a coarse extent, not proof of local coverage. No exact Malang village/urban parcel match, public feature, geometry or identifier was verified. No owner or address fields were requested or retained.",
+  "pointBasis": "UN WUP 2025 population-weighted settlement centroid; this is not a municipal boundary or a parcel-coverage claim.",
+  "registryFound": null,
+  "registryBasis": "The national ATR/BPN BHUMI parcel catalog provides a candidate layer whose broad bounding rectangle includes Malang. No primary local registry link, city selector or actual Malang parcel response was verified; nationwide bounds alone do not establish a city-specific registry.",
+  "resultCategory": "national_catalog_candidate_local_registry_unestablished_geometry_not_verified",
+  "research": {
+    "executedQueries": [
+      {
+        "language": "English",
+        "query": "Malang official cadastral parcel map ATR BPN Kota Malang peta bidang tanah GIS",
+        "result": "Official ATR/BPN BHUMI public catalog lists the national Bidang Tanah layer (umum:Persil), whose bounding box includes the Malang WUP coordinate. The viewer client code traces identify through GeoServer WMS GetFeatureInfo via /expapi/getPersil. The catalog’s service root and plausible WFS/WMS capability paths returned 404; no parcel geometry was obtained.",
+        "urls": [
+          "https://bhumi.atrbpn.go.id/peta",
+          "https://bhumi.atrbpn.go.id/bantuan/katalog_data"
+        ],
+        "method": "Separate English search; official catalog inspection, client bundle trace and bounded endpoint availability checks."
+      },
+      {
+        "language": "Indonesian",
+        "query": "peta bidang tanah Kota Malang resmi ATR BPN peta kadaster parcel GIS",
+        "result": "Official catalog data shows a published Bidang Tanah layer, umum:Persil, with bounds spanning Indonesia and including the locator. Malang-specific coverage and an exact parcel result are not established because the traced GeoServer/proxy service path could not be queried successfully (HTTP 404).",
+        "urls": [
+          "https://bhumi.atrbpn.go.id/peta",
+          "https://bhumi.atrbpn.go.id/bantuan/katalog_data"
+        ],
+        "method": "Separate Indonesian-language search and review of the official BHUMI layer catalog and viewer code."
+      }
+    ],
+    "officialSources": [
+      {
+        "url": "https://bhumi.atrbpn.go.id/peta",
+        "observation": "Official BHUMI map page and client bundle. Its feature-info code constructs GeoServer WMS GetFeatureInfo for visible 2D layers and routes the request to /expapi/getPersil."
+      },
+      {
+        "url": "https://bhumi.atrbpn.go.id/panel/items/layers?filter%5Bdefault%5D%5B_eq%5D=true&filter%5Bstatus%5D%5B_eq%5D=published&fields=*,fields.*",
+        "method": "GET",
+        "httpStatus": 200,
+        "contentType": "application/json",
+        "observation": "Published/default catalog contains Bidang Tanah, umum:Persil, bounds [94.2543556955413,-9.93667708865449]–[140.80540914949,7.65416298406574], and fields penggunaan, tipehak, luas, nib, akurasibidang."
+      },
+      {
+        "url": "https://bhumi.atrbpn.go.id/bhumigs/umum?service=WFS&version=2.0.0&request=GetCapabilities",
+        "method": "GET",
+        "httpStatus": 404,
+        "contentType": "text/html",
+        "observation": "Catalog-listed GeoServer service root did not return WFS capabilities."
+      },
+      {
+        "url": "https://bhumi.atrbpn.go.id/bhumigs/umum",
+        "observation": "Catalog service root and plausible WFS/WMS URL paths tested during client trace returned HTTP 404; no feature response was available."
+      }
+    ],
+    "viewerAndServiceTrace": {
+      "url": "https://bhumi.atrbpn.go.id/peta",
+      "bundleTrace": "The public map app identifies published layer metadata by map_service_url/map_service_layer_name and vendor Geoserver. For parcel identify it forms WMS 1.1.1 GetFeatureInfo with query_layers, bbox, EPSG:4326 viewport coordinates, and FEATURE_COUNT=5, then invokes /expapi/getPersil with service URL and click parameters. The catalog service root tested returned 404, so no point request returned a feature.",
+      "catalogService": "https://bhumi.atrbpn.go.id/bhumigs/umum",
+      "layerName": "umum:Persil",
+      "clientIdentify": "/expapi/getPersil (POST proxy; feature-info route traced, not a successful geometry response)"
+    },
+    "attemptedGeometry": {
+      "fullPolygonLimit": 3,
+      "fullPolygonsRetained": 0,
+      "ownerOrAddressDataRequested": false,
+      "outcome": "The point lies within the catalog’s nationwide bounding rectangle, which is only a coarse extent, not proof of local coverage. No exact Malang village/urban parcel match, public feature, geometry or identifier was verified. No owner or address fields were requested or retained."
+    }
+  },
+  "verifiedParcelResponse": null,
+  "source": {
+    "sourceId": "ID-JT-MALANG-ATR-BPN-BHUMI",
+    "name": "ATR/BPN BHUMI Bidang Tanah (umum:Persil)",
+    "url": "https://bhumi.atrbpn.go.id/peta",
+    "operator": "Ministry of Agrarian Affairs and Spatial Planning / National Land Agency (ATR/BPN), BHUMI/ATLAS",
+    "serviceType": "Public national parcel-layer catalog lists a Bidang Tanah polygon layer with bounds including Malang; traced GeoServer and proxy feature access did not return usable data.",
+    "layer": "Published/default catalog layer umum:Persil; fields listed in catalog include penggunaan, tipehak, luas, nib, akurasibidang.",
+    "geometryType": "Polygon declared by layer context; no parcel geometry returned",
+    "outputCrs": null,
+    "nativeIdField": "nib (catalog field label only; no feature value observed)",
+    "nativeIdEvidence": "The public layer catalog lists a `nib` field, but no Malang feature was returned, so no city-level identifier semantics or value were verified."
+  },
+  "wupCityCode": 7737,
+  "cityId": "wup2025:7737",
+  "queueRank": 265,
+  "populationPlausibility2025": "High",
+  "centerLatLon": [
+    -7.94836903264178,
+    112.629844590389
+  ],
+  "rootReviewedAt": "2026-10-08T21:48:56.829799+00:00",
+  "sourceIds": []
+}

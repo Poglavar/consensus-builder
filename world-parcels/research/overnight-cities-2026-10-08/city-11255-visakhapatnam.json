@@ -1,0 +1,125 @@
+{
+  "name": "Visakhapatnam",
+  "country": "India",
+  "countryCode": "IN",
+  "rank": 295,
+  "point": [
+    17.7010497756803,
+    83.2324027923175
+  ],
+  "freshResearch": {
+    "queries": [
+      {
+        "language": "Telugu",
+        "query": "విశాఖపట్నం పట్టణ సర్వే కాడాస్ట్రల్ మ్యాప్ భూ రికార్డులు అధికారిక",
+        "scope": "Find first-party district urban cadastral survey services and public parcel geometry.",
+        "result": "The official Visakhapatnam district Survey & Land Records page describes an urban survey program for the district, identifies the Visakhapatnam (urban) area among commissioned survey mandals, and routes document/map applications through MeeSeva with a per-square-yard fee and supporting land documents. It reports Field Measurement Book digitization progress. This is evidence of a local survey/land-record service, not an anonymous parcel-vector endpoint.",
+        "actualResultUrls": [
+          "https://visakhapatnam.ap.gov.in/te/సర్వే-భూ-రికార్డులు/",
+          "https://bhunaksha.ap.gov.in/"
+        ],
+        "executionMethod": "Official district page and official Andhra Pradesh cadastral viewer page; bounded shell request to the viewer did not return within the local network timeout."
+      },
+      {
+        "language": "English",
+        "query": "Visakhapatnam official urban survey land records cadastral maps parcel GIS Andhra Pradesh",
+        "scope": "Check city GIS and state cadastral viewer for exact point lookup and full polygons.",
+        "result": "The Government of Andhra Pradesh BhuNaksha landing page identifies itself as the state Survey, Settlements and Land Records cadastral mapping system integrated with MeeBhoomi. The AP municipal-administration Visakhapatnam GIS page loads a general municipal map and Sachivalayam list; it does not expose cadastral parcel layers in the inspected rendered view. No WUP-point village/survey selection or full parcel polygon was verified.",
+        "actualResultUrls": [
+          "https://bhunaksha.ap.gov.in/",
+          "https://visakhapatnam.cdma.ap.gov.in/ulbprofile/visakhapatnam/gis-map/"
+        ],
+        "executionMethod": "Official web search/open plus bounded direct request; no login or credentials."
+      }
+    ],
+    "portals": [
+      {
+        "name": "Visakhapatnam District Survey & Land Records",
+        "operator": "District Administration, Government of Andhra Pradesh",
+        "homeUrl": "https://visakhapatnam.ap.gov.in/te/సర్వే-భూ-రికార్డులు/",
+        "observation": "The district page describes urban survey and district survey-record services, lists the urban Visakhapatnam mandal in survey implementation, gives a fee/document workflow for applications, and reports FMB digitization. It does not publish an anonymous parcel geometry service."
+      },
+      {
+        "name": "Andhra Pradesh BhuNaksha",
+        "operator": "Department of Survey, Settlements and Land Records, Government of Andhra Pradesh / NIC",
+        "homeUrl": "https://bhunaksha.ap.gov.in/",
+        "observation": "Official state cadastral mapping platform. A reachable public exact village selection and full polygon for the WUP point were not verified."
+      },
+      {
+        "name": "Visakhapatnam municipal GIS map",
+        "operator": "Commissioner & Director of Municipal Administration, Government of Andhra Pradesh",
+        "homeUrl": "https://visakhapatnam.cdma.ap.gov.in/ulbprofile/visakhapatnam/gis-map/",
+        "observation": "Rendered public page shows a municipal base map and Sachivalayam list/search, not parcel boundaries or cadastral identifiers."
+      }
+    ],
+    "requests": [
+      {
+        "url": "https://bhunaksha.ap.gov.in/",
+        "method": "GET",
+        "httpStatus": null,
+        "contentType": null,
+        "observation": "Direct shell request timed out; not interpreted as an origin outage."
+      },
+      {
+        "url": "https://visakhapatnam.cdma.ap.gov.in/ulbprofile/visakhapatnam/gis-map/",
+        "method": "GET",
+        "httpStatus": 200,
+        "contentType": "text/html (web-rendered page)",
+        "observation": "Public municipal GIS page rendered a general map/Sachivalayam interface; no cadastral parcel layer was exposed in inspected content."
+      }
+    ],
+    "executionMethod": "Official city/state portal review and read-only web inspection."
+  },
+  "status": "complete",
+  "verifiedParcelResponse": {
+    "httpStatus": null,
+    "featureType": null,
+    "responseType": null,
+    "responseCrs": null,
+    "returnedFullPolygonCount": 0,
+    "uniqueFullPolygonCount": 0,
+    "wupPointContained": null,
+    "limitations": "No exact WUP-point survey village selection or full parcel polygon was retrieved. The district-described paid/documented urban survey workflow does not establish a public vector feature contract."
+  },
+  "source": {
+    "id": "ap-visakhapatnam-urban-survey",
+    "name": "Visakhapatnam District Survey & Land Records",
+    "operator": "District Administration, Government of Andhra Pradesh",
+    "url": "https://visakhapatnam.ap.gov.in/te/సర్వే-భూ-రికార్డులు/",
+    "format": "Official service page; no public vector format verified",
+    "access": "Public page; survey map/record applications are routed through MeeSeva with fee and supporting records",
+    "nativeIdField": null,
+    "geometryCrs": null
+  },
+  "coverageAssessment": {
+    "claimedScope": "District Survey & Land Records and Andhra Pradesh cadastral map program; official page specifically lists the Visakhapatnam urban survey mandal.",
+    "verifiedOpenScope": "Local survey/document service confirmed; a public anonymous parcel vector layer and WUP-point parcel coverage are not verified.",
+    "countrywideVerified": false,
+    "citywideVerified": false
+  },
+  "registryFound": true,
+  "registryBasis": "First-party Visakhapatnam District Survey & Land Records page documents urban survey and land-record services for Visakhapatnam, including the urban mandal and map-record application workflow.",
+  "verifiedSample": false,
+  "publicParcelGeometryFound": false,
+  "resultCategory": "local_survey_registry_confirmed_public_geometry_unverified",
+  "technicalBlocker": "The documented local urban survey products are accessed through a document/application workflow; no public full-polygon endpoint or exact WUP-point village/survey selection was established.",
+  "remainingUncertainty": "Whether Visakhapatnam urban survey maps or parcel polygons can be queried anonymously through a separate local GIS or BhuNaksha route; whether the WUP point falls in a particular survey village.",
+  "sourceIds": [],
+  "nextStep": "If pursued, identify the village/survey selection for the WUP point through an official map interface and verify whether full parcel polygons can be returned without credentials; do not infer parcel coverage from the city GIS base map.",
+  "schemaVersion": 1,
+  "checkedAt": "2026-10-09",
+  "wupCityCode": 11255,
+  "cityId": "wup2025:11255",
+  "queueRank": 295,
+  "population2025": 1641957,
+  "populationPlausibility2025": "High",
+  "populationUnit": "persons",
+  "pointBasis": "UN WUP 2025 population-weighted settlement centroid; this is not a municipal boundary or a parcel-coverage claim.",
+  "centerLatLon": [
+    17.7010497756803,
+    83.2324027923175
+  ],
+  "runtimeReadiness": "not_enabled_no_verified_public_geometry",
+  "adapterReady": false,
+  "rootReviewedAt": "2026-10-08T22:11:57.022500+00:00"
+}

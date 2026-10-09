@@ -1,0 +1,125 @@
+{
+  "schemaVersion": "1.0",
+  "cityId": "wup2025:1681",
+  "wupCityCode": 1681,
+  "name": "Homel",
+  "country": "Belarus",
+  "countryCode": "BY",
+  "rank": 1048,
+  "queueRank": 1048,
+  "point": [
+    52.4376021631448,
+    30.9782260496108
+  ],
+  "centerLatLon": [
+    52.4376021631448,
+    30.9782260496108
+  ],
+  "pointBasis": "UN WUP2025 population-weighted settlement locator; not a municipal boundary or parcel-coverage claim.",
+  "population2025": 529882,
+  "population2025k": 529.882,
+  "populationUnit": "persons",
+  "populationPlausibility2025": "High",
+  "cohort": "overnight-followon-1001-1100",
+  "checkedAt": "2026-10-09",
+  "status": "complete",
+  "registryFound": true,
+  "registryBasis": "The agency's official homepage and service pages identify the organization and state-registration/land-management functions. The official branch page says the Gomel Agency serves Gomel city except Novobelitsky District; the Gomel branch covers Gomel District and Novobelitsky District. Exact administrative sub-area placement of the WUP point was not independently overlaid.",
+  "registryEvidenceUrls": [
+    "https://gagrzk.by/",
+    "https://gagrzk.by/struktura/filialy-i-byuro/",
+    "https://gagrzk.by/uslugi/registratsiya/",
+    "https://map.nca.by/"
+  ],
+  "verifiedSample": true,
+  "publicParcelGeometryFound": true,
+  "sourceIds": [],
+  "adapterReady": false,
+  "runtimeReadiness": "held_unqualified_wfs_reader",
+  "technicalBlocker": "One unmodified valid nearby public WFS parcel (object_id 6722720) was returned through the official viewer-compatible anonymous query. It does not contain the unchanged WUP locator; the exact point query returned zero features. Current generic WFS adapter rejects the published UUID-with-hyphens feature type and does not implement the observed WFS 1.0.0 route. Complete paging/count consistency, all-grid fresh identities, footprint lookup and source binding remain unqualified. This is verified public geometry nearby, with runtime held for an unqualified reader, not evidence of parcel absence.",
+  "scopeLimits": {
+    "maxFullPolygonsRetained": 0,
+    "ownerOrAddressDataRetained": false,
+    "credentialsOrTokenValuesRetained": false,
+    "citywideCompletenessAsserted": false
+  },
+  "resultCategory": "verified_public_geometry_runtime_held",
+  "coverageAssessment": {
+    "claimedScope": "The Belarus National Cadastral Agency public map exposes a named land-parcels WFS layer and geometry schema from the state cadastral system.",
+    "verifiedOpenScope": "One unmodified valid nearby public WFS parcel (object_id 6722720) was returned through the official viewer-compatible anonymous query. It does not contain the unchanged WUP locator; the exact point query returned zero features. Current generic WFS adapter rejects the published UUID-with-hyphens feature type and does not implement the observed WFS 1.0.0 route. Complete paging/count consistency, all-grid fresh identities, footprint lookup and source binding remain unqualified. This is verified public geometry nearby, with runtime held for an unqualified reader, not evidence of parcel absence.",
+    "citywideVerified": false,
+    "countrywideVerified": false,
+    "geometryVerified": false
+  },
+  "runtimeAssessment": {
+    "status": "held_unqualified_wfs_reader",
+    "reason": "One unmodified valid nearby public WFS parcel (object_id 6722720) was returned through the official viewer-compatible anonymous query. It does not contain the unchanged WUP locator; the exact point query returned zero features. Current generic WFS adapter rejects the published UUID-with-hyphens feature type and does not implement the observed WFS 1.0.0 route. Complete paging/count consistency, all-grid fresh identities, footprint lookup and source binding remain unqualified. This is verified public geometry nearby, with runtime held for an unqualified reader, not evidence of parcel absence.",
+    "evidenceFile": "research/overnight-followon-2026-10-09/homel-root-route-discovery.json"
+  },
+  "freshResearch": {
+    "queries": [
+      {
+        "language": "Russian",
+        "query": "Гомель кадастровая карта земельные участки Национальное кадастровое агентство Беларусь",
+        "scope": "Identify official city-specific cadastral custody and safe anonymous parcel geometry.",
+        "result": "The official NCA viewer describes a public GIS for State Land Cadastre spatial data. Anonymous WFS GetCapabilities returned HTTP 200 and lists the `pcm:…` land-parcels layer; anonymous DescribeFeatureType returned HTTP 200 and confirms a full polygon geometry field. The schema also contains address and organization attributes, so the bounded WUP-point GetFeature request was restricted to `geom` only, but the server closed that request without a response. No owner/address fields or credential headers were requested or retained.",
+        "actualResultUrls": [
+          "https://map.nca.by/",
+          "https://map.nca.by/geoserver/pcm/ows?service=WFS&version=2.0.0&request=GetCapabilities",
+          "https://map.nca.by/geoserver/pcm/ows?service=WFS&version=2.0.0&request=DescribeFeatureType&typeNames=pcm%3A294b19b9-3259-44e5-b8e8-5314b0adf928"
+        ],
+        "executionMethod": "Separate native/local-language web search and first-party source review."
+      },
+      {
+        "language": "English",
+        "query": "Homel Gomel Belarus official National Cadastral Agency public cadastral map parcel polygons WFS",
+        "scope": "Cross-check city-specific registry custody and whether public full parcel geometry can be queried anonymously.",
+        "result": "The official NCA viewer describes a public GIS for State Land Cadastre spatial data. Anonymous WFS GetCapabilities returned HTTP 200 and lists the `pcm:…` land-parcels layer; anonymous DescribeFeatureType returned HTTP 200 and confirms a full polygon geometry field. The schema also contains address and organization attributes, so the bounded WUP-point GetFeature request was restricted to `geom` only, but the server closed that request without a response. No owner/address fields or credential headers were requested or retained.",
+        "actualResultUrls": [
+          "https://map.nca.by/",
+          "https://map.nca.by/geoserver/pcm/ows?service=WFS&version=2.0.0&request=GetCapabilities",
+          "https://map.nca.by/geoserver/pcm/ows?service=WFS&version=2.0.0&request=DescribeFeatureType&typeNames=pcm%3A294b19b9-3259-44e5-b8e8-5314b0adf928"
+        ],
+        "executionMethod": "Separate English-language web search and first-party source review."
+      }
+    ],
+    "portals": [
+      {
+        "name": "National Cadastral Agency public cadastral map",
+        "operator": "National Cadastral Agency of the State Committee on Property of the Republic of Belarus",
+        "homeUrl": "https://map.nca.by/",
+        "observation": "The official NCA viewer describes a public GIS for State Land Cadastre spatial data. Anonymous WFS GetCapabilities returned HTTP 200 and lists the `pcm:…` land-parcels layer; anonymous DescribeFeatureType returned HTTP 200 and confirms a full polygon geometry field. The schema also contains address and organization attributes, so the bounded WUP-point GetFeature request was restricted to `geom` only, but the server closed that request without a response. No owner/address fields or credential headers were requested or retained."
+      }
+    ],
+    "requests": [
+      {
+        "url": "https://map.nca.by/geoserver/pcm/ows?service=WFS&version=2.0.0&request=GetCapabilities",
+        "httpStatus": 200,
+        "result": "Anonymous public WFS capabilities listed 436 feature types, including the layer titled Земельные участки (land parcels). Only layer names/titles were retained."
+      },
+      {
+        "url": "https://map.nca.by/geoserver/pcm/ows?service=WFS&version=2.0.0&request=DescribeFeatureType&typeNames=pcm%3A294b19b9-3259-44e5-b8e8-5314b0adf928",
+        "httpStatus": 200,
+        "result": "Anonymous schema response confirms object_id and geom fields plus address/organization attributes; only schema and field names were inspected."
+      },
+      {
+        "url": "https://map.nca.by/geoserver/pcm/ows?service=WFS&version=1.0.0&request=GetFeature&typeName=pcm%3A294b19b9-3259-44e5-b8e8-5314b0adf928&outputFormat=application%2Fjson&maxFeatures=3&propertyName=geom&bbox=30.9781460496108%2C52.4375221631448%2C30.9783060496108%2C52.4376821631448%2CEPSG%3A4326",
+        "result": "Bounded exact-WUP query requesting at most three full geometry-only features; remote server closed the connection without a response. No geometry or attributes returned."
+      }
+    ],
+    "geometryDecision": "No full polygon retained; no qualifying safe WUP-point sample was returned.",
+    "verifiedFullGeometrySamples": 0
+  },
+  "remainingUncertainty": "Public WFS parcel layer exists nationally; Homel point inclusion, actual feature response, and citywide completeness were not verified.",
+  "nextStep": "Implement and fully qualify the published public WFS route without changing source geometry or using authentication.",
+  "priorEvidenceFiles": [],
+  "priorCheck": {
+    "attemptState": "pending",
+    "attemptEvidence": [],
+    "possiblePriorMatches": [],
+    "resolvedPriorMatches": []
+  },
+  "rootReviewNote": null,
+  "rootReviewedAt": "2026-10-09T06:46:30.956530+00:00",
+  "sampleFile": "city-1681-homel-root-samples.geojson"
+}

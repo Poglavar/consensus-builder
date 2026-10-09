@@ -1,0 +1,13 @@
+{
+  "schemaVersion": "1.0",
+  "checkedAt": "2026-10-09",
+  "cityRecord": "city-8126-sialkot.json",
+  "purpose": "Read-only source discovery and bounded public-service validation; no runtime or global changes.",
+  "scopeLimits": {
+    "maxFullPolygonsRetainedInThisCityReport": 0,
+    "maxFullPolygonsRetainedAcrossCityReview": 0,
+    "ownerOrAddressDataRetained": false,
+    "accountCredentialsOrPublicTokenValuesRetained": false
+  },
+  "assessment": "The WUP point is a population-weighted locator, not a parcel identity. A Sialkot-named PULSE layer is a credible local source, but the service returned only a token requirement. City extent coverage, current parcel distribution, fields, geometry and exact point match remain unverified. PULSE itself says its indicative lines are not legal boundaries."
+}

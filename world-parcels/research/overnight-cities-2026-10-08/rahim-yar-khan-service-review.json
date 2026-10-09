@@ -1,0 +1,77 @@
+{
+  "schemaVersion": "1.0",
+  "checkedAt": "2026-10-09",
+  "cityRecord": "city-6899-rahim-yar-khan.json",
+  "purpose": "Document first-party local registry/map evidence and schema-first anonymous geometry review.",
+  "scopeLimits": {
+    "maxFullPolygonsRetainedInCityRecord": 0,
+    "maxFullPolygonsRetainedInReview": 0,
+    "maxFullPolygonsRetainedInRepository": 0,
+    "ownerOrAddressDataRetained": false,
+    "credentialsOrTokenValuesRetained": false,
+    "citywideCompletenessAsserted": false
+  },
+  "assessment": "Official district administration identifies an Arazi Record Center in Rahim Yar Khan tehsil. Punjab’s public map is village-wise and presents district/tehsil/village selectors, but no feature schema or safe query fields were verified. The city point was not resolved to a map extent; no lookup was made. The public cadastral map is village-selected and its anonymous geometry/schema contract is unknown. No personal or parcel-specific lookup was performed.",
+  "registryAssessment": "The Rahim Yar Khan district administration’s Revenue Department page lists one Arazi Record Center for Rahim Yar Khan tehsil and five across the district; the page also identifies revenue estates and local revenue administration. Punjab’s official land-record portal exposes a village-wise cadastral-map selector. The public selector reveals no safe feature schema and includes separate owner/record search functions; no parcel or owner lookup was submitted.",
+  "officialPrimarySources": [
+    {
+      "url": "https://rykhan.punjab.gov.pk/Revenue_department",
+      "observation": "The Rahim Yar Khan district administration’s Revenue Department page lists one Arazi Record Center for Rahim Yar Khan tehsil and five across the district; the page also identifies revenue estates and local revenue administration. Punjab’s official land-record portal exposes a village-wise cadastral-map selector. The public selector reveals no safe feature schema and includes separate owner/record search functions; no parcel or owner lookup was submitted."
+    },
+    {
+      "url": "https://jamabandi.punjab.gov.pk/CadastralMap.aspx",
+      "observation": "The Rahim Yar Khan district administration’s Revenue Department page lists one Arazi Record Center for Rahim Yar Khan tehsil and five across the district; the page also identifies revenue estates and local revenue administration. Punjab’s official land-record portal exposes a village-wise cadastral-map selector. The public selector reveals no safe feature schema and includes separate owner/record search functions; no parcel or owner lookup was submitted."
+    },
+    {
+      "url": "https://www.punjab-zameen.gov.pk/",
+      "observation": "The Rahim Yar Khan district administration’s Revenue Department page lists one Arazi Record Center for Rahim Yar Khan tehsil and five across the district; the page also identifies revenue estates and local revenue administration. Punjab’s official land-record portal exposes a village-wise cadastral-map selector. The public selector reveals no safe feature schema and includes separate owner/record search functions; no parcel or owner lookup was submitted."
+    }
+  ],
+  "searchQueries": [
+    {
+      "language": "English",
+      "query": "Rahim Yar Khan official Arazi Record Center land registry cadastral map Punjab parcel GIS",
+      "result": "Official district administration identifies an Arazi Record Center in Rahim Yar Khan tehsil. Punjab’s public map is village-wise and presents district/tehsil/village selectors, but no feature schema or safe query fields were verified. The city point was not resolved to a map extent; no lookup was made.",
+      "method": "Separate English-language search and official source review."
+    },
+    {
+      "language": "Urdu",
+      "query": "رحیم یار خان اراضی ریکارڈ سنٹر کادستر نقشہ پنجاب لینڈ ریکارڈ سرکاری",
+      "result": "Official district administration identifies an Arazi Record Center in Rahim Yar Khan tehsil. Punjab’s public map is village-wise and presents district/tehsil/village selectors, but no feature schema or safe query fields were verified. The city point was not resolved to a map extent; no lookup was made.",
+      "method": "Separate local-language search and official source review."
+    }
+  ],
+  "geometryDecision": "No parcel geometry retained; no anonymous schema-safe exact-point geometry response was verified.",
+  "coverageAssessment": {
+    "claimedScope": "The Rahim Yar Khan district administration’s Revenue Department page lists one Arazi Record Center for Rahim Yar Khan tehsil and five across the district; the page also identifies revenue estates and local revenue administration. Punjab’s official land-record portal exposes a village-wise cadastral-map selector. The public selector reveals no safe feature schema and includes separate owner/record search functions; no parcel or owner lookup was submitted.",
+    "verifiedOpenScope": "Official district administration identifies an Arazi Record Center in Rahim Yar Khan tehsil. Punjab’s public map is village-wise and presents district/tehsil/village selectors, but no feature schema or safe query fields were verified. The city point was not resolved to a map extent; no lookup was made.",
+    "citywideVerified": false,
+    "countrywideVerified": false
+  },
+  "attempts": [
+    {
+      "source": "https://rykhan.punjab.gov.pk/Revenue_department",
+      "outcome": "Metadata/source review only; no feature or individual property lookup made.",
+      "fieldsRequested": [],
+      "sensitiveFieldsRequested": false
+    },
+    {
+      "source": "https://jamabandi.punjab.gov.pk/CadastralMap.aspx",
+      "outcome": "Metadata/source review only; no feature or individual property lookup made.",
+      "fieldsRequested": [],
+      "sensitiveFieldsRequested": false
+    },
+    {
+      "source": "https://www.punjab-zameen.gov.pk/",
+      "outcome": "Metadata/source review only; no feature or individual property lookup made.",
+      "fieldsRequested": [],
+      "sensitiveFieldsRequested": false
+    }
+  ],
+  "remainingUncertainty": "Whether a safe geometry-only layer covers the urban WUP point, which map unit applies there, and whether returned features support a safe native key remain unresolved.",
+  "runtimeAssessment": {
+    "status": "not_assessed",
+    "reason": "No adapter or runtime contract was tested."
+  },
+  "technicalBlocker": "The public cadastral map is village-selected and its anonymous geometry/schema contract is unknown. No personal or parcel-specific lookup was performed."
+}

@@ -1,0 +1,13 @@
+{
+  "schemaVersion": "1.0",
+  "checkedAt": "2026-10-09",
+  "cityRecord": "city-8652-meerut.json",
+  "purpose": "Read-only source discovery and bounded service validation; no runtime or global changes.",
+  "scopeLimits": {
+    "maxFullPolygonsRetainedInThisCityReport": 0,
+    "maxFullPolygonsRetainedAcrossCityReview": 0,
+    "ownerOrAddressDataRetained": false,
+    "accountCredentialsOrPublicTokenValuesRetained": false
+  },
+  "assessment": "The official UP Bhulekh dashboard identifies Meerut Sadar village मेरठ (219037), BhuNaksha-linked, with eight scanned/verified mapsheets. The correct three-level BhuNaksha map-info request (138,00734,219037) returned HTTP 200 and GIS code 13800734219037 with the expected village attribution, but all extent values were zero. No map geometry or exact WUP-point identify was available, so no parcel was retained."
+}

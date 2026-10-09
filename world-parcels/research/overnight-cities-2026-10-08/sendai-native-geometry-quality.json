@@ -1,0 +1,66 @@
+{
+  "schemaVersion": 1,
+  "library": "Shapely 2.2.0",
+  "metricCrs": "EPSG:6678",
+  "featureCount": 3,
+  "method": "Independent root GEOS review of original native SHP ring coordinates; no repair. WUP coordinate transformed using supplied PRJ.",
+  "features": [
+    {
+      "shapeRecordNumber": 309577,
+      "valid": true,
+      "empty": false,
+      "validity": "Valid Geometry",
+      "areaM2": 37557.53788370624,
+      "containsWupPoint": true,
+      "distanceToWupPointM": 0.0,
+      "nativeRingCount": 1
+    },
+    {
+      "shapeRecordNumber": 303660,
+      "valid": true,
+      "empty": false,
+      "validity": "Valid Geometry",
+      "areaM2": 427.43117711259487,
+      "containsWupPoint": false,
+      "distanceToWupPointM": 3.459697178107956,
+      "nativeRingCount": 1
+    },
+    {
+      "shapeRecordNumber": 644804,
+      "valid": true,
+      "empty": false,
+      "validity": "Valid Geometry",
+      "areaM2": 12126.358248680956,
+      "containsWupPoint": false,
+      "distanceToWupPointM": 7.6083039537554775,
+      "nativeRingCount": 1
+    }
+  ],
+  "pairs": [
+    {
+      "shapeRecordNumbers": [
+        309577,
+        303660
+      ],
+      "intersectionM2": 0.0,
+      "equals": false
+    },
+    {
+      "shapeRecordNumbers": [
+        309577,
+        644804
+      ],
+      "intersectionM2": 0.0,
+      "equals": false
+    },
+    {
+      "shapeRecordNumbers": [
+        303660,
+        644804
+      ],
+      "intersectionM2": 0.0,
+      "equals": false
+    }
+  ],
+  "identityScope": "SHP record numbers identify geometry only within the 2026-07-13 archive snapshot; future-record stability and cadastral-key correspondence unverified."
+}

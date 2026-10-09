@@ -1,0 +1,99 @@
+{
+  "name": "Benghazi",
+  "country": "Libya",
+  "countryCode": "LY",
+  "rank": 860,
+  "point": [
+    32.1053398802967,
+    20.1084289990411
+  ],
+  "population2025": 630479,
+  "population2025k": 630.479,
+  "populationUnit": "persons",
+  "populationPlausibility2025": "Moderate",
+  "schemaVersion": 1,
+  "kind": "city_parcel_source_research",
+  "checkedAt": "2026-10-09",
+  "status": "complete",
+  "registryFound": true,
+  "registryBasis": "Official Libyan News Agency reports the Benghazi branch of the Real Estate Registration Authority reopening in 2013 and identifies its branch head in a 2025 authority training report; these support a local registry branch but do not independently verify present service capacity. No public parcel geometry service or safe feature schema was found.",
+  "registryEvidenceUrls": [
+    "https://lana.gov.ly/post.php?id=15747&lang=ar",
+    "https://lana.gov.ly/post.php?id=326238&lang=ar",
+    "https://reril.ly/en/%D8%B1%D8%A6%D8%A7%D8%B3%D8%A9-%D8%A7%D9%84%D9%85%D8%B5%D9%84%D8%AD%D8%A9/"
+  ],
+  "publicParcelGeometryFound": false,
+  "verifiedSample": false,
+  "runtimeReadiness": "not_enabled_no_verified_public_geometry",
+  "adapterReady": false,
+  "priorEvidenceFiles": [],
+  "scopeLimits": "City-local source discovery only. No full parcel geometry was retained. No owner, address, account/tax identifier, credential, or token value was requested or retained. Citywide/countrywide completeness and runtime suitability are not assessed.",
+  "pointBasis": "UN WUP 2025 population-weighted settlement centroid; this is not a municipal boundary or a parcel-coverage claim.",
+  "resultCategory": "official_local_registry_candidate_geometry_unverified",
+  "technicalBlocker": "No city-local public parcel viewer, anonymous geometry endpoint, or schema-safe map service was found. Official reporting supports a local branch but does not verify current service capacity.",
+  "remainingUncertainty": "Current service capacity of the Benghazi branch and availability of public parcel geometry remain unverified.",
+  "nextStep": "No runtime qualification was attempted. If more discovery is needed, inspect first-party service metadata and retain geometry only after confirming a safe native feature identifier.",
+  "freshResearch": {
+    "queries": [
+      {
+        "language": "English",
+        "query": "Benghazi Libya official land registry cadastre office cadastral map GIS",
+        "scope": "Find city-local registration/cadastral-map evidence and determine whether anonymous schema-safe parcel geometry is available.",
+        "result": "Official Libyan News Agency reported the reopening of a Benghazi branch of the Real Estate Registration Authority in 2013. The authority’s official site identifies the national real-estate registry. No current city-specific anonymous parcel map or feature schema was located.",
+        "actualResultUrls": [
+          "https://lana.gov.ly/post.php?id=15747&lang=ar",
+          "https://reril.ly/en/%D8%B1%D8%A6%D8%A7%D8%B3%D8%A9-%D8%A7%D9%84%D9%85%D8%B5%D9%84%D8%AD%D8%A9/",
+          "https://ssf.gov.ly/wp-content/uploads/2020/02/%D9%82%D8%A7%D9%86%D9%88%D9%86-%D8%B1%D9%82%D9%85-17-%D9%84%D8%B3%D9%86%D8%A9-2010%D9%85-%D8%A8%D8%B4%D8%A3%D9%86-%D8%A7%D9%84%D8%B3%D8%AC%D9%84-%D8%A7%D9%84%D8%B9%D9%82%D8%A7%D8%B1%D9%8A.pdf"
+        ],
+        "executionMethod": "Separate language-specific web search and official source review; no owner/property-specific query."
+      },
+      {
+        "language": "Arabic",
+        "query": "site:lana.gov.ly بنغازي إعادة افتتاح فرع مصلحة التسجيل العقاري بنغازي",
+        "scope": "Find city-local registration/cadastral-map evidence and determine whether anonymous schema-safe parcel geometry is available.",
+        "result": "Libyan News Agency archive search returned its 2013 report that the Benghazi branch of the Real Estate Registration Authority reopened, and a 2025 report naming the Benghazi branch head at an authority training event. These confirm a city branch in public official reporting, but do not independently verify its current service capacity. No city-local public parcel map or anonymous geometry schema was found.",
+        "actualResultUrls": [
+          "https://lana.gov.ly/post.php?id=15747&lang=ar",
+          "https://lana.gov.ly/post.php?id=326238&lang=ar",
+          "https://reril.ly/en/%D8%B1%D8%A6%D8%A7%D8%B3%D8%A9-%D8%A7%D9%84%D9%85%D8%B5%D9%84%D8%AD%D8%A9/"
+        ],
+        "executionMethod": "Separate language-specific web search and official source review; no owner/property-specific query."
+      }
+    ]
+  },
+  "officialSources": [
+    {
+      "url": "https://lana.gov.ly/post.php?id=15747&lang=ar",
+      "observation": "Libyan News Agency report that the local Real Estate Registration Authority branch reopened in 2013; historical branch evidence."
+    },
+    {
+      "url": "https://lana.gov.ly/post.php?id=326238&lang=ar",
+      "observation": "Libyan News Agency report from 2025 names the Benghazi branch head participating in an authority training event, supporting continued branch presence but not service capacity."
+    },
+    {
+      "url": "https://reril.ly/en/%D8%B1%D8%A6%D8%A7%D8%B3%D8%A9-%D8%A7%D9%84%D9%85%D8%B5%D9%84%D8%AD%D8%A9/",
+      "observation": "Official Real Estate Registration Authority site identifies the national registry office."
+    }
+  ],
+  "verifiedParcelResponse": null,
+  "wupCityCode": 1175,
+  "cityId": "wup2025:1175",
+  "queueRank": 860,
+  "centerLatLon": [
+    32.1053398802967,
+    20.1084289990411
+  ],
+  "sourceIds": [],
+  "runtimeAssessment": {
+    "status": "not_enabled_no_verified_public_geometry",
+    "reason": "No city-local public parcel viewer, anonymous geometry endpoint, or schema-safe map service was found. Official reporting supports a local branch but does not verify current service capacity."
+  },
+  "rootPrimaryReadback": {
+    "url": "https://lana.gov.ly/post.php?id=15747&lang=ar",
+    "fetch": 200,
+    "contentType": "text/html; charset=UTF-8",
+    "title": "وكالة الأنباء الليبية - إعادة افتتاح فرع مصلحة التسجيل العقاري بمدينة بنغازي ."
+  },
+  "rootReviewNote": "Reviewed the specific primary institution/service evidence and its geographical, access and date limits. Direct readback failures are preserved separately from indexed primary evidence. No public full parcel geometry was verified for this city in this discovery pass.",
+  "rootReviewedAt": "2026-10-09T04:12:31.737456+00:00"
+}

@@ -1,0 +1,74 @@
+{
+  "schemaVersion": 1,
+  "checkedAt": "2026-10-09",
+  "sourceId": "wup2025:857",
+  "purpose": "City-specific parcel registry and safe public geometry route review",
+  "primaryPublisher": "https://urmia.ir/",
+  "sourceUrl": "https://urmia.ir/",
+  "registryFound": null,
+  "registryBasis": "The official Urmia municipal portal and its citizen-service system are city-specific, but reviewed material describes urban-planning property files and municipal case workflow, not a confirmed title/cadastre registry. Official primary evidence identifying the local title registry was not established; registryFound remains null.",
+  "officialSources": [
+    {
+      "url": "https://urmia.ir/",
+      "observation": "The official Urmia municipal portal and its citizen-service system are city-specific, but reviewed material describes urban-planning property files and municipal case workflow, not a confirmed title/cadastre registry. Official primary evidence identifying the local title registry was not established; registryFound remains null. The municipal e-service is property-case information and may expose property-specific attributes; no record or parcel query was submitted. No public geometry service with a safe ID-and-geometry-only schema was verified."
+    },
+    {
+      "url": "http://esup.urmia.ir/",
+      "observation": "The official Urmia municipal portal and its citizen-service system are city-specific, but reviewed material describes urban-planning property files and municipal case workflow, not a confirmed title/cadastre registry. Official primary evidence identifying the local title registry was not established; registryFound remains null. The municipal e-service is property-case information and may expose property-specific attributes; no record or parcel query was submitted. No public geometry service with a safe ID-and-geometry-only schema was verified."
+    },
+    {
+      "url": "https://www.ssaa.ir/",
+      "observation": "The official Urmia municipal portal and its citizen-service system are city-specific, but reviewed material describes urban-planning property files and municipal case workflow, not a confirmed title/cadastre registry. Official primary evidence identifying the local title registry was not established; registryFound remains null. The municipal e-service is property-case information and may expose property-specific attributes; no record or parcel query was submitted. No public geometry service with a safe ID-and-geometry-only schema was verified."
+    }
+  ],
+  "searchQueries": [
+    {
+      "language": "English",
+      "query": "Urmia Iran official land registry cadastral public map GIS",
+      "scope": "Identify city-specific registry evidence and safe public geometry routes.",
+      "result": "The official Urmia municipal portal and its citizen-service system are city-specific, but reviewed material describes urban-planning property files and municipal case workflow, not a confirmed title/cadastre registry. Official primary evidence identifying the local title registry was not established; registryFound remains null. The municipal e-service is property-case information and may expose property-specific attributes; no record or parcel query was submitted. No public geometry service with a safe ID-and-geometry-only schema was verified.",
+      "actualResultUrls": [
+        "https://urmia.ir/",
+        "http://esup.urmia.ir/",
+        "https://www.ssaa.ir/"
+      ],
+      "executionMethod": "Separate official-source-focused search followed by public page and service-description review; no property-specific input submitted."
+    },
+    {
+      "language": "Persian",
+      "query": "ارومیه اداره ثبت اسناد و املاک کاداستر نقشه رسمی",
+      "scope": "Identify local-language primary evidence for city registry and public parcel-map services.",
+      "result": "The official Urmia municipal portal and its citizen-service system are city-specific, but reviewed material describes urban-planning property files and municipal case workflow, not a confirmed title/cadastre registry. Official primary evidence identifying the local title registry was not established; registryFound remains null. The municipal e-service is property-case information and may expose property-specific attributes; no record or parcel query was submitted. No public geometry service with a safe ID-and-geometry-only schema was verified.",
+      "actualResultUrls": [
+        "https://urmia.ir/",
+        "http://esup.urmia.ir/",
+        "https://www.ssaa.ir/"
+      ],
+      "executionMethod": "Separate official-source-focused search followed by public page and service-description review; no property-specific input submitted."
+    }
+  ],
+  "accessReview": {
+    "publicAnonymousGeometryVerified": false,
+    "completeGeoreferencedPolygonCount": 0,
+    "geometryRetained": false,
+    "ownerAddressTaxOrPersonLookupRequested": false,
+    "authenticationOrCredentialsUsed": false,
+    "captchaOrPersonalFormSubmitted": false,
+    "routeInspectionStatus": "schema_unverified",
+    "reason": "The municipal e-service is property-case information and may expose property-specific attributes; no record or parcel query was submitted. No public geometry service with a safe ID-and-geometry-only schema was verified."
+  },
+  "requestEvidence": {
+    "method": "public official source review",
+    "propertySpecificRequestSent": false,
+    "geometryRequestSent": false,
+    "notes": "No owner, address, tax-account, title, parcel-number, or person-specific lookup was performed."
+  },
+  "technicalBlocker": "The municipal e-service is property-case information and may expose property-specific attributes; no record or parcel query was submitted. No public geometry service with a safe ID-and-geometry-only schema was verified.",
+  "sampleDisposition": "No polygon retained; no verified safe geometry endpoint.",
+  "remainingUncertainty": "A city-specific official title-registry office or published geometry-only parcel dataset may exist but was not verified.",
+  "rootRuntimeAssessment": {
+    "enabled": false,
+    "status": "not_enabled_no_verified_public_geometry",
+    "reason": "A city-specific official title-registry office or published geometry-only parcel dataset may exist but was not verified."
+  }
+}

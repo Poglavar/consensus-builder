@@ -1,0 +1,18 @@
+{
+  "checkedAt": "2026-10-09",
+  "purpose": "Independent comparison of the original retained public sample with the fresh complete adapter result, without replacing or repairing either geometry.",
+  "nativeParcelId": "106105_9.0006.98/1",
+  "canonicalParcelId": "PL-LODZ-106105_9.0006.98/1",
+  "originalSampleSha256": "54b721ea08e3e4fcfc3d52692fbf2823f3132950dac521bc7e1819561347e55b",
+  "originalSampleUnchanged": true,
+  "metricCrs": "EPSG:32634",
+  "originalAreaM2": 2270.32369212483,
+  "freshAreaM2": 2270.3236921230387,
+  "symmetricDifferenceM2": 2.2679288226112957e-07,
+  "hausdorffM": 2.794573987870897e-09,
+  "originalValid": true,
+  "freshValid": true,
+  "originalContainsUnchangedWupPoint": true,
+  "freshContainsUnchangedWupPoint": true,
+  "note": "Small coordinate differences arise only from the independent coordinate transformations. Source-native full polygon geometry is preserved; no snapping, repair, deduplication or replacement applied."
+}

@@ -1,0 +1,61 @@
+{
+  "schemaVersion": "1.0",
+  "checkedAt": "2026-10-09",
+  "cityRecord": "city-4745-jambi.json",
+  "purpose": "Document city-scope registry evidence and bounded public parcel-geometry route review.",
+  "scopeLimits": {
+    "maxFullPolygonsRetainedInCityRecord": 3,
+    "maxFullPolygonsRetainedInReview": 3,
+    "maxFullPolygonsRetainedInRepository": 3,
+    "ownerOrAddressDataRetained": false,
+    "credentialsOrTokenValuesRetained": false,
+    "citywideCompletenessAsserted": false
+  },
+  "assessment": "The official city SMARTGIS is direct evidence of local mapped PBB-P2 parcel objects, but the public viewer explicitly renders personal and tax details. No anonymous parcel geometry was requested or retained because no safe field-only path was documented.",
+  "registryAssessment": "This is a city fiscal parcel cadastre, not evidence of legal title registry coverage. At the review date the city service reported only 62,620 of 226,124 tax objects mapped, so coverage is demonstrably partial.",
+  "officialPrimarySources": [
+    {
+      "url": "https://petapajak.jambikota.go.id/",
+      "observation": "Official Kota Jambi BPPRD page describes SMARTGIS PBB-P2 for mapped tax objects; reports mapped and unmapped counts and states the system manages spatial parcel objects."
+    },
+    {
+      "url": "https://petapajak.jambikota.go.id/peta",
+      "observation": "Public viewer panel exposes NOP, Letak OP, Wajib Pajak, NPWP, address, land/building areas, and assessment values; no map feature query was submitted."
+    },
+    {
+      "url": "https://bhumi.atrbpn.go.id/bantuan/landing",
+      "observation": "National ATR/BPN BHUMI documentation describes a public interactive spatial platform and says official reference use requires a public-information request; this is not city-specific geometry coverage."
+    }
+  ],
+  "searchQueries": [
+    {
+      "language": "Indonesian",
+      "query": "Kota Jambi peta bidang tanah ATR BPN BHUMI kadaster GIS pertanahan resmi",
+      "result": "Found the city-run SMARTGIS PBB-P2 map; national BHUMI documentation describes an open spatial land platform but requires public-information request for official reference use.",
+      "method": "Separate Indonesian-language discovery search; municipal and national first-party reviews."
+    },
+    {
+      "language": "English",
+      "query": "Jambi city Indonesia official cadastral parcel map land office ATR/BPN map GIS",
+      "result": "No separate English-language title-cadastral feature source found; official city tax map is the local mapping candidate.",
+      "method": "Separate English-language discovery search."
+    }
+  ],
+  "serviceChecks": [
+    {
+      "url": "https://petapajak.jambikota.go.id/",
+      "method": "Official municipal SMARTGIS overview",
+      "httpStatus": 200,
+      "observation": "PBB-P2 mapped object count 62,620; object count 226,124; 11 kecamatan and 68 kelurahan."
+    },
+    {
+      "url": "https://petapajak.jambikota.go.id/peta",
+      "method": "Public viewer schema/UI review",
+      "httpStatus": 200,
+      "observation": "Viewer lists taxpayer identity, address, NPWP, tax-object number, and fiscal assessment fields. Avoided feature/record queries; no geometry retrieved."
+    }
+  ],
+  "geometryEvidence": null,
+  "privacy": "Did not perform a taxpayer, address, NOP, or property query. No geometry or personal/tax data was retained.",
+  "runtimeAssessment": "not_enabled_no_verified_public_geometry"
+}

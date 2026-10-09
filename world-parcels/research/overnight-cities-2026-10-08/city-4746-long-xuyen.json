@@ -1,0 +1,152 @@
+{
+  "schemaVersion": 1,
+  "kind": "city_parcel_source_research",
+  "checkedAt": "2026-10-09",
+  "populationUnit": "persons",
+  "status": "complete",
+  "pointBasis": "UN WUP 2025 population-weighted settlement centroid; this is not a municipal boundary or a parcel-coverage claim.",
+  "priorEvidenceFiles": [],
+  "priorCheck": {
+    "attemptState": "pending",
+    "attemptEvidence": [],
+    "possiblePriorMatches": []
+  },
+  "sourceIds": [],
+  "name": "Long Xuyên",
+  "country": "Viet Nam",
+  "countryCode": "VN",
+  "registryFound": true,
+  "registryBasis": "The current official Long Xuyên Ward portal publishes land-registration and land-use-right certificate notices. This confirms local registration activity, although post-2025 administrative reorganizations mean the current ward area should not be assumed identical to the WUP 2025 settlement footprint. No anonymous public parcel-vector service was verified.",
+  "registryEvidenceUrls": [
+    "https://longxuyen.angiang.gov.vn/",
+    "https://longxuyen.angiang.gov.vn/cong-khai-kq-dang-ky-dat-dai-gcn-qsdd-cua-ho-dan",
+    "https://angiang.gov.vn/vi/thong-tin-ve-quy-hoach-su-dung-dat",
+    "https://xaydungchinhsach.chinhphu.vn/toan-van-nghi-dinh-101-2024-nd-cp-quy-dinh-dang-ky-cap-giay-chung-nhan-quyen-su-dung-dat-quyen-so-huu-tai-san-gan-lien-voi-dat-119240801170006295.htm"
+  ],
+  "verifiedSample": false,
+  "publicParcelGeometryFound": false,
+  "publicParcelGeometryCandidateFound": false,
+  "runtimeReadiness": "not_enabled_no_verified_public_geometry",
+  "wupCityCode": 4746,
+  "cityId": "wup2025:4746",
+  "centerLatLon": [
+    10.3633235634388,
+    105.449017944601
+  ],
+  "point": [
+    10.3633235634388,
+    105.449017944601
+  ],
+  "rank": 851,
+  "queueRank": 851,
+  "population2025": 635490,
+  "population2025k": 635.49,
+  "populationPlausibility2025": "Moderate",
+  "scopeLimits": "No full polygon retained. City-specific registry or map evidence is informational and does not establish citywide completeness.",
+  "remainingUncertainty": "Current local land-registration notices are documented, but no public full-polygon map or safe native parcel-key schema was identified. The current ward footprint and WUP 2025 settlement scope are not asserted to match.",
+  "nextStep": "If needed, find an official An Giang province/Long Xuyên land registry map that publishes complete polygons, then verify the exact WUP point and current administrative scope.",
+  "research": {
+    "executedQueries": [
+      {
+        "language": "Vietnamese",
+        "query": "Long Xuyên bản đồ địa chính đất đai Sở TNMT An Giang official",
+        "result": "Official current ward portal and province land-information page were reviewed; no public parcel-vector service was identified.",
+        "scope": "Verify city-specific registry activity and whether a public anonymous full-polygon geometry route is available.",
+        "urls": [],
+        "actualResultUrls": [
+          "https://longxuyen.angiang.gov.vn/",
+          "https://longxuyen.angiang.gov.vn/cong-khai-kq-dang-ky-dat-dai-gcn-qsdd-cua-ho-dan",
+          "https://angiang.gov.vn/vi/thong-tin-ve-quy-hoach-su-dung-dat",
+          "https://xaydungchinhsach.chinhphu.vn/toan-van-nghi-dinh-101-2024-nd-cp-quy-dinh-dang-ky-cap-giay-chung-nhan-quyen-su-dung-dat-quyen-so-huu-tai-san-gan-lien-voi-dat-119240801170006295.htm"
+        ],
+        "executionMethod": "English and local-language official-source search; public city/service pages and safe GIS metadata inspected without owner, address, tax/account, or credential inputs."
+      },
+      {
+        "language": "Vietnamese",
+        "query": "bản đồ địa chính Long Xuyên đăng ký đất đai chính quyền",
+        "result": "Official Long Xuyên Ward site posts land-registration/certificate notices; no anonymous map geometry was found.",
+        "scope": "Verify city-specific registry activity and whether a public anonymous full-polygon geometry route is available.",
+        "urls": [],
+        "actualResultUrls": [
+          "https://longxuyen.angiang.gov.vn/",
+          "https://longxuyen.angiang.gov.vn/cong-khai-kq-dang-ky-dat-dai-gcn-qsdd-cua-ho-dan",
+          "https://angiang.gov.vn/vi/thong-tin-ve-quy-hoach-su-dung-dat",
+          "https://xaydungchinhsach.chinhphu.vn/toan-van-nghi-dinh-101-2024-nd-cp-quy-dinh-dang-ky-cap-giay-chung-nhan-quyen-su-dung-dat-quyen-so-huu-tai-san-gan-lien-voi-dat-119240801170006295.htm"
+        ],
+        "executionMethod": "English and local-language official-source search; public city/service pages and safe GIS metadata inspected without owner, address, tax/account, or credential inputs."
+      },
+      {
+        "language": "English",
+        "query": "Long Xuyen cadastral map land registration official Vietnam",
+        "result": "Official current ward and provincial sources confirm land-registration activity; no public full-polygon route was verified.",
+        "scope": "Verify city-specific registry activity and whether a public anonymous full-polygon geometry route is available.",
+        "urls": [],
+        "actualResultUrls": [
+          "https://longxuyen.angiang.gov.vn/",
+          "https://longxuyen.angiang.gov.vn/cong-khai-kq-dang-ky-dat-dai-gcn-qsdd-cua-ho-dan",
+          "https://angiang.gov.vn/vi/thong-tin-ve-quy-hoach-su-dung-dat",
+          "https://xaydungchinhsach.chinhphu.vn/toan-van-nghi-dinh-101-2024-nd-cp-quy-dinh-dang-ky-cap-giay-chung-nhan-quyen-su-dung-dat-quyen-so-huu-tai-san-gan-lien-voi-dat-119240801170006295.htm"
+        ],
+        "executionMethod": "English and local-language official-source search; public city/service pages and safe GIS metadata inspected without owner, address, tax/account, or credential inputs."
+      }
+    ],
+    "officialSources": [
+      {
+        "url": "https://longxuyen.angiang.gov.vn/",
+        "observation": "Official current Long Xuyên Ward portal."
+      },
+      {
+        "url": "https://longxuyen.angiang.gov.vn/cong-khai-kq-dang-ky-dat-dai-gcn-qsdd-cua-ho-dan",
+        "observation": "Official ward portal land-registration/land-use-right certificate notice page; it is a notices workflow, not a general parcel map."
+      },
+      {
+        "url": "https://angiang.gov.vn/vi/thong-tin-ve-quy-hoach-su-dung-dat",
+        "observation": "Official An Giang provincial land-use and planning information page."
+      },
+      {
+        "url": "https://xaydungchinhsach.chinhphu.vn/toan-van-nghi-dinh-101-2024-nd-cp-quy-dinh-dang-ky-cap-giay-chung-nhan-quyen-su-dung-dat-quyen-so-huu-tai-san-gan-lien-voi-dat-119240801170006295.htm",
+        "observation": "Official government decree describes land-registration office roles for updating cadastral maps; not a public Long Xuyên geometry service."
+      }
+    ]
+  },
+  "source": {
+    "name": "Long Xuyên Ward land-registration notice service",
+    "urls": [
+      "https://longxuyen.angiang.gov.vn/",
+      "https://longxuyen.angiang.gov.vn/cong-khai-kq-dang-ky-dat-dai-gcn-qsdd-cua-ho-dan",
+      "https://angiang.gov.vn/vi/thong-tin-ve-quy-hoach-su-dung-dat",
+      "https://xaydungchinhsach.chinhphu.vn/toan-van-nghi-dinh-101-2024-nd-cp-quy-dinh-dang-ky-cap-giay-chung-nhan-quyen-su-dung-dat-quyen-so-huu-tai-san-gan-lien-voi-dat-119240801170006295.htm"
+    ],
+    "operator": "Long Xuyên Ward People’s Committee / An Giang Province",
+    "url": "https://longxuyen.angiang.gov.vn/",
+    "serviceType": "Official land-registration service or public map candidate; vector geometry unverified",
+    "nativeIdField": null,
+    "nativeIdEvidence": null,
+    "requestedAttributes": [],
+    "personalAttributesRequested": false,
+    "directGeometryQueryVerified": false,
+    "directMetadataSchemaVerified": false,
+    "scope": "Official local registry/map workflow reviewed; no full geometry response verified."
+  },
+  "coverageAssessment": {
+    "claimedScope": "The current official Long Xuyên Ward portal publishes land-registration and land-use-right certificate notices. This confirms local registration activity, although post-2025 administrative reorganizations mean the current ward area should not be assumed identical to the WUP 2025 settlement footprint. No anonymous public parcel-vector service was verified.",
+    "verifiedOpenScope": "No public full-polygon coverage verified at the exact WUP locator. This record documents source evidence/candidate status only.",
+    "citywideVerified": false,
+    "countrywideVerified": false
+  },
+  "runtimeAssessment": {
+    "status": "unverified",
+    "reason": "No public full-polygon/native-key response was verified at the unchanged WUP locator; the official registry or map lead remains unqualified for runtime."
+  },
+  "resultCategory": "official_local_land_registration_activity_no_public_geometry",
+  "geometryEvidence": "No full parcel geometry or native cadastral identifier was verified. Official local registration notices are not a general parcel-geometry service.",
+  "adapterReady": false,
+  "rootPrimaryReadback": {
+    "url": "https://longxuyen.angiang.gov.vn/",
+    "fetch": 200,
+    "contentType": "text/html; charset=UTF-8",
+    "title": "Trang Chủ | UBND Phường Long Xuyên"
+  },
+  "rootReviewNote": "Reviewed the specific primary institution/service evidence and its geographical, access and date limits. Direct readback failures are preserved separately from indexed primary evidence. No public full parcel geometry was verified for this city in this discovery pass.",
+  "rootReviewedAt": "2026-10-09T04:12:31.737456+00:00"
+}

@@ -1,0 +1,118 @@
+{
+  "schemaVersion": 1,
+  "city": "Las Vegas",
+  "cityId": "wup2025:4714",
+  "countryCode": "US",
+  "queueRank": 232,
+  "population2025": 2183655,
+  "centerLatLon": [
+    36.1515806137119,
+    -115.164472767125
+  ],
+  "checkedAt": "2026-10-09",
+  "purpose": "Bounded adapter qualification and independent polygon quality review; no owner fields were requested.",
+  "candidateSource": {
+    "id": "us-nv-clark-assessor-parcels",
+    "operator": "Clark County Assessor / GISMO",
+    "endpoint": "https://maps.clarkcountynv.gov/arcgis/rest/services/GISMO/AssessorMap/FeatureServer/1",
+    "geometryType": "esriGeometryPolygon",
+    "idField": "APN",
+    "transportObjectId": "OID",
+    "outFields": [
+      "OID",
+      "APN"
+    ],
+    "queryFormat": "GeoJSON",
+    "sourceScope": "Clark County assessor fabric; query does not establish city-only coverage.",
+    "maxBboxKm2": 1
+  },
+  "testDesign": {
+    "grid": "13 bounded 0.001-degree cells around exact WUP point",
+    "forcedPageSize": 3,
+    "freshExactIdRetrieval": true,
+    "explicitAbsentId": "US-NV-CLARK-999999999999999",
+    "footprint": "one selected parcel footprint query",
+    "sourceBinding": "one selected parcel binding test",
+    "maximumFullPolygonsRetained": 3,
+    "maxBboxKm2": 1
+  },
+  "results": {
+    "successfulViewports": 11,
+    "failedViewports": [
+      {
+        "name": "viewport-3",
+        "status": 500
+      },
+      {
+        "name": "viewport-11",
+        "status": 500
+      }
+    ],
+    "uniqueCompleteParcels": 78,
+    "exactIdPagesPassed": 2,
+    "freshIdsVerified": 78,
+    "geometryHashesMatched": true,
+    "explicitAbsencePassed": true,
+    "forcedThreeRowPages": 7,
+    "forcedPaginationCount": 20,
+    "footprintPassed": true,
+    "sourceBindingPassed": true,
+    "sourceBindingCoverage": "complete",
+    "selectedParcelAreaM2": 1869.3,
+    "sampleGeometriesFile": "las-vegas-adapter-sample.geojson",
+    "acceptanceFile": "las-vegas-acceptance.json",
+    "requalification": {
+      "acceptanceFile": "las-vegas-retry-acceptance.json",
+      "secondRunUniqueParcels": 87,
+      "secondRunSuccessfulViewports": 12,
+      "secondRunFailedViewport": "viewport-6",
+      "targetedRetries": [
+        "viewport-3",
+        "viewport-11",
+        "viewport-6",
+        "source-binding"
+      ],
+      "targetedRetriesPassed": true,
+      "all13CellsSuccessfulAcrossAttempts": true,
+      "attemptsFile": "las-vegas-retry-attempts.json"
+    },
+    "finalRun": {
+      "acceptanceFile": "las-vegas-final-acceptance.json",
+      "uniqueCompleteParcels": 90,
+      "viewportsPassed": 13,
+      "rawRunFailedTest": "forced-three-row-pages (HTTP 500)",
+      "targetedPaginationRetry": {
+        "passed": true,
+        "features": 20,
+        "pages": 7,
+        "hashesMatched": true
+      },
+      "attemptsFile": "las-vegas-retry-attempts.json",
+      "allRequiredCheckCategoriesPassedAcrossAttempts": true
+    }
+  },
+  "geometryQuality": {
+    "report": "las-vegas-final-quality.json",
+    "library": "Shapely 2.2.0 / GEOS",
+    "metricCrs": "EPSG:32611",
+    "features": 90,
+    "validNonempty": 90,
+    "invalid": 0,
+    "exactDuplicates": 0,
+    "positiveAreaOverlaps": 0,
+    "operationErrors": 0,
+    "areaM2": {
+      "min": 2.9723201114,
+      "median": 1846.9541331566,
+      "max": 50207.7656801186
+    }
+  },
+  "limitations": [
+    "Some raw attempts returned HTTP 500. The same cells and pagination test later passed through the unchanged adapter; the raw 500 response bodies were not retained and their hashes are unavailable.",
+    "This is a neighborhood sample only, not an estimate of city/county total parcel count.",
+    "No city-boundary clipping or full Clark County enumeration was performed."
+  ],
+  "runtimeReadiness": "candidate_verified_full_geometry",
+  "adapterReady": false,
+  "nextStep": "Review service scope and the two failed cells before any registry integration."
+}

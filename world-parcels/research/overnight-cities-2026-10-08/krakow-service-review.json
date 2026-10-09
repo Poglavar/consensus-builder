@@ -1,0 +1,88 @@
+{
+  "schemaVersion": "1.0",
+  "checkedAt": "2026-10-09",
+  "cityRecord": "city-3608-krakow.json",
+  "purpose": "Document official city parcel-source evidence, bounded anonymous geometry route review, and remaining coverage/runtime limits.",
+  "scopeLimits": {
+    "maxFullPolygonsRetainedInCityRecord": 3,
+    "maxFullPolygonsRetainedInReview": 3,
+    "maxFullPolygonsRetainedInRepository": 3,
+    "ownerOrAddressDataRetained": false,
+    "credentialsOrTokenValuesRetained": false,
+    "citywideCompletenessAsserted": false
+  },
+  "assessment": "One full parcel polygon intersects the exact WUP centroid. City catalog states the published dataset covers Kraków; this review verifies only one feature and does not assert citywide completeness.",
+  "registryAssessment": "The city’s official MSIP catalog identifies an EGiB cadastral parcel vector dataset owned by the Mayor of Kraków and published by the Geodesy Department. The city BIP metadata names EGiB and a daily update path. The published feature schema contains parcel key, parcel number, unit/precinct names, area, import date, and geometry, with no owner or address field.",
+  "officialPrimarySources": [
+    {
+      "url": "https://msip.krakow.pl/dataset/1562",
+      "observation": "Official MSIP catalog publishes the cadastral parcels as vector data in EPSG:2178, with SHP/DXF/JSON downloads and WMS/WFS links; data owner is Mayor of Kraków / City Geodesy Department. Terms restrict personal data and otherwise refer to city reuse rules."
+    },
+    {
+      "url": "https://msip.krakow.pl/dataset/3207",
+      "observation": "Official city catalog describes the WMS as EGiB parcel data without personal data and identifies the City Geodesy Department as owner."
+    },
+    {
+      "url": "https://www.bip.krakow.pl/?dok_id=116045&metka=1",
+      "observation": "City BIP EGiB metadata identifies the Geodesy Department, subject data including parcels and daily updating from PZGiK object data; its listed WMS format is image output."
+    },
+    {
+      "url": "https://www.geoportal.gov.pl/pl/dane/ewidencja-gruntow-i-budynkow-egib/",
+      "observation": "Official national Geoportal explains EGiB custodianship by starosts/cities with county rights, daily aggregated WFS and that WFS returns full parcel/building geometries subject to the county feeds."
+    }
+  ],
+  "searchQueries": [
+    {
+      "language": "Polish",
+      "query": "Kraków działki ewidencyjne WFS Działki dane przestrzenne MSIP oficjalny polski",
+      "result": "Official city MSIP catalog publishes vector EGiB parcel data in EPSG:2178 and provides WFS/downloads; exact point query returned one full polygon.",
+      "method": "Separate Polish-language discovery and official city catalog, schema and bounded API inspection."
+    },
+    {
+      "language": "English",
+      "query": "Krakow official EGiB parcel WFS Geoportal cadastral polygons city GIS",
+      "result": "Official Geoportal explains EGiB responsibilities and WFS geometry; city metadata confirms the local service and its public vector fields.",
+      "method": "Separate English-language discovery followed by official national and local service review."
+    }
+  ],
+  "serviceChecks": [
+    {
+      "url": "https://msip3.um.krakow.pl/server/services/Pobieranie/Dzialki/MapServer/WFSServer?request=GetCapabilities&service=WFS",
+      "method": "GET WFS GetCapabilities",
+      "httpStatus": 200,
+      "observation": "Public WFS layer Dzialki:dzialki_ewidencyjne; default native CRS EPSG:2178."
+    },
+    {
+      "url": "https://msip3.um.krakow.pl/server/services/Pobieranie/Dzialki/MapServer/WFSServer?request=DescribeFeatureType&service=WFS&version=2.0.0&typeNames=Dzialki%3Adzialki_ewidencyjne",
+      "method": "GET DescribeFeatureType",
+      "httpStatus": 200,
+      "observation": "Schema exposes parcel identifiers, precinct/unit names, area, import date and polygon geometry; no owner or address fields."
+    },
+    {
+      "url": "https://msip3.um.krakow.pl/server/rest/services/Pobieranie/Dzialki/MapServer/0/query",
+      "method": "GET exact WGS84 point-intersection; outFields=id_dzialki,numer_dzialki,pow_graf; returnGeometry=true",
+      "httpStatus": 200,
+      "observation": "One full polygon intersects exact WUP locator; retained safe parcel key, number, area and geometry only."
+    }
+  ],
+  "geometryEvidence": {
+    "file": "city-3608-krakow-samples.geojson",
+    "featureCount": 1,
+    "attributes": [
+      "id_dzialki",
+      "numer_dzialki",
+      "pow_graf"
+    ],
+    "geometryType": "Polygon",
+    "crs": "EPSG:4326",
+    "exactLocatorFeature": true,
+    "sourceGeometryComplete": true
+  },
+  "privacy": "No owner, personal title, or address data was requested or retained. Native parcel identifiers and polygon geometry are retained only where the official public schema supports them.",
+  "runtimeAssessment": "not_enabled",
+  "qualification": {
+    "boundedSamples": 1,
+    "adapterQualified": false,
+    "note": "No adapter protocol qualification or shared runtime integration was performed."
+  }
+}

@@ -1,0 +1,54 @@
+{
+  "schemaVersion": "1.0",
+  "checkedAt": "2026-10-09",
+  "cityRecord": "city-9499-sagar.json",
+  "purpose": "Document first-party local land-registry/map evidence and bounded anonymous geometry-route review.",
+  "scopeLimits": {
+    "maxFullPolygonsRetainedInCityRecord": 3,
+    "maxFullPolygonsRetainedInReview": 3,
+    "maxFullPolygonsRetainedInRepository": 3,
+    "ownerOrAddressDataRetained": false,
+    "credentialsOrTokenValuesRetained": false,
+    "citywideCompletenessAsserted": false
+  },
+  "assessment": "SagarGIS is described as a district-level planning/infrastructure GIS; the documented layers do not include parcel boundaries. The state land-record service is record lookup, not a verified public feature API.",
+  "registryAssessment": "The district administration identifies a Land Record Office at Collectorate Sagar; this establishes local revenue/land-record activity, not anonymous parcel geometry at the WUP point.",
+  "officialPrimarySources": [
+    {
+      "url": "https://sagar.nic.in/en/service/land-records/",
+      "observation": "District Sagar lists the Land Record Office at Collectorate Sagar and links the state land-record service."
+    },
+    {
+      "url": "https://sagar.nic.in/en/sagargis/",
+      "observation": "Official district GIS description lists roads, water, sewer, land use, public assets, schools, hospitals and infrastructure; it does not identify cadastral parcels."
+    },
+    {
+      "url": "https://mptownplan.gov.in/plan_sagar.html",
+      "observation": "State Town and Country Planning page provides cadastral land-use planning maps; this is planning information, not a live cadastral parcel feature service."
+    }
+  ],
+  "searchQueries": [
+    {
+      "language": "English",
+      "query": "Sagar Madhya Pradesh official land records cadastral map GIS parcel SagarGIS",
+      "result": "District land-record office and SagarGIS were found. SagarGIS documents infrastructure and land-use layers, not cadastral parcel geometry.",
+      "method": "Separate local-language/English discovery and first-party public-page review."
+    },
+    {
+      "language": "Hindi",
+      "query": "सागर मध्य प्रदेश भू अभिलेख नक्शा सागर जीआईएस भूखंड",
+      "result": "Official Hindi SagarGIS describes infrastructure and land-use information; no public vector parcel schema was located.",
+      "method": "Separate local-language/English discovery and first-party public-page review."
+    }
+  ],
+  "serviceChecks": [
+    {
+      "url": "https://sagar.nic.in/en/sagargis/",
+      "method": "Public page/catalogue review; no property-specific query",
+      "observation": "Reviewed official service descriptions and public GIS landing page; no owner/holder/property-specific record search submitted."
+    }
+  ],
+  "geometryEvidence": null,
+  "privacy": "No parcel features or sensitive attributes retained; no owner/address/property-specific lookup submitted.",
+  "runtimeAssessment": "not_enabled"
+}

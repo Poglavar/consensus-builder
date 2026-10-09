@@ -1,0 +1,91 @@
+{
+  "schemaVersion": "1.0",
+  "checkedAt": "2026-10-09",
+  "cityRecord": "city-9438-enshi.json",
+  "purpose": "Document distinct English/local-language search evidence, first-party local custody scope, direct anonymous route results and geometry-only limits.",
+  "scopeLimits": {
+    "maxFullPolygonsRetainedInCityRecord": 0,
+    "maxFullPolygonsRetainedInReview": 0,
+    "maxFullPolygonsRetainedInRepository": 0,
+    "ownerOrAddressDataRetained": false,
+    "credentialsOrTokenValuesRetained": false,
+    "citywideCompletenessAsserted": false
+  },
+  "assessment": "The Hubei government documents an Enshi Prefecture real-estate registration system. Custody is prefecture-level within the city’s jurisdiction; no anonymous parcel feature schema or geometry route was verified.",
+  "registryAssessment": "City-bound or jurisdictionally local registry/land administration source identified, with the limited scope stated above; parcel geometry/runtime qualification remain separate.",
+  "officialPrimarySources": [
+    {
+      "url": "https://zrzyt.hubei.gov.cn/bmdt/ztzl/jjbdcdj/bdckpzs/202505/t20250514_5650177.shtml",
+      "operator": "Hubei Provincial Department of Natural Resources",
+      "observation": "Official article says Enshi Prefecture’s online real-estate-registration platform integrates surveying, planning and registration and provides citizens QR-code drawings. Service is registry information delivery, not an anonymous feature download. Direct GET returned HTTP 412; no account/QR/property request made."
+    }
+  ],
+  "searchQueries": [
+    {
+      "language": "English",
+      "query": "Enshi China official natural resources bureau real estate registration cadastral map",
+      "result": "English-language first-party and relevant source discovery; each listed official source was reviewed before use.",
+      "method": "Separate search followed by official-source review.",
+      "actualResultUrls": [
+        "https://zrzyt.hubei.gov.cn/bmdt/ztzl/jjbdcdj/bdckpzs/202505/t20250514_5650177.shtml"
+      ],
+      "scope": "Identify first-party local land-registry/cadastral custody and anonymous public parcel geometry. Preserve the exact WUP settlement point; do not submit owner, address, tax, account, lot/plot or applicant identifiers."
+    },
+    {
+      "language": "Chinese",
+      "query": "恩施市 不动产登记 地籍图 自然资源局 官方",
+      "result": "Search results are recorded below; only the cited first-party pages are treated as evidence. No private parcel fields or locators were requested.",
+      "method": "Separate local-language web search followed by first-party source review.",
+      "actualResultUrls": [
+        "https://zrzyt.hubei.gov.cn/bmdt/ztzl/jjbdcdj/bdckpzs/202505/t20250514_5650177.shtml"
+      ],
+      "scope": "Identify first-party local land-registry/cadastral custody and anonymous public parcel geometry. Preserve the exact WUP settlement point; do not submit owner, address, tax, account, lot/plot or applicant identifiers."
+    }
+  ],
+  "geometryDecision": {
+    "verified": false,
+    "sourceId": null,
+    "sampleCount": 0,
+    "sampleFile": null,
+    "nativeId": null,
+    "nativeIdField": null,
+    "exactWupPointTest": "No source-native full polygon was returned at the exact WUP point; publicParcelGeometryFound:false means unverified in this investigation, not confirmed absence.",
+    "requestEvidence": [
+      {
+        "url": "https://zrzyt.hubei.gov.cn/bmdt/ztzl/jjbdcdj/bdckpzs/202505/t20250514_5650177.shtml",
+        "method": "anonymous read-only GET; redirect-following; standard TLS; no credentials, cookies or property selectors",
+        "httpStatus": 412,
+        "contentType": "text/html",
+        "bytesRead": 6688,
+        "assessment": "Access policy response; no feature data"
+      }
+    ]
+  },
+  "coverageAssessment": {
+    "claimedScope": "The Hubei government documents an Enshi Prefecture real-estate registration system. Custody is prefecture-level within the city’s jurisdiction; no anonymous parcel feature schema or geometry route was verified.",
+    "verifiedOpenScope": "No anonymous safe full parcel geometry response was verified in this investigation.",
+    "citywideVerified": false,
+    "countrywideVerified": false,
+    "geometryVerified": false
+  },
+  "attempts": [
+    {
+      "url": "https://zrzyt.hubei.gov.cn/bmdt/ztzl/jjbdcdj/bdckpzs/202505/t20250514_5650177.shtml",
+      "result": "HTTP 412 text/html; 6688 response bytes. Access policy response; no feature data"
+    }
+  ],
+  "remainingUncertainty": "The Hubei government documents an Enshi Prefecture real-estate registration system. Custody is prefecture-level within the city’s jurisdiction; no anonymous parcel feature schema or geometry route was verified. Public parcel geometry and extent at the exact WUP point remain unverified.",
+  "nextStep": "Revisit only if an official schema-backed public full-geometry route is documented; request safe IDs and geometry only.",
+  "runtimeAssessment": "not enabled; no full parcel geometry retained",
+  "cohort": "overnight-next-1101-1200",
+  "cohortState": "research_complete_pending_root_review",
+  "integrationState": "not_integrated",
+  "rootReviewedAt": "2026-10-09T07:13:02.981057+00:00",
+  "rootReview": {
+    "checkedAt": "2026-10-09T07:13:02.981057+00:00",
+    "decision": "Reviewed city identity, canonical population/point, separate searches and saved source/request evidence. No full public parcel geometry verified in this pass.",
+    "custodyScope": "The Hubei government documents an Enshi Prefecture real-estate registration system. Custody is prefecture-level within the city’s jurisdiction; no anonymous parcel feature schema or geometry route was verified.",
+    "transportFailuresDoNotProveAbsence": true,
+    "geometryClaimScope": "Investigation outcome only; no worldwide or citywide absence asserted."
+  }
+}

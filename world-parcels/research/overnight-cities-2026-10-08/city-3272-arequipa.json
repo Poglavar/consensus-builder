@@ -1,0 +1,104 @@
+{
+  "schemaVersion": 1,
+  "kind": "city_parcel_source_research",
+  "checkedAt": "2026-10-09",
+  "name": "Arequipa",
+  "country": "Peru",
+  "countryCode": "PE",
+  "populationUnit": "persons",
+  "status": "complete",
+  "registryFound": true,
+  "registryBasis": "The Municipalidad Provincial de Arequipa lists its urban-development and tax-registration units, including local predial records and property-sector maps. SUNARP’s official government publication records a 2024 agreement specifically with the provincial municipality to provide municipal access to registered-property polygons from the Base Gráfica Registral. The agreement is municipal/institutional access, not an anonymous public feed.",
+  "registryEvidenceUrls": [
+    "https://www.gob.pe/institucion/sunarp/informes-publicaciones/5856508-convenio-de-adhesion-de-colaboracion-interinstitucional-entre-la-municipalidad-provincial-de-arequipa-y-la-sunarp-para-el-acceso-a-la-informacion-de-la-base-grafica-registral",
+    "https://www.muniarequipa.gob.pe/direccion/",
+    "https://www.muniarequipa.gob.pe/tributos-municipales/"
+  ],
+  "verifiedSample": false,
+  "publicParcelGeometryFound": false,
+  "runtimeReadiness": "not_enabled_no_verified_public_geometry",
+  "wupCityCode": 3272,
+  "cityId": "wup2025:3272",
+  "centerLatLon": [
+    -16.3954713032086,
+    -71.533670984487
+  ],
+  "rank": 529,
+  "queueRank": 529,
+  "population2025": 977496,
+  "population2025k": 977.496,
+  "pointBasis": "UN WUP 2025 population-weighted settlement centroid; this is not a municipal boundary or a parcel-coverage claim.",
+  "technicalBlocker": "The documented SUNARP Base Gráfica Registral polygons are provided to the municipality through an interinstitutional agreement, not exposed as an anonymous public route. Public municipal pages are descriptive and did not reveal a geometry-only schema or endpoint. No property or tax form was opened or used.",
+  "scopeLimits": "Evidence is specific to the Municipalidad Provincial de Arequipa and the registered-property polygons in its jurisdiction. It supports local registry/cadastre linkage but does not establish open anonymous geometry access or coverage completeness.",
+  "remainingUncertainty": "No anonymous polygon schema, safe native feature ID, or downloadable public geometry was verified. Municipal access conditions and any downstream map remain uninspected.",
+  "research": {
+    "executedQueries": [
+      {
+        "language": "English",
+        "query": "Arequipa Peru official municipal cadastre registered parcel polygons SUNARP registry",
+        "scope": "Find primary city-local registry/cadastre basis and safe anonymous polygon routes.",
+        "result": "SUNARP’s government publication documents a 2024 interinstitutional agreement with the Municipalidad Provincial de Arequipa to allow the municipality to view, extract and download registered-property polygons within its jurisdiction. The agreement is institutional access; no public geometry endpoint was identified. The municipal directory lists development and tax-registration offices; no tax lookup was used.",
+        "actualResultUrls": [
+          "https://www.gob.pe/institucion/sunarp/informes-publicaciones/5856508-convenio-de-adhesion-de-colaboracion-interinstitucional-entre-la-municipalidad-provincial-de-arequipa-y-la-sunarp-para-el-acceso-a-la-informacion-de-la-base-grafica-registral",
+          "https://www.muniarequipa.gob.pe/direccion/",
+          "https://www.muniarequipa.gob.pe/tributos-municipales/"
+        ]
+      },
+      {
+        "language": "Spanish",
+        "query": "catastro municipal Arequipa mapa predial Base Gráfica Registral SUNARP convenio",
+        "scope": "Find local-language city-specific registry/cadastre basis and safe anonymous polygon routes.",
+        "result": "La publicación oficial de SUNARP registra un convenio con la Municipalidad Provincial de Arequipa para que el municipio visualice, extraiga y descargue polígonos de predios inscritos de su ámbito. Es acceso institucional, no un servicio vectorial anónimo. El directorio municipal muestra las áreas de desarrollo urbano y registro tributario; no se consultaron padrones ni datos prediales.",
+        "actualResultUrls": [
+          "https://www.gob.pe/institucion/sunarp/informes-publicaciones/5856508-convenio-de-adhesion-de-colaboracion-interinstitucional-entre-la-municipalidad-provincial-de-arequipa-y-la-sunarp-para-el-acceso-a-la-informacion-de-la-base-grafica-registral",
+          "https://www.muniarequipa.gob.pe/direccion/",
+          "https://www.muniarequipa.gob.pe/tributos-municipales/"
+        ]
+      }
+    ],
+    "officialSources": [
+      {
+        "url": "https://www.gob.pe/institucion/sunarp/informes-publicaciones/5856508-convenio-de-adhesion-de-colaboracion-interinstitucional-entre-la-municipalidad-provincial-de-arequipa-y-la-sunarp-para-el-acceso-a-la-informacion-de-la-base-grafica-registral",
+        "observation": "The Municipalidad Provincial de Arequipa lists its urban-development and tax-registration units, including local predial records and property-sector maps. SUNARP’s official government publication records a 2024 agreement specifically with the provincial municipality to provide municipal access to registered-property polygons from the Base Gráfica Registral. The agreement is municipal/institutional access, not an anonymous public feed."
+      },
+      {
+        "url": "https://www.muniarequipa.gob.pe/direccion/",
+        "observation": "The Municipalidad Provincial de Arequipa lists its urban-development and tax-registration units, including local predial records and property-sector maps. SUNARP’s official government publication records a 2024 agreement specifically with the provincial municipality to provide municipal access to registered-property polygons from the Base Gráfica Registral. The agreement is municipal/institutional access, not an anonymous public feed."
+      },
+      {
+        "url": "https://www.muniarequipa.gob.pe/tributos-municipales/",
+        "observation": "The Municipalidad Provincial de Arequipa lists its urban-development and tax-registration units, including local predial records and property-sector maps. SUNARP’s official government publication records a 2024 agreement specifically with the provincial municipality to provide municipal access to registered-property polygons from the Base Gráfica Registral. The agreement is municipal/institutional access, not an anonymous public feed."
+      }
+    ],
+    "metadataReviewFile": "arequipa-service-review.json",
+    "routeInspectionFile": "/tmp/overnight-cities-2026-10-08/city-3272-arequipa-route-inspection.json"
+  },
+  "source": {
+    "sourceId": "pe-arequipa-city-registry",
+    "name": "Arequipa local registry/cadastre route review",
+    "operator": "Municipalidad Provincial de Arequipa / SUNARP",
+    "url": "https://www.gob.pe/institucion/sunarp/informes-publicaciones/5856508-convenio-de-adhesion-de-colaboracion-interinstitucional-entre-la-municipalidad-provincial-de-arequipa-y-la-sunarp-para-el-acceso-a-la-informacion-de-la-base-grafica-registral",
+    "scope": "Evidence is specific to the Municipalidad Provincial de Arequipa and the registered-property polygons in its jurisdiction. It supports local registry/cadastre linkage but does not establish open anonymous geometry access or coverage completeness.",
+    "nativeIdField": null,
+    "attributesRequested": [],
+    "identityBasis": "No safe parcel feature identifier was retrieved.",
+    "geometryStatus": "city_registry_basis_only_no_public_geometry_contract"
+  },
+  "coverageAssessment": {
+    "verifiedOpenScope": "Evidence is specific to the Municipalidad Provincial de Arequipa and the registered-property polygons in its jurisdiction. It supports local registry/cadastre linkage but does not establish open anonymous geometry access or coverage completeness.",
+    "notEstablished": [
+      "anonymous full-polygon access",
+      "complete citywide parcel coverage",
+      "runtime source binding"
+    ],
+    "wupPointRelation": "No parcel geometry was returned or asserted."
+  },
+  "priorEvidenceFiles": [],
+  "populationPlausibility2025": "High",
+  "rootReviewedAt": "2026-10-09T01:19:13.626142+00:00",
+  "sourceIds": [],
+  "point": [
+    -16.3954713032086,
+    -71.533670984487
+  ]
+}

@@ -1,0 +1,122 @@
+{
+  "name": "Tianjia‘an",
+  "country": "China",
+  "countryCode": "CN",
+  "rank": 469,
+  "point": [
+    32.6391465373332,
+    116.983100814725
+  ],
+  "freshResearch": {
+    "queries": [
+      {
+        "language": "Chinese (Simplified)",
+        "query": "田家庵区 不动产登记 地籍图 淮南市自然资源和规划局 田家庵分局",
+        "scope": "Verify the district-local registration office and whether public map layers include cadastral parcels.",
+        "result": "Huainan Natural Resources and Planning Bureau publishes a registration service list with an in-person service counter at the Tianjia’an District Government Service Center; information queries require an application and identity material. City planning maps publish planning units/plots, not a general cadastral parcel layer.",
+        "urls": [
+          "https://zrzyj.huainan.gov.cn/xwzx/ztzl/yhyshj/551751803.html",
+          "https://zrzyj.huainan.gov.cn/xwzx/tzgg/phgg/551814469.html",
+          "https://zrzyj.huainan.gov.cn/index.html"
+        ]
+      },
+      {
+        "language": "English",
+        "query": "Tianjia’an Huainan official land registration cadastral map public GIS",
+        "scope": "Cross-check city/district registry and public geographic-service coverage in English-indexed official sources.",
+        "result": "Huainan government identifies Tianjia’an as its central urban district. The official “Tianditu Huainan” description covers imagery, topographic/vector base maps, place names, addresses, POIs and road network; no cadastral parcel vector layer is documented.",
+        "urls": [
+          "https://huainan.gov.cn/HUAINANCHINA/AboutHuainan/1260045562.html",
+          "https://zrzyj.huainan.gov.cn/xwzx/ywlb/551536252.html"
+        ]
+      }
+    ],
+    "portals": [
+      {
+        "name": "Tianjia’an District Government Service Center real-estate registration counter",
+        "operator": "Huainan Municipal Natural Resources and Planning Bureau / Huainan Real Estate Registration Center",
+        "homeUrl": "https://zrzyj.huainan.gov.cn/xwzx/ztzl/yhyshj/551751803.html",
+        "observation": "Official 2025 service list identifies the district counter and states registration-information inquiries are application-based and require identity documentation."
+      },
+      {
+        "name": "Tianditu Huainan",
+        "operator": "Huainan Municipal Natural Resources and Planning Bureau / Municipal Land and Resources Information Center",
+        "homeUrl": "http://220.178.199.12/tdt/index.html",
+        "observation": "Officially described public geographic-information platform includes imagery, multi-scale vector base maps, place/address/POI and road data; no cadastral parcel layer claim."
+      },
+      {
+        "name": "Tianjia’an detailed planning notices",
+        "operator": "Huainan Municipal Natural Resources and Planning Bureau",
+        "homeUrl": "https://zrzyj.huainan.gov.cn/xwzx/tzgg/phgg/551814469.html",
+        "observation": "City publishes district planning unit and parcel-plan attachments; planning features are not treated as land-registration parcels."
+      }
+    ],
+    "requests": [
+      {
+        "url": "https://zrzyj.huainan.gov.cn/xwzx/ztzl/yhyshj/551751803.html",
+        "method": "GET",
+        "httpStatus": 200,
+        "contentType": "text/html",
+        "observation": "Official service list documents district-level registration counter and an identity-bearing application workflow for registration-information copies; no application or property lookup performed."
+      },
+      {
+        "url": "https://zrzyj.huainan.gov.cn/xwzx/tzgg/phgg/551814469.html",
+        "method": "GET",
+        "httpStatus": 200,
+        "contentType": "text/html",
+        "observation": "Official city planning notice for a Tianjia’an plan unit; attached planning diagram is not a parcel-registry vector source."
+      },
+      {
+        "url": "http://220.178.199.12/tdt/index.html",
+        "method": "GET",
+        "observation": "Cited in official 2020 platform description; current direct availability was not verified. The official description enumerates base-map layers, not cadastral lots."
+      }
+    ]
+  },
+  "status": "complete",
+  "source": {
+    "sourceId": "CN-AH-HUAINAN-TIANJIAAN-REGISTRY",
+    "name": "Huainan Real Estate Registration Center / Tianjia’an district counter",
+    "url": "https://zrzyj.huainan.gov.cn/xwzx/ztzl/yhyshj/551751803.html",
+    "operator": "Huainan Municipal Natural Resources and Planning Bureau, Tianjia’an branch and district service counter",
+    "serviceType": "Official city/district real-estate registration workflow; queried registration records are application/identity gated. Public Tianditu platform is general base mapping.",
+    "geometryType": "No anonymous cadastral geometry schema verified.",
+    "nativeIdField": "Not inspected.",
+    "nativeIdEvidence": "No anonymous vector endpoint or feature response accessed."
+  },
+  "coverageAssessment": {
+    "claimedScope": "Official sources establish district-local real-estate registration and public base/planning maps. The public map documentation names basic geography, while cadastral registration-information copies follow an identity-bearing request workflow.",
+    "verifiedOpenScope": "Official sources establish district-local real-estate registration and public base/planning maps. The public map documentation names basic geography, while cadastral registration-information copies follow an identity-bearing request workflow.",
+    "countrywideVerified": false
+  },
+  "registryFound": true,
+  "verifiedSample": false,
+  "resultCategory": "city_registry_no_anonymous_geometry",
+  "technicalBlocker": "No public anonymous feature layer for general land parcels was found; registration-information inquiries are application-based. Public planning polygons are not treated as cadastre.",
+  "remainingUncertainty": "Whether a separate municipal land-information service has public parcel geometry; service data coverage and native parcel schema remain unverified.",
+  "nextStep": "Only pursue a public city/district parcel-vector service with safe geometry and ID selection; do not use identity-gated record inquiries.",
+  "schemaVersion": 1,
+  "checkedAt": "2026-10-09",
+  "wupCityCode": 10770,
+  "cityId": "wup2025:10770",
+  "runtimeReadiness": "not_enabled_no_verified_public_geometry",
+  "adapterReady": false,
+  "centerLatLon": [
+    32.6391465373332,
+    116.983100814725
+  ],
+  "queueRank": 469,
+  "population2025": 1100258,
+  "populationPlausibility2025": "High",
+  "populationUnit": "persons",
+  "pointBasis": "UN WUP 2025 population-weighted settlement centroid; this is not a municipal boundary or a parcel-coverage claim.",
+  "publicParcelGeometryFound": false,
+  "sourceIds": [],
+  "registryBasis": "The official Huainan registration service list identifies a Tianjia’an district counter; the city’s local bureau and registry center continue to handle property-registration services.",
+  "rootReviewedAt": "2026-10-09T00:27:07.816662+00:00",
+  "registryEvidenceUrls": [
+    "https://zrzyj.huainan.gov.cn/xwzx/ztzl/yhyshj/551751803.html",
+    "http://220.178.199.12/tdt/index.html",
+    "https://zrzyj.huainan.gov.cn/xwzx/tzgg/phgg/551814469.html"
+  ]
+}

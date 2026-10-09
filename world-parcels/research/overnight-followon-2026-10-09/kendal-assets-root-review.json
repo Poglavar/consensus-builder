@@ -1,0 +1,432 @@
+{
+  "rows": 982,
+  "strictClosedFinitePolygonRows": 886,
+  "unhandledRows": 96,
+  "unhandledRowReasons": [
+    {
+      "id": "652",
+      "reason": "open_vertex_path_implicit_google_maps_closure_not_normalized_in_this_review"
+    },
+    {
+      "id": "688",
+      "reason": "open_vertex_path_implicit_google_maps_closure_not_normalized_in_this_review"
+    },
+    {
+      "id": "704",
+      "reason": "open_vertex_path_implicit_google_maps_closure_not_normalized_in_this_review"
+    },
+    {
+      "id": "708",
+      "reason": "open_vertex_path_implicit_google_maps_closure_not_normalized_in_this_review"
+    },
+    {
+      "id": "710",
+      "reason": "open_vertex_path_implicit_google_maps_closure_not_normalized_in_this_review"
+    },
+    {
+      "id": "726",
+      "reason": "open_vertex_path_implicit_google_maps_closure_not_normalized_in_this_review"
+    },
+    {
+      "id": "727",
+      "reason": "open_vertex_path_implicit_google_maps_closure_not_normalized_in_this_review"
+    },
+    {
+      "id": "728",
+      "reason": "open_vertex_path_implicit_google_maps_closure_not_normalized_in_this_review"
+    },
+    {
+      "id": "729",
+      "reason": "open_vertex_path_implicit_google_maps_closure_not_normalized_in_this_review"
+    },
+    {
+      "id": "734",
+      "reason": "open_vertex_path_implicit_google_maps_closure_not_normalized_in_this_review"
+    },
+    {
+      "id": "750",
+      "reason": "open_vertex_path_implicit_google_maps_closure_not_normalized_in_this_review"
+    },
+    {
+      "id": "766",
+      "reason": "open_vertex_path_implicit_google_maps_closure_not_normalized_in_this_review"
+    },
+    {
+      "id": "770",
+      "reason": "open_vertex_path_implicit_google_maps_closure_not_normalized_in_this_review"
+    },
+    {
+      "id": "784",
+      "reason": "open_vertex_path_implicit_google_maps_closure_not_normalized_in_this_review"
+    },
+    {
+      "id": "788",
+      "reason": "open_vertex_path_implicit_google_maps_closure_not_normalized_in_this_review"
+    },
+    {
+      "id": "793",
+      "reason": "open_vertex_path_implicit_google_maps_closure_not_normalized_in_this_review"
+    },
+    {
+      "id": "806",
+      "reason": "open_vertex_path_implicit_google_maps_closure_not_normalized_in_this_review"
+    },
+    {
+      "id": "854",
+      "reason": "open_vertex_path_implicit_google_maps_closure_not_normalized_in_this_review"
+    },
+    {
+      "id": "865",
+      "reason": "open_vertex_path_implicit_google_maps_closure_not_normalized_in_this_review"
+    },
+    {
+      "id": "899",
+      "reason": "open_vertex_path_implicit_google_maps_closure_not_normalized_in_this_review"
+    },
+    {
+      "id": "937",
+      "reason": "open_vertex_path_implicit_google_maps_closure_not_normalized_in_this_review"
+    },
+    {
+      "id": "938",
+      "reason": "open_vertex_path_implicit_google_maps_closure_not_normalized_in_this_review"
+    },
+    {
+      "id": "1048",
+      "reason": "missing_or_nonfinite_coordinate"
+    },
+    {
+      "id": "1108",
+      "reason": "missing_or_nonfinite_coordinate"
+    },
+    {
+      "id": "1197",
+      "reason": "open_vertex_path_implicit_google_maps_closure_not_normalized_in_this_review"
+    },
+    {
+      "id": "1203",
+      "reason": "open_vertex_path_implicit_google_maps_closure_not_normalized_in_this_review"
+    },
+    {
+      "id": "1205",
+      "reason": "open_vertex_path_implicit_google_maps_closure_not_normalized_in_this_review"
+    },
+    {
+      "id": "1208",
+      "reason": "open_vertex_path_implicit_google_maps_closure_not_normalized_in_this_review"
+    },
+    {
+      "id": "1220",
+      "reason": "open_vertex_path_implicit_google_maps_closure_not_normalized_in_this_review"
+    },
+    {
+      "id": "1222",
+      "reason": "open_vertex_path_implicit_google_maps_closure_not_normalized_in_this_review"
+    },
+    {
+      "id": "1245",
+      "reason": "open_vertex_path_implicit_google_maps_closure_not_normalized_in_this_review"
+    },
+    {
+      "id": "1248",
+      "reason": "open_vertex_path_implicit_google_maps_closure_not_normalized_in_this_review"
+    },
+    {
+      "id": "1250",
+      "reason": "open_vertex_path_implicit_google_maps_closure_not_normalized_in_this_review"
+    },
+    {
+      "id": "1255",
+      "reason": "open_vertex_path_implicit_google_maps_closure_not_normalized_in_this_review"
+    },
+    {
+      "id": "1256",
+      "reason": "open_vertex_path_implicit_google_maps_closure_not_normalized_in_this_review"
+    },
+    {
+      "id": "1257",
+      "reason": "open_vertex_path_implicit_google_maps_closure_not_normalized_in_this_review"
+    },
+    {
+      "id": "1261",
+      "reason": "open_vertex_path_implicit_google_maps_closure_not_normalized_in_this_review"
+    },
+    {
+      "id": "1262",
+      "reason": "open_vertex_path_implicit_google_maps_closure_not_normalized_in_this_review"
+    },
+    {
+      "id": "1271",
+      "reason": "open_vertex_path_implicit_google_maps_closure_not_normalized_in_this_review"
+    },
+    {
+      "id": "1277",
+      "reason": "missing_or_nonfinite_coordinate"
+    },
+    {
+      "id": "1278",
+      "reason": "open_vertex_path_implicit_google_maps_closure_not_normalized_in_this_review"
+    },
+    {
+      "id": "1280",
+      "reason": "missing_or_nonfinite_coordinate"
+    },
+    {
+      "id": "1281",
+      "reason": "missing_or_nonfinite_coordinate"
+    },
+    {
+      "id": "1282",
+      "reason": "open_vertex_path_implicit_google_maps_closure_not_normalized_in_this_review"
+    },
+    {
+      "id": "1283",
+      "reason": "missing_or_nonfinite_coordinate"
+    },
+    {
+      "id": "1284",
+      "reason": "open_vertex_path_implicit_google_maps_closure_not_normalized_in_this_review"
+    },
+    {
+      "id": "1326",
+      "reason": "open_vertex_path_implicit_google_maps_closure_not_normalized_in_this_review"
+    },
+    {
+      "id": "1359",
+      "reason": "open_vertex_path_implicit_google_maps_closure_not_normalized_in_this_review"
+    },
+    {
+      "id": "1360",
+      "reason": "open_vertex_path_implicit_google_maps_closure_not_normalized_in_this_review"
+    },
+    {
+      "id": "1361",
+      "reason": "open_vertex_path_implicit_google_maps_closure_not_normalized_in_this_review"
+    },
+    {
+      "id": "1362",
+      "reason": "open_vertex_path_implicit_google_maps_closure_not_normalized_in_this_review"
+    },
+    {
+      "id": "1363",
+      "reason": "open_vertex_path_implicit_google_maps_closure_not_normalized_in_this_review"
+    },
+    {
+      "id": "1381",
+      "reason": "open_vertex_path_implicit_google_maps_closure_not_normalized_in_this_review"
+    },
+    {
+      "id": "1384",
+      "reason": "open_vertex_path_implicit_google_maps_closure_not_normalized_in_this_review"
+    },
+    {
+      "id": "1385",
+      "reason": "open_vertex_path_implicit_google_maps_closure_not_normalized_in_this_review"
+    },
+    {
+      "id": "1388",
+      "reason": "open_vertex_path_implicit_google_maps_closure_not_normalized_in_this_review"
+    },
+    {
+      "id": "1389",
+      "reason": "open_vertex_path_implicit_google_maps_closure_not_normalized_in_this_review"
+    },
+    {
+      "id": "1391",
+      "reason": "open_vertex_path_implicit_google_maps_closure_not_normalized_in_this_review"
+    },
+    {
+      "id": "1393",
+      "reason": "open_vertex_path_implicit_google_maps_closure_not_normalized_in_this_review"
+    },
+    {
+      "id": "1394",
+      "reason": "open_vertex_path_implicit_google_maps_closure_not_normalized_in_this_review"
+    },
+    {
+      "id": "1395",
+      "reason": "open_vertex_path_implicit_google_maps_closure_not_normalized_in_this_review"
+    },
+    {
+      "id": "1396",
+      "reason": "open_vertex_path_implicit_google_maps_closure_not_normalized_in_this_review"
+    },
+    {
+      "id": "1397",
+      "reason": "open_vertex_path_implicit_google_maps_closure_not_normalized_in_this_review"
+    },
+    {
+      "id": "1400",
+      "reason": "open_vertex_path_implicit_google_maps_closure_not_normalized_in_this_review"
+    },
+    {
+      "id": "1401",
+      "reason": "open_vertex_path_implicit_google_maps_closure_not_normalized_in_this_review"
+    },
+    {
+      "id": "1403",
+      "reason": "open_vertex_path_implicit_google_maps_closure_not_normalized_in_this_review"
+    },
+    {
+      "id": "1423",
+      "reason": "open_vertex_path_implicit_google_maps_closure_not_normalized_in_this_review"
+    },
+    {
+      "id": "1424",
+      "reason": "open_vertex_path_implicit_google_maps_closure_not_normalized_in_this_review"
+    },
+    {
+      "id": "1437",
+      "reason": "open_vertex_path_implicit_google_maps_closure_not_normalized_in_this_review"
+    },
+    {
+      "id": "1438",
+      "reason": "open_vertex_path_implicit_google_maps_closure_not_normalized_in_this_review"
+    },
+    {
+      "id": "1440",
+      "reason": "open_vertex_path_implicit_google_maps_closure_not_normalized_in_this_review"
+    },
+    {
+      "id": "1447",
+      "reason": "open_vertex_path_implicit_google_maps_closure_not_normalized_in_this_review"
+    },
+    {
+      "id": "1450",
+      "reason": "open_vertex_path_implicit_google_maps_closure_not_normalized_in_this_review"
+    },
+    {
+      "id": "1452",
+      "reason": "open_vertex_path_implicit_google_maps_closure_not_normalized_in_this_review"
+    },
+    {
+      "id": "1453",
+      "reason": "open_vertex_path_implicit_google_maps_closure_not_normalized_in_this_review"
+    },
+    {
+      "id": "1455",
+      "reason": "open_vertex_path_implicit_google_maps_closure_not_normalized_in_this_review"
+    },
+    {
+      "id": "1457",
+      "reason": "open_vertex_path_implicit_google_maps_closure_not_normalized_in_this_review"
+    },
+    {
+      "id": "1473",
+      "reason": "missing_or_nonfinite_coordinate"
+    },
+    {
+      "id": "1475",
+      "reason": "open_vertex_path_implicit_google_maps_closure_not_normalized_in_this_review"
+    },
+    {
+      "id": "1482",
+      "reason": "open_vertex_path_implicit_google_maps_closure_not_normalized_in_this_review"
+    },
+    {
+      "id": "1483",
+      "reason": "open_vertex_path_implicit_google_maps_closure_not_normalized_in_this_review"
+    },
+    {
+      "id": "1492",
+      "reason": "open_vertex_path_implicit_google_maps_closure_not_normalized_in_this_review"
+    },
+    {
+      "id": "1494",
+      "reason": "open_vertex_path_implicit_google_maps_closure_not_normalized_in_this_review"
+    },
+    {
+      "id": "1495",
+      "reason": "open_vertex_path_implicit_google_maps_closure_not_normalized_in_this_review"
+    },
+    {
+      "id": "1498",
+      "reason": "open_vertex_path_implicit_google_maps_closure_not_normalized_in_this_review"
+    },
+    {
+      "id": "1499",
+      "reason": "open_vertex_path_implicit_google_maps_closure_not_normalized_in_this_review"
+    },
+    {
+      "id": "1503",
+      "reason": "open_vertex_path_implicit_google_maps_closure_not_normalized_in_this_review"
+    },
+    {
+      "id": "1506",
+      "reason": "open_vertex_path_implicit_google_maps_closure_not_normalized_in_this_review"
+    },
+    {
+      "id": "1514",
+      "reason": "open_vertex_path_implicit_google_maps_closure_not_normalized_in_this_review"
+    },
+    {
+      "id": "1522",
+      "reason": "open_vertex_path_implicit_google_maps_closure_not_normalized_in_this_review"
+    },
+    {
+      "id": "1534",
+      "reason": "open_vertex_path_implicit_google_maps_closure_not_normalized_in_this_review"
+    },
+    {
+      "id": "1536",
+      "reason": "open_vertex_path_implicit_google_maps_closure_not_normalized_in_this_review"
+    },
+    {
+      "id": "1545",
+      "reason": "open_vertex_path_implicit_google_maps_closure_not_normalized_in_this_review"
+    },
+    {
+      "id": "1552",
+      "reason": "open_vertex_path_implicit_google_maps_closure_not_normalized_in_this_review"
+    },
+    {
+      "id": "1559",
+      "reason": "missing_or_nonfinite_coordinate"
+    },
+    {
+      "id": "1582",
+      "reason": "fewer_than_four_points"
+    }
+  ],
+  "geometryManipulation": "None. No closure, snapping, repair, part omission or valid subset admission. Closed rows only are analyzed as a diagnostic subset, without a whole-source pass claim.",
+  "checkedAt": "2026-10-09",
+  "endpoint": "https://petaaset.kendalkab.go.id/front/load_polygon?nama_tabel=t_table8",
+  "publisher": "BPKAD Kabupaten Kendal",
+  "sourceScope": "KIB A Tanah: regional government land-asset ground references; not general privately-owned cadastral or registered title fabric.",
+  "httpStatus": 200,
+  "bytes": 325889,
+  "unmodifiedResponseSha256": "5ab19c68d3b1da3b84b131b07c40741e17f713e806568fdec4504d4ad4bcf388",
+  "nativeIdentityField": "id",
+  "nativeCoordinateOrder": "titik.x latitude; titik.y longitude, confirmed by actual municipal Google Maps code",
+  "sampleGeometryFile": "city-6993-kendal-samples.geojson",
+  "originalSettlementLocator": [
+    -6.9471650419436,
+    110.155736238751
+  ],
+  "pointContainingPolygonCount": 0,
+  "selectedSamples": [
+    {
+      "sourceId": "610",
+      "distanceFromLocatorM": 877.4423856179945,
+      "valid": true,
+      "areaM2": 1412.6729682202563,
+      "containsLocator": false
+    },
+    {
+      "sourceId": "1157",
+      "distanceFromLocatorM": 1168.7210875294334,
+      "valid": true,
+      "areaM2": 12152.369897876506,
+      "containsLocator": false
+    },
+    {
+      "sourceId": "879",
+      "distanceFromLocatorM": 1657.9013901329438,
+      "valid": true,
+      "areaM2": 19600.35980825963,
+      "containsLocator": false
+    }
+  ],
+  "runtimeDecision": "held_native_geometry_conflicts",
+  "rootDecision": "Public land-asset geometry is verified. No source admission: 96 paths are incomplete/nonfinite/open; the remaining closed-path diagnostic set has two invalid polygons,77 positive-area overlap pairs and three topology operation errors. No source features excluded or repaired for enablement. Only3valid nearby full native paths are retained for evidence. No whole-city or private-cadastre claim."
+}

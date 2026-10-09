@@ -1,0 +1,197 @@
+{
+  "name": "Dairut",
+  "country": "Egypt",
+  "countryCode": "EG",
+  "rank": 1104,
+  "point": [
+    27.5411285401879,
+    30.8066666037943
+  ],
+  "freshResearch": {
+    "queries": [
+      {
+        "language": "English",
+        "query": "Dairut Egypt official cadastral map land registry Assiut governorate real estate survey",
+        "scope": "Identify first-party local registry and public parcel geometry; preserve the unchanged WUP settlement locator and avoid owner or address attributes.",
+        "result": "The English search did not surface a first-party Dairut parcel service.",
+        "executionMethod": "Separate English-language web search followed by first-party source review.",
+        "actualResultUrls": [
+          "https://www.esa.gov.eg/files/Topographic_Maps.pdf",
+          "https://mediadr.sis.gov.eg/bitstream/handle/123456789/104783/WQ147_20250707_5856.pdf?isAllowed=y&sequence=2"
+        ]
+      },
+      {
+        "language": "Arabic",
+        "query": "ديروط أسيوط الموقع الرسمي الشهر العقاري خرائط مساحية مصلحة المساحة",
+        "scope": "Find first-party local-language registry/cadastral routes and any anonymous safe parcel geometry service near the unchanged WUP point.",
+        "result": "The Arabic search surfaced the Egyptian Survey Authority topographic index, which names Dairut among Assiut map centres and gives map scales. It is not a public cadastral parcel layer.",
+        "executionMethod": "Separate Arabic-language web search followed by first-party source review.",
+        "actualResultUrls": [
+          "https://www.esa.gov.eg/files/Topographic_Maps.pdf",
+          "https://mediadr.sis.gov.eg/bitstream/handle/123456789/104783/WQ147_20250707_5856.pdf?isAllowed=y&sequence=2"
+        ]
+      }
+    ],
+    "portals": [
+      {
+        "name": "https://www.esa.gov.eg/files/Topographic_Maps.pdf",
+        "operator": "Egypt",
+        "homeUrl": "https://www.esa.gov.eg/files/Topographic_Maps.pdf",
+        "observation": "Egyptian Survey Authority official topographic-map index identifies Assiut governorate centres including Dairut and lists city maps at 1:1,000 and village maps at 1:2,500. This is mapping-coverage evidence, not a public cadastral parcel vector service."
+      },
+      {
+        "name": "https://mediadr.sis.gov.eg/bitstream/handle/123456789/104783/WQ147_20250707_5856.pdf?isAllowed=y&sequence=2",
+        "operator": "Egypt",
+        "homeUrl": "https://mediadr.sis.gov.eg/bitstream/handle/123456789/104783/WQ147_20250707_5856.pdf?isAllowed=y&sequence=2",
+        "observation": "Official Egyptian Gazette publication records Survey Authority notices for a public-benefit project in Dairut, including display of project maps and compensation schedules; not a general parcel viewer."
+      }
+    ],
+    "requests": [],
+    "historicalContext": [],
+    "followthrough": {
+      "focus": "Reassess the existing registryFound=true claim against first-party city/local sources; distinguish local custodian proof from national/general map evidence and transport failure.",
+      "queries": [
+        {
+          "language": "English",
+          "query": "Dairut Assiut Egypt official cadastral land registry office property registration Dairut",
+          "resultUrls": [
+            "https://www.esa.gov.eg/files/Topographic_Maps.pdf",
+            "https://mediadr.sis.gov.eg/bitstream/handle/123456789/104783/WQ147_20250707_5856.pdf?isAllowed=y&sequence=2",
+            "https://www.esa.gov.eg/main.aspx"
+          ],
+          "result": "Only the national survey index, national authority page, and Dairut-specific project notice were identified; no local registry service or parcel viewer was surfaced."
+        },
+        {
+          "language": "Arabic",
+          "query": "ديروط أسيوط مكتب الشهر العقاري مديرية المساحة ديروط كادستر خرائط مساحية رسمي",
+          "resultUrls": [
+            "https://www.esa.gov.eg/files/Topographic_Maps.pdf",
+            "https://mediadr.sis.gov.eg/bitstream/handle/123456789/104783/WQ147_20250707_5856.pdf?isAllowed=y&sequence=2",
+            "https://www.esa.gov.eg/main.aspx"
+          ],
+          "result": "Search identified Dairut map products and project-specific surveying notice only; no first-party town registry or general parcel service was verified."
+        }
+      ],
+      "officialSources": [
+        {
+          "url": "https://www.esa.gov.eg/files/Topographic_Maps.pdf",
+          "observation": "Egyptian Survey Authority topographic index names Dairut among Assiut map centres and lists urban/village map scales. It is cartographic coverage evidence, not proof of a current cadastral registry for the town."
+        },
+        {
+          "url": "https://mediadr.sis.gov.eg/bitstream/handle/123456789/104783/WQ147_20250707_5856.pdf?isAllowed=y&sequence=2",
+          "observation": "Official gazette publication describes a project-specific public-benefit survey notice at Dairut with display of project maps and compensation schedules. It does not establish a general town registry, parcel viewer, or current parcel coverage."
+        },
+        {
+          "url": "https://www.esa.gov.eg/main.aspx",
+          "observation": "Official ESA institutional page describes the national survey authority and its mapping/ownership-record history. This national mandate does not locate a Dairut registry office or demonstrate WUP-point parcel coverage."
+        }
+      ],
+      "attempts": [
+        {
+          "url": "https://www.esa.gov.eg/files/Topographic_Maps.pdf",
+          "method": "web open of official map index",
+          "result": "Fetcher rejected the 14,569,552-byte PDF as too large; prior search/index evidence identifies Dairut, but this request did not expose parcel data."
+        },
+        {
+          "url": "https://mediadr.sis.gov.eg/bitstream/handle/123456789/104783/WQ147_20250707_5856.pdf?isAllowed=y&sequence=2",
+          "method": "web open of official gazette PDF",
+          "result": "Fetcher timed out. Search-indexed official notice is project-specific and is not a general registry/parcel service."
+        },
+        {
+          "url": "https://www.esa.gov.eg/main.aspx",
+          "method": "official ESA institutional page review",
+          "result": "National survey-authority context only; no Dairut-local registration office or public parcel endpoint established."
+        }
+      ],
+      "registryDecision": "null: local/city-specific registration or cadastral custody is not established by inspectable first-party evidence. This is uncertainty, not confirmed absence.",
+      "geometryDecision": "No safe anonymous full-polygon response was verified; no geometry query with potentially sensitive attributes was made.",
+      "uncertainty": "Whether a standing local registry/cadastre office covers Dairut and whether the WUP locator lies within any current surveyed parcel-map extent."
+    }
+  },
+  "status": "complete",
+  "verifiedParcelResponse": null,
+  "source": {
+    "sourceId": null,
+    "name": "https://www.esa.gov.eg/files/Topographic_Maps.pdf",
+    "url": "https://www.esa.gov.eg/files/Topographic_Maps.pdf",
+    "operator": null,
+    "serviceType": "Candidate source reviewed; no first-party city-local custody or safe public full-parcel geometry response verified.",
+    "layer": null,
+    "geometryType": null,
+    "outputCrs": null,
+    "nativeIdField": null,
+    "nativeIdEvidence": null,
+    "attributesRequested": [],
+    "sampleCount": 0,
+    "sampleFile": null,
+    "directGeometryQueryVerified": false,
+    "directMetadataSchemaVerified": false,
+    "geometryStatus": "not_verified",
+    "operatorNote": "Registry custody remains unconfirmed; see freshResearch followthrough and source-review record."
+  },
+  "coverageAssessment": {
+    "claimedScope": "Official sources establish Dairut map products and a project-specific survey notice. Neither identifies a standing local property-registration/cadastre custodian for the ranked locator. The topographic index is not parcel geometry; city/local registry custody remains unconfirmed, and no parcel geometry was verified.",
+    "verifiedOpenScope": "No anonymous full-parcel geometry response was verified; no absence or citywide coverage claim is made.",
+    "countrywideVerified": false,
+    "citywideVerified": false
+  },
+  "registryFound": null,
+  "verifiedSample": false,
+  "resultCategory": "local_registry_custody_unconfirmed_geometry_unverified",
+  "technicalBlocker": "No first-party city/local registry source with a safe public full-parcel geometry schema and response was verified. Access failures and broad/national map documentation do not establish absence or point coverage.",
+  "remainingUncertainty": "Whether a standing local registry/cadastre office covers Dairut and whether the WUP locator lies within any current surveyed parcel-map extent.",
+  "nextStep": "Revisit only if an official public geometry endpoint and safe minimal-field response are documented; then test the unchanged WUP point with safe identifiers and geometry only.",
+  "schemaVersion": "1.0",
+  "checkedAt": "2026-10-09",
+  "wupCityCode": 5921,
+  "cityId": "wup2025:5921",
+  "runtimeReadiness": "not_enabled_no_verified_public_geometry",
+  "adapterReady": false,
+  "centerLatLon": [
+    27.5411285401879,
+    30.8066666037943
+  ],
+  "population2025k": 501.258,
+  "populationUnit": "persons",
+  "queueRank": 1104,
+  "population2025": 501258,
+  "populationPlausibility2025": "High",
+  "pointBasis": "UN WUP 2025 population-weighted settlement point (latitude, longitude); not a municipal boundary or a parcel-coverage claim.",
+  "publicParcelGeometryFound": false,
+  "sourceIds": [],
+  "registryBasis": "The ESA topographic index is map-product evidence and the gazette notice is limited to a particular public-benefit survey project. No first-party Dairut registry office or general cadastral service was established. This does not prove that a local registry is absent.",
+  "registryEvidenceUrls": [
+    "https://www.esa.gov.eg/files/Topographic_Maps.pdf",
+    "https://mediadr.sis.gov.eg/bitstream/handle/123456789/104783/WQ147_20250707_5856.pdf?isAllowed=y&sequence=2"
+  ],
+  "runtimeAssessment": {
+    "status": "not_enabled_no_verified_public_geometry",
+    "reason": "No first-party city/local registry source with a safe public full-parcel geometry schema and response was verified. Access failures and broad/national map documentation do not establish absence or point coverage."
+  },
+  "cohort": "overnight-next-1101-1200",
+  "cohortState": "root_reviewed_integrated_locally",
+  "integrationState": "integrated_locally",
+  "rootReviewedAt": "2026-10-09T07:13:02.981057+00:00",
+  "rootPrimaryChecks": [
+    {
+      "wupCityCode": 5921,
+      "url": "https://www.esa.gov.eg/files/Topographic_Maps.pdf",
+      "checkedAt": "2026-10-09T07:10:42.542874+00:00",
+      "method": "Anonymous read-only GET, standard TLS where advertised; no credentials or property values",
+      "httpStatus": 200,
+      "finalUrl": "https://www.esa.gov.eg/files/Topographic_Maps.pdf",
+      "contentType": "application/pdf",
+      "bytesRead": 3145729,
+      "sha256": "27224d170086754f478aab19a0ef766a3ededa5421d3f4268ce5618d286fc284",
+      "complete": false
+    }
+  ],
+  "rootReview": {
+    "checkedAt": "2026-10-09T07:13:02.981057+00:00",
+    "decision": "Reviewed city identity, canonical population/point, separate searches and saved source/request evidence. No full public parcel geometry verified in this pass.",
+    "custodyScope": "The ESA topographic index is map-product evidence and the gazette notice is limited to a particular public-benefit survey project. No first-party Dairut registry office or general cadastral service was established. This does not prove that a local registry is absent.",
+    "transportFailuresDoNotProveAbsence": true,
+    "geometryClaimScope": "Investigation outcome only; no worldwide or citywide absence asserted."
+  },
+  "integratedAt": "2026-10-09T07:14:03.673112+00:00"
+}

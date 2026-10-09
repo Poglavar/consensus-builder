@@ -1,0 +1,91 @@
+{
+  "schemaVersion": 1,
+  "checkedAt": "2026-10-09",
+  "status": "complete",
+  "adapterReady": false,
+  "pointBasis": "UN WUP 2025 population-weighted settlement centroid; this is not a municipal boundary or a parcel-coverage claim.",
+  "coverageAssessment": {
+    "verifiedOpenScope": "No parcel geometry sample was retained.",
+    "citywideVerified": false,
+    "countrywideVerified": false
+  },
+  "name": "Chihuahua",
+  "country": "Mexico",
+  "countryCode": "MX",
+  "rank": 691,
+  "point": [
+    28.6631281127536,
+    -106.091986728701
+  ],
+  "population2025": 771297,
+  "populationUnit": "persons",
+  "population2025k": 771.297,
+  "populationPlausibility2025": "Moderate",
+  "wupCityCode": 4142,
+  "cityId": "wup2025:4142",
+  "queueRank": 691,
+  "registryFound": true,
+  "registryBasis": "The municipal government describes SIGMUN as a free city geography platform with cadastral information. Its official REST metadata exposes polygon layer “Predios vinculados al registro público de la propiedad” and safe fields OBJECTID and clave_guio. The bounded exact-point query was not successfully retrieved, so no sample parcel was verified.",
+  "registryEvidenceUrls": [
+    "https://www.municipiochihuahua.gob.mx/CCS/Prensa/Conoce_el_SIGMUN,_la_plataforma_de_informaci%C3%B3n_geogr%C3%A1fica_del_municipio",
+    "https://sigmun.mpiochih.gob.mx/webserver/rest/services/CATASTRO/gestion_catastral_publico/MapServer/layers"
+  ],
+  "publicParcelGeometryFound": false,
+  "verifiedSample": false,
+  "verifiedParcelResponse": null,
+  "freshResearch": {
+    "queries": [
+      {
+        "language": "Spanish",
+        "query": "Chihuahua SIGMUN predios catastro público polígonos clave catastral servicio REST",
+        "scope": "Find city-specific registry/cadastre evidence and verify anonymous geometry using safe fields only.",
+        "result": "The city states SIGMUN is free and includes cadastral information. Official layer metadata identifies a polygon parcel layer and safe fields OBJECTID and clave_guio. Exact-point response could not be retrieved; no sample verified.",
+        "actualResultUrls": [
+          "https://www.municipiochihuahua.gob.mx/CCS/Prensa/Conoce_el_SIGMUN,_la_plataforma_de_informaci%C3%B3n_geogr%C3%A1fica_del_municipio",
+          "https://www.municipiochihuahua.gob.mx/",
+          "https://sigmun.mpiochih.gob.mx/webserver/rest/services/CATASTRO/gestion_catastral_publico/MapServer/layers"
+        ],
+        "executionMethod": "Official municipal platform description and REST layer metadata reviewed first; one bounded exact-WUP-point query requesting only OBJECTID, clave_guio and geometry was attempted, but DNS/reader access failed. No unsafe fields requested."
+      },
+      {
+        "language": "English",
+        "query": "Chihuahua Mexico official municipal cadastral parcel polygon GIS SIGMUN feature layer",
+        "scope": "Find city-specific registry/cadastre evidence and verify anonymous geometry using safe fields only.",
+        "result": "Official city pages link to SIGMUN and describe cadastral content. Layer metadata confirms Polygon geometry in Mexico ITRF2008 UTM Zone 13N; bounded query did not return a response.",
+        "actualResultUrls": [
+          "https://www.municipiochihuahua.gob.mx/CCS/Prensa/Conoce_el_SIGMUN,_la_plataforma_de_informaci%C3%B3n_geogr%C3%A1fica_del_municipio",
+          "https://sigmun.mpiochih.gob.mx/webserver/rest/services/CATASTRO/gestion_catastral_publico/MapServer/layers"
+        ],
+        "executionMethod": "Separate English-language discovery followed by official city platform and service metadata review. No owner/address data requested or retained."
+      }
+    ]
+  },
+  "scopeLimits": "Official metadata documents polygon geometry but no returned feature was verified. No sample retained; no owner/address fields were requested.",
+  "source": {
+    "sourceId": "MX-CHIHUAHUA-SIGMUN-PREDIOS",
+    "name": "SIGMUN municipal cadastral parcels linked to the public property registry",
+    "url": "https://sigmun.mpiochih.gob.mx/webserver/rest/services/CATASTRO/gestion_catastral_publico/MapServer/1",
+    "operator": "Municipality of Chihuahua (SIGMUN)",
+    "serviceType": "Public municipal GIS parcel layer",
+    "layer": "Predios vinculados al registro público de la propiedad",
+    "geometryType": "Polygon",
+    "nativeCrs": "Mexico ITRF2008 / UTM Zone 13N",
+    "safeFields": [
+      "OBJECTID",
+      "clave_guio"
+    ],
+    "unsafeFieldsPresent": [
+      "address fields; not requested"
+    ],
+    "nativeIdField": "clave_guio"
+  },
+  "sourceIds": [],
+  "runtimeReadiness": "not_enabled_no_verified_public_geometry",
+  "technicalBlocker": "Official layer metadata is reachable, but the bounded feature query could not be retrieved because the service host was inaccessible from the available reader/network.",
+  "remainingUncertainty": "No sample confirms response geometry, exact WUP-point intersection, returned safe key values, or service query behavior.",
+  "centerLatLon": [
+    28.6631281127536,
+    -106.091986728701
+  ],
+  "rootReviewedAt": "2026-10-09T02:35:39.834493+00:00"
+}

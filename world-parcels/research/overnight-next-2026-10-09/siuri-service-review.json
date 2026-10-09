@@ -1,0 +1,87 @@
+{
+  "schemaVersion": "1.0",
+  "checkedAt": "2026-10-09",
+  "cityRecord": "city-11629-siuri.json",
+  "purpose": "Document separate English/local-language research, local land-registry custody scope, direct anonymous request outcomes and safe geometry limits.",
+  "scopeLimits": {
+    "maxFullPolygonsRetainedInCityRecord": 0,
+    "maxFullPolygonsRetainedInReview": 0,
+    "maxFullPolygonsRetainedInRepository": 0,
+    "ownerOrAddressDataRetained": false,
+    "credentialsOrTokenValuesRetained": false,
+    "citywideCompletenessAsserted": false
+  },
+  "assessment": "Birbhum District Land & Land Reforms Officer is officially located in Suri and describes local records-of-rights/land-management duties; no public parcel geometry feed was found.",
+  "registryAssessment": "Local or jurisdictionally local land/cadastral custodian supported at the limited scope stated; public geometry and runtime readiness remain separate.",
+  "officialPrimarySources": [
+    {
+      "url": "https://birbhum.gov.in/land-land-reforms/",
+      "operator": "Birbhum District Land & Land Reforms Office",
+      "observation": "Official district page identifies the District Land & Land Reforms Officer in Suri and describes record-of-rights/land-management duties."
+    }
+  ],
+  "searchQueries": [
+    {
+      "language": "English",
+      "query": "Siuri Suri Birbhum official land records cadastral map land reforms",
+      "result": "Separate English-language source discovery; only cited first-party sources are used as evidence.",
+      "method": "Separate English-language search followed by official-source review.",
+      "actualResultUrls": [
+        "https://birbhum.gov.in/land-land-reforms/"
+      ],
+      "scope": "Identify city-local land registry/cadastral custody and anonymous public parcel geometry. Preserve the exact WUP settlement point. Do not submit owner, address, tax, account, applicant, or private-property values. Public geographic selectors and public native parcel IDs are permitted."
+    },
+    {
+      "language": "Bengali",
+      "query": "সিউড়ি বীরভূম জমি রেকর্ড মানচিত্র ভূমি ও ভূমি সংস্কার সরকারি",
+      "result": "No first-party local-language result established a city-bound registry source.",
+      "method": "Separate local-language web search followed by first-party source review.",
+      "actualResultUrls": [],
+      "scope": "Identify city-local land registry/cadastral custody and anonymous public parcel geometry. Preserve the exact WUP settlement point. Do not submit owner, address, tax, account, applicant, or private-property values. Public geographic selectors and public native parcel IDs are permitted."
+    }
+  ],
+  "geometryDecision": {
+    "verified": false,
+    "sourceId": null,
+    "sampleCount": 0,
+    "sampleFile": null,
+    "nativeId": null,
+    "nativeIdField": null,
+    "exactWupPointTest": "No source-native full polygon was returned at the exact unchanged WUP point. publicParcelGeometryFound:false means unverified in this investigation, not confirmed absence.",
+    "requestEvidence": [
+      {
+        "url": "https://birbhum.gov.in/land-land-reforms/",
+        "method": "GET; anonymous; standard TLS; redirect-following; no credentials or property-value selectors",
+        "httpStatus": 200,
+        "contentType": "text/html; charset=UTF-8",
+        "bytesRead": 141787,
+        "assessment": "Official district land office page; no vector parcel endpoint."
+      }
+    ]
+  },
+  "coverageAssessment": {
+    "claimedScope": "Birbhum District Land & Land Reforms Officer is officially located in Suri and describes local records-of-rights/land-management duties; no public parcel geometry feed was found.",
+    "verifiedOpenScope": "No safe source-native full parcel polygon was returned in this investigation.",
+    "citywideVerified": false,
+    "countrywideVerified": false,
+    "geometryVerified": false
+  },
+  "attempts": [
+    "HTTP 200 text/html; charset=UTF-8; 141787 response bytes. Official district land office page; no vector parcel endpoint."
+  ],
+  "remainingUncertainty": "Birbhum District Land & Land Reforms Officer is officially located in Suri and describes local records-of-rights/land-management duties; no public parcel geometry feed was found. Public parcel geometry, coverage, legal/title scope and currentness beyond the evidence stated remain unverified.",
+  "nextStep": "Keep runtime disabled until root review determines whether the official source and returned geometry meet adapter criteria.",
+  "runtimeAssessment": {
+    "status": "not_enabled_no_verified_public_geometry",
+    "reason": "Suri district land administration is documented; the reviewed sources provide services/records but no anonymous parcel-vector schema or full geometry."
+  },
+  "cohort": "overnight-next-1101-1200",
+  "cohortState": "research_complete_pending_root_review",
+  "integrationState": "not_integrated",
+  "rootReviewedAt": "2026-10-09T07:25:02.908399+00:00",
+  "rootReview": {
+    "checkedAt": "2026-10-09T07:25:02.908399+00:00",
+    "decision": "Reviewed canonical identity, primary custody scope, separate search and direct-source request evidence. No public full parcel geometry verified; unresolved local custody preserved as null.",
+    "sourceEvidenceLimits": "Transport failure or lack of a verified route is not evidence that parcel geometry does not exist."
+  }
+}

@@ -1,0 +1,52 @@
+{
+  "schemaVersion": "1.0",
+  "checkedAt": "2026-10-09",
+  "cityRecord": "city-10898-pingxiang.json",
+  "purpose": "Document first-party local registry/map evidence and bounded anonymous geometry access review.",
+  "scopeLimits": {
+    "maxFullPolygonsRetainedInCityRecord": 0,
+    "maxFullPolygonsRetainedInReview": 0,
+    "maxFullPolygonsRetainedInRepository": 0,
+    "ownerOrAddressDataRetained": false,
+    "credentialsOrTokenValuesRetained": false,
+    "citywideCompletenessAsserted": false
+  },
+  "assessment": "The WUP point identifies Pingxiang, Jiangxi. Searches found secondary/republication reporting about municipal real-estate registration but no accessible city-first-party registry source. No parcel geometry route or schema was verified.",
+  "registryAssessment": "No city-first-party registry basis was verified. Search results include third-party or republication-only reporting about the Pingxiang Natural Resources and Planning Bureau; the city government homepage request timed out in the web reader. These do not establish the registry basis under the current primary-source rule.",
+  "officialPrimarySources": [
+    {
+      "url": "https://www.pingxiang.gov.cn/",
+      "observation": "The WUP point identifies Pingxiang, Jiangxi. Searches found secondary/republication reporting about municipal real-estate registration but no accessible city-first-party registry source. No parcel geometry route or schema was verified."
+    },
+    {
+      "url": "https://www.webmap.cn/store.do?method=store&storeId=714",
+      "observation": "The WUP point identifies Pingxiang, Jiangxi. Searches found secondary/republication reporting about municipal real-estate registration but no accessible city-first-party registry source. No parcel geometry route or schema was verified."
+    }
+  ],
+  "searchQueries": [
+    {
+      "language": "English",
+      "query": "Pingxiang Jiangxi official real estate registration center cadastral map GIS public",
+      "result": "City-first-party registry and safe public geometry schema were not established; no parcel query was made.",
+      "method": "Separate localized/English search and official-source review.",
+      "scope": "Identify current city-specific registry and safe public parcel geometry."
+    },
+    {
+      "language": "Chinese",
+      "query": "萍乡市自然资源和规划局 不动产登记中心 地籍图 官方",
+      "result": "Search surfaced mainly media republications and a generic map catalogue; no accessible city-first-party parcel schema was verified.",
+      "method": "Separate localized/English search and official-source review.",
+      "scope": "Identify current city-specific registry and safe public parcel geometry."
+    }
+  ],
+  "geometryDecision": "No parcel geometry retained; no anonymous public point-level full polygon response was verified.",
+  "coverageAssessment": {
+    "claimedScope": "No city-first-party registry basis was verified. Search results include third-party or republication-only reporting about the Pingxiang Natural Resources and Planning Bureau; the city government homepage request timed out in the web reader. These do not establish the registry basis under the current primary-source rule.",
+    "verifiedOpenScope": "No public parcel geometry service or point-level response verified.",
+    "citywideVerified": false,
+    "countrywideVerified": false,
+    "geometryVerified": false
+  },
+  "attempts": [],
+  "remainingUncertainty": "A city registry/cadastral service may exist, but its first-party service page and any public feature schema remain unverified."
+}

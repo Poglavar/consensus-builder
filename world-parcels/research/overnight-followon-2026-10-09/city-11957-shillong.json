@@ -1,0 +1,118 @@
+{
+  "name": "Shillong",
+  "country": "India",
+  "countryCode": "IN",
+  "rank": 1037,
+  "point": [
+    25.575442055196,
+    91.8901786175911
+  ],
+  "freshResearch": {
+    "queries": [
+      {
+        "language": "English",
+        "query": "Shillong Meghalaya India official land records cadastral map land registry survey maps council",
+        "scope": "Identify first-party local land-registry/cadastral sources and safe anonymous parcel geometry.",
+        "result": "Meghalaya’s Directorate of Land Records and Surveys says it surveys and maintains State/District maps. The Government of Meghalaya portal also reports that land surveys have not been conducted since the British period except in a few villages and that no Record of Rights exists in most areas. These broad statements do not identify a present parcel registry or map covering the WUP locator in Shillong. Public administrative/district maps are not parcel geometry. No safe public parcel feature endpoint or native-ID schema was found.",
+        "executionMethod": "Separate English-language web search followed by official-source review.",
+        "actualResultUrls": [
+          "https://www.megrevenuedm.gov.in/dlrs/dlrs_aboutus.html",
+          "https://www.meghalaya.gov.in/dept/39"
+        ]
+      },
+      {
+        "language": "Khasi/English",
+        "query": "Shillong Meghalaya jylla shillong cadastral land records official khasi map plot",
+        "scope": "Find first-party local-language registry/cadastral sources and any public parcel-map/geometry route.",
+        "result": "Meghalaya’s Directorate of Land Records and Surveys says it surveys and maintains State/District maps. The Government of Meghalaya portal also reports that land surveys have not been conducted since the British period except in a few villages and that no Record of Rights exists in most areas. These broad statements do not identify a present parcel registry or map covering the WUP locator in Shillong. Public administrative/district maps are not parcel geometry. No safe public parcel feature endpoint or native-ID schema was found.",
+        "executionMethod": "Separate local-language web search followed by official-source review.",
+        "actualResultUrls": [
+          "https://www.megrevenuedm.gov.in/dlrs/dlrs_aboutus.html",
+          "https://www.meghalaya.gov.in/dept/39"
+        ]
+      }
+    ],
+    "portals": [
+      {
+        "name": "https://www.megrevenuedm.gov.in/dlrs/dlrs_aboutus.html",
+        "operator": "India",
+        "homeUrl": "https://www.megrevenuedm.gov.in/dlrs/dlrs_aboutus.html",
+        "observation": "Directorate describes its role in surveying and maintaining State/District maps."
+      },
+      {
+        "name": "https://www.meghalaya.gov.in/dept/39",
+        "operator": "India",
+        "homeUrl": "https://www.meghalaya.gov.in/dept/39",
+        "observation": "Government page notes limited post-British land surveys and the absence of RoR in most areas; it does not establish parcel coverage at the WUP point."
+      }
+    ],
+    "requests": [],
+    "historicalContext": []
+  },
+  "status": "complete",
+  "verifiedParcelResponse": null,
+  "source": {
+    "sourceId": "IN-11957-LOCAL-CADASTRE",
+    "name": "Shillong official local land registry/map review",
+    "url": "https://www.megrevenuedm.gov.in/dlrs/dlrs_aboutus.html",
+    "operator": null,
+    "serviceType": "Official local cadastral/registry service reviewed; no anonymous safe full-parcel geometry response verified",
+    "layer": null,
+    "geometryType": null,
+    "outputCrs": null,
+    "nativeIdField": null,
+    "nativeIdEvidence": null,
+    "attributesRequested": [],
+    "sampleCount": 0,
+    "sampleFile": null,
+    "directGeometryQueryVerified": false,
+    "directMetadataSchemaVerified": false,
+    "geometryStatus": "not_verified",
+    "operatorNote": "Use the registryBasis and linked primary evidence for the verified institution; the previous country label was not an operator."
+  },
+  "coverageAssessment": {
+    "claimedScope": "The official DLRS has a state mapping mandate, but current city-specific parcel registration or point coverage in Shillong was not established. Therefore registry presence for this exact settlement locator remains unresolved.",
+    "verifiedOpenScope": "No anonymous full parcel geometry response verified in this investigation.",
+    "countrywideVerified": false,
+    "citywideVerified": false
+  },
+  "registryFound": null,
+  "registryBasis": "The official DLRS has a state mapping mandate, but current city-specific parcel registration or point coverage in Shillong was not established. Therefore registry presence for this exact settlement locator remains unresolved.",
+  "verifiedSample": false,
+  "resultCategory": "no_verified_public_geometry",
+  "technicalBlocker": "No city-specific anonymous parcel geometry route or confirmed WUP-point jurisdiction was identified.",
+  "remainingUncertainty": "Whether any Shillong locality at the WUP point has surveyed cadastral coverage or an active RoR is unresolved.",
+  "nextStep": "Recheck when a locality-specific cadastral map or registry layer is published with public geometry and safe identifiers.",
+  "schemaVersion": "1.0",
+  "checkedAt": "2026-10-09",
+  "wupCityCode": 11957,
+  "cityId": "wup2025:11957",
+  "runtimeReadiness": "not_enabled_no_verified_public_geometry",
+  "adapterReady": false,
+  "centerLatLon": [
+    25.575442055196,
+    91.8901786175911
+  ],
+  "population2025k": 534.861,
+  "populationUnit": "persons",
+  "queueRank": 1037,
+  "population2025": 534861,
+  "populationPlausibility2025": "Moderate",
+  "pointBasis": "UN WUP2025 population-weighted settlement locator; not a municipal boundary or parcel-coverage claim.",
+  "publicParcelGeometryFound": false,
+  "sourceIds": [],
+  "registryEvidenceUrls": [
+    "https://www.megrevenuedm.gov.in/dlrs/dlrs_aboutus.html",
+    "https://www.meghalaya.gov.in/dept/39"
+  ],
+  "runtimeAssessment": {
+    "status": "not_enabled_no_verified_public_geometry",
+    "reason": "No city-specific anonymous parcel geometry route or confirmed WUP-point jurisdiction was identified."
+  },
+  "rootReviewedAt": "2026-10-09T06:45:08.823796+00:00",
+  "rootReview": {
+    "checkedAt": "2026-10-09T06:45:08.823796+00:00",
+    "basis": "Reviewed city-specific English/local-language attempts, local-custody basis, source routes and documented responses. Public geometry remains unverified; access failures and unknown custody do not establish absence.",
+    "primarySourceAuditFile": "research/overnight-followon-2026-10-09/unreviewed-primary-source-audit.json"
+  }
+}

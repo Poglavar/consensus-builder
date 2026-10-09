@@ -1,0 +1,129 @@
+{
+  "schemaVersion": "1.0",
+  "checkedAt": "2026-10-09",
+  "cityRecord": "city-7432-orlando.json",
+  "purpose": "Document separate English/local-language research, local land-registry custody scope, direct anonymous request outcomes and safe geometry limits.",
+  "scopeLimits": {
+    "maxFullPolygonsRetainedInCityRecord": 0,
+    "maxFullPolygonsRetainedInReview": 0,
+    "maxFullPolygonsRetainedInRepository": 1,
+    "ownerOrAddressDataRetained": false,
+    "credentialsOrTokenValuesRetained": false,
+    "citywideCompletenessAsserted": false
+  },
+  "assessment": "Orange County Property Appraiser maintains the official county assessment parcel map. This is local assessor parcel coverage, not a title-registration extract.",
+  "registryAssessment": "Local or jurisdictionally local land/cadastral custodian supported at the limited scope stated; public geometry and runtime readiness remain separate.",
+  "officialPrimarySources": [
+    {
+      "url": "https://ocpaweb.ocpafl.org/?act=home",
+      "operator": "Orange County Property Appraiser",
+      "observation": "Official county property-appraiser site says its public map can locate parcels using geographic coordinates."
+    },
+    {
+      "url": "https://webmap.ocpafl.org/search",
+      "operator": "Orange County Property Appraiser public web map",
+      "observation": "Anonymous map exposes a parcel layer and an X,Y/latitude-longitude identify workflow; the exact WUP coordinate was queried with only OBJECTID and geometry."
+    },
+    {
+      "url": "https://vgispublic.ocpafl.org/server/rest/services/Webmap/PARCEL/MapServer/4",
+      "operator": "Orange County Property Appraiser parcel Feature Layer",
+      "observation": "Public polygon feature layer; the only requested attribute was its public OBJECTID. The layer schema contains other assessment and address fields, which were not requested or retained."
+    }
+  ],
+  "searchQueries": [
+    {
+      "language": "English",
+      "query": "Orlando Florida official Orange County Property Appraiser public parcel map geometry",
+      "result": "Separate English-language source discovery; only cited first-party sources are used as evidence.",
+      "method": "Separate English-language search followed by official-source review.",
+      "actualResultUrls": [
+        "https://ocpaweb.ocpafl.org/?act=home",
+        "https://webmap.ocpafl.org/search",
+        "https://vgispublic.ocpafl.org/server/rest/services/Webmap/PARCEL/MapServer/4"
+      ],
+      "scope": "Identify city-local land registry/cadastral custody and anonymous public parcel geometry. Preserve the exact WUP settlement point. Do not submit owner, address, tax, account, applicant, or private-property values. Public geographic selectors and public native parcel IDs are permitted."
+    },
+    {
+      "language": "English (local working language)",
+      "query": "Orlando Orange County Property Appraiser GIS map parcel identify by coordinates official",
+      "result": "Separate local-language search followed by first-party source review; cited official sources are relevant to the locality and stated scope.",
+      "method": "Separate local-language web search followed by first-party source review.",
+      "actualResultUrls": [
+        "https://ocpaweb.ocpafl.org/?act=home",
+        "https://webmap.ocpafl.org/search"
+      ],
+      "scope": "Identify city-local land registry/cadastral custody and anonymous public parcel geometry. Preserve the exact WUP settlement point. Do not submit owner, address, tax, account, applicant, or private-property values. Public geographic selectors and public native parcel IDs are permitted."
+    }
+  ],
+  "geometryDecision": {
+    "verified": true,
+    "sourceId": null,
+    "sampleCount": 1,
+    "sampleFile": "orlando-parcel-samples.geojson",
+    "nativeId": 167862,
+    "nativeIdField": "OBJECTID",
+    "exactWupPointTest": "Exact unchanged WUP point is contained by one public county parcel polygon. Only its public OBJECTID and full geometry were requested; other tax, owner, address, and assessment fields were excluded.",
+    "requestEvidence": [
+      {
+        "url": "https://ocpaweb.ocpafl.org/?act=home",
+        "method": "GET; anonymous; standard TLS; redirect-following; no credentials or property-value selectors",
+        "httpStatus": 200,
+        "contentType": "text/html",
+        "bytesRead": 5458,
+        "assessment": "Official appraiser home page."
+      },
+      {
+        "url": "https://webmap.ocpafl.org/search",
+        "method": "GET; anonymous; standard TLS; redirect-following; no credentials or property-value selectors",
+        "httpStatus": 200,
+        "contentType": "text/html",
+        "bytesRead": 3286,
+        "assessment": "Official public parcel map shell."
+      },
+      {
+        "url": "https://webmap.ocpafl.org/main.7c4560addc1b6aaf84fb.js",
+        "method": "GET; anonymous; standard TLS; redirect-following; no credentials or property-value selectors",
+        "httpStatus": 200,
+        "contentType": "application/javascript",
+        "bytesRead": 5979211,
+        "assessment": "Public app bundle advertises the parcel Feature Layer route."
+      },
+      {
+        "url": "https://vgispublic.ocpafl.org/server/rest/services/Webmap/PARCEL/MapServer/4?f=pjson",
+        "method": "GET; anonymous; standard TLS; redirect-following; no credentials or property-value selectors",
+        "httpStatus": 200,
+        "contentType": "text/plain;charset=UTF-8",
+        "bytesRead": 26664,
+        "assessment": "Polygon Feature Layer; native/latest WKID 102658/2236; OBJECTID is a public OID field."
+      },
+      {
+        "url": "https://vgispublic.ocpafl.org/server/rest/services/Webmap/PARCEL/MapServer/4/query",
+        "method": "GET; anonymous; standard TLS; redirect-following; no credentials or property-value selectors",
+        "httpStatus": 200,
+        "contentType": "application/geo+json;charset=UTF-8",
+        "bytesRead": 8140,
+        "assessment": "Exact WUP-point intersection, outFields=OBJECTID, returnGeometry=true, outSR=4326; returned one Polygon, OBJECTID 167862."
+      }
+    ]
+  },
+  "coverageAssessment": {
+    "claimedScope": "Orange County Property Appraiser maintains the official county assessment parcel map. This is local assessor parcel coverage, not a title-registration extract.",
+    "verifiedOpenScope": "One public polygon containing the exact WUP point was returned; countywide completeness and title status are not inferred.",
+    "citywideVerified": false,
+    "countrywideVerified": false,
+    "geometryVerified": true
+  },
+  "attempts": [
+    "HTTP 200 text/html; 5458 response bytes. Official appraiser home page.",
+    "HTTP 200 text/html; 3286 response bytes. Official public parcel map shell.",
+    "HTTP 200 application/javascript; 5979211 response bytes. Public app bundle advertises the parcel Feature Layer route.",
+    "HTTP 200 text/plain;charset=UTF-8; 26664 response bytes. Polygon Feature Layer; native/latest WKID 102658/2236; OBJECTID is a public OID field.",
+    "HTTP 200 application/geo+json;charset=UTF-8; 8140 response bytes. Exact WUP-point intersection, outFields=OBJECTID, returnGeometry=true, outSR=4326; returned one Polygon, OBJECTID 167862."
+  ],
+  "remainingUncertainty": "Orange County Property Appraiser maintains the official county assessment parcel map. This is local assessor parcel coverage, not a title-registration extract. Public parcel geometry, coverage, legal/title scope and currentness beyond the evidence stated remain unverified.",
+  "nextStep": "Keep runtime disabled until root review determines whether the official source and returned geometry meet adapter criteria.",
+  "runtimeAssessment": "not_enabled_pending_root_review",
+  "cohort": "overnight-next-1101-1200",
+  "cohortState": "research_complete_pending_root_review",
+  "integrationState": "not_integrated"
+}

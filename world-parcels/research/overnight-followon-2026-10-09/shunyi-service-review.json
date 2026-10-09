@@ -1,0 +1,61 @@
+{
+  "schemaVersion": "1.0",
+  "checkedAt": "2026-10-09",
+  "cityRecord": "city-9102-shunyi.json",
+  "purpose": "Document first-party local registry/map evidence and bounded anonymous geometry access review.",
+  "scopeLimits": {
+    "maxFullPolygonsRetainedInCityRecord": 0,
+    "maxFullPolygonsRetainedInReview": 0,
+    "maxFullPolygonsRetainedInRepository": 0,
+    "ownerOrAddressDataRetained": false,
+    "credentialsOrTokenValuesRetained": false,
+    "citywideCompletenessAsserted": false
+  },
+  "assessment": "Beijing’s official service map identifies Shunyi District Real Estate Registration Center and its district registration scope. No public parcel-vector service schema or safe anonymous geometry response for the WUP point was verified.",
+  "registryAssessment": "First-party sources establish a local registry/cadastre custodian.",
+  "officialPrimarySources": [
+    {
+      "url": "https://map.beijing.gov.cn/place?categoryId=bdcdj&placeId=66a8a146e4a9ed67df28602a",
+      "observation": "Official municipal map directory identifies Shunyi District Real Estate Registration Center, with administrative coverage and the city natural-resources commission as data source."
+    }
+  ],
+  "searchQueries": [
+    {
+      "language": "English",
+      "query": "Shunyi China official cadastral parcel map land registry GIS parcel polygons natural resources bureau",
+      "result": "Beijing’s official service map identifies Shunyi District Real Estate Registration Center and its district registration scope. No public parcel-vector service schema or safe anonymous geometry response for the WUP point was verified.",
+      "method": "Separate English-language web search followed by official-source review.",
+      "scope": "Identify first-party city/local registry and public parcel geometry; check the WUP point without sensitive property attributes.",
+      "actualResultUrls": [
+        "https://map.beijing.gov.cn/place?categoryId=bdcdj&placeId=66a8a146e4a9ed67df28602a"
+      ]
+    },
+    {
+      "language": "Chinese",
+      "query": "北京市顺义区 不动产登记中心 地籍图 地块查询 官方",
+      "result": "Beijing’s official service map identifies Shunyi District Real Estate Registration Center and its district registration scope. No public parcel-vector service schema or safe anonymous geometry response for the WUP point was verified.",
+      "method": "Separate local-language web search followed by official-source review.",
+      "scope": "Find first-party local-language registry/cadastral service and safe anonymous feature geometry near the unchanged WUP point.",
+      "actualResultUrls": [
+        "https://map.beijing.gov.cn/place?categoryId=bdcdj&placeId=66a8a146e4a9ed67df28602a"
+      ]
+    }
+  ],
+  "geometryDecision": "No full polygon retained; no safe anonymous geometry response was verified.",
+  "coverageAssessment": {
+    "claimedScope": "Beijing’s official service map identifies Shunyi District Real Estate Registration Center and its district registration scope. No public parcel-vector service schema or safe anonymous geometry response for the WUP point was verified.",
+    "verifiedOpenScope": "Beijing’s official service map identifies Shunyi District Real Estate Registration Center and its district registration scope. No public parcel-vector service schema or safe anonymous geometry response for the WUP point was verified.",
+    "citywideVerified": false,
+    "countrywideVerified": false,
+    "geometryVerified": false
+  },
+  "attempts": [
+    {
+      "url": "https://map.beijing.gov.cn/place?categoryId=bdcdj&placeId=66a8a146e4a9ed67df28602a",
+      "result": "Official municipal map directory identifies Shunyi District Real Estate Registration Center, with administrative coverage and the city natural-resources commission as data source."
+    }
+  ],
+  "remainingUncertainty": "Public feature geometry and point-specific cadastral coverage remain unverified.",
+  "geometryEvidence": null,
+  "runtimeAssessment": "not enabled; no verified full-parcel geometry"
+}

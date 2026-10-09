@@ -1,0 +1,53 @@
+{
+  "schemaVersion": "1.0",
+  "checkedAt": "2026-10-09",
+  "cityRecord": "city-11829-krishnanagar.json",
+  "purpose": "Read-only city-specific source discovery and bounded access review; no runtime or global changes.",
+  "scopeLimits": {
+    "maxFullPolygonsRetainedInThisCityReport": 0,
+    "maxFullPolygonsRetainedAcrossCityReview": 0,
+    "ownerOrAddressDataRetained": false,
+    "accountCredentialsOrPublicTokenValuesRetained": false
+  },
+  "assessment": "Krishnanagar Municipality’s local holding-tax service identifies wards, road names and holding numbers, and its official municipal service charter describes assessment of new holdings and certified-copy services. This establishes local municipal holding/property-assessment records, not a cadastral land-title registry or vector map. No public cadastral map or parcel geometry route was found. City-specific tax records are organized by holding but do not establish survey-boundary geometry or a title-registry map.",
+  "officialEvidence": [
+    {
+      "url": "https://tax.krishnanagarmunicipality.com/dueCheck",
+      "httpStatus": 200,
+      "observation": "Official municipality-linked public due-check shell exposes ward, road-name and holding-number selectors; no holding lookup was performed and no property data were retrieved."
+    },
+    {
+      "url": "https://krishnanagarmunicipality.com/",
+      "httpStatus": 200,
+      "observation": "Municipality website identifies Krishnanagar Municipality and links public payment/service sections."
+    },
+    {
+      "url": "https://udma.wb.gov.in/Main/urban_local_bodies",
+      "observation": "Government of West Bengal UDMA directory identifies Krishnanagar Municipality in Nadia district."
+    },
+    {
+      "url": "https://udma.wb.gov.in/public/uploads/circular_pdf/1762256293_755orderma2526.pdf",
+      "observation": "West Bengal UDMA municipal order discusses Krishnanagar municipal service and property-tax collection; it records operational concerns and does not establish cadastral vector availability."
+    },
+    {
+      "url": "https://banglarbhumi.gov.in/",
+      "observation": "Official West Bengal land-record portal lists RS-LR plot information and plot/mouza map request services behind citizen-service login. Shell retrieval timed out locally; this is not treated as an origin failure and no login was attempted."
+    }
+  ],
+  "serviceTrace": {
+    "viewer": {
+      "url": "https://tax.krishnanagarmunicipality.com/dueCheck",
+      "routes": [
+        "Public due-check page has inputs for ward, road name and holding number; no query was submitted."
+      ],
+      "notes": "This is municipal tax/holding lookup, not a cadastral map or vector service. Banglarbhumi offers plot and mouza-map services but requires citizen login for service delivery; no credentials used."
+    },
+    "notes": "Whether Krishnanagar Municipality holds a separate tax-map dataset and whether current Banglarbhumi map access has any anonymous mode; neither was queried."
+  },
+  "geometryValidation": {
+    "schemaConfirmed": false,
+    "featureQueryMade": false,
+    "retainedFullPolygonCount": 0,
+    "reason": "No public cadastral map or parcel geometry route was found. City-specific tax records are organized by holding but do not establish survey-boundary geometry or a title-registry map."
+  }
+}

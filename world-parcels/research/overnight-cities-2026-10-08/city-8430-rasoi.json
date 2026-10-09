@@ -1,0 +1,127 @@
+{
+  "schemaVersion": 1,
+  "kind": "city_parcel_source_research",
+  "checkedAt": "2026-10-09",
+  "name": "Rasoi",
+  "country": "India",
+  "countryCode": "IN",
+  "populationUnit": "persons",
+  "status": "complete",
+  "registryFound": null,
+  "registryBasis": "Identity unresolved. The official Sonipat district village list places Rasoi among villages in Rai block, and India’s official 2011 Census dataset classifies Rasoi(42) as a village (census location code 06 076 00380 059883 0000). The queue point and name are consistent with that village, but those sources do not reconcile the queued WUP cityCode and 703,790-person city population with the small village identity. Thus no city-code-bound registry finding is asserted.",
+  "registryEvidenceUrls": [
+    "https://sonipat.gov.in/village-list/",
+    "https://censusindia.gov.in/nada/index.php/catalog/6267",
+    "https://sonipat.gov.in/service/online-jamabandhis/",
+    "https://jamabandi.nic.in/"
+  ],
+  "verifiedSample": false,
+  "publicParcelGeometryFound": false,
+  "runtimeReadiness": "not_enabled_no_verified_public_geometry",
+  "wupCityCode": 8430,
+  "cityId": "wup2025:8430",
+  "centerLatLon": [
+    28.8270995940155,
+    77.0839949465445
+  ],
+  "rank": 760,
+  "queueRank": 760,
+  "population2025": 703790,
+  "population2025k": 703.79,
+  "populationPlausibility2025": "High",
+  "pointBasis": "UN WUP 2025 population-weighted settlement centroid; this is not a municipal boundary or a parcel-coverage claim.",
+  "technicalBlocker": "The Sonipat district website says Haryana registration/mutation/Jamabandi records can be viewed by owner name, khewat, or khasra; those are property/person lookup keys, so no record search was made. Its public page and census source confirm a village named Rasoi in Sonipat/Rai, not the queued city identity. The queue’s population/city classification conflict remains unresolved, and no village geometry schema was verified.",
+  "scopeLimits": "The Sonipat district website says Haryana registration/mutation/Jamabandi records can be viewed by owner name, khewat, or khasra; those are property/person lookup keys, so no record search was made. Its public page and census source confirm a village named Rasoi in Sonipat/Rai, not the queued city identity. The queue’s population/city classification conflict remains unresolved, and no village geometry schema was verified.",
+  "remainingUncertainty": "Whether queued WUP code 8430 denotes the Rasoi village shown by the point, a larger settlement/urban cluster, or a mismatched place record is unresolved. No registry record or parcel geometry is attributed to this code.",
+  "research": {
+    "executedQueries": [
+      {
+        "language": "English",
+        "query": "Rasoi Haryana Sonipat land registry village official English",
+        "scope": "Identify city-specific registry/cadastral evidence and any safe public parcel-geometry route; do not query personal, owner, address, tax, account, title, or parcel records.",
+        "result": "Official Sonipat district and Census sources show Rasoi as a village in Rai block. The queue’s city-scale population is inconsistent with the village evidence; identity remains unresolved.",
+        "actualResultUrls": [
+          "https://sonipat.gov.in/village-list/",
+          "https://censusindia.gov.in/nada/index.php/catalog/6267",
+          "https://sonipat.gov.in/service/online-jamabandhis/",
+          "https://jamabandi.nic.in/"
+        ],
+        "executionMethod": "Separate English and local-language official-source searches; review of official public HTML and indexed service/catalog pages. Only informational pages were inspected; no personal or parcel query was made."
+      },
+      {
+        "language": "Hindi",
+        "query": "रसोई गांव सोनीपत राय भूमि रिकॉर्ड जमाबंदी आधिकारिक",
+        "scope": "Identify city-specific registry/cadastral evidence and any safe public parcel-geometry route; do not query personal, owner, address, tax, account, title, or parcel records.",
+        "result": "The district’s official village list places Rasoi in Rai block; Sonipat’s online Jamabandi page describes record lookup by owner/khewat/khasra, which was not used. The queued city-code identity remains unreconciled.",
+        "actualResultUrls": [
+          "https://sonipat.gov.in/village-list/",
+          "https://censusindia.gov.in/nada/index.php/catalog/6267",
+          "https://sonipat.gov.in/service/online-jamabandhis/",
+          "https://jamabandi.nic.in/"
+        ],
+        "executionMethod": "Separate English and local-language official-source searches; review of official public HTML and indexed service/catalog pages. Only informational pages were inspected; no personal or parcel query was made."
+      }
+    ],
+    "officialSources": [
+      {
+        "url": "https://sonipat.gov.in/village-list/",
+        "observation": "Official Sonipat district village list places Rasoi at item 324 under Rai block."
+      },
+      {
+        "url": "https://censusindia.gov.in/nada/index.php/catalog/6267",
+        "observation": "Census of India official Sonipat 2011 PCA catalog identifies Rasoi(42) as a village with location code 06 076 00380 059883 0000."
+      },
+      {
+        "url": "https://sonipat.gov.in/service/online-jamabandhis/",
+        "observation": "Official district guidance says online Haryana land-record services include registration, mutation and Jamabandi, searchable with owner name, khewat or khasra number; no query was submitted."
+      },
+      {
+        "url": "https://jamabandi.nic.in/",
+        "observation": "Official Haryana Jamabandi portal linked by Sonipat district; only linked, not queried."
+      }
+    ],
+    "metadataReviewFile": "rasoi-service-review.json",
+    "routeInspectionFile": "temporary route audit outside repository"
+  },
+  "source": {
+    "sourceId": null,
+    "name": null,
+    "operator": null,
+    "url": null,
+    "serviceType": "No verified anonymous geometry-only parcel feature endpoint in this review.",
+    "geometryType": null,
+    "coordinateReferenceSystem": null,
+    "nativeIdFields": [],
+    "directGeometryQueryVerified": false,
+    "directMetadataSchemaVerified": false,
+    "scope": "The Sonipat district website says Haryana registration/mutation/Jamabandi records can be viewed by owner name, khewat, or khasra; those are property/person lookup keys, so no record search was made. Its public page and census source confirm a village named Rasoi in Sonipat/Rai, not the queued city identity. The queue’s population/city classification conflict remains unresolved, and no village geometry schema was verified."
+  },
+  "coverageAssessment": {
+    "citywideCompletenessAsserted": false,
+    "wupPointParcelPresenceAsserted": false,
+    "basis": "No verified parcel features were retrieved; city-level registry evidence is not a coverage claim."
+  },
+  "runtimeAssessment": {
+    "state": "not_enabled_no_verified_public_geometry",
+    "reason": "No anonymous parcel geometry route with a verified safe geometry-and-stable-ID response schema was established."
+  },
+  "rootReview": "pending",
+  "identityReview": {
+    "status": "unresolved",
+    "basis": "Official district/census sources identify a village named Rasoi at the relevant local place, but they do not reconcile the queued WUP cityCode and city-scale 2025 population with that village. No city-code-specific registry is asserted."
+  },
+  "rootRegistryDecisionNote": "Local registry presence is unestablished; candidate or generic pages do not prove absence.",
+  "rootPrimaryReadback": {
+    "url": "https://sonipat.gov.in/village-list/",
+    "fetch": 200,
+    "contentType": "text/html; charset=UTF-8",
+    "title": "\n        Village List | Sonipat | India    "
+  },
+  "rootReviewNote": "Reviewed the local primary institution/service evidence and stated geometry/access/identity limits. Fresh page readback failures are preserved separately and do not imply absent data; matching primary indexed text supplements the direct readback where available. No public geometry was verified for this city.",
+  "point": [
+    28.8270995940155,
+    77.0839949465445
+  ],
+  "rootReviewedAt": "2026-10-09T03:06:11.183980+00:00",
+  "sourceIds": []
+}

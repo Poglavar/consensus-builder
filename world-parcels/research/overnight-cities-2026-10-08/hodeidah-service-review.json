@@ -1,0 +1,75 @@
+{
+  "schemaVersion": "1.0",
+  "checkedAt": "2026-10-09",
+  "cityRecord": "city-456-hodeidah.json",
+  "purpose": "Document first-party local registry/map evidence and bounded anonymous geometry access review.",
+  "scopeLimits": {
+    "maxFullPolygonsRetainedInCityRecord": 0,
+    "maxFullPolygonsRetainedInReview": 0,
+    "maxFullPolygonsRetainedInRepository": 0,
+    "ownerOrAddressDataRetained": false,
+    "credentialsOrTokenValuesRetained": false,
+    "citywideCompletenessAsserted": false
+  },
+  "assessment": "Official sources confirm a Hodeidah governorate land-authority branch and registry work, but the available evidence does not bind the branch’s registry scope to the ranked Hodeidah city point. No public cadastral geometry route or parcel was identified.",
+  "registryAssessment": "Official local-governorate and national authority sources document a General Authority for Lands, Survey and Urban Planning branch in Hodeidah governorate. They do not establish registry jurisdiction or point coverage within Hodeidah city, so city-level registry presence remains unknown.",
+  "officialPrimarySources": [
+    {
+      "url": "https://www.hodeidah-gov.com/?no=2550",
+      "observation": "The official Hodeidah governorate information site identifies the local director of the General Authority for Lands, Survey and Urban Planning branch, and the authority’s official site reports a Hodeidah branch with registry and planning operations. This supports local institutional presence only; published sources describe governorate-level responsibilities and do not establish cadastral coverage at the city point."
+    },
+    {
+      "url": "https://galsup.gov.ye/?p=2192",
+      "observation": "Official public map/service context reviewed; no geometry-only schema was confirmed."
+    },
+    {
+      "url": "https://galsup.gov.ye/",
+      "observation": "Official local/regional context reviewed; no parcel lookup was performed."
+    }
+  ],
+  "searchQueries": [
+    {
+      "language": "English",
+      "query": "Hodeidah Yemen city land registry cadastral survey official public parcel map",
+      "result": "English and Arabic searches found official Hodeidah governorate reporting about the local lands-authority branch and official agency reporting on its governorate branches and registry operations. Search results also surface record notices containing claimant and parcel descriptions; no notices, names, addresses, plot identifiers, or record details were opened or retained. No public city parcel viewer or geometry-only service was found.",
+      "method": "Separate English query and first-party source review."
+    },
+    {
+      "language": "Arabic",
+      "query": "الحديدة السجل العقاري المساحة فرع هيئة الأراضي خريطة قطع الأراضي الحديدة",
+      "result": "English and Arabic searches found official Hodeidah governorate reporting about the local lands-authority branch and official agency reporting on its governorate branches and registry operations. Search results also surface record notices containing claimant and parcel descriptions; no notices, names, addresses, plot identifiers, or record details were opened or retained. No public city parcel viewer or geometry-only service was found.",
+      "method": "Separate local-language query and official source review."
+    }
+  ],
+  "geometryDecision": "No parcel geometry retained; no public feature route with a verified geometry-only and non-personal schema was identified.",
+  "coverageAssessment": {
+    "claimedScope": "Official local-governorate and national authority sources document a General Authority for Lands, Survey and Urban Planning branch in Hodeidah governorate. They do not establish registry jurisdiction or point coverage within Hodeidah city, so city-level registry presence remains unknown.",
+    "verifiedOpenScope": "Official sources confirm a Hodeidah governorate land-authority branch and registry work, but the available evidence does not bind the branch’s registry scope to the ranked Hodeidah city point. No public cadastral geometry route or parcel was identified.",
+    "citywideVerified": false,
+    "countrywideVerified": false,
+    "geometryVerified": false
+  },
+  "attempts": [
+    {
+      "url": "https://www.hodeidah-gov.com/?no=2550",
+      "method": "Read local governorate announcement",
+      "result": "Names the director of the General Authority for Lands, Survey and Urban Planning branch in Hodeidah governorate. It does not define city cadastral coverage."
+    },
+    {
+      "url": "https://galsup.gov.ye/?p=2192",
+      "method": "Read official land-authority branch report",
+      "result": "Describes the authority’s provincial branch structure and registry/urban-planning functions. The official site homepage fetch timed out in the web fetch; no direct map/schema endpoint was established."
+    },
+    {
+      "url": "https://galsup.gov.ye/",
+      "method": "Open official authority landing page",
+      "result": "Browser fetch timed out; no direct status, map, login, or geometry result is claimed."
+    },
+    {
+      "url": "N/A",
+      "method": "Anonymous parcel geometry query",
+      "result": "Not attempted: no safe geometry-only service schema and coverage extent were established."
+    }
+  ],
+  "remainingUncertainty": "The scope of Hodeidah city registry coverage, source currency/completeness, and whether any safe public geometry layer exists for the WUP point. Population plausibility is Low and has not been independently resolved in this packet."
+}

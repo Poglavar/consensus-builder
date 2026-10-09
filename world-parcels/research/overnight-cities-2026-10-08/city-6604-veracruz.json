@@ -1,0 +1,106 @@
+{
+  "name": "Veracruz",
+  "country": "Mexico",
+  "countryCode": "MX",
+  "rank": 811,
+  "point": [
+    19.1758191140684,
+    -96.1624128317656
+  ],
+  "freshResearch": {
+    "queries": [
+      {
+        "language": "English",
+        "query": "Veracruz Mexico city official cadastral registry map parcels spatial GIS",
+        "scope": "Find city-local registry evidence and a safe anonymous geometry-only parcel route for Veracruz.",
+        "result": "The local Ayuntamiento’s cadastral procedure is a paid cédula/registration service, not a public map: it requests an official ID, title/possession proof, coordinates/plan and municipal payment. State documentation describes printed or paid cadastral mapping products. No anonymous vector schema was found and no form was submitted.",
+        "actualResultUrls": [
+          "https://miveracruz.veracruzmunicipio.gob.mx/ver_ficha/28ddf490-ed37-11ea-b002-157e18c7cb76",
+          "https://www.veracruz.gob.mx/finanzas/"
+        ]
+      },
+      {
+        "language": "Spanish",
+        "query": "site:veracruzmunicipio.gob.mx catastro Veracruz municipio mapa catastral",
+        "scope": "Find primary local registry evidence and publicly documented geometry services for Veracruz.",
+        "result": "The local Ayuntamiento’s cadastral procedure is a paid cédula/registration service, not a public map: it requests an official ID, title/possession proof, coordinates/plan and municipal payment. State documentation describes printed or paid cadastral mapping products. No anonymous vector schema was found and no form was submitted.",
+        "actualResultUrls": [
+          "https://miveracruz.veracruzmunicipio.gob.mx/ver_ficha/28ddf490-ed37-11ea-b002-157e18c7cb76",
+          "https://www.veracruz.gob.mx/finanzas/"
+        ]
+      }
+    ],
+    "portals": [
+      {
+        "name": "Mi Veracruz municipal cadastral services",
+        "operator": "H. Ayuntamiento de Veracruz; Dirección de Planeación Catastral",
+        "homeUrl": "https://miveracruz.veracruzmunicipio.gob.mx/ver_ficha/28ddf490-ed37-11ea-b002-157e18c7cb76",
+        "observation": "The local Ayuntamiento’s cadastral procedure is a paid cédula/registration service, not a public map: it requests an official ID, title/possession proof, coordinates/plan and municipal payment. State documentation describes printed or paid cadastral mapping products. No anonymous vector schema was found and no form was submitted."
+      }
+    ],
+    "requests": [],
+    "historicalContext": []
+  },
+  "status": "complete",
+  "verifiedParcelResponse": null,
+  "source": {
+    "sourceId": "mx-veracruz-official-parcel-research",
+    "name": "Mi Veracruz municipal cadastral services",
+    "url": "https://miveracruz.veracruzmunicipio.gob.mx/ver_ficha/28ddf490-ed37-11ea-b002-157e18c7cb76",
+    "operator": "H. Ayuntamiento de Veracruz; Dirección de Planeación Catastral",
+    "serviceType": "Official local registry evidence reviewed; safe anonymous geometry status recorded separately.",
+    "geometryType": null,
+    "nativeIdField": null
+  },
+  "coverageAssessment": {
+    "claimedScope": "The official Ayuntamiento de Veracruz portal identifies a municipal Dirección de Planeación Catastral and a city cadastral-registration procedure for urban, suburban and rural property. It requires applicant identity, proof of title, sketch/coordinates and municipal payment; this verifies the local cadastral service but is not a public anonymous geometry route.",
+    "verifiedOpenScope": "No anonymous city parcel polygon coverage was verified.",
+    "countrywideVerified": false
+  },
+  "registryFound": true,
+  "verifiedSample": false,
+  "publicParcelGeometryFound": false,
+  "publicParcelGeometryCandidateFound": false,
+  "resultCategory": "city_registry_confirmed_geometry_unverified",
+  "technicalBlocker": "The city cadastral workflow is applicant- and property-document-based, and the public mapping products found are request/fee-based. No anonymous geometry-only schema or feature endpoint was verified.",
+  "remainingUncertainty": "Whether a separately published public municipal GIS includes parcel polygons; none was found in the official pages searched.",
+  "nextStep": "Review the source and sample before any runtime/adaptor enablement; confirm full-city coverage and privacy-safe query behavior first.",
+  "schemaVersion": 1,
+  "checkedAt": "2026-10-09",
+  "wupCityCode": 6604,
+  "cityId": "wup2025:6604",
+  "runtimeReadiness": "not_enabled_no_verified_public_geometry",
+  "adapterReady": false,
+  "centerLatLon": [
+    19.1758191140684,
+    -96.1624128317656
+  ],
+  "queueRank": 811,
+  "population2025": 668350,
+  "populationPlausibility2025": "Moderate",
+  "populationUnit": "persons",
+  "population2025k": 668.35,
+  "pointBasis": "UN WUP 2025 population-weighted settlement centroid; this is not a municipal boundary or a parcel-coverage claim.",
+  "sourceIds": [],
+  "runtimeAssessment": {
+    "status": "not_ready_no_verified_anonymous_geometry",
+    "reason": "The city cadastral workflow is applicant- and property-document-based, and the public mapping products found are request/fee-based. No anonymous geometry-only schema or feature endpoint was verified.",
+    "evidenceFile": "research/overnight-cities-2026-10-08/veracruz-service-review.json"
+  },
+  "registryBasis": "The official Ayuntamiento de Veracruz portal identifies a municipal Dirección de Planeación Catastral and a city cadastral-registration procedure for urban, suburban and rural property. It requires applicant identity, proof of title, sketch/coordinates and municipal payment; this verifies the local cadastral service but is not a public anonymous geometry route.",
+  "registryEvidenceUrls": [
+    "https://miveracruz.veracruzmunicipio.gob.mx/ver_ficha/28ddf490-ed37-11ea-b002-157e18c7cb76",
+    "https://www.veracruz.gob.mx/finanzas/"
+  ],
+  "sampleFile": null,
+  "sampleFeatureCount": 0,
+  "sampleCrs": null,
+  "rootPrimaryReadback": {
+    "url": "https://miveracruz.veracruzmunicipio.gob.mx/ver_ficha/28ddf490-ed37-11ea-b002-157e18c7cb76",
+    "fetch": 200,
+    "contentType": "text/html; charset=UTF-8",
+    "title": "Ver ficha PLC01 - Mi Veracruz"
+  },
+  "rootReviewNote": "Reviewed the specific primary institution/service evidence and its geographical, access and date limits. Direct readback failures are preserved separately from indexed primary evidence. No public full parcel geometry was verified for this city in this discovery pass.",
+  "rootReviewedAt": "2026-10-09T03:57:46.837098+00:00"
+}

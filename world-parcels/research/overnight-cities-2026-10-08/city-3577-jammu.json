@@ -1,0 +1,151 @@
+{
+  "name": "Jammu",
+  "country": "India",
+  "countryCode": "IN",
+  "rank": 443,
+  "point": [
+    32.7080652569569,
+    74.8671930287282
+  ],
+  "freshResearch": {
+    "queries": [
+      {
+        "language": "Hindi",
+        "query": "जम्मू शहर सरकारी भू-अभिलेख GIS नक्शा खसरा जमीन के प्लॉट का मानचित्र जम्मू नगर निगम",
+        "scope": "Find an official, public full-geometry cadastral/parcel service for Jammu city and its land-record authority.",
+        "result": "Official search results identify Jammu Municipal Corporation’s GIS survey of residential/commercial properties, the city’s ward GIS-map downloads, and the J&K Revenue Department’s JK Land Records Information System. No anonymously queryable parcel-feature endpoint was identified; the land-record system’s current public shell is a secure sign-in workflow.",
+        "actualResultUrls": [
+          "https://jmc.jk.gov.in/notices.aspx?noticetype=Public",
+          "https://customerstaging.myjammu.in/Common/GISMAP",
+          "https://d14fnjoywemmi.cloudfront.net/jklr/",
+          "https://jammu.nic.in/department-of-revenue/"
+        ],
+        "executionMethod": "Official Hindi/English search, municipal and state GIS page review, and read-only login-shell/bundle inspection. No account or property query."
+      },
+      {
+        "language": "English",
+        "query": "Jammu India official cadastral parcel polygon public GIS land records map municipal survey",
+        "scope": "Cross-check for a city-bound open parcel vector route and exact public layer capability.",
+        "result": "Official Jammu pages confirm Revenue land-record custodianship, JK LRIS GIS functions, a municipal GIS property survey, and ward-map downloads. Ward boundaries, planning maps, and authenticated land-record workflows are not full public parcel geometry; none returned a parcel polygon.",
+        "actualResultUrls": [
+          "https://jammu.nic.in/department-of-revenue/",
+          "https://services.india.gov.in/service/detail/land-records-information-system-jammu-and-kashmir-1",
+          "https://jmc.jk.gov.in/notices.aspx?noticetype=Public",
+          "https://customerstaging.myjammu.in/Common/GISMAP"
+        ],
+        "executionMethod": "Official source search and read-only public page/app-shell inspection."
+      }
+    ],
+    "portals": [
+      {
+        "name": "JK Land Records Information System (JKLR)",
+        "operator": "Revenue Department, Government of Jammu and Kashmir",
+        "homeUrl": "https://d14fnjoywemmi.cloudfront.net/jklr/",
+        "observation": "The official state system is described as a secure GIS-based land-record service for public and agency users; the delivered app shell uses credential/CAPTCHA/OTP sign-in. No sign-in, protected API call, or property lookup was attempted."
+      },
+      {
+        "name": "Jammu Municipal Corporation GIS property survey",
+        "operator": "Jammu Municipal Corporation",
+        "homeUrl": "https://jmc.jk.gov.in/notices.aspx?noticetype=Public",
+        "observation": "JMC publishes a GIS survey notice for residential/commercial properties; this confirms a city-specific property GIS activity but not an open parcel layer."
+      },
+      {
+        "name": "My Jammu GIS Map",
+        "operator": "Jammu Municipal Corporation / Jammu Smart City Limited",
+        "homeUrl": "https://customerstaging.myjammu.in/Common/GISMAP",
+        "observation": "Public city portal lists ward-level GIS map downloads. Ward maps are administrative/geographic products and do not establish parcel boundaries or native parcel IDs."
+      }
+    ],
+    "requests": [
+      {
+        "url": "https://d14fnjoywemmi.cloudfront.net/jklr/",
+        "method": "GET",
+        "httpStatus": 200,
+        "contentType": "text/html",
+        "observation": "Official JKLR app shell loads a secure sign-in workflow; no protected data was requested."
+      },
+      {
+        "url": "https://jmc.jk.gov.in/notices.aspx?noticetype=Public",
+        "method": "GET",
+        "httpStatus": 200,
+        "contentType": "text/html; charset=utf-8",
+        "observation": "JMC public notices page includes GIS Survey of Residential Commercial Properties."
+      },
+      {
+        "url": "https://customerstaging.myjammu.in/Common/GISMAP",
+        "method": "GET",
+        "httpStatus": 200,
+        "contentType": "text/html",
+        "observation": "Official city portal lists ward-map downloads; no parcel geometry response is exposed on the page."
+      },
+      {
+        "url": "https://stategisportal.nic.in/stategisportal/home/map/1",
+        "method": "GET",
+        "httpStatus": 200,
+        "contentType": "text/html",
+        "observation": "State GIS map is a BharatMaps multi-layer thematic/base map; its described layers are administrative/transport/terrain, not cadastral parcels."
+      }
+    ],
+    "historicalContext": []
+  },
+  "status": "complete",
+  "verifiedParcelResponse": null,
+  "source": {
+    "sourceId": "IN-JK-JAMMU-JKLR-JMC-GIS",
+    "name": "JK Land Records Information System and Jammu Municipal GIS property survey",
+    "url": "https://d14fnjoywemmi.cloudfront.net/jklr/",
+    "operator": "J&K Revenue Department; Jammu Municipal Corporation",
+    "serviceType": "GIS-based land-record and urban-property systems; public app shell is sign-in based and no open parcel vector endpoint was verified.",
+    "layer": "JKLR parcel layer not publicly accessible without sign-in; JMC public GIS page lists ward maps, not parcels.",
+    "geometryType": "none retrieved",
+    "outputCrs": "unknown",
+    "nativeIdField": "unknown",
+    "nativeIdEvidence": "No parcel feature response or schema was obtained; no account-bound service was queried."
+  },
+  "coverageAssessment": {
+    "claimedScope": "JK Revenue maintains land records and JKLR is GIS-based; Jammu Municipal Corporation has a current residential/commercial GIS survey and a city ward-map page.",
+    "verifiedOpenScope": "No anonymous full parcel polygons at the WUP point or within Jammu city were verified. Ward and master-plan maps are not parcel geometry.",
+    "countrywideVerified": false
+  },
+  "registryFound": true,
+  "verifiedSample": false,
+  "resultCategory": "official_registry_workflow_no_public_geometry",
+  "technicalBlocker": "The GIS-based land-record app presents a secure sign-in workflow; the public municipal GIS material found is ward-level and no anonymous parcel vector query was exposed.",
+  "remainingUncertainty": "Whether post-auth JKLR or JMC internal systems contain complete urban parcels is unknown; no authenticated, personal, or parcel-specific access was attempted.",
+  "nextStep": "Revisit only if an official open full-parcel geometry endpoint or explicitly public download is published.",
+  "schemaVersion": 1,
+  "checkedAt": "2026-10-08T23:57:31Z",
+  "wupCityCode": 3577,
+  "cityId": "wup2025:3577",
+  "runtimeReadiness": "not_enabled_no_verified_public_geometry",
+  "adapterReady": false,
+  "centerLatLon": [
+    32.7080652569569,
+    74.8671930287282
+  ],
+  "queueRank": 443,
+  "population2025": 1154466,
+  "populationPlausibility2025": "Moderate",
+  "populationUnit": "persons",
+  "pointBasis": "UN WUP 2025 population-weighted settlement centroid; this is not a municipal boundary or a parcel-coverage claim.",
+  "publicParcelGeometryFound": false,
+  "rootReviewedAt": "2026-10-09T00:01:28.209446+00:00",
+  "sourceIds": [],
+  "runtimeAssessment": {
+    "decision": "hold",
+    "reason": "No anonymous full parcel geometry was verified for this city."
+  },
+  "registryBasis": "Jammu district Revenue Department identifies itself as custodian of land records and survey/settlement; Government of India’s service listing describes JKLR as GIS-based; JMC separately advertises a city residential/commercial GIS survey.",
+  "registryEvidenceUrls": [
+    "https://jammu.nic.in/department-of-revenue/",
+    "https://services.india.gov.in/service/detail/land-records-information-system-jammu-and-kashmir-1",
+    "https://jmc.jk.gov.in/notices.aspx?noticetype=Public",
+    "https://customerstaging.myjammu.in/Common/GISMAP"
+  ],
+  "appCityId": null,
+  "scopeLimits": [
+    "Do not treat ward or zoning polygons as cadastral parcels.",
+    "No credentials, owner names, phone/address searches, taxes, or property-specific queries were used."
+  ],
+  "runtimeQualification": null
+}

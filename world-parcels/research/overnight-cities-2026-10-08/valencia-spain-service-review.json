@@ -1,0 +1,135 @@
+{
+  "schemaVersion": "1.0",
+  "checkedAt": "2026-10-09",
+  "cityRecord": "city-4574-valencia-spain.json",
+  "purpose": "Document first-party local registry/map evidence and bounded anonymous geometry access review.",
+  "scopeLimits": {
+    "maxFullPolygonsRetainedInCityRecord": 3,
+    "maxFullPolygonsRetainedInReview": 0,
+    "maxFullPolygonsRetainedInRepository": 3,
+    "ownerOrAddressDataRetained": false,
+    "credentialsOrTokenValuesRetained": false,
+    "citywideCompletenessAsserted": false
+  },
+  "assessment": "180 valid, distinct DGC INSPIRE cadastral parcel references verified in thirteen bounded cells around the unchanged ranked Valencia WUP locator. Actual GML members matched both numberMatched and numberReturned in all cells; a maxFeatures=3 cap rejected a 38-feature reply. This WFS does not implement offset paging; no offset-paging success is claimed. All 180 fresh exact-reference geometry reads matched, explicit provider absence messages matched both the requested REFCAT and UTM zone, and footprint/source-binding checks passed. Independent GEOS audit in EPSG:25830 found no invalid geometries, duplicates, sampled overlaps above 0.01 m² or operation errors. Only three safe sample geometries are retained in the repository. Citywide completeness, legal title, survey accuracy and parcel coverage exactly at the WUP point remain unverified.",
+  "registryAssessment": "Ajuntament de València publishes urban cadastral parcels through its official open-data portal. The Spanish DGC also publishes the national INSPIRE cadastral parcel WFS already used by the shared Madrid/Barcelona provider. These sources establish parcel geometry access, not title or complete city coverage.",
+  "officialPrimarySources": [
+    {
+      "url": "https://opendata.vlci.valencia.es/es/dataset/parcel-les-cadastrals-d-urbana-amb-fitxa-urbanistica",
+      "observation": "Official Ajuntament de València open dataset for urban cadastral parcels; lists WMS/WFS and GML, CSV, SHP, GeoJSON resources and parcel/manzana reference fields."
+    },
+    {
+      "url": "https://geoportal.valencia.es/server/services/OPENDATA/UrbanismoEInfraestructuras/MapServer/WFSServer?service=WFS&request=GetCapabilities&version=1.1.0",
+      "observation": "Official WFS capabilities advertise urban and rural cadastral parcel feature types, native EPSG:25830 and GML3 response."
+    },
+    {
+      "url": "https://geoportal.valencia.es/server/services/OPENDATA/UrbanismoEInfraestructuras/MapServer/WFSServer",
+      "observation": "Official bounded urban parcel WFS. A 100 m vicinity query yielded three full polygons with requested objectid/refpar/shape only; a 1 m bbox centered on the ranked point returned zero features."
+    }
+  ],
+  "searchQueries": [
+    {
+      "language": "English",
+      "query": "Valencia Spain official cadastral parcel map GIS Ayuntamiento València catastro open data map service parcels WFS",
+      "result": "Found the Ajuntament de València open-data dataset for urban cadastral parcels, with a published WFS/WMS and downloads; reviewed its schema and bounded native-CRS WFS response.",
+      "method": "Separate English-language search followed by official open-data resource and public WFS review."
+    },
+    {
+      "language": "Valencian",
+      "query": "València parcel·les cadastrals visor GIS Ajuntament València dades obertes cadastre WFS",
+      "result": "Local-language search led to the same official Ajuntament dataset. Its metadata describes parcel references and city planning sheets; no owner/address fields were requested.",
+      "method": "Separate Valencian-language search followed by official open-data resource review."
+    }
+  ],
+  "geometryDecision": "Three complete bounded DGC polygons retained. 13-cell completeness and geometry QA passed; explicit absence is not verified and awaits OWS exception-contract review.",
+  "coverageAssessment": {
+    "claimedScope": "Ajuntament de València publishes an urban cadastral-parcel dataset in its open-data portal with WMS, WFS, GML, CSV, SHP and GeoJSON resources. The dataset contains parcel polygons and non-personal cadastral/manzana references; it is municipal urban-cadastre data, not proof of legal title.",
+    "verifiedOpenScope": "180 valid, distinct DGC INSPIRE cadastral parcel references verified in thirteen bounded cells around the unchanged ranked Valencia WUP locator. Actual GML members matched both numberMatched and numberReturned in all cells; a maxFeatures=3 cap rejected a 38-feature reply. This WFS does not implement offset paging; no offset-paging success is claimed. All 180 fresh exact-reference geometry reads matched, explicit provider absence messages matched both the requested REFCAT and UTM zone, and footprint/source-binding checks passed. Independent GEOS audit in EPSG:25830 found no invalid geometries, duplicates, sampled overlaps above 0.01 m² or operation errors. Only three safe sample geometries are retained in the repository. Citywide completeness, legal title, survey accuracy and parcel coverage exactly at the WUP point remain unverified.",
+    "citywideVerified": false,
+    "countrywideVerified": false
+  },
+  "attempts": [
+    {
+      "url": "https://geoportal.valencia.es/server/services/OPENDATA/UrbanismoEInfraestructuras/MapServer/WFSServer",
+      "method": "WFS GetCapabilities and DescribeFeatureType, read-only",
+      "result": "HTTP 200; urban parcel type advertised. DescribeFeatureType identified objectid, refpar and shape along with other data fields; subsequent query allowlisted objectid, refpar and shape only."
+    },
+    {
+      "url": "https://geoportal.valencia.es/server/services/OPENDATA/UrbanismoEInfraestructuras/MapServer/WFSServer",
+      "method": "WFS GetFeature, native EPSG:25830 bbox 724232,4372178,724332,4372278; maxFeatures=3; propertyName=objectid,refpar,shape",
+      "result": "HTTP 200; 3 polygon features. Shapes were closed rings and coordinates were in the advertised projected CRS. Stored after conversion to GeoJSON CRS84; no sensitive attributes retained."
+    },
+    {
+      "url": "https://geoportal.valencia.es/server/services/OPENDATA/UrbanismoEInfraestructuras/MapServer/WFSServer",
+      "method": "WFS GetFeature, 1 m bbox around transformed WUP point; maxFeatures=3; safe fields only",
+      "result": "HTTP 200; numberOfFeatures=0. No parcel containment is claimed for the WUP locator."
+    },
+    {
+      "url": "https://ovc.catastro.meh.es/INSPIRE/wfsCP.aspx",
+      "method": "Repository catastro-wfs adapter: 13 bounded cells; forced three-row pagination; fresh-ID geometry; explicit absence; footprint and source-binding checks; independent EPSG:25830 GEOS QA",
+      "result": "180 unique IDs across 13 cells. Fresh reads for all IDs, footprint, and source binding passed. Forced three-row pagination failed because the endpoint does not support offset paging; explicit absent-ID request returned an OWS exception. GEOS: 180/180 valid, zero duplicate geometries, zero overlaps above 0.01 m², zero errors. Full audit details in valencia-spain-acceptance.json and valencia-spain-quality.json."
+    },
+    {
+      "url": "https://ovc.catastro.meh.es/INSPIRE/wfsCP.aspx",
+      "method": "Repository catastro-wfs adapter: 13 bounded cells; GML member-count checks; maxFeatures=3 truncation rejection; fresh ID geometries; footprint/binding; independent EPSG:25830 GEOS QA",
+      "result": "All 13 actual member counts matched numberMatched and numberReturned. 180 unique IDs; all 180 exact reads matched geometry hashes; footprint and source-binding passed. A 38-feature cell was rejected when adapter maxFeatures=3. GEOS: 180/180 valid, no duplicate geometries or overlaps above 0.01 m², zero errors. Offset paging is not implemented and is not used as a qualification test."
+    },
+    {
+      "url": "https://ovc.catastro.meh.es/INSPIRE/wfsCP.aspx?service=WFS&version=2.0.0&request=GetFeature&STOREDQUERY_ID=GetParcel",
+      "method": "Exact ID lookup through repository adapter: original malformed reference `ZZZZZZZZZZZZZZ`; then native-shaped `9999999YJ2742C` preserving observed map suffix `YJ2742C` while changing the seven-digit plot sequence",
+      "result": "Both returned HTTP 200 OWS ExceptionReport, exceptionCode OperationProcessingFailed, with Spanish “No se ha encontrado la parcela …” text. Neither is a complete empty FeatureCollection; absence remains unverified. Raw bodies retained in valencia-spain-invalid-reference-response.xml and valencia-spain-native-shaped-absence-response.xml."
+    }
+  ],
+  "remainingUncertainty": "Citywide completeness, legal title, survey accuracy and point coverage beyond the bounded evidence remain unverified.",
+  "protocolReview": {
+    "absenceVerified": false,
+    "pagingRequired": false,
+    "pagingEvidence": "Endpoint does not implement offset paging; actual member counts matched numberMatched and numberReturned in all 13 bounded cells, and maxFeatures=3 rejected a 38-feature response.",
+    "invalidReferenceResponse": "OWS ExceptionReport preserved; not interpreted as an empty success."
+  },
+  "rootDecision": "approved_for_bounded_local_runtime",
+  "scope": "180 valid, distinct DGC INSPIRE cadastral parcel references verified in thirteen bounded cells around the unchanged ranked Valencia WUP locator. Actual GML members matched both numberMatched and numberReturned in all cells; a maxFeatures=3 cap rejected a 38-feature reply. This WFS does not implement offset paging; no offset-paging success is claimed. All 180 fresh exact-reference geometry reads matched, explicit provider absence messages matched both the requested REFCAT and UTM zone, and footprint/source-binding checks passed. Independent GEOS audit in EPSG:25830 found no invalid geometries, duplicates, sampled overlaps above 0.01 m² or operation errors. Only three safe sample geometries are retained in the repository. Citywide completeness, legal title, survey accuracy and parcel coverage exactly at the WUP point remain unverified.",
+  "rootRuntimeDescriptorQualification": {
+    "tests": 24,
+    "requestCount": 198,
+    "uniqueParcels": 180,
+    "allTestsPassed": true,
+    "metricCrs": "EPSG:25830",
+    "noOffsetPagingClaim": true
+  },
+  "acceptanceFile": "valencia-spain-acceptance.json",
+  "rootMetricAuditFile": "valencia-spain-quality.json",
+  "rootAbsenceReview": {
+    "decision": "Explicit absent reference established by observed primary provider message; strict parser covers only GetParcel with matching key and requested zone.",
+    "focusedHeadlessTests": 24,
+    "allFocusedTestsPassed": true,
+    "adversarialCoverage": "Wrong echoed key/zone/code/namespace, duplicate exception, nested content, truncation, DTD/entity, generic unavailable text and HTML are rejected; viewport exceptions remain unavailable.",
+    "priorAbsenceResponseFiles": [
+      "valencia-spain-invalid-reference-response.xml",
+      "valencia-spain-native-shaped-absence-response.xml"
+    ]
+  },
+  "rootConcurrencyReview": {
+    "parallelProbe": {
+      "simultaneousCalls": 6,
+      "successes": 2,
+      "connectionResetErrors": 4,
+      "causeCode": "ECONNRESET"
+    },
+    "sameRequestsWithOneSlot": {
+      "simultaneousCallsSubmitted": 6,
+      "providerActiveQueries": 1,
+      "successes": 6,
+      "errors": 0,
+      "featureCounts": [
+        12,
+        19,
+        12,
+        11,
+        12,
+        5
+      ]
+    },
+    "runtimeFix": "Existing shared per-provider query limiter configured maxConcurrentQueries=1; all runtime methods share the slot. Fresh browser loaded 295 parcels without source warning."
+  }
+}

@@ -1,0 +1,92 @@
+{
+  "schemaVersion": 1,
+  "kind": "city_parcel_source_research",
+  "checkedAt": "2026-10-09",
+  "name": "Kavar",
+  "country": "Iran (Islamic Republic of)",
+  "countryCode": "IR",
+  "populationUnit": "persons",
+  "status": "complete",
+  "registryFound": null,
+  "registryBasis": "No city-specific primary registry or cadastre source could be verified. Province-level Fars registration sources and non-government office directories were excluded as insufficient to establish a registry for Kavar city. No parcel service or geometry was verified.",
+  "registryEvidenceUrls": [],
+  "verifiedSample": false,
+  "publicParcelGeometryFound": false,
+  "runtimeReadiness": "not_enabled_no_verified_public_geometry",
+  "wupCityCode": 6438,
+  "cityId": "wup2025:6438",
+  "centerLatLon": [
+    29.2041217864392,
+    52.6927237058683
+  ],
+  "rank": 610,
+  "queueRank": 610,
+  "population2025": 857280,
+  "population2025k": 857.28,
+  "pointBasis": "UN WUP 2025 population-weighted settlement centroid; this is not a municipal boundary or a parcel-coverage claim.",
+  "resultCategory": "city_registry_unconfirmed_no_public_geometry",
+  "technicalBlocker": "No city-bound primary registry or public anonymous geometry route could be confirmed from reviewed sources.",
+  "scopeLimits": "No city-specific primary registry or cadastre source could be verified. Province-level Fars registration sources and non-government office directories were excluded as insufficient to establish a registry for Kavar city. No parcel service or geometry was verified. No full public parcel polygon geometry is retained.",
+  "remainingUncertainty": "No geometry-only schema or public anonymous vector route was verified; institutional evidence does not by itself establish complete citywide polygon coverage.",
+  "research": {
+    "executedQueries": [
+      {
+        "language": "English",
+        "query": "Kavar Fars Iran official cadastral land registry parcel map municipality",
+        "scope": "Find Kavar-city primary registry evidence and safe anonymous parcel geometry.",
+        "result": "Search did not establish a city-specific official registry or public parcel map. The Fars provincial registration authority alone does not establish coverage of Kavar city; non-government directories were excluded.",
+        "actualResultUrls": [
+          "https://kavar.gov.ir/"
+        ],
+        "executionMethod": "Separate public English/local-language search and public-page review; no property or identity query."
+      },
+      {
+        "language": "Persian",
+        "query": "کوار فارس اداره ثبت اسناد و املاک کاداستر نقشه شهرداری سایت رسمی",
+        "scope": "یافتن منبع رسمی محلی برای ثبت املاک کوار و مسیر عمومی امن برای هندسه قطعات.",
+        "result": "در جست‌وجوی فارسی منبع اولیهٔ شهری یا لایهٔ عمومی قطعات تأیید نشد. وب‌سایت دولتی منتسب به شهرستان در ابزار مرور در دسترس نبود؛ شواهد استانی به شهر تعمیم داده نشد.",
+        "actualResultUrls": [
+          "https://kavar.gov.ir/"
+        ],
+        "executionMethod": "Separate public English/local-language search and public-page review; no property or identity query."
+      }
+    ],
+    "officialSources": [
+      {
+        "url": "https://kavar.gov.ir/",
+        "observation": "Candidate local-government host referenced in search, but page was inaccessible to the web inspection tool; institutional content and registry scope could not be verified. Not counted as positive registry evidence."
+      }
+    ]
+  },
+  "source": {
+    "sourceId": "ir-kavar-city-registry-review",
+    "name": "Kavar local land-registry and public-geometry review",
+    "operator": "No city-specific primary registry operator confirmed",
+    "url": null,
+    "scope": "No city-specific primary registry or cadastre source could be verified. Province-level Fars registration sources and non-government office directories were excluded as insufficient to establish a registry for Kavar city. No parcel service or geometry was verified.",
+    "nativeIdField": null,
+    "attributesRequested": [],
+    "identityBasis": "No native parcel identifier queried or retained.",
+    "geometryStatus": "no_public_geometry_verified"
+  },
+  "coverageAssessment": {
+    "verifiedOpenScope": "City-bound registry/service evidence remains unverified.",
+    "citywideVerified": false,
+    "countrywideVerified": false
+  },
+  "priorEvidenceFiles": [],
+  "populationPlausibility2025": "Moderate",
+  "sourceIds": [],
+  "point": [
+    29.2041217864392,
+    52.6927237058683
+  ],
+  "sampleFile": null,
+  "sampleFeatureCount": 0,
+  "sampleCrs": null,
+  "runtimeAssessment": {
+    "status": "no_public_geometry_verified_runtime_not_enabled",
+    "reason": "No city-bound primary registry or public anonymous geometry route could be confirmed from reviewed sources."
+  },
+  "rootReviewedAt": "2026-10-09T02:05:58.056454+00:00"
+}

@@ -1,0 +1,111 @@
+{
+  "schemaVersion": 1,
+  "checkedAt": "2026-10-09",
+  "name": "Putian",
+  "country": "China",
+  "countryCode": "CN",
+  "rank": 269,
+  "point": [
+    25.4197453615071,
+    119.048800960514
+  ],
+  "population2025k": 1871.858,
+  "queueRank": 269,
+  "population2025": 1871858,
+  "populationPlausibility2025": "High",
+  "populationUnit": "persons",
+  "pointBasis": "UN WUP 2025 population-weighted settlement centroid; this is not a municipal boundary or a parcel-coverage claim.",
+  "wupCityCode": 12046,
+  "cityId": "wup2025:12046",
+  "centerLatLon": [
+    25.4197453615071,
+    119.048800960514
+  ],
+  "freshResearch": {
+    "queries": [
+      {
+        "language": "Chinese",
+        "query": "莆田市 不动产登记 地籍图 宗地图 房屋分户图 官方",
+        "scope": "Find city-specific official property registration and cadastral map access.",
+        "result": "The official Putian Natural Resources Bureau site publishes a Putian real-property registration workflow, including first registration and transfer processes for land-use and building rights, and city registry-center notices. This establishes an active municipal registration system. No public parcel geometry route was identified in indexed results.",
+        "actualResultUrls": [
+          "https://zrzyj.putian.gov.cn/",
+          "https://zrzyj.putian.gov.cn/qlyx/bdcdjgg/201911/t20191121_1426557.htm",
+          "https://zrzyj.putian.gov.cn/xxgk/xwzx/bjdt/202412/t20241217_1961740.htm"
+        ],
+        "executionMethod": "Chinese-language web search and review of official municipal natural-resources bureau pages."
+      },
+      {
+        "language": "English",
+        "query": "Putian China official cadastral map land registry parcel public GIS",
+        "scope": "Cross-check official English-language discovery for public parcel geometry.",
+        "result": "No authoritative English-language parcel map/API was found. The official bureau domain is Chinese-language and documents registration services, but no downloadable or anonymous vector endpoint was identified. Direct page open by the web fetcher timed out before a response; this is a fetch-path limitation, not evidence of origin downtime.",
+        "actualResultUrls": [
+          "https://zrzyj.putian.gov.cn/"
+        ],
+        "executionMethod": "English web search, then direct page-open attempt to the official Putian bureau site; fetcher returned a timeout without HTTP response."
+      }
+    ],
+    "portals": [
+      {
+        "name": "Putian Natural Resources Bureau real-property registration workflow",
+        "operator": "Putian Municipal Natural Resources Bureau, China",
+        "homeUrl": "https://zrzyj.putian.gov.cn/qlyx/bdcdjgg/201911/t20191121_1426557.htm",
+        "observation": "Official city bureau publishes numerous first-registration, transfer, change, mortgage and cancellation workflows. No public full-polygon query service was established."
+      }
+    ],
+    "requests": [
+      {
+        "url": "https://zrzyj.putian.gov.cn/qlyx/bdcdjgg/201911/t20191121_1426557.htm",
+        "method": "GET",
+        "observation": "Official page content was returned in web search results with title and workflow attachments; a separate page-open fetch timed out before HTTP response. No API or parcel geometry response was observed."
+      },
+      {
+        "url": "https://zrzyj.putian.gov.cn/",
+        "method": "GET",
+        "observation": "Official bureau home appeared in search results; direct page-open fetch timed out before HTTP response. Do not interpret as an origin outage."
+      },
+      {
+        "name": "putian",
+        "url": "https://zrzyj.putian.gov.cn/",
+        "checkedAt": "2026-10-08T21:46:48.992Z",
+        "method": "GET",
+        "error": "fetch failed",
+        "cause": "UND_ERR_CONNECT_TIMEOUT",
+        "observation": "Fresh ordinary direct Node HTTPS attempt independently confirms this local access path failure; it does not establish publisher downtime. No credentials, alternate TLS settings or gated query were attempted."
+      }
+    ],
+    "historicalContext": []
+  },
+  "status": "complete",
+  "verifiedParcelResponse": null,
+  "source": {
+    "sourceId": "CN-FJ-PUTIAN-NR-REG",
+    "name": "Putian Natural Resources Bureau real-property registration workflows",
+    "url": "https://zrzyj.putian.gov.cn/qlyx/bdcdjgg/201911/t20191121_1426557.htm",
+    "operator": "Putian Municipal Natural Resources Bureau",
+    "serviceType": "Official city property-registration workflow notices; no public vector service identified.",
+    "layer": null,
+    "geometryType": "No public geometry response observed.",
+    "outputCrs": null,
+    "nativeIdField": "Property/unit/parcel identifiers are not supplied by the public workflow page.",
+    "nativeIdEvidence": "City bureau workflows confirm registry processes but do not expose a public feature query or parcel identifiers."
+  },
+  "coverageAssessment": {
+    "claimedScope": "Putian city property registration services are documented by the municipal Natural Resources Bureau.",
+    "verifiedOpenScope": "City-specific registration activity is verified; no anonymous parcel geometry service or coverage at the WUP point was verified.",
+    "countrywideVerified": false
+  },
+  "registryFound": true,
+  "registryBasis": "Putian Natural Resources Bureau publishes city-specific real-property registration procedures and registry-center notices. This supports registry activity; it does not establish open geometry.",
+  "verifiedSample": false,
+  "publicParcelGeometryFound": false,
+  "sourceIds": [],
+  "resultCategory": "official_registry_geometry_not_verified",
+  "technicalBlocker": "The inspected official source has no verified public full-polygon response; direct anonymous access from this environment failed with UND_ERR_CONNECT_TIMEOUT.",
+  "remainingUncertainty": "Whether any city platform exposes anonymous cadastral vectors; WUP point administrative parcel coverage; potential protected access or document-only outputs.",
+  "nextStep": "Ask the Putian registry/natural-resources bureau whether public vector parcel geometry is available, or inspect any official map viewer linked from the bureau portal when reachable.",
+  "runtimeReadiness": "not_enabled_no_verified_public_geometry",
+  "adapterReady": false,
+  "rootReviewedAt": "2026-10-08T21:48:56.829799+00:00"
+}

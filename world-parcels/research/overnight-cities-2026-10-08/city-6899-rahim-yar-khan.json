@@ -1,0 +1,101 @@
+{
+  "name": "Rahim Yar Khan",
+  "country": "Pakistan",
+  "countryCode": "PK",
+  "rank": 777,
+  "point": [
+    28.4203157275567,
+    70.3064340473504
+  ],
+  "population2025": 693373,
+  "population2025k": 693.373,
+  "populationUnit": "persons",
+  "populationPlausibility2025": "High",
+  "schemaVersion": 1,
+  "kind": "city_parcel_source_research",
+  "checkedAt": "2026-10-09",
+  "status": "complete",
+  "registryFound": true,
+  "registryBasis": "The Rahim Yar Khan district administration’s Revenue Department page lists one Arazi Record Center for Rahim Yar Khan tehsil and five across the district; the page also identifies revenue estates and local revenue administration. Punjab’s official land-record portal exposes a village-wise cadastral-map selector. The public selector reveals no safe feature schema and includes separate owner/record search functions; no parcel or owner lookup was submitted.",
+  "registryEvidenceUrls": [
+    "https://rykhan.punjab.gov.pk/Revenue_department",
+    "https://jamabandi.punjab.gov.pk/CadastralMap.aspx",
+    "https://www.punjab-zameen.gov.pk/"
+  ],
+  "publicParcelGeometryFound": false,
+  "verifiedSample": false,
+  "verifiedParcelResponse": null,
+  "runtimeReadiness": "not_enabled_no_verified_public_geometry",
+  "adapterReady": false,
+  "priorEvidenceFiles": [],
+  "scopeLimits": "City-specific source discovery only. No parcel geometry was retained. Citywide/countrywide completeness, title, survey accuracy, and runtime suitability are not asserted. No owner, address, account/tax identifier, credentials, or token values were requested or retained.",
+  "pointBasis": "UN WUP 2025 population-weighted settlement centroid; this is not a municipal boundary or a parcel-coverage claim.",
+  "resultCategory": "official_local_registry_confirmed_geometry_unverified",
+  "technicalBlocker": "The public cadastral map is village-selected and its anonymous geometry/schema contract is unknown. No personal or parcel-specific lookup was performed.",
+  "remainingUncertainty": "Whether a safe geometry-only layer covers the urban WUP point, which map unit applies there, and whether returned features support a safe native key remain unresolved.",
+  "nextStep": "If a primary official map service can be identified later, inspect its metadata and safe key fields before any bounded geometry-only request.",
+  "freshResearch": {
+    "queries": [
+      {
+        "language": "English",
+        "query": "Rahim Yar Khan official Arazi Record Center land registry cadastral map Punjab parcel GIS",
+        "scope": "Find first-party local registry evidence and a public parcel geometry schema; do not submit a parcel lookup.",
+        "result": "Official district administration identifies an Arazi Record Center in Rahim Yar Khan tehsil. Punjab’s public map is village-wise and presents district/tehsil/village selectors, but no feature schema or safe query fields were verified. The city point was not resolved to a map extent; no lookup was made.",
+        "actualResultUrls": [
+          "https://rykhan.punjab.gov.pk/Revenue_department",
+          "https://jamabandi.punjab.gov.pk/CadastralMap.aspx",
+          "https://www.punjab-zameen.gov.pk/"
+        ],
+        "executionMethod": "Separate English-language search; official primary-source and public-service review only."
+      },
+      {
+        "language": "Urdu",
+        "query": "رحیم یار خان اراضی ریکارڈ سنٹر کادستر نقشہ پنجاب لینڈ ریکارڈ سرکاری",
+        "scope": "Find first-party local-language registry/cadastre sources and public geometry schema; no individual property lookup.",
+        "result": "Official district administration identifies an Arazi Record Center in Rahim Yar Khan tehsil. Punjab’s public map is village-wise and presents district/tehsil/village selectors, but no feature schema or safe query fields were verified. The city point was not resolved to a map extent; no lookup was made.",
+        "actualResultUrls": [
+          "https://rykhan.punjab.gov.pk/Revenue_department",
+          "https://jamabandi.punjab.gov.pk/CadastralMap.aspx",
+          "https://www.punjab-zameen.gov.pk/"
+        ],
+        "executionMethod": "Separate local-language search; official primary-source and public-service review only."
+      }
+    ]
+  },
+  "source": {
+    "sourceId": "PK-RAHIM-YAR-KHAN-ARAZI-RECORDS",
+    "name": "Rahim Yar Khan Revenue Department / Punjab Land Records",
+    "url": "https://rykhan.punjab.gov.pk/Revenue_department",
+    "operator": "District Administration Rahim Yar Khan; Punjab Department of Revenue and PLRA",
+    "serviceType": "Local Arazi Record Center and public village-wise cadastral-map selector; feature schema not verified.",
+    "layer": null,
+    "geometryType": null,
+    "outputCrs": null,
+    "nativeIdField": null
+  },
+  "wupCityCode": 6899,
+  "cityId": "wup2025:6899",
+  "queueRank": 777,
+  "sourceIds": [],
+  "centerLatLon": [
+    28.4203157275567,
+    70.3064340473504
+  ],
+  "coverageAssessment": {
+    "verifiedOpenScope": "Official district administration identifies an Arazi Record Center in Rahim Yar Khan tehsil. Punjab’s public map is village-wise and presents district/tehsil/village selectors, but no feature schema or safe query fields were verified. The city point was not resolved to a map extent; no lookup was made.",
+    "citywideVerified": false,
+    "countrywideVerified": false
+  },
+  "runtimeAssessment": {
+    "status": "not_assessed",
+    "reason": "No adapter or runtime contract was tested."
+  },
+  "rootPrimaryReadback": {
+    "url": "https://rykhan.punjab.gov.pk/Revenue_department",
+    "fetch": 200,
+    "contentType": "text/html; charset=UTF-8",
+    "title": "Revenue department | Rahim Yar Khan"
+  },
+  "rootReviewNote": "Root reviewed primary local institutional/service evidence and retained the actual access, coverage and identity limits. Direct readback errors are distinct from indexed primary evidence and do not prove absent data. No public full geometry was verified for this city.",
+  "rootReviewedAt": "2026-10-09T03:28:12.559388+00:00"
+}

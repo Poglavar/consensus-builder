@@ -1,0 +1,120 @@
+{
+  "schemaVersion": 1,
+  "kind": "city_parcel_source_research",
+  "checkedAt": "2026-10-09",
+  "name": "Al Mushahidah",
+  "country": "Iraq",
+  "countryCode": "IQ",
+  "populationUnit": "persons",
+  "status": "complete",
+  "registryFound": null,
+  "registryBasis": "Identity review only. An official Iraqi investment-map document places Al-Mushahidah among the nahiyas (subdistricts) of Tarmiyah District in Baghdad Governorate. The WUP entry labels “Al Mushahidah” as a settlement with an 813,506-person 2025 population, but neither the supplied point nor population has been matched to an official locality boundary or to Tarmiyah’s subdistrict. Baghdad’s property سند-and-map services are owner-specific and list selected land-registration directorates; they do not resolve whether this WUP entry is the subdistrict, its center, or another same-name place. No local registry or geometry is attributed pending identity resolution.",
+  "registryEvidenceUrls": [],
+  "verifiedSample": false,
+  "publicParcelGeometryFound": false,
+  "runtimeReadiness": "not_enabled_wup_identity_unresolved",
+  "wupCityCode": 3076,
+  "cityId": "wup2025:3076",
+  "centerLatLon": [
+    33.6404679370979,
+    44.2293806024755
+  ],
+  "rank": 648,
+  "queueRank": 648,
+  "population2025": 813506,
+  "population2025k": 813.506,
+  "populationPlausibility2025": "Moderate",
+  "pointBasis": "UN WUP 2025 population-weighted settlement centroid; this is not a municipal boundary or a parcel-coverage claim.",
+  "technicalBlocker": "The WUP locality identity is unresolved against the administrative subdistrict Al-Mushahidah. No local registry or parcel source is attributed, and no geometry or property data was requested.",
+  "scopeLimits": "Bounded source discovery only. Official evidence confirms local registry/land-record services only where stated in registryBasis; it does not establish complete citywide cadastral coverage or parcel geometry at the WUP point. No owner, address, tax, personal-identity, credential, account, or property-identifier lookup was submitted or retained. No parcel geometry or feature attributes were retained.",
+  "remainingUncertainty": "The WUP locality identity is unresolved against the administrative subdistrict Al-Mushahidah. No local registry or parcel source is attributed, and no geometry or property data was requested.",
+  "research": {
+    "executedQueries": [
+      {
+        "language": "English",
+        "query": "Al Mushahidah Iraq Tarmiyah subdistrict Baghdad settlement land registry cadastral map official",
+        "scope": "Find first-party local registry/cadastre evidence and safe anonymous geometry-only routes; do not submit identity or property identifiers.",
+        "result": "Official Iraqi material lists Al-Mushahidah as a nahiyah within Tarmiyah District, Baghdad Governorate. The supplied WUP point/population were not reconciled to a settlement boundary. Baghdad property deed/map requests are owner-specific and do not establish an anonymous local parcel service.",
+        "actualResultUrls": [
+          "https://investpromo.gov.iq/wp-content/uploads/2024/11/%D8%A7%D9%84%D8%AE%D8%A7%D8%B1%D8%B7%D8%A9-%D8%A7%D9%84%D8%A7%D8%B3%D8%AA%D8%AB%D9%85%D8%A7%D8%B1%D9%8A%D8%A9-2024.pdf",
+          "https://moj.gov.iq/view.9289/",
+          "https://eservice.ur.gov.iq/index/new-service/10360",
+          "https://baghdad.gov.iq/map.html"
+        ]
+      },
+      {
+        "language": "Arabic",
+        "query": "ناحية المشاهدة قضاء الطارمية بغداد ناحية ام مركز سكاني سجل عقاري خارطة عقار رسمي",
+        "scope": "Find first-party local registry/cadastre evidence and safe anonymous geometry-only routes; do not submit identity or property identifiers.",
+        "result": "مصدر حكومي عراقي يدرج ناحية المشاهدة ضمن قضاء الطارمية في محافظة بغداد. لم يتم التحقق من تطابق نقطة أو تقدير سكان WUP مع حدود الناحية أو مركزها أو مستوطنة محددة. خدمات السند وخارطة العقار تتطلب طلب المالك وهوية، ولا تثبت واجهة هندسية عامة.",
+        "actualResultUrls": [
+          "https://investpromo.gov.iq/wp-content/uploads/2024/11/%D8%A7%D9%84%D8%AE%D8%A7%D8%B1%D8%B7%D8%A9-%D8%A7%D9%84%D8%A7%D8%B3%D8%AA%D8%AB%D9%85%D8%A7%D8%B1%D9%8A%D8%A9-2024.pdf",
+          "https://moj.gov.iq/view.9289/",
+          "https://eservice.ur.gov.iq/index/new-service/10360",
+          "https://baghdad.gov.iq/map.html"
+        ]
+      }
+    ],
+    "officialSources": [
+      {
+        "url": "https://investpromo.gov.iq/wp-content/uploads/2024/11/%D8%A7%D9%84%D8%AE%D8%A7%D8%B1%D8%B7%D8%A9-%D8%A7%D9%84%D8%A7%D8%B3%D8%AA%D8%AB%D9%85%D8%A7%D8%B1%D9%8A%D8%A9-2024.pdf",
+        "observation": "The official Iraqi investment map lists Tarmiyah District (قضاء الطارمية) and its subdistricts, including Al-Mushahidah (ناحية المشاهدة). This distinguishes the administrative subdistrict from a city/settlement but does not match the WUP point or population to it."
+      },
+      {
+        "url": "https://moj.gov.iq/view.9289/",
+        "observation": "Iraqi Ministry of Justice reports online property deed and property-map services for selected Baghdad real-estate registration directorates; the service does not name Al-Mushahidah/Tarmiyah as the WUP settlement and requires a property owner request."
+      },
+      {
+        "url": "https://eservice.ur.gov.iq/index/new-service/10360",
+        "observation": "The official Ur government e-service application is for a property owner to request their deed and property map; instructions require national identity documents and say availability is currently limited to Baghdad Governorate. No application was submitted."
+      },
+      {
+        "url": "https://baghdad.gov.iq/map.html",
+        "observation": "Baghdad Governorate map page is a general governorate map, not a parcel service or official point-to-boundary match."
+      }
+    ],
+    "metadataReviewFile": "al-mushahidah-service-review.json"
+  },
+  "source": {
+    "sourceId": "iq-al-mushahidah-registry-review",
+    "name": "Al Mushahidah local registry/cadastre route review",
+    "operator": "Unresolved WUP identity — no local registry/cadastre attributed",
+    "url": "https://investpromo.gov.iq/wp-content/uploads/2024/11/%D8%A7%D9%84%D8%AE%D8%A7%D8%B1%D8%B7%D8%A9-%D8%A7%D9%84%D8%A7%D8%B3%D8%AA%D8%AB%D9%85%D8%A7%D8%B1%D9%8A%D8%A9-2024.pdf",
+    "scope": "The WUP locality identity is unresolved against the administrative subdistrict Al-Mushahidah. No local registry or parcel source is attributed, and no geometry or property data was requested.",
+    "nativeIdField": null,
+    "attributesRequested": [],
+    "identityBasis": "WUP locality could not be resolved to a unique official local settlement identity.",
+    "geometryStatus": "not_assessed_identity_unresolved"
+  },
+  "coverageAssessment": {
+    "verifiedOpenScope": "The WUP locality identity is unresolved against the administrative subdistrict Al-Mushahidah. No local registry or parcel source is attributed, and no geometry or property data was requested.",
+    "notEstablished": [
+      "unique WUP-to-locality identity",
+      "anonymous full-polygon access",
+      "complete citywide cadastral coverage",
+      "runtime source binding"
+    ],
+    "wupPointRelation": "No parcel geometry was returned or asserted."
+  },
+  "priorEvidenceFiles": [],
+  "sourceIds": [],
+  "point": [
+    33.6404679370979,
+    44.2293806024755
+  ],
+  "resultCategory": "wup_identity_ambiguous_no_registry_attribution",
+  "identityReview": {
+    "status": "unresolved",
+    "decision": "No local registry or parcel source is attributed until an official boundary or source dataset ties the supplied point and population to a unique settlement.",
+    "confusableNamesakes": [
+      {
+        "feature": "Al-Mushahidah listed as a nahiyah (subdistrict) of Tarmiyah District, Baghdad Governorate",
+        "officialSource": "https://investpromo.gov.iq/wp-content/uploads/2024/11/%D8%A7%D9%84%D8%AE%D8%A7%D8%B1%D8%B7%D8%A9-%D8%A7%D9%84%D8%A7%D8%B3%D8%AA%D8%AB%D9%85%D8%A7%D8%B1%D9%8A%D8%A9-2024.pdf",
+        "registryOrCadastreEvidence": false
+      }
+    ],
+    "wupPointMatchedToNamesake": false,
+    "wupPopulationMatchesAdministrativeUnitEvidence": false
+  },
+  "rootReviewedAt": "2026-10-09T02:15:55.042537+00:00"
+}

@@ -1,0 +1,58 @@
+{
+  "schemaVersion": "1.0",
+  "checkedAt": "2026-10-09",
+  "purpose": "Read-only city source research and bounded public-service validation; no global/runtime/catalog integration.",
+  "scopeLimits": {
+    "maxFullPolygonsRetainedInThisCityReport": 0,
+    "ownerOrAddressDataRetained": false,
+    "accountCredentialsOrPublicTokenValuesRetained": false
+  },
+  "cityRecord": "city-3043-valencia.json",
+  "assessment": "SIGAT and the municipal urban-property ordinance document Valencia, Carabobo’s local cadastre and tax registry. No anonymous parcel geometry endpoint was found in those sources; no geometry query was made.",
+  "registryAssessment": "The Municipio Valencia SIGAT tax-administration portal identifies Valencia in Carabobo. The municipal urban-property ordinance assigns upkeep of the fiscal urban cadastre to the Alcaldía through its Dirección de Catastro. No public anonymous parcel-map feature service was identified.",
+  "searchQueries": [
+    {
+      "language": "English",
+      "query": "Valencia Carabobo Venezuela official municipal cadastral parcel map GIS land registry city",
+      "scope": "Locate official Valencia, Carabobo municipal cadastre and any public parcel map.",
+      "result": "Results identify the Municipio Valencia tax administration SIGAT and the municipal urban-property ordinance. Search results for Valencia, Spain were a different city and excluded. No anonymous cadastral layer or vector endpoint was found.",
+      "actualResultUrls": [
+        "https://valencia.sigat.net/",
+        "https://valencia.sigat.net/documentos/ordenanzas/ordenanza_inmuebles_urbanos_del_municipio_valencia.pdf"
+      ],
+      "executionMethod": "Separate English-language query and local SIGAT / ordinance review."
+    },
+    {
+      "language": "Spanish",
+      "query": "Valencia Carabobo catastro municipal mapa parcelas GIS alcaldía oficial",
+      "scope": "Buscar fuentes municipales oficiales sobre catastro y polígonos parcelarios públicos.",
+      "result": "El portal tributario SIGAT identifica al Municipio Valencia, estado Carabobo. La ordenanza municipal asigna el catastro urbano fiscal a la Dirección de Catastro de la Alcaldía; no se identificó un visor catastral público ni un servicio anónimo de polígonos completos.",
+      "actualResultUrls": [
+        "https://valencia.sigat.net/",
+        "https://valencia.sigat.net/documentos/ordenanzas/ordenanza_inmuebles_urbanos_del_municipio_valencia.pdf"
+      ],
+      "executionMethod": "Búsqueda separada en español y revisión de fuentes municipales."
+    }
+  ],
+  "officialSources": [
+    {
+      "url": "https://valencia.sigat.net/",
+      "operator": "SIGAT municipal tax administration, Municipio Valencia, Carabobo",
+      "observation": "Municipal contributor/tax administration portal; presents municipal procedures and urban-property tax, not an anonymous parcel GIS."
+    },
+    {
+      "url": "https://valencia.sigat.net/documentos/ordenanzas/ordenanza_inmuebles_urbanos_del_municipio_valencia.pdf",
+      "operator": "Concejo Municipal Bolivariano de Valencia / municipal publication on SIGAT",
+      "observation": "The ordinance identifies Municipio Valencia, Estado Carabobo, and assigns formation, maintenance and updating of fiscal urban cadastral information to the municipal Dirección de Catastro. No public vector service is specified."
+    }
+  ],
+  "geometryDecision": "No parcel feature service or public GIS layer was advertised by the official local tax portal or ordinance, so no geometry request was made. Valencia, Spain search results were excluded.",
+  "coverageAssessment": {
+    "claimedScope": "No parcel-polygon scope is claimed.",
+    "verifiedOpenScope": "Municipal urban cadastre/tax registry functions only; no vector query was made because no public parcel endpoint was advertised.",
+    "citywideVerified": false,
+    "countrywideVerified": false,
+    "geometryVerified": false
+  },
+  "remainingUncertainty": "A separate municipal GIS may exist outside the inspected pages."
+}

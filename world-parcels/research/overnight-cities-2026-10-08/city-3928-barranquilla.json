@@ -1,0 +1,147 @@
+{
+  "name": "Barranquilla",
+  "country": "Colombia",
+  "countryCode": "CO",
+  "rank": 228,
+  "point": [
+    10.9437023278669,
+    -74.7962611088146
+  ],
+  "population2025": 2208021,
+  "schemaVersion": 1,
+  "kind": "city_parcel_source_research",
+  "checkedAt": "2026-10-09",
+  "populationUnit": "persons",
+  "status": "complete",
+  "verifiedSample": false,
+  "publicParcelGeometryFound": false,
+  "runtimeReadiness": "not_enabled_no_verified_public_geometry",
+  "priorEvidenceFiles": [],
+  "scopeLimits": "Exact ranked-top1000 locator is [10.9437023278669, -74.7962611088146], converted to an approximately 20 m WGS84 envelope for the bounded query capped at three results. The WUP point is not a parcel identity or official city boundary. Mi Ciudad’s active bundle identifies the Predios_2026 parcel service. A normal public retry with Mi Ciudad Origin and Referer headers reached Cloudflare and returned HTTP 403; no verification challenge, login or CAPTCHA was completed. No owner/address fields or data were saved.",
+  "pointBasis": "UN WUP 2025 population-weighted settlement centroid; this is not a municipal boundary or a parcel-coverage claim.",
+  "registryFound": true,
+  "registryBasis": "Barranquilla’s official Gerencia de Gestión Catastral operates Mi Ciudad; its active app bundle identifies the Predios_2026 parcel MapServer and FeatureServer. Direct public REST reads, including a bounded three-result retry with normal Mi Ciudad Origin/Referer headers, received Cloudflare HTTP 403. Service presence is confirmed, but geometry remains unreadable here.",
+  "resultCategory": "official_city_parcel_service_bounded_geometry_query_blocked",
+  "research": {
+    "executedQueries": [
+      {
+        "language": "Spanish",
+        "query": "Barranquilla catastro mapa de predios servicio oficial geoportal Alcaldía",
+        "scope": "Find a municipal cadastral viewer and public parcel geometry endpoint.",
+        "result": "The Alcaldía’s Gerencia de Gestión Catastral publishes Mi Ciudad and an official cadastral services page. The viewer bundle names a Predios_2026 ArcGIS layer and parcel query route. A bounded three-result geometry-only identify at the WUP locator returned Cloudflare HTTP 403; no parcel geometry was retained.",
+        "actualResultUrls": [
+          "https://catastro.barranquilla.gov.co/",
+          "https://miciudad.barranquilla.gov.co/",
+          "https://catastro.barranquilla.gov.co/servicios/"
+        ],
+        "executionMethod": "Separate Spanish web search; municipal viewer inspection; app bundle trace; single small ArcGIS query with OBJECTID-only fields and a 3-feature cap."
+      },
+      {
+        "language": "English",
+        "query": "Barranquilla Colombia official cadastral parcel map public GIS service Catastro",
+        "scope": "Cross-check municipal service ownership and public map access.",
+        "result": "Official city Catastro directs users to Mi Ciudad and documents OGC web services. The active viewer bundle exposes the Predios_2026 parcel layer; direct REST metadata and a tightly bounded WUP-point query were blocked by Cloudflare in this environment.",
+        "actualResultUrls": [
+          "https://catastro.barranquilla.gov.co/",
+          "https://miciudad.barranquilla.gov.co/"
+        ],
+        "executionMethod": "Separate English web search and official page/bundle review; REST request attempted without credentials."
+      }
+    ],
+    "officialSources": [
+      {
+        "url": "https://catastro.barranquilla.gov.co/",
+        "httpStatus": 200,
+        "observation": "Official Barranquilla Catastro portal; municipal cadastral management entry point."
+      },
+      {
+        "url": "https://catastro.barranquilla.gov.co/servicios/",
+        "observation": "Official Catastro services page describes interoperability and public OGC web services."
+      },
+      {
+        "url": "https://miciudad.barranquilla.gov.co/?funcionalidad=consulta-predial&showSplash=false&showTutorial=false",
+        "method": "GET",
+        "httpStatus": 200,
+        "contentType": "text/html",
+        "observation": "Official Mi Ciudad parcel-query app shell retrieved with official Catastro Referer."
+      },
+      {
+        "url": "https://miciudad.barranquilla.gov.co/js/bundle.min.js?v=2.7.1",
+        "method": "GET",
+        "httpStatus": 200,
+        "contentType": "application/javascript",
+        "observation": "Viewer bundle defines ArcGIS Predios_2026 MapServer/0 query and Predios_2026 FeatureServer; layer metadata marks the parcel service with role Seguridad_Catastro."
+      },
+      {
+        "url": "https://miciudad.barranquilla.gov.co/server/rest/services/catastro/Predios_2026/MapServer/0?f=pjson",
+        "method": "GET",
+        "httpStatus": 403,
+        "contentType": "text/html",
+        "observation": "Cloudflare challenge page; layer schema could not be retrieved."
+      },
+      {
+        "url": "https://miciudad.barranquilla.gov.co/server/rest/services/catastro/Predios_2026/MapServer/0/query?f=json&where=1%3D1&geometry=-74.79636%2C10.94360%2C-74.79616%2C10.94380&geometryType=esriGeometryEnvelope&inSR=4326&spatialRel=esriSpatialRelIntersects&outFields=OBJECTID&returnGeometry=true&outSR=4326&resultRecordCount=3",
+        "method": "GET",
+        "httpStatus": 403,
+        "contentType": "text/html",
+        "observation": "Bounded WUP-point query used an approximately 20 m envelope, OBJECTID only, returnGeometry=true and resultRecordCount=3; Cloudflare blocked the request, so no features returned."
+      }
+    ],
+    "viewerAndServiceTrace": {
+      "viewer": "https://miciudad.barranquilla.gov.co/",
+      "bundleUrl": "https://miciudad.barranquilla.gov.co/js/bundle.min.js?v=2.7.1",
+      "bundleBytes": 703265,
+      "bundleSha256": "c7b100625ad095621db43371e6a2036c6b9f19ae2ff70fb963b7876498472309",
+      "service": "https://miciudad.barranquilla.gov.co/server/rest/services/catastro/Predios_2026/MapServer",
+      "layer": "0",
+      "queryRoute": "/server/rest/services/catastro/Predios_2026/MapServer/0/query",
+      "accessObservation": "Bundle associates Predios_2026 with role Seguridad_Catastro. Previous metadata and bounded point query returned 403. Follow-up browser route navigation displayed Cloudflare “Performing security verification”; no challenge was completed. The local requests retry with Origin https://miciudad.barranquilla.gov.co and its public Mi Ciudad Referer failed at DNS resolution before transmission. No authentication, CAPTCHA solving or private endpoints attempted.",
+      "boundedRetry": {
+        "url": "https://miciudad.barranquilla.gov.co/server/rest/services/catastro/Predios_2026/MapServer/0/query",
+        "request": "20 m WGS84 envelope around ranked locator; OBJECTID and geometry only; resultRecordCount=3",
+        "headers": "Origin and Referer set to the official Mi Ciudad origin/page",
+        "httpStatus": 403,
+        "response": "Cloudflare block page; no challenge or CAPTCHA completed."
+      }
+    },
+    "followUpAttempts": [
+      {
+        "attempt": "Direct local HTTP retry with ordinary Mi Ciudad Origin and Referer headers",
+        "url": "https://miciudad.barranquilla.gov.co/server/rest/services/catastro/Predios_2026/MapServer/0/query",
+        "parameters": "bounded WUP locator envelope; OBJECTID-only; returnGeometry=true; resultRecordCount=3",
+        "requestHeadersIntended": {
+          "Origin": "https://miciudad.barranquilla.gov.co",
+          "Referer": "https://miciudad.barranquilla.gov.co/?funcionalidad=consulta-predial&showSplash=false&showTutorial=false"
+        },
+        "result": "The local requests client could not resolve upbhunaksha.gov.in on the first request in the same run, so execution stopped before sending this Barranquilla request. No response from the Barranquilla endpoint was received."
+      },
+      {
+        "attempt": "Browser navigation to the Predios_2026/MapServer/0/query route from the Mi Ciudad app page",
+        "result": "The public browser displayed a Cloudflare security-verification page. No challenge, login, or CAPTCHA was completed; no feature response or status code was obtained. This is a route-access observation, not a successful correctly parameterized point query."
+      }
+    ]
+  },
+  "verifiedParcelResponse": null,
+  "source": {
+    "sourceId": "CO-ATL-BARRANQUILLA-MICIUDAD-PREDIOS-2026",
+    "name": "Mi Ciudad / Catastro Barranquilla Predios_2026",
+    "url": "https://miciudad.barranquilla.gov.co/",
+    "operator": "Gerencia de Gestión Catastral, Alcaldía de Barranquilla",
+    "serviceType": "Municipal ArcGIS parcel MapServer/FeatureServer identified in active viewer bundle; direct REST reads were blocked by HTTP 403.",
+    "layer": "catastro/Predios_2026/MapServer/0",
+    "geometryType": "Polygon (service layer geometry not returned; parcel layer designation only)",
+    "outputCrs": "EPSG:4326 requested, response not returned",
+    "nativeIdField": "OBJECTID (requested only; service metadata blocked)",
+    "nativeIdEvidence": "Bundle exposes this service as parcel-query layer. No feature response returned."
+  },
+  "wupCityCode": 3928,
+  "cityId": "wup2025:3928",
+  "queueRank": 228,
+  "populationPlausibility2025": "Moderate",
+  "centerLatLon": [
+    10.9437023278669,
+    -74.7962611088146
+  ],
+  "rootReviewedAt": "2026-10-08T21:44:23.947164+00:00",
+  "sourceIds": []
+}

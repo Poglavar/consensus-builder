@@ -1,0 +1,58 @@
+{
+  "schemaVersion": 1,
+  "checkedAt": "2026-10-09",
+  "sourceId": "tr-kayseri-registry-map-review",
+  "purpose": "City-specific registry/map source review and bounded safe route inspection for the WUP ranked settlement point (Kayseri).",
+  "primaryPublisher": "Kayseri Metropolitan Municipality; General Directorate of Land Registry and Cadastre (TKGM)",
+  "sourceUrl": "https://csb.kayseri.bel.tr/CbsFaaliyetleri",
+  "registryFound": true,
+  "registryBasis": "Kayseri Metropolitan Municipality publishes its city guide and cadastral GIS activity page, while TKGM provides the national parcel-query service. The municipal cadastral app is described as login-accessible; an anonymous one-point request through the reviewed TKGM adapter was blocked upstream (HTTP 403). These sources establish registry/map infrastructure, not usable Kayseri vector coverage.",
+  "officialSources": [
+    {
+      "url": "https://csb.kayseri.bel.tr/CbsFaaliyetleri",
+      "observation": "Kayseri Metropolitan Municipality’s CBS activities page identifies municipal cadastral map activity and links its city-guide map; the cadastral application is described as requiring user login."
+    },
+    {
+      "url": "https://cbs.kayseri.bel.tr/Kayseri-Kent-Rehberi",
+      "observation": "Official municipal city-guide map landing page; no anonymous parcel vector schema verified."
+    },
+    {
+      "url": "https://www.tkgm.gov.tr/e-hizmetler/sik-kullanilanlar/parsel-sorgulama",
+      "observation": "TKGM public parcel-search page documents coordinate-based parcel display and states owner/name or Turkish identity-number queries are not available."
+    },
+    {
+      "url": "https://parselsorguv2.tkgm.gov.tr/",
+      "observation": "Official public parcel viewer identified; one safe point request to its service through the reviewed adapter was blocked upstream with HTTP 403."
+    }
+  ],
+  "searchQueries": [
+    {
+      "language": "English",
+      "query": "Kayseri Turkey official cadastral map GIS land registry parcel public map",
+      "scope": "Find city-specific primary registry evidence and a safe anonymous geometry-only route.",
+      "result": "Kayseri Metropolitan Municipality publishes its city guide and cadastral GIS activity page, while TKGM provides the national parcel-query service. The municipal cadastral app is described as login-accessible; an anonymous one-point request through the reviewed TKGM adapter was blocked upstream (HTTP 403). These sources establish registry/map infrastructure, not usable Kayseri vector coverage. The official city page describes a cadastral map app accessed through user login, which was not opened. The national TKGM public page documents coordinate/parcel display and excludes owner/name or Turkish-ID lookup. One anonymous point request via the repository safe-ID/geometry adapter received HTTP 403; no retry or bypass was attempted."
+    },
+    {
+      "language": "Turkish",
+      "query": "Kayseri resmi kadastro haritası parsel sorgulama belediye kent rehberi",
+      "scope": "Find city-specific primary registry evidence and a safe anonymous geometry-only route.",
+      "result": "Kayseri Metropolitan Municipality publishes its city guide and cadastral GIS activity page, while TKGM provides the national parcel-query service. The municipal cadastral app is described as login-accessible; an anonymous one-point request through the reviewed TKGM adapter was blocked upstream (HTTP 403). These sources establish registry/map infrastructure, not usable Kayseri vector coverage. The official city page describes a cadastral map app accessed through user login, which was not opened. The national TKGM public page documents coordinate/parcel display and excludes owner/name or Turkish-ID lookup. One anonymous point request via the repository safe-ID/geometry adapter received HTTP 403; no retry or bypass was attempted."
+    }
+  ],
+  "requestEvidence": [
+    {
+      "url": "https://cbsapi.tkgm.gov.tr/megsiswebapi.v3.1/api/parsel/38.7434355668725/35.523695545876",
+      "method": "GET",
+      "status": 403,
+      "contentType": null,
+      "bytes": null,
+      "observation": "One anonymous point-identification request at the exact WUP [longitude,latitude] through the existing adapter; response was blocked. Adapter exposed no geometry or native parcel ID; no retry."
+    }
+  ],
+  "routeInspectionSummary": "The official city page describes a cadastral map app accessed through user login, which was not opened. The national TKGM public page documents coordinate/parcel display and excludes owner/name or Turkish-ID lookup. One anonymous point request via the repository safe-ID/geometry adapter received HTTP 403; no retry or bypass was attempted.",
+  "geometrySampleCount": 0,
+  "geometryRetained": false,
+  "nativeIdField": null,
+  "attributesRequested": [],
+  "runtimeEnabled": false
+}

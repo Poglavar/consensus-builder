@@ -1,0 +1,86 @@
+{
+  "name": "Homs",
+  "country": "Syrian Arab Republic",
+  "countryCode": "SY",
+  "rank": 554,
+  "point": [
+    34.7259405141759,
+    36.7176353911524
+  ],
+  "population2025": 940460,
+  "populationUnit": "persons",
+  "population2025k": 940.46,
+  "populationPlausibility2025": "High",
+  "schemaVersion": 1,
+  "checkedAt": "2026-10-09",
+  "status": "complete",
+  "registryFound": true,
+  "registryBasis": "SANA reporting specifically names the Homs Real Estate Affairs Directorate and its property register, survey statements, and cadastral records. This establishes the local registry office, not a public parcel geometry service.",
+  "registryEvidenceUrls": [
+    "https://sana.sy/governorates/homs/2587275/",
+    "https://sana.sy/governorates/homs/2190983/"
+  ],
+  "publicParcelGeometryFound": false,
+  "verifiedSample": false,
+  "verifiedParcelResponse": null,
+  "freshResearch": {
+    "queries": [
+      {
+        "language": "English",
+        "query": "Homs Syria official cadastral parcel map property registry land registry Directorate of Cadastral Affairs Homs",
+        "scope": "Find Homs-specific land registry office and anonymous public parcel maps or geometry services.",
+        "result": "SANA reports the Homs Real Estate Affairs Directorate maintains property-register and survey records and is digitizing its archive. No anonymous city parcel map or vector service was found.",
+        "actualResultUrls": [
+          "https://sana.sy/governorates/homs/2587275/",
+          "https://sana.sy/governorates/homs/2190983/"
+        ],
+        "executionMethod": "Separate English web search followed by official state-news source and public-service route inspection."
+      },
+      {
+        "language": "Arabic",
+        "query": "حمص سوريا خريطة عقارية السجل العقاري مديرية المصالح العقارية حمص رسمي",
+        "scope": "تحديد مديرية السجل العقاري في حمص والبحث عن خريطة عقارية عامة أو خدمة هندسية.",
+        "result": "تؤكد تقارير سانا وجود مديرية المصالح العقارية بحمص وسجل عقاري وبيانات مساحية؛ لم يظهر عارض عام لقطع الأراضي أو خدمة هندسية مجهولة الوصول.",
+        "actualResultUrls": [
+          "https://sana.sy/governorates/homs/2587275/",
+          "https://sana.sy/governorates/homs/2190983/"
+        ],
+        "executionMethod": "بحث عربي مستقل ومراجعة تقارير سانا الرسمية وفحص مسارات الخدمة العامة."
+      }
+    ]
+  },
+  "source": {
+    "sourceId": "SY-2106-HOMS-REGISTRY",
+    "name": "Homs Real Estate Affairs Directorate",
+    "url": "https://sana.sy/governorates/homs/2587275/",
+    "operator": "Homs Real Estate Affairs Directorate (reported by Syrian Arab News Agency)",
+    "serviceType": "Property-register, survey-record and digital-archiving services; no anonymous public vector viewer verified",
+    "layer": null,
+    "geometryType": null,
+    "outputCrs": null,
+    "nativeIdField": null,
+    "nativeIdEvidence": "Official local reporting describes property-register records, survey records and local directorate work. No public parcel ID or geometry response was found."
+  },
+  "coverageAssessment": {
+    "claimedScope": "SANA reporting specifically names the Homs Real Estate Affairs Directorate and its property register, survey statements, and cadastral records. This establishes the local registry office, not a public parcel geometry service.",
+    "verifiedOpenScope": "Local registry office evidence exists, but public parcel geometry and exact WUP point coverage remain unverified.",
+    "countrywideVerified": false
+  },
+  "resultCategory": "official_local_registry_geometry_not_verified",
+  "technicalBlocker": "No anonymous city parcel map or vector feature service was found; exact WUP-point coverage is unverified.",
+  "remainingUncertainty": "No anonymous city parcel map or vector feature service was found; exact WUP-point coverage is unverified.",
+  "pointBasis": "UN WUP 2025 population-weighted settlement centroid; this is not a municipal boundary or a parcel-coverage claim.",
+  "wupCityCode": 2106,
+  "cityId": "wup2025:2106",
+  "centerLatLon": [
+    34.7259405141759,
+    36.7176353911524
+  ],
+  "queueRank": 554,
+  "sourceIds": [],
+  "runtimeReadiness": "not_enabled_no_verified_public_geometry",
+  "adapterReady": false,
+  "sampleGeometryFile": null,
+  "sampleGeometrySha256": null,
+  "rootReviewedAt": "2026-10-09T01:31:18.479128+00:00"
+}

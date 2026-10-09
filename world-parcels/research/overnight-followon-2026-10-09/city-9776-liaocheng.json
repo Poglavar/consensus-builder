@@ -1,0 +1,107 @@
+{
+  "schemaVersion": "1.0",
+  "cityId": "wup2025:9776",
+  "wupCityCode": 9776,
+  "name": "Liaocheng",
+  "country": "China",
+  "countryCode": "CN",
+  "rank": 1065,
+  "queueRank": 1065,
+  "point": [
+    36.4671087493182,
+    115.968870425799
+  ],
+  "centerLatLon": [
+    36.4671087493182,
+    115.968870425799
+  ],
+  "pointBasis": "UN WUP2025 population-weighted settlement locator; not a municipal boundary or parcel-coverage claim.",
+  "population2025": 519411,
+  "population2025k": 519.411,
+  "populationUnit": "persons",
+  "populationPlausibility2025": "Moderate",
+  "cohort": "overnight-followon-1001-1100",
+  "checkedAt": "2026-10-09",
+  "status": "complete",
+  "registryFound": null,
+  "registryBasis": "Official city notice confirms a municipal digital-service work item for real-estate-registration tax/fee integration, but does not name the local registration center or identify the responsible agency. The article naming the center is carried by 10jqka and is not first-party. Strict local custodian status remains unresolved.",
+  "registryEvidenceUrls": [
+    "https://www.liaocheng.gov.cn/resources/public/20240930/66fa25f4fb5e24614e190cbc.pdf"
+  ],
+  "verifiedSample": false,
+  "publicParcelGeometryFound": false,
+  "sourceIds": [],
+  "adapterReady": false,
+  "runtimeReadiness": "not_enabled_no_verified_public_geometry",
+  "technicalBlocker": "City-local custody remains unresolved after the documented followthrough; no anonymous full parcel polygon response was verified.",
+  "scopeLimits": "Fresh searches found municipal registration-service evidence but no city cadastral viewer, anonymous feature endpoint or schema. No personal registration lookup was attempted.",
+  "resultCategory": "no_verified_public_geometry",
+  "coverageAssessment": {
+    "claimedScope": "A current report attributed to the Liaocheng Natural Resources and Planning Bureau describes the city registration center and municipal service hall; a Liaocheng government notice separately confirms local real-estate registration services. Local custody is established, but first-party public GIS was not located.",
+    "verifiedOpenScope": "No anonymous full parcel geometry response verified in this investigation.",
+    "citywideVerified": false,
+    "countrywideVerified": false
+  },
+  "runtimeAssessment": {
+    "status": "not_enabled_no_verified_public_geometry",
+    "reason": "City-local custody remains unresolved after the documented followthrough; no anonymous full parcel polygon response was verified."
+  },
+  "freshResearch": {
+    "queries": [
+      {
+        "language": "English",
+        "query": "Liaocheng China official cadastral parcel map land registry GIS natural resources bureau",
+        "scope": "Fresh independent city-specific registry/cadastral-map search.",
+        "result": "Found local registry evidence but no verified full public parcel polygon response in this investigation.",
+        "actualResultUrls": [
+          "https://news.10jqka.com.cn/20260831/c679454355.shtml",
+          "https://www.liaocheng.gov.cn/resources/public/20240930/66fa25f4fb5e24614e190cbc.pdf"
+        ],
+        "executionMethod": "Executed web search independently; first-party primary sources/service metadata inspected where available."
+      },
+      {
+        "language": "Chinese",
+        "query": "聊城市 不动产登记中心 地籍图 查询 官方 自然资源和规划局",
+        "scope": "Fresh independent city-specific registry/cadastral-map search.",
+        "result": "Found local registry evidence but no verified full public parcel polygon response in this investigation.",
+        "actualResultUrls": [
+          "https://news.10jqka.com.cn/20260831/c679454355.shtml",
+          "https://www.liaocheng.gov.cn/resources/public/20240930/66fa25f4fb5e24614e190cbc.pdf"
+        ],
+        "executionMethod": "Executed web search independently; first-party primary sources/service metadata inspected where available."
+      }
+    ],
+    "officialSources": [
+      {
+        "title": "Liaocheng Natural Resources and Planning Bureau registration center report (agency-attributed)",
+        "url": "https://news.10jqka.com.cn/20260831/c679454355.shtml",
+        "observation": "Report attributed to the Liaocheng Natural Resources and Planning Bureau describes the city real-estate registration center and its municipal service hall; not a parcel-data endpoint."
+      },
+      {
+        "title": "Liaocheng municipal government policy notice",
+        "url": "https://www.liaocheng.gov.cn/resources/public/20240930/66fa25f4fb5e24614e190cbc.pdf",
+        "observation": "Municipal notice addresses online one-stop real-estate registration/tax service, but does not document public parcel geometry."
+      }
+    ],
+    "viewerAndServiceTrace": "Fresh searches found municipal registration-service evidence but no city cadastral viewer, anonymous feature endpoint or schema. No personal registration lookup was attempted.",
+    "attemptedGeometry": "No safe full polygon query returned in this investigation.",
+    "sensitiveFieldsRequested": false,
+    "credentialsUsed": false
+  },
+  "remainingUncertainty": "No public parcel geometry endpoint was located; queried point-to-parcel coverage is unknown.",
+  "nextStep": "Resolve the exact administrative/cadastral locality and qualify a bounded source-native parcel query only if a safe public geometry service is available.",
+  "priorEvidenceFiles": [],
+  "priorCheck": {
+    "attemptState": "pending",
+    "attemptEvidence": [],
+    "possiblePriorMatches": []
+  },
+  "sampleFile": null,
+  "custodyFollowthroughFile": "research/overnight-followon-2026-10-09/liaocheng-root-custody-followthrough.json",
+  "rootReviewedAt": "2026-10-09T06:45:08.823796+00:00",
+  "rootReview": {
+    "checkedAt": "2026-10-09T06:45:08.823796+00:00",
+    "basis": "Reviewed city-specific English/local-language attempts, local-custody basis, source routes and documented responses. Public geometry remains unverified; access failures and unknown custody do not establish absence.",
+    "primarySourceAuditFile": "research/overnight-followon-2026-10-09/unreviewed-primary-source-audit.json"
+  }
+}

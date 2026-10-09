@@ -1,0 +1,187 @@
+{
+  "name": "Dimapur",
+  "country": "India",
+  "countryCode": "IN",
+  "rank": 1139,
+  "point": [
+    25.891891281964,
+    93.7357476549717
+  ],
+  "freshResearch": {
+    "queries": [
+      {
+        "language": "English",
+        "query": "Dimapur Nagaland official land records cadastral map municipal GIS",
+        "scope": "Identify first-party local land-registry/cadastral custody and anonymous public parcel geometry. Preserve the exact WUP settlement point; do not submit owner, address, tax, account, lot/plot or applicant identifiers.",
+        "result": "English-language first-party and relevant source discovery; each listed official source was reviewed before use.",
+        "actualResultUrls": [
+          "https://dlrs.nagaland.gov.in/",
+          "https://lrsror.nagaland.gov.in/digital-map",
+          "https://nagaland.gov.in/gov-websites"
+        ]
+      },
+      {
+        "language": "Hindi",
+        "query": "दिमापुर जमीन नक्शा भू अभिलेख नागालैंड आधिकारिक",
+        "scope": "Identify first-party local land-registry/cadastral custody and anonymous public parcel geometry. Preserve the exact WUP settlement point; do not submit owner, address, tax, account, lot/plot or applicant identifiers.",
+        "result": "Search results are recorded below; only the cited first-party pages are treated as evidence. No private parcel fields or locators were requested.",
+        "actualResultUrls": [
+          "https://dlrs.nagaland.gov.in/",
+          "https://lrsror.nagaland.gov.in/digital-map",
+          "https://nagaland.gov.in/gov-websites"
+        ],
+        "executionMethod": "Separate local-language web search followed by first-party source review."
+      }
+    ],
+    "portals": [
+      {
+        "url": "https://dlrs.nagaland.gov.in/",
+        "operator": "Nagaland Directorate of Land Records and Survey",
+        "observation": "Official directorate page identifies the government land-record/survey custodian."
+      },
+      {
+        "url": "https://lrsror.nagaland.gov.in/digital-map",
+        "operator": "Nagaland ROR Digital Map",
+        "observation": "Anonymous public digital cadastral-map application is titled “An Interactive Digital Cadastre on a Map.” Static bundle advertises an external basemap and an API for district/subdivision/area/locality selectors; no geometry schema is exposed in inspected code. It also contains survey/staff table fields and withCredentials requests, so no selector/API call or plot query was made."
+      },
+      {
+        "url": "https://nagaland.gov.in/gov-websites",
+        "operator": "Government of Nagaland",
+        "observation": "Official directory lists DLRS and Dimapur Municipal Council; district office evidence is local administrative, not point-specific parcel geometry."
+      }
+    ],
+    "requests": [
+      {
+        "url": "https://dlrs.nagaland.gov.in/",
+        "method": "anonymous read-only GET; redirect-following; standard TLS; no credentials, cookies or property selectors",
+        "httpStatus": 200,
+        "contentType": "text/html; charset=UTF-8",
+        "bytesRead": 184509,
+        "assessment": "Direct official-source GET; response supports only the page/application description recorded in the source review."
+      },
+      {
+        "url": "https://www.lrsror.nagaland.gov.in/digital-map",
+        "method": "anonymous read-only GET; redirect-following; standard TLS; no credentials, cookies or property selectors",
+        "httpStatus": null,
+        "contentType": "",
+        "bytesRead": 0,
+        "transportOutcome": "curl exit 60; TLS hostname mismatch; standard validation failed; no response used"
+      },
+      {
+        "url": "https://lrsror.nagaland.gov.in/digital-map",
+        "method": "anonymous read-only GET; redirect-following; standard TLS; no credentials, cookies or property selectors",
+        "httpStatus": 200,
+        "contentType": "text/html",
+        "bytesRead": 7172,
+        "assessment": "Canonical non-www host; public digital-cadastre app shell; scripts inspected read-only"
+      },
+      {
+        "url": "https://lrsror.nagaland.gov.in/main.7cb1b2ab096fce28.js",
+        "method": "anonymous read-only GET; redirect-following; standard TLS; no credentials, cookies or property selectors",
+        "httpStatus": 200,
+        "contentType": "text/javascript",
+        "bytesRead": 910046,
+        "assessment": "The non-www canonical host serves the public app shell. Inspected static bundle references selector endpoints and data API; no selector or record endpoint invoked."
+      },
+      {
+        "url": "https://api.lrsror.nagaland.gov.in/api/district/all",
+        "method": "Anonymous public geography-selector GET, no credentials/cookies/private parcel records",
+        "httpStatus": 200,
+        "bytesRead": 82,
+        "sha256": "979b2f031bbcb56c0d03ecb44102d4ed4f075b874b5f6c401b23b99acbb1002c",
+        "geographyNames": [
+          "Dimapur"
+        ],
+        "assessment": "Public district selector works without authentication. Bundle withCredentials alone does not establish an authentication gate."
+      }
+    ],
+    "historicalContext": []
+  },
+  "status": "complete",
+  "verifiedParcelResponse": null,
+  "source": {
+    "sourceId": null,
+    "name": "https://dlrs.nagaland.gov.in/",
+    "url": "https://dlrs.nagaland.gov.in/",
+    "operator": "Nagaland Directorate of Land Records and Survey",
+    "serviceType": "Official local registry/cadastral/map evidence reviewed; no safe full-parcel geometry was retained.",
+    "layer": null,
+    "geometryType": null,
+    "outputCrs": null,
+    "nativeIdField": null,
+    "nativeIdEvidence": null,
+    "attributesRequested": [],
+    "sampleCount": 0,
+    "sampleFile": null,
+    "directGeometryQueryVerified": false,
+    "directMetadataSchemaVerified": false,
+    "geometryStatus": "not_verified",
+    "operatorNote": "See first-party evidence and access limitations in registryBasis, freshResearch and service review."
+  },
+  "coverageAssessment": {
+    "claimedScope": "Nagaland DLRS identifies Dimapur land-record/survey staff and exposes a public cadastral-map app. The district geography API returns Dimapur anonymously. This establishes local cadastral context; available SVG-sheet coordinates and their relation to WUP ground remain unverified.",
+    "verifiedOpenScope": "No anonymous safe full parcel geometry response was verified in this investigation.",
+    "countrywideVerified": false,
+    "citywideVerified": false
+  },
+  "registryFound": true,
+  "verifiedSample": false,
+  "resultCategory": "official_local_registry_geometry_unverified",
+  "technicalBlocker": "The public map bundle retrieves SVG sheets together with land records and survey details. No separately advertised georeferenced polygon schema, source CRS or minimal-ID-only spatial-query route has been established. Public district selector succeeds anonymously; this is not an authentication failure.",
+  "remainingUncertainty": "A public SVG sheet may be available; native georeferencing and a response excluding land-record and survey-personnel values have not been established. No private-record query was sent.",
+  "nextStep": "Revisit only if an official schema-backed public full-geometry route is documented; request safe IDs and geometry only.",
+  "schemaVersion": "1.0",
+  "checkedAt": "2026-10-09",
+  "wupCityCode": 12031,
+  "cityId": "wup2025:12031",
+  "runtimeReadiness": "not_enabled_no_verified_public_geometry",
+  "adapterReady": false,
+  "centerLatLon": [
+    25.891891281964,
+    93.7357476549717
+  ],
+  "population2025k": 487.5,
+  "populationUnit": "persons",
+  "queueRank": 1139,
+  "population2025": 487500,
+  "populationPlausibility2025": "Moderate",
+  "pointBasis": "Exact unchanged UN WUP 2025 city point (latitude, longitude); not an administrative boundary or a cadastral result.",
+  "publicParcelGeometryFound": false,
+  "sourceIds": [],
+  "registryBasis": "Nagaland DLRS identifies Dimapur land-record/survey staff and exposes a public cadastral-map app. The district geography API returns Dimapur anonymously. This establishes local cadastral context; available SVG-sheet coordinates and their relation to WUP ground remain unverified.",
+  "registryEvidenceUrls": [
+    "https://dlrs.nagaland.gov.in/",
+    "https://lrsror.nagaland.gov.in/digital-map",
+    "https://nagaland.gov.in/gov-websites"
+  ],
+  "runtimeAssessment": {
+    "status": "not_enabled_no_verified_public_geometry",
+    "reason": "The public map bundle retrieves SVG sheets together with land records and survey details. No separately advertised georeferenced polygon schema, source CRS or minimal-ID-only spatial-query route has been established. Public district selector succeeds anonymously; this is not an authentication failure."
+  },
+  "cohort": "overnight-next-1101-1200",
+  "cohortState": "root_reviewed_integrated_locally",
+  "integrationState": "integrated_locally",
+  "rootReviewedAt": "2026-10-09T07:16:16.385701+00:00",
+  "rootReview": {
+    "checkedAt": "2026-10-09T07:16:16.385701+00:00",
+    "decision": "Local custody confirmed; no georeferenced full parcel polygon verified. Public selector and static map workflow reviewed; all source and canonical WUP identity fields retained.",
+    "authenticationCorrection": "Anonymous district selector returns200; withCredentials is not by itself authentication evidence."
+  },
+  "rootFollowthrough": {
+    "checkedAt": "2026-10-09T07:16:16.385701+00:00",
+    "districtSelector": {
+      "url": "https://api.lrsror.nagaland.gov.in/api/district/all",
+      "method": "Anonymous public geography-selector GET, no credentials/cookies/private parcel records",
+      "httpStatus": 200,
+      "bytesRead": 82,
+      "sha256": "979b2f031bbcb56c0d03ecb44102d4ed4f075b874b5f6c401b23b99acbb1002c",
+      "geographyNames": [
+        "Dimapur"
+      ],
+      "assessment": "Public district selector works without authentication. Bundle withCredentials alone does not establish an authentication gate."
+    },
+    "staticBundleSha256": "ca3eb834c52290b40442f1bf87bd1f0ed9563dfacebf5782b394f43aac0148f3",
+    "sourceGeometryWorkflow": "getDataAndMap POST /land-record/search/map returns map SVG, landrecords and surveyDetails together; getViewMap GET /maps/svg/mapid/{id} is advertised but no map-id/georeferencing metadata identified."
+  },
+  "integratedAt": "2026-10-09T07:16:16.595205+00:00"
+}

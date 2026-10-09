@@ -1,0 +1,134 @@
+{
+  "name": "Anshun",
+  "country": "China",
+  "countryCode": "CN",
+  "rank": 1106,
+  "point": [
+    26.2523886927404,
+    105.941227686529
+  ],
+  "freshResearch": {
+    "queries": [
+      {
+        "language": "English",
+        "query": "Anshun official natural resources real estate registration cadastral map public GIS parcel service",
+        "scope": "Identify first-party local registry and public parcel geometry; preserve the unchanged WUP settlement locator and avoid owner or address attributes.",
+        "result": "The English query surfaced Anshun Natural Resources Bureau material about the city real-estate registration platform; the bureau website itself timed out.",
+        "executionMethod": "Separate English-language web search followed by first-party source review.",
+        "actualResultUrls": [
+          "https://zrzyj.anshun.gov.cn/",
+          "https://zrzyj.anshun.gov.cn/zwgk/zfxxgk/xxgkml/czxx/bmczjsjsgjf/202407/P020241011359873265702.pdf"
+        ]
+      },
+      {
+        "language": "Chinese",
+        "query": "安顺市 自然资源局 不动产登记 地籍图 官方 查询",
+        "scope": "Find first-party local-language registry/cadastral routes and any anonymous safe parcel geometry service near the unchanged WUP point.",
+        "result": "The Chinese query surfaced an official bureau document stating the goal of a unified natural-resource and real-estate registration information platform. No public parcel feature route was documented.",
+        "executionMethod": "Separate Chinese-language web search followed by first-party source review.",
+        "actualResultUrls": [
+          "https://zrzyj.anshun.gov.cn/",
+          "https://zrzyj.anshun.gov.cn/zwgk/zfxxgk/xxgkml/czxx/bmczjsjsgjf/202407/P020241011359873265702.pdf"
+        ]
+      }
+    ],
+    "portals": [
+      {
+        "name": "https://zrzyj.anshun.gov.cn/",
+        "operator": "China",
+        "homeUrl": "https://zrzyj.anshun.gov.cn/",
+        "observation": "Official Anshun Natural Resources Bureau website; the host timed out when opened during this pass."
+      },
+      {
+        "name": "https://zrzyj.anshun.gov.cn/zwgk/zfxxgk/xxgkml/czxx/bmczjsjsgjf/202407/P020241011359873265702.pdf",
+        "operator": "China",
+        "homeUrl": "https://zrzyj.anshun.gov.cn/zwgk/zfxxgk/xxgkml/czxx/bmczjsjsgjf/202407/P020241011359873265702.pdf",
+        "observation": "Official bureau profile/budget document states the bureau works to establish a unified city natural-resource and real-estate registration information platform. No public query schema or parcel geometry was documented in the result."
+      }
+    ],
+    "requests": [],
+    "historicalContext": []
+  },
+  "status": "complete",
+  "verifiedParcelResponse": null,
+  "source": {
+    "sourceId": null,
+    "name": "https://zrzyj.anshun.gov.cn/",
+    "url": "https://zrzyj.anshun.gov.cn/",
+    "operator": null,
+    "serviceType": "Official registry/cadastral route reviewed; no anonymous safe full-parcel geometry response verified.",
+    "layer": null,
+    "geometryType": null,
+    "outputCrs": null,
+    "nativeIdField": null,
+    "nativeIdEvidence": null,
+    "attributesRequested": [],
+    "sampleCount": 0,
+    "sampleFile": null,
+    "directGeometryQueryVerified": false,
+    "directMetadataSchemaVerified": false,
+    "geometryStatus": "not_verified",
+    "operatorNote": "See first-party evidence and access limits in registryBasis and linked sources."
+  },
+  "coverageAssessment": {
+    "claimedScope": "First-party Anshun Natural Resources Bureau evidence establishes local real-estate-registration platform responsibility. The official site was slow/unavailable to the web fetcher, and no anonymous parcel vector API or feature response was identified.",
+    "verifiedOpenScope": "No anonymous full parcel geometry response was verified in this investigation.",
+    "countrywideVerified": false,
+    "citywideVerified": false
+  },
+  "registryFound": true,
+  "verifiedSample": false,
+  "resultCategory": "official_local_registry_geometry_unverified",
+  "technicalBlocker": "No anonymous safe-ID full-geometry endpoint and schema was verified; where an official map or registry portal exists, its service behavior or public feature response was not established.",
+  "remainingUncertainty": "The existence and public exposure of the municipal registration platform is unresolved; no geometry-only schema or point response was verified.",
+  "nextStep": "Revisit only if an official public geometry endpoint and safe minimal-field response are documented; then test the unchanged WUP point with safe identifiers and geometry only.",
+  "schemaVersion": "1.0",
+  "checkedAt": "2026-10-09",
+  "wupCityCode": 9188,
+  "cityId": "wup2025:9188",
+  "runtimeReadiness": "not_enabled_no_verified_public_geometry",
+  "adapterReady": false,
+  "centerLatLon": [
+    26.2523886927404,
+    105.941227686529
+  ],
+  "population2025k": 499.794,
+  "populationUnit": "persons",
+  "queueRank": 1106,
+  "population2025": 499794,
+  "populationPlausibility2025": "Moderate",
+  "pointBasis": "UN WUP 2025 population-weighted settlement point (latitude, longitude); not a municipal boundary or a parcel-coverage claim.",
+  "publicParcelGeometryFound": false,
+  "sourceIds": [],
+  "registryBasis": "First-party Anshun Natural Resources Bureau evidence establishes local real-estate-registration platform responsibility. The official site was slow/unavailable to the web fetcher, and no anonymous parcel vector API or feature response was identified.",
+  "registryEvidenceUrls": [
+    "https://zrzyj.anshun.gov.cn/",
+    "https://zrzyj.anshun.gov.cn/zwgk/zfxxgk/xxgkml/czxx/bmczjsjsgjf/202407/P020241011359873265702.pdf"
+  ],
+  "runtimeAssessment": {
+    "status": "not_enabled_no_verified_public_geometry",
+    "reason": "No anonymous safe-ID full-geometry endpoint and schema was verified; where an official map or registry portal exists, its service behavior or public feature response was not established."
+  },
+  "cohort": "overnight-next-1101-1200",
+  "cohortState": "root_reviewed_integrated_locally",
+  "integrationState": "integrated_locally",
+  "rootReviewedAt": "2026-10-09T07:13:02.981057+00:00",
+  "rootPrimaryChecks": [
+    {
+      "wupCityCode": 9188,
+      "url": "https://zrzyj.anshun.gov.cn/",
+      "checkedAt": "2026-10-09T07:10:39.364979+00:00",
+      "method": "Anonymous read-only GET, standard TLS where advertised; no credentials or property values",
+      "httpStatus": null,
+      "transportOutcome": "<urlopen error timed out>"
+    }
+  ],
+  "rootReview": {
+    "checkedAt": "2026-10-09T07:13:02.981057+00:00",
+    "decision": "Reviewed city identity, canonical population/point, separate searches and saved source/request evidence. No full public parcel geometry verified in this pass.",
+    "custodyScope": "First-party Anshun Natural Resources Bureau evidence establishes local real-estate-registration platform responsibility. The official site was slow/unavailable to the web fetcher, and no anonymous parcel vector API or feature response was identified.",
+    "transportFailuresDoNotProveAbsence": true,
+    "geometryClaimScope": "Investigation outcome only; no worldwide or citywide absence asserted."
+  },
+  "integratedAt": "2026-10-09T07:14:03.673112+00:00"
+}

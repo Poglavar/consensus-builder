@@ -1,4 +1,4 @@
-// Composite ArcGIS parcel identities use the snapshot codec and stay independent of transport OIDs.
+// Composite ArcGIS parcel identities preserve native components independently of transport OIDs.
 import { describe, expect, it, vi } from 'vitest';
 import { area as turfArea, feature as turfFeature, intersect as turfIntersect } from '@turf/turf';
 import { createArcgisParcelSource } from '../parcels/arcgis-source.js';
@@ -31,7 +31,7 @@ function makeFetch(handler) {
 }
 
 describe('ArcGIS composite native parcel IDs', () => {
-    it('encodes ordered native parts with the snapshot codec and keeps viewport IDs distinct', async () => {
+    it('encodes ordered native parts canonically and keeps viewport IDs distinct', async () => {
         const { fetchImpl } = makeFetch(() => response([
             feature(1, 42, '00100'), feature(2, 42, '00101')
         ]));
@@ -65,6 +65,23 @@ describe('ArcGIS composite native parcel IDs', () => {
         const { fetchImpl, calls } = makeFetch(() => response([]));
         await createArcgisParcelSource(descriptor, { fetchImpl }).queryIds(['OM-TEST-42~00A%7EB']);
         expect(calls[0].searchParams.get('where')).toBe("(PLOTUID = 42 AND NEWPLOTNO = '00A~B')");
+    });
+
+    it('preserves fixed-width blank cadastral components in viewport and exact-ID reads', async () => {
+        const fields = ['COMUNE', 'SEZIONE', 'FOGLIO', 'ALLEGATO', 'SVILUPPO', 'NUMERO'];
+        const props = { OBJECTID: 7, COMUNE: 'G273', SEZIONE: ' ', FOGLIO: '125',
+            ALLEGATO: ' ', SVILUPPO: ' ', NUMERO: '298' };
+        const row = { type: 'Feature', id: 7, properties: props, geometry: polygon(13.347, 38.12, 13.348, 38.121) };
+        const { fetchImpl, calls } = makeFetch(() => response([row]));
+        const source = createArcgisParcelSource({ ...descriptor, idPrefix: 'IT-TEST-',
+            idFields: fields, idFieldTypes: Object.fromEntries(fields.map(field => [field, 'string'])),
+            outFields: ['OBJECTID', ...fields] }, { fetchImpl });
+        const viewport = await source.queryBounds([13.346, 38.119, 13.349, 38.122]);
+        expect(viewport.features[0].id).toBe('IT-TEST-G273~%20~125~%20~%20~298');
+        const exact = await source.queryIds([viewport.features[0].id]);
+        expect(exact.features).toEqual(viewport.features);
+        expect(calls[1].searchParams.get('where')).toBe("(COMUNE = 'G273' AND SEZIONE = ' ' AND FOGLIO = '125' AND ALLEGATO = ' ' AND SVILUPPO = ' ' AND NUMERO = '298')");
+        expect(exact.features[0].properties.sourceProperties).toEqual(props);
     });
 
     it('rejects malformed, foreign, and noncanonical encodings before fetching', async () => {

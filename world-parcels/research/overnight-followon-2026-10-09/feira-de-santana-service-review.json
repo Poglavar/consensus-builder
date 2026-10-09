@@ -1,0 +1,65 @@
+{
+  "schemaVersion": "1.0",
+  "checkedAt": "2026-10-09",
+  "cityRecord": "city-8320-feira-de-santana.json",
+  "purpose": "Document first-party local registry/map evidence and bounded anonymous geometry access review.",
+  "scopeLimits": {
+    "maxFullPolygonsRetainedInCityRecord": 0,
+    "maxFullPolygonsRetainedInReview": 0,
+    "maxFullPolygonsRetainedInRepository": 0,
+    "ownerOrAddressDataRetained": false,
+    "credentialsOrTokenValuesRetained": false,
+    "citywideCompletenessAsserted": false
+  },
+  "assessment": "The municipal Finance Secretariat publishes a service titled “Plantas Digitalizadas”; city planning reports document the Cadastro Imobiliário and its updates. An official 2026 municipal gazette contains a development-submitted georeferenced orthophoto/planning map, which is project-specific rather than a public municipal parcel feature service. The online cadastral-plans page exposed embedded content but no public vector/API schema or WUP-point feature; no taxpayer or property identifier was entered.",
+  "registryAssessment": "Feira de Santana municipal records describe its Cadastro Imobiliário and the municipal Finance Secretariat exposes a digital cadastral-plans service.",
+  "officialPrimarySources": [
+    {
+      "url": "https://sefaz.feiradesantana.ba.gov.br/?iptu=1&pg=servicosonline&tipo_inscricao=plantas-digitalizadas",
+      "observation": "The municipal Finance Secretariat publishes a service titled “Plantas Digitalizadas”; city planning reports document the Cadastro Imobiliário and its updates. An official 2026 municipal gazette contains a development-submitted georeferenced orthophoto/planning map, which is project-specific rather than a public municipal parcel feature service. The online cadastral-plans page exposed embedded content but no public vector/API schema or WUP-point feature; no taxpayer or property identifier was entered."
+    },
+    {
+      "url": "https://www.feiradesantana.ba.gov.br/seplan/Balan%C3%A7o%20de%20Gest%C3%A3o%202003/BALAN%C3%87O%20DE%20GEST%C3%83O%202003.pdf",
+      "observation": "The municipal Finance Secretariat publishes a service titled “Plantas Digitalizadas”; city planning reports document the Cadastro Imobiliário and its updates. An official 2026 municipal gazette contains a development-submitted georeferenced orthophoto/planning map, which is project-specific rather than a public municipal parcel feature service. The online cadastral-plans page exposed embedded content but no public vector/API schema or WUP-point feature; no taxpayer or property identifier was entered."
+    },
+    {
+      "url": "https://www.feiradesantana.ba.gov.br/seplan/balanco_Gestao/balanco_2024/RELAToRIO_GERAL_2024-Parte_1.pdf",
+      "observation": "The municipal Finance Secretariat publishes a service titled “Plantas Digitalizadas”; city planning reports document the Cadastro Imobiliário and its updates. An official 2026 municipal gazette contains a development-submitted georeferenced orthophoto/planning map, which is project-specific rather than a public municipal parcel feature service. The online cadastral-plans page exposed embedded content but no public vector/API schema or WUP-point feature; no taxpayer or property identifier was entered."
+    },
+    {
+      "url": "https://diariooficial.feiradesantana.ba.gov.br/atos/executivo/1F5FRSKT090420261735.pdf",
+      "observation": "The municipal Finance Secretariat publishes a service titled “Plantas Digitalizadas”; city planning reports document the Cadastro Imobiliário and its updates. An official 2026 municipal gazette contains a development-submitted georeferenced orthophoto/planning map, which is project-specific rather than a public municipal parcel feature service. The online cadastral-plans page exposed embedded content but no public vector/API schema or WUP-point feature; no taxpayer or property identifier was entered."
+    }
+  ],
+  "searchQueries": [
+    {
+      "language": "Portuguese",
+      "query": "Feira de Santana cadastro imobiliário plantas digitalizadas mapa parcelário prefeitura cadastro técnico geoprocessamento",
+      "result": "The municipal Finance Secretariat publishes a service titled “Plantas Digitalizadas”; city planning reports document the Cadastro Imobiliário and its updates. An official 2026 municipal gazette contains a development-submitted georeferenced orthophoto/planning map, which is project-specific rather than a public municipal parcel feature service. The online cadastral-plans page exposed embedded content but no public vector/API schema or WUP-point feature; no taxpayer or property identifier was entered.",
+      "method": "Separate native/local-language web search and first-party source review.",
+      "scope": "Identify official city-specific cadastral custody and safe anonymous parcel geometry."
+    },
+    {
+      "language": "English",
+      "query": "Feira de Santana Brazil official municipal property cadastre parcel maps GIS public geometry",
+      "result": "The municipal Finance Secretariat publishes a service titled “Plantas Digitalizadas”; city planning reports document the Cadastro Imobiliário and its updates. An official 2026 municipal gazette contains a development-submitted georeferenced orthophoto/planning map, which is project-specific rather than a public municipal parcel feature service. The online cadastral-plans page exposed embedded content but no public vector/API schema or WUP-point feature; no taxpayer or property identifier was entered.",
+      "method": "Separate English-language web search and first-party source review.",
+      "scope": "Cross-check city-specific registry custody and whether public full parcel geometry can be queried anonymously."
+    }
+  ],
+  "geometryDecision": "No parcel geometry retained; no qualifying safe WUP-point sample was available for retention.",
+  "coverageAssessment": {
+    "claimedScope": "Feira de Santana municipal records describe its Cadastro Imobiliário and the municipal Finance Secretariat exposes a digital cadastral-plans service.",
+    "verifiedOpenScope": "Municipal property-cadastre activity is confirmed. Citywide open parcel geometry and WUP-point sample are unverified; orthophotos and development project plans are not treated as cadastral vectors.",
+    "citywideVerified": false,
+    "countrywideVerified": false,
+    "geometryVerified": false
+  },
+  "attempts": [
+    {
+      "url": "https://sefaz.feiradesantana.ba.gov.br/?iptu=1&pg=servicosonline&tipo_inscricao=plantas-digitalizadas",
+      "result": "Official municipal page for digital plans reviewed. It exposes embedded content but not a documented anonymous vector endpoint; no CPF, taxpayer number, or property identity was submitted."
+    }
+  ],
+  "remainingUncertainty": "Municipal property-cadastre activity is confirmed. Citywide open parcel geometry and WUP-point sample are unverified; orthophotos and development project plans are not treated as cadastral vectors."
+}

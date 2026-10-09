@@ -1,0 +1,77 @@
+{
+  "reviewDate": "2026-10-09",
+  "scope": "Read-only review of the official Almaty municipal cadastral-map viewer and three small nearby viewports. This records source and sample metadata only; it does not establish citywide coverage or legal boundary accuracy.",
+  "officialEntry": {
+    "municipalSource": "https://www.gov.kz/memleket/entities/almaty-zher/activities/10963?lang=ru",
+    "viewer": "https://mapalmaty.kz/uzo/",
+    "viewerLinkedService": "https://mapalmaty.kz/arcgis/rest/services/pg/pg_uzo/FeatureServer",
+    "viewerEvidence": [
+      {"file": "mapalmaty-uzo.html", "lines": "22-24", "finding": "Loads the ArcGIS JavaScript 3.39 compact client and /uzo/lib/start.js."},
+      {"file": "mapalmaty-start.js", "lines": "10-15", "finding": "Loads the configured /loader/uzo viewer modules."},
+      {"file": "mapalmaty-config.js", "lines": "26-27", "finding": "Sets ArcGIS REST service root to /arcgis/rest/services."},
+      {"file": "mapalmaty-cfg.js", "lines": "5-8", "finding": "Configures the pg_uzo MapServer and FeatureServer endpoints."},
+      {"file": "mapalmaty-cfg.js", "lines": "33-39", "finding": "Lists U006 among guest-visible layers and configures kad_nomer as the cadastral-number search/display field; other fields are not part of this review."}
+    ]
+  },
+  "layer": {
+    "id": 10,
+    "name": "U006:Кадастр ГЗК",
+    "geometryType": "esriGeometryPolygon",
+    "spatialReference": "EPSG:32643",
+    "displayField": "kad_nomer",
+    "objectIdField": "objectid",
+    "maxRecordCount": 1000,
+    "capabilities": ["Query", "Create", "Update", "Delete", "Uploads", "Editing"],
+    "interpretation": "The municipal viewer identifies this as its GZK cadastral layer. The label and bounded samples alone do not establish complete coverage, legal status, or positional accuracy.",
+    "accessNote": "All sample requests were read-only HTTPS GET query/count requests. Query output was restricted to objectid and kad_nomer; no owner, subject, IIN/BIN, or other personal/ownership fields were requested or retained."
+  },
+  "sampling": {
+    "method": "ArcGIS FeatureServer query using where=1=1, esriGeometryEnvelope, inSR=4326, outSR=4326, spatialRel=esriSpatialRelIntersects; count-only request followed by geometry query with outFields=objectid,kad_nomer and resultRecordCount=100.",
+    "returnedGeometryReference": "EPSG:4326",
+    "allResponsesHttpStatus": 200,
+    "allQueriesExceededTransferLimit": false,
+    "returnedPropertyKeys": ["kad_nomer", "objectid"],
+    "unexpectedPropertyKeys": [],
+    "allSampleRingsClosed": true,
+    "fullGeometryStoredOutsideRepository": true,
+    "viewports": [
+      {
+        "name": "wup-center",
+        "centerWgs84": [76.9095, 43.2613],
+        "bboxWgs84": [76.9093, 43.2611, 76.9097, 43.2615],
+        "count": 2,
+        "returned": 2,
+        "nativeIds": ["20311024028", "20311024010"],
+        "vertexCount": 51,
+        "geometrySha256": ["7ec72a54469e073f152a137193f50420f42f394188ca04d99ef90bdbe5c31eec", "1350fe3ee79f2ceb239eb4fedb6e3cedb113f19eb1ebd58000cf556054d0118f"]
+      },
+      {
+        "name": "nearby-northeast",
+        "centerWgs84": [76.911, 43.262],
+        "bboxWgs84": [76.9108, 43.2618, 76.9112, 43.2622],
+        "count": 5,
+        "returned": 5,
+        "nativeIds": ["20311023390", "20311023026", "20311023297", "20311023211", "20311023160"],
+        "vertexCount": 37,
+        "geometrySha256": ["ef567d98da65f9e20c1f403c22a93c42c79890b4798a1ab9b9d030f92a7c026d", "ce3e3148cf3563d33ea6b4c563d1ce3ba56bcaaccd16e02ca8ffa24ce8130528", "82e6fcefd83884ab174b4888c558eff8c3243ab156b4e71307c60444bea22262", "d2976a26206e8eb1b87bbe1ca4bd8478873ce10e609eedd428125fba4a1cb202", "cafef442da8108be7ff496ea4f85abff0d7a9a0d1e267c9bb3ce28bfde670634"]
+      },
+      {
+        "name": "nearby-southwest",
+        "centerWgs84": [76.9082, 43.2605],
+        "bboxWgs84": [76.908, 43.2603, 76.9084, 43.2607],
+        "count": 3,
+        "returned": 3,
+        "nativeIds": ["20311024090", "20311024010", "20311024128"],
+        "vertexCount": 126,
+        "geometrySha256": ["80d4d61de771a4a356279963638d06e2bff735f36f08011df84b8bd2d443e3f6", "1350fe3ee79f2ceb239eb4fedb6e3cedb113f19eb1ebd58000cf556054d0118f", "e48e9a769b54fd1cb26a93001cffa567174b13efefdbb2a49024dc8f7719f91e"]
+      }
+    ],
+    "totals": {
+      "featuresReturned": 10,
+      "uniqueNativeIds": 9,
+      "repeatedNativeIdAcrossViewports": "20311024010",
+      "vertices": 214
+    },
+    "limits": "Three narrowly bounded viewports near the selected center only. No citywide count, completeness check, ownership review, topology/overlap audit, or legal/accuracy assessment was performed."
+  }
+}

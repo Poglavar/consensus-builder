@@ -1,0 +1,3782 @@
+{
+  "schemaVersion": 1,
+  "purpose": "Live city parcel qualification with unmodified responses through the repository adapter; IDs and hashes retained, full geometries confined to temporary audit cache except three public samples.",
+  "checkedAt": "2026-10-08T20:36:16.260Z",
+  "city": "almaty-almaly",
+  "descriptor": {
+    "adapter": "kazakhstan-pkk",
+    "endpoint": "https://map.gov4c.kz/geoserver/wfs",
+    "featureType": "egkn:u_view",
+    "idField": "kad_nomer",
+    "idType": "string",
+    "objectIdField": "gid",
+    "parcelNumberField": "kad_nomer",
+    "outFields": [
+      "gid",
+      "kad_nomer"
+    ],
+    "pageSize": 1000,
+    "maxFeatures": 10000,
+    "maxBboxKm2": 1,
+    "maxResponseBytes": 4194304,
+    "maxTotalResponseBytes": 25165824,
+    "caCertificate": "./certificates/sectigo-public-server-authentication-ca-dv-r36.pem",
+    "id": "kz-almaty-pkk-almaly",
+    "idPrefix": "KZ-ALMATY-PKK-",
+    "districtId": 244,
+    "projection": "EPSG:32643",
+    "name": "Kazakhstan EGKN public cadastral map — Almaty Almaly district"
+  },
+  "grid": [
+    {
+      "name": "viewport-0",
+      "bbox": [
+        76.908,
+        43.26,
+        76.909,
+        43.261
+      ],
+      "kind": "aligned-grid"
+    },
+    {
+      "name": "viewport-1",
+      "bbox": [
+        76.909,
+        43.26,
+        76.91,
+        43.261
+      ],
+      "kind": "aligned-grid"
+    },
+    {
+      "name": "viewport-2",
+      "bbox": [
+        76.91,
+        43.26,
+        76.911,
+        43.261
+      ],
+      "kind": "aligned-grid"
+    },
+    {
+      "name": "viewport-3",
+      "bbox": [
+        76.908,
+        43.261,
+        76.909,
+        43.262
+      ],
+      "kind": "aligned-grid"
+    },
+    {
+      "name": "viewport-4",
+      "bbox": [
+        76.909,
+        43.261,
+        76.91,
+        43.262
+      ],
+      "kind": "aligned-grid"
+    },
+    {
+      "name": "viewport-5",
+      "bbox": [
+        76.91,
+        43.261,
+        76.911,
+        43.262
+      ],
+      "kind": "aligned-grid"
+    },
+    {
+      "name": "viewport-6",
+      "bbox": [
+        76.908,
+        43.262,
+        76.909,
+        43.263
+      ],
+      "kind": "aligned-grid"
+    },
+    {
+      "name": "viewport-7",
+      "bbox": [
+        76.909,
+        43.262,
+        76.91,
+        43.263
+      ],
+      "kind": "aligned-grid"
+    },
+    {
+      "name": "viewport-8",
+      "bbox": [
+        76.91,
+        43.262,
+        76.911,
+        43.263
+      ],
+      "kind": "aligned-grid"
+    },
+    {
+      "name": "viewport-9",
+      "bbox": [
+        76.909,
+        43.259,
+        76.91,
+        43.26
+      ],
+      "kind": "adjacent-pan"
+    },
+    {
+      "name": "viewport-10",
+      "bbox": [
+        76.909,
+        43.263,
+        76.91,
+        43.264
+      ],
+      "kind": "adjacent-pan"
+    },
+    {
+      "name": "viewport-11",
+      "bbox": [
+        76.907,
+        43.261,
+        76.908,
+        43.262
+      ],
+      "kind": "adjacent-pan"
+    },
+    {
+      "name": "viewport-12",
+      "bbox": [
+        76.911,
+        43.261,
+        76.912,
+        43.262
+      ],
+      "kind": "adjacent-pan"
+    }
+  ],
+  "tests": [
+    {
+      "name": "viewport-0",
+      "passed": true,
+      "elapsedMs": 698,
+      "requestIndexes": [
+        0,
+        0
+      ],
+      "bbox": [
+        76.908,
+        43.26,
+        76.909,
+        43.261
+      ],
+      "complete": true,
+      "count": 6,
+      "ids": [
+        {
+          "id": "KZ-ALMATY-PKK-20311024128",
+          "geometrySha256": "81e114ee008a5f06280581ec18bd0fdd764f9f98a30e49bfa899ca58b94de4bc"
+        },
+        {
+          "id": "KZ-ALMATY-PKK-20311024010",
+          "geometrySha256": "f4232b6a59c6388f63f28aa132625454f806e89b65f8d5e68d3666b82d91064f"
+        },
+        {
+          "id": "KZ-ALMATY-PKK-20311024012",
+          "geometrySha256": "5521d6fcbba787a81fc5fd30d1fda329f3d03d959b4685c833bb085f1050ad52"
+        },
+        {
+          "id": "KZ-ALMATY-PKK-20311023368",
+          "geometrySha256": "37ad199b8ad089d521f69322864cc8374ed97dfef344f1cf0b09bea2958c22d9"
+        },
+        {
+          "id": "KZ-ALMATY-PKK-20311024089",
+          "geometrySha256": "636deba3c62b0c5237546d200fd7a3f678d65b32343c16d1863ccbe0064d64cd"
+        },
+        {
+          "id": "KZ-ALMATY-PKK-20311024090",
+          "geometrySha256": "7bb2aab7d2c862f2cca3d29e1fb77e5aeb9672319098101361970f0d9ba87c9d"
+        }
+      ]
+    },
+    {
+      "name": "viewport-1",
+      "passed": true,
+      "elapsedMs": 171,
+      "requestIndexes": [
+        1,
+        1
+      ],
+      "bbox": [
+        76.909,
+        43.26,
+        76.91,
+        43.261
+      ],
+      "complete": true,
+      "count": 5,
+      "ids": [
+        {
+          "id": "KZ-ALMATY-PKK-20311024128",
+          "geometrySha256": "81e114ee008a5f06280581ec18bd0fdd764f9f98a30e49bfa899ca58b94de4bc"
+        },
+        {
+          "id": "KZ-ALMATY-PKK-20311024010",
+          "geometrySha256": "f4232b6a59c6388f63f28aa132625454f806e89b65f8d5e68d3666b82d91064f"
+        },
+        {
+          "id": "KZ-ALMATY-PKK-20311024012",
+          "geometrySha256": "5521d6fcbba787a81fc5fd30d1fda329f3d03d959b4685c833bb085f1050ad52"
+        },
+        {
+          "id": "KZ-ALMATY-PKK-20311023368",
+          "geometrySha256": "37ad199b8ad089d521f69322864cc8374ed97dfef344f1cf0b09bea2958c22d9"
+        },
+        {
+          "id": "KZ-ALMATY-PKK-20311024089",
+          "geometrySha256": "636deba3c62b0c5237546d200fd7a3f678d65b32343c16d1863ccbe0064d64cd"
+        }
+      ]
+    },
+    {
+      "name": "viewport-2",
+      "passed": true,
+      "elapsedMs": 165,
+      "requestIndexes": [
+        2,
+        2
+      ],
+      "bbox": [
+        76.91,
+        43.26,
+        76.911,
+        43.261
+      ],
+      "complete": true,
+      "count": 4,
+      "ids": [
+        {
+          "id": "KZ-ALMATY-PKK-20311024010",
+          "geometrySha256": "f4232b6a59c6388f63f28aa132625454f806e89b65f8d5e68d3666b82d91064f"
+        },
+        {
+          "id": "KZ-ALMATY-PKK-20311024012",
+          "geometrySha256": "5521d6fcbba787a81fc5fd30d1fda329f3d03d959b4685c833bb085f1050ad52"
+        },
+        {
+          "id": "KZ-ALMATY-PKK-20311023368",
+          "geometrySha256": "37ad199b8ad089d521f69322864cc8374ed97dfef344f1cf0b09bea2958c22d9"
+        },
+        {
+          "id": "KZ-ALMATY-PKK-20311024089",
+          "geometrySha256": "636deba3c62b0c5237546d200fd7a3f678d65b32343c16d1863ccbe0064d64cd"
+        }
+      ]
+    },
+    {
+      "name": "viewport-3",
+      "passed": true,
+      "elapsedMs": 165,
+      "requestIndexes": [
+        3,
+        3
+      ],
+      "bbox": [
+        76.908,
+        43.261,
+        76.909,
+        43.262
+      ],
+      "complete": true,
+      "count": 8,
+      "ids": [
+        {
+          "id": "KZ-ALMATY-PKK-20311024080",
+          "geometrySha256": "19fb2d0fbbe7dbb1e64fdab928c6fbc703be2b9efc66aa48f1cd94cfe1899daf"
+        },
+        {
+          "id": "KZ-ALMATY-PKK-20311024076",
+          "geometrySha256": "edec842244a6385aaff4a717344e53594676f03d45aa80ee80a3727c6fd102fb"
+        },
+        {
+          "id": "KZ-ALMATY-PKK-20311023084",
+          "geometrySha256": "4344f654856aadedaac132078094ad917363e72e01d6d1c4675aafea7a92a917"
+        },
+        {
+          "id": "KZ-ALMATY-PKK-20311024010",
+          "geometrySha256": "f4232b6a59c6388f63f28aa132625454f806e89b65f8d5e68d3666b82d91064f"
+        },
+        {
+          "id": "KZ-ALMATY-PKK-20311024012",
+          "geometrySha256": "5521d6fcbba787a81fc5fd30d1fda329f3d03d959b4685c833bb085f1050ad52"
+        },
+        {
+          "id": "KZ-ALMATY-PKK-20311023368",
+          "geometrySha256": "37ad199b8ad089d521f69322864cc8374ed97dfef344f1cf0b09bea2958c22d9"
+        },
+        {
+          "id": "KZ-ALMATY-PKK-20311024089",
+          "geometrySha256": "636deba3c62b0c5237546d200fd7a3f678d65b32343c16d1863ccbe0064d64cd"
+        },
+        {
+          "id": "KZ-ALMATY-PKK-20311023433",
+          "geometrySha256": "36f469a6b1b8738d5ac479dc1f31f7cbc01bc98f03f921a6b8a3c303c93baadc"
+        }
+      ]
+    },
+    {
+      "name": "viewport-4",
+      "passed": true,
+      "elapsedMs": 174,
+      "requestIndexes": [
+        4,
+        4
+      ],
+      "bbox": [
+        76.909,
+        43.261,
+        76.91,
+        43.262
+      ],
+      "complete": true,
+      "count": 8,
+      "ids": [
+        {
+          "id": "KZ-ALMATY-PKK-20311024028",
+          "geometrySha256": "37ee6ed1635846c5518d50cc814c4dfe78dc066a5cbb2a3db5e0eb9f7ad3f095"
+        },
+        {
+          "id": "KZ-ALMATY-PKK-20311024003",
+          "geometrySha256": "d0822bd683279de065a79349174e1a1df1e5ab88f96edea91c9bc670ad444eff"
+        },
+        {
+          "id": "KZ-ALMATY-PKK-20311024109",
+          "geometrySha256": "5d7751738d7fb2605eca0b8da2f58a8cb5b95c149d870f3e65a493d27c4a714c"
+        },
+        {
+          "id": "KZ-ALMATY-PKK-20311024076",
+          "geometrySha256": "edec842244a6385aaff4a717344e53594676f03d45aa80ee80a3727c6fd102fb"
+        },
+        {
+          "id": "KZ-ALMATY-PKK-20311024010",
+          "geometrySha256": "f4232b6a59c6388f63f28aa132625454f806e89b65f8d5e68d3666b82d91064f"
+        },
+        {
+          "id": "KZ-ALMATY-PKK-20311024012",
+          "geometrySha256": "5521d6fcbba787a81fc5fd30d1fda329f3d03d959b4685c833bb085f1050ad52"
+        },
+        {
+          "id": "KZ-ALMATY-PKK-20311023368",
+          "geometrySha256": "37ad199b8ad089d521f69322864cc8374ed97dfef344f1cf0b09bea2958c22d9"
+        },
+        {
+          "id": "KZ-ALMATY-PKK-20311024089",
+          "geometrySha256": "636deba3c62b0c5237546d200fd7a3f678d65b32343c16d1863ccbe0064d64cd"
+        }
+      ]
+    },
+    {
+      "name": "viewport-5",
+      "passed": true,
+      "elapsedMs": 182,
+      "requestIndexes": [
+        5,
+        5
+      ],
+      "bbox": [
+        76.91,
+        43.261,
+        76.911,
+        43.262
+      ],
+      "complete": true,
+      "count": 12,
+      "ids": [
+        {
+          "id": "KZ-ALMATY-PKK-20311023143",
+          "geometrySha256": "0a09b6ea522fe236d806c3d18c5a1e0073a906d47ca0a8a5a41c795310235d6f"
+        },
+        {
+          "id": "KZ-ALMATY-PKK-20311024028",
+          "geometrySha256": "37ee6ed1635846c5518d50cc814c4dfe78dc066a5cbb2a3db5e0eb9f7ad3f095"
+        },
+        {
+          "id": "KZ-ALMATY-PKK-20311024003",
+          "geometrySha256": "d0822bd683279de065a79349174e1a1df1e5ab88f96edea91c9bc670ad444eff"
+        },
+        {
+          "id": "KZ-ALMATY-PKK-20311023160",
+          "geometrySha256": "d80f1d675f04c7d6f11c9e2dcca175cb195aa389fffe43f02a9ce51c7013377b"
+        },
+        {
+          "id": "KZ-ALMATY-PKK-20311023078",
+          "geometrySha256": "b70666102e2593d5ca209d19b5597ace6adc7b5edfdcd663dfb0df06697aabc6"
+        },
+        {
+          "id": "KZ-ALMATY-PKK-20311023390",
+          "geometrySha256": "548ee7f30589f459cf183d449b31343754f0a2ec16f4d2e7acfc9f45a1bfdec5"
+        },
+        {
+          "id": "KZ-ALMATY-PKK-20311023297",
+          "geometrySha256": "60ec9603787c98ba8addd3ec6b03312cae3a34df5443465cbdd0aab81b3d357f"
+        },
+        {
+          "id": "KZ-ALMATY-PKK-20311024010",
+          "geometrySha256": "f4232b6a59c6388f63f28aa132625454f806e89b65f8d5e68d3666b82d91064f"
+        },
+        {
+          "id": "KZ-ALMATY-PKK-20311024012",
+          "geometrySha256": "5521d6fcbba787a81fc5fd30d1fda329f3d03d959b4685c833bb085f1050ad52"
+        },
+        {
+          "id": "KZ-ALMATY-PKK-20311023368",
+          "geometrySha256": "37ad199b8ad089d521f69322864cc8374ed97dfef344f1cf0b09bea2958c22d9"
+        },
+        {
+          "id": "KZ-ALMATY-PKK-20311024089",
+          "geometrySha256": "636deba3c62b0c5237546d200fd7a3f678d65b32343c16d1863ccbe0064d64cd"
+        },
+        {
+          "id": "KZ-ALMATY-PKK-20311023128",
+          "geometrySha256": "03420b603baed067cb0e99005c6ad84c8a70bd6c4a1e5327c6b4b32763948d55"
+        }
+      ]
+    },
+    {
+      "name": "viewport-6",
+      "passed": true,
+      "elapsedMs": 193,
+      "requestIndexes": [
+        6,
+        6
+      ],
+      "bbox": [
+        76.908,
+        43.262,
+        76.909,
+        43.263
+      ],
+      "complete": true,
+      "count": 18,
+      "ids": [
+        {
+          "id": "KZ-ALMATY-PKK-20311023319",
+          "geometrySha256": "3265346af45d696bbff42b3a69aa65469a590071c834e152397ceff34d576a3b"
+        },
+        {
+          "id": "KZ-ALMATY-PKK-20311023328",
+          "geometrySha256": "5e589e0b628088b49884db0b81961d4e7a53dba9aba119df3086a56ed42f79e1"
+        },
+        {
+          "id": "KZ-ALMATY-PKK-20311023322",
+          "geometrySha256": "60bffa29e8770b07b7ba956bf2d79d0e6b1fa6ecd162c9025c2f18d74c637430"
+        },
+        {
+          "id": "KZ-ALMATY-PKK-20311023378",
+          "geometrySha256": "a769eefcf8140a5723b455e49164755485efa2b2fe7e756a44c313b2b41591b8"
+        },
+        {
+          "id": "KZ-ALMATY-PKK-20311023363",
+          "geometrySha256": "6e8bbf3d2ec9ad30f8baaeb01abfc2ba125452e4584938582ec975f6554d396d"
+        },
+        {
+          "id": "KZ-ALMATY-PKK-20311023351",
+          "geometrySha256": "f7d266335bf999c8f49b45d0555ae3a90784d1eda9b3c9e12dffa3dc5c7fb9c7"
+        },
+        {
+          "id": "KZ-ALMATY-PKK-20311023331",
+          "geometrySha256": "6d182510264c030a5b617de61ee317957d7ea7e18e44428c73571186145ce9a3"
+        },
+        {
+          "id": "KZ-ALMATY-PKK-20311023389",
+          "geometrySha256": "6754c8a25dd09106c0f7043585ab7ab21b54c9bc26673c6727b8712d4f08573d"
+        },
+        {
+          "id": "KZ-ALMATY-PKK-20311023240",
+          "geometrySha256": "4bfbc43351e8fc4ab0d6a0c1639b075a629672b035c0c05298e48c1ff5e3eda8"
+        },
+        {
+          "id": "KZ-ALMATY-PKK-20311023101",
+          "geometrySha256": "57d8fae07deabd821e554a3854a9214b007c72f02895b47e5d015219d0c0fb43"
+        },
+        {
+          "id": "KZ-ALMATY-PKK-20311024080",
+          "geometrySha256": "19fb2d0fbbe7dbb1e64fdab928c6fbc703be2b9efc66aa48f1cd94cfe1899daf"
+        },
+        {
+          "id": "KZ-ALMATY-PKK-20311023137",
+          "geometrySha256": "c61a7dcc8566ff5bdc61d77fdf58c6df82c360136db6feeaba71cd2132d4c347"
+        },
+        {
+          "id": "KZ-ALMATY-PKK-20311023084",
+          "geometrySha256": "4344f654856aadedaac132078094ad917363e72e01d6d1c4675aafea7a92a917"
+        },
+        {
+          "id": "KZ-ALMATY-PKK-20311024012",
+          "geometrySha256": "5521d6fcbba787a81fc5fd30d1fda329f3d03d959b4685c833bb085f1050ad52"
+        },
+        {
+          "id": "KZ-ALMATY-PKK-20311023355",
+          "geometrySha256": "dee5a436bf0cc714b310e8efd779991d6d2e81cbb68921e6493742e66baa628f"
+        },
+        {
+          "id": "KZ-ALMATY-PKK-20311023368",
+          "geometrySha256": "37ad199b8ad089d521f69322864cc8374ed97dfef344f1cf0b09bea2958c22d9"
+        },
+        {
+          "id": "KZ-ALMATY-PKK-20311024089",
+          "geometrySha256": "636deba3c62b0c5237546d200fd7a3f678d65b32343c16d1863ccbe0064d64cd"
+        },
+        {
+          "id": "KZ-ALMATY-PKK-20311023433",
+          "geometrySha256": "36f469a6b1b8738d5ac479dc1f31f7cbc01bc98f03f921a6b8a3c303c93baadc"
+        }
+      ]
+    },
+    {
+      "name": "viewport-7",
+      "passed": true,
+      "elapsedMs": 175,
+      "requestIndexes": [
+        7,
+        7
+      ],
+      "bbox": [
+        76.909,
+        43.262,
+        76.91,
+        43.263
+      ],
+      "complete": true,
+      "count": 16,
+      "ids": [
+        {
+          "id": "KZ-ALMATY-PKK-20311023243",
+          "geometrySha256": "8f1fd03818f2f27089cd3053282315f65ae42ca27bc6e0ac2d2d3316271d93db"
+        },
+        {
+          "id": "KZ-ALMATY-PKK-20311023136",
+          "geometrySha256": "df68e33a5c443b8226e6a7540007f229536fd87bcb4cdb90f16cebecfe8a977f"
+        },
+        {
+          "id": "KZ-ALMATY-PKK-20311023144",
+          "geometrySha256": "ee8cb2a825c17269d624aa610ad4cb81700a9bf10082e6bdf281137aad70699a"
+        },
+        {
+          "id": "KZ-ALMATY-PKK-20311023341",
+          "geometrySha256": "9b88361e0e1baef7c9110533f2c35bd7096651e2510d016ebe253d94170b3033"
+        },
+        {
+          "id": "KZ-ALMATY-PKK-20311023120",
+          "geometrySha256": "ce2ac5f8dec66ee12b6e94b5c2fc24028ff994981622200524cb3f46b5424ea5"
+        },
+        {
+          "id": "KZ-ALMATY-PKK-20311023245",
+          "geometrySha256": "c815687e07897206f2f09fe94fcb87fd963c7118c9a1c55669c2fc068249ccb8"
+        },
+        {
+          "id": "KZ-ALMATY-PKK-20311023039",
+          "geometrySha256": "87e4f5a447021ca1d285b722733193a40404f2fab6b42f661408743f5c9c5886"
+        },
+        {
+          "id": "KZ-ALMATY-PKK-20311024003",
+          "geometrySha256": "d0822bd683279de065a79349174e1a1df1e5ab88f96edea91c9bc670ad444eff"
+        },
+        {
+          "id": "KZ-ALMATY-PKK-20311023317",
+          "geometrySha256": "1d65b4892550914a8ca32e4854e9b6c24aca451ff4ed2a4857b0ca6a4aa8d9a8"
+        },
+        {
+          "id": "KZ-ALMATY-PKK-20311023360",
+          "geometrySha256": "98cb295b0edacbf4de218c6166276cf3f9341bba219a96713bee99317010b9da"
+        },
+        {
+          "id": "KZ-ALMATY-PKK-20311023198",
+          "geometrySha256": "f9b56d2f369fa84a4911e79f76bf37f892a7b9b508196420bb3f0ec485687ca5"
+        },
+        {
+          "id": "KZ-ALMATY-PKK-20311023316",
+          "geometrySha256": "1747acbccba98227eac8d57dc81b54ea66eaafd55a7a52ab288eaf2963596f8d"
+        },
+        {
+          "id": "KZ-ALMATY-PKK-20311024012",
+          "geometrySha256": "5521d6fcbba787a81fc5fd30d1fda329f3d03d959b4685c833bb085f1050ad52"
+        },
+        {
+          "id": "KZ-ALMATY-PKK-20311023368",
+          "geometrySha256": "37ad199b8ad089d521f69322864cc8374ed97dfef344f1cf0b09bea2958c22d9"
+        },
+        {
+          "id": "KZ-ALMATY-PKK-20311024089",
+          "geometrySha256": "636deba3c62b0c5237546d200fd7a3f678d65b32343c16d1863ccbe0064d64cd"
+        },
+        {
+          "id": "KZ-ALMATY-PKK-20311023178",
+          "geometrySha256": "9860686c387056aec854a171d174e7d411b8eaed26179da2d909a9bbd42636ad"
+        }
+      ]
+    },
+    {
+      "name": "viewport-8",
+      "passed": true,
+      "elapsedMs": 159,
+      "requestIndexes": [
+        8,
+        8
+      ],
+      "bbox": [
+        76.91,
+        43.262,
+        76.911,
+        43.263
+      ],
+      "complete": true,
+      "count": 27,
+      "ids": [
+        {
+          "id": "KZ-ALMATY-PKK-20311023026",
+          "geometrySha256": "f42541aed6c9506c5d99fc6bf0e64b990763a1d0a58a6dd63449261963ad9f49"
+        },
+        {
+          "id": "KZ-ALMATY-PKK-20311023450",
+          "geometrySha256": "f12864c5335b7112a9d1f1833bd4970e8a8b415675818a514c27d537017ccb6d"
+        },
+        {
+          "id": "KZ-ALMATY-PKK-20311023144",
+          "geometrySha256": "ee8cb2a825c17269d624aa610ad4cb81700a9bf10082e6bdf281137aad70699a"
+        },
+        {
+          "id": "KZ-ALMATY-PKK-20311023018",
+          "geometrySha256": "0ee93f3d7ac46c35b83022f296865e642ead399db78ef46bd107cf30d2797777"
+        },
+        {
+          "id": "KZ-ALMATY-PKK-20311023120",
+          "geometrySha256": "ce2ac5f8dec66ee12b6e94b5c2fc24028ff994981622200524cb3f46b5424ea5"
+        },
+        {
+          "id": "KZ-ALMATY-PKK-20311023385",
+          "geometrySha256": "db52b3976400cde0beae660d90cea06e38af1f4fd96e3a77e0ecc51dc589efb2"
+        },
+        {
+          "id": "KZ-ALMATY-PKK-20311023141",
+          "geometrySha256": "0766ca5a0e0cbc110007c0c4f210e6379799d7d210f1999cc0575451078c90ab"
+        },
+        {
+          "id": "KZ-ALMATY-PKK-20311023039",
+          "geometrySha256": "87e4f5a447021ca1d285b722733193a40404f2fab6b42f661408743f5c9c5886"
+        },
+        {
+          "id": "KZ-ALMATY-PKK-20311023305",
+          "geometrySha256": "dbe89088c99809d2e5b7ac434b4b896dbd3ddce90c13aa3f1166a6ef35840f10"
+        },
+        {
+          "id": "KZ-ALMATY-PKK-20311023290",
+          "geometrySha256": "368972688a28366a322c620289bd3b2b9bb9fee0274f45f80e34a1d8bebe4ea9"
+        },
+        {
+          "id": "KZ-ALMATY-PKK-20311024003",
+          "geometrySha256": "d0822bd683279de065a79349174e1a1df1e5ab88f96edea91c9bc670ad444eff"
+        },
+        {
+          "id": "KZ-ALMATY-PKK-20311023317",
+          "geometrySha256": "1d65b4892550914a8ca32e4854e9b6c24aca451ff4ed2a4857b0ca6a4aa8d9a8"
+        },
+        {
+          "id": "KZ-ALMATY-PKK-20311023211",
+          "geometrySha256": "2fd4212e62db697320991bd794f6774e40e33619e13b60017fa91db3b3e9eaab"
+        },
+        {
+          "id": "KZ-ALMATY-PKK-20311023021",
+          "geometrySha256": "98211b423e826125b568c9d44508b8cbf3e6fdef6776a29b098e604c827b7941"
+        },
+        {
+          "id": "KZ-ALMATY-PKK-20311023386",
+          "geometrySha256": "07c172878447c4a94f78102e284a11b0506d1ad06533c5404febc41322eac05a"
+        },
+        {
+          "id": "KZ-ALMATY-PKK-20311023198",
+          "geometrySha256": "f9b56d2f369fa84a4911e79f76bf37f892a7b9b508196420bb3f0ec485687ca5"
+        },
+        {
+          "id": "KZ-ALMATY-PKK-20311023212",
+          "geometrySha256": "4a39bc09798d695d9ec80186828bf6369b6d777fd2e480d72c93e93125c76a9f"
+        },
+        {
+          "id": "KZ-ALMATY-PKK-20311023160",
+          "geometrySha256": "d80f1d675f04c7d6f11c9e2dcca175cb195aa389fffe43f02a9ce51c7013377b"
+        },
+        {
+          "id": "KZ-ALMATY-PKK-20311023231",
+          "geometrySha256": "65a19cebe4b8188d66493003e064877f03dfd03beffc98e12a68c323ef2d1cc9"
+        },
+        {
+          "id": "KZ-ALMATY-PKK-20311023390",
+          "geometrySha256": "548ee7f30589f459cf183d449b31343754f0a2ec16f4d2e7acfc9f45a1bfdec5"
+        },
+        {
+          "id": "KZ-ALMATY-PKK-20311023060",
+          "geometrySha256": "e5bebfcd729463f3dd043259b9df442a5330492244ba96514523636035df1cb8"
+        },
+        {
+          "id": "KZ-ALMATY-PKK-20311024012",
+          "geometrySha256": "5521d6fcbba787a81fc5fd30d1fda329f3d03d959b4685c833bb085f1050ad52"
+        },
+        {
+          "id": "KZ-ALMATY-PKK-20311023264",
+          "geometrySha256": "bcaf75282efba35b02bfa78e60c2600e15374435002cb2c518d347a0fde0e653"
+        },
+        {
+          "id": "KZ-ALMATY-PKK-20311023368",
+          "geometrySha256": "37ad199b8ad089d521f69322864cc8374ed97dfef344f1cf0b09bea2958c22d9"
+        },
+        {
+          "id": "KZ-ALMATY-PKK-20311024089",
+          "geometrySha256": "636deba3c62b0c5237546d200fd7a3f678d65b32343c16d1863ccbe0064d64cd"
+        },
+        {
+          "id": "KZ-ALMATY-PKK-20311023128",
+          "geometrySha256": "03420b603baed067cb0e99005c6ad84c8a70bd6c4a1e5327c6b4b32763948d55"
+        },
+        {
+          "id": "KZ-ALMATY-PKK-20311023178",
+          "geometrySha256": "9860686c387056aec854a171d174e7d411b8eaed26179da2d909a9bbd42636ad"
+        }
+      ]
+    },
+    {
+      "name": "viewport-9",
+      "passed": true,
+      "elapsedMs": 169,
+      "requestIndexes": [
+        9,
+        9
+      ],
+      "bbox": [
+        76.909,
+        43.259,
+        76.91,
+        43.26
+      ],
+      "complete": true,
+      "count": 5,
+      "ids": [
+        {
+          "id": "KZ-ALMATY-PKK-20311024128",
+          "geometrySha256": "81e114ee008a5f06280581ec18bd0fdd764f9f98a30e49bfa899ca58b94de4bc"
+        },
+        {
+          "id": "KZ-ALMATY-PKK-20311024010",
+          "geometrySha256": "f4232b6a59c6388f63f28aa132625454f806e89b65f8d5e68d3666b82d91064f"
+        },
+        {
+          "id": "KZ-ALMATY-PKK-20311024012",
+          "geometrySha256": "5521d6fcbba787a81fc5fd30d1fda329f3d03d959b4685c833bb085f1050ad52"
+        },
+        {
+          "id": "KZ-ALMATY-PKK-20311023368",
+          "geometrySha256": "37ad199b8ad089d521f69322864cc8374ed97dfef344f1cf0b09bea2958c22d9"
+        },
+        {
+          "id": "KZ-ALMATY-PKK-20311024089",
+          "geometrySha256": "636deba3c62b0c5237546d200fd7a3f678d65b32343c16d1863ccbe0064d64cd"
+        }
+      ]
+    },
+    {
+      "name": "viewport-10",
+      "passed": true,
+      "elapsedMs": 158,
+      "requestIndexes": [
+        10,
+        10
+      ],
+      "bbox": [
+        76.909,
+        43.263,
+        76.91,
+        43.264
+      ],
+      "complete": true,
+      "count": 23,
+      "ids": [
+        {
+          "id": "KZ-ALMATY-PKK-20311023275",
+          "geometrySha256": "0650b451a9fac1c74f7c57cc3461f8d19d3feb14746e93fd0c41ccd367f0025b"
+        },
+        {
+          "id": "KZ-ALMATY-PKK-20311023052",
+          "geometrySha256": "0e49b97d542c6df7b32a874343e37fb74d67940d77df82f80f1b8ab29cfd3932"
+        },
+        {
+          "id": "KZ-ALMATY-PKK-20311023278",
+          "geometrySha256": "ab008bd0a5606a23eb1e888e4070fc4f60159d4ccaaaacf90bd10b133a078cc9"
+        },
+        {
+          "id": "KZ-ALMATY-PKK-20311023245",
+          "geometrySha256": "c815687e07897206f2f09fe94fcb87fd963c7118c9a1c55669c2fc068249ccb8"
+        },
+        {
+          "id": "KZ-ALMATY-PKK-20311023169",
+          "geometrySha256": "bd479892ad8e5aaedceee68ac688d96caeab7993cfcbfa5667d80456a7d9d210"
+        },
+        {
+          "id": "KZ-ALMATY-PKK-20311023403",
+          "geometrySha256": "9ee14abf17a543ef48ac7e39e08db4f7c4515de835b1ef82b9b6e3c59e0ba3e7"
+        },
+        {
+          "id": "KZ-ALMATY-PKK-20311023228",
+          "geometrySha256": "f94a2222f47cce3a1bea676f0b427d8e3266841823f90a8d7dfa0205888c34d6"
+        },
+        {
+          "id": "KZ-ALMATY-PKK-20311023282",
+          "geometrySha256": "609339e883e90215b71e8bc82bc8492ce0af0566d09f0795907737f6afdb4956"
+        },
+        {
+          "id": "KZ-ALMATY-PKK-20311023317",
+          "geometrySha256": "1d65b4892550914a8ca32e4854e9b6c24aca451ff4ed2a4857b0ca6a4aa8d9a8"
+        },
+        {
+          "id": "KZ-ALMATY-PKK-20311023303",
+          "geometrySha256": "61514fbece6474fc05c2f89e36aa0c37e91293b4e5332baa75f006cc35fecca8"
+        },
+        {
+          "id": "KZ-ALMATY-PKK-20311023360",
+          "geometrySha256": "98cb295b0edacbf4de218c6166276cf3f9341bba219a96713bee99317010b9da"
+        },
+        {
+          "id": "KZ-ALMATY-PKK-20311023281",
+          "geometrySha256": "cfd6ef94b9c0dbeccd2a55968b8d4abd36effef0d04d7be2637429d29cf3c2e7"
+        },
+        {
+          "id": "KZ-ALMATY-PKK-20311023198",
+          "geometrySha256": "f9b56d2f369fa84a4911e79f76bf37f892a7b9b508196420bb3f0ec485687ca5"
+        },
+        {
+          "id": "KZ-ALMATY-PKK-20311023241",
+          "geometrySha256": "0402d1e153c436fdd14d6eae04e0de1f6fdb4bb3c3f72f2cef7d052260cfd355"
+        },
+        {
+          "id": "KZ-ALMATY-PKK-20311023062",
+          "geometrySha256": "cd483de1915c058dcbdd011ceaf4908bee28b9064323a0eda2db648cba367a68"
+        },
+        {
+          "id": "KZ-ALMATY-PKK-20311023181",
+          "geometrySha256": "d7e7614c3fbbc7f867edf7563cb2622d8de560fe51c3ea16ce7f6a60b2388417"
+        },
+        {
+          "id": "KZ-ALMATY-PKK-20311023025",
+          "geometrySha256": "d70d471a42ef772e7540e2c88982bba1cac3e603f93f5f2796a2d092a914f6f7"
+        },
+        {
+          "id": "KZ-ALMATY-PKK-20311023227",
+          "geometrySha256": "01427571c43529d72cf59139642d3d470b5013e255f58865b1d32b51852df1ce"
+        },
+        {
+          "id": "KZ-ALMATY-PKK-20311023311",
+          "geometrySha256": "42507b4c214f2b391131ff0f3caf8021569393fa2835a3b42f247a0574b4196b"
+        },
+        {
+          "id": "KZ-ALMATY-PKK-20311023329",
+          "geometrySha256": "b9d5d6d1bd1fc814d402371a0d2860f36ddb8ee7ea3e5ce42f822b051e41e6bf"
+        },
+        {
+          "id": "KZ-ALMATY-PKK-20311023219",
+          "geometrySha256": "e9c5e18bbdd119055dbf280397b7d2c32f23fc05bec543335b56a7924cc24a76"
+        },
+        {
+          "id": "KZ-ALMATY-PKK-20311023368",
+          "geometrySha256": "37ad199b8ad089d521f69322864cc8374ed97dfef344f1cf0b09bea2958c22d9"
+        },
+        {
+          "id": "KZ-ALMATY-PKK-20311024089",
+          "geometrySha256": "636deba3c62b0c5237546d200fd7a3f678d65b32343c16d1863ccbe0064d64cd"
+        }
+      ]
+    },
+    {
+      "name": "viewport-11",
+      "passed": true,
+      "elapsedMs": 161,
+      "requestIndexes": [
+        11,
+        11
+      ],
+      "bbox": [
+        76.907,
+        43.261,
+        76.908,
+        43.262
+      ],
+      "complete": true,
+      "count": 6,
+      "ids": [
+        {
+          "id": "KZ-ALMATY-PKK-20311024080",
+          "geometrySha256": "19fb2d0fbbe7dbb1e64fdab928c6fbc703be2b9efc66aa48f1cd94cfe1899daf"
+        },
+        {
+          "id": "KZ-ALMATY-PKK-20311024012",
+          "geometrySha256": "5521d6fcbba787a81fc5fd30d1fda329f3d03d959b4685c833bb085f1050ad52"
+        },
+        {
+          "id": "KZ-ALMATY-PKK-20311024082",
+          "geometrySha256": "dbf3aad5e4d1e8c94d4eef0807c844f6325df2363c18345cf3f1d18226ad1cd9"
+        },
+        {
+          "id": "KZ-ALMATY-PKK-20311023368",
+          "geometrySha256": "37ad199b8ad089d521f69322864cc8374ed97dfef344f1cf0b09bea2958c22d9"
+        },
+        {
+          "id": "KZ-ALMATY-PKK-20311024089",
+          "geometrySha256": "636deba3c62b0c5237546d200fd7a3f678d65b32343c16d1863ccbe0064d64cd"
+        },
+        {
+          "id": "KZ-ALMATY-PKK-20311023433",
+          "geometrySha256": "36f469a6b1b8738d5ac479dc1f31f7cbc01bc98f03f921a6b8a3c303c93baadc"
+        }
+      ]
+    },
+    {
+      "name": "viewport-12",
+      "passed": true,
+      "elapsedMs": 167,
+      "requestIndexes": [
+        12,
+        12
+      ],
+      "bbox": [
+        76.911,
+        43.261,
+        76.912,
+        43.262
+      ],
+      "complete": true,
+      "count": 12,
+      "ids": [
+        {
+          "id": "KZ-ALMATY-PKK-20311023250",
+          "geometrySha256": "1eadf4a19562588576def74a3646fc7d055531b39e6e00151af630b1d2c064d1"
+        },
+        {
+          "id": "KZ-ALMATY-PKK-20311023026",
+          "geometrySha256": "f42541aed6c9506c5d99fc6bf0e64b990763a1d0a58a6dd63449261963ad9f49"
+        },
+        {
+          "id": "KZ-ALMATY-PKK-20311023143",
+          "geometrySha256": "0a09b6ea522fe236d806c3d18c5a1e0073a906d47ca0a8a5a41c795310235d6f"
+        },
+        {
+          "id": "KZ-ALMATY-PKK-20311023099",
+          "geometrySha256": "7b9f6d2c2c1d05aa55f90e9ca3383aec7a20df27e036f7da268cb7c6c0d667a0"
+        },
+        {
+          "id": "KZ-ALMATY-PKK-20311023168",
+          "geometrySha256": "4f15936fd0278faeac884320e3c1b6db4af0a262123505cadc406ef8fc957e8e"
+        },
+        {
+          "id": "KZ-ALMATY-PKK-20311023323",
+          "geometrySha256": "6e861ffe5d976d4e9efab66fe1938b21ba89c231ef713917af294af1860b3f3d"
+        },
+        {
+          "id": "KZ-ALMATY-PKK-20311023160",
+          "geometrySha256": "d80f1d675f04c7d6f11c9e2dcca175cb195aa389fffe43f02a9ce51c7013377b"
+        },
+        {
+          "id": "KZ-ALMATY-PKK-20311023078",
+          "geometrySha256": "b70666102e2593d5ca209d19b5597ace6adc7b5edfdcd663dfb0df06697aabc6"
+        },
+        {
+          "id": "KZ-ALMATY-PKK-20311023161",
+          "geometrySha256": "92f0d41a8bf10ea2b71151f162903f62188cb9ad666827003f7fc5eccee55575"
+        },
+        {
+          "id": "KZ-ALMATY-PKK-20311023297",
+          "geometrySha256": "60ec9603787c98ba8addd3ec6b03312cae3a34df5443465cbdd0aab81b3d357f"
+        },
+        {
+          "id": "KZ-ALMATY-PKK-20311023083",
+          "geometrySha256": "605fe3946f7f945751b3ae119c74c965e44b5feb056b54876bf57f718d9e5882"
+        },
+        {
+          "id": "KZ-ALMATY-PKK-20311023368",
+          "geometrySha256": "37ad199b8ad089d521f69322864cc8374ed97dfef344f1cf0b09bea2958c22d9"
+        }
+      ]
+    },
+    {
+      "name": "forced-three-row-pages",
+      "passed": true,
+      "elapsedMs": 1618,
+      "requestIndexes": [
+        13,
+        21
+      ],
+      "count": 27,
+      "geometryPages": 9,
+      "pageSize": 3,
+      "allGeometryHashesMatch": true
+    },
+    {
+      "name": "fresh-ids-0",
+      "passed": true,
+      "elapsedMs": 402,
+      "requestIndexes": [
+        22,
+        23
+      ],
+      "count": 40,
+      "ids": [
+        "KZ-ALMATY-PKK-20311023018",
+        "KZ-ALMATY-PKK-20311023021",
+        "KZ-ALMATY-PKK-20311023025",
+        "KZ-ALMATY-PKK-20311023026",
+        "KZ-ALMATY-PKK-20311023039",
+        "KZ-ALMATY-PKK-20311023052",
+        "KZ-ALMATY-PKK-20311023060",
+        "KZ-ALMATY-PKK-20311023062",
+        "KZ-ALMATY-PKK-20311023078",
+        "KZ-ALMATY-PKK-20311023083",
+        "KZ-ALMATY-PKK-20311023084",
+        "KZ-ALMATY-PKK-20311023099",
+        "KZ-ALMATY-PKK-20311023101",
+        "KZ-ALMATY-PKK-20311023120",
+        "KZ-ALMATY-PKK-20311023128",
+        "KZ-ALMATY-PKK-20311023136",
+        "KZ-ALMATY-PKK-20311023137",
+        "KZ-ALMATY-PKK-20311023141",
+        "KZ-ALMATY-PKK-20311023143",
+        "KZ-ALMATY-PKK-20311023144",
+        "KZ-ALMATY-PKK-20311023160",
+        "KZ-ALMATY-PKK-20311023161",
+        "KZ-ALMATY-PKK-20311023168",
+        "KZ-ALMATY-PKK-20311023169",
+        "KZ-ALMATY-PKK-20311023178",
+        "KZ-ALMATY-PKK-20311023181",
+        "KZ-ALMATY-PKK-20311023198",
+        "KZ-ALMATY-PKK-20311023211",
+        "KZ-ALMATY-PKK-20311023212",
+        "KZ-ALMATY-PKK-20311023219",
+        "KZ-ALMATY-PKK-20311023227",
+        "KZ-ALMATY-PKK-20311023228",
+        "KZ-ALMATY-PKK-20311023231",
+        "KZ-ALMATY-PKK-20311023240",
+        "KZ-ALMATY-PKK-20311023241",
+        "KZ-ALMATY-PKK-20311023243",
+        "KZ-ALMATY-PKK-20311023245",
+        "KZ-ALMATY-PKK-20311023250",
+        "KZ-ALMATY-PKK-20311023264",
+        "KZ-ALMATY-PKK-20311023275"
+      ],
+      "allGeometryHashesMatch": true,
+      "absentIds": []
+    },
+    {
+      "name": "fresh-ids-40",
+      "passed": true,
+      "elapsedMs": 561,
+      "requestIndexes": [
+        24,
+        25
+      ],
+      "count": 40,
+      "ids": [
+        "KZ-ALMATY-PKK-20311023278",
+        "KZ-ALMATY-PKK-20311023281",
+        "KZ-ALMATY-PKK-20311023282",
+        "KZ-ALMATY-PKK-20311023290",
+        "KZ-ALMATY-PKK-20311023297",
+        "KZ-ALMATY-PKK-20311023303",
+        "KZ-ALMATY-PKK-20311023305",
+        "KZ-ALMATY-PKK-20311023311",
+        "KZ-ALMATY-PKK-20311023316",
+        "KZ-ALMATY-PKK-20311023317",
+        "KZ-ALMATY-PKK-20311023319",
+        "KZ-ALMATY-PKK-20311023322",
+        "KZ-ALMATY-PKK-20311023323",
+        "KZ-ALMATY-PKK-20311023328",
+        "KZ-ALMATY-PKK-20311023329",
+        "KZ-ALMATY-PKK-20311023331",
+        "KZ-ALMATY-PKK-20311023341",
+        "KZ-ALMATY-PKK-20311023351",
+        "KZ-ALMATY-PKK-20311023355",
+        "KZ-ALMATY-PKK-20311023360",
+        "KZ-ALMATY-PKK-20311023363",
+        "KZ-ALMATY-PKK-20311023368",
+        "KZ-ALMATY-PKK-20311023378",
+        "KZ-ALMATY-PKK-20311023385",
+        "KZ-ALMATY-PKK-20311023386",
+        "KZ-ALMATY-PKK-20311023389",
+        "KZ-ALMATY-PKK-20311023390",
+        "KZ-ALMATY-PKK-20311023403",
+        "KZ-ALMATY-PKK-20311023433",
+        "KZ-ALMATY-PKK-20311023450",
+        "KZ-ALMATY-PKK-20311024003",
+        "KZ-ALMATY-PKK-20311024010",
+        "KZ-ALMATY-PKK-20311024012",
+        "KZ-ALMATY-PKK-20311024028",
+        "KZ-ALMATY-PKK-20311024076",
+        "KZ-ALMATY-PKK-20311024080",
+        "KZ-ALMATY-PKK-20311024082",
+        "KZ-ALMATY-PKK-20311024089",
+        "KZ-ALMATY-PKK-20311024090",
+        "KZ-ALMATY-PKK-20311024109"
+      ],
+      "allGeometryHashesMatch": true,
+      "absentIds": []
+    },
+    {
+      "name": "fresh-ids-80",
+      "passed": true,
+      "elapsedMs": 205,
+      "requestIndexes": [
+        26,
+        26
+      ],
+      "count": 1,
+      "ids": [
+        "KZ-ALMATY-PKK-20311024128"
+      ],
+      "allGeometryHashesMatch": true,
+      "absentIds": []
+    },
+    {
+      "name": "explicit-absence",
+      "passed": true,
+      "elapsedMs": 233,
+      "requestIndexes": [
+        27,
+        27
+      ],
+      "absentIds": [
+        "KZ-ALMATY-PKK-99999999999999999999999"
+      ],
+      "complete": true
+    },
+    {
+      "name": "footprint",
+      "passed": true,
+      "elapsedMs": 254,
+      "requestIndexes": [
+        28,
+        28
+      ],
+      "selectedParcelId": "KZ-ALMATY-PKK-20311023275",
+      "count": 4,
+      "allGeometryHashesMatch": true
+    },
+    {
+      "name": "source-binding",
+      "passed": true,
+      "elapsedMs": 889,
+      "requestIndexes": [
+        29,
+        29
+      ],
+      "selectedParcelId": "KZ-ALMATY-PKK-20311023275",
+      "coverage": "complete",
+      "siteM2": 703.12,
+      "boundParcels": 2
+    }
+  ],
+  "requests": [
+    {
+      "test": "viewport-0",
+      "url": "https://map.gov4c.kz/geoserver/wfs?service=WFS&version=2.0.0&request=GetFeature&typename=egkn%3Au_view&outputFormat=application%2Fjson&srsname=EPSG%3A32643&propertyname=gid%2Ckad_nomer%2Cgeom&count=1000&startIndex=0&sortBy=gid&viewparams=district_id%3A244&bbox=654859.8488646412%2C4791455.441635649%2C654943.5509567565%2C4791568.35236448%2CEPSG%3A32643",
+      "method": "GET",
+      "checkedAt": "2026-10-08T20:36:16.263Z",
+      "httpStatus": 200,
+      "contentType": "application/json;charset=utf-8",
+      "bytes": 30473,
+      "numberMatched": 6,
+      "numberReturned": 6,
+      "features": [
+        {
+          "transportId": "u_view.fid-1c0d636f_1a11d3a7593_-469e",
+          "properties": {
+            "gid": 7235590,
+            "kad_nomer": "20311024128"
+          },
+          "geometrySha256": "ca959df9d80a0ef1f7b4f74acaf34691d8eb3973129c4f5155315ddbeff7d5e9"
+        },
+        {
+          "transportId": "u_view.fid-1c0d636f_1a11d3a7593_-469d",
+          "properties": {
+            "gid": 7236597,
+            "kad_nomer": "20311024010"
+          },
+          "geometrySha256": "286c0f985e03549c7448b34629a937465965ff82f32bc75ab033eefa789d0553"
+        },
+        {
+          "transportId": "u_view.fid-1c0d636f_1a11d3a7593_-469c",
+          "properties": {
+            "gid": 7236956,
+            "kad_nomer": "20311024012"
+          },
+          "geometrySha256": "317a12c658a0eeab98c9f4b9895ec83c8f681382c74007576dbf582c8083b761"
+        },
+        {
+          "transportId": "u_view.fid-1c0d636f_1a11d3a7593_-469b",
+          "properties": {
+            "gid": 7593170,
+            "kad_nomer": "20311023368"
+          },
+          "geometrySha256": "d30a73f826b070616217c07c38f09ad03c60c37372a332373b4116e99d8a796f"
+        },
+        {
+          "transportId": "u_view.fid-1c0d636f_1a11d3a7593_-469a",
+          "properties": {
+            "gid": 7593268,
+            "kad_nomer": "20311024089"
+          },
+          "geometrySha256": "231e16bf0d118f125b08d8da95a8f47d734f33142d638900d84b900ea10d49af"
+        },
+        {
+          "transportId": "u_view.fid-1c0d636f_1a11d3a7593_-4699",
+          "properties": {
+            "gid": 8148967,
+            "kad_nomer": "20311024090"
+          },
+          "geometrySha256": "f613c20e16e9a0d69143a321cd1bd876d64436da998f43799ec8400839c28435"
+        }
+      ]
+    },
+    {
+      "test": "viewport-1",
+      "url": "https://map.gov4c.kz/geoserver/wfs?service=WFS&version=2.0.0&request=GetFeature&typename=egkn%3Au_view&outputFormat=application%2Fjson&srsname=EPSG%3A32643&propertyname=gid%2Ckad_nomer%2Cgeom&count=1000&startIndex=0&sortBy=gid&viewparams=district_id%3A244&bbox=654941.0141762004%2C4791457.29514944%2C655024.717601178%2C4791570.206854258%2CEPSG%3A32643",
+      "method": "GET",
+      "checkedAt": "2026-10-08T20:36:16.962Z",
+      "httpStatus": 200,
+      "contentType": "application/json;charset=utf-8",
+      "bytes": 29772,
+      "numberMatched": 5,
+      "numberReturned": 5,
+      "features": [
+        {
+          "transportId": "u_view.fid--573cc778_1a11d3a63c6_-1543",
+          "properties": {
+            "gid": 7235590,
+            "kad_nomer": "20311024128"
+          },
+          "geometrySha256": "ca959df9d80a0ef1f7b4f74acaf34691d8eb3973129c4f5155315ddbeff7d5e9"
+        },
+        {
+          "transportId": "u_view.fid--573cc778_1a11d3a63c6_-1542",
+          "properties": {
+            "gid": 7236597,
+            "kad_nomer": "20311024010"
+          },
+          "geometrySha256": "286c0f985e03549c7448b34629a937465965ff82f32bc75ab033eefa789d0553"
+        },
+        {
+          "transportId": "u_view.fid--573cc778_1a11d3a63c6_-1541",
+          "properties": {
+            "gid": 7236956,
+            "kad_nomer": "20311024012"
+          },
+          "geometrySha256": "317a12c658a0eeab98c9f4b9895ec83c8f681382c74007576dbf582c8083b761"
+        },
+        {
+          "transportId": "u_view.fid--573cc778_1a11d3a63c6_-1540",
+          "properties": {
+            "gid": 7593170,
+            "kad_nomer": "20311023368"
+          },
+          "geometrySha256": "d30a73f826b070616217c07c38f09ad03c60c37372a332373b4116e99d8a796f"
+        },
+        {
+          "transportId": "u_view.fid--573cc778_1a11d3a63c6_-153f",
+          "properties": {
+            "gid": 7593268,
+            "kad_nomer": "20311024089"
+          },
+          "geometrySha256": "231e16bf0d118f125b08d8da95a8f47d734f33142d638900d84b900ea10d49af"
+        }
+      ]
+    },
+    {
+      "test": "viewport-2",
+      "url": "https://map.gov4c.kz/geoserver/wfs?service=WFS&version=2.0.0&request=GetFeature&typename=egkn%3Au_view&outputFormat=application%2Fjson&srsname=EPSG%3A32643&propertyname=gid%2Ckad_nomer%2Cgeom&count=1000&startIndex=0&sortBy=gid&viewparams=district_id%3A244&bbox=655022.179490687%2C4791459.149635209%2C655105.8842485303%2C4791572.062316017%2CEPSG%3A32643",
+      "method": "GET",
+      "checkedAt": "2026-10-08T20:36:17.134Z",
+      "httpStatus": 200,
+      "contentType": "application/json;charset=utf-8",
+      "bytes": 28175,
+      "numberMatched": 4,
+      "numberReturned": 4,
+      "features": [
+        {
+          "transportId": "u_view.fid--3f0c7dfc_1a11d39a11a_7561",
+          "properties": {
+            "gid": 7236597,
+            "kad_nomer": "20311024010"
+          },
+          "geometrySha256": "286c0f985e03549c7448b34629a937465965ff82f32bc75ab033eefa789d0553"
+        },
+        {
+          "transportId": "u_view.fid--3f0c7dfc_1a11d39a11a_7562",
+          "properties": {
+            "gid": 7236956,
+            "kad_nomer": "20311024012"
+          },
+          "geometrySha256": "317a12c658a0eeab98c9f4b9895ec83c8f681382c74007576dbf582c8083b761"
+        },
+        {
+          "transportId": "u_view.fid--3f0c7dfc_1a11d39a11a_7563",
+          "properties": {
+            "gid": 7593170,
+            "kad_nomer": "20311023368"
+          },
+          "geometrySha256": "d30a73f826b070616217c07c38f09ad03c60c37372a332373b4116e99d8a796f"
+        },
+        {
+          "transportId": "u_view.fid--3f0c7dfc_1a11d39a11a_7564",
+          "properties": {
+            "gid": 7593268,
+            "kad_nomer": "20311024089"
+          },
+          "geometrySha256": "231e16bf0d118f125b08d8da95a8f47d734f33142d638900d84b900ea10d49af"
+        }
+      ]
+    },
+    {
+      "test": "viewport-3",
+      "url": "https://map.gov4c.kz/geoserver/wfs?service=WFS&version=2.0.0&request=GetFeature&typename=egkn%3Au_view&outputFormat=application%2Fjson&srsname=EPSG%3A32643&propertyname=gid%2Ckad_nomer%2Cgeom&count=1000&startIndex=0&sortBy=gid&viewparams=district_id%3A244&bbox=654857.3133665994%2C4791566.498846683%2C654941.0141762004%2C4791679.409596854%2CEPSG%3A32643",
+      "method": "GET",
+      "checkedAt": "2026-10-08T20:36:17.299Z",
+      "httpStatus": 200,
+      "contentType": "application/json;charset=utf-8",
+      "bytes": 31349,
+      "numberMatched": 8,
+      "numberReturned": 8,
+      "features": [
+        {
+          "transportId": "u_view.fid-1c0d636f_1a11d3a7593_-4698",
+          "properties": {
+            "gid": 7235090,
+            "kad_nomer": "20311024080"
+          },
+          "geometrySha256": "588c46b47308439e066c28b106ce82d48d5762d5ccdc350e163878221de55f68"
+        },
+        {
+          "transportId": "u_view.fid-1c0d636f_1a11d3a7593_-4697",
+          "properties": {
+            "gid": 7235500,
+            "kad_nomer": "20311024076"
+          },
+          "geometrySha256": "2e99ebff0c739e57d9341561b84cb3fa8144f23d0c1004d2fc9989538ac7773d"
+        },
+        {
+          "transportId": "u_view.fid-1c0d636f_1a11d3a7593_-4696",
+          "properties": {
+            "gid": 7236536,
+            "kad_nomer": "20311023084"
+          },
+          "geometrySha256": "a1b480728bbd15c0fc7a97c7aff820bc65fe26b3399937a6f1201aee67d69bf8"
+        },
+        {
+          "transportId": "u_view.fid-1c0d636f_1a11d3a7593_-4695",
+          "properties": {
+            "gid": 7236597,
+            "kad_nomer": "20311024010"
+          },
+          "geometrySha256": "286c0f985e03549c7448b34629a937465965ff82f32bc75ab033eefa789d0553"
+        },
+        {
+          "transportId": "u_view.fid-1c0d636f_1a11d3a7593_-4694",
+          "properties": {
+            "gid": 7236956,
+            "kad_nomer": "20311024012"
+          },
+          "geometrySha256": "317a12c658a0eeab98c9f4b9895ec83c8f681382c74007576dbf582c8083b761"
+        },
+        {
+          "transportId": "u_view.fid-1c0d636f_1a11d3a7593_-4693",
+          "properties": {
+            "gid": 7593170,
+            "kad_nomer": "20311023368"
+          },
+          "geometrySha256": "d30a73f826b070616217c07c38f09ad03c60c37372a332373b4116e99d8a796f"
+        },
+        {
+          "transportId": "u_view.fid-1c0d636f_1a11d3a7593_-4692",
+          "properties": {
+            "gid": 7593268,
+            "kad_nomer": "20311024089"
+          },
+          "geometrySha256": "231e16bf0d118f125b08d8da95a8f47d734f33142d638900d84b900ea10d49af"
+        },
+        {
+          "transportId": "u_view.fid-1c0d636f_1a11d3a7593_-4691",
+          "properties": {
+            "gid": 7778258,
+            "kad_nomer": "20311023433"
+          },
+          "geometrySha256": "3aa0689f0d85ba5802a9bfd97a9d8a53e2b5ad40fac5f197b0b4c39b53e261bd"
+        }
+      ]
+    },
+    {
+      "test": "viewport-4",
+      "url": "https://map.gov4c.kz/geoserver/wfs?service=WFS&version=2.0.0&request=GetFeature&typename=egkn%3Au_view&outputFormat=application%2Fjson&srsname=EPSG%3A32643&propertyname=gid%2Ckad_nomer%2Cgeom&count=1000&startIndex=0&sortBy=gid&viewparams=district_id%3A244&bbox=654938.4773482004%2C4791568.35236448%2C655022.179490687%2C4791681.264090637%2CEPSG%3A32643",
+      "method": "GET",
+      "checkedAt": "2026-10-08T20:36:17.465Z",
+      "httpStatus": 200,
+      "contentType": "application/json;charset=utf-8",
+      "bytes": 30380,
+      "numberMatched": 8,
+      "numberReturned": 8,
+      "features": [
+        {
+          "transportId": "u_view.fid--286ab7bd_1a11d3af199_1b0a",
+          "properties": {
+            "gid": 7230110,
+            "kad_nomer": "20311024028"
+          },
+          "geometrySha256": "97feb7dc62e5aebd78bffed11828d8a81ce36f00193c65a27f746043d0facfff"
+        },
+        {
+          "transportId": "u_view.fid--286ab7bd_1a11d3af199_1b0b",
+          "properties": {
+            "gid": 7230157,
+            "kad_nomer": "20311024003"
+          },
+          "geometrySha256": "c3e349cfac6359d2fef32b5a23256f599e90d40772c21a1bf2cf8639073463d2"
+        },
+        {
+          "transportId": "u_view.fid--286ab7bd_1a11d3af199_1b0c",
+          "properties": {
+            "gid": 7234784,
+            "kad_nomer": "20311024109"
+          },
+          "geometrySha256": "f26a9845cd2e462cda4cf7022a5a22980ea29255075361f4640e8a117ca7e2b6"
+        },
+        {
+          "transportId": "u_view.fid--286ab7bd_1a11d3af199_1b0d",
+          "properties": {
+            "gid": 7235500,
+            "kad_nomer": "20311024076"
+          },
+          "geometrySha256": "2e99ebff0c739e57d9341561b84cb3fa8144f23d0c1004d2fc9989538ac7773d"
+        },
+        {
+          "transportId": "u_view.fid--286ab7bd_1a11d3af199_1b0e",
+          "properties": {
+            "gid": 7236597,
+            "kad_nomer": "20311024010"
+          },
+          "geometrySha256": "286c0f985e03549c7448b34629a937465965ff82f32bc75ab033eefa789d0553"
+        },
+        {
+          "transportId": "u_view.fid--286ab7bd_1a11d3af199_1b0f",
+          "properties": {
+            "gid": 7236956,
+            "kad_nomer": "20311024012"
+          },
+          "geometrySha256": "317a12c658a0eeab98c9f4b9895ec83c8f681382c74007576dbf582c8083b761"
+        },
+        {
+          "transportId": "u_view.fid--286ab7bd_1a11d3af199_1b10",
+          "properties": {
+            "gid": 7593170,
+            "kad_nomer": "20311023368"
+          },
+          "geometrySha256": "d30a73f826b070616217c07c38f09ad03c60c37372a332373b4116e99d8a796f"
+        },
+        {
+          "transportId": "u_view.fid--286ab7bd_1a11d3af199_1b11",
+          "properties": {
+            "gid": 7593268,
+            "kad_nomer": "20311024089"
+          },
+          "geometrySha256": "231e16bf0d118f125b08d8da95a8f47d734f33142d638900d84b900ea10d49af"
+        }
+      ]
+    },
+    {
+      "test": "viewport-5",
+      "url": "https://map.gov4c.kz/geoserver/wfs?service=WFS&version=2.0.0&request=GetFeature&typename=egkn%3Au_view&outputFormat=application%2Fjson&srsname=EPSG%3A32643&propertyname=gid%2Ckad_nomer%2Cgeom&count=1000&startIndex=0&sortBy=gid&viewparams=district_id%3A244&bbox=655019.6413327272%2C4791570.206854258%2C655103.3448081024%2C4791683.119556405%2CEPSG%3A32643",
+      "method": "GET",
+      "checkedAt": "2026-10-08T20:36:17.641Z",
+      "httpStatus": 200,
+      "contentType": "application/json;charset=utf-8",
+      "bytes": 32252,
+      "numberMatched": 13,
+      "numberReturned": 13,
+      "features": [
+        {
+          "transportId": "u_view.fid-1c0d636f_1a11d3a7593_-467e",
+          "properties": {
+            "gid": 7230078,
+            "kad_nomer": "20311023026"
+          },
+          "geometrySha256": "d1667192a96474f734f1987aef382c32a20f19feb06131c85f3a0caf7fca803a"
+        },
+        {
+          "transportId": "u_view.fid-1c0d636f_1a11d3a7593_-467d",
+          "properties": {
+            "gid": 7230087,
+            "kad_nomer": "20311023143"
+          },
+          "geometrySha256": "1c6a5acaa73ccbbd4f2797bdcddeea1d52ee1d017866d911f004d5ec877b98cc"
+        },
+        {
+          "transportId": "u_view.fid-1c0d636f_1a11d3a7593_-467c",
+          "properties": {
+            "gid": 7230110,
+            "kad_nomer": "20311024028"
+          },
+          "geometrySha256": "97feb7dc62e5aebd78bffed11828d8a81ce36f00193c65a27f746043d0facfff"
+        },
+        {
+          "transportId": "u_view.fid-1c0d636f_1a11d3a7593_-467b",
+          "properties": {
+            "gid": 7230157,
+            "kad_nomer": "20311024003"
+          },
+          "geometrySha256": "c3e349cfac6359d2fef32b5a23256f599e90d40772c21a1bf2cf8639073463d2"
+        },
+        {
+          "transportId": "u_view.fid-1c0d636f_1a11d3a7593_-467a",
+          "properties": {
+            "gid": 7235106,
+            "kad_nomer": "20311023160"
+          },
+          "geometrySha256": "93a07f8fd93b64e83f18bc60350cc2fb2df35cbf1867897884de9c3236510522"
+        },
+        {
+          "transportId": "u_view.fid-1c0d636f_1a11d3a7593_-4679",
+          "properties": {
+            "gid": 7235118,
+            "kad_nomer": "20311023078"
+          },
+          "geometrySha256": "9c4cc62c075e417aa4ed6a7c79c198d5406505a2df0ffad479dcf63052909404"
+        },
+        {
+          "transportId": "u_view.fid-1c0d636f_1a11d3a7593_-4678",
+          "properties": {
+            "gid": 7235552,
+            "kad_nomer": "20311023390"
+          },
+          "geometrySha256": "ca57cee0ed4fa24dfd376e5d9bdd63e37547d4557cf62bdfb37c138d4c1e15a7"
+        },
+        {
+          "transportId": "u_view.fid-1c0d636f_1a11d3a7593_-4677",
+          "properties": {
+            "gid": 7236550,
+            "kad_nomer": "20311023297"
+          },
+          "geometrySha256": "3935fff58d95d37e7e8b52904442d56ae082c26afeffca0374fcb76683ad2df5"
+        },
+        {
+          "transportId": "u_view.fid-1c0d636f_1a11d3a7593_-4676",
+          "properties": {
+            "gid": 7236597,
+            "kad_nomer": "20311024010"
+          },
+          "geometrySha256": "286c0f985e03549c7448b34629a937465965ff82f32bc75ab033eefa789d0553"
+        },
+        {
+          "transportId": "u_view.fid-1c0d636f_1a11d3a7593_-4675",
+          "properties": {
+            "gid": 7236956,
+            "kad_nomer": "20311024012"
+          },
+          "geometrySha256": "317a12c658a0eeab98c9f4b9895ec83c8f681382c74007576dbf582c8083b761"
+        },
+        {
+          "transportId": "u_view.fid-1c0d636f_1a11d3a7593_-4674",
+          "properties": {
+            "gid": 7593170,
+            "kad_nomer": "20311023368"
+          },
+          "geometrySha256": "d30a73f826b070616217c07c38f09ad03c60c37372a332373b4116e99d8a796f"
+        },
+        {
+          "transportId": "u_view.fid-1c0d636f_1a11d3a7593_-4673",
+          "properties": {
+            "gid": 7593268,
+            "kad_nomer": "20311024089"
+          },
+          "geometrySha256": "231e16bf0d118f125b08d8da95a8f47d734f33142d638900d84b900ea10d49af"
+        },
+        {
+          "transportId": "u_view.fid-1c0d636f_1a11d3a7593_-4672",
+          "properties": {
+            "gid": 8009109,
+            "kad_nomer": "20311023128"
+          },
+          "geometrySha256": "a8aaedcff9e6f2c5c617a345b01d904b37f3eee5d4313a2fb07067f2b100537a"
+        }
+      ]
+    },
+    {
+      "test": "viewport-6",
+      "url": "https://map.gov4c.kz/geoserver/wfs?service=WFS&version=2.0.0&request=GetFeature&typename=egkn%3Au_view&outputFormat=application%2Fjson&srsname=EPSG%3A32643&propertyname=gid%2Ckad_nomer%2Cgeom&count=1000&startIndex=0&sortBy=gid&viewparams=district_id%3A244&bbox=654854.7778211394%2C4791677.556075054%2C654938.4773482004%2C4791790.466846562%2CEPSG%3A32643",
+      "method": "GET",
+      "checkedAt": "2026-10-08T20:36:17.835Z",
+      "httpStatus": 200,
+      "contentType": "application/json;charset=utf-8",
+      "bytes": 34871,
+      "numberMatched": 18,
+      "numberReturned": 18,
+      "features": [
+        {
+          "transportId": "u_view.fid--286ab7bd_1a11d3af199_1b4a",
+          "properties": {
+            "gid": 7229454,
+            "kad_nomer": "20311023319"
+          },
+          "geometrySha256": "f416e48acb8ae68f1cfc75e8240f8bdaf5a4873f6db5921eaef3c656f543a025"
+        },
+        {
+          "transportId": "u_view.fid--286ab7bd_1a11d3af199_1b4b",
+          "properties": {
+            "gid": 7229465,
+            "kad_nomer": "20311023328"
+          },
+          "geometrySha256": "a031e17af394220bb92031344945417e536bbe9701740ee2c485a013b71e4997"
+        },
+        {
+          "transportId": "u_view.fid--286ab7bd_1a11d3af199_1b4c",
+          "properties": {
+            "gid": 7230090,
+            "kad_nomer": "20311023322"
+          },
+          "geometrySha256": "650cb47cff4df189aea49f88bb92ab33c74b1eaedc1a733aa5f2aca899e33021"
+        },
+        {
+          "transportId": "u_view.fid--286ab7bd_1a11d3af199_1b4d",
+          "properties": {
+            "gid": 7230105,
+            "kad_nomer": "20311023378"
+          },
+          "geometrySha256": "af135216b6846da93f58493f2bf1283b15afc69b546c2456c4b9bc1c7b992d2b"
+        },
+        {
+          "transportId": "u_view.fid--286ab7bd_1a11d3af199_1b4e",
+          "properties": {
+            "gid": 7230119,
+            "kad_nomer": "20311023363"
+          },
+          "geometrySha256": "d3a81bfdf8c20a3d7938ce79aaa078f9f0e13c1a0d1270808b1984b9d5e18560"
+        },
+        {
+          "transportId": "u_view.fid--286ab7bd_1a11d3af199_1b4f",
+          "properties": {
+            "gid": 7230147,
+            "kad_nomer": "20311023351"
+          },
+          "geometrySha256": "021e57e7f89f4e66bec90f2243980d0e581073fecaf41b1cea54990a027f9ad2"
+        },
+        {
+          "transportId": "u_view.fid--286ab7bd_1a11d3af199_1b50",
+          "properties": {
+            "gid": 7230152,
+            "kad_nomer": "20311023331"
+          },
+          "geometrySha256": "ce975ec77a79920238f4c3288007fc86e27e20054f34d269a46ba45136b41f2a"
+        },
+        {
+          "transportId": "u_view.fid--286ab7bd_1a11d3af199_1b51",
+          "properties": {
+            "gid": 7230168,
+            "kad_nomer": "20311023389"
+          },
+          "geometrySha256": "aa9beb997beacc2b97fe130fee10f5dc54e468aaa5256d47ebcfccb1411bd817"
+        },
+        {
+          "transportId": "u_view.fid--286ab7bd_1a11d3af199_1b52",
+          "properties": {
+            "gid": 7230207,
+            "kad_nomer": "20311023240"
+          },
+          "geometrySha256": "33da6a9aa76b04d48b174996b6eb1efbf3fdc64c700f2e06631149242aae817c"
+        },
+        {
+          "transportId": "u_view.fid--286ab7bd_1a11d3af199_1b53",
+          "properties": {
+            "gid": 7230210,
+            "kad_nomer": "20311023101"
+          },
+          "geometrySha256": "32c17f65d4b6c22dd3d6de3a25bfc51e6ac9666dbe02e9851e4c37b1cca1d6fc"
+        },
+        {
+          "transportId": "u_view.fid--286ab7bd_1a11d3af199_1b54",
+          "properties": {
+            "gid": 7235090,
+            "kad_nomer": "20311024080"
+          },
+          "geometrySha256": "588c46b47308439e066c28b106ce82d48d5762d5ccdc350e163878221de55f68"
+        },
+        {
+          "transportId": "u_view.fid--286ab7bd_1a11d3af199_1b55",
+          "properties": {
+            "gid": 7235520,
+            "kad_nomer": "20311023137"
+          },
+          "geometrySha256": "9f1fdaa04da7c3142a6de0249fb1b199e0475a7e32b5c4c6928d184ce32d301c"
+        },
+        {
+          "transportId": "u_view.fid--286ab7bd_1a11d3af199_1b56",
+          "properties": {
+            "gid": 7236536,
+            "kad_nomer": "20311023084"
+          },
+          "geometrySha256": "a1b480728bbd15c0fc7a97c7aff820bc65fe26b3399937a6f1201aee67d69bf8"
+        },
+        {
+          "transportId": "u_view.fid--286ab7bd_1a11d3af199_1b57",
+          "properties": {
+            "gid": 7236956,
+            "kad_nomer": "20311024012"
+          },
+          "geometrySha256": "317a12c658a0eeab98c9f4b9895ec83c8f681382c74007576dbf582c8083b761"
+        },
+        {
+          "transportId": "u_view.fid--286ab7bd_1a11d3af199_1b58",
+          "properties": {
+            "gid": 7237553,
+            "kad_nomer": "20311023355"
+          },
+          "geometrySha256": "28efd95f902e17186e07d5e842102947851c179fd41d2ea4bec58654065049e4"
+        },
+        {
+          "transportId": "u_view.fid--286ab7bd_1a11d3af199_1b59",
+          "properties": {
+            "gid": 7593170,
+            "kad_nomer": "20311023368"
+          },
+          "geometrySha256": "d30a73f826b070616217c07c38f09ad03c60c37372a332373b4116e99d8a796f"
+        },
+        {
+          "transportId": "u_view.fid--286ab7bd_1a11d3af199_1b5a",
+          "properties": {
+            "gid": 7593268,
+            "kad_nomer": "20311024089"
+          },
+          "geometrySha256": "231e16bf0d118f125b08d8da95a8f47d734f33142d638900d84b900ea10d49af"
+        },
+        {
+          "transportId": "u_view.fid--286ab7bd_1a11d3af199_1b5b",
+          "properties": {
+            "gid": 7778258,
+            "kad_nomer": "20311023433"
+          },
+          "geometrySha256": "3aa0689f0d85ba5802a9bfd97a9d8a53e2b5ad40fac5f197b0b4c39b53e261bd"
+        }
+      ]
+    },
+    {
+      "test": "viewport-7",
+      "url": "https://map.gov4c.kz/geoserver/wfs?service=WFS&version=2.0.0&request=GetFeature&typename=egkn%3Au_view&outputFormat=application%2Fjson&srsname=EPSG%3A32643&propertyname=gid%2Ckad_nomer%2Cgeom&count=1000&startIndex=0&sortBy=gid&viewparams=district_id%3A244&bbox=654935.9404727574%2C4791679.409596854%2C655019.6413327272%2C4791792.321344347%2CEPSG%3A32643",
+      "method": "GET",
+      "checkedAt": "2026-10-08T20:36:18.029Z",
+      "httpStatus": 200,
+      "contentType": "application/json;charset=utf-8",
+      "bytes": 34169,
+      "numberMatched": 17,
+      "numberReturned": 17,
+      "features": [
+        {
+          "transportId": "u_view.fid--3f0c7dfc_1a11d39a11a_7577",
+          "properties": {
+            "gid": 7230081,
+            "kad_nomer": "20311023243"
+          },
+          "geometrySha256": "f79b288c4b08967fcb5d1381629591c0c6f93205045e1612e17cc9d4c1389bb8"
+        },
+        {
+          "transportId": "u_view.fid--3f0c7dfc_1a11d39a11a_7578",
+          "properties": {
+            "gid": 7230088,
+            "kad_nomer": "20311023136"
+          },
+          "geometrySha256": "42aed3b365323c111611cf9bb98bb7fcfec6ca80be4910d0ed663a1103480cc4"
+        },
+        {
+          "transportId": "u_view.fid--3f0c7dfc_1a11d39a11a_7579",
+          "properties": {
+            "gid": 7230094,
+            "kad_nomer": "20311023144"
+          },
+          "geometrySha256": "5ee653e7e310f980807dce6757ffa2c31e0d38fd01a63ba01e69d52f44411f48"
+        },
+        {
+          "transportId": "u_view.fid--3f0c7dfc_1a11d39a11a_757a",
+          "properties": {
+            "gid": 7230102,
+            "kad_nomer": "20311023341"
+          },
+          "geometrySha256": "38d4e39e1a02d07fa8f3b37c66c57685cdb3852a1daecd7a7e5682ba91c02df7"
+        },
+        {
+          "transportId": "u_view.fid--3f0c7dfc_1a11d39a11a_757b",
+          "properties": {
+            "gid": 7230104,
+            "kad_nomer": "20311023120"
+          },
+          "geometrySha256": "2e896304b38cd1512d5958dd1c1eab6224b69d5ccd07ddf164709ebd72a6293c"
+        },
+        {
+          "transportId": "u_view.fid--3f0c7dfc_1a11d39a11a_757c",
+          "properties": {
+            "gid": 7230106,
+            "kad_nomer": "20311023245"
+          },
+          "geometrySha256": "b78f007ba21e0c83f3ab3eac8d8bae95142b2276e79caf64e904ec9361fd1c42"
+        },
+        {
+          "transportId": "u_view.fid--3f0c7dfc_1a11d39a11a_757d",
+          "properties": {
+            "gid": 7230116,
+            "kad_nomer": "20311023039"
+          },
+          "geometrySha256": "6c08bebad7ca995fc333cbee3e0d88635e2f80f75f472f1b4c7fc121a5a16dfd"
+        },
+        {
+          "transportId": "u_view.fid--3f0c7dfc_1a11d39a11a_757e",
+          "properties": {
+            "gid": 7230157,
+            "kad_nomer": "20311024003"
+          },
+          "geometrySha256": "c3e349cfac6359d2fef32b5a23256f599e90d40772c21a1bf2cf8639073463d2"
+        },
+        {
+          "transportId": "u_view.fid--3f0c7dfc_1a11d39a11a_757f",
+          "properties": {
+            "gid": 7230176,
+            "kad_nomer": "20311023317"
+          },
+          "geometrySha256": "62e735653a448be313ab1602fec519b1b98d4fc7afd31c26e6ee4f6d54871feb"
+        },
+        {
+          "transportId": "u_view.fid--3f0c7dfc_1a11d39a11a_7580",
+          "properties": {
+            "gid": 7230203,
+            "kad_nomer": "20311023360"
+          },
+          "geometrySha256": "0be955df9e18a9713ed763e93de28e9f514e552e149a9668e014e329970660cc"
+        },
+        {
+          "transportId": "u_view.fid--3f0c7dfc_1a11d39a11a_7581",
+          "properties": {
+            "gid": 7230215,
+            "kad_nomer": "20311023386"
+          },
+          "geometrySha256": "8fd345af66e7efc6c5af4fd435d826cd0aaa12cfbd5a30dfb428d3f4c6163818"
+        },
+        {
+          "transportId": "u_view.fid--3f0c7dfc_1a11d39a11a_7582",
+          "properties": {
+            "gid": 7234818,
+            "kad_nomer": "20311023198"
+          },
+          "geometrySha256": "c11f3790f03f3b7080cdf254bd0bed2df2a1fcbe929f5e35037e9912bf6d2c01"
+        },
+        {
+          "transportId": "u_view.fid--3f0c7dfc_1a11d39a11a_7583",
+          "properties": {
+            "gid": 7235531,
+            "kad_nomer": "20311023316"
+          },
+          "geometrySha256": "8e5f7b7f2b3ea2c3031005834672093b3adc4f1df00b98b0bd0da991289658d1"
+        },
+        {
+          "transportId": "u_view.fid--3f0c7dfc_1a11d39a11a_7584",
+          "properties": {
+            "gid": 7236956,
+            "kad_nomer": "20311024012"
+          },
+          "geometrySha256": "317a12c658a0eeab98c9f4b9895ec83c8f681382c74007576dbf582c8083b761"
+        },
+        {
+          "transportId": "u_view.fid--3f0c7dfc_1a11d39a11a_7585",
+          "properties": {
+            "gid": 7593170,
+            "kad_nomer": "20311023368"
+          },
+          "geometrySha256": "d30a73f826b070616217c07c38f09ad03c60c37372a332373b4116e99d8a796f"
+        },
+        {
+          "transportId": "u_view.fid--3f0c7dfc_1a11d39a11a_7586",
+          "properties": {
+            "gid": 7593268,
+            "kad_nomer": "20311024089"
+          },
+          "geometrySha256": "231e16bf0d118f125b08d8da95a8f47d734f33142d638900d84b900ea10d49af"
+        },
+        {
+          "transportId": "u_view.fid--3f0c7dfc_1a11d39a11a_7587",
+          "properties": {
+            "gid": 8056936,
+            "kad_nomer": "20311023178"
+          },
+          "geometrySha256": "2e0dd1d4b7bee371a2f1d64356ffaa14536c64b620d2be7ea10b31bb6d9c3e79"
+        }
+      ]
+    },
+    {
+      "test": "viewport-8",
+      "url": "https://map.gov4c.kz/geoserver/wfs?service=WFS&version=2.0.0&request=GetFeature&typename=egkn%3Au_view&outputFormat=application%2Fjson&srsname=EPSG%3A32643&propertyname=gid%2Ckad_nomer%2Cgeom&count=1000&startIndex=0&sortBy=gid&viewparams=district_id%3A244&bbox=655017.1031272995%2C4791681.264090637%2C655100.8053201811%2C4791794.176814119%2CEPSG%3A32643",
+      "method": "GET",
+      "checkedAt": "2026-10-08T20:36:18.205Z",
+      "httpStatus": 200,
+      "contentType": "application/json;charset=utf-8",
+      "bytes": 39239,
+      "numberMatched": 27,
+      "numberReturned": 27,
+      "features": [
+        {
+          "transportId": "u_view.fid-1c0d636f_1a11d3a7593_-4671",
+          "properties": {
+            "gid": 7230078,
+            "kad_nomer": "20311023026"
+          },
+          "geometrySha256": "d1667192a96474f734f1987aef382c32a20f19feb06131c85f3a0caf7fca803a"
+        },
+        {
+          "transportId": "u_view.fid-1c0d636f_1a11d3a7593_-4670",
+          "properties": {
+            "gid": 7230092,
+            "kad_nomer": "20311023450"
+          },
+          "geometrySha256": "7e62e24dc703fc280912812f5d18975e6741dc16a41623dad047c01327175962"
+        },
+        {
+          "transportId": "u_view.fid-1c0d636f_1a11d3a7593_-466f",
+          "properties": {
+            "gid": 7230094,
+            "kad_nomer": "20311023144"
+          },
+          "geometrySha256": "5ee653e7e310f980807dce6757ffa2c31e0d38fd01a63ba01e69d52f44411f48"
+        },
+        {
+          "transportId": "u_view.fid-1c0d636f_1a11d3a7593_-466e",
+          "properties": {
+            "gid": 7230103,
+            "kad_nomer": "20311023018"
+          },
+          "geometrySha256": "ed60052a295838510f1057faad6d96fcbcdf0a4c4b815a76ace54a341de49d97"
+        },
+        {
+          "transportId": "u_view.fid-1c0d636f_1a11d3a7593_-466d",
+          "properties": {
+            "gid": 7230104,
+            "kad_nomer": "20311023120"
+          },
+          "geometrySha256": "2e896304b38cd1512d5958dd1c1eab6224b69d5ccd07ddf164709ebd72a6293c"
+        },
+        {
+          "transportId": "u_view.fid-1c0d636f_1a11d3a7593_-466c",
+          "properties": {
+            "gid": 7230107,
+            "kad_nomer": "20311023385"
+          },
+          "geometrySha256": "0e4d8c28b765234d9e5cc55e84b8a2c2cbd66a1f56782e14f214cdebcc64980c"
+        },
+        {
+          "transportId": "u_view.fid-1c0d636f_1a11d3a7593_-466b",
+          "properties": {
+            "gid": 7230108,
+            "kad_nomer": "20311023141"
+          },
+          "geometrySha256": "52f66593474bea8d257ed7e5bb2acb6e6bc366e42ceefd824610fe5e2479dfd6"
+        },
+        {
+          "transportId": "u_view.fid-1c0d636f_1a11d3a7593_-466a",
+          "properties": {
+            "gid": 7230116,
+            "kad_nomer": "20311023039"
+          },
+          "geometrySha256": "6c08bebad7ca995fc333cbee3e0d88635e2f80f75f472f1b4c7fc121a5a16dfd"
+        },
+        {
+          "transportId": "u_view.fid-1c0d636f_1a11d3a7593_-4669",
+          "properties": {
+            "gid": 7230126,
+            "kad_nomer": "20311023305"
+          },
+          "geometrySha256": "be2b69585bbfaf9281cbd1bb65638b389cb6d5db13ac0464a39492b1915b65ca"
+        },
+        {
+          "transportId": "u_view.fid-1c0d636f_1a11d3a7593_-4668",
+          "properties": {
+            "gid": 7230132,
+            "kad_nomer": "20311023290"
+          },
+          "geometrySha256": "3f2bbc089e9c013f76ea50a5baba8c76a3b3fd64829948f9585c074abced21af"
+        },
+        {
+          "transportId": "u_view.fid-1c0d636f_1a11d3a7593_-4667",
+          "properties": {
+            "gid": 7230157,
+            "kad_nomer": "20311024003"
+          },
+          "geometrySha256": "c3e349cfac6359d2fef32b5a23256f599e90d40772c21a1bf2cf8639073463d2"
+        },
+        {
+          "transportId": "u_view.fid-1c0d636f_1a11d3a7593_-4666",
+          "properties": {
+            "gid": 7230176,
+            "kad_nomer": "20311023317"
+          },
+          "geometrySha256": "62e735653a448be313ab1602fec519b1b98d4fc7afd31c26e6ee4f6d54871feb"
+        },
+        {
+          "transportId": "u_view.fid-1c0d636f_1a11d3a7593_-4665",
+          "properties": {
+            "gid": 7230191,
+            "kad_nomer": "20311023211"
+          },
+          "geometrySha256": "cde692dee1d94b8634402a314c1b3074daaf27cf0cb8143360279021254f8de5"
+        },
+        {
+          "transportId": "u_view.fid-1c0d636f_1a11d3a7593_-4664",
+          "properties": {
+            "gid": 7230214,
+            "kad_nomer": "20311023021"
+          },
+          "geometrySha256": "fdb5e3586a80bac3454f29be06685faad6d34ece6479c0d3728095ef7f7827a0"
+        },
+        {
+          "transportId": "u_view.fid-1c0d636f_1a11d3a7593_-4663",
+          "properties": {
+            "gid": 7230215,
+            "kad_nomer": "20311023386"
+          },
+          "geometrySha256": "8fd345af66e7efc6c5af4fd435d826cd0aaa12cfbd5a30dfb428d3f4c6163818"
+        },
+        {
+          "transportId": "u_view.fid-1c0d636f_1a11d3a7593_-4662",
+          "properties": {
+            "gid": 7234818,
+            "kad_nomer": "20311023198"
+          },
+          "geometrySha256": "c11f3790f03f3b7080cdf254bd0bed2df2a1fcbe929f5e35037e9912bf6d2c01"
+        },
+        {
+          "transportId": "u_view.fid-1c0d636f_1a11d3a7593_-4661",
+          "properties": {
+            "gid": 7234829,
+            "kad_nomer": "20311023212"
+          },
+          "geometrySha256": "318b9b6919cd5806ce2feb3b7da868094fb97057b9bf44db854d0ae78fb51d12"
+        },
+        {
+          "transportId": "u_view.fid-1c0d636f_1a11d3a7593_-4660",
+          "properties": {
+            "gid": 7235106,
+            "kad_nomer": "20311023160"
+          },
+          "geometrySha256": "93a07f8fd93b64e83f18bc60350cc2fb2df35cbf1867897884de9c3236510522"
+        },
+        {
+          "transportId": "u_view.fid-1c0d636f_1a11d3a7593_-465f",
+          "properties": {
+            "gid": 7235542,
+            "kad_nomer": "20311023231"
+          },
+          "geometrySha256": "7afb2c6c5aff1b2c758fd951f3c9034cca679b9553b521462dd84417640c1e38"
+        },
+        {
+          "transportId": "u_view.fid-1c0d636f_1a11d3a7593_-465e",
+          "properties": {
+            "gid": 7235552,
+            "kad_nomer": "20311023390"
+          },
+          "geometrySha256": "ca57cee0ed4fa24dfd376e5d9bdd63e37547d4557cf62bdfb37c138d4c1e15a7"
+        },
+        {
+          "transportId": "u_view.fid-1c0d636f_1a11d3a7593_-465d",
+          "properties": {
+            "gid": 7235593,
+            "kad_nomer": "20311023060"
+          },
+          "geometrySha256": "2ad3c1b9812eb46bb3364d486d5e74d92dadacef2a59d22e3748ad3139b56aa7"
+        },
+        {
+          "transportId": "u_view.fid-1c0d636f_1a11d3a7593_-465c",
+          "properties": {
+            "gid": 7236956,
+            "kad_nomer": "20311024012"
+          },
+          "geometrySha256": "317a12c658a0eeab98c9f4b9895ec83c8f681382c74007576dbf582c8083b761"
+        },
+        {
+          "transportId": "u_view.fid-1c0d636f_1a11d3a7593_-465b",
+          "properties": {
+            "gid": 7237852,
+            "kad_nomer": "20311023264"
+          },
+          "geometrySha256": "467fd8121e0b74f5aa4b1b47c163fcc949a3f345f380617db849594b9d7f8fa2"
+        },
+        {
+          "transportId": "u_view.fid-1c0d636f_1a11d3a7593_-465a",
+          "properties": {
+            "gid": 7593170,
+            "kad_nomer": "20311023368"
+          },
+          "geometrySha256": "d30a73f826b070616217c07c38f09ad03c60c37372a332373b4116e99d8a796f"
+        },
+        {
+          "transportId": "u_view.fid-1c0d636f_1a11d3a7593_-4659",
+          "properties": {
+            "gid": 7593268,
+            "kad_nomer": "20311024089"
+          },
+          "geometrySha256": "231e16bf0d118f125b08d8da95a8f47d734f33142d638900d84b900ea10d49af"
+        },
+        {
+          "transportId": "u_view.fid-1c0d636f_1a11d3a7593_-4658",
+          "properties": {
+            "gid": 8009109,
+            "kad_nomer": "20311023128"
+          },
+          "geometrySha256": "a8aaedcff9e6f2c5c617a345b01d904b37f3eee5d4313a2fb07067f2b100537a"
+        },
+        {
+          "transportId": "u_view.fid-1c0d636f_1a11d3a7593_-4657",
+          "properties": {
+            "gid": 8056936,
+            "kad_nomer": "20311023178"
+          },
+          "geometrySha256": "2e0dd1d4b7bee371a2f1d64356ffaa14536c64b620d2be7ea10b31bb6d9c3e79"
+        }
+      ]
+    },
+    {
+      "test": "viewport-9",
+      "url": "https://map.gov4c.kz/geoserver/wfs?service=WFS&version=2.0.0&request=GetFeature&typename=egkn%3Au_view&outputFormat=application%2Fjson&srsname=EPSG%3A32643&propertyname=gid%2Ckad_nomer%2Cgeom&count=1000&startIndex=0&sortBy=gid&viewparams=district_id%3A244&bbox=654943.5509567565%2C4791346.23795173%2C655027.2556641998%2C4791459.149635209%2CEPSG%3A32643",
+      "method": "GET",
+      "checkedAt": "2026-10-08T20:36:18.365Z",
+      "httpStatus": 200,
+      "contentType": "application/json;charset=utf-8",
+      "bytes": 29772,
+      "numberMatched": 5,
+      "numberReturned": 5,
+      "features": [
+        {
+          "transportId": "u_view.fid--573cc778_1a11d3a63c6_-1523",
+          "properties": {
+            "gid": 7235590,
+            "kad_nomer": "20311024128"
+          },
+          "geometrySha256": "ca959df9d80a0ef1f7b4f74acaf34691d8eb3973129c4f5155315ddbeff7d5e9"
+        },
+        {
+          "transportId": "u_view.fid--573cc778_1a11d3a63c6_-1522",
+          "properties": {
+            "gid": 7236597,
+            "kad_nomer": "20311024010"
+          },
+          "geometrySha256": "286c0f985e03549c7448b34629a937465965ff82f32bc75ab033eefa789d0553"
+        },
+        {
+          "transportId": "u_view.fid--573cc778_1a11d3a63c6_-1521",
+          "properties": {
+            "gid": 7236956,
+            "kad_nomer": "20311024012"
+          },
+          "geometrySha256": "317a12c658a0eeab98c9f4b9895ec83c8f681382c74007576dbf582c8083b761"
+        },
+        {
+          "transportId": "u_view.fid--573cc778_1a11d3a63c6_-1520",
+          "properties": {
+            "gid": 7593170,
+            "kad_nomer": "20311023368"
+          },
+          "geometrySha256": "d30a73f826b070616217c07c38f09ad03c60c37372a332373b4116e99d8a796f"
+        },
+        {
+          "transportId": "u_view.fid--573cc778_1a11d3a63c6_-151f",
+          "properties": {
+            "gid": 7593268,
+            "kad_nomer": "20311024089"
+          },
+          "geometrySha256": "231e16bf0d118f125b08d8da95a8f47d734f33142d638900d84b900ea10d49af"
+        }
+      ]
+    },
+    {
+      "test": "viewport-10",
+      "url": "https://map.gov4c.kz/geoserver/wfs?service=WFS&version=2.0.0&request=GetFeature&typename=egkn%3Au_view&outputFormat=application%2Fjson&srsname=EPSG%3A32643&propertyname=gid%2Ckad_nomer%2Cgeom&count=1000&startIndex=0&sortBy=gid&viewparams=district_id%3A244&bbox=654933.4035498721%2C4791790.466846562%2C655017.1031272995%2C4791903.378615389%2CEPSG%3A32643",
+      "method": "GET",
+      "checkedAt": "2026-10-08T20:36:18.536Z",
+      "httpStatus": 200,
+      "contentType": "application/json;charset=utf-8",
+      "bytes": 35960,
+      "numberMatched": 24,
+      "numberReturned": 24,
+      "features": [
+        {
+          "transportId": "u_view.fid--286ab7bd_1a11d3af199_1b5c",
+          "properties": {
+            "gid": 7229395,
+            "kad_nomer": "20311023275"
+          },
+          "geometrySha256": "c25c0a8ba4cb852334ac0047278e6f010496cb44b50ebbe7fb886b2e4d76a193"
+        },
+        {
+          "transportId": "u_view.fid--286ab7bd_1a11d3af199_1b5d",
+          "properties": {
+            "gid": 7229407,
+            "kad_nomer": "20311023052"
+          },
+          "geometrySha256": "7610a1ea78dc0c6f8cf238da855c53f647f52acdf7b926c4df5884efb24ab44e"
+        },
+        {
+          "transportId": "u_view.fid--286ab7bd_1a11d3af199_1b5e",
+          "properties": {
+            "gid": 7230085,
+            "kad_nomer": "20311023278"
+          },
+          "geometrySha256": "7460a9dd6555d6b5f18bf6289a00ac812484739fd612281340de7de6eef182d8"
+        },
+        {
+          "transportId": "u_view.fid--286ab7bd_1a11d3af199_1b5f",
+          "properties": {
+            "gid": 7230106,
+            "kad_nomer": "20311023245"
+          },
+          "geometrySha256": "b78f007ba21e0c83f3ab3eac8d8bae95142b2276e79caf64e904ec9361fd1c42"
+        },
+        {
+          "transportId": "u_view.fid--286ab7bd_1a11d3af199_1b60",
+          "properties": {
+            "gid": 7230111,
+            "kad_nomer": "20311023169"
+          },
+          "geometrySha256": "08dbfa3030d8d827b2d9dac29269b298aa298779fe769e3a95a0e8842977572e"
+        },
+        {
+          "transportId": "u_view.fid--286ab7bd_1a11d3af199_1b61",
+          "properties": {
+            "gid": 7230117,
+            "kad_nomer": "20311023403"
+          },
+          "geometrySha256": "ba01b7dda84605cea42f3c9fd849522f7c9dd8c42c8f8132f647df7a2f758988"
+        },
+        {
+          "transportId": "u_view.fid--286ab7bd_1a11d3af199_1b62",
+          "properties": {
+            "gid": 7230121,
+            "kad_nomer": "20311023228"
+          },
+          "geometrySha256": "7ad94f9a5d52f7f947f9d7d183c753873bc99d3267b7341aa69e714b814b2e1a"
+        },
+        {
+          "transportId": "u_view.fid--286ab7bd_1a11d3af199_1b63",
+          "properties": {
+            "gid": 7230122,
+            "kad_nomer": "20311023282"
+          },
+          "geometrySha256": "e73373bfecf3d57118b1dba89b6f33e7a36b2e8f214684eb4f818a31cf35f3f2"
+        },
+        {
+          "transportId": "u_view.fid--286ab7bd_1a11d3af199_1b64",
+          "properties": {
+            "gid": 7230176,
+            "kad_nomer": "20311023317"
+          },
+          "geometrySha256": "62e735653a448be313ab1602fec519b1b98d4fc7afd31c26e6ee4f6d54871feb"
+        },
+        {
+          "transportId": "u_view.fid--286ab7bd_1a11d3af199_1b65",
+          "properties": {
+            "gid": 7230190,
+            "kad_nomer": "20311023303"
+          },
+          "geometrySha256": "7aabc8cdedf6d081671a6147f7390096e987912738e1ddf6a645608e664a01c1"
+        },
+        {
+          "transportId": "u_view.fid--286ab7bd_1a11d3af199_1b66",
+          "properties": {
+            "gid": 7230203,
+            "kad_nomer": "20311023360"
+          },
+          "geometrySha256": "0be955df9e18a9713ed763e93de28e9f514e552e149a9668e014e329970660cc"
+        },
+        {
+          "transportId": "u_view.fid--286ab7bd_1a11d3af199_1b67",
+          "properties": {
+            "gid": 7234789,
+            "kad_nomer": "20311023281"
+          },
+          "geometrySha256": "6f911ba2d457ca1149d6dccd28af32100aa34521b5d2632894ee3e6ceebf9a66"
+        },
+        {
+          "transportId": "u_view.fid--286ab7bd_1a11d3af199_1b68",
+          "properties": {
+            "gid": 7234818,
+            "kad_nomer": "20311023198"
+          },
+          "geometrySha256": "c11f3790f03f3b7080cdf254bd0bed2df2a1fcbe929f5e35037e9912bf6d2c01"
+        },
+        {
+          "transportId": "u_view.fid--286ab7bd_1a11d3af199_1b69",
+          "properties": {
+            "gid": 7235038,
+            "kad_nomer": "20311023241"
+          },
+          "geometrySha256": "ff925000ee9f944c3e68e6d24b0f430121ae20ad1b5850a2c4a19e33805654a7"
+        },
+        {
+          "transportId": "u_view.fid--286ab7bd_1a11d3af199_1b6a",
+          "properties": {
+            "gid": 7235054,
+            "kad_nomer": "20311023062"
+          },
+          "geometrySha256": "f036e15b4f50bdbc0cbfa819e02f7a76b61140a0573cba22c83d378fc9ee1ca6"
+        },
+        {
+          "transportId": "u_view.fid--286ab7bd_1a11d3af199_1b6b",
+          "properties": {
+            "gid": 7235074,
+            "kad_nomer": "20311023181"
+          },
+          "geometrySha256": "f1cb713a159cb49ab40bff302f3923c3de77ba1f3859ddbc214c4860cb1c58a7"
+        },
+        {
+          "transportId": "u_view.fid--286ab7bd_1a11d3af199_1b6c",
+          "properties": {
+            "gid": 7235533,
+            "kad_nomer": "20311023025"
+          },
+          "geometrySha256": "c4fdfc9d46daa70abde56ac2f4fb6f407d815046ba4a0c4aba8a389ec72d2406"
+        },
+        {
+          "transportId": "u_view.fid--286ab7bd_1a11d3af199_1b6d",
+          "properties": {
+            "gid": 7235545,
+            "kad_nomer": "20311023227"
+          },
+          "geometrySha256": "bbac61b35988194c071a8d14760619f63e288af4b3ca22203ef7efd626d70015"
+        },
+        {
+          "transportId": "u_view.fid--286ab7bd_1a11d3af199_1b6e",
+          "properties": {
+            "gid": 7236587,
+            "kad_nomer": "20311023311"
+          },
+          "geometrySha256": "d77a98d0ce6f0eeabfc057fe66ec8db02bc617c2db9e0a8747bd9336cec26b04"
+        },
+        {
+          "transportId": "u_view.fid--286ab7bd_1a11d3af199_1b6f",
+          "properties": {
+            "gid": 7236588,
+            "kad_nomer": "20311023329"
+          },
+          "geometrySha256": "2aaf5993b2129c228aa20498732b491d42b164ec4c7d3b2619868ea3baca040a"
+        },
+        {
+          "transportId": "u_view.fid--286ab7bd_1a11d3af199_1b70",
+          "properties": {
+            "gid": 7237790,
+            "kad_nomer": "20311023219"
+          },
+          "geometrySha256": "c8c992e43e47802a7de51aeacfe55edc2fa8ad89e320929537e962860742f4a6"
+        },
+        {
+          "transportId": "u_view.fid--286ab7bd_1a11d3af199_1b71",
+          "properties": {
+            "gid": 7593170,
+            "kad_nomer": "20311023368"
+          },
+          "geometrySha256": "d30a73f826b070616217c07c38f09ad03c60c37372a332373b4116e99d8a796f"
+        },
+        {
+          "transportId": "u_view.fid--286ab7bd_1a11d3af199_1b72",
+          "properties": {
+            "gid": 7593268,
+            "kad_nomer": "20311024089"
+          },
+          "geometrySha256": "231e16bf0d118f125b08d8da95a8f47d734f33142d638900d84b900ea10d49af"
+        },
+        {
+          "transportId": "u_view.fid--286ab7bd_1a11d3af199_1b73",
+          "properties": {
+            "gid": 8056936,
+            "kad_nomer": "20311023178"
+          },
+          "geometrySha256": "2e0dd1d4b7bee371a2f1d64356ffaa14536c64b620d2be7ea10b31bb6d9c3e79"
+        }
+      ]
+    },
+    {
+      "test": "viewport-11",
+      "url": "https://map.gov4c.kz/geoserver/wfs?service=WFS&version=2.0.0&request=GetFeature&typename=egkn%3Au_view&outputFormat=application%2Fjson&srsname=EPSG%3A32643&propertyname=gid%2Ckad_nomer%2Cgeom&count=1000&startIndex=0&sortBy=gid&viewparams=district_id%3A244&bbox=654776.1493879216%2C4791564.646300865%2C654859.8488646412%2C4791677.556075054%2CEPSG%3A32643",
+      "method": "GET",
+      "checkedAt": "2026-10-08T20:36:18.696Z",
+      "httpStatus": 200,
+      "contentType": "application/json;charset=utf-8",
+      "bytes": 29502,
+      "numberMatched": 6,
+      "numberReturned": 6,
+      "features": [
+        {
+          "transportId": "u_view.fid--3f0c7dfc_1a11d39a11a_7588",
+          "properties": {
+            "gid": 7235090,
+            "kad_nomer": "20311024080"
+          },
+          "geometrySha256": "588c46b47308439e066c28b106ce82d48d5762d5ccdc350e163878221de55f68"
+        },
+        {
+          "transportId": "u_view.fid--3f0c7dfc_1a11d39a11a_7589",
+          "properties": {
+            "gid": 7236956,
+            "kad_nomer": "20311024012"
+          },
+          "geometrySha256": "317a12c658a0eeab98c9f4b9895ec83c8f681382c74007576dbf582c8083b761"
+        },
+        {
+          "transportId": "u_view.fid--3f0c7dfc_1a11d39a11a_758a",
+          "properties": {
+            "gid": 7237711,
+            "kad_nomer": "20311024082"
+          },
+          "geometrySha256": "14750c64651e9aedbe5d5e789dabd9e4930a80528cd3cee37f6cc264fa5697df"
+        },
+        {
+          "transportId": "u_view.fid--3f0c7dfc_1a11d39a11a_758b",
+          "properties": {
+            "gid": 7593170,
+            "kad_nomer": "20311023368"
+          },
+          "geometrySha256": "d30a73f826b070616217c07c38f09ad03c60c37372a332373b4116e99d8a796f"
+        },
+        {
+          "transportId": "u_view.fid--3f0c7dfc_1a11d39a11a_758c",
+          "properties": {
+            "gid": 7593268,
+            "kad_nomer": "20311024089"
+          },
+          "geometrySha256": "231e16bf0d118f125b08d8da95a8f47d734f33142d638900d84b900ea10d49af"
+        },
+        {
+          "transportId": "u_view.fid--3f0c7dfc_1a11d39a11a_758d",
+          "properties": {
+            "gid": 7778258,
+            "kad_nomer": "20311023433"
+          },
+          "geometrySha256": "3aa0689f0d85ba5802a9bfd97a9d8a53e2b5ad40fac5f197b0b4c39b53e261bd"
+        }
+      ]
+    },
+    {
+      "test": "viewport-12",
+      "url": "https://map.gov4c.kz/geoserver/wfs?service=WFS&version=2.0.0&request=GetFeature&typename=egkn%3Au_view&outputFormat=application%2Fjson&srsname=EPSG%3A32643&propertyname=gid%2Ckad_nomer%2Cgeom&count=1000&startIndex=0&sortBy=gid&viewparams=district_id%3A244&bbox=655100.8053201811%2C4791572.062316017%2C655184.5101284493%2C4791684.975994159%2CEPSG%3A32643",
+      "method": "GET",
+      "checkedAt": "2026-10-08T20:36:18.859Z",
+      "httpStatus": 200,
+      "contentType": "application/json;charset=utf-8",
+      "bytes": 14813,
+      "numberMatched": 12,
+      "numberReturned": 12,
+      "features": [
+        {
+          "transportId": "u_view.fid-1c0d636f_1a11d3a7593_-3e62",
+          "properties": {
+            "gid": 7230075,
+            "kad_nomer": "20311023250"
+          },
+          "geometrySha256": "67154636e2ec7f1797a7739e7a25b7cb96d9d84831bdf898aa8846d6302bc65c"
+        },
+        {
+          "transportId": "u_view.fid-1c0d636f_1a11d3a7593_-3e61",
+          "properties": {
+            "gid": 7230078,
+            "kad_nomer": "20311023026"
+          },
+          "geometrySha256": "d1667192a96474f734f1987aef382c32a20f19feb06131c85f3a0caf7fca803a"
+        },
+        {
+          "transportId": "u_view.fid-1c0d636f_1a11d3a7593_-3e60",
+          "properties": {
+            "gid": 7230087,
+            "kad_nomer": "20311023143"
+          },
+          "geometrySha256": "1c6a5acaa73ccbbd4f2797bdcddeea1d52ee1d017866d911f004d5ec877b98cc"
+        },
+        {
+          "transportId": "u_view.fid-1c0d636f_1a11d3a7593_-3e5f",
+          "properties": {
+            "gid": 7230140,
+            "kad_nomer": "20311023099"
+          },
+          "geometrySha256": "ffcb6495c452c94de29861fad660a9d14a12eb0520dafcccb1d2fd45003b7140"
+        },
+        {
+          "transportId": "u_view.fid-1c0d636f_1a11d3a7593_-3e5e",
+          "properties": {
+            "gid": 7232518,
+            "kad_nomer": "20311023168"
+          },
+          "geometrySha256": "ba1ae9f0e37e8b3e90260cf56e81c601dbf03e011d844424d89f277fd47e6956"
+        },
+        {
+          "transportId": "u_view.fid-1c0d636f_1a11d3a7593_-3e5d",
+          "properties": {
+            "gid": 7235066,
+            "kad_nomer": "20311023323"
+          },
+          "geometrySha256": "bc8379231d6fa0ea6c9fa2154c5085e42a1e7e719a4acb71abfeb83f09ed6207"
+        },
+        {
+          "transportId": "u_view.fid-1c0d636f_1a11d3a7593_-3e5c",
+          "properties": {
+            "gid": 7235106,
+            "kad_nomer": "20311023160"
+          },
+          "geometrySha256": "93a07f8fd93b64e83f18bc60350cc2fb2df35cbf1867897884de9c3236510522"
+        },
+        {
+          "transportId": "u_view.fid-1c0d636f_1a11d3a7593_-3e5b",
+          "properties": {
+            "gid": 7235118,
+            "kad_nomer": "20311023078"
+          },
+          "geometrySha256": "9c4cc62c075e417aa4ed6a7c79c198d5406505a2df0ffad479dcf63052909404"
+        },
+        {
+          "transportId": "u_view.fid-1c0d636f_1a11d3a7593_-3e5a",
+          "properties": {
+            "gid": 7236523,
+            "kad_nomer": "20311023161"
+          },
+          "geometrySha256": "0f1151dbcad3554eef9d4b2b827952c36191b27b5af8f31d4370d06fe1d812df"
+        },
+        {
+          "transportId": "u_view.fid-1c0d636f_1a11d3a7593_-3e59",
+          "properties": {
+            "gid": 7236550,
+            "kad_nomer": "20311023297"
+          },
+          "geometrySha256": "3935fff58d95d37e7e8b52904442d56ae082c26afeffca0374fcb76683ad2df5"
+        },
+        {
+          "transportId": "u_view.fid-1c0d636f_1a11d3a7593_-3e58",
+          "properties": {
+            "gid": 7237716,
+            "kad_nomer": "20311023083"
+          },
+          "geometrySha256": "a9ea22ef8a64b75415d9291a2d2fbe5899bef46994fd6e1fe0f5916097fb8acd"
+        },
+        {
+          "transportId": "u_view.fid-1c0d636f_1a11d3a7593_-3e57",
+          "properties": {
+            "gid": 7593170,
+            "kad_nomer": "20311023368"
+          },
+          "geometrySha256": "d30a73f826b070616217c07c38f09ad03c60c37372a332373b4116e99d8a796f"
+        }
+      ]
+    },
+    {
+      "test": "forced-three-row-pages",
+      "url": "https://map.gov4c.kz/geoserver/wfs?service=WFS&version=2.0.0&request=GetFeature&typename=egkn%3Au_view&outputFormat=application%2Fjson&srsname=EPSG%3A32643&propertyname=gid%2Ckad_nomer%2Cgeom&count=3&startIndex=0&sortBy=gid&viewparams=district_id%3A244&bbox=655017.1031272995%2C4791681.264090637%2C655100.8053201811%2C4791794.176814119%2CEPSG%3A32643",
+      "method": "GET",
+      "checkedAt": "2026-10-08T20:36:19.029Z",
+      "httpStatus": 200,
+      "contentType": "application/json;charset=utf-8",
+      "bytes": 2032,
+      "numberMatched": 27,
+      "numberReturned": 3,
+      "features": [
+        {
+          "transportId": "u_view.fid--573cc778_1a11d3a63c6_-8b3",
+          "properties": {
+            "gid": 7230078,
+            "kad_nomer": "20311023026"
+          },
+          "geometrySha256": "d1667192a96474f734f1987aef382c32a20f19feb06131c85f3a0caf7fca803a"
+        },
+        {
+          "transportId": "u_view.fid--573cc778_1a11d3a63c6_-8b2",
+          "properties": {
+            "gid": 7230092,
+            "kad_nomer": "20311023450"
+          },
+          "geometrySha256": "7e62e24dc703fc280912812f5d18975e6741dc16a41623dad047c01327175962"
+        },
+        {
+          "transportId": "u_view.fid--573cc778_1a11d3a63c6_-8b1",
+          "properties": {
+            "gid": 7230094,
+            "kad_nomer": "20311023144"
+          },
+          "geometrySha256": "5ee653e7e310f980807dce6757ffa2c31e0d38fd01a63ba01e69d52f44411f48"
+        }
+      ]
+    },
+    {
+      "test": "forced-three-row-pages",
+      "url": "https://map.gov4c.kz/geoserver/wfs?service=WFS&version=2.0.0&request=GetFeature&typename=egkn%3Au_view&outputFormat=application%2Fjson&srsname=EPSG%3A32643&propertyname=gid%2Ckad_nomer%2Cgeom&count=3&startIndex=3&sortBy=gid&viewparams=district_id%3A244&bbox=655017.1031272995%2C4791681.264090637%2C655100.8053201811%2C4791794.176814119%2CEPSG%3A32643",
+      "method": "GET",
+      "checkedAt": "2026-10-08T20:36:19.187Z",
+      "httpStatus": 200,
+      "contentType": "application/json;charset=utf-8",
+      "bytes": 2327,
+      "numberMatched": 27,
+      "numberReturned": 3,
+      "features": [
+        {
+          "transportId": "u_view.fid--286ab7bd_1a11d3b292e_-7677",
+          "properties": {
+            "gid": 7230103,
+            "kad_nomer": "20311023018"
+          },
+          "geometrySha256": "ed60052a295838510f1057faad6d96fcbcdf0a4c4b815a76ace54a341de49d97"
+        },
+        {
+          "transportId": "u_view.fid--286ab7bd_1a11d3b292e_-7676",
+          "properties": {
+            "gid": 7230104,
+            "kad_nomer": "20311023120"
+          },
+          "geometrySha256": "2e896304b38cd1512d5958dd1c1eab6224b69d5ccd07ddf164709ebd72a6293c"
+        },
+        {
+          "transportId": "u_view.fid--286ab7bd_1a11d3b292e_-7675",
+          "properties": {
+            "gid": 7230107,
+            "kad_nomer": "20311023385"
+          },
+          "geometrySha256": "0e4d8c28b765234d9e5cc55e84b8a2c2cbd66a1f56782e14f214cdebcc64980c"
+        }
+      ]
+    },
+    {
+      "test": "forced-three-row-pages",
+      "url": "https://map.gov4c.kz/geoserver/wfs?service=WFS&version=2.0.0&request=GetFeature&typename=egkn%3Au_view&outputFormat=application%2Fjson&srsname=EPSG%3A32643&propertyname=gid%2Ckad_nomer%2Cgeom&count=3&startIndex=6&sortBy=gid&viewparams=district_id%3A244&bbox=655017.1031272995%2C4791681.264090637%2C655100.8053201811%2C4791794.176814119%2CEPSG%3A32643",
+      "method": "GET",
+      "checkedAt": "2026-10-08T20:36:19.338Z",
+      "httpStatus": 200,
+      "contentType": "application/json;charset=utf-8",
+      "bytes": 2779,
+      "numberMatched": 27,
+      "numberReturned": 3,
+      "features": [
+        {
+          "transportId": "u_view.fid--3f0c7dfc_1a11d39a11a_7baf",
+          "properties": {
+            "gid": 7230108,
+            "kad_nomer": "20311023141"
+          },
+          "geometrySha256": "52f66593474bea8d257ed7e5bb2acb6e6bc366e42ceefd824610fe5e2479dfd6"
+        },
+        {
+          "transportId": "u_view.fid--3f0c7dfc_1a11d39a11a_7bb0",
+          "properties": {
+            "gid": 7230116,
+            "kad_nomer": "20311023039"
+          },
+          "geometrySha256": "6c08bebad7ca995fc333cbee3e0d88635e2f80f75f472f1b4c7fc121a5a16dfd"
+        },
+        {
+          "transportId": "u_view.fid--3f0c7dfc_1a11d39a11a_7bb1",
+          "properties": {
+            "gid": 7230126,
+            "kad_nomer": "20311023305"
+          },
+          "geometrySha256": "be2b69585bbfaf9281cbd1bb65638b389cb6d5db13ac0464a39492b1915b65ca"
+        }
+      ]
+    },
+    {
+      "test": "forced-three-row-pages",
+      "url": "https://map.gov4c.kz/geoserver/wfs?service=WFS&version=2.0.0&request=GetFeature&typename=egkn%3Au_view&outputFormat=application%2Fjson&srsname=EPSG%3A32643&propertyname=gid%2Ckad_nomer%2Cgeom&count=3&startIndex=9&sortBy=gid&viewparams=district_id%3A244&bbox=655017.1031272995%2C4791681.264090637%2C655100.8053201811%2C4791794.176814119%2CEPSG%3A32643",
+      "method": "GET",
+      "checkedAt": "2026-10-08T20:36:19.511Z",
+      "httpStatus": 200,
+      "contentType": "application/json;charset=utf-8",
+      "bytes": 3022,
+      "numberMatched": 27,
+      "numberReturned": 3,
+      "features": [
+        {
+          "transportId": "u_view.fid-1c0d636f_1a11d3a7593_-35c9",
+          "properties": {
+            "gid": 7230132,
+            "kad_nomer": "20311023290"
+          },
+          "geometrySha256": "3f2bbc089e9c013f76ea50a5baba8c76a3b3fd64829948f9585c074abced21af"
+        },
+        {
+          "transportId": "u_view.fid-1c0d636f_1a11d3a7593_-35c8",
+          "properties": {
+            "gid": 7230157,
+            "kad_nomer": "20311024003"
+          },
+          "geometrySha256": "c3e349cfac6359d2fef32b5a23256f599e90d40772c21a1bf2cf8639073463d2"
+        },
+        {
+          "transportId": "u_view.fid-1c0d636f_1a11d3a7593_-35c7",
+          "properties": {
+            "gid": 7230176,
+            "kad_nomer": "20311023317"
+          },
+          "geometrySha256": "62e735653a448be313ab1602fec519b1b98d4fc7afd31c26e6ee4f6d54871feb"
+        }
+      ]
+    },
+    {
+      "test": "forced-three-row-pages",
+      "url": "https://map.gov4c.kz/geoserver/wfs?service=WFS&version=2.0.0&request=GetFeature&typename=egkn%3Au_view&outputFormat=application%2Fjson&srsname=EPSG%3A32643&propertyname=gid%2Ckad_nomer%2Cgeom&count=3&startIndex=12&sortBy=gid&viewparams=district_id%3A244&bbox=655017.1031272995%2C4791681.264090637%2C655100.8053201811%2C4791794.176814119%2CEPSG%3A32643",
+      "method": "GET",
+      "checkedAt": "2026-10-08T20:36:19.671Z",
+      "httpStatus": 200,
+      "contentType": "application/json;charset=utf-8",
+      "bytes": 2135,
+      "numberMatched": 27,
+      "numberReturned": 3,
+      "features": [
+        {
+          "transportId": "u_view.fid--573cc778_1a11d3a63c6_-296",
+          "properties": {
+            "gid": 7230191,
+            "kad_nomer": "20311023211"
+          },
+          "geometrySha256": "cde692dee1d94b8634402a314c1b3074daaf27cf0cb8143360279021254f8de5"
+        },
+        {
+          "transportId": "u_view.fid--573cc778_1a11d3a63c6_-295",
+          "properties": {
+            "gid": 7230214,
+            "kad_nomer": "20311023021"
+          },
+          "geometrySha256": "fdb5e3586a80bac3454f29be06685faad6d34ece6479c0d3728095ef7f7827a0"
+        },
+        {
+          "transportId": "u_view.fid--573cc778_1a11d3a63c6_-294",
+          "properties": {
+            "gid": 7230215,
+            "kad_nomer": "20311023386"
+          },
+          "geometrySha256": "8fd345af66e7efc6c5af4fd435d826cd0aaa12cfbd5a30dfb428d3f4c6163818"
+        }
+      ]
+    },
+    {
+      "test": "forced-three-row-pages",
+      "url": "https://map.gov4c.kz/geoserver/wfs?service=WFS&version=2.0.0&request=GetFeature&typename=egkn%3Au_view&outputFormat=application%2Fjson&srsname=EPSG%3A32643&propertyname=gid%2Ckad_nomer%2Cgeom&count=3&startIndex=15&sortBy=gid&viewparams=district_id%3A244&bbox=655017.1031272995%2C4791681.264090637%2C655100.8053201811%2C4791794.176814119%2CEPSG%3A32643",
+      "method": "GET",
+      "checkedAt": "2026-10-08T20:36:19.828Z",
+      "httpStatus": 200,
+      "contentType": "application/json;charset=utf-8",
+      "bytes": 2705,
+      "numberMatched": 27,
+      "numberReturned": 3,
+      "features": [
+        {
+          "transportId": "u_view.fid--286ab7bd_1a11d3b292e_-1d51",
+          "properties": {
+            "gid": 7234818,
+            "kad_nomer": "20311023198"
+          },
+          "geometrySha256": "c11f3790f03f3b7080cdf254bd0bed2df2a1fcbe929f5e35037e9912bf6d2c01"
+        },
+        {
+          "transportId": "u_view.fid--286ab7bd_1a11d3b292e_-1d50",
+          "properties": {
+            "gid": 7234829,
+            "kad_nomer": "20311023212"
+          },
+          "geometrySha256": "318b9b6919cd5806ce2feb3b7da868094fb97057b9bf44db854d0ae78fb51d12"
+        },
+        {
+          "transportId": "u_view.fid--286ab7bd_1a11d3b292e_-1d4f",
+          "properties": {
+            "gid": 7235106,
+            "kad_nomer": "20311023160"
+          },
+          "geometrySha256": "93a07f8fd93b64e83f18bc60350cc2fb2df35cbf1867897884de9c3236510522"
+        }
+      ]
+    },
+    {
+      "test": "forced-three-row-pages",
+      "url": "https://map.gov4c.kz/geoserver/wfs?service=WFS&version=2.0.0&request=GetFeature&typename=egkn%3Au_view&outputFormat=application%2Fjson&srsname=EPSG%3A32643&propertyname=gid%2Ckad_nomer%2Cgeom&count=3&startIndex=18&sortBy=gid&viewparams=district_id%3A244&bbox=655017.1031272995%2C4791681.264090637%2C655100.8053201811%2C4791794.176814119%2CEPSG%3A32643",
+      "method": "GET",
+      "checkedAt": "2026-10-08T20:36:19.979Z",
+      "httpStatus": 200,
+      "contentType": "application/json;charset=utf-8",
+      "bytes": 2407,
+      "numberMatched": 27,
+      "numberReturned": 3,
+      "features": [
+        {
+          "transportId": "u_view.fid--3f0c7dfc_1a11d39a11a_7f54",
+          "properties": {
+            "gid": 7235542,
+            "kad_nomer": "20311023231"
+          },
+          "geometrySha256": "7afb2c6c5aff1b2c758fd951f3c9034cca679b9553b521462dd84417640c1e38"
+        },
+        {
+          "transportId": "u_view.fid--3f0c7dfc_1a11d39a11a_7f55",
+          "properties": {
+            "gid": 7235552,
+            "kad_nomer": "20311023390"
+          },
+          "geometrySha256": "ca57cee0ed4fa24dfd376e5d9bdd63e37547d4557cf62bdfb37c138d4c1e15a7"
+        },
+        {
+          "transportId": "u_view.fid--3f0c7dfc_1a11d39a11a_7f56",
+          "properties": {
+            "gid": 7235593,
+            "kad_nomer": "20311023060"
+          },
+          "geometrySha256": "2ad3c1b9812eb46bb3364d486d5e74d92dadacef2a59d22e3748ad3139b56aa7"
+        }
+      ]
+    },
+    {
+      "test": "forced-three-row-pages",
+      "url": "https://map.gov4c.kz/geoserver/wfs?service=WFS&version=2.0.0&request=GetFeature&typename=egkn%3Au_view&outputFormat=application%2Fjson&srsname=EPSG%3A32643&propertyname=gid%2Ckad_nomer%2Cgeom&count=3&startIndex=21&sortBy=gid&viewparams=district_id%3A244&bbox=655017.1031272995%2C4791681.264090637%2C655100.8053201811%2C4791794.176814119%2CEPSG%3A32643",
+      "method": "GET",
+      "checkedAt": "2026-10-08T20:36:20.163Z",
+      "httpStatus": 200,
+      "contentType": "application/json;charset=utf-8",
+      "bytes": 14291,
+      "numberMatched": 27,
+      "numberReturned": 3,
+      "features": [
+        {
+          "transportId": "u_view.fid-1c0d636f_1a11d3a7593_-3462",
+          "properties": {
+            "gid": 7236956,
+            "kad_nomer": "20311024012"
+          },
+          "geometrySha256": "317a12c658a0eeab98c9f4b9895ec83c8f681382c74007576dbf582c8083b761"
+        },
+        {
+          "transportId": "u_view.fid-1c0d636f_1a11d3a7593_-3461",
+          "properties": {
+            "gid": 7237852,
+            "kad_nomer": "20311023264"
+          },
+          "geometrySha256": "467fd8121e0b74f5aa4b1b47c163fcc949a3f345f380617db849594b9d7f8fa2"
+        },
+        {
+          "transportId": "u_view.fid-1c0d636f_1a11d3a7593_-3460",
+          "properties": {
+            "gid": 7593170,
+            "kad_nomer": "20311023368"
+          },
+          "geometrySha256": "d30a73f826b070616217c07c38f09ad03c60c37372a332373b4116e99d8a796f"
+        }
+      ]
+    },
+    {
+      "test": "forced-three-row-pages",
+      "url": "https://map.gov4c.kz/geoserver/wfs?service=WFS&version=2.0.0&request=GetFeature&typename=egkn%3Au_view&outputFormat=application%2Fjson&srsname=EPSG%3A32643&propertyname=gid%2Ckad_nomer%2Cgeom&count=3&startIndex=24&sortBy=gid&viewparams=district_id%3A244&bbox=655017.1031272995%2C4791681.264090637%2C655100.8053201811%2C4791794.176814119%2CEPSG%3A32643",
+      "method": "GET",
+      "checkedAt": "2026-10-08T20:36:20.472Z",
+      "httpStatus": 200,
+      "contentType": "application/json;charset=utf-8",
+      "bytes": 16487,
+      "numberMatched": 27,
+      "numberReturned": 3,
+      "features": [
+        {
+          "transportId": "u_view.fid--573cc778_1a11d3a63c6_-293",
+          "properties": {
+            "gid": 7593268,
+            "kad_nomer": "20311024089"
+          },
+          "geometrySha256": "231e16bf0d118f125b08d8da95a8f47d734f33142d638900d84b900ea10d49af"
+        },
+        {
+          "transportId": "u_view.fid--573cc778_1a11d3a63c6_-292",
+          "properties": {
+            "gid": 8009109,
+            "kad_nomer": "20311023128"
+          },
+          "geometrySha256": "a8aaedcff9e6f2c5c617a345b01d904b37f3eee5d4313a2fb07067f2b100537a"
+        },
+        {
+          "transportId": "u_view.fid--573cc778_1a11d3a63c6_-291",
+          "properties": {
+            "gid": 8056936,
+            "kad_nomer": "20311023178"
+          },
+          "geometrySha256": "2e0dd1d4b7bee371a2f1d64356ffaa14536c64b620d2be7ea10b31bb6d9c3e79"
+        }
+      ]
+    },
+    {
+      "test": "fresh-ids-0",
+      "url": "https://map.gov4c.kz/geoserver/wfs?service=WFS&version=2.0.0&request=GetFeature&typename=egkn%3Au_view&outputFormat=application%2Fjson&srsname=EPSG%3A32643&propertyname=gid%2Ckad_nomer%2Cgeom&count=1000&startIndex=0&sortBy=gid&viewparams=district_id%3A244&filter=%3Cfes%3AFilter+xmlns%3Afes%3D%22http%3A%2F%2Fwww.opengis.net%2Ffes%2F2.0%22%3E%3Cfes%3AOr%3E%3Cfes%3APropertyIsEqualTo%3E%3Cfes%3AValueReference%3Ekad_nomer%3C%2Ffes%3AValueReference%3E%3Cfes%3ALiteral%3E20311023018%3C%2Ffes%3ALiteral%3E%3C%2Ffes%3APropertyIsEqualTo%3E%3Cfes%3APropertyIsEqualTo%3E%3Cfes%3AValueReference%3Ekad_nomer%3C%2Ffes%3AValueReference%3E%3Cfes%3ALiteral%3E20311023021%3C%2Ffes%3ALiteral%3E%3C%2Ffes%3APropertyIsEqualTo%3E%3Cfes%3APropertyIsEqualTo%3E%3Cfes%3AValueReference%3Ekad_nomer%3C%2Ffes%3AValueReference%3E%3Cfes%3ALiteral%3E20311023025%3C%2Ffes%3ALiteral%3E%3C%2Ffes%3APropertyIsEqualTo%3E%3Cfes%3APropertyIsEqualTo%3E%3Cfes%3AValueReference%3Ekad_nomer%3C%2Ffes%3AValueReference%3E%3Cfes%3ALiteral%3E20311023026%3C%2Ffes%3ALiteral%3E%3C%2Ffes%3APropertyIsEqualTo%3E%3Cfes%3APropertyIsEqualTo%3E%3Cfes%3AValueReference%3Ekad_nomer%3C%2Ffes%3AValueReference%3E%3Cfes%3ALiteral%3E20311023039%3C%2Ffes%3ALiteral%3E%3C%2Ffes%3APropertyIsEqualTo%3E%3Cfes%3APropertyIsEqualTo%3E%3Cfes%3AValueReference%3Ekad_nomer%3C%2Ffes%3AValueReference%3E%3Cfes%3ALiteral%3E20311023052%3C%2Ffes%3ALiteral%3E%3C%2Ffes%3APropertyIsEqualTo%3E%3Cfes%3APropertyIsEqualTo%3E%3Cfes%3AValueReference%3Ekad_nomer%3C%2Ffes%3AValueReference%3E%3Cfes%3ALiteral%3E20311023060%3C%2Ffes%3ALiteral%3E%3C%2Ffes%3APropertyIsEqualTo%3E%3Cfes%3APropertyIsEqualTo%3E%3Cfes%3AValueReference%3Ekad_nomer%3C%2Ffes%3AValueReference%3E%3Cfes%3ALiteral%3E20311023062%3C%2Ffes%3ALiteral%3E%3C%2Ffes%3APropertyIsEqualTo%3E%3Cfes%3APropertyIsEqualTo%3E%3Cfes%3AValueReference%3Ekad_nomer%3C%2Ffes%3AValueReference%3E%3Cfes%3ALiteral%3E20311023078%3C%2Ffes%3ALiteral%3E%3C%2Ffes%3APropertyIsEqualTo%3E%3Cfes%3APropertyIsEqualTo%3E%3Cfes%3AValueReference%3Ekad_nomer%3C%2Ffes%3AValueReference%3E%3Cfes%3ALiteral%3E20311023083%3C%2Ffes%3ALiteral%3E%3C%2Ffes%3APropertyIsEqualTo%3E%3Cfes%3APropertyIsEqualTo%3E%3Cfes%3AValueReference%3Ekad_nomer%3C%2Ffes%3AValueReference%3E%3Cfes%3ALiteral%3E20311023084%3C%2Ffes%3ALiteral%3E%3C%2Ffes%3APropertyIsEqualTo%3E%3Cfes%3APropertyIsEqualTo%3E%3Cfes%3AValueReference%3Ekad_nomer%3C%2Ffes%3AValueReference%3E%3Cfes%3ALiteral%3E20311023099%3C%2Ffes%3ALiteral%3E%3C%2Ffes%3APropertyIsEqualTo%3E%3Cfes%3APropertyIsEqualTo%3E%3Cfes%3AValueReference%3Ekad_nomer%3C%2Ffes%3AValueReference%3E%3Cfes%3ALiteral%3E20311023101%3C%2Ffes%3ALiteral%3E%3C%2Ffes%3APropertyIsEqualTo%3E%3Cfes%3APropertyIsEqualTo%3E%3Cfes%3AValueReference%3Ekad_nomer%3C%2Ffes%3AValueReference%3E%3Cfes%3ALiteral%3E20311023120%3C%2Ffes%3ALiteral%3E%3C%2Ffes%3APropertyIsEqualTo%3E%3Cfes%3APropertyIsEqualTo%3E%3Cfes%3AValueReference%3Ekad_nomer%3C%2Ffes%3AValueReference%3E%3Cfes%3ALiteral%3E20311023128%3C%2Ffes%3ALiteral%3E%3C%2Ffes%3APropertyIsEqualTo%3E%3Cfes%3APropertyIsEqualTo%3E%3Cfes%3AValueReference%3Ekad_nomer%3C%2Ffes%3AValueReference%3E%3Cfes%3ALiteral%3E20311023136%3C%2Ffes%3ALiteral%3E%3C%2Ffes%3APropertyIsEqualTo%3E%3Cfes%3APropertyIsEqualTo%3E%3Cfes%3AValueReference%3Ekad_nomer%3C%2Ffes%3AValueReference%3E%3Cfes%3ALiteral%3E20311023137%3C%2Ffes%3ALiteral%3E%3C%2Ffes%3APropertyIsEqualTo%3E%3Cfes%3APropertyIsEqualTo%3E%3Cfes%3AValueReference%3Ekad_nomer%3C%2Ffes%3AValueReference%3E%3Cfes%3ALiteral%3E20311023141%3C%2Ffes%3ALiteral%3E%3C%2Ffes%3APropertyIsEqualTo%3E%3Cfes%3APropertyIsEqualTo%3E%3Cfes%3AValueReference%3Ekad_nomer%3C%2Ffes%3AValueReference%3E%3Cfes%3ALiteral%3E20311023143%3C%2Ffes%3ALiteral%3E%3C%2Ffes%3APropertyIsEqualTo%3E%3Cfes%3APropertyIsEqualTo%3E%3Cfes%3AValueReference%3Ekad_nomer%3C%2Ffes%3AValueReference%3E%3Cfes%3ALiteral%3E20311023144%3C%2Ffes%3ALiteral%3E%3C%2Ffes%3APropertyIsEqualTo%3E%3C%2Ffes%3AOr%3E%3C%2Ffes%3AFilter%3E",
+      "method": "GET",
+      "checkedAt": "2026-10-08T20:36:20.670Z",
+      "httpStatus": 200,
+      "contentType": "application/json;charset=utf-8",
+      "bytes": 9980,
+      "numberMatched": 20,
+      "numberReturned": 20,
+      "features": [
+        {
+          "transportId": "u_view.fid--286ab7bd_1a11d3b292e_-114a",
+          "properties": {
+            "gid": 7229407,
+            "kad_nomer": "20311023052"
+          },
+          "geometrySha256": "7610a1ea78dc0c6f8cf238da855c53f647f52acdf7b926c4df5884efb24ab44e"
+        },
+        {
+          "transportId": "u_view.fid--286ab7bd_1a11d3b292e_-1149",
+          "properties": {
+            "gid": 7230078,
+            "kad_nomer": "20311023026"
+          },
+          "geometrySha256": "d1667192a96474f734f1987aef382c32a20f19feb06131c85f3a0caf7fca803a"
+        },
+        {
+          "transportId": "u_view.fid--286ab7bd_1a11d3b292e_-1148",
+          "properties": {
+            "gid": 7230087,
+            "kad_nomer": "20311023143"
+          },
+          "geometrySha256": "1c6a5acaa73ccbbd4f2797bdcddeea1d52ee1d017866d911f004d5ec877b98cc"
+        },
+        {
+          "transportId": "u_view.fid--286ab7bd_1a11d3b292e_-1147",
+          "properties": {
+            "gid": 7230088,
+            "kad_nomer": "20311023136"
+          },
+          "geometrySha256": "42aed3b365323c111611cf9bb98bb7fcfec6ca80be4910d0ed663a1103480cc4"
+        },
+        {
+          "transportId": "u_view.fid--286ab7bd_1a11d3b292e_-1146",
+          "properties": {
+            "gid": 7230094,
+            "kad_nomer": "20311023144"
+          },
+          "geometrySha256": "5ee653e7e310f980807dce6757ffa2c31e0d38fd01a63ba01e69d52f44411f48"
+        },
+        {
+          "transportId": "u_view.fid--286ab7bd_1a11d3b292e_-1145",
+          "properties": {
+            "gid": 7230103,
+            "kad_nomer": "20311023018"
+          },
+          "geometrySha256": "ed60052a295838510f1057faad6d96fcbcdf0a4c4b815a76ace54a341de49d97"
+        },
+        {
+          "transportId": "u_view.fid--286ab7bd_1a11d3b292e_-1144",
+          "properties": {
+            "gid": 7230104,
+            "kad_nomer": "20311023120"
+          },
+          "geometrySha256": "2e896304b38cd1512d5958dd1c1eab6224b69d5ccd07ddf164709ebd72a6293c"
+        },
+        {
+          "transportId": "u_view.fid--286ab7bd_1a11d3b292e_-1143",
+          "properties": {
+            "gid": 7230108,
+            "kad_nomer": "20311023141"
+          },
+          "geometrySha256": "52f66593474bea8d257ed7e5bb2acb6e6bc366e42ceefd824610fe5e2479dfd6"
+        },
+        {
+          "transportId": "u_view.fid--286ab7bd_1a11d3b292e_-1142",
+          "properties": {
+            "gid": 7230116,
+            "kad_nomer": "20311023039"
+          },
+          "geometrySha256": "6c08bebad7ca995fc333cbee3e0d88635e2f80f75f472f1b4c7fc121a5a16dfd"
+        },
+        {
+          "transportId": "u_view.fid--286ab7bd_1a11d3b292e_-1141",
+          "properties": {
+            "gid": 7230140,
+            "kad_nomer": "20311023099"
+          },
+          "geometrySha256": "ffcb6495c452c94de29861fad660a9d14a12eb0520dafcccb1d2fd45003b7140"
+        },
+        {
+          "transportId": "u_view.fid--286ab7bd_1a11d3b292e_-1140",
+          "properties": {
+            "gid": 7230210,
+            "kad_nomer": "20311023101"
+          },
+          "geometrySha256": "32c17f65d4b6c22dd3d6de3a25bfc51e6ac9666dbe02e9851e4c37b1cca1d6fc"
+        },
+        {
+          "transportId": "u_view.fid--286ab7bd_1a11d3b292e_-113f",
+          "properties": {
+            "gid": 7230214,
+            "kad_nomer": "20311023021"
+          },
+          "geometrySha256": "fdb5e3586a80bac3454f29be06685faad6d34ece6479c0d3728095ef7f7827a0"
+        },
+        {
+          "transportId": "u_view.fid--286ab7bd_1a11d3b292e_-113e",
+          "properties": {
+            "gid": 7235054,
+            "kad_nomer": "20311023062"
+          },
+          "geometrySha256": "f036e15b4f50bdbc0cbfa819e02f7a76b61140a0573cba22c83d378fc9ee1ca6"
+        },
+        {
+          "transportId": "u_view.fid--286ab7bd_1a11d3b292e_-113d",
+          "properties": {
+            "gid": 7235118,
+            "kad_nomer": "20311023078"
+          },
+          "geometrySha256": "9c4cc62c075e417aa4ed6a7c79c198d5406505a2df0ffad479dcf63052909404"
+        },
+        {
+          "transportId": "u_view.fid--286ab7bd_1a11d3b292e_-113c",
+          "properties": {
+            "gid": 7235520,
+            "kad_nomer": "20311023137"
+          },
+          "geometrySha256": "9f1fdaa04da7c3142a6de0249fb1b199e0475a7e32b5c4c6928d184ce32d301c"
+        },
+        {
+          "transportId": "u_view.fid--286ab7bd_1a11d3b292e_-113b",
+          "properties": {
+            "gid": 7235533,
+            "kad_nomer": "20311023025"
+          },
+          "geometrySha256": "c4fdfc9d46daa70abde56ac2f4fb6f407d815046ba4a0c4aba8a389ec72d2406"
+        },
+        {
+          "transportId": "u_view.fid--286ab7bd_1a11d3b292e_-113a",
+          "properties": {
+            "gid": 7235593,
+            "kad_nomer": "20311023060"
+          },
+          "geometrySha256": "2ad3c1b9812eb46bb3364d486d5e74d92dadacef2a59d22e3748ad3139b56aa7"
+        },
+        {
+          "transportId": "u_view.fid--286ab7bd_1a11d3b292e_-1139",
+          "properties": {
+            "gid": 7236536,
+            "kad_nomer": "20311023084"
+          },
+          "geometrySha256": "a1b480728bbd15c0fc7a97c7aff820bc65fe26b3399937a6f1201aee67d69bf8"
+        },
+        {
+          "transportId": "u_view.fid--286ab7bd_1a11d3b292e_-1138",
+          "properties": {
+            "gid": 7237716,
+            "kad_nomer": "20311023083"
+          },
+          "geometrySha256": "a9ea22ef8a64b75415d9291a2d2fbe5899bef46994fd6e1fe0f5916097fb8acd"
+        },
+        {
+          "transportId": "u_view.fid--286ab7bd_1a11d3b292e_-1137",
+          "properties": {
+            "gid": 8009109,
+            "kad_nomer": "20311023128"
+          },
+          "geometrySha256": "a8aaedcff9e6f2c5c617a345b01d904b37f3eee5d4313a2fb07067f2b100537a"
+        }
+      ]
+    },
+    {
+      "test": "fresh-ids-0",
+      "url": "https://map.gov4c.kz/geoserver/wfs?service=WFS&version=2.0.0&request=GetFeature&typename=egkn%3Au_view&outputFormat=application%2Fjson&srsname=EPSG%3A32643&propertyname=gid%2Ckad_nomer%2Cgeom&count=1000&startIndex=0&sortBy=gid&viewparams=district_id%3A244&filter=%3Cfes%3AFilter+xmlns%3Afes%3D%22http%3A%2F%2Fwww.opengis.net%2Ffes%2F2.0%22%3E%3Cfes%3AOr%3E%3Cfes%3APropertyIsEqualTo%3E%3Cfes%3AValueReference%3Ekad_nomer%3C%2Ffes%3AValueReference%3E%3Cfes%3ALiteral%3E20311023160%3C%2Ffes%3ALiteral%3E%3C%2Ffes%3APropertyIsEqualTo%3E%3Cfes%3APropertyIsEqualTo%3E%3Cfes%3AValueReference%3Ekad_nomer%3C%2Ffes%3AValueReference%3E%3Cfes%3ALiteral%3E20311023161%3C%2Ffes%3ALiteral%3E%3C%2Ffes%3APropertyIsEqualTo%3E%3Cfes%3APropertyIsEqualTo%3E%3Cfes%3AValueReference%3Ekad_nomer%3C%2Ffes%3AValueReference%3E%3Cfes%3ALiteral%3E20311023168%3C%2Ffes%3ALiteral%3E%3C%2Ffes%3APropertyIsEqualTo%3E%3Cfes%3APropertyIsEqualTo%3E%3Cfes%3AValueReference%3Ekad_nomer%3C%2Ffes%3AValueReference%3E%3Cfes%3ALiteral%3E20311023169%3C%2Ffes%3ALiteral%3E%3C%2Ffes%3APropertyIsEqualTo%3E%3Cfes%3APropertyIsEqualTo%3E%3Cfes%3AValueReference%3Ekad_nomer%3C%2Ffes%3AValueReference%3E%3Cfes%3ALiteral%3E20311023178%3C%2Ffes%3ALiteral%3E%3C%2Ffes%3APropertyIsEqualTo%3E%3Cfes%3APropertyIsEqualTo%3E%3Cfes%3AValueReference%3Ekad_nomer%3C%2Ffes%3AValueReference%3E%3Cfes%3ALiteral%3E20311023181%3C%2Ffes%3ALiteral%3E%3C%2Ffes%3APropertyIsEqualTo%3E%3Cfes%3APropertyIsEqualTo%3E%3Cfes%3AValueReference%3Ekad_nomer%3C%2Ffes%3AValueReference%3E%3Cfes%3ALiteral%3E20311023198%3C%2Ffes%3ALiteral%3E%3C%2Ffes%3APropertyIsEqualTo%3E%3Cfes%3APropertyIsEqualTo%3E%3Cfes%3AValueReference%3Ekad_nomer%3C%2Ffes%3AValueReference%3E%3Cfes%3ALiteral%3E20311023211%3C%2Ffes%3ALiteral%3E%3C%2Ffes%3APropertyIsEqualTo%3E%3Cfes%3APropertyIsEqualTo%3E%3Cfes%3AValueReference%3Ekad_nomer%3C%2Ffes%3AValueReference%3E%3Cfes%3ALiteral%3E20311023212%3C%2Ffes%3ALiteral%3E%3C%2Ffes%3APropertyIsEqualTo%3E%3Cfes%3APropertyIsEqualTo%3E%3Cfes%3AValueReference%3Ekad_nomer%3C%2Ffes%3AValueReference%3E%3Cfes%3ALiteral%3E20311023219%3C%2Ffes%3ALiteral%3E%3C%2Ffes%3APropertyIsEqualTo%3E%3Cfes%3APropertyIsEqualTo%3E%3Cfes%3AValueReference%3Ekad_nomer%3C%2Ffes%3AValueReference%3E%3Cfes%3ALiteral%3E20311023227%3C%2Ffes%3ALiteral%3E%3C%2Ffes%3APropertyIsEqualTo%3E%3Cfes%3APropertyIsEqualTo%3E%3Cfes%3AValueReference%3Ekad_nomer%3C%2Ffes%3AValueReference%3E%3Cfes%3ALiteral%3E20311023228%3C%2Ffes%3ALiteral%3E%3C%2Ffes%3APropertyIsEqualTo%3E%3Cfes%3APropertyIsEqualTo%3E%3Cfes%3AValueReference%3Ekad_nomer%3C%2Ffes%3AValueReference%3E%3Cfes%3ALiteral%3E20311023231%3C%2Ffes%3ALiteral%3E%3C%2Ffes%3APropertyIsEqualTo%3E%3Cfes%3APropertyIsEqualTo%3E%3Cfes%3AValueReference%3Ekad_nomer%3C%2Ffes%3AValueReference%3E%3Cfes%3ALiteral%3E20311023240%3C%2Ffes%3ALiteral%3E%3C%2Ffes%3APropertyIsEqualTo%3E%3Cfes%3APropertyIsEqualTo%3E%3Cfes%3AValueReference%3Ekad_nomer%3C%2Ffes%3AValueReference%3E%3Cfes%3ALiteral%3E20311023241%3C%2Ffes%3ALiteral%3E%3C%2Ffes%3APropertyIsEqualTo%3E%3Cfes%3APropertyIsEqualTo%3E%3Cfes%3AValueReference%3Ekad_nomer%3C%2Ffes%3AValueReference%3E%3Cfes%3ALiteral%3E20311023243%3C%2Ffes%3ALiteral%3E%3C%2Ffes%3APropertyIsEqualTo%3E%3Cfes%3APropertyIsEqualTo%3E%3Cfes%3AValueReference%3Ekad_nomer%3C%2Ffes%3AValueReference%3E%3Cfes%3ALiteral%3E20311023245%3C%2Ffes%3ALiteral%3E%3C%2Ffes%3APropertyIsEqualTo%3E%3Cfes%3APropertyIsEqualTo%3E%3Cfes%3AValueReference%3Ekad_nomer%3C%2Ffes%3AValueReference%3E%3Cfes%3ALiteral%3E20311023250%3C%2Ffes%3ALiteral%3E%3C%2Ffes%3APropertyIsEqualTo%3E%3Cfes%3APropertyIsEqualTo%3E%3Cfes%3AValueReference%3Ekad_nomer%3C%2Ffes%3AValueReference%3E%3Cfes%3ALiteral%3E20311023264%3C%2Ffes%3ALiteral%3E%3C%2Ffes%3APropertyIsEqualTo%3E%3Cfes%3APropertyIsEqualTo%3E%3Cfes%3AValueReference%3Ekad_nomer%3C%2Ffes%3AValueReference%3E%3Cfes%3ALiteral%3E20311023275%3C%2Ffes%3ALiteral%3E%3C%2Ffes%3APropertyIsEqualTo%3E%3C%2Ffes%3AOr%3E%3C%2Ffes%3AFilter%3E",
+      "method": "GET",
+      "checkedAt": "2026-10-08T20:36:20.885Z",
+      "httpStatus": 200,
+      "contentType": "application/json;charset=utf-8",
+      "bytes": 10083,
+      "numberMatched": 20,
+      "numberReturned": 20,
+      "features": [
+        {
+          "transportId": "u_view.fid--3f0c7dfc_1a11d39a11a_7f57",
+          "properties": {
+            "gid": 7229395,
+            "kad_nomer": "20311023275"
+          },
+          "geometrySha256": "c25c0a8ba4cb852334ac0047278e6f010496cb44b50ebbe7fb886b2e4d76a193"
+        },
+        {
+          "transportId": "u_view.fid--3f0c7dfc_1a11d39a11a_7f58",
+          "properties": {
+            "gid": 7230075,
+            "kad_nomer": "20311023250"
+          },
+          "geometrySha256": "67154636e2ec7f1797a7739e7a25b7cb96d9d84831bdf898aa8846d6302bc65c"
+        },
+        {
+          "transportId": "u_view.fid--3f0c7dfc_1a11d39a11a_7f59",
+          "properties": {
+            "gid": 7230081,
+            "kad_nomer": "20311023243"
+          },
+          "geometrySha256": "f79b288c4b08967fcb5d1381629591c0c6f93205045e1612e17cc9d4c1389bb8"
+        },
+        {
+          "transportId": "u_view.fid--3f0c7dfc_1a11d39a11a_7f5a",
+          "properties": {
+            "gid": 7230106,
+            "kad_nomer": "20311023245"
+          },
+          "geometrySha256": "b78f007ba21e0c83f3ab3eac8d8bae95142b2276e79caf64e904ec9361fd1c42"
+        },
+        {
+          "transportId": "u_view.fid--3f0c7dfc_1a11d39a11a_7f5b",
+          "properties": {
+            "gid": 7230111,
+            "kad_nomer": "20311023169"
+          },
+          "geometrySha256": "08dbfa3030d8d827b2d9dac29269b298aa298779fe769e3a95a0e8842977572e"
+        },
+        {
+          "transportId": "u_view.fid--3f0c7dfc_1a11d39a11a_7f5c",
+          "properties": {
+            "gid": 7230121,
+            "kad_nomer": "20311023228"
+          },
+          "geometrySha256": "7ad94f9a5d52f7f947f9d7d183c753873bc99d3267b7341aa69e714b814b2e1a"
+        },
+        {
+          "transportId": "u_view.fid--3f0c7dfc_1a11d39a11a_7f5d",
+          "properties": {
+            "gid": 7230191,
+            "kad_nomer": "20311023211"
+          },
+          "geometrySha256": "cde692dee1d94b8634402a314c1b3074daaf27cf0cb8143360279021254f8de5"
+        },
+        {
+          "transportId": "u_view.fid--3f0c7dfc_1a11d39a11a_7f5e",
+          "properties": {
+            "gid": 7230207,
+            "kad_nomer": "20311023240"
+          },
+          "geometrySha256": "33da6a9aa76b04d48b174996b6eb1efbf3fdc64c700f2e06631149242aae817c"
+        },
+        {
+          "transportId": "u_view.fid--3f0c7dfc_1a11d39a11a_7f5f",
+          "properties": {
+            "gid": 7232518,
+            "kad_nomer": "20311023168"
+          },
+          "geometrySha256": "ba1ae9f0e37e8b3e90260cf56e81c601dbf03e011d844424d89f277fd47e6956"
+        },
+        {
+          "transportId": "u_view.fid--3f0c7dfc_1a11d39a11a_7f60",
+          "properties": {
+            "gid": 7234818,
+            "kad_nomer": "20311023198"
+          },
+          "geometrySha256": "c11f3790f03f3b7080cdf254bd0bed2df2a1fcbe929f5e35037e9912bf6d2c01"
+        },
+        {
+          "transportId": "u_view.fid--3f0c7dfc_1a11d39a11a_7f61",
+          "properties": {
+            "gid": 7234829,
+            "kad_nomer": "20311023212"
+          },
+          "geometrySha256": "318b9b6919cd5806ce2feb3b7da868094fb97057b9bf44db854d0ae78fb51d12"
+        },
+        {
+          "transportId": "u_view.fid--3f0c7dfc_1a11d39a11a_7f62",
+          "properties": {
+            "gid": 7235038,
+            "kad_nomer": "20311023241"
+          },
+          "geometrySha256": "ff925000ee9f944c3e68e6d24b0f430121ae20ad1b5850a2c4a19e33805654a7"
+        },
+        {
+          "transportId": "u_view.fid--3f0c7dfc_1a11d39a11a_7f63",
+          "properties": {
+            "gid": 7235074,
+            "kad_nomer": "20311023181"
+          },
+          "geometrySha256": "f1cb713a159cb49ab40bff302f3923c3de77ba1f3859ddbc214c4860cb1c58a7"
+        },
+        {
+          "transportId": "u_view.fid--3f0c7dfc_1a11d39a11a_7f64",
+          "properties": {
+            "gid": 7235106,
+            "kad_nomer": "20311023160"
+          },
+          "geometrySha256": "93a07f8fd93b64e83f18bc60350cc2fb2df35cbf1867897884de9c3236510522"
+        },
+        {
+          "transportId": "u_view.fid--3f0c7dfc_1a11d39a11a_7f65",
+          "properties": {
+            "gid": 7235542,
+            "kad_nomer": "20311023231"
+          },
+          "geometrySha256": "7afb2c6c5aff1b2c758fd951f3c9034cca679b9553b521462dd84417640c1e38"
+        },
+        {
+          "transportId": "u_view.fid--3f0c7dfc_1a11d39a11a_7f66",
+          "properties": {
+            "gid": 7235545,
+            "kad_nomer": "20311023227"
+          },
+          "geometrySha256": "bbac61b35988194c071a8d14760619f63e288af4b3ca22203ef7efd626d70015"
+        },
+        {
+          "transportId": "u_view.fid--3f0c7dfc_1a11d39a11a_7f67",
+          "properties": {
+            "gid": 7236523,
+            "kad_nomer": "20311023161"
+          },
+          "geometrySha256": "0f1151dbcad3554eef9d4b2b827952c36191b27b5af8f31d4370d06fe1d812df"
+        },
+        {
+          "transportId": "u_view.fid--3f0c7dfc_1a11d39a11a_7f68",
+          "properties": {
+            "gid": 7237790,
+            "kad_nomer": "20311023219"
+          },
+          "geometrySha256": "c8c992e43e47802a7de51aeacfe55edc2fa8ad89e320929537e962860742f4a6"
+        },
+        {
+          "transportId": "u_view.fid--3f0c7dfc_1a11d39a11a_7f69",
+          "properties": {
+            "gid": 7237852,
+            "kad_nomer": "20311023264"
+          },
+          "geometrySha256": "467fd8121e0b74f5aa4b1b47c163fcc949a3f345f380617db849594b9d7f8fa2"
+        },
+        {
+          "transportId": "u_view.fid--3f0c7dfc_1a11d39a11a_7f6a",
+          "properties": {
+            "gid": 8056936,
+            "kad_nomer": "20311023178"
+          },
+          "geometrySha256": "2e0dd1d4b7bee371a2f1d64356ffaa14536c64b620d2be7ea10b31bb6d9c3e79"
+        }
+      ]
+    },
+    {
+      "test": "fresh-ids-40",
+      "url": "https://map.gov4c.kz/geoserver/wfs?service=WFS&version=2.0.0&request=GetFeature&typename=egkn%3Au_view&outputFormat=application%2Fjson&srsname=EPSG%3A32643&propertyname=gid%2Ckad_nomer%2Cgeom&count=1000&startIndex=0&sortBy=gid&viewparams=district_id%3A244&filter=%3Cfes%3AFilter+xmlns%3Afes%3D%22http%3A%2F%2Fwww.opengis.net%2Ffes%2F2.0%22%3E%3Cfes%3AOr%3E%3Cfes%3APropertyIsEqualTo%3E%3Cfes%3AValueReference%3Ekad_nomer%3C%2Ffes%3AValueReference%3E%3Cfes%3ALiteral%3E20311023278%3C%2Ffes%3ALiteral%3E%3C%2Ffes%3APropertyIsEqualTo%3E%3Cfes%3APropertyIsEqualTo%3E%3Cfes%3AValueReference%3Ekad_nomer%3C%2Ffes%3AValueReference%3E%3Cfes%3ALiteral%3E20311023281%3C%2Ffes%3ALiteral%3E%3C%2Ffes%3APropertyIsEqualTo%3E%3Cfes%3APropertyIsEqualTo%3E%3Cfes%3AValueReference%3Ekad_nomer%3C%2Ffes%3AValueReference%3E%3Cfes%3ALiteral%3E20311023282%3C%2Ffes%3ALiteral%3E%3C%2Ffes%3APropertyIsEqualTo%3E%3Cfes%3APropertyIsEqualTo%3E%3Cfes%3AValueReference%3Ekad_nomer%3C%2Ffes%3AValueReference%3E%3Cfes%3ALiteral%3E20311023290%3C%2Ffes%3ALiteral%3E%3C%2Ffes%3APropertyIsEqualTo%3E%3Cfes%3APropertyIsEqualTo%3E%3Cfes%3AValueReference%3Ekad_nomer%3C%2Ffes%3AValueReference%3E%3Cfes%3ALiteral%3E20311023297%3C%2Ffes%3ALiteral%3E%3C%2Ffes%3APropertyIsEqualTo%3E%3Cfes%3APropertyIsEqualTo%3E%3Cfes%3AValueReference%3Ekad_nomer%3C%2Ffes%3AValueReference%3E%3Cfes%3ALiteral%3E20311023303%3C%2Ffes%3ALiteral%3E%3C%2Ffes%3APropertyIsEqualTo%3E%3Cfes%3APropertyIsEqualTo%3E%3Cfes%3AValueReference%3Ekad_nomer%3C%2Ffes%3AValueReference%3E%3Cfes%3ALiteral%3E20311023305%3C%2Ffes%3ALiteral%3E%3C%2Ffes%3APropertyIsEqualTo%3E%3Cfes%3APropertyIsEqualTo%3E%3Cfes%3AValueReference%3Ekad_nomer%3C%2Ffes%3AValueReference%3E%3Cfes%3ALiteral%3E20311023311%3C%2Ffes%3ALiteral%3E%3C%2Ffes%3APropertyIsEqualTo%3E%3Cfes%3APropertyIsEqualTo%3E%3Cfes%3AValueReference%3Ekad_nomer%3C%2Ffes%3AValueReference%3E%3Cfes%3ALiteral%3E20311023316%3C%2Ffes%3ALiteral%3E%3C%2Ffes%3APropertyIsEqualTo%3E%3Cfes%3APropertyIsEqualTo%3E%3Cfes%3AValueReference%3Ekad_nomer%3C%2Ffes%3AValueReference%3E%3Cfes%3ALiteral%3E20311023317%3C%2Ffes%3ALiteral%3E%3C%2Ffes%3APropertyIsEqualTo%3E%3Cfes%3APropertyIsEqualTo%3E%3Cfes%3AValueReference%3Ekad_nomer%3C%2Ffes%3AValueReference%3E%3Cfes%3ALiteral%3E20311023319%3C%2Ffes%3ALiteral%3E%3C%2Ffes%3APropertyIsEqualTo%3E%3Cfes%3APropertyIsEqualTo%3E%3Cfes%3AValueReference%3Ekad_nomer%3C%2Ffes%3AValueReference%3E%3Cfes%3ALiteral%3E20311023322%3C%2Ffes%3ALiteral%3E%3C%2Ffes%3APropertyIsEqualTo%3E%3Cfes%3APropertyIsEqualTo%3E%3Cfes%3AValueReference%3Ekad_nomer%3C%2Ffes%3AValueReference%3E%3Cfes%3ALiteral%3E20311023323%3C%2Ffes%3ALiteral%3E%3C%2Ffes%3APropertyIsEqualTo%3E%3Cfes%3APropertyIsEqualTo%3E%3Cfes%3AValueReference%3Ekad_nomer%3C%2Ffes%3AValueReference%3E%3Cfes%3ALiteral%3E20311023328%3C%2Ffes%3ALiteral%3E%3C%2Ffes%3APropertyIsEqualTo%3E%3Cfes%3APropertyIsEqualTo%3E%3Cfes%3AValueReference%3Ekad_nomer%3C%2Ffes%3AValueReference%3E%3Cfes%3ALiteral%3E20311023329%3C%2Ffes%3ALiteral%3E%3C%2Ffes%3APropertyIsEqualTo%3E%3Cfes%3APropertyIsEqualTo%3E%3Cfes%3AValueReference%3Ekad_nomer%3C%2Ffes%3AValueReference%3E%3Cfes%3ALiteral%3E20311023331%3C%2Ffes%3ALiteral%3E%3C%2Ffes%3APropertyIsEqualTo%3E%3Cfes%3APropertyIsEqualTo%3E%3Cfes%3AValueReference%3Ekad_nomer%3C%2Ffes%3AValueReference%3E%3Cfes%3ALiteral%3E20311023341%3C%2Ffes%3ALiteral%3E%3C%2Ffes%3APropertyIsEqualTo%3E%3Cfes%3APropertyIsEqualTo%3E%3Cfes%3AValueReference%3Ekad_nomer%3C%2Ffes%3AValueReference%3E%3Cfes%3ALiteral%3E20311023351%3C%2Ffes%3ALiteral%3E%3C%2Ffes%3APropertyIsEqualTo%3E%3Cfes%3APropertyIsEqualTo%3E%3Cfes%3AValueReference%3Ekad_nomer%3C%2Ffes%3AValueReference%3E%3Cfes%3ALiteral%3E20311023355%3C%2Ffes%3ALiteral%3E%3C%2Ffes%3APropertyIsEqualTo%3E%3Cfes%3APropertyIsEqualTo%3E%3Cfes%3AValueReference%3Ekad_nomer%3C%2Ffes%3AValueReference%3E%3Cfes%3ALiteral%3E20311023360%3C%2Ffes%3ALiteral%3E%3C%2Ffes%3APropertyIsEqualTo%3E%3C%2Ffes%3AOr%3E%3C%2Ffes%3AFilter%3E",
+      "method": "GET",
+      "checkedAt": "2026-10-08T20:36:21.054Z",
+      "httpStatus": 200,
+      "contentType": "application/json;charset=utf-8",
+      "bytes": 10174,
+      "numberMatched": 20,
+      "numberReturned": 20,
+      "features": [
+        {
+          "transportId": "u_view.fid-1c0d636f_1a11d3a7593_-31f4",
+          "properties": {
+            "gid": 7229454,
+            "kad_nomer": "20311023319"
+          },
+          "geometrySha256": "f416e48acb8ae68f1cfc75e8240f8bdaf5a4873f6db5921eaef3c656f543a025"
+        },
+        {
+          "transportId": "u_view.fid-1c0d636f_1a11d3a7593_-31f3",
+          "properties": {
+            "gid": 7229465,
+            "kad_nomer": "20311023328"
+          },
+          "geometrySha256": "a031e17af394220bb92031344945417e536bbe9701740ee2c485a013b71e4997"
+        },
+        {
+          "transportId": "u_view.fid-1c0d636f_1a11d3a7593_-31f2",
+          "properties": {
+            "gid": 7230085,
+            "kad_nomer": "20311023278"
+          },
+          "geometrySha256": "7460a9dd6555d6b5f18bf6289a00ac812484739fd612281340de7de6eef182d8"
+        },
+        {
+          "transportId": "u_view.fid-1c0d636f_1a11d3a7593_-31f1",
+          "properties": {
+            "gid": 7230090,
+            "kad_nomer": "20311023322"
+          },
+          "geometrySha256": "650cb47cff4df189aea49f88bb92ab33c74b1eaedc1a733aa5f2aca899e33021"
+        },
+        {
+          "transportId": "u_view.fid-1c0d636f_1a11d3a7593_-31f0",
+          "properties": {
+            "gid": 7230102,
+            "kad_nomer": "20311023341"
+          },
+          "geometrySha256": "38d4e39e1a02d07fa8f3b37c66c57685cdb3852a1daecd7a7e5682ba91c02df7"
+        },
+        {
+          "transportId": "u_view.fid-1c0d636f_1a11d3a7593_-31ef",
+          "properties": {
+            "gid": 7230122,
+            "kad_nomer": "20311023282"
+          },
+          "geometrySha256": "e73373bfecf3d57118b1dba89b6f33e7a36b2e8f214684eb4f818a31cf35f3f2"
+        },
+        {
+          "transportId": "u_view.fid-1c0d636f_1a11d3a7593_-31ee",
+          "properties": {
+            "gid": 7230126,
+            "kad_nomer": "20311023305"
+          },
+          "geometrySha256": "be2b69585bbfaf9281cbd1bb65638b389cb6d5db13ac0464a39492b1915b65ca"
+        },
+        {
+          "transportId": "u_view.fid-1c0d636f_1a11d3a7593_-31ed",
+          "properties": {
+            "gid": 7230132,
+            "kad_nomer": "20311023290"
+          },
+          "geometrySha256": "3f2bbc089e9c013f76ea50a5baba8c76a3b3fd64829948f9585c074abced21af"
+        },
+        {
+          "transportId": "u_view.fid-1c0d636f_1a11d3a7593_-31ec",
+          "properties": {
+            "gid": 7230147,
+            "kad_nomer": "20311023351"
+          },
+          "geometrySha256": "021e57e7f89f4e66bec90f2243980d0e581073fecaf41b1cea54990a027f9ad2"
+        },
+        {
+          "transportId": "u_view.fid-1c0d636f_1a11d3a7593_-31eb",
+          "properties": {
+            "gid": 7230152,
+            "kad_nomer": "20311023331"
+          },
+          "geometrySha256": "ce975ec77a79920238f4c3288007fc86e27e20054f34d269a46ba45136b41f2a"
+        },
+        {
+          "transportId": "u_view.fid-1c0d636f_1a11d3a7593_-31ea",
+          "properties": {
+            "gid": 7230176,
+            "kad_nomer": "20311023317"
+          },
+          "geometrySha256": "62e735653a448be313ab1602fec519b1b98d4fc7afd31c26e6ee4f6d54871feb"
+        },
+        {
+          "transportId": "u_view.fid-1c0d636f_1a11d3a7593_-31e9",
+          "properties": {
+            "gid": 7230190,
+            "kad_nomer": "20311023303"
+          },
+          "geometrySha256": "7aabc8cdedf6d081671a6147f7390096e987912738e1ddf6a645608e664a01c1"
+        },
+        {
+          "transportId": "u_view.fid-1c0d636f_1a11d3a7593_-31e8",
+          "properties": {
+            "gid": 7230203,
+            "kad_nomer": "20311023360"
+          },
+          "geometrySha256": "0be955df9e18a9713ed763e93de28e9f514e552e149a9668e014e329970660cc"
+        },
+        {
+          "transportId": "u_view.fid-1c0d636f_1a11d3a7593_-31e7",
+          "properties": {
+            "gid": 7234789,
+            "kad_nomer": "20311023281"
+          },
+          "geometrySha256": "6f911ba2d457ca1149d6dccd28af32100aa34521b5d2632894ee3e6ceebf9a66"
+        },
+        {
+          "transportId": "u_view.fid-1c0d636f_1a11d3a7593_-31e6",
+          "properties": {
+            "gid": 7235066,
+            "kad_nomer": "20311023323"
+          },
+          "geometrySha256": "bc8379231d6fa0ea6c9fa2154c5085e42a1e7e719a4acb71abfeb83f09ed6207"
+        },
+        {
+          "transportId": "u_view.fid-1c0d636f_1a11d3a7593_-31e5",
+          "properties": {
+            "gid": 7235531,
+            "kad_nomer": "20311023316"
+          },
+          "geometrySha256": "8e5f7b7f2b3ea2c3031005834672093b3adc4f1df00b98b0bd0da991289658d1"
+        },
+        {
+          "transportId": "u_view.fid-1c0d636f_1a11d3a7593_-31e4",
+          "properties": {
+            "gid": 7236550,
+            "kad_nomer": "20311023297"
+          },
+          "geometrySha256": "3935fff58d95d37e7e8b52904442d56ae082c26afeffca0374fcb76683ad2df5"
+        },
+        {
+          "transportId": "u_view.fid-1c0d636f_1a11d3a7593_-31e3",
+          "properties": {
+            "gid": 7236587,
+            "kad_nomer": "20311023311"
+          },
+          "geometrySha256": "d77a98d0ce6f0eeabfc057fe66ec8db02bc617c2db9e0a8747bd9336cec26b04"
+        },
+        {
+          "transportId": "u_view.fid-1c0d636f_1a11d3a7593_-31e2",
+          "properties": {
+            "gid": 7236588,
+            "kad_nomer": "20311023329"
+          },
+          "geometrySha256": "2aaf5993b2129c228aa20498732b491d42b164ec4c7d3b2619868ea3baca040a"
+        },
+        {
+          "transportId": "u_view.fid-1c0d636f_1a11d3a7593_-31e1",
+          "properties": {
+            "gid": 7237553,
+            "kad_nomer": "20311023355"
+          },
+          "geometrySha256": "28efd95f902e17186e07d5e842102947851c179fd41d2ea4bec58654065049e4"
+        }
+      ]
+    },
+    {
+      "test": "fresh-ids-40",
+      "url": "https://map.gov4c.kz/geoserver/wfs?service=WFS&version=2.0.0&request=GetFeature&typename=egkn%3Au_view&outputFormat=application%2Fjson&srsname=EPSG%3A32643&propertyname=gid%2Ckad_nomer%2Cgeom&count=1000&startIndex=0&sortBy=gid&viewparams=district_id%3A244&filter=%3Cfes%3AFilter+xmlns%3Afes%3D%22http%3A%2F%2Fwww.opengis.net%2Ffes%2F2.0%22%3E%3Cfes%3AOr%3E%3Cfes%3APropertyIsEqualTo%3E%3Cfes%3AValueReference%3Ekad_nomer%3C%2Ffes%3AValueReference%3E%3Cfes%3ALiteral%3E20311023363%3C%2Ffes%3ALiteral%3E%3C%2Ffes%3APropertyIsEqualTo%3E%3Cfes%3APropertyIsEqualTo%3E%3Cfes%3AValueReference%3Ekad_nomer%3C%2Ffes%3AValueReference%3E%3Cfes%3ALiteral%3E20311023368%3C%2Ffes%3ALiteral%3E%3C%2Ffes%3APropertyIsEqualTo%3E%3Cfes%3APropertyIsEqualTo%3E%3Cfes%3AValueReference%3Ekad_nomer%3C%2Ffes%3AValueReference%3E%3Cfes%3ALiteral%3E20311023378%3C%2Ffes%3ALiteral%3E%3C%2Ffes%3APropertyIsEqualTo%3E%3Cfes%3APropertyIsEqualTo%3E%3Cfes%3AValueReference%3Ekad_nomer%3C%2Ffes%3AValueReference%3E%3Cfes%3ALiteral%3E20311023385%3C%2Ffes%3ALiteral%3E%3C%2Ffes%3APropertyIsEqualTo%3E%3Cfes%3APropertyIsEqualTo%3E%3Cfes%3AValueReference%3Ekad_nomer%3C%2Ffes%3AValueReference%3E%3Cfes%3ALiteral%3E20311023386%3C%2Ffes%3ALiteral%3E%3C%2Ffes%3APropertyIsEqualTo%3E%3Cfes%3APropertyIsEqualTo%3E%3Cfes%3AValueReference%3Ekad_nomer%3C%2Ffes%3AValueReference%3E%3Cfes%3ALiteral%3E20311023389%3C%2Ffes%3ALiteral%3E%3C%2Ffes%3APropertyIsEqualTo%3E%3Cfes%3APropertyIsEqualTo%3E%3Cfes%3AValueReference%3Ekad_nomer%3C%2Ffes%3AValueReference%3E%3Cfes%3ALiteral%3E20311023390%3C%2Ffes%3ALiteral%3E%3C%2Ffes%3APropertyIsEqualTo%3E%3Cfes%3APropertyIsEqualTo%3E%3Cfes%3AValueReference%3Ekad_nomer%3C%2Ffes%3AValueReference%3E%3Cfes%3ALiteral%3E20311023403%3C%2Ffes%3ALiteral%3E%3C%2Ffes%3APropertyIsEqualTo%3E%3Cfes%3APropertyIsEqualTo%3E%3Cfes%3AValueReference%3Ekad_nomer%3C%2Ffes%3AValueReference%3E%3Cfes%3ALiteral%3E20311023433%3C%2Ffes%3ALiteral%3E%3C%2Ffes%3APropertyIsEqualTo%3E%3Cfes%3APropertyIsEqualTo%3E%3Cfes%3AValueReference%3Ekad_nomer%3C%2Ffes%3AValueReference%3E%3Cfes%3ALiteral%3E20311023450%3C%2Ffes%3ALiteral%3E%3C%2Ffes%3APropertyIsEqualTo%3E%3Cfes%3APropertyIsEqualTo%3E%3Cfes%3AValueReference%3Ekad_nomer%3C%2Ffes%3AValueReference%3E%3Cfes%3ALiteral%3E20311024003%3C%2Ffes%3ALiteral%3E%3C%2Ffes%3APropertyIsEqualTo%3E%3Cfes%3APropertyIsEqualTo%3E%3Cfes%3AValueReference%3Ekad_nomer%3C%2Ffes%3AValueReference%3E%3Cfes%3ALiteral%3E20311024010%3C%2Ffes%3ALiteral%3E%3C%2Ffes%3APropertyIsEqualTo%3E%3Cfes%3APropertyIsEqualTo%3E%3Cfes%3AValueReference%3Ekad_nomer%3C%2Ffes%3AValueReference%3E%3Cfes%3ALiteral%3E20311024012%3C%2Ffes%3ALiteral%3E%3C%2Ffes%3APropertyIsEqualTo%3E%3Cfes%3APropertyIsEqualTo%3E%3Cfes%3AValueReference%3Ekad_nomer%3C%2Ffes%3AValueReference%3E%3Cfes%3ALiteral%3E20311024028%3C%2Ffes%3ALiteral%3E%3C%2Ffes%3APropertyIsEqualTo%3E%3Cfes%3APropertyIsEqualTo%3E%3Cfes%3AValueReference%3Ekad_nomer%3C%2Ffes%3AValueReference%3E%3Cfes%3ALiteral%3E20311024076%3C%2Ffes%3ALiteral%3E%3C%2Ffes%3APropertyIsEqualTo%3E%3Cfes%3APropertyIsEqualTo%3E%3Cfes%3AValueReference%3Ekad_nomer%3C%2Ffes%3AValueReference%3E%3Cfes%3ALiteral%3E20311024080%3C%2Ffes%3ALiteral%3E%3C%2Ffes%3APropertyIsEqualTo%3E%3Cfes%3APropertyIsEqualTo%3E%3Cfes%3AValueReference%3Ekad_nomer%3C%2Ffes%3AValueReference%3E%3Cfes%3ALiteral%3E20311024082%3C%2Ffes%3ALiteral%3E%3C%2Ffes%3APropertyIsEqualTo%3E%3Cfes%3APropertyIsEqualTo%3E%3Cfes%3AValueReference%3Ekad_nomer%3C%2Ffes%3AValueReference%3E%3Cfes%3ALiteral%3E20311024089%3C%2Ffes%3ALiteral%3E%3C%2Ffes%3APropertyIsEqualTo%3E%3Cfes%3APropertyIsEqualTo%3E%3Cfes%3AValueReference%3Ekad_nomer%3C%2Ffes%3AValueReference%3E%3Cfes%3ALiteral%3E20311024090%3C%2Ffes%3ALiteral%3E%3C%2Ffes%3APropertyIsEqualTo%3E%3Cfes%3APropertyIsEqualTo%3E%3Cfes%3AValueReference%3Ekad_nomer%3C%2Ffes%3AValueReference%3E%3Cfes%3ALiteral%3E20311024109%3C%2Ffes%3ALiteral%3E%3C%2Ffes%3APropertyIsEqualTo%3E%3C%2Ffes%3AOr%3E%3C%2Ffes%3AFilter%3E",
+      "method": "GET",
+      "checkedAt": "2026-10-08T20:36:21.236Z",
+      "httpStatus": 200,
+      "contentType": "application/json;charset=utf-8",
+      "bytes": 36446,
+      "numberMatched": 20,
+      "numberReturned": 20,
+      "features": [
+        {
+          "transportId": "u_view.fid--573cc778_1a11d3a63c6_-290",
+          "properties": {
+            "gid": 7230092,
+            "kad_nomer": "20311023450"
+          },
+          "geometrySha256": "7e62e24dc703fc280912812f5d18975e6741dc16a41623dad047c01327175962"
+        },
+        {
+          "transportId": "u_view.fid--573cc778_1a11d3a63c6_-28f",
+          "properties": {
+            "gid": 7230105,
+            "kad_nomer": "20311023378"
+          },
+          "geometrySha256": "af135216b6846da93f58493f2bf1283b15afc69b546c2456c4b9bc1c7b992d2b"
+        },
+        {
+          "transportId": "u_view.fid--573cc778_1a11d3a63c6_-28e",
+          "properties": {
+            "gid": 7230107,
+            "kad_nomer": "20311023385"
+          },
+          "geometrySha256": "0e4d8c28b765234d9e5cc55e84b8a2c2cbd66a1f56782e14f214cdebcc64980c"
+        },
+        {
+          "transportId": "u_view.fid--573cc778_1a11d3a63c6_-28d",
+          "properties": {
+            "gid": 7230110,
+            "kad_nomer": "20311024028"
+          },
+          "geometrySha256": "97feb7dc62e5aebd78bffed11828d8a81ce36f00193c65a27f746043d0facfff"
+        },
+        {
+          "transportId": "u_view.fid--573cc778_1a11d3a63c6_-28c",
+          "properties": {
+            "gid": 7230117,
+            "kad_nomer": "20311023403"
+          },
+          "geometrySha256": "ba01b7dda84605cea42f3c9fd849522f7c9dd8c42c8f8132f647df7a2f758988"
+        },
+        {
+          "transportId": "u_view.fid--573cc778_1a11d3a63c6_-28b",
+          "properties": {
+            "gid": 7230119,
+            "kad_nomer": "20311023363"
+          },
+          "geometrySha256": "d3a81bfdf8c20a3d7938ce79aaa078f9f0e13c1a0d1270808b1984b9d5e18560"
+        },
+        {
+          "transportId": "u_view.fid--573cc778_1a11d3a63c6_-28a",
+          "properties": {
+            "gid": 7230157,
+            "kad_nomer": "20311024003"
+          },
+          "geometrySha256": "c3e349cfac6359d2fef32b5a23256f599e90d40772c21a1bf2cf8639073463d2"
+        },
+        {
+          "transportId": "u_view.fid--573cc778_1a11d3a63c6_-289",
+          "properties": {
+            "gid": 7230168,
+            "kad_nomer": "20311023389"
+          },
+          "geometrySha256": "aa9beb997beacc2b97fe130fee10f5dc54e468aaa5256d47ebcfccb1411bd817"
+        },
+        {
+          "transportId": "u_view.fid--573cc778_1a11d3a63c6_-288",
+          "properties": {
+            "gid": 7230215,
+            "kad_nomer": "20311023386"
+          },
+          "geometrySha256": "8fd345af66e7efc6c5af4fd435d826cd0aaa12cfbd5a30dfb428d3f4c6163818"
+        },
+        {
+          "transportId": "u_view.fid--573cc778_1a11d3a63c6_-287",
+          "properties": {
+            "gid": 7234784,
+            "kad_nomer": "20311024109"
+          },
+          "geometrySha256": "f26a9845cd2e462cda4cf7022a5a22980ea29255075361f4640e8a117ca7e2b6"
+        },
+        {
+          "transportId": "u_view.fid--573cc778_1a11d3a63c6_-286",
+          "properties": {
+            "gid": 7235090,
+            "kad_nomer": "20311024080"
+          },
+          "geometrySha256": "588c46b47308439e066c28b106ce82d48d5762d5ccdc350e163878221de55f68"
+        },
+        {
+          "transportId": "u_view.fid--573cc778_1a11d3a63c6_-285",
+          "properties": {
+            "gid": 7235500,
+            "kad_nomer": "20311024076"
+          },
+          "geometrySha256": "2e99ebff0c739e57d9341561b84cb3fa8144f23d0c1004d2fc9989538ac7773d"
+        },
+        {
+          "transportId": "u_view.fid--573cc778_1a11d3a63c6_-284",
+          "properties": {
+            "gid": 7235552,
+            "kad_nomer": "20311023390"
+          },
+          "geometrySha256": "ca57cee0ed4fa24dfd376e5d9bdd63e37547d4557cf62bdfb37c138d4c1e15a7"
+        },
+        {
+          "transportId": "u_view.fid--573cc778_1a11d3a63c6_-283",
+          "properties": {
+            "gid": 7236597,
+            "kad_nomer": "20311024010"
+          },
+          "geometrySha256": "286c0f985e03549c7448b34629a937465965ff82f32bc75ab033eefa789d0553"
+        },
+        {
+          "transportId": "u_view.fid--573cc778_1a11d3a63c6_-282",
+          "properties": {
+            "gid": 7236956,
+            "kad_nomer": "20311024012"
+          },
+          "geometrySha256": "317a12c658a0eeab98c9f4b9895ec83c8f681382c74007576dbf582c8083b761"
+        },
+        {
+          "transportId": "u_view.fid--573cc778_1a11d3a63c6_-281",
+          "properties": {
+            "gid": 7237711,
+            "kad_nomer": "20311024082"
+          },
+          "geometrySha256": "14750c64651e9aedbe5d5e789dabd9e4930a80528cd3cee37f6cc264fa5697df"
+        },
+        {
+          "transportId": "u_view.fid--573cc778_1a11d3a63c6_-280",
+          "properties": {
+            "gid": 7593170,
+            "kad_nomer": "20311023368"
+          },
+          "geometrySha256": "d30a73f826b070616217c07c38f09ad03c60c37372a332373b4116e99d8a796f"
+        },
+        {
+          "transportId": "u_view.fid--573cc778_1a11d3a63c6_-27f",
+          "properties": {
+            "gid": 7593268,
+            "kad_nomer": "20311024089"
+          },
+          "geometrySha256": "231e16bf0d118f125b08d8da95a8f47d734f33142d638900d84b900ea10d49af"
+        },
+        {
+          "transportId": "u_view.fid--573cc778_1a11d3a63c6_-27e",
+          "properties": {
+            "gid": 7778258,
+            "kad_nomer": "20311023433"
+          },
+          "geometrySha256": "3aa0689f0d85ba5802a9bfd97a9d8a53e2b5ad40fac5f197b0b4c39b53e261bd"
+        },
+        {
+          "transportId": "u_view.fid--573cc778_1a11d3a63c6_-27d",
+          "properties": {
+            "gid": 8148967,
+            "kad_nomer": "20311024090"
+          },
+          "geometrySha256": "f613c20e16e9a0d69143a321cd1bd876d64436da998f43799ec8400839c28435"
+        }
+      ]
+    },
+    {
+      "test": "fresh-ids-80",
+      "url": "https://map.gov4c.kz/geoserver/wfs?service=WFS&version=2.0.0&request=GetFeature&typename=egkn%3Au_view&outputFormat=application%2Fjson&srsname=EPSG%3A32643&propertyname=gid%2Ckad_nomer%2Cgeom&count=1000&startIndex=0&sortBy=gid&viewparams=district_id%3A244&filter=%3Cfes%3AFilter+xmlns%3Afes%3D%22http%3A%2F%2Fwww.opengis.net%2Ffes%2F2.0%22%3E%3Cfes%3APropertyIsEqualTo%3E%3Cfes%3AValueReference%3Ekad_nomer%3C%2Ffes%3AValueReference%3E%3Cfes%3ALiteral%3E20311024128%3C%2Ffes%3ALiteral%3E%3C%2Ffes%3APropertyIsEqualTo%3E%3C%2Ffes%3AFilter%3E",
+      "method": "GET",
+      "checkedAt": "2026-10-08T20:36:21.631Z",
+      "httpStatus": 200,
+      "contentType": "application/json;charset=utf-8",
+      "bytes": 1802,
+      "numberMatched": 1,
+      "numberReturned": 1,
+      "features": [
+        {
+          "transportId": "u_view.fid--286ab7bd_1a11d3b292e_-1136",
+          "properties": {
+            "gid": 7235590,
+            "kad_nomer": "20311024128"
+          },
+          "geometrySha256": "ca959df9d80a0ef1f7b4f74acaf34691d8eb3973129c4f5155315ddbeff7d5e9"
+        }
+      ]
+    },
+    {
+      "test": "explicit-absence",
+      "url": "https://map.gov4c.kz/geoserver/wfs?service=WFS&version=2.0.0&request=GetFeature&typename=egkn%3Au_view&outputFormat=application%2Fjson&srsname=EPSG%3A32643&propertyname=gid%2Ckad_nomer%2Cgeom&count=1000&startIndex=0&sortBy=gid&viewparams=district_id%3A244&filter=%3Cfes%3AFilter+xmlns%3Afes%3D%22http%3A%2F%2Fwww.opengis.net%2Ffes%2F2.0%22%3E%3Cfes%3APropertyIsEqualTo%3E%3Cfes%3AValueReference%3Ekad_nomer%3C%2Ffes%3AValueReference%3E%3Cfes%3ALiteral%3E99999999999999999999999%3C%2Ffes%3ALiteral%3E%3C%2Ffes%3APropertyIsEqualTo%3E%3C%2Ffes%3AFilter%3E",
+      "method": "GET",
+      "checkedAt": "2026-10-08T20:36:21.847Z",
+      "httpStatus": 200,
+      "contentType": "application/json;charset=utf-8",
+      "bytes": 147,
+      "numberMatched": 0,
+      "numberReturned": 0,
+      "features": []
+    },
+    {
+      "test": "footprint",
+      "url": "https://map.gov4c.kz/geoserver/wfs?service=WFS&version=2.0.0&request=GetFeature&typename=egkn%3Au_view&outputFormat=application%2Fjson&srsname=EPSG%3A32643&propertyname=gid%2Ckad_nomer%2Cgeom&count=1000&startIndex=0&sortBy=gid&viewparams=district_id%3A244&bbox=654941.478723485%2C4791851.485678295%2C655004.0774177304%2C4791867.308276635%2CEPSG%3A32643",
+      "method": "GET",
+      "checkedAt": "2026-10-08T20:36:22.104Z",
+      "httpStatus": 200,
+      "contentType": "application/json;charset=utf-8",
+      "bytes": 12970,
+      "numberMatched": 7,
+      "numberReturned": 7,
+      "features": [
+        {
+          "transportId": "u_view.fid-1c0d636f_1a11d3a7593_-31e0",
+          "properties": {
+            "gid": 7229395,
+            "kad_nomer": "20311023275"
+          },
+          "geometrySha256": "c25c0a8ba4cb852334ac0047278e6f010496cb44b50ebbe7fb886b2e4d76a193"
+        },
+        {
+          "transportId": "u_view.fid-1c0d636f_1a11d3a7593_-31df",
+          "properties": {
+            "gid": 7234789,
+            "kad_nomer": "20311023281"
+          },
+          "geometrySha256": "6f911ba2d457ca1149d6dccd28af32100aa34521b5d2632894ee3e6ceebf9a66"
+        },
+        {
+          "transportId": "u_view.fid-1c0d636f_1a11d3a7593_-31de",
+          "properties": {
+            "gid": 7235038,
+            "kad_nomer": "20311023241"
+          },
+          "geometrySha256": "ff925000ee9f944c3e68e6d24b0f430121ae20ad1b5850a2c4a19e33805654a7"
+        },
+        {
+          "transportId": "u_view.fid-1c0d636f_1a11d3a7593_-31dd",
+          "properties": {
+            "gid": 7235545,
+            "kad_nomer": "20311023227"
+          },
+          "geometrySha256": "bbac61b35988194c071a8d14760619f63e288af4b3ca22203ef7efd626d70015"
+        },
+        {
+          "transportId": "u_view.fid-1c0d636f_1a11d3a7593_-31dc",
+          "properties": {
+            "gid": 7236587,
+            "kad_nomer": "20311023311"
+          },
+          "geometrySha256": "d77a98d0ce6f0eeabfc057fe66ec8db02bc617c2db9e0a8747bd9336cec26b04"
+        },
+        {
+          "transportId": "u_view.fid-1c0d636f_1a11d3a7593_-31db",
+          "properties": {
+            "gid": 7236588,
+            "kad_nomer": "20311023329"
+          },
+          "geometrySha256": "2aaf5993b2129c228aa20498732b491d42b164ec4c7d3b2619868ea3baca040a"
+        },
+        {
+          "transportId": "u_view.fid-1c0d636f_1a11d3a7593_-31da",
+          "properties": {
+            "gid": 7593170,
+            "kad_nomer": "20311023368"
+          },
+          "geometrySha256": "d30a73f826b070616217c07c38f09ad03c60c37372a332373b4116e99d8a796f"
+        }
+      ]
+    },
+    {
+      "test": "source-binding",
+      "url": "https://map.gov4c.kz/geoserver/wfs?service=WFS&version=2.0.0&request=GetFeature&typename=egkn%3Au_view&outputFormat=application%2Fjson&srsname=EPSG%3A32643&propertyname=gid%2Ckad_nomer%2Cgeom&count=1000&startIndex=0&sortBy=gid&viewparams=district_id%3A244&bbox=654941.478723485%2C4791851.485678295%2C655004.0774177304%2C4791867.308276635%2CEPSG%3A32643",
+      "method": "GET",
+      "checkedAt": "2026-10-08T20:36:22.355Z",
+      "httpStatus": 200,
+      "contentType": "application/json;charset=utf-8",
+      "bytes": 12970,
+      "numberMatched": 7,
+      "numberReturned": 7,
+      "features": [
+        {
+          "transportId": "u_view.fid--573cc778_1a11d3a63c6_-200",
+          "properties": {
+            "gid": 7229395,
+            "kad_nomer": "20311023275"
+          },
+          "geometrySha256": "c25c0a8ba4cb852334ac0047278e6f010496cb44b50ebbe7fb886b2e4d76a193"
+        },
+        {
+          "transportId": "u_view.fid--573cc778_1a11d3a63c6_-1ff",
+          "properties": {
+            "gid": 7234789,
+            "kad_nomer": "20311023281"
+          },
+          "geometrySha256": "6f911ba2d457ca1149d6dccd28af32100aa34521b5d2632894ee3e6ceebf9a66"
+        },
+        {
+          "transportId": "u_view.fid--573cc778_1a11d3a63c6_-1fe",
+          "properties": {
+            "gid": 7235038,
+            "kad_nomer": "20311023241"
+          },
+          "geometrySha256": "ff925000ee9f944c3e68e6d24b0f430121ae20ad1b5850a2c4a19e33805654a7"
+        },
+        {
+          "transportId": "u_view.fid--573cc778_1a11d3a63c6_-1fd",
+          "properties": {
+            "gid": 7235545,
+            "kad_nomer": "20311023227"
+          },
+          "geometrySha256": "bbac61b35988194c071a8d14760619f63e288af4b3ca22203ef7efd626d70015"
+        },
+        {
+          "transportId": "u_view.fid--573cc778_1a11d3a63c6_-1fc",
+          "properties": {
+            "gid": 7236587,
+            "kad_nomer": "20311023311"
+          },
+          "geometrySha256": "d77a98d0ce6f0eeabfc057fe66ec8db02bc617c2db9e0a8747bd9336cec26b04"
+        },
+        {
+          "transportId": "u_view.fid--573cc778_1a11d3a63c6_-1fb",
+          "properties": {
+            "gid": 7236588,
+            "kad_nomer": "20311023329"
+          },
+          "geometrySha256": "2aaf5993b2129c228aa20498732b491d42b164ec4c7d3b2619868ea3baca040a"
+        },
+        {
+          "transportId": "u_view.fid--573cc778_1a11d3a63c6_-1fa",
+          "properties": {
+            "gid": 7593170,
+            "kad_nomer": "20311023368"
+          },
+          "geometrySha256": "d30a73f826b070616217c07c38f09ad03c60c37372a332373b4116e99d8a796f"
+        }
+      ]
+    }
+  ],
+  "qualityFile": "research/overnight-cities-2026-10-08/almaty-almaly-quality.json",
+  "uniqueParcels": 81,
+  "requestCount": 30,
+  "allTestsPassed": true,
+  "finishedAt": "2026-10-08T20:36:23.413Z",
+  "qualityStatus": "pending-independent-topology-check"
+}

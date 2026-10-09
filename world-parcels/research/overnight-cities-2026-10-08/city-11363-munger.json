@@ -1,0 +1,71 @@
+{
+  "name": "Munger",
+  "country": "India",
+  "countryCode": "IN",
+  "rank": 646,
+  "point": [
+    25.3394659882247,
+    86.4806745536804
+  ],
+  "freshResearch": {
+    "queries": [
+      {
+        "language": "English",
+        "query": "Munger Bihar official municipal corporation property assessment parcel map GIS",
+        "result": "Official Munger Nagar Nigam portal confirms property assessment and a holding-number counter for operators, not an anonymous parcel map.",
+        "method": "English search followed by direct official portal review."
+      },
+      {
+        "language": "Hindi",
+        "query": "मुंगेर नगर निगम संपत्ति कर रजिस्टर भूखंड नक्शा आधिकारिक",
+        "result": "Hindi search confirms the local municipal portal; public map/geometry route was not found. Property lookup is holding-number based and operator-run.",
+        "method": "Separate Hindi search; no holding number entered and no applicant record queried."
+      }
+    ],
+    "portals": [
+      {
+        "name": "Munger local or regional public registry/map sources",
+        "operator": "Official public sources listed below where available",
+        "homeUrl": "https://mmc.bihar.gov.in/",
+        "observation": "City municipal property assessment/holding records are confirmed by the local corporation portal. The lookup is an operator counter requiring a holding number; no parcel geometry or public cadastral service was verified."
+      }
+    ],
+    "requests": []
+  },
+  "status": "complete",
+  "verifiedParcelResponse": null,
+  "source": null,
+  "coverageAssessment": {
+    "claimedScope": "Munger Nagar Nigam’s official city portal identifies the municipal corporation and explicitly describes city property assessment and property-tax register lookup by holding number at an operator-run counter. This verifies a city municipal property assessment record function, not public cadastral geometry.",
+    "verifiedOpenScope": "No public parcel geometry or anonymous point-level feature response was verified.",
+    "countrywideVerified": false
+  },
+  "registryFound": true,
+  "verifiedSample": false,
+  "resultCategory": "no_verified_sample_candidate_citywide",
+  "technicalBlocker": "Available city property lookup is an operator workflow based on holding number; no public geometry-only route was found.",
+  "remainingUncertainty": "A separate local cadastral GIS may exist outside the official municipal and state GIS pages inspected.",
+  "nextStep": "If public geometry is required, verify a distinct official city-specific geometry-only service; do not use owner, address, holding, tax, or applicant lookups.",
+  "schemaVersion": 1,
+  "checkedAt": "2026-10-09",
+  "wupCityCode": 11363,
+  "cityId": "wup2025:11363",
+  "runtimeReadiness": "not_enabled_no_verified_public_geometry",
+  "adapterReady": false,
+  "centerLatLon": [
+    25.3394659882247,
+    86.4806745536804
+  ],
+  "queueRank": 646,
+  "population2025": 814325,
+  "populationPlausibility2025": "Moderate",
+  "populationUnit": "persons",
+  "pointBasis": "UN WUP 2025 population-weighted settlement centroid; this is not a municipal boundary or a parcel-coverage claim.",
+  "publicParcelGeometryFound": false,
+  "sourceIds": [],
+  "registryBasis": "Munger Nagar Nigam’s official city portal identifies the municipal corporation and explicitly describes city property assessment and property-tax register lookup by holding number at an operator-run counter. This verifies a city municipal property assessment record function, not public cadastral geometry.",
+  "registryEvidenceUrls": [
+    "https://mmc.bihar.gov.in/"
+  ],
+  "rootReviewedAt": "2026-10-09T02:15:55.042537+00:00"
+}

@@ -1,0 +1,65 @@
+{
+  "schemaVersion": 1,
+  "kind": "root_identity_decision_overlay",
+  "cohort": "overnight-next-1101-1200",
+  "recordedAt": "2026-10-09T06:54:14Z",
+  "sourceRoster": "ranked-population.json",
+  "sourceRosterSha256": "196e3bfdd4735f178ff21388993b47809835e12507285d215b35b6c6792add8b",
+  "decisions": [
+    {
+      "wupCityCode": 6442,
+      "rank": 1158,
+      "countryCode": "CN",
+      "name": "Yulin",
+      "decision": "different_settlement",
+      "effectiveAttemptState": "pending",
+      "candidatePointLatLon": [
+        38.228670767027,
+        109.753608850168
+      ],
+      "priorCityCode": 10684,
+      "priorCityName": "Yulin",
+      "priorPointLatLon": [
+        22.6306726253459,
+        110.150072930059
+      ],
+      "distanceKm": 1734.83,
+      "reason": "Different Chinese settlements despite the shared English romanization: the existing WUP10684 packet concerns 玉林 in Guangxi; the candidate locator is 榆林 in Shaanxi. The 1,734.83 km separation and official Yulin government source support retaining WUP6442 as pending.",
+      "evidence": [
+        {
+          "path": "world-parcels/research/overnight-cities-2026-10-08/city-10684-yulin.json",
+          "observation": "Prior packet identifies Yulin/玉林, Guangxi, WUP10684, at 22.6306726253459,110.150072930059."
+        },
+        {
+          "url": "https://www.yl.gov.cn/zwgk/fdzdgknr/sthj_17285/jsxmhjyxpj/202410/P020241024373609277070.pdf",
+          "observation": "Official Yulin municipal government PDF corroborates the candidate city as 榆林/Shaanxi; exact 2025 WUP point is retained unchanged. Direct PDF fetch timed out during this session, so this is recorded as parent-supplied first-party evidence, not a successful fetch."
+        }
+      ]
+    },
+    {
+      "wupCityCode": 26,
+      "rank": 1159,
+      "countryCode": "TT",
+      "name": "Port of Spain",
+      "decision": "confirmed_attempt",
+      "effectiveAttemptState": "attempted",
+      "candidatePointLatLon": [
+        10.6579002575209,
+        -61.441428041308
+      ],
+      "distanceKm": 8.27,
+      "reason": "The existing first-party-review packet explicitly contains parcel polygons in Port of Spain neighborhoods Woodbrook and St. James. The WUP settlement centroid is shifted by 8.27 km but remains the same city; prior attempt should be skipped.",
+      "evidence": [
+        {
+          "path": "world-parcels/research/countries/TT.json",
+          "observation": "Prior country packet documents three closed-ring polygons in the Port of Spain area, specifically Woodbrook and St. James; response was not retained because it included surveyor-name personal data."
+        },
+        {
+          "path": "world-parcels/research/retry/countries/TT.json",
+          "observation": "Public parcel layer query returned three polygons within a small bounded Port of Spain envelope, with safe request metadata retained and no owner values retained in this packet. Distance to WUP settlement centroid is 8.27 km."
+        }
+      ]
+    }
+  ],
+  "immutableRosterNote": "This overlay does not alter ranked-population.json; identity application is represented only in the effective queue/skip/review ledgers and progress record."
+}

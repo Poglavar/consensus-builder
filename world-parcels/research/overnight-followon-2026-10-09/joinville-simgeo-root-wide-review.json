@@ -1,0 +1,73 @@
+{
+  "checkedAt": "2026-10-09T05:52:08.714Z",
+  "purpose": "Supplementary topology coverage of all accepted full geometry encountered in grid and selected-parcel footprint queries; every native ID freshly reread. No geometry changes or unrelated attributes retained.",
+  "gridFeatureCount": 201,
+  "selectedParcelId": "BR-JOINVILLE-IQ-13-20-15-97-307",
+  "footprintFeatureCount": 5,
+  "unionFeatureCount": 201,
+  "freshExactIdCount": 201,
+  "allFreshGeometryHashesMatch": true,
+  "absentIds": [],
+  "requests": [
+    {
+      "url": "https://geo.joinville.sc.gov.br/server/rest/services/simgeo/lotes/MapServer/3/query?where=1%3D1&geometry=-48.8285684393289%2C-26.3065110550132%2C-48.82827070138585%2C-26.30623225819074&geometryType=esriGeometryEnvelope&inSR=4326&spatialRel=esriSpatialRelIntersects&f=json&returnCountOnly=true",
+      "httpStatus": 200,
+      "bytesDeclared": "31"
+    },
+    {
+      "url": "https://geo.joinville.sc.gov.br/server/rest/services/simgeo/lotes/MapServer/3/query?where=1%3D1&geometry=-48.8285684393289%2C-26.3065110550132%2C-48.82827070138585%2C-26.30623225819074&geometryType=esriGeometryEnvelope&inSR=4326&spatialRel=esriSpatialRelIntersects&f=json&returnIdsOnly=true",
+      "httpStatus": 200,
+      "bytesDeclared": "86"
+    },
+    {
+      "url": "https://geo.joinville.sc.gov.br/server/rest/services/simgeo/lotes/MapServer/3/query?where=1%3D1&outFields=objectid%2Ciq&returnGeometry=true&outSR=4326&f=geojson&objectIds=95185%2C95244%2C95278%2C95291%2C89247%2C135586",
+      "httpStatus": 200,
+      "bytesDeclared": "810"
+    },
+    {
+      "url": "https://geo.joinville.sc.gov.br/server/rest/services/simgeo/lotes/MapServer/3/query",
+      "httpStatus": 200,
+      "bytesDeclared": "32"
+    },
+    {
+      "url": "https://geo.joinville.sc.gov.br/server/rest/services/simgeo/lotes/MapServer/3/query",
+      "httpStatus": 200,
+      "bytesDeclared": "299"
+    },
+    {
+      "url": "https://geo.joinville.sc.gov.br/server/rest/services/simgeo/lotes/MapServer/3/query?where=1%3D1&outFields=objectid%2Ciq&returnGeometry=true&outSR=4326&f=geojson&objectIds=95223%2C91528%2C84275%2C95317%2C92504%2C95287%2C35365%2C95237%2C135646%2C135647%2C135645%2C89254%2C91473%2C95304%2C95334%2C93575%2C95216%2C35295%2C100001250%2C141059%2C95482%2C34920%2C95254%2C95387%2C94070%2C95222%2C95505%2C95447%2C91527%2C29487%2C25895%2C100000114%2C93582%2C95312%2C95300%2C95333%2C95280%2C95316%2C84285%2C89239%2C95277%2C92514%2C95324%2C91028%2C91032%2C93644%2C94809%2C100001072%2C93264%2C100000877%2C95200%2C20441%2C95296%2C95329%2C95291%2C89257%2C95185%2C95244%2C95278%2C89247%2C135586%2C95182%2C21191%2C89583%2C94895%2C89872%2C94875%2C93662%2C89592%2C94923%2C95141%2C95172%2C95178%2C95246%2C93551%2C94700%2C94726%2C92500%2C94212%2C94758",
+      "httpStatus": 200,
+      "bytesDeclared": null
+    },
+    {
+      "url": "https://geo.joinville.sc.gov.br/server/rest/services/simgeo/lotes/MapServer/3/query",
+      "httpStatus": 200,
+      "bytesDeclared": "32"
+    },
+    {
+      "url": "https://geo.joinville.sc.gov.br/server/rest/services/simgeo/lotes/MapServer/3/query",
+      "httpStatus": 200,
+      "bytesDeclared": "292"
+    },
+    {
+      "url": "https://geo.joinville.sc.gov.br/server/rest/services/simgeo/lotes/MapServer/3/query?where=1%3D1&outFields=objectid%2Ciq&returnGeometry=true&outSR=4326&f=geojson&objectIds=94811%2C94792%2C89880%2C47069%2C41985%2C95147%2C89587%2C93692%2C16268%2C95171%2C94947%2C94915%2C89570%2C44623%2C89868%2C94832%2C94794%2C93278%2C94202%2C94781%2C94807%2C94837%2C89869%2C94855%2C93641%2C34039%2C78037%2C12959%2C92681%2C94835%2C94648%2C94769%2C93265%2C91462%2C94732%2C94540%2C94208%2C94459%2C94437%2C94346%2C94234%2C20525%2C89436%2C100002754%2C91147%2C20526%2C20529%2C94667%2C94701%2C20530%2C92487%2C20531%2C93436%2C91471%2C94784%2C90690%2C92750%2C93902%2C24268%2C90724%2C90558%2C90519%2C90661%2C93979%2C94353%2C94398%2C94439%2C94492%2C89451%2C94571%2C94596%2C94027%2C94369%2C93535%2C94678%2C20500%2C90619%2C91480%2C20501%2C29501",
+      "httpStatus": 200,
+      "bytesDeclared": null
+    },
+    {
+      "url": "https://geo.joinville.sc.gov.br/server/rest/services/simgeo/lotes/MapServer/3/query?where=iq+IN+%28%2713-20-25-19-435%27%2C%2713-20-25-19-444%27%2C%2713-20-25-19-449%27%2C%2713-20-25-19-452%27%2C%2713-20-25-19-463%27%2C%2713-20-25-19-469%27%2C%2713-20-25-19-477%27%2C%2713-20-25-19-48%27%2C%2713-20-25-19-484%27%2C%2713-20-25-19-491%27%2C%2713-20-25-19-497%27%2C%2713-20-25-19-505%27%2C%2713-20-25-19-519%27%2C%2713-20-25-19-527%27%2C%2713-20-25-19-533%27%2C%2713-20-25-19-540%27%2C%2713-20-25-19-555%27%2C%2713-20-25-19-565%27%2C%2713-20-25-19-575%27%2C%2713-20-25-19-585%27%2C%2713-20-25-19-589%27%2C%2713-20-25-19-60%27%2C%2713-20-25-19-632%27%2C%2713-20-25-19-651%27%2C%2713-20-25-19-671%27%2C%2713-20-25-19-691%27%2C%2713-20-25-19-72%27%2C%2713-20-25-19-731%27%2C%2713-20-25-19-965%27%2C%2713-20-25-19-979%27%2C%2713-20-25-19-993%27%2C%2713-20-25-26-140%27%2C%2713-20-25-26-181%27%2C%2713-20-25-26-193%27%2C%2713-20-25-26-205%27%2C%2713-20-25-26-217%27%2C%2713-20-25-37-122%27%2C%2713-20-25-37-192%27%2C%2713-20-25-37-55%27%2C%2713-20-25-37-70%27%2C%2713-20-25-37-85%27%29&f=json&returnCountOnly=true",
+      "httpStatus": 200,
+      "bytesDeclared": "32"
+    },
+    {
+      "url": "https://geo.joinville.sc.gov.br/server/rest/services/simgeo/lotes/MapServer/3/query?where=iq+IN+%28%2713-20-25-19-435%27%2C%2713-20-25-19-444%27%2C%2713-20-25-19-449%27%2C%2713-20-25-19-452%27%2C%2713-20-25-19-463%27%2C%2713-20-25-19-469%27%2C%2713-20-25-19-477%27%2C%2713-20-25-19-48%27%2C%2713-20-25-19-484%27%2C%2713-20-25-19-491%27%2C%2713-20-25-19-497%27%2C%2713-20-25-19-505%27%2C%2713-20-25-19-519%27%2C%2713-20-25-19-527%27%2C%2713-20-25-19-533%27%2C%2713-20-25-19-540%27%2C%2713-20-25-19-555%27%2C%2713-20-25-19-565%27%2C%2713-20-25-19-575%27%2C%2713-20-25-19-585%27%2C%2713-20-25-19-589%27%2C%2713-20-25-19-60%27%2C%2713-20-25-19-632%27%2C%2713-20-25-19-651%27%2C%2713-20-25-19-671%27%2C%2713-20-25-19-691%27%2C%2713-20-25-19-72%27%2C%2713-20-25-19-731%27%2C%2713-20-25-19-965%27%2C%2713-20-25-19-979%27%2C%2713-20-25-19-993%27%2C%2713-20-25-26-140%27%2C%2713-20-25-26-181%27%2C%2713-20-25-26-193%27%2C%2713-20-25-26-205%27%2C%2713-20-25-26-217%27%2C%2713-20-25-37-122%27%2C%2713-20-25-37-192%27%2C%2713-20-25-37-55%27%2C%2713-20-25-37-70%27%2C%2713-20-25-37-85%27%29&f=json&returnIdsOnly=true",
+      "httpStatus": 200,
+      "bytesDeclared": "196"
+    },
+    {
+      "url": "https://geo.joinville.sc.gov.br/server/rest/services/simgeo/lotes/MapServer/3/query?where=1%3D1&outFields=objectid%2Ciq&returnGeometry=true&outSR=4326&f=geojson&objectIds=20502%2C94827%2C93567%2C94752%2C20503%2C94825%2C20504%2C92661%2C89714%2C94636%2C92701%2C94573%2C20505%2C94889%2C20506%2C89569%2C94905%2C100002694%2C90618%2C94920%2C90614%2C92754%2C91033%2C95146%2C94917%2C93669%2C24057%2C100002755%2C20524%2C94436%2C94292%2C88826%2C93357%2C93389%2C93250%2C93464%2C20535%2C90264%2C92655%2C89512%2C93455",
+      "httpStatus": 200,
+      "bytesDeclared": "4482"
+    }
+  ]
+}

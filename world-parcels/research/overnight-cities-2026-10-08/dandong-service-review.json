@@ -1,0 +1,58 @@
+{
+  "schemaVersion": "1.0",
+  "checkedAt": "2026-10-09",
+  "cityRecord": "city-10802-dandong.json",
+  "purpose": "Document city-scope registry evidence and bounded public parcel-geometry route review.",
+  "scopeLimits": {
+    "maxFullPolygonsRetainedInCityRecord": 3,
+    "maxFullPolygonsRetainedInReview": 3,
+    "maxFullPolygonsRetainedInRepository": 3,
+    "ownerOrAddressDataRetained": false,
+    "credentialsOrTokenValuesRetained": false,
+    "citywideCompletenessAsserted": false
+  },
+  "assessment": "Dandong city registry and natural-resources map portal are confirmed. The portal’s public layer menu contains general mapping services, not verified parcel polygons. No anonymous parcel feature schema or geometry was verified.",
+  "registryAssessment": "Liaoning’s official provincial-government portal reports Dandong’s real-property registration center and its online application, appointment, record-query, and certificate-verification workflows. Dandong’s official natural-resources map portal identifies the Dandong Natural Resources Bureau as host. The map portal publishes generic vector/imagery/topographic/land-cover services; no cadastral parcel layer was listed.",
+  "officialPrimarySources": [
+    {
+      "url": "https://www.ln.gov.cn/web/qmzx/yhyshjzt/dt/2026012216262695116/index.shtml",
+      "observation": "Liaoning’s official provincial-government portal reports Dandong’s real-property registration center and its online application, appointment, record-query, and certificate-verification workflows. Dandong’s official natural-resources map portal identifies the Dandong Natural Resources Bureau as host. The map portal publishes generic vector/imagery/topographic/land-cover services; no cadastral parcel layer was listed."
+    },
+    {
+      "url": "https://files.dandong.gov.cn/files/ueditor/ZRZYJ/jsp/upload/file/20230130/1675056719228025096.pdf",
+      "observation": "The Dandong government’s e-registration announcement describes its city registry center and external online application/internal processing, including transfer, mortgage and alteration registration. The city-hosted Tianditu page identifies Dandong Natural Resources Bureau and offers vector base map, satellite imagery, terrain, land cover and hillshade. These are map-display products; no cadastral parcel layer or feature schema appears in the page’s published service list. No registration, property or owner lookup was performed."
+    },
+    {
+      "url": "https://liaoning.tianditu.gov.cn/dandong/",
+      "observation": "The Dandong government’s e-registration announcement describes its city registry center and external online application/internal processing, including transfer, mortgage and alteration registration. The city-hosted Tianditu page identifies Dandong Natural Resources Bureau and offers vector base map, satellite imagery, terrain, land cover and hillshade. These are map-display products; no cadastral parcel layer or feature schema appears in the page’s published service list. No registration, property or owner lookup was performed."
+    }
+  ],
+  "searchQueries": [
+    {
+      "language": "English",
+      "query": "Dandong China official real estate registration center cadastral map natural resources GIS",
+      "result": "Dandong city registry and natural-resources map portal are confirmed. The portal’s public layer menu contains general mapping services, not verified parcel polygons. No anonymous parcel feature schema or geometry was verified.",
+      "method": "Separate English and local-language official-source-focused search."
+    },
+    {
+      "language": "Chinese",
+      "query": "丹东市不动产登记中心 地籍图 宗地地图 丹东市自然资源局 官方",
+      "result": "Dandong city registry and natural-resources map portal are confirmed. The portal’s public layer menu contains general mapping services, not verified parcel polygons. No anonymous parcel feature schema or geometry was verified.",
+      "method": "Separate English and local-language official-source-focused search."
+    }
+  ],
+  "serviceChecks": [],
+  "geometryEvidence": null,
+  "accessReview": {
+    "publicAnonymousGeometryVerified": false,
+    "completeGeoreferencedPolygonCount": 0,
+    "geometryRetained": false,
+    "ownerAddressTaxOrPersonLookupRequested": false,
+    "authenticationOrCredentialsUsed": false,
+    "captchaOrPersonalFormSubmitted": false,
+    "routeInspectionStatus": "schema_unverified",
+    "reason": "The Dandong government’s e-registration announcement describes its city registry center and external online application/internal processing, including transfer, mortgage and alteration registration. The city-hosted Tianditu page identifies Dandong Natural Resources Bureau and offers vector base map, satellite imagery, terrain, land cover and hillshade. These are map-display products; no cadastral parcel layer or feature schema appears in the page’s published service list. No registration, property or owner lookup was performed."
+  },
+  "privacy": "No parcel/owner/address/tax-account lookup or login was made. No geometry or private attributes retained.",
+  "runtimeAssessment": "not_enabled_no_verified_public_geometry"
+}

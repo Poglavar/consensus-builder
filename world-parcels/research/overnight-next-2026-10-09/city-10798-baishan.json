@@ -1,0 +1,85 @@
+{
+  "schemaVersion": 1,
+  "kind": "city_parcel_source_research",
+  "checkedAt": "2026-10-09",
+  "rank": 1119,
+  "population2025k": 495.03,
+  "population2025Unit": "thousands",
+  "populationPlausibility": "Moderate",
+  "verifiedParcelResponse": null,
+  "source": null,
+  "registryFound": null,
+  "verifiedSample": false,
+  "targetGeometryEvidence": "none",
+  "nativeIdReadiness": "not_verified",
+  "cityId": "wup2025:10798",
+  "wupCityCode": 10798,
+  "name": "Baishan",
+  "country": "China",
+  "countryCode": "CN",
+  "centerLatLon": [
+    41.9411373095647,
+    126.423641919718
+  ],
+  "pointBasis": "UN WUP 2025 population-weighted settlement point (latitude, longitude); not a municipal boundary or a parcel-coverage claim.",
+  "resultCategory": "no_local_custody_evidence",
+  "priorEvidence": [],
+  "priorBlocker": null,
+  "nativeLanguageSearches": [
+    {
+      "languageScript": "Chinese (Simplified)",
+      "exactQuery": "白山市 不动产登记 地籍图 土地权属 地图 白山市自然资源局 官方",
+      "date": "2026-10-09",
+      "executionMethod": "web.run search_query; independent local-language query",
+      "resultUrls": [],
+      "summary": "Searches did not surface first-party Baishan cadastral or land-registration custody evidence."
+    },
+    {
+      "languageScript": "English",
+      "exactQuery": "Baishan City China official cadastral parcel map real estate registration bureau public GIS",
+      "date": "2026-10-09",
+      "executionMethod": "web.run search_query; independent English query",
+      "resultUrls": [],
+      "summary": "Searches did not surface first-party Baishan cadastral or land-registration custody evidence."
+    }
+  ],
+  "officialAndRelevantLeads": [],
+  "requestsAndEndpointChecks": [],
+  "coverageAssessment": {
+    "claimedScope": "Searches did not surface first-party Baishan cadastral or land-registration custody evidence.",
+    "verifiedOpenScope": null,
+    "citywideVerified": false,
+    "countrywideVerified": false,
+    "geometryVerified": false
+  },
+  "blocker": "No reliable exact-city primary source or public parcel route found in the bounded search.",
+  "remainingUncertainty": "Searches did not surface first-party Baishan cadastral or land-registration custody evidence.",
+  "nextStep": "No reliable exact-city primary source or public parcel route found in the bounded search.",
+  "runtimeReadiness": "not_enabled_no_verified_public_geometry",
+  "adapterReady": false,
+  "schemaVersionNote": "Research evidence only; no runtime adapter configured.",
+  "population2025": 495030,
+  "populationUnit": "persons",
+  "populationPlausibility2025": "Moderate",
+  "publicParcelGeometryFound": false,
+  "sourceIds": [],
+  "registryBasis": "Searches did not surface first-party Baishan cadastral or land-registration custody evidence.",
+  "registryEvidenceUrls": [],
+  "technicalBlocker": "No reliable exact-city primary source or public parcel route found in the bounded search.",
+  "runtimeAssessment": {
+    "status": "not_enabled_no_verified_public_geometry",
+    "reason": "No reliable exact-city primary source or public parcel route found in the bounded search."
+  },
+  "rootReviewedAt": "2026-10-09T07:13:02.981057+00:00",
+  "cohort": "overnight-next-1101-1200",
+  "cohortState": "root_reviewed_integrated_locally",
+  "integrationState": "integrated_locally",
+  "rootReview": {
+    "checkedAt": "2026-10-09T07:13:02.981057+00:00",
+    "decision": "Reviewed city identity, canonical population/point, separate searches and saved source/request evidence. No full public parcel geometry verified in this pass.",
+    "custodyScope": "Searches did not surface first-party Baishan cadastral or land-registration custody evidence.",
+    "transportFailuresDoNotProveAbsence": true,
+    "geometryClaimScope": "Investigation outcome only; no worldwide or citywide absence asserted."
+  },
+  "integratedAt": "2026-10-09T07:14:03.673112+00:00"
+}

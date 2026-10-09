@@ -62,7 +62,10 @@ function exactNotFoundMessage(message, parts) {
 
 function pointNotFoundMessage(message, latitude, longitude) {
     if (typeof message !== 'string') return false;
-    return normalizeMessage(message) === normalizeMessage(`Parsel Bulunamadı: Enlem = ${latitude} - Boylam = ${longitude}`);
+    // The provider localizes decimal separators in coordinate echoes. Preserve every
+    // digit and still require the complete message to identify this exact point.
+    return normalizeMessage(message.replace(/(?<=\d),(?=\d)/g, '.'))
+        === normalizeMessage(`Parsel Bulunamadı: Enlem = ${latitude} - Boylam = ${longitude}`);
 }
 
 function normalizeMessage(message) {

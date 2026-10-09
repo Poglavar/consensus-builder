@@ -1,0 +1,54 @@
+{
+  "schemaVersion": "1.0",
+  "checkedAt": "2026-10-09",
+  "cityRecord": "city-5560-mingora.json",
+  "purpose": "Document local registry evidence and bounded public parcel-geometry route review.",
+  "scopeLimits": {
+    "maxFullPolygonsRetainedInCityRecord": 3,
+    "maxFullPolygonsRetainedInReview": 3,
+    "maxFullPolygonsRetainedInRepository": 3,
+    "ownerOrAddressDataRetained": false,
+    "credentialsOrTokenValuesRetained": false,
+    "citywideCompletenessAsserted": false
+  },
+  "assessment": "Reviewed the public KP revenue digitization page and eFard entry point. No anonymous vector layer or safe feature query was exposed. The eFard property search requests registered owner name, father’s name and CNIC; did not submit a record lookup.",
+  "registryAssessment": "Khyber Pakhtunkhwa Board of Revenue reports Swat Phase-II land-record computerization, with 193 of 202 mauzas operational and nine still manual-pending. Mingora is an urban area in Swat; the regional statistics do not identify the WUP point’s mauza or establish its digitization status.",
+  "officialPrimarySources": [
+    {
+      "url": "https://revenue.kp.gov.pk/computerization-of-land-record-in-18-districts/",
+      "observation": "KP Board of Revenue reports an operational land-record program in Swat; the official Swat district site identifies Mingora as an urban area. This is a local registry pathway, not proof the WUP point is digitally mapped."
+    },
+    {
+      "url": "https://efard.kplr.gkp.pk/",
+      "observation": "Official service or administrative reference; it does not establish citywide parcel coverage."
+    },
+    {
+      "url": "https://swat.kp.gov.pk/",
+      "observation": "Official service or administrative reference; it does not establish citywide parcel coverage."
+    }
+  ],
+  "searchQueries": [
+    {
+      "language": "Pashto/Urdu",
+      "query": "سوات مینگورہ لینڈ ریکارڈ نقشہ زمین پٹواری GIS official",
+      "result": "Found KP Board of Revenue Swat computerization information and the official eFard platform; no anonymous parcel geometry endpoint found.",
+      "method": "Separate local-language discovery search."
+    },
+    {
+      "language": "English",
+      "query": "Mingora Swat Land Record KPLR public map GIS cadastral official",
+      "result": "Official sources describe Swat land-record digitization, but do not show exact Mingora point/mauza coverage or anonymous feature geometry.",
+      "method": "Separate English discovery search."
+    }
+  ],
+  "serviceChecks": [
+    {
+      "url": "https://efard.kplr.gkp.pk/",
+      "method": "Public official page/service review; no property-specific query",
+      "observation": "Reviewed the public KP revenue digitization page and eFard entry point. No anonymous vector layer or safe feature query was exposed. The eFard property search requests registered owner name, father’s name and CNIC; did not submit a record lookup."
+    }
+  ],
+  "geometryEvidence": null,
+  "privacy": "No owner or address attributes were requested or retained; no credentials or tokens retained.",
+  "runtimeAssessment": "not_enabled_no_verified_public_geometry"
+}

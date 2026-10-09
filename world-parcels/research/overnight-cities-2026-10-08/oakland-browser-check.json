@@ -1,0 +1,23 @@
+{
+  "schemaVersion": 1,
+  "checkedAt": "2026-10-08T22:52:12.398982+00:00",
+  "city": "Oakland",
+  "appCityId": "oakland",
+  "sourceId": "us-ca-oakland-parcels",
+  "url": "http://localhost:5638/?city=oakland&backend=http%3A%2F%2Flocalhost%3A5640&reduceMotion=1",
+  "browserMode": "Dedicated headed Chrome via agent-browser",
+  "result": "passed_after_transient_load_failure",
+  "loadedParcelCount": 366,
+  "interaction": "Real pointer move/down/up at x=640,y=317, then Details menu click.",
+  "selectedParcelId": "US-CA-OAK-046 542301801",
+  "detailsHeadingMatched": true,
+  "uncaughtPageErrors": [],
+  "browserClosed": true,
+  "initialAttempt": {
+    "loadedParcels": 354,
+    "failure": "One viewport displayed the source timeout banner while loaded parcels stayed on the map. Later observation and a fresh load showed 366 parcels and no timeout banner. Browser session restarted once unexpectedly; cause unestablished."
+  },
+  "diskRecovery": "Temporary ENOSPC interrupted inspection; duplicated generated dependency directories and a package download cache removed only. Research evidence retained.",
+  "screenshotCaptured": false,
+  "releaseState": "local_uncommitted_undeployed"
+}

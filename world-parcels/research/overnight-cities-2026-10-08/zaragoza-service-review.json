@@ -1,0 +1,54 @@
+{
+  "schemaVersion": "1.0",
+  "checkedAt": "2026-10-09",
+  "cityRecord": "city-4388-zaragoza.json",
+  "purpose": "Document first-party local land-registry/map evidence and bounded anonymous geometry-route review.",
+  "scopeLimits": {
+    "maxFullPolygonsRetainedInCityRecord": 3,
+    "maxFullPolygonsRetainedInReview": 3,
+    "maxFullPolygonsRetainedInRepository": 3,
+    "ownerOrAddressDataRetained": false,
+    "credentialsOrTokenValuesRetained": false,
+    "citywideCompletenessAsserted": false
+  },
+  "assessment": "Documented public dataset has municipal scope and vector parcel geometry, but this review did not retrieve a feature payload at the exact WUP locator. A failed local request is not evidence of blank coverage or a provider outage.",
+  "registryAssessment": "The Zaragoza municipal GIS/Urbanism service publishes an official city cadastral-parcel dataset and maintenance metadata.",
+  "officialPrimarySources": [
+    {
+      "url": "https://www.zaragoza.es/web/espacio-de-datos/servicio/catalogo/3062",
+      "observation": "Official Zaragoza data-space catalogue documents the municipal cadastral-parcel dataset, geometry as MultiPolygon, CRS EPSG:25830 and safe cadastral-reference field; metadata names a monthly refresh."
+    },
+    {
+      "url": "https://www.zaragoza.es/sede/portal/urbanismo/info-geografica/datos",
+      "observation": "Official Urbanism geodata page documents municipal 1:500 parcel mapping and public vector/WFS links; last dataset update shown as 2026-01-20."
+    },
+    {
+      "url": "https://idezar-sig.zaragoza.es/servicios/geoserver/urbanismo/wfs?service=WFS&version=2.0.0&request=GetCapabilities",
+      "observation": "Officially linked municipal WFS GetCapabilities endpoint; direct request timed out (HTTP000) in this session, so service availability and point response remain unverified."
+    }
+  ],
+  "searchQueries": [
+    {
+      "language": "English",
+      "query": "Zaragoza Spain official cadastral parcels dataset WFS municipal Geoportal",
+      "result": "Official city data catalog documents municipal cadastral parcel vector data (MultiPolygon, EPSG:25830) and public WFS/download routes; live feature requests timed out without HTTP response.",
+      "method": "Separate local-language/English discovery and first-party public-page review."
+    },
+    {
+      "language": "Spanish",
+      "query": "Zaragoza parcela catastral cartografía WFS Geoportal Ayuntamiento datos GIS",
+      "result": "Official municipal data catalog identifies city cadastral parcels with geometry and cadastral reference; the WFS and point request returned no HTTP response in this session.",
+      "method": "Separate local-language/English discovery and first-party public-page review."
+    }
+  ],
+  "serviceChecks": [
+    {
+      "url": "https://idezar-sig.zaragoza.es/servicios/geoserver/urbanismo/wfs?service=WFS&version=2.0.0&request=GetCapabilities",
+      "method": "Public page/catalogue review; no property-specific query",
+      "observation": "Attempted public WFS GetCapabilities and city parcel point query with safe fields only; both timed out without HTTP status (HTTP000). No broader bulk download attempted and no sample retained."
+    }
+  ],
+  "geometryEvidence": null,
+  "privacy": "No parcel features or sensitive attributes retained; no owner/address/property-specific lookup submitted.",
+  "runtimeAssessment": "not_enabled"
+}

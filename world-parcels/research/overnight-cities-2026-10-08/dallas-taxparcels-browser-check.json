@@ -1,0 +1,18 @@
+{
+  "schemaVersion": 1,
+  "checkedAt": "2026-10-08T22:41:03.835096+00:00",
+  "city": "Dallas",
+  "appCityId": "dallas",
+  "sourceId": "us-tx-dallas-taxparcels",
+  "url": "http://localhost:5638/?city=dallas&backend=http%3A%2F%2Flocalhost%3A5640&reduceMotion=1",
+  "browserMode": "Dedicated headed Chrome via agent-browser",
+  "result": "passed",
+  "loadedParcelCount": 217,
+  "interaction": "Real pointer move/down/up at x=385,y=385, then Details menu click.",
+  "selectedParcelId": "US-TX-DALLAS-00000792589000000",
+  "detailsHeadingMatched": true,
+  "uncaughtPageErrors": [],
+  "browserClosed": true,
+  "screenshotCaptured": false,
+  "releaseState": "local_uncommitted_undeployed"
+}

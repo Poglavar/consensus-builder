@@ -1,0 +1,108 @@
+{
+  "schemaVersion": 1,
+  "kind": "city_parcel_source_research",
+  "checkedAt": "2026-10-09",
+  "status": "complete",
+  "populationUnit": "persons",
+  "pointBasis": "UN WUP 2025 population-weighted settlement centroid; this is not a municipal boundary or a parcel-coverage claim.",
+  "name": "Kutubdia",
+  "country": "Bangladesh",
+  "countryCode": "BD",
+  "queueRank": 488,
+  "rank": 488,
+  "wupCityCode": 7621,
+  "cityId": "wup2025:7621",
+  "point": [
+    21.7979434201601,
+    91.9483534024793
+  ],
+  "centerLatLon": [
+    21.7979434201601,
+    91.9483534024793
+  ],
+  "population2025": 1053339,
+  "population2025k": 1053.339,
+  "populationPlausibility2025": "Moderate",
+  "populationPlausibility": "Moderate",
+  "verifiedSample": false,
+  "publicParcelGeometryFound": false,
+  "registryFound": true,
+  "adapterReady": false,
+  "runtimeReadiness": "not_enabled_no_verified_public_geometry",
+  "resultCategory": "local_registry_found_no_anonymous_geometry_verified",
+  "scopeLimits": "Kutubdia Upazila Land Office is a local land-administration office. Bangladesh DLRS’s settlement map-search page exposes division, district, survey, upazila, mouza, sheet, and plot selectors; its result panels can show plot and khatian details. The page is a plot-specific lookup UI, not a verified anonymous vector service. The separate national land-zoning portal describes digitized/georeferenced mouza sheets for planning and zoning; that is not evidence of general parcel-vector coverage. No plot, owner, khatian, identity, or property query was submitted; no public vector endpoint/schema or WUP-point geometry was verified.",
+  "registryBasis": "The official Kutubdia Upazila Land Office identifies the Assistant Commissioner (Land), Kutubdia. DLRS operates the national land-record and survey map-search page. Local office presence is verified, while anonymous geometry access and coverage at the WUP point are not.",
+  "freshResearch": {
+    "executedQueries": [
+      {
+        "language": "Bengali",
+        "query": "কুতুবদিয়া উপজেলা ভূমি অফিস জমির নকশা খতিয়ান মানচিত্র সরকারি",
+        "result": "Official local Upazila Land Office is identified; DLRS map search uses mouza/sheet/plot selectors and displays plot/khatian details after a selected plot lookup."
+      },
+      {
+        "language": "English",
+        "query": "Kutubdia Bangladesh official cadastral parcel map vector GIS land records public map",
+        "result": "Cross-check found the local Assistant Commissioner Land office and official national DLRS search pages, but no anonymous parcel vector schema/endpoint or settlement-point feature."
+      }
+    ],
+    "officialSources": [
+      {
+        "url": "https://acl.kutubdia.coxsbazar.gov.bd/",
+        "observation": "Official Kutubdia Upazila Land Office portal."
+      },
+      {
+        "url": "https://acl.kutubdia.coxsbazar.gov.bd/pages/officers/6990a723ba9bb75677b606d5",
+        "observation": "Official officers page identifies the Assistant Commissioner (Land), Kutubdia, Cox’s Bazar."
+      },
+      {
+        "url": "https://settlement.gov.bd/Map/MapSearch",
+        "observation": "Official DLRS map-search page provides administrative/survey/mouza/sheet/plot selectors and result panels including plot and khatian information; no general vector schema verified."
+      },
+      {
+        "url": "https://map.land.gov.bd/",
+        "observation": "Official land zoning project describes digitized/georeferenced mouza sheets for land-use planning/zoning; not evidence of general parcel-vector coverage."
+      }
+    ],
+    "viewerAndServiceTrace": {
+      "attempted": true,
+      "summary": "Reviewed the official local land office, DLRS map-search interface, and zoning-project description. The map search requires choosing specific survey, mouza, sheet and plot fields; no general feature schema/public vector endpoint was exposed by reviewed pages. Did not submit a parcel or personal-information query.",
+      "geometryStatus": "No anonymous parcel geometry response verified",
+      "fullPolygonLimit": 3,
+      "fullPolygonsRetained": 0,
+      "ownerOrAddressDataRequested": false,
+      "credentialsOrTokenValuesRetained": false
+    }
+  },
+  "sourceIds": [],
+  "source": {
+    "sourceId": "bd-kutubdia-upazila-land-office",
+    "name": "Kutubdia Upazila Land Office / DLRS map-search service review",
+    "operator": "Government of Bangladesh local land administration; Department of Land Records and Surveys (DLRS), Ministry of Land",
+    "url": "https://acl.kutubdia.coxsbazar.gov.bd/",
+    "serviceType": "Local land-office service with a separate national survey/mouza/plot lookup UI; no anonymous general vector layer verified.",
+    "geometryType": null,
+    "coordinateReferenceSystem": null,
+    "nativeIdFields": [],
+    "directGeometryQueryVerified": false,
+    "directMetadataSchemaVerified": false,
+    "scope": "Kutubdia Upazila local land-office presence confirmed; public digitized cadastral coverage at the WUP settlement point not verified."
+  },
+  "coverageAssessment": {
+    "claimedScope": "Kutubdia local land-administration presence and national plot-search UI; no generalized parcel geometry coverage claim.",
+    "verifiedOpenScope": "No anonymous parcel feature or WUP-point geometry verified.",
+    "citywideVerified": false,
+    "countrywideVerified": false
+  },
+  "registryEvidenceUrls": [
+    "https://acl.kutubdia.coxsbazar.gov.bd/",
+    "https://acl.kutubdia.coxsbazar.gov.bd/pages/officers/6990a723ba9bb75677b606d5",
+    "https://settlement.gov.bd/Map/MapSearch",
+    "https://map.land.gov.bd/"
+  ],
+  "runtimeAssessment": {
+    "status": "not_enabled",
+    "reason": "No anonymous general vector endpoint or schema verified; the reviewed DLRS UI is survey/mouza/sheet/plot-specific and not queried."
+  },
+  "remainingUncertainty": "The DLRS UI’s underlying map transport and whether the selected local mouza/sheet maps can be lawfully retrieved anonymously as full geometry remain unverified.",
+  "rootReviewedAt": "2026-10-09T00:36:07.367105+00:00"
+}

@@ -1,0 +1,52 @@
+{
+  "schemaVersion": "1.0",
+  "checkedAt": "2026-10-09",
+  "cityRecord": "city-11192-zhaoqing.json",
+  "purpose": "Document first-party local registry/map evidence and bounded anonymous geometry access review.",
+  "scopeLimits": {
+    "maxFullPolygonsRetainedInCityRecord": 0,
+    "maxFullPolygonsRetainedInReview": 0,
+    "maxFullPolygonsRetainedInRepository": 0,
+    "ownerOrAddressDataRetained": false,
+    "credentialsOrTokenValuesRetained": false,
+    "citywideCompletenessAsserted": false
+  },
+  "assessment": "The Zhaoqing-region government service portal lists property registration and record-enquiry services. No direct Zhaoqing cadastral map/geometry endpoint was found; record services were not opened or queried.",
+  "registryAssessment": "The official Guangdong Government Services Portal opened in the Zhaoqing region context (region=441200) and lists immovable-property registration and registration-information enquiry services. This is a city-region-specific government registry service basis, not evidence of public parcel geometry or complete city coverage.",
+  "officialPrimarySources": [
+    {
+      "url": "https://www.gdzwfw.gov.cn/portal/index?region=441200",
+      "observation": "The official Guangdong Government Services Portal opened in the Zhaoqing region context (region=441200) and lists immovable-property registration and registration-information enquiry services. This is a city-region-specific government registry service basis, not evidence of public parcel geometry or complete city coverage."
+    },
+    {
+      "url": "https://en.gdfao.gov.cn/2026-02/11/c_1015727.htm",
+      "observation": "The official Guangdong Government Services Portal opened in the Zhaoqing region context (region=441200) and lists immovable-property registration and registration-information enquiry services. This is a city-region-specific government registry service basis, not evidence of public parcel geometry or complete city coverage."
+    }
+  ],
+  "searchQueries": [
+    {
+      "language": "English",
+      "query": "Zhaoqing China official real estate registration cadastral parcel GIS map",
+      "result": "The official region-scoped Guangdong service portal offers property-registration services; no public parcel feature schema was found.",
+      "method": "Separate English/local-language search and official-source review.",
+      "scope": "Identify current city-specific registry and safe public parcel geometry."
+    },
+    {
+      "language": "Chinese",
+      "query": "肇庆市不动产登记中心 地籍图 GIS 官方",
+      "result": "Official Zhaoqing-region government portal lists real-estate registration services; exact city bureau GIS evidence was not found.",
+      "method": "Separate English/local-language search and official-source review.",
+      "scope": "Identify current city-specific registry and safe public parcel geometry."
+    }
+  ],
+  "geometryDecision": "No parcel geometry retained; no qualifying point-level sample was available for retention.",
+  "coverageAssessment": {
+    "claimedScope": "The official Guangdong Government Services Portal opened in the Zhaoqing region context (region=441200) and lists immovable-property registration and registration-information enquiry services. This is a city-region-specific government registry service basis, not evidence of public parcel geometry or complete city coverage.",
+    "verifiedOpenScope": "No citywide parcel coverage or WUP-point parcel presence is asserted.",
+    "citywideVerified": false,
+    "countrywideVerified": false,
+    "geometryVerified": false
+  },
+  "attempts": [],
+  "remainingUncertainty": "Local cadastral map availability, public feature access, and service footprint remain unknown."
+}

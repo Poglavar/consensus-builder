@@ -1,0 +1,5459 @@
+{
+  "schemaVersion": 1,
+  "purpose": "Live city parcel qualification with unmodified responses through the repository adapter; IDs and hashes retained, full geometries confined to temporary audit cache except three public samples.",
+  "checkedAt": "2026-10-09T00:05:36.973Z",
+  "city": "baltimore-city-parcels",
+  "descriptor": {
+    "id": "us-md-baltimore-city-parcel",
+    "name": "Baltimore City official EGIS parcel polygons (safe fields only)",
+    "adapter": "arcgis",
+    "endpoint": "https://egis.baltimorecity.gov/egis/rest/services/Parcel_Information/Parcel/MapServer/0",
+    "idPrefix": "US-MD-BALTIMORE-OBJECTID-",
+    "idField": "OBJECTID",
+    "idType": "integer",
+    "objectIdField": "OBJECTID",
+    "outFields": [
+      "OBJECTID",
+      "BLOCKLOT"
+    ],
+    "pageSize": 200,
+    "maxFeatures": 10000,
+    "maxBboxKm2": 1,
+    "countryCode": "US",
+    "boundsQueryMode": "object-ids",
+    "idsQueryMode": "object-ids"
+  },
+  "grid": [
+    {
+      "name": "viewport-0",
+      "bbox": [
+        -76.626,
+        39.323,
+        -76.625,
+        39.324
+      ],
+      "kind": "aligned-grid"
+    },
+    {
+      "name": "viewport-1",
+      "bbox": [
+        -76.625,
+        39.323,
+        -76.624,
+        39.324
+      ],
+      "kind": "aligned-grid"
+    },
+    {
+      "name": "viewport-2",
+      "bbox": [
+        -76.624,
+        39.323,
+        -76.623,
+        39.324
+      ],
+      "kind": "aligned-grid"
+    },
+    {
+      "name": "viewport-3",
+      "bbox": [
+        -76.626,
+        39.324,
+        -76.625,
+        39.325
+      ],
+      "kind": "aligned-grid"
+    },
+    {
+      "name": "viewport-4",
+      "bbox": [
+        -76.625,
+        39.324,
+        -76.624,
+        39.325
+      ],
+      "kind": "aligned-grid"
+    },
+    {
+      "name": "viewport-5",
+      "bbox": [
+        -76.624,
+        39.324,
+        -76.623,
+        39.325
+      ],
+      "kind": "aligned-grid"
+    },
+    {
+      "name": "viewport-6",
+      "bbox": [
+        -76.626,
+        39.325,
+        -76.625,
+        39.326
+      ],
+      "kind": "aligned-grid"
+    },
+    {
+      "name": "viewport-7",
+      "bbox": [
+        -76.625,
+        39.325,
+        -76.624,
+        39.326
+      ],
+      "kind": "aligned-grid"
+    },
+    {
+      "name": "viewport-8",
+      "bbox": [
+        -76.624,
+        39.325,
+        -76.623,
+        39.326
+      ],
+      "kind": "aligned-grid"
+    },
+    {
+      "name": "viewport-9",
+      "bbox": [
+        -76.625,
+        39.322,
+        -76.624,
+        39.323
+      ],
+      "kind": "adjacent-pan"
+    },
+    {
+      "name": "viewport-10",
+      "bbox": [
+        -76.625,
+        39.326,
+        -76.624,
+        39.327
+      ],
+      "kind": "adjacent-pan"
+    },
+    {
+      "name": "viewport-11",
+      "bbox": [
+        -76.627,
+        39.324,
+        -76.626,
+        39.325
+      ],
+      "kind": "adjacent-pan"
+    },
+    {
+      "name": "viewport-12",
+      "bbox": [
+        -76.623,
+        39.324,
+        -76.622,
+        39.325
+      ],
+      "kind": "adjacent-pan"
+    }
+  ],
+  "tests": [
+    {
+      "name": "viewport-0",
+      "passed": true,
+      "elapsedMs": 1207,
+      "requestIndexes": [
+        0,
+        2
+      ],
+      "bbox": [
+        -76.626,
+        39.323,
+        -76.625,
+        39.324
+      ],
+      "complete": true,
+      "count": 2,
+      "ids": [
+        {
+          "id": "US-MD-BALTIMORE-OBJECTID-31357",
+          "geometrySha256": "bd243acce0c5774c2a18f79fa4c4ce4b21402deabeede2179d5c0a6d07bf5c00"
+        },
+        {
+          "id": "US-MD-BALTIMORE-OBJECTID-74004",
+          "geometrySha256": "6b51da3cad62639fdb615cd1938f29cc070c4c69b5b0ab4c4af6bc145c6f45b6"
+        }
+      ]
+    },
+    {
+      "name": "viewport-1",
+      "passed": false,
+      "elapsedMs": 1330,
+      "requestIndexes": [
+        3,
+        4
+      ],
+      "error": "Parcel provider returned an incomplete or invalid object-ID list.",
+      "code": "parcel-source-unavailable"
+    },
+    {
+      "name": "viewport-2",
+      "passed": false,
+      "elapsedMs": 767,
+      "requestIndexes": [
+        5,
+        6
+      ],
+      "error": "Parcel provider returned an incomplete or invalid object-ID list.",
+      "code": "parcel-source-unavailable"
+    },
+    {
+      "name": "viewport-3",
+      "passed": true,
+      "elapsedMs": 626,
+      "requestIndexes": [
+        7,
+        9
+      ],
+      "bbox": [
+        -76.626,
+        39.324,
+        -76.625,
+        39.325
+      ],
+      "complete": true,
+      "count": 6,
+      "ids": [
+        {
+          "id": "US-MD-BALTIMORE-OBJECTID-31357",
+          "geometrySha256": "bd243acce0c5774c2a18f79fa4c4ce4b21402deabeede2179d5c0a6d07bf5c00"
+        },
+        {
+          "id": "US-MD-BALTIMORE-OBJECTID-91247",
+          "geometrySha256": "85a1051c65adb9205b612e77e56b41bff28b57c22b815b5275cd385896c20565"
+        },
+        {
+          "id": "US-MD-BALTIMORE-OBJECTID-112586",
+          "geometrySha256": "f17ac39467ae6dd91790bd9f65bb31650325157fc5c5bba77eea2fa4d9acf300"
+        },
+        {
+          "id": "US-MD-BALTIMORE-OBJECTID-118208",
+          "geometrySha256": "5daaba920e3fe120407819d7d91f8f5517c4808abc1d917fc884c2d3e8cb3469"
+        },
+        {
+          "id": "US-MD-BALTIMORE-OBJECTID-178170",
+          "geometrySha256": "a05b782818c3a41674210108d29adfbef775382c0c2e7e7cdc34a4897aa51b1f"
+        },
+        {
+          "id": "US-MD-BALTIMORE-OBJECTID-213712",
+          "geometrySha256": "ceec490153ffc0d6e60635e5a7ab6116e1c0d1bea8bb40a7c7b9c614b66990f9"
+        }
+      ]
+    },
+    {
+      "name": "viewport-4",
+      "passed": true,
+      "elapsedMs": 1133,
+      "requestIndexes": [
+        10,
+        12
+      ],
+      "bbox": [
+        -76.625,
+        39.324,
+        -76.624,
+        39.325
+      ],
+      "complete": true,
+      "count": 54,
+      "ids": [
+        {
+          "id": "US-MD-BALTIMORE-OBJECTID-7218",
+          "geometrySha256": "c9ebe1e3bc605f58a9a0278791615c39e2d6e3de0d37c3e5afd2c7f337316698"
+        },
+        {
+          "id": "US-MD-BALTIMORE-OBJECTID-13058",
+          "geometrySha256": "ed222863ae6ca60ff55a08833d2b1ff40acdea10db246537772bca818d34eada"
+        },
+        {
+          "id": "US-MD-BALTIMORE-OBJECTID-18235",
+          "geometrySha256": "c97e8d706bfbd3dfe708557b9155846ac3318b54091af9b5805f720103b09f30"
+        },
+        {
+          "id": "US-MD-BALTIMORE-OBJECTID-30519",
+          "geometrySha256": "8a1cd8e3f7712a16a2e13bfda35fb80b7085f619f0df471c3c73188f44815e93"
+        },
+        {
+          "id": "US-MD-BALTIMORE-OBJECTID-31357",
+          "geometrySha256": "bd243acce0c5774c2a18f79fa4c4ce4b21402deabeede2179d5c0a6d07bf5c00"
+        },
+        {
+          "id": "US-MD-BALTIMORE-OBJECTID-32915",
+          "geometrySha256": "6ae5e072a51f12d0c2cdde32e0a59c16026a06c465f82e6ef21b994b3e067dd8"
+        },
+        {
+          "id": "US-MD-BALTIMORE-OBJECTID-35773",
+          "geometrySha256": "9631bb83104d603e2925dcdeeea0b68f748b873c0640beed02695b6b85070c05"
+        },
+        {
+          "id": "US-MD-BALTIMORE-OBJECTID-38833",
+          "geometrySha256": "51cdf54280dac964feeeeaaf3810570cab126fb6ce93c9dd254ff23f8b3993fd"
+        },
+        {
+          "id": "US-MD-BALTIMORE-OBJECTID-41219",
+          "geometrySha256": "bc2677bdfcef77e536a0c26c0c79b5b9b3d3a9dcb9115d0292f38f5a1da8e5db"
+        },
+        {
+          "id": "US-MD-BALTIMORE-OBJECTID-42703",
+          "geometrySha256": "0e00007a8fe783d962bffada644812d9620f117d1ea8f5a3811eac08f3c2d8b7"
+        },
+        {
+          "id": "US-MD-BALTIMORE-OBJECTID-43969",
+          "geometrySha256": "2895379011fc601d21c54909cb548e803b6c4ceb90e49f53976fef72aabe7149"
+        },
+        {
+          "id": "US-MD-BALTIMORE-OBJECTID-61012",
+          "geometrySha256": "2c87c3902baac7454b4bd0ad65893d74afb7a644ec53ce9d7aa8649edb75be20"
+        },
+        {
+          "id": "US-MD-BALTIMORE-OBJECTID-65688",
+          "geometrySha256": "c193ad13c526b28241740fa8ed57deb4b08df0b8246a8fbbba93d296bbc0917d"
+        },
+        {
+          "id": "US-MD-BALTIMORE-OBJECTID-74004",
+          "geometrySha256": "6b51da3cad62639fdb615cd1938f29cc070c4c69b5b0ab4c4af6bc145c6f45b6"
+        },
+        {
+          "id": "US-MD-BALTIMORE-OBJECTID-74691",
+          "geometrySha256": "08ec32184bd2c2856ca21c6480e6af8c270baa02a22698e601a7732d30fa5bc8"
+        },
+        {
+          "id": "US-MD-BALTIMORE-OBJECTID-97551",
+          "geometrySha256": "7387f397b8ed04f3f4e15526910f99f11a8f66e3a9caf0816efa5e2d2cfa19f2"
+        },
+        {
+          "id": "US-MD-BALTIMORE-OBJECTID-99129",
+          "geometrySha256": "f2e93ba6a986a7e3f077c718153475af1e09d11f2b4faef6b8d1dd3906fb2d14"
+        },
+        {
+          "id": "US-MD-BALTIMORE-OBJECTID-100700",
+          "geometrySha256": "a50cc144800b88d6cc326a4316a171aa3a3e764c19d48f2d393106702d74338a"
+        },
+        {
+          "id": "US-MD-BALTIMORE-OBJECTID-110917",
+          "geometrySha256": "0e8bc423d7c93778fc31d0bcc73b27da5c79a19cc9ac5bd57d7266e2f244b708"
+        },
+        {
+          "id": "US-MD-BALTIMORE-OBJECTID-114900",
+          "geometrySha256": "3e848f9e36deae09931870f20b647f4caf010d2a1fccec4211afd28b12c1ebb8"
+        },
+        {
+          "id": "US-MD-BALTIMORE-OBJECTID-115224",
+          "geometrySha256": "ea1c90f0d0531ec74e252a71af3bd3109ff7583cc84b7906dbed203bd6c25d46"
+        },
+        {
+          "id": "US-MD-BALTIMORE-OBJECTID-118208",
+          "geometrySha256": "5daaba920e3fe120407819d7d91f8f5517c4808abc1d917fc884c2d3e8cb3469"
+        },
+        {
+          "id": "US-MD-BALTIMORE-OBJECTID-119114",
+          "geometrySha256": "e9b444fbdd89ad7b587e17c910029c3af16686402696f9036525b179504372fe"
+        },
+        {
+          "id": "US-MD-BALTIMORE-OBJECTID-125524",
+          "geometrySha256": "2bb9dbafff6ec92c170dee6b01f0e091e34d363caaeb5232d97bea5c6f11bfa7"
+        },
+        {
+          "id": "US-MD-BALTIMORE-OBJECTID-126110",
+          "geometrySha256": "bcc747c31adea5d6c8acf8f5b3b5bec9179b0c8cebd35095092bd0c06ed6edd7"
+        },
+        {
+          "id": "US-MD-BALTIMORE-OBJECTID-129883",
+          "geometrySha256": "4cc902a23f7afabab5e29fd7a6351c5de9587952666abc35e9230ee23fb9cf36"
+        },
+        {
+          "id": "US-MD-BALTIMORE-OBJECTID-134767",
+          "geometrySha256": "691349b06dcf7fc41b1d0c10f95b6e330ad3bcba83e7555bee5cca1661b86c2c"
+        },
+        {
+          "id": "US-MD-BALTIMORE-OBJECTID-138315",
+          "geometrySha256": "97c079abe959e1409f990b6029fb9853d7b5166543ffc484f9b012d98a948cc4"
+        },
+        {
+          "id": "US-MD-BALTIMORE-OBJECTID-139327",
+          "geometrySha256": "c98ed271359f96c4c35445f97bc0d7683fb4c61d43fd5b82de52ae5691018aee"
+        },
+        {
+          "id": "US-MD-BALTIMORE-OBJECTID-147832",
+          "geometrySha256": "6150cfa7bc5825013aaecd4765252850a69a120f22c1d2f546961a31bfacd7a7"
+        },
+        {
+          "id": "US-MD-BALTIMORE-OBJECTID-149328",
+          "geometrySha256": "06306647877fda4786ffa0ad0bcb9a18e468cc3a8f2f1e5a08e8de245bcd540b"
+        },
+        {
+          "id": "US-MD-BALTIMORE-OBJECTID-150970",
+          "geometrySha256": "1615c719eb4be404a1a881cb96f7009c4fe3a42fe5c60039f8a4dd4a981ba7ae"
+        },
+        {
+          "id": "US-MD-BALTIMORE-OBJECTID-152337",
+          "geometrySha256": "c9eec102e46a68404ebf93be26ed9a39eb95e0b0bf737fad4ce1ee9935266ef2"
+        },
+        {
+          "id": "US-MD-BALTIMORE-OBJECTID-153398",
+          "geometrySha256": "f5c0555993f5834cfe790f8e21ce34b1c9f8584a55b7a4981d48a399d738ce68"
+        },
+        {
+          "id": "US-MD-BALTIMORE-OBJECTID-153980",
+          "geometrySha256": "e5d430af50d057079f4c863335524ff4d91162138216010320823fb78ce832e3"
+        },
+        {
+          "id": "US-MD-BALTIMORE-OBJECTID-155874",
+          "geometrySha256": "700011cd942732d1fdfb44f3f2501a850b94a28e7cc5d392dbf3b4d07495023b"
+        },
+        {
+          "id": "US-MD-BALTIMORE-OBJECTID-157050",
+          "geometrySha256": "4c0b129f174c56233d5740d46a4b6b0c5800e4208b066db809d6086c3814b976"
+        },
+        {
+          "id": "US-MD-BALTIMORE-OBJECTID-164286",
+          "geometrySha256": "0c97ba6bd6a69df341c330754f4d68ea435561139d9948f9cbc1c9829e8a0780"
+        },
+        {
+          "id": "US-MD-BALTIMORE-OBJECTID-165220",
+          "geometrySha256": "0ce9b5a3b2ff7cd82e665abd4cf3e3cde4e8a79b05171d61b2b041c60d86db45"
+        },
+        {
+          "id": "US-MD-BALTIMORE-OBJECTID-168052",
+          "geometrySha256": "1896b81b64b09e25c8111cf9d4806ea1a308fbbee3e204b43a7400a460b10286"
+        },
+        {
+          "id": "US-MD-BALTIMORE-OBJECTID-178653",
+          "geometrySha256": "d9c21120de0a7502b73a98d89298ad3fe53b6a71f86df6ec2ecb41726c045220"
+        },
+        {
+          "id": "US-MD-BALTIMORE-OBJECTID-179500",
+          "geometrySha256": "acf08649dc063dad03f81798c432c9ee9e7adac5ffadf8d48cae3b591e5fb82a"
+        },
+        {
+          "id": "US-MD-BALTIMORE-OBJECTID-180319",
+          "geometrySha256": "190c53b438c10aa68c11b49945005ed89abe9f2d9f2ceb204b421f369997beec"
+        },
+        {
+          "id": "US-MD-BALTIMORE-OBJECTID-185643",
+          "geometrySha256": "25884d9a8a68a74e6bde5c3b556cc8b2ed3c1a30959f2d636996b9d2b3cff418"
+        },
+        {
+          "id": "US-MD-BALTIMORE-OBJECTID-195491",
+          "geometrySha256": "0ec68b69093201ebb04dd8160e15bf178fb1c329dd8e4701654f38075dbe2363"
+        },
+        {
+          "id": "US-MD-BALTIMORE-OBJECTID-197389",
+          "geometrySha256": "78364df53a732c5f6886d5ba86c07e01bb9ce728cbfc815cc5a93396a5603b71"
+        },
+        {
+          "id": "US-MD-BALTIMORE-OBJECTID-200300",
+          "geometrySha256": "982c41c4b3edfea8d0ccf0216b4b9cc5282b7a2205ad14de973db3ad17b28b56"
+        },
+        {
+          "id": "US-MD-BALTIMORE-OBJECTID-201216",
+          "geometrySha256": "db44f95c81f8c9433a5b91e0beec812d0560dcc0d44dc398c15be416164574d9"
+        },
+        {
+          "id": "US-MD-BALTIMORE-OBJECTID-204876",
+          "geometrySha256": "0a60bcd967ac1a51c08a070a4329522ccab0d7bd14733e563795ab15b366ed9a"
+        },
+        {
+          "id": "US-MD-BALTIMORE-OBJECTID-209388",
+          "geometrySha256": "4688353bf0a52bf2ee527a1273de1a58ba276c64c215ddfa2e4dca2fbd36220b"
+        },
+        {
+          "id": "US-MD-BALTIMORE-OBJECTID-216849",
+          "geometrySha256": "f75a53f026a4867b6846416c50ac588366031a3ee829efdb718cc1c95a5ef773"
+        },
+        {
+          "id": "US-MD-BALTIMORE-OBJECTID-218485",
+          "geometrySha256": "3696e1e8e2de1dba1c77c7355cb6e526fc489527e0e12e41a4cdc4220b0664ea"
+        },
+        {
+          "id": "US-MD-BALTIMORE-OBJECTID-223442",
+          "geometrySha256": "65294cfdd6962a20fa14d2572b8e38dbdff30623c69fd72843ba4537a98ea4f5"
+        },
+        {
+          "id": "US-MD-BALTIMORE-OBJECTID-224277",
+          "geometrySha256": "2e1049e64d647228338ab6d421e051cbaec8ea478edaf24fd05c845ab130ad2c"
+        }
+      ]
+    },
+    {
+      "name": "viewport-5",
+      "passed": true,
+      "elapsedMs": 611,
+      "requestIndexes": [
+        13,
+        15
+      ],
+      "bbox": [
+        -76.624,
+        39.324,
+        -76.623,
+        39.325
+      ],
+      "complete": true,
+      "count": 22,
+      "ids": [
+        {
+          "id": "US-MD-BALTIMORE-OBJECTID-16789",
+          "geometrySha256": "ac89871bad87d69919b9142d102dd13a9e9e172da0cdd96fd785edff2939f49e"
+        },
+        {
+          "id": "US-MD-BALTIMORE-OBJECTID-18235",
+          "geometrySha256": "c97e8d706bfbd3dfe708557b9155846ac3318b54091af9b5805f720103b09f30"
+        },
+        {
+          "id": "US-MD-BALTIMORE-OBJECTID-35773",
+          "geometrySha256": "9631bb83104d603e2925dcdeeea0b68f748b873c0640beed02695b6b85070c05"
+        },
+        {
+          "id": "US-MD-BALTIMORE-OBJECTID-79927",
+          "geometrySha256": "927cabab99008a853f83fcfbcde4da29de728fc1f73143d8cb33d4447b64ec07"
+        },
+        {
+          "id": "US-MD-BALTIMORE-OBJECTID-110917",
+          "geometrySha256": "0e8bc423d7c93778fc31d0bcc73b27da5c79a19cc9ac5bd57d7266e2f244b708"
+        },
+        {
+          "id": "US-MD-BALTIMORE-OBJECTID-119114",
+          "geometrySha256": "e9b444fbdd89ad7b587e17c910029c3af16686402696f9036525b179504372fe"
+        },
+        {
+          "id": "US-MD-BALTIMORE-OBJECTID-125524",
+          "geometrySha256": "2bb9dbafff6ec92c170dee6b01f0e091e34d363caaeb5232d97bea5c6f11bfa7"
+        },
+        {
+          "id": "US-MD-BALTIMORE-OBJECTID-132835",
+          "geometrySha256": "356fa1f43a39a834131abbf1e620ebba290b8907672bfe0ff2c6cfbfe7119d1d"
+        },
+        {
+          "id": "US-MD-BALTIMORE-OBJECTID-138315",
+          "geometrySha256": "97c079abe959e1409f990b6029fb9853d7b5166543ffc484f9b012d98a948cc4"
+        },
+        {
+          "id": "US-MD-BALTIMORE-OBJECTID-145197",
+          "geometrySha256": "0bbb1ffb8d2d19df3d46f4314291cc2d6ecd6dc34cd93252493ac34de27a1f2d"
+        },
+        {
+          "id": "US-MD-BALTIMORE-OBJECTID-154746",
+          "geometrySha256": "4f2c96f9ff4fe028f2d5c05092ee380d34932e598f71ba502509423cfd1c0d61"
+        },
+        {
+          "id": "US-MD-BALTIMORE-OBJECTID-155874",
+          "geometrySha256": "700011cd942732d1fdfb44f3f2501a850b94a28e7cc5d392dbf3b4d07495023b"
+        },
+        {
+          "id": "US-MD-BALTIMORE-OBJECTID-165220",
+          "geometrySha256": "0ce9b5a3b2ff7cd82e665abd4cf3e3cde4e8a79b05171d61b2b041c60d86db45"
+        },
+        {
+          "id": "US-MD-BALTIMORE-OBJECTID-168052",
+          "geometrySha256": "1896b81b64b09e25c8111cf9d4806ea1a308fbbee3e204b43a7400a460b10286"
+        },
+        {
+          "id": "US-MD-BALTIMORE-OBJECTID-179675",
+          "geometrySha256": "02fff97f86902409d343159ff260c63fa8bf324df8d14afa60c0c9ddc3b151f4"
+        },
+        {
+          "id": "US-MD-BALTIMORE-OBJECTID-195527",
+          "geometrySha256": "b6f523b2d2767ac4ced0b32076e9181fa1427240e75574c6cdd2a28434408f60"
+        },
+        {
+          "id": "US-MD-BALTIMORE-OBJECTID-196040",
+          "geometrySha256": "703e72c1e3162e0e472402e9f549d9b8569ef353b76803f87a70bd6df864354e"
+        },
+        {
+          "id": "US-MD-BALTIMORE-OBJECTID-201216",
+          "geometrySha256": "db44f95c81f8c9433a5b91e0beec812d0560dcc0d44dc398c15be416164574d9"
+        },
+        {
+          "id": "US-MD-BALTIMORE-OBJECTID-205107",
+          "geometrySha256": "3192838164c234af9489fb2dcfc5f01c675f8194d6187cf04767cc87677adc8a"
+        },
+        {
+          "id": "US-MD-BALTIMORE-OBJECTID-212729",
+          "geometrySha256": "52b14675c633c47f39b0098dccf9f1bba2f3e7d77e882c8e2afec18205672ba9"
+        },
+        {
+          "id": "US-MD-BALTIMORE-OBJECTID-216997",
+          "geometrySha256": "42df0f878c51a713594b30ed710bcdac3a6b85d202572956452b2a7e11a28ff8"
+        },
+        {
+          "id": "US-MD-BALTIMORE-OBJECTID-217391",
+          "geometrySha256": "25f2d0457d85236f3a5864ff38f4dd0378c8f53628daf52a277ac98d923a3215"
+        }
+      ]
+    },
+    {
+      "name": "viewport-6",
+      "passed": true,
+      "elapsedMs": 683,
+      "requestIndexes": [
+        16,
+        18
+      ],
+      "bbox": [
+        -76.626,
+        39.325,
+        -76.625,
+        39.326
+      ],
+      "complete": true,
+      "count": 18,
+      "ids": [
+        {
+          "id": "US-MD-BALTIMORE-OBJECTID-23048",
+          "geometrySha256": "50b12e65904a1e31c60a27b8efe6a3ae08a76d846c9a45f607dd89a0909dac41"
+        },
+        {
+          "id": "US-MD-BALTIMORE-OBJECTID-31357",
+          "geometrySha256": "bd243acce0c5774c2a18f79fa4c4ce4b21402deabeede2179d5c0a6d07bf5c00"
+        },
+        {
+          "id": "US-MD-BALTIMORE-OBJECTID-40761",
+          "geometrySha256": "9b70e48bddc9f30900e4303ee1ab8e13c9547f6dfbacc328e244f831e68a7abf"
+        },
+        {
+          "id": "US-MD-BALTIMORE-OBJECTID-45299",
+          "geometrySha256": "63f68e8f8a5bbc7d50289d3181c9226e2188d4ddd1469bed57e6489e203837a2"
+        },
+        {
+          "id": "US-MD-BALTIMORE-OBJECTID-51419",
+          "geometrySha256": "07ce007546b4b5b0d5f7c1bd52662dfd194fa67eda9d82cb26fb743f0500b0bb"
+        },
+        {
+          "id": "US-MD-BALTIMORE-OBJECTID-77057",
+          "geometrySha256": "4dc59b2e770ef989bccea3bbbcb170b8844412f91bbfa151b770d33f10adf861"
+        },
+        {
+          "id": "US-MD-BALTIMORE-OBJECTID-91247",
+          "geometrySha256": "85a1051c65adb9205b612e77e56b41bff28b57c22b815b5275cd385896c20565"
+        },
+        {
+          "id": "US-MD-BALTIMORE-OBJECTID-112586",
+          "geometrySha256": "f17ac39467ae6dd91790bd9f65bb31650325157fc5c5bba77eea2fa4d9acf300"
+        },
+        {
+          "id": "US-MD-BALTIMORE-OBJECTID-126962",
+          "geometrySha256": "77e6426a44c53f879e649880e8e950013190033e4d153fef91015eee31d3761f"
+        },
+        {
+          "id": "US-MD-BALTIMORE-OBJECTID-127878",
+          "geometrySha256": "90c33a6555efc5db8485b0f6ee657e880df6ad9e767bccbb4de2ba0afe3f6f1f"
+        },
+        {
+          "id": "US-MD-BALTIMORE-OBJECTID-148368",
+          "geometrySha256": "0d84c84d72da13897c97be9992f7cc41cd53d47843e1e9a6f9b46b7bad4deb8f"
+        },
+        {
+          "id": "US-MD-BALTIMORE-OBJECTID-150598",
+          "geometrySha256": "1d14c855208bedfa6897b4b8dc5efdcbfab4165e1de30983d91b8e5c4988b916"
+        },
+        {
+          "id": "US-MD-BALTIMORE-OBJECTID-177745",
+          "geometrySha256": "2f9d5c187a6963f2972286a528fcb47e4e04786f1d22ad72cbbc4598d74971d4"
+        },
+        {
+          "id": "US-MD-BALTIMORE-OBJECTID-178170",
+          "geometrySha256": "a05b782818c3a41674210108d29adfbef775382c0c2e7e7cdc34a4897aa51b1f"
+        },
+        {
+          "id": "US-MD-BALTIMORE-OBJECTID-186020",
+          "geometrySha256": "6c163f85e00ffa646a9e55591452b939c301e01b5fd9fa28e26a8c5b4a31f65f"
+        },
+        {
+          "id": "US-MD-BALTIMORE-OBJECTID-191629",
+          "geometrySha256": "4ec8a052caddb393b56ebf31ae41833443470ba9c3fae913b8e6040fd3cdd340"
+        },
+        {
+          "id": "US-MD-BALTIMORE-OBJECTID-199488",
+          "geometrySha256": "4b0cf725497aa7be6a16e093e640624be674a75bed51c9a7768c4aef87fa6d42"
+        },
+        {
+          "id": "US-MD-BALTIMORE-OBJECTID-213712",
+          "geometrySha256": "ceec490153ffc0d6e60635e5a7ab6116e1c0d1bea8bb40a7c7b9c614b66990f9"
+        }
+      ]
+    },
+    {
+      "name": "viewport-7",
+      "passed": false,
+      "elapsedMs": 387,
+      "requestIndexes": [
+        19,
+        20
+      ],
+      "error": "Parcel provider returned an incomplete or invalid object-ID list.",
+      "code": "parcel-source-unavailable"
+    },
+    {
+      "name": "viewport-8",
+      "passed": true,
+      "elapsedMs": 650,
+      "requestIndexes": [
+        21,
+        23
+      ],
+      "bbox": [
+        -76.624,
+        39.325,
+        -76.623,
+        39.326
+      ],
+      "complete": true,
+      "count": 1,
+      "ids": [
+        {
+          "id": "US-MD-BALTIMORE-OBJECTID-138315",
+          "geometrySha256": "97c079abe959e1409f990b6029fb9853d7b5166543ffc484f9b012d98a948cc4"
+        }
+      ]
+    },
+    {
+      "name": "viewport-9",
+      "passed": true,
+      "elapsedMs": 617,
+      "requestIndexes": [
+        24,
+        26
+      ],
+      "bbox": [
+        -76.625,
+        39.322,
+        -76.624,
+        39.323
+      ],
+      "complete": true,
+      "count": 31,
+      "ids": [
+        {
+          "id": "US-MD-BALTIMORE-OBJECTID-18898",
+          "geometrySha256": "fc51b299c0b4ad30f6d0448bac59c660c6008315a568d2c42756cf69cdbadf3b"
+        },
+        {
+          "id": "US-MD-BALTIMORE-OBJECTID-31357",
+          "geometrySha256": "bd243acce0c5774c2a18f79fa4c4ce4b21402deabeede2179d5c0a6d07bf5c00"
+        },
+        {
+          "id": "US-MD-BALTIMORE-OBJECTID-32332",
+          "geometrySha256": "78c8b73601595ef8dbb37956bebd5fce174b017257560c8153265b22c38f0d07"
+        },
+        {
+          "id": "US-MD-BALTIMORE-OBJECTID-38305",
+          "geometrySha256": "aa6d40c0bc29b5660c64dd78a336bbba2397488ccfe4046832893e9e4be4d664"
+        },
+        {
+          "id": "US-MD-BALTIMORE-OBJECTID-44903",
+          "geometrySha256": "c1dd86fae299c6f5bc74f0cb1eae04b208f89d1da0ea466e06b67ab5aa273743"
+        },
+        {
+          "id": "US-MD-BALTIMORE-OBJECTID-47513",
+          "geometrySha256": "51e099db80bec1f4743385881f5081dd1a78b49f29e3773cafa08403f4bd58e2"
+        },
+        {
+          "id": "US-MD-BALTIMORE-OBJECTID-53634",
+          "geometrySha256": "900e5d911192dc7b925524be4fa9deda7b8a12fde6cc5277982663ebb30ebffc"
+        },
+        {
+          "id": "US-MD-BALTIMORE-OBJECTID-66867",
+          "geometrySha256": "796c723c2d144c523b2359d4560001d1135e09eb6e854a2ad1e987d18e64296f"
+        },
+        {
+          "id": "US-MD-BALTIMORE-OBJECTID-73509",
+          "geometrySha256": "bb54b22176163368e38ab7ed5382dbc5c00c7a9483412b9c8435ba9b951878d1"
+        },
+        {
+          "id": "US-MD-BALTIMORE-OBJECTID-74648",
+          "geometrySha256": "2a6c064b33f777f16c1013e8dd8c501a0cb1e4b122dca5007eb9b0617557a67d"
+        },
+        {
+          "id": "US-MD-BALTIMORE-OBJECTID-75687",
+          "geometrySha256": "2aa610c37e44fe1db0a7f10bfbc286964b750f0a35dfaa174df1b654f58fb19e"
+        },
+        {
+          "id": "US-MD-BALTIMORE-OBJECTID-86816",
+          "geometrySha256": "ccb61169a18108e7fde8c731da97097ee3aac271d38339c466f2d30012f6e289"
+        },
+        {
+          "id": "US-MD-BALTIMORE-OBJECTID-95595",
+          "geometrySha256": "29eeb661f81b82fadf48b661f4b8f7ef2c9cbe06f9406476151efd8126830c5b"
+        },
+        {
+          "id": "US-MD-BALTIMORE-OBJECTID-103769",
+          "geometrySha256": "a35d43ecc50ea2ca1a407ed264f8515045e27532734a22e7a6187d083ec90bfc"
+        },
+        {
+          "id": "US-MD-BALTIMORE-OBJECTID-122820",
+          "geometrySha256": "3554b33a416475ac66af5f58243c3b597fca288438f9263366d4b8b5cec44259"
+        },
+        {
+          "id": "US-MD-BALTIMORE-OBJECTID-123582",
+          "geometrySha256": "aaa685349b00c448cf80710397d398d9e801f3e214bde92b055b72de6c10fb6c"
+        },
+        {
+          "id": "US-MD-BALTIMORE-OBJECTID-125828",
+          "geometrySha256": "b3f743d88727099ea705c779740f8e9a10e389ac3d04a1529e37c859ee1c47ff"
+        },
+        {
+          "id": "US-MD-BALTIMORE-OBJECTID-138904",
+          "geometrySha256": "1aed82b008f0add92d03b2cfd4b26a5a3cb4b5a6fecd27cc5a4b6f80972496e2"
+        },
+        {
+          "id": "US-MD-BALTIMORE-OBJECTID-146313",
+          "geometrySha256": "b497f8c11d4a4e819c0bc0dd110229f2e253155b93406b910031fae6680f4c9c"
+        },
+        {
+          "id": "US-MD-BALTIMORE-OBJECTID-163310",
+          "geometrySha256": "8627f3522229ad2ff620843b48b9bb4d182c4b64417e701acd336a3f60392ac0"
+        },
+        {
+          "id": "US-MD-BALTIMORE-OBJECTID-166324",
+          "geometrySha256": "8e4f8716e2a2315f61454b83eeb69df489287f10a152f486f520fece914a5577"
+        },
+        {
+          "id": "US-MD-BALTIMORE-OBJECTID-166885",
+          "geometrySha256": "f9370ab733d856c48792163ba92c83204f5bf051eca028de4e96478010a53506"
+        },
+        {
+          "id": "US-MD-BALTIMORE-OBJECTID-167402",
+          "geometrySha256": "17a1f5bec1e3b7e39a5dad24ae88feeca7afd03e7a96b56198a500e2bda6a01a"
+        },
+        {
+          "id": "US-MD-BALTIMORE-OBJECTID-168017",
+          "geometrySha256": "c6920d1ca66d0e280b5998002240735b9956002ecdcceca14bb8fac0d81e6804"
+        },
+        {
+          "id": "US-MD-BALTIMORE-OBJECTID-178262",
+          "geometrySha256": "b370f49f92a0a4e2d29c2653f804b08c71abcd46da38c122114f65635c7e3798"
+        },
+        {
+          "id": "US-MD-BALTIMORE-OBJECTID-187703",
+          "geometrySha256": "409f7783cd2c012f9673e2a27efeeaae8ef8eedc125d1c393e7fee9b791bfdbf"
+        },
+        {
+          "id": "US-MD-BALTIMORE-OBJECTID-194458",
+          "geometrySha256": "58fccf6918921ec01abd75b97131af4722f293cc5bff6521ef03f050e70b434c"
+        },
+        {
+          "id": "US-MD-BALTIMORE-OBJECTID-197313",
+          "geometrySha256": "bcd4035ee10c0964ae2c228c3184c7fbb3386a1ef6ca7d20a064e1462d70010b"
+        },
+        {
+          "id": "US-MD-BALTIMORE-OBJECTID-204475",
+          "geometrySha256": "1dfe416283060268ec53525b18d2288e9580950ecf2e1e45b8a5b3185fcd9c13"
+        },
+        {
+          "id": "US-MD-BALTIMORE-OBJECTID-205201",
+          "geometrySha256": "761048f5ad004c4ce21a3120cdaf0c6e4fb61799c9ed3d6b7618e98e2e012686"
+        },
+        {
+          "id": "US-MD-BALTIMORE-OBJECTID-220877",
+          "geometrySha256": "6a7d8465b8909e0acc139cf24e8f6fa7af1db6204bdf42c30f9fccc178406ef4"
+        }
+      ]
+    },
+    {
+      "name": "viewport-10",
+      "passed": true,
+      "elapsedMs": 608,
+      "requestIndexes": [
+        27,
+        29
+      ],
+      "bbox": [
+        -76.625,
+        39.326,
+        -76.624,
+        39.327
+      ],
+      "complete": true,
+      "count": 2,
+      "ids": [
+        {
+          "id": "US-MD-BALTIMORE-OBJECTID-138315",
+          "geometrySha256": "97c079abe959e1409f990b6029fb9853d7b5166543ffc484f9b012d98a948cc4"
+        },
+        {
+          "id": "US-MD-BALTIMORE-OBJECTID-148368",
+          "geometrySha256": "0d84c84d72da13897c97be9992f7cc41cd53d47843e1e9a6f9b46b7bad4deb8f"
+        }
+      ]
+    },
+    {
+      "name": "viewport-11",
+      "passed": true,
+      "elapsedMs": 625,
+      "requestIndexes": [
+        30,
+        32
+      ],
+      "bbox": [
+        -76.627,
+        39.324,
+        -76.626,
+        39.325
+      ],
+      "complete": true,
+      "count": 1,
+      "ids": [
+        {
+          "id": "US-MD-BALTIMORE-OBJECTID-31357",
+          "geometrySha256": "bd243acce0c5774c2a18f79fa4c4ce4b21402deabeede2179d5c0a6d07bf5c00"
+        }
+      ]
+    },
+    {
+      "name": "viewport-12",
+      "passed": true,
+      "elapsedMs": 614,
+      "requestIndexes": [
+        33,
+        35
+      ],
+      "bbox": [
+        -76.623,
+        39.324,
+        -76.622,
+        39.325
+      ],
+      "complete": true,
+      "count": 31,
+      "ids": [
+        {
+          "id": "US-MD-BALTIMORE-OBJECTID-8358",
+          "geometrySha256": "a544af713b519db10f3a25c524a4220fbee8d73cece8392c8cd62859e37061bc"
+        },
+        {
+          "id": "US-MD-BALTIMORE-OBJECTID-9554",
+          "geometrySha256": "5c36379192aa28ee09e758d1a095d6cac315af776d2080e860b6a48970d4db61"
+        },
+        {
+          "id": "US-MD-BALTIMORE-OBJECTID-20493",
+          "geometrySha256": "0ecee54d5083dc6cef2c57a0fe1367acfca27ea94d5d7678aeb06c3442b12567"
+        },
+        {
+          "id": "US-MD-BALTIMORE-OBJECTID-21870",
+          "geometrySha256": "7fee3b714494710c7403381f4a007c7736164e942047f4de813dc1f5b8620adf"
+        },
+        {
+          "id": "US-MD-BALTIMORE-OBJECTID-26199",
+          "geometrySha256": "e642300b39f819be201bf53621d338dc1d7eb1900d2509f0d4fbafe847ceb899"
+        },
+        {
+          "id": "US-MD-BALTIMORE-OBJECTID-32387",
+          "geometrySha256": "cb27a9d477e28e77256cb1a9c0ecb99a8764932c73727aad4f1927a77c3583b3"
+        },
+        {
+          "id": "US-MD-BALTIMORE-OBJECTID-32730",
+          "geometrySha256": "37c753c6fdd8838eaf7eba74461c240bf11eb3c6010a17bb24ab8fa77c9d3eb0"
+        },
+        {
+          "id": "US-MD-BALTIMORE-OBJECTID-33684",
+          "geometrySha256": "7972e2abe880daa23de6c510e2bc3092daf1a3179eed6bd737474cb6595d026d"
+        },
+        {
+          "id": "US-MD-BALTIMORE-OBJECTID-39023",
+          "geometrySha256": "15d2c7f7d1b3eb8eaecdfa674e94a2700a40faaa615f88931ee948a928b6a17d"
+        },
+        {
+          "id": "US-MD-BALTIMORE-OBJECTID-43554",
+          "geometrySha256": "4e474fae34e46319bacbc24abb00d81454a6314a5334e0d8a6df64fc6b6988a1"
+        },
+        {
+          "id": "US-MD-BALTIMORE-OBJECTID-62936",
+          "geometrySha256": "cebb95d42a1de7c300fae93bcd98395ad39f222939b8966085100376ade5203f"
+        },
+        {
+          "id": "US-MD-BALTIMORE-OBJECTID-64813",
+          "geometrySha256": "1830815111ea7d0389bcd67784a5e2c9189721974ad1b1e693d4287dca0413f0"
+        },
+        {
+          "id": "US-MD-BALTIMORE-OBJECTID-74615",
+          "geometrySha256": "5a2b2bcb3095039c30918a616746a202ea4074b19c3434e280316dfd815c27f3"
+        },
+        {
+          "id": "US-MD-BALTIMORE-OBJECTID-79927",
+          "geometrySha256": "927cabab99008a853f83fcfbcde4da29de728fc1f73143d8cb33d4447b64ec07"
+        },
+        {
+          "id": "US-MD-BALTIMORE-OBJECTID-80594",
+          "geometrySha256": "2cd94419001330594e42ca0704350a42863ed9f89b0b4c12dfb891252a24f232"
+        },
+        {
+          "id": "US-MD-BALTIMORE-OBJECTID-93140",
+          "geometrySha256": "88e61e5b7928004228912a20bcd00c3e19e29d9dee0b157e1b2ff067cf18d8ad"
+        },
+        {
+          "id": "US-MD-BALTIMORE-OBJECTID-99851",
+          "geometrySha256": "57ed82d9c3c81b00e3301bb25fc5ccc8ebf6ae3ec8bb0d2bd941c9903e902f73"
+        },
+        {
+          "id": "US-MD-BALTIMORE-OBJECTID-128907",
+          "geometrySha256": "fa3aff3389dc26d8062b965c8516bcec201b7ad1744d3b973decb43cd0492cc3"
+        },
+        {
+          "id": "US-MD-BALTIMORE-OBJECTID-138315",
+          "geometrySha256": "97c079abe959e1409f990b6029fb9853d7b5166543ffc484f9b012d98a948cc4"
+        },
+        {
+          "id": "US-MD-BALTIMORE-OBJECTID-140388",
+          "geometrySha256": "94f2bf071a44b2e24bd9271fa52eea50e2695f90ee11704d4b325465ccc24f97"
+        },
+        {
+          "id": "US-MD-BALTIMORE-OBJECTID-145197",
+          "geometrySha256": "0bbb1ffb8d2d19df3d46f4314291cc2d6ecd6dc34cd93252493ac34de27a1f2d"
+        },
+        {
+          "id": "US-MD-BALTIMORE-OBJECTID-155795",
+          "geometrySha256": "85dd7e3270720fbcf39d28a41efd7ab44a8ec60b69d79316b6230dd17711008f"
+        },
+        {
+          "id": "US-MD-BALTIMORE-OBJECTID-157373",
+          "geometrySha256": "51058a50d5dfeaacf692403d69135551a8c0dac4275ff823f15a204b43b92879"
+        },
+        {
+          "id": "US-MD-BALTIMORE-OBJECTID-162728",
+          "geometrySha256": "f8c9f7887aafa753f923a7bc29d36128c4a1cfab1752c78d020029980ada1758"
+        },
+        {
+          "id": "US-MD-BALTIMORE-OBJECTID-195527",
+          "geometrySha256": "b6f523b2d2767ac4ced0b32076e9181fa1427240e75574c6cdd2a28434408f60"
+        },
+        {
+          "id": "US-MD-BALTIMORE-OBJECTID-196040",
+          "geometrySha256": "703e72c1e3162e0e472402e9f549d9b8569ef353b76803f87a70bd6df864354e"
+        },
+        {
+          "id": "US-MD-BALTIMORE-OBJECTID-207619",
+          "geometrySha256": "a9b2a400b25ad3d53b8a234ac2031eaa572e344afbed2537e92a6bc30a6b831c"
+        },
+        {
+          "id": "US-MD-BALTIMORE-OBJECTID-211134",
+          "geometrySha256": "ca251f6c388bf73fa793030ecc196f0cc03d548c731e8596ef3c66dab1eb2190"
+        },
+        {
+          "id": "US-MD-BALTIMORE-OBJECTID-216997",
+          "geometrySha256": "42df0f878c51a713594b30ed710bcdac3a6b85d202572956452b2a7e11a28ff8"
+        },
+        {
+          "id": "US-MD-BALTIMORE-OBJECTID-218090",
+          "geometrySha256": "139ed595131e293864f1a9fd87066104669de3bda34d6876fb299a74fde64d8f"
+        },
+        {
+          "id": "US-MD-BALTIMORE-OBJECTID-223979",
+          "geometrySha256": "5535d4cceccc87829a880aac705307b82dabe1715ecf6bdbc6f74d1332ff641e"
+        }
+      ]
+    },
+    {
+      "name": "forced-three-row-pages",
+      "passed": true,
+      "elapsedMs": 4326,
+      "requestIndexes": [
+        36,
+        55
+      ],
+      "count": 54,
+      "geometryPages": 18,
+      "pageSize": 3,
+      "allGeometryHashesMatch": true
+    },
+    {
+      "name": "fresh-ids-0",
+      "passed": true,
+      "elapsedMs": 730,
+      "requestIndexes": [
+        56,
+        58
+      ],
+      "count": 40,
+      "ids": [
+        "US-MD-BALTIMORE-OBJECTID-100700",
+        "US-MD-BALTIMORE-OBJECTID-103769",
+        "US-MD-BALTIMORE-OBJECTID-110917",
+        "US-MD-BALTIMORE-OBJECTID-112586",
+        "US-MD-BALTIMORE-OBJECTID-114900",
+        "US-MD-BALTIMORE-OBJECTID-115224",
+        "US-MD-BALTIMORE-OBJECTID-118208",
+        "US-MD-BALTIMORE-OBJECTID-119114",
+        "US-MD-BALTIMORE-OBJECTID-122820",
+        "US-MD-BALTIMORE-OBJECTID-123582",
+        "US-MD-BALTIMORE-OBJECTID-125524",
+        "US-MD-BALTIMORE-OBJECTID-125828",
+        "US-MD-BALTIMORE-OBJECTID-126110",
+        "US-MD-BALTIMORE-OBJECTID-126962",
+        "US-MD-BALTIMORE-OBJECTID-127878",
+        "US-MD-BALTIMORE-OBJECTID-128907",
+        "US-MD-BALTIMORE-OBJECTID-129883",
+        "US-MD-BALTIMORE-OBJECTID-13058",
+        "US-MD-BALTIMORE-OBJECTID-132835",
+        "US-MD-BALTIMORE-OBJECTID-134767",
+        "US-MD-BALTIMORE-OBJECTID-138315",
+        "US-MD-BALTIMORE-OBJECTID-138904",
+        "US-MD-BALTIMORE-OBJECTID-139327",
+        "US-MD-BALTIMORE-OBJECTID-140388",
+        "US-MD-BALTIMORE-OBJECTID-145197",
+        "US-MD-BALTIMORE-OBJECTID-146313",
+        "US-MD-BALTIMORE-OBJECTID-147832",
+        "US-MD-BALTIMORE-OBJECTID-148368",
+        "US-MD-BALTIMORE-OBJECTID-149328",
+        "US-MD-BALTIMORE-OBJECTID-150598",
+        "US-MD-BALTIMORE-OBJECTID-150970",
+        "US-MD-BALTIMORE-OBJECTID-152337",
+        "US-MD-BALTIMORE-OBJECTID-153398",
+        "US-MD-BALTIMORE-OBJECTID-153980",
+        "US-MD-BALTIMORE-OBJECTID-154746",
+        "US-MD-BALTIMORE-OBJECTID-155795",
+        "US-MD-BALTIMORE-OBJECTID-155874",
+        "US-MD-BALTIMORE-OBJECTID-157050",
+        "US-MD-BALTIMORE-OBJECTID-157373",
+        "US-MD-BALTIMORE-OBJECTID-162728"
+      ],
+      "allGeometryHashesMatch": true,
+      "absentIds": []
+    },
+    {
+      "name": "fresh-ids-40",
+      "passed": true,
+      "elapsedMs": 636,
+      "requestIndexes": [
+        59,
+        61
+      ],
+      "count": 40,
+      "ids": [
+        "US-MD-BALTIMORE-OBJECTID-163310",
+        "US-MD-BALTIMORE-OBJECTID-164286",
+        "US-MD-BALTIMORE-OBJECTID-165220",
+        "US-MD-BALTIMORE-OBJECTID-166324",
+        "US-MD-BALTIMORE-OBJECTID-166885",
+        "US-MD-BALTIMORE-OBJECTID-167402",
+        "US-MD-BALTIMORE-OBJECTID-16789",
+        "US-MD-BALTIMORE-OBJECTID-168017",
+        "US-MD-BALTIMORE-OBJECTID-168052",
+        "US-MD-BALTIMORE-OBJECTID-177745",
+        "US-MD-BALTIMORE-OBJECTID-178170",
+        "US-MD-BALTIMORE-OBJECTID-178262",
+        "US-MD-BALTIMORE-OBJECTID-178653",
+        "US-MD-BALTIMORE-OBJECTID-179500",
+        "US-MD-BALTIMORE-OBJECTID-179675",
+        "US-MD-BALTIMORE-OBJECTID-180319",
+        "US-MD-BALTIMORE-OBJECTID-18235",
+        "US-MD-BALTIMORE-OBJECTID-185643",
+        "US-MD-BALTIMORE-OBJECTID-186020",
+        "US-MD-BALTIMORE-OBJECTID-187703",
+        "US-MD-BALTIMORE-OBJECTID-18898",
+        "US-MD-BALTIMORE-OBJECTID-191629",
+        "US-MD-BALTIMORE-OBJECTID-194458",
+        "US-MD-BALTIMORE-OBJECTID-195491",
+        "US-MD-BALTIMORE-OBJECTID-195527",
+        "US-MD-BALTIMORE-OBJECTID-196040",
+        "US-MD-BALTIMORE-OBJECTID-197313",
+        "US-MD-BALTIMORE-OBJECTID-197389",
+        "US-MD-BALTIMORE-OBJECTID-199488",
+        "US-MD-BALTIMORE-OBJECTID-200300",
+        "US-MD-BALTIMORE-OBJECTID-201216",
+        "US-MD-BALTIMORE-OBJECTID-204475",
+        "US-MD-BALTIMORE-OBJECTID-204876",
+        "US-MD-BALTIMORE-OBJECTID-20493",
+        "US-MD-BALTIMORE-OBJECTID-205107",
+        "US-MD-BALTIMORE-OBJECTID-205201",
+        "US-MD-BALTIMORE-OBJECTID-207619",
+        "US-MD-BALTIMORE-OBJECTID-209388",
+        "US-MD-BALTIMORE-OBJECTID-211134",
+        "US-MD-BALTIMORE-OBJECTID-212729"
+      ],
+      "allGeometryHashesMatch": true,
+      "absentIds": []
+    },
+    {
+      "name": "fresh-ids-80",
+      "passed": true,
+      "elapsedMs": 652,
+      "requestIndexes": [
+        62,
+        64
+      ],
+      "count": 40,
+      "ids": [
+        "US-MD-BALTIMORE-OBJECTID-213712",
+        "US-MD-BALTIMORE-OBJECTID-216849",
+        "US-MD-BALTIMORE-OBJECTID-216997",
+        "US-MD-BALTIMORE-OBJECTID-217391",
+        "US-MD-BALTIMORE-OBJECTID-218090",
+        "US-MD-BALTIMORE-OBJECTID-218485",
+        "US-MD-BALTIMORE-OBJECTID-21870",
+        "US-MD-BALTIMORE-OBJECTID-220877",
+        "US-MD-BALTIMORE-OBJECTID-223442",
+        "US-MD-BALTIMORE-OBJECTID-223979",
+        "US-MD-BALTIMORE-OBJECTID-224277",
+        "US-MD-BALTIMORE-OBJECTID-23048",
+        "US-MD-BALTIMORE-OBJECTID-26199",
+        "US-MD-BALTIMORE-OBJECTID-30519",
+        "US-MD-BALTIMORE-OBJECTID-31357",
+        "US-MD-BALTIMORE-OBJECTID-32332",
+        "US-MD-BALTIMORE-OBJECTID-32387",
+        "US-MD-BALTIMORE-OBJECTID-32730",
+        "US-MD-BALTIMORE-OBJECTID-32915",
+        "US-MD-BALTIMORE-OBJECTID-33684",
+        "US-MD-BALTIMORE-OBJECTID-35773",
+        "US-MD-BALTIMORE-OBJECTID-38305",
+        "US-MD-BALTIMORE-OBJECTID-38833",
+        "US-MD-BALTIMORE-OBJECTID-39023",
+        "US-MD-BALTIMORE-OBJECTID-40761",
+        "US-MD-BALTIMORE-OBJECTID-41219",
+        "US-MD-BALTIMORE-OBJECTID-42703",
+        "US-MD-BALTIMORE-OBJECTID-43554",
+        "US-MD-BALTIMORE-OBJECTID-43969",
+        "US-MD-BALTIMORE-OBJECTID-44903",
+        "US-MD-BALTIMORE-OBJECTID-45299",
+        "US-MD-BALTIMORE-OBJECTID-47513",
+        "US-MD-BALTIMORE-OBJECTID-51419",
+        "US-MD-BALTIMORE-OBJECTID-53634",
+        "US-MD-BALTIMORE-OBJECTID-61012",
+        "US-MD-BALTIMORE-OBJECTID-62936",
+        "US-MD-BALTIMORE-OBJECTID-64813",
+        "US-MD-BALTIMORE-OBJECTID-65688",
+        "US-MD-BALTIMORE-OBJECTID-66867",
+        "US-MD-BALTIMORE-OBJECTID-7218"
+      ],
+      "allGeometryHashesMatch": true,
+      "absentIds": []
+    },
+    {
+      "name": "fresh-ids-120",
+      "passed": true,
+      "elapsedMs": 630,
+      "requestIndexes": [
+        65,
+        67
+      ],
+      "count": 18,
+      "ids": [
+        "US-MD-BALTIMORE-OBJECTID-73509",
+        "US-MD-BALTIMORE-OBJECTID-74004",
+        "US-MD-BALTIMORE-OBJECTID-74615",
+        "US-MD-BALTIMORE-OBJECTID-74648",
+        "US-MD-BALTIMORE-OBJECTID-74691",
+        "US-MD-BALTIMORE-OBJECTID-75687",
+        "US-MD-BALTIMORE-OBJECTID-77057",
+        "US-MD-BALTIMORE-OBJECTID-79927",
+        "US-MD-BALTIMORE-OBJECTID-80594",
+        "US-MD-BALTIMORE-OBJECTID-8358",
+        "US-MD-BALTIMORE-OBJECTID-86816",
+        "US-MD-BALTIMORE-OBJECTID-91247",
+        "US-MD-BALTIMORE-OBJECTID-93140",
+        "US-MD-BALTIMORE-OBJECTID-9554",
+        "US-MD-BALTIMORE-OBJECTID-95595",
+        "US-MD-BALTIMORE-OBJECTID-97551",
+        "US-MD-BALTIMORE-OBJECTID-99129",
+        "US-MD-BALTIMORE-OBJECTID-99851"
+      ],
+      "allGeometryHashesMatch": true,
+      "absentIds": []
+    },
+    {
+      "name": "explicit-absence",
+      "passed": false,
+      "elapsedMs": 0,
+      "requestIndexes": [
+        68,
+        67
+      ],
+      "error": "Invalid parcel ID."
+    },
+    {
+      "name": "footprint",
+      "passed": false,
+      "elapsedMs": 398,
+      "requestIndexes": [
+        68,
+        69
+      ],
+      "error": "Parcel provider returned an incomplete or invalid object-ID list.",
+      "code": "parcel-source-unavailable"
+    },
+    {
+      "name": "source-binding",
+      "passed": false,
+      "elapsedMs": 421,
+      "requestIndexes": [
+        70,
+        71
+      ],
+      "error": "Parcel provider returned an incomplete or invalid object-ID list.",
+      "code": "parcel-source-unavailable"
+    }
+  ],
+  "requests": [
+    {
+      "test": "viewport-0",
+      "url": "https://egis.baltimorecity.gov/egis/rest/services/Parcel_Information/Parcel/MapServer/0/query?where=1%3D1&geometry=-76.626%2C39.323%2C-76.625%2C39.324&geometryType=esriGeometryEnvelope&inSR=4326&spatialRel=esriSpatialRelIntersects&f=json&returnCountOnly=true",
+      "method": "GET",
+      "checkedAt": "2026-10-09T00:05:36.975Z",
+      "httpStatus": 200,
+      "contentType": "application/json; charset=UTF-8",
+      "bytes": 11,
+      "count": 2
+    },
+    {
+      "test": "viewport-0",
+      "url": "https://egis.baltimorecity.gov/egis/rest/services/Parcel_Information/Parcel/MapServer/0/query?where=1%3D1&geometry=-76.626%2C39.323%2C-76.625%2C39.324&geometryType=esriGeometryEnvelope&inSR=4326&spatialRel=esriSpatialRelIntersects&f=json&returnIdsOnly=true",
+      "method": "GET",
+      "checkedAt": "2026-10-09T00:05:37.752Z",
+      "httpStatus": 200,
+      "contentType": "application/json; charset=UTF-8",
+      "bytes": 58,
+      "objectIdFieldName": "OBJECTID",
+      "objectIds": [
+        31357,
+        74004
+      ]
+    },
+    {
+      "test": "viewport-0",
+      "url": "https://egis.baltimorecity.gov/egis/rest/services/Parcel_Information/Parcel/MapServer/0/query?where=1%3D1&outFields=OBJECTID%2CBLOCKLOT&returnGeometry=true&outSR=4326&f=geojson&objectIds=31357%2C74004",
+      "method": "GET",
+      "checkedAt": "2026-10-09T00:05:37.977Z",
+      "httpStatus": 200,
+      "contentType": "application/geo+json; charset=UTF-8",
+      "bytes": 6223,
+      "features": [
+        {
+          "transportId": 31357,
+          "properties": {
+            "OBJECTID": 31357,
+            "BLOCKLOT": "3559 001"
+          },
+          "geometrySha256": "bd243acce0c5774c2a18f79fa4c4ce4b21402deabeede2179d5c0a6d07bf5c00"
+        },
+        {
+          "transportId": 74004,
+          "properties": {
+            "OBJECTID": 74004,
+            "BLOCKLOT": "3664A004"
+          },
+          "geometrySha256": "6b51da3cad62639fdb615cd1938f29cc070c4c69b5b0ab4c4af6bc145c6f45b6"
+        }
+      ]
+    },
+    {
+      "test": "viewport-1",
+      "url": "https://egis.baltimorecity.gov/egis/rest/services/Parcel_Information/Parcel/MapServer/0/query?where=1%3D1&geometry=-76.625%2C39.323%2C-76.624%2C39.324&geometryType=esriGeometryEnvelope&inSR=4326&spatialRel=esriSpatialRelIntersects&f=json&returnCountOnly=true",
+      "method": "GET",
+      "checkedAt": "2026-10-09T00:05:38.181Z",
+      "httpStatus": 200,
+      "contentType": "application/json; charset=UTF-8",
+      "bytes": 12,
+      "count": 44
+    },
+    {
+      "test": "viewport-1",
+      "url": "https://egis.baltimorecity.gov/egis/rest/services/Parcel_Information/Parcel/MapServer/0/query?where=1%3D1&geometry=-76.625%2C39.323%2C-76.624%2C39.324&geometryType=esriGeometryEnvelope&inSR=4326&spatialRel=esriSpatialRelIntersects&f=json&returnIdsOnly=true",
+      "method": "GET",
+      "checkedAt": "2026-10-09T00:05:39.297Z",
+      "httpStatus": 200,
+      "contentType": "application/json; charset=UTF-8",
+      "bytes": 341,
+      "objectIdFieldName": "OBJECTID",
+      "objectIds": [
+        2381,
+        10447,
+        20273,
+        31357,
+        32915,
+        39278,
+        52981,
+        53357,
+        60752,
+        71877,
+        73178,
+        73509,
+        74004,
+        74648,
+        77654,
+        87664,
+        92826,
+        95595,
+        99033,
+        103479,
+        103700,
+        104489,
+        105923,
+        117990,
+        123582,
+        125056,
+        125524,
+        143221,
+        146313,
+        148151,
+        152482,
+        153980,
+        155874,
+        158042,
+        159627,
+        160938,
+        164819,
+        165220,
+        166324,
+        169575,
+        179500,
+        185643,
+        202410,
+        209388,
+        218501
+      ]
+    },
+    {
+      "test": "viewport-2",
+      "url": "https://egis.baltimorecity.gov/egis/rest/services/Parcel_Information/Parcel/MapServer/0/query?where=1%3D1&geometry=-76.624%2C39.323%2C-76.623%2C39.324&geometryType=esriGeometryEnvelope&inSR=4326&spatialRel=esriSpatialRelIntersects&f=json&returnCountOnly=true",
+      "method": "GET",
+      "checkedAt": "2026-10-09T00:05:39.512Z",
+      "httpStatus": 200,
+      "contentType": "application/json; charset=UTF-8",
+      "bytes": 12,
+      "count": 50
+    },
+    {
+      "test": "viewport-2",
+      "url": "https://egis.baltimorecity.gov/egis/rest/services/Parcel_Information/Parcel/MapServer/0/query?where=1%3D1&geometry=-76.624%2C39.323%2C-76.623%2C39.324&geometryType=esriGeometryEnvelope&inSR=4326&spatialRel=esriSpatialRelIntersects&f=json&returnIdsOnly=true",
+      "method": "GET",
+      "checkedAt": "2026-10-09T00:05:40.068Z",
+      "httpStatus": 200,
+      "contentType": "application/json; charset=UTF-8",
+      "bytes": 366,
+      "objectIdFieldName": "OBJECTID",
+      "objectIds": [
+        2381,
+        11094,
+        12933,
+        16789,
+        17126,
+        40546,
+        52583,
+        53357,
+        54137,
+        55384,
+        55507,
+        60752,
+        63169,
+        71771,
+        75896,
+        76467,
+        79574,
+        82624,
+        84995,
+        87664,
+        96584,
+        97044,
+        107054,
+        109563,
+        111215,
+        125524,
+        132835,
+        148382,
+        149766,
+        149775,
+        152690,
+        154746,
+        158042,
+        158720,
+        159702,
+        160653,
+        162878,
+        166324,
+        169575,
+        170973,
+        179675,
+        181482,
+        183262,
+        196040,
+        198897,
+        202410,
+        205107,
+        212729,
+        217391
+      ]
+    },
+    {
+      "test": "viewport-3",
+      "url": "https://egis.baltimorecity.gov/egis/rest/services/Parcel_Information/Parcel/MapServer/0/query?where=1%3D1&geometry=-76.626%2C39.324%2C-76.625%2C39.325&geometryType=esriGeometryEnvelope&inSR=4326&spatialRel=esriSpatialRelIntersects&f=json&returnCountOnly=true",
+      "method": "GET",
+      "checkedAt": "2026-10-09T00:05:40.279Z",
+      "httpStatus": 200,
+      "contentType": "application/json; charset=UTF-8",
+      "bytes": 11,
+      "count": 6
+    },
+    {
+      "test": "viewport-3",
+      "url": "https://egis.baltimorecity.gov/egis/rest/services/Parcel_Information/Parcel/MapServer/0/query?where=1%3D1&geometry=-76.626%2C39.324%2C-76.625%2C39.325&geometryType=esriGeometryEnvelope&inSR=4326&spatialRel=esriSpatialRelIntersects&f=json&returnIdsOnly=true",
+      "method": "GET",
+      "checkedAt": "2026-10-09T00:05:40.510Z",
+      "httpStatus": 200,
+      "contentType": "application/json; charset=UTF-8",
+      "bytes": 86,
+      "objectIdFieldName": "OBJECTID",
+      "objectIds": [
+        31357,
+        91247,
+        112586,
+        118208,
+        178170,
+        213712
+      ]
+    },
+    {
+      "test": "viewport-3",
+      "url": "https://egis.baltimorecity.gov/egis/rest/services/Parcel_Information/Parcel/MapServer/0/query?where=1%3D1&outFields=OBJECTID%2CBLOCKLOT&returnGeometry=true&outSR=4326&f=geojson&objectIds=31357%2C91247%2C112586%2C118208%2C178170%2C213712",
+      "method": "GET",
+      "checkedAt": "2026-10-09T00:05:40.706Z",
+      "httpStatus": 200,
+      "contentType": "application/geo+json; charset=UTF-8",
+      "bytes": 7939,
+      "features": [
+        {
+          "transportId": 31357,
+          "properties": {
+            "OBJECTID": 31357,
+            "BLOCKLOT": "3559 001"
+          },
+          "geometrySha256": "bd243acce0c5774c2a18f79fa4c4ce4b21402deabeede2179d5c0a6d07bf5c00"
+        },
+        {
+          "transportId": 91247,
+          "properties": {
+            "OBJECTID": 91247,
+            "BLOCKLOT": "3664A053"
+          },
+          "geometrySha256": "85a1051c65adb9205b612e77e56b41bff28b57c22b815b5275cd385896c20565"
+        },
+        {
+          "transportId": 112586,
+          "properties": {
+            "OBJECTID": 112586,
+            "BLOCKLOT": "3664A056"
+          },
+          "geometrySha256": "f17ac39467ae6dd91790bd9f65bb31650325157fc5c5bba77eea2fa4d9acf300"
+        },
+        {
+          "transportId": 118208,
+          "properties": {
+            "OBJECTID": 118208,
+            "BLOCKLOT": "3664A057"
+          },
+          "geometrySha256": "5daaba920e3fe120407819d7d91f8f5517c4808abc1d917fc884c2d3e8cb3469"
+        },
+        {
+          "transportId": 178170,
+          "properties": {
+            "OBJECTID": 178170,
+            "BLOCKLOT": "3664A054"
+          },
+          "geometrySha256": "a05b782818c3a41674210108d29adfbef775382c0c2e7e7cdc34a4897aa51b1f"
+        },
+        {
+          "transportId": 213712,
+          "properties": {
+            "OBJECTID": 213712,
+            "BLOCKLOT": "3664A055"
+          },
+          "geometrySha256": "ceec490153ffc0d6e60635e5a7ab6116e1c0d1bea8bb40a7c7b9c614b66990f9"
+        }
+      ]
+    },
+    {
+      "test": "viewport-4",
+      "url": "https://egis.baltimorecity.gov/egis/rest/services/Parcel_Information/Parcel/MapServer/0/query?where=1%3D1&geometry=-76.625%2C39.324%2C-76.624%2C39.325&geometryType=esriGeometryEnvelope&inSR=4326&spatialRel=esriSpatialRelIntersects&f=json&returnCountOnly=true",
+      "method": "GET",
+      "checkedAt": "2026-10-09T00:05:40.906Z",
+      "httpStatus": 200,
+      "contentType": "application/json; charset=UTF-8",
+      "bytes": 12,
+      "count": 54
+    },
+    {
+      "test": "viewport-4",
+      "url": "https://egis.baltimorecity.gov/egis/rest/services/Parcel_Information/Parcel/MapServer/0/query?where=1%3D1&geometry=-76.625%2C39.324%2C-76.624%2C39.325&geometryType=esriGeometryEnvelope&inSR=4326&spatialRel=esriSpatialRelIntersects&f=json&returnIdsOnly=true",
+      "method": "GET",
+      "checkedAt": "2026-10-09T00:05:41.630Z",
+      "httpStatus": 200,
+      "contentType": "application/json; charset=UTF-8",
+      "bytes": 406,
+      "objectIdFieldName": "OBJECTID",
+      "objectIds": [
+        7218,
+        13058,
+        18235,
+        30519,
+        31357,
+        32915,
+        35773,
+        38833,
+        41219,
+        42703,
+        43969,
+        61012,
+        65688,
+        74004,
+        74691,
+        97551,
+        99129,
+        100700,
+        110917,
+        114900,
+        115224,
+        118208,
+        119114,
+        125524,
+        126110,
+        129883,
+        134767,
+        138315,
+        139327,
+        147832,
+        149328,
+        150970,
+        152337,
+        153398,
+        153980,
+        155874,
+        157050,
+        164286,
+        165220,
+        168052,
+        178653,
+        179500,
+        180319,
+        185643,
+        195491,
+        197389,
+        200300,
+        201216,
+        204876,
+        209388,
+        216849,
+        218485,
+        223442,
+        224277
+      ]
+    },
+    {
+      "test": "viewport-4",
+      "url": "https://egis.baltimorecity.gov/egis/rest/services/Parcel_Information/Parcel/MapServer/0/query?where=1%3D1&outFields=OBJECTID%2CBLOCKLOT&returnGeometry=true&outSR=4326&f=geojson&objectIds=7218%2C13058%2C18235%2C30519%2C31357%2C32915%2C35773%2C38833%2C41219%2C42703%2C43969%2C61012%2C65688%2C74004%2C74691%2C97551%2C99129%2C100700%2C110917%2C114900%2C115224%2C118208%2C119114%2C125524%2C126110%2C129883%2C134767%2C138315%2C139327%2C147832%2C149328%2C150970%2C152337%2C153398%2C153980%2C155874%2C157050%2C164286%2C165220%2C168052%2C178653%2C179500%2C180319%2C185643%2C195491%2C197389%2C200300%2C201216%2C204876%2C209388%2C216849%2C218485%2C223442%2C224277",
+      "method": "GET",
+      "checkedAt": "2026-10-09T00:05:41.824Z",
+      "httpStatus": 200,
+      "contentType": "application/geo+json; charset=UTF-8",
+      "bytes": 27204,
+      "features": [
+        {
+          "transportId": 7218,
+          "properties": {
+            "OBJECTID": 7218,
+            "BLOCKLOT": "3664A059L"
+          },
+          "geometrySha256": "c9ebe1e3bc605f58a9a0278791615c39e2d6e3de0d37c3e5afd2c7f337316698"
+        },
+        {
+          "transportId": 13058,
+          "properties": {
+            "OBJECTID": 13058,
+            "BLOCKLOT": "3664A029"
+          },
+          "geometrySha256": "ed222863ae6ca60ff55a08833d2b1ff40acdea10db246537772bca818d34eada"
+        },
+        {
+          "transportId": 18235,
+          "properties": {
+            "OBJECTID": 18235,
+            "BLOCKLOT": "3664A012"
+          },
+          "geometrySha256": "c97e8d706bfbd3dfe708557b9155846ac3318b54091af9b5805f720103b09f30"
+        },
+        {
+          "transportId": 30519,
+          "properties": {
+            "OBJECTID": 30519,
+            "BLOCKLOT": "3664A022"
+          },
+          "geometrySha256": "8a1cd8e3f7712a16a2e13bfda35fb80b7085f619f0df471c3c73188f44815e93"
+        },
+        {
+          "transportId": 31357,
+          "properties": {
+            "OBJECTID": 31357,
+            "BLOCKLOT": "3559 001"
+          },
+          "geometrySha256": "bd243acce0c5774c2a18f79fa4c4ce4b21402deabeede2179d5c0a6d07bf5c00"
+        },
+        {
+          "transportId": 32915,
+          "properties": {
+            "OBJECTID": 32915,
+            "BLOCKLOT": "3664A006A"
+          },
+          "geometrySha256": "6ae5e072a51f12d0c2cdde32e0a59c16026a06c465f82e6ef21b994b3e067dd8"
+        },
+        {
+          "transportId": 35773,
+          "properties": {
+            "OBJECTID": 35773,
+            "BLOCKLOT": "3664A011"
+          },
+          "geometrySha256": "9631bb83104d603e2925dcdeeea0b68f748b873c0640beed02695b6b85070c05"
+        },
+        {
+          "transportId": 38833,
+          "properties": {
+            "OBJECTID": 38833,
+            "BLOCKLOT": "3664A059K"
+          },
+          "geometrySha256": "51cdf54280dac964feeeeaaf3810570cab126fb6ce93c9dd254ff23f8b3993fd"
+        },
+        {
+          "transportId": 41219,
+          "properties": {
+            "OBJECTID": 41219,
+            "BLOCKLOT": "3664A016"
+          },
+          "geometrySha256": "bc2677bdfcef77e536a0c26c0c79b5b9b3d3a9dcb9115d0292f38f5a1da8e5db"
+        },
+        {
+          "transportId": 42703,
+          "properties": {
+            "OBJECTID": 42703,
+            "BLOCKLOT": "3664A020"
+          },
+          "geometrySha256": "0e00007a8fe783d962bffada644812d9620f117d1ea8f5a3811eac08f3c2d8b7"
+        },
+        {
+          "transportId": 43969,
+          "properties": {
+            "OBJECTID": 43969,
+            "BLOCKLOT": "3664A059D"
+          },
+          "geometrySha256": "2895379011fc601d21c54909cb548e803b6c4ceb90e49f53976fef72aabe7149"
+        },
+        {
+          "transportId": 61012,
+          "properties": {
+            "OBJECTID": 61012,
+            "BLOCKLOT": "3664A028"
+          },
+          "geometrySha256": "2c87c3902baac7454b4bd0ad65893d74afb7a644ec53ce9d7aa8649edb75be20"
+        },
+        {
+          "transportId": 65688,
+          "properties": {
+            "OBJECTID": 65688,
+            "BLOCKLOT": "3664A025"
+          },
+          "geometrySha256": "c193ad13c526b28241740fa8ed57deb4b08df0b8246a8fbbba93d296bbc0917d"
+        },
+        {
+          "transportId": 74004,
+          "properties": {
+            "OBJECTID": 74004,
+            "BLOCKLOT": "3664A004"
+          },
+          "geometrySha256": "6b51da3cad62639fdb615cd1938f29cc070c4c69b5b0ab4c4af6bc145c6f45b6"
+        },
+        {
+          "transportId": 74691,
+          "properties": {
+            "OBJECTID": 74691,
+            "BLOCKLOT": "3664A059"
+          },
+          "geometrySha256": "08ec32184bd2c2856ca21c6480e6af8c270baa02a22698e601a7732d30fa5bc8"
+        },
+        {
+          "transportId": 97551,
+          "properties": {
+            "OBJECTID": 97551,
+            "BLOCKLOT": "3664A017"
+          },
+          "geometrySha256": "7387f397b8ed04f3f4e15526910f99f11a8f66e3a9caf0816efa5e2d2cfa19f2"
+        },
+        {
+          "transportId": 99129,
+          "properties": {
+            "OBJECTID": 99129,
+            "BLOCKLOT": "3664A033"
+          },
+          "geometrySha256": "f2e93ba6a986a7e3f077c718153475af1e09d11f2b4faef6b8d1dd3906fb2d14"
+        },
+        {
+          "transportId": 100700,
+          "properties": {
+            "OBJECTID": 100700,
+            "BLOCKLOT": "3664A026"
+          },
+          "geometrySha256": "a50cc144800b88d6cc326a4316a171aa3a3e764c19d48f2d393106702d74338a"
+        },
+        {
+          "transportId": 110917,
+          "properties": {
+            "OBJECTID": 110917,
+            "BLOCKLOT": "3664A013"
+          },
+          "geometrySha256": "0e8bc423d7c93778fc31d0bcc73b27da5c79a19cc9ac5bd57d7266e2f244b708"
+        },
+        {
+          "transportId": 114900,
+          "properties": {
+            "OBJECTID": 114900,
+            "BLOCKLOT": "3664A019"
+          },
+          "geometrySha256": "3e848f9e36deae09931870f20b647f4caf010d2a1fccec4211afd28b12c1ebb8"
+        },
+        {
+          "transportId": 115224,
+          "properties": {
+            "OBJECTID": 115224,
+            "BLOCKLOT": "3664A059G"
+          },
+          "geometrySha256": "ea1c90f0d0531ec74e252a71af3bd3109ff7583cc84b7906dbed203bd6c25d46"
+        },
+        {
+          "transportId": 118208,
+          "properties": {
+            "OBJECTID": 118208,
+            "BLOCKLOT": "3664A057"
+          },
+          "geometrySha256": "5daaba920e3fe120407819d7d91f8f5517c4808abc1d917fc884c2d3e8cb3469"
+        },
+        {
+          "transportId": 119114,
+          "properties": {
+            "OBJECTID": 119114,
+            "BLOCKLOT": "3664A014"
+          },
+          "geometrySha256": "e9b444fbdd89ad7b587e17c910029c3af16686402696f9036525b179504372fe"
+        },
+        {
+          "transportId": 125524,
+          "properties": {
+            "OBJECTID": 125524,
+            "BLOCKLOT": "3664A007"
+          },
+          "geometrySha256": "2bb9dbafff6ec92c170dee6b01f0e091e34d363caaeb5232d97bea5c6f11bfa7"
+        },
+        {
+          "transportId": 126110,
+          "properties": {
+            "OBJECTID": 126110,
+            "BLOCKLOT": "3664A059H"
+          },
+          "geometrySha256": "bcc747c31adea5d6c8acf8f5b3b5bec9179b0c8cebd35095092bd0c06ed6edd7"
+        },
+        {
+          "transportId": 129883,
+          "properties": {
+            "OBJECTID": 129883,
+            "BLOCKLOT": "3664A032"
+          },
+          "geometrySha256": "4cc902a23f7afabab5e29fd7a6351c5de9587952666abc35e9230ee23fb9cf36"
+        },
+        {
+          "transportId": 134767,
+          "properties": {
+            "OBJECTID": 134767,
+            "BLOCKLOT": "3664A059F"
+          },
+          "geometrySha256": "691349b06dcf7fc41b1d0c10f95b6e330ad3bcba83e7555bee5cca1661b86c2c"
+        },
+        {
+          "transportId": 138315,
+          "properties": {
+            "OBJECTID": 138315,
+            "BLOCKLOT": "3669 001"
+          },
+          "geometrySha256": "97c079abe959e1409f990b6029fb9853d7b5166543ffc484f9b012d98a948cc4"
+        },
+        {
+          "transportId": 139327,
+          "properties": {
+            "OBJECTID": 139327,
+            "BLOCKLOT": "3664A027"
+          },
+          "geometrySha256": "c98ed271359f96c4c35445f97bc0d7683fb4c61d43fd5b82de52ae5691018aee"
+        },
+        {
+          "transportId": 147832,
+          "properties": {
+            "OBJECTID": 147832,
+            "BLOCKLOT": "3664A018"
+          },
+          "geometrySha256": "6150cfa7bc5825013aaecd4765252850a69a120f22c1d2f546961a31bfacd7a7"
+        },
+        {
+          "transportId": 149328,
+          "properties": {
+            "OBJECTID": 149328,
+            "BLOCKLOT": "3664A024"
+          },
+          "geometrySha256": "06306647877fda4786ffa0ad0bcb9a18e468cc3a8f2f1e5a08e8de245bcd540b"
+        },
+        {
+          "transportId": 150970,
+          "properties": {
+            "OBJECTID": 150970,
+            "BLOCKLOT": "3664A038"
+          },
+          "geometrySha256": "1615c719eb4be404a1a881cb96f7009c4fe3a42fe5c60039f8a4dd4a981ba7ae"
+        },
+        {
+          "transportId": 152337,
+          "properties": {
+            "OBJECTID": 152337,
+            "BLOCKLOT": "3664A059E"
+          },
+          "geometrySha256": "c9eec102e46a68404ebf93be26ed9a39eb95e0b0bf737fad4ce1ee9935266ef2"
+        },
+        {
+          "transportId": 153398,
+          "properties": {
+            "OBJECTID": 153398,
+            "BLOCKLOT": "3664A037"
+          },
+          "geometrySha256": "f5c0555993f5834cfe790f8e21ce34b1c9f8584a55b7a4981d48a399d738ce68"
+        },
+        {
+          "transportId": 153980,
+          "properties": {
+            "OBJECTID": 153980,
+            "BLOCKLOT": "3664A005C"
+          },
+          "geometrySha256": "e5d430af50d057079f4c863335524ff4d91162138216010320823fb78ce832e3"
+        },
+        {
+          "transportId": 155874,
+          "properties": {
+            "OBJECTID": 155874,
+            "BLOCKLOT": "3664A009"
+          },
+          "geometrySha256": "700011cd942732d1fdfb44f3f2501a850b94a28e7cc5d392dbf3b4d07495023b"
+        },
+        {
+          "transportId": 157050,
+          "properties": {
+            "OBJECTID": 157050,
+            "BLOCKLOT": "3664A059J"
+          },
+          "geometrySha256": "4c0b129f174c56233d5740d46a4b6b0c5800e4208b066db809d6086c3814b976"
+        },
+        {
+          "transportId": 164286,
+          "properties": {
+            "OBJECTID": 164286,
+            "BLOCKLOT": "3664A036"
+          },
+          "geometrySha256": "0c97ba6bd6a69df341c330754f4d68ea435561139d9948f9cbc1c9829e8a0780"
+        },
+        {
+          "transportId": 165220,
+          "properties": {
+            "OBJECTID": 165220,
+            "BLOCKLOT": "3664A008"
+          },
+          "geometrySha256": "0ce9b5a3b2ff7cd82e665abd4cf3e3cde4e8a79b05171d61b2b041c60d86db45"
+        },
+        {
+          "transportId": 168052,
+          "properties": {
+            "OBJECTID": 168052,
+            "BLOCKLOT": "3664A015"
+          },
+          "geometrySha256": "1896b81b64b09e25c8111cf9d4806ea1a308fbbee3e204b43a7400a460b10286"
+        },
+        {
+          "transportId": 178653,
+          "properties": {
+            "OBJECTID": 178653,
+            "BLOCKLOT": "3664A059C"
+          },
+          "geometrySha256": "d9c21120de0a7502b73a98d89298ad3fe53b6a71f86df6ec2ecb41726c045220"
+        },
+        {
+          "transportId": 179500,
+          "properties": {
+            "OBJECTID": 179500,
+            "BLOCKLOT": "3664A006"
+          },
+          "geometrySha256": "acf08649dc063dad03f81798c432c9ee9e7adac5ffadf8d48cae3b591e5fb82a"
+        },
+        {
+          "transportId": 180319,
+          "properties": {
+            "OBJECTID": 180319,
+            "BLOCKLOT": "3664A030"
+          },
+          "geometrySha256": "190c53b438c10aa68c11b49945005ed89abe9f2d9f2ceb204b421f369997beec"
+        },
+        {
+          "transportId": 185643,
+          "properties": {
+            "OBJECTID": 185643,
+            "BLOCKLOT": "3664A006C"
+          },
+          "geometrySha256": "25884d9a8a68a74e6bde5c3b556cc8b2ed3c1a30959f2d636996b9d2b3cff418"
+        },
+        {
+          "transportId": 195491,
+          "properties": {
+            "OBJECTID": 195491,
+            "BLOCKLOT": "3664A035"
+          },
+          "geometrySha256": "0ec68b69093201ebb04dd8160e15bf178fb1c329dd8e4701654f38075dbe2363"
+        },
+        {
+          "transportId": 197389,
+          "properties": {
+            "OBJECTID": 197389,
+            "BLOCKLOT": "3664A023"
+          },
+          "geometrySha256": "78364df53a732c5f6886d5ba86c07e01bb9ce728cbfc815cc5a93396a5603b71"
+        },
+        {
+          "transportId": 200300,
+          "properties": {
+            "OBJECTID": 200300,
+            "BLOCKLOT": "3664A021"
+          },
+          "geometrySha256": "982c41c4b3edfea8d0ccf0216b4b9cc5282b7a2205ad14de973db3ad17b28b56"
+        },
+        {
+          "transportId": 201216,
+          "properties": {
+            "OBJECTID": 201216,
+            "BLOCKLOT": "3664A010"
+          },
+          "geometrySha256": "db44f95c81f8c9433a5b91e0beec812d0560dcc0d44dc398c15be416164574d9"
+        },
+        {
+          "transportId": 204876,
+          "properties": {
+            "OBJECTID": 204876,
+            "BLOCKLOT": "3664A031"
+          },
+          "geometrySha256": "0a60bcd967ac1a51c08a070a4329522ccab0d7bd14733e563795ab15b366ed9a"
+        },
+        {
+          "transportId": 209388,
+          "properties": {
+            "OBJECTID": 209388,
+            "BLOCKLOT": "3664A006B"
+          },
+          "geometrySha256": "4688353bf0a52bf2ee527a1273de1a58ba276c64c215ddfa2e4dca2fbd36220b"
+        },
+        {
+          "transportId": 216849,
+          "properties": {
+            "OBJECTID": 216849,
+            "BLOCKLOT": "3664A059I"
+          },
+          "geometrySha256": "f75a53f026a4867b6846416c50ac588366031a3ee829efdb718cc1c95a5ef773"
+        },
+        {
+          "transportId": 218485,
+          "properties": {
+            "OBJECTID": 218485,
+            "BLOCKLOT": "3664A034"
+          },
+          "geometrySha256": "3696e1e8e2de1dba1c77c7355cb6e526fc489527e0e12e41a4cdc4220b0664ea"
+        },
+        {
+          "transportId": 223442,
+          "properties": {
+            "OBJECTID": 223442,
+            "BLOCKLOT": "3664A059B"
+          },
+          "geometrySha256": "65294cfdd6962a20fa14d2572b8e38dbdff30623c69fd72843ba4537a98ea4f5"
+        },
+        {
+          "transportId": 224277,
+          "properties": {
+            "OBJECTID": 224277,
+            "BLOCKLOT": "3664A059A"
+          },
+          "geometrySha256": "2e1049e64d647228338ab6d421e051cbaec8ea478edaf24fd05c845ab130ad2c"
+        }
+      ]
+    },
+    {
+      "test": "viewport-5",
+      "url": "https://egis.baltimorecity.gov/egis/rest/services/Parcel_Information/Parcel/MapServer/0/query?where=1%3D1&geometry=-76.624%2C39.324%2C-76.623%2C39.325&geometryType=esriGeometryEnvelope&inSR=4326&spatialRel=esriSpatialRelIntersects&f=json&returnCountOnly=true",
+      "method": "GET",
+      "checkedAt": "2026-10-09T00:05:42.040Z",
+      "httpStatus": 200,
+      "contentType": "application/json; charset=UTF-8",
+      "bytes": 12,
+      "count": 22
+    },
+    {
+      "test": "viewport-5",
+      "url": "https://egis.baltimorecity.gov/egis/rest/services/Parcel_Information/Parcel/MapServer/0/query?where=1%3D1&geometry=-76.624%2C39.324%2C-76.623%2C39.325&geometryType=esriGeometryEnvelope&inSR=4326&spatialRel=esriSpatialRelIntersects&f=json&returnIdsOnly=true",
+      "method": "GET",
+      "checkedAt": "2026-10-09T00:05:42.244Z",
+      "httpStatus": 200,
+      "contentType": "application/json; charset=UTF-8",
+      "bytes": 196,
+      "objectIdFieldName": "OBJECTID",
+      "objectIds": [
+        16789,
+        18235,
+        35773,
+        79927,
+        110917,
+        119114,
+        125524,
+        132835,
+        138315,
+        145197,
+        154746,
+        155874,
+        165220,
+        168052,
+        179675,
+        195527,
+        196040,
+        201216,
+        205107,
+        212729,
+        216997,
+        217391
+      ]
+    },
+    {
+      "test": "viewport-5",
+      "url": "https://egis.baltimorecity.gov/egis/rest/services/Parcel_Information/Parcel/MapServer/0/query?where=1%3D1&outFields=OBJECTID%2CBLOCKLOT&returnGeometry=true&outSR=4326&f=geojson&objectIds=16789%2C18235%2C35773%2C79927%2C110917%2C119114%2C125524%2C132835%2C138315%2C145197%2C154746%2C155874%2C165220%2C168052%2C179675%2C195527%2C196040%2C201216%2C205107%2C212729%2C216997%2C217391",
+      "method": "GET",
+      "checkedAt": "2026-10-09T00:05:42.439Z",
+      "httpStatus": 200,
+      "contentType": "application/geo+json; charset=UTF-8",
+      "bytes": 9625,
+      "features": [
+        {
+          "transportId": 16789,
+          "properties": {
+            "OBJECTID": 16789,
+            "BLOCKLOT": "3658 011"
+          },
+          "geometrySha256": "ac89871bad87d69919b9142d102dd13a9e9e172da0cdd96fd785edff2939f49e"
+        },
+        {
+          "transportId": 18235,
+          "properties": {
+            "OBJECTID": 18235,
+            "BLOCKLOT": "3664A012"
+          },
+          "geometrySha256": "c97e8d706bfbd3dfe708557b9155846ac3318b54091af9b5805f720103b09f30"
+        },
+        {
+          "transportId": 35773,
+          "properties": {
+            "OBJECTID": 35773,
+            "BLOCKLOT": "3664A011"
+          },
+          "geometrySha256": "9631bb83104d603e2925dcdeeea0b68f748b873c0640beed02695b6b85070c05"
+        },
+        {
+          "transportId": 79927,
+          "properties": {
+            "OBJECTID": 79927,
+            "BLOCKLOT": "3658 018"
+          },
+          "geometrySha256": "927cabab99008a853f83fcfbcde4da29de728fc1f73143d8cb33d4447b64ec07"
+        },
+        {
+          "transportId": 110917,
+          "properties": {
+            "OBJECTID": 110917,
+            "BLOCKLOT": "3664A013"
+          },
+          "geometrySha256": "0e8bc423d7c93778fc31d0bcc73b27da5c79a19cc9ac5bd57d7266e2f244b708"
+        },
+        {
+          "transportId": 119114,
+          "properties": {
+            "OBJECTID": 119114,
+            "BLOCKLOT": "3664A014"
+          },
+          "geometrySha256": "e9b444fbdd89ad7b587e17c910029c3af16686402696f9036525b179504372fe"
+        },
+        {
+          "transportId": 125524,
+          "properties": {
+            "OBJECTID": 125524,
+            "BLOCKLOT": "3664A007"
+          },
+          "geometrySha256": "2bb9dbafff6ec92c170dee6b01f0e091e34d363caaeb5232d97bea5c6f11bfa7"
+        },
+        {
+          "transportId": 132835,
+          "properties": {
+            "OBJECTID": 132835,
+            "BLOCKLOT": "3658 009"
+          },
+          "geometrySha256": "356fa1f43a39a834131abbf1e620ebba290b8907672bfe0ff2c6cfbfe7119d1d"
+        },
+        {
+          "transportId": 138315,
+          "properties": {
+            "OBJECTID": 138315,
+            "BLOCKLOT": "3669 001"
+          },
+          "geometrySha256": "97c079abe959e1409f990b6029fb9853d7b5166543ffc484f9b012d98a948cc4"
+        },
+        {
+          "transportId": 145197,
+          "properties": {
+            "OBJECTID": 145197,
+            "BLOCKLOT": "3658 021"
+          },
+          "geometrySha256": "0bbb1ffb8d2d19df3d46f4314291cc2d6ecd6dc34cd93252493ac34de27a1f2d"
+        },
+        {
+          "transportId": 154746,
+          "properties": {
+            "OBJECTID": 154746,
+            "BLOCKLOT": "3658 015"
+          },
+          "geometrySha256": "4f2c96f9ff4fe028f2d5c05092ee380d34932e598f71ba502509423cfd1c0d61"
+        },
+        {
+          "transportId": 155874,
+          "properties": {
+            "OBJECTID": 155874,
+            "BLOCKLOT": "3664A009"
+          },
+          "geometrySha256": "700011cd942732d1fdfb44f3f2501a850b94a28e7cc5d392dbf3b4d07495023b"
+        },
+        {
+          "transportId": 165220,
+          "properties": {
+            "OBJECTID": 165220,
+            "BLOCKLOT": "3664A008"
+          },
+          "geometrySha256": "0ce9b5a3b2ff7cd82e665abd4cf3e3cde4e8a79b05171d61b2b041c60d86db45"
+        },
+        {
+          "transportId": 168052,
+          "properties": {
+            "OBJECTID": 168052,
+            "BLOCKLOT": "3664A015"
+          },
+          "geometrySha256": "1896b81b64b09e25c8111cf9d4806ea1a308fbbee3e204b43a7400a460b10286"
+        },
+        {
+          "transportId": 179675,
+          "properties": {
+            "OBJECTID": 179675,
+            "BLOCKLOT": "3658 014"
+          },
+          "geometrySha256": "02fff97f86902409d343159ff260c63fa8bf324df8d14afa60c0c9ddc3b151f4"
+        },
+        {
+          "transportId": 195527,
+          "properties": {
+            "OBJECTID": 195527,
+            "BLOCKLOT": "3658 019"
+          },
+          "geometrySha256": "b6f523b2d2767ac4ced0b32076e9181fa1427240e75574c6cdd2a28434408f60"
+        },
+        {
+          "transportId": 196040,
+          "properties": {
+            "OBJECTID": 196040,
+            "BLOCKLOT": "3658 017"
+          },
+          "geometrySha256": "703e72c1e3162e0e472402e9f549d9b8569ef353b76803f87a70bd6df864354e"
+        },
+        {
+          "transportId": 201216,
+          "properties": {
+            "OBJECTID": 201216,
+            "BLOCKLOT": "3664A010"
+          },
+          "geometrySha256": "db44f95c81f8c9433a5b91e0beec812d0560dcc0d44dc398c15be416164574d9"
+        },
+        {
+          "transportId": 205107,
+          "properties": {
+            "OBJECTID": 205107,
+            "BLOCKLOT": "3658 012"
+          },
+          "geometrySha256": "3192838164c234af9489fb2dcfc5f01c675f8194d6187cf04767cc87677adc8a"
+        },
+        {
+          "transportId": 212729,
+          "properties": {
+            "OBJECTID": 212729,
+            "BLOCKLOT": "3658 013"
+          },
+          "geometrySha256": "52b14675c633c47f39b0098dccf9f1bba2f3e7d77e882c8e2afec18205672ba9"
+        },
+        {
+          "transportId": 216997,
+          "properties": {
+            "OBJECTID": 216997,
+            "BLOCKLOT": "3658 020"
+          },
+          "geometrySha256": "42df0f878c51a713594b30ed710bcdac3a6b85d202572956452b2a7e11a28ff8"
+        },
+        {
+          "transportId": 217391,
+          "properties": {
+            "OBJECTID": 217391,
+            "BLOCKLOT": "3658 010"
+          },
+          "geometrySha256": "25f2d0457d85236f3a5864ff38f4dd0378c8f53628daf52a277ac98d923a3215"
+        }
+      ]
+    },
+    {
+      "test": "viewport-6",
+      "url": "https://egis.baltimorecity.gov/egis/rest/services/Parcel_Information/Parcel/MapServer/0/query?where=1%3D1&geometry=-76.626%2C39.325%2C-76.625%2C39.326&geometryType=esriGeometryEnvelope&inSR=4326&spatialRel=esriSpatialRelIntersects&f=json&returnCountOnly=true",
+      "method": "GET",
+      "checkedAt": "2026-10-09T00:05:42.652Z",
+      "httpStatus": 200,
+      "contentType": "application/json; charset=UTF-8",
+      "bytes": 12,
+      "count": 18
+    },
+    {
+      "test": "viewport-6",
+      "url": "https://egis.baltimorecity.gov/egis/rest/services/Parcel_Information/Parcel/MapServer/0/query?where=1%3D1&geometry=-76.626%2C39.325%2C-76.625%2C39.326&geometryType=esriGeometryEnvelope&inSR=4326&spatialRel=esriSpatialRelIntersects&f=json&returnIdsOnly=true",
+      "method": "GET",
+      "checkedAt": "2026-10-09T00:05:42.887Z",
+      "httpStatus": 200,
+      "contentType": "application/json; charset=UTF-8",
+      "bytes": 165,
+      "objectIdFieldName": "OBJECTID",
+      "objectIds": [
+        23048,
+        31357,
+        40761,
+        45299,
+        51419,
+        77057,
+        91247,
+        112586,
+        126962,
+        127878,
+        148368,
+        150598,
+        177745,
+        178170,
+        186020,
+        191629,
+        199488,
+        213712
+      ]
+    },
+    {
+      "test": "viewport-6",
+      "url": "https://egis.baltimorecity.gov/egis/rest/services/Parcel_Information/Parcel/MapServer/0/query?where=1%3D1&outFields=OBJECTID%2CBLOCKLOT&returnGeometry=true&outSR=4326&f=geojson&objectIds=23048%2C31357%2C40761%2C45299%2C51419%2C77057%2C91247%2C112586%2C126962%2C127878%2C148368%2C150598%2C177745%2C178170%2C186020%2C191629%2C199488%2C213712",
+      "method": "GET",
+      "checkedAt": "2026-10-09T00:05:43.123Z",
+      "httpStatus": 200,
+      "contentType": "application/geo+json; charset=UTF-8",
+      "bytes": 22318,
+      "features": [
+        {
+          "transportId": 23048,
+          "properties": {
+            "OBJECTID": 23048,
+            "BLOCKLOT": "3664A048"
+          },
+          "geometrySha256": "50b12e65904a1e31c60a27b8efe6a3ae08a76d846c9a45f607dd89a0909dac41"
+        },
+        {
+          "transportId": 31357,
+          "properties": {
+            "OBJECTID": 31357,
+            "BLOCKLOT": "3559 001"
+          },
+          "geometrySha256": "bd243acce0c5774c2a18f79fa4c4ce4b21402deabeede2179d5c0a6d07bf5c00"
+        },
+        {
+          "transportId": 40761,
+          "properties": {
+            "OBJECTID": 40761,
+            "BLOCKLOT": "3664A043"
+          },
+          "geometrySha256": "9b70e48bddc9f30900e4303ee1ab8e13c9547f6dfbacc328e244f831e68a7abf"
+        },
+        {
+          "transportId": 45299,
+          "properties": {
+            "OBJECTID": 45299,
+            "BLOCKLOT": "3664A050"
+          },
+          "geometrySha256": "63f68e8f8a5bbc7d50289d3181c9226e2188d4ddd1469bed57e6489e203837a2"
+        },
+        {
+          "transportId": 51419,
+          "properties": {
+            "OBJECTID": 51419,
+            "BLOCKLOT": "3664A047"
+          },
+          "geometrySha256": "07ce007546b4b5b0d5f7c1bd52662dfd194fa67eda9d82cb26fb743f0500b0bb"
+        },
+        {
+          "transportId": 77057,
+          "properties": {
+            "OBJECTID": 77057,
+            "BLOCKLOT": "3664A046"
+          },
+          "geometrySha256": "4dc59b2e770ef989bccea3bbbcb170b8844412f91bbfa151b770d33f10adf861"
+        },
+        {
+          "transportId": 91247,
+          "properties": {
+            "OBJECTID": 91247,
+            "BLOCKLOT": "3664A053"
+          },
+          "geometrySha256": "85a1051c65adb9205b612e77e56b41bff28b57c22b815b5275cd385896c20565"
+        },
+        {
+          "transportId": 112586,
+          "properties": {
+            "OBJECTID": 112586,
+            "BLOCKLOT": "3664A056"
+          },
+          "geometrySha256": "f17ac39467ae6dd91790bd9f65bb31650325157fc5c5bba77eea2fa4d9acf300"
+        },
+        {
+          "transportId": 126962,
+          "properties": {
+            "OBJECTID": 126962,
+            "BLOCKLOT": "3664A049"
+          },
+          "geometrySha256": "77e6426a44c53f879e649880e8e950013190033e4d153fef91015eee31d3761f"
+        },
+        {
+          "transportId": 127878,
+          "properties": {
+            "OBJECTID": 127878,
+            "BLOCKLOT": "3664A056A"
+          },
+          "geometrySha256": "90c33a6555efc5db8485b0f6ee657e880df6ad9e767bccbb4de2ba0afe3f6f1f"
+        },
+        {
+          "transportId": 148368,
+          "properties": {
+            "OBJECTID": 148368,
+            "BLOCKLOT": "3690 003"
+          },
+          "geometrySha256": "0d84c84d72da13897c97be9992f7cc41cd53d47843e1e9a6f9b46b7bad4deb8f"
+        },
+        {
+          "transportId": 150598,
+          "properties": {
+            "OBJECTID": 150598,
+            "BLOCKLOT": "3664A052"
+          },
+          "geometrySha256": "1d14c855208bedfa6897b4b8dc5efdcbfab4165e1de30983d91b8e5c4988b916"
+        },
+        {
+          "transportId": 177745,
+          "properties": {
+            "OBJECTID": 177745,
+            "BLOCKLOT": "3664A051"
+          },
+          "geometrySha256": "2f9d5c187a6963f2972286a528fcb47e4e04786f1d22ad72cbbc4598d74971d4"
+        },
+        {
+          "transportId": 178170,
+          "properties": {
+            "OBJECTID": 178170,
+            "BLOCKLOT": "3664A054"
+          },
+          "geometrySha256": "a05b782818c3a41674210108d29adfbef775382c0c2e7e7cdc34a4897aa51b1f"
+        },
+        {
+          "transportId": 186020,
+          "properties": {
+            "OBJECTID": 186020,
+            "BLOCKLOT": "3664A045"
+          },
+          "geometrySha256": "6c163f85e00ffa646a9e55591452b939c301e01b5fd9fa28e26a8c5b4a31f65f"
+        },
+        {
+          "transportId": 191629,
+          "properties": {
+            "OBJECTID": 191629,
+            "BLOCKLOT": "3664A042"
+          },
+          "geometrySha256": "4ec8a052caddb393b56ebf31ae41833443470ba9c3fae913b8e6040fd3cdd340"
+        },
+        {
+          "transportId": 199488,
+          "properties": {
+            "OBJECTID": 199488,
+            "BLOCKLOT": "3664A044"
+          },
+          "geometrySha256": "4b0cf725497aa7be6a16e093e640624be674a75bed51c9a7768c4aef87fa6d42"
+        },
+        {
+          "transportId": 213712,
+          "properties": {
+            "OBJECTID": 213712,
+            "BLOCKLOT": "3664A055"
+          },
+          "geometrySha256": "ceec490153ffc0d6e60635e5a7ab6116e1c0d1bea8bb40a7c7b9c614b66990f9"
+        }
+      ]
+    },
+    {
+      "test": "viewport-7",
+      "url": "https://egis.baltimorecity.gov/egis/rest/services/Parcel_Information/Parcel/MapServer/0/query?where=1%3D1&geometry=-76.625%2C39.325%2C-76.624%2C39.326&geometryType=esriGeometryEnvelope&inSR=4326&spatialRel=esriSpatialRelIntersects&f=json&returnCountOnly=true",
+      "method": "GET",
+      "checkedAt": "2026-10-09T00:05:43.335Z",
+      "httpStatus": 200,
+      "contentType": "application/json; charset=UTF-8",
+      "bytes": 12,
+      "count": 20
+    },
+    {
+      "test": "viewport-7",
+      "url": "https://egis.baltimorecity.gov/egis/rest/services/Parcel_Information/Parcel/MapServer/0/query?where=1%3D1&geometry=-76.625%2C39.325%2C-76.624%2C39.326&geometryType=esriGeometryEnvelope&inSR=4326&spatialRel=esriSpatialRelIntersects&f=json&returnIdsOnly=true",
+      "method": "GET",
+      "checkedAt": "2026-10-09T00:05:43.528Z",
+      "httpStatus": 200,
+      "contentType": "application/json; charset=UTF-8",
+      "bytes": 186,
+      "objectIdFieldName": "OBJECTID",
+      "objectIds": [
+        23048,
+        23097,
+        40761,
+        51419,
+        77057,
+        87454,
+        91247,
+        118208,
+        126962,
+        127878,
+        138315,
+        148368,
+        150970,
+        153398,
+        164286,
+        186020,
+        191629,
+        195491,
+        199488,
+        207645,
+        218485
+      ]
+    },
+    {
+      "test": "viewport-8",
+      "url": "https://egis.baltimorecity.gov/egis/rest/services/Parcel_Information/Parcel/MapServer/0/query?where=1%3D1&geometry=-76.624%2C39.325%2C-76.623%2C39.326&geometryType=esriGeometryEnvelope&inSR=4326&spatialRel=esriSpatialRelIntersects&f=json&returnCountOnly=true",
+      "method": "GET",
+      "checkedAt": "2026-10-09T00:05:43.723Z",
+      "httpStatus": 200,
+      "contentType": "application/json; charset=UTF-8",
+      "bytes": 11,
+      "count": 1
+    },
+    {
+      "test": "viewport-8",
+      "url": "https://egis.baltimorecity.gov/egis/rest/services/Parcel_Information/Parcel/MapServer/0/query?where=1%3D1&geometry=-76.624%2C39.325%2C-76.623%2C39.326&geometryType=esriGeometryEnvelope&inSR=4326&spatialRel=esriSpatialRelIntersects&f=json&returnIdsOnly=true",
+      "method": "GET",
+      "checkedAt": "2026-10-09T00:05:43.932Z",
+      "httpStatus": 200,
+      "contentType": "application/json; charset=UTF-8",
+      "bytes": 53,
+      "objectIdFieldName": "OBJECTID",
+      "objectIds": [
+        138315
+      ]
+    },
+    {
+      "test": "viewport-8",
+      "url": "https://egis.baltimorecity.gov/egis/rest/services/Parcel_Information/Parcel/MapServer/0/query?where=1%3D1&outFields=OBJECTID%2CBLOCKLOT&returnGeometry=true&outSR=4326&f=geojson&objectIds=138315",
+      "method": "GET",
+      "checkedAt": "2026-10-09T00:05:44.133Z",
+      "httpStatus": 200,
+      "contentType": "application/geo+json; charset=UTF-8",
+      "bytes": 666,
+      "features": [
+        {
+          "transportId": 138315,
+          "properties": {
+            "OBJECTID": 138315,
+            "BLOCKLOT": "3669 001"
+          },
+          "geometrySha256": "97c079abe959e1409f990b6029fb9853d7b5166543ffc484f9b012d98a948cc4"
+        }
+      ]
+    },
+    {
+      "test": "viewport-9",
+      "url": "https://egis.baltimorecity.gov/egis/rest/services/Parcel_Information/Parcel/MapServer/0/query?where=1%3D1&geometry=-76.625%2C39.322%2C-76.624%2C39.323&geometryType=esriGeometryEnvelope&inSR=4326&spatialRel=esriSpatialRelIntersects&f=json&returnCountOnly=true",
+      "method": "GET",
+      "checkedAt": "2026-10-09T00:05:44.374Z",
+      "httpStatus": 200,
+      "contentType": "application/json; charset=UTF-8",
+      "bytes": 12,
+      "count": 31
+    },
+    {
+      "test": "viewport-9",
+      "url": "https://egis.baltimorecity.gov/egis/rest/services/Parcel_Information/Parcel/MapServer/0/query?where=1%3D1&geometry=-76.625%2C39.322%2C-76.624%2C39.323&geometryType=esriGeometryEnvelope&inSR=4326&spatialRel=esriSpatialRelIntersects&f=json&returnIdsOnly=true",
+      "method": "GET",
+      "checkedAt": "2026-10-09T00:05:44.578Z",
+      "httpStatus": 200,
+      "contentType": "application/json; charset=UTF-8",
+      "bytes": 250,
+      "objectIdFieldName": "OBJECTID",
+      "objectIds": [
+        18898,
+        31357,
+        32332,
+        38305,
+        44903,
+        47513,
+        53634,
+        66867,
+        73509,
+        74648,
+        75687,
+        86816,
+        95595,
+        103769,
+        122820,
+        123582,
+        125828,
+        138904,
+        146313,
+        163310,
+        166324,
+        166885,
+        167402,
+        168017,
+        178262,
+        187703,
+        194458,
+        197313,
+        204475,
+        205201,
+        220877
+      ]
+    },
+    {
+      "test": "viewport-9",
+      "url": "https://egis.baltimorecity.gov/egis/rest/services/Parcel_Information/Parcel/MapServer/0/query?where=1%3D1&outFields=OBJECTID%2CBLOCKLOT&returnGeometry=true&outSR=4326&f=geojson&objectIds=18898%2C31357%2C32332%2C38305%2C44903%2C47513%2C53634%2C66867%2C73509%2C74648%2C75687%2C86816%2C95595%2C103769%2C122820%2C123582%2C125828%2C138904%2C146313%2C163310%2C166324%2C166885%2C167402%2C168017%2C178262%2C187703%2C194458%2C197313%2C204475%2C205201%2C220877",
+      "method": "GET",
+      "checkedAt": "2026-10-09T00:05:44.772Z",
+      "httpStatus": 200,
+      "contentType": "application/geo+json; charset=UTF-8",
+      "bytes": 16521,
+      "features": [
+        {
+          "transportId": 18898,
+          "properties": {
+            "OBJECTID": 18898,
+            "BLOCKLOT": "3653 024"
+          },
+          "geometrySha256": "fc51b299c0b4ad30f6d0448bac59c660c6008315a568d2c42756cf69cdbadf3b"
+        },
+        {
+          "transportId": 31357,
+          "properties": {
+            "OBJECTID": 31357,
+            "BLOCKLOT": "3559 001"
+          },
+          "geometrySha256": "bd243acce0c5774c2a18f79fa4c4ce4b21402deabeede2179d5c0a6d07bf5c00"
+        },
+        {
+          "transportId": 32332,
+          "properties": {
+            "OBJECTID": 32332,
+            "BLOCKLOT": "3653 049"
+          },
+          "geometrySha256": "78c8b73601595ef8dbb37956bebd5fce174b017257560c8153265b22c38f0d07"
+        },
+        {
+          "transportId": 38305,
+          "properties": {
+            "OBJECTID": 38305,
+            "BLOCKLOT": "3653 030"
+          },
+          "geometrySha256": "aa6d40c0bc29b5660c64dd78a336bbba2397488ccfe4046832893e9e4be4d664"
+        },
+        {
+          "transportId": 44903,
+          "properties": {
+            "OBJECTID": 44903,
+            "BLOCKLOT": "3653 053"
+          },
+          "geometrySha256": "c1dd86fae299c6f5bc74f0cb1eae04b208f89d1da0ea466e06b67ab5aa273743"
+        },
+        {
+          "transportId": 47513,
+          "properties": {
+            "OBJECTID": 47513,
+            "BLOCKLOT": "3559 004"
+          },
+          "geometrySha256": "51e099db80bec1f4743385881f5081dd1a78b49f29e3773cafa08403f4bd58e2"
+        },
+        {
+          "transportId": 53634,
+          "properties": {
+            "OBJECTID": 53634,
+            "BLOCKLOT": "3653 057"
+          },
+          "geometrySha256": "900e5d911192dc7b925524be4fa9deda7b8a12fde6cc5277982663ebb30ebffc"
+        },
+        {
+          "transportId": 66867,
+          "properties": {
+            "OBJECTID": 66867,
+            "BLOCKLOT": "3653 004"
+          },
+          "geometrySha256": "796c723c2d144c523b2359d4560001d1135e09eb6e854a2ad1e987d18e64296f"
+        },
+        {
+          "transportId": 73509,
+          "properties": {
+            "OBJECTID": 73509,
+            "BLOCKLOT": "3664B032"
+          },
+          "geometrySha256": "bb54b22176163368e38ab7ed5382dbc5c00c7a9483412b9c8435ba9b951878d1"
+        },
+        {
+          "transportId": 74648,
+          "properties": {
+            "OBJECTID": 74648,
+            "BLOCKLOT": "3664B031B"
+          },
+          "geometrySha256": "2a6c064b33f777f16c1013e8dd8c501a0cb1e4b122dca5007eb9b0617557a67d"
+        },
+        {
+          "transportId": 75687,
+          "properties": {
+            "OBJECTID": 75687,
+            "BLOCKLOT": "3653 029"
+          },
+          "geometrySha256": "2aa610c37e44fe1db0a7f10bfbc286964b750f0a35dfaa174df1b654f58fb19e"
+        },
+        {
+          "transportId": 86816,
+          "properties": {
+            "OBJECTID": 86816,
+            "BLOCKLOT": "3653 050"
+          },
+          "geometrySha256": "ccb61169a18108e7fde8c731da97097ee3aac271d38339c466f2d30012f6e289"
+        },
+        {
+          "transportId": 95595,
+          "properties": {
+            "OBJECTID": 95595,
+            "BLOCKLOT": "3664B031D"
+          },
+          "geometrySha256": "29eeb661f81b82fadf48b661f4b8f7ef2c9cbe06f9406476151efd8126830c5b"
+        },
+        {
+          "transportId": 103769,
+          "properties": {
+            "OBJECTID": 103769,
+            "BLOCKLOT": "3653 056"
+          },
+          "geometrySha256": "a35d43ecc50ea2ca1a407ed264f8515045e27532734a22e7a6187d083ec90bfc"
+        },
+        {
+          "transportId": 122820,
+          "properties": {
+            "OBJECTID": 122820,
+            "BLOCKLOT": "3653 028"
+          },
+          "geometrySha256": "3554b33a416475ac66af5f58243c3b597fca288438f9263366d4b8b5cec44259"
+        },
+        {
+          "transportId": 123582,
+          "properties": {
+            "OBJECTID": 123582,
+            "BLOCKLOT": "3664B001"
+          },
+          "geometrySha256": "aaa685349b00c448cf80710397d398d9e801f3e214bde92b055b72de6c10fb6c"
+        },
+        {
+          "transportId": 125828,
+          "properties": {
+            "OBJECTID": 125828,
+            "BLOCKLOT": "3653 005"
+          },
+          "geometrySha256": "b3f743d88727099ea705c779740f8e9a10e389ac3d04a1529e37c859ee1c47ff"
+        },
+        {
+          "transportId": 138904,
+          "properties": {
+            "OBJECTID": 138904,
+            "BLOCKLOT": "3653 003"
+          },
+          "geometrySha256": "1aed82b008f0add92d03b2cfd4b26a5a3cb4b5a6fecd27cc5a4b6f80972496e2"
+        },
+        {
+          "transportId": 146313,
+          "properties": {
+            "OBJECTID": 146313,
+            "BLOCKLOT": "3664B031C"
+          },
+          "geometrySha256": "b497f8c11d4a4e819c0bc0dd110229f2e253155b93406b910031fae6680f4c9c"
+        },
+        {
+          "transportId": 163310,
+          "properties": {
+            "OBJECTID": 163310,
+            "BLOCKLOT": "3653 023"
+          },
+          "geometrySha256": "8627f3522229ad2ff620843b48b9bb4d182c4b64417e701acd336a3f60392ac0"
+        },
+        {
+          "transportId": 166324,
+          "properties": {
+            "OBJECTID": 166324,
+            "BLOCKLOT": "3664B031A"
+          },
+          "geometrySha256": "8e4f8716e2a2315f61454b83eeb69df489287f10a152f486f520fece914a5577"
+        },
+        {
+          "transportId": 166885,
+          "properties": {
+            "OBJECTID": 166885,
+            "BLOCKLOT": "3653 052"
+          },
+          "geometrySha256": "f9370ab733d856c48792163ba92c83204f5bf051eca028de4e96478010a53506"
+        },
+        {
+          "transportId": 167402,
+          "properties": {
+            "OBJECTID": 167402,
+            "BLOCKLOT": "3653 055"
+          },
+          "geometrySha256": "17a1f5bec1e3b7e39a5dad24ae88feeca7afd03e7a96b56198a500e2bda6a01a"
+        },
+        {
+          "transportId": 168017,
+          "properties": {
+            "OBJECTID": 168017,
+            "BLOCKLOT": "3653 027"
+          },
+          "geometrySha256": "c6920d1ca66d0e280b5998002240735b9956002ecdcceca14bb8fac0d81e6804"
+        },
+        {
+          "transportId": 178262,
+          "properties": {
+            "OBJECTID": 178262,
+            "BLOCKLOT": "3653 002"
+          },
+          "geometrySha256": "b370f49f92a0a4e2d29c2653f804b08c71abcd46da38c122114f65635c7e3798"
+        },
+        {
+          "transportId": 187703,
+          "properties": {
+            "OBJECTID": 187703,
+            "BLOCKLOT": "3653 054"
+          },
+          "geometrySha256": "409f7783cd2c012f9673e2a27efeeaae8ef8eedc125d1c393e7fee9b791bfdbf"
+        },
+        {
+          "transportId": 194458,
+          "properties": {
+            "OBJECTID": 194458,
+            "BLOCKLOT": "3653 058"
+          },
+          "geometrySha256": "58fccf6918921ec01abd75b97131af4722f293cc5bff6521ef03f050e70b434c"
+        },
+        {
+          "transportId": 197313,
+          "properties": {
+            "OBJECTID": 197313,
+            "BLOCKLOT": "3653 026"
+          },
+          "geometrySha256": "bcd4035ee10c0964ae2c228c3184c7fbb3386a1ef6ca7d20a064e1462d70010b"
+        },
+        {
+          "transportId": 204475,
+          "properties": {
+            "OBJECTID": 204475,
+            "BLOCKLOT": "3653 022"
+          },
+          "geometrySha256": "1dfe416283060268ec53525b18d2288e9580950ecf2e1e45b8a5b3185fcd9c13"
+        },
+        {
+          "transportId": 205201,
+          "properties": {
+            "OBJECTID": 205201,
+            "BLOCKLOT": "3653 051"
+          },
+          "geometrySha256": "761048f5ad004c4ce21a3120cdaf0c6e4fb61799c9ed3d6b7618e98e2e012686"
+        },
+        {
+          "transportId": 220877,
+          "properties": {
+            "OBJECTID": 220877,
+            "BLOCKLOT": "3653 025"
+          },
+          "geometrySha256": "6a7d8465b8909e0acc139cf24e8f6fa7af1db6204bdf42c30f9fccc178406ef4"
+        }
+      ]
+    },
+    {
+      "test": "viewport-10",
+      "url": "https://egis.baltimorecity.gov/egis/rest/services/Parcel_Information/Parcel/MapServer/0/query?where=1%3D1&geometry=-76.625%2C39.326%2C-76.624%2C39.327&geometryType=esriGeometryEnvelope&inSR=4326&spatialRel=esriSpatialRelIntersects&f=json&returnCountOnly=true",
+      "method": "GET",
+      "checkedAt": "2026-10-09T00:05:44.993Z",
+      "httpStatus": 200,
+      "contentType": "application/json; charset=UTF-8",
+      "bytes": 11,
+      "count": 2
+    },
+    {
+      "test": "viewport-10",
+      "url": "https://egis.baltimorecity.gov/egis/rest/services/Parcel_Information/Parcel/MapServer/0/query?where=1%3D1&geometry=-76.625%2C39.326%2C-76.624%2C39.327&geometryType=esriGeometryEnvelope&inSR=4326&spatialRel=esriSpatialRelIntersects&f=json&returnIdsOnly=true",
+      "method": "GET",
+      "checkedAt": "2026-10-09T00:05:45.191Z",
+      "httpStatus": 200,
+      "contentType": "application/json; charset=UTF-8",
+      "bytes": 60,
+      "objectIdFieldName": "OBJECTID",
+      "objectIds": [
+        138315,
+        148368
+      ]
+    },
+    {
+      "test": "viewport-10",
+      "url": "https://egis.baltimorecity.gov/egis/rest/services/Parcel_Information/Parcel/MapServer/0/query?where=1%3D1&outFields=OBJECTID%2CBLOCKLOT&returnGeometry=true&outSR=4326&f=geojson&objectIds=138315%2C148368",
+      "method": "GET",
+      "checkedAt": "2026-10-09T00:05:45.386Z",
+      "httpStatus": 200,
+      "contentType": "application/geo+json; charset=UTF-8",
+      "bytes": 10612,
+      "features": [
+        {
+          "transportId": 138315,
+          "properties": {
+            "OBJECTID": 138315,
+            "BLOCKLOT": "3669 001"
+          },
+          "geometrySha256": "97c079abe959e1409f990b6029fb9853d7b5166543ffc484f9b012d98a948cc4"
+        },
+        {
+          "transportId": 148368,
+          "properties": {
+            "OBJECTID": 148368,
+            "BLOCKLOT": "3690 003"
+          },
+          "geometrySha256": "0d84c84d72da13897c97be9992f7cc41cd53d47843e1e9a6f9b46b7bad4deb8f"
+        }
+      ]
+    },
+    {
+      "test": "viewport-11",
+      "url": "https://egis.baltimorecity.gov/egis/rest/services/Parcel_Information/Parcel/MapServer/0/query?where=1%3D1&geometry=-76.627%2C39.324%2C-76.626%2C39.325&geometryType=esriGeometryEnvelope&inSR=4326&spatialRel=esriSpatialRelIntersects&f=json&returnCountOnly=true",
+      "method": "GET",
+      "checkedAt": "2026-10-09T00:05:45.602Z",
+      "httpStatus": 200,
+      "contentType": "application/json; charset=UTF-8",
+      "bytes": 11,
+      "count": 1
+    },
+    {
+      "test": "viewport-11",
+      "url": "https://egis.baltimorecity.gov/egis/rest/services/Parcel_Information/Parcel/MapServer/0/query?where=1%3D1&geometry=-76.627%2C39.324%2C-76.626%2C39.325&geometryType=esriGeometryEnvelope&inSR=4326&spatialRel=esriSpatialRelIntersects&f=json&returnIdsOnly=true",
+      "method": "GET",
+      "checkedAt": "2026-10-09T00:05:45.817Z",
+      "httpStatus": 200,
+      "contentType": "application/json; charset=UTF-8",
+      "bytes": 52,
+      "objectIdFieldName": "OBJECTID",
+      "objectIds": [
+        31357
+      ]
+    },
+    {
+      "test": "viewport-11",
+      "url": "https://egis.baltimorecity.gov/egis/rest/services/Parcel_Information/Parcel/MapServer/0/query?where=1%3D1&outFields=OBJECTID%2CBLOCKLOT&returnGeometry=true&outSR=4326&f=geojson&objectIds=31357",
+      "method": "GET",
+      "checkedAt": "2026-10-09T00:05:46.019Z",
+      "httpStatus": 200,
+      "contentType": "application/geo+json; charset=UTF-8",
+      "bytes": 5764,
+      "features": [
+        {
+          "transportId": 31357,
+          "properties": {
+            "OBJECTID": 31357,
+            "BLOCKLOT": "3559 001"
+          },
+          "geometrySha256": "bd243acce0c5774c2a18f79fa4c4ce4b21402deabeede2179d5c0a6d07bf5c00"
+        }
+      ]
+    },
+    {
+      "test": "viewport-12",
+      "url": "https://egis.baltimorecity.gov/egis/rest/services/Parcel_Information/Parcel/MapServer/0/query?where=1%3D1&geometry=-76.623%2C39.324%2C-76.622%2C39.325&geometryType=esriGeometryEnvelope&inSR=4326&spatialRel=esriSpatialRelIntersects&f=json&returnCountOnly=true",
+      "method": "GET",
+      "checkedAt": "2026-10-09T00:05:46.229Z",
+      "httpStatus": 200,
+      "contentType": "application/json; charset=UTF-8",
+      "bytes": 12,
+      "count": 31
+    },
+    {
+      "test": "viewport-12",
+      "url": "https://egis.baltimorecity.gov/egis/rest/services/Parcel_Information/Parcel/MapServer/0/query?where=1%3D1&geometry=-76.623%2C39.324%2C-76.622%2C39.325&geometryType=esriGeometryEnvelope&inSR=4326&spatialRel=esriSpatialRelIntersects&f=json&returnIdsOnly=true",
+      "method": "GET",
+      "checkedAt": "2026-10-09T00:05:46.436Z",
+      "httpStatus": 200,
+      "contentType": "application/json; charset=UTF-8",
+      "bytes": 244,
+      "objectIdFieldName": "OBJECTID",
+      "objectIds": [
+        8358,
+        9554,
+        20493,
+        21870,
+        26199,
+        32387,
+        32730,
+        33684,
+        39023,
+        43554,
+        62936,
+        64813,
+        74615,
+        79927,
+        80594,
+        93140,
+        99851,
+        128907,
+        138315,
+        140388,
+        145197,
+        155795,
+        157373,
+        162728,
+        195527,
+        196040,
+        207619,
+        211134,
+        216997,
+        218090,
+        223979
+      ]
+    },
+    {
+      "test": "viewport-12",
+      "url": "https://egis.baltimorecity.gov/egis/rest/services/Parcel_Information/Parcel/MapServer/0/query?where=1%3D1&outFields=OBJECTID%2CBLOCKLOT&returnGeometry=true&outSR=4326&f=geojson&objectIds=8358%2C9554%2C20493%2C21870%2C26199%2C32387%2C32730%2C33684%2C39023%2C43554%2C62936%2C64813%2C74615%2C79927%2C80594%2C93140%2C99851%2C128907%2C138315%2C140388%2C145197%2C155795%2C157373%2C162728%2C195527%2C196040%2C207619%2C211134%2C216997%2C218090%2C223979",
+      "method": "GET",
+      "checkedAt": "2026-10-09T00:05:46.633Z",
+      "httpStatus": 200,
+      "contentType": "application/geo+json; charset=UTF-8",
+      "bytes": 13524,
+      "features": [
+        {
+          "transportId": 8358,
+          "properties": {
+            "OBJECTID": 8358,
+            "BLOCKLOT": "3658 118"
+          },
+          "geometrySha256": "a544af713b519db10f3a25c524a4220fbee8d73cece8392c8cd62859e37061bc"
+        },
+        {
+          "transportId": 9554,
+          "properties": {
+            "OBJECTID": 9554,
+            "BLOCKLOT": "3658 098"
+          },
+          "geometrySha256": "5c36379192aa28ee09e758d1a095d6cac315af776d2080e860b6a48970d4db61"
+        },
+        {
+          "transportId": 20493,
+          "properties": {
+            "OBJECTID": 20493,
+            "BLOCKLOT": "3658 036A"
+          },
+          "geometrySha256": "0ecee54d5083dc6cef2c57a0fe1367acfca27ea94d5d7678aeb06c3442b12567"
+        },
+        {
+          "transportId": 21870,
+          "properties": {
+            "OBJECTID": 21870,
+            "BLOCKLOT": "3658 119"
+          },
+          "geometrySha256": "7fee3b714494710c7403381f4a007c7736164e942047f4de813dc1f5b8620adf"
+        },
+        {
+          "transportId": 26199,
+          "properties": {
+            "OBJECTID": 26199,
+            "BLOCKLOT": "3658 036"
+          },
+          "geometrySha256": "e642300b39f819be201bf53621d338dc1d7eb1900d2509f0d4fbafe847ceb899"
+        },
+        {
+          "transportId": 32387,
+          "properties": {
+            "OBJECTID": 32387,
+            "BLOCKLOT": "3658 027"
+          },
+          "geometrySha256": "cb27a9d477e28e77256cb1a9c0ecb99a8764932c73727aad4f1927a77c3583b3"
+        },
+        {
+          "transportId": 32730,
+          "properties": {
+            "OBJECTID": 32730,
+            "BLOCKLOT": "3658 028"
+          },
+          "geometrySha256": "37c753c6fdd8838eaf7eba74461c240bf11eb3c6010a17bb24ab8fa77c9d3eb0"
+        },
+        {
+          "transportId": 33684,
+          "properties": {
+            "OBJECTID": 33684,
+            "BLOCKLOT": "3658 033"
+          },
+          "geometrySha256": "7972e2abe880daa23de6c510e2bc3092daf1a3179eed6bd737474cb6595d026d"
+        },
+        {
+          "transportId": 39023,
+          "properties": {
+            "OBJECTID": 39023,
+            "BLOCKLOT": "3658 026"
+          },
+          "geometrySha256": "15d2c7f7d1b3eb8eaecdfa674e94a2700a40faaa615f88931ee948a928b6a17d"
+        },
+        {
+          "transportId": 43554,
+          "properties": {
+            "OBJECTID": 43554,
+            "BLOCKLOT": "3658 034"
+          },
+          "geometrySha256": "4e474fae34e46319bacbc24abb00d81454a6314a5334e0d8a6df64fc6b6988a1"
+        },
+        {
+          "transportId": 62936,
+          "properties": {
+            "OBJECTID": 62936,
+            "BLOCKLOT": "3658 061"
+          },
+          "geometrySha256": "cebb95d42a1de7c300fae93bcd98395ad39f222939b8966085100376ade5203f"
+        },
+        {
+          "transportId": 64813,
+          "properties": {
+            "OBJECTID": 64813,
+            "BLOCKLOT": "3658 120"
+          },
+          "geometrySha256": "1830815111ea7d0389bcd67784a5e2c9189721974ad1b1e693d4287dca0413f0"
+        },
+        {
+          "transportId": 74615,
+          "properties": {
+            "OBJECTID": 74615,
+            "BLOCKLOT": "3658 099"
+          },
+          "geometrySha256": "5a2b2bcb3095039c30918a616746a202ea4074b19c3434e280316dfd815c27f3"
+        },
+        {
+          "transportId": 79927,
+          "properties": {
+            "OBJECTID": 79927,
+            "BLOCKLOT": "3658 018"
+          },
+          "geometrySha256": "927cabab99008a853f83fcfbcde4da29de728fc1f73143d8cb33d4447b64ec07"
+        },
+        {
+          "transportId": 80594,
+          "properties": {
+            "OBJECTID": 80594,
+            "BLOCKLOT": "3658 035"
+          },
+          "geometrySha256": "2cd94419001330594e42ca0704350a42863ed9f89b0b4c12dfb891252a24f232"
+        },
+        {
+          "transportId": 93140,
+          "properties": {
+            "OBJECTID": 93140,
+            "BLOCKLOT": "3658 031"
+          },
+          "geometrySha256": "88e61e5b7928004228912a20bcd00c3e19e29d9dee0b157e1b2ff067cf18d8ad"
+        },
+        {
+          "transportId": 99851,
+          "properties": {
+            "OBJECTID": 99851,
+            "BLOCKLOT": "3658 030"
+          },
+          "geometrySha256": "57ed82d9c3c81b00e3301bb25fc5ccc8ebf6ae3ec8bb0d2bd941c9903e902f73"
+        },
+        {
+          "transportId": 128907,
+          "properties": {
+            "OBJECTID": 128907,
+            "BLOCKLOT": "3658 023"
+          },
+          "geometrySha256": "fa3aff3389dc26d8062b965c8516bcec201b7ad1744d3b973decb43cd0492cc3"
+        },
+        {
+          "transportId": 138315,
+          "properties": {
+            "OBJECTID": 138315,
+            "BLOCKLOT": "3669 001"
+          },
+          "geometrySha256": "97c079abe959e1409f990b6029fb9853d7b5166543ffc484f9b012d98a948cc4"
+        },
+        {
+          "transportId": 140388,
+          "properties": {
+            "OBJECTID": 140388,
+            "BLOCKLOT": "3658 117"
+          },
+          "geometrySha256": "94f2bf071a44b2e24bd9271fa52eea50e2695f90ee11704d4b325465ccc24f97"
+        },
+        {
+          "transportId": 145197,
+          "properties": {
+            "OBJECTID": 145197,
+            "BLOCKLOT": "3658 021"
+          },
+          "geometrySha256": "0bbb1ffb8d2d19df3d46f4314291cc2d6ecd6dc34cd93252493ac34de27a1f2d"
+        },
+        {
+          "transportId": 155795,
+          "properties": {
+            "OBJECTID": 155795,
+            "BLOCKLOT": "3658 029"
+          },
+          "geometrySha256": "85dd7e3270720fbcf39d28a41efd7ab44a8ec60b69d79316b6230dd17711008f"
+        },
+        {
+          "transportId": 157373,
+          "properties": {
+            "OBJECTID": 157373,
+            "BLOCKLOT": "3658 032"
+          },
+          "geometrySha256": "51058a50d5dfeaacf692403d69135551a8c0dac4275ff823f15a204b43b92879"
+        },
+        {
+          "transportId": 162728,
+          "properties": {
+            "OBJECTID": 162728,
+            "BLOCKLOT": "3658 022"
+          },
+          "geometrySha256": "f8c9f7887aafa753f923a7bc29d36128c4a1cfab1752c78d020029980ada1758"
+        },
+        {
+          "transportId": 195527,
+          "properties": {
+            "OBJECTID": 195527,
+            "BLOCKLOT": "3658 019"
+          },
+          "geometrySha256": "b6f523b2d2767ac4ced0b32076e9181fa1427240e75574c6cdd2a28434408f60"
+        },
+        {
+          "transportId": 196040,
+          "properties": {
+            "OBJECTID": 196040,
+            "BLOCKLOT": "3658 017"
+          },
+          "geometrySha256": "703e72c1e3162e0e472402e9f549d9b8569ef353b76803f87a70bd6df864354e"
+        },
+        {
+          "transportId": 207619,
+          "properties": {
+            "OBJECTID": 207619,
+            "BLOCKLOT": "3658 121"
+          },
+          "geometrySha256": "a9b2a400b25ad3d53b8a234ac2031eaa572e344afbed2537e92a6bc30a6b831c"
+        },
+        {
+          "transportId": 211134,
+          "properties": {
+            "OBJECTID": 211134,
+            "BLOCKLOT": "3658 100"
+          },
+          "geometrySha256": "ca251f6c388bf73fa793030ecc196f0cc03d548c731e8596ef3c66dab1eb2190"
+        },
+        {
+          "transportId": 216997,
+          "properties": {
+            "OBJECTID": 216997,
+            "BLOCKLOT": "3658 020"
+          },
+          "geometrySha256": "42df0f878c51a713594b30ed710bcdac3a6b85d202572956452b2a7e11a28ff8"
+        },
+        {
+          "transportId": 218090,
+          "properties": {
+            "OBJECTID": 218090,
+            "BLOCKLOT": "3658 025"
+          },
+          "geometrySha256": "139ed595131e293864f1a9fd87066104669de3bda34d6876fb299a74fde64d8f"
+        },
+        {
+          "transportId": 223979,
+          "properties": {
+            "OBJECTID": 223979,
+            "BLOCKLOT": "3658 024"
+          },
+          "geometrySha256": "5535d4cceccc87829a880aac705307b82dabe1715ecf6bdbc6f74d1332ff641e"
+        }
+      ]
+    },
+    {
+      "test": "forced-three-row-pages",
+      "url": "https://egis.baltimorecity.gov/egis/rest/services/Parcel_Information/Parcel/MapServer/0/query?where=1%3D1&geometry=-76.625%2C39.324%2C-76.624%2C39.325&geometryType=esriGeometryEnvelope&inSR=4326&spatialRel=esriSpatialRelIntersects&f=json&returnCountOnly=true",
+      "method": "GET",
+      "checkedAt": "2026-10-09T00:05:46.844Z",
+      "httpStatus": 200,
+      "contentType": "application/json; charset=UTF-8",
+      "bytes": 12,
+      "count": 54
+    },
+    {
+      "test": "forced-three-row-pages",
+      "url": "https://egis.baltimorecity.gov/egis/rest/services/Parcel_Information/Parcel/MapServer/0/query?where=1%3D1&geometry=-76.625%2C39.324%2C-76.624%2C39.325&geometryType=esriGeometryEnvelope&inSR=4326&spatialRel=esriSpatialRelIntersects&f=json&returnIdsOnly=true",
+      "method": "GET",
+      "checkedAt": "2026-10-09T00:05:47.066Z",
+      "httpStatus": 200,
+      "contentType": "application/json; charset=UTF-8",
+      "bytes": 406,
+      "objectIdFieldName": "OBJECTID",
+      "objectIds": [
+        7218,
+        13058,
+        18235,
+        30519,
+        31357,
+        32915,
+        35773,
+        38833,
+        41219,
+        42703,
+        43969,
+        61012,
+        65688,
+        74004,
+        74691,
+        97551,
+        99129,
+        100700,
+        110917,
+        114900,
+        115224,
+        118208,
+        119114,
+        125524,
+        126110,
+        129883,
+        134767,
+        138315,
+        139327,
+        147832,
+        149328,
+        150970,
+        152337,
+        153398,
+        153980,
+        155874,
+        157050,
+        164286,
+        165220,
+        168052,
+        178653,
+        179500,
+        180319,
+        185643,
+        195491,
+        197389,
+        200300,
+        201216,
+        204876,
+        209388,
+        216849,
+        218485,
+        223442,
+        224277
+      ]
+    },
+    {
+      "test": "forced-three-row-pages",
+      "url": "https://egis.baltimorecity.gov/egis/rest/services/Parcel_Information/Parcel/MapServer/0/query?where=1%3D1&outFields=OBJECTID%2CBLOCKLOT&returnGeometry=true&outSR=4326&f=geojson&objectIds=7218%2C13058%2C18235",
+      "method": "GET",
+      "checkedAt": "2026-10-09T00:05:47.276Z",
+      "httpStatus": 200,
+      "contentType": "application/geo+json; charset=UTF-8",
+      "bytes": 1324,
+      "features": [
+        {
+          "transportId": 7218,
+          "properties": {
+            "OBJECTID": 7218,
+            "BLOCKLOT": "3664A059L"
+          },
+          "geometrySha256": "c9ebe1e3bc605f58a9a0278791615c39e2d6e3de0d37c3e5afd2c7f337316698"
+        },
+        {
+          "transportId": 13058,
+          "properties": {
+            "OBJECTID": 13058,
+            "BLOCKLOT": "3664A029"
+          },
+          "geometrySha256": "ed222863ae6ca60ff55a08833d2b1ff40acdea10db246537772bca818d34eada"
+        },
+        {
+          "transportId": 18235,
+          "properties": {
+            "OBJECTID": 18235,
+            "BLOCKLOT": "3664A012"
+          },
+          "geometrySha256": "c97e8d706bfbd3dfe708557b9155846ac3318b54091af9b5805f720103b09f30"
+        }
+      ]
+    },
+    {
+      "test": "forced-three-row-pages",
+      "url": "https://egis.baltimorecity.gov/egis/rest/services/Parcel_Information/Parcel/MapServer/0/query?where=1%3D1&outFields=OBJECTID%2CBLOCKLOT&returnGeometry=true&outSR=4326&f=geojson&objectIds=30519%2C31357%2C32915",
+      "method": "GET",
+      "checkedAt": "2026-10-09T00:05:47.497Z",
+      "httpStatus": 200,
+      "contentType": "application/geo+json; charset=UTF-8",
+      "bytes": 6480,
+      "features": [
+        {
+          "transportId": 30519,
+          "properties": {
+            "OBJECTID": 30519,
+            "BLOCKLOT": "3664A022"
+          },
+          "geometrySha256": "8a1cd8e3f7712a16a2e13bfda35fb80b7085f619f0df471c3c73188f44815e93"
+        },
+        {
+          "transportId": 31357,
+          "properties": {
+            "OBJECTID": 31357,
+            "BLOCKLOT": "3559 001"
+          },
+          "geometrySha256": "bd243acce0c5774c2a18f79fa4c4ce4b21402deabeede2179d5c0a6d07bf5c00"
+        },
+        {
+          "transportId": 32915,
+          "properties": {
+            "OBJECTID": 32915,
+            "BLOCKLOT": "3664A006A"
+          },
+          "geometrySha256": "6ae5e072a51f12d0c2cdde32e0a59c16026a06c465f82e6ef21b994b3e067dd8"
+        }
+      ]
+    },
+    {
+      "test": "forced-three-row-pages",
+      "url": "https://egis.baltimorecity.gov/egis/rest/services/Parcel_Information/Parcel/MapServer/0/query?where=1%3D1&outFields=OBJECTID%2CBLOCKLOT&returnGeometry=true&outSR=4326&f=geojson&objectIds=35773%2C38833%2C41219",
+      "method": "GET",
+      "checkedAt": "2026-10-09T00:05:47.734Z",
+      "httpStatus": 200,
+      "contentType": "application/geo+json; charset=UTF-8",
+      "bytes": 1376,
+      "features": [
+        {
+          "transportId": 35773,
+          "properties": {
+            "OBJECTID": 35773,
+            "BLOCKLOT": "3664A011"
+          },
+          "geometrySha256": "9631bb83104d603e2925dcdeeea0b68f748b873c0640beed02695b6b85070c05"
+        },
+        {
+          "transportId": 38833,
+          "properties": {
+            "OBJECTID": 38833,
+            "BLOCKLOT": "3664A059K"
+          },
+          "geometrySha256": "51cdf54280dac964feeeeaaf3810570cab126fb6ce93c9dd254ff23f8b3993fd"
+        },
+        {
+          "transportId": 41219,
+          "properties": {
+            "OBJECTID": 41219,
+            "BLOCKLOT": "3664A016"
+          },
+          "geometrySha256": "bc2677bdfcef77e536a0c26c0c79b5b9b3d3a9dcb9115d0292f38f5a1da8e5db"
+        }
+      ]
+    },
+    {
+      "test": "forced-three-row-pages",
+      "url": "https://egis.baltimorecity.gov/egis/rest/services/Parcel_Information/Parcel/MapServer/0/query?where=1%3D1&outFields=OBJECTID%2CBLOCKLOT&returnGeometry=true&outSR=4326&f=geojson&objectIds=42703%2C43969%2C61012",
+      "method": "GET",
+      "checkedAt": "2026-10-09T00:05:47.954Z",
+      "httpStatus": 200,
+      "contentType": "application/geo+json; charset=UTF-8",
+      "bytes": 1128,
+      "features": [
+        {
+          "transportId": 42703,
+          "properties": {
+            "OBJECTID": 42703,
+            "BLOCKLOT": "3664A020"
+          },
+          "geometrySha256": "0e00007a8fe783d962bffada644812d9620f117d1ea8f5a3811eac08f3c2d8b7"
+        },
+        {
+          "transportId": 43969,
+          "properties": {
+            "OBJECTID": 43969,
+            "BLOCKLOT": "3664A059D"
+          },
+          "geometrySha256": "2895379011fc601d21c54909cb548e803b6c4ceb90e49f53976fef72aabe7149"
+        },
+        {
+          "transportId": 61012,
+          "properties": {
+            "OBJECTID": 61012,
+            "BLOCKLOT": "3664A028"
+          },
+          "geometrySha256": "2c87c3902baac7454b4bd0ad65893d74afb7a644ec53ce9d7aa8649edb75be20"
+        }
+      ]
+    },
+    {
+      "test": "forced-three-row-pages",
+      "url": "https://egis.baltimorecity.gov/egis/rest/services/Parcel_Information/Parcel/MapServer/0/query?where=1%3D1&outFields=OBJECTID%2CBLOCKLOT&returnGeometry=true&outSR=4326&f=geojson&objectIds=65688%2C74004%2C74691",
+      "method": "GET",
+      "checkedAt": "2026-10-09T00:05:48.166Z",
+      "httpStatus": 200,
+      "contentType": "application/geo+json; charset=UTF-8",
+      "bytes": 1214,
+      "features": [
+        {
+          "transportId": 65688,
+          "properties": {
+            "OBJECTID": 65688,
+            "BLOCKLOT": "3664A025"
+          },
+          "geometrySha256": "c193ad13c526b28241740fa8ed57deb4b08df0b8246a8fbbba93d296bbc0917d"
+        },
+        {
+          "transportId": 74004,
+          "properties": {
+            "OBJECTID": 74004,
+            "BLOCKLOT": "3664A004"
+          },
+          "geometrySha256": "6b51da3cad62639fdb615cd1938f29cc070c4c69b5b0ab4c4af6bc145c6f45b6"
+        },
+        {
+          "transportId": 74691,
+          "properties": {
+            "OBJECTID": 74691,
+            "BLOCKLOT": "3664A059"
+          },
+          "geometrySha256": "08ec32184bd2c2856ca21c6480e6af8c270baa02a22698e601a7732d30fa5bc8"
+        }
+      ]
+    },
+    {
+      "test": "forced-three-row-pages",
+      "url": "https://egis.baltimorecity.gov/egis/rest/services/Parcel_Information/Parcel/MapServer/0/query?where=1%3D1&outFields=OBJECTID%2CBLOCKLOT&returnGeometry=true&outSR=4326&f=geojson&objectIds=97551%2C99129%2C100700",
+      "method": "GET",
+      "checkedAt": "2026-10-09T00:05:48.373Z",
+      "httpStatus": 200,
+      "contentType": "application/geo+json; charset=UTF-8",
+      "bytes": 1418,
+      "features": [
+        {
+          "transportId": 97551,
+          "properties": {
+            "OBJECTID": 97551,
+            "BLOCKLOT": "3664A017"
+          },
+          "geometrySha256": "7387f397b8ed04f3f4e15526910f99f11a8f66e3a9caf0816efa5e2d2cfa19f2"
+        },
+        {
+          "transportId": 99129,
+          "properties": {
+            "OBJECTID": 99129,
+            "BLOCKLOT": "3664A033"
+          },
+          "geometrySha256": "f2e93ba6a986a7e3f077c718153475af1e09d11f2b4faef6b8d1dd3906fb2d14"
+        },
+        {
+          "transportId": 100700,
+          "properties": {
+            "OBJECTID": 100700,
+            "BLOCKLOT": "3664A026"
+          },
+          "geometrySha256": "a50cc144800b88d6cc326a4316a171aa3a3e764c19d48f2d393106702d74338a"
+        }
+      ]
+    },
+    {
+      "test": "forced-three-row-pages",
+      "url": "https://egis.baltimorecity.gov/egis/rest/services/Parcel_Information/Parcel/MapServer/0/query?where=1%3D1&outFields=OBJECTID%2CBLOCKLOT&returnGeometry=true&outSR=4326&f=geojson&objectIds=110917%2C114900%2C115224",
+      "method": "GET",
+      "checkedAt": "2026-10-09T00:05:48.574Z",
+      "httpStatus": 200,
+      "contentType": "application/geo+json; charset=UTF-8",
+      "bytes": 1178,
+      "features": [
+        {
+          "transportId": 110917,
+          "properties": {
+            "OBJECTID": 110917,
+            "BLOCKLOT": "3664A013"
+          },
+          "geometrySha256": "0e8bc423d7c93778fc31d0bcc73b27da5c79a19cc9ac5bd57d7266e2f244b708"
+        },
+        {
+          "transportId": 114900,
+          "properties": {
+            "OBJECTID": 114900,
+            "BLOCKLOT": "3664A019"
+          },
+          "geometrySha256": "3e848f9e36deae09931870f20b647f4caf010d2a1fccec4211afd28b12c1ebb8"
+        },
+        {
+          "transportId": 115224,
+          "properties": {
+            "OBJECTID": 115224,
+            "BLOCKLOT": "3664A059G"
+          },
+          "geometrySha256": "ea1c90f0d0531ec74e252a71af3bd3109ff7583cc84b7906dbed203bd6c25d46"
+        }
+      ]
+    },
+    {
+      "test": "forced-three-row-pages",
+      "url": "https://egis.baltimorecity.gov/egis/rest/services/Parcel_Information/Parcel/MapServer/0/query?where=1%3D1&outFields=OBJECTID%2CBLOCKLOT&returnGeometry=true&outSR=4326&f=geojson&objectIds=118208%2C119114%2C125524",
+      "method": "GET",
+      "checkedAt": "2026-10-09T00:05:48.783Z",
+      "httpStatus": 200,
+      "contentType": "application/geo+json; charset=UTF-8",
+      "bytes": 1179,
+      "features": [
+        {
+          "transportId": 118208,
+          "properties": {
+            "OBJECTID": 118208,
+            "BLOCKLOT": "3664A057"
+          },
+          "geometrySha256": "5daaba920e3fe120407819d7d91f8f5517c4808abc1d917fc884c2d3e8cb3469"
+        },
+        {
+          "transportId": 119114,
+          "properties": {
+            "OBJECTID": 119114,
+            "BLOCKLOT": "3664A014"
+          },
+          "geometrySha256": "e9b444fbdd89ad7b587e17c910029c3af16686402696f9036525b179504372fe"
+        },
+        {
+          "transportId": 125524,
+          "properties": {
+            "OBJECTID": 125524,
+            "BLOCKLOT": "3664A007"
+          },
+          "geometrySha256": "2bb9dbafff6ec92c170dee6b01f0e091e34d363caaeb5232d97bea5c6f11bfa7"
+        }
+      ]
+    },
+    {
+      "test": "forced-three-row-pages",
+      "url": "https://egis.baltimorecity.gov/egis/rest/services/Parcel_Information/Parcel/MapServer/0/query?where=1%3D1&outFields=OBJECTID%2CBLOCKLOT&returnGeometry=true&outSR=4326&f=geojson&objectIds=126110%2C129883%2C134767",
+      "method": "GET",
+      "checkedAt": "2026-10-09T00:05:48.990Z",
+      "httpStatus": 200,
+      "contentType": "application/geo+json; charset=UTF-8",
+      "bytes": 1139,
+      "features": [
+        {
+          "transportId": 126110,
+          "properties": {
+            "OBJECTID": 126110,
+            "BLOCKLOT": "3664A059H"
+          },
+          "geometrySha256": "bcc747c31adea5d6c8acf8f5b3b5bec9179b0c8cebd35095092bd0c06ed6edd7"
+        },
+        {
+          "transportId": 129883,
+          "properties": {
+            "OBJECTID": 129883,
+            "BLOCKLOT": "3664A032"
+          },
+          "geometrySha256": "4cc902a23f7afabab5e29fd7a6351c5de9587952666abc35e9230ee23fb9cf36"
+        },
+        {
+          "transportId": 134767,
+          "properties": {
+            "OBJECTID": 134767,
+            "BLOCKLOT": "3664A059F"
+          },
+          "geometrySha256": "691349b06dcf7fc41b1d0c10f95b6e330ad3bcba83e7555bee5cca1661b86c2c"
+        }
+      ]
+    },
+    {
+      "test": "forced-three-row-pages",
+      "url": "https://egis.baltimorecity.gov/egis/rest/services/Parcel_Information/Parcel/MapServer/0/query?where=1%3D1&outFields=OBJECTID%2CBLOCKLOT&returnGeometry=true&outSR=4326&f=geojson&objectIds=138315%2C139327%2C147832",
+      "method": "GET",
+      "checkedAt": "2026-10-09T00:05:49.215Z",
+      "httpStatus": 200,
+      "contentType": "application/geo+json; charset=UTF-8",
+      "bytes": 1503,
+      "features": [
+        {
+          "transportId": 138315,
+          "properties": {
+            "OBJECTID": 138315,
+            "BLOCKLOT": "3669 001"
+          },
+          "geometrySha256": "97c079abe959e1409f990b6029fb9853d7b5166543ffc484f9b012d98a948cc4"
+        },
+        {
+          "transportId": 139327,
+          "properties": {
+            "OBJECTID": 139327,
+            "BLOCKLOT": "3664A027"
+          },
+          "geometrySha256": "c98ed271359f96c4c35445f97bc0d7683fb4c61d43fd5b82de52ae5691018aee"
+        },
+        {
+          "transportId": 147832,
+          "properties": {
+            "OBJECTID": 147832,
+            "BLOCKLOT": "3664A018"
+          },
+          "geometrySha256": "6150cfa7bc5825013aaecd4765252850a69a120f22c1d2f546961a31bfacd7a7"
+        }
+      ]
+    },
+    {
+      "test": "forced-three-row-pages",
+      "url": "https://egis.baltimorecity.gov/egis/rest/services/Parcel_Information/Parcel/MapServer/0/query?where=1%3D1&outFields=OBJECTID%2CBLOCKLOT&returnGeometry=true&outSR=4326&f=geojson&objectIds=149328%2C150970%2C152337",
+      "method": "GET",
+      "checkedAt": "2026-10-09T00:05:49.434Z",
+      "httpStatus": 200,
+      "contentType": "application/geo+json; charset=UTF-8",
+      "bytes": 1220,
+      "features": [
+        {
+          "transportId": 149328,
+          "properties": {
+            "OBJECTID": 149328,
+            "BLOCKLOT": "3664A024"
+          },
+          "geometrySha256": "06306647877fda4786ffa0ad0bcb9a18e468cc3a8f2f1e5a08e8de245bcd540b"
+        },
+        {
+          "transportId": 150970,
+          "properties": {
+            "OBJECTID": 150970,
+            "BLOCKLOT": "3664A038"
+          },
+          "geometrySha256": "1615c719eb4be404a1a881cb96f7009c4fe3a42fe5c60039f8a4dd4a981ba7ae"
+        },
+        {
+          "transportId": 152337,
+          "properties": {
+            "OBJECTID": 152337,
+            "BLOCKLOT": "3664A059E"
+          },
+          "geometrySha256": "c9eec102e46a68404ebf93be26ed9a39eb95e0b0bf737fad4ce1ee9935266ef2"
+        }
+      ]
+    },
+    {
+      "test": "forced-three-row-pages",
+      "url": "https://egis.baltimorecity.gov/egis/rest/services/Parcel_Information/Parcel/MapServer/0/query?where=1%3D1&outFields=OBJECTID%2CBLOCKLOT&returnGeometry=true&outSR=4326&f=geojson&objectIds=153398%2C153980%2C155874",
+      "method": "GET",
+      "checkedAt": "2026-10-09T00:05:49.641Z",
+      "httpStatus": 200,
+      "contentType": "application/geo+json; charset=UTF-8",
+      "bytes": 1341,
+      "features": [
+        {
+          "transportId": 153398,
+          "properties": {
+            "OBJECTID": 153398,
+            "BLOCKLOT": "3664A037"
+          },
+          "geometrySha256": "f5c0555993f5834cfe790f8e21ce34b1c9f8584a55b7a4981d48a399d738ce68"
+        },
+        {
+          "transportId": 153980,
+          "properties": {
+            "OBJECTID": 153980,
+            "BLOCKLOT": "3664A005C"
+          },
+          "geometrySha256": "e5d430af50d057079f4c863335524ff4d91162138216010320823fb78ce832e3"
+        },
+        {
+          "transportId": 155874,
+          "properties": {
+            "OBJECTID": 155874,
+            "BLOCKLOT": "3664A009"
+          },
+          "geometrySha256": "700011cd942732d1fdfb44f3f2501a850b94a28e7cc5d392dbf3b4d07495023b"
+        }
+      ]
+    },
+    {
+      "test": "forced-three-row-pages",
+      "url": "https://egis.baltimorecity.gov/egis/rest/services/Parcel_Information/Parcel/MapServer/0/query?where=1%3D1&outFields=OBJECTID%2CBLOCKLOT&returnGeometry=true&outSR=4326&f=geojson&objectIds=157050%2C164286%2C165220",
+      "method": "GET",
+      "checkedAt": "2026-10-09T00:05:49.850Z",
+      "httpStatus": 200,
+      "contentType": "application/geo+json; charset=UTF-8",
+      "bytes": 1384,
+      "features": [
+        {
+          "transportId": 157050,
+          "properties": {
+            "OBJECTID": 157050,
+            "BLOCKLOT": "3664A059J"
+          },
+          "geometrySha256": "4c0b129f174c56233d5740d46a4b6b0c5800e4208b066db809d6086c3814b976"
+        },
+        {
+          "transportId": 164286,
+          "properties": {
+            "OBJECTID": 164286,
+            "BLOCKLOT": "3664A036"
+          },
+          "geometrySha256": "0c97ba6bd6a69df341c330754f4d68ea435561139d9948f9cbc1c9829e8a0780"
+        },
+        {
+          "transportId": 165220,
+          "properties": {
+            "OBJECTID": 165220,
+            "BLOCKLOT": "3664A008"
+          },
+          "geometrySha256": "0ce9b5a3b2ff7cd82e665abd4cf3e3cde4e8a79b05171d61b2b041c60d86db45"
+        }
+      ]
+    },
+    {
+      "test": "forced-three-row-pages",
+      "url": "https://egis.baltimorecity.gov/egis/rest/services/Parcel_Information/Parcel/MapServer/0/query?where=1%3D1&outFields=OBJECTID%2CBLOCKLOT&returnGeometry=true&outSR=4326&f=geojson&objectIds=168052%2C178653%2C179500",
+      "method": "GET",
+      "checkedAt": "2026-10-09T00:05:50.103Z",
+      "httpStatus": 200,
+      "contentType": "application/geo+json; charset=UTF-8",
+      "bytes": 1180,
+      "features": [
+        {
+          "transportId": 168052,
+          "properties": {
+            "OBJECTID": 168052,
+            "BLOCKLOT": "3664A015"
+          },
+          "geometrySha256": "1896b81b64b09e25c8111cf9d4806ea1a308fbbee3e204b43a7400a460b10286"
+        },
+        {
+          "transportId": 178653,
+          "properties": {
+            "OBJECTID": 178653,
+            "BLOCKLOT": "3664A059C"
+          },
+          "geometrySha256": "d9c21120de0a7502b73a98d89298ad3fe53b6a71f86df6ec2ecb41726c045220"
+        },
+        {
+          "transportId": 179500,
+          "properties": {
+            "OBJECTID": 179500,
+            "BLOCKLOT": "3664A006"
+          },
+          "geometrySha256": "acf08649dc063dad03f81798c432c9ee9e7adac5ffadf8d48cae3b591e5fb82a"
+        }
+      ]
+    },
+    {
+      "test": "forced-three-row-pages",
+      "url": "https://egis.baltimorecity.gov/egis/rest/services/Parcel_Information/Parcel/MapServer/0/query?where=1%3D1&outFields=OBJECTID%2CBLOCKLOT&returnGeometry=true&outSR=4326&f=geojson&objectIds=180319%2C185643%2C195491",
+      "method": "GET",
+      "checkedAt": "2026-10-09T00:05:50.323Z",
+      "httpStatus": 200,
+      "contentType": "application/geo+json; charset=UTF-8",
+      "bytes": 1178,
+      "features": [
+        {
+          "transportId": 180319,
+          "properties": {
+            "OBJECTID": 180319,
+            "BLOCKLOT": "3664A030"
+          },
+          "geometrySha256": "190c53b438c10aa68c11b49945005ed89abe9f2d9f2ceb204b421f369997beec"
+        },
+        {
+          "transportId": 185643,
+          "properties": {
+            "OBJECTID": 185643,
+            "BLOCKLOT": "3664A006C"
+          },
+          "geometrySha256": "25884d9a8a68a74e6bde5c3b556cc8b2ed3c1a30959f2d636996b9d2b3cff418"
+        },
+        {
+          "transportId": 195491,
+          "properties": {
+            "OBJECTID": 195491,
+            "BLOCKLOT": "3664A035"
+          },
+          "geometrySha256": "0ec68b69093201ebb04dd8160e15bf178fb1c329dd8e4701654f38075dbe2363"
+        }
+      ]
+    },
+    {
+      "test": "forced-three-row-pages",
+      "url": "https://egis.baltimorecity.gov/egis/rest/services/Parcel_Information/Parcel/MapServer/0/query?where=1%3D1&outFields=OBJECTID%2CBLOCKLOT&returnGeometry=true&outSR=4326&f=geojson&objectIds=197389%2C200300%2C201216",
+      "method": "GET",
+      "checkedAt": "2026-10-09T00:05:50.535Z",
+      "httpStatus": 200,
+      "contentType": "application/geo+json; charset=UTF-8",
+      "bytes": 1421,
+      "features": [
+        {
+          "transportId": 197389,
+          "properties": {
+            "OBJECTID": 197389,
+            "BLOCKLOT": "3664A023"
+          },
+          "geometrySha256": "78364df53a732c5f6886d5ba86c07e01bb9ce728cbfc815cc5a93396a5603b71"
+        },
+        {
+          "transportId": 200300,
+          "properties": {
+            "OBJECTID": 200300,
+            "BLOCKLOT": "3664A021"
+          },
+          "geometrySha256": "982c41c4b3edfea8d0ccf0216b4b9cc5282b7a2205ad14de973db3ad17b28b56"
+        },
+        {
+          "transportId": 201216,
+          "properties": {
+            "OBJECTID": 201216,
+            "BLOCKLOT": "3664A010"
+          },
+          "geometrySha256": "db44f95c81f8c9433a5b91e0beec812d0560dcc0d44dc398c15be416164574d9"
+        }
+      ]
+    },
+    {
+      "test": "forced-three-row-pages",
+      "url": "https://egis.baltimorecity.gov/egis/rest/services/Parcel_Information/Parcel/MapServer/0/query?where=1%3D1&outFields=OBJECTID%2CBLOCKLOT&returnGeometry=true&outSR=4326&f=geojson&objectIds=204876%2C209388%2C216849",
+      "method": "GET",
+      "checkedAt": "2026-10-09T00:05:50.741Z",
+      "httpStatus": 200,
+      "contentType": "application/geo+json; charset=UTF-8",
+      "bytes": 1100,
+      "features": [
+        {
+          "transportId": 204876,
+          "properties": {
+            "OBJECTID": 204876,
+            "BLOCKLOT": "3664A031"
+          },
+          "geometrySha256": "0a60bcd967ac1a51c08a070a4329522ccab0d7bd14733e563795ab15b366ed9a"
+        },
+        {
+          "transportId": 209388,
+          "properties": {
+            "OBJECTID": 209388,
+            "BLOCKLOT": "3664A006B"
+          },
+          "geometrySha256": "4688353bf0a52bf2ee527a1273de1a58ba276c64c215ddfa2e4dca2fbd36220b"
+        },
+        {
+          "transportId": 216849,
+          "properties": {
+            "OBJECTID": 216849,
+            "BLOCKLOT": "3664A059I"
+          },
+          "geometrySha256": "f75a53f026a4867b6846416c50ac588366031a3ee829efdb718cc1c95a5ef773"
+        }
+      ]
+    },
+    {
+      "test": "forced-three-row-pages",
+      "url": "https://egis.baltimorecity.gov/egis/rest/services/Parcel_Information/Parcel/MapServer/0/query?where=1%3D1&outFields=OBJECTID%2CBLOCKLOT&returnGeometry=true&outSR=4326&f=geojson&objectIds=218485%2C223442%2C224277",
+      "method": "GET",
+      "checkedAt": "2026-10-09T00:05:50.965Z",
+      "httpStatus": 200,
+      "contentType": "application/geo+json; charset=UTF-8",
+      "bytes": 1138,
+      "features": [
+        {
+          "transportId": 218485,
+          "properties": {
+            "OBJECTID": 218485,
+            "BLOCKLOT": "3664A034"
+          },
+          "geometrySha256": "3696e1e8e2de1dba1c77c7355cb6e526fc489527e0e12e41a4cdc4220b0664ea"
+        },
+        {
+          "transportId": 223442,
+          "properties": {
+            "OBJECTID": 223442,
+            "BLOCKLOT": "3664A059B"
+          },
+          "geometrySha256": "65294cfdd6962a20fa14d2572b8e38dbdff30623c69fd72843ba4537a98ea4f5"
+        },
+        {
+          "transportId": 224277,
+          "properties": {
+            "OBJECTID": 224277,
+            "BLOCKLOT": "3664A059A"
+          },
+          "geometrySha256": "2e1049e64d647228338ab6d421e051cbaec8ea478edaf24fd05c845ab130ad2c"
+        }
+      ]
+    },
+    {
+      "test": "fresh-ids-0",
+      "url": "https://egis.baltimorecity.gov/egis/rest/services/Parcel_Information/Parcel/MapServer/0/query?where=OBJECTID+IN+%28100700%2C103769%2C110917%2C112586%2C114900%2C115224%2C118208%2C119114%2C122820%2C123582%2C125524%2C125828%2C126110%2C126962%2C127878%2C128907%2C129883%2C13058%2C132835%2C134767%2C138315%2C138904%2C139327%2C140388%2C145197%2C146313%2C147832%2C148368%2C149328%2C150598%2C150970%2C152337%2C153398%2C153980%2C154746%2C155795%2C155874%2C157050%2C157373%2C162728%29&f=json&returnCountOnly=true",
+      "method": "GET",
+      "checkedAt": "2026-10-09T00:05:51.170Z",
+      "httpStatus": 200,
+      "contentType": "application/json; charset=UTF-8",
+      "bytes": 12,
+      "count": 40
+    },
+    {
+      "test": "fresh-ids-0",
+      "url": "https://egis.baltimorecity.gov/egis/rest/services/Parcel_Information/Parcel/MapServer/0/query?where=OBJECTID+IN+%28100700%2C103769%2C110917%2C112586%2C114900%2C115224%2C118208%2C119114%2C122820%2C123582%2C125524%2C125828%2C126110%2C126962%2C127878%2C128907%2C129883%2C13058%2C132835%2C134767%2C138315%2C138904%2C139327%2C140388%2C145197%2C146313%2C147832%2C148368%2C149328%2C150598%2C150970%2C152337%2C153398%2C153980%2C154746%2C155795%2C155874%2C157050%2C157373%2C162728%29&f=json&returnIdsOnly=true",
+      "method": "GET",
+      "checkedAt": "2026-10-09T00:05:51.414Z",
+      "httpStatus": 200,
+      "contentType": "application/json; charset=UTF-8",
+      "bytes": 325,
+      "objectIdFieldName": "OBJECTID",
+      "objectIds": [
+        13058,
+        100700,
+        103769,
+        110917,
+        112586,
+        114900,
+        115224,
+        118208,
+        119114,
+        122820,
+        123582,
+        125524,
+        125828,
+        126110,
+        126962,
+        127878,
+        128907,
+        129883,
+        132835,
+        134767,
+        138315,
+        138904,
+        139327,
+        140388,
+        145197,
+        146313,
+        147832,
+        148368,
+        149328,
+        150598,
+        150970,
+        152337,
+        153398,
+        153980,
+        154746,
+        155795,
+        155874,
+        157050,
+        157373,
+        162728
+      ]
+    },
+    {
+      "test": "fresh-ids-0",
+      "url": "https://egis.baltimorecity.gov/egis/rest/services/Parcel_Information/Parcel/MapServer/0/query?where=1%3D1&outFields=OBJECTID%2CBLOCKLOT&returnGeometry=true&outSR=4326&f=geojson&objectIds=13058%2C100700%2C103769%2C110917%2C112586%2C114900%2C115224%2C118208%2C119114%2C122820%2C123582%2C125524%2C125828%2C126110%2C126962%2C127878%2C128907%2C129883%2C132835%2C134767%2C138315%2C138904%2C139327%2C140388%2C145197%2C146313%2C147832%2C148368%2C149328%2C150598%2C150970%2C152337%2C153398%2C153980%2C154746%2C155795%2C155874%2C157050%2C157373%2C162728",
+      "method": "GET",
+      "checkedAt": "2026-10-09T00:05:51.657Z",
+      "httpStatus": 200,
+      "contentType": "application/geo+json; charset=UTF-8",
+      "bytes": 25768,
+      "features": [
+        {
+          "transportId": 13058,
+          "properties": {
+            "OBJECTID": 13058,
+            "BLOCKLOT": "3664A029"
+          },
+          "geometrySha256": "ed222863ae6ca60ff55a08833d2b1ff40acdea10db246537772bca818d34eada"
+        },
+        {
+          "transportId": 100700,
+          "properties": {
+            "OBJECTID": 100700,
+            "BLOCKLOT": "3664A026"
+          },
+          "geometrySha256": "a50cc144800b88d6cc326a4316a171aa3a3e764c19d48f2d393106702d74338a"
+        },
+        {
+          "transportId": 103769,
+          "properties": {
+            "OBJECTID": 103769,
+            "BLOCKLOT": "3653 056"
+          },
+          "geometrySha256": "a35d43ecc50ea2ca1a407ed264f8515045e27532734a22e7a6187d083ec90bfc"
+        },
+        {
+          "transportId": 110917,
+          "properties": {
+            "OBJECTID": 110917,
+            "BLOCKLOT": "3664A013"
+          },
+          "geometrySha256": "0e8bc423d7c93778fc31d0bcc73b27da5c79a19cc9ac5bd57d7266e2f244b708"
+        },
+        {
+          "transportId": 112586,
+          "properties": {
+            "OBJECTID": 112586,
+            "BLOCKLOT": "3664A056"
+          },
+          "geometrySha256": "f17ac39467ae6dd91790bd9f65bb31650325157fc5c5bba77eea2fa4d9acf300"
+        },
+        {
+          "transportId": 114900,
+          "properties": {
+            "OBJECTID": 114900,
+            "BLOCKLOT": "3664A019"
+          },
+          "geometrySha256": "3e848f9e36deae09931870f20b647f4caf010d2a1fccec4211afd28b12c1ebb8"
+        },
+        {
+          "transportId": 115224,
+          "properties": {
+            "OBJECTID": 115224,
+            "BLOCKLOT": "3664A059G"
+          },
+          "geometrySha256": "ea1c90f0d0531ec74e252a71af3bd3109ff7583cc84b7906dbed203bd6c25d46"
+        },
+        {
+          "transportId": 118208,
+          "properties": {
+            "OBJECTID": 118208,
+            "BLOCKLOT": "3664A057"
+          },
+          "geometrySha256": "5daaba920e3fe120407819d7d91f8f5517c4808abc1d917fc884c2d3e8cb3469"
+        },
+        {
+          "transportId": 119114,
+          "properties": {
+            "OBJECTID": 119114,
+            "BLOCKLOT": "3664A014"
+          },
+          "geometrySha256": "e9b444fbdd89ad7b587e17c910029c3af16686402696f9036525b179504372fe"
+        },
+        {
+          "transportId": 122820,
+          "properties": {
+            "OBJECTID": 122820,
+            "BLOCKLOT": "3653 028"
+          },
+          "geometrySha256": "3554b33a416475ac66af5f58243c3b597fca288438f9263366d4b8b5cec44259"
+        },
+        {
+          "transportId": 123582,
+          "properties": {
+            "OBJECTID": 123582,
+            "BLOCKLOT": "3664B001"
+          },
+          "geometrySha256": "aaa685349b00c448cf80710397d398d9e801f3e214bde92b055b72de6c10fb6c"
+        },
+        {
+          "transportId": 125524,
+          "properties": {
+            "OBJECTID": 125524,
+            "BLOCKLOT": "3664A007"
+          },
+          "geometrySha256": "2bb9dbafff6ec92c170dee6b01f0e091e34d363caaeb5232d97bea5c6f11bfa7"
+        },
+        {
+          "transportId": 125828,
+          "properties": {
+            "OBJECTID": 125828,
+            "BLOCKLOT": "3653 005"
+          },
+          "geometrySha256": "b3f743d88727099ea705c779740f8e9a10e389ac3d04a1529e37c859ee1c47ff"
+        },
+        {
+          "transportId": 126110,
+          "properties": {
+            "OBJECTID": 126110,
+            "BLOCKLOT": "3664A059H"
+          },
+          "geometrySha256": "bcc747c31adea5d6c8acf8f5b3b5bec9179b0c8cebd35095092bd0c06ed6edd7"
+        },
+        {
+          "transportId": 126962,
+          "properties": {
+            "OBJECTID": 126962,
+            "BLOCKLOT": "3664A049"
+          },
+          "geometrySha256": "77e6426a44c53f879e649880e8e950013190033e4d153fef91015eee31d3761f"
+        },
+        {
+          "transportId": 127878,
+          "properties": {
+            "OBJECTID": 127878,
+            "BLOCKLOT": "3664A056A"
+          },
+          "geometrySha256": "90c33a6555efc5db8485b0f6ee657e880df6ad9e767bccbb4de2ba0afe3f6f1f"
+        },
+        {
+          "transportId": 128907,
+          "properties": {
+            "OBJECTID": 128907,
+            "BLOCKLOT": "3658 023"
+          },
+          "geometrySha256": "fa3aff3389dc26d8062b965c8516bcec201b7ad1744d3b973decb43cd0492cc3"
+        },
+        {
+          "transportId": 129883,
+          "properties": {
+            "OBJECTID": 129883,
+            "BLOCKLOT": "3664A032"
+          },
+          "geometrySha256": "4cc902a23f7afabab5e29fd7a6351c5de9587952666abc35e9230ee23fb9cf36"
+        },
+        {
+          "transportId": 132835,
+          "properties": {
+            "OBJECTID": 132835,
+            "BLOCKLOT": "3658 009"
+          },
+          "geometrySha256": "356fa1f43a39a834131abbf1e620ebba290b8907672bfe0ff2c6cfbfe7119d1d"
+        },
+        {
+          "transportId": 134767,
+          "properties": {
+            "OBJECTID": 134767,
+            "BLOCKLOT": "3664A059F"
+          },
+          "geometrySha256": "691349b06dcf7fc41b1d0c10f95b6e330ad3bcba83e7555bee5cca1661b86c2c"
+        },
+        {
+          "transportId": 138315,
+          "properties": {
+            "OBJECTID": 138315,
+            "BLOCKLOT": "3669 001"
+          },
+          "geometrySha256": "97c079abe959e1409f990b6029fb9853d7b5166543ffc484f9b012d98a948cc4"
+        },
+        {
+          "transportId": 138904,
+          "properties": {
+            "OBJECTID": 138904,
+            "BLOCKLOT": "3653 003"
+          },
+          "geometrySha256": "1aed82b008f0add92d03b2cfd4b26a5a3cb4b5a6fecd27cc5a4b6f80972496e2"
+        },
+        {
+          "transportId": 139327,
+          "properties": {
+            "OBJECTID": 139327,
+            "BLOCKLOT": "3664A027"
+          },
+          "geometrySha256": "c98ed271359f96c4c35445f97bc0d7683fb4c61d43fd5b82de52ae5691018aee"
+        },
+        {
+          "transportId": 140388,
+          "properties": {
+            "OBJECTID": 140388,
+            "BLOCKLOT": "3658 117"
+          },
+          "geometrySha256": "94f2bf071a44b2e24bd9271fa52eea50e2695f90ee11704d4b325465ccc24f97"
+        },
+        {
+          "transportId": 145197,
+          "properties": {
+            "OBJECTID": 145197,
+            "BLOCKLOT": "3658 021"
+          },
+          "geometrySha256": "0bbb1ffb8d2d19df3d46f4314291cc2d6ecd6dc34cd93252493ac34de27a1f2d"
+        },
+        {
+          "transportId": 146313,
+          "properties": {
+            "OBJECTID": 146313,
+            "BLOCKLOT": "3664B031C"
+          },
+          "geometrySha256": "b497f8c11d4a4e819c0bc0dd110229f2e253155b93406b910031fae6680f4c9c"
+        },
+        {
+          "transportId": 147832,
+          "properties": {
+            "OBJECTID": 147832,
+            "BLOCKLOT": "3664A018"
+          },
+          "geometrySha256": "6150cfa7bc5825013aaecd4765252850a69a120f22c1d2f546961a31bfacd7a7"
+        },
+        {
+          "transportId": 148368,
+          "properties": {
+            "OBJECTID": 148368,
+            "BLOCKLOT": "3690 003"
+          },
+          "geometrySha256": "0d84c84d72da13897c97be9992f7cc41cd53d47843e1e9a6f9b46b7bad4deb8f"
+        },
+        {
+          "transportId": 149328,
+          "properties": {
+            "OBJECTID": 149328,
+            "BLOCKLOT": "3664A024"
+          },
+          "geometrySha256": "06306647877fda4786ffa0ad0bcb9a18e468cc3a8f2f1e5a08e8de245bcd540b"
+        },
+        {
+          "transportId": 150598,
+          "properties": {
+            "OBJECTID": 150598,
+            "BLOCKLOT": "3664A052"
+          },
+          "geometrySha256": "1d14c855208bedfa6897b4b8dc5efdcbfab4165e1de30983d91b8e5c4988b916"
+        },
+        {
+          "transportId": 150970,
+          "properties": {
+            "OBJECTID": 150970,
+            "BLOCKLOT": "3664A038"
+          },
+          "geometrySha256": "1615c719eb4be404a1a881cb96f7009c4fe3a42fe5c60039f8a4dd4a981ba7ae"
+        },
+        {
+          "transportId": 152337,
+          "properties": {
+            "OBJECTID": 152337,
+            "BLOCKLOT": "3664A059E"
+          },
+          "geometrySha256": "c9eec102e46a68404ebf93be26ed9a39eb95e0b0bf737fad4ce1ee9935266ef2"
+        },
+        {
+          "transportId": 153398,
+          "properties": {
+            "OBJECTID": 153398,
+            "BLOCKLOT": "3664A037"
+          },
+          "geometrySha256": "f5c0555993f5834cfe790f8e21ce34b1c9f8584a55b7a4981d48a399d738ce68"
+        },
+        {
+          "transportId": 153980,
+          "properties": {
+            "OBJECTID": 153980,
+            "BLOCKLOT": "3664A005C"
+          },
+          "geometrySha256": "e5d430af50d057079f4c863335524ff4d91162138216010320823fb78ce832e3"
+        },
+        {
+          "transportId": 154746,
+          "properties": {
+            "OBJECTID": 154746,
+            "BLOCKLOT": "3658 015"
+          },
+          "geometrySha256": "4f2c96f9ff4fe028f2d5c05092ee380d34932e598f71ba502509423cfd1c0d61"
+        },
+        {
+          "transportId": 155795,
+          "properties": {
+            "OBJECTID": 155795,
+            "BLOCKLOT": "3658 029"
+          },
+          "geometrySha256": "85dd7e3270720fbcf39d28a41efd7ab44a8ec60b69d79316b6230dd17711008f"
+        },
+        {
+          "transportId": 155874,
+          "properties": {
+            "OBJECTID": 155874,
+            "BLOCKLOT": "3664A009"
+          },
+          "geometrySha256": "700011cd942732d1fdfb44f3f2501a850b94a28e7cc5d392dbf3b4d07495023b"
+        },
+        {
+          "transportId": 157050,
+          "properties": {
+            "OBJECTID": 157050,
+            "BLOCKLOT": "3664A059J"
+          },
+          "geometrySha256": "4c0b129f174c56233d5740d46a4b6b0c5800e4208b066db809d6086c3814b976"
+        },
+        {
+          "transportId": 157373,
+          "properties": {
+            "OBJECTID": 157373,
+            "BLOCKLOT": "3658 032"
+          },
+          "geometrySha256": "51058a50d5dfeaacf692403d69135551a8c0dac4275ff823f15a204b43b92879"
+        },
+        {
+          "transportId": 162728,
+          "properties": {
+            "OBJECTID": 162728,
+            "BLOCKLOT": "3658 022"
+          },
+          "geometrySha256": "f8c9f7887aafa753f923a7bc29d36128c4a1cfab1752c78d020029980ada1758"
+        }
+      ]
+    },
+    {
+      "test": "fresh-ids-40",
+      "url": "https://egis.baltimorecity.gov/egis/rest/services/Parcel_Information/Parcel/MapServer/0/query?where=OBJECTID+IN+%28163310%2C164286%2C165220%2C166324%2C166885%2C167402%2C16789%2C168017%2C168052%2C177745%2C178170%2C178262%2C178653%2C179500%2C179675%2C180319%2C18235%2C185643%2C186020%2C187703%2C18898%2C191629%2C194458%2C195491%2C195527%2C196040%2C197313%2C197389%2C199488%2C200300%2C201216%2C204475%2C204876%2C20493%2C205107%2C205201%2C207619%2C209388%2C211134%2C212729%29&f=json&returnCountOnly=true",
+      "method": "GET",
+      "checkedAt": "2026-10-09T00:05:51.901Z",
+      "httpStatus": 200,
+      "contentType": "application/json; charset=UTF-8",
+      "bytes": 12,
+      "count": 40
+    },
+    {
+      "test": "fresh-ids-40",
+      "url": "https://egis.baltimorecity.gov/egis/rest/services/Parcel_Information/Parcel/MapServer/0/query?where=OBJECTID+IN+%28163310%2C164286%2C165220%2C166324%2C166885%2C167402%2C16789%2C168017%2C168052%2C177745%2C178170%2C178262%2C178653%2C179500%2C179675%2C180319%2C18235%2C185643%2C186020%2C187703%2C18898%2C191629%2C194458%2C195491%2C195527%2C196040%2C197313%2C197389%2C199488%2C200300%2C201216%2C204475%2C204876%2C20493%2C205107%2C205201%2C207619%2C209388%2C211134%2C212729%29&f=json&returnIdsOnly=true",
+      "method": "GET",
+      "checkedAt": "2026-10-09T00:05:52.100Z",
+      "httpStatus": 200,
+      "contentType": "application/json; charset=UTF-8",
+      "bytes": 322,
+      "objectIdFieldName": "OBJECTID",
+      "objectIds": [
+        16789,
+        18235,
+        18898,
+        20493,
+        163310,
+        164286,
+        165220,
+        166324,
+        166885,
+        167402,
+        168017,
+        168052,
+        177745,
+        178170,
+        178262,
+        178653,
+        179500,
+        179675,
+        180319,
+        185643,
+        186020,
+        187703,
+        191629,
+        194458,
+        195491,
+        195527,
+        196040,
+        197313,
+        197389,
+        199488,
+        200300,
+        201216,
+        204475,
+        204876,
+        205107,
+        205201,
+        207619,
+        209388,
+        211134,
+        212729
+      ]
+    },
+    {
+      "test": "fresh-ids-40",
+      "url": "https://egis.baltimorecity.gov/egis/rest/services/Parcel_Information/Parcel/MapServer/0/query?where=1%3D1&outFields=OBJECTID%2CBLOCKLOT&returnGeometry=true&outSR=4326&f=geojson&objectIds=16789%2C18235%2C18898%2C20493%2C163310%2C164286%2C165220%2C166324%2C166885%2C167402%2C168017%2C168052%2C177745%2C178170%2C178262%2C178653%2C179500%2C179675%2C180319%2C185643%2C186020%2C187703%2C191629%2C194458%2C195491%2C195527%2C196040%2C197313%2C197389%2C199488%2C200300%2C201216%2C204475%2C204876%2C205107%2C205201%2C207619%2C209388%2C211134%2C212729",
+      "method": "GET",
+      "checkedAt": "2026-10-09T00:05:52.308Z",
+      "httpStatus": 200,
+      "contentType": "application/geo+json; charset=UTF-8",
+      "bytes": 15695,
+      "features": [
+        {
+          "transportId": 16789,
+          "properties": {
+            "OBJECTID": 16789,
+            "BLOCKLOT": "3658 011"
+          },
+          "geometrySha256": "ac89871bad87d69919b9142d102dd13a9e9e172da0cdd96fd785edff2939f49e"
+        },
+        {
+          "transportId": 18235,
+          "properties": {
+            "OBJECTID": 18235,
+            "BLOCKLOT": "3664A012"
+          },
+          "geometrySha256": "c97e8d706bfbd3dfe708557b9155846ac3318b54091af9b5805f720103b09f30"
+        },
+        {
+          "transportId": 18898,
+          "properties": {
+            "OBJECTID": 18898,
+            "BLOCKLOT": "3653 024"
+          },
+          "geometrySha256": "fc51b299c0b4ad30f6d0448bac59c660c6008315a568d2c42756cf69cdbadf3b"
+        },
+        {
+          "transportId": 20493,
+          "properties": {
+            "OBJECTID": 20493,
+            "BLOCKLOT": "3658 036A"
+          },
+          "geometrySha256": "0ecee54d5083dc6cef2c57a0fe1367acfca27ea94d5d7678aeb06c3442b12567"
+        },
+        {
+          "transportId": 163310,
+          "properties": {
+            "OBJECTID": 163310,
+            "BLOCKLOT": "3653 023"
+          },
+          "geometrySha256": "8627f3522229ad2ff620843b48b9bb4d182c4b64417e701acd336a3f60392ac0"
+        },
+        {
+          "transportId": 164286,
+          "properties": {
+            "OBJECTID": 164286,
+            "BLOCKLOT": "3664A036"
+          },
+          "geometrySha256": "0c97ba6bd6a69df341c330754f4d68ea435561139d9948f9cbc1c9829e8a0780"
+        },
+        {
+          "transportId": 165220,
+          "properties": {
+            "OBJECTID": 165220,
+            "BLOCKLOT": "3664A008"
+          },
+          "geometrySha256": "0ce9b5a3b2ff7cd82e665abd4cf3e3cde4e8a79b05171d61b2b041c60d86db45"
+        },
+        {
+          "transportId": 166324,
+          "properties": {
+            "OBJECTID": 166324,
+            "BLOCKLOT": "3664B031A"
+          },
+          "geometrySha256": "8e4f8716e2a2315f61454b83eeb69df489287f10a152f486f520fece914a5577"
+        },
+        {
+          "transportId": 166885,
+          "properties": {
+            "OBJECTID": 166885,
+            "BLOCKLOT": "3653 052"
+          },
+          "geometrySha256": "f9370ab733d856c48792163ba92c83204f5bf051eca028de4e96478010a53506"
+        },
+        {
+          "transportId": 167402,
+          "properties": {
+            "OBJECTID": 167402,
+            "BLOCKLOT": "3653 055"
+          },
+          "geometrySha256": "17a1f5bec1e3b7e39a5dad24ae88feeca7afd03e7a96b56198a500e2bda6a01a"
+        },
+        {
+          "transportId": 168017,
+          "properties": {
+            "OBJECTID": 168017,
+            "BLOCKLOT": "3653 027"
+          },
+          "geometrySha256": "c6920d1ca66d0e280b5998002240735b9956002ecdcceca14bb8fac0d81e6804"
+        },
+        {
+          "transportId": 168052,
+          "properties": {
+            "OBJECTID": 168052,
+            "BLOCKLOT": "3664A015"
+          },
+          "geometrySha256": "1896b81b64b09e25c8111cf9d4806ea1a308fbbee3e204b43a7400a460b10286"
+        },
+        {
+          "transportId": 177745,
+          "properties": {
+            "OBJECTID": 177745,
+            "BLOCKLOT": "3664A051"
+          },
+          "geometrySha256": "2f9d5c187a6963f2972286a528fcb47e4e04786f1d22ad72cbbc4598d74971d4"
+        },
+        {
+          "transportId": 178170,
+          "properties": {
+            "OBJECTID": 178170,
+            "BLOCKLOT": "3664A054"
+          },
+          "geometrySha256": "a05b782818c3a41674210108d29adfbef775382c0c2e7e7cdc34a4897aa51b1f"
+        },
+        {
+          "transportId": 178262,
+          "properties": {
+            "OBJECTID": 178262,
+            "BLOCKLOT": "3653 002"
+          },
+          "geometrySha256": "b370f49f92a0a4e2d29c2653f804b08c71abcd46da38c122114f65635c7e3798"
+        },
+        {
+          "transportId": 178653,
+          "properties": {
+            "OBJECTID": 178653,
+            "BLOCKLOT": "3664A059C"
+          },
+          "geometrySha256": "d9c21120de0a7502b73a98d89298ad3fe53b6a71f86df6ec2ecb41726c045220"
+        },
+        {
+          "transportId": 179500,
+          "properties": {
+            "OBJECTID": 179500,
+            "BLOCKLOT": "3664A006"
+          },
+          "geometrySha256": "acf08649dc063dad03f81798c432c9ee9e7adac5ffadf8d48cae3b591e5fb82a"
+        },
+        {
+          "transportId": 179675,
+          "properties": {
+            "OBJECTID": 179675,
+            "BLOCKLOT": "3658 014"
+          },
+          "geometrySha256": "02fff97f86902409d343159ff260c63fa8bf324df8d14afa60c0c9ddc3b151f4"
+        },
+        {
+          "transportId": 180319,
+          "properties": {
+            "OBJECTID": 180319,
+            "BLOCKLOT": "3664A030"
+          },
+          "geometrySha256": "190c53b438c10aa68c11b49945005ed89abe9f2d9f2ceb204b421f369997beec"
+        },
+        {
+          "transportId": 185643,
+          "properties": {
+            "OBJECTID": 185643,
+            "BLOCKLOT": "3664A006C"
+          },
+          "geometrySha256": "25884d9a8a68a74e6bde5c3b556cc8b2ed3c1a30959f2d636996b9d2b3cff418"
+        },
+        {
+          "transportId": 186020,
+          "properties": {
+            "OBJECTID": 186020,
+            "BLOCKLOT": "3664A045"
+          },
+          "geometrySha256": "6c163f85e00ffa646a9e55591452b939c301e01b5fd9fa28e26a8c5b4a31f65f"
+        },
+        {
+          "transportId": 187703,
+          "properties": {
+            "OBJECTID": 187703,
+            "BLOCKLOT": "3653 054"
+          },
+          "geometrySha256": "409f7783cd2c012f9673e2a27efeeaae8ef8eedc125d1c393e7fee9b791bfdbf"
+        },
+        {
+          "transportId": 191629,
+          "properties": {
+            "OBJECTID": 191629,
+            "BLOCKLOT": "3664A042"
+          },
+          "geometrySha256": "4ec8a052caddb393b56ebf31ae41833443470ba9c3fae913b8e6040fd3cdd340"
+        },
+        {
+          "transportId": 194458,
+          "properties": {
+            "OBJECTID": 194458,
+            "BLOCKLOT": "3653 058"
+          },
+          "geometrySha256": "58fccf6918921ec01abd75b97131af4722f293cc5bff6521ef03f050e70b434c"
+        },
+        {
+          "transportId": 195491,
+          "properties": {
+            "OBJECTID": 195491,
+            "BLOCKLOT": "3664A035"
+          },
+          "geometrySha256": "0ec68b69093201ebb04dd8160e15bf178fb1c329dd8e4701654f38075dbe2363"
+        },
+        {
+          "transportId": 195527,
+          "properties": {
+            "OBJECTID": 195527,
+            "BLOCKLOT": "3658 019"
+          },
+          "geometrySha256": "b6f523b2d2767ac4ced0b32076e9181fa1427240e75574c6cdd2a28434408f60"
+        },
+        {
+          "transportId": 196040,
+          "properties": {
+            "OBJECTID": 196040,
+            "BLOCKLOT": "3658 017"
+          },
+          "geometrySha256": "703e72c1e3162e0e472402e9f549d9b8569ef353b76803f87a70bd6df864354e"
+        },
+        {
+          "transportId": 197313,
+          "properties": {
+            "OBJECTID": 197313,
+            "BLOCKLOT": "3653 026"
+          },
+          "geometrySha256": "bcd4035ee10c0964ae2c228c3184c7fbb3386a1ef6ca7d20a064e1462d70010b"
+        },
+        {
+          "transportId": 197389,
+          "properties": {
+            "OBJECTID": 197389,
+            "BLOCKLOT": "3664A023"
+          },
+          "geometrySha256": "78364df53a732c5f6886d5ba86c07e01bb9ce728cbfc815cc5a93396a5603b71"
+        },
+        {
+          "transportId": 199488,
+          "properties": {
+            "OBJECTID": 199488,
+            "BLOCKLOT": "3664A044"
+          },
+          "geometrySha256": "4b0cf725497aa7be6a16e093e640624be674a75bed51c9a7768c4aef87fa6d42"
+        },
+        {
+          "transportId": 200300,
+          "properties": {
+            "OBJECTID": 200300,
+            "BLOCKLOT": "3664A021"
+          },
+          "geometrySha256": "982c41c4b3edfea8d0ccf0216b4b9cc5282b7a2205ad14de973db3ad17b28b56"
+        },
+        {
+          "transportId": 201216,
+          "properties": {
+            "OBJECTID": 201216,
+            "BLOCKLOT": "3664A010"
+          },
+          "geometrySha256": "db44f95c81f8c9433a5b91e0beec812d0560dcc0d44dc398c15be416164574d9"
+        },
+        {
+          "transportId": 204475,
+          "properties": {
+            "OBJECTID": 204475,
+            "BLOCKLOT": "3653 022"
+          },
+          "geometrySha256": "1dfe416283060268ec53525b18d2288e9580950ecf2e1e45b8a5b3185fcd9c13"
+        },
+        {
+          "transportId": 204876,
+          "properties": {
+            "OBJECTID": 204876,
+            "BLOCKLOT": "3664A031"
+          },
+          "geometrySha256": "0a60bcd967ac1a51c08a070a4329522ccab0d7bd14733e563795ab15b366ed9a"
+        },
+        {
+          "transportId": 205107,
+          "properties": {
+            "OBJECTID": 205107,
+            "BLOCKLOT": "3658 012"
+          },
+          "geometrySha256": "3192838164c234af9489fb2dcfc5f01c675f8194d6187cf04767cc87677adc8a"
+        },
+        {
+          "transportId": 205201,
+          "properties": {
+            "OBJECTID": 205201,
+            "BLOCKLOT": "3653 051"
+          },
+          "geometrySha256": "761048f5ad004c4ce21a3120cdaf0c6e4fb61799c9ed3d6b7618e98e2e012686"
+        },
+        {
+          "transportId": 207619,
+          "properties": {
+            "OBJECTID": 207619,
+            "BLOCKLOT": "3658 121"
+          },
+          "geometrySha256": "a9b2a400b25ad3d53b8a234ac2031eaa572e344afbed2537e92a6bc30a6b831c"
+        },
+        {
+          "transportId": 209388,
+          "properties": {
+            "OBJECTID": 209388,
+            "BLOCKLOT": "3664A006B"
+          },
+          "geometrySha256": "4688353bf0a52bf2ee527a1273de1a58ba276c64c215ddfa2e4dca2fbd36220b"
+        },
+        {
+          "transportId": 211134,
+          "properties": {
+            "OBJECTID": 211134,
+            "BLOCKLOT": "3658 100"
+          },
+          "geometrySha256": "ca251f6c388bf73fa793030ecc196f0cc03d548c731e8596ef3c66dab1eb2190"
+        },
+        {
+          "transportId": 212729,
+          "properties": {
+            "OBJECTID": 212729,
+            "BLOCKLOT": "3658 013"
+          },
+          "geometrySha256": "52b14675c633c47f39b0098dccf9f1bba2f3e7d77e882c8e2afec18205672ba9"
+        }
+      ]
+    },
+    {
+      "test": "fresh-ids-80",
+      "url": "https://egis.baltimorecity.gov/egis/rest/services/Parcel_Information/Parcel/MapServer/0/query?where=OBJECTID+IN+%28213712%2C216849%2C216997%2C217391%2C218090%2C218485%2C21870%2C220877%2C223442%2C223979%2C224277%2C23048%2C26199%2C30519%2C31357%2C32332%2C32387%2C32730%2C32915%2C33684%2C35773%2C38305%2C38833%2C39023%2C40761%2C41219%2C42703%2C43554%2C43969%2C44903%2C45299%2C47513%2C51419%2C53634%2C61012%2C62936%2C64813%2C65688%2C66867%2C7218%29&f=json&returnCountOnly=true",
+      "method": "GET",
+      "checkedAt": "2026-10-09T00:05:52.538Z",
+      "httpStatus": 200,
+      "contentType": "application/json; charset=UTF-8",
+      "bytes": 12,
+      "count": 40
+    },
+    {
+      "test": "fresh-ids-80",
+      "url": "https://egis.baltimorecity.gov/egis/rest/services/Parcel_Information/Parcel/MapServer/0/query?where=OBJECTID+IN+%28213712%2C216849%2C216997%2C217391%2C218090%2C218485%2C21870%2C220877%2C223442%2C223979%2C224277%2C23048%2C26199%2C30519%2C31357%2C32332%2C32387%2C32730%2C32915%2C33684%2C35773%2C38305%2C38833%2C39023%2C40761%2C41219%2C42703%2C43554%2C43969%2C44903%2C45299%2C47513%2C51419%2C53634%2C61012%2C62936%2C64813%2C65688%2C66867%2C7218%29&f=json&returnIdsOnly=true",
+      "method": "GET",
+      "checkedAt": "2026-10-09T00:05:52.765Z",
+      "httpStatus": 200,
+      "contentType": "application/json; charset=UTF-8",
+      "bytes": 295,
+      "objectIdFieldName": "OBJECTID",
+      "objectIds": [
+        7218,
+        21870,
+        23048,
+        26199,
+        30519,
+        31357,
+        32332,
+        32387,
+        32730,
+        32915,
+        33684,
+        35773,
+        38305,
+        38833,
+        39023,
+        40761,
+        41219,
+        42703,
+        43554,
+        43969,
+        44903,
+        45299,
+        47513,
+        51419,
+        53634,
+        61012,
+        62936,
+        64813,
+        65688,
+        66867,
+        213712,
+        216849,
+        216997,
+        217391,
+        218090,
+        218485,
+        220877,
+        223442,
+        223979,
+        224277
+      ]
+    },
+    {
+      "test": "fresh-ids-80",
+      "url": "https://egis.baltimorecity.gov/egis/rest/services/Parcel_Information/Parcel/MapServer/0/query?where=1%3D1&outFields=OBJECTID%2CBLOCKLOT&returnGeometry=true&outSR=4326&f=geojson&objectIds=7218%2C21870%2C23048%2C26199%2C30519%2C31357%2C32332%2C32387%2C32730%2C32915%2C33684%2C35773%2C38305%2C38833%2C39023%2C40761%2C41219%2C42703%2C43554%2C43969%2C44903%2C45299%2C47513%2C51419%2C53634%2C61012%2C62936%2C64813%2C65688%2C66867%2C213712%2C216849%2C216997%2C217391%2C218090%2C218485%2C220877%2C223442%2C223979%2C224277",
+      "method": "GET",
+      "checkedAt": "2026-10-09T00:05:52.976Z",
+      "httpStatus": 200,
+      "contentType": "application/geo+json; charset=UTF-8",
+      "bytes": 21003,
+      "features": [
+        {
+          "transportId": 7218,
+          "properties": {
+            "OBJECTID": 7218,
+            "BLOCKLOT": "3664A059L"
+          },
+          "geometrySha256": "c9ebe1e3bc605f58a9a0278791615c39e2d6e3de0d37c3e5afd2c7f337316698"
+        },
+        {
+          "transportId": 21870,
+          "properties": {
+            "OBJECTID": 21870,
+            "BLOCKLOT": "3658 119"
+          },
+          "geometrySha256": "7fee3b714494710c7403381f4a007c7736164e942047f4de813dc1f5b8620adf"
+        },
+        {
+          "transportId": 23048,
+          "properties": {
+            "OBJECTID": 23048,
+            "BLOCKLOT": "3664A048"
+          },
+          "geometrySha256": "50b12e65904a1e31c60a27b8efe6a3ae08a76d846c9a45f607dd89a0909dac41"
+        },
+        {
+          "transportId": 26199,
+          "properties": {
+            "OBJECTID": 26199,
+            "BLOCKLOT": "3658 036"
+          },
+          "geometrySha256": "e642300b39f819be201bf53621d338dc1d7eb1900d2509f0d4fbafe847ceb899"
+        },
+        {
+          "transportId": 30519,
+          "properties": {
+            "OBJECTID": 30519,
+            "BLOCKLOT": "3664A022"
+          },
+          "geometrySha256": "8a1cd8e3f7712a16a2e13bfda35fb80b7085f619f0df471c3c73188f44815e93"
+        },
+        {
+          "transportId": 31357,
+          "properties": {
+            "OBJECTID": 31357,
+            "BLOCKLOT": "3559 001"
+          },
+          "geometrySha256": "bd243acce0c5774c2a18f79fa4c4ce4b21402deabeede2179d5c0a6d07bf5c00"
+        },
+        {
+          "transportId": 32332,
+          "properties": {
+            "OBJECTID": 32332,
+            "BLOCKLOT": "3653 049"
+          },
+          "geometrySha256": "78c8b73601595ef8dbb37956bebd5fce174b017257560c8153265b22c38f0d07"
+        },
+        {
+          "transportId": 32387,
+          "properties": {
+            "OBJECTID": 32387,
+            "BLOCKLOT": "3658 027"
+          },
+          "geometrySha256": "cb27a9d477e28e77256cb1a9c0ecb99a8764932c73727aad4f1927a77c3583b3"
+        },
+        {
+          "transportId": 32730,
+          "properties": {
+            "OBJECTID": 32730,
+            "BLOCKLOT": "3658 028"
+          },
+          "geometrySha256": "37c753c6fdd8838eaf7eba74461c240bf11eb3c6010a17bb24ab8fa77c9d3eb0"
+        },
+        {
+          "transportId": 32915,
+          "properties": {
+            "OBJECTID": 32915,
+            "BLOCKLOT": "3664A006A"
+          },
+          "geometrySha256": "6ae5e072a51f12d0c2cdde32e0a59c16026a06c465f82e6ef21b994b3e067dd8"
+        },
+        {
+          "transportId": 33684,
+          "properties": {
+            "OBJECTID": 33684,
+            "BLOCKLOT": "3658 033"
+          },
+          "geometrySha256": "7972e2abe880daa23de6c510e2bc3092daf1a3179eed6bd737474cb6595d026d"
+        },
+        {
+          "transportId": 35773,
+          "properties": {
+            "OBJECTID": 35773,
+            "BLOCKLOT": "3664A011"
+          },
+          "geometrySha256": "9631bb83104d603e2925dcdeeea0b68f748b873c0640beed02695b6b85070c05"
+        },
+        {
+          "transportId": 38305,
+          "properties": {
+            "OBJECTID": 38305,
+            "BLOCKLOT": "3653 030"
+          },
+          "geometrySha256": "aa6d40c0bc29b5660c64dd78a336bbba2397488ccfe4046832893e9e4be4d664"
+        },
+        {
+          "transportId": 38833,
+          "properties": {
+            "OBJECTID": 38833,
+            "BLOCKLOT": "3664A059K"
+          },
+          "geometrySha256": "51cdf54280dac964feeeeaaf3810570cab126fb6ce93c9dd254ff23f8b3993fd"
+        },
+        {
+          "transportId": 39023,
+          "properties": {
+            "OBJECTID": 39023,
+            "BLOCKLOT": "3658 026"
+          },
+          "geometrySha256": "15d2c7f7d1b3eb8eaecdfa674e94a2700a40faaa615f88931ee948a928b6a17d"
+        },
+        {
+          "transportId": 40761,
+          "properties": {
+            "OBJECTID": 40761,
+            "BLOCKLOT": "3664A043"
+          },
+          "geometrySha256": "9b70e48bddc9f30900e4303ee1ab8e13c9547f6dfbacc328e244f831e68a7abf"
+        },
+        {
+          "transportId": 41219,
+          "properties": {
+            "OBJECTID": 41219,
+            "BLOCKLOT": "3664A016"
+          },
+          "geometrySha256": "bc2677bdfcef77e536a0c26c0c79b5b9b3d3a9dcb9115d0292f38f5a1da8e5db"
+        },
+        {
+          "transportId": 42703,
+          "properties": {
+            "OBJECTID": 42703,
+            "BLOCKLOT": "3664A020"
+          },
+          "geometrySha256": "0e00007a8fe783d962bffada644812d9620f117d1ea8f5a3811eac08f3c2d8b7"
+        },
+        {
+          "transportId": 43554,
+          "properties": {
+            "OBJECTID": 43554,
+            "BLOCKLOT": "3658 034"
+          },
+          "geometrySha256": "4e474fae34e46319bacbc24abb00d81454a6314a5334e0d8a6df64fc6b6988a1"
+        },
+        {
+          "transportId": 43969,
+          "properties": {
+            "OBJECTID": 43969,
+            "BLOCKLOT": "3664A059D"
+          },
+          "geometrySha256": "2895379011fc601d21c54909cb548e803b6c4ceb90e49f53976fef72aabe7149"
+        },
+        {
+          "transportId": 44903,
+          "properties": {
+            "OBJECTID": 44903,
+            "BLOCKLOT": "3653 053"
+          },
+          "geometrySha256": "c1dd86fae299c6f5bc74f0cb1eae04b208f89d1da0ea466e06b67ab5aa273743"
+        },
+        {
+          "transportId": 45299,
+          "properties": {
+            "OBJECTID": 45299,
+            "BLOCKLOT": "3664A050"
+          },
+          "geometrySha256": "63f68e8f8a5bbc7d50289d3181c9226e2188d4ddd1469bed57e6489e203837a2"
+        },
+        {
+          "transportId": 47513,
+          "properties": {
+            "OBJECTID": 47513,
+            "BLOCKLOT": "3559 004"
+          },
+          "geometrySha256": "51e099db80bec1f4743385881f5081dd1a78b49f29e3773cafa08403f4bd58e2"
+        },
+        {
+          "transportId": 51419,
+          "properties": {
+            "OBJECTID": 51419,
+            "BLOCKLOT": "3664A047"
+          },
+          "geometrySha256": "07ce007546b4b5b0d5f7c1bd52662dfd194fa67eda9d82cb26fb743f0500b0bb"
+        },
+        {
+          "transportId": 53634,
+          "properties": {
+            "OBJECTID": 53634,
+            "BLOCKLOT": "3653 057"
+          },
+          "geometrySha256": "900e5d911192dc7b925524be4fa9deda7b8a12fde6cc5277982663ebb30ebffc"
+        },
+        {
+          "transportId": 61012,
+          "properties": {
+            "OBJECTID": 61012,
+            "BLOCKLOT": "3664A028"
+          },
+          "geometrySha256": "2c87c3902baac7454b4bd0ad65893d74afb7a644ec53ce9d7aa8649edb75be20"
+        },
+        {
+          "transportId": 62936,
+          "properties": {
+            "OBJECTID": 62936,
+            "BLOCKLOT": "3658 061"
+          },
+          "geometrySha256": "cebb95d42a1de7c300fae93bcd98395ad39f222939b8966085100376ade5203f"
+        },
+        {
+          "transportId": 64813,
+          "properties": {
+            "OBJECTID": 64813,
+            "BLOCKLOT": "3658 120"
+          },
+          "geometrySha256": "1830815111ea7d0389bcd67784a5e2c9189721974ad1b1e693d4287dca0413f0"
+        },
+        {
+          "transportId": 65688,
+          "properties": {
+            "OBJECTID": 65688,
+            "BLOCKLOT": "3664A025"
+          },
+          "geometrySha256": "c193ad13c526b28241740fa8ed57deb4b08df0b8246a8fbbba93d296bbc0917d"
+        },
+        {
+          "transportId": 66867,
+          "properties": {
+            "OBJECTID": 66867,
+            "BLOCKLOT": "3653 004"
+          },
+          "geometrySha256": "796c723c2d144c523b2359d4560001d1135e09eb6e854a2ad1e987d18e64296f"
+        },
+        {
+          "transportId": 213712,
+          "properties": {
+            "OBJECTID": 213712,
+            "BLOCKLOT": "3664A055"
+          },
+          "geometrySha256": "ceec490153ffc0d6e60635e5a7ab6116e1c0d1bea8bb40a7c7b9c614b66990f9"
+        },
+        {
+          "transportId": 216849,
+          "properties": {
+            "OBJECTID": 216849,
+            "BLOCKLOT": "3664A059I"
+          },
+          "geometrySha256": "f75a53f026a4867b6846416c50ac588366031a3ee829efdb718cc1c95a5ef773"
+        },
+        {
+          "transportId": 216997,
+          "properties": {
+            "OBJECTID": 216997,
+            "BLOCKLOT": "3658 020"
+          },
+          "geometrySha256": "42df0f878c51a713594b30ed710bcdac3a6b85d202572956452b2a7e11a28ff8"
+        },
+        {
+          "transportId": 217391,
+          "properties": {
+            "OBJECTID": 217391,
+            "BLOCKLOT": "3658 010"
+          },
+          "geometrySha256": "25f2d0457d85236f3a5864ff38f4dd0378c8f53628daf52a277ac98d923a3215"
+        },
+        {
+          "transportId": 218090,
+          "properties": {
+            "OBJECTID": 218090,
+            "BLOCKLOT": "3658 025"
+          },
+          "geometrySha256": "139ed595131e293864f1a9fd87066104669de3bda34d6876fb299a74fde64d8f"
+        },
+        {
+          "transportId": 218485,
+          "properties": {
+            "OBJECTID": 218485,
+            "BLOCKLOT": "3664A034"
+          },
+          "geometrySha256": "3696e1e8e2de1dba1c77c7355cb6e526fc489527e0e12e41a4cdc4220b0664ea"
+        },
+        {
+          "transportId": 220877,
+          "properties": {
+            "OBJECTID": 220877,
+            "BLOCKLOT": "3653 025"
+          },
+          "geometrySha256": "6a7d8465b8909e0acc139cf24e8f6fa7af1db6204bdf42c30f9fccc178406ef4"
+        },
+        {
+          "transportId": 223442,
+          "properties": {
+            "OBJECTID": 223442,
+            "BLOCKLOT": "3664A059B"
+          },
+          "geometrySha256": "65294cfdd6962a20fa14d2572b8e38dbdff30623c69fd72843ba4537a98ea4f5"
+        },
+        {
+          "transportId": 223979,
+          "properties": {
+            "OBJECTID": 223979,
+            "BLOCKLOT": "3658 024"
+          },
+          "geometrySha256": "5535d4cceccc87829a880aac705307b82dabe1715ecf6bdbc6f74d1332ff641e"
+        },
+        {
+          "transportId": 224277,
+          "properties": {
+            "OBJECTID": 224277,
+            "BLOCKLOT": "3664A059A"
+          },
+          "geometrySha256": "2e1049e64d647228338ab6d421e051cbaec8ea478edaf24fd05c845ab130ad2c"
+        }
+      ]
+    },
+    {
+      "test": "fresh-ids-120",
+      "url": "https://egis.baltimorecity.gov/egis/rest/services/Parcel_Information/Parcel/MapServer/0/query?where=OBJECTID+IN+%2873509%2C74004%2C74615%2C74648%2C74691%2C75687%2C77057%2C79927%2C80594%2C8358%2C86816%2C91247%2C93140%2C9554%2C95595%2C97551%2C99129%2C99851%29&f=json&returnCountOnly=true",
+      "method": "GET",
+      "checkedAt": "2026-10-09T00:05:53.192Z",
+      "httpStatus": 200,
+      "contentType": "application/json; charset=UTF-8",
+      "bytes": 12,
+      "count": 18
+    },
+    {
+      "test": "fresh-ids-120",
+      "url": "https://egis.baltimorecity.gov/egis/rest/services/Parcel_Information/Parcel/MapServer/0/query?where=OBJECTID+IN+%2873509%2C74004%2C74615%2C74648%2C74691%2C75687%2C77057%2C79927%2C80594%2C8358%2C86816%2C91247%2C93140%2C9554%2C95595%2C97551%2C99129%2C99851%29&f=json&returnIdsOnly=true",
+      "method": "GET",
+      "checkedAt": "2026-10-09T00:05:53.392Z",
+      "httpStatus": 200,
+      "contentType": "application/json; charset=UTF-8",
+      "bytes": 152,
+      "objectIdFieldName": "OBJECTID",
+      "objectIds": [
+        8358,
+        9554,
+        73509,
+        74004,
+        74615,
+        74648,
+        74691,
+        75687,
+        77057,
+        79927,
+        80594,
+        86816,
+        91247,
+        93140,
+        95595,
+        97551,
+        99129,
+        99851
+      ]
+    },
+    {
+      "test": "fresh-ids-120",
+      "url": "https://egis.baltimorecity.gov/egis/rest/services/Parcel_Information/Parcel/MapServer/0/query?where=1%3D1&outFields=OBJECTID%2CBLOCKLOT&returnGeometry=true&outSR=4326&f=geojson&objectIds=8358%2C9554%2C73509%2C74004%2C74615%2C74648%2C74691%2C75687%2C77057%2C79927%2C80594%2C86816%2C91247%2C93140%2C95595%2C97551%2C99129%2C99851",
+      "method": "GET",
+      "checkedAt": "2026-10-09T00:05:53.587Z",
+      "httpStatus": 200,
+      "contentType": "application/geo+json; charset=UTF-8",
+      "bytes": 7595,
+      "features": [
+        {
+          "transportId": 8358,
+          "properties": {
+            "OBJECTID": 8358,
+            "BLOCKLOT": "3658 118"
+          },
+          "geometrySha256": "a544af713b519db10f3a25c524a4220fbee8d73cece8392c8cd62859e37061bc"
+        },
+        {
+          "transportId": 9554,
+          "properties": {
+            "OBJECTID": 9554,
+            "BLOCKLOT": "3658 098"
+          },
+          "geometrySha256": "5c36379192aa28ee09e758d1a095d6cac315af776d2080e860b6a48970d4db61"
+        },
+        {
+          "transportId": 73509,
+          "properties": {
+            "OBJECTID": 73509,
+            "BLOCKLOT": "3664B032"
+          },
+          "geometrySha256": "bb54b22176163368e38ab7ed5382dbc5c00c7a9483412b9c8435ba9b951878d1"
+        },
+        {
+          "transportId": 74004,
+          "properties": {
+            "OBJECTID": 74004,
+            "BLOCKLOT": "3664A004"
+          },
+          "geometrySha256": "6b51da3cad62639fdb615cd1938f29cc070c4c69b5b0ab4c4af6bc145c6f45b6"
+        },
+        {
+          "transportId": 74615,
+          "properties": {
+            "OBJECTID": 74615,
+            "BLOCKLOT": "3658 099"
+          },
+          "geometrySha256": "5a2b2bcb3095039c30918a616746a202ea4074b19c3434e280316dfd815c27f3"
+        },
+        {
+          "transportId": 74648,
+          "properties": {
+            "OBJECTID": 74648,
+            "BLOCKLOT": "3664B031B"
+          },
+          "geometrySha256": "2a6c064b33f777f16c1013e8dd8c501a0cb1e4b122dca5007eb9b0617557a67d"
+        },
+        {
+          "transportId": 74691,
+          "properties": {
+            "OBJECTID": 74691,
+            "BLOCKLOT": "3664A059"
+          },
+          "geometrySha256": "08ec32184bd2c2856ca21c6480e6af8c270baa02a22698e601a7732d30fa5bc8"
+        },
+        {
+          "transportId": 75687,
+          "properties": {
+            "OBJECTID": 75687,
+            "BLOCKLOT": "3653 029"
+          },
+          "geometrySha256": "2aa610c37e44fe1db0a7f10bfbc286964b750f0a35dfaa174df1b654f58fb19e"
+        },
+        {
+          "transportId": 77057,
+          "properties": {
+            "OBJECTID": 77057,
+            "BLOCKLOT": "3664A046"
+          },
+          "geometrySha256": "4dc59b2e770ef989bccea3bbbcb170b8844412f91bbfa151b770d33f10adf861"
+        },
+        {
+          "transportId": 79927,
+          "properties": {
+            "OBJECTID": 79927,
+            "BLOCKLOT": "3658 018"
+          },
+          "geometrySha256": "927cabab99008a853f83fcfbcde4da29de728fc1f73143d8cb33d4447b64ec07"
+        },
+        {
+          "transportId": 80594,
+          "properties": {
+            "OBJECTID": 80594,
+            "BLOCKLOT": "3658 035"
+          },
+          "geometrySha256": "2cd94419001330594e42ca0704350a42863ed9f89b0b4c12dfb891252a24f232"
+        },
+        {
+          "transportId": 86816,
+          "properties": {
+            "OBJECTID": 86816,
+            "BLOCKLOT": "3653 050"
+          },
+          "geometrySha256": "ccb61169a18108e7fde8c731da97097ee3aac271d38339c466f2d30012f6e289"
+        },
+        {
+          "transportId": 91247,
+          "properties": {
+            "OBJECTID": 91247,
+            "BLOCKLOT": "3664A053"
+          },
+          "geometrySha256": "85a1051c65adb9205b612e77e56b41bff28b57c22b815b5275cd385896c20565"
+        },
+        {
+          "transportId": 93140,
+          "properties": {
+            "OBJECTID": 93140,
+            "BLOCKLOT": "3658 031"
+          },
+          "geometrySha256": "88e61e5b7928004228912a20bcd00c3e19e29d9dee0b157e1b2ff067cf18d8ad"
+        },
+        {
+          "transportId": 95595,
+          "properties": {
+            "OBJECTID": 95595,
+            "BLOCKLOT": "3664B031D"
+          },
+          "geometrySha256": "29eeb661f81b82fadf48b661f4b8f7ef2c9cbe06f9406476151efd8126830c5b"
+        },
+        {
+          "transportId": 97551,
+          "properties": {
+            "OBJECTID": 97551,
+            "BLOCKLOT": "3664A017"
+          },
+          "geometrySha256": "7387f397b8ed04f3f4e15526910f99f11a8f66e3a9caf0816efa5e2d2cfa19f2"
+        },
+        {
+          "transportId": 99129,
+          "properties": {
+            "OBJECTID": 99129,
+            "BLOCKLOT": "3664A033"
+          },
+          "geometrySha256": "f2e93ba6a986a7e3f077c718153475af1e09d11f2b4faef6b8d1dd3906fb2d14"
+        },
+        {
+          "transportId": 99851,
+          "properties": {
+            "OBJECTID": 99851,
+            "BLOCKLOT": "3658 030"
+          },
+          "geometrySha256": "57ed82d9c3c81b00e3301bb25fc5ccc8ebf6ae3ec8bb0d2bd941c9903e902f73"
+        }
+      ]
+    },
+    {
+      "test": "footprint",
+      "url": "https://egis.baltimorecity.gov/egis/rest/services/Parcel_Information/Parcel/MapServer/0/query?where=1%3D1&geometry=-76.62344060977304%2C39.32381430606534%2C-76.62323921184677%2C39.32403649055533&geometryType=esriGeometryEnvelope&inSR=4326&spatialRel=esriSpatialRelIntersects&f=json&returnCountOnly=true",
+      "method": "GET",
+      "checkedAt": "2026-10-09T00:05:53.829Z",
+      "httpStatus": 200,
+      "contentType": "application/json; charset=UTF-8",
+      "bytes": 11,
+      "count": 6
+    },
+    {
+      "test": "footprint",
+      "url": "https://egis.baltimorecity.gov/egis/rest/services/Parcel_Information/Parcel/MapServer/0/query?where=1%3D1&geometry=-76.62344060977304%2C39.32381430606534%2C-76.62323921184677%2C39.32403649055533&geometryType=esriGeometryEnvelope&inSR=4326&spatialRel=esriSpatialRelIntersects&f=json&returnIdsOnly=true",
+      "method": "GET",
+      "checkedAt": "2026-10-09T00:05:54.033Z",
+      "httpStatus": 200,
+      "contentType": "application/json; charset=UTF-8",
+      "bytes": 80,
+      "objectIdFieldName": "OBJECTID",
+      "objectIds": [
+        16789,
+        132835,
+        205107,
+        212729,
+        217391
+      ]
+    },
+    {
+      "test": "source-binding",
+      "url": "https://egis.baltimorecity.gov/egis/rest/services/Parcel_Information/Parcel/MapServer/0/query?where=1%3D1&geometry=-76.62344060977304%2C39.32381430606534%2C-76.62323921184677%2C39.32403649055533&geometryType=esriGeometryEnvelope&inSR=4326&spatialRel=esriSpatialRelIntersects&f=json&returnCountOnly=true",
+      "method": "GET",
+      "checkedAt": "2026-10-09T00:05:54.228Z",
+      "httpStatus": 200,
+      "contentType": "application/json; charset=UTF-8",
+      "bytes": 11,
+      "count": 6
+    },
+    {
+      "test": "source-binding",
+      "url": "https://egis.baltimorecity.gov/egis/rest/services/Parcel_Information/Parcel/MapServer/0/query?where=1%3D1&geometry=-76.62344060977304%2C39.32381430606534%2C-76.62323921184677%2C39.32403649055533&geometryType=esriGeometryEnvelope&inSR=4326&spatialRel=esriSpatialRelIntersects&f=json&returnIdsOnly=true",
+      "method": "GET",
+      "checkedAt": "2026-10-09T00:05:54.428Z",
+      "httpStatus": 200,
+      "contentType": "application/json; charset=UTF-8",
+      "bytes": 80,
+      "objectIdFieldName": "OBJECTID",
+      "objectIds": [
+        16789,
+        132835,
+        205107,
+        212729,
+        217391
+      ]
+    }
+  ],
+  "qualityFile": "research/overnight-cities-2026-10-08/baltimore-city-parcels-quality.json",
+  "uniqueParcels": 138,
+  "requestCount": 72,
+  "allTestsPassed": false,
+  "finishedAt": "2026-10-09T00:05:54.657Z",
+  "qualityStatus": "pending-independent-topology-check"
+}

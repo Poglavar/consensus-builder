@@ -1,0 +1,104 @@
+{
+  "name": "Qarshi",
+  "country": "Uzbekistan",
+  "countryCode": "UZ",
+  "rank": 979,
+  "point": [
+    38.8366288494312,
+    65.7680353674128
+  ],
+  "freshResearch": {
+    "queries": [
+      {
+        "language": "English",
+        "query": "Qarshi Uzbekistan official cadastral map land registry parcel GIS city hokimiyat",
+        "scope": "Locate the local registry/cadastre owner and inspect safe public parcel geometry availability.",
+        "result": "An official Qarshi city decision listed land parcels for online auction with cadastral numbers and local neighborhood names, confirming cadastral administration for city land. Uzbekistan’s official National Geo-information Portal provides a cadastral-number search and official map platform, but the layer list is not exposed until interaction/sign-in and no anonymous geometry-only query was verified. No auction parcel was queried or retained.",
+        "actualResultUrls": [
+          "https://gov.uz/oz/qarshish/sections/view/65875"
+        ],
+        "executionMethod": "Separate English-language web search and official page/service review."
+      },
+      {
+        "language": "Uzbek",
+        "query": "Қарши кадастр харитаси ер участкалари расмий Қарши шаҳар ҳокимлиги кадастр",
+        "scope": "Find first-party local-language land registry, cadastral map or city land-service evidence.",
+        "result": "An official Qarshi city decision listed land parcels for online auction with cadastral numbers and local neighborhood names, confirming cadastral administration for city land. Uzbekistan’s official National Geo-information Portal provides a cadastral-number search and official map platform, but the layer list is not exposed until interaction/sign-in and no anonymous geometry-only query was verified. No auction parcel was queried or retained.",
+        "actualResultUrls": [
+          "https://gov.uz/oz/qarshish/sections/view/65875"
+        ],
+        "executionMethod": "Separate Uzbek-language web search and official local source review."
+      }
+    ],
+    "portals": [
+      {
+        "name": "Qarshi City Hokimiyat and Uzbekistan Cadastre Agency / National Geo-information Portal",
+        "operator": "Qarshi city government; Uzbekistan Cadastre Agency for national registration",
+        "homeUrl": "https://gov.uz/oz/qarshish/sections/view/65875",
+        "observation": "An official Qarshi city decision listed land parcels for online auction with cadastral numbers and local neighborhood names, confirming cadastral administration for city land. Uzbekistan’s official National Geo-information Portal provides a cadastral-number search and official map platform, but the layer list is not exposed until interaction/sign-in and no anonymous geometry-only query was verified. No auction parcel was queried or retained."
+      }
+    ],
+    "requests": [],
+    "historicalContext": []
+  },
+  "status": "complete",
+  "verifiedParcelResponse": null,
+  "source": {
+    "sourceId": "UZ-2276-LOCAL-CADASTRE-REVIEW",
+    "name": "Qarshi City Hokimiyat and Uzbekistan Cadastre Agency / National Geo-information Portal",
+    "url": "https://gov.uz/oz/qarshish/sections/view/65875",
+    "operator": "Qarshi city government; Uzbekistan Cadastre Agency for national registration",
+    "serviceType": "Local registry/cadastre evidence reviewed; no safe anonymous full-polygon response verified.",
+    "layer": null,
+    "geometryType": null,
+    "outputCrs": null,
+    "nativeIdField": null,
+    "nativeIdEvidence": null
+  },
+  "coverageAssessment": {
+    "claimedScope": "City cadastral administration is evidenced by a local land-allocation decision; no public parcel vector response at the WUP point is established.",
+    "verifiedOpenScope": "An official Qarshi city decision listed land parcels for online auction with cadastral numbers and local neighborhood names, confirming cadastral administration for city land. Uzbekistan’s official National Geo-information Portal provides a cadastral-number search and official map platform, but the layer list is not exposed until interaction/sign-in and no anonymous geometry-only query was verified. No auction parcel was queried or retained.",
+    "countrywideVerified": false,
+    "citywideVerified": false
+  },
+  "registryFound": true,
+  "verifiedSample": false,
+  "resultCategory": "official_local_registry_geometry_unverified",
+  "technicalBlocker": "The public national portal did not provide an inspectable safe geometry schema; the local decision is a static land-market list, not a parcel map API.",
+  "remainingUncertainty": "Exact urban parcel-layer coverage of this locator remains unverified.",
+  "nextStep": "If a public feature service is documented later, inspect metadata first and query only safe stable parcel IDs plus geometry in a bounded viewport.",
+  "schemaVersion": "1.0",
+  "checkedAt": "2026-10-09",
+  "wupCityCode": 2276,
+  "cityId": "wup2025:2276",
+  "runtimeReadiness": "not_enabled_no_verified_public_geometry",
+  "adapterReady": false,
+  "centerLatLon": [
+    38.8366288494312,
+    65.7680353674128
+  ],
+  "population2025k": 559.475,
+  "populationUnit": "persons",
+  "queueRank": 979,
+  "population2025": 559475,
+  "populationPlausibility2025": "Low",
+  "pointBasis": "UN WUP 2025 population-weighted settlement centroid; this is not a municipal boundary or a parcel-coverage claim.",
+  "publicParcelGeometryFound": false,
+  "sourceIds": [],
+  "registryBasis": "An official Qarshi city decision listed land parcels for online auction with cadastral numbers and local neighborhood names, confirming cadastral administration for city land. Uzbekistan’s official National Geo-information Portal provides a cadastral-number search and official map platform, but the layer list is not exposed until interaction/sign-in and no anonymous geometry-only query was verified. No auction parcel was queried or retained.",
+  "registryEvidenceUrls": [
+    "https://gov.uz/oz/qarshish/sections/view/65875"
+  ],
+  "runtimeAssessment": {
+    "status": "not_enabled_no_verified_public_geometry",
+    "reason": "The public national portal did not provide an inspectable safe geometry schema; the local decision is a static land-market list, not a parcel map API."
+  },
+  "rootPrimaryReadback": {
+    "url": "https://gov.uz/oz/qarshish/sections/view/65875",
+    "fetch": 200,
+    "contentType": "text/html; charset=utf-8",
+    "title": "Tadbirkorlik va shaharsozlik faoliyatini amalga oshirish uchun yer uchastkalarini ajratish bo‘yicha onlayn auksionga yer maydonlarini joylashtirish to‘g‘risida"
+  },
+  "rootReviewNote": "Reviewed the specific local primary evidence, its jurisdiction, source dates and public access limits. Failed readbacks are retained as transport/access outcomes rather than absence. No full public parcel geometry was verified for this city in the bounded discovery pass.",
+  "rootReviewedAt": "2026-10-09T05:07:19.594016+00:00"
+}

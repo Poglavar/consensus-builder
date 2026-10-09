@@ -1,0 +1,71 @@
+{
+  "name": "Zakho",
+  "country": "Iraq",
+  "countryCode": "IQ",
+  "rank": 645,
+  "point": [
+    37.1494279888594,
+    42.6798373704261
+  ],
+  "freshResearch": {
+    "queries": [
+      {
+        "language": "English",
+        "query": "Zakho real estate registration directorate official Kurdistan property",
+        "result": "Official KRG service portal lists the Zakho Property Registration Directorate and registration services.",
+        "method": "English web search followed by official KRG service-page review."
+      },
+      {
+        "language": "Kurdish/Arabic",
+        "query": "زاخۆ بەڕێوەبەرایەتی تۆمارکردنی خانوو و زەوی زاخۆ خزمەتگوزاری حکومەت",
+        "result": "Official KRG Arabic service page confirms the Zakho property-registration directorate; the service is applicant/owner-gated.",
+        "method": "Local-language search and official KRG service-page review; no form submitted."
+      }
+    ],
+    "portals": [
+      {
+        "name": "Zakho local or regional public registry/map sources",
+        "operator": "Official public sources listed below where available",
+        "homeUrl": "https://service.gov.krd/ar/service/moj-01-ar",
+        "observation": "City-specific property-registration institution is confirmed by KRG sources, but its registry-copy service requires verified owner identity. No anonymous public parcel geometry layer or safe point response was found."
+      }
+    ],
+    "requests": []
+  },
+  "status": "complete",
+  "verifiedParcelResponse": null,
+  "source": null,
+  "coverageAssessment": {
+    "claimedScope": "The Kurdistan Regional Government services portal explicitly lists the Zakho Property Registration Directorate and describes real-estate registration services. The identified copy-of-registration service requires the owner to appear and prove ownership, so it is institutional evidence only, not public parcel access.",
+    "verifiedOpenScope": "No public parcel geometry or anonymous point-level feature response was verified.",
+    "countrywideVerified": false
+  },
+  "registryFound": true,
+  "verifiedSample": false,
+  "resultCategory": "no_verified_sample_candidate_citywide",
+  "technicalBlocker": "Public registration copies and transaction workflows are owner/applicant-gated; no anonymous geometry service was identified.",
+  "remainingUncertainty": "Whether a separate city public parcel map exists outside the official pages inspected.",
+  "nextStep": "If public geometry is required, verify a distinct official city-specific geometry-only service; do not use owner, address, holding, tax, or applicant lookups.",
+  "schemaVersion": 1,
+  "checkedAt": "2026-10-09",
+  "wupCityCode": 593,
+  "cityId": "wup2025:593",
+  "runtimeReadiness": "not_enabled_no_verified_public_geometry",
+  "adapterReady": false,
+  "centerLatLon": [
+    37.1494279888594,
+    42.6798373704261
+  ],
+  "queueRank": 645,
+  "population2025": 814526,
+  "populationPlausibility2025": "Low",
+  "populationUnit": "persons",
+  "pointBasis": "UN WUP 2025 population-weighted settlement centroid; this is not a municipal boundary or a parcel-coverage claim.",
+  "publicParcelGeometryFound": false,
+  "sourceIds": [],
+  "registryBasis": "The Kurdistan Regional Government services portal explicitly lists the Zakho Property Registration Directorate and describes real-estate registration services. The identified copy-of-registration service requires the owner to appear and prove ownership, so it is institutional evidence only, not public parcel access.",
+  "registryEvidenceUrls": [
+    "https://service.gov.krd/ar/service/moj-01-ar"
+  ],
+  "rootReviewedAt": "2026-10-09T02:15:55.042537+00:00"
+}

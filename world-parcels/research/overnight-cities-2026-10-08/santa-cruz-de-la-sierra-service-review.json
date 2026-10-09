@@ -1,0 +1,13 @@
+{
+  "schemaVersion": "1.0",
+  "checkedAt": "2026-10-09",
+  "cityRecord": "city-1354-santa-cruz-de-la-sierra.json",
+  "purpose": "Read-only source discovery and bounded public-service validation; no runtime or global changes.",
+  "scopeLimits": {
+    "maxFullPolygonsRetainedInThisCityReport": 0,
+    "maxFullPolygonsRetainedAcrossCityReview": 0,
+    "ownerOrAddressDataRetained": false,
+    "accountCredentialsOrPublicTokenValuesRetained": false
+  },
+  "assessment": "The municipal Guía Urbana page loaded (HTTP 200); its actual catalogue lists basemaps, UV/manzano labels, districts/administrative divisions, transport, services, and facilities but no parcel/cadastral layer. The page JavaScript (HTTP 200) exposes only thematic APIs for health, education, culture, sports, security, infrastructure, and routes; no parcel/predio/lote route was present. The separate municipal cadastre page lists administrative services but no map endpoint. Thus no parcel candidate was advertised for a bounded query. Remaining uncertainty: whether a distinct municipal cadastre/tax system outside these inspected pages exposes geometry."
+}

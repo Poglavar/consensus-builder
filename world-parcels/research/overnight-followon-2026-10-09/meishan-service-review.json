@@ -1,0 +1,53 @@
+{
+  "schemaVersion": "1.0",
+  "checkedAt": "2026-10-09",
+  "cityRecord": "city-7076-meishan.json",
+  "purpose": "Document first-party local registry/map evidence and bounded anonymous geometry access review.",
+  "scopeLimits": {
+    "maxFullPolygonsRetainedInCityRecord": 0,
+    "maxFullPolygonsRetainedInReview": 0,
+    "maxFullPolygonsRetainedInRepository": 0,
+    "ownerOrAddressDataRetained": false,
+    "credentialsOrTokenValuesRetained": false,
+    "citywideCompletenessAsserted": false
+  },
+  "assessment": "An official Meishan municipal government report lists the Meishan Real Estate Registration Center among the municipal land-resources institutions and records citywide registration activity in its 2017 report. This proves historical local registry presence, but is dated and contains no current public map endpoint or parcel coverage.",
+  "registryAssessment": "Meishan’s municipal government identifies a city Real Estate Registration Center in a 2017 government work report. This establishes historical local registry context only; the report is not current evidence of active service or public geometry.",
+  "officialPrimarySources": [
+    {
+      "url": "https://www.ms.gov.cn/info/5440/1041264.htm",
+      "observation": "An official Meishan municipal government report lists the Meishan Real Estate Registration Center among the municipal land-resources institutions and records citywide registration activity in its 2017 report. This proves historical local registry presence, but is dated and contains no current public map endpoint or parcel coverage."
+    }
+  ],
+  "searchQueries": [
+    {
+      "language": "English",
+      "query": "Meishan Sichuan China official cadastral parcel map real estate registration GIS site:sc.gov.cn",
+      "result": "An official Meishan municipal government report lists the Meishan Real Estate Registration Center among the municipal land-resources institutions and records citywide registration activity in its 2017 report. This proves historical local registry presence, but is dated and contains no current public map endpoint or parcel coverage.",
+      "method": "Separate English-language web search followed by first-party page review.",
+      "scope": "Identify current first-party local registry/cadastre and safe public parcel geometry."
+    },
+    {
+      "language": "Chinese",
+      "query": "眉山市不动产登记 地籍图 地块地图 官方 自然资源局",
+      "result": "An official Meishan municipal government report lists the Meishan Real Estate Registration Center among the municipal land-resources institutions and records citywide registration activity in its 2017 report. This proves historical local registry presence, but is dated and contains no current public map endpoint or parcel coverage.",
+      "method": "Separate local-language web search followed by first-party page review.",
+      "scope": "Find first-party local-language registry, cadastral map or land-service evidence, and confirm locality."
+    }
+  ],
+  "geometryDecision": "No parcel geometry retained; no qualifying safe point-level sample was available for retention.",
+  "coverageAssessment": {
+    "claimedScope": "Meishan’s municipal government identifies a city Real Estate Registration Center in a 2017 government work report. This establishes historical local registry context only; the report is not current evidence of active service or public geometry.",
+    "verifiedOpenScope": "No public anonymous WUP-point parcel response or citywide parcel coverage is asserted.",
+    "citywideVerified": false,
+    "countrywideVerified": false,
+    "geometryVerified": false
+  },
+  "attempts": [
+    {
+      "url": "https://www.ms.gov.cn/info/5440/1041264.htm",
+      "result": "An official Meishan municipal government report lists the Meishan Real Estate Registration Center among the municipal land-resources institutions and records citywide registration activity in its 2017 report. This proves historical local registry presence, but is dated and contains no current public map endpoint or parcel coverage."
+    }
+  ],
+  "remainingUncertainty": "The registration-center evidence is from 2017; present operation, local service area, and public parcel geometry remain unverified."
+}

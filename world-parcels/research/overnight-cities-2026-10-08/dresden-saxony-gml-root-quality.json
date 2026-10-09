@@ -1,0 +1,97 @@
+{
+  "schemaVersion": 1,
+  "purpose": "Independent GEOS topology check of complete runtime parcels projected to metric coordinates; no repair applied. Counts are bounded sample evidence, not whole-city guarantees.",
+  "library": "Shapely 2.2.0",
+  "metricCrs": "EPSG:32633",
+  "featureCount": 11,
+  "validNonemptyCount": 11,
+  "invalidFeatures": [],
+  "exactDuplicateGeometryPairs": [],
+  "positiveAreaOverlapPairsAbove0_01M2": [],
+  "sumPairwiseOverlapM2": 0,
+  "operationErrors": [],
+  "areaM2": {
+    "min": 2748.9369984736363,
+    "median": 25176.708969353167,
+    "max": 1466973.1908873192
+  },
+  "features": [
+    {
+      "id": "DE-SN-140209___00622001800",
+      "areaM2": 1466973.1908873192,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "DE-SN-140209___00256____03",
+      "areaM2": 71459.56839818881,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "DE-SN-140209___00622001002",
+      "areaM2": 5997.753392114541,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "DE-SN-140209___00972____00",
+      "areaM2": 25176.708969353167,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "DE-SN-140209___00248000101",
+      "areaM2": 11935.078831053654,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "DE-SN-140209___00256000200",
+      "areaM2": 26988.827564893858,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "DE-SN-140209___00975____00",
+      "areaM2": 11196.527218807874,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "DE-SN-140209___00976____01",
+      "areaM2": 6696.824774488397,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "DE-SN-140209___00622001103",
+      "areaM2": 2748.9369984736363,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "DE-SN-140209___00890000100",
+      "areaM2": 62810.151466160314,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "DE-SN-140209___00248000a05",
+      "areaM2": 32397.467412173555,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    }
+  ]
+}

@@ -1,0 +1,61 @@
+{
+  "schemaVersion": "1.0",
+  "checkedAt": "2026-10-09",
+  "cityRecord": "city-9258-langfang.json",
+  "purpose": "Document first-party local registry/map evidence and bounded anonymous geometry access review.",
+  "scopeLimits": {
+    "maxFullPolygonsRetainedInCityRecord": 0,
+    "maxFullPolygonsRetainedInReview": 0,
+    "maxFullPolygonsRetainedInRepository": 0,
+    "ownerOrAddressDataRetained": false,
+    "credentialsOrTokenValuesRetained": false,
+    "citywideCompletenessAsserted": false
+  },
+  "assessment": "Langfang municipal government reports online property-registration services; the city bureau’s published duties include unified registration and cadastral survey. A 2019 municipal article states access to registration data is by citizen-ID and face authentication. The service inspected does not provide an anonymous parcel-geometry route; no identity or property-specific search was attempted.",
+  "registryAssessment": "Official municipal reports identify the local real-property registration center and natural-resources bureau cadastral-survey and registration duties.",
+  "officialPrimarySources": [
+    {
+      "url": "https://www.lf.gov.cn/Item/150591.aspx",
+      "observation": "Langfang municipal government reports online property-registration services; the city bureau’s published duties include unified registration and cadastral survey. A 2019 municipal article states access to registration data is by citizen-ID and face authentication. The service inspected does not provide an anonymous parcel-geometry route; no identity or property-specific search was attempted."
+    },
+    {
+      "url": "https://www.lf.gov.cn/Item/139689.aspx",
+      "observation": "Langfang municipal government reports online property-registration services; the city bureau’s published duties include unified registration and cadastral survey. A 2019 municipal article states access to registration data is by citizen-ID and face authentication. The service inspected does not provide an anonymous parcel-geometry route; no identity or property-specific search was attempted."
+    },
+    {
+      "url": "https://zfxxgk.lf.gov.cn/upload/file/20240207/6384292267385061038321689.pdf",
+      "observation": "Langfang municipal government reports online property-registration services; the city bureau’s published duties include unified registration and cadastral survey. A 2019 municipal article states access to registration data is by citizen-ID and face authentication. The service inspected does not provide an anonymous parcel-geometry route; no identity or property-specific search was attempted."
+    }
+  ],
+  "searchQueries": [
+    {
+      "language": "Chinese",
+      "query": "廊坊 不动产登记 地籍调查 地籍图 网上查询 自然资源和规划局 官方",
+      "result": "Langfang municipal government reports online property-registration services; the city bureau’s published duties include unified registration and cadastral survey. A 2019 municipal article states access to registration data is by citizen-ID and face authentication. The service inspected does not provide an anonymous parcel-geometry route; no identity or property-specific search was attempted.",
+      "method": "Separate native/local-language web search and first-party source review.",
+      "scope": "Identify official city-specific cadastral custody and safe anonymous parcel geometry."
+    },
+    {
+      "language": "English",
+      "query": "Langfang China official property registry cadastral map open parcel polygons public GIS",
+      "result": "Langfang municipal government reports online property-registration services; the city bureau’s published duties include unified registration and cadastral survey. A 2019 municipal article states access to registration data is by citizen-ID and face authentication. The service inspected does not provide an anonymous parcel-geometry route; no identity or property-specific search was attempted.",
+      "method": "Separate English-language web search and first-party source review.",
+      "scope": "Cross-check city-specific registry custody and whether public full parcel geometry can be queried anonymously."
+    }
+  ],
+  "geometryDecision": "No parcel geometry retained; no qualifying safe WUP-point sample was available for retention.",
+  "coverageAssessment": {
+    "claimedScope": "Official municipal reports identify the local real-property registration center and natural-resources bureau cadastral-survey and registration duties.",
+    "verifiedOpenScope": "Local registry and cadastral-survey responsibilities are confirmed. Anonymous WUP-point full geometry and citywide public parcel coverage remain unverified.",
+    "citywideVerified": false,
+    "countrywideVerified": false,
+    "geometryVerified": false
+  },
+  "attempts": [
+    {
+      "url": "https://www.lf.gov.cn/Item/139689.aspx",
+      "result": "Official service notice reviewed; it specifies citizen-ID and face-authentication for registration-data self-service. No authenticated session or property query was attempted."
+    }
+  ],
+  "remainingUncertainty": "Local registry and cadastral-survey responsibilities are confirmed. Anonymous WUP-point full geometry and citywide public parcel coverage remain unverified."
+}

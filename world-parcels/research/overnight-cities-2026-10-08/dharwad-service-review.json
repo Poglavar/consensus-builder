@@ -1,0 +1,54 @@
+{
+  "schemaVersion": "1.0",
+  "checkedAt": "2026-10-09",
+  "cityRecord": "city-9189-dharwad.json",
+  "purpose": "Document city-local land/property registry or map evidence and bounded anonymous parcel-geometry access review.",
+  "scopeLimits": {
+    "maxFullPolygonsRetainedInCityRecord": 0,
+    "maxFullPolygonsRetainedInReview": 0,
+    "maxFullPolygonsRetainedInRepository": 0,
+    "ownerOrAddressDataRetained": false,
+    "credentialsOrTokenValuesRetained": false,
+    "citywideCompletenessAsserted": false
+  },
+  "assessment": "The official Dharwad District land-records service page lists Revenue Maps, RTC/MR, and related land-record services and identifies a records section at the Dharwad Collectorate. This confirms local district land records and map indexing, but does not establish an anonymous full-vector cadastral service for the exact urban WUP locator. The official district portal links to Karnataka Revenue Maps and RTC services, but the map service page timed out locally during read-only inspection. The official page describes service categories, not a feature-level geometry API or schema. No parcel-specific search, login, or geometry request was made.",
+  "officialPrimarySources": [
+    {
+      "url": "https://dharwad.nic.in/en/service/land-records/",
+      "observation": "Official Dharwad District Administration lists i-RTC, Revenue Maps, RTC/MR and citizen services; its Records Section is at the Dharwad Collector Office."
+    },
+    {
+      "url": "https://dharwad.nic.in/service/%E0%B2%AD%E0%B3%82-%E0%B2%A6%E0%B2%BE%E0%B2%96%E0%B2%B2%E0%B3%86%E0%B2%97%E0%B3%81/",
+      "observation": "Official Kannada-language Dharwad District page lists the same revenue-map and land-record services."
+    },
+    {
+      "url": "https://landrecords.karnataka.gov.in/service3/",
+      "observation": "Official Karnataka Land Records Revenue Maps service linked from the district page. Direct public GET timed out locally and the web open also timed out; this is not evidence of provider outage. No feature schema or query behavior is asserted."
+    },
+    {
+      "url": "https://dilrmp.gov.in/dilrmpold/MapULPIN/tehsil-level/564",
+      "observation": "Government of India DILRMP dashboard provides Dharwad district map-digitization/georeferencing status, but not parcel feature geometry."
+    }
+  ],
+  "registryEvidenceUrls": [
+    "https://dharwad.nic.in/en/service/land-records/",
+    "https://dharwad.nic.in/service/%E0%B2%AD%E0%B3%82-%E0%B2%A6%E0%B2%BE%E0%B2%96%E0%B2%B2%E0%B2%B3%E0%B3%81/"
+  ],
+  "queries": [
+    {
+      "language": "English",
+      "query": "Dharwad Karnataka official land records revenue maps cadastral parcel map GIS"
+    },
+    {
+      "language": "Kannada",
+      "query": "ಧಾರವಾಡ ಭೂ ದಾಖಲೆ ಕಂದಾಯ ನಕ್ಷೆ ಭೂಪಟ ಸರ್ವೆ ಸಂಖ್ಯೆ ಅಧಿಕೃತ ಕರ್ನಾಟಕ"
+    }
+  ],
+  "attempts": [
+    {
+      "url": "https://landrecords.karnataka.gov.in/service3/",
+      "method": "Read-only GET of official Revenue Maps service page linked from Dharwad District land-records page",
+      "result": "Local timeout (no HTTP response status); treated as environment/network inconclusive, not provider outage. No parcel search was issued."
+    }
+  ]
+}

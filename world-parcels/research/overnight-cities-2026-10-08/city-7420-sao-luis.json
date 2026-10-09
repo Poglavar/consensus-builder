@@ -1,0 +1,112 @@
+{
+  "schemaVersion": 1,
+  "kind": "city_parcel_source_research",
+  "checkedAt": "2026-10-09",
+  "name": "São Luís",
+  "country": "Brazil",
+  "countryCode": "BR",
+  "populationUnit": "persons",
+  "status": "complete",
+  "registryFound": true,
+  "registryBasis": "São Luís SEMFAZ describes the municipal Cadastro Imobiliário and says property registration codes encode district, sector, block and lot. The city’s service catalogue offers municipal property registration. These are local tax-cadastre sources, but the inspected public routes do not expose parcel polygons.",
+  "registryEvidenceUrls": [
+    "https://www.semfaz.saoluis.ma.gov.br/consulta_nova_inscricao_imob",
+    "https://www.saoluis.ma.gov.br/portal/carta-servicos/46/",
+    "https://www.saoluis.ma.gov.br/territorio/",
+    "https://www.saoluis.ma.gov.br/mapas/"
+  ],
+  "verifiedSample": false,
+  "publicParcelGeometryFound": false,
+  "runtimeReadiness": "not_enabled_no_verified_public_geometry",
+  "wupCityCode": 7420,
+  "cityId": "wup2025:7420",
+  "centerLatLon": [
+    -2.54724343400151,
+    -44.2387814400156
+  ],
+  "rank": 404,
+  "queueRank": 404,
+  "population2025": 1264379,
+  "population2025k": 1264.379,
+  "pointBasis": "UN WUP 2025 population-weighted settlement centroid; this is not a municipal boundary or a parcel-coverage claim.",
+  "technicalBlocker": "The SEMFAZ property-number page documents an old-registration-code lookup with a visual verification challenge; no code was supplied and no form was submitted. The official INCID “Território” and “Mapas” pages list municipal maps and planning themes, not parcel polygons or a cadastral feature service. Direct SEMFAZ access timed out; direct requests to the city map pages returned HTTP 403. No complete parcel geometry was retrieved.",
+  "scopeLimits": "The inspected official sources establish the municipal property-tax cadastre and list planning/territorial maps. The thematic downloads reviewed are urban evolution, settlement origin/pattern, settlement types, and municipal territory maps. They do not establish parcel geometry. This is a public-source access finding, not a claim that the city has no cadastral data.",
+  "remainingUncertainty": "The SEMFAZ route timed out in the direct client and municipal map-page requests returned HTTP 403, so unindexed or separately hosted city GIS services may remain. Parcel polygons at the WUP point are unverified.",
+  "research": {
+    "executedQueries": [
+      {
+        "language": "English",
+        "query": "São Luís city official property cadastral map GIS parcels municipal registry",
+        "scope": "Find city-specific municipal cadastre evidence and anonymous vector parcel routes.",
+        "result": "Official SEMFAZ describes the municipal property cadastre; city INCID territory/map pages list planning and municipal-area maps. No anonymously queryable parcel polygon service was verified.",
+        "actualResultUrls": [
+          "https://www.semfaz.saoluis.ma.gov.br/consulta_nova_inscricao_imob",
+          "https://www.saoluis.ma.gov.br/territorio/",
+          "https://www.saoluis.ma.gov.br/mapas/"
+        ],
+        "executionMethod": "English-language web search followed by inspection of official Prefeitura, SEMFAZ and INCID pages."
+      },
+      {
+        "language": "Portuguese",
+        "query": "São Luís MA prefeitura mapa cadastro imobiliário GIS lotes parcelas",
+        "scope": "Localizar o cadastro imobiliário municipal e serviços públicos de polígonos de lotes para São Luís.",
+        "result": "A SEMFAZ confirma o Cadastro Imobiliário e descreve códigos geográficos de distrito, setor, quadra e lote. O portal do INCID publica mapas territoriais e de planejamento, mas não foi verificado um serviço de geometria de parcelas. A consulta individual exige inscrição anterior e desafio visual; nenhum dado foi inserido.",
+        "actualResultUrls": [
+          "https://www.semfaz.saoluis.ma.gov.br/consulta_nova_inscricao_imob",
+          "https://www.saoluis.ma.gov.br/portal/carta-servicos/46/",
+          "https://www.saoluis.ma.gov.br/territorio/",
+          "https://www.saoluis.ma.gov.br/mapas/"
+        ],
+        "executionMethod": "Busca em português e revisão de páginas oficiais da Prefeitura de São Luís, SEMFAZ e INCID."
+      }
+    ],
+    "officialSources": [
+      {
+        "url": "https://www.semfaz.saoluis.ma.gov.br/consulta_nova_inscricao_imob",
+        "observation": "SEMFAZ page says the Cadastro Imobiliário codes encode district, sector, block and lot; the individual lookup asks for an old registration number and visual challenge. No form fields were filled or submitted."
+      },
+      {
+        "url": "https://www.saoluis.ma.gov.br/portal/carta-servicos/46/",
+        "observation": "Municipal service catalogue identifies a process for registering a new property in the municipal Cadastro Imobiliário through the Finance Secretariat."
+      },
+      {
+        "url": "https://www.saoluis.ma.gov.br/territorio/",
+        "observation": "INCID territory index lists municipal and urban-planning maps, including settlement evolution, settlement origin/pattern and settlement types."
+      },
+      {
+        "url": "https://www.saoluis.ma.gov.br/mapas/",
+        "observation": "INCID public map index groups map themes such as economy, infrastructure, physical/environmental, population and territory; no cadastral parcel layer is listed in the inspected HTML."
+      },
+      {
+        "url": "https://stm.semfaz.saoluis.ma.gov.br/portalPrefeitura/jsp/mapa/mapa.jsf",
+        "observation": "The route title and content are “Mapa do Site” (site index), not a geographic map or GIS viewer."
+      }
+    ],
+    "metadataReviewFile": "sao-luis-service-review.json",
+    "routeInspectionFile": "/tmp/overnight-cities-2026-10-08/city-7420-sao-luis-route-inspection.json"
+  },
+  "source": {
+    "sourceId": "br-sao-luis-semfaz-cadastro-no-anonymous-parcel-geometry",
+    "name": "São Luís official local land-registration and public-map source review",
+    "operator": "www.semfaz.saoluis.ma.gov.br",
+    "url": "https://www.semfaz.saoluis.ma.gov.br/consulta_nova_inscricao_imob",
+    "scope": "The inspected official sources establish the municipal property-tax cadastre and list planning/territorial maps. The thematic downloads reviewed are urban evolution, settlement origin/pattern, settlement types, and municipal territory maps. They do not establish parcel geometry. This is a public-source access finding, not a claim that the city has no cadastral data.",
+    "nativeIdField": null,
+    "attributesRequested": [],
+    "identityBasis": "No feature ID or parcel geometry was returned.",
+    "geometryStatus": "no_anonymous_target_parcel_geometry_verified"
+  },
+  "coverageAssessment": {
+    "verifiedOpenScope": "The inspected official sources establish the municipal property-tax cadastre and list planning/territorial maps. The thematic downloads reviewed are urban evolution, settlement origin/pattern, settlement types, and municipal territory maps. They do not establish parcel geometry. This is a public-source access finding, not a claim that the city has no cadastral data.",
+    "citywideVerified": false,
+    "countrywideVerified": false
+  },
+  "priorEvidenceFiles": [],
+  "populationPlausibility2025": "High",
+  "rootReviewedAt": "2026-10-08T23:47:22.529967+00:00",
+  "sourceIds": [],
+  "point": [
+    -2.54724343400151,
+    -44.2387814400156
+  ]
+}

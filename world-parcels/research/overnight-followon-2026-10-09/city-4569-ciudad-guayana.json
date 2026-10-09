@@ -1,0 +1,96 @@
+{
+  "schemaVersion": "1.0",
+  "cityId": "wup2025:4569",
+  "wupCityCode": 4569,
+  "name": "Ciudad Guayana",
+  "country": "Venezuela (Bolivarian Republic of)",
+  "countryCode": "VE",
+  "rank": 1033,
+  "queueRank": 1033,
+  "point": [
+    8.28370889108248,
+    -62.7391788135209
+  ],
+  "centerLatLon": [
+    8.28370889108248,
+    -62.7391788135209
+  ],
+  "pointBasis": "UN WUP2025 population-weighted settlement centroid; not a municipal boundary or parcel-coverage claim.",
+  "population2025": 535164,
+  "population2025k": 535.164,
+  "populationUnit": "persons",
+  "populationPlausibility2025": "Moderate",
+  "cohort": "overnight-followon-1001-1100",
+  "checkedAt": "2026-10-09",
+  "status": "complete",
+  "registryFound": true,
+  "registryBasis": "The Municipio Caroní tax authority’s first-party SIGAT portal explicitly serves real-estate declarations and locates its office in Ciudad Guayana. Official municipal ordinances govern urban-property taxation and real-estate transactions. This confirms municipal property/cadastral administration, but no anonymous full-polygon query was verified.",
+  "registryEvidenceUrls": [
+    "https://caroni.sigat.net/",
+    "https://stributoscaroni.gconex.com/portal/descargas/4_ordenanza_impuesto_%20inmobiliario%20%28feb-24%29.pdf"
+  ],
+  "verifiedSample": false,
+  "publicParcelGeometryFound": false,
+  "sourceIds": [],
+  "adapterReady": false,
+  "runtimeReadiness": "not_enabled_no_verified_public_geometry",
+  "technicalBlocker": "No source-native, anonymous response containing a stable parcel identifier and complete polygon tied to the WUP point was verified in this city-specific investigation. This is an unverified access finding, not a claim that public geometry does not exist.",
+  "scopeLimits": "No full parcel geometry was retained. Local registry/cadastre custody and public geometry access are treated as separate findings; no citywide or countrywide parcel coverage is claimed.",
+  "resultCategory": "municipal_property_registry_no_public_parcel_geometry_verified",
+  "coverageAssessment": {
+    "claimedScope": "The Municipio Caroní tax authority’s first-party SIGAT portal explicitly serves real-estate declarations and locates its office in Ciudad Guayana. Official municipal ordinances govern urban-property taxation and real-estate transactions. This confirms municipal property/cadastral administration, but no anonymous full-polygon query was verified.",
+    "verifiedOpenScope": "No complete source-native anonymous parcel polygon was verified at the WUP point.",
+    "citywideVerified": false,
+    "countrywideVerified": false
+  },
+  "runtimeAssessment": {
+    "status": "not_enabled_no_verified_public_geometry",
+    "reason": "No source-native, anonymous response containing a stable parcel identifier and complete polygon tied to the WUP point was verified in this city-specific investigation. This is an unverified access finding, not a claim that public geometry does not exist."
+  },
+  "freshResearch": {
+    "queries": [
+      {
+        "language": "English",
+        "query": "Ciudad Guayana Caroni municipal property tax cadastral registry official map",
+        "scope": "Fresh city-specific discovery of local registry/cadastre custody and safe public parcel geometry.",
+        "result": "First-party Municipio Caroní tax portal provides property declaration workflows and identifies its Ciudad Guayana office; no open parcel-feature map response was established.",
+        "actualResultUrls": [
+          "https://caroni.sigat.net/",
+          "https://stributoscaroni.gconex.com/portal/descargas/4_ordenanza_impuesto_%20inmobiliario%20%28feb-24%29.pdf",
+          "https://stributoscaroni.gconex.com/portal/descargas/11_ordenanza_transaccion_inmobiliaria_2023.pdf"
+        ],
+        "executionMethod": "Executed as a fresh web search; official search results/pages were reviewed."
+      },
+      {
+        "language": "Spanish",
+        "query": "Ciudad Guayana catastro parcelario Alcaldía Caroní Municipio Caroní mapa parcela",
+        "scope": "Independent local-language search for city-specific registry/cadastre custody and anonymous parcel geometry.",
+        "result": "El portal oficial SIGAT de la Superintendencia de Administración Tributaria del Municipio Caroní ofrece trámites para declarar inmuebles y sitúa la oficina en Ciudad Guayana. No se verificó una consulta anónima de geometría parcelaria completa.",
+        "actualResultUrls": [
+          "https://caroni.sigat.net/",
+          "https://stributoscaroni.gconex.com/portal/descargas/4_ordenanza_impuesto_%20inmobiliario%20%28feb-24%29.pdf",
+          "https://stributoscaroni.gconex.com/portal/descargas/11_ordenanza_transaccion_inmobiliaria_2023.pdf"
+        ],
+        "executionMethod": "Executed as a separate fresh web search in the local language; official search results/pages were reviewed."
+      }
+    ],
+    "requests": [],
+    "portals": [
+      {
+        "homeUrl": "https://caroni.sigat.net/",
+        "observation": "First-party municipal portal identified, but no safe anonymous full-polygon point query was verified."
+      }
+    ],
+    "historicalContext": []
+  },
+  "remainingUncertainty": "The municipal property/cadastral service is established, but exact WUP-point parcel selection, an anonymous stable source identifier and complete public geometry are unverified. The SIGAT registration workflow may contain identity or property-record data; none was queried or retained.",
+  "nextStep": "Retain the bounded custody and geometry findings. Root review may qualify a documented source-native map route before enabling any provider.",
+  "priorEvidenceFiles": [],
+  "priorCheck": {
+    "attemptState": "pending",
+    "attemptEvidence": [],
+    "possiblePriorMatches": []
+  },
+  "rootReviewedAt": "2026-10-09T05:45:07.249008+00:00",
+  "rootReviewNote": "Reviewed exact immutable WUP identity, separate multilingual discovery, cited city custody and actual source observations. The Municipio Caroní tax authority’s first-party SIGAT portal explicitly serves real-estate declarations and locates its office in Ciudad Guayana. Official municipal ordinances govern urban-property taxation and real-estate transactions. This confirms municipal property/cadastral administration, but no anonymous full-polygon query was verified."
+}

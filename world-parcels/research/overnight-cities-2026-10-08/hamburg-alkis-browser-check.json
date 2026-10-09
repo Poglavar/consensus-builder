@@ -1,0 +1,20 @@
+{
+  "schemaVersion": 1,
+  "checkedAt": "2026-10-08T22:33:32.785040+00:00",
+  "city": "Hamburg",
+  "appCityId": "hamburg",
+  "sourceId": "de-hh-alkis-flurstueck",
+  "url": "http://localhost:5638/?city=hamburg&backend=http%3A%2F%2Flocalhost%3A5640&reduceMotion=1",
+  "browserMode": "Dedicated headed Chrome via agent-browser",
+  "result": "passed",
+  "loadedParcelCount": 123,
+  "interaction": "Real pointer move/down/up at x=537,y=362, then Details menu click.",
+  "selectedParcelId": "DE-HH-ALKIS-020302___00717______",
+  "detailsHeadingMatched": true,
+  "uncaughtPageErrors": [],
+  "visibleAlerts": [],
+  "browserClosed": true,
+  "screenshotCaptured": false,
+  "releaseState": "local_uncommitted_undeployed",
+  "scope": "Local rendering and normal parcel selection verified; does not establish whole-city completeness."
+}

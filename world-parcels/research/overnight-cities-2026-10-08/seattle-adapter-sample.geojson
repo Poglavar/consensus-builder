@@ -1,0 +1,137 @@
+{
+  "type": "FeatureCollection",
+  "features": [
+    {
+      "type": "Feature",
+      "id": "US-WA-KC-8934600105",
+      "geometry": {
+        "type": "Polygon",
+        "coordinates": [
+          [
+            [
+              -122.279111892867,
+              47.6791582798713
+            ],
+            [
+              -122.279513632337,
+              47.6791591891316
+            ],
+            [
+              -122.279518794893,
+              47.6793305432021
+            ],
+            [
+              -122.279117021628,
+              47.6793296343721
+            ],
+            [
+              -122.279111892867,
+              47.6791582798713
+            ]
+          ]
+        ]
+      },
+      "properties": {
+        "parcelId": "US-WA-KC-8934600105",
+        "id": "US-WA-KC-8934600105",
+        "sourceId": "us-wa-king-county-parcel-boundary",
+        "sourceParcelId": "8934600105",
+        "parcelNumber": "8934600105",
+        "cadMunicipalityName": null,
+        "ownershipType": "unknown",
+        "sourceProperties": {
+          "PIN": "8934600105",
+          "OBJECTID": 11340684
+        }
+      }
+    },
+    {
+      "type": "Feature",
+      "id": "US-WA-KC-5273200080",
+      "geometry": {
+        "type": "Polygon",
+        "coordinates": [
+          [
+            [
+              -122.279041400539,
+              47.6797359060389
+            ],
+            [
+              -122.279033670028,
+              47.6794939377627
+            ],
+            [
+              -122.279278688036,
+              47.6794944946583
+            ],
+            [
+              -122.279286136311,
+              47.6797360552189
+            ],
+            [
+              -122.279041400539,
+              47.6797359060389
+            ]
+          ]
+        ]
+      },
+      "properties": {
+        "parcelId": "US-WA-KC-5273200080",
+        "id": "US-WA-KC-5273200080",
+        "sourceId": "us-wa-king-county-parcel-boundary",
+        "sourceParcelId": "5273200080",
+        "parcelNumber": "5273200080",
+        "cadMunicipalityName": null,
+        "ownershipType": "unknown",
+        "sourceProperties": {
+          "PIN": "5273200080",
+          "OBJECTID": 11351816
+        }
+      }
+    },
+    {
+      "type": "Feature",
+      "id": "US-WA-KC-5273200060",
+      "geometry": {
+        "type": "Polygon",
+        "coordinates": [
+          [
+            [
+              -122.278804964402,
+              47.6799866918481
+            ],
+            [
+              -122.278796664768,
+              47.6797357563333
+            ],
+            [
+              -122.279041400539,
+              47.6797359060389
+            ],
+            [
+              -122.279049435577,
+              47.6799872123317
+            ],
+            [
+              -122.278804964402,
+              47.6799866918481
+            ]
+          ]
+        ]
+      },
+      "properties": {
+        "parcelId": "US-WA-KC-5273200060",
+        "id": "US-WA-KC-5273200060",
+        "sourceId": "us-wa-king-county-parcel-boundary",
+        "sourceParcelId": "5273200060",
+        "parcelNumber": "5273200060",
+        "cadMunicipalityName": null,
+        "ownershipType": "unknown",
+        "sourceProperties": {
+          "PIN": "5273200060",
+          "OBJECTID": 11351818
+        }
+      }
+    }
+  ]
+}

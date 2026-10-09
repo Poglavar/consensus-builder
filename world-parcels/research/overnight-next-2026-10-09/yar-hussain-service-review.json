@@ -1,0 +1,107 @@
+{
+  "schemaVersion": "1.0",
+  "checkedAt": "2026-10-09",
+  "cityRecord": "city-5844-yar-hussain.json",
+  "purpose": "Document distinct English/local-language search evidence, first-party local custody scope, direct anonymous route results and geometry-only limits.",
+  "scopeLimits": {
+    "maxFullPolygonsRetainedInCityRecord": 0,
+    "maxFullPolygonsRetainedInReview": 0,
+    "maxFullPolygonsRetainedInRepository": 0,
+    "ownerOrAddressDataRetained": false,
+    "credentialsOrTokenValuesRetained": false,
+    "citywideCompletenessAsserted": false
+  },
+  "assessment": "Swabi District is served by the KP Revenue land-record programme, and an official local-government record places Yar Hussain in Tehsil Razzar, Swabi. This is district-level registry custody; geometry is not exposed publicly in the checked sources.",
+  "registryAssessment": "City-bound or jurisdictionally local registry/land administration source identified, with the limited scope stated above; parcel geometry/runtime qualification remain separate.",
+  "officialPrimarySources": [
+    {
+      "url": "https://revenue.kp.gov.pk/computerization-of-land-record-in-18-districts/",
+      "operator": "Khyber Pakhtunkhwa Revenue Department",
+      "observation": "Official programme says Swabi district is in the computerized land-record programme; the page was unreachable on anonymous GET. No parcel locator submitted."
+    },
+    {
+      "url": "https://revenue.kp.gov.pk/sdcs/",
+      "operator": "Khyber Pakhtunkhwa Revenue Department",
+      "observation": "Official SDC directory describes computerized land records and service centers; no applicant or property record entered."
+    },
+    {
+      "url": "https://cfmis.lgkp.gov.pk/public/auctions/131/",
+      "operator": "Khyber Pakhtunkhwa Local Government",
+      "observation": "Official public notice identifies Yar Hussain as in Tehsil Razzar, District Swabi, linking the locality to district administration; it is not a cadastral map."
+    },
+    {
+      "url": "https://kplr.gkp.pk/",
+      "operator": "Khyber Pakhtunkhwa Land Record Portal",
+      "observation": "Official land-record portal requires record/person identifiers; no account or property query was used."
+    }
+  ],
+  "searchQueries": [
+    {
+      "language": "English",
+      "query": "Yar Hussain Swabi official land records cadastral map land revenue Pakistan",
+      "result": "English-language first-party and relevant source discovery; each listed official source was reviewed before use.",
+      "method": "Separate search followed by official-source review.",
+      "actualResultUrls": [
+        "https://revenue.kp.gov.pk/computerization-of-land-record-in-18-districts/",
+        "https://revenue.kp.gov.pk/sdcs/",
+        "https://cfmis.lgkp.gov.pk/public/auctions/131/",
+        "https://kplr.gkp.pk/"
+      ],
+      "scope": "Identify first-party local land-registry/cadastral custody and anonymous public parcel geometry. Preserve the exact WUP settlement point; do not submit owner, address, tax, account, lot/plot or applicant identifiers."
+    },
+    {
+      "language": "Urdu",
+      "query": "یار حسین صوابی خیبر پختونخوا اراضی ریکارڈ نقشہ پٹواری",
+      "result": "The Urdu search did not surface a Yar Hussain-specific first-party registry page; separate English official sources establish Swabi district service coverage and locality.",
+      "method": "Separate local-language web search followed by first-party source review.",
+      "actualResultUrls": [],
+      "scope": "Identify first-party local land-registry/cadastral custody and anonymous public parcel geometry. Preserve the exact WUP settlement point; do not submit owner, address, tax, account, lot/plot or applicant identifiers."
+    }
+  ],
+  "geometryDecision": {
+    "verified": false,
+    "sourceId": null,
+    "sampleCount": 0,
+    "sampleFile": null,
+    "nativeId": null,
+    "nativeIdField": null,
+    "exactWupPointTest": "No source-native full polygon was returned at the exact WUP point; publicParcelGeometryFound:false means unverified in this investigation, not confirmed absence.",
+    "requestEvidence": [
+      {
+        "url": "https://revenue.kp.gov.pk/computerization-of-land-record-in-18-districts/",
+        "method": "anonymous read-only GET; redirect-following; standard TLS; no credentials, cookies or property selectors",
+        "httpStatus": null,
+        "contentType": "",
+        "bytesRead": 0,
+        "transportOutcome": "curl exit 28; connection timed out after 20 seconds; no HTTP response"
+      }
+    ]
+  },
+  "coverageAssessment": {
+    "claimedScope": "Swabi District is served by the KP Revenue land-record programme, and an official local-government record places Yar Hussain in Tehsil Razzar, Swabi. This is district-level registry custody; geometry is not exposed publicly in the checked sources.",
+    "verifiedOpenScope": "No anonymous safe full parcel geometry response was verified in this investigation.",
+    "citywideVerified": false,
+    "countrywideVerified": false,
+    "geometryVerified": false
+  },
+  "attempts": [
+    {
+      "url": "https://revenue.kp.gov.pk/computerization-of-land-record-in-18-districts/",
+      "result": "No HTTP response: curl exit 28; connection timed out after 20 seconds; no HTTP response. "
+    }
+  ],
+  "remainingUncertainty": "Swabi District is served by the KP Revenue land-record programme, and an official local-government record places Yar Hussain in Tehsil Razzar, Swabi. This is district-level registry custody; geometry is not exposed publicly in the checked sources. Public parcel geometry and extent at the exact WUP point remain unverified.",
+  "nextStep": "Revisit only if an official schema-backed public full-geometry route is documented; request safe IDs and geometry only.",
+  "runtimeAssessment": "not enabled; no full parcel geometry retained",
+  "cohort": "overnight-next-1101-1200",
+  "cohortState": "research_complete_pending_root_review",
+  "integrationState": "not_integrated",
+  "rootReviewedAt": "2026-10-09T07:13:02.981057+00:00",
+  "rootReview": {
+    "checkedAt": "2026-10-09T07:13:02.981057+00:00",
+    "decision": "Reviewed city identity, canonical population/point, separate searches and saved source/request evidence. No full public parcel geometry verified in this pass.",
+    "custodyScope": "Swabi District is served by the KP Revenue land-record programme, and an official local-government record places Yar Hussain in Tehsil Razzar, Swabi. This is district-level registry custody; geometry is not exposed publicly in the checked sources.",
+    "transportFailuresDoNotProveAbsence": true,
+    "geometryClaimScope": "Investigation outcome only; no worldwide or citywide absence asserted."
+  }
+}

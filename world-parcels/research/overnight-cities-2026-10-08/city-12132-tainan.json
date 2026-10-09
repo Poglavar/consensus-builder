@@ -1,0 +1,138 @@
+{
+  "name": "Tainan",
+  "country": "China, Taiwan Province of China",
+  "countryCode": "TW",
+  "rank": 526,
+  "point": [
+    23.0029454841064,
+    120.225466132239
+  ],
+  "population2025": 979987,
+  "population2025k": 979.987,
+  "schemaVersion": 1,
+  "kind": "city_parcel_source_research",
+  "checkedAt": "2026-10-09",
+  "populationUnit": "persons",
+  "status": "complete",
+  "verifiedSample": false,
+  "publicParcelGeometryFound": false,
+  "runtimeReadiness": "not_enabled_no_verified_public_geometry",
+  "priorEvidenceFiles": [],
+  "scopeLimits": "Official SV3 documents a cadastral WFS query by parcel, section, or township/city, returning geometry in EPSG:3826 or EPSG:4326. Its parameters are QM, QD and EPSG; the documented modes require a parcel/section ID or a township/city code. No field-selection parameter or XY point mode is documented. QM=3 would request township/city-wide results, so no unbounded feature query was made. Separate SV1 supports XY lookup but returns ownership and title data, and was not called. The public city viewer supports parcel identification and layer/export tools, but no safe exact section/lot identifier was derived from the WUP coordinate.",
+  "pointBasis": "UN WUP 2025 population-weighted settlement centroid; this is not a municipal boundary or a parcel-coverage claim.",
+  "registryFound": true,
+  "registryBasis": "The Tainan City Government Bureau of Land Administration operates a city cadastral information service and the official TNGIS platform documents cadastral WFS geometry queries by parcel, section, or township/city. This confirms a city-specific cadastral service route, but not exact-point geometry or its current public access contract.",
+  "resultCategory": "city_cadastral_wfs_documented_no_safe_bounded_geometry_query",
+  "technicalBlocker": "The documented cadastral WFS requires section/parcel codes or a broad township code. Root attempted one bounded documentation-example geometry query, which failed before an HTTP response; no safe target-local full polygon or feature schema was obtained. Citywide requests and ownership/title operations remain unqueried.",
+  "remainingUncertainty": "Exact section/parcel at the WUP locator, public geometry output schema and licensing, and whether anonymous SV3 is authorized for public downloads remain unverified.",
+  "nextStep": "Root review; verify a safe, bounded city-specific geometry service and exact WUP locator coverage before any runtime qualification.",
+  "freshResearch": {
+    "executedQueries": [
+      {
+        "language": "Traditional Chinese",
+        "query": "臺南市 地籍圖 地號 查詢 地政局 地籍資訊 官方",
+        "result": "Found the city land bureau’s public cadastral map viewer, official TNGIS cadastral WFS documentation, and open-data cadastral-map listings.",
+        "method": "Separate Traditional Chinese-language discovery search and official first-party page review."
+      },
+      {
+        "language": "English",
+        "query": "Tainan City official cadastral map parcel GIS land administration public map",
+        "result": "Official Tainan open-data portal lists the 112th-year digital cadastral map with WMS resources from city land offices.",
+        "method": "Separate English-language discovery search."
+      }
+    ],
+    "officialSources": [
+      {
+        "url": "https://ldgis.tainan.gov.tw/TNLDWS/",
+        "observation": "Official city service index describes SV3 as cadastral WFS geometry by parcel, section, or township/city; output may use TWD97 (EPSG:3826) or WGS84 (EPSG:4326). It also describes SV1 XY lookup, which returns sensitive ownership and title attributes and was excluded."
+      },
+      {
+        "url": "https://ldgis.tainan.gov.tw/TNLDWS/TNGIS_WS.asmx?op=SV3",
+        "observation": "Official SV3 operation documentation lists QM, QD, EPSG parameters and WFS operation; examples are parcel, section, or township/city selection."
+      },
+      {
+        "url": "https://ldgis.tainan.gov.tw/TNLDWS/demo/service/SV3.aspx",
+        "observation": "Official trial page documents modes QM=1 by SEC+NO, QM=2 by SEC, QM=3 by TOWN, and output EPSG codes 3826/4326; it does not document output-field selection."
+      },
+      {
+        "url": "https://landmap.tainan.gov.tw/gis/",
+        "observation": "Official city interactive map provides land/section parcel search and identifies map features; no exact WUP-point parcel ID was derived."
+      },
+      {
+        "url": "https://data.gov.tw/en/datasets/167135",
+        "observation": "Taiwan open data portal describes Tainan’s digital cadastral map, section/admin attributes, and WMS services from multiple local land offices; annual dataset entry, not an exact parcel response."
+      }
+    ],
+    "viewerAndServiceTrace": {
+      "attempted": true,
+      "summary": "The City has a clear public-facing cadastral viewer and a documented official WFS operation. However, the WFS is selected by section/parcel or broad township/city; no exact parcel ID or output-field allowlist was confirmed, and a township-wide query would exceed the bounded scope.",
+      "geometryStatus": "No safe bounded feature geometry returned or retained.",
+      "fullPolygonLimit": 3,
+      "fullPolygonsRetained": 0,
+      "ownerOrAddressDataRequested": false,
+      "credentialsOrTokenValuesRetained": false
+    },
+    "attemptedGeometry": {
+      "attempted": true,
+      "status": "The documented WFS requires section/parcel IDs or a broad township code; neither an exact safe identifier nor a documented per-feature output allowlist was available. Avoided citywide query and SV1 ownership/title identification.",
+      "retainedFeatures": 0,
+      "fieldsRequested": [],
+      "geometryRetained": false,
+      "geojsonFile": null
+    }
+  },
+  "sourceIds": [],
+  "queueRank": 526,
+  "wupCityCode": 12132,
+  "cityId": "wup2025:12132",
+  "populationPlausibility2025": "High",
+  "centerLatLon": [
+    23.0029454841064,
+    120.225466132239
+  ],
+  "adapterReady": false,
+  "source": {
+    "sourceId": "tw-tainan-city-tngis-cadastral-wfs",
+    "name": "Tainan City Government TNGIS SV3 Cadastral WFS",
+    "operator": "Tainan City Government Bureau of Land Administration",
+    "url": "https://ldgis.tainan.gov.tw/TNLDWS/",
+    "serviceType": "Official municipal cadastral WFS documented as queryable by parcel, section or administrative area; bounded anonymous feature response not verified.",
+    "geometryType": null,
+    "coordinateReferenceSystem": null,
+    "nativeIdFields": [],
+    "directGeometryQueryVerified": false,
+    "directMetadataSchemaVerified": false,
+    "scope": "Official SV3 documents a cadastral WFS query by parcel, section, or township/city, returning geometry in EPSG:3826 or EPSG:4326. Its parameters are QM, QD and EPSG; the documented modes require a parcel/section ID or a township/city code. No field-selection parameter or XY point mode is documented. QM=3 would request township/city-wide results, so no unbounded feature query was made. Separate SV1 supports XY lookup but returns ownership and title data, and was not called. The public city viewer supports parcel identification and layer/export tools, but no safe exact section/lot identifier was derived from the WUP coordinate."
+  },
+  "coverageAssessment": {
+    "claimedScope": "City-specific registry/map evidence only; no geometry coverage asserted.",
+    "verifiedOpenScope": "No bounded anonymous parcel feature geometry verified.",
+    "citywideVerified": false,
+    "countrywideVerified": false
+  },
+  "registryEvidenceUrls": [
+    "https://ldgis.tainan.gov.tw/TNLDWS/",
+    "https://ldgis.tainan.gov.tw/TNLDWS/TNGIS_WS.asmx?op=SV3",
+    "https://ldgis.tainan.gov.tw/TNLDWS/demo/service/SV3.aspx",
+    "https://landmap.tainan.gov.tw/gis/",
+    "https://data.gov.tw/en/datasets/167135"
+  ],
+  "runtimeAssessment": {
+    "status": "not_enabled_no_verified_public_geometry",
+    "reason": "The documented cadastral WFS requires section/parcel codes or a broad township code. Root attempted one bounded documentation-example geometry query, which failed before an HTTP response; no safe target-local full polygon or feature schema was obtained. Citywide requests and ownership/title operations remain unqueried.",
+    "evidenceFile": "research/overnight-cities-2026-10-08/tainan-sv3-public-demo-schema-check.json"
+  },
+  "rootPublicGeometryFollowthrough": {
+    "documentationUrl": "https://ldgis.tainan.gov.tw/TNLDWS/demo/service/SV3.aspx",
+    "operation": "SV3 public cadastral geometry only, excluding ownership/title SV1",
+    "queryScope": "One public demonstration parcel from the official docs, not a citywide query or exact WUP parcel lookup.",
+    "requestedSampleCodes": {
+      "SEC": "0041",
+      "NO": "00010000"
+    },
+    "result": "Transport failed before any HTTP response or geometry was obtained.",
+    "evidenceFile": "research/overnight-cities-2026-10-08/tainan-sv3-public-demo-schema-check.json",
+    "featureValuesRetained": false
+  },
+  "rootReviewedAt": "2026-10-09T01:16:40.411562+00:00"
+}

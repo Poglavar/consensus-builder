@@ -1,0 +1,21 @@
+{
+  "checkedAt": "2026-10-09T02:52:07.414992+00:00",
+  "appCityId": "bonn",
+  "url": "http://localhost:5638/?city=bonn&backend=http%3A%2F%2F127.0.0.1%3A5640&reduceMotion=1&lang=en",
+  "headedBrowser": true,
+  "loadedParcels": 146,
+  "visibleParcels": 30,
+  "parcelFetchFinished": true,
+  "selectionMethod": "Real pointer move/down/up at [600,409], then Details menu item",
+  "selectedParcelId": "DE-NRW-05400700400071______",
+  "detailsHeading": "Parcel Copy to clipboard: DE-NRW-05400700400071______",
+  "detailsMatchesSelectedParcel": true,
+  "initialLoadFailure": {
+    "status": 502,
+    "code": "parcel-source-unavailable",
+    "loadedParcels": 0,
+    "cause": "Unestablished. The identical bounded gateway request subsequently returned HTTP200 with eleven features, followed by a successful fresh app load."
+  },
+  "uncaughtErrors": [],
+  "browserClosed": true
+}

@@ -1,0 +1,2239 @@
+{
+  "schemaVersion": 1,
+  "purpose": "Live city parcel qualification with unmodified responses through the repository adapter; IDs and hashes retained, full geometries confined to temporary audit cache except three public samples.",
+  "checkedAt": "2026-10-09T03:46:31.178Z",
+  "city": "wuppertal-nrw-root",
+  "descriptor": {
+    "id": "de-nrw-lika-flurstueck",
+    "name": "Geobasis NRW ALKIS parcels",
+    "adapter": "ogc-api",
+    "endpoint": "https://ogc-api.nrw.de/lika/v1/collections/flurstueck/items",
+    "idField": "flstkennz",
+    "idFromFeatureId": true,
+    "idType": "string",
+    "idPattern": "^[0-9_]{20}$",
+    "idPrefix": "DE-NRW-",
+    "pagination": "offset",
+    "profile": "rfc7946",
+    "outFields": [
+      "flstkennz",
+      "objid",
+      "flurstid",
+      "aktualit",
+      "flaeche",
+      "gemarkung",
+      "gemaschl",
+      "flur",
+      "flstnrzae",
+      "flstnrnen",
+      "gemeinde",
+      "gmdschl"
+    ],
+    "pageSize": 1000,
+    "maxFeatures": 10000,
+    "maxBboxKm2": 25,
+    "countryCode": "DE",
+    "metricSrid": 32632,
+    "scope": "Seven valid distinct NRW ALKIS cadastral references verified in thirteen bounded 0.001-degree cells around the unchanged Wuppertal WUP settlement locator. Complete offset paging, forced three-row geometry pages, all seven fresh exact native cadastral identities, explicit absence, footprint and source binding passed in twenty requests. Independent metric EPSG:32632 GEOS found all geometries valid and distinct, with no sampled overlaps above 0.01 m² or operation errors. Existing official North Rhine-Westphalia OGC API and native flstkennz namespace are reused. The original exact-point WFS sample and API polygon share the same native key; independent projected comparison finds Hausdorff distance 0.000006263 metres and symmetric difference 0.0099301 m², consistent with the two published CRS transformations, rather than byte-identical coordinates. Both complete source shapes remain unchanged. Wider municipal completeness, legal title, survey accuracy, currentness and long-term identity continuity remain unverified.",
+    "evidenceFile": "research/overnight-cities-2026-10-08/wuppertal-nrw-root-acceptance.json",
+    "attribution": "Bezirksregierung Köln / Geobasis NRW, ALKIS simplified schema. Datenlizenz Deutschland – Zero 2.0. Adapted to WGS84.",
+    "licenceUrl": "https://www.govdata.de/dl-de/zero-2-0",
+    "catalogueUrl": "https://ogc-api.nrw.de/lika/v1/collections/flurstueck?f=json",
+    "cityIds": [
+      "wuppertal"
+    ],
+    "additionalCityEvidence": {
+      "dusseldorf": "research/overnight-cities-2026-10-08/dusseldorf-nrw-root-acceptance.json"
+    },
+    "cityScopes": {
+      "dusseldorf": "162 valid, distinct NRW ALKIS cadastral polygons verified in thirteen local 0.001-degree cells around the unchanged Düsseldorf WUP locator. Complete offset paging, forced three-row pages, all 162 fresh native cadastral-reference reads, valid synthetic absence, footprint and source binding passed. Independent GEOS in EPSG:32632 found no invalid polygons, duplicate geometry, overlaps above 0.01 m² or operation errors. The existing North Rhine-Westphalia provider is reused. Wider municipal completeness, legal boundary accuracy and long-term identifier continuity remain unverified.",
+      "wuppertal": "Seven valid distinct NRW ALKIS cadastral references verified in thirteen bounded 0.001-degree cells around the unchanged Wuppertal WUP settlement locator. Complete offset paging, forced three-row geometry pages, all seven fresh exact native cadastral identities, explicit absence, footprint and source binding passed in twenty requests. Independent metric EPSG:32632 GEOS found all geometries valid and distinct, with no sampled overlaps above 0.01 m² or operation errors. Existing official North Rhine-Westphalia OGC API and native flstkennz namespace are reused. The original exact-point WFS sample and API polygon share the same native key; independent projected comparison finds Hausdorff distance 0.000006263 metres and symmetric difference 0.0099301 m², consistent with the two published CRS transformations, rather than byte-identical coordinates. Both complete source shapes remain unchanged. Wider municipal completeness, legal title, survey accuracy, currentness and long-term identity continuity remain unverified."
+    },
+    "operator": "Geobasis NRW / Bezirksregierung Köln",
+    "licenceNote": "Datenlizenz Deutschland – Zero 2.0; cadastral-reference geometry, legal title and survey accuracy unverified. Personal fields excluded."
+  },
+  "grid": [
+    {
+      "name": "viewport-0",
+      "bbox": [
+        7.101,
+        51.218,
+        7.102,
+        51.219
+      ],
+      "kind": "aligned-grid"
+    },
+    {
+      "name": "viewport-1",
+      "bbox": [
+        7.102,
+        51.218,
+        7.103,
+        51.219
+      ],
+      "kind": "aligned-grid"
+    },
+    {
+      "name": "viewport-2",
+      "bbox": [
+        7.103,
+        51.218,
+        7.104,
+        51.219
+      ],
+      "kind": "aligned-grid"
+    },
+    {
+      "name": "viewport-3",
+      "bbox": [
+        7.101,
+        51.219,
+        7.102,
+        51.22
+      ],
+      "kind": "aligned-grid"
+    },
+    {
+      "name": "viewport-4",
+      "bbox": [
+        7.102,
+        51.219,
+        7.103,
+        51.22
+      ],
+      "kind": "aligned-grid"
+    },
+    {
+      "name": "viewport-5",
+      "bbox": [
+        7.103,
+        51.219,
+        7.104,
+        51.22
+      ],
+      "kind": "aligned-grid"
+    },
+    {
+      "name": "viewport-6",
+      "bbox": [
+        7.101,
+        51.22,
+        7.102,
+        51.221
+      ],
+      "kind": "aligned-grid"
+    },
+    {
+      "name": "viewport-7",
+      "bbox": [
+        7.102,
+        51.22,
+        7.103,
+        51.221
+      ],
+      "kind": "aligned-grid"
+    },
+    {
+      "name": "viewport-8",
+      "bbox": [
+        7.103,
+        51.22,
+        7.104,
+        51.221
+      ],
+      "kind": "aligned-grid"
+    },
+    {
+      "name": "viewport-9",
+      "bbox": [
+        7.102,
+        51.217,
+        7.103,
+        51.218
+      ],
+      "kind": "adjacent-pan"
+    },
+    {
+      "name": "viewport-10",
+      "bbox": [
+        7.102,
+        51.221,
+        7.103,
+        51.222
+      ],
+      "kind": "adjacent-pan"
+    },
+    {
+      "name": "viewport-11",
+      "bbox": [
+        7.1,
+        51.219,
+        7.101,
+        51.22
+      ],
+      "kind": "adjacent-pan"
+    },
+    {
+      "name": "viewport-12",
+      "bbox": [
+        7.104,
+        51.219,
+        7.105,
+        51.22
+      ],
+      "kind": "adjacent-pan"
+    }
+  ],
+  "tests": [
+    {
+      "name": "viewport-0",
+      "passed": true,
+      "elapsedMs": 474,
+      "requestIndexes": [
+        0,
+        0
+      ],
+      "bbox": [
+        7.101,
+        51.218,
+        7.102,
+        51.219
+      ],
+      "complete": true,
+      "count": 1,
+      "ids": [
+        {
+          "id": "DE-NRW-05327700500316______",
+          "geometrySha256": "01918aa5d74a8f513b7926fe88b7234db31d9e6c7ea827a6168d0d1aa2874abe"
+        }
+      ]
+    },
+    {
+      "name": "viewport-1",
+      "passed": true,
+      "elapsedMs": 121,
+      "requestIndexes": [
+        1,
+        1
+      ],
+      "bbox": [
+        7.102,
+        51.218,
+        7.103,
+        51.219
+      ],
+      "complete": true,
+      "count": 1,
+      "ids": [
+        {
+          "id": "DE-NRW-05327700500316______",
+          "geometrySha256": "01918aa5d74a8f513b7926fe88b7234db31d9e6c7ea827a6168d0d1aa2874abe"
+        }
+      ]
+    },
+    {
+      "name": "viewport-2",
+      "passed": true,
+      "elapsedMs": 113,
+      "requestIndexes": [
+        2,
+        2
+      ],
+      "bbox": [
+        7.103,
+        51.218,
+        7.104,
+        51.219
+      ],
+      "complete": true,
+      "count": 1,
+      "ids": [
+        {
+          "id": "DE-NRW-05327700500316______",
+          "geometrySha256": "01918aa5d74a8f513b7926fe88b7234db31d9e6c7ea827a6168d0d1aa2874abe"
+        }
+      ]
+    },
+    {
+      "name": "viewport-3",
+      "passed": true,
+      "elapsedMs": 103,
+      "requestIndexes": [
+        3,
+        3
+      ],
+      "bbox": [
+        7.101,
+        51.219,
+        7.102,
+        51.22
+      ],
+      "complete": true,
+      "count": 2,
+      "ids": [
+        {
+          "id": "DE-NRW-05327700500304______",
+          "geometrySha256": "e816b3311c81bcb530a4829e8d6af94cf67ba709a230b7e7390f6d60f428972c"
+        },
+        {
+          "id": "DE-NRW-05327700500316______",
+          "geometrySha256": "01918aa5d74a8f513b7926fe88b7234db31d9e6c7ea827a6168d0d1aa2874abe"
+        }
+      ]
+    },
+    {
+      "name": "viewport-4",
+      "passed": true,
+      "elapsedMs": 105,
+      "requestIndexes": [
+        4,
+        4
+      ],
+      "bbox": [
+        7.102,
+        51.219,
+        7.103,
+        51.22
+      ],
+      "complete": true,
+      "count": 3,
+      "ids": [
+        {
+          "id": "DE-NRW-05327700500304______",
+          "geometrySha256": "e816b3311c81bcb530a4829e8d6af94cf67ba709a230b7e7390f6d60f428972c"
+        },
+        {
+          "id": "DE-NRW-05327700500306______",
+          "geometrySha256": "915086ae7498e5113ae4401e2b7ab96bcf0f723122c3863d37141fd58fa96e6e"
+        },
+        {
+          "id": "DE-NRW-05327700500316______",
+          "geometrySha256": "01918aa5d74a8f513b7926fe88b7234db31d9e6c7ea827a6168d0d1aa2874abe"
+        }
+      ]
+    },
+    {
+      "name": "viewport-5",
+      "passed": true,
+      "elapsedMs": 117,
+      "requestIndexes": [
+        5,
+        5
+      ],
+      "bbox": [
+        7.103,
+        51.219,
+        7.104,
+        51.22
+      ],
+      "complete": true,
+      "count": 5,
+      "ids": [
+        {
+          "id": "DE-NRW-05327700500304______",
+          "geometrySha256": "e816b3311c81bcb530a4829e8d6af94cf67ba709a230b7e7390f6d60f428972c"
+        },
+        {
+          "id": "DE-NRW-05327700500296______",
+          "geometrySha256": "1b91ab50bdb597e98b0e8ed48f7ff2f75796731536e57175981ffc4c2ce9e286"
+        },
+        {
+          "id": "DE-NRW-05327700500306______",
+          "geometrySha256": "915086ae7498e5113ae4401e2b7ab96bcf0f723122c3863d37141fd58fa96e6e"
+        },
+        {
+          "id": "DE-NRW-05327700500316______",
+          "geometrySha256": "01918aa5d74a8f513b7926fe88b7234db31d9e6c7ea827a6168d0d1aa2874abe"
+        },
+        {
+          "id": "DE-NRW-05327700500305______",
+          "geometrySha256": "9a6029566f6473b98976d1acca7754f29139d44ec825ae9bec6ab75faf86865e"
+        }
+      ]
+    },
+    {
+      "name": "viewport-6",
+      "passed": true,
+      "elapsedMs": 114,
+      "requestIndexes": [
+        6,
+        6
+      ],
+      "bbox": [
+        7.101,
+        51.22,
+        7.102,
+        51.221
+      ],
+      "complete": true,
+      "count": 6,
+      "ids": [
+        {
+          "id": "DE-NRW-05327700500304______",
+          "geometrySha256": "e816b3311c81bcb530a4829e8d6af94cf67ba709a230b7e7390f6d60f428972c"
+        },
+        {
+          "id": "DE-NRW-05327700500296______",
+          "geometrySha256": "1b91ab50bdb597e98b0e8ed48f7ff2f75796731536e57175981ffc4c2ce9e286"
+        },
+        {
+          "id": "DE-NRW-05327700500306______",
+          "geometrySha256": "915086ae7498e5113ae4401e2b7ab96bcf0f723122c3863d37141fd58fa96e6e"
+        },
+        {
+          "id": "DE-NRW-05327700500316______",
+          "geometrySha256": "01918aa5d74a8f513b7926fe88b7234db31d9e6c7ea827a6168d0d1aa2874abe"
+        },
+        {
+          "id": "DE-NRW-05327901300042______",
+          "geometrySha256": "6544295e77b66a858efbcbc27fd3ef7f184f11384b30303d68297916dfa80e27"
+        },
+        {
+          "id": "DE-NRW-05327901300043______",
+          "geometrySha256": "ece0fc87e7386574e8c82d82edc88793202109e7271ad9c5374c9fb21e528064"
+        }
+      ]
+    },
+    {
+      "name": "viewport-7",
+      "passed": true,
+      "elapsedMs": 131,
+      "requestIndexes": [
+        7,
+        7
+      ],
+      "bbox": [
+        7.102,
+        51.22,
+        7.103,
+        51.221
+      ],
+      "complete": true,
+      "count": 5,
+      "ids": [
+        {
+          "id": "DE-NRW-05327700500304______",
+          "geometrySha256": "e816b3311c81bcb530a4829e8d6af94cf67ba709a230b7e7390f6d60f428972c"
+        },
+        {
+          "id": "DE-NRW-05327700500296______",
+          "geometrySha256": "1b91ab50bdb597e98b0e8ed48f7ff2f75796731536e57175981ffc4c2ce9e286"
+        },
+        {
+          "id": "DE-NRW-05327700500306______",
+          "geometrySha256": "915086ae7498e5113ae4401e2b7ab96bcf0f723122c3863d37141fd58fa96e6e"
+        },
+        {
+          "id": "DE-NRW-05327901300042______",
+          "geometrySha256": "6544295e77b66a858efbcbc27fd3ef7f184f11384b30303d68297916dfa80e27"
+        },
+        {
+          "id": "DE-NRW-05327901300043______",
+          "geometrySha256": "ece0fc87e7386574e8c82d82edc88793202109e7271ad9c5374c9fb21e528064"
+        }
+      ]
+    },
+    {
+      "name": "viewport-8",
+      "passed": true,
+      "elapsedMs": 124,
+      "requestIndexes": [
+        8,
+        8
+      ],
+      "bbox": [
+        7.103,
+        51.22,
+        7.104,
+        51.221
+      ],
+      "complete": true,
+      "count": 4,
+      "ids": [
+        {
+          "id": "DE-NRW-05327700500296______",
+          "geometrySha256": "1b91ab50bdb597e98b0e8ed48f7ff2f75796731536e57175981ffc4c2ce9e286"
+        },
+        {
+          "id": "DE-NRW-05327700500306______",
+          "geometrySha256": "915086ae7498e5113ae4401e2b7ab96bcf0f723122c3863d37141fd58fa96e6e"
+        },
+        {
+          "id": "DE-NRW-05327901300042______",
+          "geometrySha256": "6544295e77b66a858efbcbc27fd3ef7f184f11384b30303d68297916dfa80e27"
+        },
+        {
+          "id": "DE-NRW-05327901300043______",
+          "geometrySha256": "ece0fc87e7386574e8c82d82edc88793202109e7271ad9c5374c9fb21e528064"
+        }
+      ]
+    },
+    {
+      "name": "viewport-9",
+      "passed": true,
+      "elapsedMs": 104,
+      "requestIndexes": [
+        9,
+        9
+      ],
+      "bbox": [
+        7.102,
+        51.217,
+        7.103,
+        51.218
+      ],
+      "complete": true,
+      "count": 1,
+      "ids": [
+        {
+          "id": "DE-NRW-05327700500316______",
+          "geometrySha256": "01918aa5d74a8f513b7926fe88b7234db31d9e6c7ea827a6168d0d1aa2874abe"
+        }
+      ]
+    },
+    {
+      "name": "viewport-10",
+      "passed": true,
+      "elapsedMs": 112,
+      "requestIndexes": [
+        10,
+        10
+      ],
+      "bbox": [
+        7.102,
+        51.221,
+        7.103,
+        51.222
+      ],
+      "complete": true,
+      "count": 1,
+      "ids": [
+        {
+          "id": "DE-NRW-05327901300042______",
+          "geometrySha256": "6544295e77b66a858efbcbc27fd3ef7f184f11384b30303d68297916dfa80e27"
+        }
+      ]
+    },
+    {
+      "name": "viewport-11",
+      "passed": true,
+      "elapsedMs": 104,
+      "requestIndexes": [
+        11,
+        11
+      ],
+      "bbox": [
+        7.1,
+        51.219,
+        7.101,
+        51.22
+      ],
+      "complete": true,
+      "count": 1,
+      "ids": [
+        {
+          "id": "DE-NRW-05327700500316______",
+          "geometrySha256": "01918aa5d74a8f513b7926fe88b7234db31d9e6c7ea827a6168d0d1aa2874abe"
+        }
+      ]
+    },
+    {
+      "name": "viewport-12",
+      "passed": true,
+      "elapsedMs": 147,
+      "requestIndexes": [
+        12,
+        12
+      ],
+      "bbox": [
+        7.104,
+        51.219,
+        7.105,
+        51.22
+      ],
+      "complete": true,
+      "count": 7,
+      "ids": [
+        {
+          "id": "DE-NRW-05327700500304______",
+          "geometrySha256": "e816b3311c81bcb530a4829e8d6af94cf67ba709a230b7e7390f6d60f428972c"
+        },
+        {
+          "id": "DE-NRW-05327700500296______",
+          "geometrySha256": "1b91ab50bdb597e98b0e8ed48f7ff2f75796731536e57175981ffc4c2ce9e286"
+        },
+        {
+          "id": "DE-NRW-05327700500306______",
+          "geometrySha256": "915086ae7498e5113ae4401e2b7ab96bcf0f723122c3863d37141fd58fa96e6e"
+        },
+        {
+          "id": "DE-NRW-05327700500316______",
+          "geometrySha256": "01918aa5d74a8f513b7926fe88b7234db31d9e6c7ea827a6168d0d1aa2874abe"
+        },
+        {
+          "id": "DE-NRW-05327700500305______",
+          "geometrySha256": "9a6029566f6473b98976d1acca7754f29139d44ec825ae9bec6ab75faf86865e"
+        },
+        {
+          "id": "DE-NRW-05327901300042______",
+          "geometrySha256": "6544295e77b66a858efbcbc27fd3ef7f184f11384b30303d68297916dfa80e27"
+        },
+        {
+          "id": "DE-NRW-05327901300043______",
+          "geometrySha256": "ece0fc87e7386574e8c82d82edc88793202109e7271ad9c5374c9fb21e528064"
+        }
+      ]
+    },
+    {
+      "name": "forced-three-row-pages",
+      "passed": true,
+      "elapsedMs": 331,
+      "requestIndexes": [
+        13,
+        15
+      ],
+      "count": 7,
+      "geometryPages": 3,
+      "pageSize": 3,
+      "allGeometryHashesMatch": true
+    },
+    {
+      "name": "fresh-ids-0",
+      "passed": true,
+      "elapsedMs": 115,
+      "requestIndexes": [
+        16,
+        16
+      ],
+      "count": 7,
+      "ids": [
+        "DE-NRW-05327700500296______",
+        "DE-NRW-05327700500304______",
+        "DE-NRW-05327700500305______",
+        "DE-NRW-05327700500306______",
+        "DE-NRW-05327700500316______",
+        "DE-NRW-05327901300042______",
+        "DE-NRW-05327901300043______"
+      ],
+      "allGeometryHashesMatch": true,
+      "absentIds": []
+    },
+    {
+      "name": "explicit-absence",
+      "passed": true,
+      "elapsedMs": 103,
+      "requestIndexes": [
+        17,
+        17
+      ],
+      "absentIds": [
+        "DE-NRW-00000000000000000000"
+      ],
+      "complete": true
+    },
+    {
+      "name": "footprint",
+      "passed": true,
+      "elapsedMs": 131,
+      "requestIndexes": [
+        18,
+        18
+      ],
+      "selectedParcelId": "DE-NRW-05327700500296______",
+      "count": 7,
+      "allGeometryHashesMatch": true
+    },
+    {
+      "name": "source-binding",
+      "passed": true,
+      "elapsedMs": 156,
+      "requestIndexes": [
+        19,
+        19
+      ],
+      "selectedParcelId": "DE-NRW-05327700500296______",
+      "coverage": "complete",
+      "siteM2": 8180.16,
+      "boundParcels": 1
+    }
+  ],
+  "requests": [
+    {
+      "test": "viewport-0",
+      "url": "https://ogc-api.nrw.de/lika/v1/collections/flurstueck/items?f=json&limit=1000&crs=http%3A%2F%2Fwww.opengis.net%2Fdef%2Fcrs%2FOGC%2F1.3%2FCRS84&profile=rfc7946&bbox=7.101%2C51.218%2C7.102%2C51.219&bbox-crs=http%3A%2F%2Fwww.opengis.net%2Fdef%2Fcrs%2FOGC%2F1.3%2FCRS84",
+      "method": "GET",
+      "checkedAt": "2026-10-09T03:46:31.179Z",
+      "httpStatus": 200,
+      "contentType": "application/geo+json",
+      "bytes": 16772,
+      "numberMatched": 1,
+      "numberReturned": 1,
+      "features": [
+        {
+          "transportId": "05327700500316______",
+          "properties": {
+            "objid": "DENW29AL10004uciFL",
+            "flurstid": "DENW29AL10004uci",
+            "aktualit": "2025-06-23T09:04:40Z",
+            "flaeche": 710542,
+            "gemarkung": "Vohwinkel",
+            "gemaschl": "053277",
+            "flur": "005",
+            "flstnrzae": "316",
+            "gemeinde": "Wuppertal",
+            "gmdschl": "05124000"
+          },
+          "geometrySha256": "01918aa5d74a8f513b7926fe88b7234db31d9e6c7ea827a6168d0d1aa2874abe"
+        }
+      ]
+    },
+    {
+      "test": "viewport-1",
+      "url": "https://ogc-api.nrw.de/lika/v1/collections/flurstueck/items?f=json&limit=1000&crs=http%3A%2F%2Fwww.opengis.net%2Fdef%2Fcrs%2FOGC%2F1.3%2FCRS84&profile=rfc7946&bbox=7.102%2C51.218%2C7.103%2C51.219&bbox-crs=http%3A%2F%2Fwww.opengis.net%2Fdef%2Fcrs%2FOGC%2F1.3%2FCRS84",
+      "method": "GET",
+      "checkedAt": "2026-10-09T03:46:31.654Z",
+      "httpStatus": 200,
+      "contentType": "application/geo+json",
+      "bytes": 16772,
+      "numberMatched": 1,
+      "numberReturned": 1,
+      "features": [
+        {
+          "transportId": "05327700500316______",
+          "properties": {
+            "objid": "DENW29AL10004uciFL",
+            "flurstid": "DENW29AL10004uci",
+            "aktualit": "2025-06-23T09:04:40Z",
+            "flaeche": 710542,
+            "gemarkung": "Vohwinkel",
+            "gemaschl": "053277",
+            "flur": "005",
+            "flstnrzae": "316",
+            "gemeinde": "Wuppertal",
+            "gmdschl": "05124000"
+          },
+          "geometrySha256": "01918aa5d74a8f513b7926fe88b7234db31d9e6c7ea827a6168d0d1aa2874abe"
+        }
+      ]
+    },
+    {
+      "test": "viewport-2",
+      "url": "https://ogc-api.nrw.de/lika/v1/collections/flurstueck/items?f=json&limit=1000&crs=http%3A%2F%2Fwww.opengis.net%2Fdef%2Fcrs%2FOGC%2F1.3%2FCRS84&profile=rfc7946&bbox=7.103%2C51.218%2C7.104%2C51.219&bbox-crs=http%3A%2F%2Fwww.opengis.net%2Fdef%2Fcrs%2FOGC%2F1.3%2FCRS84",
+      "method": "GET",
+      "checkedAt": "2026-10-09T03:46:31.776Z",
+      "httpStatus": 200,
+      "contentType": "application/geo+json",
+      "bytes": 16756,
+      "numberMatched": 1,
+      "numberReturned": 1,
+      "features": [
+        {
+          "transportId": "05327700500316______",
+          "properties": {
+            "objid": "DENW29AL10004uciFL",
+            "flurstid": "DENW29AL10004uci",
+            "aktualit": "2025-06-23T09:04:40Z",
+            "flaeche": 710542,
+            "gemarkung": "Vohwinkel",
+            "gemaschl": "053277",
+            "flur": "005",
+            "flstnrzae": "316",
+            "gemeinde": "Wuppertal",
+            "gmdschl": "05124000"
+          },
+          "geometrySha256": "01918aa5d74a8f513b7926fe88b7234db31d9e6c7ea827a6168d0d1aa2874abe"
+        }
+      ]
+    },
+    {
+      "test": "viewport-3",
+      "url": "https://ogc-api.nrw.de/lika/v1/collections/flurstueck/items?f=json&limit=1000&crs=http%3A%2F%2Fwww.opengis.net%2Fdef%2Fcrs%2FOGC%2F1.3%2FCRS84&profile=rfc7946&bbox=7.101%2C51.219%2C7.102%2C51.22&bbox-crs=http%3A%2F%2Fwww.opengis.net%2Fdef%2Fcrs%2FOGC%2F1.3%2FCRS84",
+      "method": "GET",
+      "checkedAt": "2026-10-09T03:46:31.889Z",
+      "httpStatus": 200,
+      "contentType": "application/geo+json",
+      "bytes": 22721,
+      "numberMatched": 2,
+      "numberReturned": 2,
+      "features": [
+        {
+          "transportId": "05327700500304______",
+          "properties": {
+            "objid": "DENW29AL10004h33FL",
+            "flurstid": "DENW29AL10004h33",
+            "aktualit": "2025-02-05T14:56:29Z",
+            "flaeche": 3575,
+            "gemarkung": "Vohwinkel",
+            "gemaschl": "053277",
+            "flur": "005",
+            "flstnrzae": "304",
+            "gemeinde": "Wuppertal",
+            "gmdschl": "05124000"
+          },
+          "geometrySha256": "e816b3311c81bcb530a4829e8d6af94cf67ba709a230b7e7390f6d60f428972c"
+        },
+        {
+          "transportId": "05327700500316______",
+          "properties": {
+            "objid": "DENW29AL10004uciFL",
+            "flurstid": "DENW29AL10004uci",
+            "aktualit": "2025-06-23T09:04:40Z",
+            "flaeche": 710542,
+            "gemarkung": "Vohwinkel",
+            "gemaschl": "053277",
+            "flur": "005",
+            "flstnrzae": "316",
+            "gemeinde": "Wuppertal",
+            "gmdschl": "05124000"
+          },
+          "geometrySha256": "01918aa5d74a8f513b7926fe88b7234db31d9e6c7ea827a6168d0d1aa2874abe"
+        }
+      ]
+    },
+    {
+      "test": "viewport-4",
+      "url": "https://ogc-api.nrw.de/lika/v1/collections/flurstueck/items?f=json&limit=1000&crs=http%3A%2F%2Fwww.opengis.net%2Fdef%2Fcrs%2FOGC%2F1.3%2FCRS84&profile=rfc7946&bbox=7.102%2C51.219%2C7.103%2C51.22&bbox-crs=http%3A%2F%2Fwww.opengis.net%2Fdef%2Fcrs%2FOGC%2F1.3%2FCRS84",
+      "method": "GET",
+      "checkedAt": "2026-10-09T03:46:31.993Z",
+      "httpStatus": 200,
+      "contentType": "application/geo+json",
+      "bytes": 28573,
+      "numberMatched": 3,
+      "numberReturned": 3,
+      "features": [
+        {
+          "transportId": "05327700500304______",
+          "properties": {
+            "objid": "DENW29AL10004h33FL",
+            "flurstid": "DENW29AL10004h33",
+            "aktualit": "2025-02-05T14:56:29Z",
+            "flaeche": 3575,
+            "gemarkung": "Vohwinkel",
+            "gemaschl": "053277",
+            "flur": "005",
+            "flstnrzae": "304",
+            "gemeinde": "Wuppertal",
+            "gmdschl": "05124000"
+          },
+          "geometrySha256": "e816b3311c81bcb530a4829e8d6af94cf67ba709a230b7e7390f6d60f428972c"
+        },
+        {
+          "transportId": "05327700500306______",
+          "properties": {
+            "objid": "DENW29AL10004uI9FL",
+            "flurstid": "DENW29AL10004uI9",
+            "aktualit": "2025-02-06T16:51:37Z",
+            "flaeche": 40035,
+            "gemarkung": "Vohwinkel",
+            "gemaschl": "053277",
+            "flur": "005",
+            "flstnrzae": "306",
+            "gemeinde": "Wuppertal",
+            "gmdschl": "05124000"
+          },
+          "geometrySha256": "915086ae7498e5113ae4401e2b7ab96bcf0f723122c3863d37141fd58fa96e6e"
+        },
+        {
+          "transportId": "05327700500316______",
+          "properties": {
+            "objid": "DENW29AL10004uciFL",
+            "flurstid": "DENW29AL10004uci",
+            "aktualit": "2025-06-23T09:04:40Z",
+            "flaeche": 710542,
+            "gemarkung": "Vohwinkel",
+            "gemaschl": "053277",
+            "flur": "005",
+            "flstnrzae": "316",
+            "gemeinde": "Wuppertal",
+            "gmdschl": "05124000"
+          },
+          "geometrySha256": "01918aa5d74a8f513b7926fe88b7234db31d9e6c7ea827a6168d0d1aa2874abe"
+        }
+      ]
+    },
+    {
+      "test": "viewport-5",
+      "url": "https://ogc-api.nrw.de/lika/v1/collections/flurstueck/items?f=json&limit=1000&crs=http%3A%2F%2Fwww.opengis.net%2Fdef%2Fcrs%2FOGC%2F1.3%2FCRS84&profile=rfc7946&bbox=7.103%2C51.219%2C7.104%2C51.22&bbox-crs=http%3A%2F%2Fwww.opengis.net%2Fdef%2Fcrs%2FOGC%2F1.3%2FCRS84",
+      "method": "GET",
+      "checkedAt": "2026-10-09T03:46:32.098Z",
+      "httpStatus": 200,
+      "contentType": "application/geo+json",
+      "bytes": 33698,
+      "numberMatched": 5,
+      "numberReturned": 5,
+      "features": [
+        {
+          "transportId": "05327700500304______",
+          "properties": {
+            "objid": "DENW29AL10004h33FL",
+            "flurstid": "DENW29AL10004h33",
+            "aktualit": "2025-02-05T14:56:29Z",
+            "flaeche": 3575,
+            "gemarkung": "Vohwinkel",
+            "gemaschl": "053277",
+            "flur": "005",
+            "flstnrzae": "304",
+            "gemeinde": "Wuppertal",
+            "gmdschl": "05124000"
+          },
+          "geometrySha256": "e816b3311c81bcb530a4829e8d6af94cf67ba709a230b7e7390f6d60f428972c"
+        },
+        {
+          "transportId": "05327700500296______",
+          "properties": {
+            "objid": "DENW29AL10004hooFL",
+            "flurstid": "DENW29AL10004hoo",
+            "aktualit": "2025-02-06T16:51:37Z",
+            "flaeche": 8192,
+            "gemarkung": "Vohwinkel",
+            "gemaschl": "053277",
+            "flur": "005",
+            "flstnrzae": "296",
+            "gemeinde": "Wuppertal",
+            "gmdschl": "05124000"
+          },
+          "geometrySha256": "1b91ab50bdb597e98b0e8ed48f7ff2f75796731536e57175981ffc4c2ce9e286"
+        },
+        {
+          "transportId": "05327700500306______",
+          "properties": {
+            "objid": "DENW29AL10004uI9FL",
+            "flurstid": "DENW29AL10004uI9",
+            "aktualit": "2025-02-06T16:51:37Z",
+            "flaeche": 40035,
+            "gemarkung": "Vohwinkel",
+            "gemaschl": "053277",
+            "flur": "005",
+            "flstnrzae": "306",
+            "gemeinde": "Wuppertal",
+            "gmdschl": "05124000"
+          },
+          "geometrySha256": "915086ae7498e5113ae4401e2b7ab96bcf0f723122c3863d37141fd58fa96e6e"
+        },
+        {
+          "transportId": "05327700500316______",
+          "properties": {
+            "objid": "DENW29AL10004uciFL",
+            "flurstid": "DENW29AL10004uci",
+            "aktualit": "2025-06-23T09:04:40Z",
+            "flaeche": 710542,
+            "gemarkung": "Vohwinkel",
+            "gemaschl": "053277",
+            "flur": "005",
+            "flstnrzae": "316",
+            "gemeinde": "Wuppertal",
+            "gmdschl": "05124000"
+          },
+          "geometrySha256": "01918aa5d74a8f513b7926fe88b7234db31d9e6c7ea827a6168d0d1aa2874abe"
+        },
+        {
+          "transportId": "05327700500305______",
+          "properties": {
+            "objid": "DENW29AL10004y9UFL",
+            "flurstid": "DENW29AL10004y9U",
+            "aktualit": "2025-02-05T14:56:29Z",
+            "flaeche": 505,
+            "gemarkung": "Vohwinkel",
+            "gemaschl": "053277",
+            "flur": "005",
+            "flstnrzae": "305",
+            "gemeinde": "Wuppertal",
+            "gmdschl": "05124000"
+          },
+          "geometrySha256": "9a6029566f6473b98976d1acca7754f29139d44ec825ae9bec6ab75faf86865e"
+        }
+      ]
+    },
+    {
+      "test": "viewport-6",
+      "url": "https://ogc-api.nrw.de/lika/v1/collections/flurstueck/items?f=json&limit=1000&crs=http%3A%2F%2Fwww.opengis.net%2Fdef%2Fcrs%2FOGC%2F1.3%2FCRS84&profile=rfc7946&bbox=7.101%2C51.22%2C7.102%2C51.221&bbox-crs=http%3A%2F%2Fwww.opengis.net%2Fdef%2Fcrs%2FOGC%2F1.3%2FCRS84",
+      "method": "GET",
+      "checkedAt": "2026-10-09T03:46:32.216Z",
+      "httpStatus": 200,
+      "contentType": "application/geo+json",
+      "bytes": 48242,
+      "numberMatched": 6,
+      "numberReturned": 6,
+      "features": [
+        {
+          "transportId": "05327700500304______",
+          "properties": {
+            "objid": "DENW29AL10004h33FL",
+            "flurstid": "DENW29AL10004h33",
+            "aktualit": "2025-02-05T14:56:29Z",
+            "flaeche": 3575,
+            "gemarkung": "Vohwinkel",
+            "gemaschl": "053277",
+            "flur": "005",
+            "flstnrzae": "304",
+            "gemeinde": "Wuppertal",
+            "gmdschl": "05124000"
+          },
+          "geometrySha256": "e816b3311c81bcb530a4829e8d6af94cf67ba709a230b7e7390f6d60f428972c"
+        },
+        {
+          "transportId": "05327700500296______",
+          "properties": {
+            "objid": "DENW29AL10004hooFL",
+            "flurstid": "DENW29AL10004hoo",
+            "aktualit": "2025-02-06T16:51:37Z",
+            "flaeche": 8192,
+            "gemarkung": "Vohwinkel",
+            "gemaschl": "053277",
+            "flur": "005",
+            "flstnrzae": "296",
+            "gemeinde": "Wuppertal",
+            "gmdschl": "05124000"
+          },
+          "geometrySha256": "1b91ab50bdb597e98b0e8ed48f7ff2f75796731536e57175981ffc4c2ce9e286"
+        },
+        {
+          "transportId": "05327700500306______",
+          "properties": {
+            "objid": "DENW29AL10004uI9FL",
+            "flurstid": "DENW29AL10004uI9",
+            "aktualit": "2025-02-06T16:51:37Z",
+            "flaeche": 40035,
+            "gemarkung": "Vohwinkel",
+            "gemaschl": "053277",
+            "flur": "005",
+            "flstnrzae": "306",
+            "gemeinde": "Wuppertal",
+            "gmdschl": "05124000"
+          },
+          "geometrySha256": "915086ae7498e5113ae4401e2b7ab96bcf0f723122c3863d37141fd58fa96e6e"
+        },
+        {
+          "transportId": "05327700500316______",
+          "properties": {
+            "objid": "DENW29AL10004uciFL",
+            "flurstid": "DENW29AL10004uci",
+            "aktualit": "2025-06-23T09:04:40Z",
+            "flaeche": 710542,
+            "gemarkung": "Vohwinkel",
+            "gemaschl": "053277",
+            "flur": "005",
+            "flstnrzae": "316",
+            "gemeinde": "Wuppertal",
+            "gmdschl": "05124000"
+          },
+          "geometrySha256": "01918aa5d74a8f513b7926fe88b7234db31d9e6c7ea827a6168d0d1aa2874abe"
+        },
+        {
+          "transportId": "05327901300042______",
+          "properties": {
+            "objid": "DENW29AL10008lRTFL",
+            "flurstid": "DENW29AL10008lRT",
+            "aktualit": "2025-02-06T17:01:35Z",
+            "flaeche": 168567,
+            "gemarkung": "Cronenberg",
+            "gemaschl": "053279",
+            "flur": "013",
+            "flstnrzae": "42",
+            "gemeinde": "Wuppertal",
+            "gmdschl": "05124000"
+          },
+          "geometrySha256": "6544295e77b66a858efbcbc27fd3ef7f184f11384b30303d68297916dfa80e27"
+        },
+        {
+          "transportId": "05327901300043______",
+          "properties": {
+            "objid": "DENW29AL10008wYPFL",
+            "flurstid": "DENW29AL10008wYP",
+            "aktualit": "2025-02-06T17:01:35Z",
+            "flaeche": 14653,
+            "gemarkung": "Cronenberg",
+            "gemaschl": "053279",
+            "flur": "013",
+            "flstnrzae": "43",
+            "gemeinde": "Wuppertal",
+            "gmdschl": "05124000"
+          },
+          "geometrySha256": "ece0fc87e7386574e8c82d82edc88793202109e7271ad9c5374c9fb21e528064"
+        }
+      ]
+    },
+    {
+      "test": "viewport-7",
+      "url": "https://ogc-api.nrw.de/lika/v1/collections/flurstueck/items?f=json&limit=1000&crs=http%3A%2F%2Fwww.opengis.net%2Fdef%2Fcrs%2FOGC%2F1.3%2FCRS84&profile=rfc7946&bbox=7.102%2C51.22%2C7.103%2C51.221&bbox-crs=http%3A%2F%2Fwww.opengis.net%2Fdef%2Fcrs%2FOGC%2F1.3%2FCRS84",
+      "method": "GET",
+      "checkedAt": "2026-10-09T03:46:32.332Z",
+      "httpStatus": 200,
+      "contentType": "application/geo+json",
+      "bytes": 33259,
+      "numberMatched": 5,
+      "numberReturned": 5,
+      "features": [
+        {
+          "transportId": "05327700500304______",
+          "properties": {
+            "objid": "DENW29AL10004h33FL",
+            "flurstid": "DENW29AL10004h33",
+            "aktualit": "2025-02-05T14:56:29Z",
+            "flaeche": 3575,
+            "gemarkung": "Vohwinkel",
+            "gemaschl": "053277",
+            "flur": "005",
+            "flstnrzae": "304",
+            "gemeinde": "Wuppertal",
+            "gmdschl": "05124000"
+          },
+          "geometrySha256": "e816b3311c81bcb530a4829e8d6af94cf67ba709a230b7e7390f6d60f428972c"
+        },
+        {
+          "transportId": "05327700500296______",
+          "properties": {
+            "objid": "DENW29AL10004hooFL",
+            "flurstid": "DENW29AL10004hoo",
+            "aktualit": "2025-02-06T16:51:37Z",
+            "flaeche": 8192,
+            "gemarkung": "Vohwinkel",
+            "gemaschl": "053277",
+            "flur": "005",
+            "flstnrzae": "296",
+            "gemeinde": "Wuppertal",
+            "gmdschl": "05124000"
+          },
+          "geometrySha256": "1b91ab50bdb597e98b0e8ed48f7ff2f75796731536e57175981ffc4c2ce9e286"
+        },
+        {
+          "transportId": "05327700500306______",
+          "properties": {
+            "objid": "DENW29AL10004uI9FL",
+            "flurstid": "DENW29AL10004uI9",
+            "aktualit": "2025-02-06T16:51:37Z",
+            "flaeche": 40035,
+            "gemarkung": "Vohwinkel",
+            "gemaschl": "053277",
+            "flur": "005",
+            "flstnrzae": "306",
+            "gemeinde": "Wuppertal",
+            "gmdschl": "05124000"
+          },
+          "geometrySha256": "915086ae7498e5113ae4401e2b7ab96bcf0f723122c3863d37141fd58fa96e6e"
+        },
+        {
+          "transportId": "05327901300042______",
+          "properties": {
+            "objid": "DENW29AL10008lRTFL",
+            "flurstid": "DENW29AL10008lRT",
+            "aktualit": "2025-02-06T17:01:35Z",
+            "flaeche": 168567,
+            "gemarkung": "Cronenberg",
+            "gemaschl": "053279",
+            "flur": "013",
+            "flstnrzae": "42",
+            "gemeinde": "Wuppertal",
+            "gmdschl": "05124000"
+          },
+          "geometrySha256": "6544295e77b66a858efbcbc27fd3ef7f184f11384b30303d68297916dfa80e27"
+        },
+        {
+          "transportId": "05327901300043______",
+          "properties": {
+            "objid": "DENW29AL10008wYPFL",
+            "flurstid": "DENW29AL10008wYP",
+            "aktualit": "2025-02-06T17:01:35Z",
+            "flaeche": 14653,
+            "gemarkung": "Cronenberg",
+            "gemaschl": "053279",
+            "flur": "013",
+            "flstnrzae": "43",
+            "gemeinde": "Wuppertal",
+            "gmdschl": "05124000"
+          },
+          "geometrySha256": "ece0fc87e7386574e8c82d82edc88793202109e7271ad9c5374c9fb21e528064"
+        }
+      ]
+    },
+    {
+      "test": "viewport-8",
+      "url": "https://ogc-api.nrw.de/lika/v1/collections/flurstueck/items?f=json&limit=1000&crs=http%3A%2F%2Fwww.opengis.net%2Fdef%2Fcrs%2FOGC%2F1.3%2FCRS84&profile=rfc7946&bbox=7.103%2C51.22%2C7.104%2C51.221&bbox-crs=http%3A%2F%2Fwww.opengis.net%2Fdef%2Fcrs%2FOGC%2F1.3%2FCRS84",
+      "method": "GET",
+      "checkedAt": "2026-10-09T03:46:32.465Z",
+      "httpStatus": 200,
+      "contentType": "application/geo+json",
+      "bytes": 27322,
+      "numberMatched": 4,
+      "numberReturned": 4,
+      "features": [
+        {
+          "transportId": "05327700500296______",
+          "properties": {
+            "objid": "DENW29AL10004hooFL",
+            "flurstid": "DENW29AL10004hoo",
+            "aktualit": "2025-02-06T16:51:37Z",
+            "flaeche": 8192,
+            "gemarkung": "Vohwinkel",
+            "gemaschl": "053277",
+            "flur": "005",
+            "flstnrzae": "296",
+            "gemeinde": "Wuppertal",
+            "gmdschl": "05124000"
+          },
+          "geometrySha256": "1b91ab50bdb597e98b0e8ed48f7ff2f75796731536e57175981ffc4c2ce9e286"
+        },
+        {
+          "transportId": "05327700500306______",
+          "properties": {
+            "objid": "DENW29AL10004uI9FL",
+            "flurstid": "DENW29AL10004uI9",
+            "aktualit": "2025-02-06T16:51:37Z",
+            "flaeche": 40035,
+            "gemarkung": "Vohwinkel",
+            "gemaschl": "053277",
+            "flur": "005",
+            "flstnrzae": "306",
+            "gemeinde": "Wuppertal",
+            "gmdschl": "05124000"
+          },
+          "geometrySha256": "915086ae7498e5113ae4401e2b7ab96bcf0f723122c3863d37141fd58fa96e6e"
+        },
+        {
+          "transportId": "05327901300042______",
+          "properties": {
+            "objid": "DENW29AL10008lRTFL",
+            "flurstid": "DENW29AL10008lRT",
+            "aktualit": "2025-02-06T17:01:35Z",
+            "flaeche": 168567,
+            "gemarkung": "Cronenberg",
+            "gemaschl": "053279",
+            "flur": "013",
+            "flstnrzae": "42",
+            "gemeinde": "Wuppertal",
+            "gmdschl": "05124000"
+          },
+          "geometrySha256": "6544295e77b66a858efbcbc27fd3ef7f184f11384b30303d68297916dfa80e27"
+        },
+        {
+          "transportId": "05327901300043______",
+          "properties": {
+            "objid": "DENW29AL10008wYPFL",
+            "flurstid": "DENW29AL10008wYP",
+            "aktualit": "2025-02-06T17:01:35Z",
+            "flaeche": 14653,
+            "gemarkung": "Cronenberg",
+            "gemaschl": "053279",
+            "flur": "013",
+            "flstnrzae": "43",
+            "gemeinde": "Wuppertal",
+            "gmdschl": "05124000"
+          },
+          "geometrySha256": "ece0fc87e7386574e8c82d82edc88793202109e7271ad9c5374c9fb21e528064"
+        }
+      ]
+    },
+    {
+      "test": "viewport-9",
+      "url": "https://ogc-api.nrw.de/lika/v1/collections/flurstueck/items?f=json&limit=1000&crs=http%3A%2F%2Fwww.opengis.net%2Fdef%2Fcrs%2FOGC%2F1.3%2FCRS84&profile=rfc7946&bbox=7.102%2C51.217%2C7.103%2C51.218&bbox-crs=http%3A%2F%2Fwww.opengis.net%2Fdef%2Fcrs%2FOGC%2F1.3%2FCRS84",
+      "method": "GET",
+      "checkedAt": "2026-10-09T03:46:32.591Z",
+      "httpStatus": 200,
+      "contentType": "application/geo+json",
+      "bytes": 16772,
+      "numberMatched": 1,
+      "numberReturned": 1,
+      "features": [
+        {
+          "transportId": "05327700500316______",
+          "properties": {
+            "objid": "DENW29AL10004uciFL",
+            "flurstid": "DENW29AL10004uci",
+            "aktualit": "2025-06-23T09:04:40Z",
+            "flaeche": 710542,
+            "gemarkung": "Vohwinkel",
+            "gemaschl": "053277",
+            "flur": "005",
+            "flstnrzae": "316",
+            "gemeinde": "Wuppertal",
+            "gmdschl": "05124000"
+          },
+          "geometrySha256": "01918aa5d74a8f513b7926fe88b7234db31d9e6c7ea827a6168d0d1aa2874abe"
+        }
+      ]
+    },
+    {
+      "test": "viewport-10",
+      "url": "https://ogc-api.nrw.de/lika/v1/collections/flurstueck/items?f=json&limit=1000&crs=http%3A%2F%2Fwww.opengis.net%2Fdef%2Fcrs%2FOGC%2F1.3%2FCRS84&profile=rfc7946&bbox=7.102%2C51.221%2C7.103%2C51.222&bbox-crs=http%3A%2F%2Fwww.opengis.net%2Fdef%2Fcrs%2FOGC%2F1.3%2FCRS84",
+      "method": "GET",
+      "checkedAt": "2026-10-09T03:46:32.696Z",
+      "httpStatus": 200,
+      "contentType": "application/geo+json",
+      "bytes": 12305,
+      "numberMatched": 1,
+      "numberReturned": 1,
+      "features": [
+        {
+          "transportId": "05327901300042______",
+          "properties": {
+            "objid": "DENW29AL10008lRTFL",
+            "flurstid": "DENW29AL10008lRT",
+            "aktualit": "2025-02-06T17:01:35Z",
+            "flaeche": 168567,
+            "gemarkung": "Cronenberg",
+            "gemaschl": "053279",
+            "flur": "013",
+            "flstnrzae": "42",
+            "gemeinde": "Wuppertal",
+            "gmdschl": "05124000"
+          },
+          "geometrySha256": "6544295e77b66a858efbcbc27fd3ef7f184f11384b30303d68297916dfa80e27"
+        }
+      ]
+    },
+    {
+      "test": "viewport-11",
+      "url": "https://ogc-api.nrw.de/lika/v1/collections/flurstueck/items?f=json&limit=1000&crs=http%3A%2F%2Fwww.opengis.net%2Fdef%2Fcrs%2FOGC%2F1.3%2FCRS84&profile=rfc7946&bbox=7.1%2C51.219%2C7.101%2C51.22&bbox-crs=http%3A%2F%2Fwww.opengis.net%2Fdef%2Fcrs%2FOGC%2F1.3%2FCRS84",
+      "method": "GET",
+      "checkedAt": "2026-10-09T03:46:32.809Z",
+      "httpStatus": 200,
+      "contentType": "application/geo+json",
+      "bytes": 16760,
+      "numberMatched": 1,
+      "numberReturned": 1,
+      "features": [
+        {
+          "transportId": "05327700500316______",
+          "properties": {
+            "objid": "DENW29AL10004uciFL",
+            "flurstid": "DENW29AL10004uci",
+            "aktualit": "2025-06-23T09:04:40Z",
+            "flaeche": 710542,
+            "gemarkung": "Vohwinkel",
+            "gemaschl": "053277",
+            "flur": "005",
+            "flstnrzae": "316",
+            "gemeinde": "Wuppertal",
+            "gmdschl": "05124000"
+          },
+          "geometrySha256": "01918aa5d74a8f513b7926fe88b7234db31d9e6c7ea827a6168d0d1aa2874abe"
+        }
+      ]
+    },
+    {
+      "test": "viewport-12",
+      "url": "https://ogc-api.nrw.de/lika/v1/collections/flurstueck/items?f=json&limit=1000&crs=http%3A%2F%2Fwww.opengis.net%2Fdef%2Fcrs%2FOGC%2F1.3%2FCRS84&profile=rfc7946&bbox=7.104%2C51.219%2C7.105%2C51.22&bbox-crs=http%3A%2F%2Fwww.opengis.net%2Fdef%2Fcrs%2FOGC%2F1.3%2FCRS84",
+      "method": "GET",
+      "checkedAt": "2026-10-09T03:46:32.914Z",
+      "httpStatus": 200,
+      "contentType": "application/geo+json",
+      "bytes": 49215,
+      "numberMatched": 7,
+      "numberReturned": 7,
+      "features": [
+        {
+          "transportId": "05327700500304______",
+          "properties": {
+            "objid": "DENW29AL10004h33FL",
+            "flurstid": "DENW29AL10004h33",
+            "aktualit": "2025-02-05T14:56:29Z",
+            "flaeche": 3575,
+            "gemarkung": "Vohwinkel",
+            "gemaschl": "053277",
+            "flur": "005",
+            "flstnrzae": "304",
+            "gemeinde": "Wuppertal",
+            "gmdschl": "05124000"
+          },
+          "geometrySha256": "e816b3311c81bcb530a4829e8d6af94cf67ba709a230b7e7390f6d60f428972c"
+        },
+        {
+          "transportId": "05327700500296______",
+          "properties": {
+            "objid": "DENW29AL10004hooFL",
+            "flurstid": "DENW29AL10004hoo",
+            "aktualit": "2025-02-06T16:51:37Z",
+            "flaeche": 8192,
+            "gemarkung": "Vohwinkel",
+            "gemaschl": "053277",
+            "flur": "005",
+            "flstnrzae": "296",
+            "gemeinde": "Wuppertal",
+            "gmdschl": "05124000"
+          },
+          "geometrySha256": "1b91ab50bdb597e98b0e8ed48f7ff2f75796731536e57175981ffc4c2ce9e286"
+        },
+        {
+          "transportId": "05327700500306______",
+          "properties": {
+            "objid": "DENW29AL10004uI9FL",
+            "flurstid": "DENW29AL10004uI9",
+            "aktualit": "2025-02-06T16:51:37Z",
+            "flaeche": 40035,
+            "gemarkung": "Vohwinkel",
+            "gemaschl": "053277",
+            "flur": "005",
+            "flstnrzae": "306",
+            "gemeinde": "Wuppertal",
+            "gmdschl": "05124000"
+          },
+          "geometrySha256": "915086ae7498e5113ae4401e2b7ab96bcf0f723122c3863d37141fd58fa96e6e"
+        },
+        {
+          "transportId": "05327700500316______",
+          "properties": {
+            "objid": "DENW29AL10004uciFL",
+            "flurstid": "DENW29AL10004uci",
+            "aktualit": "2025-06-23T09:04:40Z",
+            "flaeche": 710542,
+            "gemarkung": "Vohwinkel",
+            "gemaschl": "053277",
+            "flur": "005",
+            "flstnrzae": "316",
+            "gemeinde": "Wuppertal",
+            "gmdschl": "05124000"
+          },
+          "geometrySha256": "01918aa5d74a8f513b7926fe88b7234db31d9e6c7ea827a6168d0d1aa2874abe"
+        },
+        {
+          "transportId": "05327700500305______",
+          "properties": {
+            "objid": "DENW29AL10004y9UFL",
+            "flurstid": "DENW29AL10004y9U",
+            "aktualit": "2025-02-05T14:56:29Z",
+            "flaeche": 505,
+            "gemarkung": "Vohwinkel",
+            "gemaschl": "053277",
+            "flur": "005",
+            "flstnrzae": "305",
+            "gemeinde": "Wuppertal",
+            "gmdschl": "05124000"
+          },
+          "geometrySha256": "9a6029566f6473b98976d1acca7754f29139d44ec825ae9bec6ab75faf86865e"
+        },
+        {
+          "transportId": "05327901300042______",
+          "properties": {
+            "objid": "DENW29AL10008lRTFL",
+            "flurstid": "DENW29AL10008lRT",
+            "aktualit": "2025-02-06T17:01:35Z",
+            "flaeche": 168567,
+            "gemarkung": "Cronenberg",
+            "gemaschl": "053279",
+            "flur": "013",
+            "flstnrzae": "42",
+            "gemeinde": "Wuppertal",
+            "gmdschl": "05124000"
+          },
+          "geometrySha256": "6544295e77b66a858efbcbc27fd3ef7f184f11384b30303d68297916dfa80e27"
+        },
+        {
+          "transportId": "05327901300043______",
+          "properties": {
+            "objid": "DENW29AL10008wYPFL",
+            "flurstid": "DENW29AL10008wYP",
+            "aktualit": "2025-02-06T17:01:35Z",
+            "flaeche": 14653,
+            "gemarkung": "Cronenberg",
+            "gemaschl": "053279",
+            "flur": "013",
+            "flstnrzae": "43",
+            "gemeinde": "Wuppertal",
+            "gmdschl": "05124000"
+          },
+          "geometrySha256": "ece0fc87e7386574e8c82d82edc88793202109e7271ad9c5374c9fb21e528064"
+        }
+      ]
+    },
+    {
+      "test": "forced-three-row-pages",
+      "url": "https://ogc-api.nrw.de/lika/v1/collections/flurstueck/items?f=json&limit=3&crs=http%3A%2F%2Fwww.opengis.net%2Fdef%2Fcrs%2FOGC%2F1.3%2FCRS84&profile=rfc7946&bbox=7.104%2C51.219%2C7.105%2C51.22&bbox-crs=http%3A%2F%2Fwww.opengis.net%2Fdef%2Fcrs%2FOGC%2F1.3%2FCRS84",
+      "method": "GET",
+      "checkedAt": "2026-10-09T03:46:33.063Z",
+      "httpStatus": 200,
+      "contentType": "application/geo+json",
+      "bytes": 18138,
+      "numberMatched": 7,
+      "numberReturned": 3,
+      "features": [
+        {
+          "transportId": "05327700500304______",
+          "properties": {
+            "objid": "DENW29AL10004h33FL",
+            "flurstid": "DENW29AL10004h33",
+            "aktualit": "2025-02-05T14:56:29Z",
+            "flaeche": 3575,
+            "gemarkung": "Vohwinkel",
+            "gemaschl": "053277",
+            "flur": "005",
+            "flstnrzae": "304",
+            "gemeinde": "Wuppertal",
+            "gmdschl": "05124000"
+          },
+          "geometrySha256": "e816b3311c81bcb530a4829e8d6af94cf67ba709a230b7e7390f6d60f428972c"
+        },
+        {
+          "transportId": "05327700500296______",
+          "properties": {
+            "objid": "DENW29AL10004hooFL",
+            "flurstid": "DENW29AL10004hoo",
+            "aktualit": "2025-02-06T16:51:37Z",
+            "flaeche": 8192,
+            "gemarkung": "Vohwinkel",
+            "gemaschl": "053277",
+            "flur": "005",
+            "flstnrzae": "296",
+            "gemeinde": "Wuppertal",
+            "gmdschl": "05124000"
+          },
+          "geometrySha256": "1b91ab50bdb597e98b0e8ed48f7ff2f75796731536e57175981ffc4c2ce9e286"
+        },
+        {
+          "transportId": "05327700500306______",
+          "properties": {
+            "objid": "DENW29AL10004uI9FL",
+            "flurstid": "DENW29AL10004uI9",
+            "aktualit": "2025-02-06T16:51:37Z",
+            "flaeche": 40035,
+            "gemarkung": "Vohwinkel",
+            "gemaschl": "053277",
+            "flur": "005",
+            "flstnrzae": "306",
+            "gemeinde": "Wuppertal",
+            "gmdschl": "05124000"
+          },
+          "geometrySha256": "915086ae7498e5113ae4401e2b7ab96bcf0f723122c3863d37141fd58fa96e6e"
+        }
+      ]
+    },
+    {
+      "test": "forced-three-row-pages",
+      "url": "https://ogc-api.nrw.de/lika/v1/collections/flurstueck/items?f=json&limit=3&crs=http%3A%2F%2Fwww.opengis.net%2Fdef%2Fcrs%2FOGC%2F1.3%2FCRS84&profile=rfc7946&bbox=7.104%2C51.219%2C7.105%2C51.22&bbox-crs=http%3A%2F%2Fwww.opengis.net%2Fdef%2Fcrs%2FOGC%2F1.3%2FCRS84&offset=3",
+      "method": "GET",
+      "checkedAt": "2026-10-09T03:46:33.184Z",
+      "httpStatus": 200,
+      "contentType": "application/geo+json",
+      "bytes": 29501,
+      "numberMatched": 7,
+      "numberReturned": 3,
+      "features": [
+        {
+          "transportId": "05327700500316______",
+          "properties": {
+            "objid": "DENW29AL10004uciFL",
+            "flurstid": "DENW29AL10004uci",
+            "aktualit": "2025-06-23T09:04:40Z",
+            "flaeche": 710542,
+            "gemarkung": "Vohwinkel",
+            "gemaschl": "053277",
+            "flur": "005",
+            "flstnrzae": "316",
+            "gemeinde": "Wuppertal",
+            "gmdschl": "05124000"
+          },
+          "geometrySha256": "01918aa5d74a8f513b7926fe88b7234db31d9e6c7ea827a6168d0d1aa2874abe"
+        },
+        {
+          "transportId": "05327700500305______",
+          "properties": {
+            "objid": "DENW29AL10004y9UFL",
+            "flurstid": "DENW29AL10004y9U",
+            "aktualit": "2025-02-05T14:56:29Z",
+            "flaeche": 505,
+            "gemarkung": "Vohwinkel",
+            "gemaschl": "053277",
+            "flur": "005",
+            "flstnrzae": "305",
+            "gemeinde": "Wuppertal",
+            "gmdschl": "05124000"
+          },
+          "geometrySha256": "9a6029566f6473b98976d1acca7754f29139d44ec825ae9bec6ab75faf86865e"
+        },
+        {
+          "transportId": "05327901300042______",
+          "properties": {
+            "objid": "DENW29AL10008lRTFL",
+            "flurstid": "DENW29AL10008lRT",
+            "aktualit": "2025-02-06T17:01:35Z",
+            "flaeche": 168567,
+            "gemarkung": "Cronenberg",
+            "gemaschl": "053279",
+            "flur": "013",
+            "flstnrzae": "42",
+            "gemeinde": "Wuppertal",
+            "gmdschl": "05124000"
+          },
+          "geometrySha256": "6544295e77b66a858efbcbc27fd3ef7f184f11384b30303d68297916dfa80e27"
+        }
+      ]
+    },
+    {
+      "test": "forced-three-row-pages",
+      "url": "https://ogc-api.nrw.de/lika/v1/collections/flurstueck/items?f=json&limit=3&crs=http%3A%2F%2Fwww.opengis.net%2Fdef%2Fcrs%2FOGC%2F1.3%2FCRS84&profile=rfc7946&bbox=7.104%2C51.219%2C7.105%2C51.22&bbox-crs=http%3A%2F%2Fwww.opengis.net%2Fdef%2Fcrs%2FOGC%2F1.3%2FCRS84&offset=6",
+      "method": "GET",
+      "checkedAt": "2026-10-09T03:46:33.291Z",
+      "httpStatus": 200,
+      "contentType": "application/geo+json",
+      "bytes": 7642,
+      "numberMatched": 7,
+      "numberReturned": 1,
+      "features": [
+        {
+          "transportId": "05327901300043______",
+          "properties": {
+            "objid": "DENW29AL10008wYPFL",
+            "flurstid": "DENW29AL10008wYP",
+            "aktualit": "2025-02-06T17:01:35Z",
+            "flaeche": 14653,
+            "gemarkung": "Cronenberg",
+            "gemaschl": "053279",
+            "flur": "013",
+            "flstnrzae": "43",
+            "gemeinde": "Wuppertal",
+            "gmdschl": "05124000"
+          },
+          "geometrySha256": "ece0fc87e7386574e8c82d82edc88793202109e7271ad9c5374c9fb21e528064"
+        }
+      ]
+    },
+    {
+      "test": "fresh-ids-0",
+      "url": "https://ogc-api.nrw.de/lika/v1/collections/flurstueck/items?f=json&limit=1000&crs=http%3A%2F%2Fwww.opengis.net%2Fdef%2Fcrs%2FOGC%2F1.3%2FCRS84&profile=rfc7946&filter=%28flstkennz%20IN%20%28%2705327700500296______%27%2C%2705327700500304______%27%2C%2705327700500305______%27%2C%2705327700500306______%27%2C%2705327700500316______%27%2C%2705327901300042______%27%2C%2705327901300043______%27%29%29&filter-lang=cql2-text",
+      "method": "GET",
+      "checkedAt": "2026-10-09T03:46:33.395Z",
+      "httpStatus": 200,
+      "contentType": "application/geo+json",
+      "bytes": 49811,
+      "numberMatched": 7,
+      "numberReturned": 7,
+      "features": [
+        {
+          "transportId": "05327700500304______",
+          "properties": {
+            "objid": "DENW29AL10004h33FL",
+            "flurstid": "DENW29AL10004h33",
+            "aktualit": "2025-02-05T14:56:29Z",
+            "flaeche": 3575,
+            "gemarkung": "Vohwinkel",
+            "gemaschl": "053277",
+            "flur": "005",
+            "flstnrzae": "304",
+            "gemeinde": "Wuppertal",
+            "gmdschl": "05124000"
+          },
+          "geometrySha256": "e816b3311c81bcb530a4829e8d6af94cf67ba709a230b7e7390f6d60f428972c"
+        },
+        {
+          "transportId": "05327700500296______",
+          "properties": {
+            "objid": "DENW29AL10004hooFL",
+            "flurstid": "DENW29AL10004hoo",
+            "aktualit": "2025-02-06T16:51:37Z",
+            "flaeche": 8192,
+            "gemarkung": "Vohwinkel",
+            "gemaschl": "053277",
+            "flur": "005",
+            "flstnrzae": "296",
+            "gemeinde": "Wuppertal",
+            "gmdschl": "05124000"
+          },
+          "geometrySha256": "1b91ab50bdb597e98b0e8ed48f7ff2f75796731536e57175981ffc4c2ce9e286"
+        },
+        {
+          "transportId": "05327700500306______",
+          "properties": {
+            "objid": "DENW29AL10004uI9FL",
+            "flurstid": "DENW29AL10004uI9",
+            "aktualit": "2025-02-06T16:51:37Z",
+            "flaeche": 40035,
+            "gemarkung": "Vohwinkel",
+            "gemaschl": "053277",
+            "flur": "005",
+            "flstnrzae": "306",
+            "gemeinde": "Wuppertal",
+            "gmdschl": "05124000"
+          },
+          "geometrySha256": "915086ae7498e5113ae4401e2b7ab96bcf0f723122c3863d37141fd58fa96e6e"
+        },
+        {
+          "transportId": "05327700500316______",
+          "properties": {
+            "objid": "DENW29AL10004uciFL",
+            "flurstid": "DENW29AL10004uci",
+            "aktualit": "2025-06-23T09:04:40Z",
+            "flaeche": 710542,
+            "gemarkung": "Vohwinkel",
+            "gemaschl": "053277",
+            "flur": "005",
+            "flstnrzae": "316",
+            "gemeinde": "Wuppertal",
+            "gmdschl": "05124000"
+          },
+          "geometrySha256": "01918aa5d74a8f513b7926fe88b7234db31d9e6c7ea827a6168d0d1aa2874abe"
+        },
+        {
+          "transportId": "05327700500305______",
+          "properties": {
+            "objid": "DENW29AL10004y9UFL",
+            "flurstid": "DENW29AL10004y9U",
+            "aktualit": "2025-02-05T14:56:29Z",
+            "flaeche": 505,
+            "gemarkung": "Vohwinkel",
+            "gemaschl": "053277",
+            "flur": "005",
+            "flstnrzae": "305",
+            "gemeinde": "Wuppertal",
+            "gmdschl": "05124000"
+          },
+          "geometrySha256": "9a6029566f6473b98976d1acca7754f29139d44ec825ae9bec6ab75faf86865e"
+        },
+        {
+          "transportId": "05327901300042______",
+          "properties": {
+            "objid": "DENW29AL10008lRTFL",
+            "flurstid": "DENW29AL10008lRT",
+            "aktualit": "2025-02-06T17:01:35Z",
+            "flaeche": 168567,
+            "gemarkung": "Cronenberg",
+            "gemaschl": "053279",
+            "flur": "013",
+            "flstnrzae": "42",
+            "gemeinde": "Wuppertal",
+            "gmdschl": "05124000"
+          },
+          "geometrySha256": "6544295e77b66a858efbcbc27fd3ef7f184f11384b30303d68297916dfa80e27"
+        },
+        {
+          "transportId": "05327901300043______",
+          "properties": {
+            "objid": "DENW29AL10008wYPFL",
+            "flurstid": "DENW29AL10008wYP",
+            "aktualit": "2025-02-06T17:01:35Z",
+            "flaeche": 14653,
+            "gemarkung": "Cronenberg",
+            "gemaschl": "053279",
+            "flur": "013",
+            "flstnrzae": "43",
+            "gemeinde": "Wuppertal",
+            "gmdschl": "05124000"
+          },
+          "geometrySha256": "ece0fc87e7386574e8c82d82edc88793202109e7271ad9c5374c9fb21e528064"
+        }
+      ]
+    },
+    {
+      "test": "explicit-absence",
+      "url": "https://ogc-api.nrw.de/lika/v1/collections/flurstueck/items?f=json&limit=1000&crs=http%3A%2F%2Fwww.opengis.net%2Fdef%2Fcrs%2FOGC%2F1.3%2FCRS84&profile=rfc7946&filter=%28flstkennz%20IN%20%28%2700000000000000000000%27%29%29&filter-lang=cql2-text",
+      "method": "GET",
+      "checkedAt": "2026-10-09T03:46:33.511Z",
+      "httpStatus": 200,
+      "contentType": "application/geo+json",
+      "bytes": 1718,
+      "numberMatched": 0,
+      "numberReturned": 0,
+      "features": []
+    },
+    {
+      "test": "footprint",
+      "url": "https://ogc-api.nrw.de/lika/v1/collections/flurstueck/items?f=json&limit=1000&crs=http%3A%2F%2Fwww.opengis.net%2Fdef%2Fcrs%2FOGC%2F1.3%2FCRS84&profile=rfc7946&bbox=7.0975294535913935%2C51.219445670659276%2C7.105457069568483%2C51.223667068549126&bbox-crs=http%3A%2F%2Fwww.opengis.net%2Fdef%2Fcrs%2FOGC%2F1.3%2FCRS84",
+      "method": "GET",
+      "checkedAt": "2026-10-09T03:46:33.616Z",
+      "httpStatus": 200,
+      "contentType": "application/geo+json",
+      "bytes": 73043,
+      "numberMatched": 15,
+      "numberReturned": 15,
+      "features": [
+        {
+          "transportId": "05327700500304______",
+          "properties": {
+            "objid": "DENW29AL10004h33FL",
+            "flurstid": "DENW29AL10004h33",
+            "aktualit": "2025-02-05T14:56:29Z",
+            "flaeche": 3575,
+            "gemarkung": "Vohwinkel",
+            "gemaschl": "053277",
+            "flur": "005",
+            "flstnrzae": "304",
+            "gemeinde": "Wuppertal",
+            "gmdschl": "05124000"
+          },
+          "geometrySha256": "e816b3311c81bcb530a4829e8d6af94cf67ba709a230b7e7390f6d60f428972c"
+        },
+        {
+          "transportId": "05327700500296______",
+          "properties": {
+            "objid": "DENW29AL10004hooFL",
+            "flurstid": "DENW29AL10004hoo",
+            "aktualit": "2025-02-06T16:51:37Z",
+            "flaeche": 8192,
+            "gemarkung": "Vohwinkel",
+            "gemaschl": "053277",
+            "flur": "005",
+            "flstnrzae": "296",
+            "gemeinde": "Wuppertal",
+            "gmdschl": "05124000"
+          },
+          "geometrySha256": "1b91ab50bdb597e98b0e8ed48f7ff2f75796731536e57175981ffc4c2ce9e286"
+        },
+        {
+          "transportId": "05327700500317______",
+          "properties": {
+            "objid": "DENW29AL10004sLHFL",
+            "flurstid": "DENW29AL10004sLH",
+            "aktualit": "2025-02-05T14:56:29Z",
+            "flaeche": 11391,
+            "gemarkung": "Vohwinkel",
+            "gemaschl": "053277",
+            "flur": "005",
+            "flstnrzae": "317",
+            "gemeinde": "Wuppertal",
+            "gmdschl": "05124000"
+          },
+          "geometrySha256": "bef55972ab30f45949b87718f72ac812c0d561c71b696d6bde599029052d9fc8"
+        },
+        {
+          "transportId": "05327700500306______",
+          "properties": {
+            "objid": "DENW29AL10004uI9FL",
+            "flurstid": "DENW29AL10004uI9",
+            "aktualit": "2025-02-06T16:51:37Z",
+            "flaeche": 40035,
+            "gemarkung": "Vohwinkel",
+            "gemaschl": "053277",
+            "flur": "005",
+            "flstnrzae": "306",
+            "gemeinde": "Wuppertal",
+            "gmdschl": "05124000"
+          },
+          "geometrySha256": "915086ae7498e5113ae4401e2b7ab96bcf0f723122c3863d37141fd58fa96e6e"
+        },
+        {
+          "transportId": "05327700500316______",
+          "properties": {
+            "objid": "DENW29AL10004uciFL",
+            "flurstid": "DENW29AL10004uci",
+            "aktualit": "2025-06-23T09:04:40Z",
+            "flaeche": 710542,
+            "gemarkung": "Vohwinkel",
+            "gemaschl": "053277",
+            "flur": "005",
+            "flstnrzae": "316",
+            "gemeinde": "Wuppertal",
+            "gmdschl": "05124000"
+          },
+          "geometrySha256": "01918aa5d74a8f513b7926fe88b7234db31d9e6c7ea827a6168d0d1aa2874abe"
+        },
+        {
+          "transportId": "05327700500295______",
+          "properties": {
+            "objid": "DENW29AL10004y33FL",
+            "flurstid": "DENW29AL10004y33",
+            "aktualit": "2025-02-05T14:56:29Z",
+            "flaeche": 141,
+            "gemarkung": "Vohwinkel",
+            "gemaschl": "053277",
+            "flur": "005",
+            "flstnrzae": "295",
+            "gemeinde": "Wuppertal",
+            "gmdschl": "05124000"
+          },
+          "geometrySha256": "243463b074c759c79c3df204064277c3ab2c37430b03a3475299ed4726d97444"
+        },
+        {
+          "transportId": "05327700500305______",
+          "properties": {
+            "objid": "DENW29AL10004y9UFL",
+            "flurstid": "DENW29AL10004y9U",
+            "aktualit": "2025-02-05T14:56:29Z",
+            "flaeche": 505,
+            "gemarkung": "Vohwinkel",
+            "gemaschl": "053277",
+            "flur": "005",
+            "flstnrzae": "305",
+            "gemeinde": "Wuppertal",
+            "gmdschl": "05124000"
+          },
+          "geometrySha256": "9a6029566f6473b98976d1acca7754f29139d44ec825ae9bec6ab75faf86865e"
+        },
+        {
+          "transportId": "05327901300042______",
+          "properties": {
+            "objid": "DENW29AL10008lRTFL",
+            "flurstid": "DENW29AL10008lRT",
+            "aktualit": "2025-02-06T17:01:35Z",
+            "flaeche": 168567,
+            "gemarkung": "Cronenberg",
+            "gemaschl": "053279",
+            "flur": "013",
+            "flstnrzae": "42",
+            "gemeinde": "Wuppertal",
+            "gmdschl": "05124000"
+          },
+          "geometrySha256": "6544295e77b66a858efbcbc27fd3ef7f184f11384b30303d68297916dfa80e27"
+        },
+        {
+          "transportId": "05327901300043______",
+          "properties": {
+            "objid": "DENW29AL10008wYPFL",
+            "flurstid": "DENW29AL10008wYP",
+            "aktualit": "2025-02-06T17:01:35Z",
+            "flaeche": 14653,
+            "gemarkung": "Cronenberg",
+            "gemaschl": "053279",
+            "flur": "013",
+            "flstnrzae": "43",
+            "gemeinde": "Wuppertal",
+            "gmdschl": "05124000"
+          },
+          "geometrySha256": "ece0fc87e7386574e8c82d82edc88793202109e7271ad9c5374c9fb21e528064"
+        },
+        {
+          "transportId": "05327901300034______",
+          "properties": {
+            "objid": "DENW29AL10008xW8FL",
+            "flurstid": "DENW29AL10008xW8",
+            "aktualit": "2025-02-05T14:56:29Z",
+            "flaeche": 149,
+            "gemarkung": "Cronenberg",
+            "gemaschl": "053279",
+            "flur": "013",
+            "flstnrzae": "34",
+            "gemeinde": "Wuppertal",
+            "gmdschl": "05124000"
+          },
+          "geometrySha256": "8928277fd40f3e7d1ec27e137a90f05b1d6f0054e054568907ff591dc1ae8cb8"
+        },
+        {
+          "transportId": "05313525400060______",
+          "properties": {
+            "objid": "DENW29AL1000GC2tFL",
+            "flurstid": "DENW29AL1000GC2t",
+            "aktualit": "2025-02-06T16:39:02Z",
+            "flaeche": 11374,
+            "gemarkung": "Elberfeld",
+            "gemaschl": "053135",
+            "flur": "254",
+            "flstnrzae": "60",
+            "gemeinde": "Wuppertal",
+            "gmdschl": "05124000"
+          },
+          "geometrySha256": "8b386810f76623bd8e48f2d524b7e42377f81fa3c820cbca8b3069d0cae870b7"
+        },
+        {
+          "transportId": "05313525400062______",
+          "properties": {
+            "objid": "DENW29AL1000GOhZFL",
+            "flurstid": "DENW29AL1000GOhZ",
+            "aktualit": "2025-02-05T14:56:29Z",
+            "flaeche": 29650,
+            "gemarkung": "Elberfeld",
+            "gemaschl": "053135",
+            "flur": "254",
+            "flstnrzae": "62",
+            "gemeinde": "Wuppertal",
+            "gmdschl": "05124000"
+          },
+          "geometrySha256": "5bf8b049b6ec11a59a9abf363210c66912a3c926ce1c04afca5a6e7260ba5302"
+        },
+        {
+          "transportId": "05313525400014______",
+          "properties": {
+            "objid": "DENW29AL1000GUBdFL",
+            "flurstid": "DENW29AL1000GUBd",
+            "aktualit": "2025-02-05T14:56:29Z",
+            "flaeche": 50534,
+            "gemarkung": "Elberfeld",
+            "gemaschl": "053135",
+            "flur": "254",
+            "flstnrzae": "14",
+            "gemeinde": "Wuppertal",
+            "gmdschl": "05124000"
+          },
+          "geometrySha256": "c7e29d1d0cec317c906263914fb4a0676a435089bb974647d1a209aafec577ed"
+        },
+        {
+          "transportId": "05313525400003______",
+          "properties": {
+            "objid": "DENW29AL1000GZt6FL",
+            "flurstid": "DENW29AL1000GZt6",
+            "aktualit": "2025-02-05T14:56:29Z",
+            "flaeche": 3045,
+            "gemarkung": "Elberfeld",
+            "gemaschl": "053135",
+            "flur": "254",
+            "flstnrzae": "3",
+            "gemeinde": "Wuppertal",
+            "gmdschl": "05124000"
+          },
+          "geometrySha256": "0697b19d0187cdb1582cbdd472cdeeabbd16489b1c64a4f74c3c3252f756c3e8"
+        },
+        {
+          "transportId": "05327901300041______",
+          "properties": {
+            "objid": "DENW29AL10008vVrFL",
+            "flurstid": "DENW29AL10008vVr",
+            "aktualit": "2026-06-17T11:06:25Z",
+            "flaeche": 11234,
+            "gemarkung": "Cronenberg",
+            "gemaschl": "053279",
+            "flur": "013",
+            "flstnrzae": "41",
+            "gemeinde": "Wuppertal",
+            "gmdschl": "05124000"
+          },
+          "geometrySha256": "583149f6cd4b1d855633741d1466c5861d1124af35f0b689ccccdb1d789dcfc0"
+        }
+      ]
+    },
+    {
+      "test": "source-binding",
+      "url": "https://ogc-api.nrw.de/lika/v1/collections/flurstueck/items?f=json&limit=1000&crs=http%3A%2F%2Fwww.opengis.net%2Fdef%2Fcrs%2FOGC%2F1.3%2FCRS84&profile=rfc7946&bbox=7.0975294535913935%2C51.219445670659276%2C7.105457069568483%2C51.223667068549126&bbox-crs=http%3A%2F%2Fwww.opengis.net%2Fdef%2Fcrs%2FOGC%2F1.3%2FCRS84",
+      "method": "GET",
+      "checkedAt": "2026-10-09T03:46:33.747Z",
+      "httpStatus": 200,
+      "contentType": "application/geo+json",
+      "bytes": 73027,
+      "numberMatched": 15,
+      "numberReturned": 15,
+      "features": [
+        {
+          "transportId": "05327700500304______",
+          "properties": {
+            "objid": "DENW29AL10004h33FL",
+            "flurstid": "DENW29AL10004h33",
+            "aktualit": "2025-02-05T14:56:29Z",
+            "flaeche": 3575,
+            "gemarkung": "Vohwinkel",
+            "gemaschl": "053277",
+            "flur": "005",
+            "flstnrzae": "304",
+            "gemeinde": "Wuppertal",
+            "gmdschl": "05124000"
+          },
+          "geometrySha256": "e816b3311c81bcb530a4829e8d6af94cf67ba709a230b7e7390f6d60f428972c"
+        },
+        {
+          "transportId": "05327700500296______",
+          "properties": {
+            "objid": "DENW29AL10004hooFL",
+            "flurstid": "DENW29AL10004hoo",
+            "aktualit": "2025-02-06T16:51:37Z",
+            "flaeche": 8192,
+            "gemarkung": "Vohwinkel",
+            "gemaschl": "053277",
+            "flur": "005",
+            "flstnrzae": "296",
+            "gemeinde": "Wuppertal",
+            "gmdschl": "05124000"
+          },
+          "geometrySha256": "1b91ab50bdb597e98b0e8ed48f7ff2f75796731536e57175981ffc4c2ce9e286"
+        },
+        {
+          "transportId": "05327700500317______",
+          "properties": {
+            "objid": "DENW29AL10004sLHFL",
+            "flurstid": "DENW29AL10004sLH",
+            "aktualit": "2025-02-05T14:56:29Z",
+            "flaeche": 11391,
+            "gemarkung": "Vohwinkel",
+            "gemaschl": "053277",
+            "flur": "005",
+            "flstnrzae": "317",
+            "gemeinde": "Wuppertal",
+            "gmdschl": "05124000"
+          },
+          "geometrySha256": "bef55972ab30f45949b87718f72ac812c0d561c71b696d6bde599029052d9fc8"
+        },
+        {
+          "transportId": "05327700500306______",
+          "properties": {
+            "objid": "DENW29AL10004uI9FL",
+            "flurstid": "DENW29AL10004uI9",
+            "aktualit": "2025-02-06T16:51:37Z",
+            "flaeche": 40035,
+            "gemarkung": "Vohwinkel",
+            "gemaschl": "053277",
+            "flur": "005",
+            "flstnrzae": "306",
+            "gemeinde": "Wuppertal",
+            "gmdschl": "05124000"
+          },
+          "geometrySha256": "915086ae7498e5113ae4401e2b7ab96bcf0f723122c3863d37141fd58fa96e6e"
+        },
+        {
+          "transportId": "05327700500316______",
+          "properties": {
+            "objid": "DENW29AL10004uciFL",
+            "flurstid": "DENW29AL10004uci",
+            "aktualit": "2025-06-23T09:04:40Z",
+            "flaeche": 710542,
+            "gemarkung": "Vohwinkel",
+            "gemaschl": "053277",
+            "flur": "005",
+            "flstnrzae": "316",
+            "gemeinde": "Wuppertal",
+            "gmdschl": "05124000"
+          },
+          "geometrySha256": "01918aa5d74a8f513b7926fe88b7234db31d9e6c7ea827a6168d0d1aa2874abe"
+        },
+        {
+          "transportId": "05327700500295______",
+          "properties": {
+            "objid": "DENW29AL10004y33FL",
+            "flurstid": "DENW29AL10004y33",
+            "aktualit": "2025-02-05T14:56:29Z",
+            "flaeche": 141,
+            "gemarkung": "Vohwinkel",
+            "gemaschl": "053277",
+            "flur": "005",
+            "flstnrzae": "295",
+            "gemeinde": "Wuppertal",
+            "gmdschl": "05124000"
+          },
+          "geometrySha256": "243463b074c759c79c3df204064277c3ab2c37430b03a3475299ed4726d97444"
+        },
+        {
+          "transportId": "05327700500305______",
+          "properties": {
+            "objid": "DENW29AL10004y9UFL",
+            "flurstid": "DENW29AL10004y9U",
+            "aktualit": "2025-02-05T14:56:29Z",
+            "flaeche": 505,
+            "gemarkung": "Vohwinkel",
+            "gemaschl": "053277",
+            "flur": "005",
+            "flstnrzae": "305",
+            "gemeinde": "Wuppertal",
+            "gmdschl": "05124000"
+          },
+          "geometrySha256": "9a6029566f6473b98976d1acca7754f29139d44ec825ae9bec6ab75faf86865e"
+        },
+        {
+          "transportId": "05327901300042______",
+          "properties": {
+            "objid": "DENW29AL10008lRTFL",
+            "flurstid": "DENW29AL10008lRT",
+            "aktualit": "2025-02-06T17:01:35Z",
+            "flaeche": 168567,
+            "gemarkung": "Cronenberg",
+            "gemaschl": "053279",
+            "flur": "013",
+            "flstnrzae": "42",
+            "gemeinde": "Wuppertal",
+            "gmdschl": "05124000"
+          },
+          "geometrySha256": "6544295e77b66a858efbcbc27fd3ef7f184f11384b30303d68297916dfa80e27"
+        },
+        {
+          "transportId": "05327901300043______",
+          "properties": {
+            "objid": "DENW29AL10008wYPFL",
+            "flurstid": "DENW29AL10008wYP",
+            "aktualit": "2025-02-06T17:01:35Z",
+            "flaeche": 14653,
+            "gemarkung": "Cronenberg",
+            "gemaschl": "053279",
+            "flur": "013",
+            "flstnrzae": "43",
+            "gemeinde": "Wuppertal",
+            "gmdschl": "05124000"
+          },
+          "geometrySha256": "ece0fc87e7386574e8c82d82edc88793202109e7271ad9c5374c9fb21e528064"
+        },
+        {
+          "transportId": "05327901300034______",
+          "properties": {
+            "objid": "DENW29AL10008xW8FL",
+            "flurstid": "DENW29AL10008xW8",
+            "aktualit": "2025-02-05T14:56:29Z",
+            "flaeche": 149,
+            "gemarkung": "Cronenberg",
+            "gemaschl": "053279",
+            "flur": "013",
+            "flstnrzae": "34",
+            "gemeinde": "Wuppertal",
+            "gmdschl": "05124000"
+          },
+          "geometrySha256": "8928277fd40f3e7d1ec27e137a90f05b1d6f0054e054568907ff591dc1ae8cb8"
+        },
+        {
+          "transportId": "05313525400060______",
+          "properties": {
+            "objid": "DENW29AL1000GC2tFL",
+            "flurstid": "DENW29AL1000GC2t",
+            "aktualit": "2025-02-06T16:39:02Z",
+            "flaeche": 11374,
+            "gemarkung": "Elberfeld",
+            "gemaschl": "053135",
+            "flur": "254",
+            "flstnrzae": "60",
+            "gemeinde": "Wuppertal",
+            "gmdschl": "05124000"
+          },
+          "geometrySha256": "8b386810f76623bd8e48f2d524b7e42377f81fa3c820cbca8b3069d0cae870b7"
+        },
+        {
+          "transportId": "05313525400062______",
+          "properties": {
+            "objid": "DENW29AL1000GOhZFL",
+            "flurstid": "DENW29AL1000GOhZ",
+            "aktualit": "2025-02-05T14:56:29Z",
+            "flaeche": 29650,
+            "gemarkung": "Elberfeld",
+            "gemaschl": "053135",
+            "flur": "254",
+            "flstnrzae": "62",
+            "gemeinde": "Wuppertal",
+            "gmdschl": "05124000"
+          },
+          "geometrySha256": "5bf8b049b6ec11a59a9abf363210c66912a3c926ce1c04afca5a6e7260ba5302"
+        },
+        {
+          "transportId": "05313525400014______",
+          "properties": {
+            "objid": "DENW29AL1000GUBdFL",
+            "flurstid": "DENW29AL1000GUBd",
+            "aktualit": "2025-02-05T14:56:29Z",
+            "flaeche": 50534,
+            "gemarkung": "Elberfeld",
+            "gemaschl": "053135",
+            "flur": "254",
+            "flstnrzae": "14",
+            "gemeinde": "Wuppertal",
+            "gmdschl": "05124000"
+          },
+          "geometrySha256": "c7e29d1d0cec317c906263914fb4a0676a435089bb974647d1a209aafec577ed"
+        },
+        {
+          "transportId": "05313525400003______",
+          "properties": {
+            "objid": "DENW29AL1000GZt6FL",
+            "flurstid": "DENW29AL1000GZt6",
+            "aktualit": "2025-02-05T14:56:29Z",
+            "flaeche": 3045,
+            "gemarkung": "Elberfeld",
+            "gemaschl": "053135",
+            "flur": "254",
+            "flstnrzae": "3",
+            "gemeinde": "Wuppertal",
+            "gmdschl": "05124000"
+          },
+          "geometrySha256": "0697b19d0187cdb1582cbdd472cdeeabbd16489b1c64a4f74c3c3252f756c3e8"
+        },
+        {
+          "transportId": "05327901300041______",
+          "properties": {
+            "objid": "DENW29AL10008vVrFL",
+            "flurstid": "DENW29AL10008vVr",
+            "aktualit": "2026-06-17T11:06:25Z",
+            "flaeche": 11234,
+            "gemarkung": "Cronenberg",
+            "gemaschl": "053279",
+            "flur": "013",
+            "flstnrzae": "41",
+            "gemeinde": "Wuppertal",
+            "gmdschl": "05124000"
+          },
+          "geometrySha256": "583149f6cd4b1d855633741d1466c5861d1124af35f0b689ccccdb1d789dcfc0"
+        }
+      ]
+    }
+  ],
+  "qualityFile": "research/overnight-cities-2026-10-08/wuppertal-nrw-root-quality.json",
+  "uniqueParcels": 7,
+  "requestCount": 20,
+  "allTestsPassed": true,
+  "finishedAt": "2026-10-09T03:46:33.907Z",
+  "qualityStatus": "approved_by_root"
+}

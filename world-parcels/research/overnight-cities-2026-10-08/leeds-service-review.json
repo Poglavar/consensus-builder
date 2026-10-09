@@ -1,0 +1,86 @@
+{
+  "schemaVersion": 1,
+  "checkedAt": "2026-10-09",
+  "sourceId": "gb-leeds-registry-map-review",
+  "purpose": "Bounded city-specific registry/map source review for the WUP ranked settlement point; geometry-only where verified.",
+  "primaryPublisher": "HM Land Registry (HMLR), UK",
+  "sourceUrl": "https://use-land-property-data.service.gov.uk/datasets/inspire/download",
+  "registryFound": true,
+  "registryBasis": "HM Land Registry publishes a Leeds City Council INSPIRE Index Polygons partition; geometry-only extraction verifies a registered-freehold extent polygon at the WUP point. This source provides indicative property extent, not complete parcel or exact legal-boundary coverage.",
+  "officialSources": [
+    {
+      "url": "https://use-land-property-data.service.gov.uk/datasets/inspire/download",
+      "observation": "Official portal lists a Leeds City Council INSPIRE Index Polygons partition, published 2026-09-06."
+    },
+    {
+      "url": "https://www.data.gov.uk/dataset/811bcf4c-fbbf-4597-aa9c-3d5bd3bfd455/inspire-index-polygons-spatial-data",
+      "observation": "National Data Library entry states Open Government Licence and authority-level delivery."
+    },
+    {
+      "url": "https://www.gov.uk/government/publications/inspire-index-polygons-technical-specification",
+      "observation": "HMLR specification describes the polygons as indicative property extent for registered freeholds, not legal boundary definition."
+    }
+  ],
+  "searchQueries": [
+    {
+      "language": "English",
+      "query": "Leeds INSPIRE index polygons HM Land Registry Leeds City Council authority file parcel geometry 2026",
+      "scope": "Find current city-specific registration/map evidence and safe anonymous geometry routes.",
+      "result": "The official HMLR portal publishes local-authority INSPIRE Index Polygons, with Leeds City Council as a downloadable partition. The 2026-09-06 file was fetched anonymously. Geometry-only parsing of 303,784 GML features found three complete polygons within 1 km of the exact WUP point: one containing it and two nearest neighbors at 10.433 m and 15.543 m. The official technical specification describes registered freehold extent polygons as indicative and not exact legal boundaries. Only GEOMETRY nodes were read; no feature attribute values were read or joined. Sample identifiers are 1-based GML member ordinals.",
+      "actualResultUrls": [
+        "https://use-land-property-data.service.gov.uk/datasets/inspire/download",
+        "https://www.data.gov.uk/dataset/811bcf4c-fbbf-4597-aa9c-3d5bd3bfd455/inspire-index-polygons-spatial-data",
+        "https://www.gov.uk/government/publications/inspire-index-polygons-technical-specification"
+      ],
+      "executionMethod": "English-language web search plus direct inspection of public official/local source routes."
+    },
+    {
+      "language": "English",
+      "query": "HM Land Registry Leeds INSPIRE index polygons download Leeds City Council",
+      "scope": "Find current local-language registration/map evidence and safe anonymous geometry routes.",
+      "result": "The official HMLR portal publishes local-authority INSPIRE Index Polygons, with Leeds City Council as a downloadable partition. The 2026-09-06 file was fetched anonymously. Geometry-only parsing of 303,784 GML features found three complete polygons within 1 km of the exact WUP point: one containing it and two nearest neighbors at 10.433 m and 15.543 m. The official technical specification describes registered freehold extent polygons as indicative and not exact legal boundaries. Only GEOMETRY nodes were read; no feature attribute values were read or joined. Sample identifiers are 1-based GML member ordinals.",
+      "actualResultUrls": [
+        "https://use-land-property-data.service.gov.uk/datasets/inspire/download",
+        "https://www.data.gov.uk/dataset/811bcf4c-fbbf-4597-aa9c-3d5bd3bfd455/inspire-index-polygons-spatial-data",
+        "https://www.gov.uk/government/publications/inspire-index-polygons-technical-specification"
+      ],
+      "executionMethod": "Local-language web search and review of public official source listings; no personal or property lookup."
+    }
+  ],
+  "accessReview": {
+    "publicAnonymousGeometryVerified": true,
+    "completeGeoreferencedPolygonCount": 3,
+    "geometryRetained": true,
+    "ownerAddressTaxOrPersonLookupRequested": false,
+    "authenticationOrCredentialsUsed": false,
+    "captchaOrPersonalFormSubmitted": false,
+    "routeInspectionStatus": "geometry_only_public_download_verified",
+    "reason": "The official HMLR portal publishes local-authority INSPIRE Index Polygons, with Leeds City Council as a downloadable partition. The 2026-09-06 file was fetched anonymously. Geometry-only parsing of 303,784 GML features found three complete polygons within 1 km of the exact WUP point: one containing it and two nearest neighbors at 10.433 m and 15.543 m. The official technical specification describes registered freehold extent polygons as indicative and not exact legal boundaries. Only GEOMETRY nodes were read; no feature attribute values were read or joined. Sample identifiers are 1-based GML member ordinals.",
+    "nativeIdsUsed": "1-based GML member ordinal; no feature attributes read",
+    "sampleFile": "samples/leeds-hmlr-inspire-wup480.geojson"
+  },
+  "requestEvidence": [
+    {
+      "url": "https://use-land-property-data.service.gov.uk/datasets/inspire/download",
+      "method": "GET",
+      "status": 200,
+      "contentType": "text/html",
+      "observation": "Official HMLR download page and local-authority partition listing."
+    },
+    {
+      "url": "https://use-land-property-data.service.gov.uk/datasets/inspire/download/Leeds_City_Council.zip",
+      "method": "GET Range then full GET",
+      "status": 206,
+      "contentType": "application/zip",
+      "bytes": 47623426,
+      "observation": "Anonymous download of the official Leeds authority file succeeded. Archive was used transiently; only selected full geometry was retained."
+    }
+  ],
+  "technicalBlocker": "A bounded geometry sample is verified; the source is an indicative freehold index polygon and not a complete or authoritative parcel-boundary service.",
+  "sampleDisposition": "Three complete full polygons retained in geometry-only GeoJSON.",
+  "remainingUncertainty": "HMLR index polygons cover registered freeholds only. Exact legal boundary/citywide coverage and suitability for runtime remain unverified.",
+  "viewerClientInspection": {
+    "candidateMapFound": false,
+    "clientInspection": "HMLR static GML partition inspected; only geometry nodes parsed, no attributes read."
+  }
+}

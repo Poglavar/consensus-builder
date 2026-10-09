@@ -1,0 +1,44 @@
+{
+  "schemaVersion": 1,
+  "checkedAt": "2026-10-09",
+  "cityRecord": "city-7253-kalemie.json",
+  "purpose": "City-specific official registry/cadastre and safe anonymous parcel-geometry discovery.",
+  "scopeLimits": {
+    "maxFullPolygonsRetainedInCityRecord": 3,
+    "maxFullPolygonsRetainedInReview": 3,
+    "maxFullPolygonsRetainedInRepository": 3,
+    "ownerOrAddressDataRetained": false,
+    "credentialsOrTokenValuesRetained": false,
+    "citywideCompletenessAsserted": false
+  },
+  "assessment": "The official consultation workflow requires a formal request to the local title registrar or Cadastre Division and payment; it may return owner/title information. No record request was made. No anonymous vector layer or native schema was identified.",
+  "registryAssessment": "The official Ministry of Land Affairs lists Kalemie as a Tanganyika land/cadastral district. The DRC public-service catalogue documents formal consultation of cadastral and real-estate registers through a Conservateur des Titres Immobiliers or Cadastre Division, with an application and fee. These are city-specific registry services; no anonymous public vector layer was identified.",
+  "searchQueries": [
+    {
+      "language": "French",
+      "query": "Kalemie circonscription foncière cadastre registre immobilier officiel Tanganyika",
+      "scope": "Verify a city-specific registry workflow and look for any safe public parcel-vector service.",
+      "result": "The official Ministry of Land Affairs lists Kalemie as one of five Tanganyika land/cadastral districts. The public-services catalogue explains that register searches are requested from the title registrar or Cadastre Division, researched in official books, paid, and issued as an official information sheet/certificate. No public feature service or geometry schema was found.",
+      "actualResultUrls": [
+        "https://affairesfoncieres.gouv.cd/secretariat/circonscriptions",
+        "https://servicepublic.gouv.cd/service/4671"
+      ],
+      "executionMethod": "Separate French-language discovery and official ministry/service-catalogue review. No formal parcel search or property-identifier lookup was submitted."
+    },
+    {
+      "language": "English",
+      "query": "Kalemie DRC official land registry cadastral office property records parcel map GIS",
+      "scope": "Verify a city-specific registry workflow and look for any safe public parcel-vector service.",
+      "result": "English discovery did not identify an anonymous parcel GIS. Official French primary sources establish a Kalemie land/cadastre district and formal land-register consultation workflow; the workflow is a requested record search, not an open geometry service.",
+      "actualResultUrls": [
+        "https://affairesfoncieres.gouv.cd/secretariat/circonscriptions",
+        "https://servicepublic.gouv.cd/service/4671"
+      ],
+      "executionMethod": "Separate English-language search followed by official ministry and public-services catalogue review. No parcel lookup."
+    }
+  ],
+  "geometryEvidence": null,
+  "privacy": "No owner, address, applicant, taxpayer, assessment, sale, or other private property fields were requested or retained.",
+  "runtimeAssessment": "not_enabled_no_verified_public_geometry",
+  "technicalBlocker": "No public anonymous feature endpoint or native polygon schema was found; the documented city workflow requires a formal, paid parcel-register request."
+}

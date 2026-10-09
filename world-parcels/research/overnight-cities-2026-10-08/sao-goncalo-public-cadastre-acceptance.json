@@ -1,0 +1,3459 @@
+{
+  "schemaVersion": 1,
+  "purpose": "Read-only 13-cell public WFS qualification through the repository WFS adapter; IDs and geometry hashes only, no full geometries in this file.",
+  "checkedAt": "2026-10-08T22:01:11.405Z",
+  "city": "sao-goncalo-public-cadastre",
+  "descriptor": {
+    "id": "br-sg-prefeitura-geoserver-lote-cadastro",
+    "name": "S\u00e3o Gon\u00e7alo municipal cadastral lots (GeoServer WFS)",
+    "adapter": "wfs",
+    "endpoint": "https://geoserver.pmsg.rj.gov.br/ows",
+    "featureType": "SaoGoncalo:lote_a_cadastro_sg",
+    "idField": "id",
+    "idType": "integer",
+    "idPrefix": "BR-SG-CAD-",
+    "geometryField": "geom",
+    "requestProperties": true,
+    "outFields": [
+      "id"
+    ],
+    "pageSize": 1000,
+    "maxFeatures": 10000,
+    "maxBboxKm2": 25,
+    "countryCode": "BR",
+    "metricSrid": 31983,
+    "scope": "Public WFS parcel layer in S\u00e3o Gon\u00e7alo municipality; bounded geometry-only research near the ranked locator, not authoritative legal title determination."
+  },
+  "grid": [
+    {
+      "name": "viewport-0",
+      "bbox": [
+        -43.028,
+        -22.837,
+        -43.027,
+        -22.836
+      ],
+      "kind": "aligned-grid"
+    },
+    {
+      "name": "viewport-1",
+      "bbox": [
+        -43.027,
+        -22.837,
+        -43.026,
+        -22.836
+      ],
+      "kind": "aligned-grid"
+    },
+    {
+      "name": "viewport-2",
+      "bbox": [
+        -43.026,
+        -22.837,
+        -43.025,
+        -22.836
+      ],
+      "kind": "aligned-grid"
+    },
+    {
+      "name": "viewport-3",
+      "bbox": [
+        -43.028,
+        -22.836,
+        -43.027,
+        -22.835
+      ],
+      "kind": "aligned-grid"
+    },
+    {
+      "name": "viewport-4",
+      "bbox": [
+        -43.027,
+        -22.836,
+        -43.026,
+        -22.835
+      ],
+      "kind": "aligned-grid"
+    },
+    {
+      "name": "viewport-5",
+      "bbox": [
+        -43.026,
+        -22.836,
+        -43.025,
+        -22.835
+      ],
+      "kind": "aligned-grid"
+    },
+    {
+      "name": "viewport-6",
+      "bbox": [
+        -43.028,
+        -22.835,
+        -43.027,
+        -22.834
+      ],
+      "kind": "aligned-grid"
+    },
+    {
+      "name": "viewport-7",
+      "bbox": [
+        -43.027,
+        -22.835,
+        -43.026,
+        -22.834
+      ],
+      "kind": "aligned-grid"
+    },
+    {
+      "name": "viewport-8",
+      "bbox": [
+        -43.026,
+        -22.835,
+        -43.025,
+        -22.834
+      ],
+      "kind": "aligned-grid"
+    },
+    {
+      "name": "viewport-9",
+      "bbox": [
+        -43.027,
+        -22.838,
+        -43.026,
+        -22.837
+      ],
+      "kind": "adjacent-pan"
+    },
+    {
+      "name": "viewport-10",
+      "bbox": [
+        -43.027,
+        -22.834,
+        -43.026,
+        -22.833
+      ],
+      "kind": "adjacent-pan"
+    },
+    {
+      "name": "viewport-11",
+      "bbox": [
+        -43.029,
+        -22.836,
+        -43.028,
+        -22.835
+      ],
+      "kind": "adjacent-pan"
+    },
+    {
+      "name": "viewport-12",
+      "bbox": [
+        -43.025,
+        -22.836,
+        -43.024,
+        -22.835
+      ],
+      "kind": "adjacent-pan"
+    }
+  ],
+  "tests": [
+    {
+      "name": "viewport-0",
+      "passed": true,
+      "elapsedMs": 1196,
+      "requestIndexes": [
+        0,
+        0
+      ],
+      "bbox": [
+        -43.028,
+        -22.837,
+        -43.027,
+        -22.836
+      ],
+      "complete": true,
+      "count": 0,
+      "ids": []
+    },
+    {
+      "name": "viewport-1",
+      "passed": true,
+      "elapsedMs": 325,
+      "requestIndexes": [
+        1,
+        1
+      ],
+      "bbox": [
+        -43.027,
+        -22.837,
+        -43.026,
+        -22.836
+      ],
+      "complete": true,
+      "count": 0,
+      "ids": []
+    },
+    {
+      "name": "viewport-2",
+      "passed": true,
+      "elapsedMs": 342,
+      "requestIndexes": [
+        2,
+        2
+      ],
+      "bbox": [
+        -43.026,
+        -22.837,
+        -43.025,
+        -22.836
+      ],
+      "complete": true,
+      "count": 5,
+      "ids": [
+        {
+          "id": "BR-SG-CAD-1042513",
+          "geometrySha256": "2154e6cd6acae10ce59cedf0aa2373611657597d3d0962a3b28e5eb7d5079bec"
+        },
+        {
+          "id": "BR-SG-CAD-1042514",
+          "geometrySha256": "dec27d68c60694e576224bd48529f1bfd1c28891b030000dd8d7d2df2669df93"
+        },
+        {
+          "id": "BR-SG-CAD-1042515",
+          "geometrySha256": "6de1f98b46f21fe9eeb1cc92cd8efcd85657ccb07a3ce4a1f69a208c9c51bff3"
+        },
+        {
+          "id": "BR-SG-CAD-1042516",
+          "geometrySha256": "9a2c1785c72e989aba01ba42561ca7aff07a6bd6f22591cd4020459eb16ece5f"
+        },
+        {
+          "id": "BR-SG-CAD-1042517",
+          "geometrySha256": "c6d16fb8bf80c0f7f05034512f27befb29c43635fbe68b0589a43da983c20349"
+        }
+      ]
+    },
+    {
+      "name": "viewport-3",
+      "passed": true,
+      "elapsedMs": 321,
+      "requestIndexes": [
+        3,
+        3
+      ],
+      "bbox": [
+        -43.028,
+        -22.836,
+        -43.027,
+        -22.835
+      ],
+      "complete": true,
+      "count": 0,
+      "ids": []
+    },
+    {
+      "name": "viewport-4",
+      "passed": true,
+      "elapsedMs": 332,
+      "requestIndexes": [
+        4,
+        4
+      ],
+      "bbox": [
+        -43.027,
+        -22.836,
+        -43.026,
+        -22.835
+      ],
+      "complete": true,
+      "count": 7,
+      "ids": [
+        {
+          "id": "BR-SG-CAD-1039986",
+          "geometrySha256": "e706eb9878bbc63ecc0def0e001cd7026117cd305d89e55cef1083ee430addec"
+        },
+        {
+          "id": "BR-SG-CAD-1039987",
+          "geometrySha256": "1e5fca5524bca6deb687cd2b3393254d57e1115ca0aaac55fad47b6dc8fd22f7"
+        },
+        {
+          "id": "BR-SG-CAD-1039988",
+          "geometrySha256": "48457e04bbe25508f728319ea4cab583e2f8faddf0cc1be0bcbe21711a1ef367"
+        },
+        {
+          "id": "BR-SG-CAD-1041128",
+          "geometrySha256": "74aa4af9bd218e128715a687a09c813771fbb350842199ccaff4b32c9cafe34a"
+        },
+        {
+          "id": "BR-SG-CAD-1041133",
+          "geometrySha256": "6c2b8b826b0bbe6f386e398f497b27fbb6acff7e7dfe95b6868f0ee75d64d175"
+        },
+        {
+          "id": "BR-SG-CAD-1043291",
+          "geometrySha256": "dc142f312a034c70dd83511f7c90fdb248262a15ab39607e42040b99ea8d2743"
+        },
+        {
+          "id": "BR-SG-CAD-1073060",
+          "geometrySha256": "c5b7767cf833ebd445274e607274236d973ba20d8bf879a2903b80d4f4150258"
+        }
+      ]
+    },
+    {
+      "name": "viewport-5",
+      "passed": true,
+      "elapsedMs": 350,
+      "requestIndexes": [
+        5,
+        5
+      ],
+      "bbox": [
+        -43.026,
+        -22.836,
+        -43.025,
+        -22.835
+      ],
+      "complete": true,
+      "count": 21,
+      "ids": [
+        {
+          "id": "BR-SG-CAD-1039984",
+          "geometrySha256": "f7440320c5b24c1bd0a2a63cf795fbae3de10e56ba94b57ea0bd9b67fd91dedc"
+        },
+        {
+          "id": "BR-SG-CAD-1039985",
+          "geometrySha256": "36c81c1d843319912aab51928b28dc31dbec91c92ea5a15f5a81bc024692b6b3"
+        },
+        {
+          "id": "BR-SG-CAD-1039986",
+          "geometrySha256": "e706eb9878bbc63ecc0def0e001cd7026117cd305d89e55cef1083ee430addec"
+        },
+        {
+          "id": "BR-SG-CAD-1039987",
+          "geometrySha256": "1e5fca5524bca6deb687cd2b3393254d57e1115ca0aaac55fad47b6dc8fd22f7"
+        },
+        {
+          "id": "BR-SG-CAD-1041127",
+          "geometrySha256": "2bf8d2aef422dec76db41a9e7014ebc3f7c08e0420370ae7b51d74899fc01e10"
+        },
+        {
+          "id": "BR-SG-CAD-1041128",
+          "geometrySha256": "74aa4af9bd218e128715a687a09c813771fbb350842199ccaff4b32c9cafe34a"
+        },
+        {
+          "id": "BR-SG-CAD-1041133",
+          "geometrySha256": "6c2b8b826b0bbe6f386e398f497b27fbb6acff7e7dfe95b6868f0ee75d64d175"
+        },
+        {
+          "id": "BR-SG-CAD-1041171",
+          "geometrySha256": "9de0b833beab48aac0e816b6776442351548787891185c22802a03056099f2d7"
+        },
+        {
+          "id": "BR-SG-CAD-1041294",
+          "geometrySha256": "07b5adf3b808b38661148bd0589420a745f9246ddc0cd656adb4365307c9ba79"
+        },
+        {
+          "id": "BR-SG-CAD-1041311",
+          "geometrySha256": "731d530ffdb16d6cc1d4922175a7506be935f6e551846fd17823d2190c6ab61c"
+        },
+        {
+          "id": "BR-SG-CAD-1041315",
+          "geometrySha256": "8a670783555c5d386eb7336dd4f1537b30391df1219aecec668b2d901eba0c3c"
+        },
+        {
+          "id": "BR-SG-CAD-1041317",
+          "geometrySha256": "9c91d641629807425bc2b612bce28fb2feabbbf9ba2af6193b952a7e3b1bab36"
+        },
+        {
+          "id": "BR-SG-CAD-1041318",
+          "geometrySha256": "a584f42410155ab185ec35d91ca36eae73d910e199cb52c5b62a9c6d0e6a529a"
+        },
+        {
+          "id": "BR-SG-CAD-1041319",
+          "geometrySha256": "41d1c1d0637dda2dd47f3e62c61dfb02b0ad628e5bee7dc0eb47067b8f86bb59"
+        },
+        {
+          "id": "BR-SG-CAD-1041325",
+          "geometrySha256": "5cb9bffc20171e5037426fb025eaea2305ec335c5a8ea76c7cebdf8636a1425d"
+        },
+        {
+          "id": "BR-SG-CAD-1042513",
+          "geometrySha256": "2154e6cd6acae10ce59cedf0aa2373611657597d3d0962a3b28e5eb7d5079bec"
+        },
+        {
+          "id": "BR-SG-CAD-1042514",
+          "geometrySha256": "dec27d68c60694e576224bd48529f1bfd1c28891b030000dd8d7d2df2669df93"
+        },
+        {
+          "id": "BR-SG-CAD-1042515",
+          "geometrySha256": "6de1f98b46f21fe9eeb1cc92cd8efcd85657ccb07a3ce4a1f69a208c9c51bff3"
+        },
+        {
+          "id": "BR-SG-CAD-1042516",
+          "geometrySha256": "9a2c1785c72e989aba01ba42561ca7aff07a6bd6f22591cd4020459eb16ece5f"
+        },
+        {
+          "id": "BR-SG-CAD-1042517",
+          "geometrySha256": "c6d16fb8bf80c0f7f05034512f27befb29c43635fbe68b0589a43da983c20349"
+        },
+        {
+          "id": "BR-SG-CAD-1073056",
+          "geometrySha256": "14f0690b177df4247561b8b9214726b1c7dc66f41a4acb5f8d065f52df1cc6a8"
+        }
+      ]
+    },
+    {
+      "name": "viewport-6",
+      "passed": true,
+      "elapsedMs": 524,
+      "requestIndexes": [
+        6,
+        6
+      ],
+      "bbox": [
+        -43.028,
+        -22.835,
+        -43.027,
+        -22.834
+      ],
+      "complete": true,
+      "count": 7,
+      "ids": [
+        {
+          "id": "BR-SG-CAD-1037319",
+          "geometrySha256": "a0378e4ca31931a850c4395cc30d06dd2f5f48830cf701e2baf43497c4f9e237"
+        },
+        {
+          "id": "BR-SG-CAD-1040071",
+          "geometrySha256": "8e3fbacdb6ba962e072f927f9aba1b6b8188bf5735a7f151d9f8e6b2b9a82691"
+        },
+        {
+          "id": "BR-SG-CAD-1040073",
+          "geometrySha256": "9247eeed1eb3f3e6ccc11919fc178437ada625332d381e4d4ac7bbb39b1db16b"
+        },
+        {
+          "id": "BR-SG-CAD-1041000",
+          "geometrySha256": "6d639bd530962b04b377ffad835b93de4fefade3422d85a5895f0b53db1329b8"
+        },
+        {
+          "id": "BR-SG-CAD-1041055",
+          "geometrySha256": "8c47a8f62d392782df8390d066b13568be1fc8480fcc9ee555e658ef366eb741"
+        },
+        {
+          "id": "BR-SG-CAD-1041060",
+          "geometrySha256": "4b0f297d75d7e015a3f938b60bec7240d83ff529659db4cb8a4cedd655ad378d"
+        },
+        {
+          "id": "BR-SG-CAD-1041082",
+          "geometrySha256": "06a1cde968237c7259f2be31fc68bd86ab1b4a6f5940a8e0e829c14bfb18c18e"
+        }
+      ]
+    },
+    {
+      "name": "viewport-7",
+      "passed": true,
+      "elapsedMs": 392,
+      "requestIndexes": [
+        7,
+        7
+      ],
+      "bbox": [
+        -43.027,
+        -22.835,
+        -43.026,
+        -22.834
+      ],
+      "complete": true,
+      "count": 29,
+      "ids": [
+        {
+          "id": "BR-SG-CAD-1037319",
+          "geometrySha256": "a0378e4ca31931a850c4395cc30d06dd2f5f48830cf701e2baf43497c4f9e237"
+        },
+        {
+          "id": "BR-SG-CAD-1039986",
+          "geometrySha256": "e706eb9878bbc63ecc0def0e001cd7026117cd305d89e55cef1083ee430addec"
+        },
+        {
+          "id": "BR-SG-CAD-1039987",
+          "geometrySha256": "1e5fca5524bca6deb687cd2b3393254d57e1115ca0aaac55fad47b6dc8fd22f7"
+        },
+        {
+          "id": "BR-SG-CAD-1039988",
+          "geometrySha256": "48457e04bbe25508f728319ea4cab583e2f8faddf0cc1be0bcbe21711a1ef367"
+        },
+        {
+          "id": "BR-SG-CAD-1039989",
+          "geometrySha256": "d1a6a7e61bfc52e5e4bb5ea5c74ec78eb1a2e9c7761f5618216c134886da41a1"
+        },
+        {
+          "id": "BR-SG-CAD-1039990",
+          "geometrySha256": "9bad5ca73671723c6e61b682595ebc3285d003f6de7b94dfb1febe3e90c8e3a0"
+        },
+        {
+          "id": "BR-SG-CAD-1039991",
+          "geometrySha256": "cc3e7d01d30b0d858139bb39f051f2bbe673b61498a4f311cd2e8e9101f001b4"
+        },
+        {
+          "id": "BR-SG-CAD-1039992",
+          "geometrySha256": "d7b06f8113c54bad88896c467c279d8ec3e5f5728f89b97620189fdce9a81e4d"
+        },
+        {
+          "id": "BR-SG-CAD-1039994",
+          "geometrySha256": "1d177197c515fa2362e4070c818c92971d6e732979bf168a6038b5c2ecdb25bc"
+        },
+        {
+          "id": "BR-SG-CAD-1039996",
+          "geometrySha256": "363357a940d57a25cf87a367ad88de96150f9e3d015423fb46965020735d1ae9"
+        },
+        {
+          "id": "BR-SG-CAD-1039999",
+          "geometrySha256": "0f7daeb09f168d9fc1eb93c7566554ac91e7e047eb4b659ad85bd293b288ac19"
+        },
+        {
+          "id": "BR-SG-CAD-1040003",
+          "geometrySha256": "28e334f235bdc5ca1743a3ef144077447193c03e0682ab5f10624de54dc3f6cb"
+        },
+        {
+          "id": "BR-SG-CAD-1040006",
+          "geometrySha256": "057999f358a745749fecb98f18b60f249db96759a249cebb667254f9cc8bf2d9"
+        },
+        {
+          "id": "BR-SG-CAD-1040007",
+          "geometrySha256": "8da6c8cbd196fbf9bc22dec52c51aba794984805f1f5bee2a13355a144b0c800"
+        },
+        {
+          "id": "BR-SG-CAD-1040009",
+          "geometrySha256": "bbc6a8d8efe36759e9711a261fd2ae9bf29c75dc6de182d011a2729ef1ebccfd"
+        },
+        {
+          "id": "BR-SG-CAD-1040011",
+          "geometrySha256": "e6340d5c70d589acfb8eb48ac8fee8db553e3c3fbcdfa60e61702772bfff8cdb"
+        },
+        {
+          "id": "BR-SG-CAD-1040015",
+          "geometrySha256": "bc9c78a3625fb7d7135114bd6f6bb29d3d7049404b5ae576218ca266d9e7969b"
+        },
+        {
+          "id": "BR-SG-CAD-1040016",
+          "geometrySha256": "54b0de9fd2f864099413f7e3bee0fe6ef043fbedd2d3ed973b874fa81bf71ca2"
+        },
+        {
+          "id": "BR-SG-CAD-1040071",
+          "geometrySha256": "8e3fbacdb6ba962e072f927f9aba1b6b8188bf5735a7f151d9f8e6b2b9a82691"
+        },
+        {
+          "id": "BR-SG-CAD-1041055",
+          "geometrySha256": "8c47a8f62d392782df8390d066b13568be1fc8480fcc9ee555e658ef366eb741"
+        },
+        {
+          "id": "BR-SG-CAD-1041082",
+          "geometrySha256": "06a1cde968237c7259f2be31fc68bd86ab1b4a6f5940a8e0e829c14bfb18c18e"
+        },
+        {
+          "id": "BR-SG-CAD-1041084",
+          "geometrySha256": "ab328717f6921b4d0aac1775c59435de87c0e45e90b2899bf0f331c8fe8ef1bb"
+        },
+        {
+          "id": "BR-SG-CAD-1041087",
+          "geometrySha256": "1bb3677625e1d30f500596d0b34ca1b1fbb1f6458fe3df2615138af62c4c999c"
+        },
+        {
+          "id": "BR-SG-CAD-1043289",
+          "geometrySha256": "d2b282cd73a31e87820e39b85e5c00c09d0d0e8ab295ef6db1aba172bc339cbb"
+        },
+        {
+          "id": "BR-SG-CAD-1043290",
+          "geometrySha256": "c813a7c4dea2ba7530bb2617d833146e2811596edbc670f601956dbe0fab1d63"
+        },
+        {
+          "id": "BR-SG-CAD-1043291",
+          "geometrySha256": "dc142f312a034c70dd83511f7c90fdb248262a15ab39607e42040b99ea8d2743"
+        },
+        {
+          "id": "BR-SG-CAD-1073060",
+          "geometrySha256": "c5b7767cf833ebd445274e607274236d973ba20d8bf879a2903b80d4f4150258"
+        },
+        {
+          "id": "BR-SG-CAD-1073063",
+          "geometrySha256": "1b9d44d7ca2758b957a0f661c652a075ecd85b40cc31341308f82b374f65e569"
+        },
+        {
+          "id": "BR-SG-CAD-1073065",
+          "geometrySha256": "aeeaa8099d086f36597c34c497bf6ed24d86730c96e45173cfe3e8f8f9803af8"
+        }
+      ]
+    },
+    {
+      "name": "viewport-8",
+      "passed": true,
+      "elapsedMs": 358,
+      "requestIndexes": [
+        8,
+        8
+      ],
+      "bbox": [
+        -43.026,
+        -22.835,
+        -43.025,
+        -22.834
+      ],
+      "complete": true,
+      "count": 27,
+      "ids": [
+        {
+          "id": "BR-SG-CAD-1037319",
+          "geometrySha256": "a0378e4ca31931a850c4395cc30d06dd2f5f48830cf701e2baf43497c4f9e237"
+        },
+        {
+          "id": "BR-SG-CAD-1039985",
+          "geometrySha256": "36c81c1d843319912aab51928b28dc31dbec91c92ea5a15f5a81bc024692b6b3"
+        },
+        {
+          "id": "BR-SG-CAD-1039986",
+          "geometrySha256": "e706eb9878bbc63ecc0def0e001cd7026117cd305d89e55cef1083ee430addec"
+        },
+        {
+          "id": "BR-SG-CAD-1039987",
+          "geometrySha256": "1e5fca5524bca6deb687cd2b3393254d57e1115ca0aaac55fad47b6dc8fd22f7"
+        },
+        {
+          "id": "BR-SG-CAD-1039989",
+          "geometrySha256": "d1a6a7e61bfc52e5e4bb5ea5c74ec78eb1a2e9c7761f5618216c134886da41a1"
+        },
+        {
+          "id": "BR-SG-CAD-1039993",
+          "geometrySha256": "016450ab09ea79ae386ff5ed835844ecd0c40dd5393e410814bea14227805c1e"
+        },
+        {
+          "id": "BR-SG-CAD-1039994",
+          "geometrySha256": "1d177197c515fa2362e4070c818c92971d6e732979bf168a6038b5c2ecdb25bc"
+        },
+        {
+          "id": "BR-SG-CAD-1039996",
+          "geometrySha256": "363357a940d57a25cf87a367ad88de96150f9e3d015423fb46965020735d1ae9"
+        },
+        {
+          "id": "BR-SG-CAD-1040008",
+          "geometrySha256": "8f730c39b844cda3270f66be51e254a7733280b98c07d5bc23c09729840ba515"
+        },
+        {
+          "id": "BR-SG-CAD-1040010",
+          "geometrySha256": "663391ca49fda4a8ffa84ac279d60857981d16ba48f65d40fe4cd215838aa0a1"
+        },
+        {
+          "id": "BR-SG-CAD-1040014",
+          "geometrySha256": "def9af17a559c6356496567e9ea7e31e79b85945e5c07e3b190f32fc0a06a182"
+        },
+        {
+          "id": "BR-SG-CAD-1040018",
+          "geometrySha256": "d67478341fe49ca0cdbff6b78ebe1f616d614d7e06207cfae25a10048bc304e0"
+        },
+        {
+          "id": "BR-SG-CAD-1041123",
+          "geometrySha256": "9f04cf6a4638df8b8849ed9339e5e13bb8174f9855c33559ff58ac9dd6e3cd44"
+        },
+        {
+          "id": "BR-SG-CAD-1041127",
+          "geometrySha256": "2bf8d2aef422dec76db41a9e7014ebc3f7c08e0420370ae7b51d74899fc01e10"
+        },
+        {
+          "id": "BR-SG-CAD-1041143",
+          "geometrySha256": "394dfea57f9396a0cc660c760d7fb7828c2f3bcccd80ee23714bbd8b22a5c733"
+        },
+        {
+          "id": "BR-SG-CAD-1041279",
+          "geometrySha256": "e984face88c64154a06bcedb72504e6e6e3114f96e1d4a77bdacdf5ff567132e"
+        },
+        {
+          "id": "BR-SG-CAD-1041292",
+          "geometrySha256": "e3e96c25d1b7ce90683d7c9e3cdc550b92cd9eac3f4b056113bae754f8e7607b"
+        },
+        {
+          "id": "BR-SG-CAD-1041294",
+          "geometrySha256": "07b5adf3b808b38661148bd0589420a745f9246ddc0cd656adb4365307c9ba79"
+        },
+        {
+          "id": "BR-SG-CAD-1041311",
+          "geometrySha256": "731d530ffdb16d6cc1d4922175a7506be935f6e551846fd17823d2190c6ab61c"
+        },
+        {
+          "id": "BR-SG-CAD-1041315",
+          "geometrySha256": "8a670783555c5d386eb7336dd4f1537b30391df1219aecec668b2d901eba0c3c"
+        },
+        {
+          "id": "BR-SG-CAD-1043272",
+          "geometrySha256": "9c7c4084bc4f243b96a2f15fe5b37b3ea4ca6cc02b2f0bd8aa8f2095f5a86e40"
+        },
+        {
+          "id": "BR-SG-CAD-1073034",
+          "geometrySha256": "4fa6d31daddb40f3ffb323c7bc2abe0e9f0fba4720dcb23300072bbb5bb8e49e"
+        },
+        {
+          "id": "BR-SG-CAD-1073035",
+          "geometrySha256": "c56418e80caf52a8b38c8453c8204ad707453fd2566d345477c3e7e75a94750d"
+        },
+        {
+          "id": "BR-SG-CAD-1073036",
+          "geometrySha256": "28ace5081a80e6dd20b43d2a04f32e45fb8d4e6464f81bd2b8316a774cf2505e"
+        },
+        {
+          "id": "BR-SG-CAD-1073056",
+          "geometrySha256": "14f0690b177df4247561b8b9214726b1c7dc66f41a4acb5f8d065f52df1cc6a8"
+        },
+        {
+          "id": "BR-SG-CAD-1073063",
+          "geometrySha256": "1b9d44d7ca2758b957a0f661c652a075ecd85b40cc31341308f82b374f65e569"
+        },
+        {
+          "id": "BR-SG-CAD-1073065",
+          "geometrySha256": "aeeaa8099d086f36597c34c497bf6ed24d86730c96e45173cfe3e8f8f9803af8"
+        }
+      ]
+    },
+    {
+      "name": "viewport-9",
+      "passed": true,
+      "elapsedMs": 341,
+      "requestIndexes": [
+        9,
+        9
+      ],
+      "bbox": [
+        -43.027,
+        -22.838,
+        -43.026,
+        -22.837
+      ],
+      "complete": true,
+      "count": 0,
+      "ids": []
+    },
+    {
+      "name": "viewport-10",
+      "passed": true,
+      "elapsedMs": 371,
+      "requestIndexes": [
+        10,
+        10
+      ],
+      "bbox": [
+        -43.027,
+        -22.834,
+        -43.026,
+        -22.833
+      ],
+      "complete": true,
+      "count": 34,
+      "ids": [
+        {
+          "id": "BR-SG-CAD-1037101",
+          "geometrySha256": "dc1aa2d2e5dfaa4ab98826c5c87cfd004a0f24d180983106aa854d1a57a2b69f"
+        },
+        {
+          "id": "BR-SG-CAD-1037319",
+          "geometrySha256": "a0378e4ca31931a850c4395cc30d06dd2f5f48830cf701e2baf43497c4f9e237"
+        },
+        {
+          "id": "BR-SG-CAD-1040009",
+          "geometrySha256": "bbc6a8d8efe36759e9711a261fd2ae9bf29c75dc6de182d011a2729ef1ebccfd"
+        },
+        {
+          "id": "BR-SG-CAD-1040011",
+          "geometrySha256": "e6340d5c70d589acfb8eb48ac8fee8db553e3c3fbcdfa60e61702772bfff8cdb"
+        },
+        {
+          "id": "BR-SG-CAD-1040015",
+          "geometrySha256": "bc9c78a3625fb7d7135114bd6f6bb29d3d7049404b5ae576218ca266d9e7969b"
+        },
+        {
+          "id": "BR-SG-CAD-1040016",
+          "geometrySha256": "54b0de9fd2f864099413f7e3bee0fe6ef043fbedd2d3ed973b874fa81bf71ca2"
+        },
+        {
+          "id": "BR-SG-CAD-1040018",
+          "geometrySha256": "d67478341fe49ca0cdbff6b78ebe1f616d614d7e06207cfae25a10048bc304e0"
+        },
+        {
+          "id": "BR-SG-CAD-1040019",
+          "geometrySha256": "c6d52a5aa9cc5c7f4ae173f90b78f43b20fd42261b2e805cf749c12af3119fb4"
+        },
+        {
+          "id": "BR-SG-CAD-1040020",
+          "geometrySha256": "fd90906c10696d5f5835f16342e4eca48c6ad8cf8cd010506213951dad055367"
+        },
+        {
+          "id": "BR-SG-CAD-1040021",
+          "geometrySha256": "2e1c2bcbbbf2e89eb19696ae84770602f77e9e90b4fe006f62b01bc8e2daa4ac"
+        },
+        {
+          "id": "BR-SG-CAD-1040071",
+          "geometrySha256": "8e3fbacdb6ba962e072f927f9aba1b6b8188bf5735a7f151d9f8e6b2b9a82691"
+        },
+        {
+          "id": "BR-SG-CAD-1040073",
+          "geometrySha256": "9247eeed1eb3f3e6ccc11919fc178437ada625332d381e4d4ac7bbb39b1db16b"
+        },
+        {
+          "id": "BR-SG-CAD-1040940",
+          "geometrySha256": "99bb65427eca445e2837a1b197b429d2f2d655b8929cc08febab72891ca6d6ce"
+        },
+        {
+          "id": "BR-SG-CAD-1041014",
+          "geometrySha256": "67246ba1377fbd4d8c5573fd7980b7e2824a9087821dc56f54c350eda262092b"
+        },
+        {
+          "id": "BR-SG-CAD-1041018",
+          "geometrySha256": "f3d7d33ea3ad124e05a39eb935679019caeb0dd0603c4ff5c6b6e6f803420668"
+        },
+        {
+          "id": "BR-SG-CAD-1041028",
+          "geometrySha256": "4f040f6866dc7d4bf361fc489a155e1d8ef67f8400d087ede905cb57cdfe046e"
+        },
+        {
+          "id": "BR-SG-CAD-1041040",
+          "geometrySha256": "98b0e41deeeff1930c7e05de79d641f497f36782d59ea2f003322902191b53ed"
+        },
+        {
+          "id": "BR-SG-CAD-1041055",
+          "geometrySha256": "8c47a8f62d392782df8390d066b13568be1fc8480fcc9ee555e658ef366eb741"
+        },
+        {
+          "id": "BR-SG-CAD-1041071",
+          "geometrySha256": "9fc08f2bc5cfb49727e0d275b52c6c961330f6353fd9ee62c93a1073800c25ca"
+        },
+        {
+          "id": "BR-SG-CAD-1041072",
+          "geometrySha256": "5cb3258c3c829c60e4211596126db7dee587ec64f800bbc0c67338034ef9779f"
+        },
+        {
+          "id": "BR-SG-CAD-1041080",
+          "geometrySha256": "c912d2c9e72cc0b2fdaf622f19346f06686347aa3fd2dbb8416c0105842d66ad"
+        },
+        {
+          "id": "BR-SG-CAD-1041099",
+          "geometrySha256": "7e6c99cdad2728b28495f68425e2b8eaacc3fbfa89c0f5e8e46d29fdda014569"
+        },
+        {
+          "id": "BR-SG-CAD-1043271",
+          "geometrySha256": "388582648ebfc05037dc14b9f957b412a9cbfaced0362581252e05ffe8f5d137"
+        },
+        {
+          "id": "BR-SG-CAD-1043274",
+          "geometrySha256": "3a499c5591b221206dc7bc8d26bb258fa3c2791c55f13c14e281f07646304a34"
+        },
+        {
+          "id": "BR-SG-CAD-1043290",
+          "geometrySha256": "c813a7c4dea2ba7530bb2617d833146e2811596edbc670f601956dbe0fab1d63"
+        },
+        {
+          "id": "BR-SG-CAD-1072723",
+          "geometrySha256": "20c19dee8d1f404faeb8a9b1194e757e61b986f044d700ec0a3e8b3a10630671"
+        },
+        {
+          "id": "BR-SG-CAD-1073026",
+          "geometrySha256": "971eb71e31f12d088b373ead11dff484a805eded535ba06da271a9d0d1d8cf2f"
+        },
+        {
+          "id": "BR-SG-CAD-1073027",
+          "geometrySha256": "e176120b45ac7f26ccc682c0ca41f6139d19c81425b0ef4d1492bf9775f2fdb8"
+        },
+        {
+          "id": "BR-SG-CAD-1073066",
+          "geometrySha256": "e7efef783adbcb9bdb33b184fc1640806b0a3bf0d26dbc8e08e79adab8363a7e"
+        },
+        {
+          "id": "BR-SG-CAD-1073077",
+          "geometrySha256": "59d01f148cb310674740afc2d7b24123a6f0f1737bd933697fa149c3308d2e5a"
+        },
+        {
+          "id": "BR-SG-CAD-1073081",
+          "geometrySha256": "ad5b17a8e6fd96cf3835d63059b2b4615a803246ad38276f72927584a286fced"
+        },
+        {
+          "id": "BR-SG-CAD-1073082",
+          "geometrySha256": "7957021f382516d3a9e56905ccf9359d52a5055dfe10774d840c7bc28fc9f00a"
+        },
+        {
+          "id": "BR-SG-CAD-1073083",
+          "geometrySha256": "496100acae91b0cd5a6d4893f3d49e00ec71aec0f76d2783f6507ed00e2a63a0"
+        },
+        {
+          "id": "BR-SG-CAD-1073084",
+          "geometrySha256": "256410950e05e6ab331be0ca5bf408ceaf85487daf50a68b6c280803f3af5745"
+        }
+      ]
+    },
+    {
+      "name": "viewport-11",
+      "passed": true,
+      "elapsedMs": 331,
+      "requestIndexes": [
+        11,
+        11
+      ],
+      "bbox": [
+        -43.029,
+        -22.836,
+        -43.028,
+        -22.835
+      ],
+      "complete": true,
+      "count": 0,
+      "ids": []
+    },
+    {
+      "name": "viewport-12",
+      "passed": true,
+      "elapsedMs": 335,
+      "requestIndexes": [
+        12,
+        12
+      ],
+      "bbox": [
+        -43.025,
+        -22.836,
+        -43.024,
+        -22.835
+      ],
+      "complete": true,
+      "count": 9,
+      "ids": [
+        {
+          "id": "BR-SG-CAD-1041294",
+          "geometrySha256": "07b5adf3b808b38661148bd0589420a745f9246ddc0cd656adb4365307c9ba79"
+        },
+        {
+          "id": "BR-SG-CAD-1041311",
+          "geometrySha256": "731d530ffdb16d6cc1d4922175a7506be935f6e551846fd17823d2190c6ab61c"
+        },
+        {
+          "id": "BR-SG-CAD-1041315",
+          "geometrySha256": "8a670783555c5d386eb7336dd4f1537b30391df1219aecec668b2d901eba0c3c"
+        },
+        {
+          "id": "BR-SG-CAD-1042514",
+          "geometrySha256": "dec27d68c60694e576224bd48529f1bfd1c28891b030000dd8d7d2df2669df93"
+        },
+        {
+          "id": "BR-SG-CAD-1042515",
+          "geometrySha256": "6de1f98b46f21fe9eeb1cc92cd8efcd85657ccb07a3ce4a1f69a208c9c51bff3"
+        },
+        {
+          "id": "BR-SG-CAD-1042516",
+          "geometrySha256": "9a2c1785c72e989aba01ba42561ca7aff07a6bd6f22591cd4020459eb16ece5f"
+        },
+        {
+          "id": "BR-SG-CAD-1042517",
+          "geometrySha256": "c6d16fb8bf80c0f7f05034512f27befb29c43635fbe68b0589a43da983c20349"
+        },
+        {
+          "id": "BR-SG-CAD-1042518",
+          "geometrySha256": "a8b2e765f5ac0c0fdf2638a3355e91978e578656fd962db66cb8346fb53ce403"
+        },
+        {
+          "id": "BR-SG-CAD-1042519",
+          "geometrySha256": "3c95841ff51de5c5f09b46e51790cd65ee44bbc3eeba2f018887ea13af7e62e9"
+        }
+      ]
+    },
+    {
+      "name": "forced-three-row-pages",
+      "passed": true,
+      "elapsedMs": 4397,
+      "requestIndexes": [
+        13,
+        24
+      ],
+      "count": 34,
+      "geometryPages": 12,
+      "pageSize": 3,
+      "allGeometryHashesMatch": true
+    },
+    {
+      "name": "fresh-ids-0",
+      "passed": true,
+      "elapsedMs": 386,
+      "requestIndexes": [
+        25,
+        25
+      ],
+      "count": 40,
+      "ids": [
+        "BR-SG-CAD-1037101",
+        "BR-SG-CAD-1037319",
+        "BR-SG-CAD-1039984",
+        "BR-SG-CAD-1039985",
+        "BR-SG-CAD-1039986",
+        "BR-SG-CAD-1039987",
+        "BR-SG-CAD-1039988",
+        "BR-SG-CAD-1039989",
+        "BR-SG-CAD-1039990",
+        "BR-SG-CAD-1039991",
+        "BR-SG-CAD-1039992",
+        "BR-SG-CAD-1039993",
+        "BR-SG-CAD-1039994",
+        "BR-SG-CAD-1039996",
+        "BR-SG-CAD-1039999",
+        "BR-SG-CAD-1040003",
+        "BR-SG-CAD-1040006",
+        "BR-SG-CAD-1040007",
+        "BR-SG-CAD-1040008",
+        "BR-SG-CAD-1040009",
+        "BR-SG-CAD-1040010",
+        "BR-SG-CAD-1040011",
+        "BR-SG-CAD-1040014",
+        "BR-SG-CAD-1040015",
+        "BR-SG-CAD-1040016",
+        "BR-SG-CAD-1040018",
+        "BR-SG-CAD-1040019",
+        "BR-SG-CAD-1040020",
+        "BR-SG-CAD-1040021",
+        "BR-SG-CAD-1040071",
+        "BR-SG-CAD-1040073",
+        "BR-SG-CAD-1040940",
+        "BR-SG-CAD-1041000",
+        "BR-SG-CAD-1041014",
+        "BR-SG-CAD-1041018",
+        "BR-SG-CAD-1041028",
+        "BR-SG-CAD-1041040",
+        "BR-SG-CAD-1041055",
+        "BR-SG-CAD-1041060",
+        "BR-SG-CAD-1041071"
+      ],
+      "allGeometryHashesMatch": true,
+      "absentIds": []
+    },
+    {
+      "name": "fresh-ids-40",
+      "passed": true,
+      "elapsedMs": 369,
+      "requestIndexes": [
+        26,
+        26
+      ],
+      "count": 40,
+      "ids": [
+        "BR-SG-CAD-1041072",
+        "BR-SG-CAD-1041080",
+        "BR-SG-CAD-1041082",
+        "BR-SG-CAD-1041084",
+        "BR-SG-CAD-1041087",
+        "BR-SG-CAD-1041099",
+        "BR-SG-CAD-1041123",
+        "BR-SG-CAD-1041127",
+        "BR-SG-CAD-1041128",
+        "BR-SG-CAD-1041133",
+        "BR-SG-CAD-1041143",
+        "BR-SG-CAD-1041171",
+        "BR-SG-CAD-1041279",
+        "BR-SG-CAD-1041292",
+        "BR-SG-CAD-1041294",
+        "BR-SG-CAD-1041311",
+        "BR-SG-CAD-1041315",
+        "BR-SG-CAD-1041317",
+        "BR-SG-CAD-1041318",
+        "BR-SG-CAD-1041319",
+        "BR-SG-CAD-1041325",
+        "BR-SG-CAD-1042513",
+        "BR-SG-CAD-1042514",
+        "BR-SG-CAD-1042515",
+        "BR-SG-CAD-1042516",
+        "BR-SG-CAD-1042517",
+        "BR-SG-CAD-1042518",
+        "BR-SG-CAD-1042519",
+        "BR-SG-CAD-1043271",
+        "BR-SG-CAD-1043272",
+        "BR-SG-CAD-1043274",
+        "BR-SG-CAD-1043289",
+        "BR-SG-CAD-1043290",
+        "BR-SG-CAD-1043291",
+        "BR-SG-CAD-1072723",
+        "BR-SG-CAD-1073026",
+        "BR-SG-CAD-1073027",
+        "BR-SG-CAD-1073034",
+        "BR-SG-CAD-1073035",
+        "BR-SG-CAD-1073036"
+      ],
+      "allGeometryHashesMatch": true,
+      "absentIds": []
+    },
+    {
+      "name": "fresh-ids-80",
+      "passed": true,
+      "elapsedMs": 326,
+      "requestIndexes": [
+        27,
+        27
+      ],
+      "count": 10,
+      "ids": [
+        "BR-SG-CAD-1073056",
+        "BR-SG-CAD-1073060",
+        "BR-SG-CAD-1073063",
+        "BR-SG-CAD-1073065",
+        "BR-SG-CAD-1073066",
+        "BR-SG-CAD-1073077",
+        "BR-SG-CAD-1073081",
+        "BR-SG-CAD-1073082",
+        "BR-SG-CAD-1073083",
+        "BR-SG-CAD-1073084"
+      ],
+      "allGeometryHashesMatch": true,
+      "absentIds": []
+    },
+    {
+      "name": "explicit-absence",
+      "passed": true,
+      "elapsedMs": 307,
+      "requestIndexes": [
+        28,
+        28
+      ],
+      "absentIds": [
+        "BR-SG-CAD-999999999"
+      ],
+      "complete": true
+    },
+    {
+      "name": "footprint",
+      "passed": true,
+      "elapsedMs": 318,
+      "requestIndexes": [
+        29,
+        29
+      ],
+      "selectedParcelId": "BR-SG-CAD-1073034",
+      "count": 3,
+      "allGeometryHashesMatch": true
+    },
+    {
+      "name": "source-binding",
+      "passed": true,
+      "elapsedMs": 347,
+      "requestIndexes": [
+        30,
+        30
+      ],
+      "selectedParcelId": "BR-SG-CAD-1073034",
+      "coverage": "complete",
+      "siteM2": 406.22,
+      "boundParcels": 1
+    }
+  ],
+  "requests": [
+    {
+      "test": "viewport-0",
+      "url": "https://geoserver.pmsg.rj.gov.br/ows?service=WFS&version=2.0.0&request=GetFeature&typeNames=SaoGoncalo%3Alote_a_cadastro_sg&outputFormat=application%2Fjson&srsName=CRS%3A84&sortBy=id&propertyName=geom%2Cid&count=1000&startIndex=0&bbox=-43.028%2C-22.837%2C-43.027%2C-22.836%2CCRS%3A84",
+      "method": "GET",
+      "checkedAt": "2026-10-08T22:01:11.413Z",
+      "httpStatus": 200,
+      "contentType": "application/json;charset=UTF-8",
+      "bytes": 147,
+      "numberMatched": 0,
+      "numberReturned": 0,
+      "features": []
+    },
+    {
+      "test": "viewport-1",
+      "url": "https://geoserver.pmsg.rj.gov.br/ows?service=WFS&version=2.0.0&request=GetFeature&typeNames=SaoGoncalo%3Alote_a_cadastro_sg&outputFormat=application%2Fjson&srsName=CRS%3A84&sortBy=id&propertyName=geom%2Cid&count=1000&startIndex=0&bbox=-43.027%2C-22.837%2C-43.026%2C-22.836%2CCRS%3A84",
+      "method": "GET",
+      "checkedAt": "2026-10-08T22:01:12.610Z",
+      "httpStatus": 200,
+      "contentType": "application/json;charset=UTF-8",
+      "bytes": 147,
+      "numberMatched": 0,
+      "numberReturned": 0,
+      "features": []
+    },
+    {
+      "test": "viewport-2",
+      "url": "https://geoserver.pmsg.rj.gov.br/ows?service=WFS&version=2.0.0&request=GetFeature&typeNames=SaoGoncalo%3Alote_a_cadastro_sg&outputFormat=application%2Fjson&srsName=CRS%3A84&sortBy=id&propertyName=geom%2Cid&count=1000&startIndex=0&bbox=-43.026%2C-22.837%2C-43.025%2C-22.836%2CCRS%3A84",
+      "method": "GET",
+      "checkedAt": "2026-10-08T22:01:12.936Z",
+      "httpStatus": 200,
+      "contentType": "application/json;charset=UTF-8",
+      "bytes": 1780,
+      "numberMatched": 5,
+      "numberReturned": 5,
+      "features": [
+        {
+          "transportId": "lote_a_cadastro_sg.fid--3e166e38_1a11d2cdd4e_-7fd6",
+          "properties": {
+            "id": 1042513
+          },
+          "geometrySha256": "2154e6cd6acae10ce59cedf0aa2373611657597d3d0962a3b28e5eb7d5079bec"
+        },
+        {
+          "transportId": "lote_a_cadastro_sg.fid--3e166e38_1a11d2cdd4e_-7fd5",
+          "properties": {
+            "id": 1042514
+          },
+          "geometrySha256": "dec27d68c60694e576224bd48529f1bfd1c28891b030000dd8d7d2df2669df93"
+        },
+        {
+          "transportId": "lote_a_cadastro_sg.fid--3e166e38_1a11d2cdd4e_-7fd4",
+          "properties": {
+            "id": 1042515
+          },
+          "geometrySha256": "6de1f98b46f21fe9eeb1cc92cd8efcd85657ccb07a3ce4a1f69a208c9c51bff3"
+        },
+        {
+          "transportId": "lote_a_cadastro_sg.fid--3e166e38_1a11d2cdd4e_-7fd3",
+          "properties": {
+            "id": 1042516
+          },
+          "geometrySha256": "9a2c1785c72e989aba01ba42561ca7aff07a6bd6f22591cd4020459eb16ece5f"
+        },
+        {
+          "transportId": "lote_a_cadastro_sg.fid--3e166e38_1a11d2cdd4e_-7fd2",
+          "properties": {
+            "id": 1042517
+          },
+          "geometrySha256": "c6d16fb8bf80c0f7f05034512f27befb29c43635fbe68b0589a43da983c20349"
+        }
+      ]
+    },
+    {
+      "test": "viewport-3",
+      "url": "https://geoserver.pmsg.rj.gov.br/ows?service=WFS&version=2.0.0&request=GetFeature&typeNames=SaoGoncalo%3Alote_a_cadastro_sg&outputFormat=application%2Fjson&srsName=CRS%3A84&sortBy=id&propertyName=geom%2Cid&count=1000&startIndex=0&bbox=-43.028%2C-22.836%2C-43.027%2C-22.835%2CCRS%3A84",
+      "method": "GET",
+      "checkedAt": "2026-10-08T22:01:13.278Z",
+      "httpStatus": 200,
+      "contentType": "application/json;charset=UTF-8",
+      "bytes": 147,
+      "numberMatched": 0,
+      "numberReturned": 0,
+      "features": []
+    },
+    {
+      "test": "viewport-4",
+      "url": "https://geoserver.pmsg.rj.gov.br/ows?service=WFS&version=2.0.0&request=GetFeature&typeNames=SaoGoncalo%3Alote_a_cadastro_sg&outputFormat=application%2Fjson&srsName=CRS%3A84&sortBy=id&propertyName=geom%2Cid&count=1000&startIndex=0&bbox=-43.027%2C-22.836%2C-43.026%2C-22.835%2CCRS%3A84",
+      "method": "GET",
+      "checkedAt": "2026-10-08T22:01:13.599Z",
+      "httpStatus": 200,
+      "contentType": "application/json;charset=UTF-8",
+      "bytes": 3211,
+      "numberMatched": 7,
+      "numberReturned": 7,
+      "features": [
+        {
+          "transportId": "lote_a_cadastro_sg.fid--3e166e38_1a11d2cdd4e_-7fd1",
+          "properties": {
+            "id": 1039986
+          },
+          "geometrySha256": "e706eb9878bbc63ecc0def0e001cd7026117cd305d89e55cef1083ee430addec"
+        },
+        {
+          "transportId": "lote_a_cadastro_sg.fid--3e166e38_1a11d2cdd4e_-7fd0",
+          "properties": {
+            "id": 1039987
+          },
+          "geometrySha256": "1e5fca5524bca6deb687cd2b3393254d57e1115ca0aaac55fad47b6dc8fd22f7"
+        },
+        {
+          "transportId": "lote_a_cadastro_sg.fid--3e166e38_1a11d2cdd4e_-7fcf",
+          "properties": {
+            "id": 1039988
+          },
+          "geometrySha256": "48457e04bbe25508f728319ea4cab583e2f8faddf0cc1be0bcbe21711a1ef367"
+        },
+        {
+          "transportId": "lote_a_cadastro_sg.fid--3e166e38_1a11d2cdd4e_-7fce",
+          "properties": {
+            "id": 1041128
+          },
+          "geometrySha256": "74aa4af9bd218e128715a687a09c813771fbb350842199ccaff4b32c9cafe34a"
+        },
+        {
+          "transportId": "lote_a_cadastro_sg.fid--3e166e38_1a11d2cdd4e_-7fcd",
+          "properties": {
+            "id": 1041133
+          },
+          "geometrySha256": "6c2b8b826b0bbe6f386e398f497b27fbb6acff7e7dfe95b6868f0ee75d64d175"
+        },
+        {
+          "transportId": "lote_a_cadastro_sg.fid--3e166e38_1a11d2cdd4e_-7fcc",
+          "properties": {
+            "id": 1043291
+          },
+          "geometrySha256": "dc142f312a034c70dd83511f7c90fdb248262a15ab39607e42040b99ea8d2743"
+        },
+        {
+          "transportId": "lote_a_cadastro_sg.fid--3e166e38_1a11d2cdd4e_-7fcb",
+          "properties": {
+            "id": 1073060
+          },
+          "geometrySha256": "c5b7767cf833ebd445274e607274236d973ba20d8bf879a2903b80d4f4150258"
+        }
+      ]
+    },
+    {
+      "test": "viewport-5",
+      "url": "https://geoserver.pmsg.rj.gov.br/ows?service=WFS&version=2.0.0&request=GetFeature&typeNames=SaoGoncalo%3Alote_a_cadastro_sg&outputFormat=application%2Fjson&srsName=CRS%3A84&sortBy=id&propertyName=geom%2Cid&count=1000&startIndex=0&bbox=-43.026%2C-22.836%2C-43.025%2C-22.835%2CCRS%3A84",
+      "method": "GET",
+      "checkedAt": "2026-10-08T22:01:13.931Z",
+      "httpStatus": 200,
+      "contentType": "application/json;charset=UTF-8",
+      "bytes": 10967,
+      "numberMatched": 21,
+      "numberReturned": 21,
+      "features": [
+        {
+          "transportId": "lote_a_cadastro_sg.fid--3e166e38_1a11d2cdd4e_-7fca",
+          "properties": {
+            "id": 1039984
+          },
+          "geometrySha256": "f7440320c5b24c1bd0a2a63cf795fbae3de10e56ba94b57ea0bd9b67fd91dedc"
+        },
+        {
+          "transportId": "lote_a_cadastro_sg.fid--3e166e38_1a11d2cdd4e_-7fc9",
+          "properties": {
+            "id": 1039985
+          },
+          "geometrySha256": "36c81c1d843319912aab51928b28dc31dbec91c92ea5a15f5a81bc024692b6b3"
+        },
+        {
+          "transportId": "lote_a_cadastro_sg.fid--3e166e38_1a11d2cdd4e_-7fc8",
+          "properties": {
+            "id": 1039986
+          },
+          "geometrySha256": "e706eb9878bbc63ecc0def0e001cd7026117cd305d89e55cef1083ee430addec"
+        },
+        {
+          "transportId": "lote_a_cadastro_sg.fid--3e166e38_1a11d2cdd4e_-7fc7",
+          "properties": {
+            "id": 1039987
+          },
+          "geometrySha256": "1e5fca5524bca6deb687cd2b3393254d57e1115ca0aaac55fad47b6dc8fd22f7"
+        },
+        {
+          "transportId": "lote_a_cadastro_sg.fid--3e166e38_1a11d2cdd4e_-7fc6",
+          "properties": {
+            "id": 1041127
+          },
+          "geometrySha256": "2bf8d2aef422dec76db41a9e7014ebc3f7c08e0420370ae7b51d74899fc01e10"
+        },
+        {
+          "transportId": "lote_a_cadastro_sg.fid--3e166e38_1a11d2cdd4e_-7fc5",
+          "properties": {
+            "id": 1041128
+          },
+          "geometrySha256": "74aa4af9bd218e128715a687a09c813771fbb350842199ccaff4b32c9cafe34a"
+        },
+        {
+          "transportId": "lote_a_cadastro_sg.fid--3e166e38_1a11d2cdd4e_-7fc4",
+          "properties": {
+            "id": 1041133
+          },
+          "geometrySha256": "6c2b8b826b0bbe6f386e398f497b27fbb6acff7e7dfe95b6868f0ee75d64d175"
+        },
+        {
+          "transportId": "lote_a_cadastro_sg.fid--3e166e38_1a11d2cdd4e_-7fc3",
+          "properties": {
+            "id": 1041171
+          },
+          "geometrySha256": "9de0b833beab48aac0e816b6776442351548787891185c22802a03056099f2d7"
+        },
+        {
+          "transportId": "lote_a_cadastro_sg.fid--3e166e38_1a11d2cdd4e_-7fc2",
+          "properties": {
+            "id": 1041294
+          },
+          "geometrySha256": "07b5adf3b808b38661148bd0589420a745f9246ddc0cd656adb4365307c9ba79"
+        },
+        {
+          "transportId": "lote_a_cadastro_sg.fid--3e166e38_1a11d2cdd4e_-7fc1",
+          "properties": {
+            "id": 1041311
+          },
+          "geometrySha256": "731d530ffdb16d6cc1d4922175a7506be935f6e551846fd17823d2190c6ab61c"
+        },
+        {
+          "transportId": "lote_a_cadastro_sg.fid--3e166e38_1a11d2cdd4e_-7fc0",
+          "properties": {
+            "id": 1041315
+          },
+          "geometrySha256": "8a670783555c5d386eb7336dd4f1537b30391df1219aecec668b2d901eba0c3c"
+        },
+        {
+          "transportId": "lote_a_cadastro_sg.fid--3e166e38_1a11d2cdd4e_-7fbf",
+          "properties": {
+            "id": 1041317
+          },
+          "geometrySha256": "9c91d641629807425bc2b612bce28fb2feabbbf9ba2af6193b952a7e3b1bab36"
+        },
+        {
+          "transportId": "lote_a_cadastro_sg.fid--3e166e38_1a11d2cdd4e_-7fbe",
+          "properties": {
+            "id": 1041318
+          },
+          "geometrySha256": "a584f42410155ab185ec35d91ca36eae73d910e199cb52c5b62a9c6d0e6a529a"
+        },
+        {
+          "transportId": "lote_a_cadastro_sg.fid--3e166e38_1a11d2cdd4e_-7fbd",
+          "properties": {
+            "id": 1041319
+          },
+          "geometrySha256": "41d1c1d0637dda2dd47f3e62c61dfb02b0ad628e5bee7dc0eb47067b8f86bb59"
+        },
+        {
+          "transportId": "lote_a_cadastro_sg.fid--3e166e38_1a11d2cdd4e_-7fbc",
+          "properties": {
+            "id": 1041325
+          },
+          "geometrySha256": "5cb9bffc20171e5037426fb025eaea2305ec335c5a8ea76c7cebdf8636a1425d"
+        },
+        {
+          "transportId": "lote_a_cadastro_sg.fid--3e166e38_1a11d2cdd4e_-7fbb",
+          "properties": {
+            "id": 1042513
+          },
+          "geometrySha256": "2154e6cd6acae10ce59cedf0aa2373611657597d3d0962a3b28e5eb7d5079bec"
+        },
+        {
+          "transportId": "lote_a_cadastro_sg.fid--3e166e38_1a11d2cdd4e_-7fba",
+          "properties": {
+            "id": 1042514
+          },
+          "geometrySha256": "dec27d68c60694e576224bd48529f1bfd1c28891b030000dd8d7d2df2669df93"
+        },
+        {
+          "transportId": "lote_a_cadastro_sg.fid--3e166e38_1a11d2cdd4e_-7fb9",
+          "properties": {
+            "id": 1042515
+          },
+          "geometrySha256": "6de1f98b46f21fe9eeb1cc92cd8efcd85657ccb07a3ce4a1f69a208c9c51bff3"
+        },
+        {
+          "transportId": "lote_a_cadastro_sg.fid--3e166e38_1a11d2cdd4e_-7fb8",
+          "properties": {
+            "id": 1042516
+          },
+          "geometrySha256": "9a2c1785c72e989aba01ba42561ca7aff07a6bd6f22591cd4020459eb16ece5f"
+        },
+        {
+          "transportId": "lote_a_cadastro_sg.fid--3e166e38_1a11d2cdd4e_-7fb7",
+          "properties": {
+            "id": 1042517
+          },
+          "geometrySha256": "c6d16fb8bf80c0f7f05034512f27befb29c43635fbe68b0589a43da983c20349"
+        },
+        {
+          "transportId": "lote_a_cadastro_sg.fid--3e166e38_1a11d2cdd4e_-7fb6",
+          "properties": {
+            "id": 1073056
+          },
+          "geometrySha256": "14f0690b177df4247561b8b9214726b1c7dc66f41a4acb5f8d065f52df1cc6a8"
+        }
+      ]
+    },
+    {
+      "test": "viewport-6",
+      "url": "https://geoserver.pmsg.rj.gov.br/ows?service=WFS&version=2.0.0&request=GetFeature&typeNames=SaoGoncalo%3Alote_a_cadastro_sg&outputFormat=application%2Fjson&srsName=CRS%3A84&sortBy=id&propertyName=geom%2Cid&count=1000&startIndex=0&bbox=-43.028%2C-22.835%2C-43.027%2C-22.834%2CCRS%3A84",
+      "method": "GET",
+      "checkedAt": "2026-10-08T22:01:14.284Z",
+      "httpStatus": 200,
+      "contentType": "application/json;charset=UTF-8",
+      "bytes": 7246,
+      "numberMatched": 7,
+      "numberReturned": 7,
+      "features": [
+        {
+          "transportId": "lote_a_cadastro_sg.fid--3e166e38_1a11d2cdd4e_-7fb5",
+          "properties": {
+            "id": 1037319
+          },
+          "geometrySha256": "a0378e4ca31931a850c4395cc30d06dd2f5f48830cf701e2baf43497c4f9e237"
+        },
+        {
+          "transportId": "lote_a_cadastro_sg.fid--3e166e38_1a11d2cdd4e_-7fb4",
+          "properties": {
+            "id": 1040071
+          },
+          "geometrySha256": "8e3fbacdb6ba962e072f927f9aba1b6b8188bf5735a7f151d9f8e6b2b9a82691"
+        },
+        {
+          "transportId": "lote_a_cadastro_sg.fid--3e166e38_1a11d2cdd4e_-7fb3",
+          "properties": {
+            "id": 1040073
+          },
+          "geometrySha256": "9247eeed1eb3f3e6ccc11919fc178437ada625332d381e4d4ac7bbb39b1db16b"
+        },
+        {
+          "transportId": "lote_a_cadastro_sg.fid--3e166e38_1a11d2cdd4e_-7fb2",
+          "properties": {
+            "id": 1041000
+          },
+          "geometrySha256": "6d639bd530962b04b377ffad835b93de4fefade3422d85a5895f0b53db1329b8"
+        },
+        {
+          "transportId": "lote_a_cadastro_sg.fid--3e166e38_1a11d2cdd4e_-7fb1",
+          "properties": {
+            "id": 1041055
+          },
+          "geometrySha256": "8c47a8f62d392782df8390d066b13568be1fc8480fcc9ee555e658ef366eb741"
+        },
+        {
+          "transportId": "lote_a_cadastro_sg.fid--3e166e38_1a11d2cdd4e_-7fb0",
+          "properties": {
+            "id": 1041060
+          },
+          "geometrySha256": "4b0f297d75d7e015a3f938b60bec7240d83ff529659db4cb8a4cedd655ad378d"
+        },
+        {
+          "transportId": "lote_a_cadastro_sg.fid--3e166e38_1a11d2cdd4e_-7faf",
+          "properties": {
+            "id": 1041082
+          },
+          "geometrySha256": "06a1cde968237c7259f2be31fc68bd86ab1b4a6f5940a8e0e829c14bfb18c18e"
+        }
+      ]
+    },
+    {
+      "test": "viewport-7",
+      "url": "https://geoserver.pmsg.rj.gov.br/ows?service=WFS&version=2.0.0&request=GetFeature&typeNames=SaoGoncalo%3Alote_a_cadastro_sg&outputFormat=application%2Fjson&srsName=CRS%3A84&sortBy=id&propertyName=geom%2Cid&count=1000&startIndex=0&bbox=-43.027%2C-22.835%2C-43.026%2C-22.834%2CCRS%3A84",
+      "method": "GET",
+      "checkedAt": "2026-10-08T22:01:14.809Z",
+      "httpStatus": 200,
+      "contentType": "application/json;charset=UTF-8",
+      "bytes": 15978,
+      "numberMatched": 29,
+      "numberReturned": 29,
+      "features": [
+        {
+          "transportId": "lote_a_cadastro_sg.fid--3e166e38_1a11d2cdd4e_-7fae",
+          "properties": {
+            "id": 1037319
+          },
+          "geometrySha256": "a0378e4ca31931a850c4395cc30d06dd2f5f48830cf701e2baf43497c4f9e237"
+        },
+        {
+          "transportId": "lote_a_cadastro_sg.fid--3e166e38_1a11d2cdd4e_-7fad",
+          "properties": {
+            "id": 1039986
+          },
+          "geometrySha256": "e706eb9878bbc63ecc0def0e001cd7026117cd305d89e55cef1083ee430addec"
+        },
+        {
+          "transportId": "lote_a_cadastro_sg.fid--3e166e38_1a11d2cdd4e_-7fac",
+          "properties": {
+            "id": 1039987
+          },
+          "geometrySha256": "1e5fca5524bca6deb687cd2b3393254d57e1115ca0aaac55fad47b6dc8fd22f7"
+        },
+        {
+          "transportId": "lote_a_cadastro_sg.fid--3e166e38_1a11d2cdd4e_-7fab",
+          "properties": {
+            "id": 1039988
+          },
+          "geometrySha256": "48457e04bbe25508f728319ea4cab583e2f8faddf0cc1be0bcbe21711a1ef367"
+        },
+        {
+          "transportId": "lote_a_cadastro_sg.fid--3e166e38_1a11d2cdd4e_-7faa",
+          "properties": {
+            "id": 1039989
+          },
+          "geometrySha256": "d1a6a7e61bfc52e5e4bb5ea5c74ec78eb1a2e9c7761f5618216c134886da41a1"
+        },
+        {
+          "transportId": "lote_a_cadastro_sg.fid--3e166e38_1a11d2cdd4e_-7fa9",
+          "properties": {
+            "id": 1039990
+          },
+          "geometrySha256": "9bad5ca73671723c6e61b682595ebc3285d003f6de7b94dfb1febe3e90c8e3a0"
+        },
+        {
+          "transportId": "lote_a_cadastro_sg.fid--3e166e38_1a11d2cdd4e_-7fa8",
+          "properties": {
+            "id": 1039991
+          },
+          "geometrySha256": "cc3e7d01d30b0d858139bb39f051f2bbe673b61498a4f311cd2e8e9101f001b4"
+        },
+        {
+          "transportId": "lote_a_cadastro_sg.fid--3e166e38_1a11d2cdd4e_-7fa7",
+          "properties": {
+            "id": 1039992
+          },
+          "geometrySha256": "d7b06f8113c54bad88896c467c279d8ec3e5f5728f89b97620189fdce9a81e4d"
+        },
+        {
+          "transportId": "lote_a_cadastro_sg.fid--3e166e38_1a11d2cdd4e_-7fa6",
+          "properties": {
+            "id": 1039994
+          },
+          "geometrySha256": "1d177197c515fa2362e4070c818c92971d6e732979bf168a6038b5c2ecdb25bc"
+        },
+        {
+          "transportId": "lote_a_cadastro_sg.fid--3e166e38_1a11d2cdd4e_-7fa5",
+          "properties": {
+            "id": 1039996
+          },
+          "geometrySha256": "363357a940d57a25cf87a367ad88de96150f9e3d015423fb46965020735d1ae9"
+        },
+        {
+          "transportId": "lote_a_cadastro_sg.fid--3e166e38_1a11d2cdd4e_-7fa4",
+          "properties": {
+            "id": 1039999
+          },
+          "geometrySha256": "0f7daeb09f168d9fc1eb93c7566554ac91e7e047eb4b659ad85bd293b288ac19"
+        },
+        {
+          "transportId": "lote_a_cadastro_sg.fid--3e166e38_1a11d2cdd4e_-7fa3",
+          "properties": {
+            "id": 1040003
+          },
+          "geometrySha256": "28e334f235bdc5ca1743a3ef144077447193c03e0682ab5f10624de54dc3f6cb"
+        },
+        {
+          "transportId": "lote_a_cadastro_sg.fid--3e166e38_1a11d2cdd4e_-7fa2",
+          "properties": {
+            "id": 1040006
+          },
+          "geometrySha256": "057999f358a745749fecb98f18b60f249db96759a249cebb667254f9cc8bf2d9"
+        },
+        {
+          "transportId": "lote_a_cadastro_sg.fid--3e166e38_1a11d2cdd4e_-7fa1",
+          "properties": {
+            "id": 1040007
+          },
+          "geometrySha256": "8da6c8cbd196fbf9bc22dec52c51aba794984805f1f5bee2a13355a144b0c800"
+        },
+        {
+          "transportId": "lote_a_cadastro_sg.fid--3e166e38_1a11d2cdd4e_-7fa0",
+          "properties": {
+            "id": 1040009
+          },
+          "geometrySha256": "bbc6a8d8efe36759e9711a261fd2ae9bf29c75dc6de182d011a2729ef1ebccfd"
+        },
+        {
+          "transportId": "lote_a_cadastro_sg.fid--3e166e38_1a11d2cdd4e_-7f9f",
+          "properties": {
+            "id": 1040011
+          },
+          "geometrySha256": "e6340d5c70d589acfb8eb48ac8fee8db553e3c3fbcdfa60e61702772bfff8cdb"
+        },
+        {
+          "transportId": "lote_a_cadastro_sg.fid--3e166e38_1a11d2cdd4e_-7f9e",
+          "properties": {
+            "id": 1040015
+          },
+          "geometrySha256": "bc9c78a3625fb7d7135114bd6f6bb29d3d7049404b5ae576218ca266d9e7969b"
+        },
+        {
+          "transportId": "lote_a_cadastro_sg.fid--3e166e38_1a11d2cdd4e_-7f9d",
+          "properties": {
+            "id": 1040016
+          },
+          "geometrySha256": "54b0de9fd2f864099413f7e3bee0fe6ef043fbedd2d3ed973b874fa81bf71ca2"
+        },
+        {
+          "transportId": "lote_a_cadastro_sg.fid--3e166e38_1a11d2cdd4e_-7f9c",
+          "properties": {
+            "id": 1040071
+          },
+          "geometrySha256": "8e3fbacdb6ba962e072f927f9aba1b6b8188bf5735a7f151d9f8e6b2b9a82691"
+        },
+        {
+          "transportId": "lote_a_cadastro_sg.fid--3e166e38_1a11d2cdd4e_-7f9b",
+          "properties": {
+            "id": 1041055
+          },
+          "geometrySha256": "8c47a8f62d392782df8390d066b13568be1fc8480fcc9ee555e658ef366eb741"
+        },
+        {
+          "transportId": "lote_a_cadastro_sg.fid--3e166e38_1a11d2cdd4e_-7f9a",
+          "properties": {
+            "id": 1041082
+          },
+          "geometrySha256": "06a1cde968237c7259f2be31fc68bd86ab1b4a6f5940a8e0e829c14bfb18c18e"
+        },
+        {
+          "transportId": "lote_a_cadastro_sg.fid--3e166e38_1a11d2cdd4e_-7f99",
+          "properties": {
+            "id": 1041084
+          },
+          "geometrySha256": "ab328717f6921b4d0aac1775c59435de87c0e45e90b2899bf0f331c8fe8ef1bb"
+        },
+        {
+          "transportId": "lote_a_cadastro_sg.fid--3e166e38_1a11d2cdd4e_-7f98",
+          "properties": {
+            "id": 1041087
+          },
+          "geometrySha256": "1bb3677625e1d30f500596d0b34ca1b1fbb1f6458fe3df2615138af62c4c999c"
+        },
+        {
+          "transportId": "lote_a_cadastro_sg.fid--3e166e38_1a11d2cdd4e_-7f97",
+          "properties": {
+            "id": 1043289
+          },
+          "geometrySha256": "d2b282cd73a31e87820e39b85e5c00c09d0d0e8ab295ef6db1aba172bc339cbb"
+        },
+        {
+          "transportId": "lote_a_cadastro_sg.fid--3e166e38_1a11d2cdd4e_-7f96",
+          "properties": {
+            "id": 1043290
+          },
+          "geometrySha256": "c813a7c4dea2ba7530bb2617d833146e2811596edbc670f601956dbe0fab1d63"
+        },
+        {
+          "transportId": "lote_a_cadastro_sg.fid--3e166e38_1a11d2cdd4e_-7f95",
+          "properties": {
+            "id": 1043291
+          },
+          "geometrySha256": "dc142f312a034c70dd83511f7c90fdb248262a15ab39607e42040b99ea8d2743"
+        },
+        {
+          "transportId": "lote_a_cadastro_sg.fid--3e166e38_1a11d2cdd4e_-7f94",
+          "properties": {
+            "id": 1073060
+          },
+          "geometrySha256": "c5b7767cf833ebd445274e607274236d973ba20d8bf879a2903b80d4f4150258"
+        },
+        {
+          "transportId": "lote_a_cadastro_sg.fid--3e166e38_1a11d2cdd4e_-7f93",
+          "properties": {
+            "id": 1073063
+          },
+          "geometrySha256": "1b9d44d7ca2758b957a0f661c652a075ecd85b40cc31341308f82b374f65e569"
+        },
+        {
+          "transportId": "lote_a_cadastro_sg.fid--3e166e38_1a11d2cdd4e_-7f92",
+          "properties": {
+            "id": 1073065
+          },
+          "geometrySha256": "aeeaa8099d086f36597c34c497bf6ed24d86730c96e45173cfe3e8f8f9803af8"
+        }
+      ]
+    },
+    {
+      "test": "viewport-8",
+      "url": "https://geoserver.pmsg.rj.gov.br/ows?service=WFS&version=2.0.0&request=GetFeature&typeNames=SaoGoncalo%3Alote_a_cadastro_sg&outputFormat=application%2Fjson&srsName=CRS%3A84&sortBy=id&propertyName=geom%2Cid&count=1000&startIndex=0&bbox=-43.026%2C-22.835%2C-43.025%2C-22.834%2CCRS%3A84",
+      "method": "GET",
+      "checkedAt": "2026-10-08T22:01:15.202Z",
+      "httpStatus": 200,
+      "contentType": "application/json;charset=UTF-8",
+      "bytes": 15917,
+      "numberMatched": 27,
+      "numberReturned": 27,
+      "features": [
+        {
+          "transportId": "lote_a_cadastro_sg.fid--3e166e38_1a11d2cdd4e_-7f91",
+          "properties": {
+            "id": 1037319
+          },
+          "geometrySha256": "a0378e4ca31931a850c4395cc30d06dd2f5f48830cf701e2baf43497c4f9e237"
+        },
+        {
+          "transportId": "lote_a_cadastro_sg.fid--3e166e38_1a11d2cdd4e_-7f90",
+          "properties": {
+            "id": 1039985
+          },
+          "geometrySha256": "36c81c1d843319912aab51928b28dc31dbec91c92ea5a15f5a81bc024692b6b3"
+        },
+        {
+          "transportId": "lote_a_cadastro_sg.fid--3e166e38_1a11d2cdd4e_-7f8f",
+          "properties": {
+            "id": 1039986
+          },
+          "geometrySha256": "e706eb9878bbc63ecc0def0e001cd7026117cd305d89e55cef1083ee430addec"
+        },
+        {
+          "transportId": "lote_a_cadastro_sg.fid--3e166e38_1a11d2cdd4e_-7f8e",
+          "properties": {
+            "id": 1039987
+          },
+          "geometrySha256": "1e5fca5524bca6deb687cd2b3393254d57e1115ca0aaac55fad47b6dc8fd22f7"
+        },
+        {
+          "transportId": "lote_a_cadastro_sg.fid--3e166e38_1a11d2cdd4e_-7f8d",
+          "properties": {
+            "id": 1039989
+          },
+          "geometrySha256": "d1a6a7e61bfc52e5e4bb5ea5c74ec78eb1a2e9c7761f5618216c134886da41a1"
+        },
+        {
+          "transportId": "lote_a_cadastro_sg.fid--3e166e38_1a11d2cdd4e_-7f8c",
+          "properties": {
+            "id": 1039993
+          },
+          "geometrySha256": "016450ab09ea79ae386ff5ed835844ecd0c40dd5393e410814bea14227805c1e"
+        },
+        {
+          "transportId": "lote_a_cadastro_sg.fid--3e166e38_1a11d2cdd4e_-7f8b",
+          "properties": {
+            "id": 1039994
+          },
+          "geometrySha256": "1d177197c515fa2362e4070c818c92971d6e732979bf168a6038b5c2ecdb25bc"
+        },
+        {
+          "transportId": "lote_a_cadastro_sg.fid--3e166e38_1a11d2cdd4e_-7f8a",
+          "properties": {
+            "id": 1039996
+          },
+          "geometrySha256": "363357a940d57a25cf87a367ad88de96150f9e3d015423fb46965020735d1ae9"
+        },
+        {
+          "transportId": "lote_a_cadastro_sg.fid--3e166e38_1a11d2cdd4e_-7f89",
+          "properties": {
+            "id": 1040008
+          },
+          "geometrySha256": "8f730c39b844cda3270f66be51e254a7733280b98c07d5bc23c09729840ba515"
+        },
+        {
+          "transportId": "lote_a_cadastro_sg.fid--3e166e38_1a11d2cdd4e_-7f88",
+          "properties": {
+            "id": 1040010
+          },
+          "geometrySha256": "663391ca49fda4a8ffa84ac279d60857981d16ba48f65d40fe4cd215838aa0a1"
+        },
+        {
+          "transportId": "lote_a_cadastro_sg.fid--3e166e38_1a11d2cdd4e_-7f87",
+          "properties": {
+            "id": 1040014
+          },
+          "geometrySha256": "def9af17a559c6356496567e9ea7e31e79b85945e5c07e3b190f32fc0a06a182"
+        },
+        {
+          "transportId": "lote_a_cadastro_sg.fid--3e166e38_1a11d2cdd4e_-7f86",
+          "properties": {
+            "id": 1040018
+          },
+          "geometrySha256": "d67478341fe49ca0cdbff6b78ebe1f616d614d7e06207cfae25a10048bc304e0"
+        },
+        {
+          "transportId": "lote_a_cadastro_sg.fid--3e166e38_1a11d2cdd4e_-7f85",
+          "properties": {
+            "id": 1041123
+          },
+          "geometrySha256": "9f04cf6a4638df8b8849ed9339e5e13bb8174f9855c33559ff58ac9dd6e3cd44"
+        },
+        {
+          "transportId": "lote_a_cadastro_sg.fid--3e166e38_1a11d2cdd4e_-7f84",
+          "properties": {
+            "id": 1041127
+          },
+          "geometrySha256": "2bf8d2aef422dec76db41a9e7014ebc3f7c08e0420370ae7b51d74899fc01e10"
+        },
+        {
+          "transportId": "lote_a_cadastro_sg.fid--3e166e38_1a11d2cdd4e_-7f83",
+          "properties": {
+            "id": 1041143
+          },
+          "geometrySha256": "394dfea57f9396a0cc660c760d7fb7828c2f3bcccd80ee23714bbd8b22a5c733"
+        },
+        {
+          "transportId": "lote_a_cadastro_sg.fid--3e166e38_1a11d2cdd4e_-7f82",
+          "properties": {
+            "id": 1041279
+          },
+          "geometrySha256": "e984face88c64154a06bcedb72504e6e6e3114f96e1d4a77bdacdf5ff567132e"
+        },
+        {
+          "transportId": "lote_a_cadastro_sg.fid--3e166e38_1a11d2cdd4e_-7f81",
+          "properties": {
+            "id": 1041292
+          },
+          "geometrySha256": "e3e96c25d1b7ce90683d7c9e3cdc550b92cd9eac3f4b056113bae754f8e7607b"
+        },
+        {
+          "transportId": "lote_a_cadastro_sg.fid--3e166e38_1a11d2cdd4e_-7f80",
+          "properties": {
+            "id": 1041294
+          },
+          "geometrySha256": "07b5adf3b808b38661148bd0589420a745f9246ddc0cd656adb4365307c9ba79"
+        },
+        {
+          "transportId": "lote_a_cadastro_sg.fid--3e166e38_1a11d2cdd4e_-7f7f",
+          "properties": {
+            "id": 1041311
+          },
+          "geometrySha256": "731d530ffdb16d6cc1d4922175a7506be935f6e551846fd17823d2190c6ab61c"
+        },
+        {
+          "transportId": "lote_a_cadastro_sg.fid--3e166e38_1a11d2cdd4e_-7f7e",
+          "properties": {
+            "id": 1041315
+          },
+          "geometrySha256": "8a670783555c5d386eb7336dd4f1537b30391df1219aecec668b2d901eba0c3c"
+        },
+        {
+          "transportId": "lote_a_cadastro_sg.fid--3e166e38_1a11d2cdd4e_-7f7d",
+          "properties": {
+            "id": 1043272
+          },
+          "geometrySha256": "9c7c4084bc4f243b96a2f15fe5b37b3ea4ca6cc02b2f0bd8aa8f2095f5a86e40"
+        },
+        {
+          "transportId": "lote_a_cadastro_sg.fid--3e166e38_1a11d2cdd4e_-7f7c",
+          "properties": {
+            "id": 1073034
+          },
+          "geometrySha256": "4fa6d31daddb40f3ffb323c7bc2abe0e9f0fba4720dcb23300072bbb5bb8e49e"
+        },
+        {
+          "transportId": "lote_a_cadastro_sg.fid--3e166e38_1a11d2cdd4e_-7f7b",
+          "properties": {
+            "id": 1073035
+          },
+          "geometrySha256": "c56418e80caf52a8b38c8453c8204ad707453fd2566d345477c3e7e75a94750d"
+        },
+        {
+          "transportId": "lote_a_cadastro_sg.fid--3e166e38_1a11d2cdd4e_-7f7a",
+          "properties": {
+            "id": 1073036
+          },
+          "geometrySha256": "28ace5081a80e6dd20b43d2a04f32e45fb8d4e6464f81bd2b8316a774cf2505e"
+        },
+        {
+          "transportId": "lote_a_cadastro_sg.fid--3e166e38_1a11d2cdd4e_-7f79",
+          "properties": {
+            "id": 1073056
+          },
+          "geometrySha256": "14f0690b177df4247561b8b9214726b1c7dc66f41a4acb5f8d065f52df1cc6a8"
+        },
+        {
+          "transportId": "lote_a_cadastro_sg.fid--3e166e38_1a11d2cdd4e_-7f78",
+          "properties": {
+            "id": 1073063
+          },
+          "geometrySha256": "1b9d44d7ca2758b957a0f661c652a075ecd85b40cc31341308f82b374f65e569"
+        },
+        {
+          "transportId": "lote_a_cadastro_sg.fid--3e166e38_1a11d2cdd4e_-7f77",
+          "properties": {
+            "id": 1073065
+          },
+          "geometrySha256": "aeeaa8099d086f36597c34c497bf6ed24d86730c96e45173cfe3e8f8f9803af8"
+        }
+      ]
+    },
+    {
+      "test": "viewport-9",
+      "url": "https://geoserver.pmsg.rj.gov.br/ows?service=WFS&version=2.0.0&request=GetFeature&typeNames=SaoGoncalo%3Alote_a_cadastro_sg&outputFormat=application%2Fjson&srsName=CRS%3A84&sortBy=id&propertyName=geom%2Cid&count=1000&startIndex=0&bbox=-43.027%2C-22.838%2C-43.026%2C-22.837%2CCRS%3A84",
+      "method": "GET",
+      "checkedAt": "2026-10-08T22:01:15.563Z",
+      "httpStatus": 200,
+      "contentType": "application/json;charset=UTF-8",
+      "bytes": 147,
+      "numberMatched": 0,
+      "numberReturned": 0,
+      "features": []
+    },
+    {
+      "test": "viewport-10",
+      "url": "https://geoserver.pmsg.rj.gov.br/ows?service=WFS&version=2.0.0&request=GetFeature&typeNames=SaoGoncalo%3Alote_a_cadastro_sg&outputFormat=application%2Fjson&srsName=CRS%3A84&sortBy=id&propertyName=geom%2Cid&count=1000&startIndex=0&bbox=-43.027%2C-22.834%2C-43.026%2C-22.833%2CCRS%3A84",
+      "method": "GET",
+      "checkedAt": "2026-10-08T22:01:15.903Z",
+      "httpStatus": 200,
+      "contentType": "application/json;charset=UTF-8",
+      "bytes": 19018,
+      "numberMatched": 34,
+      "numberReturned": 34,
+      "features": [
+        {
+          "transportId": "lote_a_cadastro_sg.fid--3e166e38_1a11d2cdd4e_-7f76",
+          "properties": {
+            "id": 1037101
+          },
+          "geometrySha256": "dc1aa2d2e5dfaa4ab98826c5c87cfd004a0f24d180983106aa854d1a57a2b69f"
+        },
+        {
+          "transportId": "lote_a_cadastro_sg.fid--3e166e38_1a11d2cdd4e_-7f75",
+          "properties": {
+            "id": 1037319
+          },
+          "geometrySha256": "a0378e4ca31931a850c4395cc30d06dd2f5f48830cf701e2baf43497c4f9e237"
+        },
+        {
+          "transportId": "lote_a_cadastro_sg.fid--3e166e38_1a11d2cdd4e_-7f74",
+          "properties": {
+            "id": 1040009
+          },
+          "geometrySha256": "bbc6a8d8efe36759e9711a261fd2ae9bf29c75dc6de182d011a2729ef1ebccfd"
+        },
+        {
+          "transportId": "lote_a_cadastro_sg.fid--3e166e38_1a11d2cdd4e_-7f73",
+          "properties": {
+            "id": 1040011
+          },
+          "geometrySha256": "e6340d5c70d589acfb8eb48ac8fee8db553e3c3fbcdfa60e61702772bfff8cdb"
+        },
+        {
+          "transportId": "lote_a_cadastro_sg.fid--3e166e38_1a11d2cdd4e_-7f72",
+          "properties": {
+            "id": 1040015
+          },
+          "geometrySha256": "bc9c78a3625fb7d7135114bd6f6bb29d3d7049404b5ae576218ca266d9e7969b"
+        },
+        {
+          "transportId": "lote_a_cadastro_sg.fid--3e166e38_1a11d2cdd4e_-7f71",
+          "properties": {
+            "id": 1040016
+          },
+          "geometrySha256": "54b0de9fd2f864099413f7e3bee0fe6ef043fbedd2d3ed973b874fa81bf71ca2"
+        },
+        {
+          "transportId": "lote_a_cadastro_sg.fid--3e166e38_1a11d2cdd4e_-7f70",
+          "properties": {
+            "id": 1040018
+          },
+          "geometrySha256": "d67478341fe49ca0cdbff6b78ebe1f616d614d7e06207cfae25a10048bc304e0"
+        },
+        {
+          "transportId": "lote_a_cadastro_sg.fid--3e166e38_1a11d2cdd4e_-7f6f",
+          "properties": {
+            "id": 1040019
+          },
+          "geometrySha256": "c6d52a5aa9cc5c7f4ae173f90b78f43b20fd42261b2e805cf749c12af3119fb4"
+        },
+        {
+          "transportId": "lote_a_cadastro_sg.fid--3e166e38_1a11d2cdd4e_-7f6e",
+          "properties": {
+            "id": 1040020
+          },
+          "geometrySha256": "fd90906c10696d5f5835f16342e4eca48c6ad8cf8cd010506213951dad055367"
+        },
+        {
+          "transportId": "lote_a_cadastro_sg.fid--3e166e38_1a11d2cdd4e_-7f6d",
+          "properties": {
+            "id": 1040021
+          },
+          "geometrySha256": "2e1c2bcbbbf2e89eb19696ae84770602f77e9e90b4fe006f62b01bc8e2daa4ac"
+        },
+        {
+          "transportId": "lote_a_cadastro_sg.fid--3e166e38_1a11d2cdd4e_-7f6c",
+          "properties": {
+            "id": 1040071
+          },
+          "geometrySha256": "8e3fbacdb6ba962e072f927f9aba1b6b8188bf5735a7f151d9f8e6b2b9a82691"
+        },
+        {
+          "transportId": "lote_a_cadastro_sg.fid--3e166e38_1a11d2cdd4e_-7f6b",
+          "properties": {
+            "id": 1040073
+          },
+          "geometrySha256": "9247eeed1eb3f3e6ccc11919fc178437ada625332d381e4d4ac7bbb39b1db16b"
+        },
+        {
+          "transportId": "lote_a_cadastro_sg.fid--3e166e38_1a11d2cdd4e_-7f6a",
+          "properties": {
+            "id": 1040940
+          },
+          "geometrySha256": "99bb65427eca445e2837a1b197b429d2f2d655b8929cc08febab72891ca6d6ce"
+        },
+        {
+          "transportId": "lote_a_cadastro_sg.fid--3e166e38_1a11d2cdd4e_-7f69",
+          "properties": {
+            "id": 1041014
+          },
+          "geometrySha256": "67246ba1377fbd4d8c5573fd7980b7e2824a9087821dc56f54c350eda262092b"
+        },
+        {
+          "transportId": "lote_a_cadastro_sg.fid--3e166e38_1a11d2cdd4e_-7f68",
+          "properties": {
+            "id": 1041018
+          },
+          "geometrySha256": "f3d7d33ea3ad124e05a39eb935679019caeb0dd0603c4ff5c6b6e6f803420668"
+        },
+        {
+          "transportId": "lote_a_cadastro_sg.fid--3e166e38_1a11d2cdd4e_-7f67",
+          "properties": {
+            "id": 1041028
+          },
+          "geometrySha256": "4f040f6866dc7d4bf361fc489a155e1d8ef67f8400d087ede905cb57cdfe046e"
+        },
+        {
+          "transportId": "lote_a_cadastro_sg.fid--3e166e38_1a11d2cdd4e_-7f66",
+          "properties": {
+            "id": 1041040
+          },
+          "geometrySha256": "98b0e41deeeff1930c7e05de79d641f497f36782d59ea2f003322902191b53ed"
+        },
+        {
+          "transportId": "lote_a_cadastro_sg.fid--3e166e38_1a11d2cdd4e_-7f65",
+          "properties": {
+            "id": 1041055
+          },
+          "geometrySha256": "8c47a8f62d392782df8390d066b13568be1fc8480fcc9ee555e658ef366eb741"
+        },
+        {
+          "transportId": "lote_a_cadastro_sg.fid--3e166e38_1a11d2cdd4e_-7f64",
+          "properties": {
+            "id": 1041071
+          },
+          "geometrySha256": "9fc08f2bc5cfb49727e0d275b52c6c961330f6353fd9ee62c93a1073800c25ca"
+        },
+        {
+          "transportId": "lote_a_cadastro_sg.fid--3e166e38_1a11d2cdd4e_-7f63",
+          "properties": {
+            "id": 1041072
+          },
+          "geometrySha256": "5cb3258c3c829c60e4211596126db7dee587ec64f800bbc0c67338034ef9779f"
+        },
+        {
+          "transportId": "lote_a_cadastro_sg.fid--3e166e38_1a11d2cdd4e_-7f62",
+          "properties": {
+            "id": 1041080
+          },
+          "geometrySha256": "c912d2c9e72cc0b2fdaf622f19346f06686347aa3fd2dbb8416c0105842d66ad"
+        },
+        {
+          "transportId": "lote_a_cadastro_sg.fid--3e166e38_1a11d2cdd4e_-7f61",
+          "properties": {
+            "id": 1041099
+          },
+          "geometrySha256": "7e6c99cdad2728b28495f68425e2b8eaacc3fbfa89c0f5e8e46d29fdda014569"
+        },
+        {
+          "transportId": "lote_a_cadastro_sg.fid--3e166e38_1a11d2cdd4e_-7f60",
+          "properties": {
+            "id": 1043271
+          },
+          "geometrySha256": "388582648ebfc05037dc14b9f957b412a9cbfaced0362581252e05ffe8f5d137"
+        },
+        {
+          "transportId": "lote_a_cadastro_sg.fid--3e166e38_1a11d2cdd4e_-7f5f",
+          "properties": {
+            "id": 1043274
+          },
+          "geometrySha256": "3a499c5591b221206dc7bc8d26bb258fa3c2791c55f13c14e281f07646304a34"
+        },
+        {
+          "transportId": "lote_a_cadastro_sg.fid--3e166e38_1a11d2cdd4e_-7f5e",
+          "properties": {
+            "id": 1043290
+          },
+          "geometrySha256": "c813a7c4dea2ba7530bb2617d833146e2811596edbc670f601956dbe0fab1d63"
+        },
+        {
+          "transportId": "lote_a_cadastro_sg.fid--3e166e38_1a11d2cdd4e_-7f5d",
+          "properties": {
+            "id": 1072723
+          },
+          "geometrySha256": "20c19dee8d1f404faeb8a9b1194e757e61b986f044d700ec0a3e8b3a10630671"
+        },
+        {
+          "transportId": "lote_a_cadastro_sg.fid--3e166e38_1a11d2cdd4e_-7f5c",
+          "properties": {
+            "id": 1073026
+          },
+          "geometrySha256": "971eb71e31f12d088b373ead11dff484a805eded535ba06da271a9d0d1d8cf2f"
+        },
+        {
+          "transportId": "lote_a_cadastro_sg.fid--3e166e38_1a11d2cdd4e_-7f5b",
+          "properties": {
+            "id": 1073027
+          },
+          "geometrySha256": "e176120b45ac7f26ccc682c0ca41f6139d19c81425b0ef4d1492bf9775f2fdb8"
+        },
+        {
+          "transportId": "lote_a_cadastro_sg.fid--3e166e38_1a11d2cdd4e_-7f5a",
+          "properties": {
+            "id": 1073066
+          },
+          "geometrySha256": "e7efef783adbcb9bdb33b184fc1640806b0a3bf0d26dbc8e08e79adab8363a7e"
+        },
+        {
+          "transportId": "lote_a_cadastro_sg.fid--3e166e38_1a11d2cdd4e_-7f59",
+          "properties": {
+            "id": 1073077
+          },
+          "geometrySha256": "59d01f148cb310674740afc2d7b24123a6f0f1737bd933697fa149c3308d2e5a"
+        },
+        {
+          "transportId": "lote_a_cadastro_sg.fid--3e166e38_1a11d2cdd4e_-7f58",
+          "properties": {
+            "id": 1073081
+          },
+          "geometrySha256": "ad5b17a8e6fd96cf3835d63059b2b4615a803246ad38276f72927584a286fced"
+        },
+        {
+          "transportId": "lote_a_cadastro_sg.fid--3e166e38_1a11d2cdd4e_-7f57",
+          "properties": {
+            "id": 1073082
+          },
+          "geometrySha256": "7957021f382516d3a9e56905ccf9359d52a5055dfe10774d840c7bc28fc9f00a"
+        },
+        {
+          "transportId": "lote_a_cadastro_sg.fid--3e166e38_1a11d2cdd4e_-7f56",
+          "properties": {
+            "id": 1073083
+          },
+          "geometrySha256": "496100acae91b0cd5a6d4893f3d49e00ec71aec0f76d2783f6507ed00e2a63a0"
+        },
+        {
+          "transportId": "lote_a_cadastro_sg.fid--3e166e38_1a11d2cdd4e_-7f55",
+          "properties": {
+            "id": 1073084
+          },
+          "geometrySha256": "256410950e05e6ab331be0ca5bf408ceaf85487daf50a68b6c280803f3af5745"
+        }
+      ]
+    },
+    {
+      "test": "viewport-11",
+      "url": "https://geoserver.pmsg.rj.gov.br/ows?service=WFS&version=2.0.0&request=GetFeature&typeNames=SaoGoncalo%3Alote_a_cadastro_sg&outputFormat=application%2Fjson&srsName=CRS%3A84&sortBy=id&propertyName=geom%2Cid&count=1000&startIndex=0&bbox=-43.029%2C-22.836%2C-43.028%2C-22.835%2CCRS%3A84",
+      "method": "GET",
+      "checkedAt": "2026-10-08T22:01:16.278Z",
+      "httpStatus": 200,
+      "contentType": "application/json;charset=UTF-8",
+      "bytes": 147,
+      "numberMatched": 0,
+      "numberReturned": 0,
+      "features": []
+    },
+    {
+      "test": "viewport-12",
+      "url": "https://geoserver.pmsg.rj.gov.br/ows?service=WFS&version=2.0.0&request=GetFeature&typeNames=SaoGoncalo%3Alote_a_cadastro_sg&outputFormat=application%2Fjson&srsName=CRS%3A84&sortBy=id&propertyName=geom%2Cid&count=1000&startIndex=0&bbox=-43.025%2C-22.836%2C-43.024%2C-22.835%2CCRS%3A84",
+      "method": "GET",
+      "checkedAt": "2026-10-08T22:01:16.608Z",
+      "httpStatus": 200,
+      "contentType": "application/json;charset=UTF-8",
+      "bytes": 3376,
+      "numberMatched": 9,
+      "numberReturned": 9,
+      "features": [
+        {
+          "transportId": "lote_a_cadastro_sg.fid--3e166e38_1a11d2cdd4e_-7f54",
+          "properties": {
+            "id": 1041294
+          },
+          "geometrySha256": "07b5adf3b808b38661148bd0589420a745f9246ddc0cd656adb4365307c9ba79"
+        },
+        {
+          "transportId": "lote_a_cadastro_sg.fid--3e166e38_1a11d2cdd4e_-7f53",
+          "properties": {
+            "id": 1041311
+          },
+          "geometrySha256": "731d530ffdb16d6cc1d4922175a7506be935f6e551846fd17823d2190c6ab61c"
+        },
+        {
+          "transportId": "lote_a_cadastro_sg.fid--3e166e38_1a11d2cdd4e_-7f52",
+          "properties": {
+            "id": 1041315
+          },
+          "geometrySha256": "8a670783555c5d386eb7336dd4f1537b30391df1219aecec668b2d901eba0c3c"
+        },
+        {
+          "transportId": "lote_a_cadastro_sg.fid--3e166e38_1a11d2cdd4e_-7f51",
+          "properties": {
+            "id": 1042514
+          },
+          "geometrySha256": "dec27d68c60694e576224bd48529f1bfd1c28891b030000dd8d7d2df2669df93"
+        },
+        {
+          "transportId": "lote_a_cadastro_sg.fid--3e166e38_1a11d2cdd4e_-7f50",
+          "properties": {
+            "id": 1042515
+          },
+          "geometrySha256": "6de1f98b46f21fe9eeb1cc92cd8efcd85657ccb07a3ce4a1f69a208c9c51bff3"
+        },
+        {
+          "transportId": "lote_a_cadastro_sg.fid--3e166e38_1a11d2cdd4e_-7f4f",
+          "properties": {
+            "id": 1042516
+          },
+          "geometrySha256": "9a2c1785c72e989aba01ba42561ca7aff07a6bd6f22591cd4020459eb16ece5f"
+        },
+        {
+          "transportId": "lote_a_cadastro_sg.fid--3e166e38_1a11d2cdd4e_-7f4e",
+          "properties": {
+            "id": 1042517
+          },
+          "geometrySha256": "c6d16fb8bf80c0f7f05034512f27befb29c43635fbe68b0589a43da983c20349"
+        },
+        {
+          "transportId": "lote_a_cadastro_sg.fid--3e166e38_1a11d2cdd4e_-7f4d",
+          "properties": {
+            "id": 1042518
+          },
+          "geometrySha256": "a8b2e765f5ac0c0fdf2638a3355e91978e578656fd962db66cb8346fb53ce403"
+        },
+        {
+          "transportId": "lote_a_cadastro_sg.fid--3e166e38_1a11d2cdd4e_-7f4c",
+          "properties": {
+            "id": 1042519
+          },
+          "geometrySha256": "3c95841ff51de5c5f09b46e51790cd65ee44bbc3eeba2f018887ea13af7e62e9"
+        }
+      ]
+    },
+    {
+      "test": "forced-three-row-pages",
+      "url": "https://geoserver.pmsg.rj.gov.br/ows?service=WFS&version=2.0.0&request=GetFeature&typeNames=SaoGoncalo%3Alote_a_cadastro_sg&outputFormat=application%2Fjson&srsName=CRS%3A84&sortBy=id&propertyName=geom%2Cid&count=3&startIndex=0&bbox=-43.027%2C-22.834%2C-43.026%2C-22.833%2CCRS%3A84",
+      "method": "GET",
+      "checkedAt": "2026-10-08T22:01:16.956Z",
+      "httpStatus": 200,
+      "contentType": "application/json;charset=UTF-8",
+      "bytes": 5499,
+      "numberMatched": 34,
+      "numberReturned": 3,
+      "features": [
+        {
+          "transportId": "lote_a_cadastro_sg.fid--3e166e38_1a11d2cdd4e_-7f4b",
+          "properties": {
+            "id": 1037101
+          },
+          "geometrySha256": "dc1aa2d2e5dfaa4ab98826c5c87cfd004a0f24d180983106aa854d1a57a2b69f"
+        },
+        {
+          "transportId": "lote_a_cadastro_sg.fid--3e166e38_1a11d2cdd4e_-7f4a",
+          "properties": {
+            "id": 1037319
+          },
+          "geometrySha256": "a0378e4ca31931a850c4395cc30d06dd2f5f48830cf701e2baf43497c4f9e237"
+        },
+        {
+          "transportId": "lote_a_cadastro_sg.fid--3e166e38_1a11d2cdd4e_-7f49",
+          "properties": {
+            "id": 1040009
+          },
+          "geometrySha256": "bbc6a8d8efe36759e9711a261fd2ae9bf29c75dc6de182d011a2729ef1ebccfd"
+        }
+      ]
+    },
+    {
+      "test": "forced-three-row-pages",
+      "url": "https://geoserver.pmsg.rj.gov.br/ows?service=WFS&version=2.0.0&request=GetFeature&typeNames=SaoGoncalo%3Alote_a_cadastro_sg&outputFormat=application%2Fjson&srsName=CRS%3A84&sortBy=id&propertyName=geom%2Cid&count=3&startIndex=3&bbox=-43.027%2C-22.834%2C-43.026%2C-22.833%2CCRS%3A84",
+      "method": "GET",
+      "checkedAt": "2026-10-08T22:01:17.325Z",
+      "httpStatus": 200,
+      "contentType": "application/json;charset=UTF-8",
+      "bytes": 2105,
+      "numberMatched": 34,
+      "numberReturned": 3,
+      "features": [
+        {
+          "transportId": "lote_a_cadastro_sg.fid--3e166e38_1a11d2cdd4e_-7f48",
+          "properties": {
+            "id": 1040011
+          },
+          "geometrySha256": "e6340d5c70d589acfb8eb48ac8fee8db553e3c3fbcdfa60e61702772bfff8cdb"
+        },
+        {
+          "transportId": "lote_a_cadastro_sg.fid--3e166e38_1a11d2cdd4e_-7f47",
+          "properties": {
+            "id": 1040015
+          },
+          "geometrySha256": "bc9c78a3625fb7d7135114bd6f6bb29d3d7049404b5ae576218ca266d9e7969b"
+        },
+        {
+          "transportId": "lote_a_cadastro_sg.fid--3e166e38_1a11d2cdd4e_-7f46",
+          "properties": {
+            "id": 1040016
+          },
+          "geometrySha256": "54b0de9fd2f864099413f7e3bee0fe6ef043fbedd2d3ed973b874fa81bf71ca2"
+        }
+      ]
+    },
+    {
+      "test": "forced-three-row-pages",
+      "url": "https://geoserver.pmsg.rj.gov.br/ows?service=WFS&version=2.0.0&request=GetFeature&typeNames=SaoGoncalo%3Alote_a_cadastro_sg&outputFormat=application%2Fjson&srsName=CRS%3A84&sortBy=id&propertyName=geom%2Cid&count=3&startIndex=6&bbox=-43.027%2C-22.834%2C-43.026%2C-22.833%2CCRS%3A84",
+      "method": "GET",
+      "checkedAt": "2026-10-08T22:01:17.666Z",
+      "httpStatus": 200,
+      "contentType": "application/json;charset=UTF-8",
+      "bytes": 2076,
+      "numberMatched": 34,
+      "numberReturned": 3,
+      "features": [
+        {
+          "transportId": "lote_a_cadastro_sg.fid--3e166e38_1a11d2cdd4e_-7f45",
+          "properties": {
+            "id": 1040018
+          },
+          "geometrySha256": "d67478341fe49ca0cdbff6b78ebe1f616d614d7e06207cfae25a10048bc304e0"
+        },
+        {
+          "transportId": "lote_a_cadastro_sg.fid--3e166e38_1a11d2cdd4e_-7f44",
+          "properties": {
+            "id": 1040019
+          },
+          "geometrySha256": "c6d52a5aa9cc5c7f4ae173f90b78f43b20fd42261b2e805cf749c12af3119fb4"
+        },
+        {
+          "transportId": "lote_a_cadastro_sg.fid--3e166e38_1a11d2cdd4e_-7f43",
+          "properties": {
+            "id": 1040020
+          },
+          "geometrySha256": "fd90906c10696d5f5835f16342e4eca48c6ad8cf8cd010506213951dad055367"
+        }
+      ]
+    },
+    {
+      "test": "forced-three-row-pages",
+      "url": "https://geoserver.pmsg.rj.gov.br/ows?service=WFS&version=2.0.0&request=GetFeature&typeNames=SaoGoncalo%3Alote_a_cadastro_sg&outputFormat=application%2Fjson&srsName=CRS%3A84&sortBy=id&propertyName=geom%2Cid&count=3&startIndex=9&bbox=-43.027%2C-22.834%2C-43.026%2C-22.833%2CCRS%3A84",
+      "method": "GET",
+      "checkedAt": "2026-10-08T22:01:18.007Z",
+      "httpStatus": 200,
+      "contentType": "application/json;charset=UTF-8",
+      "bytes": 2101,
+      "numberMatched": 34,
+      "numberReturned": 3,
+      "features": [
+        {
+          "transportId": "lote_a_cadastro_sg.fid--3e166e38_1a11d2cdd4e_-7f42",
+          "properties": {
+            "id": 1040021
+          },
+          "geometrySha256": "2e1c2bcbbbf2e89eb19696ae84770602f77e9e90b4fe006f62b01bc8e2daa4ac"
+        },
+        {
+          "transportId": "lote_a_cadastro_sg.fid--3e166e38_1a11d2cdd4e_-7f41",
+          "properties": {
+            "id": 1040071
+          },
+          "geometrySha256": "8e3fbacdb6ba962e072f927f9aba1b6b8188bf5735a7f151d9f8e6b2b9a82691"
+        },
+        {
+          "transportId": "lote_a_cadastro_sg.fid--3e166e38_1a11d2cdd4e_-7f40",
+          "properties": {
+            "id": 1040073
+          },
+          "geometrySha256": "9247eeed1eb3f3e6ccc11919fc178437ada625332d381e4d4ac7bbb39b1db16b"
+        }
+      ]
+    },
+    {
+      "test": "forced-three-row-pages",
+      "url": "https://geoserver.pmsg.rj.gov.br/ows?service=WFS&version=2.0.0&request=GetFeature&typeNames=SaoGoncalo%3Alote_a_cadastro_sg&outputFormat=application%2Fjson&srsName=CRS%3A84&sortBy=id&propertyName=geom%2Cid&count=3&startIndex=12&bbox=-43.027%2C-22.834%2C-43.026%2C-22.833%2CCRS%3A84",
+      "method": "GET",
+      "checkedAt": "2026-10-08T22:01:18.356Z",
+      "httpStatus": 200,
+      "contentType": "application/json;charset=UTF-8",
+      "bytes": 2435,
+      "numberMatched": 34,
+      "numberReturned": 3,
+      "features": [
+        {
+          "transportId": "lote_a_cadastro_sg.fid--3e166e38_1a11d2cdd4e_-7f3f",
+          "properties": {
+            "id": 1040940
+          },
+          "geometrySha256": "99bb65427eca445e2837a1b197b429d2f2d655b8929cc08febab72891ca6d6ce"
+        },
+        {
+          "transportId": "lote_a_cadastro_sg.fid--3e166e38_1a11d2cdd4e_-7f3e",
+          "properties": {
+            "id": 1041014
+          },
+          "geometrySha256": "67246ba1377fbd4d8c5573fd7980b7e2824a9087821dc56f54c350eda262092b"
+        },
+        {
+          "transportId": "lote_a_cadastro_sg.fid--3e166e38_1a11d2cdd4e_-7f3d",
+          "properties": {
+            "id": 1041018
+          },
+          "geometrySha256": "f3d7d33ea3ad124e05a39eb935679019caeb0dd0603c4ff5c6b6e6f803420668"
+        }
+      ]
+    },
+    {
+      "test": "forced-three-row-pages",
+      "url": "https://geoserver.pmsg.rj.gov.br/ows?service=WFS&version=2.0.0&request=GetFeature&typeNames=SaoGoncalo%3Alote_a_cadastro_sg&outputFormat=application%2Fjson&srsName=CRS%3A84&sortBy=id&propertyName=geom%2Cid&count=3&startIndex=15&bbox=-43.027%2C-22.834%2C-43.026%2C-22.833%2CCRS%3A84",
+      "method": "GET",
+      "checkedAt": "2026-10-08T22:01:18.698Z",
+      "httpStatus": 200,
+      "contentType": "application/json;charset=UTF-8",
+      "bytes": 2160,
+      "numberMatched": 34,
+      "numberReturned": 3,
+      "features": [
+        {
+          "transportId": "lote_a_cadastro_sg.fid--3e166e38_1a11d2cdd4e_-7f3c",
+          "properties": {
+            "id": 1041028
+          },
+          "geometrySha256": "4f040f6866dc7d4bf361fc489a155e1d8ef67f8400d087ede905cb57cdfe046e"
+        },
+        {
+          "transportId": "lote_a_cadastro_sg.fid--3e166e38_1a11d2cdd4e_-7f3b",
+          "properties": {
+            "id": 1041040
+          },
+          "geometrySha256": "98b0e41deeeff1930c7e05de79d641f497f36782d59ea2f003322902191b53ed"
+        },
+        {
+          "transportId": "lote_a_cadastro_sg.fid--3e166e38_1a11d2cdd4e_-7f3a",
+          "properties": {
+            "id": 1041055
+          },
+          "geometrySha256": "8c47a8f62d392782df8390d066b13568be1fc8480fcc9ee555e658ef366eb741"
+        }
+      ]
+    },
+    {
+      "test": "forced-three-row-pages",
+      "url": "https://geoserver.pmsg.rj.gov.br/ows?service=WFS&version=2.0.0&request=GetFeature&typeNames=SaoGoncalo%3Alote_a_cadastro_sg&outputFormat=application%2Fjson&srsName=CRS%3A84&sortBy=id&propertyName=geom%2Cid&count=3&startIndex=18&bbox=-43.027%2C-22.834%2C-43.026%2C-22.833%2CCRS%3A84",
+      "method": "GET",
+      "checkedAt": "2026-10-08T22:01:19.035Z",
+      "httpStatus": 200,
+      "contentType": "application/json;charset=UTF-8",
+      "bytes": 2331,
+      "numberMatched": 34,
+      "numberReturned": 3,
+      "features": [
+        {
+          "transportId": "lote_a_cadastro_sg.fid--3e166e38_1a11d2cdd4e_-7f39",
+          "properties": {
+            "id": 1041071
+          },
+          "geometrySha256": "9fc08f2bc5cfb49727e0d275b52c6c961330f6353fd9ee62c93a1073800c25ca"
+        },
+        {
+          "transportId": "lote_a_cadastro_sg.fid--3e166e38_1a11d2cdd4e_-7f38",
+          "properties": {
+            "id": 1041072
+          },
+          "geometrySha256": "5cb3258c3c829c60e4211596126db7dee587ec64f800bbc0c67338034ef9779f"
+        },
+        {
+          "transportId": "lote_a_cadastro_sg.fid--3e166e38_1a11d2cdd4e_-7f37",
+          "properties": {
+            "id": 1041080
+          },
+          "geometrySha256": "c912d2c9e72cc0b2fdaf622f19346f06686347aa3fd2dbb8416c0105842d66ad"
+        }
+      ]
+    },
+    {
+      "test": "forced-three-row-pages",
+      "url": "https://geoserver.pmsg.rj.gov.br/ows?service=WFS&version=2.0.0&request=GetFeature&typeNames=SaoGoncalo%3Alote_a_cadastro_sg&outputFormat=application%2Fjson&srsName=CRS%3A84&sortBy=id&propertyName=geom%2Cid&count=3&startIndex=21&bbox=-43.027%2C-22.834%2C-43.026%2C-22.833%2CCRS%3A84",
+      "method": "GET",
+      "checkedAt": "2026-10-08T22:01:19.376Z",
+      "httpStatus": 200,
+      "contentType": "application/json;charset=UTF-8",
+      "bytes": 2242,
+      "numberMatched": 34,
+      "numberReturned": 3,
+      "features": [
+        {
+          "transportId": "lote_a_cadastro_sg.fid--3e166e38_1a11d2cdd4e_-7f36",
+          "properties": {
+            "id": 1041099
+          },
+          "geometrySha256": "7e6c99cdad2728b28495f68425e2b8eaacc3fbfa89c0f5e8e46d29fdda014569"
+        },
+        {
+          "transportId": "lote_a_cadastro_sg.fid--3e166e38_1a11d2cdd4e_-7f35",
+          "properties": {
+            "id": 1043271
+          },
+          "geometrySha256": "388582648ebfc05037dc14b9f957b412a9cbfaced0362581252e05ffe8f5d137"
+        },
+        {
+          "transportId": "lote_a_cadastro_sg.fid--3e166e38_1a11d2cdd4e_-7f34",
+          "properties": {
+            "id": 1043274
+          },
+          "geometrySha256": "3a499c5591b221206dc7bc8d26bb258fa3c2791c55f13c14e281f07646304a34"
+        }
+      ]
+    },
+    {
+      "test": "forced-three-row-pages",
+      "url": "https://geoserver.pmsg.rj.gov.br/ows?service=WFS&version=2.0.0&request=GetFeature&typeNames=SaoGoncalo%3Alote_a_cadastro_sg&outputFormat=application%2Fjson&srsName=CRS%3A84&sortBy=id&propertyName=geom%2Cid&count=3&startIndex=24&bbox=-43.027%2C-22.834%2C-43.026%2C-22.833%2CCRS%3A84",
+      "method": "GET",
+      "checkedAt": "2026-10-08T22:01:19.730Z",
+      "httpStatus": 200,
+      "contentType": "application/json;charset=UTF-8",
+      "bytes": 2358,
+      "numberMatched": 34,
+      "numberReturned": 3,
+      "features": [
+        {
+          "transportId": "lote_a_cadastro_sg.fid--3e166e38_1a11d2cdd4e_-7f33",
+          "properties": {
+            "id": 1043290
+          },
+          "geometrySha256": "c813a7c4dea2ba7530bb2617d833146e2811596edbc670f601956dbe0fab1d63"
+        },
+        {
+          "transportId": "lote_a_cadastro_sg.fid--3e166e38_1a11d2cdd4e_-7f32",
+          "properties": {
+            "id": 1072723
+          },
+          "geometrySha256": "20c19dee8d1f404faeb8a9b1194e757e61b986f044d700ec0a3e8b3a10630671"
+        },
+        {
+          "transportId": "lote_a_cadastro_sg.fid--3e166e38_1a11d2cdd4e_-7f31",
+          "properties": {
+            "id": 1073026
+          },
+          "geometrySha256": "971eb71e31f12d088b373ead11dff484a805eded535ba06da271a9d0d1d8cf2f"
+        }
+      ]
+    },
+    {
+      "test": "forced-three-row-pages",
+      "url": "https://geoserver.pmsg.rj.gov.br/ows?service=WFS&version=2.0.0&request=GetFeature&typeNames=SaoGoncalo%3Alote_a_cadastro_sg&outputFormat=application%2Fjson&srsName=CRS%3A84&sortBy=id&propertyName=geom%2Cid&count=3&startIndex=27&bbox=-43.027%2C-22.834%2C-43.026%2C-22.833%2CCRS%3A84",
+      "method": "GET",
+      "checkedAt": "2026-10-08T22:01:20.089Z",
+      "httpStatus": 200,
+      "contentType": "application/json;charset=UTF-8",
+      "bytes": 2633,
+      "numberMatched": 34,
+      "numberReturned": 3,
+      "features": [
+        {
+          "transportId": "lote_a_cadastro_sg.fid--3e166e38_1a11d2cdd4e_-7f30",
+          "properties": {
+            "id": 1073027
+          },
+          "geometrySha256": "e176120b45ac7f26ccc682c0ca41f6139d19c81425b0ef4d1492bf9775f2fdb8"
+        },
+        {
+          "transportId": "lote_a_cadastro_sg.fid--3e166e38_1a11d2cdd4e_-7f2f",
+          "properties": {
+            "id": 1073066
+          },
+          "geometrySha256": "e7efef783adbcb9bdb33b184fc1640806b0a3bf0d26dbc8e08e79adab8363a7e"
+        },
+        {
+          "transportId": "lote_a_cadastro_sg.fid--3e166e38_1a11d2cdd4e_-7f2e",
+          "properties": {
+            "id": 1073077
+          },
+          "geometrySha256": "59d01f148cb310674740afc2d7b24123a6f0f1737bd933697fa149c3308d2e5a"
+        }
+      ]
+    },
+    {
+      "test": "forced-three-row-pages",
+      "url": "https://geoserver.pmsg.rj.gov.br/ows?service=WFS&version=2.0.0&request=GetFeature&typeNames=SaoGoncalo%3Alote_a_cadastro_sg&outputFormat=application%2Fjson&srsName=CRS%3A84&sortBy=id&propertyName=geom%2Cid&count=3&startIndex=30&bbox=-43.027%2C-22.834%2C-43.026%2C-22.833%2CCRS%3A84",
+      "method": "GET",
+      "checkedAt": "2026-10-08T22:01:20.575Z",
+      "httpStatus": 200,
+      "contentType": "application/json;charset=UTF-8",
+      "bytes": 2327,
+      "numberMatched": 34,
+      "numberReturned": 3,
+      "features": [
+        {
+          "transportId": "lote_a_cadastro_sg.fid--3e166e38_1a11d2cdd4e_-7f2d",
+          "properties": {
+            "id": 1073081
+          },
+          "geometrySha256": "ad5b17a8e6fd96cf3835d63059b2b4615a803246ad38276f72927584a286fced"
+        },
+        {
+          "transportId": "lote_a_cadastro_sg.fid--3e166e38_1a11d2cdd4e_-7f2c",
+          "properties": {
+            "id": 1073082
+          },
+          "geometrySha256": "7957021f382516d3a9e56905ccf9359d52a5055dfe10774d840c7bc28fc9f00a"
+        },
+        {
+          "transportId": "lote_a_cadastro_sg.fid--3e166e38_1a11d2cdd4e_-7f2b",
+          "properties": {
+            "id": 1073083
+          },
+          "geometrySha256": "496100acae91b0cd5a6d4893f3d49e00ec71aec0f76d2783f6507ed00e2a63a0"
+        }
+      ]
+    },
+    {
+      "test": "forced-three-row-pages",
+      "url": "https://geoserver.pmsg.rj.gov.br/ows?service=WFS&version=2.0.0&request=GetFeature&typeNames=SaoGoncalo%3Alote_a_cadastro_sg&outputFormat=application%2Fjson&srsName=CRS%3A84&sortBy=id&propertyName=geom%2Cid&count=3&startIndex=33&bbox=-43.027%2C-22.834%2C-43.026%2C-22.833%2CCRS%3A84",
+      "method": "GET",
+      "checkedAt": "2026-10-08T22:01:20.978Z",
+      "httpStatus": 200,
+      "contentType": "application/json;charset=UTF-8",
+      "bytes": 1093,
+      "numberMatched": 34,
+      "numberReturned": 1,
+      "features": [
+        {
+          "transportId": "lote_a_cadastro_sg.fid--3e166e38_1a11d2cdd4e_-7f2a",
+          "properties": {
+            "id": 1073084
+          },
+          "geometrySha256": "256410950e05e6ab331be0ca5bf408ceaf85487daf50a68b6c280803f3af5745"
+        }
+      ]
+    },
+    {
+      "test": "fresh-ids-0",
+      "url": "https://geoserver.pmsg.rj.gov.br/ows?service=WFS&version=2.0.0&request=GetFeature&typeNames=SaoGoncalo%3Alote_a_cadastro_sg&outputFormat=application%2Fjson&srsName=CRS%3A84&sortBy=id&propertyName=geom%2Cid&count=1000&startIndex=0&cql_filter=%22id%22+IN+%281037101%2C1037319%2C1039984%2C1039985%2C1039986%2C1039987%2C1039988%2C1039989%2C1039990%2C1039991%2C1039992%2C1039993%2C1039994%2C1039996%2C1039999%2C1040003%2C1040006%2C1040007%2C1040008%2C1040009%2C1040010%2C1040011%2C1040014%2C1040015%2C1040016%2C1040018%2C1040019%2C1040020%2C1040021%2C1040071%2C1040073%2C1040940%2C1041000%2C1041014%2C1041018%2C1041028%2C1041040%2C1041055%2C1041060%2C1041071%29",
+      "method": "GET",
+      "checkedAt": "2026-10-08T22:01:21.352Z",
+      "httpStatus": 200,
+      "contentType": "application/json;charset=UTF-8",
+      "bytes": 21125,
+      "numberMatched": 40,
+      "numberReturned": 40,
+      "features": [
+        {
+          "transportId": "lote_a_cadastro_sg.fid--3e166e38_1a11d2cdd4e_-7f29",
+          "properties": {
+            "id": 1037101
+          },
+          "geometrySha256": "dc1aa2d2e5dfaa4ab98826c5c87cfd004a0f24d180983106aa854d1a57a2b69f"
+        },
+        {
+          "transportId": "lote_a_cadastro_sg.fid--3e166e38_1a11d2cdd4e_-7f28",
+          "properties": {
+            "id": 1037319
+          },
+          "geometrySha256": "a0378e4ca31931a850c4395cc30d06dd2f5f48830cf701e2baf43497c4f9e237"
+        },
+        {
+          "transportId": "lote_a_cadastro_sg.fid--3e166e38_1a11d2cdd4e_-7f27",
+          "properties": {
+            "id": 1039984
+          },
+          "geometrySha256": "f7440320c5b24c1bd0a2a63cf795fbae3de10e56ba94b57ea0bd9b67fd91dedc"
+        },
+        {
+          "transportId": "lote_a_cadastro_sg.fid--3e166e38_1a11d2cdd4e_-7f26",
+          "properties": {
+            "id": 1039985
+          },
+          "geometrySha256": "36c81c1d843319912aab51928b28dc31dbec91c92ea5a15f5a81bc024692b6b3"
+        },
+        {
+          "transportId": "lote_a_cadastro_sg.fid--3e166e38_1a11d2cdd4e_-7f25",
+          "properties": {
+            "id": 1039986
+          },
+          "geometrySha256": "e706eb9878bbc63ecc0def0e001cd7026117cd305d89e55cef1083ee430addec"
+        },
+        {
+          "transportId": "lote_a_cadastro_sg.fid--3e166e38_1a11d2cdd4e_-7f24",
+          "properties": {
+            "id": 1039987
+          },
+          "geometrySha256": "1e5fca5524bca6deb687cd2b3393254d57e1115ca0aaac55fad47b6dc8fd22f7"
+        },
+        {
+          "transportId": "lote_a_cadastro_sg.fid--3e166e38_1a11d2cdd4e_-7f23",
+          "properties": {
+            "id": 1039988
+          },
+          "geometrySha256": "48457e04bbe25508f728319ea4cab583e2f8faddf0cc1be0bcbe21711a1ef367"
+        },
+        {
+          "transportId": "lote_a_cadastro_sg.fid--3e166e38_1a11d2cdd4e_-7f22",
+          "properties": {
+            "id": 1039989
+          },
+          "geometrySha256": "d1a6a7e61bfc52e5e4bb5ea5c74ec78eb1a2e9c7761f5618216c134886da41a1"
+        },
+        {
+          "transportId": "lote_a_cadastro_sg.fid--3e166e38_1a11d2cdd4e_-7f21",
+          "properties": {
+            "id": 1039990
+          },
+          "geometrySha256": "9bad5ca73671723c6e61b682595ebc3285d003f6de7b94dfb1febe3e90c8e3a0"
+        },
+        {
+          "transportId": "lote_a_cadastro_sg.fid--3e166e38_1a11d2cdd4e_-7f20",
+          "properties": {
+            "id": 1039991
+          },
+          "geometrySha256": "cc3e7d01d30b0d858139bb39f051f2bbe673b61498a4f311cd2e8e9101f001b4"
+        },
+        {
+          "transportId": "lote_a_cadastro_sg.fid--3e166e38_1a11d2cdd4e_-7f1f",
+          "properties": {
+            "id": 1039992
+          },
+          "geometrySha256": "d7b06f8113c54bad88896c467c279d8ec3e5f5728f89b97620189fdce9a81e4d"
+        },
+        {
+          "transportId": "lote_a_cadastro_sg.fid--3e166e38_1a11d2cdd4e_-7f1e",
+          "properties": {
+            "id": 1039993
+          },
+          "geometrySha256": "016450ab09ea79ae386ff5ed835844ecd0c40dd5393e410814bea14227805c1e"
+        },
+        {
+          "transportId": "lote_a_cadastro_sg.fid--3e166e38_1a11d2cdd4e_-7f1d",
+          "properties": {
+            "id": 1039994
+          },
+          "geometrySha256": "1d177197c515fa2362e4070c818c92971d6e732979bf168a6038b5c2ecdb25bc"
+        },
+        {
+          "transportId": "lote_a_cadastro_sg.fid--3e166e38_1a11d2cdd4e_-7f1c",
+          "properties": {
+            "id": 1039996
+          },
+          "geometrySha256": "363357a940d57a25cf87a367ad88de96150f9e3d015423fb46965020735d1ae9"
+        },
+        {
+          "transportId": "lote_a_cadastro_sg.fid--3e166e38_1a11d2cdd4e_-7f1b",
+          "properties": {
+            "id": 1039999
+          },
+          "geometrySha256": "0f7daeb09f168d9fc1eb93c7566554ac91e7e047eb4b659ad85bd293b288ac19"
+        },
+        {
+          "transportId": "lote_a_cadastro_sg.fid--3e166e38_1a11d2cdd4e_-7f1a",
+          "properties": {
+            "id": 1040003
+          },
+          "geometrySha256": "28e334f235bdc5ca1743a3ef144077447193c03e0682ab5f10624de54dc3f6cb"
+        },
+        {
+          "transportId": "lote_a_cadastro_sg.fid--3e166e38_1a11d2cdd4e_-7f19",
+          "properties": {
+            "id": 1040006
+          },
+          "geometrySha256": "057999f358a745749fecb98f18b60f249db96759a249cebb667254f9cc8bf2d9"
+        },
+        {
+          "transportId": "lote_a_cadastro_sg.fid--3e166e38_1a11d2cdd4e_-7f18",
+          "properties": {
+            "id": 1040007
+          },
+          "geometrySha256": "8da6c8cbd196fbf9bc22dec52c51aba794984805f1f5bee2a13355a144b0c800"
+        },
+        {
+          "transportId": "lote_a_cadastro_sg.fid--3e166e38_1a11d2cdd4e_-7f17",
+          "properties": {
+            "id": 1040008
+          },
+          "geometrySha256": "8f730c39b844cda3270f66be51e254a7733280b98c07d5bc23c09729840ba515"
+        },
+        {
+          "transportId": "lote_a_cadastro_sg.fid--3e166e38_1a11d2cdd4e_-7f16",
+          "properties": {
+            "id": 1040009
+          },
+          "geometrySha256": "bbc6a8d8efe36759e9711a261fd2ae9bf29c75dc6de182d011a2729ef1ebccfd"
+        },
+        {
+          "transportId": "lote_a_cadastro_sg.fid--3e166e38_1a11d2cdd4e_-7f15",
+          "properties": {
+            "id": 1040010
+          },
+          "geometrySha256": "663391ca49fda4a8ffa84ac279d60857981d16ba48f65d40fe4cd215838aa0a1"
+        },
+        {
+          "transportId": "lote_a_cadastro_sg.fid--3e166e38_1a11d2cdd4e_-7f14",
+          "properties": {
+            "id": 1040011
+          },
+          "geometrySha256": "e6340d5c70d589acfb8eb48ac8fee8db553e3c3fbcdfa60e61702772bfff8cdb"
+        },
+        {
+          "transportId": "lote_a_cadastro_sg.fid--3e166e38_1a11d2cdd4e_-7f13",
+          "properties": {
+            "id": 1040014
+          },
+          "geometrySha256": "def9af17a559c6356496567e9ea7e31e79b85945e5c07e3b190f32fc0a06a182"
+        },
+        {
+          "transportId": "lote_a_cadastro_sg.fid--3e166e38_1a11d2cdd4e_-7f12",
+          "properties": {
+            "id": 1040015
+          },
+          "geometrySha256": "bc9c78a3625fb7d7135114bd6f6bb29d3d7049404b5ae576218ca266d9e7969b"
+        },
+        {
+          "transportId": "lote_a_cadastro_sg.fid--3e166e38_1a11d2cdd4e_-7f11",
+          "properties": {
+            "id": 1040016
+          },
+          "geometrySha256": "54b0de9fd2f864099413f7e3bee0fe6ef043fbedd2d3ed973b874fa81bf71ca2"
+        },
+        {
+          "transportId": "lote_a_cadastro_sg.fid--3e166e38_1a11d2cdd4e_-7f10",
+          "properties": {
+            "id": 1040018
+          },
+          "geometrySha256": "d67478341fe49ca0cdbff6b78ebe1f616d614d7e06207cfae25a10048bc304e0"
+        },
+        {
+          "transportId": "lote_a_cadastro_sg.fid--3e166e38_1a11d2cdd4e_-7f0f",
+          "properties": {
+            "id": 1040019
+          },
+          "geometrySha256": "c6d52a5aa9cc5c7f4ae173f90b78f43b20fd42261b2e805cf749c12af3119fb4"
+        },
+        {
+          "transportId": "lote_a_cadastro_sg.fid--3e166e38_1a11d2cdd4e_-7f0e",
+          "properties": {
+            "id": 1040020
+          },
+          "geometrySha256": "fd90906c10696d5f5835f16342e4eca48c6ad8cf8cd010506213951dad055367"
+        },
+        {
+          "transportId": "lote_a_cadastro_sg.fid--3e166e38_1a11d2cdd4e_-7f0d",
+          "properties": {
+            "id": 1040021
+          },
+          "geometrySha256": "2e1c2bcbbbf2e89eb19696ae84770602f77e9e90b4fe006f62b01bc8e2daa4ac"
+        },
+        {
+          "transportId": "lote_a_cadastro_sg.fid--3e166e38_1a11d2cdd4e_-7f0c",
+          "properties": {
+            "id": 1040071
+          },
+          "geometrySha256": "8e3fbacdb6ba962e072f927f9aba1b6b8188bf5735a7f151d9f8e6b2b9a82691"
+        },
+        {
+          "transportId": "lote_a_cadastro_sg.fid--3e166e38_1a11d2cdd4e_-7f0b",
+          "properties": {
+            "id": 1040073
+          },
+          "geometrySha256": "9247eeed1eb3f3e6ccc11919fc178437ada625332d381e4d4ac7bbb39b1db16b"
+        },
+        {
+          "transportId": "lote_a_cadastro_sg.fid--3e166e38_1a11d2cdd4e_-7f0a",
+          "properties": {
+            "id": 1040940
+          },
+          "geometrySha256": "99bb65427eca445e2837a1b197b429d2f2d655b8929cc08febab72891ca6d6ce"
+        },
+        {
+          "transportId": "lote_a_cadastro_sg.fid--3e166e38_1a11d2cdd4e_-7f09",
+          "properties": {
+            "id": 1041000
+          },
+          "geometrySha256": "6d639bd530962b04b377ffad835b93de4fefade3422d85a5895f0b53db1329b8"
+        },
+        {
+          "transportId": "lote_a_cadastro_sg.fid--3e166e38_1a11d2cdd4e_-7f08",
+          "properties": {
+            "id": 1041014
+          },
+          "geometrySha256": "67246ba1377fbd4d8c5573fd7980b7e2824a9087821dc56f54c350eda262092b"
+        },
+        {
+          "transportId": "lote_a_cadastro_sg.fid--3e166e38_1a11d2cdd4e_-7f07",
+          "properties": {
+            "id": 1041018
+          },
+          "geometrySha256": "f3d7d33ea3ad124e05a39eb935679019caeb0dd0603c4ff5c6b6e6f803420668"
+        },
+        {
+          "transportId": "lote_a_cadastro_sg.fid--3e166e38_1a11d2cdd4e_-7f06",
+          "properties": {
+            "id": 1041028
+          },
+          "geometrySha256": "4f040f6866dc7d4bf361fc489a155e1d8ef67f8400d087ede905cb57cdfe046e"
+        },
+        {
+          "transportId": "lote_a_cadastro_sg.fid--3e166e38_1a11d2cdd4e_-7f05",
+          "properties": {
+            "id": 1041040
+          },
+          "geometrySha256": "98b0e41deeeff1930c7e05de79d641f497f36782d59ea2f003322902191b53ed"
+        },
+        {
+          "transportId": "lote_a_cadastro_sg.fid--3e166e38_1a11d2cdd4e_-7f04",
+          "properties": {
+            "id": 1041055
+          },
+          "geometrySha256": "8c47a8f62d392782df8390d066b13568be1fc8480fcc9ee555e658ef366eb741"
+        },
+        {
+          "transportId": "lote_a_cadastro_sg.fid--3e166e38_1a11d2cdd4e_-7f03",
+          "properties": {
+            "id": 1041060
+          },
+          "geometrySha256": "4b0f297d75d7e015a3f938b60bec7240d83ff529659db4cb8a4cedd655ad378d"
+        },
+        {
+          "transportId": "lote_a_cadastro_sg.fid--3e166e38_1a11d2cdd4e_-7f02",
+          "properties": {
+            "id": 1041071
+          },
+          "geometrySha256": "9fc08f2bc5cfb49727e0d275b52c6c961330f6353fd9ee62c93a1073800c25ca"
+        }
+      ]
+    },
+    {
+      "test": "fresh-ids-40",
+      "url": "https://geoserver.pmsg.rj.gov.br/ows?service=WFS&version=2.0.0&request=GetFeature&typeNames=SaoGoncalo%3Alote_a_cadastro_sg&outputFormat=application%2Fjson&srsName=CRS%3A84&sortBy=id&propertyName=geom%2Cid&count=1000&startIndex=0&cql_filter=%22id%22+IN+%281041072%2C1041080%2C1041082%2C1041084%2C1041087%2C1041099%2C1041123%2C1041127%2C1041128%2C1041133%2C1041143%2C1041171%2C1041279%2C1041292%2C1041294%2C1041311%2C1041315%2C1041317%2C1041318%2C1041319%2C1041325%2C1042513%2C1042514%2C1042515%2C1042516%2C1042517%2C1042518%2C1042519%2C1043271%2C1043272%2C1043274%2C1043289%2C1043290%2C1043291%2C1072723%2C1073026%2C1073027%2C1073034%2C1073035%2C1073036%29",
+      "method": "GET",
+      "checkedAt": "2026-10-08T22:01:21.737Z",
+      "httpStatus": 200,
+      "contentType": "application/json;charset=UTF-8",
+      "bytes": 19486,
+      "numberMatched": 40,
+      "numberReturned": 40,
+      "features": [
+        {
+          "transportId": "lote_a_cadastro_sg.fid--3e166e38_1a11d2cdd4e_-7f01",
+          "properties": {
+            "id": 1041072
+          },
+          "geometrySha256": "5cb3258c3c829c60e4211596126db7dee587ec64f800bbc0c67338034ef9779f"
+        },
+        {
+          "transportId": "lote_a_cadastro_sg.fid--3e166e38_1a11d2cdd4e_-7f00",
+          "properties": {
+            "id": 1041080
+          },
+          "geometrySha256": "c912d2c9e72cc0b2fdaf622f19346f06686347aa3fd2dbb8416c0105842d66ad"
+        },
+        {
+          "transportId": "lote_a_cadastro_sg.fid--3e166e38_1a11d2cdd4e_-7eff",
+          "properties": {
+            "id": 1041082
+          },
+          "geometrySha256": "06a1cde968237c7259f2be31fc68bd86ab1b4a6f5940a8e0e829c14bfb18c18e"
+        },
+        {
+          "transportId": "lote_a_cadastro_sg.fid--3e166e38_1a11d2cdd4e_-7efe",
+          "properties": {
+            "id": 1041084
+          },
+          "geometrySha256": "ab328717f6921b4d0aac1775c59435de87c0e45e90b2899bf0f331c8fe8ef1bb"
+        },
+        {
+          "transportId": "lote_a_cadastro_sg.fid--3e166e38_1a11d2cdd4e_-7efd",
+          "properties": {
+            "id": 1041087
+          },
+          "geometrySha256": "1bb3677625e1d30f500596d0b34ca1b1fbb1f6458fe3df2615138af62c4c999c"
+        },
+        {
+          "transportId": "lote_a_cadastro_sg.fid--3e166e38_1a11d2cdd4e_-7efc",
+          "properties": {
+            "id": 1041099
+          },
+          "geometrySha256": "7e6c99cdad2728b28495f68425e2b8eaacc3fbfa89c0f5e8e46d29fdda014569"
+        },
+        {
+          "transportId": "lote_a_cadastro_sg.fid--3e166e38_1a11d2cdd4e_-7efb",
+          "properties": {
+            "id": 1041123
+          },
+          "geometrySha256": "9f04cf6a4638df8b8849ed9339e5e13bb8174f9855c33559ff58ac9dd6e3cd44"
+        },
+        {
+          "transportId": "lote_a_cadastro_sg.fid--3e166e38_1a11d2cdd4e_-7efa",
+          "properties": {
+            "id": 1041127
+          },
+          "geometrySha256": "2bf8d2aef422dec76db41a9e7014ebc3f7c08e0420370ae7b51d74899fc01e10"
+        },
+        {
+          "transportId": "lote_a_cadastro_sg.fid--3e166e38_1a11d2cdd4e_-7ef9",
+          "properties": {
+            "id": 1041128
+          },
+          "geometrySha256": "74aa4af9bd218e128715a687a09c813771fbb350842199ccaff4b32c9cafe34a"
+        },
+        {
+          "transportId": "lote_a_cadastro_sg.fid--3e166e38_1a11d2cdd4e_-7ef8",
+          "properties": {
+            "id": 1041133
+          },
+          "geometrySha256": "6c2b8b826b0bbe6f386e398f497b27fbb6acff7e7dfe95b6868f0ee75d64d175"
+        },
+        {
+          "transportId": "lote_a_cadastro_sg.fid--3e166e38_1a11d2cdd4e_-7ef7",
+          "properties": {
+            "id": 1041143
+          },
+          "geometrySha256": "394dfea57f9396a0cc660c760d7fb7828c2f3bcccd80ee23714bbd8b22a5c733"
+        },
+        {
+          "transportId": "lote_a_cadastro_sg.fid--3e166e38_1a11d2cdd4e_-7ef6",
+          "properties": {
+            "id": 1041171
+          },
+          "geometrySha256": "9de0b833beab48aac0e816b6776442351548787891185c22802a03056099f2d7"
+        },
+        {
+          "transportId": "lote_a_cadastro_sg.fid--3e166e38_1a11d2cdd4e_-7ef5",
+          "properties": {
+            "id": 1041279
+          },
+          "geometrySha256": "e984face88c64154a06bcedb72504e6e6e3114f96e1d4a77bdacdf5ff567132e"
+        },
+        {
+          "transportId": "lote_a_cadastro_sg.fid--3e166e38_1a11d2cdd4e_-7ef4",
+          "properties": {
+            "id": 1041292
+          },
+          "geometrySha256": "e3e96c25d1b7ce90683d7c9e3cdc550b92cd9eac3f4b056113bae754f8e7607b"
+        },
+        {
+          "transportId": "lote_a_cadastro_sg.fid--3e166e38_1a11d2cdd4e_-7ef3",
+          "properties": {
+            "id": 1041294
+          },
+          "geometrySha256": "07b5adf3b808b38661148bd0589420a745f9246ddc0cd656adb4365307c9ba79"
+        },
+        {
+          "transportId": "lote_a_cadastro_sg.fid--3e166e38_1a11d2cdd4e_-7ef2",
+          "properties": {
+            "id": 1041311
+          },
+          "geometrySha256": "731d530ffdb16d6cc1d4922175a7506be935f6e551846fd17823d2190c6ab61c"
+        },
+        {
+          "transportId": "lote_a_cadastro_sg.fid--3e166e38_1a11d2cdd4e_-7ef1",
+          "properties": {
+            "id": 1041315
+          },
+          "geometrySha256": "8a670783555c5d386eb7336dd4f1537b30391df1219aecec668b2d901eba0c3c"
+        },
+        {
+          "transportId": "lote_a_cadastro_sg.fid--3e166e38_1a11d2cdd4e_-7ef0",
+          "properties": {
+            "id": 1041317
+          },
+          "geometrySha256": "9c91d641629807425bc2b612bce28fb2feabbbf9ba2af6193b952a7e3b1bab36"
+        },
+        {
+          "transportId": "lote_a_cadastro_sg.fid--3e166e38_1a11d2cdd4e_-7eef",
+          "properties": {
+            "id": 1041318
+          },
+          "geometrySha256": "a584f42410155ab185ec35d91ca36eae73d910e199cb52c5b62a9c6d0e6a529a"
+        },
+        {
+          "transportId": "lote_a_cadastro_sg.fid--3e166e38_1a11d2cdd4e_-7eee",
+          "properties": {
+            "id": 1041319
+          },
+          "geometrySha256": "41d1c1d0637dda2dd47f3e62c61dfb02b0ad628e5bee7dc0eb47067b8f86bb59"
+        },
+        {
+          "transportId": "lote_a_cadastro_sg.fid--3e166e38_1a11d2cdd4e_-7eed",
+          "properties": {
+            "id": 1041325
+          },
+          "geometrySha256": "5cb9bffc20171e5037426fb025eaea2305ec335c5a8ea76c7cebdf8636a1425d"
+        },
+        {
+          "transportId": "lote_a_cadastro_sg.fid--3e166e38_1a11d2cdd4e_-7eec",
+          "properties": {
+            "id": 1042513
+          },
+          "geometrySha256": "2154e6cd6acae10ce59cedf0aa2373611657597d3d0962a3b28e5eb7d5079bec"
+        },
+        {
+          "transportId": "lote_a_cadastro_sg.fid--3e166e38_1a11d2cdd4e_-7eeb",
+          "properties": {
+            "id": 1042514
+          },
+          "geometrySha256": "dec27d68c60694e576224bd48529f1bfd1c28891b030000dd8d7d2df2669df93"
+        },
+        {
+          "transportId": "lote_a_cadastro_sg.fid--3e166e38_1a11d2cdd4e_-7eea",
+          "properties": {
+            "id": 1042515
+          },
+          "geometrySha256": "6de1f98b46f21fe9eeb1cc92cd8efcd85657ccb07a3ce4a1f69a208c9c51bff3"
+        },
+        {
+          "transportId": "lote_a_cadastro_sg.fid--3e166e38_1a11d2cdd4e_-7ee9",
+          "properties": {
+            "id": 1042516
+          },
+          "geometrySha256": "9a2c1785c72e989aba01ba42561ca7aff07a6bd6f22591cd4020459eb16ece5f"
+        },
+        {
+          "transportId": "lote_a_cadastro_sg.fid--3e166e38_1a11d2cdd4e_-7ee8",
+          "properties": {
+            "id": 1042517
+          },
+          "geometrySha256": "c6d16fb8bf80c0f7f05034512f27befb29c43635fbe68b0589a43da983c20349"
+        },
+        {
+          "transportId": "lote_a_cadastro_sg.fid--3e166e38_1a11d2cdd4e_-7ee7",
+          "properties": {
+            "id": 1042518
+          },
+          "geometrySha256": "a8b2e765f5ac0c0fdf2638a3355e91978e578656fd962db66cb8346fb53ce403"
+        },
+        {
+          "transportId": "lote_a_cadastro_sg.fid--3e166e38_1a11d2cdd4e_-7ee6",
+          "properties": {
+            "id": 1042519
+          },
+          "geometrySha256": "3c95841ff51de5c5f09b46e51790cd65ee44bbc3eeba2f018887ea13af7e62e9"
+        },
+        {
+          "transportId": "lote_a_cadastro_sg.fid--3e166e38_1a11d2cdd4e_-7ee5",
+          "properties": {
+            "id": 1043271
+          },
+          "geometrySha256": "388582648ebfc05037dc14b9f957b412a9cbfaced0362581252e05ffe8f5d137"
+        },
+        {
+          "transportId": "lote_a_cadastro_sg.fid--3e166e38_1a11d2cdd4e_-7ee4",
+          "properties": {
+            "id": 1043272
+          },
+          "geometrySha256": "9c7c4084bc4f243b96a2f15fe5b37b3ea4ca6cc02b2f0bd8aa8f2095f5a86e40"
+        },
+        {
+          "transportId": "lote_a_cadastro_sg.fid--3e166e38_1a11d2cdd4e_-7ee3",
+          "properties": {
+            "id": 1043274
+          },
+          "geometrySha256": "3a499c5591b221206dc7bc8d26bb258fa3c2791c55f13c14e281f07646304a34"
+        },
+        {
+          "transportId": "lote_a_cadastro_sg.fid--3e166e38_1a11d2cdd4e_-7ee2",
+          "properties": {
+            "id": 1043289
+          },
+          "geometrySha256": "d2b282cd73a31e87820e39b85e5c00c09d0d0e8ab295ef6db1aba172bc339cbb"
+        },
+        {
+          "transportId": "lote_a_cadastro_sg.fid--3e166e38_1a11d2cdd4e_-7ee1",
+          "properties": {
+            "id": 1043290
+          },
+          "geometrySha256": "c813a7c4dea2ba7530bb2617d833146e2811596edbc670f601956dbe0fab1d63"
+        },
+        {
+          "transportId": "lote_a_cadastro_sg.fid--3e166e38_1a11d2cdd4e_-7ee0",
+          "properties": {
+            "id": 1043291
+          },
+          "geometrySha256": "dc142f312a034c70dd83511f7c90fdb248262a15ab39607e42040b99ea8d2743"
+        },
+        {
+          "transportId": "lote_a_cadastro_sg.fid--3e166e38_1a11d2cdd4e_-7edf",
+          "properties": {
+            "id": 1072723
+          },
+          "geometrySha256": "20c19dee8d1f404faeb8a9b1194e757e61b986f044d700ec0a3e8b3a10630671"
+        },
+        {
+          "transportId": "lote_a_cadastro_sg.fid--3e166e38_1a11d2cdd4e_-7ede",
+          "properties": {
+            "id": 1073026
+          },
+          "geometrySha256": "971eb71e31f12d088b373ead11dff484a805eded535ba06da271a9d0d1d8cf2f"
+        },
+        {
+          "transportId": "lote_a_cadastro_sg.fid--3e166e38_1a11d2cdd4e_-7edd",
+          "properties": {
+            "id": 1073027
+          },
+          "geometrySha256": "e176120b45ac7f26ccc682c0ca41f6139d19c81425b0ef4d1492bf9775f2fdb8"
+        },
+        {
+          "transportId": "lote_a_cadastro_sg.fid--3e166e38_1a11d2cdd4e_-7edc",
+          "properties": {
+            "id": 1073034
+          },
+          "geometrySha256": "4fa6d31daddb40f3ffb323c7bc2abe0e9f0fba4720dcb23300072bbb5bb8e49e"
+        },
+        {
+          "transportId": "lote_a_cadastro_sg.fid--3e166e38_1a11d2cdd4e_-7edb",
+          "properties": {
+            "id": 1073035
+          },
+          "geometrySha256": "c56418e80caf52a8b38c8453c8204ad707453fd2566d345477c3e7e75a94750d"
+        },
+        {
+          "transportId": "lote_a_cadastro_sg.fid--3e166e38_1a11d2cdd4e_-7eda",
+          "properties": {
+            "id": 1073036
+          },
+          "geometrySha256": "28ace5081a80e6dd20b43d2a04f32e45fb8d4e6464f81bd2b8316a774cf2505e"
+        }
+      ]
+    },
+    {
+      "test": "fresh-ids-80",
+      "url": "https://geoserver.pmsg.rj.gov.br/ows?service=WFS&version=2.0.0&request=GetFeature&typeNames=SaoGoncalo%3Alote_a_cadastro_sg&outputFormat=application%2Fjson&srsName=CRS%3A84&sortBy=id&propertyName=geom%2Cid&count=1000&startIndex=0&cql_filter=%22id%22+IN+%281073056%2C1073060%2C1073063%2C1073065%2C1073066%2C1073077%2C1073081%2C1073082%2C1073083%2C1073084%29",
+      "method": "GET",
+      "checkedAt": "2026-10-08T22:01:22.108Z",
+      "httpStatus": 200,
+      "contentType": "application/json;charset=UTF-8",
+      "bytes": 4822,
+      "numberMatched": 10,
+      "numberReturned": 10,
+      "features": [
+        {
+          "transportId": "lote_a_cadastro_sg.fid--3e166e38_1a11d2cdd4e_-7ed9",
+          "properties": {
+            "id": 1073056
+          },
+          "geometrySha256": "14f0690b177df4247561b8b9214726b1c7dc66f41a4acb5f8d065f52df1cc6a8"
+        },
+        {
+          "transportId": "lote_a_cadastro_sg.fid--3e166e38_1a11d2cdd4e_-7ed8",
+          "properties": {
+            "id": 1073060
+          },
+          "geometrySha256": "c5b7767cf833ebd445274e607274236d973ba20d8bf879a2903b80d4f4150258"
+        },
+        {
+          "transportId": "lote_a_cadastro_sg.fid--3e166e38_1a11d2cdd4e_-7ed7",
+          "properties": {
+            "id": 1073063
+          },
+          "geometrySha256": "1b9d44d7ca2758b957a0f661c652a075ecd85b40cc31341308f82b374f65e569"
+        },
+        {
+          "transportId": "lote_a_cadastro_sg.fid--3e166e38_1a11d2cdd4e_-7ed6",
+          "properties": {
+            "id": 1073065
+          },
+          "geometrySha256": "aeeaa8099d086f36597c34c497bf6ed24d86730c96e45173cfe3e8f8f9803af8"
+        },
+        {
+          "transportId": "lote_a_cadastro_sg.fid--3e166e38_1a11d2cdd4e_-7ed5",
+          "properties": {
+            "id": 1073066
+          },
+          "geometrySha256": "e7efef783adbcb9bdb33b184fc1640806b0a3bf0d26dbc8e08e79adab8363a7e"
+        },
+        {
+          "transportId": "lote_a_cadastro_sg.fid--3e166e38_1a11d2cdd4e_-7ed4",
+          "properties": {
+            "id": 1073077
+          },
+          "geometrySha256": "59d01f148cb310674740afc2d7b24123a6f0f1737bd933697fa149c3308d2e5a"
+        },
+        {
+          "transportId": "lote_a_cadastro_sg.fid--3e166e38_1a11d2cdd4e_-7ed3",
+          "properties": {
+            "id": 1073081
+          },
+          "geometrySha256": "ad5b17a8e6fd96cf3835d63059b2b4615a803246ad38276f72927584a286fced"
+        },
+        {
+          "transportId": "lote_a_cadastro_sg.fid--3e166e38_1a11d2cdd4e_-7ed2",
+          "properties": {
+            "id": 1073082
+          },
+          "geometrySha256": "7957021f382516d3a9e56905ccf9359d52a5055dfe10774d840c7bc28fc9f00a"
+        },
+        {
+          "transportId": "lote_a_cadastro_sg.fid--3e166e38_1a11d2cdd4e_-7ed1",
+          "properties": {
+            "id": 1073083
+          },
+          "geometrySha256": "496100acae91b0cd5a6d4893f3d49e00ec71aec0f76d2783f6507ed00e2a63a0"
+        },
+        {
+          "transportId": "lote_a_cadastro_sg.fid--3e166e38_1a11d2cdd4e_-7ed0",
+          "properties": {
+            "id": 1073084
+          },
+          "geometrySha256": "256410950e05e6ab331be0ca5bf408ceaf85487daf50a68b6c280803f3af5745"
+        }
+      ]
+    },
+    {
+      "test": "explicit-absence",
+      "url": "https://geoserver.pmsg.rj.gov.br/ows?service=WFS&version=2.0.0&request=GetFeature&typeNames=SaoGoncalo%3Alote_a_cadastro_sg&outputFormat=application%2Fjson&srsName=CRS%3A84&sortBy=id&propertyName=geom%2Cid&count=1000&startIndex=0&cql_filter=%22id%22+IN+%28999999999%29",
+      "method": "GET",
+      "checkedAt": "2026-10-08T22:01:22.435Z",
+      "httpStatus": 200,
+      "contentType": "application/json;charset=UTF-8",
+      "bytes": 147,
+      "numberMatched": 0,
+      "numberReturned": 0,
+      "features": []
+    },
+    {
+      "test": "footprint",
+      "url": "https://geoserver.pmsg.rj.gov.br/ows?service=WFS&version=2.0.0&request=GetFeature&typeNames=SaoGoncalo%3Alote_a_cadastro_sg&outputFormat=application%2Fjson&srsName=CRS%3A84&sortBy=id&propertyName=geom%2Cid&count=1000&startIndex=0&bbox=-43.02558508%2C-22.83467463%2C-43.02523726%2C-22.83442687%2CCRS%3A84",
+      "method": "GET",
+      "checkedAt": "2026-10-08T22:01:22.745Z",
+      "httpStatus": 200,
+      "contentType": "application/json;charset=UTF-8",
+      "bytes": 2479,
+      "numberMatched": 5,
+      "numberReturned": 5,
+      "features": [
+        {
+          "transportId": "lote_a_cadastro_sg.fid--3e166e38_1a11d2cdd4e_-7ecf",
+          "properties": {
+            "id": 1041143
+          },
+          "geometrySha256": "394dfea57f9396a0cc660c760d7fb7828c2f3bcccd80ee23714bbd8b22a5c733"
+        },
+        {
+          "transportId": "lote_a_cadastro_sg.fid--3e166e38_1a11d2cdd4e_-7ece",
+          "properties": {
+            "id": 1041279
+          },
+          "geometrySha256": "e984face88c64154a06bcedb72504e6e6e3114f96e1d4a77bdacdf5ff567132e"
+        },
+        {
+          "transportId": "lote_a_cadastro_sg.fid--3e166e38_1a11d2cdd4e_-7ecd",
+          "properties": {
+            "id": 1073034
+          },
+          "geometrySha256": "4fa6d31daddb40f3ffb323c7bc2abe0e9f0fba4720dcb23300072bbb5bb8e49e"
+        },
+        {
+          "transportId": "lote_a_cadastro_sg.fid--3e166e38_1a11d2cdd4e_-7ecc",
+          "properties": {
+            "id": 1073035
+          },
+          "geometrySha256": "c56418e80caf52a8b38c8453c8204ad707453fd2566d345477c3e7e75a94750d"
+        },
+        {
+          "transportId": "lote_a_cadastro_sg.fid--3e166e38_1a11d2cdd4e_-7ecb",
+          "properties": {
+            "id": 1073036
+          },
+          "geometrySha256": "28ace5081a80e6dd20b43d2a04f32e45fb8d4e6464f81bd2b8316a774cf2505e"
+        }
+      ]
+    },
+    {
+      "test": "source-binding",
+      "url": "https://geoserver.pmsg.rj.gov.br/ows?service=WFS&version=2.0.0&request=GetFeature&typeNames=SaoGoncalo%3Alote_a_cadastro_sg&outputFormat=application%2Fjson&srsName=CRS%3A84&sortBy=id&propertyName=geom%2Cid&count=1000&startIndex=0&bbox=-43.02558508%2C-22.83467463%2C-43.02523726%2C-22.83442687%2CCRS%3A84",
+      "method": "GET",
+      "checkedAt": "2026-10-08T22:01:23.065Z",
+      "httpStatus": 200,
+      "contentType": "application/json;charset=UTF-8",
+      "bytes": 2479,
+      "numberMatched": 5,
+      "numberReturned": 5,
+      "features": [
+        {
+          "transportId": "lote_a_cadastro_sg.fid--3e166e38_1a11d2cdd4e_-7eca",
+          "properties": {
+            "id": 1041143
+          },
+          "geometrySha256": "394dfea57f9396a0cc660c760d7fb7828c2f3bcccd80ee23714bbd8b22a5c733"
+        },
+        {
+          "transportId": "lote_a_cadastro_sg.fid--3e166e38_1a11d2cdd4e_-7ec9",
+          "properties": {
+            "id": 1041279
+          },
+          "geometrySha256": "e984face88c64154a06bcedb72504e6e6e3114f96e1d4a77bdacdf5ff567132e"
+        },
+        {
+          "transportId": "lote_a_cadastro_sg.fid--3e166e38_1a11d2cdd4e_-7ec8",
+          "properties": {
+            "id": 1073034
+          },
+          "geometrySha256": "4fa6d31daddb40f3ffb323c7bc2abe0e9f0fba4720dcb23300072bbb5bb8e49e"
+        },
+        {
+          "transportId": "lote_a_cadastro_sg.fid--3e166e38_1a11d2cdd4e_-7ec7",
+          "properties": {
+            "id": 1073035
+          },
+          "geometrySha256": "c56418e80caf52a8b38c8453c8204ad707453fd2566d345477c3e7e75a94750d"
+        },
+        {
+          "transportId": "lote_a_cadastro_sg.fid--3e166e38_1a11d2cdd4e_-7ec6",
+          "properties": {
+            "id": 1073036
+          },
+          "geometrySha256": "28ace5081a80e6dd20b43d2a04f32e45fb8d4e6464f81bd2b8316a774cf2505e"
+        }
+      ]
+    }
+  ],
+  "qualityFile": "research/overnight-cities-2026-10-08/sao-goncalo-public-cadastre-root-quality.json",
+  "uniqueParcels": 90,
+  "requestCount": 31,
+  "allTestsPassed": true,
+  "finishedAt": "2026-10-08T22:01:23.417Z",
+  "qualityStatus": "root_independent_audit_clean",
+  "browserFile": "research/overnight-cities-2026-10-08/sao-goncalo-public-cadastre-browser-check.json"
+}

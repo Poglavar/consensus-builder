@@ -1,0 +1,2494 @@
+{
+  "schemaVersion": 1,
+  "checkedAt": "2026-10-09T07:14:43.153Z",
+  "city": {
+    "name": "Poznań",
+    "cityId": "wup2025:1381",
+    "countryCode": "PL",
+    "rank": 1121,
+    "population2025k": 494.839,
+    "centerLatLon": [
+      52.4033374848812,
+      16.9139953760299
+    ]
+  },
+  "purpose": "Actual backend GML WFS adapter qualification with the fixed Poznań profile. Full temporary geometry retains only safe sourceParcelId and geometry. No source catalog or runtime config change.",
+  "descriptor": {
+    "id": "poznan-gml-wfs",
+    "name": "Poznań municipal EGiB parcel polygons",
+    "adapter": "gml-wfs",
+    "endpoint": "https://portal.geopoz.poznan.pl/wmsegib",
+    "featureType": "ms:dzialki",
+    "idField": "ID_DZIALKI",
+    "geometryField": "MSGEOMETRY",
+    "responseCrs": "EPSG:2177",
+    "idPrefix": "PL-POZNAN-",
+    "idType": "string",
+    "parcelNumberField": "ID_DZIALKI",
+    "outFields": [
+      "ID_DZIALKI"
+    ],
+    "maxBboxKm2": 1,
+    "pageSize": 100,
+    "maxFeatures": 3000,
+    "maxResponseBytes": 2097152,
+    "maxTotalResponseBytes": 16777216,
+    "timeoutMs": 15000,
+    "countryCode": "PL",
+    "metricSrid": 2180,
+    "cityIds": [
+      "poznan"
+    ],
+    "maxConcurrentQueries": 1
+  },
+  "grid": {
+    "step": 0.001,
+    "base": [
+      16.913,
+      52.403
+    ],
+    "offsets": [
+      [
+        -1,
+        -1
+      ],
+      [
+        0,
+        -1
+      ],
+      [
+        1,
+        -1
+      ],
+      [
+        -1,
+        0
+      ],
+      [
+        0,
+        0
+      ],
+      [
+        1,
+        0
+      ],
+      [
+        -1,
+        1
+      ],
+      [
+        0,
+        1
+      ],
+      [
+        1,
+        1
+      ],
+      [
+        0,
+        -2
+      ],
+      [
+        0,
+        2
+      ],
+      [
+        -2,
+        0
+      ],
+      [
+        2,
+        0
+      ]
+    ],
+    "cells": [
+      {
+        "index": 0,
+        "offset": [
+          -1,
+          -1
+        ],
+        "bbox": [
+          16.912,
+          52.402,
+          16.913,
+          52.403
+        ],
+        "count": 8,
+        "complete": true,
+        "features": [
+          {
+            "id": "306401_1.0061.AR_01.1/11",
+            "geometrySha256": "8970389ce7f9ca7d59914b72d4d1ce7f1c0cf467910b9784ea549cf0a2052fad"
+          },
+          {
+            "id": "306401_1.0061.AR_01.3/41",
+            "geometrySha256": "9d2d0981c2780fff29eee6f131cdfac8368ad327a47b0ca600df57a24c8b4182"
+          },
+          {
+            "id": "306401_1.0061.AR_01.3/40",
+            "geometrySha256": "a8d7c4485660064524b7e4fa69f406f3eb4ba1567d4565ec1d0c5e7a7b0520f7"
+          },
+          {
+            "id": "306401_1.0061.AR_01.3/39",
+            "geometrySha256": "c5079ac2ca6884b4b3342ca6f64bd67c2e24670678ee494562c427760c2f3467"
+          },
+          {
+            "id": "306401_1.0061.AR_01.1/5",
+            "geometrySha256": "907a90128f72266e5b2abef6406f21bdd24327bee67539136df6a7c26a5a839d"
+          },
+          {
+            "id": "306401_1.0061.AR_01.3/38",
+            "geometrySha256": "35b0df9059ebf46802c28a5c4522017b15894552ffe444e31dd0d5616e318c80"
+          },
+          {
+            "id": "306401_1.0061.AR_01.3/25",
+            "geometrySha256": "cf5b1539e1c10b20f798626d61e73594a4f982ac8d6c280dd030624491a5de78"
+          },
+          {
+            "id": "306401_1.0061.AR_01.3/37",
+            "geometrySha256": "7e5fec8ed9c83fcc822e2b2bc6e893c32df36e6079661fa07c5c24f6085b3eca"
+          }
+        ]
+      },
+      {
+        "index": 1,
+        "offset": [
+          0,
+          -1
+        ],
+        "bbox": [
+          16.913,
+          52.402,
+          16.914,
+          52.403
+        ],
+        "count": 7,
+        "complete": true,
+        "features": [
+          {
+            "id": "306401_1.0061.AR_01.1/5",
+            "geometrySha256": "907a90128f72266e5b2abef6406f21bdd24327bee67539136df6a7c26a5a839d"
+          },
+          {
+            "id": "306401_1.0061.AR_01.3/27",
+            "geometrySha256": "e32babff4f5cdc1c218c16b7e144b1b1231d02c30c1908340061b757eec41c6f"
+          },
+          {
+            "id": "306401_1.0061.AR_01.1/8",
+            "geometrySha256": "8ae8bc800eda945f4762b37904ac27ce593518692fd22908aa077f8030617e9b"
+          },
+          {
+            "id": "306401_1.0061.AR_01.3/28",
+            "geometrySha256": "64c9c4a7137d5c7b12fdaf87cb5051fca193d7ee464cb5162dc4e1c548d67fd2"
+          },
+          {
+            "id": "306401_1.0061.AR_01.3/38",
+            "geometrySha256": "35b0df9059ebf46802c28a5c4522017b15894552ffe444e31dd0d5616e318c80"
+          },
+          {
+            "id": "306401_1.0061.AR_01.3/25",
+            "geometrySha256": "cf5b1539e1c10b20f798626d61e73594a4f982ac8d6c280dd030624491a5de78"
+          },
+          {
+            "id": "306401_1.0061.AR_01.3/24",
+            "geometrySha256": "43471b4eb2e03e9412eca6b3017ced4f73720a31646d4e41b18e622b0efc5904"
+          }
+        ]
+      },
+      {
+        "index": 2,
+        "offset": [
+          1,
+          -1
+        ],
+        "bbox": [
+          16.914,
+          52.402,
+          16.915,
+          52.403
+        ],
+        "count": 8,
+        "complete": true,
+        "features": [
+          {
+            "id": "306401_1.0061.AR_01.3/27",
+            "geometrySha256": "e32babff4f5cdc1c218c16b7e144b1b1231d02c30c1908340061b757eec41c6f"
+          },
+          {
+            "id": "306401_1.0061.AR_01.3/28",
+            "geometrySha256": "64c9c4a7137d5c7b12fdaf87cb5051fca193d7ee464cb5162dc4e1c548d67fd2"
+          },
+          {
+            "id": "306401_1.0061.AR_01.2",
+            "geometrySha256": "033951770d6a006439fc0509dd2b5c742b1a2c92388c05ceac69cafbccc1d437"
+          },
+          {
+            "id": "306401_1.0061.AR_01.3/43",
+            "geometrySha256": "acc3c8b3da84f29aae9ac7cd8ba1928ed7d1ee19bf4de2d26a0bf2db36d5d803"
+          },
+          {
+            "id": "306401_1.0061.AR_01.3/1",
+            "geometrySha256": "afe3f2f217ec2a970d89412dfe0a27c1e12849276d94bf9142b59a19ce558cb8"
+          },
+          {
+            "id": "306401_1.0061.AR_01.3/31",
+            "geometrySha256": "1be7bcd23c5a5c11809d9dd1ad42e86a5116a08dc1b8de413fbc4451258f24a5"
+          },
+          {
+            "id": "306401_1.0061.AR_01.3/29",
+            "geometrySha256": "57ffc7ed5839b8381acce6bcd2f5e082d197be615e5077498ffecdac08cd3b6b"
+          },
+          {
+            "id": "306401_1.0061.AR_01.3/24",
+            "geometrySha256": "43471b4eb2e03e9412eca6b3017ced4f73720a31646d4e41b18e622b0efc5904"
+          }
+        ]
+      },
+      {
+        "index": 3,
+        "offset": [
+          -1,
+          0
+        ],
+        "bbox": [
+          16.912,
+          52.403,
+          16.913,
+          52.404
+        ],
+        "count": 8,
+        "complete": true,
+        "features": [
+          {
+            "id": "306401_1.0051.AR_44.29/8",
+            "geometrySha256": "579c960c67e02580d6581291a0de22b4c25062ae05ee6f6e40812286394f7071"
+          },
+          {
+            "id": "306401_1.0051.AR_44.29/3",
+            "geometrySha256": "8b62e26fddc1d86e55f5ef700f50862c9cdb93bf27da64c107dee0ab52629572"
+          },
+          {
+            "id": "306401_1.0051.AR_44.22/2",
+            "geometrySha256": "49a17f2e24398b2f390e0a5063248545941f421932e01679366d5b305859fbbc"
+          },
+          {
+            "id": "306401_1.0051.AR_44.28",
+            "geometrySha256": "5a4c77db2cab3a1084f2c96bc50fed79cdccbe1bca9c4db157b813b3f7664c94"
+          },
+          {
+            "id": "306401_1.0051.AR_44.27/6",
+            "geometrySha256": "56c48e146e81746430e87a8049ea457e3d1231f42a6e6112791755e9ed4ece92"
+          },
+          {
+            "id": "306401_1.0051.AR_44.27/18",
+            "geometrySha256": "a03da82d5f3fdb8907d43c5121df7a0acbaed5ff69a3501867bd1bc7e51025a6"
+          },
+          {
+            "id": "306401_1.0061.AR_01.1/11",
+            "geometrySha256": "8970389ce7f9ca7d59914b72d4d1ce7f1c0cf467910b9784ea549cf0a2052fad"
+          },
+          {
+            "id": "306401_1.0061.AR_01.1/5",
+            "geometrySha256": "907a90128f72266e5b2abef6406f21bdd24327bee67539136df6a7c26a5a839d"
+          }
+        ]
+      },
+      {
+        "index": 4,
+        "offset": [
+          0,
+          0
+        ],
+        "bbox": [
+          16.913,
+          52.403,
+          16.914,
+          52.404
+        ],
+        "count": 8,
+        "complete": true,
+        "features": [
+          {
+            "id": "306401_1.0051.AR_44.16",
+            "geometrySha256": "a9c2704e9d99152fc181449fbb599e5b81e53d8709d2d4a9dec413a5f67375df"
+          },
+          {
+            "id": "306401_1.0051.AR_44.27/18",
+            "geometrySha256": "a03da82d5f3fdb8907d43c5121df7a0acbaed5ff69a3501867bd1bc7e51025a6"
+          },
+          {
+            "id": "306401_1.0061.AR_01.1/9",
+            "geometrySha256": "7ae8aa38d6ee6f5d4f10b16fc4471d0bf6d229836ff5da6e68b5082fd531c1c3"
+          },
+          {
+            "id": "306401_1.0051.AR_44.27/14",
+            "geometrySha256": "2601e99cb73681fb702df4651c8554eb55365ba1d98aedeac7a0d4a91e100c7d"
+          },
+          {
+            "id": "306401_1.0061.AR_01.1/5",
+            "geometrySha256": "907a90128f72266e5b2abef6406f21bdd24327bee67539136df6a7c26a5a839d"
+          },
+          {
+            "id": "306401_1.0061.AR_01.3/27",
+            "geometrySha256": "e32babff4f5cdc1c218c16b7e144b1b1231d02c30c1908340061b757eec41c6f"
+          },
+          {
+            "id": "306401_1.0061.AR_01.1/8",
+            "geometrySha256": "8ae8bc800eda945f4762b37904ac27ce593518692fd22908aa077f8030617e9b"
+          },
+          {
+            "id": "306401_1.0061.AR_01.3/28",
+            "geometrySha256": "64c9c4a7137d5c7b12fdaf87cb5051fca193d7ee464cb5162dc4e1c548d67fd2"
+          }
+        ]
+      },
+      {
+        "index": 5,
+        "offset": [
+          1,
+          0
+        ],
+        "bbox": [
+          16.914,
+          52.403,
+          16.915,
+          52.404
+        ],
+        "count": 15,
+        "complete": true,
+        "features": [
+          {
+            "id": "306401_1.0051.AR_44.16",
+            "geometrySha256": "a9c2704e9d99152fc181449fbb599e5b81e53d8709d2d4a9dec413a5f67375df"
+          },
+          {
+            "id": "306401_1.0051.AR_44.22/4",
+            "geometrySha256": "995815ee54f322a6ae3f59c221a0b562ea23dc6e8491c2d0e5d2ae328f7688ed"
+          },
+          {
+            "id": "306401_1.0051.AR_44.21/2",
+            "geometrySha256": "574165cc073a510575ad16c6c55a80119a92f1318f0391bfbd21ba06e12fe61a"
+          },
+          {
+            "id": "306401_1.0051.AR_44.20/16",
+            "geometrySha256": "81e8f3c536c316219b8286e990769301dab52bf91c86f5be7dcee50f2d95d601"
+          },
+          {
+            "id": "306401_1.0051.AR_44.21/9",
+            "geometrySha256": "6fa73b6464caeb1342ec702bbb0d3e4d75b4b7dcaf2a381a3a0b93760677725a"
+          },
+          {
+            "id": "306401_1.0051.AR_44.20/17",
+            "geometrySha256": "7fb905646804bb5cc3b323ebad958625294fde9c15dec8283d0a56f39a9e4f90"
+          },
+          {
+            "id": "306401_1.0051.AR_44.21/5",
+            "geometrySha256": "3a808ae6aaa5c7099d14694f078602790bf76588d0198fc647b3caa3f561dd23"
+          },
+          {
+            "id": "306401_1.0051.AR_44.21/12",
+            "geometrySha256": "76f9e55b6535cddd45cd1bddefed90645329d128371cda4b4e8e55a1071d6041"
+          },
+          {
+            "id": "306401_1.0051.AR_44.27/18",
+            "geometrySha256": "a03da82d5f3fdb8907d43c5121df7a0acbaed5ff69a3501867bd1bc7e51025a6"
+          },
+          {
+            "id": "306401_1.0051.AR_44.27/14",
+            "geometrySha256": "2601e99cb73681fb702df4651c8554eb55365ba1d98aedeac7a0d4a91e100c7d"
+          },
+          {
+            "id": "306401_1.0051.AR_44.27/4",
+            "geometrySha256": "229ab11e447a3293589fc2eb99c9b3b9644ed932134b1d0e19449c10113e994c"
+          },
+          {
+            "id": "306401_1.0051.AR_44.20/1",
+            "geometrySha256": "506ae0abfc26639a46c2a71e44613414183d4207198442f6693c6aed5ce7b581"
+          },
+          {
+            "id": "306401_1.0051.AR_44.21/6",
+            "geometrySha256": "d6671369862f2ed4d703696ca330a20b8b2326d396d800e98091911b3e6945c6"
+          },
+          {
+            "id": "306401_1.0061.AR_01.3/28",
+            "geometrySha256": "64c9c4a7137d5c7b12fdaf87cb5051fca193d7ee464cb5162dc4e1c548d67fd2"
+          },
+          {
+            "id": "306401_1.0061.AR_01.3/1",
+            "geometrySha256": "afe3f2f217ec2a970d89412dfe0a27c1e12849276d94bf9142b59a19ce558cb8"
+          }
+        ]
+      },
+      {
+        "index": 6,
+        "offset": [
+          -1,
+          1
+        ],
+        "bbox": [
+          16.912,
+          52.404,
+          16.913,
+          52.405
+        ],
+        "count": 3,
+        "complete": true,
+        "features": [
+          {
+            "id": "306401_1.0051.AR_44.29/8",
+            "geometrySha256": "579c960c67e02580d6581291a0de22b4c25062ae05ee6f6e40812286394f7071"
+          },
+          {
+            "id": "306401_1.0051.AR_44.28",
+            "geometrySha256": "5a4c77db2cab3a1084f2c96bc50fed79cdccbe1bca9c4db157b813b3f7664c94"
+          },
+          {
+            "id": "306401_1.0051.AR_44.27/18",
+            "geometrySha256": "a03da82d5f3fdb8907d43c5121df7a0acbaed5ff69a3501867bd1bc7e51025a6"
+          }
+        ]
+      },
+      {
+        "index": 7,
+        "offset": [
+          0,
+          1
+        ],
+        "bbox": [
+          16.913,
+          52.404,
+          16.914,
+          52.405
+        ],
+        "count": 1,
+        "complete": true,
+        "features": [
+          {
+            "id": "306401_1.0051.AR_44.27/18",
+            "geometrySha256": "a03da82d5f3fdb8907d43c5121df7a0acbaed5ff69a3501867bd1bc7e51025a6"
+          }
+        ]
+      },
+      {
+        "index": 8,
+        "offset": [
+          1,
+          1
+        ],
+        "bbox": [
+          16.914,
+          52.404,
+          16.915,
+          52.405
+        ],
+        "count": 9,
+        "complete": true,
+        "features": [
+          {
+            "id": "306401_1.0051.AR_44.16",
+            "geometrySha256": "a9c2704e9d99152fc181449fbb599e5b81e53d8709d2d4a9dec413a5f67375df"
+          },
+          {
+            "id": "306401_1.0051.AR_44.20/16",
+            "geometrySha256": "81e8f3c536c316219b8286e990769301dab52bf91c86f5be7dcee50f2d95d601"
+          },
+          {
+            "id": "306401_1.0051.AR_44.20/14",
+            "geometrySha256": "9ffd4ecda8c1a4967712f562cecde8e4a597370a37f507fe64767028aa26da24"
+          },
+          {
+            "id": "306401_1.0051.AR_44.19",
+            "geometrySha256": "ef716a3f71704c7630003b38cd6dd3846f1db7c49d26dfac0d6cdee252ea0ed7"
+          },
+          {
+            "id": "306401_1.0051.AR_44.20/17",
+            "geometrySha256": "7fb905646804bb5cc3b323ebad958625294fde9c15dec8283d0a56f39a9e4f90"
+          },
+          {
+            "id": "306401_1.0051.AR_44.27/18",
+            "geometrySha256": "a03da82d5f3fdb8907d43c5121df7a0acbaed5ff69a3501867bd1bc7e51025a6"
+          },
+          {
+            "id": "306401_1.0051.AR_44.27/17",
+            "geometrySha256": "f57a9f935645c7ef780118ff844280093fddfb581dcb5c809d29d05704d536b4"
+          },
+          {
+            "id": "306401_1.0051.AR_44.20/9",
+            "geometrySha256": "86e93922c6c259e0df956a4bf7fff2fe54b539c6472fe734f193e90d7a8a5dd8"
+          },
+          {
+            "id": "306401_1.0051.AR_44.20/3",
+            "geometrySha256": "63d0c30906c728602ecf1b6379c3e48f2bc122a9a4a1f0cf60cb5f7dab819054"
+          }
+        ]
+      },
+      {
+        "index": 9,
+        "offset": [
+          0,
+          -2
+        ],
+        "bbox": [
+          16.913,
+          52.401,
+          16.914,
+          52.402
+        ],
+        "count": 2,
+        "complete": true,
+        "features": [
+          {
+            "id": "306401_1.0061.AR_01.3/25",
+            "geometrySha256": "cf5b1539e1c10b20f798626d61e73594a4f982ac8d6c280dd030624491a5de78"
+          },
+          {
+            "id": "306401_1.0061.AR_01.3/24",
+            "geometrySha256": "43471b4eb2e03e9412eca6b3017ced4f73720a31646d4e41b18e622b0efc5904"
+          }
+        ]
+      },
+      {
+        "index": 10,
+        "offset": [
+          0,
+          2
+        ],
+        "bbox": [
+          16.913,
+          52.405,
+          16.914,
+          52.406
+        ],
+        "count": 2,
+        "complete": true,
+        "features": [
+          {
+            "id": "306401_1.0051.AR_44.28",
+            "geometrySha256": "5a4c77db2cab3a1084f2c96bc50fed79cdccbe1bca9c4db157b813b3f7664c94"
+          },
+          {
+            "id": "306401_1.0051.AR_44.27/18",
+            "geometrySha256": "a03da82d5f3fdb8907d43c5121df7a0acbaed5ff69a3501867bd1bc7e51025a6"
+          }
+        ]
+      },
+      {
+        "index": 11,
+        "offset": [
+          -2,
+          0
+        ],
+        "bbox": [
+          16.911,
+          52.403,
+          16.912,
+          52.404
+        ],
+        "count": 13,
+        "complete": true,
+        "features": [
+          {
+            "id": "306401_1.0039.AR_09.12",
+            "geometrySha256": "2f0cafdad190079e43cd9663835061667732a13e6dbc9e78cde58d8b33f5ae3c"
+          },
+          {
+            "id": "306401_1.0039.AR_10.1/53",
+            "geometrySha256": "3ab02947209e0f25ef6091227c37afb0727f0d8d6faff03a5639a78db13067b7"
+          },
+          {
+            "id": "306401_1.0051.AR_44.30/5",
+            "geometrySha256": "9269191a1df5d9da7de0e85915e62d2ab638bb92491151117374b0eb54ea2293"
+          },
+          {
+            "id": "306401_1.0051.AR_44.29/7",
+            "geometrySha256": "6dc570ddcf9567ad77af52920a15b35728cf583be161bda1481f6f09a9c5255c"
+          },
+          {
+            "id": "306401_1.0051.AR_44.29/8",
+            "geometrySha256": "579c960c67e02580d6581291a0de22b4c25062ae05ee6f6e40812286394f7071"
+          },
+          {
+            "id": "306401_1.0051.AR_44.29/3",
+            "geometrySha256": "8b62e26fddc1d86e55f5ef700f50862c9cdb93bf27da64c107dee0ab52629572"
+          },
+          {
+            "id": "306401_1.0051.AR_44.22/2",
+            "geometrySha256": "49a17f2e24398b2f390e0a5063248545941f421932e01679366d5b305859fbbc"
+          },
+          {
+            "id": "306401_1.0051.AR_44.28",
+            "geometrySha256": "5a4c77db2cab3a1084f2c96bc50fed79cdccbe1bca9c4db157b813b3f7664c94"
+          },
+          {
+            "id": "306401_1.0061.AR_01.1/7",
+            "geometrySha256": "d41ed8e0b027b309f8cc6354cf09cee399cb1ea027777afd28c371448888a81d"
+          },
+          {
+            "id": "306401_1.0061.AR_01.1/6",
+            "geometrySha256": "8bfa02bb559da6232b7d58be503e17ecfd53d430bc7da81facb47a363fd17769"
+          },
+          {
+            "id": "306401_1.0039.AR_10.1/52",
+            "geometrySha256": "d0d411ef5e96fcec6ea2ee256a5a88f20a27462fed821d21331875bc51e6452f"
+          },
+          {
+            "id": "306401_1.0061.AR_01.1/11",
+            "geometrySha256": "8970389ce7f9ca7d59914b72d4d1ce7f1c0cf467910b9784ea549cf0a2052fad"
+          },
+          {
+            "id": "306401_1.0051.AR_44.29/4",
+            "geometrySha256": "bfda8706464bfb6a07fa3cc174dfc2d5583a7d009e98dd2bdb5843dea9348dd5"
+          }
+        ]
+      },
+      {
+        "index": 12,
+        "offset": [
+          2,
+          0
+        ],
+        "bbox": [
+          16.915,
+          52.403,
+          16.916,
+          52.404
+        ],
+        "count": 9,
+        "complete": true,
+        "features": [
+          {
+            "id": "306401_1.0051.AR_44.22/4",
+            "geometrySha256": "995815ee54f322a6ae3f59c221a0b562ea23dc6e8491c2d0e5d2ae328f7688ed"
+          },
+          {
+            "id": "306401_1.0051.AR_44.21/2",
+            "geometrySha256": "574165cc073a510575ad16c6c55a80119a92f1318f0391bfbd21ba06e12fe61a"
+          },
+          {
+            "id": "306401_1.0051.AR_44.21/9",
+            "geometrySha256": "6fa73b6464caeb1342ec702bbb0d3e4d75b4b7dcaf2a381a3a0b93760677725a"
+          },
+          {
+            "id": "306401_1.0051.AR_44.20/17",
+            "geometrySha256": "7fb905646804bb5cc3b323ebad958625294fde9c15dec8283d0a56f39a9e4f90"
+          },
+          {
+            "id": "306401_1.0051.AR_44.21/5",
+            "geometrySha256": "3a808ae6aaa5c7099d14694f078602790bf76588d0198fc647b3caa3f561dd23"
+          },
+          {
+            "id": "306401_1.0051.AR_44.21/12",
+            "geometrySha256": "76f9e55b6535cddd45cd1bddefed90645329d128371cda4b4e8e55a1071d6041"
+          },
+          {
+            "id": "306401_1.0051.AR_44.21/11",
+            "geometrySha256": "bfe6049991318fa0caddd1c55710604023c3b01febafc0f2d4ee5931a43b9cc9"
+          },
+          {
+            "id": "306401_1.0051.AR_44.21/10",
+            "geometrySha256": "fd4e42f95a97945f773406996579c4b7c7f4f32c7a3ac50065b408c3052c2c96"
+          },
+          {
+            "id": "306401_1.0061.AR_01.3/1",
+            "geometrySha256": "afe3f2f217ec2a970d89412dfe0a27c1e12849276d94bf9142b59a19ce558cb8"
+          }
+        ]
+      }
+    ]
+  },
+  "tests": [
+    {
+      "name": "grid-0",
+      "passed": true,
+      "bbox": [
+        16.912,
+        52.402,
+        16.913,
+        52.403
+      ],
+      "count": 8,
+      "ids": [
+        "306401_1.0061.AR_01.1/11",
+        "306401_1.0061.AR_01.3/41",
+        "306401_1.0061.AR_01.3/40",
+        "306401_1.0061.AR_01.3/39",
+        "306401_1.0061.AR_01.1/5",
+        "306401_1.0061.AR_01.3/38",
+        "306401_1.0061.AR_01.3/25",
+        "306401_1.0061.AR_01.3/37"
+      ]
+    },
+    {
+      "name": "grid-1",
+      "passed": true,
+      "bbox": [
+        16.913,
+        52.402,
+        16.914,
+        52.403
+      ],
+      "count": 7,
+      "ids": [
+        "306401_1.0061.AR_01.1/5",
+        "306401_1.0061.AR_01.3/27",
+        "306401_1.0061.AR_01.1/8",
+        "306401_1.0061.AR_01.3/28",
+        "306401_1.0061.AR_01.3/38",
+        "306401_1.0061.AR_01.3/25",
+        "306401_1.0061.AR_01.3/24"
+      ]
+    },
+    {
+      "name": "grid-2",
+      "passed": true,
+      "bbox": [
+        16.914,
+        52.402,
+        16.915,
+        52.403
+      ],
+      "count": 8,
+      "ids": [
+        "306401_1.0061.AR_01.3/27",
+        "306401_1.0061.AR_01.3/28",
+        "306401_1.0061.AR_01.2",
+        "306401_1.0061.AR_01.3/43",
+        "306401_1.0061.AR_01.3/1",
+        "306401_1.0061.AR_01.3/31",
+        "306401_1.0061.AR_01.3/29",
+        "306401_1.0061.AR_01.3/24"
+      ]
+    },
+    {
+      "name": "grid-3",
+      "passed": true,
+      "bbox": [
+        16.912,
+        52.403,
+        16.913,
+        52.404
+      ],
+      "count": 8,
+      "ids": [
+        "306401_1.0051.AR_44.29/8",
+        "306401_1.0051.AR_44.29/3",
+        "306401_1.0051.AR_44.22/2",
+        "306401_1.0051.AR_44.28",
+        "306401_1.0051.AR_44.27/6",
+        "306401_1.0051.AR_44.27/18",
+        "306401_1.0061.AR_01.1/11",
+        "306401_1.0061.AR_01.1/5"
+      ]
+    },
+    {
+      "name": "grid-4",
+      "passed": true,
+      "bbox": [
+        16.913,
+        52.403,
+        16.914,
+        52.404
+      ],
+      "count": 8,
+      "ids": [
+        "306401_1.0051.AR_44.16",
+        "306401_1.0051.AR_44.27/18",
+        "306401_1.0061.AR_01.1/9",
+        "306401_1.0051.AR_44.27/14",
+        "306401_1.0061.AR_01.1/5",
+        "306401_1.0061.AR_01.3/27",
+        "306401_1.0061.AR_01.1/8",
+        "306401_1.0061.AR_01.3/28"
+      ]
+    },
+    {
+      "name": "grid-5",
+      "passed": true,
+      "bbox": [
+        16.914,
+        52.403,
+        16.915,
+        52.404
+      ],
+      "count": 15,
+      "ids": [
+        "306401_1.0051.AR_44.16",
+        "306401_1.0051.AR_44.22/4",
+        "306401_1.0051.AR_44.21/2",
+        "306401_1.0051.AR_44.20/16",
+        "306401_1.0051.AR_44.21/9",
+        "306401_1.0051.AR_44.20/17",
+        "306401_1.0051.AR_44.21/5",
+        "306401_1.0051.AR_44.21/12",
+        "306401_1.0051.AR_44.27/18",
+        "306401_1.0051.AR_44.27/14",
+        "306401_1.0051.AR_44.27/4",
+        "306401_1.0051.AR_44.20/1",
+        "306401_1.0051.AR_44.21/6",
+        "306401_1.0061.AR_01.3/28",
+        "306401_1.0061.AR_01.3/1"
+      ]
+    },
+    {
+      "name": "grid-6",
+      "passed": true,
+      "bbox": [
+        16.912,
+        52.404,
+        16.913,
+        52.405
+      ],
+      "count": 3,
+      "ids": [
+        "306401_1.0051.AR_44.29/8",
+        "306401_1.0051.AR_44.28",
+        "306401_1.0051.AR_44.27/18"
+      ]
+    },
+    {
+      "name": "grid-7",
+      "passed": true,
+      "bbox": [
+        16.913,
+        52.404,
+        16.914,
+        52.405
+      ],
+      "count": 1,
+      "ids": [
+        "306401_1.0051.AR_44.27/18"
+      ]
+    },
+    {
+      "name": "grid-8",
+      "passed": true,
+      "bbox": [
+        16.914,
+        52.404,
+        16.915,
+        52.405
+      ],
+      "count": 9,
+      "ids": [
+        "306401_1.0051.AR_44.16",
+        "306401_1.0051.AR_44.20/16",
+        "306401_1.0051.AR_44.20/14",
+        "306401_1.0051.AR_44.19",
+        "306401_1.0051.AR_44.20/17",
+        "306401_1.0051.AR_44.27/18",
+        "306401_1.0051.AR_44.27/17",
+        "306401_1.0051.AR_44.20/9",
+        "306401_1.0051.AR_44.20/3"
+      ]
+    },
+    {
+      "name": "grid-9",
+      "passed": true,
+      "bbox": [
+        16.913,
+        52.401,
+        16.914,
+        52.402
+      ],
+      "count": 2,
+      "ids": [
+        "306401_1.0061.AR_01.3/25",
+        "306401_1.0061.AR_01.3/24"
+      ]
+    },
+    {
+      "name": "grid-10",
+      "passed": true,
+      "bbox": [
+        16.913,
+        52.405,
+        16.914,
+        52.406
+      ],
+      "count": 2,
+      "ids": [
+        "306401_1.0051.AR_44.28",
+        "306401_1.0051.AR_44.27/18"
+      ]
+    },
+    {
+      "name": "grid-11",
+      "passed": true,
+      "bbox": [
+        16.911,
+        52.403,
+        16.912,
+        52.404
+      ],
+      "count": 13,
+      "ids": [
+        "306401_1.0039.AR_09.12",
+        "306401_1.0039.AR_10.1/53",
+        "306401_1.0051.AR_44.30/5",
+        "306401_1.0051.AR_44.29/7",
+        "306401_1.0051.AR_44.29/8",
+        "306401_1.0051.AR_44.29/3",
+        "306401_1.0051.AR_44.22/2",
+        "306401_1.0051.AR_44.28",
+        "306401_1.0061.AR_01.1/7",
+        "306401_1.0061.AR_01.1/6",
+        "306401_1.0039.AR_10.1/52",
+        "306401_1.0061.AR_01.1/11",
+        "306401_1.0051.AR_44.29/4"
+      ]
+    },
+    {
+      "name": "grid-12",
+      "passed": true,
+      "bbox": [
+        16.915,
+        52.403,
+        16.916,
+        52.404
+      ],
+      "count": 9,
+      "ids": [
+        "306401_1.0051.AR_44.22/4",
+        "306401_1.0051.AR_44.21/2",
+        "306401_1.0051.AR_44.21/9",
+        "306401_1.0051.AR_44.20/17",
+        "306401_1.0051.AR_44.21/5",
+        "306401_1.0051.AR_44.21/12",
+        "306401_1.0051.AR_44.21/11",
+        "306401_1.0051.AR_44.21/10",
+        "306401_1.0061.AR_01.3/1"
+      ]
+    },
+    {
+      "name": "grid-summary",
+      "passed": true,
+      "cellCount": 13,
+      "rowCount": 93,
+      "uniqueNativeIds": 51,
+      "counts": [
+        8,
+        7,
+        8,
+        8,
+        8,
+        15,
+        3,
+        1,
+        9,
+        2,
+        2,
+        13,
+        9
+      ]
+    },
+    {
+      "name": "forced-three-row-paging",
+      "passed": true,
+      "requestedPageSize": 3,
+      "expected": 8,
+      "returned": 8,
+      "allGeometryHashesMatch": true
+    },
+    {
+      "name": "fresh-ids-0",
+      "passed": true,
+      "requested": 8,
+      "returned": 8,
+      "absentIds": [],
+      "allGeometryHashesMatch": true
+    },
+    {
+      "name": "fresh-ids-8",
+      "passed": true,
+      "requested": 8,
+      "returned": 8,
+      "absentIds": [],
+      "allGeometryHashesMatch": true
+    },
+    {
+      "name": "fresh-ids-16",
+      "passed": true,
+      "requested": 8,
+      "returned": 8,
+      "absentIds": [],
+      "allGeometryHashesMatch": true
+    },
+    {
+      "name": "fresh-ids-24",
+      "passed": true,
+      "requested": 8,
+      "returned": 8,
+      "absentIds": [],
+      "allGeometryHashesMatch": true
+    },
+    {
+      "name": "fresh-ids-32",
+      "passed": true,
+      "requested": 8,
+      "returned": 8,
+      "absentIds": [],
+      "allGeometryHashesMatch": true
+    },
+    {
+      "name": "fresh-ids-40",
+      "passed": true,
+      "requested": 8,
+      "returned": 8,
+      "absentIds": [],
+      "allGeometryHashesMatch": true
+    },
+    {
+      "name": "fresh-ids-48",
+      "passed": true,
+      "requested": 3,
+      "returned": 3,
+      "absentIds": [],
+      "allGeometryHashesMatch": true
+    },
+    {
+      "name": "fresh-id-summary",
+      "passed": true,
+      "uniqueNativeIds": 51,
+      "batchCount": 7,
+      "independentReadComplete": true
+    },
+    {
+      "name": "explicit-absence",
+      "passed": true,
+      "absentIds": [
+        "PL-POZNAN-999999999999"
+      ],
+      "complete": true
+    },
+    {
+      "name": "wup-point-parcel",
+      "passed": true,
+      "wupPoint": [
+        16.9139953760299,
+        52.4033374848812
+      ],
+      "sourceParcelId": "306401_1.0051.AR_44.27/14",
+      "geometrySha256": "2601e99cb73681fb702df4651c8554eb55365ba1d98aedeac7a0d4a91e100c7d"
+    },
+    {
+      "name": "target-footprint-query",
+      "passed": true,
+      "sourceParcelId": "306401_1.0051.AR_44.27/14",
+      "intersectingCount": 13,
+      "targetGeometryMatches": true,
+      "allIntersectingIds": [
+        "306401_1.0051.AR_44.16",
+        "306401_1.0051.AR_44.22/4",
+        "306401_1.0051.AR_44.21/2",
+        "306401_1.0051.AR_44.20/16",
+        "306401_1.0051.AR_44.21/9",
+        "306401_1.0051.AR_44.27/18",
+        "306401_1.0061.AR_01.1/9",
+        "306401_1.0051.AR_44.27/14",
+        "306401_1.0051.AR_44.27/4",
+        "306401_1.0051.AR_44.20/1",
+        "306401_1.0061.AR_01.1/8",
+        "306401_1.0061.AR_01.3/28",
+        "306401_1.0061.AR_01.3/1"
+      ]
+    },
+    {
+      "name": "source-proposal-binding",
+      "passed": true,
+      "coverage": "complete",
+      "siteM2": 2194.58,
+      "parcelCount": 1,
+      "targetParcelId": "PL-POZNAN-306401_1.0051.AR_44.27/14",
+      "targetOverlapM2": 2194.582,
+      "source": "server:poznan-gml-wfs"
+    }
+  ],
+  "requests": [
+    {
+      "stage": "grid",
+      "url": "https://portal.geopoz.poznan.pl/wmsegib?service=WFS&version=2.0.0&request=GetFeature&typeNames=ms%3Adzialki&srsName=urn%3Aogc%3Adef%3Acrs%3AEPSG%3A%3A2177&outputFormat=application%2Fgml%2Bxml%3B+version%3D3.2&propertyName=ms%3AID_DZIALKI%2Cms%3AMSGEOMETRY&filter=%3Cfes%3AFilter+xmlns%3Afes%3D%22http%3A%2F%2Fwww.opengis.net%2Ffes%2F2.0%22+xmlns%3Ams%3D%22http%3A%2F%2Fportal.geopoz.poznan.pl%2Fwmsegib%22+xmlns%3Agml%3D%22http%3A%2F%2Fwww.opengis.net%2Fgml%2F3.2%22%3E%3Cfes%3AIntersects%3E%3Cfes%3AValueReference%3Ems%3AMSGEOMETRY%3C%2Ffes%3AValueReference%3E%3Cgml%3APolygon+srsName%3D%22urn%3Aogc%3Adef%3Acrs%3AEPSG%3A%3A2177%22%3E%3Cgml%3Aexterior%3E%3Cgml%3ALinearRing%3E%3Cgml%3AposList+srsDimension%3D%222%22%3E5808183.349483055+6425956.323094493+5808183.349483055+6426026.048502002+5808295.634322861+6426026.048502002+5808295.634322861+6425956.323094493+5808183.349483055+6425956.323094493%3C%2Fgml%3AposList%3E%3C%2Fgml%3ALinearRing%3E%3C%2Fgml%3Aexterior%3E%3C%2Fgml%3APolygon%3E%3C%2Ffes%3AIntersects%3E%3C%2Ffes%3AFilter%3E&resultType=hits",
+      "requestedAt": "2026-10-09T07:14:43.156Z",
+      "httpStatus": 200,
+      "content-type": "application/xml",
+      "content-length": null,
+      "content-encoding": "gzip",
+      "etag": null,
+      "last-modified": null,
+      "bytes": 788,
+      "bodySha256": "21452af94d1f49175ce1cc8d2b4890ce3c859765a236be985eb3b456d45ffc28",
+      "numberMatched": "8",
+      "numberReturned": "0",
+      "responseFeatureIds": []
+    },
+    {
+      "stage": "grid",
+      "url": "https://portal.geopoz.poznan.pl/wmsegib?service=WFS&version=2.0.0&request=GetFeature&typeNames=ms%3Adzialki&srsName=urn%3Aogc%3Adef%3Acrs%3AEPSG%3A%3A2177&outputFormat=application%2Fgml%2Bxml%3B+version%3D3.2&propertyName=ms%3AID_DZIALKI%2Cms%3AMSGEOMETRY&filter=%3Cfes%3AFilter+xmlns%3Afes%3D%22http%3A%2F%2Fwww.opengis.net%2Ffes%2F2.0%22+xmlns%3Ams%3D%22http%3A%2F%2Fportal.geopoz.poznan.pl%2Fwmsegib%22+xmlns%3Agml%3D%22http%3A%2F%2Fwww.opengis.net%2Fgml%2F3.2%22%3E%3Cfes%3AIntersects%3E%3Cfes%3AValueReference%3Ems%3AMSGEOMETRY%3C%2Ffes%3AValueReference%3E%3Cgml%3APolygon+srsName%3D%22urn%3Aogc%3Adef%3Acrs%3AEPSG%3A%3A2177%22%3E%3Cgml%3Aexterior%3E%3Cgml%3ALinearRing%3E%3Cgml%3AposList+srsDimension%3D%222%22%3E5808183.349483055+6425956.323094493+5808183.349483055+6426026.048502002+5808295.634322861+6426026.048502002+5808295.634322861+6425956.323094493+5808183.349483055+6425956.323094493%3C%2Fgml%3AposList%3E%3C%2Fgml%3ALinearRing%3E%3C%2Fgml%3Aexterior%3E%3C%2Fgml%3APolygon%3E%3C%2Ffes%3AIntersects%3E%3C%2Ffes%3AFilter%3E&count=8&startIndex=0",
+      "requestedAt": "2026-10-09T07:14:43.664Z",
+      "httpStatus": 200,
+      "content-type": "application/xml",
+      "content-length": null,
+      "content-encoding": "gzip",
+      "etag": null,
+      "last-modified": null,
+      "bytes": 9632,
+      "bodySha256": "8faedb95923cf20f872af4fd59b5efb7c8a19f985ce8b175bbc050c39f901c8e",
+      "numberMatched": "unknown",
+      "numberReturned": "8",
+      "responseFeatureIds": [
+        "306401_1.0061.AR_01.1/11",
+        "306401_1.0061.AR_01.3/41",
+        "306401_1.0061.AR_01.3/40",
+        "306401_1.0061.AR_01.3/39",
+        "306401_1.0061.AR_01.1/5",
+        "306401_1.0061.AR_01.3/38",
+        "306401_1.0061.AR_01.3/25",
+        "306401_1.0061.AR_01.3/37"
+      ]
+    },
+    {
+      "stage": "grid",
+      "url": "https://portal.geopoz.poznan.pl/wmsegib?service=WFS&version=2.0.0&request=GetFeature&typeNames=ms%3Adzialki&srsName=urn%3Aogc%3Adef%3Acrs%3AEPSG%3A%3A2177&outputFormat=application%2Fgml%2Bxml%3B+version%3D3.2&propertyName=ms%3AID_DZIALKI%2Cms%3AMSGEOMETRY&filter=%3Cfes%3AFilter+xmlns%3Afes%3D%22http%3A%2F%2Fwww.opengis.net%2Ffes%2F2.0%22+xmlns%3Ams%3D%22http%3A%2F%2Fportal.geopoz.poznan.pl%2Fwmsegib%22+xmlns%3Agml%3D%22http%3A%2F%2Fwww.opengis.net%2Fgml%2F3.2%22%3E%3Cfes%3AIntersects%3E%3Cfes%3AValueReference%3Ems%3AMSGEOMETRY%3C%2Ffes%3AValueReference%3E%3Cgml%3APolygon+srsName%3D%22urn%3Aogc%3Adef%3Acrs%3AEPSG%3A%3A2177%22%3E%3Cgml%3Aexterior%3E%3Cgml%3ALinearRing%3E%3Cgml%3AposList+srsDimension%3D%222%22%3E5808183.349483055+6425956.323094493+5808183.349483055+6426026.048502002+5808295.634322861+6426026.048502002+5808295.634322861+6425956.323094493+5808183.349483055+6425956.323094493%3C%2Fgml%3AposList%3E%3C%2Fgml%3ALinearRing%3E%3C%2Fgml%3Aexterior%3E%3C%2Fgml%3APolygon%3E%3C%2Ffes%3AIntersects%3E%3C%2Ffes%3AFilter%3E&resultType=hits",
+      "requestedAt": "2026-10-09T07:14:43.767Z",
+      "httpStatus": 200,
+      "content-type": "application/xml",
+      "content-length": null,
+      "content-encoding": "gzip",
+      "etag": null,
+      "last-modified": null,
+      "bytes": 788,
+      "bodySha256": "21452af94d1f49175ce1cc8d2b4890ce3c859765a236be985eb3b456d45ffc28",
+      "numberMatched": "8",
+      "numberReturned": "0",
+      "responseFeatureIds": []
+    },
+    {
+      "stage": "grid",
+      "url": "https://portal.geopoz.poznan.pl/wmsegib?service=WFS&version=2.0.0&request=GetFeature&typeNames=ms%3Adzialki&srsName=urn%3Aogc%3Adef%3Acrs%3AEPSG%3A%3A2177&outputFormat=application%2Fgml%2Bxml%3B+version%3D3.2&propertyName=ms%3AID_DZIALKI%2Cms%3AMSGEOMETRY&filter=%3Cfes%3AFilter+xmlns%3Afes%3D%22http%3A%2F%2Fwww.opengis.net%2Ffes%2F2.0%22+xmlns%3Ams%3D%22http%3A%2F%2Fportal.geopoz.poznan.pl%2Fwmsegib%22+xmlns%3Agml%3D%22http%3A%2F%2Fwww.opengis.net%2Fgml%2F3.2%22%3E%3Cfes%3AIntersects%3E%3Cfes%3AValueReference%3Ems%3AMSGEOMETRY%3C%2Ffes%3AValueReference%3E%3Cgml%3APolygon+srsName%3D%22urn%3Aogc%3Adef%3Acrs%3AEPSG%3A%3A2177%22%3E%3Cgml%3Aexterior%3E%3Cgml%3ALinearRing%3E%3Cgml%3AposList+srsDimension%3D%222%22%3E5808182.326894801+6426024.375864056+5808182.326894801+6426094.099738313+5808294.610802681+6426094.099738313+5808294.610802681+6426024.375864056+5808182.326894801+6426024.375864056%3C%2Fgml%3AposList%3E%3C%2Fgml%3ALinearRing%3E%3C%2Fgml%3Aexterior%3E%3C%2Fgml%3APolygon%3E%3C%2Ffes%3AIntersects%3E%3C%2Ffes%3AFilter%3E&resultType=hits",
+      "requestedAt": "2026-10-09T07:14:43.876Z",
+      "httpStatus": 200,
+      "content-type": "application/xml",
+      "content-length": null,
+      "content-encoding": "gzip",
+      "etag": null,
+      "last-modified": null,
+      "bytes": 788,
+      "bodySha256": "a5580f9734f2a061075bc2556cb4b579435acb06cb8707b23d8056bd150460e2",
+      "numberMatched": "7",
+      "numberReturned": "0",
+      "responseFeatureIds": []
+    },
+    {
+      "stage": "grid",
+      "url": "https://portal.geopoz.poznan.pl/wmsegib?service=WFS&version=2.0.0&request=GetFeature&typeNames=ms%3Adzialki&srsName=urn%3Aogc%3Adef%3Acrs%3AEPSG%3A%3A2177&outputFormat=application%2Fgml%2Bxml%3B+version%3D3.2&propertyName=ms%3AID_DZIALKI%2Cms%3AMSGEOMETRY&filter=%3Cfes%3AFilter+xmlns%3Afes%3D%22http%3A%2F%2Fwww.opengis.net%2Ffes%2F2.0%22+xmlns%3Ams%3D%22http%3A%2F%2Fportal.geopoz.poznan.pl%2Fwmsegib%22+xmlns%3Agml%3D%22http%3A%2F%2Fwww.opengis.net%2Fgml%2F3.2%22%3E%3Cfes%3AIntersects%3E%3Cfes%3AValueReference%3Ems%3AMSGEOMETRY%3C%2Ffes%3AValueReference%3E%3Cgml%3APolygon+srsName%3D%22urn%3Aogc%3Adef%3Acrs%3AEPSG%3A%3A2177%22%3E%3Cgml%3Aexterior%3E%3Cgml%3ALinearRing%3E%3Cgml%3AposList+srsDimension%3D%222%22%3E5808182.326894801+6426024.375864056+5808182.326894801+6426094.099738313+5808294.610802681+6426094.099738313+5808294.610802681+6426024.375864056+5808182.326894801+6426024.375864056%3C%2Fgml%3AposList%3E%3C%2Fgml%3ALinearRing%3E%3C%2Fgml%3Aexterior%3E%3C%2Fgml%3APolygon%3E%3C%2Ffes%3AIntersects%3E%3C%2Ffes%3AFilter%3E&count=7&startIndex=0",
+      "requestedAt": "2026-10-09T07:14:43.983Z",
+      "httpStatus": 200,
+      "content-type": "application/xml",
+      "content-length": null,
+      "content-encoding": "gzip",
+      "etag": null,
+      "last-modified": null,
+      "bytes": 8448,
+      "bodySha256": "6e127eafc801f4c73cedfcfa5fe2d33ce58054bd47747cd642bc5fd03148f384",
+      "numberMatched": "unknown",
+      "numberReturned": "7",
+      "responseFeatureIds": [
+        "306401_1.0061.AR_01.1/5",
+        "306401_1.0061.AR_01.3/27",
+        "306401_1.0061.AR_01.1/8",
+        "306401_1.0061.AR_01.3/28",
+        "306401_1.0061.AR_01.3/38",
+        "306401_1.0061.AR_01.3/25",
+        "306401_1.0061.AR_01.3/24"
+      ]
+    },
+    {
+      "stage": "grid",
+      "url": "https://portal.geopoz.poznan.pl/wmsegib?service=WFS&version=2.0.0&request=GetFeature&typeNames=ms%3Adzialki&srsName=urn%3Aogc%3Adef%3Acrs%3AEPSG%3A%3A2177&outputFormat=application%2Fgml%2Bxml%3B+version%3D3.2&propertyName=ms%3AID_DZIALKI%2Cms%3AMSGEOMETRY&filter=%3Cfes%3AFilter+xmlns%3Afes%3D%22http%3A%2F%2Fwww.opengis.net%2Ffes%2F2.0%22+xmlns%3Ams%3D%22http%3A%2F%2Fportal.geopoz.poznan.pl%2Fwmsegib%22+xmlns%3Agml%3D%22http%3A%2F%2Fwww.opengis.net%2Fgml%2F3.2%22%3E%3Cfes%3AIntersects%3E%3Cfes%3AValueReference%3Ems%3AMSGEOMETRY%3C%2Ffes%3AValueReference%3E%3Cgml%3APolygon+srsName%3D%22urn%3Aogc%3Adef%3Acrs%3AEPSG%3A%3A2177%22%3E%3Cgml%3Aexterior%3E%3Cgml%3ALinearRing%3E%3Cgml%3AposList+srsDimension%3D%222%22%3E5808182.326894801+6426024.375864056+5808182.326894801+6426094.099738313+5808294.610802681+6426094.099738313+5808294.610802681+6426024.375864056+5808182.326894801+6426024.375864056%3C%2Fgml%3AposList%3E%3C%2Fgml%3ALinearRing%3E%3C%2Fgml%3Aexterior%3E%3C%2Fgml%3APolygon%3E%3C%2Ffes%3AIntersects%3E%3C%2Ffes%3AFilter%3E&resultType=hits",
+      "requestedAt": "2026-10-09T07:14:44.096Z",
+      "httpStatus": 200,
+      "content-type": "application/xml",
+      "content-length": null,
+      "content-encoding": "gzip",
+      "etag": null,
+      "last-modified": null,
+      "bytes": 788,
+      "bodySha256": "0bec980154c0c2781d90aa3e942d14ea22ab5485a48342181aabf6c862ff3274",
+      "numberMatched": "7",
+      "numberReturned": "0",
+      "responseFeatureIds": []
+    },
+    {
+      "stage": "grid",
+      "url": "https://portal.geopoz.poznan.pl/wmsegib?service=WFS&version=2.0.0&request=GetFeature&typeNames=ms%3Adzialki&srsName=urn%3Aogc%3Adef%3Acrs%3AEPSG%3A%3A2177&outputFormat=application%2Fgml%2Bxml%3B+version%3D3.2&propertyName=ms%3AID_DZIALKI%2Cms%3AMSGEOMETRY&filter=%3Cfes%3AFilter+xmlns%3Afes%3D%22http%3A%2F%2Fwww.opengis.net%2Ffes%2F2.0%22+xmlns%3Ams%3D%22http%3A%2F%2Fportal.geopoz.poznan.pl%2Fwmsegib%22+xmlns%3Agml%3D%22http%3A%2F%2Fwww.opengis.net%2Fgml%2F3.2%22%3E%3Cfes%3AIntersects%3E%3Cfes%3AValueReference%3Ems%3AMSGEOMETRY%3C%2Ffes%3AValueReference%3E%3Cgml%3APolygon+srsName%3D%22urn%3Aogc%3Adef%3Acrs%3AEPSG%3A%3A2177%22%3E%3Cgml%3Aexterior%3E%3Cgml%3ALinearRing%3E%3Cgml%3AposList+srsDimension%3D%222%22%3E5808181.305247864+6426092.428639361+5808181.305247864+6426162.150980359+5808293.588223811+6426162.150980359+5808293.588223811+6426092.428639361+5808181.305247864+6426092.428639361%3C%2Fgml%3AposList%3E%3C%2Fgml%3ALinearRing%3E%3C%2Fgml%3Aexterior%3E%3C%2Fgml%3APolygon%3E%3C%2Ffes%3AIntersects%3E%3C%2Ffes%3AFilter%3E&resultType=hits",
+      "requestedAt": "2026-10-09T07:14:44.358Z",
+      "httpStatus": 200,
+      "content-type": "application/xml",
+      "content-length": null,
+      "content-encoding": "gzip",
+      "etag": null,
+      "last-modified": null,
+      "bytes": 788,
+      "bodySha256": "c1b6fdd847f0b74f7ca9d2ba6f9af77650aed7543d15421fc552750f235e91b7",
+      "numberMatched": "8",
+      "numberReturned": "0",
+      "responseFeatureIds": []
+    },
+    {
+      "stage": "grid",
+      "url": "https://portal.geopoz.poznan.pl/wmsegib?service=WFS&version=2.0.0&request=GetFeature&typeNames=ms%3Adzialki&srsName=urn%3Aogc%3Adef%3Acrs%3AEPSG%3A%3A2177&outputFormat=application%2Fgml%2Bxml%3B+version%3D3.2&propertyName=ms%3AID_DZIALKI%2Cms%3AMSGEOMETRY&filter=%3Cfes%3AFilter+xmlns%3Afes%3D%22http%3A%2F%2Fwww.opengis.net%2Ffes%2F2.0%22+xmlns%3Ams%3D%22http%3A%2F%2Fportal.geopoz.poznan.pl%2Fwmsegib%22+xmlns%3Agml%3D%22http%3A%2F%2Fwww.opengis.net%2Fgml%2F3.2%22%3E%3Cfes%3AIntersects%3E%3Cfes%3AValueReference%3Ems%3AMSGEOMETRY%3C%2Ffes%3AValueReference%3E%3Cgml%3APolygon+srsName%3D%22urn%3Aogc%3Adef%3Acrs%3AEPSG%3A%3A2177%22%3E%3Cgml%3Aexterior%3E%3Cgml%3ALinearRing%3E%3Cgml%3AposList+srsDimension%3D%222%22%3E5808181.305247864+6426092.428639361+5808181.305247864+6426162.150980359+5808293.588223811+6426162.150980359+5808293.588223811+6426092.428639361+5808181.305247864+6426092.428639361%3C%2Fgml%3AposList%3E%3C%2Fgml%3ALinearRing%3E%3C%2Fgml%3Aexterior%3E%3C%2Fgml%3APolygon%3E%3C%2Ffes%3AIntersects%3E%3C%2Ffes%3AFilter%3E&count=8&startIndex=0",
+      "requestedAt": "2026-10-09T07:14:44.461Z",
+      "httpStatus": 200,
+      "content-type": "application/xml",
+      "content-length": null,
+      "content-encoding": "gzip",
+      "etag": null,
+      "last-modified": null,
+      "bytes": 9628,
+      "bodySha256": "bbd9be593f9550d5ac69d929ee150dc1826cc39851daf58e504f2e4988905056",
+      "numberMatched": "unknown",
+      "numberReturned": "8",
+      "responseFeatureIds": [
+        "306401_1.0061.AR_01.3/27",
+        "306401_1.0061.AR_01.3/28",
+        "306401_1.0061.AR_01.2",
+        "306401_1.0061.AR_01.3/43",
+        "306401_1.0061.AR_01.3/1",
+        "306401_1.0061.AR_01.3/31",
+        "306401_1.0061.AR_01.3/29",
+        "306401_1.0061.AR_01.3/24"
+      ]
+    },
+    {
+      "stage": "grid",
+      "url": "https://portal.geopoz.poznan.pl/wmsegib?service=WFS&version=2.0.0&request=GetFeature&typeNames=ms%3Adzialki&srsName=urn%3Aogc%3Adef%3Acrs%3AEPSG%3A%3A2177&outputFormat=application%2Fgml%2Bxml%3B+version%3D3.2&propertyName=ms%3AID_DZIALKI%2Cms%3AMSGEOMETRY&filter=%3Cfes%3AFilter+xmlns%3Afes%3D%22http%3A%2F%2Fwww.opengis.net%2Ffes%2F2.0%22+xmlns%3Ams%3D%22http%3A%2F%2Fportal.geopoz.poznan.pl%2Fwmsegib%22+xmlns%3Agml%3D%22http%3A%2F%2Fwww.opengis.net%2Fgml%2F3.2%22%3E%3Cfes%3AIntersects%3E%3Cfes%3AValueReference%3Ems%3AMSGEOMETRY%3C%2Ffes%3AValueReference%3E%3Cgml%3APolygon+srsName%3D%22urn%3Aogc%3Adef%3Acrs%3AEPSG%3A%3A2177%22%3E%3Cgml%3Aexterior%3E%3Cgml%3ALinearRing%3E%3Cgml%3AposList+srsDimension%3D%222%22%3E5808181.305247864+6426092.428639361+5808181.305247864+6426162.150980359+5808293.588223811+6426162.150980359+5808293.588223811+6426092.428639361+5808181.305247864+6426092.428639361%3C%2Fgml%3AposList%3E%3C%2Fgml%3ALinearRing%3E%3C%2Fgml%3Aexterior%3E%3C%2Fgml%3APolygon%3E%3C%2Ffes%3AIntersects%3E%3C%2Ffes%3AFilter%3E&resultType=hits",
+      "requestedAt": "2026-10-09T07:14:44.581Z",
+      "httpStatus": 200,
+      "content-type": "application/xml",
+      "content-length": null,
+      "content-encoding": "gzip",
+      "etag": null,
+      "last-modified": null,
+      "bytes": 788,
+      "bodySha256": "c1b6fdd847f0b74f7ca9d2ba6f9af77650aed7543d15421fc552750f235e91b7",
+      "numberMatched": "8",
+      "numberReturned": "0",
+      "responseFeatureIds": []
+    },
+    {
+      "stage": "grid",
+      "url": "https://portal.geopoz.poznan.pl/wmsegib?service=WFS&version=2.0.0&request=GetFeature&typeNames=ms%3Adzialki&srsName=urn%3Aogc%3Adef%3Acrs%3AEPSG%3A%3A2177&outputFormat=application%2Fgml%2Bxml%3B+version%3D3.2&propertyName=ms%3AID_DZIALKI%2Cms%3AMSGEOMETRY&filter=%3Cfes%3AFilter+xmlns%3Afes%3D%22http%3A%2F%2Fwww.opengis.net%2Ffes%2F2.0%22+xmlns%3Ams%3D%22http%3A%2F%2Fportal.geopoz.poznan.pl%2Fwmsegib%22+xmlns%3Agml%3D%22http%3A%2F%2Fwww.opengis.net%2Fgml%2F3.2%22%3E%3Cfes%3AIntersects%3E%3Cfes%3AValueReference%3Ems%3AMSGEOMETRY%3C%2Ffes%3AValueReference%3E%3Cgml%3APolygon+srsName%3D%22urn%3Aogc%3Adef%3Acrs%3AEPSG%3A%3A2177%22%3E%3Cgml%3Aexterior%3E%3Cgml%3ALinearRing%3E%3Cgml%3AposList+srsDimension%3D%222%22%3E5808294.610802681+6425957.9972714335+5808294.610802681+6426027.721162702+5808406.895651351+6426027.721162702+5808406.895651351+6425957.9972714335+5808294.610802681+6425957.9972714335%3C%2Fgml%3AposList%3E%3C%2Fgml%3ALinearRing%3E%3C%2Fgml%3Aexterior%3E%3C%2Fgml%3APolygon%3E%3C%2Ffes%3AIntersects%3E%3C%2Ffes%3AFilter%3E&resultType=hits",
+      "requestedAt": "2026-10-09T07:14:44.687Z",
+      "httpStatus": 200,
+      "content-type": "application/xml",
+      "content-length": null,
+      "content-encoding": "gzip",
+      "etag": null,
+      "last-modified": null,
+      "bytes": 788,
+      "bodySha256": "c1b6fdd847f0b74f7ca9d2ba6f9af77650aed7543d15421fc552750f235e91b7",
+      "numberMatched": "8",
+      "numberReturned": "0",
+      "responseFeatureIds": []
+    },
+    {
+      "stage": "grid",
+      "url": "https://portal.geopoz.poznan.pl/wmsegib?service=WFS&version=2.0.0&request=GetFeature&typeNames=ms%3Adzialki&srsName=urn%3Aogc%3Adef%3Acrs%3AEPSG%3A%3A2177&outputFormat=application%2Fgml%2Bxml%3B+version%3D3.2&propertyName=ms%3AID_DZIALKI%2Cms%3AMSGEOMETRY&filter=%3Cfes%3AFilter+xmlns%3Afes%3D%22http%3A%2F%2Fwww.opengis.net%2Ffes%2F2.0%22+xmlns%3Ams%3D%22http%3A%2F%2Fportal.geopoz.poznan.pl%2Fwmsegib%22+xmlns%3Agml%3D%22http%3A%2F%2Fwww.opengis.net%2Fgml%2F3.2%22%3E%3Cfes%3AIntersects%3E%3Cfes%3AValueReference%3Ems%3AMSGEOMETRY%3C%2Ffes%3AValueReference%3E%3Cgml%3APolygon+srsName%3D%22urn%3Aogc%3Adef%3Acrs%3AEPSG%3A%3A2177%22%3E%3Cgml%3Aexterior%3E%3Cgml%3ALinearRing%3E%3Cgml%3AposList+srsDimension%3D%222%22%3E5808294.610802681+6425957.9972714335+5808294.610802681+6426027.721162702+5808406.895651351+6426027.721162702+5808406.895651351+6425957.9972714335+5808294.610802681+6425957.9972714335%3C%2Fgml%3AposList%3E%3C%2Fgml%3ALinearRing%3E%3C%2Fgml%3Aexterior%3E%3C%2Fgml%3APolygon%3E%3C%2Ffes%3AIntersects%3E%3C%2Ffes%3AFilter%3E&count=8&startIndex=0",
+      "requestedAt": "2026-10-09T07:14:44.844Z",
+      "httpStatus": 200,
+      "content-type": "application/xml",
+      "content-length": null,
+      "content-encoding": "gzip",
+      "etag": null,
+      "last-modified": null,
+      "bytes": 10011,
+      "bodySha256": "125330c4a9a9abd7bd9247c23e38903d1e11470d9d01d63f02376e5158fcc26b",
+      "numberMatched": "unknown",
+      "numberReturned": "8",
+      "responseFeatureIds": [
+        "306401_1.0051.AR_44.29/8",
+        "306401_1.0051.AR_44.29/3",
+        "306401_1.0051.AR_44.22/2",
+        "306401_1.0051.AR_44.28",
+        "306401_1.0051.AR_44.27/6",
+        "306401_1.0051.AR_44.27/18",
+        "306401_1.0061.AR_01.1/11",
+        "306401_1.0061.AR_01.1/5"
+      ]
+    },
+    {
+      "stage": "grid",
+      "url": "https://portal.geopoz.poznan.pl/wmsegib?service=WFS&version=2.0.0&request=GetFeature&typeNames=ms%3Adzialki&srsName=urn%3Aogc%3Adef%3Acrs%3AEPSG%3A%3A2177&outputFormat=application%2Fgml%2Bxml%3B+version%3D3.2&propertyName=ms%3AID_DZIALKI%2Cms%3AMSGEOMETRY&filter=%3Cfes%3AFilter+xmlns%3Afes%3D%22http%3A%2F%2Fwww.opengis.net%2Ffes%2F2.0%22+xmlns%3Ams%3D%22http%3A%2F%2Fportal.geopoz.poznan.pl%2Fwmsegib%22+xmlns%3Agml%3D%22http%3A%2F%2Fwww.opengis.net%2Fgml%2F3.2%22%3E%3Cfes%3AIntersects%3E%3Cfes%3AValueReference%3Ems%3AMSGEOMETRY%3C%2Ffes%3AValueReference%3E%3Cgml%3APolygon+srsName%3D%22urn%3Aogc%3Adef%3Acrs%3AEPSG%3A%3A2177%22%3E%3Cgml%3Aexterior%3E%3Cgml%3ALinearRing%3E%3Cgml%3AposList+srsDimension%3D%222%22%3E5808294.610802681+6425957.9972714335+5808294.610802681+6426027.721162702+5808406.895651351+6426027.721162702+5808406.895651351+6425957.9972714335+5808294.610802681+6425957.9972714335%3C%2Fgml%3AposList%3E%3C%2Fgml%3ALinearRing%3E%3C%2Fgml%3Aexterior%3E%3C%2Fgml%3APolygon%3E%3C%2Ffes%3AIntersects%3E%3C%2Ffes%3AFilter%3E&resultType=hits",
+      "requestedAt": "2026-10-09T07:14:45.057Z",
+      "httpStatus": 200,
+      "content-type": "application/xml",
+      "content-length": null,
+      "content-encoding": "gzip",
+      "etag": null,
+      "last-modified": null,
+      "bytes": 788,
+      "bodySha256": "bdce8ccf0a6501688ae65e51e4cdbe277168a2c0e8501156782f9a0295addec2",
+      "numberMatched": "8",
+      "numberReturned": "0",
+      "responseFeatureIds": []
+    },
+    {
+      "stage": "grid",
+      "url": "https://portal.geopoz.poznan.pl/wmsegib?service=WFS&version=2.0.0&request=GetFeature&typeNames=ms%3Adzialki&srsName=urn%3Aogc%3Adef%3Acrs%3AEPSG%3A%3A2177&outputFormat=application%2Fgml%2Bxml%3B+version%3D3.2&propertyName=ms%3AID_DZIALKI%2Cms%3AMSGEOMETRY&filter=%3Cfes%3AFilter+xmlns%3Afes%3D%22http%3A%2F%2Fwww.opengis.net%2Ffes%2F2.0%22+xmlns%3Ams%3D%22http%3A%2F%2Fportal.geopoz.poznan.pl%2Fwmsegib%22+xmlns%3Agml%3D%22http%3A%2F%2Fwww.opengis.net%2Fgml%2F3.2%22%3E%3Cfes%3AIntersects%3E%3Cfes%3AValueReference%3Ems%3AMSGEOMETRY%3C%2Ffes%3AValueReference%3E%3Cgml%3APolygon+srsName%3D%22urn%3Aogc%3Adef%3Acrs%3AEPSG%3A%3A2177%22%3E%3Cgml%3Aexterior%3E%3Cgml%3ALinearRing%3E%3Cgml%3AposList+srsDimension%3D%222%22%3E5808293.588223811+6426026.048502002+5808293.588223811+6426095.770859998+5808405.872140565+6426095.770859998+5808405.872140565+6426026.048502002+5808293.588223811+6426026.048502002%3C%2Fgml%3AposList%3E%3C%2Fgml%3ALinearRing%3E%3C%2Fgml%3Aexterior%3E%3C%2Fgml%3APolygon%3E%3C%2Ffes%3AIntersects%3E%3C%2Ffes%3AFilter%3E&resultType=hits",
+      "requestedAt": "2026-10-09T07:14:45.181Z",
+      "httpStatus": 200,
+      "content-type": "application/xml",
+      "content-length": null,
+      "content-encoding": "gzip",
+      "etag": null,
+      "last-modified": null,
+      "bytes": 788,
+      "bodySha256": "bdce8ccf0a6501688ae65e51e4cdbe277168a2c0e8501156782f9a0295addec2",
+      "numberMatched": "8",
+      "numberReturned": "0",
+      "responseFeatureIds": []
+    },
+    {
+      "stage": "grid",
+      "url": "https://portal.geopoz.poznan.pl/wmsegib?service=WFS&version=2.0.0&request=GetFeature&typeNames=ms%3Adzialki&srsName=urn%3Aogc%3Adef%3Acrs%3AEPSG%3A%3A2177&outputFormat=application%2Fgml%2Bxml%3B+version%3D3.2&propertyName=ms%3AID_DZIALKI%2Cms%3AMSGEOMETRY&filter=%3Cfes%3AFilter+xmlns%3Afes%3D%22http%3A%2F%2Fwww.opengis.net%2Ffes%2F2.0%22+xmlns%3Ams%3D%22http%3A%2F%2Fportal.geopoz.poznan.pl%2Fwmsegib%22+xmlns%3Agml%3D%22http%3A%2F%2Fwww.opengis.net%2Fgml%2F3.2%22%3E%3Cfes%3AIntersects%3E%3Cfes%3AValueReference%3Ems%3AMSGEOMETRY%3C%2Ffes%3AValueReference%3E%3Cgml%3APolygon+srsName%3D%22urn%3Aogc%3Adef%3Acrs%3AEPSG%3A%3A2177%22%3E%3Cgml%3Aexterior%3E%3Cgml%3ALinearRing%3E%3Cgml%3AposList+srsDimension%3D%222%22%3E5808293.588223811+6426026.048502002+5808293.588223811+6426095.770859998+5808405.872140565+6426095.770859998+5808405.872140565+6426026.048502002+5808293.588223811+6426026.048502002%3C%2Fgml%3AposList%3E%3C%2Fgml%3ALinearRing%3E%3C%2Fgml%3Aexterior%3E%3C%2Fgml%3APolygon%3E%3C%2Ffes%3AIntersects%3E%3C%2Ffes%3AFilter%3E&count=8&startIndex=0",
+      "requestedAt": "2026-10-09T07:14:45.338Z",
+      "httpStatus": 200,
+      "content-type": "application/xml",
+      "content-length": null,
+      "content-encoding": "gzip",
+      "etag": null,
+      "last-modified": null,
+      "bytes": 9415,
+      "bodySha256": "bfc2fdad85662e1a22ae88409752bad95793efb34d6e8ca5b46952c58d309596",
+      "numberMatched": "unknown",
+      "numberReturned": "8",
+      "responseFeatureIds": [
+        "306401_1.0051.AR_44.16",
+        "306401_1.0051.AR_44.27/18",
+        "306401_1.0061.AR_01.1/9",
+        "306401_1.0051.AR_44.27/14",
+        "306401_1.0061.AR_01.1/5",
+        "306401_1.0061.AR_01.3/27",
+        "306401_1.0061.AR_01.1/8",
+        "306401_1.0061.AR_01.3/28"
+      ]
+    },
+    {
+      "stage": "grid",
+      "url": "https://portal.geopoz.poznan.pl/wmsegib?service=WFS&version=2.0.0&request=GetFeature&typeNames=ms%3Adzialki&srsName=urn%3Aogc%3Adef%3Acrs%3AEPSG%3A%3A2177&outputFormat=application%2Fgml%2Bxml%3B+version%3D3.2&propertyName=ms%3AID_DZIALKI%2Cms%3AMSGEOMETRY&filter=%3Cfes%3AFilter+xmlns%3Afes%3D%22http%3A%2F%2Fwww.opengis.net%2Ffes%2F2.0%22+xmlns%3Ams%3D%22http%3A%2F%2Fportal.geopoz.poznan.pl%2Fwmsegib%22+xmlns%3Agml%3D%22http%3A%2F%2Fwww.opengis.net%2Fgml%2F3.2%22%3E%3Cfes%3AIntersects%3E%3Cfes%3AValueReference%3Ems%3AMSGEOMETRY%3C%2Ffes%3AValueReference%3E%3Cgml%3APolygon+srsName%3D%22urn%3Aogc%3Adef%3Acrs%3AEPSG%3A%3A2177%22%3E%3Cgml%3Aexterior%3E%3Cgml%3ALinearRing%3E%3Cgml%3AposList+srsDimension%3D%222%22%3E5808293.588223811+6426026.048502002+5808293.588223811+6426095.770859998+5808405.872140565+6426095.770859998+5808405.872140565+6426026.048502002+5808293.588223811+6426026.048502002%3C%2Fgml%3AposList%3E%3C%2Fgml%3ALinearRing%3E%3C%2Fgml%3Aexterior%3E%3C%2Fgml%3APolygon%3E%3C%2Ffes%3AIntersects%3E%3C%2Ffes%3AFilter%3E&resultType=hits",
+      "requestedAt": "2026-10-09T07:14:45.541Z",
+      "httpStatus": 200,
+      "content-type": "application/xml",
+      "content-length": null,
+      "content-encoding": "gzip",
+      "etag": null,
+      "last-modified": null,
+      "bytes": 788,
+      "bodySha256": "bdce8ccf0a6501688ae65e51e4cdbe277168a2c0e8501156782f9a0295addec2",
+      "numberMatched": "8",
+      "numberReturned": "0",
+      "responseFeatureIds": []
+    },
+    {
+      "stage": "grid",
+      "url": "https://portal.geopoz.poznan.pl/wmsegib?service=WFS&version=2.0.0&request=GetFeature&typeNames=ms%3Adzialki&srsName=urn%3Aogc%3Adef%3Acrs%3AEPSG%3A%3A2177&outputFormat=application%2Fgml%2Bxml%3B+version%3D3.2&propertyName=ms%3AID_DZIALKI%2Cms%3AMSGEOMETRY&filter=%3Cfes%3AFilter+xmlns%3Afes%3D%22http%3A%2F%2Fwww.opengis.net%2Ffes%2F2.0%22+xmlns%3Ams%3D%22http%3A%2F%2Fportal.geopoz.poznan.pl%2Fwmsegib%22+xmlns%3Agml%3D%22http%3A%2F%2Fwww.opengis.net%2Fgml%2F3.2%22%3E%3Cfes%3AIntersects%3E%3Cfes%3AValueReference%3Ems%3AMSGEOMETRY%3C%2Ffes%3AValueReference%3E%3Cgml%3APolygon+srsName%3D%22urn%3Aogc%3Adef%3Acrs%3AEPSG%3A%3A2177%22%3E%3Cgml%3Aexterior%3E%3Cgml%3ALinearRing%3E%3Cgml%3AposList+srsDimension%3D%222%22%3E5808292.566586248+6426094.099738313+5808292.566586248+6426163.8205630295+5808404.849571077+6426163.8205630295+5808404.849571077+6426094.099738313+5808292.566586248+6426094.099738313%3C%2Fgml%3AposList%3E%3C%2Fgml%3ALinearRing%3E%3C%2Fgml%3Aexterior%3E%3C%2Fgml%3APolygon%3E%3C%2Ffes%3AIntersects%3E%3C%2Ffes%3AFilter%3E&resultType=hits",
+      "requestedAt": "2026-10-09T07:14:45.945Z",
+      "httpStatus": 200,
+      "content-type": "application/xml",
+      "content-length": null,
+      "content-encoding": "gzip",
+      "etag": null,
+      "last-modified": null,
+      "bytes": 789,
+      "bodySha256": "e1cb32c762d345cbbbe9661e73bccfd65479aaa22ba752a8e52a1e350dcbca43",
+      "numberMatched": "15",
+      "numberReturned": "0",
+      "responseFeatureIds": []
+    },
+    {
+      "stage": "grid",
+      "url": "https://portal.geopoz.poznan.pl/wmsegib?service=WFS&version=2.0.0&request=GetFeature&typeNames=ms%3Adzialki&srsName=urn%3Aogc%3Adef%3Acrs%3AEPSG%3A%3A2177&outputFormat=application%2Fgml%2Bxml%3B+version%3D3.2&propertyName=ms%3AID_DZIALKI%2Cms%3AMSGEOMETRY&filter=%3Cfes%3AFilter+xmlns%3Afes%3D%22http%3A%2F%2Fwww.opengis.net%2Ffes%2F2.0%22+xmlns%3Ams%3D%22http%3A%2F%2Fportal.geopoz.poznan.pl%2Fwmsegib%22+xmlns%3Agml%3D%22http%3A%2F%2Fwww.opengis.net%2Fgml%2F3.2%22%3E%3Cfes%3AIntersects%3E%3Cfes%3AValueReference%3Ems%3AMSGEOMETRY%3C%2Ffes%3AValueReference%3E%3Cgml%3APolygon+srsName%3D%22urn%3Aogc%3Adef%3Acrs%3AEPSG%3A%3A2177%22%3E%3Cgml%3Aexterior%3E%3Cgml%3ALinearRing%3E%3Cgml%3AposList+srsDimension%3D%222%22%3E5808292.566586248+6426094.099738313+5808292.566586248+6426163.8205630295+5808404.849571077+6426163.8205630295+5808404.849571077+6426094.099738313+5808292.566586248+6426094.099738313%3C%2Fgml%3AposList%3E%3C%2Fgml%3ALinearRing%3E%3C%2Fgml%3Aexterior%3E%3C%2Fgml%3APolygon%3E%3C%2Ffes%3AIntersects%3E%3C%2Ffes%3AFilter%3E&count=15&startIndex=0",
+      "requestedAt": "2026-10-09T07:14:46.157Z",
+      "httpStatus": 200,
+      "content-type": "application/xml",
+      "content-length": null,
+      "content-encoding": "gzip",
+      "etag": null,
+      "last-modified": null,
+      "bytes": 16574,
+      "bodySha256": "5fea5f531f1f33aadb1ffeac8143cc6a9dd98f90392ceb011a1393917f35982f",
+      "numberMatched": "unknown",
+      "numberReturned": "15",
+      "responseFeatureIds": [
+        "306401_1.0051.AR_44.16",
+        "306401_1.0051.AR_44.22/4",
+        "306401_1.0051.AR_44.21/2",
+        "306401_1.0051.AR_44.20/16",
+        "306401_1.0051.AR_44.21/9",
+        "306401_1.0051.AR_44.20/17",
+        "306401_1.0051.AR_44.21/5",
+        "306401_1.0051.AR_44.21/12",
+        "306401_1.0051.AR_44.27/18",
+        "306401_1.0051.AR_44.27/14",
+        "306401_1.0051.AR_44.27/4",
+        "306401_1.0051.AR_44.20/1",
+        "306401_1.0051.AR_44.21/6",
+        "306401_1.0061.AR_01.3/28",
+        "306401_1.0061.AR_01.3/1"
+      ]
+    },
+    {
+      "stage": "grid",
+      "url": "https://portal.geopoz.poznan.pl/wmsegib?service=WFS&version=2.0.0&request=GetFeature&typeNames=ms%3Adzialki&srsName=urn%3Aogc%3Adef%3Acrs%3AEPSG%3A%3A2177&outputFormat=application%2Fgml%2Bxml%3B+version%3D3.2&propertyName=ms%3AID_DZIALKI%2Cms%3AMSGEOMETRY&filter=%3Cfes%3AFilter+xmlns%3Afes%3D%22http%3A%2F%2Fwww.opengis.net%2Ffes%2F2.0%22+xmlns%3Ams%3D%22http%3A%2F%2Fportal.geopoz.poznan.pl%2Fwmsegib%22+xmlns%3Agml%3D%22http%3A%2F%2Fwww.opengis.net%2Fgml%2F3.2%22%3E%3Cfes%3AIntersects%3E%3Cfes%3AValueReference%3Ems%3AMSGEOMETRY%3C%2Ffes%3AValueReference%3E%3Cgml%3APolygon+srsName%3D%22urn%3Aogc%3Adef%3Acrs%3AEPSG%3A%3A2177%22%3E%3Cgml%3Aexterior%3E%3Cgml%3ALinearRing%3E%3Cgml%3AposList+srsDimension%3D%222%22%3E5808292.566586248+6426094.099738313+5808292.566586248+6426163.8205630295+5808404.849571077+6426163.8205630295+5808404.849571077+6426094.099738313+5808292.566586248+6426094.099738313%3C%2Fgml%3AposList%3E%3C%2Fgml%3ALinearRing%3E%3C%2Fgml%3Aexterior%3E%3C%2Fgml%3APolygon%3E%3C%2Ffes%3AIntersects%3E%3C%2Ffes%3AFilter%3E&resultType=hits",
+      "requestedAt": "2026-10-09T07:14:46.341Z",
+      "httpStatus": 200,
+      "content-type": "application/xml",
+      "content-length": null,
+      "content-encoding": "gzip",
+      "etag": null,
+      "last-modified": null,
+      "bytes": 789,
+      "bodySha256": "0c865d8561b7f95a5ce8c0b4a77254c3df63e49e559fa082269721dc4bb80327",
+      "numberMatched": "15",
+      "numberReturned": "0",
+      "responseFeatureIds": []
+    },
+    {
+      "stage": "grid",
+      "url": "https://portal.geopoz.poznan.pl/wmsegib?service=WFS&version=2.0.0&request=GetFeature&typeNames=ms%3Adzialki&srsName=urn%3Aogc%3Adef%3Acrs%3AEPSG%3A%3A2177&outputFormat=application%2Fgml%2Bxml%3B+version%3D3.2&propertyName=ms%3AID_DZIALKI%2Cms%3AMSGEOMETRY&filter=%3Cfes%3AFilter+xmlns%3Afes%3D%22http%3A%2F%2Fwww.opengis.net%2Ffes%2F2.0%22+xmlns%3Ams%3D%22http%3A%2F%2Fportal.geopoz.poznan.pl%2Fwmsegib%22+xmlns%3Agml%3D%22http%3A%2F%2Fwww.opengis.net%2Fgml%2F3.2%22%3E%3Cfes%3AIntersects%3E%3Cfes%3AValueReference%3Ems%3AMSGEOMETRY%3C%2Ffes%3AValueReference%3E%3Cgml%3APolygon+srsName%3D%22urn%3Aogc%3Adef%3Acrs%3AEPSG%3A%3A2177%22%3E%3Cgml%3Aexterior%3E%3Cgml%3ALinearRing%3E%3Cgml%3AposList+srsDimension%3D%222%22%3E5808405.872140565+6425959.67147115+5808405.872140565+6426029.393846155+5808518.156998092+6426029.393846155+5808518.156998092+6425959.67147115+5808405.872140565+6425959.67147115%3C%2Fgml%3AposList%3E%3C%2Fgml%3ALinearRing%3E%3C%2Fgml%3Aexterior%3E%3C%2Fgml%3APolygon%3E%3C%2Ffes%3AIntersects%3E%3C%2Ffes%3AFilter%3E&resultType=hits",
+      "requestedAt": "2026-10-09T07:14:46.494Z",
+      "httpStatus": 200,
+      "content-type": "application/xml",
+      "content-length": null,
+      "content-encoding": "gzip",
+      "etag": null,
+      "last-modified": null,
+      "bytes": 788,
+      "bodySha256": "a50c171a69670d5244e8b50c79d071864ddfa8448a0a23db4146d758972b64f6",
+      "numberMatched": "3",
+      "numberReturned": "0",
+      "responseFeatureIds": []
+    },
+    {
+      "stage": "grid",
+      "url": "https://portal.geopoz.poznan.pl/wmsegib?service=WFS&version=2.0.0&request=GetFeature&typeNames=ms%3Adzialki&srsName=urn%3Aogc%3Adef%3Acrs%3AEPSG%3A%3A2177&outputFormat=application%2Fgml%2Bxml%3B+version%3D3.2&propertyName=ms%3AID_DZIALKI%2Cms%3AMSGEOMETRY&filter=%3Cfes%3AFilter+xmlns%3Afes%3D%22http%3A%2F%2Fwww.opengis.net%2Ffes%2F2.0%22+xmlns%3Ams%3D%22http%3A%2F%2Fportal.geopoz.poznan.pl%2Fwmsegib%22+xmlns%3Agml%3D%22http%3A%2F%2Fwww.opengis.net%2Fgml%2F3.2%22%3E%3Cfes%3AIntersects%3E%3Cfes%3AValueReference%3Ems%3AMSGEOMETRY%3C%2Ffes%3AValueReference%3E%3Cgml%3APolygon+srsName%3D%22urn%3Aogc%3Adef%3Acrs%3AEPSG%3A%3A2177%22%3E%3Cgml%3Aexterior%3E%3Cgml%3ALinearRing%3E%3Cgml%3AposList+srsDimension%3D%222%22%3E5808405.872140565+6425959.67147115+5808405.872140565+6426029.393846155+5808518.156998092+6426029.393846155+5808518.156998092+6425959.67147115+5808405.872140565+6425959.67147115%3C%2Fgml%3AposList%3E%3C%2Fgml%3ALinearRing%3E%3C%2Fgml%3Aexterior%3E%3C%2Fgml%3APolygon%3E%3C%2Ffes%3AIntersects%3E%3C%2Ffes%3AFilter%3E&count=3&startIndex=0",
+      "requestedAt": "2026-10-09T07:14:46.776Z",
+      "httpStatus": 200,
+      "content-type": "application/xml",
+      "content-length": null,
+      "content-encoding": "gzip",
+      "etag": null,
+      "last-modified": null,
+      "bytes": 5614,
+      "bodySha256": "6ae847f8f8249ae94a1d7b608a06eee2f3810bab9a053d298f85790562c7eeb1",
+      "numberMatched": "unknown",
+      "numberReturned": "3",
+      "responseFeatureIds": [
+        "306401_1.0051.AR_44.29/8",
+        "306401_1.0051.AR_44.28",
+        "306401_1.0051.AR_44.27/18"
+      ]
+    },
+    {
+      "stage": "grid",
+      "url": "https://portal.geopoz.poznan.pl/wmsegib?service=WFS&version=2.0.0&request=GetFeature&typeNames=ms%3Adzialki&srsName=urn%3Aogc%3Adef%3Acrs%3AEPSG%3A%3A2177&outputFormat=application%2Fgml%2Bxml%3B+version%3D3.2&propertyName=ms%3AID_DZIALKI%2Cms%3AMSGEOMETRY&filter=%3Cfes%3AFilter+xmlns%3Afes%3D%22http%3A%2F%2Fwww.opengis.net%2Ffes%2F2.0%22+xmlns%3Ams%3D%22http%3A%2F%2Fportal.geopoz.poznan.pl%2Fwmsegib%22+xmlns%3Agml%3D%22http%3A%2F%2Fwww.opengis.net%2Fgml%2F3.2%22%3E%3Cfes%3AIntersects%3E%3Cfes%3AValueReference%3Ems%3AMSGEOMETRY%3C%2Ffes%3AValueReference%3E%3Cgml%3APolygon+srsName%3D%22urn%3Aogc%3Adef%3Acrs%3AEPSG%3A%3A2177%22%3E%3Cgml%3Aexterior%3E%3Cgml%3ALinearRing%3E%3Cgml%3AposList+srsDimension%3D%222%22%3E5808405.872140565+6425959.67147115+5808405.872140565+6426029.393846155+5808518.156998092+6426029.393846155+5808518.156998092+6425959.67147115+5808405.872140565+6425959.67147115%3C%2Fgml%3AposList%3E%3C%2Fgml%3ALinearRing%3E%3C%2Fgml%3Aexterior%3E%3C%2Fgml%3APolygon%3E%3C%2Ffes%3AIntersects%3E%3C%2Ffes%3AFilter%3E&resultType=hits",
+      "requestedAt": "2026-10-09T07:14:46.941Z",
+      "httpStatus": 200,
+      "content-type": "application/xml",
+      "content-length": null,
+      "content-encoding": "gzip",
+      "etag": null,
+      "last-modified": null,
+      "bytes": 788,
+      "bodySha256": "a50c171a69670d5244e8b50c79d071864ddfa8448a0a23db4146d758972b64f6",
+      "numberMatched": "3",
+      "numberReturned": "0",
+      "responseFeatureIds": []
+    },
+    {
+      "stage": "grid",
+      "url": "https://portal.geopoz.poznan.pl/wmsegib?service=WFS&version=2.0.0&request=GetFeature&typeNames=ms%3Adzialki&srsName=urn%3Aogc%3Adef%3Acrs%3AEPSG%3A%3A2177&outputFormat=application%2Fgml%2Bxml%3B+version%3D3.2&propertyName=ms%3AID_DZIALKI%2Cms%3AMSGEOMETRY&filter=%3Cfes%3AFilter+xmlns%3Afes%3D%22http%3A%2F%2Fwww.opengis.net%2Ffes%2F2.0%22+xmlns%3Ams%3D%22http%3A%2F%2Fportal.geopoz.poznan.pl%2Fwmsegib%22+xmlns%3Agml%3D%22http%3A%2F%2Fwww.opengis.net%2Fgml%2F3.2%22%3E%3Cfes%3AIntersects%3E%3Cfes%3AValueReference%3Ems%3AMSGEOMETRY%3C%2Ffes%3AValueReference%3E%3Cgml%3APolygon+srsName%3D%22urn%3Aogc%3Adef%3Acrs%3AEPSG%3A%3A2177%22%3E%3Cgml%3Aexterior%3E%3Cgml%3ALinearRing%3E%3Cgml%3AposList+srsDimension%3D%222%22%3E5808404.849571077+6426027.721162702+5808404.849571077+6426097.442004414+5808517.1334967+6426097.442004414+5808517.1334967+6426027.721162702+5808404.849571077+6426027.721162702%3C%2Fgml%3AposList%3E%3C%2Fgml%3ALinearRing%3E%3C%2Fgml%3Aexterior%3E%3C%2Fgml%3APolygon%3E%3C%2Ffes%3AIntersects%3E%3C%2Ffes%3AFilter%3E&resultType=hits",
+      "requestedAt": "2026-10-09T07:14:47.039Z",
+      "httpStatus": 200,
+      "content-type": "application/xml",
+      "content-length": null,
+      "content-encoding": "gzip",
+      "etag": null,
+      "last-modified": null,
+      "bytes": 788,
+      "bodySha256": "ac1ce0a1e5c4876c3eaa37767273a5622ac86d917372e90caf7ec88bf94b4ade",
+      "numberMatched": "2",
+      "numberReturned": "0",
+      "responseFeatureIds": []
+    },
+    {
+      "stage": "grid",
+      "url": "https://portal.geopoz.poznan.pl/wmsegib?service=WFS&version=2.0.0&request=GetFeature&typeNames=ms%3Adzialki&srsName=urn%3Aogc%3Adef%3Acrs%3AEPSG%3A%3A2177&outputFormat=application%2Fgml%2Bxml%3B+version%3D3.2&propertyName=ms%3AID_DZIALKI%2Cms%3AMSGEOMETRY&filter=%3Cfes%3AFilter+xmlns%3Afes%3D%22http%3A%2F%2Fwww.opengis.net%2Ffes%2F2.0%22+xmlns%3Ams%3D%22http%3A%2F%2Fportal.geopoz.poznan.pl%2Fwmsegib%22+xmlns%3Agml%3D%22http%3A%2F%2Fwww.opengis.net%2Fgml%2F3.2%22%3E%3Cfes%3AIntersects%3E%3Cfes%3AValueReference%3Ems%3AMSGEOMETRY%3C%2Ffes%3AValueReference%3E%3Cgml%3APolygon+srsName%3D%22urn%3Aogc%3Adef%3Acrs%3AEPSG%3A%3A2177%22%3E%3Cgml%3Aexterior%3E%3Cgml%3ALinearRing%3E%3Cgml%3AposList+srsDimension%3D%222%22%3E5808404.849571077+6426027.721162702+5808404.849571077+6426097.442004414+5808517.1334967+6426097.442004414+5808517.1334967+6426027.721162702+5808404.849571077+6426027.721162702%3C%2Fgml%3AposList%3E%3C%2Fgml%3ALinearRing%3E%3C%2Fgml%3Aexterior%3E%3C%2Fgml%3APolygon%3E%3C%2Ffes%3AIntersects%3E%3C%2Ffes%3AFilter%3E&count=2&startIndex=0",
+      "requestedAt": "2026-10-09T07:14:47.141Z",
+      "httpStatus": 200,
+      "content-type": "application/xml",
+      "content-length": null,
+      "content-encoding": "gzip",
+      "etag": null,
+      "last-modified": null,
+      "bytes": 4207,
+      "bodySha256": "68692e15cabef8e2156950cc7ebd1f2571205c48e84d43b5b69067ec92a133f1",
+      "numberMatched": "unknown",
+      "numberReturned": "2",
+      "responseFeatureIds": [
+        "306401_1.0051.AR_44.16",
+        "306401_1.0051.AR_44.27/18"
+      ]
+    },
+    {
+      "stage": "grid",
+      "url": "https://portal.geopoz.poznan.pl/wmsegib?service=WFS&version=2.0.0&request=GetFeature&typeNames=ms%3Adzialki&srsName=urn%3Aogc%3Adef%3Acrs%3AEPSG%3A%3A2177&outputFormat=application%2Fgml%2Bxml%3B+version%3D3.2&propertyName=ms%3AID_DZIALKI%2Cms%3AMSGEOMETRY&filter=%3Cfes%3AFilter+xmlns%3Afes%3D%22http%3A%2F%2Fwww.opengis.net%2Ffes%2F2.0%22+xmlns%3Ams%3D%22http%3A%2F%2Fportal.geopoz.poznan.pl%2Fwmsegib%22+xmlns%3Agml%3D%22http%3A%2F%2Fwww.opengis.net%2Fgml%2F3.2%22%3E%3Cfes%3AIntersects%3E%3Cfes%3AValueReference%3Ems%3AMSGEOMETRY%3C%2Ffes%3AValueReference%3E%3Cgml%3APolygon+srsName%3D%22urn%3Aogc%3Adef%3Acrs%3AEPSG%3A%3A2177%22%3E%3Cgml%3Aexterior%3E%3Cgml%3ALinearRing%3E%3Cgml%3AposList+srsDimension%3D%222%22%3E5808404.849571077+6426027.721162702+5808404.849571077+6426097.442004414+5808517.1334967+6426097.442004414+5808517.1334967+6426027.721162702+5808404.849571077+6426027.721162702%3C%2Fgml%3AposList%3E%3C%2Fgml%3ALinearRing%3E%3C%2Fgml%3Aexterior%3E%3C%2Fgml%3APolygon%3E%3C%2Ffes%3AIntersects%3E%3C%2Ffes%3AFilter%3E&resultType=hits",
+      "requestedAt": "2026-10-09T07:14:47.280Z",
+      "httpStatus": 200,
+      "content-type": "application/xml",
+      "content-length": null,
+      "content-encoding": "gzip",
+      "etag": null,
+      "last-modified": null,
+      "bytes": 788,
+      "bodySha256": "ac1ce0a1e5c4876c3eaa37767273a5622ac86d917372e90caf7ec88bf94b4ade",
+      "numberMatched": "2",
+      "numberReturned": "0",
+      "responseFeatureIds": []
+    },
+    {
+      "stage": "grid",
+      "url": "https://portal.geopoz.poznan.pl/wmsegib?service=WFS&version=2.0.0&request=GetFeature&typeNames=ms%3Adzialki&srsName=urn%3Aogc%3Adef%3Acrs%3AEPSG%3A%3A2177&outputFormat=application%2Fgml%2Bxml%3B+version%3D3.2&propertyName=ms%3AID_DZIALKI%2Cms%3AMSGEOMETRY&filter=%3Cfes%3AFilter+xmlns%3Afes%3D%22http%3A%2F%2Fwww.opengis.net%2Ffes%2F2.0%22+xmlns%3Ams%3D%22http%3A%2F%2Fportal.geopoz.poznan.pl%2Fwmsegib%22+xmlns%3Agml%3D%22http%3A%2F%2Fwww.opengis.net%2Fgml%2F3.2%22%3E%3Cfes%3AIntersects%3E%3Cfes%3AValueReference%3Ems%3AMSGEOMETRY%3C%2Ffes%3AValueReference%3E%3Cgml%3APolygon+srsName%3D%22urn%3Aogc%3Adef%3Acrs%3AEPSG%3A%3A2177%22%3E%3Cgml%3Aexterior%3E%3Cgml%3ALinearRing%3E%3Cgml%3AposList+srsDimension%3D%222%22%3E5808403.827942888+6426095.770859998+5808403.827942888+6426165.49016841+5808516.110936597+6426165.49016841+5808516.110936597+6426095.770859998+5808403.827942888+6426095.770859998%3C%2Fgml%3AposList%3E%3C%2Fgml%3ALinearRing%3E%3C%2Fgml%3Aexterior%3E%3C%2Fgml%3APolygon%3E%3C%2Ffes%3AIntersects%3E%3C%2Ffes%3AFilter%3E&resultType=hits",
+      "requestedAt": "2026-10-09T07:14:47.383Z",
+      "httpStatus": 200,
+      "content-type": "application/xml",
+      "content-length": null,
+      "content-encoding": "gzip",
+      "etag": null,
+      "last-modified": null,
+      "bytes": 788,
+      "bodySha256": "cc3dd4d7a22f89d88c3841813f1f2eb3a0e1d7b812fc237bbc77d25634103f61",
+      "numberMatched": "9",
+      "numberReturned": "0",
+      "responseFeatureIds": []
+    },
+    {
+      "stage": "grid",
+      "url": "https://portal.geopoz.poznan.pl/wmsegib?service=WFS&version=2.0.0&request=GetFeature&typeNames=ms%3Adzialki&srsName=urn%3Aogc%3Adef%3Acrs%3AEPSG%3A%3A2177&outputFormat=application%2Fgml%2Bxml%3B+version%3D3.2&propertyName=ms%3AID_DZIALKI%2Cms%3AMSGEOMETRY&filter=%3Cfes%3AFilter+xmlns%3Afes%3D%22http%3A%2F%2Fwww.opengis.net%2Ffes%2F2.0%22+xmlns%3Ams%3D%22http%3A%2F%2Fportal.geopoz.poznan.pl%2Fwmsegib%22+xmlns%3Agml%3D%22http%3A%2F%2Fwww.opengis.net%2Fgml%2F3.2%22%3E%3Cfes%3AIntersects%3E%3Cfes%3AValueReference%3Ems%3AMSGEOMETRY%3C%2Ffes%3AValueReference%3E%3Cgml%3APolygon+srsName%3D%22urn%3Aogc%3Adef%3Acrs%3AEPSG%3A%3A2177%22%3E%3Cgml%3Aexterior%3E%3Cgml%3ALinearRing%3E%3Cgml%3AposList+srsDimension%3D%222%22%3E5808403.827942888+6426095.770859998+5808403.827942888+6426165.49016841+5808516.110936597+6426165.49016841+5808516.110936597+6426095.770859998+5808403.827942888+6426095.770859998%3C%2Fgml%3AposList%3E%3C%2Fgml%3ALinearRing%3E%3C%2Fgml%3Aexterior%3E%3C%2Fgml%3APolygon%3E%3C%2Ffes%3AIntersects%3E%3C%2Ffes%3AFilter%3E&count=9&startIndex=0",
+      "requestedAt": "2026-10-09T07:14:47.487Z",
+      "httpStatus": 200,
+      "content-type": "application/xml",
+      "content-length": null,
+      "content-encoding": "gzip",
+      "etag": null,
+      "last-modified": null,
+      "bytes": 11408,
+      "bodySha256": "e58321561b3b3a4e9eb2d59c09c04013af183e4883460a67357b8000d3b053b5",
+      "numberMatched": "unknown",
+      "numberReturned": "9",
+      "responseFeatureIds": [
+        "306401_1.0051.AR_44.16",
+        "306401_1.0051.AR_44.20/16",
+        "306401_1.0051.AR_44.20/14",
+        "306401_1.0051.AR_44.19",
+        "306401_1.0051.AR_44.20/17",
+        "306401_1.0051.AR_44.27/18",
+        "306401_1.0051.AR_44.27/17",
+        "306401_1.0051.AR_44.20/9",
+        "306401_1.0051.AR_44.20/3"
+      ]
+    },
+    {
+      "stage": "grid",
+      "url": "https://portal.geopoz.poznan.pl/wmsegib?service=WFS&version=2.0.0&request=GetFeature&typeNames=ms%3Adzialki&srsName=urn%3Aogc%3Adef%3Acrs%3AEPSG%3A%3A2177&outputFormat=application%2Fgml%2Bxml%3B+version%3D3.2&propertyName=ms%3AID_DZIALKI%2Cms%3AMSGEOMETRY&filter=%3Cfes%3AFilter+xmlns%3Afes%3D%22http%3A%2F%2Fwww.opengis.net%2Ffes%2F2.0%22+xmlns%3Ams%3D%22http%3A%2F%2Fportal.geopoz.poznan.pl%2Fwmsegib%22+xmlns%3Agml%3D%22http%3A%2F%2Fwww.opengis.net%2Fgml%2F3.2%22%3E%3Cfes%3AIntersects%3E%3Cfes%3AValueReference%3Ems%3AMSGEOMETRY%3C%2Ffes%3AValueReference%3E%3Cgml%3APolygon+srsName%3D%22urn%3Aogc%3Adef%3Acrs%3AEPSG%3A%3A2177%22%3E%3Cgml%3Aexterior%3E%3Cgml%3ALinearRing%3E%3Cgml%3AposList+srsDimension%3D%222%22%3E5808403.827942888+6426095.770859998+5808403.827942888+6426165.49016841+5808516.110936597+6426165.49016841+5808516.110936597+6426095.770859998+5808403.827942888+6426095.770859998%3C%2Fgml%3AposList%3E%3C%2Fgml%3ALinearRing%3E%3C%2Fgml%3Aexterior%3E%3C%2Fgml%3APolygon%3E%3C%2Ffes%3AIntersects%3E%3C%2Ffes%3AFilter%3E&resultType=hits",
+      "requestedAt": "2026-10-09T07:14:47.585Z",
+      "httpStatus": 200,
+      "content-type": "application/xml",
+      "content-length": null,
+      "content-encoding": "gzip",
+      "etag": null,
+      "last-modified": null,
+      "bytes": 788,
+      "bodySha256": "cc3dd4d7a22f89d88c3841813f1f2eb3a0e1d7b812fc237bbc77d25634103f61",
+      "numberMatched": "9",
+      "numberReturned": "0",
+      "responseFeatureIds": []
+    },
+    {
+      "stage": "grid",
+      "url": "https://portal.geopoz.poznan.pl/wmsegib?service=WFS&version=2.0.0&request=GetFeature&typeNames=ms%3Adzialki&srsName=urn%3Aogc%3Adef%3Acrs%3AEPSG%3A%3A2177&outputFormat=application%2Fgml%2Bxml%3B+version%3D3.2&propertyName=ms%3AID_DZIALKI%2Cms%3AMSGEOMETRY&filter=%3Cfes%3AFilter+xmlns%3Afes%3D%22http%3A%2F%2Fwww.opengis.net%2Ffes%2F2.0%22+xmlns%3Ams%3D%22http%3A%2F%2Fportal.geopoz.poznan.pl%2Fwmsegib%22+xmlns%3Agml%3D%22http%3A%2F%2Fwww.opengis.net%2Fgml%2F3.2%22%3E%3Cfes%3AIntersects%3E%3Cfes%3AValueReference%3Ems%3AMSGEOMETRY%3C%2Ffes%3AValueReference%3E%3Cgml%3APolygon+srsName%3D%22urn%3Aogc%3Adef%3Acrs%3AEPSG%3A%3A2177%22%3E%3Cgml%3Aexterior%3E%3Cgml%3ALinearRing%3E%3Cgml%3AposList+srsDimension%3D%222%22%3E5808071.065584047+6426022.703248864+5808071.065584047+6426092.428639361+5808183.349483055+6426092.428639361+5808183.349483055+6426022.703248864+5808071.065584047+6426022.703248864%3C%2Fgml%3AposList%3E%3C%2Fgml%3ALinearRing%3E%3C%2Fgml%3Aexterior%3E%3C%2Fgml%3APolygon%3E%3C%2Ffes%3AIntersects%3E%3C%2Ffes%3AFilter%3E&resultType=hits",
+      "requestedAt": "2026-10-09T07:14:47.682Z",
+      "httpStatus": 200,
+      "content-type": "application/xml",
+      "content-length": null,
+      "content-encoding": "gzip",
+      "etag": null,
+      "last-modified": null,
+      "bytes": 788,
+      "bodySha256": "ac1ce0a1e5c4876c3eaa37767273a5622ac86d917372e90caf7ec88bf94b4ade",
+      "numberMatched": "2",
+      "numberReturned": "0",
+      "responseFeatureIds": []
+    },
+    {
+      "stage": "grid",
+      "url": "https://portal.geopoz.poznan.pl/wmsegib?service=WFS&version=2.0.0&request=GetFeature&typeNames=ms%3Adzialki&srsName=urn%3Aogc%3Adef%3Acrs%3AEPSG%3A%3A2177&outputFormat=application%2Fgml%2Bxml%3B+version%3D3.2&propertyName=ms%3AID_DZIALKI%2Cms%3AMSGEOMETRY&filter=%3Cfes%3AFilter+xmlns%3Afes%3D%22http%3A%2F%2Fwww.opengis.net%2Ffes%2F2.0%22+xmlns%3Ams%3D%22http%3A%2F%2Fportal.geopoz.poznan.pl%2Fwmsegib%22+xmlns%3Agml%3D%22http%3A%2F%2Fwww.opengis.net%2Fgml%2F3.2%22%3E%3Cfes%3AIntersects%3E%3Cfes%3AValueReference%3Ems%3AMSGEOMETRY%3C%2Ffes%3AValueReference%3E%3Cgml%3APolygon+srsName%3D%22urn%3Aogc%3Adef%3Acrs%3AEPSG%3A%3A2177%22%3E%3Cgml%3Aexterior%3E%3Cgml%3ALinearRing%3E%3Cgml%3AposList+srsDimension%3D%222%22%3E5808071.065584047+6426022.703248864+5808071.065584047+6426092.428639361+5808183.349483055+6426092.428639361+5808183.349483055+6426022.703248864+5808071.065584047+6426022.703248864%3C%2Fgml%3AposList%3E%3C%2Fgml%3ALinearRing%3E%3C%2Fgml%3Aexterior%3E%3C%2Fgml%3APolygon%3E%3C%2Ffes%3AIntersects%3E%3C%2Ffes%3AFilter%3E&count=2&startIndex=0",
+      "requestedAt": "2026-10-09T07:14:47.779Z",
+      "httpStatus": 200,
+      "content-type": "application/xml",
+      "content-length": null,
+      "content-encoding": "gzip",
+      "etag": null,
+      "last-modified": null,
+      "bytes": 2719,
+      "bodySha256": "647c9e40dfea6d768b3aa59af51cfce8a3f99029494284f2bde87921565d9c39",
+      "numberMatched": "unknown",
+      "numberReturned": "2",
+      "responseFeatureIds": [
+        "306401_1.0061.AR_01.3/25",
+        "306401_1.0061.AR_01.3/24"
+      ]
+    },
+    {
+      "stage": "grid",
+      "url": "https://portal.geopoz.poznan.pl/wmsegib?service=WFS&version=2.0.0&request=GetFeature&typeNames=ms%3Adzialki&srsName=urn%3Aogc%3Adef%3Acrs%3AEPSG%3A%3A2177&outputFormat=application%2Fgml%2Bxml%3B+version%3D3.2&propertyName=ms%3AID_DZIALKI%2Cms%3AMSGEOMETRY&filter=%3Cfes%3AFilter+xmlns%3Afes%3D%22http%3A%2F%2Fwww.opengis.net%2Ffes%2F2.0%22+xmlns%3Ams%3D%22http%3A%2F%2Fportal.geopoz.poznan.pl%2Fwmsegib%22+xmlns%3Agml%3D%22http%3A%2F%2Fwww.opengis.net%2Fgml%2F3.2%22%3E%3Cfes%3AIntersects%3E%3Cfes%3AValueReference%3Ems%3AMSGEOMETRY%3C%2Ffes%3AValueReference%3E%3Cgml%3APolygon+srsName%3D%22urn%3Aogc%3Adef%3Acrs%3AEPSG%3A%3A2177%22%3E%3Cgml%3Aexterior%3E%3Cgml%3ALinearRing%3E%3Cgml%3AposList+srsDimension%3D%222%22%3E5808071.065584047+6426022.703248864+5808071.065584047+6426092.428639361+5808183.349483055+6426092.428639361+5808183.349483055+6426022.703248864+5808071.065584047+6426022.703248864%3C%2Fgml%3AposList%3E%3C%2Fgml%3ALinearRing%3E%3C%2Fgml%3Aexterior%3E%3C%2Fgml%3APolygon%3E%3C%2Ffes%3AIntersects%3E%3C%2Ffes%3AFilter%3E&resultType=hits",
+      "requestedAt": "2026-10-09T07:14:48.100Z",
+      "httpStatus": 200,
+      "content-type": "application/xml",
+      "content-length": null,
+      "content-encoding": "gzip",
+      "etag": null,
+      "last-modified": null,
+      "bytes": 788,
+      "bodySha256": "cedfecc83b930723460fc839a87f6f4f2177aeab576a1a90589f304dfde8d454",
+      "numberMatched": "2",
+      "numberReturned": "0",
+      "responseFeatureIds": []
+    },
+    {
+      "stage": "grid",
+      "url": "https://portal.geopoz.poznan.pl/wmsegib?service=WFS&version=2.0.0&request=GetFeature&typeNames=ms%3Adzialki&srsName=urn%3Aogc%3Adef%3Acrs%3AEPSG%3A%3A2177&outputFormat=application%2Fgml%2Bxml%3B+version%3D3.2&propertyName=ms%3AID_DZIALKI%2Cms%3AMSGEOMETRY&filter=%3Cfes%3AFilter+xmlns%3Afes%3D%22http%3A%2F%2Fwww.opengis.net%2Ffes%2F2.0%22+xmlns%3Ams%3D%22http%3A%2F%2Fportal.geopoz.poznan.pl%2Fwmsegib%22+xmlns%3Agml%3D%22http%3A%2F%2Fwww.opengis.net%2Fgml%2F3.2%22%3E%3Cfes%3AIntersects%3E%3Cfes%3AValueReference%3Ems%3AMSGEOMETRY%3C%2Ffes%3AValueReference%3E%3Cgml%3APolygon+srsName%3D%22urn%3Aogc%3Adef%3Acrs%3AEPSG%3A%3A2177%22%3E%3Cgml%3Aexterior%3E%3Cgml%3ALinearRing%3E%3Cgml%3AposList+srsDimension%3D%222%22%3E5808516.110936597+6426029.393846155+5808516.110936597+6426099.113171563+5808628.394871088+6426099.113171563+5808628.394871088+6426029.393846155+5808516.110936597+6426029.393846155%3C%2Fgml%3AposList%3E%3C%2Fgml%3ALinearRing%3E%3C%2Fgml%3Aexterior%3E%3C%2Fgml%3APolygon%3E%3C%2Ffes%3AIntersects%3E%3C%2Ffes%3AFilter%3E&resultType=hits",
+      "requestedAt": "2026-10-09T07:14:48.234Z",
+      "httpStatus": 200,
+      "content-type": "application/xml",
+      "content-length": null,
+      "content-encoding": "gzip",
+      "etag": null,
+      "last-modified": null,
+      "bytes": 788,
+      "bodySha256": "cedfecc83b930723460fc839a87f6f4f2177aeab576a1a90589f304dfde8d454",
+      "numberMatched": "2",
+      "numberReturned": "0",
+      "responseFeatureIds": []
+    },
+    {
+      "stage": "grid",
+      "url": "https://portal.geopoz.poznan.pl/wmsegib?service=WFS&version=2.0.0&request=GetFeature&typeNames=ms%3Adzialki&srsName=urn%3Aogc%3Adef%3Acrs%3AEPSG%3A%3A2177&outputFormat=application%2Fgml%2Bxml%3B+version%3D3.2&propertyName=ms%3AID_DZIALKI%2Cms%3AMSGEOMETRY&filter=%3Cfes%3AFilter+xmlns%3Afes%3D%22http%3A%2F%2Fwww.opengis.net%2Ffes%2F2.0%22+xmlns%3Ams%3D%22http%3A%2F%2Fportal.geopoz.poznan.pl%2Fwmsegib%22+xmlns%3Agml%3D%22http%3A%2F%2Fwww.opengis.net%2Fgml%2F3.2%22%3E%3Cfes%3AIntersects%3E%3Cfes%3AValueReference%3Ems%3AMSGEOMETRY%3C%2Ffes%3AValueReference%3E%3Cgml%3APolygon+srsName%3D%22urn%3Aogc%3Adef%3Acrs%3AEPSG%3A%3A2177%22%3E%3Cgml%3Aexterior%3E%3Cgml%3ALinearRing%3E%3Cgml%3AposList+srsDimension%3D%222%22%3E5808516.110936597+6426029.393846155+5808516.110936597+6426099.113171563+5808628.394871088+6426099.113171563+5808628.394871088+6426029.393846155+5808516.110936597+6426029.393846155%3C%2Fgml%3AposList%3E%3C%2Fgml%3ALinearRing%3E%3C%2Fgml%3Aexterior%3E%3C%2Fgml%3APolygon%3E%3C%2Ffes%3AIntersects%3E%3C%2Ffes%3AFilter%3E&count=2&startIndex=0",
+      "requestedAt": "2026-10-09T07:14:48.333Z",
+      "httpStatus": 200,
+      "content-type": "application/xml",
+      "content-length": null,
+      "content-encoding": "gzip",
+      "etag": null,
+      "last-modified": null,
+      "bytes": 4043,
+      "bodySha256": "a4a06b46d8968b628fd0c9f08aec5117a242ca75556a2c3f19f6a5ff9e18bacc",
+      "numberMatched": "unknown",
+      "numberReturned": "2",
+      "responseFeatureIds": [
+        "306401_1.0051.AR_44.28",
+        "306401_1.0051.AR_44.27/18"
+      ]
+    },
+    {
+      "stage": "grid",
+      "url": "https://portal.geopoz.poznan.pl/wmsegib?service=WFS&version=2.0.0&request=GetFeature&typeNames=ms%3Adzialki&srsName=urn%3Aogc%3Adef%3Acrs%3AEPSG%3A%3A2177&outputFormat=application%2Fgml%2Bxml%3B+version%3D3.2&propertyName=ms%3AID_DZIALKI%2Cms%3AMSGEOMETRY&filter=%3Cfes%3AFilter+xmlns%3Afes%3D%22http%3A%2F%2Fwww.opengis.net%2Ffes%2F2.0%22+xmlns%3Ams%3D%22http%3A%2F%2Fportal.geopoz.poznan.pl%2Fwmsegib%22+xmlns%3Agml%3D%22http%3A%2F%2Fwww.opengis.net%2Fgml%2F3.2%22%3E%3Cfes%3AIntersects%3E%3Cfes%3AValueReference%3Ems%3AMSGEOMETRY%3C%2Ffes%3AValueReference%3E%3Cgml%3APolygon+srsName%3D%22urn%3Aogc%3Adef%3Acrs%3AEPSG%3A%3A2177%22%3E%3Cgml%3Aexterior%3E%3Cgml%3ALinearRing%3E%3Cgml%3AposList+srsDimension%3D%222%22%3E5808516.110936597+6426029.393846155+5808516.110936597+6426099.113171563+5808628.394871088+6426099.113171563+5808628.394871088+6426029.393846155+5808516.110936597+6426029.393846155%3C%2Fgml%3AposList%3E%3C%2Fgml%3ALinearRing%3E%3C%2Fgml%3Aexterior%3E%3C%2Fgml%3APolygon%3E%3C%2Ffes%3AIntersects%3E%3C%2Ffes%3AFilter%3E&resultType=hits",
+      "requestedAt": "2026-10-09T07:14:48.504Z",
+      "httpStatus": 200,
+      "content-type": "application/xml",
+      "content-length": null,
+      "content-encoding": "gzip",
+      "etag": null,
+      "last-modified": null,
+      "bytes": 788,
+      "bodySha256": "cedfecc83b930723460fc839a87f6f4f2177aeab576a1a90589f304dfde8d454",
+      "numberMatched": "2",
+      "numberReturned": "0",
+      "responseFeatureIds": []
+    },
+    {
+      "stage": "grid",
+      "url": "https://portal.geopoz.poznan.pl/wmsegib?service=WFS&version=2.0.0&request=GetFeature&typeNames=ms%3Adzialki&srsName=urn%3Aogc%3Adef%3Acrs%3AEPSG%3A%3A2177&outputFormat=application%2Fgml%2Bxml%3B+version%3D3.2&propertyName=ms%3AID_DZIALKI%2Cms%3AMSGEOMETRY&filter=%3Cfes%3AFilter+xmlns%3Afes%3D%22http%3A%2F%2Fwww.opengis.net%2Ffes%2F2.0%22+xmlns%3Ams%3D%22http%3A%2F%2Fportal.geopoz.poznan.pl%2Fwmsegib%22+xmlns%3Agml%3D%22http%3A%2F%2Fwww.opengis.net%2Fgml%2F3.2%22%3E%3Cfes%3AIntersects%3E%3Cfes%3AValueReference%3Ems%3AMSGEOMETRY%3C%2Ffes%3AValueReference%3E%3Cgml%3APolygon+srsName%3D%22urn%3Aogc%3Adef%3Acrs%3AEPSG%3A%3A2177%22%3E%3Cgml%3Aexterior%3E%3Cgml%3ALinearRing%3E%3Cgml%3AposList+srsDimension%3D%222%22%3E5808295.634322861+6425889.946046612+5808295.634322861+6425959.67147115+5808407.920103437+6425959.67147115+5808407.920103437+6425889.946046612+5808295.634322861+6425889.946046612%3C%2Fgml%3AposList%3E%3C%2Fgml%3ALinearRing%3E%3C%2Fgml%3Aexterior%3E%3C%2Fgml%3APolygon%3E%3C%2Ffes%3AIntersects%3E%3C%2Ffes%3AFilter%3E&resultType=hits",
+      "requestedAt": "2026-10-09T07:14:48.790Z",
+      "httpStatus": 200,
+      "content-type": "application/xml",
+      "content-length": null,
+      "content-encoding": "gzip",
+      "etag": null,
+      "last-modified": null,
+      "bytes": 789,
+      "bodySha256": "327e3762525cc10ee939ad5805f8b655efea59d686b1c4432cabf9c88f45b151",
+      "numberMatched": "14",
+      "numberReturned": "0",
+      "responseFeatureIds": []
+    },
+    {
+      "stage": "grid",
+      "url": "https://portal.geopoz.poznan.pl/wmsegib?service=WFS&version=2.0.0&request=GetFeature&typeNames=ms%3Adzialki&srsName=urn%3Aogc%3Adef%3Acrs%3AEPSG%3A%3A2177&outputFormat=application%2Fgml%2Bxml%3B+version%3D3.2&propertyName=ms%3AID_DZIALKI%2Cms%3AMSGEOMETRY&filter=%3Cfes%3AFilter+xmlns%3Afes%3D%22http%3A%2F%2Fwww.opengis.net%2Ffes%2F2.0%22+xmlns%3Ams%3D%22http%3A%2F%2Fportal.geopoz.poznan.pl%2Fwmsegib%22+xmlns%3Agml%3D%22http%3A%2F%2Fwww.opengis.net%2Fgml%2F3.2%22%3E%3Cfes%3AIntersects%3E%3Cfes%3AValueReference%3Ems%3AMSGEOMETRY%3C%2Ffes%3AValueReference%3E%3Cgml%3APolygon+srsName%3D%22urn%3Aogc%3Adef%3Acrs%3AEPSG%3A%3A2177%22%3E%3Cgml%3Aexterior%3E%3Cgml%3ALinearRing%3E%3Cgml%3AposList+srsDimension%3D%222%22%3E5808295.634322861+6425889.946046612+5808295.634322861+6425959.67147115+5808407.920103437+6425959.67147115+5808407.920103437+6425889.946046612+5808295.634322861+6425889.946046612%3C%2Fgml%3AposList%3E%3C%2Fgml%3ALinearRing%3E%3C%2Fgml%3Aexterior%3E%3C%2Fgml%3APolygon%3E%3C%2Ffes%3AIntersects%3E%3C%2Ffes%3AFilter%3E&count=14&startIndex=0",
+      "requestedAt": "2026-10-09T07:14:48.932Z",
+      "httpStatus": 200,
+      "content-type": "application/xml",
+      "content-length": null,
+      "content-encoding": "gzip",
+      "etag": null,
+      "last-modified": null,
+      "bytes": 17398,
+      "bodySha256": "dc2d4e020a737b8abdfbb3da84b9e6ad9e995bbf46f127776612e9ca32349f26",
+      "numberMatched": "unknown",
+      "numberReturned": "14",
+      "responseFeatureIds": [
+        "306401_1.0039.AR_10.1/54",
+        "306401_1.0039.AR_09.12",
+        "306401_1.0039.AR_10.1/53",
+        "306401_1.0051.AR_44.30/5",
+        "306401_1.0051.AR_44.29/7",
+        "306401_1.0051.AR_44.29/8",
+        "306401_1.0051.AR_44.29/3",
+        "306401_1.0051.AR_44.22/2",
+        "306401_1.0051.AR_44.28",
+        "306401_1.0061.AR_01.1/7",
+        "306401_1.0061.AR_01.1/6",
+        "306401_1.0039.AR_10.1/52",
+        "306401_1.0061.AR_01.1/11",
+        "306401_1.0051.AR_44.29/4"
+      ]
+    },
+    {
+      "stage": "grid",
+      "url": "https://portal.geopoz.poznan.pl/wmsegib?service=WFS&version=2.0.0&request=GetFeature&typeNames=ms%3Adzialki&srsName=urn%3Aogc%3Adef%3Acrs%3AEPSG%3A%3A2177&outputFormat=application%2Fgml%2Bxml%3B+version%3D3.2&propertyName=ms%3AID_DZIALKI%2Cms%3AMSGEOMETRY&filter=%3Cfes%3AFilter+xmlns%3Afes%3D%22http%3A%2F%2Fwww.opengis.net%2Ffes%2F2.0%22+xmlns%3Ams%3D%22http%3A%2F%2Fportal.geopoz.poznan.pl%2Fwmsegib%22+xmlns%3Agml%3D%22http%3A%2F%2Fwww.opengis.net%2Fgml%2F3.2%22%3E%3Cfes%3AIntersects%3E%3Cfes%3AValueReference%3Ems%3AMSGEOMETRY%3C%2Ffes%3AValueReference%3E%3Cgml%3APolygon+srsName%3D%22urn%3Aogc%3Adef%3Acrs%3AEPSG%3A%3A2177%22%3E%3Cgml%3Aexterior%3E%3Cgml%3ALinearRing%3E%3Cgml%3AposList+srsDimension%3D%222%22%3E5808295.634322861+6425889.946046612+5808295.634322861+6425959.67147115+5808407.920103437+6425959.67147115+5808407.920103437+6425889.946046612+5808295.634322861+6425889.946046612%3C%2Fgml%3AposList%3E%3C%2Fgml%3ALinearRing%3E%3C%2Fgml%3Aexterior%3E%3C%2Fgml%3APolygon%3E%3C%2Ffes%3AIntersects%3E%3C%2Ffes%3AFilter%3E&resultType=hits",
+      "requestedAt": "2026-10-09T07:14:49.071Z",
+      "httpStatus": 200,
+      "content-type": "application/xml",
+      "content-length": null,
+      "content-encoding": "gzip",
+      "etag": null,
+      "last-modified": null,
+      "bytes": 789,
+      "bodySha256": "919518b9fabf764ea4f5022051b6e71b78396215df4eba3627a3e646c21eab3f",
+      "numberMatched": "14",
+      "numberReturned": "0",
+      "responseFeatureIds": []
+    },
+    {
+      "stage": "grid",
+      "url": "https://portal.geopoz.poznan.pl/wmsegib?service=WFS&version=2.0.0&request=GetFeature&typeNames=ms%3Adzialki&srsName=urn%3Aogc%3Adef%3Acrs%3AEPSG%3A%3A2177&outputFormat=application%2Fgml%2Bxml%3B+version%3D3.2&propertyName=ms%3AID_DZIALKI%2Cms%3AMSGEOMETRY&filter=%3Cfes%3AFilter+xmlns%3Afes%3D%22http%3A%2F%2Fwww.opengis.net%2Ffes%2F2.0%22+xmlns%3Ams%3D%22http%3A%2F%2Fportal.geopoz.poznan.pl%2Fwmsegib%22+xmlns%3Agml%3D%22http%3A%2F%2Fwww.opengis.net%2Fgml%2F3.2%22%3E%3Cfes%3AIntersects%3E%3Cfes%3AValueReference%3Ems%3AMSGEOMETRY%3C%2Ffes%3AValueReference%3E%3Cgml%3APolygon+srsName%3D%22urn%3Aogc%3Adef%3Acrs%3AEPSG%3A%3A2177%22%3E%3Cgml%3Aexterior%3E%3Cgml%3ALinearRing%3E%3Cgml%3AposList+srsDimension%3D%222%22%3E5808291.545889992+6426162.150980359+5808291.545889992+6426231.870271794+5808403.827942888+6426231.870271794+5808403.827942888+6426162.150980359+5808291.545889992+6426162.150980359%3C%2Fgml%3AposList%3E%3C%2Fgml%3ALinearRing%3E%3C%2Fgml%3Aexterior%3E%3C%2Fgml%3APolygon%3E%3C%2Ffes%3AIntersects%3E%3C%2Ffes%3AFilter%3E&resultType=hits",
+      "requestedAt": "2026-10-09T07:14:49.413Z",
+      "httpStatus": 200,
+      "content-type": "application/xml",
+      "content-length": null,
+      "content-encoding": "gzip",
+      "etag": null,
+      "last-modified": null,
+      "bytes": 788,
+      "bodySha256": "ef6ed4611b678c09e0b129aafcd128bb339f15363b8955e2062d2fe5c2a54531",
+      "numberMatched": "9",
+      "numberReturned": "0",
+      "responseFeatureIds": []
+    },
+    {
+      "stage": "grid",
+      "url": "https://portal.geopoz.poznan.pl/wmsegib?service=WFS&version=2.0.0&request=GetFeature&typeNames=ms%3Adzialki&srsName=urn%3Aogc%3Adef%3Acrs%3AEPSG%3A%3A2177&outputFormat=application%2Fgml%2Bxml%3B+version%3D3.2&propertyName=ms%3AID_DZIALKI%2Cms%3AMSGEOMETRY&filter=%3Cfes%3AFilter+xmlns%3Afes%3D%22http%3A%2F%2Fwww.opengis.net%2Ffes%2F2.0%22+xmlns%3Ams%3D%22http%3A%2F%2Fportal.geopoz.poznan.pl%2Fwmsegib%22+xmlns%3Agml%3D%22http%3A%2F%2Fwww.opengis.net%2Fgml%2F3.2%22%3E%3Cfes%3AIntersects%3E%3Cfes%3AValueReference%3Ems%3AMSGEOMETRY%3C%2Ffes%3AValueReference%3E%3Cgml%3APolygon+srsName%3D%22urn%3Aogc%3Adef%3Acrs%3AEPSG%3A%3A2177%22%3E%3Cgml%3Aexterior%3E%3Cgml%3ALinearRing%3E%3Cgml%3AposList+srsDimension%3D%222%22%3E5808291.545889992+6426162.150980359+5808291.545889992+6426231.870271794+5808403.827942888+6426231.870271794+5808403.827942888+6426162.150980359+5808291.545889992+6426162.150980359%3C%2Fgml%3AposList%3E%3C%2Fgml%3ALinearRing%3E%3C%2Fgml%3Aexterior%3E%3C%2Fgml%3APolygon%3E%3C%2Ffes%3AIntersects%3E%3C%2Ffes%3AFilter%3E&count=9&startIndex=0",
+      "requestedAt": "2026-10-09T07:14:49.786Z",
+      "httpStatus": 200,
+      "content-type": "application/xml",
+      "content-length": null,
+      "content-encoding": "gzip",
+      "etag": null,
+      "last-modified": null,
+      "bytes": 9278,
+      "bodySha256": "bf8137a44760037dbc497a210bfe17e9dac2a95233a79f12b29738e2573e6fc8",
+      "numberMatched": "unknown",
+      "numberReturned": "9",
+      "responseFeatureIds": [
+        "306401_1.0051.AR_44.22/4",
+        "306401_1.0051.AR_44.21/2",
+        "306401_1.0051.AR_44.21/9",
+        "306401_1.0051.AR_44.20/17",
+        "306401_1.0051.AR_44.21/5",
+        "306401_1.0051.AR_44.21/12",
+        "306401_1.0051.AR_44.21/11",
+        "306401_1.0051.AR_44.21/10",
+        "306401_1.0061.AR_01.3/1"
+      ]
+    },
+    {
+      "stage": "grid",
+      "url": "https://portal.geopoz.poznan.pl/wmsegib?service=WFS&version=2.0.0&request=GetFeature&typeNames=ms%3Adzialki&srsName=urn%3Aogc%3Adef%3Acrs%3AEPSG%3A%3A2177&outputFormat=application%2Fgml%2Bxml%3B+version%3D3.2&propertyName=ms%3AID_DZIALKI%2Cms%3AMSGEOMETRY&filter=%3Cfes%3AFilter+xmlns%3Afes%3D%22http%3A%2F%2Fwww.opengis.net%2Ffes%2F2.0%22+xmlns%3Ams%3D%22http%3A%2F%2Fportal.geopoz.poznan.pl%2Fwmsegib%22+xmlns%3Agml%3D%22http%3A%2F%2Fwww.opengis.net%2Fgml%2F3.2%22%3E%3Cfes%3AIntersects%3E%3Cfes%3AValueReference%3Ems%3AMSGEOMETRY%3C%2Ffes%3AValueReference%3E%3Cgml%3APolygon+srsName%3D%22urn%3Aogc%3Adef%3Acrs%3AEPSG%3A%3A2177%22%3E%3Cgml%3Aexterior%3E%3Cgml%3ALinearRing%3E%3Cgml%3AposList+srsDimension%3D%222%22%3E5808291.545889992+6426162.150980359+5808291.545889992+6426231.870271794+5808403.827942888+6426231.870271794+5808403.827942888+6426162.150980359+5808291.545889992+6426162.150980359%3C%2Fgml%3AposList%3E%3C%2Fgml%3ALinearRing%3E%3C%2Fgml%3Aexterior%3E%3C%2Fgml%3APolygon%3E%3C%2Ffes%3AIntersects%3E%3C%2Ffes%3AFilter%3E&resultType=hits",
+      "requestedAt": "2026-10-09T07:14:49.923Z",
+      "httpStatus": 200,
+      "content-type": "application/xml",
+      "content-length": null,
+      "content-encoding": "gzip",
+      "etag": null,
+      "last-modified": null,
+      "bytes": 788,
+      "bodySha256": "97325234250160f72faf3e33fe9bb26af708734d7fdc5998069711bae9b98559",
+      "numberMatched": "9",
+      "numberReturned": "0",
+      "responseFeatureIds": []
+    },
+    {
+      "stage": "forced-page-size-3",
+      "url": "https://portal.geopoz.poznan.pl/wmsegib?service=WFS&version=2.0.0&request=GetFeature&typeNames=ms%3Adzialki&srsName=urn%3Aogc%3Adef%3Acrs%3AEPSG%3A%3A2177&outputFormat=application%2Fgml%2Bxml%3B+version%3D3.2&propertyName=ms%3AID_DZIALKI%2Cms%3AMSGEOMETRY&filter=%3Cfes%3AFilter+xmlns%3Afes%3D%22http%3A%2F%2Fwww.opengis.net%2Ffes%2F2.0%22+xmlns%3Ams%3D%22http%3A%2F%2Fportal.geopoz.poznan.pl%2Fwmsegib%22+xmlns%3Agml%3D%22http%3A%2F%2Fwww.opengis.net%2Fgml%2F3.2%22%3E%3Cfes%3AIntersects%3E%3Cfes%3AValueReference%3Ems%3AMSGEOMETRY%3C%2Ffes%3AValueReference%3E%3Cgml%3APolygon+srsName%3D%22urn%3Aogc%3Adef%3Acrs%3AEPSG%3A%3A2177%22%3E%3Cgml%3Aexterior%3E%3Cgml%3ALinearRing%3E%3Cgml%3AposList+srsDimension%3D%222%22%3E5808293.588223811+6426026.048502002+5808293.588223811+6426095.770859998+5808405.872140565+6426095.770859998+5808405.872140565+6426026.048502002+5808293.588223811+6426026.048502002%3C%2Fgml%3AposList%3E%3C%2Fgml%3ALinearRing%3E%3C%2Fgml%3Aexterior%3E%3C%2Fgml%3APolygon%3E%3C%2Ffes%3AIntersects%3E%3C%2Ffes%3AFilter%3E&resultType=hits",
+      "requestedAt": "2026-10-09T07:14:50.404Z",
+      "httpStatus": 200,
+      "content-type": "application/xml",
+      "content-length": null,
+      "content-encoding": "gzip",
+      "etag": null,
+      "last-modified": null,
+      "bytes": 788,
+      "bodySha256": "67ca19bd5182788d5c3b1ceb97723f855287a0b5ec59c496c5b1500af69cac22",
+      "numberMatched": "8",
+      "numberReturned": "0",
+      "responseFeatureIds": []
+    },
+    {
+      "stage": "forced-page-size-3",
+      "url": "https://portal.geopoz.poznan.pl/wmsegib?service=WFS&version=2.0.0&request=GetFeature&typeNames=ms%3Adzialki&srsName=urn%3Aogc%3Adef%3Acrs%3AEPSG%3A%3A2177&outputFormat=application%2Fgml%2Bxml%3B+version%3D3.2&propertyName=ms%3AID_DZIALKI%2Cms%3AMSGEOMETRY&filter=%3Cfes%3AFilter+xmlns%3Afes%3D%22http%3A%2F%2Fwww.opengis.net%2Ffes%2F2.0%22+xmlns%3Ams%3D%22http%3A%2F%2Fportal.geopoz.poznan.pl%2Fwmsegib%22+xmlns%3Agml%3D%22http%3A%2F%2Fwww.opengis.net%2Fgml%2F3.2%22%3E%3Cfes%3AIntersects%3E%3Cfes%3AValueReference%3Ems%3AMSGEOMETRY%3C%2Ffes%3AValueReference%3E%3Cgml%3APolygon+srsName%3D%22urn%3Aogc%3Adef%3Acrs%3AEPSG%3A%3A2177%22%3E%3Cgml%3Aexterior%3E%3Cgml%3ALinearRing%3E%3Cgml%3AposList+srsDimension%3D%222%22%3E5808293.588223811+6426026.048502002+5808293.588223811+6426095.770859998+5808405.872140565+6426095.770859998+5808405.872140565+6426026.048502002+5808293.588223811+6426026.048502002%3C%2Fgml%3AposList%3E%3C%2Fgml%3ALinearRing%3E%3C%2Fgml%3Aexterior%3E%3C%2Fgml%3APolygon%3E%3C%2Ffes%3AIntersects%3E%3C%2Ffes%3AFilter%3E&count=3&startIndex=0",
+      "requestedAt": "2026-10-09T07:14:51.015Z",
+      "httpStatus": 200,
+      "content-type": "application/xml",
+      "content-length": null,
+      "content-encoding": "gzip",
+      "etag": null,
+      "last-modified": null,
+      "bytes": 4929,
+      "bodySha256": "3e1920dda17a843c03079f60b2634ecbac13b069dbb5a55565d119772cf62416",
+      "numberMatched": "unknown",
+      "numberReturned": "3",
+      "responseFeatureIds": [
+        "306401_1.0051.AR_44.16",
+        "306401_1.0051.AR_44.27/18",
+        "306401_1.0061.AR_01.1/9"
+      ]
+    },
+    {
+      "stage": "forced-page-size-3",
+      "url": "https://portal.geopoz.poznan.pl/wmsegib?service=WFS&version=2.0.0&request=GetFeature&typeNames=ms%3Adzialki&srsName=urn%3Aogc%3Adef%3Acrs%3AEPSG%3A%3A2177&outputFormat=application%2Fgml%2Bxml%3B+version%3D3.2&propertyName=ms%3AID_DZIALKI%2Cms%3AMSGEOMETRY&filter=%3Cfes%3AFilter+xmlns%3Afes%3D%22http%3A%2F%2Fwww.opengis.net%2Ffes%2F2.0%22+xmlns%3Ams%3D%22http%3A%2F%2Fportal.geopoz.poznan.pl%2Fwmsegib%22+xmlns%3Agml%3D%22http%3A%2F%2Fwww.opengis.net%2Fgml%2F3.2%22%3E%3Cfes%3AIntersects%3E%3Cfes%3AValueReference%3Ems%3AMSGEOMETRY%3C%2Ffes%3AValueReference%3E%3Cgml%3APolygon+srsName%3D%22urn%3Aogc%3Adef%3Acrs%3AEPSG%3A%3A2177%22%3E%3Cgml%3Aexterior%3E%3Cgml%3ALinearRing%3E%3Cgml%3AposList+srsDimension%3D%222%22%3E5808293.588223811+6426026.048502002+5808293.588223811+6426095.770859998+5808405.872140565+6426095.770859998+5808405.872140565+6426026.048502002+5808293.588223811+6426026.048502002%3C%2Fgml%3AposList%3E%3C%2Fgml%3ALinearRing%3E%3C%2Fgml%3Aexterior%3E%3C%2Fgml%3APolygon%3E%3C%2Ffes%3AIntersects%3E%3C%2Ffes%3AFilter%3E&count=3&startIndex=3",
+      "requestedAt": "2026-10-09T07:14:51.114Z",
+      "httpStatus": 200,
+      "content-type": "application/xml",
+      "content-length": null,
+      "content-encoding": "gzip",
+      "etag": null,
+      "last-modified": null,
+      "bytes": 3770,
+      "bodySha256": "f821574d8cca4739f66a1e50e68896e421d5fb9a1193e19ef5f9a9518d5f3563",
+      "numberMatched": "unknown",
+      "numberReturned": "3",
+      "responseFeatureIds": [
+        "306401_1.0051.AR_44.27/14",
+        "306401_1.0061.AR_01.1/5",
+        "306401_1.0061.AR_01.3/27"
+      ]
+    },
+    {
+      "stage": "forced-page-size-3",
+      "url": "https://portal.geopoz.poznan.pl/wmsegib?service=WFS&version=2.0.0&request=GetFeature&typeNames=ms%3Adzialki&srsName=urn%3Aogc%3Adef%3Acrs%3AEPSG%3A%3A2177&outputFormat=application%2Fgml%2Bxml%3B+version%3D3.2&propertyName=ms%3AID_DZIALKI%2Cms%3AMSGEOMETRY&filter=%3Cfes%3AFilter+xmlns%3Afes%3D%22http%3A%2F%2Fwww.opengis.net%2Ffes%2F2.0%22+xmlns%3Ams%3D%22http%3A%2F%2Fportal.geopoz.poznan.pl%2Fwmsegib%22+xmlns%3Agml%3D%22http%3A%2F%2Fwww.opengis.net%2Fgml%2F3.2%22%3E%3Cfes%3AIntersects%3E%3Cfes%3AValueReference%3Ems%3AMSGEOMETRY%3C%2Ffes%3AValueReference%3E%3Cgml%3APolygon+srsName%3D%22urn%3Aogc%3Adef%3Acrs%3AEPSG%3A%3A2177%22%3E%3Cgml%3Aexterior%3E%3Cgml%3ALinearRing%3E%3Cgml%3AposList+srsDimension%3D%222%22%3E5808293.588223811+6426026.048502002+5808293.588223811+6426095.770859998+5808405.872140565+6426095.770859998+5808405.872140565+6426026.048502002+5808293.588223811+6426026.048502002%3C%2Fgml%3AposList%3E%3C%2Fgml%3ALinearRing%3E%3C%2Fgml%3Aexterior%3E%3C%2Fgml%3APolygon%3E%3C%2Ffes%3AIntersects%3E%3C%2Ffes%3AFilter%3E&count=2&startIndex=6",
+      "requestedAt": "2026-10-09T07:14:51.255Z",
+      "httpStatus": 200,
+      "content-type": "application/xml",
+      "content-length": null,
+      "content-encoding": "gzip",
+      "etag": null,
+      "last-modified": null,
+      "bytes": 2304,
+      "bodySha256": "d1e8f6f7f31c7ce0e72cb54602701dd8bcb74c7c80578e41c53b6b0700ac3f3d",
+      "numberMatched": "unknown",
+      "numberReturned": "2",
+      "responseFeatureIds": [
+        "306401_1.0061.AR_01.1/8",
+        "306401_1.0061.AR_01.3/28"
+      ]
+    },
+    {
+      "stage": "forced-page-size-3",
+      "url": "https://portal.geopoz.poznan.pl/wmsegib?service=WFS&version=2.0.0&request=GetFeature&typeNames=ms%3Adzialki&srsName=urn%3Aogc%3Adef%3Acrs%3AEPSG%3A%3A2177&outputFormat=application%2Fgml%2Bxml%3B+version%3D3.2&propertyName=ms%3AID_DZIALKI%2Cms%3AMSGEOMETRY&filter=%3Cfes%3AFilter+xmlns%3Afes%3D%22http%3A%2F%2Fwww.opengis.net%2Ffes%2F2.0%22+xmlns%3Ams%3D%22http%3A%2F%2Fportal.geopoz.poznan.pl%2Fwmsegib%22+xmlns%3Agml%3D%22http%3A%2F%2Fwww.opengis.net%2Fgml%2F3.2%22%3E%3Cfes%3AIntersects%3E%3Cfes%3AValueReference%3Ems%3AMSGEOMETRY%3C%2Ffes%3AValueReference%3E%3Cgml%3APolygon+srsName%3D%22urn%3Aogc%3Adef%3Acrs%3AEPSG%3A%3A2177%22%3E%3Cgml%3Aexterior%3E%3Cgml%3ALinearRing%3E%3Cgml%3AposList+srsDimension%3D%222%22%3E5808293.588223811+6426026.048502002+5808293.588223811+6426095.770859998+5808405.872140565+6426095.770859998+5808405.872140565+6426026.048502002+5808293.588223811+6426026.048502002%3C%2Fgml%3AposList%3E%3C%2Fgml%3ALinearRing%3E%3C%2Fgml%3Aexterior%3E%3C%2Fgml%3APolygon%3E%3C%2Ffes%3AIntersects%3E%3C%2Ffes%3AFilter%3E&resultType=hits",
+      "requestedAt": "2026-10-09T07:14:51.370Z",
+      "httpStatus": 200,
+      "content-type": "application/xml",
+      "content-length": null,
+      "content-encoding": "gzip",
+      "etag": null,
+      "last-modified": null,
+      "bytes": 788,
+      "bodySha256": "6f8ed2c882a104a65475f041ca38845070ca7e39d0add3b6cc4f0cfac8f9086c",
+      "numberMatched": "8",
+      "numberReturned": "0",
+      "responseFeatureIds": []
+    },
+    {
+      "stage": "independent-fresh-id",
+      "url": "https://portal.geopoz.poznan.pl/wmsegib?service=WFS&version=2.0.0&request=GetFeature&typeNames=ms%3Adzialki&srsName=urn%3Aogc%3Adef%3Acrs%3AEPSG%3A%3A2177&outputFormat=application%2Fgml%2Bxml%3B+version%3D3.2&propertyName=ms%3AID_DZIALKI%2Cms%3AMSGEOMETRY&filter=%3Cfes%3AFilter+xmlns%3Afes%3D%22http%3A%2F%2Fwww.opengis.net%2Ffes%2F2.0%22+xmlns%3Ams%3D%22http%3A%2F%2Fportal.geopoz.poznan.pl%2Fwmsegib%22%3E%3Cfes%3AOr%3E%3Cfes%3APropertyIsEqualTo%3E%3Cfes%3AValueReference%3Ems%3AID_DZIALKI%3C%2Ffes%3AValueReference%3E%3Cfes%3ALiteral%3E306401_1.0039.AR_09.12%3C%2Ffes%3ALiteral%3E%3C%2Ffes%3APropertyIsEqualTo%3E%3Cfes%3APropertyIsEqualTo%3E%3Cfes%3AValueReference%3Ems%3AID_DZIALKI%3C%2Ffes%3AValueReference%3E%3Cfes%3ALiteral%3E306401_1.0039.AR_10.1%2F52%3C%2Ffes%3ALiteral%3E%3C%2Ffes%3APropertyIsEqualTo%3E%3Cfes%3APropertyIsEqualTo%3E%3Cfes%3AValueReference%3Ems%3AID_DZIALKI%3C%2Ffes%3AValueReference%3E%3Cfes%3ALiteral%3E306401_1.0039.AR_10.1%2F53%3C%2Ffes%3ALiteral%3E%3C%2Ffes%3APropertyIsEqualTo%3E%3Cfes%3APropertyIsEqualTo%3E%3Cfes%3AValueReference%3Ems%3AID_DZIALKI%3C%2Ffes%3AValueReference%3E%3Cfes%3ALiteral%3E306401_1.0051.AR_44.16%3C%2Ffes%3ALiteral%3E%3C%2Ffes%3APropertyIsEqualTo%3E%3Cfes%3APropertyIsEqualTo%3E%3Cfes%3AValueReference%3Ems%3AID_DZIALKI%3C%2Ffes%3AValueReference%3E%3Cfes%3ALiteral%3E306401_1.0051.AR_44.19%3C%2Ffes%3ALiteral%3E%3C%2Ffes%3APropertyIsEqualTo%3E%3Cfes%3APropertyIsEqualTo%3E%3Cfes%3AValueReference%3Ems%3AID_DZIALKI%3C%2Ffes%3AValueReference%3E%3Cfes%3ALiteral%3E306401_1.0051.AR_44.20%2F1%3C%2Ffes%3ALiteral%3E%3C%2Ffes%3APropertyIsEqualTo%3E%3Cfes%3APropertyIsEqualTo%3E%3Cfes%3AValueReference%3Ems%3AID_DZIALKI%3C%2Ffes%3AValueReference%3E%3Cfes%3ALiteral%3E306401_1.0051.AR_44.20%2F14%3C%2Ffes%3ALiteral%3E%3C%2Ffes%3APropertyIsEqualTo%3E%3Cfes%3APropertyIsEqualTo%3E%3Cfes%3AValueReference%3Ems%3AID_DZIALKI%3C%2Ffes%3AValueReference%3E%3Cfes%3ALiteral%3E306401_1.0051.AR_44.20%2F16%3C%2Ffes%3ALiteral%3E%3C%2Ffes%3APropertyIsEqualTo%3E%3C%2Ffes%3AOr%3E%3C%2Ffes%3AFilter%3E&resultType=hits",
+      "requestedAt": "2026-10-09T07:14:51.480Z",
+      "httpStatus": 200,
+      "content-type": "application/xml",
+      "content-length": null,
+      "content-encoding": "gzip",
+      "etag": null,
+      "last-modified": null,
+      "bytes": 788,
+      "bodySha256": "6f8ed2c882a104a65475f041ca38845070ca7e39d0add3b6cc4f0cfac8f9086c",
+      "numberMatched": "8",
+      "numberReturned": "0",
+      "responseFeatureIds": []
+    },
+    {
+      "stage": "independent-fresh-id",
+      "url": "https://portal.geopoz.poznan.pl/wmsegib?service=WFS&version=2.0.0&request=GetFeature&typeNames=ms%3Adzialki&srsName=urn%3Aogc%3Adef%3Acrs%3AEPSG%3A%3A2177&outputFormat=application%2Fgml%2Bxml%3B+version%3D3.2&propertyName=ms%3AID_DZIALKI%2Cms%3AMSGEOMETRY&filter=%3Cfes%3AFilter+xmlns%3Afes%3D%22http%3A%2F%2Fwww.opengis.net%2Ffes%2F2.0%22+xmlns%3Ams%3D%22http%3A%2F%2Fportal.geopoz.poznan.pl%2Fwmsegib%22%3E%3Cfes%3AOr%3E%3Cfes%3APropertyIsEqualTo%3E%3Cfes%3AValueReference%3Ems%3AID_DZIALKI%3C%2Ffes%3AValueReference%3E%3Cfes%3ALiteral%3E306401_1.0039.AR_09.12%3C%2Ffes%3ALiteral%3E%3C%2Ffes%3APropertyIsEqualTo%3E%3Cfes%3APropertyIsEqualTo%3E%3Cfes%3AValueReference%3Ems%3AID_DZIALKI%3C%2Ffes%3AValueReference%3E%3Cfes%3ALiteral%3E306401_1.0039.AR_10.1%2F52%3C%2Ffes%3ALiteral%3E%3C%2Ffes%3APropertyIsEqualTo%3E%3Cfes%3APropertyIsEqualTo%3E%3Cfes%3AValueReference%3Ems%3AID_DZIALKI%3C%2Ffes%3AValueReference%3E%3Cfes%3ALiteral%3E306401_1.0039.AR_10.1%2F53%3C%2Ffes%3ALiteral%3E%3C%2Ffes%3APropertyIsEqualTo%3E%3Cfes%3APropertyIsEqualTo%3E%3Cfes%3AValueReference%3Ems%3AID_DZIALKI%3C%2Ffes%3AValueReference%3E%3Cfes%3ALiteral%3E306401_1.0051.AR_44.16%3C%2Ffes%3ALiteral%3E%3C%2Ffes%3APropertyIsEqualTo%3E%3Cfes%3APropertyIsEqualTo%3E%3Cfes%3AValueReference%3Ems%3AID_DZIALKI%3C%2Ffes%3AValueReference%3E%3Cfes%3ALiteral%3E306401_1.0051.AR_44.19%3C%2Ffes%3ALiteral%3E%3C%2Ffes%3APropertyIsEqualTo%3E%3Cfes%3APropertyIsEqualTo%3E%3Cfes%3AValueReference%3Ems%3AID_DZIALKI%3C%2Ffes%3AValueReference%3E%3Cfes%3ALiteral%3E306401_1.0051.AR_44.20%2F1%3C%2Ffes%3ALiteral%3E%3C%2Ffes%3APropertyIsEqualTo%3E%3Cfes%3APropertyIsEqualTo%3E%3Cfes%3AValueReference%3Ems%3AID_DZIALKI%3C%2Ffes%3AValueReference%3E%3Cfes%3ALiteral%3E306401_1.0051.AR_44.20%2F14%3C%2Ffes%3ALiteral%3E%3C%2Ffes%3APropertyIsEqualTo%3E%3Cfes%3APropertyIsEqualTo%3E%3Cfes%3AValueReference%3Ems%3AID_DZIALKI%3C%2Ffes%3AValueReference%3E%3Cfes%3ALiteral%3E306401_1.0051.AR_44.20%2F16%3C%2Ffes%3ALiteral%3E%3C%2Ffes%3APropertyIsEqualTo%3E%3C%2Ffes%3AOr%3E%3C%2Ffes%3AFilter%3E&count=8&startIndex=0",
+      "requestedAt": "2026-10-09T07:14:51.696Z",
+      "httpStatus": 200,
+      "content-type": "application/xml",
+      "content-length": null,
+      "content-encoding": "gzip",
+      "etag": null,
+      "last-modified": null,
+      "bytes": 9315,
+      "bodySha256": "f984a4a9754d8a0e0dab9edd5036bb09ff50e4f436fa8ef2d38cb5bee09ed1ed",
+      "numberMatched": "unknown",
+      "numberReturned": "8",
+      "responseFeatureIds": [
+        "306401_1.0039.AR_09.12",
+        "306401_1.0039.AR_10.1/52",
+        "306401_1.0039.AR_10.1/53",
+        "306401_1.0051.AR_44.16",
+        "306401_1.0051.AR_44.19",
+        "306401_1.0051.AR_44.20/1",
+        "306401_1.0051.AR_44.20/14",
+        "306401_1.0051.AR_44.20/16"
+      ]
+    },
+    {
+      "stage": "independent-fresh-id",
+      "url": "https://portal.geopoz.poznan.pl/wmsegib?service=WFS&version=2.0.0&request=GetFeature&typeNames=ms%3Adzialki&srsName=urn%3Aogc%3Adef%3Acrs%3AEPSG%3A%3A2177&outputFormat=application%2Fgml%2Bxml%3B+version%3D3.2&propertyName=ms%3AID_DZIALKI%2Cms%3AMSGEOMETRY&filter=%3Cfes%3AFilter+xmlns%3Afes%3D%22http%3A%2F%2Fwww.opengis.net%2Ffes%2F2.0%22+xmlns%3Ams%3D%22http%3A%2F%2Fportal.geopoz.poznan.pl%2Fwmsegib%22%3E%3Cfes%3AOr%3E%3Cfes%3APropertyIsEqualTo%3E%3Cfes%3AValueReference%3Ems%3AID_DZIALKI%3C%2Ffes%3AValueReference%3E%3Cfes%3ALiteral%3E306401_1.0039.AR_09.12%3C%2Ffes%3ALiteral%3E%3C%2Ffes%3APropertyIsEqualTo%3E%3Cfes%3APropertyIsEqualTo%3E%3Cfes%3AValueReference%3Ems%3AID_DZIALKI%3C%2Ffes%3AValueReference%3E%3Cfes%3ALiteral%3E306401_1.0039.AR_10.1%2F52%3C%2Ffes%3ALiteral%3E%3C%2Ffes%3APropertyIsEqualTo%3E%3Cfes%3APropertyIsEqualTo%3E%3Cfes%3AValueReference%3Ems%3AID_DZIALKI%3C%2Ffes%3AValueReference%3E%3Cfes%3ALiteral%3E306401_1.0039.AR_10.1%2F53%3C%2Ffes%3ALiteral%3E%3C%2Ffes%3APropertyIsEqualTo%3E%3Cfes%3APropertyIsEqualTo%3E%3Cfes%3AValueReference%3Ems%3AID_DZIALKI%3C%2Ffes%3AValueReference%3E%3Cfes%3ALiteral%3E306401_1.0051.AR_44.16%3C%2Ffes%3ALiteral%3E%3C%2Ffes%3APropertyIsEqualTo%3E%3Cfes%3APropertyIsEqualTo%3E%3Cfes%3AValueReference%3Ems%3AID_DZIALKI%3C%2Ffes%3AValueReference%3E%3Cfes%3ALiteral%3E306401_1.0051.AR_44.19%3C%2Ffes%3ALiteral%3E%3C%2Ffes%3APropertyIsEqualTo%3E%3Cfes%3APropertyIsEqualTo%3E%3Cfes%3AValueReference%3Ems%3AID_DZIALKI%3C%2Ffes%3AValueReference%3E%3Cfes%3ALiteral%3E306401_1.0051.AR_44.20%2F1%3C%2Ffes%3ALiteral%3E%3C%2Ffes%3APropertyIsEqualTo%3E%3Cfes%3APropertyIsEqualTo%3E%3Cfes%3AValueReference%3Ems%3AID_DZIALKI%3C%2Ffes%3AValueReference%3E%3Cfes%3ALiteral%3E306401_1.0051.AR_44.20%2F14%3C%2Ffes%3ALiteral%3E%3C%2Ffes%3APropertyIsEqualTo%3E%3Cfes%3APropertyIsEqualTo%3E%3Cfes%3AValueReference%3Ems%3AID_DZIALKI%3C%2Ffes%3AValueReference%3E%3Cfes%3ALiteral%3E306401_1.0051.AR_44.20%2F16%3C%2Ffes%3ALiteral%3E%3C%2Ffes%3APropertyIsEqualTo%3E%3C%2Ffes%3AOr%3E%3C%2Ffes%3AFilter%3E&resultType=hits",
+      "requestedAt": "2026-10-09T07:14:51.824Z",
+      "httpStatus": 200,
+      "content-type": "application/xml",
+      "content-length": null,
+      "content-encoding": "gzip",
+      "etag": null,
+      "last-modified": null,
+      "bytes": 788,
+      "bodySha256": "6f8ed2c882a104a65475f041ca38845070ca7e39d0add3b6cc4f0cfac8f9086c",
+      "numberMatched": "8",
+      "numberReturned": "0",
+      "responseFeatureIds": []
+    },
+    {
+      "stage": "independent-fresh-id",
+      "url": "https://portal.geopoz.poznan.pl/wmsegib?service=WFS&version=2.0.0&request=GetFeature&typeNames=ms%3Adzialki&srsName=urn%3Aogc%3Adef%3Acrs%3AEPSG%3A%3A2177&outputFormat=application%2Fgml%2Bxml%3B+version%3D3.2&propertyName=ms%3AID_DZIALKI%2Cms%3AMSGEOMETRY&filter=%3Cfes%3AFilter+xmlns%3Afes%3D%22http%3A%2F%2Fwww.opengis.net%2Ffes%2F2.0%22+xmlns%3Ams%3D%22http%3A%2F%2Fportal.geopoz.poznan.pl%2Fwmsegib%22%3E%3Cfes%3AOr%3E%3Cfes%3APropertyIsEqualTo%3E%3Cfes%3AValueReference%3Ems%3AID_DZIALKI%3C%2Ffes%3AValueReference%3E%3Cfes%3ALiteral%3E306401_1.0051.AR_44.20%2F17%3C%2Ffes%3ALiteral%3E%3C%2Ffes%3APropertyIsEqualTo%3E%3Cfes%3APropertyIsEqualTo%3E%3Cfes%3AValueReference%3Ems%3AID_DZIALKI%3C%2Ffes%3AValueReference%3E%3Cfes%3ALiteral%3E306401_1.0051.AR_44.20%2F3%3C%2Ffes%3ALiteral%3E%3C%2Ffes%3APropertyIsEqualTo%3E%3Cfes%3APropertyIsEqualTo%3E%3Cfes%3AValueReference%3Ems%3AID_DZIALKI%3C%2Ffes%3AValueReference%3E%3Cfes%3ALiteral%3E306401_1.0051.AR_44.20%2F9%3C%2Ffes%3ALiteral%3E%3C%2Ffes%3APropertyIsEqualTo%3E%3Cfes%3APropertyIsEqualTo%3E%3Cfes%3AValueReference%3Ems%3AID_DZIALKI%3C%2Ffes%3AValueReference%3E%3Cfes%3ALiteral%3E306401_1.0051.AR_44.21%2F10%3C%2Ffes%3ALiteral%3E%3C%2Ffes%3APropertyIsEqualTo%3E%3Cfes%3APropertyIsEqualTo%3E%3Cfes%3AValueReference%3Ems%3AID_DZIALKI%3C%2Ffes%3AValueReference%3E%3Cfes%3ALiteral%3E306401_1.0051.AR_44.21%2F11%3C%2Ffes%3ALiteral%3E%3C%2Ffes%3APropertyIsEqualTo%3E%3Cfes%3APropertyIsEqualTo%3E%3Cfes%3AValueReference%3Ems%3AID_DZIALKI%3C%2Ffes%3AValueReference%3E%3Cfes%3ALiteral%3E306401_1.0051.AR_44.21%2F12%3C%2Ffes%3ALiteral%3E%3C%2Ffes%3APropertyIsEqualTo%3E%3Cfes%3APropertyIsEqualTo%3E%3Cfes%3AValueReference%3Ems%3AID_DZIALKI%3C%2Ffes%3AValueReference%3E%3Cfes%3ALiteral%3E306401_1.0051.AR_44.21%2F2%3C%2Ffes%3ALiteral%3E%3C%2Ffes%3APropertyIsEqualTo%3E%3Cfes%3APropertyIsEqualTo%3E%3Cfes%3AValueReference%3Ems%3AID_DZIALKI%3C%2Ffes%3AValueReference%3E%3Cfes%3ALiteral%3E306401_1.0051.AR_44.21%2F5%3C%2Ffes%3ALiteral%3E%3C%2Ffes%3APropertyIsEqualTo%3E%3C%2Ffes%3AOr%3E%3C%2Ffes%3AFilter%3E&resultType=hits",
+      "requestedAt": "2026-10-09T07:14:51.920Z",
+      "httpStatus": 200,
+      "content-type": "application/xml",
+      "content-length": null,
+      "content-encoding": "gzip",
+      "etag": null,
+      "last-modified": null,
+      "bytes": 788,
+      "bodySha256": "6f8ed2c882a104a65475f041ca38845070ca7e39d0add3b6cc4f0cfac8f9086c",
+      "numberMatched": "8",
+      "numberReturned": "0",
+      "responseFeatureIds": []
+    },
+    {
+      "stage": "independent-fresh-id",
+      "url": "https://portal.geopoz.poznan.pl/wmsegib?service=WFS&version=2.0.0&request=GetFeature&typeNames=ms%3Adzialki&srsName=urn%3Aogc%3Adef%3Acrs%3AEPSG%3A%3A2177&outputFormat=application%2Fgml%2Bxml%3B+version%3D3.2&propertyName=ms%3AID_DZIALKI%2Cms%3AMSGEOMETRY&filter=%3Cfes%3AFilter+xmlns%3Afes%3D%22http%3A%2F%2Fwww.opengis.net%2Ffes%2F2.0%22+xmlns%3Ams%3D%22http%3A%2F%2Fportal.geopoz.poznan.pl%2Fwmsegib%22%3E%3Cfes%3AOr%3E%3Cfes%3APropertyIsEqualTo%3E%3Cfes%3AValueReference%3Ems%3AID_DZIALKI%3C%2Ffes%3AValueReference%3E%3Cfes%3ALiteral%3E306401_1.0051.AR_44.20%2F17%3C%2Ffes%3ALiteral%3E%3C%2Ffes%3APropertyIsEqualTo%3E%3Cfes%3APropertyIsEqualTo%3E%3Cfes%3AValueReference%3Ems%3AID_DZIALKI%3C%2Ffes%3AValueReference%3E%3Cfes%3ALiteral%3E306401_1.0051.AR_44.20%2F3%3C%2Ffes%3ALiteral%3E%3C%2Ffes%3APropertyIsEqualTo%3E%3Cfes%3APropertyIsEqualTo%3E%3Cfes%3AValueReference%3Ems%3AID_DZIALKI%3C%2Ffes%3AValueReference%3E%3Cfes%3ALiteral%3E306401_1.0051.AR_44.20%2F9%3C%2Ffes%3ALiteral%3E%3C%2Ffes%3APropertyIsEqualTo%3E%3Cfes%3APropertyIsEqualTo%3E%3Cfes%3AValueReference%3Ems%3AID_DZIALKI%3C%2Ffes%3AValueReference%3E%3Cfes%3ALiteral%3E306401_1.0051.AR_44.21%2F10%3C%2Ffes%3ALiteral%3E%3C%2Ffes%3APropertyIsEqualTo%3E%3Cfes%3APropertyIsEqualTo%3E%3Cfes%3AValueReference%3Ems%3AID_DZIALKI%3C%2Ffes%3AValueReference%3E%3Cfes%3ALiteral%3E306401_1.0051.AR_44.21%2F11%3C%2Ffes%3ALiteral%3E%3C%2Ffes%3APropertyIsEqualTo%3E%3Cfes%3APropertyIsEqualTo%3E%3Cfes%3AValueReference%3Ems%3AID_DZIALKI%3C%2Ffes%3AValueReference%3E%3Cfes%3ALiteral%3E306401_1.0051.AR_44.21%2F12%3C%2Ffes%3ALiteral%3E%3C%2Ffes%3APropertyIsEqualTo%3E%3Cfes%3APropertyIsEqualTo%3E%3Cfes%3AValueReference%3Ems%3AID_DZIALKI%3C%2Ffes%3AValueReference%3E%3Cfes%3ALiteral%3E306401_1.0051.AR_44.21%2F2%3C%2Ffes%3ALiteral%3E%3C%2Ffes%3APropertyIsEqualTo%3E%3Cfes%3APropertyIsEqualTo%3E%3Cfes%3AValueReference%3Ems%3AID_DZIALKI%3C%2Ffes%3AValueReference%3E%3Cfes%3ALiteral%3E306401_1.0051.AR_44.21%2F5%3C%2Ffes%3ALiteral%3E%3C%2Ffes%3APropertyIsEqualTo%3E%3C%2Ffes%3AOr%3E%3C%2Ffes%3AFilter%3E&count=8&startIndex=0",
+      "requestedAt": "2026-10-09T07:14:52.087Z",
+      "httpStatus": 200,
+      "content-type": "application/xml",
+      "content-length": null,
+      "content-encoding": "gzip",
+      "etag": null,
+      "last-modified": null,
+      "bytes": 7884,
+      "bodySha256": "9bee8268b52d05334d3087c6b9949d1036dfbe0b527966c052a21e36081a2d3d",
+      "numberMatched": "unknown",
+      "numberReturned": "8",
+      "responseFeatureIds": [
+        "306401_1.0051.AR_44.20/17",
+        "306401_1.0051.AR_44.20/3",
+        "306401_1.0051.AR_44.20/9",
+        "306401_1.0051.AR_44.21/10",
+        "306401_1.0051.AR_44.21/11",
+        "306401_1.0051.AR_44.21/12",
+        "306401_1.0051.AR_44.21/2",
+        "306401_1.0051.AR_44.21/5"
+      ]
+    },
+    {
+      "stage": "independent-fresh-id",
+      "url": "https://portal.geopoz.poznan.pl/wmsegib?service=WFS&version=2.0.0&request=GetFeature&typeNames=ms%3Adzialki&srsName=urn%3Aogc%3Adef%3Acrs%3AEPSG%3A%3A2177&outputFormat=application%2Fgml%2Bxml%3B+version%3D3.2&propertyName=ms%3AID_DZIALKI%2Cms%3AMSGEOMETRY&filter=%3Cfes%3AFilter+xmlns%3Afes%3D%22http%3A%2F%2Fwww.opengis.net%2Ffes%2F2.0%22+xmlns%3Ams%3D%22http%3A%2F%2Fportal.geopoz.poznan.pl%2Fwmsegib%22%3E%3Cfes%3AOr%3E%3Cfes%3APropertyIsEqualTo%3E%3Cfes%3AValueReference%3Ems%3AID_DZIALKI%3C%2Ffes%3AValueReference%3E%3Cfes%3ALiteral%3E306401_1.0051.AR_44.20%2F17%3C%2Ffes%3ALiteral%3E%3C%2Ffes%3APropertyIsEqualTo%3E%3Cfes%3APropertyIsEqualTo%3E%3Cfes%3AValueReference%3Ems%3AID_DZIALKI%3C%2Ffes%3AValueReference%3E%3Cfes%3ALiteral%3E306401_1.0051.AR_44.20%2F3%3C%2Ffes%3ALiteral%3E%3C%2Ffes%3APropertyIsEqualTo%3E%3Cfes%3APropertyIsEqualTo%3E%3Cfes%3AValueReference%3Ems%3AID_DZIALKI%3C%2Ffes%3AValueReference%3E%3Cfes%3ALiteral%3E306401_1.0051.AR_44.20%2F9%3C%2Ffes%3ALiteral%3E%3C%2Ffes%3APropertyIsEqualTo%3E%3Cfes%3APropertyIsEqualTo%3E%3Cfes%3AValueReference%3Ems%3AID_DZIALKI%3C%2Ffes%3AValueReference%3E%3Cfes%3ALiteral%3E306401_1.0051.AR_44.21%2F10%3C%2Ffes%3ALiteral%3E%3C%2Ffes%3APropertyIsEqualTo%3E%3Cfes%3APropertyIsEqualTo%3E%3Cfes%3AValueReference%3Ems%3AID_DZIALKI%3C%2Ffes%3AValueReference%3E%3Cfes%3ALiteral%3E306401_1.0051.AR_44.21%2F11%3C%2Ffes%3ALiteral%3E%3C%2Ffes%3APropertyIsEqualTo%3E%3Cfes%3APropertyIsEqualTo%3E%3Cfes%3AValueReference%3Ems%3AID_DZIALKI%3C%2Ffes%3AValueReference%3E%3Cfes%3ALiteral%3E306401_1.0051.AR_44.21%2F12%3C%2Ffes%3ALiteral%3E%3C%2Ffes%3APropertyIsEqualTo%3E%3Cfes%3APropertyIsEqualTo%3E%3Cfes%3AValueReference%3Ems%3AID_DZIALKI%3C%2Ffes%3AValueReference%3E%3Cfes%3ALiteral%3E306401_1.0051.AR_44.21%2F2%3C%2Ffes%3ALiteral%3E%3C%2Ffes%3APropertyIsEqualTo%3E%3Cfes%3APropertyIsEqualTo%3E%3Cfes%3AValueReference%3Ems%3AID_DZIALKI%3C%2Ffes%3AValueReference%3E%3Cfes%3ALiteral%3E306401_1.0051.AR_44.21%2F5%3C%2Ffes%3ALiteral%3E%3C%2Ffes%3APropertyIsEqualTo%3E%3C%2Ffes%3AOr%3E%3C%2Ffes%3AFilter%3E&resultType=hits",
+      "requestedAt": "2026-10-09T07:14:52.312Z",
+      "httpStatus": 200,
+      "content-type": "application/xml",
+      "content-length": null,
+      "content-encoding": "gzip",
+      "etag": null,
+      "last-modified": null,
+      "bytes": 788,
+      "bodySha256": "6139373baabd3f7380c91887d284591998f55511603b16505cbcc5fcd599d699",
+      "numberMatched": "8",
+      "numberReturned": "0",
+      "responseFeatureIds": []
+    },
+    {
+      "stage": "independent-fresh-id",
+      "url": "https://portal.geopoz.poznan.pl/wmsegib?service=WFS&version=2.0.0&request=GetFeature&typeNames=ms%3Adzialki&srsName=urn%3Aogc%3Adef%3Acrs%3AEPSG%3A%3A2177&outputFormat=application%2Fgml%2Bxml%3B+version%3D3.2&propertyName=ms%3AID_DZIALKI%2Cms%3AMSGEOMETRY&filter=%3Cfes%3AFilter+xmlns%3Afes%3D%22http%3A%2F%2Fwww.opengis.net%2Ffes%2F2.0%22+xmlns%3Ams%3D%22http%3A%2F%2Fportal.geopoz.poznan.pl%2Fwmsegib%22%3E%3Cfes%3AOr%3E%3Cfes%3APropertyIsEqualTo%3E%3Cfes%3AValueReference%3Ems%3AID_DZIALKI%3C%2Ffes%3AValueReference%3E%3Cfes%3ALiteral%3E306401_1.0051.AR_44.21%2F6%3C%2Ffes%3ALiteral%3E%3C%2Ffes%3APropertyIsEqualTo%3E%3Cfes%3APropertyIsEqualTo%3E%3Cfes%3AValueReference%3Ems%3AID_DZIALKI%3C%2Ffes%3AValueReference%3E%3Cfes%3ALiteral%3E306401_1.0051.AR_44.21%2F9%3C%2Ffes%3ALiteral%3E%3C%2Ffes%3APropertyIsEqualTo%3E%3Cfes%3APropertyIsEqualTo%3E%3Cfes%3AValueReference%3Ems%3AID_DZIALKI%3C%2Ffes%3AValueReference%3E%3Cfes%3ALiteral%3E306401_1.0051.AR_44.22%2F2%3C%2Ffes%3ALiteral%3E%3C%2Ffes%3APropertyIsEqualTo%3E%3Cfes%3APropertyIsEqualTo%3E%3Cfes%3AValueReference%3Ems%3AID_DZIALKI%3C%2Ffes%3AValueReference%3E%3Cfes%3ALiteral%3E306401_1.0051.AR_44.22%2F4%3C%2Ffes%3ALiteral%3E%3C%2Ffes%3APropertyIsEqualTo%3E%3Cfes%3APropertyIsEqualTo%3E%3Cfes%3AValueReference%3Ems%3AID_DZIALKI%3C%2Ffes%3AValueReference%3E%3Cfes%3ALiteral%3E306401_1.0051.AR_44.27%2F14%3C%2Ffes%3ALiteral%3E%3C%2Ffes%3APropertyIsEqualTo%3E%3Cfes%3APropertyIsEqualTo%3E%3Cfes%3AValueReference%3Ems%3AID_DZIALKI%3C%2Ffes%3AValueReference%3E%3Cfes%3ALiteral%3E306401_1.0051.AR_44.27%2F17%3C%2Ffes%3ALiteral%3E%3C%2Ffes%3APropertyIsEqualTo%3E%3Cfes%3APropertyIsEqualTo%3E%3Cfes%3AValueReference%3Ems%3AID_DZIALKI%3C%2Ffes%3AValueReference%3E%3Cfes%3ALiteral%3E306401_1.0051.AR_44.27%2F18%3C%2Ffes%3ALiteral%3E%3C%2Ffes%3APropertyIsEqualTo%3E%3Cfes%3APropertyIsEqualTo%3E%3Cfes%3AValueReference%3Ems%3AID_DZIALKI%3C%2Ffes%3AValueReference%3E%3Cfes%3ALiteral%3E306401_1.0051.AR_44.27%2F4%3C%2Ffes%3ALiteral%3E%3C%2Ffes%3APropertyIsEqualTo%3E%3C%2Ffes%3AOr%3E%3C%2Ffes%3AFilter%3E&resultType=hits",
+      "requestedAt": "2026-10-09T07:14:52.479Z",
+      "httpStatus": 200,
+      "content-type": "application/xml",
+      "content-length": null,
+      "content-encoding": "gzip",
+      "etag": null,
+      "last-modified": null,
+      "bytes": 788,
+      "bodySha256": "6139373baabd3f7380c91887d284591998f55511603b16505cbcc5fcd599d699",
+      "numberMatched": "8",
+      "numberReturned": "0",
+      "responseFeatureIds": []
+    },
+    {
+      "stage": "independent-fresh-id",
+      "url": "https://portal.geopoz.poznan.pl/wmsegib?service=WFS&version=2.0.0&request=GetFeature&typeNames=ms%3Adzialki&srsName=urn%3Aogc%3Adef%3Acrs%3AEPSG%3A%3A2177&outputFormat=application%2Fgml%2Bxml%3B+version%3D3.2&propertyName=ms%3AID_DZIALKI%2Cms%3AMSGEOMETRY&filter=%3Cfes%3AFilter+xmlns%3Afes%3D%22http%3A%2F%2Fwww.opengis.net%2Ffes%2F2.0%22+xmlns%3Ams%3D%22http%3A%2F%2Fportal.geopoz.poznan.pl%2Fwmsegib%22%3E%3Cfes%3AOr%3E%3Cfes%3APropertyIsEqualTo%3E%3Cfes%3AValueReference%3Ems%3AID_DZIALKI%3C%2Ffes%3AValueReference%3E%3Cfes%3ALiteral%3E306401_1.0051.AR_44.21%2F6%3C%2Ffes%3ALiteral%3E%3C%2Ffes%3APropertyIsEqualTo%3E%3Cfes%3APropertyIsEqualTo%3E%3Cfes%3AValueReference%3Ems%3AID_DZIALKI%3C%2Ffes%3AValueReference%3E%3Cfes%3ALiteral%3E306401_1.0051.AR_44.21%2F9%3C%2Ffes%3ALiteral%3E%3C%2Ffes%3APropertyIsEqualTo%3E%3Cfes%3APropertyIsEqualTo%3E%3Cfes%3AValueReference%3Ems%3AID_DZIALKI%3C%2Ffes%3AValueReference%3E%3Cfes%3ALiteral%3E306401_1.0051.AR_44.22%2F2%3C%2Ffes%3ALiteral%3E%3C%2Ffes%3APropertyIsEqualTo%3E%3Cfes%3APropertyIsEqualTo%3E%3Cfes%3AValueReference%3Ems%3AID_DZIALKI%3C%2Ffes%3AValueReference%3E%3Cfes%3ALiteral%3E306401_1.0051.AR_44.22%2F4%3C%2Ffes%3ALiteral%3E%3C%2Ffes%3APropertyIsEqualTo%3E%3Cfes%3APropertyIsEqualTo%3E%3Cfes%3AValueReference%3Ems%3AID_DZIALKI%3C%2Ffes%3AValueReference%3E%3Cfes%3ALiteral%3E306401_1.0051.AR_44.27%2F14%3C%2Ffes%3ALiteral%3E%3C%2Ffes%3APropertyIsEqualTo%3E%3Cfes%3APropertyIsEqualTo%3E%3Cfes%3AValueReference%3Ems%3AID_DZIALKI%3C%2Ffes%3AValueReference%3E%3Cfes%3ALiteral%3E306401_1.0051.AR_44.27%2F17%3C%2Ffes%3ALiteral%3E%3C%2Ffes%3APropertyIsEqualTo%3E%3Cfes%3APropertyIsEqualTo%3E%3Cfes%3AValueReference%3Ems%3AID_DZIALKI%3C%2Ffes%3AValueReference%3E%3Cfes%3ALiteral%3E306401_1.0051.AR_44.27%2F18%3C%2Ffes%3ALiteral%3E%3C%2Ffes%3APropertyIsEqualTo%3E%3Cfes%3APropertyIsEqualTo%3E%3Cfes%3AValueReference%3Ems%3AID_DZIALKI%3C%2Ffes%3AValueReference%3E%3Cfes%3ALiteral%3E306401_1.0051.AR_44.27%2F4%3C%2Ffes%3ALiteral%3E%3C%2Ffes%3APropertyIsEqualTo%3E%3C%2Ffes%3AOr%3E%3C%2Ffes%3AFilter%3E&count=8&startIndex=0",
+      "requestedAt": "2026-10-09T07:14:52.575Z",
+      "httpStatus": 200,
+      "content-type": "application/xml",
+      "content-length": null,
+      "content-encoding": "gzip",
+      "etag": null,
+      "last-modified": null,
+      "bytes": 9051,
+      "bodySha256": "89fb23fd3ab565a4d91f6b48dbc622f1d133c374cec6f52e084f281bc120341f",
+      "numberMatched": "unknown",
+      "numberReturned": "8",
+      "responseFeatureIds": [
+        "306401_1.0051.AR_44.21/6",
+        "306401_1.0051.AR_44.21/9",
+        "306401_1.0051.AR_44.22/2",
+        "306401_1.0051.AR_44.22/4",
+        "306401_1.0051.AR_44.27/14",
+        "306401_1.0051.AR_44.27/17",
+        "306401_1.0051.AR_44.27/18",
+        "306401_1.0051.AR_44.27/4"
+      ]
+    },
+    {
+      "stage": "independent-fresh-id",
+      "url": "https://portal.geopoz.poznan.pl/wmsegib?service=WFS&version=2.0.0&request=GetFeature&typeNames=ms%3Adzialki&srsName=urn%3Aogc%3Adef%3Acrs%3AEPSG%3A%3A2177&outputFormat=application%2Fgml%2Bxml%3B+version%3D3.2&propertyName=ms%3AID_DZIALKI%2Cms%3AMSGEOMETRY&filter=%3Cfes%3AFilter+xmlns%3Afes%3D%22http%3A%2F%2Fwww.opengis.net%2Ffes%2F2.0%22+xmlns%3Ams%3D%22http%3A%2F%2Fportal.geopoz.poznan.pl%2Fwmsegib%22%3E%3Cfes%3AOr%3E%3Cfes%3APropertyIsEqualTo%3E%3Cfes%3AValueReference%3Ems%3AID_DZIALKI%3C%2Ffes%3AValueReference%3E%3Cfes%3ALiteral%3E306401_1.0051.AR_44.21%2F6%3C%2Ffes%3ALiteral%3E%3C%2Ffes%3APropertyIsEqualTo%3E%3Cfes%3APropertyIsEqualTo%3E%3Cfes%3AValueReference%3Ems%3AID_DZIALKI%3C%2Ffes%3AValueReference%3E%3Cfes%3ALiteral%3E306401_1.0051.AR_44.21%2F9%3C%2Ffes%3ALiteral%3E%3C%2Ffes%3APropertyIsEqualTo%3E%3Cfes%3APropertyIsEqualTo%3E%3Cfes%3AValueReference%3Ems%3AID_DZIALKI%3C%2Ffes%3AValueReference%3E%3Cfes%3ALiteral%3E306401_1.0051.AR_44.22%2F2%3C%2Ffes%3ALiteral%3E%3C%2Ffes%3APropertyIsEqualTo%3E%3Cfes%3APropertyIsEqualTo%3E%3Cfes%3AValueReference%3Ems%3AID_DZIALKI%3C%2Ffes%3AValueReference%3E%3Cfes%3ALiteral%3E306401_1.0051.AR_44.22%2F4%3C%2Ffes%3ALiteral%3E%3C%2Ffes%3APropertyIsEqualTo%3E%3Cfes%3APropertyIsEqualTo%3E%3Cfes%3AValueReference%3Ems%3AID_DZIALKI%3C%2Ffes%3AValueReference%3E%3Cfes%3ALiteral%3E306401_1.0051.AR_44.27%2F14%3C%2Ffes%3ALiteral%3E%3C%2Ffes%3APropertyIsEqualTo%3E%3Cfes%3APropertyIsEqualTo%3E%3Cfes%3AValueReference%3Ems%3AID_DZIALKI%3C%2Ffes%3AValueReference%3E%3Cfes%3ALiteral%3E306401_1.0051.AR_44.27%2F17%3C%2Ffes%3ALiteral%3E%3C%2Ffes%3APropertyIsEqualTo%3E%3Cfes%3APropertyIsEqualTo%3E%3Cfes%3AValueReference%3Ems%3AID_DZIALKI%3C%2Ffes%3AValueReference%3E%3Cfes%3ALiteral%3E306401_1.0051.AR_44.27%2F18%3C%2Ffes%3ALiteral%3E%3C%2Ffes%3APropertyIsEqualTo%3E%3Cfes%3APropertyIsEqualTo%3E%3Cfes%3AValueReference%3Ems%3AID_DZIALKI%3C%2Ffes%3AValueReference%3E%3Cfes%3ALiteral%3E306401_1.0051.AR_44.27%2F4%3C%2Ffes%3ALiteral%3E%3C%2Ffes%3APropertyIsEqualTo%3E%3C%2Ffes%3AOr%3E%3C%2Ffes%3AFilter%3E&resultType=hits",
+      "requestedAt": "2026-10-09T07:14:52.689Z",
+      "httpStatus": 200,
+      "content-type": "application/xml",
+      "content-length": null,
+      "content-encoding": "gzip",
+      "etag": null,
+      "last-modified": null,
+      "bytes": 788,
+      "bodySha256": "6139373baabd3f7380c91887d284591998f55511603b16505cbcc5fcd599d699",
+      "numberMatched": "8",
+      "numberReturned": "0",
+      "responseFeatureIds": []
+    },
+    {
+      "stage": "independent-fresh-id",
+      "url": "https://portal.geopoz.poznan.pl/wmsegib?service=WFS&version=2.0.0&request=GetFeature&typeNames=ms%3Adzialki&srsName=urn%3Aogc%3Adef%3Acrs%3AEPSG%3A%3A2177&outputFormat=application%2Fgml%2Bxml%3B+version%3D3.2&propertyName=ms%3AID_DZIALKI%2Cms%3AMSGEOMETRY&filter=%3Cfes%3AFilter+xmlns%3Afes%3D%22http%3A%2F%2Fwww.opengis.net%2Ffes%2F2.0%22+xmlns%3Ams%3D%22http%3A%2F%2Fportal.geopoz.poznan.pl%2Fwmsegib%22%3E%3Cfes%3AOr%3E%3Cfes%3APropertyIsEqualTo%3E%3Cfes%3AValueReference%3Ems%3AID_DZIALKI%3C%2Ffes%3AValueReference%3E%3Cfes%3ALiteral%3E306401_1.0051.AR_44.27%2F6%3C%2Ffes%3ALiteral%3E%3C%2Ffes%3APropertyIsEqualTo%3E%3Cfes%3APropertyIsEqualTo%3E%3Cfes%3AValueReference%3Ems%3AID_DZIALKI%3C%2Ffes%3AValueReference%3E%3Cfes%3ALiteral%3E306401_1.0051.AR_44.28%3C%2Ffes%3ALiteral%3E%3C%2Ffes%3APropertyIsEqualTo%3E%3Cfes%3APropertyIsEqualTo%3E%3Cfes%3AValueReference%3Ems%3AID_DZIALKI%3C%2Ffes%3AValueReference%3E%3Cfes%3ALiteral%3E306401_1.0051.AR_44.29%2F3%3C%2Ffes%3ALiteral%3E%3C%2Ffes%3APropertyIsEqualTo%3E%3Cfes%3APropertyIsEqualTo%3E%3Cfes%3AValueReference%3Ems%3AID_DZIALKI%3C%2Ffes%3AValueReference%3E%3Cfes%3ALiteral%3E306401_1.0051.AR_44.29%2F4%3C%2Ffes%3ALiteral%3E%3C%2Ffes%3APropertyIsEqualTo%3E%3Cfes%3APropertyIsEqualTo%3E%3Cfes%3AValueReference%3Ems%3AID_DZIALKI%3C%2Ffes%3AValueReference%3E%3Cfes%3ALiteral%3E306401_1.0051.AR_44.29%2F7%3C%2Ffes%3ALiteral%3E%3C%2Ffes%3APropertyIsEqualTo%3E%3Cfes%3APropertyIsEqualTo%3E%3Cfes%3AValueReference%3Ems%3AID_DZIALKI%3C%2Ffes%3AValueReference%3E%3Cfes%3ALiteral%3E306401_1.0051.AR_44.29%2F8%3C%2Ffes%3ALiteral%3E%3C%2Ffes%3APropertyIsEqualTo%3E%3Cfes%3APropertyIsEqualTo%3E%3Cfes%3AValueReference%3Ems%3AID_DZIALKI%3C%2Ffes%3AValueReference%3E%3Cfes%3ALiteral%3E306401_1.0051.AR_44.30%2F5%3C%2Ffes%3ALiteral%3E%3C%2Ffes%3APropertyIsEqualTo%3E%3Cfes%3APropertyIsEqualTo%3E%3Cfes%3AValueReference%3Ems%3AID_DZIALKI%3C%2Ffes%3AValueReference%3E%3Cfes%3ALiteral%3E306401_1.0061.AR_01.1%2F11%3C%2Ffes%3ALiteral%3E%3C%2Ffes%3APropertyIsEqualTo%3E%3C%2Ffes%3AOr%3E%3C%2Ffes%3AFilter%3E&resultType=hits",
+      "requestedAt": "2026-10-09T07:14:52.783Z",
+      "httpStatus": 200,
+      "content-type": "application/xml",
+      "content-length": null,
+      "content-encoding": "gzip",
+      "etag": null,
+      "last-modified": null,
+      "bytes": 788,
+      "bodySha256": "6139373baabd3f7380c91887d284591998f55511603b16505cbcc5fcd599d699",
+      "numberMatched": "8",
+      "numberReturned": "0",
+      "responseFeatureIds": []
+    },
+    {
+      "stage": "independent-fresh-id",
+      "url": "https://portal.geopoz.poznan.pl/wmsegib?service=WFS&version=2.0.0&request=GetFeature&typeNames=ms%3Adzialki&srsName=urn%3Aogc%3Adef%3Acrs%3AEPSG%3A%3A2177&outputFormat=application%2Fgml%2Bxml%3B+version%3D3.2&propertyName=ms%3AID_DZIALKI%2Cms%3AMSGEOMETRY&filter=%3Cfes%3AFilter+xmlns%3Afes%3D%22http%3A%2F%2Fwww.opengis.net%2Ffes%2F2.0%22+xmlns%3Ams%3D%22http%3A%2F%2Fportal.geopoz.poznan.pl%2Fwmsegib%22%3E%3Cfes%3AOr%3E%3Cfes%3APropertyIsEqualTo%3E%3Cfes%3AValueReference%3Ems%3AID_DZIALKI%3C%2Ffes%3AValueReference%3E%3Cfes%3ALiteral%3E306401_1.0051.AR_44.27%2F6%3C%2Ffes%3ALiteral%3E%3C%2Ffes%3APropertyIsEqualTo%3E%3Cfes%3APropertyIsEqualTo%3E%3Cfes%3AValueReference%3Ems%3AID_DZIALKI%3C%2Ffes%3AValueReference%3E%3Cfes%3ALiteral%3E306401_1.0051.AR_44.28%3C%2Ffes%3ALiteral%3E%3C%2Ffes%3APropertyIsEqualTo%3E%3Cfes%3APropertyIsEqualTo%3E%3Cfes%3AValueReference%3Ems%3AID_DZIALKI%3C%2Ffes%3AValueReference%3E%3Cfes%3ALiteral%3E306401_1.0051.AR_44.29%2F3%3C%2Ffes%3ALiteral%3E%3C%2Ffes%3APropertyIsEqualTo%3E%3Cfes%3APropertyIsEqualTo%3E%3Cfes%3AValueReference%3Ems%3AID_DZIALKI%3C%2Ffes%3AValueReference%3E%3Cfes%3ALiteral%3E306401_1.0051.AR_44.29%2F4%3C%2Ffes%3ALiteral%3E%3C%2Ffes%3APropertyIsEqualTo%3E%3Cfes%3APropertyIsEqualTo%3E%3Cfes%3AValueReference%3Ems%3AID_DZIALKI%3C%2Ffes%3AValueReference%3E%3Cfes%3ALiteral%3E306401_1.0051.AR_44.29%2F7%3C%2Ffes%3ALiteral%3E%3C%2Ffes%3APropertyIsEqualTo%3E%3Cfes%3APropertyIsEqualTo%3E%3Cfes%3AValueReference%3Ems%3AID_DZIALKI%3C%2Ffes%3AValueReference%3E%3Cfes%3ALiteral%3E306401_1.0051.AR_44.29%2F8%3C%2Ffes%3ALiteral%3E%3C%2Ffes%3APropertyIsEqualTo%3E%3Cfes%3APropertyIsEqualTo%3E%3Cfes%3AValueReference%3Ems%3AID_DZIALKI%3C%2Ffes%3AValueReference%3E%3Cfes%3ALiteral%3E306401_1.0051.AR_44.30%2F5%3C%2Ffes%3ALiteral%3E%3C%2Ffes%3APropertyIsEqualTo%3E%3Cfes%3APropertyIsEqualTo%3E%3Cfes%3AValueReference%3Ems%3AID_DZIALKI%3C%2Ffes%3AValueReference%3E%3Cfes%3ALiteral%3E306401_1.0061.AR_01.1%2F11%3C%2Ffes%3ALiteral%3E%3C%2Ffes%3APropertyIsEqualTo%3E%3C%2Ffes%3AOr%3E%3C%2Ffes%3AFilter%3E&count=8&startIndex=0",
+      "requestedAt": "2026-10-09T07:14:52.880Z",
+      "httpStatus": 200,
+      "content-type": "application/xml",
+      "content-length": null,
+      "content-encoding": "gzip",
+      "etag": null,
+      "last-modified": null,
+      "bytes": 10617,
+      "bodySha256": "d50394b657b971a4b9a704a33213cb75c78ab8c72704ff575609a991f0ca4184",
+      "numberMatched": "unknown",
+      "numberReturned": "8",
+      "responseFeatureIds": [
+        "306401_1.0051.AR_44.27/6",
+        "306401_1.0051.AR_44.28",
+        "306401_1.0051.AR_44.29/3",
+        "306401_1.0051.AR_44.29/4",
+        "306401_1.0051.AR_44.29/7",
+        "306401_1.0051.AR_44.29/8",
+        "306401_1.0051.AR_44.30/5",
+        "306401_1.0061.AR_01.1/11"
+      ]
+    },
+    {
+      "stage": "independent-fresh-id",
+      "url": "https://portal.geopoz.poznan.pl/wmsegib?service=WFS&version=2.0.0&request=GetFeature&typeNames=ms%3Adzialki&srsName=urn%3Aogc%3Adef%3Acrs%3AEPSG%3A%3A2177&outputFormat=application%2Fgml%2Bxml%3B+version%3D3.2&propertyName=ms%3AID_DZIALKI%2Cms%3AMSGEOMETRY&filter=%3Cfes%3AFilter+xmlns%3Afes%3D%22http%3A%2F%2Fwww.opengis.net%2Ffes%2F2.0%22+xmlns%3Ams%3D%22http%3A%2F%2Fportal.geopoz.poznan.pl%2Fwmsegib%22%3E%3Cfes%3AOr%3E%3Cfes%3APropertyIsEqualTo%3E%3Cfes%3AValueReference%3Ems%3AID_DZIALKI%3C%2Ffes%3AValueReference%3E%3Cfes%3ALiteral%3E306401_1.0051.AR_44.27%2F6%3C%2Ffes%3ALiteral%3E%3C%2Ffes%3APropertyIsEqualTo%3E%3Cfes%3APropertyIsEqualTo%3E%3Cfes%3AValueReference%3Ems%3AID_DZIALKI%3C%2Ffes%3AValueReference%3E%3Cfes%3ALiteral%3E306401_1.0051.AR_44.28%3C%2Ffes%3ALiteral%3E%3C%2Ffes%3APropertyIsEqualTo%3E%3Cfes%3APropertyIsEqualTo%3E%3Cfes%3AValueReference%3Ems%3AID_DZIALKI%3C%2Ffes%3AValueReference%3E%3Cfes%3ALiteral%3E306401_1.0051.AR_44.29%2F3%3C%2Ffes%3ALiteral%3E%3C%2Ffes%3APropertyIsEqualTo%3E%3Cfes%3APropertyIsEqualTo%3E%3Cfes%3AValueReference%3Ems%3AID_DZIALKI%3C%2Ffes%3AValueReference%3E%3Cfes%3ALiteral%3E306401_1.0051.AR_44.29%2F4%3C%2Ffes%3ALiteral%3E%3C%2Ffes%3APropertyIsEqualTo%3E%3Cfes%3APropertyIsEqualTo%3E%3Cfes%3AValueReference%3Ems%3AID_DZIALKI%3C%2Ffes%3AValueReference%3E%3Cfes%3ALiteral%3E306401_1.0051.AR_44.29%2F7%3C%2Ffes%3ALiteral%3E%3C%2Ffes%3APropertyIsEqualTo%3E%3Cfes%3APropertyIsEqualTo%3E%3Cfes%3AValueReference%3Ems%3AID_DZIALKI%3C%2Ffes%3AValueReference%3E%3Cfes%3ALiteral%3E306401_1.0051.AR_44.29%2F8%3C%2Ffes%3ALiteral%3E%3C%2Ffes%3APropertyIsEqualTo%3E%3Cfes%3APropertyIsEqualTo%3E%3Cfes%3AValueReference%3Ems%3AID_DZIALKI%3C%2Ffes%3AValueReference%3E%3Cfes%3ALiteral%3E306401_1.0051.AR_44.30%2F5%3C%2Ffes%3ALiteral%3E%3C%2Ffes%3APropertyIsEqualTo%3E%3Cfes%3APropertyIsEqualTo%3E%3Cfes%3AValueReference%3Ems%3AID_DZIALKI%3C%2Ffes%3AValueReference%3E%3Cfes%3ALiteral%3E306401_1.0061.AR_01.1%2F11%3C%2Ffes%3ALiteral%3E%3C%2Ffes%3APropertyIsEqualTo%3E%3C%2Ffes%3AOr%3E%3C%2Ffes%3AFilter%3E&resultType=hits",
+      "requestedAt": "2026-10-09T07:14:52.977Z",
+      "httpStatus": 200,
+      "content-type": "application/xml",
+      "content-length": null,
+      "content-encoding": "gzip",
+      "etag": null,
+      "last-modified": null,
+      "bytes": 788,
+      "bodySha256": "6139373baabd3f7380c91887d284591998f55511603b16505cbcc5fcd599d699",
+      "numberMatched": "8",
+      "numberReturned": "0",
+      "responseFeatureIds": []
+    },
+    {
+      "stage": "independent-fresh-id",
+      "url": "https://portal.geopoz.poznan.pl/wmsegib?service=WFS&version=2.0.0&request=GetFeature&typeNames=ms%3Adzialki&srsName=urn%3Aogc%3Adef%3Acrs%3AEPSG%3A%3A2177&outputFormat=application%2Fgml%2Bxml%3B+version%3D3.2&propertyName=ms%3AID_DZIALKI%2Cms%3AMSGEOMETRY&filter=%3Cfes%3AFilter+xmlns%3Afes%3D%22http%3A%2F%2Fwww.opengis.net%2Ffes%2F2.0%22+xmlns%3Ams%3D%22http%3A%2F%2Fportal.geopoz.poznan.pl%2Fwmsegib%22%3E%3Cfes%3AOr%3E%3Cfes%3APropertyIsEqualTo%3E%3Cfes%3AValueReference%3Ems%3AID_DZIALKI%3C%2Ffes%3AValueReference%3E%3Cfes%3ALiteral%3E306401_1.0061.AR_01.1%2F5%3C%2Ffes%3ALiteral%3E%3C%2Ffes%3APropertyIsEqualTo%3E%3Cfes%3APropertyIsEqualTo%3E%3Cfes%3AValueReference%3Ems%3AID_DZIALKI%3C%2Ffes%3AValueReference%3E%3Cfes%3ALiteral%3E306401_1.0061.AR_01.1%2F6%3C%2Ffes%3ALiteral%3E%3C%2Ffes%3APropertyIsEqualTo%3E%3Cfes%3APropertyIsEqualTo%3E%3Cfes%3AValueReference%3Ems%3AID_DZIALKI%3C%2Ffes%3AValueReference%3E%3Cfes%3ALiteral%3E306401_1.0061.AR_01.1%2F7%3C%2Ffes%3ALiteral%3E%3C%2Ffes%3APropertyIsEqualTo%3E%3Cfes%3APropertyIsEqualTo%3E%3Cfes%3AValueReference%3Ems%3AID_DZIALKI%3C%2Ffes%3AValueReference%3E%3Cfes%3ALiteral%3E306401_1.0061.AR_01.1%2F8%3C%2Ffes%3ALiteral%3E%3C%2Ffes%3APropertyIsEqualTo%3E%3Cfes%3APropertyIsEqualTo%3E%3Cfes%3AValueReference%3Ems%3AID_DZIALKI%3C%2Ffes%3AValueReference%3E%3Cfes%3ALiteral%3E306401_1.0061.AR_01.1%2F9%3C%2Ffes%3ALiteral%3E%3C%2Ffes%3APropertyIsEqualTo%3E%3Cfes%3APropertyIsEqualTo%3E%3Cfes%3AValueReference%3Ems%3AID_DZIALKI%3C%2Ffes%3AValueReference%3E%3Cfes%3ALiteral%3E306401_1.0061.AR_01.2%3C%2Ffes%3ALiteral%3E%3C%2Ffes%3APropertyIsEqualTo%3E%3Cfes%3APropertyIsEqualTo%3E%3Cfes%3AValueReference%3Ems%3AID_DZIALKI%3C%2Ffes%3AValueReference%3E%3Cfes%3ALiteral%3E306401_1.0061.AR_01.3%2F1%3C%2Ffes%3ALiteral%3E%3C%2Ffes%3APropertyIsEqualTo%3E%3Cfes%3APropertyIsEqualTo%3E%3Cfes%3AValueReference%3Ems%3AID_DZIALKI%3C%2Ffes%3AValueReference%3E%3Cfes%3ALiteral%3E306401_1.0061.AR_01.3%2F24%3C%2Ffes%3ALiteral%3E%3C%2Ffes%3APropertyIsEqualTo%3E%3C%2Ffes%3AOr%3E%3C%2Ffes%3AFilter%3E&resultType=hits",
+      "requestedAt": "2026-10-09T07:14:53.071Z",
+      "httpStatus": 200,
+      "content-type": "application/xml",
+      "content-length": null,
+      "content-encoding": "gzip",
+      "etag": null,
+      "last-modified": null,
+      "bytes": 788,
+      "bodySha256": "9b7d380be2164f2f94f9830e3d9b2905ec1e8017365d1702cb919ba4a87adc9f",
+      "numberMatched": "8",
+      "numberReturned": "0",
+      "responseFeatureIds": []
+    },
+    {
+      "stage": "independent-fresh-id",
+      "url": "https://portal.geopoz.poznan.pl/wmsegib?service=WFS&version=2.0.0&request=GetFeature&typeNames=ms%3Adzialki&srsName=urn%3Aogc%3Adef%3Acrs%3AEPSG%3A%3A2177&outputFormat=application%2Fgml%2Bxml%3B+version%3D3.2&propertyName=ms%3AID_DZIALKI%2Cms%3AMSGEOMETRY&filter=%3Cfes%3AFilter+xmlns%3Afes%3D%22http%3A%2F%2Fwww.opengis.net%2Ffes%2F2.0%22+xmlns%3Ams%3D%22http%3A%2F%2Fportal.geopoz.poznan.pl%2Fwmsegib%22%3E%3Cfes%3AOr%3E%3Cfes%3APropertyIsEqualTo%3E%3Cfes%3AValueReference%3Ems%3AID_DZIALKI%3C%2Ffes%3AValueReference%3E%3Cfes%3ALiteral%3E306401_1.0061.AR_01.1%2F5%3C%2Ffes%3ALiteral%3E%3C%2Ffes%3APropertyIsEqualTo%3E%3Cfes%3APropertyIsEqualTo%3E%3Cfes%3AValueReference%3Ems%3AID_DZIALKI%3C%2Ffes%3AValueReference%3E%3Cfes%3ALiteral%3E306401_1.0061.AR_01.1%2F6%3C%2Ffes%3ALiteral%3E%3C%2Ffes%3APropertyIsEqualTo%3E%3Cfes%3APropertyIsEqualTo%3E%3Cfes%3AValueReference%3Ems%3AID_DZIALKI%3C%2Ffes%3AValueReference%3E%3Cfes%3ALiteral%3E306401_1.0061.AR_01.1%2F7%3C%2Ffes%3ALiteral%3E%3C%2Ffes%3APropertyIsEqualTo%3E%3Cfes%3APropertyIsEqualTo%3E%3Cfes%3AValueReference%3Ems%3AID_DZIALKI%3C%2Ffes%3AValueReference%3E%3Cfes%3ALiteral%3E306401_1.0061.AR_01.1%2F8%3C%2Ffes%3ALiteral%3E%3C%2Ffes%3APropertyIsEqualTo%3E%3Cfes%3APropertyIsEqualTo%3E%3Cfes%3AValueReference%3Ems%3AID_DZIALKI%3C%2Ffes%3AValueReference%3E%3Cfes%3ALiteral%3E306401_1.0061.AR_01.1%2F9%3C%2Ffes%3ALiteral%3E%3C%2Ffes%3APropertyIsEqualTo%3E%3Cfes%3APropertyIsEqualTo%3E%3Cfes%3AValueReference%3Ems%3AID_DZIALKI%3C%2Ffes%3AValueReference%3E%3Cfes%3ALiteral%3E306401_1.0061.AR_01.2%3C%2Ffes%3ALiteral%3E%3C%2Ffes%3APropertyIsEqualTo%3E%3Cfes%3APropertyIsEqualTo%3E%3Cfes%3AValueReference%3Ems%3AID_DZIALKI%3C%2Ffes%3AValueReference%3E%3Cfes%3ALiteral%3E306401_1.0061.AR_01.3%2F1%3C%2Ffes%3ALiteral%3E%3C%2Ffes%3APropertyIsEqualTo%3E%3Cfes%3APropertyIsEqualTo%3E%3Cfes%3AValueReference%3Ems%3AID_DZIALKI%3C%2Ffes%3AValueReference%3E%3Cfes%3ALiteral%3E306401_1.0061.AR_01.3%2F24%3C%2Ffes%3ALiteral%3E%3C%2Ffes%3APropertyIsEqualTo%3E%3C%2Ffes%3AOr%3E%3C%2Ffes%3AFilter%3E&count=8&startIndex=0",
+      "requestedAt": "2026-10-09T07:14:53.168Z",
+      "httpStatus": 200,
+      "content-type": "application/xml",
+      "content-length": null,
+      "content-encoding": "gzip",
+      "etag": null,
+      "last-modified": null,
+      "bytes": 8298,
+      "bodySha256": "129283a1e4ab6867da9d2f58490b45b4ef967085daf73096ed964710f842b797",
+      "numberMatched": "unknown",
+      "numberReturned": "8",
+      "responseFeatureIds": [
+        "306401_1.0061.AR_01.1/5",
+        "306401_1.0061.AR_01.1/6",
+        "306401_1.0061.AR_01.1/7",
+        "306401_1.0061.AR_01.1/8",
+        "306401_1.0061.AR_01.1/9",
+        "306401_1.0061.AR_01.2",
+        "306401_1.0061.AR_01.3/1",
+        "306401_1.0061.AR_01.3/24"
+      ]
+    },
+    {
+      "stage": "independent-fresh-id",
+      "url": "https://portal.geopoz.poznan.pl/wmsegib?service=WFS&version=2.0.0&request=GetFeature&typeNames=ms%3Adzialki&srsName=urn%3Aogc%3Adef%3Acrs%3AEPSG%3A%3A2177&outputFormat=application%2Fgml%2Bxml%3B+version%3D3.2&propertyName=ms%3AID_DZIALKI%2Cms%3AMSGEOMETRY&filter=%3Cfes%3AFilter+xmlns%3Afes%3D%22http%3A%2F%2Fwww.opengis.net%2Ffes%2F2.0%22+xmlns%3Ams%3D%22http%3A%2F%2Fportal.geopoz.poznan.pl%2Fwmsegib%22%3E%3Cfes%3AOr%3E%3Cfes%3APropertyIsEqualTo%3E%3Cfes%3AValueReference%3Ems%3AID_DZIALKI%3C%2Ffes%3AValueReference%3E%3Cfes%3ALiteral%3E306401_1.0061.AR_01.1%2F5%3C%2Ffes%3ALiteral%3E%3C%2Ffes%3APropertyIsEqualTo%3E%3Cfes%3APropertyIsEqualTo%3E%3Cfes%3AValueReference%3Ems%3AID_DZIALKI%3C%2Ffes%3AValueReference%3E%3Cfes%3ALiteral%3E306401_1.0061.AR_01.1%2F6%3C%2Ffes%3ALiteral%3E%3C%2Ffes%3APropertyIsEqualTo%3E%3Cfes%3APropertyIsEqualTo%3E%3Cfes%3AValueReference%3Ems%3AID_DZIALKI%3C%2Ffes%3AValueReference%3E%3Cfes%3ALiteral%3E306401_1.0061.AR_01.1%2F7%3C%2Ffes%3ALiteral%3E%3C%2Ffes%3APropertyIsEqualTo%3E%3Cfes%3APropertyIsEqualTo%3E%3Cfes%3AValueReference%3Ems%3AID_DZIALKI%3C%2Ffes%3AValueReference%3E%3Cfes%3ALiteral%3E306401_1.0061.AR_01.1%2F8%3C%2Ffes%3ALiteral%3E%3C%2Ffes%3APropertyIsEqualTo%3E%3Cfes%3APropertyIsEqualTo%3E%3Cfes%3AValueReference%3Ems%3AID_DZIALKI%3C%2Ffes%3AValueReference%3E%3Cfes%3ALiteral%3E306401_1.0061.AR_01.1%2F9%3C%2Ffes%3ALiteral%3E%3C%2Ffes%3APropertyIsEqualTo%3E%3Cfes%3APropertyIsEqualTo%3E%3Cfes%3AValueReference%3Ems%3AID_DZIALKI%3C%2Ffes%3AValueReference%3E%3Cfes%3ALiteral%3E306401_1.0061.AR_01.2%3C%2Ffes%3ALiteral%3E%3C%2Ffes%3APropertyIsEqualTo%3E%3Cfes%3APropertyIsEqualTo%3E%3Cfes%3AValueReference%3Ems%3AID_DZIALKI%3C%2Ffes%3AValueReference%3E%3Cfes%3ALiteral%3E306401_1.0061.AR_01.3%2F1%3C%2Ffes%3ALiteral%3E%3C%2Ffes%3APropertyIsEqualTo%3E%3Cfes%3APropertyIsEqualTo%3E%3Cfes%3AValueReference%3Ems%3AID_DZIALKI%3C%2Ffes%3AValueReference%3E%3Cfes%3ALiteral%3E306401_1.0061.AR_01.3%2F24%3C%2Ffes%3ALiteral%3E%3C%2Ffes%3APropertyIsEqualTo%3E%3C%2Ffes%3AOr%3E%3C%2Ffes%3AFilter%3E&resultType=hits",
+      "requestedAt": "2026-10-09T07:14:53.266Z",
+      "httpStatus": 200,
+      "content-type": "application/xml",
+      "content-length": null,
+      "content-encoding": "gzip",
+      "etag": null,
+      "last-modified": null,
+      "bytes": 788,
+      "bodySha256": "9b7d380be2164f2f94f9830e3d9b2905ec1e8017365d1702cb919ba4a87adc9f",
+      "numberMatched": "8",
+      "numberReturned": "0",
+      "responseFeatureIds": []
+    },
+    {
+      "stage": "independent-fresh-id",
+      "url": "https://portal.geopoz.poznan.pl/wmsegib?service=WFS&version=2.0.0&request=GetFeature&typeNames=ms%3Adzialki&srsName=urn%3Aogc%3Adef%3Acrs%3AEPSG%3A%3A2177&outputFormat=application%2Fgml%2Bxml%3B+version%3D3.2&propertyName=ms%3AID_DZIALKI%2Cms%3AMSGEOMETRY&filter=%3Cfes%3AFilter+xmlns%3Afes%3D%22http%3A%2F%2Fwww.opengis.net%2Ffes%2F2.0%22+xmlns%3Ams%3D%22http%3A%2F%2Fportal.geopoz.poznan.pl%2Fwmsegib%22%3E%3Cfes%3AOr%3E%3Cfes%3APropertyIsEqualTo%3E%3Cfes%3AValueReference%3Ems%3AID_DZIALKI%3C%2Ffes%3AValueReference%3E%3Cfes%3ALiteral%3E306401_1.0061.AR_01.3%2F25%3C%2Ffes%3ALiteral%3E%3C%2Ffes%3APropertyIsEqualTo%3E%3Cfes%3APropertyIsEqualTo%3E%3Cfes%3AValueReference%3Ems%3AID_DZIALKI%3C%2Ffes%3AValueReference%3E%3Cfes%3ALiteral%3E306401_1.0061.AR_01.3%2F27%3C%2Ffes%3ALiteral%3E%3C%2Ffes%3APropertyIsEqualTo%3E%3Cfes%3APropertyIsEqualTo%3E%3Cfes%3AValueReference%3Ems%3AID_DZIALKI%3C%2Ffes%3AValueReference%3E%3Cfes%3ALiteral%3E306401_1.0061.AR_01.3%2F28%3C%2Ffes%3ALiteral%3E%3C%2Ffes%3APropertyIsEqualTo%3E%3Cfes%3APropertyIsEqualTo%3E%3Cfes%3AValueReference%3Ems%3AID_DZIALKI%3C%2Ffes%3AValueReference%3E%3Cfes%3ALiteral%3E306401_1.0061.AR_01.3%2F29%3C%2Ffes%3ALiteral%3E%3C%2Ffes%3APropertyIsEqualTo%3E%3Cfes%3APropertyIsEqualTo%3E%3Cfes%3AValueReference%3Ems%3AID_DZIALKI%3C%2Ffes%3AValueReference%3E%3Cfes%3ALiteral%3E306401_1.0061.AR_01.3%2F31%3C%2Ffes%3ALiteral%3E%3C%2Ffes%3APropertyIsEqualTo%3E%3Cfes%3APropertyIsEqualTo%3E%3Cfes%3AValueReference%3Ems%3AID_DZIALKI%3C%2Ffes%3AValueReference%3E%3Cfes%3ALiteral%3E306401_1.0061.AR_01.3%2F37%3C%2Ffes%3ALiteral%3E%3C%2Ffes%3APropertyIsEqualTo%3E%3Cfes%3APropertyIsEqualTo%3E%3Cfes%3AValueReference%3Ems%3AID_DZIALKI%3C%2Ffes%3AValueReference%3E%3Cfes%3ALiteral%3E306401_1.0061.AR_01.3%2F38%3C%2Ffes%3ALiteral%3E%3C%2Ffes%3APropertyIsEqualTo%3E%3Cfes%3APropertyIsEqualTo%3E%3Cfes%3AValueReference%3Ems%3AID_DZIALKI%3C%2Ffes%3AValueReference%3E%3Cfes%3ALiteral%3E306401_1.0061.AR_01.3%2F39%3C%2Ffes%3ALiteral%3E%3C%2Ffes%3APropertyIsEqualTo%3E%3C%2Ffes%3AOr%3E%3C%2Ffes%3AFilter%3E&resultType=hits",
+      "requestedAt": "2026-10-09T07:14:53.361Z",
+      "httpStatus": 200,
+      "content-type": "application/xml",
+      "content-length": null,
+      "content-encoding": "gzip",
+      "etag": null,
+      "last-modified": null,
+      "bytes": 788,
+      "bodySha256": "9b7d380be2164f2f94f9830e3d9b2905ec1e8017365d1702cb919ba4a87adc9f",
+      "numberMatched": "8",
+      "numberReturned": "0",
+      "responseFeatureIds": []
+    },
+    {
+      "stage": "independent-fresh-id",
+      "url": "https://portal.geopoz.poznan.pl/wmsegib?service=WFS&version=2.0.0&request=GetFeature&typeNames=ms%3Adzialki&srsName=urn%3Aogc%3Adef%3Acrs%3AEPSG%3A%3A2177&outputFormat=application%2Fgml%2Bxml%3B+version%3D3.2&propertyName=ms%3AID_DZIALKI%2Cms%3AMSGEOMETRY&filter=%3Cfes%3AFilter+xmlns%3Afes%3D%22http%3A%2F%2Fwww.opengis.net%2Ffes%2F2.0%22+xmlns%3Ams%3D%22http%3A%2F%2Fportal.geopoz.poznan.pl%2Fwmsegib%22%3E%3Cfes%3AOr%3E%3Cfes%3APropertyIsEqualTo%3E%3Cfes%3AValueReference%3Ems%3AID_DZIALKI%3C%2Ffes%3AValueReference%3E%3Cfes%3ALiteral%3E306401_1.0061.AR_01.3%2F25%3C%2Ffes%3ALiteral%3E%3C%2Ffes%3APropertyIsEqualTo%3E%3Cfes%3APropertyIsEqualTo%3E%3Cfes%3AValueReference%3Ems%3AID_DZIALKI%3C%2Ffes%3AValueReference%3E%3Cfes%3ALiteral%3E306401_1.0061.AR_01.3%2F27%3C%2Ffes%3ALiteral%3E%3C%2Ffes%3APropertyIsEqualTo%3E%3Cfes%3APropertyIsEqualTo%3E%3Cfes%3AValueReference%3Ems%3AID_DZIALKI%3C%2Ffes%3AValueReference%3E%3Cfes%3ALiteral%3E306401_1.0061.AR_01.3%2F28%3C%2Ffes%3ALiteral%3E%3C%2Ffes%3APropertyIsEqualTo%3E%3Cfes%3APropertyIsEqualTo%3E%3Cfes%3AValueReference%3Ems%3AID_DZIALKI%3C%2Ffes%3AValueReference%3E%3Cfes%3ALiteral%3E306401_1.0061.AR_01.3%2F29%3C%2Ffes%3ALiteral%3E%3C%2Ffes%3APropertyIsEqualTo%3E%3Cfes%3APropertyIsEqualTo%3E%3Cfes%3AValueReference%3Ems%3AID_DZIALKI%3C%2Ffes%3AValueReference%3E%3Cfes%3ALiteral%3E306401_1.0061.AR_01.3%2F31%3C%2Ffes%3ALiteral%3E%3C%2Ffes%3APropertyIsEqualTo%3E%3Cfes%3APropertyIsEqualTo%3E%3Cfes%3AValueReference%3Ems%3AID_DZIALKI%3C%2Ffes%3AValueReference%3E%3Cfes%3ALiteral%3E306401_1.0061.AR_01.3%2F37%3C%2Ffes%3ALiteral%3E%3C%2Ffes%3APropertyIsEqualTo%3E%3Cfes%3APropertyIsEqualTo%3E%3Cfes%3AValueReference%3Ems%3AID_DZIALKI%3C%2Ffes%3AValueReference%3E%3Cfes%3ALiteral%3E306401_1.0061.AR_01.3%2F38%3C%2Ffes%3ALiteral%3E%3C%2Ffes%3APropertyIsEqualTo%3E%3Cfes%3APropertyIsEqualTo%3E%3Cfes%3AValueReference%3Ems%3AID_DZIALKI%3C%2Ffes%3AValueReference%3E%3Cfes%3ALiteral%3E306401_1.0061.AR_01.3%2F39%3C%2Ffes%3ALiteral%3E%3C%2Ffes%3APropertyIsEqualTo%3E%3C%2Ffes%3AOr%3E%3C%2Ffes%3AFilter%3E&count=8&startIndex=0",
+      "requestedAt": "2026-10-09T07:14:53.466Z",
+      "httpStatus": 200,
+      "content-type": "application/xml",
+      "content-length": null,
+      "content-encoding": "gzip",
+      "etag": null,
+      "last-modified": null,
+      "bytes": 9563,
+      "bodySha256": "20dbda14e529ffbd24d2e45dea9f0e37f41af0efd9a945335df3a044fc16dd9e",
+      "numberMatched": "unknown",
+      "numberReturned": "8",
+      "responseFeatureIds": [
+        "306401_1.0061.AR_01.3/25",
+        "306401_1.0061.AR_01.3/27",
+        "306401_1.0061.AR_01.3/28",
+        "306401_1.0061.AR_01.3/29",
+        "306401_1.0061.AR_01.3/31",
+        "306401_1.0061.AR_01.3/37",
+        "306401_1.0061.AR_01.3/38",
+        "306401_1.0061.AR_01.3/39"
+      ]
+    },
+    {
+      "stage": "independent-fresh-id",
+      "url": "https://portal.geopoz.poznan.pl/wmsegib?service=WFS&version=2.0.0&request=GetFeature&typeNames=ms%3Adzialki&srsName=urn%3Aogc%3Adef%3Acrs%3AEPSG%3A%3A2177&outputFormat=application%2Fgml%2Bxml%3B+version%3D3.2&propertyName=ms%3AID_DZIALKI%2Cms%3AMSGEOMETRY&filter=%3Cfes%3AFilter+xmlns%3Afes%3D%22http%3A%2F%2Fwww.opengis.net%2Ffes%2F2.0%22+xmlns%3Ams%3D%22http%3A%2F%2Fportal.geopoz.poznan.pl%2Fwmsegib%22%3E%3Cfes%3AOr%3E%3Cfes%3APropertyIsEqualTo%3E%3Cfes%3AValueReference%3Ems%3AID_DZIALKI%3C%2Ffes%3AValueReference%3E%3Cfes%3ALiteral%3E306401_1.0061.AR_01.3%2F25%3C%2Ffes%3ALiteral%3E%3C%2Ffes%3APropertyIsEqualTo%3E%3Cfes%3APropertyIsEqualTo%3E%3Cfes%3AValueReference%3Ems%3AID_DZIALKI%3C%2Ffes%3AValueReference%3E%3Cfes%3ALiteral%3E306401_1.0061.AR_01.3%2F27%3C%2Ffes%3ALiteral%3E%3C%2Ffes%3APropertyIsEqualTo%3E%3Cfes%3APropertyIsEqualTo%3E%3Cfes%3AValueReference%3Ems%3AID_DZIALKI%3C%2Ffes%3AValueReference%3E%3Cfes%3ALiteral%3E306401_1.0061.AR_01.3%2F28%3C%2Ffes%3ALiteral%3E%3C%2Ffes%3APropertyIsEqualTo%3E%3Cfes%3APropertyIsEqualTo%3E%3Cfes%3AValueReference%3Ems%3AID_DZIALKI%3C%2Ffes%3AValueReference%3E%3Cfes%3ALiteral%3E306401_1.0061.AR_01.3%2F29%3C%2Ffes%3ALiteral%3E%3C%2Ffes%3APropertyIsEqualTo%3E%3Cfes%3APropertyIsEqualTo%3E%3Cfes%3AValueReference%3Ems%3AID_DZIALKI%3C%2Ffes%3AValueReference%3E%3Cfes%3ALiteral%3E306401_1.0061.AR_01.3%2F31%3C%2Ffes%3ALiteral%3E%3C%2Ffes%3APropertyIsEqualTo%3E%3Cfes%3APropertyIsEqualTo%3E%3Cfes%3AValueReference%3Ems%3AID_DZIALKI%3C%2Ffes%3AValueReference%3E%3Cfes%3ALiteral%3E306401_1.0061.AR_01.3%2F37%3C%2Ffes%3ALiteral%3E%3C%2Ffes%3APropertyIsEqualTo%3E%3Cfes%3APropertyIsEqualTo%3E%3Cfes%3AValueReference%3Ems%3AID_DZIALKI%3C%2Ffes%3AValueReference%3E%3Cfes%3ALiteral%3E306401_1.0061.AR_01.3%2F38%3C%2Ffes%3ALiteral%3E%3C%2Ffes%3APropertyIsEqualTo%3E%3Cfes%3APropertyIsEqualTo%3E%3Cfes%3AValueReference%3Ems%3AID_DZIALKI%3C%2Ffes%3AValueReference%3E%3Cfes%3ALiteral%3E306401_1.0061.AR_01.3%2F39%3C%2Ffes%3ALiteral%3E%3C%2Ffes%3APropertyIsEqualTo%3E%3C%2Ffes%3AOr%3E%3C%2Ffes%3AFilter%3E&resultType=hits",
+      "requestedAt": "2026-10-09T07:14:53.595Z",
+      "httpStatus": 200,
+      "content-type": "application/xml",
+      "content-length": null,
+      "content-encoding": "gzip",
+      "etag": null,
+      "last-modified": null,
+      "bytes": 788,
+      "bodySha256": "9b7d380be2164f2f94f9830e3d9b2905ec1e8017365d1702cb919ba4a87adc9f",
+      "numberMatched": "8",
+      "numberReturned": "0",
+      "responseFeatureIds": []
+    },
+    {
+      "stage": "independent-fresh-id",
+      "url": "https://portal.geopoz.poznan.pl/wmsegib?service=WFS&version=2.0.0&request=GetFeature&typeNames=ms%3Adzialki&srsName=urn%3Aogc%3Adef%3Acrs%3AEPSG%3A%3A2177&outputFormat=application%2Fgml%2Bxml%3B+version%3D3.2&propertyName=ms%3AID_DZIALKI%2Cms%3AMSGEOMETRY&filter=%3Cfes%3AFilter+xmlns%3Afes%3D%22http%3A%2F%2Fwww.opengis.net%2Ffes%2F2.0%22+xmlns%3Ams%3D%22http%3A%2F%2Fportal.geopoz.poznan.pl%2Fwmsegib%22%3E%3Cfes%3AOr%3E%3Cfes%3APropertyIsEqualTo%3E%3Cfes%3AValueReference%3Ems%3AID_DZIALKI%3C%2Ffes%3AValueReference%3E%3Cfes%3ALiteral%3E306401_1.0061.AR_01.3%2F40%3C%2Ffes%3ALiteral%3E%3C%2Ffes%3APropertyIsEqualTo%3E%3Cfes%3APropertyIsEqualTo%3E%3Cfes%3AValueReference%3Ems%3AID_DZIALKI%3C%2Ffes%3AValueReference%3E%3Cfes%3ALiteral%3E306401_1.0061.AR_01.3%2F41%3C%2Ffes%3ALiteral%3E%3C%2Ffes%3APropertyIsEqualTo%3E%3Cfes%3APropertyIsEqualTo%3E%3Cfes%3AValueReference%3Ems%3AID_DZIALKI%3C%2Ffes%3AValueReference%3E%3Cfes%3ALiteral%3E306401_1.0061.AR_01.3%2F43%3C%2Ffes%3ALiteral%3E%3C%2Ffes%3APropertyIsEqualTo%3E%3C%2Ffes%3AOr%3E%3C%2Ffes%3AFilter%3E&resultType=hits",
+      "requestedAt": "2026-10-09T07:14:53.697Z",
+      "httpStatus": 200,
+      "content-type": "application/xml",
+      "content-length": null,
+      "content-encoding": "gzip",
+      "etag": null,
+      "last-modified": null,
+      "bytes": 788,
+      "bodySha256": "43c7bf7a91570faaaafa8738752e13a040b72b92ed3f07e4fc6aa7848b0629e0",
+      "numberMatched": "3",
+      "numberReturned": "0",
+      "responseFeatureIds": []
+    },
+    {
+      "stage": "independent-fresh-id",
+      "url": "https://portal.geopoz.poznan.pl/wmsegib?service=WFS&version=2.0.0&request=GetFeature&typeNames=ms%3Adzialki&srsName=urn%3Aogc%3Adef%3Acrs%3AEPSG%3A%3A2177&outputFormat=application%2Fgml%2Bxml%3B+version%3D3.2&propertyName=ms%3AID_DZIALKI%2Cms%3AMSGEOMETRY&filter=%3Cfes%3AFilter+xmlns%3Afes%3D%22http%3A%2F%2Fwww.opengis.net%2Ffes%2F2.0%22+xmlns%3Ams%3D%22http%3A%2F%2Fportal.geopoz.poznan.pl%2Fwmsegib%22%3E%3Cfes%3AOr%3E%3Cfes%3APropertyIsEqualTo%3E%3Cfes%3AValueReference%3Ems%3AID_DZIALKI%3C%2Ffes%3AValueReference%3E%3Cfes%3ALiteral%3E306401_1.0061.AR_01.3%2F40%3C%2Ffes%3ALiteral%3E%3C%2Ffes%3APropertyIsEqualTo%3E%3Cfes%3APropertyIsEqualTo%3E%3Cfes%3AValueReference%3Ems%3AID_DZIALKI%3C%2Ffes%3AValueReference%3E%3Cfes%3ALiteral%3E306401_1.0061.AR_01.3%2F41%3C%2Ffes%3ALiteral%3E%3C%2Ffes%3APropertyIsEqualTo%3E%3Cfes%3APropertyIsEqualTo%3E%3Cfes%3AValueReference%3Ems%3AID_DZIALKI%3C%2Ffes%3AValueReference%3E%3Cfes%3ALiteral%3E306401_1.0061.AR_01.3%2F43%3C%2Ffes%3ALiteral%3E%3C%2Ffes%3APropertyIsEqualTo%3E%3C%2Ffes%3AOr%3E%3C%2Ffes%3AFilter%3E&count=3&startIndex=0",
+      "requestedAt": "2026-10-09T07:14:53.790Z",
+      "httpStatus": 200,
+      "content-type": "application/xml",
+      "content-length": null,
+      "content-encoding": "gzip",
+      "etag": null,
+      "last-modified": null,
+      "bytes": 4730,
+      "bodySha256": "5395852dc69da5bc02ce0fcaf2c8eacc7b88d9aa26f7230fab00b270a4c26678",
+      "numberMatched": "unknown",
+      "numberReturned": "3",
+      "responseFeatureIds": [
+        "306401_1.0061.AR_01.3/40",
+        "306401_1.0061.AR_01.3/41",
+        "306401_1.0061.AR_01.3/43"
+      ]
+    },
+    {
+      "stage": "independent-fresh-id",
+      "url": "https://portal.geopoz.poznan.pl/wmsegib?service=WFS&version=2.0.0&request=GetFeature&typeNames=ms%3Adzialki&srsName=urn%3Aogc%3Adef%3Acrs%3AEPSG%3A%3A2177&outputFormat=application%2Fgml%2Bxml%3B+version%3D3.2&propertyName=ms%3AID_DZIALKI%2Cms%3AMSGEOMETRY&filter=%3Cfes%3AFilter+xmlns%3Afes%3D%22http%3A%2F%2Fwww.opengis.net%2Ffes%2F2.0%22+xmlns%3Ams%3D%22http%3A%2F%2Fportal.geopoz.poznan.pl%2Fwmsegib%22%3E%3Cfes%3AOr%3E%3Cfes%3APropertyIsEqualTo%3E%3Cfes%3AValueReference%3Ems%3AID_DZIALKI%3C%2Ffes%3AValueReference%3E%3Cfes%3ALiteral%3E306401_1.0061.AR_01.3%2F40%3C%2Ffes%3ALiteral%3E%3C%2Ffes%3APropertyIsEqualTo%3E%3Cfes%3APropertyIsEqualTo%3E%3Cfes%3AValueReference%3Ems%3AID_DZIALKI%3C%2Ffes%3AValueReference%3E%3Cfes%3ALiteral%3E306401_1.0061.AR_01.3%2F41%3C%2Ffes%3ALiteral%3E%3C%2Ffes%3APropertyIsEqualTo%3E%3Cfes%3APropertyIsEqualTo%3E%3Cfes%3AValueReference%3Ems%3AID_DZIALKI%3C%2Ffes%3AValueReference%3E%3Cfes%3ALiteral%3E306401_1.0061.AR_01.3%2F43%3C%2Ffes%3ALiteral%3E%3C%2Ffes%3APropertyIsEqualTo%3E%3C%2Ffes%3AOr%3E%3C%2Ffes%3AFilter%3E&resultType=hits",
+      "requestedAt": "2026-10-09T07:14:53.881Z",
+      "httpStatus": 200,
+      "content-type": "application/xml",
+      "content-length": null,
+      "content-encoding": "gzip",
+      "etag": null,
+      "last-modified": null,
+      "bytes": 788,
+      "bodySha256": "43c7bf7a91570faaaafa8738752e13a040b72b92ed3f07e4fc6aa7848b0629e0",
+      "numberMatched": "3",
+      "numberReturned": "0",
+      "responseFeatureIds": []
+    },
+    {
+      "stage": "independent-fresh-id",
+      "url": "https://portal.geopoz.poznan.pl/wmsegib?service=WFS&version=2.0.0&request=GetFeature&typeNames=ms%3Adzialki&srsName=urn%3Aogc%3Adef%3Acrs%3AEPSG%3A%3A2177&outputFormat=application%2Fgml%2Bxml%3B+version%3D3.2&propertyName=ms%3AID_DZIALKI%2Cms%3AMSGEOMETRY&filter=%3Cfes%3AFilter+xmlns%3Afes%3D%22http%3A%2F%2Fwww.opengis.net%2Ffes%2F2.0%22+xmlns%3Ams%3D%22http%3A%2F%2Fportal.geopoz.poznan.pl%2Fwmsegib%22%3E%3Cfes%3APropertyIsEqualTo%3E%3Cfes%3AValueReference%3Ems%3AID_DZIALKI%3C%2Ffes%3AValueReference%3E%3Cfes%3ALiteral%3E999999999999%3C%2Ffes%3ALiteral%3E%3C%2Ffes%3APropertyIsEqualTo%3E%3C%2Ffes%3AFilter%3E&resultType=hits",
+      "requestedAt": "2026-10-09T07:14:53.975Z",
+      "httpStatus": 200,
+      "content-type": "application/xml",
+      "content-length": null,
+      "content-encoding": "gzip",
+      "etag": null,
+      "last-modified": null,
+      "bytes": 788,
+      "bodySha256": "666e487aabe0980f575dce23433fb7bcc61f2ee3458d5aba479ccfd4b4830cc2",
+      "numberMatched": "0",
+      "numberReturned": "0",
+      "responseFeatureIds": []
+    },
+    {
+      "stage": "independent-fresh-id",
+      "url": "https://portal.geopoz.poznan.pl/wmsegib?service=WFS&version=2.0.0&request=GetFeature&typeNames=ms%3Adzialki&srsName=urn%3Aogc%3Adef%3Acrs%3AEPSG%3A%3A2177&outputFormat=application%2Fgml%2Bxml%3B+version%3D3.2&propertyName=ms%3AID_DZIALKI%2Cms%3AMSGEOMETRY&filter=%3Cfes%3AFilter+xmlns%3Afes%3D%22http%3A%2F%2Fwww.opengis.net%2Ffes%2F2.0%22+xmlns%3Ams%3D%22http%3A%2F%2Fportal.geopoz.poznan.pl%2Fwmsegib%22%3E%3Cfes%3APropertyIsEqualTo%3E%3Cfes%3AValueReference%3Ems%3AID_DZIALKI%3C%2Ffes%3AValueReference%3E%3Cfes%3ALiteral%3E999999999999%3C%2Ffes%3ALiteral%3E%3C%2Ffes%3APropertyIsEqualTo%3E%3C%2Ffes%3AFilter%3E&resultType=hits",
+      "requestedAt": "2026-10-09T07:14:54.064Z",
+      "httpStatus": 200,
+      "content-type": "application/xml",
+      "content-length": null,
+      "content-encoding": "gzip",
+      "etag": null,
+      "last-modified": null,
+      "bytes": 788,
+      "bodySha256": "bc48cf8c39cea7c6a248cf03e95436d7e32cf78a6144bd3e99d6ab3faa484006",
+      "numberMatched": "0",
+      "numberReturned": "0",
+      "responseFeatureIds": []
+    },
+    {
+      "stage": "grid",
+      "url": "https://portal.geopoz.poznan.pl/wmsegib?service=WFS&version=2.0.0&request=GetFeature&typeNames=ms%3Adzialki&srsName=urn%3Aogc%3Adef%3Acrs%3AEPSG%3A%3A2177&outputFormat=application%2Fgml%2Bxml%3B+version%3D3.2&propertyName=ms%3AID_DZIALKI%2Cms%3AMSGEOMETRY&filter=%3Cfes%3AFilter+xmlns%3Afes%3D%22http%3A%2F%2Fwww.opengis.net%2Ffes%2F2.0%22+xmlns%3Ams%3D%22http%3A%2F%2Fportal.geopoz.poznan.pl%2Fwmsegib%22+xmlns%3Agml%3D%22http%3A%2F%2Fwww.opengis.net%2Fgml%2F3.2%22%3E%3Cfes%3AIntersects%3E%3Cfes%3AValueReference%3Ems%3AMSGEOMETRY%3C%2Ffes%3AValueReference%3E%3Cgml%3APolygon+srsName%3D%22urn%3Aogc%3Adef%3Acrs%3AEPSG%3A%3A2177%22%3E%3Cgml%3Aexterior%3E%3Cgml%3ALinearRing%3E%3Cgml%3AposList+srsDimension%3D%222%22%3E5808303.317152809+6426075.189562835+5808303.317152809+6426115.693431082+5808390.654216426+6426115.693431082+5808390.654216426+6426075.189562835+5808303.317152809+6426075.189562835%3C%2Fgml%3AposList%3E%3C%2Fgml%3ALinearRing%3E%3C%2Fgml%3Aexterior%3E%3C%2Fgml%3APolygon%3E%3C%2Ffes%3AIntersects%3E%3C%2Ffes%3AFilter%3E&resultType=hits",
+      "requestedAt": "2026-10-09T07:14:54.155Z",
+      "httpStatus": 200,
+      "content-type": "application/xml",
+      "content-length": null,
+      "content-encoding": "gzip",
+      "etag": null,
+      "last-modified": null,
+      "bytes": 789,
+      "bodySha256": "bf55cd92d4e046c107bea89e347329097f90ac7be7ab7d2f4d5851c4f5121079",
+      "numberMatched": "13",
+      "numberReturned": "0",
+      "responseFeatureIds": []
+    },
+    {
+      "stage": "grid",
+      "url": "https://portal.geopoz.poznan.pl/wmsegib?service=WFS&version=2.0.0&request=GetFeature&typeNames=ms%3Adzialki&srsName=urn%3Aogc%3Adef%3Acrs%3AEPSG%3A%3A2177&outputFormat=application%2Fgml%2Bxml%3B+version%3D3.2&propertyName=ms%3AID_DZIALKI%2Cms%3AMSGEOMETRY&filter=%3Cfes%3AFilter+xmlns%3Afes%3D%22http%3A%2F%2Fwww.opengis.net%2Ffes%2F2.0%22+xmlns%3Ams%3D%22http%3A%2F%2Fportal.geopoz.poznan.pl%2Fwmsegib%22+xmlns%3Agml%3D%22http%3A%2F%2Fwww.opengis.net%2Fgml%2F3.2%22%3E%3Cfes%3AIntersects%3E%3Cfes%3AValueReference%3Ems%3AMSGEOMETRY%3C%2Ffes%3AValueReference%3E%3Cgml%3APolygon+srsName%3D%22urn%3Aogc%3Adef%3Acrs%3AEPSG%3A%3A2177%22%3E%3Cgml%3Aexterior%3E%3Cgml%3ALinearRing%3E%3Cgml%3AposList+srsDimension%3D%222%22%3E5808303.317152809+6426075.189562835+5808303.317152809+6426115.693431082+5808390.654216426+6426115.693431082+5808390.654216426+6426075.189562835+5808303.317152809+6426075.189562835%3C%2Fgml%3AposList%3E%3C%2Fgml%3ALinearRing%3E%3C%2Fgml%3Aexterior%3E%3C%2Fgml%3APolygon%3E%3C%2Ffes%3AIntersects%3E%3C%2Ffes%3AFilter%3E&count=13&startIndex=0",
+      "requestedAt": "2026-10-09T07:14:54.249Z",
+      "httpStatus": 200,
+      "content-type": "application/xml",
+      "content-length": null,
+      "content-encoding": "gzip",
+      "etag": null,
+      "last-modified": null,
+      "bytes": 14467,
+      "bodySha256": "c5338cf1962ec54f92bdec5d9fab59111ef50e5e038031dc9caae8fc70228c61",
+      "numberMatched": "unknown",
+      "numberReturned": "13",
+      "responseFeatureIds": [
+        "306401_1.0051.AR_44.16",
+        "306401_1.0051.AR_44.22/4",
+        "306401_1.0051.AR_44.21/2",
+        "306401_1.0051.AR_44.20/16",
+        "306401_1.0051.AR_44.21/9",
+        "306401_1.0051.AR_44.27/18",
+        "306401_1.0061.AR_01.1/9",
+        "306401_1.0051.AR_44.27/14",
+        "306401_1.0051.AR_44.27/4",
+        "306401_1.0051.AR_44.20/1",
+        "306401_1.0061.AR_01.1/8",
+        "306401_1.0061.AR_01.3/28",
+        "306401_1.0061.AR_01.3/1"
+      ]
+    },
+    {
+      "stage": "grid",
+      "url": "https://portal.geopoz.poznan.pl/wmsegib?service=WFS&version=2.0.0&request=GetFeature&typeNames=ms%3Adzialki&srsName=urn%3Aogc%3Adef%3Acrs%3AEPSG%3A%3A2177&outputFormat=application%2Fgml%2Bxml%3B+version%3D3.2&propertyName=ms%3AID_DZIALKI%2Cms%3AMSGEOMETRY&filter=%3Cfes%3AFilter+xmlns%3Afes%3D%22http%3A%2F%2Fwww.opengis.net%2Ffes%2F2.0%22+xmlns%3Ams%3D%22http%3A%2F%2Fportal.geopoz.poznan.pl%2Fwmsegib%22+xmlns%3Agml%3D%22http%3A%2F%2Fwww.opengis.net%2Fgml%2F3.2%22%3E%3Cfes%3AIntersects%3E%3Cfes%3AValueReference%3Ems%3AMSGEOMETRY%3C%2Ffes%3AValueReference%3E%3Cgml%3APolygon+srsName%3D%22urn%3Aogc%3Adef%3Acrs%3AEPSG%3A%3A2177%22%3E%3Cgml%3Aexterior%3E%3Cgml%3ALinearRing%3E%3Cgml%3AposList+srsDimension%3D%222%22%3E5808303.317152809+6426075.189562835+5808303.317152809+6426115.693431082+5808390.654216426+6426115.693431082+5808390.654216426+6426075.189562835+5808303.317152809+6426075.189562835%3C%2Fgml%3AposList%3E%3C%2Fgml%3ALinearRing%3E%3C%2Fgml%3Aexterior%3E%3C%2Fgml%3APolygon%3E%3C%2Ffes%3AIntersects%3E%3C%2Ffes%3AFilter%3E&resultType=hits",
+      "requestedAt": "2026-10-09T07:14:54.387Z",
+      "httpStatus": 200,
+      "content-type": "application/xml",
+      "content-length": null,
+      "content-encoding": "gzip",
+      "etag": null,
+      "last-modified": null,
+      "bytes": 789,
+      "bodySha256": "bf55cd92d4e046c107bea89e347329097f90ac7be7ab7d2f4d5851c4f5121079",
+      "numberMatched": "13",
+      "numberReturned": "0",
+      "responseFeatureIds": []
+    },
+    {
+      "stage": "grid",
+      "url": "https://portal.geopoz.poznan.pl/wmsegib?service=WFS&version=2.0.0&request=GetFeature&typeNames=ms%3Adzialki&srsName=urn%3Aogc%3Adef%3Acrs%3AEPSG%3A%3A2177&outputFormat=application%2Fgml%2Bxml%3B+version%3D3.2&propertyName=ms%3AID_DZIALKI%2Cms%3AMSGEOMETRY&filter=%3Cfes%3AFilter+xmlns%3Afes%3D%22http%3A%2F%2Fwww.opengis.net%2Ffes%2F2.0%22+xmlns%3Ams%3D%22http%3A%2F%2Fportal.geopoz.poznan.pl%2Fwmsegib%22+xmlns%3Agml%3D%22http%3A%2F%2Fwww.opengis.net%2Fgml%2F3.2%22%3E%3Cfes%3AIntersects%3E%3Cfes%3AValueReference%3Ems%3AMSGEOMETRY%3C%2Ffes%3AValueReference%3E%3Cgml%3APolygon+srsName%3D%22urn%3Aogc%3Adef%3Acrs%3AEPSG%3A%3A2177%22%3E%3Cgml%3Aexterior%3E%3Cgml%3ALinearRing%3E%3Cgml%3AposList+srsDimension%3D%222%22%3E5808303.317152809+6426075.189562835+5808303.317152809+6426115.693431082+5808390.654216426+6426115.693431082+5808390.654216426+6426075.189562835+5808303.317152809+6426075.189562835%3C%2Fgml%3AposList%3E%3C%2Fgml%3ALinearRing%3E%3C%2Fgml%3Aexterior%3E%3C%2Fgml%3APolygon%3E%3C%2Ffes%3AIntersects%3E%3C%2Ffes%3AFilter%3E&resultType=hits",
+      "requestedAt": "2026-10-09T07:14:54.527Z",
+      "httpStatus": 200,
+      "content-type": "application/xml",
+      "content-length": null,
+      "content-encoding": "gzip",
+      "etag": null,
+      "last-modified": null,
+      "bytes": 789,
+      "bodySha256": "bf55cd92d4e046c107bea89e347329097f90ac7be7ab7d2f4d5851c4f5121079",
+      "numberMatched": "13",
+      "numberReturned": "0",
+      "responseFeatureIds": []
+    },
+    {
+      "stage": "grid",
+      "url": "https://portal.geopoz.poznan.pl/wmsegib?service=WFS&version=2.0.0&request=GetFeature&typeNames=ms%3Adzialki&srsName=urn%3Aogc%3Adef%3Acrs%3AEPSG%3A%3A2177&outputFormat=application%2Fgml%2Bxml%3B+version%3D3.2&propertyName=ms%3AID_DZIALKI%2Cms%3AMSGEOMETRY&filter=%3Cfes%3AFilter+xmlns%3Afes%3D%22http%3A%2F%2Fwww.opengis.net%2Ffes%2F2.0%22+xmlns%3Ams%3D%22http%3A%2F%2Fportal.geopoz.poznan.pl%2Fwmsegib%22+xmlns%3Agml%3D%22http%3A%2F%2Fwww.opengis.net%2Fgml%2F3.2%22%3E%3Cfes%3AIntersects%3E%3Cfes%3AValueReference%3Ems%3AMSGEOMETRY%3C%2Ffes%3AValueReference%3E%3Cgml%3APolygon+srsName%3D%22urn%3Aogc%3Adef%3Acrs%3AEPSG%3A%3A2177%22%3E%3Cgml%3Aexterior%3E%3Cgml%3ALinearRing%3E%3Cgml%3AposList+srsDimension%3D%222%22%3E5808303.317152809+6426075.189562835+5808303.317152809+6426115.693431082+5808390.654216426+6426115.693431082+5808390.654216426+6426075.189562835+5808303.317152809+6426075.189562835%3C%2Fgml%3AposList%3E%3C%2Fgml%3ALinearRing%3E%3C%2Fgml%3Aexterior%3E%3C%2Fgml%3APolygon%3E%3C%2Ffes%3AIntersects%3E%3C%2Ffes%3AFilter%3E&count=13&startIndex=0",
+      "requestedAt": "2026-10-09T07:14:54.650Z",
+      "httpStatus": 200,
+      "content-type": "application/xml",
+      "content-length": null,
+      "content-encoding": "gzip",
+      "etag": null,
+      "last-modified": null,
+      "bytes": 14467,
+      "bodySha256": "c5338cf1962ec54f92bdec5d9fab59111ef50e5e038031dc9caae8fc70228c61",
+      "numberMatched": "unknown",
+      "numberReturned": "13",
+      "responseFeatureIds": [
+        "306401_1.0051.AR_44.16",
+        "306401_1.0051.AR_44.22/4",
+        "306401_1.0051.AR_44.21/2",
+        "306401_1.0051.AR_44.20/16",
+        "306401_1.0051.AR_44.21/9",
+        "306401_1.0051.AR_44.27/18",
+        "306401_1.0061.AR_01.1/9",
+        "306401_1.0051.AR_44.27/14",
+        "306401_1.0051.AR_44.27/4",
+        "306401_1.0051.AR_44.20/1",
+        "306401_1.0061.AR_01.1/8",
+        "306401_1.0061.AR_01.3/28",
+        "306401_1.0061.AR_01.3/1"
+      ]
+    },
+    {
+      "stage": "grid",
+      "url": "https://portal.geopoz.poznan.pl/wmsegib?service=WFS&version=2.0.0&request=GetFeature&typeNames=ms%3Adzialki&srsName=urn%3Aogc%3Adef%3Acrs%3AEPSG%3A%3A2177&outputFormat=application%2Fgml%2Bxml%3B+version%3D3.2&propertyName=ms%3AID_DZIALKI%2Cms%3AMSGEOMETRY&filter=%3Cfes%3AFilter+xmlns%3Afes%3D%22http%3A%2F%2Fwww.opengis.net%2Ffes%2F2.0%22+xmlns%3Ams%3D%22http%3A%2F%2Fportal.geopoz.poznan.pl%2Fwmsegib%22+xmlns%3Agml%3D%22http%3A%2F%2Fwww.opengis.net%2Fgml%2F3.2%22%3E%3Cfes%3AIntersects%3E%3Cfes%3AValueReference%3Ems%3AMSGEOMETRY%3C%2Ffes%3AValueReference%3E%3Cgml%3APolygon+srsName%3D%22urn%3Aogc%3Adef%3Acrs%3AEPSG%3A%3A2177%22%3E%3Cgml%3Aexterior%3E%3Cgml%3ALinearRing%3E%3Cgml%3AposList+srsDimension%3D%222%22%3E5808303.317152809+6426075.189562835+5808303.317152809+6426115.693431082+5808390.654216426+6426115.693431082+5808390.654216426+6426075.189562835+5808303.317152809+6426075.189562835%3C%2Fgml%3AposList%3E%3C%2Fgml%3ALinearRing%3E%3C%2Fgml%3Aexterior%3E%3C%2Fgml%3APolygon%3E%3C%2Ffes%3AIntersects%3E%3C%2Ffes%3AFilter%3E&resultType=hits",
+      "requestedAt": "2026-10-09T07:14:54.780Z",
+      "httpStatus": 200,
+      "content-type": "application/xml",
+      "content-length": null,
+      "content-encoding": "gzip",
+      "etag": null,
+      "last-modified": null,
+      "bytes": 789,
+      "bodySha256": "bf55cd92d4e046c107bea89e347329097f90ac7be7ab7d2f4d5851c4f5121079",
+      "numberMatched": "13",
+      "numberReturned": "0",
+      "responseFeatureIds": []
+    }
+  ],
+  "qualityFile": "world-parcels/research/overnight-next-2026-10-09/poznan-runtime-candidate-evidence.json",
+  "locatorContainingIds": [
+    "306401_1.0051.AR_44.27/14"
+  ],
+  "uniqueNativeIds": 51,
+  "requestCount": 73,
+  "allTestsPassed": true,
+  "finishedAt": "2026-10-09T07:14:54.905Z",
+  "qualityStatus": "approved_bounded_full_geometry",
+  "rootReviewedAt": "2026-10-09T07:19:42.539920+00:00",
+  "rootQualityFile": "poznan-root-quality.json",
+  "rootQualityReview": "poznan-root-quality-review.json"
+}

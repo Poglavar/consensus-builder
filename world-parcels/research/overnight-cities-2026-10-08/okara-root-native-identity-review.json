@@ -1,0 +1,22 @@
+{
+  "schemaVersion": 1,
+  "checkedAt": "2026-10-09T03:45:50.431533+00:00",
+  "features": [
+    {
+      "runtimeId": "PK-PULSE-OKARA-10854687",
+      "originalNativeProperties": {
+        "OBJECTID": 10854687,
+        "Khasra_ID": 0,
+        "Mouza_ID": 0
+      },
+      "originalSampleMatchesFreshFullGeometry": true,
+      "rawCoordinateArraysIdentical": false,
+      "topologicallyIdentical": true,
+      "metricSrid": 32643,
+      "symmetricDifferenceM2": 0.0,
+      "hausdorffDistanceM": 0.0
+    }
+  ],
+  "sourceCoordinatesModified": false,
+  "fullGeometryRetainedInReview": false
+}

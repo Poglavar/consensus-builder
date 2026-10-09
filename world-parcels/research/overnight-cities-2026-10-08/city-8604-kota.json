@@ -1,0 +1,109 @@
+{
+  "name": "Kota",
+  "country": "India",
+  "countryCode": "IN",
+  "rank": 415,
+  "point": [
+    25.1632870782321,
+    75.8550432156941
+  ],
+  "freshResearch": {
+    "queries": [
+      {
+        "language": "Hindi",
+        "query": "कोटा राजस्थान शहरी GIS भू नक्शा खसरा नक्शा आधिकारिक",
+        "scope": "Find an anonymous official Kota parcel map and full vector endpoint.",
+        "result": "Rajasthan’s public Urban GIS portal exposes city/ULB, Khasra/plot, and jurisdiction layer selectors with coordinate and Khasra search. Its disclaimer says viewing only and attributes the data to Settlement Department Khasra/village boundaries; no anonymous full-geometry response was confirmed.",
+        "actualResultUrls": [
+          "https://rajdharaa.rajasthan.gov.in/citizenudh/",
+          "https://gis.rajasthan.gov.in/citizenudh/PDF/User_Manual_Urban_GIS_Portal.pdf"
+        ],
+        "executionMethod": "Official source search and read-only service inspection."
+      },
+      {
+        "language": "English",
+        "query": "Kota Rajasthan official urban GIS cadastral parcel Khasra plot map public vector",
+        "scope": "Cross-check Kota portal ownership and whether its map exposes downloadable geometry.",
+        "result": "The public portal provides a visual map interface and Khasra/plot layer selection, but full parcel geometry/vector access and city-specific WUP-point response remain unverified. The municipal page links a jurisdiction-boundary map, not parcel polygons.",
+        "actualResultUrls": [
+          "https://rajdharaa.rajasthan.gov.in/citizenudh/",
+          "https://lsg.rajasthan.gov.in/mckota/"
+        ],
+        "executionMethod": "Official source search and read-only service inspection."
+      }
+    ],
+    "portals": [
+      {
+        "name": "Rajasthan Urban GIS Portal",
+        "operator": "Government of Rajasthan, Urban GIS portal",
+        "homeUrl": "https://rajdharaa.rajasthan.gov.in/citizenudh/",
+        "observation": "Public map UI includes city/ULB selection, Khasra/plot layer toggles, coordinate input and Khasra search. Portal disclaimer limits it to viewing and cites Settlement Department cadastral/village-boundary data. Full vector geometry was not verified."
+      }
+    ],
+    "requests": [
+      {
+        "url": "https://rajdharaa.rajasthan.gov.in/citizenudh/",
+        "method": "GET",
+        "httpStatus": null,
+        "contentType": "text/html",
+        "observation": "Official portal identified via current search/render; direct shell request timed out locally, so no origin outage is inferred."
+      },
+      {
+        "url": "https://gis.rajasthan.gov.in/citizenudh/PDF/User_Manual_Urban_GIS_Portal.pdf",
+        "method": "GET",
+        "httpStatus": null,
+        "contentType": null,
+        "observation": "Official manual route redirects in web inspection to the portal; no geometry service schema exposed."
+      }
+    ],
+    "historicalContext": []
+  },
+  "status": "complete",
+  "verifiedParcelResponse": null,
+  "source": {
+    "sourceId": "IN-RJ-KOTA-URBAN-GIS",
+    "name": "Rajasthan Urban GIS Portal (visual Khasra/plot layers)",
+    "url": "https://rajdharaa.rajasthan.gov.in/citizenudh/",
+    "operator": "Government of Rajasthan",
+    "serviceType": "Anonymous visual map portal; full-geometry query not verified.",
+    "layer": "Khasra/Plot options shown in public interface; city-specific layer binding and native feature IDs unverified.",
+    "geometryType": "unknown; no full geometry response retrieved",
+    "outputCrs": "unknown",
+    "nativeIdField": "unknown",
+    "nativeIdEvidence": "Khasra search input observed; no record identity response obtained."
+  },
+  "coverageAssessment": {
+    "claimedScope": "Public Rajasthan Urban GIS portal supports city/ULB browsing and displays Khasra/plot layer options.",
+    "verifiedOpenScope": "Visual UI only. No city-specific full polygon response was obtained at the WUP point or elsewhere.",
+    "countrywideVerified": false
+  },
+  "registryFound": true,
+  "verifiedSample": false,
+  "resultCategory": "official_public_viewer_geometry_unverified",
+  "technicalBlocker": "The official portal exposes a public visual Khasra/plot interface, but anonymous full-feature geometry and response schema were not confirmed. Direct shell access timed out locally; this is not evidence of origin downtime.",
+  "remainingUncertainty": "Whether Kota’s selected public Khasra/plot layer has anonymous vector responses and whether its extent includes the queued WUP city point.",
+  "nextStep": "Inspect the portal in a browser or through its documented public route, select Kota and determine whether full polygons can be retrieved without account access; if only rendered map imagery, keep geometry unverified.",
+  "schemaVersion": 1,
+  "checkedAt": "2026-10-08T23:35:00Z",
+  "wupCityCode": 8604,
+  "cityId": "wup2025:8604",
+  "runtimeReadiness": "not_enabled_no_verified_public_geometry",
+  "adapterReady": false,
+  "centerLatLon": [
+    25.1632870782321,
+    75.8550432156941
+  ],
+  "queueRank": 415,
+  "population2025": 1232364,
+  "populationPlausibility2025": "High",
+  "populationUnit": "persons",
+  "pointBasis": "UN WUP 2025 population-weighted settlement centroid; this is not a municipal boundary or a parcel-coverage claim.",
+  "publicParcelGeometryFound": false,
+  "rootReviewedAt": "2026-10-08T23:47:22.529967+00:00",
+  "sourceIds": [],
+  "runtimeAssessment": {
+    "decision": "hold",
+    "reason": "Visual public map found, but no complete feature polygon, exact identity, or request semantics verified."
+  },
+  "registryBasis": "Official state portal presents cadastral Khasra/plot layers for visual browsing; this establishes a city/state cadastral viewer, not an open geometry API."
+}

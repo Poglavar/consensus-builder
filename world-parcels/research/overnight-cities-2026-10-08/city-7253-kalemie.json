@@ -1,0 +1,84 @@
+{
+  "schemaVersion": 1,
+  "checkedAt": "2026-10-09",
+  "status": "complete",
+  "adapterReady": false,
+  "pointBasis": "UN WUP 2025 population-weighted settlement centroid; this is not a municipal boundary or a parcel-coverage claim.",
+  "coverageAssessment": {
+    "verifiedOpenScope": "No safe public polygon sample was retained.",
+    "citywideVerified": false,
+    "countrywideVerified": false
+  },
+  "name": "Kalemie",
+  "country": "Democratic Republic of the Congo",
+  "countryCode": "CD",
+  "rank": 704,
+  "point": [
+    -5.92125030886077,
+    29.19350409447
+  ],
+  "population2025": 758379,
+  "populationPlausibility2025": "Low",
+  "wupCityCode": 7253,
+  "cityId": "wup2025:7253",
+  "queueRank": 704,
+  "registryFound": true,
+  "registryBasis": "The official Ministry of Land Affairs lists Kalemie as a Tanganyika land/cadastral district. The DRC public-service catalogue documents formal consultation of cadastral and real-estate registers through a Conservateur des Titres Immobiliers or Cadastre Division, with an application and fee. These are city-specific registry services; no anonymous public vector layer was identified.",
+  "registryEvidenceUrls": [
+    "https://affairesfoncieres.gouv.cd/secretariat/circonscriptions",
+    "https://servicepublic.gouv.cd/service/4671",
+    "https://affairesfoncieres.gouv.cd/ministere/historique"
+  ],
+  "publicParcelGeometryFound": false,
+  "verifiedSample": false,
+  "verifiedParcelResponse": null,
+  "freshResearch": {
+    "queries": [
+      {
+        "language": "French",
+        "query": "Kalemie circonscription foncière cadastre registre immobilier officiel Tanganyika",
+        "scope": "Verify a city-specific registry workflow and look for any safe public parcel-vector service.",
+        "result": "The official Ministry of Land Affairs lists Kalemie as one of five Tanganyika land/cadastral districts. The public-services catalogue explains that register searches are requested from the title registrar or Cadastre Division, researched in official books, paid, and issued as an official information sheet/certificate. No public feature service or geometry schema was found.",
+        "actualResultUrls": [
+          "https://affairesfoncieres.gouv.cd/secretariat/circonscriptions",
+          "https://servicepublic.gouv.cd/service/4671"
+        ],
+        "executionMethod": "Separate French-language discovery and official ministry/service-catalogue review. No formal parcel search or property-identifier lookup was submitted."
+      },
+      {
+        "language": "English",
+        "query": "Kalemie DRC official land registry cadastral office property records parcel map GIS",
+        "scope": "Verify a city-specific registry workflow and look for any safe public parcel-vector service.",
+        "result": "English discovery did not identify an anonymous parcel GIS. Official French primary sources establish a Kalemie land/cadastre district and formal land-register consultation workflow; the workflow is a requested record search, not an open geometry service.",
+        "actualResultUrls": [
+          "https://affairesfoncieres.gouv.cd/secretariat/circonscriptions",
+          "https://servicepublic.gouv.cd/service/4671"
+        ],
+        "executionMethod": "Separate English-language search followed by official ministry and public-services catalogue review. No parcel lookup."
+      }
+    ]
+  },
+  "scopeLimits": "The official consultation workflow requires a formal request to the local title registrar or Cadastre Division and payment; it may return owner/title information. No record request was made. No anonymous vector layer or native schema was identified.",
+  "source": {
+    "sourceId": "CD-TG-KALEMIE-FONCIERE",
+    "name": "Kalemie land/cadastral district and DRC land-record consultation service",
+    "url": "https://affairesfoncieres.gouv.cd/secretariat/circonscriptions",
+    "operator": "Ministry of Land Affairs, Democratic Republic of the Congo",
+    "serviceType": "City land-register and cadastral-register office; formal consultation workflow",
+    "layer": "Cadastral and real-estate register books; no public vector layer identified",
+    "geometryType": "unknown",
+    "outputCrs": "unknown",
+    "nativeIdField": "parcel-specific formal application required; schema not public"
+  },
+  "sourceIds": [],
+  "runtimeReadiness": "not_enabled_no_verified_public_geometry",
+  "technicalBlocker": "No public anonymous feature endpoint or native polygon schema was found; the documented city workflow requires a formal, paid parcel-register request.",
+  "remainingUncertainty": "Availability of parcel maps outside formal file searches and any machine-readable geometry service remain unverified.",
+  "populationUnit": "persons",
+  "population2025k": 758.379,
+  "centerLatLon": [
+    -5.92125030886077,
+    29.19350409447
+  ],
+  "rootReviewedAt": "2026-10-09T02:45:05.881311+00:00"
+}

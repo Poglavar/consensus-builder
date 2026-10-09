@@ -88,10 +88,9 @@
 
     async function simulateTransactionOrThrow(connection, tx) {
         if (!connection || typeof connection.simulateTransaction !== 'function') return null;
-        const simulation = await connection.simulateTransaction(tx, {
-            sigVerify: false,
-            replaceRecentBlockhash: false
-        });
+        // A legacy Transaction goes to web3.js 1.x's (transaction, signers?) overload: a config object there
+        // throws "Invalid arguments" before anything is signed. No signers means an unsigned simulation.
+        const simulation = await connection.simulateTransaction(tx);
         const value = simulation && simulation.value ? simulation.value : simulation;
         if (value && value.err) {
             const err = new Error('Solana transaction simulation failed.');

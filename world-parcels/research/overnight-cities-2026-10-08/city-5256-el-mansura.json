@@ -1,0 +1,117 @@
+{
+  "name": "El Mansura",
+  "country": "Egypt",
+  "countryCode": "EG",
+  "rank": 285,
+  "point": [
+    31.0449517180216,
+    31.4098944249666
+  ],
+  "population2025": 1712781,
+  "schemaVersion": 1,
+  "kind": "city_parcel_source_research",
+  "checkedAt": "2026-10-09",
+  "populationUnit": "persons",
+  "status": "complete",
+  "verifiedSample": false,
+  "publicParcelGeometryFound": false,
+  "runtimeReadiness": "not_enabled_no_verified_public_geometry",
+  "priorEvidenceFiles": [],
+  "scopeLimits": "The WUP locator is a settlement centroid, not a parcel identity. The official Dakahlia notice is city-specific but does not establish that the exact point lies within its surveyed project boundary. ESA digital map products require a written request, site/scale/layers, quotation and payment. No public parcel viewer/service endpoint or parcel geometry was found; no owner/address data retained.",
+  "pointBasis": "UN WUP 2025 population-weighted settlement centroid; this is not a municipal boundary or a parcel-coverage claim.",
+  "registryFound": true,
+  "registryBasis": "The Egyptian Survey Authority has a Dakahlia Survey Directorate with a Mansoura-specific public surveying/expropriation notice. The notice says maps and compensation lists are displayed at the local directorate and East Mansoura district office. This establishes a local survey-record source, but not an anonymous parcel GIS or the national urban real-property register: ESA lists its initial register rollout for nine Cairo areas, not Mansoura.",
+  "resultCategory": "local_survey_records_exist_no_public_parcel_geometry",
+  "research": {
+    "executedQueries": [
+      {
+        "language": "English",
+        "query": "El Mansura Egypt official cadastral parcel map parcel survey authority Dakahlia GIS land registry",
+        "scope": "Find actual city-specific cadastral/land-record sources and public parcel geometry.",
+        "result": "Official ESA and Egyptian government sources identify the Dakahlia Survey Directorate and a Mansoura-specific survey notice. ESA digital map sales are request-based; no public parcel geometry endpoint was identified.",
+        "actualResultUrls": [
+          "https://www.esa.gov.eg/NewsContent2.aspx?id=1502",
+          "https://mediadr.sis.gov.eg/bitstream/handle/123456789/106177/WQ183_20250819_3372.pdf?sequence=2&isAllowed=y",
+          "https://www.esa.gov.eg/sellingmaproomdigital.aspx",
+          "https://www.esa.gov.eg/segel.aspx",
+          "https://www.esa.gov.eg/files/Topographic_Maps.pdf"
+        ],
+        "executionMethod": "Separate web search in the stated language followed by official-source and public viewer/service inspection."
+      },
+      {
+        "language": "Arabic",
+        "query": "المنصورة الدقهلية خريطة مساحية قطع الأراضي السجل العقاري الهيئة المصرية العامة للمساحة الرسمية",
+        "scope": "Find actual city-specific cadastral/land-record sources and public parcel geometry.",
+        "result": "Official ESA/SIS sources identify Dakahlia survey work and a Mansoura notice, while the published map-product path is request/payment based. No public lot viewer or geometry response was identified.",
+        "actualResultUrls": [
+          "https://www.esa.gov.eg/NewsContent2.aspx?id=1502",
+          "https://mediadr.sis.gov.eg/bitstream/handle/123456789/106177/WQ183_20250819_3372.pdf?sequence=2&isAllowed=y",
+          "https://www.esa.gov.eg/sellingmaproomdigital.aspx",
+          "https://www.esa.gov.eg/segel.aspx",
+          "https://www.esa.gov.eg/files/Topographic_Maps.pdf"
+        ],
+        "executionMethod": "Separate web search in the stated language followed by official-source and public viewer/service inspection."
+      }
+    ],
+    "officialSources": [
+      {
+        "url": "https://www.esa.gov.eg/NewsContent2.aspx?id=1502",
+        "httpStatus": 200,
+        "observation": "Official Egyptian Survey Authority item naming the Dakahlia Survey Directorate and its local surveying/GIS work."
+      },
+      {
+        "url": "https://mediadr.sis.gov.eg/bitstream/handle/123456789/106177/WQ183_20250819_3372.pdf?sequence=2&isAllowed=y",
+        "observation": "Official Egyptian government gazette notice for a surveying/expropriation project in Mansoura; maps and compensation lists are stated to be displayed at the Dakahlia Survey Directorate and East Mansoura district office. No parcel features are published in the notice."
+      },
+      {
+        "url": "https://www.esa.gov.eg/sellingmaproomdigital.aspx",
+        "observation": "Official ESA digital-map product page describes written-request, quotation and payment workflow; no anonymous GIS viewer or vector service is exposed."
+      },
+      {
+        "url": "https://www.esa.gov.eg/segel.aspx",
+        "observation": "Official ESA page for the initial urban real-property register rollout; its named launch areas are in Cairo, not Mansoura."
+      },
+      {
+        "url": "https://www.esa.gov.eg/files/Topographic_Maps.pdf",
+        "observation": "Official topographic-map index lists Dakahlia map products, including scales and 2006/2007 coverage markers; this is not parcel geometry."
+      }
+    ],
+    "viewerAndServiceTrace": {
+      "viewerUrl": "https://www.esa.gov.eg/sellingmaproomdigital.aspx",
+      "apiBase": null,
+      "observedClientRoutes": [],
+      "notes": "Reviewed the official ESA public map-product workflow and city-specific notice. No public interactive cadastral viewer or map service was exposed. No credentials or gated workflow was used."
+    }
+  },
+  "verifiedParcelResponse": null,
+  "source": {
+    "sourceId": "EG-DAKHLIA-MANSOURA-SURVEY-DIRECTORATE",
+    "name": "Egyptian Survey Authority, Dakahlia Survey Directorate (Mansoura survey notice)",
+    "url": "https://www.esa.gov.eg/NewsContent2.aspx?id=1502",
+    "operator": "Egyptian Survey Authority",
+    "serviceType": "Local survey and map-record office; published notice requires in-person inspection of maps/list, while digital map products use a request-and-purchase process.",
+    "layer": null,
+    "geometryType": null,
+    "outputCrs": null,
+    "nativeIdField": null,
+    "nativeIdEvidence": "No public parcel identifier or vector feature was returned."
+  },
+  "wupCityCode": 5256,
+  "cityId": "wup2025:5256",
+  "queueRank": 285,
+  "populationPlausibility2025": "High",
+  "centerLatLon": [
+    31.0449517180216,
+    31.4098944249666
+  ],
+  "sourceIds": [],
+  "adapterReady": false,
+  "technicalBlocker": "The WUP locator is a settlement centroid, not a parcel identity. The official Dakahlia notice is city-specific but does not establish that the exact point lies within its surveyed project boundary. ESA digital map products require a written request, site/scale/layers, quotation and payment. No public parcel viewer/service endpoint or parcel geometry was found; no owner/address data retained.",
+  "remainingUncertainty": "Whether a different current anonymous full-polygon service exists in this city; none was verified in the inspected sources.",
+  "coverageAssessment": {
+    "verifiedOpenScope": "The WUP locator is a settlement centroid, not a parcel identity. The official Dakahlia notice is city-specific but does not establish that the exact point lies within its surveyed project boundary. ESA digital map products require a written request, site/scale/layers, quotation and payment. No public parcel viewer/service endpoint or parcel geometry was found; no owner/address data retained.",
+    "citywideVerified": false,
+    "countrywideVerified": false
+  },
+  "rootReviewedAt": "2026-10-08T21:54:55.714575+00:00"
+}

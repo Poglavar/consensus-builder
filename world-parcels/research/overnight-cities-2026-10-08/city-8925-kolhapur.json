@@ -1,0 +1,85 @@
+{
+  "name": "Kolhapur",
+  "country": "India",
+  "countryCode": "IN",
+  "rank": 641,
+  "point": [
+    16.6906689924109,
+    74.2379048458624
+  ],
+  "population2025": 819671,
+  "populationUnit": "persons",
+  "population2025k": 819.671,
+  "populationPlausibility2025": "Moderate",
+  "schemaVersion": 1,
+  "checkedAt": "2026-10-09",
+  "status": "complete",
+  "registryFound": true,
+  "registryBasis": "The official Maharashtra Land Records Department lists Kolhapur District Superintendent and city-survey offices and provides Mahabhunakasha for maps with land records. The Kolhapur District government links to land-record services. No safe anonymous parcel geometry response was verified.",
+  "registryEvidenceUrls": [
+    "https://bhumiabhilekh.maharashtra.gov.in/Contact/ContactDS",
+    "https://bhumiabhilekh.maharashtra.gov.in/Services",
+    "https://kolhapur.gov.in/en/service/7-12-online/",
+    "https://mahabhunakasha.mahabhumi.gov.in/27/index.html"
+  ],
+  "publicParcelGeometryFound": false,
+  "verifiedSample": false,
+  "verifiedParcelResponse": null,
+  "freshResearch": {
+    "queries": [
+      {
+        "language": "Marathi",
+        "query": "कोल्हापूर भूमी अभिलेख नगर भूमापन भू नकाशा गट सर्वे नकाशा अधिकृत",
+        "scope": "Locate city-specific registry/cadastre sources and verify anonymous safe public parcel geometry.",
+        "result": "Official Maharashtra Land Records lists the Kolhapur district and city survey offices and Mahabhunakasha maps with land records; only selected survey maps, no coordinate query verified.",
+        "actualResultUrls": [
+          "https://bhumiabhilekh.maharashtra.gov.in/Contact/ContactDS",
+          "https://mahabhunakasha.mahabhumi.gov.in/27/index.html"
+        ],
+        "executionMethod": "Separate language-specific search followed by official-source review; no personal lookup or owner/address field request."
+      },
+      {
+        "language": "English",
+        "query": "Kolhapur Maharashtra official cadastral parcel map land records GIS",
+        "scope": "Locate city-specific registry/cadastre sources and verify anonymous safe public parcel geometry.",
+        "result": "Official district page links Maharashtra land records; the state map portal requires location and plot selection. No anonymous bounded feature query verified.",
+        "actualResultUrls": [
+          "https://kolhapur.gov.in/en/service/7-12-online/",
+          "https://mahabhunakasha.mahabhumi.gov.in/27/index.html"
+        ],
+        "executionMethod": "Separate language-specific search followed by official-source review; no personal lookup or owner/address field request."
+      }
+    ]
+  },
+  "scopeLimits": "Mahabhunakasha requests location and plot-number selections; the municipal land-use map is not a cadastre. No city parcel geometry or exact WUP-point coverage was verified.",
+  "pointBasis": "UN WUP 2025 population-weighted settlement centroid; this is not a municipal boundary or a parcel-coverage claim.",
+  "source": {
+    "sourceId": "IN-MH-KOLHAPUR-BHUMI-RECORDS",
+    "name": "Maharashtra Land Records / Mahabhunakasha",
+    "url": "https://mahabhunakasha.mahabhumi.gov.in/27/index.html",
+    "operator": "Maharashtra Land Records Department / Kolhapur District Survey Office",
+    "serviceType": "Public map and land-record portal with location and plot-number selection; no anonymous coordinate query verified",
+    "layer": "Village, city-survey and parcel map services; no feature endpoint/schema inspected",
+    "geometryType": "Map display/download; vector endpoint unverified",
+    "outputCrs": "unknown",
+    "nativeIdField": "plot/survey number; not inspected"
+  },
+  "wupCityCode": 8925,
+  "cityId": "wup2025:8925",
+  "queueRank": 641,
+  "sourceIds": [],
+  "adapterReady": false,
+  "runtimeReadiness": "not_enabled_no_verified_public_geometry",
+  "technicalBlocker": "Mahabhunakasha requests location and plot-number selections; the municipal land-use map is not a cadastre. No city parcel geometry or exact WUP-point coverage was verified.",
+  "remainingUncertainty": "Exact locator coverage, safe source-native identifier and bounded anonymous geometry retrieval are unverified.",
+  "coverageAssessment": {
+    "verifiedOpenScope": "No parcel geometry sample was retained.",
+    "citywideVerified": false,
+    "countrywideVerified": false
+  },
+  "centerLatLon": [
+    16.6906689924109,
+    74.2379048458624
+  ],
+  "rootReviewedAt": "2026-10-09T02:12:55.238180+00:00"
+}

@@ -1,0 +1,184 @@
+{
+  "schemaVersion": 1,
+  "checkedAt": "2026-10-09",
+  "sourceId": "mx-leon-municipal-catastro",
+  "purpose": "Service review for WUP2025 rank 371 León (city code 4456); source registry evidence and safe anonymous full-polygon access status.",
+  "primaryPublisher": "Municipio de León, Guanajuato",
+  "sourceUrl": "https://www.leon.gob.mx/tesoreria/direccion-general.php?id=1",
+  "registryFound": true,
+  "registryBasis": "The Municipio de León confirms a municipal Dirección de Catastro and a city catastro platform that publishes digital valuation cartography. These are local registry/cadastre evidence; the publicly indexed map products reviewed are value zones and planning layers, not parcel geometry.",
+  "officialSources": [
+    {
+      "url": "https://www.leon.gob.mx/tesoreria/direccion-general.php?id=1",
+      "observation": "Municipal Dirección General de Ingresos page identifies the Dirección de Catastro Municipal and says it supervises digital cartography of parcels and subdivisions."
+    },
+    {
+      "url": "https://www.leon.gob.mx/appportal/consultacartografica/",
+      "observation": "Official city cadastral page offers 2026 land-value maps by street segment and neighborhood; those are valuation maps, not verified parcel geometry."
+    },
+    {
+      "url": "https://www.plataformaleon.gob.mx/descarga.php",
+      "observation": "Official city geographic platform download index lists planning, development and census polygons and PDF maps; it does not list a cadastral parcel geometry download."
+    }
+  ],
+  "searchQueries": [
+    {
+      "language": "English",
+      "query": "León Guanajuato official cadastral map parcels GIS municipal catastro open data",
+      "scope": "Find the city-specific cadastral registry and anonymous parcel polygon/map services.",
+      "result": "Official city pages identify the municipal Dirección de Catastro and a cadastral valuation map. The city geographic platform download index publishes zoning, urban limit, development, and other planning layers, but does not list parcel polygons. No full parcel geometry endpoint was verified.",
+      "actualResultUrls": [
+        "https://www.leon.gob.mx/tesoreria/direccion-general.php?id=1",
+        "https://www.leon.gob.mx/appportal/consultacartografica/",
+        "https://www.plataformaleon.gob.mx/descarga.php"
+      ],
+      "executionMethod": "English-language web search followed by direct inspection of official city pages."
+    },
+    {
+      "language": "Spanish",
+      "query": "León Guanajuato catastro mapa predial datos abiertos parcelas WFS oficial",
+      "scope": "Buscar el catastro municipal y servicios cartográficos abiertos con geometría predial para León.",
+      "result": "La búsqueda oficial localizó el plano municipal de valores de terreno, el portal geográfico municipal y la Dirección de Catastro. Los recursos publicados revisados son planos de valor y capas de planeación; no se verificó un servicio público con polígonos prediales completos.",
+      "actualResultUrls": [
+        "https://www.leon.gob.mx/appportal/consultacartografica/",
+        "https://www.plataformaleon.gob.mx/descarga.php",
+        "https://www.leon.gob.mx/tesoreria/direccion-general.php?id=1"
+      ],
+      "executionMethod": "Búsqueda en español y revisión de páginas oficiales del Municipio de León."
+    }
+  ],
+  "accessReview": {
+    "publicAnonymousGeometryVerified": false,
+    "completeGeoreferencedPolygonCount": 0,
+    "geometryRetained": false,
+    "ownerAddressTaxOrPersonLookupRequested": false,
+    "authenticationOrCredentialsUsed": false,
+    "captchaOrPersonalFormSubmitted": false,
+    "routeInspectionStatus": "not_verified",
+    "reason": "No public anonymous full parcel polygon service was identified in the reviewed city map downloads or valuation map page. The municipal property lookup/payment path requires a cadastral account number and was not queried.",
+    "candidateLayer": "implan:predios_piloto",
+    "candidateSchema": {
+      "geometryField": "geom",
+      "geometryType": "gml:MultiSurfacePropertyType",
+      "safeNativeIdField": "objectid",
+      "otherAttributeFieldsPrintedOrQueried": false
+    },
+    "targetGeometryRequest": {
+      "countLimit": 3,
+      "requestedProperties": [
+        "geom"
+      ],
+      "returnedFeatures": 0,
+      "responseStatus": 200,
+      "crsConcern": "GetCapabilities declares EPSG::32614 while bbox coordinates appear degree-like; geometry is not treated as absent solely from the empty response."
+    },
+    "mapConfigurationLayerCount": 18,
+    "wfsFeatureTypeCount": 392,
+    "publicDownloadKmzCount": 14
+  },
+  "requestEvidence": [
+    {
+      "method": "web search",
+      "observation": "Searches were conducted separately in English and the city/country primary language. Search results and official source pages are recorded above; search-result presence is not treated as a parcel response."
+    },
+    {
+      "method": "official-page inspection",
+      "observation": "Inspected the listed official HTML/content sources only. No undocumented endpoint or feature response was observed, so no HTTP status, feature count, CRS or native feature ID is asserted."
+    },
+    {
+      "url": "https://www.plataformaleon.gob.mx/descarga.php",
+      "method": "GET",
+      "status": 200,
+      "contentType": "text/html; charset=UTF-8",
+      "bytes": 30560,
+      "observation": "Anonymous direct response lists 14 KMZ downloads: development polygons, UGAT, land use, primary roads, schools, health, libraries, sport, markets, green areas, intra/peri-urban vacant lots, urban limit and delegations; no parcel file."
+    },
+    {
+      "url": "https://www.plataformaleon.gob.mx/mapamunicipio.php",
+      "method": "GET",
+      "status": 200,
+      "contentType": "text/html; charset=UTF-8",
+      "bytes": 8278,
+      "observation": "HTML embeds official GeoExplorer map 83. A second old `leon-linux.com` iframe is linked, but its anonymous HTTP request was refused; it was not used as evidence."
+    },
+    {
+      "url": "https://plataformaleon.gob.mx/geoexplorer/composer/",
+      "method": "GET",
+      "status": 200,
+      "contentType": "text/html; charset=utf-8",
+      "bytes": 4608,
+      "observation": "Public GeoExplorer shell; official host uses `/geoserver/ows` and map-ID route `../maps/83`."
+    },
+    {
+      "url": "https://plataformaleon.gob.mx/geoexplorer/maps/83",
+      "method": "GET",
+      "status": 200,
+      "contentType": "application/json",
+      "bytes": 50788,
+      "observation": "Anonymous map configuration has 18 layers; none is cadastral parcel geometry. Layer list includes city blocks and planning/utility layers."
+    },
+    {
+      "url": "https://plataformaleon.gob.mx/geoserver/ows?service=WFS&request=GetCapabilities&version=2.0.0",
+      "method": "GET",
+      "status": 200,
+      "contentType": "application/xml",
+      "bytes": 299844,
+      "observation": "392 feature types. `catastro` workspace contains eight visible boundary, street, locality and block layers. The nearest parcel-like candidate is a pilot layer; several other `predios_*` names are thematic hazard overlays."
+    },
+    {
+      "url": "https://plataformaleon.gob.mx/geoserver/ows?service=WFS&version=2.0.0&request=DescribeFeatureType&typeNames=implan%3Apredios_piloto",
+      "method": "GET",
+      "status": 200,
+      "contentType": "application/gml+xml; version=3.2",
+      "bytes": 3974,
+      "observation": "Filtered schema review found only safe ID `objectid` and geometry field `geom` (MultiSurface) for output; 29 other fields were not printed or queried."
+    },
+    {
+      "url": "https://plataformaleon.gob.mx/geoserver/ows?service=WFS&version=2.0.0&request=GetFeature&typeNames=implan%3Apredios_piloto&count=3&propertyName=geom&srsName=EPSG%3A4326&outputFormat=application%2Fjson&bbox=21.1041552910899%2C-101.68695408078%2C21.1441552910899%2C-101.64695408078%2CEPSG%3A4326",
+      "method": "GET",
+      "status": 200,
+      "contentType": "application/json;charset=UTF-8",
+      "bytes": 147,
+      "requestedAttributes": [
+        "geom"
+      ],
+      "featureCount": 0,
+      "observation": "Bounded geometry-only query around the exact WUP locator returned zero features; response contained no properties or geometry. The candidate’s published extent is separated from the center by about 7.93 km, and its declared CRS/degree-like extent conflict means this is not proof that parcels are absent."
+    },
+    {
+      "url": "https://www.leon.gob.mx/appportal/consultacartografica/",
+      "method": "GET",
+      "status": null,
+      "observation": "Direct Node HTTPS request failed before an HTTP response with `getaddrinfo ENOTFOUND www.leon.gob.mx`; official page content was independently visible through the web search/open path. No HTTP status is claimed."
+    }
+  ],
+  "technicalBlocker": "A public León IMPLAN GeoExplorer/WFS is now verified. Its map-83 configuration lists 18 public planning layers; the 392-type WFS catalogue contains a pilot `implan:predios_piloto` MultiSurface schema with `objectid`, but its advertised extent is about 7.93 km from the WUP locator and a geometry-only request within a 4.4 km by 4.4 km target box returned zero features. The catalogue advertises block polygons and thematic predio risk overlays, not a verified citywide parcel layer. The layer advertises a projected CRS while its bbox numbers are degree-like, so the zero response is not treated as proof of parcel absence. No qualifying target geometry was returned.",
+  "sampleDisposition": "No full polygon was returned for the WUP-area geometry-only query; the only candidate layer is a partial pilot extent about 7.93 km away and has inconsistent CRS/extent metadata. Zero qualifying polygons retained.",
+  "remainingUncertainty": "The León cadastral viewer and its static JavaScript/API were not inspected. Whether an anonymous selector route exposes parcel polygons remains unverified. Published city map PDFs and planning layers do not prove parcel boundaries.",
+  "viewerClientInspection": {
+    "checkedAt": "2026-10-09",
+    "shellUrl": "https://plataformaleon.gob.mx/geoexplorer/composer/",
+    "shellStatus": 200,
+    "scripts": [
+      {
+        "path": "/geoexplorer/externals/ext/adapter/ext/ext-base.js",
+        "status": 200,
+        "bytes": 27254,
+        "role": "framework library"
+      },
+      {
+        "path": "/geoexplorer/externals/ext/ext-all.js",
+        "status": 200,
+        "bytes": 717499,
+        "role": "framework library"
+      },
+      {
+        "path": "/geoexplorer/script/GeoExplorer.js",
+        "status": 200,
+        "bytes": 1070390,
+        "role": "generic GeoExplorer client"
+      }
+    ],
+    "result": "The shell loads a generic GeoExplorer client. The city-specific layer configuration is the public /geoexplorer/maps/83 JSON, and the relevant WFS layer/schema findings are recorded in officialSources and scopeLimits."
+  }
+}

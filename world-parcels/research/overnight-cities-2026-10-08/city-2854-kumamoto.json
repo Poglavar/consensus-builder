@@ -1,0 +1,115 @@
+{
+  "schemaVersion": 1,
+  "kind": "city_parcel_source_research",
+  "checkedAt": "2026-10-09",
+  "populationUnit": "persons",
+  "status": "complete",
+  "pointBasis": "UN WUP 2025 population-weighted settlement centroid; this is not a municipal boundary or a parcel-coverage claim.",
+  "priorEvidenceFiles": [],
+  "sourceIds": [],
+  "name": "Kumamoto",
+  "country": "Japan",
+  "countryCode": "JP",
+  "registryFound": true,
+  "registryBasis": "Kumamoto City's official cadastral-survey program conducts parcel surveys and prepares maps/ledgers for the registry. Copies require application; the public map themes do not list cadastral parcels.",
+  "registryEvidenceUrls": [
+    "https://www.city.kumamoto.jp/kiji0031849/index.html",
+    "https://www.city.kumamoto.jp/kiji00312383/index.html",
+    "https://www.sonicweb-asp.jp/kumamoto/"
+  ],
+  "verifiedSample": false,
+  "publicParcelGeometryFound": false,
+  "publicParcelGeometryCandidateFound": false,
+  "runtimeReadiness": "not_enabled_no_verified_public_geometry",
+  "wupCityCode": 2854,
+  "cityId": "wup2025:2854",
+  "centerLatLon": [
+    32.8076621702434,
+    130.733390386961
+  ],
+  "point": [
+    32.8076621702434,
+    130.733390386961
+  ],
+  "rank": 843,
+  "queueRank": 843,
+  "population2025": 641185,
+  "population2025k": 641.185,
+  "populationPlausibility2025": "Moderate",
+  "notes": null,
+  "coverageAssessment": {
+    "claimedScope": "Kumamoto City's official cadastral-survey program conducts parcel surveys and prepares maps/ledgers for the registry. Copies require application; the public map themes do not list cadastral parcels.",
+    "verifiedOpenScope": "No anonymous full parcel polygon with safe stable ID was verified; findings and limits are described in source and service review.",
+    "citywideVerified": false,
+    "countrywideVerified": false
+  },
+  "research": {
+    "executedQueries": [
+      {
+        "language": "Japanese",
+        "query": "熊本市 地籍調査 地籍図 地図情報サービス 地番図 不動産登記 公式",
+        "scope": "Confirm city-local registry evidence and inspect whether anonymous parcel geometry is documented.",
+        "result": "City cadastral-survey page describes parcel survey and maps/ledgers sent to registry; results require eligible applications. Public map layers are planning/infrastructure, not parcels; no address/地番/parcel search.",
+        "actualResultUrls": [
+          "https://www.city.kumamoto.jp/kiji0031849/index.html",
+          "https://www.city.kumamoto.jp/kiji00312383/index.html",
+          "https://www.sonicweb-asp.jp/kumamoto/"
+        ],
+        "executionMethod": "Separate English/local-language public-source searches and first-party static/page review; no owner, address, tax, account or property-specific query."
+      },
+      {
+        "language": "English",
+        "query": "Kumamoto City official cadastral survey map service parcel map GIS registry",
+        "scope": "Confirm city-local registry evidence and inspect whether anonymous parcel geometry is documented.",
+        "result": "City confirms cadastral surveying and a public map viewer; published themes exclude parcel polygons. No safe geometry/ID schema found.",
+        "actualResultUrls": [
+          "https://www.city.kumamoto.jp/kiji0031849/index.html",
+          "https://www.city.kumamoto.jp/kiji00312383/index.html",
+          "https://www.sonicweb-asp.jp/kumamoto/"
+        ],
+        "executionMethod": "Separate English/local-language public-source searches and first-party static/page review; no owner, address, tax, account or property-specific query."
+      }
+    ],
+    "officialSources": [
+      {
+        "url": "https://www.city.kumamoto.jp/kiji0031849/index.html",
+        "observation": "Official city cadastral-survey page describes parcel surveys and cadastral maps/ledgers sent to registry; copies by application to eligible requesters."
+      },
+      {
+        "url": "https://www.city.kumamoto.jp/kiji00312383/index.html",
+        "observation": "Official map guide lists planning, roads, utilities, facilities and hazards, not parcel layers."
+      },
+      {
+        "url": "https://www.sonicweb-asp.jp/kumamoto/",
+        "observation": "SonicWeb viewer HTTP 200 (7,416 bytes); static map JS HTTP 200 (348,929 bytes). Metadata only; no point/parcel/land-number search."
+      }
+    ]
+  },
+  "source": {
+    "name": "Kumamoto City 地籍調査 and municipal map viewer.",
+    "urls": [
+      "https://www.city.kumamoto.jp/kiji0031849/index.html",
+      "https://www.city.kumamoto.jp/kiji00312383/index.html",
+      "https://www.sonicweb-asp.jp/kumamoto/"
+    ],
+    "geometryType": null,
+    "outputCrs": null,
+    "nativeIdField": null
+  },
+  "technicalBlocker": "Published map themes do not include parcel geometry. Survey-result copies require application; no anonymous safe geometry+ID endpoint found.",
+  "scopeLimits": "Bounded public-source review. No owner, address, tax/account, applicant, identity or property-specific data queried or retained. No completeness or legal/survey accuracy claim.",
+  "remainingUncertainty": "Other city services may exist; exact WUP hit, full city parcel layer and response geometry unverified.",
+  "resultCategory": "city_cadastral_survey_confirmed_no_public_parcel_layer_verified",
+  "runtimeAssessment": {
+    "status": "not_ready_no_verified_anonymous_geometry",
+    "reason": "Published map themes do not include parcel geometry. Survey-result copies require application; no anonymous safe geometry+ID endpoint found."
+  },
+  "rootPrimaryReadback": {
+    "url": "https://www.city.kumamoto.jp/kiji0031849/index.html",
+    "fetch": 200,
+    "contentType": "text/html",
+    "title": "\r\n\t地籍調査事業 / 熊本市公式サイト\r\n"
+  },
+  "rootReviewNote": "Reviewed the specific primary institution/service evidence and its geographical, access and date limits. Direct readback failures are preserved separately from indexed primary evidence. No public full parcel geometry was verified for this city in this discovery pass.",
+  "rootReviewedAt": "2026-10-09T04:12:31.737456+00:00"
+}

@@ -1,0 +1,101 @@
+{
+  "schemaVersion": 1,
+  "kind": "city_parcel_source_research",
+  "checkedAt": "2026-10-09",
+  "name": "Shibin Al-Kom",
+  "nativeName": "شبين الكوم",
+  "country": "Egypt",
+  "countryCode": "EG",
+  "populationUnit": "persons",
+  "status": "complete",
+  "registryFound": true,
+  "registryBasis": "Egypt’s official Survey Authority describes cadastral mapping/property-document functions, while an official government service directory lists Shibin El-Kom and Monufia surveying and property-documentation offices. This establishes local registry/survey context, not parcel coverage at the WUP point.",
+  "registryEvidenceUrls": [
+    "https://www.esa.gov.eg/main.aspx",
+    "https://www.esa.gov.eg/networks.aspx",
+    "https://www.cairo.gov.eg/ar/Documents/Khadamat.pdf",
+    "https://www.esa.gov.eg/files/Topographic_Maps.pdf"
+  ],
+  "verifiedSample": false,
+  "publicParcelGeometryFound": false,
+  "sampleGeometryFile": null,
+  "runtimeReadiness": "not_enabled_no_verified_public_geometry",
+  "wupCityCode": 3405,
+  "cityId": "wup2025:3405",
+  "centerLatLon": [
+    30.5803384387797,
+    31.0041154096368
+  ],
+  "rank": 897,
+  "queueRank": 897,
+  "population2025": 605913,
+  "population2025k": 605.913,
+  "populationPlausibility2025": "High",
+  "pointBasis": "UN WUP 2025 population-weighted settlement centroid; this is not a municipal boundary or a parcel-coverage claim.",
+  "technicalBlocker": "No anonymous geometry-only feature endpoint or safe parcel identifier schema was verified.",
+  "scopeLimits": "Official survey and government service listings identify cadastral functions and local Shibin El-Kom/Monufia offices. Map indices are cartographic references, not a verified public parcel feature API.",
+  "remainingUncertainty": "Local office scope, current parcel-map availability and WUP-point parcel presence remain unresolved.",
+  "research": {
+    "executedQueries": [
+      {
+        "language": "English",
+        "query": "Shibin El Kom Egypt official cadastral survey real estate registration parcel map",
+        "result": "The official Survey Authority describes cadastral mapping services; government listings identify local Shibin El-Kom and Monufia offices. No public feature schema found.",
+        "method": "English-language search followed by official-source review.",
+        "scope": "Identify city-specific registry/cadastral evidence and a safe public parcel geometry route."
+      },
+      {
+        "language": "Arabic",
+        "query": "شبين الكوم المنوفية الهيئة المصرية العامة للمساحة الشهر العقاري خرائط رسمية",
+        "result": "تؤكد المصادر الحكومية أعمال المساحة وخدمات التوثيق في شبين الكوم والمنوفية؛ لم يظهر مسار عام آمن لهندسة القطع.",
+        "method": "Local-language search followed by official-source review. Separate English and local-language searches plus official-source review; no owner, address, title, tax, account, applicant, or personal fields were queried.",
+        "scope": "Identify city-specific registry/cadastral evidence and a safe public parcel geometry route."
+      }
+    ],
+    "officialSources": [
+      {
+        "url": "https://www.esa.gov.eg/main.aspx",
+        "observation": "Egypt’s official Survey Authority describes cadastral mapping/property-document functions, while an official government service directory lists Shibin El-Kom and Monufia surveying and property-documentation offices. This establishes local registry/survey context, not parcel coverage at the WUP point."
+      },
+      {
+        "url": "https://www.esa.gov.eg/networks.aspx",
+        "observation": "Egypt’s official Survey Authority describes cadastral mapping/property-document functions, while an official government service directory lists Shibin El-Kom and Monufia surveying and property-documentation offices. This establishes local registry/survey context, not parcel coverage at the WUP point."
+      },
+      {
+        "url": "https://www.cairo.gov.eg/ar/Documents/Khadamat.pdf",
+        "observation": "Egypt’s official Survey Authority describes cadastral mapping/property-document functions, while an official government service directory lists Shibin El-Kom and Monufia surveying and property-documentation offices. This establishes local registry/survey context, not parcel coverage at the WUP point."
+      },
+      {
+        "url": "https://www.esa.gov.eg/files/Topographic_Maps.pdf",
+        "observation": "Egypt’s official Survey Authority describes cadastral mapping/property-document functions, while an official government service directory lists Shibin El-Kom and Monufia surveying and property-documentation offices. This establishes local registry/survey context, not parcel coverage at the WUP point."
+      }
+    ],
+    "metadataReviewFile": "shibin-al-kom-service-review.json",
+    "routeInspectionFile": "/tmp/overnight-cities-2026-10-08/city-3405-shibin-al-kom-route-inspection.json"
+  },
+  "coverageAssessment": {
+    "claimedScope": "Egypt’s official Survey Authority describes cadastral mapping/property-document functions, while an official government service directory lists Shibin El-Kom and Monufia surveying and property-documentation offices. This establishes local registry/survey context, not parcel coverage at the WUP point.",
+    "verifiedOpenScope": "No public parcel geometry or WUP-point parcel presence is asserted.",
+    "citywideVerified": false,
+    "countrywideVerified": false,
+    "geometryVerified": false
+  },
+  "runtimeAssessment": {
+    "enabled": false,
+    "reason": "Root qualification remains separate; local sample/endpoint evidence alone does not authorize runtime configuration.",
+    "status": "not_enabled_no_verified_public_geometry"
+  },
+  "sourceIds": [],
+  "rootPrimaryReadback": {
+    "url": "https://www.esa.gov.eg/main.aspx",
+    "fetch": 200,
+    "contentType": "text/html; charset=utf-8",
+    "title": "الهيئة المصرية العامة للمساحة"
+  },
+  "rootReviewNote": "Reviewed the specific primary institution/service evidence and its geographical, access and date limits. Direct readback failures are preserved separately from indexed primary evidence. No public full parcel geometry was verified for this city in this discovery pass.",
+  "rootReviewedAt": "2026-10-09T04:20:40.565226+00:00",
+  "point": [
+    30.5803384387797,
+    31.0041154096368
+  ]
+}

@@ -1,0 +1,55 @@
+{
+  "schemaVersion": "1.0",
+  "checkedAt": "2026-10-09",
+  "cityRecord": "city-9646-dezhou.json",
+  "purpose": "Document first-party local registry/map evidence and bounded anonymous parcel geometry access review.",
+  "scopeLimits": {
+    "maxFullPolygonsRetainedInCityRecord": 0,
+    "maxFullPolygonsRetainedInReview": 0,
+    "maxFullPolygonsRetainedInRepository": 0,
+    "ownerOrAddressDataRetained": false,
+    "credentialsOrTokenValuesRetained": false,
+    "citywideCompletenessAsserted": false
+  },
+  "assessment": "Search results were sparse and some were for the homonymous Dazhou (达州); those were excluded. No Dezhou-specific first-party parcel source established.",
+  "registryAssessment": "Search results were sparse and some were for the homonymous Dazhou (达州); those were excluded. No Dezhou-specific first-party parcel source established.",
+  "officialPrimarySources": [],
+  "searchQueries": [
+    {
+      "language": "Chinese (Simplified)",
+      "query": "德州市 不动产登记 地籍图 德州市自然资源局 不动产登记中心 官方",
+      "result": "Search results were sparse and some were for the homonymous Dazhou (达州); those were excluded. No Dezhou-specific first-party parcel source established.",
+      "method": "Separate local-language web search followed by official-source review.",
+      "scope": "Identify first-party local land-registry/cadastral sources and safe anonymous parcel geometry.",
+      "actualResultUrls": []
+    },
+    {
+      "language": "English",
+      "query": "Dezhou China official cadastral parcel map real estate registration public GIS natural resources",
+      "result": "Search results were sparse and some were for the homonymous Dazhou (达州); those were excluded. No Dezhou-specific first-party parcel source established.",
+      "method": "Separate English-language web search followed by official-source review.",
+      "scope": "Identify first-party local land-registry/cadastral sources and safe anonymous parcel geometry.",
+      "actualResultUrls": []
+    }
+  ],
+  "geometryDecision": "No full parcel polygon retained; no safe anonymous geometry response was verified.",
+  "coverageAssessment": {
+    "claimedScope": "Search results were sparse and some were for the homonymous Dazhou (达州); those were excluded. No Dezhou-specific first-party parcel source established.",
+    "verifiedOpenScope": null,
+    "citywideVerified": false,
+    "countrywideVerified": false,
+    "geometryVerified": false
+  },
+  "attempts": [],
+  "remainingUncertainty": "Exact jurisdiction/point mapping and anonymous public vector geometry remain unverified.",
+  "geometryEvidence": null,
+  "runtimeAssessment": "not enabled; root may run full adapter qualification.",
+  "rootReviewedAt": "2026-10-09T07:13:02.981057+00:00",
+  "rootReview": {
+    "checkedAt": "2026-10-09T07:13:02.981057+00:00",
+    "decision": "Reviewed city identity, canonical population/point, separate searches and saved source/request evidence. No full public parcel geometry verified in this pass.",
+    "custodyScope": "Search results were sparse and some were for the homonymous Dazhou (达州); those were excluded. No Dezhou-specific first-party parcel source established.",
+    "transportFailuresDoNotProveAbsence": true,
+    "geometryClaimScope": "Investigation outcome only; no worldwide or citywide absence asserted."
+  }
+}

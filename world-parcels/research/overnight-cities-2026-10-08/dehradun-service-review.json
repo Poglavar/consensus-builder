@@ -1,0 +1,76 @@
+{
+  "schemaVersion": "1.0",
+  "checkedAt": "2026-10-09",
+  "cityRecord": "city-8508-dehradun.json",
+  "purpose": "Document first-party city-specific registry evidence and bounded anonymous parcel geometry/schema review.",
+  "scopeLimits": {
+    "maxFullPolygonsRetainedInCityRecord": 0,
+    "maxFullPolygonsRetainedInReview": 0,
+    "maxFullPolygonsRetainedInRepository": 0,
+    "ownerOrAddressDataRetained": false,
+    "credentialsOrTokenValuesRetained": false,
+    "citywideCompletenessAsserted": false
+  },
+  "assessment": "Dehradun District Administration links the official Bhulekh service for viewing land records and directs signed RoR requests to the concerned tehsil land-record computer centre. Uttarakhand’s registration GIS portal describes property-transaction geoservices, but its citizen portal page exposed no parcel layer or public vector schema. No map-backed parcel response was verified at the WUP point.",
+  "registryAssessment": "The district administration identifies the Board of Revenue in Dehradun and local tehsil land-record computer centres; it confirms city/district land-record activity but not public parcel geometry at the WUP point.",
+  "officialPrimarySources": [
+    {
+      "url": "https://dehradun.nic.in/service/land-records/",
+      "observation": "District Administration says land-record details are available on Bhulekh for viewing and signed RoR copies are obtained from the concerned village tehsil computer centre; it identifies the Board of Revenue, Dehradun."
+    },
+    {
+      "url": "https://gis.eregistrationukgov.in/gisportal/Home.aspx",
+      "observation": "Official Uttarakhand Stamps & Registration Department portal describes geo-enabled services for property transactions and links a citizen portal; no parcel vector layer is documented on the public landing page."
+    },
+    {
+      "url": "https://dilrmp.gov.in/dilrmpold/MapULPIN/tehsil-level/60",
+      "observation": "Government of India DILRMP page reports district-level map digitization and georeferencing status for Dehradun; aggregate progress is not point coverage or a public feature service."
+    },
+    {
+      "url": "https://bhulekh.uk.gov.in/Bhulekh",
+      "observation": "Official state Bhulekh URL linked by district administration; page-reader request timed out, with no parcel query submitted."
+    }
+  ],
+  "searchQueries": [
+    {
+      "language": "English",
+      "query": "Dehradun official cadastral parcel map land records Uttarakhand Bhunaksha GIS Dehradun municipal",
+      "result": "Dehradun District Administration links the official Bhulekh service for viewing land records and directs signed RoR requests to the concerned tehsil land-record computer centre. Uttarakhand’s registration GIS portal describes property-transaction geoservices, but its citizen portal page exposed no parcel layer or public vector schema. No map-backed parcel response was verified at the WUP point.",
+      "method": "Separate web search then official-page and anonymous-route review."
+    },
+    {
+      "language": "Hindi",
+      "query": "देहरादून भू नक्शा खसरा आधिकारिक उत्तराखंड भूमि अभिलेख देहरादून",
+      "result": "Dehradun District Administration links the official Bhulekh service for viewing land records and directs signed RoR requests to the concerned tehsil land-record computer centre. Uttarakhand’s registration GIS portal describes property-transaction geoservices, but its citizen portal page exposed no parcel layer or public vector schema. No map-backed parcel response was verified at the WUP point.",
+      "method": "Separate web search then official-page and anonymous-route review."
+    }
+  ],
+  "serviceChecks": [
+    {
+      "url": "https://dehradun.nic.in/service/land-records/",
+      "method": "GET official district service page",
+      "httpStatus": 200,
+      "observation": "Official land-record page links Bhulekh as view-only and identifies the Dehradun Board of Revenue and tehsil land-record centres."
+    },
+    {
+      "url": "https://bhulekh.uk.gov.in/Bhulekh",
+      "method": "GET official linked viewer",
+      "httpStatus": null,
+      "observation": "Anonymous page reader timed out. No tehsil/village or parcel query was submitted."
+    },
+    {
+      "url": "https://gis.eregistrationukgov.in/gisportal/Home.aspx",
+      "method": "GET official property-transaction GIS portal",
+      "httpStatus": 200,
+      "observation": "Landing page describes geo-enabled property-transaction services; no parcel-layer schema or anonymous geometry endpoint exposed."
+    },
+    {
+      "url": "https://gis.eregistrationukgov.in/gisportal/CitizenPortal/index.html",
+      "method": "GET linked citizen portal shell",
+      "httpStatus": 200,
+      "observation": "Dynamic page shell yielded no visible parcel schema or geometry route in the public page reader; no authentication attempted."
+    }
+  ],
+  "geometryEvidence": null,
+  "runtimeAssessment": "not_enabled_no_verified_public_geometry"
+}

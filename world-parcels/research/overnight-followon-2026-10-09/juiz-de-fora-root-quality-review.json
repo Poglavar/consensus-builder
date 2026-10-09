@@ -1,0 +1,10 @@
+{
+  "checkedAt": "2026-10-09T06:05:23.845931+00:00",
+  "decision": "approved_by_root",
+  "geometryChangedOrRepaired": false,
+  "basis": "170 distinct full native cadastral-reference polygons around the unchanged WUP settlement locator across thirteen bounded cells. Independent EPSG:32723 GEOS audit of all170 grid and footprint polygons found no invalidity, duplicate geometry, positive-area overlaps above0.01m² or operation errors. Forced three-row paging, all170 fresh exact native-ID reads, explicit absence, footprint lookup and source binding passed. Published native identities and full geometry preserved without repair. This bounded evidence does not establish citywide completeness, legal title, positional accuracy or currentness. Published geocodigo keys are used independently of source OBJECTID; exact locator parcel OBJECTID70049 has native keyLT104196.",
+  "acceptanceFile": "research/overnight-followon-2026-10-09/juiz-de-fora-sisurb-root-acceptance.json",
+  "qualityFile": "research/overnight-followon-2026-10-09/juiz-de-fora-sisurb-root-quality.json",
+  "wideReviewFile": "research/overnight-followon-2026-10-09/juiz-de-fora-sisurb-root-wide-review.json",
+  "wideQualityFile": "research/overnight-followon-2026-10-09/juiz-de-fora-sisurb-root-wide-quality.json"
+}

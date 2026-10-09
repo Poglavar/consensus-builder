@@ -1,0 +1,143 @@
+{
+  "name": "Santos",
+  "country": "Brazil",
+  "countryCode": "BR",
+  "rank": 496,
+  "point": [
+    -23.960626979388,
+    -46.3330720622846
+  ],
+  "population2025": 1027752,
+  "population2025k": 1027.752,
+  "schemaVersion": 1,
+  "kind": "city_parcel_source_research",
+  "checkedAt": "2026-10-09",
+  "populationUnit": "persons",
+  "status": "complete",
+  "verifiedSample": true,
+  "publicParcelGeometryFound": true,
+  "runtimeReadiness": "held_identity_paging_and_geometry_quality",
+  "priorEvidenceFiles": [],
+  "scopeLimits": "Official SIGSantos GeoServer WFS qualification covered 13 aligned 0.001° cells and four adjacent pans around the unchanged WUP locator. All 13 raw collection counts matched; 419 cell-level rows represented 257 distinct GeoServer FIDs and 171 distinct native `lote` strings. The source has 40 repeated-lote groups (126 rows involved), and the generic adapter forced-page test failed because it sorts by non-unique `lote` and repeated FIDs across offsets. A direct WFS 2.0.0 count/startIndex test with sortBy omitted completed all 62 rows across 21 three-row pages; the existing adapter cannot express that request contract. Independent GEOS EPSG:32723 QA used all 257 distinct raw features from the bounded union: all valid, 229 equal-geometry pairs, 341 positive-area overlap pairs above 0.01 m², zero operation errors; union valid. This remains local bounded-source evidence, not citywide coverage or runtime qualification. The exact WUP parcel `lotes.20499` / `55044022` is present in the sample and matches the original exact-point WFS geometry.",
+  "pointBasis": "UN WUP 2025 population-weighted settlement centroid; this is not a municipal boundary or a parcel-coverage claim.",
+  "registryFound": true,
+  "registryBasis": "The City of Santos provides SIGSantos and public Santos Mapeada. The official WFS `santos:lotes` layer is explicitly “Lotes Oficiais”; this point query is local evidence only and does not establish whole-city completeness.",
+  "resultCategory": "verified_local_public_geometry_generic_adapter_contract_blocked",
+  "technicalBlocker": "The existing generic WFS adapter hardcodes sortBy=native id. `lote` is not unique in the official `santos:lotes` layer: the 13-cell union contains 171 distinct native values across 257 distinct WFS FIDs, including 40 repeated-lote groups. With pageSize=3, sorted offset pages repeated FIDs and the adapter correctly rejected the response. Direct WFS 2.0.0 count/startIndex paging with sortBy omitted completed 62/62 unique FIDs, so the source supports paging but the current adapter cannot express the safe stable default-order contract. Do not enable runtime until a unique sortable source identity or verified no-sort paging option is supported.",
+  "remainingUncertainty": "The 13-cell local footprint is not whole-city completeness. The source contains repeated native lote values across distinct GeoServer FIDs; while tested copies had topologically identical geometries, their underlying cadastral row semantics and revision continuity remain unverified. City boundary coverage, attribution/license terms, publication freshness, legal-title meaning, and a runtime-safe pagination/identity contract remain unverified.",
+  "nextStep": "Root review; any runtime onboarding should first complete a bounded city-level qualification and confirm source attribution/terms.",
+  "freshResearch": {
+    "executedQueries": [
+      {
+        "language": "Portuguese",
+        "query": "Santos SP cadastro imobiliário mapa de lotes geoprocessamento prefeitura",
+        "result": "Found the official SIGSantos/Santos Mapeada city mapping service and parcel-layer evidence.",
+        "method": "Separate Portuguese-language discovery search and first-party portal review."
+      },
+      {
+        "language": "Portuguese",
+        "query": "site:santos.sp.gov.br \"Santos Mapeada\" cadastro mapa lotes cadastro imobiliário",
+        "result": "Found city information describing digital lot/use information and Santos Mapeada.",
+        "method": "Separate targeted Portuguese-language search."
+      }
+    ],
+    "officialSources": [
+      {
+        "url": "https://www.santos.sp.gov.br/?q=servico%2Fsantos-mapeada",
+        "observation": "The municipal mapping portal identifies SIGSantos as a city system; official public article describes digital information about lots. WFS schema safely exposes lote ID and geometry. No owner/address attributes requested."
+      },
+      {
+        "url": "https://www.santos.sp.gov.br/?q=noticia%2Fsantos-abre-acesso-digital-a-informacoes-sobre-uso-e-ocupacao-de-lotes",
+        "observation": "Supporting official service/administrative reference; see scope limits for what it does and does not establish."
+      },
+      {
+        "url": "https://egov.santos.sp.gov.br/santosmapeada/",
+        "observation": "Supporting official service/administrative reference; see scope limits for what it does and does not establish."
+      },
+      {
+        "url": "https://egov.santos.sp.gov.br/geoserver/",
+        "observation": "Supporting official service/administrative reference; see scope limits for what it does and does not establish."
+      }
+    ],
+    "viewerAndServiceTrace": {
+      "attempted": true,
+      "summary": "HTTP 200 WFS point query returned `lotes.20499`, lote 55044022, Polygon containing the exact WUP locator. Bounded 60 m local query returned 32 matches; request cap 3, retained first two nearby polygons in addition to exact-point feature.",
+      "geometryStatus": "HTTP 200 bounded WFS parcel query; 3 features retained",
+      "fullPolygonLimit": 3,
+      "fullPolygonsRetained": 3,
+      "ownerOrAddressDataRequested": false,
+      "credentialsOrTokenValuesRetained": false
+    },
+    "attemptedGeometry": {
+      "attempted": true,
+      "status": "HTTP 200 exact point returned one lot and bounded local query returned nearby polygons",
+      "retainedFeatures": 3,
+      "fieldsRequested": [
+        "lote",
+        "geometry"
+      ],
+      "geometryRetained": true,
+      "geojsonFile": "city-7505-santos-samples.geojson"
+    }
+  },
+  "sourceIds": [
+    "santos-sigsantos-wfs-lotes"
+  ],
+  "queueRank": 496,
+  "wupCityCode": 7505,
+  "cityId": "wup2025:7505",
+  "populationPlausibility2025": "High",
+  "centerLatLon": [
+    -23.960626979388,
+    -46.3330720622846
+  ],
+  "verifiedSampleFile": "city-7505-santos-samples.geojson",
+  "adapterReady": false,
+  "source": {
+    "id": "santos-sigsantos-wfs-lotes",
+    "name": "SIGSantos — Lotes Oficiais",
+    "operator": "Prefeitura Municipal de Santos",
+    "url": "https://egov.santos.sp.gov.br/geoserver/ows",
+    "layer": "santos:lotes",
+    "crs": "EPSG:4326 requested from EPSG:31983 source",
+    "idFields": [
+      "lote"
+    ],
+    "attrs": [
+      "lote",
+      "geometry"
+    ],
+    "geomType": "Polygon",
+    "verified": true,
+    "scope": "Official SIGSantos GeoServer WFS qualification covered 13 aligned 0.001° cells and four adjacent pans around the unchanged WUP locator. All 13 raw collection counts matched; 419 cell-level rows represented 257 distinct GeoServer FIDs and 171 distinct native `lote` strings. The source has 40 repeated-lote groups (126 rows involved), and the generic adapter forced-page test failed because it sorts by non-unique `lote` and repeated FIDs across offsets. A direct WFS 2.0.0 count/startIndex test with sortBy omitted completed all 62 rows across 21 three-row pages; the existing adapter cannot express that request contract. Independent GEOS EPSG:32723 QA used all 257 distinct raw features from the bounded union: all valid, 229 equal-geometry pairs, 341 positive-area overlap pairs above 0.01 m², zero operation errors; union valid. This remains local bounded-source evidence, not citywide coverage or runtime qualification. The exact WUP parcel `lotes.20499` / `55044022` is present in the sample and matches the original exact-point WFS geometry.",
+    "geometryType": "Polygon",
+    "coordinateReferenceSystem": "CRS:84 requested output",
+    "nativeIdFields": [
+      "lote"
+    ],
+    "requestedAttributes": [
+      "GEOM",
+      "lote"
+    ],
+    "directGeometryQueryVerified": true,
+    "directMetadataSchemaVerified": true,
+    "sourceId": "santos-sigsantos-wfs-lotes"
+  },
+  "coverageAssessment": {
+    "claimedScope": "Exact WUP locator and the surrounding 13 aligned .001° cells plus four adjacent pans; no citywide completeness claim.",
+    "verifiedOpenScope": "171 unique native lote values across 257 raw WFS feature IDs; all 13 cell counts matched actual members. Existing adapter passed fresh lote-ID, absence, footprint and binding checks but failed forced pageSize=3 because its sort key is non-unique. Independent GEOS metric QA was completed on all 257 raw distinct-FID geometries.",
+    "citywideVerified": false,
+    "countrywideVerified": false
+  },
+  "registryEvidenceUrls": [
+    "https://www.santos.sp.gov.br/?q=servico%2Fsantos-mapeada",
+    "https://www.santos.sp.gov.br/?q=noticia%2Fsantos-abre-acesso-digital-a-informacoes-sobre-uso-e-ocupacao-de-lotes",
+    "https://egov.santos.sp.gov.br/santosmapeada/",
+    "https://egov.santos.sp.gov.br/geoserver/"
+  ],
+  "runtimeAssessment": {
+    "status": "not_enabled",
+    "reason": "The generic adapter cannot safely page using the source’s repeated native lote string; see source review qualification evidence. A direct no-sort WFS2 page probe succeeded, but current adapter cannot express that contract."
+  },
+  "rootReviewedAt": "2026-10-09T01:08:06.099922+00:00"
+}

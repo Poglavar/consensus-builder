@@ -1,0 +1,404 @@
+{
+  "schemaVersion": 1,
+  "purpose": "Independent GEOS topology check of complete runtime parcels projected to metric coordinates; no repair applied. Counts are bounded sample evidence, not whole-city guarantees.",
+  "library": "Shapely 2.2.0",
+  "metricCrs": "EPSG:3857",
+  "featureCount": 54,
+  "validNonemptyCount": 53,
+  "invalidFeatures": [
+    {
+      "id": "KR-GWANGJU-METRO-1224012100107000001",
+      "reason": "Ring Self-intersection[14123413.7426876 4186435.04111859]",
+      "empty": false
+    }
+  ],
+  "exactDuplicateGeometryPairs": [],
+  "positiveAreaOverlapPairsAbove0_01M2": [],
+  "sumPairwiseOverlapM2": 0,
+  "operationErrors": [],
+  "areaM2": {
+    "min": 7.871373764970338,
+    "median": 675.8460592933727,
+    "max": 465069.60759032564
+  },
+  "features": [
+    {
+      "id": "KR-GWANGJU-METRO-1224011800100180003",
+      "areaM2": 212242.05195706146,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "KR-GWANGJU-METRO-1224011800109200000",
+      "areaM2": 892.5435010024345,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "KR-GWANGJU-METRO-1224012100107000001",
+      "areaM2": 465069.60759032564,
+      "valid": false,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "KR-GWANGJU-METRO-1224012100108230001",
+      "areaM2": 1818.9241773823887,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "KR-GWANGJU-METRO-1224012100108290000",
+      "areaM2": 619.3043753002464,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "KR-GWANGJU-METRO-1224011800109180006",
+      "areaM2": 1105.3539182316724,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "KR-GWANGJU-METRO-1224012100108200003",
+      "areaM2": 4627.975706900744,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "KR-GWANGJU-METRO-1224011800100160000",
+      "areaM2": 2766.702029245402,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "KR-GWANGJU-METRO-1224011800100180002",
+      "areaM2": 1930.5132883201084,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "KR-GWANGJU-METRO-1224011800100180004",
+      "areaM2": 990.1693572450964,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "KR-GWANGJU-METRO-1224011800100180005",
+      "areaM2": 3284.970566275389,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "KR-GWANGJU-METRO-1224011800100490000",
+      "areaM2": 1653.4053730278586,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "KR-GWANGJU-METRO-1224011800109190002",
+      "areaM2": 547.94375296508,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "KR-GWANGJU-METRO-1224012100107120002",
+      "areaM2": 30007.736612748966,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "KR-GWANGJU-METRO-1224012100107170003",
+      "areaM2": 6024.611604807639,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "KR-GWANGJU-METRO-1224012100106620001",
+      "areaM2": 7567.784141385645,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "KR-GWANGJU-METRO-1224012100106620003",
+      "areaM2": 1806.4024757224715,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "KR-GWANGJU-METRO-1224012100106630002",
+      "areaM2": 10913.542133802448,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "KR-GWANGJU-METRO-1224012100106700001",
+      "areaM2": 18867.618237738992,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "KR-GWANGJU-METRO-1224011800100110000",
+      "areaM2": 5847.028215215806,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "KR-GWANGJU-METRO-1224011800100120003",
+      "areaM2": 5111.645024131048,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "KR-GWANGJU-METRO-1224011800100120005",
+      "areaM2": 619.8893505048376,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "KR-GWANGJU-METRO-1224011800100120007",
+      "areaM2": 43.35590916644105,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "KR-GWANGJU-METRO-1224011800100120008",
+      "areaM2": 31.820556184599962,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "KR-GWANGJU-METRO-1224011800100140001",
+      "areaM2": 200.11457279991498,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "KR-GWANGJU-METRO-1224011800100140002",
+      "areaM2": 41.16107930715433,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "KR-GWANGJU-METRO-1224011800100140003",
+      "areaM2": 110.43973799110005,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "KR-GWANGJU-METRO-1224011800100140004",
+      "areaM2": 23.4806526240823,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "KR-GWANGJU-METRO-1224011800100140005",
+      "areaM2": 7.871373764970338,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "KR-GWANGJU-METRO-1224011800100140006",
+      "areaM2": 13.420159642613399,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "KR-GWANGJU-METRO-1224011800100140007",
+      "areaM2": 356.5687669269646,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "KR-GWANGJU-METRO-1224011800100140008",
+      "areaM2": 177.35530730492894,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "KR-GWANGJU-METRO-1224011800100150001",
+      "areaM2": 776.5352096901506,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "KR-GWANGJU-METRO-1224011800100150004",
+      "areaM2": 38.45479959925593,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "KR-GWANGJU-METRO-1224011800100150005",
+      "areaM2": 13.243604087127029,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "KR-GWANGJU-METRO-1224011800100150006",
+      "areaM2": 1293.5828859756662,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "KR-GWANGJU-METRO-1224011800100150007",
+      "areaM2": 731.802768081908,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "KR-GWANGJU-METRO-1224011800100150008",
+      "areaM2": 30.23907278919484,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "KR-GWANGJU-METRO-1224011800100150011",
+      "areaM2": 75.35822106056789,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "KR-GWANGJU-METRO-1224011800100210003",
+      "areaM2": 209.91837332053768,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "KR-GWANGJU-METRO-1224011800100220001",
+      "areaM2": 234.10089955875,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "KR-GWANGJU-METRO-1224011800100220004",
+      "areaM2": 9.164137173669129,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "KR-GWANGJU-METRO-1224011800100220006",
+      "areaM2": 24.952069950069486,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "KR-GWANGJU-METRO-1224011800100230001",
+      "areaM2": 406.68122646301424,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "KR-GWANGJU-METRO-1224011800100230002",
+      "areaM2": 243.59962187324402,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "KR-GWANGJU-METRO-1224011800100230004",
+      "areaM2": 226.8191423388535,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "KR-GWANGJU-METRO-1224011800100230005",
+      "areaM2": 17.220096210846748,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "KR-GWANGJU-METRO-1224011800100230006",
+      "areaM2": 9.641455062206653,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "KR-GWANGJU-METRO-1224011800109140001",
+      "areaM2": 24540.99861267891,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "KR-GWANGJU-METRO-1224011800109160003",
+      "areaM2": 2267.2891909428513,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "KR-GWANGJU-METRO-1224011800109180005",
+      "areaM2": 1581.5057935303932,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "KR-GWANGJU-METRO-1224011800109180008",
+      "areaM2": 18.424146761378886,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "KR-GWANGJU-METRO-1224011800113890000",
+      "areaM2": 16913.018177755075,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "KR-GWANGJU-METRO-1224011800113900000",
+      "areaM2": 738.237470615084,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    }
+  ]
+}

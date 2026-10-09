@@ -1,0 +1,73 @@
+{
+  "schemaVersion": "1.0",
+  "checkedAt": "2026-10-09",
+  "cityRecord": "city-1005-auckland.json",
+  "purpose": "Document official parcel-source evidence and bounded anonymous geometry route review.",
+  "scopeLimits": {
+    "maxFullPolygonsRetainedInCityRecord": 3,
+    "maxFullPolygonsRetainedInReview": 3,
+    "maxFullPolygonsRetainedInRepository": 3,
+    "ownerOrAddressDataRetained": false,
+    "credentialsOrTokenValuesRetained": false,
+    "citywideCompletenessAsserted": false
+  },
+  "assessment": "One official LINZ primary parcel polygon was returned for the exact Auckland WUP locator. Only `id` and geometry were retained. The public source is already cataloged and integrated for Wellington; this is a city-specific evidence packet, not an integration change. Auckland-wide completeness and source quality across a city footprint remain untested.",
+  "registryAssessment": "LINZ is the national cadastre publisher; the tested service exposes current primary parcel geometry. The source excludes non-primary, historic and pending parcel layers from this result.",
+  "officialPrimarySources": [
+    {
+      "url": "https://data.linz.govt.nz/layer/50772-nz-primary-parcels/",
+      "observation": "LINZ describes the current primary parcel polygon layer, data contents, accuracy caveat, separate non-primary/historic layers and CC BY 4.0 license."
+    },
+    {
+      "url": "https://services.arcgis.com/xdsHIIxuCWByZiCB/arcgis/rest/services/LINZ_NZ_Primary_Parcels/FeatureServer/0",
+      "observation": "LINZ-linked public ArcGIS FeatureServer layer for current primary parcels; native key is `id`."
+    },
+    {
+      "url": "https://data.linz.govt.nz/layer/122657-nz-property-boundaries/",
+      "observation": "LINZ explains its separate composite property-boundary layer combines rating units, title polygons and primary parcels where needed; not used in this sample."
+    }
+  ],
+  "searchQueries": [
+    {
+      "language": "English",
+      "query": "Auckland official property parcel map LINZ cadastral parcel GIS public map cadastral survey",
+      "result": "LINZ official data service identifies NZ Primary Parcels as an available current polygon layer; follow-up inspected its official layer metadata and public ArcGIS service.",
+      "method": "Separate English-language discovery search plus public official layer/service metadata."
+    },
+    {
+      "language": "Te reo Māori",
+      "query": "Tāmaki Makaurau mahere whenua rohenga whenua LINZ tapuwae whenua",
+      "result": "No additional local-language parcel feature service was established; primary parcel evidence came from LINZ.",
+      "method": "Separate Te reo Māori discovery search."
+    }
+  ],
+  "serviceChecks": [
+    {
+      "url": "https://services.arcgis.com/xdsHIIxuCWByZiCB/arcgis/rest/services/LINZ_NZ_Primary_Parcels/FeatureServer/0/query",
+      "method": "GET exact WGS84 point query; outFields=OBJECTID,id; resultRecordCount=3; outSR=4326",
+      "httpStatus": 200,
+      "observation": "One polygon returned, native id=5211850. Initial query timed out; same bounded query retry completed."
+    },
+    {
+      "url": "https://data.linz.govt.nz/layer/50772-nz-primary-parcels/",
+      "method": "GET official layer metadata via public search/open",
+      "observation": "LINZ catalog describes current primary parcel content, separate other parcel classes and CC BY 4.0."
+    }
+  ],
+  "geometryEvidence": {
+    "file": "city-1005-auckland-samples.geojson",
+    "featureCount": 1,
+    "attributes": [
+      "id"
+    ],
+    "geometryType": "Polygon",
+    "crs": "WGS84",
+    "exactLocatorFeature": true
+  },
+  "privacy": "Only native parcel ID and geometry were requested and retained; no title, owner, address or legal-description fields were requested.",
+  "runtimeAssessment": "existing_source_not_city_qualified",
+  "qualification": {
+    "boundedCells": 0,
+    "note": "No separate city-wide qualification was performed; the exact point feature uses the already-cataloged LINZ service."
+  }
+}

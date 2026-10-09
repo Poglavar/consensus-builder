@@ -37,7 +37,11 @@ describe('Solana market bridge', () => {
         const tokenAccount = { toBase58: () => 'token-1' };
         const connection = {
             getLatestBlockhash: vi.fn(async () => ({ blockhash: 'block', lastValidBlockHeight: 1 })),
-            simulateTransaction: vi.fn(async () => ({ value: { err: null } })),
+            simulateTransaction: vi.fn(async (_transaction, config) => {
+                // Mirrors web3.js 1.x: a legacy Transaction takes signers here, never a config object.
+                if (config !== undefined && !Array.isArray(config)) throw new Error('Invalid arguments');
+                return { value: { err: null } };
+            }),
             getBalance: vi.fn(async () => 1),
             getTokenAccountBalance: vi.fn(async () => ({ value: { amount: '2000000' } })),
             sendRawTransaction: vi.fn(async () => 'stake-tx'),
@@ -75,7 +79,11 @@ describe('Solana market bridge', () => {
         const connection = {
             getBalance: vi.fn(async () => 1),
             getLatestBlockhash: vi.fn(async () => ({ blockhash: 'block', lastValidBlockHeight: 1 })),
-            simulateTransaction: vi.fn(async () => ({ value: { err: null } })),
+            simulateTransaction: vi.fn(async (_transaction, config) => {
+                // Mirrors web3.js 1.x: a legacy Transaction takes signers here, never a config object.
+                if (config !== undefined && !Array.isArray(config)) throw new Error('Invalid arguments');
+                return { value: { err: null } };
+            }),
             sendRawTransaction: vi.fn(async () => 'create-market-tx'),
             confirmTransaction: vi.fn(async () => ({ value: { err: null } }))
         };

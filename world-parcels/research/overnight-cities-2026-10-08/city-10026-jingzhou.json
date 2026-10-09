@@ -1,0 +1,100 @@
+{
+  "name": "Jingzhou",
+  "country": "China",
+  "countryCode": "CN",
+  "rank": 799,
+  "point": [
+    30.3246518486851,
+    112.238540696423
+  ],
+  "population2025": 678632,
+  "population2025k": 678.632,
+  "populationUnit": "persons",
+  "populationPlausibility2025": "High",
+  "schemaVersion": 1,
+  "kind": "city_parcel_source_research",
+  "checkedAt": "2026-10-09",
+  "status": "complete",
+  "registryFound": true,
+  "registryBasis": "Hubei’s official Natural Resources Department reports that the Jingzhou Real Estate Registration and Transaction Center provides “one certificate, one code, scan to see map” services for the city center; it describes cadastral/rights survey as part of registration and identifies parcel maps and building subdivision plans as registry products. This is city-local registry evidence, but no anonymous, schema-safe parcel vector endpoint was identified.",
+  "registryEvidenceUrls": [
+    "https://zrzyt.hubei.gov.cn/bmdt/sxdt/202204/t20220421_4091526.shtml",
+    "https://zjjcmspublic.oss-cn-hangzhou-zwynet-d01-a.internet.cloud.zj.gov.cn/jcms_files/jcms1/web2631/site/attach/0/c09ab04507344ac2ba6cea77527834bd.pdf"
+  ],
+  "publicParcelGeometryFound": false,
+  "verifiedSample": false,
+  "runtimeReadiness": "not_enabled_no_verified_public_geometry",
+  "adapterReady": false,
+  "priorEvidenceFiles": [],
+  "scopeLimits": "City-specific source discovery only. Geometry samples, where present, are capped at three complete features and retain only safe native source GIS identity plus geometry. Citywide/countrywide completeness, title identity, legal survey accuracy and runtime suitability are not asserted. No owner, address, account/tax identifier, credentials, or token values were requested or retained.",
+  "pointBasis": "UN WUP 2025 population-weighted settlement centroid; this is not a municipal boundary or a parcel-coverage claim.",
+  "resultCategory": "official_local_registry_candidate_geometry_unverified",
+  "technicalBlocker": "The inspected official record service is certificate/QR based; no anonymous GIS feature schema or safe geometry-only query was exposed. No login, certificate QR, address or property lookup was attempted.",
+  "remainingUncertainty": "Whether the registry’s visual-map access has a separately published anonymous geometry layer and which legal/native key is suitable remain unresolved.",
+  "nextStep": "No runtime qualification was attempted. If more discovery is needed, inspect additional first-party metadata and use only bounded geometry requests with a safe native GIS key.",
+  "freshResearch": {
+    "queries": [
+      {
+        "language": "English",
+        "query": "Jingzhou Hubei official cadastral parcel map land registry natural resources GIS",
+        "scope": "Find city-local registry/map evidence and inspect whether anonymous parcel geometry can be safely requested.",
+        "result": "Official Hubei Natural Resources Department coverage describes the Jingzhou center’s QR-coded parcel-map service and cadastral survey workflows. Searches found a property/map visualization candidate but no official public vector API schema with a safe field allowlist; no property identifier was submitted and no map geometry queried.",
+        "actualResultUrls": [
+          "https://zrzyt.hubei.gov.cn/bmdt/sxdt/202204/t20220421_4091526.shtml",
+          "https://zjjcmspublic.oss-cn-hangzhou-zwynet-d01-a.internet.cloud.zj.gov.cn/jcms_files/jcms1/web2631/site/attach/0/c09ab04507344ac2ba6cea77527834bd.pdf"
+        ],
+        "executionMethod": "Separate language search; official government portal/service review; no property-specific lookup."
+      },
+      {
+        "language": "Chinese",
+        "query": "荆州市不动产登记中心 以图查房 地籍图 查询 荆州市自然资源和规划局",
+        "scope": "Find city-local registry/map evidence and inspect whether anonymous parcel geometry can be safely requested.",
+        "result": "Official Hubei Natural Resources Department coverage describes the Jingzhou center’s QR-coded parcel-map service and cadastral survey workflows. Searches found a property/map visualization candidate but no official public vector API schema with a safe field allowlist; no property identifier was submitted and no map geometry queried.",
+        "actualResultUrls": [
+          "https://zrzyt.hubei.gov.cn/bmdt/sxdt/202204/t20220421_4091526.shtml",
+          "https://zjjcmspublic.oss-cn-hangzhou-zwynet-d01-a.internet.cloud.zj.gov.cn/jcms_files/jcms1/web2631/site/attach/0/c09ab04507344ac2ba6cea77527834bd.pdf"
+        ],
+        "executionMethod": "Separate language search; official government portal/service review; no property-specific lookup."
+      }
+    ]
+  },
+  "source": {
+    "sourceId": "CN-JINGZHOU-REAL-ESTATE-REGISTRY",
+    "name": "Jingzhou Real Estate Registration and Transaction Center",
+    "url": "https://zrzyt.hubei.gov.cn/bmdt/sxdt/202204/t20220421_4091526.shtml",
+    "operator": "Jingzhou Real Estate Registration and Transaction Center / Jingzhou Natural Resources and Planning Bureau",
+    "serviceType": "Official city registry service uses QR-coded map access with real-estate certificates; no public anonymous feature service/schema verified.",
+    "layer": null,
+    "geometryType": null,
+    "outputCrs": null,
+    "nativeIdField": null
+  },
+  "wupCityCode": 10026,
+  "cityId": "wup2025:10026",
+  "queueRank": 799,
+  "sourceIds": [],
+  "centerLatLon": [
+    30.3246518486851,
+    112.238540696423
+  ],
+  "coverageAssessment": {
+    "claimedScope": "Hubei’s official Natural Resources Department reports that the Jingzhou Real Estate Registration and Transaction Center provides “one certificate, one code, scan to see map” services for the city center; it describes cadastral/rights survey as part of registration and identifies parcel maps and building subdivision plans as registry products. This is city-local registry evidence, but no anonymous, schema-safe parcel vector endpoint was identified.",
+    "verifiedOpenScope": "Official Hubei Natural Resources Department coverage describes the Jingzhou center’s QR-coded parcel-map service and cadastral survey workflows. Searches found a property/map visualization candidate but no official public vector API schema with a safe field allowlist; no property identifier was submitted and no map geometry queried.",
+    "citywideVerified": false,
+    "countrywideVerified": false
+  },
+  "runtimeAssessment": {
+    "status": "not_assessed",
+    "reason": "Source discovery only; no runtime contract or adapter qualification was tested."
+  },
+  "verifiedParcelResponse": null,
+  "rootSourceDateNote": "The city-center registration map article is dated 21 April 2022; QR-linked individual registration products are not an anonymous full-vector layer.",
+  "rootPrimaryReadback": {
+    "url": "https://zrzyt.hubei.gov.cn/bmdt/sxdt/202204/t20220421_4091526.shtml",
+    "fetch": 200,
+    "contentType": "text/html",
+    "title": "荆州市局：实现不动产权证图件“码上查”--湖北省自然资源厅"
+  },
+  "rootReviewNote": "Reviewed the specific primary institution/service evidence and its geographical, access and date limits. Direct readback failures are preserved separately from indexed primary evidence. No public full parcel geometry was verified for this city in this discovery pass.",
+  "rootReviewedAt": "2026-10-09T03:57:46.837098+00:00"
+}

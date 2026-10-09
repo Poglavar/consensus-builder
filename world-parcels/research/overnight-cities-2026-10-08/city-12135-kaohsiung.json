@@ -1,0 +1,122 @@
+{
+  "name": "Kaohsiung",
+  "country": "Taiwan",
+  "countryCode": "TW",
+  "rank": 231,
+  "point": [
+    22.6347645343725,
+    120.331923920849
+  ],
+  "freshResearch": {
+    "queries": [
+      {
+        "language": "Traditional Chinese",
+        "query": "高雄市 地籍圖 GIS 查詢 土地地號 地政局 官方 地籍圖資網路便民服務",
+        "scope": "Find the official city cadastral map viewer or public parcel API.",
+        "result": "Kaohsiung Land Bureau official page describes a public-facing cadastral GIS viewer with land/building information, parcel-map layers, parcel-number lookup, and map-click land lookup; page does not publish a vector parcel endpoint or full geometry response.",
+        "actualResultUrls": "https://landp.kcg.gov.tw/CP/2894/",
+        "executionMethod": "Web search; exact query in stated language."
+      },
+      {
+        "language": "Traditional Chinese",
+        "query": "site:landp.kcg.gov.tw/gis 高雄 地籍圖查詢 土地地號 service map REST GIS",
+        "scope": "Inspect the municipal common GIS platform and technical services.",
+        "result": "Official GIS common platform describes an embedded map API and parcel locating tools, but no unauthenticated full-polygon parcel API was verified.",
+        "actualResultUrls": "https://landp.kcg.gov.tw/gis/Default",
+        "executionMethod": "Web search; exact query in stated language."
+      },
+      {
+        "language": "English",
+        "query": "Kaohsiung Taiwan official cadastral parcel map public GIS land administration viewer",
+        "scope": "Cross-check English discovery of the official city parcel viewer and public feature endpoint.",
+        "result": "English results resolve to the official Kaohsiung City GIS common platform and Land Bureau cadastral map service descriptions; no public full-polygon endpoint surfaced. The documented viewer host remains unreachable under normal TLS/network conditions (details in request log).",
+        "actualResultUrls": [
+          "https://landp.kcg.gov.tw/gis/Default",
+          "https://landp.kcg.gov.tw/CP/2894/",
+          "https://gisdawh.kcg.gov.tw/landeasy/page.cfm"
+        ],
+        "executionMethod": "Web search; English query."
+      }
+    ],
+    "portals": [
+      {
+        "name": "Kaohsiung cadastral map service",
+        "operator": "Kaohsiung City Government Land Administration Bureau",
+        "homeUrl": "https://landp.kcg.gov.tw/CP/2894/",
+        "observation": "Official description confirms parcel map, parcel-number locating, map click lookup and thematic land-information queries. It mentions Google/Facebook sign-in for saving/shared search URLs; this is not evidence the viewer requires login for basic viewing. A separate direct viewer host was unresponsive, and no full GeoJSON feature endpoint was verified."
+      },
+      {
+        "name": "Kaohsiung City GIS common platform",
+        "operator": "Kaohsiung City Government Land Administration Bureau",
+        "homeUrl": "https://landp.kcg.gov.tw/gis/Default",
+        "observation": "Official platform page describes common embedded GIS APIs and built-in parcel locating; available page content does not establish anonymous full-polygon retrieval."
+      }
+    ],
+    "requests": [
+      {
+        "url": "https://landp.kcg.gov.tw/CP/2894/",
+        "method": "GET via indexed official page",
+        "httpStatus": 200,
+        "contentType": "text/html",
+        "observation": "Official page content documents cadastral map layers and lookup tools, no vector response."
+      },
+      {
+        "url": "https://gisdawh.kcg.gov.tw/landeasy/page.cfm",
+        "method": "Browser navigation",
+        "httpStatus": null,
+        "observation": "Official viewer navigation timed out; no page response or parcel query was captured."
+      },
+      {
+        "url": "https://landp.kcg.gov.tw/gis/Default",
+        "method": "GET with normal TLS certificate validation",
+        "httpStatus": null,
+        "observation": "Request failed certificate verification in the local client; TLS verification was not disabled."
+      },
+      {
+        "url": "https://landp.kcg.gov.tw/Scripts/TMap.js",
+        "method": "GET with normal TLS certificate validation",
+        "httpStatus": null,
+        "observation": "Official page JavaScript asset request failed certificate verification in the local client; no script content was inspected and TLS verification was not disabled."
+      },
+      {
+        "url": "https://gisdawh.kcg.gov.tw/landeasy/page.cfm",
+        "method": "Browser navigation and GET with normal TLS certificate validation",
+        "httpStatus": null,
+        "observation": "Current navigation timed out / web reader returned internal error; direct verified-TLS request timed out. The official viewer JavaScript/service bootstrap could not be reached."
+      }
+    ]
+  },
+  "status": "complete",
+  "verifiedParcelResponse": null,
+  "source": null,
+  "coverageAssessment": {
+    "claimedScope": "Official municipal cadastral viewer and common GIS services are described; exact full-polygon extent and anonymous export are not documented.",
+    "verifiedOpenScope": "No full parcel geometry was retrieved. Existing official page is service documentation only.",
+    "countrywideVerified": false
+  },
+  "registryFound": true,
+  "verifiedSample": false,
+  "resultCategory": "no_verified_sample_candidate_citywide",
+  "technicalBlocker": "The official viewer host remained unreachable: the map page and normal JavaScript asset fetch failed local TLS certificate verification, while the cadastral viewer host timed out. No TLS bypass or authentication flow was used.",
+  "remainingUncertainty": "Whether the public cadastral viewer has an anonymous API returning complete geometry remains unknown because its page and JavaScript bootstrap could not be fetched over verified TLS.",
+  "nextStep": "Retry the official viewer only after its host and certificate path are reachable; then inspect the normal page bootstrap and test a bounded geometry response.",
+  "schemaVersion": 1,
+  "checkedAt": "2026-10-09",
+  "wupCityCode": 12135,
+  "cityId": "wup2025:12135",
+  "runtimeReadiness": "not_enabled_no_verified_public_geometry",
+  "adapterReady": false,
+  "centerLatLon": [
+    22.6347645343725,
+    120.331923920849
+  ],
+  "queueRank": 231,
+  "population2025": 2187455,
+  "populationUnit": "persons",
+  "pointBasis": "UN WUP 2025 population-weighted settlement centroid; this is not a municipal boundary or a parcel-coverage claim.",
+  "publicParcelGeometryFound": false,
+  "sourceIds": [],
+  "registryBasis": "Official city Land Bureau documents cadastral parcel-map and land registry lookup services; public geometry access remains unverified.",
+  "populationPlausibility2025": "High",
+  "rootReviewedAt": "2026-10-08T21:54:55.714575+00:00"
+}

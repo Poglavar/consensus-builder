@@ -1,0 +1,131 @@
+{
+  "schemaVersion": 1,
+  "kind": "city_parcel_source_research",
+  "checkedAt": "2026-10-09",
+  "name": "Chiclayo",
+  "country": "Peru",
+  "countryCode": "PE",
+  "populationUnit": "persons",
+  "status": "complete",
+  "registryFound": true,
+  "registryBasis": "The Municipality of Chiclayo’s official organization page assigns its Instituto Metropolitano de Planificación Territorial y Gestión Catastral responsibility for maintaining the urban cadastre within its district scope and delivering GIS services. Municipal resolutions and current project notices also name the Chiclayo urban cadastral survey.",
+  "registryEvidenceUrls": [
+    "https://www.gob.pe/institucion/munichiclayo/organizacion",
+    "https://www.gob.pe/institucion/munichiclayo/normas-legales/5432521-0190-2024-mpch-a",
+    "https://www.gob.pe/institucion/munichiclayo/noticias/937991-el-martes-16-de-abril-se-realiza-el-lanzamiento-del-levantamiento-catastral-de-chiclayo",
+    "https://www.gob.pe/institucion/munichiclayo/serviciosonline/",
+    "https://geo2.vivienda.gob.pe/mvcs/oun/visor?id_tarjeta=1"
+  ],
+  "verifiedSample": false,
+  "publicParcelGeometryFound": false,
+  "runtimeReadiness": "not_enabled_no_verified_public_geometry",
+  "wupCityCode": 897,
+  "cityId": "wup2025:897",
+  "centerLatLon": [
+    -6.7699903534786,
+    -79.8447236775502
+  ],
+  "rank": 868,
+  "queueRank": 868,
+  "population2025": 620622,
+  "population2025k": 620.622,
+  "populationPlausibility2025": "High",
+  "pointBasis": "UN WUP 2025 population-weighted settlement centroid; this is not a municipal boundary or a parcel-coverage claim.",
+  "technicalBlocker": "No public anonymous geometry-only parcel endpoint or safe feature allowlist was verified. The available national thematic zoning map is not parcel geometry.",
+  "scopeLimits": "Chiclayo’s municipal cadastre function and an urban cadastral survey are confirmed by official municipal sources. The municipal open-services page and national thematic GIS do not expose a verified safe parcel feature schema. No parcel search was submitted.",
+  "remainingUncertainty": "Municipal GIS services exist, but their anonymous parcel-feature accessibility, schema, and coverage remain unknown.",
+  "research": {
+    "executedQueries": [
+      {
+        "language": "English",
+        "query": "Chiclayo Peru official municipal cadastral registry parcel GIS map",
+        "scope": "Identify city-specific registry/cadastral evidence and any safe public parcel geometry route.",
+        "result": "Municipal first-party organization page confirms an urban cadastre and GIS function; no safe public parcel-feature schema found.",
+        "actualResultUrls": [
+          "https://www.gob.pe/institucion/munichiclayo/organizacion",
+          "https://www.gob.pe/institucion/munichiclayo/normas-legales/5432521-0190-2024-mpch-a",
+          "https://www.gob.pe/institucion/munichiclayo/noticias/937991-el-martes-16-de-abril-se-realiza-el-lanzamiento-del-levantamiento-catastral-de-chiclayo",
+          "https://www.gob.pe/institucion/munichiclayo/serviciosonline/",
+          "https://geo2.vivienda.gob.pe/mvcs/oun/visor?id_tarjeta=1"
+        ],
+        "executionMethod": "Separate English and local-language search, followed by official-source review; public map/form inspection stopped before any parcel, owner, address, tax, account, or applicant lookup."
+      },
+      {
+        "language": "Spanish",
+        "query": "catastro urbano Chiclayo municipalidad plano catastral GIS oficial",
+        "scope": "Identify city-specific registry/cadastral evidence and any safe public parcel geometry route.",
+        "result": "Official municipal resolution approves cadastral sectorization; the public service links inspected did not provide a verified geometry-only parcel route.",
+        "actualResultUrls": [
+          "https://www.gob.pe/institucion/munichiclayo/organizacion",
+          "https://www.gob.pe/institucion/munichiclayo/normas-legales/5432521-0190-2024-mpch-a",
+          "https://www.gob.pe/institucion/munichiclayo/noticias/937991-el-martes-16-de-abril-se-realiza-el-lanzamiento-del-levantamiento-catastral-de-chiclayo",
+          "https://www.gob.pe/institucion/munichiclayo/serviciosonline/",
+          "https://geo2.vivienda.gob.pe/mvcs/oun/visor?id_tarjeta=1"
+        ],
+        "executionMethod": "Separate English and local-language search, followed by official-source review; public map/form inspection stopped before any parcel, owner, address, tax, account, or applicant lookup."
+      }
+    ],
+    "officialSources": [
+      {
+        "url": "https://www.gob.pe/institucion/munichiclayo/organizacion",
+        "observation": "The Municipality of Chiclayo’s official organization page assigns its Instituto Metropolitano de Planificación Territorial y Gestión Catastral responsibility for maintaining the urban cadastre within its district scope and delivering GIS services. Municipal resolutions and current project notices also name the Chiclayo urban cadastral survey."
+      },
+      {
+        "url": "https://www.gob.pe/institucion/munichiclayo/normas-legales/5432521-0190-2024-mpch-a",
+        "observation": "The Municipality of Chiclayo’s official organization page assigns its Instituto Metropolitano de Planificación Territorial y Gestión Catastral responsibility for maintaining the urban cadastre within its district scope and delivering GIS services. Municipal resolutions and current project notices also name the Chiclayo urban cadastral survey."
+      },
+      {
+        "url": "https://www.gob.pe/institucion/munichiclayo/noticias/937991-el-martes-16-de-abril-se-realiza-el-lanzamiento-del-levantamiento-catastral-de-chiclayo",
+        "observation": "The Municipality of Chiclayo’s official organization page assigns its Instituto Metropolitano de Planificación Territorial y Gestión Catastral responsibility for maintaining the urban cadastre within its district scope and delivering GIS services. Municipal resolutions and current project notices also name the Chiclayo urban cadastral survey."
+      },
+      {
+        "url": "https://www.gob.pe/institucion/munichiclayo/serviciosonline/",
+        "observation": "The Municipality of Chiclayo’s official organization page assigns its Instituto Metropolitano de Planificación Territorial y Gestión Catastral responsibility for maintaining the urban cadastre within its district scope and delivering GIS services. Municipal resolutions and current project notices also name the Chiclayo urban cadastral survey."
+      },
+      {
+        "url": "https://geo2.vivienda.gob.pe/mvcs/oun/visor?id_tarjeta=1",
+        "observation": "The Municipality of Chiclayo’s official organization page assigns its Instituto Metropolitano de Planificación Territorial y Gestión Catastral responsibility for maintaining the urban cadastre within its district scope and delivering GIS services. Municipal resolutions and current project notices also name the Chiclayo urban cadastral survey."
+      }
+    ],
+    "metadataReviewFile": "chiclayo-service-review.json",
+    "routeInspectionFile": "/tmp/overnight-cities-2026-10-08/city-897-chiclayo-route-inspection.json"
+  },
+  "source": {
+    "sourceId": null,
+    "name": null,
+    "operator": null,
+    "url": null,
+    "serviceType": "No verified anonymous geometry-only parcel endpoint in this review.",
+    "geometryType": null,
+    "coordinateReferenceSystem": null,
+    "nativeIdFields": [],
+    "directGeometryQueryVerified": false,
+    "directMetadataSchemaVerified": false,
+    "scope": "Chiclayo’s municipal cadastre function and an urban cadastral survey are confirmed by official municipal sources. The municipal open-services page and national thematic GIS do not expose a verified safe parcel feature schema. No parcel search was submitted."
+  },
+  "coverageAssessment": {
+    "claimedScope": "The Municipality of Chiclayo’s official organization page assigns its Instituto Metropolitano de Planificación Territorial y Gestión Catastral responsibility for maintaining the urban cadastre within its district scope and delivering GIS services. Municipal resolutions and current project notices also name the Chiclayo urban cadastral survey.",
+    "verifiedOpenScope": "No public parcel geometry service or point-level response verified.",
+    "citywideVerified": false,
+    "countrywideVerified": false,
+    "geometryVerified": false
+  },
+  "runtimeAssessment": {
+    "status": "not_enabled_no_verified_public_geometry",
+    "reason": "No public anonymous geometry-only parcel endpoint or safe feature allowlist was verified. The available national thematic zoning map is not parcel geometry."
+  },
+  "rootReview": "pending",
+  "point": [
+    -6.7699903534786,
+    -79.8447236775502
+  ],
+  "sourceIds": [],
+  "rootPrimaryReadback": {
+    "url": "https://www.gob.pe/institucion/munichiclayo/organizacion",
+    "fetch": 200,
+    "contentType": "text/html; charset=utf-8",
+    "title": "Municipalidad Provincial de Chiclayo - Plataforma del Estado Peruano"
+  },
+  "rootReviewNote": "Reviewed the specific primary institution/service evidence and its geographical, access and date limits. Direct readback failures are preserved separately from indexed primary evidence. No public full parcel geometry was verified for this city in this discovery pass.",
+  "rootReviewedAt": "2026-10-09T04:12:31.737456+00:00"
+}

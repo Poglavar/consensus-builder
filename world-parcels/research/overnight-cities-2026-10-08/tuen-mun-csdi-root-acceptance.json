@@ -1,0 +1,5796 @@
+{
+  "checkedAt": "2026-10-09",
+  "runtimeAdapter": "repository backend/parcels/arcgis-source.js createArcgisParcelSource; unchanged code",
+  "descriptor": {
+    "id": "temp-hk-csdi-lot-single-equality-qual",
+    "endpoint": "https://portal.csdi.gov.hk/server/rest/services/common/landsd_rcd_1637217253134_22729/FeatureServer/0",
+    "idField": "LotCSUID",
+    "idType": "string",
+    "objectIdField": "OBJECTID",
+    "idPrefix": "TMP-HK-CSDI-LOT-CSUID-",
+    "outFields": [
+      "LotCSUID",
+      "OBJECTID",
+      "LotID"
+    ],
+    "pageSize": 3,
+    "maxFeatures": 2000,
+    "maxBboxKm2": 1,
+    "boundsQueryMode": "object-ids",
+    "idsQueryMode": "single-equality",
+    "idBatchSize": 1,
+    "temporaryHarnessOnly": true
+  },
+  "denseWindow": {
+    "id": "grid-r+2-c-2",
+    "bbox": [
+      113.994,
+      22.428,
+      113.995,
+      22.429
+    ],
+    "pageSize": 3,
+    "expectedCount": 25,
+    "returnedCount": 25,
+    "complete": true,
+    "manifestMatches": true,
+    "objectIds": [
+      60243,
+      80272,
+      85562,
+      108297,
+      108438,
+      127389,
+      127390,
+      139397,
+      139489,
+      139569,
+      175769,
+      208506,
+      208956,
+      208957,
+      208960,
+      218852,
+      282306,
+      315611,
+      315892,
+      315893,
+      315988,
+      316031,
+      316032,
+      316033,
+      316036
+    ]
+  },
+  "freshIds": {
+    "requestedCount": 127,
+    "returnedCount": 127,
+    "absentCount": 0,
+    "allExact": true,
+    "checks": [
+      {
+        "expectedOBJECTID": 5191,
+        "expectedLotCSUID": "180002716",
+        "found": true,
+        "returnedCount": 1,
+        "absentIds": [],
+        "objectIdStable": true,
+        "lotCSUIDStable": true,
+        "lotIDStable": true,
+        "geometryHashStable": true
+      },
+      {
+        "expectedOBJECTID": 10248,
+        "expectedLotCSUID": "180002714    A",
+        "found": true,
+        "returnedCount": 1,
+        "absentIds": [],
+        "objectIdStable": true,
+        "lotCSUIDStable": true,
+        "lotIDStable": true,
+        "geometryHashStable": true
+      },
+      {
+        "expectedOBJECTID": 12615,
+        "expectedLotCSUID": "180003896    RP",
+        "found": true,
+        "returnedCount": 1,
+        "absentIds": [],
+        "objectIdStable": true,
+        "lotCSUIDStable": true,
+        "lotIDStable": true,
+        "geometryHashStable": true
+      },
+      {
+        "expectedOBJECTID": 14390,
+        "expectedLotCSUID": "180002718",
+        "found": true,
+        "returnedCount": 1,
+        "absentIds": [],
+        "objectIdStable": true,
+        "lotCSUIDStable": true,
+        "lotIDStable": true,
+        "geometryHashStable": true
+      },
+      {
+        "expectedOBJECTID": 16557,
+        "expectedLotCSUID": "180002600    RP",
+        "found": true,
+        "returnedCount": 1,
+        "absentIds": [],
+        "objectIdStable": true,
+        "lotCSUIDStable": true,
+        "lotIDStable": true,
+        "geometryHashStable": true
+      },
+      {
+        "expectedOBJECTID": 16574,
+        "expectedLotCSUID": "180004175",
+        "found": true,
+        "returnedCount": 1,
+        "absentIds": [],
+        "objectIdStable": true,
+        "lotCSUIDStable": true,
+        "lotIDStable": true,
+        "geometryHashStable": true
+      },
+      {
+        "expectedOBJECTID": 21147,
+        "expectedLotCSUID": "180002611    A",
+        "found": true,
+        "returnedCount": 1,
+        "absentIds": [],
+        "objectIdStable": true,
+        "lotCSUIDStable": true,
+        "lotIDStable": true,
+        "geometryHashStable": true
+      },
+      {
+        "expectedOBJECTID": 21453,
+        "expectedLotCSUID": "180002682",
+        "found": true,
+        "returnedCount": 1,
+        "absentIds": [],
+        "objectIdStable": true,
+        "lotCSUIDStable": true,
+        "lotIDStable": true,
+        "geometryHashStable": true
+      },
+      {
+        "expectedOBJECTID": 30554,
+        "expectedLotCSUID": "180002737    A,RP",
+        "found": true,
+        "returnedCount": 1,
+        "absentIds": [],
+        "objectIdStable": true,
+        "lotCSUIDStable": true,
+        "lotIDStable": true,
+        "geometryHashStable": true
+      },
+      {
+        "expectedOBJECTID": 30891,
+        "expectedLotCSUID": "180003880",
+        "found": true,
+        "returnedCount": 1,
+        "absentIds": [],
+        "objectIdStable": true,
+        "lotCSUIDStable": true,
+        "lotIDStable": true,
+        "geometryHashStable": true
+      },
+      {
+        "expectedOBJECTID": 31034,
+        "expectedLotCSUID": "180002746    RP",
+        "found": true,
+        "returnedCount": 1,
+        "absentIds": [],
+        "objectIdStable": true,
+        "lotCSUIDStable": true,
+        "lotIDStable": true,
+        "geometryHashStable": true
+      },
+      {
+        "expectedOBJECTID": 31184,
+        "expectedLotCSUID": "180002736    RP",
+        "found": true,
+        "returnedCount": 1,
+        "absentIds": [],
+        "objectIdStable": true,
+        "lotCSUIDStable": true,
+        "lotIDStable": true,
+        "geometryHashStable": true
+      },
+      {
+        "expectedOBJECTID": 35595,
+        "expectedLotCSUID": "180003882    RP",
+        "found": true,
+        "returnedCount": 1,
+        "absentIds": [],
+        "objectIdStable": true,
+        "lotCSUIDStable": true,
+        "lotIDStable": true,
+        "geometryHashStable": true
+      },
+      {
+        "expectedOBJECTID": 35931,
+        "expectedLotCSUID": "180003888    RP",
+        "found": true,
+        "returnedCount": 1,
+        "absentIds": [],
+        "objectIdStable": true,
+        "lotCSUIDStable": true,
+        "lotIDStable": true,
+        "geometryHashStable": true
+      },
+      {
+        "expectedOBJECTID": 38704,
+        "expectedLotCSUID": "180004270",
+        "found": true,
+        "returnedCount": 1,
+        "absentIds": [],
+        "objectIdStable": true,
+        "lotCSUIDStable": true,
+        "lotIDStable": true,
+        "geometryHashStable": true
+      },
+      {
+        "expectedOBJECTID": 51023,
+        "expectedLotCSUID": "180002735    B,RP",
+        "found": true,
+        "returnedCount": 1,
+        "absentIds": [],
+        "objectIdStable": true,
+        "lotCSUIDStable": true,
+        "lotIDStable": true,
+        "geometryHashStable": true
+      },
+      {
+        "expectedOBJECTID": 60243,
+        "expectedLotCSUID": "180003040",
+        "found": true,
+        "returnedCount": 1,
+        "absentIds": [],
+        "objectIdStable": true,
+        "lotCSUIDStable": true,
+        "lotIDStable": true,
+        "geometryHashStable": true
+      },
+      {
+        "expectedOBJECTID": 79918,
+        "expectedLotCSUID": "180002698",
+        "found": true,
+        "returnedCount": 1,
+        "absentIds": [],
+        "objectIdStable": true,
+        "lotCSUIDStable": true,
+        "lotIDStable": true,
+        "geometryHashStable": true
+      },
+      {
+        "expectedOBJECTID": 80133,
+        "expectedLotCSUID": "180002673    D",
+        "found": true,
+        "returnedCount": 1,
+        "absentIds": [],
+        "objectIdStable": true,
+        "lotCSUIDStable": true,
+        "lotIDStable": true,
+        "geometryHashStable": true
+      },
+      {
+        "expectedOBJECTID": 80221,
+        "expectedLotCSUID": "180002690",
+        "found": true,
+        "returnedCount": 1,
+        "absentIds": [],
+        "objectIdStable": true,
+        "lotCSUIDStable": true,
+        "lotIDStable": true,
+        "geometryHashStable": true
+      },
+      {
+        "expectedOBJECTID": 80272,
+        "expectedLotCSUID": "180003948    B,RP",
+        "found": true,
+        "returnedCount": 1,
+        "absentIds": [],
+        "objectIdStable": true,
+        "lotCSUIDStable": true,
+        "lotIDStable": true,
+        "geometryHashStable": true
+      },
+      {
+        "expectedOBJECTID": 85555,
+        "expectedLotCSUID": "180002599",
+        "found": true,
+        "returnedCount": 1,
+        "absentIds": [],
+        "objectIdStable": true,
+        "lotCSUIDStable": true,
+        "lotIDStable": true,
+        "geometryHashStable": true
+      },
+      {
+        "expectedOBJECTID": 85562,
+        "expectedLotCSUID": "180003948    A",
+        "found": true,
+        "returnedCount": 1,
+        "absentIds": [],
+        "objectIdStable": true,
+        "lotCSUIDStable": true,
+        "lotIDStable": true,
+        "geometryHashStable": true
+      },
+      {
+        "expectedOBJECTID": 85856,
+        "expectedLotCSUID": "180002680",
+        "found": true,
+        "returnedCount": 1,
+        "absentIds": [],
+        "objectIdStable": true,
+        "lotCSUIDStable": true,
+        "lotIDStable": true,
+        "geometryHashStable": true
+      },
+      {
+        "expectedOBJECTID": 86483,
+        "expectedLotCSUID": "180002673    C",
+        "found": true,
+        "returnedCount": 1,
+        "absentIds": [],
+        "objectIdStable": true,
+        "lotCSUIDStable": true,
+        "lotIDStable": true,
+        "geometryHashStable": true
+      },
+      {
+        "expectedOBJECTID": 94345,
+        "expectedLotCSUID": "180002719",
+        "found": true,
+        "returnedCount": 1,
+        "absentIds": [],
+        "objectIdStable": true,
+        "lotCSUIDStable": true,
+        "lotIDStable": true,
+        "geometryHashStable": true
+      },
+      {
+        "expectedOBJECTID": 94671,
+        "expectedLotCSUID": "180002734",
+        "found": true,
+        "returnedCount": 1,
+        "absentIds": [],
+        "objectIdStable": true,
+        "lotCSUIDStable": true,
+        "lotIDStable": true,
+        "geometryHashStable": true
+      },
+      {
+        "expectedOBJECTID": 94788,
+        "expectedLotCSUID": "180002730",
+        "found": true,
+        "returnedCount": 1,
+        "absentIds": [],
+        "objectIdStable": true,
+        "lotCSUIDStable": true,
+        "lotIDStable": true,
+        "geometryHashStable": true
+      },
+      {
+        "expectedOBJECTID": 94836,
+        "expectedLotCSUID": "180002686",
+        "found": true,
+        "returnedCount": 1,
+        "absentIds": [],
+        "objectIdStable": true,
+        "lotCSUIDStable": true,
+        "lotIDStable": true,
+        "geometryHashStable": true
+      },
+      {
+        "expectedOBJECTID": 99659,
+        "expectedLotCSUID": "180003883",
+        "found": true,
+        "returnedCount": 1,
+        "absentIds": [],
+        "objectIdStable": true,
+        "lotCSUIDStable": true,
+        "lotIDStable": true,
+        "geometryHashStable": true
+      },
+      {
+        "expectedOBJECTID": 101629,
+        "expectedLotCSUID": "180002709    RP",
+        "found": true,
+        "returnedCount": 1,
+        "absentIds": [],
+        "objectIdStable": true,
+        "lotCSUIDStable": true,
+        "lotIDStable": true,
+        "geometryHashStable": true
+      },
+      {
+        "expectedOBJECTID": 106307,
+        "expectedLotCSUID": "180002744    A,RP",
+        "found": true,
+        "returnedCount": 1,
+        "absentIds": [],
+        "objectIdStable": true,
+        "lotCSUIDStable": true,
+        "lotIDStable": true,
+        "geometryHashStable": true
+      },
+      {
+        "expectedOBJECTID": 108163,
+        "expectedLotCSUID": "180002681",
+        "found": true,
+        "returnedCount": 1,
+        "absentIds": [],
+        "objectIdStable": true,
+        "lotCSUIDStable": true,
+        "lotIDStable": true,
+        "geometryHashStable": true
+      },
+      {
+        "expectedOBJECTID": 108297,
+        "expectedLotCSUID": "180003039    RP",
+        "found": true,
+        "returnedCount": 1,
+        "absentIds": [],
+        "objectIdStable": true,
+        "lotCSUIDStable": true,
+        "lotIDStable": true,
+        "geometryHashStable": true
+      },
+      {
+        "expectedOBJECTID": 108438,
+        "expectedLotCSUID": "180002673    E",
+        "found": true,
+        "returnedCount": 1,
+        "absentIds": [],
+        "objectIdStable": true,
+        "lotCSUIDStable": true,
+        "lotIDStable": true,
+        "geometryHashStable": true
+      },
+      {
+        "expectedOBJECTID": 110061,
+        "expectedLotCSUID": "180002612",
+        "found": true,
+        "returnedCount": 1,
+        "absentIds": [],
+        "objectIdStable": true,
+        "lotCSUIDStable": true,
+        "lotIDStable": true,
+        "geometryHashStable": true
+      },
+      {
+        "expectedOBJECTID": 113182,
+        "expectedLotCSUID": "180002723",
+        "found": true,
+        "returnedCount": 1,
+        "absentIds": [],
+        "objectIdStable": true,
+        "lotCSUIDStable": true,
+        "lotIDStable": true,
+        "geometryHashStable": true
+      },
+      {
+        "expectedOBJECTID": 113266,
+        "expectedLotCSUID": "180002675",
+        "found": true,
+        "returnedCount": 1,
+        "absentIds": [],
+        "objectIdStable": true,
+        "lotCSUIDStable": true,
+        "lotIDStable": true,
+        "geometryHashStable": true
+      },
+      {
+        "expectedOBJECTID": 113410,
+        "expectedLotCSUID": "180002679",
+        "found": true,
+        "returnedCount": 1,
+        "absentIds": [],
+        "objectIdStable": true,
+        "lotCSUIDStable": true,
+        "lotIDStable": true,
+        "geometryHashStable": true
+      },
+      {
+        "expectedOBJECTID": 113463,
+        "expectedLotCSUID": "180002677",
+        "found": true,
+        "returnedCount": 1,
+        "absentIds": [],
+        "objectIdStable": true,
+        "lotCSUIDStable": true,
+        "lotIDStable": true,
+        "geometryHashStable": true
+      },
+      {
+        "expectedOBJECTID": 113596,
+        "expectedLotCSUID": "180002701",
+        "found": true,
+        "returnedCount": 1,
+        "absentIds": [],
+        "objectIdStable": true,
+        "lotCSUIDStable": true,
+        "lotIDStable": true,
+        "geometryHashStable": true
+      },
+      {
+        "expectedOBJECTID": 113892,
+        "expectedLotCSUID": "180004209",
+        "found": true,
+        "returnedCount": 1,
+        "absentIds": [],
+        "objectIdStable": true,
+        "lotCSUIDStable": true,
+        "lotIDStable": true,
+        "geometryHashStable": true
+      },
+      {
+        "expectedOBJECTID": 113958,
+        "expectedLotCSUID": "180002661",
+        "found": true,
+        "returnedCount": 1,
+        "absentIds": [],
+        "objectIdStable": true,
+        "lotCSUIDStable": true,
+        "lotIDStable": true,
+        "geometryHashStable": true
+      },
+      {
+        "expectedOBJECTID": 119461,
+        "expectedLotCSUID": "180002684",
+        "found": true,
+        "returnedCount": 1,
+        "absentIds": [],
+        "objectIdStable": true,
+        "lotCSUIDStable": true,
+        "lotIDStable": true,
+        "geometryHashStable": true
+      },
+      {
+        "expectedOBJECTID": 119889,
+        "expectedLotCSUID": "180002694",
+        "found": true,
+        "returnedCount": 1,
+        "absentIds": [],
+        "objectIdStable": true,
+        "lotCSUIDStable": true,
+        "lotIDStable": true,
+        "geometryHashStable": true
+      },
+      {
+        "expectedOBJECTID": 122516,
+        "expectedLotCSUID": "180002699",
+        "found": true,
+        "returnedCount": 1,
+        "absentIds": [],
+        "objectIdStable": true,
+        "lotCSUIDStable": true,
+        "lotIDStable": true,
+        "geometryHashStable": true
+      },
+      {
+        "expectedOBJECTID": 123377,
+        "expectedLotCSUID": "180002697",
+        "found": true,
+        "returnedCount": 1,
+        "absentIds": [],
+        "objectIdStable": true,
+        "lotCSUIDStable": true,
+        "lotIDStable": true,
+        "geometryHashStable": true
+      },
+      {
+        "expectedOBJECTID": 127389,
+        "expectedLotCSUID": "180003038",
+        "found": true,
+        "returnedCount": 1,
+        "absentIds": [],
+        "objectIdStable": true,
+        "lotCSUIDStable": true,
+        "lotIDStable": true,
+        "geometryHashStable": true
+      },
+      {
+        "expectedOBJECTID": 127390,
+        "expectedLotCSUID": "180003948    C",
+        "found": true,
+        "returnedCount": 1,
+        "absentIds": [],
+        "objectIdStable": true,
+        "lotCSUIDStable": true,
+        "lotIDStable": true,
+        "geometryHashStable": true
+      },
+      {
+        "expectedOBJECTID": 127419,
+        "expectedLotCSUID": "180004285",
+        "found": true,
+        "returnedCount": 1,
+        "absentIds": [],
+        "objectIdStable": true,
+        "lotCSUIDStable": true,
+        "lotIDStable": true,
+        "geometryHashStable": true
+      },
+      {
+        "expectedOBJECTID": 127509,
+        "expectedLotCSUID": "180002674",
+        "found": true,
+        "returnedCount": 1,
+        "absentIds": [],
+        "objectIdStable": true,
+        "lotCSUIDStable": true,
+        "lotIDStable": true,
+        "geometryHashStable": true
+      },
+      {
+        "expectedOBJECTID": 128600,
+        "expectedLotCSUID": "180002678",
+        "found": true,
+        "returnedCount": 1,
+        "absentIds": [],
+        "objectIdStable": true,
+        "lotCSUIDStable": true,
+        "lotIDStable": true,
+        "geometryHashStable": true
+      },
+      {
+        "expectedOBJECTID": 129404,
+        "expectedLotCSUID": "180004166",
+        "found": true,
+        "returnedCount": 1,
+        "absentIds": [],
+        "objectIdStable": true,
+        "lotCSUIDStable": true,
+        "lotIDStable": true,
+        "geometryHashStable": true
+      },
+      {
+        "expectedOBJECTID": 139397,
+        "expectedLotCSUID": "180003042",
+        "found": true,
+        "returnedCount": 1,
+        "absentIds": [],
+        "objectIdStable": true,
+        "lotCSUIDStable": true,
+        "lotIDStable": true,
+        "geometryHashStable": true
+      },
+      {
+        "expectedOBJECTID": 139489,
+        "expectedLotCSUID": "180002673    A",
+        "found": true,
+        "returnedCount": 1,
+        "absentIds": [],
+        "objectIdStable": true,
+        "lotCSUIDStable": true,
+        "lotIDStable": true,
+        "geometryHashStable": true
+      },
+      {
+        "expectedOBJECTID": 139569,
+        "expectedLotCSUID": "027000083",
+        "found": true,
+        "returnedCount": 1,
+        "absentIds": [],
+        "objectIdStable": true,
+        "lotCSUIDStable": true,
+        "lotIDStable": true,
+        "geometryHashStable": true
+      },
+      {
+        "expectedOBJECTID": 161031,
+        "expectedLotCSUID": "180002707",
+        "found": true,
+        "returnedCount": 1,
+        "absentIds": [],
+        "objectIdStable": true,
+        "lotCSUIDStable": true,
+        "lotIDStable": true,
+        "geometryHashStable": true
+      },
+      {
+        "expectedOBJECTID": 161133,
+        "expectedLotCSUID": "180002745    RP",
+        "found": true,
+        "returnedCount": 1,
+        "absentIds": [],
+        "objectIdStable": true,
+        "lotCSUIDStable": true,
+        "lotIDStable": true,
+        "geometryHashStable": true
+      },
+      {
+        "expectedOBJECTID": 161139,
+        "expectedLotCSUID": "180002731",
+        "found": true,
+        "returnedCount": 1,
+        "absentIds": [],
+        "objectIdStable": true,
+        "lotCSUIDStable": true,
+        "lotIDStable": true,
+        "geometryHashStable": true
+      },
+      {
+        "expectedOBJECTID": 161282,
+        "expectedLotCSUID": "180002732    RP",
+        "found": true,
+        "returnedCount": 1,
+        "absentIds": [],
+        "objectIdStable": true,
+        "lotCSUIDStable": true,
+        "lotIDStable": true,
+        "geometryHashStable": true
+      },
+      {
+        "expectedOBJECTID": 166997,
+        "expectedLotCSUID": "180002722",
+        "found": true,
+        "returnedCount": 1,
+        "absentIds": [],
+        "objectIdStable": true,
+        "lotCSUIDStable": true,
+        "lotIDStable": true,
+        "geometryHashStable": true
+      },
+      {
+        "expectedOBJECTID": 166998,
+        "expectedLotCSUID": "180002721",
+        "found": true,
+        "returnedCount": 1,
+        "absentIds": [],
+        "objectIdStable": true,
+        "lotCSUIDStable": true,
+        "lotIDStable": true,
+        "geometryHashStable": true
+      },
+      {
+        "expectedOBJECTID": 166999,
+        "expectedLotCSUID": "180002720",
+        "found": true,
+        "returnedCount": 1,
+        "absentIds": [],
+        "objectIdStable": true,
+        "lotCSUIDStable": true,
+        "lotIDStable": true,
+        "geometryHashStable": true
+      },
+      {
+        "expectedOBJECTID": 167029,
+        "expectedLotCSUID": "180002715",
+        "found": true,
+        "returnedCount": 1,
+        "absentIds": [],
+        "objectIdStable": true,
+        "lotCSUIDStable": true,
+        "lotIDStable": true,
+        "geometryHashStable": true
+      },
+      {
+        "expectedOBJECTID": 171378,
+        "expectedLotCSUID": "180002739",
+        "found": true,
+        "returnedCount": 1,
+        "absentIds": [],
+        "objectIdStable": true,
+        "lotCSUIDStable": true,
+        "lotIDStable": true,
+        "geometryHashStable": true
+      },
+      {
+        "expectedOBJECTID": 171789,
+        "expectedLotCSUID": "180002735    A,RP",
+        "found": true,
+        "returnedCount": 1,
+        "absentIds": [],
+        "objectIdStable": true,
+        "lotCSUIDStable": true,
+        "lotIDStable": true,
+        "geometryHashStable": true
+      },
+      {
+        "expectedOBJECTID": 172135,
+        "expectedLotCSUID": "180003879",
+        "found": true,
+        "returnedCount": 1,
+        "absentIds": [],
+        "objectIdStable": true,
+        "lotCSUIDStable": true,
+        "lotIDStable": true,
+        "geometryHashStable": true
+      },
+      {
+        "expectedOBJECTID": 175769,
+        "expectedLotCSUID": "180002673    RP",
+        "found": true,
+        "returnedCount": 1,
+        "absentIds": [],
+        "objectIdStable": true,
+        "lotCSUIDStable": true,
+        "lotIDStable": true,
+        "geometryHashStable": true
+      },
+      {
+        "expectedOBJECTID": 192666,
+        "expectedLotCSUID": "180002708    RP",
+        "found": true,
+        "returnedCount": 1,
+        "absentIds": [],
+        "objectIdStable": true,
+        "lotCSUIDStable": true,
+        "lotIDStable": true,
+        "geometryHashStable": true
+      },
+      {
+        "expectedOBJECTID": 192683,
+        "expectedLotCSUID": "180002728",
+        "found": true,
+        "returnedCount": 1,
+        "absentIds": [],
+        "objectIdStable": true,
+        "lotCSUIDStable": true,
+        "lotIDStable": true,
+        "geometryHashStable": true
+      },
+      {
+        "expectedOBJECTID": 192845,
+        "expectedLotCSUID": "180002725",
+        "found": true,
+        "returnedCount": 1,
+        "absentIds": [],
+        "objectIdStable": true,
+        "lotCSUIDStable": true,
+        "lotIDStable": true,
+        "geometryHashStable": true
+      },
+      {
+        "expectedOBJECTID": 193188,
+        "expectedLotCSUID": "180002705",
+        "found": true,
+        "returnedCount": 1,
+        "absentIds": [],
+        "objectIdStable": true,
+        "lotCSUIDStable": true,
+        "lotIDStable": true,
+        "geometryHashStable": true
+      },
+      {
+        "expectedOBJECTID": 193221,
+        "expectedLotCSUID": "180002717    A,RP",
+        "found": true,
+        "returnedCount": 1,
+        "absentIds": [],
+        "objectIdStable": true,
+        "lotCSUIDStable": true,
+        "lotIDStable": true,
+        "geometryHashStable": true
+      },
+      {
+        "expectedOBJECTID": 193263,
+        "expectedLotCSUID": "180002713    RP",
+        "found": true,
+        "returnedCount": 1,
+        "absentIds": [],
+        "objectIdStable": true,
+        "lotCSUIDStable": true,
+        "lotIDStable": true,
+        "geometryHashStable": true
+      },
+      {
+        "expectedOBJECTID": 193302,
+        "expectedLotCSUID": "180002733",
+        "found": true,
+        "returnedCount": 1,
+        "absentIds": [],
+        "objectIdStable": true,
+        "lotCSUIDStable": true,
+        "lotIDStable": true,
+        "geometryHashStable": true
+      },
+      {
+        "expectedOBJECTID": 193311,
+        "expectedLotCSUID": "180002726",
+        "found": true,
+        "returnedCount": 1,
+        "absentIds": [],
+        "objectIdStable": true,
+        "lotCSUIDStable": true,
+        "lotIDStable": true,
+        "geometryHashStable": true
+      },
+      {
+        "expectedOBJECTID": 193356,
+        "expectedLotCSUID": "180002729",
+        "found": true,
+        "returnedCount": 1,
+        "absentIds": [],
+        "objectIdStable": true,
+        "lotCSUIDStable": true,
+        "lotIDStable": true,
+        "geometryHashStable": true
+      },
+      {
+        "expectedOBJECTID": 193357,
+        "expectedLotCSUID": "180002727",
+        "found": true,
+        "returnedCount": 1,
+        "absentIds": [],
+        "objectIdStable": true,
+        "lotCSUIDStable": true,
+        "lotIDStable": true,
+        "geometryHashStable": true
+      },
+      {
+        "expectedOBJECTID": 208450,
+        "expectedLotCSUID": "180003948    H",
+        "found": true,
+        "returnedCount": 1,
+        "absentIds": [],
+        "objectIdStable": true,
+        "lotCSUIDStable": true,
+        "lotIDStable": true,
+        "geometryHashStable": true
+      },
+      {
+        "expectedOBJECTID": 208506,
+        "expectedLotCSUID": "180003948    E",
+        "found": true,
+        "returnedCount": 1,
+        "absentIds": [],
+        "objectIdStable": true,
+        "lotCSUIDStable": true,
+        "lotIDStable": true,
+        "geometryHashStable": true
+      },
+      {
+        "expectedOBJECTID": 208953,
+        "expectedLotCSUID": "180003948    G",
+        "found": true,
+        "returnedCount": 1,
+        "absentIds": [],
+        "objectIdStable": true,
+        "lotCSUIDStable": true,
+        "lotIDStable": true,
+        "geometryHashStable": true
+      },
+      {
+        "expectedOBJECTID": 208956,
+        "expectedLotCSUID": "180003948    F",
+        "found": true,
+        "returnedCount": 1,
+        "absentIds": [],
+        "objectIdStable": true,
+        "lotCSUIDStable": true,
+        "lotIDStable": true,
+        "geometryHashStable": true
+      },
+      {
+        "expectedOBJECTID": 208957,
+        "expectedLotCSUID": "180003948    J",
+        "found": true,
+        "returnedCount": 1,
+        "absentIds": [],
+        "objectIdStable": true,
+        "lotCSUIDStable": true,
+        "lotIDStable": true,
+        "geometryHashStable": true
+      },
+      {
+        "expectedOBJECTID": 208960,
+        "expectedLotCSUID": "180003948    I",
+        "found": true,
+        "returnedCount": 1,
+        "absentIds": [],
+        "objectIdStable": true,
+        "lotCSUIDStable": true,
+        "lotIDStable": true,
+        "geometryHashStable": true
+      },
+      {
+        "expectedOBJECTID": 218852,
+        "expectedLotCSUID": "180003948    B,1",
+        "found": true,
+        "returnedCount": 1,
+        "absentIds": [],
+        "objectIdStable": true,
+        "lotCSUIDStable": true,
+        "lotIDStable": true,
+        "geometryHashStable": true
+      },
+      {
+        "expectedOBJECTID": 219004,
+        "expectedLotCSUID": "180002676",
+        "found": true,
+        "returnedCount": 1,
+        "absentIds": [],
+        "objectIdStable": true,
+        "lotCSUIDStable": true,
+        "lotIDStable": true,
+        "geometryHashStable": true
+      },
+      {
+        "expectedOBJECTID": 219322,
+        "expectedLotCSUID": "180002685",
+        "found": true,
+        "returnedCount": 1,
+        "absentIds": [],
+        "objectIdStable": true,
+        "lotCSUIDStable": true,
+        "lotIDStable": true,
+        "geometryHashStable": true
+      },
+      {
+        "expectedOBJECTID": 219369,
+        "expectedLotCSUID": "180002695",
+        "found": true,
+        "returnedCount": 1,
+        "absentIds": [],
+        "objectIdStable": true,
+        "lotCSUIDStable": true,
+        "lotIDStable": true,
+        "geometryHashStable": true
+      },
+      {
+        "expectedOBJECTID": 220539,
+        "expectedLotCSUID": "180004309",
+        "found": true,
+        "returnedCount": 1,
+        "absentIds": [],
+        "objectIdStable": true,
+        "lotCSUIDStable": true,
+        "lotIDStable": true,
+        "geometryHashStable": true
+      },
+      {
+        "expectedOBJECTID": 232880,
+        "expectedLotCSUID": "180002693",
+        "found": true,
+        "returnedCount": 1,
+        "absentIds": [],
+        "objectIdStable": true,
+        "lotCSUIDStable": true,
+        "lotIDStable": true,
+        "geometryHashStable": true
+      },
+      {
+        "expectedOBJECTID": 232903,
+        "expectedLotCSUID": "180002702",
+        "found": true,
+        "returnedCount": 1,
+        "absentIds": [],
+        "objectIdStable": true,
+        "lotCSUIDStable": true,
+        "lotIDStable": true,
+        "geometryHashStable": true
+      },
+      {
+        "expectedOBJECTID": 233029,
+        "expectedLotCSUID": "180002687",
+        "found": true,
+        "returnedCount": 1,
+        "absentIds": [],
+        "objectIdStable": true,
+        "lotCSUIDStable": true,
+        "lotIDStable": true,
+        "geometryHashStable": true
+      },
+      {
+        "expectedOBJECTID": 243059,
+        "expectedLotCSUID": "180003872    B",
+        "found": true,
+        "returnedCount": 1,
+        "absentIds": [],
+        "objectIdStable": true,
+        "lotCSUIDStable": true,
+        "lotIDStable": true,
+        "geometryHashStable": true
+      },
+      {
+        "expectedOBJECTID": 243060,
+        "expectedLotCSUID": "180003872    A",
+        "found": true,
+        "returnedCount": 1,
+        "absentIds": [],
+        "objectIdStable": true,
+        "lotCSUIDStable": true,
+        "lotIDStable": true,
+        "geometryHashStable": true
+      },
+      {
+        "expectedOBJECTID": 246234,
+        "expectedLotCSUID": "180003963",
+        "found": true,
+        "returnedCount": 1,
+        "absentIds": [],
+        "objectIdStable": true,
+        "lotCSUIDStable": true,
+        "lotIDStable": true,
+        "geometryHashStable": true
+      },
+      {
+        "expectedOBJECTID": 248683,
+        "expectedLotCSUID": "180004202",
+        "found": true,
+        "returnedCount": 1,
+        "absentIds": [],
+        "objectIdStable": true,
+        "lotCSUIDStable": true,
+        "lotIDStable": true,
+        "geometryHashStable": true
+      },
+      {
+        "expectedOBJECTID": 250068,
+        "expectedLotCSUID": "180002643",
+        "found": true,
+        "returnedCount": 1,
+        "absentIds": [],
+        "objectIdStable": true,
+        "lotCSUIDStable": true,
+        "lotIDStable": true,
+        "geometryHashStable": true
+      },
+      {
+        "expectedOBJECTID": 250518,
+        "expectedLotCSUID": "180002724",
+        "found": true,
+        "returnedCount": 1,
+        "absentIds": [],
+        "objectIdStable": true,
+        "lotCSUIDStable": true,
+        "lotIDStable": true,
+        "geometryHashStable": true
+      },
+      {
+        "expectedOBJECTID": 251064,
+        "expectedLotCSUID": "180002689",
+        "found": true,
+        "returnedCount": 1,
+        "absentIds": [],
+        "objectIdStable": true,
+        "lotCSUIDStable": true,
+        "lotIDStable": true,
+        "geometryHashStable": true
+      },
+      {
+        "expectedOBJECTID": 258474,
+        "expectedLotCSUID": "180002688",
+        "found": true,
+        "returnedCount": 1,
+        "absentIds": [],
+        "objectIdStable": true,
+        "lotCSUIDStable": true,
+        "lotIDStable": true,
+        "geometryHashStable": true
+      },
+      {
+        "expectedOBJECTID": 258652,
+        "expectedLotCSUID": "180002696",
+        "found": true,
+        "returnedCount": 1,
+        "absentIds": [],
+        "objectIdStable": true,
+        "lotCSUIDStable": true,
+        "lotIDStable": true,
+        "geometryHashStable": true
+      },
+      {
+        "expectedOBJECTID": 260639,
+        "expectedLotCSUID": "180002673    F",
+        "found": true,
+        "returnedCount": 1,
+        "absentIds": [],
+        "objectIdStable": true,
+        "lotCSUIDStable": true,
+        "lotIDStable": true,
+        "geometryHashStable": true
+      },
+      {
+        "expectedOBJECTID": 282158,
+        "expectedLotCSUID": "180003983",
+        "found": true,
+        "returnedCount": 1,
+        "absentIds": [],
+        "objectIdStable": true,
+        "lotCSUIDStable": true,
+        "lotIDStable": true,
+        "geometryHashStable": true
+      },
+      {
+        "expectedOBJECTID": 282306,
+        "expectedLotCSUID": "180003984    RP",
+        "found": true,
+        "returnedCount": 1,
+        "absentIds": [],
+        "objectIdStable": true,
+        "lotCSUIDStable": true,
+        "lotIDStable": true,
+        "geometryHashStable": true
+      },
+      {
+        "expectedOBJECTID": 282446,
+        "expectedLotCSUID": "180003964    A",
+        "found": true,
+        "returnedCount": 1,
+        "absentIds": [],
+        "objectIdStable": true,
+        "lotCSUIDStable": true,
+        "lotIDStable": true,
+        "geometryHashStable": true
+      },
+      {
+        "expectedOBJECTID": 282447,
+        "expectedLotCSUID": "180002673    B",
+        "found": true,
+        "returnedCount": 1,
+        "absentIds": [],
+        "objectIdStable": true,
+        "lotCSUIDStable": true,
+        "lotIDStable": true,
+        "geometryHashStable": true
+      },
+      {
+        "expectedOBJECTID": 285316,
+        "expectedLotCSUID": "180002744    B,RP",
+        "found": true,
+        "returnedCount": 1,
+        "absentIds": [],
+        "objectIdStable": true,
+        "lotCSUIDStable": true,
+        "lotIDStable": true,
+        "geometryHashStable": true
+      },
+      {
+        "expectedOBJECTID": 285433,
+        "expectedLotCSUID": "180003885",
+        "found": true,
+        "returnedCount": 1,
+        "absentIds": [],
+        "objectIdStable": true,
+        "lotCSUIDStable": true,
+        "lotIDStable": true,
+        "geometryHashStable": true
+      },
+      {
+        "expectedOBJECTID": 285712,
+        "expectedLotCSUID": "180003884",
+        "found": true,
+        "returnedCount": 1,
+        "absentIds": [],
+        "objectIdStable": true,
+        "lotCSUIDStable": true,
+        "lotIDStable": true,
+        "geometryHashStable": true
+      },
+      {
+        "expectedOBJECTID": 285957,
+        "expectedLotCSUID": "180003881",
+        "found": true,
+        "returnedCount": 1,
+        "absentIds": [],
+        "objectIdStable": true,
+        "lotCSUIDStable": true,
+        "lotIDStable": true,
+        "geometryHashStable": true
+      },
+      {
+        "expectedOBJECTID": 312664,
+        "expectedLotCSUID": "180004211",
+        "found": true,
+        "returnedCount": 1,
+        "absentIds": [],
+        "objectIdStable": true,
+        "lotCSUIDStable": true,
+        "lotIDStable": true,
+        "geometryHashStable": true
+      },
+      {
+        "expectedOBJECTID": 315611,
+        "expectedLotCSUID": "180003033    B,RP",
+        "found": true,
+        "returnedCount": 1,
+        "absentIds": [],
+        "objectIdStable": true,
+        "lotCSUIDStable": true,
+        "lotIDStable": true,
+        "geometryHashStable": true
+      },
+      {
+        "expectedOBJECTID": 315892,
+        "expectedLotCSUID": "180003037    B",
+        "found": true,
+        "returnedCount": 1,
+        "absentIds": [],
+        "objectIdStable": true,
+        "lotCSUIDStable": true,
+        "lotIDStable": true,
+        "geometryHashStable": true
+      },
+      {
+        "expectedOBJECTID": 315893,
+        "expectedLotCSUID": "180003035    RP",
+        "found": true,
+        "returnedCount": 1,
+        "absentIds": [],
+        "objectIdStable": true,
+        "lotCSUIDStable": true,
+        "lotIDStable": true,
+        "geometryHashStable": true
+      },
+      {
+        "expectedOBJECTID": 315988,
+        "expectedLotCSUID": "180003948    RP",
+        "found": true,
+        "returnedCount": 1,
+        "absentIds": [],
+        "objectIdStable": true,
+        "lotCSUIDStable": true,
+        "lotIDStable": true,
+        "geometryHashStable": true
+      },
+      {
+        "expectedOBJECTID": 316031,
+        "expectedLotCSUID": "180003033    A,RP",
+        "found": true,
+        "returnedCount": 1,
+        "absentIds": [],
+        "objectIdStable": true,
+        "lotCSUIDStable": true,
+        "lotIDStable": true,
+        "geometryHashStable": true
+      },
+      {
+        "expectedOBJECTID": 316032,
+        "expectedLotCSUID": "180003033    A,4",
+        "found": true,
+        "returnedCount": 1,
+        "absentIds": [],
+        "objectIdStable": true,
+        "lotCSUIDStable": true,
+        "lotIDStable": true,
+        "geometryHashStable": true
+      },
+      {
+        "expectedOBJECTID": 316033,
+        "expectedLotCSUID": "180003033    A,5",
+        "found": true,
+        "returnedCount": 1,
+        "absentIds": [],
+        "objectIdStable": true,
+        "lotCSUIDStable": true,
+        "lotIDStable": true,
+        "geometryHashStable": true
+      },
+      {
+        "expectedOBJECTID": 316036,
+        "expectedLotCSUID": "180003033    B,4",
+        "found": true,
+        "returnedCount": 1,
+        "absentIds": [],
+        "objectIdStable": true,
+        "lotCSUIDStable": true,
+        "lotIDStable": true,
+        "geometryHashStable": true
+      },
+      {
+        "expectedOBJECTID": 347281,
+        "expectedLotCSUID": "180002668    RP",
+        "found": true,
+        "returnedCount": 1,
+        "absentIds": [],
+        "objectIdStable": true,
+        "lotCSUIDStable": true,
+        "lotIDStable": true,
+        "geometryHashStable": true
+      },
+      {
+        "expectedOBJECTID": 347648,
+        "expectedLotCSUID": "180002692",
+        "found": true,
+        "returnedCount": 1,
+        "absentIds": [],
+        "objectIdStable": true,
+        "lotCSUIDStable": true,
+        "lotIDStable": true,
+        "geometryHashStable": true
+      },
+      {
+        "expectedOBJECTID": 347669,
+        "expectedLotCSUID": "180002683",
+        "found": true,
+        "returnedCount": 1,
+        "absentIds": [],
+        "objectIdStable": true,
+        "lotCSUIDStable": true,
+        "lotIDStable": true,
+        "geometryHashStable": true
+      },
+      {
+        "expectedOBJECTID": 347708,
+        "expectedLotCSUID": "180002691",
+        "found": true,
+        "returnedCount": 1,
+        "absentIds": [],
+        "objectIdStable": true,
+        "lotCSUIDStable": true,
+        "lotIDStable": true,
+        "geometryHashStable": true
+      },
+      {
+        "expectedOBJECTID": 348130,
+        "expectedLotCSUID": "180002748    RP",
+        "found": true,
+        "returnedCount": 1,
+        "absentIds": [],
+        "objectIdStable": true,
+        "lotCSUIDStable": true,
+        "lotIDStable": true,
+        "geometryHashStable": true
+      },
+      {
+        "expectedOBJECTID": 348242,
+        "expectedLotCSUID": "180002749",
+        "found": true,
+        "returnedCount": 1,
+        "absentIds": [],
+        "objectIdStable": true,
+        "lotCSUIDStable": true,
+        "lotIDStable": true,
+        "geometryHashStable": true
+      },
+      {
+        "expectedOBJECTID": 243056,
+        "expectedLotCSUID": "180003872    C",
+        "found": true,
+        "returnedCount": 1,
+        "absentIds": [],
+        "objectIdStable": true,
+        "lotCSUIDStable": true,
+        "lotIDStable": true,
+        "geometryHashStable": true
+      },
+      {
+        "expectedOBJECTID": 243058,
+        "expectedLotCSUID": "180003872    RP",
+        "found": true,
+        "returnedCount": 1,
+        "absentIds": [],
+        "objectIdStable": true,
+        "lotCSUIDStable": true,
+        "lotIDStable": true,
+        "geometryHashStable": true
+      }
+    ],
+    "uniqueRequestedLotCSUIDCount": 127,
+    "all125ViewportUnionNativeIdsIncluded": true,
+    "all127RowsExact": true
+  },
+  "validAbsent": {
+    "requestedId": "TMP-HK-CSDI-LOT-CSUID-ZZZZZZZZZZZZZZZZZZZZZZZZZZZZZ",
+    "returnedCount": 0,
+    "absentIds": [
+      "TMP-HK-CSDI-LOT-CSUID-ZZZZZZZZZZZZZZZZZZZZZZZZZZZZZ"
+    ],
+    "validAndAbsent": true
+  },
+  "fullPolygonFootprints": [
+    {
+      "selectedObjectID": 219322,
+      "LotCSUID": "180002685",
+      "complete": true,
+      "expectedCount": 5,
+      "returnedCount": 5,
+      "manifestMatches": true,
+      "selectedGeometryBound": true,
+      "objectIds": [
+        94836,
+        119461,
+        219322,
+        232903,
+        233029
+      ]
+    },
+    {
+      "selectedObjectID": 243059,
+      "LotCSUID": "180003872    B",
+      "complete": true,
+      "expectedCount": 4,
+      "returnedCount": 4,
+      "manifestMatches": true,
+      "selectedGeometryBound": true,
+      "objectIds": [
+        243056,
+        243058,
+        243059,
+        243060
+      ]
+    },
+    {
+      "selectedObjectID": 166999,
+      "LotCSUID": "180002720",
+      "complete": true,
+      "expectedCount": 10,
+      "returnedCount": 10,
+      "manifestMatches": true,
+      "selectedGeometryBound": true,
+      "objectIds": [
+        14390,
+        94345,
+        166997,
+        166998,
+        166999,
+        167029,
+        192845,
+        193311,
+        193357,
+        250518
+      ]
+    }
+  ],
+  "geometryQuality": {
+    "analysisCrs": "EPSG:32650 (metres)",
+    "geosVersion": "3.14.1",
+    "projVersion": "9.8.1",
+    "featureCount": 127,
+    "featureSet": "125 unique OIDs in all 29 direct source windows (including the required target 13 + four pan windows), plus 2 additional neighboring footprint-intersection polygons; no filtering or repair",
+    "all29WindowUnionCount": 125,
+    "all29WindowUnionIncluded": true,
+    "extraFootprintOids": [
+      "243056",
+      "243058"
+    ],
+    "uniqueObjectIdCount": 127,
+    "uniqueLotCSUIDCount": 127,
+    "uniqueLotIDCount": 127,
+    "invalidGeometryCount": 0,
+    "exactDuplicateGeometryGroups": [],
+    "duplicateLotCSUIDGroups": [],
+    "duplicateLotIDGroups": [],
+    "positiveAreaOverlapThresholdM2": 0.01,
+    "positiveAreaOverlapPairCount": 0,
+    "positiveAreaOverlapPairs": [],
+    "repairsOrFilteringApplied": false
+  },
+  "transportTrace": {
+    "requestCount": 412,
+    "statusCounts": {
+      "200": 412
+    },
+    "fieldsUsed": [
+      "LotCSUID,OBJECTID,LotID"
+    ],
+    "trace": [
+      {
+        "method": "GET",
+        "fields": "",
+        "countOnly": "true",
+        "idsOnly": null,
+        "objectIdBatchSize": 0,
+        "httpStatus": 200,
+        "contentType": "application/json;charset=UTF-8"
+      },
+      {
+        "method": "GET",
+        "fields": "",
+        "countOnly": null,
+        "idsOnly": "true",
+        "objectIdBatchSize": 0,
+        "httpStatus": 200,
+        "contentType": "application/json;charset=UTF-8"
+      },
+      {
+        "method": "GET",
+        "fields": "LotCSUID,OBJECTID,LotID",
+        "countOnly": null,
+        "idsOnly": null,
+        "objectIdBatchSize": 3,
+        "httpStatus": 200,
+        "contentType": "application/geo+json;charset=UTF-8"
+      },
+      {
+        "method": "GET",
+        "fields": "LotCSUID,OBJECTID,LotID",
+        "countOnly": null,
+        "idsOnly": null,
+        "objectIdBatchSize": 3,
+        "httpStatus": 200,
+        "contentType": "application/geo+json;charset=UTF-8"
+      },
+      {
+        "method": "GET",
+        "fields": "LotCSUID,OBJECTID,LotID",
+        "countOnly": null,
+        "idsOnly": null,
+        "objectIdBatchSize": 3,
+        "httpStatus": 200,
+        "contentType": "application/geo+json;charset=UTF-8"
+      },
+      {
+        "method": "GET",
+        "fields": "LotCSUID,OBJECTID,LotID",
+        "countOnly": null,
+        "idsOnly": null,
+        "objectIdBatchSize": 3,
+        "httpStatus": 200,
+        "contentType": "application/geo+json;charset=UTF-8"
+      },
+      {
+        "method": "GET",
+        "fields": "LotCSUID,OBJECTID,LotID",
+        "countOnly": null,
+        "idsOnly": null,
+        "objectIdBatchSize": 3,
+        "httpStatus": 200,
+        "contentType": "application/geo+json;charset=UTF-8"
+      },
+      {
+        "method": "GET",
+        "fields": "LotCSUID,OBJECTID,LotID",
+        "countOnly": null,
+        "idsOnly": null,
+        "objectIdBatchSize": 3,
+        "httpStatus": 200,
+        "contentType": "application/geo+json;charset=UTF-8"
+      },
+      {
+        "method": "GET",
+        "fields": "LotCSUID,OBJECTID,LotID",
+        "countOnly": null,
+        "idsOnly": null,
+        "objectIdBatchSize": 3,
+        "httpStatus": 200,
+        "contentType": "application/geo+json;charset=UTF-8"
+      },
+      {
+        "method": "GET",
+        "fields": "LotCSUID,OBJECTID,LotID",
+        "countOnly": null,
+        "idsOnly": null,
+        "objectIdBatchSize": 3,
+        "httpStatus": 200,
+        "contentType": "application/geo+json;charset=UTF-8"
+      },
+      {
+        "method": "GET",
+        "fields": "LotCSUID,OBJECTID,LotID",
+        "countOnly": null,
+        "idsOnly": null,
+        "objectIdBatchSize": 1,
+        "httpStatus": 200,
+        "contentType": "application/geo+json;charset=UTF-8"
+      },
+      {
+        "method": "GET",
+        "fields": "",
+        "countOnly": "true",
+        "idsOnly": null,
+        "objectIdBatchSize": 0,
+        "httpStatus": 200,
+        "contentType": "application/json;charset=UTF-8"
+      },
+      {
+        "method": "GET",
+        "fields": "",
+        "countOnly": null,
+        "idsOnly": "true",
+        "objectIdBatchSize": 0,
+        "httpStatus": 200,
+        "contentType": "application/json;charset=UTF-8"
+      },
+      {
+        "method": "GET",
+        "fields": "LotCSUID,OBJECTID,LotID",
+        "countOnly": null,
+        "idsOnly": null,
+        "objectIdBatchSize": 1,
+        "httpStatus": 200,
+        "contentType": "application/geo+json;charset=UTF-8"
+      },
+      {
+        "method": "GET",
+        "fields": "",
+        "countOnly": "true",
+        "idsOnly": null,
+        "objectIdBatchSize": 0,
+        "httpStatus": 200,
+        "contentType": "application/json;charset=UTF-8"
+      },
+      {
+        "method": "GET",
+        "fields": "",
+        "countOnly": null,
+        "idsOnly": "true",
+        "objectIdBatchSize": 0,
+        "httpStatus": 200,
+        "contentType": "application/json;charset=UTF-8"
+      },
+      {
+        "method": "GET",
+        "fields": "LotCSUID,OBJECTID,LotID",
+        "countOnly": null,
+        "idsOnly": null,
+        "objectIdBatchSize": 1,
+        "httpStatus": 200,
+        "contentType": "application/geo+json;charset=UTF-8"
+      },
+      {
+        "method": "GET",
+        "fields": "",
+        "countOnly": "true",
+        "idsOnly": null,
+        "objectIdBatchSize": 0,
+        "httpStatus": 200,
+        "contentType": "application/json;charset=UTF-8"
+      },
+      {
+        "method": "GET",
+        "fields": "",
+        "countOnly": null,
+        "idsOnly": "true",
+        "objectIdBatchSize": 0,
+        "httpStatus": 200,
+        "contentType": "application/json;charset=UTF-8"
+      },
+      {
+        "method": "GET",
+        "fields": "LotCSUID,OBJECTID,LotID",
+        "countOnly": null,
+        "idsOnly": null,
+        "objectIdBatchSize": 1,
+        "httpStatus": 200,
+        "contentType": "application/geo+json;charset=UTF-8"
+      },
+      {
+        "method": "GET",
+        "fields": "",
+        "countOnly": "true",
+        "idsOnly": null,
+        "objectIdBatchSize": 0,
+        "httpStatus": 200,
+        "contentType": "application/json;charset=UTF-8"
+      },
+      {
+        "method": "GET",
+        "fields": "",
+        "countOnly": null,
+        "idsOnly": "true",
+        "objectIdBatchSize": 0,
+        "httpStatus": 200,
+        "contentType": "application/json;charset=UTF-8"
+      },
+      {
+        "method": "GET",
+        "fields": "LotCSUID,OBJECTID,LotID",
+        "countOnly": null,
+        "idsOnly": null,
+        "objectIdBatchSize": 1,
+        "httpStatus": 200,
+        "contentType": "application/geo+json;charset=UTF-8"
+      },
+      {
+        "method": "GET",
+        "fields": "",
+        "countOnly": "true",
+        "idsOnly": null,
+        "objectIdBatchSize": 0,
+        "httpStatus": 200,
+        "contentType": "application/json;charset=UTF-8"
+      },
+      {
+        "method": "GET",
+        "fields": "",
+        "countOnly": null,
+        "idsOnly": "true",
+        "objectIdBatchSize": 0,
+        "httpStatus": 200,
+        "contentType": "application/json;charset=UTF-8"
+      },
+      {
+        "method": "GET",
+        "fields": "LotCSUID,OBJECTID,LotID",
+        "countOnly": null,
+        "idsOnly": null,
+        "objectIdBatchSize": 1,
+        "httpStatus": 200,
+        "contentType": "application/geo+json;charset=UTF-8"
+      },
+      {
+        "method": "GET",
+        "fields": "",
+        "countOnly": "true",
+        "idsOnly": null,
+        "objectIdBatchSize": 0,
+        "httpStatus": 200,
+        "contentType": "application/json;charset=UTF-8"
+      },
+      {
+        "method": "GET",
+        "fields": "",
+        "countOnly": null,
+        "idsOnly": "true",
+        "objectIdBatchSize": 0,
+        "httpStatus": 200,
+        "contentType": "application/json;charset=UTF-8"
+      },
+      {
+        "method": "GET",
+        "fields": "LotCSUID,OBJECTID,LotID",
+        "countOnly": null,
+        "idsOnly": null,
+        "objectIdBatchSize": 1,
+        "httpStatus": 200,
+        "contentType": "application/geo+json;charset=UTF-8"
+      },
+      {
+        "method": "GET",
+        "fields": "",
+        "countOnly": "true",
+        "idsOnly": null,
+        "objectIdBatchSize": 0,
+        "httpStatus": 200,
+        "contentType": "application/json;charset=UTF-8"
+      },
+      {
+        "method": "GET",
+        "fields": "",
+        "countOnly": null,
+        "idsOnly": "true",
+        "objectIdBatchSize": 0,
+        "httpStatus": 200,
+        "contentType": "application/json;charset=UTF-8"
+      },
+      {
+        "method": "GET",
+        "fields": "LotCSUID,OBJECTID,LotID",
+        "countOnly": null,
+        "idsOnly": null,
+        "objectIdBatchSize": 1,
+        "httpStatus": 200,
+        "contentType": "application/geo+json;charset=UTF-8"
+      },
+      {
+        "method": "GET",
+        "fields": "",
+        "countOnly": "true",
+        "idsOnly": null,
+        "objectIdBatchSize": 0,
+        "httpStatus": 200,
+        "contentType": "application/json;charset=UTF-8"
+      },
+      {
+        "method": "GET",
+        "fields": "",
+        "countOnly": null,
+        "idsOnly": "true",
+        "objectIdBatchSize": 0,
+        "httpStatus": 200,
+        "contentType": "application/json;charset=UTF-8"
+      },
+      {
+        "method": "GET",
+        "fields": "LotCSUID,OBJECTID,LotID",
+        "countOnly": null,
+        "idsOnly": null,
+        "objectIdBatchSize": 1,
+        "httpStatus": 200,
+        "contentType": "application/geo+json;charset=UTF-8"
+      },
+      {
+        "method": "GET",
+        "fields": "",
+        "countOnly": "true",
+        "idsOnly": null,
+        "objectIdBatchSize": 0,
+        "httpStatus": 200,
+        "contentType": "application/json;charset=UTF-8"
+      },
+      {
+        "method": "GET",
+        "fields": "",
+        "countOnly": null,
+        "idsOnly": "true",
+        "objectIdBatchSize": 0,
+        "httpStatus": 200,
+        "contentType": "application/json;charset=UTF-8"
+      },
+      {
+        "method": "GET",
+        "fields": "LotCSUID,OBJECTID,LotID",
+        "countOnly": null,
+        "idsOnly": null,
+        "objectIdBatchSize": 1,
+        "httpStatus": 200,
+        "contentType": "application/geo+json;charset=UTF-8"
+      },
+      {
+        "method": "GET",
+        "fields": "",
+        "countOnly": "true",
+        "idsOnly": null,
+        "objectIdBatchSize": 0,
+        "httpStatus": 200,
+        "contentType": "application/json;charset=UTF-8"
+      },
+      {
+        "method": "GET",
+        "fields": "",
+        "countOnly": null,
+        "idsOnly": "true",
+        "objectIdBatchSize": 0,
+        "httpStatus": 200,
+        "contentType": "application/json;charset=UTF-8"
+      },
+      {
+        "method": "GET",
+        "fields": "LotCSUID,OBJECTID,LotID",
+        "countOnly": null,
+        "idsOnly": null,
+        "objectIdBatchSize": 1,
+        "httpStatus": 200,
+        "contentType": "application/geo+json;charset=UTF-8"
+      },
+      {
+        "method": "GET",
+        "fields": "",
+        "countOnly": "true",
+        "idsOnly": null,
+        "objectIdBatchSize": 0,
+        "httpStatus": 200,
+        "contentType": "application/json;charset=UTF-8"
+      },
+      {
+        "method": "GET",
+        "fields": "",
+        "countOnly": null,
+        "idsOnly": "true",
+        "objectIdBatchSize": 0,
+        "httpStatus": 200,
+        "contentType": "application/json;charset=UTF-8"
+      },
+      {
+        "method": "GET",
+        "fields": "LotCSUID,OBJECTID,LotID",
+        "countOnly": null,
+        "idsOnly": null,
+        "objectIdBatchSize": 1,
+        "httpStatus": 200,
+        "contentType": "application/geo+json;charset=UTF-8"
+      },
+      {
+        "method": "GET",
+        "fields": "",
+        "countOnly": "true",
+        "idsOnly": null,
+        "objectIdBatchSize": 0,
+        "httpStatus": 200,
+        "contentType": "application/json;charset=UTF-8"
+      },
+      {
+        "method": "GET",
+        "fields": "",
+        "countOnly": null,
+        "idsOnly": "true",
+        "objectIdBatchSize": 0,
+        "httpStatus": 200,
+        "contentType": "application/json;charset=UTF-8"
+      },
+      {
+        "method": "GET",
+        "fields": "LotCSUID,OBJECTID,LotID",
+        "countOnly": null,
+        "idsOnly": null,
+        "objectIdBatchSize": 1,
+        "httpStatus": 200,
+        "contentType": "application/geo+json;charset=UTF-8"
+      },
+      {
+        "method": "GET",
+        "fields": "",
+        "countOnly": "true",
+        "idsOnly": null,
+        "objectIdBatchSize": 0,
+        "httpStatus": 200,
+        "contentType": "application/json;charset=UTF-8"
+      },
+      {
+        "method": "GET",
+        "fields": "",
+        "countOnly": null,
+        "idsOnly": "true",
+        "objectIdBatchSize": 0,
+        "httpStatus": 200,
+        "contentType": "application/json;charset=UTF-8"
+      },
+      {
+        "method": "GET",
+        "fields": "LotCSUID,OBJECTID,LotID",
+        "countOnly": null,
+        "idsOnly": null,
+        "objectIdBatchSize": 1,
+        "httpStatus": 200,
+        "contentType": "application/geo+json;charset=UTF-8"
+      },
+      {
+        "method": "GET",
+        "fields": "",
+        "countOnly": "true",
+        "idsOnly": null,
+        "objectIdBatchSize": 0,
+        "httpStatus": 200,
+        "contentType": "application/json;charset=UTF-8"
+      },
+      {
+        "method": "GET",
+        "fields": "",
+        "countOnly": null,
+        "idsOnly": "true",
+        "objectIdBatchSize": 0,
+        "httpStatus": 200,
+        "contentType": "application/json;charset=UTF-8"
+      },
+      {
+        "method": "GET",
+        "fields": "LotCSUID,OBJECTID,LotID",
+        "countOnly": null,
+        "idsOnly": null,
+        "objectIdBatchSize": 1,
+        "httpStatus": 200,
+        "contentType": "application/geo+json;charset=UTF-8"
+      },
+      {
+        "method": "GET",
+        "fields": "",
+        "countOnly": "true",
+        "idsOnly": null,
+        "objectIdBatchSize": 0,
+        "httpStatus": 200,
+        "contentType": "application/json;charset=UTF-8"
+      },
+      {
+        "method": "GET",
+        "fields": "",
+        "countOnly": null,
+        "idsOnly": "true",
+        "objectIdBatchSize": 0,
+        "httpStatus": 200,
+        "contentType": "application/json;charset=UTF-8"
+      },
+      {
+        "method": "GET",
+        "fields": "LotCSUID,OBJECTID,LotID",
+        "countOnly": null,
+        "idsOnly": null,
+        "objectIdBatchSize": 1,
+        "httpStatus": 200,
+        "contentType": "application/geo+json;charset=UTF-8"
+      },
+      {
+        "method": "GET",
+        "fields": "",
+        "countOnly": "true",
+        "idsOnly": null,
+        "objectIdBatchSize": 0,
+        "httpStatus": 200,
+        "contentType": "application/json;charset=UTF-8"
+      },
+      {
+        "method": "GET",
+        "fields": "",
+        "countOnly": null,
+        "idsOnly": "true",
+        "objectIdBatchSize": 0,
+        "httpStatus": 200,
+        "contentType": "application/json;charset=UTF-8"
+      },
+      {
+        "method": "GET",
+        "fields": "LotCSUID,OBJECTID,LotID",
+        "countOnly": null,
+        "idsOnly": null,
+        "objectIdBatchSize": 1,
+        "httpStatus": 200,
+        "contentType": "application/geo+json;charset=UTF-8"
+      },
+      {
+        "method": "GET",
+        "fields": "",
+        "countOnly": "true",
+        "idsOnly": null,
+        "objectIdBatchSize": 0,
+        "httpStatus": 200,
+        "contentType": "application/json;charset=UTF-8"
+      },
+      {
+        "method": "GET",
+        "fields": "",
+        "countOnly": null,
+        "idsOnly": "true",
+        "objectIdBatchSize": 0,
+        "httpStatus": 200,
+        "contentType": "application/json;charset=UTF-8"
+      },
+      {
+        "method": "GET",
+        "fields": "LotCSUID,OBJECTID,LotID",
+        "countOnly": null,
+        "idsOnly": null,
+        "objectIdBatchSize": 1,
+        "httpStatus": 200,
+        "contentType": "application/geo+json;charset=UTF-8"
+      },
+      {
+        "method": "GET",
+        "fields": "",
+        "countOnly": "true",
+        "idsOnly": null,
+        "objectIdBatchSize": 0,
+        "httpStatus": 200,
+        "contentType": "application/json;charset=UTF-8"
+      },
+      {
+        "method": "GET",
+        "fields": "",
+        "countOnly": null,
+        "idsOnly": "true",
+        "objectIdBatchSize": 0,
+        "httpStatus": 200,
+        "contentType": "application/json;charset=UTF-8"
+      },
+      {
+        "method": "GET",
+        "fields": "LotCSUID,OBJECTID,LotID",
+        "countOnly": null,
+        "idsOnly": null,
+        "objectIdBatchSize": 1,
+        "httpStatus": 200,
+        "contentType": "application/geo+json;charset=UTF-8"
+      },
+      {
+        "method": "GET",
+        "fields": "",
+        "countOnly": "true",
+        "idsOnly": null,
+        "objectIdBatchSize": 0,
+        "httpStatus": 200,
+        "contentType": "application/json;charset=UTF-8"
+      },
+      {
+        "method": "GET",
+        "fields": "",
+        "countOnly": null,
+        "idsOnly": "true",
+        "objectIdBatchSize": 0,
+        "httpStatus": 200,
+        "contentType": "application/json;charset=UTF-8"
+      },
+      {
+        "method": "GET",
+        "fields": "LotCSUID,OBJECTID,LotID",
+        "countOnly": null,
+        "idsOnly": null,
+        "objectIdBatchSize": 1,
+        "httpStatus": 200,
+        "contentType": "application/geo+json;charset=UTF-8"
+      },
+      {
+        "method": "GET",
+        "fields": "",
+        "countOnly": "true",
+        "idsOnly": null,
+        "objectIdBatchSize": 0,
+        "httpStatus": 200,
+        "contentType": "application/json;charset=UTF-8"
+      },
+      {
+        "method": "GET",
+        "fields": "",
+        "countOnly": null,
+        "idsOnly": "true",
+        "objectIdBatchSize": 0,
+        "httpStatus": 200,
+        "contentType": "application/json;charset=UTF-8"
+      },
+      {
+        "method": "GET",
+        "fields": "LotCSUID,OBJECTID,LotID",
+        "countOnly": null,
+        "idsOnly": null,
+        "objectIdBatchSize": 1,
+        "httpStatus": 200,
+        "contentType": "application/geo+json;charset=UTF-8"
+      },
+      {
+        "method": "GET",
+        "fields": "",
+        "countOnly": "true",
+        "idsOnly": null,
+        "objectIdBatchSize": 0,
+        "httpStatus": 200,
+        "contentType": "application/json;charset=UTF-8"
+      },
+      {
+        "method": "GET",
+        "fields": "",
+        "countOnly": null,
+        "idsOnly": "true",
+        "objectIdBatchSize": 0,
+        "httpStatus": 200,
+        "contentType": "application/json;charset=UTF-8"
+      },
+      {
+        "method": "GET",
+        "fields": "LotCSUID,OBJECTID,LotID",
+        "countOnly": null,
+        "idsOnly": null,
+        "objectIdBatchSize": 1,
+        "httpStatus": 200,
+        "contentType": "application/geo+json;charset=UTF-8"
+      },
+      {
+        "method": "GET",
+        "fields": "",
+        "countOnly": "true",
+        "idsOnly": null,
+        "objectIdBatchSize": 0,
+        "httpStatus": 200,
+        "contentType": "application/json;charset=UTF-8"
+      },
+      {
+        "method": "GET",
+        "fields": "",
+        "countOnly": null,
+        "idsOnly": "true",
+        "objectIdBatchSize": 0,
+        "httpStatus": 200,
+        "contentType": "application/json;charset=UTF-8"
+      },
+      {
+        "method": "GET",
+        "fields": "LotCSUID,OBJECTID,LotID",
+        "countOnly": null,
+        "idsOnly": null,
+        "objectIdBatchSize": 1,
+        "httpStatus": 200,
+        "contentType": "application/geo+json;charset=UTF-8"
+      },
+      {
+        "method": "GET",
+        "fields": "",
+        "countOnly": "true",
+        "idsOnly": null,
+        "objectIdBatchSize": 0,
+        "httpStatus": 200,
+        "contentType": "application/json;charset=UTF-8"
+      },
+      {
+        "method": "GET",
+        "fields": "",
+        "countOnly": null,
+        "idsOnly": "true",
+        "objectIdBatchSize": 0,
+        "httpStatus": 200,
+        "contentType": "application/json;charset=UTF-8"
+      },
+      {
+        "method": "GET",
+        "fields": "LotCSUID,OBJECTID,LotID",
+        "countOnly": null,
+        "idsOnly": null,
+        "objectIdBatchSize": 1,
+        "httpStatus": 200,
+        "contentType": "application/geo+json;charset=UTF-8"
+      },
+      {
+        "method": "GET",
+        "fields": "",
+        "countOnly": "true",
+        "idsOnly": null,
+        "objectIdBatchSize": 0,
+        "httpStatus": 200,
+        "contentType": "application/json;charset=UTF-8"
+      },
+      {
+        "method": "GET",
+        "fields": "",
+        "countOnly": null,
+        "idsOnly": "true",
+        "objectIdBatchSize": 0,
+        "httpStatus": 200,
+        "contentType": "application/json;charset=UTF-8"
+      },
+      {
+        "method": "GET",
+        "fields": "LotCSUID,OBJECTID,LotID",
+        "countOnly": null,
+        "idsOnly": null,
+        "objectIdBatchSize": 1,
+        "httpStatus": 200,
+        "contentType": "application/geo+json;charset=UTF-8"
+      },
+      {
+        "method": "GET",
+        "fields": "",
+        "countOnly": "true",
+        "idsOnly": null,
+        "objectIdBatchSize": 0,
+        "httpStatus": 200,
+        "contentType": "application/json;charset=UTF-8"
+      },
+      {
+        "method": "GET",
+        "fields": "",
+        "countOnly": null,
+        "idsOnly": "true",
+        "objectIdBatchSize": 0,
+        "httpStatus": 200,
+        "contentType": "application/json;charset=UTF-8"
+      },
+      {
+        "method": "GET",
+        "fields": "LotCSUID,OBJECTID,LotID",
+        "countOnly": null,
+        "idsOnly": null,
+        "objectIdBatchSize": 1,
+        "httpStatus": 200,
+        "contentType": "application/geo+json;charset=UTF-8"
+      },
+      {
+        "method": "GET",
+        "fields": "",
+        "countOnly": "true",
+        "idsOnly": null,
+        "objectIdBatchSize": 0,
+        "httpStatus": 200,
+        "contentType": "application/json;charset=UTF-8"
+      },
+      {
+        "method": "GET",
+        "fields": "",
+        "countOnly": null,
+        "idsOnly": "true",
+        "objectIdBatchSize": 0,
+        "httpStatus": 200,
+        "contentType": "application/json;charset=UTF-8"
+      },
+      {
+        "method": "GET",
+        "fields": "LotCSUID,OBJECTID,LotID",
+        "countOnly": null,
+        "idsOnly": null,
+        "objectIdBatchSize": 1,
+        "httpStatus": 200,
+        "contentType": "application/geo+json;charset=UTF-8"
+      },
+      {
+        "method": "GET",
+        "fields": "",
+        "countOnly": "true",
+        "idsOnly": null,
+        "objectIdBatchSize": 0,
+        "httpStatus": 200,
+        "contentType": "application/json;charset=UTF-8"
+      },
+      {
+        "method": "GET",
+        "fields": "",
+        "countOnly": null,
+        "idsOnly": "true",
+        "objectIdBatchSize": 0,
+        "httpStatus": 200,
+        "contentType": "application/json;charset=UTF-8"
+      },
+      {
+        "method": "GET",
+        "fields": "LotCSUID,OBJECTID,LotID",
+        "countOnly": null,
+        "idsOnly": null,
+        "objectIdBatchSize": 1,
+        "httpStatus": 200,
+        "contentType": "application/geo+json;charset=UTF-8"
+      },
+      {
+        "method": "GET",
+        "fields": "",
+        "countOnly": "true",
+        "idsOnly": null,
+        "objectIdBatchSize": 0,
+        "httpStatus": 200,
+        "contentType": "application/json;charset=UTF-8"
+      },
+      {
+        "method": "GET",
+        "fields": "",
+        "countOnly": null,
+        "idsOnly": "true",
+        "objectIdBatchSize": 0,
+        "httpStatus": 200,
+        "contentType": "application/json;charset=UTF-8"
+      },
+      {
+        "method": "GET",
+        "fields": "LotCSUID,OBJECTID,LotID",
+        "countOnly": null,
+        "idsOnly": null,
+        "objectIdBatchSize": 1,
+        "httpStatus": 200,
+        "contentType": "application/geo+json;charset=UTF-8"
+      },
+      {
+        "method": "GET",
+        "fields": "",
+        "countOnly": "true",
+        "idsOnly": null,
+        "objectIdBatchSize": 0,
+        "httpStatus": 200,
+        "contentType": "application/json;charset=UTF-8"
+      },
+      {
+        "method": "GET",
+        "fields": "",
+        "countOnly": null,
+        "idsOnly": "true",
+        "objectIdBatchSize": 0,
+        "httpStatus": 200,
+        "contentType": "application/json;charset=UTF-8"
+      },
+      {
+        "method": "GET",
+        "fields": "LotCSUID,OBJECTID,LotID",
+        "countOnly": null,
+        "idsOnly": null,
+        "objectIdBatchSize": 1,
+        "httpStatus": 200,
+        "contentType": "application/geo+json;charset=UTF-8"
+      },
+      {
+        "method": "GET",
+        "fields": "",
+        "countOnly": "true",
+        "idsOnly": null,
+        "objectIdBatchSize": 0,
+        "httpStatus": 200,
+        "contentType": "application/json;charset=UTF-8"
+      },
+      {
+        "method": "GET",
+        "fields": "",
+        "countOnly": null,
+        "idsOnly": "true",
+        "objectIdBatchSize": 0,
+        "httpStatus": 200,
+        "contentType": "application/json;charset=UTF-8"
+      },
+      {
+        "method": "GET",
+        "fields": "LotCSUID,OBJECTID,LotID",
+        "countOnly": null,
+        "idsOnly": null,
+        "objectIdBatchSize": 1,
+        "httpStatus": 200,
+        "contentType": "application/geo+json;charset=UTF-8"
+      },
+      {
+        "method": "GET",
+        "fields": "",
+        "countOnly": "true",
+        "idsOnly": null,
+        "objectIdBatchSize": 0,
+        "httpStatus": 200,
+        "contentType": "application/json;charset=UTF-8"
+      },
+      {
+        "method": "GET",
+        "fields": "",
+        "countOnly": null,
+        "idsOnly": "true",
+        "objectIdBatchSize": 0,
+        "httpStatus": 200,
+        "contentType": "application/json;charset=UTF-8"
+      },
+      {
+        "method": "GET",
+        "fields": "LotCSUID,OBJECTID,LotID",
+        "countOnly": null,
+        "idsOnly": null,
+        "objectIdBatchSize": 1,
+        "httpStatus": 200,
+        "contentType": "application/geo+json;charset=UTF-8"
+      },
+      {
+        "method": "GET",
+        "fields": "",
+        "countOnly": "true",
+        "idsOnly": null,
+        "objectIdBatchSize": 0,
+        "httpStatus": 200,
+        "contentType": "application/json;charset=UTF-8"
+      },
+      {
+        "method": "GET",
+        "fields": "",
+        "countOnly": null,
+        "idsOnly": "true",
+        "objectIdBatchSize": 0,
+        "httpStatus": 200,
+        "contentType": "application/json;charset=UTF-8"
+      },
+      {
+        "method": "GET",
+        "fields": "LotCSUID,OBJECTID,LotID",
+        "countOnly": null,
+        "idsOnly": null,
+        "objectIdBatchSize": 1,
+        "httpStatus": 200,
+        "contentType": "application/geo+json;charset=UTF-8"
+      },
+      {
+        "method": "GET",
+        "fields": "",
+        "countOnly": "true",
+        "idsOnly": null,
+        "objectIdBatchSize": 0,
+        "httpStatus": 200,
+        "contentType": "application/json;charset=UTF-8"
+      },
+      {
+        "method": "GET",
+        "fields": "",
+        "countOnly": null,
+        "idsOnly": "true",
+        "objectIdBatchSize": 0,
+        "httpStatus": 200,
+        "contentType": "application/json;charset=UTF-8"
+      },
+      {
+        "method": "GET",
+        "fields": "LotCSUID,OBJECTID,LotID",
+        "countOnly": null,
+        "idsOnly": null,
+        "objectIdBatchSize": 1,
+        "httpStatus": 200,
+        "contentType": "application/geo+json;charset=UTF-8"
+      },
+      {
+        "method": "GET",
+        "fields": "",
+        "countOnly": "true",
+        "idsOnly": null,
+        "objectIdBatchSize": 0,
+        "httpStatus": 200,
+        "contentType": "application/json;charset=UTF-8"
+      },
+      {
+        "method": "GET",
+        "fields": "",
+        "countOnly": null,
+        "idsOnly": "true",
+        "objectIdBatchSize": 0,
+        "httpStatus": 200,
+        "contentType": "application/json;charset=UTF-8"
+      },
+      {
+        "method": "GET",
+        "fields": "LotCSUID,OBJECTID,LotID",
+        "countOnly": null,
+        "idsOnly": null,
+        "objectIdBatchSize": 1,
+        "httpStatus": 200,
+        "contentType": "application/geo+json;charset=UTF-8"
+      },
+      {
+        "method": "GET",
+        "fields": "",
+        "countOnly": "true",
+        "idsOnly": null,
+        "objectIdBatchSize": 0,
+        "httpStatus": 200,
+        "contentType": "application/json;charset=UTF-8"
+      },
+      {
+        "method": "GET",
+        "fields": "",
+        "countOnly": null,
+        "idsOnly": "true",
+        "objectIdBatchSize": 0,
+        "httpStatus": 200,
+        "contentType": "application/json;charset=UTF-8"
+      },
+      {
+        "method": "GET",
+        "fields": "LotCSUID,OBJECTID,LotID",
+        "countOnly": null,
+        "idsOnly": null,
+        "objectIdBatchSize": 1,
+        "httpStatus": 200,
+        "contentType": "application/geo+json;charset=UTF-8"
+      },
+      {
+        "method": "GET",
+        "fields": "",
+        "countOnly": "true",
+        "idsOnly": null,
+        "objectIdBatchSize": 0,
+        "httpStatus": 200,
+        "contentType": "application/json;charset=UTF-8"
+      },
+      {
+        "method": "GET",
+        "fields": "",
+        "countOnly": null,
+        "idsOnly": "true",
+        "objectIdBatchSize": 0,
+        "httpStatus": 200,
+        "contentType": "application/json;charset=UTF-8"
+      },
+      {
+        "method": "GET",
+        "fields": "LotCSUID,OBJECTID,LotID",
+        "countOnly": null,
+        "idsOnly": null,
+        "objectIdBatchSize": 1,
+        "httpStatus": 200,
+        "contentType": "application/geo+json;charset=UTF-8"
+      },
+      {
+        "method": "GET",
+        "fields": "",
+        "countOnly": "true",
+        "idsOnly": null,
+        "objectIdBatchSize": 0,
+        "httpStatus": 200,
+        "contentType": "application/json;charset=UTF-8"
+      },
+      {
+        "method": "GET",
+        "fields": "",
+        "countOnly": null,
+        "idsOnly": "true",
+        "objectIdBatchSize": 0,
+        "httpStatus": 200,
+        "contentType": "application/json;charset=UTF-8"
+      },
+      {
+        "method": "GET",
+        "fields": "LotCSUID,OBJECTID,LotID",
+        "countOnly": null,
+        "idsOnly": null,
+        "objectIdBatchSize": 1,
+        "httpStatus": 200,
+        "contentType": "application/geo+json;charset=UTF-8"
+      },
+      {
+        "method": "GET",
+        "fields": "",
+        "countOnly": "true",
+        "idsOnly": null,
+        "objectIdBatchSize": 0,
+        "httpStatus": 200,
+        "contentType": "application/json;charset=UTF-8"
+      },
+      {
+        "method": "GET",
+        "fields": "",
+        "countOnly": null,
+        "idsOnly": "true",
+        "objectIdBatchSize": 0,
+        "httpStatus": 200,
+        "contentType": "application/json;charset=UTF-8"
+      },
+      {
+        "method": "GET",
+        "fields": "LotCSUID,OBJECTID,LotID",
+        "countOnly": null,
+        "idsOnly": null,
+        "objectIdBatchSize": 1,
+        "httpStatus": 200,
+        "contentType": "application/geo+json;charset=UTF-8"
+      },
+      {
+        "method": "GET",
+        "fields": "",
+        "countOnly": "true",
+        "idsOnly": null,
+        "objectIdBatchSize": 0,
+        "httpStatus": 200,
+        "contentType": "application/json;charset=UTF-8"
+      },
+      {
+        "method": "GET",
+        "fields": "",
+        "countOnly": null,
+        "idsOnly": "true",
+        "objectIdBatchSize": 0,
+        "httpStatus": 200,
+        "contentType": "application/json;charset=UTF-8"
+      },
+      {
+        "method": "GET",
+        "fields": "LotCSUID,OBJECTID,LotID",
+        "countOnly": null,
+        "idsOnly": null,
+        "objectIdBatchSize": 1,
+        "httpStatus": 200,
+        "contentType": "application/geo+json;charset=UTF-8"
+      },
+      {
+        "method": "GET",
+        "fields": "",
+        "countOnly": "true",
+        "idsOnly": null,
+        "objectIdBatchSize": 0,
+        "httpStatus": 200,
+        "contentType": "application/json;charset=UTF-8"
+      },
+      {
+        "method": "GET",
+        "fields": "",
+        "countOnly": null,
+        "idsOnly": "true",
+        "objectIdBatchSize": 0,
+        "httpStatus": 200,
+        "contentType": "application/json;charset=UTF-8"
+      },
+      {
+        "method": "GET",
+        "fields": "LotCSUID,OBJECTID,LotID",
+        "countOnly": null,
+        "idsOnly": null,
+        "objectIdBatchSize": 1,
+        "httpStatus": 200,
+        "contentType": "application/geo+json;charset=UTF-8"
+      },
+      {
+        "method": "GET",
+        "fields": "",
+        "countOnly": "true",
+        "idsOnly": null,
+        "objectIdBatchSize": 0,
+        "httpStatus": 200,
+        "contentType": "application/json;charset=UTF-8"
+      },
+      {
+        "method": "GET",
+        "fields": "",
+        "countOnly": null,
+        "idsOnly": "true",
+        "objectIdBatchSize": 0,
+        "httpStatus": 200,
+        "contentType": "application/json;charset=UTF-8"
+      },
+      {
+        "method": "GET",
+        "fields": "LotCSUID,OBJECTID,LotID",
+        "countOnly": null,
+        "idsOnly": null,
+        "objectIdBatchSize": 1,
+        "httpStatus": 200,
+        "contentType": "application/geo+json;charset=UTF-8"
+      },
+      {
+        "method": "GET",
+        "fields": "",
+        "countOnly": "true",
+        "idsOnly": null,
+        "objectIdBatchSize": 0,
+        "httpStatus": 200,
+        "contentType": "application/json;charset=UTF-8"
+      },
+      {
+        "method": "GET",
+        "fields": "",
+        "countOnly": null,
+        "idsOnly": "true",
+        "objectIdBatchSize": 0,
+        "httpStatus": 200,
+        "contentType": "application/json;charset=UTF-8"
+      },
+      {
+        "method": "GET",
+        "fields": "LotCSUID,OBJECTID,LotID",
+        "countOnly": null,
+        "idsOnly": null,
+        "objectIdBatchSize": 1,
+        "httpStatus": 200,
+        "contentType": "application/geo+json;charset=UTF-8"
+      },
+      {
+        "method": "GET",
+        "fields": "",
+        "countOnly": "true",
+        "idsOnly": null,
+        "objectIdBatchSize": 0,
+        "httpStatus": 200,
+        "contentType": "application/json;charset=UTF-8"
+      },
+      {
+        "method": "GET",
+        "fields": "",
+        "countOnly": null,
+        "idsOnly": "true",
+        "objectIdBatchSize": 0,
+        "httpStatus": 200,
+        "contentType": "application/json;charset=UTF-8"
+      },
+      {
+        "method": "GET",
+        "fields": "LotCSUID,OBJECTID,LotID",
+        "countOnly": null,
+        "idsOnly": null,
+        "objectIdBatchSize": 1,
+        "httpStatus": 200,
+        "contentType": "application/geo+json;charset=UTF-8"
+      },
+      {
+        "method": "GET",
+        "fields": "",
+        "countOnly": "true",
+        "idsOnly": null,
+        "objectIdBatchSize": 0,
+        "httpStatus": 200,
+        "contentType": "application/json;charset=UTF-8"
+      },
+      {
+        "method": "GET",
+        "fields": "",
+        "countOnly": null,
+        "idsOnly": "true",
+        "objectIdBatchSize": 0,
+        "httpStatus": 200,
+        "contentType": "application/json;charset=UTF-8"
+      },
+      {
+        "method": "GET",
+        "fields": "LotCSUID,OBJECTID,LotID",
+        "countOnly": null,
+        "idsOnly": null,
+        "objectIdBatchSize": 1,
+        "httpStatus": 200,
+        "contentType": "application/geo+json;charset=UTF-8"
+      },
+      {
+        "method": "GET",
+        "fields": "",
+        "countOnly": "true",
+        "idsOnly": null,
+        "objectIdBatchSize": 0,
+        "httpStatus": 200,
+        "contentType": "application/json;charset=UTF-8"
+      },
+      {
+        "method": "GET",
+        "fields": "",
+        "countOnly": null,
+        "idsOnly": "true",
+        "objectIdBatchSize": 0,
+        "httpStatus": 200,
+        "contentType": "application/json;charset=UTF-8"
+      },
+      {
+        "method": "GET",
+        "fields": "LotCSUID,OBJECTID,LotID",
+        "countOnly": null,
+        "idsOnly": null,
+        "objectIdBatchSize": 1,
+        "httpStatus": 200,
+        "contentType": "application/geo+json;charset=UTF-8"
+      },
+      {
+        "method": "GET",
+        "fields": "",
+        "countOnly": "true",
+        "idsOnly": null,
+        "objectIdBatchSize": 0,
+        "httpStatus": 200,
+        "contentType": "application/json;charset=UTF-8"
+      },
+      {
+        "method": "GET",
+        "fields": "",
+        "countOnly": null,
+        "idsOnly": "true",
+        "objectIdBatchSize": 0,
+        "httpStatus": 200,
+        "contentType": "application/json;charset=UTF-8"
+      },
+      {
+        "method": "GET",
+        "fields": "LotCSUID,OBJECTID,LotID",
+        "countOnly": null,
+        "idsOnly": null,
+        "objectIdBatchSize": 1,
+        "httpStatus": 200,
+        "contentType": "application/geo+json;charset=UTF-8"
+      },
+      {
+        "method": "GET",
+        "fields": "",
+        "countOnly": "true",
+        "idsOnly": null,
+        "objectIdBatchSize": 0,
+        "httpStatus": 200,
+        "contentType": "application/json;charset=UTF-8"
+      },
+      {
+        "method": "GET",
+        "fields": "",
+        "countOnly": null,
+        "idsOnly": "true",
+        "objectIdBatchSize": 0,
+        "httpStatus": 200,
+        "contentType": "application/json;charset=UTF-8"
+      },
+      {
+        "method": "GET",
+        "fields": "LotCSUID,OBJECTID,LotID",
+        "countOnly": null,
+        "idsOnly": null,
+        "objectIdBatchSize": 1,
+        "httpStatus": 200,
+        "contentType": "application/geo+json;charset=UTF-8"
+      },
+      {
+        "method": "GET",
+        "fields": "",
+        "countOnly": "true",
+        "idsOnly": null,
+        "objectIdBatchSize": 0,
+        "httpStatus": 200,
+        "contentType": "application/json;charset=UTF-8"
+      },
+      {
+        "method": "GET",
+        "fields": "",
+        "countOnly": null,
+        "idsOnly": "true",
+        "objectIdBatchSize": 0,
+        "httpStatus": 200,
+        "contentType": "application/json;charset=UTF-8"
+      },
+      {
+        "method": "GET",
+        "fields": "LotCSUID,OBJECTID,LotID",
+        "countOnly": null,
+        "idsOnly": null,
+        "objectIdBatchSize": 1,
+        "httpStatus": 200,
+        "contentType": "application/geo+json;charset=UTF-8"
+      },
+      {
+        "method": "GET",
+        "fields": "",
+        "countOnly": "true",
+        "idsOnly": null,
+        "objectIdBatchSize": 0,
+        "httpStatus": 200,
+        "contentType": "application/json;charset=UTF-8"
+      },
+      {
+        "method": "GET",
+        "fields": "",
+        "countOnly": null,
+        "idsOnly": "true",
+        "objectIdBatchSize": 0,
+        "httpStatus": 200,
+        "contentType": "application/json;charset=UTF-8"
+      },
+      {
+        "method": "GET",
+        "fields": "LotCSUID,OBJECTID,LotID",
+        "countOnly": null,
+        "idsOnly": null,
+        "objectIdBatchSize": 1,
+        "httpStatus": 200,
+        "contentType": "application/geo+json;charset=UTF-8"
+      },
+      {
+        "method": "GET",
+        "fields": "",
+        "countOnly": "true",
+        "idsOnly": null,
+        "objectIdBatchSize": 0,
+        "httpStatus": 200,
+        "contentType": "application/json;charset=UTF-8"
+      },
+      {
+        "method": "GET",
+        "fields": "",
+        "countOnly": null,
+        "idsOnly": "true",
+        "objectIdBatchSize": 0,
+        "httpStatus": 200,
+        "contentType": "application/json;charset=UTF-8"
+      },
+      {
+        "method": "GET",
+        "fields": "LotCSUID,OBJECTID,LotID",
+        "countOnly": null,
+        "idsOnly": null,
+        "objectIdBatchSize": 1,
+        "httpStatus": 200,
+        "contentType": "application/geo+json;charset=UTF-8"
+      },
+      {
+        "method": "GET",
+        "fields": "",
+        "countOnly": "true",
+        "idsOnly": null,
+        "objectIdBatchSize": 0,
+        "httpStatus": 200,
+        "contentType": "application/json;charset=UTF-8"
+      },
+      {
+        "method": "GET",
+        "fields": "",
+        "countOnly": null,
+        "idsOnly": "true",
+        "objectIdBatchSize": 0,
+        "httpStatus": 200,
+        "contentType": "application/json;charset=UTF-8"
+      },
+      {
+        "method": "GET",
+        "fields": "LotCSUID,OBJECTID,LotID",
+        "countOnly": null,
+        "idsOnly": null,
+        "objectIdBatchSize": 1,
+        "httpStatus": 200,
+        "contentType": "application/geo+json;charset=UTF-8"
+      },
+      {
+        "method": "GET",
+        "fields": "",
+        "countOnly": "true",
+        "idsOnly": null,
+        "objectIdBatchSize": 0,
+        "httpStatus": 200,
+        "contentType": "application/json;charset=UTF-8"
+      },
+      {
+        "method": "GET",
+        "fields": "",
+        "countOnly": null,
+        "idsOnly": "true",
+        "objectIdBatchSize": 0,
+        "httpStatus": 200,
+        "contentType": "application/json;charset=UTF-8"
+      },
+      {
+        "method": "GET",
+        "fields": "LotCSUID,OBJECTID,LotID",
+        "countOnly": null,
+        "idsOnly": null,
+        "objectIdBatchSize": 1,
+        "httpStatus": 200,
+        "contentType": "application/geo+json;charset=UTF-8"
+      },
+      {
+        "method": "GET",
+        "fields": "",
+        "countOnly": "true",
+        "idsOnly": null,
+        "objectIdBatchSize": 0,
+        "httpStatus": 200,
+        "contentType": "application/json;charset=UTF-8"
+      },
+      {
+        "method": "GET",
+        "fields": "",
+        "countOnly": null,
+        "idsOnly": "true",
+        "objectIdBatchSize": 0,
+        "httpStatus": 200,
+        "contentType": "application/json;charset=UTF-8"
+      },
+      {
+        "method": "GET",
+        "fields": "LotCSUID,OBJECTID,LotID",
+        "countOnly": null,
+        "idsOnly": null,
+        "objectIdBatchSize": 1,
+        "httpStatus": 200,
+        "contentType": "application/geo+json;charset=UTF-8"
+      },
+      {
+        "method": "GET",
+        "fields": "",
+        "countOnly": "true",
+        "idsOnly": null,
+        "objectIdBatchSize": 0,
+        "httpStatus": 200,
+        "contentType": "application/json;charset=UTF-8"
+      },
+      {
+        "method": "GET",
+        "fields": "",
+        "countOnly": null,
+        "idsOnly": "true",
+        "objectIdBatchSize": 0,
+        "httpStatus": 200,
+        "contentType": "application/json;charset=UTF-8"
+      },
+      {
+        "method": "GET",
+        "fields": "LotCSUID,OBJECTID,LotID",
+        "countOnly": null,
+        "idsOnly": null,
+        "objectIdBatchSize": 1,
+        "httpStatus": 200,
+        "contentType": "application/geo+json;charset=UTF-8"
+      },
+      {
+        "method": "GET",
+        "fields": "",
+        "countOnly": "true",
+        "idsOnly": null,
+        "objectIdBatchSize": 0,
+        "httpStatus": 200,
+        "contentType": "application/json;charset=UTF-8"
+      },
+      {
+        "method": "GET",
+        "fields": "",
+        "countOnly": null,
+        "idsOnly": "true",
+        "objectIdBatchSize": 0,
+        "httpStatus": 200,
+        "contentType": "application/json;charset=UTF-8"
+      },
+      {
+        "method": "GET",
+        "fields": "LotCSUID,OBJECTID,LotID",
+        "countOnly": null,
+        "idsOnly": null,
+        "objectIdBatchSize": 1,
+        "httpStatus": 200,
+        "contentType": "application/geo+json;charset=UTF-8"
+      },
+      {
+        "method": "GET",
+        "fields": "",
+        "countOnly": "true",
+        "idsOnly": null,
+        "objectIdBatchSize": 0,
+        "httpStatus": 200,
+        "contentType": "application/json;charset=UTF-8"
+      },
+      {
+        "method": "GET",
+        "fields": "",
+        "countOnly": null,
+        "idsOnly": "true",
+        "objectIdBatchSize": 0,
+        "httpStatus": 200,
+        "contentType": "application/json;charset=UTF-8"
+      },
+      {
+        "method": "GET",
+        "fields": "LotCSUID,OBJECTID,LotID",
+        "countOnly": null,
+        "idsOnly": null,
+        "objectIdBatchSize": 1,
+        "httpStatus": 200,
+        "contentType": "application/geo+json;charset=UTF-8"
+      },
+      {
+        "method": "GET",
+        "fields": "",
+        "countOnly": "true",
+        "idsOnly": null,
+        "objectIdBatchSize": 0,
+        "httpStatus": 200,
+        "contentType": "application/json;charset=UTF-8"
+      },
+      {
+        "method": "GET",
+        "fields": "",
+        "countOnly": null,
+        "idsOnly": "true",
+        "objectIdBatchSize": 0,
+        "httpStatus": 200,
+        "contentType": "application/json;charset=UTF-8"
+      },
+      {
+        "method": "GET",
+        "fields": "LotCSUID,OBJECTID,LotID",
+        "countOnly": null,
+        "idsOnly": null,
+        "objectIdBatchSize": 1,
+        "httpStatus": 200,
+        "contentType": "application/geo+json;charset=UTF-8"
+      },
+      {
+        "method": "GET",
+        "fields": "",
+        "countOnly": "true",
+        "idsOnly": null,
+        "objectIdBatchSize": 0,
+        "httpStatus": 200,
+        "contentType": "application/json;charset=UTF-8"
+      },
+      {
+        "method": "GET",
+        "fields": "",
+        "countOnly": null,
+        "idsOnly": "true",
+        "objectIdBatchSize": 0,
+        "httpStatus": 200,
+        "contentType": "application/json;charset=UTF-8"
+      },
+      {
+        "method": "GET",
+        "fields": "LotCSUID,OBJECTID,LotID",
+        "countOnly": null,
+        "idsOnly": null,
+        "objectIdBatchSize": 1,
+        "httpStatus": 200,
+        "contentType": "application/geo+json;charset=UTF-8"
+      },
+      {
+        "method": "GET",
+        "fields": "",
+        "countOnly": "true",
+        "idsOnly": null,
+        "objectIdBatchSize": 0,
+        "httpStatus": 200,
+        "contentType": "application/json;charset=UTF-8"
+      },
+      {
+        "method": "GET",
+        "fields": "",
+        "countOnly": null,
+        "idsOnly": "true",
+        "objectIdBatchSize": 0,
+        "httpStatus": 200,
+        "contentType": "application/json;charset=UTF-8"
+      },
+      {
+        "method": "GET",
+        "fields": "LotCSUID,OBJECTID,LotID",
+        "countOnly": null,
+        "idsOnly": null,
+        "objectIdBatchSize": 1,
+        "httpStatus": 200,
+        "contentType": "application/geo+json;charset=UTF-8"
+      },
+      {
+        "method": "GET",
+        "fields": "",
+        "countOnly": "true",
+        "idsOnly": null,
+        "objectIdBatchSize": 0,
+        "httpStatus": 200,
+        "contentType": "application/json;charset=UTF-8"
+      },
+      {
+        "method": "GET",
+        "fields": "",
+        "countOnly": null,
+        "idsOnly": "true",
+        "objectIdBatchSize": 0,
+        "httpStatus": 200,
+        "contentType": "application/json;charset=UTF-8"
+      },
+      {
+        "method": "GET",
+        "fields": "LotCSUID,OBJECTID,LotID",
+        "countOnly": null,
+        "idsOnly": null,
+        "objectIdBatchSize": 1,
+        "httpStatus": 200,
+        "contentType": "application/geo+json;charset=UTF-8"
+      },
+      {
+        "method": "GET",
+        "fields": "",
+        "countOnly": "true",
+        "idsOnly": null,
+        "objectIdBatchSize": 0,
+        "httpStatus": 200,
+        "contentType": "application/json;charset=UTF-8"
+      },
+      {
+        "method": "GET",
+        "fields": "",
+        "countOnly": null,
+        "idsOnly": "true",
+        "objectIdBatchSize": 0,
+        "httpStatus": 200,
+        "contentType": "application/json;charset=UTF-8"
+      },
+      {
+        "method": "GET",
+        "fields": "LotCSUID,OBJECTID,LotID",
+        "countOnly": null,
+        "idsOnly": null,
+        "objectIdBatchSize": 1,
+        "httpStatus": 200,
+        "contentType": "application/geo+json;charset=UTF-8"
+      },
+      {
+        "method": "GET",
+        "fields": "",
+        "countOnly": "true",
+        "idsOnly": null,
+        "objectIdBatchSize": 0,
+        "httpStatus": 200,
+        "contentType": "application/json;charset=UTF-8"
+      },
+      {
+        "method": "GET",
+        "fields": "",
+        "countOnly": null,
+        "idsOnly": "true",
+        "objectIdBatchSize": 0,
+        "httpStatus": 200,
+        "contentType": "application/json;charset=UTF-8"
+      },
+      {
+        "method": "GET",
+        "fields": "LotCSUID,OBJECTID,LotID",
+        "countOnly": null,
+        "idsOnly": null,
+        "objectIdBatchSize": 1,
+        "httpStatus": 200,
+        "contentType": "application/geo+json;charset=UTF-8"
+      },
+      {
+        "method": "GET",
+        "fields": "",
+        "countOnly": "true",
+        "idsOnly": null,
+        "objectIdBatchSize": 0,
+        "httpStatus": 200,
+        "contentType": "application/json;charset=UTF-8"
+      },
+      {
+        "method": "GET",
+        "fields": "",
+        "countOnly": null,
+        "idsOnly": "true",
+        "objectIdBatchSize": 0,
+        "httpStatus": 200,
+        "contentType": "application/json;charset=UTF-8"
+      },
+      {
+        "method": "GET",
+        "fields": "LotCSUID,OBJECTID,LotID",
+        "countOnly": null,
+        "idsOnly": null,
+        "objectIdBatchSize": 1,
+        "httpStatus": 200,
+        "contentType": "application/geo+json;charset=UTF-8"
+      },
+      {
+        "method": "GET",
+        "fields": "",
+        "countOnly": "true",
+        "idsOnly": null,
+        "objectIdBatchSize": 0,
+        "httpStatus": 200,
+        "contentType": "application/json;charset=UTF-8"
+      },
+      {
+        "method": "GET",
+        "fields": "",
+        "countOnly": null,
+        "idsOnly": "true",
+        "objectIdBatchSize": 0,
+        "httpStatus": 200,
+        "contentType": "application/json;charset=UTF-8"
+      },
+      {
+        "method": "GET",
+        "fields": "LotCSUID,OBJECTID,LotID",
+        "countOnly": null,
+        "idsOnly": null,
+        "objectIdBatchSize": 1,
+        "httpStatus": 200,
+        "contentType": "application/geo+json;charset=UTF-8"
+      },
+      {
+        "method": "GET",
+        "fields": "",
+        "countOnly": "true",
+        "idsOnly": null,
+        "objectIdBatchSize": 0,
+        "httpStatus": 200,
+        "contentType": "application/json;charset=UTF-8"
+      },
+      {
+        "method": "GET",
+        "fields": "",
+        "countOnly": null,
+        "idsOnly": "true",
+        "objectIdBatchSize": 0,
+        "httpStatus": 200,
+        "contentType": "application/json;charset=UTF-8"
+      },
+      {
+        "method": "GET",
+        "fields": "LotCSUID,OBJECTID,LotID",
+        "countOnly": null,
+        "idsOnly": null,
+        "objectIdBatchSize": 1,
+        "httpStatus": 200,
+        "contentType": "application/geo+json;charset=UTF-8"
+      },
+      {
+        "method": "GET",
+        "fields": "",
+        "countOnly": "true",
+        "idsOnly": null,
+        "objectIdBatchSize": 0,
+        "httpStatus": 200,
+        "contentType": "application/json;charset=UTF-8"
+      },
+      {
+        "method": "GET",
+        "fields": "",
+        "countOnly": null,
+        "idsOnly": "true",
+        "objectIdBatchSize": 0,
+        "httpStatus": 200,
+        "contentType": "application/json;charset=UTF-8"
+      },
+      {
+        "method": "GET",
+        "fields": "LotCSUID,OBJECTID,LotID",
+        "countOnly": null,
+        "idsOnly": null,
+        "objectIdBatchSize": 1,
+        "httpStatus": 200,
+        "contentType": "application/geo+json;charset=UTF-8"
+      },
+      {
+        "method": "GET",
+        "fields": "",
+        "countOnly": "true",
+        "idsOnly": null,
+        "objectIdBatchSize": 0,
+        "httpStatus": 200,
+        "contentType": "application/json;charset=UTF-8"
+      },
+      {
+        "method": "GET",
+        "fields": "",
+        "countOnly": null,
+        "idsOnly": "true",
+        "objectIdBatchSize": 0,
+        "httpStatus": 200,
+        "contentType": "application/json;charset=UTF-8"
+      },
+      {
+        "method": "GET",
+        "fields": "LotCSUID,OBJECTID,LotID",
+        "countOnly": null,
+        "idsOnly": null,
+        "objectIdBatchSize": 1,
+        "httpStatus": 200,
+        "contentType": "application/geo+json;charset=UTF-8"
+      },
+      {
+        "method": "GET",
+        "fields": "",
+        "countOnly": "true",
+        "idsOnly": null,
+        "objectIdBatchSize": 0,
+        "httpStatus": 200,
+        "contentType": "application/json;charset=UTF-8"
+      },
+      {
+        "method": "GET",
+        "fields": "",
+        "countOnly": null,
+        "idsOnly": "true",
+        "objectIdBatchSize": 0,
+        "httpStatus": 200,
+        "contentType": "application/json;charset=UTF-8"
+      },
+      {
+        "method": "GET",
+        "fields": "LotCSUID,OBJECTID,LotID",
+        "countOnly": null,
+        "idsOnly": null,
+        "objectIdBatchSize": 1,
+        "httpStatus": 200,
+        "contentType": "application/geo+json;charset=UTF-8"
+      },
+      {
+        "method": "GET",
+        "fields": "",
+        "countOnly": "true",
+        "idsOnly": null,
+        "objectIdBatchSize": 0,
+        "httpStatus": 200,
+        "contentType": "application/json;charset=UTF-8"
+      },
+      {
+        "method": "GET",
+        "fields": "",
+        "countOnly": null,
+        "idsOnly": "true",
+        "objectIdBatchSize": 0,
+        "httpStatus": 200,
+        "contentType": "application/json;charset=UTF-8"
+      },
+      {
+        "method": "GET",
+        "fields": "LotCSUID,OBJECTID,LotID",
+        "countOnly": null,
+        "idsOnly": null,
+        "objectIdBatchSize": 1,
+        "httpStatus": 200,
+        "contentType": "application/geo+json;charset=UTF-8"
+      },
+      {
+        "method": "GET",
+        "fields": "",
+        "countOnly": "true",
+        "idsOnly": null,
+        "objectIdBatchSize": 0,
+        "httpStatus": 200,
+        "contentType": "application/json;charset=UTF-8"
+      },
+      {
+        "method": "GET",
+        "fields": "",
+        "countOnly": null,
+        "idsOnly": "true",
+        "objectIdBatchSize": 0,
+        "httpStatus": 200,
+        "contentType": "application/json;charset=UTF-8"
+      },
+      {
+        "method": "GET",
+        "fields": "LotCSUID,OBJECTID,LotID",
+        "countOnly": null,
+        "idsOnly": null,
+        "objectIdBatchSize": 1,
+        "httpStatus": 200,
+        "contentType": "application/geo+json;charset=UTF-8"
+      },
+      {
+        "method": "GET",
+        "fields": "",
+        "countOnly": "true",
+        "idsOnly": null,
+        "objectIdBatchSize": 0,
+        "httpStatus": 200,
+        "contentType": "application/json;charset=UTF-8"
+      },
+      {
+        "method": "GET",
+        "fields": "",
+        "countOnly": null,
+        "idsOnly": "true",
+        "objectIdBatchSize": 0,
+        "httpStatus": 200,
+        "contentType": "application/json;charset=UTF-8"
+      },
+      {
+        "method": "GET",
+        "fields": "LotCSUID,OBJECTID,LotID",
+        "countOnly": null,
+        "idsOnly": null,
+        "objectIdBatchSize": 1,
+        "httpStatus": 200,
+        "contentType": "application/geo+json;charset=UTF-8"
+      },
+      {
+        "method": "GET",
+        "fields": "",
+        "countOnly": "true",
+        "idsOnly": null,
+        "objectIdBatchSize": 0,
+        "httpStatus": 200,
+        "contentType": "application/json;charset=UTF-8"
+      },
+      {
+        "method": "GET",
+        "fields": "",
+        "countOnly": null,
+        "idsOnly": "true",
+        "objectIdBatchSize": 0,
+        "httpStatus": 200,
+        "contentType": "application/json;charset=UTF-8"
+      },
+      {
+        "method": "GET",
+        "fields": "LotCSUID,OBJECTID,LotID",
+        "countOnly": null,
+        "idsOnly": null,
+        "objectIdBatchSize": 1,
+        "httpStatus": 200,
+        "contentType": "application/geo+json;charset=UTF-8"
+      },
+      {
+        "method": "GET",
+        "fields": "",
+        "countOnly": "true",
+        "idsOnly": null,
+        "objectIdBatchSize": 0,
+        "httpStatus": 200,
+        "contentType": "application/json;charset=UTF-8"
+      },
+      {
+        "method": "GET",
+        "fields": "",
+        "countOnly": null,
+        "idsOnly": "true",
+        "objectIdBatchSize": 0,
+        "httpStatus": 200,
+        "contentType": "application/json;charset=UTF-8"
+      },
+      {
+        "method": "GET",
+        "fields": "LotCSUID,OBJECTID,LotID",
+        "countOnly": null,
+        "idsOnly": null,
+        "objectIdBatchSize": 1,
+        "httpStatus": 200,
+        "contentType": "application/geo+json;charset=UTF-8"
+      },
+      {
+        "method": "GET",
+        "fields": "",
+        "countOnly": "true",
+        "idsOnly": null,
+        "objectIdBatchSize": 0,
+        "httpStatus": 200,
+        "contentType": "application/json;charset=UTF-8"
+      },
+      {
+        "method": "GET",
+        "fields": "",
+        "countOnly": null,
+        "idsOnly": "true",
+        "objectIdBatchSize": 0,
+        "httpStatus": 200,
+        "contentType": "application/json;charset=UTF-8"
+      },
+      {
+        "method": "GET",
+        "fields": "LotCSUID,OBJECTID,LotID",
+        "countOnly": null,
+        "idsOnly": null,
+        "objectIdBatchSize": 1,
+        "httpStatus": 200,
+        "contentType": "application/geo+json;charset=UTF-8"
+      },
+      {
+        "method": "GET",
+        "fields": "",
+        "countOnly": "true",
+        "idsOnly": null,
+        "objectIdBatchSize": 0,
+        "httpStatus": 200,
+        "contentType": "application/json;charset=UTF-8"
+      },
+      {
+        "method": "GET",
+        "fields": "",
+        "countOnly": null,
+        "idsOnly": "true",
+        "objectIdBatchSize": 0,
+        "httpStatus": 200,
+        "contentType": "application/json;charset=UTF-8"
+      },
+      {
+        "method": "GET",
+        "fields": "LotCSUID,OBJECTID,LotID",
+        "countOnly": null,
+        "idsOnly": null,
+        "objectIdBatchSize": 1,
+        "httpStatus": 200,
+        "contentType": "application/geo+json;charset=UTF-8"
+      },
+      {
+        "method": "GET",
+        "fields": "",
+        "countOnly": "true",
+        "idsOnly": null,
+        "objectIdBatchSize": 0,
+        "httpStatus": 200,
+        "contentType": "application/json;charset=UTF-8"
+      },
+      {
+        "method": "GET",
+        "fields": "",
+        "countOnly": null,
+        "idsOnly": "true",
+        "objectIdBatchSize": 0,
+        "httpStatus": 200,
+        "contentType": "application/json;charset=UTF-8"
+      },
+      {
+        "method": "GET",
+        "fields": "LotCSUID,OBJECTID,LotID",
+        "countOnly": null,
+        "idsOnly": null,
+        "objectIdBatchSize": 1,
+        "httpStatus": 200,
+        "contentType": "application/geo+json;charset=UTF-8"
+      },
+      {
+        "method": "GET",
+        "fields": "",
+        "countOnly": "true",
+        "idsOnly": null,
+        "objectIdBatchSize": 0,
+        "httpStatus": 200,
+        "contentType": "application/json;charset=UTF-8"
+      },
+      {
+        "method": "GET",
+        "fields": "",
+        "countOnly": null,
+        "idsOnly": "true",
+        "objectIdBatchSize": 0,
+        "httpStatus": 200,
+        "contentType": "application/json;charset=UTF-8"
+      },
+      {
+        "method": "GET",
+        "fields": "LotCSUID,OBJECTID,LotID",
+        "countOnly": null,
+        "idsOnly": null,
+        "objectIdBatchSize": 1,
+        "httpStatus": 200,
+        "contentType": "application/geo+json;charset=UTF-8"
+      },
+      {
+        "method": "GET",
+        "fields": "",
+        "countOnly": "true",
+        "idsOnly": null,
+        "objectIdBatchSize": 0,
+        "httpStatus": 200,
+        "contentType": "application/json;charset=UTF-8"
+      },
+      {
+        "method": "GET",
+        "fields": "",
+        "countOnly": null,
+        "idsOnly": "true",
+        "objectIdBatchSize": 0,
+        "httpStatus": 200,
+        "contentType": "application/json;charset=UTF-8"
+      },
+      {
+        "method": "GET",
+        "fields": "LotCSUID,OBJECTID,LotID",
+        "countOnly": null,
+        "idsOnly": null,
+        "objectIdBatchSize": 1,
+        "httpStatus": 200,
+        "contentType": "application/geo+json;charset=UTF-8"
+      },
+      {
+        "method": "GET",
+        "fields": "",
+        "countOnly": "true",
+        "idsOnly": null,
+        "objectIdBatchSize": 0,
+        "httpStatus": 200,
+        "contentType": "application/json;charset=UTF-8"
+      },
+      {
+        "method": "GET",
+        "fields": "",
+        "countOnly": null,
+        "idsOnly": "true",
+        "objectIdBatchSize": 0,
+        "httpStatus": 200,
+        "contentType": "application/json;charset=UTF-8"
+      },
+      {
+        "method": "GET",
+        "fields": "LotCSUID,OBJECTID,LotID",
+        "countOnly": null,
+        "idsOnly": null,
+        "objectIdBatchSize": 1,
+        "httpStatus": 200,
+        "contentType": "application/geo+json;charset=UTF-8"
+      },
+      {
+        "method": "GET",
+        "fields": "",
+        "countOnly": "true",
+        "idsOnly": null,
+        "objectIdBatchSize": 0,
+        "httpStatus": 200,
+        "contentType": "application/json;charset=UTF-8"
+      },
+      {
+        "method": "GET",
+        "fields": "",
+        "countOnly": null,
+        "idsOnly": "true",
+        "objectIdBatchSize": 0,
+        "httpStatus": 200,
+        "contentType": "application/json;charset=UTF-8"
+      },
+      {
+        "method": "GET",
+        "fields": "LotCSUID,OBJECTID,LotID",
+        "countOnly": null,
+        "idsOnly": null,
+        "objectIdBatchSize": 1,
+        "httpStatus": 200,
+        "contentType": "application/geo+json;charset=UTF-8"
+      },
+      {
+        "method": "GET",
+        "fields": "",
+        "countOnly": "true",
+        "idsOnly": null,
+        "objectIdBatchSize": 0,
+        "httpStatus": 200,
+        "contentType": "application/json;charset=UTF-8"
+      },
+      {
+        "method": "GET",
+        "fields": "",
+        "countOnly": null,
+        "idsOnly": "true",
+        "objectIdBatchSize": 0,
+        "httpStatus": 200,
+        "contentType": "application/json;charset=UTF-8"
+      },
+      {
+        "method": "GET",
+        "fields": "LotCSUID,OBJECTID,LotID",
+        "countOnly": null,
+        "idsOnly": null,
+        "objectIdBatchSize": 1,
+        "httpStatus": 200,
+        "contentType": "application/geo+json;charset=UTF-8"
+      },
+      {
+        "method": "GET",
+        "fields": "",
+        "countOnly": "true",
+        "idsOnly": null,
+        "objectIdBatchSize": 0,
+        "httpStatus": 200,
+        "contentType": "application/json;charset=UTF-8"
+      },
+      {
+        "method": "GET",
+        "fields": "",
+        "countOnly": null,
+        "idsOnly": "true",
+        "objectIdBatchSize": 0,
+        "httpStatus": 200,
+        "contentType": "application/json;charset=UTF-8"
+      },
+      {
+        "method": "GET",
+        "fields": "LotCSUID,OBJECTID,LotID",
+        "countOnly": null,
+        "idsOnly": null,
+        "objectIdBatchSize": 1,
+        "httpStatus": 200,
+        "contentType": "application/geo+json;charset=UTF-8"
+      },
+      {
+        "method": "GET",
+        "fields": "",
+        "countOnly": "true",
+        "idsOnly": null,
+        "objectIdBatchSize": 0,
+        "httpStatus": 200,
+        "contentType": "application/json;charset=UTF-8"
+      },
+      {
+        "method": "GET",
+        "fields": "",
+        "countOnly": null,
+        "idsOnly": "true",
+        "objectIdBatchSize": 0,
+        "httpStatus": 200,
+        "contentType": "application/json;charset=UTF-8"
+      },
+      {
+        "method": "GET",
+        "fields": "LotCSUID,OBJECTID,LotID",
+        "countOnly": null,
+        "idsOnly": null,
+        "objectIdBatchSize": 1,
+        "httpStatus": 200,
+        "contentType": "application/geo+json;charset=UTF-8"
+      },
+      {
+        "method": "GET",
+        "fields": "",
+        "countOnly": "true",
+        "idsOnly": null,
+        "objectIdBatchSize": 0,
+        "httpStatus": 200,
+        "contentType": "application/json;charset=UTF-8"
+      },
+      {
+        "method": "GET",
+        "fields": "",
+        "countOnly": null,
+        "idsOnly": "true",
+        "objectIdBatchSize": 0,
+        "httpStatus": 200,
+        "contentType": "application/json;charset=UTF-8"
+      },
+      {
+        "method": "GET",
+        "fields": "LotCSUID,OBJECTID,LotID",
+        "countOnly": null,
+        "idsOnly": null,
+        "objectIdBatchSize": 1,
+        "httpStatus": 200,
+        "contentType": "application/geo+json;charset=UTF-8"
+      },
+      {
+        "method": "GET",
+        "fields": "",
+        "countOnly": "true",
+        "idsOnly": null,
+        "objectIdBatchSize": 0,
+        "httpStatus": 200,
+        "contentType": "application/json;charset=UTF-8"
+      },
+      {
+        "method": "GET",
+        "fields": "",
+        "countOnly": null,
+        "idsOnly": "true",
+        "objectIdBatchSize": 0,
+        "httpStatus": 200,
+        "contentType": "application/json;charset=UTF-8"
+      },
+      {
+        "method": "GET",
+        "fields": "LotCSUID,OBJECTID,LotID",
+        "countOnly": null,
+        "idsOnly": null,
+        "objectIdBatchSize": 1,
+        "httpStatus": 200,
+        "contentType": "application/geo+json;charset=UTF-8"
+      },
+      {
+        "method": "GET",
+        "fields": "",
+        "countOnly": "true",
+        "idsOnly": null,
+        "objectIdBatchSize": 0,
+        "httpStatus": 200,
+        "contentType": "application/json;charset=UTF-8"
+      },
+      {
+        "method": "GET",
+        "fields": "",
+        "countOnly": null,
+        "idsOnly": "true",
+        "objectIdBatchSize": 0,
+        "httpStatus": 200,
+        "contentType": "application/json;charset=UTF-8"
+      },
+      {
+        "method": "GET",
+        "fields": "LotCSUID,OBJECTID,LotID",
+        "countOnly": null,
+        "idsOnly": null,
+        "objectIdBatchSize": 1,
+        "httpStatus": 200,
+        "contentType": "application/geo+json;charset=UTF-8"
+      },
+      {
+        "method": "GET",
+        "fields": "",
+        "countOnly": "true",
+        "idsOnly": null,
+        "objectIdBatchSize": 0,
+        "httpStatus": 200,
+        "contentType": "application/json;charset=UTF-8"
+      },
+      {
+        "method": "GET",
+        "fields": "",
+        "countOnly": null,
+        "idsOnly": "true",
+        "objectIdBatchSize": 0,
+        "httpStatus": 200,
+        "contentType": "application/json;charset=UTF-8"
+      },
+      {
+        "method": "GET",
+        "fields": "LotCSUID,OBJECTID,LotID",
+        "countOnly": null,
+        "idsOnly": null,
+        "objectIdBatchSize": 1,
+        "httpStatus": 200,
+        "contentType": "application/geo+json;charset=UTF-8"
+      },
+      {
+        "method": "GET",
+        "fields": "",
+        "countOnly": "true",
+        "idsOnly": null,
+        "objectIdBatchSize": 0,
+        "httpStatus": 200,
+        "contentType": "application/json;charset=UTF-8"
+      },
+      {
+        "method": "GET",
+        "fields": "",
+        "countOnly": null,
+        "idsOnly": "true",
+        "objectIdBatchSize": 0,
+        "httpStatus": 200,
+        "contentType": "application/json;charset=UTF-8"
+      },
+      {
+        "method": "GET",
+        "fields": "LotCSUID,OBJECTID,LotID",
+        "countOnly": null,
+        "idsOnly": null,
+        "objectIdBatchSize": 1,
+        "httpStatus": 200,
+        "contentType": "application/geo+json;charset=UTF-8"
+      },
+      {
+        "method": "GET",
+        "fields": "",
+        "countOnly": "true",
+        "idsOnly": null,
+        "objectIdBatchSize": 0,
+        "httpStatus": 200,
+        "contentType": "application/json;charset=UTF-8"
+      },
+      {
+        "method": "GET",
+        "fields": "",
+        "countOnly": null,
+        "idsOnly": "true",
+        "objectIdBatchSize": 0,
+        "httpStatus": 200,
+        "contentType": "application/json;charset=UTF-8"
+      },
+      {
+        "method": "GET",
+        "fields": "LotCSUID,OBJECTID,LotID",
+        "countOnly": null,
+        "idsOnly": null,
+        "objectIdBatchSize": 1,
+        "httpStatus": 200,
+        "contentType": "application/geo+json;charset=UTF-8"
+      },
+      {
+        "method": "GET",
+        "fields": "",
+        "countOnly": "true",
+        "idsOnly": null,
+        "objectIdBatchSize": 0,
+        "httpStatus": 200,
+        "contentType": "application/json;charset=UTF-8"
+      },
+      {
+        "method": "GET",
+        "fields": "",
+        "countOnly": null,
+        "idsOnly": "true",
+        "objectIdBatchSize": 0,
+        "httpStatus": 200,
+        "contentType": "application/json;charset=UTF-8"
+      },
+      {
+        "method": "GET",
+        "fields": "LotCSUID,OBJECTID,LotID",
+        "countOnly": null,
+        "idsOnly": null,
+        "objectIdBatchSize": 1,
+        "httpStatus": 200,
+        "contentType": "application/geo+json;charset=UTF-8"
+      },
+      {
+        "method": "GET",
+        "fields": "",
+        "countOnly": "true",
+        "idsOnly": null,
+        "objectIdBatchSize": 0,
+        "httpStatus": 200,
+        "contentType": "application/json;charset=UTF-8"
+      },
+      {
+        "method": "GET",
+        "fields": "",
+        "countOnly": null,
+        "idsOnly": "true",
+        "objectIdBatchSize": 0,
+        "httpStatus": 200,
+        "contentType": "application/json;charset=UTF-8"
+      },
+      {
+        "method": "GET",
+        "fields": "LotCSUID,OBJECTID,LotID",
+        "countOnly": null,
+        "idsOnly": null,
+        "objectIdBatchSize": 1,
+        "httpStatus": 200,
+        "contentType": "application/geo+json;charset=UTF-8"
+      },
+      {
+        "method": "GET",
+        "fields": "",
+        "countOnly": "true",
+        "idsOnly": null,
+        "objectIdBatchSize": 0,
+        "httpStatus": 200,
+        "contentType": "application/json;charset=UTF-8"
+      },
+      {
+        "method": "GET",
+        "fields": "",
+        "countOnly": null,
+        "idsOnly": "true",
+        "objectIdBatchSize": 0,
+        "httpStatus": 200,
+        "contentType": "application/json;charset=UTF-8"
+      },
+      {
+        "method": "GET",
+        "fields": "LotCSUID,OBJECTID,LotID",
+        "countOnly": null,
+        "idsOnly": null,
+        "objectIdBatchSize": 1,
+        "httpStatus": 200,
+        "contentType": "application/geo+json;charset=UTF-8"
+      },
+      {
+        "method": "GET",
+        "fields": "",
+        "countOnly": "true",
+        "idsOnly": null,
+        "objectIdBatchSize": 0,
+        "httpStatus": 200,
+        "contentType": "application/json;charset=UTF-8"
+      },
+      {
+        "method": "GET",
+        "fields": "",
+        "countOnly": null,
+        "idsOnly": "true",
+        "objectIdBatchSize": 0,
+        "httpStatus": 200,
+        "contentType": "application/json;charset=UTF-8"
+      },
+      {
+        "method": "GET",
+        "fields": "LotCSUID,OBJECTID,LotID",
+        "countOnly": null,
+        "idsOnly": null,
+        "objectIdBatchSize": 1,
+        "httpStatus": 200,
+        "contentType": "application/geo+json;charset=UTF-8"
+      },
+      {
+        "method": "GET",
+        "fields": "",
+        "countOnly": "true",
+        "idsOnly": null,
+        "objectIdBatchSize": 0,
+        "httpStatus": 200,
+        "contentType": "application/json;charset=UTF-8"
+      },
+      {
+        "method": "GET",
+        "fields": "",
+        "countOnly": null,
+        "idsOnly": "true",
+        "objectIdBatchSize": 0,
+        "httpStatus": 200,
+        "contentType": "application/json;charset=UTF-8"
+      },
+      {
+        "method": "GET",
+        "fields": "LotCSUID,OBJECTID,LotID",
+        "countOnly": null,
+        "idsOnly": null,
+        "objectIdBatchSize": 1,
+        "httpStatus": 200,
+        "contentType": "application/geo+json;charset=UTF-8"
+      },
+      {
+        "method": "GET",
+        "fields": "",
+        "countOnly": "true",
+        "idsOnly": null,
+        "objectIdBatchSize": 0,
+        "httpStatus": 200,
+        "contentType": "application/json;charset=UTF-8"
+      },
+      {
+        "method": "GET",
+        "fields": "",
+        "countOnly": null,
+        "idsOnly": "true",
+        "objectIdBatchSize": 0,
+        "httpStatus": 200,
+        "contentType": "application/json;charset=UTF-8"
+      },
+      {
+        "method": "GET",
+        "fields": "LotCSUID,OBJECTID,LotID",
+        "countOnly": null,
+        "idsOnly": null,
+        "objectIdBatchSize": 1,
+        "httpStatus": 200,
+        "contentType": "application/geo+json;charset=UTF-8"
+      },
+      {
+        "method": "GET",
+        "fields": "",
+        "countOnly": "true",
+        "idsOnly": null,
+        "objectIdBatchSize": 0,
+        "httpStatus": 200,
+        "contentType": "application/json;charset=UTF-8"
+      },
+      {
+        "method": "GET",
+        "fields": "",
+        "countOnly": null,
+        "idsOnly": "true",
+        "objectIdBatchSize": 0,
+        "httpStatus": 200,
+        "contentType": "application/json;charset=UTF-8"
+      },
+      {
+        "method": "GET",
+        "fields": "LotCSUID,OBJECTID,LotID",
+        "countOnly": null,
+        "idsOnly": null,
+        "objectIdBatchSize": 1,
+        "httpStatus": 200,
+        "contentType": "application/geo+json;charset=UTF-8"
+      },
+      {
+        "method": "GET",
+        "fields": "",
+        "countOnly": "true",
+        "idsOnly": null,
+        "objectIdBatchSize": 0,
+        "httpStatus": 200,
+        "contentType": "application/json;charset=UTF-8"
+      },
+      {
+        "method": "GET",
+        "fields": "",
+        "countOnly": null,
+        "idsOnly": "true",
+        "objectIdBatchSize": 0,
+        "httpStatus": 200,
+        "contentType": "application/json;charset=UTF-8"
+      },
+      {
+        "method": "GET",
+        "fields": "LotCSUID,OBJECTID,LotID",
+        "countOnly": null,
+        "idsOnly": null,
+        "objectIdBatchSize": 1,
+        "httpStatus": 200,
+        "contentType": "application/geo+json;charset=UTF-8"
+      },
+      {
+        "method": "GET",
+        "fields": "",
+        "countOnly": "true",
+        "idsOnly": null,
+        "objectIdBatchSize": 0,
+        "httpStatus": 200,
+        "contentType": "application/json;charset=UTF-8"
+      },
+      {
+        "method": "GET",
+        "fields": "",
+        "countOnly": null,
+        "idsOnly": "true",
+        "objectIdBatchSize": 0,
+        "httpStatus": 200,
+        "contentType": "application/json;charset=UTF-8"
+      },
+      {
+        "method": "GET",
+        "fields": "LotCSUID,OBJECTID,LotID",
+        "countOnly": null,
+        "idsOnly": null,
+        "objectIdBatchSize": 1,
+        "httpStatus": 200,
+        "contentType": "application/geo+json;charset=UTF-8"
+      },
+      {
+        "method": "GET",
+        "fields": "",
+        "countOnly": "true",
+        "idsOnly": null,
+        "objectIdBatchSize": 0,
+        "httpStatus": 200,
+        "contentType": "application/json;charset=UTF-8"
+      },
+      {
+        "method": "GET",
+        "fields": "",
+        "countOnly": null,
+        "idsOnly": "true",
+        "objectIdBatchSize": 0,
+        "httpStatus": 200,
+        "contentType": "application/json;charset=UTF-8"
+      },
+      {
+        "method": "GET",
+        "fields": "LotCSUID,OBJECTID,LotID",
+        "countOnly": null,
+        "idsOnly": null,
+        "objectIdBatchSize": 1,
+        "httpStatus": 200,
+        "contentType": "application/geo+json;charset=UTF-8"
+      },
+      {
+        "method": "GET",
+        "fields": "",
+        "countOnly": "true",
+        "idsOnly": null,
+        "objectIdBatchSize": 0,
+        "httpStatus": 200,
+        "contentType": "application/json;charset=UTF-8"
+      },
+      {
+        "method": "GET",
+        "fields": "",
+        "countOnly": null,
+        "idsOnly": "true",
+        "objectIdBatchSize": 0,
+        "httpStatus": 200,
+        "contentType": "application/json;charset=UTF-8"
+      },
+      {
+        "method": "GET",
+        "fields": "LotCSUID,OBJECTID,LotID",
+        "countOnly": null,
+        "idsOnly": null,
+        "objectIdBatchSize": 1,
+        "httpStatus": 200,
+        "contentType": "application/geo+json;charset=UTF-8"
+      },
+      {
+        "method": "GET",
+        "fields": "",
+        "countOnly": "true",
+        "idsOnly": null,
+        "objectIdBatchSize": 0,
+        "httpStatus": 200,
+        "contentType": "application/json;charset=UTF-8"
+      },
+      {
+        "method": "GET",
+        "fields": "",
+        "countOnly": null,
+        "idsOnly": "true",
+        "objectIdBatchSize": 0,
+        "httpStatus": 200,
+        "contentType": "application/json;charset=UTF-8"
+      },
+      {
+        "method": "GET",
+        "fields": "LotCSUID,OBJECTID,LotID",
+        "countOnly": null,
+        "idsOnly": null,
+        "objectIdBatchSize": 1,
+        "httpStatus": 200,
+        "contentType": "application/geo+json;charset=UTF-8"
+      },
+      {
+        "method": "GET",
+        "fields": "",
+        "countOnly": "true",
+        "idsOnly": null,
+        "objectIdBatchSize": 0,
+        "httpStatus": 200,
+        "contentType": "application/json;charset=UTF-8"
+      },
+      {
+        "method": "GET",
+        "fields": "",
+        "countOnly": null,
+        "idsOnly": "true",
+        "objectIdBatchSize": 0,
+        "httpStatus": 200,
+        "contentType": "application/json;charset=UTF-8"
+      },
+      {
+        "method": "GET",
+        "fields": "LotCSUID,OBJECTID,LotID",
+        "countOnly": null,
+        "idsOnly": null,
+        "objectIdBatchSize": 1,
+        "httpStatus": 200,
+        "contentType": "application/geo+json;charset=UTF-8"
+      },
+      {
+        "method": "GET",
+        "fields": "",
+        "countOnly": "true",
+        "idsOnly": null,
+        "objectIdBatchSize": 0,
+        "httpStatus": 200,
+        "contentType": "application/json;charset=UTF-8"
+      },
+      {
+        "method": "GET",
+        "fields": "",
+        "countOnly": null,
+        "idsOnly": "true",
+        "objectIdBatchSize": 0,
+        "httpStatus": 200,
+        "contentType": "application/json;charset=UTF-8"
+      },
+      {
+        "method": "GET",
+        "fields": "LotCSUID,OBJECTID,LotID",
+        "countOnly": null,
+        "idsOnly": null,
+        "objectIdBatchSize": 1,
+        "httpStatus": 200,
+        "contentType": "application/geo+json;charset=UTF-8"
+      },
+      {
+        "method": "GET",
+        "fields": "",
+        "countOnly": "true",
+        "idsOnly": null,
+        "objectIdBatchSize": 0,
+        "httpStatus": 200,
+        "contentType": "application/json;charset=UTF-8"
+      },
+      {
+        "method": "GET",
+        "fields": "",
+        "countOnly": null,
+        "idsOnly": "true",
+        "objectIdBatchSize": 0,
+        "httpStatus": 200,
+        "contentType": "application/json;charset=UTF-8"
+      },
+      {
+        "method": "GET",
+        "fields": "LotCSUID,OBJECTID,LotID",
+        "countOnly": null,
+        "idsOnly": null,
+        "objectIdBatchSize": 1,
+        "httpStatus": 200,
+        "contentType": "application/geo+json;charset=UTF-8"
+      },
+      {
+        "method": "GET",
+        "fields": "",
+        "countOnly": "true",
+        "idsOnly": null,
+        "objectIdBatchSize": 0,
+        "httpStatus": 200,
+        "contentType": "application/json;charset=UTF-8"
+      },
+      {
+        "method": "GET",
+        "fields": "",
+        "countOnly": null,
+        "idsOnly": "true",
+        "objectIdBatchSize": 0,
+        "httpStatus": 200,
+        "contentType": "application/json;charset=UTF-8"
+      },
+      {
+        "method": "GET",
+        "fields": "LotCSUID,OBJECTID,LotID",
+        "countOnly": null,
+        "idsOnly": null,
+        "objectIdBatchSize": 1,
+        "httpStatus": 200,
+        "contentType": "application/geo+json;charset=UTF-8"
+      },
+      {
+        "method": "GET",
+        "fields": "",
+        "countOnly": "true",
+        "idsOnly": null,
+        "objectIdBatchSize": 0,
+        "httpStatus": 200,
+        "contentType": "application/json;charset=UTF-8"
+      },
+      {
+        "method": "GET",
+        "fields": "",
+        "countOnly": null,
+        "idsOnly": "true",
+        "objectIdBatchSize": 0,
+        "httpStatus": 200,
+        "contentType": "application/json;charset=UTF-8"
+      },
+      {
+        "method": "GET",
+        "fields": "LotCSUID,OBJECTID,LotID",
+        "countOnly": null,
+        "idsOnly": null,
+        "objectIdBatchSize": 1,
+        "httpStatus": 200,
+        "contentType": "application/geo+json;charset=UTF-8"
+      },
+      {
+        "method": "GET",
+        "fields": "",
+        "countOnly": "true",
+        "idsOnly": null,
+        "objectIdBatchSize": 0,
+        "httpStatus": 200,
+        "contentType": "application/json;charset=UTF-8"
+      },
+      {
+        "method": "GET",
+        "fields": "",
+        "countOnly": null,
+        "idsOnly": "true",
+        "objectIdBatchSize": 0,
+        "httpStatus": 200,
+        "contentType": "application/json;charset=UTF-8"
+      },
+      {
+        "method": "GET",
+        "fields": "LotCSUID,OBJECTID,LotID",
+        "countOnly": null,
+        "idsOnly": null,
+        "objectIdBatchSize": 1,
+        "httpStatus": 200,
+        "contentType": "application/geo+json;charset=UTF-8"
+      },
+      {
+        "method": "GET",
+        "fields": "",
+        "countOnly": "true",
+        "idsOnly": null,
+        "objectIdBatchSize": 0,
+        "httpStatus": 200,
+        "contentType": "application/json;charset=UTF-8"
+      },
+      {
+        "method": "GET",
+        "fields": "",
+        "countOnly": null,
+        "idsOnly": "true",
+        "objectIdBatchSize": 0,
+        "httpStatus": 200,
+        "contentType": "application/json;charset=UTF-8"
+      },
+      {
+        "method": "GET",
+        "fields": "LotCSUID,OBJECTID,LotID",
+        "countOnly": null,
+        "idsOnly": null,
+        "objectIdBatchSize": 1,
+        "httpStatus": 200,
+        "contentType": "application/geo+json;charset=UTF-8"
+      },
+      {
+        "method": "GET",
+        "fields": "",
+        "countOnly": "true",
+        "idsOnly": null,
+        "objectIdBatchSize": 0,
+        "httpStatus": 200,
+        "contentType": "application/json;charset=UTF-8"
+      },
+      {
+        "method": "GET",
+        "fields": "",
+        "countOnly": null,
+        "idsOnly": "true",
+        "objectIdBatchSize": 0,
+        "httpStatus": 200,
+        "contentType": "application/json;charset=UTF-8"
+      },
+      {
+        "method": "GET",
+        "fields": "LotCSUID,OBJECTID,LotID",
+        "countOnly": null,
+        "idsOnly": null,
+        "objectIdBatchSize": 1,
+        "httpStatus": 200,
+        "contentType": "application/geo+json;charset=UTF-8"
+      },
+      {
+        "method": "GET",
+        "fields": "",
+        "countOnly": "true",
+        "idsOnly": null,
+        "objectIdBatchSize": 0,
+        "httpStatus": 200,
+        "contentType": "application/json;charset=UTF-8"
+      },
+      {
+        "method": "GET",
+        "fields": "",
+        "countOnly": null,
+        "idsOnly": "true",
+        "objectIdBatchSize": 0,
+        "httpStatus": 200,
+        "contentType": "application/json;charset=UTF-8"
+      },
+      {
+        "method": "GET",
+        "fields": "LotCSUID,OBJECTID,LotID",
+        "countOnly": null,
+        "idsOnly": null,
+        "objectIdBatchSize": 1,
+        "httpStatus": 200,
+        "contentType": "application/geo+json;charset=UTF-8"
+      },
+      {
+        "method": "GET",
+        "fields": "",
+        "countOnly": "true",
+        "idsOnly": null,
+        "objectIdBatchSize": 0,
+        "httpStatus": 200,
+        "contentType": "application/json;charset=UTF-8"
+      },
+      {
+        "method": "GET",
+        "fields": "",
+        "countOnly": null,
+        "idsOnly": "true",
+        "objectIdBatchSize": 0,
+        "httpStatus": 200,
+        "contentType": "application/json;charset=UTF-8"
+      },
+      {
+        "method": "GET",
+        "fields": "LotCSUID,OBJECTID,LotID",
+        "countOnly": null,
+        "idsOnly": null,
+        "objectIdBatchSize": 1,
+        "httpStatus": 200,
+        "contentType": "application/geo+json;charset=UTF-8"
+      },
+      {
+        "method": "GET",
+        "fields": "",
+        "countOnly": "true",
+        "idsOnly": null,
+        "objectIdBatchSize": 0,
+        "httpStatus": 200,
+        "contentType": "application/json;charset=UTF-8"
+      },
+      {
+        "method": "GET",
+        "fields": "",
+        "countOnly": null,
+        "idsOnly": "true",
+        "objectIdBatchSize": 0,
+        "httpStatus": 200,
+        "contentType": "application/json;charset=UTF-8"
+      },
+      {
+        "method": "GET",
+        "fields": "LotCSUID,OBJECTID,LotID",
+        "countOnly": null,
+        "idsOnly": null,
+        "objectIdBatchSize": 1,
+        "httpStatus": 200,
+        "contentType": "application/geo+json;charset=UTF-8"
+      },
+      {
+        "method": "GET",
+        "fields": "",
+        "countOnly": "true",
+        "idsOnly": null,
+        "objectIdBatchSize": 0,
+        "httpStatus": 200,
+        "contentType": "application/json;charset=UTF-8"
+      },
+      {
+        "method": "GET",
+        "fields": "",
+        "countOnly": null,
+        "idsOnly": "true",
+        "objectIdBatchSize": 0,
+        "httpStatus": 200,
+        "contentType": "application/json;charset=UTF-8"
+      },
+      {
+        "method": "GET",
+        "fields": "LotCSUID,OBJECTID,LotID",
+        "countOnly": null,
+        "idsOnly": null,
+        "objectIdBatchSize": 1,
+        "httpStatus": 200,
+        "contentType": "application/geo+json;charset=UTF-8"
+      },
+      {
+        "method": "GET",
+        "fields": "",
+        "countOnly": "true",
+        "idsOnly": null,
+        "objectIdBatchSize": 0,
+        "httpStatus": 200,
+        "contentType": "application/json;charset=UTF-8"
+      },
+      {
+        "method": "GET",
+        "fields": "",
+        "countOnly": null,
+        "idsOnly": "true",
+        "objectIdBatchSize": 0,
+        "httpStatus": 200,
+        "contentType": "application/json;charset=UTF-8"
+      },
+      {
+        "method": "GET",
+        "fields": "LotCSUID,OBJECTID,LotID",
+        "countOnly": null,
+        "idsOnly": null,
+        "objectIdBatchSize": 1,
+        "httpStatus": 200,
+        "contentType": "application/geo+json;charset=UTF-8"
+      },
+      {
+        "method": "GET",
+        "fields": "",
+        "countOnly": "true",
+        "idsOnly": null,
+        "objectIdBatchSize": 0,
+        "httpStatus": 200,
+        "contentType": "application/json;charset=UTF-8"
+      },
+      {
+        "method": "GET",
+        "fields": "",
+        "countOnly": null,
+        "idsOnly": "true",
+        "objectIdBatchSize": 0,
+        "httpStatus": 200,
+        "contentType": "application/json;charset=UTF-8"
+      },
+      {
+        "method": "GET",
+        "fields": "LotCSUID,OBJECTID,LotID",
+        "countOnly": null,
+        "idsOnly": null,
+        "objectIdBatchSize": 1,
+        "httpStatus": 200,
+        "contentType": "application/geo+json;charset=UTF-8"
+      },
+      {
+        "method": "GET",
+        "fields": "",
+        "countOnly": "true",
+        "idsOnly": null,
+        "objectIdBatchSize": 0,
+        "httpStatus": 200,
+        "contentType": "application/json;charset=UTF-8"
+      },
+      {
+        "method": "GET",
+        "fields": "",
+        "countOnly": null,
+        "idsOnly": "true",
+        "objectIdBatchSize": 0,
+        "httpStatus": 200,
+        "contentType": "application/json;charset=UTF-8"
+      },
+      {
+        "method": "GET",
+        "fields": "LotCSUID,OBJECTID,LotID",
+        "countOnly": null,
+        "idsOnly": null,
+        "objectIdBatchSize": 1,
+        "httpStatus": 200,
+        "contentType": "application/geo+json;charset=UTF-8"
+      },
+      {
+        "method": "GET",
+        "fields": "",
+        "countOnly": "true",
+        "idsOnly": null,
+        "objectIdBatchSize": 0,
+        "httpStatus": 200,
+        "contentType": "application/json;charset=UTF-8"
+      },
+      {
+        "method": "GET",
+        "fields": "",
+        "countOnly": null,
+        "idsOnly": "true",
+        "objectIdBatchSize": 0,
+        "httpStatus": 200,
+        "contentType": "application/json;charset=UTF-8"
+      },
+      {
+        "method": "GET",
+        "fields": "LotCSUID,OBJECTID,LotID",
+        "countOnly": null,
+        "idsOnly": null,
+        "objectIdBatchSize": 1,
+        "httpStatus": 200,
+        "contentType": "application/geo+json;charset=UTF-8"
+      },
+      {
+        "method": "GET",
+        "fields": "",
+        "countOnly": "true",
+        "idsOnly": null,
+        "objectIdBatchSize": 0,
+        "httpStatus": 200,
+        "contentType": "application/json;charset=UTF-8"
+      },
+      {
+        "method": "GET",
+        "fields": "",
+        "countOnly": null,
+        "idsOnly": "true",
+        "objectIdBatchSize": 0,
+        "httpStatus": 200,
+        "contentType": "application/json;charset=UTF-8"
+      },
+      {
+        "method": "GET",
+        "fields": "LotCSUID,OBJECTID,LotID",
+        "countOnly": null,
+        "idsOnly": null,
+        "objectIdBatchSize": 1,
+        "httpStatus": 200,
+        "contentType": "application/geo+json;charset=UTF-8"
+      },
+      {
+        "method": "GET",
+        "fields": "",
+        "countOnly": "true",
+        "idsOnly": null,
+        "objectIdBatchSize": 0,
+        "httpStatus": 200,
+        "contentType": "application/json;charset=UTF-8"
+      },
+      {
+        "method": "GET",
+        "fields": "",
+        "countOnly": null,
+        "idsOnly": "true",
+        "objectIdBatchSize": 0,
+        "httpStatus": 200,
+        "contentType": "application/json;charset=UTF-8"
+      },
+      {
+        "method": "GET",
+        "fields": "LotCSUID,OBJECTID,LotID",
+        "countOnly": null,
+        "idsOnly": null,
+        "objectIdBatchSize": 1,
+        "httpStatus": 200,
+        "contentType": "application/geo+json;charset=UTF-8"
+      },
+      {
+        "method": "GET",
+        "fields": "",
+        "countOnly": "true",
+        "idsOnly": null,
+        "objectIdBatchSize": 0,
+        "httpStatus": 200,
+        "contentType": "application/json;charset=UTF-8"
+      },
+      {
+        "method": "GET",
+        "fields": "",
+        "countOnly": null,
+        "idsOnly": "true",
+        "objectIdBatchSize": 0,
+        "httpStatus": 200,
+        "contentType": "application/json;charset=UTF-8"
+      },
+      {
+        "method": "GET",
+        "fields": "LotCSUID,OBJECTID,LotID",
+        "countOnly": null,
+        "idsOnly": null,
+        "objectIdBatchSize": 1,
+        "httpStatus": 200,
+        "contentType": "application/geo+json;charset=UTF-8"
+      },
+      {
+        "method": "GET",
+        "fields": "",
+        "countOnly": "true",
+        "idsOnly": null,
+        "objectIdBatchSize": 0,
+        "httpStatus": 200,
+        "contentType": "application/json;charset=UTF-8"
+      },
+      {
+        "method": "GET",
+        "fields": "",
+        "countOnly": null,
+        "idsOnly": "true",
+        "objectIdBatchSize": 0,
+        "httpStatus": 200,
+        "contentType": "application/json;charset=UTF-8"
+      },
+      {
+        "method": "GET",
+        "fields": "LotCSUID,OBJECTID,LotID",
+        "countOnly": null,
+        "idsOnly": null,
+        "objectIdBatchSize": 1,
+        "httpStatus": 200,
+        "contentType": "application/geo+json;charset=UTF-8"
+      },
+      {
+        "method": "GET",
+        "fields": "",
+        "countOnly": "true",
+        "idsOnly": null,
+        "objectIdBatchSize": 0,
+        "httpStatus": 200,
+        "contentType": "application/json;charset=UTF-8"
+      },
+      {
+        "method": "GET",
+        "fields": "",
+        "countOnly": null,
+        "idsOnly": "true",
+        "objectIdBatchSize": 0,
+        "httpStatus": 200,
+        "contentType": "application/json;charset=UTF-8"
+      },
+      {
+        "method": "GET",
+        "fields": "LotCSUID,OBJECTID,LotID",
+        "countOnly": null,
+        "idsOnly": null,
+        "objectIdBatchSize": 1,
+        "httpStatus": 200,
+        "contentType": "application/geo+json;charset=UTF-8"
+      },
+      {
+        "method": "GET",
+        "fields": "",
+        "countOnly": "true",
+        "idsOnly": null,
+        "objectIdBatchSize": 0,
+        "httpStatus": 200,
+        "contentType": "application/json;charset=UTF-8"
+      },
+      {
+        "method": "GET",
+        "fields": "",
+        "countOnly": null,
+        "idsOnly": "true",
+        "objectIdBatchSize": 0,
+        "httpStatus": 200,
+        "contentType": "application/json;charset=UTF-8"
+      },
+      {
+        "method": "GET",
+        "fields": "LotCSUID,OBJECTID,LotID",
+        "countOnly": null,
+        "idsOnly": null,
+        "objectIdBatchSize": 1,
+        "httpStatus": 200,
+        "contentType": "application/geo+json;charset=UTF-8"
+      },
+      {
+        "method": "GET",
+        "fields": "",
+        "countOnly": "true",
+        "idsOnly": null,
+        "objectIdBatchSize": 0,
+        "httpStatus": 200,
+        "contentType": "application/json;charset=UTF-8"
+      },
+      {
+        "method": "GET",
+        "fields": "",
+        "countOnly": null,
+        "idsOnly": "true",
+        "objectIdBatchSize": 0,
+        "httpStatus": 200,
+        "contentType": "application/json;charset=UTF-8"
+      },
+      {
+        "method": "GET",
+        "fields": "LotCSUID,OBJECTID,LotID",
+        "countOnly": null,
+        "idsOnly": null,
+        "objectIdBatchSize": 1,
+        "httpStatus": 200,
+        "contentType": "application/geo+json;charset=UTF-8"
+      },
+      {
+        "method": "GET",
+        "fields": "",
+        "countOnly": "true",
+        "idsOnly": null,
+        "objectIdBatchSize": 0,
+        "httpStatus": 200,
+        "contentType": "application/json;charset=UTF-8"
+      },
+      {
+        "method": "GET",
+        "fields": "",
+        "countOnly": null,
+        "idsOnly": "true",
+        "objectIdBatchSize": 0,
+        "httpStatus": 200,
+        "contentType": "application/json;charset=UTF-8"
+      },
+      {
+        "method": "GET",
+        "fields": "LotCSUID,OBJECTID,LotID",
+        "countOnly": null,
+        "idsOnly": null,
+        "objectIdBatchSize": 1,
+        "httpStatus": 200,
+        "contentType": "application/geo+json;charset=UTF-8"
+      },
+      {
+        "method": "GET",
+        "fields": "",
+        "countOnly": "true",
+        "idsOnly": null,
+        "objectIdBatchSize": 0,
+        "httpStatus": 200,
+        "contentType": "application/json;charset=UTF-8"
+      },
+      {
+        "method": "GET",
+        "fields": "",
+        "countOnly": null,
+        "idsOnly": "true",
+        "objectIdBatchSize": 0,
+        "httpStatus": 200,
+        "contentType": "application/json;charset=UTF-8"
+      },
+      {
+        "method": "GET",
+        "fields": "LotCSUID,OBJECTID,LotID",
+        "countOnly": null,
+        "idsOnly": null,
+        "objectIdBatchSize": 1,
+        "httpStatus": 200,
+        "contentType": "application/geo+json;charset=UTF-8"
+      },
+      {
+        "method": "GET",
+        "fields": "",
+        "countOnly": "true",
+        "idsOnly": null,
+        "objectIdBatchSize": 0,
+        "httpStatus": 200,
+        "contentType": "application/json;charset=UTF-8"
+      },
+      {
+        "method": "GET",
+        "fields": "",
+        "countOnly": null,
+        "idsOnly": "true",
+        "objectIdBatchSize": 0,
+        "httpStatus": 200,
+        "contentType": "application/json;charset=UTF-8"
+      },
+      {
+        "method": "GET",
+        "fields": "LotCSUID,OBJECTID,LotID",
+        "countOnly": null,
+        "idsOnly": null,
+        "objectIdBatchSize": 1,
+        "httpStatus": 200,
+        "contentType": "application/geo+json;charset=UTF-8"
+      },
+      {
+        "method": "GET",
+        "fields": "",
+        "countOnly": "true",
+        "idsOnly": null,
+        "objectIdBatchSize": 0,
+        "httpStatus": 200,
+        "contentType": "application/json;charset=UTF-8"
+      },
+      {
+        "method": "GET",
+        "fields": "",
+        "countOnly": null,
+        "idsOnly": "true",
+        "objectIdBatchSize": 0,
+        "httpStatus": 200,
+        "contentType": "application/json;charset=UTF-8"
+      },
+      {
+        "method": "GET",
+        "fields": "",
+        "countOnly": "true",
+        "idsOnly": null,
+        "objectIdBatchSize": 0,
+        "httpStatus": 200,
+        "contentType": "application/json;charset=UTF-8"
+      },
+      {
+        "method": "GET",
+        "fields": "",
+        "countOnly": null,
+        "idsOnly": "true",
+        "objectIdBatchSize": 0,
+        "httpStatus": 200,
+        "contentType": "application/json;charset=UTF-8"
+      },
+      {
+        "method": "GET",
+        "fields": "LotCSUID,OBJECTID,LotID",
+        "countOnly": null,
+        "idsOnly": null,
+        "objectIdBatchSize": 3,
+        "httpStatus": 200,
+        "contentType": "application/geo+json;charset=UTF-8"
+      },
+      {
+        "method": "GET",
+        "fields": "LotCSUID,OBJECTID,LotID",
+        "countOnly": null,
+        "idsOnly": null,
+        "objectIdBatchSize": 3,
+        "httpStatus": 200,
+        "contentType": "application/geo+json;charset=UTF-8"
+      },
+      {
+        "method": "GET",
+        "fields": "LotCSUID,OBJECTID,LotID",
+        "countOnly": null,
+        "idsOnly": null,
+        "objectIdBatchSize": 1,
+        "httpStatus": 200,
+        "contentType": "application/geo+json;charset=UTF-8"
+      },
+      {
+        "method": "GET",
+        "fields": "",
+        "countOnly": "true",
+        "idsOnly": null,
+        "objectIdBatchSize": 0,
+        "httpStatus": 200,
+        "contentType": "application/json;charset=UTF-8"
+      },
+      {
+        "method": "GET",
+        "fields": "",
+        "countOnly": null,
+        "idsOnly": "true",
+        "objectIdBatchSize": 0,
+        "httpStatus": 200,
+        "contentType": "application/json;charset=UTF-8"
+      },
+      {
+        "method": "GET",
+        "fields": "LotCSUID,OBJECTID,LotID",
+        "countOnly": null,
+        "idsOnly": null,
+        "objectIdBatchSize": 3,
+        "httpStatus": 200,
+        "contentType": "application/geo+json;charset=UTF-8"
+      },
+      {
+        "method": "GET",
+        "fields": "LotCSUID,OBJECTID,LotID",
+        "countOnly": null,
+        "idsOnly": null,
+        "objectIdBatchSize": 2,
+        "httpStatus": 200,
+        "contentType": "application/geo+json;charset=UTF-8"
+      },
+      {
+        "method": "GET",
+        "fields": "",
+        "countOnly": "true",
+        "idsOnly": null,
+        "objectIdBatchSize": 0,
+        "httpStatus": 200,
+        "contentType": "application/json;charset=UTF-8"
+      },
+      {
+        "method": "GET",
+        "fields": "",
+        "countOnly": null,
+        "idsOnly": "true",
+        "objectIdBatchSize": 0,
+        "httpStatus": 200,
+        "contentType": "application/json;charset=UTF-8"
+      },
+      {
+        "method": "GET",
+        "fields": "LotCSUID,OBJECTID,LotID",
+        "countOnly": null,
+        "idsOnly": null,
+        "objectIdBatchSize": 3,
+        "httpStatus": 200,
+        "contentType": "application/geo+json;charset=UTF-8"
+      },
+      {
+        "method": "GET",
+        "fields": "LotCSUID,OBJECTID,LotID",
+        "countOnly": null,
+        "idsOnly": null,
+        "objectIdBatchSize": 3,
+        "httpStatus": 200,
+        "contentType": "application/geo+json;charset=UTF-8"
+      },
+      {
+        "method": "GET",
+        "fields": "LotCSUID,OBJECTID,LotID",
+        "countOnly": null,
+        "idsOnly": null,
+        "objectIdBatchSize": 3,
+        "httpStatus": 200,
+        "contentType": "application/geo+json;charset=UTF-8"
+      },
+      {
+        "method": "GET",
+        "fields": "LotCSUID,OBJECTID,LotID",
+        "countOnly": null,
+        "idsOnly": null,
+        "objectIdBatchSize": 3,
+        "httpStatus": 200,
+        "contentType": "application/geo+json;charset=UTF-8"
+      },
+      {
+        "method": "GET",
+        "fields": "LotCSUID,OBJECTID,LotID",
+        "countOnly": null,
+        "idsOnly": null,
+        "objectIdBatchSize": 3,
+        "httpStatus": 200,
+        "contentType": "application/geo+json;charset=UTF-8"
+      },
+      {
+        "method": "GET",
+        "fields": "LotCSUID,OBJECTID,LotID",
+        "countOnly": null,
+        "idsOnly": null,
+        "objectIdBatchSize": 3,
+        "httpStatus": 200,
+        "contentType": "application/geo+json;charset=UTF-8"
+      },
+      {
+        "method": "GET",
+        "fields": "LotCSUID,OBJECTID,LotID",
+        "countOnly": null,
+        "idsOnly": null,
+        "objectIdBatchSize": 1,
+        "httpStatus": 200,
+        "contentType": "application/geo+json;charset=UTF-8"
+      }
+    ]
+  },
+  "fullPolygonFootprintsCount": 3,
+  "uniqueUnionFeatureCount": 127,
+  "unionObjectIdSetSha256": "15c308924dff67279cfaad190c8f74872187aa8f820aa3010556ddb0a3a5c48d",
+  "all29WindowUnionCount": 125,
+  "all29WindowUnionIncluded": true,
+  "privacyFieldAllowlist": [
+    "OBJECTID",
+    "LotID",
+    "LotCSUID",
+    "full polygon geometry"
+  ],
+  "runtimeDescriptor": {
+    "id": "hk-landsd-csdi-lot",
+    "endpoint": "https://portal.csdi.gov.hk/server/rest/services/common/landsd_rcd_1637217253134_22729/FeatureServer/0",
+    "idField": "LotCSUID",
+    "idType": "string",
+    "objectIdField": "OBJECTID",
+    "idPrefix": "HK-LANDSD-CSDI-LOT-CSUID-",
+    "outFields": [
+      "LotCSUID",
+      "OBJECTID",
+      "LotID"
+    ],
+    "pageSize": 5,
+    "maxFeatures": 2000,
+    "maxBboxKm2": 1,
+    "boundsQueryMode": "object-ids",
+    "idsQueryMode": "single-equality",
+    "idBatchSize": 1,
+    "name": "Lands Department CSDI Lot polygons",
+    "adapter": "arcgis",
+    "cityIds": [
+      "tuenmun"
+    ],
+    "operator": "Hong Kong Lands Department / Common Spatial Data Infrastructure Portal",
+    "catalogueUrl": "https://data.gov.hk/en-data/dataset/hk-landsd-openmap-landsd-lot/resource/92d24214-a295-4b8e-8d3f-27e9226e1287",
+    "attribution": "Hong Kong Lands Department · CSDI Lots · adapted",
+    "parcelNumberField": "LotID",
+    "evidenceFile": "research/overnight-cities-2026-10-08/tuen-mun-csdi-root-acceptance.json",
+    "licenceNote": "Retain Hong Kong Lands Department attribution and published approximate-boundary and survey notices.",
+    "scope": "Public Lands Department CSDI Lot polygons in the Tuen Mun neighborhood. The dataset represents land sold or granted for specified uses and does not form a complete parcel fabric. Thirteen aligned 0.001° cells and four adjacent pans passed the real adapter with source count and object-ID manifests; a 29-window source check plus footprint neighbors yielded 127 distinct full polygons. All 127 fresh LotCSUID equality reads reproduced IDs and geometry, a valid absent ID returned empty, forced three-row object-ID batches completed, and the exact-WUP parcel passed full footprint retrieval and actual runtime proposal binding. GEOS in EPSG:32650 found no invalid polygons, duplicate geometry or positive-area overlaps above 0.01 m² in the bounded union. One conservative source bbox candidate lies about 0.04 m outside a cell; full geometry is preserved, with no snapping or clipping. Offset paging omitted that candidate, and multi-ID IN reads returned HTTP 403; the enabled descriptor uses object-ID manifests and one native LotCSUID equality per ID. Only LotCSUID, OBJECTID transport keys and LotID labels accompany geometry. Citywide completeness and identity continuity across quarterly replacements remain unverified. Published legal and survey notices are retained as scope information.",
+    "maxConcurrentQueries": 1
+  },
+  "boundedRuntimeViews": {
+    "checkedAt": "2026-10-09",
+    "mode": "object-ids",
+    "pageSize": 5,
+    "viewCount": 17,
+    "expectedViewCount": 17,
+    "complete": true,
+    "allMatch": true,
+    "perView": [
+      {
+        "id": "grid-r-2-c+0",
+        "kind": "initial_desktop_5x5",
+        "bbox": [
+          113.996,
+          22.424,
+          113.997,
+          22.425
+        ],
+        "directIdCount": 3,
+        "adapterCount": 3,
+        "complete": true,
+        "adapterIdsMatchDirectManifest": true,
+        "missingObjectIds": [],
+        "extraObjectIds": []
+      },
+      {
+        "id": "grid-r-1-c-1",
+        "kind": "initial_desktop_5x5",
+        "bbox": [
+          113.995,
+          22.425,
+          113.996,
+          22.426
+        ],
+        "directIdCount": 10,
+        "adapterCount": 10,
+        "complete": true,
+        "adapterIdsMatchDirectManifest": true,
+        "missingObjectIds": [],
+        "extraObjectIds": []
+      },
+      {
+        "id": "grid-r-1-c+0",
+        "kind": "initial_desktop_5x5",
+        "bbox": [
+          113.996,
+          22.425,
+          113.997,
+          22.426
+        ],
+        "directIdCount": 12,
+        "adapterCount": 12,
+        "complete": true,
+        "adapterIdsMatchDirectManifest": true,
+        "missingObjectIds": [],
+        "extraObjectIds": []
+      },
+      {
+        "id": "grid-r-1-c+1",
+        "kind": "initial_desktop_5x5",
+        "bbox": [
+          113.997,
+          22.425,
+          113.998,
+          22.426
+        ],
+        "directIdCount": 4,
+        "adapterCount": 4,
+        "complete": true,
+        "adapterIdsMatchDirectManifest": true,
+        "missingObjectIds": [],
+        "extraObjectIds": []
+      },
+      {
+        "id": "grid-r+0-c-2",
+        "kind": "initial_desktop_5x5",
+        "bbox": [
+          113.994,
+          22.426,
+          113.995,
+          22.427
+        ],
+        "directIdCount": 10,
+        "adapterCount": 10,
+        "complete": true,
+        "adapterIdsMatchDirectManifest": true,
+        "missingObjectIds": [],
+        "extraObjectIds": []
+      },
+      {
+        "id": "grid-r+0-c-1",
+        "kind": "initial_desktop_5x5",
+        "bbox": [
+          113.995,
+          22.426,
+          113.996,
+          22.427
+        ],
+        "directIdCount": 7,
+        "adapterCount": 7,
+        "complete": true,
+        "adapterIdsMatchDirectManifest": true,
+        "missingObjectIds": [],
+        "extraObjectIds": []
+      },
+      {
+        "id": "grid-r+0-c+0",
+        "kind": "initial_desktop_5x5",
+        "bbox": [
+          113.996,
+          22.426,
+          113.997,
+          22.427
+        ],
+        "directIdCount": 14,
+        "adapterCount": 14,
+        "complete": true,
+        "adapterIdsMatchDirectManifest": true,
+        "missingObjectIds": [],
+        "extraObjectIds": []
+      },
+      {
+        "id": "grid-r+0-c+1",
+        "kind": "initial_desktop_5x5",
+        "bbox": [
+          113.997,
+          22.426,
+          113.998,
+          22.427
+        ],
+        "directIdCount": 5,
+        "adapterCount": 5,
+        "complete": true,
+        "adapterIdsMatchDirectManifest": true,
+        "missingObjectIds": [],
+        "extraObjectIds": []
+      },
+      {
+        "id": "grid-r+0-c+2",
+        "kind": "initial_desktop_5x5",
+        "bbox": [
+          113.998,
+          22.426,
+          113.999,
+          22.427
+        ],
+        "directIdCount": 7,
+        "adapterCount": 7,
+        "complete": true,
+        "adapterIdsMatchDirectManifest": true,
+        "missingObjectIds": [],
+        "extraObjectIds": []
+      },
+      {
+        "id": "grid-r+1-c-1",
+        "kind": "initial_desktop_5x5",
+        "bbox": [
+          113.995,
+          22.427,
+          113.996,
+          22.428
+        ],
+        "directIdCount": 22,
+        "adapterCount": 22,
+        "complete": true,
+        "adapterIdsMatchDirectManifest": true,
+        "missingObjectIds": [],
+        "extraObjectIds": []
+      },
+      {
+        "id": "grid-r+1-c+0",
+        "kind": "initial_desktop_5x5",
+        "bbox": [
+          113.996,
+          22.427,
+          113.997,
+          22.428
+        ],
+        "directIdCount": 19,
+        "adapterCount": 19,
+        "complete": true,
+        "adapterIdsMatchDirectManifest": true,
+        "missingObjectIds": [],
+        "extraObjectIds": []
+      },
+      {
+        "id": "grid-r+1-c+1",
+        "kind": "initial_desktop_5x5",
+        "bbox": [
+          113.997,
+          22.427,
+          113.998,
+          22.428
+        ],
+        "directIdCount": 4,
+        "adapterCount": 4,
+        "complete": true,
+        "adapterIdsMatchDirectManifest": true,
+        "missingObjectIds": [],
+        "extraObjectIds": []
+      },
+      {
+        "id": "grid-r+2-c+0",
+        "kind": "initial_desktop_5x5",
+        "bbox": [
+          113.996,
+          22.428,
+          113.997,
+          22.429
+        ],
+        "directIdCount": 8,
+        "adapterCount": 8,
+        "complete": true,
+        "adapterIdsMatchDirectManifest": true,
+        "missingObjectIds": [],
+        "extraObjectIds": []
+      },
+      {
+        "id": "pan_east",
+        "kind": "pan_002_centered_0015",
+        "bbox": [
+          113.99686684238199,
+          22.425635578075198,
+          113.998866842382,
+          22.4276355780752
+        ],
+        "directIdCount": 18,
+        "adapterCount": 18,
+        "complete": true,
+        "adapterIdsMatchDirectManifest": true,
+        "missingObjectIds": [],
+        "extraObjectIds": []
+      },
+      {
+        "id": "pan_west",
+        "kind": "pan_002_centered_0015",
+        "bbox": [
+          113.993866842382,
+          22.425635578075198,
+          113.99586684238201,
+          22.4276355780752
+        ],
+        "directIdCount": 33,
+        "adapterCount": 33,
+        "complete": true,
+        "adapterIdsMatchDirectManifest": true,
+        "missingObjectIds": [],
+        "extraObjectIds": []
+      },
+      {
+        "id": "pan_north",
+        "kind": "pan_002_centered_0015",
+        "bbox": [
+          113.995366842382,
+          22.427135578075198,
+          113.99736684238201,
+          22.4291355780752
+        ],
+        "directIdCount": 37,
+        "adapterCount": 37,
+        "complete": true,
+        "adapterIdsMatchDirectManifest": true,
+        "missingObjectIds": [],
+        "extraObjectIds": []
+      },
+      {
+        "id": "pan_south",
+        "kind": "pan_002_centered_0015",
+        "bbox": [
+          113.995366842382,
+          22.424135578075198,
+          113.99736684238201,
+          22.4261355780752
+        ],
+        "directIdCount": 19,
+        "adapterCount": 19,
+        "complete": true,
+        "adapterIdsMatchDirectManifest": true,
+        "missingObjectIds": [],
+        "extraObjectIds": []
+      }
+    ]
+  },
+  "runtimeProfileFootprintAndBinding": {
+    "checkedAt": "2026-10-09",
+    "descriptor": {
+      "id": "hk-landsd-csdi-lot-feature-service-temp-check",
+      "endpoint": "https://portal.csdi.gov.hk/server/rest/services/common/landsd_rcd_1637217253134_22729/FeatureServer/0",
+      "idField": "LotCSUID",
+      "idType": "string",
+      "objectIdField": "OBJECTID",
+      "idPrefix": "HK-LANDSD-CSDI-LOT-CSUID-",
+      "outFields": [
+        "LotCSUID",
+        "OBJECTID",
+        "LotID"
+      ],
+      "pageSize": 5,
+      "maxFeatures": 2000,
+      "maxBboxKm2": 1,
+      "boundsQueryMode": "object-ids",
+      "idsQueryMode": "single-equality",
+      "idBatchSize": 1,
+      "temporaryOnly": true
+    },
+    "wupExactNativeParcel": {
+      "parcelId": "HK-LANDSD-CSDI-LOT-CSUID-180002685",
+      "sourceParcelId": "180002685",
+      "sourceProperties": {
+        "OBJECTID": 219322,
+        "LotID": 1800196588,
+        "LotCSUID": "180002685"
+      },
+      "identityReturnedCount": 1,
+      "identityAbsentIds": [],
+      "geometrySha256": "338f73864b0eb4b22313f78a09a84d43d344639c325f2cc837a56dd1de6805e6"
+    },
+    "footprint": {
+      "complete": true,
+      "featureCount": 5,
+      "parcelIds": [
+        "HK-LANDSD-CSDI-LOT-CSUID-180002684",
+        "HK-LANDSD-CSDI-LOT-CSUID-180002685",
+        "HK-LANDSD-CSDI-LOT-CSUID-180002686",
+        "HK-LANDSD-CSDI-LOT-CSUID-180002687",
+        "HK-LANDSD-CSDI-LOT-CSUID-180002702"
+      ],
+      "selectedGeometryBound": true,
+      "bboxCandidateCountBeforeAdapterIntersectionFilter": 7,
+      "returnedFullIntersectingCount": 5,
+      "candidateOrigin": "ArcGIS object-ID intersection manifest for selected full polygon bbox; adapter then applies actual full-polygon booleanIntersects before returning five."
+    },
+    "runtimeBinding": {
+      "complete": true,
+      "source": "server:hk-landsd-csdi-lot-feature-service-temp-check",
+      "coverage": "complete",
+      "toleranceM": 0,
+      "siteM2": 873.86,
+      "unsurveyedM2": 0,
+      "parcels": [
+        {
+          "parcelId": "HK-LANDSD-CSDI-LOT-CSUID-180002685",
+          "overlapM2": 873.858,
+          "intrusionM": 28.5555
+        }
+      ],
+      "touched": []
+    },
+    "metric": {
+      "analysisCrs": "EPSG:32650",
+      "geosVersion": "3.14.1",
+      "projVersion": "9.8.1",
+      "source": "unmodified full polygons returned by the runtime-profile adapter; no repair/filter",
+      "selectedNativeId": "180002685",
+      "selectedOBJECTID": 219322,
+      "parcelFeatureCount": 5,
+      "siteAreaM2": 871.0613347257328,
+      "coveredAreaM2": 871.0613347257337,
+      "uncoveredAreaM2": 0.0,
+      "coverageFraction": 1.000000000000001,
+      "selectedParcelValid": true,
+      "allFootprintPolygonsValid": true
+    },
+    "transportTrace": {
+      "requestCount": 11,
+      "statusCounts": {
+        "200": 11
+      },
+      "onlyAllowlistedFields": true,
+      "trace": [
+        {
+          "method": "GET",
+          "fields": "",
+          "countOnly": "true",
+          "idsOnly": null,
+          "objectIdBatchSize": 0,
+          "httpStatus": 200,
+          "contentType": "application/json;charset=UTF-8"
+        },
+        {
+          "method": "GET",
+          "fields": "",
+          "countOnly": null,
+          "idsOnly": "true",
+          "objectIdBatchSize": 0,
+          "httpStatus": 200,
+          "contentType": "application/json;charset=UTF-8"
+        },
+        {
+          "method": "GET",
+          "fields": "LotCSUID,OBJECTID,LotID",
+          "countOnly": null,
+          "idsOnly": null,
+          "objectIdBatchSize": 1,
+          "httpStatus": 200,
+          "contentType": "application/geo+json;charset=UTF-8"
+        },
+        {
+          "method": "GET",
+          "fields": "",
+          "countOnly": "true",
+          "idsOnly": null,
+          "objectIdBatchSize": 0,
+          "httpStatus": 200,
+          "contentType": "application/json;charset=UTF-8"
+        },
+        {
+          "method": "GET",
+          "fields": "",
+          "countOnly": null,
+          "idsOnly": "true",
+          "objectIdBatchSize": 0,
+          "httpStatus": 200,
+          "contentType": "application/json;charset=UTF-8"
+        },
+        {
+          "method": "GET",
+          "fields": "LotCSUID,OBJECTID,LotID",
+          "countOnly": null,
+          "idsOnly": null,
+          "objectIdBatchSize": 5,
+          "httpStatus": 200,
+          "contentType": "application/geo+json;charset=UTF-8"
+        },
+        {
+          "method": "GET",
+          "fields": "LotCSUID,OBJECTID,LotID",
+          "countOnly": null,
+          "idsOnly": null,
+          "objectIdBatchSize": 2,
+          "httpStatus": 200,
+          "contentType": "application/geo+json;charset=UTF-8"
+        },
+        {
+          "method": "GET",
+          "fields": "",
+          "countOnly": "true",
+          "idsOnly": null,
+          "objectIdBatchSize": 0,
+          "httpStatus": 200,
+          "contentType": "application/json;charset=UTF-8"
+        },
+        {
+          "method": "GET",
+          "fields": "",
+          "countOnly": null,
+          "idsOnly": "true",
+          "objectIdBatchSize": 0,
+          "httpStatus": 200,
+          "contentType": "application/json;charset=UTF-8"
+        },
+        {
+          "method": "GET",
+          "fields": "LotCSUID,OBJECTID,LotID",
+          "countOnly": null,
+          "idsOnly": null,
+          "objectIdBatchSize": 5,
+          "httpStatus": 200,
+          "contentType": "application/geo+json;charset=UTF-8"
+        },
+        {
+          "method": "GET",
+          "fields": "LotCSUID,OBJECTID,LotID",
+          "countOnly": null,
+          "idsOnly": null,
+          "objectIdBatchSize": 2,
+          "httpStatus": 200,
+          "contentType": "application/geo+json;charset=UTF-8"
+        }
+      ]
+    }
+  },
+  "allTestsPassed": true,
+  "qualityDecision": "approved_by_root",
+  "qualityFile": "research/overnight-cities-2026-10-08/tuen-mun-csdi-root-quality.json"
+}

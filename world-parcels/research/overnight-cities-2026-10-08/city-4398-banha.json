@@ -1,0 +1,116 @@
+{
+  "name": "Banha",
+  "country": "Egypt",
+  "countryCode": "EG",
+  "rank": 239,
+  "point": [
+    30.4236687181104,
+    31.1700100094863
+  ],
+  "freshResearch": {
+    "queries": [
+      {
+        "language": "Arabic",
+        "query": "خريطة مساحية بنها هيئة المساحة المصرية cadastral map Banha",
+        "scope": "Locate official Banha cadastral map and public land-parcel geometry services.",
+        "result": "The Egyptian Survey Authority (ESA) describes official survey/map products and its historical ownership-map mandate. Its official map index names Qalyubia/Banha map-sheet coverage but the entries are topographic/cartographic map products, not an open cadastral register. No primary Banha/Qalyubia parcel-registration workflow or ownership-map viewer was found.",
+        "actualResultUrls": [
+          "https://www.esa.gov.eg/services.aspx",
+          "https://www.esa.gov.eg/main.aspx",
+          "https://www.esa.gov.eg/files/Topographic_Maps.pdf"
+        ],
+        "executionMethod": "Arabic search followed by official Egyptian Survey Authority service, mandate, and map-index sources."
+      },
+      {
+        "language": "English",
+        "query": "Banha Qalyubia official cadastral map land survey Egypt public digital map",
+        "scope": "Cross-check whether official map services expose vector parcel geometry or only map products.",
+        "result": "City-specific follow-up found the official ESA directory for Qalyubia’s Utility Network Information Center in Banha, but that is utility infrastructure, not parcel ownership. The public ESA online material inspected did not expose a Banha-specific cadastral procedure or parcel vector endpoint; secondary GIS reports about planning/infrastructure were excluded.",
+        "actualResultUrls": [
+          "https://www.esa.gov.eg/services.aspx",
+          "https://www.esa.gov.eg/files/Topographic_Maps.pdf",
+          "https://www.esa.gov.eg/network3.aspx",
+          "https://gate.ahram.org.eg/News/5722905.aspx"
+        ],
+        "executionMethod": "English search; official ESA pages and map index checked, secondary planning-map report used only to distinguish its scope."
+      }
+    ],
+    "portals": [
+      {
+        "name": "Egyptian Survey Authority (ESA) map services",
+        "operator": "Egyptian Survey Authority, Government of Egypt",
+        "homeUrl": "https://www.esa.gov.eg/services.aspx",
+        "observation": "Official ESA services and map index document survey/map products. Qalyubia/Banha coverage in the topographic index is not parcel ownership or cadastral vector evidence. No city-specific cadastral service was identified."
+      },
+      {
+        "name": "Qalyubia Utility Network Information Center",
+        "operator": "ESA-accredited utility network information center, Banha",
+        "homeUrl": "https://www.esa.gov.eg/network3.aspx",
+        "observation": "Official ESA directory places the Qalyubia utility-network center in Banha; utility-network remit does not demonstrate land-parcel vectors."
+      }
+    ],
+    "requests": [
+      {
+        "url": "https://www.esa.gov.eg/services.aspx",
+        "method": "GET",
+        "observation": "Official ESA service-page content was found via web search; direct shell request returned HTTP 403, so no successful shell status is asserted."
+      },
+      {
+        "url": "https://www.esa.gov.eg/files/Topographic_Maps.pdf",
+        "method": "GET",
+        "observation": "Official ESA map index identifies Qalyubia/Banha topographic map products; the direct shell request returned HTTP 403. This is evidence of map products only, not a cadastral parcel service."
+      },
+      {
+        "url": "https://www.esa.gov.eg/network3.aspx",
+        "method": "GET",
+        "observation": "Official ESA directory identifies the Qalyubia Utility Network Information Center in Banha; its service remit is utilities, not parcel ownership. Direct shell request returned HTTP 403; no cadastral output is inferred."
+      }
+    ],
+    "historicalContext": []
+  },
+  "status": "complete",
+  "verifiedParcelResponse": null,
+  "source": {
+    "sourceId": "EG-ESA-QALYUBIA-BANHA-MAP-INDEX",
+    "name": "ESA map products and Qalyubia/Banha topographic map index",
+    "url": "https://www.esa.gov.eg/files/Topographic_Maps.pdf",
+    "operator": "Egyptian Survey Authority, Government of Egypt",
+    "serviceType": "Official map-sheet products; topographic/cartographic coverage only. No cadastral parcel feature service verified.",
+    "layer": null,
+    "geometryType": null,
+    "outputCrs": null,
+    "nativeIdField": null,
+    "nativeIdEvidence": "Map-sheet index identifies Banha/Qalyubia coverage but no cadastral parcel identifier or ownership record was retrieved."
+  },
+  "coverageAssessment": {
+    "claimedScope": "ESA survey/map products include topographic map-sheet references for Qalyubia/Banha; this is not a claim of city cadastral-register coverage.",
+    "verifiedOpenScope": "No Banha/Qalyubia ownership registry, cadastral parcel map, or full parcel vector response was verified. Official references establish topographic/utility map products only.",
+    "countrywideVerified": false
+  },
+  "registryFound": null,
+  "verifiedSample": false,
+  "resultCategory": "official_survey_map_geometry_not_verified",
+  "technicalBlocker": "Available city-specific references are topographic-map products and a utility-network center, not an ownership registry or cadastral parcel API.",
+  "remainingUncertainty": "Whether a Banha land-registration office or Qalyubia survey directorate can provide a city-specific public parcel map or feature service; no owner-record route or anonymous geometry tested.",
+  "nextStep": "Find a primary Banha/Qalyubia land-registry or survey-office page that explicitly provides parcel records/maps; only then test a bounded public geometry route.",
+  "schemaVersion": 1,
+  "checkedAt": "2026-10-09",
+  "wupCityCode": 4398,
+  "cityId": "wup2025:4398",
+  "runtimeReadiness": "not_enabled_no_verified_public_geometry",
+  "adapterReady": false,
+  "centerLatLon": [
+    30.4236687181104,
+    31.1700100094863
+  ],
+  "population2025k": 2088.52,
+  "queueRank": 239,
+  "population2025": 2088520,
+  "populationPlausibility2025": "High",
+  "populationUnit": "persons",
+  "pointBasis": "UN WUP 2025 population-weighted settlement centroid; this is not a municipal boundary or a parcel-coverage claim.",
+  "publicParcelGeometryFound": false,
+  "sourceIds": [],
+  "registryBasis": "The ESA national map/survey mandate and Qalyubia/Banha map-sheet references do not establish a city-specific cadastral register or parcel map. The Qalyubia utility-network center and planning GIS evidence are not ownership records; therefore registry presence remains unknown.",
+  "rootReviewedAt": "2026-10-08T21:25:23.474999+00:00"
+}

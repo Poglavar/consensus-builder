@@ -1,0 +1,126 @@
+{
+  "name": "Blida",
+  "country": "Algeria",
+  "countryCode": "DZ",
+  "rank": 818,
+  "point": [
+    36.5084777901985,
+    2.85506855315269
+  ],
+  "population2025": 663070,
+  "population2025k": 663.07,
+  "populationUnit": "persons",
+  "populationPlausibility2025": "High",
+  "schemaVersion": 1,
+  "kind": "city_parcel_source_research",
+  "checkedAt": "2026-10-09",
+  "status": "complete",
+  "registryFound": true,
+  "registryBasis": "The official Blida Directorate of Commerce page republishes the Wilaya of Blida directory and explicitly lists the provincial Land Cadastre and Topography Directorate and Land Conservation office with local telephone contacts. This is evidence of the responsible local land/cadastre institutions in Blida; it does not establish a public vector service or the precise coverage of the WUP locator.",
+  "registryEvidenceUrls": [
+    "https://www.dcwblida.dz/index.php?Itemid=58&id=66&option=com_content&view=article",
+    "https://www.dgdn.gov.dz/",
+    "https://www.wilayadeblida.dz/"
+  ],
+  "publicParcelGeometryFound": false,
+  "verifiedSample": false,
+  "runtimeReadiness": "not_enabled_no_verified_public_geometry",
+  "adapterReady": false,
+  "priorEvidenceFiles": [],
+  "scopeLimits": "City-specific source discovery only. No full polygon sample is retained. Citywide/countrywide completeness, title identity, legal survey accuracy, exact WUP point coverage and runtime suitability are not asserted. No owner, address, account/tax identifier, credentials, or token values were requested or retained.",
+  "pointBasis": "UN WUP 2025 population-weighted settlement centroid; this is not a municipal boundary or a parcel-coverage claim.",
+  "resultCategory": "official_local_registry_candidate_geometry_unverified",
+  "technicalBlocker": "The official local directory confirms responsible offices but exposes no parcel viewer, layer schema, or bounded geometry endpoint. DGDN’s digitization page describes document-request services; no document or property-specific request was submitted.",
+  "remainingUncertainty": "Local office existence is verified, but public vector geometry, exact municipal point coverage, and citywide completeness remain unknown.",
+  "nextStep": "No runtime qualification was attempted. If further review is needed, use only a bounded source-native geometry query with an allowlisted non-sensitive identifier and geometry.",
+  "freshResearch": {
+    "queries": [
+      {
+        "language": "English",
+        "query": "Blida Algeria official land registry cadastral parcel map GIS conservation foncière cadastral",
+        "scope": "Find city-local registry/map evidence and inspect whether anonymous parcel geometry can be safely requested.",
+        "result": "Search identified Blida’s official Wilaya directory listing the Land Cadastre and Topography Directorate and Land Conservation office. DGDN information describes digital cadastral documents as a professional-service workflow; no public vector schema or anonymous geometry endpoint was found.",
+        "actualResultUrls": [
+          "https://www.dcwblida.dz/index.php?Itemid=58&id=66&option=com_content&view=article",
+          "https://www.dgdn.gov.dz/",
+          "https://www.wilayadeblida.dz/"
+        ],
+        "executionMethod": "Separate language-specific public search and official source review; no property-specific lookup."
+      },
+      {
+        "language": "Arabic",
+        "query": "ولاية البليدة المحافظة العقارية مديرية مسح الأراضي خريطة عقارية عقارات رسمي",
+        "scope": "Find city-local registry/map evidence and inspect whether anonymous parcel geometry can be safely requested.",
+        "result": "Official Blida directory lists the cadastral/topography directorate and land-conservation office. No anonymous parcel-polygon feature service or safe schema was identified.",
+        "actualResultUrls": [
+          "https://www.dcwblida.dz/index.php?Itemid=58&id=66&option=com_content&view=article",
+          "https://www.dgdn.gov.dz/",
+          "https://www.wilayadeblida.dz/"
+        ],
+        "executionMethod": "Separate language-specific public search and official source review; no property-specific lookup."
+      },
+      {
+        "language": "French",
+        "query": "Blida cadastre parcelle carte foncière officielle direction wilaya Blida conservation foncière",
+        "scope": "Find city-local registry/map evidence and inspect whether anonymous parcel geometry can be safely requested.",
+        "result": "Official Blida directory confirms local cadastre and conservation foncière departments; no public parcel geometry service was exposed.",
+        "actualResultUrls": [
+          "https://www.dcwblida.dz/index.php?Itemid=58&id=66&option=com_content&view=article",
+          "https://www.dgdn.gov.dz/",
+          "https://www.wilayadeblida.dz/"
+        ],
+        "executionMethod": "Separate language-specific public search and official source review; no property-specific lookup."
+      },
+      {
+        "language": "Arabic",
+        "query": "site:wilayadeblida.dz مديرية مسح الأراضي والحفظ العقاري البليدة",
+        "scope": "Find city-local registry/map evidence and inspect whether anonymous parcel geometry can be safely requested.",
+        "result": "Search located the Blida official directory listing land-cadastre and land-conservation departments; no anonymous vector endpoint/schema found.",
+        "actualResultUrls": [
+          "https://www.dcwblida.dz/index.php?Itemid=58&id=66&option=com_content&view=article",
+          "https://www.dgdn.gov.dz/",
+          "https://www.wilayadeblida.dz/"
+        ],
+        "executionMethod": "Separate language-specific public search and official source review; no property-specific lookup."
+      }
+    ]
+  },
+  "source": {
+    "sourceId": "DZ-BLIDA-CADASTRE-LAND-CONSERVATION",
+    "name": "Blida Wilaya Cadastre and Land Conservation offices",
+    "url": "https://www.dcwblida.dz/index.php?Itemid=58&id=66&option=com_content&view=article",
+    "operator": "Blida Wilaya local land/cadastral administration; national DGDN",
+    "serviceType": "Official local office-directory evidence; cadastral documents appear to use formal/official workflows, not a verified public vector feature service.",
+    "layer": null,
+    "geometryType": null,
+    "outputCrs": null,
+    "nativeIdField": null
+  },
+  "wupCityCode": 3338,
+  "cityId": "wup2025:3338",
+  "queueRank": 818,
+  "sourceIds": [],
+  "centerLatLon": [
+    36.5084777901985,
+    2.85506855315269
+  ],
+  "coverageAssessment": {
+    "claimedScope": "The official Blida Directorate of Commerce page republishes the Wilaya of Blida directory and explicitly lists the provincial Land Cadastre and Topography Directorate and Land Conservation office with local telephone contacts. This is evidence of the responsible local land/cadastre institutions in Blida; it does not establish a public vector service or the precise coverage of the WUP locator.",
+    "verifiedOpenScope": "Blida’s official provincial directory lists both land-cadastre and land-conservation offices. This supports local registry/cadastral administration, but no anonymous parcel geometry service or safe feature schema was verified. No private registry lookup or cadastral-document request was made.",
+    "citywideVerified": false,
+    "countrywideVerified": false
+  },
+  "runtimeAssessment": {
+    "status": "not_assessed",
+    "reason": "Source discovery only; no runtime contract or adapter qualification was tested."
+  },
+  "verifiedParcelResponse": null,
+  "rootPrimaryReadback": {
+    "url": "https://www.dcwblida.dz/index.php?Itemid=58&id=66&option=com_content&view=article",
+    "fetch": 200,
+    "contentType": "text/html; charset=utf-8",
+    "title": "مديرية التجارة لولاية البليدة - الادارات والمؤسسات بالولاية"
+  },
+  "rootReviewNote": "Reviewed the specific primary institution/service evidence and its geographical, access and date limits. Direct readback failures are preserved separately from indexed primary evidence. No public full parcel geometry was verified for this city in this discovery pass.",
+  "rootReviewedAt": "2026-10-09T03:57:46.837098+00:00"
+}

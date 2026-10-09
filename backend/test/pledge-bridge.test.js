@@ -74,7 +74,11 @@ describe('Solana pledge bridge', () => {
         let transactionNumber = 0;
         const connection = {
             getLatestBlockhash: vi.fn(async () => ({ blockhash: 'block', lastValidBlockHeight: 1 })),
-            simulateTransaction: vi.fn(async transaction => ({ value: { err: null, instructionCount: transaction.instructions.length } })),
+            simulateTransaction: vi.fn(async (transaction, config) => {
+                // Mirrors web3.js 1.x: a legacy Transaction takes signers here, never a config object.
+                if (config !== undefined && !Array.isArray(config)) throw new Error('Invalid arguments');
+                return { value: { err: null, instructionCount: transaction.instructions.length } };
+            }),
             sendRawTransaction: vi.fn(async () => `tx-${++transactionNumber}`),
             confirmTransaction: vi.fn(async () => ({ value: { err: null } }))
         };

@@ -1,0 +1,82 @@
+{
+  "schemaVersion": 1,
+  "kind": "city_parcel_service_review",
+  "checkedAt": "2026-10-09",
+  "status": "complete",
+  "name": "Kumamoto",
+  "country": "Japan",
+  "countryCode": "JP",
+  "rank": 843,
+  "wupCityCode": 2854,
+  "point": [
+    32.8076621702434,
+    130.733390386961
+  ],
+  "registryFound": true,
+  "registryBasis": "Kumamoto City's official cadastral-survey program conducts parcel surveys and prepares maps/ledgers for the registry. Copies require application; the public map themes do not list cadastral parcels.",
+  "registryEvidenceUrls": [
+    "https://www.city.kumamoto.jp/kiji0031849/index.html",
+    "https://www.city.kumamoto.jp/kiji00312383/index.html",
+    "https://www.sonicweb-asp.jp/kumamoto/"
+  ],
+  "verifiedSample": false,
+  "publicParcelGeometryFound": false,
+  "publicParcelGeometryCandidateFound": false,
+  "returnedFullPolygonCount": 0,
+  "uniqueFullPolygonCount": 0,
+  "wupPointContained": null,
+  "portals": [
+    {
+      "name": "Kumamoto City 地籍調査 and municipal map viewer.",
+      "operator": "Official government agency identified in sources",
+      "homeUrl": "https://www.city.kumamoto.jp/kiji0031849/index.html",
+      "observation": "Official city cadastral-survey page describes parcel surveys and cadastral maps/ledgers sent to registry; copies by application to eligible requesters."
+    }
+  ],
+  "requests": [
+    {
+      "url": "https://www.sonicweb-asp.jp/kumamoto/",
+      "method": "anonymous HTTPS GET",
+      "httpStatus": 200,
+      "contentType": "text/html",
+      "bytes": 7416,
+      "observation": "Public city viewer shell."
+    },
+    {
+      "url": "https://www.sonicweb-asp.jp/kumamoto/map.js?ver=1.0.972",
+      "method": "static JS GET",
+      "httpStatus": 200,
+      "contentType": "application/javascript",
+      "bytes": 348929,
+      "observation": "Static metadata only; no map search."
+    },
+    {
+      "url": "https://www.city.kumamoto.jp/kiji0031849/index.html",
+      "method": "official public-page inspection",
+      "httpStatus": null,
+      "contentType": null,
+      "observation": "Official city cadastral-survey page describes parcel surveys and cadastral maps/ledgers sent to registry; copies by application to eligible requesters."
+    },
+    {
+      "url": "https://www.city.kumamoto.jp/kiji00312383/index.html",
+      "method": "official public-page inspection",
+      "httpStatus": null,
+      "contentType": null,
+      "observation": "Official map guide lists planning, roads, utilities, facilities and hazards, not parcel layers."
+    },
+    {
+      "url": "https://www.sonicweb-asp.jp/kumamoto/script/all_min.js?ver=1.0.696",
+      "method": "static script GET",
+      "httpStatus": 200,
+      "contentType": "application/javascript",
+      "bytes": 1323547,
+      "observation": "Static vendor app code includes generic address/land-number search configuration; no search was executed, and the city’s advertised layer list does not identify a cadastral parcel layer."
+    }
+  ],
+  "limitations": "Published map themes do not include parcel geometry. Survey-result copies require application; no anonymous safe geometry+ID endpoint found.",
+  "scopeLimits": "No protected, personal or property-specific data queried or retained. No anonymous full geometry/safe-ID schema verified; no completeness claim.",
+  "runtimeAssessment": {
+    "status": "not_assessed_no_verified_safe_geometry_schema",
+    "reason": "Published map themes do not include parcel geometry. Survey-result copies require application; no anonymous safe geometry+ID endpoint found."
+  }
+}

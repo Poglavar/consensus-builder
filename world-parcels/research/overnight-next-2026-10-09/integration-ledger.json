@@ -1,0 +1,2089 @@
+{
+  "schemaVersion": 1,
+  "kind": "population_ranked_followon_integration_ledger",
+  "cohort": "overnight-next-1101-1200",
+  "status": "active",
+  "createdAt": "2026-10-09T07:13:50.969183+00:00",
+  "updatedAt": "2026-10-09T07:25:03.115223+00:00",
+  "sourceRoster": "ranked-population.json",
+  "sourceSha256": "196e3bfdd4735f178ff21388993b47809835e12507285d215b35b6c6792add8b",
+  "sourceHashBasis": "immutable ranked-population roster JSON",
+  "bulkSourceSha256": "e9c9b41e374d776a9983e39bab54755405cecc263134db68ee706049294cd114",
+  "counts": {
+    "total": 100,
+    "priorAttemptSkipped": 5,
+    "pending": 37,
+    "rootReviewed": 58,
+    "integrated": 58,
+    "identityReviewHold": 0
+  },
+  "priorAttempts": [
+    {
+      "rank": 1105,
+      "cityCode": 3172,
+      "name": "Ijebu-Ode",
+      "country": "Nigeria",
+      "iso2": "NG",
+      "pop2025k": 500.036,
+      "plausibility": "Moderate",
+      "evidence": [
+        {
+          "kind": "registry-exact-wup-code",
+          "evidenceFile": "research/india-africa-2026-10-08/africa-ws-city-3172.json",
+          "cityId": "wup2025:3172",
+          "cityName": "Ijebu-Ode",
+          "parcelStatus": "no_verified_open_endpoint_after_attempts",
+          "checked": null,
+          "identityConfidence": "high",
+          "source": "registry"
+        },
+        {
+          "kind": "wup-code-or-explicit-city-evidence",
+          "source": "research-file",
+          "evidenceFile": "world-parcels/research/india-africa-2026-10-08/africa-ws-city-3172.json",
+          "identityConfidence": "high"
+        }
+      ],
+      "resolvedPriorMatches": [],
+      "identityDecision": null
+    },
+    {
+      "rank": 1115,
+      "cityCode": 2556,
+      "name": "Bloemfontein",
+      "country": "South Africa",
+      "iso2": "ZA",
+      "pop2025k": 496.295,
+      "plausibility": "Moderate",
+      "evidence": [
+        {
+          "kind": "wup-code-or-explicit-city-evidence",
+          "source": "research-file",
+          "evidenceFile": "world-parcels/research/africa-capitals-2026-10-08/central-south-index.json",
+          "identityConfidence": "high"
+        },
+        {
+          "kind": "wup-code-or-explicit-city-evidence",
+          "source": "research-file",
+          "evidenceFile": "world-parcels/research/africa-capitals-2026-10-08/city-bloemfontein.json",
+          "identityConfidence": "high"
+        }
+      ],
+      "resolvedPriorMatches": [],
+      "identityDecision": null
+    },
+    {
+      "rank": 1140,
+      "cityCode": 5479,
+      "name": "Timerein",
+      "country": "Sudan",
+      "iso2": "SD",
+      "pop2025k": 486.586,
+      "plausibility": "Moderate",
+      "evidence": [
+        {
+          "kind": "registry-exact-wup-code",
+          "evidenceFile": "research/india-africa-2026-10-08/africa-ne-city-timerein.json",
+          "cityId": "wup2025:5479",
+          "cityName": "Timerein",
+          "parcelStatus": "temporarily_unavailable",
+          "checked": null,
+          "identityConfidence": "high",
+          "source": "registry"
+        },
+        {
+          "kind": "wup-code-or-explicit-city-evidence",
+          "source": "research-file",
+          "evidenceFile": "world-parcels/research/india-africa-2026-10-08/africa-ne-city-timerein.json",
+          "identityConfidence": "high"
+        },
+        {
+          "kind": "wup-code-or-explicit-city-evidence",
+          "source": "research-file",
+          "evidenceFile": "world-parcels/research/india-africa-2026-10-08/africa-ne-followup-services.json",
+          "identityConfidence": "high"
+        }
+      ],
+      "resolvedPriorMatches": [],
+      "identityDecision": null
+    },
+    {
+      "rank": 1152,
+      "cityCode": 6934,
+      "name": "Villahermosa",
+      "country": "Mexico",
+      "iso2": "MX",
+      "pop2025k": 481.525,
+      "plausibility": "Moderate",
+      "evidence": [
+        {
+          "kind": "wup-code-or-explicit-city-evidence",
+          "source": "research-file",
+          "evidenceFile": "world-parcels/research/subnational/MX/TAB.json",
+          "identityConfidence": "high"
+        }
+      ],
+      "resolvedPriorMatches": [],
+      "identityDecision": null
+    },
+    {
+      "rank": 1159,
+      "cityCode": 26,
+      "name": "Port of Spain",
+      "country": "Trinidad and Tobago",
+      "iso2": "TT",
+      "pop2025k": 478.107,
+      "plausibility": "Moderate",
+      "evidence": [
+        {
+          "kind": "root-confirmed-prior-city-attempt",
+          "source": "root-identity-decision-overlay.json",
+          "evidenceFile": "world-parcels/research/countries/TT.json",
+          "additionalEvidenceFile": "world-parcels/research/retry/countries/TT.json",
+          "distanceKm": 8.27,
+          "identityConfidence": "confirmed",
+          "reason": "Polygon response covers Woodbrook/St. James in the Port of Spain area; same city despite shifted centroid."
+        }
+      ],
+      "resolvedPriorMatches": [
+        {
+          "kind": "previous-capital-city-name-coordinate-candidate",
+          "source": "world-capitals prior-check roster",
+          "evidenceFile": "research/countries/TT.json",
+          "cityId": "capital:TT:port-of-spain",
+          "cityName": "Port of Spain",
+          "researchStatus": "previously_checked",
+          "manualCityEvidence": [
+            {
+              "path": "research/countries/TT.json",
+              "note": "Port of Spain city bbox and parcel response."
+            }
+          ],
+          "identityConfidence": "review-required",
+          "distanceKm": 8.27
+        }
+      ],
+      "identityDecision": {
+        "decision": "confirmed_attempt",
+        "evidenceFile": "world-parcels/research/countries/TT.json"
+      }
+    }
+  ],
+  "identityDecisionOverlay": "root-identity-decision-overlay.json",
+  "purpose": "Track independent follow-on ranks 1101–1200. Only explicitly root-reviewed packets are integrated; pending entries remain unreviewed.",
+  "cities": [
+    {
+      "cityCode": 6272,
+      "cityId": "wup2025:6272",
+      "rank": 1101,
+      "name": "Oaxaca de Juárez",
+      "country": "Mexico",
+      "iso2": "MX",
+      "pointLatLon": [
+        17.0651706559646,
+        -96.7296334686787
+      ],
+      "population2025Persons": 502534,
+      "status": "root_reviewed",
+      "researchFile": "research/overnight-next-2026-10-09/city-6272-oaxaca-de-juarez.json",
+      "reviewedAt": "2026-10-09T07:13:02.981057+00:00",
+      "rootReviewedAt": "2026-10-09T07:13:02.981057+00:00",
+      "integratedAt": "2026-10-09T07:14:03.673112+00:00",
+      "registryFound": true,
+      "verifiedSample": false,
+      "publicParcelGeometryFound": false,
+      "registryGeometryFound": false,
+      "runtimeReadiness": "not_enabled_no_verified_public_geometry",
+      "sourceIds": []
+    },
+    {
+      "cityCode": 7556,
+      "cityId": "wup2025:7556",
+      "rank": 1102,
+      "name": "Barnaul",
+      "country": "Russian Federation",
+      "iso2": "RU",
+      "pointLatLon": [
+        53.3421465888379,
+        83.7146605640255
+      ],
+      "population2025Persons": 502491,
+      "status": "root_reviewed",
+      "researchFile": "research/overnight-next-2026-10-09/city-7556-barnaul.json",
+      "reviewedAt": "2026-10-09T07:13:02.981057+00:00",
+      "rootReviewedAt": "2026-10-09T07:13:02.981057+00:00",
+      "integratedAt": "2026-10-09T07:14:03.673112+00:00",
+      "registryFound": true,
+      "verifiedSample": false,
+      "publicParcelGeometryFound": false,
+      "registryGeometryFound": false,
+      "runtimeReadiness": "not_enabled_no_verified_public_geometry",
+      "sourceIds": []
+    },
+    {
+      "cityCode": 9571,
+      "cityId": "wup2025:9571",
+      "rank": 1103,
+      "name": "Lakhimpur",
+      "country": "India",
+      "iso2": "IN",
+      "pointLatLon": [
+        27.9453281997395,
+        80.781250431617
+      ],
+      "population2025Persons": 501540,
+      "status": "root_reviewed",
+      "researchFile": "research/overnight-next-2026-10-09/city-9571-lakhimpur.json",
+      "reviewedAt": "2026-10-09T07:13:02.981057+00:00",
+      "rootReviewedAt": "2026-10-09T07:13:02.981057+00:00",
+      "integratedAt": "2026-10-09T07:14:03.673112+00:00",
+      "registryFound": true,
+      "verifiedSample": false,
+      "publicParcelGeometryFound": false,
+      "registryGeometryFound": false,
+      "runtimeReadiness": "not_enabled_no_verified_public_geometry",
+      "sourceIds": []
+    },
+    {
+      "cityCode": 5921,
+      "cityId": "wup2025:5921",
+      "rank": 1104,
+      "name": "Dairut",
+      "country": "Egypt",
+      "iso2": "EG",
+      "pointLatLon": [
+        27.5411285401879,
+        30.8066666037943
+      ],
+      "population2025Persons": 501258,
+      "status": "root_reviewed",
+      "researchFile": "research/overnight-next-2026-10-09/city-5921-dairut.json",
+      "reviewedAt": "2026-10-09T07:13:02.981057+00:00",
+      "rootReviewedAt": "2026-10-09T07:13:02.981057+00:00",
+      "integratedAt": "2026-10-09T07:14:03.673112+00:00",
+      "registryFound": null,
+      "verifiedSample": false,
+      "publicParcelGeometryFound": false,
+      "registryGeometryFound": false,
+      "runtimeReadiness": "not_enabled_no_verified_public_geometry",
+      "sourceIds": []
+    },
+    {
+      "cityCode": 9188,
+      "cityId": "wup2025:9188",
+      "rank": 1106,
+      "name": "Anshun",
+      "country": "China",
+      "iso2": "CN",
+      "pointLatLon": [
+        26.2523886927404,
+        105.941227686529
+      ],
+      "population2025Persons": 499794,
+      "status": "root_reviewed",
+      "researchFile": "research/overnight-next-2026-10-09/city-9188-anshun.json",
+      "reviewedAt": "2026-10-09T07:13:02.981057+00:00",
+      "rootReviewedAt": "2026-10-09T07:13:02.981057+00:00",
+      "integratedAt": "2026-10-09T07:14:03.673112+00:00",
+      "registryFound": true,
+      "verifiedSample": false,
+      "publicParcelGeometryFound": false,
+      "registryGeometryFound": false,
+      "runtimeReadiness": "not_enabled_no_verified_public_geometry",
+      "sourceIds": []
+    },
+    {
+      "cityCode": 3814,
+      "cityId": "wup2025:3814",
+      "rank": 1107,
+      "name": "Bahir Dar",
+      "country": "Ethiopia",
+      "iso2": "ET",
+      "pointLatLon": [
+        11.5876211265506,
+        37.3880057217879
+      ],
+      "population2025Persons": 498735,
+      "status": "root_reviewed",
+      "researchFile": "research/overnight-next-2026-10-09/city-3814-bahir-dar.json",
+      "reviewedAt": "2026-10-09T07:13:02.981057+00:00",
+      "rootReviewedAt": "2026-10-09T07:13:02.981057+00:00",
+      "integratedAt": "2026-10-09T07:14:03.673112+00:00",
+      "registryFound": null,
+      "verifiedSample": false,
+      "publicParcelGeometryFound": false,
+      "registryGeometryFound": false,
+      "runtimeReadiness": "not_enabled_no_verified_public_geometry",
+      "sourceIds": []
+    },
+    {
+      "cityCode": 6500,
+      "cityId": "wup2025:6500",
+      "rank": 1108,
+      "name": "Naberezhnye Chelny",
+      "country": "Russian Federation",
+      "iso2": "RU",
+      "pointLatLon": [
+        55.7219960248535,
+        52.3842170017091
+      ],
+      "population2025Persons": 498625,
+      "status": "root_reviewed",
+      "researchFile": "research/overnight-next-2026-10-09/city-6500-naberezhnye-chelny.json",
+      "reviewedAt": "2026-10-09T07:13:02.981057+00:00",
+      "rootReviewedAt": "2026-10-09T07:13:02.981057+00:00",
+      "integratedAt": "2026-10-09T07:14:03.673112+00:00",
+      "registryFound": true,
+      "verifiedSample": false,
+      "publicParcelGeometryFound": false,
+      "registryGeometryFound": false,
+      "runtimeReadiness": "not_enabled_no_verified_public_geometry",
+      "sourceIds": []
+    },
+    {
+      "cityCode": 3571,
+      "cityId": "wup2025:3571",
+      "rank": 1109,
+      "name": "Hamedan",
+      "country": "Iran (Islamic Republic of)",
+      "iso2": "IR",
+      "pointLatLon": [
+        34.8015849075192,
+        48.5176028840104
+      ],
+      "population2025Persons": 498337,
+      "status": "root_reviewed",
+      "researchFile": "research/overnight-next-2026-10-09/city-3571-hamedan.json",
+      "reviewedAt": "2026-10-09T07:13:02.981057+00:00",
+      "rootReviewedAt": "2026-10-09T07:13:02.981057+00:00",
+      "integratedAt": "2026-10-09T07:14:03.673112+00:00",
+      "registryFound": null,
+      "verifiedSample": false,
+      "publicParcelGeometryFound": false,
+      "registryGeometryFound": false,
+      "runtimeReadiness": "not_enabled_no_verified_public_geometry",
+      "sourceIds": []
+    },
+    {
+      "cityCode": 5764,
+      "cityId": "wup2025:5764",
+      "rank": 1110,
+      "name": "General Santos",
+      "country": "Philippines",
+      "iso2": "PH",
+      "pointLatLon": [
+        6.10145257665392,
+        125.150288822539
+      ],
+      "population2025Persons": 498098,
+      "status": "root_reviewed",
+      "researchFile": "research/overnight-next-2026-10-09/city-5764-general-santos.json",
+      "reviewedAt": "2026-10-09T07:13:02.981057+00:00",
+      "rootReviewedAt": "2026-10-09T07:13:02.981057+00:00",
+      "integratedAt": "2026-10-09T07:14:03.673112+00:00",
+      "registryFound": true,
+      "verifiedSample": false,
+      "publicParcelGeometryFound": false,
+      "registryGeometryFound": false,
+      "runtimeReadiness": "not_enabled_no_verified_public_geometry",
+      "sourceIds": []
+    },
+    {
+      "cityCode": 5805,
+      "cityId": "wup2025:5805",
+      "rank": 1111,
+      "name": "Vũng Tàu",
+      "country": "Viet Nam",
+      "iso2": "VN",
+      "pointLatLon": [
+        10.3844600300315,
+        107.12930260452
+      ],
+      "population2025Persons": 498010,
+      "status": "root_reviewed",
+      "researchFile": "research/overnight-next-2026-10-09/city-5805-vung-tau.json",
+      "reviewedAt": "2026-10-09T07:13:02.981057+00:00",
+      "rootReviewedAt": "2026-10-09T07:13:02.981057+00:00",
+      "integratedAt": "2026-10-09T07:14:03.673112+00:00",
+      "registryFound": true,
+      "verifiedSample": false,
+      "publicParcelGeometryFound": false,
+      "registryGeometryFound": false,
+      "runtimeReadiness": "not_enabled_no_verified_public_geometry",
+      "sourceIds": []
+    },
+    {
+      "cityCode": 7888,
+      "cityId": "wup2025:7888",
+      "rank": 1112,
+      "name": "Balung",
+      "country": "Indonesia",
+      "iso2": "ID",
+      "pointLatLon": [
+        -8.33052041665116,
+        113.567671721579
+      ],
+      "population2025Persons": 497754,
+      "status": "root_reviewed",
+      "researchFile": "research/overnight-next-2026-10-09/city-7888-balung.json",
+      "reviewedAt": "2026-10-09T07:13:02.981057+00:00",
+      "rootReviewedAt": "2026-10-09T07:13:02.981057+00:00",
+      "integratedAt": "2026-10-09T07:14:03.673112+00:00",
+      "registryFound": null,
+      "verifiedSample": false,
+      "publicParcelGeometryFound": false,
+      "registryGeometryFound": false,
+      "runtimeReadiness": "not_enabled_no_verified_public_geometry",
+      "sourceIds": []
+    },
+    {
+      "cityCode": 2271,
+      "cityId": "wup2025:2271",
+      "rank": 1113,
+      "name": "Khamis Mushayt",
+      "country": "Saudi Arabia",
+      "iso2": "SA",
+      "pointLatLon": [
+        18.3008221884283,
+        42.7365518514848
+      ],
+      "population2025Persons": 497246,
+      "status": "root_reviewed",
+      "researchFile": "research/overnight-next-2026-10-09/city-2271-khamis-mushayt.json",
+      "reviewedAt": "2026-10-09T07:13:02.981057+00:00",
+      "rootReviewedAt": "2026-10-09T07:13:02.981057+00:00",
+      "integratedAt": "2026-10-09T07:14:03.673112+00:00",
+      "registryFound": true,
+      "verifiedSample": false,
+      "publicParcelGeometryFound": false,
+      "registryGeometryFound": false,
+      "runtimeReadiness": "not_enabled_no_verified_public_geometry",
+      "sourceIds": []
+    },
+    {
+      "cityCode": 11208,
+      "cityId": "wup2025:11208",
+      "rank": 1114,
+      "name": "Yangjiang",
+      "country": "China",
+      "iso2": "CN",
+      "pointLatLon": [
+        21.8512712662802,
+        111.967547953756
+      ],
+      "population2025Persons": 496608,
+      "status": "root_reviewed",
+      "researchFile": "research/overnight-next-2026-10-09/city-11208-yangjiang.json",
+      "reviewedAt": "2026-10-09T07:13:02.981057+00:00",
+      "rootReviewedAt": "2026-10-09T07:13:02.981057+00:00",
+      "integratedAt": "2026-10-09T07:14:03.673112+00:00",
+      "registryFound": true,
+      "verifiedSample": false,
+      "publicParcelGeometryFound": false,
+      "registryGeometryFound": false,
+      "runtimeReadiness": "not_enabled_no_verified_public_geometry",
+      "sourceIds": []
+    },
+    {
+      "cityCode": 1849,
+      "cityId": "wup2025:1849",
+      "rank": 1116,
+      "name": "Sousse",
+      "country": "Tunisia",
+      "iso2": "TN",
+      "pointLatLon": [
+        35.8335531532296,
+        10.5981847929834
+      ],
+      "population2025Persons": 495877,
+      "status": "root_reviewed",
+      "researchFile": "research/overnight-next-2026-10-09/city-1849-sousse.json",
+      "reviewedAt": "2026-10-09T07:13:02.981057+00:00",
+      "rootReviewedAt": "2026-10-09T07:13:02.981057+00:00",
+      "integratedAt": "2026-10-09T07:14:03.673112+00:00",
+      "registryFound": true,
+      "verifiedSample": false,
+      "publicParcelGeometryFound": false,
+      "registryGeometryFound": false,
+      "runtimeReadiness": "not_enabled_no_verified_public_geometry",
+      "sourceIds": []
+    },
+    {
+      "cityCode": 9846,
+      "cityId": "wup2025:9846",
+      "rank": 1117,
+      "name": "Huludao",
+      "country": "China",
+      "iso2": "CN",
+      "pointLatLon": [
+        40.7736582403664,
+        120.832721697372
+      ],
+      "population2025Persons": 495819,
+      "status": "root_reviewed",
+      "researchFile": "research/overnight-next-2026-10-09/city-9846-huludao.json",
+      "reviewedAt": "2026-10-09T07:13:02.981057+00:00",
+      "rootReviewedAt": "2026-10-09T07:13:02.981057+00:00",
+      "integratedAt": "2026-10-09T07:14:03.673112+00:00",
+      "registryFound": true,
+      "verifiedSample": false,
+      "publicParcelGeometryFound": false,
+      "registryGeometryFound": false,
+      "runtimeReadiness": "not_enabled_no_verified_public_geometry",
+      "sourceIds": []
+    },
+    {
+      "cityCode": 870,
+      "cityId": "wup2025:870",
+      "rank": 1118,
+      "name": "Osh",
+      "country": "Kyrgyzstan",
+      "iso2": "KG",
+      "pointLatLon": [
+        40.5260441990085,
+        72.807912074273
+      ],
+      "population2025Persons": 495400,
+      "status": "root_reviewed",
+      "researchFile": "research/overnight-next-2026-10-09/city-870-osh.json",
+      "reviewedAt": "2026-10-09T07:13:02.981057+00:00",
+      "rootReviewedAt": "2026-10-09T07:13:02.981057+00:00",
+      "integratedAt": "2026-10-09T07:14:03.673112+00:00",
+      "registryFound": true,
+      "verifiedSample": false,
+      "publicParcelGeometryFound": false,
+      "registryGeometryFound": false,
+      "runtimeReadiness": "not_enabled_no_verified_public_geometry",
+      "sourceIds": []
+    },
+    {
+      "cityCode": 10798,
+      "cityId": "wup2025:10798",
+      "rank": 1119,
+      "name": "Baishan",
+      "country": "China",
+      "iso2": "CN",
+      "pointLatLon": [
+        41.9411373095647,
+        126.423641919718
+      ],
+      "population2025Persons": 495030,
+      "status": "root_reviewed",
+      "researchFile": "research/overnight-next-2026-10-09/city-10798-baishan.json",
+      "reviewedAt": "2026-10-09T07:13:02.981057+00:00",
+      "rootReviewedAt": "2026-10-09T07:13:02.981057+00:00",
+      "integratedAt": "2026-10-09T07:14:03.673112+00:00",
+      "registryFound": null,
+      "verifiedSample": false,
+      "publicParcelGeometryFound": false,
+      "registryGeometryFound": false,
+      "runtimeReadiness": "not_enabled_no_verified_public_geometry",
+      "sourceIds": []
+    },
+    {
+      "cityCode": 9797,
+      "cityId": "wup2025:9797",
+      "rank": 1120,
+      "name": "Fatehpur",
+      "country": "India",
+      "iso2": "IN",
+      "pointLatLon": [
+        25.9251756744223,
+        80.8077313465368
+      ],
+      "population2025Persons": 494897,
+      "status": "root_reviewed",
+      "researchFile": "research/overnight-next-2026-10-09/city-9797-fatehpur.json",
+      "reviewedAt": "2026-10-09T07:13:02.981057+00:00",
+      "rootReviewedAt": "2026-10-09T07:13:02.981057+00:00",
+      "integratedAt": "2026-10-09T07:14:03.673112+00:00",
+      "registryFound": true,
+      "verifiedSample": false,
+      "publicParcelGeometryFound": false,
+      "registryGeometryFound": false,
+      "runtimeReadiness": "not_enabled_no_verified_public_geometry",
+      "sourceIds": []
+    },
+    {
+      "cityCode": 1381,
+      "cityId": "wup2025:1381",
+      "rank": 1121,
+      "name": "Poznan",
+      "country": "Poland",
+      "iso2": "PL",
+      "pointLatLon": [
+        52.4033374848812,
+        16.9139953760299
+      ],
+      "population2025Persons": 494839,
+      "status": "root_reviewed",
+      "researchFile": "research/overnight-next-2026-10-09/city-1381-poznan.json",
+      "reviewedAt": "2026-10-09T07:19:42.539920+00:00",
+      "rootReviewedAt": "2026-10-09T07:19:42.539920+00:00",
+      "integratedAt": "2026-10-09T07:19:42.814457+00:00",
+      "registryFound": true,
+      "verifiedSample": true,
+      "publicParcelGeometryFound": true,
+      "registryGeometryFound": true,
+      "runtimeReadiness": "enabled",
+      "sourceIds": [
+        "poznan-gml-wfs"
+      ]
+    },
+    {
+      "cityCode": 3041,
+      "cityId": "wup2025:3041",
+      "rank": 1122,
+      "name": "Ibagué",
+      "country": "Colombia",
+      "iso2": "CO",
+      "pointLatLon": [
+        4.440260219627,
+        -75.2066767463464
+      ],
+      "population2025Persons": 494316,
+      "status": "root_reviewed",
+      "researchFile": "research/overnight-next-2026-10-09/city-3041-ibague.json",
+      "reviewedAt": "2026-10-09T07:13:02.981057+00:00",
+      "rootReviewedAt": "2026-10-09T07:13:02.981057+00:00",
+      "integratedAt": "2026-10-09T07:14:03.673112+00:00",
+      "registryFound": true,
+      "verifiedSample": false,
+      "publicParcelGeometryFound": false,
+      "registryGeometryFound": false,
+      "runtimeReadiness": "not_enabled_no_verified_public_geometry",
+      "sourceIds": []
+    },
+    {
+      "cityCode": 8099,
+      "cityId": "wup2025:8099",
+      "rank": 1123,
+      "name": "Karnal",
+      "country": "India",
+      "iso2": "IN",
+      "pointLatLon": [
+        29.683358416672,
+        76.9941809146046
+      ],
+      "population2025Persons": 494241,
+      "status": "root_reviewed",
+      "researchFile": "research/overnight-next-2026-10-09/city-8099-karnal.json",
+      "reviewedAt": "2026-10-09T07:13:02.981057+00:00",
+      "rootReviewedAt": "2026-10-09T07:13:02.981057+00:00",
+      "integratedAt": "2026-10-09T07:14:03.673112+00:00",
+      "registryFound": true,
+      "verifiedSample": false,
+      "publicParcelGeometryFound": false,
+      "registryGeometryFound": false,
+      "runtimeReadiness": "not_enabled_no_verified_public_geometry",
+      "sourceIds": []
+    },
+    {
+      "cityCode": 4378,
+      "cityId": "wup2025:4378",
+      "rank": 1124,
+      "name": "Himeji",
+      "country": "Japan",
+      "iso2": "JP",
+      "pointLatLon": [
+        34.8196799473297,
+        134.658654075614
+      ],
+      "population2025Persons": 494064,
+      "status": "root_reviewed",
+      "researchFile": "research/overnight-next-2026-10-09/city-4378-himeji.json",
+      "reviewedAt": "2026-10-09T07:13:02.981057+00:00",
+      "rootReviewedAt": "2026-10-09T07:13:02.981057+00:00",
+      "integratedAt": "2026-10-09T07:14:03.673112+00:00",
+      "registryFound": null,
+      "verifiedSample": false,
+      "publicParcelGeometryFound": false,
+      "registryGeometryFound": false,
+      "runtimeReadiness": "not_enabled_no_verified_public_geometry",
+      "sourceIds": []
+    },
+    {
+      "cityCode": 9976,
+      "cityId": "wup2025:9976",
+      "rank": 1125,
+      "name": "Siping",
+      "country": "China",
+      "iso2": "CN",
+      "pointLatLon": [
+        43.1569561169615,
+        124.392176255859
+      ],
+      "population2025Persons": 493984,
+      "status": "root_reviewed",
+      "researchFile": "research/overnight-next-2026-10-09/city-9976-siping.json",
+      "reviewedAt": "2026-10-09T07:13:02.981057+00:00",
+      "rootReviewedAt": "2026-10-09T07:13:02.981057+00:00",
+      "integratedAt": "2026-10-09T07:14:03.673112+00:00",
+      "registryFound": true,
+      "verifiedSample": false,
+      "publicParcelGeometryFound": false,
+      "registryGeometryFound": false,
+      "runtimeReadiness": "not_enabled_no_verified_public_geometry",
+      "sourceIds": []
+    },
+    {
+      "cityCode": 8730,
+      "cityId": "wup2025:8730",
+      "rank": 1126,
+      "name": "Hapur",
+      "country": "India",
+      "iso2": "IN",
+      "pointLatLon": [
+        28.7309886138039,
+        77.7810619450886
+      ],
+      "population2025Persons": 493837,
+      "status": "root_reviewed",
+      "researchFile": "research/overnight-next-2026-10-09/city-8730-hapur.json",
+      "reviewedAt": "2026-10-09T07:13:02.981057+00:00",
+      "rootReviewedAt": "2026-10-09T07:13:02.981057+00:00",
+      "integratedAt": "2026-10-09T07:14:03.673112+00:00",
+      "registryFound": true,
+      "verifiedSample": false,
+      "publicParcelGeometryFound": false,
+      "registryGeometryFound": false,
+      "runtimeReadiness": "not_enabled_no_verified_public_geometry",
+      "sourceIds": []
+    },
+    {
+      "cityCode": 7520,
+      "cityId": "wup2025:7520",
+      "rank": 1127,
+      "name": "Aswan",
+      "country": "Egypt",
+      "iso2": "EG",
+      "pointLatLon": [
+        24.0772404484552,
+        32.9008693936913
+      ],
+      "population2025Persons": 493753,
+      "status": "root_reviewed",
+      "researchFile": "research/overnight-next-2026-10-09/city-7520-aswan.json",
+      "reviewedAt": "2026-10-09T07:13:02.981057+00:00",
+      "rootReviewedAt": "2026-10-09T07:13:02.981057+00:00",
+      "integratedAt": "2026-10-09T07:14:03.673112+00:00",
+      "registryFound": true,
+      "verifiedSample": false,
+      "publicParcelGeometryFound": false,
+      "registryGeometryFound": false,
+      "runtimeReadiness": "not_enabled_no_verified_public_geometry",
+      "sourceIds": []
+    },
+    {
+      "cityCode": 9485,
+      "cityId": "wup2025:9485",
+      "rank": 1128,
+      "name": "Hardoi",
+      "country": "India",
+      "iso2": "IN",
+      "pointLatLon": [
+        27.3940397820603,
+        80.1320809167954
+      ],
+      "population2025Persons": 493665,
+      "status": "root_reviewed",
+      "researchFile": "research/overnight-next-2026-10-09/city-9485-hardoi.json",
+      "reviewedAt": "2026-10-09T07:13:02.981057+00:00",
+      "rootReviewedAt": "2026-10-09T07:13:02.981057+00:00",
+      "integratedAt": "2026-10-09T07:14:03.673112+00:00",
+      "registryFound": true,
+      "verifiedSample": false,
+      "publicParcelGeometryFound": false,
+      "registryGeometryFound": false,
+      "runtimeReadiness": "not_enabled_no_verified_public_geometry",
+      "sourceIds": []
+    },
+    {
+      "cityCode": 9646,
+      "cityId": "wup2025:9646",
+      "rank": 1129,
+      "name": "Dezhou",
+      "country": "China",
+      "iso2": "CN",
+      "pointLatLon": [
+        37.4448001089788,
+        116.309994657024
+      ],
+      "population2025Persons": 493272,
+      "status": "root_reviewed",
+      "researchFile": "research/overnight-next-2026-10-09/city-9646-dezhou.json",
+      "reviewedAt": "2026-10-09T07:13:02.981057+00:00",
+      "rootReviewedAt": "2026-10-09T07:13:02.981057+00:00",
+      "integratedAt": "2026-10-09T07:14:03.673112+00:00",
+      "registryFound": null,
+      "verifiedSample": false,
+      "publicParcelGeometryFound": false,
+      "registryGeometryFound": false,
+      "runtimeReadiness": "not_enabled_no_verified_public_geometry",
+      "sourceIds": []
+    },
+    {
+      "cityCode": 109,
+      "cityId": "wup2025:109",
+      "rank": 1130,
+      "name": "Bulawayo",
+      "country": "Zimbabwe",
+      "iso2": "ZW",
+      "pointLatLon": [
+        -20.1619068849343,
+        28.5532969683791
+      ],
+      "population2025Persons": 492771,
+      "status": "root_reviewed",
+      "researchFile": "research/overnight-next-2026-10-09/city-109-bulawayo.json",
+      "reviewedAt": "2026-10-09T07:13:02.981057+00:00",
+      "rootReviewedAt": "2026-10-09T07:13:02.981057+00:00",
+      "integratedAt": "2026-10-09T07:14:03.673112+00:00",
+      "registryFound": true,
+      "verifiedSample": false,
+      "publicParcelGeometryFound": false,
+      "registryGeometryFound": false,
+      "runtimeReadiness": "not_enabled_no_verified_public_geometry",
+      "sourceIds": []
+    },
+    {
+      "cityCode": 4465,
+      "cityId": "wup2025:4465",
+      "rank": 1131,
+      "name": "Ife",
+      "country": "Nigeria",
+      "iso2": "NG",
+      "pointLatLon": [
+        7.47793864651925,
+        4.56951238991264
+      ],
+      "population2025Persons": 492000,
+      "status": "root_reviewed",
+      "researchFile": "research/overnight-next-2026-10-09/city-4465-ife.json",
+      "reviewedAt": "2026-10-09T07:13:02.981057+00:00",
+      "rootReviewedAt": "2026-10-09T07:13:02.981057+00:00",
+      "integratedAt": "2026-10-09T07:14:03.673112+00:00",
+      "registryFound": true,
+      "verifiedSample": false,
+      "publicParcelGeometryFound": false,
+      "registryGeometryFound": false,
+      "runtimeReadiness": "not_enabled_no_verified_public_geometry",
+      "sourceIds": []
+    },
+    {
+      "cityCode": 4735,
+      "cityId": "wup2025:4735",
+      "rank": 1132,
+      "name": "Al-Kut",
+      "country": "Iraq",
+      "iso2": "IQ",
+      "pointLatLon": [
+        32.5154837858206,
+        45.8273335618953
+      ],
+      "population2025Persons": 491247,
+      "status": "root_reviewed",
+      "researchFile": "research/overnight-next-2026-10-09/city-4735-al-kut.json",
+      "reviewedAt": "2026-10-09T07:13:02.981057+00:00",
+      "rootReviewedAt": "2026-10-09T07:13:02.981057+00:00",
+      "integratedAt": "2026-10-09T07:14:03.673112+00:00",
+      "registryFound": null,
+      "verifiedSample": false,
+      "publicParcelGeometryFound": false,
+      "registryGeometryFound": false,
+      "runtimeReadiness": "not_enabled_no_verified_public_geometry",
+      "sourceIds": []
+    },
+    {
+      "cityCode": 3216,
+      "cityId": "wup2025:3216",
+      "rank": 1133,
+      "name": "Cusco",
+      "country": "Peru",
+      "iso2": "PE",
+      "pointLatLon": [
+        -13.5289629692674,
+        -71.9549113931789
+      ],
+      "population2025Persons": 490968,
+      "status": "root_reviewed",
+      "researchFile": "research/overnight-next-2026-10-09/city-3216-cusco.json",
+      "reviewedAt": "2026-10-09T07:13:02.981057+00:00",
+      "rootReviewedAt": "2026-10-09T07:13:02.981057+00:00",
+      "integratedAt": "2026-10-09T07:14:03.673112+00:00",
+      "registryFound": true,
+      "verifiedSample": false,
+      "publicParcelGeometryFound": false,
+      "registryGeometryFound": false,
+      "runtimeReadiness": "not_enabled_no_verified_public_geometry",
+      "sourceIds": []
+    },
+    {
+      "cityCode": 4103,
+      "cityId": "wup2025:4103",
+      "rank": 1134,
+      "name": "Quebec",
+      "country": "Canada",
+      "iso2": "CA",
+      "pointLatLon": [
+        46.8389003853526,
+        -71.2572062217076
+      ],
+      "population2025Persons": 490451,
+      "status": "root_reviewed",
+      "researchFile": "research/overnight-next-2026-10-09/city-4103-quebec.json",
+      "reviewedAt": "2026-10-09T07:13:02.981057+00:00",
+      "rootReviewedAt": "2026-10-09T07:13:02.981057+00:00",
+      "integratedAt": "2026-10-09T07:14:03.673112+00:00",
+      "registryFound": true,
+      "verifiedSample": false,
+      "publicParcelGeometryFound": false,
+      "registryGeometryFound": false,
+      "runtimeReadiness": "not_enabled_no_verified_public_geometry",
+      "sourceIds": []
+    },
+    {
+      "cityCode": 11081,
+      "cityId": "wup2025:11081",
+      "rank": 1135,
+      "name": "Kakinada",
+      "country": "India",
+      "iso2": "IN",
+      "pointLatLon": [
+        16.9667490988327,
+        82.2365803866014
+      ],
+      "population2025Persons": 488958,
+      "status": "root_reviewed",
+      "researchFile": "research/overnight-next-2026-10-09/city-11081-kakinada.json",
+      "reviewedAt": "2026-10-09T07:13:02.981057+00:00",
+      "rootReviewedAt": "2026-10-09T07:13:02.981057+00:00",
+      "integratedAt": "2026-10-09T07:14:03.673112+00:00",
+      "registryFound": true,
+      "verifiedSample": false,
+      "publicParcelGeometryFound": false,
+      "registryGeometryFound": false,
+      "runtimeReadiness": "not_enabled_no_verified_public_geometry",
+      "sourceIds": []
+    },
+    {
+      "cityCode": 5621,
+      "cityId": "wup2025:5621",
+      "rank": 1136,
+      "name": "Provo",
+      "country": "United States of America",
+      "iso2": "US",
+      "pointLatLon": [
+        40.3078525920474,
+        -111.714794014436
+      ],
+      "population2025Persons": 488429,
+      "status": "pending"
+    },
+    {
+      "cityCode": 5388,
+      "cityId": "wup2025:5388",
+      "rank": 1137,
+      "name": "Portsmouth",
+      "country": "United Kingdom",
+      "iso2": "GB",
+      "pointLatLon": [
+        50.8299919480642,
+        -1.08350256594045
+      ],
+      "population2025Persons": 488385,
+      "status": "root_reviewed",
+      "researchFile": "research/overnight-next-2026-10-09/city-5388-portsmouth.json",
+      "reviewedAt": "2026-10-09T07:22:58.977081+00:00",
+      "rootReviewedAt": "2026-10-09T07:22:58.977081+00:00",
+      "integratedAt": "2026-10-09T07:22:59.163080+00:00",
+      "registryFound": true,
+      "verifiedSample": true,
+      "publicParcelGeometryFound": true,
+      "registryGeometryFound": true,
+      "runtimeReadiness": "held_native_geometry_conflicts",
+      "sourceIds": []
+    },
+    {
+      "cityCode": 11869,
+      "cityId": "wup2025:11869",
+      "rank": 1138,
+      "name": "Bazarati",
+      "country": "India",
+      "iso2": "IN",
+      "pointLatLon": [
+        22.4953847944724,
+        88.5706276658688
+      ],
+      "population2025Persons": 487581,
+      "status": "root_reviewed",
+      "researchFile": "research/overnight-next-2026-10-09/city-11869-bazarati.json",
+      "reviewedAt": "2026-10-09T07:13:02.981057+00:00",
+      "rootReviewedAt": "2026-10-09T07:13:02.981057+00:00",
+      "integratedAt": "2026-10-09T07:14:03.673112+00:00",
+      "registryFound": true,
+      "verifiedSample": false,
+      "publicParcelGeometryFound": false,
+      "registryGeometryFound": false,
+      "runtimeReadiness": "not_enabled_no_verified_public_geometry",
+      "sourceIds": []
+    },
+    {
+      "cityCode": 12031,
+      "cityId": "wup2025:12031",
+      "rank": 1139,
+      "name": "Dimapur",
+      "country": "India",
+      "iso2": "IN",
+      "pointLatLon": [
+        25.891891281964,
+        93.7357476549717
+      ],
+      "population2025Persons": 487500,
+      "status": "root_reviewed",
+      "researchFile": "research/overnight-next-2026-10-09/city-12031-dimapur.json",
+      "reviewedAt": "2026-10-09T07:16:16.385701+00:00",
+      "rootReviewedAt": "2026-10-09T07:16:16.385701+00:00",
+      "integratedAt": "2026-10-09T07:16:16.595205+00:00",
+      "registryFound": true,
+      "verifiedSample": false,
+      "publicParcelGeometryFound": false,
+      "registryGeometryFound": false,
+      "runtimeReadiness": "not_enabled_no_verified_public_geometry",
+      "sourceIds": []
+    },
+    {
+      "cityCode": 6763,
+      "cityId": "wup2025:6763",
+      "rank": 1141,
+      "name": "Yazd",
+      "country": "Iran (Islamic Republic of)",
+      "iso2": "IR",
+      "pointLatLon": [
+        31.8784529853071,
+        54.3538188019051
+      ],
+      "population2025Persons": 485381,
+      "status": "root_reviewed",
+      "researchFile": "research/overnight-next-2026-10-09/city-6763-yazd.json",
+      "reviewedAt": "2026-10-09T07:13:02.981057+00:00",
+      "rootReviewedAt": "2026-10-09T07:13:02.981057+00:00",
+      "integratedAt": "2026-10-09T07:14:03.673112+00:00",
+      "registryFound": null,
+      "verifiedSample": false,
+      "publicParcelGeometryFound": false,
+      "registryGeometryFound": false,
+      "runtimeReadiness": "not_enabled_no_verified_public_geometry",
+      "sourceIds": []
+    },
+    {
+      "cityCode": 9438,
+      "cityId": "wup2025:9438",
+      "rank": 1142,
+      "name": "Enshi",
+      "country": "China",
+      "iso2": "CN",
+      "pointLatLon": [
+        30.2702219925662,
+        109.469645197428
+      ],
+      "population2025Persons": 485222,
+      "status": "root_reviewed",
+      "researchFile": "research/overnight-next-2026-10-09/city-9438-enshi.json",
+      "reviewedAt": "2026-10-09T07:13:02.981057+00:00",
+      "rootReviewedAt": "2026-10-09T07:13:02.981057+00:00",
+      "integratedAt": "2026-10-09T07:14:03.673112+00:00",
+      "registryFound": true,
+      "verifiedSample": false,
+      "publicParcelGeometryFound": false,
+      "registryGeometryFound": false,
+      "runtimeReadiness": "not_enabled_no_verified_public_geometry",
+      "sourceIds": []
+    },
+    {
+      "cityCode": 583,
+      "cityId": "wup2025:583",
+      "rank": 1143,
+      "name": "Haifa",
+      "country": "Israel",
+      "iso2": "IL",
+      "pointLatLon": [
+        32.812430848624,
+        35.0251596262198
+      ],
+      "population2025Persons": 484770,
+      "status": "root_reviewed",
+      "researchFile": "research/overnight-next-2026-10-09/city-583-haifa.json",
+      "reviewedAt": "2026-10-09T07:13:02.981057+00:00",
+      "rootReviewedAt": "2026-10-09T07:13:02.981057+00:00",
+      "integratedAt": "2026-10-09T07:14:03.673112+00:00",
+      "registryFound": null,
+      "verifiedSample": false,
+      "publicParcelGeometryFound": false,
+      "registryGeometryFound": false,
+      "runtimeReadiness": "not_enabled_no_verified_public_geometry",
+      "sourceIds": []
+    },
+    {
+      "cityCode": 11763,
+      "cityId": "wup2025:11763",
+      "rank": 1144,
+      "name": "Cooch Behar",
+      "country": "India",
+      "iso2": "IN",
+      "pointLatLon": [
+        26.3337508382903,
+        89.4556707418829
+      ],
+      "population2025Persons": 484313,
+      "status": "root_reviewed",
+      "researchFile": "research/overnight-next-2026-10-09/city-11763-cooch-behar.json",
+      "reviewedAt": "2026-10-09T07:13:02.981057+00:00",
+      "rootReviewedAt": "2026-10-09T07:13:02.981057+00:00",
+      "integratedAt": "2026-10-09T07:14:03.673112+00:00",
+      "registryFound": true,
+      "verifiedSample": false,
+      "publicParcelGeometryFound": false,
+      "registryGeometryFound": false,
+      "runtimeReadiness": "not_enabled_no_verified_public_geometry",
+      "sourceIds": []
+    },
+    {
+      "cityCode": 3481,
+      "cityId": "wup2025:3481",
+      "rank": 1145,
+      "name": "Kagoshima",
+      "country": "Japan",
+      "iso2": "JP",
+      "pointLatLon": [
+        31.5738067119167,
+        130.533328353557
+      ],
+      "population2025Persons": 484164,
+      "status": "root_reviewed",
+      "researchFile": "research/overnight-next-2026-10-09/city-3481-kagoshima.json",
+      "reviewedAt": "2026-10-09T07:13:02.981057+00:00",
+      "rootReviewedAt": "2026-10-09T07:13:02.981057+00:00",
+      "integratedAt": "2026-10-09T07:14:03.673112+00:00",
+      "registryFound": true,
+      "verifiedSample": false,
+      "publicParcelGeometryFound": false,
+      "registryGeometryFound": false,
+      "runtimeReadiness": "not_enabled_no_verified_public_geometry",
+      "sourceIds": []
+    },
+    {
+      "cityCode": 7647,
+      "cityId": "wup2025:7647",
+      "rank": 1146,
+      "name": "Dire Dawa",
+      "country": "Ethiopia",
+      "iso2": "ET",
+      "pointLatLon": [
+        9.6009375885552,
+        41.8538213860115
+      ],
+      "population2025Persons": 483674,
+      "status": "root_reviewed",
+      "researchFile": "research/overnight-next-2026-10-09/city-7647-dire-dawa.json",
+      "reviewedAt": "2026-10-09T07:13:02.981057+00:00",
+      "rootReviewedAt": "2026-10-09T07:13:02.981057+00:00",
+      "integratedAt": "2026-10-09T07:14:03.673112+00:00",
+      "registryFound": true,
+      "verifiedSample": false,
+      "publicParcelGeometryFound": false,
+      "registryGeometryFound": false,
+      "runtimeReadiness": "not_enabled_no_verified_public_geometry",
+      "sourceIds": []
+    },
+    {
+      "cityCode": 11644,
+      "cityId": "wup2025:11644",
+      "rank": 1147,
+      "name": "Huzhou",
+      "country": "China",
+      "iso2": "CN",
+      "pointLatLon": [
+        30.8722295526369,
+        120.101679437182
+      ],
+      "population2025Persons": 483361,
+      "status": "root_reviewed",
+      "researchFile": "research/overnight-next-2026-10-09/city-11644-huzhou.json",
+      "reviewedAt": "2026-10-09T07:13:02.981057+00:00",
+      "rootReviewedAt": "2026-10-09T07:13:02.981057+00:00",
+      "integratedAt": "2026-10-09T07:14:03.673112+00:00",
+      "registryFound": true,
+      "verifiedSample": false,
+      "publicParcelGeometryFound": false,
+      "registryGeometryFound": false,
+      "runtimeReadiness": "not_enabled_no_verified_public_geometry",
+      "sourceIds": []
+    },
+    {
+      "cityCode": 5844,
+      "cityId": "wup2025:5844",
+      "rank": 1148,
+      "name": "Yar Hussain",
+      "country": "Pakistan",
+      "iso2": "PK",
+      "pointLatLon": [
+        34.2001433523288,
+        72.2760400028939
+      ],
+      "population2025Persons": 483239,
+      "status": "root_reviewed",
+      "researchFile": "research/overnight-next-2026-10-09/city-5844-yar-hussain.json",
+      "reviewedAt": "2026-10-09T07:13:02.981057+00:00",
+      "rootReviewedAt": "2026-10-09T07:13:02.981057+00:00",
+      "integratedAt": "2026-10-09T07:14:03.673112+00:00",
+      "registryFound": true,
+      "verifiedSample": false,
+      "publicParcelGeometryFound": false,
+      "registryGeometryFound": false,
+      "runtimeReadiness": "not_enabled_no_verified_public_geometry",
+      "sourceIds": []
+    },
+    {
+      "cityCode": 2221,
+      "cityId": "wup2025:2221",
+      "rank": 1149,
+      "name": "Cuenca",
+      "country": "Ecuador",
+      "iso2": "EC",
+      "pointLatLon": [
+        -2.89367285074743,
+        -79.0091652498675
+      ],
+      "population2025Persons": 482272,
+      "status": "root_reviewed",
+      "researchFile": "research/overnight-next-2026-10-09/city-2221-cuenca.json",
+      "reviewedAt": "2026-10-09T07:25:02.908399+00:00",
+      "rootReviewedAt": "2026-10-09T07:25:02.908399+00:00",
+      "integratedAt": "2026-10-09T07:25:03.115223+00:00",
+      "registryFound": true,
+      "verifiedSample": false,
+      "publicParcelGeometryFound": false,
+      "registryGeometryFound": false,
+      "runtimeReadiness": "not_enabled_no_verified_public_geometry",
+      "sourceIds": []
+    },
+    {
+      "cityCode": 7137,
+      "cityId": "wup2025:7137",
+      "rank": 1150,
+      "name": "Tahta",
+      "country": "Egypt",
+      "iso2": "EG",
+      "pointLatLon": [
+        26.8120305235432,
+        31.5004189582497
+      ],
+      "population2025Persons": 482194,
+      "status": "root_reviewed",
+      "researchFile": "research/overnight-next-2026-10-09/city-7137-tahta.json",
+      "reviewedAt": "2026-10-09T07:25:02.908399+00:00",
+      "rootReviewedAt": "2026-10-09T07:25:02.908399+00:00",
+      "integratedAt": "2026-10-09T07:25:03.115223+00:00",
+      "registryFound": null,
+      "verifiedSample": false,
+      "publicParcelGeometryFound": false,
+      "registryGeometryFound": false,
+      "runtimeReadiness": "not_enabled_no_verified_public_geometry",
+      "sourceIds": []
+    },
+    {
+      "cityCode": 1787,
+      "cityId": "wup2025:1787",
+      "rank": 1151,
+      "name": "At Ta'if",
+      "country": "Saudi Arabia",
+      "iso2": "SA",
+      "pointLatLon": [
+        21.2776595807387,
+        40.4231011229675
+      ],
+      "population2025Persons": 481818,
+      "status": "root_reviewed",
+      "researchFile": "research/overnight-next-2026-10-09/city-1787-at-taif.json",
+      "reviewedAt": "2026-10-09T07:25:02.908399+00:00",
+      "rootReviewedAt": "2026-10-09T07:25:02.908399+00:00",
+      "integratedAt": "2026-10-09T07:25:03.115223+00:00",
+      "registryFound": null,
+      "verifiedSample": false,
+      "publicParcelGeometryFound": false,
+      "registryGeometryFound": false,
+      "runtimeReadiness": "not_enabled_no_verified_public_geometry",
+      "sourceIds": []
+    },
+    {
+      "cityCode": 10804,
+      "cityId": "wup2025:10804",
+      "rank": 1153,
+      "name": "Rizhao",
+      "country": "China",
+      "iso2": "CN",
+      "pointLatLon": [
+        35.4203307182263,
+        119.516309806423
+      ],
+      "population2025Persons": 481315,
+      "status": "root_reviewed",
+      "researchFile": "research/overnight-next-2026-10-09/city-10804-rizhao.json",
+      "reviewedAt": "2026-10-09T07:25:02.908399+00:00",
+      "rootReviewedAt": "2026-10-09T07:25:02.908399+00:00",
+      "integratedAt": "2026-10-09T07:25:03.115223+00:00",
+      "registryFound": true,
+      "verifiedSample": false,
+      "publicParcelGeometryFound": false,
+      "registryGeometryFound": false,
+      "runtimeReadiness": "not_enabled_no_verified_public_geometry",
+      "sourceIds": []
+    },
+    {
+      "cityCode": 11629,
+      "cityId": "wup2025:11629",
+      "rank": 1154,
+      "name": "Siuri",
+      "country": "India",
+      "iso2": "IN",
+      "pointLatLon": [
+        23.9069771343107,
+        87.5218207401545
+      ],
+      "population2025Persons": 480595,
+      "status": "root_reviewed",
+      "researchFile": "research/overnight-next-2026-10-09/city-11629-siuri.json",
+      "reviewedAt": "2026-10-09T07:25:02.908399+00:00",
+      "rootReviewedAt": "2026-10-09T07:25:02.908399+00:00",
+      "integratedAt": "2026-10-09T07:25:03.115223+00:00",
+      "registryFound": true,
+      "verifiedSample": false,
+      "publicParcelGeometryFound": false,
+      "registryGeometryFound": false,
+      "runtimeReadiness": "not_enabled_no_verified_public_geometry",
+      "sourceIds": []
+    },
+    {
+      "cityCode": 11114,
+      "cityId": "wup2025:11114",
+      "rank": 1155,
+      "name": "Huai'an District",
+      "country": "China",
+      "iso2": "CN",
+      "pointLatLon": [
+        33.517006659027,
+        119.145207277295
+      ],
+      "population2025Persons": 480263,
+      "status": "root_reviewed",
+      "researchFile": "research/overnight-next-2026-10-09/city-11114-huaian-district.json",
+      "reviewedAt": "2026-10-09T07:25:02.908399+00:00",
+      "rootReviewedAt": "2026-10-09T07:25:02.908399+00:00",
+      "integratedAt": "2026-10-09T07:25:03.115223+00:00",
+      "registryFound": true,
+      "verifiedSample": false,
+      "publicParcelGeometryFound": false,
+      "registryGeometryFound": false,
+      "runtimeReadiness": "not_enabled_no_verified_public_geometry",
+      "sourceIds": []
+    },
+    {
+      "cityCode": 7561,
+      "cityId": "wup2025:7561",
+      "rank": 1156,
+      "name": "Kediri",
+      "country": "Indonesia",
+      "iso2": "ID",
+      "pointLatLon": [
+        -7.81500491087017,
+        112.025931424207
+      ],
+      "population2025Persons": 480038,
+      "status": "root_reviewed",
+      "researchFile": "research/overnight-next-2026-10-09/city-7561-kediri.json",
+      "reviewedAt": "2026-10-09T07:25:02.908399+00:00",
+      "rootReviewedAt": "2026-10-09T07:25:02.908399+00:00",
+      "integratedAt": "2026-10-09T07:25:03.115223+00:00",
+      "registryFound": true,
+      "verifiedSample": false,
+      "publicParcelGeometryFound": false,
+      "registryGeometryFound": false,
+      "runtimeReadiness": "not_enabled_no_verified_public_geometry",
+      "sourceIds": []
+    },
+    {
+      "cityCode": 10650,
+      "cityId": "wup2025:10650",
+      "rank": 1157,
+      "name": "Gaomi",
+      "country": "China",
+      "iso2": "CN",
+      "pointLatLon": [
+        36.3746143579324,
+        119.758977413195
+      ],
+      "population2025Persons": 479056,
+      "status": "root_reviewed",
+      "researchFile": "research/overnight-next-2026-10-09/city-10650-gaomi.json",
+      "reviewedAt": "2026-10-09T07:25:02.908399+00:00",
+      "rootReviewedAt": "2026-10-09T07:25:02.908399+00:00",
+      "integratedAt": "2026-10-09T07:25:03.115223+00:00",
+      "registryFound": null,
+      "verifiedSample": false,
+      "publicParcelGeometryFound": false,
+      "registryGeometryFound": false,
+      "runtimeReadiness": "not_enabled_no_verified_public_geometry",
+      "sourceIds": []
+    },
+    {
+      "cityCode": 6442,
+      "cityId": "wup2025:6442",
+      "rank": 1158,
+      "name": "Yulin",
+      "country": "China",
+      "iso2": "CN",
+      "pointLatLon": [
+        38.228670767027,
+        109.753608850168
+      ],
+      "population2025Persons": 478875,
+      "status": "root_reviewed",
+      "researchFile": "research/overnight-next-2026-10-09/city-6442-yulin.json",
+      "reviewedAt": "2026-10-09T07:25:02.908399+00:00",
+      "rootReviewedAt": "2026-10-09T07:25:02.908399+00:00",
+      "integratedAt": "2026-10-09T07:25:03.115223+00:00",
+      "registryFound": true,
+      "verifiedSample": false,
+      "publicParcelGeometryFound": false,
+      "registryGeometryFound": false,
+      "runtimeReadiness": "not_enabled_no_verified_public_geometry",
+      "sourceIds": []
+    },
+    {
+      "cityCode": 7673,
+      "cityId": "wup2025:7673",
+      "rank": 1160,
+      "name": "Jombang",
+      "country": "Indonesia",
+      "iso2": "ID",
+      "pointLatLon": [
+        -7.55533953219215,
+        112.248572477241
+      ],
+      "population2025Persons": 478051,
+      "status": "root_reviewed",
+      "researchFile": "research/overnight-next-2026-10-09/city-7673-jombang.json",
+      "reviewedAt": "2026-10-09T07:25:02.908399+00:00",
+      "rootReviewedAt": "2026-10-09T07:25:02.908399+00:00",
+      "integratedAt": "2026-10-09T07:25:03.115223+00:00",
+      "registryFound": true,
+      "verifiedSample": false,
+      "publicParcelGeometryFound": false,
+      "registryGeometryFound": false,
+      "runtimeReadiness": "not_enabled_no_verified_public_geometry",
+      "sourceIds": []
+    },
+    {
+      "cityCode": 3455,
+      "cityId": "wup2025:3455",
+      "rank": 1161,
+      "name": "Kryvyi Rih",
+      "country": "Ukraine",
+      "iso2": "UA",
+      "pointLatLon": [
+        47.9124891394484,
+        33.4094007331177
+      ],
+      "population2025Persons": 477940,
+      "status": "root_reviewed",
+      "researchFile": "research/overnight-next-2026-10-09/city-3455-kryvyi-rih.json",
+      "reviewedAt": "2026-10-09T07:25:02.908399+00:00",
+      "rootReviewedAt": "2026-10-09T07:25:02.908399+00:00",
+      "integratedAt": "2026-10-09T07:25:03.115223+00:00",
+      "registryFound": null,
+      "verifiedSample": false,
+      "publicParcelGeometryFound": false,
+      "registryGeometryFound": false,
+      "runtimeReadiness": "not_enabled_no_verified_public_geometry",
+      "sourceIds": []
+    },
+    {
+      "cityCode": 9983,
+      "cityId": "wup2025:9983",
+      "rank": 1162,
+      "name": "Gonda",
+      "country": "India",
+      "iso2": "IN",
+      "pointLatLon": [
+        27.1362705963641,
+        81.9635768974354
+      ],
+      "population2025Persons": 477697,
+      "status": "root_reviewed",
+      "researchFile": "research/overnight-next-2026-10-09/city-9983-gonda.json",
+      "reviewedAt": "2026-10-09T07:25:02.908399+00:00",
+      "rootReviewedAt": "2026-10-09T07:25:02.908399+00:00",
+      "integratedAt": "2026-10-09T07:25:03.115223+00:00",
+      "registryFound": true,
+      "verifiedSample": false,
+      "publicParcelGeometryFound": false,
+      "registryGeometryFound": false,
+      "runtimeReadiness": "not_enabled_no_verified_public_geometry",
+      "sourceIds": []
+    },
+    {
+      "cityCode": 7498,
+      "cityId": "wup2025:7498",
+      "rank": 1163,
+      "name": "Tomsk",
+      "country": "Russian Federation",
+      "iso2": "RU",
+      "pointLatLon": [
+        56.4935874403217,
+        84.9837662139804
+      ],
+      "population2025Persons": 477632,
+      "status": "root_reviewed",
+      "researchFile": "research/overnight-next-2026-10-09/city-7498-tomsk.json",
+      "reviewedAt": "2026-10-09T07:25:02.908399+00:00",
+      "rootReviewedAt": "2026-10-09T07:25:02.908399+00:00",
+      "integratedAt": "2026-10-09T07:25:03.115223+00:00",
+      "registryFound": true,
+      "verifiedSample": false,
+      "publicParcelGeometryFound": false,
+      "registryGeometryFound": false,
+      "runtimeReadiness": "not_enabled_no_verified_public_geometry",
+      "sourceIds": []
+    },
+    {
+      "cityCode": 7953,
+      "cityId": "wup2025:7953",
+      "rank": 1164,
+      "name": "Zigong",
+      "country": "China",
+      "iso2": "CN",
+      "pointLatLon": [
+        29.3556395185828,
+        104.763175776665
+      ],
+      "population2025Persons": 477271,
+      "status": "root_reviewed",
+      "researchFile": "research/overnight-next-2026-10-09/city-7953-zigong.json",
+      "reviewedAt": "2026-10-09T07:25:02.908399+00:00",
+      "rootReviewedAt": "2026-10-09T07:25:02.908399+00:00",
+      "integratedAt": "2026-10-09T07:25:03.115223+00:00",
+      "registryFound": true,
+      "verifiedSample": false,
+      "publicParcelGeometryFound": false,
+      "registryGeometryFound": false,
+      "runtimeReadiness": "not_enabled_no_verified_public_geometry",
+      "sourceIds": []
+    },
+    {
+      "cityCode": 7432,
+      "cityId": "wup2025:7432",
+      "rank": 1165,
+      "name": "Orlando",
+      "country": "United States of America",
+      "iso2": "US",
+      "pointLatLon": [
+        28.5718526010057,
+        -81.3224429681126
+      ],
+      "population2025Persons": 477249,
+      "status": "pending"
+    },
+    {
+      "cityCode": 9279,
+      "cityId": "wup2025:9279",
+      "rank": 1166,
+      "name": "Etawah",
+      "country": "India",
+      "iso2": "IN",
+      "pointLatLon": [
+        26.7828387119844,
+        79.0233814920568
+      ],
+      "population2025Persons": 475213,
+      "status": "pending"
+    },
+    {
+      "cityCode": 7148,
+      "cityId": "wup2025:7148",
+      "rank": 1167,
+      "name": "Gusau",
+      "country": "Nigeria",
+      "iso2": "NG",
+      "pointLatLon": [
+        12.1743944871879,
+        6.67653836825649
+      ],
+      "population2025Persons": 475004,
+      "status": "pending"
+    },
+    {
+      "cityCode": 5699,
+      "cityId": "wup2025:5699",
+      "rank": 1168,
+      "name": "Annaba",
+      "country": "Algeria",
+      "iso2": "DZ",
+      "pointLatLon": [
+        36.8754393605619,
+        7.73812245011438
+      ],
+      "population2025Persons": 474367,
+      "status": "pending"
+    },
+    {
+      "cityCode": 8767,
+      "cityId": "wup2025:8767",
+      "rank": 1169,
+      "name": "Jinzhong",
+      "country": "China",
+      "iso2": "CN",
+      "pointLatLon": [
+        37.6887939356622,
+        112.736514077553
+      ],
+      "population2025Persons": 473959,
+      "status": "pending"
+    },
+    {
+      "cityCode": 4390,
+      "cityId": "wup2025:4390",
+      "rank": 1170,
+      "name": "Oshogbo",
+      "country": "Nigeria",
+      "iso2": "NG",
+      "pointLatLon": [
+        7.77187668103078,
+        4.56628909899883
+      ],
+      "population2025Persons": 473929,
+      "status": "pending"
+    },
+    {
+      "cityCode": 10619,
+      "cityId": "wup2025:10619",
+      "rank": 1171,
+      "name": "Ghazipur",
+      "country": "India",
+      "iso2": "IN",
+      "pointLatLon": [
+        25.5865210971484,
+        83.5734521945564
+      ],
+      "population2025Persons": 473824,
+      "status": "pending"
+    },
+    {
+      "cityCode": 3976,
+      "cityId": "wup2025:3976",
+      "rank": 1172,
+      "name": "Maringá",
+      "country": "Brazil",
+      "iso2": "BR",
+      "pointLatLon": [
+        -23.4200314948645,
+        -51.9182787611961
+      ],
+      "population2025Persons": 473708,
+      "status": "pending"
+    },
+    {
+      "cityCode": 5191,
+      "cityId": "wup2025:5191",
+      "rank": 1173,
+      "name": "Palma de Mallorca",
+      "country": "Spain",
+      "iso2": "ES",
+      "pointLatLon": [
+        39.5730201363164,
+        2.65959892235363
+      ],
+      "population2025Persons": 473499,
+      "status": "pending"
+    },
+    {
+      "cityCode": 780,
+      "cityId": "wup2025:780",
+      "rank": 1174,
+      "name": "La Serena",
+      "country": "Chile",
+      "iso2": "CL",
+      "pointLatLon": [
+        -29.9386203764592,
+        -71.2818667450625
+      ],
+      "population2025Persons": 473325,
+      "status": "pending"
+    },
+    {
+      "cityCode": 9883,
+      "cityId": "wup2025:9883",
+      "rank": 1175,
+      "name": "Raebareli",
+      "country": "India",
+      "iso2": "IN",
+      "pointLatLon": [
+        26.2276825649448,
+        81.243838038826
+      ],
+      "population2025Persons": 472091,
+      "status": "pending"
+    },
+    {
+      "cityCode": 2928,
+      "cityId": "wup2025:2928",
+      "rank": 1176,
+      "name": "Macapá",
+      "country": "Brazil",
+      "iso2": "BR",
+      "pointLatLon": [
+        0.0431561083287672,
+        -51.0688251135422
+      ],
+      "population2025Persons": 471922,
+      "status": "pending"
+    },
+    {
+      "cityCode": 495,
+      "cityId": "wup2025:495",
+      "rank": 1177,
+      "name": "Piura",
+      "country": "Peru",
+      "iso2": "PE",
+      "pointLatLon": [
+        -5.19036024947437,
+        -80.6384430749245
+      ],
+      "population2025Persons": 471521,
+      "status": "pending"
+    },
+    {
+      "cityCode": 7454,
+      "cityId": "wup2025:7454",
+      "rank": 1178,
+      "name": "Chuxiong",
+      "country": "China",
+      "iso2": "CN",
+      "pointLatLon": [
+        25.03991885835,
+        101.551006942271
+      ],
+      "population2025Persons": 471251,
+      "status": "pending"
+    },
+    {
+      "cityCode": 2732,
+      "cityId": "wup2025:2732",
+      "rank": 1179,
+      "name": "Huancayo",
+      "country": "Peru",
+      "iso2": "PE",
+      "pointLatLon": [
+        -12.0626815606747,
+        -75.2170085204294
+      ],
+      "population2025Persons": 470685,
+      "status": "pending"
+    },
+    {
+      "cityCode": 7534,
+      "cityId": "wup2025:7534",
+      "rank": 1180,
+      "name": "Kemerovo",
+      "country": "Russian Federation",
+      "iso2": "RU",
+      "pointLatLon": [
+        55.3523295052853,
+        86.0912292541964
+      ],
+      "population2025Persons": 470175,
+      "status": "pending"
+    },
+    {
+      "cityCode": 6924,
+      "cityId": "wup2025:6924",
+      "rank": 1181,
+      "name": "Faqous",
+      "country": "Egypt",
+      "iso2": "EG",
+      "pointLatLon": [
+        30.724896740623,
+        31.7910152915622
+      ],
+      "population2025Persons": 470110,
+      "status": "pending"
+    },
+    {
+      "cityCode": 7651,
+      "cityId": "wup2025:7651",
+      "rank": 1182,
+      "name": "Cox's Bazar",
+      "country": "Bangladesh",
+      "iso2": "BD",
+      "pointLatLon": [
+        21.4407822517003,
+        92.0100285427203
+      ],
+      "population2025Persons": 470100,
+      "status": "pending"
+    },
+    {
+      "cityCode": 9595,
+      "cityId": "wup2025:9595",
+      "rank": 1183,
+      "name": "Sitapur",
+      "country": "India",
+      "iso2": "IN",
+      "pointLatLon": [
+        27.5635472049459,
+        80.6900013205048
+      ],
+      "population2025Persons": 469750,
+      "status": "pending"
+    },
+    {
+      "cityCode": 7995,
+      "cityId": "wup2025:7995",
+      "rank": 1184,
+      "name": "Lüliang",
+      "country": "China",
+      "iso2": "CN",
+      "pointLatLon": [
+        37.5208137223457,
+        111.14629385973
+      ],
+      "population2025Persons": 469647,
+      "status": "pending"
+    },
+    {
+      "cityCode": 4148,
+      "cityId": "wup2025:4148",
+      "rank": 1185,
+      "name": "Tétouan",
+      "country": "Morocco",
+      "iso2": "MA",
+      "pointLatLon": [
+        35.574381252055,
+        -5.36603950989224
+      ],
+      "population2025Persons": 469642,
+      "status": "pending"
+    },
+    {
+      "cityCode": 9965,
+      "cityId": "wup2025:9965",
+      "rank": 1186,
+      "name": "Kurnool",
+      "country": "India",
+      "iso2": "IN",
+      "pointLatLon": [
+        15.8201820533485,
+        78.033203328802
+      ],
+      "population2025Persons": 468997,
+      "status": "pending"
+    },
+    {
+      "cityCode": 9720,
+      "cityId": "wup2025:9720",
+      "rank": 1187,
+      "name": "Changge",
+      "country": "China",
+      "iso2": "CN",
+      "pointLatLon": [
+        34.2032184797196,
+        113.762855142875
+      ],
+      "population2025Persons": 468159,
+      "status": "pending"
+    },
+    {
+      "cityCode": 6034,
+      "cityId": "wup2025:6034",
+      "rank": 1188,
+      "name": "Brighton",
+      "country": "United Kingdom",
+      "iso2": "GB",
+      "pointLatLon": [
+        50.832718747559,
+        -0.232087060115579
+      ],
+      "population2025Persons": 467937,
+      "status": "pending"
+    },
+    {
+      "cityCode": 12016,
+      "cityId": "wup2025:12016",
+      "rank": 1189,
+      "name": "Beilun District",
+      "country": "China",
+      "iso2": "CN",
+      "pointLatLon": [
+        29.9078688188933,
+        121.831098805701
+      ],
+      "population2025Persons": 467912,
+      "status": "pending"
+    },
+    {
+      "cityCode": 8942,
+      "cityId": "wup2025:8942",
+      "rank": 1190,
+      "name": "Yangquan",
+      "country": "China",
+      "iso2": "CN",
+      "pointLatLon": [
+        37.8659735411705,
+        113.536135376174
+      ],
+      "population2025Persons": 467148,
+      "status": "pending"
+    },
+    {
+      "cityCode": 4121,
+      "cityId": "wup2025:4121",
+      "rank": 1191,
+      "name": "Ryazan",
+      "country": "Russian Federation",
+      "iso2": "RU",
+      "pointLatLon": [
+        54.6244799579635,
+        39.7195409037211
+      ],
+      "population2025Persons": 466086,
+      "status": "pending"
+    },
+    {
+      "cityCode": 8993,
+      "cityId": "wup2025:8993",
+      "rank": 1192,
+      "name": "Ichalkaranji",
+      "country": "India",
+      "iso2": "IN",
+      "pointLatLon": [
+        16.6982924157306,
+        74.459250736313
+      ],
+      "population2025Persons": 465814,
+      "status": "pending"
+    },
+    {
+      "cityCode": 7290,
+      "cityId": "wup2025:7290",
+      "rank": 1193,
+      "name": "Jundiaí",
+      "country": "Brazil",
+      "iso2": "BR",
+      "pointLatLon": [
+        -23.1976446911945,
+        -46.8554383147568
+      ],
+      "population2025Persons": 465531,
+      "status": "pending"
+    },
+    {
+      "cityCode": 11756,
+      "cityId": "wup2025:11756",
+      "rank": 1194,
+      "name": "Tongxiang",
+      "country": "China",
+      "iso2": "CN",
+      "pointLatLon": [
+        30.6457678687231,
+        120.575851300139
+      ],
+      "population2025Persons": 465450,
+      "status": "pending"
+    },
+    {
+      "cityCode": 11147,
+      "cityId": "wup2025:11147",
+      "rank": 1195,
+      "name": "Balia",
+      "country": "India",
+      "iso2": "IN",
+      "pointLatLon": [
+        26.3173952417814,
+        85.9061124111966
+      ],
+      "population2025Persons": 465399,
+      "status": "pending"
+    },
+    {
+      "cityCode": 8558,
+      "cityId": "wup2025:8558",
+      "rank": 1196,
+      "name": "Manado",
+      "country": "Indonesia",
+      "iso2": "ID",
+      "pointLatLon": [
+        1.47338708187465,
+        124.845657141248
+      ],
+      "population2025Persons": 464793,
+      "status": "pending"
+    },
+    {
+      "cityCode": 11736,
+      "cityId": "wup2025:11736",
+      "rank": 1197,
+      "name": "Shanwei",
+      "country": "China",
+      "iso2": "CN",
+      "pointLatLon": [
+        22.7831667729166,
+        115.367998832657
+      ],
+      "population2025Persons": 464738,
+      "status": "pending"
+    },
+    {
+      "cityCode": 25,
+      "cityId": "wup2025:25",
+      "rank": 1198,
+      "name": "San Juan",
+      "country": "Argentina",
+      "iso2": "AR",
+      "pointLatLon": [
+        -31.5395129374039,
+        -68.5413653624017
+      ],
+      "population2025Persons": 464466,
+      "status": "pending"
+    },
+    {
+      "cityCode": 11710,
+      "cityId": "wup2025:11710",
+      "rank": 1199,
+      "name": "Meizhou",
+      "country": "China",
+      "iso2": "CN",
+      "pointLatLon": [
+        24.3186796455347,
+        116.100671710308
+      ],
+      "population2025Persons": 464343,
+      "status": "pending"
+    },
+    {
+      "cityCode": 8914,
+      "cityId": "wup2025:8914",
+      "rank": 1200,
+      "name": "Bijie",
+      "country": "China",
+      "iso2": "CN",
+      "pointLatLon": [
+        27.2994822128137,
+        105.287401120227
+      ],
+      "population2025Persons": 463837,
+      "status": "pending"
+    }
+  ],
+  "sourceRosterSha256": "196e3bfdd4735f178ff21388993b47809835e12507285d215b35b6c6792add8b"
+}

@@ -1,0 +1,18 @@
+{
+  "purpose": "Original sample used an unverified parish label. Full original geometry is retained outside the repository; final canonical sample is macau-dscc-adapter-sample.geojson. No parish membership claimed.",
+  "featureCount": 3,
+  "features": [
+    {
+      "id": "MO-CAD-FATIMA-389",
+      "geometrySha256": "fe1cd591324b000a6c1efd9ace54a2b5538880df533a3b50f2a3a4a320dac572"
+    },
+    {
+      "id": "MO-CAD-FATIMA-87",
+      "geometrySha256": "f2e774781130fcc964f04a5f1bd20d120723fae9ec7e3371942a417dad842d24"
+    },
+    {
+      "id": "MO-CAD-FATIMA-88",
+      "geometrySha256": "b8431f9a209d41fd9d8f170e03fd168df235407d39abcd6ba2c9e13ae2f79460"
+    }
+  ]
+}

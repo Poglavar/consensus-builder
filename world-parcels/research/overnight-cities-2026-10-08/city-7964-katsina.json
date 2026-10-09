@@ -1,0 +1,128 @@
+{
+  "name": "Katsina",
+  "country": "Nigeria",
+  "countryCode": "NG",
+  "rank": 917,
+  "point": [
+    12.9800243686818,
+    7.61758905462921
+  ],
+  "population2025": 594775,
+  "population2025k": 594.775,
+  "populationPlausibility2025": "Moderate",
+  "schemaVersion": 1,
+  "kind": "city_parcel_source_research",
+  "checkedAt": "2026-10-09",
+  "populationUnit": "persons",
+  "status": "complete",
+  "verifiedSample": false,
+  "publicParcelGeometryFound": false,
+  "runtimeReadiness": "not_enabled_no_verified_public_geometry",
+  "priorEvidenceFiles": [],
+  "priorCheck": {
+    "attemptState": "pending",
+    "attemptEvidence": [],
+    "possiblePriorMatches": []
+  },
+  "pointBasis": "UN WUP 2025 population-weighted settlement centroid; this is not a municipal boundary or a parcel-coverage claim.",
+  "registryFound": true,
+  "registryBasis": "Katsina State Government identifies KATGIS as its official geographic-information and land-administration service; official ministry pages at Katsina describe title registration and land-search services. These are city-scoped agency/registry services, not evidence of an anonymous parcel vector layer.",
+  "registryEvidenceUrls": [
+    "https://gis.katsinastate.gov.ng/",
+    "https://mols.kt.gov.ng/guidelines/",
+    "https://katsinastate.gov.ng/service-elements/"
+  ],
+  "resultCategory": "local_registry_evidenced_geometry_unverified",
+  "remainingUncertainty": "No anonymous, field-safe parcel geometry response was verified; exact point and map coverage remain unresolved.",
+  "scopeLimits": "Review covers the exact unchanged WUP settlement locator and identified official sources only. No owner, address, personal-property, tax, account, token or credential data requested or retained. No citywide completeness claimed.",
+  "verifiedParcelResponse": null,
+  "source": {
+    "sourceId": "NG-7964-katsina-source-review",
+    "name": "Katsina State Geographic Information Service (KATGIS) / Ministry of Lands and Survey",
+    "url": "https://gis.katsinastate.gov.ng/",
+    "operator": "Nigeria",
+    "serviceType": "Official state geospatial and land-registration service; no anonymous parcel-geometry endpoint verified.",
+    "layer": null,
+    "geometryType": null,
+    "outputCrs": null,
+    "nativeIdField": null,
+    "nativeIdEvidence": "No feature response returned; native parcel key not verified."
+  },
+  "wupCityCode": 7964,
+  "cityId": "wup2025:7964",
+  "queueRank": 917,
+  "centerLatLon": [
+    12.9800243686818,
+    7.61758905462921
+  ],
+  "sourceIds": [],
+  "adapterReady": false,
+  "technicalBlocker": "Research only; no parcel geometry sample or runtime adapter qualification.",
+  "coverageAssessment": {
+    "claimedScope": "Katsina State Government identifies KATGIS as its official geographic-information and land-administration service; official ministry pages at Katsina describe title registration and land-search services. These are city-scoped agency/registry services, not evidence of an anonymous parcel vector layer.",
+    "verifiedOpenScope": "No public parcel geometry scope verified.",
+    "countrywideVerified": false,
+    "citywideVerified": false
+  },
+  "research": {
+    "queries": [
+      {
+        "language": "English",
+        "query": "Katsina Nigeria official cadastral map land registry GIS parcel records state lands ministry",
+        "scope": "Locate primary city/local cadastral or land-registry evidence and any safe public parcel-geometry endpoint.",
+        "result": "Official KATGIS and Ministry of Lands pages document land-registration, legal-search, recertification, and geospatial services at Katsina. The reviewed public pages expose service/application workflows, not a safe anonymous polygon layer or feature schema. No parcel lookup was performed.",
+        "actualResultUrls": [
+          "https://gis.katsinastate.gov.ng/",
+          "https://mols.kt.gov.ng/guidelines/",
+          "https://katsinastate.gov.ng/service-elements/"
+        ],
+        "executionMethod": "Separate English-language source search and first-party source/service review; no owner, address, account, token or personal-property attributes requested."
+      },
+      {
+        "language": "Hausa",
+        "query": "No feature response returned; native parcel key not verified.",
+        "scope": "Find primary local-language evidence for the same registry/map question.",
+        "result": "Official KATGIS and Ministry of Lands pages document land-registration, legal-search, recertification, and geospatial services at Katsina. The reviewed public pages expose service/application workflows, not a safe anonymous polygon layer or feature schema. No parcel lookup was performed.",
+        "actualResultUrls": [
+          "https://gis.katsinastate.gov.ng/",
+          "https://mols.kt.gov.ng/guidelines/",
+          "https://katsinastate.gov.ng/service-elements/"
+        ],
+        "executionMethod": "Separate native/local-language query and first-party source review. For Ogale, searched a Nigerian Pidgin/place-name variant because no standardized Eleme-language registry query term was identified."
+      }
+    ],
+    "officialSources": [
+      {
+        "url": "https://gis.katsinastate.gov.ng/",
+        "observation": "Katsina State Government identifies KATGIS as its official geographic-information and land-administration service; official ministry pages at Katsina describe title registration and land-search services. These are city-scoped agency/registry services, not evidence of an anonymous parcel vector layer."
+      },
+      {
+        "url": "https://mols.kt.gov.ng/guidelines/",
+        "observation": "Katsina State Government identifies KATGIS as its official geographic-information and land-administration service; official ministry pages at Katsina describe title registration and land-search services. These are city-scoped agency/registry services, not evidence of an anonymous parcel vector layer."
+      },
+      {
+        "url": "https://katsinastate.gov.ng/service-elements/",
+        "observation": "Katsina State Government identifies KATGIS as its official geographic-information and land-administration service; official ministry pages at Katsina describe title registration and land-search services. These are city-scoped agency/registry services, not evidence of an anonymous parcel vector layer."
+      }
+    ],
+    "attempts": [
+      {
+        "url": "https://gis.katsinastate.gov.ng/",
+        "method": "Public agency/service-page review",
+        "result": "Describes KATGIS land-administration and legal-search services; no public vector layer endpoint/schema found."
+      }
+    ]
+  },
+  "runtimeAssessment": {
+    "status": "not_enabled_no_verified_public_geometry",
+    "reason": "Research only; no parcel geometry sample or runtime adapter qualification."
+  },
+  "rootPrimaryReadback": {
+    "url": "https://gis.katsinastate.gov.ng/",
+    "fetch": 200,
+    "contentType": "text/html; charset=utf-8",
+    "title": "KATGIS - Katsina State Geographic Information Service"
+  },
+  "rootReviewNote": "Reviewed the specific primary institution/service evidence and its geographical, access and date limits. Direct readback failures are preserved separately from indexed primary evidence. No public full parcel geometry was verified for this city in this discovery pass.",
+  "rootReviewedAt": "2026-10-09T04:30:00.451299+00:00"
+}

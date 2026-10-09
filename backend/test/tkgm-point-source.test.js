@@ -93,6 +93,17 @@ describe('TKGM point parcel source', () => {
         });
     });
 
+    it('verifies Turkish decimal-comma no-hit coordinates without accepting a different point', async () => {
+        const queried = [29.0470015858534, 40.2050411327084];
+        const message = 'Parsel Bulunamadı: Enlem = 40,2050411327084 - Boylam=29,0470015858534 ';
+        const fetchImpl = vi.fn().mockResolvedValue(response({ Message: message }, 404));
+        await expect(source(fetchImpl).queryPoint(queried)).resolves.toMatchObject({
+            complete: true, queryType: 'point', point: queried, features: []
+        });
+        const wrong = vi.fn().mockResolvedValue(response({ Message: message.replace('29,0470015858534', '29,0470015858535') }, 404));
+        await expect(source(wrong).queryPoint(queried)).rejects.toMatchObject({ status: 502, upstreamStatus: 404 });
+    });
+
     it('rejects HTTP 200 nulls as invalid point and exact-ID provider results', async () => {
         await expect(source(vi.fn().mockResolvedValue(response(null))).queryPoint(point))
             .rejects.toMatchObject({ status: 502, code: 'parcel-source-unavailable' });

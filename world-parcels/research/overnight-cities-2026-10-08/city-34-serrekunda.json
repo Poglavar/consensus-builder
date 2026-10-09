@@ -1,0 +1,136 @@
+{
+  "name": "Serrekunda",
+  "country": "Gambia",
+  "countryCode": "GM",
+  "rank": 441,
+  "point": [
+    13.4087270720374,
+    -16.6866449299391
+  ],
+  "freshResearch": {
+    "queries": [
+      {
+        "language": "English (official government-source language)",
+        "query": "Serrekunda Serekunda official cadastral parcel map land survey GIS map Department Lands Survey Kanifing",
+        "scope": "Find city-bound official land registry or public parcel GIS/vector service for Serrekunda.",
+        "result": "The official Ministry of Lands and Government policy sources place Serrekunda in the Greater Banjul/ Kanifing context. The Auditor General reports cadastral mapping in parts of Greater Banjul but paper-based land administration and no citizen-accessible technological interface; no public city parcel vector was found.",
+        "actualResultUrls": [
+          "https://molrg.gov.gm/",
+          "https://moj.gov.gm/registrar-generals-department/",
+          "https://nao.gm/wp-content/uploads/2024/05/MoLRG_Land-Registration-and-Documentation.pdf",
+          "https://policies.gov.gm/d/6d4b253b-ef9d-11f0-b086-029254d29bb1"
+        ],
+        "executionMethod": "Official government and Auditor General source search/read; public-service route inspection."
+      },
+      {
+        "language": "English (local spelling cross-check)",
+        "query": "Serekunda land map cadastre public GIS parcel map Gambia official",
+        "scope": "Cross-check the Serrekunda/Serekunda spelling variant for an official public map service.",
+        "result": "No separate public Serrekunda parcel viewer or vector dataset was located. The official land policy calls the city area part of the Serrekunda conurbation and identifies Kanifing as State Land; this is registry context, not proof of any exact parcel geometry.",
+        "actualResultUrls": [
+          "https://molrg.gov.gm/wp-content/uploads/2025/03/National-Land-Policy.pdf",
+          "https://moj.gov.gm/registrar-generals-department/"
+        ],
+        "executionMethod": "Official source search and policy/registry page review."
+      }
+    ],
+    "portals": [
+      {
+        "name": "Department of Lands and Survey / Deeds Registry",
+        "operator": "Ministry of Lands, Regional Government and Religious Affairs / Registrar General’s Department",
+        "homeUrl": "https://moj.gov.gm/registrar-generals-department/",
+        "observation": "The Deeds Registry is established under the Lands (Registration of Deeds) Act and registers land-affecting instruments. The Auditor General’s 2024 report says cadastral mapping exists in some parts including Greater Banjul, but land documentation remains paper-based with no citizen-accessible technological interface."
+      },
+      {
+        "name": "National Land Policy 2026–2035",
+        "operator": "Ministry of Lands, Regional Government and Religious Affairs",
+        "homeUrl": "https://molrg.gov.gm/wp-content/uploads/2025/03/National-Land-Policy.pdf",
+        "observation": "The policy frames integrated digital land registration and information systems as a modernization objective; current conditions are described as fragmented and paper-based. Serrekunda is identified as part of the Greater Banjul conurbation; exact parcel coverage is not established."
+      }
+    ],
+    "requests": [
+      {
+        "url": "https://molrg.gov.gm/wp-content/uploads/2025/03/National-Land-Policy.pdf",
+        "method": "GET",
+        "httpStatus": 200,
+        "contentType": "application/pdf",
+        "observation": "Official Ministry policy document; describes land-registration and digital-LIS objectives."
+      },
+      {
+        "url": "https://nao.gm/wp-content/uploads/2024/05/MoLRG_Land-Registration-and-Documentation.pdf",
+        "method": "GET",
+        "httpStatus": 200,
+        "contentType": "application/pdf",
+        "observation": "Official Auditor General performance audit. Its cited fieldwork reports that only some areas are cadastral mapped, names Greater Banjul, and finds no citizen-accessible digital land-record interface; this is not a current parcel API."
+      }
+    ],
+    "historicalContext": []
+  },
+  "status": "complete",
+  "verifiedParcelResponse": null,
+  "source": {
+    "sourceId": "GM-GBA-LANDS-DEEDS-REGISTRY",
+    "name": "The Gambia Deeds Registry and Department of Lands and Survey (Greater Banjul context)",
+    "url": "https://moj.gov.gm/registrar-generals-department/",
+    "operator": "Registrar General’s Department and Department of Lands and Survey",
+    "serviceType": "Statutory deeds registry and cadastral mapping administration; no anonymous vector parcel service verified.",
+    "layer": "No public parcel layer verified.",
+    "geometryType": "none retrieved",
+    "outputCrs": "unknown",
+    "nativeIdField": "unknown",
+    "nativeIdEvidence": "No parcel feature response was obtained; official audit discusses cadastral maps but provides no feature schema or native parcel ID."
+  },
+  "coverageAssessment": {
+    "claimedScope": "The statutory Deeds Registry covers land-affecting documents nationally; an Auditor General report says cadastral mapping existed in parts of Greater Banjul, and government policy locates Serrekunda in the Greater Banjul conurbation.",
+    "verifiedOpenScope": "No public full parcel polygons or city-cell geometry verified. The Greater Banjul mapping statement does not establish exact coverage at the WUP point.",
+    "countrywideVerified": false
+  },
+  "registryFound": true,
+  "verifiedSample": false,
+  "resultCategory": "official_registry_workflow_no_public_geometry",
+  "technicalBlocker": "No anonymous complete parcel-geometry route was identified. The audit reports broader paper-based records and a KMC property database/GIS exception, but does not expose a public vector endpoint.",
+  "remainingUncertainty": "The Auditor General report cites 2022 fieldwork, and current exact parcel coverage/digitization within Serrekunda remains unknown. The new national policy is forward-looking and does not show a deployed public parcel service.",
+  "nextStep": "Do not query deeds, owners, or individual property records. Revisit only if the Ministry publishes a public, city-bound parcel vector service.",
+  "schemaVersion": 1,
+  "checkedAt": "2026-10-08T23:57:31Z",
+  "wupCityCode": 34,
+  "cityId": "wup2025:34",
+  "runtimeReadiness": "not_enabled_no_verified_public_geometry",
+  "adapterReady": false,
+  "centerLatLon": [
+    13.4087270720374,
+    -16.6866449299391
+  ],
+  "queueRank": 441,
+  "population2025": 1156903,
+  "populationPlausibility2025": "Moderate",
+  "populationUnit": "persons",
+  "pointBasis": "UN WUP 2025 population-weighted settlement centroid; this is not a municipal boundary or a parcel-coverage claim.",
+  "publicParcelGeometryFound": false,
+  "rootReviewedAt": "2026-10-09T00:01:28.209446+00:00",
+  "sourceIds": [],
+  "runtimeAssessment": {
+    "decision": "hold",
+    "reason": "No anonymous full parcel geometry was verified for this city."
+  },
+  "registryBasis": "The national Auditor General reports that Kanifing Municipal Council issues official land transfers, keeps a Rates Matrix System with near-universal municipal property registration, and operates GIS with property IDs. The council explicitly lists Serekunda East, West and Central within its municipality. This is direct local registry/mapping activity, not proof of exact WUP parcel coverage or an open geometry service.",
+  "registryEvidenceUrls": [
+    "https://moj.gov.gm/registrar-generals-department/",
+    "https://nao.gm/wp-content/uploads/2024/05/MoLRG_Land-Registration-and-Documentation.pdf",
+    "https://molrg.gov.gm/wp-content/uploads/2025/03/National-Land-Policy.pdf",
+    "https://kanifing.gm/subdivisions-of-km/"
+  ],
+  "appCityId": null,
+  "scopeLimits": [
+    "Greater Banjul mapping evidence is not an exact Serrekunda municipal parcel-coverage boundary.",
+    "No owner/address/deed lookup or property-specific query was made."
+  ],
+  "runtimeQualification": null,
+  "rootSupplementalResearch": {
+    "finding": "Primary audit contains a local KMC digital property/GIS exception to the broader paper-based system; this supports local activity. No account/property records were queried.",
+    "sources": [
+      "https://nao.gm/wp-content/uploads/2024/05/MoLRG_Land-Registration-and-Documentation.pdf",
+      "https://kanifing.gm/subdivisions-of-km/"
+    ]
+  }
+}

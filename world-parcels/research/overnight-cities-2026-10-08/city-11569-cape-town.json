@@ -1,0 +1,79 @@
+{
+  "schemaVersion": 1,
+  "checkedAt": "2026-10-09",
+  "status": "complete",
+  "adapterReady": false,
+  "pointBasis": "UN WUP 2025 population-weighted settlement centroid; this is not a municipal boundary or a parcel-coverage claim.",
+  "coverageAssessment": {
+    "verifiedOpenScope": "No parcel geometry sample was retained.",
+    "citywideVerified": false,
+    "countrywideVerified": false
+  },
+  "name": "Cape Town",
+  "country": "India",
+  "countryCode": "IN",
+  "rank": 692,
+  "point": [
+    20.4649384147329,
+    85.878897629746
+  ],
+  "population2025": 770260,
+  "populationUnit": "persons",
+  "population2025k": 770.26,
+  "populationPlausibility2025": "High",
+  "wupCityCode": 11569,
+  "cityId": "wup2025:11569",
+  "queueRank": 692,
+  "registryFound": null,
+  "registryBasis": "Unresolved WUP identity anomaly: the ranked WUP row assigns city code 11569 and locId 356 (India) with coordinates near Cuttack, while the name “Cape Town” is independently associated with the South African city. No registry is attached to either candidate pending primary reconciliation.",
+  "registryEvidenceUrls": [],
+  "publicParcelGeometryFound": false,
+  "verifiedSample": false,
+  "verifiedParcelResponse": null,
+  "freshResearch": {
+    "queries": [
+      {
+        "language": "Odia",
+        "query": "କଟକ ନଗର ଜମି ରେକର୍ଡ ଭୂଖଣ୍ଡ ମାନଚିତ୍ର ଓଡ଼ିଶା ସରକାର",
+        "scope": "Reconcile the WUP India locator and name before any registry association.",
+        "result": "No primary WUP record was found that reconciles city code 11569/Cape Town with an Indian settlement. No Indian registry lookup or South African record association was made.",
+        "actualResultUrls": [
+          "https://population.un.org/wup/downloads?tab=Cities"
+        ],
+        "executionMethod": "Compared official WUP city-table context with independent South Africa name references; did not query any parcel source."
+      },
+      {
+        "language": "English",
+        "query": "UN WUP 2025 City_Code 11569 Cape Town India locId 356",
+        "scope": "Reconcile the WUP India locator and name before any registry association.",
+        "result": "WUP 2025 official download page is the primary roster source, but available official table views do not resolve the discrepancy between the India locator and Cape Town name. South African references identify a different settlement candidate and are excluded.",
+        "actualResultUrls": [
+          "https://population.un.org/wup/downloads?tab=Cities",
+          "https://unstats.un.org/unsd/ungegn/"
+        ],
+        "executionMethod": "Primary-source identity review only. No local parcel lookup, geometry query, or use of existing South African Cape Town artifacts."
+      }
+    ]
+  },
+  "scopeLimits": "Identity unresolved. Do not associate South African records/geometry or Indian local records with this ranked row until the primary WUP name/locator is reconciled. Existing ZA Cape Town artifacts were excluded.",
+  "source": {
+    "sourceId": "WUP-2025-11569-UNRESOLVED",
+    "name": "UN World Urbanization Prospects 2025 city roster row",
+    "url": "https://population.un.org/wup/downloads?tab=Cities",
+    "operator": "United Nations Department of Economic and Social Affairs, Population Division",
+    "serviceType": "Population city roster; identity under review",
+    "layer": "City row cityCode 11569 / locId 356",
+    "geometryType": "Point locator only",
+    "outputCrs": "WGS 84 longitude/latitude as represented in roster",
+    "nativeIdField": "cityCode"
+  },
+  "sourceIds": [],
+  "runtimeReadiness": "not_enabled_wup_identity_unresolved",
+  "technicalBlocker": "The primary WUP name and India locator do not reconcile; registry discovery is intentionally withheld.",
+  "remainingUncertainty": "Whether the WUP row contains a name/locator/country coding error or refers to another settlement is unresolved.",
+  "centerLatLon": [
+    20.4649384147329,
+    85.878897629746
+  ],
+  "rootReviewedAt": "2026-10-09T02:35:39.834493+00:00"
+}

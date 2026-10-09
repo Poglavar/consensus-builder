@@ -1,0 +1,138 @@
+{
+  "name": "Naberezhnye Chelny",
+  "country": "Russian Federation",
+  "countryCode": "RU",
+  "rank": 1108,
+  "point": [
+    55.7219960248535,
+    52.3842170017091
+  ],
+  "freshResearch": {
+    "queries": [
+      {
+        "language": "English",
+        "query": "Naberezhnye Chelny official land cadastral map Rosreestr city administration GIS real estate registration",
+        "scope": "Identify first-party local registry and public parcel geometry; preserve the unchanged WUP settlement locator and avoid owner or address attributes.",
+        "result": "The English search did not surface an official anonymous parcel endpoint.",
+        "executionMethod": "Separate English-language web search followed by first-party source review.",
+        "actualResultUrls": [
+          "https://nabchelny.ru/company/3756",
+          "https://nabchelny.ru/upload/files/user/20.03.2025_2127_Salaxov_F.Sh._Gizatullin_L.R.pdf"
+        ]
+      },
+      {
+        "language": "Russian",
+        "query": "Набережные Челны официальный земельный участок кадастровая карта муниципальный комитет земельные отношения",
+        "scope": "Find first-party local-language registry/cadastral routes and any anonymous safe parcel geometry service near the unchanged WUP point.",
+        "result": "The Russian search found the official city land-and-property office and municipal cadastral registration procedures, including boundary and plot-plan approvals; no public geometry service was described.",
+        "executionMethod": "Separate Russian-language web search followed by first-party source review.",
+        "actualResultUrls": [
+          "https://nabchelny.ru/company/3756",
+          "https://nabchelny.ru/upload/files/user/20.03.2025_2127_Salaxov_F.Sh._Gizatullin_L.R.pdf"
+        ]
+      }
+    ],
+    "portals": [
+      {
+        "name": "https://nabchelny.ru/company/3756",
+        "operator": "Russian Federation",
+        "homeUrl": "https://nabchelny.ru/company/3756",
+        "observation": "Official city site gives the city Executive Committee land-and-property office as responsible for cadastral registration, plot-plan approval, and boundary coordination. It describes administrative documents, not open parcel geometries."
+      },
+      {
+        "name": "https://nabchelny.ru/upload/files/user/20.03.2025_2127_Salaxov_F.Sh._Gizatullin_L.R.pdf",
+        "operator": "Russian Federation",
+        "homeUrl": "https://nabchelny.ru/upload/files/user/20.03.2025_2127_Salaxov_F.Sh._Gizatullin_L.R.pdf",
+        "observation": "Official municipal resolution references cadastral land parcels and city land administration. No public feature layer is documented."
+      }
+    ],
+    "requests": [],
+    "historicalContext": []
+  },
+  "status": "complete",
+  "verifiedParcelResponse": null,
+  "source": {
+    "sourceId": null,
+    "name": "https://nabchelny.ru/company/3756",
+    "url": "https://nabchelny.ru/company/3756",
+    "operator": null,
+    "serviceType": "Official registry/cadastral route reviewed; no anonymous safe full-parcel geometry response verified.",
+    "layer": null,
+    "geometryType": null,
+    "outputCrs": null,
+    "nativeIdField": null,
+    "nativeIdEvidence": null,
+    "attributesRequested": [],
+    "sampleCount": 0,
+    "sampleFile": null,
+    "directGeometryQueryVerified": false,
+    "directMetadataSchemaVerified": false,
+    "geometryStatus": "not_verified",
+    "operatorNote": "See first-party evidence and access limits in registryBasis and linked sources."
+  },
+  "coverageAssessment": {
+    "claimedScope": "The official city land-and-property administration handles cadastral registration and plot-plan procedures. The service materials require administrative applications; no anonymous geometry service was identified.",
+    "verifiedOpenScope": "No anonymous full parcel geometry response was verified in this investigation.",
+    "countrywideVerified": false,
+    "citywideVerified": false
+  },
+  "registryFound": true,
+  "verifiedSample": false,
+  "resultCategory": "official_local_registry_geometry_unverified",
+  "technicalBlocker": "No anonymous safe-ID full-geometry endpoint and schema was verified; where an official map or registry portal exists, its service behavior or public feature response was not established.",
+  "remainingUncertainty": "No safe public geometry schema or exact-point feature response was verified; federal cadastral viewer behavior was not tested.",
+  "nextStep": "Revisit only if an official public geometry endpoint and safe minimal-field response are documented; then test the unchanged WUP point with safe identifiers and geometry only.",
+  "schemaVersion": "1.0",
+  "checkedAt": "2026-10-09",
+  "wupCityCode": 6500,
+  "cityId": "wup2025:6500",
+  "runtimeReadiness": "not_enabled_no_verified_public_geometry",
+  "adapterReady": false,
+  "centerLatLon": [
+    55.7219960248535,
+    52.3842170017091
+  ],
+  "population2025k": 498.625,
+  "populationUnit": "persons",
+  "queueRank": 1108,
+  "population2025": 498625,
+  "populationPlausibility2025": "High",
+  "pointBasis": "UN WUP 2025 population-weighted settlement point (latitude, longitude); not a municipal boundary or a parcel-coverage claim.",
+  "publicParcelGeometryFound": false,
+  "sourceIds": [],
+  "registryBasis": "The official city land-and-property administration handles cadastral registration and plot-plan procedures. The service materials require administrative applications; no anonymous geometry service was identified.",
+  "registryEvidenceUrls": [
+    "https://nabchelny.ru/company/3756",
+    "https://nabchelny.ru/upload/files/user/20.03.2025_2127_Salaxov_F.Sh._Gizatullin_L.R.pdf"
+  ],
+  "runtimeAssessment": {
+    "status": "not_enabled_no_verified_public_geometry",
+    "reason": "No anonymous safe-ID full-geometry endpoint and schema was verified; where an official map or registry portal exists, its service behavior or public feature response was not established."
+  },
+  "cohort": "overnight-next-1101-1200",
+  "cohortState": "root_reviewed_integrated_locally",
+  "integrationState": "integrated_locally",
+  "rootReviewedAt": "2026-10-09T07:13:02.981057+00:00",
+  "rootPrimaryChecks": [
+    {
+      "wupCityCode": 6500,
+      "url": "https://nabchelny.ru/company/3756",
+      "checkedAt": "2026-10-09T07:10:47.396594+00:00",
+      "method": "Anonymous read-only GET, standard TLS where advertised; no credentials or property values",
+      "httpStatus": 200,
+      "finalUrl": "https://nabchelny.ru/company/3756",
+      "contentType": "text/html",
+      "bytesRead": 33788,
+      "sha256": "c7ea96e61588ade19e0fce9c15a77747c11604224252dda3fa9939393b9d77af",
+      "complete": true
+    }
+  ],
+  "rootReview": {
+    "checkedAt": "2026-10-09T07:13:02.981057+00:00",
+    "decision": "Reviewed city identity, canonical population/point, separate searches and saved source/request evidence. No full public parcel geometry verified in this pass.",
+    "custodyScope": "The official city land-and-property administration handles cadastral registration and plot-plan procedures. The service materials require administrative applications; no anonymous geometry service was identified.",
+    "transportFailuresDoNotProveAbsence": true,
+    "geometryClaimScope": "Investigation outcome only; no worldwide or citywide absence asserted."
+  },
+  "integratedAt": "2026-10-09T07:14:03.673112+00:00"
+}

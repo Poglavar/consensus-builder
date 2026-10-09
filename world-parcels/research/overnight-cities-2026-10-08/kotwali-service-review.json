@@ -1,0 +1,89 @@
+{
+  "schemaVersion": 1,
+  "checkedAt": "2026-10-09",
+  "sourceId": "in-kotwali-registry-review",
+  "purpose": "Resolve WUP locality identity before any local registry attribution; no property or owner lookup.",
+  "primaryPublisher": "Unresolved WUP identity — no local registry/cadastre attributed",
+  "sourceUrl": "https://censusindia.gov.in/nada/index.php/catalog/6416",
+  "registryFound": null,
+  "registryBasis": "Identity review only. Official Census of India data lists two separate villages named Kotwali in Rajaun sub-district, Banka (codes 240853 and 240854); the Banka District Census Handbook reports populations of 681 and 1,673 in 2011. Bhagalpur District separately lists a Kotwali police station. Neither the supplied WUP point nor its 2025 population estimate (839,900) has been reconciled to either village or to the police station; these homonyms do not establish the WUP settlement’s identity or registry coverage.",
+  "officialSources": [
+    {
+      "url": "https://censusindia.gov.in/nada/index.php/catalog/6416",
+      "observation": "Identity review only. Official Census of India data lists two separate villages named Kotwali in Rajaun sub-district, Banka (codes 240853 and 240854); the Banka District Census Handbook reports populations of 681 and 1,673 in 2011. Bhagalpur District separately lists a Kotwali police station. Neither the supplied WUP point nor its 2025 population estimate (839,900) has been reconciled to either village or to the police station; these homonyms do not establish the WUP settlement’s identity or registry coverage."
+    },
+    {
+      "url": "https://censusindia.gov.in/nada/index.php/catalog/255/download/666/DH_2011_1023_PART_A_DCHB_BANKA.pdf",
+      "observation": "Identity review only. Official Census of India data lists two separate villages named Kotwali in Rajaun sub-district, Banka (codes 240853 and 240854); the Banka District Census Handbook reports populations of 681 and 1,673 in 2011. Bhagalpur District separately lists a Kotwali police station. Neither the supplied WUP point nor its 2025 population estimate (839,900) has been reconciled to either village or to the police station; these homonyms do not establish the WUP settlement’s identity or registry coverage."
+    },
+    {
+      "url": "https://bhagalpur.nic.in/police/",
+      "observation": "Identity review only. Official Census of India data lists two separate villages named Kotwali in Rajaun sub-district, Banka (codes 240853 and 240854); the Banka District Census Handbook reports populations of 681 and 1,673 in 2011. Bhagalpur District separately lists a Kotwali police station. Neither the supplied WUP point nor its 2025 population estimate (839,900) has been reconciled to either village or to the police station; these homonyms do not establish the WUP settlement’s identity or registry coverage."
+    }
+  ],
+  "searchQueries": [
+    {
+      "language": "English",
+      "query": "Kotwali Bihar India settlement census village official land records cadastral map",
+      "scope": "Find official local registry/cadastre evidence and safe anonymous geometry-only routes; do not submit identifiers.",
+      "result": "Identity review only. Official Census of India data lists two separate villages named Kotwali in Rajaun sub-district, Banka (codes 240853 and 240854); the Banka District Census Handbook reports populations of 681 and 1,673 in 2011. Bhagalpur District separately lists a Kotwali police station. Neither the supplied WUP point nor its 2025 population estimate (839,900) has been reconciled to either village or to the police station; these homonyms do not establish the WUP settlement’s identity or registry coverage.",
+      "actualResultUrls": [
+        "https://censusindia.gov.in/nada/index.php/catalog/6416",
+        "https://censusindia.gov.in/nada/index.php/catalog/255/download/666/DH_2011_1023_PART_A_DCHB_BANKA.pdf",
+        "https://bhagalpur.nic.in/police/"
+      ]
+    },
+    {
+      "language": "Hindi",
+      "query": "कोतवाली बिहार गांव जनगणना भूमि रिकॉर्ड राजस्व मानचित्र आधिकारिक",
+      "scope": "Find native-language local registry/cadastre evidence and safe anonymous geometry-only routes.",
+      "result": "Identity review only. Official Census of India data lists two separate villages named Kotwali in Rajaun sub-district, Banka (codes 240853 and 240854); the Banka District Census Handbook reports populations of 681 and 1,673 in 2011. Bhagalpur District separately lists a Kotwali police station. Neither the supplied WUP point nor its 2025 population estimate (839,900) has been reconciled to either village or to the police station; these homonyms do not establish the WUP settlement’s identity or registry coverage.",
+      "actualResultUrls": [
+        "https://censusindia.gov.in/nada/index.php/catalog/6416",
+        "https://censusindia.gov.in/nada/index.php/catalog/255/download/666/DH_2011_1023_PART_A_DCHB_BANKA.pdf",
+        "https://bhagalpur.nic.in/police/"
+      ]
+    }
+  ],
+  "accessReview": {
+    "publicAnonymousGeometryVerified": false,
+    "completeGeoreferencedPolygonCount": 0,
+    "geometryRetained": false,
+    "ownerAddressTaxOrPersonLookupRequested": false,
+    "authenticationOrCredentialsUsed": false,
+    "captchaOrPersonalFormSubmitted": false,
+    "routeInspectionStatus": "identity_unresolved_no_service_attribution",
+    "reason": "The WUP label “Kotwali” is ambiguous and the supplied settlement point/population have not been matched to an official locality boundary. Do not infer that the record belongs to the Bhagalpur police station or either Banka village. No local parcel source is attributed pending identity resolution.",
+    "nativeIdsUsed": "No safe parcel feature identifier retrieved; no feature attributes requested."
+  },
+  "requestEvidence": [
+    {
+      "url": "https://censusindia.gov.in/nada/index.php/catalog/6416",
+      "method": "official public page/document review",
+      "status": "status_not_exposed_by_web_open",
+      "httpStatusObtained": false,
+      "observation": "Identity review only. Official Census of India data lists two separate villages named Kotwali in Rajaun sub-district, Banka (codes 240853 and 240854); the Banka District Census Handbook reports populations of 681 and 1,673 in 2011. Bhagalpur District separately lists a Kotwali police station. Neither the supplied WUP point nor its 2025 population estimate (839,900) has been reconciled to either village or to the police station; these homonyms do not establish the WUP settlement’s identity or registry coverage."
+    },
+    {
+      "url": "https://censusindia.gov.in/nada/index.php/catalog/255/download/666/DH_2011_1023_PART_A_DCHB_BANKA.pdf",
+      "method": "official public page/document review",
+      "status": "status_not_exposed_by_web_open",
+      "httpStatusObtained": false,
+      "observation": "Identity review only. Official Census of India data lists two separate villages named Kotwali in Rajaun sub-district, Banka (codes 240853 and 240854); the Banka District Census Handbook reports populations of 681 and 1,673 in 2011. Bhagalpur District separately lists a Kotwali police station. Neither the supplied WUP point nor its 2025 population estimate (839,900) has been reconciled to either village or to the police station; these homonyms do not establish the WUP settlement’s identity or registry coverage."
+    },
+    {
+      "url": "https://bhagalpur.nic.in/police/",
+      "method": "official public page/document review",
+      "status": "status_not_exposed_by_web_open",
+      "httpStatusObtained": false,
+      "observation": "Identity review only. Official Census of India data lists two separate villages named Kotwali in Rajaun sub-district, Banka (codes 240853 and 240854); the Banka District Census Handbook reports populations of 681 and 1,673 in 2011. Bhagalpur District separately lists a Kotwali police station. Neither the supplied WUP point nor its 2025 population estimate (839,900) has been reconciled to either village or to the police station; these homonyms do not establish the WUP settlement’s identity or registry coverage."
+    }
+  ],
+  "technicalBlocker": "The WUP label “Kotwali” is ambiguous and the supplied settlement point/population have not been matched to an official locality boundary. Do not infer that the record belongs to the Bhagalpur police station or either Banka village. No local parcel source is attributed pending identity resolution.",
+  "sampleDisposition": "No parcel geometry or feature attributes retained.",
+  "remainingUncertainty": "The WUP settlement identity itself remains unresolved; a name match alone cannot bind the result to a police station, village, district, or city registry.",
+  "rootIdentityReview": {
+    "decision": "unresolved_settlement_identity",
+    "registryAbsenceEstablished": false
+  }
+}

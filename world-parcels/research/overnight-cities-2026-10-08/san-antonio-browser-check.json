@@ -1,0 +1,21 @@
+{
+  "schemaVersion": 1,
+  "checkedAt": "2026-10-08T22:38:52.982942+00:00",
+  "city": "San Antonio",
+  "appCityId": "sanantonio",
+  "sourceId": "us-tx-bexar-bcad-public-archive-2022-propid",
+  "url": "http://localhost:5638/?city=sanantonio&backend=http%3A%2F%2Flocalhost%3A5640&reduceMotion=1",
+  "browserMode": "Dedicated headed Chrome via agent-browser",
+  "result": "passed",
+  "loadedParcelCount": 219,
+  "interaction": "Real pointer move/down/up at x=483,y=294, then Details menu click.",
+  "selectedParcelId": "US-TX-BEXAR-BCAD-2022-386332",
+  "detailsHeadingMatched": true,
+  "uncaughtPageErrors": [],
+  "visibleAlerts": [],
+  "browserClosed": true,
+  "screenshotCaptured": false,
+  "releaseState": "local_uncommitted_undeployed",
+  "initialAttempt": "Source unavailable during local preview restart; direct route subsequently returned a complete collection and browser reload passed. No inference of provider absence.",
+  "scope": "Local rendering and normal parcel selection verified; the source attribution explicitly identifies a public 2022 archive."
+}

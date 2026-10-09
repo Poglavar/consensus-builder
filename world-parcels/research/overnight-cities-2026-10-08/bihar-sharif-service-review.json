@@ -1,0 +1,60 @@
+{
+  "schemaVersion": "1.0",
+  "checkedAt": "2026-10-09",
+  "cityRecord": "city-11183-bihar-sharif.json",
+  "purpose": "Document first-party local registry/map evidence and bounded anonymous geometry access review.",
+  "scopeLimits": {
+    "maxFullPolygonsRetainedInCityRecord": 0,
+    "maxFullPolygonsRetainedInReview": 0,
+    "maxFullPolygonsRetainedInRepository": 0,
+    "ownerOrAddressDataRetained": false,
+    "credentialsOrTokenValuesRetained": false,
+    "citywideCompletenessAsserted": false
+  },
+  "assessment": "The official Nalanda portal ties land records and revenue administration to Biharsharif. Its district map page provides constituency/block maps, not parcel features. State land-record pages expose identifier-driven records; no plot/owner query was submitted.",
+  "registryAssessment": "Nalanda District’s official government portal lists online Khata/Jamabandi land-record services and identifies the Revenue Section at the Biharsharif Collectorate. This is local district/city land-record administration. Available district maps are administrative/electoral rather than parcel geometry; no personal or plot lookup was made.",
+  "officialPrimarySources": [
+    {
+      "url": "https://nalanda.nic.in/en/service/land-records/",
+      "observation": "Nalanda District’s official government portal lists online Khata/Jamabandi land-record services and identifies the Revenue Section at the Biharsharif Collectorate. This is local district/city land-record administration. Available district maps are administrative/electoral rather than parcel geometry; no personal or plot lookup was made."
+    },
+    {
+      "url": "https://nalanda.nic.in/en/map-of-district/",
+      "observation": "Nalanda District’s official government portal lists online Khata/Jamabandi land-record services and identifies the Revenue Section at the Biharsharif Collectorate. This is local district/city land-record administration. Available district maps are administrative/electoral rather than parcel geometry; no personal or plot lookup was made."
+    },
+    {
+      "url": "https://dlrs.bihar.gov.in/services.html",
+      "observation": "Nalanda District’s official government portal lists online Khata/Jamabandi land-record services and identifies the Revenue Section at the Biharsharif Collectorate. This is local district/city land-record administration. Available district maps are administrative/electoral rather than parcel geometry; no personal or plot lookup was made."
+    },
+    {
+      "url": "https://biharbhumi.bihar.gov.in/Biharbhumi/",
+      "observation": "Nalanda District’s official government portal lists online Khata/Jamabandi land-record services and identifies the Revenue Section at the Biharsharif Collectorate. This is local district/city land-record administration. Available district maps are administrative/electoral rather than parcel geometry; no personal or plot lookup was made."
+    }
+  ],
+  "searchQueries": [
+    {
+      "language": "English",
+      "query": "Bihar Sharif Nalanda official land records revenue office cadastral map GIS",
+      "result": "Official Nalanda portal confirms land records and the Biharsharif Revenue Section; available map materials are administrative, no parcel schema verified.",
+      "method": "Separate English/local-language search and official-source review.",
+      "scope": "Identify current city-specific registry and safe public parcel geometry."
+    },
+    {
+      "language": "Hindi",
+      "query": "बिहार शरीफ नालंदा भूमि अभिलेख अंचल कार्यालय नक्शा आधिकारिक",
+      "result": "Localized search confirms local revenue/land-record services; no plot, khata, owner, or applicant data were queried.",
+      "method": "Separate English/local-language search and official-source review.",
+      "scope": "Identify current city-specific registry and safe public parcel geometry."
+    }
+  ],
+  "geometryDecision": "No parcel geometry retained; no qualifying point-level sample was available for retention.",
+  "coverageAssessment": {
+    "claimedScope": "Nalanda District’s official government portal lists online Khata/Jamabandi land-record services and identifies the Revenue Section at the Biharsharif Collectorate. This is local district/city land-record administration. Available district maps are administrative/electoral rather than parcel geometry; no personal or plot lookup was made.",
+    "verifiedOpenScope": "No citywide parcel coverage or WUP-point parcel presence is asserted.",
+    "citywideVerified": false,
+    "countrywideVerified": false,
+    "geometryVerified": false
+  },
+  "attempts": [],
+  "remainingUncertainty": "Parcel data may exist in other state/local systems; no WUP-point parcel presence or citywide coverage is established."
+}

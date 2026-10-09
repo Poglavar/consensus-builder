@@ -1,0 +1,39 @@
+{
+  "schemaVersion": "1.0",
+  "checkedAt": "2026-10-09",
+  "cityRecord": "city-627-dagupan-lingayen.json",
+  "purpose": "Read-only source discovery and bounded access review; no runtime or global changes.",
+  "scopeLimits": {
+    "maxFullPolygonsRetainedInThisCityReport": 0,
+    "maxFullPolygonsRetainedAcrossCityReview": 0,
+    "ownerOrAddressDataRetained": false,
+    "accountCredentialsOrPublicTokenValuesRetained": false
+  },
+  "assessment": "The official Dagupan City government says its City Assessor’s records cover the city and that digitized cadastral maps reveal land within Dagupan’s boundaries. Its City Assessor Citizen’s Charter confirms real-property assessment and requestable tax-map copies. This is direct city-local cadastral/assessment evidence; it does not establish anonymous full-vector access. No anonymous parcel-vector viewer, public feature schema, or bounded geometry route was found. Official evidence describes digitized city cadastral maps held/used by the City Assessor and document-request services. The official online real-property-tax service is account based and was not queried.",
+  "officialEvidence": [
+    {
+      "url": "https://www.dagupan.gov.ph/the-city/physical-profile/",
+      "observation": "Official city physical profile attributes its area statement to City Assessor records and says digitized cadastral maps reveal the land within Dagupan city boundaries."
+    },
+    {
+      "url": "https://www.dagupan.gov.ph/wp-content/uploads/2022/01/CITY-OF-DAGUPAN-CITIZENS-CHARTER-1.pdf",
+      "httpStatus": 200,
+      "observation": "City Assessor Citizen’s Charter assigns real-property assessment locally and describes tax-map copies by formal data request; some assessor services require a request and fees (including a PHP200-per-parcel service). No map data or property details were retrieved."
+    },
+    {
+      "url": "https://www.dagupan.gov.ph/",
+      "observation": "Official City website links to Online Real Estate Property Tax service; the linked taxpayer service is an account-based property-tax workflow, not a public cadastral geometry endpoint."
+    }
+  ],
+  "serviceTrace": {
+    "viewer": null,
+    "routes": [],
+    "notes": "Whether the City Assessor has a public downloadable vector service or only assessor-office/tax-map request workflows; exact WUP-centroid parcel coverage was not tested."
+  },
+  "geometryValidation": {
+    "schemaConfirmed": false,
+    "featureQueryMade": false,
+    "retainedFullPolygonCount": 0,
+    "reason": "No anonymous parcel-vector viewer, public feature schema, or bounded geometry route was found. Official evidence describes digitized city cadastral maps held/used by the City Assessor and document-request services. The official online real-property-tax service is account based and was not queried."
+  }
+}

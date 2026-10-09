@@ -1,0 +1,85 @@
+{
+  "schemaVersion": 1,
+  "kind": "city_parcel_source_research",
+  "checkedAt": "2026-10-09",
+  "rank": 1129,
+  "population2025k": 493.272,
+  "population2025Unit": "thousands",
+  "populationPlausibility": "Moderate",
+  "verifiedParcelResponse": null,
+  "source": null,
+  "registryFound": null,
+  "verifiedSample": false,
+  "targetGeometryEvidence": "none",
+  "nativeIdReadiness": "not_verified",
+  "cityId": "wup2025:9646",
+  "wupCityCode": 9646,
+  "name": "Dezhou",
+  "country": "China",
+  "countryCode": "CN",
+  "centerLatLon": [
+    37.4448001089788,
+    116.309994657024
+  ],
+  "pointBasis": "UN WUP 2025 population-weighted settlement point (latitude, longitude); not a municipal boundary or a parcel-coverage claim.",
+  "resultCategory": "no_local_custody_evidence",
+  "priorEvidence": [],
+  "priorBlocker": null,
+  "nativeLanguageSearches": [
+    {
+      "languageScript": "Chinese (Simplified)",
+      "exactQuery": "德州市 不动产登记 地籍图 德州市自然资源局 不动产登记中心 官方",
+      "date": "2026-10-09",
+      "executionMethod": "web.run search_query; independent local-language query",
+      "resultUrls": [],
+      "summary": "Search results were sparse and some were for the homonymous Dazhou (达州); those were excluded. No Dezhou-specific first-party parcel source established."
+    },
+    {
+      "languageScript": "English",
+      "exactQuery": "Dezhou China official cadastral parcel map real estate registration public GIS natural resources",
+      "date": "2026-10-09",
+      "executionMethod": "web.run search_query; independent English query",
+      "resultUrls": [],
+      "summary": "Search results were sparse and some were for the homonymous Dazhou (达州); those were excluded. No Dezhou-specific first-party parcel source established."
+    }
+  ],
+  "officialAndRelevantLeads": [],
+  "requestsAndEndpointChecks": [],
+  "coverageAssessment": {
+    "claimedScope": "Search results were sparse and some were for the homonymous Dazhou (达州); those were excluded. No Dezhou-specific first-party parcel source established.",
+    "verifiedOpenScope": null,
+    "citywideVerified": false,
+    "countrywideVerified": false,
+    "geometryVerified": false
+  },
+  "blocker": "Need exact 德州 official bureau/service domain and a verified local-custody source before status can be set.",
+  "remainingUncertainty": "Search results were sparse and some were for the homonymous Dazhou (达州); those were excluded. No Dezhou-specific first-party parcel source established.",
+  "nextStep": "Need exact 德州 official bureau/service domain and a verified local-custody source before status can be set.",
+  "runtimeReadiness": "not_enabled_no_verified_public_geometry",
+  "adapterReady": false,
+  "schemaVersionNote": "Research evidence only; no runtime adapter configured.",
+  "population2025": 493272,
+  "populationUnit": "persons",
+  "populationPlausibility2025": "Moderate",
+  "publicParcelGeometryFound": false,
+  "sourceIds": [],
+  "registryBasis": "Search results were sparse and some were for the homonymous Dazhou (达州); those were excluded. No Dezhou-specific first-party parcel source established.",
+  "registryEvidenceUrls": [],
+  "technicalBlocker": "Need exact 德州 official bureau/service domain and a verified local-custody source before status can be set.",
+  "runtimeAssessment": {
+    "status": "not_enabled_no_verified_public_geometry",
+    "reason": "Need exact 德州 official bureau/service domain and a verified local-custody source before status can be set."
+  },
+  "rootReviewedAt": "2026-10-09T07:13:02.981057+00:00",
+  "cohort": "overnight-next-1101-1200",
+  "cohortState": "root_reviewed_integrated_locally",
+  "integrationState": "integrated_locally",
+  "rootReview": {
+    "checkedAt": "2026-10-09T07:13:02.981057+00:00",
+    "decision": "Reviewed city identity, canonical population/point, separate searches and saved source/request evidence. No full public parcel geometry verified in this pass.",
+    "custodyScope": "Search results were sparse and some were for the homonymous Dazhou (达州); those were excluded. No Dezhou-specific first-party parcel source established.",
+    "transportFailuresDoNotProveAbsence": true,
+    "geometryClaimScope": "Investigation outcome only; no worldwide or citywide absence asserted."
+  },
+  "integratedAt": "2026-10-09T07:14:03.673112+00:00"
+}

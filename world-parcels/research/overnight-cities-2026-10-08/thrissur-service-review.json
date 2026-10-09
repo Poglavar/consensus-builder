@@ -1,0 +1,74 @@
+{
+  "schemaVersion": "1.0",
+  "checkedAt": "2026-10-09",
+  "cityRecord": "city-9737-thrissur.json",
+  "purpose": "Document first-party local registry/map evidence and bounded anonymous geometry access review.",
+  "scopeLimits": {
+    "maxFullPolygonsRetainedInCityRecord": 0,
+    "maxFullPolygonsRetainedInReview": 0,
+    "maxFullPolygonsRetainedInRepository": 0,
+    "ownerOrAddressDataRetained": false,
+    "credentialsOrTokenValuesRetained": false,
+    "citywideCompletenessAsserted": false
+  },
+  "assessment": "The Kerala Department’s official e-Maps link points to emaps.kerala.gov.in, but requests timed out and the TLS certificate validation failed. No TLS bypass was used, so viewer JS, service schema, and parcel geometry were not verified. Whether the official e-Maps service is temporarily unavailable or whether another official endpoint serves the same city-specific cadastral map; parcel coverage at the WUP point remains unknown.",
+  "registryAssessment": "Kerala’s Directorate of Survey and Land Records operates BhuNaksha/eMaps, and its official description says citizens can obtain digital sketches for parcels in mapped villages. The official DSLR directory lists Thrissur district survey and mapping offices. This confirms local survey/cadastral functions, but not point-specific coverage.",
+  "officialPrimarySources": [
+    {
+      "url": "https://emaps.kerala.gov.in/bhunaksha/kl/home.html",
+      "observation": "Official Kerala eMaps page describes cadastral mapping by village and says citizens can obtain a digital sketch of each parcel in a village."
+    },
+    {
+      "url": "https://emaps.kerala.gov.in/bhunaksha/32/map.html",
+      "observation": "Official Kerala BhuNaksha viewer page for state code 32; UI presents district/taluk/village selection and plot information."
+    },
+    {
+      "url": "https://dslr.kerala.gov.in/en/sub-offices-2/",
+      "observation": "Official Directorate of Survey and Land Records directory lists Thrissur survey/mapping offices."
+    },
+    {
+      "url": "https://dslr.kerala.gov.in/en/2021/02/20/e-maps-news/",
+      "observation": "Official Department of Survey and Land Records page links to the e-Maps viewer; the linked official host could not be reached with normal TLS validation."
+    }
+  ],
+  "searchQueries": [
+    {
+      "language": "English",
+      "query": "Thrissur official cadastral parcel map land survey GIS Kerala eRekha BhuNaksha",
+      "result": "Found Kerala’s official eMaps/BhuNaksha portal and Directorate of Survey and Land Records; the portal describes village cadastral mapping and public parcel sketches.",
+      "method": "Separate English-language search followed by official portal and department directory review."
+    },
+    {
+      "language": "Malayalam",
+      "query": "തൃശ്ശൂർ ഭൂനക്ശാ cadastral parcel map survey and land records official Kerala e maps",
+      "result": "Local-language search found the Kerala government eMaps/BhuNaksha system and official survey department pages. The search did not resolve this exact urban point to a selected mapped village.",
+      "method": "Separate Malayalam-language search followed by official portal review."
+    }
+  ],
+  "geometryDecision": "No parcel geometry retained; the exact point-level public response was unavailable or unverified.",
+  "coverageAssessment": {
+    "claimedScope": "Kerala’s Directorate of Survey and Land Records operates BhuNaksha/eMaps, and its official description says citizens can obtain digital sketches for parcels in mapped villages. The official DSLR directory lists Thrissur district survey and mapping offices. This confirms local survey/cadastral functions, but not point-specific coverage.",
+    "verifiedOpenScope": "The official viewer was discoverable, but TLS certificate validation failed on the direct portal request; without a verified point-selected Thrissur map extent, no parcel vector query was made.",
+    "citywideVerified": false,
+    "countrywideVerified": false,
+    "geometryVerified": false
+  },
+  "attempts": [
+    {
+      "url": "https://emaps.kerala.gov.in/bhunaksha/32/map.html",
+      "method": "GET official BhuNaksha viewer",
+      "result": "TLS certificate validation failed (certificate expired); no page data or parcel geometry accepted from that request. Web search index confirms the official viewer UI but not point-specific coverage."
+    },
+    {
+      "url": "https://emaps.kerala.gov.in/bhunaksha/kl/home.html",
+      "method": "Official eMaps information page review",
+      "result": "Portal description confirms village parcel mapping and digital sketch service; no exact Thrissur village selection or full polygon response was obtained."
+    },
+    {
+      "url": "https://emaps.kerala.gov.in/bhunaksha/kl/home.html",
+      "method": "Open official eMaps entry linked from Kerala Department of Survey and Land Records; official web fetch timed out and direct TLS validation failed due expired certificate. No certificate bypass or alternate host was used.",
+      "result": "Viewer could not be retrieved safely, so no viewer JS/service contract or point geometry was verified."
+    }
+  ],
+  "remainingUncertainty": "Whether the official e-Maps service is temporarily unavailable or whether another official endpoint serves the same city-specific cadastral map; parcel coverage at the WUP point remains unknown."
+}

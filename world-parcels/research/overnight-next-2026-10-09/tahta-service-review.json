@@ -1,0 +1,95 @@
+{
+  "schemaVersion": "1.0",
+  "checkedAt": "2026-10-09",
+  "cityRecord": "city-7137-tahta.json",
+  "purpose": "Document separate English/local-language research, local land-registry custody scope, direct anonymous request outcomes and safe geometry limits.",
+  "scopeLimits": {
+    "maxFullPolygonsRetainedInCityRecord": 0,
+    "maxFullPolygonsRetainedInReview": 0,
+    "maxFullPolygonsRetainedInRepository": 0,
+    "ownerOrAddressDataRetained": false,
+    "credentialsOrTokenValuesRetained": false,
+    "citywideCompletenessAsserted": false
+  },
+  "assessment": "Egyptian national surveying and mapping services were located, but no official Tahta/Sohag land-registry custody source was established by the city-specific searches.",
+  "registryAssessment": "No city-level legal land/cadastral custodian was established by this research; listed mapping/service sources have the limited scope stated.",
+  "officialPrimarySources": [
+    {
+      "url": "https://www.esa.gov.eg/services.aspx",
+      "operator": "Egyptian General Authority for Surveying",
+      "observation": "National surveying authority offers digital and paper maps and property-inventory services; no city-specific Tahta cadastre or parcel service was found."
+    },
+    {
+      "url": "https://www.mwri.gov.eg/?lang=en&page_id=33317",
+      "operator": "Egyptian Ministry of Water Resources and Irrigation",
+      "observation": "Describes the Survey Authority as the national provider of surveying, property inventory and topographic-map services; this does not establish local Tahta registry custody."
+    }
+  ],
+  "searchQueries": [
+    {
+      "language": "English",
+      "query": "Tahta Egypt official land registry cadastral map Survey Authority Sohag",
+      "result": "Separate English-language source discovery; only cited first-party sources are used as evidence.",
+      "method": "Separate English-language search followed by official-source review.",
+      "actualResultUrls": [
+        "https://www.esa.gov.eg/services.aspx",
+        "https://www.mwri.gov.eg/?lang=en&page_id=33317"
+      ],
+      "scope": "Identify city-local land registry/cadastral custody and anonymous public parcel geometry. Preserve the exact WUP settlement point. Do not submit owner, address, tax, account, applicant, or private-property values. Public geographic selectors and public native parcel IDs are permitted."
+    },
+    {
+      "language": "Arabic",
+      "query": "طهطا سوهاج السجل العقاري خريطة كادستر الأراضي",
+      "result": "Separate local-language search followed by first-party source review; cited official sources are relevant to the locality and stated scope.",
+      "method": "Separate local-language web search followed by first-party source review.",
+      "actualResultUrls": [
+        "https://www.esa.gov.eg/services.aspx"
+      ],
+      "scope": "Identify city-local land registry/cadastral custody and anonymous public parcel geometry. Preserve the exact WUP settlement point. Do not submit owner, address, tax, account, applicant, or private-property values. Public geographic selectors and public native parcel IDs are permitted."
+    }
+  ],
+  "geometryDecision": {
+    "verified": false,
+    "sourceId": null,
+    "sampleCount": 0,
+    "sampleFile": null,
+    "nativeId": null,
+    "nativeIdField": null,
+    "exactWupPointTest": "No source-native full polygon was returned at the exact unchanged WUP point. publicParcelGeometryFound:false means unverified in this investigation, not confirmed absence.",
+    "requestEvidence": [
+      {
+        "url": "https://www.esa.gov.eg/services.aspx",
+        "method": "GET; anonymous; standard TLS; redirect-following; no credentials or property-value selectors",
+        "httpStatus": 200,
+        "contentType": "text/html; charset=utf-8",
+        "bytesRead": 18949,
+        "assessment": "National Survey Authority service page; not city-specific cadastral geometry."
+      }
+    ]
+  },
+  "coverageAssessment": {
+    "claimedScope": "Egyptian national surveying and mapping services were located, but no official Tahta/Sohag land-registry custody source was established by the city-specific searches.",
+    "verifiedOpenScope": "No safe source-native full parcel polygon was returned in this investigation.",
+    "citywideVerified": false,
+    "countrywideVerified": false,
+    "geometryVerified": false
+  },
+  "attempts": [
+    "HTTP 200 text/html; charset=utf-8; 18949 response bytes. National Survey Authority service page; not city-specific cadastral geometry."
+  ],
+  "remainingUncertainty": "Egyptian national surveying and mapping services were located, but no official Tahta/Sohag land-registry custody source was established by the city-specific searches. Public parcel geometry, coverage, legal/title scope and currentness beyond the evidence stated remain unverified.",
+  "nextStep": "Keep runtime disabled until root review determines whether the official source and returned geometry meet adapter criteria.",
+  "runtimeAssessment": {
+    "status": "not_enabled_no_verified_public_geometry",
+    "reason": "No Tahta-specific cadastral map schema or anonymous geometry route was identified; national Survey Authority map services do not establish city coverage."
+  },
+  "cohort": "overnight-next-1101-1200",
+  "cohortState": "research_complete_pending_root_review",
+  "integrationState": "not_integrated",
+  "rootReviewedAt": "2026-10-09T07:25:02.908399+00:00",
+  "rootReview": {
+    "checkedAt": "2026-10-09T07:25:02.908399+00:00",
+    "decision": "Reviewed canonical identity, primary custody scope, separate search and direct-source request evidence. No public full parcel geometry verified; unresolved local custody preserved as null.",
+    "sourceEvidenceLimits": "Transport failure or lack of a verified route is not evidence that parcel geometry does not exist."
+  }
+}

@@ -1,0 +1,51 @@
+{
+  "schemaVersion": "1.0",
+  "checkedAt": "2026-10-09",
+  "cityRecord": "city-4368-namangan.json",
+  "purpose": "Read-only city-specific source discovery and bounded access review; no runtime or global changes.",
+  "scopeLimits": {
+    "maxFullPolygonsRetainedInThisCityReport": 0,
+    "maxFullPolygonsRetainedAcrossCityReview": 0,
+    "ownerOrAddressDataRetained": false,
+    "accountCredentialsOrPublicTokenValuesRetained": false
+  },
+  "assessment": "The official Uzbekistan Cadastre Agency lists a Namangan city cadastre office and city cadastral divisions; current agency reporting also documents cadastral inventory work in Namangan Region. This establishes city-local cadastral administration, but not public city parcel-vector access. National geoportal and State Urban Cadastre are candidates, not yet verified as city-feature sources. The local cadastral office is confirmed, but the national public geoportal presents a terms-consent step and no documented geometry/property allowlist was found. The city-scoped vector layer and privacy-safe feature contract remain unverified; no parcel query was made.",
+  "officialEvidence": [
+    {
+      "url": "https://kadastr.uz/uz/news/news-02-27-10-2023",
+      "observation": "Official Uzbekistan Cadastre Agency listing includes Namangan city among the regional cadastral offices/divisions. The site timed out during direct retrieval; indexed first-party result was used, and no outage conclusion is made."
+    },
+    {
+      "url": "https://gov.uz/oz/kadastr/news/view/199050",
+      "observation": "Cadastre Agency news (2026-07-29) reports ongoing technical inventory of real-estate objects in Namangan Region; province-wide counts are not treated as city coverage."
+    },
+    {
+      "url": "https://open.ngis.uz/",
+      "observation": "National Cadastre Agency Geoportal shell advertises cadastral-number search and displays a public-offer consent dialog. No consent, search or feature request was submitted; no safe property schema was verified."
+    },
+    {
+      "url": "https://dshk.uz/ru/",
+      "observation": "State Urban Cadastre portal describes general public and restricted user data and urban-planning layers; its public data scope is not shown to include Namangan cadastral parcels."
+    },
+    {
+      "url": "https://gov.uz/en/namangancity/contacts",
+      "observation": "Official city administration page identifies Namangan City Administration and its office, confirming city context but not parcel data."
+    }
+  ],
+  "serviceTrace": {
+    "viewer": {
+      "url": "https://open.ngis.uz/",
+      "routes": [
+        "Public portal shell includes cadastral-number search; a terms-of-use consent dialog appears. No search or layer query was made."
+      ],
+      "notes": "The portal is national rather than a Namangan city service, and no city-specific feature schema or safe attributes were verified. The State Urban Cadastre portal separately advertises public data and restricted registered-user content; no cadastral parcel layer was established."
+    },
+    "notes": "Whether the Namangan city office’s map data are exposed through the national geoportal, what properties are returned, and whether the WUP point is covered by an anonymous full-geometry service."
+  },
+  "geometryValidation": {
+    "schemaConfirmed": false,
+    "featureQueryMade": false,
+    "retainedFullPolygonCount": 0,
+    "reason": "The local cadastral office is confirmed, but the national public geoportal presents a terms-consent step and no documented geometry/property allowlist was found. The city-scoped vector layer and privacy-safe feature contract remain unverified; no parcel query was made."
+  }
+}

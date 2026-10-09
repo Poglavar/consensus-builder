@@ -1,0 +1,140 @@
+{
+  "name": "Erbil",
+  "country": "Iraq",
+  "countryCode": "IQ",
+  "rank": 312,
+  "point": [
+    36.1835825456192,
+    44.0357591213196
+  ],
+  "freshResearch": {
+    "queries": [
+      {
+        "language": "Arabic",
+        "query": "أربيل دائرة التسجيل العقاري خارطة عقار خريطة كاداستر GIS قطع أراضي",
+        "result": "KRG official services list Erbil property registration directorates and a property-boundary/map service. It requires an owner/attorney, latest registration copy and ID documents, with fees and in-office survey. KRSO GIS describes administrative boundaries/topography, not cadastre. No anonymous parcel viewer/API found.",
+        "urls": [
+          "https://services.gov.krd/en/service/moj-09-en",
+          "https://services.gov.krd/en/service/moj-01-en",
+          "https://krso.gov.krd/en/statistics/map"
+        ],
+        "method": "Arabic/English search and first-party KRG service page/catalog review."
+      },
+      {
+        "language": "Kurdish (Sorani)",
+        "query": "هەولێر تۆمارکردنی خانووبەرە نەخشەی موڵک GIS پارچە زەوی",
+        "result": "No public parcel map surfaced. KRG service documentation confirms Erbil registry offices and an owner/document-gated property-map/boundary service; no authenticated workflow was entered.",
+        "urls": [
+          "https://services.gov.krd/en/service/moj-09-en",
+          "https://services.gov.krd/en/service/moj-01-en"
+        ],
+        "method": "Kurdish search and official Arabic/English government service review."
+      },
+      {
+        "language": "English",
+        "query": "Erbil official land registry cadastral property map public GIS parcel boundaries",
+        "result": "Official KRG portal identifies Erbil registration directorates and property-map/boundary procedures. KRSO GIS lists administrative/statistical layers only; no public cadastral parcels.",
+        "urls": [
+          "https://services.gov.krd/en/service/moj-09-en",
+          "https://krso.gov.krd/en/statistics/map"
+        ],
+        "method": "First-party government page review and public GIS catalog inspection."
+      }
+    ],
+    "portals": [
+      {
+        "name": "KRG Property Boundary Demarcation",
+        "operator": "Directorate of Land Registry, Kurdistan Regional Government / Ministry of Justice",
+        "url": "https://services.gov.krd/en/service/moj-09-en",
+        "observation": "Official service issues a property boundary/map after owner/attorney application with current registry copy, identity/residence documents, fees and surveyor visit; not an open viewer."
+      },
+      {
+        "name": "Erbil Real Estate Registration Directorates",
+        "operator": "Directorate of Land Registry, Ministry of Justice, Kurdistan Regional Government",
+        "url": "https://services.gov.krd/en/service/moj-01-en",
+        "observation": "Official service page identifies Erbil registry directorates and property registration services."
+      },
+      {
+        "name": "KRSO GIS map catalog",
+        "operator": "Kurdistan Region Statistics Office",
+        "url": "https://krso.gov.krd/en/statistics/map",
+        "observation": "Official GIS covers administrative divisions, rivers, dams, topography and statistics; page does not list cadastral parcels."
+      }
+    ],
+    "requests": [
+      {
+        "url": "https://services.gov.krd/en/service/moj-09-en",
+        "method": "GET web inspection",
+        "status": 200,
+        "type": "text/html",
+        "observation": "Owner/document-gated boundary and property-map service details."
+      },
+      {
+        "url": "https://services.gov.krd/en/service/moj-01-en",
+        "method": "GET web inspection",
+        "status": 200,
+        "type": "text/html",
+        "observation": "Property registry service page lists Erbil directorates and application requirements."
+      },
+      {
+        "url": "https://krso.gov.krd/en/statistics/map",
+        "method": "GET web inspection",
+        "status": 200,
+        "type": "text/html",
+        "observation": "Official GIS catalog lists administrative/statistical maps, not cadastral parcels."
+      }
+    ]
+  },
+  "status": "complete",
+  "verifiedParcelResponse": {
+    "httpStatus": null,
+    "featureType": null,
+    "responseType": null,
+    "responseCrs": null,
+    "returnedFullPolygonCount": 0,
+    "uniqueFullPolygonCount": 0,
+    "wupPointContained": null,
+    "limitations": "No full parcel polygon was fetched or independently verified."
+  },
+  "source": {
+    "id": "krg-erbil-land-registry-map-service",
+    "name": "KRG Directorate of Land Registry property map service",
+    "operator": "Ministry of Justice, Kurdistan Regional Government",
+    "url": "https://services.gov.krd/en/service/moj-09-en",
+    "format": "Individual registry/property map; public vector format unspecified",
+    "access": "Owner or authorized representative with latest registration copy and identity documents; fee and survey process",
+    "nativeIdField": "Property registration record (not queried)",
+    "geometryCrs": null
+  },
+  "coverageAssessment": {
+    "claimedScope": "First-party KRG service pages list Erbil registry offices and an official individual property map/boundary service. Access is owner-specific, not a public vector interface.",
+    "verifiedOpenScope": "Map service requires owner/attorney status, registry copy, identification, fees and surveyor visit; no open parcel endpoint found.",
+    "countrywideVerified": false,
+    "citywideVerified": false
+  },
+  "registryFound": true,
+  "registryBasis": "First-party KRG service pages list Erbil registry offices and an official individual property map/boundary service. Access is owner-specific, not a public vector interface.",
+  "verifiedSample": false,
+  "publicParcelGeometryFound": false,
+  "resultCategory": "local_registry_confirmed_property_map_gated",
+  "technicalBlocker": "Map service requires owner/attorney status, registry copy, identification, fees and surveyor visit; no open parcel endpoint found.",
+  "remainingUncertainty": "Whether a separate public Erbil cadastral viewer or open vector layer exists outside the owner-specific map service.",
+  "nextStep": "Only revisit if a first-party public parcel endpoint is found; do not submit identity details or attempt owner-specific lookup.",
+  "sourceIds": [],
+  "schemaVersion": 1,
+  "checkedAt": "2026-10-09",
+  "wupCityCode": 2345,
+  "cityId": "wup2025:2345",
+  "queueRank": 312,
+  "population2025": 1582829,
+  "populationPlausibility2025": "High",
+  "populationUnit": "persons",
+  "pointBasis": "UN WUP 2025 population-weighted settlement centroid; this is not a municipal boundary or a parcel-coverage claim.",
+  "centerLatLon": [
+    36.1835825456192,
+    44.0357591213196
+  ],
+  "runtimeReadiness": "not_enabled_no_verified_public_geometry",
+  "adapterReady": false,
+  "rootReviewedAt": "2026-10-08T22:19:03.228348+00:00"
+}

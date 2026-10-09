@@ -1,0 +1,64 @@
+{
+  "schemaVersion": "1.0",
+  "checkedAt": "2026-10-09",
+  "cityRecord": "city-4567-acapulco.json",
+  "purpose": "Document official city parcel-source evidence, bounded anonymous geometry route review, and remaining coverage/runtime limits.",
+  "scopeLimits": {
+    "maxFullPolygonsRetainedInCityRecord": 3,
+    "maxFullPolygonsRetainedInReview": 3,
+    "maxFullPolygonsRetainedInRepository": 3,
+    "ownerOrAddressDataRetained": false,
+    "credentialsOrTokenValuesRetained": false,
+    "citywideCompletenessAsserted": false
+  },
+  "assessment": "Acapulco de Juárez municipal cadastre service evidence. Risk Atlas layers were not treated as parcel geometry.",
+  "registryAssessment": "The official municipal portal identifies a Dirección de Catastro e Impuesto Predial and lists its local office/contact. The 2026 municipal revenue law describes prints of verified/cadastrally registered parcel locations through digital cartography and a separate planimetric restitution vector coverage for not-yet-verified urban parcels. This confirms municipal cadastral activity, not a public vector download.",
+  "officialPrimarySources": [
+    {
+      "url": "https://acapulco.gob.mx/predial/",
+      "httpStatus": 200,
+      "observation": "Official city page lists the Dirección de Catastro e Impuesto Predial and its downtown office/contact for balance questions and clarifications."
+    },
+    {
+      "url": "https://acapulco.gob.mx/transparencia/descargar.php?d=%2Ftransparencia%2Fwp-content%2Fuploads%2Ffinanzas%2Finfofinanciera%2FPeriodico_Oficial_Ley_Ingresos_2026.pdf",
+      "observation": "2026 municipal revenue law lists fees for printed locations of already verified/cadastrally registered urban parcels via digital cartography, plus a distinct planimetric restitution vector coverage for unverified parcels."
+    },
+    {
+      "url": "https://acapulco.gob.mx/transparencia/wp-content/uploads/marcojuridico/leyes/Ley_266_Catastro_Municipal_Guerrero.pdf",
+      "observation": "Guerrero municipal cadastral law establishes cadastral/parcel map registers and the fields that may be held in cadastral records; it is not a published city vector service."
+    },
+    {
+      "url": "https://acapulco.gob.mx/pcivil/mapa_atlasdigital.html",
+      "observation": "Official interactive risk atlas contains hazard and planning layers with some parcel-related counts; it does not expose or establish a municipal cadastral parcel polygon layer."
+    }
+  ],
+  "searchQueries": [
+    {
+      "language": "Spanish",
+      "query": "Acapulco Guerrero catastro municipal cartografía predial digital mapa consulta predios sitio oficial",
+      "result": "Official city portal identifies Catastro e Impuesto Predial, and the 2026 municipal fee schedule documents printed parcel locations from digital cartography. No vector service/schema was identified; the Risk Atlas is not cadastral parcel coverage.",
+      "method": "Separate Spanish-language discovery plus official municipal service and map inspection."
+    },
+    {
+      "language": "English",
+      "query": "Acapulco Mexico official municipal cadastral parcel map GIS digital cartography property tax",
+      "result": "No separate official public parcel-geometry service was found; municipal cadastre office and cartography documentation provide registry evidence.",
+      "method": "Separate English-language discovery followed by official-source inspection."
+    }
+  ],
+  "serviceChecks": [
+    {
+      "url": "https://acapulco.gob.mx/pcivil/mapa_atlasdigital.html",
+      "method": "Official public viewer inspection",
+      "observation": "No anonymous full-parcel feature service or vector schema was found in the official city materials inspected. The official Risk Atlas is a hazard/planning interface and its “predios” counts/layers do not establish cadastral parcel geometry."
+    }
+  ],
+  "geometryEvidence": null,
+  "privacy": "No owner, personal title, or address data was requested or retained. Native parcel identifiers and polygon geometry are retained only where the official public schema supports them.",
+  "runtimeAssessment": "not_enabled",
+  "qualification": {
+    "boundedSamples": 0,
+    "adapterQualified": false,
+    "note": "No adapter protocol qualification or shared runtime integration was performed."
+  }
+}

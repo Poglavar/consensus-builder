@@ -1,0 +1,61 @@
+{
+  "schemaVersion": "1.0",
+  "checkedAt": "2026-10-09",
+  "cityRecord": "city-11594-shangrao.json",
+  "purpose": "Document first-party local registry/map evidence and bounded anonymous parcel-geometry access review.",
+  "scopeLimits": {
+    "maxFullPolygonsRetainedInCityRecord": 0,
+    "maxFullPolygonsRetainedInReview": 0,
+    "maxFullPolygonsRetainedInRepository": 0,
+    "ownerOrAddressDataRetained": false,
+    "credentialsOrTokenValuesRetained": false,
+    "citywideCompletenessAsserted": false
+  },
+  "assessment": "Local real-estate registration evidence verified; service described is an applicant-specific record workflow, not a public parcel-geometry map. No public geometry service/schema was exposed by the official registration source. The cited records service requires the claimant’s identification and concerns own-property certificates; no personal lookup was attempted.",
+  "registryAssessment": "The official Shangrao 12345 service platform records an answer from the Municipal Natural Resources Bureau directing residents to Shangrao Municipal Real Estate Registration Center or the Xinzhou District service-center registration counter. The procedure is for a claimant’s own-property certificate and requires identity documents; no personal query was made.",
+  "officialPrimarySources": [
+    {
+      "url": "https://szrx.zgsr.gov.cn/ecall/case/article/62",
+      "observation": "Official Shangrao municipal service hotline answer names the Municipal Real Estate Registration Center and Xinzhou District registration window and describes identity-required own-property certificate issuance."
+    }
+  ],
+  "searchQueries": [
+    {
+      "language": "English",
+      "query": "Shangrao China official real estate registration registry cadastral parcel map GIS",
+      "scope": "Locate the city/local land registry or cadastral source and assess anonymous public polygon geometry.",
+      "result": "No public geometry service/schema was exposed by the official registration source. The cited records service requires the claimant’s identification and concerns own-property certificates; no personal lookup was attempted. Official registry evidence: The official Shangrao 12345 service platform records an answer from the Municipal Natural Resources Bureau directing residents to Shangrao Municipal Real Estate Registration Center or the Xinzhou District service-center registration counter. The procedure is for a claimant’s own-property certificate and requires identity documents; no personal query was made.",
+      "actualResultUrls": [
+        "https://szrx.zgsr.gov.cn/ecall/case/article/62"
+      ],
+      "executionMethod": "Separate English-language web search, followed by review of first-party source pages and service metadata."
+    },
+    {
+      "language": "Chinese",
+      "query": "上饶市 不动产登记中心 信州区 登记窗口 地籍图 官方",
+      "scope": "Find first-party local-language land registration, cadastral map or city-specific parcel service evidence.",
+      "result": "No public geometry service/schema was exposed by the official registration source. The cited records service requires the claimant’s identification and concerns own-property certificates; no personal lookup was attempted. Official registry evidence: The official Shangrao 12345 service platform records an answer from the Municipal Natural Resources Bureau directing residents to Shangrao Municipal Real Estate Registration Center or the Xinzhou District service-center registration counter. The procedure is for a claimant’s own-property certificate and requires identity documents; no personal query was made.",
+      "actualResultUrls": [
+        "https://szrx.zgsr.gov.cn/ecall/case/article/62"
+      ],
+      "executionMethod": "Separate Chinese-language web search, followed by review of first-party source pages; no personal property query."
+    }
+  ],
+  "geometryDecision": {
+    "publicParcelGeometryFound": null,
+    "decision": "No full anonymous parcel feature response was obtained. No geometry sample is retained; exact point geometry remains unverified."
+  },
+  "coverageAssessment": {
+    "citywideCompletenessAsserted": false,
+    "scope": "Reviewed official local sources and the exact unchanged WUP locator only; no citywide parcel completeness is claimed.",
+    "limits": "No anonymous geometry endpoint or exact point parcel coverage was verified."
+  },
+  "attempts": [
+    {
+      "url": "https://szrx.zgsr.gov.cn/ecall/case/article/62",
+      "method": "Official public source/service review",
+      "result": "Official Shangrao municipal service hotline answer names the Municipal Real Estate Registration Center and Xinzhou District registration window and describes identity-required own-property certificate issuance."
+    }
+  ],
+  "remainingUncertainty": "No anonymous geometry endpoint or exact point parcel coverage was verified."
+}

@@ -1,0 +1,95 @@
+{
+  "schemaVersion": "1.0",
+  "checkedAt": "2026-10-09",
+  "cityRecord": "city-7504-west-palm-beach.json",
+  "purpose": "Read-only local registry and public parcel geometry source discovery; parent owns any runtime qualification.",
+  "scopeLimits": {
+    "maxFullPolygonsRetainedInCityRecord": 0,
+    "maxFullPolygonsRetainedInReview": 0,
+    "maxFullPolygonsRetainedAcrossCityReview": 1,
+    "ownerOrAddressDataRetained": false,
+    "accountCredentialsOrPublicTokenValuesRetained": false,
+    "citywideCompletenessAsserted": false
+  },
+  "assessment": "The City parcel service extent excludes the WUP locator; an exact query to the City endpoint timed out locally after 15 seconds. The County Property Appraiser endpoint returned a county polygon at the point, but city-jurisdiction binding remains unresolved.",
+  "registryAssessment": "First-party Palm Beach County Property Appraiser and West Palm Beach GIS sources document the county parcel map and monthly City copy. The WUP locator is outside the City layer extent, so the local registry/source match remains partial.",
+  "searchQueries": [
+    {
+      "language": "English",
+      "query": "West Palm Beach Florida official parcel GIS property appraiser parcel data feature service",
+      "scope": "Find city/county first-party parcel map and determine whether public geometry can be read safely.",
+      "result": "Official City GIS metadata exposes a polygon Parcels feature layer copied monthly from Palm Beach County; official County Property Appraiser GIS identifies the county map as the official property-ownership map. A safe county-level exact-point query returned one full polygon with only OBJECTID. The WUP locator projects outside the City GIS layer extent, so the County sample is not claimed as city-bound.",
+      "actualResultUrls": [
+        "https://wpbgisportal.wpb.org/server/rest/services/Parcel/Parcels_New/FeatureServer/0?f=pjson",
+        "https://pbcpao.gov/departments/gis.htm",
+        "https://gis.pbcgov.org/arcgis/rest/services/Parcels/PARCEL_PROPERTY_USE_PAPA/MapServer/14?f=pjson"
+      ],
+      "executionMethod": "Separate language-specific web search and first-party source/service review; no property-specific record lookup."
+    },
+    {
+      "language": "English (local official language)",
+      "query": "Palm Beach County Property Appraiser GIS official parcel map West Palm Beach City parcel",
+      "scope": "Verify the county’s local parcel-maintenance role and the City GIS copy relationship.",
+      "result": "Palm Beach County Property Appraiser says it maintains the county official parcel ownership map; the City of West Palm Beach layer states it is downloaded from PBC monthly. No owner, address, assessment, tax, or transaction attributes were requested.",
+      "actualResultUrls": [
+        "https://pbcpao.gov/departments/gis.htm",
+        "https://wpbgisportal.wpb.org/server/rest/services/Parcel/Parcels_New/FeatureServer/0?f=pjson"
+      ],
+      "executionMethod": "Separate language-specific web search and first-party source/service review; no property-specific record lookup."
+    }
+  ],
+  "officialPrimarySources": [
+    {
+      "url": "https://wpbgisportal.wpb.org/server/rest/services/Parcel/Parcels_New/FeatureServer/0?f=pjson",
+      "observation": "City layer Parcels is polygon geometry; its metadata says the data is downloaded from Palm Beach County on the first Monday monthly and staged/refreshed the following Sunday; it is used in public and internal applications."
+    },
+    {
+      "url": "https://pbcpao.gov/departments/gis.htm",
+      "observation": "County Property Appraiser describes the county GIS as the official parcel ownership map."
+    },
+    {
+      "url": "https://gis.pbcgov.org/arcgis/rest/services/Parcels/PARCEL_PROPERTY_USE_PAPA/MapServer/14?f=pjson",
+      "observation": "Public polygon layer metadata; safe query requested only OBJECTID and geometry."
+    }
+  ],
+  "serviceChecks": [
+    {
+      "url": "https://wpbgisportal.wpb.org/server/rest/services/Parcel/Parcels_New/FeatureServer/0?f=pjson",
+      "method": "GET metadata via official ArcGIS REST page",
+      "status": 200,
+      "observation": "Polygon layer in EPSG:2881; map supports query; schema also contains unrelated owner/address/value attributes, none requested."
+    },
+    {
+      "url": "https://wpbgisportal.wpb.org/server/rest/services/Parcel/Parcels_New/FeatureServer/0/query",
+      "method": "GET exact WUP point query via local shell, 15s timeout",
+      "status": null,
+      "observation": "No HTTP response; local request timed out. This is not evidence the provider is down."
+    },
+    {
+      "url": "https://gis.pbcgov.org/arcgis/rest/services/Parcels/PARCEL_PROPERTY_USE_PAPA/MapServer/14?f=pjson",
+      "method": "GET",
+      "status": 200,
+      "observation": "County polygon layer in EPSG:3857; only system OBJECTID was requested in feature query."
+    },
+    {
+      "url": "https://gis.pbcgov.org/arcgis/rest/services/Parcels/PARCEL_PROPERTY_USE_PAPA/MapServer/14/query",
+      "method": "GET exact WUP point, outFields=OBJECTID, returnGeometry=true, outSR=4326, f=geojson",
+      "status": 200,
+      "observation": "One full Polygon returned; WUP point is inside. County-wide result only; city-layer projected extent excludes point."
+    }
+  ],
+  "geometryEvidence": {
+    "decision": "One complete county geometry observed at the WUP locator and retained as a safe sample; it is not represented as city-bound because the City layer extent excludes the point.",
+    "sampleFile": "city-7504-west-palm-beach-samples.geojson",
+    "featureCount": 1,
+    "outputFields": [
+      "OBJECTID"
+    ],
+    "fullPolygonLimit": 1
+  },
+  "privacy": "No owner, address, parcel account, tax, price, assessment, transaction, credentials or token values requested or retained.",
+  "runtimeAssessment": "Not qualified; parent owns runtime qualification.",
+  "technicalBlocker": "The City parcel service extent excludes the WUP locator; an exact query to the City endpoint timed out locally after 15 seconds. The County Property Appraiser endpoint returned a county polygon at the point, but city-jurisdiction binding remains unresolved.",
+  "remainingUncertainty": "Whether WUP’s population-weighted center is inside incorporated West Palm Beach and whether the City-hosted parcel layer has a usable query at this locator; no citywide completeness/adapter qualification performed.",
+  "nextStep": "Parent may qualify the county source separately and decide whether the WUP point is sufficiently city-bound; do not infer incorporated-city coverage from county geometry."
+}

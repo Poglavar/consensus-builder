@@ -1,0 +1,10 @@
+{
+  "schemaVersion": 1,
+  "checkedAt": "2026-10-09T03:11:15.385212+00:00",
+  "decision": "approved_by_root",
+  "scope": "146 valid distinct county cadastral-reference polygons verified in thirteen bounded 0.001-degree cells around the unchanged Milwaukee WUP settlement locator. Map_ID is the non-null integer field explicitly labelled GIS Polygon ID; null Parcel_Key values do not substitute a tax-account identifier or block public reference geometry. Complete bounded paging, forced three-row pages, all 146 fresh Map_ID reads, explicit absence, footprint and source binding passed in 30 requests. Independent metric EPSG:32616 GEOS found all geometries valid and distinct, with no sampled overlaps above 0.01 m² or operation errors. All three original nearby samples match fresh complete geometry unchanged. The exact WUP point itself returned no intersecting parcel; usable nearby coverage is verified. Native source CRS is EPSG:6609 (ArcGIS WKID103191); requested EPSG:4326 output is retained unchanged. Map_ID is public source geometry identity; legal-title identity, citywide completeness, survey accuracy, currentness and long-term key continuity remain unverified.",
+  "sourceCoordinatesModified": false,
+  "acceptanceFile": "milwaukee-county-root-acceptance.json",
+  "qualityFile": "milwaukee-county-root-quality.json",
+  "nativeIdentityEvidenceFile": "milwaukee-root-sample-native-id-review.json"
+}

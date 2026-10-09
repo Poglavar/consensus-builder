@@ -1,0 +1,156 @@
+{
+  "name": "Sousse",
+  "country": "Tunisia",
+  "countryCode": "TN",
+  "rank": 1116,
+  "point": [
+    35.8335531532296,
+    10.5981847929834
+  ],
+  "freshResearch": {
+    "queries": [
+      {
+        "language": "English",
+        "query": "Sousse Tunisia official cadastre parcel map land registry cadastral land topography ONT",
+        "scope": "Identify first-party local registry and public parcel geometry; preserve the unchanged WUP settlement locator and avoid owner or address attributes.",
+        "result": "The English search found official national topography/cadastre and land-property services, but no open geometry schema.",
+        "executionMethod": "Separate English-language web search followed by first-party source review.",
+        "actualResultUrls": [
+          "https://www.justice.gov.tn/index.php?id=257",
+          "https://www.cpf.gov.tn/CPFWebSite/Arabe/SrvEnLigne.php",
+          "https://www.otc.nat.tn/",
+          "https://www.mehat.gov.tn/fr/principaux-secteurs/amenagement-du-territoire/schemas-directeurs-damenagement-des-territoires-et-atlas-cartographiques/atlas-cartographiques/"
+        ]
+      },
+      {
+        "language": "Arabic",
+        "query": "سوسة تونس الديوان الوطني للملكية العقارية المسح العقاري خرائط عقارية موقع رسمي",
+        "scope": "Find first-party local-language registry/cadastral routes and any anonymous safe parcel geometry service near the unchanged WUP point.",
+        "result": "The Arabic search identified the Sousse Real Estate Court branch and National Office of Land Property online services. Record services use property-title/applicant identifiers; no anonymous polygon endpoint was found.",
+        "executionMethod": "Separate Arabic-language web search followed by first-party source review.",
+        "actualResultUrls": [
+          "https://www.justice.gov.tn/index.php?id=257",
+          "https://www.cpf.gov.tn/CPFWebSite/Arabe/SrvEnLigne.php",
+          "https://www.otc.nat.tn/",
+          "https://www.mehat.gov.tn/fr/principaux-secteurs/amenagement-du-territoire/schemas-directeurs-damenagement-des-territoires-et-atlas-cartographiques/atlas-cartographiques/"
+        ]
+      }
+    ],
+    "portals": [
+      {
+        "name": "https://www.justice.gov.tn/index.php?id=257",
+        "operator": "Tunisia",
+        "homeUrl": "https://www.justice.gov.tn/index.php?id=257",
+        "observation": "Official Ministry of Justice page lists the Sousse Real Estate Court branch, its territorial jurisdiction over Sousse Governorate, and its role in voluntary/compulsory registration and cadastral-survey matters."
+      },
+      {
+        "name": "https://www.cpf.gov.tn/CPFWebSite/Arabe/SrvEnLigne.php",
+        "operator": "Tunisia",
+        "homeUrl": "https://www.cpf.gov.tn/CPFWebSite/Arabe/SrvEnLigne.php",
+        "observation": "Official National Office of Land Property services provide parcel-title consultation, copies, certificates and transaction lists; title-number/identity-based services, not anonymous polygon access."
+      },
+      {
+        "name": "https://www.otc.nat.tn/",
+        "operator": "Tunisia",
+        "homeUrl": "https://www.otc.nat.tn/",
+        "observation": "Official Office of Topography and Cadastre page lists geographic coverage, services, forms and access-to-information route; no public feature service was documented."
+      },
+      {
+        "name": "https://www.mehat.gov.tn/fr/principaux-secteurs/amenagement-du-territoire/schemas-directeurs-damenagement-des-territoires-et-atlas-cartographiques/atlas-cartographiques/",
+        "operator": "Tunisia",
+        "homeUrl": "https://www.mehat.gov.tn/fr/principaux-secteurs/amenagement-du-territoire/schemas-directeurs-damenagement-des-territoires-et-atlas-cartographiques/atlas-cartographiques/",
+        "observation": "Ministry atlas page includes a Sousse governorate cartographic atlas; this is planning/cartographic material, not cadastral polygons."
+      }
+    ],
+    "requests": [],
+    "historicalContext": []
+  },
+  "status": "complete",
+  "verifiedParcelResponse": null,
+  "source": {
+    "sourceId": null,
+    "name": "https://www.justice.gov.tn/index.php?id=257",
+    "url": "https://www.justice.gov.tn/index.php?id=257",
+    "operator": null,
+    "serviceType": "Official registry/cadastral route reviewed; no anonymous safe full-parcel geometry response verified.",
+    "layer": null,
+    "geometryType": null,
+    "outputCrs": null,
+    "nativeIdField": null,
+    "nativeIdEvidence": null,
+    "attributesRequested": [],
+    "sampleCount": 0,
+    "sampleFile": null,
+    "directGeometryQueryVerified": false,
+    "directMetadataSchemaVerified": false,
+    "geometryStatus": "not_verified",
+    "operatorNote": "See first-party evidence and access limits in registryBasis and linked sources."
+  },
+  "coverageAssessment": {
+    "claimedScope": "First-party justice and land-property sources confirm a Sousse real-estate court branch and national land-property record services. The online services use registered-title and applicant identifiers; the map/topography pages reviewed did not expose safe anonymous full parcel geometry.",
+    "verifiedOpenScope": "No anonymous full parcel geometry response was verified in this investigation.",
+    "countrywideVerified": false,
+    "citywideVerified": false
+  },
+  "registryFound": true,
+  "verifiedSample": false,
+  "resultCategory": "official_local_registry_geometry_unverified",
+  "technicalBlocker": "No anonymous safe-ID full-geometry endpoint and schema was verified; where an official map or registry portal exists, its service behavior or public feature response was not established.",
+  "remainingUncertainty": "No anonymous geometry-only service or response at the unchanged WUP point was verified.",
+  "nextStep": "Revisit only if an official public geometry endpoint and safe minimal-field response are documented; then test the unchanged WUP point with safe identifiers and geometry only.",
+  "schemaVersion": "1.0",
+  "checkedAt": "2026-10-09",
+  "wupCityCode": 1849,
+  "cityId": "wup2025:1849",
+  "runtimeReadiness": "not_enabled_no_verified_public_geometry",
+  "adapterReady": false,
+  "centerLatLon": [
+    35.8335531532296,
+    10.5981847929834
+  ],
+  "population2025k": 495.877,
+  "populationUnit": "persons",
+  "queueRank": 1116,
+  "population2025": 495877,
+  "populationPlausibility2025": "Low",
+  "pointBasis": "UN WUP 2025 population-weighted settlement point (latitude, longitude); not a municipal boundary or a parcel-coverage claim.",
+  "publicParcelGeometryFound": false,
+  "sourceIds": [],
+  "registryBasis": "First-party justice and land-property sources confirm a Sousse real-estate court branch and national land-property record services. The online services use registered-title and applicant identifiers; the map/topography pages reviewed did not expose safe anonymous full parcel geometry.",
+  "registryEvidenceUrls": [
+    "https://www.justice.gov.tn/index.php?id=257",
+    "https://www.cpf.gov.tn/CPFWebSite/Arabe/SrvEnLigne.php",
+    "https://www.otc.nat.tn/",
+    "https://www.mehat.gov.tn/fr/principaux-secteurs/amenagement-du-territoire/schemas-directeurs-damenagement-des-territoires-et-atlas-cartographiques/atlas-cartographiques/"
+  ],
+  "runtimeAssessment": {
+    "status": "not_enabled_no_verified_public_geometry",
+    "reason": "No anonymous safe-ID full-geometry endpoint and schema was verified; where an official map or registry portal exists, its service behavior or public feature response was not established."
+  },
+  "cohort": "overnight-next-1101-1200",
+  "cohortState": "root_reviewed_integrated_locally",
+  "integrationState": "integrated_locally",
+  "rootReviewedAt": "2026-10-09T07:13:02.981057+00:00",
+  "rootPrimaryChecks": [
+    {
+      "wupCityCode": 1849,
+      "url": "https://www.justice.gov.tn/index.php?id=257",
+      "checkedAt": "2026-10-09T07:10:43.569180+00:00",
+      "method": "Anonymous read-only GET, standard TLS where advertised; no credentials or property values",
+      "httpStatus": 200,
+      "finalUrl": "https://www.justice.gov.tn/index.php?id=257",
+      "contentType": "text/html;charset=utf-8",
+      "bytesRead": 96069,
+      "sha256": "8334a14b5fe129c7d4b99cecb9af8e0838bfcf5e0ada39b2f323b9a9618d0ba9",
+      "complete": true
+    }
+  ],
+  "rootReview": {
+    "checkedAt": "2026-10-09T07:13:02.981057+00:00",
+    "decision": "Reviewed city identity, canonical population/point, separate searches and saved source/request evidence. No full public parcel geometry verified in this pass.",
+    "custodyScope": "First-party justice and land-property sources confirm a Sousse real-estate court branch and national land-property record services. The online services use registered-title and applicant identifiers; the map/topography pages reviewed did not expose safe anonymous full parcel geometry.",
+    "transportFailuresDoNotProveAbsence": true,
+    "geometryClaimScope": "Investigation outcome only; no worldwide or citywide absence asserted."
+  },
+  "integratedAt": "2026-10-09T07:14:03.673112+00:00"
+}

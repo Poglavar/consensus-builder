@@ -1,0 +1,42 @@
+{
+  "schemaVersion": 1,
+  "checkedAt": "2026-10-09",
+  "cityRecord": "city-5903-saratov.json",
+  "purpose": "City-specific official registry/cadastre and safe anonymous parcel-geometry discovery.",
+  "scopeLimits": {
+    "maxFullPolygonsRetainedInCityRecord": 3,
+    "maxFullPolygonsRetainedInReview": 3,
+    "maxFullPolygonsRetainedInRepository": 3,
+    "ownerOrAddressDataRetained": false,
+    "credentialsOrTokenValuesRetained": false,
+    "citywideCompletenessAsserted": false
+  },
+  "assessment": "Official municipal cadastral map plans and land-plot schemes are evidence of local land records, not a verified GIS polygon layer. No sample geometry retained.",
+  "registryAssessment": "The City of Saratov Committee for Management of City Property publishes city land/property administration materials, including cadastral-territory map plans and land-plot schemes, and identifies itself as the municipal authority for city land relations. This is city-specific municipal land-record evidence; it does not establish an anonymous public parcel-vector service or title registry access.",
+  "searchQueries": [
+    {
+      "language": "Russian",
+      "query": "Саратов официальный комитет по управлению имуществом кадастровые планы земельные участки карта",
+      "scope": "Find city-specific land/property-record authority and safe anonymous parcel geometry.",
+      "result": "The city administration committee page publishes cadastral-territory map plans and land-plot schemes. No anonymous native polygon layer or schema was verified.",
+      "actualResultUrls": [
+        "https://www.saratovmer.ru/administraciya/committees/96/"
+      ],
+      "executionMethod": "Reviewed the official Saratov city committee page; no property lookup or geometry query."
+    },
+    {
+      "language": "English",
+      "query": "Saratov city official cadastral map parcel GIS polygon land records",
+      "scope": "Find city-specific land/property-record authority and safe anonymous parcel geometry.",
+      "result": "Official city committee material confirms municipal land/property administration; no public parcel-vector endpoint found.",
+      "actualResultUrls": [
+        "https://www.saratovmer.ru/administraciya/committees/96/"
+      ],
+      "executionMethod": "Separate English-language source discovery and official-source review; no property lookup."
+    }
+  ],
+  "geometryEvidence": null,
+  "privacy": "No owner, address, taxpayer, assessment, sale, or other private property fields were requested or retained.",
+  "runtimeAssessment": "not_enabled_no_verified_public_geometry",
+  "technicalBlocker": "No anonymous public parcel-vector endpoint or native geometry schema was identified."
+}

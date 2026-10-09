@@ -1,0 +1,129 @@
+{
+  "name": "Ballari",
+  "country": "India",
+  "countryCode": "IN",
+  "rank": 929,
+  "point": [
+    15.1425146511547,
+    76.9207622333843
+  ],
+  "population2025": 587340,
+  "population2025k": 587.34,
+  "schemaVersion": 1,
+  "kind": "city_parcel_source_research",
+  "checkedAt": "2026-10-09",
+  "populationUnit": "persons",
+  "status": "complete",
+  "verifiedSample": false,
+  "publicParcelGeometryFound": false,
+  "runtimeReadiness": "not_enabled_no_verified_public_geometry",
+  "priorEvidenceFiles": [],
+  "scopeLimits": "Bhoomi is documented as an RTC/record service. No public parcel geometry API, feature schema or exact WUP-point coverage was verified.",
+  "pointBasis": "UN WUP 2025 population-weighted settlement centroid; this is not a municipal boundary or a parcel-coverage claim.",
+  "registryFound": true,
+  "registryBasis": "The official district page links state Bhoomi record services and explicitly places the respective Taluka land-record offices in Ballari city.",
+  "resultCategory": "local_land_records_found_no_anonymous_geometry_verified",
+  "technicalBlocker": "Only record-service descriptions were verified; no anonymous vector feature endpoint/schema.",
+  "remainingUncertainty": "Whether a separate public survey-map service serves urban Ballari and its exact coverage remain unknown.",
+  "nextStep": "Root review the local registry/map evidence; request an official public schema or coverage statement if city-point parcel geometry is needed, without using account-gated or property-specific searches.",
+  "freshResearch": {
+    "executedQueries": [
+      {
+        "language": "English",
+        "query": "Ballari Karnataka official land records Bhoomi cadastral parcel map",
+        "result": "District page links Bhoomi land records and identifies the respective Taluka offices in Ballari; the service is record delivery rather than an exposed public vector schema.",
+        "method": "Separate local-language/English discovery and first-party public-page review."
+      },
+      {
+        "language": "Kannada",
+        "query": "ಬಳ್ಳಾರಿ ಭೂ ದಾಖಲೆ ಭೂಮಿ ಪಹಣಿ ನಕ್ಷೆ ಅಧಿಕೃತ",
+        "result": "Official district Bhoomi page describes paid RTC record access and Ballari Taluka offices; no anonymous full-polygon service was found.",
+        "method": "Separate local-language/English discovery and first-party public-page review."
+      }
+    ],
+    "officialSources": [
+      {
+        "url": "https://ballari.nic.in/en/service/land-records-bhoomi/",
+        "observation": "Official Ballari district page links Karnataka Bhoomi and says Pahani/RTC records are delivered online for a fee; it lists the respective Taluka offices in Ballari."
+      },
+      {
+        "url": "https://ballari.nic.in/en/",
+        "observation": "Official district site identifies Ballari as district headquarters and lists land records among government services."
+      },
+      {
+        "url": "https://landrecords.karnataka.gov.in/",
+        "observation": "Karnataka land-record portal linked by Ballari district; no anonymous full-polygon schema was verified in this review."
+      }
+    ],
+    "viewerAndServiceTrace": {
+      "attempted": true,
+      "summary": "Reviewed official district and state service descriptions; did not request RTC/owner/plot-specific records.",
+      "geometryStatus": "No anonymous full polygon response verified",
+      "fullPolygonLimit": 3,
+      "fullPolygonsRetained": 0,
+      "ownerOrAddressDataRequested": false,
+      "credentialsOrTokenValuesRetained": false
+    },
+    "attemptedGeometry": {
+      "attempted": true,
+      "status": "Reviewed official district and state service descriptions; did not request RTC/owner/plot-specific records.",
+      "retainedFeatures": 0,
+      "fieldsRequested": [],
+      "geometryRetained": false,
+      "geojsonFile": null
+    }
+  },
+  "sourceIds": [],
+  "queueRank": 929,
+  "wupCityCode": 9701,
+  "cityId": "wup2025:9701",
+  "populationPlausibility2025": "High",
+  "centerLatLon": [
+    15.1425146511547,
+    76.9207622333843
+  ],
+  "adapterReady": false,
+  "source": {
+    "sourceId": "in-ballari-public-registry-review",
+    "name": "Government of Karnataka / Ballari District Administration",
+    "operator": "Government of Karnataka / Ballari District Administration",
+    "url": "https://landrecords.karnataka.gov.in/",
+    "serviceType": "State land-record (Bhoomi RTC/Pahani) service; not a verified public vector service.",
+    "geometryType": null,
+    "coordinateReferenceSystem": null,
+    "nativeIdFields": [],
+    "directGeometryQueryVerified": false,
+    "directMetadataSchemaVerified": false,
+    "scope": "Bhoomi is documented as an RTC/record service. No public parcel geometry API, feature schema or exact WUP-point coverage was verified."
+  },
+  "coverageAssessment": {
+    "claimedScope": "Bhoomi is documented as an RTC/record service. No public parcel geometry API, feature schema or exact WUP-point coverage was verified.",
+    "verifiedOpenScope": "No anonymous full-polygon response returned in this review.",
+    "citywideVerified": false,
+    "countrywideVerified": false
+  },
+  "registryEvidenceUrls": [
+    "https://ballari.nic.in/en/service/land-records-bhoomi/",
+    "https://ballari.nic.in/en/",
+    "https://landrecords.karnataka.gov.in/"
+  ],
+  "runtimeAssessment": {
+    "status": "not_enabled_no_verified_public_geometry",
+    "reason": "Only record-service descriptions were verified; no anonymous vector feature endpoint/schema."
+  },
+  "priorCheck": {
+    "attemptState": "pending",
+    "attemptEvidence": [],
+    "possiblePriorMatches": [],
+    "resolvedPriorMatches": []
+  },
+  "rootPrimaryReadback": {
+    "url": "https://ballari.nic.in/en/service/land-records-bhoomi/",
+    "fetch": 200,
+    "contentType": "text/html; charset=UTF-8",
+    "title": "\n        Land Records- Bhoomi | Ballari District , Government of Karnataka | India    "
+  },
+  "rootSourceDateNote": "The Bhoomi office page footer is dated 19 May 2020; retained as institutional evidence without claiming current vector service availability.",
+  "rootReviewNote": "Reviewed local institutional basis separately from anonymous vector access; direct readback errors are preserved and do not establish absence. No full parcel geometry was retrieved for this city in this discovery pass.",
+  "rootReviewedAt": "2026-10-09T04:44:50.237109+00:00"
+}

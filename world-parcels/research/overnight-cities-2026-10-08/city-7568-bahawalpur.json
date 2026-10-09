@@ -1,0 +1,109 @@
+{
+  "name": "Bahawalpur",
+  "country": "Pakistan",
+  "countryCode": "PK",
+  "rank": 684,
+  "point": [
+    29.3911014203026,
+    71.6822668115569
+  ],
+  "freshResearch": {
+    "queries": [
+      {
+        "language": "Urdu",
+        "query": "بہاولپور اراضی ریکارڈ کیڈسٹرل نقشہ پنجاب لینڈ ریکارڈ اتھارٹی PULSE",
+        "scope": "Find official Bahawalpur parcel registry and anonymous cadastral-map service.",
+        "result": "Official PULSE public GIS lists a Bahawalpur cadastral map layer. Its indicative-only boundary disclaimer is informational; full parcel details separately require login. No anonymous full-polygon response/native key/schema was verified, so geometry remains an unverified candidate.",
+        "actualResultUrls": [
+          "https://lis.pulse.gop.pk/",
+          "https://pulse.gop.pk/",
+          "https://bahawalpur.punjab.gov.pk/administration_bahawalpur"
+        ]
+      },
+      {
+        "language": "English",
+        "query": "Bahawalpur official land records cadastral parcel map PULSE Punjab",
+        "scope": "Cross-check local records authority and public GIS limits.",
+        "result": "Official PULSE public GIS lists a Bahawalpur cadastral map layer. Its indicative-only boundary disclaimer is informational; full parcel details separately require login. No anonymous full-polygon response/native key/schema was verified, so geometry remains an unverified candidate.",
+        "actualResultUrls": [
+          "https://bahawalpur.punjab.gov.pk/administration_bahawalpur",
+          "https://lis.pulse.gop.pk/",
+          "https://www.punjab-zameen.gov.pk/"
+        ]
+      }
+    ],
+    "portals": [
+      {
+        "name": "Punjab PULSE GIS Portal",
+        "operator": "Punjab Urban Land Systems Enhancement / Punjab Land Records Authority, Government of Punjab",
+        "homeUrl": "https://lis.pulse.gop.pk/",
+        "observation": "Public viewer lists a Bahawalpur cadastral-map category. Its indicative-only disclaimer describes legal use; complete parcel details separately require login. This review did not establish the anonymous full-geometry endpoint/schema, so it remains unverified."
+      }
+    ],
+    "requests": [
+      {
+        "url": "https://lis.pulse.gop.pk/",
+        "method": "GET official public viewer page",
+        "result": "Page lists Bahawalpur under Cadastral Maps and states that parcel lines are for indicative visualization only; full parcel detail requires account login. No city layer selection, feature query, login, or geometry retrieval."
+      },
+      {
+        "url": "https://bahawalpur.punjab.gov.pk/administration_bahawalpur",
+        "method": "GET official district revenue-administration page",
+        "result": "Confirms local land records and deed-maintenance functions."
+      }
+    ],
+    "historicalContext": []
+  },
+  "status": "complete",
+  "verifiedParcelResponse": null,
+  "source": {
+    "sourceId": "pk-bahawalpur-official-land-records",
+    "name": "Punjab PULSE GIS Portal",
+    "url": "https://lis.pulse.gop.pk/",
+    "operator": "Punjab Urban Land Systems Enhancement / Punjab Land Records Authority, Government of Punjab",
+    "serviceType": "Official registry/map services reviewed; no safe anonymous full-polygon feature response verified.",
+    "geometryType": null,
+    "nativeIdField": null,
+    "scope": "PULSE’s public map lists Bahawalpur cadastral maps, while detailed parcel attributes are login-gated. That access gate alone does not disqualify any separately public full polygon as reference geometry. However, no anonymous full-polygon response, native parcel key or safe output schema was verified; no map feature query was performed."
+  },
+  "coverageAssessment": {
+    "claimedScope": "Official district records confirm local land-record and deed-maintenance administration, while PULSE publicly lists Bahawalpur cadastral maps. The viewer describes mapped lines as indicative rather than legal and separately login-gates complete parcel details; neither fact alone rules out public reference polygons. This review did not verify an anonymous full-polygon response, native parcel key or safe schema, and made no feature query.",
+    "verifiedOpenScope": "Official local registration or parcel-map administration is documented, but anonymous full city parcel geometry has not been verified.",
+    "countrywideVerified": false
+  },
+  "registryFound": true,
+  "verifiedSample": false,
+  "publicParcelGeometryFound": false,
+  "publicParcelGeometryCandidateFound": true,
+  "resultCategory": "city_registry_confirmed_geometry_candidate_unverified",
+  "technicalBlocker": "PULSE’s public map lists Bahawalpur cadastral maps, while detailed parcel attributes are login-gated. That access gate alone does not disqualify any separately public full polygon as reference geometry. However, no anonymous full-polygon response, native parcel key or safe output schema was verified; no map feature query was performed.",
+  "remainingUncertainty": "Whether the public Bahawalpur cadastral layer exposes complete anonymous polygon geometry and native parcel keys, what extent the layer covers, and what terms govern reuse. The viewer’s indicative-only boundary disclaimer is informational and is not itself a technical disqualifier.",
+  "nextStep": "Inspect the public layer’s metadata/query schema and a bounded anonymous full-polygon response, if exposed; retain only safe native parcel keys and geometry. Do not infer geometry absence from the disclaimer or login gate for detailed attributes.",
+  "schemaVersion": 1,
+  "checkedAt": "2026-10-09",
+  "wupCityCode": 7568,
+  "cityId": "wup2025:7568",
+  "runtimeReadiness": "not_enabled_no_verified_public_geometry",
+  "adapterReady": false,
+  "centerLatLon": [
+    29.3911014203026,
+    71.6822668115569
+  ],
+  "queueRank": 684,
+  "population2025": 776611,
+  "populationPlausibility2025": "High",
+  "populationUnit": "persons",
+  "pointBasis": "UN WUP 2025 population-weighted settlement centroid; this is not a municipal boundary or a parcel-coverage claim.",
+  "sourceIds": [],
+  "runtimeAssessment": {
+    "status": "not_ready_no_verified_anonymous_geometry",
+    "reason": "PULSE’s public map lists Bahawalpur cadastral maps, while detailed parcel attributes are login-gated. That access gate alone does not disqualify any separately public full polygon as reference geometry. However, no anonymous full-polygon response, native parcel key or safe output schema was verified; no map feature query was performed.",
+    "evidenceFile": "research/overnight-cities-2026-10-08/bahawalpur-service-review.json"
+  },
+  "registryBasis": "Official district records confirm local land-record and deed-maintenance administration, while PULSE publicly lists Bahawalpur cadastral maps. The viewer describes mapped lines as indicative rather than legal and separately login-gates complete parcel details; neither fact alone rules out public reference polygons. This review did not verify an anonymous full-polygon response, native parcel key or safe schema, and made no feature query.",
+  "registryEvidenceUrls": [
+    "https://bahawalpur.punjab.gov.pk/administration_bahawalpur",
+    "https://lis.pulse.gop.pk/"
+  ],
+  "rootReviewedAt": "2026-10-09T02:33:54.695776+00:00"
+}

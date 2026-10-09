@@ -1,0 +1,126 @@
+{
+  "name": "Darbhanga",
+  "country": "India",
+  "countryCode": "IN",
+  "rank": 547,
+  "point": [
+    26.155733262152,
+    85.895785217262
+  ],
+  "freshResearch": {
+    "queries": [
+      {
+        "language": "English",
+        "query": "Darbhanga Bihar official cadastral map land records BhuNaksha district",
+        "result": "The Darbhanga District Administration links Bihar Bhumi; the state Revenue and Land Records Directorate operates an anonymous BhuNaksha map-sheet viewer; DILRMP has a Darbhanga district cadastral map status report. BhuNaksha client uses WMS map imagery and plot-identification routes; no full parcel vector method/schema was found.",
+        "urls": [
+          "https://darbhanga.nic.in/service/biharbhumi/",
+          "https://bhunaksha.bihar.gov.in/index.jsp",
+          "https://dilrmp.gov.in/dilrmpold/MapULPIN/tehsil-level/215",
+          "https://dlrs.bihar.gov.in/"
+        ]
+      },
+      {
+        "language": "Hindi",
+        "query": "दरभंगा भू नक्शा बिहार भूमि अभिलेख आधिकारिक नक्शा",
+        "result": "जिला प्रशासन का दरभंगा भूमि-अभिलेख पृष्ठ बिहार भूमि पोर्टल से जोड़ता है। बिहार राजस्व एवं भूमि अभिलेख निदेशालय का भू-नक्शा दर्शक जिला, अनुमंडल, अंचल, मौजा और शीट चयन देता है; सरकारी DILRMP डैशबोर्ड में दरभंगा जिला मानचित्र स्थिति है। दर्शक WMS चित्र और प्लॉट-चयन का उपयोग करता है; पूर्ण वेक्टर बहुभुज का सार्वजनिक अनुबंध नहीं मिला।",
+        "urls": [
+          "https://darbhanga.nic.in/service/biharbhumi/",
+          "https://bhunaksha.bihar.gov.in/index.jsp",
+          "https://dilrmp.gov.in/dilrmpold/MapULPIN/tehsil-level/215",
+          "https://dlrs.bihar.gov.in/"
+        ]
+      }
+    ],
+    "portals": [
+      {
+        "url": "https://darbhanga.nic.in/service/biharbhumi/",
+        "observation": "Official district land-records page links to Bihar Bhumi and is owned by the Darbhanga District Administration (last updated 2026-09-26)."
+      },
+      {
+        "url": "https://bhunaksha.bihar.gov.in/index.jsp",
+        "httpStatus": 200,
+        "observation": "Anonymous official Bihar BhuNaksha shell displays selectors for district, subdivision, circle, mauza, survey type, map instance, and sheet. No feature geometry was requested."
+      },
+      {
+        "url": "https://bhunaksha.bihar.gov.in/index.js",
+        "httpStatus": 200,
+        "observation": "Official viewer client renders map layers as WMS images and calls plot identification after a village/GIS selection. No full-vector polygon route was found in the client."
+      },
+      {
+        "url": "https://dlrs.bihar.gov.in/",
+        "observation": "Official Bihar Directorate of Land Records and Survey lists Bhu-Naksha and Online Map among public services."
+      },
+      {
+        "url": "https://dilrmp.gov.in/dilrmpold/MapULPIN/tehsil-level/215",
+        "observation": "Government of India DILRMP district report for Darbhanga publishes cadastral map, village, and parcel digitization status."
+      }
+    ],
+    "requests": []
+  },
+  "status": "complete",
+  "verifiedParcelResponse": {
+    "httpStatus": null,
+    "featureType": null,
+    "responseType": null,
+    "responseCrs": null,
+    "returnedFullPolygonCount": 0,
+    "uniqueFullPolygonCount": 0,
+    "wupPointContained": null,
+    "limitations": "No full parcel geometry was retrieved or independently validated."
+  },
+  "source": {
+    "id": "city-IN-11153-overnight-research",
+    "name": "Darbhanga city-local parcel source review",
+    "operator": null,
+    "url": "https://bhunaksha.bihar.gov.in/index.jsp",
+    "format": "No verified full-vector geometry source",
+    "access": "Public source discovery only; no login or credentials used",
+    "nativeIdField": null,
+    "geometryCrs": null
+  },
+  "coverageAssessment": {
+    "claimedScope": "The official Darbhanga District Administration land-records page links the Bihar Bhumi land-record service. Bihar Revenue and Land Records Directorate provides an official public BhuNaksha cadastral-map viewer with district/subdivision/circle/mauza/map-sheet selectors, and Government of India DILRMP publishes Darbhanga district cadastral-map status. These establish local district land-record/map services, but the city-centroid village and a full-vector endpoint are not verified.",
+    "verifiedOpenScope": "The anonymous official BhuNaksha viewer exposes raster WMS display and plot-identification workflows, not a verified full-vector polygon feed. No feature query or geometry sample was made because the client did not identify a vector route or safe response schema.",
+    "countrywideVerified": false,
+    "citywideVerified": false
+  },
+  "registryFound": true,
+  "registryBasis": "The Darbhanga District Administration explicitly locates its Revenue Department in city Darbhanga and links Bihar land records. Its land-record service, Bihar BhuNaksha and DILRMP district cadastral-map report corroborate local land administration. The specific urban mauza and public parcel vector coverage remain unverified.",
+  "verifiedSample": false,
+  "publicParcelGeometryFound": false,
+  "resultCategory": "local_cadastral_map_viewer_wms_only_no_city_vector",
+  "technicalBlocker": "The anonymous official BhuNaksha viewer exposes raster WMS display and plot-identification workflows, not a verified full-vector polygon feed. No feature query or geometry sample was made because the client did not identify a vector route or safe response schema.",
+  "remainingUncertainty": "The WUP point is not resolved to a specific Darbhanga mauza, and district map counts do not demonstrate complete city-center coverage.",
+  "nextStep": "Resolve the point to the official Darbhanga Sadar/urban mauza through public selectors; proceed only if an official full-vector schema is documented.",
+  "sourceIds": [],
+  "schemaVersion": 1,
+  "checkedAt": "2026-10-09",
+  "wupCityCode": 11153,
+  "cityId": "wup2025:11153",
+  "queueRank": 547,
+  "population2025": 950875,
+  "populationPlausibility2025": "Moderate",
+  "populationUnit": "persons",
+  "pointBasis": "UN WUP 2025 population-weighted settlement centroid; this is not a municipal boundary or a parcel-coverage claim.",
+  "centerLatLon": [
+    26.155733262152,
+    85.895785217262
+  ],
+  "runtimeReadiness": "not_enabled_no_verified_public_geometry",
+  "adapterReady": false,
+  "scopeLimits": "Source discovery only. No full parcel polygons, owner/address data, credentials, login sessions, or tokens were retained.",
+  "registryEvidenceUrls": [
+    "https://darbhanga.nic.in/service/biharbhumi/",
+    "https://bhunaksha.bihar.gov.in/index.jsp",
+    "https://dilrmp.gov.in/dilrmpold/MapULPIN/tehsil-level/215",
+    "https://dlrs.bihar.gov.in/",
+    "https://darbhanga.nic.in/hi/service/%E0%A4%B0%E0%A4%BE%E0%A4%9C%E0%A4%B8%E0%A5%8D%E0%A4%B5/"
+  ],
+  "rootSupplementalResearch": {
+    "query": "site.darbhanga.nic.in land records circle Darbhanga Sadar land revenue",
+    "url": "https://darbhanga.nic.in/hi/service/%E0%A4%B0%E0%A4%BE%E0%A4%9C%E0%A4%B8%E0%A5%8D%E0%A4%B5/",
+    "observation": "The first-party Revenue Department service page explicitly names city Darbhanga; no person/contact details retained."
+  },
+  "rootReviewedAt": "2026-10-09T01:23:12.168688+00:00"
+}

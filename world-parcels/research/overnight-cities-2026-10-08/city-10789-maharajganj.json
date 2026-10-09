@@ -1,0 +1,152 @@
+{
+  "name": "Maharajganj",
+  "country": "India",
+  "countryCode": "IN",
+  "rank": 307,
+  "point": [
+    26.1665010555298,
+    84.4781547264985
+  ],
+  "freshResearch": {
+    "queries": [
+      {
+        "language": "Hindi",
+        "query": "महाराजगंज सिवान बिहार भू नक्शा बिहार भू अभिलेख आधिकारिक",
+        "result": "Official Bihar BhuNaksha viewer identifies Bihar state, Siwan district code 16, Maharajganj subdivision code 02 and Maharajganj circle code 15; local selectors include urban mauzas Pasnauli and Sihouta. Exact WUP point-to-mauza association was not resolved. Viewer JavaScript draws village/plot layers through WMS images and has a plot-identify call, but no full-vector polygon response was found.",
+        "urls": [
+          "https://bhunaksha.bihar.gov.in/10/indexmain.jsp",
+          "https://bhunaksha.bihar.gov.in/ScalarDatahandler",
+          "https://siwan.nic.in/service/land-records/"
+        ],
+        "method": "Official district/state pages plus bounded anonymous GET/POST selectors and public config/index.js inspection."
+      },
+      {
+        "language": "English",
+        "query": "Maharajganj Siwan Bihar cadastral map official BhuNaksha land records",
+        "result": "The Siwan District Administration links Bihar land records; Bihar Revenue & Land Reforms lists Bhu-Naksha as a public revenue-map viewer. Siwan/Maharajganj selectors work, but point-to-mauza and parcel geometry remain unverified.",
+        "urls": [
+          "https://siwan.nic.in/service/land-records/",
+          "https://emutation.bihar.gov.in/biharbhumidemo/Default",
+          "https://bhunaksha.bihar.gov.in/10/indexmain.jsp"
+        ],
+        "method": "Official government pages and direct public selector inspection."
+      }
+    ],
+    "portals": [
+      {
+        "name": "Bihar BhuNaksha, Siwan selector",
+        "operator": "Department of Revenue & Land Reforms, Government of Bihar / NIC Bihar",
+        "url": "https://bhunaksha.bihar.gov.in/10/indexmain.jsp",
+        "observation": "Anonymous cadastral map viewer. Selectors expose Siwan district, Maharajganj subdivision/circle and local mauzas. Map images are WMS; exact WUP-point mauza is unresolved."
+      },
+      {
+        "name": "Siwan District land records",
+        "operator": "District Administration, Government of Bihar",
+        "url": "https://siwan.nic.in/service/land-records/",
+        "observation": "First-party district page links to the Revenue Section and Bihar land-record services."
+      },
+      {
+        "name": "Bihar Revenue & Land Reforms citizen portal",
+        "operator": "Department of Revenue & Land Reforms, Government of Bihar",
+        "url": "https://emutation.bihar.gov.in/biharbhumidemo/Default",
+        "observation": "Lists public information and Bhu-Naksha revenue maps; certified services may require registration."
+      }
+    ],
+    "requests": [
+      {
+        "url": "https://bhunaksha.bihar.gov.in/10/indexmain.jsp",
+        "method": "GET",
+        "status": 200,
+        "type": "text/html;charset=UTF-8",
+        "observation": "Anonymous map shell with Bihar location selectors."
+      },
+      {
+        "url": "https://bhunaksha.bihar.gov.in/10/config.js",
+        "method": "GET",
+        "status": 200,
+        "type": "text/javascript",
+        "observation": "Public config sets service path to the app parent."
+      },
+      {
+        "url": "https://bhunaksha.bihar.gov.in/10/index.js",
+        "method": "GET",
+        "status": 200,
+        "type": "text/javascript",
+        "observation": "Viewer draws village and plot maps through WMS and calls REST getPlotAtXY; no vector polygon method found."
+      },
+      {
+        "url": "https://bhunaksha.bihar.gov.in/rest/Levels/count",
+        "method": "POST state=10",
+        "status": 200,
+        "type": "application/json",
+        "observation": "Seven selector levels."
+      },
+      {
+        "url": "https://bhunaksha.bihar.gov.in/ScalarDatahandler",
+        "method": "POST OP=2, level=2, Siwan district 16",
+        "status": 200,
+        "type": "text/html;charset=UTF-8",
+        "observation": "Returns Maharajganj subdivision 02, circles and mauza selectors."
+      },
+      {
+        "url": "https://bhunaksha.bihar.gov.in/ScalarDatahandler",
+        "method": "POST OP=2, level=4, selections=16,02,15",
+        "status": 200,
+        "type": "text/html;charset=UTF-8",
+        "observation": "Returns local mauzas including Pasnauli (urban) and Sihouta (urban); WUP point not resolved to one."
+      }
+    ]
+  },
+  "status": "complete",
+  "verifiedParcelResponse": {
+    "httpStatus": null,
+    "featureType": null,
+    "responseType": null,
+    "responseCrs": null,
+    "returnedFullPolygonCount": 0,
+    "uniqueFullPolygonCount": 0,
+    "wupPointContained": null,
+    "limitations": "No full parcel polygon was fetched or independently verified."
+  },
+  "source": {
+    "id": "bihar-bhunaksha-siwan-maharajganj",
+    "name": "Bihar BhuNaksha",
+    "operator": "Department of Revenue & Land Reforms, Government of Bihar / NIC Bihar",
+    "url": "https://bhunaksha.bihar.gov.in/10/indexmain.jsp",
+    "format": "WMS map images; vector format not verified",
+    "access": "Anonymous selector/map shell; no login used",
+    "nativeIdField": "District/subdivision/circle/mauza and plot identifiers; point-level ID unresolved",
+    "geometryCrs": null
+  },
+  "coverageAssessment": {
+    "claimedScope": "Official Bihar selector and Siwan district page establish a local Bihar/Siwan cadastral map. This follows the queue’s Bihar Siwan identity; the Uttar Pradesh Maharajganj was not used.",
+    "verifiedOpenScope": "Viewer is based on WMS images and selected mauza/GIS coordinates; no full-vector response contract or exact WUP-point mauza was established.",
+    "countrywideVerified": false,
+    "citywideVerified": false
+  },
+  "registryFound": true,
+  "registryBasis": "Official Bihar selector and Siwan district page establish a local Bihar/Siwan cadastral map. This follows the queue’s Bihar Siwan identity; the Uttar Pradesh Maharajganj was not used.",
+  "verifiedSample": false,
+  "publicParcelGeometryFound": false,
+  "resultCategory": "local_cadastral_raster_viewer_point_to_mauza_unresolved",
+  "technicalBlocker": "Viewer is based on WMS images and selected mauza/GIS coordinates; no full-vector response contract or exact WUP-point mauza was established.",
+  "remainingUncertainty": "Whether the WUP point lies in a specific Maharajganj mauza and whether full parcel vectors can be retrieved.",
+  "nextStep": "Resolve the WUP point to an official mauza; if the service remains WMS-only, retain it as map-only and do not claim parcel geometry.",
+  "sourceIds": [],
+  "schemaVersion": 1,
+  "checkedAt": "2026-10-09",
+  "wupCityCode": 10789,
+  "cityId": "wup2025:10789",
+  "queueRank": 307,
+  "population2025": 1601258,
+  "populationPlausibility2025": "High",
+  "populationUnit": "persons",
+  "pointBasis": "UN WUP 2025 population-weighted settlement centroid; this is not a municipal boundary or a parcel-coverage claim.",
+  "centerLatLon": [
+    26.1665010555298,
+    84.4781547264985
+  ],
+  "runtimeReadiness": "not_enabled_no_verified_public_geometry",
+  "adapterReady": false,
+  "rootReviewedAt": "2026-10-08T22:19:03.228348+00:00"
+}

@@ -1,0 +1,39 @@
+{
+  "schemaVersion": "1.0",
+  "checkedAt": "2026-10-09",
+  "cityRecord": "city-4961-otsu.json",
+  "purpose": "Local registry and public parcel-geometry source review. Queries were separated by English and local language. No owner, address, tax, or private property fields were queried or retained.",
+  "scopeLimits": {
+    "maxFullPolygonsRetainedInCityRecord": 0,
+    "maxFullPolygonsRetainedInReview": 0,
+    "maxFullPolygonsRetainedInRepository": 0,
+    "ownerOrAddressDataRetained": false,
+    "credentialsOrPrivateRecordLookupsUsed": false,
+    "citywideCompletenessAsserted": false
+  },
+  "assessment": "Otsu City conducts cadastral surveys and publishes survey-implementation maps. Its official My Town map-service page explicitly says it does not include parcel-number (地番図) map information; certificates/records are handled through specific application channels. No public parcel feature endpoint or geometry was found. No full polygon was returned; geometry presence remains unverified.",
+  "officialPrimarySources": [
+    {
+      "url": "https://www.city.otsu.lg.jp/machi/c/ch/1395209266135.html",
+      "observation": "Otsu City conducts cadastral surveys and publishes survey-implementation maps. Its official My Town map-service page explicitly says it does not include parcel-number (地番図) map information; certificates/records are handled through specific application channels. No public parcel feature endpoint or geometry was found."
+    }
+  ],
+  "searches": [
+    {
+      "language": "English",
+      "query": "Otsu Japan official cadastral parcel map land registry GIS public city map"
+    },
+    {
+      "language": "Japanese",
+      "query": "大津市 地籍図 地番図 地図情報サービス 地籍調査 公式"
+    }
+  ],
+  "geometryEvidence": null,
+  "decision": {
+    "registryFound": true,
+    "publicParcelGeometryFound": null,
+    "verifiedSample": false,
+    "adapterReady": false
+  },
+  "nextStep": "Trace and inspect a public feature-service schema before any geometry request; restrict any future query to stable safe IDs and geometry."
+}

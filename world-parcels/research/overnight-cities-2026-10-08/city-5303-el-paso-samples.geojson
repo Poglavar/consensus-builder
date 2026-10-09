@@ -1,0 +1,83 @@
+{
+  "type": "FeatureCollection",
+  "attribution": "City of El Paso GIS / El Paso Central Appraisal District parcel-source context",
+  "semantics": "One bounded public City GIS parcel polygon and safe OBJECTID; no citywide coverage or title-status claim.",
+  "features": [
+    {
+      "type": "Feature",
+      "id": 128625,
+      "geometry": {
+        "type": "Polygon",
+        "coordinates": [
+          [
+            [
+              -106.36478205214412,
+              31.785649352578677
+            ],
+            [
+              -106.36498046588999,
+              31.78581565625465
+            ],
+            [
+              -106.3652514236849,
+              31.78557823457643
+            ],
+            [
+              -106.36506838176184,
+              31.78543243755991
+            ],
+            [
+              -106.36504768048206,
+              31.785414325280744
+            ],
+            [
+              -106.36478205214412,
+              31.785649352578677
+            ]
+          ]
+        ]
+      },
+      "properties": {
+        "OBJECTID": 128625
+      }
+    },
+    {
+      "type": "Feature",
+      "id": 130036,
+      "properties": {
+        "OBJECTID": 130036
+      },
+      "geometry": {
+        "type": "Polygon",
+        "coordinates": [
+          [
+            [
+              -106.3646455027239,
+              31.786675301154975
+            ],
+            [
+              -106.36485224534474,
+              31.786846360871813
+            ],
+            [
+              -106.36512044308188,
+              31.786614177069904
+            ],
+            [
+              -106.36508282365223,
+              31.78658090130339
+            ],
+            [
+              -106.36492747011819,
+              31.786443482879953
+            ],
+            [
+              -106.3646455027239,
+              31.786675301154975
+            ]
+          ]
+        ]
+      }
+    }
+  ]
+}

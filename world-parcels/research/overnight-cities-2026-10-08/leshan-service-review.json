@@ -1,0 +1,77 @@
+{
+  "schemaVersion": "1.0",
+  "checkedAt": "2026-10-09",
+  "cityRecord": "city-7196-leshan.json",
+  "purpose": "Document official local registry/map evidence and bounded anonymous parcel-geometry access review.",
+  "scopeLimits": {
+    "maxFullPolygonsRetainedInCityRecord": 0,
+    "maxFullPolygonsRetainedInReview": 0,
+    "maxFullPolygonsRetainedInRepository": 0,
+    "ownerOrAddressDataRetained": false,
+    "credentialsOrTokenValuesRetained": false,
+    "citywideCompletenessAsserted": false
+  },
+  "assessment": "Official Leshan city records establish a municipal real-estate registry and cadastral-survey responsibilities. Its reported central-city jurisdiction excludes named peripheral areas; the WUP locator appears city-centre but exact register coverage at the point was not tested. Public city map/service searches found no parcel-vector endpoint or schema. Registry notices were reviewed only as evidence that an office operates; no people, addresses or property identifiers were copied.",
+  "registryAssessment": "Official Leshan sources identify the city-level Real Estate Registration Center, its jurisdiction over registered real property in the central city, and responsibility for cadastral/right-of-use surveys, mapping review and registry-information inquiries. A city government notification describes unified registration roles across central city and district offices. No anonymous parcel geometry service was found.",
+  "officialPrimarySources": [
+    {
+      "url": "https://www.leshan.gov.cn/lsswszf/ysjs/92337985/2025092616070493407800000/20250926160847-461604.pdf",
+      "observation": "Official Leshan sources identify the city-level Real Estate Registration Center, its jurisdiction over registered real property in the central city, and responsibility for cadastral/right-of-use surveys, mapping review and registry-information inquiries. A city government notification describes unified registration roles across central city and district offices. No anonymous parcel geometry service was found."
+    },
+    {
+      "url": "https://www.leshan.gov.cn/lsswszf/xzgfxwjs/90053490/2016092216324641826300000.html",
+      "observation": "Official Leshan sources identify the city-level Real Estate Registration Center, its jurisdiction over registered real property in the central city, and responsibility for cadastral/right-of-use surveys, mapping review and registry-information inquiries. A city government notification describes unified registration roles across central city and district offices. No anonymous parcel geometry service was found."
+    },
+    {
+      "url": "https://www.leshan.gov.cn/lsswszf/jgjj/92337985/687753280467013.html",
+      "observation": "Official Leshan sources identify the city-level Real Estate Registration Center, its jurisdiction over registered real property in the central city, and responsibility for cadastral/right-of-use surveys, mapping review and registry-information inquiries. A city government notification describes unified registration roles across central city and district offices. No anonymous parcel geometry service was found."
+    },
+    {
+      "url": "https://szrzyhghj.leshan.gov.cn/sgtzyj/bdczcfg/202503/88f57be025d045ee8bab4af9cf49d350.shtml",
+      "observation": "Official Leshan sources identify the city-level Real Estate Registration Center, its jurisdiction over registered real property in the central city, and responsibility for cadastral/right-of-use surveys, mapping review and registry-information inquiries. A city government notification describes unified registration roles across central city and district offices. No anonymous parcel geometry service was found."
+    }
+  ],
+  "searchQueries": [
+    {
+      "language": "English",
+      "query": "Leshan China official cadastral parcel map land survey GIS government",
+      "result": "The English-language query did not identify a city parcel GIS. Official Chinese city records establish the registration center and cadastral survey/mapping remit; no public geometry API was exposed.",
+      "method": "Separate English and local-language source discovery followed by official-source review.",
+      "scope": "Find local registry evidence and public parcel geometry."
+    },
+    {
+      "language": "Chinese",
+      "query": "乐山市 不动产登记 地籍测绘 地籍图 宗地 GIS 官方",
+      "result": "乐山市政府和自然资源部门资料确认市级不动产登记中心负责权籍调查、测绘成果审核和登记信息查询；检索未发现公开宗地矢量服务。",
+      "method": "Separate English and local-language source discovery followed by official-source review.",
+      "scope": "Find local registry evidence and public parcel geometry."
+    }
+  ],
+  "geometryDecision": {
+    "publicParcelGeometryFound": null,
+    "decision": "No geometry retained; no anonymous exact-point geometry response was verified."
+  },
+  "coverageAssessment": {
+    "citywideCompletenessAsserted": false,
+    "scope": "Reviewed official sources and exact unchanged WUP settlement locator only.",
+    "limits": "No exact parcel lookup or public map service was verified, and no feature coverage was tested at the WUP locator."
+  },
+  "attempts": [
+    {
+      "url": "https://www.leshan.gov.cn/lsswszf/ysjs/92337985/2025092616070493407800000/20250926160847-461604.pdf",
+      "method": "GET official city center institutional/financial report",
+      "result": "Describes registry center jurisdiction, cadastral inquiry, survey-result review and registry information services; no map or geometry route listed."
+    },
+    {
+      "url": "https://www.leshan.gov.cn/lsswszf/xzgfxwjs/90053490/2016092216324641826300000.html",
+      "method": "GET official city unified registration notice",
+      "result": "Defines city/district registration assignments; no anonymous parcel map is published."
+    },
+    {
+      "url": "https://www.leshan.gov.cn/lsswszf/jgjj/92337985/687753280467013.html",
+      "method": "GET official municipal natural-resources bureau profile",
+      "result": "Lists unified property registration, cadastral investigation and cadastral surveying among agency responsibilities; no public feature service was linked."
+    }
+  ],
+  "remainingUncertainty": "No exact parcel lookup or public map service was verified, and no feature coverage was tested at the WUP locator."
+}

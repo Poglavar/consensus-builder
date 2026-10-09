@@ -1,0 +1,58 @@
+{
+  "schemaVersion": "1.0",
+  "checkedAt": "2026-10-09",
+  "cityRecord": "city-9007-sangli.json",
+  "purpose": "Document city-scope registry evidence and bounded public parcel-geometry route review.",
+  "scopeLimits": {
+    "maxFullPolygonsRetainedInCityRecord": 3,
+    "maxFullPolygonsRetainedInReview": 3,
+    "maxFullPolygonsRetainedInRepository": 3,
+    "ownerOrAddressDataRetained": false,
+    "credentialsOrTokenValuesRetained": false,
+    "citywideCompletenessAsserted": false
+  },
+  "assessment": "Municipal property-plan services and a city survey office are verified. Public ward-election maps are administrative boundaries, and no parcel-feature endpoint was verified.",
+  "registryAssessment": "The Sangli-Miraj-Kupwad Municipal Corporation advertises property part-plan/layout information and zone-certificate services; Maharashtra Land Records lists a Sangli City Survey Office. This establishes local cadastral/property-plan activity but not anonymous downloadable parcel polygons.",
+  "officialPrimarySources": [
+    {
+      "url": "https://www.smkc.gov.in/",
+      "observation": "The Sangli-Miraj-Kupwad Municipal Corporation advertises property part-plan/layout information and zone-certificate services; Maharashtra Land Records lists a Sangli City Survey Office. This establishes local cadastral/property-plan activity but not anonymous downloadable parcel polygons."
+    },
+    {
+      "url": "https://bhumiabhilekh.maharashtra.gov.in/Contact/ContactDS?districtId=15&source=DistrictContact",
+      "observation": "The official SMKC landing page labels a “भाग नकाशा” (property part-plan) and layout-information service, which appears to be a citizen service rather than a public feature dataset. Its election map page publishes ward maps only. The state land-records contact page lists the Sangli City Survey Officer. No plot/property input was submitted."
+    },
+    {
+      "url": "https://smkc.gov.in/SMKC_New_Election_Final.aspx",
+      "observation": "The official SMKC landing page labels a “भाग नकाशा” (property part-plan) and layout-information service, which appears to be a citizen service rather than a public feature dataset. Its election map page publishes ward maps only. The state land-records contact page lists the Sangli City Survey Officer. No plot/property input was submitted."
+    }
+  ],
+  "searchQueries": [
+    {
+      "language": "English",
+      "query": "Sangli Maharashtra municipal property part plan cadastral map parcel GIS official",
+      "result": "Municipal property-plan services and a city survey office are verified. Public ward-election maps are administrative boundaries, and no parcel-feature endpoint was verified.",
+      "method": "Separate official-source-focused web search."
+    },
+    {
+      "language": "Marathi",
+      "query": "सांगली महानगरपालिका भाग नकाशा मालमत्ता सिटी सर्व्हे भूमी अभिलेख अधिकृत",
+      "result": "Municipal property-plan services and a city survey office are verified. Public ward-election maps are administrative boundaries, and no parcel-feature endpoint was verified.",
+      "method": "Separate official-source-focused web search."
+    }
+  ],
+  "serviceChecks": [],
+  "geometryEvidence": null,
+  "accessReview": {
+    "publicAnonymousGeometryVerified": false,
+    "completeGeoreferencedPolygonCount": 0,
+    "geometryRetained": false,
+    "ownerAddressTaxOrPersonLookupRequested": false,
+    "authenticationOrCredentialsUsed": false,
+    "captchaOrPersonalFormSubmitted": false,
+    "routeInspectionStatus": "not_verified",
+    "reason": "The official SMKC landing page labels a “भाग नकाशा” (property part-plan) and layout-information service, which appears to be a citizen service rather than a public feature dataset. Its election map page publishes ward maps only. The state land-records contact page lists the Sangli City Survey Officer. No plot/property input was submitted."
+  },
+  "privacy": "No parcel, owner, address, tax-account, or personal-data lookup was made. No credentials or CAPTCHA were used.",
+  "runtimeAssessment": "not_enabled_no_verified_public_geometry"
+}

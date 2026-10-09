@@ -1,0 +1,126 @@
+{
+  "schemaVersion": "1.0",
+  "checkedAt": "2026-10-09",
+  "cityRecord": "city-6315-gaziantep.json",
+  "purpose": "Read-only city parcel-source discovery; no runtime, global, catalog, or registry integration.",
+  "scopeLimits": {
+    "maxFullPolygonsRetainedInThisCityReport": 3,
+    "fullPolygonsRetained": 1,
+    "ownerOrAddressDataRetained": false,
+    "accountCredentialsOrPublicTokenValuesRetained": false
+  },
+  "assessment": "The exact WUP point returned HTTP 200 with a full Polygon containing the requested point. The existing adapter returned 11 polygon features over 13 local point probes; two provider HTTP 404 responses were surfaced by the adapter as 502 errors. A six-ID exact lookup matched all six requested IDs. Independent Shapely geometry checks passed for the six returned polygons. The adapter has no bbox/area-enumeration route, so pagination and city-area completeness cannot be tested.",
+  "registryAssessment": "The official TKGM directory lists Gaziantep Cadastre Directorate in Şehitkamil/Gaziantep. The official TKGM public parcel lookup backed by the existing point adapter returned a full polygon containing the exact WUP point and nearby parcel polygons. This confirms a local point sample only, not citywide completeness.",
+  "searchQueries": [
+    {
+      "language": "English",
+      "query": "Gaziantep official cadastral parcel map public GIS map service TKGM parcel query",
+      "result": "English search found the official Gaziantep Cadastre Directorate and TKGM public Parcel Query. A later anonymous exact ranked-point query via the existing adapter returned one full polygon containing the WUP point; a bounded 13-point local probe returned 11 polygons and two provider 404s that the adapter translated to errors. The endpoint supports point/exact-ID lookup only, not city-area enumeration.",
+      "urls": [
+        "https://www.tkgm.gov.tr/gaziantep-bm/bagli-mudurlukler/gaziantep-kadastro-mudurlugu",
+        "https://www.tkgm.gov.tr/e-hizmetler/sik-kullanilanlar/parsel-sorgulama",
+        "https://cbsapi.tkgm.gov.tr/megsiswebapi.v3.1/api/parsel/37.0505785072048/37.3758827160868"
+      ],
+      "method": "Separate English web search; official source review and one bounded exact-point GET attempt."
+    },
+    {
+      "language": "Turkish",
+      "query": "Gaziantep resmi parsel sorgu kent rehberi kadastro imar GIS harita belediye",
+      "result": "Resmî TKGM dizininde Gaziantep Kadastro Müdürlüğü Şehitkamil/Gaziantep adresinde listeleniyor; TKGM Parsel Sorgu kamuya açık ulusal parsel sorgusudur. Tam WUP noktasında resmî API’den mevcut adaptörle alınan tam poligon noktayı içerdi; 13 yakın nokta sorgusunda 11 poligon döndü, iki 404 yanıtı adaptör tarafından hata olarak yansıtıldı. Servis alan sorgusunu desteklemiyor.",
+      "urls": [
+        "https://www.tkgm.gov.tr/gaziantep-bm/bagli-mudurlukler/gaziantep-kadastro-mudurlugu",
+        "https://parselsorgu.tkgm.gov.tr/",
+        "https://gim.gaziantep.bel.tr/",
+        "https://cbsapi.tkgm.gov.tr/megsiswebapi.v3.1/api/parsel/37.0505785072048/37.3758827160868"
+      ],
+      "method": "Ayrı Türkçe arama; kurum ve şehir harita sayfaları incelendi; exact-point GET normal TLS/browser headers ile denendi."
+    }
+  ],
+  "officialSources": [
+    {
+      "url": "https://www.tkgm.gov.tr/gaziantep-bm/bagli-mudurlukler/gaziantep-kadastro-mudurlugu",
+      "method": "GET via web search result",
+      "observation": "Official TKGM directory names Gaziantep Cadastre Directorate and gives its Şehitkamil / Gaziantep office.",
+      "httpStatus": 200,
+      "contentType": "text/html"
+    },
+    {
+      "url": "https://www.tkgm.gov.tr/e-hizmetler/sik-kullanilanlar/parsel-sorgulama",
+      "method": "GET via web search result",
+      "observation": "Official TKGM page documents the public national parcel-query service.",
+      "httpStatus": 200,
+      "contentType": "text/html"
+    },
+    {
+      "url": "https://gim.gaziantep.bel.tr/",
+      "method": "GET via web search result",
+      "observation": "Municipal mapping interface presents project, facility, neighbourhood, road and address layers; no parcel/cadastre layer surfaced.",
+      "httpStatus": 200,
+      "contentType": "text/html"
+    },
+    {
+      "url": "https://cbsapi.tkgm.gov.tr/megsiswebapi.v3.1/api/parsel/37.0505785072048/37.3758827160868",
+      "method": "GET with Chrome-like UA, Accept and tr-TR language headers; web open retry",
+      "observation": "Exact ranked-point request could not be completed: shell DNS resolution failed for cbsapi.tkgm.gov.tr and web reader reports the API URL inaccessible. This is a tooling/network blocker, not a provider HTTP response.",
+      "contentType": "unavailable"
+    }
+  ],
+  "viewerAndServiceTrace": {
+    "attempted": true,
+    "summary": "The existing TKGM point adapter contract was exercised with an anonymous exact WUP-point GET plus a 13-point ~75 m local probe. Exact point returned a full WGS84 Polygon and the adapter confirmed point containment. One observed exact ID matched on exact-ID query; an implausible but syntactically valid ID returned in absentIds. Two nearby provider 404 no-hit responses were surfaced as 502 errors. The adapter explicitly rejects area/bbox queries. A six-ID exact lookup produced six matching geometries. Independent Shapely 2.1.2 reprojected them to EPSG:32637 and found all six valid with no positive-area overlaps; area-wide coverage remains unavailable.",
+    "fullPolygonLimit": 3,
+    "fullPolygonsRetained": 0,
+    "ownerOrAddressDataRequested": false,
+    "credentialsOrTokenValuesRetained": false,
+    "routes": [
+      "GET /megsiswebapi.v3.1/api/parsel/{latitude}/{longitude} (13 local bounded points; 11 polygon responses, two provider 404 responses surfaced as adapter errors)",
+      "GET /megsiswebapi.v3.1/api/parsel/{mahalleId}/{adaNo}/{parselNo} via queryIds (observed ID matched; absent-ID check returned absentIds)",
+      "Area/bbox route is unsupported by descriptor/adapter."
+    ]
+  },
+  "geometryAttempt": {
+    "fullPolygonLimit": 3,
+    "fullPolygonsRetained": 1,
+    "ownerOrAddressDataRequested": false,
+    "outcome": "One full polygon was verified at the exact WUP point and retained in gaziantep-point-sample.geojson. A 13-point local adapter run returned 11 polygons and two provider HTTP 404 responses that the adapter treated as errors. Six exact-ID lookups matched; independent Shapely 2.1.2 quality audit found all six geometries valid with no positive-area overlaps. The point-only API cannot test pagination or citywide coverage."
+  },
+  "remainingUncertainty": "Citywide parcel completeness and coverage remain unknown because the public API is point/exact-ID only. The adapter’s handling of provider 404 point no-hits appears unreliable at two nearby test points. The public-service programmatic reuse terms were not located.",
+  "nextStep": "Keep this evidence as point-query-only. Before enabling broader runtime use, preserve and fix/retest the provider 404 parser behavior and document source terms; an area-wide source is still required for viewport parcel coverage.",
+  "sampleQualification": {
+    "pointProbeCount": 13,
+    "polygonHitCount": 11,
+    "noHitCount": 0,
+    "provider404SurfacedAsAdapterError": 2,
+    "errorCount": 2,
+    "distinctPolygonIds": [
+      "TR-TKGM-131507-2388-2",
+      "TR-TKGM-131504-2414-5",
+      "TR-TKGM-131504-2407-15",
+      "TR-TKGM-131491-5681-1",
+      "TR-TKGM-131524-8088-3",
+      "TR-TKGM-131507-2389-21"
+    ],
+    "repeatedIdsHadIdenticalGeometryHashes": true,
+    "exactIdLookupMatched": true,
+    "absentIdLookupReturnedAbsentIds": true,
+    "bboxSupported": false,
+    "areaEnumerationSupported": false,
+    "pagination": null,
+    "ownerAddressFieldsRequested": false,
+    "ownerAddressValuesRetained": false,
+    "exactIdBatchCount": 6,
+    "exactIdBatchMatched": 6,
+    "shapelyNativeGeometryAudit": "/private/tmp/gaziantep-native-6.geojson",
+    "metricCrs": "EPSG:32637",
+    "validPolygonCount": 6,
+    "positiveAreaOverlapCount": 0,
+    "areasM2": [
+      57609.46,
+      4276.32,
+      7832.16,
+      4601.86,
+      3591.28,
+      8516.81
+    ]
+  }
+}

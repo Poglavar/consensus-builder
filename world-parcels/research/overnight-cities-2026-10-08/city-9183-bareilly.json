@@ -1,0 +1,133 @@
+{
+  "name": "Bareilly",
+  "country": "India",
+  "countryCode": "IN",
+  "rank": 298,
+  "point": [
+    28.3683131530454,
+    79.4267919871802
+  ],
+  "freshResearch": {
+    "queries": [
+      {
+        "language": "Hindi",
+        "query": "बरेली भू नक्शा उत्तर प्रदेश खसरा नक्शा आधिकारिक",
+        "scope": "Confirm Bareilly-specific local cadastral coverage and inspect the official map selector.",
+        "result": "Bareilly district’s official land-record page links UP Bhulekh. The official UP Bhunaksha selector identifies Bareilly district code 150, its Bareilly tehsil code 00787, and returns 417 village records under that tehsil. The exact WUP point’s village and parcel geometry were not resolved.",
+        "actualResultUrls": [
+          "https://bareilly.nic.in/service/land-records/",
+          "https://upbhunaksha.gov.in/home/",
+          "https://upbhunaksha.gov.in/bhunakshaserver/masterdata/levelvalue"
+        ],
+        "executionMethod": "Official district page and read-only POST selector requests to UP BhuNaksha."
+      },
+      {
+        "language": "English",
+        "query": "Bareilly official cadastral map Bhu Naksha Uttar Pradesh land records map sheets",
+        "scope": "Check city-specific state map records and georeferencing data.",
+        "result": "The official UP dashboard identifies Bareilly district and reports its georeferenced cadastral map progress; this is not point-level parcel proof. The state viewer’s anonymous selector works for Bareilly, but its plot lookup requires a selected village GIS code and projected map coordinates, which are not known for the WUP centroid.",
+        "actualResultUrls": [
+          "https://upbhulekh.gov.in/GeoDashboard/public_report?distCode=150",
+          "https://upbhunaksha.gov.in/home/"
+        ],
+        "executionMethod": "Official web search and direct read-only selector API inspection."
+      }
+    ],
+    "portals": [
+      {
+        "name": "Bareilly District land records",
+        "operator": "District Administration, Government of Uttar Pradesh",
+        "homeUrl": "https://bareilly.nic.in/service/land-records/",
+        "observation": "Official district page links land records through the state Bhulekh services."
+      },
+      {
+        "name": "Uttar Pradesh BhuNaksha",
+        "operator": "Government of Uttar Pradesh / Board of Revenue; NIC UP State Unit",
+        "homeUrl": "https://upbhunaksha.gov.in/home/",
+        "observation": "Official public cadastral viewer. Selector requests return Bareilly district, tehsil, and village choices; plot query needs village-specific GIS code and projected coordinates."
+      },
+      {
+        "name": "UP Bhulekh map georeferencing dashboard",
+        "operator": "Government of Uttar Pradesh / Board of Revenue",
+        "homeUrl": "https://upbhulekh.gov.in/GeoDashboard/public_report?distCode=150",
+        "observation": "District-specific dashboard tracks map digitization and georeferencing progress; these aggregate counts do not prove parcel coverage at the WUP point."
+      }
+    ],
+    "requests": [
+      {
+        "url": "https://upbhunaksha.gov.in/bhunakshaserver/masterdata/levelvalue",
+        "method": "POST (level 1 selector)",
+        "httpStatus": 200,
+        "contentType": "application/json",
+        "observation": "Public selector returned district list including Bareilly code 150."
+      },
+      {
+        "url": "https://upbhunaksha.gov.in/bhunakshaserver/masterdata/levelvalue",
+        "method": "POST (level 2, district code 150)",
+        "httpStatus": 200,
+        "contentType": "application/json",
+        "observation": "Returned six Bareilly tehsils, including Bareilly tehsil code 00787."
+      },
+      {
+        "url": "https://upbhunaksha.gov.in/bhunakshaserver/masterdata/levelvalue",
+        "method": "POST (level 3, district/tehsil codes 150,00787)",
+        "httpStatus": 200,
+        "contentType": "application/json",
+        "observation": "Returned 417 village records; no exact WUP-point village selected."
+      }
+    ],
+    "executionMethod": "Hindi and English search, direct anonymous selector POST inspection, and official dashboard/district-page review."
+  },
+  "status": "complete",
+  "verifiedParcelResponse": {
+    "httpStatus": 200,
+    "featureType": null,
+    "responseType": "JSON village selectors only",
+    "responseCrs": null,
+    "returnedFullPolygonCount": 0,
+    "uniqueFullPolygonCount": 0,
+    "wupPointContained": null,
+    "limitations": "Bareilly district/tehsil/village hierarchy is confirmed through official selectors, but no village was identified at the WUP point and no parcel geometry was requested."
+  },
+  "source": {
+    "id": "up-bhunaksha-bareilly-selector",
+    "name": "Uttar Pradesh BhuNaksha",
+    "operator": "Government of Uttar Pradesh / Board of Revenue",
+    "url": "https://upbhunaksha.gov.in/home/",
+    "format": "Public selector JSON; parcel geometry format not verified",
+    "access": "Anonymous selector GET/POST; plot lookup requires village-specific GIS code and projected coordinates",
+    "nativeIdField": "village GIS code / plot number (exact schema not queried)",
+    "geometryCrs": null
+  },
+  "coverageAssessment": {
+    "claimedScope": "Official UP cadastral viewer includes Bareilly district, its tehsils and village records; dashboard reports district cadastral map georeferencing progress.",
+    "verifiedOpenScope": "District and tehsil hierarchy verified; exact population-weighted point-to-village association and any full parcel geometry unverified.",
+    "countrywideVerified": false,
+    "citywideVerified": false
+  },
+  "registryFound": true,
+  "registryBasis": "Official Bareilly district land-record page links the UP land-record service, and official UP BhuNaksha selectors return Bareilly district and its local village hierarchy.",
+  "verifiedSample": false,
+  "publicParcelGeometryFound": false,
+  "resultCategory": "local_cadastral_selector_confirmed_point_parcel_unresolved",
+  "technicalBlocker": "UP BhuNaksha plot lookup requires a selected village GIS code and projected x/y. No point-to-village resolution was established for the WUP centroid.",
+  "remainingUncertainty": "Which village/revenue map contains the WUP population centroid, whether that village has data, and whether full parcel geometry is publicly retrievable in a usable response format.",
+  "sourceIds": [],
+  "nextStep": "Resolve the WUP coordinate to an official Bareilly village using the viewer’s map/extent workflow; only then test the point lookup and inspect full polygon semantics.",
+  "schemaVersion": 1,
+  "checkedAt": "2026-10-09",
+  "wupCityCode": 9183,
+  "cityId": "wup2025:9183",
+  "queueRank": 298,
+  "population2025": 1635214,
+  "populationPlausibility2025": "High",
+  "populationUnit": "persons",
+  "pointBasis": "UN WUP 2025 population-weighted settlement centroid; this is not a municipal boundary or a parcel-coverage claim.",
+  "centerLatLon": [
+    28.3683131530454,
+    79.4267919871802
+  ],
+  "runtimeReadiness": "not_enabled_no_verified_public_geometry",
+  "adapterReady": false,
+  "rootReviewedAt": "2026-10-08T22:11:57.022500+00:00"
+}

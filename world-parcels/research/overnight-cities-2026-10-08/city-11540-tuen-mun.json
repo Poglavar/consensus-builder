@@ -1,0 +1,783 @@
+{
+  "schemaVersion": 1,
+  "kind": "city_parcel_source_research",
+  "checkedAt": "2026-10-09",
+  "status": "complete",
+  "populationUnit": "persons",
+  "pointBasis": "UN WUP 2025 population-weighted settlement centroid; this is not a municipal boundary or a parcel-coverage claim.",
+  "name": "Tuen Mun",
+  "country": "China, Hong Kong SAR",
+  "countryCode": "HK",
+  "queueRank": 489,
+  "rank": 489,
+  "wupCityCode": 11540,
+  "cityId": "wup2025:11540",
+  "point": [
+    22.4266355780752,
+    113.996366842382
+  ],
+  "centerLatLon": [
+    22.4266355780752,
+    113.996366842382
+  ],
+  "population2025": 1053083,
+  "population2025k": 1053.083,
+  "populationPlausibility2025": "Low",
+  "populationPlausibility": "Low",
+  "verifiedSample": true,
+  "publicParcelGeometryFound": true,
+  "registryFound": true,
+  "adapterReady": true,
+  "runtimeReadiness": "enabled",
+  "resultCategory": "verified_public_geometry_runtime_enabled",
+  "scopeLimits": "Public Lands Department CSDI Lot polygons in the Tuen Mun neighborhood. The dataset represents land sold or granted for specified uses and does not form a complete parcel fabric. Thirteen aligned 0.001° cells and four adjacent pans passed the real adapter with source count and object-ID manifests; a 29-window source check plus footprint neighbors yielded 127 distinct full polygons. All 127 fresh LotCSUID equality reads reproduced IDs and geometry, a valid absent ID returned empty, forced three-row object-ID batches completed, and the exact-WUP parcel passed full footprint retrieval and actual runtime proposal binding. GEOS in EPSG:32650 found no invalid polygons, duplicate geometry or positive-area overlaps above 0.01 m² in the bounded union. One conservative source bbox candidate lies about 0.04 m outside a cell; full geometry is preserved, with no snapping or clipping. Offset paging omitted that candidate, and multi-ID IN reads returned HTTP 403; the enabled descriptor uses object-ID manifests and one native LotCSUID equality per ID. Only LotCSUID, OBJECTID transport keys and LotID labels accompany geometry. Citywide completeness and identity continuity across quarterly replacements remain unverified. Published legal and survey notices are retained as scope information.",
+  "registryBasis": "Hong Kong Lands Department publishes the Lot dataset through CSDI and its official metadata identifies Tuen Mun within the digital land-boundary map coverage. The queried Lot dataset is a subset-style land-lot layer, not all parcels.",
+  "freshResearch": {
+    "executedQueries": [
+      {
+        "language": "Traditional Chinese",
+        "query": "site:landsd.gov.hk 屯門 地段 資料 地政總署 地界圖 iC1000",
+        "result": "Official Hong Kong metadata confirms digital land-boundary-map coverage includes Tuen Mun; CSDI Lot data is a distinct public polygon layer."
+      },
+      {
+        "language": "English",
+        "query": "Tuen Mun official cadastral parcel lots polygon data Lands Department CSDI public geometry",
+        "result": "Official data.gov.hk metadata describes the Lands Department quarterly Lot dataset; schema was checked before one exact WUP-point polygon query. Lot Index API attempts against the same neighborhood returned HTTP 400."
+      }
+    ],
+    "officialSources": [
+      {
+        "url": "https://data.gov.hk/en-data/dataset/hk-landsd-openmap-landsd-lot/resource/92d24214-a295-4b8e-8d3f-27e9226e1287",
+        "observation": "Official data.gov.hk record identifies the Lands Department Lot dataset, CSDI API, quarterly update frequency, and describes lots as land granted or sold for specified uses rather than all parcels."
+      },
+      {
+        "url": "https://portal.csdi.gov.hk/server/rest/services/common/landsd_rcd_1637217253134_22729/FeatureServer?f=pjson",
+        "observation": "Layer metadata was inspected before feature query: layer 0 Lot, Polygon geometry, EPSG:4326-supported output; fields OBJECTID, Shape__Length, Shape__Area, LotID, LotCSUID; maximum record count 3,000. Only OBJECTID and LotID requested."
+      },
+      {
+        "url": "https://www.hkmapmeta.gov.hk/mcs/home/web/data/lands/iC1000.html",
+        "observation": "Official iC1000 metadata says current digital land-boundary maps cover Tuen Mun and are updated; mapped boundaries are approximate and field survey is needed."
+      },
+      {
+        "url": "https://tools.csdi.gov.hk/csdi-webpage/apidoc/LotIndexAPI",
+        "observation": "Official Lot Index API documentation describes a separate GML query service for lots/GLAs/STTs with bounded bbox requests."
+      }
+    ],
+    "viewerAndServiceTrace": {
+      "attempted": true,
+      "summary": "Schema-first CSDI FeatureServer review followed by one exact WUP point intersection query requesting only OBJECTID and LotID plus full geometry; separately attempted WUP-centered Lot Index API bboxes, which returned HTTP 400. No owner/address/title/valuation fields requested.",
+      "geometryStatus": "One full polygon intersected exact WUP point via CSDI Lot layer",
+      "fullPolygonLimit": 3,
+      "fullPolygonsRetained": 1,
+      "ownerOrAddressDataRequested": false,
+      "credentialsOrTokenValuesRetained": false
+    }
+  },
+  "sourceIds": [
+    "hk-landsd-csdi-lot"
+  ],
+  "source": {
+    "sourceId": "hk-landsd-csdi-lot",
+    "name": "Lands Department Lot (CSDI) FeatureServer layer 0",
+    "operator": "Hong Kong Lands Department / Common Spatial Data Infrastructure Portal",
+    "url": "https://data.gov.hk/en-data/dataset/hk-landsd-openmap-landsd-lot/resource/92d24214-a295-4b8e-8d3f-27e9226e1287",
+    "serviceType": "Public CSDI ArcGIS FeatureServer geometry query; quarterly Lot layer; not a complete parcel fabric.",
+    "layer": "common/landsd_rcd_1637217253134_22729/FeatureServer/0 (Lot)",
+    "geometryType": "Polygon",
+    "coordinateReferenceSystem": "WGS 84 longitude/latitude requested (EPSG:4326)",
+    "nativeIdFields": [
+      "LotCSUID"
+    ],
+    "directGeometryQueryVerified": true,
+    "directMetadataSchemaVerified": true,
+    "scope": "Public Lands Department CSDI Lot polygons in the Tuen Mun neighborhood. The dataset represents land sold or granted for specified uses and does not form a complete parcel fabric. Thirteen aligned 0.001° cells and four adjacent pans passed the real adapter with source count and object-ID manifests; a 29-window source check plus footprint neighbors yielded 127 distinct full polygons. All 127 fresh LotCSUID equality reads reproduced IDs and geometry, a valid absent ID returned empty, forced three-row object-ID batches completed, and the exact-WUP parcel passed full footprint retrieval and actual runtime proposal binding. GEOS in EPSG:32650 found no invalid polygons, duplicate geometry or positive-area overlaps above 0.01 m² in the bounded union. One conservative source bbox candidate lies about 0.04 m outside a cell; full geometry is preserved, with no snapping or clipping. Offset paging omitted that candidate, and multi-ID IN reads returned HTTP 403; the enabled descriptor uses object-ID manifests and one native LotCSUID equality per ID. Only LotCSUID, OBJECTID transport keys and LotID labels accompany geometry. Citywide completeness and identity continuity across quarterly replacements remain unverified. Published legal and survey notices are retained as scope information.",
+    "transportIdFields": [
+      "OBJECTID"
+    ],
+    "labelFields": [
+      "LotID"
+    ]
+  },
+  "coverageAssessment": {
+    "claimedScope": "Exact WUP-point hit in the public Lands Department Lot layer; one feature only.",
+    "verifiedOpenScope": "Public Lands Department CSDI Lot polygons in the Tuen Mun neighborhood. The dataset represents land sold or granted for specified uses and does not form a complete parcel fabric. Thirteen aligned 0.001° cells and four adjacent pans passed the real adapter with source count and object-ID manifests; a 29-window source check plus footprint neighbors yielded 127 distinct full polygons. All 127 fresh LotCSUID equality reads reproduced IDs and geometry, a valid absent ID returned empty, forced three-row object-ID batches completed, and the exact-WUP parcel passed full footprint retrieval and actual runtime proposal binding. GEOS in EPSG:32650 found no invalid polygons, duplicate geometry or positive-area overlaps above 0.01 m² in the bounded union. One conservative source bbox candidate lies about 0.04 m outside a cell; full geometry is preserved, with no snapping or clipping. Offset paging omitted that candidate, and multi-ID IN reads returned HTTP 403; the enabled descriptor uses object-ID manifests and one native LotCSUID equality per ID. Only LotCSUID, OBJECTID transport keys and LotID labels accompany geometry. Citywide completeness and identity continuity across quarterly replacements remain unverified. Published legal and survey notices are retained as scope information.",
+    "citywideVerified": false,
+    "countrywideVerified": false
+  },
+  "registryEvidenceUrls": [
+    "https://data.gov.hk/en-data/dataset/hk-landsd-openmap-landsd-lot/resource/92d24214-a295-4b8e-8d3f-27e9226e1287",
+    "https://www.hkmapmeta.gov.hk/mcs/home/web/data/lands/iC1000.html",
+    "https://tools.csdi.gov.hk/csdi-webpage/apidoc/LotIndexAPI"
+  ],
+  "runtimeAssessment": {
+    "status": "enabled",
+    "reason": "Public Lands Department CSDI Lot polygons in the Tuen Mun neighborhood. The dataset represents land sold or granted for specified uses and does not form a complete parcel fabric. Thirteen aligned 0.001° cells and four adjacent pans passed the real adapter with source count and object-ID manifests; a 29-window source check plus footprint neighbors yielded 127 distinct full polygons. All 127 fresh LotCSUID equality reads reproduced IDs and geometry, a valid absent ID returned empty, forced three-row object-ID batches completed, and the exact-WUP parcel passed full footprint retrieval and actual runtime proposal binding. GEOS in EPSG:32650 found no invalid polygons, duplicate geometry or positive-area overlaps above 0.01 m² in the bounded union. One conservative source bbox candidate lies about 0.04 m outside a cell; full geometry is preserved, with no snapping or clipping. Offset paging omitted that candidate, and multi-ID IN reads returned HTTP 403; the enabled descriptor uses object-ID manifests and one native LotCSUID equality per ID. Only LotCSUID, OBJECTID transport keys and LotID labels accompany geometry. Citywide completeness and identity continuity across quarterly replacements remain unverified. Published legal and survey notices are retained as scope information.",
+    "acceptanceFile": "research/overnight-cities-2026-10-08/tuen-mun-csdi-root-acceptance.json",
+    "qualityFile": "research/overnight-cities-2026-10-08/tuen-mun-csdi-root-quality.json",
+    "qualityReviewFile": "research/overnight-cities-2026-10-08/tuen-mun-csdi-service-review.json"
+  },
+  "remainingUncertainty": "Citywide lot completeness and native-ID continuity across quarterly replacement remain unverified.",
+  "verifiedParcelResponse": {
+    "url": "https://portal.csdi.gov.hk/server/rest/services/common/landsd_rcd_1637217253134_22729/FeatureServer/0/query",
+    "httpStatus": 200,
+    "contentType": "application/geo+json;charset=UTF-8",
+    "featureCount": 1,
+    "geometryType": "POLYGON",
+    "outputCrs": "WGS 84 longitude/latitude (EPSG:4326)",
+    "fullGeometryReturned": true,
+    "clipped": false,
+    "requestSemantics": "ArcGIS FeatureServer layer query: where=1=1, geometry=<exact WUP point [22.4266355780752,113.996366842382]>, geometryType=esriGeometryPoint, inSR=4326, spatialRel=esriSpatialRelIntersects, outFields=OBJECTID,LotID, returnGeometry=true, outSR=4326. Layer metadata advertises maxRecordCount=3,000; citywide enumeration not tested.",
+    "samples": [
+      {
+        "featureId": "219322",
+        "lotId": 1800196588,
+        "locationBasis": "Exact UN WUP 2025 weighted point [22.4266355780752,113.996366842382]",
+        "geometryType": "POLYGON",
+        "outputCrs": "WGS 84 longitude/latitude (EPSG:4326)",
+        "coordinates": [
+          [
+            [
+              113.99648408654507,
+              22.42689353555588
+            ],
+            [
+              113.99648016547162,
+              22.42689404049485
+            ],
+            [
+              113.99647526320493,
+              22.42689457928595
+            ],
+            [
+              113.99647035037108,
+              22.42689502703825
+            ],
+            [
+              113.99646542891313,
+              22.426895383483007
+            ],
+            [
+              113.9964605008711,
+              22.426895648441857
+            ],
+            [
+              113.99645556818767,
+              22.426895821917004
+            ],
+            [
+              113.99645063290292,
+              22.426895903730127
+            ],
+            [
+              113.99644569676524,
+              22.426895893883152
+            ],
+            [
+              113.99644076200865,
+              22.42689579246887
+            ],
+            [
+              113.99643583038164,
+              22.426895599398932
+            ],
+            [
+              113.99643090402093,
+              22.426895314856367
+            ],
+            [
+              113.99642598477207,
+              22.426894938843198
+            ],
+            [
+              113.99642107467456,
+              22.42689447163264
+            ],
+            [
+              113.99641544893514,
+              22.426893822652538
+            ],
+            [
+              113.99641162147397,
+              22.426893820454453
+            ],
+            [
+              113.99641051303502,
+              22.426893779392106
+            ],
+            [
+              113.99640557724848,
+              22.42689372339874
+            ],
+            [
+              113.99640064167255,
+              22.426893654762818
+            ],
+            [
+              113.99639570640436,
+              22.42689357348448
+            ],
+            [
+              113.99639077124979,
+              22.426893479473183
+            ],
+            [
+              113.99638583650008,
+              22.426893372819585
+            ],
+            [
+              113.9963809021554,
+              22.426893253433363
+            ],
+            [
+              113.99637596811846,
+              22.426893121404696
+            ],
+            [
+              113.99637103448639,
+              22.426892976733722
+            ],
+            [
+              113.99636610135647,
+              22.426892819330256
+            ],
+            [
+              113.99636116863144,
+              22.426892649284458
+            ],
+            [
+              113.99635623650556,
+              22.426892466596538
+            ],
+            [
+              113.99635130497884,
+              22.426892271266553
+            ],
+            [
+              113.99634637405141,
+              22.426892063204132
+            ],
+            [
+              113.99634144372325,
+              22.426891842409333
+            ],
+            [
+              113.99633375148825,
+              22.426891472686464
+            ],
+            [
+              113.99632881975086,
+              22.426891665754862
+            ],
+            [
+              113.9963238840144,
+              22.426891721375306
+            ],
+            [
+              113.99631894894108,
+              22.42689163973363
+            ],
+            [
+              113.9963140187078,
+              22.42689142074417
+            ],
+            [
+              113.99630909787949,
+              22.42689106468296
+            ],
+            [
+              113.99630419072959,
+              22.426890571916
+            ],
+            [
+              113.99630348332411,
+              22.426890480820948
+            ],
+            [
+              113.99627193411955,
+              22.426882534348174
+            ],
+            [
+              113.99626311069466,
+              22.426881690342913
+            ],
+            [
+              113.99625823021216,
+              22.426881006971712
+            ],
+            [
+              113.99625337731794,
+              22.42688017173919
+            ],
+            [
+              113.99624855735335,
+              22.426879185373732
+            ],
+            [
+              113.9962437757562,
+              22.426878049235977
+            ],
+            [
+              113.9962390380617,
+              22.4268767644158
+            ],
+            [
+              113.99623434951299,
+              22.426875332544505
+            ],
+            [
+              113.99622971535341,
+              22.426873755072883
+            ],
+            [
+              113.99622514082589,
+              22.42687203381282
+            ],
+            [
+              113.9962236764839,
+              22.426866740426647
+            ],
+            [
+              113.99622267560116,
+              22.426862247114023
+            ],
+            [
+              113.99622188525463,
+              22.426857717463502
+            ],
+            [
+              113.99622130708427,
+              22.426853160146166
+            ],
+            [
+              113.99622094195321,
+              22.426848583741883
+            ],
+            [
+              113.99621989357856,
+              22.426841682860204
+            ],
+            [
+              113.99621922389458,
+              22.426837136096438
+            ],
+            [
+              113.99621857062908,
+              22.42683258718373
+            ],
+            [
+              113.9962179338789,
+              22.426828036302762
+            ],
+            [
+              113.99621731354691,
+              22.42682348345348
+            ],
+            [
+              113.99621670973028,
+              22.426818928635956
+            ],
+            [
+              113.99621612233163,
+              22.426814372030684
+            ],
+            [
+              113.9962155514482,
+              22.426809813547493
+            ],
+            [
+              113.9962149969827,
+              22.42680525327654
+            ],
+            [
+              113.9962144590322,
+              22.42680069130829
+            ],
+            [
+              113.99621393759658,
+              22.426796127733034
+            ],
+            [
+              113.99621343267593,
+              22.426791562460433
+            ],
+            [
+              113.99621294427003,
+              22.426786995671126
+            ],
+            [
+              113.99621261541132,
+              22.426782312477208
+            ],
+            [
+              113.99621231400624,
+              22.42677773162891
+            ],
+            [
+              113.99621203241797,
+              22.4267731496288
+            ],
+            [
+              113.99621177074341,
+              22.426768566657596
+            ],
+            [
+              113.99621152898256,
+              22.426763982715325
+            ],
+            [
+              113.9962113071353,
+              22.42675939789228
+            ],
+            [
+              113.99621110520148,
+              22.42675481227874
+            ],
+            [
+              113.99621092318111,
+              22.426750225874724
+            ],
+            [
+              113.99621076107401,
+              22.426745638860854
+            ],
+            [
+              113.99621061888013,
+              22.426741051237123
+            ],
+            [
+              113.9962104965993,
+              22.426736463093814
+            ],
+            [
+              113.9962103942315,
+              22.42673187452126
+            ],
+            [
+              113.99621031177658,
+              22.42672728560974
+            ],
+            [
+              113.9962102492344,
+              22.42672269644957
+            ],
+            [
+              113.99621178951881,
+              22.426719516656743
+            ],
+            [
+              113.99621417556439,
+              22.42671549743664
+            ],
+            [
+              113.99621656617198,
+              22.426711480659826
+            ],
+            [
+              113.99621896143879,
+              22.426707466236106
+            ],
+            [
+              113.99622136126771,
+              22.426703454165356
+            ],
+            [
+              113.99622376575587,
+              22.426699444447678
+            ],
+            [
+              113.9962261748059,
+              22.42669543726359
+            ],
+            [
+              113.99622858851528,
+              22.426691432342295
+            ],
+            [
+              113.99623100678666,
+              22.426687429864273
+            ],
+            [
+              113.99623342971715,
+              22.42668342982966
+            ],
+            [
+              113.99623585720973,
+              22.426679432147996
+            ],
+            [
+              113.99623828926431,
+              22.426675436909623
+            ],
+            [
+              113.99624072597813,
+              22.426671444024333
+            ],
+            [
+              113.99624316725382,
+              22.426667453672653
+            ],
+            [
+              113.99624561309159,
+              22.426663465673915
+            ],
+            [
+              113.99624806349135,
+              22.42665948011848
+            ],
+            [
+              113.99625051855027,
+              22.42665549700642
+            ],
+            [
+              113.99625433329801,
+              22.42664932742845
+            ],
+            [
+              113.99627584847552,
+              22.426616986553945
+            ],
+            [
+              113.99628326790585,
+              22.426605518057716
+            ],
+            [
+              113.99628785829822,
+              22.42660382826479
+            ],
+            [
+              113.99629249613574,
+              22.426602254656228
+            ],
+            [
+              113.99629717801737,
+              22.42660079831193
+            ],
+            [
+              113.99630190044479,
+              22.42659946040191
+            ],
+            [
+              113.99630666011439,
+              22.426598241735206
+            ],
+            [
+              113.99631145343096,
+              22.426597143301148
+            ],
+            [
+              113.99631627679953,
+              22.42659616590848
+            ],
+            [
+              113.99632112681951,
+              22.42659531027581
+            ],
+            [
+              113.99632599989616,
+              22.426594577031256
+            ],
+            [
+              113.99633089253194,
+              22.42659396671276
+            ],
+            [
+              113.99633580093811,
+              22.426593479767543
+            ],
+            [
+              113.99634072171467,
+              22.42659311646278
+            ],
+            [
+              113.99634565116996,
+              22.426592877245835
+            ],
+            [
+              113.99635058571005,
+              22.42659276211271
+            ],
+            [
+              113.99635552164364,
+              22.42659277123988
+            ],
+            [
+              113.99636152854802,
+              22.42659295016182
+            ],
+            [
+              113.99636646390434,
+              22.426593030176974
+            ],
+            [
+              113.99637139958017,
+              22.426593088428984
+            ],
+            [
+              113.9963763355754,
+              22.426593125008125
+            ],
+            [
+              113.99638127169604,
+              22.426593139733605
+            ],
+            [
+              113.99638620784467,
+              22.426593132785886
+            ],
+            [
+              113.99639114392433,
+              22.426593104074573
+            ],
+            [
+              113.99639607983795,
+              22.42659305350926
+            ],
+            [
+              113.99640101539103,
+              22.42659298127031
+            ],
+            [
+              113.9964059505837,
+              22.426592887267468
+            ],
+            [
+              113.99641088522172,
+              22.426592771500477
+            ],
+            [
+              113.9964158192079,
+              22.426592633969243
+            ],
+            [
+              113.99642075254225,
+              22.426592474673765
+            ],
+            [
+              113.99642568493327,
+              22.426592293704015
+            ],
+            [
+              113.99643088846774,
+              22.42659207917277
+            ],
+            [
+              113.99643582341056,
+              22.42659217851051
+            ],
+            [
+              113.99644075693377,
+              22.426592324082375
+            ],
+            [
+              113.99644568864898,
+              22.426592515797626
+            ],
+            [
+              113.99645061797335,
+              22.426592753655626
+            ],
+            [
+              113.99645554451853,
+              22.426593037565617
+            ],
+            [
+              113.99646046760431,
+              22.42659336770746
+            ],
+            [
+              113.99646538693966,
+              22.426593743809935
+            ],
+            [
+              113.99647030184454,
+              22.426594165962555
+            ],
+            [
+              113.99647521193039,
+              22.426594634164925
+            ],
+            [
+              113.99648011661469,
+              22.426595148235748
+            ],
+            [
+              113.99648567980064,
+              22.426595787661746
+            ],
+            [
+              113.99649609834132,
+              22.426599186161173
+            ],
+            [
+              113.99649351656593,
+              22.42665487889492
+            ],
+            [
+              113.99648965001539,
+              22.426741615952157
+            ],
+            [
+              113.99648671527541,
+              22.426809997055678
+            ],
+            [
+              113.99648583602392,
+              22.42682330342425
+            ],
+            [
+              113.99647597732593,
+              22.426845485541627
+            ],
+            [
+              113.99647727402767,
+              22.426851152237504
+            ],
+            [
+              113.99647825383478,
+              22.426855649949985
+            ],
+            [
+              113.9964791915729,
+              22.42686015547196
+            ],
+            [
+              113.99648008743699,
+              22.42686466826185
+            ],
+            [
+              113.99648094113577,
+              22.426869188228995
+            ],
+            [
+              113.99648175276693,
+              22.426873714922003
+            ],
+            [
+              113.99648252213669,
+              22.42687824797943
+            ],
+            [
+              113.9964832492455,
+              22.42688278704007
+            ],
+            [
+              113.99648408654507,
+              22.42689353555588
+            ]
+          ]
+        ]
+      }
+    ],
+    "attributePolicy": "Retained full geometry and numeric OBJECTID / LotID only; Shape__Length, Shape__Area, LotCSUID, owner/address/title/value fields were not requested or retained."
+  },
+  "rootReviewedAt": "2026-10-09T00:58:42.724560+00:00",
+  "technicalBlocker": null,
+  "nextStep": "Inspect enabled source in headed app.",
+  "appCityId": "tuenmun",
+  "runtimeQualification": {
+    "sourceId": "hk-landsd-csdi-lot",
+    "status": "enabled",
+    "acceptanceFile": "research/overnight-cities-2026-10-08/tuen-mun-csdi-root-acceptance.json",
+    "qualityFile": "research/overnight-cities-2026-10-08/tuen-mun-csdi-root-quality.json"
+  }
+}

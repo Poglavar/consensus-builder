@@ -1,0 +1,78 @@
+{
+  "schemaVersion": "1.0",
+  "checkedAt": "2026-10-09",
+  "cityRecord": "city-11002-chenzhou.json",
+  "purpose": "Document primary local registry/custody evidence and bounded anonymous full-geometry discovery.",
+  "scopeLimits": {
+    "maxFullPolygonsRetainedInCityRecord": 0,
+    "maxFullPolygonsRetainedInReview": 0,
+    "maxFullPolygonsRetainedInRepository": 0,
+    "ownerOrAddressDataRetained": false,
+    "credentialsOrTokenValuesRetained": false,
+    "citywideCompletenessAsserted": false
+  },
+  "assessment": "City-specific registration responsibility is confirmed, but no public anonymous full-polygon parcel layer was established. No feature query was made because inspected official registration pages provide service and application requirements rather than a public geometry API.",
+  "registryAssessment": "Hunan Government Service Network listings for Chenzhou identify the Chenzhou Natural Resources and Planning Bureau and Chenzhou Real Estate Registration Center as the responsible city-level authority for real-estate registrations. The entry requires cadastral-survey materials, parcel maps, and parcel-boundary coordinates as application documents; it does not expose public parcel geometry.",
+  "officialPrimarySources": [
+    {
+      "url": "https://zwfw-new.hunan.gov.cn/hnvirtualhall/hndirectory/responsibilitylist.jsp?areaCode=431001000000&flag=&jgname=&orgid=&pager.desc=true&pager.offset=2630",
+      "observation": "Official Hunan government responsibility directory names Chenzhou Natural Resources and Planning Bureau and Chenzhou Real Estate Registration Center for registration matters."
+    },
+    {
+      "url": "https://zwfw-new.hunan.gov.cn/onething/sungovaffairs/zjfwInfoDetail.jsp?areaCode=&id=87haueVtQCeaE7R1V9Q82Q",
+      "observation": "Official Hunan government service entry for Chenzhou registration-related approval; supporting application materials include cadastral survey form, parcel map, and boundary coordinates."
+    },
+    {
+      "url": "https://www.hunan.gov.cn/topic/2023wznb/sz2023/czs2023/czsbm/202401/t20240130_32639059.html",
+      "observation": "Official Hunan government Chenzhou bureau profile."
+    }
+  ],
+  "searchQueries": [
+    {
+      "language": "English",
+      "query": "Chenzhou Hunan official land parcel cadastral map property registration public GIS",
+      "resultUrls": [
+        "https://zwfw-new.hunan.gov.cn/hnvirtualhall/hndirectory/responsibilitylist.jsp?areaCode=431001000000&flag=&jgname=&orgid=&pager.desc=true&pager.offset=2630",
+        "https://zwfw-new.hunan.gov.cn/onething/sungovaffairs/zjfwInfoDetail.jsp?areaCode=&id=87haueVtQCeaE7R1V9Q82Q",
+        "https://www.hunan.gov.cn/topic/2023wznb/sz2023/czs2023/czsbm/202401/t20240130_32639059.html"
+      ]
+    },
+    {
+      "language": "Chinese",
+      "query": "郴州 不动产登记 地籍图 公开查询 郴州市自然资源和规划局",
+      "resultUrls": [
+        "https://zwfw-new.hunan.gov.cn/hnvirtualhall/hndirectory/responsibilitylist.jsp?areaCode=431001000000&flag=&jgname=&orgid=&pager.desc=true&pager.offset=2630",
+        "https://zwfw-new.hunan.gov.cn/onething/sungovaffairs/zjfwInfoDetail.jsp?areaCode=&id=87haueVtQCeaE7R1V9Q82Q",
+        "https://www.hunan.gov.cn/topic/2023wznb/sz2023/czs2023/czsbm/202401/t20240130_32639059.html"
+      ]
+    }
+  ],
+  "geometryDecision": {
+    "verified": false,
+    "sourceId": null,
+    "sampleCount": 0,
+    "sampleFile": null,
+    "nativeId": null,
+    "nativeIdField": null,
+    "exactWupPointTest": "No source-native complete polygon was returned at the WUP point. `publicParcelGeometryFound:false` means unverified in this research, not confirmed absence.",
+    "requestEvidence": [
+      {
+        "url": "https://zwfw-new.hunan.gov.cn/hnvirtualhall/hndirectory/responsibilitylist.jsp?areaCode=431001000000&flag=&jgname=&orgid=&pager.desc=true&pager.offset=2630",
+        "method": "GET (bounded read)",
+        "httpStatus": 200,
+        "contentType": "text/html;charset=utf-8",
+        "bytesRead": 42985,
+        "assessment": "Official Hunan responsibility directory identifies city registration authority; no anonymous geometry endpoint."
+      }
+    ]
+  },
+  "coverageAssessment": {
+    "claimedScope": "Hunan Government Service Network listings for Chenzhou identify the Chenzhou Natural Resources and Planning Bureau and Chenzhou Real Estate Registration Center as the responsible city-level authority for real-estate registrations. The entry requires cadastral-survey materials, parcel maps, and parcel-boundary coordinates as application documents; it does not expose public parcel geometry.",
+    "verifiedOpenScope": "No full parcel geometry was verified and no citywide coverage is asserted.",
+    "citywideVerified": false,
+    "countrywideVerified": false
+  },
+  "attempts": [],
+  "remainingUncertainty": "Whether Chenzhou publishes anonymous full parcel geometry, and whether any viewer has a public feature API, remain unverified.",
+  "nextStep": "Use the city registration center or an official Chenzhou map catalog to identify a documented public vector feature endpoint."
+}

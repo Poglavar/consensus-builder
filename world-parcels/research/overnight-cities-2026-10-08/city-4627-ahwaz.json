@@ -1,0 +1,118 @@
+{
+  "name": "Ahwaz",
+  "country": "Iran",
+  "countryCode": "IR",
+  "rank": 297,
+  "point": [
+    31.3446982544985,
+    48.722244246153
+  ],
+  "freshResearch": {
+    "queries": [
+      {
+        "language": "Persian",
+        "query": "اهواز نقشه کاداستر املاک GIS شهرداری اهواز سامانه ثبت اسناد نقشه قطعات",
+        "scope": "Find a first-party Ahwaz municipal or provincial parcel registry/map service.",
+        "result": "Search results did not surface a first-party Ahwaz parcel-cadastre service. A third-party directory references gis.ahvaz.ir as an Ahvaz map portal, and a third-party app listing describes the municipal “Ahvaz My” application as including a city map, but neither confirms parcel cadastral layers. A secondary description of the Khuzestan provincial registry office concerns registration operations rather than a public map.",
+        "actualResultUrls": [
+          "https://gis.ahvaz.ir/",
+          "https://105.1308.ir/app/ir.ahvaz.my"
+        ],
+        "executionMethod": "Persian web search and read-only direct request to the cited GIS hostname."
+      },
+      {
+        "language": "English",
+        "query": "Ahwaz official cadastral parcel registry GIS municipal map Iran Khuzestan",
+        "scope": "Check English-language primary evidence for local parcel registry and vector access.",
+        "result": "No first-party city or provincial parcel viewer/vector source was located. National Iranian land-cadastre references alone were not counted as evidence of a local public parcel registry. The municipal GIS hostname reset the direct connection; this does not establish provider unavailability.",
+        "actualResultUrls": [
+          "https://gis.ahvaz.ir/"
+        ],
+        "executionMethod": "English web search plus bounded read-only HTTP/HTTPS shell requests."
+      }
+    ],
+    "portals": [
+      {
+        "name": "Ahvaz municipal GIS hostname (lead only)",
+        "operator": "Unverified; third-party listing associates hostname with Ahvaz map portal",
+        "homeUrl": "https://gis.ahvaz.ir/",
+        "observation": "The hostname appears in a third-party directory; both HTTP and HTTPS direct requests reset the connection in this environment. No first-party map shell, parcel layer, or source operator could be verified."
+      },
+      {
+        "name": "Ahvaz My municipal app (secondary listing)",
+        "operator": "Listed as Ahvaz Municipality Technology Organization",
+        "homeUrl": "https://105.1308.ir/app/ir.ahvaz.my",
+        "observation": "Third-party app listing says the app provides a city map and municipal services. It does not establish cadastral parcels or expose a public vector query."
+      }
+    ],
+    "requests": [
+      {
+        "url": "http://gis.ahvaz.ir/",
+        "method": "GET",
+        "httpStatus": null,
+        "contentType": null,
+        "observation": "Connection reset by peer from local shell."
+      },
+      {
+        "url": "https://gis.ahvaz.ir/",
+        "method": "GET",
+        "httpStatus": null,
+        "contentType": null,
+        "observation": "Connection reset by peer from local shell."
+      }
+    ],
+    "executionMethod": "Persian and English web searches plus bounded direct read-only requests; local map lead remains unverified."
+  },
+  "status": "complete",
+  "verifiedParcelResponse": {
+    "httpStatus": null,
+    "featureType": null,
+    "responseType": null,
+    "responseCrs": null,
+    "returnedFullPolygonCount": 0,
+    "uniqueFullPolygonCount": 0,
+    "wupPointContained": null,
+    "limitations": "No first-party local parcel registry source or anonymous full polygon service was verified. The GIS hostname is a secondary-source lead only."
+  },
+  "source": {
+    "id": null,
+    "name": null,
+    "operator": null,
+    "url": "https://gis.ahvaz.ir/",
+    "format": null,
+    "access": "Unknown; first-party ownership and access contract not verified",
+    "nativeIdField": null,
+    "geometryCrs": null
+  },
+  "coverageAssessment": {
+    "claimedScope": "No local cadastral coverage claim substantiated by first-party evidence.",
+    "verifiedOpenScope": "No first-party Ahwaz parcel registry or public parcel geometry verified.",
+    "countrywideVerified": false,
+    "citywideVerified": false
+  },
+  "registryFound": null,
+  "registryBasis": "Unresolved. National cadastre information and third-party references to a municipal map do not establish a first-party local parcel registry service.",
+  "verifiedSample": false,
+  "publicParcelGeometryFound": false,
+  "resultCategory": "local_registry_unresolved_no_verified_public_geometry",
+  "technicalBlocker": "No accessible first-party Ahwaz cadastral map/source was found; the cited GIS hostname resets connections and its operator/layers remain unverified.",
+  "remainingUncertainty": "Whether gis.ahvaz.ir is a current municipal portal and whether it contains cadastral parcel layers, and whether any local parcel data are available publicly.",
+  "sourceIds": [],
+  "nextStep": "Seek first-party confirmation from Ahvaz municipality or Khuzestan provincial registry and a reachable city-specific public map layer before assigning registry status or requesting geometry.",
+  "schemaVersion": 1,
+  "checkedAt": "2026-10-09",
+  "wupCityCode": 4627,
+  "cityId": "wup2025:4627",
+  "queueRank": 297,
+  "population2025": 1639321,
+  "populationPlausibility2025": "High",
+  "populationUnit": "persons",
+  "pointBasis": "UN WUP 2025 population-weighted settlement centroid; this is not a municipal boundary or a parcel-coverage claim.",
+  "centerLatLon": [
+    31.3446982544985,
+    48.722244246153
+  ],
+  "runtimeReadiness": "not_enabled_no_verified_public_geometry",
+  "adapterReady": false,
+  "rootReviewedAt": "2026-10-08T22:11:57.022500+00:00"
+}

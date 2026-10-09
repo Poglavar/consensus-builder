@@ -1,0 +1,87 @@
+{
+  "schemaVersion": "1.0",
+  "checkedAt": "2026-10-09",
+  "cityRecord": "city-4113-stuttgart.json",
+  "purpose": "Read-only official city registry and bounded public parcel geometry review.",
+  "scopeLimits": {
+    "maxFullPolygonsRetainedInThisCityReport": 3,
+    "maxFullPolygonsRetainedAcrossCityReview": 3,
+    "ownerOrAddressDataRetained": false,
+    "credentialsOrPrivateTokensRetained": false
+  },
+  "assessment": "Stuttgart city cadastral services are documented by the municipal Geoportal; the official LGL ALKIS WFS returns complete owner-free parcel polygons. A 40 m × 40 m WUP-centered bbox matched six features and returned three. All three identify Stuttgart; none contains the WUP point.",
+  "officialEvidence": [
+    {
+      "url": "https://www.stuttgart.de/leben/bauen/geoportal/dienste-und-auskunftssysteme",
+      "observation": "The official Stuttgart Geoportal documents municipal cadastral services; LGL provides ALKIS parcel polygons."
+    },
+    {
+      "url": "https://opendata.stuttgart.de/dataset/alkis",
+      "observation": "The official Stuttgart Geoportal documents municipal cadastral services; LGL provides ALKIS parcel polygons."
+    },
+    {
+      "url": "https://www.lgl-bw.de/Produkte/Geodatendienste/ALKIS-Daten/index.html",
+      "observation": "The official Stuttgart Geoportal documents municipal cadastral services; LGL provides ALKIS parcel polygons."
+    },
+    {
+      "url": "https://owsproxy.lgl-bw.de/owsproxy/wfs/WFS_LGL-BW_ALKIS?SERVICE=WFS&REQUEST=GetCapabilities",
+      "httpStatus": 200,
+      "observation": "WFS capabilities document official ALKIS parcel layer nora:v_al_flurstueck and state that owners/leaseholders are not provided."
+    }
+  ],
+  "serviceTrace": {
+    "service": "https://owsproxy.lgl-bw.de/owsproxy/wfs/WFS_LGL-BW_ALKIS",
+    "version": "WFS 2.0.0",
+    "layer": "nora:v_al_flurstueck",
+    "geometryType": "Polygon",
+    "nativeCrs": "EPSG:25832",
+    "query": "Anonymous GetFeature; explicit safe property projection; COUNT=3; 40 m × 40 m bbox around ranked WUP point.",
+    "httpStatus": 200,
+    "contentType": "application/geo+json",
+    "responseBytes": 9381,
+    "numberMatched": 6,
+    "numberReturned": 3,
+    "schemaSafeFields": [
+      "gml_id",
+      "flurstueckskennzeichen",
+      "gemeinde_id",
+      "gemeinde_name",
+      "geom"
+    ],
+    "retainedFields": [
+      "gml_id",
+      "flurstueckskennzeichen",
+      "gemeinde_id",
+      "gemeinde_name",
+      "geometry"
+    ],
+    "returnedCityNames": [
+      "Stuttgart",
+      "Stuttgart",
+      "Stuttgart"
+    ],
+    "retainedIdentifiers": [
+      "08146000000678000000",
+      "08146000000688000200",
+      "08146000001247000200"
+    ],
+    "wupPointContainedByReturnedFeatures": false,
+    "sampleFile": "samples/stuttgart-alkis-wup576-bbox.geojson",
+    "sampleSha256": "39f554918e1100db47ce875ab94a1f172f9a5f57582eb1d22f50f29942e96a16",
+    "sampleCrs": "OGC:CRS84 transformed from EPSG:25832, full boundaries preserved"
+  },
+  "completenessAssessment": {
+    "citywideFeatureCount": null,
+    "completeIdManifestAvailable": false,
+    "totalOrPagingMetadataObserved": false,
+    "runtimeQualification": "Not qualified; bounded query matched six records but returned three; no citywide inventory/paging contract tested."
+  },
+  "runtimeBlocker": null,
+  "rootRuntimeReview": {
+    "status": "approved_by_root",
+    "reason": "78 valid, distinct official cadastral polygons verified in thirteen local 0.001-degree cells around the unchanged WUP settlement locator. Complete pages, forced three-row pagination, all 78 fresh native cadastral-reference reads, valid synthetic absence, footprint and source binding passed. Independent GEOS in EPSG:32632 found no invalid polygons, duplicate geometry, overlaps above 0.01 m² or operation errors. Stuttgart parcels returned through the Baden-Württemberg LGL ALKIS service; nearby valid ground is verified, without requiring the settlement centroid itself to fall inside a parcel. Wider municipal completeness, legal boundary accuracy and long-term identifier continuity remain unverified.",
+    "checkedAt": "2026-10-09T01:44:14.180992+00:00",
+    "acceptanceFile": "research/overnight-cities-2026-10-08/stuttgart-lgl-root-acceptance.json",
+    "qualityFile": "research/overnight-cities-2026-10-08/stuttgart-lgl-root-quality.json"
+  }
+}

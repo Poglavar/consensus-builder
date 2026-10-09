@@ -1,0 +1,43 @@
+{
+  "schemaVersion": 1,
+  "checkedAt": "2026-10-09",
+  "cityRecord": "city-10704-mudanjiang.json",
+  "purpose": "City-specific official registry/cadastre and safe anonymous parcel-geometry discovery.",
+  "scopeLimits": {
+    "maxFullPolygonsRetainedInCityRecord": 3,
+    "maxFullPolygonsRetainedInReview": 3,
+    "maxFullPolygonsRetainedInRepository": 3,
+    "ownerOrAddressDataRetained": false,
+    "credentialsOrTokenValuesRetained": false,
+    "citywideCompletenessAsserted": false
+  },
+  "assessment": "Online registration query and cadastral visual-query plans do not document a public feature service or safe anonymous geometry response. No map query or parcel lookup was made.",
+  "registryAssessment": "The official Mudanjiang Natural Resources Bureau identifies a Municipal Real Estate Registration Center with cadastral/ownership survey, registration review, records, and related teams. A city bureau plan describes an existing “Internet + real-estate registration” platform and online registration-information query, and calls for visual cadastral-map query expansion. The records establish city-specific property registry workflow, but do not expose a public anonymous vector-layer schema.",
+  "searchQueries": [
+    {
+      "language": "Chinese (Simplified)",
+      "query": "牡丹江市不动产登记中心 地籍图 可视化查询 登记信息 官方",
+      "scope": "Verify city-specific land/property registry and determine whether an anonymous safe polygon service exists.",
+      "result": "Official city records identify the Real Estate Registration Center and its cadastral survey, property-right registration, and records functions. A city plan documents online registration-information query and a cadastral-map visual-query work item; no feature layer, safe field schema, or anonymous geometry endpoint was identified.",
+      "actualResultUrls": [
+        "https://zrzyj.mdj.gov.cn/mdjszrzyj/c100457/202508/1017682/files/2024%E5%B9%B4%E5%BA%A6%E7%89%A1%E4%B8%B9%E6%B1%9F%E5%B8%82%E8%87%AA%E7%84%B6%E8%B5%84%E6%BA%90%E5%B1%80%E9%83%A8%E9%97%A8%E5%86%B3%E7%AE%97%E5%85%AC%E5%BC%80%E8%AF%B4%E6%98%8E.pdf",
+        "https://zrzyj.mdj.gov.cn/mdjszrzyj/c100733/202302/252477.shtml"
+      ],
+      "executionMethod": "Separate Chinese-language discovery; city natural-resources bureau and its published budget/service notices reviewed. No parcel/property lookup or feature request."
+    },
+    {
+      "language": "English",
+      "query": "Mudanjiang official real estate registration center cadastral map land registry GIS",
+      "scope": "Verify city-specific land/property registry and determine whether an anonymous safe polygon service exists.",
+      "result": "English discovery did not locate a city-published open parcel feature service. Official Chinese city-bureau records confirm the local registry workflow, but not public vector geometry.",
+      "actualResultUrls": [
+        "https://zrzyj.mdj.gov.cn/"
+      ],
+      "executionMethod": "Separate English-language discovery; reviewed official city bureau source references found in Chinese-language results. No property lookup."
+    }
+  ],
+  "geometryEvidence": null,
+  "privacy": "No owner, address, applicant, taxpayer, assessment, sale, or other private property fields were requested or retained.",
+  "runtimeAssessment": "not_enabled_no_verified_public_geometry",
+  "technicalBlocker": "The city sources document registration and visual cadastral-query workflows but provide no public vector service endpoint or feature schema."
+}

@@ -1,0 +1,1420 @@
+{
+  "schemaVersion": 1,
+  "purpose": "Independent GEOS topology check of complete runtime parcels projected to metric coordinates; no repair applied. Counts are bounded sample evidence, not whole-city guarantees.",
+  "library": "Shapely 2.2.0",
+  "metricCrs": "EPSG:32617",
+  "featureCount": 200,
+  "validNonemptyCount": 200,
+  "invalidFeatures": [],
+  "exactDuplicateGeometryPairs": [],
+  "positiveAreaOverlapPairsAbove0_01M2": [],
+  "sumPairwiseOverlapM2": 0,
+  "operationErrors": [],
+  "areaM2": {
+    "min": 184.942411578275,
+    "median": 432.2505984153328,
+    "max": 156495.9197467172
+  },
+  "features": [
+    {
+      "id": "US-MI-DETROIT-16008193.",
+      "areaM2": 222.90904971761003,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "US-MI-DETROIT-16008192.",
+      "areaM2": 233.9335026572633,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "US-MI-DETROIT-16008201.",
+      "areaM2": 185.02530415465804,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "US-MI-DETROIT-16008199-200",
+      "areaM2": 372.3627174225133,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "US-MI-DETROIT-16008194-8",
+      "areaM2": 1016.5443173957746,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "US-MI-DETROIT-16008202.",
+      "areaM2": 263.8779806061144,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "US-MI-DETROIT-16033850.",
+      "areaM2": 355.34747480915075,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "US-MI-DETROIT-16033846-7",
+      "areaM2": 325.0140157171813,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "US-MI-DETROIT-16033848.",
+      "areaM2": 678.5168286053619,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "US-MI-DETROIT-16033849.",
+      "areaM2": 355.090378271304,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "US-MI-DETROIT-16033851.",
+      "areaM2": 352.97063201011446,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "US-MI-DETROIT-16033852.",
+      "areaM2": 354.7408123578426,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "US-MI-DETROIT-16033285.",
+      "areaM2": 443.33871668502445,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "US-MI-DETROIT-16033286.",
+      "areaM2": 443.4611210330579,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "US-MI-DETROIT-16033287.",
+      "areaM2": 441.5526581802337,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "US-MI-DETROIT-16033288.",
+      "areaM2": 443.51306695677243,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "US-MI-DETROIT-16033289.",
+      "areaM2": 443.42921259399293,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "US-MI-DETROIT-16033290.",
+      "areaM2": 441.5860255848812,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "US-MI-DETROIT-16008207.",
+      "areaM2": 185.63199338704933,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "US-MI-DETROIT-16008208.",
+      "areaM2": 185.75567955099558,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "US-MI-DETROIT-16008211.",
+      "areaM2": 184.942411578275,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "US-MI-DETROIT-16008210.",
+      "areaM2": 186.9283739219472,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "US-MI-DETROIT-16008209.",
+      "areaM2": 187.00266312557721,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "US-MI-DETROIT-16008205.",
+      "areaM2": 187.23498174461452,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "US-MI-DETROIT-16008206.",
+      "areaM2": 187.12640746428943,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "US-MI-DETROIT-16008203-4",
+      "areaM2": 450.13428357863415,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "US-MI-DETROIT-16032254.",
+      "areaM2": 430.3478622378151,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "US-MI-DETROIT-16032255.",
+      "areaM2": 428.4028997185659,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "US-MI-DETROIT-16032256.",
+      "areaM2": 430.40163456855976,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "US-MI-DETROIT-16032257.",
+      "areaM2": 430.1348658360538,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "US-MI-DETROIT-16032258.",
+      "areaM2": 392.09942994290407,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "US-MI-DETROIT-16032259.",
+      "areaM2": 394.14318644294383,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "US-MI-DETROIT-16032875.",
+      "areaM2": 441.4977773977116,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "US-MI-DETROIT-16032876.",
+      "areaM2": 443.7229047738337,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "US-MI-DETROIT-16032877.",
+      "areaM2": 444.7361756842434,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "US-MI-DETROIT-16032878.",
+      "areaM2": 442.5489413906379,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "US-MI-DETROIT-16032879.",
+      "areaM2": 444.2164477733582,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "US-MI-DETROIT-16008216-9",
+      "areaM2": 741.8660059921052,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "US-MI-DETROIT-16008215.",
+      "areaM2": 195.93779789353565,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "US-MI-DETROIT-16008214.",
+      "areaM2": 186.50406244517643,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "US-MI-DETROIT-16008221.",
+      "areaM2": 373.08752352335705,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "US-MI-DETROIT-16008220.",
+      "areaM2": 185.03295189692412,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "US-MI-DETROIT-16008213.",
+      "areaM2": 186.6243394415046,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "US-MI-DETROIT-16008212.",
+      "areaM2": 185.00237380751295,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "US-MI-DETROIT-16031872.",
+      "areaM2": 427.7376104704912,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "US-MI-DETROIT-16031871.",
+      "areaM2": 429.3763154999074,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "US-MI-DETROIT-16031870.",
+      "areaM2": 429.3731181862904,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "US-MI-DETROIT-16031869.",
+      "areaM2": 426.9558955429781,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "US-MI-DETROIT-16031868.",
+      "areaM2": 393.28163733901846,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "US-MI-DETROIT-16031867.",
+      "areaM2": 393.758315848724,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "US-MI-DETROIT-16033853.",
+      "areaM2": 354.59624166458855,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "US-MI-DETROIT-16033854.",
+      "areaM2": 353.63113107726497,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "US-MI-DETROIT-16033855.",
+      "areaM2": 355.1217700275041,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "US-MI-DETROIT-16033856.",
+      "areaM2": 354.7803173433574,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "US-MI-DETROIT-16033857.",
+      "areaM2": 352.967487029364,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "US-MI-DETROIT-16033858.",
+      "areaM2": 353.104001694192,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "US-MI-DETROIT-16033859.",
+      "areaM2": 329.2884905573182,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "US-MI-DETROIT-16033860.",
+      "areaM2": 502.2056756781877,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "US-MI-DETROIT-16033278.",
+      "areaM2": 556.3487250963572,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "US-MI-DETROIT-16033279.",
+      "areaM2": 436.07040085150436,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "US-MI-DETROIT-16033280.",
+      "areaM2": 445.2974043484107,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "US-MI-DETROIT-16033281.",
+      "areaM2": 441.59810840977866,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "US-MI-DETROIT-16033282.",
+      "areaM2": 443.40746434459516,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "US-MI-DETROIT-16033283.",
+      "areaM2": 443.3877949761769,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "US-MI-DETROIT-16033284.",
+      "areaM2": 441.6189475466283,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "US-MI-DETROIT-16032245.",
+      "areaM2": 550.1556114366551,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "US-MI-DETROIT-16032248.",
+      "areaM2": 428.3283153579793,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "US-MI-DETROIT-16032249.",
+      "areaM2": 428.4071208550444,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "US-MI-DETROIT-16032250.",
+      "areaM2": 432.16177398950487,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "US-MI-DETROIT-16032251.",
+      "areaM2": 428.3669514248775,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "US-MI-DETROIT-16032252.",
+      "areaM2": 428.1859805265047,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "US-MI-DETROIT-16032253.",
+      "areaM2": 430.39968948816613,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "US-MI-DETROIT-16032886.",
+      "areaM2": 433.35817160835774,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "US-MI-DETROIT-16032880.",
+      "areaM2": 443.11535067661066,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "US-MI-DETROIT-16032881.",
+      "areaM2": 444.0828115072493,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "US-MI-DETROIT-16032882.",
+      "areaM2": 444.3918836950571,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "US-MI-DETROIT-16032883.",
+      "areaM2": 442.1388894945997,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "US-MI-DETROIT-16032884.",
+      "areaM2": 443.3065209120028,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "US-MI-DETROIT-16032885.",
+      "areaM2": 443.9093454243823,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "US-MI-DETROIT-16032887.",
+      "areaM2": 556.995260755317,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "US-MI-DETROIT-16032246.",
+      "areaM2": 381.40555734239865,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "US-MI-DETROIT-16032247.",
+      "areaM2": 432.33942284116074,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "US-MI-DETROIT-16031881.",
+      "areaM2": 555.7800431888923,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "US-MI-DETROIT-16031880.",
+      "areaM2": 378.5411709688638,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "US-MI-DETROIT-16031879.",
+      "areaM2": 429.2344582557923,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "US-MI-DETROIT-16031878.",
+      "areaM2": 427.47702541906284,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "US-MI-DETROIT-16031877.",
+      "areaM2": 429.76120410212195,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "US-MI-DETROIT-16031876.",
+      "areaM2": 430.2945841983957,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "US-MI-DETROIT-16031875.",
+      "areaM2": 428.5249877225743,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "US-MI-DETROIT-16031874.",
+      "areaM2": 430.5637527151629,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "US-MI-DETROIT-16031873.",
+      "areaM2": 430.2930557327208,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "US-MI-DETROIT-16030746.",
+      "areaM2": 603.2974987110847,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "US-MI-DETROIT-16030747.",
+      "areaM2": 369.3973472934959,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "US-MI-DETROIT-16030748.",
+      "areaM2": 423.7043350986411,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "US-MI-DETROIT-16030749.",
+      "areaM2": 423.9179462143055,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "US-MI-DETROIT-16030750.",
+      "areaM2": 421.91558121349254,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "US-MI-DETROIT-16030752.",
+      "areaM2": 423.1338431136924,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "US-MI-DETROIT-16030751.",
+      "areaM2": 423.7066620060423,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "US-MI-DETROIT-16033861.",
+      "areaM2": 400.40597560814285,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "US-MI-DETROIT-16033862.",
+      "areaM2": 404.60580588224514,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "US-MI-DETROIT-16033863.",
+      "areaM2": 400.36135022085887,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "US-MI-DETROIT-16033864.",
+      "areaM2": 402.15437969118034,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "US-MI-DETROIT-16033865.",
+      "areaM2": 402.80753686461884,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "US-MI-DETROIT-16033866.",
+      "areaM2": 400.4646010426692,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "US-MI-DETROIT-16033867.",
+      "areaM2": 403.9988458007293,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "US-MI-DETROIT-16033868.",
+      "areaM2": 400.95521107993795,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "US-MI-DETROIT-16033869.",
+      "areaM2": 400.35219032390404,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "US-MI-DETROIT-16033269.",
+      "areaM2": 447.360256154804,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "US-MI-DETROIT-16033270.",
+      "areaM2": 444.5050468735277,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "US-MI-DETROIT-16033271.",
+      "areaM2": 444.8590680550349,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "US-MI-DETROIT-16033272.",
+      "areaM2": 447.4051744518951,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "US-MI-DETROIT-16033273.",
+      "areaM2": 444.3493643599976,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "US-MI-DETROIT-16033274.",
+      "areaM2": 449.0698720197651,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "US-MI-DETROIT-16033275.",
+      "areaM2": 444.50394618703956,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "US-MI-DETROIT-16033276.",
+      "areaM2": 443.79388762222345,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "US-MI-DETROIT-16033277.",
+      "areaM2": 448.36923967123374,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "US-MI-DETROIT-16032236.",
+      "areaM2": 440.7630574013559,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "US-MI-DETROIT-16032237.",
+      "areaM2": 440.56080640609093,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "US-MI-DETROIT-16032238.",
+      "areaM2": 441.45156445076134,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "US-MI-DETROIT-16032239.",
+      "areaM2": 440.11833683734665,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "US-MI-DETROIT-16032240.",
+      "areaM2": 442.05729292655644,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "US-MI-DETROIT-16032241.",
+      "areaM2": 441.8024383341599,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "US-MI-DETROIT-16032242.",
+      "areaM2": 442.00675223725125,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "US-MI-DETROIT-16032243.",
+      "areaM2": 442.06328200336117,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "US-MI-DETROIT-16032244.",
+      "areaM2": 441.8550515560439,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "US-MI-DETROIT-16032888.",
+      "areaM2": 444.2297082644608,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "US-MI-DETROIT-16032889.",
+      "areaM2": 447.6762740234017,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "US-MI-DETROIT-16032890.",
+      "areaM2": 444.0827725798175,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "US-MI-DETROIT-16032891.",
+      "areaM2": 446.3328785198136,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "US-MI-DETROIT-16032892.",
+      "areaM2": 445.92692398185864,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "US-MI-DETROIT-16032893.",
+      "areaM2": 444.1354239095865,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "US-MI-DETROIT-16032894.",
+      "areaM2": 447.9225032256835,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "US-MI-DETROIT-16032895.",
+      "areaM2": 444.33396975670234,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "US-MI-DETROIT-16032896.",
+      "areaM2": 445.8045510735313,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "US-MI-DETROIT-16031890.",
+      "areaM2": 449.0510941900091,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "US-MI-DETROIT-16031889.",
+      "areaM2": 444.7883258954794,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "US-MI-DETROIT-16031888.",
+      "areaM2": 445.79386063389916,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "US-MI-DETROIT-16031887.",
+      "areaM2": 445.98908256818385,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "US-MI-DETROIT-16031886.",
+      "areaM2": 444.0922911924478,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "US-MI-DETROIT-16031884.",
+      "areaM2": 444.1431850550011,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "US-MI-DETROIT-16031883.",
+      "areaM2": 446.59664404102915,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "US-MI-DETROIT-16031882.",
+      "areaM2": 447.0025076083931,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "US-MI-DETROIT-16031885.",
+      "areaM2": 447.54608078778955,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "US-MI-DETROIT-16030743.",
+      "areaM2": 481.4103924006264,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "US-MI-DETROIT-16030744.",
+      "areaM2": 481.61925430543147,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "US-MI-DETROIT-16030745.",
+      "areaM2": 479.58226864345045,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "US-MI-DETROIT-16030737.",
+      "areaM2": 481.5748655889353,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "US-MI-DETROIT-16030738.",
+      "areaM2": 481.3038084231769,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "US-MI-DETROIT-16030739.",
+      "areaM2": 481.6244319229801,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "US-MI-DETROIT-16030740.",
+      "areaM2": 479.4505977212687,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "US-MI-DETROIT-16030741.",
+      "areaM2": 484.17521703159974,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "US-MI-DETROIT-16030742.",
+      "areaM2": 480.268709130463,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "US-MI-DETROIT-16007987.003",
+      "areaM2": 156495.9197467172,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "US-MI-DETROIT-16032234.",
+      "areaM2": 440.11184895630873,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "US-MI-DETROIT-16032228.",
+      "areaM2": 500.3570501496502,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "US-MI-DETROIT-16032229.",
+      "areaM2": 500.9438713231098,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "US-MI-DETROIT-16032230.",
+      "areaM2": 693.0244005340664,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "US-MI-DETROIT-16032231.",
+      "areaM2": 497.21476797051764,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "US-MI-DETROIT-16032232.",
+      "areaM2": 441.85652085554733,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "US-MI-DETROIT-16032233.",
+      "areaM2": 442.0465697828154,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "US-MI-DETROIT-16032235.",
+      "areaM2": 441.4510623726974,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "US-MI-DETROIT-16032897.",
+      "areaM2": 446.6782705727302,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "US-MI-DETROIT-16032898.",
+      "areaM2": 445.53130647808575,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "US-MI-DETROIT-16032899.",
+      "areaM2": 448.9226786831712,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "US-MI-DETROIT-16032901.",
+      "areaM2": 502.4306289654022,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "US-MI-DETROIT-16032902.",
+      "areaM2": 709.0903000113091,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "US-MI-DETROIT-16032903.",
+      "areaM2": 510.4530781251675,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "US-MI-DETROIT-16032904.",
+      "areaM2": 507.5339708791859,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "US-MI-DETROIT-16032900.",
+      "areaM2": 445.3239351743532,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "US-MI-DETROIT-16034784.",
+      "areaM2": 369.8977637586286,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "US-MI-DETROIT-16034785.",
+      "areaM2": 371.60702301545075,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "US-MI-DETROIT-16034786.",
+      "areaM2": 370.8011995022917,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "US-MI-DETROIT-16034787.",
+      "areaM2": 369.0553055622401,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "US-MI-DETROIT-16034788.",
+      "areaM2": 369.8431516097509,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "US-MI-DETROIT-16034789.",
+      "areaM2": 373.31624114029546,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "US-MI-DETROIT-16034790.",
+      "areaM2": 369.1391650833055,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "US-MI-DETROIT-16034792.",
+      "areaM2": 530.8316682129075,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "US-MI-DETROIT-16034222.",
+      "areaM2": 369.14176355217904,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "US-MI-DETROIT-16034215.",
+      "areaM2": 527.0046490471707,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "US-MI-DETROIT-16034216.",
+      "areaM2": 348.8369387515415,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "US-MI-DETROIT-16034217.",
+      "areaM2": 371.6038636992206,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "US-MI-DETROIT-16034218.",
+      "areaM2": 370.8430872957591,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "US-MI-DETROIT-16034219.",
+      "areaM2": 369.3303483986347,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "US-MI-DETROIT-16034220.",
+      "areaM2": 371.6027470733522,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "US-MI-DETROIT-16034221.",
+      "areaM2": 371.4101354687612,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "US-MI-DETROIT-16034223.",
+      "areaM2": 371.0356311817452,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "US-MI-DETROIT-16034791.",
+      "areaM2": 351.74145963078905,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "US-MI-DETROIT-16030362.",
+      "areaM2": 421.22308711030337,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "US-MI-DETROIT-16030363.",
+      "areaM2": 421.70704338191956,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "US-MI-DETROIT-16030364.",
+      "areaM2": 425.34334564510505,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "US-MI-DETROIT-16030365.",
+      "areaM2": 421.4298127075483,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "US-MI-DETROIT-16030366.",
+      "areaM2": 421.4806407083395,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "US-MI-DETROIT-16030367.",
+      "areaM2": 425.1673171617797,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "US-MI-DETROIT-16030368.",
+      "areaM2": 421.7506744877026,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "US-MI-DETROIT-16030369.",
+      "areaM2": 421.43343683425456,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "US-MI-DETROIT-16030370.",
+      "areaM2": 363.2637791983155,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "US-MI-DETROIT-16030371.",
+      "areaM2": 606.0777718378241,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "US-MI-DETROIT-16030753.",
+      "areaM2": 420.78904459302026,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "US-MI-DETROIT-16030754.",
+      "areaM2": 422.6542713323999,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "US-MI-DETROIT-16030755.",
+      "areaM2": 422.65490913355654,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    }
+  ]
+}

@@ -1,0 +1,105 @@
+{
+  "name": "Moradabad",
+  "country": "India",
+  "countryCode": "IN",
+  "rank": 342,
+  "point": [
+    28.8365293124607,
+    78.75790232865
+  ],
+  "population2025": 1484611,
+  "schemaVersion": 1,
+  "kind": "city_parcel_source_research",
+  "checkedAt": "2026-10-09",
+  "populationUnit": "persons",
+  "status": "complete",
+  "verifiedSample": false,
+  "publicParcelGeometryFound": false,
+  "runtimeReadiness": "not_enabled_no_verified_public_geometry",
+  "priorEvidenceFiles": [],
+  "scopeLimits": "The ranked UN World Urbanization Prospects 2025 population-weighted locator is not a municipal boundary or parcel identity. Official local registration/land-record evidence was found, but no anonymous public parcel polygon was verified for this locator. No full geometry or owner/address data is retained.",
+  "pointBasis": "UN WUP 2025 population-weighted settlement centroid; this is not a municipal boundary or a parcel-coverage claim.",
+  "registryFound": true,
+  "registryBasis": "Official Moradabad district land-records page links the Uttar Pradesh land-record system; official state viewer and district map dashboard provide local revenue-map/record context. These sources confirm local land-record services, not point coverage.",
+  "resultCategory": "local_registry_or_cadastral_viewer_confirmed_public_parcel_geometry_unverified",
+  "technicalBlocker": "The WUP locator is outside the verified extent for selected Kasba Moradabad, and the adjacent revenue-village identity is unresolved. The viewer identify response is not safely field-filterable and could expose personal/property information; no parcel identify call was made.",
+  "remainingUncertainty": "Which revenue village or urban parcel service covers the WUP locator; whether an anonymous geometry-only endpoint is available for that exact area.",
+  "nextStep": "Resolve the exact adjacent revenue village through official map selection or another safe public map; then use only a geometry and safe-ID endpoint if available.",
+  "freshResearch": {
+    "executedQueries": [
+      {
+        "language": "English",
+        "query": "Moradabad official cadastral parcel map Bhunaksha land records GIS district registry Uttar Pradesh",
+        "result": "Official district land-records page links Uttar Pradesh land records. The official district dashboard publishes tehsil-level map georeferencing counts, but these are not an exact-point coverage test. Anonymous viewer selectors resolved Moradabad tehsil and Kasba Moradabad village; its georeferenced extent does not include the WUP locator. No safe full-vector geometry endpoint was verified.",
+        "method": "Separate English-language search, official district/dashboard review and bounded anonymous viewer selector/extent calls."
+      },
+      {
+        "language": "Hindi",
+        "query": "मुरादाबाद आधिकारिक भू नक्शा खसरा नक्शा उत्तर प्रदेश भूलेख जिला आधिकारिक",
+        "result": "आधिकारिक जिला भूमि-अभिलेख पृष्ठ उत्तर प्रदेश भूलेख से जोड़ता है। मोरादाबाद तहसील के ग्राम/मानचित्र भू-संदर्भ आँकड़े उपलब्ध हैं। सार्वजनिक चयनकर्ता में कस्वा मुरादाबाद ग्राम चुना गया, किंतु उसके मानचित्र विस्तार में WUP बिंदु नहीं आता; इससे दूसरे पड़ोसी ग्राम की स्थिति सिद्ध नहीं होती।",
+        "method": "Separate Hindi-language search and anonymous official viewer calls."
+      }
+    ],
+    "officialSources": [
+      {
+        "url": "https://moradabad.nic.in/service/land-records/",
+        "observation": "Official Moradabad district land-records service linking the state land-record system and identifying Moradabad city/tehsil context."
+      },
+      {
+        "url": "https://upbhunaksha.gov.in/upbhunaksha/",
+        "observation": "Official UP BhuNaksha viewer shell; selectors and viewer client reviewed; initial page defaults to Agra."
+      },
+      {
+        "url": "https://upbhulekh.gov.in/GeoDashboard/public_report?distCode=135",
+        "observation": "Official Moradabad district dashboard with tehsil-level scanned/georeferenced village-map counts; aggregate only."
+      },
+      {
+        "url": "https://bor.up.nic.in/",
+        "observation": "Official UP Board of Revenue context for land records/maps."
+      }
+    ],
+    "viewerAndServiceTrace": {
+      "attempted": true,
+      "summary": "Anonymous viewer selectors resolved state 09, district Moradabad 135, tehsil 00719, village 220922 (कस्वा मुरादाबाद, hasData=true). Official getVVVVExtentGeoref for this selected village returned EPSG:32644 bounds x=282238.4922..285220.2884, y=3190220.2012..3193135.5627. The WUP point transformed to EPSG:32644 is approximately [281247.06,3191939.71], about 991 m west of that village extent. Control village 220927 (छावनी, hasData=false) returned a zero extent. This does not resolve neighboring-village coverage. Viewer getPlotAtXY returns an unfiltered interactive parcel info object with no safe allowlist; it was not called. WMS is raster rendering, not verified full-vector geometry.",
+      "fullPolygonLimit": 3,
+      "fullPolygonsRetained": 0,
+      "ownerOrAddressDataRequested": false,
+      "credentialsOrTokenValuesRetained": false
+    },
+    "attemptedGeometry": {
+      "attempted": false,
+      "status": "no safe anonymous full-vector geometry query",
+      "retainedFeatures": 0,
+      "fieldsRequested": [],
+      "geometryRetained": false
+    }
+  },
+  "registryEvidenceUrls": [
+    "https://moradabad.nic.in/service/land-records/",
+    "https://upbhunaksha.gov.in/upbhunaksha/",
+    "https://upbhulekh.gov.in/GeoDashboard/public_report?distCode=135",
+    "https://bor.up.nic.in/"
+  ],
+  "sourceIds": [],
+  "coverageAssessment": {
+    "claimedScope": "Official Moradabad district land-records page links the Uttar Pradesh land-record system; official state viewer and district map dashboard provide local revenue-map/record context. These sources confirm local land-record services, not point coverage.",
+    "verifiedOpenScope": "The WUP locator is outside the verified extent for selected Kasba Moradabad, and the adjacent revenue-village identity is unresolved. The viewer identify response is not safely field-filterable and could expose personal/property information; no parcel identify call was made.",
+    "citywideVerified": false,
+    "countrywideVerified": false
+  },
+  "source": {
+    "name": "Moradabad local registry/map evidence",
+    "operator": "Local public authority identified in official sources",
+    "url": "https://moradabad.nic.in/service/land-records/",
+    "scope": "Official Moradabad district land-records page links the Uttar Pradesh land-record system; official state viewer and district map dashboard provide local revenue-map/record context. These sources confirm local land-record services, not point coverage."
+  },
+  "wupCityCode": 8979,
+  "cityId": "wup2025:8979",
+  "queueRank": 342,
+  "populationPlausibility2025": "Moderate",
+  "centerLatLon": [
+    28.8365293124607,
+    78.75790232865
+  ],
+  "rootReviewedAt": "2026-10-08T22:44:29.461431+00:00"
+}

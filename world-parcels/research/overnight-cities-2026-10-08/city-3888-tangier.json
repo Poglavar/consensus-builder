@@ -1,0 +1,89 @@
+{
+  "name": "Tangier",
+  "country": "Morocco",
+  "countryCode": "MA",
+  "rank": 423,
+  "point": [
+    35.7515657876569,
+    -5.81507882593036
+  ],
+  "freshResearch": {
+    "queries": [
+      {
+        "language": "English",
+        "query": "Tangier official cadastral map parcels Morocco ANCFCC cadastre Tanger urban agency GIS",
+        "scope": "Find city-specific official land registry evidence and inspect anonymous map, service schema and parcel geometry routes.",
+        "result": "ANCFCC lists cadastral and land-conservation offices in Tangier and provides a cadastral-plan request service keyed by land-title number. The Agence Urbaine de Tanger public geoportal describes planning-document layers and localizes land/address references, while its published service scope is planning boundaries/documents rather than parcel-vector geometry. No anonymous parcel geometry or schema was verified; no title number or form was submitted.",
+        "actualResultUrls": [
+          "https://www.ancfcc.gov.ma/ReseauBlocsFonciers/",
+          "https://www.ancfcc.gov.ma/Plancadastralpage",
+          "https://www.ancfcc.gov.ma/cadastre/",
+          "https://www.ancfcc.gov.ma/ProduitsCadastreAr/",
+          "https://aut.gov.ma/services/",
+          "https://aut.gov.ma/pa/"
+        ],
+        "executionMethod": "Separate English web search followed by direct review of official local pages and anonymous public map/service entry points."
+      },
+      {
+        "language": "Arabic",
+        "query": "طنجة خريطة عقارية المسح العقاري المحافظة العقارية طنجة الأنكفك",
+        "scope": "Find city-specific official land registry evidence and inspect anonymous map, service schema and parcel geometry routes.",
+        "result": "ANCFCC lists cadastral and land-conservation offices in Tangier and provides a cadastral-plan request service keyed by land-title number. The Agence Urbaine de Tanger public geoportal describes planning-document layers and localizes land/address references, while its published service scope is planning boundaries/documents rather than parcel-vector geometry. No anonymous parcel geometry or schema was verified; no title number or form was submitted.",
+        "actualResultUrls": [
+          "https://www.ancfcc.gov.ma/ReseauBlocsFonciers/",
+          "https://www.ancfcc.gov.ma/Plancadastralpage",
+          "https://www.ancfcc.gov.ma/cadastre/",
+          "https://www.ancfcc.gov.ma/ProduitsCadastreAr/",
+          "https://aut.gov.ma/services/",
+          "https://aut.gov.ma/pa/"
+        ],
+        "executionMethod": "Separate native-language web search followed by direct review of official local pages and anonymous public map/service entry points."
+      }
+    ]
+  },
+  "status": "complete",
+  "verifiedParcelResponse": null,
+  "source": {
+    "sourceId": "MA-3888-PUBLIC-CADASTRE",
+    "name": "ANCFCC Tangier cadastral offices and Agence Urbaine planning geoportal",
+    "url": "https://www.ancfcc.gov.ma/ReseauBlocsFonciers/",
+    "operator": "Agence Nationale de la Conservation Foncière, du Cadastre et de la Cartographie (ANCFCC), Tangier offices; Agence Urbaine de Tanger",
+    "serviceType": "Official city-local land-record or registration services; no anonymous public parcel-vector endpoint/schema verified",
+    "layer": "No anonymous parcel feature layer verified",
+    "geometryType": "Not verified",
+    "outputCrs": null,
+    "nativeIdField": "No public safe parcel identifier returned",
+    "nativeIdEvidence": "ANCFCC lists cadastral and land-conservation offices in Tangier and provides a cadastral-plan request service keyed by land-title number. The Agence Urbaine de Tanger public geoportal describes planning-document layers and localizes land/address references, while its published service scope is planning boundaries/documents rather than parcel-vector geometry. No anonymous parcel geometry or schema was verified; no title number or form was submitted."
+  },
+  "coverageAssessment": {
+    "claimedScope": "ANCFCC lists cadastral and land-conservation offices in Tangier and provides a cadastral-plan request service keyed by land-title number. The Agence Urbaine de Tanger public geoportal describes planning-document layers and localizes land/address references, while its published service scope is planning boundaries/documents rather than parcel-vector geometry. No anonymous parcel geometry or schema was verified; no title number or form was submitted.",
+    "verifiedOpenScope": "ANCFCC lists cadastral and land-conservation offices in Tangier and provides a cadastral-plan request service keyed by land-title number. The Agence Urbaine de Tanger public geoportal describes planning-document layers and localizes land/address references, while its published service scope is planning boundaries/documents rather than parcel-vector geometry. No anonymous parcel geometry or schema was verified; no title number or form was submitted.",
+    "countrywideVerified": false
+  },
+  "registryFound": true,
+  "registryBasis": "ANCFCC’s official office directory lists cadastral and land-conservation offices in Tanger and Tanger Bani Makada; this is direct city-specific registration/survey service evidence.",
+  "verifiedSample": false,
+  "resultCategory": "official_registry_geometry_not_verified",
+  "technicalBlocker": "The cadastral-plan service is title-number keyed; the agency page-reader returned 403 for its form, and the public Tanger urban geoportal is documented as planning-document visualization. No anonymous vector endpoint was exposed.",
+  "remainingUncertainty": "The exact WUP-point parcel and citywide parcel-vector coverage were not tested because the public sources reviewed did not expose a safe anonymous query/schema.",
+  "nextStep": "Recheck if the official local provider exposes an anonymous safe-ID parcel-vector layer or point-to-feature schema.",
+  "schemaVersion": 1,
+  "checkedAt": "2026-10-09",
+  "wupCityCode": 3888,
+  "cityId": "wup2025:3888",
+  "runtimeReadiness": "not_enabled_no_verified_public_geometry",
+  "adapterReady": false,
+  "centerLatLon": [
+    35.7515657876569,
+    -5.81507882593036
+  ],
+  "population2025k": 1217.976,
+  "populationUnit": "persons",
+  "queueRank": 423,
+  "population2025": 1217976,
+  "populationPlausibility2025": "High",
+  "pointBasis": "UN WUP 2025 population-weighted settlement centroid; this is not a municipal boundary or a parcel-coverage claim.",
+  "publicParcelGeometryFound": false,
+  "sourceIds": [],
+  "rootReviewedAt": "2026-10-08T23:47:22.529967+00:00"
+}

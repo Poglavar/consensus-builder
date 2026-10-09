@@ -1,0 +1,52 @@
+{
+  "schemaVersion": 1,
+  "nativeCrs": "EPSG:27700",
+  "sourceCoordinatesModified": false,
+  "fullGeometryRetainedInReview": false,
+  "featureCount": 8,
+  "invalid": [
+    {
+      "nativeId": "51811805",
+      "valid": false,
+      "reason": "Ring Self-intersection[455359.95 340434.85]"
+    },
+    {
+      "nativeId": "29142533",
+      "valid": false,
+      "reason": "Ring Self-intersection[455273.4 340506.199999999]"
+    }
+  ],
+  "overlaps": [
+    {
+      "nativeIds": [
+        "29104217",
+        "29107140"
+      ],
+      "overlapM2": 9.060795081834073
+    },
+    {
+      "nativeIds": [
+        "29108328",
+        "29113761"
+      ],
+      "overlapM2": 4.0786528928425625
+    },
+    {
+      "nativeIds": [
+        "54930722",
+        "54930900"
+      ],
+      "overlapM2": 3.3771085008760875
+    }
+  ],
+  "request": {
+    "url": "https://maps164.nottinghamcity.gov.uk/server/rest/services/Core_services/Housing_and_Property/MapServer/22/query?where=INSPIRE_ID+IN+%28%2751811805%27%2C%2729142533%27%2C%2729104217%27%2C%2729107140%27%2C%2729108328%27%2C%2729113761%27%2C%2754930722%27%2C%2754930900%27%29&outFields=OBJECTID%2CINSPIRE_ID&returnGeometry=true&outSR=27700&f=geojson",
+    "httpStatus": 200,
+    "nativeCoordinateSrid": 27700,
+    "featureCount": 8,
+    "safeFieldsRequested": [
+      "OBJECTID",
+      "INSPIRE_ID"
+    ]
+  }
+}

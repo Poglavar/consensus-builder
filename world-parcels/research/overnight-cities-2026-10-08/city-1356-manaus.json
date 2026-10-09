@@ -1,0 +1,153 @@
+{
+  "schemaVersion": 1,
+  "kind": "city_parcel_source_research",
+  "checkedAt": "2026-10-09",
+  "country": "Brazil",
+  "countryCode": "BR",
+  "populationUnit": "persons",
+  "status": "complete",
+  "verifiedSample": false,
+  "publicParcelGeometryFound": false,
+  "runtimeReadiness": "not_enabled_no_verified_public_geometry",
+  "priorEvidenceFiles": [],
+  "scopeLimits": "The WUP point is a population-cluster locator, not an official city boundary or parcel identity. A viewer, service description, metadata record, or clipped vector tile does not verify a full parcel polygon. No owner or personal data was requested or saved; no login, CAPTCHA, credential, or token was used.",
+  "wupCityCode": 1356,
+  "queueRank": 217,
+  "name": "Manaus",
+  "centerLatLon": [
+    -3.06599248560791,
+    -59.9928944528753
+  ],
+  "population2025": 2277352,
+  "pointBasis": "UN WUP 2025 population-weighted settlement centroid; this is not a municipal boundary or a parcel-coverage claim.",
+  "registryFound": true,
+  "registryBasis": "Manaus city hall documents the Mapa de Manaus cadastral update (about 345,000 properties updated; project target around 524,000 units) and SEMEF GIS data. A public Geo360 lot vector-tile table and municipal ArcGIS lot layer are discoverable, but complete exact parcel geometries/counts and formal linkage to the city project were not verified.",
+  "resultCategory": "public_polygon_vector_tile_candidate_partial_tile_response_not_full_geometry",
+  "research": {
+    "executedQueries": [
+      {
+        "language": "Portuguese",
+        "query": "Manaus cadastro imobiliário lotes mapa geográfico GIS Prefeitura SEMEF parcelas shapefile",
+        "scope": "Find official city cadastral map project and open GIS parcel layer.",
+        "result": "Prefeitura reports Mapa de Manaus and a large cadastral update; public Geo360 vector-tile table cadastro.lote and municipal ArcGIS “Lotes - SEMEF” candidates surfaced. No full feature geometry query verified.",
+        "actualResultUrls": [
+          "https://www.manaus.am.gov.br/noticia/cadastro/projeto-mapa-de-manaus-da-prefeitura-atualiza-cadastro-de-345-mil-imoveis-na-capital/",
+          "https://tiles-manaus.geo360.com.br/",
+          "https://pmm.manaus.am.gov.br/arcgis/rest/services/PORTAL_TRANSPARENCIA/SEMINF_OBRAS_PORTAL_CIDADAO_SRGS/MapServer/2"
+        ],
+        "executionMethod": "Web search in English and city/country language; official portals directly inspected where recorded."
+      },
+      {
+        "language": "Portuguese",
+        "query": "site:manaus.am.gov.br \"Mapa de Manaus\" cadastro imóveis SEMEF mapeamento",
+        "scope": "Check city-government reporting for scope and counts, then distinguish project statistics from layer counts.",
+        "result": "Official reports describe ~345,000 properties updated and a ~524,000-unit target; these are project statistics, not verified feature-service counts.",
+        "actualResultUrls": [
+          "https://www.manaus.am.gov.br/noticia/cadastro/projeto-mapa-de-manaus-da-prefeitura-atualiza-cadastro-de-345-mil-imoveis-na-capital/",
+          "https://www.manaus.am.gov.br/noticia/levantamento/projeto-de-mapeamento-da-cidade-chega-em-sua-fase-final/"
+        ],
+        "executionMethod": "Web search in English and city/country language; official portals directly inspected where recorded."
+      },
+      {
+        "language": "English",
+        "query": "Manaus official public cadastral lot polygon GIS vector tiles Geo360 SEMEF",
+        "scope": "Locate publicly accessible city lot polygons and evaluate whether they can be queried as complete features.",
+        "result": "Geo360 pg_tileserv exposes cadastro.lote polygon metadata and a bounded vector tile; tile response is not a complete feature-geometry response.",
+        "actualResultUrls": [
+          "https://tiles-manaus.geo360.com.br/",
+          "https://pmm.manaus.am.gov.br/arcgis/rest/services/PORTAL_TRANSPARENCIA/SEMINF_OBRAS_PORTAL_CIDADAO_SRGS/MapServer/2"
+        ],
+        "executionMethod": "Web search in English and city/country language; official portals directly inspected where recorded."
+      }
+    ],
+    "officialSources": [
+      {
+        "url": "https://www.manaus.am.gov.br/noticia/cadastro/projeto-mapa-de-manaus-da-prefeitura-atualiza-cadastro-de-345-mil-imoveis-na-capital/",
+        "observation": "Official Prefeitura report says Mapa de Manaus updated about 345,000 properties and added roughly 10,000. Property-update count is not a verified GIS feature count."
+      },
+      {
+        "url": "https://www.manaus.am.gov.br/noticia/levantamento/projeto-de-mapeamento-da-cidade-chega-em-sua-fase-final/",
+        "observation": "Official project progress report describes ~85% completion, roughly 345,000 updates and a target of about 524,000 units across the mapped urban area."
+      },
+      {
+        "url": "https://www.manaus.am.gov.br/noticia/gestao/atividades-mapa-manaus-avancam/",
+        "observation": "Official city material names Topocart as contractor. A Topocart article says it implemented Geo360 for the municipal project; this makes vendor-hosted Geo360 a plausible candidate but does not technically prove the exposed tenant table is the official project layer."
+      },
+      {
+        "url": "https://pmm.manaus.am.gov.br/arcgis/rest/services/PORTAL_TRANSPARENCIA/SEMINF_OBRAS_PORTAL_CIDADAO_SRGS/MapServer/2",
+        "observation": "Official municipal ArcGIS layer metadata indexed as “Lotes - SEMEF”, polygon geometry, query support and ID/status fields. Direct bounded inspection timed out; no live count or feature sample obtained."
+      },
+      {
+        "url": "https://tiles-manaus.geo360.com.br/cadastro.lote.html",
+        "observation": "Public anonymous MapLibre layer viewer, loaded with MapLibre JS and jQuery from public CDN. It displays the vector-tile table; no bearer-token/CSRF bootstrap marker was found. Tile availability does not prove complete parcel geometry."
+      }
+    ],
+    "candidateSources": [
+      {
+        "url": "https://tiles-manaus.geo360.com.br/cadastro.lote.json",
+        "operator": "Geo360; likely related to Mapa de Manaus vendor work, linkage not technically confirmed",
+        "type": "pg_tileserv vector-tile table",
+        "assessment": "Strong public polygon-layer candidate. Metadata and one capped tile were obtained; no full feature geometry or total count verified."
+      },
+      {
+        "url": "https://pmm.manaus.am.gov.br/arcgis/rest/services/PORTAL_TRANSPARENCIA/SEMINF_OBRAS_PORTAL_CIDADAO_SRGS/MapServer/2",
+        "operator": "Prefeitura de Manaus ArcGIS server",
+        "type": "MapServer polygon layer, Lotes - SEMEF",
+        "assessment": "Official candidate; direct service request timed out; no live result."
+      }
+    ],
+    "requestsAndEndpointChecks": [
+      {
+        "url": "https://mapademanaus.manaus.am.gov.br/",
+        "method": "GET",
+        "httpStatus": "connect_timeout",
+        "checkedAt": "2026-10-08T21:00:28Z",
+        "contentType": null,
+        "observation": "Official project viewer host timed out; web-rendered content is status/FAQ, not an anonymous parcel query UI."
+      },
+      {
+        "url": "https://tiles-manaus.geo360.com.br/cadastro.lote.html",
+        "method": "GET",
+        "httpStatus": 200,
+        "checkedAt": "2026-10-08T21:00:29Z",
+        "contentType": "text/html; charset=utf-8",
+        "observation": "Public viewer page loaded (6524 bytes); MapLibre GL and jQuery bootstrap, no auth markers detected."
+      },
+      {
+        "url": "https://tiles-manaus.geo360.com.br/cadastro.lote.json",
+        "method": "GET",
+        "httpStatus": 200,
+        "checkedAt": "2026-10-08T21:00:30Z",
+        "contentType": "application/json",
+        "observation": "Public polygon-table metadata only, not a complete feature query."
+      },
+      {
+        "url": "https://pmm.manaus.am.gov.br/arcgis/rest/services/PORTAL_TRANSPARENCIA/SEMINF_OBRAS_PORTAL_CIDADAO_SRGS/MapServer/2?f=json",
+        "method": "GET",
+        "httpStatus": "connect_timeout",
+        "checkedAt": "2026-10-08T21:00:36Z",
+        "contentType": null,
+        "observation": "Official ArcGIS candidate host timed out again; no data returned."
+      }
+    ],
+    "coverageAssessment": {
+      "verifiedOpenScope": "Municipal cadastral mapping project documented citywide by the Prefeitura; a vendor-hosted vector-tile table has a metadata extent covering the WUP locator. Actual feature coverage, count, and public map-service coverage remain unverified.",
+      "citywideVerified": false,
+      "countrywideVerified": false,
+      "geometryVerified": false,
+      "wupPointCoveredByVerifiedParcelGeometry": false,
+      "candidateLayerCount": null
+    },
+    "blocker": "A vector-tile table and official polygon MapServer candidate are discoverable, but neither yielded complete exact parcel geometries in this pass. The official MapServer and project viewer hosts timed out; Geo360 remains a plausible, not technically confirmed, project-layer candidate.",
+    "remainingUncertainty": "The official project viewer/app direct host and the city ArcGIS host timed out on retry. Geo360 layer metadata and MapLibre viewer are public without auth, but only a clipped/quantized tile was observed; full feature access and the table’s formal linkage to Mapa de Manaus remain unverified."
+  },
+  "cityId": "wup2025:1356",
+  "serviceReviewFile": "manaus-service-review.json",
+  "populationPlausibility2025": "High",
+  "rootReviewedAt": "2026-10-08T21:10:04.693505+00:00",
+  "sourceIds": [],
+  "point": [
+    -3.06599248560791,
+    -59.9928944528753
+  ]
+}

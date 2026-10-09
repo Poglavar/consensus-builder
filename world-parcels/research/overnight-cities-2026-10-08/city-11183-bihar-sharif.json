@@ -1,0 +1,124 @@
+{
+  "schemaVersion": 1,
+  "kind": "city_parcel_source_research",
+  "checkedAt": "2026-10-09",
+  "name": "Bihar Sharif",
+  "country": "India",
+  "countryCode": "IN",
+  "populationUnit": "persons",
+  "status": "complete",
+  "registryFound": true,
+  "registryBasis": "Nalanda District’s official government portal lists online Khata/Jamabandi land-record services and identifies the Revenue Section at the Biharsharif Collectorate. This is local district/city land-record administration. Available district maps are administrative/electoral rather than parcel geometry; no personal or plot lookup was made.",
+  "registryEvidenceUrls": [
+    "https://nalanda.nic.in/en/service/land-records/",
+    "https://nalanda.nic.in/en/map-of-district/",
+    "https://dlrs.bihar.gov.in/services.html",
+    "https://biharbhumi.bihar.gov.in/Biharbhumi/"
+  ],
+  "verifiedSample": false,
+  "publicParcelGeometryFound": false,
+  "runtimeReadiness": "not_enabled_no_verified_public_geometry",
+  "wupCityCode": 11183,
+  "cityId": "wup2025:11183",
+  "centerLatLon": [
+    25.196385632576,
+    85.5249256060625
+  ],
+  "rank": 895,
+  "queueRank": 895,
+  "population2025": 607401,
+  "population2025k": 607.401,
+  "populationPlausibility2025": "Moderate",
+  "pointBasis": "UN WUP 2025 population-weighted settlement centroid; this is not a municipal boundary or a parcel-coverage claim.",
+  "technicalBlocker": "No anonymous safe parcel geometry endpoint/schema was found. Map portals with plot or khata records were not queried.",
+  "scopeLimits": "The official Nalanda portal ties land records and revenue administration to Biharsharif. Its district map page provides constituency/block maps, not parcel features. State land-record pages expose identifier-driven records; no plot/owner query was submitted.",
+  "remainingUncertainty": "Parcel data may exist in other state/local systems; no WUP-point parcel presence or citywide coverage is established.",
+  "research": {
+    "executedQueries": [
+      {
+        "language": "English",
+        "query": "Bihar Sharif Nalanda official land records revenue office cadastral map GIS",
+        "scope": "Identify city-specific registry/cadastral evidence and any safe public parcel geometry route.",
+        "result": "Official Nalanda portal confirms land records and the Biharsharif Revenue Section; available map materials are administrative, no parcel schema verified.",
+        "actualResultUrls": [
+          "https://nalanda.nic.in/en/service/land-records/",
+          "https://nalanda.nic.in/en/map-of-district/",
+          "https://dlrs.bihar.gov.in/services.html",
+          "https://biharbhumi.bihar.gov.in/Biharbhumi/"
+        ],
+        "executionMethod": "Separate English and local-language search followed by official-source review. No owner, address, title, tax, account, applicant, or property identifier was queried."
+      },
+      {
+        "language": "Hindi",
+        "query": "बिहार शरीफ नालंदा भूमि अभिलेख अंचल कार्यालय नक्शा आधिकारिक",
+        "scope": "Identify city-specific registry/cadastral evidence and any safe public parcel geometry route.",
+        "result": "Localized search confirms local revenue/land-record services; no plot, khata, owner, or applicant data were queried.",
+        "actualResultUrls": [
+          "https://nalanda.nic.in/en/service/land-records/",
+          "https://nalanda.nic.in/en/map-of-district/",
+          "https://dlrs.bihar.gov.in/services.html",
+          "https://biharbhumi.bihar.gov.in/Biharbhumi/"
+        ],
+        "executionMethod": "Separate English and local-language search followed by official-source review. No owner, address, title, tax, account, applicant, or property identifier was queried."
+      }
+    ],
+    "officialSources": [
+      {
+        "url": "https://nalanda.nic.in/en/service/land-records/",
+        "observation": "Nalanda District’s official government portal lists online Khata/Jamabandi land-record services and identifies the Revenue Section at the Biharsharif Collectorate. This is local district/city land-record administration. Available district maps are administrative/electoral rather than parcel geometry; no personal or plot lookup was made."
+      },
+      {
+        "url": "https://nalanda.nic.in/en/map-of-district/",
+        "observation": "Nalanda District’s official government portal lists online Khata/Jamabandi land-record services and identifies the Revenue Section at the Biharsharif Collectorate. This is local district/city land-record administration. Available district maps are administrative/electoral rather than parcel geometry; no personal or plot lookup was made."
+      },
+      {
+        "url": "https://dlrs.bihar.gov.in/services.html",
+        "observation": "Nalanda District’s official government portal lists online Khata/Jamabandi land-record services and identifies the Revenue Section at the Biharsharif Collectorate. This is local district/city land-record administration. Available district maps are administrative/electoral rather than parcel geometry; no personal or plot lookup was made."
+      },
+      {
+        "url": "https://biharbhumi.bihar.gov.in/Biharbhumi/",
+        "observation": "Nalanda District’s official government portal lists online Khata/Jamabandi land-record services and identifies the Revenue Section at the Biharsharif Collectorate. This is local district/city land-record administration. Available district maps are administrative/electoral rather than parcel geometry; no personal or plot lookup was made."
+      }
+    ],
+    "metadataReviewFile": "bihar-sharif-service-review.json",
+    "routeInspectionFile": "/tmp/overnight-cities-2026-10-08/city-11183-bihar-sharif-route-inspection.json"
+  },
+  "source": {
+    "sourceId": null,
+    "name": null,
+    "operator": null,
+    "url": null,
+    "serviceType": "No verified anonymous geometry-only parcel endpoint in this review.",
+    "geometryType": null,
+    "coordinateReferenceSystem": null,
+    "nativeIdFields": [],
+    "directGeometryQueryVerified": false,
+    "directMetadataSchemaVerified": false,
+    "scope": "The official Nalanda portal ties land records and revenue administration to Biharsharif. Its district map page provides constituency/block maps, not parcel features. State land-record pages expose identifier-driven records; no plot/owner query was submitted."
+  },
+  "coverageAssessment": {
+    "claimedScope": "Nalanda District’s official government portal lists online Khata/Jamabandi land-record services and identifies the Revenue Section at the Biharsharif Collectorate. This is local district/city land-record administration. Available district maps are administrative/electoral rather than parcel geometry; no personal or plot lookup was made.",
+    "verifiedOpenScope": "No public parcel geometry sample was retained; bounded requests returned no geometry or no safe schema was verified.",
+    "citywideVerified": false,
+    "countrywideVerified": false,
+    "geometryVerified": false
+  },
+  "runtimeAssessment": {
+    "status": "not_enabled_no_verified_public_geometry",
+    "reason": "No anonymous safe parcel geometry endpoint/schema was found. Map portals with plot or khata records were not queried."
+  },
+  "rootReview": "pending",
+  "point": [
+    25.196385632576,
+    85.5249256060625
+  ],
+  "sourceIds": [],
+  "rootPrimaryReadback": {
+    "url": "https://nalanda.nic.in/en/service/land-records/",
+    "fetch": 200,
+    "contentType": "text/html; charset=UTF-8",
+    "title": "\n        View Khata and Jamabandi Records online | District Nalanda, Government of Bihar | India    "
+  },
+  "rootReviewNote": "Reviewed the specific primary institution/service evidence and its geographical, access and date limits. Direct readback failures are preserved separately from indexed primary evidence. No public full parcel geometry was verified for this city in this discovery pass.",
+  "rootReviewedAt": "2026-10-09T04:20:40.565226+00:00"
+}

@@ -1,0 +1,114 @@
+{
+  "name": "Jos",
+  "country": "Nigeria",
+  "countryCode": "NG",
+  "rank": 561,
+  "point": [
+    9.85131982668829,
+    8.87152547738896
+  ],
+  "freshResearch": {
+    "queries": [
+      {
+        "language": "English",
+        "query": "Jos Plateau State official cadastral map land registry PLAGIS Jos North Jos South",
+        "result": "Official Plateau State PLAGIS describes separate registry and cadastral platforms. Its cadastral-zone schedule names Jos North and Jos South settlements, and the 2024 financial statement records a specific “Mapping for Cadastral Jos at Scale 1:2000” line. No anonymous full-parcel feature endpoint or safe feature schema was found.",
+        "urls": [
+          "https://plagis.plateaustate.gov.ng/about-us",
+          "https://plagis.plateaustate.gov.ng/information/rates",
+          "https://plateaustate.gov.ng/uploads/PLATEAU_STATE_2024_FINANCIAL_STATEMENT.pdf"
+        ]
+      },
+      {
+        "language": "Hausa",
+        "query": "Jos Plateau State cadastral map Hausa taswirar fili Jos filaye PLAGIS",
+        "result": "Binciken Hausa ya samo shafin hukuma na PLAGIS da jerin yankunan cadastral na Greater Jos, ciki har da Jos North da Jos South. Bayanai sun tabbatar da ayyukan cadastral a yankin Jos, amma ba a samo hanyar jama’a ta sauke cikakkun siffofin filaye ba.",
+        "urls": [
+          "https://plagis.plateaustate.gov.ng/information/rates",
+          "https://plateaustate.gov.ng/uploads/PLATEAU_STATE_2024_FINANCIAL_STATEMENT.pdf"
+        ]
+      }
+    ],
+    "portals": [
+      {
+        "url": "https://plagis.plateaustate.gov.ng/about-us",
+        "observation": "Official PLAGIS page says it operates registry (land administration, deeds and property valuation) and cadastral (geoinformatics, surveying, GIS analysis and map production) platforms."
+      },
+      {
+        "url": "https://plagis.plateaustate.gov.ng/information/rates",
+        "observation": "Official rate index lists a downloadable Cadastral Zones document and Greater Jos survey and other land charges."
+      },
+      {
+        "url": "https://plagis.plateaustate.gov.ng/document/rates/Cadastral-Zones.pdf",
+        "observation": "Six-page PLAGIS schedule delineates cadastral sectors and lists numerous Jos North/Jos South settlements, including in Greater Jos."
+      },
+      {
+        "url": "https://plateaustate.gov.ng/uploads/PLATEAU_STATE_2024_FINANCIAL_STATEMENT.pdf",
+        "observation": "2024 financial statement includes a specific “Mapping for Cadastral Jos at Scale 1:2000” item and expansion of land-record/deeds registries."
+      },
+      {
+        "url": "https://plagis.plateaustate.gov.ng/",
+        "observation": "Official service shell exposes Login and Register your Property links; no anonymous parcel map/feature route or property field schema was documented."
+      }
+    ],
+    "requests": []
+  },
+  "status": "complete",
+  "verifiedParcelResponse": {
+    "httpStatus": null,
+    "featureType": null,
+    "responseType": null,
+    "responseCrs": null,
+    "returnedFullPolygonCount": 0,
+    "uniqueFullPolygonCount": 0,
+    "wupPointContained": null,
+    "limitations": "No parcel feature response or full polygon was retrieved."
+  },
+  "source": {
+    "id": "city-NG-8575-overnight-research",
+    "name": "Jos city-area cadastral source review",
+    "operator": "Plateau Geographic Information Service (PLAGIS), Plateau State Government",
+    "url": "https://plagis.plateaustate.gov.ng/",
+    "format": "Official cadastral zone schedule and land-record service portal; no public feature schema verified",
+    "access": "Public source review only; no account, property registration, or parcel lookup used",
+    "nativeIdField": null,
+    "geometryCrs": null
+  },
+  "coverageAssessment": {
+    "claimedScope": "PLAGIS publishes Greater Jos cadastral sectors containing Jos North and Jos South urban localities; the state separately budgets cadastral mapping of Jos. The WUP city point is not matched to a particular sector or parcel, and complete public vector coverage is unverified.",
+    "verifiedOpenScope": "Official city-area cadastral planning/registry records are confirmed. Public sources reviewed did not publish an anonymous full-polygon parcel endpoint with safe attributes; no parcel feature request was made.",
+    "countrywideVerified": false,
+    "citywideVerified": false
+  },
+  "registryFound": true,
+  "registryBasis": "Plateau State PLAGIS city-area cadastral mapping and registry are established through the Jos-specific cadastral-zone schedule and 2024 “Mapping for Cadastral Jos” budget line. This confirms local cadastral administration, not anonymous public polygon access.",
+  "verifiedSample": false,
+  "publicParcelGeometryFound": false,
+  "resultCategory": "city_local_cadastre_documented_no_verified_open_vector",
+  "technicalBlocker": "The public PLAGIS shell offers property registration/login and published documents, but no anonymous full-parcel vector route or privacy-safe feature schema was verified.",
+  "remainingUncertainty": "Whether PLAGIS exposes complete parcel polygons publicly and whether the WUP population centroid lies in a mapped/available sector remain unverified.",
+  "nextStep": "If a public map endpoint is found, inspect its documented properties and city-sector coverage before querying any parcel. Do not submit a registration or private property identifier.",
+  "sourceIds": [],
+  "schemaVersion": 1,
+  "checkedAt": "2026-10-09",
+  "wupCityCode": 8575,
+  "cityId": "wup2025:8575",
+  "queueRank": 561,
+  "population2025": 923652,
+  "populationPlausibility2025": "Low",
+  "populationUnit": "persons",
+  "pointBasis": "UN WUP 2025 population-weighted settlement centroid; this is not a municipal boundary or a parcel-coverage claim.",
+  "centerLatLon": [
+    9.85131982668829,
+    8.87152547738896
+  ],
+  "runtimeReadiness": "not_enabled_no_verified_public_geometry",
+  "adapterReady": false,
+  "scopeLimits": "Source discovery only. No full parcel polygons, owner/address data, account credentials, tokens or feature responses were retained.",
+  "registryEvidenceUrls": [
+    "https://plagis.plateaustate.gov.ng/about-us",
+    "https://plagis.plateaustate.gov.ng/information/rates",
+    "https://plateaustate.gov.ng/uploads/PLATEAU_STATE_2024_FINANCIAL_STATEMENT.pdf"
+  ],
+  "rootReviewedAt": "2026-10-09T01:33:52.627254+00:00"
+}

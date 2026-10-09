@@ -1,0 +1,114 @@
+{
+  "schemaVersion": 1,
+  "kind": "city_parcel_source_research",
+  "checkedAt": "2026-10-09",
+  "status": "complete",
+  "name": "Mendoza",
+  "country": "Argentina",
+  "countryCode": "AR",
+  "wupCityCode": 198,
+  "cityId": "wup2025:198",
+  "queueRank": 495,
+  "rank": 495,
+  "population2025": 1027849,
+  "population2025k": 1027.849,
+  "populationUnit": "persons",
+  "populationPlausibility2025": "Moderate",
+  "centerLatLon": [
+    -32.9044235903811,
+    -68.8275288471433
+  ],
+  "point": [
+    -32.9044235903811,
+    -68.8275288471433
+  ],
+  "pointBasis": "UN WUP 2025 population-weighted settlement centroid; this is not a municipal boundary or a parcel-coverage claim.",
+  "registryFound": true,
+  "verifiedSample": true,
+  "publicParcelGeometryFound": true,
+  "runtimeReadiness": "held_geometry_quality",
+  "technicalBlocker": "The public Guaymallén parcel layer passed bounded retrieval, paging, all 363 fresh native-ID geometry reads, explicit valid-format absence, full footprint lookup and actual proposal binding. Independent GEOS found eight overlaps above 0.01 m², including 268.254 m² and 133.021 m²; their source meaning remains unresolved. Runtime is held without geometry repair or selective deletion.",
+  "scopeLimits": "Guaymallén municipal parcels in the Mendoza population settlement. The exact WUP locator returned empty in Capital, Godoy Cruz and Guaymallén layers; nearby Guaymallén polygons were verified. Nine aligned 0.001° cells plus four cardinal extension cells produced 363 distinct full parcels. Three nearby full polygons are retained; the bounded union stayed temporary. All 363 legal nomenclatu strings refreshed exactly, native EPSG:3857 count/object-ID manifests agreed, forced three-row batches completed 47 rows over 16 pages, and a selected polygon passed actual footprint binding. GEOS EPSG:32719 found all 363 valid and distinct, with 18 positive-area intersections, eight above 0.01 m². No citywide or countrywide completeness is asserted.",
+  "sourceIds": [
+    "ar-mendoza-guaymallen-parcelas"
+  ],
+  "freshResearch": {
+    "executedQueries": [
+      {
+        "language": "Spanish",
+        "query": "Mendoza Argentina catastro parcelas IDE WFS oficial datos abiertos",
+        "method": "Separate fresh web discovery search on 9 October 2026."
+      },
+      {
+        "language": "English",
+        "query": "Mendoza official cadastral parcel polygon IDE Mendoza public WFS",
+        "method": "Separate fresh web discovery search on 9 October 2026."
+      }
+    ],
+    "officialSources": [
+      {
+        "url": "https://ide.mendoza.gov.ar/",
+        "observation": "Official municipality-specific cadastral layer metadata or province territorial-data viewer."
+      },
+      {
+        "url": "https://mpipgis1.mendoza.gov.ar/portal/apps/experiencebuilder/experience/?id=a4dedeff2e034263927fcf69c55074c1&page=page_2",
+        "observation": "Official municipality-specific cadastral layer metadata or province territorial-data viewer."
+      },
+      {
+        "url": "https://ide.mendoza.gov.ar/server/rest/services/Hosted/Parcelas_Guaymall%C3%A9n/FeatureServer/0?f=pjson",
+        "observation": "Official municipality-specific cadastral layer metadata or province territorial-data viewer."
+      }
+    ],
+    "viewerAndServiceTrace": {
+      "schemaReviewedBeforeGeometry": true,
+      "publicPolygonSamplesRetained": 3,
+      "safeFieldsRetained": [
+        "fid",
+        "nomenclatu",
+        "globalid"
+      ],
+      "sourceExactLocatorEmpty": true
+    }
+  },
+  "priorEvidenceFiles": [],
+  "registryBasis": "The provincial official territorial-data portal exposes municipality-named cadastral parcel layers. Public Guaymallén layer schema and nearby full legal-ID parcel polygons bind this source to the Mendoza settlement, rather than relying solely on provincial jurisdiction.",
+  "registryEvidenceUrls": [
+    "https://ide.mendoza.gov.ar/",
+    "https://mpipgis1.mendoza.gov.ar/portal/apps/experiencebuilder/experience/?id=a4dedeff2e034263927fcf69c55074c1&page=page_2",
+    "https://ide.mendoza.gov.ar/server/rest/services/Hosted/Parcelas_Guaymall%C3%A9n/FeatureServer/0?f=pjson"
+  ],
+  "adapterReady": false,
+  "resultCategory": "verified_public_geometry_held_quality",
+  "coverageAssessment": {
+    "claimedScope": "Published Guaymallén cadastral parcel dataset within the broader Mendoza settlement.",
+    "verifiedOpenScope": "Guaymallén municipal parcels in the Mendoza population settlement. The exact WUP locator returned empty in Capital, Godoy Cruz and Guaymallén layers; nearby Guaymallén polygons were verified. Nine aligned 0.001° cells plus four cardinal extension cells produced 363 distinct full parcels. Three nearby full polygons are retained; the bounded union stayed temporary. All 363 legal nomenclatu strings refreshed exactly, native EPSG:3857 count/object-ID manifests agreed, forced three-row batches completed 47 rows over 16 pages, and a selected polygon passed actual footprint binding. GEOS EPSG:32719 found all 363 valid and distinct, with 18 positive-area intersections, eight above 0.01 m². No citywide or countrywide completeness is asserted.",
+    "citywideVerified": false,
+    "countrywideVerified": false
+  },
+  "sampleFile": "research/overnight-cities-2026-10-08/mendoza-guaymallen-safe-samples.geojson",
+  "sampleFeatureCount": 3,
+  "sampleCrs": "EPSG:4326",
+  "remainingUncertainty": "The meaning of substantial overlaps, broader municipal completeness and native-ID continuity after replacement remain unverified.",
+  "source": {
+    "sourceId": "ar-mendoza-guaymallen-parcelas",
+    "name": "Guaymallén public cadastral parcels, Mendoza",
+    "operator": "Mendoza Province territorial-data portal / municipal cadastral dataset",
+    "url": "https://ide.mendoza.gov.ar/server/rest/services/Hosted/Parcelas_Guaymall%C3%A9n/FeatureServer/0",
+    "serviceType": "Public ArcGIS FeatureServer",
+    "nativeIdFields": [
+      "nomenclatu"
+    ],
+    "transportIdFields": [
+      "fid"
+    ],
+    "crs": "Native EPSG:3857, output EPSG:4326",
+    "scope": "Guaymallén municipal parcels in the Mendoza population settlement. The exact WUP locator returned empty in Capital, Godoy Cruz and Guaymallén layers; nearby Guaymallén polygons were verified. Nine aligned 0.001° cells plus four cardinal extension cells produced 363 distinct full parcels. Three nearby full polygons are retained; the bounded union stayed temporary. All 363 legal nomenclatu strings refreshed exactly, native EPSG:3857 count/object-ID manifests agreed, forced three-row batches completed 47 rows over 16 pages, and a selected polygon passed actual footprint binding. GEOS EPSG:32719 found all 363 valid and distinct, with 18 positive-area intersections, eight above 0.01 m². No citywide or countrywide completeness is asserted."
+  },
+  "runtimeAssessment": {
+    "status": "held_geometry_quality",
+    "reason": "The public Guaymallén parcel layer passed bounded retrieval, paging, all 363 fresh native-ID geometry reads, explicit valid-format absence, full footprint lookup and actual proposal binding. Independent GEOS found eight overlaps above 0.01 m², including 268.254 m² and 133.021 m²; their source meaning remains unresolved. Runtime is held without geometry repair or selective deletion.",
+    "acceptanceFile": "research/overnight-cities-2026-10-08/mendoza-guaymallen-root-acceptance.json",
+    "qualityFile": "research/overnight-cities-2026-10-08/mendoza-guaymallen-root-quality.json"
+  },
+  "rootReviewedAt": "2026-10-09T01:05:39.556194+00:00"
+}

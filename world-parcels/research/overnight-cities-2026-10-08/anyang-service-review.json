@@ -1,0 +1,41 @@
+{
+  "schemaVersion": "1.0",
+  "checkedAt": "2026-10-09",
+  "cityRecord": "city-9476-anyang.json",
+  "purpose": "Document first-party local registry/viewer evidence and bounded anonymous geometry access review.",
+  "scopeLimits": {
+    "maxFullPolygonsRetainedInCityRecord": 0,
+    "maxFullPolygonsRetainedInReview": 0,
+    "maxFullPolygonsRetainedInRepository": 0,
+    "ownerOrAddressDataRetained": false,
+    "credentialsOrTokenValuesRetained": false,
+    "citywideCompletenessAsserted": false
+  },
+  "assessment": "Static HTML, map page, configuration and main JavaScript bundle for the official Anyang Tianditu viewer were inspected. The viewer config contains a public embedded map API credential; its value was excluded from retained notes. The inspected bundle/config exposes basemap/thematic map behavior and no parcel/cadastral layer or feature-query endpoint. No geometry query was sent. Whether a separate authenticated or non-public cadastral interface exists, and whether any untraced public layer covers the WUP locator.",
+  "officialPrimarySources": [
+    {
+      "url": "https://henan.tianditu.gov.cn/anyang/",
+      "observation": "Official Anyang Tianditu public map operated by Anyang Natural Resources and Planning Bureau; listed content is general basemap/thematic mapping, not cadastral parcels."
+    },
+    {
+      "url": "https://henan.tianditu.gov.cn/anyang/contact.html",
+      "observation": "Official map contact page identifies the Anyang Natural Resources and Planning Bureau as owner/operator."
+    },
+    {
+      "url": "https://anyang.zfcg.henan.gov.cn/anyang/",
+      "observation": "Official procurement portal results identify a municipal Anyang Real Estate Transaction and Registration Center."
+    }
+  ],
+  "attempts": [
+    {
+      "url": "https://henan.tianditu.gov.cn/anyang/",
+      "method": "GET official page and static viewer assets",
+      "result": "Page and viewer bundle/config inspected; general public map services, no parcel layer identified."
+    },
+    {
+      "url": "https://anyang.zfcg.henan.gov.cn/anyang/",
+      "method": "GET official municipal procurement search result",
+      "result": "City Real Estate Transaction and Registration Center identified; no geometry endpoint."
+    }
+  ]
+}

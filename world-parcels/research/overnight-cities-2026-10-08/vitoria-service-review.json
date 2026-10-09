@@ -1,0 +1,27 @@
+{
+  "schemaVersion": 1,
+  "checkedAt": "2026-10-08T23:47:22.439148+00:00",
+  "cityRecord": "city-8229-vitoria.json",
+  "operator": "Prefeitura Municipal de Vitória",
+  "officialEndpoint": "https://gis.vitoria.es.gov.br/arcgis/rest/services/MapaBaseImobiliario/MapServer/101",
+  "rootDecision": "approved_with_documented_native_boundary_slivers",
+  "assessment": "127 valid, distinct municipal Lote references verified in thirteen bounded 0.001-degree cells at the separately identified central Vitória reference [-20.3155,-40.3128]. The unchanged WUP locator has no exact-point parcel. Complete object-ID manifests, 31-row forced three-row paging over eleven geometry pages, all 127 fresh composite codGeo/codLote identities, explicit absence, footprint and binding passed in 21 checks. Native EPSG:31984 re-reads confirm four tiny source boundary-sliver pairs totaling 0.37279 m²; the largest pair is 0.17233 m², the largest fraction is 0.03197% of the smaller parcel, and overlap-part inscribed diameters are 0.00092–0.01331 m (GEOS tolerance 0.0001 m). Root accepts these documented narrow slivers for bounded reference use, consistent with the Philadelphia review. All original coordinates remain unchanged; no repair, clipping, snapping or selective deletion. Citywide completeness, source-wide identity uniqueness, survey accuracy and legal-title extent remain unverified.",
+  "acceptanceFile": "vitoria-lotes-root-acceptance.json",
+  "metricAuditFile": "vitoria-lotes-root-quality.json",
+  "nativeCoordinateReviewFile": "vitoria-native-overlap-review.json",
+  "scopeLimits": {
+    "maxFullPolygonsRetainedInRepository": 3,
+    "ownerOrAddressDataRetained": false,
+    "citywideCompletenessAsserted": false
+  },
+  "boundarySliverAssessment": "Native intersections are tiny narrow strips, valid and nonduplicated; the native re-reads and thickness evidence support bounded reference use without modifying geometry.",
+  "concurrencyReview": {
+    "evidenceFile": "vitoria-concurrency-review.json",
+    "sixSimultaneousQueriesPassed": 6,
+    "sameQueriesWithLimitTwoPassed": 6,
+    "originalTwentyFiveCellTimeoutCause": "Not established by the six-request comparison; the initial failure and cooldown retry remain recorded.",
+    "runtimeMaxConcurrentQueries": 2,
+    "reason": "Use the established per-source concurrency limiter to bound municipal-service load; no custom retry or timeout increase."
+  },
+  "browserCheckFile": "vitoria-browser-check.json"
+}

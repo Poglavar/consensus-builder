@@ -1,0 +1,97 @@
+{
+  "name": "Xiangyang",
+  "country": "China",
+  "countryCode": "CN",
+  "rank": 536,
+  "point": [
+    32.0682535773164,
+    112.148945184735
+  ],
+  "population2025": 969011,
+  "schemaVersion": 1,
+  "kind": "city_parcel_source_research",
+  "checkedAt": "2026-10-09",
+  "populationUnit": "persons",
+  "status": "complete",
+  "verifiedSample": false,
+  "publicParcelGeometryFound": false,
+  "runtimeReadiness": "not_enabled_no_verified_public_geometry",
+  "priorEvidenceFiles": [],
+  "scopeLimits": "The documented Xiangyang cadastral-map lookup is accessed through the Hubei government service platform after identity verification and requires a known property locator. No anonymous geometry-only vector endpoint or safe feature schema was found; no login or property lookup was attempted. The WUP point is a population-weighted settlement locator, not a parcel or city boundary. No owner/address/right-holder values, accounts or credentials were retained.",
+  "pointBasis": "UN WUP 2025 population-weighted settlement centroid; this is not a municipal boundary or a parcel-coverage claim.",
+  "registryFound": true,
+  "registryBasis": "The official Hubei Provincial Department of Natural Resources describes Xiangyang’s city real-estate registration center and a city cadastral-map visual inquiry service. Public instructions for the Xiangyang online hall say the inquirer first authenticates and searches by property address, certificate number or unit number. This verifies local registry and map inquiry, but does not establish anonymous parcel-vector access.",
+  "registryEvidenceUrls": [
+    "https://zrzyt.hubei.gov.cn/bmdt/ztzl/jjbdcdj/bdckpzs/202505/t20250514_5650170.shtml"
+  ],
+  "resultCategory": "city_registry_and_authentication_gated_cadastral_map_query_no_public_vector",
+  "research": {
+    "executedQueries": [
+      {
+        "language": "English",
+        "query": "Xiangyang China official cadastral map parcel real estate registration GIS public query",
+        "scope": "Find city-local registry evidence, public service access conditions, and a schema-safe anonymous full-polygon parcel source.",
+        "result": "Official Hubei natural-resources report confirms Xiangyang cadastral-map visual inquiry. The reported online query is reached through a government service platform and identity verification; no public vector service was found.",
+        "actualResultUrls": [
+          "https://zrzyt.hubei.gov.cn/bmdt/ztzl/jjbdcdj/bdckpzs/202505/t20250514_5650170.shtml",
+          "https://news.cjn.cn/hbpd_19912/xy_19928/202307/t4619015.htm"
+        ],
+        "executionMethod": "Separate English or native-language public search, followed by official-source and public map/service inspection."
+      },
+      {
+        "language": "Chinese",
+        "query": "襄阳市 不动产登记 地籍图 可视化查询 官方 在线办事大厅",
+        "scope": "Find city-local registry evidence, public service access conditions, and a schema-safe anonymous full-polygon parcel source.",
+        "result": "湖北省自然资源厅 confirms the Xiangyang city registry’s visual cadastral-map query service. Xiangyang Daily’s 2023 report gives the flow: authenticate on the Hubei government service portal, enter the Xiangyang online registry hall and search with an address, certificate or unit number. No unauthenticated geometry layer is documented.",
+        "actualResultUrls": [
+          "https://zrzyt.hubei.gov.cn/bmdt/ztzl/jjbdcdj/bdckpzs/202505/t20250514_5650170.shtml",
+          "https://news.cjn.cn/hbpd_19912/xy_19928/202307/t4619015.htm"
+        ],
+        "executionMethod": "Separate English or native-language public search, followed by official-source and public map/service inspection."
+      }
+    ],
+    "officialSources": [
+      {
+        "url": "https://zrzyt.hubei.gov.cn/bmdt/ztzl/jjbdcdj/bdckpzs/202505/t20250514_5650170.shtml",
+        "observation": "Official provincial natural-resources retrospective explicitly names Xiangyang’s real-estate registration reforms, city online hall, and cadastral-map visual query service."
+      },
+      {
+        "url": "https://news.cjn.cn/hbpd_19912/xy_19928/202307/t4619015.htm",
+        "observation": "Xiangyang Daily report describes the documented citizen workflow as identity verification in Hubei’s government service platform, selection of Xiangyang online registry hall, and lookup by address, certificate or unit number. This secondary report was used only to clarify access conditions."
+      }
+    ],
+    "viewerAndServiceTrace": {
+      "viewerUrl": "https://zwfw.hubei.gov.cn/",
+      "apiBase": null,
+      "observedClientRoutes": [
+        "Hubei government services portal > real-estate registration > Xiangyang online hall > cadastral-map visual inquiry"
+      ],
+      "notes": "Official descriptions require identity verification and a known property locator. No login, identity submission or property-specific lookup was attempted; no geometry schema or anonymous vector route observed."
+    }
+  },
+  "verifiedParcelResponse": null,
+  "source": {
+    "id": "CN-HB-XIANGYANG-REGISTRY-CADASTRAL-VISUAL-QUERY",
+    "name": "Xiangyang city real-estate registration and cadastral-map visual query",
+    "url": "https://zrzyt.hubei.gov.cn/bmdt/ztzl/jjbdcdj/bdckpzs/202505/t20250514_5650170.shtml",
+    "operator": "Xiangyang Real Estate Registration Center / Hubei government service platform",
+    "type": "Identity-verified public inquiry into registered property attributes and cadastral map",
+    "layer": null,
+    "geometryType": null,
+    "nativeIdField": null,
+    "nativeIdEvidence": "The documented lookup accepts an address, certificate number or real-estate unit number; no anonymous vector schema was exposed."
+  },
+  "wupCityCode": 9746,
+  "cityId": "wup2025:9746",
+  "queueRank": 536,
+  "populationPlausibility2025": "High",
+  "centerLatLon": [
+    32.0682535773164,
+    112.148945184735
+  ],
+  "sourceIds": [],
+  "adapterReady": false,
+  "technicalBlocker": "The documented Xiangyang cadastral-map lookup is accessed through the Hubei government service platform after identity verification and requires a known property locator. No anonymous geometry-only vector endpoint or safe feature schema was found; no login or property lookup was attempted.",
+  "remainingUncertainty": "Whether other current anonymous public vector services exist for this city; none was confirmed in the official sources inspected.",
+  "rootReviewedAt": "2026-10-09T01:19:13.626142+00:00"
+}

@@ -1,0 +1,94 @@
+{
+  "schemaVersion": 1,
+  "kind": "city_parcel_source_research",
+  "checkedAt": "2026-10-09",
+  "name": "Bikaner",
+  "country": "India",
+  "countryCode": "IN",
+  "populationUnit": "persons",
+  "status": "complete",
+  "registryFound": null,
+  "registryBasis": "The Rajasthan Urban GIS portal advertises Khasra/plot layers and a City/ULB selector, and Bikaner Municipal Corporation publishes ward-boundary material and city property/plot statistics. The available evidence does not establish that a Bikaner-bound cadastral registry or parcel-vector route is exposed, so registry presence is left undetermined.",
+  "registryEvidenceUrls": [
+    "https://rajdharaa.rajasthan.gov.in/citizenudh/index",
+    "https://bikanermc.org/",
+    "https://www.lsg.urban.rajasthan.gov.in/content/raj/udh/en/home.html"
+  ],
+  "verifiedSample": false,
+  "publicParcelGeometryFound": false,
+  "runtimeReadiness": "not_enabled_no_verified_public_geometry",
+  "wupCityCode": 4741,
+  "cityId": "wup2025:4741",
+  "centerLatLon": [
+    28.0153603272392,
+    73.3182976639379
+  ],
+  "rank": 586,
+  "queueRank": 586,
+  "population2025": 882222,
+  "population2025k": 882.222,
+  "pointBasis": "UN WUP 2025 population-weighted settlement centroid; this is not a municipal boundary or a parcel-coverage claim.",
+  "technicalBlocker": "No city-specific anonymous parcel feature schema was verified; direct HTTPS shell access to the public GIS timed out. No TLS bypass was attempted, no parcel query was performed, and no geometry retained.",
+  "scopeLimits": "State Urban GIS public viewer and the Bikaner municipal portal were identified. Portal text lists Khasra and plot search controls, including parcel-specific selectors; no parcel, Khasra, or property query was submitted. Bikaner city GIS geometry and its schema were not verified.",
+  "remainingUncertainty": "No complete georeferenced parcel polygon with a verified safe native ID was obtained for this city. Public maps or registry workflows may provide visual layers or identity-dependent services that were not queried.",
+  "research": {
+    "executedQueries": [
+      {
+        "language": "English",
+        "query": "Bikaner Rajasthan official cadastral parcel map GIS land records urban GIS",
+        "scope": "Find city-specific primary registry evidence and a safe anonymous geometry-only route.",
+        "result": "The Rajasthan Urban GIS portal advertises Khasra/plot layers and a City/ULB selector, and Bikaner Municipal Corporation publishes ward-boundary material and city property/plot statistics. The available evidence does not establish that a Bikaner-bound cadastral registry or parcel-vector route is exposed, so registry presence is left undetermined. The public Rajasthan Urban GIS page lists Khasra, plot, urban-jurisdiction, and other layers but places Khasra and plot lookup behind selectors; no selector was submitted. Its disclaimer says the Khasra/village data is for viewing only and not legal use. The municipal site publishes ward-boundary material, not a parcel feature schema. Direct standard HTTPS shell access timed out without an HTTP status; the public page was inspected via web rendering.",
+        "actualResultUrls": [
+          "https://rajdharaa.rajasthan.gov.in/citizenudh/index",
+          "https://bikanermc.org/",
+          "https://www.lsg.urban.rajasthan.gov.in/content/raj/udh/en/home.html"
+        ],
+        "executionMethod": "English/local-language search plus primary-source public route review; no parcel-specific or private lookup."
+      },
+      {
+        "language": "Hindi",
+        "query": "बीकानेर राजस्थान आधिकारिक भू नक्शा खसरा नगर निगम GIS भूमि अभिलेख",
+        "scope": "Find city-specific primary registry evidence and a safe anonymous geometry-only route.",
+        "result": "The Rajasthan Urban GIS portal advertises Khasra/plot layers and a City/ULB selector, and Bikaner Municipal Corporation publishes ward-boundary material and city property/plot statistics. The available evidence does not establish that a Bikaner-bound cadastral registry or parcel-vector route is exposed, so registry presence is left undetermined. The public Rajasthan Urban GIS page lists Khasra, plot, urban-jurisdiction, and other layers but places Khasra and plot lookup behind selectors; no selector was submitted. Its disclaimer says the Khasra/village data is for viewing only and not legal use. The municipal site publishes ward-boundary material, not a parcel feature schema. Direct standard HTTPS shell access timed out without an HTTP status; the public page was inspected via web rendering.",
+        "actualResultUrls": [
+          "https://rajdharaa.rajasthan.gov.in/citizenudh/index",
+          "https://bikanermc.org/",
+          "https://www.lsg.urban.rajasthan.gov.in/content/raj/udh/en/home.html"
+        ],
+        "executionMethod": "English/local-language search plus primary-source public route review; no parcel-specific or private lookup."
+      }
+    ]
+  },
+  "source": {
+    "sourceId": "in-bikaner-registry-map-review",
+    "name": "Bikaner local registry/map source review",
+    "operator": "Rajasthan Department of Urban Development and Housing; Bikaner Municipal Corporation",
+    "url": "https://rajdharaa.rajasthan.gov.in/citizenudh/index",
+    "scope": "State Urban GIS public viewer and the Bikaner municipal portal were identified. Portal text lists Khasra and plot search controls, including parcel-specific selectors; no parcel, Khasra, or property query was submitted. Bikaner city GIS geometry and its schema were not verified.",
+    "nativeIdField": null,
+    "attributesRequested": [],
+    "identityBasis": "No native feature ID obtained.",
+    "geometryStatus": "no_city_specific_vector_schema_verified"
+  },
+  "coverageAssessment": {
+    "verifiedOpenScope": "State Urban GIS public viewer and the Bikaner municipal portal were identified. Portal text lists Khasra and plot search controls, including parcel-specific selectors; no parcel, Khasra, or property query was submitted. Bikaner city GIS geometry and its schema were not verified.",
+    "citywideVerified": false,
+    "countrywideVerified": false
+  },
+  "priorEvidenceFiles": [],
+  "populationPlausibility2025": "High",
+  "sourceIds": [],
+  "point": [
+    28.0153603272392,
+    73.3182976639379
+  ],
+  "sampleFile": null,
+  "sampleFeatureCount": 0,
+  "sampleCrs": null,
+  "geometryEvidence": null,
+  "runtimeAssessment": {
+    "runtimeEnabled": false,
+    "reason": "No full geometry-only parcel sample and native safe ID were verified."
+  },
+  "rootReviewedAt": "2026-10-09T01:44:14.672457+00:00"
+}

@@ -1,0 +1,110 @@
+{
+  "name": "Yichang",
+  "country": "China",
+  "countryCode": "CN",
+  "rank": 390,
+  "point": [
+    30.7113043041825,
+    111.31454718262
+  ],
+  "population2025": 1314779,
+  "schemaVersion": 1,
+  "kind": "city_parcel_source_research",
+  "checkedAt": "2026-10-09",
+  "populationUnit": "persons",
+  "status": "complete",
+  "verifiedSample": false,
+  "publicParcelGeometryFound": false,
+  "runtimeReadiness": "not_enabled_no_verified_public_geometry",
+  "priorEvidenceFiles": [],
+  "scopeLimits": "The ranked WUP population-weighted point is a settlement locator, not a parcel identity, municipal boundary, or coverage guarantee. No full parcel polygon geometry is retained.",
+  "pointBasis": "UN WUP 2025 population-weighted settlement centroid; this is not a municipal boundary or a parcel-coverage claim.",
+  "registryFound": true,
+  "registryBasis": "Official Hubei department describes citywide registration/cadastral visualization, gated behind verified login.",
+  "resultCategory": "city_registry_visualization_requires_verified_login_no_public_vector_geometry",
+  "technicalBlocker": "The documented workflow requires login and identity verification. No public full-polygon service exposed.",
+  "remainingUncertainty": "Whether authenticated viewer permits geometry download; geometry was not probed.",
+  "nextStep": "Use only anonymous catalog metadata if available; no account or parcel lookup.",
+  "research": {
+    "executedQueries": [
+      {
+        "language": "English",
+        "query": "Yichang official cadastral parcel map real estate registration online map GIS Yichang China",
+        "result": "Official Hubei natural-resources pages confirm a city-wide cadastral visualization service, but it requires Hubei Government Service Network account and identity verification; no anonymous vector endpoint documented.",
+        "urls": [
+          "https://zrzyt.hubei.gov.cn/bmdt/sxdt/202309/t20230911_4877901.shtml",
+          "https://zrzyt.hubei.gov.cn/bmdt/sxdt/202608/t20260828_6003462.shtml"
+        ],
+        "method": "Separate native-language or English web search; official pages/viewer inspected where available; no personal or owner-record query."
+      },
+      {
+        "language": "Simplified Chinese",
+        "query": "宜昌市 地籍图 宗地图 不动产登记地图 GIS 宜昌自然资源和规划局",
+        "result": "宜昌全域不动产登记及地籍图可视化服务需湖北政务服务网实名认证后使用。另有地下管线权籍数据库报道，但不是公开通用宗地边界服务。未提交查询。",
+        "urls": [
+          "https://zrzyt.hubei.gov.cn/bmdt/sxdt/202309/t20230911_4877901.shtml",
+          "https://zrzyt.hubei.gov.cn/bmdt/sxdt/202608/t20260828_6003462.shtml",
+          "https://zrzyt.hubei.gov.cn/bmdt/ztzl/jjbdcdj/bdczcjd/202512/t20251212_5832680.shtml"
+        ],
+        "method": "Separate native-language or English web search; official pages/viewer inspected where available; no personal or owner-record query."
+      }
+    ],
+    "officialSources": [
+      {
+        "url": "https://zrzyt.hubei.gov.cn/bmdt/sxdt/202309/t20230911_4877901.shtml",
+        "method": "Public source/search review or direct anonymous GET",
+        "httpStatus": 200,
+        "contentType": "text/html",
+        "observation": "Official Hubei Department says Yichang citywide property and cadastral map visual query requires real-name facial verification; results omit holder name/ID."
+      },
+      {
+        "url": "https://zrzyt.hubei.gov.cn/bmdt/sxdt/202608/t20260828_6003462.shtml",
+        "method": "Public source/search review or direct anonymous GET",
+        "httpStatus": 200,
+        "contentType": "text/html",
+        "observation": "Yichang cadastral database/vector layer report concerns underground utility rights, not open general parcel polygons."
+      },
+      {
+        "url": "https://zrzyt.hubei.gov.cn/bmdt/ztzl/jjbdcdj/bdczcjd/202512/t20251212_5832680.shtml",
+        "method": "Public source/search review or direct anonymous GET",
+        "httpStatus": 200,
+        "contentType": "text/html",
+        "observation": "Official FAQ describes legal limits on land-registration/cadastral query subjects."
+      }
+    ],
+    "portals": [
+      {
+        "name": "Yichang cadastral map visualization",
+        "operator": "Yichang Natural Resources and Planning Bureau via Hubei Government Service Network",
+        "url": "https://zwfw.hubei.gov.cn/webview/yslb/bdcdj/bdcdj.html",
+        "observation": "Official documentation describes authenticated map query; no account or property query was attempted."
+      }
+    ],
+    "viewerAndServiceTrace": {
+      "attempted": true,
+      "summary": "Official sources confirm the service but require verified login. No anonymous polygon route was documented or tested.",
+      "fullPolygonLimit": 3,
+      "fullPolygonsRetained": 0,
+      "ownerOrAddressDataRequested": false,
+      "credentialsOrTokenValuesRetained": false
+    },
+    "attemptedGeometry": {
+      "fullPolygonLimit": 3,
+      "fullPolygonsRetained": 0,
+      "ownerOrAddressDataRequested": false,
+      "outcome": "No full parcel polygon geometry was requested or retained."
+    }
+  },
+  "verifiedParcelResponse": null,
+  "source": null,
+  "wupCityCode": 9790,
+  "cityId": "wup2025:9790",
+  "queueRank": 390,
+  "populationPlausibility2025": "Moderate",
+  "centerLatLon": [
+    30.7113043041825,
+    111.31454718262
+  ],
+  "sourceIds": [],
+  "rootReviewedAt": "2026-10-08T23:20:33.128981+00:00"
+}

@@ -1,0 +1,80 @@
+{
+  "schemaVersion": "1.0",
+  "checkedAt": "2026-10-09",
+  "cityRecord": "city-3725-rasht.json",
+  "purpose": "Document first-party local registry/map evidence and bounded anonymous geometry access review.",
+  "scopeLimits": {
+    "maxFullPolygonsRetainedInCityRecord": 3,
+    "maxFullPolygonsRetainedInReview": 0,
+    "maxFullPolygonsRetainedInRepository": 24,
+    "ownerOrAddressDataRetained": false,
+    "credentialsOrTokenValuesRetained": false,
+    "citywideCompletenessAsserted": false
+  },
+  "assessment": "English and Persian searches did not surface first-party Rasht registry or parcel-viewer documentation. A secondary city-news report describes a city road-network layer on Iran SDI, which is non-cadastral and not used to infer parcel availability.",
+  "registryAssessment": "No first-party public page identifying a Rasht land-registration office or parcel-map service was located. The official municipal and national SDI entry points could not be reviewed through available fetch tools. A secondary report attributes road-network data publishing to the Rasht municipal ICT organization, but this is not primary evidence of a land registry or parcel layer.",
+  "officialPrimarySources": [
+    {
+      "url": "https://rasht.ir/",
+      "observation": "No first-party public page identifying a Rasht land-registration office or parcel-map service was located. The official municipal and national SDI entry points could not be reviewed through available fetch tools. A secondary report attributes road-network data publishing to the Rasht municipal ICT organization, but this is not primary evidence of a land registry or parcel layer."
+    },
+    {
+      "url": "https://fava.rasht.ir/",
+      "observation": "No first-party public page identifying a Rasht land-registration office or parcel-map service was located. The official municipal and national SDI entry points could not be reviewed through available fetch tools. A secondary report attributes road-network data publishing to the Rasht municipal ICT organization, but this is not primary evidence of a land registry or parcel layer."
+    },
+    {
+      "url": "https://iransdi.ncc.gov.ir/",
+      "observation": "No first-party public page identifying a Rasht land-registration office or parcel-map service was located. The official municipal and national SDI entry points could not be reviewed through available fetch tools. A secondary report attributes road-network data publishing to the Rasht municipal ICT organization, but this is not primary evidence of a land registry or parcel layer."
+    }
+  ],
+  "searchQueries": [
+    {
+      "language": "Persian",
+      "query": "رشت نقشه کاداستر شهرداری رشت اداره ثبت اسناد و املاک گیلان سامانه GIS رسمی",
+      "result": "Searches did not return a first-party Rasht registry page or public cadastral layer catalogue. Municipal rasht.ir and FAVA/national SDI endpoints were not accessible via the current web fetch path; a secondary city-news report about road-network publishing is not treated as parcel evidence.",
+      "method": "Separate Persian search and official-domain search; secondary result excluded from registry determination.",
+      "scope": "Find first-party Rasht cadastral/registry office and public parcel map sources."
+    },
+    {
+      "language": "English",
+      "query": "Rasht Iran official land registry cadastral map GIS Gilan municipality parcel",
+      "result": "No first-party city register or anonymous parcel geometry endpoint was verified. The known municipal and national spatial portals could not be reviewed through the available read-only fetch path.",
+      "method": "Separate English search followed by official-domain review.",
+      "scope": "Cross-check official local registration and public feature service."
+    }
+  ],
+  "geometryDecision": "No parcel geometry retained. No qualifying complete full polygon at a safely validated native parcel ID was returned.",
+  "coverageAssessment": {
+    "claimedScope": "No Rasht cadastral or registry extent is claimed. The municipal SDI road-network report is context only and not parcel evidence.",
+    "verifiedOpenScope": "English and Persian searches did not surface first-party Rasht registry or parcel-viewer documentation. A secondary city-news report describes a city road-network layer on Iran SDI, which is non-cadastral and not used to infer parcel availability.",
+    "citywideVerified": false,
+    "countrywideVerified": false,
+    "geometryVerified": false
+  },
+  "attempts": [
+    {
+      "url": "https://rasht.ir/",
+      "method": "GET / official municipal portal attempt",
+      "status": "browser_fetch_timeout",
+      "observation": "The read-only browser fetch timed out before returning page content; no origin availability conclusion is drawn."
+    },
+    {
+      "url": "https://fava.rasht.ir/",
+      "method": "GET / official municipal ICT portal attempt",
+      "status": "not_accessible_via_web_fetch",
+      "observation": "The web fetch tool could not access the official municipal GIS/ICT portal; no claim about provider state or layer contents is made."
+    },
+    {
+      "url": "https://iransdi.ncc.gov.ir/",
+      "method": "GET / National Cartographic Center SDI attempt",
+      "status": "browser_fetch_timeout",
+      "observation": "The read-only browser fetch timed out before returning page content; no origin availability conclusion is drawn."
+    },
+    {
+      "url": "https://nabzkhabar.ir/%D8%AA%D8%A8%D8%A7%D8%AF%D9%84-%D8%A7%D8%B7%D9%84%D8%A7%D8%B9%D8%A7%D8%AA-%D8%B4%D9%87%D8%B1%DB%8C/",
+      "method": "secondary-source review",
+      "observation": "Reports that Rasht municipal ICT published a road-network layer on Iran SDI; used only as context because it is not first-party and does not establish a parcel layer."
+    }
+  ],
+  "remainingUncertainty": "Whether the Rasht municipal SDI includes a current cadastre layer, whether the provincial land-registration offices publish a city-specific public workflow, and whether any public full polygon is available."
+}

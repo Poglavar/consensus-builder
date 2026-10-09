@@ -1,0 +1,71 @@
+{
+  "schemaVersion": 1,
+  "checkedAt": "2026-10-09",
+  "cityRecord": "city-3460-nampula.json",
+  "purpose": "City-specific official registration/cadastre and bounded anonymous parcel-geometry review.",
+  "scopeLimits": {
+    "maxFullPolygonsRetainedInCityRecord": 3,
+    "maxFullPolygonsRetainedInReview": 3,
+    "maxFullPolygonsRetainedInRepository": 3,
+    "ownerOrAddressDataRetained": false,
+    "credentialsOrTokenValuesRetained": false,
+    "citywideCompletenessAsserted": false
+  },
+  "assessment": "Official local registration/cadastre evidence was found, but no anonymous public parcel feature response was verified at the ranked point.",
+  "registryAssessment": "Nampula municipal regulation establishes a Municipal Urbanization and Cadastre Service responsible for maintaining cadastral records, administering the municipal-land cadastre, issuing cadastral certificates and organizing map/survey archives. This is local cadastral evidence, not a public title registry or anonymous GIS.",
+  "searchQueries": [
+    {
+      "language": "Portuguese",
+      "query": "Cadastro predial Município de Nampula cadastro do solo municipal mapa parcelas DUAT município Nampula",
+      "scope": "Locate official city-scope registry/cadastre services and test for anonymous safe parcel geometry at the ranked point.",
+      "result": "WUP coordinate is not a parcel identity. Reviewed sources did not expose a public Nampula parcel feature layer. A government ArcGIS layer named Nampula is administrative geography only and was excluded. No geometry or personal ownership value was queried/retained.",
+      "actualResultUrls": [
+        "https://www.cmnampula.gov.mz/wp-content/uploads/2024/02/REGULAMENTO-INTERNO-NAMPULA-VERSAO-FINAL-13.06.2021.pdf",
+        "https://cmnampula.gov.mz/conselho-municipal/",
+        "https://www.ade.gov.mz/",
+        "https://gis.fnds.gov.mz/server/rest/services/MRV/MRVFNDS/MapServer/layers"
+      ],
+      "executionMethod": "Separate language-specific search followed by official-source review."
+    },
+    {
+      "language": "English",
+      "query": "Nampula Mozambique official municipal cadastre land parcel registry GIS map municipal land records",
+      "scope": "Locate official city-scope registry/cadastre services and test for anonymous safe parcel geometry at the ranked point.",
+      "result": "WUP coordinate is not a parcel identity. Reviewed sources did not expose a public Nampula parcel feature layer. A government ArcGIS layer named Nampula is administrative geography only and was excluded. No geometry or personal ownership value was queried/retained.",
+      "actualResultUrls": [
+        "https://www.cmnampula.gov.mz/wp-content/uploads/2024/02/REGULAMENTO-INTERNO-NAMPULA-VERSAO-FINAL-13.06.2021.pdf",
+        "https://cmnampula.gov.mz/conselho-municipal/",
+        "https://www.ade.gov.mz/",
+        "https://gis.fnds.gov.mz/server/rest/services/MRV/MRVFNDS/MapServer/layers"
+      ],
+      "executionMethod": "Separate language-specific search followed by official-source review."
+    }
+  ],
+  "officialPrimarySources": [
+    {
+      "url": "https://www.cmnampula.gov.mz/wp-content/uploads/2024/02/REGULAMENTO-INTERNO-NAMPULA-VERSAO-FINAL-13.06.2021.pdf",
+      "observation": "Municipal Internal Regulation Arts.59–62 establishes Urbanization and Cadastre Service; it maintains cadastral/municipal land records and issues certificates."
+    },
+    {
+      "url": "https://cmnampula.gov.mz/conselho-municipal/",
+      "observation": "Municipal Council page lists Urbanization and Land Management."
+    },
+    {
+      "url": "https://www.ade.gov.mz/",
+      "observation": "National geospatial agency advertises MOZGIS; no Nampula parcel layer/schema documented in inspected sources."
+    },
+    {
+      "url": "https://gis.fnds.gov.mz/server/rest/services/MRV/MRVFNDS/MapServer/layers",
+      "observation": "Government layer named Nampula is an administrative polygon with field adm3_pt, not a parcel layer; excluded from geometry evidence."
+    }
+  ],
+  "viewerAndServiceTrace": {
+    "viewerUrl": "https://www.cmnampula.gov.mz/wp-content/uploads/2024/02/REGULAMENTO-INTERNO-NAMPULA-VERSAO-FINAL-13.06.2021.pdf",
+    "apiBase": null,
+    "observedClientRoutes": [],
+    "notes": "WUP coordinate is not a parcel identity. Reviewed sources did not expose a public Nampula parcel feature layer. A government ArcGIS layer named Nampula is administrative geography only and was excluded. No geometry or personal ownership value was queried/retained."
+  },
+  "geometryEvidence": null,
+  "privacy": "No owner/address properties or credentials are retained. Marseille sample retains only native IDU and geometry; no owner/plot report was queried for other cities.",
+  "runtimeAssessment": "not_enabled_no_verified_public_geometry"
+}

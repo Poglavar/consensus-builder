@@ -1,0 +1,80 @@
+{
+  "schemaVersion": "1.0",
+  "checkedAt": "2026-10-09",
+  "cityRecord": "city-8846-maiduguri.json",
+  "purpose": "Document first-party city-specific registry evidence and bounded anonymous parcel geometry/schema review.",
+  "scopeLimits": {
+    "maxFullPolygonsRetainedInCityRecord": 0,
+    "maxFullPolygonsRetainedInReview": 0,
+    "maxFullPolygonsRetainedInRepository": 0,
+    "ownerOrAddressDataRetained": false,
+    "credentialsOrTokenValuesRetained": false,
+    "citywideCompletenessAsserted": false
+  },
+  "assessment": "BOGIS is the Borno land administration and title-registration agency, with a public-facing office address in Maiduguri and public descriptions of land-title searches and surveying services. The reviewed pages expose application/forms and archive information, but no anonymous parcel-vector layer, coordinate query, or safe geometry response was identified. No application or record search was submitted.",
+  "registryAssessment": "BOGIS confirms land title registration/search functions and lists its contact office on Biu Road in Maiduguri; this establishes a city-located registry office, not the extent or public vector coverage of its records.",
+  "officialPrimarySources": [
+    {
+      "url": "https://bogis.bornostate.gov.ng/",
+      "observation": "BOGIS states it administers state land title, registration and searches, maintains land-location data, and allows public title searches at a prescribed fee; it lists its office at Biu Road, Maiduguri."
+    },
+    {
+      "url": "https://bogis.bornostate.gov.ng/properties",
+      "observation": "Official properties/land-registration service page; it advertises land registration guidance, not a public parcel feature service."
+    },
+    {
+      "url": "https://bogis.bornostate.gov.ng/land-registeration-guide",
+      "observation": "Official property-registration guide directs applicants to BOGIS Customer Care Unit in Maiduguri and requires a completed application and original documents."
+    },
+    {
+      "url": "https://bogis.bornostate.gov.ng/application-forms",
+      "observation": "Lists applications such as land-use change, legal search and right of occupancy; no record-specific form was submitted."
+    },
+    {
+      "url": "https://app.bogis.bornostate.gov.ng/",
+      "observation": "Official BOGIS application portal describes secure land-related applications and required documents; it is applicant self-service, not a public map."
+    }
+  ],
+  "searchQueries": [
+    {
+      "language": "English",
+      "query": "Maiduguri official cadastral map land registry Borno Geographic Information Service parcels map",
+      "result": "BOGIS is the Borno land administration and title-registration agency, with a public-facing office address in Maiduguri and public descriptions of land-title searches and surveying services. The reviewed pages expose application/forms and archive information, but no anonymous parcel-vector layer, coordinate query, or safe geometry response was identified. No application or record search was submitted.",
+      "method": "Separate web search then official-page and anonymous-route review."
+    },
+    {
+      "language": "Hausa",
+      "query": "taswirar fili Maiduguri BOGIS hukumar kula da filaye Borno",
+      "result": "BOGIS is the Borno land administration and title-registration agency, with a public-facing office address in Maiduguri and public descriptions of land-title searches and surveying services. The reviewed pages expose application/forms and archive information, but no anonymous parcel-vector layer, coordinate query, or safe geometry response was identified. No application or record search was submitted.",
+      "method": "Separate web search then official-page and anonymous-route review."
+    }
+  ],
+  "serviceChecks": [
+    {
+      "url": "https://bogis.bornostate.gov.ng/",
+      "method": "GET official BOGIS homepage",
+      "httpStatus": 200,
+      "observation": "Anonymous page documents state land title, registration and searches; contact office is in Maiduguri. No map or vector endpoint is linked in the reviewed page."
+    },
+    {
+      "url": "https://bogis.bornostate.gov.ng/application-forms",
+      "method": "GET official service page",
+      "httpStatus": 200,
+      "observation": "Application forms include legal search and land-administration requests; no form submitted and no property identifier used."
+    },
+    {
+      "url": "https://app.bogis.bornostate.gov.ng/",
+      "method": "GET official application portal",
+      "httpStatus": 200,
+      "observation": "Public reader received a dynamic shell with no indexed content or anonymous map/schema. No login or application attempt was made."
+    },
+    {
+      "url": "https://bogis.bornostate.gov.ng/land-registeration-guide",
+      "method": "GET official local registration guide",
+      "httpStatus": 200,
+      "observation": "The guide sends applicants to the BOGIS Customer Care Unit in Maiduguri and requires an application with original documents; no application submitted."
+    }
+  ],
+  "geometryEvidence": null,
+  "runtimeAssessment": "not_enabled_no_verified_public_geometry"
+}

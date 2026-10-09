@@ -1,0 +1,2853 @@
+{
+  "schemaVersion": 1,
+  "purpose": "Live city parcel qualification with unmodified responses through the repository adapter; IDs and hashes retained, full geometries confined to temporary audit cache except three public samples.",
+  "checkedAt": "2026-10-08T22:49:48.334Z",
+  "city": "gwangju",
+  "descriptor": {
+    "id": "kr-gwangju-city-wfs-cadastral-parcels",
+    "name": "Gwangju Metropolitan City continuous cadastral map (anonymous WFS)",
+    "adapter": "wfs",
+    "endpoint": "https://gis.gwangju.go.kr/map/proxy/wfs.do",
+    "featureType": "sde:lsmd_cont_ldreg",
+    "version": "1.1.0",
+    "idField": "pnu",
+    "idType": "string",
+    "idPrefix": "KR-GWANGJU-METRO-",
+    "idPattern": "^[0-9]{19}$",
+    "geometryField": "geom",
+    "requestProperties": true,
+    "outFields": [
+      "pnu"
+    ],
+    "pageSize": 1000,
+    "maxFeatures": 10000,
+    "maxBboxKm2": 25,
+    "countryCode": "KR",
+    "metricSrid": 3857,
+    "scope": "Anonymous public city cadastral WFS; bounded map-service evidence, no owner or address fields requested."
+  },
+  "grid": [
+    {
+      "name": "viewport-0",
+      "bbox": [
+        126.867,
+        35.163,
+        126.868,
+        35.164
+      ],
+      "kind": "aligned-grid"
+    },
+    {
+      "name": "viewport-1",
+      "bbox": [
+        126.868,
+        35.163,
+        126.869,
+        35.164
+      ],
+      "kind": "aligned-grid"
+    },
+    {
+      "name": "viewport-2",
+      "bbox": [
+        126.869,
+        35.163,
+        126.87,
+        35.164
+      ],
+      "kind": "aligned-grid"
+    },
+    {
+      "name": "viewport-3",
+      "bbox": [
+        126.867,
+        35.164,
+        126.868,
+        35.165
+      ],
+      "kind": "aligned-grid"
+    },
+    {
+      "name": "viewport-4",
+      "bbox": [
+        126.868,
+        35.164,
+        126.869,
+        35.165
+      ],
+      "kind": "aligned-grid"
+    },
+    {
+      "name": "viewport-5",
+      "bbox": [
+        126.869,
+        35.164,
+        126.87,
+        35.165
+      ],
+      "kind": "aligned-grid"
+    },
+    {
+      "name": "viewport-6",
+      "bbox": [
+        126.867,
+        35.165,
+        126.868,
+        35.166
+      ],
+      "kind": "aligned-grid"
+    },
+    {
+      "name": "viewport-7",
+      "bbox": [
+        126.868,
+        35.165,
+        126.869,
+        35.166
+      ],
+      "kind": "aligned-grid"
+    },
+    {
+      "name": "viewport-8",
+      "bbox": [
+        126.869,
+        35.165,
+        126.87,
+        35.166
+      ],
+      "kind": "aligned-grid"
+    },
+    {
+      "name": "viewport-9",
+      "bbox": [
+        126.868,
+        35.162,
+        126.869,
+        35.163
+      ],
+      "kind": "adjacent-pan"
+    },
+    {
+      "name": "viewport-10",
+      "bbox": [
+        126.868,
+        35.166,
+        126.869,
+        35.167
+      ],
+      "kind": "adjacent-pan"
+    },
+    {
+      "name": "viewport-11",
+      "bbox": [
+        126.866,
+        35.164,
+        126.867,
+        35.165
+      ],
+      "kind": "adjacent-pan"
+    },
+    {
+      "name": "viewport-12",
+      "bbox": [
+        126.87,
+        35.164,
+        126.871,
+        35.165
+      ],
+      "kind": "adjacent-pan"
+    }
+  ],
+  "tests": [
+    {
+      "name": "viewport-0",
+      "passed": true,
+      "elapsedMs": 2409,
+      "requestIndexes": [
+        0,
+        0
+      ],
+      "bbox": [
+        126.867,
+        35.163,
+        126.868,
+        35.164
+      ],
+      "complete": true,
+      "count": 5,
+      "ids": [
+        {
+          "id": "KR-GWANGJU-METRO-1224011800100180003",
+          "geometrySha256": "a8a2d899c50713d5f325400ed884ac9de6d857e7700256420f6036e878ba1ce7"
+        },
+        {
+          "id": "KR-GWANGJU-METRO-1224011800109200000",
+          "geometrySha256": "83366e72e9b799868c0a5a5705fec1bb2eab157797b0c724589e9c18d6f9e307"
+        },
+        {
+          "id": "KR-GWANGJU-METRO-1224012100107000001",
+          "geometrySha256": "f75fd714b29813f5775b888ef6a8e974d85e2d87e27d127d76d3d8aaf3b9f473"
+        },
+        {
+          "id": "KR-GWANGJU-METRO-1224012100108230001",
+          "geometrySha256": "7b802c04209b6e1b0afc56d1d40c9f64ac7bce3fdd38bcd51a616070bbc46c28"
+        },
+        {
+          "id": "KR-GWANGJU-METRO-1224012100108290000",
+          "geometrySha256": "33f436d57a32efac2f40fb126ba6223813aab276e9865228bcd4f7ae5cdbdfb5"
+        }
+      ]
+    },
+    {
+      "name": "viewport-1",
+      "passed": true,
+      "elapsedMs": 1185,
+      "requestIndexes": [
+        1,
+        1
+      ],
+      "bbox": [
+        126.868,
+        35.163,
+        126.869,
+        35.164
+      ],
+      "complete": true,
+      "count": 2,
+      "ids": [
+        {
+          "id": "KR-GWANGJU-METRO-1224012100107000001",
+          "geometrySha256": "f75fd714b29813f5775b888ef6a8e974d85e2d87e27d127d76d3d8aaf3b9f473"
+        },
+        {
+          "id": "KR-GWANGJU-METRO-1224012100108230001",
+          "geometrySha256": "7b802c04209b6e1b0afc56d1d40c9f64ac7bce3fdd38bcd51a616070bbc46c28"
+        }
+      ]
+    },
+    {
+      "name": "viewport-2",
+      "passed": true,
+      "elapsedMs": 532,
+      "requestIndexes": [
+        2,
+        2
+      ],
+      "bbox": [
+        126.869,
+        35.163,
+        126.87,
+        35.164
+      ],
+      "complete": true,
+      "count": 2,
+      "ids": [
+        {
+          "id": "KR-GWANGJU-METRO-1224012100107000001",
+          "geometrySha256": "f75fd714b29813f5775b888ef6a8e974d85e2d87e27d127d76d3d8aaf3b9f473"
+        },
+        {
+          "id": "KR-GWANGJU-METRO-1224012100108230001",
+          "geometrySha256": "7b802c04209b6e1b0afc56d1d40c9f64ac7bce3fdd38bcd51a616070bbc46c28"
+        }
+      ]
+    },
+    {
+      "name": "viewport-3",
+      "passed": true,
+      "elapsedMs": 420,
+      "requestIndexes": [
+        3,
+        3
+      ],
+      "bbox": [
+        126.867,
+        35.164,
+        126.868,
+        35.165
+      ],
+      "complete": true,
+      "count": 6,
+      "ids": [
+        {
+          "id": "KR-GWANGJU-METRO-1224011800100180003",
+          "geometrySha256": "a8a2d899c50713d5f325400ed884ac9de6d857e7700256420f6036e878ba1ce7"
+        },
+        {
+          "id": "KR-GWANGJU-METRO-1224011800109180006",
+          "geometrySha256": "bac6f3ade057c3addddb21bee1e74b95707e57a8a373096bb3318727977c5bfc"
+        },
+        {
+          "id": "KR-GWANGJU-METRO-1224011800109200000",
+          "geometrySha256": "83366e72e9b799868c0a5a5705fec1bb2eab157797b0c724589e9c18d6f9e307"
+        },
+        {
+          "id": "KR-GWANGJU-METRO-1224012100107000001",
+          "geometrySha256": "f75fd714b29813f5775b888ef6a8e974d85e2d87e27d127d76d3d8aaf3b9f473"
+        },
+        {
+          "id": "KR-GWANGJU-METRO-1224012100108200003",
+          "geometrySha256": "77e974ecfc458192fea40d3b4acf2516a32ccbfb365e062e6785c10a6a65f1d6"
+        },
+        {
+          "id": "KR-GWANGJU-METRO-1224012100108290000",
+          "geometrySha256": "33f436d57a32efac2f40fb126ba6223813aab276e9865228bcd4f7ae5cdbdfb5"
+        }
+      ]
+    },
+    {
+      "name": "viewport-4",
+      "passed": true,
+      "elapsedMs": 382,
+      "requestIndexes": [
+        4,
+        4
+      ],
+      "bbox": [
+        126.868,
+        35.164,
+        126.869,
+        35.165
+      ],
+      "complete": true,
+      "count": 3,
+      "ids": [
+        {
+          "id": "KR-GWANGJU-METRO-1224011800109180006",
+          "geometrySha256": "bac6f3ade057c3addddb21bee1e74b95707e57a8a373096bb3318727977c5bfc"
+        },
+        {
+          "id": "KR-GWANGJU-METRO-1224012100107000001",
+          "geometrySha256": "f75fd714b29813f5775b888ef6a8e974d85e2d87e27d127d76d3d8aaf3b9f473"
+        },
+        {
+          "id": "KR-GWANGJU-METRO-1224012100108200003",
+          "geometrySha256": "77e974ecfc458192fea40d3b4acf2516a32ccbfb365e062e6785c10a6a65f1d6"
+        }
+      ]
+    },
+    {
+      "name": "viewport-5",
+      "passed": true,
+      "elapsedMs": 373,
+      "requestIndexes": [
+        5,
+        5
+      ],
+      "bbox": [
+        126.869,
+        35.164,
+        126.87,
+        35.165
+      ],
+      "complete": true,
+      "count": 2,
+      "ids": [
+        {
+          "id": "KR-GWANGJU-METRO-1224012100107000001",
+          "geometrySha256": "f75fd714b29813f5775b888ef6a8e974d85e2d87e27d127d76d3d8aaf3b9f473"
+        },
+        {
+          "id": "KR-GWANGJU-METRO-1224012100108200003",
+          "geometrySha256": "77e974ecfc458192fea40d3b4acf2516a32ccbfb365e062e6785c10a6a65f1d6"
+        }
+      ]
+    },
+    {
+      "name": "viewport-6",
+      "passed": true,
+      "elapsedMs": 397,
+      "requestIndexes": [
+        6,
+        6
+      ],
+      "bbox": [
+        126.867,
+        35.165,
+        126.868,
+        35.166
+      ],
+      "complete": true,
+      "count": 12,
+      "ids": [
+        {
+          "id": "KR-GWANGJU-METRO-1224011800100160000",
+          "geometrySha256": "41a3641de6abdd32933d3ea267df92a038fca772373cc85b5761112a7a5e0e21"
+        },
+        {
+          "id": "KR-GWANGJU-METRO-1224011800100180002",
+          "geometrySha256": "294285784121c70d75640308494d1ae9bddcf36240e710b0dd6e03a2658a921d"
+        },
+        {
+          "id": "KR-GWANGJU-METRO-1224011800100180003",
+          "geometrySha256": "a8a2d899c50713d5f325400ed884ac9de6d857e7700256420f6036e878ba1ce7"
+        },
+        {
+          "id": "KR-GWANGJU-METRO-1224011800100180004",
+          "geometrySha256": "47eb0b03397675f3baa802494d9511d9a56ddc2fd993c41ec45025fc3fad103d"
+        },
+        {
+          "id": "KR-GWANGJU-METRO-1224011800100180005",
+          "geometrySha256": "dcc2553afae91c3dcafaab1cd2d8a3fccc58f8a28712cea37986af9d287d6385"
+        },
+        {
+          "id": "KR-GWANGJU-METRO-1224011800100490000",
+          "geometrySha256": "0be214420a48ef918a51783335ba5807b92d7a95349b3b8ae2d713daf5f76df5"
+        },
+        {
+          "id": "KR-GWANGJU-METRO-1224011800109180006",
+          "geometrySha256": "bac6f3ade057c3addddb21bee1e74b95707e57a8a373096bb3318727977c5bfc"
+        },
+        {
+          "id": "KR-GWANGJU-METRO-1224011800109190002",
+          "geometrySha256": "0120bbcd3a2efeb980ae1405adaf8232c0a8ea508a74bf6eb6e60ae74beb5abc"
+        },
+        {
+          "id": "KR-GWANGJU-METRO-1224011800109200000",
+          "geometrySha256": "83366e72e9b799868c0a5a5705fec1bb2eab157797b0c724589e9c18d6f9e307"
+        },
+        {
+          "id": "KR-GWANGJU-METRO-1224012100107000001",
+          "geometrySha256": "f75fd714b29813f5775b888ef6a8e974d85e2d87e27d127d76d3d8aaf3b9f473"
+        },
+        {
+          "id": "KR-GWANGJU-METRO-1224012100108200003",
+          "geometrySha256": "77e974ecfc458192fea40d3b4acf2516a32ccbfb365e062e6785c10a6a65f1d6"
+        },
+        {
+          "id": "KR-GWANGJU-METRO-1224012100108290000",
+          "geometrySha256": "33f436d57a32efac2f40fb126ba6223813aab276e9865228bcd4f7ae5cdbdfb5"
+        }
+      ]
+    },
+    {
+      "name": "viewport-7",
+      "passed": true,
+      "elapsedMs": 705,
+      "requestIndexes": [
+        7,
+        7
+      ],
+      "bbox": [
+        126.868,
+        35.165,
+        126.869,
+        35.166
+      ],
+      "complete": true,
+      "count": 8,
+      "ids": [
+        {
+          "id": "KR-GWANGJU-METRO-1224011800100160000",
+          "geometrySha256": "41a3641de6abdd32933d3ea267df92a038fca772373cc85b5761112a7a5e0e21"
+        },
+        {
+          "id": "KR-GWANGJU-METRO-1224011800100180004",
+          "geometrySha256": "47eb0b03397675f3baa802494d9511d9a56ddc2fd993c41ec45025fc3fad103d"
+        },
+        {
+          "id": "KR-GWANGJU-METRO-1224011800100490000",
+          "geometrySha256": "0be214420a48ef918a51783335ba5807b92d7a95349b3b8ae2d713daf5f76df5"
+        },
+        {
+          "id": "KR-GWANGJU-METRO-1224011800109180006",
+          "geometrySha256": "bac6f3ade057c3addddb21bee1e74b95707e57a8a373096bb3318727977c5bfc"
+        },
+        {
+          "id": "KR-GWANGJU-METRO-1224012100107000001",
+          "geometrySha256": "f75fd714b29813f5775b888ef6a8e974d85e2d87e27d127d76d3d8aaf3b9f473"
+        },
+        {
+          "id": "KR-GWANGJU-METRO-1224012100107120002",
+          "geometrySha256": "0a1cfd258d310031bf44f9e856104aa5594ca4b53125053864b4cbe4a39c297f"
+        },
+        {
+          "id": "KR-GWANGJU-METRO-1224012100107170003",
+          "geometrySha256": "667137134c4b3219155c8b1f819f28334128bf02eff8406a63a303b0ae508551"
+        },
+        {
+          "id": "KR-GWANGJU-METRO-1224012100108200003",
+          "geometrySha256": "77e974ecfc458192fea40d3b4acf2516a32ccbfb365e062e6785c10a6a65f1d6"
+        }
+      ]
+    },
+    {
+      "name": "viewport-8",
+      "passed": true,
+      "elapsedMs": 379,
+      "requestIndexes": [
+        8,
+        8
+      ],
+      "bbox": [
+        126.869,
+        35.165,
+        126.87,
+        35.166
+      ],
+      "complete": true,
+      "count": 4,
+      "ids": [
+        {
+          "id": "KR-GWANGJU-METRO-1224012100107000001",
+          "geometrySha256": "f75fd714b29813f5775b888ef6a8e974d85e2d87e27d127d76d3d8aaf3b9f473"
+        },
+        {
+          "id": "KR-GWANGJU-METRO-1224012100107120002",
+          "geometrySha256": "0a1cfd258d310031bf44f9e856104aa5594ca4b53125053864b4cbe4a39c297f"
+        },
+        {
+          "id": "KR-GWANGJU-METRO-1224012100107170003",
+          "geometrySha256": "667137134c4b3219155c8b1f819f28334128bf02eff8406a63a303b0ae508551"
+        },
+        {
+          "id": "KR-GWANGJU-METRO-1224012100108200003",
+          "geometrySha256": "77e974ecfc458192fea40d3b4acf2516a32ccbfb365e062e6785c10a6a65f1d6"
+        }
+      ]
+    },
+    {
+      "name": "viewport-9",
+      "passed": true,
+      "elapsedMs": 714,
+      "requestIndexes": [
+        9,
+        9
+      ],
+      "bbox": [
+        126.868,
+        35.162,
+        126.869,
+        35.163
+      ],
+      "complete": true,
+      "count": 6,
+      "ids": [
+        {
+          "id": "KR-GWANGJU-METRO-1224012100106620001",
+          "geometrySha256": "f7fb66e8227cc2a60088186876faf777d6dcf27ae21bafeefad7a9e17e99fb65"
+        },
+        {
+          "id": "KR-GWANGJU-METRO-1224012100106620003",
+          "geometrySha256": "3d68d4ab0ad83ac262931bef8d679c64701080151af759b741ba0e2bc01e39a3"
+        },
+        {
+          "id": "KR-GWANGJU-METRO-1224012100106630002",
+          "geometrySha256": "101ae8db37b185e22359067e73358a233221b722fdeded5f93bc067456f913a1"
+        },
+        {
+          "id": "KR-GWANGJU-METRO-1224012100106700001",
+          "geometrySha256": "521dd3b2be040ae5fc353deefeabc29d367428f445c1b01393d0f274cf70014c"
+        },
+        {
+          "id": "KR-GWANGJU-METRO-1224012100107000001",
+          "geometrySha256": "f75fd714b29813f5775b888ef6a8e974d85e2d87e27d127d76d3d8aaf3b9f473"
+        },
+        {
+          "id": "KR-GWANGJU-METRO-1224012100108230001",
+          "geometrySha256": "7b802c04209b6e1b0afc56d1d40c9f64ac7bce3fdd38bcd51a616070bbc46c28"
+        }
+      ]
+    },
+    {
+      "name": "viewport-10",
+      "passed": true,
+      "elapsedMs": 402,
+      "requestIndexes": [
+        10,
+        10
+      ],
+      "bbox": [
+        126.868,
+        35.166,
+        126.869,
+        35.167
+      ],
+      "complete": true,
+      "count": 42,
+      "ids": [
+        {
+          "id": "KR-GWANGJU-METRO-1224011800100110000",
+          "geometrySha256": "16f970f81eacecdc733b59816776ff2eca8ea989d002c3eabd04c2d26615fb8f"
+        },
+        {
+          "id": "KR-GWANGJU-METRO-1224011800100120003",
+          "geometrySha256": "f5c823f543390bd48f928d35c491713103fbf893635a47ff0b91dfeab7163e01"
+        },
+        {
+          "id": "KR-GWANGJU-METRO-1224011800100120005",
+          "geometrySha256": "147f020bb19bc4465d2ea385050eca73a4dad02ab91d0022791b8b6c671e2958"
+        },
+        {
+          "id": "KR-GWANGJU-METRO-1224011800100120007",
+          "geometrySha256": "29a1b836e3400d3ecdd5b4e465f11ddcd1448c59e20e7099ad9adc47391eb19e"
+        },
+        {
+          "id": "KR-GWANGJU-METRO-1224011800100120008",
+          "geometrySha256": "ab148664f086016eff58e12cf42cbc68f81dfb961d3f8a83530f111f7addc50c"
+        },
+        {
+          "id": "KR-GWANGJU-METRO-1224011800100140001",
+          "geometrySha256": "7f521dc7275917c81bf0821a7d8d98a8ef96be4dc7d54c44aa4b37f0a66ab6e0"
+        },
+        {
+          "id": "KR-GWANGJU-METRO-1224011800100140002",
+          "geometrySha256": "35b02231631b1c8525ff0cf50ab16dc1f7660eb80e62a0e0abe4ab1bccb24720"
+        },
+        {
+          "id": "KR-GWANGJU-METRO-1224011800100140003",
+          "geometrySha256": "42aefac6a5349205262cdb7d5bc84e3224648de913a24f9a19376e8548813f58"
+        },
+        {
+          "id": "KR-GWANGJU-METRO-1224011800100140004",
+          "geometrySha256": "4f67a6e6fd67407ed1dd63d18f4cf891fc31dfec095601aa430f9fe23d61e9d2"
+        },
+        {
+          "id": "KR-GWANGJU-METRO-1224011800100140005",
+          "geometrySha256": "af953bcc4f35d315e13f9fd377fdf9e7905360bf0919dd191331fcc3f6564079"
+        },
+        {
+          "id": "KR-GWANGJU-METRO-1224011800100140006",
+          "geometrySha256": "baab002ed3f5b0d159bf455980f2d32f9fbc565f57b2049fb6aa568912bdaadf"
+        },
+        {
+          "id": "KR-GWANGJU-METRO-1224011800100140007",
+          "geometrySha256": "0594f34c63825ae0103377a749358ed8fd691dc2eb94e2cb20492feb05cd5904"
+        },
+        {
+          "id": "KR-GWANGJU-METRO-1224011800100140008",
+          "geometrySha256": "9e027c525d277354b1eef5c6f2de57f6b4ffb9e0e9ae98480782186bee912d20"
+        },
+        {
+          "id": "KR-GWANGJU-METRO-1224011800100150001",
+          "geometrySha256": "80fb443ced1432f4a803e382e776d66cec70f7a1c49b30641cd4c20e2c9a2ef4"
+        },
+        {
+          "id": "KR-GWANGJU-METRO-1224011800100150004",
+          "geometrySha256": "2a98b26ad6089e410f4a96304b47069a173a6e0c4682b31c97f9af3d3b95a455"
+        },
+        {
+          "id": "KR-GWANGJU-METRO-1224011800100150005",
+          "geometrySha256": "18ec16c1e38895d79fb513de012c3d62a7a1e12470930a0b0d0bfa157e327f78"
+        },
+        {
+          "id": "KR-GWANGJU-METRO-1224011800100150006",
+          "geometrySha256": "297478d8d7c86e0f3ff4b568d2d7d361b14f7ab2ef43ad45ec20648b47d87634"
+        },
+        {
+          "id": "KR-GWANGJU-METRO-1224011800100150007",
+          "geometrySha256": "89a27505683fbbf280f2d2b69b4acd014caa459c7ac226b81f0cf8ca3c27ca56"
+        },
+        {
+          "id": "KR-GWANGJU-METRO-1224011800100150008",
+          "geometrySha256": "55f5c97542ac07d3fd6cb8ce1a5854aa77ae2d356cef556e66eaef9c42bede66"
+        },
+        {
+          "id": "KR-GWANGJU-METRO-1224011800100150011",
+          "geometrySha256": "0e46f3933203de38eda2348fbe23d922ba138cb0b221dbe844220efe2962453c"
+        },
+        {
+          "id": "KR-GWANGJU-METRO-1224011800100160000",
+          "geometrySha256": "41a3641de6abdd32933d3ea267df92a038fca772373cc85b5761112a7a5e0e21"
+        },
+        {
+          "id": "KR-GWANGJU-METRO-1224011800100180004",
+          "geometrySha256": "47eb0b03397675f3baa802494d9511d9a56ddc2fd993c41ec45025fc3fad103d"
+        },
+        {
+          "id": "KR-GWANGJU-METRO-1224011800100210003",
+          "geometrySha256": "69ac1674cd0a2dd3e57fbfca344589ce19f2ea590030958c3af3fd149ecd6619"
+        },
+        {
+          "id": "KR-GWANGJU-METRO-1224011800100220001",
+          "geometrySha256": "db5918d9b448b03914def2908cd90fd93e83cb20c190274e57d5b0118294a926"
+        },
+        {
+          "id": "KR-GWANGJU-METRO-1224011800100220004",
+          "geometrySha256": "b1467f15fec1954b4f172c88baac5399f70c5ea8b81424a136977fd7fe19da60"
+        },
+        {
+          "id": "KR-GWANGJU-METRO-1224011800100220006",
+          "geometrySha256": "642d7ec071d2821a3e6b44f40293a38041e8e77b7633199a1e309898f33ded14"
+        },
+        {
+          "id": "KR-GWANGJU-METRO-1224011800100230001",
+          "geometrySha256": "00eec410b94841e2d015b0a3ccba7663ebf094cf0c0e81702f8b3bef0fccc3bc"
+        },
+        {
+          "id": "KR-GWANGJU-METRO-1224011800100230002",
+          "geometrySha256": "0b786470530eca46c839b00e5d14ee0e2667a151f1e24e60a8df58e763d0b9a0"
+        },
+        {
+          "id": "KR-GWANGJU-METRO-1224011800100230004",
+          "geometrySha256": "3206692ac5f0d1a440a9a2fbdbefb344b78376d8b6f5e1a4e5c011ed9cef1243"
+        },
+        {
+          "id": "KR-GWANGJU-METRO-1224011800100230005",
+          "geometrySha256": "8cce330434034e17e825490bfc07ef4f55f659487a7c1d25d7bc481b53cc79db"
+        },
+        {
+          "id": "KR-GWANGJU-METRO-1224011800100230006",
+          "geometrySha256": "2e0b69141cff6c116e6c1dddb341e959dc95b4889669953b8f663fc491432b78"
+        },
+        {
+          "id": "KR-GWANGJU-METRO-1224011800100490000",
+          "geometrySha256": "0be214420a48ef918a51783335ba5807b92d7a95349b3b8ae2d713daf5f76df5"
+        },
+        {
+          "id": "KR-GWANGJU-METRO-1224011800109140001",
+          "geometrySha256": "248431cddedc45a64267eab1b207965d2f4ad2b9212cd745103611e932bd410c"
+        },
+        {
+          "id": "KR-GWANGJU-METRO-1224011800109160003",
+          "geometrySha256": "423cbe016a0f98732a5e41d11a16b3d2e62fdbad7898cedd2673fbad792418d6"
+        },
+        {
+          "id": "KR-GWANGJU-METRO-1224011800109180005",
+          "geometrySha256": "568676ba9b095e6cc420adc93ee295db630bb1b1c82c343bc81e89788086807c"
+        },
+        {
+          "id": "KR-GWANGJU-METRO-1224011800109180006",
+          "geometrySha256": "bac6f3ade057c3addddb21bee1e74b95707e57a8a373096bb3318727977c5bfc"
+        },
+        {
+          "id": "KR-GWANGJU-METRO-1224011800109180008",
+          "geometrySha256": "4afaba69f6d5ce9b10d45189a4ea2c5a2df307c10eb31564fe6589ef3fa5e007"
+        },
+        {
+          "id": "KR-GWANGJU-METRO-1224011800113890000",
+          "geometrySha256": "7b33ae51749106fb7ae2723bdb9ae8bf2c61da0bb8f22ea65cf8e90fc56d9e8c"
+        },
+        {
+          "id": "KR-GWANGJU-METRO-1224011800113900000",
+          "geometrySha256": "86481f67f6e69c1af03562552b87153046f8a1465204dac789a4e731b902905f"
+        },
+        {
+          "id": "KR-GWANGJU-METRO-1224012100107120002",
+          "geometrySha256": "0a1cfd258d310031bf44f9e856104aa5594ca4b53125053864b4cbe4a39c297f"
+        },
+        {
+          "id": "KR-GWANGJU-METRO-1224012100107170003",
+          "geometrySha256": "667137134c4b3219155c8b1f819f28334128bf02eff8406a63a303b0ae508551"
+        },
+        {
+          "id": "KR-GWANGJU-METRO-1224012100108200003",
+          "geometrySha256": "77e974ecfc458192fea40d3b4acf2516a32ccbfb365e062e6785c10a6a65f1d6"
+        }
+      ]
+    },
+    {
+      "name": "viewport-11",
+      "passed": true,
+      "elapsedMs": 715,
+      "requestIndexes": [
+        11,
+        11
+      ],
+      "bbox": [
+        126.866,
+        35.164,
+        126.867,
+        35.165
+      ],
+      "complete": true,
+      "count": 5,
+      "ids": [
+        {
+          "id": "KR-GWANGJU-METRO-1224011800100180003",
+          "geometrySha256": "a8a2d899c50713d5f325400ed884ac9de6d857e7700256420f6036e878ba1ce7"
+        },
+        {
+          "id": "KR-GWANGJU-METRO-1224011800109180006",
+          "geometrySha256": "bac6f3ade057c3addddb21bee1e74b95707e57a8a373096bb3318727977c5bfc"
+        },
+        {
+          "id": "KR-GWANGJU-METRO-1224011800109200000",
+          "geometrySha256": "83366e72e9b799868c0a5a5705fec1bb2eab157797b0c724589e9c18d6f9e307"
+        },
+        {
+          "id": "KR-GWANGJU-METRO-1224012100107000001",
+          "geometrySha256": "f75fd714b29813f5775b888ef6a8e974d85e2d87e27d127d76d3d8aaf3b9f473"
+        },
+        {
+          "id": "KR-GWANGJU-METRO-1224012100108290000",
+          "geometrySha256": "33f436d57a32efac2f40fb126ba6223813aab276e9865228bcd4f7ae5cdbdfb5"
+        }
+      ]
+    },
+    {
+      "name": "viewport-12",
+      "passed": true,
+      "elapsedMs": 371,
+      "requestIndexes": [
+        12,
+        12
+      ],
+      "bbox": [
+        126.87,
+        35.164,
+        126.871,
+        35.165
+      ],
+      "complete": true,
+      "count": 2,
+      "ids": [
+        {
+          "id": "KR-GWANGJU-METRO-1224012100107000001",
+          "geometrySha256": "f75fd714b29813f5775b888ef6a8e974d85e2d87e27d127d76d3d8aaf3b9f473"
+        },
+        {
+          "id": "KR-GWANGJU-METRO-1224012100108200003",
+          "geometrySha256": "77e974ecfc458192fea40d3b4acf2516a32ccbfb365e062e6785c10a6a65f1d6"
+        }
+      ]
+    },
+    {
+      "name": "forced-three-row-pages",
+      "passed": true,
+      "elapsedMs": 5334,
+      "requestIndexes": [
+        13,
+        26
+      ],
+      "count": 42,
+      "geometryPages": 14,
+      "pageSize": 3,
+      "allGeometryHashesMatch": true
+    },
+    {
+      "name": "fresh-ids-0",
+      "passed": true,
+      "elapsedMs": 5217,
+      "requestIndexes": [
+        27,
+        27
+      ],
+      "count": 40,
+      "ids": [
+        "KR-GWANGJU-METRO-1224011800100110000",
+        "KR-GWANGJU-METRO-1224011800100120003",
+        "KR-GWANGJU-METRO-1224011800100120005",
+        "KR-GWANGJU-METRO-1224011800100120007",
+        "KR-GWANGJU-METRO-1224011800100120008",
+        "KR-GWANGJU-METRO-1224011800100140001",
+        "KR-GWANGJU-METRO-1224011800100140002",
+        "KR-GWANGJU-METRO-1224011800100140003",
+        "KR-GWANGJU-METRO-1224011800100140004",
+        "KR-GWANGJU-METRO-1224011800100140005",
+        "KR-GWANGJU-METRO-1224011800100140006",
+        "KR-GWANGJU-METRO-1224011800100140007",
+        "KR-GWANGJU-METRO-1224011800100140008",
+        "KR-GWANGJU-METRO-1224011800100150001",
+        "KR-GWANGJU-METRO-1224011800100150004",
+        "KR-GWANGJU-METRO-1224011800100150005",
+        "KR-GWANGJU-METRO-1224011800100150006",
+        "KR-GWANGJU-METRO-1224011800100150007",
+        "KR-GWANGJU-METRO-1224011800100150008",
+        "KR-GWANGJU-METRO-1224011800100150011",
+        "KR-GWANGJU-METRO-1224011800100160000",
+        "KR-GWANGJU-METRO-1224011800100180002",
+        "KR-GWANGJU-METRO-1224011800100180003",
+        "KR-GWANGJU-METRO-1224011800100180004",
+        "KR-GWANGJU-METRO-1224011800100180005",
+        "KR-GWANGJU-METRO-1224011800100210003",
+        "KR-GWANGJU-METRO-1224011800100220001",
+        "KR-GWANGJU-METRO-1224011800100220004",
+        "KR-GWANGJU-METRO-1224011800100220006",
+        "KR-GWANGJU-METRO-1224011800100230001",
+        "KR-GWANGJU-METRO-1224011800100230002",
+        "KR-GWANGJU-METRO-1224011800100230004",
+        "KR-GWANGJU-METRO-1224011800100230005",
+        "KR-GWANGJU-METRO-1224011800100230006",
+        "KR-GWANGJU-METRO-1224011800100490000",
+        "KR-GWANGJU-METRO-1224011800109140001",
+        "KR-GWANGJU-METRO-1224011800109160003",
+        "KR-GWANGJU-METRO-1224011800109180005",
+        "KR-GWANGJU-METRO-1224011800109180006",
+        "KR-GWANGJU-METRO-1224011800109180008"
+      ],
+      "allGeometryHashesMatch": true,
+      "absentIds": []
+    },
+    {
+      "name": "fresh-ids-40",
+      "passed": true,
+      "elapsedMs": 4405,
+      "requestIndexes": [
+        28,
+        28
+      ],
+      "count": 14,
+      "ids": [
+        "KR-GWANGJU-METRO-1224011800109190002",
+        "KR-GWANGJU-METRO-1224011800109200000",
+        "KR-GWANGJU-METRO-1224011800113890000",
+        "KR-GWANGJU-METRO-1224011800113900000",
+        "KR-GWANGJU-METRO-1224012100106620001",
+        "KR-GWANGJU-METRO-1224012100106620003",
+        "KR-GWANGJU-METRO-1224012100106630002",
+        "KR-GWANGJU-METRO-1224012100106700001",
+        "KR-GWANGJU-METRO-1224012100107000001",
+        "KR-GWANGJU-METRO-1224012100107120002",
+        "KR-GWANGJU-METRO-1224012100107170003",
+        "KR-GWANGJU-METRO-1224012100108200003",
+        "KR-GWANGJU-METRO-1224012100108230001",
+        "KR-GWANGJU-METRO-1224012100108290000"
+      ],
+      "allGeometryHashesMatch": true,
+      "absentIds": []
+    },
+    {
+      "name": "explicit-absence",
+      "passed": true,
+      "elapsedMs": 3726,
+      "requestIndexes": [
+        29,
+        29
+      ],
+      "absentIds": [
+        "KR-GWANGJU-METRO-0000000000000000000"
+      ],
+      "complete": true
+    },
+    {
+      "name": "footprint",
+      "passed": true,
+      "elapsedMs": 422,
+      "requestIndexes": [
+        30,
+        30
+      ],
+      "selectedParcelId": "KR-GWANGJU-METRO-1224011800100120005",
+      "count": 8,
+      "allGeometryHashesMatch": true
+    },
+    {
+      "name": "source-binding",
+      "passed": true,
+      "elapsedMs": 395,
+      "requestIndexes": [
+        31,
+        31
+      ],
+      "selectedParcelId": "KR-GWANGJU-METRO-1224011800100120005",
+      "coverage": "complete",
+      "siteM2": 414.26,
+      "boundParcels": 1
+    }
+  ],
+  "requests": [
+    {
+      "test": "viewport-0",
+      "url": "https://gis.gwangju.go.kr/map/proxy/wfs.do?service=WFS&version=1.1.0&request=GetFeature&typeName=sde%3Alsmd_cont_ldreg&outputFormat=application%2Fjson&srsName=CRS%3A84&sortBy=pnu&propertyName=geom%2Cpnu&maxFeatures=1000&startIndex=0&bbox=126.867%2C35.163%2C126.868%2C35.164%2CCRS%3A84",
+      "method": "GET",
+      "checkedAt": "2026-10-08T22:49:48.359Z",
+      "httpStatus": 200,
+      "contentType": "application/json;charset=UTF-8",
+      "bytes": 24265,
+      "numberMatched": 5,
+      "numberReturned": 5,
+      "features": [
+        {
+          "transportId": "lsmd_cont_ldreg.60370",
+          "properties": {
+            "pnu": "1224011800100180003"
+          },
+          "geometrySha256": "a8a2d899c50713d5f325400ed884ac9de6d857e7700256420f6036e878ba1ce7"
+        },
+        {
+          "transportId": "lsmd_cont_ldreg.62324",
+          "properties": {
+            "pnu": "1224011800109200000"
+          },
+          "geometrySha256": "83366e72e9b799868c0a5a5705fec1bb2eab157797b0c724589e9c18d6f9e307"
+        },
+        {
+          "transportId": "lsmd_cont_ldreg.77986",
+          "properties": {
+            "pnu": "1224012100107000001"
+          },
+          "geometrySha256": "f75fd714b29813f5775b888ef6a8e974d85e2d87e27d127d76d3d8aaf3b9f473"
+        },
+        {
+          "transportId": "lsmd_cont_ldreg.78040",
+          "properties": {
+            "pnu": "1224012100108230001"
+          },
+          "geometrySha256": "7b802c04209b6e1b0afc56d1d40c9f64ac7bce3fdd38bcd51a616070bbc46c28"
+        },
+        {
+          "transportId": "lsmd_cont_ldreg.78097",
+          "properties": {
+            "pnu": "1224012100108290000"
+          },
+          "geometrySha256": "33f436d57a32efac2f40fb126ba6223813aab276e9865228bcd4f7ae5cdbdfb5"
+        }
+      ]
+    },
+    {
+      "test": "viewport-1",
+      "url": "https://gis.gwangju.go.kr/map/proxy/wfs.do?service=WFS&version=1.1.0&request=GetFeature&typeName=sde%3Alsmd_cont_ldreg&outputFormat=application%2Fjson&srsName=CRS%3A84&sortBy=pnu&propertyName=geom%2Cpnu&maxFeatures=1000&startIndex=0&bbox=126.868%2C35.163%2C126.869%2C35.164%2CCRS%3A84",
+      "method": "GET",
+      "checkedAt": "2026-10-08T22:49:50.782Z",
+      "httpStatus": 200,
+      "contentType": "application/json;charset=UTF-8",
+      "bytes": 14904,
+      "numberMatched": 2,
+      "numberReturned": 2,
+      "features": [
+        {
+          "transportId": "lsmd_cont_ldreg.77986",
+          "properties": {
+            "pnu": "1224012100107000001"
+          },
+          "geometrySha256": "f75fd714b29813f5775b888ef6a8e974d85e2d87e27d127d76d3d8aaf3b9f473"
+        },
+        {
+          "transportId": "lsmd_cont_ldreg.78040",
+          "properties": {
+            "pnu": "1224012100108230001"
+          },
+          "geometrySha256": "7b802c04209b6e1b0afc56d1d40c9f64ac7bce3fdd38bcd51a616070bbc46c28"
+        }
+      ]
+    },
+    {
+      "test": "viewport-2",
+      "url": "https://gis.gwangju.go.kr/map/proxy/wfs.do?service=WFS&version=1.1.0&request=GetFeature&typeName=sde%3Alsmd_cont_ldreg&outputFormat=application%2Fjson&srsName=CRS%3A84&sortBy=pnu&propertyName=geom%2Cpnu&maxFeatures=1000&startIndex=0&bbox=126.869%2C35.163%2C126.87%2C35.164%2CCRS%3A84",
+      "method": "GET",
+      "checkedAt": "2026-10-08T22:49:51.972Z",
+      "httpStatus": 200,
+      "contentType": "application/json;charset=UTF-8",
+      "bytes": 14904,
+      "numberMatched": 2,
+      "numberReturned": 2,
+      "features": [
+        {
+          "transportId": "lsmd_cont_ldreg.77986",
+          "properties": {
+            "pnu": "1224012100107000001"
+          },
+          "geometrySha256": "f75fd714b29813f5775b888ef6a8e974d85e2d87e27d127d76d3d8aaf3b9f473"
+        },
+        {
+          "transportId": "lsmd_cont_ldreg.78040",
+          "properties": {
+            "pnu": "1224012100108230001"
+          },
+          "geometrySha256": "7b802c04209b6e1b0afc56d1d40c9f64ac7bce3fdd38bcd51a616070bbc46c28"
+        }
+      ]
+    },
+    {
+      "test": "viewport-3",
+      "url": "https://gis.gwangju.go.kr/map/proxy/wfs.do?service=WFS&version=1.1.0&request=GetFeature&typeName=sde%3Alsmd_cont_ldreg&outputFormat=application%2Fjson&srsName=CRS%3A84&sortBy=pnu&propertyName=geom%2Cpnu&maxFeatures=1000&startIndex=0&bbox=126.867%2C35.164%2C126.868%2C35.165%2CCRS%3A84",
+      "method": "GET",
+      "checkedAt": "2026-10-08T22:49:52.537Z",
+      "httpStatus": 200,
+      "contentType": "application/json;charset=UTF-8",
+      "bytes": 26153,
+      "numberMatched": 6,
+      "numberReturned": 6,
+      "features": [
+        {
+          "transportId": "lsmd_cont_ldreg.60370",
+          "properties": {
+            "pnu": "1224011800100180003"
+          },
+          "geometrySha256": "a8a2d899c50713d5f325400ed884ac9de6d857e7700256420f6036e878ba1ce7"
+        },
+        {
+          "transportId": "lsmd_cont_ldreg.62318",
+          "properties": {
+            "pnu": "1224011800109180006"
+          },
+          "geometrySha256": "bac6f3ade057c3addddb21bee1e74b95707e57a8a373096bb3318727977c5bfc"
+        },
+        {
+          "transportId": "lsmd_cont_ldreg.62324",
+          "properties": {
+            "pnu": "1224011800109200000"
+          },
+          "geometrySha256": "83366e72e9b799868c0a5a5705fec1bb2eab157797b0c724589e9c18d6f9e307"
+        },
+        {
+          "transportId": "lsmd_cont_ldreg.77986",
+          "properties": {
+            "pnu": "1224012100107000001"
+          },
+          "geometrySha256": "f75fd714b29813f5775b888ef6a8e974d85e2d87e27d127d76d3d8aaf3b9f473"
+        },
+        {
+          "transportId": "lsmd_cont_ldreg.78028",
+          "properties": {
+            "pnu": "1224012100108200003"
+          },
+          "geometrySha256": "77e974ecfc458192fea40d3b4acf2516a32ccbfb365e062e6785c10a6a65f1d6"
+        },
+        {
+          "transportId": "lsmd_cont_ldreg.78097",
+          "properties": {
+            "pnu": "1224012100108290000"
+          },
+          "geometrySha256": "33f436d57a32efac2f40fb126ba6223813aab276e9865228bcd4f7ae5cdbdfb5"
+        }
+      ]
+    },
+    {
+      "test": "viewport-4",
+      "url": "https://gis.gwangju.go.kr/map/proxy/wfs.do?service=WFS&version=1.1.0&request=GetFeature&typeName=sde%3Alsmd_cont_ldreg&outputFormat=application%2Fjson&srsName=CRS%3A84&sortBy=pnu&propertyName=geom%2Cpnu&maxFeatures=1000&startIndex=0&bbox=126.868%2C35.164%2C126.869%2C35.165%2CCRS%3A84",
+      "method": "GET",
+      "checkedAt": "2026-10-08T22:49:52.958Z",
+      "httpStatus": 200,
+      "contentType": "application/json;charset=UTF-8",
+      "bytes": 16792,
+      "numberMatched": 3,
+      "numberReturned": 3,
+      "features": [
+        {
+          "transportId": "lsmd_cont_ldreg.62318",
+          "properties": {
+            "pnu": "1224011800109180006"
+          },
+          "geometrySha256": "bac6f3ade057c3addddb21bee1e74b95707e57a8a373096bb3318727977c5bfc"
+        },
+        {
+          "transportId": "lsmd_cont_ldreg.77986",
+          "properties": {
+            "pnu": "1224012100107000001"
+          },
+          "geometrySha256": "f75fd714b29813f5775b888ef6a8e974d85e2d87e27d127d76d3d8aaf3b9f473"
+        },
+        {
+          "transportId": "lsmd_cont_ldreg.78028",
+          "properties": {
+            "pnu": "1224012100108200003"
+          },
+          "geometrySha256": "77e974ecfc458192fea40d3b4acf2516a32ccbfb365e062e6785c10a6a65f1d6"
+        }
+      ]
+    },
+    {
+      "test": "viewport-5",
+      "url": "https://gis.gwangju.go.kr/map/proxy/wfs.do?service=WFS&version=1.1.0&request=GetFeature&typeName=sde%3Alsmd_cont_ldreg&outputFormat=application%2Fjson&srsName=CRS%3A84&sortBy=pnu&propertyName=geom%2Cpnu&maxFeatures=1000&startIndex=0&bbox=126.869%2C35.164%2C126.87%2C35.165%2CCRS%3A84",
+      "method": "GET",
+      "checkedAt": "2026-10-08T22:49:53.343Z",
+      "httpStatus": 200,
+      "contentType": "application/json;charset=UTF-8",
+      "bytes": 15127,
+      "numberMatched": 2,
+      "numberReturned": 2,
+      "features": [
+        {
+          "transportId": "lsmd_cont_ldreg.77986",
+          "properties": {
+            "pnu": "1224012100107000001"
+          },
+          "geometrySha256": "f75fd714b29813f5775b888ef6a8e974d85e2d87e27d127d76d3d8aaf3b9f473"
+        },
+        {
+          "transportId": "lsmd_cont_ldreg.78028",
+          "properties": {
+            "pnu": "1224012100108200003"
+          },
+          "geometrySha256": "77e974ecfc458192fea40d3b4acf2516a32ccbfb365e062e6785c10a6a65f1d6"
+        }
+      ]
+    },
+    {
+      "test": "viewport-6",
+      "url": "https://gis.gwangju.go.kr/map/proxy/wfs.do?service=WFS&version=1.1.0&request=GetFeature&typeName=sde%3Alsmd_cont_ldreg&outputFormat=application%2Fjson&srsName=CRS%3A84&sortBy=pnu&propertyName=geom%2Cpnu&maxFeatures=1000&startIndex=0&bbox=126.867%2C35.165%2C126.868%2C35.166%2CCRS%3A84",
+      "method": "GET",
+      "checkedAt": "2026-10-08T22:49:53.716Z",
+      "httpStatus": 200,
+      "contentType": "application/json;charset=UTF-8",
+      "bytes": 31244,
+      "numberMatched": 12,
+      "numberReturned": 12,
+      "features": [
+        {
+          "transportId": "lsmd_cont_ldreg.60367",
+          "properties": {
+            "pnu": "1224011800100160000"
+          },
+          "geometrySha256": "41a3641de6abdd32933d3ea267df92a038fca772373cc85b5761112a7a5e0e21"
+        },
+        {
+          "transportId": "lsmd_cont_ldreg.60369",
+          "properties": {
+            "pnu": "1224011800100180002"
+          },
+          "geometrySha256": "294285784121c70d75640308494d1ae9bddcf36240e710b0dd6e03a2658a921d"
+        },
+        {
+          "transportId": "lsmd_cont_ldreg.60370",
+          "properties": {
+            "pnu": "1224011800100180003"
+          },
+          "geometrySha256": "a8a2d899c50713d5f325400ed884ac9de6d857e7700256420f6036e878ba1ce7"
+        },
+        {
+          "transportId": "lsmd_cont_ldreg.60371",
+          "properties": {
+            "pnu": "1224011800100180004"
+          },
+          "geometrySha256": "47eb0b03397675f3baa802494d9511d9a56ddc2fd993c41ec45025fc3fad103d"
+        },
+        {
+          "transportId": "lsmd_cont_ldreg.60372",
+          "properties": {
+            "pnu": "1224011800100180005"
+          },
+          "geometrySha256": "dcc2553afae91c3dcafaab1cd2d8a3fccc58f8a28712cea37986af9d287d6385"
+        },
+        {
+          "transportId": "lsmd_cont_ldreg.60411",
+          "properties": {
+            "pnu": "1224011800100490000"
+          },
+          "geometrySha256": "0be214420a48ef918a51783335ba5807b92d7a95349b3b8ae2d713daf5f76df5"
+        },
+        {
+          "transportId": "lsmd_cont_ldreg.62318",
+          "properties": {
+            "pnu": "1224011800109180006"
+          },
+          "geometrySha256": "bac6f3ade057c3addddb21bee1e74b95707e57a8a373096bb3318727977c5bfc"
+        },
+        {
+          "transportId": "lsmd_cont_ldreg.62323",
+          "properties": {
+            "pnu": "1224011800109190002"
+          },
+          "geometrySha256": "0120bbcd3a2efeb980ae1405adaf8232c0a8ea508a74bf6eb6e60ae74beb5abc"
+        },
+        {
+          "transportId": "lsmd_cont_ldreg.62324",
+          "properties": {
+            "pnu": "1224011800109200000"
+          },
+          "geometrySha256": "83366e72e9b799868c0a5a5705fec1bb2eab157797b0c724589e9c18d6f9e307"
+        },
+        {
+          "transportId": "lsmd_cont_ldreg.77986",
+          "properties": {
+            "pnu": "1224012100107000001"
+          },
+          "geometrySha256": "f75fd714b29813f5775b888ef6a8e974d85e2d87e27d127d76d3d8aaf3b9f473"
+        },
+        {
+          "transportId": "lsmd_cont_ldreg.78028",
+          "properties": {
+            "pnu": "1224012100108200003"
+          },
+          "geometrySha256": "77e974ecfc458192fea40d3b4acf2516a32ccbfb365e062e6785c10a6a65f1d6"
+        },
+        {
+          "transportId": "lsmd_cont_ldreg.78097",
+          "properties": {
+            "pnu": "1224012100108290000"
+          },
+          "geometrySha256": "33f436d57a32efac2f40fb126ba6223813aab276e9865228bcd4f7ae5cdbdfb5"
+        }
+      ]
+    },
+    {
+      "test": "viewport-7",
+      "url": "https://gis.gwangju.go.kr/map/proxy/wfs.do?service=WFS&version=1.1.0&request=GetFeature&typeName=sde%3Alsmd_cont_ldreg&outputFormat=application%2Fjson&srsName=CRS%3A84&sortBy=pnu&propertyName=geom%2Cpnu&maxFeatures=1000&startIndex=0&bbox=126.868%2C35.165%2C126.869%2C35.166%2CCRS%3A84",
+      "method": "GET",
+      "checkedAt": "2026-10-08T22:49:54.117Z",
+      "httpStatus": 200,
+      "contentType": "application/json;charset=UTF-8",
+      "bytes": 22031,
+      "numberMatched": 8,
+      "numberReturned": 8,
+      "features": [
+        {
+          "transportId": "lsmd_cont_ldreg.60367",
+          "properties": {
+            "pnu": "1224011800100160000"
+          },
+          "geometrySha256": "41a3641de6abdd32933d3ea267df92a038fca772373cc85b5761112a7a5e0e21"
+        },
+        {
+          "transportId": "lsmd_cont_ldreg.60371",
+          "properties": {
+            "pnu": "1224011800100180004"
+          },
+          "geometrySha256": "47eb0b03397675f3baa802494d9511d9a56ddc2fd993c41ec45025fc3fad103d"
+        },
+        {
+          "transportId": "lsmd_cont_ldreg.60411",
+          "properties": {
+            "pnu": "1224011800100490000"
+          },
+          "geometrySha256": "0be214420a48ef918a51783335ba5807b92d7a95349b3b8ae2d713daf5f76df5"
+        },
+        {
+          "transportId": "lsmd_cont_ldreg.62318",
+          "properties": {
+            "pnu": "1224011800109180006"
+          },
+          "geometrySha256": "bac6f3ade057c3addddb21bee1e74b95707e57a8a373096bb3318727977c5bfc"
+        },
+        {
+          "transportId": "lsmd_cont_ldreg.77986",
+          "properties": {
+            "pnu": "1224012100107000001"
+          },
+          "geometrySha256": "f75fd714b29813f5775b888ef6a8e974d85e2d87e27d127d76d3d8aaf3b9f473"
+        },
+        {
+          "transportId": "lsmd_cont_ldreg.77977",
+          "properties": {
+            "pnu": "1224012100107120002"
+          },
+          "geometrySha256": "0a1cfd258d310031bf44f9e856104aa5594ca4b53125053864b4cbe4a39c297f"
+        },
+        {
+          "transportId": "lsmd_cont_ldreg.77979",
+          "properties": {
+            "pnu": "1224012100107170003"
+          },
+          "geometrySha256": "667137134c4b3219155c8b1f819f28334128bf02eff8406a63a303b0ae508551"
+        },
+        {
+          "transportId": "lsmd_cont_ldreg.78028",
+          "properties": {
+            "pnu": "1224012100108200003"
+          },
+          "geometrySha256": "77e974ecfc458192fea40d3b4acf2516a32ccbfb365e062e6785c10a6a65f1d6"
+        }
+      ]
+    },
+    {
+      "test": "viewport-8",
+      "url": "https://gis.gwangju.go.kr/map/proxy/wfs.do?service=WFS&version=1.1.0&request=GetFeature&typeName=sde%3Alsmd_cont_ldreg&outputFormat=application%2Fjson&srsName=CRS%3A84&sortBy=pnu&propertyName=geom%2Cpnu&maxFeatures=1000&startIndex=0&bbox=126.869%2C35.165%2C126.87%2C35.166%2CCRS%3A84",
+      "method": "GET",
+      "checkedAt": "2026-10-08T22:49:54.823Z",
+      "httpStatus": 200,
+      "contentType": "application/json;charset=UTF-8",
+      "bytes": 18223,
+      "numberMatched": 4,
+      "numberReturned": 4,
+      "features": [
+        {
+          "transportId": "lsmd_cont_ldreg.77986",
+          "properties": {
+            "pnu": "1224012100107000001"
+          },
+          "geometrySha256": "f75fd714b29813f5775b888ef6a8e974d85e2d87e27d127d76d3d8aaf3b9f473"
+        },
+        {
+          "transportId": "lsmd_cont_ldreg.77977",
+          "properties": {
+            "pnu": "1224012100107120002"
+          },
+          "geometrySha256": "0a1cfd258d310031bf44f9e856104aa5594ca4b53125053864b4cbe4a39c297f"
+        },
+        {
+          "transportId": "lsmd_cont_ldreg.77979",
+          "properties": {
+            "pnu": "1224012100107170003"
+          },
+          "geometrySha256": "667137134c4b3219155c8b1f819f28334128bf02eff8406a63a303b0ae508551"
+        },
+        {
+          "transportId": "lsmd_cont_ldreg.78028",
+          "properties": {
+            "pnu": "1224012100108200003"
+          },
+          "geometrySha256": "77e974ecfc458192fea40d3b4acf2516a32ccbfb365e062e6785c10a6a65f1d6"
+        }
+      ]
+    },
+    {
+      "test": "viewport-9",
+      "url": "https://gis.gwangju.go.kr/map/proxy/wfs.do?service=WFS&version=1.1.0&request=GetFeature&typeName=sde%3Alsmd_cont_ldreg&outputFormat=application%2Fjson&srsName=CRS%3A84&sortBy=pnu&propertyName=geom%2Cpnu&maxFeatures=1000&startIndex=0&bbox=126.868%2C35.162%2C126.869%2C35.163%2CCRS%3A84",
+      "method": "GET",
+      "checkedAt": "2026-10-08T22:49:55.203Z",
+      "httpStatus": 200,
+      "contentType": "application/json;charset=UTF-8",
+      "bytes": 18214,
+      "numberMatched": 6,
+      "numberReturned": 6,
+      "features": [
+        {
+          "transportId": "lsmd_cont_ldreg.77646",
+          "properties": {
+            "pnu": "1224012100106620001"
+          },
+          "geometrySha256": "f7fb66e8227cc2a60088186876faf777d6dcf27ae21bafeefad7a9e17e99fb65"
+        },
+        {
+          "transportId": "lsmd_cont_ldreg.77648",
+          "properties": {
+            "pnu": "1224012100106620003"
+          },
+          "geometrySha256": "3d68d4ab0ad83ac262931bef8d679c64701080151af759b741ba0e2bc01e39a3"
+        },
+        {
+          "transportId": "lsmd_cont_ldreg.77649",
+          "properties": {
+            "pnu": "1224012100106630002"
+          },
+          "geometrySha256": "101ae8db37b185e22359067e73358a233221b722fdeded5f93bc067456f913a1"
+        },
+        {
+          "transportId": "lsmd_cont_ldreg.77651",
+          "properties": {
+            "pnu": "1224012100106700001"
+          },
+          "geometrySha256": "521dd3b2be040ae5fc353deefeabc29d367428f445c1b01393d0f274cf70014c"
+        },
+        {
+          "transportId": "lsmd_cont_ldreg.77986",
+          "properties": {
+            "pnu": "1224012100107000001"
+          },
+          "geometrySha256": "f75fd714b29813f5775b888ef6a8e974d85e2d87e27d127d76d3d8aaf3b9f473"
+        },
+        {
+          "transportId": "lsmd_cont_ldreg.78040",
+          "properties": {
+            "pnu": "1224012100108230001"
+          },
+          "geometrySha256": "7b802c04209b6e1b0afc56d1d40c9f64ac7bce3fdd38bcd51a616070bbc46c28"
+        }
+      ]
+    },
+    {
+      "test": "viewport-10",
+      "url": "https://gis.gwangju.go.kr/map/proxy/wfs.do?service=WFS&version=1.1.0&request=GetFeature&typeName=sde%3Alsmd_cont_ldreg&outputFormat=application%2Fjson&srsName=CRS%3A84&sortBy=pnu&propertyName=geom%2Cpnu&maxFeatures=1000&startIndex=0&bbox=126.868%2C35.166%2C126.869%2C35.167%2CCRS%3A84",
+      "method": "GET",
+      "checkedAt": "2026-10-08T22:49:55.918Z",
+      "httpStatus": 200,
+      "contentType": "application/json;charset=UTF-8",
+      "bytes": 27619,
+      "numberMatched": 42,
+      "numberReturned": 42,
+      "features": [
+        {
+          "transportId": "lsmd_cont_ldreg.60347",
+          "properties": {
+            "pnu": "1224011800100110000"
+          },
+          "geometrySha256": "16f970f81eacecdc733b59816776ff2eca8ea989d002c3eabd04c2d26615fb8f"
+        },
+        {
+          "transportId": "lsmd_cont_ldreg.60348",
+          "properties": {
+            "pnu": "1224011800100120003"
+          },
+          "geometrySha256": "f5c823f543390bd48f928d35c491713103fbf893635a47ff0b91dfeab7163e01"
+        },
+        {
+          "transportId": "lsmd_cont_ldreg.60349",
+          "properties": {
+            "pnu": "1224011800100120005"
+          },
+          "geometrySha256": "147f020bb19bc4465d2ea385050eca73a4dad02ab91d0022791b8b6c671e2958"
+        },
+        {
+          "transportId": "lsmd_cont_ldreg.60351",
+          "properties": {
+            "pnu": "1224011800100120007"
+          },
+          "geometrySha256": "29a1b836e3400d3ecdd5b4e465f11ddcd1448c59e20e7099ad9adc47391eb19e"
+        },
+        {
+          "transportId": "lsmd_cont_ldreg.60352",
+          "properties": {
+            "pnu": "1224011800100120008"
+          },
+          "geometrySha256": "ab148664f086016eff58e12cf42cbc68f81dfb961d3f8a83530f111f7addc50c"
+        },
+        {
+          "transportId": "lsmd_cont_ldreg.60353",
+          "properties": {
+            "pnu": "1224011800100140001"
+          },
+          "geometrySha256": "7f521dc7275917c81bf0821a7d8d98a8ef96be4dc7d54c44aa4b37f0a66ab6e0"
+        },
+        {
+          "transportId": "lsmd_cont_ldreg.60354",
+          "properties": {
+            "pnu": "1224011800100140002"
+          },
+          "geometrySha256": "35b02231631b1c8525ff0cf50ab16dc1f7660eb80e62a0e0abe4ab1bccb24720"
+        },
+        {
+          "transportId": "lsmd_cont_ldreg.60355",
+          "properties": {
+            "pnu": "1224011800100140003"
+          },
+          "geometrySha256": "42aefac6a5349205262cdb7d5bc84e3224648de913a24f9a19376e8548813f58"
+        },
+        {
+          "transportId": "lsmd_cont_ldreg.60356",
+          "properties": {
+            "pnu": "1224011800100140004"
+          },
+          "geometrySha256": "4f67a6e6fd67407ed1dd63d18f4cf891fc31dfec095601aa430f9fe23d61e9d2"
+        },
+        {
+          "transportId": "lsmd_cont_ldreg.60357",
+          "properties": {
+            "pnu": "1224011800100140005"
+          },
+          "geometrySha256": "af953bcc4f35d315e13f9fd377fdf9e7905360bf0919dd191331fcc3f6564079"
+        },
+        {
+          "transportId": "lsmd_cont_ldreg.60358",
+          "properties": {
+            "pnu": "1224011800100140006"
+          },
+          "geometrySha256": "baab002ed3f5b0d159bf455980f2d32f9fbc565f57b2049fb6aa568912bdaadf"
+        },
+        {
+          "transportId": "lsmd_cont_ldreg.60359",
+          "properties": {
+            "pnu": "1224011800100140007"
+          },
+          "geometrySha256": "0594f34c63825ae0103377a749358ed8fd691dc2eb94e2cb20492feb05cd5904"
+        },
+        {
+          "transportId": "lsmd_cont_ldreg.60360",
+          "properties": {
+            "pnu": "1224011800100140008"
+          },
+          "geometrySha256": "9e027c525d277354b1eef5c6f2de57f6b4ffb9e0e9ae98480782186bee912d20"
+        },
+        {
+          "transportId": "lsmd_cont_ldreg.60361",
+          "properties": {
+            "pnu": "1224011800100150001"
+          },
+          "geometrySha256": "80fb443ced1432f4a803e382e776d66cec70f7a1c49b30641cd4c20e2c9a2ef4"
+        },
+        {
+          "transportId": "lsmd_cont_ldreg.60362",
+          "properties": {
+            "pnu": "1224011800100150004"
+          },
+          "geometrySha256": "2a98b26ad6089e410f4a96304b47069a173a6e0c4682b31c97f9af3d3b95a455"
+        },
+        {
+          "transportId": "lsmd_cont_ldreg.60336",
+          "properties": {
+            "pnu": "1224011800100150005"
+          },
+          "geometrySha256": "18ec16c1e38895d79fb513de012c3d62a7a1e12470930a0b0d0bfa157e327f78"
+        },
+        {
+          "transportId": "lsmd_cont_ldreg.60363",
+          "properties": {
+            "pnu": "1224011800100150006"
+          },
+          "geometrySha256": "297478d8d7c86e0f3ff4b568d2d7d361b14f7ab2ef43ad45ec20648b47d87634"
+        },
+        {
+          "transportId": "lsmd_cont_ldreg.60364",
+          "properties": {
+            "pnu": "1224011800100150007"
+          },
+          "geometrySha256": "89a27505683fbbf280f2d2b69b4acd014caa459c7ac226b81f0cf8ca3c27ca56"
+        },
+        {
+          "transportId": "lsmd_cont_ldreg.60365",
+          "properties": {
+            "pnu": "1224011800100150008"
+          },
+          "geometrySha256": "55f5c97542ac07d3fd6cb8ce1a5854aa77ae2d356cef556e66eaef9c42bede66"
+        },
+        {
+          "transportId": "lsmd_cont_ldreg.60366",
+          "properties": {
+            "pnu": "1224011800100150011"
+          },
+          "geometrySha256": "0e46f3933203de38eda2348fbe23d922ba138cb0b221dbe844220efe2962453c"
+        },
+        {
+          "transportId": "lsmd_cont_ldreg.60367",
+          "properties": {
+            "pnu": "1224011800100160000"
+          },
+          "geometrySha256": "41a3641de6abdd32933d3ea267df92a038fca772373cc85b5761112a7a5e0e21"
+        },
+        {
+          "transportId": "lsmd_cont_ldreg.60371",
+          "properties": {
+            "pnu": "1224011800100180004"
+          },
+          "geometrySha256": "47eb0b03397675f3baa802494d9511d9a56ddc2fd993c41ec45025fc3fad103d"
+        },
+        {
+          "transportId": "lsmd_cont_ldreg.60375",
+          "properties": {
+            "pnu": "1224011800100210003"
+          },
+          "geometrySha256": "69ac1674cd0a2dd3e57fbfca344589ce19f2ea590030958c3af3fd149ecd6619"
+        },
+        {
+          "transportId": "lsmd_cont_ldreg.60377",
+          "properties": {
+            "pnu": "1224011800100220001"
+          },
+          "geometrySha256": "db5918d9b448b03914def2908cd90fd93e83cb20c190274e57d5b0118294a926"
+        },
+        {
+          "transportId": "lsmd_cont_ldreg.60378",
+          "properties": {
+            "pnu": "1224011800100220004"
+          },
+          "geometrySha256": "b1467f15fec1954b4f172c88baac5399f70c5ea8b81424a136977fd7fe19da60"
+        },
+        {
+          "transportId": "lsmd_cont_ldreg.60379",
+          "properties": {
+            "pnu": "1224011800100220006"
+          },
+          "geometrySha256": "642d7ec071d2821a3e6b44f40293a38041e8e77b7633199a1e309898f33ded14"
+        },
+        {
+          "transportId": "lsmd_cont_ldreg.60380",
+          "properties": {
+            "pnu": "1224011800100230001"
+          },
+          "geometrySha256": "00eec410b94841e2d015b0a3ccba7663ebf094cf0c0e81702f8b3bef0fccc3bc"
+        },
+        {
+          "transportId": "lsmd_cont_ldreg.60381",
+          "properties": {
+            "pnu": "1224011800100230002"
+          },
+          "geometrySha256": "0b786470530eca46c839b00e5d14ee0e2667a151f1e24e60a8df58e763d0b9a0"
+        },
+        {
+          "transportId": "lsmd_cont_ldreg.60382",
+          "properties": {
+            "pnu": "1224011800100230004"
+          },
+          "geometrySha256": "3206692ac5f0d1a440a9a2fbdbefb344b78376d8b6f5e1a4e5c011ed9cef1243"
+        },
+        {
+          "transportId": "lsmd_cont_ldreg.60383",
+          "properties": {
+            "pnu": "1224011800100230005"
+          },
+          "geometrySha256": "8cce330434034e17e825490bfc07ef4f55f659487a7c1d25d7bc481b53cc79db"
+        },
+        {
+          "transportId": "lsmd_cont_ldreg.60384",
+          "properties": {
+            "pnu": "1224011800100230006"
+          },
+          "geometrySha256": "2e0b69141cff6c116e6c1dddb341e959dc95b4889669953b8f663fc491432b78"
+        },
+        {
+          "transportId": "lsmd_cont_ldreg.60411",
+          "properties": {
+            "pnu": "1224011800100490000"
+          },
+          "geometrySha256": "0be214420a48ef918a51783335ba5807b92d7a95349b3b8ae2d713daf5f76df5"
+        },
+        {
+          "transportId": "lsmd_cont_ldreg.62239",
+          "properties": {
+            "pnu": "1224011800109140001"
+          },
+          "geometrySha256": "248431cddedc45a64267eab1b207965d2f4ad2b9212cd745103611e932bd410c"
+        },
+        {
+          "transportId": "lsmd_cont_ldreg.62295",
+          "properties": {
+            "pnu": "1224011800109160003"
+          },
+          "geometrySha256": "423cbe016a0f98732a5e41d11a16b3d2e62fdbad7898cedd2673fbad792418d6"
+        },
+        {
+          "transportId": "lsmd_cont_ldreg.62317",
+          "properties": {
+            "pnu": "1224011800109180005"
+          },
+          "geometrySha256": "568676ba9b095e6cc420adc93ee295db630bb1b1c82c343bc81e89788086807c"
+        },
+        {
+          "transportId": "lsmd_cont_ldreg.62318",
+          "properties": {
+            "pnu": "1224011800109180006"
+          },
+          "geometrySha256": "bac6f3ade057c3addddb21bee1e74b95707e57a8a373096bb3318727977c5bfc"
+        },
+        {
+          "transportId": "lsmd_cont_ldreg.62320",
+          "properties": {
+            "pnu": "1224011800109180008"
+          },
+          "geometrySha256": "4afaba69f6d5ce9b10d45189a4ea2c5a2df307c10eb31564fe6589ef3fa5e007"
+        },
+        {
+          "transportId": "lsmd_cont_ldreg.65990",
+          "properties": {
+            "pnu": "1224011800113890000"
+          },
+          "geometrySha256": "7b33ae51749106fb7ae2723bdb9ae8bf2c61da0bb8f22ea65cf8e90fc56d9e8c"
+        },
+        {
+          "transportId": "lsmd_cont_ldreg.65991",
+          "properties": {
+            "pnu": "1224011800113900000"
+          },
+          "geometrySha256": "86481f67f6e69c1af03562552b87153046f8a1465204dac789a4e731b902905f"
+        },
+        {
+          "transportId": "lsmd_cont_ldreg.77977",
+          "properties": {
+            "pnu": "1224012100107120002"
+          },
+          "geometrySha256": "0a1cfd258d310031bf44f9e856104aa5594ca4b53125053864b4cbe4a39c297f"
+        },
+        {
+          "transportId": "lsmd_cont_ldreg.77979",
+          "properties": {
+            "pnu": "1224012100107170003"
+          },
+          "geometrySha256": "667137134c4b3219155c8b1f819f28334128bf02eff8406a63a303b0ae508551"
+        },
+        {
+          "transportId": "lsmd_cont_ldreg.78028",
+          "properties": {
+            "pnu": "1224012100108200003"
+          },
+          "geometrySha256": "77e974ecfc458192fea40d3b4acf2516a32ccbfb365e062e6785c10a6a65f1d6"
+        }
+      ]
+    },
+    {
+      "test": "viewport-11",
+      "url": "https://gis.gwangju.go.kr/map/proxy/wfs.do?service=WFS&version=1.1.0&request=GetFeature&typeName=sde%3Alsmd_cont_ldreg&outputFormat=application%2Fjson&srsName=CRS%3A84&sortBy=pnu&propertyName=geom%2Cpnu&maxFeatures=1000&startIndex=0&bbox=126.866%2C35.164%2C126.867%2C35.165%2CCRS%3A84",
+      "method": "GET",
+      "checkedAt": "2026-10-08T22:49:56.323Z",
+      "httpStatus": 200,
+      "contentType": "application/json;charset=UTF-8",
+      "bytes": 22362,
+      "numberMatched": 5,
+      "numberReturned": 5,
+      "features": [
+        {
+          "transportId": "lsmd_cont_ldreg.60370",
+          "properties": {
+            "pnu": "1224011800100180003"
+          },
+          "geometrySha256": "a8a2d899c50713d5f325400ed884ac9de6d857e7700256420f6036e878ba1ce7"
+        },
+        {
+          "transportId": "lsmd_cont_ldreg.62318",
+          "properties": {
+            "pnu": "1224011800109180006"
+          },
+          "geometrySha256": "bac6f3ade057c3addddb21bee1e74b95707e57a8a373096bb3318727977c5bfc"
+        },
+        {
+          "transportId": "lsmd_cont_ldreg.62324",
+          "properties": {
+            "pnu": "1224011800109200000"
+          },
+          "geometrySha256": "83366e72e9b799868c0a5a5705fec1bb2eab157797b0c724589e9c18d6f9e307"
+        },
+        {
+          "transportId": "lsmd_cont_ldreg.77986",
+          "properties": {
+            "pnu": "1224012100107000001"
+          },
+          "geometrySha256": "f75fd714b29813f5775b888ef6a8e974d85e2d87e27d127d76d3d8aaf3b9f473"
+        },
+        {
+          "transportId": "lsmd_cont_ldreg.78097",
+          "properties": {
+            "pnu": "1224012100108290000"
+          },
+          "geometrySha256": "33f436d57a32efac2f40fb126ba6223813aab276e9865228bcd4f7ae5cdbdfb5"
+        }
+      ]
+    },
+    {
+      "test": "viewport-12",
+      "url": "https://gis.gwangju.go.kr/map/proxy/wfs.do?service=WFS&version=1.1.0&request=GetFeature&typeName=sde%3Alsmd_cont_ldreg&outputFormat=application%2Fjson&srsName=CRS%3A84&sortBy=pnu&propertyName=geom%2Cpnu&maxFeatures=1000&startIndex=0&bbox=126.87%2C35.164%2C126.871%2C35.165%2CCRS%3A84",
+      "method": "GET",
+      "checkedAt": "2026-10-08T22:49:57.040Z",
+      "httpStatus": 200,
+      "contentType": "application/json;charset=UTF-8",
+      "bytes": 15127,
+      "numberMatched": 2,
+      "numberReturned": 2,
+      "features": [
+        {
+          "transportId": "lsmd_cont_ldreg.77986",
+          "properties": {
+            "pnu": "1224012100107000001"
+          },
+          "geometrySha256": "f75fd714b29813f5775b888ef6a8e974d85e2d87e27d127d76d3d8aaf3b9f473"
+        },
+        {
+          "transportId": "lsmd_cont_ldreg.78028",
+          "properties": {
+            "pnu": "1224012100108200003"
+          },
+          "geometrySha256": "77e974ecfc458192fea40d3b4acf2516a32ccbfb365e062e6785c10a6a65f1d6"
+        }
+      ]
+    },
+    {
+      "test": "forced-three-row-pages",
+      "url": "https://gis.gwangju.go.kr/map/proxy/wfs.do?service=WFS&version=1.1.0&request=GetFeature&typeName=sde%3Alsmd_cont_ldreg&outputFormat=application%2Fjson&srsName=CRS%3A84&sortBy=pnu&propertyName=geom%2Cpnu&maxFeatures=3&startIndex=0&bbox=126.868%2C35.166%2C126.869%2C35.167%2CCRS%3A84",
+      "method": "GET",
+      "checkedAt": "2026-10-08T22:49:57.416Z",
+      "httpStatus": 200,
+      "contentType": "application/json;charset=UTF-8",
+      "bytes": 2908,
+      "numberMatched": 42,
+      "numberReturned": 3,
+      "features": [
+        {
+          "transportId": "lsmd_cont_ldreg.60347",
+          "properties": {
+            "pnu": "1224011800100110000"
+          },
+          "geometrySha256": "16f970f81eacecdc733b59816776ff2eca8ea989d002c3eabd04c2d26615fb8f"
+        },
+        {
+          "transportId": "lsmd_cont_ldreg.60348",
+          "properties": {
+            "pnu": "1224011800100120003"
+          },
+          "geometrySha256": "f5c823f543390bd48f928d35c491713103fbf893635a47ff0b91dfeab7163e01"
+        },
+        {
+          "transportId": "lsmd_cont_ldreg.60349",
+          "properties": {
+            "pnu": "1224011800100120005"
+          },
+          "geometrySha256": "147f020bb19bc4465d2ea385050eca73a4dad02ab91d0022791b8b6c671e2958"
+        }
+      ]
+    },
+    {
+      "test": "forced-three-row-pages",
+      "url": "https://gis.gwangju.go.kr/map/proxy/wfs.do?service=WFS&version=1.1.0&request=GetFeature&typeName=sde%3Alsmd_cont_ldreg&outputFormat=application%2Fjson&srsName=CRS%3A84&sortBy=pnu&propertyName=geom%2Cpnu&maxFeatures=3&startIndex=3&bbox=126.868%2C35.166%2C126.869%2C35.167%2CCRS%3A84",
+      "method": "GET",
+      "checkedAt": "2026-10-08T22:49:57.858Z",
+      "httpStatus": 200,
+      "contentType": "application/json;charset=UTF-8",
+      "bytes": 1201,
+      "numberMatched": 42,
+      "numberReturned": 3,
+      "features": [
+        {
+          "transportId": "lsmd_cont_ldreg.60351",
+          "properties": {
+            "pnu": "1224011800100120007"
+          },
+          "geometrySha256": "29a1b836e3400d3ecdd5b4e465f11ddcd1448c59e20e7099ad9adc47391eb19e"
+        },
+        {
+          "transportId": "lsmd_cont_ldreg.60352",
+          "properties": {
+            "pnu": "1224011800100120008"
+          },
+          "geometrySha256": "ab148664f086016eff58e12cf42cbc68f81dfb961d3f8a83530f111f7addc50c"
+        },
+        {
+          "transportId": "lsmd_cont_ldreg.60353",
+          "properties": {
+            "pnu": "1224011800100140001"
+          },
+          "geometrySha256": "7f521dc7275917c81bf0821a7d8d98a8ef96be4dc7d54c44aa4b37f0a66ab6e0"
+        }
+      ]
+    },
+    {
+      "test": "forced-three-row-pages",
+      "url": "https://gis.gwangju.go.kr/map/proxy/wfs.do?service=WFS&version=1.1.0&request=GetFeature&typeName=sde%3Alsmd_cont_ldreg&outputFormat=application%2Fjson&srsName=CRS%3A84&sortBy=pnu&propertyName=geom%2Cpnu&maxFeatures=3&startIndex=6&bbox=126.868%2C35.166%2C126.869%2C35.167%2CCRS%3A84",
+      "method": "GET",
+      "checkedAt": "2026-10-08T22:49:58.237Z",
+      "httpStatus": 200,
+      "contentType": "application/json;charset=UTF-8",
+      "bytes": 1227,
+      "numberMatched": 42,
+      "numberReturned": 3,
+      "features": [
+        {
+          "transportId": "lsmd_cont_ldreg.60354",
+          "properties": {
+            "pnu": "1224011800100140002"
+          },
+          "geometrySha256": "35b02231631b1c8525ff0cf50ab16dc1f7660eb80e62a0e0abe4ab1bccb24720"
+        },
+        {
+          "transportId": "lsmd_cont_ldreg.60355",
+          "properties": {
+            "pnu": "1224011800100140003"
+          },
+          "geometrySha256": "42aefac6a5349205262cdb7d5bc84e3224648de913a24f9a19376e8548813f58"
+        },
+        {
+          "transportId": "lsmd_cont_ldreg.60356",
+          "properties": {
+            "pnu": "1224011800100140004"
+          },
+          "geometrySha256": "4f67a6e6fd67407ed1dd63d18f4cf891fc31dfec095601aa430f9fe23d61e9d2"
+        }
+      ]
+    },
+    {
+      "test": "forced-three-row-pages",
+      "url": "https://gis.gwangju.go.kr/map/proxy/wfs.do?service=WFS&version=1.1.0&request=GetFeature&typeName=sde%3Alsmd_cont_ldreg&outputFormat=application%2Fjson&srsName=CRS%3A84&sortBy=pnu&propertyName=geom%2Cpnu&maxFeatures=3&startIndex=9&bbox=126.868%2C35.166%2C126.869%2C35.167%2CCRS%3A84",
+      "method": "GET",
+      "checkedAt": "2026-10-08T22:49:58.617Z",
+      "httpStatus": 200,
+      "contentType": "application/json;charset=UTF-8",
+      "bytes": 1121,
+      "numberMatched": 42,
+      "numberReturned": 3,
+      "features": [
+        {
+          "transportId": "lsmd_cont_ldreg.60357",
+          "properties": {
+            "pnu": "1224011800100140005"
+          },
+          "geometrySha256": "af953bcc4f35d315e13f9fd377fdf9e7905360bf0919dd191331fcc3f6564079"
+        },
+        {
+          "transportId": "lsmd_cont_ldreg.60358",
+          "properties": {
+            "pnu": "1224011800100140006"
+          },
+          "geometrySha256": "baab002ed3f5b0d159bf455980f2d32f9fbc565f57b2049fb6aa568912bdaadf"
+        },
+        {
+          "transportId": "lsmd_cont_ldreg.60359",
+          "properties": {
+            "pnu": "1224011800100140007"
+          },
+          "geometrySha256": "0594f34c63825ae0103377a749358ed8fd691dc2eb94e2cb20492feb05cd5904"
+        }
+      ]
+    },
+    {
+      "test": "forced-three-row-pages",
+      "url": "https://gis.gwangju.go.kr/map/proxy/wfs.do?service=WFS&version=1.1.0&request=GetFeature&typeName=sde%3Alsmd_cont_ldreg&outputFormat=application%2Fjson&srsName=CRS%3A84&sortBy=pnu&propertyName=geom%2Cpnu&maxFeatures=3&startIndex=12&bbox=126.868%2C35.166%2C126.869%2C35.167%2CCRS%3A84",
+      "method": "GET",
+      "checkedAt": "2026-10-08T22:49:58.993Z",
+      "httpStatus": 200,
+      "contentType": "application/json;charset=UTF-8",
+      "bytes": 1390,
+      "numberMatched": 42,
+      "numberReturned": 3,
+      "features": [
+        {
+          "transportId": "lsmd_cont_ldreg.60360",
+          "properties": {
+            "pnu": "1224011800100140008"
+          },
+          "geometrySha256": "9e027c525d277354b1eef5c6f2de57f6b4ffb9e0e9ae98480782186bee912d20"
+        },
+        {
+          "transportId": "lsmd_cont_ldreg.60361",
+          "properties": {
+            "pnu": "1224011800100150001"
+          },
+          "geometrySha256": "80fb443ced1432f4a803e382e776d66cec70f7a1c49b30641cd4c20e2c9a2ef4"
+        },
+        {
+          "transportId": "lsmd_cont_ldreg.60362",
+          "properties": {
+            "pnu": "1224011800100150004"
+          },
+          "geometrySha256": "2a98b26ad6089e410f4a96304b47069a173a6e0c4682b31c97f9af3d3b95a455"
+        }
+      ]
+    },
+    {
+      "test": "forced-three-row-pages",
+      "url": "https://gis.gwangju.go.kr/map/proxy/wfs.do?service=WFS&version=1.1.0&request=GetFeature&typeName=sde%3Alsmd_cont_ldreg&outputFormat=application%2Fjson&srsName=CRS%3A84&sortBy=pnu&propertyName=geom%2Cpnu&maxFeatures=3&startIndex=15&bbox=126.868%2C35.166%2C126.869%2C35.167%2CCRS%3A84",
+      "method": "GET",
+      "checkedAt": "2026-10-08T22:49:59.356Z",
+      "httpStatus": 200,
+      "contentType": "application/json;charset=UTF-8",
+      "bytes": 1628,
+      "numberMatched": 42,
+      "numberReturned": 3,
+      "features": [
+        {
+          "transportId": "lsmd_cont_ldreg.60336",
+          "properties": {
+            "pnu": "1224011800100150005"
+          },
+          "geometrySha256": "18ec16c1e38895d79fb513de012c3d62a7a1e12470930a0b0d0bfa157e327f78"
+        },
+        {
+          "transportId": "lsmd_cont_ldreg.60363",
+          "properties": {
+            "pnu": "1224011800100150006"
+          },
+          "geometrySha256": "297478d8d7c86e0f3ff4b568d2d7d361b14f7ab2ef43ad45ec20648b47d87634"
+        },
+        {
+          "transportId": "lsmd_cont_ldreg.60364",
+          "properties": {
+            "pnu": "1224011800100150007"
+          },
+          "geometrySha256": "89a27505683fbbf280f2d2b69b4acd014caa459c7ac226b81f0cf8ca3c27ca56"
+        }
+      ]
+    },
+    {
+      "test": "forced-three-row-pages",
+      "url": "https://gis.gwangju.go.kr/map/proxy/wfs.do?service=WFS&version=1.1.0&request=GetFeature&typeName=sde%3Alsmd_cont_ldreg&outputFormat=application%2Fjson&srsName=CRS%3A84&sortBy=pnu&propertyName=geom%2Cpnu&maxFeatures=3&startIndex=18&bbox=126.868%2C35.166%2C126.869%2C35.167%2CCRS%3A84",
+      "method": "GET",
+      "checkedAt": "2026-10-08T22:49:59.742Z",
+      "httpStatus": 200,
+      "contentType": "application/json;charset=UTF-8",
+      "bytes": 1524,
+      "numberMatched": 42,
+      "numberReturned": 3,
+      "features": [
+        {
+          "transportId": "lsmd_cont_ldreg.60365",
+          "properties": {
+            "pnu": "1224011800100150008"
+          },
+          "geometrySha256": "55f5c97542ac07d3fd6cb8ce1a5854aa77ae2d356cef556e66eaef9c42bede66"
+        },
+        {
+          "transportId": "lsmd_cont_ldreg.60366",
+          "properties": {
+            "pnu": "1224011800100150011"
+          },
+          "geometrySha256": "0e46f3933203de38eda2348fbe23d922ba138cb0b221dbe844220efe2962453c"
+        },
+        {
+          "transportId": "lsmd_cont_ldreg.60367",
+          "properties": {
+            "pnu": "1224011800100160000"
+          },
+          "geometrySha256": "41a3641de6abdd32933d3ea267df92a038fca772373cc85b5761112a7a5e0e21"
+        }
+      ]
+    },
+    {
+      "test": "forced-three-row-pages",
+      "url": "https://gis.gwangju.go.kr/map/proxy/wfs.do?service=WFS&version=1.1.0&request=GetFeature&typeName=sde%3Alsmd_cont_ldreg&outputFormat=application%2Fjson&srsName=CRS%3A84&sortBy=pnu&propertyName=geom%2Cpnu&maxFeatures=3&startIndex=21&bbox=126.868%2C35.166%2C126.869%2C35.167%2CCRS%3A84",
+      "method": "GET",
+      "checkedAt": "2026-10-08T22:50:00.116Z",
+      "httpStatus": 200,
+      "contentType": "application/json;charset=UTF-8",
+      "bytes": 1706,
+      "numberMatched": 42,
+      "numberReturned": 3,
+      "features": [
+        {
+          "transportId": "lsmd_cont_ldreg.60371",
+          "properties": {
+            "pnu": "1224011800100180004"
+          },
+          "geometrySha256": "47eb0b03397675f3baa802494d9511d9a56ddc2fd993c41ec45025fc3fad103d"
+        },
+        {
+          "transportId": "lsmd_cont_ldreg.60375",
+          "properties": {
+            "pnu": "1224011800100210003"
+          },
+          "geometrySha256": "69ac1674cd0a2dd3e57fbfca344589ce19f2ea590030958c3af3fd149ecd6619"
+        },
+        {
+          "transportId": "lsmd_cont_ldreg.60377",
+          "properties": {
+            "pnu": "1224011800100220001"
+          },
+          "geometrySha256": "db5918d9b448b03914def2908cd90fd93e83cb20c190274e57d5b0118294a926"
+        }
+      ]
+    },
+    {
+      "test": "forced-three-row-pages",
+      "url": "https://gis.gwangju.go.kr/map/proxy/wfs.do?service=WFS&version=1.1.0&request=GetFeature&typeName=sde%3Alsmd_cont_ldreg&outputFormat=application%2Fjson&srsName=CRS%3A84&sortBy=pnu&propertyName=geom%2Cpnu&maxFeatures=3&startIndex=24&bbox=126.868%2C35.166%2C126.869%2C35.167%2CCRS%3A84",
+      "method": "GET",
+      "checkedAt": "2026-10-08T22:50:00.493Z",
+      "httpStatus": 200,
+      "contentType": "application/json;charset=UTF-8",
+      "bytes": 1228,
+      "numberMatched": 42,
+      "numberReturned": 3,
+      "features": [
+        {
+          "transportId": "lsmd_cont_ldreg.60378",
+          "properties": {
+            "pnu": "1224011800100220004"
+          },
+          "geometrySha256": "b1467f15fec1954b4f172c88baac5399f70c5ea8b81424a136977fd7fe19da60"
+        },
+        {
+          "transportId": "lsmd_cont_ldreg.60379",
+          "properties": {
+            "pnu": "1224011800100220006"
+          },
+          "geometrySha256": "642d7ec071d2821a3e6b44f40293a38041e8e77b7633199a1e309898f33ded14"
+        },
+        {
+          "transportId": "lsmd_cont_ldreg.60380",
+          "properties": {
+            "pnu": "1224011800100230001"
+          },
+          "geometrySha256": "00eec410b94841e2d015b0a3ccba7663ebf094cf0c0e81702f8b3bef0fccc3bc"
+        }
+      ]
+    },
+    {
+      "test": "forced-three-row-pages",
+      "url": "https://gis.gwangju.go.kr/map/proxy/wfs.do?service=WFS&version=1.1.0&request=GetFeature&typeName=sde%3Alsmd_cont_ldreg&outputFormat=application%2Fjson&srsName=CRS%3A84&sortBy=pnu&propertyName=geom%2Cpnu&maxFeatures=3&startIndex=27&bbox=126.868%2C35.166%2C126.869%2C35.167%2CCRS%3A84",
+      "method": "GET",
+      "checkedAt": "2026-10-08T22:50:00.866Z",
+      "httpStatus": 200,
+      "contentType": "application/json;charset=UTF-8",
+      "bytes": 1306,
+      "numberMatched": 42,
+      "numberReturned": 3,
+      "features": [
+        {
+          "transportId": "lsmd_cont_ldreg.60381",
+          "properties": {
+            "pnu": "1224011800100230002"
+          },
+          "geometrySha256": "0b786470530eca46c839b00e5d14ee0e2667a151f1e24e60a8df58e763d0b9a0"
+        },
+        {
+          "transportId": "lsmd_cont_ldreg.60382",
+          "properties": {
+            "pnu": "1224011800100230004"
+          },
+          "geometrySha256": "3206692ac5f0d1a440a9a2fbdbefb344b78376d8b6f5e1a4e5c011ed9cef1243"
+        },
+        {
+          "transportId": "lsmd_cont_ldreg.60383",
+          "properties": {
+            "pnu": "1224011800100230005"
+          },
+          "geometrySha256": "8cce330434034e17e825490bfc07ef4f55f659487a7c1d25d7bc481b53cc79db"
+        }
+      ]
+    },
+    {
+      "test": "forced-three-row-pages",
+      "url": "https://gis.gwangju.go.kr/map/proxy/wfs.do?service=WFS&version=1.1.0&request=GetFeature&typeName=sde%3Alsmd_cont_ldreg&outputFormat=application%2Fjson&srsName=CRS%3A84&sortBy=pnu&propertyName=geom%2Cpnu&maxFeatures=3&startIndex=30&bbox=126.868%2C35.166%2C126.869%2C35.167%2CCRS%3A84",
+      "method": "GET",
+      "checkedAt": "2026-10-08T22:50:01.239Z",
+      "httpStatus": 200,
+      "contentType": "application/json;charset=UTF-8",
+      "bytes": 2138,
+      "numberMatched": 42,
+      "numberReturned": 3,
+      "features": [
+        {
+          "transportId": "lsmd_cont_ldreg.60384",
+          "properties": {
+            "pnu": "1224011800100230006"
+          },
+          "geometrySha256": "2e0b69141cff6c116e6c1dddb341e959dc95b4889669953b8f663fc491432b78"
+        },
+        {
+          "transportId": "lsmd_cont_ldreg.60411",
+          "properties": {
+            "pnu": "1224011800100490000"
+          },
+          "geometrySha256": "0be214420a48ef918a51783335ba5807b92d7a95349b3b8ae2d713daf5f76df5"
+        },
+        {
+          "transportId": "lsmd_cont_ldreg.62239",
+          "properties": {
+            "pnu": "1224011800109140001"
+          },
+          "geometrySha256": "248431cddedc45a64267eab1b207965d2f4ad2b9212cd745103611e932bd410c"
+        }
+      ]
+    },
+    {
+      "test": "forced-three-row-pages",
+      "url": "https://gis.gwangju.go.kr/map/proxy/wfs.do?service=WFS&version=1.1.0&request=GetFeature&typeName=sde%3Alsmd_cont_ldreg&outputFormat=application%2Fjson&srsName=CRS%3A84&sortBy=pnu&propertyName=geom%2Cpnu&maxFeatures=3&startIndex=33&bbox=126.868%2C35.166%2C126.869%2C35.167%2CCRS%3A84",
+      "method": "GET",
+      "checkedAt": "2026-10-08T22:50:01.623Z",
+      "httpStatus": 200,
+      "contentType": "application/json;charset=UTF-8",
+      "bytes": 3338,
+      "numberMatched": 42,
+      "numberReturned": 3,
+      "features": [
+        {
+          "transportId": "lsmd_cont_ldreg.62295",
+          "properties": {
+            "pnu": "1224011800109160003"
+          },
+          "geometrySha256": "423cbe016a0f98732a5e41d11a16b3d2e62fdbad7898cedd2673fbad792418d6"
+        },
+        {
+          "transportId": "lsmd_cont_ldreg.62317",
+          "properties": {
+            "pnu": "1224011800109180005"
+          },
+          "geometrySha256": "568676ba9b095e6cc420adc93ee295db630bb1b1c82c343bc81e89788086807c"
+        },
+        {
+          "transportId": "lsmd_cont_ldreg.62318",
+          "properties": {
+            "pnu": "1224011800109180006"
+          },
+          "geometrySha256": "bac6f3ade057c3addddb21bee1e74b95707e57a8a373096bb3318727977c5bfc"
+        }
+      ]
+    },
+    {
+      "test": "forced-three-row-pages",
+      "url": "https://gis.gwangju.go.kr/map/proxy/wfs.do?service=WFS&version=1.1.0&request=GetFeature&typeName=sde%3Alsmd_cont_ldreg&outputFormat=application%2Fjson&srsName=CRS%3A84&sortBy=pnu&propertyName=geom%2Cpnu&maxFeatures=3&startIndex=36&bbox=126.868%2C35.166%2C126.869%2C35.167%2CCRS%3A84",
+      "method": "GET",
+      "checkedAt": "2026-10-08T22:50:02.008Z",
+      "httpStatus": 200,
+      "contentType": "application/json;charset=UTF-8",
+      "bytes": 2536,
+      "numberMatched": 42,
+      "numberReturned": 3,
+      "features": [
+        {
+          "transportId": "lsmd_cont_ldreg.62320",
+          "properties": {
+            "pnu": "1224011800109180008"
+          },
+          "geometrySha256": "4afaba69f6d5ce9b10d45189a4ea2c5a2df307c10eb31564fe6589ef3fa5e007"
+        },
+        {
+          "transportId": "lsmd_cont_ldreg.65990",
+          "properties": {
+            "pnu": "1224011800113890000"
+          },
+          "geometrySha256": "7b33ae51749106fb7ae2723bdb9ae8bf2c61da0bb8f22ea65cf8e90fc56d9e8c"
+        },
+        {
+          "transportId": "lsmd_cont_ldreg.65991",
+          "properties": {
+            "pnu": "1224011800113900000"
+          },
+          "geometrySha256": "86481f67f6e69c1af03562552b87153046f8a1465204dac789a4e731b902905f"
+        }
+      ]
+    },
+    {
+      "test": "forced-three-row-pages",
+      "url": "https://gis.gwangju.go.kr/map/proxy/wfs.do?service=WFS&version=1.1.0&request=GetFeature&typeName=sde%3Alsmd_cont_ldreg&outputFormat=application%2Fjson&srsName=CRS%3A84&sortBy=pnu&propertyName=geom%2Cpnu&maxFeatures=3&startIndex=39&bbox=126.868%2C35.166%2C126.869%2C35.167%2CCRS%3A84",
+      "method": "GET",
+      "checkedAt": "2026-10-08T22:50:02.371Z",
+      "httpStatus": 200,
+      "contentType": "application/json;charset=UTF-8",
+      "bytes": 7097,
+      "numberMatched": 42,
+      "numberReturned": 3,
+      "features": [
+        {
+          "transportId": "lsmd_cont_ldreg.77977",
+          "properties": {
+            "pnu": "1224012100107120002"
+          },
+          "geometrySha256": "0a1cfd258d310031bf44f9e856104aa5594ca4b53125053864b4cbe4a39c297f"
+        },
+        {
+          "transportId": "lsmd_cont_ldreg.77979",
+          "properties": {
+            "pnu": "1224012100107170003"
+          },
+          "geometrySha256": "667137134c4b3219155c8b1f819f28334128bf02eff8406a63a303b0ae508551"
+        },
+        {
+          "transportId": "lsmd_cont_ldreg.78028",
+          "properties": {
+            "pnu": "1224012100108200003"
+          },
+          "geometrySha256": "77e974ecfc458192fea40d3b4acf2516a32ccbfb365e062e6785c10a6a65f1d6"
+        }
+      ]
+    },
+    {
+      "test": "fresh-ids-0",
+      "url": "https://gis.gwangju.go.kr/map/proxy/wfs.do?service=WFS&version=1.1.0&request=GetFeature&typeName=sde%3Alsmd_cont_ldreg&outputFormat=application%2Fjson&srsName=CRS%3A84&sortBy=pnu&propertyName=geom%2Cpnu&maxFeatures=1000&startIndex=0&cql_filter=pnu+IN+%28%271224011800100110000%27%2C%271224011800100120003%27%2C%271224011800100120005%27%2C%271224011800100120007%27%2C%271224011800100120008%27%2C%271224011800100140001%27%2C%271224011800100140002%27%2C%271224011800100140003%27%2C%271224011800100140004%27%2C%271224011800100140005%27%2C%271224011800100140006%27%2C%271224011800100140007%27%2C%271224011800100140008%27%2C%271224011800100150001%27%2C%271224011800100150004%27%2C%271224011800100150005%27%2C%271224011800100150006%27%2C%271224011800100150007%27%2C%271224011800100150008%27%2C%271224011800100150011%27%2C%271224011800100160000%27%2C%271224011800100180002%27%2C%271224011800100180003%27%2C%271224011800100180004%27%2C%271224011800100180005%27%2C%271224011800100210003%27%2C%271224011800100220001%27%2C%271224011800100220004%27%2C%271224011800100220006%27%2C%271224011800100230001%27%2C%271224011800100230002%27%2C%271224011800100230004%27%2C%271224011800100230005%27%2C%271224011800100230006%27%2C%271224011800100490000%27%2C%271224011800109140001%27%2C%271224011800109160003%27%2C%271224011800109180005%27%2C%271224011800109180006%27%2C%271224011800109180008%27%29",
+      "method": "GET",
+      "checkedAt": "2026-10-08T22:50:02.759Z",
+      "httpStatus": 200,
+      "contentType": "application/json;charset=UTF-8",
+      "bytes": 25589,
+      "numberMatched": 40,
+      "numberReturned": 40,
+      "features": [
+        {
+          "transportId": "lsmd_cont_ldreg.60347",
+          "properties": {
+            "pnu": "1224011800100110000"
+          },
+          "geometrySha256": "16f970f81eacecdc733b59816776ff2eca8ea989d002c3eabd04c2d26615fb8f"
+        },
+        {
+          "transportId": "lsmd_cont_ldreg.60348",
+          "properties": {
+            "pnu": "1224011800100120003"
+          },
+          "geometrySha256": "f5c823f543390bd48f928d35c491713103fbf893635a47ff0b91dfeab7163e01"
+        },
+        {
+          "transportId": "lsmd_cont_ldreg.60349",
+          "properties": {
+            "pnu": "1224011800100120005"
+          },
+          "geometrySha256": "147f020bb19bc4465d2ea385050eca73a4dad02ab91d0022791b8b6c671e2958"
+        },
+        {
+          "transportId": "lsmd_cont_ldreg.60351",
+          "properties": {
+            "pnu": "1224011800100120007"
+          },
+          "geometrySha256": "29a1b836e3400d3ecdd5b4e465f11ddcd1448c59e20e7099ad9adc47391eb19e"
+        },
+        {
+          "transportId": "lsmd_cont_ldreg.60352",
+          "properties": {
+            "pnu": "1224011800100120008"
+          },
+          "geometrySha256": "ab148664f086016eff58e12cf42cbc68f81dfb961d3f8a83530f111f7addc50c"
+        },
+        {
+          "transportId": "lsmd_cont_ldreg.60353",
+          "properties": {
+            "pnu": "1224011800100140001"
+          },
+          "geometrySha256": "7f521dc7275917c81bf0821a7d8d98a8ef96be4dc7d54c44aa4b37f0a66ab6e0"
+        },
+        {
+          "transportId": "lsmd_cont_ldreg.60354",
+          "properties": {
+            "pnu": "1224011800100140002"
+          },
+          "geometrySha256": "35b02231631b1c8525ff0cf50ab16dc1f7660eb80e62a0e0abe4ab1bccb24720"
+        },
+        {
+          "transportId": "lsmd_cont_ldreg.60355",
+          "properties": {
+            "pnu": "1224011800100140003"
+          },
+          "geometrySha256": "42aefac6a5349205262cdb7d5bc84e3224648de913a24f9a19376e8548813f58"
+        },
+        {
+          "transportId": "lsmd_cont_ldreg.60356",
+          "properties": {
+            "pnu": "1224011800100140004"
+          },
+          "geometrySha256": "4f67a6e6fd67407ed1dd63d18f4cf891fc31dfec095601aa430f9fe23d61e9d2"
+        },
+        {
+          "transportId": "lsmd_cont_ldreg.60357",
+          "properties": {
+            "pnu": "1224011800100140005"
+          },
+          "geometrySha256": "af953bcc4f35d315e13f9fd377fdf9e7905360bf0919dd191331fcc3f6564079"
+        },
+        {
+          "transportId": "lsmd_cont_ldreg.60358",
+          "properties": {
+            "pnu": "1224011800100140006"
+          },
+          "geometrySha256": "baab002ed3f5b0d159bf455980f2d32f9fbc565f57b2049fb6aa568912bdaadf"
+        },
+        {
+          "transportId": "lsmd_cont_ldreg.60359",
+          "properties": {
+            "pnu": "1224011800100140007"
+          },
+          "geometrySha256": "0594f34c63825ae0103377a749358ed8fd691dc2eb94e2cb20492feb05cd5904"
+        },
+        {
+          "transportId": "lsmd_cont_ldreg.60360",
+          "properties": {
+            "pnu": "1224011800100140008"
+          },
+          "geometrySha256": "9e027c525d277354b1eef5c6f2de57f6b4ffb9e0e9ae98480782186bee912d20"
+        },
+        {
+          "transportId": "lsmd_cont_ldreg.60361",
+          "properties": {
+            "pnu": "1224011800100150001"
+          },
+          "geometrySha256": "80fb443ced1432f4a803e382e776d66cec70f7a1c49b30641cd4c20e2c9a2ef4"
+        },
+        {
+          "transportId": "lsmd_cont_ldreg.60362",
+          "properties": {
+            "pnu": "1224011800100150004"
+          },
+          "geometrySha256": "2a98b26ad6089e410f4a96304b47069a173a6e0c4682b31c97f9af3d3b95a455"
+        },
+        {
+          "transportId": "lsmd_cont_ldreg.60336",
+          "properties": {
+            "pnu": "1224011800100150005"
+          },
+          "geometrySha256": "18ec16c1e38895d79fb513de012c3d62a7a1e12470930a0b0d0bfa157e327f78"
+        },
+        {
+          "transportId": "lsmd_cont_ldreg.60363",
+          "properties": {
+            "pnu": "1224011800100150006"
+          },
+          "geometrySha256": "297478d8d7c86e0f3ff4b568d2d7d361b14f7ab2ef43ad45ec20648b47d87634"
+        },
+        {
+          "transportId": "lsmd_cont_ldreg.60364",
+          "properties": {
+            "pnu": "1224011800100150007"
+          },
+          "geometrySha256": "89a27505683fbbf280f2d2b69b4acd014caa459c7ac226b81f0cf8ca3c27ca56"
+        },
+        {
+          "transportId": "lsmd_cont_ldreg.60365",
+          "properties": {
+            "pnu": "1224011800100150008"
+          },
+          "geometrySha256": "55f5c97542ac07d3fd6cb8ce1a5854aa77ae2d356cef556e66eaef9c42bede66"
+        },
+        {
+          "transportId": "lsmd_cont_ldreg.60366",
+          "properties": {
+            "pnu": "1224011800100150011"
+          },
+          "geometrySha256": "0e46f3933203de38eda2348fbe23d922ba138cb0b221dbe844220efe2962453c"
+        },
+        {
+          "transportId": "lsmd_cont_ldreg.60367",
+          "properties": {
+            "pnu": "1224011800100160000"
+          },
+          "geometrySha256": "41a3641de6abdd32933d3ea267df92a038fca772373cc85b5761112a7a5e0e21"
+        },
+        {
+          "transportId": "lsmd_cont_ldreg.60369",
+          "properties": {
+            "pnu": "1224011800100180002"
+          },
+          "geometrySha256": "294285784121c70d75640308494d1ae9bddcf36240e710b0dd6e03a2658a921d"
+        },
+        {
+          "transportId": "lsmd_cont_ldreg.60370",
+          "properties": {
+            "pnu": "1224011800100180003"
+          },
+          "geometrySha256": "a8a2d899c50713d5f325400ed884ac9de6d857e7700256420f6036e878ba1ce7"
+        },
+        {
+          "transportId": "lsmd_cont_ldreg.60371",
+          "properties": {
+            "pnu": "1224011800100180004"
+          },
+          "geometrySha256": "47eb0b03397675f3baa802494d9511d9a56ddc2fd993c41ec45025fc3fad103d"
+        },
+        {
+          "transportId": "lsmd_cont_ldreg.60372",
+          "properties": {
+            "pnu": "1224011800100180005"
+          },
+          "geometrySha256": "dcc2553afae91c3dcafaab1cd2d8a3fccc58f8a28712cea37986af9d287d6385"
+        },
+        {
+          "transportId": "lsmd_cont_ldreg.60375",
+          "properties": {
+            "pnu": "1224011800100210003"
+          },
+          "geometrySha256": "69ac1674cd0a2dd3e57fbfca344589ce19f2ea590030958c3af3fd149ecd6619"
+        },
+        {
+          "transportId": "lsmd_cont_ldreg.60377",
+          "properties": {
+            "pnu": "1224011800100220001"
+          },
+          "geometrySha256": "db5918d9b448b03914def2908cd90fd93e83cb20c190274e57d5b0118294a926"
+        },
+        {
+          "transportId": "lsmd_cont_ldreg.60378",
+          "properties": {
+            "pnu": "1224011800100220004"
+          },
+          "geometrySha256": "b1467f15fec1954b4f172c88baac5399f70c5ea8b81424a136977fd7fe19da60"
+        },
+        {
+          "transportId": "lsmd_cont_ldreg.60379",
+          "properties": {
+            "pnu": "1224011800100220006"
+          },
+          "geometrySha256": "642d7ec071d2821a3e6b44f40293a38041e8e77b7633199a1e309898f33ded14"
+        },
+        {
+          "transportId": "lsmd_cont_ldreg.60380",
+          "properties": {
+            "pnu": "1224011800100230001"
+          },
+          "geometrySha256": "00eec410b94841e2d015b0a3ccba7663ebf094cf0c0e81702f8b3bef0fccc3bc"
+        },
+        {
+          "transportId": "lsmd_cont_ldreg.60381",
+          "properties": {
+            "pnu": "1224011800100230002"
+          },
+          "geometrySha256": "0b786470530eca46c839b00e5d14ee0e2667a151f1e24e60a8df58e763d0b9a0"
+        },
+        {
+          "transportId": "lsmd_cont_ldreg.60382",
+          "properties": {
+            "pnu": "1224011800100230004"
+          },
+          "geometrySha256": "3206692ac5f0d1a440a9a2fbdbefb344b78376d8b6f5e1a4e5c011ed9cef1243"
+        },
+        {
+          "transportId": "lsmd_cont_ldreg.60383",
+          "properties": {
+            "pnu": "1224011800100230005"
+          },
+          "geometrySha256": "8cce330434034e17e825490bfc07ef4f55f659487a7c1d25d7bc481b53cc79db"
+        },
+        {
+          "transportId": "lsmd_cont_ldreg.60384",
+          "properties": {
+            "pnu": "1224011800100230006"
+          },
+          "geometrySha256": "2e0b69141cff6c116e6c1dddb341e959dc95b4889669953b8f663fc491432b78"
+        },
+        {
+          "transportId": "lsmd_cont_ldreg.60411",
+          "properties": {
+            "pnu": "1224011800100490000"
+          },
+          "geometrySha256": "0be214420a48ef918a51783335ba5807b92d7a95349b3b8ae2d713daf5f76df5"
+        },
+        {
+          "transportId": "lsmd_cont_ldreg.62239",
+          "properties": {
+            "pnu": "1224011800109140001"
+          },
+          "geometrySha256": "248431cddedc45a64267eab1b207965d2f4ad2b9212cd745103611e932bd410c"
+        },
+        {
+          "transportId": "lsmd_cont_ldreg.62295",
+          "properties": {
+            "pnu": "1224011800109160003"
+          },
+          "geometrySha256": "423cbe016a0f98732a5e41d11a16b3d2e62fdbad7898cedd2673fbad792418d6"
+        },
+        {
+          "transportId": "lsmd_cont_ldreg.62317",
+          "properties": {
+            "pnu": "1224011800109180005"
+          },
+          "geometrySha256": "568676ba9b095e6cc420adc93ee295db630bb1b1c82c343bc81e89788086807c"
+        },
+        {
+          "transportId": "lsmd_cont_ldreg.62318",
+          "properties": {
+            "pnu": "1224011800109180006"
+          },
+          "geometrySha256": "bac6f3ade057c3addddb21bee1e74b95707e57a8a373096bb3318727977c5bfc"
+        },
+        {
+          "transportId": "lsmd_cont_ldreg.62320",
+          "properties": {
+            "pnu": "1224011800109180008"
+          },
+          "geometrySha256": "4afaba69f6d5ce9b10d45189a4ea2c5a2df307c10eb31564fe6589ef3fa5e007"
+        }
+      ]
+    },
+    {
+      "test": "fresh-ids-40",
+      "url": "https://gis.gwangju.go.kr/map/proxy/wfs.do?service=WFS&version=1.1.0&request=GetFeature&typeName=sde%3Alsmd_cont_ldreg&outputFormat=application%2Fjson&srsName=CRS%3A84&sortBy=pnu&propertyName=geom%2Cpnu&maxFeatures=1000&startIndex=0&cql_filter=pnu+IN+%28%271224011800109190002%27%2C%271224011800109200000%27%2C%271224011800113890000%27%2C%271224011800113900000%27%2C%271224012100106620001%27%2C%271224012100106620003%27%2C%271224012100106630002%27%2C%271224012100106700001%27%2C%271224012100107000001%27%2C%271224012100107120002%27%2C%271224012100107170003%27%2C%271224012100108200003%27%2C%271224012100108230001%27%2C%271224012100108290000%27%29",
+      "method": "GET",
+      "checkedAt": "2026-10-08T22:50:07.973Z",
+      "httpStatus": 200,
+      "contentType": "application/json;charset=UTF-8",
+      "bytes": 32553,
+      "numberMatched": 14,
+      "numberReturned": 14,
+      "features": [
+        {
+          "transportId": "lsmd_cont_ldreg.62323",
+          "properties": {
+            "pnu": "1224011800109190002"
+          },
+          "geometrySha256": "0120bbcd3a2efeb980ae1405adaf8232c0a8ea508a74bf6eb6e60ae74beb5abc"
+        },
+        {
+          "transportId": "lsmd_cont_ldreg.62324",
+          "properties": {
+            "pnu": "1224011800109200000"
+          },
+          "geometrySha256": "83366e72e9b799868c0a5a5705fec1bb2eab157797b0c724589e9c18d6f9e307"
+        },
+        {
+          "transportId": "lsmd_cont_ldreg.65990",
+          "properties": {
+            "pnu": "1224011800113890000"
+          },
+          "geometrySha256": "7b33ae51749106fb7ae2723bdb9ae8bf2c61da0bb8f22ea65cf8e90fc56d9e8c"
+        },
+        {
+          "transportId": "lsmd_cont_ldreg.65991",
+          "properties": {
+            "pnu": "1224011800113900000"
+          },
+          "geometrySha256": "86481f67f6e69c1af03562552b87153046f8a1465204dac789a4e731b902905f"
+        },
+        {
+          "transportId": "lsmd_cont_ldreg.77646",
+          "properties": {
+            "pnu": "1224012100106620001"
+          },
+          "geometrySha256": "f7fb66e8227cc2a60088186876faf777d6dcf27ae21bafeefad7a9e17e99fb65"
+        },
+        {
+          "transportId": "lsmd_cont_ldreg.77648",
+          "properties": {
+            "pnu": "1224012100106620003"
+          },
+          "geometrySha256": "3d68d4ab0ad83ac262931bef8d679c64701080151af759b741ba0e2bc01e39a3"
+        },
+        {
+          "transportId": "lsmd_cont_ldreg.77649",
+          "properties": {
+            "pnu": "1224012100106630002"
+          },
+          "geometrySha256": "101ae8db37b185e22359067e73358a233221b722fdeded5f93bc067456f913a1"
+        },
+        {
+          "transportId": "lsmd_cont_ldreg.77651",
+          "properties": {
+            "pnu": "1224012100106700001"
+          },
+          "geometrySha256": "521dd3b2be040ae5fc353deefeabc29d367428f445c1b01393d0f274cf70014c"
+        },
+        {
+          "transportId": "lsmd_cont_ldreg.77986",
+          "properties": {
+            "pnu": "1224012100107000001"
+          },
+          "geometrySha256": "f75fd714b29813f5775b888ef6a8e974d85e2d87e27d127d76d3d8aaf3b9f473"
+        },
+        {
+          "transportId": "lsmd_cont_ldreg.77977",
+          "properties": {
+            "pnu": "1224012100107120002"
+          },
+          "geometrySha256": "0a1cfd258d310031bf44f9e856104aa5594ca4b53125053864b4cbe4a39c297f"
+        },
+        {
+          "transportId": "lsmd_cont_ldreg.77979",
+          "properties": {
+            "pnu": "1224012100107170003"
+          },
+          "geometrySha256": "667137134c4b3219155c8b1f819f28334128bf02eff8406a63a303b0ae508551"
+        },
+        {
+          "transportId": "lsmd_cont_ldreg.78028",
+          "properties": {
+            "pnu": "1224012100108200003"
+          },
+          "geometrySha256": "77e974ecfc458192fea40d3b4acf2516a32ccbfb365e062e6785c10a6a65f1d6"
+        },
+        {
+          "transportId": "lsmd_cont_ldreg.78040",
+          "properties": {
+            "pnu": "1224012100108230001"
+          },
+          "geometrySha256": "7b802c04209b6e1b0afc56d1d40c9f64ac7bce3fdd38bcd51a616070bbc46c28"
+        },
+        {
+          "transportId": "lsmd_cont_ldreg.78097",
+          "properties": {
+            "pnu": "1224012100108290000"
+          },
+          "geometrySha256": "33f436d57a32efac2f40fb126ba6223813aab276e9865228bcd4f7ae5cdbdfb5"
+        }
+      ]
+    },
+    {
+      "test": "explicit-absence",
+      "url": "https://gis.gwangju.go.kr/map/proxy/wfs.do?service=WFS&version=1.1.0&request=GetFeature&typeName=sde%3Alsmd_cont_ldreg&outputFormat=application%2Fjson&srsName=CRS%3A84&sortBy=pnu&propertyName=geom%2Cpnu&maxFeatures=1000&startIndex=0&cql_filter=pnu+IN+%28%270000000000000000000%27%29",
+      "method": "GET",
+      "checkedAt": "2026-10-08T22:50:12.379Z",
+      "httpStatus": 200,
+      "contentType": "application/json;charset=UTF-8",
+      "bytes": 147,
+      "numberMatched": 0,
+      "numberReturned": 0,
+      "features": []
+    },
+    {
+      "test": "footprint",
+      "url": "https://gis.gwangju.go.kr/map/proxy/wfs.do?service=WFS&version=1.1.0&request=GetFeature&typeName=sde%3Alsmd_cont_ldreg&outputFormat=application%2Fjson&srsName=CRS%3A84&sortBy=pnu&propertyName=geom%2Cpnu&maxFeatures=1000&startIndex=0&bbox=126.86877307%2C35.1666871%2C126.86941051%2C35.16679836%2CCRS%3A84",
+      "method": "GET",
+      "checkedAt": "2026-10-08T22:50:16.135Z",
+      "httpStatus": 200,
+      "contentType": "application/json;charset=UTF-8",
+      "bytes": 5183,
+      "numberMatched": 9,
+      "numberReturned": 9,
+      "features": [
+        {
+          "transportId": "lsmd_cont_ldreg.60347",
+          "properties": {
+            "pnu": "1224011800100110000"
+          },
+          "geometrySha256": "16f970f81eacecdc733b59816776ff2eca8ea989d002c3eabd04c2d26615fb8f"
+        },
+        {
+          "transportId": "lsmd_cont_ldreg.60349",
+          "properties": {
+            "pnu": "1224011800100120005"
+          },
+          "geometrySha256": "147f020bb19bc4465d2ea385050eca73a4dad02ab91d0022791b8b6c671e2958"
+        },
+        {
+          "transportId": "lsmd_cont_ldreg.60350",
+          "properties": {
+            "pnu": "1224011800100120006"
+          },
+          "geometrySha256": "b461cb407f461eaaca6f6407668f9501cf5062f0af0d90012332a731e6c9e7b3"
+        },
+        {
+          "transportId": "lsmd_cont_ldreg.60353",
+          "properties": {
+            "pnu": "1224011800100140001"
+          },
+          "geometrySha256": "7f521dc7275917c81bf0821a7d8d98a8ef96be4dc7d54c44aa4b37f0a66ab6e0"
+        },
+        {
+          "transportId": "lsmd_cont_ldreg.60354",
+          "properties": {
+            "pnu": "1224011800100140002"
+          },
+          "geometrySha256": "35b02231631b1c8525ff0cf50ab16dc1f7660eb80e62a0e0abe4ab1bccb24720"
+        },
+        {
+          "transportId": "lsmd_cont_ldreg.60359",
+          "properties": {
+            "pnu": "1224011800100140007"
+          },
+          "geometrySha256": "0594f34c63825ae0103377a749358ed8fd691dc2eb94e2cb20492feb05cd5904"
+        },
+        {
+          "transportId": "lsmd_cont_ldreg.62239",
+          "properties": {
+            "pnu": "1224011800109140001"
+          },
+          "geometrySha256": "248431cddedc45a64267eab1b207965d2f4ad2b9212cd745103611e932bd410c"
+        },
+        {
+          "transportId": "lsmd_cont_ldreg.62295",
+          "properties": {
+            "pnu": "1224011800109160003"
+          },
+          "geometrySha256": "423cbe016a0f98732a5e41d11a16b3d2e62fdbad7898cedd2673fbad792418d6"
+        },
+        {
+          "transportId": "lsmd_cont_ldreg.62303",
+          "properties": {
+            "pnu": "1224011800109160015"
+          },
+          "geometrySha256": "8403800a788fd0dc284028001848b683f6c6cd0c1c258af829fbde5d8391b444"
+        }
+      ]
+    },
+    {
+      "test": "source-binding",
+      "url": "https://gis.gwangju.go.kr/map/proxy/wfs.do?service=WFS&version=1.1.0&request=GetFeature&typeName=sde%3Alsmd_cont_ldreg&outputFormat=application%2Fjson&srsName=CRS%3A84&sortBy=pnu&propertyName=geom%2Cpnu&maxFeatures=1000&startIndex=0&bbox=126.86877307%2C35.1666871%2C126.86941051%2C35.16679836%2CCRS%3A84",
+      "method": "GET",
+      "checkedAt": "2026-10-08T22:50:16.572Z",
+      "httpStatus": 200,
+      "contentType": "application/json;charset=UTF-8",
+      "bytes": 5183,
+      "numberMatched": 9,
+      "numberReturned": 9,
+      "features": [
+        {
+          "transportId": "lsmd_cont_ldreg.60347",
+          "properties": {
+            "pnu": "1224011800100110000"
+          },
+          "geometrySha256": "16f970f81eacecdc733b59816776ff2eca8ea989d002c3eabd04c2d26615fb8f"
+        },
+        {
+          "transportId": "lsmd_cont_ldreg.60349",
+          "properties": {
+            "pnu": "1224011800100120005"
+          },
+          "geometrySha256": "147f020bb19bc4465d2ea385050eca73a4dad02ab91d0022791b8b6c671e2958"
+        },
+        {
+          "transportId": "lsmd_cont_ldreg.60350",
+          "properties": {
+            "pnu": "1224011800100120006"
+          },
+          "geometrySha256": "b461cb407f461eaaca6f6407668f9501cf5062f0af0d90012332a731e6c9e7b3"
+        },
+        {
+          "transportId": "lsmd_cont_ldreg.60353",
+          "properties": {
+            "pnu": "1224011800100140001"
+          },
+          "geometrySha256": "7f521dc7275917c81bf0821a7d8d98a8ef96be4dc7d54c44aa4b37f0a66ab6e0"
+        },
+        {
+          "transportId": "lsmd_cont_ldreg.60354",
+          "properties": {
+            "pnu": "1224011800100140002"
+          },
+          "geometrySha256": "35b02231631b1c8525ff0cf50ab16dc1f7660eb80e62a0e0abe4ab1bccb24720"
+        },
+        {
+          "transportId": "lsmd_cont_ldreg.60359",
+          "properties": {
+            "pnu": "1224011800100140007"
+          },
+          "geometrySha256": "0594f34c63825ae0103377a749358ed8fd691dc2eb94e2cb20492feb05cd5904"
+        },
+        {
+          "transportId": "lsmd_cont_ldreg.62239",
+          "properties": {
+            "pnu": "1224011800109140001"
+          },
+          "geometrySha256": "248431cddedc45a64267eab1b207965d2f4ad2b9212cd745103611e932bd410c"
+        },
+        {
+          "transportId": "lsmd_cont_ldreg.62295",
+          "properties": {
+            "pnu": "1224011800109160003"
+          },
+          "geometrySha256": "423cbe016a0f98732a5e41d11a16b3d2e62fdbad7898cedd2673fbad792418d6"
+        },
+        {
+          "transportId": "lsmd_cont_ldreg.62303",
+          "properties": {
+            "pnu": "1224011800109160015"
+          },
+          "geometrySha256": "8403800a788fd0dc284028001848b683f6c6cd0c1c258af829fbde5d8391b444"
+        }
+      ]
+    }
+  ],
+  "qualityFile": "research/overnight-cities-2026-10-08/gwangju-quality.json",
+  "uniqueParcels": 54,
+  "requestCount": 32,
+  "allTestsPassed": true,
+  "finishedAt": "2026-10-08T22:50:16.970Z",
+  "qualityStatus": "pending-independent-topology-check"
+}

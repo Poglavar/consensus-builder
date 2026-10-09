@@ -1,0 +1,2004 @@
+{
+  "schemaVersion": 1,
+  "purpose": "Independent GEOS topology check of complete runtime parcels projected to metric coordinates; no repair applied. Counts are bounded sample evidence, not whole-city guarantees.",
+  "library": "Shapely 2.2.0",
+  "metricCrs": "EPSG:32617",
+  "featureCount": 50,
+  "validNonemptyCount": 50,
+  "invalidFeatures": [],
+  "exactDuplicateGeometryPairs": [
+    [
+      "US-FL-PINELLAS-183016665520000110",
+      "US-FL-PINELLAS-183016665520000090"
+    ],
+    [
+      "US-FL-PINELLAS-183016665520000110",
+      "US-FL-PINELLAS-183016665520000020"
+    ],
+    [
+      "US-FL-PINELLAS-183016665520000110",
+      "US-FL-PINELLAS-183016665520000010"
+    ],
+    [
+      "US-FL-PINELLAS-183016665520000110",
+      "US-FL-PINELLAS-183016665520000040"
+    ],
+    [
+      "US-FL-PINELLAS-183016665520000110",
+      "US-FL-PINELLAS-183016665520000160"
+    ],
+    [
+      "US-FL-PINELLAS-183016665520000110",
+      "US-FL-PINELLAS-183016665520000080"
+    ],
+    [
+      "US-FL-PINELLAS-183016665520000110",
+      "US-FL-PINELLAS-183016665520000120"
+    ],
+    [
+      "US-FL-PINELLAS-183016665520000110",
+      "US-FL-PINELLAS-183016665520000050"
+    ],
+    [
+      "US-FL-PINELLAS-183016665520000110",
+      "US-FL-PINELLAS-183016665520000140"
+    ],
+    [
+      "US-FL-PINELLAS-183016665520000110",
+      "US-FL-PINELLAS-183016665520000130"
+    ],
+    [
+      "US-FL-PINELLAS-183016665520000110",
+      "US-FL-PINELLAS-183016665520000030"
+    ],
+    [
+      "US-FL-PINELLAS-183016665520000110",
+      "US-FL-PINELLAS-183016665520000100"
+    ],
+    [
+      "US-FL-PINELLAS-183016665520000110",
+      "US-FL-PINELLAS-183016665520000001"
+    ],
+    [
+      "US-FL-PINELLAS-183016665520000110",
+      "US-FL-PINELLAS-183016665520000070"
+    ],
+    [
+      "US-FL-PINELLAS-183016665520000110",
+      "US-FL-PINELLAS-183016665520000150"
+    ],
+    [
+      "US-FL-PINELLAS-183016665520000110",
+      "US-FL-PINELLAS-183016665520000060"
+    ],
+    [
+      "US-FL-PINELLAS-183016665520000140",
+      "US-FL-PINELLAS-183016665520000090"
+    ],
+    [
+      "US-FL-PINELLAS-183016665520000140",
+      "US-FL-PINELLAS-183016665520000020"
+    ],
+    [
+      "US-FL-PINELLAS-183016665520000140",
+      "US-FL-PINELLAS-183016665520000010"
+    ],
+    [
+      "US-FL-PINELLAS-183016665520000140",
+      "US-FL-PINELLAS-183016665520000040"
+    ],
+    [
+      "US-FL-PINELLAS-183016665520000140",
+      "US-FL-PINELLAS-183016665520000160"
+    ],
+    [
+      "US-FL-PINELLAS-183016665520000140",
+      "US-FL-PINELLAS-183016665520000080"
+    ],
+    [
+      "US-FL-PINELLAS-183016665520000140",
+      "US-FL-PINELLAS-183016665520000120"
+    ],
+    [
+      "US-FL-PINELLAS-183016665520000140",
+      "US-FL-PINELLAS-183016665520000050"
+    ],
+    [
+      "US-FL-PINELLAS-183016665520000140",
+      "US-FL-PINELLAS-183016665520000130"
+    ],
+    [
+      "US-FL-PINELLAS-183016665520000140",
+      "US-FL-PINELLAS-183016665520000030"
+    ],
+    [
+      "US-FL-PINELLAS-183016665520000140",
+      "US-FL-PINELLAS-183016665520000100"
+    ],
+    [
+      "US-FL-PINELLAS-183016665520000140",
+      "US-FL-PINELLAS-183016665520000001"
+    ],
+    [
+      "US-FL-PINELLAS-183016665520000140",
+      "US-FL-PINELLAS-183016665520000070"
+    ],
+    [
+      "US-FL-PINELLAS-183016665520000140",
+      "US-FL-PINELLAS-183016665520000150"
+    ],
+    [
+      "US-FL-PINELLAS-183016665520000140",
+      "US-FL-PINELLAS-183016665520000060"
+    ],
+    [
+      "US-FL-PINELLAS-183016665520000010",
+      "US-FL-PINELLAS-183016665520000090"
+    ],
+    [
+      "US-FL-PINELLAS-183016665520000010",
+      "US-FL-PINELLAS-183016665520000020"
+    ],
+    [
+      "US-FL-PINELLAS-183016665520000010",
+      "US-FL-PINELLAS-183016665520000040"
+    ],
+    [
+      "US-FL-PINELLAS-183016665520000010",
+      "US-FL-PINELLAS-183016665520000160"
+    ],
+    [
+      "US-FL-PINELLAS-183016665520000010",
+      "US-FL-PINELLAS-183016665520000080"
+    ],
+    [
+      "US-FL-PINELLAS-183016665520000010",
+      "US-FL-PINELLAS-183016665520000120"
+    ],
+    [
+      "US-FL-PINELLAS-183016665520000010",
+      "US-FL-PINELLAS-183016665520000050"
+    ],
+    [
+      "US-FL-PINELLAS-183016665520000010",
+      "US-FL-PINELLAS-183016665520000130"
+    ],
+    [
+      "US-FL-PINELLAS-183016665520000010",
+      "US-FL-PINELLAS-183016665520000030"
+    ],
+    [
+      "US-FL-PINELLAS-183016665520000010",
+      "US-FL-PINELLAS-183016665520000100"
+    ],
+    [
+      "US-FL-PINELLAS-183016665520000010",
+      "US-FL-PINELLAS-183016665520000001"
+    ],
+    [
+      "US-FL-PINELLAS-183016665520000010",
+      "US-FL-PINELLAS-183016665520000070"
+    ],
+    [
+      "US-FL-PINELLAS-183016665520000010",
+      "US-FL-PINELLAS-183016665520000150"
+    ],
+    [
+      "US-FL-PINELLAS-183016665520000010",
+      "US-FL-PINELLAS-183016665520000060"
+    ],
+    [
+      "US-FL-PINELLAS-183016665520000040",
+      "US-FL-PINELLAS-183016665520000090"
+    ],
+    [
+      "US-FL-PINELLAS-183016665520000040",
+      "US-FL-PINELLAS-183016665520000020"
+    ],
+    [
+      "US-FL-PINELLAS-183016665520000040",
+      "US-FL-PINELLAS-183016665520000160"
+    ],
+    [
+      "US-FL-PINELLAS-183016665520000040",
+      "US-FL-PINELLAS-183016665520000080"
+    ],
+    [
+      "US-FL-PINELLAS-183016665520000040",
+      "US-FL-PINELLAS-183016665520000120"
+    ],
+    [
+      "US-FL-PINELLAS-183016665520000040",
+      "US-FL-PINELLAS-183016665520000050"
+    ],
+    [
+      "US-FL-PINELLAS-183016665520000040",
+      "US-FL-PINELLAS-183016665520000130"
+    ],
+    [
+      "US-FL-PINELLAS-183016665520000040",
+      "US-FL-PINELLAS-183016665520000030"
+    ],
+    [
+      "US-FL-PINELLAS-183016665520000040",
+      "US-FL-PINELLAS-183016665520000100"
+    ],
+    [
+      "US-FL-PINELLAS-183016665520000040",
+      "US-FL-PINELLAS-183016665520000001"
+    ],
+    [
+      "US-FL-PINELLAS-183016665520000040",
+      "US-FL-PINELLAS-183016665520000070"
+    ],
+    [
+      "US-FL-PINELLAS-183016665520000040",
+      "US-FL-PINELLAS-183016665520000150"
+    ],
+    [
+      "US-FL-PINELLAS-183016665520000040",
+      "US-FL-PINELLAS-183016665520000060"
+    ],
+    [
+      "US-FL-PINELLAS-183016665520000160",
+      "US-FL-PINELLAS-183016665520000090"
+    ],
+    [
+      "US-FL-PINELLAS-183016665520000160",
+      "US-FL-PINELLAS-183016665520000020"
+    ],
+    [
+      "US-FL-PINELLAS-183016665520000160",
+      "US-FL-PINELLAS-183016665520000080"
+    ],
+    [
+      "US-FL-PINELLAS-183016665520000160",
+      "US-FL-PINELLAS-183016665520000120"
+    ],
+    [
+      "US-FL-PINELLAS-183016665520000160",
+      "US-FL-PINELLAS-183016665520000050"
+    ],
+    [
+      "US-FL-PINELLAS-183016665520000160",
+      "US-FL-PINELLAS-183016665520000130"
+    ],
+    [
+      "US-FL-PINELLAS-183016665520000160",
+      "US-FL-PINELLAS-183016665520000030"
+    ],
+    [
+      "US-FL-PINELLAS-183016665520000160",
+      "US-FL-PINELLAS-183016665520000100"
+    ],
+    [
+      "US-FL-PINELLAS-183016665520000160",
+      "US-FL-PINELLAS-183016665520000001"
+    ],
+    [
+      "US-FL-PINELLAS-183016665520000160",
+      "US-FL-PINELLAS-183016665520000070"
+    ],
+    [
+      "US-FL-PINELLAS-183016665520000160",
+      "US-FL-PINELLAS-183016665520000150"
+    ],
+    [
+      "US-FL-PINELLAS-183016665520000160",
+      "US-FL-PINELLAS-183016665520000060"
+    ],
+    [
+      "US-FL-PINELLAS-183016665520000080",
+      "US-FL-PINELLAS-183016665520000090"
+    ],
+    [
+      "US-FL-PINELLAS-183016665520000080",
+      "US-FL-PINELLAS-183016665520000020"
+    ],
+    [
+      "US-FL-PINELLAS-183016665520000080",
+      "US-FL-PINELLAS-183016665520000120"
+    ],
+    [
+      "US-FL-PINELLAS-183016665520000080",
+      "US-FL-PINELLAS-183016665520000050"
+    ],
+    [
+      "US-FL-PINELLAS-183016665520000080",
+      "US-FL-PINELLAS-183016665520000130"
+    ],
+    [
+      "US-FL-PINELLAS-183016665520000080",
+      "US-FL-PINELLAS-183016665520000030"
+    ],
+    [
+      "US-FL-PINELLAS-183016665520000080",
+      "US-FL-PINELLAS-183016665520000100"
+    ],
+    [
+      "US-FL-PINELLAS-183016665520000080",
+      "US-FL-PINELLAS-183016665520000001"
+    ],
+    [
+      "US-FL-PINELLAS-183016665520000080",
+      "US-FL-PINELLAS-183016665520000070"
+    ],
+    [
+      "US-FL-PINELLAS-183016665520000080",
+      "US-FL-PINELLAS-183016665520000150"
+    ],
+    [
+      "US-FL-PINELLAS-183016665520000080",
+      "US-FL-PINELLAS-183016665520000060"
+    ],
+    [
+      "US-FL-PINELLAS-183016665520000090",
+      "US-FL-PINELLAS-183016665520000020"
+    ],
+    [
+      "US-FL-PINELLAS-183016665520000090",
+      "US-FL-PINELLAS-183016665520000120"
+    ],
+    [
+      "US-FL-PINELLAS-183016665520000090",
+      "US-FL-PINELLAS-183016665520000050"
+    ],
+    [
+      "US-FL-PINELLAS-183016665520000090",
+      "US-FL-PINELLAS-183016665520000130"
+    ],
+    [
+      "US-FL-PINELLAS-183016665520000090",
+      "US-FL-PINELLAS-183016665520000030"
+    ],
+    [
+      "US-FL-PINELLAS-183016665520000090",
+      "US-FL-PINELLAS-183016665520000100"
+    ],
+    [
+      "US-FL-PINELLAS-183016665520000090",
+      "US-FL-PINELLAS-183016665520000001"
+    ],
+    [
+      "US-FL-PINELLAS-183016665520000090",
+      "US-FL-PINELLAS-183016665520000070"
+    ],
+    [
+      "US-FL-PINELLAS-183016665520000090",
+      "US-FL-PINELLAS-183016665520000150"
+    ],
+    [
+      "US-FL-PINELLAS-183016665520000090",
+      "US-FL-PINELLAS-183016665520000060"
+    ],
+    [
+      "US-FL-PINELLAS-183016665520000130",
+      "US-FL-PINELLAS-183016665520000020"
+    ],
+    [
+      "US-FL-PINELLAS-183016665520000130",
+      "US-FL-PINELLAS-183016665520000120"
+    ],
+    [
+      "US-FL-PINELLAS-183016665520000130",
+      "US-FL-PINELLAS-183016665520000050"
+    ],
+    [
+      "US-FL-PINELLAS-183016665520000130",
+      "US-FL-PINELLAS-183016665520000030"
+    ],
+    [
+      "US-FL-PINELLAS-183016665520000130",
+      "US-FL-PINELLAS-183016665520000100"
+    ],
+    [
+      "US-FL-PINELLAS-183016665520000130",
+      "US-FL-PINELLAS-183016665520000001"
+    ],
+    [
+      "US-FL-PINELLAS-183016665520000130",
+      "US-FL-PINELLAS-183016665520000070"
+    ],
+    [
+      "US-FL-PINELLAS-183016665520000130",
+      "US-FL-PINELLAS-183016665520000150"
+    ],
+    [
+      "US-FL-PINELLAS-183016665520000130",
+      "US-FL-PINELLAS-183016665520000060"
+    ],
+    [
+      "US-FL-PINELLAS-183016665520000100",
+      "US-FL-PINELLAS-183016665520000020"
+    ],
+    [
+      "US-FL-PINELLAS-183016665520000100",
+      "US-FL-PINELLAS-183016665520000120"
+    ],
+    [
+      "US-FL-PINELLAS-183016665520000100",
+      "US-FL-PINELLAS-183016665520000050"
+    ],
+    [
+      "US-FL-PINELLAS-183016665520000100",
+      "US-FL-PINELLAS-183016665520000030"
+    ],
+    [
+      "US-FL-PINELLAS-183016665520000100",
+      "US-FL-PINELLAS-183016665520000001"
+    ],
+    [
+      "US-FL-PINELLAS-183016665520000100",
+      "US-FL-PINELLAS-183016665520000070"
+    ],
+    [
+      "US-FL-PINELLAS-183016665520000100",
+      "US-FL-PINELLAS-183016665520000150"
+    ],
+    [
+      "US-FL-PINELLAS-183016665520000100",
+      "US-FL-PINELLAS-183016665520000060"
+    ],
+    [
+      "US-FL-PINELLAS-183016665520000001",
+      "US-FL-PINELLAS-183016665520000020"
+    ],
+    [
+      "US-FL-PINELLAS-183016665520000001",
+      "US-FL-PINELLAS-183016665520000120"
+    ],
+    [
+      "US-FL-PINELLAS-183016665520000001",
+      "US-FL-PINELLAS-183016665520000050"
+    ],
+    [
+      "US-FL-PINELLAS-183016665520000001",
+      "US-FL-PINELLAS-183016665520000030"
+    ],
+    [
+      "US-FL-PINELLAS-183016665520000001",
+      "US-FL-PINELLAS-183016665520000070"
+    ],
+    [
+      "US-FL-PINELLAS-183016665520000001",
+      "US-FL-PINELLAS-183016665520000150"
+    ],
+    [
+      "US-FL-PINELLAS-183016665520000001",
+      "US-FL-PINELLAS-183016665520000060"
+    ],
+    [
+      "US-FL-PINELLAS-183016665520000070",
+      "US-FL-PINELLAS-183016665520000020"
+    ],
+    [
+      "US-FL-PINELLAS-183016665520000070",
+      "US-FL-PINELLAS-183016665520000120"
+    ],
+    [
+      "US-FL-PINELLAS-183016665520000070",
+      "US-FL-PINELLAS-183016665520000050"
+    ],
+    [
+      "US-FL-PINELLAS-183016665520000070",
+      "US-FL-PINELLAS-183016665520000030"
+    ],
+    [
+      "US-FL-PINELLAS-183016665520000070",
+      "US-FL-PINELLAS-183016665520000150"
+    ],
+    [
+      "US-FL-PINELLAS-183016665520000070",
+      "US-FL-PINELLAS-183016665520000060"
+    ],
+    [
+      "US-FL-PINELLAS-183016665520000150",
+      "US-FL-PINELLAS-183016665520000020"
+    ],
+    [
+      "US-FL-PINELLAS-183016665520000150",
+      "US-FL-PINELLAS-183016665520000120"
+    ],
+    [
+      "US-FL-PINELLAS-183016665520000150",
+      "US-FL-PINELLAS-183016665520000050"
+    ],
+    [
+      "US-FL-PINELLAS-183016665520000150",
+      "US-FL-PINELLAS-183016665520000030"
+    ],
+    [
+      "US-FL-PINELLAS-183016665520000150",
+      "US-FL-PINELLAS-183016665520000060"
+    ],
+    [
+      "US-FL-PINELLAS-183016665520000060",
+      "US-FL-PINELLAS-183016665520000020"
+    ],
+    [
+      "US-FL-PINELLAS-183016665520000060",
+      "US-FL-PINELLAS-183016665520000120"
+    ],
+    [
+      "US-FL-PINELLAS-183016665520000060",
+      "US-FL-PINELLAS-183016665520000050"
+    ],
+    [
+      "US-FL-PINELLAS-183016665520000060",
+      "US-FL-PINELLAS-183016665520000030"
+    ],
+    [
+      "US-FL-PINELLAS-183016665520000050",
+      "US-FL-PINELLAS-183016665520000020"
+    ],
+    [
+      "US-FL-PINELLAS-183016665520000050",
+      "US-FL-PINELLAS-183016665520000120"
+    ],
+    [
+      "US-FL-PINELLAS-183016665520000050",
+      "US-FL-PINELLAS-183016665520000030"
+    ],
+    [
+      "US-FL-PINELLAS-183016665520000020",
+      "US-FL-PINELLAS-183016665520000120"
+    ],
+    [
+      "US-FL-PINELLAS-183016665520000020",
+      "US-FL-PINELLAS-183016665520000030"
+    ],
+    [
+      "US-FL-PINELLAS-183016665520000030",
+      "US-FL-PINELLAS-183016665520000120"
+    ]
+  ],
+  "positiveAreaOverlapPairsAbove0_01M2": [
+    {
+      "ids": [
+        "US-FL-PINELLAS-183016665520000110",
+        "US-FL-PINELLAS-183016665520000090"
+      ],
+      "overlapM2": 11767.468565888179,
+      "fractionOfSmaller": 1.0
+    },
+    {
+      "ids": [
+        "US-FL-PINELLAS-183016665520000110",
+        "US-FL-PINELLAS-183016665520000020"
+      ],
+      "overlapM2": 11767.468565888179,
+      "fractionOfSmaller": 1.0
+    },
+    {
+      "ids": [
+        "US-FL-PINELLAS-183016665520000110",
+        "US-FL-PINELLAS-183016665520000010"
+      ],
+      "overlapM2": 11767.468565888179,
+      "fractionOfSmaller": 1.0
+    },
+    {
+      "ids": [
+        "US-FL-PINELLAS-183016665520000110",
+        "US-FL-PINELLAS-183016665520000040"
+      ],
+      "overlapM2": 11767.468565888179,
+      "fractionOfSmaller": 1.0
+    },
+    {
+      "ids": [
+        "US-FL-PINELLAS-183016665520000110",
+        "US-FL-PINELLAS-183016665520000160"
+      ],
+      "overlapM2": 11767.468565888179,
+      "fractionOfSmaller": 1.0
+    },
+    {
+      "ids": [
+        "US-FL-PINELLAS-183016665520000110",
+        "US-FL-PINELLAS-183016665520000080"
+      ],
+      "overlapM2": 11767.468565888179,
+      "fractionOfSmaller": 1.0
+    },
+    {
+      "ids": [
+        "US-FL-PINELLAS-183016665520000110",
+        "US-FL-PINELLAS-183016665520000120"
+      ],
+      "overlapM2": 11767.468565888179,
+      "fractionOfSmaller": 1.0
+    },
+    {
+      "ids": [
+        "US-FL-PINELLAS-183016665520000110",
+        "US-FL-PINELLAS-183016665520000050"
+      ],
+      "overlapM2": 11767.468565888179,
+      "fractionOfSmaller": 1.0
+    },
+    {
+      "ids": [
+        "US-FL-PINELLAS-183016665520000110",
+        "US-FL-PINELLAS-183016665520000140"
+      ],
+      "overlapM2": 11767.468565888179,
+      "fractionOfSmaller": 1.0
+    },
+    {
+      "ids": [
+        "US-FL-PINELLAS-183016665520000110",
+        "US-FL-PINELLAS-183016665520000130"
+      ],
+      "overlapM2": 11767.468565888179,
+      "fractionOfSmaller": 1.0
+    },
+    {
+      "ids": [
+        "US-FL-PINELLAS-183016665520000110",
+        "US-FL-PINELLAS-183016665520000030"
+      ],
+      "overlapM2": 11767.468565888179,
+      "fractionOfSmaller": 1.0
+    },
+    {
+      "ids": [
+        "US-FL-PINELLAS-183016665520000110",
+        "US-FL-PINELLAS-183016665520000100"
+      ],
+      "overlapM2": 11767.468565888179,
+      "fractionOfSmaller": 1.0
+    },
+    {
+      "ids": [
+        "US-FL-PINELLAS-183016665520000110",
+        "US-FL-PINELLAS-183016665520000001"
+      ],
+      "overlapM2": 11767.468565888179,
+      "fractionOfSmaller": 1.0
+    },
+    {
+      "ids": [
+        "US-FL-PINELLAS-183016665520000110",
+        "US-FL-PINELLAS-183016665520000070"
+      ],
+      "overlapM2": 11767.468565888179,
+      "fractionOfSmaller": 1.0
+    },
+    {
+      "ids": [
+        "US-FL-PINELLAS-183016665520000110",
+        "US-FL-PINELLAS-183016665520000150"
+      ],
+      "overlapM2": 11767.468565888179,
+      "fractionOfSmaller": 1.0
+    },
+    {
+      "ids": [
+        "US-FL-PINELLAS-183016665520000110",
+        "US-FL-PINELLAS-183016665520000060"
+      ],
+      "overlapM2": 11767.468565888179,
+      "fractionOfSmaller": 1.0
+    },
+    {
+      "ids": [
+        "US-FL-PINELLAS-183016665520000140",
+        "US-FL-PINELLAS-183016665520000090"
+      ],
+      "overlapM2": 11767.468565888179,
+      "fractionOfSmaller": 1.0
+    },
+    {
+      "ids": [
+        "US-FL-PINELLAS-183016665520000140",
+        "US-FL-PINELLAS-183016665520000020"
+      ],
+      "overlapM2": 11767.468565888179,
+      "fractionOfSmaller": 1.0
+    },
+    {
+      "ids": [
+        "US-FL-PINELLAS-183016665520000140",
+        "US-FL-PINELLAS-183016665520000010"
+      ],
+      "overlapM2": 11767.468565888179,
+      "fractionOfSmaller": 1.0
+    },
+    {
+      "ids": [
+        "US-FL-PINELLAS-183016665520000140",
+        "US-FL-PINELLAS-183016665520000040"
+      ],
+      "overlapM2": 11767.468565888179,
+      "fractionOfSmaller": 1.0
+    },
+    {
+      "ids": [
+        "US-FL-PINELLAS-183016665520000140",
+        "US-FL-PINELLAS-183016665520000160"
+      ],
+      "overlapM2": 11767.468565888179,
+      "fractionOfSmaller": 1.0
+    },
+    {
+      "ids": [
+        "US-FL-PINELLAS-183016665520000140",
+        "US-FL-PINELLAS-183016665520000080"
+      ],
+      "overlapM2": 11767.468565888179,
+      "fractionOfSmaller": 1.0
+    },
+    {
+      "ids": [
+        "US-FL-PINELLAS-183016665520000140",
+        "US-FL-PINELLAS-183016665520000120"
+      ],
+      "overlapM2": 11767.468565888179,
+      "fractionOfSmaller": 1.0
+    },
+    {
+      "ids": [
+        "US-FL-PINELLAS-183016665520000140",
+        "US-FL-PINELLAS-183016665520000050"
+      ],
+      "overlapM2": 11767.468565888179,
+      "fractionOfSmaller": 1.0
+    },
+    {
+      "ids": [
+        "US-FL-PINELLAS-183016665520000140",
+        "US-FL-PINELLAS-183016665520000130"
+      ],
+      "overlapM2": 11767.468565888179,
+      "fractionOfSmaller": 1.0
+    },
+    {
+      "ids": [
+        "US-FL-PINELLAS-183016665520000140",
+        "US-FL-PINELLAS-183016665520000030"
+      ],
+      "overlapM2": 11767.468565888179,
+      "fractionOfSmaller": 1.0
+    },
+    {
+      "ids": [
+        "US-FL-PINELLAS-183016665520000140",
+        "US-FL-PINELLAS-183016665520000100"
+      ],
+      "overlapM2": 11767.468565888179,
+      "fractionOfSmaller": 1.0
+    },
+    {
+      "ids": [
+        "US-FL-PINELLAS-183016665520000140",
+        "US-FL-PINELLAS-183016665520000001"
+      ],
+      "overlapM2": 11767.468565888179,
+      "fractionOfSmaller": 1.0
+    },
+    {
+      "ids": [
+        "US-FL-PINELLAS-183016665520000140",
+        "US-FL-PINELLAS-183016665520000070"
+      ],
+      "overlapM2": 11767.468565888179,
+      "fractionOfSmaller": 1.0
+    },
+    {
+      "ids": [
+        "US-FL-PINELLAS-183016665520000140",
+        "US-FL-PINELLAS-183016665520000150"
+      ],
+      "overlapM2": 11767.468565888179,
+      "fractionOfSmaller": 1.0
+    },
+    {
+      "ids": [
+        "US-FL-PINELLAS-183016665520000140",
+        "US-FL-PINELLAS-183016665520000060"
+      ],
+      "overlapM2": 11767.468565888179,
+      "fractionOfSmaller": 1.0
+    },
+    {
+      "ids": [
+        "US-FL-PINELLAS-183016665520000010",
+        "US-FL-PINELLAS-183016665520000090"
+      ],
+      "overlapM2": 11767.468565888179,
+      "fractionOfSmaller": 1.0
+    },
+    {
+      "ids": [
+        "US-FL-PINELLAS-183016665520000010",
+        "US-FL-PINELLAS-183016665520000020"
+      ],
+      "overlapM2": 11767.468565888179,
+      "fractionOfSmaller": 1.0
+    },
+    {
+      "ids": [
+        "US-FL-PINELLAS-183016665520000010",
+        "US-FL-PINELLAS-183016665520000040"
+      ],
+      "overlapM2": 11767.468565888179,
+      "fractionOfSmaller": 1.0
+    },
+    {
+      "ids": [
+        "US-FL-PINELLAS-183016665520000010",
+        "US-FL-PINELLAS-183016665520000160"
+      ],
+      "overlapM2": 11767.468565888179,
+      "fractionOfSmaller": 1.0
+    },
+    {
+      "ids": [
+        "US-FL-PINELLAS-183016665520000010",
+        "US-FL-PINELLAS-183016665520000080"
+      ],
+      "overlapM2": 11767.468565888179,
+      "fractionOfSmaller": 1.0
+    },
+    {
+      "ids": [
+        "US-FL-PINELLAS-183016665520000010",
+        "US-FL-PINELLAS-183016665520000120"
+      ],
+      "overlapM2": 11767.468565888179,
+      "fractionOfSmaller": 1.0
+    },
+    {
+      "ids": [
+        "US-FL-PINELLAS-183016665520000010",
+        "US-FL-PINELLAS-183016665520000050"
+      ],
+      "overlapM2": 11767.468565888179,
+      "fractionOfSmaller": 1.0
+    },
+    {
+      "ids": [
+        "US-FL-PINELLAS-183016665520000010",
+        "US-FL-PINELLAS-183016665520000130"
+      ],
+      "overlapM2": 11767.468565888179,
+      "fractionOfSmaller": 1.0
+    },
+    {
+      "ids": [
+        "US-FL-PINELLAS-183016665520000010",
+        "US-FL-PINELLAS-183016665520000030"
+      ],
+      "overlapM2": 11767.468565888179,
+      "fractionOfSmaller": 1.0
+    },
+    {
+      "ids": [
+        "US-FL-PINELLAS-183016665520000010",
+        "US-FL-PINELLAS-183016665520000100"
+      ],
+      "overlapM2": 11767.468565888179,
+      "fractionOfSmaller": 1.0
+    },
+    {
+      "ids": [
+        "US-FL-PINELLAS-183016665520000010",
+        "US-FL-PINELLAS-183016665520000001"
+      ],
+      "overlapM2": 11767.468565888179,
+      "fractionOfSmaller": 1.0
+    },
+    {
+      "ids": [
+        "US-FL-PINELLAS-183016665520000010",
+        "US-FL-PINELLAS-183016665520000070"
+      ],
+      "overlapM2": 11767.468565888179,
+      "fractionOfSmaller": 1.0
+    },
+    {
+      "ids": [
+        "US-FL-PINELLAS-183016665520000010",
+        "US-FL-PINELLAS-183016665520000150"
+      ],
+      "overlapM2": 11767.468565888179,
+      "fractionOfSmaller": 1.0
+    },
+    {
+      "ids": [
+        "US-FL-PINELLAS-183016665520000010",
+        "US-FL-PINELLAS-183016665520000060"
+      ],
+      "overlapM2": 11767.468565888179,
+      "fractionOfSmaller": 1.0
+    },
+    {
+      "ids": [
+        "US-FL-PINELLAS-183016665520000040",
+        "US-FL-PINELLAS-183016665520000090"
+      ],
+      "overlapM2": 11767.468565888179,
+      "fractionOfSmaller": 1.0
+    },
+    {
+      "ids": [
+        "US-FL-PINELLAS-183016665520000040",
+        "US-FL-PINELLAS-183016665520000020"
+      ],
+      "overlapM2": 11767.468565888179,
+      "fractionOfSmaller": 1.0
+    },
+    {
+      "ids": [
+        "US-FL-PINELLAS-183016665520000040",
+        "US-FL-PINELLAS-183016665520000160"
+      ],
+      "overlapM2": 11767.468565888179,
+      "fractionOfSmaller": 1.0
+    },
+    {
+      "ids": [
+        "US-FL-PINELLAS-183016665520000040",
+        "US-FL-PINELLAS-183016665520000080"
+      ],
+      "overlapM2": 11767.468565888179,
+      "fractionOfSmaller": 1.0
+    },
+    {
+      "ids": [
+        "US-FL-PINELLAS-183016665520000040",
+        "US-FL-PINELLAS-183016665520000120"
+      ],
+      "overlapM2": 11767.468565888179,
+      "fractionOfSmaller": 1.0
+    },
+    {
+      "ids": [
+        "US-FL-PINELLAS-183016665520000040",
+        "US-FL-PINELLAS-183016665520000050"
+      ],
+      "overlapM2": 11767.468565888179,
+      "fractionOfSmaller": 1.0
+    },
+    {
+      "ids": [
+        "US-FL-PINELLAS-183016665520000040",
+        "US-FL-PINELLAS-183016665520000130"
+      ],
+      "overlapM2": 11767.468565888179,
+      "fractionOfSmaller": 1.0
+    },
+    {
+      "ids": [
+        "US-FL-PINELLAS-183016665520000040",
+        "US-FL-PINELLAS-183016665520000030"
+      ],
+      "overlapM2": 11767.468565888179,
+      "fractionOfSmaller": 1.0
+    },
+    {
+      "ids": [
+        "US-FL-PINELLAS-183016665520000040",
+        "US-FL-PINELLAS-183016665520000100"
+      ],
+      "overlapM2": 11767.468565888179,
+      "fractionOfSmaller": 1.0
+    },
+    {
+      "ids": [
+        "US-FL-PINELLAS-183016665520000040",
+        "US-FL-PINELLAS-183016665520000001"
+      ],
+      "overlapM2": 11767.468565888179,
+      "fractionOfSmaller": 1.0
+    },
+    {
+      "ids": [
+        "US-FL-PINELLAS-183016665520000040",
+        "US-FL-PINELLAS-183016665520000070"
+      ],
+      "overlapM2": 11767.468565888179,
+      "fractionOfSmaller": 1.0
+    },
+    {
+      "ids": [
+        "US-FL-PINELLAS-183016665520000040",
+        "US-FL-PINELLAS-183016665520000150"
+      ],
+      "overlapM2": 11767.468565888179,
+      "fractionOfSmaller": 1.0
+    },
+    {
+      "ids": [
+        "US-FL-PINELLAS-183016665520000040",
+        "US-FL-PINELLAS-183016665520000060"
+      ],
+      "overlapM2": 11767.468565888179,
+      "fractionOfSmaller": 1.0
+    },
+    {
+      "ids": [
+        "US-FL-PINELLAS-183016665520000160",
+        "US-FL-PINELLAS-183016665520000090"
+      ],
+      "overlapM2": 11767.468565888179,
+      "fractionOfSmaller": 1.0
+    },
+    {
+      "ids": [
+        "US-FL-PINELLAS-183016665520000160",
+        "US-FL-PINELLAS-183016665520000020"
+      ],
+      "overlapM2": 11767.468565888179,
+      "fractionOfSmaller": 1.0
+    },
+    {
+      "ids": [
+        "US-FL-PINELLAS-183016665520000160",
+        "US-FL-PINELLAS-183016665520000080"
+      ],
+      "overlapM2": 11767.468565888179,
+      "fractionOfSmaller": 1.0
+    },
+    {
+      "ids": [
+        "US-FL-PINELLAS-183016665520000160",
+        "US-FL-PINELLAS-183016665520000120"
+      ],
+      "overlapM2": 11767.468565888179,
+      "fractionOfSmaller": 1.0
+    },
+    {
+      "ids": [
+        "US-FL-PINELLAS-183016665520000160",
+        "US-FL-PINELLAS-183016665520000050"
+      ],
+      "overlapM2": 11767.468565888179,
+      "fractionOfSmaller": 1.0
+    },
+    {
+      "ids": [
+        "US-FL-PINELLAS-183016665520000160",
+        "US-FL-PINELLAS-183016665520000130"
+      ],
+      "overlapM2": 11767.468565888179,
+      "fractionOfSmaller": 1.0
+    },
+    {
+      "ids": [
+        "US-FL-PINELLAS-183016665520000160",
+        "US-FL-PINELLAS-183016665520000030"
+      ],
+      "overlapM2": 11767.468565888179,
+      "fractionOfSmaller": 1.0
+    },
+    {
+      "ids": [
+        "US-FL-PINELLAS-183016665520000160",
+        "US-FL-PINELLAS-183016665520000100"
+      ],
+      "overlapM2": 11767.468565888179,
+      "fractionOfSmaller": 1.0
+    },
+    {
+      "ids": [
+        "US-FL-PINELLAS-183016665520000160",
+        "US-FL-PINELLAS-183016665520000001"
+      ],
+      "overlapM2": 11767.468565888179,
+      "fractionOfSmaller": 1.0
+    },
+    {
+      "ids": [
+        "US-FL-PINELLAS-183016665520000160",
+        "US-FL-PINELLAS-183016665520000070"
+      ],
+      "overlapM2": 11767.468565888179,
+      "fractionOfSmaller": 1.0
+    },
+    {
+      "ids": [
+        "US-FL-PINELLAS-183016665520000160",
+        "US-FL-PINELLAS-183016665520000150"
+      ],
+      "overlapM2": 11767.468565888179,
+      "fractionOfSmaller": 1.0
+    },
+    {
+      "ids": [
+        "US-FL-PINELLAS-183016665520000160",
+        "US-FL-PINELLAS-183016665520000060"
+      ],
+      "overlapM2": 11767.468565888179,
+      "fractionOfSmaller": 1.0
+    },
+    {
+      "ids": [
+        "US-FL-PINELLAS-183016665520000080",
+        "US-FL-PINELLAS-183016665520000090"
+      ],
+      "overlapM2": 11767.468565888179,
+      "fractionOfSmaller": 1.0
+    },
+    {
+      "ids": [
+        "US-FL-PINELLAS-183016665520000080",
+        "US-FL-PINELLAS-183016665520000020"
+      ],
+      "overlapM2": 11767.468565888179,
+      "fractionOfSmaller": 1.0
+    },
+    {
+      "ids": [
+        "US-FL-PINELLAS-183016665520000080",
+        "US-FL-PINELLAS-183016665520000120"
+      ],
+      "overlapM2": 11767.468565888179,
+      "fractionOfSmaller": 1.0
+    },
+    {
+      "ids": [
+        "US-FL-PINELLAS-183016665520000080",
+        "US-FL-PINELLAS-183016665520000050"
+      ],
+      "overlapM2": 11767.468565888179,
+      "fractionOfSmaller": 1.0
+    },
+    {
+      "ids": [
+        "US-FL-PINELLAS-183016665520000080",
+        "US-FL-PINELLAS-183016665520000130"
+      ],
+      "overlapM2": 11767.468565888179,
+      "fractionOfSmaller": 1.0
+    },
+    {
+      "ids": [
+        "US-FL-PINELLAS-183016665520000080",
+        "US-FL-PINELLAS-183016665520000030"
+      ],
+      "overlapM2": 11767.468565888179,
+      "fractionOfSmaller": 1.0
+    },
+    {
+      "ids": [
+        "US-FL-PINELLAS-183016665520000080",
+        "US-FL-PINELLAS-183016665520000100"
+      ],
+      "overlapM2": 11767.468565888179,
+      "fractionOfSmaller": 1.0
+    },
+    {
+      "ids": [
+        "US-FL-PINELLAS-183016665520000080",
+        "US-FL-PINELLAS-183016665520000001"
+      ],
+      "overlapM2": 11767.468565888179,
+      "fractionOfSmaller": 1.0
+    },
+    {
+      "ids": [
+        "US-FL-PINELLAS-183016665520000080",
+        "US-FL-PINELLAS-183016665520000070"
+      ],
+      "overlapM2": 11767.468565888179,
+      "fractionOfSmaller": 1.0
+    },
+    {
+      "ids": [
+        "US-FL-PINELLAS-183016665520000080",
+        "US-FL-PINELLAS-183016665520000150"
+      ],
+      "overlapM2": 11767.468565888179,
+      "fractionOfSmaller": 1.0
+    },
+    {
+      "ids": [
+        "US-FL-PINELLAS-183016665520000080",
+        "US-FL-PINELLAS-183016665520000060"
+      ],
+      "overlapM2": 11767.468565888179,
+      "fractionOfSmaller": 1.0
+    },
+    {
+      "ids": [
+        "US-FL-PINELLAS-183016665520000090",
+        "US-FL-PINELLAS-183016665520000020"
+      ],
+      "overlapM2": 11767.468565888179,
+      "fractionOfSmaller": 1.0
+    },
+    {
+      "ids": [
+        "US-FL-PINELLAS-183016665520000090",
+        "US-FL-PINELLAS-183016665520000120"
+      ],
+      "overlapM2": 11767.468565888179,
+      "fractionOfSmaller": 1.0
+    },
+    {
+      "ids": [
+        "US-FL-PINELLAS-183016665520000090",
+        "US-FL-PINELLAS-183016665520000050"
+      ],
+      "overlapM2": 11767.468565888179,
+      "fractionOfSmaller": 1.0
+    },
+    {
+      "ids": [
+        "US-FL-PINELLAS-183016665520000090",
+        "US-FL-PINELLAS-183016665520000130"
+      ],
+      "overlapM2": 11767.468565888179,
+      "fractionOfSmaller": 1.0
+    },
+    {
+      "ids": [
+        "US-FL-PINELLAS-183016665520000090",
+        "US-FL-PINELLAS-183016665520000030"
+      ],
+      "overlapM2": 11767.468565888179,
+      "fractionOfSmaller": 1.0
+    },
+    {
+      "ids": [
+        "US-FL-PINELLAS-183016665520000090",
+        "US-FL-PINELLAS-183016665520000100"
+      ],
+      "overlapM2": 11767.468565888179,
+      "fractionOfSmaller": 1.0
+    },
+    {
+      "ids": [
+        "US-FL-PINELLAS-183016665520000090",
+        "US-FL-PINELLAS-183016665520000001"
+      ],
+      "overlapM2": 11767.468565888179,
+      "fractionOfSmaller": 1.0
+    },
+    {
+      "ids": [
+        "US-FL-PINELLAS-183016665520000090",
+        "US-FL-PINELLAS-183016665520000070"
+      ],
+      "overlapM2": 11767.468565888179,
+      "fractionOfSmaller": 1.0
+    },
+    {
+      "ids": [
+        "US-FL-PINELLAS-183016665520000090",
+        "US-FL-PINELLAS-183016665520000150"
+      ],
+      "overlapM2": 11767.468565888179,
+      "fractionOfSmaller": 1.0
+    },
+    {
+      "ids": [
+        "US-FL-PINELLAS-183016665520000090",
+        "US-FL-PINELLAS-183016665520000060"
+      ],
+      "overlapM2": 11767.468565888179,
+      "fractionOfSmaller": 1.0
+    },
+    {
+      "ids": [
+        "US-FL-PINELLAS-183016665520000130",
+        "US-FL-PINELLAS-183016665520000020"
+      ],
+      "overlapM2": 11767.468565888179,
+      "fractionOfSmaller": 1.0
+    },
+    {
+      "ids": [
+        "US-FL-PINELLAS-183016665520000130",
+        "US-FL-PINELLAS-183016665520000120"
+      ],
+      "overlapM2": 11767.468565888179,
+      "fractionOfSmaller": 1.0
+    },
+    {
+      "ids": [
+        "US-FL-PINELLAS-183016665520000130",
+        "US-FL-PINELLAS-183016665520000050"
+      ],
+      "overlapM2": 11767.468565888179,
+      "fractionOfSmaller": 1.0
+    },
+    {
+      "ids": [
+        "US-FL-PINELLAS-183016665520000130",
+        "US-FL-PINELLAS-183016665520000030"
+      ],
+      "overlapM2": 11767.468565888179,
+      "fractionOfSmaller": 1.0
+    },
+    {
+      "ids": [
+        "US-FL-PINELLAS-183016665520000130",
+        "US-FL-PINELLAS-183016665520000100"
+      ],
+      "overlapM2": 11767.468565888179,
+      "fractionOfSmaller": 1.0
+    },
+    {
+      "ids": [
+        "US-FL-PINELLAS-183016665520000130",
+        "US-FL-PINELLAS-183016665520000001"
+      ],
+      "overlapM2": 11767.468565888179,
+      "fractionOfSmaller": 1.0
+    },
+    {
+      "ids": [
+        "US-FL-PINELLAS-183016665520000130",
+        "US-FL-PINELLAS-183016665520000070"
+      ],
+      "overlapM2": 11767.468565888179,
+      "fractionOfSmaller": 1.0
+    },
+    {
+      "ids": [
+        "US-FL-PINELLAS-183016665520000130",
+        "US-FL-PINELLAS-183016665520000150"
+      ],
+      "overlapM2": 11767.468565888179,
+      "fractionOfSmaller": 1.0
+    },
+    {
+      "ids": [
+        "US-FL-PINELLAS-183016665520000130",
+        "US-FL-PINELLAS-183016665520000060"
+      ],
+      "overlapM2": 11767.468565888179,
+      "fractionOfSmaller": 1.0
+    },
+    {
+      "ids": [
+        "US-FL-PINELLAS-183016665520000100",
+        "US-FL-PINELLAS-183016665520000020"
+      ],
+      "overlapM2": 11767.468565888179,
+      "fractionOfSmaller": 1.0
+    },
+    {
+      "ids": [
+        "US-FL-PINELLAS-183016665520000100",
+        "US-FL-PINELLAS-183016665520000120"
+      ],
+      "overlapM2": 11767.468565888179,
+      "fractionOfSmaller": 1.0
+    },
+    {
+      "ids": [
+        "US-FL-PINELLAS-183016665520000100",
+        "US-FL-PINELLAS-183016665520000050"
+      ],
+      "overlapM2": 11767.468565888179,
+      "fractionOfSmaller": 1.0
+    },
+    {
+      "ids": [
+        "US-FL-PINELLAS-183016665520000100",
+        "US-FL-PINELLAS-183016665520000030"
+      ],
+      "overlapM2": 11767.468565888179,
+      "fractionOfSmaller": 1.0
+    },
+    {
+      "ids": [
+        "US-FL-PINELLAS-183016665520000100",
+        "US-FL-PINELLAS-183016665520000001"
+      ],
+      "overlapM2": 11767.468565888179,
+      "fractionOfSmaller": 1.0
+    },
+    {
+      "ids": [
+        "US-FL-PINELLAS-183016665520000100",
+        "US-FL-PINELLAS-183016665520000070"
+      ],
+      "overlapM2": 11767.468565888179,
+      "fractionOfSmaller": 1.0
+    },
+    {
+      "ids": [
+        "US-FL-PINELLAS-183016665520000100",
+        "US-FL-PINELLAS-183016665520000150"
+      ],
+      "overlapM2": 11767.468565888179,
+      "fractionOfSmaller": 1.0
+    },
+    {
+      "ids": [
+        "US-FL-PINELLAS-183016665520000100",
+        "US-FL-PINELLAS-183016665520000060"
+      ],
+      "overlapM2": 11767.468565888179,
+      "fractionOfSmaller": 1.0
+    },
+    {
+      "ids": [
+        "US-FL-PINELLAS-183016665520000001",
+        "US-FL-PINELLAS-183016665520000020"
+      ],
+      "overlapM2": 11767.468565888179,
+      "fractionOfSmaller": 1.0
+    },
+    {
+      "ids": [
+        "US-FL-PINELLAS-183016665520000001",
+        "US-FL-PINELLAS-183016665520000120"
+      ],
+      "overlapM2": 11767.468565888179,
+      "fractionOfSmaller": 1.0
+    },
+    {
+      "ids": [
+        "US-FL-PINELLAS-183016665520000001",
+        "US-FL-PINELLAS-183016665520000050"
+      ],
+      "overlapM2": 11767.468565888179,
+      "fractionOfSmaller": 1.0
+    },
+    {
+      "ids": [
+        "US-FL-PINELLAS-183016665520000001",
+        "US-FL-PINELLAS-183016665520000030"
+      ],
+      "overlapM2": 11767.468565888179,
+      "fractionOfSmaller": 1.0
+    },
+    {
+      "ids": [
+        "US-FL-PINELLAS-183016665520000001",
+        "US-FL-PINELLAS-183016665520000070"
+      ],
+      "overlapM2": 11767.468565888179,
+      "fractionOfSmaller": 1.0
+    },
+    {
+      "ids": [
+        "US-FL-PINELLAS-183016665520000001",
+        "US-FL-PINELLAS-183016665520000150"
+      ],
+      "overlapM2": 11767.468565888179,
+      "fractionOfSmaller": 1.0
+    },
+    {
+      "ids": [
+        "US-FL-PINELLAS-183016665520000001",
+        "US-FL-PINELLAS-183016665520000060"
+      ],
+      "overlapM2": 11767.468565888179,
+      "fractionOfSmaller": 1.0
+    },
+    {
+      "ids": [
+        "US-FL-PINELLAS-183016665520000070",
+        "US-FL-PINELLAS-183016665520000020"
+      ],
+      "overlapM2": 11767.468565888179,
+      "fractionOfSmaller": 1.0
+    },
+    {
+      "ids": [
+        "US-FL-PINELLAS-183016665520000070",
+        "US-FL-PINELLAS-183016665520000120"
+      ],
+      "overlapM2": 11767.468565888179,
+      "fractionOfSmaller": 1.0
+    },
+    {
+      "ids": [
+        "US-FL-PINELLAS-183016665520000070",
+        "US-FL-PINELLAS-183016665520000050"
+      ],
+      "overlapM2": 11767.468565888179,
+      "fractionOfSmaller": 1.0
+    },
+    {
+      "ids": [
+        "US-FL-PINELLAS-183016665520000070",
+        "US-FL-PINELLAS-183016665520000030"
+      ],
+      "overlapM2": 11767.468565888179,
+      "fractionOfSmaller": 1.0
+    },
+    {
+      "ids": [
+        "US-FL-PINELLAS-183016665520000070",
+        "US-FL-PINELLAS-183016665520000150"
+      ],
+      "overlapM2": 11767.468565888179,
+      "fractionOfSmaller": 1.0
+    },
+    {
+      "ids": [
+        "US-FL-PINELLAS-183016665520000070",
+        "US-FL-PINELLAS-183016665520000060"
+      ],
+      "overlapM2": 11767.468565888179,
+      "fractionOfSmaller": 1.0
+    },
+    {
+      "ids": [
+        "US-FL-PINELLAS-183016665520000150",
+        "US-FL-PINELLAS-183016665520000020"
+      ],
+      "overlapM2": 11767.468565888179,
+      "fractionOfSmaller": 1.0
+    },
+    {
+      "ids": [
+        "US-FL-PINELLAS-183016665520000150",
+        "US-FL-PINELLAS-183016665520000120"
+      ],
+      "overlapM2": 11767.468565888179,
+      "fractionOfSmaller": 1.0
+    },
+    {
+      "ids": [
+        "US-FL-PINELLAS-183016665520000150",
+        "US-FL-PINELLAS-183016665520000050"
+      ],
+      "overlapM2": 11767.468565888179,
+      "fractionOfSmaller": 1.0
+    },
+    {
+      "ids": [
+        "US-FL-PINELLAS-183016665520000150",
+        "US-FL-PINELLAS-183016665520000030"
+      ],
+      "overlapM2": 11767.468565888179,
+      "fractionOfSmaller": 1.0
+    },
+    {
+      "ids": [
+        "US-FL-PINELLAS-183016665520000150",
+        "US-FL-PINELLAS-183016665520000060"
+      ],
+      "overlapM2": 11767.468565888179,
+      "fractionOfSmaller": 1.0
+    },
+    {
+      "ids": [
+        "US-FL-PINELLAS-183016665520000060",
+        "US-FL-PINELLAS-183016665520000020"
+      ],
+      "overlapM2": 11767.468565888179,
+      "fractionOfSmaller": 1.0
+    },
+    {
+      "ids": [
+        "US-FL-PINELLAS-183016665520000060",
+        "US-FL-PINELLAS-183016665520000120"
+      ],
+      "overlapM2": 11767.468565888179,
+      "fractionOfSmaller": 1.0
+    },
+    {
+      "ids": [
+        "US-FL-PINELLAS-183016665520000060",
+        "US-FL-PINELLAS-183016665520000050"
+      ],
+      "overlapM2": 11767.468565888179,
+      "fractionOfSmaller": 1.0
+    },
+    {
+      "ids": [
+        "US-FL-PINELLAS-183016665520000060",
+        "US-FL-PINELLAS-183016665520000030"
+      ],
+      "overlapM2": 11767.468565888179,
+      "fractionOfSmaller": 1.0
+    },
+    {
+      "ids": [
+        "US-FL-PINELLAS-183016665520000050",
+        "US-FL-PINELLAS-183016665520000020"
+      ],
+      "overlapM2": 11767.468565888179,
+      "fractionOfSmaller": 1.0
+    },
+    {
+      "ids": [
+        "US-FL-PINELLAS-183016665520000050",
+        "US-FL-PINELLAS-183016665520000120"
+      ],
+      "overlapM2": 11767.468565888179,
+      "fractionOfSmaller": 1.0
+    },
+    {
+      "ids": [
+        "US-FL-PINELLAS-183016665520000050",
+        "US-FL-PINELLAS-183016665520000030"
+      ],
+      "overlapM2": 11767.468565888179,
+      "fractionOfSmaller": 1.0
+    },
+    {
+      "ids": [
+        "US-FL-PINELLAS-183016665520000020",
+        "US-FL-PINELLAS-183016665520000120"
+      ],
+      "overlapM2": 11767.468565888179,
+      "fractionOfSmaller": 1.0
+    },
+    {
+      "ids": [
+        "US-FL-PINELLAS-183016665520000020",
+        "US-FL-PINELLAS-183016665520000030"
+      ],
+      "overlapM2": 11767.468565888179,
+      "fractionOfSmaller": 1.0
+    },
+    {
+      "ids": [
+        "US-FL-PINELLAS-183016665520000030",
+        "US-FL-PINELLAS-183016665520000120"
+      ],
+      "overlapM2": 11767.468565888179,
+      "fractionOfSmaller": 1.0
+    }
+  ],
+  "sumPairwiseOverlapM2": 1600375.7249607977,
+  "operationErrors": [],
+  "areaM2": {
+    "min": 180.34883238569273,
+    "median": 6550.265714598827,
+    "max": 43145.73221447948
+  },
+  "features": [
+    {
+      "id": "US-FL-PINELLAS-183016215820010010",
+      "areaM2": 43145.73221447948,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "US-FL-PINELLAS-183016697684004703",
+      "areaM2": 1520.22306426278,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "US-FL-PINELLAS-183016215820020030",
+      "areaM2": 4427.82831717453,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "US-FL-PINELLAS-183016303380000131",
+      "areaM2": 14981.113154513912,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "US-FL-PINELLAS-183016215820020010",
+      "areaM2": 3627.70249181816,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "US-FL-PINELLAS-183016697684003307",
+      "areaM2": 341.5073790295512,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "US-FL-PINELLAS-183016697684003306",
+      "areaM2": 4517.490081607531,
+      "valid": true,
+      "empty": false,
+      "parts": 2
+    },
+    {
+      "id": "US-FL-PINELLAS-183016697684003310",
+      "areaM2": 960.2928257969297,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "US-FL-PINELLAS-183016697684003303",
+      "areaM2": 6274.774895688654,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "US-FL-PINELLAS-183016697684003314",
+      "areaM2": 180.34883238569273,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "US-FL-PINELLAS-183016697684003304",
+      "areaM2": 3271.1034961354485,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "US-FL-PINELLAS-183016697684003302",
+      "areaM2": 3560.399409139972,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "US-FL-PINELLAS-183016697684004801",
+      "areaM2": 4372.294626930051,
+      "valid": true,
+      "empty": false,
+      "parts": 2
+    },
+    {
+      "id": "US-FL-PINELLAS-183016697684003305",
+      "areaM2": 2768.7559588647487,
+      "valid": true,
+      "empty": false,
+      "parts": 2
+    },
+    {
+      "id": "US-FL-PINELLAS-183016697684003308",
+      "areaM2": 4911.79285340044,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "US-FL-PINELLAS-183016697684003301",
+      "areaM2": 1482.944089582656,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "US-FL-PINELLAS-183016663010000080",
+      "areaM2": 7685.913934309005,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "US-FL-PINELLAS-183016663010000090",
+      "areaM2": 23209.791886471492,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "US-FL-PINELLAS-183016663010000060",
+      "areaM2": 6166.915884571972,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "US-FL-PINELLAS-183016665520000110",
+      "areaM2": 11767.468565888179,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "US-FL-PINELLAS-183016665520000140",
+      "areaM2": 11767.468565888179,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "US-FL-PINELLAS-183016665520000010",
+      "areaM2": 11767.468565888179,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "US-FL-PINELLAS-183016665520000040",
+      "areaM2": 11767.468565888179,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "US-FL-PINELLAS-183016665520000160",
+      "areaM2": 11767.468565888179,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "US-FL-PINELLAS-183016665520000080",
+      "areaM2": 11767.468565888179,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "US-FL-PINELLAS-183016665520000090",
+      "areaM2": 11767.468565888179,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "US-FL-PINELLAS-183016557510000010",
+      "areaM2": 6825.7565335089985,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "US-FL-PINELLAS-183016665520000130",
+      "areaM2": 11767.468565888179,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "US-FL-PINELLAS-183016663010000020",
+      "areaM2": 5019.889084183351,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "US-FL-PINELLAS-183016665520000100",
+      "areaM2": 11767.468565888179,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "US-FL-PINELLAS-183016665520000001",
+      "areaM2": 11767.468565888179,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "US-FL-PINELLAS-183016665520000070",
+      "areaM2": 11767.468565888179,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "US-FL-PINELLAS-183016665520000150",
+      "areaM2": 11767.468565888179,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "US-FL-PINELLAS-183016665520000060",
+      "areaM2": 11767.468565888179,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "US-FL-PINELLAS-183016665520000050",
+      "areaM2": 11767.468565888179,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "US-FL-PINELLAS-183016665520000020",
+      "areaM2": 11767.468565888179,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "US-FL-PINELLAS-183016665520000030",
+      "areaM2": 11767.468565888179,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "US-FL-PINELLAS-183016665520000120",
+      "areaM2": 11767.468565888179,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "US-FL-PINELLAS-183016663010000051",
+      "areaM2": 5004.126924877532,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "US-FL-PINELLAS-183016697684004803",
+      "areaM2": 13086.447674725221,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "US-FL-PINELLAS-183016697684004701",
+      "areaM2": 2170.113543158931,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "US-FL-PINELLAS-183016697684004802",
+      "areaM2": 4523.944121910027,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "US-FL-PINELLAS-183016697684004808",
+      "areaM2": 7777.123639206423,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "US-FL-PINELLAS-173016060290000040",
+      "areaM2": 1059.0318804627686,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "US-FL-PINELLAS-173016060290000060",
+      "areaM2": 1602.8082414674361,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "US-FL-PINELLAS-173016060290000070",
+      "areaM2": 1721.7882176578153,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "US-FL-PINELLAS-173016017730001190",
+      "areaM2": 10262.852714036962,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "US-FL-PINELLAS-173016060290000050",
+      "areaM2": 1062.6101257488972,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "US-FL-PINELLAS-173016017730000050",
+      "areaM2": 1889.74029563443,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "US-FL-PINELLAS-173016060290000080",
+      "areaM2": 989.9241603457067,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    }
+  ]
+}

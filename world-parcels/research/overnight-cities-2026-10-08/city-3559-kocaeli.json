@@ -1,0 +1,124 @@
+{
+  "name": "Kocaeli",
+  "country": "Türkiye",
+  "countryCode": "TR",
+  "rank": 729,
+  "point": [
+    40.7607874772498,
+    29.9033393198989
+  ],
+  "population2025k": 737.38,
+  "schemaVersion": 1,
+  "kind": "city_parcel_source_research",
+  "checkedAt": "2026-10-09",
+  "populationUnit": "persons",
+  "status": "complete",
+  "verifiedSample": false,
+  "publicParcelGeometryFound": false,
+  "runtimeReadiness": "not_enabled_no_verified_public_geometry",
+  "priorEvidenceFiles": [],
+  "scopeLimits": "UN WUP 2025 population-weighted settlement centroid is a locator, not an official city boundary or parcel identity. No owner, address, tax or account fields were requested or copied; no login credentials or private tokens were used.",
+  "pointBasis": "UN WUP 2025 population-weighted settlement centroid; this is not a municipal boundary or a parcel-coverage claim.",
+  "registryFound": true,
+  "registryBasis": "Kocaeli Büyükşehir Belediyesi’s official Şehir Rehberi service page describes online property/zoning lookups by block/parcel, address or map click. Its official announcement says the map provides cadastral information and that the city operates its own interactive digital map; official TKGM sources list the Kocaeli Cadastre Directorate and public Parsel Sorgu service. No feature-layer schema or Kocaeli polygon response was verified. The national coordinate API’s previously observed daily rate limit is a throttle and is not treated as no coverage; it was not retried for this city.",
+  "resultCategory": "official_city_cadastre_map_and_local_cadastre_office_no_city_polygon_response_verified",
+  "technicalBlocker": "No anonymous full polygon feature response or safe source schema was verified in this pass.",
+  "remainingUncertainty": "Whether the city map’s parcel layer exposes full geometry anonymously, whether its point falls on an operating cadastral parcel, and service-layer extent/schema/currentness.",
+  "freshResearch": {
+    "executedQueries": [
+      {
+        "language": "English",
+        "query": "Kocaeli official cadastral parcel GIS map parcel query cadastre",
+        "result": "Official Kocaeli city sources describe a public Şehir Rehberi with cadastral lookup; TKGM lists the local Kocaeli Cadastre Directorate and a public national parcel-search service. No Kocaeli-specific anonymous vector schema or polygon feature was obtained.",
+        "method": "Separate language-specific web search and review of official primary sources"
+      },
+      {
+        "language": "Turkish",
+        "query": "Kocaeli kadastro parsel sorgu harita resmi belediye kent rehberi GIS",
+        "result": "Kocaeli Büyükşehir Belediyesi Şehir Rehberi ada/parsel, adres veya harita üzerinden imar sorgusu sunuyor; TKGM’nin resmî kaynakları Kocaeli Kadastro Müdürlüğü’nü ve Parsel Sorgu hizmetini listeliyor. Bu araştırmada Kocaeli için anonim vektör katman şeması veya parsel geometrisi doğrulanmadı.",
+        "method": "Separate language-specific web search and review of official primary sources"
+      }
+    ],
+    "officialSources": [
+      {
+        "url": "https://www.kocaeli.bel.tr/hizmet/sehir-rehberi-251.html",
+        "observation": "Official Kocaeli Metropolitan Municipality page says Şehir Rehberi supports online property/zoning queries by block/parcel number, address or map click."
+      },
+      {
+        "url": "https://www.kocaeli.bel.tr/haber/kocaeli-sehir-rehberi-uygulamasi-yeniden-tasarlandi-39020.html",
+        "observation": "Official city announcement describes map-click “Kadastro Bilgileri”, address and parcel lookup in its public interactive city guide."
+      },
+      {
+        "url": "https://rehber.kocaeli.bel.tr/portal/",
+        "observation": "Official viewer linked by the city service page; public web-reader request timed out, so no layer metadata or feature endpoint was obtained."
+      },
+      {
+        "url": "https://www.tkgm.gov.tr/istanbul-bm/bagli-mudurlukler/kocaeli-kadastro-mudurlugu",
+        "observation": "Official TKGM page lists the Kocaeli Cadastre Directorate in İzmit/Kocaeli and its local contact/address."
+      },
+      {
+        "url": "https://www.tkgm.gov.tr/e-hizmetler/sik-kullanilanlar/parsel-sorgulama",
+        "observation": "Official TKGM page documents the free public parcel query/map and safe parcel attributes, coordinate, sheet and KML/PDF functions; it states owner-name and Turkish ID searches are not available."
+      }
+    ],
+    "coverageAssessment": {
+      "verifiedOpenScope": "Official city and national sources establish a local Kocaeli cadastral office, public city map and public TKGM parcel-search service. The city viewer did not load through the research reader, and no Kocaeli-specific safe vector schema or polygon response was verified. Known TKGM daily query throttling is not interpreted as absence.",
+      "citywideVerified": false,
+      "countrywideVerified": false,
+      "geometryVerified": false
+    },
+    "blocker": "The official public map/service evidence does not expose a verified anonymous parcel polygon response with a safe schema.",
+    "remainingUncertainty": "Whether the city map’s parcel layer exposes full geometry anonymously, whether its point falls on an operating cadastral parcel, and service-layer extent/schema/currentness."
+  },
+  "cityId": "wup2025:3559",
+  "populationPlausibility2025": "High",
+  "sourceIds": [],
+  "queueRank": 729,
+  "wupCityCode": 3559,
+  "centerLatLon": [
+    40.7607874772498,
+    29.9033393198989
+  ],
+  "population2025": 737380,
+  "verifiedSampleFile": null,
+  "adapterReady": false,
+  "source": {
+    "name": "Kocaeli official cadastral services and city map",
+    "operator": "Kocaeli Büyükşehir Belediyesi / Şehir Rehberi and TKGM Kocaeli Kadastro Müdürlüğü",
+    "url": "https://www.kocaeli.bel.tr/hizmet/sehir-rehberi-251.html",
+    "serviceType": "Kocaeli Büyükşehir Belediyesi’s official Şehir Rehberi service page describes online property/zoning lookups by block/parcel, address or map click. Its official announcement says the map provides cadastral information and that the city operates its own interactive digital map; official TKGM sources list the Kocaeli Cadastre Directorate and public Parsel Sorgu service. No feature-layer schema or Kocaeli polygon response was verified. The national coordinate API’s previously observed daily rate limit is a throttle and is not treated as no coverage; it was not retried for this city.",
+    "geometryType": null,
+    "nativeIdFields": [],
+    "requestedAttributes": [],
+    "personalAttributesRequested": false,
+    "directGeometryQueryVerified": false,
+    "directMetadataSchemaVerified": false,
+    "nativeIdEvidence": "No public feature schema or parcel record returned.",
+    "scope": "Official city and national sources establish a local Kocaeli cadastral office, public city map and public TKGM parcel-search service. The city viewer did not load through the research reader, and no Kocaeli-specific safe vector schema or polygon response was verified. Known TKGM daily query throttling is not interpreted as absence."
+  },
+  "coverageAssessment": {
+    "verifiedOpenScope": "Official city and national sources establish a local Kocaeli cadastral office, public city map and public TKGM parcel-search service. The city viewer did not load through the research reader, and no Kocaeli-specific safe vector schema or polygon response was verified. Known TKGM daily query throttling is not interpreted as absence.",
+    "citywideVerified": false,
+    "countrywideVerified": false,
+    "geometryVerified": false
+  },
+  "runtimeAssessment": {
+    "status": "not_enabled_no_verified_public_geometry",
+    "reason": "Kocaeli Büyükşehir Belediyesi’s official Şehir Rehberi service page describes online property/zoning lookups by block/parcel, address or map click. Its official announcement says the map provides cadastral information and that the city operates its own interactive digital map; official TKGM sources list the Kocaeli Cadastre Directorate and public Parsel Sorgu service. No feature-layer schema or Kocaeli polygon response was verified. The national coordinate API’s previously observed daily rate limit is a throttle and is not treated as no coverage; it was not retried for this city."
+  },
+  "registryEvidenceUrls": [
+    "https://www.kocaeli.bel.tr/hizmet/sehir-rehberi-251.html",
+    "https://www.kocaeli.bel.tr/haber/kocaeli-sehir-rehberi-uygulamasi-yeniden-tasarlandi-39020.html",
+    "https://rehber.kocaeli.bel.tr/portal/",
+    "https://www.tkgm.gov.tr/istanbul-bm/bagli-mudurlukler/kocaeli-kadastro-mudurlugu",
+    "https://www.tkgm.gov.tr/e-hizmetler/sik-kullanilanlar/parsel-sorgulama"
+  ],
+  "rootPrimaryReadback": {
+    "url": "https://www.kocaeli.bel.tr/hizmet/sehir-rehberi-251.html",
+    "fetch": 200,
+    "contentType": "text/html; charset=UTF-8",
+    "title": "Şehir Rehberi - Kocaeli Büyükşehir Belediyesi"
+  },
+  "rootReviewNote": "Reviewed the local primary institution/service evidence and stated geometry/access/identity limits. Fresh page readback failures are preserved separately and do not imply absent data; matching primary indexed text supplements the direct readback where available. No public geometry was verified for this city.",
+  "rootReviewedAt": "2026-10-09T03:06:11.183980+00:00"
+}

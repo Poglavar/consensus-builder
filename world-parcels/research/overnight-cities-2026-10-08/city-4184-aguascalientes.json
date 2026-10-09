@@ -1,0 +1,115 @@
+{
+  "schemaVersion": 1,
+  "kind": "city_parcel_source_research",
+  "checkedAt": "2026-10-09",
+  "name": "Aguascalientes",
+  "country": "Mexico",
+  "countryCode": "MX",
+  "populationUnit": "persons",
+  "status": "complete",
+  "registryFound": true,
+  "registryBasis": "The Aguascalientes municipal government exposes its Catastro/Predial system, and the official state Instituto Registral y Catastral identifies its online cadastral service. The official VisorAGS page shows a Predios layer and property-information flow. These establish local/state cadastral service presence, but no safe anonymous geometry-only endpoint/schema was verified.",
+  "registryEvidenceUrls": [
+    "https://ags.gob.mx/",
+    "https://ags.gob.mx/servicios/pisabit/loginCatastro.asp",
+    "https://eservicios2.aguascalientes.gob.mx/IRC/ManifestacionEnLinea/index",
+    "https://visor.aguascalientes.gob.mx/visorags/vdi"
+  ],
+  "verifiedSample": false,
+  "publicParcelGeometryFound": false,
+  "runtimeReadiness": "not_enabled_no_verified_public_geometry",
+  "wupCityCode": 4184,
+  "cityId": "wup2025:4184",
+  "centerLatLon": [
+    21.8879380080795,
+    -102.281544395184
+  ],
+  "rank": 611,
+  "queueRank": 611,
+  "population2025": 856387,
+  "population2025k": 856.387,
+  "pointBasis": "UN WUP 2025 population-weighted settlement centroid; this is not a municipal boundary or a parcel-coverage claim.",
+  "resultCategory": "city_registry_confirmed_no_public_geometry",
+  "technicalBlocker": "The public viewer is property-oriented and its reviewed page reveals no geometry-only schema; catastral-key and property-detail flows were left unused.",
+  "scopeLimits": "The Aguascalientes municipal government exposes its Catastro/Predial system, and the official state Instituto Registral y Catastral identifies its online cadastral service. The official VisorAGS page shows a Predios layer and property-information flow. These establish local/state cadastral service presence, but no safe anonymous geometry-only endpoint/schema was verified. No full public parcel polygon geometry is retained.",
+  "remainingUncertainty": "No geometry-only schema or public anonymous vector route was verified; institutional evidence does not by itself establish complete citywide polygon coverage.",
+  "research": {
+    "executedQueries": [
+      {
+        "language": "English",
+        "query": "Aguascalientes Mexico official cadastral parcel map GIS municipal registry",
+        "scope": "Find city-specific cadastral service evidence and public geometry-only endpoints.",
+        "result": "Official municipal and state portals establish cadastral services; the official VisorAGS viewer lists Predios and address/property information controls. Its public text does not reveal a geometry-only endpoint or safe vector schema. No address, cadastral key or parcel detail was submitted.",
+        "actualResultUrls": [
+          "https://ags.gob.mx/",
+          "https://ags.gob.mx/servicios/pisabit/loginCatastro.asp",
+          "https://eservicios2.aguascalientes.gob.mx/IRC/ManifestacionEnLinea/index",
+          "https://visor.aguascalientes.gob.mx/visorags/vdi"
+        ],
+        "executionMethod": "Separate public English/local-language search and public-page review; no property or identity query."
+      },
+      {
+        "language": "Spanish",
+        "query": "catastro predios mapa visor Aguascalientes municipio padrón catastral oficial",
+        "scope": "Confirmar el servicio catastral municipal y buscar un servicio público que permita obtener solo geometría.",
+        "result": "El Ayuntamiento publica su sistema Catastro/Predial; el Instituto Registral y Catastral estatal describe una plataforma oficial que solicita clave catastral para trámites; VisorAGS muestra la capa Predios y controles de búsqueda/detalle. No se envió dirección, clave ni consulta de predio y no se confirmó una capa vectorial de solo geometría.",
+        "actualResultUrls": [
+          "https://ags.gob.mx/",
+          "https://ags.gob.mx/servicios/pisabit/loginCatastro.asp",
+          "https://eservicios2.aguascalientes.gob.mx/IRC/ManifestacionEnLinea/index",
+          "https://visor.aguascalientes.gob.mx/visorags/vdi"
+        ],
+        "executionMethod": "Separate public English/local-language search and public-page review; no property or identity query."
+      }
+    ],
+    "officialSources": [
+      {
+        "url": "https://ags.gob.mx/",
+        "observation": "Official Aguascalientes municipal government portal; links municipal services including Catastro/Predial."
+      },
+      {
+        "url": "https://ags.gob.mx/servicios/pisabit/loginCatastro.asp",
+        "observation": "Municipal Catastro/Predial login entry. Login flow was not used."
+      },
+      {
+        "url": "https://eservicios2.aguascalientes.gob.mx/IRC/ManifestacionEnLinea/index",
+        "observation": "Official state Instituto Registral y Catastral cadastral-service page; requests property key and applicant documentation for a procedure. No form was submitted."
+      },
+      {
+        "url": "https://visor.aguascalientes.gob.mx/visorags/vdi",
+        "observation": "Official VisorAGS page lists a Predios layer and address/property-information controls. No address search, parcel selection or property-detail action was used; no geometry schema was exposed in the public page text."
+      }
+    ]
+  },
+  "source": {
+    "sourceId": "mx-aguascalientes-cadastre-services",
+    "name": "Aguascalientes local land-registry and public-geometry review",
+    "operator": "Aguascalientes municipal government; Instituto Registral y Catastral del Estado",
+    "url": "https://ags.gob.mx/",
+    "scope": "The Aguascalientes municipal government exposes its Catastro/Predial system, and the official state Instituto Registral y Catastral identifies its online cadastral service. The official VisorAGS page shows a Predios layer and property-information flow. These establish local/state cadastral service presence, but no safe anonymous geometry-only endpoint/schema was verified.",
+    "nativeIdField": null,
+    "attributesRequested": [],
+    "identityBasis": "No native parcel identifier queried or retained.",
+    "geometryStatus": "no_public_geometry_verified"
+  },
+  "coverageAssessment": {
+    "verifiedOpenScope": "City-bound registry/service evidence was found.",
+    "citywideVerified": false,
+    "countrywideVerified": false
+  },
+  "priorEvidenceFiles": [],
+  "populationPlausibility2025": "Moderate",
+  "sourceIds": [],
+  "point": [
+    21.8879380080795,
+    -102.281544395184
+  ],
+  "sampleFile": null,
+  "sampleFeatureCount": 0,
+  "sampleCrs": null,
+  "runtimeAssessment": {
+    "status": "no_public_geometry_verified_runtime_not_enabled",
+    "reason": "The public viewer is property-oriented and its reviewed page reveals no geometry-only schema; catastral-key and property-detail flows were left unused."
+  },
+  "rootReviewedAt": "2026-10-09T02:05:58.056454+00:00"
+}

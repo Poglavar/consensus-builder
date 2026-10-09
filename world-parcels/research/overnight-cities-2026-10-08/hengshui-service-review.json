@@ -1,0 +1,52 @@
+{
+  "schemaVersion": "1.0",
+  "checkedAt": "2026-10-09",
+  "cityRecord": "city-9446-hengshui.json",
+  "purpose": "Document first-party local registry/map evidence and bounded anonymous geometry access review.",
+  "scopeLimits": {
+    "maxFullPolygonsRetainedInCityRecord": 0,
+    "maxFullPolygonsRetainedInReview": 0,
+    "maxFullPolygonsRetainedInRepository": 0,
+    "ownerOrAddressDataRetained": false,
+    "credentialsOrTokenValuesRetained": false,
+    "citywideCompletenessAsserted": false
+  },
+  "assessment": "The target is Hengshui, Hebei. Official host access did not resolve in the web reader, and search results did not establish a Hengshui-specific registry office from a usable primary page. No parcel geometry route was verified.",
+  "registryAssessment": "No accessible city-first-party real-estate registry source was verified in this pass. The Hengshui government homepage timed out in the web reader (no HTTP status), while search results were either for similarly named Hengyang or third-party directories; these are not used to infer Hengshui registry coverage.",
+  "officialPrimarySources": [
+    {
+      "url": "https://www.hengshui.gov.cn/",
+      "observation": "The target is Hengshui, Hebei. Official host access did not resolve in the web reader, and search results did not establish a Hengshui-specific registry office from a usable primary page. No parcel geometry route was verified."
+    },
+    {
+      "url": "http://zrgh.hengshui.gov.cn/",
+      "observation": "The target is Hengshui, Hebei. Official host access did not resolve in the web reader, and search results did not establish a Hengshui-specific registry office from a usable primary page. No parcel geometry route was verified."
+    }
+  ],
+  "searchQueries": [
+    {
+      "language": "English",
+      "query": "Hengshui China official cadastral registry parcel map GIS natural resources",
+      "result": "Search results did not provide a usable Hengshui primary registry page; similarly named Hengyang results were excluded.",
+      "method": "Separate localized/English search and official-source review.",
+      "scope": "Identify current city-specific registry and safe public parcel geometry."
+    },
+    {
+      "language": "Chinese",
+      "query": "衡水市不动产登记中心 自然资源和规划局 地籍图 官方",
+      "result": "Exact and site-scoped searches did not return a verifiable Hengshui first-party registry page; nonprimary directory results were excluded.",
+      "method": "Separate localized/English search and official-source review.",
+      "scope": "Identify current city-specific registry and safe public parcel geometry."
+    }
+  ],
+  "geometryDecision": "No parcel geometry retained; no anonymous public point-level full polygon response was verified.",
+  "coverageAssessment": {
+    "claimedScope": "No accessible city-first-party real-estate registry source was verified in this pass. The Hengshui government homepage timed out in the web reader (no HTTP status), while search results were either for similarly named Hengyang or third-party directories; these are not used to infer Hengshui registry coverage.",
+    "verifiedOpenScope": "No public parcel geometry service or point-level response verified.",
+    "citywideVerified": false,
+    "countrywideVerified": false,
+    "geometryVerified": false
+  },
+  "attempts": [],
+  "remainingUncertainty": "A local registry office or map may exist; direct city-first-party evidence and anonymous schema remain unverified."
+}

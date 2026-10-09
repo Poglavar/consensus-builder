@@ -1,0 +1,137 @@
+{
+  "name": "Uberlândia",
+  "country": "Brazil",
+  "countryCode": "BR",
+  "rank": 883,
+  "point": [
+    -18.9180632609849,
+    -48.2789974161471
+  ],
+  "population2025": 613434,
+  "population2025k": 613.434,
+  "populationPlausibility2025": "Moderate",
+  "schemaVersion": 1,
+  "kind": "city_parcel_source_research",
+  "checkedAt": "2026-10-09",
+  "populationUnit": "persons",
+  "status": "complete",
+  "verifiedSample": false,
+  "publicParcelGeometryFound": false,
+  "runtimeReadiness": "not_enabled_no_verified_public_geometry",
+  "priorEvidenceFiles": [],
+  "priorCheck": {
+    "attemptState": "pending",
+    "attemptEvidence": [],
+    "possiblePriorMatches": []
+  },
+  "pointBasis": "UN WUP 2025 population-weighted settlement centroid; this is not a municipal boundary or a parcel-coverage claim.",
+  "registryFound": true,
+  "registryBasis": "Official municipal planning pages publish static maps and lot-plan files; PRODAUB describes geoprocessing and cadastral updating. The property-service form is an application workflow, not an anonymous parcel map, and no public geometry endpoint was exposed.",
+  "registryEvidenceUrls": [
+    "https://www.uberlandia.mg.gov.br/prefeitura/secretarias/planejamento-urbano/mapas-e-bairros/",
+    "https://www.uberlandia.mg.gov.br/prefeitura/orgaos-municipais/prodaub/projetos-prodaub/sistema-de-geoprocessamento/",
+    "https://plataforma.uberlandia.mg.gov.br/plataforma/f/t/imovelsel"
+  ],
+  "resultCategory": "municipal_cadastre_evidenced_no_public_geometry_verified",
+  "remainingUncertainty": "Whether a separate public GIS exists outside the inspected planning pages, and whether its parcel coverage includes the WUP point.",
+  "scopeLimits": "Research is limited to official sources and the exact unchanged WUP settlement locator. No owner, address, personal-property, tax, account, token or credential data requested or retained. No citywide completeness claimed.",
+  "verifiedParcelResponse": null,
+  "source": {
+    "sourceId": "BR-6184-uberlandia-cadastre-review",
+    "name": "Uberlândia municipal cadastre / PRODAUB geoprocessing",
+    "url": "https://plataforma.uberlandia.mg.gov.br/plataforma/f/t/imovelsel",
+    "operator": "Brazil",
+    "serviceType": "Municipal cadastral updating and static map publication; no anonymous parcel vector endpoint identified.",
+    "layer": null,
+    "geometryType": null,
+    "outputCrs": null,
+    "nativeIdField": null,
+    "nativeIdEvidence": "No feature response returned; native identifier not verified."
+  },
+  "wupCityCode": 6184,
+  "cityId": "wup2025:6184",
+  "queueRank": 883,
+  "centerLatLon": [
+    -18.9180632609849,
+    -48.2789974161471
+  ],
+  "sourceIds": [],
+  "adapterReady": false,
+  "technicalBlocker": "Research evidence only; no runtime adapter qualification performed.",
+  "coverageAssessment": {
+    "claimedScope": "Official municipal planning pages publish static maps and lot-plan files; PRODAUB describes geoprocessing and cadastral updating. The property-service form is an application workflow, not an anonymous parcel map, and no public geometry endpoint was exposed.",
+    "verifiedOpenScope": "No parcel geometry scope verified.",
+    "countrywideVerified": false,
+    "citywideVerified": false
+  },
+  "research": {
+    "queries": [
+      {
+        "language": "English",
+        "query": "Uberlandia Brazil official municipal cadastre parcel GIS map lotes",
+        "scope": "Identify official local registry/cadastre evidence and public parcel geometry.",
+        "result": "Official city planning and PRODAUB pages publish static map information and describe cadastral geoprocessing; no public parcel service schema identified.",
+        "actualResultUrls": [
+          "https://www.uberlandia.mg.gov.br/prefeitura/secretarias/planejamento-urbano/mapas-e-bairros/",
+          "https://www.uberlandia.mg.gov.br/prefeitura/orgaos-municipais/prodaub/projetos-prodaub/sistema-de-geoprocessamento/",
+          "https://plataforma.uberlandia.mg.gov.br/plataforma/f/t/imovelsel"
+        ],
+        "executionMethod": "Separate English and local-language source searches followed by official-source/service inspection; no personal/property identifiers or gated account access."
+      },
+      {
+        "language": "Portuguese",
+        "query": "Uberlândia mapa cadastral lotes geoprocessamento prefeitura serviço oficial",
+        "scope": "Identify official local registry/cadastre evidence and public parcel geometry.",
+        "result": "A Prefeitura publica mapas estáticos e descreve atualização cadastral por geoprocessamento; o formulário de consulta imobiliária é um fluxo de atendimento, não um mapa parcelário anônimo.",
+        "actualResultUrls": [
+          "https://www.uberlandia.mg.gov.br/prefeitura/secretarias/planejamento-urbano/mapas-e-bairros/",
+          "https://www.uberlandia.mg.gov.br/prefeitura/orgaos-municipais/prodaub/projetos-prodaub/sistema-de-geoprocessamento/",
+          "https://plataforma.uberlandia.mg.gov.br/plataforma/f/t/imovelsel"
+        ],
+        "executionMethod": "Separate English and local-language source searches followed by official-source/service inspection; no personal/property identifiers or gated account access."
+      }
+    ],
+    "officialSources": [
+      {
+        "url": "https://www.uberlandia.mg.gov.br/prefeitura/secretarias/planejamento-urbano/mapas-e-bairros/",
+        "observation": "Official municipal planning pages publish static maps and lot-plan files; PRODAUB describes geoprocessing and cadastral updating. The property-service form is an application workflow, not an anonymous parcel map, and no public geometry endpoint was exposed."
+      },
+      {
+        "url": "https://www.uberlandia.mg.gov.br/prefeitura/orgaos-municipais/prodaub/projetos-prodaub/sistema-de-geoprocessamento/",
+        "observation": "Official municipal planning pages publish static maps and lot-plan files; PRODAUB describes geoprocessing and cadastral updating. The property-service form is an application workflow, not an anonymous parcel map, and no public geometry endpoint was exposed."
+      },
+      {
+        "url": "https://plataforma.uberlandia.mg.gov.br/plataforma/f/t/imovelsel",
+        "observation": "Official municipal planning pages publish static maps and lot-plan files; PRODAUB describes geoprocessing and cadastral updating. The property-service form is an application workflow, not an anonymous parcel map, and no public geometry endpoint was exposed."
+      }
+    ],
+    "requests": [
+      {
+        "url": "https://www.uberlandia.mg.gov.br/prefeitura/secretarias/planejamento-urbano/mapas-e-bairros/",
+        "method": "GET official planning maps page",
+        "observation": "Static PDF/DWG map resources are listed; no parcel API was exposed."
+      },
+      {
+        "url": "https://www.uberlandia.mg.gov.br/prefeitura/orgaos-municipais/prodaub/projetos-prodaub/sistema-de-geoprocessamento/",
+        "method": "GET official PRODAUB geoprocessing page",
+        "observation": "Describes geoprocessing and cadastral updates; linked detail did not expose a viewer or vector route."
+      },
+      {
+        "url": "https://plataforma.uberlandia.mg.gov.br/plataforma/f/t/imovelsel",
+        "method": "GET municipal property-service form without submission",
+        "observation": "Form requests cadastral enrollment/address/quadra/lote; stopped without entering or submitting property data."
+      }
+    ]
+  },
+  "runtimeAssessment": {
+    "status": "not_enabled_no_verified_public_geometry",
+    "reason": "Research evidence only; no runtime adapter qualification performed."
+  },
+  "rootPrimaryReadback": {
+    "url": "https://www.uberlandia.mg.gov.br/prefeitura/secretarias/planejamento-urbano/mapas-e-bairros/",
+    "fetch": "error",
+    "reason": "HTTP Error 403: Forbidden"
+  },
+  "rootReviewNote": "Reviewed the specific primary institution/service evidence and its geographical, access and date limits. Direct readback failures are preserved separately from indexed primary evidence. No public full parcel geometry was verified for this city in this discovery pass.",
+  "rootReviewedAt": "2026-10-09T04:20:40.565226+00:00"
+}

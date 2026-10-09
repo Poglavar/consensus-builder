@@ -1,0 +1,21 @@
+{
+  "schemaVersion": 1,
+  "checkedAt": "2026-10-09T02:35:00.739312+00:00",
+  "purpose": "Root review of sampled native CSG boundary sliver without repair, rounding, union or selective exclusion.",
+  "nativeCrs": "EPSG:4148",
+  "metricCrs": "EPSG:32735",
+  "nativeIds": [
+    "G421T0IQ010900001019000000",
+    "G421T0IQ010900001021000000"
+  ],
+  "nativePolygonsValid": [
+    true,
+    true
+  ],
+  "unroundedNativeIntersectionReprojectedM2": 0.013070464821964833,
+  "minimumRotatedRectangleWidthM": 0.0007007246554214375,
+  "minimumRotatedRectangleLengthM": 54.21231041388755,
+  "runtimeProjectedOverlapM2": 0.013070436569194044,
+  "decision": "approved_by_root",
+  "reason": "The native coordinate overlap reproduces the runtime boundary sliver. It is under one millimetre wide over approximately 54 metres and remains in both complete source polygons; accepted only for the bounded reference-map scope. Provider beta/currentness/legal-coordinate caveats remain explicit."
+}

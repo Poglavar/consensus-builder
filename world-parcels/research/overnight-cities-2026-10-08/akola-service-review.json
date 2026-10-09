@@ -1,0 +1,74 @@
+{
+  "schemaVersion": 1,
+  "checkedAt": "2026-10-09",
+  "sourceId": "wup2025:9339",
+  "purpose": "City-specific parcel registry and safe public geometry route review",
+  "primaryPublisher": "https://bhumiabhilekh.maharashtra.gov.in/WhosWho?districtId=1",
+  "sourceUrl": "https://bhumiabhilekh.maharashtra.gov.in/WhosWho?districtId=1",
+  "registryFound": true,
+  "registryBasis": "Maharashtra’s official Land Records department lists the Akola district land-record office and city-survey staff; the official Akola Municipal Corporation site publishes municipal property-service entry points. This supports local land-record/municipal property-registry presence.",
+  "officialSources": [
+    {
+      "url": "https://bhumiabhilekh.maharashtra.gov.in/WhosWho?districtId=1",
+      "observation": "Maharashtra’s official Land Records department lists the Akola district land-record office and city-survey staff; the official Akola Municipal Corporation site publishes municipal property-service entry points. This supports local land-record/municipal property-registry presence. The municipal page exposes property-ID, property-number, mobile-number, and OTP forms, which were not submitted. No public parcel layer with a safe ID-and-geometry-only schema was verified."
+    },
+    {
+      "url": "https://akolamc.in/",
+      "observation": "Maharashtra’s official Land Records department lists the Akola district land-record office and city-survey staff; the official Akola Municipal Corporation site publishes municipal property-service entry points. This supports local land-record/municipal property-registry presence. The municipal page exposes property-ID, property-number, mobile-number, and OTP forms, which were not submitted. No public parcel layer with a safe ID-and-geometry-only schema was verified."
+    },
+    {
+      "url": "https://www.bhumiabhilekh.maharashtra.gov.in/",
+      "observation": "Maharashtra’s official Land Records department lists the Akola district land-record office and city-survey staff; the official Akola Municipal Corporation site publishes municipal property-service entry points. This supports local land-record/municipal property-registry presence. The municipal page exposes property-ID, property-number, mobile-number, and OTP forms, which were not submitted. No public parcel layer with a safe ID-and-geometry-only schema was verified."
+    }
+  ],
+  "searchQueries": [
+    {
+      "language": "English",
+      "query": "Akola Maharashtra official city land records cadastral map GIS",
+      "scope": "Identify city-specific registry evidence and safe public parcel geometry routes.",
+      "result": "Maharashtra’s official Land Records department lists the Akola district land-record office and city-survey staff; the official Akola Municipal Corporation site publishes municipal property-service entry points. This supports local land-record/municipal property-registry presence. The municipal page exposes property-ID, property-number, mobile-number, and OTP forms, which were not submitted. No public parcel layer with a safe ID-and-geometry-only schema was verified.",
+      "actualResultUrls": [
+        "https://bhumiabhilekh.maharashtra.gov.in/WhosWho?districtId=1",
+        "https://akolamc.in/",
+        "https://www.bhumiabhilekh.maharashtra.gov.in/"
+      ],
+      "executionMethod": "Official-source-focused search and public HTML/document review; no property-specific inputs submitted."
+    },
+    {
+      "language": "Marathi",
+      "query": "अकोला शहर भूमी अभिलेख कार्यालय अधिकृत नकाशा मालमत्ता अभिलेख",
+      "scope": "Identify primary local-language evidence for registry/cadastre and anonymous map services.",
+      "result": "Maharashtra’s official Land Records department lists the Akola district land-record office and city-survey staff; the official Akola Municipal Corporation site publishes municipal property-service entry points. This supports local land-record/municipal property-registry presence. The municipal page exposes property-ID, property-number, mobile-number, and OTP forms, which were not submitted. No public parcel layer with a safe ID-and-geometry-only schema was verified.",
+      "actualResultUrls": [
+        "https://bhumiabhilekh.maharashtra.gov.in/WhosWho?districtId=1",
+        "https://akolamc.in/",
+        "https://www.bhumiabhilekh.maharashtra.gov.in/"
+      ],
+      "executionMethod": "Separate local-language official-source-focused search; no property-specific inputs submitted."
+    }
+  ],
+  "accessReview": {
+    "publicAnonymousGeometryVerified": false,
+    "completeGeoreferencedPolygonCount": 0,
+    "geometryRetained": false,
+    "ownerAddressTaxOrPersonLookupRequested": false,
+    "authenticationOrCredentialsUsed": false,
+    "captchaOrPersonalFormSubmitted": false,
+    "routeInspectionStatus": "schema_unverified",
+    "reason": "The municipal page exposes property-ID, property-number, mobile-number, and OTP forms, which were not submitted. No public parcel layer with a safe ID-and-geometry-only schema was verified."
+  },
+  "requestEvidence": {
+    "method": "public official source review",
+    "propertySpecificRequestSent": false,
+    "geometryRequestSent": false,
+    "notes": "No owner, address, tax-account, title, parcel-number, or person-specific lookup was performed."
+  },
+  "technicalBlocker": "The municipal page exposes property-ID, property-number, mobile-number, and OTP forms, which were not submitted. No public parcel layer with a safe ID-and-geometry-only schema was verified.",
+  "sampleDisposition": "No polygon retained; no verified safe geometry endpoint.",
+  "remainingUncertainty": "The official public interfaces reviewed do not publish a verified parcel geometry schema or complete polygon download route.",
+  "rootRuntimeAssessment": {
+    "enabled": false,
+    "status": "not_enabled_no_verified_public_geometry",
+    "reason": "The official public interfaces reviewed do not publish a verified parcel geometry schema or complete polygon download route."
+  }
+}

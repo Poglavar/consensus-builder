@@ -1,0 +1,149 @@
+{
+  "name": "Tijuana",
+  "country": "Mexico",
+  "countryCode": "MX",
+  "rank": 320,
+  "point": [
+    32.4947895827471,
+    -116.955328873562
+  ],
+  "freshResearch": {
+    "queries": [
+      {
+        "language": "Spanish",
+        "query": "Tijuana Catastro Municipal cartografía mapa predios polígonos parcela GIS oficial",
+        "scope": "Find official Tijuana municipal cadastral records and any open parcel map or vector endpoint.",
+        "result": "The Ayuntamiento’s Dirección de Catastro Municipal lists cartography services for certified and simple plan copies, boundary certifications and parcel polygons. The services require a request and payment receipt, and some require the parcel plan or field-book documents. IMPLAN describes the public Gemelo Digital as a geospatial viewer and the Atlas as risk-themed layers; neither inspected public page exposes parcel vector data.",
+        "actualResultUrls": [
+          "https://www.tijuana.gob.mx/dependencias/sdue/dmc/",
+          "https://www.tijuana.gob.mx/dependencias/sdue/dmc/tramites_cartografia.aspx",
+          "https://implan.tijuana.gob.mx/servicios/cartografia/gemelo-digital.aspx",
+          "https://gemelodigital.implantijuana.gob.mx/atlas-de-riesgo-tijuana-2024"
+        ],
+        "executionMethod": "Separate Spanish-language search; first-party municipal Catastro, IMPLAN portal, Atlas app and read-only shell inspection."
+      },
+      {
+        "language": "English",
+        "query": "Tijuana municipal cadastral parcel map public GIS Catastro city lot polygons",
+        "scope": "Cross-check public parcel viewer availability and whether the advertised GIS relates to cadastral rather than zoning/risk.",
+        "result": "English-language official results point to the same local municipal Catastro and IMPLAN GIS. The municipal cartography catalog provides plan-copy and polygon-certification workflows, while the public planning GIS page describes thematic geographic layers and the risk atlas. No anonymous full parcel geometry was verified.",
+        "actualResultUrls": [
+          "https://www.tijuana.gob.mx/dependencias/sdue/dmc/",
+          "https://implan.tijuana.gob.mx/servicios/cartografia/gemelo-digital.aspx",
+          "https://gemelodigital.implantijuana.gob.mx/"
+        ],
+        "executionMethod": "Separate English-language search and public official page review; no account or parcel request."
+      }
+    ],
+    "portals": [
+      {
+        "name": "Dirección de Catastro Municipal (DCM)",
+        "operator": "H. Ayuntamiento de Tijuana, Secretaría de Desarrollo Urbano y Ecología",
+        "homeUrl": "https://www.tijuana.gob.mx/dependencias/sdue/dmc/",
+        "observation": "Official municipal cadastre page describes the city cadastral office and its cartographic records."
+      },
+      {
+        "name": "Departamento de Cartografía services",
+        "operator": "Dirección de Catastro Municipal, Ayuntamiento de Tijuana",
+        "homeUrl": "https://www.tijuana.gob.mx/dependencias/sdue/dmc/tramites_cartografia.aspx",
+        "observation": "Official service list offers certified/simple plan copies and parcel boundary certifications; each requires a service request and payment receipt. It does not expose a public parcel download/API."
+      },
+      {
+        "name": "Carta Urbana del Gemelo Digital Tijuana",
+        "operator": "Instituto Metropolitano de Planeación de Tijuana (IMPLAN)",
+        "homeUrl": "https://implan.tijuana.gob.mx/servicios/cartografia/gemelo-digital.aspx",
+        "observation": "Official page describes an urban GIS viewer for geographic layers in 2D/2.5D/3D. Its linked map route redirected to the IMPLAN home page during inspection; no parcel layer or geometry response was confirmed."
+      },
+      {
+        "name": "Atlas Municipal de Riesgos de Tijuana",
+        "operator": "IMPLAN Tijuana",
+        "homeUrl": "https://gemelodigital.implantijuana.gob.mx/atlas-de-riesgo-tijuana-2024",
+        "observation": "Public application identifies risk-map layers, drawing and export tools; it is a hazard atlas, not a public cadastral parcel service."
+      }
+    ],
+    "requests": [
+      {
+        "url": "https://www.tijuana.gob.mx/dependencias/sdue/dmc/tramites_cartografia.aspx",
+        "method": "GET",
+        "httpStatus": 200,
+        "contentType": "text/html",
+        "observation": "Lists cartography services and requirements: requests and payment receipts; certified parcel polygons require supplied plan and field-book data."
+      },
+      {
+        "url": "https://gemelodigital.implantijuana.gob.mx/",
+        "method": "GET",
+        "httpStatus": 200,
+        "contentType": "text/html",
+        "observation": "Official IMPLAN geospatial portal shell includes public registration/login controls. No anonymous parcel layer query was available in the inspected pages."
+      },
+      {
+        "url": "https://gemelodigital.implantijuana.gob.mx/atlas-de-riesgo-tijuana-2024",
+        "method": "GET web inspection",
+        "httpStatus": 200,
+        "contentType": "text/html",
+        "observation": "Public GIS application is the 2024 municipal risk atlas; no parcel polygon service was identified."
+      },
+      {
+        "url": "https://implan.tijuana.gob.mx/servicios/cartografia/gemelo-digital.aspx",
+        "method": "GET web inspection",
+        "httpStatus": 200,
+        "contentType": "text/html",
+        "observation": "Public page describes Carta Urbana GIS and links an embedded map. Its linked route redirected to the IMPLAN home page, so no working public parcel map was verified."
+      }
+    ],
+    "executionMethod": "Official Spanish and English search, direct first-party HTML/app inspection; no credentials, owner records or certified parcel copy requests."
+  },
+  "status": "complete",
+  "verifiedParcelResponse": {
+    "httpStatus": null,
+    "featureType": null,
+    "responseType": null,
+    "responseCrs": null,
+    "returnedFullPolygonCount": 0,
+    "uniqueFullPolygonCount": 0,
+    "wupPointContained": null,
+    "limitations": "No public parcel-vector request was available in the inspected municipal applications. Official public cartography services require an application and payment; no parcel geometry was fetched."
+  },
+  "source": {
+    "sourceId": "MX-TIJUANA-DMC-CARTOGRAPHY",
+    "name": "Dirección de Catastro Municipal cartography services",
+    "operator": "H. Ayuntamiento de Tijuana",
+    "url": "https://www.tijuana.gob.mx/dependencias/sdue/dmc/tramites_cartografia.aspx",
+    "serviceType": "Municipal cadastral records and paid/request-based plan and polygon-certification services; public vector format not verified.",
+    "geometryType": null,
+    "outputCrs": null,
+    "nativeIdField": null
+  },
+  "coverageAssessment": {
+    "claimedScope": "Tijuana municipal Catastro maintains cartographic plans and parcel-boundary certification services for the municipality.",
+    "verifiedOpenScope": "The public IMPLAN/Gemelo Digital content inspected covers planning and risk themes; public parcel-level geometry is not exposed. Cartography documents are requested from the municipal Catastro office.",
+    "countrywideVerified": false,
+    "citywideVerified": false
+  },
+  "registryFound": true,
+  "registryBasis": "First-party Ayuntamiento pages identify the Dirección de Catastro Municipal and its cartography department, including parcel polygon certifications and map-copy services.",
+  "verifiedSample": false,
+  "publicParcelGeometryFound": false,
+  "resultCategory": "local_municipal_cadastre_confirmed_plan_services_no_public_vector",
+  "technicalBlocker": "Parcel plans and boundary certifications are provided through an application/payment workflow; the inspected public GIS pages expose planning/risk layers rather than cadastral vectors.",
+  "remainingUncertainty": "Whether a separate anonymous municipal cadastral viewer exists outside the inspected IMPLAN pages; the advertised Carta Urbana embedded map route did not resolve to a live viewer.",
+  "nextStep": "Keep runtime disabled. If the city exposes a public parcel layer later, verify the exact WUP vicinity and full polygon response before adapter work.",
+  "schemaVersion": 1,
+  "checkedAt": "2026-10-09",
+  "wupCityCode": 488,
+  "cityId": "wup2025:488",
+  "queueRank": 320,
+  "population2025k": 1557.695,
+  "population2025": 1557695,
+  "populationPlausibility2025": "Moderate",
+  "populationUnit": "persons",
+  "pointBasis": "UN WUP 2025 population-weighted settlement centroid; this is not a municipal boundary or a parcel-coverage claim.",
+  "centerLatLon": [
+    32.4947895827471,
+    -116.955328873562
+  ],
+  "runtimeReadiness": "not_enabled_no_verified_public_geometry",
+  "adapterReady": false,
+  "sourceIds": [],
+  "rootReviewedAt": "2026-10-08T22:32:33.023730+00:00"
+}

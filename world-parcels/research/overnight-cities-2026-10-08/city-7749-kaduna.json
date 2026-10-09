@@ -1,0 +1,111 @@
+{
+  "name": "Kaduna",
+  "country": "Nigeria",
+  "countryCode": "NG",
+  "rank": 266,
+  "point": [
+    10.5027699418822,
+    7.4346140227085
+  ],
+  "population2025": 1890448,
+  "schemaVersion": 1,
+  "kind": "city_parcel_source_research",
+  "checkedAt": "2026-10-09",
+  "populationUnit": "persons",
+  "status": "complete",
+  "verifiedSample": false,
+  "publicParcelGeometryFound": false,
+  "runtimeReadiness": "not_enabled_no_verified_public_geometry",
+  "priorEvidenceFiles": [],
+  "scopeLimits": "The WUP point is a settlement locator and does not identify a land parcel. KADGIS has statewide statutory responsibilities including the Kaduna metropolis, but no city-specific parcel layer or anonymous feature endpoint was exposed. Public geometry, exact parcel coverage and runtime usability are unverified.",
+  "pointBasis": "UN WUP 2025 population-weighted settlement centroid; this is not a municipal boundary or a parcel-coverage claim.",
+  "registryFound": true,
+  "registryBasis": "Kaduna Geographic Information Service (KADGIS) is the official state GIS and land-registration agency, with statutory mapping/cadastral responsibilities; its current portal claims land administration and parcel viewing across 23 LGAs. The live public homepage’s Explore Map control is inert (#) and embeds only a base map; the resources pages describe registered-user data requests. No anonymous parcel layer service or geometry endpoint was exposed, so exact city coverage and parcels remain unverified.",
+  "resultCategory": "official_local_registry_confirmed_public_geometry_unavailable",
+  "research": {
+    "executedQueries": [
+      {
+        "language": "English",
+        "query": "Kaduna official cadastral parcel map GIS Kaduna State Geographic Information Service KADGIS land records",
+        "result": "Official KADGIS portal identifies the state statutory land/geospatial agency, cadastral mapping, land registration, and claims parcel viewing for all 23 LGAs. The Explore Map link points to #; its page provides no parcel service URL or usable parcel layer.",
+        "urls": [
+          "https://kadgis.kdsg.gov.ng/",
+          "https://kdsg.gov.ng/kaduna-geographic-information-service/"
+        ],
+        "method": "Separate English web search and review of the official current KADGIS and Kaduna State Government agency pages."
+      },
+      {
+        "language": "English",
+        "query": "Kaduna official land registry map parcel search KADGIS property map",
+        "result": "Official KADGIS resources indicate land/title applications and a data repository where registered users may request datasets; the public site did not expose an anonymous parcel map endpoint. The KADGIS legal/regulatory material assigns land registry and cadastral administration responsibilities locally.",
+        "urls": [
+          "https://kadgis.kdsg.gov.ng/resources/",
+          "https://kadgis.kdsg.gov.ng/land-use-regulations/",
+          "https://kdsg.gov.ng/download/2941/laws/21681/a-law-to-establish-the-kaduna-geographic-information-service-and-matters-connected-therewith"
+        ],
+        "method": "Separate English search and official public service, resource and legal-document review."
+      },
+      {
+        "language": "Hausa",
+        "query": "Kaduna Hausa taswirar fili KADGIS rajistar fili cadastral map Kaduna",
+        "result": "Hausa-language search found a Radio Nigeria Kaduna Hausa item about KADGIS land certificates for city residents but no Hausa-language public parcel viewer or city parcel service. Official KADGIS English pages remain the authoritative registry source; geometry was not available.",
+        "urls": [
+          "https://kadgis.kdsg.gov.ng/"
+        ],
+        "method": "Separate Hausa-language web search plus local public agency source check."
+      }
+    ],
+    "officialSources": [
+      {
+        "url": "https://kadgis.kdsg.gov.ng/",
+        "observation": "Official current KADGIS portal describes the statutory state GIS/land-administration role, cadastral surveys, and parcel viewing across 23 LGAs. The Explore Map control is `#`; no parcel service script/endpoint was found in the public page."
+      },
+      {
+        "url": "https://kadgis.kdsg.gov.ng/resources/",
+        "observation": "Official resources page describes requests for spatial datasets by registered users; it did not provide an anonymous parcel map service."
+      },
+      {
+        "url": "https://kadgis.kdsg.gov.ng/land-use-regulations/",
+        "observation": "Official KADGIS page hosts land-use regulations."
+      },
+      {
+        "url": "https://kdsg.gov.ng/download/2941/laws/21681/a-law-to-establish-the-kaduna-geographic-information-service-and-matters-connected-therewith",
+        "observation": "Official state KADGIS law establishes land/geospatial responsibilities."
+      }
+    ],
+    "viewerAndServiceTrace": {
+      "url": "https://kadgis.kdsg.gov.ng/",
+      "trace": "Public HTML exposes the Kaduna State Map section, but Explore Map href is # and page scripts expose no parcel GIS service or vector tile endpoint. General Google map content is not cadastral evidence. Resources and land registration flows are separate from public parcel geometry.",
+      "routes": []
+    },
+    "attemptedGeometry": {
+      "fullPolygonLimit": 3,
+      "fullPolygonsRetained": 0,
+      "ownerOrAddressDataRequested": false,
+      "outcome": "The WUP point is a settlement locator and does not identify a land parcel. KADGIS has statewide statutory responsibilities including the Kaduna metropolis, but no city-specific parcel layer or anonymous feature endpoint was exposed. Public geometry, exact parcel coverage and runtime usability are unverified."
+    }
+  },
+  "verifiedParcelResponse": null,
+  "source": {
+    "sourceId": "NG-KD-KADUNA-KADGIS",
+    "name": "Kaduna Geographic Information Service (KADGIS), land registry and cadastral mapping",
+    "url": "https://kadgis.kdsg.gov.ng/",
+    "operator": "Kaduna Geographic Information Service, Kaduna State Government",
+    "serviceType": "Local statutory land administration and cadastral mapping agency; homepage advertises parcel viewing, but no working public parcel layer/service endpoint was exposed.",
+    "layer": null,
+    "geometryType": null,
+    "outputCrs": null,
+    "nativeIdField": null,
+    "nativeIdEvidence": "No public parcel layer or feature response was accessible; no parcel identifier was observed."
+  },
+  "wupCityCode": 7749,
+  "cityId": "wup2025:7749",
+  "queueRank": 266,
+  "populationPlausibility2025": "Moderate",
+  "centerLatLon": [
+    10.5027699418822,
+    7.4346140227085
+  ],
+  "rootReviewedAt": "2026-10-08T21:46:22.040221+00:00",
+  "sourceIds": []
+}

@@ -1,0 +1,74 @@
+{
+  "schemaVersion": "1.0",
+  "checkedAt": "2026-10-09",
+  "cityRecord": "city-5303-el-paso.json",
+  "purpose": "Document first-party local registry/map evidence and bounded anonymous geometry access review.",
+  "scopeLimits": {
+    "maxFullPolygonsRetainedInCityRecord": 0,
+    "maxFullPolygonsRetainedInReview": 0,
+    "maxFullPolygonsRetainedInRepository": 1,
+    "ownerOrAddressDataRetained": false,
+    "credentialsOrTokenValuesRetained": false,
+    "citywideCompletenessAsserted": false
+  },
+  "assessment": "Public FeatureServer metadata: HTTP 200; polygon geometry; WKID 6578; safe OBJECTID. A prior bounded neighborhood query found OBJECTID 128625; the subsequent re-fetch by that safe GIS ID returned HTTP 200, one feature and only OBJECTID plus geometry.",
+  "registryAssessment": "The City of El Paso Open Data Hub says parcel shapefiles are maintained by El Paso Central Appraisal District (EPCAD); the City GIS exposes a public Parcels polygon layer. A bounded query returned one safe OBJECTID and polygon near the WUP point. This is not a citywide completeness or legal-title claim.",
+  "officialPrimarySources": [
+    {
+      "url": "https://opendata.elpasotexas.gov/",
+      "observation": "The City of El Paso Open Data Hub says parcel shapefiles are maintained by El Paso Central Appraisal District (EPCAD); the City GIS exposes a public Parcels polygon layer. A bounded query returned one safe OBJECTID and polygon near the WUP point. This is not a citywide completeness or legal-title claim."
+    },
+    {
+      "url": "https://epcad.org/OpenGovernment",
+      "observation": "The City of El Paso Open Data Hub says parcel shapefiles are maintained by El Paso Central Appraisal District (EPCAD); the City GIS exposes a public Parcels polygon layer. A bounded query returned one safe OBJECTID and polygon near the WUP point. This is not a citywide completeness or legal-title claim."
+    },
+    {
+      "url": "https://gis.elpasotexas.gov/arcgis/rest/services/Deeds/FeatureServer/0",
+      "observation": "The City of El Paso Open Data Hub says parcel shapefiles are maintained by El Paso Central Appraisal District (EPCAD); the City GIS exposes a public Parcels polygon layer. A bounded query returned one safe OBJECTID and polygon near the WUP point. This is not a citywide completeness or legal-title claim."
+    }
+  ],
+  "searchQueries": [
+    {
+      "language": "English",
+      "query": "El Paso official GIS parcel layer open data appraisal district parcel geometry",
+      "result": "Official city open-data source links parcel mapping to EPCAD; City GIS publishes a Parcels polygon layer and a bounded geometry-only sample.",
+      "method": "English-language search and official-source review.",
+      "scope": "Identify current city-specific registry and safe public parcel geometry."
+    },
+    {
+      "language": "English (local official source)",
+      "query": "El Paso GIS parcelas datos abiertos EPCAD parcelas mapa oficial",
+      "result": "La fuente municipal enlaza los datos de parcelas del EPCAD; el GIS de la ciudad publica una capa poligonal y una muestra limitada solo a geometría e identificador.",
+      "method": "Local-language search and official-source review.",
+      "scope": "Identify current city-specific registry and safe public parcel geometry."
+    }
+  ],
+  "geometryDecision": "Retained 1 geometry-only polygon(s) with safe GIS OBJECTID.",
+  "coverageAssessment": {
+    "claimedScope": "The City of El Paso Open Data Hub says parcel shapefiles are maintained by El Paso Central Appraisal District (EPCAD); the City GIS exposes a public Parcels polygon layer. A bounded query returned one safe OBJECTID and polygon near the WUP point. This is not a citywide completeness or legal-title claim.",
+    "verifiedOpenScope": "Bounded geometry response only; no citywide completeness claim.",
+    "citywideVerified": false,
+    "countrywideVerified": false,
+    "geometryVerified": true
+  },
+  "attempts": [
+    {
+      "kind": "layer-metadata",
+      "url": "https://gis.elpasotexas.gov/arcgis/rest/services/Deeds/FeatureServer/0?f=pjson",
+      "httpStatus": 200,
+      "result": "Polygon layer, WKID 6578, safe OBJECTID available; metadata contains other property-related attributes which were not requested as feature values."
+    },
+    {
+      "kind": "bounded-geometry-query",
+      "bbox4326": [
+        -106.3665,
+        31.7858,
+        -106.3632,
+        31.7877
+      ],
+      "httpStatus": 200,
+      "result": "Prior bounded query identified only safe GIS OBJECTID 128625. A later narrow retry returned 0 features; a direct geometry re-fetch by that already identified GIS OBJECTID returned 1 polygon, HTTP 200. Response retained only OBJECTID and geometry."
+    }
+  ],
+  "remainingUncertainty": "No citywide coverage/completeness test or legal-title verification was made; WUP point is a settlement centroid, not a boundary."
+}

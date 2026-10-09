@@ -1,0 +1,97 @@
+{
+  "schemaVersion": "1.0",
+  "checkedAt": "2026-10-09",
+  "cityRecord": "city-7094-sorocaba.json",
+  "purpose": "Document first-party local registry/map evidence and schema-first anonymous geometry review.",
+  "scopeLimits": {
+    "maxFullPolygonsRetainedInCityRecord": 0,
+    "maxFullPolygonsRetainedInReview": 0,
+    "maxFullPolygonsRetainedInRepository": 0,
+    "ownerOrAddressDataRetained": false,
+    "credentialsOrTokenValuesRetained": false,
+    "citywideCompletenessAsserted": false
+  },
+  "assessment": "Sorocaba’s official planning-secretariat GIS page offers informational maps and downloadable geospatial ZIP files. Municipal planning/government sources describe geoprocessing and cartographic layers for lots and buildings used to update the municipal property cadastre. This establishes municipal cadastral-map custody, not a land-title registry or a verified public parcel-vector endpoint. The municipal GIS page confirms downloadable ZIP geospatial data, but the accessible page does not expose layer names or feature schemas. Tax/property-account services require identifying information and were not accessed.",
+  "registryAssessment": "Sorocaba’s official planning-secretariat GIS page offers informational maps and downloadable geospatial ZIP files. Municipal planning/government sources describe geoprocessing and cartographic layers for lots and buildings used to update the municipal property cadastre. This establishes municipal cadastral-map custody, not a land-title registry or a verified public parcel-vector endpoint.",
+  "officialPrimarySources": [
+    {
+      "url": "https://planejamento.sorocaba.sp.gov.br/mapas-camadas-simples-consulta/",
+      "observation": "The city planning GIS provides informational maps and geospatial downloads; an official city report describes digital lots and municipal-property-cadastre updates. The download layer schema was not exposed in the reviewed page, and tax/owner workflows requiring CPF/CNPJ, property inscription or CAPTCHA were not used."
+    },
+    {
+      "url": "https://agencia-local.sorocaba.sp.gov.br/iptu-complementar-foi-emitido-apos-estudo-utilizando-mapeamento/",
+      "observation": "The city planning GIS provides informational maps and geospatial downloads; an official city report describes digital lots and municipal-property-cadastre updates. The download layer schema was not exposed in the reviewed page, and tax/owner workflows requiring CPF/CNPJ, property inscription or CAPTCHA were not used."
+    },
+    {
+      "url": "https://noticias.sorocaba.sp.gov.br/wp-content/uploads/2024/06/noticias.sorocaba.sp.gov.br-relatorio-de-gestao.2022.1o.semestre_compressed.pdf",
+      "observation": "The city planning GIS provides informational maps and geospatial downloads; an official city report describes digital lots and municipal-property-cadastre updates. The download layer schema was not exposed in the reviewed page, and tax/owner workflows requiring CPF/CNPJ, property inscription or CAPTCHA were not used."
+    },
+    {
+      "url": "https://recad.sorocaba.sp.gov.br/dsf_sod_gtm/rcd/loginrcdman.do",
+      "observation": "The city planning GIS provides informational maps and geospatial downloads; an official city report describes digital lots and municipal-property-cadastre updates. The download layer schema was not exposed in the reviewed page, and tax/owner workflows requiring CPF/CNPJ, property inscription or CAPTCHA were not used."
+    },
+    {
+      "url": "https://iptu.sorocaba.sp.gov.br/dsf_iptu/pages/consultadebito.jsf",
+      "observation": "The city planning GIS provides informational maps and geospatial downloads; an official city report describes digital lots and municipal-property-cadastre updates. The download layer schema was not exposed in the reviewed page, and tax/owner workflows requiring CPF/CNPJ, property inscription or CAPTCHA were not used."
+    }
+  ],
+  "searchQueries": [
+    {
+      "language": "English",
+      "query": "Sorocaba official municipal cadastral parcel map GIS geospatial layers lots download",
+      "result": "The city planning GIS provides informational maps and geospatial downloads; an official city report describes digital lots and municipal-property-cadastre updates. The download layer schema was not exposed in the reviewed page, and tax/owner workflows requiring CPF/CNPJ, property inscription or CAPTCHA were not used.",
+      "method": "Separate English-language search and official source review."
+    },
+    {
+      "language": "Portuguese",
+      "query": "Sorocaba mapa cadastral lotes cadastro imobiliário geoprocessamento camadas GIS prefeitura",
+      "result": "The city planning GIS provides informational maps and geospatial downloads; an official city report describes digital lots and municipal-property-cadastre updates. The download layer schema was not exposed in the reviewed page, and tax/owner workflows requiring CPF/CNPJ, property inscription or CAPTCHA were not used.",
+      "method": "Separate local-language search and official source review."
+    }
+  ],
+  "geometryDecision": "No parcel geometry retained; no safe anonymous parcel polygon response was verified.",
+  "coverageAssessment": {
+    "claimedScope": "Sorocaba’s official planning-secretariat GIS page offers informational maps and downloadable geospatial ZIP files. Municipal planning/government sources describe geoprocessing and cartographic layers for lots and buildings used to update the municipal property cadastre. This establishes municipal cadastral-map custody, not a land-title registry or a verified public parcel-vector endpoint.",
+    "verifiedOpenScope": "The city planning GIS provides informational maps and geospatial downloads; an official city report describes digital lots and municipal-property-cadastre updates. The download layer schema was not exposed in the reviewed page, and tax/owner workflows requiring CPF/CNPJ, property inscription or CAPTCHA were not used.",
+    "citywideVerified": false,
+    "countrywideVerified": false
+  },
+  "attempts": [
+    {
+      "source": "https://planejamento.sorocaba.sp.gov.br/mapas-camadas-simples-consulta/",
+      "outcome": "Official GIS page confirms informational map and geospatial ZIP downloads; accessible text does not disclose layer schema.",
+      "fieldsRequested": [],
+      "sensitiveFieldsRequested": false
+    },
+    {
+      "source": "https://agencia-local.sorocaba.sp.gov.br/iptu-complementar-foi-emitido-apos-estudo-utilizando-mapeamento/",
+      "outcome": "Official primary-source review; no feature geometry or individual property lookup.",
+      "fieldsRequested": [],
+      "sensitiveFieldsRequested": false
+    },
+    {
+      "source": "https://noticias.sorocaba.sp.gov.br/wp-content/uploads/2024/06/noticias.sorocaba.sp.gov.br-relatorio-de-gestao.2022.1o.semestre_compressed.pdf",
+      "outcome": "Official primary-source review; no feature geometry or individual property lookup.",
+      "fieldsRequested": [],
+      "sensitiveFieldsRequested": false
+    },
+    {
+      "source": "https://recad.sorocaba.sp.gov.br/dsf_sod_gtm/rcd/loginrcdman.do",
+      "outcome": "Owner/property-account workflow reviewed but not entered; no login, identifier, CAPTCHA or property-specific lookup submitted.",
+      "fieldsRequested": [],
+      "sensitiveFieldsRequested": false
+    },
+    {
+      "source": "https://iptu.sorocaba.sp.gov.br/dsf_iptu/pages/consultadebito.jsf",
+      "outcome": "Owner/property-account workflow reviewed but not entered; no login, identifier, CAPTCHA or property-specific lookup submitted.",
+      "fieldsRequested": [],
+      "sensitiveFieldsRequested": false
+    }
+  ],
+  "remainingUncertainty": "Which GIS download includes parcel polygons at the WUP point, the native non-sensitive key, and whether its schema permits safe geometry-only access remain unresolved.",
+  "runtimeAssessment": {
+    "status": "not_assessed",
+    "reason": "No adapter or runtime contract was tested."
+  },
+  "technicalBlocker": "The municipal GIS page confirms downloadable ZIP geospatial data, but the accessible page does not expose layer names or feature schemas. Tax/property-account services require identifying information and were not accessed."
+}

@@ -1,0 +1,72 @@
+{
+  "schemaVersion": "1.0",
+  "checkedAt": "2026-10-09",
+  "cityRecord": "city-10429-azamgarh.json",
+  "purpose": "Document first-party local registry/map evidence and bounded anonymous geometry access review.",
+  "scopeLimits": {
+    "maxFullPolygonsRetainedInCityRecord": 0,
+    "maxFullPolygonsRetainedInReview": 0,
+    "maxFullPolygonsRetainedInRepository": 0,
+    "ownerOrAddressDataRetained": false,
+    "credentialsOrTokenValuesRetained": false,
+    "citywideCompletenessAsserted": false
+  },
+  "assessment": "UP district dashboard distCode=191 identifies Azamgarh and reports tehsil mapping progress; Board of Revenue provides statewide land records and the public map viewer. This does not verify the exact centroid’s village or parcel geometry.",
+  "registryAssessment": "The Uttar Pradesh Board of Revenue operates statewide Bhulekh/BhuNaksha; the official district dashboard for Azamgarh (distCode=191) reports tehsil-level cadastral-map digitization. The exact WUP-point revenue village and full polygon were not identified.",
+  "officialPrimarySources": [
+    {
+      "url": "https://upbhulekh.gov.in/GeoDashboard/public_report?distCode=191",
+      "observation": "UP district dashboard distCode=191 identifies Azamgarh and reports tehsil mapping progress; Board of Revenue provides statewide land records and the public map viewer. This does not verify the exact centroid’s village or parcel geometry."
+    },
+    {
+      "url": "https://upbhulekh.gov.in/",
+      "observation": "UP district dashboard distCode=191 identifies Azamgarh and reports tehsil mapping progress; Board of Revenue provides statewide land records and the public map viewer. This does not verify the exact centroid’s village or parcel geometry."
+    },
+    {
+      "url": "https://upbhunaksha.gov.in/bhunaksha/09/index.html",
+      "observation": "UP district dashboard distCode=191 identifies Azamgarh and reports tehsil mapping progress; Board of Revenue provides statewide land records and the public map viewer. This does not verify the exact centroid’s village or parcel geometry."
+    },
+    {
+      "url": "https://azamgarh.nic.in/",
+      "observation": "UP district dashboard distCode=191 identifies Azamgarh and reports tehsil mapping progress; Board of Revenue provides statewide land records and the public map viewer. This does not verify the exact centroid’s village or parcel geometry."
+    }
+  ],
+  "searchQueries": [
+    {
+      "language": "English",
+      "query": "Azamgarh India official cadastre cadastral parcel map GIS land registry",
+      "scope": "Identify city-specific land registry/cadastre context and any anonymous full-parcel geometry.",
+      "result": "UP district dashboard distCode=191 identifies Azamgarh and reports tehsil mapping progress; Board of Revenue provides statewide land records and the public map viewer. This does not verify the exact centroid’s village or parcel geometry.",
+      "actualResultUrls": [
+        "https://upbhulekh.gov.in/GeoDashboard/public_report?distCode=191",
+        "https://upbhulekh.gov.in/",
+        "https://upbhunaksha.gov.in/bhunaksha/09/index.html",
+        "https://azamgarh.nic.in/"
+      ],
+      "executionMethod": "Separate English search and official-source review; no owner, address, title, tax, token, account, applicant, or property identifier was queried."
+    },
+    {
+      "language": "Hindi",
+      "query": "आजमगढ़ भू नक्शा भूलेख राजस्व ग्राम नक्शा आधिकारिक",
+      "scope": "Identify city-specific land registry/cadastre context and any anonymous full-parcel geometry.",
+      "result": "UP district dashboard distCode=191 identifies Azamgarh and reports tehsil mapping progress; Board of Revenue provides statewide land records and the public map viewer. This does not verify the exact centroid’s village or parcel geometry.",
+      "actualResultUrls": [
+        "https://upbhulekh.gov.in/GeoDashboard/public_report?distCode=191",
+        "https://upbhulekh.gov.in/",
+        "https://upbhunaksha.gov.in/bhunaksha/09/index.html",
+        "https://azamgarh.nic.in/"
+      ],
+      "executionMethod": "Separate local-language search and official-source review; no owner, address, title, tax, token, account, applicant, or property identifier was queried."
+    }
+  ],
+  "geometryDecision": "No full parcel geometry retained; no qualifying full polygon response was verified.",
+  "coverageAssessment": {
+    "claimedScope": "The Uttar Pradesh Board of Revenue operates statewide Bhulekh/BhuNaksha; the official district dashboard for Azamgarh (distCode=191) reports tehsil-level cadastral-map digitization. The exact WUP-point revenue village and full polygon were not identified.",
+    "verifiedOpenScope": "No citywide parcel coverage or WUP-point parcel presence is asserted.",
+    "citywideVerified": false,
+    "countrywideVerified": false,
+    "geometryVerified": false
+  },
+  "attempts": [],
+  "remainingUncertainty": "Public anonymous parcel geometry, exact WUP-point coverage, and citywide coverage remain unverified."
+}

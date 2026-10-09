@@ -1,0 +1,111 @@
+{
+  "type": "FeatureCollection",
+  "name": "Malaga municipal parcel sample (geometry and native feature id only)",
+  "crs": {
+    "type": "name",
+    "properties": {
+      "name": "urn:ogc:def:crs:EPSG::25830"
+    }
+  },
+  "features": [
+    {
+      "type": "Feature",
+      "id": "da_cartografiaParcela.4196772",
+      "geometry": {
+        "type": "Polygon",
+        "coordinates": [
+          [
+            [
+              371595.57294653,
+              4064781.2745334,
+              3.739e-05
+            ],
+            [
+              371588.00486026,
+              4064775.78460544,
+              3.739e-05
+            ],
+            [
+              371587.65486172,
+              4064776.18460767,
+              3.739e-05
+            ],
+            [
+              371585.45483694,
+              4064774.62462856,
+              3.739e-05
+            ],
+            [
+              371585.76483509,
+              4064774.2046267,
+              3.739e-05
+            ],
+            [
+              371579.06875877,
+              4064769.35069046,
+              3.739e-05
+            ],
+            [
+              371583.23673202,
+              4064763.47266584,
+              3.739e-05
+            ],
+            [
+              371599.7299198,
+              4064775.40450884,
+              3.739e-05
+            ],
+            [
+              371595.57294653,
+              4064781.2745334,
+              3.739e-05
+            ]
+          ]
+        ]
+      },
+      "properties": {
+        "sourceFeatureId": "da_cartografiaParcela.4196772"
+      }
+    }
+  ],
+  "properties": {
+    "source": "Ayuntamiento de Málaga open parcel dataset",
+    "sourceUrl": "https://datosabiertos.malaga.eu/recursos/urbanismoEInfraestructura/planimetria/callejero/da_cartografiaParcela-25830.geojson",
+    "sourceCrs": "EPSG:25830",
+    "verifiedWupPointEpsg25830": [
+      371591.291,
+      4064773.039
+    ],
+    "selection": "full polygon features whose source geometry covers exact WUP point; no other source attributes retained"
+  },
+  "selectionAudit": {
+    "source": "Ayuntamiento de Málaga municipal open parcel dataset",
+    "sourceUrl": "https://datosabiertos.malaga.eu/recursos/urbanismoEInfraestructura/planimetria/callejero/da_cartografiaParcela-25830.geojson",
+    "nativeId": "da_cartografiaParcela.4196772",
+    "sourceCrs": "EPSG:25830",
+    "sourceFeatureCount": 58631,
+    "sourceGeometryExtentEPSG25830": [
+      358282.26599712,
+      4055772.65591506,
+      387188.726,
+      4082816.5695
+    ],
+    "sourceDownloadBytes": 60931934,
+    "httpLastModified": "Thu, 08 Oct 2026 12:02:12 GMT",
+    "ckanResourceLastModified": "2025-04-09T13:06:41.855480",
+    "ckanMetadataModified": "2025-04-28T07:45:29.025357",
+    "wupPointLatLon": [
+      36.719979707331,
+      -4.43788341316648
+    ],
+    "wupPointEpsg25830": [
+      371591.291186269,
+      4064773.038900511
+    ],
+    "wupPointContained": true,
+    "retainedAttributes": [
+      "sourceFeatureId"
+    ],
+    "geometryUnmodified": true
+  }
+}

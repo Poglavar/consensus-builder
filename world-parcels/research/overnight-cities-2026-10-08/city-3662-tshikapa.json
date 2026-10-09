@@ -1,0 +1,103 @@
+{
+  "schemaVersion": 1,
+  "kind": "city_parcel_source_research",
+  "checkedAt": "2026-10-09",
+  "status": "complete",
+  "populationUnit": "persons",
+  "pointBasis": "UN WUP 2025 population-weighted settlement centroid; this is not a municipal boundary or a parcel-coverage claim.",
+  "name": "Tshikapa",
+  "country": "Democratic Republic of the Congo",
+  "countryCode": "CD",
+  "queueRank": 487,
+  "rank": 487,
+  "wupCityCode": 3662,
+  "cityId": "wup2025:3662",
+  "point": [
+    -6.4224159353736,
+    20.7852913673922
+  ],
+  "centerLatLon": [
+    -6.4224159353736,
+    20.7852913673922
+  ],
+  "population2025": 1054686,
+  "population2025k": 1054.686,
+  "populationPlausibility2025": "Low",
+  "populationPlausibility": "Low",
+  "verifiedSample": false,
+  "publicParcelGeometryFound": false,
+  "registryFound": true,
+  "adapterReady": false,
+  "runtimeReadiness": "not_enabled_no_verified_public_geometry",
+  "resultCategory": "local_registry_found_no_anonymous_geometry_verified",
+  "scopeLimits": "The Ministry of Land Affairs administrative circumscription page explicitly lists the Tshikapa land-registration/cadastre circumscription for Kasaï Province. The national public-service page describes register consultation as a formal, paid request to the Conservateur des Titres Immobiliers or Chef de Division du Cadastre, with an official certified response. The ministry land-service form requests property location and registered-holder details. No public anonymous vector parcel geometry was verified. No requests were submitted.",
+  "registryBasis": "The Ministry of Land Affairs lists Tshikapa as a cadastral/land-registration circumscription under Kasaï Province. The public-service register-consultation procedure confirms access is formal and paid; it is not an anonymous geometry API.",
+  "freshResearch": {
+    "executedQueries": [
+      {
+        "language": "French",
+        "query": "site:affairesfoncieres.gouv.cd Tshikapa circonscription foncière cadastre",
+        "result": "Official Ministry of Land Affairs administrative listing explicitly maps Kasaï Province to the Tshikapa circumscription."
+      },
+      {
+        "language": "English/French",
+        "query": "Tshikapa DRC official public cadastral parcel map GIS land registry geometry",
+        "result": "Cross-check found the official city-specific registry directory and formal register consultation process, but no anonymous parcel feature endpoint."
+      }
+    ],
+    "officialSources": [
+      {
+        "url": "https://affairesfoncieres.gouv.cd/secretariat/circonscriptions",
+        "observation": "Official Ministry of Land Affairs list explicitly includes Tshikapa under Kasaï Province."
+      },
+      {
+        "url": "https://servicepublic.gouv.cd/service/4671",
+        "observation": "Official service description says register consultation requires a formal paid request to the real-estate registrar or cadastral division and gives an official response."
+      },
+      {
+        "url": "https://www.affairesfoncieres.gouv.cd/services-fonciers/demandes",
+        "observation": "Official ministry service form requests property location and registered-holder information; not used."
+      }
+    ],
+    "viewerAndServiceTrace": {
+      "attempted": true,
+      "summary": "Reviewed official ministry circumscription, national public-service register procedure, and land-services form. No anonymous map/vector schema was exposed; no registry query or form was submitted.",
+      "geometryStatus": "No anonymous parcel geometry response verified",
+      "fullPolygonLimit": 3,
+      "fullPolygonsRetained": 0,
+      "ownerOrAddressDataRequested": false,
+      "credentialsOrTokenValuesRetained": false
+    }
+  },
+  "sourceIds": [],
+  "source": {
+    "sourceId": "cd-kasai-tshikapa-land-registry-circumscription",
+    "name": "Tshikapa cadastral / land-registration circumscription",
+    "operator": "DR Congo Ministry of Land Affairs",
+    "url": "https://affairesfoncieres.gouv.cd/secretariat/circonscriptions",
+    "serviceType": "Official administrative registry directory; public register searches require formal paid request.",
+    "geometryType": null,
+    "coordinateReferenceSystem": null,
+    "nativeIdFields": [],
+    "directGeometryQueryVerified": false,
+    "directMetadataSchemaVerified": false,
+    "scope": "City-specific Tshikapa registry circumscription in Kasaï; no public vector parcel service verified."
+  },
+  "coverageAssessment": {
+    "claimedScope": "Tshikapa registry presence only; no parcel geometry coverage claim.",
+    "verifiedOpenScope": "No anonymous parcel feature or WUP-point coverage verified.",
+    "citywideVerified": false,
+    "countrywideVerified": false
+  },
+  "registryEvidenceUrls": [
+    "https://affairesfoncieres.gouv.cd/secretariat/circonscriptions",
+    "https://servicepublic.gouv.cd/service/4671",
+    "https://www.affairesfoncieres.gouv.cd/services-fonciers/demandes"
+  ],
+  "runtimeAssessment": {
+    "status": "not_enabled",
+    "reason": "No anonymous public geometry endpoint found; register consultation is described as formal and paid."
+  },
+  "remainingUncertainty": "Whether any public viewer exposes cadastral vectors independently of the formal register-request service remains unverified.",
+  "rootReviewedAt": "2026-10-09T00:36:07.367105+00:00"
+}

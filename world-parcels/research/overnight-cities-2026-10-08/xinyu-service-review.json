@@ -1,0 +1,58 @@
+{
+  "schemaVersion": "1.0",
+  "checkedAt": "2026-10-09",
+  "cityRecord": "city-11134-xinyu.json",
+  "purpose": "Document city-scope registry evidence and bounded public parcel-geometry route review.",
+  "scopeLimits": {
+    "maxFullPolygonsRetainedInCityRecord": 3,
+    "maxFullPolygonsRetainedInReview": 3,
+    "maxFullPolygonsRetainedInRepository": 3,
+    "ownerOrAddressDataRetained": false,
+    "credentialsOrTokenValuesRetained": false,
+    "citywideCompletenessAsserted": false
+  },
+  "assessment": "Official city-government sources establish a local Xinyu real-estate registration center and its registration functions, but do not expose a public parcel geometry service. Searches found no official city-specific public feature schema or anonymous parcel endpoint. No geometry request was made and no full polygon retained. No owner/address or identity data queried.",
+  "registryAssessment": "Official Xinyu government material names the municipal real-estate registration center and describes it as handling local property-rights registration. The city natural-resources bureau is also named in current official city-government material. These establish a local registry service, but not anonymous parcel geometry or public map coverage at the WUP locator.",
+  "officialPrimarySources": [
+    {
+      "url": "https://xfj.xinyu.gov.cn/xfj/zcjdx/2019-10/30/content_f1c4f825c0ba438fa17ab086eb859f27.shtml",
+      "observation": "Official Xinyu government department policy explainer says the city real-estate registration center handles property-rights registration and gives the administrative-service-center location; this is registry-service evidence, not a parcel GIS."
+    },
+    {
+      "url": "https://lyj.xinyu.gov.cn/lyj/slyyw/2026-07/24/content_a56572583ec742d4b33a9c6941f7dd1b.shtml",
+      "observation": "Current official Xinyu Forestry Bureau report discusses linking forest-right registration data with the municipal real-estate registration system; it confirms ongoing local registration infrastructure, not a public parcel-map endpoint."
+    },
+    {
+      "url": "https://lyj.xinyu.gov.cn/lyj/zcjdm/2026-07/24/content_8528821369824d259e63bd16987ff827.shtml",
+      "observation": "Official multi-agency Xinyu notice naming the municipal natural-resources and forestry bureaus; no public parcel geometry schema."
+    }
+  ],
+  "searchQueries": [
+    {
+      "language": "English",
+      "query": "Xinyu China official natural resources bureau real estate registration center cadastral parcel map GIS",
+      "result": "No city-specific public cadastral feature service or geometry schema was identified. City-government material did verify the local real-estate registration center.",
+      "urls": [
+        "https://xfj.xinyu.gov.cn/xfj/zcjdx/2019-10/30/content_f1c4f825c0ba438fa17ab086eb859f27.shtml",
+        "https://lyj.xinyu.gov.cn/lyj/slyyw/2026-07/24/content_a56572583ec742d4b33a9c6941f7dd1b.shtml",
+        "https://lyj.xinyu.gov.cn/lyj/zcjdm/2026-07/24/content_8528821369824d259e63bd16987ff827.shtml"
+      ],
+      "scope": "Find official city-local registry/cadastre evidence and inspect public geometry-only routes without personal/property-specific queries."
+    },
+    {
+      "language": "Chinese",
+      "query": "新余市 自然资源局 不动产登记中心 地籍图 地籍调查 官方 新余市政府",
+      "result": "Official city-government pages name the Xinyu real-estate registration center and local registration functions. No anonymous parcel-geometry service or schema surfaced.",
+      "urls": [
+        "https://xfj.xinyu.gov.cn/xfj/zcjdx/2019-10/30/content_f1c4f825c0ba438fa17ab086eb859f27.shtml",
+        "https://lyj.xinyu.gov.cn/lyj/slyyw/2026-07/24/content_a56572583ec742d4b33a9c6941f7dd1b.shtml",
+        "https://lyj.xinyu.gov.cn/lyj/zcjdm/2026-07/24/content_8528821369824d259e63bd16987ff827.shtml"
+      ],
+      "scope": "Find official city-local registry/cadastre evidence and inspect public geometry-only routes without personal/property-specific queries."
+    }
+  ],
+  "serviceChecks": [],
+  "geometryEvidence": null,
+  "privacy": "No parcel-specific lookup or geometry request was made; no owner/address/identity attributes, credentials or tokens retained.",
+  "runtimeAssessment": "not_enabled_no_verified_public_geometry"
+}

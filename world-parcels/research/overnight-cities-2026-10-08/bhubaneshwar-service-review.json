@@ -1,0 +1,77 @@
+{
+  "schemaVersion": "1.0",
+  "checkedAt": "2026-10-09",
+  "cityRecord": "city-11573-bhubaneshwar.json",
+  "purpose": "Document city-local registry evidence and bounded anonymous parcel-vector access review.",
+  "scopeLimits": {
+    "maxFullPolygonsRetainedInCityRecord": 0,
+    "maxFullPolygonsRetainedInReview": 0,
+    "maxFullPolygonsRetainedInRepository": 0,
+    "ownerOrAddressDataRetained": false,
+    "credentialsOrTokenValuesRetained": false,
+    "citywideCompletenessAsserted": false
+  },
+  "assessment": "BMC documents city property-tax records and GIS-based survey, and BDA publishes land-use planning products. The official BhuNaksha map-backed selector returned only Puri, Nayagarh, and Rayagada, not Khordha. No plot-info endpoint or parcel geometry was queried.",
+  "registryAssessment": "RegistryFound is based on local BMC property records and city planning services; it is not a claim that public cadastral polygons are available or that the WUP point is covered.",
+  "officialPrimarySources": [
+    {
+      "url": "https://app2bhunakshaodisha.nic.in/bhunaksha/",
+      "observation": "Official Odisha BhuNaksha plot-map UI with District, Tehsil, RI, Village and Sheet selectors; public selector request currently returned only three district choices, none Khordha."
+    },
+    {
+      "url": "https://bhulekh.ori.nic.in/frmmapview.aspx",
+      "observation": "Official Odisha Bhulekh Map View page links to the official BhuNaksha service and exposes village-map/plot-map entry points."
+    },
+    {
+      "url": "https://www.bmc.gov.in/property-tax-assessment",
+      "observation": "Bhubaneswar Municipal Corporation says property-tax records are being computerised and GIS maps are used for its city survey; this is local property-tax administration, not public parcel polygons."
+    },
+    {
+      "url": "https://www.bda.gov.in/information/894",
+      "observation": "Bhubaneswar Development Authority offers a land-use map for 205 villages and a clearly labeled draft GIS-based CDP plan; neither was treated as a cadastral vector layer."
+    },
+    {
+      "url": "https://odisha4kgeo.in/index.php/mapview/bluisplus",
+      "observation": "ORSAC describes statewide georeferenced cadastral-level land-use maps; the portal is a state asset/planning system, not verified public parcel vectors for this city point."
+    }
+  ],
+  "searchQueries": [
+    {
+      "language": "English",
+      "query": "Bhubaneswar official cadastral parcel map GIS land records Bhubaneswar Development Authority",
+      "result": "The official BhuNaksha application is a village-level plot-map viewer. Its anonymous current selector returns map-backed district entries Puri, Nayagarh, and Rayagada; Khordha (Bhubaneswar) was absent. BDA’s official public pages link land-use maps and a draft CDP map, not parcel vectors.",
+      "method": "Separate English search, official BDA/BMC pages, and public BhuNaksha selector/schema review."
+    },
+    {
+      "language": "Odia",
+      "query": "ଭୁବନେଶ୍ୱର ଜମି ନକ୍ସା ଭୂଖଣ୍ଡ ମାନଚିତ୍ର ଜିଆଇଏସ ସରକାରୀ",
+      "result": "Official BMC materials document city property-tax records and GIS-based survey; the public BhuNaksha map selector did not expose Khordha in its current map-backed options. No property record or owner lookup was performed.",
+      "method": "Separate Odia-language search and official Odisha/BMC map-source review."
+    }
+  ],
+  "serviceChecks": [
+    {
+      "url": "https://app2bhunakshaodisha.nic.in/bhunaksha/",
+      "method": "GET official viewer shell and public client JS",
+      "httpStatus": 200,
+      "observation": "UI uses district/tehsil/RI/village/sheet selection and raster WMS; plot-info route not invoked."
+    },
+    {
+      "url": "https://app2bhunakshaodisha.nic.in/bhunaksha/rest/Levels/ListsAfterLevel",
+      "method": "POST public selector only, state 21, level 0, hasmap true and false",
+      "httpStatus": 200,
+      "observation": "Both responses returned only district codes 11 Puri, 22 Nayagarh, and 27 Rayagada; Khordha was not in the current map-backed selector result."
+    },
+    {
+      "url": "https://www.bmc.gov.in/property-tax-assessment",
+      "method": "GET city property/GIS survey page",
+      "httpStatus": 200,
+      "observation": "City page describes local property tax record digitization and GIS map use for survey; no parcel layer schema."
+    }
+  ],
+  "geometryEvidence": null,
+  "qualification": null,
+  "privacy": "Requests used only declared safe identifiers and geometry. No owner, address, tax, account, or other property record values were requested.",
+  "rootDecision": "pending_root_review",
+  "runtimeAssessment": "not_enabled_no_verified_public_geometry"
+}

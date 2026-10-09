@@ -1,0 +1,113 @@
+{
+  "schemaVersion": "1.0",
+  "checkedAt": "2026-10-09",
+  "cityRecord": "city-5764-general-santos.json",
+  "purpose": "Document separate English/local-language searches, first-party local registry/cadastre evidence, and bounded anonymous geometry discovery.",
+  "scopeLimits": {
+    "maxFullPolygonsRetainedInCityRecord": 0,
+    "maxFullPolygonsRetainedInReview": 0,
+    "maxFullPolygonsRetainedInRepository": 0,
+    "ownerOrAddressDataRetained": false,
+    "credentialsOrTokenValuesRetained": false,
+    "citywideCompletenessAsserted": false
+  },
+  "assessment": "City office directory confirms local housing/land and assessor offices. National Geoportal has General Santos existing land use, not a parcel fabric. An official FOI response previously said the requested cadastral shapefile was not held at central DENR. No anonymous parcel geometry endpoint was found.",
+  "registryAssessment": "First-party registry, cadastral or land-administration custodian route identified as described in the cited official-source observations; public safe geometry remains unverified.",
+  "officialPrimarySources": [
+    {
+      "url": "https://gensantos.gov.ph/departments/",
+      "observation": "Official General Santos city directory lists City Housing and Land Management Office and City Assessor’s Office."
+    },
+    {
+      "url": "https://www.geoportal.gov.ph/",
+      "observation": "Official Philippine Geoportal lists an Existing Land Use Map for General Santos; that thematic land-use layer is not parcel cadastre."
+    },
+    {
+      "url": "https://www.foi.gov.ph/requests/shapefiles-of-cadastral-map-of-general-santos-city-and-sarangani-province-with-boundaries/",
+      "observation": "Official FOI record says DENR Central Office did not hold the requested General Santos/Sarangani cadastral shapefile in 2023 and referred the requester to DENR Region XII; this does not establish current availability."
+    }
+  ],
+  "searchQueries": [
+    {
+      "language": "English",
+      "query": "General Santos official cadastral maps land registration DENR LRA geospatial parcel map Philippines city",
+      "resultUrls": [
+        "https://gensantos.gov.ph/departments/",
+        "https://www.geoportal.gov.ph/",
+        "https://www.foi.gov.ph/requests/shapefiles-of-cadastral-map-of-general-santos-city-and-sarangani-province-with-boundaries/"
+      ],
+      "result": "The English search found the official national Geoportal’s General Santos existing land-use map and city land/assessor offices. Land use is not cadastral parcels.",
+      "scope": "Identify first-party local registry and public parcel geometry; preserve the unchanged WUP settlement locator and avoid owner or address attributes."
+    },
+    {
+      "language": "Filipino",
+      "query": "Lungsod ng General Santos opisyal na mapa kadastral rehistro ng lupa tanggapan ng assessor",
+      "resultUrls": [
+        "https://gensantos.gov.ph/departments/",
+        "https://www.geoportal.gov.ph/",
+        "https://www.foi.gov.ph/requests/shapefiles-of-cadastral-map-of-general-santos-city-and-sarangani-province-with-boundaries/"
+      ],
+      "result": "The Filipino search surfaced the official City Assessor and city-office directory, but no public parcel-geometry portal.",
+      "scope": "Find first-party local-language registry/cadastral routes and any anonymous safe parcel geometry service near the unchanged WUP point."
+    }
+  ],
+  "geometryDecision": {
+    "verified": false,
+    "sourceId": null,
+    "sampleCount": 0,
+    "sampleFile": null,
+    "nativeId": null,
+    "nativeIdField": null,
+    "exactWupPointTest": "No source-native full polygon was returned at the WUP point. publicParcelGeometryFound:false means unverified here, not confirmed absence.",
+    "requestEvidence": []
+  },
+  "coverageAssessment": {
+    "claimedScope": "City office directory confirms local housing/land and assessor offices. National Geoportal has General Santos existing land use, not a parcel fabric. An official FOI response previously said the requested cadastral shapefile was not held at central DENR. No anonymous parcel geometry endpoint was found.",
+    "verifiedOpenScope": "No full parcel geometry was verified and no citywide coverage is asserted.",
+    "citywideVerified": false,
+    "countrywideVerified": false,
+    "geometryVerified": false
+  },
+  "attempts": [
+    {
+      "url": "https://gensantos.gov.ph/departments/",
+      "result": "Official General Santos city directory lists City Housing and Land Management Office and City Assessor’s Office."
+    },
+    {
+      "url": "https://www.geoportal.gov.ph/",
+      "result": "Official Philippine Geoportal lists an Existing Land Use Map for General Santos; that thematic land-use layer is not parcel cadastre."
+    },
+    {
+      "url": "https://www.foi.gov.ph/requests/shapefiles-of-cadastral-map-of-general-santos-city-and-sarangani-province-with-boundaries/",
+      "result": "Official FOI record says DENR Central Office did not hold the requested General Santos/Sarangani cadastral shapefile in 2023 and referred the requester to DENR Region XII; this does not establish current availability."
+    }
+  ],
+  "remainingUncertainty": "Regional cadastral data availability and the current parcel-map route remain unresolved; no point query was made.",
+  "nextStep": "Use the official source catalog or documented map-service metadata if available; request only safe parcel identifiers and geometry, never owner or address fields.",
+  "runtimeAssessment": "not enabled; no verified full-parcel geometry",
+  "cohort": "overnight-next-1101-1200",
+  "cohortState": "research_complete_pending_root_review",
+  "integrationState": "not_integrated",
+  "rootPrimaryChecks": [
+    {
+      "wupCityCode": 5764,
+      "url": "https://gensantos.gov.ph/departments/",
+      "checkedAt": "2026-10-09T07:10:39.364895+00:00",
+      "method": "Anonymous read-only GET, standard TLS where advertised; no credentials or property values",
+      "httpStatus": 200,
+      "finalUrl": "https://gensantos.gov.ph/departments/",
+      "contentType": "text/html; charset=UTF-8",
+      "bytesRead": 423770,
+      "sha256": "91f708b4317f4494e6778ccdb5c5cfa797136698db0c15e35e872fecfb6c7a84",
+      "complete": true
+    }
+  ],
+  "rootReviewedAt": "2026-10-09T07:13:02.981057+00:00",
+  "rootReview": {
+    "checkedAt": "2026-10-09T07:13:02.981057+00:00",
+    "decision": "Reviewed city identity, canonical population/point, separate searches and saved source/request evidence. No full public parcel geometry verified in this pass.",
+    "custodyScope": "City office directory confirms local housing/land and assessor offices. National Geoportal has General Santos existing land use, not a parcel fabric. An official FOI response previously said the requested cadastral shapefile was not held at central DENR. No anonymous parcel geometry endpoint was found.",
+    "transportFailuresDoNotProveAbsence": true,
+    "geometryClaimScope": "Investigation outcome only; no worldwide or citywide absence asserted."
+  }
+}

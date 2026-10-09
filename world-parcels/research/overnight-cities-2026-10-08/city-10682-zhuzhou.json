@@ -1,0 +1,90 @@
+{
+  "schemaVersion": 1,
+  "kind": "city_parcel_source_research",
+  "checkedAt": "2026-10-09",
+  "name": "Zhuzhou",
+  "country": "China",
+  "countryCode": "CN",
+  "populationUnit": "persons",
+  "status": "complete",
+  "registryFound": true,
+  "registryBasis": "The Hunan Provincial government-service portal has a Zhuzhou City service storefront with a city-provided “Real Estate Registration Query” service. The page requires a certificate/identity-number input for lookup, so it establishes a city-specific registration service but not anonymous parcel geometry.",
+  "registryEvidenceUrls": [
+    "https://zwfw-new.hunan.gov.cn/hnzwfw/portal/WCcByBF0QjqavaDWE5rr7w/index.html"
+  ],
+  "verifiedSample": false,
+  "publicParcelGeometryFound": false,
+  "runtimeReadiness": "not_enabled_no_verified_public_geometry",
+  "wupCityCode": 10682,
+  "cityId": "wup2025:10682",
+  "centerLatLon": [
+    27.8501754316563,
+    113.147247450275
+  ],
+  "rank": 527,
+  "queueRank": 527,
+  "population2025": 979244,
+  "population2025k": 979.244,
+  "pointBasis": "UN WUP 2025 population-weighted settlement centroid; this is not a municipal boundary or a parcel-coverage claim.",
+  "technicalBlocker": "The city-provided registration query is identifier-driven and the public page does not expose a geometry-only polygon route or schema. No identifier was entered, no form submitted, and no property information queried.",
+  "scopeLimits": "A city-specific registration service is confirmed. This does not imply public parcel-geometry access or citywide cadastral coverage.",
+  "remainingUncertainty": "No anonymous vector feature schema or full polygon route was verified. The public query service requires a certificate/identity number and was not used.",
+  "research": {
+    "executedQueries": [
+      {
+        "language": "English",
+        "query": "Zhuzhou China official city real estate registration center cadastral map parcel GIS",
+        "scope": "Find primary city-local registry/cadastre basis and safe anonymous polygon routes.",
+        "result": "The official Hunan government portal exposes a Zhuzhou-branded Real Estate Registration Query service and labels Zhuzhou as the service provider. The visible form requires a certificate/identity number. No form value was entered and no private or property record was queried; no public vector or schema route was found.",
+        "actualResultUrls": [
+          "https://zwfw-new.hunan.gov.cn/hnzwfw/portal/WCcByBF0QjqavaDWE5rr7w/index.html"
+        ]
+      },
+      {
+        "language": "Chinese",
+        "query": "株洲市 不动产登记查询 不动产登记中心 地籍图 官方",
+        "scope": "Find local-language city-specific registry/cadastre basis and safe anonymous polygon routes.",
+        "result": "湖南省株洲市政务服务旗舰店列有“不动产登记查询”，页面明示“本服务由株洲市提供”。查询页需要证件号码；未填写号码或提交请求，也未发现匿名矢量地块数据接口。",
+        "actualResultUrls": [
+          "https://zwfw-new.hunan.gov.cn/hnzwfw/portal/WCcByBF0QjqavaDWE5rr7w/index.html"
+        ]
+      }
+    ],
+    "officialSources": [
+      {
+        "url": "https://zwfw-new.hunan.gov.cn/hnzwfw/portal/WCcByBF0QjqavaDWE5rr7w/index.html",
+        "observation": "The Hunan Provincial government-service portal has a Zhuzhou City service storefront with a city-provided “Real Estate Registration Query” service. The page requires a certificate/identity-number input for lookup, so it establishes a city-specific registration service but not anonymous parcel geometry."
+      }
+    ],
+    "metadataReviewFile": "zhuzhou-service-review.json",
+    "routeInspectionFile": "/tmp/overnight-cities-2026-10-08/city-10682-zhuzhou-route-inspection.json"
+  },
+  "source": {
+    "sourceId": "cn-zhuzhou-city-registry",
+    "name": "Zhuzhou local registry/cadastre route review",
+    "operator": "Zhuzhou City government-services storefront / natural-resources registration service",
+    "url": "https://zwfw-new.hunan.gov.cn/hnzwfw/portal/WCcByBF0QjqavaDWE5rr7w/index.html",
+    "scope": "A city-specific registration service is confirmed. This does not imply public parcel-geometry access or citywide cadastral coverage.",
+    "nativeIdField": null,
+    "attributesRequested": [],
+    "identityBasis": "No safe parcel feature identifier was retrieved.",
+    "geometryStatus": "city_registry_basis_only_no_public_geometry_contract"
+  },
+  "coverageAssessment": {
+    "verifiedOpenScope": "A city-specific registration service is confirmed. This does not imply public parcel-geometry access or citywide cadastral coverage.",
+    "notEstablished": [
+      "anonymous full-polygon access",
+      "complete citywide parcel coverage",
+      "runtime source binding"
+    ],
+    "wupPointRelation": "No parcel geometry was returned or asserted."
+  },
+  "priorEvidenceFiles": [],
+  "populationPlausibility2025": "High",
+  "rootReviewedAt": "2026-10-09T01:19:13.626142+00:00",
+  "sourceIds": [],
+  "point": [
+    27.8501754316563,
+    113.147247450275
+  ]
+}

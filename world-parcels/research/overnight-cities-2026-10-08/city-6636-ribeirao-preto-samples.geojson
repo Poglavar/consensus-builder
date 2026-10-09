@@ -1,0 +1,41 @@
+{
+  "type": "FeatureCollection",
+  "name": "Ribeirão Preto municipal Cadastro Urbano Lote at WUP locator",
+  "sourceFile": "/private/tmp/rp-point-safe.geojson",
+  "features": [
+    {
+      "type": "Feature",
+      "id": 179088,
+      "properties": {
+        "gid": 179088
+      },
+      "geometry": {
+        "type": "Polygon",
+        "coordinates": [
+          [
+            [
+              -47.80980534492367,
+              -21.164998837397963
+            ],
+            [
+              -47.80961440528429,
+              -21.165147146277263
+            ],
+            [
+              -47.80924103792023,
+              -21.164710587864345
+            ],
+            [
+              -47.80943197747972,
+              -21.16456227942156
+            ],
+            [
+              -47.80980534492367,
+              -21.164998837397963
+            ]
+          ]
+        ]
+      }
+    }
+  ]
+}

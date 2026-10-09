@@ -1,0 +1,46 @@
+{
+  "schemaVersion": 1,
+  "checkedAt": "2026-10-09",
+  "cityRecord": "city-11967-agartala.json",
+  "purpose": "City-specific official registry/cadastre and safe anonymous parcel-geometry discovery.",
+  "scopeLimits": {
+    "maxFullPolygonsRetainedInCityRecord": 3,
+    "maxFullPolygonsRetainedInReview": 3,
+    "maxFullPolygonsRetainedInRepository": 3,
+    "ownerOrAddressDataRetained": false,
+    "credentialsOrTokenValuesRetained": false,
+    "citywideCompletenessAsserted": false
+  },
+  "assessment": "e-JAMI citizen map preview is described as a non-scaled PDF and the official notice records the service outage. Agartala NAKSHA pilot and planning-map sources do not provide a public parcel feature schema. No property search or geometry sample retained.",
+  "registryAssessment": "The official West Tripura district land-records service page places the Directorate of Land Records and Settlement headquarters in Agartala and links to the e-JAMI land-record system. A Tripura government notice says DLRS provides e-JAMI records, registration, and cadastral-map access; its June 2025 service interruption notice reported both official and citizen portals inaccessible. No anonymous vector layer or geometry schema was verified.",
+  "searchQueries": [
+    {
+      "language": "Bengali",
+      "query": "আগরতলা ভূমি রেকর্ড জরিপ মানচিত্র ই-জামি সরকারি ডিএলআরএস",
+      "scope": "Verify Agartala-specific land-record office/workflow and check for safe public parcel geometry.",
+      "result": "West Tripura district government identifies DLRS headquarters in Agartala and links the state e-JAMI system. The Tripura government documented e-JAMI interruption from 2025-06-06, naming the citizen and official portals as inaccessible. e-JAMI citizen functions include plot-based RoR and non-scaled PDF map preview; no vector schema found.",
+      "actualResultUrls": [
+        "https://westtripura.nic.in/bn/service/%E0%A6%AD%E0%A7%82%E0%A6%AE%E0%A6%BF-%E0%A6%B0%E0%A6%BF%E0%A6%95%E0%A7%8D%E0%A6%B8%E0%A6%A1/",
+        "https://ica.tripura.gov.in/sites/default/files/1239-25%20Eng%20PR%20%23%20Press%20Release%20of%20Directorate%20of%20Land%20Records%20and%20Settlement.pdf",
+        "https://negd.gov.in/isl/Directory/statedata/279"
+      ],
+      "executionMethod": "Separate Bengali-language discovery and official district/state portal review. Citizen and official portal opens timed out; no plot number, property search, or feature query submitted."
+    },
+    {
+      "language": "English",
+      "query": "Agartala Tripura official land records eJami cadastral maps parcel geometry GIS NAKSHA",
+      "scope": "Verify Agartala-specific land-record office/workflow and check for safe public parcel geometry.",
+      "result": "Official Tripura sources document the e-JAMI cadastral-map workflow, a NAKSHA pilot covering Agartala Municipal Corporation, and GIS master-plan PDFs. The NAKSHA information page is a programme/status portal, and the master plans are planning land-use maps, not a public cadastral feature service. No parcel geometry schema was available.",
+      "actualResultUrls": [
+        "https://ica.tripura.gov.in/sites/default/files/1239-25%20Eng%20PR%20%23%20Press%20Release%20of%20Directorate%20of%20Land%20Records%20and%20Settlement.pdf",
+        "https://surveyofindia.gov.in/documents/circulars/document-83846-Naksha%20Pilot.pdf",
+        "https://tuda.tripura.ind.in/pages/gis-based-master-plans"
+      ],
+      "executionMethod": "Separate English-language discovery; reviewed Tripura district/state sources, Survey of India pilot roster and official planning authority page. No plot lookup or geometry query."
+    }
+  ],
+  "geometryEvidence": null,
+  "privacy": "No owner, address, applicant, taxpayer, assessment, sale, or other private property fields were requested or retained.",
+  "runtimeAssessment": "not_enabled_no_verified_public_geometry",
+  "technicalBlocker": "The official 2025 notice records the e-JAMI portals as inaccessible after a State Data Centre outage; direct portal reads also timed out in this review. No safe feature schema could be reviewed."
+}

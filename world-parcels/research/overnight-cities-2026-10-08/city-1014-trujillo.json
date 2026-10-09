@@ -1,0 +1,124 @@
+{
+  "name": "Trujillo",
+  "country": "Peru",
+  "countryCode": "PE",
+  "rank": 549,
+  "point": [
+    -8.09242852086721,
+    -79.0293840510472
+  ],
+  "freshResearch": {
+    "queries": [
+      {
+        "language": "English",
+        "query": "Trujillo Peru official municipal cadastral geovisor lot parcels GIS PLANDET",
+        "result": "Official municipal geoviewer has a public shell and cadastral-lot tables. The client fetches table-backed GeoJSON with optional bbox but no field projection, so no feature request was made without a safe schema.",
+        "urls": [
+          "https://plandet.munitrujillo.gob.pe/",
+          "https://plandet.munitrujillo.gob.pe/visor/",
+          "https://www.munitrujillo.gob.pe/Archivosvirtual/Transparencia/Adjuntos/88867_portalDocumento.pdf"
+        ]
+      },
+      {
+        "language": "Spanish",
+        "query": "Trujillo Perú catastro urbano geovisor lotes portal municipalidad provincial",
+        "result": "La Municipalidad Provincial identifica a PLANDET como responsable del catastro distrital y del Geovisor Cartográfico con información de lotes. El cliente obtiene GeoJSON desde una tabla y permite bbox, pero no incluye selección de campos; no se consultaron entidades ni se retuvo geometría.",
+        "urls": [
+          "https://www.gob.pe/institucion/munitrujillo/noticias/611539-mpt-presenta-geovisor-cartografico-provincial",
+          "https://plandet.munitrujillo.gob.pe/visor/",
+          "https://www.munitrujillo.gob.pe/Archivosvirtual/Transparencia/Adjuntos/14208_portalTransparencia.pdf"
+        ]
+      }
+    ],
+    "portals": [
+      {
+        "url": "https://www.munitrujillo.gob.pe/Archivosvirtual/Transparencia/Adjuntos/88867_portalDocumento.pdf",
+        "observation": "Municipal organizational regulation assigns the PLANDET Geomatics and Cadastre subunit to maintain Trujillo’s cadastral information system, maintain the city geoviewer, and issue cadastral-code certificates for Trujillo district."
+      },
+      {
+        "url": "https://www.gob.pe/institucion/munitrujillo/noticias/611539-mpt-presenta-geovisor-cartografico-provincial",
+        "observation": "First-party municipal announcement says the public Geovisor Cartográfico includes lot information, zoning and other geographic layers for the Trujillo metropolitan/provincial area."
+      },
+      {
+        "url": "https://plandet.munitrujillo.gob.pe/",
+        "httpStatus": 200,
+        "observation": "Current PLANDET page identifies the municipal unit responsible for district cadastre, property formalization and territorial planning; it links the public viewer."
+      },
+      {
+        "url": "https://plandet.munitrujillo.gob.pe/visor/",
+        "httpStatus": 200,
+        "observation": "Public map shell publishes table names including `s25_lote_cata`, `s26_lote_cata`, `s27_lote_cata`, `s32_lote_cata`, `s33_lote_cata`, and `sector13_lote_catastral`."
+      },
+      {
+        "url": "https://plandet.munitrujillo.gob.pe/visor/assets/js/layers/polygons.js",
+        "httpStatus": 200,
+        "observation": "Viewer client fetches `api.php?tabla={name}` and appends a bounding-box parameter when supplied. It provides no field-selection parameter; no feature request or geometry was made."
+      },
+      {
+        "url": "https://www.munitrujillo.gob.pe/Archivosvirtual/Transparencia/Adjuntos/14208_portalTransparencia.pdf",
+        "observation": "Municipal performance document reports urban cadastral updates and maintenance of the PLANDET geoviewer; it does not define a safe feature schema."
+      }
+    ],
+    "requests": []
+  },
+  "status": "complete",
+  "verifiedParcelResponse": {
+    "httpStatus": null,
+    "featureType": null,
+    "responseType": null,
+    "responseCrs": null,
+    "returnedFullPolygonCount": 0,
+    "uniqueFullPolygonCount": 0,
+    "wupPointContained": null,
+    "limitations": "No parcel feature response or full polygon was retrieved."
+  },
+  "source": {
+    "id": "city-PE-1014-overnight-research",
+    "name": "Trujillo city-local parcel source review",
+    "operator": null,
+    "url": "https://plandet.munitrujillo.gob.pe/visor/",
+    "format": "Public geometry not schema-verified",
+    "access": "Public source discovery only; no account login or feature query used",
+    "nativeIdField": null,
+    "geometryCrs": null
+  },
+  "coverageAssessment": {
+    "claimedScope": "The Municipalidad Provincial de Trujillo’s PLANDET unit is responsible for maintaining the Trujillo cadastral information system and public cartographic geoviewer; the first-party viewer lists cadastral-lot tables. This verifies a city-local cadastre and map service, but the public feature schema and data properties are not constrained by the client.",
+    "verifiedOpenScope": "The official public viewer exposes a table-backed GeoJSON route without a field-selection parameter. Its property schema is not published, so a bounded query might return unreviewed fields. No feature request or geometry was made.",
+    "countrywideVerified": false,
+    "citywideVerified": false
+  },
+  "registryFound": true,
+  "registryBasis": "The Municipalidad Provincial de Trujillo’s PLANDET unit is responsible for maintaining the Trujillo cadastral information system and public cartographic geoviewer; the first-party viewer lists cadastral-lot tables. This verifies a city-local cadastre and map service, but the public feature schema and data properties are not constrained by the client.",
+  "verifiedSample": false,
+  "publicParcelGeometryFound": false,
+  "resultCategory": "public_cadastral_vector_candidate_no_safe_attribute_allowlist",
+  "technicalBlocker": "The official public viewer exposes a table-backed GeoJSON route without a field-selection parameter. Its property schema is not published, so a bounded query might return unreviewed fields. No feature request or geometry was made.",
+  "remainingUncertainty": "Whether the lot layers return only geometry/safe IDs or include sensitive cadastral/property attributes; coverage scope of each lot-table layer and WUP-point inclusion are unverified.",
+  "nextStep": "Obtain a public schema or a geometry-and-safe-ID-only endpoint contract, then test a bounded city query before retaining up to three polygons.",
+  "sourceIds": [],
+  "schemaVersion": 1,
+  "checkedAt": "2026-10-09",
+  "wupCityCode": 1014,
+  "cityId": "wup2025:1014",
+  "queueRank": 549,
+  "population2025": 949018,
+  "populationPlausibility2025": "High",
+  "populationUnit": "persons",
+  "pointBasis": "UN WUP 2025 population-weighted settlement centroid; this is not a municipal boundary or a parcel-coverage claim.",
+  "centerLatLon": [
+    -8.09242852086721,
+    -79.0293840510472
+  ],
+  "runtimeReadiness": "not_enabled_no_verified_public_geometry",
+  "adapterReady": false,
+  "scopeLimits": "Source discovery only. No full parcel polygons, owner/address data, account credentials, tokens or feature responses were retained.",
+  "registryEvidenceUrls": [
+    "https://plandet.munitrujillo.gob.pe/",
+    "https://plandet.munitrujillo.gob.pe/visor/",
+    "https://www.munitrujillo.gob.pe/Archivosvirtual/Transparencia/Adjuntos/88867_portalDocumento.pdf",
+    "https://www.gob.pe/institucion/munitrujillo/noticias/611539-mpt-presenta-geovisor-cartografico-provincial",
+    "https://www.munitrujillo.gob.pe/Archivosvirtual/Transparencia/Adjuntos/14208_portalTransparencia.pdf"
+  ],
+  "rootReviewedAt": "2026-10-09T01:29:32.105621+00:00"
+}

@@ -1,0 +1,8 @@
+{
+  "schemaVersion": 1,
+  "checkedAt": "2026-10-08T23:01:54.087887+00:00",
+  "cityRecord": "city-2381-cordoba.json",
+  "rootDecision": "held_geometry_quality",
+  "rootGeometryAuditFile": "cordoba-root-quality.json",
+  "rootAssessment": "Independent root GEOS audit reproduces 22 invalid geometries among 440 complete original source polygons, three positive-area overlap pairs totaling 395.24 m² and five overlay operation errors. The source is held without repairs or selective deletion. A dev-labelled public municipal host is informational and is not an eligibility gate."
+}

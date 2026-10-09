@@ -1,0 +1,13 @@
+{
+  "checkedAt": "2026-10-09T04:40:32.064988+00:00",
+  "decision": "approved_by_root",
+  "geometryPreserved": true,
+  "featureCount": 114,
+  "independentAudit": "west-palm-beach-county-ground-quality.json",
+  "invalidCount": 0,
+  "duplicateCount": 0,
+  "overlapCountAbove0_01M2": 0,
+  "operationErrors": 0,
+  "scope": "114 valid distinct Palm Beach County Property Appraiser GIS reference polygons in thirteen bounded cells around the unchanged UN WUP West Palm Beach settlement locator. Native count/OID manifests, forced three-row pages, fresh GIS-ID geometry reads, explicit absence, footprint and binding pass. Metric EPSG32617 topology found no sampled overlap or errors. The county sample contains the locator; the separate municipal parcel layer extent excludes it. This serves the WUP settlement location using county ground and makes no West Palm Beach municipal-only coverage claim. Documented PCN/PARID is nonunique across geometry features, so it is not the runtime key.",
+  "nativeIdentityAndScopeReview": "westpalmbeach-root-native-identity-and-scope-review.json"
+}

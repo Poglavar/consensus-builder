@@ -1,0 +1,41 @@
+{
+  "schemaVersion": 1,
+  "checkedAt": "2026-10-09",
+  "cityRecord": "city-11674-quzhou.json",
+  "purpose": "City-specific official registry/cadastre and safe anonymous parcel-geometry discovery.",
+  "scopeLimits": {
+    "maxFullPolygonsRetainedInCityRecord": 3,
+    "maxFullPolygonsRetainedInReview": 3,
+    "maxFullPolygonsRetainedInRepository": 3,
+    "ownerOrAddressDataRetained": false,
+    "credentialsOrTokenValuesRetained": false,
+    "citywideCompletenessAsserted": false
+  },
+  "assessment": "Official Quzhou bureau material confirms a municipal property-registration and cadastral survey platform, but no public anonymous feature layer, geometry schema or coordinate-based parcel query was verified. No personal title records were inspected.",
+  "registryAssessment": "The official Quzhou Natural Resources and Planning Bureau states that it manages unified natural-resource and immovable-property registration, cadastral/rights surveys and a citywide registration information platform. This establishes the municipal registry authority, not a public anonymous parcel-vector service.",
+  "searchQueries": [
+    {
+      "language": "Chinese",
+      "query": "衢州市 不动产登记 地籍图 公开 GIS 地块 几何 自然资源和规划局",
+      "scope": "Locate city-specific registry/cadastre evidence and verify anonymous bounded parcel geometry without private fields.",
+      "result": "Official bureau material confirms municipal unified property registration, cadastral survey and a registration information platform. No anonymous public parcel-vector endpoint was found.",
+      "actualResultUrls": [
+        "https://www.qz.gov.cn/art/2019/5/23/art_1229040350_15097.html"
+      ],
+      "executionMethod": "Separate local-language and English discovery followed by official-source review; no personal property lookup or owner/address value request."
+    },
+    {
+      "language": "English",
+      "query": "Quzhou China official property registration cadastral parcel GIS map open data",
+      "scope": "Locate city-specific registry/cadastre evidence and verify anonymous bounded parcel geometry without private fields.",
+      "result": "English-language results did not identify a city parcel feature service; the official Quzhou bureau source describes local registration/cadastral duties but no anonymous geometry API.",
+      "actualResultUrls": [
+        "https://www.qz.gov.cn/art/2019/5/23/art_1229040350_15097.html"
+      ],
+      "executionMethod": "Separate local-language and English discovery followed by official-source review; no personal property lookup or owner/address value request."
+    }
+  ],
+  "geometryEvidence": null,
+  "privacy": "No owner/address/assessment values or private parcel records were requested, queried, or retained. No parcel polygon was retained.",
+  "runtimeAssessment": "not_assessed"
+}

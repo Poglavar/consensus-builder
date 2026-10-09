@@ -1,0 +1,818 @@
+{
+  "schemaVersion": 1,
+  "purpose": "Independent GEOS topology check of complete runtime parcels projected to metric coordinates; no repair applied. Counts are bounded sample evidence, not whole-city guarantees.",
+  "library": "Shapely 2.2.0",
+  "metricCrs": "EPSG:32617",
+  "featureCount": 114,
+  "validNonemptyCount": 114,
+  "invalidFeatures": [],
+  "exactDuplicateGeometryPairs": [],
+  "positiveAreaOverlapPairsAbove0_01M2": [],
+  "sumPairwiseOverlapM2": 0,
+  "operationErrors": [],
+  "areaM2": {
+    "min": 46.42954598393285,
+    "median": 1076.96203399166,
+    "max": 18404.9594542645
+  },
+  "features": [
+    {
+      "id": "US-PBC-OID-21812",
+      "areaM2": 139.25796044965202,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "US-PBC-OID-188528",
+      "areaM2": 636.0526072793718,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "US-PBC-OID-243847",
+      "areaM2": 746.5309761765889,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "US-PBC-OID-312180",
+      "areaM2": 974.8359383803071,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "US-PBC-OID-323511",
+      "areaM2": 1076.9683003072516,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "US-PBC-OID-323512",
+      "areaM2": 1076.9557676760687,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "US-PBC-OID-334776",
+      "areaM2": 1044.4635635918828,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "US-PBC-OID-344699",
+      "areaM2": 1187.8933988456872,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "US-PBC-OID-373715",
+      "areaM2": 2019.3010525274003,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "US-PBC-OID-378159",
+      "areaM2": 1750.0784300468695,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "US-PBC-OID-378160",
+      "areaM2": 1750.074278632105,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "US-PBC-OID-380429",
+      "areaM2": 2280.1236016488137,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "US-PBC-OID-389526",
+      "areaM2": 3793.359410563166,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "US-PBC-OID-125207",
+      "areaM2": 510.63404521149283,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "US-PBC-OID-146653",
+      "areaM2": 568.3937515719198,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "US-PBC-OID-269247",
+      "areaM2": 824.6386678274148,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "US-PBC-OID-309834",
+      "areaM2": 965.554446995032,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "US-PBC-OID-328581",
+      "areaM2": 1104.6370786923208,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "US-PBC-OID-367303",
+      "areaM2": 1536.3731244209637,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "US-PBC-OID-367304",
+      "areaM2": 1536.523789294395,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "US-PBC-OID-382011",
+      "areaM2": 2161.142470554753,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "US-PBC-OID-389860",
+      "areaM2": 3800.9610815484043,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "US-PBC-OID-113805",
+      "areaM2": 487.4214865648495,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "US-PBC-OID-251904",
+      "areaM2": 789.0387020322662,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "US-PBC-OID-274019",
+      "areaM2": 849.7377433686825,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "US-PBC-OID-312129",
+      "areaM2": 986.4337217106106,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "US-PBC-OID-316967",
+      "areaM2": 1010.3446324096573,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "US-PBC-OID-322007",
+      "areaM2": 1032.4646236410083,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "US-PBC-OID-333574",
+      "areaM2": 1038.3952331488483,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "US-PBC-OID-374395",
+      "areaM2": 1979.6124655384167,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "US-PBC-OID-389081",
+      "areaM2": 3823.7959554144372,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "US-PBC-OID-393952",
+      "areaM2": 3243.2368423965263,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "US-PBC-OID-221728",
+      "areaM2": 726.9532276914842,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "US-PBC-OID-221729",
+      "areaM2": 726.9518970532819,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "US-PBC-OID-221730",
+      "areaM2": 726.9459811915847,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "US-PBC-OID-221731",
+      "areaM2": 726.9530130417211,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "US-PBC-OID-262599",
+      "areaM2": 814.451077123198,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "US-PBC-OID-264758",
+      "areaM2": 821.1759847240951,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "US-PBC-OID-289027",
+      "areaM2": 870.3820515060021,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "US-PBC-OID-325130",
+      "areaM2": 1090.4281095793347,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "US-PBC-OID-325131",
+      "areaM2": 1090.4261344134848,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "US-PBC-OID-325299",
+      "areaM2": 1090.4231994303534,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "US-PBC-OID-360668",
+      "areaM2": 1453.8925033310672,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "US-PBC-OID-380584",
+      "areaM2": 2304.7812278154565,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "US-PBC-OID-387475",
+      "areaM2": 2611.164406085036,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "US-PBC-OID-335357",
+      "areaM2": 1152.3937515564878,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "US-PBC-OID-367302",
+      "areaM2": 1536.3820623520253,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "US-PBC-OID-380586",
+      "areaM2": 2304.766953238714,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "US-PBC-OID-380587",
+      "areaM2": 2304.6886265595513,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "US-PBC-OID-408731",
+      "areaM2": 4728.446875265748,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "US-PBC-OID-393630",
+      "areaM2": 3241.2175869590797,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "US-PBC-OID-401749",
+      "areaM2": 4751.973230329654,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "US-PBC-OID-456588",
+      "areaM2": 811.9380357187423,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "US-PBC-OID-464019",
+      "areaM2": 1908.5597138175956,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "US-PBC-OID-262597",
+      "areaM2": 814.4589401703313,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "US-PBC-OID-262598",
+      "areaM2": 814.4506793207702,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "US-PBC-OID-275473",
+      "areaM2": 861.5744638358585,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "US-PBC-OID-275475",
+      "areaM2": 861.5677578193049,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "US-PBC-OID-285249",
+      "areaM2": 873.6891907874137,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "US-PBC-OID-292697",
+      "areaM2": 901.9477143630751,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "US-PBC-OID-292699",
+      "areaM2": 901.9587288078383,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "US-PBC-OID-304724",
+      "areaM2": 914.0716394008829,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "US-PBC-OID-324766",
+      "areaM2": 1083.6864694841263,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "US-PBC-OID-325298",
+      "areaM2": 1090.4222225921592,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "US-PBC-OID-380453",
+      "areaM2": 2304.7950414752822,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "US-PBC-OID-380583",
+      "areaM2": 2304.795169313662,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "US-PBC-OID-381121",
+      "areaM2": 2321.0347946264073,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "US-PBC-OID-383931",
+      "areaM2": 2175.9715164751824,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "US-PBC-OID-386456",
+      "areaM2": 2466.1035628539425,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "US-PBC-OID-379485",
+      "areaM2": 2421.0406043779844,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "US-PBC-OID-380933",
+      "areaM2": 2391.7895077125004,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "US-PBC-OID-399051",
+      "areaM2": 4219.769202969979,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "US-PBC-OID-380088",
+      "areaM2": 2369.3150581108493,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "US-PBC-OID-390044",
+      "areaM2": 3708.6666860162513,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "US-PBC-OID-454482",
+      "areaM2": 377.4276121252218,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "US-PBC-OID-312224",
+      "areaM2": 975.4715757515465,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "US-PBC-OID-312225",
+      "areaM2": 975.480226541531,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "US-PBC-OID-332351",
+      "areaM2": 1046.9912771238282,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "US-PBC-OID-371227",
+      "areaM2": 1900.8647054108726,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "US-PBC-OID-371257",
+      "areaM2": 1842.4208546862312,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "US-PBC-OID-389524",
+      "areaM2": 3793.380446786135,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "US-PBC-OID-389525",
+      "areaM2": 3793.372911844028,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "US-PBC-OID-389871",
+      "areaM2": 3804.0330766322368,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "US-PBC-OID-404721",
+      "areaM2": 4657.112816371282,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "US-PBC-OID-132360",
+      "areaM2": 529.190569636054,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "US-PBC-OID-376458",
+      "areaM2": 1740.7670330622664,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "US-PBC-OID-383929",
+      "areaM2": 2176.044953649563,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "US-PBC-OID-383930",
+      "areaM2": 2175.968456545508,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "US-PBC-OID-400363",
+      "areaM2": 4351.871273983143,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "US-PBC-OID-426153",
+      "areaM2": 8190.915920746263,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "US-PBC-OID-174753",
+      "areaM2": 603.4665732519023,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "US-PBC-OID-174754",
+      "areaM2": 603.4680346182521,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "US-PBC-OID-174755",
+      "areaM2": 603.4818052154991,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "US-PBC-OID-174756",
+      "areaM2": 603.4714127081152,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "US-PBC-OID-341637",
+      "areaM2": 1206.9400426218156,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "US-PBC-OID-436592",
+      "areaM2": 18404.9594542645,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "US-PBC-OID-89883",
+      "areaM2": 434.50722797145033,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "US-PBC-OID-241240",
+      "areaM2": 765.9260528829471,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "US-PBC-OID-367072",
+      "areaM2": 1531.861218382122,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "US-PBC-OID-403523",
+      "areaM2": 4891.140782811551,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "US-PBC-OID-424307",
+      "areaM2": 7470.668798108714,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "US-PBC-OID-454473",
+      "areaM2": 368.6353185095262,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "US-PBC-OID-454474",
+      "areaM2": 367.83261228821084,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "US-PBC-OID-454475",
+      "areaM2": 366.97668680036304,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "US-PBC-OID-454476",
+      "areaM2": 366.71324505680496,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "US-PBC-OID-454477",
+      "areaM2": 357.8151433505688,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "US-PBC-OID-454478",
+      "areaM2": 359.9304931529368,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "US-PBC-OID-454479",
+      "areaM2": 362.9055261567163,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "US-PBC-OID-454480",
+      "areaM2": 362.90349848651505,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "US-PBC-OID-454481",
+      "areaM2": 370.7509454882127,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "US-PBC-OID-456589",
+      "areaM2": 168.91912978949537,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "US-PBC-OID-463737",
+      "areaM2": 615.5899418241773,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "US-PBC-OID-464310",
+      "areaM2": 46.42954598393285,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "US-PBC-OID-476548",
+      "areaM2": 351.45567899981603,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    }
+  ]
+}

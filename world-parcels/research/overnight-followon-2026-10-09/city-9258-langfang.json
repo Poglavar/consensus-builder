@@ -1,0 +1,117 @@
+{
+  "schemaVersion": "1.0",
+  "cityId": "wup2025:9258",
+  "wupCityCode": 9258,
+  "name": "Langfang",
+  "country": "China",
+  "countryCode": "CN",
+  "rank": 1051,
+  "queueRank": 1051,
+  "point": [
+    39.537110136251,
+    116.709068602406
+  ],
+  "centerLatLon": [
+    39.537110136251,
+    116.709068602406
+  ],
+  "pointBasis": "UN WUP2025 population-weighted settlement locator; not a municipal boundary or parcel-coverage claim.",
+  "population2025": 527161,
+  "population2025k": 527.161,
+  "populationUnit": "persons",
+  "populationPlausibility2025": "Moderate",
+  "cohort": "overnight-followon-1001-1100",
+  "checkedAt": "2026-10-09",
+  "status": "complete",
+  "registryFound": true,
+  "registryBasis": "Official municipal reports identify the local real-property registration center and natural-resources bureau cadastral-survey and registration duties.",
+  "registryEvidenceUrls": [
+    "https://www.lf.gov.cn/Item/150591.aspx",
+    "https://www.lf.gov.cn/Item/139689.aspx",
+    "https://zfxxgk.lf.gov.cn/upload/file/20240207/6384292267385061038321689.pdf"
+  ],
+  "verifiedSample": false,
+  "publicParcelGeometryFound": false,
+  "sourceIds": [],
+  "adapterReady": false,
+  "runtimeReadiness": "not_enabled_no_verified_public_geometry",
+  "technicalBlocker": "The official registration-data self-service is identity-gated and no anonymous public full-geometry map endpoint was found in the municipal material reviewed.",
+  "scopeLimits": {
+    "maxFullPolygonsRetained": 0,
+    "ownerOrAddressDataRetained": false,
+    "credentialsOrTokenValuesRetained": false,
+    "citywideCompletenessAsserted": false
+  },
+  "resultCategory": "no_verified_public_geometry",
+  "coverageAssessment": {
+    "claimedScope": "Official municipal reports identify the local real-property registration center and natural-resources bureau cadastral-survey and registration duties.",
+    "verifiedOpenScope": "No anonymous full parcel geometry response verified in this investigation.",
+    "citywideVerified": false,
+    "countrywideVerified": false,
+    "geometryVerified": false
+  },
+  "runtimeAssessment": {
+    "status": "not_enabled_no_verified_public_geometry",
+    "reason": "The official registration-data self-service is identity-gated and no anonymous public full-geometry map endpoint was found in the municipal material reviewed."
+  },
+  "freshResearch": {
+    "queries": [
+      {
+        "language": "Chinese",
+        "query": "廊坊 不动产登记 地籍调查 地籍图 网上查询 自然资源和规划局 官方",
+        "scope": "Identify official city-specific cadastral custody and safe anonymous parcel geometry.",
+        "result": "Langfang municipal government reports online property-registration services; the city bureau’s published duties include unified registration and cadastral survey. A 2019 municipal article states access to registration data is by citizen-ID and face authentication. The service inspected does not provide an anonymous parcel-geometry route; no identity or property-specific search was attempted.",
+        "actualResultUrls": [
+          "https://www.lf.gov.cn/Item/150591.aspx",
+          "https://www.lf.gov.cn/Item/139689.aspx",
+          "https://zfxxgk.lf.gov.cn/upload/file/20240207/6384292267385061038321689.pdf"
+        ],
+        "executionMethod": "Separate native/local-language web search and first-party source review."
+      },
+      {
+        "language": "English",
+        "query": "Langfang China official property registry cadastral map open parcel polygons public GIS",
+        "scope": "Cross-check city-specific registry custody and whether public full parcel geometry can be queried anonymously.",
+        "result": "Langfang municipal government reports online property-registration services; the city bureau’s published duties include unified registration and cadastral survey. A 2019 municipal article states access to registration data is by citizen-ID and face authentication. The service inspected does not provide an anonymous parcel-geometry route; no identity or property-specific search was attempted.",
+        "actualResultUrls": [
+          "https://www.lf.gov.cn/Item/150591.aspx",
+          "https://www.lf.gov.cn/Item/139689.aspx",
+          "https://zfxxgk.lf.gov.cn/upload/file/20240207/6384292267385061038321689.pdf"
+        ],
+        "executionMethod": "Separate English-language web search and first-party source review."
+      }
+    ],
+    "portals": [
+      {
+        "name": "Langfang municipal online real-property registration service",
+        "operator": "Langfang Municipal Natural Resources and Planning Bureau / real-property registration center",
+        "homeUrl": "https://www.lf.gov.cn/Item/150591.aspx",
+        "observation": "Langfang municipal government reports online property-registration services; the city bureau’s published duties include unified registration and cadastral survey. A 2019 municipal article states access to registration data is by citizen-ID and face authentication. The service inspected does not provide an anonymous parcel-geometry route; no identity or property-specific search was attempted."
+      }
+    ],
+    "requests": [
+      {
+        "url": "https://www.lf.gov.cn/Item/139689.aspx",
+        "result": "Official service notice reviewed; it specifies citizen-ID and face-authentication for registration-data self-service. No authenticated session or property query was attempted."
+      }
+    ],
+    "geometryDecision": "No full polygon retained; no qualifying safe WUP-point sample was returned.",
+    "verifiedFullGeometrySamples": 0
+  },
+  "remainingUncertainty": "Local registry and cadastral-survey responsibilities are confirmed. Anonymous WUP-point full geometry and citywide public parcel coverage remain unverified.",
+  "nextStep": "If required, use the official authority’s documented public geometry route or request its published access process; do not submit personal or owner identifiers.",
+  "priorEvidenceFiles": [],
+  "priorCheck": {
+    "attemptState": "pending",
+    "attemptEvidence": [],
+    "possiblePriorMatches": [],
+    "resolvedPriorMatches": []
+  },
+  "rootReviewNote": null,
+  "rootReviewedAt": "2026-10-09T06:45:08.823796+00:00",
+  "rootReview": {
+    "checkedAt": "2026-10-09T06:45:08.823796+00:00",
+    "basis": "Reviewed city-specific English/local-language attempts, local-custody basis, source routes and documented responses. Public geometry remains unverified; access failures and unknown custody do not establish absence.",
+    "primarySourceAuditFile": "research/overnight-followon-2026-10-09/unreviewed-primary-source-audit.json"
+  }
+}

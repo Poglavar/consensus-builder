@@ -1,0 +1,93 @@
+{
+  "schemaVersion": "1.0",
+  "checkedAt": "2026-10-09",
+  "cityRecord": "city-10337-jaunpur.json",
+  "purpose": "Document first-party local registry/map evidence and bounded anonymous geometry access review.",
+  "scopeLimits": {
+    "maxFullPolygonsRetainedInCityRecord": 3,
+    "maxFullPolygonsRetainedInReview": 0,
+    "maxFullPolygonsRetainedInRepository": 24,
+    "ownerOrAddressDataRetained": false,
+    "credentialsOrTokenValuesRetained": false,
+    "citywideCompletenessAsserted": false
+  },
+  "assessment": "The official district land-record page and map digitization dashboard establish district land records. Public viewer selectors returned district 194, Sadar tehsil 00984, and its village list. The city-named village option `सिपाह शहर जौनपुर` hasData false. No full polygon was returned or selected.",
+  "registryAssessment": "Jaunpur District Administration identifies the state Bhulekh land-record system and all tehsils; the UP cadastral-map selector returned Jaunpur district, Sadar tehsil, and revenue-village options. A city-named Sadar option, Sipah Shahar Jaunpur, was listed with `hasData:false`; no claim is made that it contains the WUP point.",
+  "officialPrimarySources": [
+    {
+      "url": "https://jaunpur.nic.in/service/land-records/",
+      "observation": "Jaunpur District Administration identifies the state Bhulekh land-record system and all tehsils; the UP cadastral-map selector returned Jaunpur district, Sadar tehsil, and revenue-village options. A city-named Sadar option, Sipah Shahar Jaunpur, was listed with `hasData:false`; no claim is made that it contains the WUP point."
+    },
+    {
+      "url": "https://jaunpur.nic.in/hi/service/%E0%A4%AD%E0%A5%82%E0%A4%AE%E0%A4%BF-%E0%A4%B0%E0%A4%BF%E0%A4%95%E0%A5%89%E0%A4%B0%E0%A5%8D%E0%A4%A1%E0%A5%8D%E0%A4%B8/",
+      "observation": "Jaunpur District Administration identifies the state Bhulekh land-record system and all tehsils; the UP cadastral-map selector returned Jaunpur district, Sadar tehsil, and revenue-village options. A city-named Sadar option, Sipah Shahar Jaunpur, was listed with `hasData:false`; no claim is made that it contains the WUP point."
+    },
+    {
+      "url": "https://upbhulekh.gov.in/GeoDashboard/public_report?distCode=194",
+      "observation": "Jaunpur District Administration identifies the state Bhulekh land-record system and all tehsils; the UP cadastral-map selector returned Jaunpur district, Sadar tehsil, and revenue-village options. A city-named Sadar option, Sipah Shahar Jaunpur, was listed with `hasData:false`; no claim is made that it contains the WUP point."
+    },
+    {
+      "url": "https://upbhunaksha.gov.in/Public/LayarPublic.aspx",
+      "observation": "Jaunpur District Administration identifies the state Bhulekh land-record system and all tehsils; the UP cadastral-map selector returned Jaunpur district, Sadar tehsil, and revenue-village options. A city-named Sadar option, Sipah Shahar Jaunpur, was listed with `hasData:false`; no claim is made that it contains the WUP point."
+    }
+  ],
+  "searchQueries": [
+    {
+      "language": "Hindi",
+      "query": "जौनपुर तहसील भू नक्शा भूमि अभिलेख आधिकारिक खतौनी नक्शा",
+      "result": "The official district page links the UP Bhulekh land-record system and all Jaunpur tehsils. The official cadastral viewer exposes district/tehsil/village selectors; no parcel geometry at the WUP point was obtained.",
+      "method": "Separate Hindi search and official district/service review.",
+      "scope": "Find first-party Jaunpur land records and cadastral map sources."
+    },
+    {
+      "language": "English",
+      "query": "Jaunpur Uttar Pradesh official land records cadastral map BhuNaksha parcel geometry",
+      "result": "The UP digitization dashboard reports georeferenced cadastral maps by Jaunpur tehsil. Public selectors returned Jaunpur district and Sadar tehsil; the city-named Sipah Shahar Jaunpur option reports no map data. WUP point-to-village association remains unresolved.",
+      "method": "Separate English search followed by official dashboard and public viewer selector requests.",
+      "scope": "Cross-check map coverage and public feature access."
+    }
+  ],
+  "geometryDecision": "No parcel geometry retained. No qualifying complete full polygon at a safely validated native parcel ID was returned.",
+  "coverageAssessment": {
+    "claimedScope": "Uttar Pradesh land records and revenue-village cadastral maps. Jaunpur district and the Sadar tehsil selector are verified; exact WUP-point village is not resolved.",
+    "verifiedOpenScope": "The official district land-record page and map digitization dashboard establish district land records. Public viewer selectors returned district 194, Sadar tehsil 00984, and its village list. The city-named village option `सिपाह शहर जौनपुर` hasData false. No full polygon was returned or selected.",
+    "citywideVerified": false,
+    "countrywideVerified": false,
+    "geometryVerified": false
+  },
+  "attempts": [
+    {
+      "url": "https://jaunpur.nic.in/service/land-records/",
+      "method": "GET / official page review",
+      "httpStatus": 200,
+      "observation": "District Administration links the state land-record system and identifies all tehsil offices."
+    },
+    {
+      "url": "https://upbhulekh.gov.in/GeoDashboard/public_report?distCode=194",
+      "method": "GET",
+      "httpStatus": 200,
+      "observation": "Official geo-reference dashboard lists Jaunpur tehsil completion counts; this is not point-level geometry."
+    },
+    {
+      "url": "https://upbhunaksha.gov.in/Public/LayarPublic.aspx",
+      "method": "GET",
+      "httpStatus": 200,
+      "observation": "Public cadastral viewer shell loads with default Agra selection; the default map was not treated as Jaunpur data."
+    },
+    {
+      "url": "https://upbhunaksha.gov.in/bhunakshaserver/masterdata/levelvalue",
+      "method": "POST form level=2,codes=194",
+      "httpStatus": 200,
+      "contentType": "application/json",
+      "observation": "Returns six Jaunpur tehsils, including Sadar code 00984."
+    },
+    {
+      "url": "https://upbhunaksha.gov.in/bhunakshaserver/masterdata/levelvalue",
+      "method": "POST form level=3,codes=194,00984",
+      "httpStatus": 200,
+      "contentType": "application/json",
+      "observation": "Returns Sadar village options; `सिपाह शहर जौनपुर` code 218078 hasData=false. No point-specific plot query was made."
+    }
+  ],
+  "remainingUncertainty": "Which revenue village and plot cover the WUP centroid; whether a bordering urban revenue village has public full geometry; whether the target city centre is excluded from the village-map dataset."
+}

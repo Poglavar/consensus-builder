@@ -1,0 +1,129 @@
+{
+  "name": "Sagar",
+  "country": "India",
+  "countryCode": "IN",
+  "rank": 928,
+  "point": [
+    23.8418091858205,
+    78.7553824828906
+  ],
+  "population2025": 587471,
+  "population2025k": 587.471,
+  "schemaVersion": 1,
+  "kind": "city_parcel_source_research",
+  "checkedAt": "2026-10-09",
+  "populationUnit": "persons",
+  "status": "complete",
+  "verifiedSample": false,
+  "publicParcelGeometryFound": false,
+  "runtimeReadiness": "not_enabled_no_verified_public_geometry",
+  "priorEvidenceFiles": [],
+  "scopeLimits": "SagarGIS is described as a district-level planning/infrastructure GIS; the documented layers do not include parcel boundaries. The state land-record service is record lookup, not a verified public feature API.",
+  "pointBasis": "UN WUP 2025 population-weighted settlement centroid; this is not a municipal boundary or a parcel-coverage claim.",
+  "registryFound": true,
+  "registryBasis": "The district administration identifies a Land Record Office at Collectorate Sagar; this establishes local revenue/land-record activity, not anonymous parcel geometry at the WUP point.",
+  "resultCategory": "local_land_records_found_no_anonymous_geometry_verified",
+  "technicalBlocker": "No safe anonymous parcel vector layer/schema or full polygon response was verified.",
+  "remainingUncertainty": "Whether the land-record portal has a separate public map API and whether parcel coverage includes the WUP point remain unverified.",
+  "nextStep": "Root review the local registry/map evidence; request an official public schema or coverage statement if city-point parcel geometry is needed, without using account-gated or property-specific searches.",
+  "freshResearch": {
+    "executedQueries": [
+      {
+        "language": "English",
+        "query": "Sagar Madhya Pradesh official land records cadastral map GIS parcel SagarGIS",
+        "result": "District land-record office and SagarGIS were found. SagarGIS documents infrastructure and land-use layers, not cadastral parcel geometry.",
+        "method": "Separate local-language/English discovery and first-party public-page review."
+      },
+      {
+        "language": "Hindi",
+        "query": "सागर मध्य प्रदेश भू अभिलेख नक्शा सागर जीआईएस भूखंड",
+        "result": "Official Hindi SagarGIS describes infrastructure and land-use information; no public vector parcel schema was located.",
+        "method": "Separate local-language/English discovery and first-party public-page review."
+      }
+    ],
+    "officialSources": [
+      {
+        "url": "https://sagar.nic.in/en/service/land-records/",
+        "observation": "District Sagar lists the Land Record Office at Collectorate Sagar and links the state land-record service."
+      },
+      {
+        "url": "https://sagar.nic.in/en/sagargis/",
+        "observation": "Official district GIS description lists roads, water, sewer, land use, public assets, schools, hospitals and infrastructure; it does not identify cadastral parcels."
+      },
+      {
+        "url": "https://mptownplan.gov.in/plan_sagar.html",
+        "observation": "State Town and Country Planning page provides cadastral land-use planning maps; this is planning information, not a live cadastral parcel feature service."
+      }
+    ],
+    "viewerAndServiceTrace": {
+      "attempted": true,
+      "summary": "Reviewed official service descriptions and public GIS landing page; no owner/holder/property-specific record search submitted.",
+      "geometryStatus": "No anonymous full polygon response verified",
+      "fullPolygonLimit": 3,
+      "fullPolygonsRetained": 0,
+      "ownerOrAddressDataRequested": false,
+      "credentialsOrTokenValuesRetained": false
+    },
+    "attemptedGeometry": {
+      "attempted": true,
+      "status": "Reviewed official service descriptions and public GIS landing page; no owner/holder/property-specific record search submitted.",
+      "retainedFeatures": 0,
+      "fieldsRequested": [],
+      "geometryRetained": false,
+      "geojsonFile": null
+    }
+  },
+  "sourceIds": [],
+  "queueRank": 928,
+  "wupCityCode": 9499,
+  "cityId": "wup2025:9499",
+  "populationPlausibility2025": "Moderate",
+  "centerLatLon": [
+    23.8418091858205,
+    78.7553824828906
+  ],
+  "adapterReady": false,
+  "source": {
+    "sourceId": "in-sagar-public-registry-review",
+    "name": "District Sagar / Government of Madhya Pradesh",
+    "operator": "District Sagar / Government of Madhya Pradesh",
+    "url": "https://sagar.nic.in/en/sagargis/",
+    "serviceType": "State and district land-record services; district infrastructure and planning GIS.",
+    "geometryType": null,
+    "coordinateReferenceSystem": null,
+    "nativeIdFields": [],
+    "directGeometryQueryVerified": false,
+    "directMetadataSchemaVerified": false,
+    "scope": "SagarGIS is described as a district-level planning/infrastructure GIS; the documented layers do not include parcel boundaries. The state land-record service is record lookup, not a verified public feature API."
+  },
+  "coverageAssessment": {
+    "claimedScope": "SagarGIS is described as a district-level planning/infrastructure GIS; the documented layers do not include parcel boundaries. The state land-record service is record lookup, not a verified public feature API.",
+    "verifiedOpenScope": "No anonymous full-polygon response returned in this review.",
+    "citywideVerified": false,
+    "countrywideVerified": false
+  },
+  "registryEvidenceUrls": [
+    "https://sagar.nic.in/en/service/land-records/",
+    "https://sagar.nic.in/en/sagargis/",
+    "https://mptownplan.gov.in/plan_sagar.html"
+  ],
+  "runtimeAssessment": {
+    "status": "not_enabled_no_verified_public_geometry",
+    "reason": "No safe anonymous parcel vector layer/schema or full polygon response was verified."
+  },
+  "priorCheck": {
+    "attemptState": "pending",
+    "attemptEvidence": [],
+    "possiblePriorMatches": [],
+    "resolvedPriorMatches": []
+  },
+  "rootPrimaryReadback": {
+    "url": "https://sagar.nic.in/en/service/land-records/",
+    "fetch": 200,
+    "contentType": "text/html; charset=UTF-8",
+    "title": "\n        Land Records | DISTRICT SAGAR, Govenrment of Madhya Pradesh | India    "
+  },
+  "rootSourceDateNote": "The district Land Record Office page footer is dated 19 January 2021; the readback confirms its published institutional evidence, not office operation or endpoint currency today.",
+  "rootReviewNote": "Reviewed local institutional basis separately from anonymous vector access; direct readback errors are preserved and do not establish absence. No full parcel geometry was retrieved for this city in this discovery pass.",
+  "rootReviewedAt": "2026-10-09T04:44:50.237109+00:00"
+}

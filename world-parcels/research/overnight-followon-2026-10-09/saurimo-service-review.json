@@ -1,0 +1,69 @@
+{
+  "schemaVersion": "1.0",
+  "checkedAt": "2026-10-09",
+  "cityRecord": "city-3943-saurimo.json",
+  "purpose": "Document primary local registry/custody evidence and bounded anonymous full-geometry discovery.",
+  "scopeLimits": {
+    "maxFullPolygonsRetainedInCityRecord": 0,
+    "maxFullPolygonsRetainedInReview": 0,
+    "maxFullPolygonsRetainedInRepository": 0,
+    "ownerOrAddressDataRetained": false,
+    "credentialsOrTokenValuesRetained": false,
+    "citywideCompletenessAsserted": false
+  },
+  "assessment": "A local property registry is confirmed, but no anonymous complete polygon source was found in the search. No geometry request was made because no target-specific public feature endpoint was identified.",
+  "registryAssessment": "Angola’s Ministry of Justice reports that the integrated justice building in Saurimo includes local Serviços de Registo Predial. This is direct city-local property-registration office evidence. It does not establish an anonymous public parcel-geometry service; no Luanda/Benguela jurisdiction evidence is used.",
+  "officialPrimarySources": [
+    {
+      "url": "https://minjusdh.gov.ao/web/noticias/saurimo-ganha-um-novo-edificio-integrado-dos-servicos-de-justica",
+      "observation": "Official Ministry of Justice report: Saurimo integrated justice building includes local property-registry services."
+    },
+    {
+      "url": "https://mat.gov.ao/web/pontos-atendimentos",
+      "observation": "Official territorial administration public service directory; checked as local context, not as parcel-data evidence."
+    }
+  ],
+  "searchQueries": [
+    {
+      "language": "English",
+      "query": "Saurimo Angola official land cadastre registry public parcel map provincial government",
+      "resultUrls": [
+        "https://minjusdh.gov.ao/web/noticias/saurimo-ganha-um-novo-edificio-integrado-dos-servicos-de-justica",
+        "https://mat.gov.ao/web/pontos-atendimentos"
+      ]
+    },
+    {
+      "language": "Portuguese",
+      "query": "Saurimo Angola cadastro predial município cadastro urbano registo predial parcela mapa oficial",
+      "resultUrls": [
+        "https://minjusdh.gov.ao/web/noticias/saurimo-ganha-um-novo-edificio-integrado-dos-servicos-de-justica",
+        "https://mat.gov.ao/web/pontos-atendimentos"
+      ]
+    }
+  ],
+  "geometryDecision": {
+    "verified": false,
+    "sourceId": null,
+    "sampleCount": 0,
+    "sampleFile": null,
+    "nativeId": null,
+    "nativeIdField": null,
+    "exactWupPointTest": "No source-native complete polygon was returned at the WUP point. `publicParcelGeometryFound:false` means unverified in this research, not confirmed absence.",
+    "requestEvidence": [
+      {
+        "url": "https://minjusdh.gov.ao/web/noticias/saurimo-ganha-um-novo-edificio-integrado-dos-servicos-de-justica",
+        "method": "GET",
+        "result": "Local read timed out before an HTTP response; official Ministry of Justice indexed page was inspected through web search. Timeout is not evidence of provider downtime."
+      }
+    ]
+  },
+  "coverageAssessment": {
+    "claimedScope": "Angola’s Ministry of Justice reports that the integrated justice building in Saurimo includes local Serviços de Registo Predial. This is direct city-local property-registration office evidence. It does not establish an anonymous public parcel-geometry service; no Luanda/Benguela jurisdiction evidence is used.",
+    "verifiedOpenScope": "No full parcel geometry was verified and no citywide coverage is asserted.",
+    "citywideVerified": false,
+    "countrywideVerified": false
+  },
+  "attempts": [],
+  "remainingUncertainty": "Public parcel geometry/API availability, jurisdictional coverage, and the current scope of the Saurimo registry remain unverified.",
+  "nextStep": "Identify an official Saurimo registry or IGCA public viewer with a documented anonymous full-polygon response."
+}

@@ -1,0 +1,61 @@
+{
+  "schemaVersion": "1.0",
+  "checkedAt": "2026-10-09",
+  "cityRecord": "city-10842-luan.json",
+  "purpose": "Document city-scope registry evidence and bounded public parcel-geometry route review.",
+  "scopeLimits": {
+    "maxFullPolygonsRetainedInCityRecord": 3,
+    "maxFullPolygonsRetainedInReview": 3,
+    "maxFullPolygonsRetainedInRepository": 3,
+    "ownerOrAddressDataRetained": false,
+    "credentialsOrTokenValuesRetained": false,
+    "citywideCompletenessAsserted": false
+  },
+  "assessment": "Official Lu'an sources confirm the city registration center, a map-based property-record lookup, and internal data integration. Its documented outputs include parcel maps and protected property/right information, and its endpoint is plain HTTP; no safe geometry-only schema or endpoint was verified.",
+  "registryAssessment": "The Lu'an Natural Resources and Planning Bureau documents a city real-property-registration information visualization service and identifies the Municipal Real Estate Registration Center as its operator/partner. The city describes a public map-based lookup, but its own description says results combine parcel location/map with planning permits, physical property information, and associated rights restrictions. The related service notice calls for disclosure filtering/de-identification. Because no public geometry-only field allowlist was verified, the documented service is not treated as a safe parcel-geometry route.",
+  "officialPrimarySources": [
+    {
+      "url": "https://zrzy.luan.gov.cn/ztzl/ztzl/bdcdj/tsxd/5043400.html",
+      "observation": "Lu'an Natural Resources and Planning Bureau (2022) says its real-property-registration visualization service offers public map-based lookup and may return parcel location/maps, planning permits, property natural status and related rights restrictions. The page documents a plain-HTTP endpoint; it was not accessed."
+    },
+    {
+      "url": "https://zrzy.luan.gov.cn/ztzl/ztzl/yhyshj/flfg/5298731.html",
+      "observation": "The municipal bureau's 2023 update notice describes feeds for parcels, buildings, units, boundary points and parcel-map geometry; it instructs disclosure only after de-identification and sets a frequent update process."
+    },
+    {
+      "url": "https://www.luan.gov.cn/hdjl/dwzsk/10659999.html",
+      "observation": "The municipal government lists Lu'an Municipal Real Estate Registration Center and its office address, corroborating the city registry institution."
+    }
+  ],
+  "searchQueries": [
+    {
+      "language": "English",
+      "query": "Lu'an China official real property registration public cadastral map parcel geometry city registry",
+      "result": "Official Lu'an sources confirm the city registration center, a map-based property-record lookup, and internal data integration. Its documented outputs include parcel maps and protected property/right information, and its endpoint is plain HTTP; no safe geometry-only schema or endpoint was verified.",
+      "method": "English-language search followed by primary official-source review."
+    },
+    {
+      "language": "Chinese",
+      "query": "六安市 不动产登记中心 不动产登记信息在线可视化查询 宗地图形 官方",
+      "result": "六安市自然资源和规划局 documents the city-run online visualization service and its data feeds. The documentation describes mixed record/geometry output plus de-identification controls; the non-TLS platform endpoint was not accessed, and no feature schema was verified.",
+      "method": "Native-language search followed by primary official-source review."
+    }
+  ],
+  "serviceChecks": [],
+  "geometryEvidence": null,
+  "accessReview": {
+    "publicAnonymousGeometryVerified": false,
+    "completeGeoreferencedPolygonCount": 0,
+    "geometryRetained": false,
+    "ownerAddressTaxOrPersonLookupRequested": false,
+    "authenticationOrCredentialsUsed": false,
+    "captchaOrPersonalFormSubmitted": false,
+    "routeInspectionStatus": "schema_unverified",
+    "reason": "The official bureau's 2022 launch notice documents an online map-based real-property lookup and gives the platform endpoint as plain HTTP; it says the search can return parcel maps, natural-property details, planning-permit information, and associated rights restrictions. The 2023 bureau notice describes integration of parcel, building, household/unit, boundary-point, and parcel-map feeds and says public disclosure is de-identified. No request was made to the HTTP platform because it is not TLS-protected and the published output is not limited to geometry and stable public parcel IDs. No owner, address, property, rights-restriction, or tax lookup was made."
+  },
+  "privacy": "No owner, address, taxpayer, account, title, protected attribute, or property-record lookup was made. No geometry was retained.",
+  "runtimeAssessment": {
+    "status": "not_enabled_no_verified_safe_geometry_schema",
+    "reason": "Official documentation confirms the city service exists and indicates city/county data coverage and frequent updates, but does not publish a field allowlist, anonymous feature schema, CRS, or safe endpoint. Its broad record display means it cannot presently qualify as a geometry-only source. The cited release/coverage claims are from 2022–2023 and do not establish current endpoint availability or parcel coverage at the WUP point."
+  }
+}

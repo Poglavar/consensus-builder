@@ -1,0 +1,161 @@
+{
+  "schemaVersion": 1,
+  "kind": "city_parcel_source_research",
+  "checkedAt": "2026-10-09",
+  "populationUnit": "persons",
+  "status": "complete",
+  "pointBasis": "UN WUP 2025 population-weighted settlement centroid; this is not a municipal boundary or a parcel-coverage claim.",
+  "priorEvidenceFiles": [],
+  "priorCheck": {
+    "attemptState": "pending",
+    "attemptEvidence": [],
+    "possiblePriorMatches": []
+  },
+  "sourceIds": [],
+  "name": "Kuningan",
+  "country": "Indonesia",
+  "countryCode": "ID",
+  "registryFound": true,
+  "registryBasis": "The official Kuningan ATR/BPN Land Office portal has current local land-service notices. The official BHUMI ATR/BPN map describes the national parcel layer (`bidang tanah`) and map features. Kuningan Regency also hosts a public map of government land assets, but it is limited to public assets. No schema/full cadastral polygon response for the unchanged Kuningan WUP locator was verified.",
+  "registryEvidenceUrls": [
+    "https://kab-kuningan.atrbpn.go.id/",
+    "https://bhumi.atrbpn.go.id/peta",
+    "https://bhumi.atrbpn.go.id/bantuan/peta",
+    "https://bhumi.atrbpn.go.id/bantuan/unsur_peta",
+    "https://asetku.kuningankab.go.id/"
+  ],
+  "verifiedSample": false,
+  "publicParcelGeometryFound": false,
+  "publicParcelGeometryCandidateFound": true,
+  "runtimeReadiness": "not_enabled_no_verified_public_geometry",
+  "wupCityCode": 6443,
+  "cityId": "wup2025:6443",
+  "centerLatLon": [
+    -6.94625633222776,
+    108.502030708035
+  ],
+  "point": [
+    -6.94625633222776,
+    108.502030708035
+  ],
+  "rank": 850,
+  "queueRank": 850,
+  "population2025": 636447,
+  "population2025k": 636.447,
+  "populationPlausibility2025": "High",
+  "scopeLimits": "No full polygon retained. City-specific registry or map evidence is informational and does not establish citywide completeness.",
+  "remainingUncertainty": "Local land-office activity is confirmed. BHUMI shows a parcel layer interactively, but a complete geometry/native-key schema at the target city was not verified; the local government asset map is not a comprehensive cadastre. No account, login, owner, or parcel-property lookup was used.",
+  "nextStep": "If pursued, inspect the anonymous BHUMI map’s public cadastral layer at the WUP locator and verify a safe source-native parcel key plus complete geometry before retaining samples.",
+  "research": {
+    "executedQueries": [
+      {
+        "language": "Indonesian",
+        "query": "Kuningan peta bidang tanah BPN resmi kantor pertanahan kabupaten",
+        "result": "Official local BPN Land Office and BHUMI parcel-map candidate reviewed; no full geometry response at the city locator.",
+        "scope": "Verify city-specific registry activity and whether a public anonymous full-polygon geometry route is available.",
+        "urls": [],
+        "actualResultUrls": [
+          "https://kab-kuningan.atrbpn.go.id/",
+          "https://bhumi.atrbpn.go.id/peta",
+          "https://bhumi.atrbpn.go.id/bantuan/peta",
+          "https://bhumi.atrbpn.go.id/bantuan/unsur_peta",
+          "https://asetku.kuningankab.go.id/"
+        ],
+        "executionMethod": "English and local-language official-source search; public city/service pages and safe GIS metadata inspected without owner, address, tax/account, or credential inputs."
+      },
+      {
+        "language": "Indonesian",
+        "query": "Kantor Pertanahan Kabupaten Kuningan peta bidang tanah",
+        "result": "Official Kuningan Land Office site is active; no anonymous full-polygon route was confirmed.",
+        "scope": "Verify city-specific registry activity and whether a public anonymous full-polygon geometry route is available.",
+        "urls": [],
+        "actualResultUrls": [
+          "https://kab-kuningan.atrbpn.go.id/",
+          "https://bhumi.atrbpn.go.id/peta",
+          "https://bhumi.atrbpn.go.id/bantuan/peta",
+          "https://bhumi.atrbpn.go.id/bantuan/unsur_peta",
+          "https://asetku.kuningankab.go.id/"
+        ],
+        "executionMethod": "English and local-language official-source search; public city/service pages and safe GIS metadata inspected without owner, address, tax/account, or credential inputs."
+      },
+      {
+        "language": "English",
+        "query": "Kuningan land parcel map cadastre ATR BPN official",
+        "result": "Official national BHUMI describes a cadastral parcel map layer; a Kuningan-specific geometry schema remains unverified.",
+        "scope": "Verify city-specific registry activity and whether a public anonymous full-polygon geometry route is available.",
+        "urls": [],
+        "actualResultUrls": [
+          "https://kab-kuningan.atrbpn.go.id/",
+          "https://bhumi.atrbpn.go.id/peta",
+          "https://bhumi.atrbpn.go.id/bantuan/peta",
+          "https://bhumi.atrbpn.go.id/bantuan/unsur_peta",
+          "https://asetku.kuningankab.go.id/"
+        ],
+        "executionMethod": "English and local-language official-source search; public city/service pages and safe GIS metadata inspected without owner, address, tax/account, or credential inputs."
+      }
+    ],
+    "officialSources": [
+      {
+        "url": "https://kab-kuningan.atrbpn.go.id/",
+        "observation": "Official Kuningan Regency Land Office portal, with current 2026 land-services notices."
+      },
+      {
+        "url": "https://bhumi.atrbpn.go.id/peta",
+        "observation": "Official ATR/BPN national BHUMI map shell."
+      },
+      {
+        "url": "https://bhumi.atrbpn.go.id/bantuan/peta",
+        "observation": "Official BHUMI help page says the interactive map integrates with ATR/BPN ATLAS, a platform for agency geospatial data."
+      },
+      {
+        "url": "https://bhumi.atrbpn.go.id/bantuan/unsur_peta",
+        "observation": "Official map-element guide documents displayed layers including land parcels (`bidang tanah`) and land-value zones."
+      },
+      {
+        "url": "https://asetku.kuningankab.go.id/",
+        "observation": "Official Kuningan Regency public asset-land map lists government asset locations; not a general cadastral inventory."
+      }
+    ]
+  },
+  "source": {
+    "name": "Kuningan Land Office and BHUMI parcel-map candidate",
+    "urls": [
+      "https://kab-kuningan.atrbpn.go.id/",
+      "https://bhumi.atrbpn.go.id/peta",
+      "https://bhumi.atrbpn.go.id/bantuan/peta",
+      "https://bhumi.atrbpn.go.id/bantuan/unsur_peta",
+      "https://asetku.kuningankab.go.id/"
+    ],
+    "operator": "Kuningan Regency Land Office / ATR-BPN",
+    "url": "https://kab-kuningan.atrbpn.go.id/",
+    "serviceType": "Official land-registration service or public map candidate; vector geometry unverified",
+    "nativeIdField": null,
+    "nativeIdEvidence": null,
+    "requestedAttributes": [],
+    "personalAttributesRequested": false,
+    "directGeometryQueryVerified": false,
+    "directMetadataSchemaVerified": false,
+    "scope": "Official local registry/map workflow reviewed; no full geometry response verified."
+  },
+  "coverageAssessment": {
+    "claimedScope": "The official Kuningan ATR/BPN Land Office portal has current local land-service notices. The official BHUMI ATR/BPN map describes the national parcel layer (`bidang tanah`) and map features. Kuningan Regency also hosts a public map of government land assets, but it is limited to public assets. No schema/full cadastral polygon response for the unchanged Kuningan WUP locator was verified.",
+    "verifiedOpenScope": "No public full-polygon coverage verified at the exact WUP locator. This record documents source evidence/candidate status only.",
+    "citywideVerified": false,
+    "countrywideVerified": false
+  },
+  "runtimeAssessment": {
+    "status": "unverified",
+    "reason": "No public full-polygon/native-key response was verified at the unchanged WUP locator; the official registry or map lead remains unqualified for runtime."
+  },
+  "resultCategory": "official_local_registry_and_national_map_candidate",
+  "geometryEvidence": "No full public parcel polygon was retained. A national public cadastral viewer is a candidate, but safe native-key/geometry schema and WUP-point coverage were not verified; government-asset locations are not a general cadastre.",
+  "adapterReady": false,
+  "rootPrimaryReadback": {
+    "url": "https://kab-kuningan.atrbpn.go.id/",
+    "fetch": 200,
+    "contentType": "text/html",
+    "title": null
+  },
+  "rootReviewNote": "Reviewed the specific primary institution/service evidence and its geographical, access and date limits. Direct readback failures are preserved separately from indexed primary evidence. No public full parcel geometry was verified for this city in this discovery pass.",
+  "rootReviewedAt": "2026-10-09T04:12:31.737456+00:00"
+}

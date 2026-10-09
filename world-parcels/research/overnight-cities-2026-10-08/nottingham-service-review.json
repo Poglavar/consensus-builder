@@ -1,0 +1,116 @@
+{
+  "schemaVersion": "1.0",
+  "kind": "parcel_source_service_review",
+  "checkedAt": "2026-10-09",
+  "cityRecord": "city-5220-nottingham.json",
+  "city": "Nottingham",
+  "countryCode": "GB",
+  "wupCityCode": 5220,
+  "rank": 835,
+  "registryFound": true,
+  "registryEvidenceUrls": [
+    "https://maps164.nottinghamcity.gov.uk/server/rest/services/Core_services/Housing_and_Property/MapServer/22",
+    "https://www.data.gov.uk/dataset/811bcf4c-fbbf-4597-aa9c-3d5bd3bfd455/inspire-index-polygons-spatial-data",
+    "https://www.gov.uk/government/publications/inspire-index-polygons-technical-specification"
+  ],
+  "publicAnonymousGeometryVerified": true,
+  "completeGeoreferencedPolygonCount": 1,
+  "geometryRetained": true,
+  "ownerAddressTaxOrPersonLookupRequested": false,
+  "authenticationOrCredentialsUsed": false,
+  "captchaOrPersonalFormSubmitted": false,
+  "scopeLimits": {
+    "maxFullPolygonsRetainedInCityRecord": 3,
+    "maxFullPolygonsRetainedInReview": 0,
+    "ownerOrAddressDataRetained": false,
+    "credentialsOrTokenValuesRetained": false,
+    "citywideCompletenessAsserted": false
+  },
+  "searchQueries": [
+    {
+      "language": "English",
+      "query": "Nottingham HMLR INSPIRE index polygons open map service parcel polygons WFS",
+      "result": "Official Nottingham City Council ArcGIS REST layer 22 is Land Registry INSPIRE Index Polygons, Polygon geometry, EPSG:27700 native CRS. Schema exposes INSPIRE_ID, WEBSITE and system fields. Only INSPIRE_ID plus geometry were requested; the exact WUP point query returned one complete polygon.",
+      "method": "Separate English search and official ArcGIS layer metadata inspection followed by one exact-point query, maximum 3 features."
+    },
+    {
+      "language": "English (Nottingham City Council-focused)",
+      "query": "site:maps.nottinghamcity.gov.uk/server/rest/services Nottingham Land Registry INSPIRE Index Polygons Nottingham City",
+      "result": "The council layer metadata says it contains indicative locations of freehold registered property in Nottingham City, with each INSPIRE_ID relating to a registered title. It warns exact title extent can only be identified from the individual title plan. Query at the exact WUP coordinate returned one complete polygon with safe INSPIRE_ID only.",
+      "method": "Separate authority-focused English search and ArcGIS REST metadata/query review; no title lookup."
+    }
+  ],
+  "officialPrimarySources": [
+    {
+      "url": "https://maps164.nottinghamcity.gov.uk/server/rest/services/Core_services/Housing_and_Property/MapServer/22",
+      "observation": "Nottingham City Council feature-layer metadata: Land Registry INSPIRE Index Polygons, polygon, native EPSG:27700; fields include INSPIRE_ID, WEBSITE, OBJECTID and shape. Description limits data to indicative freehold registered-property extents and says title plans establish exact title extent."
+    },
+    {
+      "url": "https://www.data.gov.uk/dataset/811bcf4c-fbbf-4597-aa9c-3d5bd3bfd455/inspire-index-polygons-spatial-data",
+      "observation": "UK National Data Library describes HMLR INSPIRE Index Polygons as locations of freehold registered property, partitioned by local authority and licensed under the Open Government Licence."
+    },
+    {
+      "url": "https://www.gov.uk/government/publications/inspire-index-polygons-technical-specification",
+      "observation": "HMLR technical specification defines the index polygons as indicative property extents, not legal title boundaries."
+    }
+  ],
+  "requestEvidence": [
+    {
+      "url": "https://maps164.nottinghamcity.gov.uk/server/rest/services/Core_services/Housing_and_Property/MapServer/22",
+      "method": "official source metadata/service-page review; no property-specific query",
+      "status": "official_source_reviewed",
+      "observation": "Nottingham City Council feature-layer metadata: Land Registry INSPIRE Index Polygons, polygon, native EPSG:27700; fields include INSPIRE_ID, WEBSITE, OBJECTID and shape. Description limits data to indicative freehold registered-property extents and says title plans establish exact title extent."
+    },
+    {
+      "url": "https://www.data.gov.uk/dataset/811bcf4c-fbbf-4597-aa9c-3d5bd3bfd455/inspire-index-polygons-spatial-data",
+      "method": "official source metadata/service-page review; no property-specific query",
+      "status": "official_source_reviewed",
+      "observation": "UK National Data Library describes HMLR INSPIRE Index Polygons as locations of freehold registered property, partitioned by local authority and licensed under the Open Government Licence."
+    },
+    {
+      "url": "https://www.gov.uk/government/publications/inspire-index-polygons-technical-specification",
+      "method": "official source metadata/service-page review; no property-specific query",
+      "status": "official_source_reviewed",
+      "observation": "HMLR technical specification defines the index polygons as indicative property extents, not legal title boundaries."
+    },
+    {
+      "url": "https://maps164.nottinghamcity.gov.uk/server/rest/services/Core_services/Housing_and_Property/MapServer/22/query",
+      "method": "GET exact WUP point; resultRecordCount=3; outFields=INSPIRE_ID; returnGeometry=true; outSR=4326; f=geojson",
+      "status": 200,
+      "featureCount": 1,
+      "fieldsRequested": [
+        "INSPIRE_ID",
+        "geometry"
+      ],
+      "sensitiveFieldsRequested": false,
+      "observation": "Returned one complete polygon intersecting the exact WUP point, native INSPIRE_ID 29114768; schema fields WEBSITE, OBJECTID, SHAPE_Area and SHAPE_Length were not requested or retained."
+    }
+  ],
+  "accessReview": {
+    "publicAnonymousGeometryVerified": true,
+    "completeGeoreferencedPolygonCount": 1,
+    "geometryRetained": true,
+    "ownerAddressTaxOrPersonLookupRequested": false,
+    "authenticationOrCredentialsUsed": false,
+    "captchaOrPersonalFormSubmitted": false,
+    "routeInspectionStatus": "public_schema_safe_exact_point_sample_verified",
+    "reason": "The official layer states that INSPIRE polygons show indicative locations/extents of freehold registered properties and that exact title extent requires the individual title plan. The sample therefore confirms the public index layer only; completeness, legal boundaries and runtime suitability are not asserted.",
+    "nativeIdsUsed": "INSPIRE_ID 29114768; only the native ID and geometry were requested and retained.",
+    "sampleFile": "samples/nottingham-hmlr-inspire-wup5220.geojson",
+    "sampleSha256": "2795781e0438f3398d5c30b0865cb7e0206827994fe0d330adf457e32220d099"
+  },
+  "geometryDecision": "Retained one complete geometry with INSPIRE_ID only.",
+  "technicalBlocker": "The official layer states that INSPIRE polygons show indicative locations/extents of freehold registered properties and that exact title extent requires the individual title plan. The sample therefore confirms the public index layer only; completeness, legal boundaries and runtime suitability are not asserted.",
+  "sampleDisposition": "One full polygon retained in samples/nottingham-hmlr-inspire-wup5220.geojson.",
+  "coverageAssessment": {
+    "claimedScope": "Nottingham City Council publishes a Land Registry INSPIRE Index Polygons feature layer, whose metadata describes indicative extents of freehold registered property. One complete polygon intersecting the exact WUP point was returned with the sole native property INSPIRE_ID field. This is an indicative registered-freehold index polygon, not a full cadastral parcel or legally determined title boundary.",
+    "verifiedOpenScope": "One exact-point Nottingham City Council INSPIRE index polygon with INSPIRE_ID only; indicative registered-freehold extent, not complete cadastral coverage.",
+    "citywideVerified": false,
+    "countrywideVerified": false
+  },
+  "runtimeAssessment": {
+    "status": "not_assessed",
+    "reason": "Source discovery only; runtime qualification was not performed."
+  },
+  "remainingUncertainty": "Citywide freehold-registration completeness, exact legal title boundaries, all leasehold/unregistered land and runtime suitability remain unverified."
+}

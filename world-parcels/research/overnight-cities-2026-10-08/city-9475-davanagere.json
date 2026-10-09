@@ -1,0 +1,104 @@
+{
+  "name": "Davanagere",
+  "country": "India",
+  "countryCode": "IN",
+  "rank": 981,
+  "point": [
+    14.4581636427115,
+    75.9184487995179
+  ],
+  "freshResearch": {
+    "queries": [
+      {
+        "language": "English",
+        "query": "Davanagere official cadastral map land records Bhoomi Karnataka parcel GIS district",
+        "scope": "Locate the local registry/cadastre owner and inspect safe public parcel geometry availability.",
+        "result": "Davanagere district administration links citizens to the state Bhoomi land-records service and identifies the local Deputy Commissioner office. State land-record / revenue-map systems are parcel-number and administrative-unit oriented; this review did not verify an anonymous geometry-only feature API for the urban WUP point. Survey of India’s city/district program inventory identifies ongoing NAKSHA urban land-record work, not an open parcel layer.",
+        "actualResultUrls": [
+          "https://davanagere.nic.in/en/service/bhoomi/"
+        ],
+        "executionMethod": "Separate English-language web search and official page/service review."
+      },
+      {
+        "language": "Kannada",
+        "query": "ದಾವಣಗೆರೆ ಭೂಮಿ ಭೂ ದಾಖಲೆ ಭೂ ನಕ್ಷೆ ಅಧಿಕೃತ ಜಿಲ್ಲಾಡಳಿತ",
+        "scope": "Find first-party local-language land registry, cadastral map or city land-service evidence.",
+        "result": "Davanagere district administration links citizens to the state Bhoomi land-records service and identifies the local Deputy Commissioner office. State land-record / revenue-map systems are parcel-number and administrative-unit oriented; this review did not verify an anonymous geometry-only feature API for the urban WUP point. Survey of India’s city/district program inventory identifies ongoing NAKSHA urban land-record work, not an open parcel layer.",
+        "actualResultUrls": [
+          "https://davanagere.nic.in/en/service/bhoomi/"
+        ],
+        "executionMethod": "Separate Kannada-language web search and official local source review."
+      }
+    ],
+    "portals": [
+      {
+        "name": "Karnataka Bhoomi land-records service and Davanagere district administration",
+        "operator": "Government of Karnataka Revenue Department; Davanagere district administration",
+        "homeUrl": "https://davanagere.nic.in/en/service/bhoomi/",
+        "observation": "Davanagere district administration links citizens to the state Bhoomi land-records service and identifies the local Deputy Commissioner office. State land-record / revenue-map systems are parcel-number and administrative-unit oriented; this review did not verify an anonymous geometry-only feature API for the urban WUP point. Survey of India’s city/district program inventory identifies ongoing NAKSHA urban land-record work, not an open parcel layer."
+      }
+    ],
+    "requests": [],
+    "historicalContext": []
+  },
+  "status": "complete",
+  "verifiedParcelResponse": null,
+  "source": {
+    "sourceId": "IN-9475-LOCAL-CADASTRE-REVIEW",
+    "name": "Karnataka Bhoomi land-records service and Davanagere district administration",
+    "url": "https://davanagere.nic.in/en/service/bhoomi/",
+    "operator": "Government of Karnataka Revenue Department; Davanagere district administration",
+    "serviceType": "Local registry/cadastre evidence reviewed; no safe anonymous full-polygon response verified.",
+    "layer": null,
+    "geometryType": null,
+    "outputCrs": null,
+    "nativeIdField": null,
+    "nativeIdEvidence": null
+  },
+  "coverageAssessment": {
+    "claimedScope": "Local revenue office and land-record service are confirmed; no public full parcel geometry response or exact map-sheet coverage was verified.",
+    "verifiedOpenScope": "Davanagere district administration links citizens to the state Bhoomi land-records service and identifies the local Deputy Commissioner office. State land-record / revenue-map systems are parcel-number and administrative-unit oriented; this review did not verify an anonymous geometry-only feature API for the urban WUP point. Survey of India’s city/district program inventory identifies ongoing NAKSHA urban land-record work, not an open parcel layer.",
+    "countrywideVerified": false,
+    "citywideVerified": false
+  },
+  "registryFound": true,
+  "verifiedSample": false,
+  "resultCategory": "official_local_registry_geometry_unverified",
+  "technicalBlocker": "No schema-backed safe vector endpoint was found. Bhoomi and map interfaces are record/survey workflows, not a verified geometry-only service.",
+  "remainingUncertainty": "Exact city urban survey-number layer coverage and WUP point inclusion remain unverified.",
+  "nextStep": "If a public feature service is documented later, inspect metadata first and query only safe stable parcel IDs plus geometry in a bounded viewport.",
+  "schemaVersion": "1.0",
+  "checkedAt": "2026-10-09",
+  "wupCityCode": 9475,
+  "cityId": "wup2025:9475",
+  "runtimeReadiness": "not_enabled_no_verified_public_geometry",
+  "adapterReady": false,
+  "centerLatLon": [
+    14.4581636427115,
+    75.9184487995179
+  ],
+  "population2025k": 559.117,
+  "populationUnit": "persons",
+  "queueRank": 981,
+  "population2025": 559117,
+  "populationPlausibility2025": "High",
+  "pointBasis": "UN WUP 2025 population-weighted settlement centroid; this is not a municipal boundary or a parcel-coverage claim.",
+  "publicParcelGeometryFound": false,
+  "sourceIds": [],
+  "registryBasis": "Davanagere district administration links citizens to the state Bhoomi land-records service and identifies the local Deputy Commissioner office. State land-record / revenue-map systems are parcel-number and administrative-unit oriented; this review did not verify an anonymous geometry-only feature API for the urban WUP point. Survey of India’s city/district program inventory identifies ongoing NAKSHA urban land-record work, not an open parcel layer.",
+  "registryEvidenceUrls": [
+    "https://davanagere.nic.in/en/service/bhoomi/"
+  ],
+  "runtimeAssessment": {
+    "status": "not_enabled_no_verified_public_geometry",
+    "reason": "No schema-backed safe vector endpoint was found. Bhoomi and map interfaces are record/survey workflows, not a verified geometry-only service."
+  },
+  "rootPrimaryReadback": {
+    "url": "https://davanagere.nic.in/en/service/bhoomi/",
+    "fetch": 200,
+    "contentType": "text/html; charset=UTF-8",
+    "title": "\n        Bhoomi | Davanagere District ,Government of Karnataka | India    "
+  },
+  "rootReviewNote": "Reviewed the specific local primary evidence, its jurisdiction, source dates and public access limits. Failed readbacks are retained as transport/access outcomes rather than absence. No full public parcel geometry was verified for this city in the bounded discovery pass.",
+  "rootReviewedAt": "2026-10-09T05:07:19.594016+00:00"
+}

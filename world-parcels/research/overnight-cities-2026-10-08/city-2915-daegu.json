@@ -1,0 +1,124 @@
+{
+  "name": "Daegu",
+  "country": "Republic of Korea",
+  "countryCode": "KR",
+  "rank": 213,
+  "point": [
+    35.8589361554858,
+    128.593469060585
+  ],
+  "freshResearch": {
+    "queries": [
+      {
+        "language": "Korean",
+        "query": "대구 지적도 토지임야도 열람 지적(임야)도 Daegu official",
+        "scope": "Find the authoritative Daegu cadastral/forest parcel-map viewer.",
+        "result": "Direct HTTP 200 inspection confirms the Daegu KRAS cadastral/forest map page is live. It offers parcel-location and lot/address inquiry with Daegu selected at the city level; no target parcel was selected or returned. The notice says the display may differ from official records and is not a legal certificate or survey source.",
+        "actualResultUrls": [
+          "https://kras.daegu.go.kr/land_info/info/landmap/landmap.do",
+          "https://www.daegu.go.kr/build/index.do?menu_id=00001348"
+        ],
+        "executionMethod": "Web search plus direct read-only HTTP inspection of the Daegu KRAS page and viewer form."
+      },
+      {
+        "language": "Korean",
+        "query": "대구 연속지적도 WFS 공개 데이터 토지정보",
+        "scope": "Check for official open full-polygon data or a public feature service beyond the parcel viewer.",
+        "result": "The official Ministry of Land K-GeoP viewer exposes land and building information and asks users to select a parcel on the map; it states the map is for reference and has no legal effect. No anonymous full-polygon feature API or downloadable Daegu parcel layer was identified in the official results.",
+        "actualResultUrls": [
+          "https://kgeop.go.kr/info/infoMap.do",
+          "https://www.data.go.kr/data/15123884/openapi.do"
+        ],
+        "executionMethod": "Web search; Korean query."
+      },
+      {
+        "language": "English",
+        "query": "Daegu cadastral parcel map official Korea land information system",
+        "scope": "Cross-check the service operator and public API availability in English.",
+        "result": "Search pointed to the Daegu city site, the national MOLIT K-GeoP map, and the Data.go.kr land/forest attribute API. The attribute API is not full parcel geometry and does not satisfy the sample requirement.",
+        "actualResultUrls": [
+          "https://kgeop.go.kr/info/infoMap.do",
+          "https://www.data.go.kr/data/15123884/openapi.do"
+        ],
+        "executionMethod": "Web search; English query."
+      }
+    ],
+    "portals": [
+      {
+        "name": "Daegu KRAS cadastral/forest map inquiry",
+        "operator": "Daegu Metropolitan City land-information portal (KRAS integration page)",
+        "homeUrl": "https://kras.daegu.go.kr/land_info/info/landmap/landmap.do",
+        "observation": "Direct HTTP 200 confirms the live Daegu cadastral/forest map viewer. City-level selector is Daegu; the form requires administrative/lot selection. Disclaimer warns the display may differ from official records and has no survey/legal-certificate status. No target polygon was selected."
+      },
+      {
+        "name": "K-GeoP Internet map",
+        "operator": "Ministry of Land, Infrastructure and Transport / National Spatial Information Center",
+        "homeUrl": "https://kgeop.go.kr/info/infoMap.do",
+        "observation": "Interactive national land-information viewer. Static response says select a parcel on the map and notes the map has no legal effect; the target-coordinate URL could not be fetched through the web transport. No full polygon response was returned."
+      }
+    ],
+    "requests": [
+      {
+        "url": "https://kras.daegu.go.kr/land_info/info/landmap/landmap.do",
+        "method": "GET",
+        "httpStatus": 200,
+        "contentType": "text/html; charset=euc-kr",
+        "observation": "HTTP 200; title 지적(임야)도 열람. City selector is Daegu; UI exposes district/eup-myeon-dong/ri and parcel/address search. Disclaimer says displayed data can differ from official records and map cannot be used for surveying."
+      },
+      {
+        "url": "https://kras.daegu.go.kr/land_info/info/landmap/landmap.do?service=init",
+        "method": "GET",
+        "httpStatus": 200,
+        "contentType": "text/html; charset=euc-kr",
+        "observation": "HTTP 200; same live city-specific cadastral viewer shell."
+      },
+      {
+        "url": "https://kgeop.go.kr/info/infoMap.do",
+        "method": "GET",
+        "httpStatus": 200,
+        "contentType": "text/html",
+        "observation": "National MOLIT viewer page exposes parcel selection controls; no full target geometry was retrieved."
+      },
+      {
+        "url": "https://www.data.go.kr/data/15123884/openapi.do",
+        "method": "GET",
+        "httpStatus": 200,
+        "contentType": "text/html",
+        "observation": "Official API metadata page describes parcel-register attributes, not a full-polygon layer."
+      }
+    ]
+  },
+  "status": "complete",
+  "verifiedParcelResponse": null,
+  "source": null,
+  "coverageAssessment": {
+    "claimedScope": "Daegu city KRAS cadastral/forest map viewer provides parcel/lot inquiry; national K-GeoP is an additional interactive reference viewer.",
+    "verifiedOpenScope": "A city-specific cadastral viewer is live, but no WUP-point or other full parcel polygon was selected and verified.",
+    "countrywideVerified": false
+  },
+  "registryFound": true,
+  "verifiedSample": false,
+  "resultCategory": "no_verified_sample_candidate_citywide",
+  "technicalBlocker": "No anonymous full-polygon response was verified after the inspected administrative parcel-selection flow. The legal/survey disclaimer is informational and does not block use.",
+  "remainingUncertainty": "Whether the Daegu viewer can expose full polygon geometry publicly after selecting the target parcel; whether a separate official open full-polygon service exists.",
+  "nextStep": "Use the viewer to resolve the WUP-point administrative unit and parcel, then inspect whether a complete parcel polygon is retrievable; retain the viewer disclaimer.",
+  "schemaVersion": 1,
+  "checkedAt": "2026-10-09",
+  "wupCityCode": 2915,
+  "cityId": "wup2025:2915",
+  "runtimeReadiness": "not_enabled_no_verified_public_geometry",
+  "adapterReady": false,
+  "centerLatLon": [
+    35.8589361554858,
+    128.593469060585
+  ],
+  "queueRank": 213,
+  "population2025": 2334446,
+  "populationPlausibility2025": "Moderate",
+  "populationUnit": "persons",
+  "pointBasis": "UN WUP 2025 population-weighted settlement centroid; this is not a municipal boundary or a parcel-coverage claim.",
+  "publicParcelGeometryFound": false,
+  "rootReviewedAt": "2026-10-08T20:54:18.632578+00:00",
+  "sourceIds": [],
+  "registryBasis": "The Daegu-operated KRAS viewer exposes city-specific cadastral/forest map inquiry and parcel selection; no full geometry was retrieved."
+}

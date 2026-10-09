@@ -1,0 +1,118 @@
+{
+  "name": "Aba",
+  "country": "Nigeria",
+  "countryCode": "NG",
+  "rank": 355,
+  "point": [
+    5.10115289040459,
+    7.35051288564353
+  ],
+  "population2025": 1428069,
+  "schemaVersion": 1,
+  "kind": "city_parcel_source_research",
+  "checkedAt": "2026-10-09",
+  "populationUnit": "persons",
+  "status": "complete",
+  "verifiedSample": false,
+  "publicParcelGeometryFound": false,
+  "runtimeReadiness": "not_enabled_no_verified_public_geometry",
+  "priorEvidenceFiles": [],
+  "scopeLimits": "The ranked UN World Urbanization Prospects 2025 point is a population-weighted locator, not a municipal boundary or parcel identity. Official local land/property mapping or registration evidence was found, but no anonymous public parcel polygon was verified for this point. No geometry or owner/address data is retained.",
+  "pointBasis": "UN WUP 2025 population-weighted settlement centroid; this is not a municipal boundary or a parcel-coverage claim.",
+  "registryFound": true,
+  "registryBasis": "Abia State land-registration and GIS services are documented. City-specific land-parcellation activity is independently identified in the official 2026 approved budget: the Ministry of Lands project at Mbaisi Layout, Ogbor Hill, Aba is coded to Aba North and includes reported 2025 performance. This confirms local parcel administration, not an anonymous map or complete city registry.",
+  "resultCategory": "local_land_or_property_admin_evidence_public_parcel_geometry_unverified",
+  "technicalBlocker": "No anonymous public parcel geometry service or city-specific parcel viewer was found. The official property and GIS workflows require application/property and ownership documentation.",
+  "remainingUncertainty": "Whether Abia maintains an unpublished or authenticated city-level parcel GIS that covers the ranked WUP locator; whether any public vector service is available upon request.",
+  "nextStep": "If follow-up is needed, request an anonymous map-service URL and coverage details from the Abia State Ministry of Lands & Housing; do not submit a private property-registration request.",
+  "freshResearch": {
+    "executedQueries": [
+      {
+        "language": "English",
+        "query": "Aba Nigeria official cadastral parcel map land registry GIS Abia State Geographic Information System land records",
+        "scope": "Find Aba/Abia first-party property registration, land-record, GIS-map and public parcel-vector evidence.",
+        "result": "The Abia State Government Services Portal offers state property registration, certificate-of-occupancy, land-use and transfer services. The Abia Ministry of Lands & Housing describes GIS mapping and survey services as application procedures requiring a survey plan and proof of ownership. Neither official source publishes an anonymous parcel polygon viewer or geometry service.",
+        "method": "Separate English-language web search followed by official Abia State portal and Ministry service-page review."
+      },
+      {
+        "language": "English",
+        "query": "Aba Abia State official land registry property map GIS cadastral survey Aba Nigeria government",
+        "scope": "Check for an Aba-specific public parcel map or geographic information system.",
+        "result": "No city-specific public parcel-vector service was found. The official property workflows require land/property reference and applicant/owner documentation; they were not submitted or queried.",
+        "method": "Separate focused English-language search and official service review."
+      }
+    ],
+    "officialSources": [
+      {
+        "url": "https://services.abiastate.gov.ng/services/property",
+        "observation": "Official Abia State Government services catalog: property registration, certificate-of-occupancy, land use charges and transfer services; responsible agency shown as Ministry of Lands and Survey."
+      },
+      {
+        "url": "https://services.abiastate.gov.ng/apply/property/step/1",
+        "observation": "Official registration workflow requests property address/land reference and advances through identity and document steps; not a public parcel viewer. No application was submitted."
+      },
+      {
+        "url": "https://landsandhousing.abiastate.gov.ng/services/",
+        "observation": "Official Abia Ministry of Lands & Housing describes title registration and GIS mapping/survey services, requiring ownership/survey documentation."
+      }
+    ],
+    "viewerAndServiceTrace": {
+      "attempted": true,
+      "summary": "Reviewed public official Abia property-service pages and the Ministry of Lands & Housing service listing. The state property workflow is an application interface, not an anonymous public map; registration steps ask for property/land references and identity/title documents. GIS mapping/survey is provided on request after submission of a survey plan and proof of ownership. No coordinates, owner records or private application endpoints were queried. No public parcel geometry route or viewer JavaScript was exposed by the reviewed pages.",
+      "fullPolygonLimit": 3,
+      "fullPolygonsRetained": 0,
+      "ownerOrAddressDataRequested": false,
+      "credentialsOrTokenValuesRetained": false
+    },
+    "attemptedGeometry": {
+      "attempted": false,
+      "status": "no anonymous safe parcel-vector endpoint verified",
+      "retainedFeatures": 0,
+      "fieldsRequested": [],
+      "geometryRetained": false
+    }
+  },
+  "registryEvidenceUrls": [
+    "https://services.abiastate.gov.ng/services/property",
+    "https://services.abiastate.gov.ng/apply/property/step/1",
+    "https://landsandhousing.abiastate.gov.ng/services/",
+    "https://abiastate.gov.ng/wp-content/uploads/2026/02/ABIA-STATE-2026-APPROVED-ESTIMATES.pdf"
+  ],
+  "sourceIds": [],
+  "coverageAssessment": {
+    "claimedScope": "The official Abia State Government property service offers property registration in the state register and identifies the Ministry of Lands and Survey as responsible; the Abia Ministry separately lists land-title registration and GIS mapping/survey services. These are state-level services relevant to Aba, but do not prove a city-specific map endpoint or exact-point cadastral coverage.",
+    "verifiedOpenScope": "No anonymous public parcel geometry service or city-specific parcel viewer was found. The official property and GIS workflows require application/property and ownership documentation.",
+    "citywideVerified": false,
+    "countrywideVerified": false
+  },
+  "source": {
+    "name": "Aba local land/property-map evidence",
+    "operator": "Local/state public authority identified in official sources",
+    "url": "https://services.abiastate.gov.ng/services/property",
+    "scope": "The official Abia State Government property service offers property registration in the state register and identifies the Ministry of Lands and Survey as responsible; the Abia Ministry separately lists land-title registration and GIS mapping/survey services. These are state-level services relevant to Aba, but do not prove a city-specific map endpoint or exact-point cadastral coverage."
+  },
+  "wupCityCode": 7785,
+  "cityId": "wup2025:7785",
+  "queueRank": 355,
+  "populationPlausibility2025": "Moderate",
+  "centerLatLon": [
+    5.10115289040459,
+    7.35051288564353
+  ],
+  "rootSupplementalResearch": {
+    "queries": [
+      {
+        "language": "English",
+        "query": "site:landsandhousing.abiastate.gov.ng Aba land registry cadastral office"
+      },
+      {
+        "language": "English",
+        "query": "site:abiastate.gov.ng \"Parcellation of Mbaisi Layout\" \"Aba\""
+      }
+    ],
+    "source": "https://abiastate.gov.ng/wp-content/uploads/2026/02/ABIA-STATE-2026-APPROVED-ESTIMATES.pdf",
+    "access": "Primary official budget indexed text reviewed through web search; no claim that the entire PDF was downloaded. Separate C-of-O procedure PDF direct GET returned HTTP403.",
+    "observation": "City-specific ministry parcellation project at Ogbor Hill, Aba; budget row names Aba North and reports prior-year performance."
+  },
+  "rootReviewedAt": "2026-10-08T23:01:54.520804+00:00"
+}

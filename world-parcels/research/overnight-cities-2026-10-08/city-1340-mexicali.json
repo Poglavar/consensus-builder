@@ -1,0 +1,118 @@
+{
+  "name": "Mexicali",
+  "country": "Mexico",
+  "countryCode": "MX",
+  "rank": 727,
+  "point": [
+    32.6167894308152,
+    -115.444822169369
+  ],
+  "population2025k": 737.963,
+  "schemaVersion": 1,
+  "kind": "city_parcel_source_research",
+  "checkedAt": "2026-10-09",
+  "populationUnit": "persons",
+  "status": "complete",
+  "verifiedSample": false,
+  "publicParcelGeometryFound": false,
+  "runtimeReadiness": "not_enabled_no_verified_public_geometry",
+  "priorEvidenceFiles": [],
+  "scopeLimits": "UN WUP 2025 population-weighted settlement centroid is a locator, not an official city boundary or parcel identity. No owner, address, tax or account fields were requested or copied; no login credentials or private tokens were used.",
+  "pointBasis": "UN WUP 2025 population-weighted settlement centroid; this is not a municipal boundary or a parcel-coverage claim.",
+  "registryFound": true,
+  "registryBasis": "The official Ayuntamiento de Mexicali identifies the Dirección de Administración Urbana as responsible for municipal cadastral authority and lists its Departamento de Catastro. The official municipal cadastral consultation URL redirects to a username/password login. The city’s open IMIP geovisor presents planning/territorial layers but no parcel feature schema was found; no feature geometry was requested.",
+  "resultCategory": "official_municipal_cadastre_login_gated_no_public_polygon_verified",
+  "technicalBlocker": "No anonymous full polygon feature response or safe source schema was verified in this pass.",
+  "remainingUncertainty": "Whether any separate official public cadastral map or safe vector service exists apart from the login-gated consultation portal; exact schema and city coverage.",
+  "freshResearch": {
+    "executedQueries": [
+      {
+        "language": "English",
+        "query": "Mexicali official cadastral parcel map GIS property cadastre municipality",
+        "result": "Official municipal sources identify the city Catastro department and cadastral lookup by clave catastral. The cadastral consultation page redirects to a login form; the public IMIP geovisor advertises urban-planning/territorial layers, but no parcel-vector schema or anonymous polygon endpoint was identified.",
+        "method": "Separate language-specific web search and review of official primary sources"
+      },
+      {
+        "language": "Spanish",
+        "query": "Mexicali catastro municipal mapa predial cartografía catastral oficial ayuntamiento",
+        "result": "El Ayuntamiento identifica la Dirección de Administración Urbana y el Departamento de Catastro; la consulta catastral oficial redirige a inicio de sesión con usuario y contraseña. El geovisor público del IMIP presenta capas territoriales y de planeación, pero no se verificó un servicio vectorial catastral anónimo.",
+        "method": "Separate language-specific web search and review of official primary sources"
+      }
+    ],
+    "officialSources": [
+      {
+        "url": "https://mexicali.gob.mx/portalmexicali/dependencia/dau",
+        "observation": "Official municipal page identifies the Dirección de Administración Urbana’s cadastral jurisdiction and its Departamento de Catastro."
+      },
+      {
+        "url": "https://www.mexicali.gob.mx/webpub/consultacatastro/Consulta.aspx",
+        "observation": "Official municipal Catastro consultation route redirects to a username/password login form; no credentials were entered and no parcel query was made."
+      },
+      {
+        "url": "https://www.mexicali.gob.mx/portalmexicali/predial",
+        "observation": "Official city Predial page explains that account lookup uses a cadastral key; it is an account/payment service, not evidence of a public polygon layer."
+      },
+      {
+        "url": "https://www.mexicali.gob.mx/sitioimip/geovisor",
+        "observation": "Official IMIP Geovisor describes public urban-planning and territorial geospatial information; no cadastral parcel vector service was identified in the reviewed map layers."
+      }
+    ],
+    "coverageAssessment": {
+      "verifiedOpenScope": "Official city sources confirm a local municipal Catastro department and a cadastral consultation route, but that lookup is login-gated. The public IMIP geovisor does not establish an anonymous parcel-vector layer. No polygon response or absence was inferred.",
+      "citywideVerified": false,
+      "countrywideVerified": false,
+      "geometryVerified": false
+    },
+    "blocker": "The official public map/service evidence does not expose a verified anonymous parcel polygon response with a safe schema.",
+    "remainingUncertainty": "Whether any separate official public cadastral map or safe vector service exists apart from the login-gated consultation portal; exact schema and city coverage."
+  },
+  "cityId": "wup2025:1340",
+  "populationPlausibility2025": "Moderate",
+  "sourceIds": [],
+  "queueRank": 727,
+  "wupCityCode": 1340,
+  "centerLatLon": [
+    32.6167894308152,
+    -115.444822169369
+  ],
+  "population2025": 737963,
+  "verifiedSampleFile": null,
+  "adapterReady": false,
+  "source": {
+    "name": "Mexicali official cadastral services and city map",
+    "operator": "Ayuntamiento de Mexicali / Dirección de Administración Urbana, Departamento de Catastro",
+    "url": "https://mexicali.gob.mx/portalmexicali/dependencia/dau",
+    "serviceType": "The official Ayuntamiento de Mexicali identifies the Dirección de Administración Urbana as responsible for municipal cadastral authority and lists its Departamento de Catastro. The official municipal cadastral consultation URL redirects to a username/password login. The city’s open IMIP geovisor presents planning/territorial layers but no parcel feature schema was found; no feature geometry was requested.",
+    "geometryType": null,
+    "nativeIdFields": [],
+    "requestedAttributes": [],
+    "personalAttributesRequested": false,
+    "directGeometryQueryVerified": false,
+    "directMetadataSchemaVerified": false,
+    "nativeIdEvidence": "No public feature schema or parcel record returned.",
+    "scope": "Official city sources confirm a local municipal Catastro department and a cadastral consultation route, but that lookup is login-gated. The public IMIP geovisor does not establish an anonymous parcel-vector layer. No polygon response or absence was inferred."
+  },
+  "coverageAssessment": {
+    "verifiedOpenScope": "Official city sources confirm a local municipal Catastro department and a cadastral consultation route, but that lookup is login-gated. The public IMIP geovisor does not establish an anonymous parcel-vector layer. No polygon response or absence was inferred.",
+    "citywideVerified": false,
+    "countrywideVerified": false,
+    "geometryVerified": false
+  },
+  "runtimeAssessment": {
+    "status": "not_enabled_no_verified_public_geometry",
+    "reason": "The official Ayuntamiento de Mexicali identifies the Dirección de Administración Urbana as responsible for municipal cadastral authority and lists its Departamento de Catastro. The official municipal cadastral consultation URL redirects to a username/password login. The city’s open IMIP geovisor presents planning/territorial layers but no parcel feature schema was found; no feature geometry was requested."
+  },
+  "registryEvidenceUrls": [
+    "https://mexicali.gob.mx/portalmexicali/dependencia/dau",
+    "https://www.mexicali.gob.mx/webpub/consultacatastro/Consulta.aspx",
+    "https://www.mexicali.gob.mx/portalmexicali/predial",
+    "https://www.mexicali.gob.mx/sitioimip/geovisor"
+  ],
+  "rootPrimaryReadback": {
+    "url": "https://mexicali.gob.mx/portalmexicali/dependencia/dau",
+    "fetch": "error",
+    "reason": "<urlopen error timed out>"
+  },
+  "rootReviewNote": "Reviewed the local primary institution/service evidence and stated geometry/access/identity limits. Fresh page readback failures are preserved separately and do not imply absent data; matching primary indexed text supplements the direct readback where available. No public geometry was verified for this city.",
+  "rootReviewedAt": "2026-10-09T03:06:11.183980+00:00"
+}

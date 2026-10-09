@@ -1,0 +1,134 @@
+{
+  "name": "Darjeeling",
+  "country": "India",
+  "countryCode": "IN",
+  "rank": 923,
+  "point": [
+    27.0480578643789,
+    88.2367516627387
+  ],
+  "population2025": 590052,
+  "population2025k": 590.052,
+  "populationPlausibility2025": "Moderate",
+  "schemaVersion": 1,
+  "kind": "city_parcel_source_research",
+  "checkedAt": "2026-10-09",
+  "populationUnit": "persons",
+  "status": "complete",
+  "verifiedSample": false,
+  "publicParcelGeometryFound": false,
+  "runtimeReadiness": "not_enabled_no_verified_public_geometry",
+  "priorEvidenceFiles": [],
+  "priorCheck": {
+    "attemptState": "pending",
+    "attemptEvidence": [],
+    "possiblePriorMatches": []
+  },
+  "pointBasis": "UN WUP 2025 population-weighted settlement centroid; this is not a municipal boundary or a parcel-coverage claim.",
+  "registryFound": true,
+  "registryBasis": "The current official Darjeeling district directory identifies the District Registrar in Darjeeling. This supplies local registry institutional evidence beyond the state land-record portal, while leaving city-specific anonymous geometry access unverified.",
+  "registryEvidenceUrls": [
+    "https://banglarbhumi.gov.in/BanglarBhumi/KnowYourProperty.action",
+    "https://darjeeling.gov.in/",
+    "https://basundhara.wb.gov.in/GeoPortalApp/map",
+    "https://darjeeling.gov.in/whoswho/the-district-registrar-darjeeling/"
+  ],
+  "resultCategory": "local_registry_evidenced_geometry_unverified",
+  "remainingUncertainty": "Anonymous public parcel geometry and exact WUP-point coverage were not verified.",
+  "scopeLimits": "Research covers the exact unchanged WUP locator and reviewed official sources only. No owner, address, personal-property, tax, account, token or credential data requested or retained. No citywide completeness claimed.",
+  "verifiedParcelResponse": null,
+  "source": {
+    "sourceId": "IN-11507-darjeeling-source-review",
+    "name": "West Bengal BanglarBhumi / Darjeeling District administration",
+    "url": "https://banglarbhumi.gov.in/BanglarBhumi/KnowYourProperty.action",
+    "operator": "India",
+    "serviceType": "Official state land-record and plot/mouza map request service; no safe anonymous point-to-geometry endpoint verified.",
+    "layer": null,
+    "geometryType": null,
+    "outputCrs": null,
+    "nativeIdField": null,
+    "nativeIdEvidence": "No anonymous feature response; plot-number schema not verified."
+  },
+  "wupCityCode": 11507,
+  "cityId": "wup2025:11507",
+  "queueRank": 923,
+  "centerLatLon": [
+    27.0480578643789,
+    88.2367516627387
+  ],
+  "sourceIds": [],
+  "adapterReady": false,
+  "technicalBlocker": "Research only; no parcel sample or runtime adapter qualification.",
+  "coverageAssessment": {
+    "claimedScope": "The official West Bengal Land & Land Reforms portal lists district-based RS-LR plot information, plot-map and mouza-map requests, while the Darjeeling District government site identifies its local administration and municipalities. Portal map/record workflows require administrative plot identifiers; no anonymous WUP-coordinate geometry endpoint was verified.",
+    "verifiedOpenScope": "No anonymous public parcel geometry scope verified.",
+    "countrywideVerified": false,
+    "citywideVerified": false
+  },
+  "research": {
+    "queries": [
+      {
+        "language": "English",
+        "query": "Darjeeling India official land records cadastral map West Bengal Bhulekh municipal land registry",
+        "scope": "Find primary local registry/cadastre evidence and a public parcel-geometry service.",
+        "result": "Official West Bengal services expose plot information and plot/mouza-map request workflows; the district government portal confirms Darjeeling is in the state service area. The separate Basundhara map offers district settlement mapping, not a verified cadastral polygon endpoint. No plot number, account, captcha, or personal record was submitted.",
+        "actualResultUrls": [
+          "https://banglarbhumi.gov.in/BanglarBhumi/KnowYourProperty.action",
+          "https://darjeeling.gov.in/",
+          "https://basundhara.wb.gov.in/GeoPortalApp/map"
+        ],
+        "executionMethod": "Separate English-language search and first-party service review; no property identifiers or personal fields submitted."
+      },
+      {
+        "language": "Hindi",
+        "query": "दार्जिलिंग भू अभिलेख दाग खसरा नक्शा बंगाल सरकारी भूमि रिकॉर्ड",
+        "scope": "Find first-party local-language evidence for the same local registry/map question.",
+        "result": "Official West Bengal services expose plot information and plot/mouza-map request workflows; the district government portal confirms Darjeeling is in the state service area. The separate Basundhara map offers district settlement mapping, not a verified cadastral polygon endpoint. No plot number, account, captcha, or personal record was submitted.",
+        "actualResultUrls": [
+          "https://banglarbhumi.gov.in/BanglarBhumi/KnowYourProperty.action",
+          "https://darjeeling.gov.in/",
+          "https://basundhara.wb.gov.in/GeoPortalApp/map"
+        ],
+        "executionMethod": "Separate native-language search and official source review."
+      }
+    ],
+    "officialSources": [
+      {
+        "url": "https://banglarbhumi.gov.in/BanglarBhumi/KnowYourProperty.action",
+        "observation": "The official West Bengal Land & Land Reforms portal lists district-based RS-LR plot information, plot-map and mouza-map requests, while the Darjeeling District government site identifies its local administration and municipalities. Portal map/record workflows require administrative plot identifiers; no anonymous WUP-coordinate geometry endpoint was verified."
+      },
+      {
+        "url": "https://darjeeling.gov.in/",
+        "observation": "The official West Bengal Land & Land Reforms portal lists district-based RS-LR plot information, plot-map and mouza-map requests, while the Darjeeling District government site identifies its local administration and municipalities. Portal map/record workflows require administrative plot identifiers; no anonymous WUP-coordinate geometry endpoint was verified."
+      },
+      {
+        "url": "https://basundhara.wb.gov.in/GeoPortalApp/map",
+        "observation": "The official West Bengal Land & Land Reforms portal lists district-based RS-LR plot information, plot-map and mouza-map requests, while the Darjeeling District government site identifies its local administration and municipalities. Portal map/record workflows require administrative plot identifiers; no anonymous WUP-coordinate geometry endpoint was verified."
+      }
+    ],
+    "attempts": [
+      {
+        "url": "https://banglarbhumi.gov.in/BanglarBhumi/KnowYourProperty.action",
+        "method": "Official land-record/map-service page review",
+        "result": "Lists plot-info and plot/mouza-map request services; workflow is based on district/block/mouza and plot identifiers. No personal/property search submitted."
+      },
+      {
+        "url": "https://basundhara.wb.gov.in/GeoPortalApp/map",
+        "method": "Official geospatial portal review",
+        "result": "Provides district settlement mapping; no parcel schema or anonymous parcel geometry layer verified."
+      }
+    ]
+  },
+  "rootPrimarySupplement": "Fresh indexed primary local office evidence reviewed; original direct page failures and state map access limits are retained separately.",
+  "runtimeAssessment": {
+    "status": "not_enabled_no_verified_public_geometry",
+    "reason": "Research only; no parcel sample or runtime adapter qualification."
+  },
+  "rootPrimaryReadback": {
+    "url": "https://banglarbhumi.gov.in/BanglarBhumi/KnowYourProperty.action",
+    "fetch": "error",
+    "reason": "<urlopen error timed out>"
+  },
+  "rootReviewNote": "Reviewed the specific primary institution/service evidence and its geographical, access and date limits. Direct readback failures are preserved separately from indexed primary evidence. No public full parcel geometry was verified for this city in this discovery pass.",
+  "rootReviewedAt": "2026-10-09T04:30:00.451299+00:00"
+}

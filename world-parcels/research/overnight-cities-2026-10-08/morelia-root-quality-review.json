@@ -1,0 +1,10 @@
+{
+  "schemaVersion": 1,
+  "checkedAt": "2026-10-09T04:02:13.464140+00:00",
+  "decision": "held_identity_and_ground_geometry",
+  "reason": "Four sampled viewport cells fail because native clave_catastro is null on returned polygons. Among the 376 successfully retained cadastral references, independent EPSG:32614 GEOS finds 270 exact duplicate geometry pairs and 309 overlap pairs above 0.01 m\u00b2. A fresh original EPSG:6369 request reproduces identical 237.533623 m\u00b2 footprints for two different native cadastral keys. Both rows have distinct publisher idpredio UUIDs and tipo=2, forma=null; no inspected publisher rule defines an authoritative ground-only/lifecycle exclusion. Replacing native identity does not resolve overlapping record geometry. No repair, invented identifier or selective exclusion is applied. This source remains held on native-key completeness and ground-geometry semantics.",
+  "acceptanceFile": "morelia-municipal-root-acceptance.json",
+  "qualityFile": "morelia-municipal-root-quality.json",
+  "nativeDuplicateReviewFile": "morelia-root-native-duplicate-review.json",
+  "sourceCoordinatesModified": false
+}

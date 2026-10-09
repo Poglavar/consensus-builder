@@ -1,0 +1,102 @@
+{
+  "name": "Amarah",
+  "country": "Iraq",
+  "countryCode": "IQ",
+  "rank": 836,
+  "point": [
+    31.8434188048201,
+    47.1459419520301
+  ],
+  "population2025": 645612,
+  "population2025k": 645.612,
+  "populationUnit": "persons",
+  "populationPlausibility2025": "Moderate",
+  "schemaVersion": 1,
+  "kind": "city_parcel_source_research",
+  "checkedAt": "2026-10-09",
+  "status": "complete",
+  "registryFound": true,
+  "registryBasis": "The Iraqi Ministry of Justice lists a Maysan Real Estate Registration Directorate and reports current activity/visits at the Maysan registry directorate. A city-specific Amarah Municipality portal advertises public enquiry by parcel/property number, but it is an attribute lookup rather than a published map/vector schema. No city-local anonymous parcel geometry was verified, and the WUP point was not submitted to any property lookup.",
+  "registryEvidenceUrls": [
+    "https://moj.gov.iq/contact_us.php",
+    "https://moj.gov.iq/view.9791/",
+    "https://amarah-municipality.com/"
+  ],
+  "publicParcelGeometryFound": false,
+  "verifiedSample": false,
+  "runtimeReadiness": "not_enabled_no_verified_public_geometry",
+  "adapterReady": false,
+  "priorEvidenceFiles": [],
+  "scopeLimits": "City-specific source discovery for this exact UN WUP 2025 settlement point only. The point is not a municipal boundary or parcel-coverage claim. No owner, address, account, title-owner, tax or person-specific lookup was requested or retained. No citywide/countrywide completeness, title identity, legal boundary, survey accuracy or runtime suitability is asserted.",
+  "pointBasis": "UN WUP 2025 population-weighted settlement centroid; this is not a municipal boundary or a parcel-coverage claim.",
+  "resultCategory": "official_local_registry_and_municipal_property_procedure_no_public_geometry",
+  "technicalBlocker": "The official MoJ sources establish Maysan registry presence but publish no anonymous parcel geometry schema. Amarah Municipality’s public portal describes parcel/property-number enquiry only; no number was entered and no owner/address/certificate information was requested. The portal’s .com host was not independently verified through a government-domain link.",
+  "remainingUncertainty": "Exact office location relative to the WUP point, the municipal portal’s hosting authority, whether the enquiry exposes any spatial geometry, and public vector field schemas remain unverified.",
+  "nextStep": "No runtime qualification was attempted. Parent agent will assess source/runtime compatibility separately.",
+  "freshResearch": {
+    "queries": [
+      {
+        "language": "English",
+        "query": "Amarah Maysan official cadastral land registry parcel map Iraq survey department",
+        "scope": "Find official city/region registry and public parcel-map services; inspect only public metadata.",
+        "result": "Iraq MoJ sources list the Maysan real-estate registration directorate and recent activity there. An Amarah Municipality portal advertises enquiry by parcel/property number, but no GIS feature service or public polygon schema is exposed. Its host is .com and was not independently linked from a .gov.iq source.",
+        "urls": [
+          "https://moj.gov.iq/contact_us.php",
+          "https://moj.gov.iq/view.9791/",
+          "https://amarah-municipality.com/"
+        ],
+        "method": "Separate English search; official MoJ source review and municipal portal landing-page review only, no property number submitted."
+      },
+      {
+        "language": "Arabic",
+        "query": "العمارة ميسان التسجيل العقاري خريطة قطع الأراضي مديرية بلدية العمارة",
+        "scope": "Search Arabic-language first-party sources for Amarah/Maysan land registry and cadastral map access.",
+        "result": "The MoJ official contact directory lists the Maysan Real Estate Registration Directorate; a Ministry report documents service activity at the Maysan directorate. The Amarah municipal page describes a parcel/property-number enquiry portal, not geometry. No record identifier was entered and no anonymous vector schema was found.",
+        "urls": [
+          "https://moj.gov.iq/contact_us.php",
+          "https://moj.gov.iq/view.9791/",
+          "https://amarah-municipality.com/"
+        ],
+        "method": "Separate Arabic search and official page review; no person-specific or property-specific lookup."
+      }
+    ]
+  },
+  "source": {
+    "sourceId": "IQ-MAYSAN-REAL-ESTATE-REGISTRY-AMARAH-MUNICIPAL-PROCEDURE",
+    "name": "Maysan Real Estate Registration Directorate and Amarah Municipality public portal",
+    "url": "https://moj.gov.iq/contact_us.php",
+    "operator": "Iraqi Ministry of Justice; Amarah Municipality (portal host not independently government-domain verified)",
+    "serviceType": "Official local registry directory and municipal parcel-number enquiry procedure; no anonymous parcel-vector service/schema verified.",
+    "layer": null,
+    "geometryType": null,
+    "outputCrs": null,
+    "nativeIdField": null
+  },
+  "wupCityCode": 5080,
+  "cityId": "wup2025:5080",
+  "queueRank": 836,
+  "sourceIds": [],
+  "centerLatLon": [
+    31.8434188048201,
+    47.1459419520301
+  ],
+  "coverageAssessment": {
+    "claimedScope": "The Iraqi Ministry of Justice lists a Maysan Real Estate Registration Directorate and reports current activity/visits at the Maysan registry directorate. A city-specific Amarah Municipality portal advertises public enquiry by parcel/property number, but it is an attribute lookup rather than a published map/vector schema. No city-local anonymous parcel geometry was verified, and the WUP point was not submitted to any property lookup.",
+    "verifiedOpenScope": "The official MoJ sources establish Maysan registry presence but publish no anonymous parcel geometry schema. Amarah Municipality’s public portal describes parcel/property-number enquiry only; no number was entered and no owner/address/certificate information was requested. The portal’s .com host was not independently verified through a government-domain link.",
+    "citywideVerified": false,
+    "countrywideVerified": false
+  },
+  "runtimeAssessment": {
+    "status": "not_assessed",
+    "reason": "Source discovery only; no runtime adapter qualification was performed."
+  },
+  "verifiedParcelResponse": null,
+  "rootPrimaryReadback": {
+    "url": "https://moj.gov.iq/contact_us.php",
+    "fetch": 200,
+    "contentType": "text/html; charset=UTF-8",
+    "title": "وزارة العدل - جمهورية العراق"
+  },
+  "rootReviewNote": "Reviewed the specific primary institution/service evidence and its geographical, access and date limits. Direct readback failures are preserved separately from indexed primary evidence. No public full parcel geometry was verified for this city in this discovery pass.",
+  "rootReviewedAt": "2026-10-09T03:57:46.837098+00:00"
+}

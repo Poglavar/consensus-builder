@@ -1,0 +1,32 @@
+{
+  "schemaVersion": 1,
+  "checkedAt": "2026-10-09T00:14:00Z",
+  "configuredAppCities": 148,
+  "executableProviders": 132,
+  "success": true,
+  "testCount": 26,
+  "passedTests": 26,
+  "failedTests": 0,
+  "testFiles": [
+    {
+      "file": "backend/test/coverage-evidence-consistency.test.js",
+      "status": "passed",
+      "tests": 5
+    },
+    {
+      "file": "backend/test/frontend-city-source-integrations.test.js",
+      "status": "passed",
+      "tests": 3
+    },
+    {
+      "file": "backend/test/parcel-source-city-metric.test.js",
+      "status": "passed",
+      "tests": 2
+    },
+    {
+      "file": "backend/test/world-coverage-build.test.js",
+      "status": "passed",
+      "tests": 16
+    }
+  ]
+}

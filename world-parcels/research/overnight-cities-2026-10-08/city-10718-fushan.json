@@ -1,0 +1,110 @@
+{
+  "name": "Fushan",
+  "country": "China",
+  "countryCode": "CN",
+  "rank": 537,
+  "point": [
+    37.542523018522,
+    121.326592159236
+  ],
+  "population2025": 968359,
+  "schemaVersion": 1,
+  "kind": "city_parcel_source_research",
+  "checkedAt": "2026-10-09",
+  "populationUnit": "persons",
+  "status": "complete",
+  "verifiedSample": false,
+  "publicParcelGeometryFound": false,
+  "runtimeReadiness": "not_enabled_no_verified_public_geometry",
+  "priorEvidenceFiles": [],
+  "scopeLimits": "The published Yantai cadastral-map lookup is an individual property inquiry through registered WeChat/one-network channels, using a known location or parcel identifier. No public geometry-only schema or anonymous WFS/GeoJSON endpoint was found. No account was created and no parcel-specific query was submitted. The WUP point is a population-weighted settlement locator, not a parcel or city boundary. No owner/address/right-holder values, accounts or credentials were retained.",
+  "pointBasis": "UN WUP 2025 population-weighted settlement centroid; this is not a municipal boundary or a parcel-coverage claim.",
+  "registryFound": true,
+  "registryBasis": "Official Yantai government material identifies a Fushan branch of the city real-estate registration center and Fushan district notices document current registration activity. Yantai also documents public cadastral-map lookup by location or parcel code through its service channels, but its online public-query channel requires real-name WeChat registration. No anonymous full-polygon service is established.",
+  "registryEvidenceUrls": [
+    "https://www.yantai.gov.cn/cms_files/complat3/49/attach/202512/3f5a7c5d99424be5a01a179fd9eb2a7c.pdf",
+    "https://ytfushan.gov.cn/col/col13662/art/2026/art_f1ed54f5f3754f05b438e8d0ed4ffc10.html"
+  ],
+  "resultCategory": "local_registry_and_public_record_lookup_requires_registered_channel_no_vector_sample",
+  "research": {
+    "executedQueries": [
+      {
+        "language": "English",
+        "query": "Fushan Yantai China official cadastral parcel map land registry public GIS",
+        "scope": "Find city-local registry evidence, public service access conditions, and a schema-safe anonymous full-polygon parcel source.",
+        "result": "Official Yantai sources identify a Fushan registry branch and public cadastral-map inquiry. Instructions describe a registered WeChat/one-network search by property location or parcel identifier; no public vector feature service found.",
+        "actualResultUrls": [
+          "https://www.yantai.gov.cn/cms_files/complat3/49/attach/202512/3f5a7c5d99424be5a01a179fd9eb2a7c.pdf",
+          "https://www.yantai.gov.cn/art/2020/7/7/art_99956_52027.html",
+          "https://www.yantai.gov.cn/art/2022/3/29/art_41950_2972963.html",
+          "https://ytfushan.gov.cn/col/col13662/art/2026/art_f1ed54f5f3754f05b438e8d0ed4ffc10.html"
+        ],
+        "executionMethod": "Separate English or native-language public search, followed by official-source and public map/service inspection."
+      },
+      {
+        "language": "Chinese",
+        "query": "烟台福山区 不动产登记 地籍地图 公开查询 官方 地图",
+        "scope": "Find city-local registry evidence, public service access conditions, and a schema-safe anonymous full-polygon parcel source.",
+        "result": "烟台市政府公告 lists the 福山分中心; official city rules allow public cadastral-map inquiry through official channels and 2022 instructions specify WeChat real-name registration and known parcel/address inputs. A current Fushan first-registration notice confirms local registry operations but contains parcel-specific personal data, which was not retained. No anonymous vector endpoint or feature schema found.",
+        "actualResultUrls": [
+          "https://www.yantai.gov.cn/cms_files/complat3/49/attach/202512/3f5a7c5d99424be5a01a179fd9eb2a7c.pdf",
+          "https://www.yantai.gov.cn/art/2020/7/7/art_99956_52027.html",
+          "https://www.yantai.gov.cn/art/2022/3/29/art_41950_2972963.html",
+          "https://ytfushan.gov.cn/col/col13662/art/2026/art_f1ed54f5f3754f05b438e8d0ed4ffc10.html"
+        ],
+        "executionMethod": "Separate English or native-language public search, followed by official-source and public map/service inspection."
+      }
+    ],
+    "officialSources": [
+      {
+        "url": "https://www.yantai.gov.cn/cms_files/complat3/49/attach/202512/3f5a7c5d99424be5a01a179fd9eb2a7c.pdf",
+        "observation": "Official Yantai municipal notice lists the Fushan branch of the city real-estate registration center at the Fushan district service center."
+      },
+      {
+        "url": "https://www.yantai.gov.cn/art/2020/7/7/art_99956_52027.html",
+        "observation": "Official Yantai natural-resources notice says nonprivate cadastral-map data may be queried by anyone using property location or code through its official channels, including cadastral subdistrict, use, area and other land attributes."
+      },
+      {
+        "url": "https://www.yantai.gov.cn/art/2022/3/29/art_41950_2972963.html",
+        "observation": "Official Yantai government instructions describe Fushan as an available area for public information inquiry and state that the WeChat workflow requires real-name registration and a known location, unit number or certificate number."
+      },
+      {
+        "url": "https://ytfushan.gov.cn/col/col13662/art/2026/art_f1ed54f5f3754f05b438e8d0ed4ffc10.html",
+        "observation": "Official Fushan district government registration notice confirms current local real-estate registration activity. The notice includes personal/property-level information; no such values were copied or retained."
+      }
+    ],
+    "viewerAndServiceTrace": {
+      "viewerUrl": "https://www.yantai.gov.cn/art/2022/3/29/art_41950_2972963.html",
+      "apiBase": null,
+      "observedClientRoutes": [
+        "Yantai real-estate registration WeChat service > public information query > cadastral parcel query"
+      ],
+      "notes": "The official route requires real-name registration and a known address/unit/certificate locator. No account/login or property query was attempted. No geometry-only vector schema or anonymous endpoint found."
+    }
+  },
+  "verifiedParcelResponse": null,
+  "source": {
+    "id": "CN-SD-YANTAI-FUSHAN-REGISTRY-PUBLIC-QUERY",
+    "name": "Yantai real-estate registration service, Fushan branch",
+    "url": "https://www.yantai.gov.cn/cms_files/complat3/49/attach/202512/3f5a7c5d99424be5a01a179fd9eb2a7c.pdf",
+    "operator": "Yantai Real Estate Registration Center, Fushan branch",
+    "type": "Local registration office and authenticated public cadastral-map query",
+    "layer": null,
+    "geometryType": null,
+    "nativeIdField": null,
+    "nativeIdEvidence": "Public query instructions accept address, certificate number or real-estate unit number; no anonymous vector feature response was exposed."
+  },
+  "wupCityCode": 10718,
+  "cityId": "wup2025:10718",
+  "queueRank": 537,
+  "populationPlausibility2025": "Moderate",
+  "centerLatLon": [
+    37.542523018522,
+    121.326592159236
+  ],
+  "sourceIds": [],
+  "adapterReady": false,
+  "technicalBlocker": "The published Yantai cadastral-map lookup is an individual property inquiry through registered WeChat/one-network channels, using a known location or parcel identifier. No public geometry-only schema or anonymous WFS/GeoJSON endpoint was found. No account was created and no parcel-specific query was submitted.",
+  "remainingUncertainty": "Whether other current anonymous public vector services exist for this city; none was confirmed in the official sources inspected.",
+  "rootReviewedAt": "2026-10-09T01:19:13.626142+00:00"
+}

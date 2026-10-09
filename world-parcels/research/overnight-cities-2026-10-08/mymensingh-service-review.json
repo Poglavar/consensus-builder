@@ -1,0 +1,123 @@
+{
+  "schemaVersion": "1.0",
+  "checkedAt": "2026-10-09",
+  "cityRecord": "city-6082-mymensingh.json",
+  "purpose": "Document city-scope registry evidence and bounded public parcel-geometry route review.",
+  "scopeLimits": {
+    "maxFullPolygonsRetainedInCityRecord": 0,
+    "maxFullPolygonsRetainedInReview": 0,
+    "maxFullPolygonsRetainedInRepository": 0,
+    "ownerOrAddressDataRetained": false,
+    "credentialsOrTokenValuesRetained": false,
+    "citywideCompletenessAsserted": false
+  },
+  "assessment": "The official DLRS Mymensingh Zonal Settlement Office serves Mymensingh district; official land-record/survey services include mouza maps and cadastral/plot map searches. A public map-search client can load full per-sheet GeoJSON/vector tiles by administrative map selectors. For this city, public selectors returned Mymensingh district and one RS survey but zero thana/upazila units; no Mymensingh Sadar sheet or exact WUP polygon could be queried.",
+  "registryAssessment": "The official DLRS Mymensingh Zonal Settlement Office serves Mymensingh district; official land-record/survey services include mouza maps and cadastral/plot map searches. A public map-search client can load full per-sheet GeoJSON/vector tiles by administrative map selectors. For this city, public selectors returned Mymensingh district and one RS survey but zero thana/upazila units; no Mymensingh Sadar sheet or exact WUP polygon could be queried.",
+  "officialPrimarySources": [
+    {
+      "url": "https://zso.mymensingh.gov.bd/pages/officers",
+      "observation": "Official DLRS Mymensingh office page lists the Mymensingh Zonal Settlement Officer under the Department of Land Records and Surveys."
+    },
+    {
+      "url": "https://dlrs.portal.gov.bd/pages/static-pages/6922e0b8933eb65569e2854b",
+      "observation": "Official DLRS directory assigns Mymensingh district to the Mymensingh Zonal Settlement Office and lists survey/mouza map services."
+    },
+    {
+      "url": "https://settlement.gov.bd/Map/MapSearch",
+      "observation": "Official DLRS map-search page exposes administrative selectors for survey, district, upazila, mouza, sheet and dag; HTML shell returned HTTP 200."
+    },
+    {
+      "url": "https://map.land.gov.bd/",
+      "observation": "Official Smart Bhumi Naksha page explains a mouza/plot land-use zoning program; it is not itself proof of cadastral parcel-vector coverage."
+    },
+    {
+      "url": "https://mymensingh.gov.bd/pages/static-pages/69709db5a31054345f1604f5",
+      "observation": "Official Mymensingh district map page offers district map material, not parcel vectors."
+    },
+    {
+      "url": "https://mymensinghsadar.mymensingh.gov.bd/bn/site/view/office_process_map",
+      "observation": "Official Mymensingh Sadar government service-process page includes land-record correction and khatiyan copy services; it supports local land-record activity, not anonymous parcel-vector geometry."
+    }
+  ],
+  "searchQueries": [
+    {
+      "language": "Bengali",
+      "query": "ময়মনসিংহ সদর ভূমি রেকর্ড জরিপ মৌজা ম্যাপ দাগ প্লট মানচিত্র সরকারি",
+      "result": "সরকারি ভূমি রেকর্ড ও জরিপ অধিদপ্তরের ময়মনসিংহ জোনাল অফিস ময়মনসিংহ জেলা পরিচালনা করে। DLRS MapSearch-এ বিভাগ/জেলা/জরিপ/উপজেলা/মৌজা/শিট নির্বাচন আছে এবং per-sheet GeoJSON/vector tile route ব্যবহৃত হয়; ময়মনসিংহ জেলার RS জরিপে উপজেলা তালিকা শূন্য, তাই শহরের WUP পয়েন্টে কোনো sheet/parcel geometry পাওয়া যায়নি।",
+      "urls": [
+        "https://zso.mymensingh.gov.bd/pages/officers",
+        "https://dlrs.portal.gov.bd/pages/static-pages/6922e0b8933eb65569e2854b",
+        "https://settlement.gov.bd/Map/MapSearch",
+        "https://settlement.gov.bd/js/MapSearch.js?v=yIrkacclePMWogM6Pmn4B9h1nLF0RbM3YSk70pezUfQ",
+        "https://map.land.gov.bd/",
+        "https://mymensingh.gov.bd/pages/static-pages/69709db5a31054345f1604f5",
+        "https://mymensinghsadar.mymensingh.gov.bd/bn/site/view/office_process_map"
+      ],
+      "scope": "Verify city-local registry/cadastre activity and safe public full geometry routes."
+    },
+    {
+      "language": "English",
+      "query": "Mymensingh Bangladesh official cadastral parcel map land records survey office public GIS",
+      "result": "Official DLRS sources establish a Mymensingh Zonal Settlement Office and a public map-search workflow with district/survey/upazila/mouza/sheet selectors. Its public selector returned zero upazila map units for Mymensingh district’s listed RS survey, so no exact-point feature was available. The separate Smart Land Map site is a mouza/plot land-zoning project, not verified parcel registry geometry.",
+      "urls": [
+        "https://zso.mymensingh.gov.bd/pages/officers",
+        "https://dlrs.portal.gov.bd/pages/static-pages/6922e0b8933eb65569e2854b",
+        "https://settlement.gov.bd/Map/MapSearch",
+        "https://settlement.gov.bd/js/MapSearch.js?v=yIrkacclePMWogM6Pmn4B9h1nLF0RbM3YSk70pezUfQ",
+        "https://map.land.gov.bd/",
+        "https://mymensingh.gov.bd/pages/static-pages/69709db5a31054345f1604f5",
+        "https://mymensinghsadar.mymensingh.gov.bd/bn/site/view/office_process_map"
+      ],
+      "scope": "Cross-check source identity, public access conditions, and exact locator coverage."
+    }
+  ],
+  "serviceChecks": [
+    {
+      "url": "https://settlement.gov.bd/Map/MapSearch",
+      "method": "GET public official source, safe metadata/selector route, or linked map shell; no property/owner/address/account query",
+      "result": "HTTP 200 official DLRS MapSearch HTML; loaded MapSearch.js. Client declares `/Khatian/GetSheetJsonBySurvey` for per-sheet GeoJSON and `/tiles/parcels/{rsnum}/{comcod}/{unitcod}/{z}/{x}/{y}.pbf` vector tiles after mouza selection. No feature data requested without a selected target map unit."
+    },
+    {
+      "url": "https://settlement.gov.bd/Map/GetDivisionList",
+      "method": "GET public official source, safe metadata/selector route, or linked map shell; no property/owner/address/account query",
+      "result": "HTTP 200 JSON; identified Mymensingh division code 070000000."
+    },
+    {
+      "url": "https://settlement.gov.bd/Khatian/getdistrictlistdivisionwise",
+      "method": "GET public official source, safe metadata/selector route, or linked map shell; no property/owner/address/account query",
+      "result": "HTTP 200 JSON; Mymensingh district code 070300000, comcod 4171."
+    },
+    {
+      "url": "https://settlement.gov.bd/Khatian/GetSurveyListDistrictWise",
+      "method": "GET public official source, safe metadata/selector route, or linked map shell; no property/owner/address/account query",
+      "result": "HTTP 200 JSON; one survey entry, RS (rsnum 201901)."
+    },
+    {
+      "url": "https://settlement.gov.bd/Khatian/GetThanaListBySurveyMap",
+      "method": "GET public official source, safe metadata/selector route, or linked map shell; no property/owner/address/account query",
+      "result": "HTTP 200 JSON for district Mymensingh/comcod 4171/RS 201901; returned zero upazila entries, so no Mymensingh Sadar mouza/sheet could be selected."
+    },
+    {
+      "url": "https://map.land.gov.bd/assets/js/main.js",
+      "method": "GET public official source, safe metadata/selector route, or linked map shell; no property/owner/address/account query",
+      "result": "HTTP 200 JS; reviewed layer construction. Mymensingh imagery/layers use WMS; code did not expose a parcel WFS feature schema."
+    },
+    {
+      "url": "http://gis.land.gov.bd/geoserver/wfs?service=WFS&version=2.0.0&request=GetCapabilities",
+      "method": "GET public official source, safe metadata/selector route, or linked map shell; no property/owner/address/account query",
+      "result": "One public WFS GetCapabilities request returned HTTP 503; no layer schema was returned. This is a route-specific response, not a blanket outage finding."
+    },
+    {
+      "url": "https://mymensinghsadar.mymensingh.gov.bd/bn/site/view/office_process_map",
+      "method": "GET official local service-process source page",
+      "result": "Official Mymensingh Sadar page lists land-record correction and duplicate/copy khatiyan services. It does not expose parcel geometry."
+    }
+  ],
+  "geometryEvidence": null,
+  "privacy": "No owner, address, applicant, account, taxpayer, or identity data was queried or retained. No credentials, tokens, or full geometry were retained.",
+  "runtimeAssessment": {
+    "status": "not_ready_no_verified_exact_point_full_polygon",
+    "reason": "No full parcel polygon at the exact WUP point was received. MapSearch route makes per-sheet full GeoJSON available after selecting a map unit; this district’s public survey selector returned no upazila choices. No tile was treated as a full geometry sample."
+  },
+  "geometryDisposition": "No full geometry sample: public map UI documents per-sheet GeoJSON, but the Mymensingh district selector returned no upazila choices for the available RS survey. No exact WUP feature was available."
+}

@@ -1,0 +1,101 @@
+{
+  "name": "Yinchuan",
+  "country": "China",
+  "countryCode": "CN",
+  "rank": 277,
+  "point": [
+    38.4839023521646,
+    106.253020125617
+  ],
+  "freshResearch": {
+    "queries": [
+      {
+        "language": "Chinese",
+        "query": "银川 不动产登记 地籍图 可视化 查询 官方",
+        "result": "Official Yinchuan government account describes the local cadastral map visualization and city registration center service.",
+        "urls": [
+          "https://www.yinchuan.gov.cn/xwzx/mrdt/202411/t20241127_4740285.html",
+          "https://www.yinchuan.gov.cn/xxgk/bmxxgkml/sgtj/xxgkml_2153/gkxx_2154/zsdw/202501/t20250109_4784911.html"
+        ]
+      },
+      {
+        "language": "English",
+        "query": "Yinchuan official cadastral map property registration viewer",
+        "result": "Official city registration center and its cadastral-map viewer identified; parcel geometry request requires authorization bootstrap.",
+        "urls": [
+          "https://www.yinchuan.gov.cn/xwzx/mrdt/202411/t20241127_4740285.html",
+          "http://www.ycbdc.org.cn/tswebgispublish/"
+        ]
+      }
+    ],
+    "requests": [
+      {
+        "url": "http://www.ycbdc.org.cn/",
+        "method": "GET",
+        "status": 200,
+        "type": "text/html",
+        "observation": "Official Yinchuan Real Estate Registration Transaction Center shell links to cadastral map viewer."
+      },
+      {
+        "url": "http://www.ycbdc.org.cn/tswebgispublish/",
+        "method": "GET",
+        "status": 200,
+        "type": "text/html",
+        "observation": "Vue viewer page titled 地籍图可视化."
+      },
+      {
+        "url": "http://www.ycbdc.org.cn/webgisapi/tswebgisservice/gis/initializate",
+        "method": "GET",
+        "status": 400,
+        "type": "application/json",
+        "observation": "Unauthenticated initialization rejected with Bad Request. Viewer JavaScript calls /user/gettoken?userid=... before its GIS query routes; no token endpoint or GIS query was called."
+      }
+    ],
+    "portals": [
+      {
+        "name": "Yinchuan real estate registration cadastral-map visualization",
+        "operator": "Yinchuan Municipal Real Estate Registration Center",
+        "homeUrl": "http://www.ycbdc.org.cn/tswebgispublish/",
+        "observation": "Public viewer shell is live. JavaScript bootstraps an Authorization token before GIS query; token bootstrap and parcel query intentionally not used."
+      }
+    ]
+  },
+  "status": "complete",
+  "verifiedParcelResponse": null,
+  "source": {
+    "id": "cn-yinchuan-local-real-estate-registration-cadastral-map",
+    "name": "Yinchuan Real Estate Registration Transaction Center cadastral-map viewer",
+    "operator": "Yinchuan Municipal Natural Resources Bureau / municipal registration center",
+    "url": "http://www.ycbdc.org.cn/tswebgispublish/"
+  },
+  "coverageAssessment": {
+    "claimedScope": "City-local property and cadastral-map query services as described by official city sources or explicitly attributed city-center reports.",
+    "verifiedOpenScope": "City-specific registry map/service evidence was found, but no anonymous full parcel polygon was verified.",
+    "countrywideVerified": false
+  },
+  "registryFound": true,
+  "registryBasis": "Yinchuan city government reports the municipal registration center launched cadastral-map visualization for property-information queries; the center is officially responsible for municipal real-estate registration. The live viewer shell is official and labeled 地籍图可视化.",
+  "verifiedSample": false,
+  "publicParcelGeometryFound": false,
+  "resultCategory": "local_registry_map_confirmed_but_geometry_endpoint_requires_token",
+  "technicalBlocker": "Viewer query bootstrap uses /user/gettoken and then sends an Authorization token to GIS query endpoints. No token or gated query was requested; anonymous GET initialization returned HTTP 400.",
+  "remainingUncertainty": "Whether the public map query returns full cadastral parcel polygons or only property/building lookup geometry; no authorized query was attempted.",
+  "runtimeReadiness": "not_enabled_no_verified_public_geometry",
+  "adapterReady": false,
+  "cityId": "wup2025:4779",
+  "wupCityCode": 4779,
+  "centerLatLon": [
+    38.4839023521646,
+    106.253020125617
+  ],
+  "schemaVersion": 1,
+  "checkedAt": "2026-10-09",
+  "queueRank": 277,
+  "population2025": 1792788,
+  "populationPlausibility2025": "High",
+  "populationUnit": "persons",
+  "pointBasis": "UN WUP 2025 population-weighted settlement centroid; this is not a municipal boundary or a parcel-coverage claim.",
+  "sourceIds": [],
+  "nextStep": "Use only an approved public unauthenticated route if the city publishes one; do not call token bootstrap or GIS query routes under the current no-token scope.",
+  "rootReviewedAt": "2026-10-08T22:06:54.103695+00:00"
+}

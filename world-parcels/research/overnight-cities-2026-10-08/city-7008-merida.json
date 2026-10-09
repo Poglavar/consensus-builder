@@ -1,0 +1,107 @@
+{
+  "schemaVersion": 1,
+  "kind": "city_parcel_source_research",
+  "checkedAt": "2026-10-09",
+  "name": "Mérida",
+  "country": "Mexico",
+  "countryCode": "MX",
+  "populationUnit": "persons",
+  "status": "complete",
+  "registryFound": true,
+  "registryBasis": "The Ayuntamiento de Mérida identifies a Dirección de Catastro Municipal, and its official Geoportal describes municipal cadastral information covering Mérida and its comisarías. The portal’s public guide describes searching and locating individual properties; no parcel-specific search or selection was used. The municipality and registry are city-bound, but no safe geometry-only response was verified.",
+  "registryEvidenceUrls": [
+    "https://www.merida.gob.mx/gobierno/dependencia/catastro.php",
+    "https://www.merida.gob.mx/geoportal/",
+    "https://portalciudadano.merida.gob.mx/TramitesEnLinea/tramites"
+  ],
+  "verifiedSample": false,
+  "publicParcelGeometryFound": false,
+  "runtimeReadiness": "not_enabled_no_verified_public_geometry",
+  "wupCityCode": 7008,
+  "cityId": "wup2025:7008",
+  "centerLatLon": [
+    20.9698239663823,
+    -89.6159522935402
+  ],
+  "rank": 618,
+  "queueRank": 618,
+  "population2025": 847166,
+  "population2025k": 847.166,
+  "pointBasis": "UN WUP 2025 population-weighted settlement centroid; this is not a municipal boundary or a parcel-coverage claim.",
+  "resultCategory": "city_registry_confirmed_interactive_geoportal_no_safe_vector",
+  "technicalBlocker": "A city public cadastral Geoportal exists, but the inspected guidance is property-oriented and the map host was blocked; no anonymous geometry-only schema or response was verified.",
+  "scopeLimits": "The Ayuntamiento de Mérida identifies a Dirección de Catastro Municipal, and its official Geoportal describes municipal cadastral information covering Mérida and its comisarías. The portal’s public guide describes searching and locating individual properties; no parcel-specific search or selection was used. The municipality and registry are city-bound, but no safe geometry-only response was verified. No full parcel polygon geometry was retained.",
+  "remainingUncertainty": "Public map/catalog indicators do not establish that anonymous feature geometry can be retrieved with an approved field allowlist or that its coverage is complete.",
+  "research": {
+    "executedQueries": [
+      {
+        "language": "English",
+        "query": "Mérida Yucatán Mexico official municipal cadastral map GIS property registry",
+        "scope": "Find city-specific cadastral evidence and an anonymous geometry-only map service.",
+        "result": "The official municipality lists its Dirección de Catastro Municipal and describes its Geoportal as a municipal spatial platform with cadastral information. Public guidance is property-search oriented; direct map landing was blocked by an anti-bot page and the separate map host returned 403. No user/property query or captcha interaction occurred.",
+        "actualResultUrls": [
+          "https://www.merida.gob.mx/gobierno/dependencia/catastro.php",
+          "https://www.merida.gob.mx/geoportal/"
+        ],
+        "executionMethod": "Separate English and local-language public search/page review; no parcel or identity lookup."
+      },
+      {
+        "language": "Spanish",
+        "query": "Catastro Municipal Mérida Yucatán geoportal predios mapa geográfico datos catastrales",
+        "scope": "Verificar el Catastro municipal y revisar si existe un servicio público de geometría que no requiera consultar un predio.",
+        "result": "El Ayuntamiento confirma la Dirección de Catastro Municipal y describe el Geoportal con información catastral municipal. La guía del portal ofrece búsquedas/localización de predios, sin exponer un esquema de geometría solamente. El acceso directo al mapa mostró una página de protección anti-bot/403; no se resolvió ni se envió formulario.",
+        "actualResultUrls": [
+          "https://www.merida.gob.mx/gobierno/dependencia/catastro.php",
+          "https://www.merida.gob.mx/geoportal/",
+          "https://portalciudadano.merida.gob.mx/TramitesEnLinea/tramites"
+        ],
+        "executionMethod": "Separate English and local-language public search/page review; no parcel or identity lookup."
+      }
+    ],
+    "officialSources": [
+      {
+        "url": "https://www.merida.gob.mx/gobierno/dependencia/catastro.php",
+        "observation": "Official Ayuntamiento directory identifies the Dirección de Catastro Municipal."
+      },
+      {
+        "url": "https://www.merida.gob.mx/geoportal/",
+        "observation": "Official municipal Geoportal describes its spatial platform and municipal cadastral information including comisarías; its public guide describes property searches. The direct landing GET returned a Radware challenge page (HTTP 200), while the public web inspection returned 403; no challenge was solved or parcel searched."
+      },
+      {
+        "url": "https://portalciudadano.merida.gob.mx/TramitesEnLinea/tramites",
+        "observation": "Official municipal service catalogue includes cadastral procedures; no application, cadastral key, address or payment was submitted."
+      }
+    ]
+  },
+  "source": {
+    "sourceId": "mx-merida-municipal-cadastre-geoportal",
+    "name": "Mérida local land-registration and public-geometry review",
+    "operator": "Ayuntamiento de Mérida, Dirección de Catastro Municipal",
+    "url": "https://www.merida.gob.mx/gobierno/dependencia/catastro.php",
+    "scope": "The Ayuntamiento de Mérida identifies a Dirección de Catastro Municipal, and its official Geoportal describes municipal cadastral information covering Mérida and its comisarías. The portal’s public guide describes searching and locating individual properties; no parcel-specific search or selection was used. The municipality and registry are city-bound, but no safe geometry-only response was verified.",
+    "nativeIdField": null,
+    "attributesRequested": [],
+    "identityBasis": "No native parcel identifier queried or retained.",
+    "geometryStatus": "no_geometry_response_verified"
+  },
+  "coverageAssessment": {
+    "verifiedOpenScope": "Local registry/cadastral office evidence was found; public vector geometry was not safely verified.",
+    "citywideVerified": false,
+    "countrywideVerified": false
+  },
+  "priorEvidenceFiles": [],
+  "populationPlausibility2025": "Moderate",
+  "sourceIds": [],
+  "point": [
+    20.9698239663823,
+    -89.6159522935402
+  ],
+  "sampleFile": null,
+  "sampleFeatureCount": 0,
+  "sampleCrs": null,
+  "runtimeAssessment": {
+    "status": "no_public_geometry_verified_runtime_not_enabled",
+    "reason": "A city public cadastral Geoportal exists, but the inspected guidance is property-oriented and the map host was blocked; no anonymous geometry-only schema or response was verified."
+  },
+  "rootReviewedAt": "2026-10-09T02:08:28.000160+00:00"
+}

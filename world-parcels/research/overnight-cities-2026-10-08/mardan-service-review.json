@@ -1,0 +1,74 @@
+{
+  "schemaVersion": "1.0",
+  "checkedAt": "2026-10-09",
+  "cityRecord": "city-5483-mardan.json",
+  "purpose": "Document first-party local registry/map evidence and bounded anonymous geometry access review.",
+  "scopeLimits": {
+    "maxFullPolygonsRetainedInCityRecord": 0,
+    "maxFullPolygonsRetainedInReview": 0,
+    "maxFullPolygonsRetainedInRepository": 0,
+    "ownerOrAddressDataRetained": false,
+    "credentialsOrTokenValuesRetained": false,
+    "citywideCompletenessAsserted": false
+  },
+  "assessment": "Official local sources establish digital land records and property registration but expose no anonymous parcel map endpoint, geometry schema or safe geometry-only query. Whether the Mardan SDC/LRMIS has a public map service separate from its record and registration workflows; exact parcel coverage is unknown.",
+  "registryAssessment": "The KP Revenue & Estate Department lists an operational SDC at Mardan main Kachehries and additional centers at Takht Bahi and Katlang; its SDC page describes computerized land records. The department also confirms that provincial e-Registry is operational in Mardan. These confirm city-specific registration/record services, not public parcel geometry.",
+  "officialPrimarySources": [
+    {
+      "url": "https://revenue.kp.gov.pk/sdcs/",
+      "observation": "Khyber Pakhtunkhwa Revenue & Estate Department describes digitized Service Delivery Centres and land record services; lists SDC Mardan at main Kachehries and Takht Bahi/Katlang centers within Mardan District."
+    },
+    {
+      "url": "https://revenue.kp.gov.pk/general-news/e-registry-operational/",
+      "observation": "Official department announcement confirms e-Registry property-registration service operational in Mardan and other districts."
+    },
+    {
+      "url": "https://revenue.kp.gov.pk/director-land-record/",
+      "observation": "Directorate of Land Records responsibilities include registration, settlement and GIS-based cadastral mapping/database management; no Mardan public vector viewer is linked."
+    },
+    {
+      "url": "https://revenue.kp.gov.pk/dlr-msg/",
+      "observation": "Director Land Records describes provincial GIS cadastral mapping and digitized record programme; no city map/service endpoint is exposed."
+    }
+  ],
+  "searchQueries": [
+    {
+      "language": "English",
+      "query": "Mardan Pakistan official cadastral parcel map land records GIS revenue registry",
+      "result": "Found Mardan-specific land record service centers and e-Registry activity in official Khyber Pakhtunkhwa Revenue pages; no public cadastral vector viewer was found.",
+      "method": "Separate language-specific web search followed by review of first-party city/agency pages; no identity, ownership, or property-specific lookup submitted."
+    },
+    {
+      "language": "Urdu/Pashto terms",
+      "query": "Mardan Khyber Pakhtunkhwa official land records cadastral map GIS revenue Mardan Urdu Pashto زمین ریکارڈ مردان نقشہ",
+      "result": "Local-language search supported the same official Mardan land-record and registration offices; no public parcel geometry endpoint surfaced.",
+      "method": "Separate language-specific web search followed by review of first-party city/agency pages; no identity, ownership, or property-specific lookup submitted."
+    }
+  ],
+  "geometryDecision": "No full parcel geometry was retained because no anonymous safe-field geometry response was verified.",
+  "coverageAssessment": {
+    "claimedScope": "The KP Revenue & Estate Department lists an operational SDC at Mardan main Kachehries and additional centers at Takht Bahi and Katlang; its SDC page describes computerized land records. The department also confirms that provincial e-Registry is operational in Mardan. These confirm city-specific registration/record services, not public parcel geometry.",
+    "verifiedOpenScope": "Official local sources establish digital land records and property registration but expose no anonymous parcel map endpoint, geometry schema or safe geometry-only query.",
+    "citywideVerified": false,
+    "countrywideVerified": false,
+    "geometryVerified": false
+  },
+  "attempts": [
+    {
+      "url": "https://revenue.kp.gov.pk/sdcs/",
+      "method": "Review official SDC directory and service description.",
+      "result": "Lists Mardan main Kachehries SDC and centers at Takht Bahi and Katlang; describes computerized land record services including Fard and mutations."
+    },
+    {
+      "url": "https://revenue.kp.gov.pk/general-news/e-registry-operational/",
+      "method": "Review official e-Registry announcement.",
+      "result": "Confirms e-Registry operational in Mardan; no public parcel map or vector endpoint linked."
+    },
+    {
+      "url": "https://revenue.kp.gov.pk/director-land-record/",
+      "method": "Review Directorate remit and linked services.",
+      "result": "GIS-based cadastral mapping/database management is a provincial function; no public Mardan geometry service exposed."
+    }
+  ],
+  "remainingUncertainty": "Whether the Mardan SDC/LRMIS has a public map service separate from its record and registration workflows; exact parcel coverage is unknown."
+}

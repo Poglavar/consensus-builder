@@ -1,0 +1,9 @@
+{
+  "checkedAt": "2026-10-09T05:44:06.635917+00:00",
+  "decision": "approved_by_root",
+  "basis": "180 distinct full native ALKIS parcels around the unchanged Leipzig WUP locator across thirteen bounded cells; all 180 grid and footprint geometries independently audited in EPSG32633 with no invalidity, duplicate geometry, positive-area overlaps above0.01m2 or operation errors. Forced three-row paging, fresh exact native-ID reads, explicit absence, footprint lookup and source binding passed. Published source parcel keys and complete geometry are preserved. This bounded evidence does not establish citywide completeness, survey accuracy, legal title or currentness.",
+  "acceptanceTests": 22,
+  "requests": 130,
+  "supplementaryRequests": 72,
+  "rootApprovedRuntimeProfile": "dresden-saxony-gml-wfs"
+}

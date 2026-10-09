@@ -1,0 +1,3596 @@
+{
+  "schemaVersion": 1,
+  "purpose": "Independent GEOS topology check of complete runtime parcels projected to metric coordinates; no repair applied. Counts are bounded sample evidence, not whole-city guarantees.",
+  "library": "Shapely 2.1.2",
+  "metricCrs": "EPSG:32618",
+  "featureCount": 500,
+  "validNonemptyCount": 500,
+  "invalidFeatures": [],
+  "exactDuplicateGeometryPairs": [],
+  "positiveAreaOverlapPairsAbove0_01M2": [
+    {
+      "ids": [
+        "US-PA-PHILADELPHIA-DOR-015N070127",
+        "US-PA-PHILADELPHIA-DOR-015N070138"
+      ],
+      "overlapM2": 1.0839514231722873,
+      "fractionOfSmaller": 0.0077948676922798684,
+      "overlapRectangleSidesM": [
+        27.641581133056253,
+        0.0785628077838597,
+        27.64158113285887,
+        0.07856281531335765
+      ],
+      "overlapParts": 1
+    },
+    {
+      "ids": [
+        "US-PA-PHILADELPHIA-DOR-015N060167",
+        "US-PA-PHILADELPHIA-DOR-015N060166"
+      ],
+      "overlapM2": 5.773200967781463,
+      "fractionOfSmaller": 0.0024011467404397766,
+      "overlapRectangleSidesM": [
+        97.36897909247163,
+        38.36564962895024,
+        97.36920124025416,
+        38.36562521823364
+      ],
+      "overlapParts": 2
+    },
+    {
+      "ids": [
+        "US-PA-PHILADELPHIA-DOR-015N060164",
+        "US-PA-PHILADELPHIA-DOR-015N060168"
+      ],
+      "overlapM2": 2.2822283948363142,
+      "fractionOfSmaller": 0.0006708980049125588,
+      "overlapRectangleSidesM": [
+        36.202497857017576,
+        8.481684107701705,
+        36.20249785804707,
+        8.481684116305228
+      ],
+      "overlapParts": 2
+    },
+    {
+      "ids": [
+        "US-PA-PHILADELPHIA-DOR-013N070327",
+        "US-PA-PHILADELPHIA-DOR-013N070249"
+      ],
+      "overlapM2": 0.16191923674080044,
+      "fractionOfSmaller": 0.0029384284369205977,
+      "overlapRectangleSidesM": [
+        12.75390428474699,
+        0.025184410470985737,
+        12.753904284758097,
+        0.02518440480597498
+      ],
+      "overlapParts": 1
+    },
+    {
+      "ids": [
+        "US-PA-PHILADELPHIA-DOR-015N060139",
+        "US-PA-PHILADELPHIA-DOR-015N060000"
+      ],
+      "overlapM2": 0.36341564488539113,
+      "fractionOfSmaller": 0.0029776742794208042,
+      "overlapRectangleSidesM": [
+        24.41942652712498,
+        0.029637739493476468,
+        24.419426527371975,
+        0.029637732919746525
+      ],
+      "overlapParts": 1
+    }
+  ],
+  "sumPairwiseOverlapM2": 9.664715667416257,
+  "operationErrors": [],
+  "areaM2": {
+    "min": 25.872161894105513,
+    "median": 145.56686103261393,
+    "max": 23141.488731945497
+  },
+  "features": [
+    {
+      "id": "US-PA-PHILADELPHIA-DOR-014N080161",
+      "areaM2": 163.77689488533858,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "US-PA-PHILADELPHIA-DOR-014N080099",
+      "areaM2": 104.26514698850616,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "US-PA-PHILADELPHIA-DOR-014N080088",
+      "areaM2": 163.55900191769373,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "US-PA-PHILADELPHIA-DOR-014N080096",
+      "areaM2": 174.80563468304842,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "US-PA-PHILADELPHIA-DOR-014N080092",
+      "areaM2": 165.71453792514166,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "US-PA-PHILADELPHIA-DOR-014N080073",
+      "areaM2": 145.43958415820163,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "US-PA-PHILADELPHIA-DOR-014N080095",
+      "areaM2": 160.3701677000677,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "US-PA-PHILADELPHIA-DOR-014N080129",
+      "areaM2": 262.18641693963355,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "US-PA-PHILADELPHIA-DOR-013N070098",
+      "areaM2": 163.18486101767803,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "US-PA-PHILADELPHIA-DOR-014N080091",
+      "areaM2": 162.81644794406475,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "US-PA-PHILADELPHIA-DOR-014N080140",
+      "areaM2": 111.52122647737161,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "US-PA-PHILADELPHIA-DOR-013N070276",
+      "areaM2": 139.52167771226894,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "US-PA-PHILADELPHIA-DOR-014N080139",
+      "areaM2": 106.97314678254605,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "US-PA-PHILADELPHIA-DOR-014N080083",
+      "areaM2": 160.45009377786755,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "US-PA-PHILADELPHIA-DOR-014N080141",
+      "areaM2": 100.15644379794097,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "US-PA-PHILADELPHIA-DOR-014N080121",
+      "areaM2": 104.7093633500195,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "US-PA-PHILADELPHIA-DOR-014N080098",
+      "areaM2": 171.22623956411277,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "US-PA-PHILADELPHIA-DOR-014N080128",
+      "areaM2": 105.84150618980499,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "US-PA-PHILADELPHIA-DOR-014N080133",
+      "areaM2": 101.46541814283117,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "US-PA-PHILADELPHIA-DOR-013N070091",
+      "areaM2": 159.20856867092567,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "US-PA-PHILADELPHIA-DOR-013N070238",
+      "areaM2": 131.84206440512833,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "US-PA-PHILADELPHIA-DOR-013N070102",
+      "areaM2": 156.41408354734077,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "US-PA-PHILADELPHIA-DOR-014N080094",
+      "areaM2": 167.82200684894175,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "US-PA-PHILADELPHIA-DOR-014N080074",
+      "areaM2": 160.97297724333242,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "US-PA-PHILADELPHIA-DOR-013N070085",
+      "areaM2": 141.9160898710649,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "US-PA-PHILADELPHIA-DOR-014N080134",
+      "areaM2": 100.0887365224462,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "US-PA-PHILADELPHIA-DOR-014N080097",
+      "areaM2": 166.19216126366877,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "US-PA-PHILADELPHIA-DOR-014N080137",
+      "areaM2": 124.66181633061127,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "US-PA-PHILADELPHIA-DOR-013N070264",
+      "areaM2": 132.0153696295876,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "US-PA-PHILADELPHIA-DOR-014N080101",
+      "areaM2": 170.62289398917963,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "US-PA-PHILADELPHIA-DOR-014N080106",
+      "areaM2": 174.751635546592,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "US-PA-PHILADELPHIA-DOR-014N080100",
+      "areaM2": 105.11248408144797,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "US-PA-PHILADELPHIA-DOR-013N070218",
+      "areaM2": 175.48542799770297,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "US-PA-PHILADELPHIA-DOR-013N070094",
+      "areaM2": 201.40131256022735,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "US-PA-PHILADELPHIA-DOR-014N080075",
+      "areaM2": 162.70551116002474,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "US-PA-PHILADELPHIA-DOR-013N070324",
+      "areaM2": 452.93982076297044,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "US-PA-PHILADELPHIA-DOR-013N070100",
+      "areaM2": 155.69710138661026,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "US-PA-PHILADELPHIA-DOR-014N080036",
+      "areaM2": 147.13493033081272,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "US-PA-PHILADELPHIA-DOR-014N080037",
+      "areaM2": 146.5062943333835,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "US-PA-PHILADELPHIA-DOR-014N080319",
+      "areaM2": 241.45388431657392,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "US-PA-PHILADELPHIA-DOR-014N080040",
+      "areaM2": 135.8160746878278,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "US-PA-PHILADELPHIA-DOR-014N080041",
+      "areaM2": 150.01390618164876,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "US-PA-PHILADELPHIA-DOR-014N080042",
+      "areaM2": 154.3401393741545,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "US-PA-PHILADELPHIA-DOR-014N080043",
+      "areaM2": 154.52676847075816,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "US-PA-PHILADELPHIA-DOR-014N080044",
+      "areaM2": 154.4805594665447,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "US-PA-PHILADELPHIA-DOR-014N080045",
+      "areaM2": 154.48056105694317,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "US-PA-PHILADELPHIA-DOR-014N080046",
+      "areaM2": 154.4805631123447,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "US-PA-PHILADELPHIA-DOR-014N080047",
+      "areaM2": 154.48056469686242,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "US-PA-PHILADELPHIA-DOR-014N080048",
+      "areaM2": 154.6244757398326,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "US-PA-PHILADELPHIA-DOR-014N080049",
+      "areaM2": 150.01980359127532,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "US-PA-PHILADELPHIA-DOR-014N080120",
+      "areaM2": 168.113167141222,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "US-PA-PHILADELPHIA-DOR-014N080078",
+      "areaM2": 153.5516402940643,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "US-PA-PHILADELPHIA-DOR-014N080145",
+      "areaM2": 103.82369037437141,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "US-PA-PHILADELPHIA-DOR-014N080152",
+      "areaM2": 171.22122832337317,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "US-PA-PHILADELPHIA-DOR-014N080163",
+      "areaM2": 145.42997500656674,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "US-PA-PHILADELPHIA-DOR-014N080104",
+      "areaM2": 175.47100229471948,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "US-PA-PHILADELPHIA-DOR-014N080119",
+      "areaM2": 105.81500893807305,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "US-PA-PHILADELPHIA-DOR-013N070177",
+      "areaM2": 162.2048778681489,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "US-PA-PHILADELPHIA-DOR-014N080076",
+      "areaM2": 154.66167624913226,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "US-PA-PHILADELPHIA-DOR-014N080320",
+      "areaM2": 326.7847249512558,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "US-PA-PHILADELPHIA-DOR-013N070176",
+      "areaM2": 161.47227515203514,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "US-PA-PHILADELPHIA-DOR-014N080155",
+      "areaM2": 102.2171472274096,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "US-PA-PHILADELPHIA-DOR-014N080146",
+      "areaM2": 109.00320555428438,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "US-PA-PHILADELPHIA-DOR-013N070170",
+      "areaM2": 158.7670076227156,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "US-PA-PHILADELPHIA-DOR-014N080080",
+      "areaM2": 156.95653027592232,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "US-PA-PHILADELPHIA-DOR-014N080077",
+      "areaM2": 163.9263993428815,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "US-PA-PHILADELPHIA-DOR-014N080138",
+      "areaM2": 105.92171578256584,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "US-PA-PHILADELPHIA-DOR-013N070312",
+      "areaM2": 325.3364071594483,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "US-PA-PHILADELPHIA-DOR-014N080081",
+      "areaM2": 161.18477973366234,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "US-PA-PHILADELPHIA-DOR-014N080118",
+      "areaM2": 173.66340327843417,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "US-PA-PHILADELPHIA-DOR-014N080108",
+      "areaM2": 104.48322765556732,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "US-PA-PHILADELPHIA-DOR-013N070174",
+      "areaM2": 166.52420325926914,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "US-PA-PHILADELPHIA-DOR-014N080149",
+      "areaM2": 172.06194208782014,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "US-PA-PHILADELPHIA-DOR-014N080124",
+      "areaM2": 161.69494513988568,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "US-PA-PHILADELPHIA-DOR-014N080069",
+      "areaM2": 158.62848513406033,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "US-PA-PHILADELPHIA-DOR-013N060217",
+      "areaM2": 2707.371007377033,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "US-PA-PHILADELPHIA-DOR-014N080122",
+      "areaM2": 101.05243820292716,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "US-PA-PHILADELPHIA-DOR-014N080144",
+      "areaM2": 106.47163446523895,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "US-PA-PHILADELPHIA-DOR-013N070328",
+      "areaM2": 321.3758685635518,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "US-PA-PHILADELPHIA-DOR-014N080127",
+      "areaM2": 174.04547418408362,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "US-PA-PHILADELPHIA-DOR-014N080147",
+      "areaM2": 105.80897167904368,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "US-PA-PHILADELPHIA-DOR-014N080105",
+      "areaM2": 169.78250856041308,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "US-PA-PHILADELPHIA-DOR-014N080132",
+      "areaM2": 167.5683946615062,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "US-PA-PHILADELPHIA-DOR-014N080063",
+      "areaM2": 159.2656364794277,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "US-PA-PHILADELPHIA-DOR-013N070175",
+      "areaM2": 154.44418542599826,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "US-PA-PHILADELPHIA-DOR-014N070011",
+      "areaM2": 153.79721945538864,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "US-PA-PHILADELPHIA-DOR-014N080314",
+      "areaM2": 427.41883760071056,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "US-PA-PHILADELPHIA-DOR-014N080079",
+      "areaM2": 160.3896719016274,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "US-PA-PHILADELPHIA-DOR-014N080107",
+      "areaM2": 102.17884796388479,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "US-PA-PHILADELPHIA-DOR-014N080117",
+      "areaM2": 107.06178210482571,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "US-PA-PHILADELPHIA-DOR-014N080136",
+      "areaM2": 172.9757006729154,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "US-PA-PHILADELPHIA-DOR-013N070173",
+      "areaM2": 159.79997192365494,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "US-PA-PHILADELPHIA-DOR-014N070101",
+      "areaM2": 95.09860745403945,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "US-PA-PHILADELPHIA-DOR-014N070055",
+      "areaM2": 101.99087490046067,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "US-PA-PHILADELPHIA-DOR-014N070041",
+      "areaM2": 161.76111699064535,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "US-PA-PHILADELPHIA-DOR-014N070126",
+      "areaM2": 168.342558135001,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "US-PA-PHILADELPHIA-DOR-014N070050",
+      "areaM2": 95.44553309232343,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "US-PA-PHILADELPHIA-DOR-014N070139",
+      "areaM2": 103.30477521784046,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "US-PA-PHILADELPHIA-DOR-014N070099",
+      "areaM2": 95.38502449715804,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "US-PA-PHILADELPHIA-DOR-014N070119",
+      "areaM2": 97.65092210349984,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "US-PA-PHILADELPHIA-DOR-014N070092",
+      "areaM2": 145.80314781485146,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "US-PA-PHILADELPHIA-DOR-014N070090",
+      "areaM2": 150.76441750434705,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "US-PA-PHILADELPHIA-DOR-014N070058",
+      "areaM2": 103.78666071522619,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "US-PA-PHILADELPHIA-DOR-014N070042",
+      "areaM2": 162.03804165566652,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "US-PA-PHILADELPHIA-DOR-014N070111",
+      "areaM2": 1054.9850452591704,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "US-PA-PHILADELPHIA-DOR-014N070043",
+      "areaM2": 161.2754486358647,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "US-PA-PHILADELPHIA-DOR-014N070070",
+      "areaM2": 99.5504988530386,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "US-PA-PHILADELPHIA-DOR-014N070102",
+      "areaM2": 98.05594829254727,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "US-PA-PHILADELPHIA-DOR-014N070175",
+      "areaM2": 153.27873251075295,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "US-PA-PHILADELPHIA-DOR-014N070051",
+      "areaM2": 97.84502533297093,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "US-PA-PHILADELPHIA-DOR-014N070082",
+      "areaM2": 149.24578396585355,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "US-PA-PHILADELPHIA-DOR-014N070081",
+      "areaM2": 146.54419608743825,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "US-PA-PHILADELPHIA-DOR-014N070078",
+      "areaM2": 104.5196114444642,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "US-PA-PHILADELPHIA-DOR-014N070049",
+      "areaM2": 96.38938246913568,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "US-PA-PHILADELPHIA-DOR-014N070084",
+      "areaM2": 147.42789718628697,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "US-PA-PHILADELPHIA-DOR-014N070054",
+      "areaM2": 102.89834651350745,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "US-PA-PHILADELPHIA-DOR-014N070012",
+      "areaM2": 165.21220073676494,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "US-PA-PHILADELPHIA-DOR-014N070103",
+      "areaM2": 92.53065763448026,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "US-PA-PHILADELPHIA-DOR-014N070202",
+      "areaM2": 304.40444820646337,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "US-PA-PHILADELPHIA-DOR-014N070203",
+      "areaM2": 300.55953100631115,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "US-PA-PHILADELPHIA-DOR-014N070057",
+      "areaM2": 102.35182845421278,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "US-PA-PHILADELPHIA-DOR-014N070072",
+      "areaM2": 93.3496923426749,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "US-PA-PHILADELPHIA-DOR-014N070040",
+      "areaM2": 163.8925706634268,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "US-PA-PHILADELPHIA-DOR-014N070121",
+      "areaM2": 174.4809972533277,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "US-PA-PHILADELPHIA-DOR-014N070079",
+      "areaM2": 147.83813703640135,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "US-PA-PHILADELPHIA-DOR-014N070053",
+      "areaM2": 101.43671448520917,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "US-PA-PHILADELPHIA-DOR-014N070056",
+      "areaM2": 103.31172737814715,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "US-PA-PHILADELPHIA-DOR-014N070204",
+      "areaM2": 297.7085539850881,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "US-PA-PHILADELPHIA-DOR-014N070201",
+      "areaM2": 856.9547443040211,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "US-PA-PHILADELPHIA-DOR-014N070116",
+      "areaM2": 138.74919085444571,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "US-PA-PHILADELPHIA-DOR-014N070052",
+      "areaM2": 105.50591805570723,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "US-PA-PHILADELPHIA-DOR-014N070080",
+      "areaM2": 147.72098046861268,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "US-PA-PHILADELPHIA-DOR-014N070104",
+      "areaM2": 97.57235533618314,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "US-PA-PHILADELPHIA-DOR-014N070010",
+      "areaM2": 161.92279757130638,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "US-PA-PHILADELPHIA-DOR-014N070009",
+      "areaM2": 164.31424644920907,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "US-PA-PHILADELPHIA-DOR-015N070338",
+      "areaM2": 270.09500686028554,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "US-PA-PHILADELPHIA-DOR-015N070100",
+      "areaM2": 148.7486436612253,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "US-PA-PHILADELPHIA-DOR-015N070101",
+      "areaM2": 145.23791297212213,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "US-PA-PHILADELPHIA-DOR-014N080123",
+      "areaM2": 172.01207700456803,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "US-PA-PHILADELPHIA-DOR-015N070102",
+      "areaM2": 147.7531661328417,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "US-PA-PHILADELPHIA-DOR-014N080252",
+      "areaM2": 2428.565881597886,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "US-PA-PHILADELPHIA-DOR-014N080143",
+      "areaM2": 99.12168562749544,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "US-PA-PHILADELPHIA-DOR-015N070110",
+      "areaM2": 150.01057492200766,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "US-PA-PHILADELPHIA-DOR-015N070126",
+      "areaM2": 151.07168043422266,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "US-PA-PHILADELPHIA-DOR-015N070112",
+      "areaM2": 150.09002076100577,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "US-PA-PHILADELPHIA-DOR-015N070306",
+      "areaM2": 89.43241146516802,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "US-PA-PHILADELPHIA-DOR-014N080151",
+      "areaM2": 104.10232271167574,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "US-PA-PHILADELPHIA-DOR-015N070304",
+      "areaM2": 97.7414208227557,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "US-PA-PHILADELPHIA-DOR-014N080131",
+      "areaM2": 173.00115145875262,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "US-PA-PHILADELPHIA-DOR-015N070108",
+      "areaM2": 147.29118562529322,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "US-PA-PHILADELPHIA-DOR-014N080237",
+      "areaM2": 144.3944438397729,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "US-PA-PHILADELPHIA-DOR-015N070106",
+      "areaM2": 147.7214129010157,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "US-PA-PHILADELPHIA-DOR-014N080158",
+      "areaM2": 170.4122994808782,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "US-PA-PHILADELPHIA-DOR-014N080135",
+      "areaM2": 101.33484980143702,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "US-PA-PHILADELPHIA-DOR-015N070305",
+      "areaM2": 89.93866817612044,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "US-PA-PHILADELPHIA-DOR-014N080148",
+      "areaM2": 174.14107183235586,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "US-PA-PHILADELPHIA-DOR-014N080142",
+      "areaM2": 98.44254573848485,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "US-PA-PHILADELPHIA-DOR-015N070105",
+      "areaM2": 146.4966549993276,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "US-PA-PHILADELPHIA-DOR-014N080213",
+      "areaM2": 131.3842904854877,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "US-PA-PHILADELPHIA-DOR-014N080209",
+      "areaM2": 105.70219714768508,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "US-PA-PHILADELPHIA-DOR-014N080212",
+      "areaM2": 129.34743088963072,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "US-PA-PHILADELPHIA-DOR-014N080214",
+      "areaM2": 129.80290087558126,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "US-PA-PHILADELPHIA-DOR-014N080017",
+      "areaM2": 3714.3890456107088,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "US-PA-PHILADELPHIA-DOR-014N080317",
+      "areaM2": 103.75377592715934,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "US-PA-PHILADELPHIA-DOR-014N080316",
+      "areaM2": 103.75377668737806,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "US-PA-PHILADELPHIA-DOR-014N080217",
+      "areaM2": 104.37120048511716,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "US-PA-PHILADELPHIA-DOR-014N080211",
+      "areaM2": 129.34743200546166,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "US-PA-PHILADELPHIA-DOR-014N080202",
+      "areaM2": 96.1577660391537,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "US-PA-PHILADELPHIA-DOR-014N080183",
+      "areaM2": 93.8429425819108,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "US-PA-PHILADELPHIA-DOR-014N080210",
+      "areaM2": 154.23968069974,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "US-PA-PHILADELPHIA-DOR-015N070326",
+      "areaM2": 91.20267067378799,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "US-PA-PHILADELPHIA-DOR-014N080247",
+      "areaM2": 96.76520306093764,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "US-PA-PHILADELPHIA-DOR-014N080249",
+      "areaM2": 89.2222845457573,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "US-PA-PHILADELPHIA-DOR-014N080199",
+      "areaM2": 159.12847564431533,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "US-PA-PHILADELPHIA-DOR-015N070127",
+      "areaM2": 139.05963076779943,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "US-PA-PHILADELPHIA-DOR-014N080195",
+      "areaM2": 102.85171795939678,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "US-PA-PHILADELPHIA-DOR-014N080194",
+      "areaM2": 160.926853423863,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "US-PA-PHILADELPHIA-DOR-014N080188",
+      "areaM2": 100.75897933523069,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "US-PA-PHILADELPHIA-DOR-014N080190",
+      "areaM2": 153.91171606085757,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "US-PA-PHILADELPHIA-DOR-014N080248",
+      "areaM2": 94.52703676942971,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "US-PA-PHILADELPHIA-DOR-014N080203",
+      "areaM2": 102.58896209494253,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "US-PA-PHILADELPHIA-DOR-014N080150",
+      "areaM2": 182.77628507269281,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "US-PA-PHILADELPHIA-DOR-015N070329",
+      "areaM2": 82.4740075468358,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "US-PA-PHILADELPHIA-DOR-015N070333",
+      "areaM2": 135.57561404768995,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "US-PA-PHILADELPHIA-DOR-014N080187",
+      "areaM2": 99.83530025484583,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "US-PA-PHILADELPHIA-DOR-014N080200",
+      "areaM2": 103.95700456500455,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "US-PA-PHILADELPHIA-DOR-015N070330",
+      "areaM2": 97.04248028270652,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "US-PA-PHILADELPHIA-DOR-014N080189",
+      "areaM2": 160.67968929434642,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "US-PA-PHILADELPHIA-DOR-015N070334",
+      "areaM2": 137.55744522448018,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "US-PA-PHILADELPHIA-DOR-015N070332",
+      "areaM2": 139.72027495324832,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "US-PA-PHILADELPHIA-DOR-014N080191",
+      "areaM2": 98.3010679036006,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "US-PA-PHILADELPHIA-DOR-014N080198",
+      "areaM2": 155.0516769314838,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "US-PA-PHILADELPHIA-DOR-014N080250",
+      "areaM2": 100.50289842538075,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "US-PA-PHILADELPHIA-DOR-014N080193",
+      "areaM2": 94.8941271683322,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "US-PA-PHILADELPHIA-DOR-015N070016",
+      "areaM2": 91.05240000047918,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "US-PA-PHILADELPHIA-DOR-014N080207",
+      "areaM2": 157.29532701772473,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "US-PA-PHILADELPHIA-DOR-014N080125",
+      "areaM2": 102.5361999791119,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "US-PA-PHILADELPHIA-DOR-015N070128",
+      "areaM2": 145.69413790702623,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "US-PA-PHILADELPHIA-DOR-014N080186",
+      "areaM2": 155.91197960387427,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "US-PA-PHILADELPHIA-DOR-014N080185",
+      "areaM2": 158.05565698127413,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "US-PA-PHILADELPHIA-DOR-014N080201",
+      "areaM2": 150.42145202296092,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "US-PA-PHILADELPHIA-DOR-014N080205",
+      "areaM2": 95.5815925536952,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "US-PA-PHILADELPHIA-DOR-014N080208",
+      "areaM2": 168.82298274958214,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "US-PA-PHILADELPHIA-DOR-015N070173",
+      "areaM2": 163.2346467541477,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "US-PA-PHILADELPHIA-DOR-015N070014",
+      "areaM2": 89.68339168867365,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "US-PA-PHILADELPHIA-DOR-015N070020",
+      "areaM2": 89.78396682522795,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "US-PA-PHILADELPHIA-DOR-015N070319",
+      "areaM2": 87.35535162153035,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "US-PA-PHILADELPHIA-DOR-015N070317",
+      "areaM2": 81.36971679355935,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "US-PA-PHILADELPHIA-DOR-015N070138",
+      "areaM2": 159.39443267878858,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "US-PA-PHILADELPHIA-DOR-014N080154",
+      "areaM2": 110.83972031595228,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "US-PA-PHILADELPHIA-DOR-015N070323",
+      "areaM2": 89.99732066814636,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "US-PA-PHILADELPHIA-DOR-014N080196",
+      "areaM2": 88.08949391347387,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "US-PA-PHILADELPHIA-DOR-015N070019",
+      "areaM2": 88.31170419842366,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "US-PA-PHILADELPHIA-DOR-014N080153",
+      "areaM2": 107.17532462949768,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "US-PA-PHILADELPHIA-DOR-014N080238",
+      "areaM2": 108.45970162301973,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "US-PA-PHILADELPHIA-DOR-015N070021",
+      "areaM2": 91.33618818993033,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "US-PA-PHILADELPHIA-DOR-014N080192",
+      "areaM2": 95.63534089196487,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "US-PA-PHILADELPHIA-DOR-014N080220",
+      "areaM2": 91.6933371605335,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "US-PA-PHILADELPHIA-DOR-015N060167",
+      "areaM2": 9470.660917199093,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "US-PA-PHILADELPHIA-DOR-014N070123",
+      "areaM2": 166.27470072067564,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "US-PA-PHILADELPHIA-DOR-014N070129",
+      "areaM2": 164.08557415841764,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "US-PA-PHILADELPHIA-DOR-014N070115",
+      "areaM2": 98.58883277016282,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "US-PA-PHILADELPHIA-DOR-014N070132",
+      "areaM2": 162.30650057798485,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "US-PA-PHILADELPHIA-DOR-014N070110",
+      "areaM2": 95.3149404490311,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "US-PA-PHILADELPHIA-DOR-014N070137",
+      "areaM2": 164.25883268530745,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "US-PA-PHILADELPHIA-DOR-015N070123",
+      "areaM2": 136.3291653252604,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "US-PA-PHILADELPHIA-DOR-014N070062",
+      "areaM2": 153.98936178152002,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "US-PA-PHILADELPHIA-DOR-014N070114",
+      "areaM2": 94.24039339039665,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "US-PA-PHILADELPHIA-DOR-014N070045",
+      "areaM2": 96.73450312061722,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "US-PA-PHILADELPHIA-DOR-014N070044",
+      "areaM2": 98.1773368650438,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "US-PA-PHILADELPHIA-DOR-014N070122",
+      "areaM2": 88.85453767704368,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "US-PA-PHILADELPHIA-DOR-015N060166",
+      "areaM2": 2404.3515835788053,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "US-PA-PHILADELPHIA-DOR-014N070120",
+      "areaM2": 95.47201111656493,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "US-PA-PHILADELPHIA-DOR-014N070130",
+      "areaM2": 94.77778287898022,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "US-PA-PHILADELPHIA-DOR-014N070124",
+      "areaM2": 93.0842050383036,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "US-PA-PHILADELPHIA-DOR-014N070131",
+      "areaM2": 165.11238811612162,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "US-PA-PHILADELPHIA-DOR-014N070206",
+      "areaM2": 187.59973986696374,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "US-PA-PHILADELPHIA-DOR-014N070133",
+      "areaM2": 165.70655482872664,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "US-PA-PHILADELPHIA-DOR-014N070046",
+      "areaM2": 95.14639205189594,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "US-PA-PHILADELPHIA-DOR-014N070128",
+      "areaM2": 165.92132489425885,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "US-PA-PHILADELPHIA-DOR-014N070047",
+      "areaM2": 96.57563029387002,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "US-PA-PHILADELPHIA-DOR-014N070138",
+      "areaM2": 167.26374553978357,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "US-PA-PHILADELPHIA-DOR-014N070134",
+      "areaM2": 177.0097354425425,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "US-PA-PHILADELPHIA-DOR-014N070048",
+      "areaM2": 95.64931280640545,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "US-PA-PHILADELPHIA-DOR-014N070205",
+      "areaM2": 188.23450825296936,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "US-PA-PHILADELPHIA-DOR-014N070135",
+      "areaM2": 166.68708894484973,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "US-PA-PHILADELPHIA-DOR-014N070112",
+      "areaM2": 96.5373668822744,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "US-PA-PHILADELPHIA-DOR-015N070084",
+      "areaM2": 107.60330982735086,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "US-PA-PHILADELPHIA-DOR-015N070192",
+      "areaM2": 169.78897684041516,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "US-PA-PHILADELPHIA-DOR-015N070164",
+      "areaM2": 163.180173826519,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "US-PA-PHILADELPHIA-DOR-015N070081",
+      "areaM2": 110.20494116905088,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "US-PA-PHILADELPHIA-DOR-015N070086",
+      "areaM2": 111.36580467248169,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "US-PA-PHILADELPHIA-DOR-015N070087",
+      "areaM2": 105.77206048140286,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "US-PA-PHILADELPHIA-DOR-015N070078",
+      "areaM2": 105.93850956193201,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "US-PA-PHILADELPHIA-DOR-015N070077",
+      "areaM2": 109.20621287797451,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "US-PA-PHILADELPHIA-DOR-015N070111",
+      "areaM2": 158.87466339908087,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "US-PA-PHILADELPHIA-DOR-015N070090",
+      "areaM2": 108.98054703014142,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "US-PA-PHILADELPHIA-DOR-015N070222",
+      "areaM2": 173.35750560711682,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "US-PA-PHILADELPHIA-DOR-015N070083",
+      "areaM2": 110.47612723247966,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "US-PA-PHILADELPHIA-DOR-015N070169",
+      "areaM2": 161.0472990353791,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "US-PA-PHILADELPHIA-DOR-015N070162",
+      "areaM2": 161.80649191796746,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "US-PA-PHILADELPHIA-DOR-015N070193",
+      "areaM2": 169.10771056254143,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "US-PA-PHILADELPHIA-DOR-015N070088",
+      "areaM2": 109.42441804051404,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "US-PA-PHILADELPHIA-DOR-015N070161",
+      "areaM2": 158.29406297523798,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "US-PA-PHILADELPHIA-DOR-015N070139",
+      "areaM2": 161.0829496513256,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "US-PA-PHILADELPHIA-DOR-015N070311",
+      "areaM2": 150.8554119052334,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "US-PA-PHILADELPHIA-DOR-015N070308",
+      "areaM2": 159.82646185014409,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "US-PA-PHILADELPHIA-DOR-015N070146",
+      "areaM2": 159.7168391352468,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "US-PA-PHILADELPHIA-DOR-015N070307",
+      "areaM2": 85.0383606731016,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "US-PA-PHILADELPHIA-DOR-015N070160",
+      "areaM2": 155.6847827812549,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "US-PA-PHILADELPHIA-DOR-015N070080",
+      "areaM2": 107.30629294021779,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "US-PA-PHILADELPHIA-DOR-015N070153",
+      "areaM2": 162.6810926950482,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "US-PA-PHILADELPHIA-DOR-015N070310",
+      "areaM2": 156.36272130313185,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "US-PA-PHILADELPHIA-DOR-015N070312",
+      "areaM2": 155.38625438950305,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "US-PA-PHILADELPHIA-DOR-015N070191",
+      "areaM2": 179.12481858128828,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "US-PA-PHILADELPHIA-DOR-015N070189",
+      "areaM2": 174.25380249399112,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "US-PA-PHILADELPHIA-DOR-015N070141",
+      "areaM2": 165.96555190673314,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "US-PA-PHILADELPHIA-DOR-015N070172",
+      "areaM2": 160.18170470111463,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "US-PA-PHILADELPHIA-DOR-015N070218",
+      "areaM2": 206.00820206766141,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "US-PA-PHILADELPHIA-DOR-015N070313",
+      "areaM2": 146.34964205692884,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "US-PA-PHILADELPHIA-DOR-015N070309",
+      "areaM2": 142.82480275866007,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "US-PA-PHILADELPHIA-DOR-015N070085",
+      "areaM2": 106.43701607111586,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "US-PA-PHILADELPHIA-DOR-015N070075",
+      "areaM2": 110.80336018387219,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "US-PA-PHILADELPHIA-DOR-015N070219",
+      "areaM2": 170.1579254336882,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "US-PA-PHILADELPHIA-DOR-015N070159",
+      "areaM2": 153.773694344146,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "US-PA-PHILADELPHIA-DOR-015N070082",
+      "areaM2": 103.60377309714073,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "US-PA-PHILADELPHIA-DOR-015N070167",
+      "areaM2": 154.17293284856856,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "US-PA-PHILADELPHIA-DOR-015N070140",
+      "areaM2": 161.61489835014083,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "US-PA-PHILADELPHIA-DOR-015N070221",
+      "areaM2": 179.84214266401258,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "US-PA-PHILADELPHIA-DOR-015N070073",
+      "areaM2": 111.0565310191507,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "US-PA-PHILADELPHIA-DOR-015N070076",
+      "areaM2": 108.99767298389298,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "US-PA-PHILADELPHIA-DOR-015N070165",
+      "areaM2": 156.7962202984568,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "US-PA-PHILADELPHIA-DOR-015N070220",
+      "areaM2": 177.3121779194981,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "US-PA-PHILADELPHIA-DOR-015N070314",
+      "areaM2": 139.4080348084112,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "US-PA-PHILADELPHIA-DOR-015N070190",
+      "areaM2": 181.6405443895175,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "US-PA-PHILADELPHIA-DOR-015N070089",
+      "areaM2": 103.06905406290106,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "US-PA-PHILADELPHIA-DOR-015N070072",
+      "areaM2": 95.78216988855897,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "US-PA-PHILADELPHIA-DOR-015N070143",
+      "areaM2": 159.93459871306533,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "US-PA-PHILADELPHIA-DOR-015N070188",
+      "areaM2": 181.34635354038036,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "US-PA-PHILADELPHIA-DOR-015N070079",
+      "areaM2": 106.77536003912785,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "US-PA-PHILADELPHIA-DOR-015N070055",
+      "areaM2": 111.42359319322472,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "US-PA-PHILADELPHIA-DOR-015N070150",
+      "areaM2": 160.10052982084565,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "US-PA-PHILADELPHIA-DOR-015N070174",
+      "areaM2": 152.7855253743546,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "US-PA-PHILADELPHIA-DOR-015N070168",
+      "areaM2": 156.98158110814657,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "US-PA-PHILADELPHIA-DOR-015N070074",
+      "areaM2": 107.38047563957983,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "US-PA-PHILADELPHIA-DOR-015N070223",
+      "areaM2": 176.92429304022363,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "US-PA-PHILADELPHIA-DOR-015N070224",
+      "areaM2": 162.0069199797078,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "US-PA-PHILADELPHIA-DOR-015N070268",
+      "areaM2": 106.86175310515162,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "US-PA-PHILADELPHIA-DOR-015N070271",
+      "areaM2": 169.41713070675416,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "US-PA-PHILADELPHIA-DOR-015N070327",
+      "areaM2": 100.0393431824026,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "US-PA-PHILADELPHIA-DOR-015N070253",
+      "areaM2": 103.22594393524652,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "US-PA-PHILADELPHIA-DOR-015N070335",
+      "areaM2": 311.81860879751963,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "US-PA-PHILADELPHIA-DOR-015N070296",
+      "areaM2": 166.58271983859123,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "US-PA-PHILADELPHIA-DOR-015N070315",
+      "areaM2": 103.56745131182618,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "US-PA-PHILADELPHIA-DOR-015N070185",
+      "areaM2": 91.8152666316513,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "US-PA-PHILADELPHIA-DOR-015N070298",
+      "areaM2": 93.11541953496804,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "US-PA-PHILADELPHIA-DOR-015N070328",
+      "areaM2": 79.83032693327785,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "US-PA-PHILADELPHIA-DOR-015N070321",
+      "areaM2": 95.65834482534933,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "US-PA-PHILADELPHIA-DOR-015N070251",
+      "areaM2": 101.130026686088,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "US-PA-PHILADELPHIA-DOR-015N070322",
+      "areaM2": 97.48900003701714,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "US-PA-PHILADELPHIA-DOR-015N070179",
+      "areaM2": 98.16817027391473,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "US-PA-PHILADELPHIA-DOR-015N070243",
+      "areaM2": 101.98161914108802,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "US-PA-PHILADELPHIA-DOR-015N070262",
+      "areaM2": 108.70909125103339,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "US-PA-PHILADELPHIA-DOR-015N070240",
+      "areaM2": 96.02954139723656,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "US-PA-PHILADELPHIA-DOR-015N070299",
+      "areaM2": 98.46455874351092,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "US-PA-PHILADELPHIA-DOR-015N070324",
+      "areaM2": 84.52534306057407,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "US-PA-PHILADELPHIA-DOR-015N070267",
+      "areaM2": 106.38587389272362,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "US-PA-PHILADELPHIA-DOR-015N070242",
+      "areaM2": 101.09119147205834,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "US-PA-PHILADELPHIA-DOR-015N070260",
+      "areaM2": 108.02169749711577,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "US-PA-PHILADELPHIA-DOR-015N070270",
+      "areaM2": 167.2528541269305,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "US-PA-PHILADELPHIA-DOR-015N070264",
+      "areaM2": 106.35078695961617,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "US-PA-PHILADELPHIA-DOR-015N070273",
+      "areaM2": 103.88427804068192,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "US-PA-PHILADELPHIA-DOR-015N070300",
+      "areaM2": 101.07662270172175,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "US-PA-PHILADELPHIA-DOR-015N070249",
+      "areaM2": 106.27864882317911,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "US-PA-PHILADELPHIA-DOR-015N070184",
+      "areaM2": 96.22866183409519,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "US-PA-PHILADELPHIA-DOR-015N070316",
+      "areaM2": 111.54330831067963,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "US-PA-PHILADELPHIA-DOR-015N070250",
+      "areaM2": 105.57732530817846,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "US-PA-PHILADELPHIA-DOR-015N070144",
+      "areaM2": 157.36848815688882,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "US-PA-PHILADELPHIA-DOR-015N070279",
+      "areaM2": 111.02509606157724,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "US-PA-PHILADELPHIA-DOR-015N070247",
+      "areaM2": 107.58776135337976,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "US-PA-PHILADELPHIA-DOR-015N070245",
+      "areaM2": 107.4568772507952,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "US-PA-PHILADELPHIA-DOR-015N070248",
+      "areaM2": 100.20580435580732,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "US-PA-PHILADELPHIA-DOR-015N070266",
+      "areaM2": 108.16930776526127,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "US-PA-PHILADELPHIA-DOR-015N070252",
+      "areaM2": 105.6944941156726,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "US-PA-PHILADELPHIA-DOR-015N070337",
+      "areaM2": 309.69847084319355,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "US-PA-PHILADELPHIA-DOR-015N070254",
+      "areaM2": 106.94935886511526,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "US-PA-PHILADELPHIA-DOR-015N070163",
+      "areaM2": 152.43565564516268,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "US-PA-PHILADELPHIA-DOR-015N070320",
+      "areaM2": 98.36884823309532,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "US-PA-PHILADELPHIA-DOR-015N070259",
+      "areaM2": 106.71489209743956,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "US-PA-PHILADELPHIA-DOR-015N070265",
+      "areaM2": 111.17901705984374,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "US-PA-PHILADELPHIA-DOR-015N070246",
+      "areaM2": 101.10428627063725,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "US-PA-PHILADELPHIA-DOR-015N070182",
+      "areaM2": 155.18350017950695,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "US-PA-PHILADELPHIA-DOR-015N070292",
+      "areaM2": 144.65362264220101,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "US-PA-PHILADELPHIA-DOR-015N070197",
+      "areaM2": 164.87014349049838,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "US-PA-PHILADELPHIA-DOR-015N070180",
+      "areaM2": 98.11936389248753,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "US-PA-PHILADELPHIA-DOR-015N070175",
+      "areaM2": 99.14992297539548,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "US-PA-PHILADELPHIA-DOR-015N070297",
+      "areaM2": 149.91389958113325,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "US-PA-PHILADELPHIA-DOR-015N070263",
+      "areaM2": 107.46235751436112,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "US-PA-PHILADELPHIA-DOR-015N070336",
+      "areaM2": 292.88497756105727,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "US-PA-PHILADELPHIA-DOR-015N070178",
+      "areaM2": 97.23182901079436,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "US-PA-PHILADELPHIA-DOR-015N070261",
+      "areaM2": 107.84562604557766,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "US-PA-PHILADELPHIA-DOR-015N070166",
+      "areaM2": 146.91436972136614,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "US-PA-PHILADELPHIA-DOR-015N070176",
+      "areaM2": 95.72103059369327,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "US-PA-PHILADELPHIA-DOR-015N070177",
+      "areaM2": 98.69310265173785,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "US-PA-PHILADELPHIA-DOR-015N070194",
+      "areaM2": 176.04984253377785,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "US-PA-PHILADELPHIA-DOR-015N070325",
+      "areaM2": 101.08943107761345,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "US-PA-PHILADELPHIA-DOR-015N070244",
+      "areaM2": 103.28239932350861,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "US-PA-PHILADELPHIA-DOR-015N070241",
+      "areaM2": 102.86886166149372,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "US-PA-PHILADELPHIA-DOR-015N070181",
+      "areaM2": 94.82099754331254,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "US-PA-PHILADELPHIA-DOR-015N070269",
+      "areaM2": 167.86074136817535,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "US-PA-PHILADELPHIA-DOR-015N070318",
+      "areaM2": 105.16837550220482,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "US-PA-PHILADELPHIA-DOR-015N060164",
+      "areaM2": 3401.751649468338,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "US-PA-PHILADELPHIA-DOR-015N060015",
+      "areaM2": 130.42902159831098,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "US-PA-PHILADELPHIA-DOR-015N060168",
+      "areaM2": 23141.488731945497,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "US-PA-PHILADELPHIA-DOR-015N070294",
+      "areaM2": 151.9438392009553,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "US-PA-PHILADELPHIA-DOR-015N070295",
+      "areaM2": 153.2979214969574,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "US-PA-PHILADELPHIA-DOR-015N070280",
+      "areaM2": 153.8728351340399,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "US-PA-PHILADELPHIA-DOR-015N070302",
+      "areaM2": 103.87088770453829,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "US-PA-PHILADELPHIA-DOR-015N070293",
+      "areaM2": 153.45383571029475,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "US-PA-PHILADELPHIA-DOR-015N060016",
+      "areaM2": 44.6836954618732,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "US-PA-PHILADELPHIA-DOR-015N070285",
+      "areaM2": 147.60697831286012,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "US-PA-PHILADELPHIA-DOR-015N060013",
+      "areaM2": 104.5952603619747,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "US-PA-PHILADELPHIA-DOR-015N060014",
+      "areaM2": 82.35509174080559,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "US-PA-PHILADELPHIA-DOR-013N060135",
+      "areaM2": 364.7820082848015,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "US-PA-PHILADELPHIA-DOR-013N070289",
+      "areaM2": 206.56097160977336,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "US-PA-PHILADELPHIA-DOR-013N070286",
+      "areaM2": 199.8666270825926,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "US-PA-PHILADELPHIA-DOR-013N070292",
+      "areaM2": 166.59344663527457,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "US-PA-PHILADELPHIA-DOR-013N070294",
+      "areaM2": 169.0632968170625,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "US-PA-PHILADELPHIA-DOR-013N070298",
+      "areaM2": 375.8710796905758,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "US-PA-PHILADELPHIA-DOR-013N060126",
+      "areaM2": 244.23287020898732,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "US-PA-PHILADELPHIA-DOR-013N070250",
+      "areaM2": 193.16969159587921,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "US-PA-PHILADELPHIA-DOR-013N070284",
+      "areaM2": 204.99482297568758,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "US-PA-PHILADELPHIA-DOR-013N070290",
+      "areaM2": 200.46000864101703,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "US-PA-PHILADELPHIA-DOR-013N060128",
+      "areaM2": 239.0345769784606,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "US-PA-PHILADELPHIA-DOR-013N070255",
+      "areaM2": 92.28736345882186,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "US-PA-PHILADELPHIA-DOR-013N070342",
+      "areaM2": 87.62839264971606,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "US-PA-PHILADELPHIA-DOR-013N070295",
+      "areaM2": 187.08652016039056,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "US-PA-PHILADELPHIA-DOR-013N070288",
+      "areaM2": 161.47843338823654,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "US-PA-PHILADELPHIA-DOR-013N070279",
+      "areaM2": 169.09658836656862,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "US-PA-PHILADELPHIA-DOR-013N070285",
+      "areaM2": 52.973057703113675,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "US-PA-PHILADELPHIA-DOR-013N070291",
+      "areaM2": 518.440204316646,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "US-PA-PHILADELPHIA-DOR-013N070297",
+      "areaM2": 235.14730431055654,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "US-PA-PHILADELPHIA-DOR-013N070079",
+      "areaM2": 176.5504176785014,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "US-PA-PHILADELPHIA-DOR-013N070314",
+      "areaM2": 398.2081777526409,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "US-PA-PHILADELPHIA-DOR-013N060129",
+      "areaM2": 243.0069182246009,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "US-PA-PHILADELPHIA-DOR-013N060137",
+      "areaM2": 358.11804578202054,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "US-PA-PHILADELPHIA-DOR-013N070251",
+      "areaM2": 141.2629871754856,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "US-PA-PHILADELPHIA-DOR-013N060115",
+      "areaM2": 244.18395312686863,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "US-PA-PHILADELPHIA-DOR-013N070246",
+      "areaM2": 146.02015214083548,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "US-PA-PHILADELPHIA-DOR-013N070229",
+      "areaM2": 128.88696160659435,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "US-PA-PHILADELPHIA-DOR-013N070299",
+      "areaM2": 183.39509198358394,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "US-PA-PHILADELPHIA-DOR-013N070245",
+      "areaM2": 144.47184512319865,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "US-PA-PHILADELPHIA-DOR-013N070222",
+      "areaM2": 153.8392539298748,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "US-PA-PHILADELPHIA-DOR-013N060123",
+      "areaM2": 240.83062184175876,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "US-PA-PHILADELPHIA-DOR-013N070327",
+      "areaM2": 65.89455024942431,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "US-PA-PHILADELPHIA-DOR-013N070074",
+      "areaM2": 362.0002356294536,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "US-PA-PHILADELPHIA-DOR-013N070249",
+      "areaM2": 55.10402591614173,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "US-PA-PHILADELPHIA-DOR-015N070196",
+      "areaM2": 174.79585064045466,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "US-PA-PHILADELPHIA-DOR-015N070255",
+      "areaM2": 101.55322254843772,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "US-PA-PHILADELPHIA-DOR-016N060145",
+      "areaM2": 102.28211328151849,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "US-PA-PHILADELPHIA-DOR-016N060142",
+      "areaM2": 105.77133475593965,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "US-PA-PHILADELPHIA-DOR-015N070291",
+      "areaM2": 107.87671631822612,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "US-PA-PHILADELPHIA-DOR-015N070256",
+      "areaM2": 101.14907551487022,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "US-PA-PHILADELPHIA-DOR-016N060143",
+      "areaM2": 106.47469428727544,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "US-PA-PHILADELPHIA-DOR-016N060133",
+      "areaM2": 134.28710257940128,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "US-PA-PHILADELPHIA-DOR-016N060139",
+      "areaM2": 116.38528000653905,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "US-PA-PHILADELPHIA-DOR-016N060138",
+      "areaM2": 86.24383883639284,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "US-PA-PHILADELPHIA-DOR-016N060136",
+      "areaM2": 152.95157445800302,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "US-PA-PHILADELPHIA-DOR-016N060212",
+      "areaM2": 66.05742034284091,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "US-PA-PHILADELPHIA-DOR-016N060211",
+      "areaM2": 62.88891373506872,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "US-PA-PHILADELPHIA-DOR-015N070195",
+      "areaM2": 173.14608866086368,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "US-PA-PHILADELPHIA-DOR-015N070257",
+      "areaM2": 105.49768545983603,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "US-PA-PHILADELPHIA-DOR-016N060213",
+      "areaM2": 61.925875814147766,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "US-PA-PHILADELPHIA-DOR-016N060217",
+      "areaM2": 316.5488357444582,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "US-PA-PHILADELPHIA-DOR-016N060129",
+      "areaM2": 179.12821183245748,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "US-PA-PHILADELPHIA-DOR-016N060141",
+      "areaM2": 168.5791909979464,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "US-PA-PHILADELPHIA-DOR-016N060146",
+      "areaM2": 100.9662854218028,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "US-PA-PHILADELPHIA-DOR-016N060137",
+      "areaM2": 123.29880503892163,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "US-PA-PHILADELPHIA-DOR-016N060144",
+      "areaM2": 101.42130120695441,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "US-PA-PHILADELPHIA-DOR-016N060135",
+      "areaM2": 64.32443678867266,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "US-PA-PHILADELPHIA-DOR-015N070277",
+      "areaM2": 113.26433956571276,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "US-PA-PHILADELPHIA-DOR-015N070186",
+      "areaM2": 181.47017384382832,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "US-PA-PHILADELPHIA-DOR-016N060214",
+      "areaM2": 67.10379789017398,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "US-PA-PHILADELPHIA-DOR-016N060215",
+      "areaM2": 5179.162411023501,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "US-PA-PHILADELPHIA-DOR-016N060216",
+      "areaM2": 11249.698348593492,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "US-PA-PHILADELPHIA-DOR-016N060131",
+      "areaM2": 106.15845183102815,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "US-PA-PHILADELPHIA-DOR-015N070187",
+      "areaM2": 192.5542728819513,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "US-PA-PHILADELPHIA-DOR-015N070258",
+      "areaM2": 108.30260422575219,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "US-PA-PHILADELPHIA-DOR-014N080114",
+      "areaM2": 76.58988484438626,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "US-PA-PHILADELPHIA-DOR-014N080175",
+      "areaM2": 91.42223403986459,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "US-PA-PHILADELPHIA-DOR-014N080225",
+      "areaM2": 25.872161894105513,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "US-PA-PHILADELPHIA-DOR-014N080226",
+      "areaM2": 138.77764266844778,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "US-PA-PHILADELPHIA-DOR-014N080251",
+      "areaM2": 1250.880238413013,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "US-PA-PHILADELPHIA-DOR-014N080318",
+      "areaM2": 83.64890224860483,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "US-PA-PHILADELPHIA-DOR-014N080258",
+      "areaM2": 322.9180331798832,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "US-PA-PHILADELPHIA-DOR-014N080181",
+      "areaM2": 87.07988235600101,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "US-PA-PHILADELPHIA-DOR-014N080229",
+      "areaM2": 116.37865112756384,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "US-PA-PHILADELPHIA-DOR-014N080302",
+      "areaM2": 342.0930516452623,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "US-PA-PHILADELPHIA-DOR-014N080256",
+      "areaM2": 328.896852141317,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "US-PA-PHILADELPHIA-DOR-014N080184",
+      "areaM2": 88.93205142619453,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "US-PA-PHILADELPHIA-DOR-014N080257",
+      "areaM2": 344.02403068927003,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "US-PA-PHILADELPHIA-DOR-014N080115",
+      "areaM2": 77.00221844400969,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "US-PA-PHILADELPHIA-DOR-014N080167",
+      "areaM2": 87.8084551308564,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "US-PA-PHILADELPHIA-DOR-014N080182",
+      "areaM2": 86.05283820205335,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "US-PA-PHILADELPHIA-DOR-014N080116",
+      "areaM2": 83.41672233698621,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "US-PA-PHILADELPHIA-DOR-014N080255",
+      "areaM2": 344.7721244526334,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "US-PA-PHILADELPHIA-DOR-014N080301",
+      "areaM2": 347.2402480966723,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "US-PA-PHILADELPHIA-DOR-014N080309",
+      "areaM2": 343.3739790604674,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "US-PA-PHILADELPHIA-DOR-014N080259",
+      "areaM2": 319.52093581276006,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "US-PA-PHILADELPHIA-DOR-014N080227",
+      "areaM2": 116.72164638987834,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "US-PA-PHILADELPHIA-DOR-014N080300",
+      "areaM2": 347.353014081092,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "US-PA-PHILADELPHIA-DOR-014N080109",
+      "areaM2": 85.89370661688827,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "US-PA-PHILADELPHIA-DOR-014N080110",
+      "areaM2": 80.5432528307807,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "US-PA-PHILADELPHIA-DOR-014N080321",
+      "areaM2": 84.19735237875483,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "US-PA-PHILADELPHIA-DOR-014N080322",
+      "areaM2": 78.77565474648033,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "US-PA-PHILADELPHIA-DOR-014N080312",
+      "areaM2": 233.03422749129945,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "US-PA-PHILADELPHIA-DOR-014N080310",
+      "areaM2": 233.03415726258822,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "US-PA-PHILADELPHIA-DOR-014N080315",
+      "areaM2": 78.17568601813821,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "US-PA-PHILADELPHIA-DOR-014N070033",
+      "areaM2": 187.01217156104192,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "US-PA-PHILADELPHIA-DOR-015N060147",
+      "areaM2": 118.42720283082915,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "US-PA-PHILADELPHIA-DOR-015N060149",
+      "areaM2": 121.60851271374446,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "US-PA-PHILADELPHIA-DOR-015N060151",
+      "areaM2": 120.37584550431298,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "US-PA-PHILADELPHIA-DOR-014N070061",
+      "areaM2": 156.78080148941518,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "US-PA-PHILADELPHIA-DOR-015N060119",
+      "areaM2": 123.59677032333535,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "US-PA-PHILADELPHIA-DOR-014N070066",
+      "areaM2": 187.76094907987624,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "US-PA-PHILADELPHIA-DOR-015N060154",
+      "areaM2": 123.74112607529472,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "US-PA-PHILADELPHIA-DOR-014N070060",
+      "areaM2": 155.16270155777255,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "US-PA-PHILADELPHIA-DOR-014N070200",
+      "areaM2": 13098.626700535875,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "US-PA-PHILADELPHIA-DOR-014N070065",
+      "areaM2": 189.69000558423903,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "US-PA-PHILADELPHIA-DOR-015N060139",
+      "areaM2": 122.046809282337,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "US-PA-PHILADELPHIA-DOR-015N060126",
+      "areaM2": 125.3590353403344,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "US-PA-PHILADELPHIA-DOR-015N060113",
+      "areaM2": 120.17589039483885,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "US-PA-PHILADELPHIA-DOR-014N070064",
+      "areaM2": 153.04499477775082,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "US-PA-PHILADELPHIA-DOR-014N070063",
+      "areaM2": 189.24929445621748,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "US-PA-PHILADELPHIA-DOR-014N070018",
+      "areaM2": 186.69571172507037,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "US-PA-PHILADELPHIA-DOR-015N060152",
+      "areaM2": 119.35551680940414,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "US-PA-PHILADELPHIA-DOR-014N070067",
+      "areaM2": 192.5336090569604,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "US-PA-PHILADELPHIA-DOR-014N070059",
+      "areaM2": 190.73610031424374,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "US-PA-PHILADELPHIA-DOR-014N070032",
+      "areaM2": 183.86510616279872,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "US-PA-PHILADELPHIA-DOR-015N060000",
+      "areaM2": 1463.2208562828707,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    }
+  ]
+}

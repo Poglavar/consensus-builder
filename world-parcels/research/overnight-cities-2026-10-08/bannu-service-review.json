@@ -1,0 +1,56 @@
+{
+  "schemaVersion": "1.0",
+  "checkedAt": "2026-10-09",
+  "cityRecord": "city-3470-bannu.json",
+  "purpose": "Document first-party local registry/map evidence and bounded anonymous geometry access review.",
+  "scopeLimits": {
+    "maxFullPolygonsRetainedInCityRecord": 0,
+    "maxFullPolygonsRetainedInReview": 0,
+    "maxFullPolygonsRetainedInRepository": 0,
+    "ownerOrAddressDataRetained": false,
+    "credentialsOrTokenValuesRetained": false,
+    "citywideCompletenessAsserted": false
+  },
+  "assessment": "Official KP Revenue sources confirm a Bannu city land-record SDC and Bannu district digitization. Services concern records/fards and mutations; no public parcel geometry feature service or safe schema was verified.",
+  "registryAssessment": "The Government of Khyber Pakhtunkhwa Revenue & Estate Department lists an SDC at Bannu Tehsil Building, Chai Bazar, Bannu City and describes computerized land-record services. Its official computerization page also lists Bannu among the districts and reports operational mauza coverage. This is Bannu-specific registry evidence, not evidence for other provinces.",
+  "officialPrimarySources": [
+    {
+      "url": "https://revenue.kp.gov.pk/sdcs/",
+      "observation": "The Government of Khyber Pakhtunkhwa Revenue & Estate Department lists an SDC at Bannu Tehsil Building, Chai Bazar, Bannu City and describes computerized land-record services. Its official computerization page also lists Bannu among the districts and reports operational mauza coverage. This is Bannu-specific registry evidence, not evidence for other provinces."
+    },
+    {
+      "url": "https://revenue.kp.gov.pk/computerization-of-land-record-in-18-districts/",
+      "observation": "The Government of Khyber Pakhtunkhwa Revenue & Estate Department lists an SDC at Bannu Tehsil Building, Chai Bazar, Bannu City and describes computerized land-record services. Its official computerization page also lists Bannu among the districts and reports operational mauza coverage. This is Bannu-specific registry evidence, not evidence for other provinces."
+    },
+    {
+      "url": "https://revenue.kp.gov.pk/dlr-msg/",
+      "observation": "The Government of Khyber Pakhtunkhwa Revenue & Estate Department lists an SDC at Bannu Tehsil Building, Chai Bazar, Bannu City and describes computerized land-record services. Its official computerization page also lists Bannu among the districts and reports operational mauza coverage. This is Bannu-specific registry evidence, not evidence for other provinces."
+    }
+  ],
+  "searchQueries": [
+    {
+      "language": "English",
+      "query": "Bannu Pakistan official land records service delivery center cadastral map GIS",
+      "result": "KP Revenue lists the Bannu SDC and district digitization; no safe public parcel geometry schema found.",
+      "method": "Separate localized/English search and official-source review.",
+      "scope": "Identify current city-specific registry and safe public parcel geometry."
+    },
+    {
+      "language": "Urdu",
+      "query": "بنوں اراضی ریکارڈ سروس ڈلیوری سنٹر سرکاری نقشہ کڈسٹرل",
+      "result": "Localized search was checked against official KP revenue sources; Bannu registry service is confirmed, but no anonymous parcel geometry endpoint was verified.",
+      "method": "Separate localized/English search and official-source review.",
+      "scope": "Identify current city-specific registry and safe public parcel geometry."
+    }
+  ],
+  "geometryDecision": "No parcel geometry retained; no anonymous public point-level full polygon response was verified.",
+  "coverageAssessment": {
+    "claimedScope": "The Government of Khyber Pakhtunkhwa Revenue & Estate Department lists an SDC at Bannu Tehsil Building, Chai Bazar, Bannu City and describes computerized land-record services. Its official computerization page also lists Bannu among the districts and reports operational mauza coverage. This is Bannu-specific registry evidence, not evidence for other provinces.",
+    "verifiedOpenScope": "No public parcel geometry service or point-level response verified.",
+    "citywideVerified": false,
+    "countrywideVerified": false,
+    "geometryVerified": false
+  },
+  "attempts": [],
+  "remainingUncertainty": "Public parcel geometry coverage and any safe anonymous map endpoint remain unknown."
+}

@@ -1,0 +1,59 @@
+{
+  "schemaVersion": "1.0",
+  "checkedAt": "2026-10-09",
+  "cityRecord": "city-119-latakia.json",
+  "purpose": "Document first-party local registry/map evidence and bounded anonymous parcel-geometry access review.",
+  "scopeLimits": {
+    "maxFullPolygonsRetainedInCityRecord": 0,
+    "maxFullPolygonsRetainedInReview": 0,
+    "maxFullPolygonsRetainedInRepository": 0,
+    "ownerOrAddressDataRetained": false,
+    "credentialsOrTokenValuesRetained": false,
+    "citywideCompletenessAsserted": false
+  },
+  "assessment": "The official governorate service directory documents land/property-record and cadastral-plan services handled in Latakia, including owner/transaction documentation for some services. Search did not identify a public parcel-layer endpoint or safe anonymous geometry route; no personal or parcel-specific request was made.",
+  "registryAssessment": "The official Latakia Governorate service directory lists Latakia City Council property/real-estate services, including cadastral-plan requests and registry extracts. These are application-based administrative services, not evidence of anonymous public parcel geometry.",
+  "officialPrimarySources": [
+    {
+      "url": "https://latakia.gov.sy/services",
+      "observation": "The official Latakia Governorate service directory lists Latakia City Council property/real-estate services, including cadastral-plan requests and registry extracts. These are application-based administrative services, not evidence of anonymous public parcel geometry."
+    },
+    {
+      "url": "https://sana.sy/locals/2407294/",
+      "observation": "The official Latakia Governorate service directory lists Latakia City Council property/real-estate services, including cadastral-plan requests and registry extracts. These are application-based administrative services, not evidence of anonymous public parcel geometry."
+    }
+  ],
+  "searchQueries": [
+    {
+      "language": "English",
+      "query": "Latakia Syria official cadastral map land registry municipal GIS parcel land registry services",
+      "result": "The official governorate service directory documents land/property-record and cadastral-plan services handled in Latakia, including owner/transaction documentation for some services. Search did not identify a public parcel-layer endpoint or safe anonymous geometry route; no personal or parcel-specific request was made.",
+      "method": "Separate English-language search and first-party service review; no property identifiers or personal fields submitted.",
+      "scope": "Find primary local registry/cadastre evidence and a public parcel-geometry service."
+    },
+    {
+      "language": "Arabic",
+      "query": "اللاذقية مديرية المصالح العقارية السجل العقاري مخطط عقاري عقار",
+      "result": "The official governorate service directory documents land/property-record and cadastral-plan services handled in Latakia, including owner/transaction documentation for some services. Search did not identify a public parcel-layer endpoint or safe anonymous geometry route; no personal or parcel-specific request was made.",
+      "method": "Separate native-language search and official source review.",
+      "scope": "Find first-party local-language evidence for the same local registry/map question."
+    }
+  ],
+  "geometryDecision": {
+    "publicParcelGeometryFound": null,
+    "decision": "No geometry retained; anonymous public parcel geometry was not verified."
+  },
+  "coverageAssessment": {
+    "citywideCompletenessAsserted": false,
+    "scope": "Exact unchanged WUP settlement locator and reviewed official sources only.",
+    "limits": "No public service extent or citywide parcel coverage verified."
+  },
+  "attempts": [
+    {
+      "url": "https://latakia.gov.sy/services",
+      "method": "Official service-directory review",
+      "result": "Lists local property/registry and cadastral-plan services with application requirements; no public parcel geometry service exposed."
+    }
+  ],
+  "remainingUncertainty": "No anonymous field-safe parcel geometry response was verified; coverage at the exact WUP point remains unresolved."
+}

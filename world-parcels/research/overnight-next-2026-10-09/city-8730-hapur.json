@@ -1,0 +1,154 @@
+{
+  "schemaVersion": 1,
+  "kind": "city_parcel_source_research",
+  "checkedAt": "2026-10-09",
+  "rank": 1126,
+  "population2025k": 493.837,
+  "population2025Unit": "thousands",
+  "populationPlausibility": "Moderate",
+  "verifiedParcelResponse": null,
+  "source": {
+    "name": "District Hapur, Government of Uttar Pradesh",
+    "url": "https://hapur.nic.in/service/land-records/",
+    "operator": "District Hapur, Government of Uttar Pradesh",
+    "serviceType": "official service/map evidence; vector access not verified",
+    "layer": "not verified",
+    "geometryType": "not verified",
+    "nativeIdField": null
+  },
+  "registryFound": true,
+  "verifiedSample": false,
+  "targetGeometryEvidence": "none",
+  "nativeIdReadiness": "not_verified",
+  "cityId": "wup2025:8730",
+  "wupCityCode": 8730,
+  "name": "Hapur",
+  "country": "India",
+  "countryCode": "IN",
+  "centerLatLon": [
+    28.7309886138039,
+    77.7810619450886
+  ],
+  "pointBasis": "UN WUP 2025 population-weighted settlement point (latitude, longitude); not a municipal boundary or a parcel-coverage claim.",
+  "resultCategory": "official_registry_route_geometry_unverified",
+  "priorEvidence": [],
+  "priorBlocker": null,
+  "nativeLanguageSearches": [
+    {
+      "languageScript": "Hindi",
+      "exactQuery": "हापुड़ भूलेख खतौनी भू नक्शा तहसील हापुड़ जिला भूमि अभिलेख सरकारी",
+      "date": "2026-10-09",
+      "executionMethod": "web.run search_query; independent local-language query",
+      "resultUrls": [
+        "https://hapur.nic.in/service/land-records/",
+        "https://upbhulekh.gov.in/GeoDashboard/public_report?distCode=204",
+        "https://dilrmp.gov.in/dilrmpold/MapULPIN/tehsil-level/665"
+      ],
+      "summary": "Official Hapur district and tehsil land-record and cadastral-map status is established; no city-point village selection or parcel geometry verified."
+    },
+    {
+      "languageScript": "English",
+      "exactQuery": "Hapur Uttar Pradesh official land records cadastral map Bhunaksha tehsil district government",
+      "date": "2026-10-09",
+      "executionMethod": "web.run search_query; independent English query",
+      "resultUrls": [
+        "https://hapur.nic.in/service/land-records/",
+        "https://upbhulekh.gov.in/GeoDashboard/public_report?distCode=204",
+        "https://dilrmp.gov.in/dilrmpold/MapULPIN/tehsil-level/665"
+      ],
+      "summary": "Official Hapur district and tehsil land-record and cadastral-map status is established; no city-point village selection or parcel geometry verified."
+    }
+  ],
+  "officialAndRelevantLeads": [
+    {
+      "url": "https://hapur.nic.in/service/land-records/",
+      "operator": "District Hapur, Government of Uttar Pradesh",
+      "observation": "Official district page says UP Bhulekh computerizes state land records in all tehsils and names Tehsil Office, Hapur."
+    },
+    {
+      "url": "https://upbhulekh.gov.in/GeoDashboard/public_report?distCode=204",
+      "operator": "Revenue Board, Government of Uttar Pradesh",
+      "observation": "Official cadastral map georeferencing dashboard for Hapur district; reports village/mapsheet progress by three tehsils. WUP point not resolved to a village."
+    },
+    {
+      "url": "https://dilrmp.gov.in/dilrmpold/MapULPIN/tehsil-level/665",
+      "operator": "Department of Land Resources, Government of India",
+      "observation": "Official DILRMP tehsil-level status for Hapur including maps/parcel counts."
+    }
+  ],
+  "requestsAndEndpointChecks": [
+    {
+      "url": "https://hapur.nic.in/service/land-records/",
+      "method": "Anonymous read-only GET; redirect-following; 15 s read timeout; no cookies or credentials",
+      "httpStatus": 200,
+      "finalUrl": "https://hapur.nic.in/service/land-records/",
+      "contentType": "text/html; charset=UTF-8",
+      "bytesRead": 116302,
+      "sha256OfReadBytes": "164b2983de4776afe45154a943d2899550f855e47c35fa17826356b22a062e3a",
+      "title": "Land Records | District Hapur | India",
+      "assessment": "Primary landing/source page responded successfully. The response establishes only the source description summarized above; it does not itself verify a public parcel feature geometry except where separately reported."
+    },
+    {
+      "url": "https://hapur.nic.in/service/land-records/",
+      "method": "GET via search result/page review",
+      "httpStatus": "accessible in web search/open",
+      "contentType": "not independently captured",
+      "assessment": "Official district page says UP Bhulekh computerizes state land records in all tehsils and names Tehsil Office, Hapur."
+    },
+    {
+      "url": "https://upbhulekh.gov.in/GeoDashboard/public_report?distCode=204",
+      "method": "GET via search result/page review",
+      "httpStatus": "accessible in web search/open",
+      "contentType": "not independently captured",
+      "assessment": "Official cadastral map georeferencing dashboard for Hapur district; reports village/mapsheet progress by three tehsils. WUP point not resolved to a village."
+    },
+    {
+      "url": "https://dilrmp.gov.in/dilrmpold/MapULPIN/tehsil-level/665",
+      "method": "GET via search result/page review",
+      "httpStatus": "accessible in web search/open",
+      "contentType": "not independently captured",
+      "assessment": "Official DILRMP tehsil-level status for Hapur including maps/parcel counts."
+    }
+  ],
+  "coverageAssessment": {
+    "claimedScope": "Official Hapur district and tehsil land-record and cadastral-map status is established; no city-point village selection or parcel geometry verified.",
+    "verifiedOpenScope": null,
+    "citywideVerified": false,
+    "countrywideVerified": false,
+    "geometryVerified": false
+  },
+  "blocker": "BhuNaksha selection needs exact village; center-to-village mapping not completed. No full geometry.",
+  "remainingUncertainty": "Official Hapur district and tehsil land-record and cadastral-map status is established; no city-point village selection or parcel geometry verified.",
+  "nextStep": "BhuNaksha selection needs exact village; center-to-village mapping not completed. No full geometry.",
+  "runtimeReadiness": "not_enabled_no_verified_public_geometry",
+  "adapterReady": false,
+  "schemaVersionNote": "Research evidence only; no runtime adapter configured.",
+  "population2025": 493837,
+  "populationUnit": "persons",
+  "populationPlausibility2025": "Moderate",
+  "publicParcelGeometryFound": false,
+  "sourceIds": [],
+  "registryBasis": "Official Hapur district and tehsil land-record and cadastral-map status is established; no city-point village selection or parcel geometry verified.",
+  "registryEvidenceUrls": [
+    "https://hapur.nic.in/service/land-records/",
+    "https://upbhulekh.gov.in/GeoDashboard/public_report?distCode=204",
+    "https://dilrmp.gov.in/dilrmpold/MapULPIN/tehsil-level/665"
+  ],
+  "technicalBlocker": "BhuNaksha selection needs exact village; center-to-village mapping not completed. No full geometry.",
+  "runtimeAssessment": {
+    "status": "not_enabled_no_verified_public_geometry",
+    "reason": "BhuNaksha selection needs exact village; center-to-village mapping not completed. No full geometry."
+  },
+  "rootReviewedAt": "2026-10-09T07:13:02.981057+00:00",
+  "cohort": "overnight-next-1101-1200",
+  "cohortState": "root_reviewed_integrated_locally",
+  "integrationState": "integrated_locally",
+  "rootReview": {
+    "checkedAt": "2026-10-09T07:13:02.981057+00:00",
+    "decision": "Reviewed city identity, canonical population/point, separate searches and saved source/request evidence. No full public parcel geometry verified in this pass.",
+    "custodyScope": "Official Hapur district and tehsil land-record and cadastral-map status is established; no city-point village selection or parcel geometry verified.",
+    "transportFailuresDoNotProveAbsence": true,
+    "geometryClaimScope": "Investigation outcome only; no worldwide or citywide absence asserted."
+  },
+  "integratedAt": "2026-10-09T07:14:03.673112+00:00"
+}

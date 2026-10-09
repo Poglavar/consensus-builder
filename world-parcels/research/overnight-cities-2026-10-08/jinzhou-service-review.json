@@ -1,0 +1,77 @@
+{
+  "schemaVersion": 1,
+  "checkedAt": "2026-10-09",
+  "sourceId": "cn-jinzhou-real-estate-registration-center",
+  "purpose": "Service review for WUP2025 rank 612 Jinzhou (city code 9830); city-bound registry evidence and safe anonymous parcel-geometry route.",
+  "primaryPublisher": "Jinzhou Natural Resources Service Center (Jinzhou Real Estate Registration Center)",
+  "sourceUrl": "https://ysj.ln.gov.cn/ysj/gdgz/jz/F6F07B3A976F4126A6198D06D437A63A/index.shtml",
+  "registryFound": true,
+  "registryBasis": "Official Liaoning government sources identify the Jinzhou Natural Resources Service Center (Jinzhou Real Estate Registration Center) and city-level registration services. Published booking/workflow descriptions involve unified identity authentication; no parcel, applicant or owner lookup was attempted. No public anonymous parcel-vector route was verified.",
+  "officialSources": [
+    {
+      "url": "https://ysj.ln.gov.cn/ysj/gdgz/jz/F6F07B3A976F4126A6198D06D437A63A/index.shtml",
+      "observation": "Official Liaoning government coverage identifies Jinzhou’s Natural Resources Service Center (Jinzhou Real Estate Registration Center) and its services; a booking workflow was described as real-name/authenticated."
+    },
+    {
+      "url": "https://ysj.ln.gov.cn/ysj/gdgz/jz/C5608CC6D147485E98A81D4006ED2201/index.shtml",
+      "observation": "Official Liaoning government article describes the Jinzhou municipal real-estate registration process as an applicant submission with identity verification; no application was attempted."
+    },
+    {
+      "url": "https://ysj.ln.gov.cn/ysj/gdgz/jz/39E5A03A52EA4CEE893814D503CF5EB4/index.shtml",
+      "observation": "Official provincial reporting says Jinzhou has a unified municipal real-estate registration platform and municipal service coverage."
+    },
+    {
+      "url": "http://www.jzsbdc.com/",
+      "observation": "Registration-center portal URL cited by official provincial reporting; not opened because only HTTP was published and anonymous vector scope was not established."
+    }
+  ],
+  "searchQueries": [
+    {
+      "language": "English",
+      "query": "Jinzhou Liaoning official real estate registration center cadastral parcel map GIS",
+      "scope": "Find Jinzhou city-bound registry evidence and public geometry-only parcel routes.",
+      "result": "Liaoning government reporting identifies Jinzhou’s natural-resources service/real-estate registration center and city registration services. The cited official service portal was not accessible via standard HTTPS inspection; workflow reporting indicates identity-authenticated booking. No public anonymous geometry schema was found.",
+      "actualResultUrls": [
+        "https://ysj.ln.gov.cn/ysj/gdgz/jz/F6F07B3A976F4126A6198D06D437A63A/index.shtml",
+        "https://ysj.ln.gov.cn/ysj/gdgz/jz/C5608CC6D147485E98A81D4006ED2201/index.shtml",
+        "https://ysj.ln.gov.cn/ysj/gdgz/jz/39E5A03A52EA4CEE893814D503CF5EB4/index.shtml",
+        "http://www.jzsbdc.com/"
+      ],
+      "executionMethod": "Public English/local-language search and official-page review; no private lookup."
+    },
+    {
+      "language": "Chinese",
+      "query": "锦州市 不动产登记中心 锦州市自然资源服务中心 地籍图 公开地图 GIS",
+      "scope": "核实锦州市本地不动产登记机构，并查找匿名、仅几何的公开宗地服务。",
+      "result": "辽宁省政府自然资源相关页面明确锦州市自然资源服务中心（市不动产登记中心）及市级登记服务。公开资料未确认匿名宗地矢量接口；预约/业务办理涉及统一身份认证。未访问认证页面或查询具体不动产。",
+      "actualResultUrls": [
+        "https://ysj.ln.gov.cn/ysj/gdgz/jz/F6F07B3A976F4126A6198D06D437A63A/index.shtml",
+        "https://ysj.ln.gov.cn/ysj/gdgz/jz/C5608CC6D147485E98A81D4006ED2201/index.shtml",
+        "https://ysj.ln.gov.cn/ysj/gdgz/jz/39E5A03A52EA4CEE893814D503CF5EB4/index.shtml",
+        "http://www.jzsbdc.com/"
+      ],
+      "executionMethod": "Public English/local-language search and official-page review; no private lookup."
+    }
+  ],
+  "accessReview": {
+    "publicAnonymousGeometryVerified": false,
+    "completeGeoreferencedPolygonCount": 0,
+    "geometryRetained": false,
+    "ownerAddressTaxOrPersonLookupRequested": false,
+    "authenticationOrCredentialsUsed": false,
+    "captchaOrPersonalFormSubmitted": false,
+    "paymentSubmitted": false,
+    "routeInspectionStatus": "reviewed_no_safe_public_geometry_route_verified",
+    "reason": "Official city-level registration sources establish the institution; the registration web workflows use applicant identity, and no anonymous geometry-only route was identified.",
+    "candidateLayer": null,
+    "candidateSchema": null,
+    "targetGeometryRequest": null
+  },
+  "requestEvidence": [
+    {
+      "method": "public search and page review",
+      "observation": "Institutional and interface information only; no parcel, address, owner, tax-account or identity lookup was submitted. No HTTP feature-response status or feature count is asserted."
+    }
+  ],
+  "routeInspectionFile": "/tmp/overnight-cities-2026-10-08/city-9830-jinzhou-route-inspection.json"
+}

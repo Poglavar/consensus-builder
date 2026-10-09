@@ -1,0 +1,114 @@
+{
+  "name": "Asyut",
+  "country": "Egypt",
+  "countryCode": "EG",
+  "rank": 357,
+  "point": [
+    27.1964325283935,
+    31.1730450992381
+  ],
+  "population2025": 1406963,
+  "schemaVersion": 1,
+  "kind": "city_parcel_source_research",
+  "checkedAt": "2026-10-09",
+  "populationUnit": "persons",
+  "status": "complete",
+  "verifiedSample": false,
+  "publicParcelGeometryFound": false,
+  "runtimeReadiness": "not_enabled_no_verified_public_geometry",
+  "priorEvidenceFiles": [],
+  "scopeLimits": "The ranked UN World Urbanization Prospects 2025 point is a population-weighted locator, not a municipal boundary or parcel identity. Official local land/property mapping or registration evidence was found, but no anonymous public parcel polygon was verified for this point. No geometry or owner/address data is retained.",
+  "pointBasis": "UN WUP 2025 population-weighted settlement centroid; this is not a municipal boundary or a parcel-coverage claim.",
+  "registryFound": true,
+  "registryBasis": "Official Egyptian Survey Authority describes maps and property books for agricultural holdings and built-up urban parcels, and its official branch directory places a detailed-maps office in Asyut. Local Asyut University material separately confirms a Governorate Spatial Changes Unit working with GIS/survey data. This supports local cadastral/land-map administration but not an open, point-specific parcel endpoint.",
+  "resultCategory": "local_land_or_property_admin_evidence_public_parcel_geometry_unverified",
+  "technicalBlocker": "No anonymous public parcel-vector viewer or geometry endpoint was found; available official sources describe local map offices and internal spatial-change work.",
+  "remainingUncertainty": "Whether an authenticated or unpublished municipal/governorate parcel GIS covers the WUP locator; no point-specific parcel identity or map extent was verified.",
+  "nextStep": "Request the public map-service URL and coverage scope from the Asyut detailed-maps office or Governorate Spatial Changes Unit if public access is needed.",
+  "freshResearch": {
+    "executedQueries": [
+      {
+        "language": "English",
+        "query": "Asyut Egypt official cadastral parcel map land registry GIS governorate cadastral information",
+        "scope": "Find a city-specific first-party survey/map/land-record source and public geometry service.",
+        "result": "Official Egyptian Survey Authority’s local branch directory identifies a detailed-maps office in Asyut. Official national material describes the Authority’s cadastral/property-map functions. A local public university reports a field-training collaboration with the Asyut Governorate Spatial Changes Unit, but no public city parcel viewer or vector endpoint was identified.",
+        "method": "Separate English-language web search; official Survey Authority pages and Asyut University page reviewed."
+      },
+      {
+        "language": "Arabic",
+        "query": "أسيوط خريطة مساحية قطع الأراضي السجل العيني خرائط رسمية",
+        "scope": "البحث عن خرائط قطع الأراضي والسجل/المساحة الرسمية في مدينة أسيوط.",
+        "result": "الهيئة المصرية العامة للمساحة تعرض فرعاً محلياً للخرائط التفصيلية بأسيوط، وتوضح أن وظائفها تشمل خرائط ودفاتر الملكية؛ كما توثق جامعة أسيوط تعاوناً ميدانياً مع وحدة المتغيرات المكانية بديوان المحافظة. لم يُعثر على عارض قطع عام أو خدمة هندسية مفتوحة للمجهول.",
+        "method": "بحث عربي مستقل ومراجعة صفحات الهيئة/الجامعة الرسمية."
+      },
+      {
+        "language": "Arabic",
+        "query": "أسيوط وحدة المتغيرات المكانية ديوان عام المحافظة خريطة الأراضي خرائط",
+        "scope": "تحقق موجه من الوحدة المحلية والخرائط المساحية المتاحة علناً.",
+        "result": "مصدر جامعة أسيوط يذكر تعاون برنامج المساحة والخرائط ونظم المعلومات الجغرافية مع وحدة المتغيرات المكانية بديوان المحافظة لتدريب ميداني ورصد التغيرات، لكنه يصف قاعدة بيانات/عمل حكومياً وليس خدمة عامة لاسترجاع قطع الأراضي.",
+        "method": "بحث عربي مستقل ومراجعة المصدر الجامعي الحكومي."
+      }
+    ],
+    "officialSources": [
+      {
+        "url": "https://www.esa.gov.eg/TrainingBranchs.aspx",
+        "observation": "Official Egyptian Survey Authority branch directory identifies the Asyut detailed-maps office in the city."
+      },
+      {
+        "url": "https://www.esa.gov.eg/main.aspx",
+        "observation": "Official Authority describes urban/rural property maps, property books and related surveying responsibilities."
+      },
+      {
+        "url": "https://www.esa.gov.eg/amlak.aspx",
+        "observation": "Official Survey Authority state-property mapping program lists Asyut among governorates; this is government-asset mapping, not private-parcel public access."
+      },
+      {
+        "url": "https://b.aun.edu.eg/arts/ar/brnamj-almsaht-walkhrayt-wnzm-almlwmat-aljghrafyt-bjamt-asywt-ynzm-lqa-m-whdt-almtghyrat-almkanyt?gvas=red",
+        "observation": "Asyut University report on collaboration with the Governorate Spatial Changes Unit for GIS/survey training and spatial-change work; no public parcel query service claimed."
+      }
+    ],
+    "viewerAndServiceTrace": {
+      "attempted": true,
+      "summary": "Reviewed the Egyptian Survey Authority’s local branch directory (Asyut detailed-maps office) and public description of property-map/land-book responsibilities. Asyut University reports local GIS/survey field-training collaboration with the governorate Spatial Changes Unit, but this describes internal government mapping and data creation rather than an anonymous public parcel viewer. No public vector geometry route or parcel schema was exposed in the reviewed sources. No coordinate/owner-specific service was queried.",
+      "fullPolygonLimit": 3,
+      "fullPolygonsRetained": 0,
+      "ownerOrAddressDataRequested": false,
+      "credentialsOrTokenValuesRetained": false
+    },
+    "attemptedGeometry": {
+      "attempted": false,
+      "status": "no anonymous safe parcel-vector endpoint verified",
+      "retainedFeatures": 0,
+      "fieldsRequested": [],
+      "geometryRetained": false
+    }
+  },
+  "registryEvidenceUrls": [
+    "https://www.esa.gov.eg/TrainingBranchs.aspx",
+    "https://www.esa.gov.eg/main.aspx",
+    "https://www.esa.gov.eg/amlak.aspx",
+    "https://b.aun.edu.eg/arts/ar/brnamj-almsaht-walkhrayt-wnzm-almlwmat-aljghrafyt-bjamt-asywt-ynzm-lqa-m-whdt-almtghyrat-almkanyt?gvas=red"
+  ],
+  "sourceIds": [],
+  "coverageAssessment": {
+    "claimedScope": "Official Egyptian Survey Authority describes maps and property books for agricultural holdings and built-up urban parcels, and its official branch directory places a detailed-maps office in Asyut. Local Asyut University material separately confirms a Governorate Spatial Changes Unit working with GIS/survey data. This supports local cadastral/land-map administration but not an open, point-specific parcel endpoint.",
+    "verifiedOpenScope": "No anonymous public parcel-vector viewer or geometry endpoint was found; available official sources describe local map offices and internal spatial-change work.",
+    "citywideVerified": false,
+    "countrywideVerified": false
+  },
+  "source": {
+    "name": "Asyut local land/property-map evidence",
+    "operator": "Local/state public authority identified in official sources",
+    "url": "https://www.esa.gov.eg/TrainingBranchs.aspx",
+    "scope": "Official Egyptian Survey Authority describes maps and property books for agricultural holdings and built-up urban parcels, and its official branch directory places a detailed-maps office in Asyut. Local Asyut University material separately confirms a Governorate Spatial Changes Unit working with GIS/survey data. This supports local cadastral/land-map administration but not an open, point-specific parcel endpoint."
+  },
+  "wupCityCode": 6909,
+  "cityId": "wup2025:6909",
+  "queueRank": 357,
+  "populationPlausibility2025": "High",
+  "centerLatLon": [
+    27.1964325283935,
+    31.1730450992381
+  ],
+  "rootReviewedAt": "2026-10-08T23:01:54.520804+00:00"
+}

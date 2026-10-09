@@ -1,0 +1,134 @@
+{
+  "name": "Cochabamba",
+  "country": "Bolivia (Plurinational State of)",
+  "countryCode": "BO",
+  "rank": 377,
+  "point": [
+    -17.4013891412774,
+    -66.1739561318593
+  ],
+  "freshResearch": {
+    "queries": [
+      {
+        "language": "Spanish",
+        "query": "Cochabamba catastro municipal mapa digital parcelas predios código catastral oficial GIS",
+        "scope": "Follow the municipal digital cadastre map link and discover whether it exposes safe public full-vector geometry.",
+        "result": "The current Gobierno Autónomo Municipal de Cochabamba homepage advertises “Mapa digital de Cochabamba” and says residents can obtain a cadastral code through the map. Its public client script points to `http://mapadigital.cochabamba.bo/public/generado2`. That route returned an HTML form shell with a POST action and Google reCAPTCHA script; it exposed no parcel feature schema or geometry response. The Catastro Cbba site is presented as the municipal Geographic Administration and Cadastre directorate, but direct HTTPS access returned a Cloudflare 403 due to a locally prohibited DNS/IP target; this is not evidence that the origin is down.",
+        "actualResultUrls": [
+          "https://www.cochabamba.bo/",
+          "http://mapadigital.cochabamba.bo/public/generado2",
+          "https://www.catastrocbba.com/"
+        ],
+        "executionMethod": "Spanish-language search, official municipal homepage and static client-script inspection, and anonymous GET of the linked map shell. No POST, captcha, cadastral-code or property-specific lookup was made."
+      },
+      {
+        "language": "English",
+        "query": "Cochabamba Bolivia municipal cadastral map public parcel GIS digital map official",
+        "scope": "Cross-check municipal authority, public lookup status, and any vector data route.",
+        "result": "The municipal portal links to its digital cadastre map for obtaining a cadastral code. The page shell does not document an anonymous vector service; only an interactive form route is visible. No full polygon was returned or claimed.",
+        "actualResultUrls": [
+          "https://www.cochabamba.bo/",
+          "http://mapadigital.cochabamba.bo/public/generado2"
+        ],
+        "executionMethod": "Separate English-language search and cross-check against the first-party municipal digital-map page."
+      }
+    ],
+    "portals": [
+      {
+        "name": "Cochabamba Digital Map",
+        "operator": "Gobierno Autónomo Municipal de Cochabamba",
+        "homeUrl": "https://www.cochabamba.bo/",
+        "observation": "The city portal links “Mapa digital de Cochabamba” with the stated purpose of obtaining the cadastral code. Its linked HTML shell is a POST form with a CAPTCHA script and does not expose a vector layer/schema in the initial response."
+      },
+      {
+        "name": "Catastro Cbba – municipal Geographic Administration and Cadastre",
+        "operator": "Gobierno Autónomo Municipal de Cochabamba / Dirección de Administración Geográfica y Catastro",
+        "homeUrl": "https://www.catastrocbba.com/",
+        "observation": "Search-indexed site identifies the municipal cadastre directorate; direct GET encountered a Cloudflare 403 local DNS/IP policy response, not treated as origin outage."
+      }
+    ],
+    "requests": [
+      {
+        "url": "https://www.cochabamba.bo/",
+        "method": "GET direct shell",
+        "status": 200,
+        "type": "text/html;charset=UTF-8",
+        "observation": "Official municipal SPA shell; client-script inspection found the Digital Map link route."
+      },
+      {
+        "url": "https://www.cochabamba.bo/front/static/js/main.00e3f25d.chunk.js",
+        "method": "GET public static script",
+        "status": 200,
+        "type": "application/javascript",
+        "observation": "Static client references `http://mapadigital.cochabamba.bo/public/generado2` as the digital cadastral map destination; no API/vector endpoint was exposed by this page script."
+      },
+      {
+        "url": "http://mapadigital.cochabamba.bo/public/generado2",
+        "method": "GET direct shell",
+        "status": 200,
+        "type": "text/html; charset=UTF-8",
+        "observation": "Returns a 1,452-byte HTML form with relative POST action `generado2` and a reCAPTCHA script; no parcel geometry or schema in response. Form not submitted."
+      },
+      {
+        "url": "https://www.catastrocbba.com/",
+        "method": "GET direct shell",
+        "status": 403,
+        "type": "text/html; charset=UTF-8",
+        "observation": "Cloudflare “DNS points to prohibited IP” local policy response; not treated as provider downtime and not bypassed."
+      },
+      {
+        "url": "https://mapadigital.cochabamba.bo/public/generado2",
+        "method": "GET HTTPS alternative",
+        "status": null,
+        "type": null,
+        "observation": "TLS connection refused before HTTP response; the municipal client itself links the HTTP URL. No TLS bypass or alternate endpoint guessing."
+      }
+    ]
+  },
+  "status": "complete",
+  "verifiedParcelResponse": {
+    "attempted": true,
+    "fullGeometrySampleCount": 0,
+    "bounded": false,
+    "pointLocated": false,
+    "note": "No anonymous full-vector parcel query produced geometry; see recorded official public routes and their request outcomes."
+  },
+  "source": {
+    "operator": "Gobierno Autónomo Municipal de Cochabamba / Dirección de Administración Geográfica y Catastro",
+    "endpoint": "http://mapadigital.cochabamba.bo/public/generado2",
+    "requestedAttributes": [],
+    "personalAttributesRequested": false,
+    "serviceType": "Municipal digital cadastral-code lookup page; no vector service identified",
+    "geometryType": null,
+    "nativeIdFields": [],
+    "directGeometryQueryVerified": false,
+    "directMetadataSchemaVerified": false
+  },
+  "coverageAssessment": "Municipal digital cadastral lookup is advertised. The map route returned only an HTML form shell, so no parcel geometry, WUP-point coverage, or vector layer was verified.",
+  "registryFound": true,
+  "registryBasis": "The official city homepage advertises its Digital Map specifically as a way to obtain a cadastral code, and the municipal Catastro site is identified as the Dirección de Administración Geográfica y Catastro. This confirms city-local cadastral services but does not verify public parcel geometries.",
+  "verifiedSample": false,
+  "publicParcelGeometryFound": false,
+  "resultCategory": "municipal_cadastral_map_lookup_advertised_no_public_vector_response",
+  "technicalBlocker": "The linked map route exposes a form POST and reCAPTCHA, with no visible vector API or layer schema. The form was not submitted. HTTPS was refused and the city Catastro hostname received a local Cloudflare DNS/IP policy response; neither result is treated as proof of provider downtime.",
+  "remainingUncertainty": "The user-facing map may render parcel outlines after its interactive form flow, but the public HTML/JS inspected did not document a safe anonymous vector endpoint or full geometry response. The WUP point has not been spatially tested.",
+  "nextStep": "If the municipality publishes a documented non-captcha vector service, inspect it using a bounded safe-field query; do not submit the form or attempt captcha bypass.",
+  "sourceIds": [],
+  "schemaVersion": 1,
+  "checkedAt": "2026-10-09",
+  "wupCityCode": 648,
+  "cityId": "wup2025:648",
+  "queueRank": 377,
+  "population2025": 1346672,
+  "population2025k": 1346.672,
+  "populationPlausibility2025": "Low",
+  "populationUnit": "persons",
+  "pointBasis": "UN WUP 2025 population-weighted settlement centroid; this is not a municipal boundary or a parcel-coverage claim.",
+  "centerLatLon": [
+    -17.4013891412774,
+    -66.1739561318593
+  ],
+  "runtimeReadiness": "not_enabled_no_verified_public_geometry",
+  "adapterReady": false,
+  "rootReviewedAt": "2026-10-08T23:19:47.932570+00:00"
+}

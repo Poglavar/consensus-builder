@@ -1,0 +1,162 @@
+{
+  "schemaVersion": "1.0",
+  "checkedAt": "2026-10-09",
+  "cityRecord": "city-2271-khamis-mushayt.json",
+  "purpose": "Document separate English/local-language searches, first-party local registry/cadastre evidence, and bounded anonymous geometry discovery.",
+  "scopeLimits": {
+    "maxFullPolygonsRetainedInCityRecord": 0,
+    "maxFullPolygonsRetainedInReview": 0,
+    "maxFullPolygonsRetainedInRepository": 0,
+    "ownerOrAddressDataRetained": false,
+    "credentialsOrTokenValuesRetained": false,
+    "citywideCompletenessAsserted": false
+  },
+  "assessment": "Aseer Municipality GeoExplorer visibly lists land-plot boundary layers covering the region, including Khamis Mushayt. The map terms limit copying/reuse and no downloadable safe geometry schema was verified. Formal cadastral reports are owner/deed-based and authenticated.",
+  "registryAssessment": "First-party registry, cadastral or land-administration custodian route identified as described in the cited official-source observations; public safe geometry remains unverified.",
+  "officialPrimarySources": [
+    {
+      "url": "https://mapservice.ars.gov.sa/Asir_GeoExplorer",
+      "observation": "Official Aseer Regional Municipality GeoExplorer advertises “land plot boundaries” and “Balady land plot boundaries” layers. The portal terms restrict copying/reuse without permission; no feature request or geometry export was made."
+    },
+    {
+      "url": "https://ars.gov.sa/Content/SingleService/b62c69d8-00e8-467a-a3a0-81443d5f18f5",
+      "observation": "Official Aseer Municipality service page says cadastral reports require owner/applicant identification, ownership-document information, municipality/district selection, licensed engineering office/surveyor, and fee."
+    },
+    {
+      "url": "https://balady.gov.sa/en/services/issuance-cadastral-report?page=0",
+      "observation": "Official Balady cadastral report workflow requires an authenticated account and title/deed information; this is not a public geometry endpoint."
+    }
+  ],
+  "searchQueries": [
+    {
+      "language": "English",
+      "query": "Khamis Mushait official cadastral map parcel GIS land registry municipality Saudi Balady",
+      "resultUrls": [
+        "https://mapservice.ars.gov.sa/Asir_GeoExplorer",
+        "https://ars.gov.sa/Content/SingleService/b62c69d8-00e8-467a-a3a0-81443d5f18f5",
+        "https://balady.gov.sa/en/services/issuance-cadastral-report?page=0"
+      ],
+      "result": "The English search found the official Balady cadastral-report application, which requires login and ownership-document information; it is not an anonymous geometry service.",
+      "scope": "Identify first-party local registry and public parcel geometry; preserve the unchanged WUP settlement locator and avoid owner or address attributes."
+    },
+    {
+      "language": "Arabic",
+      "query": "خميس مشيط خريطة عقارية مساحية قطع أراضي بلدية عسير منصة بلدي الرسمية",
+      "resultUrls": [
+        "https://mapservice.ars.gov.sa/Asir_GeoExplorer",
+        "https://ars.gov.sa/Content/SingleService/b62c69d8-00e8-467a-a3a0-81443d5f18f5",
+        "https://balady.gov.sa/en/services/issuance-cadastral-report?page=0"
+      ],
+      "result": "The Arabic search found Aseer Municipality’s GeoExplorer and its “land plot boundaries” layers, but terms restrict copying/reuse and no safe output schema or polygon response was accessed.",
+      "scope": "Find first-party local-language registry/cadastral routes and any anonymous safe parcel geometry service near the unchanged WUP point."
+    }
+  ],
+  "geometryDecision": {
+    "verified": false,
+    "sourceId": null,
+    "sampleCount": 0,
+    "sampleFile": null,
+    "nativeId": null,
+    "nativeIdField": null,
+    "exactWupPointTest": "No source-native full polygon was returned at the WUP point. publicParcelGeometryFound:false means unverified here, not confirmed absence.",
+    "requestEvidence": []
+  },
+  "coverageAssessment": {
+    "claimedScope": "Aseer Municipality GeoExplorer visibly lists land-plot boundary layers covering the region, including Khamis Mushayt. The map terms limit copying/reuse and no downloadable safe geometry schema was verified. Formal cadastral reports are owner/deed-based and authenticated.",
+    "verifiedOpenScope": "No full parcel geometry was verified and no citywide coverage is asserted.",
+    "citywideVerified": false,
+    "countrywideVerified": false,
+    "geometryVerified": false
+  },
+  "attempts": [
+    {
+      "url": "https://mapservice.ars.gov.sa/Asir_GeoExplorer",
+      "result": "Official Aseer Regional Municipality GeoExplorer advertises “land plot boundaries” and “Balady land plot boundaries” layers. The portal terms restrict copying/reuse without permission; no feature request or geometry export was made."
+    },
+    {
+      "url": "https://ars.gov.sa/Content/SingleService/b62c69d8-00e8-467a-a3a0-81443d5f18f5",
+      "result": "Official Aseer Municipality service page says cadastral reports require owner/applicant identification, ownership-document information, municipality/district selection, licensed engineering office/surveyor, and fee."
+    },
+    {
+      "url": "https://balady.gov.sa/en/services/issuance-cadastral-report?page=0",
+      "result": "Official Balady cadastral report workflow requires an authenticated account and title/deed information; this is not a public geometry endpoint."
+    },
+    {
+      "url": "https://mapservice.ars.gov.sa/Asir_GeoExplorer",
+      "method": "Anonymous read-only curl GET, standard TLS, no authentication",
+      "httpStatus": 200,
+      "bytesRead": 752587,
+      "sha256": "cbb5a45014db1c35908b06651a1c494a87f54c4c2f0b2ba53caadaeda96633d9",
+      "assessment": "Official map HTML discloses land-plot and Balady land-plot FeatureServer URLs; display/export options do not establish working geometry access."
+    },
+    {
+      "url": "https://asirgis.ars.gov.sa/server/rest/services/ALMostaksif/SubDivisionParcelS/FeatureServer/0?f=pjson",
+      "method": "Anonymous read-only metadata GET, standard TLS",
+      "httpStatus": null,
+      "bytesRead": 0,
+      "transportOutcome": "curl exit 6: could not resolve host asirgis.ars.gov.sa; no HTTP response"
+    },
+    {
+      "url": "https://asirgis.ars.gov.sa/server/rest/services/AsirLayers/SubDivisionParcelSBalady/FeatureServer/0?f=pjson",
+      "method": "Anonymous read-only metadata GET, standard TLS",
+      "httpStatus": null,
+      "bytesRead": 0,
+      "transportOutcome": "curl exit 6: could not resolve host asirgis.ars.gov.sa; no HTTP response"
+    }
+  ],
+  "remainingUncertainty": "The public viewer loads, but parcel-service reachability, safe native IDs, and WUP-point coverage are unresolved. Terms are retained as publisher information, not a technical qualification gate.",
+  "nextStep": "Use the official source catalog or documented map-service metadata if available; request only safe parcel identifiers and geometry, never owner or address fields.",
+  "runtimeAssessment": "not enabled; no verified full-parcel geometry",
+  "cohort": "overnight-next-1101-1200",
+  "cohortState": "research_complete_pending_root_review",
+  "integrationState": "not_integrated",
+  "rootFollowthrough": {
+    "checkedAt": "2026-10-09T07:13:02.981057+00:00",
+    "disclosedParcelServices": [
+      "https://asirgis.ars.gov.sa/server/rest/services/ALMostaksif/SubDivisionParcelS/FeatureServer/0",
+      "https://asirgis.ars.gov.sa/server/rest/services/AsirLayers/SubDivisionParcelSBalady/FeatureServer/0"
+    ],
+    "viewerResponse": {
+      "url": "https://mapservice.ars.gov.sa/Asir_GeoExplorer",
+      "method": "Anonymous read-only curl GET, standard TLS, no authentication",
+      "httpStatus": 200,
+      "bytesRead": 752587,
+      "sha256": "cbb5a45014db1c35908b06651a1c494a87f54c4c2f0b2ba53caadaeda96633d9",
+      "assessment": "Official map HTML discloses land-plot and Balady land-plot FeatureServer URLs; display/export options do not establish working geometry access."
+    },
+    "metadataFailures": [
+      {
+        "url": "https://asirgis.ars.gov.sa/server/rest/services/ALMostaksif/SubDivisionParcelS/FeatureServer/0?f=pjson",
+        "method": "Anonymous read-only metadata GET, standard TLS",
+        "httpStatus": null,
+        "bytesRead": 0,
+        "transportOutcome": "curl exit 6: could not resolve host asirgis.ars.gov.sa; no HTTP response"
+      },
+      {
+        "url": "https://asirgis.ars.gov.sa/server/rest/services/AsirLayers/SubDivisionParcelSBalady/FeatureServer/0?f=pjson",
+        "method": "Anonymous read-only metadata GET, standard TLS",
+        "httpStatus": null,
+        "bytesRead": 0,
+        "transportOutcome": "curl exit 6: could not resolve host asirgis.ars.gov.sa; no HTTP response"
+      }
+    ]
+  },
+  "rootPrimaryChecks": [
+    {
+      "wupCityCode": 2271,
+      "url": "https://mapservice.ars.gov.sa/Asir_GeoExplorer",
+      "checkedAt": "2026-10-09T07:10:42.062473+00:00",
+      "method": "Anonymous read-only GET, standard TLS where advertised; no credentials or property values",
+      "httpStatus": null,
+      "transportOutcome": "<urlopen error [SSL: CERTIFICATE_VERIFY_FAILED] certificate verify failed: unable to get local issuer certificate (_ssl.c:1082)>"
+    }
+  ],
+  "rootReviewedAt": "2026-10-09T07:13:02.981057+00:00",
+  "rootReview": {
+    "checkedAt": "2026-10-09T07:13:02.981057+00:00",
+    "decision": "Reviewed city identity, canonical population/point, separate searches and saved source/request evidence. No full public parcel geometry verified in this pass.",
+    "custodyScope": "Aseer Municipality GeoExplorer visibly lists land-plot boundary layers covering the region, including Khamis Mushayt. The map terms limit copying/reuse and no downloadable safe geometry schema was verified. Formal cadastral reports are owner/deed-based and authenticated.",
+    "transportFailuresDoNotProveAbsence": true,
+    "geometryClaimScope": "Investigation outcome only; no worldwide or citywide absence asserted."
+  }
+}

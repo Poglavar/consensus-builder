@@ -1,0 +1,147 @@
+{
+  "name": "Londrina",
+  "country": "Brazil",
+  "countryCode": "BR",
+  "rank": 910,
+  "point": [
+    -23.3040374340556,
+    -51.1766120351161
+  ],
+  "population2025": 598731,
+  "population2025k": 598.731,
+  "populationPlausibility2025": "Moderate",
+  "schemaVersion": 1,
+  "kind": "city_parcel_source_research",
+  "checkedAt": "2026-10-09",
+  "populationUnit": "persons",
+  "status": "complete",
+  "verifiedSample": false,
+  "publicParcelGeometryFound": false,
+  "runtimeReadiness": "not_enabled_no_verified_public_geometry",
+  "priorEvidenceFiles": [],
+  "priorCheck": {
+    "attemptState": "pending",
+    "attemptEvidence": [],
+    "possiblePriorMatches": []
+  },
+  "pointBasis": "UN WUP 2025 population-weighted settlement centroid; this is not a municipal boundary or a parcel-coverage claim.",
+  "registryFound": true,
+  "registryBasis": "The municipal SIGLON portal describes citizen access to municipal geospatial data. Its official ArcGIS REST service exposes a polygon layer “Base Cartográfica com Quadra, Lote e Loteamento” (layer 0), with fields OBJECTID, QUADR_C, LOTE_C, NOME_LOTE and SHAPE in SIRGAS 2000 / UTM 22S (EPSG:31982). A bounded exact-WUP point query requesting only OBJECTID, QUADR_C, LOTE_C and geometry timed out at 25 seconds with zero bytes; no feature/ID/geometry was returned or retained.",
+  "registryEvidenceUrls": [
+    "https://portal.londrina.pr.gov.br/mapa-cidade",
+    "https://portal.londrina.pr.gov.br/o-que-e-siglon",
+    "https://geo.londrina.pr.gov.br/server/rest/services/Gerais/BCarSiglon/MapServer/0?f=pjson",
+    "https://geo.londrina.pr.gov.br/server/rest/services/Gerais/BCarSiglon/MapServer/0"
+  ],
+  "resultCategory": "official_city_polygon_layer_candidate_query_timed_out",
+  "scopeLimits": "Research uses official public sources and preserves the exact unchanged WUP locator. No owner, address, account, tax, personal-property, credential or token data requested or retained. No citywide completeness asserted.",
+  "remainingUncertainty": "Whether the official ArcGIS layer will answer a bounded point query; whether QUADR_C + LOTE_C provide stable parcel identity; exact geometry coverage at WUP point; layer currency/authority relative to legal cadastral boundaries.",
+  "research": {
+    "executedQueries": [
+      {
+        "language": "English",
+        "query": "Londrina Brazil official municipal parcel cadastre map GIS parcel lotes",
+        "scope": "Identify first-party registry/cadastre evidence and anonymous public parcel geometry.",
+        "result": "Official SIGLON city pages identify the public GIS; municipal ArcGIS REST publishes a polygon map layer carrying quadra/lote fields. Exact WUP-point feature query timed out.",
+        "actualResultUrls": [
+          "https://portal.londrina.pr.gov.br/mapa-cidade",
+          "https://portal.londrina.pr.gov.br/o-que-e-siglon",
+          "https://geo.londrina.pr.gov.br/server/rest/services/Gerais/BCarSiglon/MapServer/0?f=pjson",
+          "https://geo.londrina.pr.gov.br/server/rest/services/Gerais/BCarSiglon/MapServer/0"
+        ],
+        "executionMethod": "English-language web search followed by official-source/service inspection; no gated or property-specific queries."
+      },
+      {
+        "language": "Portuguese",
+        "query": "Londrina mapa cadastral lotes SIGLON geoprocessamento prefeitura oficial",
+        "scope": "Identify first-party registry/cadastre evidence and anonymous public parcel geometry in a local language.",
+        "result": "O portal municipal SIGLON permite consulta de dados georreferenciados; serviço ArcGIS municipal publica camada poligonal com campos de quadra e lote. A consulta espacial limitada ao ponto WUP expirou sem resposta.",
+        "actualResultUrls": [
+          "https://portal.londrina.pr.gov.br/mapa-cidade",
+          "https://portal.londrina.pr.gov.br/o-que-e-siglon",
+          "https://geo.londrina.pr.gov.br/server/rest/services/Gerais/BCarSiglon/MapServer/0?f=pjson",
+          "https://geo.londrina.pr.gov.br/server/rest/services/Gerais/BCarSiglon/MapServer/0"
+        ],
+        "executionMethod": "Separate local-language web search followed by official-source/service inspection; no gated or property-specific queries."
+      }
+    ],
+    "officialSources": [
+      {
+        "url": "https://portal.londrina.pr.gov.br/mapa-cidade",
+        "observation": "The municipal SIGLON portal describes citizen access to municipal geospatial data. Its official ArcGIS REST service exposes a polygon layer “Base Cartográfica com Quadra, Lote e Loteamento” (layer 0), with fields OBJECTID, QUADR_C, LOTE_C, NOME_LOTE and SHAPE in SIRGAS 2000 / UTM 22S (EPSG:31982). A bounded exact-WUP point query requesting only OBJECTID, QUADR_C, LOTE_C and geometry timed out at 25 seconds with zero bytes; no feature/ID/geometry was returned or retained."
+      },
+      {
+        "url": "https://portal.londrina.pr.gov.br/o-que-e-siglon",
+        "observation": "The municipal SIGLON portal describes citizen access to municipal geospatial data. Its official ArcGIS REST service exposes a polygon layer “Base Cartográfica com Quadra, Lote e Loteamento” (layer 0), with fields OBJECTID, QUADR_C, LOTE_C, NOME_LOTE and SHAPE in SIRGAS 2000 / UTM 22S (EPSG:31982). A bounded exact-WUP point query requesting only OBJECTID, QUADR_C, LOTE_C and geometry timed out at 25 seconds with zero bytes; no feature/ID/geometry was returned or retained."
+      },
+      {
+        "url": "https://geo.londrina.pr.gov.br/server/rest/services/Gerais/BCarSiglon/MapServer/0?f=pjson",
+        "observation": "The municipal SIGLON portal describes citizen access to municipal geospatial data. Its official ArcGIS REST service exposes a polygon layer “Base Cartográfica com Quadra, Lote e Loteamento” (layer 0), with fields OBJECTID, QUADR_C, LOTE_C, NOME_LOTE and SHAPE in SIRGAS 2000 / UTM 22S (EPSG:31982). A bounded exact-WUP point query requesting only OBJECTID, QUADR_C, LOTE_C and geometry timed out at 25 seconds with zero bytes; no feature/ID/geometry was returned or retained."
+      },
+      {
+        "url": "https://geo.londrina.pr.gov.br/server/rest/services/Gerais/BCarSiglon/MapServer/0",
+        "observation": "The municipal SIGLON portal describes citizen access to municipal geospatial data. Its official ArcGIS REST service exposes a polygon layer “Base Cartográfica com Quadra, Lote e Loteamento” (layer 0), with fields OBJECTID, QUADR_C, LOTE_C, NOME_LOTE and SHAPE in SIRGAS 2000 / UTM 22S (EPSG:31982). A bounded exact-WUP point query requesting only OBJECTID, QUADR_C, LOTE_C and geometry timed out at 25 seconds with zero bytes; no feature/ID/geometry was returned or retained."
+      }
+    ],
+    "requests": [
+      {
+        "url": "https://portal.londrina.pr.gov.br/o-que-e-siglon",
+        "method": "GET official municipal GIS description",
+        "result": "States that citizens can consume municipal georeferenced data through a browser."
+      },
+      {
+        "url": "https://geo.londrina.pr.gov.br/server/rest/services/Gerais/BCarSiglon/MapServer/0?f=pjson",
+        "method": "GET ArcGIS layer metadata (schema only)",
+        "httpStatus": 200,
+        "result": "Layer name “Base Cartográfica com Quadra, Lote e Loteamento”; polygon geometry; CRS EPSG:31982; fields OBJECTID (transport OID), QUADR_C, LOTE_C, NOME_LOTE, SHAPE; citywide layer extent. Candidate native identity fields are QUADR_C + LOTE_C; no feature values requested."
+      },
+      {
+        "url": "https://geo.londrina.pr.gov.br/server/rest/services/Gerais/BCarSiglon/MapServer/0/query?geometry=-51.1766120351161%2C-23.3040374340556&geometryType=esriGeometryPoint&inSR=4326&spatialRel=esriSpatialRelIntersects&outFields=OBJECTID%2CQUADR_C%2CLOTE_C&returnGeometry=true&outSR=4326&resultRecordCount=3&f=geojson",
+        "method": "GET bounded exact-WUP-point intersection, max 3 features",
+        "result": "Request timed out after 25 seconds with zero bytes; no feature attributes or geometry returned."
+      }
+    ]
+  },
+  "verifiedParcelResponse": null,
+  "source": {
+    "sourceId": "BR-4423-londrina-cadastre-review",
+    "name": "Municipal Londrina SIGLON ArcGIS Server — BCarSiglon “Base Cartográfica com Quadra, Lote e Loteamento” layer 0",
+    "url": "https://geo.londrina.pr.gov.br/server/rest/services/Gerais/BCarSiglon/MapServer/0",
+    "operator": "Brazil",
+    "serviceType": "Official municipal polygon feature layer, query enabled; one exact-point query timed out and did not return a feature.",
+    "layer": "Base Cartográfica com Quadra, Lote e Loteamento (layer 0)",
+    "geometryType": "Polygon",
+    "outputCrs": "EPSG:31982 (SIRGAS 2000 / UTM zone 22S)",
+    "nativeIdField": "Candidate combination QUADR_C + LOTE_C (feature values not returned); OBJECTID is service transport OID.",
+    "nativeIdEvidence": "Layer schema lists QUADR_C and LOTE_C and shape in EPSG:31982; point query timed out, so no feature identity was verified."
+  },
+  "wupCityCode": 4423,
+  "cityId": "wup2025:4423",
+  "queueRank": 910,
+  "centerLatLon": [
+    -23.3040374340556,
+    -51.1766120351161
+  ],
+  "sourceIds": [],
+  "adapterReady": false,
+  "technicalBlocker": "Research packet only; no runtime adapter qualification performed.",
+  "coverageAssessment": {
+    "claimedScope": "The municipal SIGLON portal describes citizen access to municipal geospatial data. Its official ArcGIS REST service exposes a polygon layer “Base Cartográfica com Quadra, Lote e Loteamento” (layer 0), with fields OBJECTID, QUADR_C, LOTE_C, NOME_LOTE and SHAPE in SIRGAS 2000 / UTM 22S (EPSG:31982). A bounded exact-WUP point query requesting only OBJECTID, QUADR_C, LOTE_C and geometry timed out at 25 seconds with zero bytes; no feature/ID/geometry was returned or retained.",
+    "verifiedOpenScope": "No parcel geometry verified at the exact WUP settlement point.",
+    "countrywideVerified": false,
+    "citywideVerified": false
+  },
+  "publicParcelGeometryCandidateFound": true,
+  "runtimeAssessment": {
+    "status": "not_enabled_no_verified_public_geometry",
+    "reason": "Research packet only; no runtime adapter qualification performed."
+  },
+  "rootPrimaryReadback": {
+    "url": "https://portal.londrina.pr.gov.br/mapa-cidade",
+    "fetch": 200,
+    "contentType": "text/html; charset=utf-8",
+    "title": "Portal da Prefeitura de Londrina - Mapa da Cidade"
+  },
+  "rootReviewNote": "Reviewed the specific primary institution/service evidence and its geographical, access and date limits. Direct readback failures are preserved separately from indexed primary evidence. No public full parcel geometry was verified for this city in this discovery pass.",
+  "rootReviewedAt": "2026-10-09T04:20:40.565226+00:00"
+}

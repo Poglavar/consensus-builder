@@ -1,0 +1,71 @@
+{
+  "name": "Arusha",
+  "country": "United Republic of Tanzania",
+  "countryCode": "TZ",
+  "rank": 665,
+  "point": [
+    -3.37643947086754,
+    36.6941032162482
+  ],
+  "freshResearch": {
+    "queries": [
+      {
+        "language": "English",
+        "query": "Arusha City Council official land cadastral GIS land registry parcel map Tanzania",
+        "result": "Found official Ministry of Lands documentation that e-Ardhi implementation includes Arusha City Council; the service provides land and title workflows through an account, not a public parcel geometry layer.",
+        "method": "Separate English-language search followed by official Ministry and city council review."
+      },
+      {
+        "language": "Swahili",
+        "query": "Arusha City Council ardhi ardhi cadastral registry ramani Arusha jiji",
+        "result": "Official Ministry of Lands material confirms Arusha City e-Ardhi deployment. The public rent form asks for title/plot IDs or owner/location fields, so no form data was entered.",
+        "method": "Separate Swahili-language search and official ministry service-page review."
+      }
+    ],
+    "portals": [
+      {
+        "name": "Arusha official land registry / map sources",
+        "operator": "Official city, regional or national authority as scoped in the observations",
+        "homeUrl": "https://eardhi.lands.go.tz/",
+        "observation": "The Ministry’s Swahili page names Arusha City among e-Ardhi councils. The platform requires an account for requests and application tracking. The public land-rent assessment page accepts title/plot IDs, owner type/name, area, block, and plot number; it is not a geometry-only service. No field was submitted and no account/login used. No anonymous parcel geometry was verified."
+      }
+    ],
+    "requests": []
+  },
+  "status": "complete",
+  "verifiedParcelResponse": null,
+  "source": null,
+  "coverageAssessment": {
+    "claimedScope": "The official Ministry of Lands states that e-Ardhi was operational in Arusha City Council and describes it as providing land planning, surveying, title registration, and valuation services. The city council portal itself identifies Arusha City Council but does not expose a cadastral map or registry. This establishes city-specific service coverage, not public parcel geometry.",
+    "verifiedOpenScope": "No anonymous public geometry-only parcel response was verified.",
+    "countrywideVerified": false
+  },
+  "registryFound": true,
+  "verifiedSample": false,
+  "resultCategory": "no_verified_sample_candidate_citywide",
+  "technicalBlocker": "The city land-service platform is account-based; the public assessment workflow requires property/title and owner/location fields. No geometry-only anonymous service was identified.",
+  "remainingUncertainty": "Whether Arusha City Council or Ministry e-Ardhi has a separate public map with geometry-only output beyond logged-in land services.",
+  "nextStep": "If parcel geometry is required, first verify an official public endpoint whose response can be limited to geometry and safe native IDs, then review coverage at the city point.",
+  "schemaVersion": 1,
+  "checkedAt": "2026-10-09",
+  "wupCityCode": 3133,
+  "cityId": "wup2025:3133",
+  "runtimeReadiness": "not_enabled_no_verified_public_geometry",
+  "adapterReady": false,
+  "centerLatLon": [
+    -3.37643947086754,
+    36.6941032162482
+  ],
+  "queueRank": 665,
+  "population2025": 795744,
+  "populationPlausibility2025": "Moderate",
+  "populationUnit": "persons",
+  "pointBasis": "UN WUP 2025 population-weighted settlement centroid; this is not a municipal boundary or a parcel-coverage claim.",
+  "publicParcelGeometryFound": false,
+  "sourceIds": [],
+  "registryBasis": "The official Ministry of Lands states that e-Ardhi was operational in Arusha City Council and describes it as providing land planning, surveying, title registration, and valuation services. The city council portal itself identifies Arusha City Council but does not expose a cadastral map or registry. This establishes city-specific service coverage, not public parcel geometry.",
+  "registryEvidenceUrls": [
+    "https://www.lands.go.tz/news/mfumo-wa-e-ardhi-kukamilika-ifikapo-juni-2026"
+  ],
+  "rootReviewedAt": "2026-10-09T02:33:40.013985+00:00"
+}

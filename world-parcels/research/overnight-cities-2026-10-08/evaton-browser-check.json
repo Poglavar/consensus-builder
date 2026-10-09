@@ -1,0 +1,15 @@
+{
+  "checkedAt": "2026-10-09T02:41:08.174596+00:00",
+  "appCityId": "evaton",
+  "url": "http://localhost:5638/?city=evaton&backend=http%3A%2F%2F127.0.0.1%3A5640&reduceMotion=1&lang=en",
+  "headedBrowser": true,
+  "loadedParcels": 71,
+  "visibleParcels": 19,
+  "parcelFetchFinished": true,
+  "selectionMethod": "Real pointer move/down/up at [600,409], then Details menu item",
+  "selectedParcelId": "ZA-CSG-DFFE-ERVEN-G421T0IQ010900001104000000",
+  "detailsHeading": "Parcel Copy to clipboard: ZA-CSG-DFFE-ERVEN-G421T0IQ010900001104000000",
+  "detailsMatchesSelectedParcel": true,
+  "uncaughtErrors": [],
+  "browserClosed": true
+}

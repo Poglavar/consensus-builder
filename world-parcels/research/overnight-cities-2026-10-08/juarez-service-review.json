@@ -1,0 +1,37 @@
+{
+  "schemaVersion": 1,
+  "checkedAt": "2026-10-08T23:56:37.852903+00:00",
+  "cityRecord": "city-5188-ciudad-juarez.json",
+  "operator": "Instituto Municipal de Investigación y Planeación (IMIP), Municipio de Juárez",
+  "officialSources": [
+    "https://www.imip.org.mx/sigem/",
+    "https://sigimip.org.mx/server/rest/services/CartografiaBase/FeatureServer/3"
+  ],
+  "rootDecision": "approved_for_bounded_runtime",
+  "assessment": "203 valid, distinct IMIP municipal Predios geometries verified in thirteen bounded 0.001-degree cells around the unchanged Ciudad Juárez WUP locator, which lies in a returned full polygon. GlobalID is the publisher-declared per-feature identity; OBJECTID is transport identity, and clavetxt remains only a label. The earlier clavetxt-based full-grid exact read matched 23,424 source rows because the label 0 is repeated, so that descriptor is rejected without filtering out such rows. Complete object-ID manifests, forced three-row paging of 31 source features over eleven geometry pages, all 203 fresh GlobalID reads, valid synthetic UUID absence, footprint and binding passed. Independent GEOS in EPSG:32613 found all 203 valid, nonduplicate and no sampled positive-area overlaps above 0.01 m² or operation errors. A malformed non-UUID absence probe correctly returned HTTP 400 and is preserved separately. All source shapes and labels remain unchanged. Citywide completeness, GlobalID continuity after publisher replacement, survey accuracy and legal-title semantics remain unverified.",
+  "nativeIdentityReview": {
+    "idField": "GlobalID",
+    "publisherMetadataObjectIdField": "OBJECTID",
+    "publisherMetadataGlobalIdField": "GlobalID",
+    "parcelLabel": "clavetxt",
+    "rejectedLabelQueryMatchedRows": 23424,
+    "labelQueryFieldsRequested": [
+      "OBJECTID",
+      "clavetxt"
+    ],
+    "acceptedFeatureFieldsRequested": [
+      "OBJECTID",
+      "GlobalID",
+      "clavetxt"
+    ],
+    "absenceFile": "juarez-valid-globalid-absence.json"
+  },
+  "acceptanceFile": "juarez-globalid-effective-acceptance.json",
+  "qualityFile": "juarez-globalid-root-quality.json",
+  "scopeLimits": {
+    "maxFullPolygonsRetainedInRepository": 3,
+    "ownerAddressTaxAttributesRetained": false,
+    "citywideCompletenessAsserted": false
+  },
+  "headedBrowserCheckFile": "research/overnight-cities-2026-10-08/juarez-browser-check.json"
+}

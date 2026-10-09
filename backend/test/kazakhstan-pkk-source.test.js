@@ -219,3 +219,52 @@ describe('Astana official PKK parcel source', () => {
         expect(result.features).toHaveLength(1);
     });
 });
+
+describe('Almaty official PKK district projection', () => {
+    const almatyPrefix = 'KZ-ALMATY-PKK-';
+    const almatyCrs = 'EPSG:32643';
+    const center = [76.909491597618, 43.2612968331175];
+    const metric = proj4('EPSG:4326', almatyCrs, center);
+    const almatyBounds = [center[0] - 0.0002, center[1] - 0.0002, center[0] + 0.0002, center[1] + 0.0002];
+    const override = { id: 'almaty-egkn-pkk', districtId: 244, idPrefix: almatyPrefix, projection: almatyCrs };
+    const crs = { type: 'name', properties: { name: 'urn:ogc:def:crs:EPSG::32643' } };
+
+    it('uses the published Almaty district SRS for bounds and fresh exact reference reads', async () => {
+        const native = row(7236597, '20311024010', geometryAt(metric));
+        const { source, fetchImpl } = makeSource([response([native], 1, { crs }), response([native], 1, { crs })], override);
+        const viewport = await source.queryBounds(almatyBounds);
+        expect(viewport.features[0].id).toBe(almatyPrefix + '20311024010');
+        const expected = proj4(almatyCrs, 'EPSG:4326', [metric[0] - 5, metric[1] - 5]);
+        const actual = viewport.features[0].geometry.coordinates[0][0][0];
+        expect(actual[0]).toBeCloseTo(expected[0], 8);
+        expect(actual[1]).toBeCloseTo(expected[1], 8);
+        const params = new URL(fetchImpl.mock.calls[0][0]).searchParams;
+        expect(params.get('viewparams')).toBe('district_id:244');
+        expect(params.get('srsname')).toBe(almatyCrs);
+        expect(params.get('bbox')).toMatch(/,EPSG:32643$/);
+        expect(JSON.stringify(viewport)).not.toContain('address_ru');
+        const reread = await source.queryIds([almatyPrefix + '20311024010']);
+        expect(reread.features).toEqual(viewport.features);
+        expect(reread.absentIds).toEqual([]);
+        const referenceParams = new URL(fetchImpl.mock.calls[1][0]).searchParams;
+        expect(referenceParams.get('viewparams')).toBe('district_id:244');
+        expect(referenceParams.has('bbox')).toBe(false);
+    });
+
+    it('rejects Astana CRS metadata in an Almaty response instead of silently reprojecting it', async () => {
+        const { source } = makeSource([response([row(7236597, '20311024010', geometryAt(metric))])], override);
+        await expect(source.queryBounds(almatyBounds)).rejects.toMatchObject({ status: 502 });
+    });
+
+    it('requires a verified district/projection/namespace combination before network access', () => {
+        expect(() => makeSource([], { ...override, projection: SOURCE_CRS })).toThrow(/descriptor/);
+        expect(() => makeSource([], { ...override, idPrefix: PREFIX })).toThrow(/descriptor/);
+        expect(() => makeSource([], { ...override, districtId: 999 })).toThrow(/descriptor/);
+    });
+
+    it('rejects references belonging to the other configured city before network access', async () => {
+        const { source, fetchImpl } = makeSource([], override);
+        await expect(source.queryIds([PREFIX + '21320072529'])).rejects.toMatchObject({ status: 400 });
+        expect(fetchImpl).not.toHaveBeenCalled();
+    });
+});

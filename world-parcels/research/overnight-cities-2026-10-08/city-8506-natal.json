@@ -1,0 +1,417 @@
+{
+  "name": "Natal",
+  "country": "Brazil",
+  "countryCode": "BR",
+  "rank": 471,
+  "point": [
+    -5.80172762143018,
+    -35.2365461225769
+  ],
+  "freshResearch": {
+    "queries": [
+      {
+        "language": "Portuguese (Brazilian)",
+        "query": "Natal Prefeitura GeoNatal cadastro territorial Parcelas Lotes mapa cadastral GIS",
+        "scope": "Find the municipal city-lot map and determine whether it offers a bounded geometry-only query.",
+        "result": "Official GeoNatal viewer catalog lists a Cadastro Territorial group with Parcelas (Lotes) split into four city zones. Its JavaScript loads each whole static GeoJSON file directly; this is a public vector snapshot, not a server-side geometry/ID query. File schema includes extra fields (bairro, inscricao, area) in addition to id and geometry, so no feature was retained or queried.",
+        "urls": [
+          "https://geomapas.natal.rn.gov.br/",
+          "https://geomapas.natal.rn.gov.br/api.php?listar_todos",
+          "https://www2.natal.rn.gov.br/_anexos/compras/anexo_num_3926.pdf"
+        ]
+      },
+      {
+        "language": "English",
+        "query": "Natal Brazil official municipal cadastral lot parcel GeoNatal city GIS",
+        "scope": "Cross-check city registry activity and the published lot-vector layer.",
+        "result": "English-indexed official municipal sources describe the city property-cadastre database and GeoNatal parcel group. No separate safe anonymous bounded-vector API or existing Natal runtime source was verified; the state SICAR layer is rural and is not treated as urban cadastre.",
+        "urls": [
+          "https://geomapas.natal.rn.gov.br/",
+          "https://www2.natal.rn.gov.br/_anexos/compras/anexo_num_3926.pdf",
+          "https://www2.natal.rn.gov.br/semurb/planodiretor/paginas/menu/aba5/pagina4.php"
+        ]
+      }
+    ],
+    "portals": [
+      {
+        "name": "GeoNatal — Cadastro Territorial / Parcelas (Lotes)",
+        "operator": "Prefeitura Municipal do Natal",
+        "homeUrl": "https://geomapas.natal.rn.gov.br/",
+        "observation": "Public city GIS catalogue lists four static urban lot GeoJSON snapshots, one per zone; all four returned 200 and were schema-checked. Snapshot field names/types: id integer, bairro string, inscricao string, area number; all geometries MultiPolygon in OGC:CRS84. No owner/person/address/account fields were present. Extra area and municipal inscription metadata were not retained in samples."
+      },
+      {
+        "name": "Natal municipal Cadastro Técnico Multifinalitário materials",
+        "operator": "Prefeitura Municipal do Natal",
+        "homeUrl": "https://www2.natal.rn.gov.br/_anexos/compras/anexo_num_3926.pdf",
+        "observation": "Official city technical specification calls for a municipal spatial CTM database covering properties, blocks and lots, with spatial IDs for administrative use. No personal/property record was queried."
+      },
+      {
+        "name": "SICAR RN rural property layer (excluded from city lots)",
+        "operator": "Serviço Florestal Brasileiro (SICAR)",
+        "homeUrl": "https://geoserver.car.gov.br/geoserver/sicar/ows",
+        "observation": "Existing research record is explicitly rural, self-declared environmental property perimeters; it is not Natal urban-lot cadastre and is not a substitute for GeoNatal."
+      }
+    ],
+    "requests": [
+      {
+        "url": "https://geomapas.natal.rn.gov.br/",
+        "method": "GET",
+        "httpStatus": 200,
+        "contentType": "text/html; charset=ISO-8859-1",
+        "observation": "Official municipal GeoNatal viewer; its public layer control shows Cadastro Territorial → Parcelas (Lotes), divided into four city zones."
+      },
+      {
+        "url": "https://geomapas.natal.rn.gov.br/dist/js/data.js",
+        "method": "GET",
+        "httpStatus": 200,
+        "contentType": "application/javascript",
+        "observation": "Viewer code requests the public layer list then loads each layer as uploads/{link}.geojson; no request-side bbox or field projection exists."
+      },
+      {
+        "url": "https://geomapas.natal.rn.gov.br/api.php?listar_todos",
+        "method": "GET",
+        "httpStatus": 200,
+        "contentType": "application/json",
+        "observation": "Public metadata response lists 221 GIS layers, including four parcel layers (IDs 22–25) and their separate 2025-named files."
+      },
+      {
+        "url": "https://geomapas.natal.rn.gov.br/uploads/lotes_zona_sul_12_02_2025_c4ba6dc4ecd731c091a580ac0faaf898.geojson",
+        "method": "GET",
+        "httpStatus": 200,
+        "contentLengthBytes": 27172090,
+        "featureCount": 40568,
+        "observation": "Full-zone GeoJSON schema only reviewed; OGC:CRS84, MultiPolygon, properties contain keys id, bairro, inscricao, area. No feature values or geometries retained from this zone."
+      },
+      {
+        "url": "https://geomapas.natal.rn.gov.br/uploads/lotes_zona_leste_12_02_2025_2b5d592e765e3b339b0c759edb7639a2.geojson",
+        "method": "GET",
+        "httpStatus": 200,
+        "contentLengthBytes": 20305906,
+        "featureCount": 29827,
+        "observation": "Full-zone GeoJSON schema only reviewed; same four fields/types and OGC:CRS84 MultiPolygon geometry. No feature values or geometries retained from this zone."
+      },
+      {
+        "url": "https://geomapas.natal.rn.gov.br/uploads/lotes_zona_oeste_12_02_2025_b7185ed0cfc138c9b4375889c11bdc95.geojson",
+        "method": "GET",
+        "httpStatus": 200,
+        "contentLengthBytes": 34970590,
+        "featureCount": 51598,
+        "observation": "Full-zone GeoJSON; property schema id integer, bairro string, inscricao string, area number; geometry MultiPolygon; CRS OGC:CRS84. HEAD returned Last-Modified 2025-05-15 and no strong ETag. One bounded query was also run through the existing snapshot adapter; only geometry and id were retained."
+      },
+      {
+        "url": "https://geomapas.natal.rn.gov.br/uploads/lotes_zona_norte_12_02_2025_59392b65890b37c086b6e34ee9afe933.geojson",
+        "method": "GET",
+        "httpStatus": 200,
+        "contentLengthBytes": 51945076,
+        "featureCount": 80438,
+        "observation": "Full-zone GeoJSON schema only reviewed; same four fields/types and OGC:CRS84 MultiPolygon geometry. No feature values or geometries retained from this zone."
+      },
+      {
+        "url": "https://geomapas.natal.rn.gov.br/uploads/lotes_zona_oeste_12_02_2025_b7185ed0cfc138c9b4375889c11bdc95.geojson",
+        "method": "HEAD",
+        "httpStatus": 200,
+        "observation": "Content-Length 34,970,590; Last-Modified 2025-05-15; no ETag. The runtime adapter temporary test used increased byte/feature limits and pinned the observed feature count, not a provider revision."
+      }
+    ]
+  },
+  "status": "complete",
+  "source": {
+    "sourceId": "br-natal-geonatal-lotes",
+    "name": "GeoNatal municipal Parcelas (Lotes) GeoJSON snapshots",
+    "url": "https://geomapas.natal.rn.gov.br/",
+    "operator": "Prefeitura Municipal do Natal",
+    "serviceType": "Four public static full-zone GeoJSON snapshots loaded by GeoNatal. A temporary run of the existing geojson-snapshot adapter against Zona Oeste returned complete bounded coverage at the population centroid; this was a manual descriptor with raised snapshot byte/feature limits, not an app/config mutation.",
+    "geometryType": "MultiPolygon",
+    "nativeIdField": "id (integer)",
+    "nativeIdEvidence": "All 212,431 zone features expose id as integer according to schema inspection. The temporary WUP-centered adapter query returned IDs 89327, 89531, and 90357. Legal cadastral-number semantics remain unconfirmed.",
+    "outputCrs": "OGC:CRS84 (WGS84 longitude/latitude)",
+    "schemaFields": [
+      {
+        "name": "id",
+        "type": "integer",
+        "retained": "identifier only"
+      },
+      {
+        "name": "bairro",
+        "type": "string",
+        "retained": false
+      },
+      {
+        "name": "inscricao",
+        "type": "string",
+        "retained": false
+      },
+      {
+        "name": "area",
+        "type": "number",
+        "retained": false
+      }
+    ],
+    "zoneSnapshots": [
+      {
+        "name": "Lotes - Zona Sul",
+        "url": "https://geomapas.natal.rn.gov.br/uploads/lotes_zona_sul_12_02_2025_c4ba6dc4ecd731c091a580ac0faaf898.geojson",
+        "httpStatus": 200,
+        "contentLengthBytes": 27172090,
+        "featureCount": 40568
+      },
+      {
+        "name": "Lotes - Zona Leste",
+        "url": "https://geomapas.natal.rn.gov.br/uploads/lotes_zona_leste_12_02_2025_2b5d592e765e3b339b0c759edb7639a2.geojson",
+        "httpStatus": 200,
+        "contentLengthBytes": 20305906,
+        "featureCount": 29827
+      },
+      {
+        "name": "Lotes - Zona Oeste",
+        "url": "https://geomapas.natal.rn.gov.br/uploads/lotes_zona_oeste_12_02_2025_b7185ed0cfc138c9b4375889c11bdc95.geojson",
+        "httpStatus": 200,
+        "contentLengthBytes": 34970590,
+        "featureCount": 51598,
+        "lastModified": "2025-05-15T12:46:12Z",
+        "strongEtagPresent": false
+      },
+      {
+        "name": "Lotes - Zona Norte",
+        "url": "https://geomapas.natal.rn.gov.br/uploads/lotes_zona_norte_12_02_2025_59392b65890b37c086b6e34ee9afe933.geojson",
+        "httpStatus": 200,
+        "contentLengthBytes": 51945076,
+        "featureCount": 80438
+      }
+    ]
+  },
+  "coverageAssessment": {
+    "claimedScope": "GeoNatal public municipal catalogue lists full-zone parcel GeoJSON snapshots for Natal urban zones Sul, Leste, Oeste, Norte.",
+    "verifiedOpenScope": "Existing snapshot adapter passed 13 aligned cells, four pans, all 786 bounded identities after a second complete HTTP 200 file read, absence and footprint intersection. Independent GEOS in EPSG:32725 found one duplicate normalized-geometry group and 50 parcel pairs overlapping above 0.01 m². Runtime is held for source topology; no filtering or repair was applied. The observed Oeste file contains 51,598 features; no publisher ETag was provided. Other zones remain unqualified.",
+    "countrywideVerified": false
+  },
+  "registryFound": true,
+  "verifiedSample": true,
+  "resultCategory": "verified_public_geometry_runtime_candidate",
+  "technicalBlocker": "Existing snapshot adapter passed 13 aligned cells, four pans, all 786 bounded identities after a second complete HTTP 200 file read, absence and footprint intersection. Independent GEOS in EPSG:32725 found one duplicate normalized-geometry group and 50 parcel pairs overlapping above 0.01 m². Runtime is held for source topology; no filtering or repair was applied. The observed Oeste file contains 51,598 features; no publisher ETag was provided. Other zones remain unqualified.",
+  "remainingUncertainty": "Whether all zone files are a coherent current and exhaustive parcel fabric, whether numeric id is an official legal parcel identifier, cross-zone ID uniqueness, inter-zone seams/overlap, and public reuse terms. Only Zona Oeste around the population centroid was geometry-tested. Last-Modified suggests dated publication but no ETag protects source revision.",
+  "nextStep": "Retain topology evidence; await a publisher revision or demonstrated coherent source fabric before runtime enablement.",
+  "schemaVersion": 1,
+  "checkedAt": "2026-10-09",
+  "wupCityCode": 8506,
+  "cityId": "wup2025:8506",
+  "runtimeReadiness": "held_geometry_quality",
+  "adapterReady": false,
+  "centerLatLon": [
+    -5.80172762143018,
+    -35.2365461225769
+  ],
+  "queueRank": 471,
+  "population2025": 1089473,
+  "populationPlausibility2025": "High",
+  "populationUnit": "persons",
+  "pointBasis": "UN WUP 2025 population-weighted settlement centroid; this is not a municipal boundary or a parcel-coverage claim.",
+  "publicParcelGeometryFound": true,
+  "sourceIds": [
+    "br-natal-geonatal-lotes"
+  ],
+  "registryBasis": "The official city GeoNatal portal directly publishes the urban Parcelas (Lotes) layers; city CTM material identifies the municipal parcel database as a city-managed spatial dataset.",
+  "rootReviewedAt": "2026-10-09T00:27:07.816662+00:00",
+  "verifiedParcelResponse": {
+    "url": "https://geomapas.natal.rn.gov.br/uploads/lotes_zona_oeste_12_02_2025_b7185ed0cfc138c9b4375889c11bdc95.geojson",
+    "method": "GET through existing geojson-snapshot adapter (temporary descriptor)",
+    "httpStatus": 200,
+    "contentType": "HTTP Content-Type header absent; JSON body parsed successfully",
+    "featureCount": 3,
+    "geometryType": "MultiPolygon",
+    "coordinateCrs": "OGC:CRS84",
+    "fullGeometryReturned": true,
+    "clipped": false,
+    "queryBounds": [
+      -35.2365961225769,
+      -5.80177762143018,
+      -35.236496122576895,
+      -5.80167762143018
+    ],
+    "queryLocation": "WUP 2025 point -5.80172762143018, -35.2365461225769 with ±0.00005° bounds",
+    "snapshotReadSemantics": "Adapter read the complete Zona Oeste static GeoJSON snapshot (51,598 features; 34,970,590 bytes), indexed it in memory with id as the only retained source property, and returned all three features intersecting the tiny query bbox. Full source polygons were returned without clipping. No owner/address/tax/account values were retained.",
+    "samples": [
+      {
+        "id": "89327",
+        "geometry": {
+          "type": "MultiPolygon",
+          "coordinates": [
+            [
+              [
+                [
+                  -35.23654210810652,
+                  -5.801816020107092,
+                  0
+                ],
+                [
+                  -35.23643505029006,
+                  -5.801646159182998,
+                  0
+                ],
+                [
+                  -35.2364213972232,
+                  -5.801624496840062,
+                  0
+                ],
+                [
+                  -35.23634070452209,
+                  -5.80167336307767,
+                  0
+                ],
+                [
+                  -35.23637109840312,
+                  -5.801725128825978,
+                  0
+                ],
+                [
+                  -35.23644581030944,
+                  -5.801852375374658,
+                  0
+                ],
+                [
+                  -35.236449816180084,
+                  -5.801859198023829,
+                  0
+                ],
+                [
+                  -35.236454975784476,
+                  -5.801867985680112,
+                  0
+                ],
+                [
+                  -35.236502689319195,
+                  -5.801839529411256,
+                  0
+                ],
+                [
+                  -35.23650503434732,
+                  -5.801838130844515,
+                  0
+                ],
+                [
+                  -35.23654210810652,
+                  -5.801816020107092,
+                  0
+                ]
+              ]
+            ]
+          ]
+        }
+      },
+      {
+        "id": "89531",
+        "geometry": {
+          "type": "MultiPolygon",
+          "coordinates": [
+            [
+              [
+                [
+                  -35.23662874604674,
+                  -5.801764349364586,
+                  0
+                ],
+                [
+                  -35.23652097777772,
+                  -5.801592207830004,
+                  0
+                ],
+                [
+                  -35.236508260344735,
+                  -5.801571893876797,
+                  0
+                ],
+                [
+                  -35.2364213972232,
+                  -5.801624496840062,
+                  0
+                ],
+                [
+                  -35.23643505029006,
+                  -5.801646159182998,
+                  0
+                ],
+                [
+                  -35.23654210810652,
+                  -5.801816020107092,
+                  0
+                ],
+                [
+                  -35.236581851638164,
+                  -5.801792317127211,
+                  0
+                ],
+                [
+                  -35.23662874604674,
+                  -5.801764349364586,
+                  0
+                ]
+              ]
+            ]
+          ]
+        }
+      },
+      {
+        "id": "90357",
+        "geometry": {
+          "type": "MultiPolygon",
+          "coordinates": [
+            [
+              [
+                [
+                  -35.23671202255199,
+                  -5.801714683363577,
+                  0
+                ],
+                [
+                  -35.2366303569087,
+                  -5.801580175647282,
+                  0
+                ],
+                [
+                  -35.23659385680151,
+                  -5.801520057973287,
+                  0
+                ],
+                [
+                  -35.236508260344735,
+                  -5.801571893876797,
+                  0
+                ],
+                [
+                  -35.23652097777772,
+                  -5.801592207830004,
+                  0
+                ],
+                [
+                  -35.23662874604674,
+                  -5.801764349364586,
+                  0
+                ],
+                [
+                  -35.23666039943939,
+                  -5.801745471330322,
+                  0
+                ],
+                [
+                  -35.23671202255199,
+                  -5.801714683363577,
+                  0
+                ]
+              ]
+            ]
+          ]
+        }
+      }
+    ],
+    "attributePolicy": "Only numeric source id plus complete geometry retained. Other published fields (bairro, inscricao, area) were schema-checked by name/type and discarded from the sample artifacts."
+  },
+  "registryEvidenceUrls": [
+    "https://geomapas.natal.rn.gov.br/"
+  ],
+  "runtimeAssessment": {
+    "status": "held_geometry_quality",
+    "reason": "Existing snapshot adapter passed 13 aligned cells, four pans, all 786 bounded identities after a second complete HTTP 200 file read, absence and footprint intersection. Independent GEOS in EPSG:32725 found one duplicate normalized-geometry group and 50 parcel pairs overlapping above 0.01 m². Runtime is held for source topology; no filtering or repair was applied. The observed Oeste file contains 51,598 features; no publisher ETag was provided. Other zones remain unqualified.",
+    "acceptanceFile": "research/overnight-cities-2026-10-08/natal-oeste-acceptance.json",
+    "qualityFile": "research/overnight-cities-2026-10-08/natal-oeste-quality.json"
+  }
+}

@@ -1,0 +1,47 @@
+{
+  "schemaVersion": 1,
+  "checkedAt": "2026-10-09",
+  "cityId": "vitoria",
+  "sourceId": "br-vitoria-lotes",
+  "browser": "Dedicated headed Chrome",
+  "url": "http://localhost:5638/?city=vitoria&backend=http%3A%2F%2Flocalhost%3A5640&reduceMotion=1",
+  "initialLoadedParcels": 181,
+  "initialViewportCount": 59,
+  "selectedParcelId": "BR-VIX-LOTE-44800~56822",
+  "mapMenuAreaM2Rounded": 915,
+  "detailsOpened": true,
+  "detailsIdentityMatches": true,
+  "uncaughtBrowserErrors": [],
+  "browserClosed": true,
+  "failedRequests": [
+    {
+      "bbox": [
+        -40.315,
+        -20.314,
+        -40.314,
+        -20.313
+      ],
+      "gatewayHttpStatus": 504,
+      "initialMessage": "Parcel provider timed out.",
+      "retry": "Immediate visitor retry remained unavailable during the provider cooldown."
+    }
+  ],
+  "consoleErrors": [
+    "Initial parcel fetch provider timeout",
+    "Immediate retry remained unavailable"
+  ],
+  "scope": "Geometry selection and Details succeeded from loaded official polygons; complete initial viewport load did not pass. Preserve this failure when recording any follow-up.",
+  "freshBoundedConcurrencyFollowup": {
+    "loadedParcels": 199,
+    "reportedViewportCount": 199,
+    "selectedParcelId": "BR-VIX-LOTE-44800~56822",
+    "menuAreaM2Rounded": 915,
+    "detailsOpened": true,
+    "detailsIdentityMatches": true,
+    "initialViewportSucceeded": true,
+    "uncaughtBrowserErrors": [],
+    "browserClosed": true,
+    "maxConcurrentQueries": 2,
+    "causalLimit": "Six requests also passed unrestricted; original timeout cause is not proven."
+  }
+}

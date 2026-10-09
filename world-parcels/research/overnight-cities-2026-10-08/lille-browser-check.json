@@ -1,0 +1,23 @@
+{
+  "checkedAt": "2026-10-09T01:50:42.933243+00:00",
+  "city": "lille",
+  "sourceId": "fr-ign-parcellaire-express",
+  "result": "passed_manual_headed_app_check",
+  "loadedParcels": 436,
+  "visibleCenterCount": 93,
+  "selectedParcelId": "FR-PCI-59378000BH0158",
+  "detailsIdMatchesSelection": true,
+  "pointerClick": {
+    "x": 503,
+    "y": 364,
+    "pointLatLon": [
+      50.658899835,
+      3.10500899
+    ],
+    "pointBasis": "point on a verified visible Marcq-en-Bar\u0153ul parcel near the unchanged metropolitan settlement locator"
+  },
+  "mapBounds": "3.1036591529846196,50.65812810070848,3.1068778038024902,50.659518987915455",
+  "uncaughtPageErrors": 0,
+  "sourceUnavailableWarnings": [],
+  "browserClosed": true
+}

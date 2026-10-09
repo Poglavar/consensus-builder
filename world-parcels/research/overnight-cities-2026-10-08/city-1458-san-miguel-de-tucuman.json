@@ -1,0 +1,201 @@
+{
+  "schemaVersion": 1,
+  "kind": "city_parcel_source_research",
+  "checkedAt": "2026-10-09",
+  "country": "Argentina",
+  "countryCode": "AR",
+  "populationUnit": "persons",
+  "status": "complete",
+  "verifiedSample": false,
+  "publicParcelGeometryFound": false,
+  "runtimeReadiness": "not_enabled_no_verified_public_geometry",
+  "adapterReady": false,
+  "priorEvidenceFiles": [],
+  "scopeLimits": "The WUP point is a population-cluster locator, not a municipal boundary or official parcel identity. A single point hit or an unsuccessful point-centered geometry request cannot establish citywide coverage. No personal owner, address, tax, account, or applicant data was requested or retained; no authentication, CAPTCHA, credentials, or token was used.",
+  "wupCityCode": 1458,
+  "queueRank": 541,
+  "name": "San Miguel de Tucumán",
+  "centerLatLon": [
+    -26.8252181813735,
+    -65.2162963375371
+  ],
+  "population2025": 959565,
+  "population2025k": 959.565,
+  "populationPlausibility2025": "Moderate",
+  "pointBasis": "UN WUP 2025 population-weighted settlement centroid; this is not a municipal boundary or a parcel-coverage claim.",
+  "registryFound": true,
+  "registryBasis": "San Miguel de Tucumán’s own SMT municipal guide explicitly locates the Directorate of Catastro and Edificación in this city and documents parcel division, unification and registration procedures. The provincial Tucumán DGC public map and WFS metadata corroborate local cadastral mapping. No full parcel polygon was obtained from three bounded geometry-only requests; this is not an absence claim.",
+  "registryEvidenceUrls": [
+    "https://guiadetramites.smt.gob.ar/categoria?sub=206",
+    "https://aplicaciones.catastrotucuman.gov.ar/publicmaprube1.html",
+    "https://mapas.catastrotucuman.gov.ar/geoserver/dgct/wfs"
+  ],
+  "resultCategory": "city_local_registry_evidence_no_verified_public_geometry",
+  "technicalBlocker": "Three bounded public WFS GetFeature requests restricted to geometry and safe KEY failed without an HTTP response, including one root WFS 1.1.0 CQL-BBOX follow-through. No full parcel geometry, absence response or runtime contract is verified.",
+  "remainingUncertainty": "Whether the official WFS will return a bounded geometry response under normal load; current layer vintage, record identity semantics and citywide coverage. No property-specific padrón request was made.",
+  "nextStep": "Review a bounded public geometry response when the documented DGC WFS returns one, then verify identities and original geometry.",
+  "research": {
+    "executedQueries": [
+      {
+        "language": "English",
+        "query": "San Miguel de Tucumán cadastral parcel GIS public query municipal Catastro Tucumán",
+        "scope": "Find city-local cadastral registry evidence and safe anonymous parcel-geometry routes.",
+        "result": "The search also returned San Miguel in Buenos Aires; root city-identity review excludes that result. The separate SMT municipal guide and Tucumán DGC source establish target-city cadastre evidence.",
+        "actualResultUrls": [
+          "https://www.msm.gov.ar/guia-tramites/catastro/",
+          "https://aplicaciones.catastrotucuman.gov.ar/publicmaprube1.html",
+          "https://mapas.catastrotucuman.gov.ar/geoserver/dgct/wfs"
+        ],
+        "executionMethod": "Web search followed by primary-page or public metadata inspection."
+      },
+      {
+        "language": "Spanish",
+        "query": "San Miguel de Tucumán Catastro municipal mapa parcelario registro de propiedades Consulta Catastro Digital",
+        "scope": "Find city-local cadastral registry evidence and safe anonymous parcel-geometry routes.",
+        "result": "The search also returned San Miguel in Buenos Aires; root city-identity review excludes that result. The separate SMT municipal guide and Tucumán DGC source establish target-city cadastre evidence.",
+        "actualResultUrls": [
+          "https://www.msm.gov.ar/guia-tramites/catastro/",
+          "https://guiadetramites.smt.gob.ar/categoria?sub=206",
+          "https://aplicaciones.catastrotucuman.gov.ar/publicmaprube1.html"
+        ],
+        "executionMethod": "Web search followed by primary-page or public metadata inspection."
+      }
+    ],
+    "officialSources": [
+      {
+        "url": "https://www.msm.gov.ar/guia-tramites/catastro/",
+        "method": "official-source inspection",
+        "observation": "Excluded from registry evidence: this page belongs to San Miguel municipality in Buenos Aires, as its footer explicitly states; it is a different settlement.",
+        "cityIdentityMatch": false
+      },
+      {
+        "url": "https://guiadetramites.smt.gob.ar/categoria?sub=206",
+        "method": "GET",
+        "observation": "Municipal Catastro y Edificación guide describes that specific property information requires DNI and evidence of interest; this route was not submitted. It also identifies Catastro and Edificación/land-survey services.",
+        "status": 200,
+        "contentType": "text/html",
+        "bytes": 154319
+      },
+      {
+        "url": "https://aplicaciones.catastrotucuman.gov.ar/publicmaprube1.html",
+        "method": "GET",
+        "observation": "Official DGC map HTML exposes a padrón search field and parcel/map controls; no padrón value was entered. Static JavaScript declares WMS layers PARCELASR and PARCELASRUBE at the official mapas.catastrotucuman.gov.ar GeoServer.",
+        "status": 200,
+        "contentType": "text/html",
+        "bytes": 31615
+      },
+      {
+        "url": "https://mapas.catastrotucuman.gov.ar/geoserver/dgct/wms?service=WMS&request=GetCapabilities&version=1.3.0",
+        "method": "GET",
+        "observation": "Official WMS GetCapabilities returned public map layers including PARCELASR, PARCELASRUBE, streets and block layers; no feature rows were requested.",
+        "status": 200,
+        "contentType": "text/xml",
+        "bytes": 311096
+      },
+      {
+        "url": "https://mapas.catastrotucuman.gov.ar/geoserver/dgct/wfs?service=WFS&request=GetCapabilities&version=2.0.0",
+        "method": "GET",
+        "observation": "Official WFS GetCapabilities lists feature types including dgct:PARCELASRUBE and dgct:parcelas.",
+        "status": 200,
+        "contentType": "application/xml",
+        "bytes": 100090
+      },
+      {
+        "url": "https://mapas.catastrotucuman.gov.ar/geoserver/dgct/wfs?service=WFS&version=2.0.0&request=DescribeFeatureType&typeNames=dgct:PARCELASRUBE",
+        "method": "GET",
+        "observation": "Schema only: GEOMETRY (Surface), KEY (string), ADMPCOLOR (decimal), DESCRIP (string); no owner/name/address/tax fields.",
+        "status": 200,
+        "contentType": "application/gml+xml; version=3.2",
+        "bytes": 1232
+      }
+    ],
+    "requestsAndEndpointChecks": [
+      {
+        "method": "GET",
+        "url": "https://aplicaciones.catastrotucuman.gov.ar/publicmaprube1.html",
+        "status": 200,
+        "contentType": "text/html",
+        "bytes": 31615,
+        "observation": "Static public map page loaded; its form was not submitted. HTML/inline JavaScript exposes DGC WMS parcel layers."
+      },
+      {
+        "method": "GET",
+        "url": "https://mapas.catastrotucuman.gov.ar/geoserver/dgct/wms?service=WMS&request=GetCapabilities&version=1.3.0",
+        "status": 200,
+        "contentType": "text/xml",
+        "bytes": 311096,
+        "observation": "Public map-layer metadata only."
+      },
+      {
+        "method": "GET",
+        "url": "https://mapas.catastrotucuman.gov.ar/geoserver/dgct/wfs?service=WFS&request=GetCapabilities&version=2.0.0",
+        "status": 200,
+        "contentType": "application/xml",
+        "bytes": 100090,
+        "observation": "Public WFS feature-type metadata only; no feature rows requested."
+      },
+      {
+        "method": "GET",
+        "url": "https://mapas.catastrotucuman.gov.ar/geoserver/dgct/wfs?service=WFS&version=2.0.0&request=DescribeFeatureType&typeNames=dgct:PARCELASRUBE",
+        "status": 200,
+        "contentType": "application/gml+xml; version=3.2",
+        "bytes": 1232,
+        "observation": "Schema for the candidate layer contains only geometry, KEY, ADMPCOLOR and DESCRIP fields; no personal fields."
+      },
+      {
+        "method": "GET",
+        "url": "https://mapas.catastrotucuman.gov.ar/geoserver/dgct/wfs?service=WFS&version=2.0.0&request=GetFeature&typeNames=dgct%3APARCELASRUBE&count=3&outputFormat=application%2Fjson&srsName=urn%3Aogc%3Adef%3Acrs%3AOGC%3A1.3%3ACRS84&propertyName=GEOMETRY&bbox=-65.21642%2C-26.82536%2C-65.21617%2C-26.82508%2Curn%3Aogc%3Adef%3Acrs%3AOGC%3A1.3%3ACRS84",
+        "status": "no HTTP response; read timed out",
+        "contentType": "unavailable",
+        "observation": "Bounded geometry-only GetFeature request in CRS84 around the WUP point timed out; no response body or HTTP status was received."
+      },
+      {
+        "method": "GET",
+        "url": "https://mapas.catastrotucuman.gov.ar/geoserver/dgct/wfs?service=WFS&version=2.0.0&request=GetFeature&typeNames=dgct%3APARCELASRUBE&count=3&outputFormat=application%2Fjson&srsName=urn%3Aogc%3Adef%3Acrs%3AOGC%3A1.3%3ACRS84&propertyName=GEOMETRY&bbox=7033437%2C3577883%2C7033487%2C3577933%2Curn%3Aogc%3Adef%3Acrs%3AEPSG%3A%3A5345",
+        "status": "no HTTP response; read timed out",
+        "contentType": "unavailable",
+        "observation": "One narrower 50 m geometry-only request used the feature type native CRS EPSG:5345 and the schema-approved GEOMETRY field; it also timed out without an HTTP response. No feature count or absence inference is possible."
+      }
+    ],
+    "coverageAssessment": {
+      "verifiedOpenScope": "San Miguel de Tucumán’s own SMT municipal guide explicitly locates the Directorate of Catastro and Edificación in this city and documents parcel division, unification and registration procedures. The provincial Tucumán DGC public map and WFS metadata corroborate local cadastral mapping. No full parcel polygon was obtained from three bounded geometry-only requests; this is not an absence claim.",
+      "citywideVerified": false,
+      "countrywideVerified": false,
+      "geometryVerified": false
+    }
+  },
+  "cityId": "wup2025:1458",
+  "point": [
+    -26.8252181813735,
+    -65.2162963375371
+  ],
+  "sourceIds": [],
+  "verifiedParcelResponse": null,
+  "registryEvidence": {
+    "registryFound": true,
+    "registryBasis": "The municipality’s Catastro y Edificación office states that it maintains the municipal property and real-estate register and handles parcel identification, valuation and boundary-related procedures. The municipal guide says property-specific consultations require identity and proof of interest, so no such query was made. The provincial DGC public map advertises parcel layers and has a public WFS metadata/schema route; this confirms local cadastre evidence, but its bounded geometry requests timed out and no sample was obtained.",
+    "officialSourceUrls": [
+      "https://www.msm.gov.ar/guia-tramites/catastro/",
+      "https://guiadetramites.smt.gob.ar/categoria?sub=206",
+      "https://aplicaciones.catastrotucuman.gov.ar/publicmaprube1.html",
+      "https://mapas.catastrotucuman.gov.ar/geoserver/dgct/wfs"
+    ]
+  },
+  "rootSupplementalResearch": {
+    "excludedSameNameSource": "https://www.msm.gov.ar/guia-tramites/catastro/",
+    "exclusionReason": "Footer explicitly says San Miguel, Provincia de Buenos Aires.",
+    "targetCitySource": "https://guiadetramites.smt.gob.ar/categoria?sub=206",
+    "observation": "Target SMT guide explicitly names San Miguel de Tucumán and its local cadastre/land-survey procedures.",
+    "geometryFollowthrough": {
+      "protocol": "WFS1.1.0",
+      "output": "GeoJSON EPSG4326",
+      "fields": [
+        "GEOMETRY",
+        "KEY"
+      ],
+      "maximumFeatures": 3,
+      "result": "No HTTP response; TimeoutError."
+    }
+  },
+  "rootReviewedAt": "2026-10-09T01:29:32.105621+00:00"
+}

@@ -1,0 +1,5502 @@
+{
+  "schemaVersion": 1,
+  "purpose": "Live city parcel qualification with unmodified responses through the repository adapter; IDs and hashes retained, full geometries confined to temporary audit cache except three public samples.",
+  "checkedAt": "2026-10-09T03:56:27.769Z",
+  "city": "toulouse-ign-root",
+  "descriptor": {
+    "id": "fr-ign-parcellaire-express",
+    "name": "France IGN/DGFiP Parcellaire Express (PCI)",
+    "adapter": "wfs",
+    "endpoint": "https://data.geopf.fr/wfs/ows",
+    "featureType": "CADASTRALPARCELS.PARCELLAIRE_EXPRESS:parcelle",
+    "idField": "idu",
+    "idType": "string",
+    "idPattern": "^[0-9A-Z]{14}$",
+    "idPrefix": "FR-PCI-",
+    "outFields": [
+      "idu",
+      "numero",
+      "section",
+      "code_insee",
+      "nom_com",
+      "code_dep",
+      "code_com",
+      "code_arr",
+      "com_abs",
+      "contenance"
+    ],
+    "pageSize": 1000,
+    "maxFeatures": 10000,
+    "maxBboxKm2": 25,
+    "countryCode": "FR",
+    "metricSrid": 32631,
+    "scope": "85 valid distinct cadastral-reference polygons verified in thirteen bounded 0.001-degree cells around the unchanged WUP settlement locator. Complete counted paging, forced three-row geometry pages, all 85 fresh exact native identities, explicit absence, footprint and source binding passed in 31 requests. Independent metric EPSG:32631 GEOS found all polygons valid and distinct, with no sampled overlaps above 0.01 m² or operation errors. The existing national IGN/DGFiP Parcellaire Express provider and FR-PCI native idu namespace are reused. The exact WUP point returned no parcel; both original bounded-nearby samples have Toulouse INSEE prefix31555 and match fresh complete geometry exactly. No municipality boundary was inferred from the WUP point, and no full-city coverage claim is made. Legal title, survey accuracy, currentness, long-term key continuity and wider municipal completeness remain unverified.",
+    "evidenceFile": "research/overnight-cities-2026-10-08/toulouse-ign-root-acceptance.json",
+    "attribution": "IGN/DGFiP, Parcellaire Express (PCI), catalogue and updates linked; accessed October 2, 2026. Licence Ouverte 2.0. Adapted to WGS84.",
+    "licenceUrl": "https://www.data.gouv.fr/pages/legal/licences/etalab-2.0",
+    "catalogueUrl": "https://www.data.gouv.fr/datasets/parcellaire-express-pci",
+    "parcelNumberField": "numero",
+    "cityIds": [
+      "toulouse"
+    ],
+    "additionalCityEvidence": {
+      "marseille": "research/overnight-cities-2026-10-08/marseille-ign-root-acceptance.json",
+      "lille": "research/overnight-cities-2026-10-08/lille-ign-root-acceptance.json"
+    },
+    "cityScopes": {
+      "marseille": "331 valid, distinct official cadastral polygons verified in thirteen local 0.001-degree cells around the unchanged WUP settlement locator. Complete pages, forced three-row pagination, all 331 fresh native cadastral-reference reads, valid synthetic absence, footprint and source binding passed. Independent GEOS in EPSG:32631 found no invalid polygons, duplicate geometry, overlaps above 0.01 m² or operation errors. Marseille commune; the unchanged WUP point lies within returned parcel geometry. Wider municipal completeness, legal boundary accuracy and long-term identifier continuity remain unverified.",
+      "lille": "281 valid, distinct official cadastral polygons verified in thirteen local 0.001-degree cells around the unchanged WUP settlement locator. Complete pages, forced three-row pagination, all 281 fresh native cadastral-reference reads, valid synthetic absence, footprint and source binding passed. Independent GEOS in EPSG:32631 found no invalid polygons, duplicate geometry, overlaps above 0.01 m² or operation errors. Lille metropolitan settlement locator near Marcq-en-Barœul, which is a separate commune. The initial query restricted to Lille commune 59350 returned no parcel at the WUP point; the existing nationwide IGN provider verifies nearby ground at the unchanged locator without that municipal restriction. Wider municipal completeness, legal boundary accuracy and long-term identifier continuity remain unverified.",
+      "toulouse": "85 valid distinct cadastral-reference polygons verified in thirteen bounded 0.001-degree cells around the unchanged WUP settlement locator. Complete counted paging, forced three-row geometry pages, all 85 fresh exact native identities, explicit absence, footprint and source binding passed in 31 requests. Independent metric EPSG:32631 GEOS found all polygons valid and distinct, with no sampled overlaps above 0.01 m² or operation errors. The existing national IGN/DGFiP Parcellaire Express provider and FR-PCI native idu namespace are reused. The exact WUP point returned no parcel; both original bounded-nearby samples have Toulouse INSEE prefix31555 and match fresh complete geometry exactly. No municipality boundary was inferred from the WUP point, and no full-city coverage claim is made. Legal title, survey accuracy, currentness, long-term key continuity and wider municipal completeness remain unverified."
+    },
+    "operator": "IGN / Direction générale des Finances publiques",
+    "maxConcurrentQueries": 2,
+    "licenceNote": "Public publisher geometry and attribution verified; provider conditions remain informational. Geometry does not establish legal title, survey accuracy or currentness. Personal fields excluded."
+  },
+  "grid": [
+    {
+      "name": "viewport-0",
+      "bbox": [
+        1.424,
+        43.603,
+        1.425,
+        43.604
+      ],
+      "kind": "aligned-grid"
+    },
+    {
+      "name": "viewport-1",
+      "bbox": [
+        1.425,
+        43.603,
+        1.426,
+        43.604
+      ],
+      "kind": "aligned-grid"
+    },
+    {
+      "name": "viewport-2",
+      "bbox": [
+        1.426,
+        43.603,
+        1.427,
+        43.604
+      ],
+      "kind": "aligned-grid"
+    },
+    {
+      "name": "viewport-3",
+      "bbox": [
+        1.424,
+        43.604,
+        1.425,
+        43.605
+      ],
+      "kind": "aligned-grid"
+    },
+    {
+      "name": "viewport-4",
+      "bbox": [
+        1.425,
+        43.604,
+        1.426,
+        43.605
+      ],
+      "kind": "aligned-grid"
+    },
+    {
+      "name": "viewport-5",
+      "bbox": [
+        1.426,
+        43.604,
+        1.427,
+        43.605
+      ],
+      "kind": "aligned-grid"
+    },
+    {
+      "name": "viewport-6",
+      "bbox": [
+        1.424,
+        43.605,
+        1.425,
+        43.606
+      ],
+      "kind": "aligned-grid"
+    },
+    {
+      "name": "viewport-7",
+      "bbox": [
+        1.425,
+        43.605,
+        1.426,
+        43.606
+      ],
+      "kind": "aligned-grid"
+    },
+    {
+      "name": "viewport-8",
+      "bbox": [
+        1.426,
+        43.605,
+        1.427,
+        43.606
+      ],
+      "kind": "aligned-grid"
+    },
+    {
+      "name": "viewport-9",
+      "bbox": [
+        1.425,
+        43.602,
+        1.426,
+        43.603
+      ],
+      "kind": "adjacent-pan"
+    },
+    {
+      "name": "viewport-10",
+      "bbox": [
+        1.425,
+        43.606,
+        1.426,
+        43.607
+      ],
+      "kind": "adjacent-pan"
+    },
+    {
+      "name": "viewport-11",
+      "bbox": [
+        1.423,
+        43.604,
+        1.424,
+        43.605
+      ],
+      "kind": "adjacent-pan"
+    },
+    {
+      "name": "viewport-12",
+      "bbox": [
+        1.427,
+        43.604,
+        1.428,
+        43.605
+      ],
+      "kind": "adjacent-pan"
+    }
+  ],
+  "tests": [
+    {
+      "name": "viewport-0",
+      "passed": true,
+      "elapsedMs": 266,
+      "requestIndexes": [
+        0,
+        0
+      ],
+      "bbox": [
+        1.424,
+        43.603,
+        1.425,
+        43.604
+      ],
+      "complete": true,
+      "count": 8,
+      "ids": [
+        {
+          "id": "FR-PCI-31555828AB0393",
+          "geometrySha256": "aab16bea24b444976a9e30c749d36d90598ef745a2da42ba5e32594e9aba325b"
+        },
+        {
+          "id": "FR-PCI-31555828AB0394",
+          "geometrySha256": "b49093c0d9852ffee84fab2943eb74f0e9cbfed56f83dec65c920957eda62227"
+        },
+        {
+          "id": "FR-PCI-31555828AB0402",
+          "geometrySha256": "37befe11a7077914c64fa608d9c34e5c5bafbd036f742ea92619d818ebad6bdf"
+        },
+        {
+          "id": "FR-PCI-31555828AB0403",
+          "geometrySha256": "1818de1189c2dab003afdfa7f31f124e8b18bde94e52e04f930cb4964809dbbc"
+        },
+        {
+          "id": "FR-PCI-31555828AB0404",
+          "geometrySha256": "5304bec29943932f3046238acb56e122f86e67d73392fed2ae46e8517465d64f"
+        },
+        {
+          "id": "FR-PCI-31555828AB0445",
+          "geometrySha256": "c504059c3a84d99c8bf201136b688edfbafa2a5b34cfe168d5b73864235345ab"
+        },
+        {
+          "id": "FR-PCI-31555828AB0484",
+          "geometrySha256": "54c5f9c3126c317db3d0c324be2d109eb0942762d38392b0509d2ca1f3d04478"
+        },
+        {
+          "id": "FR-PCI-31555828AB0562",
+          "geometrySha256": "9d3fdcf28fcd64160bfcc466401bdc5a816979003380f5fb38e26c9d55b599c5"
+        }
+      ]
+    },
+    {
+      "name": "viewport-1",
+      "passed": true,
+      "elapsedMs": 95,
+      "requestIndexes": [
+        1,
+        1
+      ],
+      "bbox": [
+        1.425,
+        43.603,
+        1.426,
+        43.604
+      ],
+      "complete": true,
+      "count": 3,
+      "ids": [
+        {
+          "id": "FR-PCI-31555828AB0360",
+          "geometrySha256": "94af2caaf1e7cfd656757b8ad3c62d015c0b3dc835f4d61858d5608e51127582"
+        },
+        {
+          "id": "FR-PCI-31555828AB0484",
+          "geometrySha256": "54c5f9c3126c317db3d0c324be2d109eb0942762d38392b0509d2ca1f3d04478"
+        },
+        {
+          "id": "FR-PCI-31555828AB0562",
+          "geometrySha256": "9d3fdcf28fcd64160bfcc466401bdc5a816979003380f5fb38e26c9d55b599c5"
+        }
+      ]
+    },
+    {
+      "name": "viewport-2",
+      "passed": true,
+      "elapsedMs": 94,
+      "requestIndexes": [
+        2,
+        2
+      ],
+      "bbox": [
+        1.426,
+        43.603,
+        1.427,
+        43.604
+      ],
+      "complete": true,
+      "count": 0,
+      "ids": []
+    },
+    {
+      "name": "viewport-3",
+      "passed": true,
+      "elapsedMs": 102,
+      "requestIndexes": [
+        3,
+        3
+      ],
+      "bbox": [
+        1.424,
+        43.604,
+        1.425,
+        43.605
+      ],
+      "complete": true,
+      "count": 5,
+      "ids": [
+        {
+          "id": "FR-PCI-31555827AD0282",
+          "geometrySha256": "f6014199f43dc29b99c5cde0360d6bfc809cf31b5cb652ab785e57979593175a"
+        },
+        {
+          "id": "FR-PCI-31555827AD0473",
+          "geometrySha256": "b641bd76e58581e69dfe4d553e44bfaf8b21213722b51d8164944001e08e2125"
+        },
+        {
+          "id": "FR-PCI-31555827AD0544",
+          "geometrySha256": "b5a1f5c5d691748fed25225992c66f8403799b8b49fcc9d4480aa1b831f3f82c"
+        },
+        {
+          "id": "FR-PCI-31555827AD0628",
+          "geometrySha256": "165878ef5187e8d2457e9ae7493a4f4b28df4bf03c9ab5b803d63d2f82ab1519"
+        },
+        {
+          "id": "FR-PCI-31555828AB0562",
+          "geometrySha256": "9d3fdcf28fcd64160bfcc466401bdc5a816979003380f5fb38e26c9d55b599c5"
+        }
+      ]
+    },
+    {
+      "name": "viewport-4",
+      "passed": true,
+      "elapsedMs": 99,
+      "requestIndexes": [
+        4,
+        4
+      ],
+      "bbox": [
+        1.425,
+        43.604,
+        1.426,
+        43.605
+      ],
+      "complete": true,
+      "count": 4,
+      "ids": [
+        {
+          "id": "FR-PCI-31555827AD0473",
+          "geometrySha256": "b641bd76e58581e69dfe4d553e44bfaf8b21213722b51d8164944001e08e2125"
+        },
+        {
+          "id": "FR-PCI-31555827AD0544",
+          "geometrySha256": "b5a1f5c5d691748fed25225992c66f8403799b8b49fcc9d4480aa1b831f3f82c"
+        },
+        {
+          "id": "FR-PCI-31555827AD0628",
+          "geometrySha256": "165878ef5187e8d2457e9ae7493a4f4b28df4bf03c9ab5b803d63d2f82ab1519"
+        },
+        {
+          "id": "FR-PCI-31555828AB0562",
+          "geometrySha256": "9d3fdcf28fcd64160bfcc466401bdc5a816979003380f5fb38e26c9d55b599c5"
+        }
+      ]
+    },
+    {
+      "name": "viewport-5",
+      "passed": true,
+      "elapsedMs": 95,
+      "requestIndexes": [
+        5,
+        5
+      ],
+      "bbox": [
+        1.426,
+        43.604,
+        1.427,
+        43.605
+      ],
+      "complete": true,
+      "count": 7,
+      "ids": [
+        {
+          "id": "FR-PCI-31555827AD0379",
+          "geometrySha256": "70e85021b69b1550a91006f4322fb76542a7b1736b05736f5cbc421f40df8085"
+        },
+        {
+          "id": "FR-PCI-31555827AD0380",
+          "geometrySha256": "7314979ace2f0ae5a101a6deaebe205fd2771cca3e983cdac649cde58e5388d1"
+        },
+        {
+          "id": "FR-PCI-31555827AD0454",
+          "geometrySha256": "76f30e269aecdac1497278625e589f7676743d385f32a662bcb5922cf605c3df"
+        },
+        {
+          "id": "FR-PCI-31555827AD0473",
+          "geometrySha256": "b641bd76e58581e69dfe4d553e44bfaf8b21213722b51d8164944001e08e2125"
+        },
+        {
+          "id": "FR-PCI-31555827AD0477",
+          "geometrySha256": "6ff1c9d75b45462d3cf02d251dd6b3fe66f10ac05a7ea5c54892ef13a24dc1f1"
+        },
+        {
+          "id": "FR-PCI-31555827AD0526",
+          "geometrySha256": "fff6c3700807c50145f81e38964507f07b9d2d2dd3cf0d2a8d88f2454f52a1f0"
+        },
+        {
+          "id": "FR-PCI-31555827AD0628",
+          "geometrySha256": "165878ef5187e8d2457e9ae7493a4f4b28df4bf03c9ab5b803d63d2f82ab1519"
+        }
+      ]
+    },
+    {
+      "name": "viewport-6",
+      "passed": true,
+      "elapsedMs": 100,
+      "requestIndexes": [
+        6,
+        6
+      ],
+      "bbox": [
+        1.424,
+        43.605,
+        1.425,
+        43.606
+      ],
+      "complete": true,
+      "count": 7,
+      "ids": [
+        {
+          "id": "FR-PCI-31555827AD0282",
+          "geometrySha256": "f6014199f43dc29b99c5cde0360d6bfc809cf31b5cb652ab785e57979593175a"
+        },
+        {
+          "id": "FR-PCI-31555827AD0451",
+          "geometrySha256": "e89e2659b442a20060ba2b5f79dbfde9057a7deaaae291f691bd9dc1be01a074"
+        },
+        {
+          "id": "FR-PCI-31555827AD0452",
+          "geometrySha256": "14091cabe321005d3f0371888a85356ab1a188605296c5cc33b1d048e4c19e3d"
+        },
+        {
+          "id": "FR-PCI-31555827AD0473",
+          "geometrySha256": "b641bd76e58581e69dfe4d553e44bfaf8b21213722b51d8164944001e08e2125"
+        },
+        {
+          "id": "FR-PCI-31555827AD0540",
+          "geometrySha256": "5f2d18ccd0c5cfbef9407cf7b2d12d4e5317656c212bf00ebdf079b497360a91"
+        },
+        {
+          "id": "FR-PCI-31555827AD0544",
+          "geometrySha256": "b5a1f5c5d691748fed25225992c66f8403799b8b49fcc9d4480aa1b831f3f82c"
+        },
+        {
+          "id": "FR-PCI-31555827AD0628",
+          "geometrySha256": "165878ef5187e8d2457e9ae7493a4f4b28df4bf03c9ab5b803d63d2f82ab1519"
+        }
+      ]
+    },
+    {
+      "name": "viewport-7",
+      "passed": true,
+      "elapsedMs": 97,
+      "requestIndexes": [
+        7,
+        7
+      ],
+      "bbox": [
+        1.425,
+        43.605,
+        1.426,
+        43.606
+      ],
+      "complete": true,
+      "count": 12,
+      "ids": [
+        {
+          "id": "FR-PCI-31555827AD0427",
+          "geometrySha256": "dfe877dcdbb423d0dbfa3ecb229ed2d5331d3b66c30dcba46eac78fc65306d10"
+        },
+        {
+          "id": "FR-PCI-31555827AD0439",
+          "geometrySha256": "c690f59cbd6f28ed57006d88248123fa05f47da3cedc05fbf5509579b4cb6c69"
+        },
+        {
+          "id": "FR-PCI-31555827AD0473",
+          "geometrySha256": "b641bd76e58581e69dfe4d553e44bfaf8b21213722b51d8164944001e08e2125"
+        },
+        {
+          "id": "FR-PCI-31555827AD0482",
+          "geometrySha256": "d91006f7a422d1a783e9d1f67e4f6da321ce8a6ca414dec471eecabe0311413f"
+        },
+        {
+          "id": "FR-PCI-31555827AD0484",
+          "geometrySha256": "857233f1b0cebb1328d779ded2b59778431ea1d6fb5a28dd95d79407de7c74a9"
+        },
+        {
+          "id": "FR-PCI-31555827AD0486",
+          "geometrySha256": "d66726406459240878b657abecd58369158001a9b8d4f880ac08b64b6888b222"
+        },
+        {
+          "id": "FR-PCI-31555827AD0489",
+          "geometrySha256": "b63e001bcfdf502e3405c073d64cc9b6ec405ff5002dc925adf85155b2183010"
+        },
+        {
+          "id": "FR-PCI-31555827AD0494",
+          "geometrySha256": "6721bef4a402dcabe5fce451e63c6daac00015ac82d1345d27920bcc6c37f781"
+        },
+        {
+          "id": "FR-PCI-31555827AD0540",
+          "geometrySha256": "5f2d18ccd0c5cfbef9407cf7b2d12d4e5317656c212bf00ebdf079b497360a91"
+        },
+        {
+          "id": "FR-PCI-31555827AD0544",
+          "geometrySha256": "b5a1f5c5d691748fed25225992c66f8403799b8b49fcc9d4480aa1b831f3f82c"
+        },
+        {
+          "id": "FR-PCI-31555827AD0581",
+          "geometrySha256": "8e0286c11297b17cfb1462f49229de14f2c9a11556b03be0a8c83de1cc3b2fbe"
+        },
+        {
+          "id": "FR-PCI-31555827AD0628",
+          "geometrySha256": "165878ef5187e8d2457e9ae7493a4f4b28df4bf03c9ab5b803d63d2f82ab1519"
+        }
+      ]
+    },
+    {
+      "name": "viewport-8",
+      "passed": true,
+      "elapsedMs": 105,
+      "requestIndexes": [
+        8,
+        8
+      ],
+      "bbox": [
+        1.426,
+        43.605,
+        1.427,
+        43.606
+      ],
+      "complete": true,
+      "count": 14,
+      "ids": [
+        {
+          "id": "FR-PCI-31555827AD0258",
+          "geometrySha256": "81024414a543b0a163e94a40f837e4e3ef2c6e28bcf775196ed754e8c3f0507a"
+        },
+        {
+          "id": "FR-PCI-31555827AD0259",
+          "geometrySha256": "1c2065b90996aaac310449ae163b5fc46a2dd0a32095aaee2e9cdd7b67cf64d9"
+        },
+        {
+          "id": "FR-PCI-31555827AD0260",
+          "geometrySha256": "9fb130e7ed3d9a8081f76085a83910a20265061d386bf2be0f4123cb967bceec"
+        },
+        {
+          "id": "FR-PCI-31555827AD0261",
+          "geometrySha256": "68937672ab963326e5b4f4dd83197ac6e686361d1984708b42b58a45699621a6"
+        },
+        {
+          "id": "FR-PCI-31555827AD0439",
+          "geometrySha256": "c690f59cbd6f28ed57006d88248123fa05f47da3cedc05fbf5509579b4cb6c69"
+        },
+        {
+          "id": "FR-PCI-31555827AD0473",
+          "geometrySha256": "b641bd76e58581e69dfe4d553e44bfaf8b21213722b51d8164944001e08e2125"
+        },
+        {
+          "id": "FR-PCI-31555827AD0489",
+          "geometrySha256": "b63e001bcfdf502e3405c073d64cc9b6ec405ff5002dc925adf85155b2183010"
+        },
+        {
+          "id": "FR-PCI-31555827AD0494",
+          "geometrySha256": "6721bef4a402dcabe5fce451e63c6daac00015ac82d1345d27920bcc6c37f781"
+        },
+        {
+          "id": "FR-PCI-31555827AD0515",
+          "geometrySha256": "e369b8c4de4639d527f7f36a67b48ab37a10fa02eb9491c3850052d92d1deb21"
+        },
+        {
+          "id": "FR-PCI-31555827AD0525",
+          "geometrySha256": "d0a068f918bef764442f0e3a5d17989a1dc47756a616a3a5168b48edb4f85b7d"
+        },
+        {
+          "id": "FR-PCI-31555827AD0526",
+          "geometrySha256": "fff6c3700807c50145f81e38964507f07b9d2d2dd3cf0d2a8d88f2454f52a1f0"
+        },
+        {
+          "id": "FR-PCI-31555827AD0581",
+          "geometrySha256": "8e0286c11297b17cfb1462f49229de14f2c9a11556b03be0a8c83de1cc3b2fbe"
+        },
+        {
+          "id": "FR-PCI-31555827AD0582",
+          "geometrySha256": "00685778564f88353c37e986baba788fbe39bc9cd126a53ac10b903c2cc5c8e8"
+        },
+        {
+          "id": "FR-PCI-31555827AD0628",
+          "geometrySha256": "165878ef5187e8d2457e9ae7493a4f4b28df4bf03c9ab5b803d63d2f82ab1519"
+        }
+      ]
+    },
+    {
+      "name": "viewport-9",
+      "passed": true,
+      "elapsedMs": 106,
+      "requestIndexes": [
+        9,
+        9
+      ],
+      "bbox": [
+        1.425,
+        43.602,
+        1.426,
+        43.603
+      ],
+      "complete": true,
+      "count": 16,
+      "ids": [
+        {
+          "id": "FR-PCI-31555828AB0097",
+          "geometrySha256": "3e5a25f4539ada60c7180b4550b2cf6d52909d1f0ac05db519c86ced68992eee"
+        },
+        {
+          "id": "FR-PCI-31555828AB0099",
+          "geometrySha256": "b6c44520bbaa5d11abe098ab054fff29fc56372fffb4c324f830a684bb73c746"
+        },
+        {
+          "id": "FR-PCI-31555828AB0343",
+          "geometrySha256": "15eeabbf86bc5b27fd8a73bbf0df2488f4d76f7e685d734d219fd458bd23bd35"
+        },
+        {
+          "id": "FR-PCI-31555828AB0357",
+          "geometrySha256": "3a326695477704edef36dcf3410c848ad001f299c868fb67907ce91a497cef81"
+        },
+        {
+          "id": "FR-PCI-31555828AB0360",
+          "geometrySha256": "94af2caaf1e7cfd656757b8ad3c62d015c0b3dc835f4d61858d5608e51127582"
+        },
+        {
+          "id": "FR-PCI-31555828AB0361",
+          "geometrySha256": "1a4382d7c07f4c07cff4fbdbcae9669bdfddf706ad8fd3940453b719a84cc3e3"
+        },
+        {
+          "id": "FR-PCI-31555828AB0371",
+          "geometrySha256": "0b3d6ed3fe3d950a03a31d56ec9c8893360dacfa7587dd2c915715b754ec0713"
+        },
+        {
+          "id": "FR-PCI-31555828AB0424",
+          "geometrySha256": "5c649c9a6707c57d60afd9833e0509c576bdce4439d243d6fdb2b5f01a7497c5"
+        },
+        {
+          "id": "FR-PCI-31555828AB0447",
+          "geometrySha256": "c7b13b70c6eb33a8042ea751790a89c03b5c2d449f0336b8b2b1ba0f197ed78e"
+        },
+        {
+          "id": "FR-PCI-31555828AB0449",
+          "geometrySha256": "d40e0f9a5c9bf7d723acf0a6d348f92f2c1879139923a5ebf57f2af85eefc210"
+        },
+        {
+          "id": "FR-PCI-31555828AB0482",
+          "geometrySha256": "198ab297f1f4f5473714bc68a536adc2395cab6ebb4ac6df5a682e74cee45cef"
+        },
+        {
+          "id": "FR-PCI-31555828AB0483",
+          "geometrySha256": "c9b23611ac968b6b63d514066e35e5e48fcf371a96254ba2eae2646d372b68b0"
+        },
+        {
+          "id": "FR-PCI-31555828AB0484",
+          "geometrySha256": "54c5f9c3126c317db3d0c324be2d109eb0942762d38392b0509d2ca1f3d04478"
+        },
+        {
+          "id": "FR-PCI-31555828AB0560",
+          "geometrySha256": "66b313d0c5e9fa778c758509b389f43c434dd18ef815d94cf110757926ccbeaf"
+        },
+        {
+          "id": "FR-PCI-31555828AB0561",
+          "geometrySha256": "18afbe66e17eb6648647a9611ccc98e7f5c8caf1bfbbbdd47958ba5191d53381"
+        },
+        {
+          "id": "FR-PCI-31555828AB0562",
+          "geometrySha256": "9d3fdcf28fcd64160bfcc466401bdc5a816979003380f5fb38e26c9d55b599c5"
+        }
+      ]
+    },
+    {
+      "name": "viewport-10",
+      "passed": true,
+      "elapsedMs": 107,
+      "requestIndexes": [
+        10,
+        10
+      ],
+      "bbox": [
+        1.425,
+        43.606,
+        1.426,
+        43.607
+      ],
+      "complete": true,
+      "count": 35,
+      "ids": [
+        {
+          "id": "FR-PCI-31555827AD0157",
+          "geometrySha256": "b172cb0e46d395d82ec4fc3d2550809922c6357f42ed519641646ae130d041c4"
+        },
+        {
+          "id": "FR-PCI-31555827AD0158",
+          "geometrySha256": "e6fd475588abb2421a406158ecef7bfbde01a670cd9b54862da4e37f00deba18"
+        },
+        {
+          "id": "FR-PCI-31555827AD0159",
+          "geometrySha256": "0068d37151169106d271c27f3eae83a50d8c3e68ca1e277d065a3394d02507bd"
+        },
+        {
+          "id": "FR-PCI-31555827AD0175",
+          "geometrySha256": "948e0553f0437a886301b82e7564b243e16ad54e57ed977b7b149a9185b6bf5d"
+        },
+        {
+          "id": "FR-PCI-31555827AD0176",
+          "geometrySha256": "c506dea241ffea1265082862a4b7814dc601e8ad84b87fc303616ef107abc9c8"
+        },
+        {
+          "id": "FR-PCI-31555827AD0177",
+          "geometrySha256": "af3f27c43d52d8546cceaca89641c928cbfbb436d26d4afa94c210500bc2a7b5"
+        },
+        {
+          "id": "FR-PCI-31555827AD0178",
+          "geometrySha256": "7c58733e84bc91b3cd0a162fcf6d8628a3bcd4d78a0b1033bafad5f0ef0ea0df"
+        },
+        {
+          "id": "FR-PCI-31555827AD0179",
+          "geometrySha256": "dcba61f0435aa7b493c8885f428576784b7f5dd166c19fe9d39eb8e081fdc35a"
+        },
+        {
+          "id": "FR-PCI-31555827AD0180",
+          "geometrySha256": "d03a14f946c8cb430b8eb72a96848736e7c5e083c954b1ec1989932441087888"
+        },
+        {
+          "id": "FR-PCI-31555827AD0181",
+          "geometrySha256": "9f365f60ae45e0334093e1dfc3c1f8addd0b6a1f9dec724d2614e0ea8f80f1e3"
+        },
+        {
+          "id": "FR-PCI-31555827AD0182",
+          "geometrySha256": "1f5dd659888faa9cb0b590df67654113d933858efd3cf50fe25e7c7146f13a52"
+        },
+        {
+          "id": "FR-PCI-31555827AD0183",
+          "geometrySha256": "f74af6ab479c064063dcd79cbef6f2956a0f13e55665bb70d5ccabbba531c4ac"
+        },
+        {
+          "id": "FR-PCI-31555827AD0184",
+          "geometrySha256": "c9e6def3f33509a560167c5462a5d83edc3aa8cfcc9165594705815909f19101"
+        },
+        {
+          "id": "FR-PCI-31555827AD0185",
+          "geometrySha256": "a4ec99e27b877c2ea1def77a1579dc91e66baa2770691ceba6c9fd4b8bcda4ff"
+        },
+        {
+          "id": "FR-PCI-31555827AD0186",
+          "geometrySha256": "277cbf826d7e23d3447541017ffe9400aad4f6d9a82a3a3c509011fbed493d7e"
+        },
+        {
+          "id": "FR-PCI-31555827AD0187",
+          "geometrySha256": "e90f8c428a33bb26caaad812d80164ae5c75c753747a7e566b05594e5c16737d"
+        },
+        {
+          "id": "FR-PCI-31555827AD0201",
+          "geometrySha256": "0313712517e725a9a5d3abd0235b7b5cee0e7e3a0af213224fe0fbc261e017ce"
+        },
+        {
+          "id": "FR-PCI-31555827AD0204",
+          "geometrySha256": "da085809d2ef5a1e3e70cd78b8530812a20cb1a08f7eedb4b5a2a2e0a66cc593"
+        },
+        {
+          "id": "FR-PCI-31555827AD0205",
+          "geometrySha256": "3279ef234f3dd8149208e00e1cae2a417550fa37e439f4d2ba0f35f13fd3da58"
+        },
+        {
+          "id": "FR-PCI-31555827AD0208",
+          "geometrySha256": "d69b9d46b0a3e6ee1099aaba8bbd60841f6dd1dda371c1c7ca37c4fe05e18372"
+        },
+        {
+          "id": "FR-PCI-31555827AD0209",
+          "geometrySha256": "81c5d2e23302cebf96d7c1ab3db9310c999fd3b5502878a5801c87abe338e3b0"
+        },
+        {
+          "id": "FR-PCI-31555827AD0211",
+          "geometrySha256": "fe34d07d732bbd4cd2482259afda24b233281ff63f03a02e4170da2c210e06a5"
+        },
+        {
+          "id": "FR-PCI-31555827AD0213",
+          "geometrySha256": "f5d498f44673c5a514d1e6c17888c322a01df6224ecaaa670145d7555ec02f99"
+        },
+        {
+          "id": "FR-PCI-31555827AD0214",
+          "geometrySha256": "777a673809fb0d98b9a14628232ae9aec37de0afad6458c6675a35b68e73a054"
+        },
+        {
+          "id": "FR-PCI-31555827AD0215",
+          "geometrySha256": "5432eff0c4210d83a2f5bd4734cb02a573407988e67ea32ee85bb71853c890ce"
+        },
+        {
+          "id": "FR-PCI-31555827AD0265",
+          "geometrySha256": "cc209da6dd608df3d94b0fd36ed35426f1202477fa64596cbaa44d8799e7968a"
+        },
+        {
+          "id": "FR-PCI-31555827AD0414",
+          "geometrySha256": "afb1730f958672655532e2d347e39a485cd8af382f9b8198e3d157e7d9f58c49"
+        },
+        {
+          "id": "FR-PCI-31555827AD0423",
+          "geometrySha256": "ab47349f62bb6451e076d0e1b4edfdc6fa67ca1052427e3fbe944a4853306735"
+        },
+        {
+          "id": "FR-PCI-31555827AD0424",
+          "geometrySha256": "27e49f0aa2da9e3b904035fd3353cfc120959289e9064748670c63eeaf881010"
+        },
+        {
+          "id": "FR-PCI-31555827AD0425",
+          "geometrySha256": "aa7ab2471ef5669af693f472507e4d318d7f466707a3602cdb5120ef87725ee0"
+        },
+        {
+          "id": "FR-PCI-31555827AD0427",
+          "geometrySha256": "dfe877dcdbb423d0dbfa3ecb229ed2d5331d3b66c30dcba46eac78fc65306d10"
+        },
+        {
+          "id": "FR-PCI-31555827AD0462",
+          "geometrySha256": "a6e04892ce57606863032ba57da6ee90fc6ec90af83b8e6d28b4e66d2b35b5ef"
+        },
+        {
+          "id": "FR-PCI-31555827AD0463",
+          "geometrySha256": "b8dab5944fc44c3bfed39ea0feffdb0a5c791aaf931bc0ce405c062d1bbd12ac"
+        },
+        {
+          "id": "FR-PCI-31555827AD0521",
+          "geometrySha256": "0bb01be085e69a4dcb276e24a6560b9477e89b81a60c829091f1d9a5d059e8ab"
+        },
+        {
+          "id": "FR-PCI-31555827AD0581",
+          "geometrySha256": "8e0286c11297b17cfb1462f49229de14f2c9a11556b03be0a8c83de1cc3b2fbe"
+        }
+      ]
+    },
+    {
+      "name": "viewport-11",
+      "passed": true,
+      "elapsedMs": 96,
+      "requestIndexes": [
+        11,
+        11
+      ],
+      "bbox": [
+        1.423,
+        43.604,
+        1.424,
+        43.605
+      ],
+      "complete": true,
+      "count": 3,
+      "ids": [
+        {
+          "id": "FR-PCI-31555827AD0544",
+          "geometrySha256": "b5a1f5c5d691748fed25225992c66f8403799b8b49fcc9d4480aa1b831f3f82c"
+        },
+        {
+          "id": "FR-PCI-31555827AD0628",
+          "geometrySha256": "165878ef5187e8d2457e9ae7493a4f4b28df4bf03c9ab5b803d63d2f82ab1519"
+        },
+        {
+          "id": "FR-PCI-31555828AB0562",
+          "geometrySha256": "9d3fdcf28fcd64160bfcc466401bdc5a816979003380f5fb38e26c9d55b599c5"
+        }
+      ]
+    },
+    {
+      "name": "viewport-12",
+      "passed": true,
+      "elapsedMs": 517,
+      "requestIndexes": [
+        12,
+        12
+      ],
+      "bbox": [
+        1.427,
+        43.604,
+        1.428,
+        43.605
+      ],
+      "complete": true,
+      "count": 6,
+      "ids": [
+        {
+          "id": "FR-PCI-31555827AD0453",
+          "geometrySha256": "34dce8e4f048a31ce846be4c8e9643d1df3038f9acc307ee00c69eee698c3f30"
+        },
+        {
+          "id": "FR-PCI-31555827AD0454",
+          "geometrySha256": "76f30e269aecdac1497278625e589f7676743d385f32a662bcb5922cf605c3df"
+        },
+        {
+          "id": "FR-PCI-31555827AD0458",
+          "geometrySha256": "37214d332a6485a3bde45e2f50308b7192821ebb6eeaeafb0c42c09c60482faf"
+        },
+        {
+          "id": "FR-PCI-31555827AD0460",
+          "geometrySha256": "05a53fdf6f3bb8a7d4491fdcdfad105bb26ac4eb4907c4e68c36d67212c447ec"
+        },
+        {
+          "id": "FR-PCI-31555827AD0526",
+          "geometrySha256": "fff6c3700807c50145f81e38964507f07b9d2d2dd3cf0d2a8d88f2454f52a1f0"
+        },
+        {
+          "id": "FR-PCI-31555827AD0628",
+          "geometrySha256": "165878ef5187e8d2457e9ae7493a4f4b28df4bf03c9ab5b803d63d2f82ab1519"
+        }
+      ]
+    },
+    {
+      "name": "forced-three-row-pages",
+      "passed": true,
+      "elapsedMs": 1225,
+      "requestIndexes": [
+        13,
+        24
+      ],
+      "count": 35,
+      "geometryPages": 12,
+      "pageSize": 3,
+      "allGeometryHashesMatch": true
+    },
+    {
+      "name": "fresh-ids-0",
+      "passed": true,
+      "elapsedMs": 125,
+      "requestIndexes": [
+        25,
+        25
+      ],
+      "count": 40,
+      "ids": [
+        "FR-PCI-31555827AD0157",
+        "FR-PCI-31555827AD0158",
+        "FR-PCI-31555827AD0159",
+        "FR-PCI-31555827AD0175",
+        "FR-PCI-31555827AD0176",
+        "FR-PCI-31555827AD0177",
+        "FR-PCI-31555827AD0178",
+        "FR-PCI-31555827AD0179",
+        "FR-PCI-31555827AD0180",
+        "FR-PCI-31555827AD0181",
+        "FR-PCI-31555827AD0182",
+        "FR-PCI-31555827AD0183",
+        "FR-PCI-31555827AD0184",
+        "FR-PCI-31555827AD0185",
+        "FR-PCI-31555827AD0186",
+        "FR-PCI-31555827AD0187",
+        "FR-PCI-31555827AD0201",
+        "FR-PCI-31555827AD0204",
+        "FR-PCI-31555827AD0205",
+        "FR-PCI-31555827AD0208",
+        "FR-PCI-31555827AD0209",
+        "FR-PCI-31555827AD0211",
+        "FR-PCI-31555827AD0213",
+        "FR-PCI-31555827AD0214",
+        "FR-PCI-31555827AD0215",
+        "FR-PCI-31555827AD0258",
+        "FR-PCI-31555827AD0259",
+        "FR-PCI-31555827AD0260",
+        "FR-PCI-31555827AD0261",
+        "FR-PCI-31555827AD0265",
+        "FR-PCI-31555827AD0282",
+        "FR-PCI-31555827AD0379",
+        "FR-PCI-31555827AD0380",
+        "FR-PCI-31555827AD0414",
+        "FR-PCI-31555827AD0423",
+        "FR-PCI-31555827AD0424",
+        "FR-PCI-31555827AD0425",
+        "FR-PCI-31555827AD0427",
+        "FR-PCI-31555827AD0439",
+        "FR-PCI-31555827AD0451"
+      ],
+      "allGeometryHashesMatch": true,
+      "absentIds": []
+    },
+    {
+      "name": "fresh-ids-40",
+      "passed": true,
+      "elapsedMs": 112,
+      "requestIndexes": [
+        26,
+        26
+      ],
+      "count": 40,
+      "ids": [
+        "FR-PCI-31555827AD0452",
+        "FR-PCI-31555827AD0453",
+        "FR-PCI-31555827AD0454",
+        "FR-PCI-31555827AD0458",
+        "FR-PCI-31555827AD0460",
+        "FR-PCI-31555827AD0462",
+        "FR-PCI-31555827AD0463",
+        "FR-PCI-31555827AD0473",
+        "FR-PCI-31555827AD0477",
+        "FR-PCI-31555827AD0482",
+        "FR-PCI-31555827AD0484",
+        "FR-PCI-31555827AD0486",
+        "FR-PCI-31555827AD0489",
+        "FR-PCI-31555827AD0494",
+        "FR-PCI-31555827AD0515",
+        "FR-PCI-31555827AD0521",
+        "FR-PCI-31555827AD0525",
+        "FR-PCI-31555827AD0526",
+        "FR-PCI-31555827AD0540",
+        "FR-PCI-31555827AD0544",
+        "FR-PCI-31555827AD0581",
+        "FR-PCI-31555827AD0582",
+        "FR-PCI-31555827AD0628",
+        "FR-PCI-31555828AB0097",
+        "FR-PCI-31555828AB0099",
+        "FR-PCI-31555828AB0343",
+        "FR-PCI-31555828AB0357",
+        "FR-PCI-31555828AB0360",
+        "FR-PCI-31555828AB0361",
+        "FR-PCI-31555828AB0371",
+        "FR-PCI-31555828AB0393",
+        "FR-PCI-31555828AB0394",
+        "FR-PCI-31555828AB0402",
+        "FR-PCI-31555828AB0403",
+        "FR-PCI-31555828AB0404",
+        "FR-PCI-31555828AB0424",
+        "FR-PCI-31555828AB0445",
+        "FR-PCI-31555828AB0447",
+        "FR-PCI-31555828AB0449",
+        "FR-PCI-31555828AB0482"
+      ],
+      "allGeometryHashesMatch": true,
+      "absentIds": []
+    },
+    {
+      "name": "fresh-ids-80",
+      "passed": true,
+      "elapsedMs": 99,
+      "requestIndexes": [
+        27,
+        27
+      ],
+      "count": 5,
+      "ids": [
+        "FR-PCI-31555828AB0483",
+        "FR-PCI-31555828AB0484",
+        "FR-PCI-31555828AB0560",
+        "FR-PCI-31555828AB0561",
+        "FR-PCI-31555828AB0562"
+      ],
+      "allGeometryHashesMatch": true,
+      "absentIds": []
+    },
+    {
+      "name": "explicit-absence",
+      "passed": true,
+      "elapsedMs": 478,
+      "requestIndexes": [
+        28,
+        28
+      ],
+      "absentIds": [
+        "FR-PCI-00000000ZZ9999"
+      ],
+      "complete": true
+    },
+    {
+      "name": "footprint",
+      "passed": true,
+      "elapsedMs": 107,
+      "requestIndexes": [
+        29,
+        29
+      ],
+      "selectedParcelId": "FR-PCI-31555827AD0214",
+      "count": 4,
+      "allGeometryHashesMatch": true
+    },
+    {
+      "name": "source-binding",
+      "passed": true,
+      "elapsedMs": 118,
+      "requestIndexes": [
+        30,
+        30
+      ],
+      "selectedParcelId": "FR-PCI-31555827AD0214",
+      "coverage": "complete",
+      "siteM2": 278.95,
+      "boundParcels": 1
+    }
+  ],
+  "requests": [
+    {
+      "test": "viewport-0",
+      "url": "https://data.geopf.fr/wfs/ows?service=WFS&version=2.0.0&request=GetFeature&typeNames=CADASTRALPARCELS.PARCELLAIRE_EXPRESS%3Aparcelle&outputFormat=application%2Fjson&srsName=CRS%3A84&sortBy=idu&count=1000&startIndex=0&bbox=1.424%2C43.603%2C1.425%2C43.604%2CCRS%3A84",
+      "method": "GET",
+      "checkedAt": "2026-10-09T03:56:27.771Z",
+      "httpStatus": 200,
+      "contentType": "application/json;charset=UTF-8",
+      "bytes": 5997,
+      "numberMatched": 8,
+      "numberReturned": 8,
+      "features": [
+        {
+          "transportId": "parcelle.56345236",
+          "properties": {
+            "idu": "31555828AB0393",
+            "numero": "0393",
+            "section": "AB",
+            "code_insee": "31555",
+            "nom_com": "Toulouse",
+            "code_dep": "31",
+            "code_com": "555",
+            "code_arr": "000",
+            "com_abs": "828",
+            "contenance": 550
+          },
+          "geometrySha256": "aab16bea24b444976a9e30c749d36d90598ef745a2da42ba5e32594e9aba325b"
+        },
+        {
+          "transportId": "parcelle.1876877",
+          "properties": {
+            "idu": "31555828AB0394",
+            "numero": "0394",
+            "section": "AB",
+            "code_insee": "31555",
+            "nom_com": "Toulouse",
+            "code_dep": "31",
+            "code_com": "555",
+            "code_arr": "000",
+            "com_abs": "828",
+            "contenance": 16
+          },
+          "geometrySha256": "b49093c0d9852ffee84fab2943eb74f0e9cbfed56f83dec65c920957eda62227"
+        },
+        {
+          "transportId": "parcelle.57558020",
+          "properties": {
+            "idu": "31555828AB0402",
+            "numero": "0402",
+            "section": "AB",
+            "code_insee": "31555",
+            "nom_com": "Toulouse",
+            "code_dep": "31",
+            "code_com": "555",
+            "code_arr": "000",
+            "com_abs": "828",
+            "contenance": 279
+          },
+          "geometrySha256": "37befe11a7077914c64fa608d9c34e5c5bafbd036f742ea92619d818ebad6bdf"
+        },
+        {
+          "transportId": "parcelle.57627281",
+          "properties": {
+            "idu": "31555828AB0403",
+            "numero": "0403",
+            "section": "AB",
+            "code_insee": "31555",
+            "nom_com": "Toulouse",
+            "code_dep": "31",
+            "code_com": "555",
+            "code_arr": "000",
+            "com_abs": "828",
+            "contenance": 18
+          },
+          "geometrySha256": "1818de1189c2dab003afdfa7f31f124e8b18bde94e52e04f930cb4964809dbbc"
+        },
+        {
+          "transportId": "parcelle.57696608",
+          "properties": {
+            "idu": "31555828AB0404",
+            "numero": "0404",
+            "section": "AB",
+            "code_insee": "31555",
+            "nom_com": "Toulouse",
+            "code_dep": "31",
+            "code_com": "555",
+            "code_arr": "000",
+            "com_abs": "828",
+            "contenance": 2
+          },
+          "geometrySha256": "5304bec29943932f3046238acb56e122f86e67d73392fed2ae46e8517465d64f"
+        },
+        {
+          "transportId": "parcelle.61438876",
+          "properties": {
+            "idu": "31555828AB0445",
+            "numero": "0445",
+            "section": "AB",
+            "code_insee": "31555",
+            "nom_com": "Toulouse",
+            "code_dep": "31",
+            "code_com": "555",
+            "code_arr": "000",
+            "com_abs": "828",
+            "contenance": 5
+          },
+          "geometrySha256": "c504059c3a84d99c8bf201136b688edfbafa2a5b34cfe168d5b73864235345ab"
+        },
+        {
+          "transportId": "parcelle.64766070",
+          "properties": {
+            "idu": "31555828AB0484",
+            "numero": "0484",
+            "section": "AB",
+            "code_insee": "31555",
+            "nom_com": "Toulouse",
+            "code_dep": "31",
+            "code_com": "555",
+            "code_arr": "000",
+            "com_abs": "828",
+            "contenance": 720
+          },
+          "geometrySha256": "54c5f9c3126c317db3d0c324be2d109eb0942762d38392b0509d2ca1f3d04478"
+        },
+        {
+          "transportId": "parcelle.71043769",
+          "properties": {
+            "idu": "31555828AB0562",
+            "numero": "0562",
+            "section": "AB",
+            "code_insee": "31555",
+            "nom_com": "Toulouse",
+            "code_dep": "31",
+            "code_com": "555",
+            "code_arr": "000",
+            "com_abs": "828",
+            "contenance": 5045
+          },
+          "geometrySha256": "9d3fdcf28fcd64160bfcc466401bdc5a816979003380f5fb38e26c9d55b599c5"
+        }
+      ]
+    },
+    {
+      "test": "viewport-1",
+      "url": "https://data.geopf.fr/wfs/ows?service=WFS&version=2.0.0&request=GetFeature&typeNames=CADASTRALPARCELS.PARCELLAIRE_EXPRESS%3Aparcelle&outputFormat=application%2Fjson&srsName=CRS%3A84&sortBy=idu&count=1000&startIndex=0&bbox=1.425%2C43.603%2C1.426%2C43.604%2CCRS%3A84",
+      "method": "GET",
+      "checkedAt": "2026-10-09T03:56:28.037Z",
+      "httpStatus": 200,
+      "contentType": "application/json;charset=UTF-8",
+      "bytes": 3050,
+      "numberMatched": 3,
+      "numberReturned": 3,
+      "features": [
+        {
+          "transportId": "parcelle.53041271",
+          "properties": {
+            "idu": "31555828AB0360",
+            "numero": "0360",
+            "section": "AB",
+            "code_insee": "31555",
+            "nom_com": "Toulouse",
+            "code_dep": "31",
+            "code_com": "555",
+            "code_arr": "000",
+            "com_abs": "828",
+            "contenance": 120
+          },
+          "geometrySha256": "94af2caaf1e7cfd656757b8ad3c62d015c0b3dc835f4d61858d5608e51127582"
+        },
+        {
+          "transportId": "parcelle.64766070",
+          "properties": {
+            "idu": "31555828AB0484",
+            "numero": "0484",
+            "section": "AB",
+            "code_insee": "31555",
+            "nom_com": "Toulouse",
+            "code_dep": "31",
+            "code_com": "555",
+            "code_arr": "000",
+            "com_abs": "828",
+            "contenance": 720
+          },
+          "geometrySha256": "54c5f9c3126c317db3d0c324be2d109eb0942762d38392b0509d2ca1f3d04478"
+        },
+        {
+          "transportId": "parcelle.71043769",
+          "properties": {
+            "idu": "31555828AB0562",
+            "numero": "0562",
+            "section": "AB",
+            "code_insee": "31555",
+            "nom_com": "Toulouse",
+            "code_dep": "31",
+            "code_com": "555",
+            "code_arr": "000",
+            "com_abs": "828",
+            "contenance": 5045
+          },
+          "geometrySha256": "9d3fdcf28fcd64160bfcc466401bdc5a816979003380f5fb38e26c9d55b599c5"
+        }
+      ]
+    },
+    {
+      "test": "viewport-2",
+      "url": "https://data.geopf.fr/wfs/ows?service=WFS&version=2.0.0&request=GetFeature&typeNames=CADASTRALPARCELS.PARCELLAIRE_EXPRESS%3Aparcelle&outputFormat=application%2Fjson&srsName=CRS%3A84&sortBy=idu&count=1000&startIndex=0&bbox=1.426%2C43.603%2C1.427%2C43.604%2CCRS%3A84",
+      "method": "GET",
+      "checkedAt": "2026-10-09T03:56:28.133Z",
+      "httpStatus": 200,
+      "contentType": "application/json;charset=UTF-8",
+      "bytes": 147,
+      "numberMatched": 0,
+      "numberReturned": 0,
+      "features": []
+    },
+    {
+      "test": "viewport-3",
+      "url": "https://data.geopf.fr/wfs/ows?service=WFS&version=2.0.0&request=GetFeature&typeNames=CADASTRALPARCELS.PARCELLAIRE_EXPRESS%3Aparcelle&outputFormat=application%2Fjson&srsName=CRS%3A84&sortBy=idu&count=1000&startIndex=0&bbox=1.424%2C43.604%2C1.425%2C43.605%2CCRS%3A84",
+      "method": "GET",
+      "checkedAt": "2026-10-09T03:56:28.228Z",
+      "httpStatus": 200,
+      "contentType": "application/json;charset=UTF-8",
+      "bytes": 7890,
+      "numberMatched": 5,
+      "numberReturned": 5,
+      "features": [
+        {
+          "transportId": "parcelle.43401644",
+          "properties": {
+            "idu": "31555827AD0282",
+            "numero": "0282",
+            "section": "AD",
+            "code_insee": "31555",
+            "nom_com": "Toulouse",
+            "code_dep": "31",
+            "code_com": "555",
+            "code_arr": "000",
+            "com_abs": "827",
+            "contenance": 157
+          },
+          "geometrySha256": "f6014199f43dc29b99c5cde0360d6bfc809cf31b5cb652ab785e57979593175a"
+        },
+        {
+          "transportId": "parcelle.63888695",
+          "properties": {
+            "idu": "31555827AD0473",
+            "numero": "0473",
+            "section": "AD",
+            "code_insee": "31555",
+            "nom_com": "Toulouse",
+            "code_dep": "31",
+            "code_com": "555",
+            "code_arr": "000",
+            "com_abs": "827",
+            "contenance": 8645
+          },
+          "geometrySha256": "b641bd76e58581e69dfe4d553e44bfaf8b21213722b51d8164944001e08e2125"
+        },
+        {
+          "transportId": "parcelle.69704342",
+          "properties": {
+            "idu": "31555827AD0544",
+            "numero": "0544",
+            "section": "AD",
+            "code_insee": "31555",
+            "nom_com": "Toulouse",
+            "code_dep": "31",
+            "code_com": "555",
+            "code_arr": "000",
+            "com_abs": "827",
+            "contenance": 20640
+          },
+          "geometrySha256": "b5a1f5c5d691748fed25225992c66f8403799b8b49fcc9d4480aa1b831f3f82c"
+        },
+        {
+          "transportId": "parcelle.75615266",
+          "properties": {
+            "idu": "31555827AD0628",
+            "numero": "0628",
+            "section": "AD",
+            "code_insee": "31555",
+            "nom_com": "Toulouse",
+            "code_dep": "31",
+            "code_com": "555",
+            "code_arr": "000",
+            "com_abs": "827",
+            "contenance": 12350
+          },
+          "geometrySha256": "165878ef5187e8d2457e9ae7493a4f4b28df4bf03c9ab5b803d63d2f82ab1519"
+        },
+        {
+          "transportId": "parcelle.71043769",
+          "properties": {
+            "idu": "31555828AB0562",
+            "numero": "0562",
+            "section": "AB",
+            "code_insee": "31555",
+            "nom_com": "Toulouse",
+            "code_dep": "31",
+            "code_com": "555",
+            "code_arr": "000",
+            "com_abs": "828",
+            "contenance": 5045
+          },
+          "geometrySha256": "9d3fdcf28fcd64160bfcc466401bdc5a816979003380f5fb38e26c9d55b599c5"
+        }
+      ]
+    },
+    {
+      "test": "viewport-4",
+      "url": "https://data.geopf.fr/wfs/ows?service=WFS&version=2.0.0&request=GetFeature&typeNames=CADASTRALPARCELS.PARCELLAIRE_EXPRESS%3Aparcelle&outputFormat=application%2Fjson&srsName=CRS%3A84&sortBy=idu&count=1000&startIndex=0&bbox=1.425%2C43.604%2C1.426%2C43.605%2CCRS%3A84",
+      "method": "GET",
+      "checkedAt": "2026-10-09T03:56:28.331Z",
+      "httpStatus": 200,
+      "contentType": "application/json;charset=UTF-8",
+      "bytes": 7324,
+      "numberMatched": 4,
+      "numberReturned": 4,
+      "features": [
+        {
+          "transportId": "parcelle.63888695",
+          "properties": {
+            "idu": "31555827AD0473",
+            "numero": "0473",
+            "section": "AD",
+            "code_insee": "31555",
+            "nom_com": "Toulouse",
+            "code_dep": "31",
+            "code_com": "555",
+            "code_arr": "000",
+            "com_abs": "827",
+            "contenance": 8645
+          },
+          "geometrySha256": "b641bd76e58581e69dfe4d553e44bfaf8b21213722b51d8164944001e08e2125"
+        },
+        {
+          "transportId": "parcelle.69704342",
+          "properties": {
+            "idu": "31555827AD0544",
+            "numero": "0544",
+            "section": "AD",
+            "code_insee": "31555",
+            "nom_com": "Toulouse",
+            "code_dep": "31",
+            "code_com": "555",
+            "code_arr": "000",
+            "com_abs": "827",
+            "contenance": 20640
+          },
+          "geometrySha256": "b5a1f5c5d691748fed25225992c66f8403799b8b49fcc9d4480aa1b831f3f82c"
+        },
+        {
+          "transportId": "parcelle.75615266",
+          "properties": {
+            "idu": "31555827AD0628",
+            "numero": "0628",
+            "section": "AD",
+            "code_insee": "31555",
+            "nom_com": "Toulouse",
+            "code_dep": "31",
+            "code_com": "555",
+            "code_arr": "000",
+            "com_abs": "827",
+            "contenance": 12350
+          },
+          "geometrySha256": "165878ef5187e8d2457e9ae7493a4f4b28df4bf03c9ab5b803d63d2f82ab1519"
+        },
+        {
+          "transportId": "parcelle.71043769",
+          "properties": {
+            "idu": "31555828AB0562",
+            "numero": "0562",
+            "section": "AB",
+            "code_insee": "31555",
+            "nom_com": "Toulouse",
+            "code_dep": "31",
+            "code_com": "555",
+            "code_arr": "000",
+            "com_abs": "828",
+            "contenance": 5045
+          },
+          "geometrySha256": "9d3fdcf28fcd64160bfcc466401bdc5a816979003380f5fb38e26c9d55b599c5"
+        }
+      ]
+    },
+    {
+      "test": "viewport-5",
+      "url": "https://data.geopf.fr/wfs/ows?service=WFS&version=2.0.0&request=GetFeature&typeNames=CADASTRALPARCELS.PARCELLAIRE_EXPRESS%3Aparcelle&outputFormat=application%2Fjson&srsName=CRS%3A84&sortBy=idu&count=1000&startIndex=0&bbox=1.426%2C43.604%2C1.427%2C43.605%2CCRS%3A84",
+      "method": "GET",
+      "checkedAt": "2026-10-09T03:56:28.431Z",
+      "httpStatus": 200,
+      "contentType": "application/json;charset=UTF-8",
+      "bytes": 7573,
+      "numberMatched": 7,
+      "numberReturned": 7,
+      "features": [
+        {
+          "transportId": "parcelle.54779661",
+          "properties": {
+            "idu": "31555827AD0379",
+            "numero": "0379",
+            "section": "AD",
+            "code_insee": "31555",
+            "nom_com": "Toulouse",
+            "code_dep": "31",
+            "code_com": "555",
+            "code_arr": "000",
+            "com_abs": "827",
+            "contenance": 163
+          },
+          "geometrySha256": "70e85021b69b1550a91006f4322fb76542a7b1736b05736f5cbc421f40df8085"
+        },
+        {
+          "transportId": "parcelle.55127863",
+          "properties": {
+            "idu": "31555827AD0380",
+            "numero": "0380",
+            "section": "AD",
+            "code_insee": "31555",
+            "nom_com": "Toulouse",
+            "code_dep": "31",
+            "code_com": "555",
+            "code_arr": "000",
+            "com_abs": "827",
+            "contenance": 163
+          },
+          "geometrySha256": "7314979ace2f0ae5a101a6deaebe205fd2771cca3e983cdac649cde58e5388d1"
+        },
+        {
+          "transportId": "parcelle.62253420",
+          "properties": {
+            "idu": "31555827AD0454",
+            "numero": "0454",
+            "section": "AD",
+            "code_insee": "31555",
+            "nom_com": "Toulouse",
+            "code_dep": "31",
+            "code_com": "555",
+            "code_arr": "000",
+            "com_abs": "827",
+            "contenance": 2832
+          },
+          "geometrySha256": "76f30e269aecdac1497278625e589f7676743d385f32a662bcb5922cf605c3df"
+        },
+        {
+          "transportId": "parcelle.63888695",
+          "properties": {
+            "idu": "31555827AD0473",
+            "numero": "0473",
+            "section": "AD",
+            "code_insee": "31555",
+            "nom_com": "Toulouse",
+            "code_dep": "31",
+            "code_com": "555",
+            "code_arr": "000",
+            "com_abs": "827",
+            "contenance": 8645
+          },
+          "geometrySha256": "b641bd76e58581e69dfe4d553e44bfaf8b21213722b51d8164944001e08e2125"
+        },
+        {
+          "transportId": "parcelle.64116271",
+          "properties": {
+            "idu": "31555827AD0477",
+            "numero": "0477",
+            "section": "AD",
+            "code_insee": "31555",
+            "nom_com": "Toulouse",
+            "code_dep": "31",
+            "code_com": "555",
+            "code_arr": "000",
+            "com_abs": "827",
+            "contenance": 16
+          },
+          "geometrySha256": "6ff1c9d75b45462d3cf02d251dd6b3fe66f10ac05a7ea5c54892ef13a24dc1f1"
+        },
+        {
+          "transportId": "parcelle.68318612",
+          "properties": {
+            "idu": "31555827AD0526",
+            "numero": "0526",
+            "section": "AD",
+            "code_insee": "31555",
+            "nom_com": "Toulouse",
+            "code_dep": "31",
+            "code_com": "555",
+            "code_arr": "000",
+            "com_abs": "827",
+            "contenance": 3039
+          },
+          "geometrySha256": "fff6c3700807c50145f81e38964507f07b9d2d2dd3cf0d2a8d88f2454f52a1f0"
+        },
+        {
+          "transportId": "parcelle.75615266",
+          "properties": {
+            "idu": "31555827AD0628",
+            "numero": "0628",
+            "section": "AD",
+            "code_insee": "31555",
+            "nom_com": "Toulouse",
+            "code_dep": "31",
+            "code_com": "555",
+            "code_arr": "000",
+            "com_abs": "827",
+            "contenance": 12350
+          },
+          "geometrySha256": "165878ef5187e8d2457e9ae7493a4f4b28df4bf03c9ab5b803d63d2f82ab1519"
+        }
+      ]
+    },
+    {
+      "test": "viewport-6",
+      "url": "https://data.geopf.fr/wfs/ows?service=WFS&version=2.0.0&request=GetFeature&typeNames=CADASTRALPARCELS.PARCELLAIRE_EXPRESS%3Aparcelle&outputFormat=application%2Fjson&srsName=CRS%3A84&sortBy=idu&count=1000&startIndex=0&bbox=1.424%2C43.605%2C1.425%2C43.606%2CCRS%3A84",
+      "method": "GET",
+      "checkedAt": "2026-10-09T03:56:28.526Z",
+      "httpStatus": 200,
+      "contentType": "application/json;charset=UTF-8",
+      "bytes": 8171,
+      "numberMatched": 7,
+      "numberReturned": 7,
+      "features": [
+        {
+          "transportId": "parcelle.43401644",
+          "properties": {
+            "idu": "31555827AD0282",
+            "numero": "0282",
+            "section": "AD",
+            "code_insee": "31555",
+            "nom_com": "Toulouse",
+            "code_dep": "31",
+            "code_com": "555",
+            "code_arr": "000",
+            "com_abs": "827",
+            "contenance": 157
+          },
+          "geometrySha256": "f6014199f43dc29b99c5cde0360d6bfc809cf31b5cb652ab785e57979593175a"
+        },
+        {
+          "transportId": "parcelle.62072487",
+          "properties": {
+            "idu": "31555827AD0451",
+            "numero": "0451",
+            "section": "AD",
+            "code_insee": "31555",
+            "nom_com": "Toulouse",
+            "code_dep": "31",
+            "code_com": "555",
+            "code_arr": "000",
+            "com_abs": "827",
+            "contenance": 17
+          },
+          "geometrySha256": "e89e2659b442a20060ba2b5f79dbfde9057a7deaaae291f691bd9dc1be01a074"
+        },
+        {
+          "transportId": "parcelle.62132861",
+          "properties": {
+            "idu": "31555827AD0452",
+            "numero": "0452",
+            "section": "AD",
+            "code_insee": "31555",
+            "nom_com": "Toulouse",
+            "code_dep": "31",
+            "code_com": "555",
+            "code_arr": "000",
+            "com_abs": "827",
+            "contenance": 13
+          },
+          "geometrySha256": "14091cabe321005d3f0371888a85356ab1a188605296c5cc33b1d048e4c19e3d"
+        },
+        {
+          "transportId": "parcelle.63888695",
+          "properties": {
+            "idu": "31555827AD0473",
+            "numero": "0473",
+            "section": "AD",
+            "code_insee": "31555",
+            "nom_com": "Toulouse",
+            "code_dep": "31",
+            "code_com": "555",
+            "code_arr": "000",
+            "com_abs": "827",
+            "contenance": 8645
+          },
+          "geometrySha256": "b641bd76e58581e69dfe4d553e44bfaf8b21213722b51d8164944001e08e2125"
+        },
+        {
+          "transportId": "parcelle.69511318",
+          "properties": {
+            "idu": "31555827AD0540",
+            "numero": "0540",
+            "section": "AD",
+            "code_insee": "31555",
+            "nom_com": "Toulouse",
+            "code_dep": "31",
+            "code_com": "555",
+            "code_arr": "000",
+            "com_abs": "827",
+            "contenance": 905
+          },
+          "geometrySha256": "5f2d18ccd0c5cfbef9407cf7b2d12d4e5317656c212bf00ebdf079b497360a91"
+        },
+        {
+          "transportId": "parcelle.69704342",
+          "properties": {
+            "idu": "31555827AD0544",
+            "numero": "0544",
+            "section": "AD",
+            "code_insee": "31555",
+            "nom_com": "Toulouse",
+            "code_dep": "31",
+            "code_com": "555",
+            "code_arr": "000",
+            "com_abs": "827",
+            "contenance": 20640
+          },
+          "geometrySha256": "b5a1f5c5d691748fed25225992c66f8403799b8b49fcc9d4480aa1b831f3f82c"
+        },
+        {
+          "transportId": "parcelle.75615266",
+          "properties": {
+            "idu": "31555827AD0628",
+            "numero": "0628",
+            "section": "AD",
+            "code_insee": "31555",
+            "nom_com": "Toulouse",
+            "code_dep": "31",
+            "code_com": "555",
+            "code_arr": "000",
+            "com_abs": "827",
+            "contenance": 12350
+          },
+          "geometrySha256": "165878ef5187e8d2457e9ae7493a4f4b28df4bf03c9ab5b803d63d2f82ab1519"
+        }
+      ]
+    },
+    {
+      "test": "viewport-7",
+      "url": "https://data.geopf.fr/wfs/ows?service=WFS&version=2.0.0&request=GetFeature&typeNames=CADASTRALPARCELS.PARCELLAIRE_EXPRESS%3Aparcelle&outputFormat=application%2Fjson&srsName=CRS%3A84&sortBy=idu&count=1000&startIndex=0&bbox=1.425%2C43.605%2C1.426%2C43.606%2CCRS%3A84",
+      "method": "GET",
+      "checkedAt": "2026-10-09T03:56:28.627Z",
+      "httpStatus": 200,
+      "contentType": "application/json;charset=UTF-8",
+      "bytes": 12375,
+      "numberMatched": 12,
+      "numberReturned": 12,
+      "features": [
+        {
+          "transportId": "parcelle.59775136",
+          "properties": {
+            "idu": "31555827AD0427",
+            "numero": "0427",
+            "section": "AD",
+            "code_insee": "31555",
+            "nom_com": "Toulouse",
+            "code_dep": "31",
+            "code_com": "555",
+            "code_arr": "000",
+            "com_abs": "827",
+            "contenance": 210
+          },
+          "geometrySha256": "dfe877dcdbb423d0dbfa3ecb229ed2d5331d3b66c30dcba46eac78fc65306d10"
+        },
+        {
+          "transportId": "parcelle.60804169",
+          "properties": {
+            "idu": "31555827AD0439",
+            "numero": "0439",
+            "section": "AD",
+            "code_insee": "31555",
+            "nom_com": "Toulouse",
+            "code_dep": "31",
+            "code_com": "555",
+            "code_arr": "000",
+            "com_abs": "827",
+            "contenance": 601
+          },
+          "geometrySha256": "c690f59cbd6f28ed57006d88248123fa05f47da3cedc05fbf5509579b4cb6c69"
+        },
+        {
+          "transportId": "parcelle.63888695",
+          "properties": {
+            "idu": "31555827AD0473",
+            "numero": "0473",
+            "section": "AD",
+            "code_insee": "31555",
+            "nom_com": "Toulouse",
+            "code_dep": "31",
+            "code_com": "555",
+            "code_arr": "000",
+            "com_abs": "827",
+            "contenance": 8645
+          },
+          "geometrySha256": "b641bd76e58581e69dfe4d553e44bfaf8b21213722b51d8164944001e08e2125"
+        },
+        {
+          "transportId": "parcelle.64657382",
+          "properties": {
+            "idu": "31555827AD0482",
+            "numero": "0482",
+            "section": "AD",
+            "code_insee": "31555",
+            "nom_com": "Toulouse",
+            "code_dep": "31",
+            "code_com": "555",
+            "code_arr": "000",
+            "com_abs": "827",
+            "contenance": 411
+          },
+          "geometrySha256": "d91006f7a422d1a783e9d1f67e4f6da321ce8a6ca414dec471eecabe0311413f"
+        },
+        {
+          "transportId": "parcelle.64768881",
+          "properties": {
+            "idu": "31555827AD0484",
+            "numero": "0484",
+            "section": "AD",
+            "code_insee": "31555",
+            "nom_com": "Toulouse",
+            "code_dep": "31",
+            "code_com": "555",
+            "code_arr": "000",
+            "com_abs": "827",
+            "contenance": 315
+          },
+          "geometrySha256": "857233f1b0cebb1328d779ded2b59778431ea1d6fb5a28dd95d79407de7c74a9"
+        },
+        {
+          "transportId": "parcelle.64879818",
+          "properties": {
+            "idu": "31555827AD0486",
+            "numero": "0486",
+            "section": "AD",
+            "code_insee": "31555",
+            "nom_com": "Toulouse",
+            "code_dep": "31",
+            "code_com": "555",
+            "code_arr": "000",
+            "com_abs": "827",
+            "contenance": 249
+          },
+          "geometrySha256": "d66726406459240878b657abecd58369158001a9b8d4f880ac08b64b6888b222"
+        },
+        {
+          "transportId": "parcelle.65044887",
+          "properties": {
+            "idu": "31555827AD0489",
+            "numero": "0489",
+            "section": "AD",
+            "code_insee": "31555",
+            "nom_com": "Toulouse",
+            "code_dep": "31",
+            "code_com": "555",
+            "code_arr": "000",
+            "com_abs": "827",
+            "contenance": 1228
+          },
+          "geometrySha256": "b63e001bcfdf502e3405c073d64cc9b6ec405ff5002dc925adf85155b2183010"
+        },
+        {
+          "transportId": "parcelle.65575099",
+          "properties": {
+            "idu": "31555827AD0494",
+            "numero": "0494",
+            "section": "AD",
+            "code_insee": "31555",
+            "nom_com": "Toulouse",
+            "code_dep": "31",
+            "code_com": "555",
+            "code_arr": "000",
+            "com_abs": "827",
+            "contenance": 2027
+          },
+          "geometrySha256": "6721bef4a402dcabe5fce451e63c6daac00015ac82d1345d27920bcc6c37f781"
+        },
+        {
+          "transportId": "parcelle.69511318",
+          "properties": {
+            "idu": "31555827AD0540",
+            "numero": "0540",
+            "section": "AD",
+            "code_insee": "31555",
+            "nom_com": "Toulouse",
+            "code_dep": "31",
+            "code_com": "555",
+            "code_arr": "000",
+            "com_abs": "827",
+            "contenance": 905
+          },
+          "geometrySha256": "5f2d18ccd0c5cfbef9407cf7b2d12d4e5317656c212bf00ebdf079b497360a91"
+        },
+        {
+          "transportId": "parcelle.69704342",
+          "properties": {
+            "idu": "31555827AD0544",
+            "numero": "0544",
+            "section": "AD",
+            "code_insee": "31555",
+            "nom_com": "Toulouse",
+            "code_dep": "31",
+            "code_com": "555",
+            "code_arr": "000",
+            "com_abs": "827",
+            "contenance": 20640
+          },
+          "geometrySha256": "b5a1f5c5d691748fed25225992c66f8403799b8b49fcc9d4480aa1b831f3f82c"
+        },
+        {
+          "transportId": "parcelle.72389595",
+          "properties": {
+            "idu": "31555827AD0581",
+            "numero": "0581",
+            "section": "AD",
+            "code_insee": "31555",
+            "nom_com": "Toulouse",
+            "code_dep": "31",
+            "code_com": "555",
+            "code_arr": "000",
+            "com_abs": "827",
+            "contenance": 1111
+          },
+          "geometrySha256": "8e0286c11297b17cfb1462f49229de14f2c9a11556b03be0a8c83de1cc3b2fbe"
+        },
+        {
+          "transportId": "parcelle.75615266",
+          "properties": {
+            "idu": "31555827AD0628",
+            "numero": "0628",
+            "section": "AD",
+            "code_insee": "31555",
+            "nom_com": "Toulouse",
+            "code_dep": "31",
+            "code_com": "555",
+            "code_arr": "000",
+            "com_abs": "827",
+            "contenance": 12350
+          },
+          "geometrySha256": "165878ef5187e8d2457e9ae7493a4f4b28df4bf03c9ab5b803d63d2f82ab1519"
+        }
+      ]
+    },
+    {
+      "test": "viewport-8",
+      "url": "https://data.geopf.fr/wfs/ows?service=WFS&version=2.0.0&request=GetFeature&typeNames=CADASTRALPARCELS.PARCELLAIRE_EXPRESS%3Aparcelle&outputFormat=application%2Fjson&srsName=CRS%3A84&sortBy=idu&count=1000&startIndex=0&bbox=1.426%2C43.605%2C1.427%2C43.606%2CCRS%3A84",
+      "method": "GET",
+      "checkedAt": "2026-10-09T03:56:28.725Z",
+      "httpStatus": 200,
+      "contentType": "application/json;charset=UTF-8",
+      "bytes": 14737,
+      "numberMatched": 14,
+      "numberReturned": 14,
+      "features": [
+        {
+          "transportId": "parcelle.39884178",
+          "properties": {
+            "idu": "31555827AD0258",
+            "numero": "0258",
+            "section": "AD",
+            "code_insee": "31555",
+            "nom_com": "Toulouse",
+            "code_dep": "31",
+            "code_com": "555",
+            "code_arr": "000",
+            "com_abs": "827",
+            "contenance": 469
+          },
+          "geometrySha256": "81024414a543b0a163e94a40f837e4e3ef2c6e28bcf775196ed754e8c3f0507a"
+        },
+        {
+          "transportId": "parcelle.39999852",
+          "properties": {
+            "idu": "31555827AD0259",
+            "numero": "0259",
+            "section": "AD",
+            "code_insee": "31555",
+            "nom_com": "Toulouse",
+            "code_dep": "31",
+            "code_com": "555",
+            "code_arr": "000",
+            "com_abs": "827",
+            "contenance": 105
+          },
+          "geometrySha256": "1c2065b90996aaac310449ae163b5fc46a2dd0a32095aaee2e9cdd7b67cf64d9"
+        },
+        {
+          "transportId": "parcelle.40406506",
+          "properties": {
+            "idu": "31555827AD0260",
+            "numero": "0260",
+            "section": "AD",
+            "code_insee": "31555",
+            "nom_com": "Toulouse",
+            "code_dep": "31",
+            "code_com": "555",
+            "code_arr": "000",
+            "com_abs": "827",
+            "contenance": 160
+          },
+          "geometrySha256": "9fb130e7ed3d9a8081f76085a83910a20265061d386bf2be0f4123cb967bceec"
+        },
+        {
+          "transportId": "parcelle.40521467",
+          "properties": {
+            "idu": "31555827AD0261",
+            "numero": "0261",
+            "section": "AD",
+            "code_insee": "31555",
+            "nom_com": "Toulouse",
+            "code_dep": "31",
+            "code_com": "555",
+            "code_arr": "000",
+            "com_abs": "827",
+            "contenance": 498
+          },
+          "geometrySha256": "68937672ab963326e5b4f4dd83197ac6e686361d1984708b42b58a45699621a6"
+        },
+        {
+          "transportId": "parcelle.60804169",
+          "properties": {
+            "idu": "31555827AD0439",
+            "numero": "0439",
+            "section": "AD",
+            "code_insee": "31555",
+            "nom_com": "Toulouse",
+            "code_dep": "31",
+            "code_com": "555",
+            "code_arr": "000",
+            "com_abs": "827",
+            "contenance": 601
+          },
+          "geometrySha256": "c690f59cbd6f28ed57006d88248123fa05f47da3cedc05fbf5509579b4cb6c69"
+        },
+        {
+          "transportId": "parcelle.63888695",
+          "properties": {
+            "idu": "31555827AD0473",
+            "numero": "0473",
+            "section": "AD",
+            "code_insee": "31555",
+            "nom_com": "Toulouse",
+            "code_dep": "31",
+            "code_com": "555",
+            "code_arr": "000",
+            "com_abs": "827",
+            "contenance": 8645
+          },
+          "geometrySha256": "b641bd76e58581e69dfe4d553e44bfaf8b21213722b51d8164944001e08e2125"
+        },
+        {
+          "transportId": "parcelle.65044887",
+          "properties": {
+            "idu": "31555827AD0489",
+            "numero": "0489",
+            "section": "AD",
+            "code_insee": "31555",
+            "nom_com": "Toulouse",
+            "code_dep": "31",
+            "code_com": "555",
+            "code_arr": "000",
+            "com_abs": "827",
+            "contenance": 1228
+          },
+          "geometrySha256": "b63e001bcfdf502e3405c073d64cc9b6ec405ff5002dc925adf85155b2183010"
+        },
+        {
+          "transportId": "parcelle.65575099",
+          "properties": {
+            "idu": "31555827AD0494",
+            "numero": "0494",
+            "section": "AD",
+            "code_insee": "31555",
+            "nom_com": "Toulouse",
+            "code_dep": "31",
+            "code_com": "555",
+            "code_arr": "000",
+            "com_abs": "827",
+            "contenance": 2027
+          },
+          "geometrySha256": "6721bef4a402dcabe5fce451e63c6daac00015ac82d1345d27920bcc6c37f781"
+        },
+        {
+          "transportId": "parcelle.67506280",
+          "properties": {
+            "idu": "31555827AD0515",
+            "numero": "0515",
+            "section": "AD",
+            "code_insee": "31555",
+            "nom_com": "Toulouse",
+            "code_dep": "31",
+            "code_com": "555",
+            "code_arr": "000",
+            "com_abs": "827",
+            "contenance": 871
+          },
+          "geometrySha256": "e369b8c4de4639d527f7f36a67b48ab37a10fa02eb9491c3850052d92d1deb21"
+        },
+        {
+          "transportId": "parcelle.68268247",
+          "properties": {
+            "idu": "31555827AD0525",
+            "numero": "0525",
+            "section": "AD",
+            "code_insee": "31555",
+            "nom_com": "Toulouse",
+            "code_dep": "31",
+            "code_com": "555",
+            "code_arr": "000",
+            "com_abs": "827",
+            "contenance": 3911
+          },
+          "geometrySha256": "d0a068f918bef764442f0e3a5d17989a1dc47756a616a3a5168b48edb4f85b7d"
+        },
+        {
+          "transportId": "parcelle.68318612",
+          "properties": {
+            "idu": "31555827AD0526",
+            "numero": "0526",
+            "section": "AD",
+            "code_insee": "31555",
+            "nom_com": "Toulouse",
+            "code_dep": "31",
+            "code_com": "555",
+            "code_arr": "000",
+            "com_abs": "827",
+            "contenance": 3039
+          },
+          "geometrySha256": "fff6c3700807c50145f81e38964507f07b9d2d2dd3cf0d2a8d88f2454f52a1f0"
+        },
+        {
+          "transportId": "parcelle.72389595",
+          "properties": {
+            "idu": "31555827AD0581",
+            "numero": "0581",
+            "section": "AD",
+            "code_insee": "31555",
+            "nom_com": "Toulouse",
+            "code_dep": "31",
+            "code_com": "555",
+            "code_arr": "000",
+            "com_abs": "827",
+            "contenance": 1111
+          },
+          "geometrySha256": "8e0286c11297b17cfb1462f49229de14f2c9a11556b03be0a8c83de1cc3b2fbe"
+        },
+        {
+          "transportId": "parcelle.72433194",
+          "properties": {
+            "idu": "31555827AD0582",
+            "numero": "0582",
+            "section": "AD",
+            "code_insee": "31555",
+            "nom_com": "Toulouse",
+            "code_dep": "31",
+            "code_com": "555",
+            "code_arr": "000",
+            "com_abs": "827",
+            "contenance": 37
+          },
+          "geometrySha256": "00685778564f88353c37e986baba788fbe39bc9cd126a53ac10b903c2cc5c8e8"
+        },
+        {
+          "transportId": "parcelle.75615266",
+          "properties": {
+            "idu": "31555827AD0628",
+            "numero": "0628",
+            "section": "AD",
+            "code_insee": "31555",
+            "nom_com": "Toulouse",
+            "code_dep": "31",
+            "code_com": "555",
+            "code_arr": "000",
+            "com_abs": "827",
+            "contenance": 12350
+          },
+          "geometrySha256": "165878ef5187e8d2457e9ae7493a4f4b28df4bf03c9ab5b803d63d2f82ab1519"
+        }
+      ]
+    },
+    {
+      "test": "viewport-9",
+      "url": "https://data.geopf.fr/wfs/ows?service=WFS&version=2.0.0&request=GetFeature&typeNames=CADASTRALPARCELS.PARCELLAIRE_EXPRESS%3Aparcelle&outputFormat=application%2Fjson&srsName=CRS%3A84&sortBy=idu&count=1000&startIndex=0&bbox=1.425%2C43.602%2C1.426%2C43.603%2CCRS%3A84",
+      "method": "GET",
+      "checkedAt": "2026-10-09T03:56:28.831Z",
+      "httpStatus": 200,
+      "contentType": "application/json;charset=UTF-8",
+      "bytes": 15733,
+      "numberMatched": 16,
+      "numberReturned": 16,
+      "features": [
+        {
+          "transportId": "parcelle.93404223",
+          "properties": {
+            "idu": "31555828AB0097",
+            "numero": "0097",
+            "section": "AB",
+            "code_insee": "31555",
+            "nom_com": "Toulouse",
+            "code_dep": "31",
+            "code_com": "555",
+            "code_arr": "000",
+            "com_abs": "828",
+            "contenance": 4504
+          },
+          "geometrySha256": "3e5a25f4539ada60c7180b4550b2cf6d52909d1f0ac05db519c86ced68992eee"
+        },
+        {
+          "transportId": "parcelle.94167714",
+          "properties": {
+            "idu": "31555828AB0099",
+            "numero": "0099",
+            "section": "AB",
+            "code_insee": "31555",
+            "nom_com": "Toulouse",
+            "code_dep": "31",
+            "code_com": "555",
+            "code_arr": "000",
+            "com_abs": "828",
+            "contenance": 1342
+          },
+          "geometrySha256": "b6c44520bbaa5d11abe098ab054fff29fc56372fffb4c324f830a684bb73c746"
+        },
+        {
+          "transportId": "parcelle.51104793",
+          "properties": {
+            "idu": "31555828AB0343",
+            "numero": "0343",
+            "section": "AB",
+            "code_insee": "31555",
+            "nom_com": "Toulouse",
+            "code_dep": "31",
+            "code_com": "555",
+            "code_arr": "000",
+            "com_abs": "828",
+            "contenance": 700
+          },
+          "geometrySha256": "15eeabbf86bc5b27fd8a73bbf0df2488f4d76f7e685d734d219fd458bd23bd35"
+        },
+        {
+          "transportId": "parcelle.52525720",
+          "properties": {
+            "idu": "31555828AB0357",
+            "numero": "0357",
+            "section": "AB",
+            "code_insee": "31555",
+            "nom_com": "Toulouse",
+            "code_dep": "31",
+            "code_com": "555",
+            "code_arr": "000",
+            "com_abs": "828",
+            "contenance": 2560
+          },
+          "geometrySha256": "3a326695477704edef36dcf3410c848ad001f299c868fb67907ce91a497cef81"
+        },
+        {
+          "transportId": "parcelle.53041271",
+          "properties": {
+            "idu": "31555828AB0360",
+            "numero": "0360",
+            "section": "AB",
+            "code_insee": "31555",
+            "nom_com": "Toulouse",
+            "code_dep": "31",
+            "code_com": "555",
+            "code_arr": "000",
+            "com_abs": "828",
+            "contenance": 120
+          },
+          "geometrySha256": "94af2caaf1e7cfd656757b8ad3c62d015c0b3dc835f4d61858d5608e51127582"
+        },
+        {
+          "transportId": "parcelle.53120435",
+          "properties": {
+            "idu": "31555828AB0361",
+            "numero": "0361",
+            "section": "AB",
+            "code_insee": "31555",
+            "nom_com": "Toulouse",
+            "code_dep": "31",
+            "code_com": "555",
+            "code_arr": "000",
+            "com_abs": "828",
+            "contenance": 160
+          },
+          "geometrySha256": "1a4382d7c07f4c07cff4fbdbcae9669bdfddf706ad8fd3940453b719a84cc3e3"
+        },
+        {
+          "transportId": "parcelle.54172714",
+          "properties": {
+            "idu": "31555828AB0371",
+            "numero": "0371",
+            "section": "AB",
+            "code_insee": "31555",
+            "nom_com": "Toulouse",
+            "code_dep": "31",
+            "code_com": "555",
+            "code_arr": "000",
+            "com_abs": "828",
+            "contenance": 173
+          },
+          "geometrySha256": "0b3d6ed3fe3d950a03a31d56ec9c8893360dacfa7587dd2c915715b754ec0713"
+        },
+        {
+          "transportId": "parcelle.59577100",
+          "properties": {
+            "idu": "31555828AB0424",
+            "numero": "0424",
+            "section": "AB",
+            "code_insee": "31555",
+            "nom_com": "Toulouse",
+            "code_dep": "31",
+            "code_com": "555",
+            "code_arr": "000",
+            "com_abs": "828",
+            "contenance": 1426
+          },
+          "geometrySha256": "5c649c9a6707c57d60afd9833e0509c576bdce4439d243d6fdb2b5f01a7497c5"
+        },
+        {
+          "transportId": "parcelle.61561504",
+          "properties": {
+            "idu": "31555828AB0447",
+            "numero": "0447",
+            "section": "AB",
+            "code_insee": "31555",
+            "nom_com": "Toulouse",
+            "code_dep": "31",
+            "code_com": "555",
+            "code_arr": "000",
+            "com_abs": "828",
+            "contenance": 62
+          },
+          "geometrySha256": "c7b13b70c6eb33a8042ea751790a89c03b5c2d449f0336b8b2b1ba0f197ed78e"
+        },
+        {
+          "transportId": "parcelle.61683935",
+          "properties": {
+            "idu": "31555828AB0449",
+            "numero": "0449",
+            "section": "AB",
+            "code_insee": "31555",
+            "nom_com": "Toulouse",
+            "code_dep": "31",
+            "code_com": "555",
+            "code_arr": "000",
+            "com_abs": "828",
+            "contenance": 280
+          },
+          "geometrySha256": "d40e0f9a5c9bf7d723acf0a6d348f92f2c1879139923a5ebf57f2af85eefc210"
+        },
+        {
+          "transportId": "parcelle.64654516",
+          "properties": {
+            "idu": "31555828AB0482",
+            "numero": "0482",
+            "section": "AB",
+            "code_insee": "31555",
+            "nom_com": "Toulouse",
+            "code_dep": "31",
+            "code_com": "555",
+            "code_arr": "000",
+            "com_abs": "828",
+            "contenance": 2361
+          },
+          "geometrySha256": "198ab297f1f4f5473714bc68a536adc2395cab6ebb4ac6df5a682e74cee45cef"
+        },
+        {
+          "transportId": "parcelle.64710457",
+          "properties": {
+            "idu": "31555828AB0483",
+            "numero": "0483",
+            "section": "AB",
+            "code_insee": "31555",
+            "nom_com": "Toulouse",
+            "code_dep": "31",
+            "code_com": "555",
+            "code_arr": "000",
+            "com_abs": "828",
+            "contenance": 1608
+          },
+          "geometrySha256": "c9b23611ac968b6b63d514066e35e5e48fcf371a96254ba2eae2646d372b68b0"
+        },
+        {
+          "transportId": "parcelle.64766070",
+          "properties": {
+            "idu": "31555828AB0484",
+            "numero": "0484",
+            "section": "AB",
+            "code_insee": "31555",
+            "nom_com": "Toulouse",
+            "code_dep": "31",
+            "code_com": "555",
+            "code_arr": "000",
+            "com_abs": "828",
+            "contenance": 720
+          },
+          "geometrySha256": "54c5f9c3126c317db3d0c324be2d109eb0942762d38392b0509d2ca1f3d04478"
+        },
+        {
+          "transportId": "parcelle.70951994",
+          "properties": {
+            "idu": "31555828AB0560",
+            "numero": "0560",
+            "section": "AB",
+            "code_insee": "31555",
+            "nom_com": "Toulouse",
+            "code_dep": "31",
+            "code_com": "555",
+            "code_arr": "000",
+            "com_abs": "828",
+            "contenance": 1248
+          },
+          "geometrySha256": "66b313d0c5e9fa778c758509b389f43c434dd18ef815d94cf110757926ccbeaf"
+        },
+        {
+          "transportId": "parcelle.70997974",
+          "properties": {
+            "idu": "31555828AB0561",
+            "numero": "0561",
+            "section": "AB",
+            "code_insee": "31555",
+            "nom_com": "Toulouse",
+            "code_dep": "31",
+            "code_com": "555",
+            "code_arr": "000",
+            "com_abs": "828",
+            "contenance": 438
+          },
+          "geometrySha256": "18afbe66e17eb6648647a9611ccc98e7f5c8caf1bfbbbdd47958ba5191d53381"
+        },
+        {
+          "transportId": "parcelle.71043769",
+          "properties": {
+            "idu": "31555828AB0562",
+            "numero": "0562",
+            "section": "AB",
+            "code_insee": "31555",
+            "nom_com": "Toulouse",
+            "code_dep": "31",
+            "code_com": "555",
+            "code_arr": "000",
+            "com_abs": "828",
+            "contenance": 5045
+          },
+          "geometrySha256": "9d3fdcf28fcd64160bfcc466401bdc5a816979003380f5fb38e26c9d55b599c5"
+        }
+      ]
+    },
+    {
+      "test": "viewport-10",
+      "url": "https://data.geopf.fr/wfs/ows?service=WFS&version=2.0.0&request=GetFeature&typeNames=CADASTRALPARCELS.PARCELLAIRE_EXPRESS%3Aparcelle&outputFormat=application%2Fjson&srsName=CRS%3A84&sortBy=idu&count=1000&startIndex=0&bbox=1.425%2C43.606%2C1.426%2C43.607%2CCRS%3A84",
+      "method": "GET",
+      "checkedAt": "2026-10-09T03:56:28.938Z",
+      "httpStatus": 200,
+      "contentType": "application/json;charset=UTF-8",
+      "bytes": 22984,
+      "numberMatched": 35,
+      "numberReturned": 35,
+      "features": [
+        {
+          "transportId": "parcelle.21068730",
+          "properties": {
+            "idu": "31555827AD0157",
+            "numero": "0157",
+            "section": "AD",
+            "code_insee": "31555",
+            "nom_com": "Toulouse",
+            "code_dep": "31",
+            "code_com": "555",
+            "code_arr": "000",
+            "com_abs": "827",
+            "contenance": 303
+          },
+          "geometrySha256": "b172cb0e46d395d82ec4fc3d2550809922c6357f42ed519641646ae130d041c4"
+        },
+        {
+          "transportId": "parcelle.791688",
+          "properties": {
+            "idu": "31555827AD0158",
+            "numero": "0158",
+            "section": "AD",
+            "code_insee": "31555",
+            "nom_com": "Toulouse",
+            "code_dep": "31",
+            "code_com": "555",
+            "code_arr": "000",
+            "com_abs": "827",
+            "contenance": 338
+          },
+          "geometrySha256": "e6fd475588abb2421a406158ecef7bfbde01a670cd9b54862da4e37f00deba18"
+        },
+        {
+          "transportId": "parcelle.21485323",
+          "properties": {
+            "idu": "31555827AD0159",
+            "numero": "0159",
+            "section": "AD",
+            "code_insee": "31555",
+            "nom_com": "Toulouse",
+            "code_dep": "31",
+            "code_com": "555",
+            "code_arr": "000",
+            "com_abs": "827",
+            "contenance": 371
+          },
+          "geometrySha256": "0068d37151169106d271c27f3eae83a50d8c3e68ca1e277d065a3394d02507bd"
+        },
+        {
+          "transportId": "parcelle.25201143",
+          "properties": {
+            "idu": "31555827AD0175",
+            "numero": "0175",
+            "section": "AD",
+            "code_insee": "31555",
+            "nom_com": "Toulouse",
+            "code_dep": "31",
+            "code_com": "555",
+            "code_arr": "000",
+            "com_abs": "827",
+            "contenance": 264
+          },
+          "geometrySha256": "948e0553f0437a886301b82e7564b243e16ad54e57ed977b7b149a9185b6bf5d"
+        },
+        {
+          "transportId": "parcelle.25383784",
+          "properties": {
+            "idu": "31555827AD0176",
+            "numero": "0176",
+            "section": "AD",
+            "code_insee": "31555",
+            "nom_com": "Toulouse",
+            "code_dep": "31",
+            "code_com": "555",
+            "code_arr": "000",
+            "com_abs": "827",
+            "contenance": 233
+          },
+          "geometrySha256": "c506dea241ffea1265082862a4b7814dc601e8ad84b87fc303616ef107abc9c8"
+        },
+        {
+          "transportId": "parcelle.25564663",
+          "properties": {
+            "idu": "31555827AD0177",
+            "numero": "0177",
+            "section": "AD",
+            "code_insee": "31555",
+            "nom_com": "Toulouse",
+            "code_dep": "31",
+            "code_com": "555",
+            "code_arr": "000",
+            "com_abs": "827",
+            "contenance": 312
+          },
+          "geometrySha256": "af3f27c43d52d8546cceaca89641c928cbfbb436d26d4afa94c210500bc2a7b5"
+        },
+        {
+          "transportId": "parcelle.25744814",
+          "properties": {
+            "idu": "31555827AD0178",
+            "numero": "0178",
+            "section": "AD",
+            "code_insee": "31555",
+            "nom_com": "Toulouse",
+            "code_dep": "31",
+            "code_com": "555",
+            "code_arr": "000",
+            "com_abs": "827",
+            "contenance": 229
+          },
+          "geometrySha256": "7c58733e84bc91b3cd0a162fcf6d8628a3bcd4d78a0b1033bafad5f0ef0ea0df"
+        },
+        {
+          "transportId": "parcelle.25923489",
+          "properties": {
+            "idu": "31555827AD0179",
+            "numero": "0179",
+            "section": "AD",
+            "code_insee": "31555",
+            "nom_com": "Toulouse",
+            "code_dep": "31",
+            "code_com": "555",
+            "code_arr": "000",
+            "com_abs": "827",
+            "contenance": 36
+          },
+          "geometrySha256": "dcba61f0435aa7b493c8885f428576784b7f5dd166c19fe9d39eb8e081fdc35a"
+        },
+        {
+          "transportId": "parcelle.26401847",
+          "properties": {
+            "idu": "31555827AD0180",
+            "numero": "0180",
+            "section": "AD",
+            "code_insee": "31555",
+            "nom_com": "Toulouse",
+            "code_dep": "31",
+            "code_com": "555",
+            "code_arr": "000",
+            "com_abs": "827",
+            "contenance": 250
+          },
+          "geometrySha256": "d03a14f946c8cb430b8eb72a96848736e7c5e083c954b1ec1989932441087888"
+        },
+        {
+          "transportId": "parcelle.26578419",
+          "properties": {
+            "idu": "31555827AD0181",
+            "numero": "0181",
+            "section": "AD",
+            "code_insee": "31555",
+            "nom_com": "Toulouse",
+            "code_dep": "31",
+            "code_com": "555",
+            "code_arr": "000",
+            "com_abs": "827",
+            "contenance": 1075
+          },
+          "geometrySha256": "9f365f60ae45e0334093e1dfc3c1f8addd0b6a1f9dec724d2614e0ea8f80f1e3"
+        },
+        {
+          "transportId": "parcelle.26754385",
+          "properties": {
+            "idu": "31555827AD0182",
+            "numero": "0182",
+            "section": "AD",
+            "code_insee": "31555",
+            "nom_com": "Toulouse",
+            "code_dep": "31",
+            "code_com": "555",
+            "code_arr": "000",
+            "com_abs": "827",
+            "contenance": 347
+          },
+          "geometrySha256": "1f5dd659888faa9cb0b590df67654113d933858efd3cf50fe25e7c7146f13a52"
+        },
+        {
+          "transportId": "parcelle.26928478",
+          "properties": {
+            "idu": "31555827AD0183",
+            "numero": "0183",
+            "section": "AD",
+            "code_insee": "31555",
+            "nom_com": "Toulouse",
+            "code_dep": "31",
+            "code_com": "555",
+            "code_arr": "000",
+            "com_abs": "827",
+            "contenance": 242
+          },
+          "geometrySha256": "f74af6ab479c064063dcd79cbef6f2956a0f13e55665bb70d5ccabbba531c4ac"
+        },
+        {
+          "transportId": "parcelle.27101860",
+          "properties": {
+            "idu": "31555827AD0184",
+            "numero": "0184",
+            "section": "AD",
+            "code_insee": "31555",
+            "nom_com": "Toulouse",
+            "code_dep": "31",
+            "code_com": "555",
+            "code_arr": "000",
+            "com_abs": "827",
+            "contenance": 251
+          },
+          "geometrySha256": "c9e6def3f33509a560167c5462a5d83edc3aa8cfcc9165594705815909f19101"
+        },
+        {
+          "transportId": "parcelle.27273965",
+          "properties": {
+            "idu": "31555827AD0185",
+            "numero": "0185",
+            "section": "AD",
+            "code_insee": "31555",
+            "nom_com": "Toulouse",
+            "code_dep": "31",
+            "code_com": "555",
+            "code_arr": "000",
+            "com_abs": "827",
+            "contenance": 198
+          },
+          "geometrySha256": "a4ec99e27b877c2ea1def77a1579dc91e66baa2770691ceba6c9fd4b8bcda4ff"
+        },
+        {
+          "transportId": "parcelle.27445180",
+          "properties": {
+            "idu": "31555827AD0186",
+            "numero": "0186",
+            "section": "AD",
+            "code_insee": "31555",
+            "nom_com": "Toulouse",
+            "code_dep": "31",
+            "code_com": "555",
+            "code_arr": "000",
+            "com_abs": "827",
+            "contenance": 274
+          },
+          "geometrySha256": "277cbf826d7e23d3447541017ffe9400aad4f6d9a82a3a3c509011fbed493d7e"
+        },
+        {
+          "transportId": "parcelle.27614773",
+          "properties": {
+            "idu": "31555827AD0187",
+            "numero": "0187",
+            "section": "AD",
+            "code_insee": "31555",
+            "nom_com": "Toulouse",
+            "code_dep": "31",
+            "code_com": "555",
+            "code_arr": "000",
+            "com_abs": "827",
+            "contenance": 90
+          },
+          "geometrySha256": "e90f8c428a33bb26caaad812d80164ae5c75c753747a7e566b05594e5c16737d"
+        },
+        {
+          "transportId": "parcelle.30779293",
+          "properties": {
+            "idu": "31555827AD0201",
+            "numero": "0201",
+            "section": "AD",
+            "code_insee": "31555",
+            "nom_com": "Toulouse",
+            "code_dep": "31",
+            "code_com": "555",
+            "code_arr": "000",
+            "com_abs": "827",
+            "contenance": 238
+          },
+          "geometrySha256": "0313712517e725a9a5d3abd0235b7b5cee0e7e3a0af213224fe0fbc261e017ce"
+        },
+        {
+          "transportId": "parcelle.31242550",
+          "properties": {
+            "idu": "31555827AD0204",
+            "numero": "0204",
+            "section": "AD",
+            "code_insee": "31555",
+            "nom_com": "Toulouse",
+            "code_dep": "31",
+            "code_com": "555",
+            "code_arr": "000",
+            "com_abs": "827",
+            "contenance": 215
+          },
+          "geometrySha256": "da085809d2ef5a1e3e70cd78b8530812a20cb1a08f7eedb4b5a2a2e0a66cc593"
+        },
+        {
+          "transportId": "parcelle.31394934",
+          "properties": {
+            "idu": "31555827AD0205",
+            "numero": "0205",
+            "section": "AD",
+            "code_insee": "31555",
+            "nom_com": "Toulouse",
+            "code_dep": "31",
+            "code_com": "555",
+            "code_arr": "000",
+            "com_abs": "827",
+            "contenance": 237
+          },
+          "geometrySha256": "3279ef234f3dd8149208e00e1cae2a417550fa37e439f4d2ba0f35f13fd3da58"
+        },
+        {
+          "transportId": "parcelle.31845787",
+          "properties": {
+            "idu": "31555827AD0208",
+            "numero": "0208",
+            "section": "AD",
+            "code_insee": "31555",
+            "nom_com": "Toulouse",
+            "code_dep": "31",
+            "code_com": "555",
+            "code_arr": "000",
+            "com_abs": "827",
+            "contenance": 238
+          },
+          "geometrySha256": "d69b9d46b0a3e6ee1099aaba8bbd60841f6dd1dda371c1c7ca37c4fe05e18372"
+        },
+        {
+          "transportId": "parcelle.31994577",
+          "properties": {
+            "idu": "31555827AD0209",
+            "numero": "0209",
+            "section": "AD",
+            "code_insee": "31555",
+            "nom_com": "Toulouse",
+            "code_dep": "31",
+            "code_com": "555",
+            "code_arr": "000",
+            "com_abs": "827",
+            "contenance": 156
+          },
+          "geometrySha256": "81c5d2e23302cebf96d7c1ab3db9310c999fd3b5502878a5801c87abe338e3b0"
+        },
+        {
+          "transportId": "parcelle.32586803",
+          "properties": {
+            "idu": "31555827AD0211",
+            "numero": "0211",
+            "section": "AD",
+            "code_insee": "31555",
+            "nom_com": "Toulouse",
+            "code_dep": "31",
+            "code_com": "555",
+            "code_arr": "000",
+            "com_abs": "827",
+            "contenance": 404
+          },
+          "geometrySha256": "fe34d07d732bbd4cd2482259afda24b233281ff63f03a02e4170da2c210e06a5"
+        },
+        {
+          "transportId": "parcelle.32878363",
+          "properties": {
+            "idu": "31555827AD0213",
+            "numero": "0213",
+            "section": "AD",
+            "code_insee": "31555",
+            "nom_com": "Toulouse",
+            "code_dep": "31",
+            "code_com": "555",
+            "code_arr": "000",
+            "com_abs": "827",
+            "contenance": 288
+          },
+          "geometrySha256": "f5d498f44673c5a514d1e6c17888c322a01df6224ecaaa670145d7555ec02f99"
+        },
+        {
+          "transportId": "parcelle.33022664",
+          "properties": {
+            "idu": "31555827AD0214",
+            "numero": "0214",
+            "section": "AD",
+            "code_insee": "31555",
+            "nom_com": "Toulouse",
+            "code_dep": "31",
+            "code_com": "555",
+            "code_arr": "000",
+            "com_abs": "827",
+            "contenance": 281
+          },
+          "geometrySha256": "777a673809fb0d98b9a14628232ae9aec37de0afad6458c6675a35b68e73a054"
+        },
+        {
+          "transportId": "parcelle.33166026",
+          "properties": {
+            "idu": "31555827AD0215",
+            "numero": "0215",
+            "section": "AD",
+            "code_insee": "31555",
+            "nom_com": "Toulouse",
+            "code_dep": "31",
+            "code_com": "555",
+            "code_arr": "000",
+            "com_abs": "827",
+            "contenance": 335
+          },
+          "geometrySha256": "5432eff0c4210d83a2f5bd4734cb02a573407988e67ea32ee85bb71853c890ce"
+        },
+        {
+          "transportId": "parcelle.40976867",
+          "properties": {
+            "idu": "31555827AD0265",
+            "numero": "0265",
+            "section": "AD",
+            "code_insee": "31555",
+            "nom_com": "Toulouse",
+            "code_dep": "31",
+            "code_com": "555",
+            "code_arr": "000",
+            "com_abs": "827",
+            "contenance": 2328
+          },
+          "geometrySha256": "cc209da6dd608df3d94b0fd36ed35426f1202477fa64596cbaa44d8799e7968a"
+        },
+        {
+          "transportId": "parcelle.58651853",
+          "properties": {
+            "idu": "31555827AD0414",
+            "numero": "0414",
+            "section": "AD",
+            "code_insee": "31555",
+            "nom_com": "Toulouse",
+            "code_dep": "31",
+            "code_com": "555",
+            "code_arr": "000",
+            "com_abs": "827",
+            "contenance": 127
+          },
+          "geometrySha256": "afb1730f958672655532e2d347e39a485cd8af382f9b8198e3d157e7d9f58c49"
+        },
+        {
+          "transportId": "parcelle.59515666",
+          "properties": {
+            "idu": "31555827AD0423",
+            "numero": "0423",
+            "section": "AD",
+            "code_insee": "31555",
+            "nom_com": "Toulouse",
+            "code_dep": "31",
+            "code_com": "555",
+            "code_arr": "000",
+            "com_abs": "827",
+            "contenance": 17
+          },
+          "geometrySha256": "ab47349f62bb6451e076d0e1b4edfdc6fa67ca1052427e3fbe944a4853306735"
+        },
+        {
+          "transportId": "parcelle.59580751",
+          "properties": {
+            "idu": "31555827AD0424",
+            "numero": "0424",
+            "section": "AD",
+            "code_insee": "31555",
+            "nom_com": "Toulouse",
+            "code_dep": "31",
+            "code_com": "555",
+            "code_arr": "000",
+            "com_abs": "827",
+            "contenance": 188
+          },
+          "geometrySha256": "27e49f0aa2da9e3b904035fd3353cfc120959289e9064748670c63eeaf881010"
+        },
+        {
+          "transportId": "parcelle.59645462",
+          "properties": {
+            "idu": "31555827AD0425",
+            "numero": "0425",
+            "section": "AD",
+            "code_insee": "31555",
+            "nom_com": "Toulouse",
+            "code_dep": "31",
+            "code_com": "555",
+            "code_arr": "000",
+            "com_abs": "827",
+            "contenance": 105
+          },
+          "geometrySha256": "aa7ab2471ef5669af693f472507e4d318d7f466707a3602cdb5120ef87725ee0"
+        },
+        {
+          "transportId": "parcelle.59775136",
+          "properties": {
+            "idu": "31555827AD0427",
+            "numero": "0427",
+            "section": "AD",
+            "code_insee": "31555",
+            "nom_com": "Toulouse",
+            "code_dep": "31",
+            "code_com": "555",
+            "code_arr": "000",
+            "com_abs": "827",
+            "contenance": 210
+          },
+          "geometrySha256": "dfe877dcdbb423d0dbfa3ecb229ed2d5331d3b66c30dcba46eac78fc65306d10"
+        },
+        {
+          "transportId": "parcelle.62991114",
+          "properties": {
+            "idu": "31555827AD0462",
+            "numero": "0462",
+            "section": "AD",
+            "code_insee": "31555",
+            "nom_com": "Toulouse",
+            "code_dep": "31",
+            "code_com": "555",
+            "code_arr": "000",
+            "com_abs": "827",
+            "contenance": 212
+          },
+          "geometrySha256": "a6e04892ce57606863032ba57da6ee90fc6ec90af83b8e6d28b4e66d2b35b5ef"
+        },
+        {
+          "transportId": "parcelle.63049827",
+          "properties": {
+            "idu": "31555827AD0463",
+            "numero": "0463",
+            "section": "AD",
+            "code_insee": "31555",
+            "nom_com": "Toulouse",
+            "code_dep": "31",
+            "code_com": "555",
+            "code_arr": "000",
+            "com_abs": "827",
+            "contenance": 258
+          },
+          "geometrySha256": "b8dab5944fc44c3bfed39ea0feffdb0a5c791aaf931bc0ce405c062d1bbd12ac"
+        },
+        {
+          "transportId": "parcelle.68065445",
+          "properties": {
+            "idu": "31555827AD0521",
+            "numero": "0521",
+            "section": "AD",
+            "code_insee": "31555",
+            "nom_com": "Toulouse",
+            "code_dep": "31",
+            "code_com": "555",
+            "code_arr": "000",
+            "com_abs": "827",
+            "contenance": 399
+          },
+          "geometrySha256": "0bb01be085e69a4dcb276e24a6560b9477e89b81a60c829091f1d9a5d059e8ab"
+        },
+        {
+          "transportId": "parcelle.72389595",
+          "properties": {
+            "idu": "31555827AD0581",
+            "numero": "0581",
+            "section": "AD",
+            "code_insee": "31555",
+            "nom_com": "Toulouse",
+            "code_dep": "31",
+            "code_com": "555",
+            "code_arr": "000",
+            "com_abs": "827",
+            "contenance": 1111
+          },
+          "geometrySha256": "8e0286c11297b17cfb1462f49229de14f2c9a11556b03be0a8c83de1cc3b2fbe"
+        }
+      ]
+    },
+    {
+      "test": "viewport-11",
+      "url": "https://data.geopf.fr/wfs/ows?service=WFS&version=2.0.0&request=GetFeature&typeNames=CADASTRALPARCELS.PARCELLAIRE_EXPRESS%3Aparcelle&outputFormat=application%2Fjson&srsName=CRS%3A84&sortBy=idu&count=1000&startIndex=0&bbox=1.423%2C43.604%2C1.424%2C43.605%2CCRS%3A84",
+      "method": "GET",
+      "checkedAt": "2026-10-09T03:56:29.047Z",
+      "httpStatus": 200,
+      "contentType": "application/json;charset=UTF-8",
+      "bytes": 5734,
+      "numberMatched": 3,
+      "numberReturned": 3,
+      "features": [
+        {
+          "transportId": "parcelle.69704342",
+          "properties": {
+            "idu": "31555827AD0544",
+            "numero": "0544",
+            "section": "AD",
+            "code_insee": "31555",
+            "nom_com": "Toulouse",
+            "code_dep": "31",
+            "code_com": "555",
+            "code_arr": "000",
+            "com_abs": "827",
+            "contenance": 20640
+          },
+          "geometrySha256": "b5a1f5c5d691748fed25225992c66f8403799b8b49fcc9d4480aa1b831f3f82c"
+        },
+        {
+          "transportId": "parcelle.75615266",
+          "properties": {
+            "idu": "31555827AD0628",
+            "numero": "0628",
+            "section": "AD",
+            "code_insee": "31555",
+            "nom_com": "Toulouse",
+            "code_dep": "31",
+            "code_com": "555",
+            "code_arr": "000",
+            "com_abs": "827",
+            "contenance": 12350
+          },
+          "geometrySha256": "165878ef5187e8d2457e9ae7493a4f4b28df4bf03c9ab5b803d63d2f82ab1519"
+        },
+        {
+          "transportId": "parcelle.71043769",
+          "properties": {
+            "idu": "31555828AB0562",
+            "numero": "0562",
+            "section": "AB",
+            "code_insee": "31555",
+            "nom_com": "Toulouse",
+            "code_dep": "31",
+            "code_com": "555",
+            "code_arr": "000",
+            "com_abs": "828",
+            "contenance": 5045
+          },
+          "geometrySha256": "9d3fdcf28fcd64160bfcc466401bdc5a816979003380f5fb38e26c9d55b599c5"
+        }
+      ]
+    },
+    {
+      "test": "viewport-12",
+      "url": "https://data.geopf.fr/wfs/ows?service=WFS&version=2.0.0&request=GetFeature&typeNames=CADASTRALPARCELS.PARCELLAIRE_EXPRESS%3Aparcelle&outputFormat=application%2Fjson&srsName=CRS%3A84&sortBy=idu&count=1000&startIndex=0&bbox=1.427%2C43.604%2C1.428%2C43.605%2CCRS%3A84",
+      "method": "GET",
+      "checkedAt": "2026-10-09T03:56:29.146Z",
+      "httpStatus": 200,
+      "contentType": "application/json;charset=UTF-8",
+      "bytes": 6792,
+      "numberMatched": 6,
+      "numberReturned": 6,
+      "features": [
+        {
+          "transportId": "parcelle.62193198",
+          "properties": {
+            "idu": "31555827AD0453",
+            "numero": "0453",
+            "section": "AD",
+            "code_insee": "31555",
+            "nom_com": "Toulouse",
+            "code_dep": "31",
+            "code_com": "555",
+            "code_arr": "000",
+            "com_abs": "827",
+            "contenance": 225
+          },
+          "geometrySha256": "34dce8e4f048a31ce846be4c8e9643d1df3038f9acc307ee00c69eee698c3f30"
+        },
+        {
+          "transportId": "parcelle.62253420",
+          "properties": {
+            "idu": "31555827AD0454",
+            "numero": "0454",
+            "section": "AD",
+            "code_insee": "31555",
+            "nom_com": "Toulouse",
+            "code_dep": "31",
+            "code_com": "555",
+            "code_arr": "000",
+            "com_abs": "827",
+            "contenance": 2832
+          },
+          "geometrySha256": "76f30e269aecdac1497278625e589f7676743d385f32a662bcb5922cf605c3df"
+        },
+        {
+          "transportId": "parcelle.62476590",
+          "properties": {
+            "idu": "31555827AD0458",
+            "numero": "0458",
+            "section": "AD",
+            "code_insee": "31555",
+            "nom_com": "Toulouse",
+            "code_dep": "31",
+            "code_com": "555",
+            "code_arr": "000",
+            "com_abs": "827",
+            "contenance": 2
+          },
+          "geometrySha256": "37214d332a6485a3bde45e2f50308b7192821ebb6eeaeafb0c42c09c60482faf"
+        },
+        {
+          "transportId": "parcelle.62873109",
+          "properties": {
+            "idu": "31555827AD0460",
+            "numero": "0460",
+            "section": "AD",
+            "code_insee": "31555",
+            "nom_com": "Toulouse",
+            "code_dep": "31",
+            "code_com": "555",
+            "code_arr": "000",
+            "com_abs": "827",
+            "contenance": 176
+          },
+          "geometrySha256": "05a53fdf6f3bb8a7d4491fdcdfad105bb26ac4eb4907c4e68c36d67212c447ec"
+        },
+        {
+          "transportId": "parcelle.68318612",
+          "properties": {
+            "idu": "31555827AD0526",
+            "numero": "0526",
+            "section": "AD",
+            "code_insee": "31555",
+            "nom_com": "Toulouse",
+            "code_dep": "31",
+            "code_com": "555",
+            "code_arr": "000",
+            "com_abs": "827",
+            "contenance": 3039
+          },
+          "geometrySha256": "fff6c3700807c50145f81e38964507f07b9d2d2dd3cf0d2a8d88f2454f52a1f0"
+        },
+        {
+          "transportId": "parcelle.75615266",
+          "properties": {
+            "idu": "31555827AD0628",
+            "numero": "0628",
+            "section": "AD",
+            "code_insee": "31555",
+            "nom_com": "Toulouse",
+            "code_dep": "31",
+            "code_com": "555",
+            "code_arr": "000",
+            "com_abs": "827",
+            "contenance": 12350
+          },
+          "geometrySha256": "165878ef5187e8d2457e9ae7493a4f4b28df4bf03c9ab5b803d63d2f82ab1519"
+        }
+      ]
+    },
+    {
+      "test": "forced-three-row-pages",
+      "url": "https://data.geopf.fr/wfs/ows?service=WFS&version=2.0.0&request=GetFeature&typeNames=CADASTRALPARCELS.PARCELLAIRE_EXPRESS%3Aparcelle&outputFormat=application%2Fjson&srsName=CRS%3A84&sortBy=idu&count=3&startIndex=0&bbox=1.425%2C43.606%2C1.426%2C43.607%2CCRS%3A84",
+      "method": "GET",
+      "checkedAt": "2026-10-09T03:56:29.666Z",
+      "httpStatus": 200,
+      "contentType": "application/json;charset=UTF-8",
+      "bytes": 2689,
+      "numberMatched": 35,
+      "numberReturned": 3,
+      "features": [
+        {
+          "transportId": "parcelle.21068730",
+          "properties": {
+            "idu": "31555827AD0157",
+            "numero": "0157",
+            "section": "AD",
+            "code_insee": "31555",
+            "nom_com": "Toulouse",
+            "code_dep": "31",
+            "code_com": "555",
+            "code_arr": "000",
+            "com_abs": "827",
+            "contenance": 303
+          },
+          "geometrySha256": "b172cb0e46d395d82ec4fc3d2550809922c6357f42ed519641646ae130d041c4"
+        },
+        {
+          "transportId": "parcelle.791688",
+          "properties": {
+            "idu": "31555827AD0158",
+            "numero": "0158",
+            "section": "AD",
+            "code_insee": "31555",
+            "nom_com": "Toulouse",
+            "code_dep": "31",
+            "code_com": "555",
+            "code_arr": "000",
+            "com_abs": "827",
+            "contenance": 338
+          },
+          "geometrySha256": "e6fd475588abb2421a406158ecef7bfbde01a670cd9b54862da4e37f00deba18"
+        },
+        {
+          "transportId": "parcelle.21485323",
+          "properties": {
+            "idu": "31555827AD0159",
+            "numero": "0159",
+            "section": "AD",
+            "code_insee": "31555",
+            "nom_com": "Toulouse",
+            "code_dep": "31",
+            "code_com": "555",
+            "code_arr": "000",
+            "com_abs": "827",
+            "contenance": 371
+          },
+          "geometrySha256": "0068d37151169106d271c27f3eae83a50d8c3e68ca1e277d065a3394d02507bd"
+        }
+      ]
+    },
+    {
+      "test": "forced-three-row-pages",
+      "url": "https://data.geopf.fr/wfs/ows?service=WFS&version=2.0.0&request=GetFeature&typeNames=CADASTRALPARCELS.PARCELLAIRE_EXPRESS%3Aparcelle&outputFormat=application%2Fjson&srsName=CRS%3A84&sortBy=idu&count=3&startIndex=3&bbox=1.425%2C43.606%2C1.426%2C43.607%2CCRS%3A84",
+      "method": "GET",
+      "checkedAt": "2026-10-09T03:56:29.768Z",
+      "httpStatus": 200,
+      "contentType": "application/json;charset=UTF-8",
+      "bytes": 3006,
+      "numberMatched": 35,
+      "numberReturned": 3,
+      "features": [
+        {
+          "transportId": "parcelle.25201143",
+          "properties": {
+            "idu": "31555827AD0175",
+            "numero": "0175",
+            "section": "AD",
+            "code_insee": "31555",
+            "nom_com": "Toulouse",
+            "code_dep": "31",
+            "code_com": "555",
+            "code_arr": "000",
+            "com_abs": "827",
+            "contenance": 264
+          },
+          "geometrySha256": "948e0553f0437a886301b82e7564b243e16ad54e57ed977b7b149a9185b6bf5d"
+        },
+        {
+          "transportId": "parcelle.25383784",
+          "properties": {
+            "idu": "31555827AD0176",
+            "numero": "0176",
+            "section": "AD",
+            "code_insee": "31555",
+            "nom_com": "Toulouse",
+            "code_dep": "31",
+            "code_com": "555",
+            "code_arr": "000",
+            "com_abs": "827",
+            "contenance": 233
+          },
+          "geometrySha256": "c506dea241ffea1265082862a4b7814dc601e8ad84b87fc303616ef107abc9c8"
+        },
+        {
+          "transportId": "parcelle.25564663",
+          "properties": {
+            "idu": "31555827AD0177",
+            "numero": "0177",
+            "section": "AD",
+            "code_insee": "31555",
+            "nom_com": "Toulouse",
+            "code_dep": "31",
+            "code_com": "555",
+            "code_arr": "000",
+            "com_abs": "827",
+            "contenance": 312
+          },
+          "geometrySha256": "af3f27c43d52d8546cceaca89641c928cbfbb436d26d4afa94c210500bc2a7b5"
+        }
+      ]
+    },
+    {
+      "test": "forced-three-row-pages",
+      "url": "https://data.geopf.fr/wfs/ows?service=WFS&version=2.0.0&request=GetFeature&typeNames=CADASTRALPARCELS.PARCELLAIRE_EXPRESS%3Aparcelle&outputFormat=application%2Fjson&srsName=CRS%3A84&sortBy=idu&count=3&startIndex=6&bbox=1.425%2C43.606%2C1.426%2C43.607%2CCRS%3A84",
+      "method": "GET",
+      "checkedAt": "2026-10-09T03:56:29.895Z",
+      "httpStatus": 200,
+      "contentType": "application/json;charset=UTF-8",
+      "bytes": 2738,
+      "numberMatched": 35,
+      "numberReturned": 3,
+      "features": [
+        {
+          "transportId": "parcelle.25744814",
+          "properties": {
+            "idu": "31555827AD0178",
+            "numero": "0178",
+            "section": "AD",
+            "code_insee": "31555",
+            "nom_com": "Toulouse",
+            "code_dep": "31",
+            "code_com": "555",
+            "code_arr": "000",
+            "com_abs": "827",
+            "contenance": 229
+          },
+          "geometrySha256": "7c58733e84bc91b3cd0a162fcf6d8628a3bcd4d78a0b1033bafad5f0ef0ea0df"
+        },
+        {
+          "transportId": "parcelle.25923489",
+          "properties": {
+            "idu": "31555827AD0179",
+            "numero": "0179",
+            "section": "AD",
+            "code_insee": "31555",
+            "nom_com": "Toulouse",
+            "code_dep": "31",
+            "code_com": "555",
+            "code_arr": "000",
+            "com_abs": "827",
+            "contenance": 36
+          },
+          "geometrySha256": "dcba61f0435aa7b493c8885f428576784b7f5dd166c19fe9d39eb8e081fdc35a"
+        },
+        {
+          "transportId": "parcelle.26401847",
+          "properties": {
+            "idu": "31555827AD0180",
+            "numero": "0180",
+            "section": "AD",
+            "code_insee": "31555",
+            "nom_com": "Toulouse",
+            "code_dep": "31",
+            "code_com": "555",
+            "code_arr": "000",
+            "com_abs": "827",
+            "contenance": 250
+          },
+          "geometrySha256": "d03a14f946c8cb430b8eb72a96848736e7c5e083c954b1ec1989932441087888"
+        }
+      ]
+    },
+    {
+      "test": "forced-three-row-pages",
+      "url": "https://data.geopf.fr/wfs/ows?service=WFS&version=2.0.0&request=GetFeature&typeNames=CADASTRALPARCELS.PARCELLAIRE_EXPRESS%3Aparcelle&outputFormat=application%2Fjson&srsName=CRS%3A84&sortBy=idu&count=3&startIndex=9&bbox=1.425%2C43.606%2C1.426%2C43.607%2CCRS%3A84",
+      "method": "GET",
+      "checkedAt": "2026-10-09T03:56:30.009Z",
+      "httpStatus": 200,
+      "contentType": "application/json;charset=UTF-8",
+      "bytes": 2645,
+      "numberMatched": 35,
+      "numberReturned": 3,
+      "features": [
+        {
+          "transportId": "parcelle.26578419",
+          "properties": {
+            "idu": "31555827AD0181",
+            "numero": "0181",
+            "section": "AD",
+            "code_insee": "31555",
+            "nom_com": "Toulouse",
+            "code_dep": "31",
+            "code_com": "555",
+            "code_arr": "000",
+            "com_abs": "827",
+            "contenance": 1075
+          },
+          "geometrySha256": "9f365f60ae45e0334093e1dfc3c1f8addd0b6a1f9dec724d2614e0ea8f80f1e3"
+        },
+        {
+          "transportId": "parcelle.26754385",
+          "properties": {
+            "idu": "31555827AD0182",
+            "numero": "0182",
+            "section": "AD",
+            "code_insee": "31555",
+            "nom_com": "Toulouse",
+            "code_dep": "31",
+            "code_com": "555",
+            "code_arr": "000",
+            "com_abs": "827",
+            "contenance": 347
+          },
+          "geometrySha256": "1f5dd659888faa9cb0b590df67654113d933858efd3cf50fe25e7c7146f13a52"
+        },
+        {
+          "transportId": "parcelle.26928478",
+          "properties": {
+            "idu": "31555827AD0183",
+            "numero": "0183",
+            "section": "AD",
+            "code_insee": "31555",
+            "nom_com": "Toulouse",
+            "code_dep": "31",
+            "code_com": "555",
+            "code_arr": "000",
+            "com_abs": "827",
+            "contenance": 242
+          },
+          "geometrySha256": "f74af6ab479c064063dcd79cbef6f2956a0f13e55665bb70d5ccabbba531c4ac"
+        }
+      ]
+    },
+    {
+      "test": "forced-three-row-pages",
+      "url": "https://data.geopf.fr/wfs/ows?service=WFS&version=2.0.0&request=GetFeature&typeNames=CADASTRALPARCELS.PARCELLAIRE_EXPRESS%3Aparcelle&outputFormat=application%2Fjson&srsName=CRS%3A84&sortBy=idu&count=3&startIndex=12&bbox=1.425%2C43.606%2C1.426%2C43.607%2CCRS%3A84",
+      "method": "GET",
+      "checkedAt": "2026-10-09T03:56:30.110Z",
+      "httpStatus": 200,
+      "contentType": "application/json;charset=UTF-8",
+      "bytes": 2940,
+      "numberMatched": 35,
+      "numberReturned": 3,
+      "features": [
+        {
+          "transportId": "parcelle.27101860",
+          "properties": {
+            "idu": "31555827AD0184",
+            "numero": "0184",
+            "section": "AD",
+            "code_insee": "31555",
+            "nom_com": "Toulouse",
+            "code_dep": "31",
+            "code_com": "555",
+            "code_arr": "000",
+            "com_abs": "827",
+            "contenance": 251
+          },
+          "geometrySha256": "c9e6def3f33509a560167c5462a5d83edc3aa8cfcc9165594705815909f19101"
+        },
+        {
+          "transportId": "parcelle.27273965",
+          "properties": {
+            "idu": "31555827AD0185",
+            "numero": "0185",
+            "section": "AD",
+            "code_insee": "31555",
+            "nom_com": "Toulouse",
+            "code_dep": "31",
+            "code_com": "555",
+            "code_arr": "000",
+            "com_abs": "827",
+            "contenance": 198
+          },
+          "geometrySha256": "a4ec99e27b877c2ea1def77a1579dc91e66baa2770691ceba6c9fd4b8bcda4ff"
+        },
+        {
+          "transportId": "parcelle.27445180",
+          "properties": {
+            "idu": "31555827AD0186",
+            "numero": "0186",
+            "section": "AD",
+            "code_insee": "31555",
+            "nom_com": "Toulouse",
+            "code_dep": "31",
+            "code_com": "555",
+            "code_arr": "000",
+            "com_abs": "827",
+            "contenance": 274
+          },
+          "geometrySha256": "277cbf826d7e23d3447541017ffe9400aad4f6d9a82a3a3c509011fbed493d7e"
+        }
+      ]
+    },
+    {
+      "test": "forced-three-row-pages",
+      "url": "https://data.geopf.fr/wfs/ows?service=WFS&version=2.0.0&request=GetFeature&typeNames=CADASTRALPARCELS.PARCELLAIRE_EXPRESS%3Aparcelle&outputFormat=application%2Fjson&srsName=CRS%3A84&sortBy=idu&count=3&startIndex=15&bbox=1.425%2C43.606%2C1.426%2C43.607%2CCRS%3A84",
+      "method": "GET",
+      "checkedAt": "2026-10-09T03:56:30.207Z",
+      "httpStatus": 200,
+      "contentType": "application/json;charset=UTF-8",
+      "bytes": 2767,
+      "numberMatched": 35,
+      "numberReturned": 3,
+      "features": [
+        {
+          "transportId": "parcelle.27614773",
+          "properties": {
+            "idu": "31555827AD0187",
+            "numero": "0187",
+            "section": "AD",
+            "code_insee": "31555",
+            "nom_com": "Toulouse",
+            "code_dep": "31",
+            "code_com": "555",
+            "code_arr": "000",
+            "com_abs": "827",
+            "contenance": 90
+          },
+          "geometrySha256": "e90f8c428a33bb26caaad812d80164ae5c75c753747a7e566b05594e5c16737d"
+        },
+        {
+          "transportId": "parcelle.30779293",
+          "properties": {
+            "idu": "31555827AD0201",
+            "numero": "0201",
+            "section": "AD",
+            "code_insee": "31555",
+            "nom_com": "Toulouse",
+            "code_dep": "31",
+            "code_com": "555",
+            "code_arr": "000",
+            "com_abs": "827",
+            "contenance": 238
+          },
+          "geometrySha256": "0313712517e725a9a5d3abd0235b7b5cee0e7e3a0af213224fe0fbc261e017ce"
+        },
+        {
+          "transportId": "parcelle.31242550",
+          "properties": {
+            "idu": "31555827AD0204",
+            "numero": "0204",
+            "section": "AD",
+            "code_insee": "31555",
+            "nom_com": "Toulouse",
+            "code_dep": "31",
+            "code_com": "555",
+            "code_arr": "000",
+            "com_abs": "827",
+            "contenance": 215
+          },
+          "geometrySha256": "da085809d2ef5a1e3e70cd78b8530812a20cb1a08f7eedb4b5a2a2e0a66cc593"
+        }
+      ]
+    },
+    {
+      "test": "forced-three-row-pages",
+      "url": "https://data.geopf.fr/wfs/ows?service=WFS&version=2.0.0&request=GetFeature&typeNames=CADASTRALPARCELS.PARCELLAIRE_EXPRESS%3Aparcelle&outputFormat=application%2Fjson&srsName=CRS%3A84&sortBy=idu&count=3&startIndex=18&bbox=1.425%2C43.606%2C1.426%2C43.607%2CCRS%3A84",
+      "method": "GET",
+      "checkedAt": "2026-10-09T03:56:30.315Z",
+      "httpStatus": 200,
+      "contentType": "application/json;charset=UTF-8",
+      "bytes": 2887,
+      "numberMatched": 35,
+      "numberReturned": 3,
+      "features": [
+        {
+          "transportId": "parcelle.31394934",
+          "properties": {
+            "idu": "31555827AD0205",
+            "numero": "0205",
+            "section": "AD",
+            "code_insee": "31555",
+            "nom_com": "Toulouse",
+            "code_dep": "31",
+            "code_com": "555",
+            "code_arr": "000",
+            "com_abs": "827",
+            "contenance": 237
+          },
+          "geometrySha256": "3279ef234f3dd8149208e00e1cae2a417550fa37e439f4d2ba0f35f13fd3da58"
+        },
+        {
+          "transportId": "parcelle.31845787",
+          "properties": {
+            "idu": "31555827AD0208",
+            "numero": "0208",
+            "section": "AD",
+            "code_insee": "31555",
+            "nom_com": "Toulouse",
+            "code_dep": "31",
+            "code_com": "555",
+            "code_arr": "000",
+            "com_abs": "827",
+            "contenance": 238
+          },
+          "geometrySha256": "d69b9d46b0a3e6ee1099aaba8bbd60841f6dd1dda371c1c7ca37c4fe05e18372"
+        },
+        {
+          "transportId": "parcelle.31994577",
+          "properties": {
+            "idu": "31555827AD0209",
+            "numero": "0209",
+            "section": "AD",
+            "code_insee": "31555",
+            "nom_com": "Toulouse",
+            "code_dep": "31",
+            "code_com": "555",
+            "code_arr": "000",
+            "com_abs": "827",
+            "contenance": 156
+          },
+          "geometrySha256": "81c5d2e23302cebf96d7c1ab3db9310c999fd3b5502878a5801c87abe338e3b0"
+        }
+      ]
+    },
+    {
+      "test": "forced-three-row-pages",
+      "url": "https://data.geopf.fr/wfs/ows?service=WFS&version=2.0.0&request=GetFeature&typeNames=CADASTRALPARCELS.PARCELLAIRE_EXPRESS%3Aparcelle&outputFormat=application%2Fjson&srsName=CRS%3A84&sortBy=idu&count=3&startIndex=21&bbox=1.425%2C43.606%2C1.426%2C43.607%2CCRS%3A84",
+      "method": "GET",
+      "checkedAt": "2026-10-09T03:56:30.408Z",
+      "httpStatus": 200,
+      "contentType": "application/json;charset=UTF-8",
+      "bytes": 2839,
+      "numberMatched": 35,
+      "numberReturned": 3,
+      "features": [
+        {
+          "transportId": "parcelle.32586803",
+          "properties": {
+            "idu": "31555827AD0211",
+            "numero": "0211",
+            "section": "AD",
+            "code_insee": "31555",
+            "nom_com": "Toulouse",
+            "code_dep": "31",
+            "code_com": "555",
+            "code_arr": "000",
+            "com_abs": "827",
+            "contenance": 404
+          },
+          "geometrySha256": "fe34d07d732bbd4cd2482259afda24b233281ff63f03a02e4170da2c210e06a5"
+        },
+        {
+          "transportId": "parcelle.32878363",
+          "properties": {
+            "idu": "31555827AD0213",
+            "numero": "0213",
+            "section": "AD",
+            "code_insee": "31555",
+            "nom_com": "Toulouse",
+            "code_dep": "31",
+            "code_com": "555",
+            "code_arr": "000",
+            "com_abs": "827",
+            "contenance": 288
+          },
+          "geometrySha256": "f5d498f44673c5a514d1e6c17888c322a01df6224ecaaa670145d7555ec02f99"
+        },
+        {
+          "transportId": "parcelle.33022664",
+          "properties": {
+            "idu": "31555827AD0214",
+            "numero": "0214",
+            "section": "AD",
+            "code_insee": "31555",
+            "nom_com": "Toulouse",
+            "code_dep": "31",
+            "code_com": "555",
+            "code_arr": "000",
+            "com_abs": "827",
+            "contenance": 281
+          },
+          "geometrySha256": "777a673809fb0d98b9a14628232ae9aec37de0afad6458c6675a35b68e73a054"
+        }
+      ]
+    },
+    {
+      "test": "forced-three-row-pages",
+      "url": "https://data.geopf.fr/wfs/ows?service=WFS&version=2.0.0&request=GetFeature&typeNames=CADASTRALPARCELS.PARCELLAIRE_EXPRESS%3Aparcelle&outputFormat=application%2Fjson&srsName=CRS%3A84&sortBy=idu&count=3&startIndex=24&bbox=1.425%2C43.606%2C1.426%2C43.607%2CCRS%3A84",
+      "method": "GET",
+      "checkedAt": "2026-10-09T03:56:30.508Z",
+      "httpStatus": 200,
+      "contentType": "application/json;charset=UTF-8",
+      "bytes": 3014,
+      "numberMatched": 35,
+      "numberReturned": 3,
+      "features": [
+        {
+          "transportId": "parcelle.33166026",
+          "properties": {
+            "idu": "31555827AD0215",
+            "numero": "0215",
+            "section": "AD",
+            "code_insee": "31555",
+            "nom_com": "Toulouse",
+            "code_dep": "31",
+            "code_com": "555",
+            "code_arr": "000",
+            "com_abs": "827",
+            "contenance": 335
+          },
+          "geometrySha256": "5432eff0c4210d83a2f5bd4734cb02a573407988e67ea32ee85bb71853c890ce"
+        },
+        {
+          "transportId": "parcelle.40976867",
+          "properties": {
+            "idu": "31555827AD0265",
+            "numero": "0265",
+            "section": "AD",
+            "code_insee": "31555",
+            "nom_com": "Toulouse",
+            "code_dep": "31",
+            "code_com": "555",
+            "code_arr": "000",
+            "com_abs": "827",
+            "contenance": 2328
+          },
+          "geometrySha256": "cc209da6dd608df3d94b0fd36ed35426f1202477fa64596cbaa44d8799e7968a"
+        },
+        {
+          "transportId": "parcelle.58651853",
+          "properties": {
+            "idu": "31555827AD0414",
+            "numero": "0414",
+            "section": "AD",
+            "code_insee": "31555",
+            "nom_com": "Toulouse",
+            "code_dep": "31",
+            "code_com": "555",
+            "code_arr": "000",
+            "com_abs": "827",
+            "contenance": 127
+          },
+          "geometrySha256": "afb1730f958672655532e2d347e39a485cd8af382f9b8198e3d157e7d9f58c49"
+        }
+      ]
+    },
+    {
+      "test": "forced-three-row-pages",
+      "url": "https://data.geopf.fr/wfs/ows?service=WFS&version=2.0.0&request=GetFeature&typeNames=CADASTRALPARCELS.PARCELLAIRE_EXPRESS%3Aparcelle&outputFormat=application%2Fjson&srsName=CRS%3A84&sortBy=idu&count=3&startIndex=27&bbox=1.425%2C43.606%2C1.426%2C43.607%2CCRS%3A84",
+      "method": "GET",
+      "checkedAt": "2026-10-09T03:56:30.604Z",
+      "httpStatus": 200,
+      "contentType": "application/json;charset=UTF-8",
+      "bytes": 2466,
+      "numberMatched": 35,
+      "numberReturned": 3,
+      "features": [
+        {
+          "transportId": "parcelle.59515666",
+          "properties": {
+            "idu": "31555827AD0423",
+            "numero": "0423",
+            "section": "AD",
+            "code_insee": "31555",
+            "nom_com": "Toulouse",
+            "code_dep": "31",
+            "code_com": "555",
+            "code_arr": "000",
+            "com_abs": "827",
+            "contenance": 17
+          },
+          "geometrySha256": "ab47349f62bb6451e076d0e1b4edfdc6fa67ca1052427e3fbe944a4853306735"
+        },
+        {
+          "transportId": "parcelle.59580751",
+          "properties": {
+            "idu": "31555827AD0424",
+            "numero": "0424",
+            "section": "AD",
+            "code_insee": "31555",
+            "nom_com": "Toulouse",
+            "code_dep": "31",
+            "code_com": "555",
+            "code_arr": "000",
+            "com_abs": "827",
+            "contenance": 188
+          },
+          "geometrySha256": "27e49f0aa2da9e3b904035fd3353cfc120959289e9064748670c63eeaf881010"
+        },
+        {
+          "transportId": "parcelle.59645462",
+          "properties": {
+            "idu": "31555827AD0425",
+            "numero": "0425",
+            "section": "AD",
+            "code_insee": "31555",
+            "nom_com": "Toulouse",
+            "code_dep": "31",
+            "code_com": "555",
+            "code_arr": "000",
+            "com_abs": "827",
+            "contenance": 105
+          },
+          "geometrySha256": "aa7ab2471ef5669af693f472507e4d318d7f466707a3602cdb5120ef87725ee0"
+        }
+      ]
+    },
+    {
+      "test": "forced-three-row-pages",
+      "url": "https://data.geopf.fr/wfs/ows?service=WFS&version=2.0.0&request=GetFeature&typeNames=CADASTRALPARCELS.PARCELLAIRE_EXPRESS%3Aparcelle&outputFormat=application%2Fjson&srsName=CRS%3A84&sortBy=idu&count=3&startIndex=30&bbox=1.425%2C43.606%2C1.426%2C43.607%2CCRS%3A84",
+      "method": "GET",
+      "checkedAt": "2026-10-09T03:56:30.697Z",
+      "httpStatus": 200,
+      "contentType": "application/json;charset=UTF-8",
+      "bytes": 2813,
+      "numberMatched": 35,
+      "numberReturned": 3,
+      "features": [
+        {
+          "transportId": "parcelle.59775136",
+          "properties": {
+            "idu": "31555827AD0427",
+            "numero": "0427",
+            "section": "AD",
+            "code_insee": "31555",
+            "nom_com": "Toulouse",
+            "code_dep": "31",
+            "code_com": "555",
+            "code_arr": "000",
+            "com_abs": "827",
+            "contenance": 210
+          },
+          "geometrySha256": "dfe877dcdbb423d0dbfa3ecb229ed2d5331d3b66c30dcba46eac78fc65306d10"
+        },
+        {
+          "transportId": "parcelle.62991114",
+          "properties": {
+            "idu": "31555827AD0462",
+            "numero": "0462",
+            "section": "AD",
+            "code_insee": "31555",
+            "nom_com": "Toulouse",
+            "code_dep": "31",
+            "code_com": "555",
+            "code_arr": "000",
+            "com_abs": "827",
+            "contenance": 212
+          },
+          "geometrySha256": "a6e04892ce57606863032ba57da6ee90fc6ec90af83b8e6d28b4e66d2b35b5ef"
+        },
+        {
+          "transportId": "parcelle.63049827",
+          "properties": {
+            "idu": "31555827AD0463",
+            "numero": "0463",
+            "section": "AD",
+            "code_insee": "31555",
+            "nom_com": "Toulouse",
+            "code_dep": "31",
+            "code_com": "555",
+            "code_arr": "000",
+            "com_abs": "827",
+            "contenance": 258
+          },
+          "geometrySha256": "b8dab5944fc44c3bfed39ea0feffdb0a5c791aaf931bc0ce405c062d1bbd12ac"
+        }
+      ]
+    },
+    {
+      "test": "forced-three-row-pages",
+      "url": "https://data.geopf.fr/wfs/ows?service=WFS&version=2.0.0&request=GetFeature&typeNames=CADASTRALPARCELS.PARCELLAIRE_EXPRESS%3Aparcelle&outputFormat=application%2Fjson&srsName=CRS%3A84&sortBy=idu&count=3&startIndex=33&bbox=1.425%2C43.606%2C1.426%2C43.607%2CCRS%3A84",
+      "method": "GET",
+      "checkedAt": "2026-10-09T03:56:30.792Z",
+      "httpStatus": 200,
+      "contentType": "application/json;charset=UTF-8",
+      "bytes": 2016,
+      "numberMatched": 35,
+      "numberReturned": 2,
+      "features": [
+        {
+          "transportId": "parcelle.68065445",
+          "properties": {
+            "idu": "31555827AD0521",
+            "numero": "0521",
+            "section": "AD",
+            "code_insee": "31555",
+            "nom_com": "Toulouse",
+            "code_dep": "31",
+            "code_com": "555",
+            "code_arr": "000",
+            "com_abs": "827",
+            "contenance": 399
+          },
+          "geometrySha256": "0bb01be085e69a4dcb276e24a6560b9477e89b81a60c829091f1d9a5d059e8ab"
+        },
+        {
+          "transportId": "parcelle.72389595",
+          "properties": {
+            "idu": "31555827AD0581",
+            "numero": "0581",
+            "section": "AD",
+            "code_insee": "31555",
+            "nom_com": "Toulouse",
+            "code_dep": "31",
+            "code_com": "555",
+            "code_arr": "000",
+            "com_abs": "827",
+            "contenance": 1111
+          },
+          "geometrySha256": "8e0286c11297b17cfb1462f49229de14f2c9a11556b03be0a8c83de1cc3b2fbe"
+        }
+      ]
+    },
+    {
+      "test": "fresh-ids-0",
+      "url": "https://data.geopf.fr/wfs/ows?service=WFS&version=2.0.0&request=GetFeature&typeNames=CADASTRALPARCELS.PARCELLAIRE_EXPRESS%3Aparcelle&outputFormat=application%2Fjson&srsName=CRS%3A84&sortBy=idu&count=1000&startIndex=0&cql_filter=idu+IN+%28%2731555827AD0157%27%2C%2731555827AD0158%27%2C%2731555827AD0159%27%2C%2731555827AD0175%27%2C%2731555827AD0176%27%2C%2731555827AD0177%27%2C%2731555827AD0178%27%2C%2731555827AD0179%27%2C%2731555827AD0180%27%2C%2731555827AD0181%27%2C%2731555827AD0182%27%2C%2731555827AD0183%27%2C%2731555827AD0184%27%2C%2731555827AD0185%27%2C%2731555827AD0186%27%2C%2731555827AD0187%27%2C%2731555827AD0201%27%2C%2731555827AD0204%27%2C%2731555827AD0205%27%2C%2731555827AD0208%27%2C%2731555827AD0209%27%2C%2731555827AD0211%27%2C%2731555827AD0213%27%2C%2731555827AD0214%27%2C%2731555827AD0215%27%2C%2731555827AD0258%27%2C%2731555827AD0259%27%2C%2731555827AD0260%27%2C%2731555827AD0261%27%2C%2731555827AD0265%27%2C%2731555827AD0282%27%2C%2731555827AD0379%27%2C%2731555827AD0380%27%2C%2731555827AD0414%27%2C%2731555827AD0423%27%2C%2731555827AD0424%27%2C%2731555827AD0425%27%2C%2731555827AD0427%27%2C%2731555827AD0439%27%2C%2731555827AD0451%27%29",
+      "method": "GET",
+      "checkedAt": "2026-10-09T03:56:30.893Z",
+      "httpStatus": 200,
+      "contentType": "application/json;charset=UTF-8",
+      "bytes": 25467,
+      "numberMatched": 40,
+      "numberReturned": 40,
+      "features": [
+        {
+          "transportId": "parcelle.21068730",
+          "properties": {
+            "idu": "31555827AD0157",
+            "numero": "0157",
+            "section": "AD",
+            "code_insee": "31555",
+            "nom_com": "Toulouse",
+            "code_dep": "31",
+            "code_com": "555",
+            "code_arr": "000",
+            "com_abs": "827",
+            "contenance": 303
+          },
+          "geometrySha256": "b172cb0e46d395d82ec4fc3d2550809922c6357f42ed519641646ae130d041c4"
+        },
+        {
+          "transportId": "parcelle.791688",
+          "properties": {
+            "idu": "31555827AD0158",
+            "numero": "0158",
+            "section": "AD",
+            "code_insee": "31555",
+            "nom_com": "Toulouse",
+            "code_dep": "31",
+            "code_com": "555",
+            "code_arr": "000",
+            "com_abs": "827",
+            "contenance": 338
+          },
+          "geometrySha256": "e6fd475588abb2421a406158ecef7bfbde01a670cd9b54862da4e37f00deba18"
+        },
+        {
+          "transportId": "parcelle.21485323",
+          "properties": {
+            "idu": "31555827AD0159",
+            "numero": "0159",
+            "section": "AD",
+            "code_insee": "31555",
+            "nom_com": "Toulouse",
+            "code_dep": "31",
+            "code_com": "555",
+            "code_arr": "000",
+            "com_abs": "827",
+            "contenance": 371
+          },
+          "geometrySha256": "0068d37151169106d271c27f3eae83a50d8c3e68ca1e277d065a3394d02507bd"
+        },
+        {
+          "transportId": "parcelle.25201143",
+          "properties": {
+            "idu": "31555827AD0175",
+            "numero": "0175",
+            "section": "AD",
+            "code_insee": "31555",
+            "nom_com": "Toulouse",
+            "code_dep": "31",
+            "code_com": "555",
+            "code_arr": "000",
+            "com_abs": "827",
+            "contenance": 264
+          },
+          "geometrySha256": "948e0553f0437a886301b82e7564b243e16ad54e57ed977b7b149a9185b6bf5d"
+        },
+        {
+          "transportId": "parcelle.25383784",
+          "properties": {
+            "idu": "31555827AD0176",
+            "numero": "0176",
+            "section": "AD",
+            "code_insee": "31555",
+            "nom_com": "Toulouse",
+            "code_dep": "31",
+            "code_com": "555",
+            "code_arr": "000",
+            "com_abs": "827",
+            "contenance": 233
+          },
+          "geometrySha256": "c506dea241ffea1265082862a4b7814dc601e8ad84b87fc303616ef107abc9c8"
+        },
+        {
+          "transportId": "parcelle.25564663",
+          "properties": {
+            "idu": "31555827AD0177",
+            "numero": "0177",
+            "section": "AD",
+            "code_insee": "31555",
+            "nom_com": "Toulouse",
+            "code_dep": "31",
+            "code_com": "555",
+            "code_arr": "000",
+            "com_abs": "827",
+            "contenance": 312
+          },
+          "geometrySha256": "af3f27c43d52d8546cceaca89641c928cbfbb436d26d4afa94c210500bc2a7b5"
+        },
+        {
+          "transportId": "parcelle.25744814",
+          "properties": {
+            "idu": "31555827AD0178",
+            "numero": "0178",
+            "section": "AD",
+            "code_insee": "31555",
+            "nom_com": "Toulouse",
+            "code_dep": "31",
+            "code_com": "555",
+            "code_arr": "000",
+            "com_abs": "827",
+            "contenance": 229
+          },
+          "geometrySha256": "7c58733e84bc91b3cd0a162fcf6d8628a3bcd4d78a0b1033bafad5f0ef0ea0df"
+        },
+        {
+          "transportId": "parcelle.25923489",
+          "properties": {
+            "idu": "31555827AD0179",
+            "numero": "0179",
+            "section": "AD",
+            "code_insee": "31555",
+            "nom_com": "Toulouse",
+            "code_dep": "31",
+            "code_com": "555",
+            "code_arr": "000",
+            "com_abs": "827",
+            "contenance": 36
+          },
+          "geometrySha256": "dcba61f0435aa7b493c8885f428576784b7f5dd166c19fe9d39eb8e081fdc35a"
+        },
+        {
+          "transportId": "parcelle.26401847",
+          "properties": {
+            "idu": "31555827AD0180",
+            "numero": "0180",
+            "section": "AD",
+            "code_insee": "31555",
+            "nom_com": "Toulouse",
+            "code_dep": "31",
+            "code_com": "555",
+            "code_arr": "000",
+            "com_abs": "827",
+            "contenance": 250
+          },
+          "geometrySha256": "d03a14f946c8cb430b8eb72a96848736e7c5e083c954b1ec1989932441087888"
+        },
+        {
+          "transportId": "parcelle.26578419",
+          "properties": {
+            "idu": "31555827AD0181",
+            "numero": "0181",
+            "section": "AD",
+            "code_insee": "31555",
+            "nom_com": "Toulouse",
+            "code_dep": "31",
+            "code_com": "555",
+            "code_arr": "000",
+            "com_abs": "827",
+            "contenance": 1075
+          },
+          "geometrySha256": "9f365f60ae45e0334093e1dfc3c1f8addd0b6a1f9dec724d2614e0ea8f80f1e3"
+        },
+        {
+          "transportId": "parcelle.26754385",
+          "properties": {
+            "idu": "31555827AD0182",
+            "numero": "0182",
+            "section": "AD",
+            "code_insee": "31555",
+            "nom_com": "Toulouse",
+            "code_dep": "31",
+            "code_com": "555",
+            "code_arr": "000",
+            "com_abs": "827",
+            "contenance": 347
+          },
+          "geometrySha256": "1f5dd659888faa9cb0b590df67654113d933858efd3cf50fe25e7c7146f13a52"
+        },
+        {
+          "transportId": "parcelle.26928478",
+          "properties": {
+            "idu": "31555827AD0183",
+            "numero": "0183",
+            "section": "AD",
+            "code_insee": "31555",
+            "nom_com": "Toulouse",
+            "code_dep": "31",
+            "code_com": "555",
+            "code_arr": "000",
+            "com_abs": "827",
+            "contenance": 242
+          },
+          "geometrySha256": "f74af6ab479c064063dcd79cbef6f2956a0f13e55665bb70d5ccabbba531c4ac"
+        },
+        {
+          "transportId": "parcelle.27101860",
+          "properties": {
+            "idu": "31555827AD0184",
+            "numero": "0184",
+            "section": "AD",
+            "code_insee": "31555",
+            "nom_com": "Toulouse",
+            "code_dep": "31",
+            "code_com": "555",
+            "code_arr": "000",
+            "com_abs": "827",
+            "contenance": 251
+          },
+          "geometrySha256": "c9e6def3f33509a560167c5462a5d83edc3aa8cfcc9165594705815909f19101"
+        },
+        {
+          "transportId": "parcelle.27273965",
+          "properties": {
+            "idu": "31555827AD0185",
+            "numero": "0185",
+            "section": "AD",
+            "code_insee": "31555",
+            "nom_com": "Toulouse",
+            "code_dep": "31",
+            "code_com": "555",
+            "code_arr": "000",
+            "com_abs": "827",
+            "contenance": 198
+          },
+          "geometrySha256": "a4ec99e27b877c2ea1def77a1579dc91e66baa2770691ceba6c9fd4b8bcda4ff"
+        },
+        {
+          "transportId": "parcelle.27445180",
+          "properties": {
+            "idu": "31555827AD0186",
+            "numero": "0186",
+            "section": "AD",
+            "code_insee": "31555",
+            "nom_com": "Toulouse",
+            "code_dep": "31",
+            "code_com": "555",
+            "code_arr": "000",
+            "com_abs": "827",
+            "contenance": 274
+          },
+          "geometrySha256": "277cbf826d7e23d3447541017ffe9400aad4f6d9a82a3a3c509011fbed493d7e"
+        },
+        {
+          "transportId": "parcelle.27614773",
+          "properties": {
+            "idu": "31555827AD0187",
+            "numero": "0187",
+            "section": "AD",
+            "code_insee": "31555",
+            "nom_com": "Toulouse",
+            "code_dep": "31",
+            "code_com": "555",
+            "code_arr": "000",
+            "com_abs": "827",
+            "contenance": 90
+          },
+          "geometrySha256": "e90f8c428a33bb26caaad812d80164ae5c75c753747a7e566b05594e5c16737d"
+        },
+        {
+          "transportId": "parcelle.30779293",
+          "properties": {
+            "idu": "31555827AD0201",
+            "numero": "0201",
+            "section": "AD",
+            "code_insee": "31555",
+            "nom_com": "Toulouse",
+            "code_dep": "31",
+            "code_com": "555",
+            "code_arr": "000",
+            "com_abs": "827",
+            "contenance": 238
+          },
+          "geometrySha256": "0313712517e725a9a5d3abd0235b7b5cee0e7e3a0af213224fe0fbc261e017ce"
+        },
+        {
+          "transportId": "parcelle.31242550",
+          "properties": {
+            "idu": "31555827AD0204",
+            "numero": "0204",
+            "section": "AD",
+            "code_insee": "31555",
+            "nom_com": "Toulouse",
+            "code_dep": "31",
+            "code_com": "555",
+            "code_arr": "000",
+            "com_abs": "827",
+            "contenance": 215
+          },
+          "geometrySha256": "da085809d2ef5a1e3e70cd78b8530812a20cb1a08f7eedb4b5a2a2e0a66cc593"
+        },
+        {
+          "transportId": "parcelle.31394934",
+          "properties": {
+            "idu": "31555827AD0205",
+            "numero": "0205",
+            "section": "AD",
+            "code_insee": "31555",
+            "nom_com": "Toulouse",
+            "code_dep": "31",
+            "code_com": "555",
+            "code_arr": "000",
+            "com_abs": "827",
+            "contenance": 237
+          },
+          "geometrySha256": "3279ef234f3dd8149208e00e1cae2a417550fa37e439f4d2ba0f35f13fd3da58"
+        },
+        {
+          "transportId": "parcelle.31845787",
+          "properties": {
+            "idu": "31555827AD0208",
+            "numero": "0208",
+            "section": "AD",
+            "code_insee": "31555",
+            "nom_com": "Toulouse",
+            "code_dep": "31",
+            "code_com": "555",
+            "code_arr": "000",
+            "com_abs": "827",
+            "contenance": 238
+          },
+          "geometrySha256": "d69b9d46b0a3e6ee1099aaba8bbd60841f6dd1dda371c1c7ca37c4fe05e18372"
+        },
+        {
+          "transportId": "parcelle.31994577",
+          "properties": {
+            "idu": "31555827AD0209",
+            "numero": "0209",
+            "section": "AD",
+            "code_insee": "31555",
+            "nom_com": "Toulouse",
+            "code_dep": "31",
+            "code_com": "555",
+            "code_arr": "000",
+            "com_abs": "827",
+            "contenance": 156
+          },
+          "geometrySha256": "81c5d2e23302cebf96d7c1ab3db9310c999fd3b5502878a5801c87abe338e3b0"
+        },
+        {
+          "transportId": "parcelle.32586803",
+          "properties": {
+            "idu": "31555827AD0211",
+            "numero": "0211",
+            "section": "AD",
+            "code_insee": "31555",
+            "nom_com": "Toulouse",
+            "code_dep": "31",
+            "code_com": "555",
+            "code_arr": "000",
+            "com_abs": "827",
+            "contenance": 404
+          },
+          "geometrySha256": "fe34d07d732bbd4cd2482259afda24b233281ff63f03a02e4170da2c210e06a5"
+        },
+        {
+          "transportId": "parcelle.32878363",
+          "properties": {
+            "idu": "31555827AD0213",
+            "numero": "0213",
+            "section": "AD",
+            "code_insee": "31555",
+            "nom_com": "Toulouse",
+            "code_dep": "31",
+            "code_com": "555",
+            "code_arr": "000",
+            "com_abs": "827",
+            "contenance": 288
+          },
+          "geometrySha256": "f5d498f44673c5a514d1e6c17888c322a01df6224ecaaa670145d7555ec02f99"
+        },
+        {
+          "transportId": "parcelle.33022664",
+          "properties": {
+            "idu": "31555827AD0214",
+            "numero": "0214",
+            "section": "AD",
+            "code_insee": "31555",
+            "nom_com": "Toulouse",
+            "code_dep": "31",
+            "code_com": "555",
+            "code_arr": "000",
+            "com_abs": "827",
+            "contenance": 281
+          },
+          "geometrySha256": "777a673809fb0d98b9a14628232ae9aec37de0afad6458c6675a35b68e73a054"
+        },
+        {
+          "transportId": "parcelle.33166026",
+          "properties": {
+            "idu": "31555827AD0215",
+            "numero": "0215",
+            "section": "AD",
+            "code_insee": "31555",
+            "nom_com": "Toulouse",
+            "code_dep": "31",
+            "code_com": "555",
+            "code_arr": "000",
+            "com_abs": "827",
+            "contenance": 335
+          },
+          "geometrySha256": "5432eff0c4210d83a2f5bd4734cb02a573407988e67ea32ee85bb71853c890ce"
+        },
+        {
+          "transportId": "parcelle.39884178",
+          "properties": {
+            "idu": "31555827AD0258",
+            "numero": "0258",
+            "section": "AD",
+            "code_insee": "31555",
+            "nom_com": "Toulouse",
+            "code_dep": "31",
+            "code_com": "555",
+            "code_arr": "000",
+            "com_abs": "827",
+            "contenance": 469
+          },
+          "geometrySha256": "81024414a543b0a163e94a40f837e4e3ef2c6e28bcf775196ed754e8c3f0507a"
+        },
+        {
+          "transportId": "parcelle.39999852",
+          "properties": {
+            "idu": "31555827AD0259",
+            "numero": "0259",
+            "section": "AD",
+            "code_insee": "31555",
+            "nom_com": "Toulouse",
+            "code_dep": "31",
+            "code_com": "555",
+            "code_arr": "000",
+            "com_abs": "827",
+            "contenance": 105
+          },
+          "geometrySha256": "1c2065b90996aaac310449ae163b5fc46a2dd0a32095aaee2e9cdd7b67cf64d9"
+        },
+        {
+          "transportId": "parcelle.40406506",
+          "properties": {
+            "idu": "31555827AD0260",
+            "numero": "0260",
+            "section": "AD",
+            "code_insee": "31555",
+            "nom_com": "Toulouse",
+            "code_dep": "31",
+            "code_com": "555",
+            "code_arr": "000",
+            "com_abs": "827",
+            "contenance": 160
+          },
+          "geometrySha256": "9fb130e7ed3d9a8081f76085a83910a20265061d386bf2be0f4123cb967bceec"
+        },
+        {
+          "transportId": "parcelle.40521467",
+          "properties": {
+            "idu": "31555827AD0261",
+            "numero": "0261",
+            "section": "AD",
+            "code_insee": "31555",
+            "nom_com": "Toulouse",
+            "code_dep": "31",
+            "code_com": "555",
+            "code_arr": "000",
+            "com_abs": "827",
+            "contenance": 498
+          },
+          "geometrySha256": "68937672ab963326e5b4f4dd83197ac6e686361d1984708b42b58a45699621a6"
+        },
+        {
+          "transportId": "parcelle.40976867",
+          "properties": {
+            "idu": "31555827AD0265",
+            "numero": "0265",
+            "section": "AD",
+            "code_insee": "31555",
+            "nom_com": "Toulouse",
+            "code_dep": "31",
+            "code_com": "555",
+            "code_arr": "000",
+            "com_abs": "827",
+            "contenance": 2328
+          },
+          "geometrySha256": "cc209da6dd608df3d94b0fd36ed35426f1202477fa64596cbaa44d8799e7968a"
+        },
+        {
+          "transportId": "parcelle.43401644",
+          "properties": {
+            "idu": "31555827AD0282",
+            "numero": "0282",
+            "section": "AD",
+            "code_insee": "31555",
+            "nom_com": "Toulouse",
+            "code_dep": "31",
+            "code_com": "555",
+            "code_arr": "000",
+            "com_abs": "827",
+            "contenance": 157
+          },
+          "geometrySha256": "f6014199f43dc29b99c5cde0360d6bfc809cf31b5cb652ab785e57979593175a"
+        },
+        {
+          "transportId": "parcelle.54779661",
+          "properties": {
+            "idu": "31555827AD0379",
+            "numero": "0379",
+            "section": "AD",
+            "code_insee": "31555",
+            "nom_com": "Toulouse",
+            "code_dep": "31",
+            "code_com": "555",
+            "code_arr": "000",
+            "com_abs": "827",
+            "contenance": 163
+          },
+          "geometrySha256": "70e85021b69b1550a91006f4322fb76542a7b1736b05736f5cbc421f40df8085"
+        },
+        {
+          "transportId": "parcelle.55127863",
+          "properties": {
+            "idu": "31555827AD0380",
+            "numero": "0380",
+            "section": "AD",
+            "code_insee": "31555",
+            "nom_com": "Toulouse",
+            "code_dep": "31",
+            "code_com": "555",
+            "code_arr": "000",
+            "com_abs": "827",
+            "contenance": 163
+          },
+          "geometrySha256": "7314979ace2f0ae5a101a6deaebe205fd2771cca3e983cdac649cde58e5388d1"
+        },
+        {
+          "transportId": "parcelle.58651853",
+          "properties": {
+            "idu": "31555827AD0414",
+            "numero": "0414",
+            "section": "AD",
+            "code_insee": "31555",
+            "nom_com": "Toulouse",
+            "code_dep": "31",
+            "code_com": "555",
+            "code_arr": "000",
+            "com_abs": "827",
+            "contenance": 127
+          },
+          "geometrySha256": "afb1730f958672655532e2d347e39a485cd8af382f9b8198e3d157e7d9f58c49"
+        },
+        {
+          "transportId": "parcelle.59515666",
+          "properties": {
+            "idu": "31555827AD0423",
+            "numero": "0423",
+            "section": "AD",
+            "code_insee": "31555",
+            "nom_com": "Toulouse",
+            "code_dep": "31",
+            "code_com": "555",
+            "code_arr": "000",
+            "com_abs": "827",
+            "contenance": 17
+          },
+          "geometrySha256": "ab47349f62bb6451e076d0e1b4edfdc6fa67ca1052427e3fbe944a4853306735"
+        },
+        {
+          "transportId": "parcelle.59580751",
+          "properties": {
+            "idu": "31555827AD0424",
+            "numero": "0424",
+            "section": "AD",
+            "code_insee": "31555",
+            "nom_com": "Toulouse",
+            "code_dep": "31",
+            "code_com": "555",
+            "code_arr": "000",
+            "com_abs": "827",
+            "contenance": 188
+          },
+          "geometrySha256": "27e49f0aa2da9e3b904035fd3353cfc120959289e9064748670c63eeaf881010"
+        },
+        {
+          "transportId": "parcelle.59645462",
+          "properties": {
+            "idu": "31555827AD0425",
+            "numero": "0425",
+            "section": "AD",
+            "code_insee": "31555",
+            "nom_com": "Toulouse",
+            "code_dep": "31",
+            "code_com": "555",
+            "code_arr": "000",
+            "com_abs": "827",
+            "contenance": 105
+          },
+          "geometrySha256": "aa7ab2471ef5669af693f472507e4d318d7f466707a3602cdb5120ef87725ee0"
+        },
+        {
+          "transportId": "parcelle.59775136",
+          "properties": {
+            "idu": "31555827AD0427",
+            "numero": "0427",
+            "section": "AD",
+            "code_insee": "31555",
+            "nom_com": "Toulouse",
+            "code_dep": "31",
+            "code_com": "555",
+            "code_arr": "000",
+            "com_abs": "827",
+            "contenance": 210
+          },
+          "geometrySha256": "dfe877dcdbb423d0dbfa3ecb229ed2d5331d3b66c30dcba46eac78fc65306d10"
+        },
+        {
+          "transportId": "parcelle.60804169",
+          "properties": {
+            "idu": "31555827AD0439",
+            "numero": "0439",
+            "section": "AD",
+            "code_insee": "31555",
+            "nom_com": "Toulouse",
+            "code_dep": "31",
+            "code_com": "555",
+            "code_arr": "000",
+            "com_abs": "827",
+            "contenance": 601
+          },
+          "geometrySha256": "c690f59cbd6f28ed57006d88248123fa05f47da3cedc05fbf5509579b4cb6c69"
+        },
+        {
+          "transportId": "parcelle.62072487",
+          "properties": {
+            "idu": "31555827AD0451",
+            "numero": "0451",
+            "section": "AD",
+            "code_insee": "31555",
+            "nom_com": "Toulouse",
+            "code_dep": "31",
+            "code_com": "555",
+            "code_arr": "000",
+            "com_abs": "827",
+            "contenance": 17
+          },
+          "geometrySha256": "e89e2659b442a20060ba2b5f79dbfde9057a7deaaae291f691bd9dc1be01a074"
+        }
+      ]
+    },
+    {
+      "test": "fresh-ids-40",
+      "url": "https://data.geopf.fr/wfs/ows?service=WFS&version=2.0.0&request=GetFeature&typeNames=CADASTRALPARCELS.PARCELLAIRE_EXPRESS%3Aparcelle&outputFormat=application%2Fjson&srsName=CRS%3A84&sortBy=idu&count=1000&startIndex=0&cql_filter=idu+IN+%28%2731555827AD0452%27%2C%2731555827AD0453%27%2C%2731555827AD0454%27%2C%2731555827AD0458%27%2C%2731555827AD0460%27%2C%2731555827AD0462%27%2C%2731555827AD0463%27%2C%2731555827AD0473%27%2C%2731555827AD0477%27%2C%2731555827AD0482%27%2C%2731555827AD0484%27%2C%2731555827AD0486%27%2C%2731555827AD0489%27%2C%2731555827AD0494%27%2C%2731555827AD0515%27%2C%2731555827AD0521%27%2C%2731555827AD0525%27%2C%2731555827AD0526%27%2C%2731555827AD0540%27%2C%2731555827AD0544%27%2C%2731555827AD0581%27%2C%2731555827AD0582%27%2C%2731555827AD0628%27%2C%2731555828AB0097%27%2C%2731555828AB0099%27%2C%2731555828AB0343%27%2C%2731555828AB0357%27%2C%2731555828AB0360%27%2C%2731555828AB0361%27%2C%2731555828AB0371%27%2C%2731555828AB0393%27%2C%2731555828AB0394%27%2C%2731555828AB0402%27%2C%2731555828AB0403%27%2C%2731555828AB0404%27%2C%2731555828AB0424%27%2C%2731555828AB0445%27%2C%2731555828AB0447%27%2C%2731555828AB0449%27%2C%2731555828AB0482%27%29",
+      "method": "GET",
+      "checkedAt": "2026-10-09T03:56:31.019Z",
+      "httpStatus": 200,
+      "contentType": "application/json;charset=UTF-8",
+      "bytes": 37452,
+      "numberMatched": 40,
+      "numberReturned": 40,
+      "features": [
+        {
+          "transportId": "parcelle.62132861",
+          "properties": {
+            "idu": "31555827AD0452",
+            "numero": "0452",
+            "section": "AD",
+            "code_insee": "31555",
+            "nom_com": "Toulouse",
+            "code_dep": "31",
+            "code_com": "555",
+            "code_arr": "000",
+            "com_abs": "827",
+            "contenance": 13
+          },
+          "geometrySha256": "14091cabe321005d3f0371888a85356ab1a188605296c5cc33b1d048e4c19e3d"
+        },
+        {
+          "transportId": "parcelle.62193198",
+          "properties": {
+            "idu": "31555827AD0453",
+            "numero": "0453",
+            "section": "AD",
+            "code_insee": "31555",
+            "nom_com": "Toulouse",
+            "code_dep": "31",
+            "code_com": "555",
+            "code_arr": "000",
+            "com_abs": "827",
+            "contenance": 225
+          },
+          "geometrySha256": "34dce8e4f048a31ce846be4c8e9643d1df3038f9acc307ee00c69eee698c3f30"
+        },
+        {
+          "transportId": "parcelle.62253420",
+          "properties": {
+            "idu": "31555827AD0454",
+            "numero": "0454",
+            "section": "AD",
+            "code_insee": "31555",
+            "nom_com": "Toulouse",
+            "code_dep": "31",
+            "code_com": "555",
+            "code_arr": "000",
+            "com_abs": "827",
+            "contenance": 2832
+          },
+          "geometrySha256": "76f30e269aecdac1497278625e589f7676743d385f32a662bcb5922cf605c3df"
+        },
+        {
+          "transportId": "parcelle.62476590",
+          "properties": {
+            "idu": "31555827AD0458",
+            "numero": "0458",
+            "section": "AD",
+            "code_insee": "31555",
+            "nom_com": "Toulouse",
+            "code_dep": "31",
+            "code_com": "555",
+            "code_arr": "000",
+            "com_abs": "827",
+            "contenance": 2
+          },
+          "geometrySha256": "37214d332a6485a3bde45e2f50308b7192821ebb6eeaeafb0c42c09c60482faf"
+        },
+        {
+          "transportId": "parcelle.62873109",
+          "properties": {
+            "idu": "31555827AD0460",
+            "numero": "0460",
+            "section": "AD",
+            "code_insee": "31555",
+            "nom_com": "Toulouse",
+            "code_dep": "31",
+            "code_com": "555",
+            "code_arr": "000",
+            "com_abs": "827",
+            "contenance": 176
+          },
+          "geometrySha256": "05a53fdf6f3bb8a7d4491fdcdfad105bb26ac4eb4907c4e68c36d67212c447ec"
+        },
+        {
+          "transportId": "parcelle.62991114",
+          "properties": {
+            "idu": "31555827AD0462",
+            "numero": "0462",
+            "section": "AD",
+            "code_insee": "31555",
+            "nom_com": "Toulouse",
+            "code_dep": "31",
+            "code_com": "555",
+            "code_arr": "000",
+            "com_abs": "827",
+            "contenance": 212
+          },
+          "geometrySha256": "a6e04892ce57606863032ba57da6ee90fc6ec90af83b8e6d28b4e66d2b35b5ef"
+        },
+        {
+          "transportId": "parcelle.63049827",
+          "properties": {
+            "idu": "31555827AD0463",
+            "numero": "0463",
+            "section": "AD",
+            "code_insee": "31555",
+            "nom_com": "Toulouse",
+            "code_dep": "31",
+            "code_com": "555",
+            "code_arr": "000",
+            "com_abs": "827",
+            "contenance": 258
+          },
+          "geometrySha256": "b8dab5944fc44c3bfed39ea0feffdb0a5c791aaf931bc0ce405c062d1bbd12ac"
+        },
+        {
+          "transportId": "parcelle.63888695",
+          "properties": {
+            "idu": "31555827AD0473",
+            "numero": "0473",
+            "section": "AD",
+            "code_insee": "31555",
+            "nom_com": "Toulouse",
+            "code_dep": "31",
+            "code_com": "555",
+            "code_arr": "000",
+            "com_abs": "827",
+            "contenance": 8645
+          },
+          "geometrySha256": "b641bd76e58581e69dfe4d553e44bfaf8b21213722b51d8164944001e08e2125"
+        },
+        {
+          "transportId": "parcelle.64116271",
+          "properties": {
+            "idu": "31555827AD0477",
+            "numero": "0477",
+            "section": "AD",
+            "code_insee": "31555",
+            "nom_com": "Toulouse",
+            "code_dep": "31",
+            "code_com": "555",
+            "code_arr": "000",
+            "com_abs": "827",
+            "contenance": 16
+          },
+          "geometrySha256": "6ff1c9d75b45462d3cf02d251dd6b3fe66f10ac05a7ea5c54892ef13a24dc1f1"
+        },
+        {
+          "transportId": "parcelle.64657382",
+          "properties": {
+            "idu": "31555827AD0482",
+            "numero": "0482",
+            "section": "AD",
+            "code_insee": "31555",
+            "nom_com": "Toulouse",
+            "code_dep": "31",
+            "code_com": "555",
+            "code_arr": "000",
+            "com_abs": "827",
+            "contenance": 411
+          },
+          "geometrySha256": "d91006f7a422d1a783e9d1f67e4f6da321ce8a6ca414dec471eecabe0311413f"
+        },
+        {
+          "transportId": "parcelle.64768881",
+          "properties": {
+            "idu": "31555827AD0484",
+            "numero": "0484",
+            "section": "AD",
+            "code_insee": "31555",
+            "nom_com": "Toulouse",
+            "code_dep": "31",
+            "code_com": "555",
+            "code_arr": "000",
+            "com_abs": "827",
+            "contenance": 315
+          },
+          "geometrySha256": "857233f1b0cebb1328d779ded2b59778431ea1d6fb5a28dd95d79407de7c74a9"
+        },
+        {
+          "transportId": "parcelle.64879818",
+          "properties": {
+            "idu": "31555827AD0486",
+            "numero": "0486",
+            "section": "AD",
+            "code_insee": "31555",
+            "nom_com": "Toulouse",
+            "code_dep": "31",
+            "code_com": "555",
+            "code_arr": "000",
+            "com_abs": "827",
+            "contenance": 249
+          },
+          "geometrySha256": "d66726406459240878b657abecd58369158001a9b8d4f880ac08b64b6888b222"
+        },
+        {
+          "transportId": "parcelle.65044887",
+          "properties": {
+            "idu": "31555827AD0489",
+            "numero": "0489",
+            "section": "AD",
+            "code_insee": "31555",
+            "nom_com": "Toulouse",
+            "code_dep": "31",
+            "code_com": "555",
+            "code_arr": "000",
+            "com_abs": "827",
+            "contenance": 1228
+          },
+          "geometrySha256": "b63e001bcfdf502e3405c073d64cc9b6ec405ff5002dc925adf85155b2183010"
+        },
+        {
+          "transportId": "parcelle.65575099",
+          "properties": {
+            "idu": "31555827AD0494",
+            "numero": "0494",
+            "section": "AD",
+            "code_insee": "31555",
+            "nom_com": "Toulouse",
+            "code_dep": "31",
+            "code_com": "555",
+            "code_arr": "000",
+            "com_abs": "827",
+            "contenance": 2027
+          },
+          "geometrySha256": "6721bef4a402dcabe5fce451e63c6daac00015ac82d1345d27920bcc6c37f781"
+        },
+        {
+          "transportId": "parcelle.67506280",
+          "properties": {
+            "idu": "31555827AD0515",
+            "numero": "0515",
+            "section": "AD",
+            "code_insee": "31555",
+            "nom_com": "Toulouse",
+            "code_dep": "31",
+            "code_com": "555",
+            "code_arr": "000",
+            "com_abs": "827",
+            "contenance": 871
+          },
+          "geometrySha256": "e369b8c4de4639d527f7f36a67b48ab37a10fa02eb9491c3850052d92d1deb21"
+        },
+        {
+          "transportId": "parcelle.68065445",
+          "properties": {
+            "idu": "31555827AD0521",
+            "numero": "0521",
+            "section": "AD",
+            "code_insee": "31555",
+            "nom_com": "Toulouse",
+            "code_dep": "31",
+            "code_com": "555",
+            "code_arr": "000",
+            "com_abs": "827",
+            "contenance": 399
+          },
+          "geometrySha256": "0bb01be085e69a4dcb276e24a6560b9477e89b81a60c829091f1d9a5d059e8ab"
+        },
+        {
+          "transportId": "parcelle.68268247",
+          "properties": {
+            "idu": "31555827AD0525",
+            "numero": "0525",
+            "section": "AD",
+            "code_insee": "31555",
+            "nom_com": "Toulouse",
+            "code_dep": "31",
+            "code_com": "555",
+            "code_arr": "000",
+            "com_abs": "827",
+            "contenance": 3911
+          },
+          "geometrySha256": "d0a068f918bef764442f0e3a5d17989a1dc47756a616a3a5168b48edb4f85b7d"
+        },
+        {
+          "transportId": "parcelle.68318612",
+          "properties": {
+            "idu": "31555827AD0526",
+            "numero": "0526",
+            "section": "AD",
+            "code_insee": "31555",
+            "nom_com": "Toulouse",
+            "code_dep": "31",
+            "code_com": "555",
+            "code_arr": "000",
+            "com_abs": "827",
+            "contenance": 3039
+          },
+          "geometrySha256": "fff6c3700807c50145f81e38964507f07b9d2d2dd3cf0d2a8d88f2454f52a1f0"
+        },
+        {
+          "transportId": "parcelle.69511318",
+          "properties": {
+            "idu": "31555827AD0540",
+            "numero": "0540",
+            "section": "AD",
+            "code_insee": "31555",
+            "nom_com": "Toulouse",
+            "code_dep": "31",
+            "code_com": "555",
+            "code_arr": "000",
+            "com_abs": "827",
+            "contenance": 905
+          },
+          "geometrySha256": "5f2d18ccd0c5cfbef9407cf7b2d12d4e5317656c212bf00ebdf079b497360a91"
+        },
+        {
+          "transportId": "parcelle.69704342",
+          "properties": {
+            "idu": "31555827AD0544",
+            "numero": "0544",
+            "section": "AD",
+            "code_insee": "31555",
+            "nom_com": "Toulouse",
+            "code_dep": "31",
+            "code_com": "555",
+            "code_arr": "000",
+            "com_abs": "827",
+            "contenance": 20640
+          },
+          "geometrySha256": "b5a1f5c5d691748fed25225992c66f8403799b8b49fcc9d4480aa1b831f3f82c"
+        },
+        {
+          "transportId": "parcelle.72389595",
+          "properties": {
+            "idu": "31555827AD0581",
+            "numero": "0581",
+            "section": "AD",
+            "code_insee": "31555",
+            "nom_com": "Toulouse",
+            "code_dep": "31",
+            "code_com": "555",
+            "code_arr": "000",
+            "com_abs": "827",
+            "contenance": 1111
+          },
+          "geometrySha256": "8e0286c11297b17cfb1462f49229de14f2c9a11556b03be0a8c83de1cc3b2fbe"
+        },
+        {
+          "transportId": "parcelle.72433194",
+          "properties": {
+            "idu": "31555827AD0582",
+            "numero": "0582",
+            "section": "AD",
+            "code_insee": "31555",
+            "nom_com": "Toulouse",
+            "code_dep": "31",
+            "code_com": "555",
+            "code_arr": "000",
+            "com_abs": "827",
+            "contenance": 37
+          },
+          "geometrySha256": "00685778564f88353c37e986baba788fbe39bc9cd126a53ac10b903c2cc5c8e8"
+        },
+        {
+          "transportId": "parcelle.75615266",
+          "properties": {
+            "idu": "31555827AD0628",
+            "numero": "0628",
+            "section": "AD",
+            "code_insee": "31555",
+            "nom_com": "Toulouse",
+            "code_dep": "31",
+            "code_com": "555",
+            "code_arr": "000",
+            "com_abs": "827",
+            "contenance": 12350
+          },
+          "geometrySha256": "165878ef5187e8d2457e9ae7493a4f4b28df4bf03c9ab5b803d63d2f82ab1519"
+        },
+        {
+          "transportId": "parcelle.93404223",
+          "properties": {
+            "idu": "31555828AB0097",
+            "numero": "0097",
+            "section": "AB",
+            "code_insee": "31555",
+            "nom_com": "Toulouse",
+            "code_dep": "31",
+            "code_com": "555",
+            "code_arr": "000",
+            "com_abs": "828",
+            "contenance": 4504
+          },
+          "geometrySha256": "3e5a25f4539ada60c7180b4550b2cf6d52909d1f0ac05db519c86ced68992eee"
+        },
+        {
+          "transportId": "parcelle.94167714",
+          "properties": {
+            "idu": "31555828AB0099",
+            "numero": "0099",
+            "section": "AB",
+            "code_insee": "31555",
+            "nom_com": "Toulouse",
+            "code_dep": "31",
+            "code_com": "555",
+            "code_arr": "000",
+            "com_abs": "828",
+            "contenance": 1342
+          },
+          "geometrySha256": "b6c44520bbaa5d11abe098ab054fff29fc56372fffb4c324f830a684bb73c746"
+        },
+        {
+          "transportId": "parcelle.51104793",
+          "properties": {
+            "idu": "31555828AB0343",
+            "numero": "0343",
+            "section": "AB",
+            "code_insee": "31555",
+            "nom_com": "Toulouse",
+            "code_dep": "31",
+            "code_com": "555",
+            "code_arr": "000",
+            "com_abs": "828",
+            "contenance": 700
+          },
+          "geometrySha256": "15eeabbf86bc5b27fd8a73bbf0df2488f4d76f7e685d734d219fd458bd23bd35"
+        },
+        {
+          "transportId": "parcelle.52525720",
+          "properties": {
+            "idu": "31555828AB0357",
+            "numero": "0357",
+            "section": "AB",
+            "code_insee": "31555",
+            "nom_com": "Toulouse",
+            "code_dep": "31",
+            "code_com": "555",
+            "code_arr": "000",
+            "com_abs": "828",
+            "contenance": 2560
+          },
+          "geometrySha256": "3a326695477704edef36dcf3410c848ad001f299c868fb67907ce91a497cef81"
+        },
+        {
+          "transportId": "parcelle.53041271",
+          "properties": {
+            "idu": "31555828AB0360",
+            "numero": "0360",
+            "section": "AB",
+            "code_insee": "31555",
+            "nom_com": "Toulouse",
+            "code_dep": "31",
+            "code_com": "555",
+            "code_arr": "000",
+            "com_abs": "828",
+            "contenance": 120
+          },
+          "geometrySha256": "94af2caaf1e7cfd656757b8ad3c62d015c0b3dc835f4d61858d5608e51127582"
+        },
+        {
+          "transportId": "parcelle.53120435",
+          "properties": {
+            "idu": "31555828AB0361",
+            "numero": "0361",
+            "section": "AB",
+            "code_insee": "31555",
+            "nom_com": "Toulouse",
+            "code_dep": "31",
+            "code_com": "555",
+            "code_arr": "000",
+            "com_abs": "828",
+            "contenance": 160
+          },
+          "geometrySha256": "1a4382d7c07f4c07cff4fbdbcae9669bdfddf706ad8fd3940453b719a84cc3e3"
+        },
+        {
+          "transportId": "parcelle.54172714",
+          "properties": {
+            "idu": "31555828AB0371",
+            "numero": "0371",
+            "section": "AB",
+            "code_insee": "31555",
+            "nom_com": "Toulouse",
+            "code_dep": "31",
+            "code_com": "555",
+            "code_arr": "000",
+            "com_abs": "828",
+            "contenance": 173
+          },
+          "geometrySha256": "0b3d6ed3fe3d950a03a31d56ec9c8893360dacfa7587dd2c915715b754ec0713"
+        },
+        {
+          "transportId": "parcelle.56345236",
+          "properties": {
+            "idu": "31555828AB0393",
+            "numero": "0393",
+            "section": "AB",
+            "code_insee": "31555",
+            "nom_com": "Toulouse",
+            "code_dep": "31",
+            "code_com": "555",
+            "code_arr": "000",
+            "com_abs": "828",
+            "contenance": 550
+          },
+          "geometrySha256": "aab16bea24b444976a9e30c749d36d90598ef745a2da42ba5e32594e9aba325b"
+        },
+        {
+          "transportId": "parcelle.1876877",
+          "properties": {
+            "idu": "31555828AB0394",
+            "numero": "0394",
+            "section": "AB",
+            "code_insee": "31555",
+            "nom_com": "Toulouse",
+            "code_dep": "31",
+            "code_com": "555",
+            "code_arr": "000",
+            "com_abs": "828",
+            "contenance": 16
+          },
+          "geometrySha256": "b49093c0d9852ffee84fab2943eb74f0e9cbfed56f83dec65c920957eda62227"
+        },
+        {
+          "transportId": "parcelle.57558020",
+          "properties": {
+            "idu": "31555828AB0402",
+            "numero": "0402",
+            "section": "AB",
+            "code_insee": "31555",
+            "nom_com": "Toulouse",
+            "code_dep": "31",
+            "code_com": "555",
+            "code_arr": "000",
+            "com_abs": "828",
+            "contenance": 279
+          },
+          "geometrySha256": "37befe11a7077914c64fa608d9c34e5c5bafbd036f742ea92619d818ebad6bdf"
+        },
+        {
+          "transportId": "parcelle.57627281",
+          "properties": {
+            "idu": "31555828AB0403",
+            "numero": "0403",
+            "section": "AB",
+            "code_insee": "31555",
+            "nom_com": "Toulouse",
+            "code_dep": "31",
+            "code_com": "555",
+            "code_arr": "000",
+            "com_abs": "828",
+            "contenance": 18
+          },
+          "geometrySha256": "1818de1189c2dab003afdfa7f31f124e8b18bde94e52e04f930cb4964809dbbc"
+        },
+        {
+          "transportId": "parcelle.57696608",
+          "properties": {
+            "idu": "31555828AB0404",
+            "numero": "0404",
+            "section": "AB",
+            "code_insee": "31555",
+            "nom_com": "Toulouse",
+            "code_dep": "31",
+            "code_com": "555",
+            "code_arr": "000",
+            "com_abs": "828",
+            "contenance": 2
+          },
+          "geometrySha256": "5304bec29943932f3046238acb56e122f86e67d73392fed2ae46e8517465d64f"
+        },
+        {
+          "transportId": "parcelle.59577100",
+          "properties": {
+            "idu": "31555828AB0424",
+            "numero": "0424",
+            "section": "AB",
+            "code_insee": "31555",
+            "nom_com": "Toulouse",
+            "code_dep": "31",
+            "code_com": "555",
+            "code_arr": "000",
+            "com_abs": "828",
+            "contenance": 1426
+          },
+          "geometrySha256": "5c649c9a6707c57d60afd9833e0509c576bdce4439d243d6fdb2b5f01a7497c5"
+        },
+        {
+          "transportId": "parcelle.61438876",
+          "properties": {
+            "idu": "31555828AB0445",
+            "numero": "0445",
+            "section": "AB",
+            "code_insee": "31555",
+            "nom_com": "Toulouse",
+            "code_dep": "31",
+            "code_com": "555",
+            "code_arr": "000",
+            "com_abs": "828",
+            "contenance": 5
+          },
+          "geometrySha256": "c504059c3a84d99c8bf201136b688edfbafa2a5b34cfe168d5b73864235345ab"
+        },
+        {
+          "transportId": "parcelle.61561504",
+          "properties": {
+            "idu": "31555828AB0447",
+            "numero": "0447",
+            "section": "AB",
+            "code_insee": "31555",
+            "nom_com": "Toulouse",
+            "code_dep": "31",
+            "code_com": "555",
+            "code_arr": "000",
+            "com_abs": "828",
+            "contenance": 62
+          },
+          "geometrySha256": "c7b13b70c6eb33a8042ea751790a89c03b5c2d449f0336b8b2b1ba0f197ed78e"
+        },
+        {
+          "transportId": "parcelle.61683935",
+          "properties": {
+            "idu": "31555828AB0449",
+            "numero": "0449",
+            "section": "AB",
+            "code_insee": "31555",
+            "nom_com": "Toulouse",
+            "code_dep": "31",
+            "code_com": "555",
+            "code_arr": "000",
+            "com_abs": "828",
+            "contenance": 280
+          },
+          "geometrySha256": "d40e0f9a5c9bf7d723acf0a6d348f92f2c1879139923a5ebf57f2af85eefc210"
+        },
+        {
+          "transportId": "parcelle.64654516",
+          "properties": {
+            "idu": "31555828AB0482",
+            "numero": "0482",
+            "section": "AB",
+            "code_insee": "31555",
+            "nom_com": "Toulouse",
+            "code_dep": "31",
+            "code_com": "555",
+            "code_arr": "000",
+            "com_abs": "828",
+            "contenance": 2361
+          },
+          "geometrySha256": "198ab297f1f4f5473714bc68a536adc2395cab6ebb4ac6df5a682e74cee45cef"
+        }
+      ]
+    },
+    {
+      "test": "fresh-ids-80",
+      "url": "https://data.geopf.fr/wfs/ows?service=WFS&version=2.0.0&request=GetFeature&typeNames=CADASTRALPARCELS.PARCELLAIRE_EXPRESS%3Aparcelle&outputFormat=application%2Fjson&srsName=CRS%3A84&sortBy=idu&count=1000&startIndex=0&cql_filter=idu+IN+%28%2731555828AB0483%27%2C%2731555828AB0484%27%2C%2731555828AB0560%27%2C%2731555828AB0561%27%2C%2731555828AB0562%27%29",
+      "method": "GET",
+      "checkedAt": "2026-10-09T03:56:31.131Z",
+      "httpStatus": 200,
+      "contentType": "application/json;charset=UTF-8",
+      "bytes": 4680,
+      "numberMatched": 5,
+      "numberReturned": 5,
+      "features": [
+        {
+          "transportId": "parcelle.64710457",
+          "properties": {
+            "idu": "31555828AB0483",
+            "numero": "0483",
+            "section": "AB",
+            "code_insee": "31555",
+            "nom_com": "Toulouse",
+            "code_dep": "31",
+            "code_com": "555",
+            "code_arr": "000",
+            "com_abs": "828",
+            "contenance": 1608
+          },
+          "geometrySha256": "c9b23611ac968b6b63d514066e35e5e48fcf371a96254ba2eae2646d372b68b0"
+        },
+        {
+          "transportId": "parcelle.64766070",
+          "properties": {
+            "idu": "31555828AB0484",
+            "numero": "0484",
+            "section": "AB",
+            "code_insee": "31555",
+            "nom_com": "Toulouse",
+            "code_dep": "31",
+            "code_com": "555",
+            "code_arr": "000",
+            "com_abs": "828",
+            "contenance": 720
+          },
+          "geometrySha256": "54c5f9c3126c317db3d0c324be2d109eb0942762d38392b0509d2ca1f3d04478"
+        },
+        {
+          "transportId": "parcelle.70951994",
+          "properties": {
+            "idu": "31555828AB0560",
+            "numero": "0560",
+            "section": "AB",
+            "code_insee": "31555",
+            "nom_com": "Toulouse",
+            "code_dep": "31",
+            "code_com": "555",
+            "code_arr": "000",
+            "com_abs": "828",
+            "contenance": 1248
+          },
+          "geometrySha256": "66b313d0c5e9fa778c758509b389f43c434dd18ef815d94cf110757926ccbeaf"
+        },
+        {
+          "transportId": "parcelle.70997974",
+          "properties": {
+            "idu": "31555828AB0561",
+            "numero": "0561",
+            "section": "AB",
+            "code_insee": "31555",
+            "nom_com": "Toulouse",
+            "code_dep": "31",
+            "code_com": "555",
+            "code_arr": "000",
+            "com_abs": "828",
+            "contenance": 438
+          },
+          "geometrySha256": "18afbe66e17eb6648647a9611ccc98e7f5c8caf1bfbbbdd47958ba5191d53381"
+        },
+        {
+          "transportId": "parcelle.71043769",
+          "properties": {
+            "idu": "31555828AB0562",
+            "numero": "0562",
+            "section": "AB",
+            "code_insee": "31555",
+            "nom_com": "Toulouse",
+            "code_dep": "31",
+            "code_com": "555",
+            "code_arr": "000",
+            "com_abs": "828",
+            "contenance": 5045
+          },
+          "geometrySha256": "9d3fdcf28fcd64160bfcc466401bdc5a816979003380f5fb38e26c9d55b599c5"
+        }
+      ]
+    },
+    {
+      "test": "explicit-absence",
+      "url": "https://data.geopf.fr/wfs/ows?service=WFS&version=2.0.0&request=GetFeature&typeNames=CADASTRALPARCELS.PARCELLAIRE_EXPRESS%3Aparcelle&outputFormat=application%2Fjson&srsName=CRS%3A84&sortBy=idu&count=1000&startIndex=0&cql_filter=idu+IN+%28%2700000000ZZ9999%27%29",
+      "method": "GET",
+      "checkedAt": "2026-10-09T03:56:31.232Z",
+      "httpStatus": 200,
+      "contentType": "application/json;charset=UTF-8",
+      "bytes": 147,
+      "numberMatched": 0,
+      "numberReturned": 0,
+      "features": []
+    },
+    {
+      "test": "footprint",
+      "url": "https://data.geopf.fr/wfs/ows?service=WFS&version=2.0.0&request=GetFeature&typeNames=CADASTRALPARCELS.PARCELLAIRE_EXPRESS%3Aparcelle&outputFormat=application%2Fjson&srsName=CRS%3A84&sortBy=idu&count=1000&startIndex=0&bbox=1.42550041%2C43.60630521%2C1.4257769%2C43.60647144%2CCRS%3A84",
+      "method": "GET",
+      "checkedAt": "2026-10-09T03:56:31.716Z",
+      "httpStatus": 200,
+      "contentType": "application/json;charset=UTF-8",
+      "bytes": 3382,
+      "numberMatched": 5,
+      "numberReturned": 5,
+      "features": [
+        {
+          "transportId": "parcelle.26754385",
+          "properties": {
+            "idu": "31555827AD0182",
+            "numero": "0182",
+            "section": "AD",
+            "code_insee": "31555",
+            "nom_com": "Toulouse",
+            "code_dep": "31",
+            "code_com": "555",
+            "code_arr": "000",
+            "com_abs": "827",
+            "contenance": 347
+          },
+          "geometrySha256": "1f5dd659888faa9cb0b590df67654113d933858efd3cf50fe25e7c7146f13a52"
+        },
+        {
+          "transportId": "parcelle.32878363",
+          "properties": {
+            "idu": "31555827AD0213",
+            "numero": "0213",
+            "section": "AD",
+            "code_insee": "31555",
+            "nom_com": "Toulouse",
+            "code_dep": "31",
+            "code_com": "555",
+            "code_arr": "000",
+            "com_abs": "827",
+            "contenance": 288
+          },
+          "geometrySha256": "f5d498f44673c5a514d1e6c17888c322a01df6224ecaaa670145d7555ec02f99"
+        },
+        {
+          "transportId": "parcelle.33022664",
+          "properties": {
+            "idu": "31555827AD0214",
+            "numero": "0214",
+            "section": "AD",
+            "code_insee": "31555",
+            "nom_com": "Toulouse",
+            "code_dep": "31",
+            "code_com": "555",
+            "code_arr": "000",
+            "com_abs": "827",
+            "contenance": 281
+          },
+          "geometrySha256": "777a673809fb0d98b9a14628232ae9aec37de0afad6458c6675a35b68e73a054"
+        },
+        {
+          "transportId": "parcelle.33166026",
+          "properties": {
+            "idu": "31555827AD0215",
+            "numero": "0215",
+            "section": "AD",
+            "code_insee": "31555",
+            "nom_com": "Toulouse",
+            "code_dep": "31",
+            "code_com": "555",
+            "code_arr": "000",
+            "com_abs": "827",
+            "contenance": 335
+          },
+          "geometrySha256": "5432eff0c4210d83a2f5bd4734cb02a573407988e67ea32ee85bb71853c890ce"
+        },
+        {
+          "transportId": "parcelle.63049827",
+          "properties": {
+            "idu": "31555827AD0463",
+            "numero": "0463",
+            "section": "AD",
+            "code_insee": "31555",
+            "nom_com": "Toulouse",
+            "code_dep": "31",
+            "code_com": "555",
+            "code_arr": "000",
+            "com_abs": "827",
+            "contenance": 258
+          },
+          "geometrySha256": "b8dab5944fc44c3bfed39ea0feffdb0a5c791aaf931bc0ce405c062d1bbd12ac"
+        }
+      ]
+    },
+    {
+      "test": "source-binding",
+      "url": "https://data.geopf.fr/wfs/ows?service=WFS&version=2.0.0&request=GetFeature&typeNames=CADASTRALPARCELS.PARCELLAIRE_EXPRESS%3Aparcelle&outputFormat=application%2Fjson&srsName=CRS%3A84&sortBy=idu&count=1000&startIndex=0&bbox=1.42550041%2C43.60630521%2C1.4257769%2C43.60647144%2CCRS%3A84",
+      "method": "GET",
+      "checkedAt": "2026-10-09T03:56:31.826Z",
+      "httpStatus": 200,
+      "contentType": "application/json;charset=UTF-8",
+      "bytes": 3382,
+      "numberMatched": 5,
+      "numberReturned": 5,
+      "features": [
+        {
+          "transportId": "parcelle.26754385",
+          "properties": {
+            "idu": "31555827AD0182",
+            "numero": "0182",
+            "section": "AD",
+            "code_insee": "31555",
+            "nom_com": "Toulouse",
+            "code_dep": "31",
+            "code_com": "555",
+            "code_arr": "000",
+            "com_abs": "827",
+            "contenance": 347
+          },
+          "geometrySha256": "1f5dd659888faa9cb0b590df67654113d933858efd3cf50fe25e7c7146f13a52"
+        },
+        {
+          "transportId": "parcelle.32878363",
+          "properties": {
+            "idu": "31555827AD0213",
+            "numero": "0213",
+            "section": "AD",
+            "code_insee": "31555",
+            "nom_com": "Toulouse",
+            "code_dep": "31",
+            "code_com": "555",
+            "code_arr": "000",
+            "com_abs": "827",
+            "contenance": 288
+          },
+          "geometrySha256": "f5d498f44673c5a514d1e6c17888c322a01df6224ecaaa670145d7555ec02f99"
+        },
+        {
+          "transportId": "parcelle.33022664",
+          "properties": {
+            "idu": "31555827AD0214",
+            "numero": "0214",
+            "section": "AD",
+            "code_insee": "31555",
+            "nom_com": "Toulouse",
+            "code_dep": "31",
+            "code_com": "555",
+            "code_arr": "000",
+            "com_abs": "827",
+            "contenance": 281
+          },
+          "geometrySha256": "777a673809fb0d98b9a14628232ae9aec37de0afad6458c6675a35b68e73a054"
+        },
+        {
+          "transportId": "parcelle.33166026",
+          "properties": {
+            "idu": "31555827AD0215",
+            "numero": "0215",
+            "section": "AD",
+            "code_insee": "31555",
+            "nom_com": "Toulouse",
+            "code_dep": "31",
+            "code_com": "555",
+            "code_arr": "000",
+            "com_abs": "827",
+            "contenance": 335
+          },
+          "geometrySha256": "5432eff0c4210d83a2f5bd4734cb02a573407988e67ea32ee85bb71853c890ce"
+        },
+        {
+          "transportId": "parcelle.63049827",
+          "properties": {
+            "idu": "31555827AD0463",
+            "numero": "0463",
+            "section": "AD",
+            "code_insee": "31555",
+            "nom_com": "Toulouse",
+            "code_dep": "31",
+            "code_com": "555",
+            "code_arr": "000",
+            "com_abs": "827",
+            "contenance": 258
+          },
+          "geometrySha256": "b8dab5944fc44c3bfed39ea0feffdb0a5c791aaf931bc0ce405c062d1bbd12ac"
+        }
+      ]
+    }
+  ],
+  "qualityFile": "research/overnight-cities-2026-10-08/toulouse-ign-root-quality.json",
+  "uniqueParcels": 85,
+  "requestCount": 31,
+  "allTestsPassed": true,
+  "finishedAt": "2026-10-09T03:56:31.949Z",
+  "qualityStatus": "approved_by_root"
+}

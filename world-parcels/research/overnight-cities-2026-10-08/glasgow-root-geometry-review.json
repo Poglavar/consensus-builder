@@ -1,0 +1,57 @@
+{
+  "schemaVersion": 1,
+  "purpose": "Independent native-coordinate audit of all three retained Scottish title polygons without repair or exclusion.",
+  "sourceCrs": "EPSG:27700",
+  "featureCount": 3,
+  "validCount": 3,
+  "distinctIds": 3,
+  "features": [
+    {
+      "inspireid": "gb.ros.lr.SCT0000107107",
+      "isValid": true,
+      "coversWup": true,
+      "areaSquareM": 74551.24379999783
+    },
+    {
+      "inspireid": "gb.ros.lr.SCT0005869008",
+      "isValid": true,
+      "coversWup": true,
+      "areaSquareM": 74516.64094999862
+    },
+    {
+      "inspireid": "gb.ros.lr.SCT0006813307",
+      "isValid": true,
+      "coversWup": true,
+      "areaSquareM": 74591.39449999841
+    }
+  ],
+  "pairs": [
+    {
+      "ids": [
+        "gb.ros.lr.SCT0000107107",
+        "gb.ros.lr.SCT0005869008"
+      ],
+      "equals": false,
+      "overlaps": true,
+      "intersectionAreaSquareM": 74516.64088251068
+    },
+    {
+      "ids": [
+        "gb.ros.lr.SCT0000107107",
+        "gb.ros.lr.SCT0006813307"
+      ],
+      "equals": false,
+      "overlaps": true,
+      "intersectionAreaSquareM": 74551.19756793797
+    },
+    {
+      "ids": [
+        "gb.ros.lr.SCT0005869008",
+        "gb.ros.lr.SCT0006813307"
+      ],
+      "equals": false,
+      "overlaps": true,
+      "intersectionAreaSquareM": 74516.6395178986
+    }
+  ]
+}

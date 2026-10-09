@@ -1,0 +1,109 @@
+{
+  "schemaVersion": "1.0",
+  "checkedAt": "2026-10-09",
+  "cityRecord": "city-2517-jeonju.json",
+  "purpose": "Document city-scope registry evidence and bounded public parcel-geometry route review.",
+  "scopeLimits": {
+    "maxFullPolygonsRetainedInCityRecord": 0,
+    "maxFullPolygonsRetainedInReview": 0,
+    "maxFullPolygonsRetainedInRepository": 0,
+    "ownerOrAddressDataRetained": false,
+    "credentialsOrTokenValuesRetained": false,
+    "citywideCompletenessAsserted": false
+  },
+  "assessment": "Jeonju City’s official Living Geographic Information site is a public municipal map and its map page identifies a cadastral-map (`지적도`) layer. The city’s official page also links national cadastral/LX and land-planning services. No current public full-polygon schema or safe WUP-point feature response was verified.",
+  "registryAssessment": "Jeonju City’s official Living Geographic Information site is a public municipal map and its map page identifies a cadastral-map (`지적도`) layer. The city’s official page also links national cadastral/LX and land-planning services. No current public full-polygon schema or safe WUP-point feature response was verified.",
+  "officialPrimarySources": [
+    {
+      "url": "https://map.jeonju.go.kr/portal/",
+      "observation": "Official Jeonju City Hall Living Geographic Information portal; current page lists the public municipal map and a notice about partial service interruption."
+    },
+    {
+      "url": "https://map.jeonju.go.kr/map/theme-map.lm?tableName=AED",
+      "observation": "Official city map route; indexed page exposes a `지적도` layer button, but direct shell request returned a web-firewall block page."
+    },
+    {
+      "url": "https://www.jeonju.go.kr/planweb/board/view.9is?boardUid=ff8080818b5bc5cf018ba8ca7216641f&contentUid=ff8080818990c349018b041a87fe3960&dataUid=9be517a8914526ec0195f069ef98541d&page=49&subPath=",
+      "observation": "Official Jeonju release says Living Geographic Information is a public citizen service accessible to anyone."
+    },
+    {
+      "url": "https://baro.lx.or.kr/",
+      "observation": "Official LX cadastral surveying service linked from the city’s real-estate section; not used for geometry."
+    },
+    {
+      "url": "https://www.kgeop.go.kr/",
+      "observation": "Official Ministry of Land K-GeoP portal; nationwide land-information service, no Jeonju parcel geometry query performed."
+    }
+  ],
+  "searchQueries": [
+    {
+      "language": "Korean",
+      "query": "전주시 생활지리정보 지적도 토지대장 public service",
+      "result": "Official city map page includes a cadastral-map layer and citywide public GIS service; no safe full geometry response was obtained.",
+      "scope": "Verify city-specific registry activity and whether a public anonymous full-polygon geometry route is available.",
+      "urls": [
+        "https://map.jeonju.go.kr/portal/",
+        "https://map.jeonju.go.kr/map/theme-map.lm?tableName=AED",
+        "https://www.jeonju.go.kr/planweb/board/view.9is?boardUid=ff8080818b5bc5cf018ba8ca7216641f&contentUid=ff8080818990c349018b041a87fe3960&dataUid=9be517a8914526ec0195f069ef98541d&page=49&subPath=",
+        "https://baro.lx.or.kr/",
+        "https://www.kgeop.go.kr/"
+      ]
+    },
+    {
+      "language": "Korean",
+      "query": "site:jeonju.go.kr 전주시 지적도 토지정보과 지적재조사",
+      "result": "Official Jeonju results confirm cadastral-map/lawful land-administration activity and municipal service ownership.",
+      "scope": "Verify city-specific registry activity and whether a public anonymous full-polygon geometry route is available.",
+      "urls": [
+        "https://map.jeonju.go.kr/portal/",
+        "https://map.jeonju.go.kr/map/theme-map.lm?tableName=AED",
+        "https://www.jeonju.go.kr/planweb/board/view.9is?boardUid=ff8080818b5bc5cf018ba8ca7216641f&contentUid=ff8080818990c349018b041a87fe3960&dataUid=9be517a8914526ec0195f069ef98541d&page=49&subPath=",
+        "https://baro.lx.or.kr/",
+        "https://www.kgeop.go.kr/"
+      ]
+    },
+    {
+      "language": "English",
+      "query": "Jeonju city GIS cadastral map official land parcel",
+      "result": "Official Jeonju municipal GIS is a candidate, but vector schema and point response are unverified.",
+      "scope": "Verify city-specific registry activity and whether a public anonymous full-polygon geometry route is available.",
+      "urls": [
+        "https://map.jeonju.go.kr/portal/",
+        "https://map.jeonju.go.kr/map/theme-map.lm?tableName=AED",
+        "https://www.jeonju.go.kr/planweb/board/view.9is?boardUid=ff8080818b5bc5cf018ba8ca7216641f&contentUid=ff8080818990c349018b041a87fe3960&dataUid=9be517a8914526ec0195f069ef98541d&page=49&subPath=",
+        "https://baro.lx.or.kr/",
+        "https://www.kgeop.go.kr/"
+      ]
+    }
+  ],
+  "serviceChecks": [
+    {
+      "url": "https://map.jeonju.go.kr/portal/",
+      "method": "GET official city GIS landing page",
+      "result": "Official page lists a public living-geography GIS and current notice that some functions have been interrupted since 2025-09-26; affected functions shown are building-register lookup and selected thematic layers."
+    },
+    {
+      "url": "https://map.jeonju.go.kr/map/theme-map.lm?tableName=AED",
+      "method": "GET official thematic map route",
+      "result": "HTTP 200 response body was a web-firewall policy block page; no GIS schema or geometry response established."
+    },
+    {
+      "url": "https://www.jeonju.go.kr/planweb/board/view.9is?boardUid=ff8080818b5bc5cf018ba8ca7216641f&contentUid=ff8080818990c349018b041a87fe3960&dataUid=9be517a8914526ec0195f069ef98541d&page=49&subPath=",
+      "method": "GET official city service announcement",
+      "result": "Official release describes Living Geographic Information as a citizen-facing municipal service."
+    }
+  ],
+  "geometryEvidence": "No full parcel polygon or native parcel identity was verified. Search-indexed official map page identifies a cadastral-map layer, but direct viewer retrieval was intercepted by a web-firewall page; this is inconclusive, not a provider-outage claim.",
+  "privacy": {
+    "ownerOrAddressDataRequested": false,
+    "ownerOrAddressDataRetained": false,
+    "credentialsOrTokensRequested": false,
+    "credentialsOrTokensRetained": false,
+    "notes": "No owner, address, tax/account, or credential values were queried or retained. Morelia requests used only the safe cadastral key and full geometry."
+  },
+  "runtimeAssessment": {
+    "status": "unverified",
+    "reason": "No safe full-polygon/native-key response was verified at the unchanged WUP locator; no runtime qualification is claimed."
+  },
+  "geometryDisposition": "No full parcel polygon or native parcel identity was verified. Search-indexed official map page identifies a cadastral-map layer, but direct viewer retrieval was intercepted by a web-firewall page; this is inconclusive, not a provider-outage claim."
+}

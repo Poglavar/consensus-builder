@@ -1,0 +1,76 @@
+{
+  "schemaVersion": "1.0",
+  "checkedAt": "2026-10-09",
+  "cityRecord": "city-9576-cangzhou.json",
+  "purpose": "Document first-party local registry/map evidence and bounded anonymous parcel-geometry access review.",
+  "scopeLimits": {
+    "maxFullPolygonsRetainedInCityRecord": 0,
+    "maxFullPolygonsRetainedInReview": 0,
+    "maxFullPolygonsRetainedInRepository": 0,
+    "ownerOrAddressDataRetained": false,
+    "credentialsOrTokenValuesRetained": false,
+    "citywideCompletenessAsserted": false
+  },
+  "assessment": "No directly accessible official city registry page or public vector endpoint surfaced. Two local reports attribute current registration-center operations to the Cangzhou Government Service Management Office, Registration Center and Natural Resources and Planning Bureau; these corroborate an office but are not treated as primary-source data.",
+  "registryAssessment": "Local reporting reproduces a notice attributed to the Cangzhou Government Service Management Office and Real Estate Registration Center, and a Cangzhou Daily story reports statements from the city Natural Resources and Planning Bureau about municipal registration services. These support existence of a city registration center, but the official-host copies were not located in this pass; no public anonymous parcel service or vector schema was verified.",
+  "officialPrimarySources": [
+    {
+      "url": "https://www.cangzhou.gov.cn/",
+      "httpStatus": "timeout",
+      "observation": "Attempted official Cangzhou portal readback; the web retrieval timed out, so no official city-host page content could be verified."
+    }
+  ],
+  "searchQueries": [
+    {
+      "language": "English",
+      "query": "Cangzhou official real estate registration center cadastral parcel data city natural resources bureau",
+      "scope": "Find first-party city/local registry, cadastral map and safely accessible parcel geometry.",
+      "result": "No directly accessible official city registry page or public vector endpoint surfaced. Two local reports attribute current registration-center operations to the Cangzhou Government Service Management Office, Registration Center and Natural Resources and Planning Bureau; these corroborate an office but are not treated as primary-source data.",
+      "actualResultUrls": [
+        "https://www.cangzhou.gov.cn/",
+        "https://hebei.sina.cn/news/2026-08-17/detail-ininqtns0341217.d.html?vt=4",
+        "https://bohaitoday.cn/h-nd-142324.html?fromColId=2"
+      ],
+      "executionMethod": "Separate language-specific web search followed by review of official sources and public viewer/service metadata; no personal property query."
+    },
+    {
+      "language": "Chinese",
+      "query": "沧州市 不动产登记 中心 地籍 数据 矢量 宗地 官方 自然资源",
+      "scope": "Find first-party city/local registry, cadastral map and safely accessible parcel geometry.",
+      "result": "No directly accessible official city registry page or public vector endpoint surfaced. Two local reports attribute current registration-center operations to the Cangzhou Government Service Management Office, Registration Center and Natural Resources and Planning Bureau; these corroborate an office but are not treated as primary-source data.",
+      "actualResultUrls": [
+        "https://www.cangzhou.gov.cn/",
+        "https://hebei.sina.cn/news/2026-08-17/detail-ininqtns0341217.d.html?vt=4",
+        "https://bohaitoday.cn/h-nd-142324.html?fromColId=2"
+      ],
+      "executionMethod": "Separate language-specific web search followed by review of official sources and public viewer/service metadata; no personal property query."
+    }
+  ],
+  "geometryDecision": {
+    "publicParcelGeometryFound": null,
+    "decision": "No geometry retained; public anonymous geometry was not verified."
+  },
+  "coverageAssessment": {
+    "citywideCompletenessAsserted": false,
+    "scope": "Exact unchanged WUP settlement point and reviewed official sources only.",
+    "limits": "No complete citywide source extent or coverage was verified."
+  },
+  "attempts": [
+    {
+      "url": "https://www.cangzhou.gov.cn/",
+      "method": "Official city portal readback",
+      "result": "Fetch timed out; no page content or public parcel service could be inspected."
+    }
+  ],
+  "remainingUncertainty": "A current official Cangzhou registry page, safe anonymous geometry endpoint and the exact source coverage at the unchanged WUP locator were not verified.",
+  "secondaryCorroboration": [
+    {
+      "url": "https://hebei.sina.cn/news/2026-08-17/detail-ininqtns0341217.d.html?vt=4",
+      "observation": "Sina Hebei reproduces an August 2026 notice attributed to the Cangzhou Government Service Management Office and Cangzhou Real Estate Registration Center, describing city-center appointment/in-person processing."
+    },
+    {
+      "url": "https://bohaitoday.cn/h-nd-142324.html?fromColId=2",
+      "observation": "Bohai Today attributes a report to Cangzhou Daily and quotes the municipal Natural Resources and Planning Bureau and City Real Estate Registration Center on city land-registration service workflows."
+    }
+  ]
+}

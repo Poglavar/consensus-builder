@@ -1,0 +1,117 @@
+{
+  "name": "Hisar",
+  "country": "India",
+  "countryCode": "IN",
+  "rank": 1011,
+  "point": [
+    29.1407789732886,
+    75.7421162056991
+  ],
+  "freshResearch": {
+    "queries": [
+      {
+        "language": "English",
+        "query": "Hisar Haryana official land records cadastral map Bhu Naksha public parcel map",
+        "scope": "Find local registry/cadastre and safe public full-polygon route.",
+        "result": "Official Hisar district land-record page directs users to Haryana Jamabandi. Divisional Commissioner homepage includes भू नक्शा, but the exposed link is a Google iframe rather than a documented parcel-feature API. No target full parcel geometry returned; no plot, owner or address lookup made.",
+        "executionMethod": "Separate English search and first-party review."
+      },
+      {
+        "language": "Hindi",
+        "query": "हिसार भूमि रिकॉर्ड भू नक्शा जमाबंदी हरियाणा आधिकारिक",
+        "scope": "Find local-language registry/cadastre evidence and public geometry.",
+        "result": "Official Hisar district land-record page directs users to Haryana Jamabandi. Divisional Commissioner homepage includes भू नक्शा, but the exposed link is a Google iframe rather than a documented parcel-feature API. No target full parcel geometry returned; no plot, owner or address lookup made.",
+        "executionMethod": "Separate native-language search and first-party review."
+      }
+    ],
+    "portals": [
+      {
+        "name": "Hisar district land records and Haryana Jamabandi",
+        "operator": "Hisar District Administration / Haryana Revenue Department",
+        "homeUrl": "https://hisar.gov.in/service/land-records/",
+        "observation": "Official Hisar district land-record page directs users to Haryana Jamabandi. Divisional Commissioner homepage includes भू नक्शा, but the exposed link is a Google iframe rather than a documented parcel-feature API. No target full parcel geometry returned; no plot, owner or address lookup made."
+      }
+    ],
+    "requests": [
+      {
+        "observation": "Reviewed commissioner homepage: jurisdiction includes Hisar district and shows a Bhu Naksha iframe; district page links Jamabandi. No target parcel query."
+      },
+      {
+        "checkedAt": "2026-10-09T05:42:07.564322+00:00",
+        "url": "https://hisar.gov.in/service/land-records/",
+        "normalTlsVerification": true,
+        "httpStatus": 200,
+        "contentType": "text/html; charset=UTF-8",
+        "finalUrl": "https://hisar.gov.in/service/land-records/",
+        "bytesRead": 107546,
+        "boundedReadIncomplete": false,
+        "sha256": "376dbd5d3c9b299fdf7052ea970126f18d6a2132f036e5fbba7c077f64e70c14",
+        "title": "Land Records | District Hisar, Government of Haryana | India"
+      }
+    ],
+    "historicalContext": []
+  },
+  "status": "complete",
+  "verifiedParcelResponse": null,
+  "source": {
+    "sourceId": "IN-7285-LOCAL-CADASTRE-REVIEW",
+    "name": "Hisar district land records and Haryana Jamabandi",
+    "url": "https://hisar.gov.in/service/land-records/",
+    "operator": "Hisar District Administration / Haryana Revenue Department",
+    "serviceType": "Official local registry/cadastre reviewed; no safe anonymous full-polygon response verified.",
+    "layer": null,
+    "geometryType": null,
+    "outputCrs": null,
+    "nativeIdField": null,
+    "nativeIdEvidence": null
+  },
+  "coverageAssessment": {
+    "claimedScope": "Reviewed commissioner homepage: jurisdiction includes Hisar district and shows a Bhu Naksha iframe; district page links Jamabandi. No target parcel query.",
+    "verifiedOpenScope": "Official Hisar district land-record page directs users to Haryana Jamabandi. Divisional Commissioner homepage includes भू नक्शा, but the exposed link is a Google iframe rather than a documented parcel-feature API. No target full parcel geometry returned; no plot, owner or address lookup made.",
+    "countrywideVerified": false,
+    "citywideVerified": false
+  },
+  "registryFound": true,
+  "verifiedSample": false,
+  "resultCategory": "official_local_registry_geometry_unverified",
+  "technicalBlocker": "No safe anonymous full-polygon response exposed; no owner/address lookup made.",
+  "remainingUncertainty": "Parcel presence at WUP point and any public feature endpoint remain unverified.",
+  "nextStep": "If official source later exposes a documented feature service, inspect schema and make a bounded full-geometry query.",
+  "schemaVersion": "1.0",
+  "checkedAt": "2026-10-09",
+  "wupCityCode": 7285,
+  "cityId": "wup2025:7285",
+  "runtimeReadiness": "not_enabled_no_verified_public_geometry",
+  "adapterReady": false,
+  "centerLatLon": [
+    29.1407789732886,
+    75.7421162056991
+  ],
+  "population2025k": 543.775,
+  "populationUnit": "persons",
+  "queueRank": 1011,
+  "population2025": 543775,
+  "populationPlausibility2025": "High",
+  "pointBasis": "UN WUP 2025 population-weighted settlement centroid; not a municipal boundary or parcel-coverage claim.",
+  "publicParcelGeometryFound": false,
+  "sourceIds": [],
+  "registryBasis": "The official Hisar district Land Records service directs local land-record access to Haryana Jamabandi. The divisional commissioner site additionally lists Hisar jurisdiction. Its BhuNaksha-labelled Google iframe is not a verified native cadastral feature service; no WUP-point village or safe full-polygon response was established.",
+  "registryEvidenceUrls": [
+    "https://hisar.gov.in/service/land-records/",
+    "https://commhsr.haryana.gov.in/hi/",
+    "https://jamabandi.nic.in/"
+  ],
+  "runtimeAssessment": {
+    "status": "not_enabled_no_verified_public_geometry",
+    "reason": "No safe anonymous full-polygon response exposed; no owner/address lookup made."
+  },
+  "cohort": "overnight-followon-1001-1100",
+  "priorCheck": {
+    "attemptState": "pending",
+    "attemptEvidence": [],
+    "possiblePriorMatches": []
+  },
+  "rootPreviousRegistryBasis": "Reviewed commissioner homepage: jurisdiction includes Hisar district and shows a Bhu Naksha iframe; district page links Jamabandi. No target parcel query.",
+  "rootReviewedAt": "2026-10-09T05:45:07.249008+00:00",
+  "rootReviewNote": "Reviewed exact immutable WUP identity, separate multilingual discovery, cited city custody and actual source observations. The official Hisar district Land Records service directs local land-record access to Haryana Jamabandi. The divisional commissioner site additionally lists Hisar jurisdiction. Its BhuNaksha-labelled Google iframe is not a verified native cadastral feature service; no WUP-point village or safe full-polygon response was established."
+}

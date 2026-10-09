@@ -1,0 +1,71 @@
+{
+  "schemaVersion": "1.0",
+  "checkedAt": "2026-10-09",
+  "cityRecord": "city-11957-shillong.json",
+  "purpose": "Document first-party local registry/map evidence and bounded anonymous parcel geometry access review.",
+  "scopeLimits": {
+    "maxFullPolygonsRetainedInCityRecord": 0,
+    "maxFullPolygonsRetainedInReview": 0,
+    "maxFullPolygonsRetainedInRepository": 0,
+    "ownerOrAddressDataRetained": false,
+    "credentialsOrTokenValuesRetained": false,
+    "citywideCompletenessAsserted": false
+  },
+  "assessment": "Meghalaya’s Directorate of Land Records and Surveys says it surveys and maintains State/District maps. The Government of Meghalaya portal also reports that land surveys have not been conducted since the British period except in a few villages and that no Record of Rights exists in most areas. These broad statements do not identify a present parcel registry or map covering the WUP locator in Shillong. Public administrative/district maps are not parcel geometry. No safe public parcel feature endpoint or native-ID schema was found.",
+  "registryAssessment": "The official DLRS has a state mapping mandate, but current city-specific parcel registration or point coverage in Shillong was not established. Therefore registry presence for this exact settlement locator remains unresolved.",
+  "officialPrimarySources": [
+    {
+      "url": "https://www.megrevenuedm.gov.in/dlrs/dlrs_aboutus.html",
+      "observation": "Directorate describes its role in surveying and maintaining State/District maps."
+    },
+    {
+      "url": "https://www.meghalaya.gov.in/dept/39",
+      "observation": "Government page notes limited post-British land surveys and the absence of RoR in most areas; it does not establish parcel coverage at the WUP point."
+    }
+  ],
+  "searchQueries": [
+    {
+      "language": "English",
+      "query": "Shillong Meghalaya India official land records cadastral map land registry survey maps council",
+      "result": "Meghalaya’s Directorate of Land Records and Surveys says it surveys and maintains State/District maps. The Government of Meghalaya portal also reports that land surveys have not been conducted since the British period except in a few villages and that no Record of Rights exists in most areas. These broad statements do not identify a present parcel registry or map covering the WUP locator in Shillong. Public administrative/district maps are not parcel geometry. No safe public parcel feature endpoint or native-ID schema was found.",
+      "method": "Separate English-language web search followed by official-source review.",
+      "scope": "Identify first-party local land-registry/cadastral sources and safe anonymous parcel geometry.",
+      "actualResultUrls": [
+        "https://www.megrevenuedm.gov.in/dlrs/dlrs_aboutus.html",
+        "https://www.meghalaya.gov.in/dept/39"
+      ]
+    },
+    {
+      "language": "Khasi/English",
+      "query": "Shillong Meghalaya jylla shillong cadastral land records official khasi map plot",
+      "result": "Meghalaya’s Directorate of Land Records and Surveys says it surveys and maintains State/District maps. The Government of Meghalaya portal also reports that land surveys have not been conducted since the British period except in a few villages and that no Record of Rights exists in most areas. These broad statements do not identify a present parcel registry or map covering the WUP locator in Shillong. Public administrative/district maps are not parcel geometry. No safe public parcel feature endpoint or native-ID schema was found.",
+      "method": "Separate local-language web search followed by official-source review.",
+      "scope": "Find first-party local-language registry/cadastral sources and any public parcel-map/geometry route.",
+      "actualResultUrls": [
+        "https://www.megrevenuedm.gov.in/dlrs/dlrs_aboutus.html",
+        "https://www.meghalaya.gov.in/dept/39"
+      ]
+    }
+  ],
+  "geometryDecision": "No full polygon retained; no anonymous safe-ID geometry response was verified.",
+  "coverageAssessment": {
+    "claimedScope": "The official DLRS has a state mapping mandate, but current city-specific parcel registration or point coverage in Shillong was not established. Therefore registry presence for this exact settlement locator remains unresolved.",
+    "verifiedOpenScope": "Meghalaya’s Directorate of Land Records and Surveys says it surveys and maintains State/District maps. The Government of Meghalaya portal also reports that land surveys have not been conducted since the British period except in a few villages and that no Record of Rights exists in most areas. These broad statements do not identify a present parcel registry or map covering the WUP locator in Shillong. Public administrative/district maps are not parcel geometry. No safe public parcel feature endpoint or native-ID schema was found.",
+    "citywideVerified": false,
+    "countrywideVerified": false,
+    "geometryVerified": false
+  },
+  "attempts": [
+    {
+      "url": "https://www.megrevenuedm.gov.in/dlrs/dlrs_aboutus.html",
+      "result": "Official survey-and-map mandate reviewed; page does not expose an anonymous parcel feature service."
+    },
+    {
+      "url": "https://www.meghalaya.gov.in/dept/39",
+      "result": "State land-survey status reviewed; no point-specific geometry or parcel query performed."
+    }
+  ],
+  "remainingUncertainty": "Whether any Shillong locality at the WUP point has surveyed cadastral coverage or an active RoR is unresolved.",
+  "geometryEvidence": null,
+  "runtimeAssessment": "not enabled; root may run full adapter qualification."
+}

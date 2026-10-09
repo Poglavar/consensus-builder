@@ -1,0 +1,134 @@
+{
+  "name": "Oaxaca de Juárez",
+  "country": "Mexico",
+  "countryCode": "MX",
+  "rank": 1101,
+  "point": [
+    17.0651706559646,
+    -96.7296334686787
+  ],
+  "freshResearch": {
+    "queries": [
+      {
+        "language": "English",
+        "query": "Oaxaca de Juárez official cadastral map parcels catastro Oaxaca gobierno del estado",
+        "scope": "Identify first-party local registry and public parcel geometry; preserve the unchanged WUP settlement locator and avoid owner or address attributes.",
+        "result": "Search surfaced the Oaxaca State Cadastral Institute as the official local custodian, with a stated cadastral registry and territorial information system. The public state georeference portal is a programme search, not parcel geometry.",
+        "executionMethod": "Separate English-language web search followed by first-party source review.",
+        "actualResultUrls": [
+          "https://www.oaxaca.gob.mx/detalle-portal/iceo/?id=56&page_servicios=1&page_tramites=1",
+          "https://sgps.oaxaca.gob.mx/geoReference/georeference"
+        ]
+      },
+      {
+        "language": "Spanish",
+        "query": "Oaxaca de Juárez catastro municipal predial plano catastral sitio oficial",
+        "scope": "Find first-party local-language registry/cadastral routes and any anonymous safe parcel geometry service near the unchanged WUP point.",
+        "result": "The Spanish search confirmed the ICEO office in Oaxaca de Juárez and listed cadastral registry tasks; it did not identify an anonymous parcel geometry service.",
+        "executionMethod": "Separate Spanish-language web search followed by first-party source review.",
+        "actualResultUrls": [
+          "https://www.oaxaca.gob.mx/detalle-portal/iceo/?id=56&page_servicios=1&page_tramites=1",
+          "https://sgps.oaxaca.gob.mx/geoReference/georeference"
+        ]
+      }
+    ],
+    "portals": [
+      {
+        "name": "https://www.oaxaca.gob.mx/detalle-portal/iceo/?id=56&page_servicios=1&page_tramites=1",
+        "operator": "Mexico",
+        "homeUrl": "https://www.oaxaca.gob.mx/detalle-portal/iceo/?id=56&page_servicios=1&page_tramites=1",
+        "observation": "Oaxaca State Cadastral Institute (ICEO) identifies its role maintaining the cadastral register and territorial information system; lists cadastral data correction, parcel split/merge, registry intake and copy/print services. The official directory places the institute in Oaxaca de Juárez. No anonymous parcel geometry API or response was documented."
+      },
+      {
+        "name": "https://sgps.oaxaca.gob.mx/geoReference/georeference",
+        "operator": "Mexico",
+        "homeUrl": "https://sgps.oaxaca.gob.mx/geoReference/georeference",
+        "observation": "Official Oaxaca georeference portal supports searching state-funded programmes by dependency, region, district or municipality; it is not a cadastral parcel feature service."
+      }
+    ],
+    "requests": [],
+    "historicalContext": []
+  },
+  "status": "complete",
+  "verifiedParcelResponse": null,
+  "source": {
+    "sourceId": null,
+    "name": "https://www.oaxaca.gob.mx/detalle-portal/iceo/?id=56&page_servicios=1&page_tramites=1",
+    "url": "https://www.oaxaca.gob.mx/detalle-portal/iceo/?id=56&page_servicios=1&page_tramites=1",
+    "operator": null,
+    "serviceType": "Official registry/cadastral route reviewed; no anonymous safe full-parcel geometry response verified.",
+    "layer": null,
+    "geometryType": null,
+    "outputCrs": null,
+    "nativeIdField": null,
+    "nativeIdEvidence": null,
+    "attributesRequested": [],
+    "sampleCount": 0,
+    "sampleFile": null,
+    "directGeometryQueryVerified": false,
+    "directMetadataSchemaVerified": false,
+    "geometryStatus": "not_verified",
+    "operatorNote": "See first-party evidence and access limits in registryBasis and linked sources."
+  },
+  "coverageAssessment": {
+    "claimedScope": "The state Cadastral Institute is a local first-party cadastre custodian with an office in Oaxaca de Juárez. The official public pages describe registry and cadastral services but do not document a safe anonymous parcel-vector route. The separate georeference portal concerns programme records, not cadastral lots.",
+    "verifiedOpenScope": "No anonymous full parcel geometry response was verified in this investigation.",
+    "countrywideVerified": false,
+    "citywideVerified": false
+  },
+  "registryFound": true,
+  "verifiedSample": false,
+  "resultCategory": "official_local_registry_geometry_unverified",
+  "technicalBlocker": "No anonymous safe-ID full-geometry endpoint and schema was verified; where an official map or registry portal exists, its service behavior or public feature response was not established.",
+  "remainingUncertainty": "No anonymous geometry-only parcel endpoint, safe output schema, or feature at the unchanged WUP settlement point was verified.",
+  "nextStep": "Revisit only if an official public geometry endpoint and safe minimal-field response are documented; then test the unchanged WUP point with safe identifiers and geometry only.",
+  "schemaVersion": "1.0",
+  "checkedAt": "2026-10-09",
+  "wupCityCode": 6272,
+  "cityId": "wup2025:6272",
+  "runtimeReadiness": "not_enabled_no_verified_public_geometry",
+  "adapterReady": false,
+  "centerLatLon": [
+    17.0651706559646,
+    -96.7296334686787
+  ],
+  "population2025k": 502.534,
+  "populationUnit": "persons",
+  "queueRank": 1101,
+  "population2025": 502534,
+  "populationPlausibility2025": "Moderate",
+  "pointBasis": "UN WUP 2025 population-weighted settlement point (latitude, longitude); not a municipal boundary or a parcel-coverage claim.",
+  "publicParcelGeometryFound": false,
+  "sourceIds": [],
+  "registryBasis": "The state Cadastral Institute is a local first-party cadastre custodian with an office in Oaxaca de Juárez. The official public pages describe registry and cadastral services but do not document a safe anonymous parcel-vector route. The separate georeference portal concerns programme records, not cadastral lots.",
+  "registryEvidenceUrls": [
+    "https://www.oaxaca.gob.mx/detalle-portal/iceo/?id=56&page_servicios=1&page_tramites=1",
+    "https://sgps.oaxaca.gob.mx/geoReference/georeference"
+  ],
+  "runtimeAssessment": {
+    "status": "not_enabled_no_verified_public_geometry",
+    "reason": "No anonymous safe-ID full-geometry endpoint and schema was verified; where an official map or registry portal exists, its service behavior or public feature response was not established."
+  },
+  "cohort": "overnight-next-1101-1200",
+  "cohortState": "root_reviewed_integrated_locally",
+  "integrationState": "integrated_locally",
+  "rootReviewedAt": "2026-10-09T07:13:02.981057+00:00",
+  "rootPrimaryChecks": [
+    {
+      "wupCityCode": 6272,
+      "url": "https://www.oaxaca.gob.mx/detalle-portal/iceo/?id=56&page_servicios=1&page_tramites=1",
+      "checkedAt": "2026-10-09T07:10:43.345518+00:00",
+      "method": "Anonymous read-only GET, standard TLS where advertised; no credentials or property values",
+      "httpStatus": null,
+      "transportOutcome": "<urlopen error [Errno 8] nodename nor servname provided, or not known>"
+    }
+  ],
+  "rootReview": {
+    "checkedAt": "2026-10-09T07:13:02.981057+00:00",
+    "decision": "Reviewed city identity, canonical population/point, separate searches and saved source/request evidence. No full public parcel geometry verified in this pass.",
+    "custodyScope": "The state Cadastral Institute is a local first-party cadastre custodian with an office in Oaxaca de Juárez. The official public pages describe registry and cadastral services but do not document a safe anonymous parcel-vector route. The separate georeference portal concerns programme records, not cadastral lots.",
+    "transportFailuresDoNotProveAbsence": true,
+    "geometryClaimScope": "Investigation outcome only; no worldwide or citywide absence asserted."
+  },
+  "integratedAt": "2026-10-09T07:14:03.673112+00:00"
+}

@@ -1,0 +1,106 @@
+{
+  "name": "Salem",
+  "country": "India",
+  "countryCode": "IN",
+  "rank": 380,
+  "point": [
+    11.6608143362765,
+    78.1424629181232
+  ],
+  "population2025": 1337000,
+  "schemaVersion": 1,
+  "kind": "city_parcel_source_research",
+  "checkedAt": "2026-10-09",
+  "populationUnit": "persons",
+  "status": "complete",
+  "verifiedSample": false,
+  "publicParcelGeometryFound": false,
+  "runtimeReadiness": "not_enabled_no_verified_public_geometry",
+  "priorEvidenceFiles": [],
+  "scopeLimits": "The ranked WUP point is a population-weighted Salem locator, not a parcel identity. Salem’s official Survey and Land Records department confirms computerized urban TSLR for Salem Corporation and online TSLR-copy services. Public correlation statements map old to current survey identifiers, but the reviewed material exposes no full polygon service. No parcel-number/owner lookup was submitted and no geometry was retained.",
+  "pointBasis": "UN WUP 2025 population-weighted settlement centroid; this is not a municipal boundary or a parcel-coverage claim.",
+  "registryFound": true,
+  "registryBasis": "Salem District Administration confirms computerized Town Survey Land Records for Salem Corporation and provides official online TSLR extracts and current/old survey-identifier correlation records. This is local urban land-record evidence, not proof of ownership or an open polygon API.",
+  "resultCategory": "official_local_registry_confirmed_geometry_unverified",
+  "technicalBlocker": "The official e-services workflow is record-oriented (Patta/FMB/Chitta/TSLR extracts) and no public vector geometry API or map-service schema was discovered. Avoid submitting a property/survey lookup because returned records may include private landholding details.",
+  "remainingUncertainty": "Whether the online TSLR service offers anonymous full geometry for a specific town survey block; coverage at the WUP point and citywide vector coverage are unverified.",
+  "nextStep": "Locate an officially documented anonymous TSLR polygon service before attempting bounded geometry retrieval.",
+  "freshResearch": {
+    "executedQueries": [
+      {
+        "language": "English",
+        "query": "Salem Tamil Nadu official cadastral parcel map land survey records GIS municipal property parcels official",
+        "result": "Found Salem District Survey and Land Records information: Salem Corporation has computerized urban TSLR records and official online TSLR extracts, but no public vector parcel endpoint.",
+        "method": "Separate language-specific web search followed by review of first-party city/agency pages; no identity, ownership, or property-specific lookup submitted."
+      },
+      {
+        "language": "Tamil",
+        "query": "சேலம் அதிகாரப்பூர்வ நில வரைபடம் பட்டா FMB நகர நில அளவை வரைபடம் நில பதிவுகள்",
+        "result": "Tamil-language search led to Salem District official land e-services for Patta/FMB/TSLR and the Survey and Land Records office; no public polygon API was identified.",
+        "method": "Separate language-specific web search followed by review of first-party city/agency pages; no identity, ownership, or property-specific lookup submitted."
+      }
+    ],
+    "officialSources": [
+      {
+        "url": "https://salem.nic.in/departments/survey-and-land-records/",
+        "observation": "Salem District Administration states computerized TSLR records and online TSLR extracts for Salem Corporation; urban Patta transfers and survey records are handled by the district Survey and Land Records office."
+      },
+      {
+        "url": "https://salem.nic.in/service/e-services-anytime-anywhere-land/",
+        "observation": "Official Salem e-services page links Patta/FMB, Chitta, TSLR and A-Register queries; property-record lookup was not submitted."
+      },
+      {
+        "url": "https://salem.nic.in/survey-correlation-statement-of-urban-land-records/",
+        "observation": "Official public correlation statements relate old and current survey identifiers for Salem Main/West/South taluk and Salem Town; these are tabular reference records, not polygon geometry."
+      },
+      {
+        "url": "https://eservices.tn.gov.in/eservicesnew/",
+        "observation": "Tamil Nadu official land-record e-services portal referenced by Salem District; not queried with any property/survey identifier."
+      }
+    ],
+    "viewerAndServiceTrace": {
+      "attempted": true,
+      "summary": "The official e-services workflow is record-oriented (Patta/FMB/Chitta/TSLR extracts) and no public vector geometry API or map-service schema was discovered. Avoid submitting a property/survey lookup because returned records may include private landholding details.",
+      "fullPolygonLimit": 3,
+      "fullPolygonsRetained": 0,
+      "ownerOrAddressDataRequested": false,
+      "credentialsOrTokenValuesRetained": false
+    },
+    "attemptedGeometry": {
+      "attempted": false,
+      "status": "no anonymous geometry-only response verified",
+      "retainedFeatures": 0,
+      "fieldsRequested": [],
+      "geometryRetained": false,
+      "geojsonFile": null
+    }
+  },
+  "registryEvidenceUrls": [
+    "https://salem.nic.in/departments/survey-and-land-records/",
+    "https://salem.nic.in/service/e-services-anytime-anywhere-land/",
+    "https://salem.nic.in/survey-correlation-statement-of-urban-land-records/",
+    "https://eservices.tn.gov.in/eservicesnew/"
+  ],
+  "sourceIds": [],
+  "coverageAssessment": {
+    "claimedScope": "Salem District Administration confirms computerized Town Survey Land Records for Salem Corporation and provides official online TSLR extracts and current/old survey-identifier correlation records. This is local urban land-record evidence, not proof of ownership or an open polygon API.",
+    "verifiedOpenScope": "The official e-services workflow is record-oriented (Patta/FMB/Chitta/TSLR extracts) and no public vector geometry API or map-service schema was discovered. Avoid submitting a property/survey lookup because returned records may include private landholding details.",
+    "citywideVerified": false,
+    "countrywideVerified": false
+  },
+  "source": {
+    "name": "Salem official cadastral / parcel evidence",
+    "operator": "Salem District Administration confirms computerized Town Survey Land Records for Salem Corporation and provides official online TSLR extracts and current/old survey-identifier correlation records. This is local urban land-record evidence, not proof of ownership or an open polygon API.",
+    "url": "https://salem.nic.in/departments/survey-and-land-records/",
+    "scope": "The ranked WUP point is a population-weighted Salem locator, not a parcel identity. Salem’s official Survey and Land Records department confirms computerized urban TSLR for Salem Corporation and online TSLR-copy services. Public correlation statements map old to current survey identifiers, but the reviewed material exposes no full polygon service. No parcel-number/owner lookup was submitted and no geometry was retained."
+  },
+  "wupCityCode": 10215,
+  "cityId": "wup2025:10215",
+  "queueRank": 380,
+  "populationPlausibility2025": "High",
+  "centerLatLon": [
+    11.6608143362765,
+    78.1424629181232
+  ],
+  "rootReviewedAt": "2026-10-08T23:20:33.128981+00:00"
+}

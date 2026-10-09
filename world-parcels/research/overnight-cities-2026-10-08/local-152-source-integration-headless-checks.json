@@ -1,0 +1,22 @@
+{
+  "numTotalTests": 20,
+  "numPassedTests": 20,
+  "numFailedTests": 0,
+  "success": true,
+  "files": [
+    {
+      "name": "parcel-catalog-startup.test.js",
+      "status": "passed"
+    },
+    {
+      "name": "parcel-source-city-metric.test.js",
+      "status": "passed"
+    },
+    {
+      "name": "world-coverage-build.test.js",
+      "status": "passed"
+    }
+  ],
+  "previousCatalogNameCheckFailed": true,
+  "correction": "Changed Tuen Mun descriptor adapter name to the existing registered arcgis factory; runtime protocol unchanged."
+}

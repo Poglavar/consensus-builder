@@ -1,0 +1,108 @@
+{
+  "name": "Đà Nẵng",
+  "country": "Vietnam",
+  "countryCode": "VN",
+  "rank": 454,
+  "point": [
+    16.044364367918,
+    108.205216460945
+  ],
+  "freshResearch": {
+    "queries": [
+      {
+        "language": "Vietnamese",
+        "query": "cổng thông tin đất đai Đà Nẵng dữ liệu địa chính 560.400 thửa tạm bảo trì",
+        "scope": "Verify the municipal land-information portal status and parcel database.",
+        "result": "City agency response dated 2025 says the city portal is under maintenance while upgrading the database for administrative reorganization, and directs official requests to the city land-registration office. A municipal investment portal reports the older public portal mapped 560,400 parcels.",
+        "urls": [
+          "https://gopy.danang.gov.vn/cgyfiles/2025/9/26/3176%20TTQLDL_1758876983228.pdf",
+          "https://www.investdanang.gov.vn/vi/web/guest/chi-tiet-tin-tuc?dinhdanh=1407846",
+          "https://danang.gov.vn/thong-tin-dat-dai"
+        ]
+      },
+      {
+        "language": "English",
+        "query": "Da Nang official land information portal cadastral parcel database city land registration office",
+        "scope": "Cross-check municipal source and current public portal availability.",
+        "result": "English-indexed city services point to the city land information directory; no current anonymous full-vector parcel endpoint was verified. City-maintained portal update and office workflow are confirmed by first-party Vietnamese sources.",
+        "urls": [
+          "https://danang.gov.vn/thong-tin-dat-dai",
+          "https://www.investdanang.gov.vn/vi/web/guest/chi-tiet-tin-tuc?dinhdanh=1407846"
+        ]
+      }
+    ],
+    "portals": [
+      {
+        "name": "Đà Nẵng Land Information Portal",
+        "operator": "Đà Nẵng Department of Natural Resources and Environment / city land registration office",
+        "homeUrl": "https://ttdd.tnmt.danang.gov.vn/",
+        "observation": "Historical city portal provided parcel-click map information. Official 2025 response reports maintenance and database transition; callers are directed to the city land registration office for official data."
+      },
+      {
+        "name": "City land information index",
+        "operator": "Đà Nẵng City",
+        "homeUrl": "https://danang.gov.vn/thong-tin-dat-dai",
+        "observation": "Current city land-information service directory."
+      }
+    ],
+    "requests": [
+      {
+        "url": "https://gopy.danang.gov.vn/cgyfiles/2025/9/26/3176%20TTQLDL_1758876983228.pdf",
+        "method": "GET",
+        "httpStatus": 200,
+        "contentType": "application/pdf",
+        "observation": "Official city response states former portal is under maintenance during database modernization after administrative reorganization; official parcel information available through city land-registration office."
+      },
+      {
+        "url": "https://www.investdanang.gov.vn/vi/web/guest/chi-tiet-tin-tuc?dinhdanh=1407846",
+        "method": "GET",
+        "observation": "City investment-promotion portal describes historical public land portal and 560,400 spatial parcels; historical capability only, not current service availability."
+      }
+    ]
+  },
+  "status": "complete",
+  "source": {
+    "sourceId": "VN-DN-DANANG-CITY-LAND-PORTAL",
+    "name": "Đà Nẵng city land information portal and land registration office",
+    "url": "https://ttdd.tnmt.danang.gov.vn/",
+    "operator": "Đà Nẵng City Department of Agriculture and Environment / Land Registration Office",
+    "serviceType": "Former public municipal land-information map; currently reported under maintenance; official requests routed to city registration office.",
+    "geometryType": "Unknown for current endpoint; historical portal had spatial parcel map.",
+    "nativeIdField": "Not inspected while the public portal is under maintenance.",
+    "nativeIdEvidence": "Historical city description says parcel click supplied map-sheet and parcel number but no current safe anonymous API schema verified."
+  },
+  "coverageAssessment": {
+    "claimedScope": "City-owned sources document a historical urban land portal with 560,400 mapped parcels and a 2025 municipal response that the database is being upgraded for the administrative transition. Current city-specific registry activity is supported; current public geometry is not.",
+    "verifiedOpenScope": "City-owned sources document a historical urban land portal with 560,400 mapped parcels and a 2025 municipal response that the database is being upgraded for the administrative transition. Current city-specific registry activity is supported; current public geometry is not.",
+    "countrywideVerified": false
+  },
+  "registryFound": true,
+  "verifiedSample": false,
+  "resultCategory": "city_registry_no_anonymous_geometry",
+  "technicalBlocker": "Official municipal response says the city land-information portal is under maintenance during database modernization and directs official records requests to the Land Registration Office. No current public full geometry was available to verify.",
+  "remainingUncertainty": "Whether the updated successor portal now exposes parcel vectors publicly; historic portal coverage applies to the former city boundary and may not cover current administrative area.",
+  "nextStep": "Recheck the city portal after the official maintenance/update phase; seek public full-geometry access only, without account or property-specific workflows.",
+  "schemaVersion": 1,
+  "checkedAt": "2026-10-09",
+  "wupCityCode": 5489,
+  "cityId": "wup2025:5489",
+  "runtimeReadiness": "not_enabled_no_verified_public_geometry",
+  "adapterReady": false,
+  "centerLatLon": [
+    16.044364367918,
+    108.205216460945
+  ],
+  "queueRank": 454,
+  "population2025": 1142621,
+  "populationPlausibility2025": "Moderate",
+  "populationUnit": "persons",
+  "pointBasis": "UN WUP 2025 population-weighted settlement centroid; this is not a municipal boundary or a parcel-coverage claim.",
+  "publicParcelGeometryFound": false,
+  "rootReviewedAt": "2026-10-09T00:13:07.775882+00:00",
+  "sourceIds": [],
+  "registryBasis": "The city-owned land portal historically mapped 560,400 parcels, and the city agency reported maintenance and database updates in 2025.",
+  "registryEvidenceUrls": [
+    "https://ttdd.tnmt.danang.gov.vn/",
+    "https://danang.gov.vn/thong-tin-dat-dai"
+  ]
+}

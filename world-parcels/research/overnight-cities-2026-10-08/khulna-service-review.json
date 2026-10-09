@@ -1,0 +1,53 @@
+{
+  "schemaVersion": "1.0",
+  "checkedAt": "2026-10-09",
+  "cityRecord": "city-6006-khulna.json",
+  "purpose": "Document first-party local registry/map evidence and bounded anonymous geometry access review.",
+  "scopeLimits": {
+    "maxFullPolygonsRetainedInCityRecord": 0,
+    "maxFullPolygonsRetainedInReview": 0,
+    "maxFullPolygonsRetainedInRepository": 0,
+    "ownerOrAddressDataRetained": false,
+    "credentialsOrTokenValuesRetained": false,
+    "citywideCompletenessAsserted": false
+  },
+  "assessment": "KCC publishes a general city-map page; KDA advertises a mouza/dag-based Detailed Area Plan, which is planning evidence rather than a verified land-title register. Direct HTML retrieval for the .gov.bd map sites failed normal TLS certificate validation; no certificate bypass was used. The national DLRS portal was not tied to a particular map sheet covering the exact ranked point. Registry source status therefore remains undetermined, and no parcel geometry/schema was verified.",
+  "registryAssessment": "KCC publishes a general city-map page; KDA advertises a mouza/dag-based Detailed Area Plan, which is planning evidence rather than a verified land-title register. Direct HTML retrieval for the .gov.bd map sites failed normal TLS certificate validation; no certificate bypass was used. The national DLRS portal was not tied to a particular map sheet covering the exact ranked point. Registry source status therefore remains undetermined, and no parcel geometry/schema was verified.",
+  "officialPrimarySources": [
+    {
+      "url": "https://khulnacity.gov.bd/",
+      "observation": "Official Khulna City Corporation site lists a city map page; indexed content alone does not establish cadastral content."
+    },
+    {
+      "url": "https://khulnacity.portal.gov.bd/site/page/fd8b3a16-8c66-4981-b28b-8fa2bcb5a18c/",
+      "observation": "Official KCC portal page is titled “Khulna city map” and presents a map image, not a documented parcel vector service."
+    },
+    {
+      "url": "https://kda.gov.bd/",
+      "observation": "Khulna Development Authority site advertises the Detailed Area Plan map based on mouza and dag numbers, alongside planning/land-use services. This is planning material and was not verified as a cadastral register or anonymous parcel vector service."
+    },
+    {
+      "url": "https://settlement.gov.bd/home/",
+      "observation": "DLRS national portal describes survey map and record services, but this review did not verify a city-point linked map sheet or city-scoped parcel geometry."
+    }
+  ],
+  "searchQueries": [
+    {
+      "language": "English",
+      "query": "Khulna City Corporation official cadastral map parcel land records GIS",
+      "result": "KCC publishes a general city-map page; KDA advertises a mouza/dag-based Detailed Area Plan, which is planning evidence rather than a verified land-title register. Direct HTML retrieval for the .gov.bd map sites failed normal TLS certificate validation; no certificate bypass was used. The national DLRS portal was not tied to a particular map sheet covering the exact ranked point. Registry source status therefore remains undetermined, and no parcel geometry/schema was verified.",
+      "method": "Separate local-language and English web searches followed by official page review; no personal or property records searched."
+    },
+    {
+      "language": "Bengali",
+      "query": "খুলনা সিটি কর্পোরেশন শহরের মানচিত্র মৌজা দাগ ভিত্তিক ম্যাপ জমির রেকর্ড",
+      "result": "KCC publishes a general city-map page; KDA advertises a mouza/dag-based Detailed Area Plan, which is planning evidence rather than a verified land-title register. Direct HTML retrieval for the .gov.bd map sites failed normal TLS certificate validation; no certificate bypass was used. The national DLRS portal was not tied to a particular map sheet covering the exact ranked point. Registry source status therefore remains undetermined, and no parcel geometry/schema was verified.",
+      "method": "Separate local-language and English web searches followed by official page review; no personal or property records searched."
+    }
+  ],
+  "serviceChecks": [],
+  "geometryEvidence": null,
+  "temporaryEvidence": [
+    "/tmp/overnight-cities-2026-10-08/city-6006-route-inspection.json"
+  ]
+}

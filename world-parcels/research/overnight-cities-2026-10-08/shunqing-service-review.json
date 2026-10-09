@@ -1,0 +1,36 @@
+{
+  "schemaVersion": "1.0",
+  "checkedAt": "2026-10-09",
+  "cityRecord": "city-8226-shunqing.json",
+  "purpose": "Document city-local land/property registry or map evidence and bounded anonymous parcel-geometry access review.",
+  "scopeLimits": {
+    "maxFullPolygonsRetainedInCityRecord": 0,
+    "maxFullPolygonsRetainedInReview": 0,
+    "maxFullPolygonsRetainedInRepository": 0,
+    "ownerOrAddressDataRetained": false,
+    "credentialsOrTokenValuesRetained": false,
+    "citywideCompletenessAsserted": false
+  },
+  "assessment": "Searches located an official Sichuan Agricultural University hiring notice describing the Nanchong Real Estate Registration Center in Shunqing and its city-wide registry mandate, but no first-party Nanchong/ Shunqing portal record or public cadastral viewer was verified. The cited notice is not itself the registry operator. The city natural-resources site could not be read through the public search/open path, and no public parcel viewer or geometry service was identified. No authenticated registry workflow was entered.",
+  "officialPrimarySources": [
+    {
+      "url": "https://job.sicau.edu.cn/job/upload/file/20240522/1716366525271037197.pdf",
+      "observation": "Sichuan Agricultural University-hosted 2024 recruitment notice identifies Nanchong Real Estate Registration Center, gives an address in Shunqing, and describes registration and database responsibilities for Nanchong city. Indirect, not a first-party registry publication."
+    },
+    {
+      "url": "https://www.nanchong.gov.cn/zrzyghj/",
+      "observation": "Search result names this as the unit website; direct web open returned an internal error, so no service behavior is asserted."
+    }
+  ],
+  "queries": [
+    {
+      "language": "English",
+      "query": "Shunqing Nanchong official property registration cadastral parcel map GIS"
+    },
+    {
+      "language": "Chinese",
+      "query": "南充市顺庆区 不动产登记 地籍图 地图 查询 官方"
+    }
+  ],
+  "attempts": []
+}

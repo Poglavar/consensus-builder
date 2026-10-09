@@ -1,0 +1,127 @@
+{
+  "name": "Al-Fashir",
+  "country": "Sudan",
+  "countryCode": "SD",
+  "rank": 855,
+  "point": [
+    13.6272778170846,
+    25.3537847898895
+  ],
+  "population2025": 633077,
+  "population2025k": 633.077,
+  "populationPlausibility2025": "High",
+  "schemaVersion": 1,
+  "kind": "city_parcel_source_research",
+  "checkedAt": "2026-10-09",
+  "populationUnit": "persons",
+  "status": "complete",
+  "priorEvidenceFiles": [],
+  "priorCheck": {
+    "attemptState": "pending",
+    "attemptEvidence": [],
+    "possiblePriorMatches": []
+  },
+  "pointBasis": "UN WUP 2025 population-weighted settlement centroid; this is not a municipal boundary or a parcel-coverage claim.",
+  "registryFound": null,
+  "registryBasis": "Sudan’s official Judiciary describes its land-registration directorate and states it operates branch offices across Sudan; it separately identifies El Fasher as the seat of the North Darfur judicial apparatus. The reviewed official sources do not explicitly locate a land-registration branch in El Fasher, so city-local registry confirmation remains unresolved.",
+  "registryEvidenceUrls": [
+    "https://sj.gov.sd/ar/content/page/%D8%A5%D8%AF%D8%A7%D8%B1%D8%A9-%D8%AA%D8%B3%D8%AC%D9%8A%D9%84%D8%A7%D8%AA-%D8%A7%D9%84%D8%A7%D8%B1%D8%A7%D8%B6%D9%8A",
+    "https://sj.gov.sd/ar/content/page/%D8%A7%D9%84%D8%A3%D8%AC%D9%87%D8%B2%D8%A7%D8%A1-%D8%A7%D9%84%D9%82%D8%B6%D8%A7%D8%A6%D9%8A%D8%A9",
+    "https://aqari.nctr.sd/ar"
+  ],
+  "verifiedSample": false,
+  "publicParcelGeometryFound": false,
+  "publicParcelGeometryCandidateFound": false,
+  "runtimeReadiness": "not_enabled_no_verified_public_geometry",
+  "wupCityCode": 2826,
+  "cityId": "wup2025:2826",
+  "centerLatLon": [
+    13.6272778170846,
+    25.3537847898895
+  ],
+  "queueRank": 855,
+  "scopeLimits": "Bounded official-source and public-service review. No citywide completeness is claimed. No owner, address, account, tax, personal-property or credential fields are retained.",
+  "resultCategory": "local_registry_unconfirmed_no_public_geometry",
+  "technicalBlocker": "No city-specific land-registration branch or public parcel geometry endpoint was confirmed in the official sources reviewed; no parcel lookup was attempted.",
+  "remainingUncertainty": "Whether an active land-registration office serves El Fasher and whether land records are accessible there remain unverified.",
+  "nextStep": "Parent review may decide whether additional viewer/source investigation is useful; no geometry/runtime claim is made.",
+  "freshResearch": {
+    "queries": [
+      {
+        "language": "Arabic",
+        "query": "الفاشر شمال دارفور تسجيلات الأراضي خريطة كادستر مسح عقاري رسمي",
+        "scope": "Verify official local registry evidence and whether an anonymous public full parcel polygon service is exposed.",
+        "result": "Official sources describe Sudan’s land-registration directorate and the North Darfur Judiciary headquartered in El Fasher, but do not explicitly identify a local land-registry branch or public parcel map.",
+        "actualResultUrls": [
+          "https://sj.gov.sd/ar/content/page/%D8%A5%D8%AF%D8%A7%D8%B1%D8%A9-%D8%AA%D8%B3%D8%AC%D9%8A%D9%84%D8%A7%D8%AA-%D8%A7%D9%84%D8%A7%D8%B1%D8%A7%D8%B6%D9%8A",
+          "https://sj.gov.sd/ar/content/page/%D8%A7%D9%84%D8%A3%D8%AC%D9%87%D8%B2%D8%A7%D8%A1-%D8%A7%D9%84%D9%82%D8%B6%D8%A7%D8%A6%D9%8A%D8%A9",
+          "https://aqari.nctr.sd/ar"
+        ],
+        "executionMethod": "Separate English and local-language first-party source discovery, followed by read-only service documentation/route inspection where accessible; no owner, address, account, tax, personal-property or credential queries."
+      },
+      {
+        "language": "English",
+        "query": "El Fasher North Darfur official land registry cadastre map survey",
+        "scope": "Verify official local registry evidence and whether an anonymous public full parcel polygon service is exposed.",
+        "result": "Official judiciary pages identify an El Fasher-based North Darfur judicial administration and nationwide land-registration branches; no city-specific office or anonymous map/geometry endpoint was verified.",
+        "actualResultUrls": [
+          "https://sj.gov.sd/ar/content/page/%D8%A5%D8%AF%D8%A7%D8%B1%D8%A9-%D8%AA%D8%B3%D8%AC%D9%8A%D9%84%D8%A7%D8%AA-%D8%A7%D9%84%D8%A7%D8%B1%D8%A7%D8%B6%D9%8A",
+          "https://sj.gov.sd/ar/content/page/%D8%A7%D9%84%D8%A3%D8%AC%D9%87%D8%B2%D8%A7%D8%A1-%D8%A7%D9%84%D9%82%D8%B6%D8%A7%D8%A6%D9%8A%D8%A9",
+          "https://aqari.nctr.sd/ar"
+        ],
+        "executionMethod": "Separate English and local-language first-party source discovery, followed by read-only service documentation/route inspection where accessible; no owner, address, account, tax, personal-property or credential queries."
+      }
+    ],
+    "portals": [
+      {
+        "name": "Al-Fashir official registry/cadastral review",
+        "operator": "Sudan",
+        "homeUrl": "https://sj.gov.sd/ar/content/page/%D8%A5%D8%AF%D8%A7%D8%B1%D8%A9-%D8%AA%D8%B3%D8%AC%D9%8A%D9%84%D8%A7%D8%AA-%D8%A7%D9%84%D8%A7%D8%B1%D8%A7%D8%B6%D9%8A",
+        "observation": "Sudan’s official Judiciary describes its land-registration directorate and states it operates branch offices across Sudan; it separately identifies El Fasher as the seat of the North Darfur judicial apparatus. The reviewed official sources do not explicitly locate a land-registration branch in El Fasher, so city-local registry confirmation remains unresolved."
+      }
+    ],
+    "requests": [
+      {
+        "url": "https://sj.gov.sd/ar/content/page/%D8%A5%D8%AF%D8%A7%D8%B1%D8%A9-%D8%AA%D8%B3%D8%AC%D9%8A%D9%84%D8%A7%D8%AA-%D8%A7%D9%84%D8%A7%D8%B1%D8%A7%D8%B6%D9%8A",
+        "method": "GET official Judiciary land-registration directorate page",
+        "observation": "Says the directorate operates branch offices throughout Sudan and outlines land-registration services. No branch-level map or anonymous geometry API is described."
+      },
+      {
+        "url": "https://sj.gov.sd/ar/content/page/%D8%A7%D9%84%D8%A3%D8%AC%D9%87%D8%B2%D8%A7%D8%A6%D8%B2%D9%8A%D8%A9",
+        "method": "GET official Judiciary state apparatus directory",
+        "observation": "Identifies North Darfur judicial apparatus as headquartered in El Fasher and lists its courts; does not explicitly list a land-registration office there."
+      }
+    ]
+  },
+  "verifiedParcelResponse": null,
+  "source": {
+    "sourceId": "SD-2826-al-fashir-cadastre-review",
+    "name": "Al-Fashir official cadastral/registry source review",
+    "url": "https://sj.gov.sd/ar/content/page/%D8%A5%D8%AF%D8%A7%D8%B1%D8%A9-%D8%AA%D8%B3%D8%AC%D9%8A%D9%84%D8%A7%D8%AA-%D8%A7%D9%84%D8%A7%D8%B1%D8%A7%D8%B6%D9%8A",
+    "operator": "Sudan",
+    "serviceType": "National Judiciary land-registration directorate with branches; city-specific registry unconfirmed, no public geometry verified.",
+    "layer": "none verified",
+    "geometryType": "none verified",
+    "outputCrs": "unknown",
+    "nativeIdField": "unknown",
+    "nativeIdEvidence": "No safe native parcel ID was confirmed in a full feature response."
+  },
+  "coverageAssessment": {
+    "claimedScope": "Sudan’s official Judiciary describes its land-registration directorate and states it operates branch offices across Sudan; it separately identifies El Fasher as the seat of the North Darfur judicial apparatus. The reviewed official sources do not explicitly locate a land-registration branch in El Fasher, so city-local registry confirmation remains unresolved.",
+    "verifiedOpenScope": "Official local registration/map evidence is documented, but no full polygon response was verified.",
+    "countrywideVerified": false
+  },
+  "runtimeAssessment": {
+    "decision": "hold",
+    "reason": "No verified public full-polygon response was obtained.",
+    "status": "not_enabled_no_verified_public_geometry"
+  },
+  "rootPrimaryReadback": {
+    "url": "https://sj.gov.sd/ar/content/page/%D8%A5%D8%AF%D8%A7%D8%B1%D8%A9-%D8%AA%D8%B3%D8%AC%D9%8A%D9%84%D8%A7%D8%AA-%D8%A7%D9%84%D8%A7%D8%B1%D8%A7%D8%B6%D9%8A",
+    "fetch": "error",
+    "reason": "HTTP Error 521: <none>"
+  },
+  "rootReviewNote": "Reviewed the specific primary institution/service evidence and its geographical, access and date limits. Direct readback failures are preserved separately from indexed primary evidence. No public full parcel geometry was verified for this city in this discovery pass.",
+  "rootReviewedAt": "2026-10-09T04:12:31.737456+00:00",
+  "sourceIds": []
+}

@@ -1,0 +1,88 @@
+{
+  "name": "Malda",
+  "country": "India",
+  "countryCode": "IN",
+  "rank": 511,
+  "point": [
+    25.0402052315554,
+    88.0216528634627
+  ],
+  "population2025": 1001322,
+  "population2025k": 1001.322,
+  "populationUnit": "persons",
+  "schemaVersion": 1,
+  "kind": "city_parcel_source_research",
+  "checkedAt": "2026-10-09",
+  "status": "complete",
+  "verifiedSample": false,
+  "publicParcelGeometryFound": false,
+  "runtimeReadiness": "not_enabled_no_verified_public_geometry",
+  "adapterReady": false,
+  "priorEvidenceFiles": [],
+  "scopeLimits": "Official Malda District sources list record-of-rights/plot information and Mouza & Plot maps, with digitized Mouza-map applications handled by the district land office. The English Bazar municipal tax portal is holding-number based. The WUP point [25.0402052315554, 88.0216528634627] has not been tied to English Bazar, Old Malda or a revenue mouza; no parcel geometry was returned or retained.",
+  "pointBasis": "UN WUP 2025 population-weighted settlement centroid; this is not a municipal boundary or a parcel-coverage claim.",
+  "registryFound": true,
+  "registryBasis": "Malda District Land & Land Reforms lists plot information and Mouza/plot map services, including map copies through the District Land & Land Reforms Office. English Bazar Municipality also has a holding-assessment portal. The WUP locator has not been assigned to a municipality, ward, mouza or plot, so these local services do not establish exact-point parcel coverage.",
+  "resultCategory": "official_district_land_record_and_map_request_path_point_mouza_unverified",
+  "technicalBlocker": "No anonymous bounded vector parcel source or exact WUP-point mouza/municipal assignment was established.",
+  "remainingUncertainty": "Whether the WUP locator falls within English Bazar, Old Malda or another local jurisdiction and whether any public parcel geometry service covers it.",
+  "nextStep": "Resolve the point to its official municipal ward/revenue mouza using authoritative boundary data, then inspect only a public schema-safe map route.",
+  "freshResearch": {
+    "executedQueries": [
+      {
+        "language": "English",
+        "query": "Malda West Bengal official land records cadastral map mouza plot maps English Bazar municipality",
+        "scope": "Find Malda-specific land-record and municipal parcel services.",
+        "result": "The official district Land & Land Reforms page lists plot information and Mouza/plot maps; a separate district form entry describes applications for digitized Mouza maps. English Bazar Municipality has an online holding-assessment portal, which is not parcel geometry. The WUP point’s exact municipal/mouza jurisdiction remains unverified.",
+        "urls": [
+          "https://malda.gov.in/land-land-reforms-department/",
+          "https://malda.gov.in/form/application-for-r-s-scanned-l-r-digitized-mouza-maps/",
+          "https://malda.gov.in/public-utility/english-bazar-municipality/",
+          "https://tax.englishbazarmunicipality.in/index.aspx"
+        ],
+        "method": "Separate English-language source discovery and review of the official district and municipal service pages."
+      },
+      {
+        "language": "Bengali",
+        "query": "মালদা জমি মানচিত্র মৌজা প্লট রেকর্ড অফিশিয়াল ভূমি সংস্কার জেলা",
+        "scope": "Check Bengali-language official land-map and land-record references for Malda.",
+        "result": "Official Malda district land services include plot records and Mouza/plot maps; records and map copies are requested through government channels rather than an anonymous vector feature service. No exact-point mouza or polygon was established.",
+        "urls": [
+          "https://malda.gov.in/bn/service/land_records/",
+          "https://malda.gov.in/land-land-reforms-department/"
+        ],
+        "method": "Separate Bengali-language discovery search and first-party district service review."
+      }
+    ]
+  },
+  "verifiedParcelResponse": null,
+  "source": {
+    "sourceId": "IN-MALDA-LOCAL-REGISTRY-RESEARCH",
+    "name": "Malda official local land-record/cadastral service evidence",
+    "url": "https://malda.gov.in/land-land-reforms-department/",
+    "operator": "Local city/district natural-resource and land-record authorities",
+    "serviceType": "Official local registry/map service pathway identified; public parcel feature geometry not verified.",
+    "layer": null,
+    "geometryType": null,
+    "outputCrs": null,
+    "nativeIdField": null,
+    "nativeIdEvidence": "No feature response returned; a parcel-level native identifier and feature schema remain unverified."
+  },
+  "wupCityCode": 11609,
+  "cityId": "wup2025:11609",
+  "queueRank": 511,
+  "populationPlausibility2025": "Moderate",
+  "centerLatLon": [
+    25.0402052315554,
+    88.0216528634627
+  ],
+  "sourceIds": [],
+  "rootReviewedAt": "2026-10-09T01:10:35.212195+00:00",
+  "registryEvidenceUrls": [
+    "https://malda.gov.in/land-land-reforms-department/",
+    "https://malda.gov.in/form/application-for-r-s-scanned-l-r-digitized-mouza-maps/",
+    "https://malda.gov.in/public-utility/english-bazar-municipality/",
+    "https://tax.englishbazarmunicipality.in/index.aspx",
+    "https://malda.gov.in/bn/service/land_records/"
+  ]
+}

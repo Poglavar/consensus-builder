@@ -1,0 +1,52 @@
+{
+  "schemaVersion": "1.0",
+  "checkedAt": "2026-10-09",
+  "cityRecord": "city-11782-jinhua.json",
+  "purpose": "Document local registry evidence and public parcel-geometry route review.",
+  "scopeLimits": {
+    "maxFullPolygonsRetainedInCityRecord": 0,
+    "maxFullPolygonsRetainedInReview": 0,
+    "maxFullPolygonsRetainedInRepository": 0,
+    "ownerOrAddressDataRetained": false,
+    "credentialsOrTokenValuesRetained": false,
+    "citywideCompletenessAsserted": false
+  },
+  "assessment": "Official municipal natural-resources and immovable-property registration responsibilities and city-level registration policy were found. Jinhua’s official open-data portal was reviewed for spatial datasets; no public parcel feature schema or bounded geometry service was established. The WUP point was not matched to a district/street parcel; no owner or property query was made.",
+  "registryAssessment": "Jinhua’s official city natural-resources and planning authority is assigned natural-resource and immovable-property title registration responsibilities; Jinhua government bulletins document city-level immovable-property registration rules. These establish a local registry custodian, not open parcel-vector coverage.",
+  "officialPrimarySources": [
+    {
+      "url": "https://www.jinhua.gov.cn/module/download/downfile.jsp?classid=0&filename=238d85601fba404496e624aec4aeb932.pdf",
+      "observation": "Official 2025 Jinhua government bulletin issued by the city Natural Resources and Planning Bureau records city-level immovable-property registration policy."
+    },
+    {
+      "url": "https://zjjcmspublic.oss-cn-hangzhou-zwynet-d01-a.internet.cloud.zj.gov.cn/jcms_files/jcms1/web3539/site/attach/0/a3de8453bf354df69bc844a5cba4cd14.pdf",
+      "observation": "Official 2025 budget of the Jinhua Economic Development Zone bureau branch describes natural-resource investigation and immovable-property title-registration duties; it is subdistrict evidence, not a city parcel layer."
+    },
+    {
+      "url": "https://open.data.jinhua.gov.cn/",
+      "observation": "Official Jinhua municipal open-data portal reviewed; no public cadastral parcel vector dataset/schema was found in the reviewed results."
+    },
+    {
+      "url": "http://zrzyj.jinhua.gov.cn/",
+      "observation": "Official city bureau domain; direct open timed out, so no feature-service claim is based on it."
+    }
+  ],
+  "searchQueries": [
+    {
+      "language": "Chinese",
+      "query": "金华市 自然资源和规划局 不动产 地籍图 地块 查询 官方",
+      "result": "Official Jinhua government material identifies the city natural-resources and planning bureau and city immovable-property registration activity. The official open-data portal is available, but no anonymous parcel-vector service for the WUP point was identified.",
+      "method": "Separate Chinese-language search and review of first-party city-government and open-data sources."
+    },
+    {
+      "language": "English",
+      "query": "Jinhua China official municipal cadastral parcel map natural resources GIS cadastral service",
+      "result": "The official Jinhua government/open-data sources point to city natural-resource registration and spatial-data publishing, but did not expose an anonymous cadastral parcel layer or exact-point geometry response. The bureau homepage timed out when opened; no service is inferred from that failure.",
+      "method": "Separate English-language discovery search and official portal review."
+    }
+  ],
+  "serviceChecks": [],
+  "geometryEvidence": null,
+  "privacy": "No owner, address, credentials, tokens or property-specific records were requested or retained.",
+  "runtimeAssessment": "not_enabled_no_verified_public_geometry"
+}

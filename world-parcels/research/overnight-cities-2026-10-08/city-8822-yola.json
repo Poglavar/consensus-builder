@@ -1,0 +1,88 @@
+{
+  "schemaVersion": 1,
+  "checkedAt": "2026-10-09",
+  "status": "complete",
+  "adapterReady": false,
+  "pointBasis": "UN WUP 2025 population-weighted settlement centroid; this is not a municipal boundary or a parcel-coverage claim.",
+  "coverageAssessment": {
+    "verifiedOpenScope": "No safe public polygon sample was retained.",
+    "citywideVerified": false,
+    "countrywideVerified": false
+  },
+  "name": "Yola",
+  "country": "Nigeria",
+  "countryCode": "NG",
+  "rank": 705,
+  "point": [
+    9.23249094464243,
+    12.4590822393845
+  ],
+  "population2025": 758153,
+  "populationPlausibility2025": "Moderate",
+  "wupCityCode": 8822,
+  "cityId": "wup2025:8822",
+  "queueRank": 705,
+  "registryFound": true,
+  "registryBasis": "Adamawa State’s Ministry of Lands and Survey is located in Yola and documents services including Certificates of Occupancy, land surveying, and mapping. The state Digital Archive catalogs CofOs, location maps and parcel survey diagrams; its interface requires login. A 2026 state report says the new land-administration platform was still moving toward full deployment and describes applicant/record workflow modules, not a public anonymous parcel-vector service.",
+  "registryEvidenceUrls": [
+    "https://lands.adamawastate.gov.ng/",
+    "https://das.adamawastate.gov.ng/",
+    "https://adamawastate.gov.ng/adamawa-deepens-digital-land-reforms-as-stakeholders-receive-hands-on-training-on-new-administration-system/",
+    "https://saber.adamawastate.gov.ng/ova_doc/government-of-adamawa-state-ministry-of-lands-and-survey-terms-of-reference/"
+  ],
+  "publicParcelGeometryFound": false,
+  "verifiedSample": false,
+  "verifiedParcelResponse": null,
+  "freshResearch": {
+    "queries": [
+      {
+        "language": "Hausa",
+        "query": "Yola hukumar filaye rajistar fili taswirar filaye Adamawa hukuma",
+        "scope": "Verify a Yola-specific land-record office/workflow and assess any safe public parcel geometry.",
+        "result": "No Hausa-language public polygon service was identified. Official Adamawa sources place the Ministry of Lands and Survey at Yola and describe state land records, surveys, parcel diagrams and C of O workflows. The digital archive is login-gated and is document-oriented; no vector schema or public geometry endpoint was identified.",
+        "actualResultUrls": [
+          "https://lands.adamawastate.gov.ng/",
+          "https://das.adamawastate.gov.ng/",
+          "https://adamawastate.gov.ng/adamawa-deepens-digital-land-reforms-as-stakeholders-receive-hands-on-training-on-new-administration-system/"
+        ],
+        "executionMethod": "Separate Hausa-language discovery; read official state ministry, digital archive landing page, and state land-administration platform announcement. Did not log in or search by property/application identifiers."
+      },
+      {
+        "language": "English",
+        "query": "Yola Adamawa official land registry cadastral mapping parcel survey diagrams GIS land records",
+        "scope": "Verify a Yola-specific land-record office/workflow and assess any safe public parcel geometry.",
+        "result": "Official state sources document the ministry at Yola, CofO and survey/mapping services, and a secure archive for CofOs, location maps and survey diagrams. The April 2026 state report says digital administration was still transitioning toward full deployment. No anonymous polygon feature layer/schema found.",
+        "actualResultUrls": [
+          "https://lands.adamawastate.gov.ng/",
+          "https://das.adamawastate.gov.ng/",
+          "https://adamawastate.gov.ng/adamawa-deepens-digital-land-reforms-as-stakeholders-receive-hands-on-training-on-new-administration-system/",
+          "https://saber.adamawastate.gov.ng/ova_doc/government-of-adamawa-state-ministry-of-lands-and-survey-terms-of-reference/"
+        ],
+        "executionMethod": "Separate English-language discovery and official-source review. The archive exposes a Proceed to Login action; no account created, no property lookup, and no feature query."
+      }
+    ]
+  },
+  "scopeLimits": "The digital archive covers administrative documents and parcel survey diagrams and requires login. The state land administration platform is in rollout and exposes no public feature metadata. No application, owner search, property lookup, or geometry query was made.",
+  "source": {
+    "sourceId": "NG-AD-YOLA-LANDS-ARCHIVE",
+    "name": "Adamawa State Ministry of Lands and Survey and Digital Archive (Yola)",
+    "url": "https://das.adamawastate.gov.ng/",
+    "operator": "Adamawa State Ministry of Lands and Survey / Office of the Surveyor General",
+    "serviceType": "Land title/Cofo administration, surveying, mapping, and secure records archive",
+    "layer": "CofOs, location maps and parcel survey diagrams stored as records; no public vector layer identified",
+    "geometryType": "survey diagrams/map documents; feature geometry unknown",
+    "outputCrs": "unknown",
+    "nativeIdField": "document/Cofo/parcel fields are archive metadata; detailed schema not publicly exposed"
+  },
+  "sourceIds": [],
+  "runtimeReadiness": "not_enabled_no_verified_public_geometry",
+  "technicalBlocker": "The only documented record portal is login-gated and document-oriented; the separate state land-administration platform exposes no public feature service/schema and is still in deployment.",
+  "remainingUncertainty": "Whether future public interfaces expose safe anonymous parcel geometries, the exact city parcel coverage, and source-native non-sensitive keys remain unknown.",
+  "populationUnit": "persons",
+  "population2025k": 758.153,
+  "centerLatLon": [
+    9.23249094464243,
+    12.4590822393845
+  ],
+  "rootReviewedAt": "2026-10-09T02:45:05.881311+00:00"
+}

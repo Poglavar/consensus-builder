@@ -1,0 +1,58 @@
+{
+  "schemaVersion": "1.0",
+  "checkedAt": "2026-10-09",
+  "cityRecord": "city-492-san-pedro-sula.json",
+  "purpose": "Document first-party local registry/map evidence and bounded anonymous geometry access review.",
+  "scopeLimits": {
+    "maxFullPolygonsRetainedInCityRecord": 0,
+    "maxFullPolygonsRetainedInReview": 0,
+    "maxFullPolygonsRetainedInRepository": 0,
+    "ownerOrAddressDataRetained": false,
+    "credentialsOrTokenValuesRetained": false,
+    "citywideCompletenessAsserted": false
+  },
+  "assessment": "The municipal registry and online service are first-party and active, but parcel plans are handled through an applicant-specific request. No anonymous public vector schema, safe-ID query, or geometry endpoint was found; no parcel feature was retained.",
+  "registryAssessment": "Local municipal Catastro exists, but no public city parcel geometry service was verified.",
+  "officialPrimarySources": [
+    {
+      "url": "https://www.sanpedrosula.hn/catastro/index.php",
+      "observation": "Municipality provides its online municipal Catastro portal, including update requests, certificates, claims, and plans/maps of colonias."
+    },
+    {
+      "url": "https://www.sanpedrosula.hn/catastro/index.php/solicitud-de-planos",
+      "observation": "Cadastral plan/map requests require applicant and property identification and supporting documents; no private request was submitted."
+    },
+    {
+      "url": "https://portalunico.iaip.gob.hn/92/50/",
+      "observation": "Official transparency portal publishes municipal cadastral information reports; it is not an anonymous parcel geometry service."
+    },
+    {
+      "url": "https://sinap.hn/",
+      "observation": "Instituto de la Propiedad promotes the national SINAP catalog/GeoParcelas; no public anonymous geometry endpoint was found."
+    }
+  ],
+  "searchQueries": [
+    {
+      "language": "English",
+      "query": "San Pedro Sula Honduras official municipal cadastral map parcel GIS catastro online land registry",
+      "result": "The municipal registry and online service are first-party and active, but parcel plans are handled through an applicant-specific request. No anonymous public vector schema, safe-ID query, or geometry endpoint was found; no parcel feature was retained.",
+      "method": "Separate web search followed by direct review of relevant official sources."
+    },
+    {
+      "language": "Spanish",
+      "query": "San Pedro Sula catastro mapa de predios SIG catastro municipal oficial Honduras servicios en línea",
+      "result": "The municipal registry and online service are first-party and active, but parcel plans are handled through an applicant-specific request. No anonymous public vector schema, safe-ID query, or geometry endpoint was found; no parcel feature was retained.",
+      "method": "Separate web search followed by direct review of relevant official sources."
+    }
+  ],
+  "serviceChecks": [
+    {
+      "url": "https://www.sanpedrosula.hn/catastro/index.php/solicitud-de-planos",
+      "method": "GET",
+      "httpStatus": 200,
+      "observation": "Municipal map request form requires applicant/property data and supporting documents; no form submitted. No anonymous service schema/geometry route discovered."
+    }
+  ],
+  "geometryEvidence": null,
+  "runtimeAssessment": "not_enabled_no_verified_public_geometry"
+}

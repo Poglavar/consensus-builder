@@ -1,0 +1,95 @@
+{
+  "schemaVersion": "1.0",
+  "checkedAt": "2026-10-09",
+  "cityRecord": "city-9396-jiaozuo.json",
+  "purpose": "Document city-scope registry evidence and bounded public parcel-geometry route review.",
+  "scopeLimits": {
+    "maxFullPolygonsRetainedInCityRecord": 3,
+    "maxFullPolygonsRetainedInReview": 3,
+    "maxFullPolygonsRetainedInRepository": 3,
+    "ownerOrAddressDataRetained": false,
+    "credentialsOrTokenValuesRetained": false,
+    "citywideCompletenessAsserted": false
+  },
+  "assessment": "Jiaozuo Municipal Natural Resources and Planning Bureau is the organizer of the Jiaozuo Tianditu web map and lists an “不动产办事大厅” (real-estate registration service hall). Henan’s official government-service catalog identifies the Jiaozuo city registration receiving window. These establish a local registry and public city map, but the map portal’s cache-miss route prevented inspection of its loaded layers or feature schema. Jiaozuo’s official city map lists public online-map functionality and is operated by the municipal natural-resources bureau, but the web reader returned “Cache miss” for the map shell and direct requests from the restricted environment failed DNS resolution. No layer catalog, parcel feature schema, safe native identifier field, or geometry-only route was verified. The city’s registry information is informational; no person/parcel query was made.",
+  "registryAssessment": "Jiaozuo Municipal Natural Resources and Planning Bureau is the organizer of the Jiaozuo Tianditu web map and lists an “不动产办事大厅” (real-estate registration service hall). Henan’s official government-service catalog identifies the Jiaozuo city registration receiving window. These establish a local registry and public city map, but the map portal’s cache-miss route prevented inspection of its loaded layers or feature schema.",
+  "officialPrimarySources": [
+    {
+      "url": "https://zrzyj.jiaozuo.gov.cn/",
+      "observation": "Official Jiaozuo municipal Natural Resources and Planning Bureau homepage lists the real-estate registration service hall and city services."
+    },
+    {
+      "url": "https://henan.tianditu.gov.cn/jiaozuo/LianXiWM.aspx",
+      "observation": "Official Jiaozuo Tianditu contact page identifies Jiaozuo Municipal Natural Resources and Planning Bureau as organizer and links the public online map at jzmap.gov.cn."
+    },
+    {
+      "url": "https://www.jzmap.gov.cn/map.htm",
+      "observation": "Public map-shell URL linked from Jiaozuo Tianditu; map page could not be fetched by the web reader (cache miss), and no layer/feature schema was verified."
+    },
+    {
+      "url": "https://www.hnzwfw.gov.cn/portal/guide/56CFFA40475E238F82BD48FE478486D6",
+      "observation": "Henan government-service guide gives the Jiaozuo municipal property-registration receiving window, location, and formal application workflow."
+    },
+    {
+      "url": "https://zfcg.henan.gov.cn/cmsweb81e27e/jiaozuo/rootfiles/2025/08/15/42cd93342d564a8c9ffa3b1252735ae3.pdf",
+      "observation": "Official Henan procurement contract for Jiaozuo’s municipal registration center discusses city-level cadastral survey, real-estate-unit identifiers, spatial-data quality checks, and management of registration datasets; it is not a public geometry endpoint."
+    }
+  ],
+  "searchQueries": [
+    {
+      "language": "English",
+      "query": "Jiaozuo China official property registration center cadastral map land registry",
+      "result": "Official English-language results did not establish a separate local map or schema; local official Chinese sources establish the city registry and map portal.",
+      "method": "Separate official-source-focused search; no person/property lookup."
+    },
+    {
+      "language": "Chinese",
+      "query": "焦作市 不动产登记中心 天地图 焦作 地籍图 官方",
+      "result": "Jiaozuo’s Natural Resources and Planning Bureau operates the city map and lists its registration hall; official service-catalog/procurement records describe city registration and cadastral survey-data management. The public map layer schema remains unverified.",
+      "method": "Separate official-source-focused search; no person/property lookup."
+    }
+  ],
+  "serviceChecks": [
+    {
+      "url": "https://zrzyj.jiaozuo.gov.cn/",
+      "check": "public informational HTML / documentation review",
+      "result": "Official Jiaozuo municipal Natural Resources and Planning Bureau homepage lists the real-estate registration service hall and city services."
+    },
+    {
+      "url": "https://henan.tianditu.gov.cn/jiaozuo/LianXiWM.aspx",
+      "check": "public informational HTML / documentation review",
+      "result": "Official Jiaozuo Tianditu contact page identifies Jiaozuo Municipal Natural Resources and Planning Bureau as organizer and links the public online map at jzmap.gov.cn."
+    },
+    {
+      "url": "https://www.jzmap.gov.cn/map.htm",
+      "check": "public informational HTML / documentation review",
+      "result": "Public map-shell URL linked from Jiaozuo Tianditu; map page could not be fetched by the web reader (cache miss), and no layer/feature schema was verified."
+    },
+    {
+      "url": "https://www.hnzwfw.gov.cn/portal/guide/56CFFA40475E238F82BD48FE478486D6",
+      "check": "public informational HTML / documentation review",
+      "result": "Henan government-service guide gives the Jiaozuo municipal property-registration receiving window, location, and formal application workflow."
+    },
+    {
+      "url": "https://zfcg.henan.gov.cn/cmsweb81e27e/jiaozuo/rootfiles/2025/08/15/42cd93342d564a8c9ffa3b1252735ae3.pdf",
+      "check": "public informational HTML / documentation review",
+      "result": "Official Henan procurement contract for Jiaozuo’s municipal registration center discusses city-level cadastral survey, real-estate-unit identifiers, spatial-data quality checks, and management of registration datasets; it is not a public geometry endpoint."
+    }
+  ],
+  "geometryEvidence": null,
+  "accessReview": {
+    "publicAnonymousGeometryVerified": false,
+    "completeGeoreferencedPolygonCount": 0,
+    "geometryRetained": false,
+    "ownerAddressTaxOrPersonLookupRequested": false,
+    "authenticationOrCredentialsUsed": false,
+    "captchaOrPersonalFormSubmitted": false,
+    "routeInspectionStatus": "schema_unverified",
+    "reason": "Jiaozuo’s official city map lists public online-map functionality and is operated by the municipal natural-resources bureau, but the web reader returned “Cache miss” for the map shell and direct requests from the restricted environment failed DNS resolution. No layer catalog, parcel feature schema, safe native identifier field, or geometry-only route was verified. The city’s registry information is informational; no person/parcel query was made."
+  },
+  "privacy": "No parcel, owner, address, tax-account, title or personal lookup was made. No geometry or private attributes were retained.",
+  "runtimeAssessment": {
+    "state": "not_enabled_no_verified_public_geometry",
+    "reason": "No anonymous parcel geometry route with a verified safe geometry-and-stable-ID response schema was established."
+  }
+}

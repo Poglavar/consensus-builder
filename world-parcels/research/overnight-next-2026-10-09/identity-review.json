@@ -1,0 +1,68 @@
+{
+  "schemaVersion": 1,
+  "cohort": "overnight-next-1101-1200",
+  "cohortState": "active_research_pending_unintegrated",
+  "integrationState": "not_integrated",
+  "identityDecisionOverlay": "root-identity-decision-overlay.json",
+  "cityCount": 0,
+  "cities": [],
+  "resolvedDecisions": [
+    {
+      "rank": 1158,
+      "cityCode": 6442,
+      "name": "Yulin",
+      "country": "China",
+      "iso2": "CN",
+      "decision": "released_as_different_settlement",
+      "originalPossiblePriorMatches": [
+        {
+          "kind": "same-country-name-distance-review",
+          "evidenceFile": "research/overnight-cities-2026-10-08/city-10684-yulin.json",
+          "cityId": "wup2025:10684",
+          "cityName": "Yulin",
+          "parcelStatus": "no_verified_open_endpoint_after_attempts",
+          "checked": true,
+          "distanceKm": 1734.83,
+          "identityConfidence": "ambiguous",
+          "source": "registry"
+        },
+        {
+          "evidenceFile": "world-parcels/research/overnight-cities-2026-10-08/city-10684-yulin.json",
+          "matchedName": "Yulin",
+          "field": "name",
+          "identityConfidence": "review-required",
+          "kind": "structured-city-name-candidate",
+          "source": "research-file"
+        }
+      ],
+      "overlay": "root-identity-decision-overlay.json"
+    },
+    {
+      "rank": 1159,
+      "cityCode": 26,
+      "name": "Port of Spain",
+      "country": "Trinidad and Tobago",
+      "iso2": "TT",
+      "decision": "confirmed_prior_attempt",
+      "originalPossiblePriorMatches": [
+        {
+          "kind": "previous-capital-city-name-coordinate-candidate",
+          "source": "world-capitals prior-check roster",
+          "evidenceFile": "research/countries/TT.json",
+          "cityId": "capital:TT:port-of-spain",
+          "cityName": "Port of Spain",
+          "researchStatus": "previously_checked",
+          "manualCityEvidence": [
+            {
+              "path": "research/countries/TT.json",
+              "note": "Port of Spain city bbox and parcel response."
+            }
+          ],
+          "identityConfidence": "review-required",
+          "distanceKm": 8.27
+        }
+      ],
+      "overlay": "root-identity-decision-overlay.json"
+    }
+  ]
+}

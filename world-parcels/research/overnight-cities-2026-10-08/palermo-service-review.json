@@ -1,0 +1,100 @@
+{
+  "schemaVersion": 1,
+  "checkedAt": "2026-10-09",
+  "sourceId": "it-palermo-official-parcel-research",
+  "purpose": "Service review for WUP2025 rank 812 Palermo (city code 4616); local registry evidence and safe anonymous full-polygon access status.",
+  "primaryPublisher": "Regione Siciliana SITR; source and attribution Agenzia delle Entrate – Regione Siciliana",
+  "sourceUrl": "https://map.sitr.regione.sicilia.it/gis/rest/services/catasto/cartografia_catastale/MapServer",
+  "registryFound": true,
+  "registryBasis": "Agenzia delle Entrate’s RNDT catalogue has a city-specific vector cadastral dataset “Cartografia catastale - Comune di PALERMO” (revised 2025-01-20). Regione Siciliana SITR publishes regional cadastral cartography with a queryable polygon layer “Particelle”, refreshed July 2026. A safe geometry-only query at the exact WUP point returned one polygon, requesting only service OBJECTID.",
+  "officialSources": [
+    {
+      "url": "https://geodati.gov.it/geoportale/visualizzazione-metadati/scheda-metadati?metadataid=age%3AD_G273_PALERMO",
+      "observation": "Agenzia delle Entrate metadata describes the vector cadastral dataset for the specific Comune di Palermo, revised 2025-01-20, with 1:500 scale."
+    },
+    {
+      "url": "https://www.sitr.regione.sicilia.it/geoportale/it/metadata/details/830",
+      "observation": "SITR dataset metadata identifies vector cadastral parcels, full Sicily scope, EPSG:3004 metadata, no public access constraint, and CC BY 4.0; data revision metadata 2020-11-01. The serving map layer uses EPSG:25833 and describes a July 2026 update."
+    },
+    {
+      "url": "https://map.sitr.regione.sicilia.it/gis/rest/services/catasto/cartografia_catastale/MapServer",
+      "observation": "Anonymous service metadata lists polygon layer Particelle (layer 4), query formats JSON/geoJSON/PBF, max 1000 records, EPSG:25833, source copyright Agenzia delle Entrate / Regione Siciliana, and a July 2026 update."
+    },
+    {
+      "url": "https://map.sitr.regione.sicilia.it/gis/rest/services/catasto/cartografia_catastale/MapServer/4",
+      "observation": "Layer schema lists OBJECTID and Shape plus cadastral classification fields. Geometry query was constrained to return only OBJECTID and geometry; all other fields were excluded."
+    },
+    {
+      "url": "https://www.fiscooggi.it/file-download/download/public/109472",
+      "observation": "Agenzia delle Entrate publication documents public WMS and WFS cadastral-cartography services. Its published WFS GetCapabilities route returned HTTP 403 anonymously in this inspection; no WFS query followed."
+    }
+  ],
+  "searchQueries": [
+    {
+      "language": "English",
+      "query": "Palermo Italy public cadastral parcel polygon GIS vector map official",
+      "scope": "Find official local registry and anonymous parcel geometry route.",
+      "result": "Agenzia delle Entrate lists an open WFS for cadastral cartography; the official WFS GetCapabilities request returned HTTP 403 anonymously, so its schema was not inspected. Independently, Regione Siciliana SITR’s official regional ArcGIS service exposes a polygon layer “Particelle” with JSON/GeoJSON query support, native service object ID, and CC BY 4.0 dataset metadata. One exact-point intersection returned one polygon with OBJECTID only.",
+      "urls": [
+        "https://geodati.gov.it/geoportale/visualizzazione-metadati/scheda-metadati?metadataid=age%3AD_G273_PALERMO",
+        "https://www.sitr.regione.sicilia.it/geoportale/it/metadata/details/830",
+        "https://map.sitr.regione.sicilia.it/gis/rest/services/catasto/cartografia_catastale/MapServer"
+      ]
+    },
+    {
+      "language": "Italian",
+      "query": "Palermo Comune cartografia catastale particelle vettoriali WFS SITR Agenzia Entrate",
+      "scope": "Find first-party local registry and map service details.",
+      "result": "Agenzia delle Entrate lists an open WFS for cadastral cartography; the official WFS GetCapabilities request returned HTTP 403 anonymously, so its schema was not inspected. Independently, Regione Siciliana SITR’s official regional ArcGIS service exposes a polygon layer “Particelle” with JSON/GeoJSON query support, native service object ID, and CC BY 4.0 dataset metadata. One exact-point intersection returned one polygon with OBJECTID only.",
+      "urls": [
+        "https://geodati.gov.it/geoportale/visualizzazione-metadati/scheda-metadati?metadataid=age%3AD_G273_PALERMO",
+        "https://www.sitr.regione.sicilia.it/geoportale/it/metadata/details/830",
+        "https://map.sitr.regione.sicilia.it/gis/rest/services/catasto/cartografia_catastale/MapServer"
+      ]
+    }
+  ],
+  "accessReview": {
+    "publicAnonymousGeometryVerified": true,
+    "completeGeoreferencedPolygonCount": 1,
+    "geometryRetained": true,
+    "ownerAddressTaxOrPersonLookupRequested": false,
+    "authenticationOrCredentialsUsed": false,
+    "captchaOrPersonalFormSubmitted": false,
+    "routeInspectionStatus": "geometry_only_sample_verified_runtime_not_enabled",
+    "reason": "A one-feature local sample is verified, but runtime has not been enabled: citywide completeness, pagination behavior, and a production viewport policy have not been qualified. The national WFS capabilities endpoint returned anonymous HTTP 403; the independently verified regional SITR endpoint supplies the retained sample."
+  },
+  "requestEvidence": [
+    {
+      "url": "https://map.sitr.regione.sicilia.it/gis/rest/services/catasto/cartografia_catastale/MapServer",
+      "method": "GET metadata inspection",
+      "result": "Official anonymous service metadata identified updated July 2026, EPSG:25833, and supported JSON/geoJSON/PBF query formats."
+    },
+    {
+      "url": "https://map.sitr.regione.sicilia.it/gis/rest/services/catasto/cartografia_catastale/MapServer/4",
+      "method": "GET schema inspection",
+      "result": "Feature layer Particelle is Polygon; schema includes OBJECTID, Shape and other cadastral classification attributes. A geometry query was constrained to OBJECTID only."
+    },
+    {
+      "url": "https://map.sitr.regione.sicilia.it/gis/rest/services/catasto/cartografia_catastale/MapServer/4/query",
+      "method": "GET anonymous geometry-only point intersection",
+      "result": "HTTP 200, 751-byte GeoJSON response, one Polygon feature at the queued WUP point; properties contained only OBJECTID=5685467. One closed ring retained in the sample."
+    },
+    {
+      "url": "https://wfs.cartografia.agenziaentrate.gov.it/inspire/wfs/owfs01.php",
+      "method": "GET WFS GetCapabilities (metadata only)",
+      "result": "HTTP 403, 436-byte response. No credentials, property IDs or feature queries were used."
+    }
+  ],
+  "datasetLicense": "CC BY 4.0 (SITR dataset metadata); attribution retained in sample.",
+  "sampleFile": "samples/palermo-sitr-wup812.geojson",
+  "sampleFeatureCount": 1,
+  "safeFieldAllowlist": [
+    "OBJECTID",
+    "Shape"
+  ],
+  "sourceSchemaNotes": "The full layer schema contains COMUNE, SEZIONE, FOGLIO, ALLEGATO, SVILUPPO, NUMERO, LIVELLO, ORIGINE and regional administrative labels. These were not requested or retained.",
+  "crs": "Layer EPSG:25833; sample exported OGC:CRS84 (WGS84 lon/lat).",
+  "technicalBlocker": "A one-feature local sample is verified, but runtime has not been enabled: citywide completeness, pagination behavior, and a production viewport policy have not been qualified. The national WFS capabilities endpoint returned anonymous HTTP 403; the independently verified regional SITR endpoint supplies the retained sample.",
+  "sampleDisposition": "One geometry+OBJECTID sample retained under CC BY 4.0 attribution.",
+  "remainingUncertainty": "No citywide coverage/completeness review was performed. Regional service metadata’s dataset revision is 2020-11-01 while its live layer declares a July 2026 update. The single point sample is cadastral cartography, not a claim about legal rights or survey accuracy."
+}

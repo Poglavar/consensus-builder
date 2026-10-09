@@ -1,0 +1,93 @@
+{
+  "name": "Xuzhou",
+  "country": "China",
+  "countryCode": "CN",
+  "rank": 360,
+  "point": [
+    34.2602047908013,
+    117.163793336788
+  ],
+  "freshResearch": {
+    "queries": [
+      {
+        "language": "Chinese",
+        "query": "徐州市 不动产登记 地籍图 查询 徐州市自然资源和规划局 官方",
+        "scope": "Find local registry services and an anonymous full parcel geometry service.",
+        "result": "The Xuzhou government service portal lists city-level real-estate registration workflows under the Xuzhou Natural Resources and Planning Bureau. A 2025 city report says registration, trade and tax services are handled online. No anonymous city parcel-vector viewer or downloadable full geometries were found in the reviewed sources.",
+        "actualResultUrls": [
+          "https://xz.jszwfw.gov.cn/",
+          "https://xz.jszwfw.gov.cn/jszwfw/bscx/itemlist/bszn.do?iddept_ql_inf=11320300MB1560536G3000715001007&iddept_yw_inf=11320300MB1560536G300071500100701&ql_kind=07&webId=8",
+          "https://jsnews.jschina.com.cn/xz/a/202501/t20250110_s6780e392e4b04dff990795f0.shtml"
+        ],
+        "executionMethod": "Separate Chinese-language search and first-party government service page/report inspection; no person- or property-specific record query."
+      },
+      {
+        "language": "English",
+        "query": "Xuzhou City China official real estate registration cadastral parcel map public GIS",
+        "scope": "Cross-check municipal registry identity and open geometry access.",
+        "result": "The official municipal service portal confirms that registration services are administered by the Xuzhou Natural Resources and Planning Bureau and are online. Reviewed official service sources describe application workflows rather than public parcel-vector access. No English-language anonymous parcel geometry viewer was found.",
+        "actualResultUrls": [
+          "https://xz.jszwfw.gov.cn/",
+          "https://xz.jszwfw.gov.cn/jszwfw/bscx/itemlist/bszn.do?iddept_ql_inf=11320300MB1560536G3000715001007&iddept_yw_inf=11320300MB1560536G300071500100701&ql_kind=07&webId=8"
+        ],
+        "executionMethod": "Separate English-language search and first-party municipal service-page inspection."
+      }
+    ],
+    "portals": [
+      {
+        "name": "Xuzhou Government Service Portal, real-estate registration workflow",
+        "operator": "Xuzhou Natural Resources and Planning Bureau",
+        "homeUrl": "https://xz.jszwfw.gov.cn/jszwfw/bscx/itemlist/bszn.do?iddept_ql_inf=11320300MB1560536G3000715001007&iddept_yw_inf=11320300MB1560536G300071500100701&ql_kind=07&webId=8",
+        "observation": "Current city-level registration workflow; includes online application and office service locations. This is an application route, not a public parcel geometry layer."
+      },
+      {
+        "name": "Xuzhou online registration service launch (2025)",
+        "operator": "Xuzhou Natural Resources and Planning Bureau",
+        "homeUrl": "https://jsnews.jschina.com.cn/xz/a/202501/t20250110_s6780e392e4b04dff990795f0.shtml",
+        "observation": "Reports city-wide online registration integrated with trade and tax services; no anonymous map/vector is described."
+      }
+    ],
+    "requests": []
+  },
+  "status": "complete",
+  "verifiedParcelResponse": {
+    "attempted": false,
+    "fullGeometrySampleCount": 0,
+    "bounded": true,
+    "pointLocated": false,
+    "note": "No complete public parcel polygon sample was verified."
+  },
+  "source": {
+    "operator": "Xuzhou Natural Resources and Planning Bureau",
+    "endpoint": null,
+    "requestedAttributes": [],
+    "personalAttributesRequested": false
+  },
+  "coverageAssessment": "No public full-polygon coverage verified for the WUP point.",
+  "registryFound": true,
+  "registryBasis": "First-party Xuzhou municipal service materials confirm a city-run real-estate registration service under the city natural-resources bureau.",
+  "verifiedSample": false,
+  "publicParcelGeometryFound": false,
+  "resultCategory": "city_registry_workflow_no_public_parcel_geometry_found",
+  "technicalBlocker": "Public sources reviewed expose registration application workflows, not anonymous cadastral polygons.",
+  "remainingUncertainty": "The exact WUP-point cadastral coverage and whether a separate public parcel layer exists were not established.",
+  "sourceIds": [],
+  "nextStep": "Ask the municipal bureau whether a non-personal open parcel layer is available.",
+  "schemaVersion": 1,
+  "checkedAt": "2026-10-09",
+  "wupCityCode": 10490,
+  "cityId": "wup2025:10490",
+  "queueRank": 360,
+  "population2025": 1402001,
+  "population2025k": 1402.001,
+  "populationPlausibility2025": "High",
+  "populationUnit": "persons",
+  "pointBasis": "UN WUP 2025 population-weighted settlement centroid; this is not a municipal boundary or a parcel-coverage claim.",
+  "centerLatLon": [
+    34.2602047908013,
+    117.163793336788
+  ],
+  "runtimeReadiness": "not_enabled_no_verified_public_geometry",
+  "adapterReady": false,
+  "rootReviewedAt": "2026-10-08T23:02:54.805434+00:00"
+}

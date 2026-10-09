@@ -1,0 +1,13 @@
+{
+  "schemaVersion": "1.0",
+  "checkedAt": "2026-10-09",
+  "cityRecord": "city-10971-mehsi.json",
+  "purpose": "Read-only source discovery and bounded public-service validation; no runtime or global changes.",
+  "scopeLimits": {
+    "maxFullPolygonsRetainedInThisCityReport": 0,
+    "maxFullPolygonsRetainedAcrossCityReview": 0,
+    "ownerOrAddressDataRetained": false,
+    "accountCredentialsOrPublicTokenValuesRetained": false
+  },
+  "assessment": "A valid local city-named cadastral sheet was verified: Main Mehsi Mauza 0734, CS Map 06 sheet 00, EPSG:32645 extent 312447.31749583624–313785.41989247856 E and 2916320.83622262–2918241.180299062 N. Its exact midpoint (313116.3686941574, 2917281.00826084) resolves through the official `getPlotAtXY` route to safe identifiers id `3ZLTxJhdQLS-B6ve_aHBmQ`, kide `335`. The WUP centroid remains unchanged; this is explicitly an alternate local map-validation point. Follow-on visualization in the official client uses WMS rasters, and the inspected client advertises no full-vector/GeoJSON/WFS geometry route; therefore no full parcel polygon was retrieved or marked verified. Earlier malformed/non-covering map extents do not invalidate this distinct valid Main Mehsi CS sheet."
+}

@@ -1,0 +1,71 @@
+{
+  "name": "Abeokuta",
+  "country": "Nigeria",
+  "countryCode": "NG",
+  "rank": 659,
+  "point": [
+    7.1651739338135,
+    3.34634847941721
+  ],
+  "freshResearch": {
+    "queries": [
+      {
+        "language": "English",
+        "query": "Abeokuta Ogun State official land registry cadastral GIS parcel map",
+        "result": "Found Ogun State OLARMS and OLARMS-GIS, with state land registration and parcel mapping; public map access is not documented as anonymous or geometry-only, and the registry office is located in Abeokuta.",
+        "method": "Separate English-language search and official Ogun State/OLARMS portal review."
+      },
+      {
+        "language": "Yoruba",
+        "query": "site:ogunstate.gov.ng Abeokuta ìforúkọsílẹ̀ ilẹ OLARMS Bureau Lands Survey",
+        "result": "No additional Yoruba-language official cadastral/map result surfaced; the primary English OLARMS pages remain the verified source.",
+        "method": "Separate Yoruba-language official-domain search."
+      }
+    ],
+    "portals": [
+      {
+        "name": "Abeokuta official registry / cadastral map sources",
+        "operator": "Official city, regional or national public authority, as described per source",
+        "homeUrl": "https://olarms.ogunstate.gov.ng/",
+        "observation": "The state land registry/admin office is physically in Abeokuta and the official portal lists Abeokuta schemes. The official OLARMS-GIS landing page advertises parcel polygons and cadastral maps, but entry is through a sign-in/start flow and no public terms or anonymous schema are supplied. A separate property-ID map advertises parcel click-through to PID/address; it was not used. No anonymous geometry-only endpoint was verified."
+      }
+    ],
+    "requests": []
+  },
+  "status": "complete",
+  "verifiedParcelResponse": null,
+  "source": null,
+  "coverageAssessment": {
+    "claimedScope": "Ogun State’s official OLARMS portal describes state land registration/search and property-registration services, lists government land schemes in Abeokuta, and places the Bureau of Lands and Survey GIS office at Oke-Mosan, Abeokuta. This is city-located institutional evidence, not a claim of citywide parcel coverage.",
+    "verifiedOpenScope": "No anonymous public geometry-only parcel response was verified.",
+    "countrywideVerified": false
+  },
+  "registryFound": true,
+  "verifiedSample": false,
+  "resultCategory": "no_verified_sample_candidate_citywide",
+  "technicalBlocker": "The primary land-registry workflow requires account/transaction steps; the GIS landing page lacks an anonymous schema, and the public property-ID map exposes IDs/address on selection. No geometry-only public route was verified.",
+  "remainingUncertainty": "Whether OLARMS-GIS has a public geometry-only endpoint separate from its sign-in/start workflow and property-identification map.",
+  "nextStep": "If parcel geometry is needed, verify a distinct official public geometry-only feature service with a server-side allowlist before any point request.",
+  "schemaVersion": 1,
+  "checkedAt": "2026-10-09",
+  "wupCityCode": 1570,
+  "cityId": "wup2025:1570",
+  "runtimeReadiness": "not_enabled_no_verified_public_geometry",
+  "adapterReady": false,
+  "centerLatLon": [
+    7.1651739338135,
+    3.34634847941721
+  ],
+  "queueRank": 659,
+  "population2025": 801826,
+  "populationPlausibility2025": "Low",
+  "populationUnit": "persons",
+  "pointBasis": "UN WUP 2025 population-weighted settlement centroid; this is not a municipal boundary or a parcel-coverage claim.",
+  "publicParcelGeometryFound": false,
+  "sourceIds": [],
+  "registryBasis": "Ogun State’s official OLARMS portal describes state land registration/search and property-registration services, lists government land schemes in Abeokuta, and places the Bureau of Lands and Survey GIS office at Oke-Mosan, Abeokuta. This is city-located institutional evidence, not a claim of citywide parcel coverage.",
+  "registryEvidenceUrls": [
+    "https://olarms.ogunstate.gov.ng/"
+  ],
+  "rootReviewedAt": "2026-10-09T02:33:40.013985+00:00"
+}

@@ -1,0 +1,65 @@
+{
+  "schemaVersion": 1,
+  "checkedAt": "2026-10-09",
+  "sourceId": "cn-honghuagang-registry-map-review",
+  "purpose": "Bounded city-specific registry/map source review for the WUP ranked settlement point; geometry-only where verified.",
+  "primaryPublisher": "Guizhou Provincial Government Service Portal / Zunyi real estate registration system",
+  "sourceUrl": "https://zwfw.guizhou.gov.cn/eptemp.aspx?areacode=520300",
+  "registryFound": true,
+  "registryBasis": "The official Zunyi-area service portal identifies a Honghuagang real-estate registration subcenter. This proves a local registration service exists, but does not establish any public parcel geometry coverage.",
+  "officialSources": [
+    {
+      "url": "https://zwfw.guizhou.gov.cn/eptemp.aspx?areacode=520300",
+      "observation": "Official Guizhou government service portal scoped to Zunyi lists local real-estate registration service institutions including the Honghuagang subcenter."
+    }
+  ],
+  "searchQueries": [
+    {
+      "language": "English",
+      "query": "Honghuagang District Zunyi real estate registration center public cadastral map parcels",
+      "scope": "Find current city-specific registration/map evidence and safe anonymous geometry routes.",
+      "result": "The Guizhou provincial government service portal identifies Zunyi real-estate registration services and a Honghuagang subcenter. This establishes a city/district-bound registration service, but searches and public portal inspection did not identify an anonymous cadastral map, parcel-vector schema, or geometry endpoint. No private application or record was queried.",
+      "actualResultUrls": [
+        "https://zwfw.guizhou.gov.cn/eptemp.aspx?areacode=520300"
+      ],
+      "executionMethod": "English-language web search plus direct inspection of public official/local source routes."
+    },
+    {
+      "language": "Chinese",
+      "query": "红花岗区 不动产登记中心 红花岗分中心 地籍图 地块 公开 GIS",
+      "scope": "Find current local-language registration/map evidence and safe anonymous geometry routes.",
+      "result": "The Guizhou provincial government service portal identifies Zunyi real-estate registration services and a Honghuagang subcenter. This establishes a city/district-bound registration service, but searches and public portal inspection did not identify an anonymous cadastral map, parcel-vector schema, or geometry endpoint. No private application or record was queried.",
+      "actualResultUrls": [
+        "https://zwfw.guizhou.gov.cn/eptemp.aspx?areacode=520300"
+      ],
+      "executionMethod": "Local-language web search and review of public official source listings; no personal or property lookup."
+    }
+  ],
+  "accessReview": {
+    "publicAnonymousGeometryVerified": false,
+    "completeGeoreferencedPolygonCount": 0,
+    "geometryRetained": false,
+    "ownerAddressTaxOrPersonLookupRequested": false,
+    "authenticationOrCredentialsUsed": false,
+    "captchaOrPersonalFormSubmitted": false,
+    "routeInspectionStatus": "inspected_no_target_geometry_response",
+    "reason": "The Guizhou provincial government service portal identifies Zunyi real-estate registration services and a Honghuagang subcenter. This establishes a city/district-bound registration service, but searches and public portal inspection did not identify an anonymous cadastral map, parcel-vector schema, or geometry endpoint. No private application or record was queried.",
+    "nativeIdsUsed": "none",
+    "sampleFile": null
+  },
+  "requestEvidence": [
+    {
+      "url": "https://zwfw.guizhou.gov.cn/eptemp.aspx?areacode=520300",
+      "method": "official page inspection",
+      "status": 200,
+      "observation": "Zunyi-area public service listing identifies the Honghuagang real-estate registration subcenter; no login or personal property query used."
+    }
+  ],
+  "technicalBlocker": "The Guizhou provincial government service portal identifies Zunyi real-estate registration services and a Honghuagang subcenter. This establishes a city/district-bound registration service, but searches and public portal inspection did not identify an anonymous cadastral map, parcel-vector schema, or geometry endpoint. No private application or record was queried.",
+  "sampleDisposition": "No full parcel polygons retained.",
+  "remainingUncertainty": "A public feature geometry response and exact point parcel coverage remain unverified.",
+  "viewerClientInspection": {
+    "candidateMapFound": false,
+    "clientInspection": "No public feature service/schema route confirmed."
+  }
+}

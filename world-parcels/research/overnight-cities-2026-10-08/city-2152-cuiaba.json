@@ -1,0 +1,117 @@
+{
+  "schemaVersion": 1,
+  "kind": "city_parcel_source_research",
+  "checkedAt": "2026-10-09",
+  "name": "Cuiabá",
+  "country": "Brazil",
+  "countryCode": "BR",
+  "populationUnit": "persons",
+  "status": "complete",
+  "registryFound": true,
+  "registryBasis": "Cuiabá’s official Finance portal describes its Cadastro Fiscal Imobiliário and a map-based SIG Cuiabá route for finding a property registration number; the city links a public SIG application. The same municipal service materials say the owner may need to search by CPF to find a property registration number. These establish a local fiscal parcel cadastre and public map interface, but the reviewed JS app shell exposed no safe geometry-only response schema. No map feature, CPF, owner, registration number, or property record was queried.",
+  "registryEvidenceUrls": [
+    "https://portalfazenda.cuiaba.mt.gov.br/portalfazenda/PortalContribuinte/CadastroFiscalImobiliario/InformacoesCadFiscalImobiliario",
+    "https://www.cuiaba.mt.gov.br/secretarias/economia/sig-cuiaba",
+    "https://app.smartgis.net.br/cuiaba/publico/",
+    "https://portalfazenda.cuiaba.mt.gov.br/portalfazenda/PortalContribuinte/IPTU/DuvidasFrequentes",
+    "https://gazetamunicipal.cuiaba.mt.gov.br/api/api/editions/viewPdf/10443"
+  ],
+  "verifiedSample": false,
+  "publicParcelGeometryFound": false,
+  "runtimeReadiness": "not_enabled_no_verified_public_geometry",
+  "wupCityCode": 2152,
+  "cityId": "wup2025:2152",
+  "centerLatLon": [
+    -15.6146077910969,
+    -56.0874091534311
+  ],
+  "point": [
+    -15.6146077910969,
+    -56.0874091534311
+  ],
+  "rank": 663,
+  "queueRank": 663,
+  "population2025": 798772,
+  "population2025k": 798.772,
+  "populationPlausibility2025": "Moderate",
+  "pointBasis": "UN WUP 2025 population-weighted settlement centroid; this is not a municipal boundary or a parcel-coverage claim.",
+  "technicalBlocker": "The map is officially linked, but the reviewed application shell did not reveal layer schema or a safe geometry-only allowlist. The taxpayer portal explicitly describes a CPF-based owner search path; that path was not used. No cadastral registration, identity, address or tax lookup was submitted.",
+  "scopeLimits": "Official public-page/document discovery only. No owner, address, tax, personal-identity, credential, account, CPF, or property-identifier lookup was submitted or retained. No full parcel geometry was retained. The supplied WUP point is not treated as a legal boundary.",
+  "remainingUncertainty": "Whether SIG Cuiabá supports anonymous full-polygon feature access with a safe field projection independent of its fiscal-registration/property-search flow; whether citywide polygon coverage is complete.",
+  "nextStep": "Inspect a documented public SIG service/schema or layer metadata before any feature request; do not use CPF, owner, tax, address or property-registration search.",
+  "research": {
+    "executedQueries": [
+      {
+        "language": "English",
+        "query": "Cuiabá Brazil official municipal cadastral parcel GIS public map property registration geometry",
+        "result": "Cuiabá’s official Finance portal documents the municipal fiscal property cadastre and map-based SIG entry point. The linked public web application is a JS shell in the reviewed text view; no safe geometry-only layer/schema was available.",
+        "urls": [
+          "https://portalfazenda.cuiaba.mt.gov.br/portalfazenda/PortalContribuinte/CadastroFiscalImobiliario/InformacoesCadFiscalImobiliario",
+          "https://www.cuiaba.mt.gov.br/secretarias/economia/sig-cuiaba",
+          "https://app.smartgis.net.br/cuiaba/publico/"
+        ],
+        "scope": "Find official city-specific registry/cadastre evidence and safe anonymous geometry-only routes; do not submit identifiers.",
+        "method": "Separate language-specific search followed by first-party page/document review; no identity, ownership, address or property-specific query submitted."
+      },
+      {
+        "language": "Portuguese",
+        "query": "Cuiabá cadastro imobiliário municipal SIG mapa inscrição imobiliária cadastro fiscal imobiliário",
+        "result": "As fontes municipais confirmam o Cadastro Fiscal Imobiliário e o SIG Cuiabá para localizar inscrição imobiliária por mapa. O FAQ indica que a busca do imóvel pode exigir CPF do proprietário. Nenhuma busca de imóvel/CPF foi feita; o app não forneceu esquema seguro de geometria anônima.",
+        "urls": [
+          "https://portalfazenda.cuiaba.mt.gov.br/portalfazenda/PortalContribuinte/CadastroFiscalImobiliario/InformacoesCadFiscalImobiliario",
+          "https://portalfazenda.cuiaba.mt.gov.br/portalfazenda/PortalContribuinte/IPTU/DuvidasFrequentes"
+        ],
+        "scope": "Find official city-specific registry/cadastre evidence and safe anonymous geometry-only routes; do not submit identifiers.",
+        "method": "Separate language-specific search followed by first-party page/document review; no identity, ownership, address or property-specific query submitted."
+      }
+    ],
+    "officialSources": [
+      {
+        "url": "https://portalfazenda.cuiaba.mt.gov.br/portalfazenda/PortalContribuinte/CadastroFiscalImobiliario/InformacoesCadFiscalImobiliario",
+        "observation": "The official city Finance portal describes the Cadastro Fiscal Imobiliário and the SIG Cuiabá “Localização Inscrição Imobiliária por Mapa” service. This is municipal fiscal-cadastre evidence; the page does not publish a safe vector schema."
+      },
+      {
+        "url": "https://www.cuiaba.mt.gov.br/secretarias/economia/sig-cuiaba",
+        "observation": "Cuiabá’s municipal portal links the public SIG Cuiabá application at app.smartgis.net.br/cuiaba/publico/."
+      },
+      {
+        "url": "https://app.smartgis.net.br/cuiaba/publico/",
+        "observation": "The official public map route returned only a JavaScript application shell in the reviewed text interface; no layer list, safe field allowlist or geometry response was exposed."
+      },
+      {
+        "url": "https://portalfazenda.cuiaba.mt.gov.br/portalfazenda/PortalContribuinte/IPTU/DuvidasFrequentes",
+        "observation": "The official FAQ says property owners can use SIG Cuiabá or the taxpayer portal to find the property registration number and may search the property through CPF. No owner or property query was made."
+      },
+      {
+        "url": "https://gazetamunicipal.cuiaba.mt.gov.br/api/api/editions/viewPdf/10443",
+        "observation": "An official municipal gazette specification refers to the city’s cadastral cartographic base and shapefile outputs for lot, block and building layers in a contracted update. It does not establish public anonymous access to those vectors."
+      }
+    ],
+    "metadataReviewFile": "cuiaba-service-review.json"
+  },
+  "source": {
+    "sourceId": "br-cuiaba-registry-review",
+    "name": "Cuiabá local registry/cadastre route review",
+    "operator": "Prefeitura Municipal de Cuiabá — Secretaria Municipal de Economia / Cadastro Fiscal Imobiliário",
+    "url": "https://portalfazenda.cuiaba.mt.gov.br/portalfazenda/PortalContribuinte/CadastroFiscalImobiliario/InformacoesCadFiscalImobiliario",
+    "scope": "Cuiabá’s official Finance portal describes its Cadastro Fiscal Imobiliário and a map-based SIG Cuiabá route for finding a property registration number; the city links a public SIG application. The same municipal service materials say the owner may need to search by CPF to find a property registration number. These establish a local fiscal parcel cadastre and public map interface, but the reviewed JS app shell exposed no safe geometry-only response schema. No map feature, CPF, owner, registration number, or property record was queried.",
+    "nativeIdField": null,
+    "attributesRequested": [],
+    "identityBasis": "No safe parcel feature identifier retrieved.",
+    "geometryStatus": "city_registry_basis_only_no_public_geometry_contract"
+  },
+  "coverageAssessment": {
+    "verifiedOpenScope": "Cuiabá’s official Finance portal describes its Cadastro Fiscal Imobiliário and a map-based SIG Cuiabá route for finding a property registration number; the city links a public SIG application. The same municipal service materials say the owner may need to search by CPF to find a property registration number. These establish a local fiscal parcel cadastre and public map interface, but the reviewed JS app shell exposed no safe geometry-only response schema. No map feature, CPF, owner, registration number, or property record was queried.",
+    "notEstablished": [
+      "anonymous full-polygon access",
+      "complete citywide cadastral coverage",
+      "runtime source binding"
+    ],
+    "wupPointRelation": "No parcel geometry was returned or asserted."
+  },
+  "priorAttemptState": "pending",
+  "priorAttemptEvidence": [],
+  "resultCategory": "official_local_registry_confirmed_geometry_unverified",
+  "rootReviewedAt": "2026-10-09T02:33:40.013985+00:00",
+  "sourceIds": []
+}

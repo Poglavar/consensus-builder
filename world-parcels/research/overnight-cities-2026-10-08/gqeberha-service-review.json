@@ -1,0 +1,135 @@
+{
+  "schemaVersion": "1.0",
+  "checkedAt": "2026-10-09",
+  "cityRecord": "city-2020-gqeberha.json",
+  "purpose": "Document city-scope registry evidence and bounded public parcel-geometry route review.",
+  "scopeLimits": {
+    "maxFullPolygonsRetainedInCityRecord": 0,
+    "maxFullPolygonsRetainedInReview": 0,
+    "maxFullPolygonsRetainedInRepository": 0,
+    "ownerOrAddressDataRetained": false,
+    "credentialsOrTokenValuesRetained": false,
+    "citywideCompletenessAsserted": false
+  },
+  "assessment": "The Chief Surveyor General identifies its spatial component as a computerized map of land parcels and administrative boundaries across South Africa. Official government ArcGIS metadata identifies a nationwide polygon layer named Erven, with geometry and non-owner parcel-reference fields. A point query at the unchanged Gqeberha WUP locator did not complete before the transport timeout, so no sample or point coverage is claimed.",
+  "registryAssessment": "The Chief Surveyor General identifies its spatial component as a computerized map of land parcels and administrative boundaries across South Africa. Official government ArcGIS metadata identifies a nationwide polygon layer named Erven, with geometry and non-owner parcel-reference fields. A point query at the unchanged Gqeberha WUP locator did not complete before the transport timeout, so no sample or point coverage is claimed.",
+  "officialPrimarySources": [
+    {
+      "url": "https://csg.dlrrd.gov.za/data.htm",
+      "observation": "Official Chief Surveyor General data page describes the national spatial component as a computerised map of land parcels and administrative boundaries; search result identifies data contacts/downloads."
+    },
+    {
+      "url": "https://csg.dlrrd.gov.za/",
+      "observation": "Official CSG home identifies the national cadastral survey management system and directs data requests to Surveyor-General offices."
+    },
+    {
+      "url": "https://dffeportal.environment.gov.za/hosting/rest/services/CSG_Cadaster/CSG_Cadastral_Data/MapServer?f=pjson",
+      "observation": "Official government ArcGIS service metadata identifies the CSG national cadastral layer and custodian."
+    },
+    {
+      "url": "https://dffeportal.environment.gov.za/hosting/rest/services/CSG_Cadaster/CSG_Cadastral_Data/MapServer/2?f=pjson",
+      "observation": "HTTP 200 layer metadata: `Erven`, esriGeometryPolygon, nationwide extent, EPSG:4148, maxRecordCount 1000; schema includes safe candidates `PRCL_KEY`, `PRCL_TYPE`, `PROVINCE`, `PARCEL_NO`, `PORTION` and geometry."
+    },
+    {
+      "url": "https://dffeportal.environment.gov.za/hosting/rest/services/CSG_Cadaster/CSG_Cadastral_Data/MapServer/2/query",
+      "observation": "Exact unchanged-WUP-point query was attempted with only safe parcel key/reference fields plus full geometry; client timed out before HTTP status, so no point result is claimed."
+    },
+    {
+      "url": "https://eservices.evaluations.co.za/nmbm/index.aspx",
+      "observation": "Municipal valuation site confirms Nelson Mandela Bay property roll exists; it is owner/property-owner-oriented and was not queried for parcel data."
+    }
+  ],
+  "searchQueries": [
+    {
+      "language": "English",
+      "query": "Gqeberha cadastral erven land survey municipality official",
+      "result": "Official national CSG source and government ArcGIS polygon layer were reviewed; exact point query did not complete.",
+      "scope": "Verify the city-local registry evidence and whether an anonymous public full-polygon route is available.",
+      "urls": [
+        "https://csg.dlrrd.gov.za/data.htm",
+        "https://csg.dlrrd.gov.za/",
+        "https://dffeportal.environment.gov.za/hosting/rest/services/CSG_Cadaster/CSG_Cadastral_Data/MapServer?f=pjson",
+        "https://dffeportal.environment.gov.za/hosting/rest/services/CSG_Cadaster/CSG_Cadastral_Data/MapServer/2?f=pjson",
+        "https://dffeportal.environment.gov.za/hosting/rest/services/CSG_Cadaster/CSG_Cadastral_Data/MapServer/2/query",
+        "https://eservices.evaluations.co.za/nmbm/index.aspx"
+      ]
+    },
+    {
+      "language": "Afrikaans",
+      "query": "Port Elizabeth kadastrale erwe grondregister amptelik",
+      "result": "Search located official CSG cadastral data and national polygon layer; no city-level geometry result was obtained.",
+      "scope": "Verify the city-local registry evidence and whether an anonymous public full-polygon route is available.",
+      "urls": [
+        "https://csg.dlrrd.gov.za/data.htm",
+        "https://csg.dlrrd.gov.za/",
+        "https://dffeportal.environment.gov.za/hosting/rest/services/CSG_Cadaster/CSG_Cadastral_Data/MapServer?f=pjson",
+        "https://dffeportal.environment.gov.za/hosting/rest/services/CSG_Cadaster/CSG_Cadastral_Data/MapServer/2?f=pjson",
+        "https://dffeportal.environment.gov.za/hosting/rest/services/CSG_Cadaster/CSG_Cadastral_Data/MapServer/2/query",
+        "https://eservices.evaluations.co.za/nmbm/index.aspx"
+      ]
+    },
+    {
+      "language": "isiXhosa",
+      "query": "Gqeberha imephu yomhlaba i-erven cadastral official",
+      "result": "Search did not identify a separate municipal parcel vector source; official CSG national layer remains the candidate.",
+      "scope": "Verify the city-local registry evidence and whether an anonymous public full-polygon route is available.",
+      "urls": [
+        "https://csg.dlrrd.gov.za/data.htm",
+        "https://csg.dlrrd.gov.za/",
+        "https://dffeportal.environment.gov.za/hosting/rest/services/CSG_Cadaster/CSG_Cadastral_Data/MapServer?f=pjson",
+        "https://dffeportal.environment.gov.za/hosting/rest/services/CSG_Cadaster/CSG_Cadastral_Data/MapServer/2?f=pjson",
+        "https://dffeportal.environment.gov.za/hosting/rest/services/CSG_Cadaster/CSG_Cadastral_Data/MapServer/2/query",
+        "https://eservices.evaluations.co.za/nmbm/index.aspx"
+      ]
+    },
+    {
+      "language": "English",
+      "query": "NMBM erf register CSG cadastral map Gqeberha",
+      "result": "Official municipal valuation roll and national CSG layer identified; valuation service is not used as a geometry source.",
+      "scope": "Verify the city-local registry evidence and whether an anonymous public full-polygon route is available.",
+      "urls": [
+        "https://csg.dlrrd.gov.za/data.htm",
+        "https://csg.dlrrd.gov.za/",
+        "https://dffeportal.environment.gov.za/hosting/rest/services/CSG_Cadaster/CSG_Cadastral_Data/MapServer?f=pjson",
+        "https://dffeportal.environment.gov.za/hosting/rest/services/CSG_Cadaster/CSG_Cadastral_Data/MapServer/2?f=pjson",
+        "https://dffeportal.environment.gov.za/hosting/rest/services/CSG_Cadaster/CSG_Cadastral_Data/MapServer/2/query",
+        "https://eservices.evaluations.co.za/nmbm/index.aspx"
+      ]
+    }
+  ],
+  "serviceChecks": [
+    {
+      "url": "https://dffeportal.environment.gov.za/hosting/rest/services/CSG_Cadaster/CSG_Cadastral_Data/MapServer?f=pjson",
+      "method": "GET official government ArcGIS service metadata",
+      "result": "HTTP 200; CSG national cadastral service; child layers include Erven polygons."
+    },
+    {
+      "url": "https://dffeportal.environment.gov.za/hosting/rest/services/CSG_Cadaster/CSG_Cadastral_Data/MapServer/2?f=pjson",
+      "method": "GET layer schema",
+      "result": "HTTP 200; `Erven`, polygon, nationwide extent; only safe parcel reference/administrative fields selected for any query."
+    },
+    {
+      "url": "https://dffeportal.environment.gov.za/hosting/rest/services/CSG_Cadaster/CSG_Cadastral_Data/MapServer/2/query",
+      "method": "GET bounded exact WUP point query",
+      "result": "Client transport timed out before HTTP status; recorded as inconclusive, not as service failure. No data retained."
+    },
+    {
+      "url": "https://eservices.evaluations.co.za/nmbm/index.aspx",
+      "method": "GET municipal valuation site",
+      "result": "Property-owner valuation workflow is not a parcel geometry endpoint; no accounts/property identifiers or personal data submitted."
+    }
+  ],
+  "geometryEvidence": "No full parcel geometry was retained. Official service metadata confirms a national polygon layer but the exact-city point query timed out before HTTP status, so there is no verified sample or point-coverage claim.",
+  "privacy": {
+    "ownerOrAddressDataRequested": false,
+    "ownerOrAddressDataRetained": false,
+    "credentialsOrTokensRequested": false,
+    "credentialsOrTokensRetained": false,
+    "notes": "Only public city-level or exact WUP locator requests were considered; no owner, address, account, or credential values were retained."
+  },
+  "runtimeAssessment": {
+    "status": "unverified",
+    "reason": "No public full-polygon/native-key response was verified at the exact WUP locator; source candidates remain unqualified."
+  },
+  "geometryDisposition": "No full parcel geometry was retained. Official service metadata confirms a national polygon layer but the exact-city point query timed out before HTTP status, so there is no verified sample or point-coverage claim."
+}

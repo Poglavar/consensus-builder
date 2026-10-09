@@ -1,0 +1,60 @@
+{
+  "schemaVersion": 1,
+  "checkedAt": "2026-10-09",
+  "sourceId": null,
+  "purpose": "Service review for WUP2025 rank 808 Jiamusi (city code 10156); city-local registry evidence and safe anonymous full-polygon access status.",
+  "primaryPublisher": "China",
+  "sourceUrl": "https://www.zwfw.hlj.gov.cn/jmopenpub/jmopen_files/webapp/html5/bdczq/index.html",
+  "registryFound": true,
+  "registryBasis": "Official Jiamusi real-estate registration information lists the municipal registration center and service points in the urban districts, and the Heilongjiang government service portal hosts Jiamusi’s online registration application/appointment/records entry. These are local registration services covering the city center; the public landing pages do not expose a safe anonymous parcel-geometry schema.",
+  "officialSources": [
+    {
+      "url": "https://www.zwfw.hlj.gov.cn/jmopenpub/jmopen_files/webapp/html5/bdczq/index.html",
+      "observation": "Official Heilongjiang government service page for Jiamusi presents online real-estate registration, appointments, certificate and progress inquiry entry points; no anonymous parcel geometry layer is advertised."
+    },
+    {
+      "url": "https://www.jms.gov.cn/",
+      "observation": "Official Jiamusi municipal government portal; no public parcel feature service was located from the reviewed local sources."
+    }
+  ],
+  "searchQueries": [
+    {
+      "language": "English",
+      "query": "Jiamusi China official real estate registration center cadastral map parcel GIS public API",
+      "result": "Search found the official Heilongjiang government-service registration page for Jiamusi and city-center registration services. The public service page offers online registration/appointment and certificate/progress lookup, but no anonymous geometry-only dataset or safe feature schema was found. No parcel lookup was attempted.",
+      "urls": [
+        "https://www.zwfw.hlj.gov.cn/jmopenpub/jmopen_files/webapp/html5/bdczq/index.html",
+        "https://www.jms.gov.cn/"
+      ]
+    },
+    {
+      "language": "Chinese",
+      "query": "佳木斯市 不动产登记中心 地籍图 查询 GIS 公开地图 官方",
+      "result": "黑龙江政务服务平台的佳木斯页面展示不动产在线登记、预约和证书/进度查询入口；本地登记中心设有市区服务网点。未找到匿名公开地籍要素服务或只返回几何与安全编号的字段模式；未提交查询。",
+      "urls": [
+        "https://www.zwfw.hlj.gov.cn/jmopenpub/jmopen_files/webapp/html5/bdczq/index.html",
+        "https://www.jms.gov.cn/"
+      ]
+    }
+  ],
+  "accessReview": {
+    "publicAnonymousGeometryVerified": false,
+    "completeGeoreferencedPolygonCount": 0,
+    "geometryRetained": false,
+    "ownerAddressTaxOrPersonLookupRequested": false,
+    "authenticationOrCredentialsUsed": false,
+    "captchaOrPersonalFormSubmitted": false,
+    "routeInspectionStatus": "no_safe_public_geometry_contract_verified",
+    "reason": "Local real-estate registration services are verified, but no public anonymous parcel-feature endpoint with a geometry-and-safe-ID schema was found. The service workflows include registration/certificate lookups and were not submitted."
+  },
+  "requestEvidence": [
+    {
+      "route": "No anonymous full-polygon route with a safe schema was verified.",
+      "status": "not_queried",
+      "result": "No geometry or feature attributes received/retained."
+    }
+  ],
+  "technicalBlocker": "Local real-estate registration services are verified, but no public anonymous parcel-feature endpoint with a geometry-and-safe-ID schema was found. The service workflows include registration/certificate lookups and were not submitted.",
+  "sampleDisposition": "No parcel polygons or parcel feature attributes retained.",
+  "remainingUncertainty": "No safe public parcel geometry, exact WUP-point parcel presence, layer schema, or citywide completeness was verified."
+}

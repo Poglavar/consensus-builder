@@ -1,0 +1,61 @@
+{
+  "schemaVersion": "1.0",
+  "checkedAt": "2026-10-09",
+  "cityRecord": "city-7376-patiala.json",
+  "purpose": "Document city-scope registry evidence and bounded public parcel-geometry route review.",
+  "scopeLimits": {
+    "maxFullPolygonsRetainedInCityRecord": 3,
+    "maxFullPolygonsRetainedInReview": 3,
+    "maxFullPolygonsRetainedInRepository": 3,
+    "ownerOrAddressDataRetained": false,
+    "credentialsOrTokenValuesRetained": false,
+    "citywideCompletenessAsserted": false
+  },
+  "assessment": "District Patiala official land-record service and the Government of Punjab village-wise Cadastral Map page are confirmed. The latter requires district/tehsil/village selection but does not expose a safe feature schema in the inspected shell.",
+  "registryAssessment": "The District Patiala government identifies Punjab land-record services, a Patiala PLRS office at the district complex, and links its official land-record service. The Government of Punjab cadastral-map portal exposes village-wise map selectors for district, tehsil, and village. The inspected public shell exposes no parcel geometry response schema, stable-ID allowlist, or CRS; no selector was submitted and no map/features were requested.",
+  "officialPrimarySources": [
+    {
+      "url": "https://patiala.nic.in/service/punjab-land-records/",
+      "observation": "Official District Patiala land-record service identifies the Punjab Land Records Society and lists the PLRS office at Room 314, District Office Patiala."
+    },
+    {
+      "url": "https://jamabandi.punjab.gov.in/CadastralMap.aspx",
+      "observation": "Government of Punjab portal labels a village-wise Cadastral Map and publicly shows district/tehsil/village selectors. The static shell does not describe feature attributes, geometry format, stable IDs, or CRS; no selector was submitted."
+    },
+    {
+      "url": "https://dilrmp.gov.in/dilrmpold/MapULPIN/tehsil-level/48",
+      "observation": "Government of India DILRMP page provides Patiala tehsil-level digitization/georeferencing/parcel status statistics only; it is not parcel geometry."
+    }
+  ],
+  "searchQueries": [
+    {
+      "language": "English",
+      "query": "Patiala India official land records cadastral map parcel registry Punjab government",
+      "result": "District Patiala official land-record service and the Government of Punjab village-wise Cadastral Map page are confirmed. The latter requires district/tehsil/village selection but does not expose a safe feature schema in the inspected shell.",
+      "method": "English-language search followed by primary-source review."
+    },
+    {
+      "language": "Punjabi",
+      "query": "ਪਟਿਆਲਾ ਜ਼ਮੀਨ ਰਿਕਾਰਡ ਕੈਡਸਟ੍ਰਲ ਨਕਸ਼ਾ ਸਰਕਾਰੀ ਪੰਜਾਬ",
+      "result": "ਪੰਜਾਬ ਸਰਕਾਰ ਦੇ ਜਮਾਬੰਦੀ ਪੋਰਟਲ ਉੱਤੇ ਪਿੰਡ-ਵਾਰ Cadastral Map ਚੋਣਾਂ (ਜ਼ਿਲ੍ਹਾ, ਤਹਿਸੀਲ, ਪਿੰਡ) ਦਿਖਦੀਆਂ ਹਨ; ਪਰ ਜਿਓਮੈਟਰੀ ਅਤੇ ਸੁਰੱਖਿਅਤ ਸਥਿਰ ID ਦਾ ਸਕੀਮਾ ਨਹੀਂ ਮਿਲਿਆ। ਕੋਈ ਚੋਣ ਜਾਂ ਰਿਕਾਰਡ ਖੋਜ ਨਹੀਂ ਕੀਤੀ।",
+      "method": "Local-language search followed by primary-source review."
+    }
+  ],
+  "serviceChecks": [],
+  "geometryEvidence": null,
+  "accessReview": {
+    "publicAnonymousGeometryVerified": false,
+    "completeGeoreferencedPolygonCount": 0,
+    "geometryRetained": false,
+    "ownerAddressTaxOrPersonLookupRequested": false,
+    "authenticationOrCredentialsUsed": false,
+    "captchaOrPersonalFormSubmitted": false,
+    "routeInspectionStatus": "schema_unverified",
+    "reason": "The District Patiala portal lists a PLRS office at the Patiala district office and links to Punjab land-records services. The official Punjab Cadastral Map page is labeled village-wise and exposes district/tehsil/village selectors plus unrelated jamabandi navigation including owner-name, khewat, khasra, mutation and registered-deed searches. The static page provides no safe feature schema/attribute allowlist or CRS, and no form or map request was submitted. The DILRMP tehsil dashboard provides status statistics only, not parcel geometries. No owner/record/registration lookup was performed."
+  },
+  "privacy": "No owner/address/tax/account/property-record query, login, or private attribute extraction was performed. No geometry retained.",
+  "runtimeAssessment": {
+    "status": "not_enabled_no_verified_safe_geometry_schema",
+    "reason": "City-level land-record and state cadastral-map services are confirmed, but the public map shell did not expose a geometry-only response with safe stable IDs. Any cadastral map output may be raster or include parcel records; current geometry/identity cannot be established from the inspected page. No parcel coverage at the WUP point is asserted."
+  }
+}

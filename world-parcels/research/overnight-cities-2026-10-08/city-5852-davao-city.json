@@ -1,0 +1,165 @@
+{
+  "name": "Davao City",
+  "country": "Philippines",
+  "countryCode": "PH",
+  "rank": 322,
+  "point": [
+    7.08353064229607,
+    125.587999586852
+  ],
+  "freshResearch": {
+    "queries": [
+      {
+        "language": "Filipino (Tagalog) / Cebuano terms",
+        "query": "Davao City mapa ng lupa mapa sa lote cadastral tax mapping City Assessor opisyal",
+        "scope": "Find first-party local land-parcel mapping and a public cadastral geometry endpoint.",
+        "result": "Native-language search terms surfaced the City Government of Davao City Assessor and the official GIS portal. The local assessor explicitly maintains a tax-mapping system. The current 2026 Citizens’ Charter says Map Verification requires an in-person request, government ID, title copy and PHP 50 per parcel. No public parcel-vector route was found.",
+        "actualResultUrls": [
+          "https://davaocity.gov.ph/departments/fiscal-management/city-assessors-office/",
+          "https://www.davaocity.gov.ph/wp-content/uploads/2023/07/CC-Handbook-Revised-II-July-5-2023.pdf",
+          "https://gismap.davaocity.gov.ph/",
+          "https://davaocity.gov.ph/wp-content/uploads/2026/03/CGD_CC2026_VOLUMEIE.pdf"
+        ],
+        "executionMethod": "Native-language search terms plus official City Assessor, city GIS and Citizens’ Charter pages; no personal/property data was entered."
+      },
+      {
+        "language": "English",
+        "query": "Davao City official cadastral parcel map tax mapping City Assessor WFS public GIS",
+        "scope": "Cross-check the public Davaomap layers against local assessor tax-map services.",
+        "result": "The City Assessor states that it maintains real-property tax maps and records. The official public Davaomap describes boundaries, barangays, streets and zoning; the public GeoServer lists 35 map feature types but no parcel/title cadastral layer. The current 2026 Map Verification transaction requires an ID and title copy and costs PHP 50 per parcel. No public full parcel geometry was retrieved.",
+        "actualResultUrls": [
+          "https://davaocity.gov.ph/departments/fiscal-management/city-assessors-office/",
+          "https://davaocity.gov.ph/davao-city-gis-map/",
+          "https://gismap.davaocity.gov.ph/Davaomap/",
+          "https://gismap.davaocity.gov.ph/geoserver/wfs?service=WFS&request=GetCapabilities",
+          "https://davaocity.gov.ph/wp-content/uploads/2026/03/CGD_CC2026_VOLUMEIE.pdf"
+        ],
+        "executionMethod": "Separate English-language search, official GIS/app script and GeoServer capabilities inspection, and official City Assessor service charter."
+      }
+    ],
+    "portals": [
+      {
+        "name": "City Assessor’s Office (CASSO)",
+        "operator": "City Government of Davao",
+        "homeUrl": "https://davaocity.gov.ph/departments/fiscal-management/city-assessors-office/",
+        "observation": "First-party office page says CASSO maintains tax mapping, property assessment and records services for the city."
+      },
+      {
+        "name": "Davaomap / Davao City Webmaps",
+        "operator": "City Planning and Development Office, City Government of Davao",
+        "homeUrl": "https://gismap.davaocity.gov.ph/Davaomap/",
+        "observation": "Public web map exposes streets/roads, rivers, barangay and district boundaries, congressional boundaries and zoning. GeoServer capabilities list 35 public map feature types; no parcel or cadastral type appeared."
+      },
+      {
+        "name": "CASSO Map Verification",
+        "operator": "City Assessor’s Office – Tax Mapping Division",
+        "homeUrl": "https://davaocity.gov.ph/wp-content/uploads/2026/03/CGD_CC2026_VOLUMEIE.pdf",
+        "observation": "Current 2026 official Citizens’ Charter describes an in-person request to verify a property location in the tax map, requiring a request form, government ID, title copy and official receipt; PHP 50 per parcel."
+      },
+      {
+        "name": "Davao City GIS Division",
+        "operator": "Office of the City Planning and Development Coordinator",
+        "homeUrl": "https://cpdoapps.davaocity.gov.ph/divisions/gis",
+        "observation": "Official page offers GIS data/maps on request through the office; it does not advertise parcel vector downloads."
+      }
+    ],
+    "requests": [
+      {
+        "url": "https://davaocity.gov.ph/davao-city-gis-map/",
+        "method": "GET web inspection",
+        "httpStatus": 200,
+        "contentType": "text/html",
+        "observation": "City Government page identifies Davaomap as the official city GIS and describes boundaries, barangays, roads and zoning."
+      },
+      {
+        "url": "https://gismap.davaocity.gov.ph/Davaomap/",
+        "method": "GET web inspection",
+        "httpStatus": 200,
+        "contentType": "text/html",
+        "observation": "Public map UI lists only general reference layers, district/ barangay boundaries, streets, rivers and zoning."
+      },
+      {
+        "url": "https://gismap.davaocity.gov.ph/Zoning/js/script.js",
+        "method": "GET",
+        "httpStatus": 200,
+        "contentType": "application/javascript",
+        "observation": "Public app script configures WFS search against Davao:Barangay; no parcel feature request is present in this map's search flow."
+      },
+      {
+        "url": "https://gismap.davaocity.gov.ph/geoserver/wfs?service=WFS&request=GetCapabilities",
+        "method": "GET",
+        "httpStatus": 200,
+        "contentType": "application/xml",
+        "observation": "GeoServer capabilities enumerate 35 feature types, including Barangay, district, Streets and zoning/risk layers; none is a parcel/title/cadastral feature type."
+      },
+      {
+        "url": "https://davaocity.gov.ph/departments/fiscal-management/city-assessors-office/",
+        "method": "GET web inspection",
+        "httpStatus": 200,
+        "contentType": "text/html",
+        "observation": "Official office page establishes city tax-mapping and real-property records services."
+      },
+      {
+        "url": "https://davaocity.gov.ph/wp-content/uploads/2026/03/CGD_CC2026_VOLUMEIE.pdf",
+        "method": "GET web inspection",
+        "httpStatus": 200,
+        "contentType": "application/pdf",
+        "observation": "Current 2026 Citizens’ Charter documents in-person Map Verification, required ID/title documents, an official receipt and PHP 50 per parcel."
+      }
+    ],
+    "executionMethod": "Filipino/Cebuano-language search terms and English official-source search; direct read-only WFS capability and static JavaScript inspection; no parcel or owner query."
+  },
+  "status": "complete",
+  "verifiedParcelResponse": {
+    "httpStatus": null,
+    "featureType": null,
+    "responseType": null,
+    "responseCrs": null,
+    "returnedFullPolygonCount": 0,
+    "uniqueFullPolygonCount": 0,
+    "wupPointContained": null,
+    "limitations": "The public GIS has non-parcel city reference layers. Local City Assessor maintains tax maps, but map verification is a document/request workflow. No parcel API or geometry query was made."
+  },
+  "source": {
+    "sourceId": "PH-DAVAO-CASSO-TAX-MAPPING",
+    "name": "Davao City Assessor tax-mapping and property-record system",
+    "operator": "City Government of Davao",
+    "url": "https://davaocity.gov.ph/departments/fiscal-management/city-assessors-office/",
+    "serviceType": "Local tax mapping and property records; public parcel-vector format not verified.",
+    "geometryType": null,
+    "outputCrs": null,
+    "nativeIdField": null
+  },
+  "coverageAssessment": {
+    "claimedScope": "CASSO maintains real-property assessment, tax mapping and records for its municipal jurisdiction.",
+    "verifiedOpenScope": "Davaomap's open layers cover city reference and zoning themes. The parcel-level tax map is handled through the City Assessor's application/verification workflow; no open vector endpoint was confirmed.",
+    "countrywideVerified": false,
+    "citywideVerified": false
+  },
+  "registryFound": true,
+  "registryBasis": "First-party Davao City Assessor says it maintains the city's tax-mapping system and real-property records; its official Map Verification service explicitly handles property location in the tax map.",
+  "verifiedSample": false,
+  "publicParcelGeometryFound": false,
+  "resultCategory": "local_tax_cadastre_confirmed_no_public_parcel_layer",
+  "technicalBlocker": "The official city GIS exposes general reference, boundaries, roads, zoning and risk layers, but GeoServer capabilities contain no parcel/title layer. Parcel map verification requires an in-person request with an ID and title copy plus fee.",
+  "remainingUncertainty": "Whether CASSO or CPDO has a separately published non-indexed parcel map accessible to the public; the current public web-map and service documentation provide no such route.",
+  "nextStep": "Keep runtime disabled. If the City Assessor publishes an open parcel-vector endpoint, verify a bounded WUP-neighborhood feature response before adapter work.",
+  "schemaVersion": 1,
+  "checkedAt": "2026-10-09",
+  "wupCityCode": 5852,
+  "cityId": "wup2025:5852",
+  "queueRank": 322,
+  "population2025k": 1546.026,
+  "population2025": 1546026,
+  "populationPlausibility2025": "High",
+  "populationUnit": "persons",
+  "pointBasis": "UN WUP 2025 population-weighted settlement centroid; this is not a municipal boundary or a parcel-coverage claim.",
+  "centerLatLon": [
+    7.08353064229607,
+    125.587999586852
+  ],
+  "runtimeReadiness": "not_enabled_no_verified_public_geometry",
+  "adapterReady": false,
+  "sourceIds": [],
+  "rootReviewedAt": "2026-10-08T22:32:33.023730+00:00"
+}

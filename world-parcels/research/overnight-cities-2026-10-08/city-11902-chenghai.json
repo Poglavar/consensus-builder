@@ -1,0 +1,94 @@
+{
+  "schemaVersion": 1,
+  "kind": "city_parcel_source_research",
+  "checkedAt": "2026-10-09",
+  "name": "Chenghai",
+  "country": "China",
+  "countryCode": "CN",
+  "populationUnit": "persons",
+  "status": "complete",
+  "registryFound": true,
+  "registryBasis": "The official Shantou Municipal Natural Resources Bureau service guide explicitly lists the Chenghai District Real Estate Registration and Transaction Center and its Chenghai service locations. This verifies a city/district-specific registry institution, not a public parcel-vector endpoint.",
+  "registryEvidenceUrls": [
+    "https://www.shantou.gov.cn/stszrzyj/zljs/yhyshj/bszn/content/post_2342822.html",
+    "https://www.shantou.gov.cn/stszrzyj/",
+    "https://www.shantou.gov.cn/cnst/ztzl/sthqbmzczt/chqrmzfmhwz/index.html"
+  ],
+  "verifiedSample": false,
+  "publicParcelGeometryFound": false,
+  "runtimeReadiness": "not_enabled_no_verified_public_geometry",
+  "wupCityCode": 11902,
+  "cityId": "wup2025:11902",
+  "centerLatLon": [
+    23.4865371056598,
+    116.778763937351
+  ],
+  "rank": 596,
+  "queueRank": 596,
+  "population2025": 875988,
+  "population2025k": 875.988,
+  "pointBasis": "UN WUP 2025 population-weighted settlement centroid; this is not a municipal boundary or a parcel-coverage claim.",
+  "technicalBlocker": "No anonymous public vector feature route or schema was found from official Chenghai/Shantou sources; no geometry retained.",
+  "scopeLimits": "Official Shantou natural-resources service guide names the Chenghai district registration center and two local service locations. No registration form or property identifier was used. Public cadastral vector geometry for Chenghai was not verified.",
+  "remainingUncertainty": "Citywide parcel coverage is not established. For the Florida row, retained geometry is from a countywide service and municipal-boundary coverage is unverified. For other rows, no broader completeness claim is made.",
+  "research": {
+    "executedQueries": [
+      {
+        "language": "English",
+        "query": "Chenghai Shantou China official real estate registration cadastral map GIS parcel",
+        "scope": "Find city-specific primary registry evidence and safe anonymous geometry-only sources.",
+        "result": "The official Shantou Municipal Natural Resources Bureau service guide explicitly lists the Chenghai District Real Estate Registration and Transaction Center and its Chenghai service locations. This verifies a city/district-specific registry institution, not a public parcel-vector endpoint. Reviewed the official Chinese service guide and district/city map-service discovery. The guide is a counter-service directory; no parcel or registration lookup. No anonymous geometry schema or public vector service was identified. No authentication or owner/address workflow entered.",
+        "actualResultUrls": [
+          "https://www.shantou.gov.cn/stszrzyj/zljs/yhyshj/bszn/content/post_2342822.html",
+          "https://www.shantou.gov.cn/stszrzyj/",
+          "https://www.shantou.gov.cn/cnst/ztzl/sthqbmzczt/chqrmzfmhwz/index.html"
+        ],
+        "executionMethod": "English/local-language query plus official-source/schema review; no owner, address, tax, or property lookup."
+      },
+      {
+        "language": "Chinese",
+        "query": "澄海区 不动产登记交易中心 地籍图 GIS 官方 汕头市自然资源局",
+        "scope": "Find city-specific primary registry evidence and safe anonymous geometry-only sources.",
+        "result": "The official Shantou Municipal Natural Resources Bureau service guide explicitly lists the Chenghai District Real Estate Registration and Transaction Center and its Chenghai service locations. This verifies a city/district-specific registry institution, not a public parcel-vector endpoint. Reviewed the official Chinese service guide and district/city map-service discovery. The guide is a counter-service directory; no parcel or registration lookup. No anonymous geometry schema or public vector service was identified. No authentication or owner/address workflow entered.",
+        "actualResultUrls": [
+          "https://www.shantou.gov.cn/stszrzyj/zljs/yhyshj/bszn/content/post_2342822.html",
+          "https://www.shantou.gov.cn/stszrzyj/",
+          "https://www.shantou.gov.cn/cnst/ztzl/sthqbmzczt/chqrmzfmhwz/index.html"
+        ],
+        "executionMethod": "English/local-language query plus official-source/schema review; no owner, address, tax, or property lookup."
+      }
+    ]
+  },
+  "source": {
+    "sourceId": "cn-shantou-chenghai-registration",
+    "name": "Chenghai registry and parcel geometry review",
+    "operator": "Shantou Municipal Natural Resources Bureau; Chenghai District Real Estate Registration and Transaction Center",
+    "url": "https://www.shantou.gov.cn/stszrzyj/zljs/yhyshj/bszn/content/post_2342822.html",
+    "scope": "Official Shantou natural-resources service guide names the Chenghai district registration center and two local service locations. No registration form or property identifier was used. Public cadastral vector geometry for Chenghai was not verified.",
+    "nativeIdField": null,
+    "attributesRequested": [],
+    "identityBasis": "No feature ID obtained.",
+    "geometryStatus": "no_anonymous_geometry_schema_found"
+  },
+  "coverageAssessment": {
+    "verifiedOpenScope": "Official Shantou natural-resources service guide names the Chenghai district registration center and two local service locations. No registration form or property identifier was used. Public cadastral vector geometry for Chenghai was not verified.",
+    "citywideVerified": false,
+    "countrywideVerified": false
+  },
+  "priorEvidenceFiles": [],
+  "populationPlausibility2025": "High",
+  "sourceIds": [],
+  "point": [
+    23.4865371056598,
+    116.778763937351
+  ],
+  "sampleFile": null,
+  "sampleFeatureCount": 0,
+  "sampleCrs": null,
+  "geometryEvidence": null,
+  "runtimeAssessment": {
+    "runtimeEnabled": false,
+    "reason": "No city-local full polygon response at the WUP locator was verified."
+  },
+  "rootReviewedAt": "2026-10-09T01:54:44.086328+00:00"
+}

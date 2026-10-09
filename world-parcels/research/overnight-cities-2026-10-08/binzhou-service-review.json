@@ -1,0 +1,39 @@
+{
+  "schemaVersion": "1.0",
+  "checkedAt": "2026-10-09",
+  "cityRecord": "city-9998-binzhou.json",
+  "purpose": "City-specific registry and public parcel-geometry source review. No owner, address, tax, or private property fields were requested or retained.",
+  "scopeLimits": {
+    "maxFullPolygonsRetainedInCityRecord": 0,
+    "maxFullPolygonsRetainedInReview": 0,
+    "maxFullPolygonsRetainedInRepository": 0,
+    "ownerOrAddressDataRetained": false,
+    "credentialsOrPrivateRecordLookupsUsed": false,
+    "citywideCompletenessAsserted": false
+  },
+  "assessment": "The municipal root page timed out during this review. Official natural-resources bureau reports from other Shandong cities explicitly refer to Binzhou’s Real Estate Transaction and Registration Center; local Binzhou reporting describes that center’s 2026 service activity. No anonymous parcel vector endpoint was identified. No geometry feature was retained; geometry evidence remains unverified.",
+  "officialPrimarySources": [
+    {
+      "url": "https://www.binzhou.gov.cn/",
+      "observation": "The municipal root page timed out during this review. Official natural-resources bureau reports from other Shandong cities explicitly refer to Binzhou’s Real Estate Transaction and Registration Center; local Binzhou reporting describes that center’s 2026 service activity. No anonymous parcel vector endpoint was identified."
+    }
+  ],
+  "searches": [
+    {
+      "language": "English",
+      "query": "Binzhou Shandong official real estate registration center cadastral parcel map GIS natural resources bureau"
+    },
+    {
+      "language": "Chinese",
+      "query": "滨州市 不动产交易登记中心 不动产登记 服务 官方 滨州"
+    }
+  ],
+  "geometryEvidence": null,
+  "decision": {
+    "registryFound": true,
+    "publicParcelGeometryFound": null,
+    "verifiedSample": false,
+    "adapterReady": false
+  },
+  "nextStep": "If a clearly public feature endpoint is later documented, inspect schema first and query only safe stable IDs plus geometry in a bounded viewport."
+}

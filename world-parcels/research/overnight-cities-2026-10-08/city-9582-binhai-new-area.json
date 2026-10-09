@@ -1,0 +1,112 @@
+{
+  "name": "Binhai New Area",
+  "country": "China",
+  "countryCode": "CN",
+  "rank": 506,
+  "point": [
+    39.0182796644856,
+    117.661130756039
+  ],
+  "population2025": 1017230,
+  "schemaVersion": 1,
+  "kind": "city_parcel_source_research",
+  "checkedAt": "2026-10-09",
+  "populationUnit": "persons",
+  "status": "complete",
+  "verifiedSample": false,
+  "publicParcelGeometryFound": false,
+  "runtimeReadiness": "not_enabled_no_verified_public_geometry",
+  "priorEvidenceFiles": [],
+  "scopeLimits": "This record covers source discovery only. The WUP point is a settlement centroid, not a parcel identity or municipal boundary. No full parcel geometry, owner data, address data, or credentials were retained.",
+  "pointBasis": "UN WUP 2025 population-weighted settlement centroid; this is not a municipal boundary or a parcel-coverage claim.",
+  "registryFound": true,
+  "registryBasis": "Official Tianjin registration rule assigns the Binhai New Area branch real-estate registration cases in Binhai, with specified exceptions. Local official material identifies registry-center operations. This does not establish a public parcel geometry service.",
+  "resultCategory": "local_real_estate_registry_no_public_geometry_verified",
+  "research": {
+    "executedQueries": [
+      {
+        "language": "English",
+        "query": "Binhai New Area Tianjin official cadastral parcel map land registry GIS",
+        "scope": "Find city-specific cadastral/land-record sources and public parcel geometry.",
+        "result": "English-language official material provides area context; no anonymous parcel vector endpoint was identified.",
+        "actualResultUrls": [
+          "https://www.teda.gov.cn/"
+        ],
+        "executionMethod": "Separate web search in the stated language followed by official-source and public viewer/service inspection."
+      },
+      {
+        "language": "Chinese (Simplified)",
+        "query": "天津 滨海新区 不动产登记 地籍图 地块 官方 GIS",
+        "scope": "Find city-specific cadastral/land-record sources and public parcel geometry.",
+        "result": "Official Tianjin rule establishes the Binhai New Area branch as a local real-estate registration office. Public natural-resources mapping sources reviewed did not establish an anonymous cadastral parcel feature layer; public registration workflow requires identity registration.",
+        "actualResultUrls": [
+          "https://ghzy.tj.gov.cn/",
+          "https://gis.tj.gov.cn/"
+        ],
+        "executionMethod": "Separate web search in the stated language followed by official-source and public viewer/service inspection."
+      }
+    ],
+    "officialSources": [
+      {
+        "url": "https://ghzy.tj.gov.cn/",
+        "observation": "Official Tianjin Natural Resources and Planning Bureau portal; reviewed for public mapping and parcel service entry points, no public parcel feature schema confirmed."
+      },
+      {
+        "url": "https://gis.tj.gov.cn/",
+        "observation": "Official Tianjin Tianditu mapping portal; public base maps reviewed, but no exposed cadastral parcel feature layer verified."
+      },
+      {
+        "url": "https://www.teda.gov.cn/",
+        "observation": "Official TEDA site documents Binhai New Area registry-center presence and local service activity."
+      },
+      {
+        "url": "https://zwfw.tj.gov.cn/",
+        "observation": "Public Tianjin registration service requires identity registration; no login or credentials used."
+      }
+    ],
+    "viewerAndServiceTrace": {
+      "viewerUrl": "https://gis.tj.gov.cn/",
+      "apiBase": null,
+      "observedClientRoutes": [],
+      "notes": "Reviewed official Tianjin public mapping and real-estate registration entry points. No anonymous parcel geometry route or safe public parcel schema was verified; no account workflow was entered."
+    }
+  },
+  "verifiedParcelResponse": null,
+  "source": {
+    "sourceId": "CITY-CN-9582-CADASTRAL-RESEARCH",
+    "name": "Binhai New Area city-local cadastral/land-information evidence",
+    "url": "https://ghzy.tj.gov.cn/",
+    "operator": null,
+    "serviceType": "City-local cadastral/land-information evidence; anonymous full parcel geometry not verified.",
+    "layer": null,
+    "geometryType": null,
+    "outputCrs": null,
+    "nativeIdField": null,
+    "nativeIdEvidence": "No parcel feature response was retained; no native parcel identifier was validated."
+  },
+  "wupCityCode": 9582,
+  "cityId": "wup2025:9582",
+  "queueRank": 506,
+  "populationPlausibility2025": "Moderate",
+  "centerLatLon": [
+    39.0182796644856,
+    117.661130756039
+  ],
+  "sourceIds": [],
+  "adapterReady": false,
+  "technicalBlocker": "City-local registration sources are confirmed, but the reviewed public base-map services do not expose a verified cadastral parcel feature layer. The public Tianjin registration service requires identity registration; no account was used.",
+  "remainingUncertainty": "Whether a separate public parcel-vector endpoint exists and what its feature schema, spatial coverage and terms allow remain unverified.",
+  "registryEvidenceUrls": [
+    "https://ghzy.tj.gov.cn/",
+    "https://gis.tj.gov.cn/",
+    "https://www.teda.gov.cn/",
+    "https://zwfw.tj.gov.cn/",
+    "https://www.teda.gov.cn/contents/21/31360.html"
+  ],
+  "rootSupplementalResearch": {
+    "query": "site:teda.gov.cn 滨海新区 不动产登记 中心",
+    "url": "https://www.teda.gov.cn/contents/21/31360.html",
+    "observation": "Official TEDA notice explicitly describes Binhai New Area Real Estate Registration Centre staff operating a local one-stop service centre, providing direct local-office evidence."
+  },
+  "rootReviewedAt": "2026-10-09T01:06:43.045826+00:00"
+}

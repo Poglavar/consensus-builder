@@ -1,0 +1,97 @@
+{
+  "schemaVersion": 1,
+  "purpose": "Independent GEOS topology check of complete runtime parcels projected to metric coordinates; no repair applied. Counts are bounded sample evidence, not whole-city guarantees.",
+  "library": "Shapely 2.2.0",
+  "metricCrs": "EPSG:32724",
+  "featureCount": 11,
+  "validNonemptyCount": 11,
+  "invalidFeatures": [],
+  "exactDuplicateGeometryPairs": [],
+  "positiveAreaOverlapPairsAbove0_01M2": [],
+  "sumPairwiseOverlapM2": 0,
+  "operationErrors": [],
+  "areaM2": {
+    "min": 388.58854725538555,
+    "median": 844.8540520509191,
+    "max": 13479.45605923115
+  },
+  "features": [
+    {
+      "id": "BR-VIX-LOTE-44208~17729",
+      "areaM2": 1068.9734050274208,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "BR-VIX-LOTE-44813~17731",
+      "areaM2": 652.1518997019091,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "BR-VIX-LOTE-47316~17730",
+      "areaM2": 388.58854725538555,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "BR-VIX-LOTE-23099~17732",
+      "areaM2": 639.210182338224,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "BR-VIX-LOTE-23102~17728",
+      "areaM2": 844.8540520509191,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "BR-VIX-LOTE-23104~17727",
+      "areaM2": 637.1025088180397,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "BR-VIX-LOTE-3136~17726",
+      "areaM2": 692.197948877931,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "BR-VIX-LOTE-23271~17725",
+      "areaM2": 11423.871342612265,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "BR-VIX-LOTE-23265~17733",
+      "areaM2": 1019.7359257244551,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "BR-VIX-LOTE-24731~17736",
+      "areaM2": 13479.45605923115,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "BR-VIX-LOTE-23311~17707",
+      "areaM2": 9726.695302497634,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    }
+  ]
+}

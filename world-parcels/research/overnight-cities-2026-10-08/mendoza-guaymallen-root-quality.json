@@ -1,0 +1,716 @@
+{
+  "schemaVersion": 1,
+  "purpose": "Independent GEOS 3.14.1 topology QA in EPSG:32719 on every feature retained from the raw 13-cell union. Source geometry was neither repaired nor filtered.",
+  "sourceFeatureCount": 363,
+  "crs": "EPSG:32719",
+  "validityResultCount": 363,
+  "invalidGeometryRecords": [],
+  "candidatePairsByOverlappingBounds": 752,
+  "geosEqualsDuplicateRecords": [],
+  "positiveAreaIntersectionRecords": [
+    {
+      "parcelIds": [
+        "AR-MDZ-GUAYMALLEN-040102005600021900008",
+        "AR-MDZ-GUAYMALLEN-040102005600023000004"
+      ],
+      "intersectionAreaM2": 0.00341796875,
+      "relation": "positive-area-overlap",
+      "intersectionGeometryType": "MultiPolygon"
+    },
+    {
+      "parcelIds": [
+        "AR-MDZ-GUAYMALLEN-040102005600014200004",
+        "AR-MDZ-GUAYMALLEN-040102005600023100009"
+      ],
+      "intersectionAreaM2": 0.000244140625,
+      "relation": "positive-area-overlap",
+      "intersectionGeometryType": "GeometryCollection"
+    },
+    {
+      "parcelIds": [
+        "AR-MDZ-GUAYMALLEN-042251625635961700007",
+        "AR-MDZ-GUAYMALLEN-040102005600024200007"
+      ],
+      "intersectionAreaM2": 0.024658203125,
+      "relation": "positive-area-overlap",
+      "intersectionGeometryType": "Polygon"
+    },
+    {
+      "parcelIds": [
+        "AR-MDZ-GUAYMALLEN-042251625635961700007",
+        "AR-MDZ-GUAYMALLEN-040102005600021100001"
+      ],
+      "intersectionAreaM2": 0.000732421875,
+      "relation": "positive-area-overlap",
+      "intersectionGeometryType": "GeometryCollection"
+    },
+    {
+      "parcelIds": [
+        "AR-MDZ-GUAYMALLEN-042251625635961700007",
+        "AR-MDZ-GUAYMALLEN-040102005600017800002"
+      ],
+      "intersectionAreaM2": 0.003662109375,
+      "relation": "positive-area-overlap",
+      "intersectionGeometryType": "GeometryCollection"
+    },
+    {
+      "parcelIds": [
+        "AR-MDZ-GUAYMALLEN-042251625635961700007",
+        "AR-MDZ-GUAYMALLEN-040102005600011400002"
+      ],
+      "intersectionAreaM2": 0.637939453125,
+      "relation": "positive-area-overlap",
+      "intersectionGeometryType": "MultiPolygon"
+    },
+    {
+      "parcelIds": [
+        "AR-MDZ-GUAYMALLEN-042516230635966200003",
+        "AR-MDZ-GUAYMALLEN-040102005600006100004"
+      ],
+      "intersectionAreaM2": 0.054443359375,
+      "relation": "positive-area-overlap",
+      "intersectionGeometryType": "Polygon"
+    },
+    {
+      "parcelIds": [
+        "AR-MDZ-GUAYMALLEN-042516230635966200003",
+        "AR-MDZ-GUAYMALLEN-040102005600016000002"
+      ],
+      "intersectionAreaM2": 0.207763671875,
+      "relation": "positive-area-overlap",
+      "intersectionGeometryType": "Polygon"
+    },
+    {
+      "parcelIds": [
+        "AR-MDZ-GUAYMALLEN-040102005600022800007",
+        "AR-MDZ-GUAYMALLEN-040102005600019500006"
+      ],
+      "intersectionAreaM2": 0.000244140625,
+      "relation": "positive-area-overlap",
+      "intersectionGeometryType": "GeometryCollection"
+    },
+    {
+      "parcelIds": [
+        "AR-MDZ-GUAYMALLEN-040102005600016000002",
+        "AR-MDZ-GUAYMALLEN-042516232635967200004"
+      ],
+      "intersectionAreaM2": 0.310302734375,
+      "relation": "positive-area-overlap",
+      "intersectionGeometryType": "Polygon"
+    },
+    {
+      "parcelIds": [
+        "AR-MDZ-GUAYMALLEN-040101004300003700000",
+        "AR-MDZ-GUAYMALLEN-042515997635990600005"
+      ],
+      "intersectionAreaM2": 0.000244140625,
+      "relation": "positive-area-overlap",
+      "intersectionGeometryType": "GeometryCollection"
+    },
+    {
+      "parcelIds": [
+        "AR-MDZ-GUAYMALLEN-040102003700015900002",
+        "AR-MDZ-GUAYMALLEN-040102003700007400004"
+      ],
+      "intersectionAreaM2": 0.00048828125,
+      "relation": "positive-area-overlap",
+      "intersectionGeometryType": "GeometryCollection"
+    },
+    {
+      "parcelIds": [
+        "AR-MDZ-GUAYMALLEN-040102003700006500005",
+        "AR-MDZ-GUAYMALLEN-040102003700007400004"
+      ],
+      "intersectionAreaM2": 0.000244140625,
+      "relation": "positive-area-overlap",
+      "intersectionGeometryType": "GeometryCollection"
+    },
+    {
+      "parcelIds": [
+        "AR-MDZ-GUAYMALLEN-042516111635987600007",
+        "AR-MDZ-GUAYMALLEN-040102005500000700001"
+      ],
+      "intersectionAreaM2": 0.000732421875,
+      "relation": "positive-area-overlap",
+      "intersectionGeometryType": "GeometryCollection"
+    },
+    {
+      "parcelIds": [
+        "AR-MDZ-GUAYMALLEN-040102005300002700000",
+        "AR-MDZ-GUAYMALLEN-040102005300006300006"
+      ],
+      "intersectionAreaM2": 268.25390625,
+      "relation": "positive-area-overlap",
+      "intersectionGeometryType": "Polygon"
+    },
+    {
+      "parcelIds": [
+        "AR-MDZ-GUAYMALLEN-040102005300002700000",
+        "AR-MDZ-GUAYMALLEN-040102005300002600005"
+      ],
+      "intersectionAreaM2": 0.026611328125,
+      "relation": "positive-area-overlap",
+      "intersectionGeometryType": "GeometryCollection"
+    },
+    {
+      "parcelIds": [
+        "AR-MDZ-GUAYMALLEN-040102005300002700000",
+        "AR-MDZ-GUAYMALLEN-040102005300002800004"
+      ],
+      "intersectionAreaM2": 0.000244140625,
+      "relation": "positive-area-overlap",
+      "intersectionGeometryType": "GeometryCollection"
+    },
+    {
+      "parcelIds": [
+        "AR-MDZ-GUAYMALLEN-040102005300002700000",
+        "AR-MDZ-GUAYMALLEN-040102005300006400001"
+      ],
+      "intersectionAreaM2": 133.020751953125,
+      "relation": "positive-area-overlap",
+      "intersectionGeometryType": "Polygon"
+    }
+  ],
+  "pairwiseGeosErrors": [],
+  "coverageValidationRawDiagnostics": [
+    {
+      "type": "LineString",
+      "areaM2": 0,
+      "lengthM": null
+    },
+    {
+      "type": "LineString",
+      "areaM2": 0,
+      "lengthM": null
+    },
+    {
+      "type": "MultiLineString",
+      "areaM2": 0,
+      "lengthM": null
+    },
+    {
+      "type": "LineString",
+      "areaM2": 0,
+      "lengthM": null
+    },
+    {
+      "type": "MultiLineString",
+      "areaM2": 0,
+      "lengthM": null
+    },
+    {
+      "type": "LineString",
+      "areaM2": 0,
+      "lengthM": null
+    },
+    {
+      "type": "LineString",
+      "areaM2": 0,
+      "lengthM": null
+    },
+    {
+      "type": "LineString",
+      "areaM2": 0,
+      "lengthM": null
+    },
+    {
+      "type": "MultiLineString",
+      "areaM2": 0,
+      "lengthM": null
+    },
+    {
+      "type": "LineString",
+      "areaM2": 0,
+      "lengthM": null
+    },
+    {
+      "type": "LineString",
+      "areaM2": 0,
+      "lengthM": null
+    },
+    {
+      "type": "LineString",
+      "areaM2": 0,
+      "lengthM": null
+    },
+    {
+      "type": "LineString",
+      "areaM2": 0,
+      "lengthM": null
+    },
+    {
+      "type": "LineString",
+      "areaM2": 0,
+      "lengthM": null
+    },
+    {
+      "type": "MultiLineString",
+      "areaM2": 0,
+      "lengthM": null
+    },
+    {
+      "type": "LineString",
+      "areaM2": 0,
+      "lengthM": null
+    },
+    {
+      "type": "LineString",
+      "areaM2": 0,
+      "lengthM": null
+    },
+    {
+      "type": "LineString",
+      "areaM2": 0,
+      "lengthM": null
+    },
+    {
+      "type": "LineString",
+      "areaM2": 0,
+      "lengthM": null
+    },
+    {
+      "type": "LineString",
+      "areaM2": 0,
+      "lengthM": null
+    },
+    {
+      "type": "LineString",
+      "areaM2": 0,
+      "lengthM": null
+    },
+    {
+      "type": "LineString",
+      "areaM2": 0,
+      "lengthM": null
+    },
+    {
+      "type": "LineString",
+      "areaM2": 0,
+      "lengthM": null
+    },
+    {
+      "type": "LineString",
+      "areaM2": 0,
+      "lengthM": null
+    },
+    {
+      "type": "LineString",
+      "areaM2": 0,
+      "lengthM": null
+    },
+    {
+      "type": "LineString",
+      "areaM2": 0,
+      "lengthM": null
+    },
+    {
+      "type": "LineString",
+      "areaM2": 0,
+      "lengthM": null
+    },
+    {
+      "type": "LineString",
+      "areaM2": 0,
+      "lengthM": null
+    },
+    {
+      "type": "LineString",
+      "areaM2": 0,
+      "lengthM": null
+    },
+    {
+      "type": "MultiLineString",
+      "areaM2": 0,
+      "lengthM": null
+    },
+    {
+      "type": "LineString",
+      "areaM2": 0,
+      "lengthM": null
+    },
+    {
+      "type": "LineString",
+      "areaM2": 0,
+      "lengthM": null
+    }
+  ],
+  "counts": {
+    "valid": 363,
+    "invalid": 0,
+    "bboxCandidatePairs": 752,
+    "equalsDuplicates": 0,
+    "positiveAreaIntersections": 18,
+    "pairwiseErrors": 0,
+    "coverageValidationRecords": 32,
+    "materialPositiveAreaIntersectionsOver0_01M2": 8
+  },
+  "coverageValidationFile": "mendoza-coverage-validation.json",
+  "validityRawFile": "mendoza-validity.txt",
+  "coverageValidationRawDiagnosticsDetails": [
+    {
+      "record": 0,
+      "type": "LineString",
+      "lengthM": 19.282219821876364,
+      "componentCount": 1
+    },
+    {
+      "record": 1,
+      "type": "LineString",
+      "lengthM": 18.37650078737355,
+      "componentCount": 1
+    },
+    {
+      "record": 2,
+      "type": "MultiLineString",
+      "lengthM": 13.592476391253024,
+      "componentCount": 2
+    },
+    {
+      "record": 3,
+      "type": "LineString",
+      "lengthM": 18.308634946598232,
+      "componentCount": 1
+    },
+    {
+      "record": 4,
+      "type": "MultiLineString",
+      "lengthM": 156.40617476030087,
+      "componentCount": 4
+    },
+    {
+      "record": 5,
+      "type": "LineString",
+      "lengthM": 28.156786359619485,
+      "componentCount": 1
+    },
+    {
+      "record": 6,
+      "type": "LineString",
+      "lengthM": 5.2765488664371,
+      "componentCount": 1
+    },
+    {
+      "record": 7,
+      "type": "LineString",
+      "lengthM": 14.222035362031015,
+      "componentCount": 1
+    },
+    {
+      "record": 8,
+      "type": "MultiLineString",
+      "lengthM": 37.61261058901556,
+      "componentCount": 2
+    },
+    {
+      "record": 9,
+      "type": "LineString",
+      "lengthM": 13.665242484065468,
+      "componentCount": 1
+    },
+    {
+      "record": 10,
+      "type": "LineString",
+      "lengthM": 1.92131336892566,
+      "componentCount": 1
+    },
+    {
+      "record": 11,
+      "type": "LineString",
+      "lengthM": 5.753824716513267,
+      "componentCount": 1
+    },
+    {
+      "record": 12,
+      "type": "LineString",
+      "lengthM": 20.168404157642286,
+      "componentCount": 1
+    },
+    {
+      "record": 13,
+      "type": "LineString",
+      "lengthM": 22.90766772098338,
+      "componentCount": 1
+    },
+    {
+      "record": 14,
+      "type": "MultiLineString",
+      "lengthM": 58.12327453958676,
+      "componentCount": 2
+    },
+    {
+      "record": 15,
+      "type": "LineString",
+      "lengthM": 0.47729914765895826,
+      "componentCount": 1
+    },
+    {
+      "record": 16,
+      "type": "LineString",
+      "lengthM": 20.791606898901122,
+      "componentCount": 1
+    },
+    {
+      "record": 17,
+      "type": "LineString",
+      "lengthM": 7.82247632672908,
+      "componentCount": 1
+    },
+    {
+      "record": 18,
+      "type": "LineString",
+      "lengthM": 10.58368451138137,
+      "componentCount": 1
+    },
+    {
+      "record": 19,
+      "type": "LineString",
+      "lengthM": 19.15112605950366,
+      "componentCount": 1
+    },
+    {
+      "record": 20,
+      "type": "LineString",
+      "lengthM": 11.069181916279549,
+      "componentCount": 1
+    },
+    {
+      "record": 21,
+      "type": "LineString",
+      "lengthM": 12.96913057218294,
+      "componentCount": 1
+    },
+    {
+      "record": 22,
+      "type": "LineString",
+      "lengthM": 15.933636544583354,
+      "componentCount": 1
+    },
+    {
+      "record": 23,
+      "type": "LineString",
+      "lengthM": 19.91607614785437,
+      "componentCount": 1
+    },
+    {
+      "record": 24,
+      "type": "LineString",
+      "lengthM": 4.688786507791992,
+      "componentCount": 1
+    },
+    {
+      "record": 25,
+      "type": "LineString",
+      "lengthM": 12.15040743163213,
+      "componentCount": 1
+    },
+    {
+      "record": 26,
+      "type": "LineString",
+      "lengthM": 100.63640318602003,
+      "componentCount": 1
+    },
+    {
+      "record": 27,
+      "type": "LineString",
+      "lengthM": 4.561901056051825,
+      "componentCount": 1
+    },
+    {
+      "record": 28,
+      "type": "LineString",
+      "lengthM": 2.7264917569163263,
+      "componentCount": 1
+    },
+    {
+      "record": 29,
+      "type": "MultiLineString",
+      "lengthM": 13.677549978732497,
+      "componentCount": 2
+    },
+    {
+      "record": 30,
+      "type": "LineString",
+      "lengthM": 15.03869759798151,
+      "componentCount": 1
+    },
+    {
+      "record": 31,
+      "type": "LineString",
+      "lengthM": 1.8354092994504334,
+      "componentCount": 1
+    }
+  ],
+  "coverageValidationDiagnosticTotalLengthM": 707.8035798118732,
+  "positiveAreaIntersectionTotalM2Pairwise": 402.546630859375,
+  "positiveAreaIntersectionMaxM2": 268.25390625,
+  "overlapReview": {
+    "materialThresholdM2": 0.01,
+    "materialPositiveAreaIntersections": [
+      {
+        "parcelIds": [
+          "AR-MDZ-GUAYMALLEN-042251625635961700007",
+          "AR-MDZ-GUAYMALLEN-040102005600024200007"
+        ],
+        "intersectionAreaM2": 0.024658203125,
+        "relation": "positive-area-overlap",
+        "intersectionGeometryType": "Polygon"
+      },
+      {
+        "parcelIds": [
+          "AR-MDZ-GUAYMALLEN-042251625635961700007",
+          "AR-MDZ-GUAYMALLEN-040102005600011400002"
+        ],
+        "intersectionAreaM2": 0.637939453125,
+        "relation": "positive-area-overlap",
+        "intersectionGeometryType": "MultiPolygon"
+      },
+      {
+        "parcelIds": [
+          "AR-MDZ-GUAYMALLEN-042516230635966200003",
+          "AR-MDZ-GUAYMALLEN-040102005600006100004"
+        ],
+        "intersectionAreaM2": 0.054443359375,
+        "relation": "positive-area-overlap",
+        "intersectionGeometryType": "Polygon"
+      },
+      {
+        "parcelIds": [
+          "AR-MDZ-GUAYMALLEN-042516230635966200003",
+          "AR-MDZ-GUAYMALLEN-040102005600016000002"
+        ],
+        "intersectionAreaM2": 0.207763671875,
+        "relation": "positive-area-overlap",
+        "intersectionGeometryType": "Polygon"
+      },
+      {
+        "parcelIds": [
+          "AR-MDZ-GUAYMALLEN-040102005600016000002",
+          "AR-MDZ-GUAYMALLEN-042516232635967200004"
+        ],
+        "intersectionAreaM2": 0.310302734375,
+        "relation": "positive-area-overlap",
+        "intersectionGeometryType": "Polygon"
+      },
+      {
+        "parcelIds": [
+          "AR-MDZ-GUAYMALLEN-040102005300002700000",
+          "AR-MDZ-GUAYMALLEN-040102005300006300006"
+        ],
+        "intersectionAreaM2": 268.25390625,
+        "relation": "positive-area-overlap",
+        "intersectionGeometryType": "Polygon"
+      },
+      {
+        "parcelIds": [
+          "AR-MDZ-GUAYMALLEN-040102005300002700000",
+          "AR-MDZ-GUAYMALLEN-040102005300002600005"
+        ],
+        "intersectionAreaM2": 0.026611328125,
+        "relation": "positive-area-overlap",
+        "intersectionGeometryType": "GeometryCollection"
+      },
+      {
+        "parcelIds": [
+          "AR-MDZ-GUAYMALLEN-040102005300002700000",
+          "AR-MDZ-GUAYMALLEN-040102005300006400001"
+        ],
+        "intersectionAreaM2": 133.020751953125,
+        "relation": "positive-area-overlap",
+        "intersectionGeometryType": "Polygon"
+      }
+    ],
+    "allOtherPositiveIntersections": [
+      {
+        "parcelIds": [
+          "AR-MDZ-GUAYMALLEN-040102005600021900008",
+          "AR-MDZ-GUAYMALLEN-040102005600023000004"
+        ],
+        "intersectionAreaM2": 0.00341796875,
+        "relation": "positive-area-overlap",
+        "intersectionGeometryType": "MultiPolygon"
+      },
+      {
+        "parcelIds": [
+          "AR-MDZ-GUAYMALLEN-040102005600014200004",
+          "AR-MDZ-GUAYMALLEN-040102005600023100009"
+        ],
+        "intersectionAreaM2": 0.000244140625,
+        "relation": "positive-area-overlap",
+        "intersectionGeometryType": "GeometryCollection"
+      },
+      {
+        "parcelIds": [
+          "AR-MDZ-GUAYMALLEN-042251625635961700007",
+          "AR-MDZ-GUAYMALLEN-040102005600021100001"
+        ],
+        "intersectionAreaM2": 0.000732421875,
+        "relation": "positive-area-overlap",
+        "intersectionGeometryType": "GeometryCollection"
+      },
+      {
+        "parcelIds": [
+          "AR-MDZ-GUAYMALLEN-042251625635961700007",
+          "AR-MDZ-GUAYMALLEN-040102005600017800002"
+        ],
+        "intersectionAreaM2": 0.003662109375,
+        "relation": "positive-area-overlap",
+        "intersectionGeometryType": "GeometryCollection"
+      },
+      {
+        "parcelIds": [
+          "AR-MDZ-GUAYMALLEN-040102005600022800007",
+          "AR-MDZ-GUAYMALLEN-040102005600019500006"
+        ],
+        "intersectionAreaM2": 0.000244140625,
+        "relation": "positive-area-overlap",
+        "intersectionGeometryType": "GeometryCollection"
+      },
+      {
+        "parcelIds": [
+          "AR-MDZ-GUAYMALLEN-040101004300003700000",
+          "AR-MDZ-GUAYMALLEN-042515997635990600005"
+        ],
+        "intersectionAreaM2": 0.000244140625,
+        "relation": "positive-area-overlap",
+        "intersectionGeometryType": "GeometryCollection"
+      },
+      {
+        "parcelIds": [
+          "AR-MDZ-GUAYMALLEN-040102003700015900002",
+          "AR-MDZ-GUAYMALLEN-040102003700007400004"
+        ],
+        "intersectionAreaM2": 0.00048828125,
+        "relation": "positive-area-overlap",
+        "intersectionGeometryType": "GeometryCollection"
+      },
+      {
+        "parcelIds": [
+          "AR-MDZ-GUAYMALLEN-040102003700006500005",
+          "AR-MDZ-GUAYMALLEN-040102003700007400004"
+        ],
+        "intersectionAreaM2": 0.000244140625,
+        "relation": "positive-area-overlap",
+        "intersectionGeometryType": "GeometryCollection"
+      },
+      {
+        "parcelIds": [
+          "AR-MDZ-GUAYMALLEN-042516111635987600007",
+          "AR-MDZ-GUAYMALLEN-040102005500000700001"
+        ],
+        "intersectionAreaM2": 0.000732421875,
+        "relation": "positive-area-overlap",
+        "intersectionGeometryType": "GeometryCollection"
+      },
+      {
+        "parcelIds": [
+          "AR-MDZ-GUAYMALLEN-040102005300002700000",
+          "AR-MDZ-GUAYMALLEN-040102005300002800004"
+        ],
+        "intersectionAreaM2": 0.000244140625,
+        "relation": "positive-area-overlap",
+        "intersectionGeometryType": "GeometryCollection"
+      }
+    ],
+    "interpretation": "GEOS reports positive polygonal intersections. Tiny values are retained as raw findings and may reflect source coordinate precision; the larger overlaps require publisher review."
+  }
+}

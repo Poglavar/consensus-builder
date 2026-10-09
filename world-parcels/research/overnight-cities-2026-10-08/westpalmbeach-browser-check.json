@@ -1,0 +1,19 @@
+{
+  "checkedAt": "2026-10-09T04:43:32.597176+00:00",
+  "appCityId": "westpalmbeach",
+  "url": "http://localhost:5638/?city=westpalmbeach&backend=http%3A%2F%2F127.0.0.1%3A5640&reduceMotion=1&lang=en",
+  "headedBrowser": true,
+  "loadedParcels": 203,
+  "visibleParcels": 66,
+  "parcelFetchFinished": true,
+  "selectedParcelId": "US-PBC-OID-367302",
+  "pointerCoordinates": [
+    548,
+    372
+  ],
+  "detailsMatchesNativeId": true,
+  "uncaughtPageErrors": [],
+  "browserClosed": true,
+  "scope": "Actual initial viewport; no citywide or incorporated-city completeness claim.",
+  "browserCloseConfirmedAt": "2026-10-09T04:44:50.140767+00:00"
+}

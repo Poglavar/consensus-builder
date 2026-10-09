@@ -1,0 +1,1294 @@
+{
+  "schemaVersion": 1,
+  "purpose": "Independent GEOS topology check of complete runtime parcels projected to metric coordinates; no repair applied. Counts are bounded sample evidence, not whole-city guarantees.",
+  "library": "Shapely 2.1.2",
+  "metricCrs": "EPSG:32643",
+  "featureCount": 82,
+  "validNonemptyCount": 82,
+  "invalidFeatures": [],
+  "exactDuplicateGeometryPairs": [],
+  "positiveAreaOverlapPairsAbove0_01M2": [
+    {
+      "ids": [
+        "KZ-ALMATY-MUNICIPAL-20311024090",
+        "KZ-ALMATY-MUNICIPAL-20311024128"
+      ],
+      "overlapM2": 0.09826339780788908,
+      "fractionOfSmaller": 5.638360912502491e-06
+    },
+    {
+      "ids": [
+        "KZ-ALMATY-MUNICIPAL-20311024090",
+        "KZ-ALMATY-MUNICIPAL-20311024046"
+      ],
+      "overlapM2": 0.5420831160544253,
+      "fractionOfSmaller": 4.785726252545271e-05
+    },
+    {
+      "ids": [
+        "KZ-ALMATY-MUNICIPAL-20311024090",
+        "KZ-ALMATY-MUNICIPAL-20311024012"
+      ],
+      "overlapM2": 0.4677822650146535,
+      "fractionOfSmaller": 2.6841380386387878e-05
+    },
+    {
+      "ids": [
+        "KZ-ALMATY-MUNICIPAL-20311024028",
+        "KZ-ALMATY-MUNICIPAL-20311023128"
+      ],
+      "overlapM2": 0.023402756457256493,
+      "fractionOfSmaller": 1.6946184688960157e-05
+    },
+    {
+      "ids": [
+        "KZ-ALMATY-MUNICIPAL-20311023141",
+        "KZ-ALMATY-MUNICIPAL-20311023060"
+      ],
+      "overlapM2": 0.08776623967948494,
+      "fractionOfSmaller": 0.00016563023036156584
+    },
+    {
+      "ids": [
+        "KZ-ALMATY-MUNICIPAL-20311023141",
+        "KZ-ALMATY-MUNICIPAL-20311023212"
+      ],
+      "overlapM2": 0.010019039361266358,
+      "fractionOfSmaller": 1.1852709625282163e-05
+    },
+    {
+      "ids": [
+        "KZ-ALMATY-MUNICIPAL-20311023290",
+        "KZ-ALMATY-MUNICIPAL-20311023264"
+      ],
+      "overlapM2": 0.08975720340377791,
+      "fractionOfSmaller": 0.000135645481503046
+    },
+    {
+      "ids": [
+        "KZ-ALMATY-MUNICIPAL-20311023290",
+        "KZ-ALMATY-MUNICIPAL-20311023305"
+      ],
+      "overlapM2": 0.01726191657728041,
+      "fractionOfSmaller": 2.2211931937194093e-05
+    },
+    {
+      "ids": [
+        "KZ-ALMATY-MUNICIPAL-20311023328",
+        "KZ-ALMATY-MUNICIPAL-20314065144"
+      ],
+      "overlapM2": 0.3245112529223153,
+      "fractionOfSmaller": 0.0008543449783938463
+    },
+    {
+      "ids": [
+        "KZ-ALMATY-MUNICIPAL-20311024012",
+        "KZ-ALMATY-MUNICIPAL-20311024003"
+      ],
+      "overlapM2": 0.17181375667210516,
+      "fractionOfSmaller": 0.00025918352224138226
+    },
+    {
+      "ids": [
+        "KZ-ALMATY-MUNICIPAL-20311024012",
+        "KZ-ALMATY-MUNICIPAL-20311023386"
+      ],
+      "overlapM2": 0.05049525123668275,
+      "fractionOfSmaller": 0.00011210354497110476
+    },
+    {
+      "ids": [
+        "KZ-ALMATY-MUNICIPAL-20311024012",
+        "KZ-ALMATY-MUNICIPAL-20311023178"
+      ],
+      "overlapM2": 0.0184174856582097,
+      "fractionOfSmaller": 1.8988948719489123e-05
+    },
+    {
+      "ids": [
+        "KZ-ALMATY-MUNICIPAL-20311024042",
+        "KZ-ALMATY-MUNICIPAL-20311023128"
+      ],
+      "overlapM2": 0.042150806415769064,
+      "fractionOfSmaller": 2.627109482310248e-05
+    },
+    {
+      "ids": [
+        "KZ-ALMATY-MUNICIPAL-20311023178",
+        "KZ-ALMATY-MUNICIPAL-20311023231"
+      ],
+      "overlapM2": 0.09449644461692197,
+      "fractionOfSmaller": 0.00023939276239070875
+    },
+    {
+      "ids": [
+        "KZ-ALMATY-MUNICIPAL-20311023178",
+        "KZ-ALMATY-MUNICIPAL-20311023317"
+      ],
+      "overlapM2": 0.0793724054984643,
+      "fractionOfSmaller": 0.00010844062812512194
+    },
+    {
+      "ids": [
+        "KZ-ALMATY-MUNICIPAL-20311023329",
+        "KZ-ALMATY-MUNICIPAL-20311023227"
+      ],
+      "overlapM2": 35.63673068775192,
+      "fractionOfSmaller": 0.04740311432651173
+    },
+    {
+      "ids": [
+        "KZ-ALMATY-MUNICIPAL-20311023198",
+        "KZ-ALMATY-MUNICIPAL-20311023360"
+      ],
+      "overlapM2": 0.02445570067702264,
+      "fractionOfSmaller": 3.4928000062151234e-05
+    },
+    {
+      "ids": [
+        "KZ-ALMATY-MUNICIPAL-20311023198",
+        "KZ-ALMATY-MUNICIPAL-20311023317"
+      ],
+      "overlapM2": 0.10813577728081109,
+      "fractionOfSmaller": 0.00014773788872199828
+    },
+    {
+      "ids": [
+        "KZ-ALMATY-MUNICIPAL-20311023319",
+        "KZ-ALMATY-MUNICIPAL-20314065144"
+      ],
+      "overlapM2": 0.03749164357944722,
+      "fractionOfSmaller": 0.00012515690523970572
+    },
+    {
+      "ids": [
+        "KZ-ALMATY-MUNICIPAL-20311023101",
+        "KZ-ALMATY-MUNICIPAL-20311023084"
+      ],
+      "overlapM2": 0.13052881896604707,
+      "fractionOfSmaller": 0.00025673588470932475
+    },
+    {
+      "ids": [
+        "KZ-ALMATY-MUNICIPAL-20311023101",
+        "KZ-ALMATY-MUNICIPAL-20311023240"
+      ],
+      "overlapM2": 0.08147171590620314,
+      "fractionOfSmaller": 0.00019237844353421805
+    },
+    {
+      "ids": [
+        "KZ-ALMATY-MUNICIPAL-20311023227",
+        "KZ-ALMATY-MUNICIPAL-20311023311"
+      ],
+      "overlapM2": 20.118730628911692,
+      "fractionOfSmaller": 0.025065725173411362
+    },
+    {
+      "ids": [
+        "KZ-ALMATY-MUNICIPAL-20311023433",
+        "KZ-ALMATY-MUNICIPAL-20314065144"
+      ],
+      "overlapM2": 181.4318922814599,
+      "fractionOfSmaller": 0.12876957515682871
+    },
+    {
+      "ids": [
+        "KZ-ALMATY-MUNICIPAL-20311023078",
+        "KZ-ALMATY-MUNICIPAL-20311023099"
+      ],
+      "overlapM2": 0.15459856132095007,
+      "fractionOfSmaller": 0.0003201471210573881
+    },
+    {
+      "ids": [
+        "KZ-ALMATY-MUNICIPAL-20311023362",
+        "KZ-ALMATY-MUNICIPAL-20311023169"
+      ],
+      "overlapM2": 70.53156420499025,
+      "fractionOfSmaller": 0.12010394686020211
+    },
+    {
+      "ids": [
+        "KZ-ALMATY-MUNICIPAL-20311023062",
+        "KZ-ALMATY-MUNICIPAL-20311023052"
+      ],
+      "overlapM2": 36.82525512288,
+      "fractionOfSmaller": 0.055010807649125706
+    },
+    {
+      "ids": [
+        "KZ-ALMATY-MUNICIPAL-20311023322",
+        "KZ-ALMATY-MUNICIPAL-20314065144"
+      ],
+      "overlapM2": 0.060738566171640196,
+      "fractionOfSmaller": 0.00017780234688528912
+    },
+    {
+      "ids": [
+        "KZ-ALMATY-MUNICIPAL-20311023025",
+        "KZ-ALMATY-MUNICIPAL-20311023245"
+      ],
+      "overlapM2": 56.29743019045884,
+      "fractionOfSmaller": 0.07647206440405999
+    },
+    {
+      "ids": [
+        "KZ-ALMATY-MUNICIPAL-20311023228",
+        "KZ-ALMATY-MUNICIPAL-20311023278"
+      ],
+      "overlapM2": 52.475157396545804,
+      "fractionOfSmaller": 0.07816864703333745
+    },
+    {
+      "ids": [
+        "KZ-ALMATY-MUNICIPAL-20311023228",
+        "KZ-ALMATY-MUNICIPAL-20311023311"
+      ],
+      "overlapM2": 3.137359043526548,
+      "fractionOfSmaller": 0.004167022518138995
+    },
+    {
+      "ids": [
+        "KZ-ALMATY-MUNICIPAL-20311023311",
+        "KZ-ALMATY-MUNICIPAL-20311023169"
+      ],
+      "overlapM2": 0.36380985446281194,
+      "fractionOfSmaller": 0.0005203550160848934
+    },
+    {
+      "ids": [
+        "KZ-ALMATY-MUNICIPAL-20311023241",
+        "KZ-ALMATY-MUNICIPAL-20311023275"
+      ],
+      "overlapM2": 0.11526623094784055,
+      "fractionOfSmaller": 0.0001640056995308942
+    }
+  ],
+  "sumPairwiseOverlapM2": 459.64820976321425,
+  "operationErrors": [],
+  "areaM2": {
+    "min": 0.6398195852004709,
+    "median": 715.306928639292,
+    "max": 50357.55161164966
+  },
+  "features": [
+    {
+      "id": "KZ-ALMATY-MUNICIPAL-20311024090",
+      "areaM2": 17427.653059597516,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "KZ-ALMATY-MUNICIPAL-20311023390",
+      "areaM2": 0.6398586494064633,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "KZ-ALMATY-MUNICIPAL-20311024028",
+      "areaM2": 1381.0044494854683,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "KZ-ALMATY-MUNICIPAL-20311023389",
+      "areaM2": 0.6398586494064633,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "KZ-ALMATY-MUNICIPAL-20311023141",
+      "areaM2": 845.295268171884,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "KZ-ALMATY-MUNICIPAL-20311023026",
+      "areaM2": 868.9795765743063,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "KZ-ALMATY-MUNICIPAL-20311023212",
+      "areaM2": 913.7290369776647,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "KZ-ALMATY-MUNICIPAL-20311024080",
+      "areaM2": 7753.960532711384,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "KZ-ALMATY-MUNICIPAL-20311023021",
+      "areaM2": 591.8600962882998,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "KZ-ALMATY-MUNICIPAL-20311023403",
+      "areaM2": 0.6398195852004709,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "KZ-ALMATY-MUNICIPAL-20311023297",
+      "areaM2": 913.0440552288337,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "KZ-ALMATY-MUNICIPAL-20311023290",
+      "areaM2": 777.1461134533356,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "KZ-ALMATY-MUNICIPAL-20311023328",
+      "areaM2": 379.83632037305443,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "KZ-ALMATY-MUNICIPAL-20311024012",
+      "areaM2": 50357.55161164966,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "KZ-ALMATY-MUNICIPAL-20311024042",
+      "areaM2": 2769.403080912743,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "KZ-ALMATY-MUNICIPAL-20311024003",
+      "areaM2": 662.9038574145617,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "KZ-ALMATY-MUNICIPAL-20311023178",
+      "areaM2": 969.9054924144954,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "KZ-ALMATY-MUNICIPAL-20311023303",
+      "areaM2": 766.1604441709287,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "KZ-ALMATY-MUNICIPAL-20311023018",
+      "areaM2": 910.0493330180166,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "KZ-ALMATY-MUNICIPAL-20311023329",
+      "areaM2": 751.7803670511354,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "KZ-ALMATY-MUNICIPAL-20311023211",
+      "areaM2": 436.1353337077755,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "KZ-ALMATY-MUNICIPAL-20311023060",
+      "areaM2": 529.8926378831561,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "KZ-ALMATY-MUNICIPAL-20311023198",
+      "areaM2": 930.6141929379368,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "KZ-ALMATY-MUNICIPAL-20311023319",
+      "areaM2": 299.55713196680324,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "KZ-ALMATY-MUNICIPAL-20311023161",
+      "areaM2": 165.55974813493714,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "KZ-ALMATY-MUNICIPAL-20311024010",
+      "areaM2": 43826.708528518415,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "KZ-ALMATY-MUNICIPAL-20311023101",
+      "areaM2": 508.41672995511016,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "KZ-ALMATY-MUNICIPAL-20311023227",
+      "areaM2": 802.6390814438822,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "KZ-ALMATY-MUNICIPAL-20311024046",
+      "areaM2": 11327.081563976217,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "KZ-ALMATY-MUNICIPAL-20311023378",
+      "areaM2": 16.25547235334839,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "KZ-ALMATY-MUNICIPAL-20311023341",
+      "areaM2": 690.1878753046813,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "KZ-ALMATY-MUNICIPAL-20311023264",
+      "areaM2": 661.7043369908517,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "KZ-ALMATY-MUNICIPAL-20311023323",
+      "areaM2": 560.4993098446163,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "KZ-ALMATY-MUNICIPAL-20311023240",
+      "areaM2": 423.4971154224558,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "KZ-ALMATY-MUNICIPAL-20311023128",
+      "areaM2": 1604.4556460091703,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "KZ-ALMATY-MUNICIPAL-20311023120",
+      "areaM2": 938.2781327655231,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "KZ-ALMATY-MUNICIPAL-20311023231",
+      "areaM2": 394.7339245899839,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "KZ-ALMATY-MUNICIPAL-20311023386",
+      "areaM2": 450.43402730661325,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "KZ-ALMATY-MUNICIPAL-20311023433",
+      "areaM2": 1408.9655266820105,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "KZ-ALMATY-MUNICIPAL-20311023078",
+      "areaM2": 482.898489951554,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "KZ-ALMATY-MUNICIPAL-20311023281",
+      "areaM2": 695.8261440317282,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "KZ-ALMATY-MUNICIPAL-20311023362",
+      "areaM2": 587.2543413339044,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "KZ-ALMATY-MUNICIPAL-20311023316",
+      "areaM2": 434.10742079621787,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "KZ-ALMATY-MUNICIPAL-20311023062",
+      "areaM2": 669.4185505830375,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "KZ-ALMATY-MUNICIPAL-20311024076",
+      "areaM2": 1427.9063708716208,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "KZ-ALMATY-MUNICIPAL-20311023136",
+      "areaM2": 564.6534644173935,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "KZ-ALMATY-MUNICIPAL-20311023143",
+      "areaM2": 360.8275502968713,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "KZ-ALMATY-MUNICIPAL-20311023250",
+      "areaM2": 484.93906129579693,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "KZ-ALMATY-MUNICIPAL-20311023360",
+      "areaM2": 700.1746631214476,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "KZ-ALMATY-MUNICIPAL-20311023099",
+      "areaM2": 1066.9466101423204,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "KZ-ALMATY-MUNICIPAL-20311023322",
+      "areaM2": 341.60722417700293,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "KZ-ALMATY-MUNICIPAL-20311023025",
+      "areaM2": 736.1829529407859,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "KZ-ALMATY-MUNICIPAL-20311023144",
+      "areaM2": 890.9076833727906,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "KZ-ALMATY-MUNICIPAL-20311023243",
+      "areaM2": 624.0633577350626,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "KZ-ALMATY-MUNICIPAL-20311023219",
+      "areaM2": 739.3755098144753,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "KZ-ALMATY-MUNICIPAL-20311024109",
+      "areaM2": 5.8312135225721535,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "KZ-ALMATY-MUNICIPAL-20311023039",
+      "areaM2": 593.6459341761997,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "KZ-ALMATY-MUNICIPAL-20311023282",
+      "areaM2": 698.8000558067828,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "KZ-ALMATY-MUNICIPAL-20311023052",
+      "areaM2": 940.7467430683502,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "KZ-ALMATY-MUNICIPAL-20311023228",
+      "areaM2": 752.9018693490772,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "KZ-ALMATY-MUNICIPAL-20311023160",
+      "areaM2": 367.98668352355514,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "KZ-ALMATY-MUNICIPAL-20311023305",
+      "areaM2": 870.5070102952297,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "KZ-ALMATY-MUNICIPAL-20311023181",
+      "areaM2": 731.8637893039922,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "KZ-ALMATY-MUNICIPAL-20311024082",
+      "areaM2": 11027.459039904035,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "KZ-ALMATY-MUNICIPAL-20311023278",
+      "areaM2": 671.3069675386109,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "KZ-ALMATY-MUNICIPAL-20311023311",
+      "areaM2": 1203.9759742552073,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "KZ-ALMATY-MUNICIPAL-20311023241",
+      "areaM2": 727.7954108615585,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "KZ-ALMATY-MUNICIPAL-20311023083",
+      "areaM2": 10014.428869446521,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "KZ-ALMATY-MUNICIPAL-20311023355",
+      "areaM2": 2029.8601382312518,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "KZ-ALMATY-MUNICIPAL-20311023168",
+      "areaM2": 549.351896214256,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "KZ-ALMATY-MUNICIPAL-20311024128",
+      "areaM2": 39561.28009585216,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "KZ-ALMATY-MUNICIPAL-20311023317",
+      "areaM2": 731.9434318185812,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "KZ-ALMATY-MUNICIPAL-20311023331",
+      "areaM2": 756.5819499443037,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "KZ-ALMATY-MUNICIPAL-20311023385",
+      "areaM2": 79.75226570794104,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "KZ-ALMATY-MUNICIPAL-20311023169",
+      "areaM2": 699.1570047697169,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "KZ-ALMATY-MUNICIPAL-20311023275",
+      "areaM2": 702.8184464170255,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "KZ-ALMATY-MUNICIPAL-20311023245",
+      "areaM2": 870.5524272500996,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "KZ-ALMATY-MUNICIPAL-20311023363",
+      "areaM2": 329.98487722240066,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "KZ-ALMATY-MUNICIPAL-20311023084",
+      "areaM2": 1085.172070827341,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "KZ-ALMATY-MUNICIPAL-20311023351",
+      "areaM2": 408.7812163111247,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "KZ-ALMATY-MUNICIPAL-20311023368",
+      "areaM2": 227.6551002345712,
+      "valid": true,
+      "empty": false,
+      "parts": 57
+    },
+    {
+      "id": "KZ-ALMATY-MUNICIPAL-20314065144",
+      "areaM2": 6744.065912954976,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    }
+  ],
+  "source": {
+    "endpoint": "https://mapalmaty.kz/arcgis/rest/services/pg/pg_uzo/FeatureServer/10",
+    "name": "U006:Кадастр ГЗК",
+    "serviceVersion": 10.2,
+    "geometryType": "esriGeometryPolygon",
+    "safeOutFields": [
+      "objectid",
+      "kad_nomer"
+    ],
+    "objectIdField": "objectid",
+    "nativeIdField": "kad_nomer",
+    "supportedQueryFormats": [
+      "JSON",
+      "AMF"
+    ],
+    "requestsUseF": "json",
+    "requestedOutSR": 32643,
+    "queryFormatEvidence": "The layer supports JSON/AMF; the existing ArcGIS adapter requires f=geojson, which this source rejects with HTTP 400. These native-source geometry requests used the supported f=json format; no response rewriting or mock was used."
+  },
+  "requestCompleteness": {
+    "method": "Per-cell returnCountOnly and returnIdsOnly manifests; then OID queries over the union of sampled IDs, returnGeometry=true, outFields=objectid,kad_nomer.",
+    "viewportCount": 13,
+    "viewportCounts": [
+      {
+        "name": "viewport-0",
+        "bboxWgs84": [
+          76.908,
+          43.26,
+          76.909,
+          43.261
+        ],
+        "count": 5,
+        "manifestCount": 5,
+        "manifestComplete": true,
+        "manifestExceededTransferLimit": false
+      },
+      {
+        "name": "viewport-1",
+        "bboxWgs84": [
+          76.909,
+          43.26,
+          76.91,
+          43.261
+        ],
+        "count": 2,
+        "manifestCount": 2,
+        "manifestComplete": true,
+        "manifestExceededTransferLimit": false
+      },
+      {
+        "name": "viewport-2",
+        "bboxWgs84": [
+          76.91,
+          43.26,
+          76.911,
+          43.261
+        ],
+        "count": 2,
+        "manifestCount": 2,
+        "manifestComplete": true,
+        "manifestExceededTransferLimit": false
+      },
+      {
+        "name": "viewport-3",
+        "bboxWgs84": [
+          76.908,
+          43.261,
+          76.909,
+          43.262
+        ],
+        "count": 7,
+        "manifestCount": 7,
+        "manifestComplete": true,
+        "manifestExceededTransferLimit": false
+      },
+      {
+        "name": "viewport-4",
+        "bboxWgs84": [
+          76.909,
+          43.261,
+          76.91,
+          43.262
+        ],
+        "count": 7,
+        "manifestCount": 7,
+        "manifestComplete": true,
+        "manifestExceededTransferLimit": false
+      },
+      {
+        "name": "viewport-5",
+        "bboxWgs84": [
+          76.91,
+          43.261,
+          76.911,
+          43.262
+        ],
+        "count": 12,
+        "manifestCount": 12,
+        "manifestComplete": true,
+        "manifestExceededTransferLimit": false
+      },
+      {
+        "name": "viewport-6",
+        "bboxWgs84": [
+          76.908,
+          43.262,
+          76.909,
+          43.263
+        ],
+        "count": 15,
+        "manifestCount": 15,
+        "manifestComplete": true,
+        "manifestExceededTransferLimit": false
+      },
+      {
+        "name": "viewport-7",
+        "bboxWgs84": [
+          76.909,
+          43.262,
+          76.91,
+          43.263
+        ],
+        "count": 16,
+        "manifestCount": 16,
+        "manifestComplete": true,
+        "manifestExceededTransferLimit": false
+      },
+      {
+        "name": "viewport-8",
+        "bboxWgs84": [
+          76.91,
+          43.262,
+          76.911,
+          43.263
+        ],
+        "count": 26,
+        "manifestCount": 26,
+        "manifestComplete": true,
+        "manifestExceededTransferLimit": false
+      },
+      {
+        "name": "viewport-9",
+        "bboxWgs84": [
+          76.909,
+          43.259,
+          76.91,
+          43.26
+        ],
+        "count": 2,
+        "manifestCount": 2,
+        "manifestComplete": true,
+        "manifestExceededTransferLimit": false
+      },
+      {
+        "name": "viewport-10",
+        "bboxWgs84": [
+          76.909,
+          43.263,
+          76.91,
+          43.264
+        ],
+        "count": 22,
+        "manifestCount": 22,
+        "manifestComplete": true,
+        "manifestExceededTransferLimit": false
+      },
+      {
+        "name": "viewport-11",
+        "bboxWgs84": [
+          76.907,
+          43.261,
+          76.908,
+          43.262
+        ],
+        "count": 3,
+        "manifestCount": 3,
+        "manifestComplete": true,
+        "manifestExceededTransferLimit": false
+      },
+      {
+        "name": "viewport-12",
+        "bboxWgs84": [
+          76.911,
+          43.261,
+          76.912,
+          43.262
+        ],
+        "count": 11,
+        "manifestCount": 11,
+        "manifestComplete": true,
+        "manifestExceededTransferLimit": false
+      }
+    ],
+    "sumCellRows": 130,
+    "uniqueManifestOids": 82,
+    "oidPageCount": 1,
+    "oidPageEvidence": [
+      {
+        "offset": 0,
+        "requestedCount": 82,
+        "returnedCount": 82,
+        "httpStatus": 200,
+        "exceededTransferLimit": false,
+        "spatialReference": {
+          "wkid": 32643,
+          "latestWkid": 32643
+        },
+        "geometrySpatialReferences": []
+      }
+    ],
+    "featuresFetched": 82,
+    "allManifestsEqualCounts": true,
+    "noTransferLimitFlags": true,
+    "returnedPropertyKeys": [
+      "objectid",
+      "kad_nomer"
+    ],
+    "unexpectedPropertyKeys": []
+  },
+  "spatialReferenceEvidence": {
+    "requestedOutSR": 32643,
+    "layerSpatialReference": "EPSG:32643",
+    "responseTopLevelSpatialReference": [
+      {
+        "latestWkid": 32643,
+        "wkid": 32643
+      }
+    ],
+    "featureGeometrySpatialReferences": [],
+    "geometrySpatialReferenceNote": "FeatureSet response carries top-level wkid=32643 and latestWkid=32643; individual geometry objects omit spatialReference, so features inherit the response-level reference."
+  },
+  "nativeIdentityEvidence": {
+    "method": "Separate bounded attribute-only f=json count/page audit across the same 13 cells; only objectid,kad_nomer requested, no geometry.",
+    "uniqueObjectIds": 82,
+    "uniqueKadNomer": 82,
+    "duplicateKadNomerAcrossDistinctObjectIds": [],
+    "all9AbsentNativeProbe": {
+      "status": 200,
+      "count": 0,
+      "nativeValue": "99999999999999999999999"
+    },
+    "scopeNote": "kad_nomer was unique per objectid in these sampled cells; this does not establish uniqueness outside the sample."
+  },
+  "esriRingConversion": {
+    "documentation": "https://developers.arcgis.com/rest/services-reference/enterprise/geometry-objects/",
+    "documentedRule": "Exterior rings are clockwise; holes are counterclockwise.",
+    "conversion": "Clockwise rings become polygon exteriors; each counterclockwise ring was attached to the smallest containing exterior. Multiple exteriors become MultiPolygon components. Exact coordinate sequences and ring winding were preserved; no coordinate edits, winding normalization, geometry repair, or orphan-hole assignment.",
+    "ringCounts": {
+      "clockwiseOuter": 138,
+      "counterclockwiseHole": 1
+    },
+    "holeAssignments": 1,
+    "orphanHoleCount": 0,
+    "coordinateSequencesPreserved": true,
+    "polygonFeatureCount": 81,
+    "multiPolygonFeatureCount": 1,
+    "tempMetricGeoJson": "/tmp/overnight-cities-2026-10-08/almaty-municipal-native-metric.geojson",
+    "rawEsriJson": "/tmp/overnight-cities-2026-10-08/almaty-municipal-native-esrijson.json"
+  },
+  "nationalOverlapComparison": {
+    "nationalSampleSource": "/tmp/overnight-cities-2026-10-08/almaty-overlap-native-raw.geojson",
+    "sameCrs": "Both samples use EPSG:32643; no reprojection or geometry modification applied for comparison.",
+    "nationalSampleFeatureCount": 9,
+    "sharedKadNomerCount": 9,
+    "sharedKadNomer": [
+      "20311023025",
+      "20311023052",
+      "20311023062",
+      "20311023227",
+      "20311023228",
+      "20311023245",
+      "20311023278",
+      "20311023311",
+      "20311023329"
+    ],
+    "perFeatureGeometryComparisons": [
+      {
+        "kadNomer": "20311023025",
+        "topologicallyEqual": false,
+        "symmetricDifferenceM2": 58.64965060068836,
+        "hausdorffDistanceM": 0.7178530213916637,
+        "nationalAreaM2": 736.0374744386467,
+        "municipalAreaM2": 736.1829529407859
+      },
+      {
+        "kadNomer": "20311023052",
+        "topologicallyEqual": false,
+        "symmetricDifferenceM2": 68.46648058302641,
+        "hausdorffDistanceM": 0.7160293007238433,
+        "nationalAreaM2": 940.560156079344,
+        "municipalAreaM2": 940.7467430683502
+      },
+      {
+        "kadNomer": "20311023062",
+        "topologicallyEqual": false,
+        "symmetricDifferenceM2": 57.922579470392975,
+        "hausdorffDistanceM": 0.7160169900068333,
+        "nationalAreaM2": 669.282796037812,
+        "municipalAreaM2": 669.4185505830375
+      },
+      {
+        "kadNomer": "20311023227",
+        "topologicallyEqual": false,
+        "symmetricDifferenceM2": 64.41713605831815,
+        "hausdorffDistanceM": 0.7106700222235448,
+        "nationalAreaM2": 802.4711609401735,
+        "municipalAreaM2": 802.6390814438822
+      },
+      {
+        "kadNomer": "20311023228",
+        "topologicallyEqual": false,
+        "symmetricDifferenceM2": 56.800563436318185,
+        "hausdorffDistanceM": 0.7173990867283694,
+        "nationalAreaM2": 752.7558111483468,
+        "municipalAreaM2": 752.9018693490772
+      },
+      {
+        "kadNomer": "20311023245",
+        "topologicallyEqual": false,
+        "symmetricDifferenceM2": 58.73133048571739,
+        "hausdorffDistanceM": 0.7179384726082302,
+        "nationalAreaM2": 870.3787992626277,
+        "municipalAreaM2": 870.5524272500996
+      },
+      {
+        "kadNomer": "20311023278",
+        "topologicallyEqual": false,
+        "symmetricDifferenceM2": 55.16582879369581,
+        "hausdorffDistanceM": 0.7171679375503084,
+        "nationalAreaM2": 671.1692401045409,
+        "municipalAreaM2": 671.3069675386109
+      },
+      {
+        "kadNomer": "20311023311",
+        "topologicallyEqual": false,
+        "symmetricDifferenceM2": 71.66093905879866,
+        "hausdorffDistanceM": 0.7111449993667561,
+        "nationalAreaM2": 1203.736222271255,
+        "municipalAreaM2": 1203.9759742552073
+      },
+      {
+        "kadNomer": "20311023329",
+        "topologicallyEqual": false,
+        "symmetricDifferenceM2": 62.40894170600767,
+        "hausdorffDistanceM": 0.710104505985577,
+        "nationalAreaM2": 751.6306640463573,
+        "municipalAreaM2": 751.7803670511354
+      }
+    ],
+    "nationalMaterialPairs": [
+      {
+        "nativeIds": [
+          "20311023245",
+          "20311023025"
+        ],
+        "nationalOverlapM2": 56.29238491495347,
+        "municipalOverlapM2": 56.29743019045884,
+        "municipalFractionOfSmaller": 0.07647206440405999,
+        "differenceM2": 0.005045275505366931,
+        "presentInMunicipalSample": true
+      },
+      {
+        "nativeIds": [
+          "20311023052",
+          "20311023062"
+        ],
+        "nationalOverlapM2": 36.81689001695528,
+        "municipalOverlapM2": 36.825255122879994,
+        "municipalFractionOfSmaller": 0.0550108076491257,
+        "differenceM2": 0.008365105924717398,
+        "presentInMunicipalSample": true
+      },
+      {
+        "nativeIds": [
+          "20311023278",
+          "20311023228"
+        ],
+        "nationalOverlapM2": 52.46518249945723,
+        "municipalOverlapM2": 52.4751573965458,
+        "municipalFractionOfSmaller": 0.07816864703333745,
+        "differenceM2": 0.009974897088568468,
+        "presentInMunicipalSample": true
+      },
+      {
+        "nativeIds": [
+          "20311023228",
+          "20311023311"
+        ],
+        "nationalOverlapM2": 3.13707655827373,
+        "municipalOverlapM2": 3.137359043526548,
+        "municipalFractionOfSmaller": 0.004167022518138995,
+        "differenceM2": 0.0002824852528182653,
+        "presentInMunicipalSample": true
+      },
+      {
+        "nativeIds": [
+          "20311023227",
+          "20311023311"
+        ],
+        "nationalOverlapM2": 20.111538840746054,
+        "municipalOverlapM2": 20.118730628911692,
+        "municipalFractionOfSmaller": 0.025065725173411362,
+        "differenceM2": 0.007191788165638258,
+        "presentInMunicipalSample": true
+      },
+      {
+        "nativeIds": [
+          "20311023227",
+          "20311023329"
+        ],
+        "nationalOverlapM2": 35.63035453748479,
+        "municipalOverlapM2": 35.63673068775192,
+        "municipalFractionOfSmaller": 0.04740311432651173,
+        "differenceM2": 0.006376150267129788,
+        "presentInMunicipalSample": true
+      }
+    ],
+    "allSixNationalPositiveAreaPairsPersist": true,
+    "lifecycleFieldNullCountsInExistingNineFeatureNationalSample": {
+      "date_end": {
+        "presentCount": 9,
+        "nullCount": 9,
+        "nonNullCount": 0
+      },
+      "is_del": {
+        "presentCount": 9,
+        "nullCount": 9,
+        "nonNullCount": 0
+      },
+      "land_status": {
+        "presentCount": 9,
+        "nullCount": 9,
+        "nonNullCount": 0
+      },
+      "ddate": {
+        "presentCount": 9,
+        "nullCount": 9,
+        "nonNullCount": 0
+      }
+    },
+    "interpretation": "The municipal alternative retains all six national-source overlap pairs at nearly the same overlapping areas, though none of the nine corresponding individual polygons is topologically equal across sources. Switching sources does not remove this sampled overlap issue. Do not filter using the national lifecycle fields: all four tested fields were null on all nine records."
+  },
+  "scopeLimit": "Thirteen bounded 0.001-degree viewports near the selected center only; this is not citywide completeness or legal-accuracy evidence."
+}

@@ -1,0 +1,96 @@
+{
+  "schemaVersion": "1.0",
+  "checkedAt": "2026-10-09",
+  "cityRecord": "city-7520-aswan.json",
+  "purpose": "Document first-party local registry/map evidence and bounded anonymous parcel geometry access review.",
+  "scopeLimits": {
+    "maxFullPolygonsRetainedInCityRecord": 0,
+    "maxFullPolygonsRetainedInReview": 0,
+    "maxFullPolygonsRetainedInRepository": 0,
+    "ownerOrAddressDataRetained": false,
+    "credentialsOrTokenValuesRetained": false,
+    "citywideCompletenessAsserted": false
+  },
+  "assessment": "An Aswan registry office is evidenced and national ESA holds cadastral mapping role; city public polygon access is not verified.",
+  "registryAssessment": "An Aswan registry office is evidenced and national ESA holds cadastral mapping role; city public polygon access is not verified.",
+  "officialPrimarySources": [
+    {
+      "url": "https://gis.aswan.gov.eg/",
+      "operator": "Aswan Governorate GIS Geoportal",
+      "observation": "Official geoportal describes Geographic Information Administration and Utility Network Center and Urban Planning; reviewed description does not identify land parcels."
+    },
+    {
+      "url": "https://www.esa.gov.eg/main.aspx",
+      "operator": "Egyptian Survey Authority",
+      "observation": "Official national mapping agency states mission includes ownership/cadastral maps/registers; not evidence of an anonymous parcel service."
+    },
+    {
+      "url": "https://assets.mof.gov.eg/files0cb868e0-08ce-11ec-a1b5-d3b23deafc98.pdf",
+      "operator": "Egypt Ministry of Finance",
+      "observation": "Official finance document lists Aswan real-estate registration office address; office location evidence only."
+    }
+  ],
+  "searchQueries": [
+    {
+      "language": "Arabic",
+      "query": "أسوان خريطة مساحية سجل عقاري محافظة أسوان الشهر العقاري GIS رسمي",
+      "result": "An Aswan registry office is evidenced and national ESA holds cadastral mapping role; city public polygon access is not verified.",
+      "method": "Separate local-language web search followed by official-source review.",
+      "scope": "Identify first-party local land-registry/cadastral sources and safe anonymous parcel geometry.",
+      "actualResultUrls": [
+        "https://gis.aswan.gov.eg/",
+        "https://www.esa.gov.eg/main.aspx",
+        "https://assets.mof.gov.eg/files0cb868e0-08ce-11ec-a1b5-d3b23deafc98.pdf"
+      ]
+    },
+    {
+      "language": "English",
+      "query": "Aswan Egypt official cadastral land registry parcel map local survey authority GIS",
+      "result": "An Aswan registry office is evidenced and national ESA holds cadastral mapping role; city public polygon access is not verified.",
+      "method": "Separate English-language web search followed by official-source review.",
+      "scope": "Identify first-party local land-registry/cadastral sources and safe anonymous parcel geometry.",
+      "actualResultUrls": [
+        "https://gis.aswan.gov.eg/",
+        "https://www.esa.gov.eg/main.aspx",
+        "https://assets.mof.gov.eg/files0cb868e0-08ce-11ec-a1b5-d3b23deafc98.pdf"
+      ]
+    }
+  ],
+  "geometryDecision": "No full parcel polygon retained; no safe anonymous geometry response was verified.",
+  "coverageAssessment": {
+    "claimedScope": "An Aswan registry office is evidenced and national ESA holds cadastral mapping role; city public polygon access is not verified.",
+    "verifiedOpenScope": null,
+    "citywideVerified": false,
+    "countrywideVerified": false,
+    "geometryVerified": false
+  },
+  "attempts": [
+    {
+      "url": "https://gis.aswan.gov.eg/",
+      "result": "Anonymous read-only GET returned HTTP 200 (text/html; charset=utf-8), 5067 bytes read; title: البوابة الجغرافية. SHA-256 of bytes read: e895b17b185cb95bac3e4b34d76298be37c906247b6ff6f8cda6b254bf2becb4. No cookies, credentials, or property-specific parameters were sent."
+    },
+    {
+      "url": "https://gis.aswan.gov.eg/",
+      "result": "Official geoportal describes Geographic Information Administration and Utility Network Center and Urban Planning; reviewed description does not identify land parcels."
+    },
+    {
+      "url": "https://www.esa.gov.eg/main.aspx",
+      "result": "Official national mapping agency states mission includes ownership/cadastral maps/registers; not evidence of an anonymous parcel service."
+    },
+    {
+      "url": "https://assets.mof.gov.eg/files0cb868e0-08ce-11ec-a1b5-d3b23deafc98.pdf",
+      "result": "Official finance document lists Aswan real-estate registration office address; office location evidence only."
+    }
+  ],
+  "remainingUncertainty": "Exact jurisdiction/point mapping and anonymous public vector geometry remain unverified.",
+  "geometryEvidence": null,
+  "runtimeAssessment": "not enabled; root may run full adapter qualification.",
+  "rootReviewedAt": "2026-10-09T07:13:02.981057+00:00",
+  "rootReview": {
+    "checkedAt": "2026-10-09T07:13:02.981057+00:00",
+    "decision": "Reviewed city identity, canonical population/point, separate searches and saved source/request evidence. No full public parcel geometry verified in this pass.",
+    "custodyScope": "An Aswan registry office is evidenced and national ESA holds cadastral mapping role; city public polygon access is not verified.",
+    "transportFailuresDoNotProveAbsence": true,
+    "geometryClaimScope": "Investigation outcome only; no worldwide or citywide absence asserted."
+  }
+}

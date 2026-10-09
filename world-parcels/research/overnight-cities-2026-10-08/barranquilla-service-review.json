@@ -1,0 +1,13 @@
+{
+  "schemaVersion": "1.0",
+  "checkedAt": "2026-10-09",
+  "cityRecord": "city-3928-barranquilla.json",
+  "purpose": "Read-only municipal viewer/service trace and bounded WUP-point query review; public access barriers noted; no runtime or global changes.",
+  "scopeLimits": {
+    "maxFullPolygonsRetainedInThisCityReport": 0,
+    "maxFullPolygonsRetainedAcrossCityReview": 0,
+    "ownerOrAddressDataRetained": false,
+    "accountCredentialsOrPublicTokenValuesRetained": false
+  },
+  "assessment": "Official Mi Ciudad bundle identifies the Predios_2026 parcel layer. The bounded WUP-point query returned Cloudflare HTTP 403. A follow-up ordinary public request with the Mi Ciudad Origin/Referer headers also returned HTTP 403 from Cloudflare. No challenge or login was completed and no geometry was retained."
+}

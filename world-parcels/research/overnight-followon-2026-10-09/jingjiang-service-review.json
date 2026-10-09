@@ -1,0 +1,75 @@
+{
+  "schemaVersion": "1.0",
+  "checkedAt": "2026-10-09",
+  "cityRecord": "city-11536-jingjiang.json",
+  "purpose": "Document first-party local registry/map evidence and bounded anonymous geometry access review.",
+  "scopeLimits": {
+    "maxFullPolygonsRetainedInCityRecord": 0,
+    "maxFullPolygonsRetainedInReview": 0,
+    "maxFullPolygonsRetainedInRepository": 0,
+    "ownerOrAddressDataRetained": false,
+    "credentialsOrTokenValuesRetained": false,
+    "citywideCompletenessAsserted": false
+  },
+  "assessment": "The municipal government bureau page identifies the Jingjiang Real Estate Registration Center; a municipal service page lists land/cadastral application and registration services. Reviewed pages do not expose an anonymous parcel-vector route, and no property-specific request was made.",
+  "registryAssessment": "Jingjiang municipal government identifies the city Natural Resources and Planning Bureau and its Real Estate Registration Center, and describes land/cadastral registration services. No anonymous public parcel geometry endpoint was found.",
+  "officialPrimarySources": [
+    {
+      "url": "https://www.jingjiang.gov.cn/xxgk/fdzdgknr/ldjg/bmjj/art/2022/art_cd3fe701470149ce886fff63fb98e74b.html",
+      "observation": "The municipal government bureau page identifies the Jingjiang Real Estate Registration Center; a municipal service page lists land/cadastral application and registration services. Reviewed pages do not expose an anonymous parcel-vector route, and no property-specific request was made."
+    },
+    {
+      "url": "https://www.jingjiang.gov.cn/12345/zwfw/art/2024/art_c3ea7ee58f4e4797946e72563f871403.html",
+      "observation": "The municipal government bureau page identifies the Jingjiang Real Estate Registration Center; a municipal service page lists land/cadastral application and registration services. Reviewed pages do not expose an anonymous parcel-vector route, and no property-specific request was made."
+    }
+  ],
+  "searchQueries": [
+    {
+      "language": "English",
+      "query": "Jingjiang Jiangsu China official cadastral map land registration center natural resources bureau",
+      "result": "The municipal government bureau page identifies the Jingjiang Real Estate Registration Center; a municipal service page lists land/cadastral application and registration services. Reviewed pages do not expose an anonymous parcel-vector route, and no property-specific request was made.",
+      "method": "Separate official-source search and review.",
+      "scope": "Identify first-party registry custody and public geometry route.",
+      "actualResultUrls": [
+        "https://www.jingjiang.gov.cn/xxgk/fdzdgknr/ldjg/bmjj/art/2022/art_cd3fe701470149ce886fff63fb98e74b.html",
+        "https://www.jingjiang.gov.cn/12345/zwfw/art/2024/art_c3ea7ee58f4e4797946e72563f871403.html"
+      ]
+    },
+    {
+      "language": "Chinese",
+      "query": "靖江市 不动产登记 地籍图 自然资源和规划局 官方",
+      "result": "The municipal government bureau page identifies the Jingjiang Real Estate Registration Center; a municipal service page lists land/cadastral application and registration services. Reviewed pages do not expose an anonymous parcel-vector route, and no property-specific request was made.",
+      "method": "Separate official-source search and review.",
+      "scope": "Identify first-party registry custody and public geometry route.",
+      "actualResultUrls": [
+        "https://www.jingjiang.gov.cn/xxgk/fdzdgknr/ldjg/bmjj/art/2022/art_cd3fe701470149ce886fff63fb98e74b.html",
+        "https://www.jingjiang.gov.cn/12345/zwfw/art/2024/art_c3ea7ee58f4e4797946e72563f871403.html"
+      ]
+    }
+  ],
+  "geometryDecision": "No full polygon retained: no safe anonymous geometry-only route was verified.",
+  "coverageAssessment": {
+    "claimedScope": "Jingjiang municipal government identifies the city Natural Resources and Planning Bureau and its Real Estate Registration Center, and describes land/cadastral registration services. No anonymous public parcel geometry endpoint was found.",
+    "verifiedOpenScope": "The municipal government bureau page identifies the Jingjiang Real Estate Registration Center; a municipal service page lists land/cadastral application and registration services. Reviewed pages do not expose an anonymous parcel-vector route, and no property-specific request was made.",
+    "citywideVerified": false,
+    "countrywideVerified": false,
+    "geometryVerified": false
+  },
+  "attempts": [
+    {
+      "url": "https://www.jingjiang.gov.cn/xxgk/fdzdgknr/ldjg/bmjj/art/2022/art_cd3fe701470149ce886fff63fb98e74b.html",
+      "result": "Official source reviewed; no property-specific lookup or identifying information was submitted."
+    },
+    {
+      "url": "https://www.jingjiang.gov.cn/12345/zwfw/art/2024/art_c3ea7ee58f4e4797946e72563f871403.html",
+      "result": "Official source reviewed; no property-specific lookup or identifying information was submitted."
+    }
+  ],
+  "remainingUncertainty": "Citywide completeness and adapter/runtime suitability remain unqualified; local registry evidence does not establish full public geometry availability.",
+  "geometryEvidence": {
+    "sampleFile": null,
+    "featureCount": 0,
+    "query": "No geometry request made; reviewed official HTML/search evidence only."
+  },
+  "runtimeAssessment": "Not enabled; root may perform full adapter qualification."
+}

@@ -1,0 +1,94 @@
+{
+  "schemaVersion": 1,
+  "kind": "city_parcel_source_research",
+  "checkedAt": "2026-10-09",
+  "country": "Democratic Republic of the Congo",
+  "countryCode": "CD",
+  "populationUnit": "persons",
+  "status": "complete",
+  "verifiedSample": false,
+  "publicParcelGeometryFound": false,
+  "runtimeReadiness": "not_enabled_no_verified_public_geometry",
+  "priorEvidenceFiles": [],
+  "scopeLimits": "The ranked UN WUP 2025 population-weighted settlement point is a locator, not an official municipal boundary, parcel identity, or coverage guarantee. No owner, address, tax, or account data was retained; no credential, login, CAPTCHA, or private token was used.",
+  "wupCityCode": 4580,
+  "queueRank": 336,
+  "name": "Kananga",
+  "centerLatLon": [
+    -5.89773463093619,
+    22.4124793487778
+  ],
+  "population2025": 1504370,
+  "pointBasis": "UN WUP 2025 population-weighted settlement centroid; this is not a municipal boundary or a parcel-coverage claim.",
+  "registryFound": true,
+  "registryBasis": "The DRC Ministry of Land Affairs official circonscriptions directory lists Kananga under Kasai-Central, establishing local land-affairs/cadastre jurisdiction. The official public-service catalog describes cadastral and real-estate register consultation as an application handled by the titles/cadastre office for a fee; the ministry application requires identity documents and property details. No anonymous public parcel map/vector service was identified.",
+  "resultCategory": "city_registry_documented_application_required_no_public_geometry",
+  "research": {
+    "executedQueries": [
+      {
+        "language": "English",
+        "query": "Kananga Democratic Republic of Congo official land registry cadastral map GIS parcel service Kananga city",
+        "scope": "Search for a city-specific registry, cadastral map or public parcel-vector service.",
+        "result": "Search returned the official Ministry of Land Affairs and local jurisdiction directory; no open city parcel layer was found.",
+        "actualResultUrls": [
+          "https://www.affairesfoncieres.gouv.cd/secretariat/circonscriptions",
+          "https://servicepublic.gouv.cd/service/4671",
+          "https://www.affairesfoncieres.gouv.cd/services-fonciers/demandes"
+        ],
+        "executionMethod": "Separate web search and official-source review."
+      },
+      {
+        "language": "French",
+        "query": "Kananga parcelles cadastre registre foncier carte GIS mairie Kananga service des titres fonciers officiel",
+        "scope": "Search for a city-specific registry, cadastral map or public parcel-vector service.",
+        "result": "Official Ministry directory identifies the Kananga land-affairs circonscription. The official registry consultation is a paid request to the titles/cadastre service, not open geometry.",
+        "actualResultUrls": [
+          "https://www.affairesfoncieres.gouv.cd/secretariat/circonscriptions",
+          "https://servicepublic.gouv.cd/service/4671",
+          "https://www.affairesfoncieres.gouv.cd/services-fonciers/demandes"
+        ],
+        "executionMethod": "Separate web search and official-source review."
+      }
+    ],
+    "officialSources": [
+      {
+        "url": "https://www.affairesfoncieres.gouv.cd/secretariat/circonscriptions",
+        "operator": "DRC Ministry of Land Affairs",
+        "observation": "Official local jurisdiction directory lists Kananga under Kasai-Central."
+      },
+      {
+        "url": "https://servicepublic.gouv.cd/service/4671",
+        "operator": "DRC Government Public Service portal",
+        "observation": "Cadastral/real-estate register consultation is a paid application to land titles/cadastre office; it does not advertise an anonymous map endpoint."
+      },
+      {
+        "url": "https://www.affairesfoncieres.gouv.cd/services-fonciers/demandes",
+        "operator": "DRC Ministry of Land Affairs",
+        "observation": "Application workflow requests applicant identity documentation and property location/reference details."
+      }
+    ],
+    "requests": [],
+    "coverageAssessment": {
+      "claimedScope": "No complete municipal coverage is claimed.",
+      "verifiedOpenScope": "No anonymous city parcel polygons verified. City-local registry or mapping evidence is described above.",
+      "citywideVerified": false,
+      "countrywideVerified": false,
+      "geometryVerified": false
+    },
+    "technicalBlocker": "The official service is an applicant-submitted registry consultation, requires identity documentation/property references, and is paid; it is not an anonymous spatial viewer. No municipal GIS/vector service was discovered.",
+    "remainingUncertainty": "Whether the Kananga land-affairs office has an unindexed public map service or can provide geometry as part of an application; no city parcel boundary coverage can be claimed."
+  },
+  "verifiedParcelResponse": null,
+  "source": null,
+  "cityId": "wup2025:4580",
+  "populationPlausibility2025": "Moderate",
+  "sourceIds": [],
+  "technicalBlocker": "The official service is an applicant-submitted registry consultation, requires identity documentation/property references, and is paid; it is not an anonymous spatial viewer. No municipal GIS/vector service was discovered.",
+  "remainingUncertainty": "Whether the Kananga land-affairs office has an unindexed public map service or can provide geometry as part of an application; no city parcel boundary coverage can be claimed.",
+  "nextStep": "Retain as research only unless a safe, anonymous, city-local polygon endpoint can be inspected and verified.",
+  "rootReviewedAt": "2026-10-08T22:44:29.461431+00:00",
+  "point": [
+    -5.89773463093619,
+    22.4124793487778
+  ]
+}

@@ -1,0 +1,15 @@
+{
+  "checkedAt": "2026-10-09T03:24:14.258354+00:00",
+  "appCityId": "milwaukee",
+  "url": "http://localhost:5638/?city=milwaukee&backend=http%3A%2F%2F127.0.0.1%3A5640&reduceMotion=1&lang=en",
+  "headedBrowser": true,
+  "loadedParcels": 254,
+  "visibleParcels": 60,
+  "parcelFetchFinished": true,
+  "selectionMethod": "Real pointer move/down/up at [350, 446], then Details menu item",
+  "selectedParcelId": "US-WI-MILWAUKEE-MAP-1037413",
+  "detailsHeading": "Parcel US-WI-MILWAUKEE-MAP-1037413",
+  "detailsMatchesSelectedParcel": true,
+  "uncaughtErrors": [],
+  "browserClosed": true
+}

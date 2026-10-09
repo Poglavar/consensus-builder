@@ -1,0 +1,85 @@
+{
+  "name": "San Pedro Sula",
+  "country": "Honduras",
+  "countryCode": "HN",
+  "rank": 397,
+  "point": [
+    15.5146924750272,
+    -87.9925876655816
+  ],
+  "freshResearch": {
+    "queries": [
+      {
+        "language": "English",
+        "query": "San Pedro Sula Honduras official municipal cadastral map parcel GIS catastro online land registry",
+        "scope": "Find official local cadastral registry/map evidence and test anonymous parcel geometry access.",
+        "result": "The municipal registry and online service are first-party and active, but parcel plans are handled through an applicant-specific request. No anonymous public vector schema, safe-ID query, or geometry endpoint was found; no parcel feature was retained.",
+        "actualResultUrls": [
+          "https://www.sanpedrosula.hn/catastro/index.php",
+          "https://www.sanpedrosula.hn/catastro/index.php/solicitud-de-planos",
+          "https://portalunico.iaip.gob.hn/92/50/",
+          "https://sinap.hn/"
+        ],
+        "executionMethod": "Separate English and local-language web searches followed by official portal and bounded public service review."
+      },
+      {
+        "language": "Spanish",
+        "query": "San Pedro Sula catastro mapa de predios SIG catastro municipal oficial Honduras servicios en línea",
+        "scope": "Find official local cadastral registry/map evidence and test anonymous parcel geometry access.",
+        "result": "The municipal registry and online service are first-party and active, but parcel plans are handled through an applicant-specific request. No anonymous public vector schema, safe-ID query, or geometry endpoint was found; no parcel feature was retained.",
+        "actualResultUrls": [
+          "https://www.sanpedrosula.hn/catastro/index.php",
+          "https://www.sanpedrosula.hn/catastro/index.php/solicitud-de-planos",
+          "https://portalunico.iaip.gob.hn/92/50/",
+          "https://sinap.hn/"
+        ],
+        "executionMethod": "Separate English and local-language web searches followed by official portal and bounded public service review."
+      }
+    ]
+  },
+  "status": "complete",
+  "verifiedParcelResponse": null,
+  "source": {
+    "sourceId": "HN-492-PUBLIC-CADASTRE",
+    "name": "Municipalidad de San Pedro Sula Catastro en Línea",
+    "url": "https://www.sanpedrosula.hn/catastro/index.php",
+    "operator": "Municipality of San Pedro Sula, Municipal Catastro",
+    "serviceType": "Applicant-based cadastral service and plan requests; no anonymous feature service verified",
+    "layer": "Municipalidad de San Pedro Sula Catastro en Línea",
+    "geometryType": "Not verified",
+    "outputCrs": null,
+    "nativeIdField": "Cadastral key is required for the plan request form; no public identifier response verified",
+    "nativeIdEvidence": "Local municipal Catastro exists, but no public city parcel geometry service was verified."
+  },
+  "coverageAssessment": {
+    "claimedScope": "Local municipal Catastro exists, but no public city parcel geometry service was verified.",
+    "verifiedOpenScope": "Local municipal Catastro exists, but no public city parcel geometry service was verified.",
+    "countrywideVerified": false
+  },
+  "registryFound": true,
+  "verifiedSample": false,
+  "resultCategory": "official_cadastral_registry_geometry_not_verified",
+  "technicalBlocker": "The municipal registry and online service are first-party and active, but parcel plans are handled through an applicant-specific request. No anonymous public vector schema, safe-ID query, or geometry endpoint was found; no parcel feature was retained.",
+  "remainingUncertainty": "Citywide coverage and completeness are not established; this record is limited to the reviewed public source and WUP-point vicinity.",
+  "nextStep": "Recheck only if the official provider publishes an anonymous, safe vector feature endpoint or map-backed city-center hierarchy.",
+  "schemaVersion": 1,
+  "checkedAt": "2026-10-09",
+  "wupCityCode": 492,
+  "cityId": "wup2025:492",
+  "runtimeReadiness": "not_enabled_no_verified_public_geometry",
+  "adapterReady": false,
+  "centerLatLon": [
+    15.5146924750272,
+    -87.9925876655816
+  ],
+  "population2025k": 1299.457,
+  "populationUnit": "persons",
+  "queueRank": 397,
+  "population2025": 1299457,
+  "populationPlausibility2025": "Moderate",
+  "pointBasis": "UN WUP 2025 population-weighted settlement centroid; this is not a municipal boundary or a parcel-coverage claim.",
+  "publicParcelGeometryFound": false,
+  "sourceIds": [],
+  "registryBasis": "The Municipality of San Pedro Sula operates its own Catastro en Línea portal and applicant-based cadastral plan services; no anonymous parcel geometry route was verified.",
+  "rootReviewedAt": "2026-10-08T23:30:20.283150+00:00"
+}

@@ -1,0 +1,566 @@
+{
+  "schemaVersion": 1,
+  "purpose": "Independent GEOS topology check of complete runtime parcels projected to metric coordinates; no repair applied. Counts are bounded sample evidence, not whole-city guarantees.",
+  "library": "Shapely 2.2.0",
+  "metricCrs": "EPSG:32632",
+  "featureCount": 78,
+  "validNonemptyCount": 78,
+  "invalidFeatures": [],
+  "exactDuplicateGeometryPairs": [],
+  "positiveAreaOverlapPairsAbove0_01M2": [],
+  "sumPairwiseOverlapM2": 0,
+  "operationErrors": [],
+  "areaM2": {
+    "min": 21.830266222839875,
+    "median": 751.1773062358902,
+    "max": 425845.3475669096
+  },
+  "features": [
+    {
+      "id": "DE-BW-ALKIS-08146000000678000000",
+      "areaM2": 276573.5500456897,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "DE-BW-ALKIS-08146000000688000200",
+      "areaM2": 34477.566647162916,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "DE-BW-ALKIS-08146000001247000200",
+      "areaM2": 5744.033449779787,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "DE-BW-ALKIS-08146000001253000100",
+      "areaM2": 1717.4467647198258,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "DE-BW-ALKIS-08146000001270000900",
+      "areaM2": 5233.405226633073,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "DE-BW-ALKIS-08146000001270001300",
+      "areaM2": 4931.7560807738355,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "DE-BW-ALKIS-08146000001271000200",
+      "areaM2": 5006.382765631059,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "DE-BW-ALKIS-08146000001271001900",
+      "areaM2": 2941.2054970858426,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "DE-BW-ALKIS-08146000001275000100",
+      "areaM2": 9673.072765820403,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "DE-BW-ALKIS-08146000001275000200",
+      "areaM2": 1592.329223057785,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "DE-BW-ALKIS-08146000001280000000",
+      "areaM2": 23227.556094054657,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "DE-BW-ALKIS-08146000009315000000",
+      "areaM2": 425845.3475669096,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "DE-BW-ALKIS-08146000001254000100",
+      "areaM2": 1721.9892018207229,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "DE-BW-ALKIS-08146000001270000100",
+      "areaM2": 1515.2927136129429,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "DE-BW-ALKIS-08146000001270000200",
+      "areaM2": 35.440224926508336,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "DE-BW-ALKIS-08146000001270000300",
+      "areaM2": 66.53357727776246,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "DE-BW-ALKIS-08146000001270001500",
+      "areaM2": 163.71123724033993,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "DE-BW-ALKIS-08146000001270001600",
+      "areaM2": 137.17496995983637,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "DE-BW-ALKIS-08146000001270001700",
+      "areaM2": 158.5950188644718,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "DE-BW-ALKIS-08146000001270001800",
+      "areaM2": 322.6839078536824,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "DE-BW-ALKIS-08146000001270001900",
+      "areaM2": 364.5907945567392,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "DE-BW-ALKIS-08146000001270002000",
+      "areaM2": 320.30877333833195,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "DE-BW-ALKIS-08146000001271000100",
+      "areaM2": 3246.866555679506,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "DE-BW-ALKIS-08146000001271000300",
+      "areaM2": 556.1231814910678,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "DE-BW-ALKIS-08146000001271001200",
+      "areaM2": 1392.4752925329005,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "DE-BW-ALKIS-08146000001271001300",
+      "areaM2": 548.6982699943549,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "DE-BW-ALKIS-08146000001278000000",
+      "areaM2": 5234.4505184315485,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "DE-BW-ALKIS-08146000001257000500",
+      "areaM2": 312.40048256333523,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "DE-BW-ALKIS-08146000001258002900",
+      "areaM2": 289.02360431005627,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "DE-BW-ALKIS-08146000001258003000",
+      "areaM2": 193.23246686075228,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "DE-BW-ALKIS-08146000001258003100",
+      "areaM2": 1110.9669349610651,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "DE-BW-ALKIS-08146000001260000100",
+      "areaM2": 11582.112997333295,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "DE-BW-ALKIS-08146000001260000200",
+      "areaM2": 1440.0770294772267,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "DE-BW-ALKIS-08146000001265000000",
+      "areaM2": 1158.8622099934223,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "DE-BW-ALKIS-08146000001269000200",
+      "areaM2": 1060.5761604916527,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "DE-BW-ALKIS-08146000001269000300",
+      "areaM2": 700.6885763250971,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "DE-BW-ALKIS-08146000001270001100",
+      "areaM2": 596.995428405735,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "DE-BW-ALKIS-08146000001271001400",
+      "areaM2": 1323.5977777958103,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "DE-BW-ALKIS-08146000001280000101",
+      "areaM2": 638.2495782029995,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "DE-BW-ALKIS-08146000001280000400",
+      "areaM2": 3423.520621217592,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "DE-BW-ALKIS-08146000000688000000",
+      "areaM2": 55290.43876643086,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "DE-BW-ALKIS-08146000001268000100",
+      "areaM2": 300.06032812532095,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "DE-BW-ALKIS-08146000001268000200",
+      "areaM2": 654.9276680958396,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "DE-BW-ALKIS-08146000001268001000",
+      "areaM2": 1164.8152198966848,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "DE-BW-ALKIS-08146000001268001300",
+      "areaM2": 21.830266222839875,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "DE-BW-ALKIS-08146000001269001500",
+      "areaM2": 575.2592737194185,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "DE-BW-ALKIS-08146000001269001600",
+      "areaM2": 426.082732557593,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "DE-BW-ALKIS-08146000001269001700",
+      "areaM2": 349.94885452257836,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "DE-BW-ALKIS-08146000001269001900",
+      "areaM2": 290.74423471070037,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "DE-BW-ALKIS-08146000001271001600",
+      "areaM2": 646.0642235619599,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "DE-BW-ALKIS-08146000001271001700",
+      "areaM2": 368.0180083895769,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "DE-BW-ALKIS-08146000001231000400",
+      "areaM2": 2044.640504578989,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "DE-BW-ALKIS-08146000001231000500",
+      "areaM2": 831.4787736032046,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "DE-BW-ALKIS-08146000001231000600",
+      "areaM2": 801.6660361466834,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "DE-BW-ALKIS-08146000001253000200",
+      "areaM2": 1141.764778915833,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "DE-BW-ALKIS-08146000001257000100",
+      "areaM2": 387.2711913051661,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "DE-BW-ALKIS-08146000001257000300",
+      "areaM2": 336.93565370939865,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "DE-BW-ALKIS-08146000001257000400",
+      "areaM2": 605.7151441339532,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "DE-BW-ALKIS-08146000001257000600",
+      "areaM2": 827.4941217140603,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "DE-BW-ALKIS-08146000001257000800",
+      "areaM2": 909.2641320201237,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "DE-BW-ALKIS-08146000001258003200",
+      "areaM2": 438.0927680759805,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "DE-BW-ALKIS-08146000001258003300",
+      "areaM2": 252.64602989638632,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "DE-BW-ALKIS-08146000001258003400",
+      "areaM2": 293.8461885744913,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "DE-BW-ALKIS-08146000001279000100",
+      "areaM2": 7901.098944764963,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "DE-BW-ALKIS-08146000000782000101",
+      "areaM2": 192437.8180724724,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "DE-BW-ALKIS-08146000001261000300",
+      "areaM2": 2696.860117358808,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "DE-BW-ALKIS-08146000001261000800",
+      "areaM2": 7749.863505667746,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "DE-BW-ALKIS-08146000001268000300",
+      "areaM2": 684.4015484257528,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "DE-BW-ALKIS-08146000001268000400",
+      "areaM2": 692.4058555769478,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "DE-BW-ALKIS-08146000001268000500",
+      "areaM2": 306.4259933010964,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "DE-BW-ALKIS-08146000001268000600",
+      "areaM2": 179.66958102231047,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "DE-BW-ALKIS-08146000001268000700",
+      "areaM2": 282.16849456084856,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "DE-BW-ALKIS-08146000001268000800",
+      "areaM2": 251.25467598303155,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "DE-BW-ALKIS-08146000001268001100",
+      "areaM2": 2901.0066416254476,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "DE-BW-ALKIS-08146000001268001200",
+      "areaM2": 4915.620400997629,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "DE-BW-ALKIS-08146000001268001400",
+      "areaM2": 383.4857086181698,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "DE-BW-ALKIS-08146000001280000201",
+      "areaM2": 242.7590095079826,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "DE-BW-ALKIS-08146000001280000500",
+      "areaM2": 2652.725120062545,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    }
+  ]
+}

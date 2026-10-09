@@ -1,0 +1,121 @@
+{
+  "name": "Voronezh",
+  "country": "Russian Federation",
+  "countryCode": "RU",
+  "rank": 591,
+  "point": [
+    51.6725664441539,
+    39.1996117648012
+  ],
+  "freshResearch": {
+    "queries": [
+      {
+        "language": "Russian",
+        "query": "Voronezh официальный публичная кадастровая карта земельные участки городская администрация геопортал Росреестр",
+        "result": "Региональное государственное учреждение кадастровой оценки направляет пользователей в публичную кадастровую карту Росреестра, перенесенную на НСПД. Официальные органы Воронежа используют кадастровые участки в документах планировки и межевания; городское управление земельных отношений ведет земельные вопросы муниципалитета. Векторная выгрузка с безопасным набором атрибутов не установлена.",
+        "urls": [
+          "https://www.volbti.ru/publichnaya-kadastrovaya-karta/",
+          "https://uizo.voronezh-city.ru/",
+          "https://uga.voronezh-city.ru/documents/pravila-zemlepolzovaniya-i-zastroyki-territorii-gorodskogo-okruga-gorod-voronezh/",
+          "https://uga.voronezh-city.ru/images/img/uga/PPT/2026_47.pdf",
+          "https://t.me/s/rosreestr_news/2517"
+        ]
+      },
+      {
+        "language": "English",
+        "query": "Voronezh Russia official cadastral public map city land registry parcels",
+        "result": "The regional state cadastral valuation institution identifies the Rosreestr public map as the source for parcel information, and official city land/planning offices publish parcel-related records. No anonymous full-polygon endpoint with a safe field allowlist was verified.",
+        "urls": [
+          "https://www.volbti.ru/publichnaya-kadastrovaya-karta/",
+          "https://uizo.voronezh-city.ru/",
+          "https://uga.voronezh-city.ru/documents/pravila-zemlepolzovaniya-i-zastroyki-territorii-gorodskogo-okruga-gorod-voronezh/",
+          "https://uga.voronezh-city.ru/images/img/uga/PPT/2026_47.pdf",
+          "https://t.me/s/rosreestr_news/2517"
+        ]
+      }
+    ],
+    "portals": [
+      {
+        "url": "https://www.volbti.ru/publichnaya-kadastrovaya-karta/",
+        "observation": "Voronezh regional state cadastral valuation institution directs users to Rosreestr’s Public Cadastral Map."
+      },
+      {
+        "url": "https://uizo.voronezh-city.ru/",
+        "observation": "Official city land/property management department."
+      },
+      {
+        "url": "https://uga.voronezh-city.ru/documents/pravila-zemlepolzovaniya-i-zastroyki-territorii-gorodskogo-okruga-gorod-voronezh/",
+        "observation": "Official city planning and zoning records."
+      },
+      {
+        "url": "https://uga.voronezh-city.ru/images/img/uga/PPT/2026_47.pdf",
+        "observation": "Official Voronezh planning/mapping materials include parcel boundary data, but are not a public parcel-vector service."
+      },
+      {
+        "url": "https://t.me/s/rosreestr_news/2517",
+        "observation": "Rosreestr confirms the public map is on NSPD and available without authorization or payment."
+      }
+    ],
+    "requests": []
+  },
+  "status": "complete",
+  "verifiedParcelResponse": {
+    "httpStatus": null,
+    "featureType": null,
+    "responseType": null,
+    "responseCrs": null,
+    "returnedFullPolygonCount": 0,
+    "uniqueFullPolygonCount": 0,
+    "wupPointContained": null,
+    "limitations": "No public, anonymous full-polygon response with privacy-safe selected attributes was retrieved or retained."
+  },
+  "source": {
+    "id": "city-RU-4362-overnight-research",
+    "name": "Voronezh city cadastral source review",
+    "operator": "Russian Federal Service for State Registration, Cadastre and Cartography (Rosreestr), Voronezh regional cadastral valuation institution and city land authorities",
+    "url": "https://nspd.gov.ru/map",
+    "format": "Official public cadastral map/registry and municipal land records; no safe full-vector API verified",
+    "access": "Public source and layer-metadata review only; no account login, owner search, address search, cadastral-key search, or feature identify query used.",
+    "nativeIdField": null,
+    "geometryCrs": null
+  },
+  "coverageAssessment": {
+    "claimedScope": "Official national public cadastral map applies to parcels within Voronezh; city sources confirm land/cadastral administration.",
+    "verifiedOpenScope": "Public registry/map activity is confirmed, but anonymous privacy-safe full polygon retrieval is not verified.",
+    "countrywideVerified": false,
+    "citywideVerified": false
+  },
+  "registryFound": true,
+  "registryBasis": "Voronezh’s regional state cadastral valuation institution points to Rosreestr/NSPD for public cadastral information; city planning and land authorities publish parcel-related planning materials. The national map is accessible anonymously, but no safe public full-vector feature schema or geometry export was verified.",
+  "verifiedSample": false,
+  "publicParcelGeometryFound": false,
+  "resultCategory": "city_local_registry_or_public_cadastre_documented_no_verified_safe_vector",
+  "technicalBlocker": "The official NSPD map could not be loaded from this environment during a public shell check. The timeout is local access evidence only, not provider downtime; no map API or parcel lookup was attempted.",
+  "remainingUncertainty": "Whether a documented anonymous feature route can return full geometry with only safe native parcel identifiers is unresolved; the WUP point is not matched to any parcel.",
+  "nextStep": "If further research is warranted, use a documented public feature service only after confirming a property-safe field projection; never use identify/cédula/search functions that expose owner, address or tax data.",
+  "sourceIds": [],
+  "schemaVersion": 1,
+  "checkedAt": "2026-10-09",
+  "wupCityCode": 4362,
+  "cityId": "wup2025:4362",
+  "queueRank": 591,
+  "population2025": 879892,
+  "populationPlausibility2025": "High",
+  "populationUnit": "persons",
+  "pointBasis": "UN WUP 2025 population-weighted settlement centroid; this is not a municipal boundary or a parcel-coverage claim.",
+  "centerLatLon": [
+    51.6725664441539,
+    39.1996117648012
+  ],
+  "runtimeReadiness": "not_enabled_no_verified_public_geometry",
+  "adapterReady": false,
+  "scopeLimits": "Source discovery only. No owner/address/property value or account data retained; no parcel-level lookup or geometry was performed.",
+  "registryEvidenceUrls": [
+    "https://www.volbti.ru/publichnaya-kadastrovaya-karta/",
+    "https://uizo.voronezh-city.ru/",
+    "https://uga.voronezh-city.ru/documents/pravila-zemlepolzovaniya-i-zastroyki-territorii-gorodskogo-okruga-gorod-voronezh/",
+    "https://uga.voronezh-city.ru/images/img/uga/PPT/2026_47.pdf",
+    "https://t.me/s/rosreestr_news/2517"
+  ],
+  "rootReviewedAt": "2026-10-09T01:48:28.723986+00:00"
+}

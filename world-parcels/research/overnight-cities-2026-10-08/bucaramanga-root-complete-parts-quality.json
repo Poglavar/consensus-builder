@@ -1,0 +1,1855 @@
+{
+  "schemaVersion": 1,
+  "purpose": "Independent GEOS topology check of complete runtime parcels projected to metric coordinates; no repair applied. Counts are bounded sample evidence, not whole-city guarantees.",
+  "library": "Shapely 2.2.0",
+  "metricCrs": "EPSG:32618",
+  "featureCount": 258,
+  "validNonemptyCount": 258,
+  "invalidFeatures": [],
+  "exactDuplicateGeometryPairs": [],
+  "positiveAreaOverlapPairsAbove0_01M2": [
+    {
+      "ids": [
+        "CO-AMB-CODIGO-680010102000002570901900000000",
+        "CO-AMB-CODIGO-680010102000002550901900000000"
+      ],
+      "overlapM2": 0.33380698372083106,
+      "fractionOfSmaller": 2.6057729495802593e-05
+    }
+  ],
+  "sumPairwiseOverlapM2": 0.33380698372083106,
+  "operationErrors": [],
+  "areaM2": {
+    "min": 29.447746420092464,
+    "median": 153.73814193230334,
+    "max": 26693.25039238578
+  },
+  "features": [
+    {
+      "id": "CO-AMB-CODIGO-680010102000001570001000000000",
+      "areaM2": 10855.462126936458,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "CO-AMB-CODIGO-680010104000000150013000000000",
+      "areaM2": 142.78891732715746,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "CO-AMB-CODIGO-680010104000000150014000000000",
+      "areaM2": 66.98601523938584,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "CO-AMB-CODIGO-680010104000000150901900000000",
+      "areaM2": 143.08480554242982,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "CO-AMB-CODIGO-680010104000000150001000000000",
+      "areaM2": 164.81925200459563,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "CO-AMB-CODIGO-680010104000000150003000000000",
+      "areaM2": 165.64167309902848,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "CO-AMB-CODIGO-680010104000000150010000000000",
+      "areaM2": 142.08919547029106,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "CO-AMB-CODIGO-680010104000000150011000000000",
+      "areaM2": 110.47942555054286,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "CO-AMB-CODIGO-680010104000000150012000000000",
+      "areaM2": 142.7872887698838,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "CO-AMB-CODIGO-680010105000003830903900000000",
+      "areaM2": 187.48744639021277,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "CO-AMB-CODIGO-680010105000003830021000000000",
+      "areaM2": 187.4850060596684,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "CO-AMB-CODIGO-680010105000003830026000000000",
+      "areaM2": 143.44366402559615,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "CO-AMB-CODIGO-680010105000003830022000000000",
+      "areaM2": 238.83456735867622,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "CO-AMB-CODIGO-680010105000003830016000000000",
+      "areaM2": 187.48519185664196,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "CO-AMB-CODIGO-680010105000003830012000000000",
+      "areaM2": 187.49145261768774,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "CO-AMB-CODIGO-680010105000003840001000000000",
+      "areaM2": 346.1706819639005,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "CO-AMB-CODIGO-680010105000003830013000000000",
+      "areaM2": 187.48679976525122,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "CO-AMB-CODIGO-680010105000003830014000000000",
+      "areaM2": 187.48289484416068,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "CO-AMB-CODIGO-680010105000003830902900000000",
+      "areaM2": 187.48851038375417,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "CO-AMB-CODIGO-680010105000003830018000000000",
+      "areaM2": 187.48608895118866,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "CO-AMB-CODIGO-680010105000003830019000000000",
+      "areaM2": 187.48531982617857,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "CO-AMB-CODIGO-680010105000003830020000000000",
+      "areaM2": 187.4869352518485,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "CO-AMB-CODIGO-680010105000003830036000000000",
+      "areaM2": 187.4855590320669,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "CO-AMB-CODIGO-680010105000003830035000000000",
+      "areaM2": 187.48332961658406,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "CO-AMB-CODIGO-680010105000003830033000000000",
+      "areaM2": 187.4906547970743,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "CO-AMB-CODIGO-680010105000003830032000000000",
+      "areaM2": 187.48786887931598,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "CO-AMB-CODIGO-680010105000003830031000000000",
+      "areaM2": 187.48246112991447,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "CO-AMB-CODIGO-680010105000003830030000000000",
+      "areaM2": 187.4883044979862,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "CO-AMB-CODIGO-680010105000003830028000000000",
+      "areaM2": 187.48952791945499,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "CO-AMB-CODIGO-680010105000003830029000000000",
+      "areaM2": 187.4877509537887,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "CO-AMB-CODIGO-680010105000003830027000000000",
+      "areaM2": 187.47962474969253,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "CO-AMB-CODIGO-680010105000003830024000000000",
+      "areaM2": 149.92346318154782,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "CO-AMB-CODIGO-680010105000003830023000000000",
+      "areaM2": 148.33108284392694,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "CO-AMB-CODIGO-680010105000003830025000000000",
+      "areaM2": 199.9010142652785,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "CO-AMB-CODIGO-680010105000003830015000000000",
+      "areaM2": 187.48873806426383,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "CO-AMB-CODIGO-680010105000003860019000000000",
+      "areaM2": 199.98447203448643,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "CO-AMB-CODIGO-680010104000000130007000000000",
+      "areaM2": 143.49784825247733,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "CO-AMB-CODIGO-680010104000000130019000000000",
+      "areaM2": 143.49710149180999,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "CO-AMB-CODIGO-680010104000000130006000000000",
+      "areaM2": 143.48878467123419,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "CO-AMB-CODIGO-680010104000000130005000000000",
+      "areaM2": 143.4852405611463,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "CO-AMB-CODIGO-680010104000000130001000000000",
+      "areaM2": 136.6308229540487,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "CO-AMB-CODIGO-680010104000000120023000000000",
+      "areaM2": 139.32492371587546,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "CO-AMB-CODIGO-680010104000000120007000000000",
+      "areaM2": 136.70959117913296,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "CO-AMB-CODIGO-680010104000000120022000000000",
+      "areaM2": 138.61845515313365,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "CO-AMB-CODIGO-680010104000000120008000000000",
+      "areaM2": 135.16852497882957,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "CO-AMB-CODIGO-680010104000000120021000000000",
+      "areaM2": 136.7495162759821,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "CO-AMB-CODIGO-680010104000000130901900000000",
+      "areaM2": 188.5945761155921,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "CO-AMB-CODIGO-680010104000000130012000000000",
+      "areaM2": 57.498570855735686,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "CO-AMB-CODIGO-680010104000000130022000000000",
+      "areaM2": 57.497751632714795,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "CO-AMB-CODIGO-680010104000000130023000000000",
+      "areaM2": 73.59123305535522,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "CO-AMB-CODIGO-680010104000000130014000000000",
+      "areaM2": 153.7379021538309,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "CO-AMB-CODIGO-680010104000000130011000000000",
+      "areaM2": 153.73838171077577,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "CO-AMB-CODIGO-680010104000000130015000000000",
+      "areaM2": 143.49799053292378,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "CO-AMB-CODIGO-680010104000000130010000000000",
+      "areaM2": 153.7329159590622,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "CO-AMB-CODIGO-680010104000000130016000000000",
+      "areaM2": 143.48855783637165,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "CO-AMB-CODIGO-680010104000000130009000000000",
+      "areaM2": 143.49575540590737,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "CO-AMB-CODIGO-680010104000000130017000000000",
+      "areaM2": 143.4961340839534,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "CO-AMB-CODIGO-680010104000000130008000000000",
+      "areaM2": 143.48595050383796,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "CO-AMB-CODIGO-680010104000000130018000000000",
+      "areaM2": 143.48075158224,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "CO-AMB-CODIGO-680010104000000120009000000000",
+      "areaM2": 134.51830709512637,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "CO-AMB-CODIGO-680010104000000120904900000000",
+      "areaM2": 137.09132211260078,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "CO-AMB-CODIGO-680010104000000120010000000000",
+      "areaM2": 138.64547444389396,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "CO-AMB-CODIGO-680010104000000120901900000000",
+      "areaM2": 141.43937967444197,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "CO-AMB-CODIGO-680010104000000120011000000000",
+      "areaM2": 140.22877801190586,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "CO-AMB-CODIGO-680010104000000130002000000000",
+      "areaM2": 129.8869438009119,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "CO-AMB-CODIGO-680010104000000130003000000000",
+      "areaM2": 128.09624562643637,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "CO-AMB-CODIGO-680010104000000130004000000000",
+      "areaM2": 166.98756897287615,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "CO-AMB-CODIGO-680010104000000150006000000000",
+      "areaM2": 146.98719319257597,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "CO-AMB-CODIGO-680010104000000150007000000000",
+      "areaM2": 146.99231572238202,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "CO-AMB-CODIGO-680010104000000150008000000000",
+      "areaM2": 146.9935766476558,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "CO-AMB-CODIGO-680010104000000160009000000000",
+      "areaM2": 149.99040363026774,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "CO-AMB-CODIGO-680010104000000160010000000000",
+      "areaM2": 149.99635453172715,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "CO-AMB-CODIGO-680010104000000160011000000000",
+      "areaM2": 149.98114550734473,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "CO-AMB-CODIGO-680010104000000160902900000000",
+      "areaM2": 149.98936368186472,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "CO-AMB-CODIGO-680010104000000110001000000000",
+      "areaM2": 19702.752632916647,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "CO-AMB-CODIGO-680010104000000120006000000000",
+      "areaM2": 137.32046208487426,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "CO-AMB-CODIGO-680010104000000120902900000000",
+      "areaM2": 142.44688748270943,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "CO-AMB-CODIGO-680010104000000120012000000000",
+      "areaM2": 134.0500851909204,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "CO-AMB-CODIGO-680010104000000120013000000000",
+      "areaM2": 207.68193843111584,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "CO-AMB-CODIGO-680010104000000120903900000000",
+      "areaM2": 139.58300164883445,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "CO-AMB-CODIGO-680010104000000120016000000000",
+      "areaM2": 136.5318095684894,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "CO-AMB-CODIGO-680010104000000120015000000000",
+      "areaM2": 137.3931859862371,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "CO-AMB-CODIGO-680010104000000120014000000000",
+      "areaM2": 66.4445226433438,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "CO-AMB-CODIGO-680010104000000120002000000000",
+      "areaM2": 135.1188718406553,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "CO-AMB-CODIGO-680010104000000120001000000000",
+      "areaM2": 191.8472686177735,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "CO-AMB-CODIGO-680010104000000120005000000000",
+      "areaM2": 134.2365850593324,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "CO-AMB-CODIGO-680010104000000120003000000000",
+      "areaM2": 179.52806340706474,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "CO-AMB-CODIGO-680010104000000150004000000000",
+      "areaM2": 287.0585179932055,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "CO-AMB-CODIGO-680010104000000150005000000000",
+      "areaM2": 146.9961866933462,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "CO-AMB-CODIGO-680010104000000150009000000000",
+      "areaM2": 180.59392834399227,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "CO-AMB-CODIGO-680010104000007480008000000000",
+      "areaM2": 2286.8342912425214,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "CO-AMB-CODIGO-680010104000000100010000000000",
+      "areaM2": 4399.964758318906,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "CO-AMB-CODIGO-680010104000000120004000000000",
+      "areaM2": 181.7888337687643,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "CO-AMB-CODIGO-680010104000000040002000000000",
+      "areaM2": 129.58847408550372,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "CO-AMB-CODIGO-680010102000001560002000000000",
+      "areaM2": 13214.044116345567,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "CO-AMB-CODIGO-680010105000003830005000000000",
+      "areaM2": 149.98808082950114,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "CO-AMB-CODIGO-680010105000003830007000000000",
+      "areaM2": 187.48372719034725,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "CO-AMB-CODIGO-680010105000003830008000000000",
+      "areaM2": 187.47860398777976,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "CO-AMB-CODIGO-680010105000003830042000000000",
+      "areaM2": 39.99590084643751,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "CO-AMB-CODIGO-680010105000003830041000000000",
+      "areaM2": 187.48541819707472,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "CO-AMB-CODIGO-680010105000003830004000000000",
+      "areaM2": 149.98968703443379,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "CO-AMB-CODIGO-680010105000003830003000000000",
+      "areaM2": 149.98599123772627,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "CO-AMB-CODIGO-680010105000003830002000000000",
+      "areaM2": 149.99279008674802,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "CO-AMB-CODIGO-680010105000003830006000000000",
+      "areaM2": 159.98435521478646,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "CO-AMB-CODIGO-680010105000003830009000000000",
+      "areaM2": 187.4869192644134,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "CO-AMB-CODIGO-680010105000003830010000000000",
+      "areaM2": 187.49092901489666,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "CO-AMB-CODIGO-680010105000003830011000000000",
+      "areaM2": 187.4794467095731,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "CO-AMB-CODIGO-680010105000003830037000000000",
+      "areaM2": 187.48569066594473,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "CO-AMB-CODIGO-680010105000003830040000000000",
+      "areaM2": 187.49118364162246,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "CO-AMB-CODIGO-680010105000003830901900000000",
+      "areaM2": 187.48634578317842,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "CO-AMB-CODIGO-680010105000003830038000000000",
+      "areaM2": 187.48592572088026,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "CO-AMB-CODIGO-680010105000003800001000000000",
+      "areaM2": 2056.8973833179334,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "CO-AMB-CODIGO-680010102000001640017000000000",
+      "areaM2": 214.24737364488254,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "CO-AMB-CODIGO-680010102000001620003000000000",
+      "areaM2": 164.64100730914654,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "CO-AMB-CODIGO-680010102000001610903900000000",
+      "areaM2": 700.1048798156269,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "CO-AMB-CODIGO-680010102000001610012000000000",
+      "areaM2": 165.53491395332028,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "CO-AMB-CODIGO-680010102000001610902900000000",
+      "areaM2": 171.44818487120858,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "CO-AMB-CODIGO-680010102000001610011000000000",
+      "areaM2": 171.54189478168192,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "CO-AMB-CODIGO-680010102000001610010000000000",
+      "areaM2": 164.3510118584418,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "CO-AMB-CODIGO-680010102000001610901900000000",
+      "areaM2": 225.38332669417971,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "CO-AMB-CODIGO-680010102000001610007000000000",
+      "areaM2": 161.45621100176842,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "CO-AMB-CODIGO-680010102000001610008000000000",
+      "areaM2": 113.98570644139154,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "CO-AMB-CODIGO-680010102000001610016000000000",
+      "areaM2": 86.75423399347801,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "CO-AMB-CODIGO-680010102000001610009000000000",
+      "areaM2": 118.61706628925644,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "CO-AMB-CODIGO-680010102000001640019000000000",
+      "areaM2": 560.81404768577,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "CO-AMB-CODIGO-680010102000001640018000000000",
+      "areaM2": 200.79270751668662,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "CO-AMB-CODIGO-680010102000001640016000000000",
+      "areaM2": 218.33655597374724,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "CO-AMB-CODIGO-680010102000001620019000000000",
+      "areaM2": 161.68118182902205,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "CO-AMB-CODIGO-680010102000001620902900000000",
+      "areaM2": 162.33163191747812,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "CO-AMB-CODIGO-680010102000001620903900000000",
+      "areaM2": 162.63316743803924,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "CO-AMB-CODIGO-680010102000001620016000000000",
+      "areaM2": 159.51503781958172,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "CO-AMB-CODIGO-680010102000001620015000000000",
+      "areaM2": 163.27451733253963,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "CO-AMB-CODIGO-680010102000001620014000000000",
+      "areaM2": 161.29304368900225,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "CO-AMB-CODIGO-680010102000001620004000000000",
+      "areaM2": 174.61557929770757,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "CO-AMB-CODIGO-680010102000001620013000000000",
+      "areaM2": 161.26805744880727,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "CO-AMB-CODIGO-680010102000001620005000000000",
+      "areaM2": 171.52756798498916,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "CO-AMB-CODIGO-680010102000001620006000000000",
+      "areaM2": 171.03086913050453,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "CO-AMB-CODIGO-680010102000001620901900000000",
+      "areaM2": 170.99578474910325,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "CO-AMB-CODIGO-680010102000001620010000000000",
+      "areaM2": 159.96961226027992,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "CO-AMB-CODIGO-680010102000001620008000000000",
+      "areaM2": 173.23955025124127,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "CO-AMB-CODIGO-680010102000001620009000000000",
+      "areaM2": 216.32621871737211,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "CO-AMB-CODIGO-680010102000005090001000000000",
+      "areaM2": 4887.905699881803,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "CO-AMB-CODIGO-680010102000001640005000000000",
+      "areaM2": 373.51959134047587,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "CO-AMB-CODIGO-680010102000001640015000000000",
+      "areaM2": 218.73268528203303,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "CO-AMB-CODIGO-680010102000001640902900000000",
+      "areaM2": 221.1028698630093,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "CO-AMB-CODIGO-680010102000001640904900000000",
+      "areaM2": 169.7626626067234,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "CO-AMB-CODIGO-680010102000001640901900000000",
+      "areaM2": 156.1611996157379,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "CO-AMB-CODIGO-680010102000001640903900000000",
+      "areaM2": 182.80187058136306,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "CO-AMB-CODIGO-680010102000001640013000000000",
+      "areaM2": 224.82195256241093,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "CO-AMB-CODIGO-680010102000001640012000000000",
+      "areaM2": 216.01110220096498,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "CO-AMB-CODIGO-680010102000001620012000000000",
+      "areaM2": 177.43175073926767,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "CO-AMB-CODIGO-680010102000001620011000000000",
+      "areaM2": 145.68961998460233,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "CO-AMB-CODIGO-680010102000001640905900000000",
+      "areaM2": 314.030894335714,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "CO-AMB-CODIGO-680010102000001640906900000000",
+      "areaM2": 287.0745989110661,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "CO-AMB-CODIGO-680010102000001640008000000000",
+      "areaM2": 810.9941137574742,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "CO-AMB-CODIGO-680010102000001550003000000000",
+      "areaM2": 1081.4511786657108,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "CO-AMB-CODIGO-680010102000001550005000000000",
+      "areaM2": 853.158804840598,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "CO-AMB-CODIGO-680010102000005000001000000000",
+      "areaM2": 130.39286257566016,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "CO-AMB-CODIGO-680010105000003650005000000000",
+      "areaM2": 1169.9060477588712,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "CO-AMB-CODIGO-680010105000003800002000000000",
+      "areaM2": 2683.4089060101396,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "CO-AMB-CODIGO-680010102000001560008000000000",
+      "areaM2": 396.24291952024646,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "CO-AMB-CODIGO-680010102000001560007000000000",
+      "areaM2": 400.1342167313629,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "CO-AMB-CODIGO-680010102000001560006000000000",
+      "areaM2": 418.019640362843,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "CO-AMB-CODIGO-680010102000001560004000000000",
+      "areaM2": 218.56849775908145,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "CO-AMB-CODIGO-680010102000001560003000000000",
+      "areaM2": 236.62759314895783,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "CO-AMB-CODIGO-680010102000001640001000000000",
+      "areaM2": 148.20219699040393,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "CO-AMB-CODIGO-680010102000001640020000000000",
+      "areaM2": 104.21614607121857,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "CO-AMB-CODIGO-680010102000001640002000000000",
+      "areaM2": 331.1705783044864,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "CO-AMB-CODIGO-680010102000001640003000000000",
+      "areaM2": 701.9205112558338,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "CO-AMB-CODIGO-680010102000002570901900000000",
+      "areaM2": 23744.558654869477,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "CO-AMB-CODIGO-680010102000001640004000000000",
+      "areaM2": 197.51639545947083,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "CO-AMB-CODIGO-680010104000000160903900000000",
+      "areaM2": 149.98744738808983,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "CO-AMB-CODIGO-680010104000000160904900000000",
+      "areaM2": 145.99252456238133,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "CO-AMB-CODIGO-680010104000000160905900000000",
+      "areaM2": 149.98548828715548,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "CO-AMB-CODIGO-680010104000000170011000000000",
+      "areaM2": 150.7392790023418,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "CO-AMB-CODIGO-680010104000000170001000000000",
+      "areaM2": 183.98957561274375,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "CO-AMB-CODIGO-680010104000000170010000000000",
+      "areaM2": 150.73237269737152,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "CO-AMB-CODIGO-680010104000000170009000000000",
+      "areaM2": 150.7371900882141,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "CO-AMB-CODIGO-680010104000000170008000000000",
+      "areaM2": 150.73543647949222,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "CO-AMB-CODIGO-680010104000000170007000000000",
+      "areaM2": 150.74020159869903,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "CO-AMB-CODIGO-680010104000000170901900000000",
+      "areaM2": 150.73859344856564,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "CO-AMB-CODIGO-680010104000000170903900000000",
+      "areaM2": 150.73268080265157,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "CO-AMB-CODIGO-680010104000000170004000000000",
+      "areaM2": 150.74046174614222,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "CO-AMB-CODIGO-680010104000000170905900000000",
+      "areaM2": 150.742575565735,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "CO-AMB-CODIGO-680010104000000170025000000000",
+      "areaM2": 143.99265355610729,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "CO-AMB-CODIGO-680010104000000170002000000000",
+      "areaM2": 150.73985093019647,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "CO-AMB-CODIGO-680010104000000170024000000000",
+      "areaM2": 143.99153046995806,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "CO-AMB-CODIGO-680010104000000160004000000000",
+      "areaM2": 149.98654709798856,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "CO-AMB-CODIGO-680010104000000170902900000000",
+      "areaM2": 150.74447117635015,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "CO-AMB-CODIGO-680010104000000170023000000000",
+      "areaM2": 143.9843768205818,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "CO-AMB-CODIGO-680010104000000170015000000000",
+      "areaM2": 150.74010626569608,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "CO-AMB-CODIGO-680010104000000170016000000000",
+      "areaM2": 150.7409352149081,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "CO-AMB-CODIGO-680010104000000170017000000000",
+      "areaM2": 150.7400046106254,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "CO-AMB-CODIGO-680010104000000170018000000000",
+      "areaM2": 150.73531949082488,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "CO-AMB-CODIGO-680010104000000170019000000000",
+      "areaM2": 150.74374336449037,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "CO-AMB-CODIGO-680010104000000170020000000000",
+      "areaM2": 150.74457485137737,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "CO-AMB-CODIGO-680010104000000170021000000000",
+      "areaM2": 150.73318308044483,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "CO-AMB-CODIGO-680010104000000170904900000000",
+      "areaM2": 187.99570986950977,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "CO-AMB-CODIGO-680010104000000170012000000000",
+      "areaM2": 150.73502039061935,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "CO-AMB-CODIGO-680010104000000170013000000000",
+      "areaM2": 150.73903614039222,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "CO-AMB-CODIGO-680010104000000160015000000000",
+      "areaM2": 149.99178574790116,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "CO-AMB-CODIGO-680010104000000160023000000000",
+      "areaM2": 149.9901022521736,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "CO-AMB-CODIGO-680010104000000160024000000000",
+      "areaM2": 181.96105629671248,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "CO-AMB-CODIGO-680010104000000160025000000000",
+      "areaM2": 142.5522227703442,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "CO-AMB-CODIGO-680010104000000160026000000000",
+      "areaM2": 142.5504937922884,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "CO-AMB-CODIGO-680010104000000160027000000000",
+      "areaM2": 142.54697855989696,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "CO-AMB-CODIGO-680010104000000160001000000000",
+      "areaM2": 182.0571189927706,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "CO-AMB-CODIGO-680010104000000160002000000000",
+      "areaM2": 147.98840489018818,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "CO-AMB-CODIGO-680010104000000160003000000000",
+      "areaM2": 149.98958241099703,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "CO-AMB-CODIGO-680010104000000160005000000000",
+      "areaM2": 149.98829245552676,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "CO-AMB-CODIGO-680010104000000160006000000000",
+      "areaM2": 149.99504946366693,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "CO-AMB-CODIGO-680010104000000160007000000000",
+      "areaM2": 147.99278021102424,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "CO-AMB-CODIGO-680010104000000160008000000000",
+      "areaM2": 149.98538922413314,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "CO-AMB-CODIGO-680010104000000160017000000000",
+      "areaM2": 149.98239709667257,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "CO-AMB-CODIGO-680010104000000160018000000000",
+      "areaM2": 149.99571142968355,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "CO-AMB-CODIGO-680010104000000160019000000000",
+      "areaM2": 149.9901361612136,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "CO-AMB-CODIGO-680010104000000160020000000000",
+      "areaM2": 149.98740527885505,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "CO-AMB-CODIGO-680010104000000160022000000000",
+      "areaM2": 149.9865798990848,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "CO-AMB-CODIGO-680010104000000160901900000000",
+      "areaM2": 149.99442709855498,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "CO-AMB-CODIGO-680010104000000180007000000000",
+      "areaM2": 149.98715045052808,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "CO-AMB-CODIGO-680010104000000180008000000000",
+      "areaM2": 149.99053018109075,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "CO-AMB-CODIGO-680010104000000180009000000000",
+      "areaM2": 120.5358546089308,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "CO-AMB-CODIGO-680010104000000180010000000000",
+      "areaM2": 149.9899532775147,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "CO-AMB-CODIGO-680010104000000180024000000000",
+      "areaM2": 29.447746420092464,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "CO-AMB-CODIGO-680010104000000180001000000000",
+      "areaM2": 183.9877276979257,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "CO-AMB-CODIGO-680010104000000180002000000000",
+      "areaM2": 149.98464836389766,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "CO-AMB-CODIGO-680010104000000180003000000000",
+      "areaM2": 149.98468180356392,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "CO-AMB-CODIGO-680010104000000180004000000000",
+      "areaM2": 149.99747038949855,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "CO-AMB-CODIGO-680010104000000180005000000000",
+      "areaM2": 149.98880792516223,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "CO-AMB-CODIGO-680010104000000180006000000000",
+      "areaM2": 149.9869600281507,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "CO-AMB-CODIGO-680010102000005010001000000000",
+      "areaM2": 2344.101061974595,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "CO-AMB-CODIGO-680010102000001590001000000000",
+      "areaM2": 66.11504423193948,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "CO-AMB-CODIGO-680010102000002550901900000000",
+      "areaM2": 12810.28662818075,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "CO-AMB-CODIGO-680010105000003830001000000000",
+      "areaM2": 199.9830705588416,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "CO-AMB-CODIGO-680010105000003850025000000000",
+      "areaM2": 263.7517083126571,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "CO-AMB-CODIGO-680010105000006470901900000000",
+      "areaM2": 175.5973796860486,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "CO-AMB-CODIGO-680010105000006470001000000000",
+      "areaM2": 5049.959971213695,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "CO-AMB-CODIGO-680010105000003820902900000000",
+      "areaM2": 1121.4231390164318,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "CO-AMB-CODIGO-680010105000003820901900000000",
+      "areaM2": 1069.055284959656,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "CO-AMB-CODIGO-680010105000006470010000000000",
+      "areaM2": 179.9976527945691,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "CO-AMB-CODIGO-680010105000006470009000000000",
+      "areaM2": 179.98378795450083,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "CO-AMB-CODIGO-680010105000006470008000000000",
+      "areaM2": 179.99186423759772,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "CO-AMB-CODIGO-680010105000006470007000000000",
+      "areaM2": 179.9814128434162,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "CO-AMB-CODIGO-680010105000006470006000000000",
+      "areaM2": 179.97819042426883,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "CO-AMB-CODIGO-680010105000006470005000000000",
+      "areaM2": 179.99014974588582,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "CO-AMB-CODIGO-680010105000006470004000000000",
+      "areaM2": 179.98021924828902,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "CO-AMB-CODIGO-680010105000006470003000000000",
+      "areaM2": 179.9914587300367,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "CO-AMB-CODIGO-680010105000006470002000000000",
+      "areaM2": 1121.2998419325947,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "CO-AMB-CODIGO-680010105000006470019000000000",
+      "areaM2": 426.49247596741714,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "CO-AMB-CODIGO-680010105000006470020000000000",
+      "areaM2": 54.3967107932173,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "CO-AMB-CODIGO-680010105000006470021000000000",
+      "areaM2": 70.20844471940927,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "CO-AMB-CODIGO-680010104000007480002000000000",
+      "areaM2": 95.05264517927041,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "CO-AMB-CODIGO-680010104000007480001000000000",
+      "areaM2": 91.9359510056213,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "CO-AMB-CODIGO-680010104000007480003000000000",
+      "areaM2": 90.16219524038517,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "CO-AMB-CODIGO-680010104000007480004000000000",
+      "areaM2": 112.68366918031593,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "CO-AMB-CODIGO-680010104000007480005000000000",
+      "areaM2": 49.79591883773605,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "CO-AMB-CODIGO-680010104000002370001000000000",
+      "areaM2": 26693.25039238578,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "CO-AMB-CODIGO-680010104000000100003000000000",
+      "areaM2": 3181.685650714332,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    }
+  ],
+  "edgeOverlapReview": [
+    {
+      "ids": [
+        "CO-AMB-CODIGO-680010102000002570901900000000",
+        "CO-AMB-CODIGO-680010102000002550901900000000"
+      ],
+      "overlapM2": 0.33380698372083106,
+      "fractionOfSmaller": 2.6057729495802593e-05,
+      "intersectionType": "Polygon",
+      "intersectionPerimeterM": 2.814364469708255,
+      "minRotatedRectSideLengthsM": [
+        0.7153194327648542,
+        0.933302058051865,
+        0.7153194327648542,
+        0.933302058051865
+      ],
+      "areaOfSmallerM2": 12810.28662818075,
+      "sourceGeometryModified": false
+    }
+  ]
+}

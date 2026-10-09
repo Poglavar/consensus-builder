@@ -1,0 +1,120 @@
+{
+  "name": "Kazan",
+  "country": "Russia",
+  "countryCode": "RU",
+  "rank": 456,
+  "point": [
+    55.798632491807,
+    49.1497492505748
+  ],
+  "freshResearch": {
+    "queries": [
+      {
+        "language": "Russian",
+        "query": "Казань кадастровый учет земельные участки официальный комитет земельных и имущественных отношений GIS карта",
+        "scope": "Find the city-owned land/property registry and municipal geospatial services.",
+        "result": "Kazan Committee of Land and Property Relations lists parcel formation and boundary-related municipal services. City GISOGD publishes planning layers but not a verified general cadastral parcel vector layer; municipal MGIS is login-gated.",
+        "urls": [
+          "https://kzio.kzn.ru/",
+          "https://kzn.ru/meriya/ispolnitelnyy-komitet/upravlenie-arkhitektury-i-gradostroitelstva-ispolnitelnogo-komiteta-g-kazani/struktura-upravleniya/otdel-informatsionnoy-sistemy-obespecheniya-gradostroitelnoy-deyatelnosti-isogd-i-geosluzhby/",
+          "https://gis.kzn.ru/",
+          "https://mgis.kzn.ru/Account/Login"
+        ]
+      },
+      {
+        "language": "English",
+        "query": "Kazan city official land property cadastral map GIS public parcels",
+        "scope": "Cross-check city geospatial portals and local registry evidence in English-indexed sources.",
+        "result": "City-owned sources confirm the municipal land/property committee and public planning GIS. No anonymous full-polygon service for general Kazan parcels was verified.",
+        "urls": [
+          "https://kzio.kzn.ru/",
+          "https://gis.kzn.ru/",
+          "https://map.kzn.ru/"
+        ]
+      }
+    ],
+    "portals": [
+      {
+        "name": "Committee of Land and Property Relations of Kazan",
+        "operator": "Kazan City Executive Committee",
+        "homeUrl": "https://kzio.kzn.ru/",
+        "observation": "City committee publishes land/property, parcel-formation, and boundary-related services; this is city-bound evidence of registry operations."
+      },
+      {
+        "name": "GISOGD Kazan public map",
+        "operator": "Kazan City Architecture and Urban Planning Department",
+        "homeUrl": "https://gis.kzn.ru/",
+        "observation": "City planning map publishes planning, zoning, servitude, and land-use layers; no general cadastral parcel coverage verified."
+      },
+      {
+        "name": "Kazan MGIS",
+        "operator": "Kazan City",
+        "homeUrl": "https://mgis.kzn.ru/Account/Login",
+        "observation": "Municipal workflow portal is login-gated; it is not an anonymous geometry source."
+      }
+    ],
+    "requests": [
+      {
+        "url": "https://kzio.kzn.ru/",
+        "method": "GET",
+        "observation": "City committee source documents local municipal land/property administration and parcel-related services."
+      },
+      {
+        "url": "https://gis.kzn.ru/",
+        "method": "GET",
+        "observation": "Public city planning GIS; its documented layers do not establish general cadastral parcel polygons."
+      },
+      {
+        "url": "https://mgis.kzn.ru/Account/Login",
+        "method": "GET",
+        "observation": "Municipal GIS is account-gated; no login attempted."
+      }
+    ]
+  },
+  "status": "complete",
+  "source": {
+    "sourceId": "RU-TA-KAZAN-MUNICIPAL-LAND-GIS",
+    "name": "Kazan Committee of Land and Property Relations and city GISOGD",
+    "url": "https://kzio.kzn.ru/",
+    "operator": "Kazan City Executive Committee",
+    "serviceType": "Municipal land/property services and public urban-planning GIS; no public parcel geometry endpoint confirmed.",
+    "geometryType": "Not verified for cadastral parcels.",
+    "nativeIdField": "Not inspected.",
+    "nativeIdEvidence": "No anonymous parcel schema or geometry response obtained."
+  },
+  "coverageAssessment": {
+    "claimedScope": "Kazan municipal committee evidence is city-bound, and the public city GIS covers planning layers. A 2026 municipal cadastral-plan approval record exists for city cadastral quarters, but the public planning map and login-gated MGIS do not establish public parcel vectors.",
+    "verifiedOpenScope": "Kazan municipal committee evidence is city-bound, and the public city GIS covers planning layers. A 2026 municipal cadastral-plan approval record exists for city cadastral quarters, but the public planning map and login-gated MGIS do not establish public parcel vectors.",
+    "countrywideVerified": false
+  },
+  "registryFound": true,
+  "verifiedSample": false,
+  "resultCategory": "city_registry_no_anonymous_geometry",
+  "technicalBlocker": "Public GIS is planning-focused; city MGIS requires login, and no anonymous general-parcel feature layer was found.",
+  "remainingUncertainty": "Whether municipal GIS has a public cadastral service not linked from the inspected city pages; legal coverage and any national cadastral services are outside this city-specific finding.",
+  "nextStep": "Only pursue a city-published anonymous parcel-vector layer with geometry and ID schema; do not use account-gated workflows.",
+  "schemaVersion": 1,
+  "checkedAt": "2026-10-09",
+  "wupCityCode": 5923,
+  "cityId": "wup2025:5923",
+  "runtimeReadiness": "not_enabled_no_verified_public_geometry",
+  "adapterReady": false,
+  "centerLatLon": [
+    55.798632491807,
+    49.1497492505748
+  ],
+  "queueRank": 456,
+  "population2025": 1132941,
+  "populationPlausibility2025": "High",
+  "populationUnit": "persons",
+  "pointBasis": "UN WUP 2025 population-weighted settlement centroid; this is not a municipal boundary or a parcel-coverage claim.",
+  "publicParcelGeometryFound": false,
+  "rootReviewedAt": "2026-10-09T00:13:07.775882+00:00",
+  "sourceIds": [],
+  "registryBasis": "Kazan city Committee of Land and Property Relations publishes local parcel and boundary-related services; municipal GIS exists, but no anonymous general-parcel vector layer was verified.",
+  "registryEvidenceUrls": [
+    "https://kzio.kzn.ru/",
+    "https://gis.kzn.ru/",
+    "https://mgis.kzn.ru/Account/Login"
+  ]
+}

@@ -1,0 +1,109 @@
+{
+  "schemaVersion": 1,
+  "kind": "city_parcel_source_research",
+  "checkedAt": "2026-10-09",
+  "name": "Samarinda",
+  "country": "Indonesia",
+  "countryCode": "ID",
+  "populationUnit": "persons",
+  "status": "complete",
+  "registryFound": true,
+  "registryBasis": "The Samarinda Land Office is the local ATR/BPN office. BHUMI is the national ATR/BPN interactive cadastral map; its public layer metadata advertises the 2D “Bidang Tanah” layer and a GeoServer `umum:Persil` service. Samarinda’s own Satu Peta GeoServer is directly accessible, but its public WFS catalog contains no parcel/persil/bidang layer.",
+  "registryEvidenceUrls": [
+    "https://kot-samarinda.atrbpn.go.id/",
+    "https://bhumi.atrbpn.go.id/peta",
+    "https://geoportal.samarindakota.go.id/satu-peta",
+    "https://geoserver-geoportal.samarindakota.go.id/geoserver/wfs?service=WFS&request=GetCapabilities&version=2.0.0"
+  ],
+  "verifiedSample": false,
+  "publicParcelGeometryFound": false,
+  "runtimeReadiness": "not_enabled_no_verified_public_geometry",
+  "wupCityCode": 8199,
+  "cityId": "wup2025:8199",
+  "centerLatLon": [
+    -0.495342688995459,
+    117.146215066518
+  ],
+  "rank": 386,
+  "queueRank": 386,
+  "population2025": 1325554,
+  "population2025k": 1325.554,
+  "populationPlausibility2025": "Moderate",
+  "pointBasis": "UN WUP 2025 population-weighted settlement centroid; this is not a municipal boundary or a parcel-coverage claim.",
+  "technicalBlocker": "BHUMI’s public metadata advertises a nationwide cadastral 2D layer, but the listed `/bhumigs/umum` service and tested standard WMS/WFS endpoints return HTTP 404; no feature geometry route or schema could be verified. Samarinda’s official city GeoServer WFS capabilities are public (205 feature types) but contain no parcel/bidang/persil layer; only a groundwater-tax layer contains the word “tanah.”",
+  "scopeLimits": "Inspected the local land office homepage, city Satu Peta HTML/client config, public Samarinda GeoServer WMS/WFS capabilities, BHUMI public map shell/client, and BHUMI default-layer metadata only. Did not request GetFeature, click-identify, or any BHUMI attribute record. BHUMI help explains parcel identification exposes property attributes; no such identify call was made.",
+  "remainingUncertainty": "Whether BHUMI’s `umum:Persil` layer is served through an alternate browser-only or proxy endpoint that returns geometry; whether its nationwide map layer has parcel footprint in the city. The city GeoServer catalog does not expose a local cadastral vector layer.",
+  "research": {
+    "executedQueries": [
+      {
+        "language": "Indonesian",
+        "query": "site:atrbpn.go.id Samarinda Kantor Pertanahan Kota Samarinda peta bidang tanah",
+        "result": "Found official local land office and public ATR/BPN BHUMI map help describing a cadastral parcel layer."
+      },
+      {
+        "language": "English",
+        "query": "Samarinda official land office cadastral map parcel GIS",
+        "result": "Found Samarinda Satu Peta and BHUMI; the city GeoServer has thematic layers only, and BHUMI layer-service route is not directly resolvable as OGC."
+      }
+    ],
+    "officialSources": [
+      {
+        "url": "https://kot-samarinda.atrbpn.go.id/",
+        "observation": "HTTP 200, 6,855 bytes; official Kantor Pertanahan Kota Samarinda office landing page."
+      },
+      {
+        "url": "https://geoportal.samarindakota.go.id/satu-peta",
+        "observation": "HTTP 200, 1,590,789 bytes. Public city GIS uses the official GeoServer host and lists thematic city layers."
+      },
+      {
+        "url": "https://geoserver-geoportal.samarindakota.go.id/geoserver/wfs?service=WFS&request=GetCapabilities&version=2.0.0",
+        "observation": "HTTP 200, 213,096 bytes; 205 WFS feature types. Name scan for parcel/bidang/tanah/persil/cadastral terms returned only a groundwater-tax theme (`pajak_air_tanah`), not parcel geometry."
+      },
+      {
+        "url": "https://geoserver-geoportal.samarindakota.go.id/geoserver/wms?service=WMS&request=GetCapabilities&version=1.3.0",
+        "observation": "HTTP 200, 561,011 bytes; 203 WMS layer nodes."
+      },
+      {
+        "url": "https://bhumi.atrbpn.go.id/peta",
+        "observation": "HTTP 200, 13,552 bytes; public interactive map shell. Its static page bundle loads published default layer metadata from the public panel API."
+      },
+      {
+        "url": "https://bhumi.atrbpn.go.id/panel/items/layers?filter[default][_eq]=true&filter[status][_eq]=published&fields=*,fields.*",
+        "observation": "HTTP 200, 1,545 bytes; one default layer record, “Bidang Tanah”, type 2D, vendor GeoServer, layer `umum:Persil`, configured path `/bhumigs/umum`. This is layer metadata, not feature geometry."
+      },
+      {
+        "url": "https://bhumi.atrbpn.go.id/bantuan/peta",
+        "observation": "Official BHUMI help describes the interactive map as a public spatial-information interface integrated with ATR/BPN Atlas."
+      },
+      {
+        "url": "https://bhumi.atrbpn.go.id/bantuan/unsur_peta",
+        "observation": "Official BHUMI help describes a “bidang tanah” map layer and identifies the information shown after feature click; no click-identify or property lookup was made."
+      }
+    ],
+    "metadataReviewFile": "samarinda-service-review.json",
+    "routeInspectionFile": "/tmp/overnight-cities-2026-10-08/city-8199-samarinda-route-inspection.json"
+  },
+  "source": {
+    "sourceId": "id-atrbpn-bhumi-bidang-tanah-and-samarinda-geoportal",
+    "name": "ATR/BPN BHUMI public parcel-map metadata and Samarinda city Geoportal",
+    "operator": "Ministry of Agrarian Affairs and Spatial Planning/National Land Agency (ATR/BPN); Samarinda City Geoportal",
+    "url": "https://bhumi.atrbpn.go.id/peta",
+    "scope": "BHUMI’s public metadata advertises a nationwide cadastral 2D layer, but the listed `/bhumigs/umum` service and tested standard WMS/WFS endpoints return HTTP 404; no feature geometry route or schema could be verified. Samarinda’s official city GeoServer WFS capabilities are public (205 feature types) but contain no parcel/bidang/persil layer; only a groundwater-tax layer contains the word “tanah.”",
+    "nativeIdField": null,
+    "attributesRequested": [],
+    "identityBasis": "No parcel feature was requested or returned; no native parcel identifier was examined.",
+    "geometryStatus": "no_qualifying_anonymous_geometry_route"
+  },
+  "coverageAssessment": {
+    "verifiedOpenScope": "Official local registry/land-office presence and public map routes were inspected. No anonymous parcel polygon geometry was verified for the target city; this is an access result, not a claim that the registry lacks parcel records.",
+    "citywideVerified": false,
+    "countrywideVerified": false
+  },
+  "priorEvidenceFiles": [],
+  "point": [
+    -0.495342688995459,
+    117.146215066518
+  ],
+  "rootReviewedAt": "2026-10-08T23:27:05.916367+00:00",
+  "sourceIds": []
+}

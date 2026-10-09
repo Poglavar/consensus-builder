@@ -1,0 +1,351 @@
+{
+  "schemaVersion": 1,
+  "purpose": "Independent GEOS topology check of complete runtime parcels projected to metric coordinates; no repair applied. Counts are bounded sample evidence, not whole-city guarantees.",
+  "library": "Shapely 2.2.0",
+  "metricCrs": "EPSG:32735",
+  "featureCount": 46,
+  "validNonemptyCount": 46,
+  "invalidFeatures": [],
+  "exactDuplicateGeometryPairs": [],
+  "positiveAreaOverlapPairsAbove0_01M2": [
+    {
+      "ids": [
+        "ZA-CSG-DFFE-ERVEN-G421T0IQ010900001021000000",
+        "ZA-CSG-DFFE-ERVEN-G421T0IQ010900001019000000"
+      ],
+      "overlapM2": 0.013070436569194044,
+      "fractionOfSmaller": 3.222194837340859e-06
+    }
+  ],
+  "sumPairwiseOverlapM2": 0.013070436569194044,
+  "operationErrors": [],
+  "areaM2": {
+    "min": 271.80101441968253,
+    "median": 4107.190780344513,
+    "max": 16998.092445068138
+  },
+  "features": [
+    {
+      "id": "ZA-CSG-DFFE-ERVEN-G421T0IQ010900001027000000",
+      "areaM2": 3666.650557787434,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "ZA-CSG-DFFE-ERVEN-G421T0IQ010900001029000000",
+      "areaM2": 3570.2893669337527,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "ZA-CSG-DFFE-ERVEN-G421T0IQ010900001031000000",
+      "areaM2": 4114.154431025799,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "ZA-CSG-DFFE-ERVEN-G421T0IQ010900001025000000",
+      "areaM2": 6651.4730205395,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "ZA-CSG-DFFE-ERVEN-G421T0IQ010900001028000000",
+      "areaM2": 4107.158916609801,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "ZA-CSG-DFFE-ERVEN-G421T0IQ010900001030000000",
+      "areaM2": 4855.683650870802,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "ZA-CSG-DFFE-ERVEN-G421T0IQ010900001105000000",
+      "areaM2": 4650.217485453111,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "ZA-CSG-DFFE-ERVEN-G421T0IQ010900001108000000",
+      "areaM2": 4094.915129134475,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "ZA-CSG-DFFE-ERVEN-G421T0IQ010900001110000000",
+      "areaM2": 4107.222644079225,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "ZA-CSG-DFFE-ERVEN-G421T0IQ010900001112000000",
+      "areaM2": 4855.6388192322265,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "ZA-CSG-DFFE-ERVEN-G421T0IQ010900001114000000",
+      "areaM2": 4132.93736302102,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "ZA-CSG-DFFE-ERVEN-G421T0IQ010900001111000000",
+      "areaM2": 3570.3461785531686,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "ZA-CSG-DFFE-ERVEN-G421T0IQ010900001115000000",
+      "areaM2": 3561.3461035934233,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "ZA-CSG-DFFE-ERVEN-G421T0IQ010900001109000000",
+      "areaM2": 3666.6032056922663,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "ZA-CSG-DFFE-ERVEN-G421T0IQ010900001113000000",
+      "areaM2": 4114.06042050351,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "ZA-CSG-DFFE-ERVEN-G421T0IQ010900001021000000",
+      "areaM2": 4258.080817248249,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "ZA-CSG-DFFE-ERVEN-G421T0IQ010900001022000000",
+      "areaM2": 3598.0086374402913,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "ZA-CSG-DFFE-ERVEN-G421T0IQ010900001104000000",
+      "areaM2": 16998.092445068138,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "ZA-CSG-DFFE-ERVEN-G421T0IQ010900001106000000",
+      "areaM2": 3283.597442814711,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "ZA-CSG-DFFE-ERVEN-G421T0IQ010900001107000000",
+      "areaM2": 6651.523212290439,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "ZA-CSG-DFFE-ERVEN-G421T0IQ010900001017000000",
+      "areaM2": 3770.5901109883353,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "ZA-CSG-DFFE-ERVEN-G421T0IQ010900001019000000",
+      "areaM2": 4056.3768577012934,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "ZA-CSG-DFFE-ERVEN-G421T0IQ010900001102000000",
+      "areaM2": 4504.093610182378,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "ZA-CSG-DFFE-ERVEN-G421T0IQ010900001101000000",
+      "areaM2": 8155.766112713913,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "ZA-CSG-DFFE-ERVEN-G421T0IQ010900001103000000",
+      "areaM2": 4056.245201842021,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "ZA-CSG-DFFE-ERVEN-G421T0IQ010900001177000000",
+      "areaM2": 9142.098898247772,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "ZA-CSG-DFFE-ERVEN-G421T0IQ010900001176000000",
+      "areaM2": 8560.160765658264,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "ZA-CSG-DFFE-ERVEN-G421T0IQ010900001037000000",
+      "areaM2": 3858.3026174794904,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "ZA-CSG-DFFE-ERVEN-G421T0IQ010900001116000000",
+      "areaM2": 4479.05577744182,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "ZA-CSG-DFFE-ERVEN-G421T0IQ010900001033000000",
+      "areaM2": 3561.3572104911377,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "ZA-CSG-DFFE-ERVEN-G421T0IQ010900001035000000",
+      "areaM2": 3876.5589099991635,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "ZA-CSG-DFFE-ERVEN-G421T0IQ010900001118000000",
+      "areaM2": 4439.682683700662,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "ZA-CSG-DFFE-ERVEN-G421T0IQ010900001120000110",
+      "areaM2": 983.6696004082874,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "ZA-CSG-DFFE-ERVEN-G421T0IQ010900001120000100",
+      "areaM2": 271.80101441968253,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "ZA-CSG-DFFE-ERVEN-G421T0IQ010900001095000000",
+      "areaM2": 4132.8521210871195,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "ZA-CSG-DFFE-ERVEN-G421T0IQ010900001097000000",
+      "areaM2": 4479.102708440699,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "ZA-CSG-DFFE-ERVEN-G421T0IQ010900001098000000",
+      "areaM2": 3876.6127169042907,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "ZA-CSG-DFFE-ERVEN-G421T0IQ010900001100000000",
+      "areaM2": 3858.259758275489,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "ZA-CSG-DFFE-ERVEN-G421T0IQ010900001096000000",
+      "areaM2": 3561.290149336594,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "ZA-CSG-DFFE-ERVEN-G421T0IQ010900001099000000",
+      "areaM2": 4439.625657623934,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "ZA-CSG-DFFE-ERVEN-G421T0IQ010900001023000000",
+      "areaM2": 4650.156860345078,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "ZA-CSG-DFFE-ERVEN-G421T0IQ010900001020000000",
+      "areaM2": 9142.491056219485,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "ZA-CSG-DFFE-ERVEN-G421T0IQ010900001024000000",
+      "areaM2": 3283.6006047383917,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "ZA-CSG-DFFE-ERVEN-G421T0IQ010900001180000000",
+      "areaM2": 4094.6264277113373,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "ZA-CSG-DFFE-ERVEN-G421T0IQ010900001182000000",
+      "areaM2": 4106.895123513827,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "ZA-CSG-DFFE-ERVEN-G421T0IQ010900001179000000",
+      "areaM2": 14584.351244182855,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    }
+  ]
+}

@@ -1,0 +1,111 @@
+{
+  "schemaVersion": 1,
+  "checkedAt": "2026-10-09",
+  "cityRecord": "city-5207-sukkur.json",
+  "sourceId": "pk-sukkur-registry-review",
+  "purpose": "Review city-local registry basis and anonymous geometry-only routes without querying personal/property attributes.",
+  "scopeLimits": {
+    "maxFullPolygonsRetainedInCityRecord": 0,
+    "maxFullPolygonsRetainedInReview": 0,
+    "maxFullPolygonsRetainedInRepository": 0,
+    "ownerOrAddressDataRetained": false,
+    "credentialsOrTokenValuesRetained": false,
+    "citywideCompletenessAsserted": false
+  },
+  "registryFound": true,
+  "registryBasis": "Board of Revenue, Government of Sindh operates the Sindh Zameen land-record portal and Sukkur service-center/digitization functions. Its official Sukkur dashboard documents a Board of Revenue digital scanning unit and indexed registration documents; the active-center page lists Sukkur among district centers. Portal FAQs state that record search is owner-name keyed and deliberately limited for privacy, and ruled cards contain ownership/transaction details. These sources confirm local land-record and registration services, not anonymous full parcel geometry or citywide coverage.",
+  "assessment": "Local registration and land-record services are confirmed. Record-search and property-card routes are identity/property-oriented; the Deh-map route did not yield a documented anonymous geometry schema. No parcel geometry was retained.",
+  "officialSources": [
+    {
+      "url": "https://sindhzameen.gos.pk/",
+      "observation": "Sindh Zameen is the official Board of Revenue Government of Sindh portal for land records, registries, Deh maps, property registers and ruled cards; it contains owner-name and CNIC search controls. No query was submitted."
+    },
+    {
+      "url": "https://sindhzameen.gos.pk/FAQs.aspx",
+      "observation": "Official portal FAQ says record search is available to persons whose names are entered in the record, provides only limited information for privacy, and notes Village Form II urban property registers plus rural agricultural forms. It does not promise city parcel vectors."
+    },
+    {
+      "url": "https://sindhzameen.gos.pk/Centers.aspx",
+      "observation": "Official active-centers page lists a Sukkur district service center."
+    },
+    {
+      "url": "https://sindhzameen.gos.pk/asrkhi/sukkur_dashboard.aspx",
+      "observation": "Official Board of Revenue Sukkur dashboard describes a local digital scanning unit, 11 sub-registrar offices across three districts, and registration documents indexed (aggregate administrative metrics). This confirms local registration activity, not open geometry."
+    },
+    {
+      "url": "https://sindhzameen.gos.pk/demo_Registries/RuledCard.aspx",
+      "observation": "The official Ruled Card service describes surveyed property cards with ownership and subsequent transaction details for 20 Sindh cities; the interface asks District, Taluka/Town, Ward/Quarter and Survey number. It was not used because it exposes property-level records, not safe geometry-only data."
+    },
+    {
+      "url": "https://map.sindhzameen.gos.pk/",
+      "observation": "The official Deh Map host returned 502 on the public route during review; the Sindh BOR geodatabase page did not expose an anonymous feature service schema. No query or sample was made."
+    }
+  ],
+  "searchQueries": [
+    {
+      "language": "English",
+      "query": "Sukkur Pakistan official land registry city survey cadastral map parcel geometry Board of Revenue",
+      "result": "Found the Board of Revenue Sindh’s Sukkur district service-center listing and a Sukkur digital scanning unit dashboard for registration-document indexing. Public ruled cards are ownership/transaction records and require district/town/ward/survey number selection; FAQs describe name-based searches and limited output for owner privacy. The anonymous Deh Maps host was not reachable in the review, and no safe full-polygon schema was verified.",
+      "method": "Separate language-specific discovery followed by first-party page/document review; no identity, ownership or property-specific query submitted."
+    },
+    {
+      "language": "Sindhi/Urdu",
+      "query": "سکر زمين رڪارڊ نقشو رجسٽري بورڊ آف روينيو سنڌ سروي پبلڪ سکر",
+      "result": "بورڊ آف روينيو سنڌ جو سنڌ زمين پورٽل سکر لاءِ سروس سينٽر ۽ ڊجيٽل اسڪيننگ يونٽ جي موجودگي ڏيکاري ٿو. رولڊ ڪارڊ ۾ ملڪيت ۽ ٽرانزيڪشن جي معلومات آهي ۽ چونڊون ضلعو، تعلقو، وارڊ ۽ سروي نمبر وٺن ٿيون؛ مالڪ جي سڃاڻپ واري ڳولا يا ملڪيت جو رڪارڊ استعمال نه ڪيو ويو. عوامي ديھه-نقشن جو ميزبان جائزي دوران نه کليو؛ محفوظ مڪمل پارسل هندسه نه ملي.",
+      "method": "Separate language-specific discovery followed by first-party page/document review; no identity, ownership or property-specific query submitted."
+    }
+  ],
+  "geometryDecision": "No parcel geometry retained because no anonymous safe-field full-polygon response or schema was verified.",
+  "coverageAssessment": {
+    "claimedScope": "Board of Revenue, Government of Sindh operates the Sindh Zameen land-record portal and Sukkur service-center/digitization functions. Its official Sukkur dashboard documents a Board of Revenue digital scanning unit and indexed registration documents; the active-center page lists Sukkur among district centers. Portal FAQs state that record search is owner-name keyed and deliberately limited for privacy, and ruled cards contain ownership/transaction details. These sources confirm local land-record and registration services, not anonymous full parcel geometry or citywide coverage.",
+    "verifiedOpenScope": "Local registration and land-record services are confirmed. Record-search and property-card routes are identity/property-oriented; the Deh-map route did not yield a documented anonymous geometry schema. No parcel geometry was retained.",
+    "citywideVerified": false,
+    "countrywideVerified": false,
+    "geometryVerified": false
+  },
+  "attempts": [
+    {
+      "url": "https://sindhzameen.gos.pk/",
+      "method": "Official public page/document review only; no login or property query.",
+      "result": "Sindh Zameen is the official Board of Revenue Government of Sindh portal for land records, registries, Deh maps, property registers and ruled cards; it contains owner-name and CNIC search controls. No query was submitted."
+    },
+    {
+      "url": "https://sindhzameen.gos.pk/FAQs.aspx",
+      "method": "Official public page/document review only; no login or property query.",
+      "result": "Official portal FAQ says record search is available to persons whose names are entered in the record, provides only limited information for privacy, and notes Village Form II urban property registers plus rural agricultural forms. It does not promise city parcel vectors."
+    },
+    {
+      "url": "https://sindhzameen.gos.pk/Centers.aspx",
+      "method": "Official public page/document review only; no login or property query.",
+      "result": "Official active-centers page lists a Sukkur district service center."
+    },
+    {
+      "url": "https://sindhzameen.gos.pk/asrkhi/sukkur_dashboard.aspx",
+      "method": "Official public page/document review only; no login or property query.",
+      "result": "Official Board of Revenue Sukkur dashboard describes a local digital scanning unit, 11 sub-registrar offices across three districts, and registration documents indexed (aggregate administrative metrics). This confirms local registration activity, not open geometry."
+    },
+    {
+      "url": "https://sindhzameen.gos.pk/demo_Registries/RuledCard.aspx",
+      "method": "Official public page/document review only; no login or property query.",
+      "result": "The official Ruled Card service describes surveyed property cards with ownership and subsequent transaction details for 20 Sindh cities; the interface asks District, Taluka/Town, Ward/Quarter and Survey number. It was not used because it exposes property-level records, not safe geometry-only data."
+    },
+    {
+      "url": "https://map.sindhzameen.gos.pk/",
+      "method": "Official public page/document review only; no login or property query.",
+      "result": "The official Deh Map host returned 502 on the public route during review; the Sindh BOR geodatabase page did not expose an anonymous feature service schema. No query or sample was made."
+    }
+  ],
+  "accessReview": {
+    "publicAnonymousGeometryVerified": false,
+    "completeGeoreferencedPolygonCount": 0,
+    "geometryRetained": false,
+    "ownerAddressTaxOrPersonLookupRequested": false,
+    "authenticationOrCredentialsUsed": false,
+    "captchaOrPersonalFormSubmitted": false,
+    "routeInspectionStatus": "city_local_registry_verified_no_public_geometry_contract",
+    "reason": "Local registration and land-record services are confirmed. Record-search and property-card routes are identity/property-oriented; the Deh-map route did not yield a documented anonymous geometry schema. No parcel geometry was retained.",
+    "nativeIdsUsed": "No safe parcel identifier retrieved; no feature attributes requested."
+  },
+  "sampleDisposition": "No parcel geometry or feature attributes retained.",
+  "remainingUncertainty": "Local registration and land-record services are confirmed. Record-search and property-card routes are identity/property-oriented; the Deh-map route did not yield a documented anonymous geometry schema. No parcel geometry was retained."
+}

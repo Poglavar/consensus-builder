@@ -1,0 +1,118 @@
+{
+  "name": "Novo Hamburgo",
+  "country": "Brazil",
+  "countryCode": "BR",
+  "rank": 1040,
+  "point": [
+    -29.712605019471,
+    -51.1241391499748
+  ],
+  "freshResearch": {
+    "queries": [
+      {
+        "language": "English",
+        "query": "Novo Hamburgo prefeitura oficial cadastro imobiliário mapa geoprocessamento parcelas",
+        "scope": "Identify first-party local land-registry/cadastral sources and safe anonymous parcel geometry.",
+        "result": "The official municipal urban-development directorate describes the local real-estate cadastral system and digital cartography. Its citizen service for consulting a property cadastral mirror requires a login and password. No anonymous parcel feature endpoint, schema or geometry-only query was found; no account or property lookup was attempted.",
+        "executionMethod": "Separate English-language web search followed by official-source review.",
+        "actualResultUrls": [
+          "https://novohamburgo.rs.gov.br/smmadu/diretoria-desenvolvimento-urbano",
+          "https://novohamburgo.atende.net/autoatendimento/servicos/e-espelho-do-cadastro-imobiliario"
+        ]
+      },
+      {
+        "language": "Portuguese",
+        "query": "Novo Hamburgo cadastro imobiliário mapa de lotes prefeitura geoprocessamento cadastro de imóveis municipal",
+        "scope": "Find first-party local-language registry/cadastral sources and any public parcel-map/geometry route.",
+        "result": "The official municipal urban-development directorate describes the local real-estate cadastral system and digital cartography. Its citizen service for consulting a property cadastral mirror requires a login and password. No anonymous parcel feature endpoint, schema or geometry-only query was found; no account or property lookup was attempted.",
+        "executionMethod": "Separate local-language web search followed by official-source review.",
+        "actualResultUrls": [
+          "https://novohamburgo.rs.gov.br/smmadu/diretoria-desenvolvimento-urbano",
+          "https://novohamburgo.atende.net/autoatendimento/servicos/e-espelho-do-cadastro-imobiliario"
+        ]
+      }
+    ],
+    "portals": [
+      {
+        "name": "https://novohamburgo.rs.gov.br/smmadu/diretoria-desenvolvimento-urbano",
+        "operator": "Brazil",
+        "homeUrl": "https://novohamburgo.rs.gov.br/smmadu/diretoria-desenvolvimento-urbano",
+        "observation": "Municipal directorate describes the local real-estate cadastre and digital-cartography work."
+      },
+      {
+        "name": "https://novohamburgo.atende.net/autoatendimento/servicos/e-espelho-do-cadastro-imobiliario",
+        "operator": "Brazil",
+        "homeUrl": "https://novohamburgo.atende.net/autoatendimento/servicos/e-espelho-do-cadastro-imobiliario",
+        "observation": "Municipal property-cadastre mirror page requires login."
+      }
+    ],
+    "requests": [],
+    "historicalContext": []
+  },
+  "status": "complete",
+  "verifiedParcelResponse": null,
+  "source": {
+    "sourceId": "BR-5917-LOCAL-CADASTRE",
+    "name": "Novo Hamburgo official local land registry/map review",
+    "url": "https://novohamburgo.rs.gov.br/smmadu/diretoria-desenvolvimento-urbano",
+    "operator": null,
+    "serviceType": "Official local cadastral/registry service reviewed; no anonymous safe full-parcel geometry response verified",
+    "layer": null,
+    "geometryType": null,
+    "outputCrs": null,
+    "nativeIdField": null,
+    "nativeIdEvidence": null,
+    "attributesRequested": [],
+    "sampleCount": 0,
+    "sampleFile": null,
+    "directGeometryQueryVerified": false,
+    "directMetadataSchemaVerified": false,
+    "geometryStatus": "not_verified",
+    "operatorNote": "Use the registryBasis and linked primary evidence for the verified institution; the previous country label was not an operator."
+  },
+  "coverageAssessment": {
+    "claimedScope": "The municipality confirms a local Cadastro Imobiliário and digital cartography, with record consultation through an authenticated service.",
+    "verifiedOpenScope": "No anonymous full parcel geometry response verified in this investigation.",
+    "countrywideVerified": false,
+    "citywideVerified": false
+  },
+  "registryFound": true,
+  "registryBasis": "The municipality confirms a local Cadastro Imobiliário and digital cartography, with record consultation through an authenticated service.",
+  "verifiedSample": false,
+  "resultCategory": "no_verified_public_geometry",
+  "technicalBlocker": "The only located individual property consultation route requires login; a safe anonymous geometry service was not identified.",
+  "remainingUncertainty": "The exact parcel coverage at the WUP point and the existence of a separate public vector layer remain unknown.",
+  "nextStep": "Recheck if the municipality publishes an unauthenticated geometry-only parcel layer with a safe identifier.",
+  "schemaVersion": "1.0",
+  "checkedAt": "2026-10-09",
+  "wupCityCode": 5917,
+  "cityId": "wup2025:5917",
+  "runtimeReadiness": "not_enabled_no_verified_public_geometry",
+  "adapterReady": false,
+  "centerLatLon": [
+    -29.712605019471,
+    -51.1241391499748
+  ],
+  "population2025k": 533.686,
+  "populationUnit": "persons",
+  "queueRank": 1040,
+  "population2025": 533686,
+  "populationPlausibility2025": "Moderate",
+  "pointBasis": "UN WUP2025 population-weighted settlement locator; not a municipal boundary or parcel-coverage claim.",
+  "publicParcelGeometryFound": false,
+  "sourceIds": [],
+  "registryEvidenceUrls": [
+    "https://novohamburgo.rs.gov.br/smmadu/diretoria-desenvolvimento-urbano",
+    "https://novohamburgo.atende.net/autoatendimento/servicos/e-espelho-do-cadastro-imobiliario"
+  ],
+  "runtimeAssessment": {
+    "status": "not_enabled_no_verified_public_geometry",
+    "reason": "The only located individual property consultation route requires login; a safe anonymous geometry service was not identified."
+  },
+  "rootReviewedAt": "2026-10-09T06:45:08.823796+00:00",
+  "rootReview": {
+    "checkedAt": "2026-10-09T06:45:08.823796+00:00",
+    "basis": "Reviewed city-specific English/local-language attempts, local-custody basis, source routes and documented responses. Public geometry remains unverified; access failures and unknown custody do not establish absence.",
+    "primarySourceAuditFile": "research/overnight-followon-2026-10-09/unreviewed-primary-source-audit.json"
+  }
+}

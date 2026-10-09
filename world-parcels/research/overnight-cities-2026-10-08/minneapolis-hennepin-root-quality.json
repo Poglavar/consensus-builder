@@ -1,0 +1,90 @@
+{
+  "schemaVersion": 1,
+  "purpose": "Independent GEOS topology check of complete runtime parcels projected to metric coordinates; no repair applied. Counts are bounded sample evidence, not whole-city guarantees.",
+  "library": "Shapely 2.2.0",
+  "metricCrs": "EPSG:26915",
+  "featureCount": 10,
+  "validNonemptyCount": 10,
+  "invalidFeatures": [],
+  "exactDuplicateGeometryPairs": [],
+  "positiveAreaOverlapPairsAbove0_01M2": [],
+  "sumPairwiseOverlapM2": 0,
+  "operationErrors": [],
+  "areaM2": {
+    "min": 0.07253452138356975,
+    "median": 16934.99897258481,
+    "max": 266773.01754650247
+  },
+  "features": [
+    {
+      "id": "us-mn-hennepin:2502924130011",
+      "areaM2": 1571.7930855296481,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "us-mn-hennepin:2502924130005",
+      "areaM2": 5076.366597362044,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "us-mn-hennepin:2502924130010",
+      "areaM2": 0.07253886623954893,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "us-mn-hennepin:2502924130004",
+      "areaM2": 43579.86195746318,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "us-mn-hennepin:2502924130003",
+      "areaM2": 51037.58012735523,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "us-mn-hennepin:2502924110011",
+      "areaM2": 266773.01754650247,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "us-mn-hennepin:2502924240050",
+      "areaM2": 28793.631347807575,
+      "valid": true,
+      "empty": false,
+      "parts": 2
+    },
+    {
+      "id": "us-mn-hennepin:2502924130006",
+      "areaM2": 4933.011685969727,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "us-mn-hennepin:2502924120002",
+      "areaM2": 0.07253452138356975,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "us-mn-hennepin:2502924210009",
+      "areaM2": 37138.8492915605,
+      "valid": true,
+      "empty": false,
+      "parts": 2
+    }
+  ]
+}

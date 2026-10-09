@@ -1,0 +1,87 @@
+{
+  "schemaVersion": "1.0",
+  "checkedAt": "2026-10-09",
+  "cityRecord": "city-10650-gaomi.json",
+  "purpose": "Document separate English/local-language research, local land-registry custody scope, direct anonymous request outcomes and safe geometry limits.",
+  "scopeLimits": {
+    "maxFullPolygonsRetainedInCityRecord": 0,
+    "maxFullPolygonsRetainedInReview": 0,
+    "maxFullPolygonsRetainedInRepository": 0,
+    "ownerOrAddressDataRetained": false,
+    "credentialsOrTokenValuesRetained": false,
+    "citywideCompletenessAsserted": false
+  },
+  "assessment": "English and Chinese source searches did not establish a first-party Gaomi land-registry custodian or public parcel service; the official city domain timed out.",
+  "registryAssessment": "No city-level legal land/cadastral custodian was established by this research; listed mapping/service sources have the limited scope stated.",
+  "officialPrimarySources": [
+    {
+      "url": "https://www.gaomi.gov.cn/",
+      "operator": "Gaomi Municipal Government",
+      "observation": "Official city domain did not respond to the direct HTTPS check; the Chinese and English searches did not locate a verifiable first-party city cadastral registry or public parcel map."
+    }
+  ],
+  "searchQueries": [
+    {
+      "language": "English",
+      "query": "Gaomi China official cadastral map real estate registry natural resources planning bureau",
+      "result": "Separate English-language source discovery; only cited first-party sources are used as evidence.",
+      "method": "Separate English-language search followed by official-source review.",
+      "actualResultUrls": [
+        "https://www.gaomi.gov.cn/"
+      ],
+      "scope": "Identify city-local land registry/cadastral custody and anonymous public parcel geometry. Preserve the exact WUP settlement point. Do not submit owner, address, tax, account, applicant, or private-property values. Public geographic selectors and public native parcel IDs are permitted."
+    },
+    {
+      "language": "Chinese",
+      "query": "高密市 不动产登记 地籍图 自然资源和规划局 官方",
+      "result": "No first-party local-language result established a city-bound registry source.",
+      "method": "Separate local-language web search followed by first-party source review.",
+      "actualResultUrls": [],
+      "scope": "Identify city-local land registry/cadastral custody and anonymous public parcel geometry. Preserve the exact WUP settlement point. Do not submit owner, address, tax, account, applicant, or private-property values. Public geographic selectors and public native parcel IDs are permitted."
+    }
+  ],
+  "geometryDecision": {
+    "verified": false,
+    "sourceId": null,
+    "sampleCount": 0,
+    "sampleFile": null,
+    "nativeId": null,
+    "nativeIdField": null,
+    "exactWupPointTest": "No source-native full polygon was returned at the exact unchanged WUP point. publicParcelGeometryFound:false means unverified in this investigation, not confirmed absence.",
+    "requestEvidence": [
+      {
+        "url": "https://www.gaomi.gov.cn/",
+        "method": "GET; anonymous; standard TLS; redirect-following; no credentials or property-value selectors",
+        "httpStatus": null,
+        "contentType": "",
+        "bytesRead": 0,
+        "transportOutcome": "curl exit 28; 20-second connection timeout; no HTTP response; city registry source not established."
+      }
+    ]
+  },
+  "coverageAssessment": {
+    "claimedScope": "English and Chinese source searches did not establish a first-party Gaomi land-registry custodian or public parcel service; the official city domain timed out.",
+    "verifiedOpenScope": "No safe source-native full parcel polygon was returned in this investigation.",
+    "citywideVerified": false,
+    "countrywideVerified": false,
+    "geometryVerified": false
+  },
+  "attempts": [
+    "No HTTP response: curl exit 28; 20-second connection timeout; no HTTP response; city registry source not established.. curl exit 28; 20-second connection timeout; no HTTP response; city registry source not established."
+  ],
+  "remainingUncertainty": "English and Chinese source searches did not establish a first-party Gaomi land-registry custodian or public parcel service; the official city domain timed out. Public parcel geometry, coverage, legal/title scope and currentness beyond the evidence stated remain unverified.",
+  "nextStep": "Keep runtime disabled until root review determines whether the official source and returned geometry meet adapter criteria.",
+  "runtimeAssessment": {
+    "status": "not_enabled_no_verified_public_geometry",
+    "reason": "No first-party city registry or public parcel route was established; official city domain timed out."
+  },
+  "cohort": "overnight-next-1101-1200",
+  "cohortState": "research_complete_pending_root_review",
+  "integrationState": "not_integrated",
+  "rootReviewedAt": "2026-10-09T07:25:02.908399+00:00",
+  "rootReview": {
+    "checkedAt": "2026-10-09T07:25:02.908399+00:00",
+    "decision": "Reviewed canonical identity, primary custody scope, separate search and direct-source request evidence. No public full parcel geometry verified; unresolved local custody preserved as null.",
+    "sourceEvidenceLimits": "Transport failure or lack of a verified route is not evidence that parcel geometry does not exist."
+  }
+}

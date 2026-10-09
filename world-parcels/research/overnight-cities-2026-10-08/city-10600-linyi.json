@@ -1,0 +1,105 @@
+{
+  "name": "Linyi",
+  "country": "China",
+  "countryCode": "CN",
+  "rank": 522,
+  "point": [
+    35.0600551162676,
+    118.328610885455
+  ],
+  "population2025": 987615,
+  "schemaVersion": 1,
+  "kind": "city_parcel_source_research",
+  "checkedAt": "2026-10-09",
+  "populationUnit": "persons",
+  "status": "complete",
+  "verifiedSample": false,
+  "publicParcelGeometryFound": false,
+  "runtimeReadiness": "not_enabled_no_verified_public_geometry",
+  "priorEvidenceFiles": [],
+  "scopeLimits": "The official city policy describes cadastral-map visualization for identity-verified users. No anonymous geometry-only endpoint or public vector schema was verified; no identity or login flow was entered. The WUP locator is a settlement centroid, not a parcel identity or city boundary. No owner/address/rights-holder data or credentials were retained.",
+  "pointBasis": "UN WUP 2025 population-weighted settlement centroid; this is not a municipal boundary or a parcel-coverage claim.",
+  "registryFound": true,
+  "registryBasis": "Official Linyi government documents identify the city Real Estate Registration and Transaction Center and a city-level one-network registration service; municipal policy states registered property and cadastral-map lookup are provided after identity verification. This confirms local registry and map service but not anonymous full-vector access.",
+  "resultCategory": "city_registry_and_identity_verified_cadastral_lookup_no_public_vector",
+  "research": {
+    "executedQueries": [
+      {
+        "language": "English",
+        "query": "Linyi China official land registry cadastral map parcel query GIS",
+        "scope": "Find city-local land registry/map evidence and public full-polygon parcel geometry.",
+        "result": "Official Linyi Natural Resources and Planning Bureau and city government sources document property registration and a visual cadastral-map lookup service requiring identity verification. No anonymous vector geometry endpoint found.",
+        "actualResultUrls": [
+          "https://gtj.linyi.gov.cn/",
+          "https://swj.linyi.gov.cn/info/1224/13709.htm",
+          "https://www.linyi.gov.cn/info/9157/302931.htm"
+        ],
+        "executionMethod": "Separate native-language or English public search followed by official-source, public map/service and client inspection."
+      },
+      {
+        "language": "Chinese",
+        "query": "临沂市 不动产登记 地籍图 可视化 查询 身份验证 官方 天地图·临沂",
+        "scope": "Find city-local land registry/map evidence and public full-polygon parcel geometry.",
+        "result": "Official municipal policy describes identity-verified online query of property natural condition, restrictions and cadastral map; bureau homepage links Tianditu·Linyi, but no public parcel-vector service identified.",
+        "actualResultUrls": [
+          "https://gtj.linyi.gov.cn/",
+          "https://swj.linyi.gov.cn/info/1224/13709.htm",
+          "https://www.linyi.gov.cn/info/9157/302931.htm"
+        ],
+        "executionMethod": "Separate native-language or English public search followed by official-source, public map/service and client inspection."
+      }
+    ],
+    "officialSources": [
+      {
+        "url": "https://gtj.linyi.gov.cn/",
+        "observation": "Official Linyi Natural Resources and Planning Bureau homepage provides Tianditu·Linyi map link and city registry center news."
+      },
+      {
+        "url": "https://swj.linyi.gov.cn/info/1224/13709.htm",
+        "observation": "Official Linyi government implementation plan assigns the city Natural Resources and Planning Bureau lead responsibility for property registration and describes cadastral-map visual lookup after user identity verification."
+      },
+      {
+        "url": "https://www.linyi.gov.cn/info/9157/302931.htm",
+        "observation": "Official Linyi Real Estate Registration and Transaction Center notice describes city-level one-network registration services and local service centers."
+      }
+    ],
+    "viewerAndServiceTrace": {
+      "viewerUrl": "http://lll.17.193.47/online/index",
+      "apiBase": null,
+      "observedClientRoutes": [
+        "identity-verified city one-network service"
+      ],
+      "notes": "The official municipal page identifies cadastral-map visualization as available after identity verification. No login/identity route or feature API was queried; no geometry retained."
+    }
+  },
+  "verifiedParcelResponse": null,
+  "source": {
+    "id": "CN-SD-LINYI-ONE-NET-REGISTRATION",
+    "name": "Linyi Real Estate Registration One-Network Service",
+    "url": "https://www.linyi.gov.cn/info/9157/302931.htm",
+    "operator": "Linyi Real Estate Registration and Transaction Center / Linyi Natural Resources and Planning Bureau",
+    "type": "City property registration portal with identity-verified cadastral-map query",
+    "layer": null,
+    "geometryType": null,
+    "nativeIdField": null,
+    "nativeIdEvidence": "No public schema or anonymous parcel feature was observed."
+  },
+  "wupCityCode": 10600,
+  "cityId": "wup2025:10600",
+  "queueRank": 522,
+  "populationPlausibility2025": "Low",
+  "centerLatLon": [
+    35.0600551162676,
+    118.328610885455
+  ],
+  "sourceIds": [],
+  "adapterReady": false,
+  "technicalBlocker": "The official city policy describes cadastral-map visualization for identity-verified users. No anonymous geometry-only endpoint or public vector schema was verified; no identity or login flow was entered.",
+  "remainingUncertainty": "Whether additional citywide or city-level anonymous full-polygon datasets exist beyond the official services inspected; none was confirmed.",
+  "registryEvidenceUrls": [
+    "https://gtj.linyi.gov.cn/",
+    "https://swj.linyi.gov.cn/info/1224/13709.htm",
+    "https://www.linyi.gov.cn/info/9157/302931.htm"
+  ],
+  "rootReviewedAt": "2026-10-09T01:14:01.434685+00:00"
+}

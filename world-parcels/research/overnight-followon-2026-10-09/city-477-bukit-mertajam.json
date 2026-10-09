@@ -1,0 +1,138 @@
+{
+  "schemaVersion": "1.0",
+  "cityId": "wup2025:477",
+  "wupCityCode": 477,
+  "name": "Bukit Mertajam",
+  "country": "Malaysia",
+  "countryCode": "MY",
+  "rank": 1071,
+  "queueRank": 1071,
+  "point": [
+    5.37430818562544,
+    100.428386608375
+  ],
+  "centerLatLon": [
+    5.37430818562544,
+    100.428386608375
+  ],
+  "pointBasis": "UN WUP2025 population-weighted settlement centroid; not a municipal boundary or parcel-coverage claim.",
+  "population2025": 517326,
+  "population2025k": 517.326,
+  "populationUnit": "persons",
+  "populationPlausibility2025": "Moderate",
+  "cohort": "overnight-followon-1069-1076",
+  "checkedAt": "2026-10-09",
+  "status": "complete",
+  "registryFound": true,
+  "registryBasis": "The official Penang Seberang Perai Tengah District and Land Office says its district includes Bukit Mertajam and gives its Bukit Mertajam office address. A JUPEM-credited Penang cadastral lot layer returned one complete polygon intersecting the exact WUP point with only UPI and FID requested. This verifies a local land office and a point-matched parcel reference, without asserting full municipal coverage or legal boundary accuracy.",
+  "registryEvidenceUrls": [
+    "https://portalpdt.penang.gov.my/index.php/profil/pejabat-daerah-dan-tanah-seberang-perai-tengah",
+    "https://geoformatik.forestry.gov.my/arcgis/rest/services/PULAU_PINANG_SDE/MapServer/45",
+    "https://www.mygeoportal.gov.my/sites/default/files/dokumen_upi/KOD%20DAN%20NAMA%20SEMPADAN%20PENTADBIRIAN%20TANAH_Pulau%20Pinang.pdf",
+    "https://www.jupem.gov.my/"
+  ],
+  "verifiedSample": true,
+  "publicParcelGeometryFound": true,
+  "sourceIds": [
+    "my-penang-forestry-cadastral-lots"
+  ],
+  "adapterReady": true,
+  "runtimeReadiness": "enabled",
+  "technicalBlocker": null,
+  "scopeLimits": "18 distinct full native cadastral-reference polygons around the unchanged WUP settlement locator across thirteen bounded cells. Independent EPSG:32647 GEOS audit of all19 grid and footprint polygons found no invalidity, duplicate geometry, positive-area overlaps above0.01m² or operation errors. Forced three-row paging, all19 fresh exact native-ID reads, explicit absence, footprint lookup and source binding passed. Published native identities and full geometry preserved without repair. This bounded evidence does not establish citywide completeness, legal title, positional accuracy or currentness. The Forestry government GIS host credits JUPEM2020; its official GlobalSign intermediate certificate is supplied with normal certificate and hostname verification. Source age and notices are informational.",
+  "resultCategory": "verified_public_geometry_runtime_enabled",
+  "remainingUncertainty": "Qualified bounded source-reference geometry only; whole-city completeness, legal title, survey accuracy, currentness and future revision identity continuity remain unverified.",
+  "nextStep": "Manual browser verification after catalog integration.",
+  "coverageAssessment": {
+    "claimedScope": "The official Penang Seberang Perai Tengah District and Land Office says its district includes Bukit Mertajam and gives its Bukit Mertajam office address. A JUPEM-credited Penang cadastral lot layer returned one complete polygon intersecting the exact WUP point with only UPI and FID requested. This verifies a local land office and a point-matched parcel reference, without asserting full municipal coverage or legal boundary accuracy.",
+    "verifiedOpenScope": "18 distinct full native cadastral-reference polygons around the unchanged WUP settlement locator across thirteen bounded cells. Independent EPSG:32647 GEOS audit of all19 grid and footprint polygons found no invalidity, duplicate geometry, positive-area overlaps above0.01m² or operation errors. Forced three-row paging, all19 fresh exact native-ID reads, explicit absence, footprint lookup and source binding passed. Published native identities and full geometry preserved without repair. This bounded evidence does not establish citywide completeness, legal title, positional accuracy or currentness. The Forestry government GIS host credits JUPEM2020; its official GlobalSign intermediate certificate is supplied with normal certificate and hostname verification. Source age and notices are informational.",
+    "citywideVerified": false,
+    "countrywideVerified": false
+  },
+  "runtimeAssessment": {
+    "status": "enabled",
+    "reason": "18 distinct full native cadastral-reference polygons around the unchanged WUP settlement locator across thirteen bounded cells. Independent EPSG:32647 GEOS audit of all19 grid and footprint polygons found no invalidity, duplicate geometry, positive-area overlaps above0.01m² or operation errors. Forced three-row paging, all19 fresh exact native-ID reads, explicit absence, footprint lookup and source binding passed. Published native identities and full geometry preserved without repair. This bounded evidence does not establish citywide completeness, legal title, positional accuracy or currentness. The Forestry government GIS host credits JUPEM2020; its official GlobalSign intermediate certificate is supplied with normal certificate and hostname verification. Source age and notices are informational.",
+    "acceptanceFile": "research/overnight-followon-2026-10-09/bukit-mertajam-root-acceptance.json",
+    "qualityFile": "research/overnight-followon-2026-10-09/bukit-mertajam-root-quality.json",
+    "qualityReviewFile": "research/overnight-followon-2026-10-09/bukit-mertajam-root-quality-review.json"
+  },
+  "freshResearch": {
+    "queries": [
+      {
+        "language": "English",
+        "query": "Bukit Mertajam Penang official cadastral lot map JUPEM land office registry",
+        "scope": "Identify first-party city-bound registry/cadastre custody and safe public parcel geometry.",
+        "result": "The official district/land office page places Bukit Mertajam in Seberang Perai Tengah; JUPEM’s official site advertises MyLot for online lot location/boundaries. A JUPEM-credited cadastral polygon layer returned one exact-point hit.",
+        "actualResultUrls": [
+          "https://portalpdt.penang.gov.my/index.php/profil/pejabat-daerah-dan-tanah-seberang-perai-tengah",
+          "https://geoformatik.forestry.gov.my/arcgis/rest/services/PULAU_PINANG_SDE/MapServer/45",
+          "https://www.mygeoportal.gov.my/sites/default/files/dokumen_upi/KOD%20DAN%20NAMA%20SEMPADAN%20PENTADBIRIAN%20TANAH_Pulau%20Pinang.pdf",
+          "https://www.jupem.gov.my/"
+        ],
+        "executionMethod": "Separate fresh web search in this language; first-party pages/search results reviewed."
+      },
+      {
+        "language": "Malay",
+        "query": "Bukit Mertajam tanah kadaster lot Pejabat Daerah dan Tanah Seberang Perai Tengah Pulau Pinang",
+        "scope": "Identify first-party city-bound registry/cadastre custody and safe public parcel geometry.",
+        "result": "Portal rasmi menyatakan Bukit Mertajam ialah bandar utama dalam Daerah Seberang Perai Tengah dan menunjukkan pejabat tanah daerah di Bukit Mertajam. Lapisan kadaster yang dikreditkan kepada JUPEM memberikan satu poligon yang meliputi titik WUP tepat dengan medan UPI dan FID sahaja.",
+        "actualResultUrls": [
+          "https://portalpdt.penang.gov.my/index.php/profil/pejabat-daerah-dan-tanah-seberang-perai-tengah",
+          "https://geoformatik.forestry.gov.my/arcgis/rest/services/PULAU_PINANG_SDE/MapServer/45",
+          "https://www.mygeoportal.gov.my/sites/default/files/dokumen_upi/KOD%20DAN%20NAMA%20SEMPADAN%20PENTADBIRIAN%20TANAH_Pulau%20Pinang.pdf",
+          "https://www.jupem.gov.my/"
+        ],
+        "executionMethod": "Separate fresh web search in this language; first-party pages/search results reviewed."
+      }
+    ]
+  },
+  "source": {
+    "sourceId": "my-penang-forestry-cadastral-lots",
+    "name": "JUPEM Penang cadastral lots (Forestry GIS host)",
+    "url": "https://geoformatik.forestry.gov.my/arcgis/rest/services/PULAU_PINANG_SDE/MapServer/45",
+    "operator": "Department of Survey and Mapping Malaysia (JUPEM); Department of Forestry GIS host",
+    "scope": "18 distinct full native cadastral-reference polygons around the unchanged WUP settlement locator across thirteen bounded cells. Independent EPSG:32647 GEOS audit of all19 grid and footprint polygons found no invalidity, duplicate geometry, positive-area overlaps above0.01m² or operation errors. Forced three-row paging, all19 fresh exact native-ID reads, explicit absence, footprint lookup and source binding passed. Published native identities and full geometry preserved without repair. This bounded evidence does not establish citywide completeness, legal title, positional accuracy or currentness. The Forestry government GIS host credits JUPEM2020; its official GlobalSign intermediate certificate is supplied with normal certificate and hostname verification. Source age and notices are informational.",
+    "serviceType": "Anonymous ArcGIS REST MapServer query; exact point, outFields=FID,UPI, returnGeometry=true, outSR=4326.",
+    "geometryType": "esriGeometryPolygon",
+    "nativeCrs": "ArcGIS WKID 102062 (layer metadata)",
+    "outputCrs": "EPSG:4326",
+    "nativeIdField": "UPI",
+    "transportIdField": "FID",
+    "attributesRequested": [
+      "FID",
+      "UPI"
+    ],
+    "sampleCount": 1,
+    "sampleFile": "city-477-bukit-mertajam-samples.geojson",
+    "directGeometryQueryVerified": true,
+    "directMetadataSchemaVerified": true,
+    "geometryStatus": "verified_native_geometry_runtime_held",
+    "endpoint": "https://geoformatik.forestry.gov.my/arcgis/rest/services/PULAU_PINANG_SDE/MapServer/45"
+  },
+  "verifiedParcelResponse": {
+    "httpStatus": 200,
+    "returnedFeatures": 1,
+    "retainedFullPolygonCount": 1,
+    "nativeParcelIdentifiers": [
+      "0701060003760"
+    ],
+    "transportObjectIds": [
+      330428
+    ],
+    "wupPointContained": true,
+    "geometryType": "Polygon",
+    "rings": 1,
+    "vertices": 53,
+    "pointQueryUrl": "https://geoformatik.forestry.gov.my/arcgis/rest/services/PULAU_PINANG_SDE/MapServer/45/query"
+  },
+  "rootReviewedAt": "2026-10-09T06:05:23.845931+00:00",
+  "rootReviewNote": "Root independently reviewed bounded real-adapter acceptance and all grid/footprint native geometry topology; all fresh native-ID rereads match. Approved.",
+  "appCityId": "bukit_mertajam",
+  "runtimeQualification": {
+    "sourceId": "my-penang-forestry-cadastral-lots",
+    "status": "enabled",
+    "acceptanceFile": "research/overnight-followon-2026-10-09/bukit-mertajam-root-acceptance.json",
+    "qualityFile": "research/overnight-followon-2026-10-09/bukit-mertajam-root-quality.json"
+  },
+  "sampleFile": "city-477-bukit-mertajam-samples.geojson"
+}

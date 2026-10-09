@@ -1,0 +1,111 @@
+{
+  "schemaVersion": 1,
+  "kind": "city_parcel_source_research",
+  "checkedAt": "2026-10-09",
+  "name": "Hermosillo",
+  "country": "Mexico",
+  "countryCode": "MX",
+  "populationUnit": "persons",
+  "status": "complete",
+  "registryFound": true,
+  "registryBasis": "The Municipio de Hermosillo identifies a municipal Dirección de Catastro and publishes cadastral valuation cartography/services. The indexed products reviewed are valuation maps, not verified parcel geometry.",
+  "registryEvidenceUrls": [
+    "https://catastro.hermosillo.gob.mx/",
+    "https://catastro.hermosillo.gob.mx/areas/sc.html",
+    "https://catastro.hermosillo.gob.mx/pdfS/2025/planos-valores-unitarios-catastro%202025.pdf",
+    "https://www.hermosillo.gob.mx/entidades/tesoreria-municipal/"
+  ],
+  "verifiedSample": false,
+  "publicParcelGeometryFound": false,
+  "runtimeReadiness": "not_enabled_no_verified_public_geometry",
+  "wupCityCode": 1900,
+  "cityId": "wup2025:1900",
+  "centerLatLon": [
+    29.0942213025904,
+    -110.979670642422
+  ],
+  "rank": 698,
+  "queueRank": 698,
+  "population2025": 765445,
+  "population2025k": 765.445,
+  "populationPlausibility2025": "Moderate",
+  "pointBasis": "UN WUP 2025 population-weighted settlement centroid; this is not a municipal boundary or a parcel-coverage claim.",
+  "technicalBlocker": "Official municipal pages establish Catastro and cadastral cartographic products, including 2025 unit-value maps by region. A public-indexed Catastro Digital link leads to a municipal-account sign-in; no credentials were used. PDF map sheets are valuation/cartographic products and were not treated as parcel feature geometry.",
+  "scopeLimits": "Official municipal pages establish Catastro and cadastral cartographic products, including 2025 unit-value maps by region. A public-indexed Catastro Digital link leads to a municipal-account sign-in; no credentials were used. PDF map sheets are valuation/cartographic products and were not treated as parcel feature geometry.",
+  "remainingUncertainty": "Whether the account-gated Catastro Digital interface provides public parcel geometry after authentication is unverified. No parcel/property query or personal data was accessed.",
+  "research": {
+    "executedQueries": [
+      {
+        "language": "English",
+        "query": "Hermosillo Sonora municipal cadastre cadastral map parcel GIS official",
+        "scope": "Identify the city-specific registry and a public, anonymous parcel-geometry source.",
+        "result": "City registry/cadastre confirmed; no anonymous full-parcel geometry route verified. The Catastro Digital route is an account-gated service and was not entered.",
+        "actualResultUrls": [
+          "https://catastro.hermosillo.gob.mx/",
+          "https://catastro.hermosillo.gob.mx/areas/sc.html",
+          "https://catastro.hermosillo.gob.mx/pdfS/2025/planos-valores-unitarios-catastro%202025.pdf",
+          "https://www.hermosillo.gob.mx/entidades/tesoreria-municipal/"
+        ],
+        "executionMethod": "Separate language-specific web search, filtering to official municipal, registry, or government sources."
+      },
+      {
+        "language": "Spanish",
+        "query": "Hermosillo Sonora catastro municipal mapa predial cartografía parcelaria oficial",
+        "scope": "Identify the city-specific registry and a public, anonymous parcel-geometry source.",
+        "result": "City registry/cadastre confirmed; no anonymous full-parcel geometry route verified. The Catastro Digital route is an account-gated service and was not entered.",
+        "actualResultUrls": [
+          "https://catastro.hermosillo.gob.mx/",
+          "https://catastro.hermosillo.gob.mx/areas/sc.html",
+          "https://catastro.hermosillo.gob.mx/pdfS/2025/planos-valores-unitarios-catastro%202025.pdf",
+          "https://www.hermosillo.gob.mx/entidades/tesoreria-municipal/"
+        ],
+        "executionMethod": "Separate language-specific web search, filtering to official municipal, registry, or government sources."
+      }
+    ],
+    "officialSources": [
+      {
+        "url": "https://catastro.hermosillo.gob.mx/",
+        "observation": "The Municipio de Hermosillo identifies a municipal Dirección de Catastro and publishes cadastral valuation cartography/services. The indexed products reviewed are valuation maps, not verified parcel geometry."
+      },
+      {
+        "url": "https://catastro.hermosillo.gob.mx/areas/sc.html",
+        "observation": "Official municipal pages establish Catastro and cadastral cartographic products, including 2025 unit-value maps by region. A public-indexed Catastro Digital link leads to a municipal-account sign-in; no credentials were used. PDF map sheets are valuation/cartographic products and were not treated as parcel feature geometry."
+      },
+      {
+        "url": "https://catastro.hermosillo.gob.mx/pdfS/2025/planos-valores-unitarios-catastro%202025.pdf",
+        "observation": "Official municipal pages establish Catastro and cadastral cartographic products, including 2025 unit-value maps by region. A public-indexed Catastro Digital link leads to a municipal-account sign-in; no credentials were used. PDF map sheets are valuation/cartographic products and were not treated as parcel feature geometry."
+      },
+      {
+        "url": "https://www.hermosillo.gob.mx/entidades/tesoreria-municipal/",
+        "observation": "Official municipal pages establish Catastro and cadastral cartographic products, including 2025 unit-value maps by region. A public-indexed Catastro Digital link leads to a municipal-account sign-in; no credentials were used. PDF map sheets are valuation/cartographic products and were not treated as parcel feature geometry."
+      }
+    ],
+    "metadataReviewFile": "hermosillo-service-review.json",
+    "routeInspectionFile": "temporary route audit outside repository"
+  },
+  "source": {
+    "sourceId": null,
+    "name": null,
+    "operator": null,
+    "url": null,
+    "serviceType": "No anonymously verified full parcel-geometry endpoint in this review.",
+    "geometryType": null,
+    "coordinateReferenceSystem": null,
+    "nativeIdFields": [],
+    "directGeometryQueryVerified": false,
+    "directMetadataSchemaVerified": false,
+    "scope": "Official municipal pages establish Catastro and cadastral cartographic products, including 2025 unit-value maps by region. A public-indexed Catastro Digital link leads to a municipal-account sign-in; no credentials were used. PDF map sheets are valuation/cartographic products and were not treated as parcel feature geometry."
+  },
+  "coverageAssessment": "No citywide parcel coverage or WUP-point parcel presence is asserted.",
+  "runtimeAssessment": {
+    "status": "not_enabled_no_verified_public_geometry",
+    "reason": "not_enabled_no_verified_public_geometry"
+  },
+  "rootReview": "pending",
+  "point": [
+    29.0942213025904,
+    -110.979670642422
+  ],
+  "rootReviewedAt": "2026-10-09T02:45:05.881311+00:00",
+  "sourceIds": []
+}

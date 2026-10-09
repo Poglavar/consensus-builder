@@ -1,0 +1,116 @@
+{
+  "name": "Wuhu",
+  "country": "China",
+  "countryCode": "CN",
+  "rank": 300,
+  "point": [
+    31.3366053937168,
+    118.380592606049
+  ],
+  "population2025": 1631043,
+  "schemaVersion": 1,
+  "kind": "city_parcel_source_research",
+  "checkedAt": "2026-10-09",
+  "populationUnit": "persons",
+  "status": "complete",
+  "verifiedSample": false,
+  "publicParcelGeometryFound": false,
+  "runtimeReadiness": "not_enabled_no_verified_public_geometry",
+  "priorEvidenceFiles": [],
+  "scopeLimits": "The ranked WUP population-weighted point is a settlement locator, not a parcel identity, municipal boundary, or coverage guarantee. No full polygon geometry is retained.",
+  "pointBasis": "UN WUP 2025 population-weighted settlement centroid; this is not a municipal boundary or a parcel-coverage claim.",
+  "registryFound": true,
+  "registryBasis": "Official city notice documents visual lookup of city-area property natural conditions, rights status and cadastral maps; service entry is Wanshitong APP or Anhui Government Services Wuhu subsite electronic map. No open vector endpoint is published in the notice.",
+  "resultCategory": "city_registry_or_public_viewer_documented_no_public_vector_geometry_verified",
+  "technicalBlocker": "City bureau confirms a visual cadastral lookup, but its official link resolves to a generic government-services department list (HTTP 200, no cadastral/map text or viewer scripts) rather than the described electronic-map page. The notice publishes no vector endpoint. No anonymous polygon response was verified.",
+  "remainingUncertainty": "Whether the electronic-map viewer permits anonymous access, what datasets it displays, and whether any full polygon export/API is available; no direct route was identified. The cited announcement states the “other property” cadastral query exists but does not specify access requirements.",
+  "nextStep": "Retry the official Wuhu government-service electronic map when reachable; inspect its public viewer assets and network calls before testing only a small geometry-only query.",
+  "research": {
+    "executedQueries": [
+      {
+        "language": "English",
+        "query": "Wuhu China official public cadastral parcel map GIS land registry WMS feature service",
+        "result": "English search found the Wuhu Natural Resources and Planning Bureau notice describing a city cadastral-map query service. Its official Anhui Government Services link was followed: HTTP 200 returned only a generic department-list page, with no map/cadastral text or viewer scripts. The direct electronic-map route remains unknown.",
+        "urls": [
+          "https://zrzyhghj.wuhu.gov.cn/xwzx/tzgg/8600847.html",
+          "https://wh.ahzwfw.gov.cn/bog-bsdt/static/workProcess/departmentHoem.html?cityCode=340200000000&cityName=%E8%8A%9C%E6%B9%96%E5%B8%82&deptCode=34020010260000000000"
+        ],
+        "method": "Separate English web search; official notice opened and linked government-service route followed via the page link."
+      },
+      {
+        "language": "Simplified Chinese",
+        "query": "芜湖市 自然资源和规划局 地籍图 宗地图 不动产登记 查询 地图 GIS 官方",
+        "result": "芜湖市自然资源和规划局公告确认“芜湖市地籍图查询”可视化查询市区不动产自然状况、权利状态和地籍图；入口在皖事通或安徽政务服务网芜湖分厅电子地图。跟进公告中的官方政务服务链接后，HTTP 200 页面只是通用部门列表，没有地籍图/电子地图文字或查看器脚本；实际电子地图入口仍未找到。本人名下查询明确需注册、实名认证和刷脸；公告未说明其他查询是否匿名，也未公布矢量服务接口。",
+        "urls": [
+          "https://zrzyhghj.wuhu.gov.cn/xwzx/tzgg/8600847.html",
+          "https://zrzyhghj.wuhu.gov.cn/xwzx/tzgg/8768547.html",
+          "https://wh.ahzwfw.gov.cn/bog-bsdt/static/workProcess/departmentHoem.html?cityCode=340200000000&cityName=%E8%8A%9C%E6%B9%96%E5%B8%82&deptCode=34020010260000000000"
+        ],
+        "method": "Separate Simplified Chinese search; opened the city bureau notice and followed its official government-service link (page request timed out)."
+      }
+    ],
+    "officialSources": [
+      {
+        "url": "https://zrzyhghj.wuhu.gov.cn/xwzx/tzgg/8600847.html",
+        "method": "GET via web reader",
+        "observation": "HTTP 200 official bureau notice; lines 76–78 describe the cadastral map lookup and government-service entry.",
+        "httpStatus": 200,
+        "contentType": "text/html"
+      },
+      {
+        "url": "https://wh.ahzwfw.gov.cn/bog-bsdt/static/workProcess/departmentHoem.html?cityCode=340200000000&cityName=%E8%8A%9C%E6%B9%96%E5%B8%82&deptCode=34020010260000000000",
+        "method": "GET via official page link",
+        "observation": "The bureau page link to Anhui government service timed out in the reader; no viewer HTML/JS or service route was obtained.",
+        "contentType": "unknown"
+      },
+      {
+        "url": "https://zrzyhghj.wuhu.gov.cn/openness/public/6596701/40037218.html",
+        "method": "GET via web search result",
+        "observation": "Official bureau page identifies the municipal registration center responsibilities including cadastral database and public query service.",
+        "httpStatus": 200,
+        "contentType": "text/html"
+      },
+      {
+        "url": "https://wh.ahzwfw.gov.cn/bog-bsdt/static/workProcess/departmentHoem.html?cityCode=340200000000&cityName=%E8%8A%9C%E6%B9%96%E5%B8%82&deptCode=34020010260000000000",
+        "method": "Direct anonymous GET with browser-like headers, followed official city-bureau link",
+        "httpStatus": 200,
+        "contentType": "text/html",
+        "observation": "Page title is a generic department list; page contains no cadastral/map terms or viewer scripts. It is not the advertised electronic-map viewer."
+      }
+    ],
+    "portals": [
+      {
+        "name": "芜湖市地籍图查询 / 芜湖电子地图",
+        "operator": "Wuhu Real Estate Registration Center / Wuhu Natural Resources and Planning Bureau",
+        "url": "https://zrzyhghj.wuhu.gov.cn/xwzx/tzgg/8600847.html",
+        "observation": "Official city notice documents visual lookup of city-area property natural conditions, rights status and cadastral maps; service entry is Wanshitong APP or Anhui Government Services Wuhu subsite electronic map. No open vector endpoint is published in the notice."
+      }
+    ],
+    "viewerAndServiceTrace": {
+      "attempted": true,
+      "summary": "City bureau confirms a visual cadastral lookup, but its official link resolves to a generic government-services department list (HTTP 200, no cadastral/map text or viewer scripts) rather than the described electronic-map page. The notice publishes no vector endpoint. No anonymous polygon response was verified.",
+      "fullPolygonLimit": 3,
+      "fullPolygonsRetained": 0,
+      "ownerOrAddressDataRequested": false,
+      "credentialsOrTokenValuesRetained": false
+    },
+    "attemptedGeometry": {
+      "fullPolygonLimit": 3,
+      "fullPolygonsRetained": 0,
+      "ownerOrAddressDataRequested": false,
+      "outcome": "No full parcel polygon was verified; no geometry has been retained."
+    }
+  },
+  "verifiedParcelResponse": null,
+  "source": null,
+  "wupCityCode": 11312,
+  "cityId": "wup2025:11312",
+  "queueRank": 300,
+  "populationPlausibility2025": "Moderate",
+  "centerLatLon": [
+    31.3366053937168,
+    118.380592606049
+  ],
+  "sourceIds": [],
+  "rootReviewedAt": "2026-10-08T22:19:03.228348+00:00"
+}

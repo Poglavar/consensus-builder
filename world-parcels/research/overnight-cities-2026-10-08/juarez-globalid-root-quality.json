@@ -1,0 +1,1441 @@
+{
+  "schemaVersion": 1,
+  "purpose": "Independent GEOS topology check of complete runtime parcels projected to metric coordinates; no repair applied. Counts are bounded sample evidence, not whole-city guarantees.",
+  "library": "Shapely 2.2.0",
+  "metricCrs": "EPSG:32613",
+  "featureCount": 203,
+  "validNonemptyCount": 203,
+  "invalidFeatures": [],
+  "exactDuplicateGeometryPairs": [],
+  "positiveAreaOverlapPairsAbove0_01M2": [],
+  "sumPairwiseOverlapM2": 0,
+  "operationErrors": [],
+  "areaM2": {
+    "min": 91.93160798955023,
+    "median": 397.25797942396275,
+    "max": 15612.846198436853
+  },
+  "features": [
+    {
+      "id": "MX-JUA-PREDIO-{D2F2D020-8669-4C2F-B6AA-23930CFA8F51}",
+      "areaM2": 392.2293443318262,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "MX-JUA-PREDIO-{CAA13AE6-B72B-47C7-94C1-192F5308F600}",
+      "areaM2": 408.8193951017632,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "MX-JUA-PREDIO-{FAF66DEA-43DF-4066-B142-98F62DF294B2}",
+      "areaM2": 151.31471642198935,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "MX-JUA-PREDIO-{C265667B-42B9-4943-9A06-095121F5A534}",
+      "areaM2": 524.8809109179277,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "MX-JUA-PREDIO-{9845F20F-A8F4-4B0C-A46C-7D34D73CBACE}",
+      "areaM2": 516.0073168424502,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "MX-JUA-PREDIO-{C243E1DA-B97A-46B8-9165-3448942F0E4D}",
+      "areaM2": 495.26401987077384,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "MX-JUA-PREDIO-{D0B82B7B-66FE-4C4C-9402-F1BEFE55A169}",
+      "areaM2": 1002.4644172252043,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "MX-JUA-PREDIO-{8DEF45D2-5548-4932-A316-CD53DB0D986E}",
+      "areaM2": 237.2134113729193,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "MX-JUA-PREDIO-{04B42843-19EC-416A-9844-07E2D3694450}",
+      "areaM2": 377.8752127056574,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "MX-JUA-PREDIO-{2F139BF7-B475-4DE6-8F9A-E7A93AE020DC}",
+      "areaM2": 395.50552498457967,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "MX-JUA-PREDIO-{27968CED-6BA9-4404-AB18-5C0C52964702}",
+      "areaM2": 391.90069076968337,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "MX-JUA-PREDIO-{BC50BF45-A151-42F3-9AB8-740ABB140C4E}",
+      "areaM2": 819.3088382582126,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "MX-JUA-PREDIO-{534EEBBD-F92E-430A-9070-43EB1F099F2E}",
+      "areaM2": 398.9218188981636,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "MX-JUA-PREDIO-{EC411556-3617-49D9-BEA3-9EEFF07F5508}",
+      "areaM2": 401.8439320172462,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "MX-JUA-PREDIO-{1BC5D765-8D2F-4C15-BD03-C6D07FC8F226}",
+      "areaM2": 385.5661893879657,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "MX-JUA-PREDIO-{0123E618-0066-4893-A883-5912805496BF}",
+      "areaM2": 323.7246653999608,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "MX-JUA-PREDIO-{F84A6B1C-5F11-4734-A918-F982699F9389}",
+      "areaM2": 518.6269138820292,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "MX-JUA-PREDIO-{8948B01F-335E-4719-AF9C-70ABA7E39AA1}",
+      "areaM2": 495.5531895810273,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "MX-JUA-PREDIO-{54C61EB0-FFCA-4710-8283-100BAA7BC603}",
+      "areaM2": 2909.0722185073687,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "MX-JUA-PREDIO-{BFE1FE4C-8EFE-49D6-B061-0645918D858A}",
+      "areaM2": 813.2926574997124,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "MX-JUA-PREDIO-{4FCF6D84-1333-4B16-91A5-D6B5C7391EF6}",
+      "areaM2": 220.82106364195621,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "MX-JUA-PREDIO-{165C8476-D130-46EB-AA82-8981DAB21A13}",
+      "areaM2": 205.15119429797343,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "MX-JUA-PREDIO-{8A5F1357-60C9-4C3D-95A9-0487A62D804E}",
+      "areaM2": 262.32355099996494,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "MX-JUA-PREDIO-{D8E8A60B-D54F-4F8A-9A37-5FAD6FB9DFA8}",
+      "areaM2": 400.9440822153505,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "MX-JUA-PREDIO-{8856015F-214D-4C64-925C-C6F70D9151E5}",
+      "areaM2": 390.8034286599475,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "MX-JUA-PREDIO-{6F9BDD96-B37A-4F78-A838-EB598D35137E}",
+      "areaM2": 405.6416460424224,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "MX-JUA-PREDIO-{6A090FF7-54A7-4C09-83AE-C0D582A761BC}",
+      "areaM2": 375.2206051127838,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "MX-JUA-PREDIO-{C83B7C6F-9BA9-40D8-98F8-59762190B2F0}",
+      "areaM2": 1003.8564528382304,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "MX-JUA-PREDIO-{D2004C48-741B-4EA2-B1CB-C487035F64CF}",
+      "areaM2": 788.5368463580518,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "MX-JUA-PREDIO-{96BA974C-79E1-4749-AB1D-2C8E3D94A467}",
+      "areaM2": 393.5641739570335,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "MX-JUA-PREDIO-{1E4504E1-0ECF-4C84-833B-3152449C4658}",
+      "areaM2": 197.63487612017673,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "MX-JUA-PREDIO-{69FFFCAE-C0DE-4D4D-932D-6C9966EF65B6}",
+      "areaM2": 199.37800420112757,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "MX-JUA-PREDIO-{82281BEC-007E-42F1-A147-FBDA1DA06F3C}",
+      "areaM2": 492.623297486201,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "MX-JUA-PREDIO-{A5C091FB-9845-42FA-A290-04C4D16819F6}",
+      "areaM2": 460.5063414253984,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "MX-JUA-PREDIO-{33C212DF-7955-4325-818B-2C3F7BDF1AD5}",
+      "areaM2": 594.0069077253609,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "MX-JUA-PREDIO-{9BD09EB0-2106-4180-B2B8-6091096B3389}",
+      "areaM2": 550.2464609925821,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "MX-JUA-PREDIO-{6299AB3A-9479-4DB7-9A01-27AD12844BB6}",
+      "areaM2": 7084.372600073902,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "MX-JUA-PREDIO-{FBEF08E7-03E0-4411-A1AD-6F01C6ADA905}",
+      "areaM2": 348.17425298851373,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "MX-JUA-PREDIO-{96B9670F-7AC9-44C0-8143-057202BB4541}",
+      "areaM2": 303.04517293152014,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "MX-JUA-PREDIO-{DED8450F-DB42-49FD-A4A9-4227F12810B6}",
+      "areaM2": 276.82219496237826,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "MX-JUA-PREDIO-{04A31B4F-6B03-4BDB-AE91-090D3BE15319}",
+      "areaM2": 541.7168836977261,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "MX-JUA-PREDIO-{9437FEA7-7ADF-4D22-8C1A-CE6BA9EE874F}",
+      "areaM2": 359.1709734000128,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "MX-JUA-PREDIO-{406C5902-F232-497E-9974-D7451D6B4062}",
+      "areaM2": 383.9569255495656,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "MX-JUA-PREDIO-{BA311616-7FAE-4F18-B80B-A86CFEE0B85A}",
+      "areaM2": 407.40759698836735,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "MX-JUA-PREDIO-{E5CB9A2F-E1F9-4FAD-9259-78FED7AA0E25}",
+      "areaM2": 1366.7460285968593,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "MX-JUA-PREDIO-{DF515366-AFCE-4D0F-BE16-2ABA496004E5}",
+      "areaM2": 228.81451441903027,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "MX-JUA-PREDIO-{3A27BBD2-9437-468E-B1E6-B5575953CB15}",
+      "areaM2": 244.08525063918637,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "MX-JUA-PREDIO-{B72C2C4A-F99A-4BAB-AD01-F5757191EBC7}",
+      "areaM2": 7483.448700047844,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "MX-JUA-PREDIO-{DEA83596-EB68-4C0B-9A2D-1DAA27DE3B1C}",
+      "areaM2": 175.35830425408273,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "MX-JUA-PREDIO-{0749EE25-FF49-4BE3-B42D-7F0C9BF9E14C}",
+      "areaM2": 393.6417405522091,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "MX-JUA-PREDIO-{E644CE30-AC04-4032-B7D5-47C4C63EB713}",
+      "areaM2": 228.31406330418451,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "MX-JUA-PREDIO-{072DCD6D-07AF-4CAA-9CBA-E577AE566298}",
+      "areaM2": 640.4323582255744,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "MX-JUA-PREDIO-{8C5CE721-EF03-42EE-A7FE-E6AED15D20C2}",
+      "areaM2": 331.7384779364397,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "MX-JUA-PREDIO-{0ADF7123-D7F0-4254-B40D-7C003D87B0CC}",
+      "areaM2": 488.61154149127896,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "MX-JUA-PREDIO-{69BFCA9B-98FB-43CF-8304-2F6CCB9A76C4}",
+      "areaM2": 345.14495942799033,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "MX-JUA-PREDIO-{795A6FDA-5A42-4492-80F5-487F20FC1588}",
+      "areaM2": 348.3648460054103,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "MX-JUA-PREDIO-{9BC3B9FF-2BE6-4C5F-A699-A56DB2EC5B03}",
+      "areaM2": 377.8092510560935,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "MX-JUA-PREDIO-{2406413B-55B6-4002-8732-20425ECD3A0E}",
+      "areaM2": 312.2152225451626,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "MX-JUA-PREDIO-{55F0A51C-3E7D-452E-873D-1744E00C7764}",
+      "areaM2": 991.497089297068,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "MX-JUA-PREDIO-{93BD72AA-D6F2-4911-A69C-852C858F5D12}",
+      "areaM2": 226.49088002318882,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "MX-JUA-PREDIO-{1CEF74D7-8EB6-48F7-84A8-F9F01F73BCB6}",
+      "areaM2": 254.08461253786322,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "MX-JUA-PREDIO-{BBB81F90-95A5-44A5-B849-937631EA1017}",
+      "areaM2": 405.61482085721724,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "MX-JUA-PREDIO-{1C820ACC-5C80-4118-9127-A5DA828972B5}",
+      "areaM2": 387.37603609349395,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "MX-JUA-PREDIO-{296B22A2-84ED-4065-AFC2-0C4EBEC1A78B}",
+      "areaM2": 402.78758768184514,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "MX-JUA-PREDIO-{3DB9F1F0-19D1-4AF6-BFCA-8561DA1E2C86}",
+      "areaM2": 379.8127838843013,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "MX-JUA-PREDIO-{70C99F78-4216-4A9A-B181-46B4E56F492D}",
+      "areaM2": 492.823558662952,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "MX-JUA-PREDIO-{69D5742E-E857-447A-AADE-35D371EF5BA6}",
+      "areaM2": 1001.0213333058898,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "MX-JUA-PREDIO-{4F3D5B33-FD07-4E37-BFB4-34F5E56C65EF}",
+      "areaM2": 406.3413662437025,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "MX-JUA-PREDIO-{2F1C1ECF-4AA7-4B20-B4A0-58840D8D7A24}",
+      "areaM2": 372.34216039586767,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "MX-JUA-PREDIO-{227A11AF-DCEE-45D3-8D5C-FA697F6258AB}",
+      "areaM2": 194.05958368095528,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "MX-JUA-PREDIO-{5F83A198-5116-4E51-B49F-346B6063CE62}",
+      "areaM2": 217.73220015535443,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "MX-JUA-PREDIO-{0E194603-13C2-4B09-ADA4-CC1E087A01CB}",
+      "areaM2": 193.72518389731016,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "MX-JUA-PREDIO-{D36D1D82-7C44-493F-8BAE-7CEBFF552571}",
+      "areaM2": 381.45233837836736,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "MX-JUA-PREDIO-{08B26A20-53D1-4071-88E5-C0F64D17864E}",
+      "areaM2": 397.61322193724254,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "MX-JUA-PREDIO-{8ABA5907-AC49-4A66-BD28-2FC1C40FF594}",
+      "areaM2": 413.22016959842455,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "MX-JUA-PREDIO-{9CE43E67-B941-4798-8024-0D815D2E2506}",
+      "areaM2": 383.9577898140302,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "MX-JUA-PREDIO-{331310E1-212C-45D0-94E0-5027771C78E1}",
+      "areaM2": 407.6316389651721,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "MX-JUA-PREDIO-{25C59411-777B-401A-8DA7-35811220C22E}",
+      "areaM2": 500.1110229492613,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "MX-JUA-PREDIO-{1278A10A-F61F-495B-B302-4A5EFE77ED28}",
+      "areaM2": 499.41948910790484,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "MX-JUA-PREDIO-{31445EB1-1F48-4BB3-8566-DC8FE00582A4}",
+      "areaM2": 499.11022560678373,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "MX-JUA-PREDIO-{420A3E7F-ACDF-4EA8-AA8C-5F09BD83BE2E}",
+      "areaM2": 193.42251447020945,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "MX-JUA-PREDIO-{9C75EB6F-6504-4D99-8B40-F235BA61042A}",
+      "areaM2": 187.34492762242533,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "MX-JUA-PREDIO-{65749747-FEDF-46AB-AC79-F92FF67F18E2}",
+      "areaM2": 401.796254729091,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "MX-JUA-PREDIO-{0E67F444-6169-4523-A37E-20BF72958188}",
+      "areaM2": 185.51297605518764,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "MX-JUA-PREDIO-{B089C19A-52EF-4A15-AB1B-ADE3B7077C6C}",
+      "areaM2": 395.9216616645731,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "MX-JUA-PREDIO-{1266C462-0D25-485C-851F-419CE70F1B0F}",
+      "areaM2": 800.8649193358973,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "MX-JUA-PREDIO-{13C3EFFA-AF09-46B2-BB10-AC2ED9183E11}",
+      "areaM2": 407.18248147484724,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "MX-JUA-PREDIO-{58029062-2FA7-4A78-85FD-0CEE8B88735C}",
+      "areaM2": 439.1424460721328,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "MX-JUA-PREDIO-{21B4581C-D4DB-4C65-BC72-E7F3CC137E0E}",
+      "areaM2": 777.6382579084327,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "MX-JUA-PREDIO-{1C489CE6-B864-49AE-9256-C0AC3E17E3AD}",
+      "areaM2": 470.4984839433865,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "MX-JUA-PREDIO-{F9FA573B-26EC-4346-B4DB-D5A5A7F72BFA}",
+      "areaM2": 332.88621997161897,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "MX-JUA-PREDIO-{24766EAA-0055-4527-A6E6-B186E3E7B54F}",
+      "areaM2": 421.6423000488412,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "MX-JUA-PREDIO-{D91EF970-3008-4969-9824-1071F6E11D71}",
+      "areaM2": 386.18082925004586,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "MX-JUA-PREDIO-{B9DBCD88-0520-4738-8961-43F8EB40D2B5}",
+      "areaM2": 377.93581544120036,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "MX-JUA-PREDIO-{4A49D1C1-6C4C-4084-AED6-5CCC9DEF1591}",
+      "areaM2": 480.4563309927941,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "MX-JUA-PREDIO-{BDDF3382-F1AB-48B8-8950-0081DDA94DB2}",
+      "areaM2": 525.4759985953626,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "MX-JUA-PREDIO-{19B69F6C-7ACC-4337-8D2B-E8BE9E13994B}",
+      "areaM2": 442.24299115153667,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "MX-JUA-PREDIO-{E6A2162C-8B03-4190-BD4D-99640F2112D9}",
+      "areaM2": 399.208132030298,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "MX-JUA-PREDIO-{D41FF97F-5B4A-4FB1-9A9E-2EA6DF6D98A0}",
+      "areaM2": 2011.8961340864657,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "MX-JUA-PREDIO-{64E79954-1FA5-4AA8-9E58-157110067DAF}",
+      "areaM2": 232.7693715387589,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "MX-JUA-PREDIO-{7F03E566-1DDA-4C70-8AF0-712B7A7DD8A3}",
+      "areaM2": 382.8956274292192,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "MX-JUA-PREDIO-{5CFAD13B-D114-4478-9C17-D72DEDC6BA6A}",
+      "areaM2": 789.2774492958908,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "MX-JUA-PREDIO-{6DCCD6EC-C497-4EC3-A9B6-50D31596FB8C}",
+      "areaM2": 243.23271513608697,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "MX-JUA-PREDIO-{9339E1E4-1EA8-421D-B9A4-4A0C82106B5F}",
+      "areaM2": 203.18249420507107,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "MX-JUA-PREDIO-{B1502FD1-8A05-423F-9821-41495A174998}",
+      "areaM2": 794.1855752102185,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "MX-JUA-PREDIO-{8AABEB3A-7977-42C1-AAD9-3D4E09DE7332}",
+      "areaM2": 272.2734096708206,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "MX-JUA-PREDIO-{2768C7D4-24B1-4436-B31E-DE2A7DD4BF27}",
+      "areaM2": 182.3155444977073,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "MX-JUA-PREDIO-{B56A9CF8-36A4-4DA6-8C16-21C117043583}",
+      "areaM2": 185.53200536461554,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "MX-JUA-PREDIO-{5E9335AE-6828-42D3-BBE2-89DA1EA32AD4}",
+      "areaM2": 411.5913790302272,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "MX-JUA-PREDIO-{E97FBE6A-5F0D-4998-A71D-36A51338386D}",
+      "areaM2": 397.61718507592786,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "MX-JUA-PREDIO-{698FE660-B78C-44FD-BEDC-64A06AA36663}",
+      "areaM2": 504.564163001384,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "MX-JUA-PREDIO-{50E2B2C6-2AB6-46A7-9790-A475FB2EF989}",
+      "areaM2": 980.3343229106586,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "MX-JUA-PREDIO-{B07289C4-90E3-448A-985D-675D0168518C}",
+      "areaM2": 397.9408541118258,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "MX-JUA-PREDIO-{0B4A1CA7-B1E9-49C2-98AD-5A64476607BF}",
+      "areaM2": 402.6290835311322,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "MX-JUA-PREDIO-{FB32A764-24B4-4A87-B6CB-2E1E9D06A7C4}",
+      "areaM2": 411.12774404167493,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "MX-JUA-PREDIO-{B89EDF08-F314-4404-AE6C-BCB02CED5387}",
+      "areaM2": 402.41426899823193,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "MX-JUA-PREDIO-{D5620DD7-B41A-4A36-9466-03CCE721BA85}",
+      "areaM2": 91.93160798955023,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "MX-JUA-PREDIO-{86A44E5D-5A7A-4465-8D11-33442013A851}",
+      "areaM2": 113.36106184161736,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "MX-JUA-PREDIO-{83028892-68D1-484A-8DE7-D4DA8377E11C}",
+      "areaM2": 194.01434925540354,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "MX-JUA-PREDIO-{8DFFD899-9E67-4624-9886-28DF0110327B}",
+      "areaM2": 15612.846198436853,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "MX-JUA-PREDIO-{61D8500D-1D2E-45FF-9202-4FCE1A52DCAF}",
+      "areaM2": 284.70290159841034,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "MX-JUA-PREDIO-{7A613063-696C-4F36-8EFE-19BD969E4421}",
+      "areaM2": 189.7211332594957,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "MX-JUA-PREDIO-{26EC655F-6CA7-44C7-879F-0C590B66E95A}",
+      "areaM2": 179.66865523222245,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "MX-JUA-PREDIO-{57EF8F39-186C-489B-BEB6-20964383ADA4}",
+      "areaM2": 529.8244313051815,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "MX-JUA-PREDIO-{3E7ED41A-D6C2-4711-A58D-EE82A6E830AE}",
+      "areaM2": 463.7987101024106,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "MX-JUA-PREDIO-{31236D21-89D6-4F06-A5C5-F010C50DEF26}",
+      "areaM2": 334.7530409026473,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "MX-JUA-PREDIO-{26F1D4D4-D0AF-4F61-935A-5259FD5D05E2}",
+      "areaM2": 380.9391194787942,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "MX-JUA-PREDIO-{09194ADE-D94C-4277-9B76-7B6D669B3219}",
+      "areaM2": 420.41636521935544,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "MX-JUA-PREDIO-{DA862FA7-000A-43FB-9CF4-AF08D316B9C0}",
+      "areaM2": 389.9698042987664,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "MX-JUA-PREDIO-{953830CB-1AD5-4B31-8A0E-F98A5BCEBD02}",
+      "areaM2": 392.3341383784148,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "MX-JUA-PREDIO-{E558E5A5-DACF-4F54-A223-1AC5AA9E3178}",
+      "areaM2": 392.34566838849327,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "MX-JUA-PREDIO-{AF86A528-3424-4925-865D-F719D4C2DBE0}",
+      "areaM2": 367.56558648706005,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "MX-JUA-PREDIO-{01DB974A-E9D0-48C3-841A-E3392907F4B4}",
+      "areaM2": 434.2132359712672,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "MX-JUA-PREDIO-{0B5A6FB0-FF16-4881-AF6B-DE5B4C61E7F0}",
+      "areaM2": 531.447912087894,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "MX-JUA-PREDIO-{170A4A7C-1526-4D86-B712-6E57EE0205E3}",
+      "areaM2": 473.84180551434963,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "MX-JUA-PREDIO-{11CCBCA8-50FA-4245-BCD2-E52352098DD2}",
+      "areaM2": 310.0864931074377,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "MX-JUA-PREDIO-{338606FE-000E-4557-B549-EDCAF31C2F37}",
+      "areaM2": 338.1338088792849,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "MX-JUA-PREDIO-{C84441D7-C256-4BDF-80EE-FE422AA4B24B}",
+      "areaM2": 337.1225212354486,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "MX-JUA-PREDIO-{2FAB6636-86FE-4270-9941-2C05C1C0CE17}",
+      "areaM2": 338.816034953811,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "MX-JUA-PREDIO-{637B0D7B-5A27-40C1-889D-13B4B6234266}",
+      "areaM2": 340.33256286237446,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "MX-JUA-PREDIO-{5C28A446-A42F-40CC-A6D5-D4E0FF09B4E7}",
+      "areaM2": 346.106452591682,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "MX-JUA-PREDIO-{547F2528-E0F2-4078-836C-9914FB578992}",
+      "areaM2": 446.3356869797134,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "MX-JUA-PREDIO-{BDF7E9BF-CF42-44A2-BC55-622848F90BC8}",
+      "areaM2": 912.260568771136,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "MX-JUA-PREDIO-{8346397E-732E-4902-BF18-2B8E604D917F}",
+      "areaM2": 1062.7653318094224,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "MX-JUA-PREDIO-{CB728910-E1E8-4EDE-86A7-35DE27C2D899}",
+      "areaM2": 294.53548778245255,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "MX-JUA-PREDIO-{5A5F3B34-6FF6-467B-AE43-49109C095D42}",
+      "areaM2": 433.44446373127084,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "MX-JUA-PREDIO-{3DEBC384-DCB1-428F-9EDE-21C3819C6449}",
+      "areaM2": 262.0035254575812,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "MX-JUA-PREDIO-{71B34608-8E06-4DFE-A8F8-09788EEA0E75}",
+      "areaM2": 183.2138642247156,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "MX-JUA-PREDIO-{CAF4A874-2EF2-4C3E-9C05-3991DEB7DE56}",
+      "areaM2": 351.10748358413264,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "MX-JUA-PREDIO-{7B036556-AFA9-4CE7-A6E5-FE92B1C25EF1}",
+      "areaM2": 353.4638620045957,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "MX-JUA-PREDIO-{3A66019A-D956-4014-9833-18D6AA8B1552}",
+      "areaM2": 266.02100241166715,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "MX-JUA-PREDIO-{EEC947D8-08DE-4CFC-AF13-3CE53E3EF17A}",
+      "areaM2": 2928.9051803479697,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "MX-JUA-PREDIO-{CE2CDD07-D483-4F10-BD9B-EA9973953249}",
+      "areaM2": 1184.7243330797828,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "MX-JUA-PREDIO-{D8DC3D33-3843-493E-A946-68FFB76E76DB}",
+      "areaM2": 500.41621820123305,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "MX-JUA-PREDIO-{2DE3EBED-2F38-45DA-9AF1-442936FC518D}",
+      "areaM2": 1028.1807621868938,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "MX-JUA-PREDIO-{980FC732-19B6-4C73-9758-14C34E4C6E69}",
+      "areaM2": 507.71204369831503,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "MX-JUA-PREDIO-{8DD00D0E-9DF2-49A9-AD65-0A8EB0E0E44E}",
+      "areaM2": 316.7083263104703,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "MX-JUA-PREDIO-{585E73C6-BE0E-44D7-B1EC-9FE9BF94B105}",
+      "areaM2": 498.72482191558635,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "MX-JUA-PREDIO-{F2B4F562-5185-43A4-AE20-CD966B20802E}",
+      "areaM2": 786.302209668003,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "MX-JUA-PREDIO-{51775A94-EC59-4EE9-B79A-48606405CDB0}",
+      "areaM2": 15295.614063311985,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "MX-JUA-PREDIO-{E13A8F76-5D66-4B93-9E43-C7BDE99A2F5B}",
+      "areaM2": 383.00963121970256,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "MX-JUA-PREDIO-{EB9F07BA-C3F5-4317-9AEF-3A9C7AC71828}",
+      "areaM2": 986.9799125006426,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "MX-JUA-PREDIO-{8543FC5A-83A2-4F06-9BEB-8B1F4D9C18F1}",
+      "areaM2": 431.5070058326562,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "MX-JUA-PREDIO-{72C7D118-A146-4218-A9E0-51AF76550D1D}",
+      "areaM2": 416.5458569791674,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "MX-JUA-PREDIO-{AC94DAED-6F25-4D9E-A6F0-07E6F2AD1C58}",
+      "areaM2": 388.21673796053005,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "MX-JUA-PREDIO-{1FEC4DC7-839B-4EAA-A528-17FF749B5D31}",
+      "areaM2": 389.31752507299876,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "MX-JUA-PREDIO-{78D09F66-0845-415A-B19D-FEA228678537}",
+      "areaM2": 401.51965872799326,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "MX-JUA-PREDIO-{71478BBC-52DC-4D97-A80A-F15544A13521}",
+      "areaM2": 380.9930426652093,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "MX-JUA-PREDIO-{4EA06234-A19D-4CC3-8872-3B27B5FDE686}",
+      "areaM2": 2190.177839428777,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "MX-JUA-PREDIO-{7B16583D-B4C5-414A-B8D0-AEA0FB349648}",
+      "areaM2": 789.3134240187505,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "MX-JUA-PREDIO-{41F985F3-AD7C-4132-919D-5C6C0BD7FA20}",
+      "areaM2": 387.3363156914819,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "MX-JUA-PREDIO-{DAE5A285-08AA-47B8-91EC-FF60F99996EB}",
+      "areaM2": 387.041398557171,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "MX-JUA-PREDIO-{7ABDC5EE-34F2-426B-B8A1-A19B394FB1BE}",
+      "areaM2": 387.1341091867333,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "MX-JUA-PREDIO-{B2210BF3-9CE2-47DE-8966-A1AF000506DC}",
+      "areaM2": 387.67849766141717,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "MX-JUA-PREDIO-{55744C62-68EA-4BE5-962E-1CF0962F9CDA}",
+      "areaM2": 516.9010231710513,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "MX-JUA-PREDIO-{DA559887-55ED-478D-BFBE-B6327A875084}",
+      "areaM2": 670.5711632577328,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "MX-JUA-PREDIO-{D7C6A918-245C-4489-BF06-AB410BDE57F7}",
+      "areaM2": 793.6543842558823,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "MX-JUA-PREDIO-{B11C762A-BC4B-4568-9DF2-CF3D699D3B65}",
+      "areaM2": 391.11849285644286,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "MX-JUA-PREDIO-{0F83E978-7087-4A43-BA06-1D3655FCAA98}",
+      "areaM2": 395.258519552627,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "MX-JUA-PREDIO-{BE608EF3-9728-4BEA-8314-F1767917626C}",
+      "areaM2": 392.988695442073,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "MX-JUA-PREDIO-{3D90B9AD-BC5D-4848-AA67-B2AF8BDBF856}",
+      "areaM2": 409.7218262302805,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "MX-JUA-PREDIO-{0405825E-698C-47D8-9FDE-C79C50CA4A73}",
+      "areaM2": 136.37193409641398,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "MX-JUA-PREDIO-{1848D702-A465-48C8-921A-B75E4CE0ECEC}",
+      "areaM2": 514.390891062331,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "MX-JUA-PREDIO-{291C5520-CED8-44A3-8405-178D50050209}",
+      "areaM2": 314.2135662860263,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "MX-JUA-PREDIO-{3FB88472-B675-4538-9158-57D6DB274F4C}",
+      "areaM2": 794.0108929627852,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "MX-JUA-PREDIO-{1114B79C-3746-4BF2-957E-75FA4004EAD5}",
+      "areaM2": 404.5924969143334,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "MX-JUA-PREDIO-{C377A3BE-F8A6-43D0-935C-965178F1CFFF}",
+      "areaM2": 405.1930449628762,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "MX-JUA-PREDIO-{0BC9C92C-DCE1-4C9F-8781-EB72920A88CA}",
+      "areaM2": 399.93729303949533,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "MX-JUA-PREDIO-{627C0480-75CC-4A32-AEAD-C944E82C1713}",
+      "areaM2": 400.5513662482108,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "MX-JUA-PREDIO-{C46E85AD-C162-4E6F-899B-C5DC867C3567}",
+      "areaM2": 391.72654904480277,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "MX-JUA-PREDIO-{2691E2DC-1AF5-4E92-BA5E-0C6A80AB624F}",
+      "areaM2": 397.5641001983476,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "MX-JUA-PREDIO-{0DFFF31A-BF3D-417B-8CEF-C3779238B0D3}",
+      "areaM2": 385.6706808763705,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "MX-JUA-PREDIO-{5F1D482F-2BA6-4B90-A97D-C59290C6F273}",
+      "areaM2": 421.09092124093775,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "MX-JUA-PREDIO-{85CA924B-D977-444D-A410-86ECFBCBEE91}",
+      "areaM2": 374.48380424004927,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "MX-JUA-PREDIO-{175160E7-81F8-4A5B-AA3A-71C6CE119BD5}",
+      "areaM2": 400.48096351009775,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "MX-JUA-PREDIO-{A9A4C09F-E622-4586-992B-55E787AA3B5F}",
+      "areaM2": 499.6279975575838,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "MX-JUA-PREDIO-{F89F12AF-FB69-4B2B-AF25-F3B16A3C190F}",
+      "areaM2": 137.56447172411478,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "MX-JUA-PREDIO-{E9ED97AB-9746-4C35-B926-D26598B4ABC4}",
+      "areaM2": 134.72350458850354,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "MX-JUA-PREDIO-{AC799FDD-B4BB-4301-84D0-1510853511E2}",
+      "areaM2": 400.0869531270724,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "MX-JUA-PREDIO-{E306D718-9643-4864-852B-C584BAE648F0}",
+      "areaM2": 397.25797942396275,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "MX-JUA-PREDIO-{A7EF3480-6855-4171-BD53-0256C1C76166}",
+      "areaM2": 397.2411017843099,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "MX-JUA-PREDIO-{7E37B253-0326-4CDA-BE75-7646081A5EE6}",
+      "areaM2": 258.8068605103836,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "MX-JUA-PREDIO-{43C80D7D-37E8-4F48-8E4E-4A0777C4F5DC}",
+      "areaM2": 265.33662377966385,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    }
+  ]
+}

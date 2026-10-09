@@ -1,0 +1,150 @@
+{
+  "name": "Gwalior",
+  "country": "India",
+  "countryCode": "IN",
+  "rank": 321,
+  "point": [
+    26.217568901603,
+    78.1767770347132
+  ],
+  "freshResearch": {
+    "queries": [
+      {
+        "language": "Hindi",
+        "query": "ग्वालियर शहरी भू नक्शा भू अभिलेख नजूल भूमि मानचित्र आधिकारिक",
+        "scope": "Find Gwalior-specific first-party urban land-record/map services and parcel geometry.",
+        "result": "The official Gwalior district site publishes Nazul Land Information PDFs for named urban areas including Goshpura, Kotalashkar, Morar and Purani Chawni, and lists Gwalior GIS. The state/district land-records directory identifies the Land Records & Settlements Commissioner in Gwalior. These establish local land-record functions and static information, not an anonymous parcel-vector endpoint.",
+        "actualResultUrls": [
+          "https://gwalior.nic.in/en/nazul-2/",
+          "https://gwalior.nic.in/directory/भू-अभिलेख-एवं-बन्दोबस्त/",
+          "https://gwalior.nic.in/ग्वालियर-जीआईएस/",
+          "https://gwaliorgis.mp.gov.in/"
+        ],
+        "executionMethod": "Separate Hindi-language search and review of district-owned pages; bounded GET to official GIS target timed out locally and is left inconclusive."
+      },
+      {
+        "language": "English",
+        "query": "Gwalior official city cadastral parcel map land records Nazul GIS Madhya Pradesh",
+        "scope": "Cross-check local urban records and public map access.",
+        "result": "First-party Gwalior district and Government of India DILRMP pages confirm district cadastral-map digitization and Gwalior GIS. The public GIS is described as infrastructure/land-use data, and the official Nazul page offers static PDFs by locality. The linked GIS host timed out from this environment; no public parcel geometry or exact WUP-village selection was verified.",
+        "actualResultUrls": [
+          "https://gwalior.nic.in/en/gwalior-gis/",
+          "https://gwalior.nic.in/en/nazul-2/",
+          "https://dilrmp.gov.in/dilrmpold/MapULPIN/tehsil-level/421",
+          "https://gwaliorgis.mp.gov.in/"
+        ],
+        "executionMethod": "Separate English-language search and official district/state page review; one bounded anonymous viewer GET."
+      }
+    ],
+    "portals": [
+      {
+        "name": "Gwalior GIS",
+        "operator": "District Administration, Government of Madhya Pradesh",
+        "homeUrl": "https://gwalior.nic.in/en/gwalior-gis/",
+        "observation": "District page links the Gwalior GIS portal and describes district-level roads, water, sewer, land-use, public assets, schools, hospitals and other infrastructure layers; no cadastral parcel layer is named."
+      },
+      {
+        "name": "NAZUL Land Information",
+        "operator": "District Administration, Government of Madhya Pradesh",
+        "homeUrl": "https://gwalior.nic.in/en/nazul-2/",
+        "observation": "Official district page publishes downloadable locality-specific PDFs for 14 named areas. The files are static records, not a public vector query service. The district page indicates its last update was July 22, 2019."
+      },
+      {
+        "name": "Land Records & Settlements directory",
+        "operator": "District Administration, Government of Madhya Pradesh / Commissioner Land Records",
+        "homeUrl": "https://gwalior.nic.in/directory/भू-अभिलेख-एवं-बन्दोबस्त/",
+        "observation": "District directory identifies the Land Records & Settlements Commissioner office in Gwalior."
+      },
+      {
+        "name": "DILRMP Gwalior district map-status page",
+        "operator": "Department of Land Resources, Government of India",
+        "homeUrl": "https://dilrmp.gov.in/dilrmpold/MapULPIN/tehsil-level/421",
+        "observation": "District-specific MIS reports cadastral-map digitization and georeferencing by Gwalior tehsil, including Gird; this is coverage status, not a public geometry API."
+      }
+    ],
+    "requests": [
+      {
+        "url": "https://gwalior.nic.in/en/gwalior-gis/",
+        "method": "GET web inspection",
+        "httpStatus": 200,
+        "contentType": "text/html",
+        "observation": "Official district GIS description and target link reviewed."
+      },
+      {
+        "url": "https://gwaliorgis.mp.gov.in/",
+        "method": "GET",
+        "httpStatus": null,
+        "contentType": null,
+        "observation": "Officially linked viewer request timed out locally; no claim is made about origin availability."
+      },
+      {
+        "url": "https://gwalior.nic.in/en/nazul-2/",
+        "method": "GET web inspection",
+        "httpStatus": 200,
+        "contentType": "text/html",
+        "observation": "Official district page lists static locality-specific Nazul PDFs."
+      },
+      {
+        "url": "https://dilrmp.gov.in/dilrmpold/MapULPIN/tehsil-level/421",
+        "method": "GET web inspection",
+        "httpStatus": 200,
+        "contentType": "text/html",
+        "observation": "District-specific cadastral map digitization status page lists the Gwalior tehsils and parcel counts."
+      }
+    ],
+    "executionMethod": "Official Hindi and English searches, district/state sources and bounded anonymous viewer request; no credentials or property lookups."
+  },
+  "status": "complete",
+  "verifiedParcelResponse": {
+    "httpStatus": null,
+    "featureType": null,
+    "responseType": null,
+    "responseCrs": null,
+    "returnedFullPolygonCount": 0,
+    "uniqueFullPolygonCount": 0,
+    "wupPointContained": null,
+    "limitations": "No public exact-point parcel query or full polygon was retrieved. Official district/state records establish cadastral activity and downloadable locality PDFs only."
+  },
+  "source": {
+    "sourceId": "IN-GWALIOR-LOCAL-LAND-RECORDS",
+    "name": "Gwalior District Land Records & Settlements / Gwalior GIS",
+    "operator": "District Administration and Commissioner Land Records, Government of Madhya Pradesh",
+    "url": "https://gwalior.nic.in/en/gwalior-gis/",
+    "serviceType": "District GIS and local Nazul PDF records; no public parcel-vector format verified.",
+    "geometryType": null,
+    "outputCrs": null,
+    "nativeIdField": "No public query schema was verified."
+  },
+  "coverageAssessment": {
+    "claimedScope": "Official district sources identify Gwalior land records, local Nazul locality PDFs and a linked district GIS. DILRMP reports district cadastral map status by tehsil.",
+    "verifiedOpenScope": "The linked public GIS shell timed out locally; its district page describes infrastructure/land-use themes. No exact WUP point village or parcel geometry was confirmed.",
+    "countrywideVerified": false,
+    "citywideVerified": false
+  },
+  "registryFound": true,
+  "registryBasis": "First-party Gwalior district pages identify a local Land Records & Settlements office and locality-level Nazul information; the official district GIS and district-specific cadastral status support local land-record coverage.",
+  "verifiedSample": false,
+  "publicParcelGeometryFound": false,
+  "resultCategory": "local_land_records_and_gis_confirmed_no_public_parcel_geometry",
+  "technicalBlocker": "The only public local cadastral information verified is static locality PDF material and district status reporting; the official GIS page does not advertise parcel layers, and its linked viewer timed out locally.",
+  "remainingUncertainty": "Whether the Gwalior urban tehsil/village maps are exposed through a separate working vector viewer and whether the WUP point resolves to a specific urban parcel. The locality PDF index page is marked last updated July 2019.",
+  "nextStep": "If continued, identify the official city-scale cadastral route and exact tehsil/village for the WUP point; test anonymous full-feature geometry before any adapter integration.",
+  "schemaVersion": 1,
+  "checkedAt": "2026-10-09",
+  "wupCityCode": 9121,
+  "cityId": "wup2025:9121",
+  "queueRank": 321,
+  "population2025k": 1554.246,
+  "population2025": 1554246,
+  "populationPlausibility2025": "High",
+  "populationUnit": "persons",
+  "pointBasis": "UN WUP 2025 population-weighted settlement centroid; this is not a municipal boundary or a parcel-coverage claim.",
+  "centerLatLon": [
+    26.217568901603,
+    78.1767770347132
+  ],
+  "runtimeReadiness": "not_enabled_no_verified_public_geometry",
+  "adapterReady": false,
+  "sourceIds": [],
+  "rootReviewedAt": "2026-10-08T22:32:33.023730+00:00"
+}

@@ -1,0 +1,143 @@
+{
+  "name": "Cartagena",
+  "country": "Colombia",
+  "countryCode": "CO",
+  "rank": 510,
+  "point": [
+    10.39224154935,
+    -75.5009295774275
+  ],
+  "population2025": 1008584,
+  "schemaVersion": 1,
+  "kind": "city_parcel_source_research",
+  "checkedAt": "2026-10-09",
+  "populationUnit": "persons",
+  "status": "complete",
+  "verifiedSample": false,
+  "publicParcelGeometryFound": false,
+  "runtimeReadiness": "not_enabled_no_verified_public_geometry",
+  "priorEvidenceFiles": [],
+  "scopeLimits": "This record covers source discovery only. The WUP point is a settlement centroid, not a parcel identity or municipal boundary. No full parcel geometry, owner data, address data, or credentials were retained.",
+  "pointBasis": "UN WUP 2025 population-weighted settlement centroid; this is not a municipal boundary or a parcel-coverage claim.",
+  "registryFound": true,
+  "registryBasis": "Cartagena’s official catastro portal identifies AMB Catastro as gestor catastral for Cartagena under a 2024 contract and links the public Geoportal. This verifies city-local cadastral management.",
+  "resultCategory": "public_cadastral_vector_candidate_no_safe_field_allowlist",
+  "research": {
+    "executedQueries": [
+      {
+        "language": "English",
+        "query": "Cartagena Colombia official cadastral geoportal parcel map cadastral GIS",
+        "scope": "Find city-specific cadastral/land-record sources and public parcel geometry.",
+        "result": "Official City Catastro pages identify AMB Catastro as gestor catastral and link a public interactive Geoportal. Its frontend exposes a candidate terrenos GeoJSON bbox route, but no safe schema-confirming feature response was verified.",
+        "actualResultUrls": [
+          "https://catastro.cartagena.gov.co/",
+          "http://152.200.137.106:7050/geoportal-cartagena/"
+        ],
+        "executionMethod": "Separate web search in the stated language followed by official-source and public viewer/service inspection."
+      },
+      {
+        "language": "Spanish",
+        "query": "Cartagena catastro geoportal predios terrenos gestor catastral oficial",
+        "scope": "Find city-specific cadastral/land-record sources and public parcel geometry.",
+        "result": "Official city material identifies AMB Catastro as local gestor catastral and presents a public geoportal. Frontend inspection shows terrenos/unidades/buildings layers and a bbox API pattern; schema and a valid bounded feature response were not confirmed.",
+        "actualResultUrls": [
+          "https://catastro.cartagena.gov.co/",
+          "http://152.200.137.106:7050/geoportal-cartagena/"
+        ],
+        "executionMethod": "Separate web search in the stated language followed by official-source and public viewer/service inspection."
+      }
+    ],
+    "officialSources": [
+      {
+        "url": "https://catastro.cartagena.gov.co/",
+        "httpStatus": 200,
+        "observation": "Official City Catastro portal identifies AMB Catastro as Cartagena gestor catastral and links to the public Geoportal."
+      },
+      {
+        "url": "http://152.200.137.106:7050/geoportal-cartagena/",
+        "httpStatus": 200,
+        "observation": "Public Geoportal Cartagena shell; frontend exposes candidate vector layer names and bbox API pattern."
+      },
+      {
+        "url": "http://152.200.137.106:7050/geoportal-cartagena/app.js?v=20260914-46",
+        "httpStatus": 200,
+        "observation": "Frontend JavaScript declares terrenos, unidades, construcciones, barrios and vias layer routes, requests api/capas/{name}?bbox=..., and uses terrain feature id for details; no parcel property schema was established."
+      },
+      {
+        "url": "http://152.200.137.106:7050/geoportal-cartagena/api/salud",
+        "httpStatus": 200,
+        "observation": "Public service health response names katastermap-prod."
+      },
+      {
+        "url": "http://152.200.137.106:7050/geoportal-cartagena/api/capas/terrenos?bbox=invalid",
+        "httpStatus": 400,
+        "observation": "Malformed-bbox validation response was an empty application/json FeatureCollection with no schema; no feature query was made."
+      },
+      {
+        "url": "https://seguimientopot.cartagena.gov.co/geodata-midas",
+        "httpStatus": 403,
+        "observation": "Local fetch access denied; this does not establish origin availability or failure and was not treated as provider downtime."
+      },
+      {
+        "url": "https://catastrocartagena.ambq.gov.co/",
+        "httpStatus": 200,
+        "observation": "Official AMB Catastro Cartagena homepage links to the Geoportal and identifies AMB as the gestor catastral contracted by the district for conservation and diffusion of the cadastral service."
+      },
+      {
+        "url": "https://www.cartagena.gov.co/noticias/amb-catastro-cartagena-habilita-su-pagina-web-facilita-tramites-acceso-informacion",
+        "observation": "Official City notice (2025-07-14) describes the public Geoportal as an interactive map to visualize, consult and analyze cadastral/geospatial information."
+      },
+      {
+        "url": "https://planeacion.cartagena.gov.co/midas",
+        "observation": "Official Planning Department page describes MIDAS as free-access and says updated cadastral information generated by AMB is visualized there, with user-facing data downloads. MIDAS is a separate system; no feature schema or downloadable parcel data was requested during this review."
+      }
+    ],
+    "viewerAndServiceTrace": {
+      "viewerUrl": "http://152.200.137.106:7050/geoportal-cartagena/",
+      "apiBase": null,
+      "observedClientRoutes": [
+        "GET /geoportal-cartagena/api/capas/{layer}?bbox={west,south,east,north}; frontend provides EPSG:4326 extent to six decimals, with no field selection.",
+        "GET /geoportal-cartagena/api/salud (public service health route).",
+        "Frontend selection reads feature property `id`; this is not documented as the native cadastral identifier. Detail/search routes that can return parcel references and addresses were not queried."
+      ],
+      "notes": "Official public Geoportal landing page and app bundle inspected. The frontend builds `GET api/capas/{name}?bbox={bounds}` with extent transformed to EPSG:4326 and six decimal places; it requests no `fields`/`outFields` allowlist. The map reads `feature.properties.id` for selection, but neither native cadastral identity nor a property-minimal response is documented. The client also exposes property lookup/detail routes showing cadastral reference, parcel number and address, which were not queried. No official OpenAPI/schema or safe geometry-only attribute contract was located; no feature request or geometry retained."
+    }
+  },
+  "verifiedParcelResponse": null,
+  "source": {
+    "sourceId": "CITY-CO-3215-CADASTRAL-RESEARCH",
+    "name": "Cartagena city-local cadastral/land-information evidence",
+    "url": "https://catastro.cartagena.gov.co/",
+    "operator": null,
+    "serviceType": "City-local cadastral/land-information evidence; anonymous full parcel geometry not verified.",
+    "layer": null,
+    "geometryType": null,
+    "outputCrs": null,
+    "nativeIdField": null,
+    "nativeIdEvidence": "No parcel feature response was retained; no native parcel identifier was validated."
+  },
+  "wupCityCode": 3215,
+  "cityId": "wup2025:3215",
+  "queueRank": 510,
+  "populationPlausibility2025": "High",
+  "centerLatLon": [
+    10.39224154935,
+    -75.5009295774275
+  ],
+  "sourceIds": [],
+  "adapterReady": false,
+  "technicalBlocker": "The official public Geoportal frontend requests `api/capas/{layer}?bbox={extent}` with a bounded EPSG:4326 bbox at 6 decimal places and parses GeoJSON, but it sends no field-selection parameter. It reads a feature property named `id` for map selection; no published schema or contract establishes that this is a native cadastral ID or limits returned properties to geometry plus safe identifiers. The other visible detail/search routes can return property references and addresses, so they were not queried. No feature query or parcel geometry was retained.",
+  "remainingUncertainty": "The public Geoportal may expose full parcel vectors through its terrenos layer, but no official OpenAPI/property schema or safe geometry-only allowlist was found. The frontend field id is a selection key only; its native cadastral meaning is unverified. A schema-safe feature query cannot proceed until the service contract explicitly limits attributes.",
+  "registryEvidenceUrls": [
+    "https://catastro.cartagena.gov.co/",
+    "http://152.200.137.106:7050/geoportal-cartagena/",
+    "http://152.200.137.106:7050/geoportal-cartagena/app.js?v=20260914-46",
+    "http://152.200.137.106:7050/geoportal-cartagena/api/salud",
+    "http://152.200.137.106:7050/geoportal-cartagena/api/capas/terrenos?bbox=invalid",
+    "https://seguimientopot.cartagena.gov.co/geodata-midas",
+    "https://catastrocartagena.ambq.gov.co/",
+    "https://www.cartagena.gov.co/noticias/amb-catastro-cartagena-habilita-su-pagina-web-facilita-tramites-acceso-informacion",
+    "https://planeacion.cartagena.gov.co/midas"
+  ],
+  "rootReviewedAt": "2026-10-09T01:06:43.045826+00:00"
+}

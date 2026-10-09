@@ -1,0 +1,3833 @@
+{
+  "schemaVersion": 1,
+  "purpose": "Live city parcel qualification with unmodified responses through the repository adapter; IDs and hashes retained, full geometries confined to temporary audit cache except three public samples.",
+  "checkedAt": "2026-10-09T03:18:48.049Z",
+  "city": "fresno-county-root",
+  "descriptor": {
+    "id": "us-ca-fresno-county-parcels",
+    "name": "Fresno County public parcel polygons",
+    "adapter": "arcgis",
+    "endpoint": "https://gisprod10.co.fresno.ca.us/server/rest/services/Hosted/Parcels/FeatureServer/0",
+    "idField": "apn",
+    "idType": "string",
+    "objectIdField": "fid",
+    "idPrefix": "US-CA-FRESNO-APN-",
+    "outFields": [
+      "fid",
+      "apn"
+    ],
+    "pageSize": 1000,
+    "maxFeatures": 3000,
+    "maxBboxKm2": 1,
+    "countryCode": "US",
+    "metricSrid": 32611,
+    "cityIds": [
+      "fresno"
+    ],
+    "maxConcurrentQueries": 2,
+    "operator": "Fresno County Assessor / GIS",
+    "scope": "106 valid distinct county parcel polygons verified in thirteen bounded 0.001-degree cells around the unchanged Fresno WUP settlement locator. Source-native string apn values are preserved unchanged; fid is used only for transport paging. Complete bounded paging, forced three-row pages, all 106 fresh native-ID reads, explicit absence, footprint and source binding passed in 25 requests. Independent metric EPSG:32611 GEOS found all geometries valid and distinct, with no sampled overlaps above 0.01 m² or operation errors. The original exact-point sample matches fresh full geometry unchanged. Native source CRS is EPSG:3857 (ArcGIS WKID102100); requested EPSG:4326 output is retained unchanged. County parcel reference identity is established; citywide completeness, survey accuracy, legal title, currentness and long-term identity continuity remain unverified.",
+    "evidenceFile": "research/overnight-cities-2026-10-08/fresno-county-root-acceptance.json",
+    "attribution": "Fresno County Assessor / GIS · public parcel reference polygons · adapted",
+    "catalogueUrl": "https://www.fresnocountyca.gov/Departments/Assessor/Mapping",
+    "licenceNote": "Anonymous bounded public geometry access and county attribution verified. Publisher reuse/currentness/legal-coordinate conditions are informational; this reference layer does not establish legal title or survey accuracy. Personal fields are excluded."
+  },
+  "grid": [
+    {
+      "name": "viewport-0",
+      "bbox": [
+        -119.773,
+        36.791,
+        -119.772,
+        36.792
+      ],
+      "kind": "aligned-grid"
+    },
+    {
+      "name": "viewport-1",
+      "bbox": [
+        -119.772,
+        36.791,
+        -119.771,
+        36.792
+      ],
+      "kind": "aligned-grid"
+    },
+    {
+      "name": "viewport-2",
+      "bbox": [
+        -119.771,
+        36.791,
+        -119.77,
+        36.792
+      ],
+      "kind": "aligned-grid"
+    },
+    {
+      "name": "viewport-3",
+      "bbox": [
+        -119.773,
+        36.792,
+        -119.772,
+        36.793
+      ],
+      "kind": "aligned-grid"
+    },
+    {
+      "name": "viewport-4",
+      "bbox": [
+        -119.772,
+        36.792,
+        -119.771,
+        36.793
+      ],
+      "kind": "aligned-grid"
+    },
+    {
+      "name": "viewport-5",
+      "bbox": [
+        -119.771,
+        36.792,
+        -119.77,
+        36.793
+      ],
+      "kind": "aligned-grid"
+    },
+    {
+      "name": "viewport-6",
+      "bbox": [
+        -119.773,
+        36.793,
+        -119.772,
+        36.794
+      ],
+      "kind": "aligned-grid"
+    },
+    {
+      "name": "viewport-7",
+      "bbox": [
+        -119.772,
+        36.793,
+        -119.771,
+        36.794
+      ],
+      "kind": "aligned-grid"
+    },
+    {
+      "name": "viewport-8",
+      "bbox": [
+        -119.771,
+        36.793,
+        -119.77,
+        36.794
+      ],
+      "kind": "aligned-grid"
+    },
+    {
+      "name": "viewport-9",
+      "bbox": [
+        -119.772,
+        36.79,
+        -119.771,
+        36.791
+      ],
+      "kind": "adjacent-pan"
+    },
+    {
+      "name": "viewport-10",
+      "bbox": [
+        -119.772,
+        36.794,
+        -119.771,
+        36.795
+      ],
+      "kind": "adjacent-pan"
+    },
+    {
+      "name": "viewport-11",
+      "bbox": [
+        -119.774,
+        36.792,
+        -119.773,
+        36.793
+      ],
+      "kind": "adjacent-pan"
+    },
+    {
+      "name": "viewport-12",
+      "bbox": [
+        -119.77,
+        36.792,
+        -119.769,
+        36.793
+      ],
+      "kind": "adjacent-pan"
+    }
+  ],
+  "tests": [
+    {
+      "name": "viewport-0",
+      "passed": true,
+      "elapsedMs": 953,
+      "requestIndexes": [
+        0,
+        0
+      ],
+      "bbox": [
+        -119.773,
+        36.791,
+        -119.772,
+        36.792
+      ],
+      "complete": true,
+      "count": 7,
+      "ids": [
+        {
+          "id": "US-CA-FRESNO-APN-43613503",
+          "geometrySha256": "8758e8b431ec700435d54818605a2007aa82e27988293dcb9ed4d5da34598dd4"
+        },
+        {
+          "id": "US-CA-FRESNO-APN-43614102",
+          "geometrySha256": "0e5979edd0cd9daca67d516eeb25f1dbb9468b08c8c1226196ed32cbd8c7e8ef"
+        },
+        {
+          "id": "US-CA-FRESNO-APN-43613502",
+          "geometrySha256": "003e080d16ffb0179a6c7cc7af772eabe4d8e4aaa4711ee2f0f3c072d3a42bf8"
+        },
+        {
+          "id": "US-CA-FRESNO-APN-43613402",
+          "geometrySha256": "80fb2dac462783ecb3fa502923cfccf5d72c8f27dfc7ba318b6c1c7441ab28fb"
+        },
+        {
+          "id": "US-CA-FRESNO-APN-43614103",
+          "geometrySha256": "a547c7e4d022ec13f9193a2258a276cb127bf8dc352adfee14780aa831af9699"
+        },
+        {
+          "id": "US-CA-FRESNO-APN-43614303",
+          "geometrySha256": "c647275179edb872223914d5ba6d1c2d1511e8a98a0fe8bd76a0e7b81aa2a6da"
+        },
+        {
+          "id": "US-CA-FRESNO-APN-43614302",
+          "geometrySha256": "553b3678c1d4e4cdb10679176f3fe6c68ec8a427633b0c18a24c06fd9eebd565"
+        }
+      ]
+    },
+    {
+      "name": "viewport-1",
+      "passed": true,
+      "elapsedMs": 672,
+      "requestIndexes": [
+        1,
+        1
+      ],
+      "bbox": [
+        -119.772,
+        36.791,
+        -119.771,
+        36.792
+      ],
+      "complete": true,
+      "count": 13,
+      "ids": [
+        {
+          "id": "US-CA-FRESNO-APN-43614218",
+          "geometrySha256": "bdd146b888dc0ff4d130af2f8caca4891fa17ae5041ca24d3dc7c7adaa71741c"
+        },
+        {
+          "id": "US-CA-FRESNO-APN-43614106",
+          "geometrySha256": "1f3b7c02655d865300ab9e9cadf22cfd7a0ee79aa01d4e4f64da819acca74979"
+        },
+        {
+          "id": "US-CA-FRESNO-APN-43614105",
+          "geometrySha256": "2a22edb8fff36705e20380bf65d8098328424cc3c1d927c721ca8eeb42dc6c1c"
+        },
+        {
+          "id": "US-CA-FRESNO-APN-43614305",
+          "geometrySha256": "8f5e1eb858662578d6bd542c76aef0989e81365fd1a99d5e1bbd5233098223b8"
+        },
+        {
+          "id": "US-CA-FRESNO-APN-43614304",
+          "geometrySha256": "f4cb12615772ab6997eb1da906dd70e084c91d538579829ae7981b20551b110d"
+        },
+        {
+          "id": "US-CA-FRESNO-APN-43614104",
+          "geometrySha256": "058986d0175c6495afd662fb5f2b41ef4b7e241e3b6c4872367ed8d3eb4687f9"
+        },
+        {
+          "id": "US-CA-FRESNO-APN-43614102",
+          "geometrySha256": "0e5979edd0cd9daca67d516eeb25f1dbb9468b08c8c1226196ed32cbd8c7e8ef"
+        },
+        {
+          "id": "US-CA-FRESNO-APN-43614338",
+          "geometrySha256": "87f6b8e14e29c9743f2bc33cad7d8bce9a5cdc7f1ecee6ad4700cce9467db9c9"
+        },
+        {
+          "id": "US-CA-FRESNO-APN-43614108",
+          "geometrySha256": "8c1c8e7546da86b5207f646c66e4c7836f1e8070bdd4de0bb8979d1231b7747f"
+        },
+        {
+          "id": "US-CA-FRESNO-APN-43614103",
+          "geometrySha256": "a547c7e4d022ec13f9193a2258a276cb127bf8dc352adfee14780aa831af9699"
+        },
+        {
+          "id": "US-CA-FRESNO-APN-43614303",
+          "geometrySha256": "c647275179edb872223914d5ba6d1c2d1511e8a98a0fe8bd76a0e7b81aa2a6da"
+        },
+        {
+          "id": "US-CA-FRESNO-APN-43614302",
+          "geometrySha256": "553b3678c1d4e4cdb10679176f3fe6c68ec8a427633b0c18a24c06fd9eebd565"
+        },
+        {
+          "id": "US-CA-FRESNO-APN-43614201",
+          "geometrySha256": "ff93763e876eefc57d8e10ec73911066fb6f731c00427b22d80bfe87430f8644"
+        }
+      ]
+    },
+    {
+      "name": "viewport-2",
+      "passed": true,
+      "elapsedMs": 234,
+      "requestIndexes": [
+        2,
+        2
+      ],
+      "bbox": [
+        -119.771,
+        36.791,
+        -119.77,
+        36.792
+      ],
+      "complete": true,
+      "count": 15,
+      "ids": [
+        {
+          "id": "US-CA-FRESNO-APN-43614109",
+          "geometrySha256": "0aef1cad0528abbf7a959e824e8c6f2ad9029228a896d5067840a031301d9aee"
+        },
+        {
+          "id": "US-CA-FRESNO-APN-43614218",
+          "geometrySha256": "bdd146b888dc0ff4d130af2f8caca4891fa17ae5041ca24d3dc7c7adaa71741c"
+        },
+        {
+          "id": "US-CA-FRESNO-APN-43614215",
+          "geometrySha256": "7bdc71f39c0882ea6d9b3a7528d4debc20d5e41ccf6d2a1691bbd56a3f2d8cf1"
+        },
+        {
+          "id": "US-CA-FRESNO-APN-43614214",
+          "geometrySha256": "030d4aa8130ca2dbdc21eee67eb6823f40d1b42bd26dda1b08ed8f89763ef306"
+        },
+        {
+          "id": "US-CA-FRESNO-APN-43614205",
+          "geometrySha256": "3e6b9ba688a2bcdb609fd22d94f9f20585a8d776b858decb61fe1e20c1abfa04"
+        },
+        {
+          "id": "US-CA-FRESNO-APN-43614217",
+          "geometrySha256": "b55ad51364b5fb593a001343de8259605f86177b66024c835282ba143f382c86"
+        },
+        {
+          "id": "US-CA-FRESNO-APN-43614112",
+          "geometrySha256": "cc4703f50812f05f9fe98e493b1d4e9b50707948d69e5f4c6e8414177d040850"
+        },
+        {
+          "id": "US-CA-FRESNO-APN-43614111",
+          "geometrySha256": "77f922cec8b504d785797cba6c4ab97d20f4c352acfbb8c5fb9991f861120c5e"
+        },
+        {
+          "id": "US-CA-FRESNO-APN-43614108",
+          "geometrySha256": "8c1c8e7546da86b5207f646c66e4c7836f1e8070bdd4de0bb8979d1231b7747f"
+        },
+        {
+          "id": "US-CA-FRESNO-APN-43614203",
+          "geometrySha256": "d9f47cc712eadbb964cbe7d6e2385e0c246e95d5282e3b5e0a580e1fa032bad2"
+        },
+        {
+          "id": "US-CA-FRESNO-APN-43614216",
+          "geometrySha256": "4ff3f432ca22f62e7842403f64283eb59c77f7506fbedaeb00e462726e3f2462"
+        },
+        {
+          "id": "US-CA-FRESNO-APN-43614204",
+          "geometrySha256": "4f93d689ae0a3133f96752b930aa887b4d6c5dace9ec6324d7316b0445c72118"
+        },
+        {
+          "id": "US-CA-FRESNO-APN-43614202",
+          "geometrySha256": "962428206f1ffc047931025d9dfbc056c9ad47c5705e4224fb2c5ca66648a593"
+        },
+        {
+          "id": "US-CA-FRESNO-APN-43614110",
+          "geometrySha256": "1732f518a3649be74e923c57da7f3c757325841efc837fef7aea80d57b5f3123"
+        },
+        {
+          "id": "US-CA-FRESNO-APN-43614201",
+          "geometrySha256": "ff93763e876eefc57d8e10ec73911066fb6f731c00427b22d80bfe87430f8644"
+        }
+      ]
+    },
+    {
+      "name": "viewport-3",
+      "passed": true,
+      "elapsedMs": 238,
+      "requestIndexes": [
+        3,
+        3
+      ],
+      "bbox": [
+        -119.773,
+        36.792,
+        -119.772,
+        36.793
+      ],
+      "complete": true,
+      "count": 10,
+      "ids": [
+        {
+          "id": "US-CA-FRESNO-APN-43605407",
+          "geometrySha256": "94a8a552f35d328d52202f732d084b911a81a7cc207d13d029b418ce845b43a2"
+        },
+        {
+          "id": "US-CA-FRESNO-APN-43614101",
+          "geometrySha256": "dd96ea05f9dd40700f45c8fb0c879231119164e3b5e89af19f126bacdfdea8b5"
+        },
+        {
+          "id": "US-CA-FRESNO-APN-43606155",
+          "geometrySha256": "5e8c9af8ee7382ce80f8e028b3f3a2a0af6634d4ba4edb2f60a7da0fbf423d3c"
+        },
+        {
+          "id": "US-CA-FRESNO-APN-43614102",
+          "geometrySha256": "0e5979edd0cd9daca67d516eeb25f1dbb9468b08c8c1226196ed32cbd8c7e8ef"
+        },
+        {
+          "id": "US-CA-FRESNO-APN-43605415",
+          "geometrySha256": "ce42c577687da2dfd507cbaebcf0d23c7cc8954c83413183929e5a952d581467"
+        },
+        {
+          "id": "US-CA-FRESNO-APN-43613502",
+          "geometrySha256": "003e080d16ffb0179a6c7cc7af772eabe4d8e4aaa4711ee2f0f3c072d3a42bf8"
+        },
+        {
+          "id": "US-CA-FRESNO-APN-43606301T",
+          "geometrySha256": "c2ce3e6e30b5814fd2716e515023f4d585484e5a47324371b94d529c70c3bfa6"
+        },
+        {
+          "id": "US-CA-FRESNO-APN-43605416",
+          "geometrySha256": "03bb988298875b1006282859e98658c9194f98281ab0fe59fba306bf25c2a10f"
+        },
+        {
+          "id": "US-CA-FRESNO-APN-43606152",
+          "geometrySha256": "b348e9e9e77404c6f640d232d949692898ee19bfd2f7e6bed76f35cb2ab6ca11"
+        },
+        {
+          "id": "US-CA-FRESNO-APN-43605406",
+          "geometrySha256": "45032ca5925686e8d7729ec749ad4c5112f94e5a6ef98eea55ac8e51a591b68f"
+        }
+      ]
+    },
+    {
+      "name": "viewport-4",
+      "passed": true,
+      "elapsedMs": 233,
+      "requestIndexes": [
+        4,
+        4
+      ],
+      "bbox": [
+        -119.772,
+        36.792,
+        -119.771,
+        36.793
+      ],
+      "complete": true,
+      "count": 13,
+      "ids": [
+        {
+          "id": "US-CA-FRESNO-APN-43614106",
+          "geometrySha256": "1f3b7c02655d865300ab9e9cadf22cfd7a0ee79aa01d4e4f64da819acca74979"
+        },
+        {
+          "id": "US-CA-FRESNO-APN-43614105",
+          "geometrySha256": "2a22edb8fff36705e20380bf65d8098328424cc3c1d927c721ca8eeb42dc6c1c"
+        },
+        {
+          "id": "US-CA-FRESNO-APN-43606154",
+          "geometrySha256": "48313efccf81df1a65a331f856f1160148459fdb7d51759707a895c50205a124"
+        },
+        {
+          "id": "US-CA-FRESNO-APN-43606302",
+          "geometrySha256": "3fa2e1e0914231ffb013e5a394e92ddba871f2175667192d2ba4ce2deba9a094"
+        },
+        {
+          "id": "US-CA-FRESNO-APN-43614101",
+          "geometrySha256": "dd96ea05f9dd40700f45c8fb0c879231119164e3b5e89af19f126bacdfdea8b5"
+        },
+        {
+          "id": "US-CA-FRESNO-APN-43614107",
+          "geometrySha256": "374baeb7738b667af44268cda1abdc41182182a42c8d9aba564a41754a94e114"
+        },
+        {
+          "id": "US-CA-FRESNO-APN-43606155",
+          "geometrySha256": "5e8c9af8ee7382ce80f8e028b3f3a2a0af6634d4ba4edb2f60a7da0fbf423d3c"
+        },
+        {
+          "id": "US-CA-FRESNO-APN-43614102",
+          "geometrySha256": "0e5979edd0cd9daca67d516eeb25f1dbb9468b08c8c1226196ed32cbd8c7e8ef"
+        },
+        {
+          "id": "US-CA-FRESNO-APN-43606301T",
+          "geometrySha256": "c2ce3e6e30b5814fd2716e515023f4d585484e5a47324371b94d529c70c3bfa6"
+        },
+        {
+          "id": "US-CA-FRESNO-APN-43606143",
+          "geometrySha256": "dcd8b927e1fdf96a08467c9184317813db30ed2b4e20d8c93097b0cf410d73f4"
+        },
+        {
+          "id": "US-CA-FRESNO-APN-43606303",
+          "geometrySha256": "cfe59daeaa5822a8a7469ce63e8734e1ada95681450b0b554b1268d5ffebeeae"
+        },
+        {
+          "id": "US-CA-FRESNO-APN-43614108",
+          "geometrySha256": "8c1c8e7546da86b5207f646c66e4c7836f1e8070bdd4de0bb8979d1231b7747f"
+        },
+        {
+          "id": "US-CA-FRESNO-APN-43606152",
+          "geometrySha256": "b348e9e9e77404c6f640d232d949692898ee19bfd2f7e6bed76f35cb2ab6ca11"
+        }
+      ]
+    },
+    {
+      "name": "viewport-5",
+      "passed": true,
+      "elapsedMs": 267,
+      "requestIndexes": [
+        5,
+        5
+      ],
+      "bbox": [
+        -119.771,
+        36.792,
+        -119.77,
+        36.793
+      ],
+      "complete": true,
+      "count": 15,
+      "ids": [
+        {
+          "id": "US-CA-FRESNO-APN-43614109",
+          "geometrySha256": "0aef1cad0528abbf7a959e824e8c6f2ad9029228a896d5067840a031301d9aee"
+        },
+        {
+          "id": "US-CA-FRESNO-APN-43606306",
+          "geometrySha256": "8215a67acc4047e2dea6f4911477948fd81e7fddcf7888ceb6a077d5ab28b53e"
+        },
+        {
+          "id": "US-CA-FRESNO-APN-43606307",
+          "geometrySha256": "ed5725afca9005a0b020f4a96a4de78e96fe8caeb66ff5d20576bb2991407497"
+        },
+        {
+          "id": "US-CA-FRESNO-APN-43606224",
+          "geometrySha256": "30cf27c84b8a48a16591bd2d0461899c2a81490dab63e4a455742612d9a12eb9"
+        },
+        {
+          "id": "US-CA-FRESNO-APN-43606305",
+          "geometrySha256": "8d4fe90033023840e816e3e97af62cee608aecff174e271c861435b140f00847"
+        },
+        {
+          "id": "US-CA-FRESNO-APN-43606143",
+          "geometrySha256": "dcd8b927e1fdf96a08467c9184317813db30ed2b4e20d8c93097b0cf410d73f4"
+        },
+        {
+          "id": "US-CA-FRESNO-APN-43614112",
+          "geometrySha256": "cc4703f50812f05f9fe98e493b1d4e9b50707948d69e5f4c6e8414177d040850"
+        },
+        {
+          "id": "US-CA-FRESNO-APN-43614111",
+          "geometrySha256": "77f922cec8b504d785797cba6c4ab97d20f4c352acfbb8c5fb9991f861120c5e"
+        },
+        {
+          "id": "US-CA-FRESNO-APN-43606303",
+          "geometrySha256": "cfe59daeaa5822a8a7469ce63e8734e1ada95681450b0b554b1268d5ffebeeae"
+        },
+        {
+          "id": "US-CA-FRESNO-APN-43614108",
+          "geometrySha256": "8c1c8e7546da86b5207f646c66e4c7836f1e8070bdd4de0bb8979d1231b7747f"
+        },
+        {
+          "id": "US-CA-FRESNO-APN-43606221",
+          "geometrySha256": "7cf6adeaae31ff28cc0e5d95790accd4479e622f679b57c841e1c4eed9959b16"
+        },
+        {
+          "id": "US-CA-FRESNO-APN-43606304",
+          "geometrySha256": "73b77337420222aa9d6062d20f051f18460fbd40f93201a8cfa13cbb8b56eaa2"
+        },
+        {
+          "id": "US-CA-FRESNO-APN-43606223",
+          "geometrySha256": "3b4f270086d5c9d884e0efc0019c1b4bbfa8c9a6790278beeed13f6f7096221b"
+        },
+        {
+          "id": "US-CA-FRESNO-APN-43614110",
+          "geometrySha256": "1732f518a3649be74e923c57da7f3c757325841efc837fef7aea80d57b5f3123"
+        },
+        {
+          "id": "US-CA-FRESNO-APN-43606222",
+          "geometrySha256": "5b54fc8376aa107588dafeb1dcc4667e7109a6e7ce47cef1b4b27445054f52d5"
+        }
+      ]
+    },
+    {
+      "name": "viewport-6",
+      "passed": true,
+      "elapsedMs": 236,
+      "requestIndexes": [
+        6,
+        6
+      ],
+      "bbox": [
+        -119.773,
+        36.793,
+        -119.772,
+        36.794
+      ],
+      "complete": true,
+      "count": 6,
+      "ids": [
+        {
+          "id": "US-CA-FRESNO-APN-43605403",
+          "geometrySha256": "0c79814e3430163d8c9a158201ee1c654b4442cfc2eb57a0115d652934effad1"
+        },
+        {
+          "id": "US-CA-FRESNO-APN-43605404",
+          "geometrySha256": "b171ddf1aaaa012efb371db59f234785c940e84abfa49a4ebc645e7ec02597da"
+        },
+        {
+          "id": "US-CA-FRESNO-APN-43605415",
+          "geometrySha256": "ce42c577687da2dfd507cbaebcf0d23c7cc8954c83413183929e5a952d581467"
+        },
+        {
+          "id": "US-CA-FRESNO-APN-43606144",
+          "geometrySha256": "1a8be92314ebb5128b8aa5e3c574cee3ecff1f5b3a886bb2bb0fb91b8bc17ab8"
+        },
+        {
+          "id": "US-CA-FRESNO-APN-43605402",
+          "geometrySha256": "376ba9dd08e844932307f6d730876da8f753bd40b88ae974bf2cf26b4e0a1155"
+        },
+        {
+          "id": "US-CA-FRESNO-APN-43606152",
+          "geometrySha256": "b348e9e9e77404c6f640d232d949692898ee19bfd2f7e6bed76f35cb2ab6ca11"
+        }
+      ]
+    },
+    {
+      "name": "viewport-7",
+      "passed": true,
+      "elapsedMs": 232,
+      "requestIndexes": [
+        7,
+        7
+      ],
+      "bbox": [
+        -119.772,
+        36.793,
+        -119.771,
+        36.794
+      ],
+      "complete": true,
+      "count": 6,
+      "ids": [
+        {
+          "id": "US-CA-FRESNO-APN-43606154",
+          "geometrySha256": "48313efccf81df1a65a331f856f1160148459fdb7d51759707a895c50205a124"
+        },
+        {
+          "id": "US-CA-FRESNO-APN-43606155",
+          "geometrySha256": "5e8c9af8ee7382ce80f8e028b3f3a2a0af6634d4ba4edb2f60a7da0fbf423d3c"
+        },
+        {
+          "id": "US-CA-FRESNO-APN-43606144",
+          "geometrySha256": "1a8be92314ebb5128b8aa5e3c574cee3ecff1f5b3a886bb2bb0fb91b8bc17ab8"
+        },
+        {
+          "id": "US-CA-FRESNO-APN-43606142",
+          "geometrySha256": "d46877289fde83f8497f642ec9966ae5c4bb7d3479bb55a48b5aecd8eaa09ce7"
+        },
+        {
+          "id": "US-CA-FRESNO-APN-43606143",
+          "geometrySha256": "dcd8b927e1fdf96a08467c9184317813db30ed2b4e20d8c93097b0cf410d73f4"
+        },
+        {
+          "id": "US-CA-FRESNO-APN-43606152",
+          "geometrySha256": "b348e9e9e77404c6f640d232d949692898ee19bfd2f7e6bed76f35cb2ab6ca11"
+        }
+      ]
+    },
+    {
+      "name": "viewport-8",
+      "passed": true,
+      "elapsedMs": 233,
+      "requestIndexes": [
+        8,
+        8
+      ],
+      "bbox": [
+        -119.771,
+        36.793,
+        -119.77,
+        36.794
+      ],
+      "complete": true,
+      "count": 18,
+      "ids": [
+        {
+          "id": "US-CA-FRESNO-APN-43606107",
+          "geometrySha256": "97f81f1c7a2574065b1c46fd525ae0959d2b7feab91f45e886b43b059719228d"
+        },
+        {
+          "id": "US-CA-FRESNO-APN-43606104",
+          "geometrySha256": "8d72a3f8dcb7cecb47eec4dd00596056a812d809c89035594c8d75879d3cc182"
+        },
+        {
+          "id": "US-CA-FRESNO-APN-43606203",
+          "geometrySha256": "1b2e3ebbdae28af39aa92258d1e307f6d94706541ab2695e7d178b9640acbfce"
+        },
+        {
+          "id": "US-CA-FRESNO-APN-43606105",
+          "geometrySha256": "14badb99b970026760a7440d9513cfb95ab437b21d6fee55fbc2a818108d2763"
+        },
+        {
+          "id": "US-CA-FRESNO-APN-43606126",
+          "geometrySha256": "72b4e757043541cd9dbf604b0f33ffa3fa4c3d953fca8c99a09287b47fa80573"
+        },
+        {
+          "id": "US-CA-FRESNO-APN-43606224",
+          "geometrySha256": "30cf27c84b8a48a16591bd2d0461899c2a81490dab63e4a455742612d9a12eb9"
+        },
+        {
+          "id": "US-CA-FRESNO-APN-43606142",
+          "geometrySha256": "d46877289fde83f8497f642ec9966ae5c4bb7d3479bb55a48b5aecd8eaa09ce7"
+        },
+        {
+          "id": "US-CA-FRESNO-APN-43606143",
+          "geometrySha256": "dcd8b927e1fdf96a08467c9184317813db30ed2b4e20d8c93097b0cf410d73f4"
+        },
+        {
+          "id": "US-CA-FRESNO-APN-43606129",
+          "geometrySha256": "8893ec6860a0935a6c02d82aebf9bdaa8b1a0aa8be70958d4e541662d0393211"
+        },
+        {
+          "id": "US-CA-FRESNO-APN-43606128",
+          "geometrySha256": "45105de09eb457a0bb7b038e1a95b853040cd37efd1e29783924a0850ad6168e"
+        },
+        {
+          "id": "US-CA-FRESNO-APN-43606106",
+          "geometrySha256": "0cb0b2edcd1c856e1b2731046377fd4b0a9fdc59b0db047232651a0974fe584b"
+        },
+        {
+          "id": "US-CA-FRESNO-APN-43606127",
+          "geometrySha256": "b7813d83c0e2bc5f4e4b8a9f3c2eab5682adabd158f204dc9c2ec77f20462022"
+        },
+        {
+          "id": "US-CA-FRESNO-APN-43606221",
+          "geometrySha256": "7cf6adeaae31ff28cc0e5d95790accd4479e622f679b57c841e1c4eed9959b16"
+        },
+        {
+          "id": "US-CA-FRESNO-APN-43606202",
+          "geometrySha256": "e72b750e7a5e126f1e021bb114fae3dab50e5f808134b662da871e26a16c9ffe"
+        },
+        {
+          "id": "US-CA-FRESNO-APN-43606204",
+          "geometrySha256": "62f5ad0a7a1b8354312c09fc73b26a89e78906923511df91c72e7c6134ec2da1"
+        },
+        {
+          "id": "US-CA-FRESNO-APN-43606223",
+          "geometrySha256": "3b4f270086d5c9d884e0efc0019c1b4bbfa8c9a6790278beeed13f6f7096221b"
+        },
+        {
+          "id": "US-CA-FRESNO-APN-43606201",
+          "geometrySha256": "03e353d84e70edb734ae4492ad8370dabbb5b1ffea652f2b4402c7de62cd8123"
+        },
+        {
+          "id": "US-CA-FRESNO-APN-43606222",
+          "geometrySha256": "5b54fc8376aa107588dafeb1dcc4667e7109a6e7ce47cef1b4b27445054f52d5"
+        }
+      ]
+    },
+    {
+      "name": "viewport-9",
+      "passed": true,
+      "elapsedMs": 321,
+      "requestIndexes": [
+        9,
+        9
+      ],
+      "bbox": [
+        -119.772,
+        36.79,
+        -119.771,
+        36.791
+      ],
+      "complete": true,
+      "count": 11,
+      "ids": [
+        {
+          "id": "US-CA-FRESNO-APN-43622149",
+          "geometrySha256": "f15ffb1b275312665c7498eea0f4f51861b57b9b41e0b8f34cc23568e62dfcf3"
+        },
+        {
+          "id": "US-CA-FRESNO-APN-43614305",
+          "geometrySha256": "8f5e1eb858662578d6bd542c76aef0989e81365fd1a99d5e1bbd5233098223b8"
+        },
+        {
+          "id": "US-CA-FRESNO-APN-43622150",
+          "geometrySha256": "4732120423738126c55f29a96e9c811d64d5d99ce3c85098aa4bc17b631792ec"
+        },
+        {
+          "id": "US-CA-FRESNO-APN-43614307",
+          "geometrySha256": "64da07206034605e4e3450717c60c0a3fa8b9baa2105c9b00ce5f8f830adc5cd"
+        },
+        {
+          "id": "US-CA-FRESNO-APN-43622106",
+          "geometrySha256": "de304b0102514f695b506e3cded6f8ad2820e2a8fb12bc8f1a2443f7871a027d"
+        },
+        {
+          "id": "US-CA-FRESNO-APN-43622107",
+          "geometrySha256": "11f794470afb62ab26b211e2512c4dcdb048b7a357a031755b6d436bbff53e4c"
+        },
+        {
+          "id": "US-CA-FRESNO-APN-43614338",
+          "geometrySha256": "87f6b8e14e29c9743f2bc33cad7d8bce9a5cdc7f1ecee6ad4700cce9467db9c9"
+        },
+        {
+          "id": "US-CA-FRESNO-APN-43614347",
+          "geometrySha256": "bd5532a1e8de975ba5beaa1b72ed08e5ed150831a39a1d7c29db75d473d8042c"
+        },
+        {
+          "id": "US-CA-FRESNO-APN-43614324",
+          "geometrySha256": "15e890db4aea8e659cd0190f0e3d86ad56cc1c095d651f223c43f38c185a9511"
+        },
+        {
+          "id": "US-CA-FRESNO-APN-43614302",
+          "geometrySha256": "553b3678c1d4e4cdb10679176f3fe6c68ec8a427633b0c18a24c06fd9eebd565"
+        },
+        {
+          "id": "US-CA-FRESNO-APN-43614339",
+          "geometrySha256": "b372ed8c2a3d90b451504be40666d6b1311fbadc01c414332b8912b3c01f00ec"
+        }
+      ]
+    },
+    {
+      "name": "viewport-10",
+      "passed": true,
+      "elapsedMs": 236,
+      "requestIndexes": [
+        10,
+        10
+      ],
+      "bbox": [
+        -119.772,
+        36.794,
+        -119.771,
+        36.795
+      ],
+      "complete": true,
+      "count": 9,
+      "ids": [
+        {
+          "id": "US-CA-FRESNO-APN-42827249",
+          "geometrySha256": "233753d01987570227059e4e8c92c949cfe1bcaea9731a316364d90b52d9684d"
+        },
+        {
+          "id": "US-CA-FRESNO-APN-42827238",
+          "geometrySha256": "ca14977bc9cfb1e60adafa2bd0c49a4ad89febf0a394f17d3c8fd58b8484e201"
+        },
+        {
+          "id": "US-CA-FRESNO-APN-42827208",
+          "geometrySha256": "bd90f1198eb34223a97329b6eb6b94d565440079fd66010ba81009499328f734"
+        },
+        {
+          "id": "US-CA-FRESNO-APN-42827241",
+          "geometrySha256": "11bc3d92abed277acd55f23c9758f738b06bd90b0ebcc371e9765c1feb776b7e"
+        },
+        {
+          "id": "US-CA-FRESNO-APN-42827240",
+          "geometrySha256": "1792423dbec3ad9bf30b24836d45368107bff5190980827d38749b4150d3087e"
+        },
+        {
+          "id": "US-CA-FRESNO-APN-42827245",
+          "geometrySha256": "541f6419547561040c70cdc98f18363e02180d618697826ae9dc5ab78f9126ac"
+        },
+        {
+          "id": "US-CA-FRESNO-APN-42827206",
+          "geometrySha256": "e7222a199fdca76d3a6cbe6f40e22a25f93e13c644a8dd99a4654369c2f3e696"
+        },
+        {
+          "id": "US-CA-FRESNO-APN-42827207",
+          "geometrySha256": "d9a8f24665177f033f26a099ea863436619bcb1175e70b768cf0a2b0ba9f31c6"
+        },
+        {
+          "id": "US-CA-FRESNO-APN-42827239",
+          "geometrySha256": "f661793b155ad3431622c315bf31a7fe361db59f2ded251a6c29c68d2dbb5446"
+        }
+      ]
+    },
+    {
+      "name": "viewport-11",
+      "passed": true,
+      "elapsedMs": 231,
+      "requestIndexes": [
+        11,
+        11
+      ],
+      "bbox": [
+        -119.774,
+        36.792,
+        -119.773,
+        36.793
+      ],
+      "complete": true,
+      "count": 15,
+      "ids": [
+        {
+          "id": "US-CA-FRESNO-APN-43605409",
+          "geometrySha256": "85c6bc2d6d7754086d776e8770bd14e63ec4f79047468ca8c6fe0fc3d030378b"
+        },
+        {
+          "id": "US-CA-FRESNO-APN-43605410",
+          "geometrySha256": "ada27134c60815abfa2f811124132a219d5f8ee4f7c7d746deca21ce01816027"
+        },
+        {
+          "id": "US-CA-FRESNO-APN-43605304",
+          "geometrySha256": "e3c23e90089f9f32d899510b699c8d7eca8404e34b1ea32ec63a4f46bad1063f"
+        },
+        {
+          "id": "US-CA-FRESNO-APN-43605407",
+          "geometrySha256": "94a8a552f35d328d52202f732d084b911a81a7cc207d13d029b418ce845b43a2"
+        },
+        {
+          "id": "US-CA-FRESNO-APN-43613313",
+          "geometrySha256": "91952652eed112349cb947898bcc34ecd81a21ef6ff77d5f7581cc81dbc8ad68"
+        },
+        {
+          "id": "US-CA-FRESNO-APN-43605411",
+          "geometrySha256": "a18a025e756214c670d85f026d5eb8b01b553c0b5de839eec86ce667756b44c4"
+        },
+        {
+          "id": "US-CA-FRESNO-APN-43605415",
+          "geometrySha256": "ce42c577687da2dfd507cbaebcf0d23c7cc8954c83413183929e5a952d581467"
+        },
+        {
+          "id": "US-CA-FRESNO-APN-43613502",
+          "geometrySha256": "003e080d16ffb0179a6c7cc7af772eabe4d8e4aaa4711ee2f0f3c072d3a42bf8"
+        },
+        {
+          "id": "US-CA-FRESNO-APN-43605302",
+          "geometrySha256": "c9b49fb955e2b1c4a61eb540e96fc457ca836010bbcf20103d67ad6e80c7eb68"
+        },
+        {
+          "id": "US-CA-FRESNO-APN-43605303",
+          "geometrySha256": "b72b0d6e3388c2670b87c63361a8294a0789cd0b0a4216d2f87bfb98230cf385"
+        },
+        {
+          "id": "US-CA-FRESNO-APN-43605416",
+          "geometrySha256": "03bb988298875b1006282859e98658c9194f98281ab0fe59fba306bf25c2a10f"
+        },
+        {
+          "id": "US-CA-FRESNO-APN-43605305",
+          "geometrySha256": "01837f34bcb4c47fe141d05521bc1bc414c0914f4138d2f3a5c2709e04c1ad86"
+        },
+        {
+          "id": "US-CA-FRESNO-APN-43605406",
+          "geometrySha256": "45032ca5925686e8d7729ec749ad4c5112f94e5a6ef98eea55ac8e51a591b68f"
+        },
+        {
+          "id": "US-CA-FRESNO-APN-43613501",
+          "geometrySha256": "80550441088734551acb5da4e529054146429ef61ee8df88e04e902b02ec6ff0"
+        },
+        {
+          "id": "US-CA-FRESNO-APN-43605408",
+          "geometrySha256": "24c3b98f4ab45bb1ddcbb4b9f4f798c83e8c36c124d2ac423d90ee86680c14aa"
+        }
+      ]
+    },
+    {
+      "name": "viewport-12",
+      "passed": true,
+      "elapsedMs": 239,
+      "requestIndexes": [
+        12,
+        12
+      ],
+      "bbox": [
+        -119.77,
+        36.792,
+        -119.769,
+        36.793
+      ],
+      "complete": true,
+      "count": 16,
+      "ids": [
+        {
+          "id": "US-CA-FRESNO-APN-43614115",
+          "geometrySha256": "c26a0060c90a8d7807d004066425f14fe24bb307d1a3d1aeb5ebbb4d9102356a"
+        },
+        {
+          "id": "US-CA-FRESNO-APN-43614114",
+          "geometrySha256": "30e4b4e07ea6e291076020aaf39b2f41d1039387b2f66ab89980a70de2ca934a"
+        },
+        {
+          "id": "US-CA-FRESNO-APN-43614113",
+          "geometrySha256": "9e0f704eca8ffd686b869854147863a91e1e318e75e4c5617d01b2617033159d"
+        },
+        {
+          "id": "US-CA-FRESNO-APN-43606307",
+          "geometrySha256": "ed5725afca9005a0b020f4a96a4de78e96fe8caeb66ff5d20576bb2991407497"
+        },
+        {
+          "id": "US-CA-FRESNO-APN-43606312",
+          "geometrySha256": "e3b5602cc1012f02340edc4576ed54bf6f97100bbc069968629b0a19f4db5a04"
+        },
+        {
+          "id": "US-CA-FRESNO-APN-43606308",
+          "geometrySha256": "9c38bce622c155edd6ffbd60a9e4aa7d8cccb6b76a217918ff21e59c4fd526a8"
+        },
+        {
+          "id": "US-CA-FRESNO-APN-43606218",
+          "geometrySha256": "ad1889460c08e8cbd10aa5aa8602316572c87ee096afcb0324bf7e77aeb1dc0b"
+        },
+        {
+          "id": "US-CA-FRESNO-APN-43606309",
+          "geometrySha256": "28af08d55af1994d9d5a31fc8b754168b6fda14aef46b361d4a5f8fc87730ac4"
+        },
+        {
+          "id": "US-CA-FRESNO-APN-43606217",
+          "geometrySha256": "1f7396de11b417b7d7febd5c6ab40cfcb119d37e371574fd0e0b4801cf60a0d4"
+        },
+        {
+          "id": "US-CA-FRESNO-APN-43606310",
+          "geometrySha256": "123b53a832c63375a07181fbc4be3853817832f9f617494ceb6e7e50e133e1ff"
+        },
+        {
+          "id": "US-CA-FRESNO-APN-43614112",
+          "geometrySha256": "cc4703f50812f05f9fe98e493b1d4e9b50707948d69e5f4c6e8414177d040850"
+        },
+        {
+          "id": "US-CA-FRESNO-APN-43606311",
+          "geometrySha256": "61b2f004bb69526841115058691ab82c5b57e2d748a13108eab45bdf0e949a19"
+        },
+        {
+          "id": "US-CA-FRESNO-APN-43606220",
+          "geometrySha256": "1fce3ca6b6f6831a392c9966efce23f48ade26ceb830b59f948d01ad57c449e1"
+        },
+        {
+          "id": "US-CA-FRESNO-APN-43606219",
+          "geometrySha256": "4b9dd6271971d66a749d3ca2830196b4c37af8fd1e2e178ea17ee9f1c4ac98cc"
+        },
+        {
+          "id": "US-CA-FRESNO-APN-43606221",
+          "geometrySha256": "7cf6adeaae31ff28cc0e5d95790accd4479e622f679b57c841e1c4eed9959b16"
+        },
+        {
+          "id": "US-CA-FRESNO-APN-43614116",
+          "geometrySha256": "af0ddce6859fcc490e05c7bd40ba8b8a74c65d3bf2abe3caad0b0ac22082286e"
+        }
+      ]
+    },
+    {
+      "name": "forced-three-row-pages",
+      "passed": true,
+      "elapsedMs": 1409,
+      "requestIndexes": [
+        13,
+        18
+      ],
+      "count": 18,
+      "geometryPages": 6,
+      "pageSize": 3,
+      "allGeometryHashesMatch": true
+    },
+    {
+      "name": "fresh-ids-0",
+      "passed": true,
+      "elapsedMs": 503,
+      "requestIndexes": [
+        19,
+        19
+      ],
+      "count": 40,
+      "ids": [
+        "US-CA-FRESNO-APN-42827206",
+        "US-CA-FRESNO-APN-42827207",
+        "US-CA-FRESNO-APN-42827208",
+        "US-CA-FRESNO-APN-42827238",
+        "US-CA-FRESNO-APN-42827239",
+        "US-CA-FRESNO-APN-42827240",
+        "US-CA-FRESNO-APN-42827241",
+        "US-CA-FRESNO-APN-42827245",
+        "US-CA-FRESNO-APN-42827249",
+        "US-CA-FRESNO-APN-43605302",
+        "US-CA-FRESNO-APN-43605303",
+        "US-CA-FRESNO-APN-43605304",
+        "US-CA-FRESNO-APN-43605305",
+        "US-CA-FRESNO-APN-43605402",
+        "US-CA-FRESNO-APN-43605403",
+        "US-CA-FRESNO-APN-43605404",
+        "US-CA-FRESNO-APN-43605406",
+        "US-CA-FRESNO-APN-43605407",
+        "US-CA-FRESNO-APN-43605408",
+        "US-CA-FRESNO-APN-43605409",
+        "US-CA-FRESNO-APN-43605410",
+        "US-CA-FRESNO-APN-43605411",
+        "US-CA-FRESNO-APN-43605415",
+        "US-CA-FRESNO-APN-43605416",
+        "US-CA-FRESNO-APN-43606104",
+        "US-CA-FRESNO-APN-43606105",
+        "US-CA-FRESNO-APN-43606106",
+        "US-CA-FRESNO-APN-43606107",
+        "US-CA-FRESNO-APN-43606126",
+        "US-CA-FRESNO-APN-43606127",
+        "US-CA-FRESNO-APN-43606128",
+        "US-CA-FRESNO-APN-43606129",
+        "US-CA-FRESNO-APN-43606142",
+        "US-CA-FRESNO-APN-43606143",
+        "US-CA-FRESNO-APN-43606144",
+        "US-CA-FRESNO-APN-43606152",
+        "US-CA-FRESNO-APN-43606154",
+        "US-CA-FRESNO-APN-43606155",
+        "US-CA-FRESNO-APN-43606201",
+        "US-CA-FRESNO-APN-43606202"
+      ],
+      "allGeometryHashesMatch": true,
+      "absentIds": []
+    },
+    {
+      "name": "fresh-ids-40",
+      "passed": true,
+      "elapsedMs": 456,
+      "requestIndexes": [
+        20,
+        20
+      ],
+      "count": 40,
+      "ids": [
+        "US-CA-FRESNO-APN-43606203",
+        "US-CA-FRESNO-APN-43606204",
+        "US-CA-FRESNO-APN-43606217",
+        "US-CA-FRESNO-APN-43606218",
+        "US-CA-FRESNO-APN-43606219",
+        "US-CA-FRESNO-APN-43606220",
+        "US-CA-FRESNO-APN-43606221",
+        "US-CA-FRESNO-APN-43606222",
+        "US-CA-FRESNO-APN-43606223",
+        "US-CA-FRESNO-APN-43606224",
+        "US-CA-FRESNO-APN-43606301T",
+        "US-CA-FRESNO-APN-43606302",
+        "US-CA-FRESNO-APN-43606303",
+        "US-CA-FRESNO-APN-43606304",
+        "US-CA-FRESNO-APN-43606305",
+        "US-CA-FRESNO-APN-43606306",
+        "US-CA-FRESNO-APN-43606307",
+        "US-CA-FRESNO-APN-43606308",
+        "US-CA-FRESNO-APN-43606309",
+        "US-CA-FRESNO-APN-43606310",
+        "US-CA-FRESNO-APN-43606311",
+        "US-CA-FRESNO-APN-43606312",
+        "US-CA-FRESNO-APN-43613313",
+        "US-CA-FRESNO-APN-43613402",
+        "US-CA-FRESNO-APN-43613501",
+        "US-CA-FRESNO-APN-43613502",
+        "US-CA-FRESNO-APN-43613503",
+        "US-CA-FRESNO-APN-43614101",
+        "US-CA-FRESNO-APN-43614102",
+        "US-CA-FRESNO-APN-43614103",
+        "US-CA-FRESNO-APN-43614104",
+        "US-CA-FRESNO-APN-43614105",
+        "US-CA-FRESNO-APN-43614106",
+        "US-CA-FRESNO-APN-43614107",
+        "US-CA-FRESNO-APN-43614108",
+        "US-CA-FRESNO-APN-43614109",
+        "US-CA-FRESNO-APN-43614110",
+        "US-CA-FRESNO-APN-43614111",
+        "US-CA-FRESNO-APN-43614112",
+        "US-CA-FRESNO-APN-43614113"
+      ],
+      "allGeometryHashesMatch": true,
+      "absentIds": []
+    },
+    {
+      "name": "fresh-ids-80",
+      "passed": true,
+      "elapsedMs": 395,
+      "requestIndexes": [
+        21,
+        21
+      ],
+      "count": 26,
+      "ids": [
+        "US-CA-FRESNO-APN-43614114",
+        "US-CA-FRESNO-APN-43614115",
+        "US-CA-FRESNO-APN-43614116",
+        "US-CA-FRESNO-APN-43614201",
+        "US-CA-FRESNO-APN-43614202",
+        "US-CA-FRESNO-APN-43614203",
+        "US-CA-FRESNO-APN-43614204",
+        "US-CA-FRESNO-APN-43614205",
+        "US-CA-FRESNO-APN-43614214",
+        "US-CA-FRESNO-APN-43614215",
+        "US-CA-FRESNO-APN-43614216",
+        "US-CA-FRESNO-APN-43614217",
+        "US-CA-FRESNO-APN-43614218",
+        "US-CA-FRESNO-APN-43614302",
+        "US-CA-FRESNO-APN-43614303",
+        "US-CA-FRESNO-APN-43614304",
+        "US-CA-FRESNO-APN-43614305",
+        "US-CA-FRESNO-APN-43614307",
+        "US-CA-FRESNO-APN-43614324",
+        "US-CA-FRESNO-APN-43614338",
+        "US-CA-FRESNO-APN-43614339",
+        "US-CA-FRESNO-APN-43614347",
+        "US-CA-FRESNO-APN-43622106",
+        "US-CA-FRESNO-APN-43622107",
+        "US-CA-FRESNO-APN-43622149",
+        "US-CA-FRESNO-APN-43622150"
+      ],
+      "allGeometryHashesMatch": true,
+      "absentIds": []
+    },
+    {
+      "name": "explicit-absence",
+      "passed": true,
+      "elapsedMs": 260,
+      "requestIndexes": [
+        22,
+        22
+      ],
+      "absentIds": [
+        "US-CA-FRESNO-APN-9999999999"
+      ],
+      "complete": true
+    },
+    {
+      "name": "footprint",
+      "passed": true,
+      "elapsedMs": 236,
+      "requestIndexes": [
+        23,
+        23
+      ],
+      "selectedParcelId": "US-CA-FRESNO-APN-43614215",
+      "count": 6,
+      "allGeometryHashesMatch": true
+    },
+    {
+      "name": "source-binding",
+      "passed": true,
+      "elapsedMs": 249,
+      "requestIndexes": [
+        24,
+        24
+      ],
+      "selectedParcelId": "US-CA-FRESNO-APN-43614215",
+      "coverage": "complete",
+      "siteM2": 822.73,
+      "boundParcels": 1
+    }
+  ],
+  "requests": [
+    {
+      "test": "viewport-0",
+      "url": "https://gisprod10.co.fresno.ca.us/server/rest/services/Hosted/Parcels/FeatureServer/0/query?where=1%3D1&outFields=fid%2Capn&returnGeometry=true&outSR=4326&f=geojson&orderByFields=fid&resultRecordCount=1000&resultOffset=0&geometry=-119.773%2C36.791%2C-119.772%2C36.792&geometryType=esriGeometryEnvelope&inSR=4326&spatialRel=esriSpatialRelIntersects",
+      "method": "GET",
+      "checkedAt": "2026-10-09T03:18:48.052Z",
+      "httpStatus": 200,
+      "contentType": "application/geo+json;charset=UTF-8",
+      "bytes": 2881,
+      "features": [
+        {
+          "transportId": 31884,
+          "properties": {
+            "fid": 31884,
+            "apn": "43613503"
+          },
+          "geometrySha256": "8758e8b431ec700435d54818605a2007aa82e27988293dcb9ed4d5da34598dd4"
+        },
+        {
+          "transportId": 117621,
+          "properties": {
+            "fid": 117621,
+            "apn": "43614102"
+          },
+          "geometrySha256": "0e5979edd0cd9daca67d516eeb25f1dbb9468b08c8c1226196ed32cbd8c7e8ef"
+        },
+        {
+          "transportId": 136710,
+          "properties": {
+            "fid": 136710,
+            "apn": "43613502"
+          },
+          "geometrySha256": "003e080d16ffb0179a6c7cc7af772eabe4d8e4aaa4711ee2f0f3c072d3a42bf8"
+        },
+        {
+          "transportId": 171798,
+          "properties": {
+            "fid": 171798,
+            "apn": "43613402"
+          },
+          "geometrySha256": "80fb2dac462783ecb3fa502923cfccf5d72c8f27dfc7ba318b6c1c7441ab28fb"
+        },
+        {
+          "transportId": 262546,
+          "properties": {
+            "fid": 262546,
+            "apn": "43614103"
+          },
+          "geometrySha256": "a547c7e4d022ec13f9193a2258a276cb127bf8dc352adfee14780aa831af9699"
+        },
+        {
+          "transportId": 278219,
+          "properties": {
+            "fid": 278219,
+            "apn": "43614303"
+          },
+          "geometrySha256": "c647275179edb872223914d5ba6d1c2d1511e8a98a0fe8bd76a0e7b81aa2a6da"
+        },
+        {
+          "transportId": 279799,
+          "properties": {
+            "fid": 279799,
+            "apn": "43614302"
+          },
+          "geometrySha256": "553b3678c1d4e4cdb10679176f3fe6c68ec8a427633b0c18a24c06fd9eebd565"
+        }
+      ]
+    },
+    {
+      "test": "viewport-1",
+      "url": "https://gisprod10.co.fresno.ca.us/server/rest/services/Hosted/Parcels/FeatureServer/0/query?where=1%3D1&outFields=fid%2Capn&returnGeometry=true&outSR=4326&f=geojson&orderByFields=fid&resultRecordCount=1000&resultOffset=0&geometry=-119.772%2C36.791%2C-119.771%2C36.792&geometryType=esriGeometryEnvelope&inSR=4326&spatialRel=esriSpatialRelIntersects",
+      "method": "GET",
+      "checkedAt": "2026-10-09T03:18:49.004Z",
+      "httpStatus": 200,
+      "contentType": "application/geo+json;charset=UTF-8",
+      "bytes": 6772,
+      "features": [
+        {
+          "transportId": 5726,
+          "properties": {
+            "fid": 5726,
+            "apn": "43614218"
+          },
+          "geometrySha256": "bdd146b888dc0ff4d130af2f8caca4891fa17ae5041ca24d3dc7c7adaa71741c"
+        },
+        {
+          "transportId": 7879,
+          "properties": {
+            "fid": 7879,
+            "apn": "43614106"
+          },
+          "geometrySha256": "1f3b7c02655d865300ab9e9cadf22cfd7a0ee79aa01d4e4f64da819acca74979"
+        },
+        {
+          "transportId": 17815,
+          "properties": {
+            "fid": 17815,
+            "apn": "43614105"
+          },
+          "geometrySha256": "2a22edb8fff36705e20380bf65d8098328424cc3c1d927c721ca8eeb42dc6c1c"
+        },
+        {
+          "transportId": 31204,
+          "properties": {
+            "fid": 31204,
+            "apn": "43614305"
+          },
+          "geometrySha256": "8f5e1eb858662578d6bd542c76aef0989e81365fd1a99d5e1bbd5233098223b8"
+        },
+        {
+          "transportId": 32077,
+          "properties": {
+            "fid": 32077,
+            "apn": "43614304"
+          },
+          "geometrySha256": "f4cb12615772ab6997eb1da906dd70e084c91d538579829ae7981b20551b110d"
+        },
+        {
+          "transportId": 45700,
+          "properties": {
+            "fid": 45700,
+            "apn": "43614104"
+          },
+          "geometrySha256": "058986d0175c6495afd662fb5f2b41ef4b7e241e3b6c4872367ed8d3eb4687f9"
+        },
+        {
+          "transportId": 117621,
+          "properties": {
+            "fid": 117621,
+            "apn": "43614102"
+          },
+          "geometrySha256": "0e5979edd0cd9daca67d516eeb25f1dbb9468b08c8c1226196ed32cbd8c7e8ef"
+        },
+        {
+          "transportId": 174926,
+          "properties": {
+            "fid": 174926,
+            "apn": "43614338"
+          },
+          "geometrySha256": "87f6b8e14e29c9743f2bc33cad7d8bce9a5cdc7f1ecee6ad4700cce9467db9c9"
+        },
+        {
+          "transportId": 207322,
+          "properties": {
+            "fid": 207322,
+            "apn": "43614108"
+          },
+          "geometrySha256": "8c1c8e7546da86b5207f646c66e4c7836f1e8070bdd4de0bb8979d1231b7747f"
+        },
+        {
+          "transportId": 262546,
+          "properties": {
+            "fid": 262546,
+            "apn": "43614103"
+          },
+          "geometrySha256": "a547c7e4d022ec13f9193a2258a276cb127bf8dc352adfee14780aa831af9699"
+        },
+        {
+          "transportId": 278219,
+          "properties": {
+            "fid": 278219,
+            "apn": "43614303"
+          },
+          "geometrySha256": "c647275179edb872223914d5ba6d1c2d1511e8a98a0fe8bd76a0e7b81aa2a6da"
+        },
+        {
+          "transportId": 279799,
+          "properties": {
+            "fid": 279799,
+            "apn": "43614302"
+          },
+          "geometrySha256": "553b3678c1d4e4cdb10679176f3fe6c68ec8a427633b0c18a24c06fd9eebd565"
+        },
+        {
+          "transportId": 289685,
+          "properties": {
+            "fid": 289685,
+            "apn": "43614201"
+          },
+          "geometrySha256": "ff93763e876eefc57d8e10ec73911066fb6f731c00427b22d80bfe87430f8644"
+        }
+      ]
+    },
+    {
+      "test": "viewport-2",
+      "url": "https://gisprod10.co.fresno.ca.us/server/rest/services/Hosted/Parcels/FeatureServer/0/query?where=1%3D1&outFields=fid%2Capn&returnGeometry=true&outSR=4326&f=geojson&orderByFields=fid&resultRecordCount=1000&resultOffset=0&geometry=-119.771%2C36.791%2C-119.77%2C36.792&geometryType=esriGeometryEnvelope&inSR=4326&spatialRel=esriSpatialRelIntersects",
+      "method": "GET",
+      "checkedAt": "2026-10-09T03:18:49.677Z",
+      "httpStatus": 200,
+      "contentType": "application/geo+json;charset=UTF-8",
+      "bytes": 6775,
+      "features": [
+        {
+          "transportId": 4903,
+          "properties": {
+            "fid": 4903,
+            "apn": "43614109"
+          },
+          "geometrySha256": "0aef1cad0528abbf7a959e824e8c6f2ad9029228a896d5067840a031301d9aee"
+        },
+        {
+          "transportId": 5726,
+          "properties": {
+            "fid": 5726,
+            "apn": "43614218"
+          },
+          "geometrySha256": "bdd146b888dc0ff4d130af2f8caca4891fa17ae5041ca24d3dc7c7adaa71741c"
+        },
+        {
+          "transportId": 64122,
+          "properties": {
+            "fid": 64122,
+            "apn": "43614215"
+          },
+          "geometrySha256": "7bdc71f39c0882ea6d9b3a7528d4debc20d5e41ccf6d2a1691bbd56a3f2d8cf1"
+        },
+        {
+          "transportId": 101496,
+          "properties": {
+            "fid": 101496,
+            "apn": "43614214"
+          },
+          "geometrySha256": "030d4aa8130ca2dbdc21eee67eb6823f40d1b42bd26dda1b08ed8f89763ef306"
+        },
+        {
+          "transportId": 120059,
+          "properties": {
+            "fid": 120059,
+            "apn": "43614205"
+          },
+          "geometrySha256": "3e6b9ba688a2bcdb609fd22d94f9f20585a8d776b858decb61fe1e20c1abfa04"
+        },
+        {
+          "transportId": 142938,
+          "properties": {
+            "fid": 142938,
+            "apn": "43614217"
+          },
+          "geometrySha256": "b55ad51364b5fb593a001343de8259605f86177b66024c835282ba143f382c86"
+        },
+        {
+          "transportId": 176322,
+          "properties": {
+            "fid": 176322,
+            "apn": "43614112"
+          },
+          "geometrySha256": "cc4703f50812f05f9fe98e493b1d4e9b50707948d69e5f4c6e8414177d040850"
+        },
+        {
+          "transportId": 202585,
+          "properties": {
+            "fid": 202585,
+            "apn": "43614111"
+          },
+          "geometrySha256": "77f922cec8b504d785797cba6c4ab97d20f4c352acfbb8c5fb9991f861120c5e"
+        },
+        {
+          "transportId": 207322,
+          "properties": {
+            "fid": 207322,
+            "apn": "43614108"
+          },
+          "geometrySha256": "8c1c8e7546da86b5207f646c66e4c7836f1e8070bdd4de0bb8979d1231b7747f"
+        },
+        {
+          "transportId": 217012,
+          "properties": {
+            "fid": 217012,
+            "apn": "43614203"
+          },
+          "geometrySha256": "d9f47cc712eadbb964cbe7d6e2385e0c246e95d5282e3b5e0a580e1fa032bad2"
+        },
+        {
+          "transportId": 217359,
+          "properties": {
+            "fid": 217359,
+            "apn": "43614216"
+          },
+          "geometrySha256": "4ff3f432ca22f62e7842403f64283eb59c77f7506fbedaeb00e462726e3f2462"
+        },
+        {
+          "transportId": 260317,
+          "properties": {
+            "fid": 260317,
+            "apn": "43614204"
+          },
+          "geometrySha256": "4f93d689ae0a3133f96752b930aa887b4d6c5dace9ec6324d7316b0445c72118"
+        },
+        {
+          "transportId": 267198,
+          "properties": {
+            "fid": 267198,
+            "apn": "43614202"
+          },
+          "geometrySha256": "962428206f1ffc047931025d9dfbc056c9ad47c5705e4224fb2c5ca66648a593"
+        },
+        {
+          "transportId": 276765,
+          "properties": {
+            "fid": 276765,
+            "apn": "43614110"
+          },
+          "geometrySha256": "1732f518a3649be74e923c57da7f3c757325841efc837fef7aea80d57b5f3123"
+        },
+        {
+          "transportId": 289685,
+          "properties": {
+            "fid": 289685,
+            "apn": "43614201"
+          },
+          "geometrySha256": "ff93763e876eefc57d8e10ec73911066fb6f731c00427b22d80bfe87430f8644"
+        }
+      ]
+    },
+    {
+      "test": "viewport-3",
+      "url": "https://gisprod10.co.fresno.ca.us/server/rest/services/Hosted/Parcels/FeatureServer/0/query?where=1%3D1&outFields=fid%2Capn&returnGeometry=true&outSR=4326&f=geojson&orderByFields=fid&resultRecordCount=1000&resultOffset=0&geometry=-119.773%2C36.792%2C-119.772%2C36.793&geometryType=esriGeometryEnvelope&inSR=4326&spatialRel=esriSpatialRelIntersects",
+      "method": "GET",
+      "checkedAt": "2026-10-09T03:18:49.911Z",
+      "httpStatus": 200,
+      "contentType": "application/geo+json;charset=UTF-8",
+      "bytes": 6096,
+      "features": [
+        {
+          "transportId": 55395,
+          "properties": {
+            "fid": 55395,
+            "apn": "43605407"
+          },
+          "geometrySha256": "94a8a552f35d328d52202f732d084b911a81a7cc207d13d029b418ce845b43a2"
+        },
+        {
+          "transportId": 80211,
+          "properties": {
+            "fid": 80211,
+            "apn": "43614101"
+          },
+          "geometrySha256": "dd96ea05f9dd40700f45c8fb0c879231119164e3b5e89af19f126bacdfdea8b5"
+        },
+        {
+          "transportId": 113344,
+          "properties": {
+            "fid": 113344,
+            "apn": "43606155"
+          },
+          "geometrySha256": "5e8c9af8ee7382ce80f8e028b3f3a2a0af6634d4ba4edb2f60a7da0fbf423d3c"
+        },
+        {
+          "transportId": 117621,
+          "properties": {
+            "fid": 117621,
+            "apn": "43614102"
+          },
+          "geometrySha256": "0e5979edd0cd9daca67d516eeb25f1dbb9468b08c8c1226196ed32cbd8c7e8ef"
+        },
+        {
+          "transportId": 134504,
+          "properties": {
+            "fid": 134504,
+            "apn": "43605415"
+          },
+          "geometrySha256": "ce42c577687da2dfd507cbaebcf0d23c7cc8954c83413183929e5a952d581467"
+        },
+        {
+          "transportId": 136710,
+          "properties": {
+            "fid": 136710,
+            "apn": "43613502"
+          },
+          "geometrySha256": "003e080d16ffb0179a6c7cc7af772eabe4d8e4aaa4711ee2f0f3c072d3a42bf8"
+        },
+        {
+          "transportId": 148897,
+          "properties": {
+            "fid": 148897,
+            "apn": "43606301T"
+          },
+          "geometrySha256": "c2ce3e6e30b5814fd2716e515023f4d585484e5a47324371b94d529c70c3bfa6"
+        },
+        {
+          "transportId": 205982,
+          "properties": {
+            "fid": 205982,
+            "apn": "43605416"
+          },
+          "geometrySha256": "03bb988298875b1006282859e98658c9194f98281ab0fe59fba306bf25c2a10f"
+        },
+        {
+          "transportId": 213423,
+          "properties": {
+            "fid": 213423,
+            "apn": "43606152"
+          },
+          "geometrySha256": "b348e9e9e77404c6f640d232d949692898ee19bfd2f7e6bed76f35cb2ab6ca11"
+        },
+        {
+          "transportId": 219595,
+          "properties": {
+            "fid": 219595,
+            "apn": "43605406"
+          },
+          "geometrySha256": "45032ca5925686e8d7729ec749ad4c5112f94e5a6ef98eea55ac8e51a591b68f"
+        }
+      ]
+    },
+    {
+      "test": "viewport-4",
+      "url": "https://gisprod10.co.fresno.ca.us/server/rest/services/Hosted/Parcels/FeatureServer/0/query?where=1%3D1&outFields=fid%2Capn&returnGeometry=true&outSR=4326&f=geojson&orderByFields=fid&resultRecordCount=1000&resultOffset=0&geometry=-119.772%2C36.792%2C-119.771%2C36.793&geometryType=esriGeometryEnvelope&inSR=4326&spatialRel=esriSpatialRelIntersects",
+      "method": "GET",
+      "checkedAt": "2026-10-09T03:18:50.150Z",
+      "httpStatus": 200,
+      "contentType": "application/geo+json;charset=UTF-8",
+      "bytes": 9312,
+      "features": [
+        {
+          "transportId": 7879,
+          "properties": {
+            "fid": 7879,
+            "apn": "43614106"
+          },
+          "geometrySha256": "1f3b7c02655d865300ab9e9cadf22cfd7a0ee79aa01d4e4f64da819acca74979"
+        },
+        {
+          "transportId": 17815,
+          "properties": {
+            "fid": 17815,
+            "apn": "43614105"
+          },
+          "geometrySha256": "2a22edb8fff36705e20380bf65d8098328424cc3c1d927c721ca8eeb42dc6c1c"
+        },
+        {
+          "transportId": 20308,
+          "properties": {
+            "fid": 20308,
+            "apn": "43606154"
+          },
+          "geometrySha256": "48313efccf81df1a65a331f856f1160148459fdb7d51759707a895c50205a124"
+        },
+        {
+          "transportId": 23251,
+          "properties": {
+            "fid": 23251,
+            "apn": "43606302"
+          },
+          "geometrySha256": "3fa2e1e0914231ffb013e5a394e92ddba871f2175667192d2ba4ce2deba9a094"
+        },
+        {
+          "transportId": 80211,
+          "properties": {
+            "fid": 80211,
+            "apn": "43614101"
+          },
+          "geometrySha256": "dd96ea05f9dd40700f45c8fb0c879231119164e3b5e89af19f126bacdfdea8b5"
+        },
+        {
+          "transportId": 87532,
+          "properties": {
+            "fid": 87532,
+            "apn": "43614107"
+          },
+          "geometrySha256": "374baeb7738b667af44268cda1abdc41182182a42c8d9aba564a41754a94e114"
+        },
+        {
+          "transportId": 113344,
+          "properties": {
+            "fid": 113344,
+            "apn": "43606155"
+          },
+          "geometrySha256": "5e8c9af8ee7382ce80f8e028b3f3a2a0af6634d4ba4edb2f60a7da0fbf423d3c"
+        },
+        {
+          "transportId": 117621,
+          "properties": {
+            "fid": 117621,
+            "apn": "43614102"
+          },
+          "geometrySha256": "0e5979edd0cd9daca67d516eeb25f1dbb9468b08c8c1226196ed32cbd8c7e8ef"
+        },
+        {
+          "transportId": 148897,
+          "properties": {
+            "fid": 148897,
+            "apn": "43606301T"
+          },
+          "geometrySha256": "c2ce3e6e30b5814fd2716e515023f4d585484e5a47324371b94d529c70c3bfa6"
+        },
+        {
+          "transportId": 158161,
+          "properties": {
+            "fid": 158161,
+            "apn": "43606143"
+          },
+          "geometrySha256": "dcd8b927e1fdf96a08467c9184317813db30ed2b4e20d8c93097b0cf410d73f4"
+        },
+        {
+          "transportId": 202918,
+          "properties": {
+            "fid": 202918,
+            "apn": "43606303"
+          },
+          "geometrySha256": "cfe59daeaa5822a8a7469ce63e8734e1ada95681450b0b554b1268d5ffebeeae"
+        },
+        {
+          "transportId": 207322,
+          "properties": {
+            "fid": 207322,
+            "apn": "43614108"
+          },
+          "geometrySha256": "8c1c8e7546da86b5207f646c66e4c7836f1e8070bdd4de0bb8979d1231b7747f"
+        },
+        {
+          "transportId": 213423,
+          "properties": {
+            "fid": 213423,
+            "apn": "43606152"
+          },
+          "geometrySha256": "b348e9e9e77404c6f640d232d949692898ee19bfd2f7e6bed76f35cb2ab6ca11"
+        }
+      ]
+    },
+    {
+      "test": "viewport-5",
+      "url": "https://gisprod10.co.fresno.ca.us/server/rest/services/Hosted/Parcels/FeatureServer/0/query?where=1%3D1&outFields=fid%2Capn&returnGeometry=true&outSR=4326&f=geojson&orderByFields=fid&resultRecordCount=1000&resultOffset=0&geometry=-119.771%2C36.792%2C-119.77%2C36.793&geometryType=esriGeometryEnvelope&inSR=4326&spatialRel=esriSpatialRelIntersects",
+      "method": "GET",
+      "checkedAt": "2026-10-09T03:18:50.382Z",
+      "httpStatus": 200,
+      "contentType": "application/geo+json;charset=UTF-8",
+      "bytes": 7832,
+      "features": [
+        {
+          "transportId": 4903,
+          "properties": {
+            "fid": 4903,
+            "apn": "43614109"
+          },
+          "geometrySha256": "0aef1cad0528abbf7a959e824e8c6f2ad9029228a896d5067840a031301d9aee"
+        },
+        {
+          "transportId": 51600,
+          "properties": {
+            "fid": 51600,
+            "apn": "43606306"
+          },
+          "geometrySha256": "8215a67acc4047e2dea6f4911477948fd81e7fddcf7888ceb6a077d5ab28b53e"
+        },
+        {
+          "transportId": 53439,
+          "properties": {
+            "fid": 53439,
+            "apn": "43606307"
+          },
+          "geometrySha256": "ed5725afca9005a0b020f4a96a4de78e96fe8caeb66ff5d20576bb2991407497"
+        },
+        {
+          "transportId": 109481,
+          "properties": {
+            "fid": 109481,
+            "apn": "43606224"
+          },
+          "geometrySha256": "30cf27c84b8a48a16591bd2d0461899c2a81490dab63e4a455742612d9a12eb9"
+        },
+        {
+          "transportId": 122680,
+          "properties": {
+            "fid": 122680,
+            "apn": "43606305"
+          },
+          "geometrySha256": "8d4fe90033023840e816e3e97af62cee608aecff174e271c861435b140f00847"
+        },
+        {
+          "transportId": 158161,
+          "properties": {
+            "fid": 158161,
+            "apn": "43606143"
+          },
+          "geometrySha256": "dcd8b927e1fdf96a08467c9184317813db30ed2b4e20d8c93097b0cf410d73f4"
+        },
+        {
+          "transportId": 176322,
+          "properties": {
+            "fid": 176322,
+            "apn": "43614112"
+          },
+          "geometrySha256": "cc4703f50812f05f9fe98e493b1d4e9b50707948d69e5f4c6e8414177d040850"
+        },
+        {
+          "transportId": 202585,
+          "properties": {
+            "fid": 202585,
+            "apn": "43614111"
+          },
+          "geometrySha256": "77f922cec8b504d785797cba6c4ab97d20f4c352acfbb8c5fb9991f861120c5e"
+        },
+        {
+          "transportId": 202918,
+          "properties": {
+            "fid": 202918,
+            "apn": "43606303"
+          },
+          "geometrySha256": "cfe59daeaa5822a8a7469ce63e8734e1ada95681450b0b554b1268d5ffebeeae"
+        },
+        {
+          "transportId": 207322,
+          "properties": {
+            "fid": 207322,
+            "apn": "43614108"
+          },
+          "geometrySha256": "8c1c8e7546da86b5207f646c66e4c7836f1e8070bdd4de0bb8979d1231b7747f"
+        },
+        {
+          "transportId": 230183,
+          "properties": {
+            "fid": 230183,
+            "apn": "43606221"
+          },
+          "geometrySha256": "7cf6adeaae31ff28cc0e5d95790accd4479e622f679b57c841e1c4eed9959b16"
+        },
+        {
+          "transportId": 247937,
+          "properties": {
+            "fid": 247937,
+            "apn": "43606304"
+          },
+          "geometrySha256": "73b77337420222aa9d6062d20f051f18460fbd40f93201a8cfa13cbb8b56eaa2"
+        },
+        {
+          "transportId": 262567,
+          "properties": {
+            "fid": 262567,
+            "apn": "43606223"
+          },
+          "geometrySha256": "3b4f270086d5c9d884e0efc0019c1b4bbfa8c9a6790278beeed13f6f7096221b"
+        },
+        {
+          "transportId": 276765,
+          "properties": {
+            "fid": 276765,
+            "apn": "43614110"
+          },
+          "geometrySha256": "1732f518a3649be74e923c57da7f3c757325841efc837fef7aea80d57b5f3123"
+        },
+        {
+          "transportId": 286788,
+          "properties": {
+            "fid": 286788,
+            "apn": "43606222"
+          },
+          "geometrySha256": "5b54fc8376aa107588dafeb1dcc4667e7109a6e7ce47cef1b4b27445054f52d5"
+        }
+      ]
+    },
+    {
+      "test": "viewport-6",
+      "url": "https://gisprod10.co.fresno.ca.us/server/rest/services/Hosted/Parcels/FeatureServer/0/query?where=1%3D1&outFields=fid%2Capn&returnGeometry=true&outSR=4326&f=geojson&orderByFields=fid&resultRecordCount=1000&resultOffset=0&geometry=-119.773%2C36.793%2C-119.772%2C36.794&geometryType=esriGeometryEnvelope&inSR=4326&spatialRel=esriSpatialRelIntersects",
+      "method": "GET",
+      "checkedAt": "2026-10-09T03:18:50.650Z",
+      "httpStatus": 200,
+      "contentType": "application/geo+json;charset=UTF-8",
+      "bytes": 3478,
+      "features": [
+        {
+          "transportId": 77045,
+          "properties": {
+            "fid": 77045,
+            "apn": "43605403"
+          },
+          "geometrySha256": "0c79814e3430163d8c9a158201ee1c654b4442cfc2eb57a0115d652934effad1"
+        },
+        {
+          "transportId": 120537,
+          "properties": {
+            "fid": 120537,
+            "apn": "43605404"
+          },
+          "geometrySha256": "b171ddf1aaaa012efb371db59f234785c940e84abfa49a4ebc645e7ec02597da"
+        },
+        {
+          "transportId": 134504,
+          "properties": {
+            "fid": 134504,
+            "apn": "43605415"
+          },
+          "geometrySha256": "ce42c577687da2dfd507cbaebcf0d23c7cc8954c83413183929e5a952d581467"
+        },
+        {
+          "transportId": 147479,
+          "properties": {
+            "fid": 147479,
+            "apn": "43606144"
+          },
+          "geometrySha256": "1a8be92314ebb5128b8aa5e3c574cee3ecff1f5b3a886bb2bb0fb91b8bc17ab8"
+        },
+        {
+          "transportId": 180472,
+          "properties": {
+            "fid": 180472,
+            "apn": "43605402"
+          },
+          "geometrySha256": "376ba9dd08e844932307f6d730876da8f753bd40b88ae974bf2cf26b4e0a1155"
+        },
+        {
+          "transportId": 213423,
+          "properties": {
+            "fid": 213423,
+            "apn": "43606152"
+          },
+          "geometrySha256": "b348e9e9e77404c6f640d232d949692898ee19bfd2f7e6bed76f35cb2ab6ca11"
+        }
+      ]
+    },
+    {
+      "test": "viewport-7",
+      "url": "https://gisprod10.co.fresno.ca.us/server/rest/services/Hosted/Parcels/FeatureServer/0/query?where=1%3D1&outFields=fid%2Capn&returnGeometry=true&outSR=4326&f=geojson&orderByFields=fid&resultRecordCount=1000&resultOffset=0&geometry=-119.772%2C36.793%2C-119.771%2C36.794&geometryType=esriGeometryEnvelope&inSR=4326&spatialRel=esriSpatialRelIntersects",
+      "method": "GET",
+      "checkedAt": "2026-10-09T03:18:50.887Z",
+      "httpStatus": 200,
+      "contentType": "application/geo+json;charset=UTF-8",
+      "bytes": 5803,
+      "features": [
+        {
+          "transportId": 20308,
+          "properties": {
+            "fid": 20308,
+            "apn": "43606154"
+          },
+          "geometrySha256": "48313efccf81df1a65a331f856f1160148459fdb7d51759707a895c50205a124"
+        },
+        {
+          "transportId": 113344,
+          "properties": {
+            "fid": 113344,
+            "apn": "43606155"
+          },
+          "geometrySha256": "5e8c9af8ee7382ce80f8e028b3f3a2a0af6634d4ba4edb2f60a7da0fbf423d3c"
+        },
+        {
+          "transportId": 147479,
+          "properties": {
+            "fid": 147479,
+            "apn": "43606144"
+          },
+          "geometrySha256": "1a8be92314ebb5128b8aa5e3c574cee3ecff1f5b3a886bb2bb0fb91b8bc17ab8"
+        },
+        {
+          "transportId": 151103,
+          "properties": {
+            "fid": 151103,
+            "apn": "43606142"
+          },
+          "geometrySha256": "d46877289fde83f8497f642ec9966ae5c4bb7d3479bb55a48b5aecd8eaa09ce7"
+        },
+        {
+          "transportId": 158161,
+          "properties": {
+            "fid": 158161,
+            "apn": "43606143"
+          },
+          "geometrySha256": "dcd8b927e1fdf96a08467c9184317813db30ed2b4e20d8c93097b0cf410d73f4"
+        },
+        {
+          "transportId": 213423,
+          "properties": {
+            "fid": 213423,
+            "apn": "43606152"
+          },
+          "geometrySha256": "b348e9e9e77404c6f640d232d949692898ee19bfd2f7e6bed76f35cb2ab6ca11"
+        }
+      ]
+    },
+    {
+      "test": "viewport-8",
+      "url": "https://gisprod10.co.fresno.ca.us/server/rest/services/Hosted/Parcels/FeatureServer/0/query?where=1%3D1&outFields=fid%2Capn&returnGeometry=true&outSR=4326&f=geojson&orderByFields=fid&resultRecordCount=1000&resultOffset=0&geometry=-119.771%2C36.793%2C-119.77%2C36.794&geometryType=esriGeometryEnvelope&inSR=4326&spatialRel=esriSpatialRelIntersects",
+      "method": "GET",
+      "checkedAt": "2026-10-09T03:18:51.121Z",
+      "httpStatus": 200,
+      "contentType": "application/geo+json;charset=UTF-8",
+      "bytes": 8879,
+      "features": [
+        {
+          "transportId": 10856,
+          "properties": {
+            "fid": 10856,
+            "apn": "43606107"
+          },
+          "geometrySha256": "97f81f1c7a2574065b1c46fd525ae0959d2b7feab91f45e886b43b059719228d"
+        },
+        {
+          "transportId": 22052,
+          "properties": {
+            "fid": 22052,
+            "apn": "43606104"
+          },
+          "geometrySha256": "8d72a3f8dcb7cecb47eec4dd00596056a812d809c89035594c8d75879d3cc182"
+        },
+        {
+          "transportId": 54339,
+          "properties": {
+            "fid": 54339,
+            "apn": "43606203"
+          },
+          "geometrySha256": "1b2e3ebbdae28af39aa92258d1e307f6d94706541ab2695e7d178b9640acbfce"
+        },
+        {
+          "transportId": 101169,
+          "properties": {
+            "fid": 101169,
+            "apn": "43606105"
+          },
+          "geometrySha256": "14badb99b970026760a7440d9513cfb95ab437b21d6fee55fbc2a818108d2763"
+        },
+        {
+          "transportId": 108526,
+          "properties": {
+            "fid": 108526,
+            "apn": "43606126"
+          },
+          "geometrySha256": "72b4e757043541cd9dbf604b0f33ffa3fa4c3d953fca8c99a09287b47fa80573"
+        },
+        {
+          "transportId": 109481,
+          "properties": {
+            "fid": 109481,
+            "apn": "43606224"
+          },
+          "geometrySha256": "30cf27c84b8a48a16591bd2d0461899c2a81490dab63e4a455742612d9a12eb9"
+        },
+        {
+          "transportId": 151103,
+          "properties": {
+            "fid": 151103,
+            "apn": "43606142"
+          },
+          "geometrySha256": "d46877289fde83f8497f642ec9966ae5c4bb7d3479bb55a48b5aecd8eaa09ce7"
+        },
+        {
+          "transportId": 158161,
+          "properties": {
+            "fid": 158161,
+            "apn": "43606143"
+          },
+          "geometrySha256": "dcd8b927e1fdf96a08467c9184317813db30ed2b4e20d8c93097b0cf410d73f4"
+        },
+        {
+          "transportId": 158769,
+          "properties": {
+            "fid": 158769,
+            "apn": "43606129"
+          },
+          "geometrySha256": "8893ec6860a0935a6c02d82aebf9bdaa8b1a0aa8be70958d4e541662d0393211"
+        },
+        {
+          "transportId": 175430,
+          "properties": {
+            "fid": 175430,
+            "apn": "43606128"
+          },
+          "geometrySha256": "45105de09eb457a0bb7b038e1a95b853040cd37efd1e29783924a0850ad6168e"
+        },
+        {
+          "transportId": 193336,
+          "properties": {
+            "fid": 193336,
+            "apn": "43606106"
+          },
+          "geometrySha256": "0cb0b2edcd1c856e1b2731046377fd4b0a9fdc59b0db047232651a0974fe584b"
+        },
+        {
+          "transportId": 195361,
+          "properties": {
+            "fid": 195361,
+            "apn": "43606127"
+          },
+          "geometrySha256": "b7813d83c0e2bc5f4e4b8a9f3c2eab5682adabd158f204dc9c2ec77f20462022"
+        },
+        {
+          "transportId": 230183,
+          "properties": {
+            "fid": 230183,
+            "apn": "43606221"
+          },
+          "geometrySha256": "7cf6adeaae31ff28cc0e5d95790accd4479e622f679b57c841e1c4eed9959b16"
+        },
+        {
+          "transportId": 239060,
+          "properties": {
+            "fid": 239060,
+            "apn": "43606202"
+          },
+          "geometrySha256": "e72b750e7a5e126f1e021bb114fae3dab50e5f808134b662da871e26a16c9ffe"
+        },
+        {
+          "transportId": 250150,
+          "properties": {
+            "fid": 250150,
+            "apn": "43606204"
+          },
+          "geometrySha256": "62f5ad0a7a1b8354312c09fc73b26a89e78906923511df91c72e7c6134ec2da1"
+        },
+        {
+          "transportId": 262567,
+          "properties": {
+            "fid": 262567,
+            "apn": "43606223"
+          },
+          "geometrySha256": "3b4f270086d5c9d884e0efc0019c1b4bbfa8c9a6790278beeed13f6f7096221b"
+        },
+        {
+          "transportId": 264679,
+          "properties": {
+            "fid": 264679,
+            "apn": "43606201"
+          },
+          "geometrySha256": "03e353d84e70edb734ae4492ad8370dabbb5b1ffea652f2b4402c7de62cd8123"
+        },
+        {
+          "transportId": 286788,
+          "properties": {
+            "fid": 286788,
+            "apn": "43606222"
+          },
+          "geometrySha256": "5b54fc8376aa107588dafeb1dcc4667e7109a6e7ce47cef1b4b27445054f52d5"
+        }
+      ]
+    },
+    {
+      "test": "viewport-9",
+      "url": "https://gisprod10.co.fresno.ca.us/server/rest/services/Hosted/Parcels/FeatureServer/0/query?where=1%3D1&outFields=fid%2Capn&returnGeometry=true&outSR=4326&f=geojson&orderByFields=fid&resultRecordCount=1000&resultOffset=0&geometry=-119.772%2C36.79%2C-119.771%2C36.791&geometryType=esriGeometryEnvelope&inSR=4326&spatialRel=esriSpatialRelIntersects",
+      "method": "GET",
+      "checkedAt": "2026-10-09T03:18:51.354Z",
+      "httpStatus": 200,
+      "contentType": "application/geo+json;charset=UTF-8",
+      "bytes": 6759,
+      "features": [
+        {
+          "transportId": 29409,
+          "properties": {
+            "fid": 29409,
+            "apn": "43622149"
+          },
+          "geometrySha256": "f15ffb1b275312665c7498eea0f4f51861b57b9b41e0b8f34cc23568e62dfcf3"
+        },
+        {
+          "transportId": 31204,
+          "properties": {
+            "fid": 31204,
+            "apn": "43614305"
+          },
+          "geometrySha256": "8f5e1eb858662578d6bd542c76aef0989e81365fd1a99d5e1bbd5233098223b8"
+        },
+        {
+          "transportId": 36319,
+          "properties": {
+            "fid": 36319,
+            "apn": "43622150"
+          },
+          "geometrySha256": "4732120423738126c55f29a96e9c811d64d5d99ce3c85098aa4bc17b631792ec"
+        },
+        {
+          "transportId": 40184,
+          "properties": {
+            "fid": 40184,
+            "apn": "43614307"
+          },
+          "geometrySha256": "64da07206034605e4e3450717c60c0a3fa8b9baa2105c9b00ce5f8f830adc5cd"
+        },
+        {
+          "transportId": 67866,
+          "properties": {
+            "fid": 67866,
+            "apn": "43622106"
+          },
+          "geometrySha256": "de304b0102514f695b506e3cded6f8ad2820e2a8fb12bc8f1a2443f7871a027d"
+        },
+        {
+          "transportId": 133312,
+          "properties": {
+            "fid": 133312,
+            "apn": "43622107"
+          },
+          "geometrySha256": "11f794470afb62ab26b211e2512c4dcdb048b7a357a031755b6d436bbff53e4c"
+        },
+        {
+          "transportId": 174926,
+          "properties": {
+            "fid": 174926,
+            "apn": "43614338"
+          },
+          "geometrySha256": "87f6b8e14e29c9743f2bc33cad7d8bce9a5cdc7f1ecee6ad4700cce9467db9c9"
+        },
+        {
+          "transportId": 181603,
+          "properties": {
+            "fid": 181603,
+            "apn": "43614347"
+          },
+          "geometrySha256": "bd5532a1e8de975ba5beaa1b72ed08e5ed150831a39a1d7c29db75d473d8042c"
+        },
+        {
+          "transportId": 206876,
+          "properties": {
+            "fid": 206876,
+            "apn": "43614324"
+          },
+          "geometrySha256": "15e890db4aea8e659cd0190f0e3d86ad56cc1c095d651f223c43f38c185a9511"
+        },
+        {
+          "transportId": 279799,
+          "properties": {
+            "fid": 279799,
+            "apn": "43614302"
+          },
+          "geometrySha256": "553b3678c1d4e4cdb10679176f3fe6c68ec8a427633b0c18a24c06fd9eebd565"
+        },
+        {
+          "transportId": 288891,
+          "properties": {
+            "fid": 288891,
+            "apn": "43614339"
+          },
+          "geometrySha256": "b372ed8c2a3d90b451504be40666d6b1311fbadc01c414332b8912b3c01f00ec"
+        }
+      ]
+    },
+    {
+      "test": "viewport-10",
+      "url": "https://gisprod10.co.fresno.ca.us/server/rest/services/Hosted/Parcels/FeatureServer/0/query?where=1%3D1&outFields=fid%2Capn&returnGeometry=true&outSR=4326&f=geojson&orderByFields=fid&resultRecordCount=1000&resultOffset=0&geometry=-119.772%2C36.794%2C-119.771%2C36.795&geometryType=esriGeometryEnvelope&inSR=4326&spatialRel=esriSpatialRelIntersects",
+      "method": "GET",
+      "checkedAt": "2026-10-09T03:18:51.676Z",
+      "httpStatus": 200,
+      "contentType": "application/geo+json;charset=UTF-8",
+      "bytes": 4343,
+      "features": [
+        {
+          "transportId": 12506,
+          "properties": {
+            "fid": 12506,
+            "apn": "42827249"
+          },
+          "geometrySha256": "233753d01987570227059e4e8c92c949cfe1bcaea9731a316364d90b52d9684d"
+        },
+        {
+          "transportId": 24267,
+          "properties": {
+            "fid": 24267,
+            "apn": "42827238"
+          },
+          "geometrySha256": "ca14977bc9cfb1e60adafa2bd0c49a4ad89febf0a394f17d3c8fd58b8484e201"
+        },
+        {
+          "transportId": 37248,
+          "properties": {
+            "fid": 37248,
+            "apn": "42827208"
+          },
+          "geometrySha256": "bd90f1198eb34223a97329b6eb6b94d565440079fd66010ba81009499328f734"
+        },
+        {
+          "transportId": 37752,
+          "properties": {
+            "fid": 37752,
+            "apn": "42827241"
+          },
+          "geometrySha256": "11bc3d92abed277acd55f23c9758f738b06bd90b0ebcc371e9765c1feb776b7e"
+        },
+        {
+          "transportId": 40070,
+          "properties": {
+            "fid": 40070,
+            "apn": "42827240"
+          },
+          "geometrySha256": "1792423dbec3ad9bf30b24836d45368107bff5190980827d38749b4150d3087e"
+        },
+        {
+          "transportId": 170279,
+          "properties": {
+            "fid": 170279,
+            "apn": "42827245"
+          },
+          "geometrySha256": "541f6419547561040c70cdc98f18363e02180d618697826ae9dc5ab78f9126ac"
+        },
+        {
+          "transportId": 228701,
+          "properties": {
+            "fid": 228701,
+            "apn": "42827206"
+          },
+          "geometrySha256": "e7222a199fdca76d3a6cbe6f40e22a25f93e13c644a8dd99a4654369c2f3e696"
+        },
+        {
+          "transportId": 255822,
+          "properties": {
+            "fid": 255822,
+            "apn": "42827207"
+          },
+          "geometrySha256": "d9a8f24665177f033f26a099ea863436619bcb1175e70b768cf0a2b0ba9f31c6"
+        },
+        {
+          "transportId": 266992,
+          "properties": {
+            "fid": 266992,
+            "apn": "42827239"
+          },
+          "geometrySha256": "f661793b155ad3431622c315bf31a7fe361db59f2ded251a6c29c68d2dbb5446"
+        }
+      ]
+    },
+    {
+      "test": "viewport-11",
+      "url": "https://gisprod10.co.fresno.ca.us/server/rest/services/Hosted/Parcels/FeatureServer/0/query?where=1%3D1&outFields=fid%2Capn&returnGeometry=true&outSR=4326&f=geojson&orderByFields=fid&resultRecordCount=1000&resultOffset=0&geometry=-119.774%2C36.792%2C-119.773%2C36.793&geometryType=esriGeometryEnvelope&inSR=4326&spatialRel=esriSpatialRelIntersects",
+      "method": "GET",
+      "checkedAt": "2026-10-09T03:18:51.914Z",
+      "httpStatus": 200,
+      "contentType": "application/geo+json;charset=UTF-8",
+      "bytes": 5536,
+      "features": [
+        {
+          "transportId": 8273,
+          "properties": {
+            "fid": 8273,
+            "apn": "43605409"
+          },
+          "geometrySha256": "85c6bc2d6d7754086d776e8770bd14e63ec4f79047468ca8c6fe0fc3d030378b"
+        },
+        {
+          "transportId": 30239,
+          "properties": {
+            "fid": 30239,
+            "apn": "43605410"
+          },
+          "geometrySha256": "ada27134c60815abfa2f811124132a219d5f8ee4f7c7d746deca21ce01816027"
+        },
+        {
+          "transportId": 46384,
+          "properties": {
+            "fid": 46384,
+            "apn": "43605304"
+          },
+          "geometrySha256": "e3c23e90089f9f32d899510b699c8d7eca8404e34b1ea32ec63a4f46bad1063f"
+        },
+        {
+          "transportId": 55395,
+          "properties": {
+            "fid": 55395,
+            "apn": "43605407"
+          },
+          "geometrySha256": "94a8a552f35d328d52202f732d084b911a81a7cc207d13d029b418ce845b43a2"
+        },
+        {
+          "transportId": 66958,
+          "properties": {
+            "fid": 66958,
+            "apn": "43613313"
+          },
+          "geometrySha256": "91952652eed112349cb947898bcc34ecd81a21ef6ff77d5f7581cc81dbc8ad68"
+        },
+        {
+          "transportId": 98421,
+          "properties": {
+            "fid": 98421,
+            "apn": "43605411"
+          },
+          "geometrySha256": "a18a025e756214c670d85f026d5eb8b01b553c0b5de839eec86ce667756b44c4"
+        },
+        {
+          "transportId": 134504,
+          "properties": {
+            "fid": 134504,
+            "apn": "43605415"
+          },
+          "geometrySha256": "ce42c577687da2dfd507cbaebcf0d23c7cc8954c83413183929e5a952d581467"
+        },
+        {
+          "transportId": 136710,
+          "properties": {
+            "fid": 136710,
+            "apn": "43613502"
+          },
+          "geometrySha256": "003e080d16ffb0179a6c7cc7af772eabe4d8e4aaa4711ee2f0f3c072d3a42bf8"
+        },
+        {
+          "transportId": 158859,
+          "properties": {
+            "fid": 158859,
+            "apn": "43605302"
+          },
+          "geometrySha256": "c9b49fb955e2b1c4a61eb540e96fc457ca836010bbcf20103d67ad6e80c7eb68"
+        },
+        {
+          "transportId": 198814,
+          "properties": {
+            "fid": 198814,
+            "apn": "43605303"
+          },
+          "geometrySha256": "b72b0d6e3388c2670b87c63361a8294a0789cd0b0a4216d2f87bfb98230cf385"
+        },
+        {
+          "transportId": 205982,
+          "properties": {
+            "fid": 205982,
+            "apn": "43605416"
+          },
+          "geometrySha256": "03bb988298875b1006282859e98658c9194f98281ab0fe59fba306bf25c2a10f"
+        },
+        {
+          "transportId": 206386,
+          "properties": {
+            "fid": 206386,
+            "apn": "43605305"
+          },
+          "geometrySha256": "01837f34bcb4c47fe141d05521bc1bc414c0914f4138d2f3a5c2709e04c1ad86"
+        },
+        {
+          "transportId": 219595,
+          "properties": {
+            "fid": 219595,
+            "apn": "43605406"
+          },
+          "geometrySha256": "45032ca5925686e8d7729ec749ad4c5112f94e5a6ef98eea55ac8e51a591b68f"
+        },
+        {
+          "transportId": 246382,
+          "properties": {
+            "fid": 246382,
+            "apn": "43613501"
+          },
+          "geometrySha256": "80550441088734551acb5da4e529054146429ef61ee8df88e04e902b02ec6ff0"
+        },
+        {
+          "transportId": 246418,
+          "properties": {
+            "fid": 246418,
+            "apn": "43605408"
+          },
+          "geometrySha256": "24c3b98f4ab45bb1ddcbb4b9f4f798c83e8c36c124d2ac423d90ee86680c14aa"
+        }
+      ]
+    },
+    {
+      "test": "viewport-12",
+      "url": "https://gisprod10.co.fresno.ca.us/server/rest/services/Hosted/Parcels/FeatureServer/0/query?where=1%3D1&outFields=fid%2Capn&returnGeometry=true&outSR=4326&f=geojson&orderByFields=fid&resultRecordCount=1000&resultOffset=0&geometry=-119.77%2C36.792%2C-119.769%2C36.793&geometryType=esriGeometryEnvelope&inSR=4326&spatialRel=esriSpatialRelIntersects",
+      "method": "GET",
+      "checkedAt": "2026-10-09T03:18:52.146Z",
+      "httpStatus": 200,
+      "contentType": "application/geo+json;charset=UTF-8",
+      "bytes": 8170,
+      "features": [
+        {
+          "transportId": 29305,
+          "properties": {
+            "fid": 29305,
+            "apn": "43614115"
+          },
+          "geometrySha256": "c26a0060c90a8d7807d004066425f14fe24bb307d1a3d1aeb5ebbb4d9102356a"
+        },
+        {
+          "transportId": 36918,
+          "properties": {
+            "fid": 36918,
+            "apn": "43614114"
+          },
+          "geometrySha256": "30e4b4e07ea6e291076020aaf39b2f41d1039387b2f66ab89980a70de2ca934a"
+        },
+        {
+          "transportId": 51459,
+          "properties": {
+            "fid": 51459,
+            "apn": "43614113"
+          },
+          "geometrySha256": "9e0f704eca8ffd686b869854147863a91e1e318e75e4c5617d01b2617033159d"
+        },
+        {
+          "transportId": 53439,
+          "properties": {
+            "fid": 53439,
+            "apn": "43606307"
+          },
+          "geometrySha256": "ed5725afca9005a0b020f4a96a4de78e96fe8caeb66ff5d20576bb2991407497"
+        },
+        {
+          "transportId": 79563,
+          "properties": {
+            "fid": 79563,
+            "apn": "43606312"
+          },
+          "geometrySha256": "e3b5602cc1012f02340edc4576ed54bf6f97100bbc069968629b0a19f4db5a04"
+        },
+        {
+          "transportId": 102696,
+          "properties": {
+            "fid": 102696,
+            "apn": "43606308"
+          },
+          "geometrySha256": "9c38bce622c155edd6ffbd60a9e4aa7d8cccb6b76a217918ff21e59c4fd526a8"
+        },
+        {
+          "transportId": 107128,
+          "properties": {
+            "fid": 107128,
+            "apn": "43606218"
+          },
+          "geometrySha256": "ad1889460c08e8cbd10aa5aa8602316572c87ee096afcb0324bf7e77aeb1dc0b"
+        },
+        {
+          "transportId": 131798,
+          "properties": {
+            "fid": 131798,
+            "apn": "43606309"
+          },
+          "geometrySha256": "28af08d55af1994d9d5a31fc8b754168b6fda14aef46b361d4a5f8fc87730ac4"
+        },
+        {
+          "transportId": 162814,
+          "properties": {
+            "fid": 162814,
+            "apn": "43606217"
+          },
+          "geometrySha256": "1f7396de11b417b7d7febd5c6ab40cfcb119d37e371574fd0e0b4801cf60a0d4"
+        },
+        {
+          "transportId": 167981,
+          "properties": {
+            "fid": 167981,
+            "apn": "43606310"
+          },
+          "geometrySha256": "123b53a832c63375a07181fbc4be3853817832f9f617494ceb6e7e50e133e1ff"
+        },
+        {
+          "transportId": 176322,
+          "properties": {
+            "fid": 176322,
+            "apn": "43614112"
+          },
+          "geometrySha256": "cc4703f50812f05f9fe98e493b1d4e9b50707948d69e5f4c6e8414177d040850"
+        },
+        {
+          "transportId": 177160,
+          "properties": {
+            "fid": 177160,
+            "apn": "43606311"
+          },
+          "geometrySha256": "61b2f004bb69526841115058691ab82c5b57e2d748a13108eab45bdf0e949a19"
+        },
+        {
+          "transportId": 192738,
+          "properties": {
+            "fid": 192738,
+            "apn": "43606220"
+          },
+          "geometrySha256": "1fce3ca6b6f6831a392c9966efce23f48ade26ceb830b59f948d01ad57c449e1"
+        },
+        {
+          "transportId": 197188,
+          "properties": {
+            "fid": 197188,
+            "apn": "43606219"
+          },
+          "geometrySha256": "4b9dd6271971d66a749d3ca2830196b4c37af8fd1e2e178ea17ee9f1c4ac98cc"
+        },
+        {
+          "transportId": 230183,
+          "properties": {
+            "fid": 230183,
+            "apn": "43606221"
+          },
+          "geometrySha256": "7cf6adeaae31ff28cc0e5d95790accd4479e622f679b57c841e1c4eed9959b16"
+        },
+        {
+          "transportId": 259237,
+          "properties": {
+            "fid": 259237,
+            "apn": "43614116"
+          },
+          "geometrySha256": "af0ddce6859fcc490e05c7bd40ba8b8a74c65d3bf2abe3caad0b0ac22082286e"
+        }
+      ]
+    },
+    {
+      "test": "forced-three-row-pages",
+      "url": "https://gisprod10.co.fresno.ca.us/server/rest/services/Hosted/Parcels/FeatureServer/0/query?where=1%3D1&outFields=fid%2Capn&returnGeometry=true&outSR=4326&f=geojson&orderByFields=fid&resultRecordCount=3&resultOffset=0&geometry=-119.771%2C36.793%2C-119.77%2C36.794&geometryType=esriGeometryEnvelope&inSR=4326&spatialRel=esriSpatialRelIntersects",
+      "method": "GET",
+      "checkedAt": "2026-10-09T03:18:52.389Z",
+      "httpStatus": 200,
+      "contentType": "application/geo+json;charset=UTF-8",
+      "bytes": 1289,
+      "features": [
+        {
+          "transportId": 10856,
+          "properties": {
+            "fid": 10856,
+            "apn": "43606107"
+          },
+          "geometrySha256": "97f81f1c7a2574065b1c46fd525ae0959d2b7feab91f45e886b43b059719228d"
+        },
+        {
+          "transportId": 22052,
+          "properties": {
+            "fid": 22052,
+            "apn": "43606104"
+          },
+          "geometrySha256": "8d72a3f8dcb7cecb47eec4dd00596056a812d809c89035594c8d75879d3cc182"
+        },
+        {
+          "transportId": 54339,
+          "properties": {
+            "fid": 54339,
+            "apn": "43606203"
+          },
+          "geometrySha256": "1b2e3ebbdae28af39aa92258d1e307f6d94706541ab2695e7d178b9640acbfce"
+        }
+      ]
+    },
+    {
+      "test": "forced-three-row-pages",
+      "url": "https://gisprod10.co.fresno.ca.us/server/rest/services/Hosted/Parcels/FeatureServer/0/query?where=1%3D1&outFields=fid%2Capn&returnGeometry=true&outSR=4326&f=geojson&orderByFields=fid&resultRecordCount=3&resultOffset=3&geometry=-119.771%2C36.793%2C-119.77%2C36.794&geometryType=esriGeometryEnvelope&inSR=4326&spatialRel=esriSpatialRelIntersects",
+      "method": "GET",
+      "checkedAt": "2026-10-09T03:18:52.620Z",
+      "httpStatus": 200,
+      "contentType": "application/geo+json;charset=UTF-8",
+      "bytes": 1293,
+      "features": [
+        {
+          "transportId": 101169,
+          "properties": {
+            "fid": 101169,
+            "apn": "43606105"
+          },
+          "geometrySha256": "14badb99b970026760a7440d9513cfb95ab437b21d6fee55fbc2a818108d2763"
+        },
+        {
+          "transportId": 108526,
+          "properties": {
+            "fid": 108526,
+            "apn": "43606126"
+          },
+          "geometrySha256": "72b4e757043541cd9dbf604b0f33ffa3fa4c3d953fca8c99a09287b47fa80573"
+        },
+        {
+          "transportId": 109481,
+          "properties": {
+            "fid": 109481,
+            "apn": "43606224"
+          },
+          "geometrySha256": "30cf27c84b8a48a16591bd2d0461899c2a81490dab63e4a455742612d9a12eb9"
+        }
+      ]
+    },
+    {
+      "test": "forced-three-row-pages",
+      "url": "https://gisprod10.co.fresno.ca.us/server/rest/services/Hosted/Parcels/FeatureServer/0/query?where=1%3D1&outFields=fid%2Capn&returnGeometry=true&outSR=4326&f=geojson&orderByFields=fid&resultRecordCount=3&resultOffset=6&geometry=-119.771%2C36.793%2C-119.77%2C36.794&geometryType=esriGeometryEnvelope&inSR=4326&spatialRel=esriSpatialRelIntersects",
+      "method": "GET",
+      "checkedAt": "2026-10-09T03:18:52.851Z",
+      "httpStatus": 200,
+      "contentType": "application/geo+json;charset=UTF-8",
+      "bytes": 2390,
+      "features": [
+        {
+          "transportId": 151103,
+          "properties": {
+            "fid": 151103,
+            "apn": "43606142"
+          },
+          "geometrySha256": "d46877289fde83f8497f642ec9966ae5c4bb7d3479bb55a48b5aecd8eaa09ce7"
+        },
+        {
+          "transportId": 158161,
+          "properties": {
+            "fid": 158161,
+            "apn": "43606143"
+          },
+          "geometrySha256": "dcd8b927e1fdf96a08467c9184317813db30ed2b4e20d8c93097b0cf410d73f4"
+        },
+        {
+          "transportId": 158769,
+          "properties": {
+            "fid": 158769,
+            "apn": "43606129"
+          },
+          "geometrySha256": "8893ec6860a0935a6c02d82aebf9bdaa8b1a0aa8be70958d4e541662d0393211"
+        }
+      ]
+    },
+    {
+      "test": "forced-three-row-pages",
+      "url": "https://gisprod10.co.fresno.ca.us/server/rest/services/Hosted/Parcels/FeatureServer/0/query?where=1%3D1&outFields=fid%2Capn&returnGeometry=true&outSR=4326&f=geojson&orderByFields=fid&resultRecordCount=3&resultOffset=9&geometry=-119.771%2C36.793%2C-119.77%2C36.794&geometryType=esriGeometryEnvelope&inSR=4326&spatialRel=esriSpatialRelIntersects",
+      "method": "GET",
+      "checkedAt": "2026-10-09T03:18:53.085Z",
+      "httpStatus": 200,
+      "contentType": "application/geo+json;charset=UTF-8",
+      "bytes": 1339,
+      "features": [
+        {
+          "transportId": 175430,
+          "properties": {
+            "fid": 175430,
+            "apn": "43606128"
+          },
+          "geometrySha256": "45105de09eb457a0bb7b038e1a95b853040cd37efd1e29783924a0850ad6168e"
+        },
+        {
+          "transportId": 193336,
+          "properties": {
+            "fid": 193336,
+            "apn": "43606106"
+          },
+          "geometrySha256": "0cb0b2edcd1c856e1b2731046377fd4b0a9fdc59b0db047232651a0974fe584b"
+        },
+        {
+          "transportId": 195361,
+          "properties": {
+            "fid": 195361,
+            "apn": "43606127"
+          },
+          "geometrySha256": "b7813d83c0e2bc5f4e4b8a9f3c2eab5682adabd158f204dc9c2ec77f20462022"
+        }
+      ]
+    },
+    {
+      "test": "forced-three-row-pages",
+      "url": "https://gisprod10.co.fresno.ca.us/server/rest/services/Hosted/Parcels/FeatureServer/0/query?where=1%3D1&outFields=fid%2Capn&returnGeometry=true&outSR=4326&f=geojson&orderByFields=fid&resultRecordCount=3&resultOffset=12&geometry=-119.771%2C36.793%2C-119.77%2C36.794&geometryType=esriGeometryEnvelope&inSR=4326&spatialRel=esriSpatialRelIntersects",
+      "method": "GET",
+      "checkedAt": "2026-10-09T03:18:53.316Z",
+      "httpStatus": 200,
+      "contentType": "application/geo+json;charset=UTF-8",
+      "bytes": 1540,
+      "features": [
+        {
+          "transportId": 230183,
+          "properties": {
+            "fid": 230183,
+            "apn": "43606221"
+          },
+          "geometrySha256": "7cf6adeaae31ff28cc0e5d95790accd4479e622f679b57c841e1c4eed9959b16"
+        },
+        {
+          "transportId": 239060,
+          "properties": {
+            "fid": 239060,
+            "apn": "43606202"
+          },
+          "geometrySha256": "e72b750e7a5e126f1e021bb114fae3dab50e5f808134b662da871e26a16c9ffe"
+        },
+        {
+          "transportId": 250150,
+          "properties": {
+            "fid": 250150,
+            "apn": "43606204"
+          },
+          "geometrySha256": "62f5ad0a7a1b8354312c09fc73b26a89e78906923511df91c72e7c6134ec2da1"
+        }
+      ]
+    },
+    {
+      "test": "forced-three-row-pages",
+      "url": "https://gisprod10.co.fresno.ca.us/server/rest/services/Hosted/Parcels/FeatureServer/0/query?where=1%3D1&outFields=fid%2Capn&returnGeometry=true&outSR=4326&f=geojson&orderByFields=fid&resultRecordCount=3&resultOffset=15&geometry=-119.771%2C36.793%2C-119.77%2C36.794&geometryType=esriGeometryEnvelope&inSR=4326&spatialRel=esriSpatialRelIntersects",
+      "method": "GET",
+      "checkedAt": "2026-10-09T03:18:53.557Z",
+      "httpStatus": 200,
+      "contentType": "application/geo+json;charset=UTF-8",
+      "bytes": 1453,
+      "features": [
+        {
+          "transportId": 262567,
+          "properties": {
+            "fid": 262567,
+            "apn": "43606223"
+          },
+          "geometrySha256": "3b4f270086d5c9d884e0efc0019c1b4bbfa8c9a6790278beeed13f6f7096221b"
+        },
+        {
+          "transportId": 264679,
+          "properties": {
+            "fid": 264679,
+            "apn": "43606201"
+          },
+          "geometrySha256": "03e353d84e70edb734ae4492ad8370dabbb5b1ffea652f2b4402c7de62cd8123"
+        },
+        {
+          "transportId": 286788,
+          "properties": {
+            "fid": 286788,
+            "apn": "43606222"
+          },
+          "geometrySha256": "5b54fc8376aa107588dafeb1dcc4667e7109a6e7ce47cef1b4b27445054f52d5"
+        }
+      ]
+    },
+    {
+      "test": "fresh-ids-0",
+      "url": "https://gisprod10.co.fresno.ca.us/server/rest/services/Hosted/Parcels/FeatureServer/0/query?where=apn+IN+%28%2742827206%27%2C%2742827207%27%2C%2742827208%27%2C%2742827238%27%2C%2742827239%27%2C%2742827240%27%2C%2742827241%27%2C%2742827245%27%2C%2742827249%27%2C%2743605302%27%2C%2743605303%27%2C%2743605304%27%2C%2743605305%27%2C%2743605402%27%2C%2743605403%27%2C%2743605404%27%2C%2743605406%27%2C%2743605407%27%2C%2743605408%27%2C%2743605409%27%2C%2743605410%27%2C%2743605411%27%2C%2743605415%27%2C%2743605416%27%2C%2743606104%27%2C%2743606105%27%2C%2743606106%27%2C%2743606107%27%2C%2743606126%27%2C%2743606127%27%2C%2743606128%27%2C%2743606129%27%2C%2743606142%27%2C%2743606143%27%2C%2743606144%27%2C%2743606152%27%2C%2743606154%27%2C%2743606155%27%2C%2743606201%27%2C%2743606202%27%29&outFields=fid%2Capn&returnGeometry=true&outSR=4326&f=geojson&orderByFields=fid&resultRecordCount=1000&resultOffset=0",
+      "method": "GET",
+      "checkedAt": "2026-10-09T03:18:53.800Z",
+      "httpStatus": 200,
+      "contentType": "application/geo+json;charset=UTF-8",
+      "bytes": 19597,
+      "features": [
+        {
+          "transportId": 8273,
+          "properties": {
+            "fid": 8273,
+            "apn": "43605409"
+          },
+          "geometrySha256": "85c6bc2d6d7754086d776e8770bd14e63ec4f79047468ca8c6fe0fc3d030378b"
+        },
+        {
+          "transportId": 10856,
+          "properties": {
+            "fid": 10856,
+            "apn": "43606107"
+          },
+          "geometrySha256": "97f81f1c7a2574065b1c46fd525ae0959d2b7feab91f45e886b43b059719228d"
+        },
+        {
+          "transportId": 12506,
+          "properties": {
+            "fid": 12506,
+            "apn": "42827249"
+          },
+          "geometrySha256": "233753d01987570227059e4e8c92c949cfe1bcaea9731a316364d90b52d9684d"
+        },
+        {
+          "transportId": 20308,
+          "properties": {
+            "fid": 20308,
+            "apn": "43606154"
+          },
+          "geometrySha256": "48313efccf81df1a65a331f856f1160148459fdb7d51759707a895c50205a124"
+        },
+        {
+          "transportId": 22052,
+          "properties": {
+            "fid": 22052,
+            "apn": "43606104"
+          },
+          "geometrySha256": "8d72a3f8dcb7cecb47eec4dd00596056a812d809c89035594c8d75879d3cc182"
+        },
+        {
+          "transportId": 24267,
+          "properties": {
+            "fid": 24267,
+            "apn": "42827238"
+          },
+          "geometrySha256": "ca14977bc9cfb1e60adafa2bd0c49a4ad89febf0a394f17d3c8fd58b8484e201"
+        },
+        {
+          "transportId": 30239,
+          "properties": {
+            "fid": 30239,
+            "apn": "43605410"
+          },
+          "geometrySha256": "ada27134c60815abfa2f811124132a219d5f8ee4f7c7d746deca21ce01816027"
+        },
+        {
+          "transportId": 37248,
+          "properties": {
+            "fid": 37248,
+            "apn": "42827208"
+          },
+          "geometrySha256": "bd90f1198eb34223a97329b6eb6b94d565440079fd66010ba81009499328f734"
+        },
+        {
+          "transportId": 37752,
+          "properties": {
+            "fid": 37752,
+            "apn": "42827241"
+          },
+          "geometrySha256": "11bc3d92abed277acd55f23c9758f738b06bd90b0ebcc371e9765c1feb776b7e"
+        },
+        {
+          "transportId": 40070,
+          "properties": {
+            "fid": 40070,
+            "apn": "42827240"
+          },
+          "geometrySha256": "1792423dbec3ad9bf30b24836d45368107bff5190980827d38749b4150d3087e"
+        },
+        {
+          "transportId": 46384,
+          "properties": {
+            "fid": 46384,
+            "apn": "43605304"
+          },
+          "geometrySha256": "e3c23e90089f9f32d899510b699c8d7eca8404e34b1ea32ec63a4f46bad1063f"
+        },
+        {
+          "transportId": 55395,
+          "properties": {
+            "fid": 55395,
+            "apn": "43605407"
+          },
+          "geometrySha256": "94a8a552f35d328d52202f732d084b911a81a7cc207d13d029b418ce845b43a2"
+        },
+        {
+          "transportId": 77045,
+          "properties": {
+            "fid": 77045,
+            "apn": "43605403"
+          },
+          "geometrySha256": "0c79814e3430163d8c9a158201ee1c654b4442cfc2eb57a0115d652934effad1"
+        },
+        {
+          "transportId": 98421,
+          "properties": {
+            "fid": 98421,
+            "apn": "43605411"
+          },
+          "geometrySha256": "a18a025e756214c670d85f026d5eb8b01b553c0b5de839eec86ce667756b44c4"
+        },
+        {
+          "transportId": 101169,
+          "properties": {
+            "fid": 101169,
+            "apn": "43606105"
+          },
+          "geometrySha256": "14badb99b970026760a7440d9513cfb95ab437b21d6fee55fbc2a818108d2763"
+        },
+        {
+          "transportId": 108526,
+          "properties": {
+            "fid": 108526,
+            "apn": "43606126"
+          },
+          "geometrySha256": "72b4e757043541cd9dbf604b0f33ffa3fa4c3d953fca8c99a09287b47fa80573"
+        },
+        {
+          "transportId": 113344,
+          "properties": {
+            "fid": 113344,
+            "apn": "43606155"
+          },
+          "geometrySha256": "5e8c9af8ee7382ce80f8e028b3f3a2a0af6634d4ba4edb2f60a7da0fbf423d3c"
+        },
+        {
+          "transportId": 120537,
+          "properties": {
+            "fid": 120537,
+            "apn": "43605404"
+          },
+          "geometrySha256": "b171ddf1aaaa012efb371db59f234785c940e84abfa49a4ebc645e7ec02597da"
+        },
+        {
+          "transportId": 134504,
+          "properties": {
+            "fid": 134504,
+            "apn": "43605415"
+          },
+          "geometrySha256": "ce42c577687da2dfd507cbaebcf0d23c7cc8954c83413183929e5a952d581467"
+        },
+        {
+          "transportId": 147479,
+          "properties": {
+            "fid": 147479,
+            "apn": "43606144"
+          },
+          "geometrySha256": "1a8be92314ebb5128b8aa5e3c574cee3ecff1f5b3a886bb2bb0fb91b8bc17ab8"
+        },
+        {
+          "transportId": 151103,
+          "properties": {
+            "fid": 151103,
+            "apn": "43606142"
+          },
+          "geometrySha256": "d46877289fde83f8497f642ec9966ae5c4bb7d3479bb55a48b5aecd8eaa09ce7"
+        },
+        {
+          "transportId": 158161,
+          "properties": {
+            "fid": 158161,
+            "apn": "43606143"
+          },
+          "geometrySha256": "dcd8b927e1fdf96a08467c9184317813db30ed2b4e20d8c93097b0cf410d73f4"
+        },
+        {
+          "transportId": 158769,
+          "properties": {
+            "fid": 158769,
+            "apn": "43606129"
+          },
+          "geometrySha256": "8893ec6860a0935a6c02d82aebf9bdaa8b1a0aa8be70958d4e541662d0393211"
+        },
+        {
+          "transportId": 158859,
+          "properties": {
+            "fid": 158859,
+            "apn": "43605302"
+          },
+          "geometrySha256": "c9b49fb955e2b1c4a61eb540e96fc457ca836010bbcf20103d67ad6e80c7eb68"
+        },
+        {
+          "transportId": 170279,
+          "properties": {
+            "fid": 170279,
+            "apn": "42827245"
+          },
+          "geometrySha256": "541f6419547561040c70cdc98f18363e02180d618697826ae9dc5ab78f9126ac"
+        },
+        {
+          "transportId": 175430,
+          "properties": {
+            "fid": 175430,
+            "apn": "43606128"
+          },
+          "geometrySha256": "45105de09eb457a0bb7b038e1a95b853040cd37efd1e29783924a0850ad6168e"
+        },
+        {
+          "transportId": 180472,
+          "properties": {
+            "fid": 180472,
+            "apn": "43605402"
+          },
+          "geometrySha256": "376ba9dd08e844932307f6d730876da8f753bd40b88ae974bf2cf26b4e0a1155"
+        },
+        {
+          "transportId": 193336,
+          "properties": {
+            "fid": 193336,
+            "apn": "43606106"
+          },
+          "geometrySha256": "0cb0b2edcd1c856e1b2731046377fd4b0a9fdc59b0db047232651a0974fe584b"
+        },
+        {
+          "transportId": 195361,
+          "properties": {
+            "fid": 195361,
+            "apn": "43606127"
+          },
+          "geometrySha256": "b7813d83c0e2bc5f4e4b8a9f3c2eab5682adabd158f204dc9c2ec77f20462022"
+        },
+        {
+          "transportId": 198814,
+          "properties": {
+            "fid": 198814,
+            "apn": "43605303"
+          },
+          "geometrySha256": "b72b0d6e3388c2670b87c63361a8294a0789cd0b0a4216d2f87bfb98230cf385"
+        },
+        {
+          "transportId": 205982,
+          "properties": {
+            "fid": 205982,
+            "apn": "43605416"
+          },
+          "geometrySha256": "03bb988298875b1006282859e98658c9194f98281ab0fe59fba306bf25c2a10f"
+        },
+        {
+          "transportId": 206386,
+          "properties": {
+            "fid": 206386,
+            "apn": "43605305"
+          },
+          "geometrySha256": "01837f34bcb4c47fe141d05521bc1bc414c0914f4138d2f3a5c2709e04c1ad86"
+        },
+        {
+          "transportId": 213423,
+          "properties": {
+            "fid": 213423,
+            "apn": "43606152"
+          },
+          "geometrySha256": "b348e9e9e77404c6f640d232d949692898ee19bfd2f7e6bed76f35cb2ab6ca11"
+        },
+        {
+          "transportId": 219595,
+          "properties": {
+            "fid": 219595,
+            "apn": "43605406"
+          },
+          "geometrySha256": "45032ca5925686e8d7729ec749ad4c5112f94e5a6ef98eea55ac8e51a591b68f"
+        },
+        {
+          "transportId": 228701,
+          "properties": {
+            "fid": 228701,
+            "apn": "42827206"
+          },
+          "geometrySha256": "e7222a199fdca76d3a6cbe6f40e22a25f93e13c644a8dd99a4654369c2f3e696"
+        },
+        {
+          "transportId": 239060,
+          "properties": {
+            "fid": 239060,
+            "apn": "43606202"
+          },
+          "geometrySha256": "e72b750e7a5e126f1e021bb114fae3dab50e5f808134b662da871e26a16c9ffe"
+        },
+        {
+          "transportId": 246418,
+          "properties": {
+            "fid": 246418,
+            "apn": "43605408"
+          },
+          "geometrySha256": "24c3b98f4ab45bb1ddcbb4b9f4f798c83e8c36c124d2ac423d90ee86680c14aa"
+        },
+        {
+          "transportId": 255822,
+          "properties": {
+            "fid": 255822,
+            "apn": "42827207"
+          },
+          "geometrySha256": "d9a8f24665177f033f26a099ea863436619bcb1175e70b768cf0a2b0ba9f31c6"
+        },
+        {
+          "transportId": 264679,
+          "properties": {
+            "fid": 264679,
+            "apn": "43606201"
+          },
+          "geometrySha256": "03e353d84e70edb734ae4492ad8370dabbb5b1ffea652f2b4402c7de62cd8123"
+        },
+        {
+          "transportId": 266992,
+          "properties": {
+            "fid": 266992,
+            "apn": "42827239"
+          },
+          "geometrySha256": "f661793b155ad3431622c315bf31a7fe361db59f2ded251a6c29c68d2dbb5446"
+        }
+      ]
+    },
+    {
+      "test": "fresh-ids-40",
+      "url": "https://gisprod10.co.fresno.ca.us/server/rest/services/Hosted/Parcels/FeatureServer/0/query?where=apn+IN+%28%2743606203%27%2C%2743606204%27%2C%2743606217%27%2C%2743606218%27%2C%2743606219%27%2C%2743606220%27%2C%2743606221%27%2C%2743606222%27%2C%2743606223%27%2C%2743606224%27%2C%2743606301T%27%2C%2743606302%27%2C%2743606303%27%2C%2743606304%27%2C%2743606305%27%2C%2743606306%27%2C%2743606307%27%2C%2743606308%27%2C%2743606309%27%2C%2743606310%27%2C%2743606311%27%2C%2743606312%27%2C%2743613313%27%2C%2743613402%27%2C%2743613501%27%2C%2743613502%27%2C%2743613503%27%2C%2743614101%27%2C%2743614102%27%2C%2743614103%27%2C%2743614104%27%2C%2743614105%27%2C%2743614106%27%2C%2743614107%27%2C%2743614108%27%2C%2743614109%27%2C%2743614110%27%2C%2743614111%27%2C%2743614112%27%2C%2743614113%27%29&outFields=fid%2Capn&returnGeometry=true&outSR=4326&f=geojson&orderByFields=fid&resultRecordCount=1000&resultOffset=0",
+      "method": "GET",
+      "checkedAt": "2026-10-09T03:18:54.304Z",
+      "httpStatus": 200,
+      "contentType": "application/geo+json;charset=UTF-8",
+      "bytes": 19660,
+      "features": [
+        {
+          "transportId": 4903,
+          "properties": {
+            "fid": 4903,
+            "apn": "43614109"
+          },
+          "geometrySha256": "0aef1cad0528abbf7a959e824e8c6f2ad9029228a896d5067840a031301d9aee"
+        },
+        {
+          "transportId": 7879,
+          "properties": {
+            "fid": 7879,
+            "apn": "43614106"
+          },
+          "geometrySha256": "1f3b7c02655d865300ab9e9cadf22cfd7a0ee79aa01d4e4f64da819acca74979"
+        },
+        {
+          "transportId": 17815,
+          "properties": {
+            "fid": 17815,
+            "apn": "43614105"
+          },
+          "geometrySha256": "2a22edb8fff36705e20380bf65d8098328424cc3c1d927c721ca8eeb42dc6c1c"
+        },
+        {
+          "transportId": 23251,
+          "properties": {
+            "fid": 23251,
+            "apn": "43606302"
+          },
+          "geometrySha256": "3fa2e1e0914231ffb013e5a394e92ddba871f2175667192d2ba4ce2deba9a094"
+        },
+        {
+          "transportId": 31884,
+          "properties": {
+            "fid": 31884,
+            "apn": "43613503"
+          },
+          "geometrySha256": "8758e8b431ec700435d54818605a2007aa82e27988293dcb9ed4d5da34598dd4"
+        },
+        {
+          "transportId": 45700,
+          "properties": {
+            "fid": 45700,
+            "apn": "43614104"
+          },
+          "geometrySha256": "058986d0175c6495afd662fb5f2b41ef4b7e241e3b6c4872367ed8d3eb4687f9"
+        },
+        {
+          "transportId": 51459,
+          "properties": {
+            "fid": 51459,
+            "apn": "43614113"
+          },
+          "geometrySha256": "9e0f704eca8ffd686b869854147863a91e1e318e75e4c5617d01b2617033159d"
+        },
+        {
+          "transportId": 51600,
+          "properties": {
+            "fid": 51600,
+            "apn": "43606306"
+          },
+          "geometrySha256": "8215a67acc4047e2dea6f4911477948fd81e7fddcf7888ceb6a077d5ab28b53e"
+        },
+        {
+          "transportId": 53439,
+          "properties": {
+            "fid": 53439,
+            "apn": "43606307"
+          },
+          "geometrySha256": "ed5725afca9005a0b020f4a96a4de78e96fe8caeb66ff5d20576bb2991407497"
+        },
+        {
+          "transportId": 54339,
+          "properties": {
+            "fid": 54339,
+            "apn": "43606203"
+          },
+          "geometrySha256": "1b2e3ebbdae28af39aa92258d1e307f6d94706541ab2695e7d178b9640acbfce"
+        },
+        {
+          "transportId": 66958,
+          "properties": {
+            "fid": 66958,
+            "apn": "43613313"
+          },
+          "geometrySha256": "91952652eed112349cb947898bcc34ecd81a21ef6ff77d5f7581cc81dbc8ad68"
+        },
+        {
+          "transportId": 79563,
+          "properties": {
+            "fid": 79563,
+            "apn": "43606312"
+          },
+          "geometrySha256": "e3b5602cc1012f02340edc4576ed54bf6f97100bbc069968629b0a19f4db5a04"
+        },
+        {
+          "transportId": 80211,
+          "properties": {
+            "fid": 80211,
+            "apn": "43614101"
+          },
+          "geometrySha256": "dd96ea05f9dd40700f45c8fb0c879231119164e3b5e89af19f126bacdfdea8b5"
+        },
+        {
+          "transportId": 87532,
+          "properties": {
+            "fid": 87532,
+            "apn": "43614107"
+          },
+          "geometrySha256": "374baeb7738b667af44268cda1abdc41182182a42c8d9aba564a41754a94e114"
+        },
+        {
+          "transportId": 102696,
+          "properties": {
+            "fid": 102696,
+            "apn": "43606308"
+          },
+          "geometrySha256": "9c38bce622c155edd6ffbd60a9e4aa7d8cccb6b76a217918ff21e59c4fd526a8"
+        },
+        {
+          "transportId": 107128,
+          "properties": {
+            "fid": 107128,
+            "apn": "43606218"
+          },
+          "geometrySha256": "ad1889460c08e8cbd10aa5aa8602316572c87ee096afcb0324bf7e77aeb1dc0b"
+        },
+        {
+          "transportId": 109481,
+          "properties": {
+            "fid": 109481,
+            "apn": "43606224"
+          },
+          "geometrySha256": "30cf27c84b8a48a16591bd2d0461899c2a81490dab63e4a455742612d9a12eb9"
+        },
+        {
+          "transportId": 117621,
+          "properties": {
+            "fid": 117621,
+            "apn": "43614102"
+          },
+          "geometrySha256": "0e5979edd0cd9daca67d516eeb25f1dbb9468b08c8c1226196ed32cbd8c7e8ef"
+        },
+        {
+          "transportId": 122680,
+          "properties": {
+            "fid": 122680,
+            "apn": "43606305"
+          },
+          "geometrySha256": "8d4fe90033023840e816e3e97af62cee608aecff174e271c861435b140f00847"
+        },
+        {
+          "transportId": 131798,
+          "properties": {
+            "fid": 131798,
+            "apn": "43606309"
+          },
+          "geometrySha256": "28af08d55af1994d9d5a31fc8b754168b6fda14aef46b361d4a5f8fc87730ac4"
+        },
+        {
+          "transportId": 136710,
+          "properties": {
+            "fid": 136710,
+            "apn": "43613502"
+          },
+          "geometrySha256": "003e080d16ffb0179a6c7cc7af772eabe4d8e4aaa4711ee2f0f3c072d3a42bf8"
+        },
+        {
+          "transportId": 148897,
+          "properties": {
+            "fid": 148897,
+            "apn": "43606301T"
+          },
+          "geometrySha256": "c2ce3e6e30b5814fd2716e515023f4d585484e5a47324371b94d529c70c3bfa6"
+        },
+        {
+          "transportId": 162814,
+          "properties": {
+            "fid": 162814,
+            "apn": "43606217"
+          },
+          "geometrySha256": "1f7396de11b417b7d7febd5c6ab40cfcb119d37e371574fd0e0b4801cf60a0d4"
+        },
+        {
+          "transportId": 167981,
+          "properties": {
+            "fid": 167981,
+            "apn": "43606310"
+          },
+          "geometrySha256": "123b53a832c63375a07181fbc4be3853817832f9f617494ceb6e7e50e133e1ff"
+        },
+        {
+          "transportId": 171798,
+          "properties": {
+            "fid": 171798,
+            "apn": "43613402"
+          },
+          "geometrySha256": "80fb2dac462783ecb3fa502923cfccf5d72c8f27dfc7ba318b6c1c7441ab28fb"
+        },
+        {
+          "transportId": 176322,
+          "properties": {
+            "fid": 176322,
+            "apn": "43614112"
+          },
+          "geometrySha256": "cc4703f50812f05f9fe98e493b1d4e9b50707948d69e5f4c6e8414177d040850"
+        },
+        {
+          "transportId": 177160,
+          "properties": {
+            "fid": 177160,
+            "apn": "43606311"
+          },
+          "geometrySha256": "61b2f004bb69526841115058691ab82c5b57e2d748a13108eab45bdf0e949a19"
+        },
+        {
+          "transportId": 192738,
+          "properties": {
+            "fid": 192738,
+            "apn": "43606220"
+          },
+          "geometrySha256": "1fce3ca6b6f6831a392c9966efce23f48ade26ceb830b59f948d01ad57c449e1"
+        },
+        {
+          "transportId": 197188,
+          "properties": {
+            "fid": 197188,
+            "apn": "43606219"
+          },
+          "geometrySha256": "4b9dd6271971d66a749d3ca2830196b4c37af8fd1e2e178ea17ee9f1c4ac98cc"
+        },
+        {
+          "transportId": 202585,
+          "properties": {
+            "fid": 202585,
+            "apn": "43614111"
+          },
+          "geometrySha256": "77f922cec8b504d785797cba6c4ab97d20f4c352acfbb8c5fb9991f861120c5e"
+        },
+        {
+          "transportId": 202918,
+          "properties": {
+            "fid": 202918,
+            "apn": "43606303"
+          },
+          "geometrySha256": "cfe59daeaa5822a8a7469ce63e8734e1ada95681450b0b554b1268d5ffebeeae"
+        },
+        {
+          "transportId": 207322,
+          "properties": {
+            "fid": 207322,
+            "apn": "43614108"
+          },
+          "geometrySha256": "8c1c8e7546da86b5207f646c66e4c7836f1e8070bdd4de0bb8979d1231b7747f"
+        },
+        {
+          "transportId": 230183,
+          "properties": {
+            "fid": 230183,
+            "apn": "43606221"
+          },
+          "geometrySha256": "7cf6adeaae31ff28cc0e5d95790accd4479e622f679b57c841e1c4eed9959b16"
+        },
+        {
+          "transportId": 246382,
+          "properties": {
+            "fid": 246382,
+            "apn": "43613501"
+          },
+          "geometrySha256": "80550441088734551acb5da4e529054146429ef61ee8df88e04e902b02ec6ff0"
+        },
+        {
+          "transportId": 247937,
+          "properties": {
+            "fid": 247937,
+            "apn": "43606304"
+          },
+          "geometrySha256": "73b77337420222aa9d6062d20f051f18460fbd40f93201a8cfa13cbb8b56eaa2"
+        },
+        {
+          "transportId": 250150,
+          "properties": {
+            "fid": 250150,
+            "apn": "43606204"
+          },
+          "geometrySha256": "62f5ad0a7a1b8354312c09fc73b26a89e78906923511df91c72e7c6134ec2da1"
+        },
+        {
+          "transportId": 262546,
+          "properties": {
+            "fid": 262546,
+            "apn": "43614103"
+          },
+          "geometrySha256": "a547c7e4d022ec13f9193a2258a276cb127bf8dc352adfee14780aa831af9699"
+        },
+        {
+          "transportId": 262567,
+          "properties": {
+            "fid": 262567,
+            "apn": "43606223"
+          },
+          "geometrySha256": "3b4f270086d5c9d884e0efc0019c1b4bbfa8c9a6790278beeed13f6f7096221b"
+        },
+        {
+          "transportId": 276765,
+          "properties": {
+            "fid": 276765,
+            "apn": "43614110"
+          },
+          "geometrySha256": "1732f518a3649be74e923c57da7f3c757325841efc837fef7aea80d57b5f3123"
+        },
+        {
+          "transportId": 286788,
+          "properties": {
+            "fid": 286788,
+            "apn": "43606222"
+          },
+          "geometrySha256": "5b54fc8376aa107588dafeb1dcc4667e7109a6e7ce47cef1b4b27445054f52d5"
+        }
+      ]
+    },
+    {
+      "test": "fresh-ids-80",
+      "url": "https://gisprod10.co.fresno.ca.us/server/rest/services/Hosted/Parcels/FeatureServer/0/query?where=apn+IN+%28%2743614114%27%2C%2743614115%27%2C%2743614116%27%2C%2743614201%27%2C%2743614202%27%2C%2743614203%27%2C%2743614204%27%2C%2743614205%27%2C%2743614214%27%2C%2743614215%27%2C%2743614216%27%2C%2743614217%27%2C%2743614218%27%2C%2743614302%27%2C%2743614303%27%2C%2743614304%27%2C%2743614305%27%2C%2743614307%27%2C%2743614324%27%2C%2743614338%27%2C%2743614339%27%2C%2743614347%27%2C%2743622106%27%2C%2743622107%27%2C%2743622149%27%2C%2743622150%27%29&outFields=fid%2Capn&returnGeometry=true&outSR=4326&f=geojson&orderByFields=fid&resultRecordCount=1000&resultOffset=0",
+      "method": "GET",
+      "checkedAt": "2026-10-09T03:18:54.760Z",
+      "httpStatus": 200,
+      "contentType": "application/geo+json;charset=UTF-8",
+      "bytes": 13250,
+      "features": [
+        {
+          "transportId": 5726,
+          "properties": {
+            "fid": 5726,
+            "apn": "43614218"
+          },
+          "geometrySha256": "bdd146b888dc0ff4d130af2f8caca4891fa17ae5041ca24d3dc7c7adaa71741c"
+        },
+        {
+          "transportId": 29305,
+          "properties": {
+            "fid": 29305,
+            "apn": "43614115"
+          },
+          "geometrySha256": "c26a0060c90a8d7807d004066425f14fe24bb307d1a3d1aeb5ebbb4d9102356a"
+        },
+        {
+          "transportId": 29409,
+          "properties": {
+            "fid": 29409,
+            "apn": "43622149"
+          },
+          "geometrySha256": "f15ffb1b275312665c7498eea0f4f51861b57b9b41e0b8f34cc23568e62dfcf3"
+        },
+        {
+          "transportId": 31204,
+          "properties": {
+            "fid": 31204,
+            "apn": "43614305"
+          },
+          "geometrySha256": "8f5e1eb858662578d6bd542c76aef0989e81365fd1a99d5e1bbd5233098223b8"
+        },
+        {
+          "transportId": 32077,
+          "properties": {
+            "fid": 32077,
+            "apn": "43614304"
+          },
+          "geometrySha256": "f4cb12615772ab6997eb1da906dd70e084c91d538579829ae7981b20551b110d"
+        },
+        {
+          "transportId": 36319,
+          "properties": {
+            "fid": 36319,
+            "apn": "43622150"
+          },
+          "geometrySha256": "4732120423738126c55f29a96e9c811d64d5d99ce3c85098aa4bc17b631792ec"
+        },
+        {
+          "transportId": 36918,
+          "properties": {
+            "fid": 36918,
+            "apn": "43614114"
+          },
+          "geometrySha256": "30e4b4e07ea6e291076020aaf39b2f41d1039387b2f66ab89980a70de2ca934a"
+        },
+        {
+          "transportId": 40184,
+          "properties": {
+            "fid": 40184,
+            "apn": "43614307"
+          },
+          "geometrySha256": "64da07206034605e4e3450717c60c0a3fa8b9baa2105c9b00ce5f8f830adc5cd"
+        },
+        {
+          "transportId": 64122,
+          "properties": {
+            "fid": 64122,
+            "apn": "43614215"
+          },
+          "geometrySha256": "7bdc71f39c0882ea6d9b3a7528d4debc20d5e41ccf6d2a1691bbd56a3f2d8cf1"
+        },
+        {
+          "transportId": 67866,
+          "properties": {
+            "fid": 67866,
+            "apn": "43622106"
+          },
+          "geometrySha256": "de304b0102514f695b506e3cded6f8ad2820e2a8fb12bc8f1a2443f7871a027d"
+        },
+        {
+          "transportId": 101496,
+          "properties": {
+            "fid": 101496,
+            "apn": "43614214"
+          },
+          "geometrySha256": "030d4aa8130ca2dbdc21eee67eb6823f40d1b42bd26dda1b08ed8f89763ef306"
+        },
+        {
+          "transportId": 120059,
+          "properties": {
+            "fid": 120059,
+            "apn": "43614205"
+          },
+          "geometrySha256": "3e6b9ba688a2bcdb609fd22d94f9f20585a8d776b858decb61fe1e20c1abfa04"
+        },
+        {
+          "transportId": 133312,
+          "properties": {
+            "fid": 133312,
+            "apn": "43622107"
+          },
+          "geometrySha256": "11f794470afb62ab26b211e2512c4dcdb048b7a357a031755b6d436bbff53e4c"
+        },
+        {
+          "transportId": 142938,
+          "properties": {
+            "fid": 142938,
+            "apn": "43614217"
+          },
+          "geometrySha256": "b55ad51364b5fb593a001343de8259605f86177b66024c835282ba143f382c86"
+        },
+        {
+          "transportId": 174926,
+          "properties": {
+            "fid": 174926,
+            "apn": "43614338"
+          },
+          "geometrySha256": "87f6b8e14e29c9743f2bc33cad7d8bce9a5cdc7f1ecee6ad4700cce9467db9c9"
+        },
+        {
+          "transportId": 181603,
+          "properties": {
+            "fid": 181603,
+            "apn": "43614347"
+          },
+          "geometrySha256": "bd5532a1e8de975ba5beaa1b72ed08e5ed150831a39a1d7c29db75d473d8042c"
+        },
+        {
+          "transportId": 206876,
+          "properties": {
+            "fid": 206876,
+            "apn": "43614324"
+          },
+          "geometrySha256": "15e890db4aea8e659cd0190f0e3d86ad56cc1c095d651f223c43f38c185a9511"
+        },
+        {
+          "transportId": 217012,
+          "properties": {
+            "fid": 217012,
+            "apn": "43614203"
+          },
+          "geometrySha256": "d9f47cc712eadbb964cbe7d6e2385e0c246e95d5282e3b5e0a580e1fa032bad2"
+        },
+        {
+          "transportId": 217359,
+          "properties": {
+            "fid": 217359,
+            "apn": "43614216"
+          },
+          "geometrySha256": "4ff3f432ca22f62e7842403f64283eb59c77f7506fbedaeb00e462726e3f2462"
+        },
+        {
+          "transportId": 259237,
+          "properties": {
+            "fid": 259237,
+            "apn": "43614116"
+          },
+          "geometrySha256": "af0ddce6859fcc490e05c7bd40ba8b8a74c65d3bf2abe3caad0b0ac22082286e"
+        },
+        {
+          "transportId": 260317,
+          "properties": {
+            "fid": 260317,
+            "apn": "43614204"
+          },
+          "geometrySha256": "4f93d689ae0a3133f96752b930aa887b4d6c5dace9ec6324d7316b0445c72118"
+        },
+        {
+          "transportId": 267198,
+          "properties": {
+            "fid": 267198,
+            "apn": "43614202"
+          },
+          "geometrySha256": "962428206f1ffc047931025d9dfbc056c9ad47c5705e4224fb2c5ca66648a593"
+        },
+        {
+          "transportId": 278219,
+          "properties": {
+            "fid": 278219,
+            "apn": "43614303"
+          },
+          "geometrySha256": "c647275179edb872223914d5ba6d1c2d1511e8a98a0fe8bd76a0e7b81aa2a6da"
+        },
+        {
+          "transportId": 279799,
+          "properties": {
+            "fid": 279799,
+            "apn": "43614302"
+          },
+          "geometrySha256": "553b3678c1d4e4cdb10679176f3fe6c68ec8a427633b0c18a24c06fd9eebd565"
+        },
+        {
+          "transportId": 288891,
+          "properties": {
+            "fid": 288891,
+            "apn": "43614339"
+          },
+          "geometrySha256": "b372ed8c2a3d90b451504be40666d6b1311fbadc01c414332b8912b3c01f00ec"
+        },
+        {
+          "transportId": 289685,
+          "properties": {
+            "fid": 289685,
+            "apn": "43614201"
+          },
+          "geometrySha256": "ff93763e876eefc57d8e10ec73911066fb6f731c00427b22d80bfe87430f8644"
+        }
+      ]
+    },
+    {
+      "test": "explicit-absence",
+      "url": "https://gisprod10.co.fresno.ca.us/server/rest/services/Hosted/Parcels/FeatureServer/0/query?where=apn+IN+%28%279999999999%27%29&outFields=fid%2Capn&returnGeometry=true&outSR=4326&f=geojson&orderByFields=fid&resultRecordCount=1000&resultOffset=0",
+      "method": "GET",
+      "checkedAt": "2026-10-09T03:18:55.156Z",
+      "httpStatus": 200,
+      "contentType": "application/geo+json;charset=UTF-8",
+      "bytes": 87,
+      "features": []
+    },
+    {
+      "test": "footprint",
+      "url": "https://gisprod10.co.fresno.ca.us/server/rest/services/Hosted/Parcels/FeatureServer/0/query?where=1%3D1&outFields=fid%2Capn&returnGeometry=true&outSR=4326&f=geojson&orderByFields=fid&resultRecordCount=1000&resultOffset=0&geometry=-119.77040543969439%2C36.79115560410815%2C-119.77014425578525%2C36.79147980964376&geometryType=esriGeometryEnvelope&inSR=4326&spatialRel=esriSpatialRelIntersects",
+      "method": "GET",
+      "checkedAt": "2026-10-09T03:18:55.418Z",
+      "httpStatus": 200,
+      "contentType": "application/geo+json;charset=UTF-8",
+      "bytes": 2498,
+      "features": [
+        {
+          "transportId": 64122,
+          "properties": {
+            "fid": 64122,
+            "apn": "43614215"
+          },
+          "geometrySha256": "7bdc71f39c0882ea6d9b3a7528d4debc20d5e41ccf6d2a1691bbd56a3f2d8cf1"
+        },
+        {
+          "transportId": 101496,
+          "properties": {
+            "fid": 101496,
+            "apn": "43614214"
+          },
+          "geometrySha256": "030d4aa8130ca2dbdc21eee67eb6823f40d1b42bd26dda1b08ed8f89763ef306"
+        },
+        {
+          "transportId": 120059,
+          "properties": {
+            "fid": 120059,
+            "apn": "43614205"
+          },
+          "geometrySha256": "3e6b9ba688a2bcdb609fd22d94f9f20585a8d776b858decb61fe1e20c1abfa04"
+        },
+        {
+          "transportId": 217012,
+          "properties": {
+            "fid": 217012,
+            "apn": "43614203"
+          },
+          "geometrySha256": "d9f47cc712eadbb964cbe7d6e2385e0c246e95d5282e3b5e0a580e1fa032bad2"
+        },
+        {
+          "transportId": 217359,
+          "properties": {
+            "fid": 217359,
+            "apn": "43614216"
+          },
+          "geometrySha256": "4ff3f432ca22f62e7842403f64283eb59c77f7506fbedaeb00e462726e3f2462"
+        },
+        {
+          "transportId": 260317,
+          "properties": {
+            "fid": 260317,
+            "apn": "43614204"
+          },
+          "geometrySha256": "4f93d689ae0a3133f96752b930aa887b4d6c5dace9ec6324d7316b0445c72118"
+        }
+      ]
+    },
+    {
+      "test": "source-binding",
+      "url": "https://gisprod10.co.fresno.ca.us/server/rest/services/Hosted/Parcels/FeatureServer/0/query?where=1%3D1&outFields=fid%2Capn&returnGeometry=true&outSR=4326&f=geojson&orderByFields=fid&resultRecordCount=1000&resultOffset=0&geometry=-119.77040543969439%2C36.79115560410815%2C-119.77014425578525%2C36.79147980964376&geometryType=esriGeometryEnvelope&inSR=4326&spatialRel=esriSpatialRelIntersects",
+      "method": "GET",
+      "checkedAt": "2026-10-09T03:18:55.657Z",
+      "httpStatus": 200,
+      "contentType": "application/geo+json;charset=UTF-8",
+      "bytes": 2498,
+      "features": [
+        {
+          "transportId": 64122,
+          "properties": {
+            "fid": 64122,
+            "apn": "43614215"
+          },
+          "geometrySha256": "7bdc71f39c0882ea6d9b3a7528d4debc20d5e41ccf6d2a1691bbd56a3f2d8cf1"
+        },
+        {
+          "transportId": 101496,
+          "properties": {
+            "fid": 101496,
+            "apn": "43614214"
+          },
+          "geometrySha256": "030d4aa8130ca2dbdc21eee67eb6823f40d1b42bd26dda1b08ed8f89763ef306"
+        },
+        {
+          "transportId": 120059,
+          "properties": {
+            "fid": 120059,
+            "apn": "43614205"
+          },
+          "geometrySha256": "3e6b9ba688a2bcdb609fd22d94f9f20585a8d776b858decb61fe1e20c1abfa04"
+        },
+        {
+          "transportId": 217012,
+          "properties": {
+            "fid": 217012,
+            "apn": "43614203"
+          },
+          "geometrySha256": "d9f47cc712eadbb964cbe7d6e2385e0c246e95d5282e3b5e0a580e1fa032bad2"
+        },
+        {
+          "transportId": 217359,
+          "properties": {
+            "fid": 217359,
+            "apn": "43614216"
+          },
+          "geometrySha256": "4ff3f432ca22f62e7842403f64283eb59c77f7506fbedaeb00e462726e3f2462"
+        },
+        {
+          "transportId": 260317,
+          "properties": {
+            "fid": 260317,
+            "apn": "43614204"
+          },
+          "geometrySha256": "4f93d689ae0a3133f96752b930aa887b4d6c5dace9ec6324d7316b0445c72118"
+        }
+      ]
+    }
+  ],
+  "qualityFile": "research/overnight-cities-2026-10-08/fresno-county-root-quality.json",
+  "uniqueParcels": 106,
+  "requestCount": 25,
+  "allTestsPassed": true,
+  "finishedAt": "2026-10-09T03:18:55.909Z",
+  "qualityStatus": "approved_by_root"
+}

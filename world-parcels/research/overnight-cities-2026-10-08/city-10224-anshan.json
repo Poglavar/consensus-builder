@@ -1,0 +1,116 @@
+{
+  "name": "Anshan",
+  "country": "China",
+  "countryCode": "CN",
+  "rank": 388,
+  "point": [
+    41.1101737280777,
+    122.992688593335
+  ],
+  "population2025": 1322386,
+  "schemaVersion": 1,
+  "kind": "city_parcel_source_research",
+  "checkedAt": "2026-10-09",
+  "populationUnit": "persons",
+  "status": "complete",
+  "verifiedSample": false,
+  "publicParcelGeometryFound": false,
+  "runtimeReadiness": "not_enabled_no_verified_public_geometry",
+  "priorEvidenceFiles": [],
+  "scopeLimits": "The ranked WUP population-weighted point is a settlement locator, not a parcel identity, municipal boundary, or coverage guarantee. No full parcel polygon geometry is retained.",
+  "pointBasis": "UN WUP 2025 population-weighted settlement centroid; this is not a municipal boundary or a parcel-coverage claim.",
+  "registryFound": true,
+  "registryBasis": "Official city government describes identity-gated real-estate registration record query; this establishes local registry activity but not open geometry.",
+  "resultCategory": "city_registry_access_gated_no_public_vector_geometry_verified",
+  "technicalBlocker": "Registration query is identity-gated; Tianditu page did not expose parcel layer or geometry API.",
+  "remainingUncertainty": "Whether a separate public cadastral viewer exists outside the Tianditu basemap portal.",
+  "nextStep": "Inspect only anonymous service-catalog metadata if available; do not use Liaoshitong or query property records.",
+  "research": {
+    "executedQueries": [
+      {
+        "language": "English",
+        "query": "Anshan official cadastral parcel map public map GIS real estate registration Anshan City China",
+        "result": "Found official Anshan Tianditu portal, whose indexed interface lists vector map, imagery, terrain, land-cover and shaded-relief basemaps but no visible parcel layer. Official registration-record query requires account authentication.",
+        "urls": [
+          "https://liaoning.tianditu.gov.cn/anshan",
+          "https://spj.anshan.gov.cn/xxgk/025003/20220803/223210e2-89f6-4788-a1eb-331ba01a60e0.html"
+        ],
+        "method": "Separate native-language or English web search; official pages/viewer inspected where available; no personal or owner-record query."
+      },
+      {
+        "language": "Simplified Chinese",
+        "query": "鞍山市 自然资源局 地籍图 宗地图 不动产登记 GIS 公开查询 不动产登记中心",
+        "result": "官方辽事通登记查询指南要求实名登录和人脸识别；天地图鞍山页面显示通用底图分类，未确认宗地矢量图层。",
+        "urls": [
+          "https://spj.anshan.gov.cn/xxgk/025003/20220803/223210e2-89f6-4788-a1eb-331ba01a60e0.html",
+          "https://spj.anshan.gov.cn/xxgk/025003/20231129/55d9e66c-028c-43e4-97cb-abc29b032fa5.html",
+          "https://liaoning.tianditu.gov.cn/anshan"
+        ],
+        "method": "Separate native-language or English web search; official pages/viewer inspected where available; no personal or owner-record query."
+      }
+    ],
+    "officialSources": [
+      {
+        "url": "https://spj.anshan.gov.cn/xxgk/025003/20220803/223210e2-89f6-4788-a1eb-331ba01a60e0.html",
+        "method": "Public source/search review or direct anonymous GET",
+        "httpStatus": 200,
+        "contentType": "text/html",
+        "observation": "Official instructions say Liaoshitong real-estate registration queries require实名 login, face verification, and claimant/legitimate-interest selection."
+      },
+      {
+        "url": "https://spj.anshan.gov.cn/xxgk/025003/20231129/55d9e66c-028c-43e4-97cb-abc29b032fa5.html",
+        "method": "Public source/search review or direct anonymous GET",
+        "httpStatus": 200,
+        "contentType": "text/html",
+        "observation": "Official city guide confirms online property-registration service, also requiring identity verification."
+      },
+      {
+        "url": "https://liaoning.tianditu.gov.cn/anshan",
+        "method": "Public source/search review or direct anonymous GET",
+        "httpStatus": null,
+        "contentType": "text/html (indexed)",
+        "observation": "Official Anshan Natural Resources Bureau geospatial portal; indexed UI lists general basemaps, not verified parcel geometry. Direct GET timed out locally."
+      }
+    ],
+    "portals": [
+      {
+        "name": "Liaoshitong Anshan property query",
+        "operator": "Anshan municipal service / real-estate registration center",
+        "url": "https://spj.anshan.gov.cn/xxgk/025003/20220803/223210e2-89f6-4788-a1eb-331ba01a60e0.html",
+        "observation": "Identity-authenticated registry service; no login or personal query performed."
+      },
+      {
+        "name": "Tianditu Anshan",
+        "operator": "Anshan Natural Resources Bureau",
+        "url": "https://liaoning.tianditu.gov.cn/anshan",
+        "observation": "General basemap portal; no parcel feature response verified."
+      }
+    ],
+    "viewerAndServiceTrace": {
+      "attempted": true,
+      "summary": "Local registry service is identity-gated. Public Tianditu page timed out locally; indexed content shows basemaps only. No anonymous full-polygon endpoint confirmed.",
+      "fullPolygonLimit": 3,
+      "fullPolygonsRetained": 0,
+      "ownerOrAddressDataRequested": false,
+      "credentialsOrTokenValuesRetained": false
+    },
+    "attemptedGeometry": {
+      "fullPolygonLimit": 3,
+      "fullPolygonsRetained": 0,
+      "ownerOrAddressDataRequested": false,
+      "outcome": "No full parcel polygon geometry was requested or retained."
+    }
+  },
+  "verifiedParcelResponse": null,
+  "source": null,
+  "wupCityCode": 10224,
+  "cityId": "wup2025:10224",
+  "queueRank": 388,
+  "populationPlausibility2025": "High",
+  "centerLatLon": [
+    41.1101737280777,
+    122.992688593335
+  ],
+  "sourceIds": [],
+  "rootReviewedAt": "2026-10-08T23:20:33.128981+00:00"
+}

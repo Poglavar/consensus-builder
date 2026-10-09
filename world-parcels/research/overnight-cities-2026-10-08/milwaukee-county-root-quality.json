@@ -1,0 +1,1042 @@
+{
+  "schemaVersion": 1,
+  "purpose": "Independent GEOS topology check of complete runtime parcels projected to metric coordinates; no repair applied. Counts are bounded sample evidence, not whole-city guarantees.",
+  "library": "Shapely 2.2.0",
+  "metricCrs": "EPSG:32616",
+  "featureCount": 146,
+  "validNonemptyCount": 146,
+  "invalidFeatures": [],
+  "exactDuplicateGeometryPairs": [],
+  "positiveAreaOverlapPairsAbove0_01M2": [],
+  "sumPairwiseOverlapM2": 0,
+  "operationErrors": [],
+  "areaM2": {
+    "min": 194.07288322023027,
+    "median": 477.4886913414444,
+    "max": 17961.82333351781
+  },
+  "features": [
+    {
+      "id": "US-WI-MILWAUKEE-MAP-1160751",
+      "areaM2": 360.1492957729404,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "US-WI-MILWAUKEE-MAP-1089703",
+      "areaM2": 332.080789190668,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "US-WI-MILWAUKEE-MAP-1039249",
+      "areaM2": 769.2886946099418,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "US-WI-MILWAUKEE-MAP-1110183",
+      "areaM2": 2262.7651410352237,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "US-WI-MILWAUKEE-MAP-1037416",
+      "areaM2": 1603.9866435702702,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "US-WI-MILWAUKEE-MAP-1037414",
+      "areaM2": 392.72980611334594,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "US-WI-MILWAUKEE-MAP-1084535",
+      "areaM2": 14129.236012745172,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "US-WI-MILWAUKEE-MAP-1135328",
+      "areaM2": 394.5373902578518,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "US-WI-MILWAUKEE-MAP-1155606",
+      "areaM2": 354.69450641932946,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "US-WI-MILWAUKEE-MAP-1037415",
+      "areaM2": 355.8313007724539,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "US-WI-MILWAUKEE-MAP-1114972",
+      "areaM2": 3021.9031144008522,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "US-WI-MILWAUKEE-MAP-1150537",
+      "areaM2": 356.2405033639721,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "US-WI-MILWAUKEE-MAP-1089581",
+      "areaM2": 356.7740906419022,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "US-WI-MILWAUKEE-MAP-1037417",
+      "areaM2": 355.5191072585589,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "US-WI-MILWAUKEE-MAP-1094855",
+      "areaM2": 355.50428184291695,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "US-WI-MILWAUKEE-MAP-1079514",
+      "areaM2": 354.6832191024775,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "US-WI-MILWAUKEE-MAP-1084619",
+      "areaM2": 357.9971290934634,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "US-WI-MILWAUKEE-MAP-1084618",
+      "areaM2": 356.6055919062582,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "US-WI-MILWAUKEE-MAP-1110255",
+      "areaM2": 344.0772182516941,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "US-WI-MILWAUKEE-MAP-1079515",
+      "areaM2": 480.6990060541779,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "US-WI-MILWAUKEE-MAP-1039248",
+      "areaM2": 434.4928181483304,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "US-WI-MILWAUKEE-MAP-1160750",
+      "areaM2": 487.07830528965735,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "US-WI-MILWAUKEE-MAP-1115204",
+      "areaM2": 773.6915005201181,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "US-WI-MILWAUKEE-MAP-1037412",
+      "areaM2": 282.88321508963736,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "US-WI-MILWAUKEE-MAP-1110146",
+      "areaM2": 194.07288322023027,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "US-WI-MILWAUKEE-MAP-1037405",
+      "areaM2": 194.13958620203127,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "US-WI-MILWAUKEE-MAP-1037407",
+      "areaM2": 337.97075184922534,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "US-WI-MILWAUKEE-MAP-1140329",
+      "areaM2": 377.7210600128781,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "US-WI-MILWAUKEE-MAP-1140330",
+      "areaM2": 355.1795700523913,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "US-WI-MILWAUKEE-MAP-1135327",
+      "areaM2": 731.2184132593151,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "US-WI-MILWAUKEE-MAP-1037408",
+      "areaM2": 354.43491140699666,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "US-WI-MILWAUKEE-MAP-1039240",
+      "areaM2": 389.9971615435163,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "US-WI-MILWAUKEE-MAP-1079513",
+      "areaM2": 396.5979648464304,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "US-WI-MILWAUKEE-MAP-1135437",
+      "areaM2": 947.0455021214215,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "US-WI-MILWAUKEE-MAP-1039247",
+      "areaM2": 467.99529658868784,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "US-WI-MILWAUKEE-MAP-1110145",
+      "areaM2": 400.7286352878953,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "US-WI-MILWAUKEE-MAP-1120197",
+      "areaM2": 397.3452107775046,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "US-WI-MILWAUKEE-MAP-1120198",
+      "areaM2": 327.72245103655433,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "US-WI-MILWAUKEE-MAP-1037410",
+      "areaM2": 326.499145546589,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "US-WI-MILWAUKEE-MAP-1037411",
+      "areaM2": 488.8219024783537,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "US-WI-MILWAUKEE-MAP-1130285",
+      "areaM2": 236.69224369081226,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "US-WI-MILWAUKEE-MAP-1094726",
+      "areaM2": 200.55720465770233,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "US-WI-MILWAUKEE-MAP-1037406",
+      "areaM2": 221.94304464725477,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "US-WI-MILWAUKEE-MAP-1115202",
+      "areaM2": 720.4959839737043,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "US-WI-MILWAUKEE-MAP-1037409",
+      "areaM2": 360.5476280190891,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "US-WI-MILWAUKEE-MAP-1104963",
+      "areaM2": 360.0143800107295,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "US-WI-MILWAUKEE-MAP-1037400",
+      "areaM2": 731.294733628769,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "US-WI-MILWAUKEE-MAP-1094769",
+      "areaM2": 5738.20319469624,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "US-WI-MILWAUKEE-MAP-1037375",
+      "areaM2": 1292.8754694869158,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "US-WI-MILWAUKEE-MAP-1082471",
+      "areaM2": 3286.4931786563357,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "US-WI-MILWAUKEE-MAP-1084527",
+      "areaM2": 2601.310613755181,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "US-WI-MILWAUKEE-MAP-1038069",
+      "areaM2": 318.7051227451891,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "US-WI-MILWAUKEE-MAP-1105005",
+      "areaM2": 12938.014073327047,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "US-WI-MILWAUKEE-MAP-1037413",
+      "areaM2": 437.9823703127333,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "US-WI-MILWAUKEE-MAP-1038051",
+      "areaM2": 3896.650806715129,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "US-WI-MILWAUKEE-MAP-1115200",
+      "areaM2": 488.29121123640016,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "US-WI-MILWAUKEE-MAP-1104960",
+      "areaM2": 484.7132715496761,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "US-WI-MILWAUKEE-MAP-1155601",
+      "areaM2": 476.43491520538544,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "US-WI-MILWAUKEE-MAP-1037372",
+      "areaM2": 597.9531140344599,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "US-WI-MILWAUKEE-MAP-1037373",
+      "areaM2": 550.4500632570819,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "US-WI-MILWAUKEE-MAP-1037374",
+      "areaM2": 263.8919794093477,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "US-WI-MILWAUKEE-MAP-1037377",
+      "areaM2": 440.0652011954912,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "US-WI-MILWAUKEE-MAP-1094721",
+      "areaM2": 488.1052312127528,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "US-WI-MILWAUKEE-MAP-1135325",
+      "areaM2": 488.18419135187753,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "US-WI-MILWAUKEE-MAP-1037944",
+      "areaM2": 264.5139321513259,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "US-WI-MILWAUKEE-MAP-1037945",
+      "areaM2": 271.050991861843,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "US-WI-MILWAUKEE-MAP-1105000",
+      "areaM2": 250.47678303068196,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "US-WI-MILWAUKEE-MAP-1037948",
+      "areaM2": 336.85287738247007,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "US-WI-MILWAUKEE-MAP-1160785",
+      "areaM2": 337.9289152012325,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "US-WI-MILWAUKEE-MAP-1140335",
+      "areaM2": 332.080482552167,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "US-WI-MILWAUKEE-MAP-1135329",
+      "areaM2": 667.0028882797753,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "US-WI-MILWAUKEE-MAP-1150539",
+      "areaM2": 332.61235714035377,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "US-WI-MILWAUKEE-MAP-1130288",
+      "areaM2": 486.75283464329624,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "US-WI-MILWAUKEE-MAP-1079398",
+      "areaM2": 240.48483164315093,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "US-WI-MILWAUKEE-MAP-1037591",
+      "areaM2": 194.33233499099896,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "US-WI-MILWAUKEE-MAP-1038047",
+      "areaM2": 2878.145703459811,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "US-WI-MILWAUKEE-MAP-1038052",
+      "areaM2": 986.7527752130826,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "US-WI-MILWAUKEE-MAP-1125233",
+      "areaM2": 1550.961594295001,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "US-WI-MILWAUKEE-MAP-1089588",
+      "areaM2": 3342.6474031472403,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "US-WI-MILWAUKEE-MAP-1115208",
+      "areaM2": 1333.1691020611672,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "US-WI-MILWAUKEE-MAP-1037464",
+      "areaM2": 999.4438444139175,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "US-WI-MILWAUKEE-MAP-1038046",
+      "areaM2": 572.5747690495723,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "US-WI-MILWAUKEE-MAP-1037686",
+      "areaM2": 17961.82333351781,
+      "valid": true,
+      "empty": false,
+      "parts": 5
+    },
+    {
+      "id": "US-WI-MILWAUKEE-MAP-1037462",
+      "areaM2": 1021.508784564069,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "US-WI-MILWAUKEE-MAP-1037463",
+      "areaM2": 332.3636952122971,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "US-WI-MILWAUKEE-MAP-1038040",
+      "areaM2": 1337.4076234530617,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "US-WI-MILWAUKEE-MAP-1089580",
+      "areaM2": 522.6867456913681,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "US-WI-MILWAUKEE-MAP-1079385",
+      "areaM2": 597.1166775281414,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "US-WI-MILWAUKEE-MAP-1037687",
+      "areaM2": 12995.01934112264,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "US-WI-MILWAUKEE-MAP-1094753",
+      "areaM2": 507.8105632830849,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "US-WI-MILWAUKEE-MAP-1037777",
+      "areaM2": 503.708557649584,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "US-WI-MILWAUKEE-MAP-1120216",
+      "areaM2": 514.2012658304475,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "US-WI-MILWAUKEE-MAP-1150558",
+      "areaM2": 499.22462625449975,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "US-WI-MILWAUKEE-MAP-1037776",
+      "areaM2": 506.11949366771324,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "US-WI-MILWAUKEE-MAP-1140355",
+      "areaM2": 582.0142472846167,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "US-WI-MILWAUKEE-MAP-1037778",
+      "areaM2": 596.0620573567641,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "US-WI-MILWAUKEE-MAP-1037775",
+      "areaM2": 590.0925181017885,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "US-WI-MILWAUKEE-MAP-1160824",
+      "areaM2": 5992.942515611321,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "US-WI-MILWAUKEE-MAP-1038324",
+      "areaM2": 544.3202432727684,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "US-WI-MILWAUKEE-MAP-1094793",
+      "areaM2": 336.077660986243,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "US-WI-MILWAUKEE-MAP-1089639",
+      "areaM2": 499.8507005138936,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "US-WI-MILWAUKEE-MAP-1038318",
+      "areaM2": 292.46282382719323,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "US-WI-MILWAUKEE-MAP-1120248",
+      "areaM2": 500.9086262852975,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "US-WI-MILWAUKEE-MAP-1140389",
+      "areaM2": 504.71624386901954,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "US-WI-MILWAUKEE-MAP-1038317",
+      "areaM2": 334.25072685433895,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "US-WI-MILWAUKEE-MAP-1038316",
+      "areaM2": 334.2429286182672,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "US-WI-MILWAUKEE-MAP-1145496",
+      "areaM2": 469.1941558939232,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "US-WI-MILWAUKEE-MAP-1038315",
+      "areaM2": 331.1358421413405,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "US-WI-MILWAUKEE-MAP-1038319",
+      "areaM2": 423.3670920654938,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "US-WI-MILWAUKEE-MAP-1038314",
+      "areaM2": 337.3712769092222,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "US-WI-MILWAUKEE-MAP-1145434",
+      "areaM2": 445.66045024891713,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "US-WI-MILWAUKEE-MAP-1155609",
+      "areaM2": 445.7799189172537,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "US-WI-MILWAUKEE-MAP-1110149",
+      "areaM2": 600.4180853729472,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "US-WI-MILWAUKEE-MAP-1037459",
+      "areaM2": 485.9610426287054,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "US-WI-MILWAUKEE-MAP-1037395",
+      "areaM2": 343.45480734463405,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "US-WI-MILWAUKEE-MAP-1006522",
+      "areaM2": 501.3624179255747,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "US-WI-MILWAUKEE-MAP-1037396",
+      "areaM2": 686.9113870250395,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "US-WI-MILWAUKEE-MAP-1006521",
+      "areaM2": 512.6229670791957,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "US-WI-MILWAUKEE-MAP-1038059",
+      "areaM2": 686.9001464531816,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "US-WI-MILWAUKEE-MAP-1006518",
+      "areaM2": 523.6770945291892,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "US-WI-MILWAUKEE-MAP-1006517",
+      "areaM2": 523.6777590798927,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "US-WI-MILWAUKEE-MAP-1038060",
+      "areaM2": 343.453882852362,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "US-WI-MILWAUKEE-MAP-1038061",
+      "areaM2": 343.455192758336,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "US-WI-MILWAUKEE-MAP-1094771",
+      "areaM2": 875.2011895149046,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "US-WI-MILWAUKEE-MAP-1038062",
+      "areaM2": 343.451907805733,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "US-WI-MILWAUKEE-MAP-1038070",
+      "areaM2": 546.4333941775304,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "US-WI-MILWAUKEE-MAP-1079392",
+      "areaM2": 681.683776990227,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "US-WI-MILWAUKEE-MAP-1135324",
+      "areaM2": 598.0278048697498,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "US-WI-MILWAUKEE-MAP-1104959",
+      "areaM2": 529.8543251800894,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "US-WI-MILWAUKEE-MAP-1155598",
+      "areaM2": 220.13595303495765,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "US-WI-MILWAUKEE-MAP-1099858",
+      "areaM2": 561.7208277953666,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "US-WI-MILWAUKEE-MAP-1155600",
+      "areaM2": 478.54246747750335,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "US-WI-MILWAUKEE-MAP-1155599",
+      "areaM2": 486.3687842150667,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "US-WI-MILWAUKEE-MAP-1110142",
+      "areaM2": 473.06114089038715,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "US-WI-MILWAUKEE-MAP-1150534",
+      "areaM2": 487.2205306537712,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "US-WI-MILWAUKEE-MAP-1140321",
+      "areaM2": 472.40812761740114,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "US-WI-MILWAUKEE-MAP-1150567",
+      "areaM2": 445.49671077462494,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "US-WI-MILWAUKEE-MAP-1037946",
+      "areaM2": 270.97038520948627,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "US-WI-MILWAUKEE-MAP-1037403",
+      "areaM2": 423.9944148442442,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "US-WI-MILWAUKEE-MAP-1110144",
+      "areaM2": 473.9833445235548,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "US-WI-MILWAUKEE-MAP-1079386",
+      "areaM2": 473.8587379452438,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "US-WI-MILWAUKEE-MAP-1130283",
+      "areaM2": 473.740112595583,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "US-WI-MILWAUKEE-MAP-1130284",
+      "areaM2": 473.65132152532794,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "US-WI-MILWAUKEE-MAP-1037404",
+      "areaM2": 487.4705445948328,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "US-WI-MILWAUKEE-MAP-1160749",
+      "areaM2": 487.3571373071028,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "US-WI-MILWAUKEE-MAP-1150536",
+      "areaM2": 487.2305635388114,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    }
+  ]
+}

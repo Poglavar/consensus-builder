@@ -1,0 +1,39 @@
+{
+  "schemaVersion": "1.0",
+  "checkedAt": "2026-10-09",
+  "cityRecord": "city-10781-ballia.json",
+  "purpose": "City-specific registry and public parcel-geometry source review. No owner, address, tax, or private property fields were requested or retained.",
+  "scopeLimits": {
+    "maxFullPolygonsRetainedInCityRecord": 0,
+    "maxFullPolygonsRetainedInReview": 0,
+    "maxFullPolygonsRetainedInRepository": 0,
+    "ownerOrAddressDataRetained": false,
+    "credentialsOrPrivateRecordLookupsUsed": false,
+    "citywideCompletenessAsserted": false
+  },
+  "assessment": "UP land-record mapping is available by district, tehsil and revenue village. Official Ballia dashboard reports georeferenced map-sheet/village coverage across tehsils, but is aggregate coverage and does not establish a vector parcel endpoint at this locator. The viewer’s plot lookup is identifier/map-click oriented; only raster map output was verified in this review. No geometry feature was retained; geometry evidence remains unverified.",
+  "officialPrimarySources": [
+    {
+      "url": "https://upbhunaksha.gov.in/upbhunaksha/",
+      "observation": "UP land-record mapping is available by district, tehsil and revenue village. Official Ballia dashboard reports georeferenced map-sheet/village coverage across tehsils, but is aggregate coverage and does not establish a vector parcel endpoint at this locator. The viewer’s plot lookup is identifier/map-click oriented; only raster map output was verified in this review."
+    }
+  ],
+  "searches": [
+    {
+      "language": "English",
+      "query": "Ballia official cadastral map land records Uttar Pradesh BhuNaksha public GIS district"
+    },
+    {
+      "language": "Hindi",
+      "query": "बलिया भू नक्शा खसरा नक्शा भूमि अभिलेख आधिकारिक उत्तर प्रदेश"
+    }
+  ],
+  "geometryEvidence": null,
+  "decision": {
+    "registryFound": true,
+    "publicParcelGeometryFound": null,
+    "verifiedSample": false,
+    "adapterReady": false
+  },
+  "nextStep": "If a clearly public feature endpoint is later documented, inspect schema first and query only safe stable IDs plus geometry in a bounded viewport."
+}

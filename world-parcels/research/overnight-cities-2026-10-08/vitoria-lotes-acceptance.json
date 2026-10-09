@@ -1,0 +1,1928 @@
+{
+  "schemaVersion": 1,
+  "purpose": "Live city parcel qualification with unmodified responses through the repository adapter; IDs and hashes retained, full geometries confined to temporary audit cache except three public samples.",
+  "checkedAt": "2026-10-08T23:33:58.838Z",
+  "city": "vitoria-lotes",
+  "descriptor": {
+    "id": "br-vitoria-lotes",
+    "adapter": "arcgis",
+    "endpoint": "https://gis.vitoria.es.gov.br/arcgis/rest/services/MapaBaseImobiliario/MapServer/101",
+    "idPrefix": "BR-VIX-LOTE-",
+    "idFields": [
+      "codGeo",
+      "codLote"
+    ],
+    "idFieldTypes": {
+      "codGeo": "string",
+      "codLote": "integer"
+    },
+    "objectIdField": "OBJECTID",
+    "outFields": [
+      "OBJECTID",
+      "codGeo",
+      "codLote",
+      "codGeoPoligono"
+    ],
+    "pageSize": 3,
+    "maxFeatures": 1000,
+    "maxBboxKm2": 1,
+    "boundsSrid": 31984,
+    "boundsProjection": "+proj=utm +zone=24 +south +ellps=GRS80 +units=m +no_defs",
+    "boundsQueryMode": "object-ids",
+    "idsQueryMode": "object-ids"
+  },
+  "grid": [
+    {
+      "name": "viewport-0",
+      "bbox": [
+        -40.3134,
+        -20.316,
+        -40.3131,
+        -20.3157
+      ],
+      "kind": "aligned-grid"
+    },
+    {
+      "name": "viewport-1",
+      "bbox": [
+        -40.3131,
+        -20.316,
+        -40.3128,
+        -20.3157
+      ],
+      "kind": "aligned-grid"
+    },
+    {
+      "name": "viewport-2",
+      "bbox": [
+        -40.3128,
+        -20.316,
+        -40.3125,
+        -20.3157
+      ],
+      "kind": "aligned-grid"
+    },
+    {
+      "name": "viewport-3",
+      "bbox": [
+        -40.3134,
+        -20.3157,
+        -40.3131,
+        -20.3154
+      ],
+      "kind": "aligned-grid"
+    },
+    {
+      "name": "viewport-4",
+      "bbox": [
+        -40.3131,
+        -20.3157,
+        -40.3128,
+        -20.3154
+      ],
+      "kind": "aligned-grid"
+    },
+    {
+      "name": "viewport-5",
+      "bbox": [
+        -40.3128,
+        -20.3157,
+        -40.3125,
+        -20.3154
+      ],
+      "kind": "aligned-grid"
+    },
+    {
+      "name": "viewport-6",
+      "bbox": [
+        -40.3134,
+        -20.3154,
+        -40.3131,
+        -20.3151
+      ],
+      "kind": "aligned-grid"
+    },
+    {
+      "name": "viewport-7",
+      "bbox": [
+        -40.3131,
+        -20.3154,
+        -40.3128,
+        -20.3151
+      ],
+      "kind": "aligned-grid"
+    },
+    {
+      "name": "viewport-8",
+      "bbox": [
+        -40.3128,
+        -20.3154,
+        -40.3125,
+        -20.3151
+      ],
+      "kind": "aligned-grid"
+    },
+    {
+      "name": "viewport-9",
+      "bbox": [
+        -40.3131,
+        -20.3163,
+        -40.3128,
+        -20.316
+      ],
+      "kind": "adjacent-pan"
+    },
+    {
+      "name": "viewport-10",
+      "bbox": [
+        -40.3131,
+        -20.3151,
+        -40.3128,
+        -20.3148
+      ],
+      "kind": "adjacent-pan"
+    },
+    {
+      "name": "viewport-11",
+      "bbox": [
+        -40.3137,
+        -20.3157,
+        -40.3134,
+        -20.3154
+      ],
+      "kind": "adjacent-pan"
+    },
+    {
+      "name": "viewport-12",
+      "bbox": [
+        -40.3125,
+        -20.3157,
+        -40.3122,
+        -20.3154
+      ],
+      "kind": "adjacent-pan"
+    }
+  ],
+  "tests": [
+    {
+      "name": "viewport-0",
+      "passed": true,
+      "elapsedMs": 3087,
+      "requestIndexes": [
+        0,
+        3
+      ],
+      "bbox": [
+        -40.3134,
+        -20.316,
+        -40.3131,
+        -20.3157
+      ],
+      "complete": true,
+      "count": 4,
+      "ids": [
+        {
+          "id": "BR-VIX-LOTE-44208~17729",
+          "geometrySha256": "df03ba67272ae63dc01f160c359ce51f12900011d0bc909581f2c858fb191611"
+        },
+        {
+          "id": "BR-VIX-LOTE-44813~17731",
+          "geometrySha256": "2206af0b0818eb72d693115665ee90f31839ac819d19a51e767f922db95624ca"
+        },
+        {
+          "id": "BR-VIX-LOTE-47316~17730",
+          "geometrySha256": "cb262d84090f1733e51eec2dfe22b0a1783ef2447156981fd88ed24b8c2d0bcd"
+        },
+        {
+          "id": "BR-VIX-LOTE-23099~17732",
+          "geometrySha256": "f6fcf87a1d2edabc867dcc0c6790c83dcaebbad2bf3697a4a08ce3127302ab2b"
+        }
+      ]
+    },
+    {
+      "name": "viewport-1",
+      "passed": true,
+      "elapsedMs": 1001,
+      "requestIndexes": [
+        4,
+        6
+      ],
+      "bbox": [
+        -40.3131,
+        -20.316,
+        -40.3128,
+        -20.3157
+      ],
+      "complete": true,
+      "count": 3,
+      "ids": [
+        {
+          "id": "BR-VIX-LOTE-23102~17728",
+          "geometrySha256": "9952a30bbaba2709e0a7626a5b163dbe241e6c1f7cf8b7cc299947670f819232"
+        },
+        {
+          "id": "BR-VIX-LOTE-23104~17727",
+          "geometrySha256": "250c04f2ae0e35040324b7ab4754c3efe884adaadfdae20fb7134e05e8531884"
+        },
+        {
+          "id": "BR-VIX-LOTE-44208~17729",
+          "geometrySha256": "df03ba67272ae63dc01f160c359ce51f12900011d0bc909581f2c858fb191611"
+        }
+      ]
+    },
+    {
+      "name": "viewport-2",
+      "passed": true,
+      "elapsedMs": 1039,
+      "requestIndexes": [
+        7,
+        9
+      ],
+      "bbox": [
+        -40.3128,
+        -20.316,
+        -40.3125,
+        -20.3157
+      ],
+      "complete": true,
+      "count": 3,
+      "ids": [
+        {
+          "id": "BR-VIX-LOTE-3136~17726",
+          "geometrySha256": "c2d20f7110ae9c8b2c7ab22e1fadd3f7d12ef1e01cd00966686228cb97986f65"
+        },
+        {
+          "id": "BR-VIX-LOTE-23104~17727",
+          "geometrySha256": "250c04f2ae0e35040324b7ab4754c3efe884adaadfdae20fb7134e05e8531884"
+        },
+        {
+          "id": "BR-VIX-LOTE-23271~17725",
+          "geometrySha256": "5cc53e10bb11c73882dc69026d49400060cea0b05c56e51f7cb17985133f1481"
+        }
+      ]
+    },
+    {
+      "name": "viewport-3",
+      "passed": true,
+      "elapsedMs": 1338,
+      "requestIndexes": [
+        10,
+        13
+      ],
+      "bbox": [
+        -40.3134,
+        -20.3157,
+        -40.3131,
+        -20.3154
+      ],
+      "complete": true,
+      "count": 4,
+      "ids": [
+        {
+          "id": "BR-VIX-LOTE-23099~17732",
+          "geometrySha256": "f6fcf87a1d2edabc867dcc0c6790c83dcaebbad2bf3697a4a08ce3127302ab2b"
+        },
+        {
+          "id": "BR-VIX-LOTE-23265~17733",
+          "geometrySha256": "f42cf0bc9871ebd5920e3476ebc8e52b712edbe59b9467ab8c8d2ba2d0615a2a"
+        },
+        {
+          "id": "BR-VIX-LOTE-44208~17729",
+          "geometrySha256": "df03ba67272ae63dc01f160c359ce51f12900011d0bc909581f2c858fb191611"
+        },
+        {
+          "id": "BR-VIX-LOTE-23271~17725",
+          "geometrySha256": "5cc53e10bb11c73882dc69026d49400060cea0b05c56e51f7cb17985133f1481"
+        }
+      ]
+    },
+    {
+      "name": "viewport-4",
+      "passed": true,
+      "elapsedMs": 1358,
+      "requestIndexes": [
+        14,
+        17
+      ],
+      "bbox": [
+        -40.3131,
+        -20.3157,
+        -40.3128,
+        -20.3154
+      ],
+      "complete": true,
+      "count": 4,
+      "ids": [
+        {
+          "id": "BR-VIX-LOTE-23102~17728",
+          "geometrySha256": "9952a30bbaba2709e0a7626a5b163dbe241e6c1f7cf8b7cc299947670f819232"
+        },
+        {
+          "id": "BR-VIX-LOTE-23104~17727",
+          "geometrySha256": "250c04f2ae0e35040324b7ab4754c3efe884adaadfdae20fb7134e05e8531884"
+        },
+        {
+          "id": "BR-VIX-LOTE-44208~17729",
+          "geometrySha256": "df03ba67272ae63dc01f160c359ce51f12900011d0bc909581f2c858fb191611"
+        },
+        {
+          "id": "BR-VIX-LOTE-23271~17725",
+          "geometrySha256": "5cc53e10bb11c73882dc69026d49400060cea0b05c56e51f7cb17985133f1481"
+        }
+      ]
+    },
+    {
+      "name": "viewport-5",
+      "passed": true,
+      "elapsedMs": 1002,
+      "requestIndexes": [
+        18,
+        20
+      ],
+      "bbox": [
+        -40.3128,
+        -20.3157,
+        -40.3125,
+        -20.3154
+      ],
+      "complete": true,
+      "count": 3,
+      "ids": [
+        {
+          "id": "BR-VIX-LOTE-3136~17726",
+          "geometrySha256": "c2d20f7110ae9c8b2c7ab22e1fadd3f7d12ef1e01cd00966686228cb97986f65"
+        },
+        {
+          "id": "BR-VIX-LOTE-23104~17727",
+          "geometrySha256": "250c04f2ae0e35040324b7ab4754c3efe884adaadfdae20fb7134e05e8531884"
+        },
+        {
+          "id": "BR-VIX-LOTE-23271~17725",
+          "geometrySha256": "5cc53e10bb11c73882dc69026d49400060cea0b05c56e51f7cb17985133f1481"
+        }
+      ]
+    },
+    {
+      "name": "viewport-6",
+      "passed": true,
+      "elapsedMs": 1547,
+      "requestIndexes": [
+        21,
+        23
+      ],
+      "bbox": [
+        -40.3134,
+        -20.3154,
+        -40.3131,
+        -20.3151
+      ],
+      "complete": true,
+      "count": 3,
+      "ids": [
+        {
+          "id": "BR-VIX-LOTE-23265~17733",
+          "geometrySha256": "f42cf0bc9871ebd5920e3476ebc8e52b712edbe59b9467ab8c8d2ba2d0615a2a"
+        },
+        {
+          "id": "BR-VIX-LOTE-23271~17725",
+          "geometrySha256": "5cc53e10bb11c73882dc69026d49400060cea0b05c56e51f7cb17985133f1481"
+        },
+        {
+          "id": "BR-VIX-LOTE-44208~17729",
+          "geometrySha256": "df03ba67272ae63dc01f160c359ce51f12900011d0bc909581f2c858fb191611"
+        }
+      ]
+    },
+    {
+      "name": "viewport-7",
+      "passed": true,
+      "elapsedMs": 1003,
+      "requestIndexes": [
+        24,
+        26
+      ],
+      "bbox": [
+        -40.3131,
+        -20.3154,
+        -40.3128,
+        -20.3151
+      ],
+      "complete": true,
+      "count": 1,
+      "ids": [
+        {
+          "id": "BR-VIX-LOTE-23271~17725",
+          "geometrySha256": "5cc53e10bb11c73882dc69026d49400060cea0b05c56e51f7cb17985133f1481"
+        }
+      ]
+    },
+    {
+      "name": "viewport-8",
+      "passed": true,
+      "elapsedMs": 1546,
+      "requestIndexes": [
+        27,
+        29
+      ],
+      "bbox": [
+        -40.3128,
+        -20.3154,
+        -40.3125,
+        -20.3151
+      ],
+      "complete": true,
+      "count": 1,
+      "ids": [
+        {
+          "id": "BR-VIX-LOTE-23271~17725",
+          "geometrySha256": "5cc53e10bb11c73882dc69026d49400060cea0b05c56e51f7cb17985133f1481"
+        }
+      ]
+    },
+    {
+      "name": "viewport-9",
+      "passed": true,
+      "elapsedMs": 1519,
+      "requestIndexes": [
+        30,
+        32
+      ],
+      "bbox": [
+        -40.3131,
+        -20.3163,
+        -40.3128,
+        -20.316
+      ],
+      "complete": true,
+      "count": 3,
+      "ids": [
+        {
+          "id": "BR-VIX-LOTE-23102~17728",
+          "geometrySha256": "9952a30bbaba2709e0a7626a5b163dbe241e6c1f7cf8b7cc299947670f819232"
+        },
+        {
+          "id": "BR-VIX-LOTE-24731~17736",
+          "geometrySha256": "0cbc26a9c2abf9653c2e693189ad4fd6a9120c2c6da92b2e6fa9d6ffc2f614ef"
+        },
+        {
+          "id": "BR-VIX-LOTE-44208~17729",
+          "geometrySha256": "df03ba67272ae63dc01f160c359ce51f12900011d0bc909581f2c858fb191611"
+        }
+      ]
+    },
+    {
+      "name": "viewport-10",
+      "passed": true,
+      "elapsedMs": 999,
+      "requestIndexes": [
+        33,
+        35
+      ],
+      "bbox": [
+        -40.3131,
+        -20.3151,
+        -40.3128,
+        -20.3148
+      ],
+      "complete": true,
+      "count": 1,
+      "ids": [
+        {
+          "id": "BR-VIX-LOTE-23311~17707",
+          "geometrySha256": "3d110f78a0604af3dc715f7041ce65d5229285d100aa69b424037e5f9455cea0"
+        }
+      ]
+    },
+    {
+      "name": "viewport-11",
+      "passed": true,
+      "elapsedMs": 1002,
+      "requestIndexes": [
+        36,
+        38
+      ],
+      "bbox": [
+        -40.3137,
+        -20.3157,
+        -40.3134,
+        -20.3154
+      ],
+      "complete": true,
+      "count": 2,
+      "ids": [
+        {
+          "id": "BR-VIX-LOTE-23099~17732",
+          "geometrySha256": "f6fcf87a1d2edabc867dcc0c6790c83dcaebbad2bf3697a4a08ce3127302ab2b"
+        },
+        {
+          "id": "BR-VIX-LOTE-23265~17733",
+          "geometrySha256": "f42cf0bc9871ebd5920e3476ebc8e52b712edbe59b9467ab8c8d2ba2d0615a2a"
+        }
+      ]
+    },
+    {
+      "name": "viewport-12",
+      "passed": true,
+      "elapsedMs": 1007,
+      "requestIndexes": [
+        39,
+        41
+      ],
+      "bbox": [
+        -40.3125,
+        -20.3157,
+        -40.3122,
+        -20.3154
+      ],
+      "complete": true,
+      "count": 1,
+      "ids": [
+        {
+          "id": "BR-VIX-LOTE-23271~17725",
+          "geometrySha256": "5cc53e10bb11c73882dc69026d49400060cea0b05c56e51f7cb17985133f1481"
+        }
+      ]
+    },
+    {
+      "name": "forced-three-row-pages",
+      "passed": true,
+      "elapsedMs": 1333,
+      "requestIndexes": [
+        42,
+        45
+      ],
+      "count": 4,
+      "geometryPages": 2,
+      "pageSize": 3,
+      "allGeometryHashesMatch": true
+    },
+    {
+      "name": "fresh-ids-0",
+      "passed": true,
+      "elapsedMs": 2169,
+      "requestIndexes": [
+        46,
+        51
+      ],
+      "count": 11,
+      "ids": [
+        "BR-VIX-LOTE-23099~17732",
+        "BR-VIX-LOTE-23102~17728",
+        "BR-VIX-LOTE-23104~17727",
+        "BR-VIX-LOTE-23265~17733",
+        "BR-VIX-LOTE-23271~17725",
+        "BR-VIX-LOTE-23311~17707",
+        "BR-VIX-LOTE-24731~17736",
+        "BR-VIX-LOTE-3136~17726",
+        "BR-VIX-LOTE-44208~17729",
+        "BR-VIX-LOTE-44813~17731",
+        "BR-VIX-LOTE-47316~17730"
+      ],
+      "allGeometryHashesMatch": true,
+      "absentIds": []
+    },
+    {
+      "name": "explicit-absence",
+      "passed": true,
+      "elapsedMs": 719,
+      "requestIndexes": [
+        52,
+        53
+      ],
+      "absentIds": [
+        "BR-VIX-LOTE-999999999~999999999"
+      ],
+      "complete": true
+    },
+    {
+      "name": "footprint",
+      "passed": true,
+      "elapsedMs": 1343,
+      "requestIndexes": [
+        54,
+        57
+      ],
+      "selectedParcelId": "BR-VIX-LOTE-23102~17728",
+      "count": 4,
+      "allGeometryHashesMatch": true
+    },
+    {
+      "name": "source-binding",
+      "passed": true,
+      "elapsedMs": 1384,
+      "requestIndexes": [
+        58,
+        61
+      ],
+      "selectedParcelId": "BR-VIX-LOTE-23102~17728",
+      "coverage": "complete",
+      "siteM2": 849.46,
+      "boundParcels": 1
+    }
+  ],
+  "requests": [
+    {
+      "test": "viewport-0",
+      "url": "https://gis.vitoria.es.gov.br/arcgis/rest/services/MapaBaseImobiliario/MapServer/101/query?where=1%3D1&geometry=362878.29422438855%2C7753003.772552041%2C362909.883308055%2C7753037.227732102&geometryType=esriGeometryEnvelope&inSR=31984&spatialRel=esriSpatialRelIntersects&f=json&returnCountOnly=true",
+      "method": "GET",
+      "checkedAt": "2026-10-08T23:33:58.840Z",
+      "httpStatus": 200,
+      "contentType": "application/json; charset=UTF-8",
+      "bytes": 11,
+      "count": 4
+    },
+    {
+      "test": "viewport-0",
+      "url": "https://gis.vitoria.es.gov.br/arcgis/rest/services/MapaBaseImobiliario/MapServer/101/query?where=1%3D1&geometry=362878.29422438855%2C7753003.772552041%2C362909.883308055%2C7753037.227732102&geometryType=esriGeometryEnvelope&inSR=31984&spatialRel=esriSpatialRelIntersects&f=json&returnIdsOnly=true",
+      "method": "GET",
+      "checkedAt": "2026-10-08T23:34:00.315Z",
+      "httpStatus": 200,
+      "contentType": "application/json; charset=UTF-8",
+      "bytes": 70,
+      "objectIdFieldName": "OBJECTID",
+      "objectIds": [
+        42855,
+        45294,
+        42271,
+        22065
+      ]
+    },
+    {
+      "test": "viewport-0",
+      "url": "https://gis.vitoria.es.gov.br/arcgis/rest/services/MapaBaseImobiliario/MapServer/101/query?where=1%3D1&outFields=OBJECTID%2CcodGeo%2CcodLote%2CcodGeoPoligono&returnGeometry=true&outSR=4326&f=geojson&objectIds=42855%2C45294%2C42271",
+      "method": "GET",
+      "checkedAt": "2026-10-08T23:34:01.263Z",
+      "httpStatus": 200,
+      "contentType": "application/geo+json; charset=UTF-8",
+      "bytes": 2366,
+      "features": [
+        {
+          "transportId": 42271,
+          "properties": {
+            "OBJECTID": 42271,
+            "codGeo": "44208",
+            "codLote": 17729,
+            "codGeoPoligono": 0
+          },
+          "geometrySha256": "df03ba67272ae63dc01f160c359ce51f12900011d0bc909581f2c858fb191611"
+        },
+        {
+          "transportId": 42855,
+          "properties": {
+            "OBJECTID": 42855,
+            "codGeo": "44813",
+            "codLote": 17731,
+            "codGeoPoligono": 0
+          },
+          "geometrySha256": "2206af0b0818eb72d693115665ee90f31839ac819d19a51e767f922db95624ca"
+        },
+        {
+          "transportId": 45294,
+          "properties": {
+            "OBJECTID": 45294,
+            "codGeo": "47316",
+            "codLote": 17730,
+            "codGeoPoligono": 0
+          },
+          "geometrySha256": "cb262d84090f1733e51eec2dfe22b0a1783ef2447156981fd88ed24b8c2d0bcd"
+        }
+      ]
+    },
+    {
+      "test": "viewport-0",
+      "url": "https://gis.vitoria.es.gov.br/arcgis/rest/services/MapaBaseImobiliario/MapServer/101/query?where=1%3D1&outFields=OBJECTID%2CcodGeo%2CcodLote%2CcodGeoPoligono&returnGeometry=true&outSR=4326&f=geojson&objectIds=22065",
+      "method": "GET",
+      "checkedAt": "2026-10-08T23:34:01.598Z",
+      "httpStatus": 200,
+      "contentType": "application/geo+json; charset=UTF-8",
+      "bytes": 621,
+      "features": [
+        {
+          "transportId": 22065,
+          "properties": {
+            "OBJECTID": 22065,
+            "codGeo": "23099",
+            "codLote": 17732,
+            "codGeoPoligono": 0
+          },
+          "geometrySha256": "f6fcf87a1d2edabc867dcc0c6790c83dcaebbad2bf3697a4a08ce3127302ab2b"
+        }
+      ]
+    },
+    {
+      "test": "viewport-1",
+      "url": "https://gis.vitoria.es.gov.br/arcgis/rest/services/MapaBaseImobiliario/MapServer/101/query?where=1%3D1&geometry=362909.61904244707%2C7753004.021877369%2C362941.20806281886%2C7753037.476997387&geometryType=esriGeometryEnvelope&inSR=31984&spatialRel=esriSpatialRelIntersects&f=json&returnCountOnly=true",
+      "method": "GET",
+      "checkedAt": "2026-10-08T23:34:01.926Z",
+      "httpStatus": 200,
+      "contentType": "application/json; charset=UTF-8",
+      "bytes": 11,
+      "count": 3
+    },
+    {
+      "test": "viewport-1",
+      "url": "https://gis.vitoria.es.gov.br/arcgis/rest/services/MapaBaseImobiliario/MapServer/101/query?where=1%3D1&geometry=362909.61904244707%2C7753004.021877369%2C362941.20806281886%2C7753037.476997387&geometryType=esriGeometryEnvelope&inSR=31984&spatialRel=esriSpatialRelIntersects&f=json&returnIdsOnly=true",
+      "method": "GET",
+      "checkedAt": "2026-10-08T23:34:02.259Z",
+      "httpStatus": 200,
+      "contentType": "application/json; charset=UTF-8",
+      "bytes": 64,
+      "objectIdFieldName": "OBJECTID",
+      "objectIds": [
+        22070,
+        22068,
+        42271
+      ]
+    },
+    {
+      "test": "viewport-1",
+      "url": "https://gis.vitoria.es.gov.br/arcgis/rest/services/MapaBaseImobiliario/MapServer/101/query?where=1%3D1&outFields=OBJECTID%2CcodGeo%2CcodLote%2CcodGeoPoligono&returnGeometry=true&outSR=4326&f=geojson&objectIds=22070%2C22068%2C42271",
+      "method": "GET",
+      "checkedAt": "2026-10-08T23:34:02.593Z",
+      "httpStatus": 200,
+      "contentType": "application/geo+json; charset=UTF-8",
+      "bytes": 2575,
+      "features": [
+        {
+          "transportId": 22068,
+          "properties": {
+            "OBJECTID": 22068,
+            "codGeo": "23102",
+            "codLote": 17728,
+            "codGeoPoligono": 0
+          },
+          "geometrySha256": "9952a30bbaba2709e0a7626a5b163dbe241e6c1f7cf8b7cc299947670f819232"
+        },
+        {
+          "transportId": 22070,
+          "properties": {
+            "OBJECTID": 22070,
+            "codGeo": "23104",
+            "codLote": 17727,
+            "codGeoPoligono": 0
+          },
+          "geometrySha256": "250c04f2ae0e35040324b7ab4754c3efe884adaadfdae20fb7134e05e8531884"
+        },
+        {
+          "transportId": 42271,
+          "properties": {
+            "OBJECTID": 42271,
+            "codGeo": "44208",
+            "codLote": 17729,
+            "codGeoPoligono": 0
+          },
+          "geometrySha256": "df03ba67272ae63dc01f160c359ce51f12900011d0bc909581f2c858fb191611"
+        }
+      ]
+    },
+    {
+      "test": "viewport-2",
+      "url": "https://gis.vitoria.es.gov.br/arcgis/rest/services/MapaBaseImobiliario/MapServer/101/query?where=1%3D1&geometry=362940.9438576327%2C7753004.271145699%2C362972.5328147117%2C7753037.726205673&geometryType=esriGeometryEnvelope&inSR=31984&spatialRel=esriSpatialRelIntersects&f=json&returnCountOnly=true",
+      "method": "GET",
+      "checkedAt": "2026-10-08T23:34:02.927Z",
+      "httpStatus": 200,
+      "contentType": "application/json; charset=UTF-8",
+      "bytes": 11,
+      "count": 3
+    },
+    {
+      "test": "viewport-2",
+      "url": "https://gis.vitoria.es.gov.br/arcgis/rest/services/MapaBaseImobiliario/MapServer/101/query?where=1%3D1&geometry=362940.9438576327%2C7753004.271145699%2C362972.5328147117%2C7753037.726205673&geometryType=esriGeometryEnvelope&inSR=31984&spatialRel=esriSpatialRelIntersects&f=json&returnIdsOnly=true",
+      "method": "GET",
+      "checkedAt": "2026-10-08T23:34:03.291Z",
+      "httpStatus": 200,
+      "contentType": "application/json; charset=UTF-8",
+      "bytes": 63,
+      "objectIdFieldName": "OBJECTID",
+      "objectIds": [
+        22070,
+        3047,
+        22228
+      ]
+    },
+    {
+      "test": "viewport-2",
+      "url": "https://gis.vitoria.es.gov.br/arcgis/rest/services/MapaBaseImobiliario/MapServer/101/query?where=1%3D1&outFields=OBJECTID%2CcodGeo%2CcodLote%2CcodGeoPoligono&returnGeometry=true&outSR=4326&f=geojson&objectIds=22070%2C3047%2C22228",
+      "method": "GET",
+      "checkedAt": "2026-10-08T23:34:03.635Z",
+      "httpStatus": 200,
+      "contentType": "application/geo+json; charset=UTF-8",
+      "bytes": 3075,
+      "features": [
+        {
+          "transportId": 3047,
+          "properties": {
+            "OBJECTID": 3047,
+            "codGeo": "3136",
+            "codLote": 17726,
+            "codGeoPoligono": 0
+          },
+          "geometrySha256": "c2d20f7110ae9c8b2c7ab22e1fadd3f7d12ef1e01cd00966686228cb97986f65"
+        },
+        {
+          "transportId": 22070,
+          "properties": {
+            "OBJECTID": 22070,
+            "codGeo": "23104",
+            "codLote": 17727,
+            "codGeoPoligono": 0
+          },
+          "geometrySha256": "250c04f2ae0e35040324b7ab4754c3efe884adaadfdae20fb7134e05e8531884"
+        },
+        {
+          "transportId": 22228,
+          "properties": {
+            "OBJECTID": 22228,
+            "codGeo": "23271",
+            "codLote": 17725,
+            "codGeoPoligono": 0
+          },
+          "geometrySha256": "5cc53e10bb11c73882dc69026d49400060cea0b05c56e51f7cb17985133f1481"
+        }
+      ]
+    },
+    {
+      "test": "viewport-3",
+      "url": "https://gis.vitoria.es.gov.br/arcgis/rest/services/MapaBaseImobiliario/MapServer/101/query?where=1%3D1&geometry=362878.0299021058%2C7753036.978409819%2C362909.61904244707%2C7753070.433585758&geometryType=esriGeometryEnvelope&inSR=31984&spatialRel=esriSpatialRelIntersects&f=json&returnCountOnly=true",
+      "method": "GET",
+      "checkedAt": "2026-10-08T23:34:03.967Z",
+      "httpStatus": 200,
+      "contentType": "application/json; charset=UTF-8",
+      "bytes": 11,
+      "count": 4
+    },
+    {
+      "test": "viewport-3",
+      "url": "https://gis.vitoria.es.gov.br/arcgis/rest/services/MapaBaseImobiliario/MapServer/101/query?where=1%3D1&geometry=362878.0299021058%2C7753036.978409819%2C362909.61904244707%2C7753070.433585758&geometryType=esriGeometryEnvelope&inSR=31984&spatialRel=esriSpatialRelIntersects&f=json&returnIdsOnly=true",
+      "method": "GET",
+      "checkedAt": "2026-10-08T23:34:04.311Z",
+      "httpStatus": 200,
+      "contentType": "application/json; charset=UTF-8",
+      "bytes": 70,
+      "objectIdFieldName": "OBJECTID",
+      "objectIds": [
+        22222,
+        42271,
+        22065,
+        22228
+      ]
+    },
+    {
+      "test": "viewport-3",
+      "url": "https://gis.vitoria.es.gov.br/arcgis/rest/services/MapaBaseImobiliario/MapServer/101/query?where=1%3D1&outFields=OBJECTID%2CcodGeo%2CcodLote%2CcodGeoPoligono&returnGeometry=true&outSR=4326&f=geojson&objectIds=22222%2C42271%2C22065",
+      "method": "GET",
+      "checkedAt": "2026-10-08T23:34:04.647Z",
+      "httpStatus": 200,
+      "contentType": "application/geo+json; charset=UTF-8",
+      "bytes": 2491,
+      "features": [
+        {
+          "transportId": 22065,
+          "properties": {
+            "OBJECTID": 22065,
+            "codGeo": "23099",
+            "codLote": 17732,
+            "codGeoPoligono": 0
+          },
+          "geometrySha256": "f6fcf87a1d2edabc867dcc0c6790c83dcaebbad2bf3697a4a08ce3127302ab2b"
+        },
+        {
+          "transportId": 22222,
+          "properties": {
+            "OBJECTID": 22222,
+            "codGeo": "23265",
+            "codLote": 17733,
+            "codGeoPoligono": 0
+          },
+          "geometrySha256": "f42cf0bc9871ebd5920e3476ebc8e52b712edbe59b9467ab8c8d2ba2d0615a2a"
+        },
+        {
+          "transportId": 42271,
+          "properties": {
+            "OBJECTID": 42271,
+            "codGeo": "44208",
+            "codLote": 17729,
+            "codGeoPoligono": 0
+          },
+          "geometrySha256": "df03ba67272ae63dc01f160c359ce51f12900011d0bc909581f2c858fb191611"
+        }
+      ]
+    },
+    {
+      "test": "viewport-3",
+      "url": "https://gis.vitoria.es.gov.br/arcgis/rest/services/MapaBaseImobiliario/MapServer/101/query?where=1%3D1&outFields=OBJECTID%2CcodGeo%2CcodLote%2CcodGeoPoligono&returnGeometry=true&outSR=4326&f=geojson&objectIds=22228",
+      "method": "GET",
+      "checkedAt": "2026-10-08T23:34:04.977Z",
+      "httpStatus": 200,
+      "contentType": "application/geo+json; charset=UTF-8",
+      "bytes": 1792,
+      "features": [
+        {
+          "transportId": 22228,
+          "properties": {
+            "OBJECTID": 22228,
+            "codGeo": "23271",
+            "codLote": 17725,
+            "codGeoPoligono": 0
+          },
+          "geometrySha256": "5cc53e10bb11c73882dc69026d49400060cea0b05c56e51f7cb17985133f1481"
+        }
+      ]
+    },
+    {
+      "test": "viewport-4",
+      "url": "https://gis.vitoria.es.gov.br/arcgis/rest/services/MapaBaseImobiliario/MapServer/101/query?where=1%3D1&geometry=362909.35478058516%2C7753037.227732102%2C362940.9438576327%2C7753070.682847998&geometryType=esriGeometryEnvelope&inSR=31984&spatialRel=esriSpatialRelIntersects&f=json&returnCountOnly=true",
+      "method": "GET",
+      "checkedAt": "2026-10-08T23:34:05.305Z",
+      "httpStatus": 200,
+      "contentType": "application/json; charset=UTF-8",
+      "bytes": 11,
+      "count": 4
+    },
+    {
+      "test": "viewport-4",
+      "url": "https://gis.vitoria.es.gov.br/arcgis/rest/services/MapaBaseImobiliario/MapServer/101/query?where=1%3D1&geometry=362909.35478058516%2C7753037.227732102%2C362940.9438576327%2C7753070.682847998&geometryType=esriGeometryEnvelope&inSR=31984&spatialRel=esriSpatialRelIntersects&f=json&returnIdsOnly=true",
+      "method": "GET",
+      "checkedAt": "2026-10-08T23:34:05.649Z",
+      "httpStatus": 200,
+      "contentType": "application/json; charset=UTF-8",
+      "bytes": 70,
+      "objectIdFieldName": "OBJECTID",
+      "objectIds": [
+        22070,
+        22068,
+        42271,
+        22228
+      ]
+    },
+    {
+      "test": "viewport-4",
+      "url": "https://gis.vitoria.es.gov.br/arcgis/rest/services/MapaBaseImobiliario/MapServer/101/query?where=1%3D1&outFields=OBJECTID%2CcodGeo%2CcodLote%2CcodGeoPoligono&returnGeometry=true&outSR=4326&f=geojson&objectIds=22070%2C22068%2C42271",
+      "method": "GET",
+      "checkedAt": "2026-10-08T23:34:05.997Z",
+      "httpStatus": 200,
+      "contentType": "application/geo+json; charset=UTF-8",
+      "bytes": 2575,
+      "features": [
+        {
+          "transportId": 22068,
+          "properties": {
+            "OBJECTID": 22068,
+            "codGeo": "23102",
+            "codLote": 17728,
+            "codGeoPoligono": 0
+          },
+          "geometrySha256": "9952a30bbaba2709e0a7626a5b163dbe241e6c1f7cf8b7cc299947670f819232"
+        },
+        {
+          "transportId": 22070,
+          "properties": {
+            "OBJECTID": 22070,
+            "codGeo": "23104",
+            "codLote": 17727,
+            "codGeoPoligono": 0
+          },
+          "geometrySha256": "250c04f2ae0e35040324b7ab4754c3efe884adaadfdae20fb7134e05e8531884"
+        },
+        {
+          "transportId": 42271,
+          "properties": {
+            "OBJECTID": 42271,
+            "codGeo": "44208",
+            "codLote": 17729,
+            "codGeoPoligono": 0
+          },
+          "geometrySha256": "df03ba67272ae63dc01f160c359ce51f12900011d0bc909581f2c858fb191611"
+        }
+      ]
+    },
+    {
+      "test": "viewport-4",
+      "url": "https://gis.vitoria.es.gov.br/arcgis/rest/services/MapaBaseImobiliario/MapServer/101/query?where=1%3D1&outFields=OBJECTID%2CcodGeo%2CcodLote%2CcodGeoPoligono&returnGeometry=true&outSR=4326&f=geojson&objectIds=22228",
+      "method": "GET",
+      "checkedAt": "2026-10-08T23:34:06.334Z",
+      "httpStatus": 200,
+      "contentType": "application/geo+json; charset=UTF-8",
+      "bytes": 1792,
+      "features": [
+        {
+          "transportId": 22228,
+          "properties": {
+            "OBJECTID": 22228,
+            "codGeo": "23271",
+            "codLote": 17725,
+            "codGeoPoligono": 0
+          },
+          "geometrySha256": "5cc53e10bb11c73882dc69026d49400060cea0b05c56e51f7cb17985133f1481"
+        }
+      ]
+    },
+    {
+      "test": "viewport-5",
+      "url": "https://gis.vitoria.es.gov.br/arcgis/rest/services/MapaBaseImobiliario/MapServer/101/query?where=1%3D1&geometry=362940.67965619144%2C7753037.476997387%2C362972.26866994705%2C7753070.93205324&geometryType=esriGeometryEnvelope&inSR=31984&spatialRel=esriSpatialRelIntersects&f=json&returnCountOnly=true",
+      "method": "GET",
+      "checkedAt": "2026-10-08T23:34:06.664Z",
+      "httpStatus": 200,
+      "contentType": "application/json; charset=UTF-8",
+      "bytes": 11,
+      "count": 3
+    },
+    {
+      "test": "viewport-5",
+      "url": "https://gis.vitoria.es.gov.br/arcgis/rest/services/MapaBaseImobiliario/MapServer/101/query?where=1%3D1&geometry=362940.67965619144%2C7753037.476997387%2C362972.26866994705%2C7753070.93205324&geometryType=esriGeometryEnvelope&inSR=31984&spatialRel=esriSpatialRelIntersects&f=json&returnIdsOnly=true",
+      "method": "GET",
+      "checkedAt": "2026-10-08T23:34:07.002Z",
+      "httpStatus": 200,
+      "contentType": "application/json; charset=UTF-8",
+      "bytes": 63,
+      "objectIdFieldName": "OBJECTID",
+      "objectIds": [
+        22070,
+        3047,
+        22228
+      ]
+    },
+    {
+      "test": "viewport-5",
+      "url": "https://gis.vitoria.es.gov.br/arcgis/rest/services/MapaBaseImobiliario/MapServer/101/query?where=1%3D1&outFields=OBJECTID%2CcodGeo%2CcodLote%2CcodGeoPoligono&returnGeometry=true&outSR=4326&f=geojson&objectIds=22070%2C3047%2C22228",
+      "method": "GET",
+      "checkedAt": "2026-10-08T23:34:07.343Z",
+      "httpStatus": 200,
+      "contentType": "application/geo+json; charset=UTF-8",
+      "bytes": 3075,
+      "features": [
+        {
+          "transportId": 3047,
+          "properties": {
+            "OBJECTID": 3047,
+            "codGeo": "3136",
+            "codLote": 17726,
+            "codGeoPoligono": 0
+          },
+          "geometrySha256": "c2d20f7110ae9c8b2c7ab22e1fadd3f7d12ef1e01cd00966686228cb97986f65"
+        },
+        {
+          "transportId": 22070,
+          "properties": {
+            "OBJECTID": 22070,
+            "codGeo": "23104",
+            "codLote": 17727,
+            "codGeoPoligono": 0
+          },
+          "geometrySha256": "250c04f2ae0e35040324b7ab4754c3efe884adaadfdae20fb7134e05e8531884"
+        },
+        {
+          "transportId": 22228,
+          "properties": {
+            "OBJECTID": 22228,
+            "codGeo": "23271",
+            "codLote": 17725,
+            "codGeoPoligono": 0
+          },
+          "geometrySha256": "5cc53e10bb11c73882dc69026d49400060cea0b05c56e51f7cb17985133f1481"
+        }
+      ]
+    },
+    {
+      "test": "viewport-6",
+      "url": "https://gis.vitoria.es.gov.br/arcgis/rest/services/MapaBaseImobiliario/MapServer/101/query?where=1%3D1&geometry=362877.7655835699%2C7753070.184266519%2C362909.35478058516%2C7753103.639438335&geometryType=esriGeometryEnvelope&inSR=31984&spatialRel=esriSpatialRelIntersects&f=json&returnCountOnly=true",
+      "method": "GET",
+      "checkedAt": "2026-10-08T23:34:07.667Z",
+      "httpStatus": 200,
+      "contentType": "application/json; charset=UTF-8",
+      "bytes": 11,
+      "count": 3
+    },
+    {
+      "test": "viewport-6",
+      "url": "https://gis.vitoria.es.gov.br/arcgis/rest/services/MapaBaseImobiliario/MapServer/101/query?where=1%3D1&geometry=362877.7655835699%2C7753070.184266519%2C362909.35478058516%2C7753103.639438335&geometryType=esriGeometryEnvelope&inSR=31984&spatialRel=esriSpatialRelIntersects&f=json&returnIdsOnly=true",
+      "method": "GET",
+      "checkedAt": "2026-10-08T23:34:08.529Z",
+      "httpStatus": 200,
+      "contentType": "application/json; charset=UTF-8",
+      "bytes": 64,
+      "objectIdFieldName": "OBJECTID",
+      "objectIds": [
+        22222,
+        42271,
+        22228
+      ]
+    },
+    {
+      "test": "viewport-6",
+      "url": "https://gis.vitoria.es.gov.br/arcgis/rest/services/MapaBaseImobiliario/MapServer/101/query?where=1%3D1&outFields=OBJECTID%2CcodGeo%2CcodLote%2CcodGeoPoligono&returnGeometry=true&outSR=4326&f=geojson&objectIds=22222%2C42271%2C22228",
+      "method": "GET",
+      "checkedAt": "2026-10-08T23:34:08.867Z",
+      "httpStatus": 200,
+      "contentType": "application/geo+json; charset=UTF-8",
+      "bytes": 3662,
+      "features": [
+        {
+          "transportId": 22222,
+          "properties": {
+            "OBJECTID": 22222,
+            "codGeo": "23265",
+            "codLote": 17733,
+            "codGeoPoligono": 0
+          },
+          "geometrySha256": "f42cf0bc9871ebd5920e3476ebc8e52b712edbe59b9467ab8c8d2ba2d0615a2a"
+        },
+        {
+          "transportId": 22228,
+          "properties": {
+            "OBJECTID": 22228,
+            "codGeo": "23271",
+            "codLote": 17725,
+            "codGeoPoligono": 0
+          },
+          "geometrySha256": "5cc53e10bb11c73882dc69026d49400060cea0b05c56e51f7cb17985133f1481"
+        },
+        {
+          "transportId": 42271,
+          "properties": {
+            "OBJECTID": 42271,
+            "codGeo": "44208",
+            "codLote": 17729,
+            "codGeoPoligono": 0
+          },
+          "geometrySha256": "df03ba67272ae63dc01f160c359ce51f12900011d0bc909581f2c858fb191611"
+        }
+      ]
+    },
+    {
+      "test": "viewport-7",
+      "url": "https://gis.vitoria.es.gov.br/arcgis/rest/services/MapaBaseImobiliario/MapServer/101/query?where=1%3D1&geometry=362909.0905224692%2C7753070.433585758%2C362940.67965619144%2C7753103.888697531&geometryType=esriGeometryEnvelope&inSR=31984&spatialRel=esriSpatialRelIntersects&f=json&returnCountOnly=true",
+      "method": "GET",
+      "checkedAt": "2026-10-08T23:34:09.215Z",
+      "httpStatus": 200,
+      "contentType": "application/json; charset=UTF-8",
+      "bytes": 11,
+      "count": 1
+    },
+    {
+      "test": "viewport-7",
+      "url": "https://gis.vitoria.es.gov.br/arcgis/rest/services/MapaBaseImobiliario/MapServer/101/query?where=1%3D1&geometry=362909.0905224692%2C7753070.433585758%2C362940.67965619144%2C7753103.888697531&geometryType=esriGeometryEnvelope&inSR=31984&spatialRel=esriSpatialRelIntersects&f=json&returnIdsOnly=true",
+      "method": "GET",
+      "checkedAt": "2026-10-08T23:34:09.556Z",
+      "httpStatus": 200,
+      "contentType": "application/json; charset=UTF-8",
+      "bytes": 52,
+      "objectIdFieldName": "OBJECTID",
+      "objectIds": [
+        22228
+      ]
+    },
+    {
+      "test": "viewport-7",
+      "url": "https://gis.vitoria.es.gov.br/arcgis/rest/services/MapaBaseImobiliario/MapServer/101/query?where=1%3D1&outFields=OBJECTID%2CcodGeo%2CcodLote%2CcodGeoPoligono&returnGeometry=true&outSR=4326&f=geojson&objectIds=22228",
+      "method": "GET",
+      "checkedAt": "2026-10-08T23:34:09.889Z",
+      "httpStatus": 200,
+      "contentType": "application/geo+json; charset=UTF-8",
+      "bytes": 1792,
+      "features": [
+        {
+          "transportId": 22228,
+          "properties": {
+            "OBJECTID": 22228,
+            "codGeo": "23271",
+            "codLote": 17725,
+            "codGeoPoligono": 0
+          },
+          "geometrySha256": "5cc53e10bb11c73882dc69026d49400060cea0b05c56e51f7cb17985133f1481"
+        }
+      ]
+    },
+    {
+      "test": "viewport-8",
+      "url": "https://gis.vitoria.es.gov.br/arcgis/rest/services/MapaBaseImobiliario/MapServer/101/query?where=1%3D1&geometry=362940.4154584955%2C7753070.682847998%2C362972.0045289267%2C7753104.1378997285&geometryType=esriGeometryEnvelope&inSR=31984&spatialRel=esriSpatialRelIntersects&f=json&returnCountOnly=true",
+      "method": "GET",
+      "checkedAt": "2026-10-08T23:34:10.219Z",
+      "httpStatus": 200,
+      "contentType": "application/json; charset=UTF-8",
+      "bytes": 11,
+      "count": 1
+    },
+    {
+      "test": "viewport-8",
+      "url": "https://gis.vitoria.es.gov.br/arcgis/rest/services/MapaBaseImobiliario/MapServer/101/query?where=1%3D1&geometry=362940.4154584955%2C7753070.682847998%2C362972.0045289267%2C7753104.1378997285&geometryType=esriGeometryEnvelope&inSR=31984&spatialRel=esriSpatialRelIntersects&f=json&returnIdsOnly=true",
+      "method": "GET",
+      "checkedAt": "2026-10-08T23:34:11.071Z",
+      "httpStatus": 200,
+      "contentType": "application/json; charset=UTF-8",
+      "bytes": 52,
+      "objectIdFieldName": "OBJECTID",
+      "objectIds": [
+        22228
+      ]
+    },
+    {
+      "test": "viewport-8",
+      "url": "https://gis.vitoria.es.gov.br/arcgis/rest/services/MapaBaseImobiliario/MapServer/101/query?where=1%3D1&outFields=OBJECTID%2CcodGeo%2CcodLote%2CcodGeoPoligono&returnGeometry=true&outSR=4326&f=geojson&objectIds=22228",
+      "method": "GET",
+      "checkedAt": "2026-10-08T23:34:11.425Z",
+      "httpStatus": 200,
+      "contentType": "application/geo+json; charset=UTF-8",
+      "bytes": 1792,
+      "features": [
+        {
+          "transportId": 22228,
+          "properties": {
+            "OBJECTID": 22228,
+            "codGeo": "23271",
+            "codLote": 17725,
+            "codGeoPoligono": 0
+          },
+          "geometrySha256": "5cc53e10bb11c73882dc69026d49400060cea0b05c56e51f7cb17985133f1481"
+        }
+      ]
+    },
+    {
+      "test": "viewport-9",
+      "url": "https://gis.vitoria.es.gov.br/arcgis/rest/services/MapaBaseImobiliario/MapServer/101/query?where=1%3D1&geometry=362909.883308055%2C7752970.816021559%2C362941.47227175033%2C7753004.271145699&geometryType=esriGeometryEnvelope&inSR=31984&spatialRel=esriSpatialRelIntersects&f=json&returnCountOnly=true",
+      "method": "GET",
+      "checkedAt": "2026-10-08T23:34:11.767Z",
+      "httpStatus": 200,
+      "contentType": "application/json; charset=UTF-8",
+      "bytes": 11,
+      "count": 3
+    },
+    {
+      "test": "viewport-9",
+      "url": "https://gis.vitoria.es.gov.br/arcgis/rest/services/MapaBaseImobiliario/MapServer/101/query?where=1%3D1&geometry=362909.883308055%2C7752970.816021559%2C362941.47227175033%2C7753004.271145699&geometryType=esriGeometryEnvelope&inSR=31984&spatialRel=esriSpatialRelIntersects&f=json&returnIdsOnly=true",
+      "method": "GET",
+      "checkedAt": "2026-10-08T23:34:12.102Z",
+      "httpStatus": 200,
+      "contentType": "application/json; charset=UTF-8",
+      "bytes": 64,
+      "objectIdFieldName": "OBJECTID",
+      "objectIds": [
+        23644,
+        22068,
+        42271
+      ]
+    },
+    {
+      "test": "viewport-9",
+      "url": "https://gis.vitoria.es.gov.br/arcgis/rest/services/MapaBaseImobiliario/MapServer/101/query?where=1%3D1&outFields=OBJECTID%2CcodGeo%2CcodLote%2CcodGeoPoligono&returnGeometry=true&outSR=4326&f=geojson&objectIds=23644%2C22068%2C42271",
+      "method": "GET",
+      "checkedAt": "2026-10-08T23:34:12.951Z",
+      "httpStatus": 200,
+      "contentType": "application/geo+json; charset=UTF-8",
+      "bytes": 3202,
+      "features": [
+        {
+          "transportId": 22068,
+          "properties": {
+            "OBJECTID": 22068,
+            "codGeo": "23102",
+            "codLote": 17728,
+            "codGeoPoligono": 0
+          },
+          "geometrySha256": "9952a30bbaba2709e0a7626a5b163dbe241e6c1f7cf8b7cc299947670f819232"
+        },
+        {
+          "transportId": 23644,
+          "properties": {
+            "OBJECTID": 23644,
+            "codGeo": "24731",
+            "codLote": 17736,
+            "codGeoPoligono": 0
+          },
+          "geometrySha256": "0cbc26a9c2abf9653c2e693189ad4fd6a9120c2c6da92b2e6fa9d6ffc2f614ef"
+        },
+        {
+          "transportId": 42271,
+          "properties": {
+            "OBJECTID": 42271,
+            "codGeo": "44208",
+            "codLote": 17729,
+            "codGeoPoligono": 0
+          },
+          "geometrySha256": "df03ba67272ae63dc01f160c359ce51f12900011d0bc909581f2c858fb191611"
+        }
+      ]
+    },
+    {
+      "test": "viewport-10",
+      "url": "https://gis.vitoria.es.gov.br/arcgis/rest/services/MapaBaseImobiliario/MapServer/101/query?where=1%3D1&geometry=362908.82626809936%2C7753103.639438335%2C362940.4154584955%2C7753137.094545985&geometryType=esriGeometryEnvelope&inSR=31984&spatialRel=esriSpatialRelIntersects&f=json&returnCountOnly=true",
+      "method": "GET",
+      "checkedAt": "2026-10-08T23:34:13.287Z",
+      "httpStatus": 200,
+      "contentType": "application/json; charset=UTF-8",
+      "bytes": 11,
+      "count": 1
+    },
+    {
+      "test": "viewport-10",
+      "url": "https://gis.vitoria.es.gov.br/arcgis/rest/services/MapaBaseImobiliario/MapServer/101/query?where=1%3D1&geometry=362908.82626809936%2C7753103.639438335%2C362940.4154584955%2C7753137.094545985&geometryType=esriGeometryEnvelope&inSR=31984&spatialRel=esriSpatialRelIntersects&f=json&returnIdsOnly=true",
+      "method": "GET",
+      "checkedAt": "2026-10-08T23:34:13.627Z",
+      "httpStatus": 200,
+      "contentType": "application/json; charset=UTF-8",
+      "bytes": 52,
+      "objectIdFieldName": "OBJECTID",
+      "objectIds": [
+        22268
+      ]
+    },
+    {
+      "test": "viewport-10",
+      "url": "https://gis.vitoria.es.gov.br/arcgis/rest/services/MapaBaseImobiliario/MapServer/101/query?where=1%3D1&outFields=OBJECTID%2CcodGeo%2CcodLote%2CcodGeoPoligono&returnGeometry=true&outSR=4326&f=geojson&objectIds=22268",
+      "method": "GET",
+      "checkedAt": "2026-10-08T23:34:13.957Z",
+      "httpStatus": 200,
+      "contentType": "application/geo+json; charset=UTF-8",
+      "bytes": 536,
+      "features": [
+        {
+          "transportId": 22268,
+          "properties": {
+            "OBJECTID": 22268,
+            "codGeo": "23311",
+            "codLote": 17707,
+            "codGeoPoligono": 0
+          },
+          "geometrySha256": "3d110f78a0604af3dc715f7041ce65d5229285d100aa69b424037e5f9455cea0"
+        }
+      ]
+    },
+    {
+      "test": "viewport-11",
+      "url": "https://gis.vitoria.es.gov.br/arcgis/rest/services/MapaBaseImobiliario/MapServer/101/query?where=1%3D1&geometry=362846.705020754%2C7753036.729030537%2C362878.29422438855%2C7753070.184266519&geometryType=esriGeometryEnvelope&inSR=31984&spatialRel=esriSpatialRelIntersects&f=json&returnCountOnly=true",
+      "method": "GET",
+      "checkedAt": "2026-10-08T23:34:14.285Z",
+      "httpStatus": 200,
+      "contentType": "application/json; charset=UTF-8",
+      "bytes": 11,
+      "count": 2
+    },
+    {
+      "test": "viewport-11",
+      "url": "https://gis.vitoria.es.gov.br/arcgis/rest/services/MapaBaseImobiliario/MapServer/101/query?where=1%3D1&geometry=362846.705020754%2C7753036.729030537%2C362878.29422438855%2C7753070.184266519&geometryType=esriGeometryEnvelope&inSR=31984&spatialRel=esriSpatialRelIntersects&f=json&returnIdsOnly=true",
+      "method": "GET",
+      "checkedAt": "2026-10-08T23:34:14.624Z",
+      "httpStatus": 200,
+      "contentType": "application/json; charset=UTF-8",
+      "bytes": 58,
+      "objectIdFieldName": "OBJECTID",
+      "objectIds": [
+        22222,
+        22065
+      ]
+    },
+    {
+      "test": "viewport-11",
+      "url": "https://gis.vitoria.es.gov.br/arcgis/rest/services/MapaBaseImobiliario/MapServer/101/query?where=1%3D1&outFields=OBJECTID%2CcodGeo%2CcodLote%2CcodGeoPoligono&returnGeometry=true&outSR=4326&f=geojson&objectIds=22222%2C22065",
+      "method": "GET",
+      "checkedAt": "2026-10-08T23:34:14.957Z",
+      "httpStatus": 200,
+      "contentType": "application/geo+json; charset=UTF-8",
+      "bytes": 1493,
+      "features": [
+        {
+          "transportId": 22065,
+          "properties": {
+            "OBJECTID": 22065,
+            "codGeo": "23099",
+            "codLote": 17732,
+            "codGeoPoligono": 0
+          },
+          "geometrySha256": "f6fcf87a1d2edabc867dcc0c6790c83dcaebbad2bf3697a4a08ce3127302ab2b"
+        },
+        {
+          "transportId": 22222,
+          "properties": {
+            "OBJECTID": 22222,
+            "codGeo": "23265",
+            "codLote": 17733,
+            "codGeoPoligono": 0
+          },
+          "geometrySha256": "f42cf0bc9871ebd5920e3476ebc8e52b712edbe59b9467ab8c8d2ba2d0615a2a"
+        }
+      ]
+    },
+    {
+      "test": "viewport-12",
+      "url": "https://gis.vitoria.es.gov.br/arcgis/rest/services/MapaBaseImobiliario/MapServer/101/query?where=1%3D1&geometry=362972.0045289267%2C7753037.726205673%2C363003.59347939043%2C7753071.181201484&geometryType=esriGeometryEnvelope&inSR=31984&spatialRel=esriSpatialRelIntersects&f=json&returnCountOnly=true",
+      "method": "GET",
+      "checkedAt": "2026-10-08T23:34:15.287Z",
+      "httpStatus": 200,
+      "contentType": "application/json; charset=UTF-8",
+      "bytes": 11,
+      "count": 1
+    },
+    {
+      "test": "viewport-12",
+      "url": "https://gis.vitoria.es.gov.br/arcgis/rest/services/MapaBaseImobiliario/MapServer/101/query?where=1%3D1&geometry=362972.0045289267%2C7753037.726205673%2C363003.59347939043%2C7753071.181201484&geometryType=esriGeometryEnvelope&inSR=31984&spatialRel=esriSpatialRelIntersects&f=json&returnIdsOnly=true",
+      "method": "GET",
+      "checkedAt": "2026-10-08T23:34:15.629Z",
+      "httpStatus": 200,
+      "contentType": "application/json; charset=UTF-8",
+      "bytes": 52,
+      "objectIdFieldName": "OBJECTID",
+      "objectIds": [
+        22228
+      ]
+    },
+    {
+      "test": "viewport-12",
+      "url": "https://gis.vitoria.es.gov.br/arcgis/rest/services/MapaBaseImobiliario/MapServer/101/query?where=1%3D1&outFields=OBJECTID%2CcodGeo%2CcodLote%2CcodGeoPoligono&returnGeometry=true&outSR=4326&f=geojson&objectIds=22228",
+      "method": "GET",
+      "checkedAt": "2026-10-08T23:34:15.962Z",
+      "httpStatus": 200,
+      "contentType": "application/geo+json; charset=UTF-8",
+      "bytes": 1792,
+      "features": [
+        {
+          "transportId": 22228,
+          "properties": {
+            "OBJECTID": 22228,
+            "codGeo": "23271",
+            "codLote": 17725,
+            "codGeoPoligono": 0
+          },
+          "geometrySha256": "5cc53e10bb11c73882dc69026d49400060cea0b05c56e51f7cb17985133f1481"
+        }
+      ]
+    },
+    {
+      "test": "forced-three-row-pages",
+      "url": "https://gis.vitoria.es.gov.br/arcgis/rest/services/MapaBaseImobiliario/MapServer/101/query?where=1%3D1&geometry=362878.29422438855%2C7753003.772552041%2C362909.883308055%2C7753037.227732102&geometryType=esriGeometryEnvelope&inSR=31984&spatialRel=esriSpatialRelIntersects&f=json&returnCountOnly=true",
+      "method": "GET",
+      "checkedAt": "2026-10-08T23:34:16.295Z",
+      "httpStatus": 200,
+      "contentType": "application/json; charset=UTF-8",
+      "bytes": 11,
+      "count": 4
+    },
+    {
+      "test": "forced-three-row-pages",
+      "url": "https://gis.vitoria.es.gov.br/arcgis/rest/services/MapaBaseImobiliario/MapServer/101/query?where=1%3D1&geometry=362878.29422438855%2C7753003.772552041%2C362909.883308055%2C7753037.227732102&geometryType=esriGeometryEnvelope&inSR=31984&spatialRel=esriSpatialRelIntersects&f=json&returnIdsOnly=true",
+      "method": "GET",
+      "checkedAt": "2026-10-08T23:34:16.633Z",
+      "httpStatus": 200,
+      "contentType": "application/json; charset=UTF-8",
+      "bytes": 70,
+      "objectIdFieldName": "OBJECTID",
+      "objectIds": [
+        42855,
+        45294,
+        42271,
+        22065
+      ]
+    },
+    {
+      "test": "forced-three-row-pages",
+      "url": "https://gis.vitoria.es.gov.br/arcgis/rest/services/MapaBaseImobiliario/MapServer/101/query?where=1%3D1&outFields=OBJECTID%2CcodGeo%2CcodLote%2CcodGeoPoligono&returnGeometry=true&outSR=4326&f=geojson&objectIds=42855%2C45294%2C42271",
+      "method": "GET",
+      "checkedAt": "2026-10-08T23:34:16.969Z",
+      "httpStatus": 200,
+      "contentType": "application/geo+json; charset=UTF-8",
+      "bytes": 2366,
+      "features": [
+        {
+          "transportId": 42271,
+          "properties": {
+            "OBJECTID": 42271,
+            "codGeo": "44208",
+            "codLote": 17729,
+            "codGeoPoligono": 0
+          },
+          "geometrySha256": "df03ba67272ae63dc01f160c359ce51f12900011d0bc909581f2c858fb191611"
+        },
+        {
+          "transportId": 42855,
+          "properties": {
+            "OBJECTID": 42855,
+            "codGeo": "44813",
+            "codLote": 17731,
+            "codGeoPoligono": 0
+          },
+          "geometrySha256": "2206af0b0818eb72d693115665ee90f31839ac819d19a51e767f922db95624ca"
+        },
+        {
+          "transportId": 45294,
+          "properties": {
+            "OBJECTID": 45294,
+            "codGeo": "47316",
+            "codLote": 17730,
+            "codGeoPoligono": 0
+          },
+          "geometrySha256": "cb262d84090f1733e51eec2dfe22b0a1783ef2447156981fd88ed24b8c2d0bcd"
+        }
+      ]
+    },
+    {
+      "test": "forced-three-row-pages",
+      "url": "https://gis.vitoria.es.gov.br/arcgis/rest/services/MapaBaseImobiliario/MapServer/101/query?where=1%3D1&outFields=OBJECTID%2CcodGeo%2CcodLote%2CcodGeoPoligono&returnGeometry=true&outSR=4326&f=geojson&objectIds=22065",
+      "method": "GET",
+      "checkedAt": "2026-10-08T23:34:17.300Z",
+      "httpStatus": 200,
+      "contentType": "application/geo+json; charset=UTF-8",
+      "bytes": 621,
+      "features": [
+        {
+          "transportId": 22065,
+          "properties": {
+            "OBJECTID": 22065,
+            "codGeo": "23099",
+            "codLote": 17732,
+            "codGeoPoligono": 0
+          },
+          "geometrySha256": "f6fcf87a1d2edabc867dcc0c6790c83dcaebbad2bf3697a4a08ce3127302ab2b"
+        }
+      ]
+    },
+    {
+      "test": "fresh-ids-0",
+      "url": "https://gis.vitoria.es.gov.br/arcgis/rest/services/MapaBaseImobiliario/MapServer/101/query?where=%28codGeo+%3D+%2723099%27+AND+codLote+%3D+17732%29+OR+%28codGeo+%3D+%2723102%27+AND+codLote+%3D+17728%29+OR+%28codGeo+%3D+%2723104%27+AND+codLote+%3D+17727%29+OR+%28codGeo+%3D+%2723265%27+AND+codLote+%3D+17733%29+OR+%28codGeo+%3D+%2723271%27+AND+codLote+%3D+17725%29+OR+%28codGeo+%3D+%2723311%27+AND+codLote+%3D+17707%29+OR+%28codGeo+%3D+%2724731%27+AND+codLote+%3D+17736%29+OR+%28codGeo+%3D+%273136%27+AND+codLote+%3D+17726%29+OR+%28codGeo+%3D+%2744208%27+AND+codLote+%3D+17729%29+OR+%28codGeo+%3D+%2744813%27+AND+codLote+%3D+17731%29+OR+%28codGeo+%3D+%2747316%27+AND+codLote+%3D+17730%29&f=json&returnCountOnly=true",
+      "method": "GET",
+      "checkedAt": "2026-10-08T23:34:17.629Z",
+      "httpStatus": 200,
+      "contentType": "application/json; charset=UTF-8",
+      "bytes": 12,
+      "count": 11
+    },
+    {
+      "test": "fresh-ids-0",
+      "url": "https://gis.vitoria.es.gov.br/arcgis/rest/services/MapaBaseImobiliario/MapServer/101/query?where=%28codGeo+%3D+%2723099%27+AND+codLote+%3D+17732%29+OR+%28codGeo+%3D+%2723102%27+AND+codLote+%3D+17728%29+OR+%28codGeo+%3D+%2723104%27+AND+codLote+%3D+17727%29+OR+%28codGeo+%3D+%2723265%27+AND+codLote+%3D+17733%29+OR+%28codGeo+%3D+%2723271%27+AND+codLote+%3D+17725%29+OR+%28codGeo+%3D+%2723311%27+AND+codLote+%3D+17707%29+OR+%28codGeo+%3D+%2724731%27+AND+codLote+%3D+17736%29+OR+%28codGeo+%3D+%273136%27+AND+codLote+%3D+17726%29+OR+%28codGeo+%3D+%2744208%27+AND+codLote+%3D+17729%29+OR+%28codGeo+%3D+%2744813%27+AND+codLote+%3D+17731%29+OR+%28codGeo+%3D+%2747316%27+AND+codLote+%3D+17730%29&f=json&returnIdsOnly=true",
+      "method": "GET",
+      "checkedAt": "2026-10-08T23:34:18.041Z",
+      "httpStatus": 200,
+      "contentType": "application/json; charset=UTF-8",
+      "bytes": 111,
+      "objectIdFieldName": "OBJECTID",
+      "objectIds": [
+        3047,
+        22065,
+        22068,
+        22070,
+        22222,
+        22228,
+        22268,
+        23644,
+        42271,
+        42855,
+        45294
+      ]
+    },
+    {
+      "test": "fresh-ids-0",
+      "url": "https://gis.vitoria.es.gov.br/arcgis/rest/services/MapaBaseImobiliario/MapServer/101/query?where=1%3D1&outFields=OBJECTID%2CcodGeo%2CcodLote%2CcodGeoPoligono&returnGeometry=true&outSR=4326&f=geojson&objectIds=3047%2C22065%2C22068",
+      "method": "GET",
+      "checkedAt": "2026-10-08T23:34:18.456Z",
+      "httpStatus": 200,
+      "contentType": "application/geo+json; charset=UTF-8",
+      "bytes": 2030,
+      "features": [
+        {
+          "transportId": 3047,
+          "properties": {
+            "OBJECTID": 3047,
+            "codGeo": "3136",
+            "codLote": 17726,
+            "codGeoPoligono": 0
+          },
+          "geometrySha256": "c2d20f7110ae9c8b2c7ab22e1fadd3f7d12ef1e01cd00966686228cb97986f65"
+        },
+        {
+          "transportId": 22065,
+          "properties": {
+            "OBJECTID": 22065,
+            "codGeo": "23099",
+            "codLote": 17732,
+            "codGeoPoligono": 0
+          },
+          "geometrySha256": "f6fcf87a1d2edabc867dcc0c6790c83dcaebbad2bf3697a4a08ce3127302ab2b"
+        },
+        {
+          "transportId": 22068,
+          "properties": {
+            "OBJECTID": 22068,
+            "codGeo": "23102",
+            "codLote": 17728,
+            "codGeoPoligono": 0
+          },
+          "geometrySha256": "9952a30bbaba2709e0a7626a5b163dbe241e6c1f7cf8b7cc299947670f819232"
+        }
+      ]
+    },
+    {
+      "test": "fresh-ids-0",
+      "url": "https://gis.vitoria.es.gov.br/arcgis/rest/services/MapaBaseImobiliario/MapServer/101/query?where=1%3D1&outFields=OBJECTID%2CcodGeo%2CcodLote%2CcodGeoPoligono&returnGeometry=true&outSR=4326&f=geojson&objectIds=22070%2C22222%2C22228",
+      "method": "GET",
+      "checkedAt": "2026-10-08T23:34:18.789Z",
+      "httpStatus": 200,
+      "contentType": "application/geo+json; charset=UTF-8",
+      "bytes": 3369,
+      "features": [
+        {
+          "transportId": 22070,
+          "properties": {
+            "OBJECTID": 22070,
+            "codGeo": "23104",
+            "codLote": 17727,
+            "codGeoPoligono": 0
+          },
+          "geometrySha256": "250c04f2ae0e35040324b7ab4754c3efe884adaadfdae20fb7134e05e8531884"
+        },
+        {
+          "transportId": 22222,
+          "properties": {
+            "OBJECTID": 22222,
+            "codGeo": "23265",
+            "codLote": 17733,
+            "codGeoPoligono": 0
+          },
+          "geometrySha256": "f42cf0bc9871ebd5920e3476ebc8e52b712edbe59b9467ab8c8d2ba2d0615a2a"
+        },
+        {
+          "transportId": 22228,
+          "properties": {
+            "OBJECTID": 22228,
+            "codGeo": "23271",
+            "codLote": 17725,
+            "codGeoPoligono": 0
+          },
+          "geometrySha256": "5cc53e10bb11c73882dc69026d49400060cea0b05c56e51f7cb17985133f1481"
+        }
+      ]
+    },
+    {
+      "test": "fresh-ids-0",
+      "url": "https://gis.vitoria.es.gov.br/arcgis/rest/services/MapaBaseImobiliario/MapServer/101/query?where=1%3D1&outFields=OBJECTID%2CcodGeo%2CcodLote%2CcodGeoPoligono&returnGeometry=true&outSR=4326&f=geojson&objectIds=22268%2C23644%2C42271",
+      "method": "GET",
+      "checkedAt": "2026-10-08T23:34:19.132Z",
+      "httpStatus": 200,
+      "contentType": "application/geo+json; charset=UTF-8",
+      "bytes": 2866,
+      "features": [
+        {
+          "transportId": 22268,
+          "properties": {
+            "OBJECTID": 22268,
+            "codGeo": "23311",
+            "codLote": 17707,
+            "codGeoPoligono": 0
+          },
+          "geometrySha256": "3d110f78a0604af3dc715f7041ce65d5229285d100aa69b424037e5f9455cea0"
+        },
+        {
+          "transportId": 23644,
+          "properties": {
+            "OBJECTID": 23644,
+            "codGeo": "24731",
+            "codLote": 17736,
+            "codGeoPoligono": 0
+          },
+          "geometrySha256": "0cbc26a9c2abf9653c2e693189ad4fd6a9120c2c6da92b2e6fa9d6ffc2f614ef"
+        },
+        {
+          "transportId": 42271,
+          "properties": {
+            "OBJECTID": 42271,
+            "codGeo": "44208",
+            "codLote": 17729,
+            "codGeoPoligono": 0
+          },
+          "geometrySha256": "df03ba67272ae63dc01f160c359ce51f12900011d0bc909581f2c858fb191611"
+        }
+      ]
+    },
+    {
+      "test": "fresh-ids-0",
+      "url": "https://gis.vitoria.es.gov.br/arcgis/rest/services/MapaBaseImobiliario/MapServer/101/query?where=1%3D1&outFields=OBJECTID%2CcodGeo%2CcodLote%2CcodGeoPoligono&returnGeometry=true&outSR=4326&f=geojson&objectIds=42855%2C45294",
+      "method": "GET",
+      "checkedAt": "2026-10-08T23:34:19.467Z",
+      "httpStatus": 200,
+      "contentType": "application/geo+json; charset=UTF-8",
+      "bytes": 1368,
+      "features": [
+        {
+          "transportId": 42855,
+          "properties": {
+            "OBJECTID": 42855,
+            "codGeo": "44813",
+            "codLote": 17731,
+            "codGeoPoligono": 0
+          },
+          "geometrySha256": "2206af0b0818eb72d693115665ee90f31839ac819d19a51e767f922db95624ca"
+        },
+        {
+          "transportId": 45294,
+          "properties": {
+            "OBJECTID": 45294,
+            "codGeo": "47316",
+            "codLote": 17730,
+            "codGeoPoligono": 0
+          },
+          "geometrySha256": "cb262d84090f1733e51eec2dfe22b0a1783ef2447156981fd88ed24b8c2d0bcd"
+        }
+      ]
+    },
+    {
+      "test": "explicit-absence",
+      "url": "https://gis.vitoria.es.gov.br/arcgis/rest/services/MapaBaseImobiliario/MapServer/101/query?where=%28codGeo+%3D+%27999999999%27+AND+codLote+%3D+999999999%29&f=json&returnCountOnly=true",
+      "method": "GET",
+      "checkedAt": "2026-10-08T23:34:19.798Z",
+      "httpStatus": 200,
+      "contentType": "application/json; charset=UTF-8",
+      "bytes": 11,
+      "count": 0
+    },
+    {
+      "test": "explicit-absence",
+      "url": "https://gis.vitoria.es.gov.br/arcgis/rest/services/MapaBaseImobiliario/MapServer/101/query?where=%28codGeo+%3D+%27999999999%27+AND+codLote+%3D+999999999%29&f=json&returnIdsOnly=true",
+      "method": "GET",
+      "checkedAt": "2026-10-08T23:34:20.157Z",
+      "httpStatus": 200,
+      "contentType": "application/json; charset=UTF-8",
+      "bytes": 49,
+      "objectIdFieldName": "OBJECTID",
+      "objectIds": null
+    },
+    {
+      "test": "footprint",
+      "url": "https://gis.vitoria.es.gov.br/arcgis/rest/services/MapaBaseImobiliario/MapServer/101/query?where=1%3D1&geometry=362912.1542334637%2C7753001.345732371%2C362939.1473126335%2C7753053.350732241&geometryType=esriGeometryEnvelope&inSR=31984&spatialRel=esriSpatialRelIntersects&f=json&returnCountOnly=true",
+      "method": "GET",
+      "checkedAt": "2026-10-08T23:34:20.518Z",
+      "httpStatus": 200,
+      "contentType": "application/json; charset=UTF-8",
+      "bytes": 11,
+      "count": 4
+    },
+    {
+      "test": "footprint",
+      "url": "https://gis.vitoria.es.gov.br/arcgis/rest/services/MapaBaseImobiliario/MapServer/101/query?where=1%3D1&geometry=362912.1542334637%2C7753001.345732371%2C362939.1473126335%2C7753053.350732241&geometryType=esriGeometryEnvelope&inSR=31984&spatialRel=esriSpatialRelIntersects&f=json&returnIdsOnly=true",
+      "method": "GET",
+      "checkedAt": "2026-10-08T23:34:20.858Z",
+      "httpStatus": 200,
+      "contentType": "application/json; charset=UTF-8",
+      "bytes": 70,
+      "objectIdFieldName": "OBJECTID",
+      "objectIds": [
+        22070,
+        22068,
+        42271,
+        22228
+      ]
+    },
+    {
+      "test": "footprint",
+      "url": "https://gis.vitoria.es.gov.br/arcgis/rest/services/MapaBaseImobiliario/MapServer/101/query?where=1%3D1&outFields=OBJECTID%2CcodGeo%2CcodLote%2CcodGeoPoligono&returnGeometry=true&outSR=4326&f=geojson&objectIds=22070%2C22068%2C42271",
+      "method": "GET",
+      "checkedAt": "2026-10-08T23:34:21.199Z",
+      "httpStatus": 200,
+      "contentType": "application/geo+json; charset=UTF-8",
+      "bytes": 2575,
+      "features": [
+        {
+          "transportId": 22068,
+          "properties": {
+            "OBJECTID": 22068,
+            "codGeo": "23102",
+            "codLote": 17728,
+            "codGeoPoligono": 0
+          },
+          "geometrySha256": "9952a30bbaba2709e0a7626a5b163dbe241e6c1f7cf8b7cc299947670f819232"
+        },
+        {
+          "transportId": 22070,
+          "properties": {
+            "OBJECTID": 22070,
+            "codGeo": "23104",
+            "codLote": 17727,
+            "codGeoPoligono": 0
+          },
+          "geometrySha256": "250c04f2ae0e35040324b7ab4754c3efe884adaadfdae20fb7134e05e8531884"
+        },
+        {
+          "transportId": 42271,
+          "properties": {
+            "OBJECTID": 42271,
+            "codGeo": "44208",
+            "codLote": 17729,
+            "codGeoPoligono": 0
+          },
+          "geometrySha256": "df03ba67272ae63dc01f160c359ce51f12900011d0bc909581f2c858fb191611"
+        }
+      ]
+    },
+    {
+      "test": "footprint",
+      "url": "https://gis.vitoria.es.gov.br/arcgis/rest/services/MapaBaseImobiliario/MapServer/101/query?where=1%3D1&outFields=OBJECTID%2CcodGeo%2CcodLote%2CcodGeoPoligono&returnGeometry=true&outSR=4326&f=geojson&objectIds=22228",
+      "method": "GET",
+      "checkedAt": "2026-10-08T23:34:21.527Z",
+      "httpStatus": 200,
+      "contentType": "application/geo+json; charset=UTF-8",
+      "bytes": 1792,
+      "features": [
+        {
+          "transportId": 22228,
+          "properties": {
+            "OBJECTID": 22228,
+            "codGeo": "23271",
+            "codLote": 17725,
+            "codGeoPoligono": 0
+          },
+          "geometrySha256": "5cc53e10bb11c73882dc69026d49400060cea0b05c56e51f7cb17985133f1481"
+        }
+      ]
+    },
+    {
+      "test": "source-binding",
+      "url": "https://gis.vitoria.es.gov.br/arcgis/rest/services/MapaBaseImobiliario/MapServer/101/query?where=1%3D1&geometry=362912.1542334637%2C7753001.345732371%2C362939.1473126335%2C7753053.350732241&geometryType=esriGeometryEnvelope&inSR=31984&spatialRel=esriSpatialRelIntersects&f=json&returnCountOnly=true",
+      "method": "GET",
+      "checkedAt": "2026-10-08T23:34:21.862Z",
+      "httpStatus": 200,
+      "contentType": "application/json; charset=UTF-8",
+      "bytes": 11,
+      "count": 4
+    },
+    {
+      "test": "source-binding",
+      "url": "https://gis.vitoria.es.gov.br/arcgis/rest/services/MapaBaseImobiliario/MapServer/101/query?where=1%3D1&geometry=362912.1542334637%2C7753001.345732371%2C362939.1473126335%2C7753053.350732241&geometryType=esriGeometryEnvelope&inSR=31984&spatialRel=esriSpatialRelIntersects&f=json&returnIdsOnly=true",
+      "method": "GET",
+      "checkedAt": "2026-10-08T23:34:22.205Z",
+      "httpStatus": 200,
+      "contentType": "application/json; charset=UTF-8",
+      "bytes": 70,
+      "objectIdFieldName": "OBJECTID",
+      "objectIds": [
+        22070,
+        22068,
+        42271,
+        22228
+      ]
+    },
+    {
+      "test": "source-binding",
+      "url": "https://gis.vitoria.es.gov.br/arcgis/rest/services/MapaBaseImobiliario/MapServer/101/query?where=1%3D1&outFields=OBJECTID%2CcodGeo%2CcodLote%2CcodGeoPoligono&returnGeometry=true&outSR=4326&f=geojson&objectIds=22070%2C22068%2C42271",
+      "method": "GET",
+      "checkedAt": "2026-10-08T23:34:22.542Z",
+      "httpStatus": 200,
+      "contentType": "application/geo+json; charset=UTF-8",
+      "bytes": 2575,
+      "features": [
+        {
+          "transportId": 22068,
+          "properties": {
+            "OBJECTID": 22068,
+            "codGeo": "23102",
+            "codLote": 17728,
+            "codGeoPoligono": 0
+          },
+          "geometrySha256": "9952a30bbaba2709e0a7626a5b163dbe241e6c1f7cf8b7cc299947670f819232"
+        },
+        {
+          "transportId": 22070,
+          "properties": {
+            "OBJECTID": 22070,
+            "codGeo": "23104",
+            "codLote": 17727,
+            "codGeoPoligono": 0
+          },
+          "geometrySha256": "250c04f2ae0e35040324b7ab4754c3efe884adaadfdae20fb7134e05e8531884"
+        },
+        {
+          "transportId": 42271,
+          "properties": {
+            "OBJECTID": 42271,
+            "codGeo": "44208",
+            "codLote": 17729,
+            "codGeoPoligono": 0
+          },
+          "geometrySha256": "df03ba67272ae63dc01f160c359ce51f12900011d0bc909581f2c858fb191611"
+        }
+      ]
+    },
+    {
+      "test": "source-binding",
+      "url": "https://gis.vitoria.es.gov.br/arcgis/rest/services/MapaBaseImobiliario/MapServer/101/query?where=1%3D1&outFields=OBJECTID%2CcodGeo%2CcodLote%2CcodGeoPoligono&returnGeometry=true&outSR=4326&f=geojson&objectIds=22228",
+      "method": "GET",
+      "checkedAt": "2026-10-08T23:34:22.871Z",
+      "httpStatus": 200,
+      "contentType": "application/geo+json; charset=UTF-8",
+      "bytes": 1792,
+      "features": [
+        {
+          "transportId": 22228,
+          "properties": {
+            "OBJECTID": 22228,
+            "codGeo": "23271",
+            "codLote": 17725,
+            "codGeoPoligono": 0
+          },
+          "geometrySha256": "5cc53e10bb11c73882dc69026d49400060cea0b05c56e51f7cb17985133f1481"
+        }
+      ]
+    }
+  ],
+  "qualityFile": "research/overnight-cities-2026-10-08/vitoria-lotes-quality.json",
+  "uniqueParcels": 11,
+  "requestCount": 62,
+  "allTestsPassed": true,
+  "finishedAt": "2026-10-08T23:34:23.247Z",
+  "qualityStatus": "pending-independent-topology-check"
+}

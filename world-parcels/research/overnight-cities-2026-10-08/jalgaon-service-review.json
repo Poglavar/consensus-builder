@@ -1,0 +1,76 @@
+{
+  "schemaVersion": 1,
+  "checkedAt": "2026-10-09",
+  "sourceId": "in-jalgaon-official-local-registry-review",
+  "purpose": "Service review for WUP2025 rank 680 Jalgaon (city code 8959); source registry evidence and safe anonymous full-polygon access status.",
+  "primaryPublisher": "Official Maharashtra Land Records page for Jalgaon district identifies district and subordinate land-records offices, including the Jalgaon local survey remit.",
+  "sourceUrl": "https://bhumiabhilekh.maharashtra.gov.in/DistrictSCLR/DistrictInfo?districtId=16",
+  "registryFound": true,
+  "registryBasis": "The Maharashtra Land Records Department’s Jalgaon district information page identifies the district land-records administration and subordinate offices, including the local city-survey function. The Jalgaon municipal corporation separately publishes municipal services. This supports a local land-record registry function, but no anonymous full-parcel geometry route was verified.",
+  "officialSources": [
+    {
+      "url": "https://bhumiabhilekh.maharashtra.gov.in/DistrictSCLR/DistrictInfo?districtId=16",
+      "observation": "Official Maharashtra Land Records page for Jalgaon district identifies district and subordinate land-records offices, including the Jalgaon local survey remit."
+    },
+    {
+      "url": "https://jcmc.gov.in/",
+      "observation": "Official Jalgaon City Municipal Corporation portal; municipal service presence is contextual only and no property-tax search was used."
+    },
+    {
+      "url": "https://mahabhunakasha.mahabhumi.gov.in/",
+      "observation": "The district land-records page links this portal for land-map downloads. An anonymous homepage request timed out (curl exit status 28, HTTP status 000, zero bytes), so no portal route, schema or parcel response is asserted."
+    }
+  ],
+  "searchQueries": [
+    {
+      "language": "English",
+      "query": "Jalgaon Maharashtra official land records city survey cadastral map parcel public GIS",
+      "scope": "Find city-specific official registry and safe public full parcel geometry.",
+      "result": "The Maharashtra Land Records Department publishes Jalgaon district and city-survey office information. No safe anonymous full parcel geometry endpoint was identified.",
+      "actualResultUrls": [
+        "https://bhumiabhilekh.maharashtra.gov.in/DistrictSCLR/DistrictInfo?districtId=16",
+        "https://jcmc.gov.in/"
+      ],
+      "executionMethod": "Official-source search and public-page review."
+    },
+    {
+      "language": "Marathi",
+      "query": "जळगाव शहर भूमी अभिलेख नगर भूमापन नकाशा भूखंड अधिकृत",
+      "scope": "Find city-specific official registry and safe public full parcel geometry.",
+      "result": "महाराष्ट्र भूमी अभिलेख विभागाच्या जळगाव जिल्हा माहितीमध्ये स्थानिक भूमी-अभिलेख/नगर भूमापन कार्यालयांची माहिती आहे. शहराच्या मालमत्ता-कर सेवेतील मालमत्ता क्रमांक व वैयक्तिक तपशील आवश्यक असल्याने ती वापरली नाही; सार्वजनिक पूर्ण भूखंड भूमिती मार्ग सत्यापित झाला नाही.",
+      "actualResultUrls": [
+        "https://bhumiabhilekh.maharashtra.gov.in/DistrictSCLR/DistrictInfo?districtId=16",
+        "https://jcmc.gov.in/"
+      ],
+      "executionMethod": "Official-source search and public-page review."
+    }
+  ],
+  "accessReview": {
+    "publicAnonymousGeometryVerified": false,
+    "completeGeoreferencedPolygonCount": 0,
+    "geometryRetained": false,
+    "ownerAddressTaxOrPersonLookupRequested": false,
+    "authenticationOrCredentialsUsed": false,
+    "captchaOrPersonalFormSubmitted": false,
+    "routeInspectionStatus": "advertised_map_route_unreachable",
+    "reason": "No anonymous full-parcel geometry endpoint or geometry-only schema was verified. The municipal property-tax route requests property identifiers and personal details, so it was not used.",
+    "publicHtmlFetched": false,
+    "publicHtmlRoutesInspected": [],
+    "advertisedMapLinkFound": true
+  },
+  "requestEvidence": [
+    {
+      "method": "official-source review",
+      "observation": "Official evidence and access limits are summarized above. No property-specific query or non-public service was used; no HTTP status or geometry/schema is asserted."
+    },
+    {
+      "url": "https://mahabhunakasha.mahabhumi.gov.in/",
+      "method": "GET",
+      "status": null,
+      "observation": "Anonymous HTTPS homepage request timed out after 20 seconds (curl status 000, zero bytes). No TLS verification bypass, map selection or parcel query was attempted."
+    }
+  ],
+  "technicalBlocker": "The official district page advertises a land-map download portal, but an anonymous HTTPS homepage GET timed out. No public geometry-only endpoint or schema could be verified; the parcel selection and property-tax workflows were not used.",
+  "sampleDisposition": "Map download portal is advertised by the official district page but its homepage timed out; zero polygons retained.",
+  "remainingUncertainty": "A public cadastral map may exist in a separate survey system, but no safe schema-first route was verified."
+}

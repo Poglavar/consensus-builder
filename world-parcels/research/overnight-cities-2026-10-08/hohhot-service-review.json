@@ -1,0 +1,13 @@
+{
+  "schemaVersion": "1.0",
+  "checkedAt": "2026-10-09",
+  "cityRecord": "city-6045-hohhot.json",
+  "purpose": "Read-only source discovery and bounded public-service validation; no runtime or global changes.",
+  "scopeLimits": {
+    "maxFullPolygonsRetainedInThisCityReport": 0,
+    "maxFullPolygonsRetainedAcrossCityReview": 0,
+    "ownerOrAddressDataRetained": false,
+    "accountCredentialsOrPublicTokenValuesRetained": false
+  },
+  "assessment": "The official Hohhot bureau notice confirms free visual cadastral-map lookup for anyone via the registration center's WeChat public account, but the notice page contains no QR/H5 link. Its sole attachment endpoint returned HTTP 200 text/plain with a short failure response rather than a PDF. The actual WeChat interface/API remains inaccessible from the disclosed web path; no public full-vector endpoint or sample geometry was verified. Remaining uncertainty: whether the WeChat service exposes an anonymous polygon API and whether the WUP point is in coverage."
+}

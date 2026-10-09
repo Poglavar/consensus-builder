@@ -1,0 +1,91 @@
+{
+  "schemaVersion": "1.0",
+  "checkedAt": "2026-10-09",
+  "cityRecord": "city-7302-minneapolis-saint-paul.json",
+  "purpose": "Document local county parcel-map evidence, point jurisdiction and bounded anonymous geometry route review.",
+  "scopeLimits": {
+    "maxFullPolygonsRetainedInCityRecord": 3,
+    "maxFullPolygonsRetainedInReview": 3,
+    "maxFullPolygonsRetainedInRepository": 3,
+    "ownerOrAddressDataRetained": false,
+    "credentialsOrTokenValuesRetained": false,
+    "citywideCompletenessAsserted": false
+  },
+  "assessment": "The WUP locator is in Minneapolis (not Saint Paul) and in Hennepin County. The existing Ramsey County/St Paul source therefore does not cover this point. Hennepin County parcel GIS returned no exact locator feature; two nearby features were returned from a 25 m extent and retained with only the county PIN and geometry. Hennepin metadata describes a tax parcel dataset that is not suitable for surveying/legal use.",
+  "registryAssessment": "Hennepin County publishes local county parcel geometry maintained from Survey Division geometry and property tax records. Treat it as a local tax/assessor parcel fabric, not a title boundary or legal survey.",
+  "officialPrimarySources": [
+    {
+      "url": "https://www.minneapolismn.gov/government/departments/it/gis/",
+      "observation": "Minneapolis GIS page points users to City GIS, Open Data Minneapolis and City of Saint Paul GIS as separate resources."
+    },
+    {
+      "url": "https://gis.data.mn.gov/maps/hennepin::county-parcels/about",
+      "observation": "Minnesota Geospatial Commons identifies the public Hennepin County County Parcels dataset, monthly refresh, and county PIN field; describes stacked multi-PID geometries."
+    },
+    {
+      "url": "https://www.arcgis.com/home/item.html?id=7975aabf6e1e42998a40a4b085ffefdf&sublayer=1",
+      "observation": "Hennepin County metadata says parcel geometry is created and maintained by Hennepin County Survey Division, combined with county property-tax extracts, and is not suitable for legal, engineering or surveying use."
+    },
+    {
+      "url": "https://arcgis.metc.state.mn.us/data1/rest/services/cd/city_boundaries/MapServer/0",
+      "observation": "Metropolitan Council city-boundary layer used to identify exact WUP point as Minneapolis."
+    },
+    {
+      "url": "https://arcgis.metc.state.mn.us/data1/rest/services/parcels/Parcels_2025/FeatureServer/3",
+      "observation": "Metropolitan Council Hennepin County parcel layer queried with safe field allowlist only."
+    },
+    {
+      "url": "https://www.hennepincounty.gov/services/property/property-maps-data",
+      "observation": "Official Hennepin County property page lists public property maps, survey plats and maps for download or purchase."
+    }
+  ],
+  "searchQueries": [
+    {
+      "language": "English",
+      "query": "Minneapolis official parcel map property polygons city GIS open data",
+      "result": "Found Minneapolis GIS/open-data guidance and Hennepin County public parcel data; exact locator is within Minneapolis and Hennepin County, while nearby polygons but no exact-point parcel were returned.",
+      "method": "Separate English-language discovery search, official service metadata and bounded point/envelope requests."
+    }
+  ],
+  "serviceChecks": [
+    {
+      "url": "https://arcgis.metc.state.mn.us/data1/rest/services/cd/city_boundaries/MapServer/0/query",
+      "method": "GET exact-point query with where=CTU_NAME=Minneapolis, outFields=CTU_NAME, returnGeometry=false",
+      "httpStatus": 200,
+      "observation": "One result: Minneapolis."
+    },
+    {
+      "url": "https://arcgis.metc.state.mn.us/data1/rest/services/parcels/Parcels_2025/FeatureServer/3?f=pjson",
+      "method": "GET layer metadata",
+      "observation": "Hennepin County Parcels; Polygon; EPSG:26915; County PIN (`COUNTY_PIN`) is available. Other address/owner fields exist but were not requested."
+    },
+    {
+      "url": "https://arcgis.metc.state.mn.us/data1/rest/services/parcels/Parcels_2025/FeatureServer/3/query",
+      "method": "GET exact point; outFields=OBJECTID,COUNTY_PIN; outSR=4326",
+      "httpStatus": 200,
+      "observation": "Empty result at exact WUP point. First attempt used non-existent PID field and returned ArcGIS query error; retried after reading schema."
+    },
+    {
+      "url": "https://arcgis.metc.state.mn.us/data1/rest/services/parcels/Parcels_2025/FeatureServer/3/query",
+      "method": "GET 25 m EPSG:26915 envelope; outFields=OBJECTID,COUNTY_PIN; resultRecordCount=3; outSR=4326",
+      "httpStatus": 200,
+      "observation": "Two features returned and retained; both are nearby, not exact-point matches."
+    }
+  ],
+  "geometryEvidence": {
+    "file": "city-7302-minneapolis-saint-paul-samples.geojson",
+    "featureCount": 2,
+    "attributes": [
+      "COUNTY_PIN"
+    ],
+    "geometryType": "Polygon",
+    "crs": "WGS84",
+    "exactLocatorFeature": false
+  },
+  "privacy": "Only county parcel identifiers and geometry were requested/retained. No owner, address, taxpayer, title or tax values were requested; no property lookup was submitted.",
+  "runtimeAssessment": "not_enabled_exact_point_uncovered",
+  "qualification": {
+    "boundedCells": 0,
+    "note": "No city-wide qualification was performed; only exact point and 25 m near-point extent were queried."
+  }
+}

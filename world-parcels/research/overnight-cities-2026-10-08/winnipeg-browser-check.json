@@ -1,0 +1,14 @@
+{
+  "schemaVersion": 1,
+  "checkedAt": "2026-10-09T03:52:06.950719+00:00",
+  "browser": "Dedicated headed Chrome through agent-browser; manual inspection, no browser test suite.",
+  "url": "http://localhost:5638/?city=winnipeg&backend=http%3A%2F%2F127.0.0.1%3A5640&reduceMotion=1&lang=en",
+  "loadedParcels": 71,
+  "visibleParcelCenters": 6,
+  "pointerSelectedParcelId": "CA-WINNIPEG-GISID-638413",
+  "detailsHeadingMatchedNativeIdentity": true,
+  "uncaughtPageErrors": [],
+  "browserClosed": true,
+  "browserCloseConfirmedAt": "2026-10-09T04:12:31.591161+00:00",
+  "browserCloseEvidence": "Named validation session closed; subsequent session list returned No active sessions."
+}

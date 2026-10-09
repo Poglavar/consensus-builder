@@ -1,0 +1,107 @@
+{
+  "name": "Gaya",
+  "country": "India",
+  "countryCode": "IN",
+  "rank": 519,
+  "point": [
+    24.7781888862228,
+    84.9997633545803
+  ],
+  "population2025": 991081,
+  "schemaVersion": 1,
+  "kind": "city_parcel_source_research",
+  "checkedAt": "2026-10-09",
+  "populationUnit": "persons",
+  "status": "complete",
+  "verifiedSample": false,
+  "publicParcelGeometryFound": false,
+  "runtimeReadiness": "not_enabled_no_verified_public_geometry",
+  "priorEvidenceFiles": [],
+  "scopeLimits": "The official BhuNaksha client exposes parcel maps as WMS imagery and plot selection/detail routes, but no public full-geometry vector endpoint was identified. WMS tiles and plot-detail routes were not queried for parcel records. The WUP locator is a settlement centroid, not a parcel identity or city boundary. No owner/address/rights-holder data or credentials were retained.",
+  "pointBasis": "UN WUP 2025 population-weighted settlement centroid; this is not a municipal boundary or a parcel-coverage claim.",
+  "registryFound": true,
+  "registryBasis": "The official Gaya district land-records page points users to Bihar land-record services, and the Bihar BhuNaksha public map exposes the district/subdivision/circle/mauza/survey hierarchy. This confirms local records and parcel-map indexing for Gaya, but not anonymous full-vector access.",
+  "resultCategory": "local_parcel_map_exists_raster_only_no_public_vector_geometry",
+  "research": {
+    "executedQueries": [
+      {
+        "language": "English",
+        "query": "Gaya Bihar official land records cadastral parcel map BhuNaksha Gaya district",
+        "scope": "Find city-local land registry/map evidence and public full-polygon parcel geometry.",
+        "result": "Official Gaya district land-records page and Bihar Revenue BhuNaksha viewer found. Viewer contains selectors down to mauza/survey and displays map imagery; no public vector geometry endpoint found.",
+        "actualResultUrls": [
+          "https://gaya.nic.in/service/land-records/",
+          "https://biharbhumi.bihar.gov.in/",
+          "https://bhunaksha.bihar.gov.in/10/indexmain.jsp"
+        ],
+        "executionMethod": "Separate native-language or English public search followed by official-source, public map/service and client inspection."
+      },
+      {
+        "language": "Hindi",
+        "query": "गया बिहार भू नक्शा खसरा खतियान जमीन का नक्शा आधिकारिक",
+        "scope": "Find city-local land registry/map evidence and public full-polygon parcel geometry.",
+        "result": "Official Bihar Bhunaksha and Gaya district land-record service found; map client presents survey parcel workflow but only WMS imagery is exposed.",
+        "actualResultUrls": [
+          "https://gaya.nic.in/service/land-records/",
+          "https://bhunaksha.bihar.gov.in/10/indexmain.jsp"
+        ],
+        "executionMethod": "Separate native-language or English public search followed by official-source, public map/service and client inspection."
+      }
+    ],
+    "officialSources": [
+      {
+        "url": "https://gaya.nic.in/service/land-records/",
+        "observation": "Official Gaya district land-records page provides the local government land-record service entry point."
+      },
+      {
+        "url": "https://biharbhumi.bihar.gov.in/",
+        "observation": "Official Bihar Revenue Department portal links revenue land records and cadastral map services."
+      },
+      {
+        "url": "https://bhunaksha.bihar.gov.in/10/indexmain.jsp",
+        "httpStatus": 200,
+        "observation": "Public Bihar BhuNaksha map shell has district, subdivision, circle, mauza and survey/map selectors. Client JavaScript uses WMS imagery and plot-selection/detail routes; no full geometry response was requested or returned."
+      }
+    ],
+    "viewerAndServiceTrace": {
+      "viewerUrl": "https://bhunaksha.bihar.gov.in/10/indexmain.jsp",
+      "apiBase": "https://bhunaksha.bihar.gov.in/10/",
+      "observedClientRoutes": [
+        "/rest/MapInfo/getPlotAtXY",
+        "/ScalarDatahandler",
+        "WMS"
+      ],
+      "notes": "Inspected public client JS/config. WMS is imagery, while selected-plot routes are not a documented geometry-only vector response; they were not called. No polygon retained."
+    }
+  },
+  "verifiedParcelResponse": null,
+  "source": {
+    "id": "IN-BR-BHUNAKSHA-GAYA",
+    "name": "Bihar BhuNaksha and Gaya district land records",
+    "url": "https://bhunaksha.bihar.gov.in/10/indexmain.jsp",
+    "operator": "Bihar Revenue and Land Reforms Department",
+    "type": "Public cadastral map viewer with WMS raster and plot-selection workflow",
+    "layer": null,
+    "geometryType": "Polygon (map display; no vector response tested)",
+    "nativeIdField": null,
+    "nativeIdEvidence": "Viewer exposes selected plot identifier in client-side selection flow, but no safe full-geometry response was observed."
+  },
+  "wupCityCode": 11089,
+  "cityId": "wup2025:11089",
+  "queueRank": 519,
+  "populationPlausibility2025": "High",
+  "centerLatLon": [
+    24.7781888862228,
+    84.9997633545803
+  ],
+  "sourceIds": [],
+  "adapterReady": false,
+  "technicalBlocker": "The official BhuNaksha client exposes parcel maps as WMS imagery and plot selection/detail routes, but no public full-geometry vector endpoint was identified. WMS tiles and plot-detail routes were not queried for parcel records.",
+  "remainingUncertainty": "Whether additional citywide or city-level anonymous full-polygon datasets exist beyond the official services inspected; none was confirmed.",
+  "registryEvidenceUrls": [
+    "https://gaya.nic.in/service/land-records/",
+    "https://biharbhumi.bihar.gov.in/",
+    "https://bhunaksha.bihar.gov.in/10/indexmain.jsp"
+  ],
+  "rootReviewedAt": "2026-10-09T01:14:01.434685+00:00"
+}

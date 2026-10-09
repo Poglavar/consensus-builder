@@ -1,0 +1,92 @@
+{
+  "name": "Khulna",
+  "country": "Bangladesh",
+  "countryCode": "BD",
+  "rank": 475,
+  "point": [
+    22.837154971161,
+    89.5463159905925
+  ],
+  "freshResearch": {
+    "queries": [
+      {
+        "language": "English",
+        "query": "Khulna City Corporation official cadastral map parcel land records GIS",
+        "scope": "Find city-specific official registration/map sources and determine whether anonymous parcel geometry is documented.",
+        "result": "KCC publishes a general city-map page; KDA advertises a mouza/dag-based Detailed Area Plan, which is planning evidence rather than a verified land-title register. Direct HTML retrieval for the .gov.bd map sites failed normal TLS certificate validation; no certificate bypass was used. The national DLRS portal was not tied to a particular map sheet covering the exact ranked point. Registry source status therefore remains undetermined, and no parcel geometry/schema was verified.",
+        "actualResultUrls": [
+          "https://khulnacity.gov.bd/",
+          "https://khulnacity.portal.gov.bd/site/page/fd8b3a16-8c66-4981-b28b-8fa2bcb5a18c/",
+          "https://kda.gov.bd/",
+          "https://settlement.gov.bd/home/"
+        ],
+        "executionMethod": "Separate English and local-language web searches; official source page review; bounded anonymous HTML review where available."
+      },
+      {
+        "language": "Bengali",
+        "query": "খুলনা সিটি কর্পোরেশন শহরের মানচিত্র মৌজা দাগ ভিত্তিক ম্যাপ জমির রেকর্ড",
+        "scope": "Find city-specific official registration/map sources and determine whether anonymous parcel geometry is documented.",
+        "result": "KCC publishes a general city-map page; KDA advertises a mouza/dag-based Detailed Area Plan, which is planning evidence rather than a verified land-title register. Direct HTML retrieval for the .gov.bd map sites failed normal TLS certificate validation; no certificate bypass was used. The national DLRS portal was not tied to a particular map sheet covering the exact ranked point. Registry source status therefore remains undetermined, and no parcel geometry/schema was verified.",
+        "actualResultUrls": [
+          "https://khulnacity.gov.bd/",
+          "https://khulnacity.portal.gov.bd/site/page/fd8b3a16-8c66-4981-b28b-8fa2bcb5a18c/",
+          "https://kda.gov.bd/",
+          "https://settlement.gov.bd/home/"
+        ],
+        "executionMethod": "Separate English and local-language web searches; official source page review; bounded anonymous HTML review where available."
+      }
+    ]
+  },
+  "status": "complete",
+  "verifiedParcelResponse": null,
+  "source": {
+    "sourceId": "BD-6006-CITY-PARCEL-RESEARCH",
+    "name": "Khulna city public map and KDA Detailed Area Plan references",
+    "url": "https://khulnacity.portal.gov.bd/site/page/fd8b3a16-8c66-4981-b28b-8fa2bcb5a18c/",
+    "operator": "Local municipal/city authority sources",
+    "serviceType": "Registry/map source discovery; no anonymous geometry response verified",
+    "layer": null,
+    "geometryType": null,
+    "outputCrs": null,
+    "nativeIdField": null,
+    "nativeIdEvidence": "No public parcel schema or stable anonymous native geometry identifier was verified."
+  },
+  "coverageAssessment": {
+    "claimedScope": "No citywide parcel coverage claim.",
+    "verifiedOpenScope": "No anonymous parcel geometry was retained or verified.",
+    "countrywideVerified": false
+  },
+  "registryFound": null,
+  "verifiedSample": false,
+  "resultCategory": "official_local_registry_or_map_geometry_not_verified",
+  "technicalBlocker": "KCC publishes a general city-map page; KDA advertises a mouza/dag-based Detailed Area Plan, which is planning evidence rather than a verified land-title register. Direct HTML retrieval for the .gov.bd map sites failed normal TLS certificate validation; no certificate bypass was used. The national DLRS portal was not tied to a particular map sheet covering the exact ranked point. Registry source status therefore remains undetermined, and no parcel geometry/schema was verified.",
+  "remainingUncertainty": "Whether a safe anonymous geometry-only parcel endpoint exists and covers the exact WUP point; local source metadata and currentness are not fully qualified.",
+  "nextStep": "Recheck only if the local authority publishes a geometry-only service or an open-data parcel geometry package with a documented safe schema.",
+  "schemaVersion": 1,
+  "checkedAt": "2026-10-09",
+  "wupCityCode": 6006,
+  "cityId": "wup2025:6006",
+  "runtimeReadiness": "not_enabled_no_verified_public_geometry",
+  "adapterReady": false,
+  "centerLatLon": [
+    22.837154971161,
+    89.5463159905925
+  ],
+  "population2025k": 1074.134,
+  "populationUnit": "persons",
+  "queueRank": 475,
+  "population2025": 1074134,
+  "populationPlausibility2025": "High",
+  "pointBasis": "UN WUP 2025 population-weighted settlement centroid; this is not a municipal boundary or a parcel-coverage claim.",
+  "publicParcelGeometryFound": false,
+  "sourceIds": [],
+  "registryBasis": "KCC publishes a general city-map page; KDA advertises a mouza/dag-based Detailed Area Plan, which is planning evidence rather than a verified land-title register. Direct HTML retrieval for the .gov.bd map sites failed normal TLS certificate validation; no certificate bypass was used. The national DLRS portal was not tied to a particular map sheet covering the exact ranked point. Registry source status therefore remains undetermined, and no parcel geometry/schema was verified.",
+  "registryEvidenceUrls": [
+    "https://khulnacity.gov.bd/",
+    "https://khulnacity.portal.gov.bd/site/page/fd8b3a16-8c66-4981-b28b-8fa2bcb5a18c/",
+    "https://kda.gov.bd/",
+    "https://settlement.gov.bd/home/"
+  ],
+  "rootSupplementalResearch": [],
+  "rootReviewedAt": "2026-10-09T00:27:07.816662+00:00"
+}

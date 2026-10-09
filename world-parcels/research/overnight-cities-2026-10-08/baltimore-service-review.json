@@ -1,0 +1,81 @@
+{
+  "schemaVersion": "1.0",
+  "checkedAt": "2026-10-09",
+  "cityRecord": "city-8172-baltimore.json",
+  "purpose": "Document city-local registry evidence and bounded anonymous parcel-vector access review.",
+  "scopeLimits": {
+    "maxFullPolygonsRetainedInCityRecord": 1,
+    "maxFullPolygonsRetainedInReview": 1,
+    "maxFullPolygonsRetainedInRepository": 1,
+    "ownerOrAddressDataRetained": false,
+    "credentialsOrTokenValuesRetained": false,
+    "citywideCompletenessAsserted": false
+  },
+  "assessment": "The thirteen-cell native-CRS run passes 202 distinct valid geometries, forced paging, fresh exact identities, absence, footprint and binding. The wider actual desktop app load exposes additional cells with incomplete native-CRS count/ID manifests and source warnings. A separate sequential check of [-76.624,39.322,-76.623,39.323] reproduces count 61 versus 60 IDs. Runtime is held for wider viewport completeness; no count validation was weakened and no source polygons were filtered or repaired. Previous EPSG:4326 manifest and offset-page failures remain preserved.",
+  "registryAssessment": "Direct local City EGIS evidence confirms an exact-point parcel feature. The source adapter remains unqualified and disabled.",
+  "officialPrimarySources": [
+    {
+      "url": "https://egis.baltimorecity.gov/egis/rest/services/Parcel_Information/Parcel/MapServer",
+      "observation": "Official Baltimore City EGIS parcel map service, layer geodata.EGISDATA.parcel."
+    },
+    {
+      "url": "https://egis.baltimorecity.gov/egis/rest/services/Parcel_Information/Parcel/MapServer/0?f=pjson",
+      "observation": "Layer metadata (schema before data) identifies a Polygon layer, OBJECTID OID, safe BLOCKLOT identifier, and separate edit/user and other fields not requested."
+    },
+    {
+      "url": "https://data.baltimorecity.gov/",
+      "observation": "Official Baltimore City Open Data portal; service is on the City EGIS host."
+    }
+  ],
+  "searchQueries": [
+    {
+      "language": "English",
+      "query": "Baltimore City official parcel map GIS parcel boundaries city EGIS",
+      "result": "Official Baltimore City EGIS exposes a polygon Parcel MapServer layer with schema-defined OBJECTID and BLOCKLOT keys; a point-intersection query with those two fields returned one feature containing the exact WUP point.",
+      "method": "Separate English search, official ArcGIS layer metadata review, then bounded geometry request with outFields=OBJECTID,BLOCKLOT."
+    },
+    {
+      "language": "English",
+      "query": "Baltimore City EGIS public parcel data MapServer parcel boundaries",
+      "result": "The City map service supports anonymous query/GeoJSON and polygon output. Metadata was reviewed before a single exact-point feature request; only OBJECTID, BLOCKLOT and geometry were requested.",
+      "method": "Second distinct English-language query and official service-layer review."
+    }
+  ],
+  "serviceChecks": [
+    {
+      "url": "https://egis.baltimorecity.gov/egis/rest/services/Parcel_Information/Parcel/MapServer/0?f=pjson",
+      "method": "GET metadata/schema first",
+      "httpStatus": 200,
+      "observation": "Polygon layer; OBJECTID (OID) and BLOCKLOT; also contains user/edit/property fields that were excluded from all feature requests."
+    },
+    {
+      "url": "https://egis.baltimorecity.gov/egis/rest/services/Parcel_Information/Parcel/MapServer/0/query",
+      "method": "GET exact point query, geometryType point, inSR 4326, outSR 4326, outFields=OBJECTID,BLOCKLOT, returnGeometry=true, resultRecordCount=3, f=geojson",
+      "httpStatus": 200,
+      "observation": "One polygon, ID fields exactly OBJECTID and BLOCKLOT; point-in-polygon check true."
+    }
+  ],
+  "geometryEvidence": {
+    "file": "city-8172-baltimore-samples.geojson",
+    "featureCount": 1,
+    "attributes": [
+      "OBJECTID",
+      "BLOCKLOT"
+    ],
+    "geometryType": "Polygon",
+    "crs": "WGS84",
+    "exactLocatorFeature": true
+  },
+  "qualification": {
+    "acceptanceFile": "baltimore-city-parcels-acceptance.json (temporary only)",
+    "boundedCells": 13,
+    "result": "not passed; offset paging repeated results in several cells. Object-ID mode passed 10 of 13 cells and forced three-row pagination but failed three ID-manifest cells; no runtime qualification."
+  },
+  "privacy": "Requests used only declared safe identifiers and geometry. No owner, address, tax, account, or other property record values were requested.",
+  "rootDecision": "held_wider_viewport_completeness",
+  "runtimeAssessment": "not_enabled_geometry_found_adapter_unqualified",
+  "acceptanceFile": "baltimore-root-native-acceptance.json",
+  "qualityFile": "baltimore-root-quality.json",
+  "widerProbeFile": "baltimore-wider-native-probe.json",
+  "browserCheckFile": "baltimore-browser-check.json"
+}

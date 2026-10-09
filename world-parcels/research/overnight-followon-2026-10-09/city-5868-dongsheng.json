@@ -1,0 +1,86 @@
+{
+  "schemaVersion": "1.0",
+  "cityId": "wup2025:5868",
+  "wupCityCode": 5868,
+  "name": "Dongsheng",
+  "country": "China",
+  "countryCode": "CN",
+  "rank": 1069,
+  "queueRank": 1069,
+  "point": [
+    39.8203021381827,
+    109.989857987012
+  ],
+  "centerLatLon": [
+    39.8203021381827,
+    109.989857987012
+  ],
+  "pointBasis": "UN WUP2025 population-weighted settlement locator; not a municipal boundary or parcel-coverage claim.",
+  "population2025": 518080,
+  "population2025k": 518.08,
+  "populationUnit": "persons",
+  "populationPlausibility2025": "High",
+  "cohort": "overnight-followon-1069-1076",
+  "checkedAt": "2026-10-09",
+  "status": "complete",
+  "registryFound": true,
+  "registryBasis": "The Ordos Natural Resources Bureau publishes a Dongsheng/Kangbashi land-registration guide and the Ordos city government service portal lists real-property registration services. The Dongsheng guide’s cadastral-map retrieval is tied to scanning a property-certificate QR code through an official account, so it does not establish an anonymous geometry route. This is city/district-bound custody evidence, not evidence that the WUP point or the wider city has open parcel geometry.",
+  "registryEvidenceUrls": [
+    "https://zrzyj.ordos.gov.cn/zxgz/bdcdjcth/yshj/202605/t20260514_1652641.html",
+    "https://zwfw.ordos.gov.cn/portal/bszn/view.shtml?serviceOid=ff80808175ba741a0175bb7fec341891"
+  ],
+  "verifiedSample": false,
+  "publicParcelGeometryFound": false,
+  "sourceIds": [],
+  "adapterReady": false,
+  "runtimeReadiness": "not_enabled_no_verified_public_geometry",
+  "technicalBlocker": "No source-native anonymous response containing a complete polygon at the exact WUP point was verified in this city-specific investigation. This is an unverified access finding, not a claim that public parcel geometry does not exist.",
+  "scopeLimits": "Local registry/cadastre custody and safe public geometry are assessed separately. No complete parcel geometry at the exact WUP point was retained; no citywide or countrywide coverage is asserted.",
+  "resultCategory": "no_verified_public_geometry",
+  "remainingUncertainty": "Exact WUP point coverage and source completeness remain unverified; no citywide or countrywide completeness claim is made.",
+  "nextStep": "Root review can retain this city-specific custody evidence and pursue a source-native public feature route only if one is identified.",
+  "coverageAssessment": {
+    "claimedScope": "The Ordos Natural Resources Bureau publishes a Dongsheng/Kangbashi land-registration guide and the Ordos city government service portal lists real-property registration services. The Dongsheng guide’s cadastral-map retrieval is tied to scanning a property-certificate QR code through an official account, so it does not establish an anonymous geometry route. This is city/district-bound custody evidence, not evidence that the WUP point or the wider city has open parcel geometry.",
+    "verifiedOpenScope": "No anonymous full parcel geometry response verified in this investigation.",
+    "citywideVerified": false,
+    "countrywideVerified": false
+  },
+  "runtimeAssessment": {
+    "status": "not_enabled_no_verified_public_geometry",
+    "reason": "No source-native anonymous response containing a complete polygon at the exact WUP point was verified in this city-specific investigation. This is an unverified access finding, not a claim that public parcel geometry does not exist."
+  },
+  "freshResearch": {
+    "queries": [
+      {
+        "language": "English",
+        "query": "Dongsheng Ordos China official land registry cadastre map natural resources bureau",
+        "scope": "Identify first-party city-bound registry/cadastre custody and safe public parcel geometry.",
+        "result": "The official Ordos Natural Resources Bureau directly identifies registration procedures for Dongsheng and Kangbashi; the cadastral map workflow is certificate-linked.",
+        "actualResultUrls": [
+          "https://zrzyj.ordos.gov.cn/zxgz/bdcdjcth/yshj/202605/t20260514_1652641.html",
+          "https://zwfw.ordos.gov.cn/portal/bszn/view.shtml?serviceOid=ff80808175ba741a0175bb7fec341891"
+        ],
+        "executionMethod": "Separate fresh web search in this language; first-party pages/search results reviewed."
+      },
+      {
+        "language": "Chinese",
+        "query": "东胜区 不动产登记 地籍图 鄂尔多斯 自然资源局",
+        "scope": "Identify first-party city-bound registry/cadastre custody and safe public parcel geometry.",
+        "result": "The official Ordos Natural Resources Bureau guide covers Dongsheng and Kangbashi registration and says cadastral-map retrieval uses the QR code on a property certificate and an official WeChat service. No anonymous geometry route was established.",
+        "actualResultUrls": [
+          "https://zrzyj.ordos.gov.cn/zxgz/bdcdjcth/yshj/202605/t20260514_1652641.html",
+          "https://zwfw.ordos.gov.cn/portal/bszn/view.shtml?serviceOid=ff80808175ba741a0175bb7fec341891"
+        ],
+        "executionMethod": "Separate fresh web search in this language; first-party pages/search results reviewed."
+      }
+    ]
+  },
+  "source": null,
+  "verifiedParcelResponse": null,
+  "rootReviewedAt": "2026-10-09T06:45:08.823796+00:00",
+  "rootReview": {
+    "checkedAt": "2026-10-09T06:45:08.823796+00:00",
+    "basis": "Reviewed city-specific English/local-language attempts, local-custody basis, source routes and documented responses. Public geometry remains unverified; access failures and unknown custody do not establish absence.",
+    "primarySourceAuditFile": "research/overnight-followon-2026-10-09/unreviewed-primary-source-audit.json"
+  }
+}

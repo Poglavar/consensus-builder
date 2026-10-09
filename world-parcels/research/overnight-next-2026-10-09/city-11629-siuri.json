@@ -1,0 +1,118 @@
+{
+  "name": "Siuri",
+  "country": "India",
+  "countryCode": "IN",
+  "rank": 1154,
+  "point": [
+    23.9069771343107,
+    87.5218207401545
+  ],
+  "freshResearch": {
+    "queries": [
+      {
+        "language": "English",
+        "query": "Siuri Suri Birbhum official land records cadastral map land reforms",
+        "scope": "Identify city-local land registry/cadastral custody and anonymous public parcel geometry. Preserve the exact WUP settlement point. Do not submit owner, address, tax, account, applicant, or private-property values. Public geographic selectors and public native parcel IDs are permitted.",
+        "result": "Separate English-language source discovery; only cited first-party sources are used as evidence.",
+        "actualResultUrls": [
+          "https://birbhum.gov.in/land-land-reforms/"
+        ]
+      },
+      {
+        "language": "Bengali",
+        "query": "সিউড়ি বীরভূম জমি রেকর্ড মানচিত্র ভূমি ও ভূমি সংস্কার সরকারি",
+        "scope": "Identify city-local land registry/cadastral custody and anonymous public parcel geometry. Preserve the exact WUP settlement point. Do not submit owner, address, tax, account, applicant, or private-property values. Public geographic selectors and public native parcel IDs are permitted.",
+        "result": "No first-party local-language result established a city-bound registry source.",
+        "actualResultUrls": [],
+        "executionMethod": "Separate local-language web search followed by first-party source review."
+      }
+    ],
+    "portals": [
+      {
+        "url": "https://birbhum.gov.in/land-land-reforms/",
+        "operator": "Birbhum District Land & Land Reforms Office",
+        "observation": "Official district page identifies the District Land & Land Reforms Officer in Suri and describes record-of-rights/land-management duties."
+      }
+    ],
+    "requests": [
+      {
+        "url": "https://birbhum.gov.in/land-land-reforms/",
+        "method": "GET; anonymous; standard TLS; redirect-following; no credentials or property-value selectors",
+        "httpStatus": 200,
+        "contentType": "text/html; charset=UTF-8",
+        "bytesRead": 141787,
+        "assessment": "Official district land office page; no vector parcel endpoint."
+      }
+    ],
+    "historicalContext": []
+  },
+  "status": "complete",
+  "verifiedParcelResponse": null,
+  "source": {
+    "sourceId": null,
+    "name": "https://birbhum.gov.in/land-land-reforms/",
+    "url": "https://birbhum.gov.in/land-land-reforms/",
+    "operator": "Birbhum District Land & Land Reforms Office",
+    "serviceType": "Official local registry/cadastral/map evidence reviewed; no safe full-parcel geometry retained.",
+    "layer": null,
+    "geometryType": null,
+    "outputCrs": null,
+    "nativeIdField": null,
+    "nativeIdEvidence": null,
+    "attributesRequested": [],
+    "sampleCount": 0,
+    "sampleFile": null,
+    "directGeometryQueryVerified": false,
+    "directMetadataSchemaVerified": false,
+    "geometryStatus": "not_verified",
+    "operatorNote": "See official source review and anonymous request outcomes; custody, geometry availability and runtime readiness are separate."
+  },
+  "coverageAssessment": {
+    "claimedScope": "Birbhum District Land & Land Reforms Officer is officially located in Suri and describes local records-of-rights/land-management duties; no public parcel geometry feed was found.",
+    "verifiedOpenScope": "No safe source-native full parcel polygon was returned in this investigation.",
+    "countrywideVerified": false,
+    "citywideVerified": false
+  },
+  "registryFound": true,
+  "verifiedSample": false,
+  "resultCategory": "official_local_registry_geometry_unverified",
+  "technicalBlocker": "Suri district land administration is documented; the reviewed sources provide services/records but no anonymous parcel-vector schema or full geometry.",
+  "remainingUncertainty": "Birbhum District Land & Land Reforms Officer is officially located in Suri and describes local records-of-rights/land-management duties; no public parcel geometry feed was found. Public parcel geometry, coverage, legal/title scope and currentness beyond the evidence stated remain unverified.",
+  "nextStep": "Keep runtime disabled until root review determines whether the official source and returned geometry meet adapter criteria.",
+  "schemaVersion": "1.0",
+  "checkedAt": "2026-10-09",
+  "wupCityCode": 11629,
+  "cityId": "wup2025:11629",
+  "runtimeReadiness": "not_enabled_no_verified_public_geometry",
+  "adapterReady": false,
+  "centerLatLon": [
+    23.9069771343107,
+    87.5218207401545
+  ],
+  "population2025k": 480.595,
+  "populationUnit": "persons",
+  "queueRank": 1154,
+  "population2025": 480595,
+  "populationPlausibility2025": "Low",
+  "pointBasis": "Exact unchanged UN WUP 2025 city point (latitude, longitude); not an administrative boundary or cadastral result.",
+  "publicParcelGeometryFound": false,
+  "sourceIds": [],
+  "registryBasis": "Birbhum District Land & Land Reforms Officer is officially located in Suri and describes local records-of-rights/land-management duties; no public parcel geometry feed was found.",
+  "registryEvidenceUrls": [
+    "https://birbhum.gov.in/land-land-reforms/"
+  ],
+  "runtimeAssessment": {
+    "status": "not_enabled_no_verified_public_geometry",
+    "reason": "Suri district land administration is documented; the reviewed sources provide services/records but no anonymous parcel-vector schema or full geometry."
+  },
+  "cohort": "overnight-next-1101-1200",
+  "cohortState": "root_reviewed_integrated_locally",
+  "integrationState": "integrated_locally",
+  "rootReviewedAt": "2026-10-09T07:25:02.908399+00:00",
+  "rootReview": {
+    "checkedAt": "2026-10-09T07:25:02.908399+00:00",
+    "decision": "Reviewed canonical identity, primary custody scope, separate search and direct-source request evidence. No public full parcel geometry verified; unresolved local custody preserved as null.",
+    "sourceEvidenceLimits": "Transport failure or lack of a verified route is not evidence that parcel geometry does not exist."
+  },
+  "integratedAt": "2026-10-09T07:25:03.115223+00:00"
+}

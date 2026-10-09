@@ -1,0 +1,113 @@
+{
+  "schemaVersion": "1.0",
+  "checkedAtUtc": "2026-10-09T06:40:38Z",
+  "city": "Wrocław",
+  "country": "Poland",
+  "wupCityCode": 1580,
+  "featureIdentity": {
+    "OBJECTID": 1150,
+    "ID_SWDE": "026401_1.0001.1434"
+  },
+  "source": {
+    "custodian": "Wrocław municipal GIS",
+    "layerUrl": "https://gis.um.wroc.pl/portal_srv/rest/services/Dzia%C5%82ki/MapServer/0",
+    "sourcePortal": "https://geoportal.wroclaw.pl/mapy/wlasnosci/",
+    "endpointOperation": "ArcGIS REST Query"
+  },
+  "request": {
+    "url": "https://gis.um.wroc.pl/portal_srv/rest/services/Dzia%C5%82ki/MapServer/0/query?f=json&objectIds=1150&outFields=OBJECTID%2CID_SWDE&returnGeometry=true&outSR=2177&returnZ=false&returnM=false",
+    "method": "GET",
+    "requestedFields": [
+      "OBJECTID",
+      "ID_SWDE"
+    ],
+    "returnGeometry": true,
+    "outputSpatialReference": 2177,
+    "objectIdFilter": 1150
+  },
+  "sourceResponse": {
+    "httpStatus": 200,
+    "contentType": "application/json;charset=UTF-8",
+    "responseBytes": 5331,
+    "capturedAtUtc": "2026-10-09T06:40:38Z",
+    "tempRawResponse": "tmp/overnight-cities-2026-10-09/wroclaw-1150-native-response.json",
+    "rawResponseSha256": "84988a56c9136e891d5e8996fb6b4d9028a140aef72debe10a84e401c5e7e46b",
+    "fieldsReturned": [
+      "OBJECTID",
+      "ID_SWDE"
+    ],
+    "featureCount": 1,
+    "spatialReference": {
+      "wkid": 2177,
+      "latestWkid": 2177
+    }
+  },
+  "geometryEvidence": {
+    "geometryType": "esriGeometryPolygon",
+    "ringCount": 4,
+    "coordinateCountByRing": [
+      90,
+      9,
+      13,
+      13
+    ],
+    "closedRings": [
+      true,
+      true,
+      true,
+      true
+    ],
+    "nativeRingsSha256": "1df5afbaa6902d06e849745a7c4686063d6ce583a87d75acd95418ef549750fd",
+    "sampleFile": "wroclaw-1580-1434-native-sample.json"
+  },
+  "nativeValidity": {
+    "engine": "GEOS",
+    "version": "3.14.1",
+    "operation": "isValid",
+    "result": false,
+    "repairOrNormalizationPerformed": false,
+    "nonAdjacentRingIntersections": [
+      {
+        "ringIndex": 0,
+        "intersections": [
+          {
+            "segmentA": 0,
+            "segmentB": 79,
+            "point": [
+              6431379.179,
+              5663867.811000001
+            ]
+          },
+          {
+            "segmentA": 0,
+            "segmentB": 80,
+            "point": [
+              6431379.179,
+              5663867.811000001
+            ]
+          },
+          {
+            "segmentA": 1,
+            "segmentB": 79,
+            "point": [
+              6431379.179,
+              5663867.811000001
+            ]
+          },
+          {
+            "segmentA": 1,
+            "segmentB": 80,
+            "point": [
+              6431379.179,
+              5663867.811000001
+            ]
+          }
+        ]
+      }
+    ],
+    "otherRingsSelfIntersectionCount": 0,
+    "crossRingSegmentIntersectionCount": 0,
+    "interpretation": "The returned source polygon is invalid in native EPSG:2177: ring 0 self-touches/intersects at the repeated point approximately (6431379.179, 5663867.811). Other rings showed no self-intersections in the same segment scan, and no pair of distinct rings intersected. Source coordinates were kept unchanged."
+  },
+  "limitations": "This records one exact source feature and its native validity only. It does not assert citywide parcel coverage or runtime suitability."
+}

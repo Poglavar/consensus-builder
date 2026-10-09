@@ -1,0 +1,15 @@
+{
+  "checkedAt": "2026-10-09T03:03:04.227810+00:00",
+  "appCityId": "thessaloniki",
+  "url": "http://localhost:5638/?city=thessaloniki&backend=http%3A%2F%2F127.0.0.1%3A5640&reduceMotion=1&lang=en",
+  "headedBrowser": true,
+  "loadedParcels": 579,
+  "visibleParcels": 256,
+  "parcelFetchFinished": true,
+  "selectionMethod": "Real pointer move/down/up at [600,409], then Details menu item",
+  "selectedParcelId": "GR-THESS-KAEK-190442128009",
+  "detailsHeading": "Parcel Copy to clipboard: GR-THESS-KAEK-190442128009",
+  "detailsMatchesSelectedParcel": true,
+  "uncaughtErrors": [],
+  "browserClosed": true
+}

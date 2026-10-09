@@ -1,0 +1,12 @@
+{
+  "url": "https://geoportal.mm.gov.om/server/rest/services/SeebContract_MIL1/MapServer/11?f=pjson",
+  "actualPayloadKeys": [
+    "error"
+  ],
+  "error": {
+    "code": 499,
+    "message": "Token Required",
+    "details": []
+  },
+  "fields": null
+}

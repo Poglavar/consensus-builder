@@ -1,0 +1,109 @@
+{
+  "schemaVersion": 1,
+  "kind": "city_parcel_source_research",
+  "checkedAt": "2026-10-09",
+  "name": "Sekondi-Takoradi",
+  "country": "Ghana",
+  "countryCode": "GH",
+  "populationUnit": "persons",
+  "status": "complete",
+  "registryFound": true,
+  "registryBasis": "The Lands Commission client-service charter identifies its Western Region office in Sekondi and the local records/search service. STMA independently documents the city’s land-use and spatial planning. This is city-local registry/mapping administration; the login/site-plan workflow did not yield an anonymous complete parcel polygon.",
+  "registryEvidenceUrls": [
+    "https://stma.gov.gh/departments/physical-planning.php",
+    "https://www.lc.gov.gh/about-us/organizational-structure/survey-mapping-division-smd/",
+    "https://lc.gov.gh/storage/2023/12/CLIENT-SERVICE-CHARTER.pdf",
+    "https://elis.lc.gov.gh/",
+    "https://www.stma.gov.gh/Documents.php"
+  ],
+  "verifiedSample": false,
+  "publicParcelGeometryFound": false,
+  "runtimeReadiness": "not_enabled_no_verified_public_geometry",
+  "wupCityCode": 1260,
+  "cityId": "wup2025:1260",
+  "centerLatLon": [
+    4.93638525904733,
+    -1.75275110396952
+  ],
+  "rank": 457,
+  "queueRank": 457,
+  "population2025": 1127436,
+  "population2025k": 1127.436,
+  "pointBasis": "UN WUP 2025 population-weighted settlement centroid; this is not a municipal boundary or a parcel-coverage claim.",
+  "technicalBlocker": "No anonymous city parcel-feature endpoint or geometry-only schema was found in the inspected official route set. The official ELIS page requires valid credentials, and the Lands Commission charter routes Western Region searches through a site-plan submission to a regional office. No login, form, payment, or parcel search was attempted.",
+  "scopeLimits": "City-specific planning authority and Lands Commission record custody are established. Publicly available STMA spatial plans are city-level land-use/structure plans; they do not establish parcel geometry or complete cadastral coverage. No parcel feature data or search report was requested.",
+  "remainingUncertainty": "No anonymous city parcel-feature endpoint or geometry-only schema was found in the inspected official route set. The official ELIS page requires valid credentials, and the Lands Commission charter routes Western Region searches through a site-plan submission to a regional office. No login, form, payment, or parcel search was attempted.",
+  "research": {
+    "executedQueries": [
+      {
+        "language": "English",
+        "query": "Sekondi-Takoradi Ghana official public cadastral map land registry GIS parcel service",
+        "scope": "Find city-local cadastral services and anonymous full-polygon routes.",
+        "result": "Official STMA pages establish urban physical planning and public spatial-plan downloads. Lands Commission sources establish survey-record custody and a site-plan-based regional search workflow; no anonymous parcel geometry route was verified.",
+        "urls": [
+          "https://stma.gov.gh/departments/physical-planning.php",
+          "https://www.lc.gov.gh/about-us/organizational-structure/survey-mapping-division-smd/",
+          "https://lc.gov.gh/storage/2023/12/CLIENT-SERVICE-CHARTER.pdf"
+        ]
+      },
+      {
+        "language": "Twi",
+        "query": "Sekondi-Takoradi asase nhoma, asase mmara, asase mfonini GIS land parcel map",
+        "scope": "Hwehwɛ kuropɔn no asase nhoma ne anonymous parcel geometry route.",
+        "result": "Search did not surface an official Twi cadastral map or geometry route. The traceable official sources found were the English-language STMA spatial-planning pages and Lands Commission service documentation.",
+        "urls": [
+          "https://stma.gov.gh/departments/physical-planning.php",
+          "https://www.lc.gov.gh/about-us/organizational-structure/survey-mapping-division-smd/"
+        ]
+      }
+    ],
+    "officialSources": [
+      {
+        "url": "https://stma.gov.gh/departments/physical-planning.php",
+        "observation": "Official city department page describes spatial/land-use planning, monitoring development and facilitating permits; it does not advertise an open parcel feature service."
+      },
+      {
+        "url": "https://www.lc.gov.gh/about-us/organizational-structure/survey-mapping-division-smd/",
+        "observation": "National statutory mapping division states it preserves records and operations relating to surveys of land parcels; this is institutional evidence, not an anonymous parcel feed."
+      },
+      {
+        "url": "https://lc.gov.gh/storage/2023/12/CLIENT-SERVICE-CHARTER.pdf",
+        "observation": "For other regions, the official charter describes a site-plan submission workflow at a regional office for searches; no owner, address, or parcel lookup was made."
+      },
+      {
+        "url": "https://elis.lc.gov.gh/",
+        "observation": "Public ELIS landing page returned HTTP 200 and prompts for official email/password. No login was attempted."
+      }
+    ],
+    "metadataReviewFile": "sekondi-takoradi-service-review.json",
+    "routeInspectionFile": "/tmp/overnight-cities-2026-10-08/city-1260-sekondi-takoradi-route-inspection.json"
+  },
+  "source": {
+    "sourceId": "gh-sekondi-takoradi-lands-commission-and-stma-review",
+    "name": "gh Sekondi-Takoradi local registry and public parcel-map route review",
+    "operator": "Sekondi-Takoradi Metropolitan Assembly and Ghana Lands Commission",
+    "url": "https://stma.gov.gh/departments/physical-planning.php",
+    "scope": "City-specific planning authority and Lands Commission record custody are established. Publicly available STMA spatial plans are city-level land-use/structure plans; they do not establish parcel geometry or complete cadastral coverage. No parcel feature data or search report was requested.",
+    "nativeIdField": null,
+    "attributesRequested": [],
+    "identityBasis": "No parcel feature ID or geometry was requested or returned.",
+    "geometryStatus": "no_verified_anonymous_parcel_geometry_route"
+  },
+  "coverageAssessment": {
+    "verifiedOpenScope": "City-specific planning authority and Lands Commission record custody are established. Publicly available STMA spatial plans are city-level land-use/structure plans; they do not establish parcel geometry or complete cadastral coverage. No parcel feature data or search report was requested.",
+    "citywideVerified": false,
+    "countrywideVerified": false
+  },
+  "priorEvidenceFiles": [],
+  "populationPlausibility2025": "High",
+  "rootReviewedAt": "2026-10-09T00:13:07.775882+00:00",
+  "sourceIds": [],
+  "point": [
+    4.93638525904733,
+    -1.75275110396952
+  ],
+  "rootSupplementalResearch": {
+    "primarySource": "https://lc.gov.gh/storage/2023/12/CLIENT-SERVICE-CHARTER.pdf",
+    "finding": "Regional office is identified in Sekondi; no personal deed record values were retained."
+  }
+}

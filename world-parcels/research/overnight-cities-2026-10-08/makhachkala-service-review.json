@@ -1,0 +1,69 @@
+{
+  "schemaVersion": "1.0",
+  "checkedAt": "2026-10-09",
+  "cityRecord": "city-6942-makhachkala.json",
+  "purpose": "Document city-scope registry evidence and bounded public parcel-geometry route review.",
+  "scopeLimits": {
+    "maxFullPolygonsRetainedInCityRecord": 3,
+    "maxFullPolygonsRetainedInReview": 3,
+    "maxFullPolygonsRetainedInRepository": 3,
+    "ownerOrAddressDataRetained": false,
+    "credentialsOrTokenValuesRetained": false,
+    "citywideCompletenessAsserted": false
+  },
+  "assessment": "Официальные материалы Республики Дагестан указывают региональные подразделения Росреестра и Роскадастра в Махачкале. В 2026 году филиал Роскадастра внес обновленные сведения о границе населенного пункта Махачкалы в ЕГРН/НСПД; это не слой земельных участков и не подтверждение городского покрытия кадастровыми полигонами.",
+  "registryAssessment": "Official Dagestan Ministry of Land and Property Relations notice for cadastral-complex work in city cadastral quarter 05:40:000019 names the regional Rosreestr office and Roskadastr branch at Makhachkala addresses and identifies the Makhachkala city administration as the map-plan approval authority. This is direct city-specific cadastral work, but consultation/objections require identity and rights documents. The regional offices have Republic of Dagestan remit; this does not establish municipality-only parcel coverage. No anonymous geometry-only route or safe attribute allowlist was verified.",
+  "officialPrimarySources": [
+    {
+      "url": "https://estate-rd.ru/news/izveshhenie-o-provedenii-zasedaniia-soglasitelnoi-komissii-po-voprosu-soglasovaniia-mestopolozeniia-granic-zemelnyx-ucastkov-na-territorii-goroda-maxackaly",
+      "observation": "Official Dagestan Ministry notice documents KKR project quarter 05:40:000019 within Makhachkala city district, city-government authority and Makhachkala office locations; map-plan inspection/objections require identity and rights documents."
+    },
+    {
+      "url": "https://lkkadastr.ru/respublika-dagestan/",
+      "observation": "Roskadastr Dagestan regional service page lists regional service offices at Akushinsky 5V and Nauchnaya 8 in Makhachkala. The office serves the republic region; no municipality-only coverage is inferred."
+    },
+    {
+      "url": "https://estate-rd.ru/news/izveshhenie-o-provedenii-zasedaniia-soglasovatelnoi-komissii-po-voprosu-soglasovaniia-mestopolozeniia-granic-zemelnyx-ucastkov-pri-vypolnenii-kkr-v-gorode-buinaksk",
+      "observation": "Official Dagestan Ministry of Land and Property Relations KKR notice identifies the regional Rosreestr administration and regional Roskadastr branch as responsible participants and gives Makhachkala contact/office locations; the notice’s work area is Buynaksk, not Makhachkala."
+    },
+    {
+      "url": "https://riadagestan.ru/news/economy/aktualizirovany_granitsy_makhachkaly",
+      "observation": "2026 report says the Dagestan Roskadastr branch entered updated Makhachkala settlement boundary information into EGRN and made it available on NSPD. This is boundary evidence, not cadastral parcel geometry."
+    },
+    {
+      "url": "https://nspd.gov.ru/map",
+      "observation": "Federal National Spatial Data System map is the destination cited for the updated settlement boundary. The public map page timed out in the web reader; no status or feature schema was established."
+    }
+  ],
+  "searchQueries": [
+    {
+      "language": "English",
+      "query": "Makhachkala Dagestan official land registry cadastral register Rosreestr public map",
+      "result": "Search results identified the Dagestan regional Rosreestr/Roskadastr institutions in Makhachkala and the public NSPD cadastral-map platform, but no city parcel feature schema/field allowlist was found.",
+      "method": "English-language search followed by primary-source review."
+    },
+    {
+      "language": "Russian",
+      "query": "Махачкала Росреестр Роскадастр кадастровый учет реестр недвижимости публичная карта официальный",
+      "result": "Официальные материалы Республики Дагестан указывают региональные подразделения Росреестра и Роскадастра в Махачкале. В 2026 году филиал Роскадастра внес обновленные сведения о границе населенного пункта Махачкалы в ЕГРН/НСПД; это не слой земельных участков и не подтверждение городского покрытия кадастровыми полигонами.",
+      "method": "Local-language search followed by primary-source review."
+    }
+  ],
+  "serviceChecks": [],
+  "geometryEvidence": null,
+  "accessReview": {
+    "publicAnonymousGeometryVerified": false,
+    "completeGeoreferencedPolygonCount": 0,
+    "geometryRetained": false,
+    "ownerAddressTaxOrPersonLookupRequested": false,
+    "authenticationOrCredentialsUsed": false,
+    "captchaOrPersonalFormSubmitted": false,
+    "routeInspectionStatus": "schema_unverified",
+    "reason": "An official 2026 Dagestan Ministry notice documents cadastral-complex work for a quarter within the Makhachkala city district and lists official government/registry locations for consulting the project map plan. Participation and objections require personal identity and land-right documents, so no such submission or feature request was made. The official NSPD public map URL was attempted in the web reader but timed out without HTTP status; no schema or geometry was exposed. Do not treat the city cadastral-work notice or updated settlement boundary as proof of full parcel-layer coverage."
+  },
+  "privacy": "No owner/address/tax/account/property-record query, login, or private attribute extraction was performed. No geometry retained.",
+  "runtimeAssessment": {
+    "status": "not_enabled_no_verified_safe_geometry_schema",
+    "reason": "The registry offices and one city-specific cadastral project are confirmed, but the region-level registry remit spans Dagestan and does not imply Makhachkala-only coverage. No anonymous geometry+safe-ID schema, CRS, complete parcel coverage, or WUP-point parcel presence was verified."
+  }
+}

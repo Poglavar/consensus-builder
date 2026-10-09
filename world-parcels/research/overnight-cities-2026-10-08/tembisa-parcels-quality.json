@@ -1,0 +1,1637 @@
+{
+  "schemaVersion": 1,
+  "purpose": "Independent GEOS topology check of complete runtime parcels projected to metric coordinates; no repair applied. Counts are bounded sample evidence, not whole-city guarantees.",
+  "library": "Shapely 2.2.0",
+  "metricCrs": "EPSG:32735",
+  "featureCount": 231,
+  "validNonemptyCount": 231,
+  "invalidFeatures": [],
+  "exactDuplicateGeometryPairs": [],
+  "positiveAreaOverlapPairsAbove0_01M2": [],
+  "sumPairwiseOverlapM2": 0,
+  "operationErrors": [],
+  "areaM2": {
+    "min": 238.711167264827,
+    "median": 271.44932654213704,
+    "max": 1962735.399309826
+  },
+  "features": [
+    {
+      "id": "ZA-EKU-STAND-S260000000019600000",
+      "areaM2": 246.68664199277652,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "ZA-EKU-STAND-S260000000020400000",
+      "areaM2": 265.69838445179073,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "ZA-EKU-STAND-S260000000017100000",
+      "areaM2": 276.2110639141051,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "ZA-EKU-STAND-S260000000022900000",
+      "areaM2": 271.41422656279576,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "ZA-EKU-STAND-S260000000019200000",
+      "areaM2": 258.1021379692569,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "ZA-EKU-STAND-S260000000020700000",
+      "areaM2": 273.20750134213233,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "ZA-EKU-STAND-S260000000011500000",
+      "areaM2": 249.85423129902793,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "ZA-EKU-STAND-S260000000016900000",
+      "areaM2": 282.3086774852076,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "ZA-EKU-STAND-S260000000020000000",
+      "areaM2": 475.69330804558854,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "ZA-EKU-STAND-S260000000022600000",
+      "areaM2": 252.5560190345161,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "ZA-EKU-STAND-S260000000016700000",
+      "areaM2": 262.97667466114933,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "ZA-EKU-STAND-S260000000020200000",
+      "areaM2": 280.19023782801946,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "ZA-EKU-STAND-S260000000020300000",
+      "areaM2": 285.3330940980885,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "ZA-EKU-STAND-S260000000022500000",
+      "areaM2": 294.94757630373584,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "ZA-EKU-STAND-S260000000017000000",
+      "areaM2": 256.3323308868397,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "ZA-EKU-STAND-S260000000020800000",
+      "areaM2": 296.2837121670714,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "ZA-EKU-STAND-S260000000019000000",
+      "areaM2": 260.2106923669397,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "ZA-EKU-STAND-S260000000011700000",
+      "areaM2": 247.6150944954535,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "ZA-EKU-STAND-S260000000019300000",
+      "areaM2": 252.9410770089776,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "ZA-EKU-STAND-S260000000020900000",
+      "areaM2": 256.9085596030786,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "ZA-EKU-STAND-S260000000018800000",
+      "areaM2": 257.1409387431221,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "ZA-EKU-STAND-S260000000019100000",
+      "areaM2": 261.19368521568606,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "ZA-EKU-STAND-S260000000020500000",
+      "areaM2": 289.59685376092193,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "ZA-EKU-STAND-S260000000011800000",
+      "areaM2": 239.36277666437473,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "ZA-EKU-STAND-S260000000022800000",
+      "areaM2": 249.68857922679365,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "ZA-EKU-STAND-S260000000019800000",
+      "areaM2": 287.2627216479749,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "ZA-EKU-STAND-S260000000016800000",
+      "areaM2": 257.60237903049244,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "ZA-EKU-STAND-S260000000019700000",
+      "areaM2": 429.1239228346549,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "ZA-EKU-STAND-S260000000019900000",
+      "areaM2": 306.3341973566785,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "ZA-EKU-STAND-S260000000019400000",
+      "areaM2": 249.07461683984207,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "ZA-EKU-STAND-S260000000022400000",
+      "areaM2": 275.79765153078233,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "ZA-EKU-STAND-S260000000020100000",
+      "areaM2": 289.9305122177584,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "ZA-EKU-STAND-S260000000011900000",
+      "areaM2": 2763.9952592613945,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "ZA-EKU-STAND-S260000000018900000",
+      "areaM2": 260.71493361621924,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "ZA-EKU-STAND-S260000000019500000",
+      "areaM2": 261.2051179543877,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "ZA-EKU-STAND-S260000000022700000",
+      "areaM2": 257.03627535387506,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "ZA-EKU-STAND-S260000000020600000",
+      "areaM2": 271.59586394732236,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "ZA-EKU-STAND-S260000000023200000",
+      "areaM2": 2896.712784567292,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "ZA-EKU-STAND-S260000000011600000",
+      "areaM2": 260.12027462907196,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "ZA-EKU-STAND-S260000000026800000",
+      "areaM2": 377.9264135836921,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "ZA-EKU-STAND-S260000000026600000",
+      "areaM2": 269.2985650382161,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "ZA-EKU-STAND-S260000000024400000",
+      "areaM2": 275.1880238155642,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "ZA-EKU-STAND-S260000000024000000",
+      "areaM2": 303.2123122974072,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "ZA-EKU-STAND-S260000000023900000",
+      "areaM2": 368.96205117785354,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "ZA-EKU-STAND-S260000000022200000",
+      "areaM2": 378.779170277353,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "ZA-EKU-STAND-S260000000024300000",
+      "areaM2": 261.6232333546773,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "ZA-EKU-STAND-S260000000024500000",
+      "areaM2": 275.620695816371,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "ZA-EKU-STAND-S260000000026700000",
+      "areaM2": 348.63078592799417,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "ZA-EKU-STAND-S260000000026300000",
+      "areaM2": 271.3640390213772,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "ZA-EKU-STAND-S260000000021900000",
+      "areaM2": 302.2402532319754,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "ZA-EKU-STAND-S260000000021000000",
+      "areaM2": 273.95578485859056,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "ZA-EKU-STAND-S260000000024600000",
+      "areaM2": 252.69624131296217,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "ZA-EKU-STAND-S260000000026200000",
+      "areaM2": 264.49623067223354,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "ZA-EKU-STAND-S260000000026100000",
+      "areaM2": 268.9498385156436,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "ZA-EKU-STAND-S260000000022000000",
+      "areaM2": 426.37613590758,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "ZA-EKU-STAND-S260000000022100000",
+      "areaM2": 449.2554652993999,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "ZA-EKU-STAND-S260000000026500000",
+      "areaM2": 266.835284033623,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "ZA-EKU-STAND-S260000000026000000",
+      "areaM2": 264.6977151464946,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "ZA-EKU-STAND-S260000000021100000",
+      "areaM2": 264.7166028917507,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "ZA-EKU-STAND-S260000000024200000",
+      "areaM2": 313.4373269477236,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "ZA-EKU-STAND-S260000000024800000",
+      "areaM2": 277.4770853195366,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "ZA-EKU-STAND-S260000000024700000",
+      "areaM2": 279.051412361158,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "ZA-EKU-STAND-S260000000023700000",
+      "areaM2": 275.309215520964,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "ZA-EKU-STAND-S260000000024100000",
+      "areaM2": 368.85943808692355,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "ZA-EKU-STAND-S260000000023800000",
+      "areaM2": 293.93498335231794,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "ZA-EKU-STAND-S260000000025900000",
+      "areaM2": 258.10163456665674,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "ZA-EKU-STAND-S260000000026400000",
+      "areaM2": 251.93336421119787,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "ZA-EKU-STAND-S260000000022300000",
+      "areaM2": 313.9157351552302,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "ZA-EKU-STAND-S260000000029400000",
+      "areaM2": 272.1417803392208,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "ZA-EKU-STAND-S260000000027600000",
+      "areaM2": 266.2476036457447,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "ZA-EKU-STAND-S260000000029000000",
+      "areaM2": 265.18500760330664,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "ZA-EKU-STAND-S260000000027400000",
+      "areaM2": 263.65087143024243,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "ZA-EKU-STAND-S260000000027000000",
+      "areaM2": 365.87865064477313,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "ZA-EKU-STAND-S260000000027100000",
+      "areaM2": 352.87337611784864,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "ZA-EKU-STAND-S260000000028800000",
+      "areaM2": 272.11596586987827,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "ZA-EKU-STAND-S260000000029200000",
+      "areaM2": 273.5661810655203,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "ZA-EKU-STAND-S260000000027300000",
+      "areaM2": 272.82712409199695,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "ZA-EKU-STAND-S260000000028900000",
+      "areaM2": 269.80181408096587,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "ZA-EKU-STAND-S260000000029500000",
+      "areaM2": 346.74792260697586,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "ZA-EKU-STAND-S260000000027200000",
+      "areaM2": 278.5762367115193,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "ZA-EKU-STAND-S260000000029600000",
+      "areaM2": 417.6978338137171,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "ZA-EKU-STAND-S350000000000100000",
+      "areaM2": 13667.411488469477,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "ZA-EKU-STAND-S260000000029300000",
+      "areaM2": 266.99712316461057,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "ZA-EKU-STAND-S260000000027900000",
+      "areaM2": 270.57855030936105,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "ZA-EKU-STAND-S260000000027700000",
+      "areaM2": 271.9642146314882,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "ZA-EKU-STAND-S260000000029100000",
+      "areaM2": 272.0937776540256,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "ZA-EKU-STAND-S260000000027500000",
+      "areaM2": 257.3428050593446,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "ZA-EKU-STAND-S260000000027800000",
+      "areaM2": 263.9438323885531,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "ZA-EKU-STAND-S850000000000900000",
+      "areaM2": 1962735.399309826,
+      "valid": true,
+      "empty": false,
+      "parts": 8
+    },
+    {
+      "id": "ZA-EKU-STAND-S260000000016100000",
+      "areaM2": 252.83738328205814,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "ZA-EKU-STAND-S260000000013000000",
+      "areaM2": 273.19120101970407,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "ZA-EKU-STAND-S260000000012800000",
+      "areaM2": 260.610453603403,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "ZA-EKU-STAND-S260000000013300000",
+      "areaM2": 292.74117854966784,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "ZA-EKU-STAND-S260000000016000000",
+      "areaM2": 262.64370686074034,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "ZA-EKU-STAND-S260000000012900000",
+      "areaM2": 270.50847013694266,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "ZA-EKU-STAND-S260000000016200000",
+      "areaM2": 261.6850726956309,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "ZA-EKU-STAND-S260000000015900000",
+      "areaM2": 267.3982368955579,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "ZA-EKU-STAND-S260000000015600000",
+      "areaM2": 315.63266931322676,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "ZA-EKU-STAND-S260000000013200000",
+      "areaM2": 421.60968011612994,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "ZA-EKU-STAND-S260000000013400000",
+      "areaM2": 289.3144815138169,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "ZA-EKU-STAND-S260000000013100000",
+      "areaM2": 280.31388185432877,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "ZA-EKU-STAND-S260000000023100000",
+      "areaM2": 383.8436803439149,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "ZA-EKU-STAND-S260000000015700000",
+      "areaM2": 390.41651644537643,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "ZA-EKU-STAND-S260000000023000000",
+      "areaM2": 271.44932654213704,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "ZA-EKU-STAND-S260000000012600003",
+      "areaM2": 276.0964522863279,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "ZA-EKU-STAND-S260000000015800000",
+      "areaM2": 270.9701122852179,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "ZA-EKU-STAND-S260000000012700000",
+      "areaM2": 258.40687149958865,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "ZA-EKU-STAND-S260000000013800000",
+      "areaM2": 314.6192161443945,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "ZA-EKU-STAND-S260000000025100000",
+      "areaM2": 279.2282504694591,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "ZA-EKU-STAND-S260000000025800000",
+      "areaM2": 263.8097588273332,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "ZA-EKU-STAND-S260000000014900000",
+      "areaM2": 276.8014500085576,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "ZA-EKU-STAND-S260000000023300000",
+      "areaM2": 375.6856599328275,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "ZA-EKU-STAND-S260000000015000000",
+      "areaM2": 281.724100728244,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "ZA-EKU-STAND-S260000000013500000",
+      "areaM2": 272.1395555091496,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "ZA-EKU-STAND-S260000000015100000",
+      "areaM2": 279.81039214407315,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "ZA-EKU-STAND-S260000000014800000",
+      "areaM2": 267.73430159733107,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "ZA-EKU-STAND-S260000000015400000",
+      "areaM2": 262.79832673379,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "ZA-EKU-STAND-S260000000025700000",
+      "areaM2": 265.56533740143163,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "ZA-EKU-STAND-S260000000013600000",
+      "areaM2": 287.26281414697826,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "ZA-EKU-STAND-S260000000014000000",
+      "areaM2": 252.75437556627702,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "ZA-EKU-STAND-S260000000013700000",
+      "areaM2": 277.1476781645327,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "ZA-EKU-STAND-S260000000015500000",
+      "areaM2": 278.2179408947051,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "ZA-EKU-STAND-S260000000024900000",
+      "areaM2": 283.5587818523903,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "ZA-EKU-STAND-S260000000025600000",
+      "areaM2": 253.5676291986873,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "ZA-EKU-STAND-S260000000023600000",
+      "areaM2": 276.23787675824536,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "ZA-EKU-STAND-S260000000013900000",
+      "areaM2": 319.3782546232577,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "ZA-EKU-STAND-S260000000025300000",
+      "areaM2": 328.32976499045395,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "ZA-EKU-STAND-S260000000014100000",
+      "areaM2": 262.78603298423656,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "ZA-EKU-STAND-S260000000023500000",
+      "areaM2": 277.48043614410665,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "ZA-EKU-STAND-S260000000025200000",
+      "areaM2": 268.01096937982936,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "ZA-EKU-STAND-S260000000023400000",
+      "areaM2": 275.3146127834202,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "ZA-EKU-STAND-S260000000015200000",
+      "areaM2": 275.56663437749046,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "ZA-EKU-STAND-S260000000025000000",
+      "areaM2": 257.05695564078746,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "ZA-EKU-STAND-S260000000015300000",
+      "areaM2": 262.806903615373,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "ZA-EKU-STAND-S260000000025400000",
+      "areaM2": 355.7401375535315,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "ZA-EKU-STAND-S260000000025500000",
+      "areaM2": 268.7363898059912,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "ZA-EKU-STAND-S260000000014200000",
+      "areaM2": 257.86564613884224,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "ZA-EKU-STAND-S260000000028700000",
+      "areaM2": 257.1947678896902,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "ZA-EKU-STAND-S350000000001600000",
+      "areaM2": 264.41409761324707,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "ZA-EKU-STAND-S260000000014500000",
+      "areaM2": 344.7195454175114,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "ZA-EKU-STAND-S350000000002000000",
+      "areaM2": 259.1804776261965,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "ZA-EKU-STAND-S260000000028300000",
+      "areaM2": 481.1164735427367,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "ZA-EKU-STAND-S350000000001800000",
+      "areaM2": 357.85549404797644,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "ZA-EKU-STAND-S350000000001700000",
+      "areaM2": 273.3047242034245,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "ZA-EKU-STAND-S260000000014700000",
+      "areaM2": 280.0192958105068,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "ZA-EKU-STAND-S260000000028500000",
+      "areaM2": 254.97905812027474,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "ZA-EKU-STAND-S260000000028200000",
+      "areaM2": 263.4196058037662,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "ZA-EKU-STAND-S260000000014400000",
+      "areaM2": 320.45116316664263,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "ZA-EKU-STAND-S260000000028600000",
+      "areaM2": 271.5050256282742,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "ZA-EKU-STAND-S260000000028400000",
+      "areaM2": 497.80112366870776,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "ZA-EKU-STAND-S260000000014600000",
+      "areaM2": 268.75107268108826,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "ZA-EKU-STAND-S350000000000200000",
+      "areaM2": 13585.365418757787,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "ZA-EKU-STAND-S350000000001900000",
+      "areaM2": 376.3183112823451,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "ZA-EKU-STAND-S260000000028100000",
+      "areaM2": 265.0903937172366,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "ZA-EKU-STAND-S260000000028000000",
+      "areaM2": 255.41331268506846,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "ZA-EKU-STAND-S260000000014300000",
+      "areaM2": 256.880609037422,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "ZA-EKU-STAND-S350000000002100000",
+      "areaM2": 255.05713666874186,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "ZA-EKU-STAND-S270000000051900000",
+      "areaM2": 46393.900282400864,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "ZA-EKU-STAND-S260000000017600000",
+      "areaM2": 264.92206805136885,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "ZA-EKU-STAND-S260000000021700000",
+      "areaM2": 404.00975049297665,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "ZA-EKU-STAND-S260000000018500000",
+      "areaM2": 262.8275848281966,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "ZA-EKU-STAND-S260000000017700000",
+      "areaM2": 280.42225813380685,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "ZA-EKU-STAND-S260000000018100000",
+      "areaM2": 324.44799129865754,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "ZA-EKU-STAND-S260000000030400000",
+      "areaM2": 269.44679231312216,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "ZA-EKU-STAND-S260000000030600000",
+      "areaM2": 261.73656034793527,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "ZA-EKU-STAND-S260000000031900000",
+      "areaM2": 260.5860022669253,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "ZA-EKU-STAND-S260000000021800000",
+      "areaM2": 260.7973205727232,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "ZA-EKU-STAND-S260000000021500000",
+      "areaM2": 263.67548017418653,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "ZA-EKU-STAND-S260000000031000000",
+      "areaM2": 266.0223904796441,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "ZA-EKU-STAND-S260000000021600000",
+      "areaM2": 331.439551790365,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "ZA-EKU-STAND-S260000000031100000",
+      "areaM2": 273.6893361343542,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "ZA-EKU-STAND-S260000000017900000",
+      "areaM2": 243.2730000916666,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "ZA-EKU-STAND-S260000000010500000",
+      "areaM2": 313.94521414463304,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "ZA-EKU-STAND-S260000000018200000",
+      "areaM2": 276.08937703086644,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "ZA-EKU-STAND-S260000000018300000",
+      "areaM2": 266.2170637772387,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "ZA-EKU-STAND-S260000000031600000",
+      "areaM2": 267.92013265462606,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "ZA-EKU-STAND-S260000000031500000",
+      "areaM2": 257.7420350353161,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "ZA-EKU-STAND-S260000000021400000",
+      "areaM2": 259.32623117290063,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "ZA-EKU-STAND-S260000000030800000",
+      "areaM2": 258.3535396928956,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "ZA-EKU-STAND-S260000000030900000",
+      "areaM2": 275.6325691528697,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "ZA-EKU-STAND-S260000000010700000",
+      "areaM2": 267.52120838829114,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "ZA-EKU-STAND-S260000000021300000",
+      "areaM2": 271.31453450720124,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "ZA-EKU-STAND-S260000000018700000",
+      "areaM2": 269.2050374410934,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "ZA-EKU-STAND-S260000000031800000",
+      "areaM2": 269.6365669663668,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "ZA-EKU-STAND-S260000000021200000",
+      "areaM2": 268.77675293122826,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "ZA-EKU-STAND-S260000000031700000",
+      "areaM2": 256.5392118374628,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "ZA-EKU-STAND-S260000000030700000",
+      "areaM2": 265.38585766191653,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "ZA-EKU-STAND-S260000000030500000",
+      "areaM2": 268.03632304249004,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "ZA-EKU-STAND-S260000000018600000",
+      "areaM2": 264.3138351201818,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "ZA-EKU-STAND-S260000000030300000",
+      "areaM2": 272.30021025956165,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "ZA-EKU-STAND-S260000000017800000",
+      "areaM2": 270.0157048303715,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "ZA-EKU-STAND-S260000000026900000",
+      "areaM2": 427.98690485298704,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "ZA-EKU-STAND-S260000000018000000",
+      "areaM2": 325.66710429445124,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "ZA-EKU-STAND-S260000000010600000",
+      "areaM2": 238.711167264827,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "ZA-EKU-STAND-S260000000018400000",
+      "areaM2": 272.0824962157423,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "ZA-EKU-STAND-S330000000003700000",
+      "areaM2": 258.7914884728175,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "ZA-EKU-STAND-S330000000002300000",
+      "areaM2": 256.4842851007056,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "ZA-EKU-STAND-S330000000001700000",
+      "areaM2": 263.5465344344281,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "ZA-EKU-STAND-S330000000001800000",
+      "areaM2": 267.53375763084176,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "ZA-EKU-STAND-S330000000002000000",
+      "areaM2": 259.9126827928333,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "ZA-EKU-STAND-S330000000003900000",
+      "areaM2": 355.60613662805025,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "ZA-EKU-STAND-S330000000002200000",
+      "areaM2": 265.621073575901,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "ZA-EKU-STAND-S330000000001900000",
+      "areaM2": 263.26745338016127,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "ZA-EKU-STAND-S330000000002500000",
+      "areaM2": 265.14002296298713,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "ZA-EKU-STAND-S330000000003800000",
+      "areaM2": 255.55237679452478,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "ZA-EKU-STAND-S330000000002400000",
+      "areaM2": 265.12102551838075,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "ZA-EKU-STAND-S330000000001600000",
+      "areaM2": 259.5621875276187,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "ZA-EKU-STAND-S330000000002100000",
+      "areaM2": 1554.7887687372715,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "ZA-EKU-STAND-S260000000012400000",
+      "areaM2": 263.4904847011221,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "ZA-EKU-STAND-S260000000012600002",
+      "areaM2": 282.73268189507877,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "ZA-EKU-STAND-S260000000016500000",
+      "areaM2": 275.84123573474074,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "ZA-EKU-STAND-S260000000012600004",
+      "areaM2": 277.10044401135343,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "ZA-EKU-STAND-S260000000012600001",
+      "areaM2": 292.19208023367815,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "ZA-EKU-STAND-S260000000012100000",
+      "areaM2": 546.6879699634155,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "ZA-EKU-STAND-S260000000016300000",
+      "areaM2": 270.35495350855723,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "ZA-EKU-STAND-S260000000012300000",
+      "areaM2": 246.80757678309914,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "ZA-EKU-STAND-S260000000016600000",
+      "areaM2": 284.71361953878835,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "ZA-EKU-STAND-S260000000016400000",
+      "areaM2": 259.9775216460892,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "ZA-EKU-STAND-S260000000012500000",
+      "areaM2": 281.35972930647597,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "ZA-EKU-STAND-S260000000012200000",
+      "areaM2": 269.30045221203153,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "ZA-EKU-STAND-S350000000002400000",
+      "areaM2": 302.9339876733537,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "ZA-EKU-STAND-S350000000001500000",
+      "areaM2": 280.40301331429976,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "ZA-EKU-STAND-S350000000002600000",
+      "areaM2": 258.71202685878734,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "ZA-EKU-STAND-S350000000001200000",
+      "areaM2": 281.7969765930346,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "ZA-EKU-STAND-S350000000001400000",
+      "areaM2": 272.9515067940224,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "ZA-EKU-STAND-S350000000002500000",
+      "areaM2": 275.5732078689503,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "ZA-EKU-STAND-S350000000002300000",
+      "areaM2": 258.27104390807165,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "ZA-EKU-STAND-S350000000001300000",
+      "areaM2": 313.8893564985549,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "ZA-EKU-STAND-S350000000002200000",
+      "areaM2": 268.1249694933126,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "ZA-EKU-STAND-S350000000001000000",
+      "areaM2": 2056.4413504838394,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "ZA-EKU-STAND-S350000000001100000",
+      "areaM2": 277.8750351261227,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    }
+  ]
+}

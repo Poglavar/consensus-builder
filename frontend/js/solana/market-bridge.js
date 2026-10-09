@@ -49,7 +49,9 @@
         const latest = await connection.getLatestBlockhash('confirmed');
         const transaction = new root.solanaWeb3.Transaction({ feePayer: wallet, recentBlockhash: latest.blockhash });
         instructions.forEach(instruction => transaction.add(instruction));
-        const simulation = await connection.simulateTransaction(transaction, { sigVerify: false });
+        // A legacy Transaction goes to web3.js 1.x's (transaction, signers?) overload: a config object there
+        // throws "Invalid arguments" before anything is signed. No signers means an unsigned simulation.
+        const simulation = await connection.simulateTransaction(transaction);
         if (simulation?.value?.err) {
             const error = transactionError('Market transaction simulation failed', 'SIMULATION_FAILED');
             error.logs = simulation.value.logs || [];

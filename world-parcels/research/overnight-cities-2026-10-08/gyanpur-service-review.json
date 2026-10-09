@@ -1,0 +1,56 @@
+{
+  "schemaVersion": "1.0",
+  "checkedAt": "2026-10-09",
+  "cityRecord": "city-10281-gyanpur.json",
+  "purpose": "Document first-party local registry/map evidence and bounded anonymous geometry access review.",
+  "scopeLimits": {
+    "maxFullPolygonsRetainedInCityRecord": 0,
+    "maxFullPolygonsRetainedInReview": 0,
+    "maxFullPolygonsRetainedInRepository": 0,
+    "ownerOrAddressDataRetained": false,
+    "credentialsOrTokenValuesRetained": false,
+    "citywideCompletenessAsserted": false
+  },
+  "assessment": "The Bhadohi/Gyanpur public map-progress report explicitly lists ज्ञानपुर ना.क्षे. (Gyanpur urban area), village code 219502. Its row reports Revenue Village=1 and Village Khatauni=1 but Scannable Village, Scanned/Verified Village, Linked Village (Bhunaksha), Georeferenced Village and all map-sheet progress values=0. No map-backed urban village or anonymous parcel geometry was found for the WUP point.",
+  "registryAssessment": "The official dashboard includes Gyanpur urban revenue village but shows no scanned, linked or georeferenced cadastral mapsheet; no parcel geometry coverage verified.",
+  "officialPrimarySources": [
+    {
+      "url": "https://upbhulekh.gov.in/GeoDashboard/public_report?distCode=198&tehsilCode=00998",
+      "observation": "Uttar Pradesh Board of Revenue cadastral-map digitization/georeferencing public report, filtered to district Bhadohi and tehsil Gyanpur."
+    },
+    {
+      "url": "https://upbhunaksha.gov.in/upbhunaksha/",
+      "observation": "Official Uttar Pradesh BhuNaksha public cadastral map viewer."
+    },
+    {
+      "url": "https://upbhulekh.gov.in/",
+      "observation": "Board of Revenue public land-record portal, which documents UP land records and parcel status services."
+    }
+  ],
+  "searchQueries": [
+    {
+      "language": "English",
+      "query": "Gyanpur official land records cadastral map Bhulekh Uttar Pradesh Gyanpur tehsil Bhadohi",
+      "result": "The Bhadohi/Gyanpur public map-progress report explicitly lists ज्ञानपुर ना.क्षे. (Gyanpur urban area), village code 219502. Its row reports Revenue Village=1 and Village Khatauni=1 but Scannable Village, Scanned/Verified Village, Linked Village (Bhunaksha), Georeferenced Village and all map-sheet progress values=0. No map-backed urban village or anonymous parcel geometry was found for the WUP point.",
+      "method": "Separate web search followed by official portal and bounded anonymous route review."
+    },
+    {
+      "language": "Hindi",
+      "query": "ज्ञानपुर भू नक्शा आधिकारिक तहसील भदोही भूमि अभिलेख नक्शा",
+      "result": "The Bhadohi/Gyanpur public map-progress report explicitly lists ज्ञानपुर ना.क्षे. (Gyanpur urban area), village code 219502. Its row reports Revenue Village=1 and Village Khatauni=1 but Scannable Village, Scanned/Verified Village, Linked Village (Bhunaksha), Georeferenced Village and all map-sheet progress values=0. No map-backed urban village or anonymous parcel geometry was found for the WUP point.",
+      "method": "Separate web search followed by official portal and bounded anonymous route review."
+    }
+  ],
+  "serviceChecks": [
+    {
+      "url": "https://upbhulekh.gov.in/GeoDashboard/public_report?distCode=198&tehsilCode=00998",
+      "method": "GET official public report",
+      "httpStatus": 200,
+      "observation": "Exact Gyanpur urban revenue-village row ज्ञानपुर ना.क्षे. code 219502 shows Revenue Village=1 and Village Khatauni=1 but Scannable/Scanned/Verified Village=0, Linked Village (Bhunaksha)=0, Georeferenced Village=0, and scannable/scanned/verified/linked/georeferenced map sheets=0."
+    }
+  ],
+  "geometryEvidence": null,
+  "temporaryEvidence": [
+    "/private/tmp/overnight-cities-2026-10-08/gyanpur-map-progress-report.html"
+  ]
+}

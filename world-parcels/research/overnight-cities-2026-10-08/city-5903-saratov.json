@@ -1,0 +1,80 @@
+{
+  "schemaVersion": 1,
+  "checkedAt": "2026-10-09",
+  "status": "complete",
+  "adapterReady": false,
+  "pointBasis": "UN WUP 2025 population-weighted settlement centroid; this is not a municipal boundary or a parcel-coverage claim.",
+  "coverageAssessment": {
+    "verifiedOpenScope": "No parcel geometry sample was retained.",
+    "citywideVerified": false,
+    "countrywideVerified": false
+  },
+  "name": "Saratov",
+  "country": "Russian Federation",
+  "countryCode": "RU",
+  "rank": 690,
+  "point": [
+    51.5456168202981,
+    45.9831712830451
+  ],
+  "population2025": 771355,
+  "populationUnit": "persons",
+  "population2025k": 771.355,
+  "populationPlausibility2025": "High",
+  "wupCityCode": 5903,
+  "cityId": "wup2025:5903",
+  "queueRank": 690,
+  "registryFound": true,
+  "registryBasis": "The City of Saratov Committee for Management of City Property publishes city land/property administration materials, including cadastral-territory map plans and land-plot schemes, and identifies itself as the municipal authority for city land relations. This is city-specific municipal land-record evidence; it does not establish an anonymous public parcel-vector service or title registry access.",
+  "registryEvidenceUrls": [
+    "https://www.saratovmer.ru/administraciya/committees/96/"
+  ],
+  "publicParcelGeometryFound": false,
+  "verifiedSample": false,
+  "verifiedParcelResponse": null,
+  "freshResearch": {
+    "queries": [
+      {
+        "language": "Russian",
+        "query": "Саратов официальный комитет по управлению имуществом кадастровые планы земельные участки карта",
+        "scope": "Find city-specific land/property-record authority and safe anonymous parcel geometry.",
+        "result": "The city administration committee page publishes cadastral-territory map plans and land-plot schemes. No anonymous native polygon layer or schema was verified.",
+        "actualResultUrls": [
+          "https://www.saratovmer.ru/administraciya/committees/96/"
+        ],
+        "executionMethod": "Reviewed the official Saratov city committee page; no property lookup or geometry query."
+      },
+      {
+        "language": "English",
+        "query": "Saratov city official cadastral map parcel GIS polygon land records",
+        "scope": "Find city-specific land/property-record authority and safe anonymous parcel geometry.",
+        "result": "Official city committee material confirms municipal land/property administration; no public parcel-vector endpoint found.",
+        "actualResultUrls": [
+          "https://www.saratovmer.ru/administraciya/committees/96/"
+        ],
+        "executionMethod": "Separate English-language source discovery and official-source review; no property lookup."
+      }
+    ]
+  },
+  "scopeLimits": "Official municipal cadastral map plans and land-plot schemes are evidence of local land records, not a verified GIS polygon layer. No sample geometry retained.",
+  "source": {
+    "sourceId": "RU-SARATOV-CITY-PROPERTY-COMMITTEE",
+    "name": "Saratov Committee for Management of City Property",
+    "url": "https://www.saratovmer.ru/administraciya/committees/96/",
+    "operator": "Saratov City Administration",
+    "serviceType": "Municipal property/land administration and cadastral map-plan publication",
+    "layer": "Cadastral-territory map plans and land-plot schemes; no public vector layer identified",
+    "geometryType": "unknown",
+    "outputCrs": "unknown",
+    "nativeIdField": "unknown"
+  },
+  "sourceIds": [],
+  "runtimeReadiness": "not_enabled_no_verified_public_geometry",
+  "technicalBlocker": "No anonymous public parcel-vector endpoint or native geometry schema was identified.",
+  "remainingUncertainty": "Extent and freshness of published map plans, source-native parcel identifiers, locator coverage, and any public vector service remain unverified.",
+  "centerLatLon": [
+    51.5456168202981,
+    45.9831712830451
+  ],
+  "rootReviewedAt": "2026-10-09T02:35:39.834493+00:00"
+}

@@ -1,0 +1,60 @@
+{
+  "schemaVersion": "1.0",
+  "checkedAt": "2026-10-09",
+  "cityRecord": "city-9726-kaifeng.json",
+  "purpose": "Document first-party local registry/map evidence and bounded anonymous geometry access review.",
+  "scopeLimits": {
+    "maxFullPolygonsRetainedInCityRecord": 0,
+    "maxFullPolygonsRetainedInReview": 0,
+    "maxFullPolygonsRetainedInRepository": 0,
+    "ownerOrAddressDataRetained": false,
+    "credentialsOrTokenValuesRetained": false,
+    "citywideCompletenessAsserted": false
+  },
+  "assessment": "Kaifeng has a city-level real-estate registration center. Its official description confirms registration/cadastral administration and public inquiry services, while the separate city Tianditu page exposes general mapping. The official service guide requires applicant identification for registry-information inquiry. No anonymous parcel geometry or geometry-only public schema was verified; no registry notice content was accessed.",
+  "registryAssessment": "Kaifeng has a city-level real-estate registration center. Its official description confirms registration/cadastral administration and public inquiry services, while the separate city Tianditu page exposes general mapping. The official service guide requires applicant identification for registry-information inquiry. No anonymous parcel geometry or geometry-only public schema was verified; no registry notice content was accessed.",
+  "officialPrimarySources": [
+    {
+      "url": "https://www.kffddj.cn/",
+      "observation": "Official city real-estate registration center portal. Organization and service responsibilities confirm city-level registration operations; this review did not inspect registry announcement records or submit queries."
+    },
+    {
+      "url": "https://www.kffddj.cn/news/view-44-5114.html",
+      "observation": "Center introduction states that the center is subordinate to the Kaifeng Natural Resources and Planning Bureau and is responsible for city-level register, cadastral survey-result review, city platform maintenance, record management and public inquiry service."
+    },
+    {
+      "url": "https://www.kffddj.cn/page-51.html",
+      "observation": "Official service guide describes identity-required record inquiry; this is not an anonymous public parcel map."
+    },
+    {
+      "url": "https://henan.tianditu.gov.cn/kaifeng/",
+      "observation": "City-specific public geographic-information portal, sponsored by Kaifeng Natural Resources and Planning Bureau and operated by Henan Map Institute. Displayed public service categories include basemaps, imagery, terrain, names, boundaries and generic geographic APIs; no cadastral parcel layer or parcel schema was identified."
+    }
+  ],
+  "searchQueries": [
+    {
+      "language": "English",
+      "query": "Kaifeng official cadastral parcel map GIS real estate registration public map China",
+      "result": "Kaifeng has a city-level real-estate registration center. Its official description confirms registration/cadastral administration and public inquiry services, while the separate city Tianditu page exposes general mapping. The official service guide requires applicant identification for registry-information inquiry. No anonymous parcel geometry or geometry-only public schema was verified; no registry notice content was accessed.",
+      "method": "Separate local-language and English web searches followed by official page review; no personal or property records searched."
+    },
+    {
+      "language": "Chinese",
+      "query": "开封市 不动产登记 地籍图 GIS 公开地图 自然资源和规划局",
+      "result": "Kaifeng has a city-level real-estate registration center. Its official description confirms registration/cadastral administration and public inquiry services, while the separate city Tianditu page exposes general mapping. The official service guide requires applicant identification for registry-information inquiry. No anonymous parcel geometry or geometry-only public schema was verified; no registry notice content was accessed.",
+      "method": "Separate local-language and English web searches followed by official page review; no personal or property records searched."
+    }
+  ],
+  "serviceChecks": [
+    {
+      "url": "https://henan.tianditu.gov.cn/kaifeng/",
+      "method": "GET anonymous HTTPS HTML",
+      "httpStatus": 200,
+      "observation": "City-specific public geospatial portal lists general base maps, imagery, terrain, names and boundaries; no cadastral parcel layer/schema identified. Avoided reading/storing page-embedded client key parameters."
+    }
+  ],
+  "geometryEvidence": null,
+  "temporaryEvidence": [
+    "/tmp/overnight-cities-2026-10-08/city-9726-route-inspection.json"
+  ]
+}

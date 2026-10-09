@@ -1,0 +1,13 @@
+{
+  "schemaVersion": "1.0",
+  "checkedAt": "2026-10-09",
+  "cityRecord": "city-7749-kaduna.json",
+  "purpose": "Read-only source discovery and bounded public-service validation; no runtime or global changes.",
+  "scopeLimits": {
+    "maxFullPolygonsRetainedInThisCityReport": 0,
+    "maxFullPolygonsRetainedAcrossCityReview": 0,
+    "ownerOrAddressDataRetained": false,
+    "accountCredentialsOrPublicTokenValuesRetained": false
+  },
+  "assessment": "The WUP point is a settlement locator and does not identify a land parcel. KADGIS has statewide statutory responsibilities including the Kaduna metropolis, but no city-specific parcel layer or anonymous feature endpoint was exposed. Public geometry, exact parcel coverage and runtime usability are unverified."
+}

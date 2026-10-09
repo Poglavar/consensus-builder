@@ -1,0 +1,10 @@
+{
+  "schemaVersion": 1,
+  "checkedAt": "2026-10-09T03:36:55.414196+00:00",
+  "decision": "approved_by_root",
+  "scope": "32 valid distinct public parcel-reference polygons verified in thirteen bounded 0.001-degree cells around the unchanged WUP settlement locator. Complete bounded paging, all 32 fresh native-ID reads, explicit absence, footprint and source binding passed in 60 requests. Independent metric EPSG:32614 GEOS found all geometries valid and distinct, with no sampled overlaps above 0.01 m² or operation errors. Source-native GISID identifies public assessment ground footprints, distinct from property roll/account identifiers and certified survey/title parcels. Counted Socrata paging verifies publication revision before and after each read; identical rows for one GISID are collapsed only when complete geometry is identical. Only GISID, transport row ID, row revision and geometry are requested. The exact point returned no feature; two saved nearby samples match fresh full geometry unchanged. Citywide completeness, legal title, survey accuracy, currentness and long-term identity continuity remain unverified.",
+  "sourceCoordinatesModified": false,
+  "acceptanceFile": "winnipeg-assessment-root-acceptance.json",
+  "qualityFile": "winnipeg-assessment-root-quality.json",
+  "nativeIdentityEvidenceFile": "winnipeg-root-native-identity-review.json"
+}

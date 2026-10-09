@@ -1,0 +1,56 @@
+{
+  "schemaVersion": "1.0",
+  "checkedAt": "2026-10-09",
+  "cityRecord": "city-4622-nizhny-novgorod.json",
+  "purpose": "Document local official registry/map evidence and bounded anonymous geometry-route review.",
+  "scopeLimits": {
+    "maxFullPolygonsRetainedInCityRecord": 0,
+    "maxFullPolygonsRetainedInReview": 0,
+    "maxFullPolygonsRetainedInRepository": 0,
+    "ownerOrAddressDataRetained": false,
+    "credentialsOrTokenValuesRetained": false,
+    "citywideCompletenessAsserted": false
+  },
+  "assessment": "Official city land-plot guidance refers to the public cadastral map; current NSPD requests timed out before schema or parcel response.",
+  "registryAssessment": "Municipal land administration confirmed; exact WUP boundary and parcel coverage remain unverified.",
+  "officialPrimarySources": [
+    {
+      "url": "https://admgor.nnov.ru/subordinate/1/page/Baza-gotovyh-resheniy/Zemelnye-uchastki",
+      "observation": "Official city land-plot guidance directs users to public cadastral map for cadastral-number information."
+    },
+    {
+      "url": "https://admgor.nnov.ru/Gorod/Gradostroitelstvo/Granica-goroda",
+      "observation": "Official boundary legal-act/schematic map page; no GIS overlay completed."
+    },
+    {
+      "url": "https://nspd.gov.ru/map?thematic=PKK",
+      "observation": "Official map route timed out during bounded anonymous attempts."
+    }
+  ],
+  "searchQueries": [
+    {
+      "language": "Russian",
+      "query": "Нижний Новгород публичная кадастровая карта НСПД Роскадастр официальный земельный участок",
+      "result": "City land-plot page directs to public cadastral map; current NSPD request timed out.",
+      "method": "Separate Russian-language search and official pages review."
+    },
+    {
+      "language": "English",
+      "query": "Nizhny Novgorod official cadastral map parcel registry NSPD public map",
+      "result": "Local land administration found; no current anonymous geometry response.",
+      "method": "Separate English-language search."
+    }
+  ],
+  "serviceChecks": [
+    {
+      "url": "https://nspd.gov.ru/map?thematic=PKK",
+      "method": "GET ordinary anonymous browser and shell attempts",
+      "httpStatus": null,
+      "observation": "Connection timeout; no HTML map config, schema or features."
+    }
+  ],
+  "geometryEvidence": null,
+  "privacy": "Only public safe IDs and geometry were retained for Calgary. No owner, address, title, account, or tax attributes were requested; other cities had no geometry retained.",
+  "rootDecision": "pending_root_review",
+  "runtimeAssessment": "not_enabled_no_verified_public_geometry"
+}

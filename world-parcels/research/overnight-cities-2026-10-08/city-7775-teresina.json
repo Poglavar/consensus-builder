@@ -1,0 +1,110 @@
+{
+  "schemaVersion": 1,
+  "purpose": "Population-ranked city cadastral-source investigation; retain public authority evidence and safe geometry only.",
+  "cityId": "wup2025:7775",
+  "wupCityCode": 7775,
+  "name": "Teresina",
+  "country": "Brazil",
+  "countryCode": "BR",
+  "queueRank": 559,
+  "rank": 559,
+  "point": [
+    -5.0961394658762,
+    -42.7913465599766
+  ],
+  "centerLatLon": [
+    -5.0961394658762,
+    -42.7913465599766
+  ],
+  "population2025": 929795,
+  "populationPlausibility2025": "Moderate",
+  "populationUnit": "persons",
+  "pointBasis": "UN WUP 2025 population-weighted settlement centroid; this is not a municipal boundary or a parcel-coverage claim.",
+  "checkedAt": "2026-10-09T01:27:22.202141+00:00",
+  "registryFound": true,
+  "registryBasis": "First-party municipal finance and technology agencies report managing the Teresina property cadastre and loading lots, blocks and buildings into their city GIS. Their January and October 2025 project notices explicitly bind the cadastral work to this municipality. They establish local cadastre activity, not present public parcel-vector availability.",
+  "registryEvidenceUrls": [
+    "https://antigo-semf.pmt.pi.gov.br/prefeitura-de-teresina-avanca-para-fase-final-do-novo-sistema-de-informacoes-georreferenciadas/",
+    "https://antigo-prodater.pmt.pi.gov.br/prodater-semplan-e-semf-discutem-implantacao-do-sistema-de-informacoes-geograficas-sig-web/"
+  ],
+  "verifiedSample": false,
+  "publicParcelGeometryFound": false,
+  "sourceIds": [],
+  "status": "complete",
+  "runtimeReadiness": "not_enabled_no_verified_public_geometry",
+  "technicalBlocker": "The public municipal map catalog links an anonymous file folder containing blocks, neighborhoods, roads, urban perimeter and zoning archives; no parcel/lote archive is listed. City GIS project notices do not expose a public parcel feature schema or service. The property consultation form requires an existing inscription and has not been submitted. No full parcel polygon was obtained; blocks and zoning are not treated as parcels.",
+  "resultCategory": "municipal_property_cadastre_public_vector_unverified",
+  "remainingUncertainty": "A later public GIS release may exist; the retrieved city notices and folder do not establish a current parcel-vector contract.",
+  "research": {
+    "queries": [
+      {
+        "language": "English",
+        "query": "Teresina official prefeitura cadastro imobiliário lotes geoserver GeoTeresina WFS",
+        "urls": [
+          "https://antigo-semf.pmt.pi.gov.br/prefeitura-de-teresina-avanca-para-fase-final-do-novo-sistema-de-informacoes-georreferenciadas/",
+          "https://antigo-prodater.pmt.pi.gov.br/prodater-semplan-e-semf-discutem-implantacao-do-sistema-de-informacoes-geograficas-sig-web/",
+          "https://antigo-semplan.pmt.pi.gov.br/mapas-interativos/"
+        ],
+        "result": "Found first-party municipal cadastre/GIS project notices and a municipal public map-file catalog, without a parcel-vector endpoint."
+      },
+      {
+        "language": "Portuguese",
+        "query": "Teresina mapa parcelas lotes cadastro imobiliário dados abertos",
+        "urls": [
+          "https://antigo-semf.pmt.pi.gov.br/prefeitura-de-teresina-avanca-para-fase-final-do-novo-sistema-de-informacoes-georreferenciadas/",
+          "https://antigo-prodater.pmt.pi.gov.br/prodater-semplan-e-semf-discutem-implantacao-do-sistema-de-informacoes-geograficas-sig-web/",
+          "https://antigo-semplan.pmt.pi.gov.br/mapas-interativos/"
+        ],
+        "result": "Municipal sources establish local cadastral work. The public map folder exposes territorial reference layers, without a parcel archive."
+      }
+    ],
+    "officialSources": [
+      {
+        "url": "https://antigo-semf.pmt.pi.gov.br/prefeitura-de-teresina-avanca-para-fase-final-do-novo-sistema-de-informacoes-georreferenciadas/",
+        "observation": "Municipal Finance notice dated 1 October 2025 reports city SIG loading lots, blocks and buildings, and Cartography/IPTU teams."
+      },
+      {
+        "url": "https://antigo-prodater.pmt.pi.gov.br/prodater-semplan-e-semf-discutem-implantacao-do-sistema-de-informacoes-geograficas-sig-web/",
+        "observation": "PRODATER notice dated 28 January 2025 describes management of the city multifunction cadastre and real-estate register."
+      },
+      {
+        "url": "https://antigo-semplan.pmt.pi.gov.br/mapas-interativos/",
+        "observation": "Official municipal planning map catalog lists a public city shapefile folder and territorial planning products."
+      },
+      {
+        "url": "https://drive.google.com/drive/folders/1oDUOT92kbHTb1gKor9vHOpjAZgK_O_lK?usp=sharing",
+        "observation": "Anonymous folder HTTP 200; only file names inspected. No account information or file data retained."
+      }
+    ],
+    "publicFolderFileNames": [
+      "BAIRROS_2013.rar",
+      "Divisão SDU.rar",
+      "LOGRADOUROS 2024.rar",
+      "NÚCLEOS URBANOS - SHAPEFILE.rar",
+      "Perimetro Urbano 2022 Lei nº3.757 de 03-06-2022.rar",
+      "PRAÇAS DECRETADAS.rar",
+      "QUADRAS.zip",
+      "SUBBACIAS.rar",
+      "ZONA_URBANIZACAO_ESPECIFICA.rar",
+      "ZONEAMENTO-Lei-5.807-2022.rar"
+    ]
+  },
+  "verifiedParcelResponse": {
+    "returnedFullPolygonCount": 0,
+    "uniqueFullPolygonCount": 0,
+    "httpStatus": null,
+    "limitations": "No full cadastral geometry response was obtained."
+  },
+  "coverageAssessment": {
+    "verifiedOpenScope": "The public municipal map catalog links an anonymous file folder containing blocks, neighborhoods, roads, urban perimeter and zoning archives; no parcel/lote archive is listed. City GIS project notices do not expose a public parcel feature schema or service. The property consultation form requires an existing inscription and has not been submitted. No full parcel polygon was obtained; blocks and zoning are not treated as parcels.",
+    "citywideVerified": false,
+    "countrywideVerified": false
+  },
+  "accessReview": {
+    "publicAnonymousGeometryVerified": false,
+    "ownerAddressTaxOrPersonLookupRequested": false,
+    "authenticationOrCredentialsUsed": false,
+    "captchaOrPersonalFormSubmitted": false
+  },
+  "rootReviewedAt": "2026-10-09T01:29:32.105621+00:00"
+}

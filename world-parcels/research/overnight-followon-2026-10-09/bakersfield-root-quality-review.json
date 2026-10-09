@@ -1,0 +1,8 @@
+{
+  "checkedAt": "2026-10-09T06:49:54.753760+00:00",
+  "decision": "approved_by_root",
+  "basis": "119 distinct native APN references passed thirteen 0.001-degree cells around the unchanged Bakersfield WUP locator, complete native-projected bounds manifests and all fresh exact native identity reads. A separate 1 km metric-square envelope supplied 761 full source polygons; an independent root EPSG:32611 GEOS audit found all valid and distinct, with no overlaps above 0.01 m² or operation errors. APN_ID strings are preserved independently of OBJECTID transport keys; APN 14734302 maps to OBJECTID 127663 and contains the locator. Forced three-feature paging, explicit absence, full footprint and source binding passed. Native EPSG:2229 bounds projection resolves the previously inconsistent WGS84 count/manifests without changing geometry. Earlier failed probes are retained in the acceptance record. This bounded evidence does not establish citywide completeness, legal title, accuracy or currentness.",
+  "geometryChangedOrRepaired": false,
+  "acceptanceFile": "research/overnight-followon-2026-10-09/bakersfield-native-bounds-requalification-acceptance.json",
+  "qualityFile": "research/overnight-followon-2026-10-09/bakersfield-root-quality.json"
+}

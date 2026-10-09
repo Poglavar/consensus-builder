@@ -1,0 +1,15 @@
+{
+  "schemaVersion": 1,
+  "sourceCrs": "EPSG:25830",
+  "nativeTuple": {
+    "OBJECTID": 74763,
+    "Codigo_Municipio": 20,
+    "Codigo_Poligono": 1106,
+    "Codigo_Parcela": 2010
+  },
+  "wfsSampleFile": "samples/bilbao-parcel-wup4021.geojson",
+  "wfsRestSameNativeCoordinates": true,
+  "hausdorffDistanceM": 9.946529457016767e-10,
+  "symmetricDifferenceM2": 1.972064036861467e-08,
+  "geometryRetainedInRecord": false
+}

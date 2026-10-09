@@ -1,0 +1,87 @@
+{
+  "schemaVersion": 1,
+  "checkedAt": "2026-10-09",
+  "sourceId": "kz-shymkent-rgis-land-plot-layer",
+  "purpose": "Service review for WUP2025 rank 437 Shymkent (city code 2354); local registry evidence and safe anonymous full-polygon access status.",
+  "primaryPublisher": "РГИС Шымкент (Shymkent Regional GIS)",
+  "sourceUrl": "https://geo-shym.kz/map/",
+  "registryFound": true,
+  "registryBasis": "Shymkent’s public Regional GIS map lists a city-specific land-plot layer labeled “Жер телімі (МЖКААЖ)” and a cadastral-number input. Static client code configures GeoServer WMS rendering. The public map’s presence verifies a local cadastral-map service, but no georeferenced polygon/schema response was retrieved.",
+  "officialSources": [
+    {
+      "url": "https://geo-shym.kz/map/",
+      "observation": "Anonymous direct GET of the city RGIS page returned HTTP 200 with a JavaScript shell. Its rendered public layer listing, found in indexed page content, shows “Жер телімі (МЖКААЖ)” and a cadastral-number input. Static client inspection identifies GeoServer WMS rendering; no polygon geometry was returned."
+    },
+    {
+      "url": "https://geo-shym.kz/map/main.js",
+      "observation": "Public static client bundle returned HTTP 200 (648,840 bytes). It configures GeoServer WMS rendering/legend requests; no vector feature/schema contract was found in inspected client strings."
+    }
+  ],
+  "searchQueries": [
+    {
+      "language": "English",
+      "query": "Shymkent Kazakhstan official public cadastral map land plots GIS parcel service",
+      "scope": "Find city-local cadastral layers and anonymous full-polygon access.",
+      "result": "Shymkent’s public Regional GIS page lists a land-plot cadastral layer. The client configures WMS rendering; attempts to retrieve WFS/WMS capabilities failed standard TLS verification before an HTTP status. No vector schema or feature geometry was verified.",
+      "urls": [
+        "https://geo-shym.kz/map/"
+      ]
+    },
+    {
+      "language": "Kazakh",
+      "query": "Шымкент жер кадастр картасы жер учаскелері ашық карта кадастр",
+      "scope": "Шымкент қаласының жер учаскелері қабатын және анонимді геометрия жолдарын табу.",
+      "result": "Шымкенттің ашық РГИС картасында «Жер телімі (МЖКААЖ)» қабаты мен кадастрлық нөмір енгізу өрісі бар. Клиент GeoServer WMS кескіндерін көрсетеді; стандартты TLS тексеруі capabilities сұрауларын тоқтатты. Полигон алынбады.",
+      "urls": [
+        "https://geo-shym.kz/map/"
+      ]
+    }
+  ],
+  "accessReview": {
+    "publicAnonymousGeometryVerified": false,
+    "completeGeoreferencedPolygonCount": 0,
+    "geometryRetained": false,
+    "ownerAddressTaxOrPersonLookupRequested": false,
+    "authenticationOrCredentialsUsed": false,
+    "captchaOrPersonalFormSubmitted": false,
+    "routeInspectionStatus": "no_public_geometry_contract_verified",
+    "reason": "The public map client exposes WMS image rendering at the GeoServer endpoint. Direct HTTPS WFS and WMS GetCapabilities requests failed certificate verification before any HTTP response, so the layer schema and any geometry-only feature route could not be safely inspected. TLS verification was not disabled; no raster image was treated as vector geometry."
+  },
+  "requestEvidence": [
+    {
+      "url": "https://geo-shym.kz/map/",
+      "method": "GET",
+      "status": 200,
+      "contentType": "text/html",
+      "bytes": 2612,
+      "observation": "Anonymous public Shymkent RGIS app page. It loads runtime/polyfills/styles/vendor/main bundles."
+    },
+    {
+      "url": "https://geo-shym.kz/map/main.js",
+      "method": "GET",
+      "status": 200,
+      "contentType": "application/javascript",
+      "bytes": 648840,
+      "observation": "Static public client inspected. It configures WMS image/legend requests to GeoServer; no vector schema discovered."
+    },
+    {
+      "url": "https://dm.geo-shym.kz/geoserver/gis/ows?service=WFS&version=2.0.0&request=GetCapabilities",
+      "method": "GET",
+      "status": "not_obtained_tls_verification_error",
+      "errorClass": "URLError / SSL certificate verification failure",
+      "httpStatusObtained": false,
+      "observation": "Standard certificate verification failed before HTTP response. No TLS bypass was attempted."
+    },
+    {
+      "url": "https://dm.geo-shym.kz/geoserver/gis/wms?service=WMS&version=1.3.0&request=GetCapabilities",
+      "method": "GET",
+      "status": "not_obtained_tls_verification_error",
+      "errorClass": "URLError / SSL certificate verification failure",
+      "httpStatusObtained": false,
+      "observation": "Standard certificate verification failed before HTTP response. WMS capabilities were not read."
+    }
+  ],
+  "technicalBlocker": "The public map client exposes WMS image rendering at the GeoServer endpoint. Direct HTTPS WFS and WMS GetCapabilities requests failed certificate verification before any HTTP response, so the layer schema and any geometry-only feature route could not be safely inspected. TLS verification was not disabled; no raster image was treated as vector geometry.",
+  "sampleDisposition": "No parcel polygons or feature attributes retained.",
+  "remainingUncertainty": "The GeoServer service could not be inspected while standard TLS certificate verification failed. A verified service endpoint and geometry-only feature contract remain unestablished; no feature data or parcel attributes were requested."
+}

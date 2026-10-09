@@ -1,0 +1,149 @@
+{
+  "name": "Marseille",
+  "country": "France",
+  "countryCode": "FR",
+  "rank": 581,
+  "point": [
+    43.3060785068726,
+    5.40046021068172
+  ],
+  "population2025": 891463,
+  "populationUnit": "persons",
+  "population2025k": 891.463,
+  "populationPlausibility2025": "High",
+  "schemaVersion": 1,
+  "checkedAt": "2026-10-09",
+  "status": "complete",
+  "registryFound": true,
+  "registryBasis": "City of Marseille lists cadastre consultation/printing through its urban-planning service. Open IGN API Carto retrieves PCI cadastral parcels; the exact ranked-point query restricted to INSEE commune 13055 returned one feature. Cadastral mapping is not legal proof of title.",
+  "registryEvidenceUrls": [
+    "https://www.marseille.fr/index.php/logement-urbanisme/plan-local-durbanisme/renseignements-durbanisme",
+    "https://www.data.gouv.fr/dataservices/api-carto-module-cadastre",
+    "https://apicarto.ign.fr/api/doc/pdf/docUser_moduleCadastre.pdf",
+    "https://cadastre.data.gouv.fr/datasets/cadastre-etalab",
+    "https://www.insee.fr/fr/metadonnees/geographie/commune/13055-marseille"
+  ],
+  "publicParcelGeometryFound": true,
+  "verifiedSample": true,
+  "verifiedParcelResponse": {
+    "url": "https://apicarto.ign.fr/api/cadastre",
+    "httpStatus": 200,
+    "contentType": "application/json; charset=utf-8",
+    "featureType": "parcelle",
+    "nativeCrs": "EPSG:4326",
+    "responseCount": 1,
+    "responseNumberMatched": 1,
+    "requestLimit": 3,
+    "requestFilter": "code_insee=13055 and ranked WUP Point [5.40046021068172,43.3060785068726]",
+    "requestedFields": [
+      "geometry"
+    ],
+    "safeFieldsRetained": [
+      "idu",
+      "geometry"
+    ],
+    "featureIds": [
+      "parcelle.94619612"
+    ],
+    "nativeParcelIdentifier": "132048180B0142",
+    "wupPointContained": true,
+    "sampleGeometryFile": "samples/marseille-ign-cadastre-wup581.geojson",
+    "sampleSha256": "108a71131d405c4b8e1e8b390060fbfb488e4d35a5afab23d50e20b4b0ef6a12",
+    "limitations": "One point-intersecting parcel only. Other attributes returned by API were not retained. Cadastral mapping is not title evidence."
+  },
+  "freshResearch": {
+    "queries": [
+      {
+        "language": "French",
+        "query": "Marseille cadastre parcelles cadastrales service public commune INSEE 13055 géométrie API Carto IGN",
+        "scope": "Locate official city-scope registry/cadastre services and test for anonymous safe parcel geometry at the ranked point.",
+        "result": "City of Marseille lists cadastre consultation/printing through its urban-planning service. Open IGN API Carto retrieves PCI cadastral parcels; the exact ranked-point query restricted to INSEE commune 13055 returned one feature. Cadastral mapping is not legal proof of title.",
+        "actualResultUrls": [
+          "https://www.marseille.fr/index.php/logement-urbanisme/plan-local-durbanisme/renseignements-durbanisme",
+          "https://www.data.gouv.fr/dataservices/api-carto-module-cadastre",
+          "https://apicarto.ign.fr/api/doc/pdf/docUser_moduleCadastre.pdf",
+          "https://cadastre.data.gouv.fr/datasets/cadastre-etalab",
+          "https://www.insee.fr/fr/metadonnees/geographie/commune/13055-marseille"
+        ],
+        "executionMethod": "Separate language-specific search followed by official-source review."
+      },
+      {
+        "language": "English",
+        "query": "Marseille France official cadastral parcel geometry API cadastre parcellaire IGN",
+        "scope": "Locate official city-scope registry/cadastre services and test for anonymous safe parcel geometry at the ranked point.",
+        "result": "City of Marseille lists cadastre consultation/printing through its urban-planning service. Open IGN API Carto retrieves PCI cadastral parcels; the exact ranked-point query restricted to INSEE commune 13055 returned one feature. Cadastral mapping is not legal proof of title.",
+        "actualResultUrls": [
+          "https://www.marseille.fr/index.php/logement-urbanisme/plan-local-durbanisme/renseignements-durbanisme",
+          "https://www.data.gouv.fr/dataservices/api-carto-module-cadastre",
+          "https://apicarto.ign.fr/api/doc/pdf/docUser_moduleCadastre.pdf",
+          "https://cadastre.data.gouv.fr/datasets/cadastre-etalab",
+          "https://www.insee.fr/fr/metadonnees/geographie/commune/13055-marseille"
+        ],
+        "executionMethod": "Separate language-specific search followed by official-source review."
+      }
+    ]
+  },
+  "scopeLimits": "331 valid, distinct official cadastral polygons verified in thirteen local 0.001-degree cells around the unchanged WUP settlement locator. Complete pages, forced three-row pagination, all 331 fresh native cadastral-reference reads, valid synthetic absence, footprint and source binding passed. Independent GEOS in EPSG:32631 found no invalid polygons, duplicate geometry, overlaps above 0.01 m² or operation errors. Marseille commune; the unchanged WUP point lies within returned parcel geometry. Wider municipal completeness, legal boundary accuracy and long-term identifier continuity remain unverified.",
+  "pointBasis": "UN WUP 2025 population-weighted settlement centroid; this is not a municipal boundary or a parcel-coverage claim.",
+  "source": {
+    "sourceId": "fr-ign-parcellaire-express",
+    "name": "France IGN/DGFiP Parcellaire Express (PCI)",
+    "operator": "IGN / DGFiP",
+    "url": "https://data.geopf.fr/wfs/ows",
+    "serviceType": "wfs",
+    "layer": "CADASTRALPARCELS.PARCELLAIRE_EXPRESS:parcelle",
+    "geometryType": "Polygon/MultiPolygon",
+    "outputCrs": "EPSG:4326",
+    "nativeIdField": "idu",
+    "scope": "331 valid, distinct official cadastral polygons verified in thirteen local 0.001-degree cells around the unchanged WUP settlement locator. Complete pages, forced three-row pagination, all 331 fresh native cadastral-reference reads, valid synthetic absence, footprint and source binding passed. Independent GEOS in EPSG:32631 found no invalid polygons, duplicate geometry, overlaps above 0.01 m² or operation errors. Marseille commune; the unchanged WUP point lies within returned parcel geometry. Wider municipal completeness, legal boundary accuracy and long-term identifier continuity remain unverified.",
+    "identityBasis": "Fresh bounded adapter qualification uses the publisher native cadastral key, preserving complete geometry and separate transport IDs."
+  },
+  "wupCityCode": 4276,
+  "cityId": "wup2025:4276",
+  "queueRank": 581,
+  "sourceIds": [
+    "fr-ign-parcellaire-express"
+  ],
+  "adapterReady": false,
+  "runtimeReadiness": "enabled",
+  "technicalBlocker": null,
+  "remainingUncertainty": "Coverage and completeness beyond the one parcel; cadastral map is not title evidence.",
+  "coverageAssessment": {
+    "verifiedOpenScope": "331 valid, distinct official cadastral polygons verified in thirteen local 0.001-degree cells around the unchanged WUP settlement locator. Complete pages, forced three-row pagination, all 331 fresh native cadastral-reference reads, valid synthetic absence, footprint and source binding passed. Independent GEOS in EPSG:32631 found no invalid polygons, duplicate geometry, overlaps above 0.01 m² or operation errors. Marseille commune; the unchanged WUP point lies within returned parcel geometry. Wider municipal completeness, legal boundary accuracy and long-term identifier continuity remain unverified.",
+    "citywideVerified": false,
+    "countrywideVerified": false
+  },
+  "appCityId": "marseille",
+  "resultCategory": "verified_public_geometry_runtime_enabled",
+  "runtimeAssessment": {
+    "status": "enabled",
+    "reason": "331 valid, distinct official cadastral polygons verified in thirteen local 0.001-degree cells around the unchanged WUP settlement locator. Complete pages, forced three-row pagination, all 331 fresh native cadastral-reference reads, valid synthetic absence, footprint and source binding passed. Independent GEOS in EPSG:32631 found no invalid polygons, duplicate geometry, overlaps above 0.01 m² or operation errors. Marseille commune; the unchanged WUP point lies within returned parcel geometry. Wider municipal completeness, legal boundary accuracy and long-term identifier continuity remain unverified.",
+    "acceptanceFile": "research/overnight-cities-2026-10-08/marseille-ign-root-acceptance.json",
+    "qualityFile": "research/overnight-cities-2026-10-08/marseille-ign-root-quality.json",
+    "qualityReviewFile": "research/overnight-cities-2026-10-08/marseille-service-review.json"
+  },
+  "runtimeQualification": {
+    "sourceId": "fr-ign-parcellaire-express",
+    "status": "enabled",
+    "acceptanceFile": "research/overnight-cities-2026-10-08/marseille-ign-root-acceptance.json",
+    "qualityFile": "research/overnight-cities-2026-10-08/marseille-ign-root-quality.json"
+  },
+  "centerLatLon": [
+    43.3060785068726,
+    5.40046021068172
+  ],
+  "rootReviewedAt": "2026-10-09T01:44:14.672457+00:00",
+  "discoverySource": {
+    "sourceId": "FR-4276-IGN-APICARTO-PCI-PARCELLE",
+    "name": "IGN API Carto Cadastre, PCI Express parcel source",
+    "url": "https://apicarto.ign.fr/api/cadastre",
+    "operator": "IGN / Parcellaire Express (PCI)",
+    "serviceType": "Open anonymous GeoJSON cadastral parcel API, bounded point request",
+    "layer": "parcelle",
+    "geometryType": "MultiPolygon",
+    "outputCrs": "EPSG:4326",
+    "nativeIdField": "idu",
+    "nativeIdEvidence": "Exact commune-restricted query returned IDU 132048180B0142; sample retains only this safe ID and geometry.",
+    "scope": "331 valid, distinct official cadastral polygons verified in thirteen local 0.001-degree cells around the unchanged WUP settlement locator. Complete pages, forced three-row pagination, all 331 fresh native cadastral-reference reads, valid synthetic absence, footprint and source binding passed. Independent GEOS in EPSG:32631 found no invalid polygons, duplicate geometry, overlaps above 0.01 m² or operation errors. Marseille commune; the unchanged WUP point lies within returned parcel geometry. Wider municipal completeness, legal boundary accuracy and long-term identifier continuity remain unverified."
+  }
+}

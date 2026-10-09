@@ -1,0 +1,5369 @@
+{
+  "schemaVersion": 1,
+  "purpose": "Independent GEOS topology check of complete runtime parcels projected to metric coordinates; no repair applied. Counts are bounded sample evidence, not whole-city guarantees.",
+  "library": "Shapely 2.2.0",
+  "metricCrs": "EPSG:32723",
+  "featureCount": 729,
+  "validNonemptyCount": 729,
+  "invalidFeatures": [],
+  "exactDuplicateGeometryPairs": [
+    [
+      "BR-RIBEIRAO-PRETO-GID-178927",
+      "BR-RIBEIRAO-PRETO-GID-178928"
+    ],
+    [
+      "BR-RIBEIRAO-PRETO-GID-178927",
+      "BR-RIBEIRAO-PRETO-GID-178929"
+    ],
+    [
+      "BR-RIBEIRAO-PRETO-GID-178927",
+      "BR-RIBEIRAO-PRETO-GID-179009"
+    ],
+    [
+      "BR-RIBEIRAO-PRETO-GID-178927",
+      "BR-RIBEIRAO-PRETO-GID-179004"
+    ],
+    [
+      "BR-RIBEIRAO-PRETO-GID-178927",
+      "BR-RIBEIRAO-PRETO-GID-178966"
+    ],
+    [
+      "BR-RIBEIRAO-PRETO-GID-178927",
+      "BR-RIBEIRAO-PRETO-GID-178931"
+    ],
+    [
+      "BR-RIBEIRAO-PRETO-GID-178927",
+      "BR-RIBEIRAO-PRETO-GID-178933"
+    ],
+    [
+      "BR-RIBEIRAO-PRETO-GID-178927",
+      "BR-RIBEIRAO-PRETO-GID-178934"
+    ],
+    [
+      "BR-RIBEIRAO-PRETO-GID-178927",
+      "BR-RIBEIRAO-PRETO-GID-178935"
+    ],
+    [
+      "BR-RIBEIRAO-PRETO-GID-178927",
+      "BR-RIBEIRAO-PRETO-GID-178936"
+    ],
+    [
+      "BR-RIBEIRAO-PRETO-GID-178927",
+      "BR-RIBEIRAO-PRETO-GID-178984"
+    ],
+    [
+      "BR-RIBEIRAO-PRETO-GID-178927",
+      "BR-RIBEIRAO-PRETO-GID-178983"
+    ],
+    [
+      "BR-RIBEIRAO-PRETO-GID-178927",
+      "BR-RIBEIRAO-PRETO-GID-178982"
+    ],
+    [
+      "BR-RIBEIRAO-PRETO-GID-178927",
+      "BR-RIBEIRAO-PRETO-GID-178981"
+    ],
+    [
+      "BR-RIBEIRAO-PRETO-GID-178927",
+      "BR-RIBEIRAO-PRETO-GID-178980"
+    ],
+    [
+      "BR-RIBEIRAO-PRETO-GID-178927",
+      "BR-RIBEIRAO-PRETO-GID-178979"
+    ],
+    [
+      "BR-RIBEIRAO-PRETO-GID-178927",
+      "BR-RIBEIRAO-PRETO-GID-178978"
+    ],
+    [
+      "BR-RIBEIRAO-PRETO-GID-178927",
+      "BR-RIBEIRAO-PRETO-GID-178977"
+    ],
+    [
+      "BR-RIBEIRAO-PRETO-GID-178927",
+      "BR-RIBEIRAO-PRETO-GID-178976"
+    ],
+    [
+      "BR-RIBEIRAO-PRETO-GID-178927",
+      "BR-RIBEIRAO-PRETO-GID-178975"
+    ]
+  ],
+  "positiveAreaOverlapPairsAbove0_01M2": [
+    {
+      "ids": [
+        "BR-RIBEIRAO-PRETO-GID-178804",
+        "BR-RIBEIRAO-PRETO-GID-178806"
+      ],
+      "overlapM2": 0.11737749003247444,
+      "fractionOfSmaller": 0.0005901935252996939
+    },
+    {
+      "ids": [
+        "BR-RIBEIRAO-PRETO-GID-178804",
+        "BR-RIBEIRAO-PRETO-GID-178805"
+      ],
+      "overlapM2": 0.33390898583490153,
+      "fractionOfSmaller": 0.001457862605177902
+    },
+    {
+      "ids": [
+        "BR-RIBEIRAO-PRETO-GID-178927",
+        "BR-RIBEIRAO-PRETO-GID-178928"
+      ],
+      "overlapM2": 2636.5079103943913,
+      "fractionOfSmaller": 1.0
+    },
+    {
+      "ids": [
+        "BR-RIBEIRAO-PRETO-GID-178927",
+        "BR-RIBEIRAO-PRETO-GID-178929"
+      ],
+      "overlapM2": 2636.5079103943913,
+      "fractionOfSmaller": 1.0
+    },
+    {
+      "ids": [
+        "BR-RIBEIRAO-PRETO-GID-178927",
+        "BR-RIBEIRAO-PRETO-GID-179009"
+      ],
+      "overlapM2": 2636.5079103943913,
+      "fractionOfSmaller": 1.0
+    },
+    {
+      "ids": [
+        "BR-RIBEIRAO-PRETO-GID-178927",
+        "BR-RIBEIRAO-PRETO-GID-179004"
+      ],
+      "overlapM2": 2636.5079103943913,
+      "fractionOfSmaller": 1.0
+    },
+    {
+      "ids": [
+        "BR-RIBEIRAO-PRETO-GID-178927",
+        "BR-RIBEIRAO-PRETO-GID-178966"
+      ],
+      "overlapM2": 2636.5079103943913,
+      "fractionOfSmaller": 1.0
+    },
+    {
+      "ids": [
+        "BR-RIBEIRAO-PRETO-GID-178927",
+        "BR-RIBEIRAO-PRETO-GID-178931"
+      ],
+      "overlapM2": 2636.5079103943913,
+      "fractionOfSmaller": 1.0
+    },
+    {
+      "ids": [
+        "BR-RIBEIRAO-PRETO-GID-178927",
+        "BR-RIBEIRAO-PRETO-GID-178933"
+      ],
+      "overlapM2": 2636.5079103943913,
+      "fractionOfSmaller": 1.0
+    },
+    {
+      "ids": [
+        "BR-RIBEIRAO-PRETO-GID-178927",
+        "BR-RIBEIRAO-PRETO-GID-178934"
+      ],
+      "overlapM2": 2636.5079103943913,
+      "fractionOfSmaller": 1.0
+    },
+    {
+      "ids": [
+        "BR-RIBEIRAO-PRETO-GID-178927",
+        "BR-RIBEIRAO-PRETO-GID-178935"
+      ],
+      "overlapM2": 2636.5079103943913,
+      "fractionOfSmaller": 1.0
+    },
+    {
+      "ids": [
+        "BR-RIBEIRAO-PRETO-GID-178927",
+        "BR-RIBEIRAO-PRETO-GID-178936"
+      ],
+      "overlapM2": 2636.5079103943913,
+      "fractionOfSmaller": 1.0
+    },
+    {
+      "ids": [
+        "BR-RIBEIRAO-PRETO-GID-178927",
+        "BR-RIBEIRAO-PRETO-GID-178984"
+      ],
+      "overlapM2": 2636.5079103943913,
+      "fractionOfSmaller": 1.0
+    },
+    {
+      "ids": [
+        "BR-RIBEIRAO-PRETO-GID-178927",
+        "BR-RIBEIRAO-PRETO-GID-178983"
+      ],
+      "overlapM2": 2636.5079103943913,
+      "fractionOfSmaller": 1.0
+    },
+    {
+      "ids": [
+        "BR-RIBEIRAO-PRETO-GID-178927",
+        "BR-RIBEIRAO-PRETO-GID-178982"
+      ],
+      "overlapM2": 2636.5079103943913,
+      "fractionOfSmaller": 1.0
+    },
+    {
+      "ids": [
+        "BR-RIBEIRAO-PRETO-GID-178927",
+        "BR-RIBEIRAO-PRETO-GID-178981"
+      ],
+      "overlapM2": 2636.5079103943913,
+      "fractionOfSmaller": 1.0
+    },
+    {
+      "ids": [
+        "BR-RIBEIRAO-PRETO-GID-178927",
+        "BR-RIBEIRAO-PRETO-GID-178980"
+      ],
+      "overlapM2": 2636.5079103943913,
+      "fractionOfSmaller": 1.0
+    },
+    {
+      "ids": [
+        "BR-RIBEIRAO-PRETO-GID-178927",
+        "BR-RIBEIRAO-PRETO-GID-178979"
+      ],
+      "overlapM2": 2636.5079103943913,
+      "fractionOfSmaller": 1.0
+    },
+    {
+      "ids": [
+        "BR-RIBEIRAO-PRETO-GID-178927",
+        "BR-RIBEIRAO-PRETO-GID-178978"
+      ],
+      "overlapM2": 2636.5079103943913,
+      "fractionOfSmaller": 1.0
+    },
+    {
+      "ids": [
+        "BR-RIBEIRAO-PRETO-GID-178927",
+        "BR-RIBEIRAO-PRETO-GID-178977"
+      ],
+      "overlapM2": 2636.5079103943913,
+      "fractionOfSmaller": 1.0
+    }
+  ],
+  "sumPairwiseOverlapM2": 30757848.79969653,
+  "operationErrors": [],
+  "areaM2": {
+    "min": 40.49994088828609,
+    "median": 447.6438885192099,
+    "max": 19265.244377576775
+  },
+  "features": [
+    {
+      "id": "BR-RIBEIRAO-PRETO-GID-178418",
+      "areaM2": 229.66242726884425,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "BR-RIBEIRAO-PRETO-GID-178419",
+      "areaM2": 211.51859114483352,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "BR-RIBEIRAO-PRETO-GID-178443",
+      "areaM2": 117.88885357530938,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "BR-RIBEIRAO-PRETO-GID-178444",
+      "areaM2": 88.73054849480457,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "BR-RIBEIRAO-PRETO-GID-178445",
+      "areaM2": 105.77646707169255,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "BR-RIBEIRAO-PRETO-GID-178446",
+      "areaM2": 96.26945624004364,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "BR-RIBEIRAO-PRETO-GID-178447",
+      "areaM2": 85.60547479398129,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "BR-RIBEIRAO-PRETO-GID-178448",
+      "areaM2": 118.827782276682,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "BR-RIBEIRAO-PRETO-GID-178481",
+      "areaM2": 244.54086775822736,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "BR-RIBEIRAO-PRETO-GID-178482",
+      "areaM2": 125.68696542755329,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "BR-RIBEIRAO-PRETO-GID-178483",
+      "areaM2": 640.0720219707005,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "BR-RIBEIRAO-PRETO-GID-178484",
+      "areaM2": 624.0819020577785,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "BR-RIBEIRAO-PRETO-GID-178485",
+      "areaM2": 941.4843637852333,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "BR-RIBEIRAO-PRETO-GID-178487",
+      "areaM2": 2315.0925089720536,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "BR-RIBEIRAO-PRETO-GID-178506",
+      "areaM2": 181.4795265772974,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "BR-RIBEIRAO-PRETO-GID-178507",
+      "areaM2": 286.0116661694611,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "BR-RIBEIRAO-PRETO-GID-178675",
+      "areaM2": 306.4470166780668,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "BR-RIBEIRAO-PRETO-GID-178676",
+      "areaM2": 229.77287028010306,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "BR-RIBEIRAO-PRETO-GID-178677",
+      "areaM2": 161.651802135028,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "BR-RIBEIRAO-PRETO-GID-178678",
+      "areaM2": 363.4744353096007,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "BR-RIBEIRAO-PRETO-GID-178679",
+      "areaM2": 144.85765571424284,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "BR-RIBEIRAO-PRETO-GID-178680",
+      "areaM2": 190.02558981063626,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "BR-RIBEIRAO-PRETO-GID-178682",
+      "areaM2": 1556.6602942880959,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "BR-RIBEIRAO-PRETO-GID-178683",
+      "areaM2": 57.71007609358229,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "BR-RIBEIRAO-PRETO-GID-178684",
+      "areaM2": 66.96518684126734,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "BR-RIBEIRAO-PRETO-GID-178685",
+      "areaM2": 55.487933294217854,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "BR-RIBEIRAO-PRETO-GID-178686",
+      "areaM2": 66.946785557427,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "BR-RIBEIRAO-PRETO-GID-178687",
+      "areaM2": 125.80733840961557,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "BR-RIBEIRAO-PRETO-GID-178688",
+      "areaM2": 218.57090740745866,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "BR-RIBEIRAO-PRETO-GID-178689",
+      "areaM2": 91.0391322868724,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "BR-RIBEIRAO-PRETO-GID-178690",
+      "areaM2": 89.5951600848187,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "BR-RIBEIRAO-PRETO-GID-178691",
+      "areaM2": 102.3423057026298,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "BR-RIBEIRAO-PRETO-GID-178692",
+      "areaM2": 64.77380730470473,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "BR-RIBEIRAO-PRETO-GID-178693",
+      "areaM2": 86.36748372912604,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "BR-RIBEIRAO-PRETO-GID-178694",
+      "areaM2": 219.95663927614834,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "BR-RIBEIRAO-PRETO-GID-178695",
+      "areaM2": 245.02221212179506,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "BR-RIBEIRAO-PRETO-GID-178696",
+      "areaM2": 97.78791649502405,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "BR-RIBEIRAO-PRETO-GID-178697",
+      "areaM2": 98.68241325869485,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "BR-RIBEIRAO-PRETO-GID-178698",
+      "areaM2": 212.220605437635,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "BR-RIBEIRAO-PRETO-GID-178699",
+      "areaM2": 345.7678884760242,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "BR-RIBEIRAO-PRETO-GID-178708",
+      "areaM2": 155.56128502798663,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "BR-RIBEIRAO-PRETO-GID-178709",
+      "areaM2": 245.6969943573446,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "BR-RIBEIRAO-PRETO-GID-178710",
+      "areaM2": 457.3223917068269,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "BR-RIBEIRAO-PRETO-GID-178711",
+      "areaM2": 104.45292172580395,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "BR-RIBEIRAO-PRETO-GID-178712",
+      "areaM2": 191.71613105041433,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "BR-RIBEIRAO-PRETO-GID-178713",
+      "areaM2": 106.22389348612036,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "BR-RIBEIRAO-PRETO-GID-178714",
+      "areaM2": 359.71880788048634,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "BR-RIBEIRAO-PRETO-GID-178700",
+      "areaM2": 301.3484714186799,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "BR-RIBEIRAO-PRETO-GID-178701",
+      "areaM2": 412.55265833909345,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "BR-RIBEIRAO-PRETO-GID-178702",
+      "areaM2": 290.31842984320076,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "BR-RIBEIRAO-PRETO-GID-178703",
+      "areaM2": 142.77343100870218,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "BR-RIBEIRAO-PRETO-GID-178704",
+      "areaM2": 98.72877347725355,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "BR-RIBEIRAO-PRETO-GID-178705",
+      "areaM2": 89.56198664859635,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "BR-RIBEIRAO-PRETO-GID-178706",
+      "areaM2": 95.07938550862674,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "BR-RIBEIRAO-PRETO-GID-178707",
+      "areaM2": 125.3863097899175,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "BR-RIBEIRAO-PRETO-GID-178804",
+      "areaM2": 229.93406253569208,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "BR-RIBEIRAO-PRETO-GID-178805",
+      "areaM2": 229.04009242637431,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "BR-RIBEIRAO-PRETO-GID-178806",
+      "areaM2": 198.87966404387683,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "BR-RIBEIRAO-PRETO-GID-178807",
+      "areaM2": 225.08028322088103,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "BR-RIBEIRAO-PRETO-GID-178808",
+      "areaM2": 145.82589079684837,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "BR-RIBEIRAO-PRETO-GID-178809",
+      "areaM2": 163.72770757339126,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "BR-RIBEIRAO-PRETO-GID-178810",
+      "areaM2": 309.5549206504855,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "BR-RIBEIRAO-PRETO-GID-178811",
+      "areaM2": 278.5991380143232,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "BR-RIBEIRAO-PRETO-GID-178812",
+      "areaM2": 145.65258979899374,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "BR-RIBEIRAO-PRETO-GID-178813",
+      "areaM2": 135.02336131874938,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "BR-RIBEIRAO-PRETO-GID-178814",
+      "areaM2": 202.53483962873312,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "BR-RIBEIRAO-PRETO-GID-178815",
+      "areaM2": 132.5236461960336,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "BR-RIBEIRAO-PRETO-GID-178816",
+      "areaM2": 155.02609955111603,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "BR-RIBEIRAO-PRETO-GID-178817",
+      "areaM2": 869.5789220438712,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "BR-RIBEIRAO-PRETO-GID-178818",
+      "areaM2": 423.5220512723315,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "BR-RIBEIRAO-PRETO-GID-178819",
+      "areaM2": 247.44951714263186,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "BR-RIBEIRAO-PRETO-GID-178821",
+      "areaM2": 138.80334904956592,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "BR-RIBEIRAO-PRETO-GID-178822",
+      "areaM2": 121.75713643503784,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "BR-RIBEIRAO-PRETO-GID-178823",
+      "areaM2": 192.24257421078443,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "BR-RIBEIRAO-PRETO-GID-178824",
+      "areaM2": 611.7836913405016,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "BR-RIBEIRAO-PRETO-GID-178826",
+      "areaM2": 110.60570519531173,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "BR-RIBEIRAO-PRETO-GID-178927",
+      "areaM2": 2636.5079103943913,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "BR-RIBEIRAO-PRETO-GID-178928",
+      "areaM2": 2636.5079103943913,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "BR-RIBEIRAO-PRETO-GID-178929",
+      "areaM2": 2636.5079103943913,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "BR-RIBEIRAO-PRETO-GID-178930",
+      "areaM2": 2636.5079103943913,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "BR-RIBEIRAO-PRETO-GID-178931",
+      "areaM2": 2636.5079103943913,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "BR-RIBEIRAO-PRETO-GID-178932",
+      "areaM2": 2636.5079103943913,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "BR-RIBEIRAO-PRETO-GID-178933",
+      "areaM2": 2636.5079103943913,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "BR-RIBEIRAO-PRETO-GID-178934",
+      "areaM2": 2636.5079103943913,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "BR-RIBEIRAO-PRETO-GID-178935",
+      "areaM2": 2636.5079103943913,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "BR-RIBEIRAO-PRETO-GID-178936",
+      "areaM2": 2636.5079103943913,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "BR-RIBEIRAO-PRETO-GID-178937",
+      "areaM2": 2636.5079103943913,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "BR-RIBEIRAO-PRETO-GID-178938",
+      "areaM2": 2636.5079103943913,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "BR-RIBEIRAO-PRETO-GID-178939",
+      "areaM2": 2636.5079103943913,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "BR-RIBEIRAO-PRETO-GID-178940",
+      "areaM2": 2636.5079103943913,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "BR-RIBEIRAO-PRETO-GID-178941",
+      "areaM2": 2636.5079103943913,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "BR-RIBEIRAO-PRETO-GID-178942",
+      "areaM2": 2636.5079103943913,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "BR-RIBEIRAO-PRETO-GID-178943",
+      "areaM2": 2636.5079103943913,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "BR-RIBEIRAO-PRETO-GID-178944",
+      "areaM2": 2636.5079103943913,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "BR-RIBEIRAO-PRETO-GID-178945",
+      "areaM2": 2636.5079103943913,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "BR-RIBEIRAO-PRETO-GID-178946",
+      "areaM2": 2636.5079103943913,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "BR-RIBEIRAO-PRETO-GID-178947",
+      "areaM2": 2636.5079103943913,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "BR-RIBEIRAO-PRETO-GID-178948",
+      "areaM2": 2636.5079103943913,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "BR-RIBEIRAO-PRETO-GID-178949",
+      "areaM2": 2636.5079103943913,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "BR-RIBEIRAO-PRETO-GID-178950",
+      "areaM2": 2636.5079103943913,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "BR-RIBEIRAO-PRETO-GID-178951",
+      "areaM2": 2636.5079103943913,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "BR-RIBEIRAO-PRETO-GID-178952",
+      "areaM2": 2636.5079103943913,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "BR-RIBEIRAO-PRETO-GID-178953",
+      "areaM2": 2636.5079103943913,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "BR-RIBEIRAO-PRETO-GID-178954",
+      "areaM2": 2636.5079103943913,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "BR-RIBEIRAO-PRETO-GID-178955",
+      "areaM2": 2636.5079103943913,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "BR-RIBEIRAO-PRETO-GID-178956",
+      "areaM2": 2636.5079103943913,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "BR-RIBEIRAO-PRETO-GID-178957",
+      "areaM2": 2636.5079103943913,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "BR-RIBEIRAO-PRETO-GID-178958",
+      "areaM2": 2636.5079103943913,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "BR-RIBEIRAO-PRETO-GID-178959",
+      "areaM2": 2636.5079103943913,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "BR-RIBEIRAO-PRETO-GID-178960",
+      "areaM2": 2636.5079103943913,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "BR-RIBEIRAO-PRETO-GID-178961",
+      "areaM2": 2636.5079103943913,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "BR-RIBEIRAO-PRETO-GID-178962",
+      "areaM2": 2636.5079103943913,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "BR-RIBEIRAO-PRETO-GID-178963",
+      "areaM2": 2636.5079103943913,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "BR-RIBEIRAO-PRETO-GID-178964",
+      "areaM2": 2636.5079103943913,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "BR-RIBEIRAO-PRETO-GID-178965",
+      "areaM2": 2636.5079103943913,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "BR-RIBEIRAO-PRETO-GID-178966",
+      "areaM2": 2636.5079103943913,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "BR-RIBEIRAO-PRETO-GID-178967",
+      "areaM2": 2636.5079103943913,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "BR-RIBEIRAO-PRETO-GID-178968",
+      "areaM2": 2636.5079103943913,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "BR-RIBEIRAO-PRETO-GID-178969",
+      "areaM2": 2636.5079103943913,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "BR-RIBEIRAO-PRETO-GID-178970",
+      "areaM2": 2636.5079103943913,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "BR-RIBEIRAO-PRETO-GID-178971",
+      "areaM2": 2636.5079103943913,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "BR-RIBEIRAO-PRETO-GID-178972",
+      "areaM2": 2636.5079103943913,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "BR-RIBEIRAO-PRETO-GID-178973",
+      "areaM2": 2636.5079103943913,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "BR-RIBEIRAO-PRETO-GID-178974",
+      "areaM2": 2636.5079103943913,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "BR-RIBEIRAO-PRETO-GID-178975",
+      "areaM2": 2636.5079103943913,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "BR-RIBEIRAO-PRETO-GID-178976",
+      "areaM2": 2636.5079103943913,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "BR-RIBEIRAO-PRETO-GID-178977",
+      "areaM2": 2636.5079103943913,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "BR-RIBEIRAO-PRETO-GID-178978",
+      "areaM2": 2636.5079103943913,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "BR-RIBEIRAO-PRETO-GID-178979",
+      "areaM2": 2636.5079103943913,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "BR-RIBEIRAO-PRETO-GID-178980",
+      "areaM2": 2636.5079103943913,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "BR-RIBEIRAO-PRETO-GID-178981",
+      "areaM2": 2636.5079103943913,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "BR-RIBEIRAO-PRETO-GID-178982",
+      "areaM2": 2636.5079103943913,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "BR-RIBEIRAO-PRETO-GID-178983",
+      "areaM2": 2636.5079103943913,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "BR-RIBEIRAO-PRETO-GID-178984",
+      "areaM2": 2636.5079103943913,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "BR-RIBEIRAO-PRETO-GID-178985",
+      "areaM2": 2636.5079103943913,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "BR-RIBEIRAO-PRETO-GID-178986",
+      "areaM2": 2636.5079103943913,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "BR-RIBEIRAO-PRETO-GID-178987",
+      "areaM2": 2636.5079103943913,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "BR-RIBEIRAO-PRETO-GID-178988",
+      "areaM2": 2636.5079103943913,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "BR-RIBEIRAO-PRETO-GID-178989",
+      "areaM2": 2636.5079103943913,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "BR-RIBEIRAO-PRETO-GID-178990",
+      "areaM2": 2636.5079103943913,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "BR-RIBEIRAO-PRETO-GID-178991",
+      "areaM2": 2636.5079103943913,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "BR-RIBEIRAO-PRETO-GID-178992",
+      "areaM2": 2636.5079103943913,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "BR-RIBEIRAO-PRETO-GID-178993",
+      "areaM2": 2636.5079103943913,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "BR-RIBEIRAO-PRETO-GID-178994",
+      "areaM2": 2636.5079103943913,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "BR-RIBEIRAO-PRETO-GID-178995",
+      "areaM2": 2636.5079103943913,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "BR-RIBEIRAO-PRETO-GID-178996",
+      "areaM2": 2636.5079103943913,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "BR-RIBEIRAO-PRETO-GID-178997",
+      "areaM2": 2636.5079103943913,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "BR-RIBEIRAO-PRETO-GID-178998",
+      "areaM2": 2636.5079103943913,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "BR-RIBEIRAO-PRETO-GID-178999",
+      "areaM2": 2636.5079103943913,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "BR-RIBEIRAO-PRETO-GID-179000",
+      "areaM2": 2636.5079103943913,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "BR-RIBEIRAO-PRETO-GID-179001",
+      "areaM2": 2636.5079103943913,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "BR-RIBEIRAO-PRETO-GID-179002",
+      "areaM2": 2636.5079103943913,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "BR-RIBEIRAO-PRETO-GID-179003",
+      "areaM2": 2636.5079103943913,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "BR-RIBEIRAO-PRETO-GID-179004",
+      "areaM2": 2636.5079103943913,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "BR-RIBEIRAO-PRETO-GID-179005",
+      "areaM2": 2636.5079103943913,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "BR-RIBEIRAO-PRETO-GID-179006",
+      "areaM2": 2636.5079103943913,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "BR-RIBEIRAO-PRETO-GID-179007",
+      "areaM2": 2636.5079103943913,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "BR-RIBEIRAO-PRETO-GID-179008",
+      "areaM2": 2636.5079103943913,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "BR-RIBEIRAO-PRETO-GID-179009",
+      "areaM2": 2636.5079103943913,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "BR-RIBEIRAO-PRETO-GID-179010",
+      "areaM2": 2636.5079103943913,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "BR-RIBEIRAO-PRETO-GID-179011",
+      "areaM2": 2636.5079103943913,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "BR-RIBEIRAO-PRETO-GID-179012",
+      "areaM2": 2636.5079103943913,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "BR-RIBEIRAO-PRETO-GID-179013",
+      "areaM2": 2636.5079103943913,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "BR-RIBEIRAO-PRETO-GID-179014",
+      "areaM2": 2636.5079103943913,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "BR-RIBEIRAO-PRETO-GID-179015",
+      "areaM2": 2636.5079103943913,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "BR-RIBEIRAO-PRETO-GID-179016",
+      "areaM2": 2636.5079103943913,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "BR-RIBEIRAO-PRETO-GID-179017",
+      "areaM2": 2636.5079103943913,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "BR-RIBEIRAO-PRETO-GID-179018",
+      "areaM2": 2636.5079103943913,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "BR-RIBEIRAO-PRETO-GID-179019",
+      "areaM2": 2636.5079103943913,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "BR-RIBEIRAO-PRETO-GID-179020",
+      "areaM2": 2636.5079103943913,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "BR-RIBEIRAO-PRETO-GID-179021",
+      "areaM2": 2636.5079103943913,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "BR-RIBEIRAO-PRETO-GID-179022",
+      "areaM2": 2636.5079103943913,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "BR-RIBEIRAO-PRETO-GID-179023",
+      "areaM2": 2163.975448663886,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "BR-RIBEIRAO-PRETO-GID-179024",
+      "areaM2": 2163.975448663886,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "BR-RIBEIRAO-PRETO-GID-179025",
+      "areaM2": 2163.975448663886,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "BR-RIBEIRAO-PRETO-GID-179026",
+      "areaM2": 2163.975448663886,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "BR-RIBEIRAO-PRETO-GID-179027",
+      "areaM2": 2163.975448663886,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "BR-RIBEIRAO-PRETO-GID-179028",
+      "areaM2": 2163.975448663886,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "BR-RIBEIRAO-PRETO-GID-179029",
+      "areaM2": 2163.975448663886,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "BR-RIBEIRAO-PRETO-GID-179030",
+      "areaM2": 2163.975448663886,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "BR-RIBEIRAO-PRETO-GID-179031",
+      "areaM2": 2163.975448663886,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "BR-RIBEIRAO-PRETO-GID-179032",
+      "areaM2": 2163.975448663886,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "BR-RIBEIRAO-PRETO-GID-179033",
+      "areaM2": 2163.975448663886,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "BR-RIBEIRAO-PRETO-GID-179034",
+      "areaM2": 2163.975448663886,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "BR-RIBEIRAO-PRETO-GID-179035",
+      "areaM2": 2163.975448663886,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "BR-RIBEIRAO-PRETO-GID-179036",
+      "areaM2": 2163.975448663886,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "BR-RIBEIRAO-PRETO-GID-179037",
+      "areaM2": 2163.975448663886,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "BR-RIBEIRAO-PRETO-GID-179038",
+      "areaM2": 2163.975448663886,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "BR-RIBEIRAO-PRETO-GID-179039",
+      "areaM2": 2163.975448663886,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "BR-RIBEIRAO-PRETO-GID-179040",
+      "areaM2": 2163.975448663886,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "BR-RIBEIRAO-PRETO-GID-179041",
+      "areaM2": 2163.975448663886,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "BR-RIBEIRAO-PRETO-GID-179042",
+      "areaM2": 2163.975448663886,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "BR-RIBEIRAO-PRETO-GID-179043",
+      "areaM2": 2163.975448663886,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "BR-RIBEIRAO-PRETO-GID-179044",
+      "areaM2": 2163.975448663886,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "BR-RIBEIRAO-PRETO-GID-179045",
+      "areaM2": 2163.975448663886,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "BR-RIBEIRAO-PRETO-GID-179046",
+      "areaM2": 2163.975448663886,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "BR-RIBEIRAO-PRETO-GID-179047",
+      "areaM2": 2163.975448663886,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "BR-RIBEIRAO-PRETO-GID-179048",
+      "areaM2": 2163.975448663886,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "BR-RIBEIRAO-PRETO-GID-179049",
+      "areaM2": 2163.975448663886,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "BR-RIBEIRAO-PRETO-GID-179050",
+      "areaM2": 2163.975448663886,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "BR-RIBEIRAO-PRETO-GID-179051",
+      "areaM2": 2163.975448663886,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "BR-RIBEIRAO-PRETO-GID-179052",
+      "areaM2": 2163.975448663886,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "BR-RIBEIRAO-PRETO-GID-179053",
+      "areaM2": 2163.975448663886,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "BR-RIBEIRAO-PRETO-GID-179054",
+      "areaM2": 2163.975448663886,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "BR-RIBEIRAO-PRETO-GID-179055",
+      "areaM2": 2163.975448663886,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "BR-RIBEIRAO-PRETO-GID-179056",
+      "areaM2": 2163.975448663886,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "BR-RIBEIRAO-PRETO-GID-179057",
+      "areaM2": 2163.975448663886,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "BR-RIBEIRAO-PRETO-GID-179058",
+      "areaM2": 2163.975448663886,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "BR-RIBEIRAO-PRETO-GID-179059",
+      "areaM2": 2163.975448663886,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "BR-RIBEIRAO-PRETO-GID-179060",
+      "areaM2": 2163.975448663886,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "BR-RIBEIRAO-PRETO-GID-179061",
+      "areaM2": 2163.975448663886,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "BR-RIBEIRAO-PRETO-GID-179062",
+      "areaM2": 2163.975448663886,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "BR-RIBEIRAO-PRETO-GID-179063",
+      "areaM2": 2163.975448663886,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "BR-RIBEIRAO-PRETO-GID-179064",
+      "areaM2": 2163.975448663886,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "BR-RIBEIRAO-PRETO-GID-179065",
+      "areaM2": 2163.975448663886,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "BR-RIBEIRAO-PRETO-GID-179066",
+      "areaM2": 2163.975448663886,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "BR-RIBEIRAO-PRETO-GID-179067",
+      "areaM2": 2163.975448663886,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "BR-RIBEIRAO-PRETO-GID-179068",
+      "areaM2": 2163.975448663886,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "BR-RIBEIRAO-PRETO-GID-179069",
+      "areaM2": 2163.975448663886,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "BR-RIBEIRAO-PRETO-GID-179070",
+      "areaM2": 2163.975448663886,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "BR-RIBEIRAO-PRETO-GID-179071",
+      "areaM2": 2163.975448663886,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "BR-RIBEIRAO-PRETO-GID-179072",
+      "areaM2": 2163.975448663886,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "BR-RIBEIRAO-PRETO-GID-179073",
+      "areaM2": 2163.975448663886,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "BR-RIBEIRAO-PRETO-GID-179074",
+      "areaM2": 2163.975448663886,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "BR-RIBEIRAO-PRETO-GID-179075",
+      "areaM2": 2163.975448663886,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "BR-RIBEIRAO-PRETO-GID-179076",
+      "areaM2": 2163.975448663886,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "BR-RIBEIRAO-PRETO-GID-179077",
+      "areaM2": 2163.975448663886,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "BR-RIBEIRAO-PRETO-GID-179078",
+      "areaM2": 2163.975448663886,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "BR-RIBEIRAO-PRETO-GID-179079",
+      "areaM2": 2163.975448663886,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "BR-RIBEIRAO-PRETO-GID-179080",
+      "areaM2": 2163.975448663886,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "BR-RIBEIRAO-PRETO-GID-179081",
+      "areaM2": 2163.975448663886,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "BR-RIBEIRAO-PRETO-GID-179082",
+      "areaM2": 2163.975448663886,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "BR-RIBEIRAO-PRETO-GID-179083",
+      "areaM2": 2163.975448663886,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "BR-RIBEIRAO-PRETO-GID-179084",
+      "areaM2": 2163.975448663886,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "BR-RIBEIRAO-PRETO-GID-179085",
+      "areaM2": 2163.975448663886,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "BR-RIBEIRAO-PRETO-GID-179086",
+      "areaM2": 2163.975448663886,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "BR-RIBEIRAO-PRETO-GID-179087",
+      "areaM2": 522.0628534180157,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "BR-RIBEIRAO-PRETO-GID-179088",
+      "areaM2": 1597.3120900223303,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "BR-RIBEIRAO-PRETO-GID-178820",
+      "areaM2": 224.90505224160853,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "BR-RIBEIRAO-PRETO-GID-178831",
+      "areaM2": 2627.0713919018444,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "BR-RIBEIRAO-PRETO-GID-178832",
+      "areaM2": 2627.0713919018444,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "BR-RIBEIRAO-PRETO-GID-178833",
+      "areaM2": 2627.0713919018444,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "BR-RIBEIRAO-PRETO-GID-178834",
+      "areaM2": 2627.0713919018444,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "BR-RIBEIRAO-PRETO-GID-178835",
+      "areaM2": 2627.0713919018444,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "BR-RIBEIRAO-PRETO-GID-178836",
+      "areaM2": 2627.0713919018444,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "BR-RIBEIRAO-PRETO-GID-178837",
+      "areaM2": 2627.0713919018444,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "BR-RIBEIRAO-PRETO-GID-178838",
+      "areaM2": 2627.0713919018444,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "BR-RIBEIRAO-PRETO-GID-178839",
+      "areaM2": 2627.0713919018444,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "BR-RIBEIRAO-PRETO-GID-178840",
+      "areaM2": 2627.0713919018444,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "BR-RIBEIRAO-PRETO-GID-178841",
+      "areaM2": 2627.0713919018444,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "BR-RIBEIRAO-PRETO-GID-178842",
+      "areaM2": 2627.0713919018444,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "BR-RIBEIRAO-PRETO-GID-178843",
+      "areaM2": 2627.0713919018444,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "BR-RIBEIRAO-PRETO-GID-178844",
+      "areaM2": 2627.0713919018444,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "BR-RIBEIRAO-PRETO-GID-178845",
+      "areaM2": 2627.0713919018444,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "BR-RIBEIRAO-PRETO-GID-178846",
+      "areaM2": 2627.0713919018444,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "BR-RIBEIRAO-PRETO-GID-178847",
+      "areaM2": 2627.0713919018444,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "BR-RIBEIRAO-PRETO-GID-178848",
+      "areaM2": 2627.0713919018444,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "BR-RIBEIRAO-PRETO-GID-178849",
+      "areaM2": 2627.0713919018444,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "BR-RIBEIRAO-PRETO-GID-178850",
+      "areaM2": 2627.0713919018444,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "BR-RIBEIRAO-PRETO-GID-178851",
+      "areaM2": 2627.0713919018444,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "BR-RIBEIRAO-PRETO-GID-178852",
+      "areaM2": 2627.0713919018444,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "BR-RIBEIRAO-PRETO-GID-178853",
+      "areaM2": 2627.0713919018444,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "BR-RIBEIRAO-PRETO-GID-178854",
+      "areaM2": 2627.0713919018444,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "BR-RIBEIRAO-PRETO-GID-178855",
+      "areaM2": 2627.0713919018444,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "BR-RIBEIRAO-PRETO-GID-178856",
+      "areaM2": 2627.0713919018444,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "BR-RIBEIRAO-PRETO-GID-178857",
+      "areaM2": 2627.0713919018444,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "BR-RIBEIRAO-PRETO-GID-178858",
+      "areaM2": 2627.0713919018444,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "BR-RIBEIRAO-PRETO-GID-178859",
+      "areaM2": 2627.0713919018444,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "BR-RIBEIRAO-PRETO-GID-178860",
+      "areaM2": 2627.0713919018444,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "BR-RIBEIRAO-PRETO-GID-178861",
+      "areaM2": 2627.0713919018444,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "BR-RIBEIRAO-PRETO-GID-178862",
+      "areaM2": 2627.0713919018444,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "BR-RIBEIRAO-PRETO-GID-178863",
+      "areaM2": 2627.0713919018444,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "BR-RIBEIRAO-PRETO-GID-178864",
+      "areaM2": 2627.0713919018444,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "BR-RIBEIRAO-PRETO-GID-178865",
+      "areaM2": 2627.0713919018444,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "BR-RIBEIRAO-PRETO-GID-178866",
+      "areaM2": 2627.0713919018444,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "BR-RIBEIRAO-PRETO-GID-178867",
+      "areaM2": 2627.0713919018444,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "BR-RIBEIRAO-PRETO-GID-178868",
+      "areaM2": 2627.0713919018444,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "BR-RIBEIRAO-PRETO-GID-178869",
+      "areaM2": 2627.0713919018444,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "BR-RIBEIRAO-PRETO-GID-178870",
+      "areaM2": 2627.0713919018444,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "BR-RIBEIRAO-PRETO-GID-178871",
+      "areaM2": 2627.0713919018444,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "BR-RIBEIRAO-PRETO-GID-178872",
+      "areaM2": 2627.0713919018444,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "BR-RIBEIRAO-PRETO-GID-178873",
+      "areaM2": 2627.0713919018444,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "BR-RIBEIRAO-PRETO-GID-178874",
+      "areaM2": 2627.0713919018444,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "BR-RIBEIRAO-PRETO-GID-178875",
+      "areaM2": 2627.0713919018444,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "BR-RIBEIRAO-PRETO-GID-178876",
+      "areaM2": 2627.0713919018444,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "BR-RIBEIRAO-PRETO-GID-178877",
+      "areaM2": 2627.0713919018444,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "BR-RIBEIRAO-PRETO-GID-178878",
+      "areaM2": 2627.0713919018444,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "BR-RIBEIRAO-PRETO-GID-178879",
+      "areaM2": 2627.0713919018444,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "BR-RIBEIRAO-PRETO-GID-178880",
+      "areaM2": 2627.0713919018444,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "BR-RIBEIRAO-PRETO-GID-178881",
+      "areaM2": 2627.0713919018444,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "BR-RIBEIRAO-PRETO-GID-178882",
+      "areaM2": 2627.0713919018444,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "BR-RIBEIRAO-PRETO-GID-178883",
+      "areaM2": 2627.0713919018444,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "BR-RIBEIRAO-PRETO-GID-178884",
+      "areaM2": 2627.0713919018444,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "BR-RIBEIRAO-PRETO-GID-178885",
+      "areaM2": 2627.0713919018444,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "BR-RIBEIRAO-PRETO-GID-178886",
+      "areaM2": 2627.0713919018444,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "BR-RIBEIRAO-PRETO-GID-178887",
+      "areaM2": 2627.0713919018444,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "BR-RIBEIRAO-PRETO-GID-178888",
+      "areaM2": 2627.0713919018444,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "BR-RIBEIRAO-PRETO-GID-178889",
+      "areaM2": 2627.0713919018444,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "BR-RIBEIRAO-PRETO-GID-178890",
+      "areaM2": 2627.0713919018444,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "BR-RIBEIRAO-PRETO-GID-178891",
+      "areaM2": 2627.0713919018444,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "BR-RIBEIRAO-PRETO-GID-178892",
+      "areaM2": 2627.0713919018444,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "BR-RIBEIRAO-PRETO-GID-178893",
+      "areaM2": 2627.0713919018444,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "BR-RIBEIRAO-PRETO-GID-178894",
+      "areaM2": 2627.0713919018444,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "BR-RIBEIRAO-PRETO-GID-178895",
+      "areaM2": 2627.0713919018444,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "BR-RIBEIRAO-PRETO-GID-178896",
+      "areaM2": 2627.0713919018444,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "BR-RIBEIRAO-PRETO-GID-178897",
+      "areaM2": 2627.0713919018444,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "BR-RIBEIRAO-PRETO-GID-178898",
+      "areaM2": 2627.0713919018444,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "BR-RIBEIRAO-PRETO-GID-178899",
+      "areaM2": 2627.0713919018444,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "BR-RIBEIRAO-PRETO-GID-178900",
+      "areaM2": 2627.0713919018444,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "BR-RIBEIRAO-PRETO-GID-178901",
+      "areaM2": 2627.0713919018444,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "BR-RIBEIRAO-PRETO-GID-178902",
+      "areaM2": 2627.0713919018444,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "BR-RIBEIRAO-PRETO-GID-178903",
+      "areaM2": 2627.0713919018444,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "BR-RIBEIRAO-PRETO-GID-178904",
+      "areaM2": 2627.0713919018444,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "BR-RIBEIRAO-PRETO-GID-178905",
+      "areaM2": 2627.0713919018444,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "BR-RIBEIRAO-PRETO-GID-178906",
+      "areaM2": 2627.0713919018444,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "BR-RIBEIRAO-PRETO-GID-178907",
+      "areaM2": 2627.0713919018444,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "BR-RIBEIRAO-PRETO-GID-178908",
+      "areaM2": 2627.0713919018444,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "BR-RIBEIRAO-PRETO-GID-178909",
+      "areaM2": 2627.0713919018444,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "BR-RIBEIRAO-PRETO-GID-178910",
+      "areaM2": 2627.0713919018444,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "BR-RIBEIRAO-PRETO-GID-178911",
+      "areaM2": 2627.0713919018444,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "BR-RIBEIRAO-PRETO-GID-178912",
+      "areaM2": 2627.0713919018444,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "BR-RIBEIRAO-PRETO-GID-178913",
+      "areaM2": 2627.0713919018444,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "BR-RIBEIRAO-PRETO-GID-178914",
+      "areaM2": 2627.0713919018444,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "BR-RIBEIRAO-PRETO-GID-178915",
+      "areaM2": 2627.0713919018444,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "BR-RIBEIRAO-PRETO-GID-178916",
+      "areaM2": 2627.0713919018444,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "BR-RIBEIRAO-PRETO-GID-178917",
+      "areaM2": 2627.0713919018444,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "BR-RIBEIRAO-PRETO-GID-178918",
+      "areaM2": 2627.0713919018444,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "BR-RIBEIRAO-PRETO-GID-178919",
+      "areaM2": 2627.0713919018444,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "BR-RIBEIRAO-PRETO-GID-178920",
+      "areaM2": 2627.0713919018444,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "BR-RIBEIRAO-PRETO-GID-178921",
+      "areaM2": 2627.0713919018444,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "BR-RIBEIRAO-PRETO-GID-178922",
+      "areaM2": 2627.0713919018444,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "BR-RIBEIRAO-PRETO-GID-178923",
+      "areaM2": 2627.0713919018444,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "BR-RIBEIRAO-PRETO-GID-178924",
+      "areaM2": 2627.0713919018444,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "BR-RIBEIRAO-PRETO-GID-178925",
+      "areaM2": 2627.0713919018444,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "BR-RIBEIRAO-PRETO-GID-178926",
+      "areaM2": 2627.0713919018444,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "BR-RIBEIRAO-PRETO-GID-179107",
+      "areaM2": 1974.0488678524312,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "BR-RIBEIRAO-PRETO-GID-179111",
+      "areaM2": 1287.2192936726362,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "BR-RIBEIRAO-PRETO-GID-179113",
+      "areaM2": 195.00144158319588,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "BR-RIBEIRAO-PRETO-GID-179114",
+      "areaM2": 318.22909428623507,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "BR-RIBEIRAO-PRETO-GID-179115",
+      "areaM2": 456.70495516654864,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "BR-RIBEIRAO-PRETO-GID-179116",
+      "areaM2": 458.0334933532374,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "BR-RIBEIRAO-PRETO-GID-179117",
+      "areaM2": 1694.3748932162252,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "BR-RIBEIRAO-PRETO-GID-179384",
+      "areaM2": 19265.244377576775,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "BR-RIBEIRAO-PRETO-GID-178430",
+      "areaM2": 2609.289398445387,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "BR-RIBEIRAO-PRETO-GID-178466",
+      "areaM2": 377.44358589939185,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "BR-RIBEIRAO-PRETO-GID-178467",
+      "areaM2": 199.49898939290784,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "BR-RIBEIRAO-PRETO-GID-178468",
+      "areaM2": 317.5044995504946,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "BR-RIBEIRAO-PRETO-GID-178469",
+      "areaM2": 234.10591540210524,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "BR-RIBEIRAO-PRETO-GID-178470",
+      "areaM2": 174.99771862737578,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "BR-RIBEIRAO-PRETO-GID-178471",
+      "areaM2": 164.6919941286818,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "BR-RIBEIRAO-PRETO-GID-178472",
+      "areaM2": 135.00095963814908,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "BR-RIBEIRAO-PRETO-GID-178473",
+      "areaM2": 160.00052934883072,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "BR-RIBEIRAO-PRETO-GID-178474",
+      "areaM2": 156.87409629700915,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "BR-RIBEIRAO-PRETO-GID-178475",
+      "areaM2": 219.99945020522628,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "BR-RIBEIRAO-PRETO-GID-178476",
+      "areaM2": 503.86774596933213,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "BR-RIBEIRAO-PRETO-GID-178477",
+      "areaM2": 155.04332221242908,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "BR-RIBEIRAO-PRETO-GID-178478",
+      "areaM2": 341.9472014116802,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "BR-RIBEIRAO-PRETO-GID-178479",
+      "areaM2": 227.96389012065123,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "BR-RIBEIRAO-PRETO-GID-178480",
+      "areaM2": 349.4187622582091,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "BR-RIBEIRAO-PRETO-GID-178585",
+      "areaM2": 250.00137703328667,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "BR-RIBEIRAO-PRETO-GID-178586",
+      "areaM2": 95.96020805984153,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "BR-RIBEIRAO-PRETO-GID-178587",
+      "areaM2": 104.0396923022509,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "BR-RIBEIRAO-PRETO-GID-178588",
+      "areaM2": 89.28537086269431,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "BR-RIBEIRAO-PRETO-GID-178589",
+      "areaM2": 115.95274323481141,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "BR-RIBEIRAO-PRETO-GID-178590",
+      "areaM2": 95.99863109829468,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "BR-RIBEIRAO-PRETO-GID-178715",
+      "areaM2": 118.40093374478704,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "BR-RIBEIRAO-PRETO-GID-178716",
+      "areaM2": 125.26180427355787,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "BR-RIBEIRAO-PRETO-GID-178717",
+      "areaM2": 129.3617427355453,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "BR-RIBEIRAO-PRETO-GID-178718",
+      "areaM2": 154.6833134679108,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "BR-RIBEIRAO-PRETO-GID-178719",
+      "areaM2": 75.00146442164723,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "BR-RIBEIRAO-PRETO-GID-178720",
+      "areaM2": 75.00146443093959,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "BR-RIBEIRAO-PRETO-GID-178721",
+      "areaM2": 133.50318294207386,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "BR-RIBEIRAO-PRETO-GID-178722",
+      "areaM2": 251.52918728569463,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "BR-RIBEIRAO-PRETO-GID-178723",
+      "areaM2": 251.85915244926616,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "BR-RIBEIRAO-PRETO-GID-178724",
+      "areaM2": 233.20335223580656,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "BR-RIBEIRAO-PRETO-GID-178725",
+      "areaM2": 229.61631677181725,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "BR-RIBEIRAO-PRETO-GID-178726",
+      "areaM2": 231.40591622673907,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "BR-RIBEIRAO-PRETO-GID-178727",
+      "areaM2": 229.6163168240347,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "BR-RIBEIRAO-PRETO-GID-178728",
+      "areaM2": 331.86480599463425,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "BR-RIBEIRAO-PRETO-GID-178734",
+      "areaM2": 1994.2245900000771,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "BR-RIBEIRAO-PRETO-GID-178744",
+      "areaM2": 226.38638771590038,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "BR-RIBEIRAO-PRETO-GID-178745",
+      "areaM2": 199.9999196224658,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "BR-RIBEIRAO-PRETO-GID-178746",
+      "areaM2": 447.6438885192099,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "BR-RIBEIRAO-PRETO-GID-178747",
+      "areaM2": 442.9463367359771,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "BR-RIBEIRAO-PRETO-GID-178748",
+      "areaM2": 202.68370654026927,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "BR-RIBEIRAO-PRETO-GID-178749",
+      "areaM2": 239.2629216510771,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "BR-RIBEIRAO-PRETO-GID-178750",
+      "areaM2": 149.68644580574755,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "BR-RIBEIRAO-PRETO-GID-178751",
+      "areaM2": 149.68540090374324,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "BR-RIBEIRAO-PRETO-GID-178752",
+      "areaM2": 134.91779971344963,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "BR-RIBEIRAO-PRETO-GID-179094",
+      "areaM2": 892.9048183896529,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "BR-RIBEIRAO-PRETO-GID-179095",
+      "areaM2": 1023.3827109900329,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "BR-RIBEIRAO-PRETO-GID-178738",
+      "areaM2": 195.9036033153995,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "BR-RIBEIRAO-PRETO-GID-178740",
+      "areaM2": 97.20089042177878,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "BR-RIBEIRAO-PRETO-GID-178741",
+      "areaM2": 97.43987064488611,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "BR-RIBEIRAO-PRETO-GID-178742",
+      "areaM2": 241.99946641398662,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "BR-RIBEIRAO-PRETO-GID-178743",
+      "areaM2": 226.21938523168467,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "BR-RIBEIRAO-PRETO-GID-179089",
+      "areaM2": 168.65789644255267,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "BR-RIBEIRAO-PRETO-GID-179090",
+      "areaM2": 114.01835406807618,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "BR-RIBEIRAO-PRETO-GID-179091",
+      "areaM2": 190.33335307277855,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "BR-RIBEIRAO-PRETO-GID-179092",
+      "areaM2": 98.79827552778441,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "BR-RIBEIRAO-PRETO-GID-179093",
+      "areaM2": 113.14267590367405,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "BR-RIBEIRAO-PRETO-GID-179096",
+      "areaM2": 1599.3401645097597,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "BR-RIBEIRAO-PRETO-GID-179097",
+      "areaM2": 254.99489790403624,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "BR-RIBEIRAO-PRETO-GID-179098",
+      "areaM2": 306.25230857633335,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "BR-RIBEIRAO-PRETO-GID-179099",
+      "areaM2": 206.95740008729052,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "BR-RIBEIRAO-PRETO-GID-179100",
+      "areaM2": 87.40091161675767,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "BR-RIBEIRAO-PRETO-GID-179101",
+      "areaM2": 132.95653102343462,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "BR-RIBEIRAO-PRETO-GID-179102",
+      "areaM2": 97.0214487334826,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "BR-RIBEIRAO-PRETO-GID-179103",
+      "areaM2": 96.39072649209871,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "BR-RIBEIRAO-PRETO-GID-179104",
+      "areaM2": 97.65010858253305,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "BR-RIBEIRAO-PRETO-GID-179105",
+      "areaM2": 98.28162982638028,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "BR-RIBEIRAO-PRETO-GID-179106",
+      "areaM2": 2321.440892557539,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "BR-RIBEIRAO-PRETO-GID-179242",
+      "areaM2": 859.8711347345551,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "BR-RIBEIRAO-PRETO-GID-179108",
+      "areaM2": 161.50224305214238,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "BR-RIBEIRAO-PRETO-GID-179109",
+      "areaM2": 175.68165836177278,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "BR-RIBEIRAO-PRETO-GID-179110",
+      "areaM2": 178.56184936746246,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "BR-RIBEIRAO-PRETO-GID-179112",
+      "areaM2": 202.50238419799493,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "BR-RIBEIRAO-PRETO-GID-179218",
+      "areaM2": 245.33982736730565,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "BR-RIBEIRAO-PRETO-GID-179219",
+      "areaM2": 219.99959876147267,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "BR-RIBEIRAO-PRETO-GID-179220",
+      "areaM2": 123.56970017289164,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "BR-RIBEIRAO-PRETO-GID-179221",
+      "areaM2": 122.87793510039296,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "BR-RIBEIRAO-PRETO-GID-179222",
+      "areaM2": 194.00993988030473,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "BR-RIBEIRAO-PRETO-GID-179223",
+      "areaM2": 143.60943285475722,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "BR-RIBEIRAO-PRETO-GID-179224",
+      "areaM2": 152.46927490057254,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "BR-RIBEIRAO-PRETO-GID-179225",
+      "areaM2": 148.21193703278493,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "BR-RIBEIRAO-PRETO-GID-179226",
+      "areaM2": 213.1757622052063,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "BR-RIBEIRAO-PRETO-GID-179229",
+      "areaM2": 126.21530438738264,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "BR-RIBEIRAO-PRETO-GID-179230",
+      "areaM2": 122.75332093691922,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "BR-RIBEIRAO-PRETO-GID-179231",
+      "areaM2": 205.6282586873221,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "BR-RIBEIRAO-PRETO-GID-179232",
+      "areaM2": 133.8921461913187,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "BR-RIBEIRAO-PRETO-GID-179233",
+      "areaM2": 129.02729040361007,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "BR-RIBEIRAO-PRETO-GID-179234",
+      "areaM2": 343.55417727522524,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "BR-RIBEIRAO-PRETO-GID-179235",
+      "areaM2": 1040.8168709946099,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "BR-RIBEIRAO-PRETO-GID-179236",
+      "areaM2": 531.5078925198729,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "BR-RIBEIRAO-PRETO-GID-179237",
+      "areaM2": 363.31521961697604,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "BR-RIBEIRAO-PRETO-GID-179238",
+      "areaM2": 389.5918652445057,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "BR-RIBEIRAO-PRETO-GID-179239",
+      "areaM2": 244.4665595001712,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "BR-RIBEIRAO-PRETO-GID-179240",
+      "areaM2": 504.3375000979079,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "BR-RIBEIRAO-PRETO-GID-179255",
+      "areaM2": 276.00205878382934,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "BR-RIBEIRAO-PRETO-GID-179256",
+      "areaM2": 161.2179088921212,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "BR-RIBEIRAO-PRETO-GID-179258",
+      "areaM2": 132.4770008230493,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "BR-RIBEIRAO-PRETO-GID-179259",
+      "areaM2": 102.4081814085043,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "BR-RIBEIRAO-PRETO-GID-179260",
+      "areaM2": 95.49801259481086,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "BR-RIBEIRAO-PRETO-GID-179286",
+      "areaM2": 3988.097369090581,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "BR-RIBEIRAO-PRETO-GID-179296",
+      "areaM2": 112.67461904491107,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "BR-RIBEIRAO-PRETO-GID-179297",
+      "areaM2": 116.51496842091626,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "BR-RIBEIRAO-PRETO-GID-178527",
+      "areaM2": 1804.9411374448446,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "BR-RIBEIRAO-PRETO-GID-178528",
+      "areaM2": 1804.9411374448446,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "BR-RIBEIRAO-PRETO-GID-178529",
+      "areaM2": 1804.9411374448446,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "BR-RIBEIRAO-PRETO-GID-178530",
+      "areaM2": 1804.9411374448446,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "BR-RIBEIRAO-PRETO-GID-178531",
+      "areaM2": 1804.9411374448446,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "BR-RIBEIRAO-PRETO-GID-178532",
+      "areaM2": 1804.9411374448446,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "BR-RIBEIRAO-PRETO-GID-178533",
+      "areaM2": 1804.9411374448446,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "BR-RIBEIRAO-PRETO-GID-178534",
+      "areaM2": 1804.9411374448446,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "BR-RIBEIRAO-PRETO-GID-178535",
+      "areaM2": 1804.9411374448446,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "BR-RIBEIRAO-PRETO-GID-178536",
+      "areaM2": 1804.9411374448446,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "BR-RIBEIRAO-PRETO-GID-178537",
+      "areaM2": 1804.9411374448446,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "BR-RIBEIRAO-PRETO-GID-178538",
+      "areaM2": 1804.9411374448446,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "BR-RIBEIRAO-PRETO-GID-178539",
+      "areaM2": 1804.9411374448446,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "BR-RIBEIRAO-PRETO-GID-178540",
+      "areaM2": 1804.9411374448446,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "BR-RIBEIRAO-PRETO-GID-178541",
+      "areaM2": 1804.9411374448446,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "BR-RIBEIRAO-PRETO-GID-178542",
+      "areaM2": 1804.9411374448446,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "BR-RIBEIRAO-PRETO-GID-178543",
+      "areaM2": 1804.9411374448446,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "BR-RIBEIRAO-PRETO-GID-178544",
+      "areaM2": 1804.9411374448446,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "BR-RIBEIRAO-PRETO-GID-178545",
+      "areaM2": 1804.9411374448446,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "BR-RIBEIRAO-PRETO-GID-178546",
+      "areaM2": 1804.9411374448446,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "BR-RIBEIRAO-PRETO-GID-178547",
+      "areaM2": 1804.9411374448446,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "BR-RIBEIRAO-PRETO-GID-178548",
+      "areaM2": 1804.9411374448446,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "BR-RIBEIRAO-PRETO-GID-178549",
+      "areaM2": 1804.9411374448446,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "BR-RIBEIRAO-PRETO-GID-178550",
+      "areaM2": 1804.9411374448446,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "BR-RIBEIRAO-PRETO-GID-178551",
+      "areaM2": 1804.9411374448446,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "BR-RIBEIRAO-PRETO-GID-178552",
+      "areaM2": 1804.9411374448446,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "BR-RIBEIRAO-PRETO-GID-178553",
+      "areaM2": 1804.9411374448446,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "BR-RIBEIRAO-PRETO-GID-178554",
+      "areaM2": 1804.9411374448446,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "BR-RIBEIRAO-PRETO-GID-178555",
+      "areaM2": 1804.9411374448446,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "BR-RIBEIRAO-PRETO-GID-178556",
+      "areaM2": 1804.9411374448446,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "BR-RIBEIRAO-PRETO-GID-178557",
+      "areaM2": 1804.9411374448446,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "BR-RIBEIRAO-PRETO-GID-178558",
+      "areaM2": 1804.9411374448446,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "BR-RIBEIRAO-PRETO-GID-178559",
+      "areaM2": 1804.9411374448446,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "BR-RIBEIRAO-PRETO-GID-178560",
+      "areaM2": 1804.9411374448446,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "BR-RIBEIRAO-PRETO-GID-178561",
+      "areaM2": 1804.9411374448446,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "BR-RIBEIRAO-PRETO-GID-178562",
+      "areaM2": 1804.9411374448446,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "BR-RIBEIRAO-PRETO-GID-178563",
+      "areaM2": 1804.9411374448446,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "BR-RIBEIRAO-PRETO-GID-178564",
+      "areaM2": 1804.9411374448446,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "BR-RIBEIRAO-PRETO-GID-178565",
+      "areaM2": 1804.9411374448446,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "BR-RIBEIRAO-PRETO-GID-178566",
+      "areaM2": 1804.9411374448446,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "BR-RIBEIRAO-PRETO-GID-178567",
+      "areaM2": 1804.9411374448446,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "BR-RIBEIRAO-PRETO-GID-178568",
+      "areaM2": 1804.9411374448446,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "BR-RIBEIRAO-PRETO-GID-178569",
+      "areaM2": 1804.9411374448446,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "BR-RIBEIRAO-PRETO-GID-178570",
+      "areaM2": 1804.9411374448446,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "BR-RIBEIRAO-PRETO-GID-178571",
+      "areaM2": 1804.9411374448446,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "BR-RIBEIRAO-PRETO-GID-178572",
+      "areaM2": 1804.9411374448446,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "BR-RIBEIRAO-PRETO-GID-178573",
+      "areaM2": 1804.9411374448446,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "BR-RIBEIRAO-PRETO-GID-178574",
+      "areaM2": 1804.9411374448446,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "BR-RIBEIRAO-PRETO-GID-178575",
+      "areaM2": 1804.9411374448446,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "BR-RIBEIRAO-PRETO-GID-178576",
+      "areaM2": 1804.9411374448446,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "BR-RIBEIRAO-PRETO-GID-178577",
+      "areaM2": 1804.9411374448446,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "BR-RIBEIRAO-PRETO-GID-178578",
+      "areaM2": 1804.9411374448446,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "BR-RIBEIRAO-PRETO-GID-178579",
+      "areaM2": 249.99942086229157,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "BR-RIBEIRAO-PRETO-GID-178580",
+      "areaM2": 250.0013770464061,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "BR-RIBEIRAO-PRETO-GID-178581",
+      "areaM2": 249.99903354060464,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "BR-RIBEIRAO-PRETO-GID-178582",
+      "areaM2": 250.000202922338,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "BR-RIBEIRAO-PRETO-GID-178583",
+      "areaM2": 125.00030120076087,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "BR-RIBEIRAO-PRETO-GID-178584",
+      "areaM2": 124.9989278828778,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "BR-RIBEIRAO-PRETO-GID-178591",
+      "areaM2": 259.1827549885852,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "BR-RIBEIRAO-PRETO-GID-178592",
+      "areaM2": 198.00165338861297,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "BR-RIBEIRAO-PRETO-GID-178603",
+      "areaM2": 115.94531493096278,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "BR-RIBEIRAO-PRETO-GID-178604",
+      "areaM2": 115.94531496103423,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "BR-RIBEIRAO-PRETO-GID-178606",
+      "areaM2": 179.52995088153378,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "BR-RIBEIRAO-PRETO-GID-178607",
+      "areaM2": 125.63152548996199,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "BR-RIBEIRAO-PRETO-GID-178608",
+      "areaM2": 125.92102165194824,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "BR-RIBEIRAO-PRETO-GID-178609",
+      "areaM2": 399.8988240891406,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "BR-RIBEIRAO-PRETO-GID-178610",
+      "areaM2": 118.3267919069196,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "BR-RIBEIRAO-PRETO-GID-178611",
+      "areaM2": 118.32513106100575,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "BR-RIBEIRAO-PRETO-GID-178612",
+      "areaM2": 475.0113339053234,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "BR-RIBEIRAO-PRETO-GID-178613",
+      "areaM2": 178.87895579740052,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "BR-RIBEIRAO-PRETO-GID-178614",
+      "areaM2": 185.503759593826,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "BR-RIBEIRAO-PRETO-GID-178615",
+      "areaM2": 145.75443350623942,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "BR-RIBEIRAO-PRETO-GID-178616",
+      "areaM2": 148.4024279159653,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "BR-RIBEIRAO-PRETO-GID-178617",
+      "areaM2": 143.10375288532086,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "BR-RIBEIRAO-PRETO-GID-178619",
+      "areaM2": 93.60221962816948,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "BR-RIBEIRAO-PRETO-GID-178620",
+      "areaM2": 93.60240977702365,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "BR-RIBEIRAO-PRETO-GID-178621",
+      "areaM2": 134.85223849543053,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "BR-RIBEIRAO-PRETO-GID-178622",
+      "areaM2": 1135.9411578323095,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "BR-RIBEIRAO-PRETO-GID-178729",
+      "areaM2": 96.00257983046883,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "BR-RIBEIRAO-PRETO-GID-178730",
+      "areaM2": 97.20221954686798,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "BR-RIBEIRAO-PRETO-GID-178731",
+      "areaM2": 57.601284815693575,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "BR-RIBEIRAO-PRETO-GID-178732",
+      "areaM2": 174.26176813137218,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "BR-RIBEIRAO-PRETO-GID-178753",
+      "areaM2": 129.37591360557502,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "BR-RIBEIRAO-PRETO-GID-178754",
+      "areaM2": 169.60202849420807,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "BR-RIBEIRAO-PRETO-GID-178755",
+      "areaM2": 144.84651702898714,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "BR-RIBEIRAO-PRETO-GID-178756",
+      "areaM2": 142.99062792427594,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "BR-RIBEIRAO-PRETO-GID-178757",
+      "areaM2": 157.19966441430194,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "BR-RIBEIRAO-PRETO-GID-178758",
+      "areaM2": 553.2038542242551,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "BR-RIBEIRAO-PRETO-GID-178790",
+      "areaM2": 163.26598092083032,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "BR-RIBEIRAO-PRETO-GID-178735",
+      "areaM2": 263.81421063450944,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "BR-RIBEIRAO-PRETO-GID-178736",
+      "areaM2": 304.31448946129717,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "BR-RIBEIRAO-PRETO-GID-178737",
+      "areaM2": 199.7074886949611,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "BR-RIBEIRAO-PRETO-GID-178739",
+      "areaM2": 258.70607337279205,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "BR-RIBEIRAO-PRETO-GID-178789",
+      "areaM2": 112.00126843856826,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "BR-RIBEIRAO-PRETO-GID-179120",
+      "areaM2": 204.36306664346446,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "BR-RIBEIRAO-PRETO-GID-179121",
+      "areaM2": 402.99893047431357,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "BR-RIBEIRAO-PRETO-GID-179122",
+      "areaM2": 245.20917740125867,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "BR-RIBEIRAO-PRETO-GID-179123",
+      "areaM2": 259.71114839254926,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "BR-RIBEIRAO-PRETO-GID-179124",
+      "areaM2": 1003.5065616558195,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "BR-RIBEIRAO-PRETO-GID-179125",
+      "areaM2": 664.1659169367595,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "BR-RIBEIRAO-PRETO-GID-179126",
+      "areaM2": 1166.9883967383012,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "BR-RIBEIRAO-PRETO-GID-179127",
+      "areaM2": 1043.9451027524015,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "BR-RIBEIRAO-PRETO-GID-179139",
+      "areaM2": 2009.2873974011156,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "BR-RIBEIRAO-PRETO-GID-179140",
+      "areaM2": 863.8928986035169,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "BR-RIBEIRAO-PRETO-GID-179141",
+      "areaM2": 264.50801875894155,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "BR-RIBEIRAO-PRETO-GID-179142",
+      "areaM2": 251.68880153105724,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "BR-RIBEIRAO-PRETO-GID-179143",
+      "areaM2": 216.95144805258707,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "BR-RIBEIRAO-PRETO-GID-179144",
+      "areaM2": 230.55780733689224,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "BR-RIBEIRAO-PRETO-GID-179145",
+      "areaM2": 229.36971186871912,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "BR-RIBEIRAO-PRETO-GID-179244",
+      "areaM2": 553.3236467830575,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "BR-RIBEIRAO-PRETO-GID-179245",
+      "areaM2": 154.2912790511354,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "BR-RIBEIRAO-PRETO-GID-179246",
+      "areaM2": 241.9524096413802,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "BR-RIBEIRAO-PRETO-GID-179247",
+      "areaM2": 303.85322664128887,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "BR-RIBEIRAO-PRETO-GID-179248",
+      "areaM2": 75.45543819485606,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "BR-RIBEIRAO-PRETO-GID-179249",
+      "areaM2": 240.19407306853407,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "BR-RIBEIRAO-PRETO-GID-179250",
+      "areaM2": 127.01091295360416,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "BR-RIBEIRAO-PRETO-GID-179251",
+      "areaM2": 71.55848171017871,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "BR-RIBEIRAO-PRETO-GID-179252",
+      "areaM2": 317.4022324544134,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "BR-RIBEIRAO-PRETO-GID-179253",
+      "areaM2": 138.00019009062618,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "BR-RIBEIRAO-PRETO-GID-179254",
+      "areaM2": 138.00186870385005,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "BR-RIBEIRAO-PRETO-GID-179257",
+      "areaM2": 111.58279325755956,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "BR-RIBEIRAO-PRETO-GID-179261",
+      "areaM2": 1276.3185093499965,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "BR-RIBEIRAO-PRETO-GID-179262",
+      "areaM2": 162.951587510845,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "BR-RIBEIRAO-PRETO-GID-179263",
+      "areaM2": 239.53264042159975,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "BR-RIBEIRAO-PRETO-GID-179264",
+      "areaM2": 90.04999626270876,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "BR-RIBEIRAO-PRETO-GID-179265",
+      "areaM2": 211.49517470259036,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "BR-RIBEIRAO-PRETO-GID-179266",
+      "areaM2": 105.61930607352767,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "BR-RIBEIRAO-PRETO-GID-179267",
+      "areaM2": 101.55605657795722,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "BR-RIBEIRAO-PRETO-GID-179268",
+      "areaM2": 163.8911458461939,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "BR-RIBEIRAO-PRETO-GID-179269",
+      "areaM2": 376.5435777412206,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "BR-RIBEIRAO-PRETO-GID-179270",
+      "areaM2": 170.53667658286915,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "BR-RIBEIRAO-PRETO-GID-179271",
+      "areaM2": 170.1480665140976,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "BR-RIBEIRAO-PRETO-GID-179272",
+      "areaM2": 327.67246772142767,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "BR-RIBEIRAO-PRETO-GID-179273",
+      "areaM2": 276.8918460496576,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "BR-RIBEIRAO-PRETO-GID-179274",
+      "areaM2": 158.23829429828163,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "BR-RIBEIRAO-PRETO-GID-179275",
+      "areaM2": 178.02716495352857,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "BR-RIBEIRAO-PRETO-GID-179276",
+      "areaM2": 338.05653184435386,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "BR-RIBEIRAO-PRETO-GID-179304",
+      "areaM2": 198.02765022481344,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "BR-RIBEIRAO-PRETO-GID-179305",
+      "areaM2": 126.74409007110368,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "BR-RIBEIRAO-PRETO-GID-179306",
+      "areaM2": 99.3326263375244,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "BR-RIBEIRAO-PRETO-GID-179307",
+      "areaM2": 127.22754551472326,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "BR-RIBEIRAO-PRETO-GID-179308",
+      "areaM2": 165.4118569876593,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "BR-RIBEIRAO-PRETO-GID-179309",
+      "areaM2": 293.3847804037327,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "BR-RIBEIRAO-PRETO-GID-178659",
+      "areaM2": 243.95715053692103,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "BR-RIBEIRAO-PRETO-GID-178660",
+      "areaM2": 192.7060181240883,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "BR-RIBEIRAO-PRETO-GID-178661",
+      "areaM2": 272.09226774392835,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "BR-RIBEIRAO-PRETO-GID-178662",
+      "areaM2": 159.2775324780726,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "BR-RIBEIRAO-PRETO-GID-178663",
+      "areaM2": 123.85113038468924,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "BR-RIBEIRAO-PRETO-GID-178664",
+      "areaM2": 132.74916511934637,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "BR-RIBEIRAO-PRETO-GID-178665",
+      "areaM2": 152.6530135798756,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "BR-RIBEIRAO-PRETO-GID-178666",
+      "areaM2": 231.36533733179877,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "BR-RIBEIRAO-PRETO-GID-178667",
+      "areaM2": 544.6444507204208,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "BR-RIBEIRAO-PRETO-GID-178668",
+      "areaM2": 167.81239556505002,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "BR-RIBEIRAO-PRETO-GID-178669",
+      "areaM2": 174.55753212638427,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "BR-RIBEIRAO-PRETO-GID-178791",
+      "areaM2": 149.1779237211144,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "BR-RIBEIRAO-PRETO-GID-178792",
+      "areaM2": 150.00088257046798,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "BR-RIBEIRAO-PRETO-GID-178793",
+      "areaM2": 300.00313724454816,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "BR-RIBEIRAO-PRETO-GID-178794",
+      "areaM2": 150.00085167118473,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "BR-RIBEIRAO-PRETO-GID-178795",
+      "areaM2": 150.0021190281916,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "BR-RIBEIRAO-PRETO-GID-178796",
+      "areaM2": 300.00277311996194,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "BR-RIBEIRAO-PRETO-GID-178797",
+      "areaM2": 262.90943872745413,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "BR-RIBEIRAO-PRETO-GID-178798",
+      "areaM2": 209.58041463673166,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "BR-RIBEIRAO-PRETO-GID-178799",
+      "areaM2": 177.4113817342959,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "BR-RIBEIRAO-PRETO-GID-178800",
+      "areaM2": 140.68695703980632,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "BR-RIBEIRAO-PRETO-GID-178801",
+      "areaM2": 179.78178457130966,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "BR-RIBEIRAO-PRETO-GID-178802",
+      "areaM2": 179.78053211249625,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "BR-RIBEIRAO-PRETO-GID-178803",
+      "areaM2": 123.26161930662482,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "BR-RIBEIRAO-PRETO-GID-178825",
+      "areaM2": 130.61823534261515,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "BR-RIBEIRAO-PRETO-GID-178827",
+      "areaM2": 562.5339207840583,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "BR-RIBEIRAO-PRETO-GID-178828",
+      "areaM2": 553.5280486094837,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "BR-RIBEIRAO-PRETO-GID-178829",
+      "areaM2": 585.7238258345596,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "BR-RIBEIRAO-PRETO-GID-178830",
+      "areaM2": 306.85973045312477,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "BR-RIBEIRAO-PRETO-GID-179151",
+      "areaM2": 332.23223154316486,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "BR-RIBEIRAO-PRETO-GID-179152",
+      "areaM2": 331.25480076529846,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "BR-RIBEIRAO-PRETO-GID-179153",
+      "areaM2": 201.45592440924855,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "BR-RIBEIRAO-PRETO-GID-179154",
+      "areaM2": 229.0334788255341,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "BR-RIBEIRAO-PRETO-GID-179155",
+      "areaM2": 172.64018149965153,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "BR-RIBEIRAO-PRETO-GID-179156",
+      "areaM2": 40.49994088828609,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "BR-RIBEIRAO-PRETO-GID-179157",
+      "areaM2": 122.43628733976188,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "BR-RIBEIRAO-PRETO-GID-179159",
+      "areaM2": 216.00329233659014,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "BR-RIBEIRAO-PRETO-GID-179160",
+      "areaM2": 169.79045759488244,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "BR-RIBEIRAO-PRETO-GID-179161",
+      "areaM2": 268.8252585108645,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "BR-RIBEIRAO-PRETO-GID-179167",
+      "areaM2": 129.60073642200075,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "BR-RIBEIRAO-PRETO-GID-179168",
+      "areaM2": 129.6024253366541,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "BR-RIBEIRAO-PRETO-GID-241517",
+      "areaM2": 1016.4100558633104,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "BR-RIBEIRAO-PRETO-GID-177123",
+      "areaM2": 180.25702545517066,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "BR-RIBEIRAO-PRETO-GID-177169",
+      "areaM2": 902.3865224841899,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "BR-RIBEIRAO-PRETO-GID-177170",
+      "areaM2": 1199.644684353868,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "BR-RIBEIRAO-PRETO-GID-178768",
+      "areaM2": 746.8090755519299,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "BR-RIBEIRAO-PRETO-GID-178769",
+      "areaM2": 783.448119833088,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "BR-RIBEIRAO-PRETO-GID-178770",
+      "areaM2": 2043.9935460999143,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "BR-RIBEIRAO-PRETO-GID-178771",
+      "areaM2": 202.50234458274974,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "BR-RIBEIRAO-PRETO-GID-178772",
+      "areaM2": 144.50252033721193,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "BR-RIBEIRAO-PRETO-GID-178773",
+      "areaM2": 105.50043629145485,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "BR-RIBEIRAO-PRETO-GID-178774",
+      "areaM2": 250.00397276959234,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "BR-RIBEIRAO-PRETO-GID-178775",
+      "areaM2": 185.5026801594351,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "BR-RIBEIRAO-PRETO-GID-178776",
+      "areaM2": 209.6288425801946,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "BR-RIBEIRAO-PRETO-GID-178777",
+      "areaM2": 111.00136430420243,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "BR-RIBEIRAO-PRETO-GID-178778",
+      "areaM2": 160.05290019594284,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "BR-RIBEIRAO-PRETO-GID-178779",
+      "areaM2": 244.44396606648792,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "BR-RIBEIRAO-PRETO-GID-178780",
+      "areaM2": 305.5538170506414,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "BR-RIBEIRAO-PRETO-GID-178781",
+      "areaM2": 190.60722086740404,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "BR-RIBEIRAO-PRETO-GID-178782",
+      "areaM2": 549.354429468513,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "BR-RIBEIRAO-PRETO-GID-178783",
+      "areaM2": 273.7818669114056,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "BR-RIBEIRAO-PRETO-GID-178784",
+      "areaM2": 267.77228965403833,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "BR-RIBEIRAO-PRETO-GID-178785",
+      "areaM2": 123.00045699524878,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "BR-RIBEIRAO-PRETO-GID-178786",
+      "areaM2": 127.00132249072026,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "BR-RIBEIRAO-PRETO-GID-178787",
+      "areaM2": 150.0153205465091,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "BR-RIBEIRAO-PRETO-GID-178788",
+      "areaM2": 136.00818192910333,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "BR-RIBEIRAO-PRETO-GID-179128",
+      "areaM2": 123.488756634252,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "BR-RIBEIRAO-PRETO-GID-179129",
+      "areaM2": 103.26094867212389,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "BR-RIBEIRAO-PRETO-GID-179130",
+      "areaM2": 225.36615505960057,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "BR-RIBEIRAO-PRETO-GID-179131",
+      "areaM2": 70.00539754218886,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "BR-RIBEIRAO-PRETO-GID-179132",
+      "areaM2": 146.88659277724835,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "BR-RIBEIRAO-PRETO-GID-179133",
+      "areaM2": 250.81907055032497,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "BR-RIBEIRAO-PRETO-GID-179134",
+      "areaM2": 125.40858213140767,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "BR-RIBEIRAO-PRETO-GID-179135",
+      "areaM2": 93.94632665685265,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "BR-RIBEIRAO-PRETO-GID-179136",
+      "areaM2": 96.8078016431703,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "BR-RIBEIRAO-PRETO-GID-179137",
+      "areaM2": 165.01167912614687,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "BR-RIBEIRAO-PRETO-GID-179138",
+      "areaM2": 137.61179212102456,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "BR-RIBEIRAO-PRETO-GID-179199",
+      "areaM2": 69.3611056065069,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "BR-RIBEIRAO-PRETO-GID-179200",
+      "areaM2": 121.11630618066427,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "BR-RIBEIRAO-PRETO-GID-179201",
+      "areaM2": 159.8553853117952,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "BR-RIBEIRAO-PRETO-GID-178431",
+      "areaM2": 8925.34427107837,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "BR-RIBEIRAO-PRETO-GID-178432",
+      "areaM2": 4690.2955746509315,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "BR-RIBEIRAO-PRETO-GID-178433",
+      "areaM2": 652.8123017731637,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "BR-RIBEIRAO-PRETO-GID-178434",
+      "areaM2": 316.80580298746827,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "BR-RIBEIRAO-PRETO-GID-178435",
+      "areaM2": 316.8088039326546,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "BR-RIBEIRAO-PRETO-GID-178436",
+      "areaM2": 852.1622107681139,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "BR-RIBEIRAO-PRETO-GID-178437",
+      "areaM2": 1323.9517699814028,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "BR-RIBEIRAO-PRETO-GID-178438",
+      "areaM2": 91.93887768627906,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "BR-RIBEIRAO-PRETO-GID-178439",
+      "areaM2": 141.12248276633076,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "BR-RIBEIRAO-PRETO-GID-178440",
+      "areaM2": 169.9508096691348,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "BR-RIBEIRAO-PRETO-GID-178441",
+      "areaM2": 154.00343401432104,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "BR-RIBEIRAO-PRETO-GID-178460",
+      "areaM2": 81.45705951172413,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "BR-RIBEIRAO-PRETO-GID-178461",
+      "areaM2": 93.25769527888836,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "BR-RIBEIRAO-PRETO-GID-178462",
+      "areaM2": 189.3519258770401,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "BR-RIBEIRAO-PRETO-GID-178463",
+      "areaM2": 157.73584739586138,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "BR-RIBEIRAO-PRETO-GID-178464",
+      "areaM2": 227.97104602732986,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "BR-RIBEIRAO-PRETO-GID-178465",
+      "areaM2": 121.70400245450932,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "BR-RIBEIRAO-PRETO-GID-179217",
+      "areaM2": 186.84634133205057,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "BR-RIBEIRAO-PRETO-GID-179227",
+      "areaM2": 187.0173499893407,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "BR-RIBEIRAO-PRETO-GID-179228",
+      "areaM2": 134.35898446067623,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "BR-RIBEIRAO-PRETO-GID-179283",
+      "areaM2": 165.2803030218393,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "BR-RIBEIRAO-PRETO-GID-179284",
+      "areaM2": 166.8314088343184,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "BR-RIBEIRAO-PRETO-GID-179285",
+      "areaM2": 171.2237322101743,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "BR-RIBEIRAO-PRETO-GID-179287",
+      "areaM2": 314.8196104415195,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "BR-RIBEIRAO-PRETO-GID-179288",
+      "areaM2": 263.2959314709895,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "BR-RIBEIRAO-PRETO-GID-179289",
+      "areaM2": 292.8512912495912,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "BR-RIBEIRAO-PRETO-GID-179290",
+      "areaM2": 134.42403647574446,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "BR-RIBEIRAO-PRETO-GID-179291",
+      "areaM2": 174.91714772650914,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "BR-RIBEIRAO-PRETO-GID-179292",
+      "areaM2": 93.1156229256855,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "BR-RIBEIRAO-PRETO-GID-179293",
+      "areaM2": 117.5851590979916,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "BR-RIBEIRAO-PRETO-GID-179294",
+      "areaM2": 94.82636628765391,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "BR-RIBEIRAO-PRETO-GID-179295",
+      "areaM2": 106.6916791055794,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "BR-RIBEIRAO-PRETO-GID-179298",
+      "areaM2": 72.92062146462122,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "BR-RIBEIRAO-PRETO-GID-179367",
+      "areaM2": 240.00078079470384,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "BR-RIBEIRAO-PRETO-GID-179368",
+      "areaM2": 336.0007428177475,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "BR-RIBEIRAO-PRETO-GID-179369",
+      "areaM2": 331.2753106405917,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "BR-RIBEIRAO-PRETO-GID-179370",
+      "areaM2": 202.37716394164727,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "BR-RIBEIRAO-PRETO-GID-179371",
+      "areaM2": 776.5940284591525,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "BR-RIBEIRAO-PRETO-GID-179372",
+      "areaM2": 122.98165857771865,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "BR-RIBEIRAO-PRETO-GID-179373",
+      "areaM2": 121.00577629555416,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "BR-RIBEIRAO-PRETO-GID-179374",
+      "areaM2": 101.27092695352192,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "BR-RIBEIRAO-PRETO-GID-179375",
+      "areaM2": 69.22853005886832,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "BR-RIBEIRAO-PRETO-GID-179376",
+      "areaM2": 89.53848164172551,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "BR-RIBEIRAO-PRETO-GID-179377",
+      "areaM2": 83.35708868338769,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "BR-RIBEIRAO-PRETO-GID-179378",
+      "areaM2": 367.1432325719463,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "BR-RIBEIRAO-PRETO-GID-179535",
+      "areaM2": 104.62281436595572,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "BR-RIBEIRAO-PRETO-GID-179536",
+      "areaM2": 78.2022065362313,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "BR-RIBEIRAO-PRETO-GID-179537",
+      "areaM2": 107.32760419104329,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "BR-RIBEIRAO-PRETO-GID-179538",
+      "areaM2": 75.16795098733803,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "BR-RIBEIRAO-PRETO-GID-179539",
+      "areaM2": 210.50517758773861,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "BR-RIBEIRAO-PRETO-GID-179540",
+      "areaM2": 222.53764619173953,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "BR-RIBEIRAO-PRETO-GID-179541",
+      "areaM2": 347.1961906971927,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "BR-RIBEIRAO-PRETO-GID-179542",
+      "areaM2": 125.05989288835787,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "BR-RIBEIRAO-PRETO-GID-179543",
+      "areaM2": 137.56858679596147,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "BR-RIBEIRAO-PRETO-GID-179544",
+      "areaM2": 51.82112108449748,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "BR-RIBEIRAO-PRETO-GID-179547",
+      "areaM2": 185.81617644913658,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "BR-RIBEIRAO-PRETO-GID-179548",
+      "areaM2": 210.50986794867234,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "BR-RIBEIRAO-PRETO-GID-179549",
+      "areaM2": 378.004691305832,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "BR-RIBEIRAO-PRETO-GID-179550",
+      "areaM2": 87.18764698675328,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "BR-RIBEIRAO-PRETO-GID-179551",
+      "areaM2": 86.52199853412128,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    }
+  ],
+  "exactDuplicateGeometryPairCount": 12462,
+  "positiveAreaOverlapPairCountAbove0_01M2": 12467,
+  "retainedPairExamplesLimit": 20,
+  "pairAuditScope": "Every candidate pair was checked; reported total counts are complete. At most20examples of each category are retained here; sumPairwiseOverlapM2 counts stacked pairwise area, not geographical extent."
+}

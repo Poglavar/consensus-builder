@@ -1,0 +1,83 @@
+{
+  "name": "Kharkiv",
+  "country": "Ukraine",
+  "countryCode": "UA",
+  "rank": 394,
+  "point": [
+    49.9875116472834,
+    36.2663445587846
+  ],
+  "freshResearch": {
+    "queries": [
+      {
+        "language": "English",
+        "query": "Kharkiv official cadastral map land registry GIS parcel map Ukraine Держгеокадастр кадастрова карта Харків офіційний",
+        "scope": "Find official local cadastral registry/map evidence and test anonymous parcel geometry access.",
+        "result": "City-specific municipal urban-planning cadastre is documented, but reviewed public city layers contain no parcel geometry. The state public cadastral map was reported unavailable; the national geoportal redirects to login. No anonymous, safe, city parcel geometry route was verified.",
+        "actualResultUrls": [
+          "https://dma.city.kharkiv.ua/pro-kadastr/",
+          "https://smart.khmr.gov.ua/opendataportal",
+          "https://kharkivska.land.gov.ua/info/administratyvni-posluhy-holovnoho-upravlinnia-derzhheokadastru-u-kharkivskii-oblasti/"
+        ],
+        "executionMethod": "Separate English and local-language web searches followed by official portal and bounded public service review."
+      },
+      {
+        "language": "Ukrainian",
+        "query": "Харків офіційна кадастрова карта земельні ділянки Держгеокадастр Харківська міська рада земельний кадастр",
+        "scope": "Find official local cadastral registry/map evidence and test anonymous parcel geometry access.",
+        "result": "City-specific municipal urban-planning cadastre is documented, but reviewed public city layers contain no parcel geometry. The state public cadastral map was reported unavailable; the national geoportal redirects to login. No anonymous, safe, city parcel geometry route was verified.",
+        "actualResultUrls": [
+          "https://dma.city.kharkiv.ua/pro-kadastr/",
+          "https://smart.khmr.gov.ua/opendataportal",
+          "https://kharkivska.land.gov.ua/info/administratyvni-posluhy-holovnoho-upravlinnia-derzhheokadastru-u-kharkivskii-oblasti/"
+        ],
+        "executionMethod": "Separate English and local-language web searches followed by official portal and bounded public service review."
+      }
+    ]
+  },
+  "status": "complete",
+  "verifiedParcelResponse": null,
+  "source": {
+    "sourceId": "UA-3991-PUBLIC-CADASTRE",
+    "name": "Kharkiv municipal urban-planning cadastre and State GeoCadastre public map",
+    "url": "https://dma.city.kharkiv.ua/pro-kadastr/",
+    "operator": "Kharkiv City Council Department of Urban Planning and Architecture; State GeoCadastre (Kharkiv region)",
+    "serviceType": "Municipal cadastral information service; public city thematic map; state parcel-map service currently unavailable/restricted",
+    "layer": "Kharkiv municipal urban-planning cadastre and State GeoCadastre public map",
+    "geometryType": "Not verified",
+    "outputCrs": null,
+    "nativeIdField": "No parcel identifier returned anonymously",
+    "nativeIdEvidence": "Kharkiv municipal cadastre exists, but this review verified no public parcel-vector coverage at the WUP point; the open city map exposes non-parcel municipal themes."
+  },
+  "coverageAssessment": {
+    "claimedScope": "Kharkiv municipal cadastre exists, but this review verified no public parcel-vector coverage at the WUP point; the open city map exposes non-parcel municipal themes.",
+    "verifiedOpenScope": "Kharkiv municipal cadastre exists, but this review verified no public parcel-vector coverage at the WUP point; the open city map exposes non-parcel municipal themes.",
+    "countrywideVerified": false
+  },
+  "registryFound": true,
+  "verifiedSample": false,
+  "resultCategory": "official_cadastral_registry_geometry_not_verified",
+  "technicalBlocker": "City-specific municipal urban-planning cadastre is documented, but reviewed public city layers contain no parcel geometry. The state public cadastral map was reported unavailable; the national geoportal redirects to login. No anonymous, safe, city parcel geometry route was verified.",
+  "remainingUncertainty": "Citywide coverage and completeness are not established; this record is limited to the reviewed public source and WUP-point vicinity.",
+  "nextStep": "Recheck only if the official provider publishes an anonymous, safe vector feature endpoint or map-backed city-center hierarchy.",
+  "schemaVersion": 1,
+  "checkedAt": "2026-10-09",
+  "wupCityCode": 3991,
+  "cityId": "wup2025:3991",
+  "runtimeReadiness": "not_enabled_no_verified_public_geometry",
+  "adapterReady": false,
+  "centerLatLon": [
+    49.9875116472834,
+    36.2663445587846
+  ],
+  "population2025k": 1308.892,
+  "populationUnit": "persons",
+  "queueRank": 394,
+  "population2025": 1308892,
+  "populationPlausibility2025": "High",
+  "pointBasis": "UN WUP 2025 population-weighted settlement centroid; this is not a municipal boundary or a parcel-coverage claim.",
+  "publicParcelGeometryFound": false,
+  "sourceIds": [],
+  "registryBasis": "Kharkiv City Council describes its municipal urban-planning cadastre; the regional State GeoCadastre page describes local state cadastral information services. Neither establishes anonymous parcel-vector coverage.",
+  "rootReviewedAt": "2026-10-08T23:30:20.283150+00:00"
+}

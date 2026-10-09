@@ -1,0 +1,101 @@
+{
+  "name": "Kikwit",
+  "country": "Democratic Republic of the Congo",
+  "countryCode": "CD",
+  "rank": 1003,
+  "point": [
+    -5.04636001307394,
+    18.8157153663698
+  ],
+  "freshResearch": {
+    "queries": [
+      {
+        "language": "English",
+        "query": "Kikwit Democratic Republic of Congo official land registry cadastre map parcel GIS cadastral",
+        "scope": "Identify current first-party local registry/cadastre and safe public parcel geometry.",
+        "result": "The official Ministry of Land Affairs lists Kikwit I and Kikwit II as land/cadastral jurisdictions in Kwilu. The official public-services catalogue describes cadastral and property-register access through the Conservateur des Titres Immobiliers or Cadastre Division, via formal paid requests. No public map or anonymous feature endpoint was found.",
+        "executionMethod": "Separate English-language web search followed by first-party page review."
+      },
+      {
+        "language": "French",
+        "query": "Kikwit cadastre officiel circonscription foncière titres immobiliers Kwilu parcelles",
+        "scope": "Find first-party local-language registry, cadastral map or land-service evidence, and confirm locality.",
+        "result": "The official Ministry of Land Affairs lists Kikwit I and Kikwit II as land/cadastral jurisdictions in Kwilu. The official public-services catalogue describes cadastral and property-register access through the Conservateur des Titres Immobiliers or Cadastre Division, via formal paid requests. No public map or anonymous feature endpoint was found.",
+        "executionMethod": "Separate local-language web search followed by first-party page review."
+      }
+    ],
+    "portals": [
+      {
+        "name": "Ministry of Land Affairs cadastral/land circonscriptions and registry procedures",
+        "operator": "Ministère des Affaires Foncières, Democratic Republic of the Congo",
+        "homeUrl": "https://affairesfoncieres.gouv.cd/secretariat/circonscriptions",
+        "observation": "The official Ministry of Land Affairs lists Kikwit I and Kikwit II as land/cadastral jurisdictions in Kwilu. The official public-services catalogue describes cadastral and property-register access through the Conservateur des Titres Immobiliers or Cadastre Division, via formal paid requests. No public map or anonymous feature endpoint was found."
+      }
+    ],
+    "requests": [],
+    "historicalContext": []
+  },
+  "status": "complete",
+  "verifiedParcelResponse": null,
+  "source": {
+    "sourceId": "CD-2756-LOCAL-CADASTRE-REVIEW",
+    "name": "Ministry of Land Affairs cadastral/land circonscriptions and registry procedures",
+    "url": "https://affairesfoncieres.gouv.cd/secretariat/circonscriptions",
+    "operator": "Ministère des Affaires Foncières, Democratic Republic of the Congo",
+    "serviceType": "Official local registry/map service reviewed; no safe anonymous full-polygon response verified.",
+    "layer": null,
+    "geometryType": null,
+    "outputCrs": null,
+    "nativeIdField": null,
+    "nativeIdEvidence": null
+  },
+  "coverageAssessment": {
+    "claimedScope": "Kikwit I and Kikwit II are explicitly named in the ministry’s current jurisdiction listing; public procedures are office-based requests rather than map data. No WUP-point cadastral polygon coverage is claimed.",
+    "verifiedOpenScope": "The official Ministry of Land Affairs lists Kikwit I and Kikwit II as land/cadastral jurisdictions in Kwilu. The official public-services catalogue describes cadastral and property-register access through the Conservateur des Titres Immobiliers or Cadastre Division, via formal paid requests. No public map or anonymous feature endpoint was found.",
+    "countrywideVerified": false,
+    "citywideVerified": false
+  },
+  "registryFound": true,
+  "verifiedSample": false,
+  "resultCategory": "official_local_registry_geometry_unverified",
+  "technicalBlocker": "The ministry directly documents Kikwit I/II local cadastral and title jurisdictions. Separate paid record consultation does not establish whether anonymous geometry exists. No safe native-ID-and-full-polygon endpoint/schema was verified after the fresh searches.",
+  "remainingUncertainty": "Exact coverage at the WUP point and registered parcel presence were not verified; ministry evidence establishes local administrative registries only.",
+  "nextStep": "If the official source later exposes a documented public feature service, inspect metadata first and make only a bounded query retaining safe native IDs plus geometry.",
+  "schemaVersion": "1.0",
+  "checkedAt": "2026-10-09",
+  "wupCityCode": 2756,
+  "cityId": "wup2025:2756",
+  "runtimeReadiness": "not_enabled_no_verified_public_geometry",
+  "adapterReady": false,
+  "centerLatLon": [
+    -5.04636001307394,
+    18.8157153663698
+  ],
+  "population2025k": 549.102,
+  "populationUnit": "persons",
+  "queueRank": 1003,
+  "population2025": 549102,
+  "populationPlausibility2025": "High",
+  "pointBasis": "UN WUP 2025 population-weighted settlement centroid; this is not a municipal boundary or a parcel-coverage claim.",
+  "publicParcelGeometryFound": false,
+  "sourceIds": [],
+  "registryBasis": "The official Ministry of Land Affairs lists Kikwit I and Kikwit II as land/cadastral jurisdictions in Kwilu. The official public-services catalogue describes cadastral and property-register access through the Conservateur des Titres Immobiliers or Cadastre Division, via formal paid requests. No public map or anonymous feature endpoint was found.",
+  "registryEvidenceUrls": [
+    "https://affairesfoncieres.gouv.cd/secretariat/circonscriptions",
+    "https://servicepublic.gouv.cd/service/4671",
+    "https://servicepublic.gouv.cd/service/4642",
+    "https://www.affairesfoncieres.gouv.cd/"
+  ],
+  "runtimeAssessment": {
+    "status": "not_enabled_no_verified_public_geometry",
+    "reason": "The ministry directly documents Kikwit I/II local cadastral and title jurisdictions. Separate paid record consultation does not establish whether anonymous geometry exists. No safe native-ID-and-full-polygon endpoint/schema was verified after the fresh searches."
+  },
+  "cohort": "overnight-followon-1001-1100",
+  "priorCheck": {
+    "attemptState": "pending",
+    "attemptEvidence": [],
+    "possiblePriorMatches": []
+  },
+  "rootReviewedAt": "2026-10-09T05:45:07.249008+00:00",
+  "rootReviewNote": "Reviewed exact immutable WUP identity, separate multilingual discovery, cited city custody and actual source observations. The official Ministry of Land Affairs lists Kikwit I and Kikwit II as land/cadastral jurisdictions in Kwilu. The official public-services catalogue describes cadastral and property-register access through the Conservateur des Titres Immobiliers or Cadastre Division, via formal paid requests. No public map or anonymous feature endpoint was found."
+}

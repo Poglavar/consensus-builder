@@ -1,0 +1,84 @@
+{
+  "schemaVersion": "1.0",
+  "checkedAt": "2026-10-09",
+  "cityRecord": "city-7709-datong.json",
+  "purpose": "Read-only city parcel-source discovery; no runtime, global, catalog, or registry integration.",
+  "scopeLimits": {
+    "maxFullPolygonsRetainedInThisCityReport": 3,
+    "fullPolygonsRetained": 0,
+    "ownerOrAddressDataRetained": false,
+    "accountCredentialsOrPublicTokenValuesRetained": false
+  },
+  "assessment": "The official city bureau treats cadastral map/house-plan access as a qualifying registry-record inquiry; no open anonymous polygon endpoint is documented.",
+  "registryAssessment": "Datong’s first-party municipal natural-resources bureau documents local real-estate registration services and a city cadastral-map inquiry; cadastral maps are record copies subject to eligibility.",
+  "searchQueries": [
+    {
+      "language": "English",
+      "query": "Datong Shanxi official public cadastral map land parcel registration map GIS 大同市 自然资源局 地籍图 宗地 GIS 官方",
+      "result": "The Datong municipal natural-resources bureau site links the local online real-estate registration platform and lists a cadastral-map inquiry. Its service standard treats parcel cadastral maps/house plans as copies of registration records to be provided to eligible requesters; no free open vector service was located.",
+      "urls": [
+        "https://zrzy.dt.gov.cn/",
+        "https://zrzy.dt.gov.cn/dtsghhzrzyjzz/bslc/listN.shtml",
+        "https://zrzy.dt.gov.cn/dtsghhzrzyjzz/yshj/202412/16b6fca540764a5faaa56265fc7256f0.shtml",
+        "https://www.dt.gov.cn/dtszf/zwfw/zwfw.shtml"
+      ],
+      "method": "Separate English web search followed by official city bureau and government-service page inspection."
+    },
+    {
+      "language": "Simplified Chinese",
+      "query": "大同市 不动产登记 地籍图 宗地图 查询 大同市规划和自然资源局 官方",
+      "result": "大同市规划和自然资源局办事流程列有“地籍图查询”和“不动产登记资料查询”。该局发布的地籍图服务标准说明宗地图及房屋平面图属于不动产登记资料查阅/复制事项，须符合查询条件；未发现公开下载或匿名矢量接口。",
+      "urls": [
+        "https://zrzy.dt.gov.cn/dtsghhzrzyjzz/bslc/listN.shtml",
+        "https://zrzy.dt.gov.cn/dtsghhzrzyjzz/yshj/202412/16b6fca540764a5faaa56265fc7256f0.shtml",
+        "https://zrzy.dt.gov.cn/"
+      ],
+      "method": "Separate Simplified-Chinese search and inspection of Datong Natural Resources and Planning Bureau pages."
+    }
+  ],
+  "portals": [
+    {
+      "name": "Datong Natural Resources and Planning Bureau registration service",
+      "operator": "Datong Municipal Bureau of Natural Resources and Planning",
+      "url": "https://zrzy.dt.gov.cn/",
+      "observation": "Official city bureau lists an online real-estate registration service and local cadastral-map inquiry. The downloadable map/plan standard describes record-copy access for qualified query applicants, not open data."
+    },
+    {
+      "name": "Datong bureau service guide: cadastral map inquiry",
+      "operator": "Datong Municipal Bureau of Natural Resources and Planning",
+      "url": "https://zrzy.dt.gov.cn/dtsghhzrzyjzz/bslc/listN.shtml",
+      "observation": "Official city service list names 地籍图查询 and 不动产登记资料查询."
+    },
+    {
+      "name": "Datong cadastral-map service standard",
+      "operator": "Datong Municipal Bureau of Natural Resources and Planning",
+      "url": "https://zrzy.dt.gov.cn/dtsghhzrzyjzz/yshj/202412/16b6fca540764a5faaa56265fc7256f0.shtml",
+      "observation": "Cadastral map copies and house plans are described as registration-record access/copy requests subject to query eligibility. No open vector feed is described."
+    }
+  ],
+  "requests": [
+    {
+      "url": "https://zrzy.dt.gov.cn/dtsghhzrzyjzz/bslc/listN.shtml",
+      "method": "Official web page open",
+      "status": null,
+      "type": "text/html page content",
+      "observation": "Page content lists local land-registry and cadastral-map processes; status code not exposed by the web tool."
+    },
+    {
+      "url": "https://zrzy.dt.gov.cn/dtsghhzrzyjzz/yshj/202412/16b6fca540764a5faaa56265fc7256f0.shtml",
+      "method": "Official web page open",
+      "status": null,
+      "type": "text/html page content",
+      "observation": "Cadastral map standard opened; map-copy service belongs to qualified registration-data queries. No geometry API request was made."
+    }
+  ],
+  "decision": {
+    "registryFound": true,
+    "publicParcelGeometryFound": false,
+    "verifiedSample": false,
+    "resultCategory": "official_registry_geometry_not_public",
+    "runtimeReadiness": "not_enabled_no_verified_public_geometry"
+  },
+  "unresolved": "The local bureau service list names a cadastral map inquiry, but its qualifications, actual service UI, and any public vector route were not inspected; the exact WUP point remains unlocated to a parcel.",
+  "nextStep": "Inspect the direct city cadastral-map inquiry guidance and its access criteria; use no identity-gated/owner-specific lookup. Seek a separately documented anonymous vector source before sampling."
+}

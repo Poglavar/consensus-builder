@@ -1,0 +1,126 @@
+{
+  "name": "Port Harcourt",
+  "country": "Nigeria",
+  "countryCode": "NG",
+  "rank": 211,
+  "point": [
+    4.81889717418507,
+    7.00978537116905
+  ],
+  "freshResearch": {
+    "queries": [
+      {
+        "language": "English",
+        "query": "Port Harcourt land parcel GIS cadastral official government Rivers State Ministry of Lands and Survey",
+        "scope": "Locate current official Port Harcourt/Rivers parcel or cadastral map services.",
+        "result": "Rivers State official investment-promotion information identifies the Ministry of Lands and Survey and describes RIVLANDS as a survey-plan/title application and charting workflow. No public parcel map or anonymous geometry endpoint was found.",
+        "actualResultUrls": [
+          "https://rsipa.riversstateapps.ng/lands-and-survey/",
+          "https://www.sgriv.com/",
+          "https://riversstate.gov.ng/"
+        ],
+        "executionMethod": "Web search; English query (official language)."
+      },
+      {
+        "language": "English",
+        "query": "Port Harcourt cadastral parcel map Rivers State GIS land registry surveyor general",
+        "scope": "Check the Rivers State Surveyor-General and current land-management portal for an anonymous public map.",
+        "result": "Direct HTTP 200 inspection confirms the SGRIV landing/register/login pages are live account workflows. The official RSIPA land-service page describes deed and survey-plan submission followed by charting/site inspection and Surveyor-General approval. No public viewer or parcel geometry service was exposed.",
+        "actualResultUrls": [
+          "https://www.sgriv.com/",
+          "https://www.sgriv.com/register",
+          "https://www.sgriv.com/login",
+          "https://rsipa.riversstateapps.ng/lands-and-survey/"
+        ],
+        "executionMethod": "Web search plus direct read-only HTTP inspection of Rivers State Surveyor-General and RSIPA pages."
+      }
+    ],
+    "portals": [
+      {
+        "name": "Rivers State Ministry of Lands and Survey / RIVLANDS",
+        "operator": "Rivers State Government; the service description is published by Rivers State Investment Promotion Agency",
+        "homeUrl": "https://rsipa.riversstateapps.ng/lands-and-survey/",
+        "observation": "Official service description says applicants submit a deed and blue-copy survey plan, pay for charting/site inspection, then survey officers upload a survey and the Surveyor-General approves it. This is an application/charting workflow, not a public cadastral layer."
+      },
+      {
+        "name": "SGRIV Land Management Platform",
+        "operator": "Landing page identifies the Office of the Surveyor General, Rivers State; product footer names Prope3Solutions as developer",
+        "homeUrl": "https://www.sgriv.com/",
+        "observation": "HTTP 200 inspection confirms the live land-management platform has registration/sign-in routes but no public parcel viewer or geometry service. No applicant account or transaction was created."
+      }
+    ],
+    "requests": [
+      {
+        "url": "https://www.sgriv.com/",
+        "method": "GET",
+        "httpStatus": 200,
+        "contentType": "text/html; charset=utf-8",
+        "observation": "HTTP 200; landing page identifies the Office of Surveyor General and offers request/account entry points; no public parcel map linked."
+      },
+      {
+        "url": "https://www.sgriv.com/register",
+        "method": "GET",
+        "httpStatus": 200,
+        "contentType": "text/html; charset=utf-8",
+        "observation": "HTTP 200; registration/account workflow, no public parcel search."
+      },
+      {
+        "url": "https://www.sgriv.com/login",
+        "method": "GET",
+        "httpStatus": 200,
+        "contentType": "text/html; charset=utf-8",
+        "observation": "HTTP 200; sign-in workflow, no public parcel search."
+      },
+      {
+        "url": "https://rsipa.riversstateapps.ng/lands-and-survey/",
+        "method": "GET",
+        "httpStatus": 200,
+        "contentType": "text/html; charset=utf-8",
+        "observation": "HTTP 200; official land-service description says applicants submit a deed and survey plan for charting/site inspection; no parcel geometry response."
+      }
+    ],
+    "historicalContext": [
+      {
+        "url": "https://geospatialworld.net/article/web-based-gis-application-for-the-rivers-state-government-in-nigeria-spatial-component-of-the-e-service-portal/",
+        "observation": "A 2010 article describes a Rivers State web-mapping component for general POI categories and an administrator-only shapefile upload tool; it does not establish a current public cadastral polygon service."
+      },
+      {
+        "url": "https://businessday.ng/interview/article/nigeria-needs-n21trn-to-close-housing-deficit/",
+        "observation": "A 2024 interview reports that RIVGIS was not fully functional at the time. This secondary report is context only; current public service availability was checked through the present state/Surveyor-General portals."
+      }
+    ]
+  },
+  "status": "complete",
+  "verifiedParcelResponse": null,
+  "source": null,
+  "coverageAssessment": {
+    "claimedScope": "Rivers State land administration and survey-plan charting; official pages do not state an open public parcel-layer extent.",
+    "verifiedOpenScope": "No public parcel geometry or anonymous viewer was found on the live official service pages.",
+    "countrywideVerified": false
+  },
+  "registryFound": null,
+  "verifiedSample": false,
+  "resultCategory": "no_verified_sample_candidate_citywide",
+  "technicalBlocker": "Land-service access is through account-based and applicant-submission workflows; no public parcel map/feature endpoint was exposed.",
+  "remainingUncertainty": "Whether a separate public registry or open GIS parcel service exists outside the official pages inspected.",
+  "nextStep": "If a public parcel source is required, locate a distinct official open GIS service; otherwise this city remains without verified public full-polygon parcel access.",
+  "schemaVersion": 1,
+  "checkedAt": "2026-10-09",
+  "wupCityCode": 7434,
+  "cityId": "wup2025:7434",
+  "runtimeReadiness": "not_enabled_no_verified_public_geometry",
+  "adapterReady": false,
+  "centerLatLon": [
+    4.81889717418507,
+    7.00978537116905
+  ],
+  "queueRank": 211,
+  "population2025": 2341445,
+  "populationPlausibility2025": "Moderate",
+  "populationUnit": "persons",
+  "pointBasis": "UN WUP 2025 population-weighted settlement centroid; this is not a municipal boundary or a parcel-coverage claim.",
+  "publicParcelGeometryFound": false,
+  "rootReviewedAt": "2026-10-08T20:54:18.632578+00:00",
+  "sourceIds": [],
+  "registryBasis": "Current official land-administration and applicant charting workflows are confirmed, but city-specific public registry/map presence is unestablished."
+}

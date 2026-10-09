@@ -1,0 +1,105 @@
+{
+  "name": "Oyo",
+  "country": "Nigeria",
+  "countryCode": "NG",
+  "rank": 668,
+  "point": [
+    7.84515460139767,
+    3.93411663086072
+  ],
+  "population2025": 793241,
+  "populationUnit": "persons",
+  "population2025k": 793.241,
+  "populationPlausibility2025": "Moderate",
+  "schemaVersion": 1,
+  "checkedAt": "2026-10-09",
+  "status": "complete",
+  "registryFound": true,
+  "registryBasis": "City-local evidence is explicit: the Oyo State Ministry of Lands lists an implemented “Oyo Town GRA, Oyo” land-allocation service, with plot selection, allocation letter and Certificate of Occupancy workflow; its current Land Use Charge table separately lists Oyo West and Oyo East property records. This supports a local government property-record/land service for Oyo town, distinct from Ibadan and the state namesake. It does not establish a general citywide cadastral polygon layer, exact WUP-locator jurisdiction, or anonymous parcel geometry.",
+  "registryEvidenceUrls": [
+    "https://lands.oyostate.gov.ng/land-application.html",
+    "https://lands.oyostate.gov.ng/land-use-charge.html",
+    "https://lands.oyostate.gov.ng/oyo-giss.html"
+  ],
+  "publicParcelGeometryFound": false,
+  "verifiedSample": false,
+  "verifiedParcelResponse": {
+    "url": null,
+    "httpStatus": null,
+    "contentType": null,
+    "featureType": null,
+    "nativeCrs": null,
+    "responseCount": 0,
+    "responseNumberMatched": "not queried",
+    "requestLimit": 0,
+    "requestFilter": "No anonymous safe polygon feature query was made or verified.",
+    "requestedFields": [],
+    "safeFieldsRetained": [],
+    "featureIds": [],
+    "nativeParcelIdentifier": null,
+    "wupPointContained": null,
+    "sampleGeometryFile": null,
+    "sampleSha256": null,
+    "limitations": "No public parcel polygon or native parcel ID was retrieved."
+  },
+  "freshResearch": {
+    "queries": [
+      {
+        "language": "Yoruba",
+        "query": "Oyo ilu ilẹ̀ ilẹ̀ cadastral map ìforúkọsílẹ̀ ilẹ̀ GIS osise Oyo State Nigeria",
+        "scope": "Locate a city-local land registry/cadastre and verify whether anonymous safe parcel geometry is available.",
+        "result": "Root-review follow-up checked the official Oyo State Ministry of Lands service pages for Oyo Town (the Nigerian city). The GRA service explicitly lists Oyo Town GRA and describes online plot selection/allocation/Certificate of Occupancy workflow; the Land Use Charge table separately lists Oyo West and Oyo East. This is local property-record/land service evidence, not parcel polygon coverage. No name, survey-plan, property, or address lookup was made.",
+        "actualResultUrls": [
+          "https://lands.oyostate.gov.ng/land-application.html",
+          "https://lands.oyostate.gov.ng/land-use-charge.html",
+          "https://lands.oyostate.gov.ng/oyo-giss.html"
+        ],
+        "executionMethod": "Separate Yoruba and English searches, then direct review of official Oyo State Ministry of Lands service pages identifying Oyo Town GRA and Oyo East/West entries. No named-property or survey-plan search was submitted."
+      },
+      {
+        "language": "English",
+        "query": "Oyo Nigeria official cadastral parcel map land registry survey map Oyo town",
+        "scope": "Locate a city-local land registry/cadastre and verify whether anonymous safe parcel geometry is available.",
+        "result": "Root-review follow-up checked the official Oyo State Ministry of Lands service pages for Oyo Town (the Nigerian city). The GRA service explicitly lists Oyo Town GRA and describes online plot selection/allocation/Certificate of Occupancy workflow; the Land Use Charge table separately lists Oyo West and Oyo East. This is local property-record/land service evidence, not parcel polygon coverage. No name, survey-plan, property, or address lookup was made.",
+        "actualResultUrls": [
+          "https://lands.oyostate.gov.ng/land-application.html",
+          "https://lands.oyostate.gov.ng/land-use-charge.html",
+          "https://lands.oyostate.gov.ng/oyo-giss.html"
+        ],
+        "executionMethod": "Separate Yoruba and English searches, then direct review of official Oyo State Ministry of Lands service pages identifying Oyo Town GRA and Oyo East/West entries. No named-property or survey-plan search was submitted."
+      }
+    ]
+  },
+  "scopeLimits": "Oyo Town land-allocation and Oyo East/West property-record services are verified, but no general citywide cadastral polygon layer, exact WUP-locator jurisdiction, or anonymous geometry endpoint was verified.",
+  "pointBasis": "UN WUP 2025 population-weighted settlement centroid; this is not a municipal boundary or a parcel-coverage claim.",
+  "source": {
+    "sourceId": "NG-3114-LOCAL-CADASTRE-REGISTRY",
+    "name": "Oyo State Ministry of Lands: Oyo Town GRA and Land Use Charge services",
+    "url": "https://lands.oyostate.gov.ng/land-application.html",
+    "operator": "Oyo State Ministry of Lands, Housing & Urban Development / Office of the Surveyor General",
+    "serviceType": "Official local property-record and land-allocation/title services; no anonymous parcel feature endpoint verified",
+    "layer": null,
+    "geometryType": null,
+    "outputCrs": null,
+    "nativeIdField": null,
+    "nativeIdEvidence": "No public parcel feature response or safe native parcel identifier was retrieved."
+  },
+  "wupCityCode": 3114,
+  "cityId": "wup2025:3114",
+  "queueRank": 668,
+  "sourceIds": [],
+  "adapterReady": false,
+  "runtimeReadiness": "not_enabled_no_verified_public_geometry",
+  "technicalBlocker": "Oyo Town land-allocation and Oyo East/West property-record services are verified, but no general citywide cadastral polygon layer, exact WUP-locator jurisdiction, or anonymous geometry endpoint was verified.",
+  "remainingUncertainty": "Whether an anonymous cadastral polygon service covers the WUP locator and broader Oyo town is unverified.",
+  "coverageAssessment": {
+    "verifiedOpenScope": "No anonymous parcel geometry response verified.",
+    "citywideVerified": false,
+    "countrywideVerified": false
+  },
+  "centerLatLon": [
+    7.84515460139767,
+    3.93411663086072
+  ],
+  "rootReviewedAt": "2026-10-09T02:33:40.013985+00:00"
+}

@@ -1,0 +1,74 @@
+{
+  "schemaVersion": "1.0",
+  "checkedAt": "2026-10-09",
+  "cityRecord": "city-4378-himeji.json",
+  "purpose": "Document first-party local registry/map evidence and bounded anonymous parcel geometry access review.",
+  "scopeLimits": {
+    "maxFullPolygonsRetainedInCityRecord": 0,
+    "maxFullPolygonsRetainedInReview": 0,
+    "maxFullPolygonsRetainedInRepository": 0,
+    "ownerOrAddressDataRetained": false,
+    "credentialsOrTokenValuesRetained": false,
+    "citywideCompletenessAsserted": false
+  },
+  "assessment": "Reviewed Himeji public GIS source is thematic/planning, not evidence of local parcel-cadastre custody.",
+  "registryAssessment": "Reviewed Himeji public GIS source is thematic/planning, not evidence of local parcel-cadastre custody.",
+  "officialPrimarySources": [
+    {
+      "url": "https://www.city.himeji.lg.jp/shisei/0000005035.html",
+      "operator": "Himeji City Government GIS page",
+      "observation": "Official city map layers cover facilities, planning, cultural assets, roads and hazards; no parcel/cadastral layer is listed."
+    }
+  ],
+  "searchQueries": [
+    {
+      "language": "Japanese",
+      "query": "姫路市 地番図 地籍図 不動産登記 地理情報システム 姫路市 公式",
+      "result": "Reviewed Himeji public GIS source is thematic/planning, not evidence of local parcel-cadastre custody.",
+      "method": "Separate local-language web search followed by official-source review.",
+      "scope": "Identify first-party local land-registry/cadastral sources and safe anonymous parcel geometry.",
+      "actualResultUrls": [
+        "https://www.city.himeji.lg.jp/shisei/0000005035.html"
+      ]
+    },
+    {
+      "language": "English",
+      "query": "Himeji City Japan official cadastral parcel map land registry GIS public map",
+      "result": "Reviewed Himeji public GIS source is thematic/planning, not evidence of local parcel-cadastre custody.",
+      "method": "Separate English-language web search followed by official-source review.",
+      "scope": "Identify first-party local land-registry/cadastral sources and safe anonymous parcel geometry.",
+      "actualResultUrls": [
+        "https://www.city.himeji.lg.jp/shisei/0000005035.html"
+      ]
+    }
+  ],
+  "geometryDecision": "No full parcel polygon retained; no safe anonymous geometry response was verified.",
+  "coverageAssessment": {
+    "claimedScope": "Reviewed Himeji public GIS source is thematic/planning, not evidence of local parcel-cadastre custody.",
+    "verifiedOpenScope": null,
+    "citywideVerified": false,
+    "countrywideVerified": false,
+    "geometryVerified": false
+  },
+  "attempts": [
+    {
+      "url": "https://www.city.himeji.lg.jp/shisei/0000005035.html",
+      "result": "Anonymous read-only GET returned HTTP 200 (text/html), 69833 bytes read; title: 公開用地理情報システム | 姫路市. SHA-256 of bytes read: 2fa61d2babd08bd16f6700db55d9ffe4b1e606b6feb0127fba4fa6d40df04fff. No cookies, credentials, or property-specific parameters were sent."
+    },
+    {
+      "url": "https://www.city.himeji.lg.jp/shisei/0000005035.html",
+      "result": "Official city map layers cover facilities, planning, cultural assets, roads and hazards; no parcel/cadastral layer is listed."
+    }
+  ],
+  "remainingUncertainty": "Exact jurisdiction/point mapping and anonymous public vector geometry remain unverified.",
+  "geometryEvidence": null,
+  "runtimeAssessment": "not enabled; root may run full adapter qualification.",
+  "rootReviewedAt": "2026-10-09T07:13:02.981057+00:00",
+  "rootReview": {
+    "checkedAt": "2026-10-09T07:13:02.981057+00:00",
+    "decision": "Reviewed city identity, canonical population/point, separate searches and saved source/request evidence. No full public parcel geometry verified in this pass.",
+    "custodyScope": "Reviewed Himeji public GIS source is thematic/planning, not evidence of local parcel-cadastre custody.",
+    "transportFailuresDoNotProveAbsence": true,
+    "geometryClaimScope": "Investigation outcome only; no worldwide or citywide absence asserted."
+  }
+}

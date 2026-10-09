@@ -1,0 +1,154 @@
+{
+  "schemaVersion": "1.0",
+  "cityId": "wup2025:8498",
+  "wupCityCode": 8498,
+  "name": "Kupang",
+  "country": "Indonesia",
+  "countryCode": "ID",
+  "rank": 1026,
+  "queueRank": 1026,
+  "point": [
+    -10.1687959816867,
+    123.620316001471
+  ],
+  "centerLatLon": [
+    -10.1687959816867,
+    123.620316001471
+  ],
+  "pointBasis": "UN WUP2025 population-weighted settlement centroid; not a municipal boundary or parcel-coverage claim.",
+  "population2025": 538998,
+  "population2025k": 538.998,
+  "populationUnit": "persons",
+  "populationPlausibility2025": "High",
+  "cohort": "overnight-followon-1001-1100",
+  "checkedAt": "2026-10-09",
+  "status": "complete",
+  "registryFound": true,
+  "registryBasis": "The City Kupang BKAD page documents local government land certification and boundary-survey procedures. The national catalog dataset named kupang is actually from Sidoarjo and its extent is112.74691..112.77321E near7.56S, far from the unchanged City Kupang WUP point. Its name alone is rejected as city parcel evidence. No correct-jurisdiction anonymous full-polygon response is verified.",
+  "registryEvidenceUrls": [
+    "https://bkad.kupangkota.go.id/berita_show/sertifikasi-tanah",
+    "https://data.go.id/dataset/dataset/kupang",
+    "https://bhumi.atrbpn.go.id/bantuan/peta"
+  ],
+  "verifiedSample": false,
+  "publicParcelGeometryFound": false,
+  "sourceIds": [],
+  "adapterReady": false,
+  "runtimeReadiness": "not_enabled_no_verified_public_geometry",
+  "technicalBlocker": "No correct-city, anonymous ID-and-complete-polygon response was established after fresh multilingual discovery and primary-source inspection. This is an unverified access finding, not a claim that public geometry or a registry does not exist.",
+  "scopeLimits": "No full source-native public polygon response was verified in this fresh city investigation; registry custody, map publication and technical geometry retrieval remain separate findings.",
+  "resultCategory": "registry_found_public_geometry_unverified",
+  "coverageAssessment": {
+    "claimedScope": "The City Kupang BKAD page documents local government land certification and boundary-survey procedures. The national catalog dataset named kupang is actually from Sidoarjo and its extent is112.74691..112.77321E near7.56S, far from the unchanged City Kupang WUP point. Its name alone is rejected as city parcel evidence. No correct-jurisdiction anonymous full-polygon response is verified.",
+    "verifiedOpenScope": "No full source-native public polygon response was verified in this fresh city investigation; registry custody, map publication and technical geometry retrieval remain separate findings.",
+    "citywideVerified": false,
+    "countrywideVerified": false
+  },
+  "runtimeAssessment": {
+    "status": "not_enabled",
+    "reason": "No correct-city, anonymous ID-and-complete-polygon response was established after fresh multilingual discovery and primary-source inspection. This is an unverified access finding, not a claim that public geometry or a registry does not exist."
+  },
+  "freshResearch": {
+    "queries": [
+      {
+        "language": "English",
+        "query": "Kupang Indonesia official land office cadastral parcel map",
+        "scope": "Fresh city-specific registry and public parcel geometry discovery.",
+        "result": "The City Kupang BKAD page documents local government land certification and boundary-survey procedures. The national catalog dataset named kupang is actually from Sidoarjo and its extent is112.74691..112.77321E near7.56S, far from the unchanged City Kupang WUP point. Its name alone is rejected as city parcel evidence. No correct-jurisdiction anonymous full-polygon response is verified.",
+        "actualResultUrls": [
+          "https://bkad.kupangkota.go.id/berita_show/sertifikasi-tanah",
+          "https://data.go.id/dataset/dataset/kupang",
+          "https://bhumi.atrbpn.go.id/bantuan/peta"
+        ],
+        "executionMethod": "Executed web search; first-party pages and documented interfaces inspected."
+      },
+      {
+        "language": "Indonesian",
+        "query": "Kota Kupang Kantor Pertanahan bidang tanah BHUMI resmi",
+        "scope": "Independent local-language search for local custody and anonymous cadastral geometry.",
+        "result": "The City Kupang BKAD page documents local government land certification and boundary-survey procedures. The national catalog dataset named kupang is actually from Sidoarjo and its extent is112.74691..112.77321E near7.56S, far from the unchanged City Kupang WUP point. Its name alone is rejected as city parcel evidence. No correct-jurisdiction anonymous full-polygon response is verified.",
+        "actualResultUrls": [
+          "https://bkad.kupangkota.go.id/berita_show/sertifikasi-tanah",
+          "https://data.go.id/dataset/dataset/kupang",
+          "https://bhumi.atrbpn.go.id/bantuan/peta"
+        ],
+        "executionMethod": "Separately executed web search; actual first-party results inspected."
+      }
+    ],
+    "requests": [
+      {
+        "checkedAt": "2026-10-09T05:29:16.612937+00:00",
+        "url": "https://bkad.kupangkota.go.id/berita_show/sertifikasi-tanah",
+        "normalTlsVerification": true,
+        "httpStatus": 200,
+        "contentType": "text/html; charset=UTF-8",
+        "finalUrl": "https://bkad.kupangkota.go.id/berita_show/sertifikasi-tanah",
+        "bytesRead": 31545,
+        "boundedReadIncomplete": false,
+        "sha256": "9077ae44b7eadfe00ffe10116904e8481cb3025617e6fb04ed6e3b576b20b831",
+        "title": "BKAD Kota Kupang"
+      },
+      {
+        "checkedAt": "2026-10-09T05:29:17.357872+00:00",
+        "url": "https://data.go.id/dataset/dataset/kupang",
+        "normalTlsVerification": true,
+        "httpStatus": 200,
+        "contentType": "text/html; charset=utf-8",
+        "finalUrl": "https://data.go.id/dataset/dataset/kupang",
+        "bytesRead": 99925,
+        "boundedReadIncomplete": false,
+        "sha256": "d5856ce557008cedac1985252cdcc83291b5346afa0f075c63c5457c4eb4f8a7",
+        "title": "kupang"
+      },
+      {
+        "checkedAt": "2026-10-09T05:29:19.373064+00:00",
+        "url": "https://bhumi.atrbpn.go.id/bantuan/peta",
+        "normalTlsVerification": true,
+        "httpStatus": 200,
+        "contentType": "text/html; charset=utf-8",
+        "finalUrl": "https://bhumi.atrbpn.go.id/bantuan/peta",
+        "bytesRead": 30917,
+        "boundedReadIncomplete": false,
+        "sha256": "92eba10dfd42f4058b22fe908b995689de4d721425bef23b37926d465c59a0c5",
+        "title": "Peta – BHUMI"
+      }
+    ],
+    "portals": [
+      {
+        "homeUrl": "https://bkad.kupangkota.go.id/berita_show/sertifikasi-tanah",
+        "observation": "The City Kupang BKAD page documents local government land certification and boundary-survey procedures. The national catalog dataset named kupang is actually from Sidoarjo and its extent is112.74691..112.77321E near7.56S, far from the unchanged City Kupang WUP point. Its name alone is rejected as city parcel evidence. No correct-jurisdiction anonymous full-polygon response is verified."
+      },
+      {
+        "homeUrl": "https://data.go.id/dataset/dataset/kupang",
+        "observation": "The City Kupang BKAD page documents local government land certification and boundary-survey procedures. The national catalog dataset named kupang is actually from Sidoarjo and its extent is112.74691..112.77321E near7.56S, far from the unchanged City Kupang WUP point. Its name alone is rejected as city parcel evidence. No correct-jurisdiction anonymous full-polygon response is verified."
+      },
+      {
+        "homeUrl": "https://bhumi.atrbpn.go.id/bantuan/peta",
+        "observation": "The City Kupang BKAD page documents local government land certification and boundary-survey procedures. The national catalog dataset named kupang is actually from Sidoarjo and its extent is112.74691..112.77321E near7.56S, far from the unchanged City Kupang WUP point. Its name alone is rejected as city parcel evidence. No correct-jurisdiction anonymous full-polygon response is verified."
+      }
+    ],
+    "historicalContext": []
+  },
+  "remainingUncertainty": "Public geometry completeness and runtime access remain unqualified; survey accuracy, legal title and source currentness are not independently established.",
+  "nextStep": "Retain the documented technical finding and proceed down the population roster; no executable provider enabled.",
+  "priorEvidenceFiles": [],
+  "priorCheck": {
+    "attemptState": "pending",
+    "attemptEvidence": [],
+    "possiblePriorMatches": []
+  },
+  "rootReviewNote": "The City Kupang BKAD page documents local government land certification and boundary-survey procedures. The national catalog dataset named kupang is actually from Sidoarjo and its extent is112.74691..112.77321E near7.56S, far from the unchanged City Kupang WUP point. Its name alone is rejected as city parcel evidence. No correct-jurisdiction anonymous full-polygon response is verified. No full source-native public polygon response was verified in this fresh city investigation; registry custody, map publication and technical geometry retrieval remain separate findings.",
+  "rootReviewedAt": "2026-10-09T05:33:34.746161+00:00",
+  "rootWrongJurisdictionDatasetReview": {
+    "catalogName": "kupang",
+    "organization": "Kabupaten Sidoarjo",
+    "publisherEndpoint": "https://geoportal.sidoarjokab.go.id/geoserver/ows",
+    "extentLon": [
+      112.74691000000003,
+      112.77321000000006
+    ],
+    "extentLatAround": -7.56,
+    "matchesUnchangedLocator": false,
+    "geometrySampleRetained": false
+  }
+}

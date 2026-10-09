@@ -1,0 +1,92 @@
+{
+  "name": "Qujing",
+  "country": "China",
+  "countryCode": "CN",
+  "rank": 859,
+  "point": [
+    25.5057994241493,
+    103.806166901787
+  ],
+  "population2025": 630828,
+  "population2025k": 630.828,
+  "populationUnit": "persons",
+  "populationPlausibility2025": "High",
+  "schemaVersion": 1,
+  "kind": "city_parcel_source_research",
+  "checkedAt": "2026-10-09",
+  "status": "complete",
+  "registryFound": true,
+  "registryBasis": "Official municipal government portal; real-estate-registration information is published under the Natural Resources and Planning Bureau.",
+  "registryEvidenceUrls": [
+    "https://www.qj.gov.cn/",
+    "https://www.qj.gov.cn/uploadfile/2023/0228/20230228091052508.pdf"
+  ],
+  "publicParcelGeometryFound": false,
+  "verifiedSample": false,
+  "runtimeReadiness": "not_enabled_no_verified_public_geometry",
+  "adapterReady": false,
+  "priorEvidenceFiles": [],
+  "scopeLimits": "City-local source discovery only. No full parcel geometry was retained. No owner, address, account/tax identifier, credential, or token value was requested or retained. Citywide/countrywide completeness and runtime suitability are not assessed.",
+  "pointBasis": "UN WUP 2025 population-weighted settlement centroid; this is not a municipal boundary or a parcel-coverage claim.",
+  "resultCategory": "official_local_registry_candidate_geometry_unverified",
+  "technicalBlocker": "No city-specific public parcel map service, anonymous feature endpoint, or safe geometry schema was identified. Individual-property registration notices were not retained or queried.",
+  "remainingUncertainty": "Whether Qujing publishes anonymous parcel geometry through a service not indexed by the reviewed official portal remains unknown.",
+  "nextStep": "No runtime qualification was attempted. If more discovery is needed, inspect first-party service metadata and retain geometry only after confirming a safe native feature identifier.",
+  "freshResearch": {
+    "queries": [
+      {
+        "language": "English",
+        "query": "Qujing China official land registry cadastre map parcel GIS government natural resources bureau",
+        "scope": "Find city-local registration/cadastral-map evidence and determine whether anonymous schema-safe parcel geometry is available.",
+        "result": "Official Qujing municipal government publication categories and recent notices identify the Qujing Real Estate Registration Center under the Natural Resources and Planning Bureau. No city parcel map, anonymous feature endpoint, or feature schema was identified in the search results.",
+        "actualResultUrls": [
+          "https://www.qj.gov.cn/",
+          "https://www.qj.gov.cn/uploadfile/2023/0228/20230228091052508.pdf"
+        ],
+        "executionMethod": "Separate language-specific web search and official source review; no owner/property-specific query."
+      },
+      {
+        "language": "Chinese",
+        "query": "曲靖市 自然资源和规划局 地籍图 不动产登记 电子地图 官网 曲靖 parcel map",
+        "scope": "Find city-local registration/cadastral-map evidence and determine whether anonymous schema-safe parcel geometry is available.",
+        "result": "The Qujing government portal publishes the local Real Estate Registration Center’s fee schedule and registration information under the city Natural Resources and Planning Bureau. The reviewed official materials establish a local registration institution, but do not expose a public parcel geometry service or safe feature schema.",
+        "actualResultUrls": [
+          "https://www.qj.gov.cn/",
+          "https://www.qj.gov.cn/uploadfile/2023/0228/20230228091052508.pdf"
+        ],
+        "executionMethod": "Separate language-specific web search and official source review; no owner/property-specific query."
+      }
+    ]
+  },
+  "officialSources": [
+    {
+      "url": "https://www.qj.gov.cn/",
+      "observation": "Official municipal government portal; real-estate-registration information is published under the Natural Resources and Planning Bureau."
+    },
+    {
+      "url": "https://www.qj.gov.cn/uploadfile/2023/0228/20230228091052508.pdf",
+      "observation": "Official city Real Estate Registration Center fee-basis document; supports the existence of a local registration service, not a public parcel geometry API."
+    }
+  ],
+  "verifiedParcelResponse": null,
+  "wupCityCode": 8755,
+  "cityId": "wup2025:8755",
+  "queueRank": 859,
+  "centerLatLon": [
+    25.5057994241493,
+    103.806166901787
+  ],
+  "sourceIds": [],
+  "runtimeAssessment": {
+    "status": "not_enabled_no_verified_public_geometry",
+    "reason": "No city-specific public parcel map service, anonymous feature endpoint, or safe geometry schema was identified. Individual-property registration notices were not retained or queried."
+  },
+  "rootPrimaryReadback": {
+    "url": "https://www.qj.gov.cn/",
+    "fetch": 200,
+    "contentType": "text/html",
+    "title": "曲靖市人民政府门户网"
+  },
+  "rootReviewNote": "Reviewed the specific primary institution/service evidence and its geographical, access and date limits. Direct readback failures are preserved separately from indexed primary evidence. No public full parcel geometry was verified for this city in this discovery pass.",
+  "rootReviewedAt": "2026-10-09T04:12:31.737456+00:00"
+}

@@ -1,0 +1,59 @@
+{
+  "schemaVersion": 1,
+  "checkedAt": "2026-10-09",
+  "sourceId": "ir-kavar-city-registry-review",
+  "purpose": "Service review for WUP2025 rank 610 Kavar (city code 6438); city-bound registry evidence and safe anonymous parcel-geometry route.",
+  "primaryPublisher": "No city-specific primary registry operator confirmed",
+  "sourceUrl": null,
+  "registryFound": null,
+  "registryBasis": "No city-specific primary registry or cadastre source could be verified. Province-level Fars registration sources and non-government office directories were excluded as insufficient to establish a registry for Kavar city. No parcel service or geometry was verified.",
+  "officialSources": [
+    {
+      "url": "https://kavar.gov.ir/",
+      "observation": "Candidate local-government host referenced in search, but page was inaccessible to the web inspection tool; institutional content and registry scope could not be verified. Not counted as positive registry evidence."
+    }
+  ],
+  "searchQueries": [
+    {
+      "language": "English",
+      "query": "Kavar Fars Iran official cadastral land registry parcel map municipality",
+      "scope": "Find Kavar-city primary registry evidence and safe anonymous parcel geometry.",
+      "result": "Search did not establish a city-specific official registry or public parcel map. The Fars provincial registration authority alone does not establish coverage of Kavar city; non-government directories were excluded.",
+      "actualResultUrls": [
+        "https://kavar.gov.ir/"
+      ],
+      "executionMethod": "Public English/local-language search and official-page review; no private lookup."
+    },
+    {
+      "language": "Persian",
+      "query": "کوار فارس اداره ثبت اسناد و املاک کاداستر نقشه شهرداری سایت رسمی",
+      "scope": "یافتن منبع رسمی محلی برای ثبت املاک کوار و مسیر عمومی امن برای هندسه قطعات.",
+      "result": "در جست‌وجوی فارسی منبع اولیهٔ شهری یا لایهٔ عمومی قطعات تأیید نشد. وب‌سایت دولتی منتسب به شهرستان در ابزار مرور در دسترس نبود؛ شواهد استانی به شهر تعمیم داده نشد.",
+      "actualResultUrls": [
+        "https://kavar.gov.ir/"
+      ],
+      "executionMethod": "Public English/local-language search and official-page review; no private lookup."
+    }
+  ],
+  "accessReview": {
+    "publicAnonymousGeometryVerified": false,
+    "completeGeoreferencedPolygonCount": 0,
+    "geometryRetained": false,
+    "ownerAddressTaxOrPersonLookupRequested": false,
+    "authenticationOrCredentialsUsed": false,
+    "captchaOrPersonalFormSubmitted": false,
+    "paymentSubmitted": false,
+    "routeInspectionStatus": "reviewed_no_safe_public_geometry_route_verified",
+    "reason": "No city-bound primary registry or public anonymous geometry route could be confirmed from reviewed sources.",
+    "candidateLayer": null,
+    "candidateSchema": null,
+    "targetGeometryRequest": null
+  },
+  "requestEvidence": [
+    {
+      "method": "public search and page review",
+      "observation": "Institutional and interface information only; no parcel, address, owner, tax-account or identity lookup was submitted. No HTTP feature-response status or feature count is asserted."
+    }
+  ],
+  "routeInspectionFile": "/tmp/overnight-cities-2026-10-08/city-6438-kavar-route-inspection.json"
+}

@@ -1,0 +1,1242 @@
+{
+  "schemaVersion": 1,
+  "checkedAt": "2026-10-09T06:34:00.091Z",
+  "city": "malaga-snapshot-root",
+  "descriptor": {
+    "id": "es-malaga-municipal-parcel-snapshot",
+    "name": "Málaga municipal cartographic parcel polygons",
+    "adapter": "geojson-snapshot",
+    "endpoint": "https://datosabiertos.malaga.eu/recursos/urbanismoEInfraestructura/planimetria/callejero/da_cartografiaParcela-4326.geojson",
+    "idFields": [
+      "ID_PARCELA"
+    ],
+    "outFields": [
+      "ID_PARCELA"
+    ],
+    "parcelNumberField": "ID_PARCELA",
+    "idPrefix": "ES-MALAGA-PARCELA-",
+    "maxSnapshotBytes": 67108864,
+    "maxSnapshotFeatures": 60000,
+    "expectedSnapshotFeatures": 58631,
+    "expectedEtag": "\"314864d-65d53018af75b-gzip\"",
+    "maxFeatures": 3000,
+    "maxBboxKm2": 1,
+    "countryCode": "ES",
+    "metricSrid": 32630,
+    "cityIds": [
+      "malaga"
+    ],
+    "maxConcurrentQueries": 1
+  },
+  "purpose": "Real snapshot adapter; two independent complete public downloads verify revision, complete count and unchanged identities. Only ID_PARCELA and full geometry retained in temporary caches.",
+  "grid": [
+    {
+      "name": "viewport-0",
+      "bbox": [
+        -4.439,
+        36.718,
+        -4.438,
+        36.719
+      ]
+    },
+    {
+      "name": "viewport-1",
+      "bbox": [
+        -4.438,
+        36.718,
+        -4.437,
+        36.719
+      ]
+    },
+    {
+      "name": "viewport-2",
+      "bbox": [
+        -4.437,
+        36.718,
+        -4.436,
+        36.719
+      ]
+    },
+    {
+      "name": "viewport-3",
+      "bbox": [
+        -4.439,
+        36.719,
+        -4.438,
+        36.72
+      ]
+    },
+    {
+      "name": "viewport-4",
+      "bbox": [
+        -4.438,
+        36.719,
+        -4.437,
+        36.72
+      ]
+    },
+    {
+      "name": "viewport-5",
+      "bbox": [
+        -4.437,
+        36.719,
+        -4.436,
+        36.72
+      ]
+    },
+    {
+      "name": "viewport-6",
+      "bbox": [
+        -4.439,
+        36.72,
+        -4.438,
+        36.721
+      ]
+    },
+    {
+      "name": "viewport-7",
+      "bbox": [
+        -4.438,
+        36.72,
+        -4.437,
+        36.721
+      ]
+    },
+    {
+      "name": "viewport-8",
+      "bbox": [
+        -4.437,
+        36.72,
+        -4.436,
+        36.721
+      ]
+    },
+    {
+      "name": "viewport-9",
+      "bbox": [
+        -4.438,
+        36.717,
+        -4.437,
+        36.718
+      ]
+    },
+    {
+      "name": "viewport-10",
+      "bbox": [
+        -4.438,
+        36.721,
+        -4.437,
+        36.722
+      ]
+    },
+    {
+      "name": "viewport-11",
+      "bbox": [
+        -4.44,
+        36.719,
+        -4.439,
+        36.72
+      ]
+    },
+    {
+      "name": "viewport-12",
+      "bbox": [
+        -4.436,
+        36.719,
+        -4.435,
+        36.72
+      ]
+    }
+  ],
+  "tests": [
+    {
+      "name": "viewport-0",
+      "passed": true,
+      "bbox": [
+        -4.439,
+        36.718,
+        -4.438,
+        36.719
+      ],
+      "count": 4,
+      "complete": true,
+      "ids": [
+        {
+          "id": "ES-MALAGA-PARCELA-4196974",
+          "geometrySha256": "f128adcb97c207a7359e4c096571312b05fd7cd79060d296fed3da62e3cc5b97"
+        },
+        {
+          "id": "ES-MALAGA-PARCELA-4196975",
+          "geometrySha256": "2221884520f4330ca841031658138d527a6a26f007300a986607dc8903dd6381"
+        },
+        {
+          "id": "ES-MALAGA-PARCELA-4196972",
+          "geometrySha256": "03bd111a1d56d9255ae33cd46f46dfdc6839f838c8329265b3a346e2cae22332"
+        },
+        {
+          "id": "ES-MALAGA-PARCELA-4196953",
+          "geometrySha256": "d03b974310d39c0450330cd68d7588905f2416da6b01dc52f867e67731cf1b3e"
+        }
+      ]
+    },
+    {
+      "name": "viewport-1",
+      "passed": true,
+      "bbox": [
+        -4.438,
+        36.718,
+        -4.437,
+        36.719
+      ],
+      "count": 6,
+      "complete": true,
+      "ids": [
+        {
+          "id": "ES-MALAGA-PARCELA-4196912",
+          "geometrySha256": "42da786a95894ec40d1b94b9a938a428e10fd9ec89764d6e4dd6020f5c2fc24c"
+        },
+        {
+          "id": "ES-MALAGA-PARCELA-4196974",
+          "geometrySha256": "f128adcb97c207a7359e4c096571312b05fd7cd79060d296fed3da62e3cc5b97"
+        },
+        {
+          "id": "ES-MALAGA-PARCELA-4196975",
+          "geometrySha256": "2221884520f4330ca841031658138d527a6a26f007300a986607dc8903dd6381"
+        },
+        {
+          "id": "ES-MALAGA-PARCELA-4196913",
+          "geometrySha256": "9eaa55bdd1cf372c7b6bb7dd0b3388e4e14afc8cf33acf9d7f3d89a87174eff4"
+        },
+        {
+          "id": "ES-MALAGA-PARCELA-4196906",
+          "geometrySha256": "ed9b2f625b11548e0963e9635fdf805c86ae9a6b8cfc4c76adda622b0012eaa7"
+        },
+        {
+          "id": "ES-MALAGA-PARCELA-4196918",
+          "geometrySha256": "b5847ddb8aec55168dc0f24e0ab9f4f3fcebac32a7b86583c2959ee5aea50124"
+        }
+      ]
+    },
+    {
+      "name": "viewport-2",
+      "passed": true,
+      "bbox": [
+        -4.437,
+        36.718,
+        -4.436,
+        36.719
+      ],
+      "count": 22,
+      "complete": true,
+      "ids": [
+        {
+          "id": "ES-MALAGA-PARCELA-4196946",
+          "geometrySha256": "591d32b13fa16374bbf7d9f6b40ffc6612388220014e7016c68027f402f8b137"
+        },
+        {
+          "id": "ES-MALAGA-PARCELA-4196911",
+          "geometrySha256": "a54914cd3f377cb4197c7c01c2d08c246b64c71289d4de864f06f3929ea386b8"
+        },
+        {
+          "id": "ES-MALAGA-PARCELA-4196948",
+          "geometrySha256": "f0047f166ea3ac3a74dc1b2cca0a8207afdabc6a52946c93699041e2472a93a2"
+        },
+        {
+          "id": "ES-MALAGA-PARCELA-4196912",
+          "geometrySha256": "42da786a95894ec40d1b94b9a938a428e10fd9ec89764d6e4dd6020f5c2fc24c"
+        },
+        {
+          "id": "ES-MALAGA-PARCELA-4196915",
+          "geometrySha256": "5c17a160bb4ee54958eadd4a6a9285011d4b8fc43cb819ea3b71564ff4955481"
+        },
+        {
+          "id": "ES-MALAGA-PARCELA-4196941",
+          "geometrySha256": "0ddd978e9605fc595899061dbcf898ca1495223f20fd51c96d3688d02ebf7f73"
+        },
+        {
+          "id": "ES-MALAGA-PARCELA-4196943",
+          "geometrySha256": "9a2257835b07e6790acec1337a7327143b42be519cf67e02e416edcb9b49b926"
+        },
+        {
+          "id": "ES-MALAGA-PARCELA-4196947",
+          "geometrySha256": "46a048ff5809c7a75e6e6badd20fe43dd8093cb83e86ba51ed9684c31b4b14f4"
+        },
+        {
+          "id": "ES-MALAGA-PARCELA-4196917",
+          "geometrySha256": "18c98aa24e5894d7290cf1ed4d1a39f7e84d4ef1f9228dbd6afbfb9e223ab686"
+        },
+        {
+          "id": "ES-MALAGA-PARCELA-4196916",
+          "geometrySha256": "207ddf2db46ba58de7cfc1c2b6fad013ddf84da891f28ae7bdddd7e632df795d"
+        },
+        {
+          "id": "ES-MALAGA-PARCELA-4196920",
+          "geometrySha256": "756be1c26427b8412941a382da0c733e46989af84c5863f0667bb22568c5c0e5"
+        },
+        {
+          "id": "ES-MALAGA-PARCELA-4196921",
+          "geometrySha256": "252ad44276b51e09cae206dcd17ab6bb219e6961f86f61ad3f14801ff8a5b7fc"
+        },
+        {
+          "id": "ES-MALAGA-PARCELA-4196942",
+          "geometrySha256": "f23835b140466e3a01b8e1cfa36442c84e2ef2686d542878ea5cfba5f6580ca1"
+        },
+        {
+          "id": "ES-MALAGA-PARCELA-4196919",
+          "geometrySha256": "25508c5ffba3901528e587a324cc4ee435658072f09a8e12d59bfcbf4fc8eba7"
+        },
+        {
+          "id": "ES-MALAGA-PARCELA-4196924",
+          "geometrySha256": "6a72ab9edada39e5e4bad2560b4cf24f3629c82da6e6ed90e0a88ae9653a1a3a"
+        },
+        {
+          "id": "ES-MALAGA-PARCELA-4196922",
+          "geometrySha256": "00c0b88573275d55c2faab97f2175ea0221dcb15a0d419f9dc4d7dc1fcc00e27"
+        },
+        {
+          "id": "ES-MALAGA-PARCELA-4196925",
+          "geometrySha256": "c6b83fa46c84e28f8eeb9f7eabff0735138a27576489baa47bdd38c9b6ba711c"
+        },
+        {
+          "id": "ES-MALAGA-PARCELA-4196918",
+          "geometrySha256": "b5847ddb8aec55168dc0f24e0ab9f4f3fcebac32a7b86583c2959ee5aea50124"
+        },
+        {
+          "id": "ES-MALAGA-PARCELA-4196923",
+          "geometrySha256": "0dfd4f3d1bd2f494c90ae4faa792e0c2eced1926ea9737e8a0ec9a457d299cf5"
+        },
+        {
+          "id": "ES-MALAGA-PARCELA-4196928",
+          "geometrySha256": "9c33ba9b02c310c3a541dfd5fdf45d4b2afef47544744914cdb7db0a2e8a6205"
+        },
+        {
+          "id": "ES-MALAGA-PARCELA-4196926",
+          "geometrySha256": "ae34b0b9ba3b11edc789e47677d7751614fbc3e34b175732ea013d048e27c56f"
+        },
+        {
+          "id": "ES-MALAGA-PARCELA-4196927",
+          "geometrySha256": "46fd29e929bf09a1244810ae9c16abf0051c6e079a6700b8977836e0a824b0bb"
+        }
+      ]
+    },
+    {
+      "name": "viewport-3",
+      "passed": true,
+      "bbox": [
+        -4.439,
+        36.719,
+        -4.438,
+        36.72
+      ],
+      "count": 7,
+      "complete": true,
+      "ids": [
+        {
+          "id": "ES-MALAGA-PARCELA-4196974",
+          "geometrySha256": "f128adcb97c207a7359e4c096571312b05fd7cd79060d296fed3da62e3cc5b97"
+        },
+        {
+          "id": "ES-MALAGA-PARCELA-4196973",
+          "geometrySha256": "87281d22d74536d80bd02d107bef5b4b57615f993dc6fc1b953649c009619463"
+        },
+        {
+          "id": "ES-MALAGA-PARCELA-4196972",
+          "geometrySha256": "03bd111a1d56d9255ae33cd46f46dfdc6839f838c8329265b3a346e2cae22332"
+        },
+        {
+          "id": "ES-MALAGA-PARCELA-4196778",
+          "geometrySha256": "a8d6358fbc402f88cb286cc331a98ceae241f60903ab1f60c9d52cfd0b4709ba"
+        },
+        {
+          "id": "ES-MALAGA-PARCELA-4196772",
+          "geometrySha256": "29bf3ce7c9fb8d36b723d193fce635547c45ed91117ac8ac6d1c97823833e669"
+        },
+        {
+          "id": "ES-MALAGA-PARCELA-4196768",
+          "geometrySha256": "a27384bfa159dcc0921e6d20adfcc0c79ed79c548306f5dcf3acf59c46a63fb0"
+        },
+        {
+          "id": "ES-MALAGA-PARCELA-4196773",
+          "geometrySha256": "d8792d0ba20526652ccbea66001051f24f9596248a5a1cdb55f9be14a4f07ee2"
+        }
+      ]
+    },
+    {
+      "name": "viewport-4",
+      "passed": true,
+      "bbox": [
+        -4.438,
+        36.719,
+        -4.437,
+        36.72
+      ],
+      "count": 24,
+      "complete": true,
+      "ids": [
+        {
+          "id": "ES-MALAGA-PARCELA-4196908",
+          "geometrySha256": "9b3324df7274febdaad4c5b26564bcc8fb473573c818a4bd8a4d5ddf4bc1dd84"
+        },
+        {
+          "id": "ES-MALAGA-PARCELA-4196900",
+          "geometrySha256": "d1fbcecefdc7d2954577a833fdb14919613557aa281c25fb49b877a02d0df6da"
+        },
+        {
+          "id": "ES-MALAGA-PARCELA-4196902",
+          "geometrySha256": "9be926f901a12491dd8a9380907464612a9a69c486d9c7206d5413f508ea33de"
+        },
+        {
+          "id": "ES-MALAGA-PARCELA-4196974",
+          "geometrySha256": "f128adcb97c207a7359e4c096571312b05fd7cd79060d296fed3da62e3cc5b97"
+        },
+        {
+          "id": "ES-MALAGA-PARCELA-4196777",
+          "geometrySha256": "6447e771fdf2d03c3d9be202f3a17434c400f0dfb733298b9f981c719594552f"
+        },
+        {
+          "id": "ES-MALAGA-PARCELA-4196905",
+          "geometrySha256": "a64503a1d94de014d520bab86f597f50a81c364392bfa98e6e4a1e83b09b2feb"
+        },
+        {
+          "id": "ES-MALAGA-PARCELA-4196903",
+          "geometrySha256": "506f00eb97755155d5cb94ca40110e244974d77de4af3b7e580c32560511a735"
+        },
+        {
+          "id": "ES-MALAGA-PARCELA-4196906",
+          "geometrySha256": "ed9b2f625b11548e0963e9635fdf805c86ae9a6b8cfc4c76adda622b0012eaa7"
+        },
+        {
+          "id": "ES-MALAGA-PARCELA-4196901",
+          "geometrySha256": "fc7ef6cbbfb236dac581f7d1f4fd83d2cf76b881477a2bb09bb5cbb9f26c164a"
+        },
+        {
+          "id": "ES-MALAGA-PARCELA-4196907",
+          "geometrySha256": "ebe0a028e451b405ca333c633a12a13e431bb0dca1d924f7c71726903ab025f4"
+        },
+        {
+          "id": "ES-MALAGA-PARCELA-4196904",
+          "geometrySha256": "f2721ab8841a31ba82db8d7a10e94d4e7a23eb38fc6712f5e92e22866ed7c33f"
+        },
+        {
+          "id": "ES-MALAGA-PARCELA-4196779",
+          "geometrySha256": "77291777c97899faa7681a562b1d788259004b10650bb8962a11076b22a62d2b"
+        },
+        {
+          "id": "ES-MALAGA-PARCELA-4196778",
+          "geometrySha256": "a8d6358fbc402f88cb286cc331a98ceae241f60903ab1f60c9d52cfd0b4709ba"
+        },
+        {
+          "id": "ES-MALAGA-PARCELA-4196772",
+          "geometrySha256": "29bf3ce7c9fb8d36b723d193fce635547c45ed91117ac8ac6d1c97823833e669"
+        },
+        {
+          "id": "ES-MALAGA-PARCELA-4196809",
+          "geometrySha256": "68a3bf9382f5504f9185c7ad9e11c3fa4683fead4fed2688ded75ae8061c1ca6"
+        },
+        {
+          "id": "ES-MALAGA-PARCELA-4196775",
+          "geometrySha256": "7a71a08389c6102483b6811ecdffcb8f63c9babe80d7d974f63ec230a1568981"
+        },
+        {
+          "id": "ES-MALAGA-PARCELA-4196776",
+          "geometrySha256": "e982a56292a1587fa392d34f2572aaf7dc34961e8f5ab76ac6d9d8da074435ce"
+        },
+        {
+          "id": "ES-MALAGA-PARCELA-4196780",
+          "geometrySha256": "1fbe96bbbe2248d1bb4dddb2fd2dd6d3711e3990ae52da82a0cdffa562ca75cf"
+        },
+        {
+          "id": "ES-MALAGA-PARCELA-4196805",
+          "geometrySha256": "9749e6cb4443084a2e90572896ed3d64deca171ba451c051c2fe62ace5a40cd8"
+        },
+        {
+          "id": "ES-MALAGA-PARCELA-4196773",
+          "geometrySha256": "d8792d0ba20526652ccbea66001051f24f9596248a5a1cdb55f9be14a4f07ee2"
+        },
+        {
+          "id": "ES-MALAGA-PARCELA-4196782",
+          "geometrySha256": "99b12336adc4f7fbb2d7497419179a15f9c9bc1ab175285a245003b91335c4c0"
+        },
+        {
+          "id": "ES-MALAGA-PARCELA-4196781",
+          "geometrySha256": "2b027f67225dc394cb794d31e836a09e93aeafa9e3688e454ccdb20161bfc23f"
+        },
+        {
+          "id": "ES-MALAGA-PARCELA-4196783",
+          "geometrySha256": "54e35df703bafa171ed535ef7f2d26e2a15fa542643dae34b4bf0cbbb2cdca36"
+        },
+        {
+          "id": "ES-MALAGA-PARCELA-4196806",
+          "geometrySha256": "5083e2c66c834645f431e63d259648c0e09d07faf9322199ed39e09a3edfde91"
+        }
+      ]
+    },
+    {
+      "name": "viewport-5",
+      "passed": true,
+      "bbox": [
+        -4.437,
+        36.719,
+        -4.436,
+        36.72
+      ],
+      "count": 29,
+      "complete": true,
+      "ids": [
+        {
+          "id": "ES-MALAGA-PARCELA-4196908",
+          "geometrySha256": "9b3324df7274febdaad4c5b26564bcc8fb473573c818a4bd8a4d5ddf4bc1dd84"
+        },
+        {
+          "id": "ES-MALAGA-PARCELA-4196911",
+          "geometrySha256": "a54914cd3f377cb4197c7c01c2d08c246b64c71289d4de864f06f3929ea386b8"
+        },
+        {
+          "id": "ES-MALAGA-PARCELA-4196912",
+          "geometrySha256": "42da786a95894ec40d1b94b9a938a428e10fd9ec89764d6e4dd6020f5c2fc24c"
+        },
+        {
+          "id": "ES-MALAGA-PARCELA-4196915",
+          "geometrySha256": "5c17a160bb4ee54958eadd4a6a9285011d4b8fc43cb819ea3b71564ff4955481"
+        },
+        {
+          "id": "ES-MALAGA-PARCELA-4196931",
+          "geometrySha256": "4c923183aa4a0740329654bc4fb5bc66b128faa27b05851ea00d2cab110cca44"
+        },
+        {
+          "id": "ES-MALAGA-PARCELA-4196941",
+          "geometrySha256": "0ddd978e9605fc595899061dbcf898ca1495223f20fd51c96d3688d02ebf7f73"
+        },
+        {
+          "id": "ES-MALAGA-PARCELA-4196943",
+          "geometrySha256": "9a2257835b07e6790acec1337a7327143b42be519cf67e02e416edcb9b49b926"
+        },
+        {
+          "id": "ES-MALAGA-PARCELA-4196910",
+          "geometrySha256": "68d56ff4b4f6fe5b71e1b76dd3f922250678c77948f8bbc91d96cf639e523ebf"
+        },
+        {
+          "id": "ES-MALAGA-PARCELA-4196909",
+          "geometrySha256": "7b6dc26cff4e46663adbadf3315227083b763879d9bc171f162170a6e7905fd9"
+        },
+        {
+          "id": "ES-MALAGA-PARCELA-4196929",
+          "geometrySha256": "a1f0cd7d3765aa6ac4a1e8eacdb7b63f1455b66baef5a3459edbf446f07a20ac"
+        },
+        {
+          "id": "ES-MALAGA-PARCELA-4196936",
+          "geometrySha256": "99c1277818a48f24e783ad4c102e931d0c0322138956225adc269375804cc356"
+        },
+        {
+          "id": "ES-MALAGA-PARCELA-4196916",
+          "geometrySha256": "207ddf2db46ba58de7cfc1c2b6fad013ddf84da891f28ae7bdddd7e632df795d"
+        },
+        {
+          "id": "ES-MALAGA-PARCELA-4196933",
+          "geometrySha256": "6772c48e24234bb53ae4d6c7e647356f108ba04d55470d4655988c92db0c59d3"
+        },
+        {
+          "id": "ES-MALAGA-PARCELA-4196942",
+          "geometrySha256": "f23835b140466e3a01b8e1cfa36442c84e2ef2686d542878ea5cfba5f6580ca1"
+        },
+        {
+          "id": "ES-MALAGA-PARCELA-4196935",
+          "geometrySha256": "33bbe05df3d3332139ba6b22798a62a1d03ca0bac4e7fe1ddc024b8ceca81501"
+        },
+        {
+          "id": "ES-MALAGA-PARCELA-4196914",
+          "geometrySha256": "698298475cf5b052e284faa152c71e49c0475fce9eafef80f8078dd9d3c89854"
+        },
+        {
+          "id": "ES-MALAGA-PARCELA-4196939",
+          "geometrySha256": "f2ba0f6b39934f56bd167ae58e1ccfee95a344fa689c940adcead8d614ac5c23"
+        },
+        {
+          "id": "ES-MALAGA-PARCELA-4196934",
+          "geometrySha256": "6d0bdfbfebd8f1717ab8b5931506c1f7191a6a3436d8fc152b7dfcaafb0c2110"
+        },
+        {
+          "id": "ES-MALAGA-PARCELA-4196930",
+          "geometrySha256": "9ea1f72b8f33c6a7027ed7d726791f596d6ad5113e3eeb90822b53b2280bb490"
+        },
+        {
+          "id": "ES-MALAGA-PARCELA-4196932",
+          "geometrySha256": "e5d08686cca438295bb9a1c5fca29788c636e0d405407bb9abdf7c242d94f556"
+        },
+        {
+          "id": "ES-MALAGA-PARCELA-4196938",
+          "geometrySha256": "281a5c2cff5f0cfa98dd2d9a3a27598568cc0959d13735b9afb9ae7cc78655b2"
+        },
+        {
+          "id": "ES-MALAGA-PARCELA-4196940",
+          "geometrySha256": "b30a759631fde0de5be4ff6e67cd2c368f306655fe0988c8be94b126871f0cc9"
+        },
+        {
+          "id": "ES-MALAGA-PARCELA-4196944",
+          "geometrySha256": "dd832f434d25d378c4144f6522d4add2520ca1431b6b8a41f615961480ee2299"
+        },
+        {
+          "id": "ES-MALAGA-PARCELA-4196937",
+          "geometrySha256": "6a918539ac6c8c6160b0c7b91de246975aaf73975ee547d413d3414f422c6fef"
+        },
+        {
+          "id": "ES-MALAGA-PARCELA-4196834",
+          "geometrySha256": "999c5e8b356aa6874ebc5bdce6643b46f6ba8a0e28865c81ffebadefa385b9f5"
+        },
+        {
+          "id": "ES-MALAGA-PARCELA-4196809",
+          "geometrySha256": "68a3bf9382f5504f9185c7ad9e11c3fa4683fead4fed2688ded75ae8061c1ca6"
+        },
+        {
+          "id": "ES-MALAGA-PARCELA-4196823",
+          "geometrySha256": "5c5ed4f1aa834f8e52d4e6d2ea4719beb77f5779d8f78753258b6cb20c6bc7a7"
+        },
+        {
+          "id": "ES-MALAGA-PARCELA-4196808",
+          "geometrySha256": "89dcec016bae4fddc7f0c378bf72aa2a63a3f68c1cc40138387457564bd48a46"
+        },
+        {
+          "id": "ES-MALAGA-PARCELA-4196806",
+          "geometrySha256": "5083e2c66c834645f431e63d259648c0e09d07faf9322199ed39e09a3edfde91"
+        }
+      ]
+    },
+    {
+      "name": "viewport-6",
+      "passed": true,
+      "bbox": [
+        -4.439,
+        36.72,
+        -4.438,
+        36.721
+      ],
+      "count": 16,
+      "complete": true,
+      "ids": [
+        {
+          "id": "ES-MALAGA-PARCELA-4196973",
+          "geometrySha256": "87281d22d74536d80bd02d107bef5b4b57615f993dc6fc1b953649c009619463"
+        },
+        {
+          "id": "ES-MALAGA-PARCELA-4196745",
+          "geometrySha256": "262f82f3364b176de3589c38d62510ad1f70ba2928fe39d73b9d5855db7c259a"
+        },
+        {
+          "id": "ES-MALAGA-PARCELA-4196747",
+          "geometrySha256": "a0e80a15b78e4ebfa227b7bb99c0653c1b18668f5c69a21036e92a0c96656c35"
+        },
+        {
+          "id": "ES-MALAGA-PARCELA-4196748",
+          "geometrySha256": "f3b547ec46d68b388127d0f12d3149db793c5c235ce2e2c729b2bcdde19b8d29"
+        },
+        {
+          "id": "ES-MALAGA-PARCELA-4196742",
+          "geometrySha256": "48dce17965688788c7494667637eb8fe14b3e3dd578b356fd056a114c43ca106"
+        },
+        {
+          "id": "ES-MALAGA-PARCELA-4196767",
+          "geometrySha256": "4ae172fa6a5344ca0fd94fdc483bb2231c9ced265c72b3f0bd28e6cc9cca5d8e"
+        },
+        {
+          "id": "ES-MALAGA-PARCELA-4196768",
+          "geometrySha256": "a27384bfa159dcc0921e6d20adfcc0c79ed79c548306f5dcf3acf59c46a63fb0"
+        },
+        {
+          "id": "ES-MALAGA-PARCELA-4196763",
+          "geometrySha256": "74a10b861182da01c2021bad38f01870bdd6aab50f8a3455961f35f921f96696"
+        },
+        {
+          "id": "ES-MALAGA-PARCELA-4196758",
+          "geometrySha256": "6fb58bd1d1bde019f410ef1489d41cb0f4eedd4206e83a37d3b9bb91a4be3aad"
+        },
+        {
+          "id": "ES-MALAGA-PARCELA-4196761",
+          "geometrySha256": "e4b645cae8845ad05363f6a7c3fa792b5426dcfba9001ae594ccaf8fafdd35ba"
+        },
+        {
+          "id": "ES-MALAGA-PARCELA-4196759",
+          "geometrySha256": "f78c3df26d1dd391029b27feee5bdda5d55813d5fc1181c01888ad8c82a48af1"
+        },
+        {
+          "id": "ES-MALAGA-PARCELA-4196762",
+          "geometrySha256": "1af80abe8a4b3d9e7e92de42549c20ff6cb2102da792956e9a2beea0cb472144"
+        },
+        {
+          "id": "ES-MALAGA-PARCELA-4196757",
+          "geometrySha256": "f267dfd885bed0827f642c739463bff2a5ae43c93b208547516a99179e27ea4f"
+        },
+        {
+          "id": "ES-MALAGA-PARCELA-4196756",
+          "geometrySha256": "068ce8e40650c64c9d1a6bd5c1dc1beccd42133a8a5ed8ad4426523aa2920317"
+        },
+        {
+          "id": "ES-MALAGA-PARCELA-4196760",
+          "geometrySha256": "fe0c389e5b3db417871aabcee960732e8b4e5e5fb3da1fb840399755dc43a3aa"
+        },
+        {
+          "id": "ES-MALAGA-PARCELA-9008556",
+          "geometrySha256": "26b3015770c10505b1c343e2aca3650b75c9ca7968b99cfc9198fbfb6b6457a7"
+        }
+      ]
+    },
+    {
+      "name": "viewport-7",
+      "passed": true,
+      "bbox": [
+        -4.438,
+        36.72,
+        -4.437,
+        36.721
+      ],
+      "count": 42,
+      "complete": true,
+      "ids": [
+        {
+          "id": "ES-MALAGA-PARCELA-4196795",
+          "geometrySha256": "2ba53a10c1e02a5da335c91751776903015129088d04e53e396a8b136a7fefe9"
+        },
+        {
+          "id": "ES-MALAGA-PARCELA-4196802",
+          "geometrySha256": "bfb80053bdb1413a5b8d998617533e78a119f4e687f5e45d46aa6fcb26e45299"
+        },
+        {
+          "id": "ES-MALAGA-PARCELA-4196746",
+          "geometrySha256": "0f023f4ecd0a13127a69f97e00b551a32309bd05279ab16fb80b2df38ad77362"
+        },
+        {
+          "id": "ES-MALAGA-PARCELA-4196745",
+          "geometrySha256": "262f82f3364b176de3589c38d62510ad1f70ba2928fe39d73b9d5855db7c259a"
+        },
+        {
+          "id": "ES-MALAGA-PARCELA-4196784",
+          "geometrySha256": "879a9bfcadef0566e34620577d052935fb64aa9872efb8aea1d2dff0d214030b"
+        },
+        {
+          "id": "ES-MALAGA-PARCELA-4196753",
+          "geometrySha256": "1c663ea09b943603401c2a7cd2299e93ac16064fc350dab12e8bf509678e31c6"
+        },
+        {
+          "id": "ES-MALAGA-PARCELA-4196747",
+          "geometrySha256": "a0e80a15b78e4ebfa227b7bb99c0653c1b18668f5c69a21036e92a0c96656c35"
+        },
+        {
+          "id": "ES-MALAGA-PARCELA-4196749",
+          "geometrySha256": "5f6665e85a1ca08066a3ca97fec5ef87d299dc95892ac2ab564905b8eaf92b9f"
+        },
+        {
+          "id": "ES-MALAGA-PARCELA-4196788",
+          "geometrySha256": "d7a900454b725043db17206417f0a3dfe6f5948fb99c7d38a307fd0b288d7d30"
+        },
+        {
+          "id": "ES-MALAGA-PARCELA-4196764",
+          "geometrySha256": "9151e4b0fe801a11a7de57720c9beeef031feb9ce967f04fddff601468d09fc4"
+        },
+        {
+          "id": "ES-MALAGA-PARCELA-4196789",
+          "geometrySha256": "0a150cd81b935373baae8f4de63dc4fc5ba4aabcd9e70f84500032610b3d667d"
+        },
+        {
+          "id": "ES-MALAGA-PARCELA-4196787",
+          "geometrySha256": "edfbc1426f97f237aa569afc8776d49e46afbcbabb8b593e050edd6f6012a4df"
+        },
+        {
+          "id": "ES-MALAGA-PARCELA-4196767",
+          "geometrySha256": "4ae172fa6a5344ca0fd94fdc483bb2231c9ced265c72b3f0bd28e6cc9cca5d8e"
+        },
+        {
+          "id": "ES-MALAGA-PARCELA-4196800",
+          "geometrySha256": "918da730d778f3ab6be2d480cfb70f18287df36c3f22c52fd50dead85a2a5987"
+        },
+        {
+          "id": "ES-MALAGA-PARCELA-4196807",
+          "geometrySha256": "d4abbdedf434763504101d567b898a7c8cf49e7c3ee639d89ca6790221257227"
+        },
+        {
+          "id": "ES-MALAGA-PARCELA-4196772",
+          "geometrySha256": "29bf3ce7c9fb8d36b723d193fce635547c45ed91117ac8ac6d1c97823833e669"
+        },
+        {
+          "id": "ES-MALAGA-PARCELA-4196804",
+          "geometrySha256": "f5d027a6bcc98b88b3eeb3db9095514cd5dbd8ff36d78e7f81af86fab1714d60"
+        },
+        {
+          "id": "ES-MALAGA-PARCELA-4196775",
+          "geometrySha256": "7a71a08389c6102483b6811ecdffcb8f63c9babe80d7d974f63ec230a1568981"
+        },
+        {
+          "id": "ES-MALAGA-PARCELA-4196776",
+          "geometrySha256": "e982a56292a1587fa392d34f2572aaf7dc34961e8f5ab76ac6d9d8da074435ce"
+        },
+        {
+          "id": "ES-MALAGA-PARCELA-4196799",
+          "geometrySha256": "db06ab58803f9347f83a84aaae05a2e039e258d489d404e80d80e478caa6dee1"
+        },
+        {
+          "id": "ES-MALAGA-PARCELA-4196805",
+          "geometrySha256": "9749e6cb4443084a2e90572896ed3d64deca171ba451c051c2fe62ace5a40cd8"
+        },
+        {
+          "id": "ES-MALAGA-PARCELA-4196771",
+          "geometrySha256": "5e46ea1b3feac419154d3e27176b03d0286bfa84ebb5b6155cf1f4c9af03ea32"
+        },
+        {
+          "id": "ES-MALAGA-PARCELA-4196774",
+          "geometrySha256": "d0b2f371eaeea83a41873d30581b10e06b0978bc41c3996827fc82689fd47a04"
+        },
+        {
+          "id": "ES-MALAGA-PARCELA-4196770",
+          "geometrySha256": "5a07a5fa2682de0a7b8c324fc19a0bbf488c807db8da43ef9c0671dec9c4b4bf"
+        },
+        {
+          "id": "ES-MALAGA-PARCELA-4196769",
+          "geometrySha256": "f88c4ac0431cebd0b8fa8639c20e9975bebfa65b16da48b5e049ae3185ef0b32"
+        },
+        {
+          "id": "ES-MALAGA-PARCELA-4196761",
+          "geometrySha256": "e4b645cae8845ad05363f6a7c3fa792b5426dcfba9001ae594ccaf8fafdd35ba"
+        },
+        {
+          "id": "ES-MALAGA-PARCELA-4196794",
+          "geometrySha256": "8fcb759d6b105e7279f0e679ca355c033f19c4ea420455f685067e8db4a97878"
+        },
+        {
+          "id": "ES-MALAGA-PARCELA-4196798",
+          "geometrySha256": "11f3badeabf25b668728403e6b85e9f8f12b3bfa0b5e002ace26e49a6617131a"
+        },
+        {
+          "id": "ES-MALAGA-PARCELA-4196797",
+          "geometrySha256": "e238bc47d9375234d690a7e9244f0eb4403023ef47defc3ca5d582836b99933f"
+        },
+        {
+          "id": "ES-MALAGA-PARCELA-4196759",
+          "geometrySha256": "f78c3df26d1dd391029b27feee5bdda5d55813d5fc1181c01888ad8c82a48af1"
+        },
+        {
+          "id": "ES-MALAGA-PARCELA-4196790",
+          "geometrySha256": "2afe322d0f6d625aa6e352e646cbacd8eadc71af27cfb316410705c6922b28e0"
+        },
+        {
+          "id": "ES-MALAGA-PARCELA-4196792",
+          "geometrySha256": "5122e004deb09d9a1c28fc07b7b945ce662eb8600e3b904b788cebf70524376e"
+        },
+        {
+          "id": "ES-MALAGA-PARCELA-4196766",
+          "geometrySha256": "96bdfc2aeb2d209c8edbc19b9ede44fef1109f76794f3d73b20073b7f0550dd9"
+        },
+        {
+          "id": "ES-MALAGA-PARCELA-4196760",
+          "geometrySha256": "fe0c389e5b3db417871aabcee960732e8b4e5e5fb3da1fb840399755dc43a3aa"
+        },
+        {
+          "id": "ES-MALAGA-PARCELA-9001394",
+          "geometrySha256": "db35f632b0a609019a04c4bbf6a713622b23e34c736a5a82f7bb432ea33bd3ac"
+        },
+        {
+          "id": "ES-MALAGA-PARCELA-4196793",
+          "geometrySha256": "a16207de43e0b453a23a8592e5bb4a117f6d0f5138ce781ec6e7cfe7700cf330"
+        },
+        {
+          "id": "ES-MALAGA-PARCELA-4196796",
+          "geometrySha256": "94e98f3e6978bf8d594a643dd286e5e528e96bc3303fe84c82f305011259ad29"
+        },
+        {
+          "id": "ES-MALAGA-PARCELA-4196765",
+          "geometrySha256": "a92e06e8e398029dfbafca46025bd53f71eb04d89ff20a73165b0c025141e160"
+        },
+        {
+          "id": "ES-MALAGA-PARCELA-4196801",
+          "geometrySha256": "20786dfd6e18f7cd801aa26b3b36370e6d6a18bb9046fcd1ecafa76ab0385672"
+        },
+        {
+          "id": "ES-MALAGA-PARCELA-4196806",
+          "geometrySha256": "5083e2c66c834645f431e63d259648c0e09d07faf9322199ed39e09a3edfde91"
+        },
+        {
+          "id": "ES-MALAGA-PARCELA-4196785",
+          "geometrySha256": "ed2ab17b3fa650f6935c28d2f38825b21d86f7cfce217c2aaf2519579927f25d"
+        },
+        {
+          "id": "ES-MALAGA-PARCELA-4196786",
+          "geometrySha256": "faf786ca5f90d9c64ffa355b9650340d6acd61b7bc03760c9139d06de6e6a429"
+        }
+      ]
+    },
+    {
+      "name": "viewport-8",
+      "passed": true,
+      "bbox": [
+        -4.437,
+        36.72,
+        -4.436,
+        36.721
+      ],
+      "count": 19,
+      "complete": true,
+      "ids": [
+        {
+          "id": "ES-MALAGA-PARCELA-4196812",
+          "geometrySha256": "ba2a0feca3f3803d3c8eff2ab09f003bb79ab2c29f6c9908c4656571c9a354b2"
+        },
+        {
+          "id": "ES-MALAGA-PARCELA-4196802",
+          "geometrySha256": "bfb80053bdb1413a5b8d998617533e78a119f4e687f5e45d46aa6fcb26e45299"
+        },
+        {
+          "id": "ES-MALAGA-PARCELA-4196753",
+          "geometrySha256": "1c663ea09b943603401c2a7cd2299e93ac16064fc350dab12e8bf509678e31c6"
+        },
+        {
+          "id": "ES-MALAGA-PARCELA-4196749",
+          "geometrySha256": "5f6665e85a1ca08066a3ca97fec5ef87d299dc95892ac2ab564905b8eaf92b9f"
+        },
+        {
+          "id": "ES-MALAGA-PARCELA-4196754",
+          "geometrySha256": "336f01190dc46aa7ad34a00b6e63babf872ef260a8fdbafe40f1954cb3bb1530"
+        },
+        {
+          "id": "ES-MALAGA-PARCELA-4196814",
+          "geometrySha256": "d7ffb79f778ffd7a2909ac614d811dab76e05c8d320dde8fbd032e2ee701be20"
+        },
+        {
+          "id": "ES-MALAGA-PARCELA-4196803",
+          "geometrySha256": "f7ea529119e36483e639befa03b4ff1ab412e56fca3583f26f9aa6a1de018e35"
+        },
+        {
+          "id": "ES-MALAGA-PARCELA-4196807",
+          "geometrySha256": "d4abbdedf434763504101d567b898a7c8cf49e7c3ee639d89ca6790221257227"
+        },
+        {
+          "id": "ES-MALAGA-PARCELA-4196809",
+          "geometrySha256": "68a3bf9382f5504f9185c7ad9e11c3fa4683fead4fed2688ded75ae8061c1ca6"
+        },
+        {
+          "id": "ES-MALAGA-PARCELA-4196823",
+          "geometrySha256": "5c5ed4f1aa834f8e52d4e6d2ea4719beb77f5779d8f78753258b6cb20c6bc7a7"
+        },
+        {
+          "id": "ES-MALAGA-PARCELA-4196822",
+          "geometrySha256": "13af9be444c8b04186e7a0d14da7e1e3149aa21d36bff41bd37d9ee29f7d8326"
+        },
+        {
+          "id": "ES-MALAGA-PARCELA-4196821",
+          "geometrySha256": "79f3d70dd8b052a7ec94e41b73d09e10b7db86ea55c0579c54df46b612751a74"
+        },
+        {
+          "id": "ES-MALAGA-PARCELA-4196811",
+          "geometrySha256": "f175b6179cebfbd1affee925570c166789bb86567d2c33df3739772d84000efc"
+        },
+        {
+          "id": "ES-MALAGA-PARCELA-4196798",
+          "geometrySha256": "11f3badeabf25b668728403e6b85e9f8f12b3bfa0b5e002ace26e49a6617131a"
+        },
+        {
+          "id": "ES-MALAGA-PARCELA-4196808",
+          "geometrySha256": "89dcec016bae4fddc7f0c378bf72aa2a63a3f68c1cc40138387457564bd48a46"
+        },
+        {
+          "id": "ES-MALAGA-PARCELA-90130340",
+          "geometrySha256": "de71e7a3afc5dfd74d7bc583fccc2efed8866a76637facaa367aab887142476e"
+        },
+        {
+          "id": "ES-MALAGA-PARCELA-4196806",
+          "geometrySha256": "5083e2c66c834645f431e63d259648c0e09d07faf9322199ed39e09a3edfde91"
+        },
+        {
+          "id": "ES-MALAGA-PARCELA-4196750",
+          "geometrySha256": "1b3e2d9e48d4df0a696961df0044162fcb919210e4dd08cb48273ea08c01c200"
+        },
+        {
+          "id": "ES-MALAGA-PARCELA-90152530",
+          "geometrySha256": "93725509023708ff90875a5d1cbbe011e52b91e8a8e9e392f21795d5a1e9065d"
+        }
+      ]
+    },
+    {
+      "name": "viewport-9",
+      "passed": true,
+      "bbox": [
+        -4.438,
+        36.717,
+        -4.437,
+        36.718
+      ],
+      "count": 1,
+      "complete": true,
+      "ids": [
+        {
+          "id": "ES-MALAGA-PARCELA-4196957",
+          "geometrySha256": "e5ef416de335bdcc58467d5b1051bf11fc9dd1db6a1fea361459d9852ecd24b4"
+        }
+      ]
+    },
+    {
+      "name": "viewport-10",
+      "passed": true,
+      "bbox": [
+        -4.438,
+        36.721,
+        -4.437,
+        36.722
+      ],
+      "count": 6,
+      "complete": true,
+      "ids": [
+        {
+          "id": "ES-MALAGA-PARCELA-9011545",
+          "geometrySha256": "8d58591eabce67a0d9d7882271fdedd8e4f2c142c534fbbb152b91c977218517"
+        },
+        {
+          "id": "ES-MALAGA-PARCELA-4196746",
+          "geometrySha256": "0f023f4ecd0a13127a69f97e00b551a32309bd05279ab16fb80b2df38ad77362"
+        },
+        {
+          "id": "ES-MALAGA-PARCELA-4196745",
+          "geometrySha256": "262f82f3364b176de3589c38d62510ad1f70ba2928fe39d73b9d5855db7c259a"
+        },
+        {
+          "id": "ES-MALAGA-PARCELA-4196749",
+          "geometrySha256": "5f6665e85a1ca08066a3ca97fec5ef87d299dc95892ac2ab564905b8eaf92b9f"
+        },
+        {
+          "id": "ES-MALAGA-PARCELA-8391348",
+          "geometrySha256": "b137127b086e21633a6218724716ce6d42cd8cbce13b59918a39047233263035"
+        },
+        {
+          "id": "ES-MALAGA-PARCELA-90135552",
+          "geometrySha256": "db4b75ea226699ad6e0561f4715940ac58fcffc953c0d5d07b4c7809844e548a"
+        }
+      ]
+    },
+    {
+      "name": "viewport-11",
+      "passed": true,
+      "bbox": [
+        -4.44,
+        36.719,
+        -4.439,
+        36.72
+      ],
+      "count": 7,
+      "complete": true,
+      "ids": [
+        {
+          "id": "ES-MALAGA-PARCELA-4196974",
+          "geometrySha256": "f128adcb97c207a7359e4c096571312b05fd7cd79060d296fed3da62e3cc5b97"
+        },
+        {
+          "id": "ES-MALAGA-PARCELA-9000463",
+          "geometrySha256": "c79fdf2c88108bc547b802930ee0d45c0073fd252b1adecabfd9693ce142459a"
+        },
+        {
+          "id": "ES-MALAGA-PARCELA-4196966",
+          "geometrySha256": "162e860f91346f862c698ecbc7c836076a4e5ffee88283379b0a90c69e7e974f"
+        },
+        {
+          "id": "ES-MALAGA-PARCELA-4196973",
+          "geometrySha256": "87281d22d74536d80bd02d107bef5b4b57615f993dc6fc1b953649c009619463"
+        },
+        {
+          "id": "ES-MALAGA-PARCELA-4196971",
+          "geometrySha256": "9670c20041b432f96586d9925d60537c1fdfb9302ee4dbeeb945ff43ce0e2839"
+        },
+        {
+          "id": "ES-MALAGA-PARCELA-4196972",
+          "geometrySha256": "03bd111a1d56d9255ae33cd46f46dfdc6839f838c8329265b3a346e2cae22332"
+        },
+        {
+          "id": "ES-MALAGA-PARCELA-4197470",
+          "geometrySha256": "4dc00d4d5d420469a49fbc8a0eb8a5c35f4a77c3b6b3b05e9872f5866178eb16"
+        }
+      ]
+    },
+    {
+      "name": "viewport-12",
+      "passed": true,
+      "bbox": [
+        -4.436,
+        36.719,
+        -4.435,
+        36.72
+      ],
+      "count": 18,
+      "complete": true,
+      "ids": [
+        {
+          "id": "ES-MALAGA-PARCELA-4196949",
+          "geometrySha256": "4aa30ccf9f134490c04bf918f3a9da05a0364dc676b12ff625c877b12ccb71f3"
+        },
+        {
+          "id": "ES-MALAGA-PARCELA-4196950",
+          "geometrySha256": "2930e12058440c2e2ab3bdb853f9f771ea770f29cc870e3ce01f052e9824962b"
+        },
+        {
+          "id": "ES-MALAGA-PARCELA-4196945",
+          "geometrySha256": "19173adac128f916ac9066fafec8c2f50fed5ecb42c9f68c55e710e05d78064c"
+        },
+        {
+          "id": "ES-MALAGA-PARCELA-4196935",
+          "geometrySha256": "33bbe05df3d3332139ba6b22798a62a1d03ca0bac4e7fe1ddc024b8ceca81501"
+        },
+        {
+          "id": "ES-MALAGA-PARCELA-4196939",
+          "geometrySha256": "f2ba0f6b39934f56bd167ae58e1ccfee95a344fa689c940adcead8d614ac5c23"
+        },
+        {
+          "id": "ES-MALAGA-PARCELA-4196838",
+          "geometrySha256": "597cdd809dfe00d66b81b988154f0d29aff2469f09a566ee3914108953494b4c"
+        },
+        {
+          "id": "ES-MALAGA-PARCELA-4196940",
+          "geometrySha256": "b30a759631fde0de5be4ff6e67cd2c368f306655fe0988c8be94b126871f0cc9"
+        },
+        {
+          "id": "ES-MALAGA-PARCELA-4196944",
+          "geometrySha256": "dd832f434d25d378c4144f6522d4add2520ca1431b6b8a41f615961480ee2299"
+        },
+        {
+          "id": "ES-MALAGA-PARCELA-4195159",
+          "geometrySha256": "b50a1176025eca3e2e3a69ab1a88866d9a6b8ee4d68430fca447b774cd56e110"
+        },
+        {
+          "id": "ES-MALAGA-PARCELA-4196833",
+          "geometrySha256": "61262c2eba900cff5a7849b0e6f58a96d16b6cdb1b72ceca39aefededde05fc6"
+        },
+        {
+          "id": "ES-MALAGA-PARCELA-4196836",
+          "geometrySha256": "5fb3742bd3795060e2acc7c5cda4bf425857c1d840d3ba4218840c8e2c33860b"
+        },
+        {
+          "id": "ES-MALAGA-PARCELA-4196835",
+          "geometrySha256": "28cf6a39590c45daa4b1ac2f79c931a91c521827dc55aee5127732468828795f"
+        },
+        {
+          "id": "ES-MALAGA-PARCELA-4196834",
+          "geometrySha256": "999c5e8b356aa6874ebc5bdce6643b46f6ba8a0e28865c81ffebadefa385b9f5"
+        },
+        {
+          "id": "ES-MALAGA-PARCELA-4196823",
+          "geometrySha256": "5c5ed4f1aa834f8e52d4e6d2ea4719beb77f5779d8f78753258b6cb20c6bc7a7"
+        },
+        {
+          "id": "ES-MALAGA-PARCELA-4196839",
+          "geometrySha256": "6f668110f99affd918971523de2b9f84ab6044212149ecbe42f7b95a38d3747f"
+        },
+        {
+          "id": "ES-MALAGA-PARCELA-4196840",
+          "geometrySha256": "560c7e8f277c45a01a321b7f939dfabdf254d99355dc4c2442a606d36820c0bf"
+        },
+        {
+          "id": "ES-MALAGA-PARCELA-4196837",
+          "geometrySha256": "f6189bedf5539a5187c94c9c56c7a199acc0f9c19ee06eaa7594e6d5d8648886"
+        },
+        {
+          "id": "ES-MALAGA-PARCELA-90130340",
+          "geometrySha256": "de71e7a3afc5dfd74d7bc583fccc2efed8866a76637facaa367aab887142476e"
+        }
+      ]
+    },
+    {
+      "name": "complete-snapshot-protocol",
+      "passed": true,
+      "featureCount": 58631,
+      "bytes": 51676749,
+      "pagingApplicable": false,
+      "pagingReason": "One complete declared-length snapshot, with pinned source count and revision; no remote feature paging is used."
+    },
+    {
+      "name": "footprint",
+      "passed": true,
+      "selectedParcelId": "ES-MALAGA-PARCELA-4196772",
+      "count": 3,
+      "complete": true,
+      "exactWupPointContained": true,
+      "allGeometryHashesMatch": true
+    },
+    {
+      "name": "source-binding",
+      "passed": true,
+      "selectedParcelId": "ES-MALAGA-PARCELA-4196772",
+      "coverage": "complete",
+      "siteM2": 148.3,
+      "boundParcels": 1
+    },
+    {
+      "name": "fresh-ids-0",
+      "passed": true,
+      "count": 80,
+      "allGeometryHashesMatch": true,
+      "absentIds": []
+    },
+    {
+      "name": "fresh-ids-80",
+      "passed": true,
+      "count": 65,
+      "allGeometryHashesMatch": true,
+      "absentIds": []
+    },
+    {
+      "name": "fresh-snapshot-protocol",
+      "passed": true,
+      "featureCount": 58631,
+      "bytes": 51676749,
+      "allBodyHashesMatch": true
+    },
+    {
+      "name": "explicit-absence",
+      "passed": true,
+      "absentIds": [
+        "ES-MALAGA-PARCELA-999999999999"
+      ],
+      "complete": true
+    }
+  ],
+  "requests": [
+    {
+      "stage": "first",
+      "url": "https://datosabiertos.malaga.eu/recursos/urbanismoEInfraestructura/planimetria/callejero/da_cartografiaParcela-4326.geojson",
+      "checkedAt": "2026-10-09T06:34:00.093Z",
+      "httpStatus": 200,
+      "etag": "\"314864d-65d53018af75b-gzip\"",
+      "last-modified": "Thu, 08 Oct 2026 12:02:29 GMT",
+      "content-length": null,
+      "content-type": "application/geo+json",
+      "content-encoding": "gzip",
+      "bytes": 51676749,
+      "bodySha256": "3bfa7dd54a2dab51153b778fac0758502656704c12771ef972b31d6c86ab6e23",
+      "featureCount": 58631,
+      "crs": {
+        "type": "name",
+        "properties": {
+          "name": "urn:ogc:def:crs:EPSG::4326"
+        }
+      }
+    },
+    {
+      "stage": "fresh-independent",
+      "url": "https://datosabiertos.malaga.eu/recursos/urbanismoEInfraestructura/planimetria/callejero/da_cartografiaParcela-4326.geojson",
+      "checkedAt": "2026-10-09T06:34:07.945Z",
+      "httpStatus": 200,
+      "etag": "\"314864d-65d53018af75b-gzip\"",
+      "last-modified": "Thu, 08 Oct 2026 12:02:29 GMT",
+      "content-length": null,
+      "content-type": "application/geo+json",
+      "content-encoding": "gzip",
+      "bytes": 51676749,
+      "bodySha256": "3bfa7dd54a2dab51153b778fac0758502656704c12771ef972b31d6c86ab6e23",
+      "featureCount": 58631,
+      "crs": {
+        "type": "name",
+        "properties": {
+          "name": "urn:ogc:def:crs:EPSG::4326"
+        }
+      }
+    }
+  ],
+  "qualityFile": "research/overnight-followon-2026-10-09/malaga-snapshot-root-quality.json",
+  "uniqueParcels": 145,
+  "requestCount": 2,
+  "allTestsPassed": true,
+  "finishedAt": "2026-10-09T06:34:15.413Z",
+  "qualityStatus": "approved_by_root",
+  "qualityReviewedAt": "2026-10-09T06:42:58.658927+00:00"
+}

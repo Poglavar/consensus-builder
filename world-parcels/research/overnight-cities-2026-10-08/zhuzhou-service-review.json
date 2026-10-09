@@ -1,0 +1,59 @@
+{
+  "schemaVersion": 1,
+  "checkedAt": "2026-10-09",
+  "sourceId": "cn-zhuzhou-city-registry",
+  "purpose": "Review city-local registry basis and anonymous geometry-only routes without querying personal/property attributes.",
+  "primaryPublisher": "Zhuzhou City government-services storefront / natural-resources registration service",
+  "sourceUrl": "https://zwfw-new.hunan.gov.cn/hnzwfw/portal/WCcByBF0QjqavaDWE5rr7w/index.html",
+  "registryFound": true,
+  "registryBasis": "The Hunan Provincial government-service portal has a Zhuzhou City service storefront with a city-provided “Real Estate Registration Query” service. The page requires a certificate/identity-number input for lookup, so it establishes a city-specific registration service but not anonymous parcel geometry.",
+  "officialSources": [
+    {
+      "url": "https://zwfw-new.hunan.gov.cn/hnzwfw/portal/WCcByBF0QjqavaDWE5rr7w/index.html",
+      "observation": "The Hunan Provincial government-service portal has a Zhuzhou City service storefront with a city-provided “Real Estate Registration Query” service. The page requires a certificate/identity-number input for lookup, so it establishes a city-specific registration service but not anonymous parcel geometry."
+    }
+  ],
+  "searchQueries": [
+    {
+      "language": "English",
+      "query": "Zhuzhou China official city real estate registration center cadastral map parcel GIS",
+      "scope": "Find primary city-local registry/cadastre basis and safe anonymous polygon routes.",
+      "result": "The official Hunan government portal exposes a Zhuzhou-branded Real Estate Registration Query service and labels Zhuzhou as the service provider. The visible form requires a certificate/identity number. No form value was entered and no private or property record was queried; no public vector or schema route was found.",
+      "actualResultUrls": [
+        "https://zwfw-new.hunan.gov.cn/hnzwfw/portal/WCcByBF0QjqavaDWE5rr7w/index.html"
+      ]
+    },
+    {
+      "language": "Chinese",
+      "query": "株洲市 不动产登记查询 不动产登记中心 地籍图 官方",
+      "scope": "Find local-language city-specific registry/cadastre basis and safe anonymous polygon routes.",
+      "result": "湖南省株洲市政务服务旗舰店列有“不动产登记查询”，页面明示“本服务由株洲市提供”。查询页需要证件号码；未填写号码或提交请求，也未发现匿名矢量地块数据接口。",
+      "actualResultUrls": [
+        "https://zwfw-new.hunan.gov.cn/hnzwfw/portal/WCcByBF0QjqavaDWE5rr7w/index.html"
+      ]
+    }
+  ],
+  "accessReview": {
+    "publicAnonymousGeometryVerified": false,
+    "completeGeoreferencedPolygonCount": 0,
+    "geometryRetained": false,
+    "ownerAddressTaxOrPersonLookupRequested": false,
+    "authenticationOrCredentialsUsed": false,
+    "captchaOrPersonalFormSubmitted": false,
+    "routeInspectionStatus": "city_registry_verified_no_geometry_contract",
+    "reason": "The city-provided registration query is identifier-driven and the public page does not expose a geometry-only polygon route or schema. No identifier was entered, no form submitted, and no property information queried.",
+    "nativeIdsUsed": "No safe parcel feature identifier retrieved; no feature attributes requested."
+  },
+  "requestEvidence": [
+    {
+      "url": "https://zwfw-new.hunan.gov.cn/hnzwfw/portal/WCcByBF0QjqavaDWE5rr7w/index.html",
+      "method": "public page open",
+      "status": "status_not_exposed_by_web_open",
+      "httpStatusObtained": false,
+      "observation": "Zhuzhou City service storefront identifies the service as real-estate registration query, says it is provided by Zhuzhou, and presents an identity/certificate-number input. Nothing was entered or submitted."
+    }
+  ],
+  "technicalBlocker": "The city-provided registration query is identifier-driven and the public page does not expose a geometry-only polygon route or schema. No identifier was entered, no form submitted, and no property information queried.",
+  "sampleDisposition": "No parcel geometry or feature attributes retained.",
+  "remainingUncertainty": "No anonymous vector feature schema or full polygon route was verified. The public query service requires a certificate/identity number and was not used."
+}

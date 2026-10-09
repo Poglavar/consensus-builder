@@ -1,0 +1,59 @@
+{
+  "schemaVersion": "1.0",
+  "checkedAt": "2026-10-09",
+  "cityRecord": "city-8707-yongchuan.json",
+  "purpose": "Document first-party local registry/map evidence and bounded anonymous parcel-geometry access review.",
+  "scopeLimits": {
+    "maxFullPolygonsRetainedInCityRecord": 0,
+    "maxFullPolygonsRetainedInReview": 0,
+    "maxFullPolygonsRetainedInRepository": 0,
+    "ownerOrAddressDataRetained": false,
+    "credentialsOrTokenValuesRetained": false,
+    "citywideCompletenessAsserted": false
+  },
+  "assessment": "Official local records identify the Yongchuan District real-estate registration center and its land/house registration and information-platform remit. Chinese-language searches did not surface a public parcel vector endpoint or an anonymous geometry query. No personal-property lookup was performed.",
+  "registryAssessment": "The official Chongqing Municipal Natural Resources and Planning Bureau document identifies the Yongchuan District real-estate registration center as a district unit responsible for land, house and forest registration, registration information management and service-platform construction. No public parcel layer or anonymous geometry service was found in the reviewed first-party sources.",
+  "officialPrimarySources": [
+    {
+      "url": "https://ghzrzyj.cq.gov.cn/zwgk_186/fdzdgknr/czyjs/202603/P020260302354998109920.pdf",
+      "observation": "The official Chongqing Municipal Natural Resources and Planning Bureau document identifies the Yongchuan District real-estate registration center as a district unit responsible for land, house and forest registration, registration information management and service-platform construction. No public parcel layer or anonymous geometry service was found in the reviewed first-party sources."
+    },
+    {
+      "url": "https://yc.cq.gov.cn/",
+      "observation": "The official Chongqing Municipal Natural Resources and Planning Bureau document identifies the Yongchuan District real-estate registration center as a district unit responsible for land, house and forest registration, registration information management and service-platform construction. No public parcel layer or anonymous geometry service was found in the reviewed first-party sources."
+    }
+  ],
+  "searchQueries": [
+    {
+      "language": "English",
+      "query": "Yongchuan Chongqing official cadastral parcel map land registry GIS real estate registration",
+      "result": "Official local records identify the Yongchuan District real-estate registration center and its land/house registration and information-platform remit. Chinese-language searches did not surface a public parcel vector endpoint or an anonymous geometry query. No personal-property lookup was performed.",
+      "method": "Separate English-language search and first-party service review; no property identifiers or personal fields submitted.",
+      "scope": "Find primary local registry/cadastre evidence and a public parcel-geometry service."
+    },
+    {
+      "language": "Chinese",
+      "query": "永川 不动产登记 地籍图 宗地 官方 自然资源局",
+      "result": "Official local records identify the Yongchuan District real-estate registration center and its land/house registration and information-platform remit. Chinese-language searches did not surface a public parcel vector endpoint or an anonymous geometry query. No personal-property lookup was performed.",
+      "method": "Separate native-language search and official source review.",
+      "scope": "Find first-party local-language evidence for the same local registry/map question."
+    }
+  ],
+  "geometryDecision": {
+    "publicParcelGeometryFound": null,
+    "decision": "No geometry retained; anonymous public parcel geometry was not verified."
+  },
+  "coverageAssessment": {
+    "citywideCompletenessAsserted": false,
+    "scope": "Exact unchanged WUP settlement locator and reviewed official sources only.",
+    "limits": "No public service extent or citywide parcel coverage verified."
+  },
+  "attempts": [
+    {
+      "url": "https://ghzrzyj.cq.gov.cn/zwgk_186/fdzdgknr/czyjs/202603/P020260302354998109920.pdf",
+      "method": "Official district-center remit document review",
+      "result": "Confirms land/house registration and registration-information platform duties; does not publish a public geometry endpoint or feature schema."
+    }
+  ],
+  "remainingUncertainty": "No anonymous field-safe parcel geometry response was verified; coverage at the exact WUP point remains unresolved."
+}

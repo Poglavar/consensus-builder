@@ -1,0 +1,89 @@
+{
+  "schemaVersion": "1.0",
+  "checkedAt": "2026-10-09",
+  "cityRecord": "city-7427-jhang.json",
+  "purpose": "Document local registry evidence, language-specific searches and bounded anonymous geometry-route review.",
+  "scopeLimits": {
+    "maxFullPolygonsRetainedInCityRecord": 0,
+    "maxFullPolygonsRetainedInReview": 0,
+    "ownerOrAddressDataRetained": false,
+    "credentialsOrTokenValuesRetained": false,
+    "citywideCompletenessAsserted": false
+  },
+  "assessment": "The official Jhang district Revenue Department identifies efficient land-record management as a district function and publishes Jhang tehsil revenue-estate/mouza and staff coverage. Punjab Land Records also exposes village-wise cadastral-map selectors, including Jhang in the PLRA public map catalogue. This establishes a local revenue/cadastral workflow, not an anonymously accessible urban parcel-vector layer or citywide coverage. No sample retained. Official map pages establish cadastral-map availability, but an anonymous feature endpoint/schema and geometry-only response for the exact WUP point were not verified.",
+  "registryAssessment": "The official Jhang district Revenue Department identifies efficient land-record management as a district function and publishes Jhang tehsil revenue-estate/mouza and staff coverage. Punjab Land Records also exposes village-wise cadastral-map selectors, including Jhang in the PLRA public map catalogue. This establishes a local revenue/cadastral workflow, not an anonymously accessible urban parcel-vector layer or citywide coverage.",
+  "officialPrimarySources": [
+    {
+      "url": "https://jhang.punjab.gov.pk/revenue_dept",
+      "observation": "Official district Revenue Department lists efficient land-record management and Jhang tehsil revenue circles/estates."
+    },
+    {
+      "url": "https://jamabandi.punjab.gov.pk/CadastralMap.aspx?itemPID=19",
+      "observation": "Punjab Land Records public portal advertises village-wise cadastral maps and district/tehsil/village selectors; no selected parcel or personal data was queried."
+    },
+    {
+      "url": "https://lis.pulse.gop.pk/",
+      "observation": "Official Punjab PULSE viewer advertises Jhang under Cadastral Maps; enhanced parcel details show a login gate, which was not used."
+    }
+  ],
+  "searchQueries": [
+    {
+      "language": "English",
+      "query": "Jhang Pakistan official land records cadastral maps service Punjab Board of Revenue Jhang district",
+      "scope": "Find local registry/cadastral custodian and public parcel geometry, bound to this city.",
+      "result": "Official Jhang district Revenue Department describes land-record management and Jhang tehsil revenue estates. The provincial cadastral-map service offers district/tehsil/village selection; no safe public vector feature route was verified.",
+      "actualResultUrls": [
+        "https://jhang.punjab.gov.pk/revenue_dept",
+        "https://jamabandi.punjab.gov.pk/CadastralMap.aspx?itemPID=19",
+        "https://lis.pulse.gop.pk/"
+      ],
+      "executionMethod": "Separate English-language web search followed by official source and public service review; no owner or property fields requested."
+    },
+    {
+      "language": "Urdu",
+      "query": "جھنگ شہر سرکاری لینڈ ریکارڈ محکمہ مال نقشہ",
+      "scope": "Find local registry/cadastral custodian and public parcel geometry, bound to this city.",
+      "result": "Urdu-language search corroborated the Jhang Revenue Department and Punjab Land Records map service. Public map context was read only; no owner, khata, address, or tax lookup was submitted.",
+      "actualResultUrls": [
+        "https://jhang.punjab.gov.pk/revenue_dept",
+        "https://jamabandi.punjab.gov.pk/CadastralMap.aspx?itemPID=19",
+        "https://lis.pulse.gop.pk/"
+      ],
+      "executionMethod": "Separate local-language web search followed by official-source review; no owner or property fields requested."
+    }
+  ],
+  "geometryDecision": {
+    "publicParcelGeometryFound": false,
+    "verifiedSample": false,
+    "decision": "No sample retained. Official map pages establish cadastral-map availability, but an anonymous feature endpoint/schema and geometry-only response for the exact WUP point were not verified."
+  },
+  "coverageAssessment": {
+    "citywideCompletenessAsserted": false,
+    "scope": "Exact unchanged WUP locator and reviewed city-specific official sources only.",
+    "limits": "No citywide source extent or coverage was verified."
+  },
+  "attempts": [
+    {
+      "url": "https://jhang.punjab.gov.pk/revenue_dept",
+      "method": "Official website/service metadata review",
+      "result": "Official district Revenue Department lists efficient land-record management and Jhang tehsil revenue circles/estates."
+    },
+    {
+      "url": "https://jamabandi.punjab.gov.pk/CadastralMap.aspx?itemPID=19",
+      "method": "Official website/service metadata review",
+      "result": "Punjab Land Records public portal advertises village-wise cadastral maps and district/tehsil/village selectors; no selected parcel or personal data was queried."
+    },
+    {
+      "url": "https://lis.pulse.gop.pk/",
+      "method": "Official website/service metadata review",
+      "result": "Official Punjab PULSE viewer advertises Jhang under Cadastral Maps; enhanced parcel details show a login gate, which was not used."
+    }
+  ],
+  "sourceCandidate": null,
+  "privacyReview": {
+    "ownerAddressTaxOrAccountValuesRequested": false,
+    "propertyDetailsSubmitted": false,
+    "credentialsOrTokensRetained": false
+  },
+  "sampleGeometryFile": null
+}

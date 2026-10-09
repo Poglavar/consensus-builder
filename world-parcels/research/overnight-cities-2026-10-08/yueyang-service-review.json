@@ -1,0 +1,81 @@
+{
+  "schemaVersion": 1,
+  "checkedAt": "2026-10-09",
+  "sourceId": "cn-yueyang-official-land-records",
+  "purpose": "Service review for WUP2025 rank 686 Yueyang (city code 10436); source registry evidence and safe anonymous full-polygon access status.",
+  "primaryPublisher": "Official Yueyang Real Estate Registration Center portal menu lists “地籍图查询” and a public-query-system entry. The page is a category index and does not disclose a full polygon schema.",
+  "sourceUrl": "https://bdc.yueyang.gov.cn/Publish/PC/html/djtcx/index.html",
+  "registryFound": true,
+  "registryBasis": "The Yueyang Real Estate Registration Center is a city-local public institution. Its official portal includes a “cadastral map query” section and a public query-system entry; the public section is only a category/index, and the linked query landing page did not load. No anonymous full-polygon geometry was verified.",
+  "officialSources": [
+    {
+      "url": "https://bdc.yueyang.gov.cn/Publish/PC/html/djtcx/index.html",
+      "observation": "Official Yueyang Real Estate Registration Center portal menu lists “地籍图查询” and a public-query-system entry. The page is a category index and does not disclose a full polygon schema."
+    },
+    {
+      "url": "https://yybb.yueyang.gov.cn/65518/73959/content_2288486.html",
+      "observation": "Official Yueyang Natural Resources and Planning Bureau report identifies the city registration center and its city-urban registration duties."
+    },
+    {
+      "url": "https://bdc.yueyang.gov.cn/yywechat/",
+      "observation": "Official Yueyang registry service page lists public-facing service functions and local registration service halls; no full polygon endpoint verified."
+    }
+  ],
+  "searchQueries": [
+    {
+      "language": "English",
+      "query": "Yueyang Hunan official real estate registry cadastral map public parcel geometry GIS",
+      "scope": "Find city-specific official registry and safe public full parcel geometry.",
+      "result": "Official Yueyang Real Estate Registration Center portal advertises a cadastral-map-query section and public query system. A separate official city bureau report defines the registry remit for the city urban area. The public query landing page timed out; no polygon endpoint was exposed.",
+      "actualResultUrls": [
+        "https://bdc.yueyang.gov.cn/Publish/PC/html/djtcx/index.html",
+        "https://yybb.yueyang.gov.cn/65518/73959/content_2288486.html",
+        "https://bdc.yueyang.gov.cn/yywechat/"
+      ],
+      "executionMethod": "Search in the stated language followed by official-page/metadata review."
+    },
+    {
+      "language": "Chinese (Simplified)",
+      "query": "岳阳市 不动产登记中心 地籍图查询 公众查询系统 宗地 地图 官方",
+      "scope": "Find city-specific official registry and safe public full parcel geometry.",
+      "result": "岳阳市不动产登记中心官网列出“地籍图查询”栏目和“公众查询系统”入口；栏目内容是索引，查询系统的落地页超时，未发现匿名宗地几何接口。市登记中心官方事业单位报告明确其负责岳阳市城区不动产登记。",
+      "actualResultUrls": [
+        "https://bdc.yueyang.gov.cn/Publish/PC/html/djtcx/index.html",
+        "https://yybb.yueyang.gov.cn/65518/73959/content_2288486.html",
+        "https://bdc.yueyang.gov.cn/yywechat/"
+      ],
+      "executionMethod": "Search in the stated language followed by official-page/metadata review."
+    }
+  ],
+  "accessReview": {
+    "publicAnonymousGeometryVerified": false,
+    "completeGeoreferencedPolygonCount": 0,
+    "geometryRetained": false,
+    "ownerAddressTaxOrPersonLookupRequested": false,
+    "authenticationOrCredentialsUsed": false,
+    "captchaOrPersonalFormSubmitted": false,
+    "routeInspectionStatus": "advertised_map_query_landing_unavailable",
+    "reason": "The public portal advertises a cadastral-map-query category, but its index page contains no map data/schema. The linked public query-system landing page timed out. No login or property-specific query was attempted.",
+    "publicHtmlFetched": true,
+    "publicHtmlRoutesInspected": [
+      "/Publish/PC/html/djtcx/index.html"
+    ],
+    "advertisedMapLinkFound": true,
+    "samplePath": null
+  },
+  "requestEvidence": [
+    {
+      "method": "official public-page/source review",
+      "observation": "No undocumented feature query or personal/property-specific route was used; no HTTP status or feature response is asserted unless separately recorded below."
+    },
+    {
+      "url": "https://portal.hunanbdc.cn/query/index?DJFS=2&district=NDMwNjAw&field=query",
+      "method": "public landing-page GET through web retrieval",
+      "status": null,
+      "observation": "The Yueyang registry menu links this public query-system route. Retrieval timed out; no form was submitted, no property/owner query was made, and no HTTP status is asserted."
+    }
+  ],
+  "technicalBlocker": "The public portal advertises a cadastral-map-query category, but its index page contains no map data/schema. The linked public query-system landing page timed out. No login or property-specific query was attempted.",
+  "sampleDisposition": "No safe anonymous full polygon route verified; zero polygons retained.",
+  "remainingUncertainty": "A public cadastral map may be behind the portal query system, but its route and data-access conditions were not established."
+}

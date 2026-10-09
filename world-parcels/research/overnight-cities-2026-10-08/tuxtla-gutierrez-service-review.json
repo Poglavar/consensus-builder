@@ -1,0 +1,96 @@
+{
+  "schemaVersion": "1.0",
+  "checkedAt": "2026-10-09",
+  "cityRecord": "city-6859-tuxtla-gutierrez.json",
+  "purpose": "Document first-party local registry/map evidence and bounded anonymous geometry access review.",
+  "scopeLimits": {
+    "maxFullPolygonsRetainedInCityRecord": 3,
+    "maxFullPolygonsRetainedInReview": 0,
+    "maxFullPolygonsRetainedInRepository": 24,
+    "ownerOrAddressDataRetained": false,
+    "credentialsOrTokenValuesRetained": false,
+    "citywideCompletenessAsserted": false
+  },
+  "assessment": "The municipal manual describes SIGETUX 2.0 as a public interactive GIS for municipal planning, data, metadata and photogrammetry. State directory lists a Tuxtla registral delegation; municipal pages provide predial and property-transfer workflows. No cadastral parcel layer or full-polygon schema was confirmed.",
+  "registryAssessment": "The official Chiapas Institute Registral directory lists Delegación Registral Tuxtla 1 in the city, while the municipal government provides property-tax and urban-property procedures. This confirms local property/cadastral administration, but no anonymous parcel geometry service was verified.",
+  "officialPrimarySources": [
+    {
+      "url": "https://chiapas.gob.mx/funcionarios/estatal/ejecutivo/instituto-registral",
+      "observation": "The official Chiapas Institute Registral directory lists Delegación Registral Tuxtla 1 in the city, while the municipal government provides property-tax and urban-property procedures. This confirms local property/cadastral administration, but no anonymous parcel geometry service was verified."
+    },
+    {
+      "url": "https://tuxtla.gob.mx/ventanilla/",
+      "observation": "The official Chiapas Institute Registral directory lists Delegación Registral Tuxtla 1 in the city, while the municipal government provides property-tax and urban-property procedures. This confirms local property/cadastral administration, but no anonymous parcel geometry service was verified."
+    },
+    {
+      "url": "https://tuxtla.gob.mx/1Mapa-municipal",
+      "observation": "The official Chiapas Institute Registral directory lists Delegación Registral Tuxtla 1 in the city, while the municipal government provides property-tax and urban-property procedures. This confirms local property/cadastral administration, but no anonymous parcel geometry service was verified."
+    },
+    {
+      "url": "https://sigetux.tuxtla.gob.mx/iciplam/doctos/MANUAL_DE_USUARIO_GEOTUX_v2.pdf",
+      "observation": "The official Chiapas Institute Registral directory lists Delegación Registral Tuxtla 1 in the city, while the municipal government provides property-tax and urban-property procedures. This confirms local property/cadastral administration, but no anonymous parcel geometry service was verified."
+    },
+    {
+      "url": "https://innovacion.tuxtla.gob.mx/taip/ArchivosFracciones/898.pdf",
+      "observation": "The official Chiapas Institute Registral directory lists Delegación Registral Tuxtla 1 in the city, while the municipal government provides property-tax and urban-property procedures. This confirms local property/cadastral administration, but no anonymous parcel geometry service was verified."
+    }
+  ],
+  "searchQueries": [
+    {
+      "language": "Spanish",
+      "query": "Tuxtla Gutiérrez catastro municipal predial mapa parcelario SIGETUX oficial",
+      "result": "Municipal and state sources confirm a municipal map, predial/property workflows and a state registral delegation. The public SIGETUX manual describes general planning GIS, photogrammetry and map information; it does not document cadastral parcel geometry.",
+      "method": "Separate Spanish search followed by official municipal and state sources.",
+      "scope": "Find first-party local cadastral, property registry and public map services."
+    },
+    {
+      "language": "English",
+      "query": "Tuxtla Gutierrez official cadastral GIS parcel map public land registry SIGETUX",
+      "result": "Official sources corroborate the city registry delegation and municipal GIS; the available SIGETUX documentation is a public planning map manual, not a parcel-feature schema. No full polygon was returned.",
+      "method": "Separate English search and official portal/manual review.",
+      "scope": "Cross-check municipal map, registry, and full-geometry access."
+    }
+  ],
+  "geometryDecision": "No parcel geometry retained. No qualifying complete full polygon at a safely validated native parcel ID was returned.",
+  "coverageAssessment": {
+    "claimedScope": "Municipal SIGETUX public planning/geographic map, state property registry delegation, and municipal predial/urban-property procedures.",
+    "verifiedOpenScope": "The municipal manual describes SIGETUX 2.0 as a public interactive GIS for municipal planning, data, metadata and photogrammetry. State directory lists a Tuxtla registral delegation; municipal pages provide predial and property-transfer workflows. No cadastral parcel layer or full-polygon schema was confirmed.",
+    "citywideVerified": false,
+    "countrywideVerified": false,
+    "geometryVerified": false
+  },
+  "attempts": [
+    {
+      "url": "https://tuxtla.gob.mx/1Mapa-municipal",
+      "method": "GET",
+      "httpStatus": 403,
+      "contentType": "text/html",
+      "observation": "Direct read received a hosting/security challenge response. Search-indexed page names the municipal map but exposes no indexed layer schema."
+    },
+    {
+      "url": "https://sigetux.tuxtla.gob.mx/",
+      "method": "GET",
+      "httpStatus": 403,
+      "contentType": "text/html",
+      "observation": "Direct read received a hosting/security challenge response; not treated as evidence the portal is unavailable to ordinary users."
+    },
+    {
+      "url": "https://sigetux.tuxtla.gob.mx/iciplam/doctos/MANUAL_DE_USUARIO_GEOTUX_v2.pdf",
+      "method": "GET / official manual review",
+      "observation": "SIGETUX 2.0 is described as a public GIS with data, metadata, photogrammetry, and planning information; no parcel vector endpoint is specified."
+    },
+    {
+      "url": "https://apicatastro.tuxtla.gob.mx/",
+      "method": "GET",
+      "httpStatus": 200,
+      "contentType": "text/html",
+      "observation": "Returned a generic Laravel welcome page, not a public cadastral feature API."
+    },
+    {
+      "url": "https://chiapas.gob.mx/funcionarios/estatal/ejecutivo/instituto-registral",
+      "method": "GET / official directory review",
+      "observation": "Official state directory lists Delegación Registral Tuxtla 1."
+    }
+  ],
+  "remainingUncertainty": "Whether SIGETUX exposes a parcel layer to the public; exact city parcel coverage at the WUP point; any anonymous full-feature geometry or native cadastral ID route."
+}

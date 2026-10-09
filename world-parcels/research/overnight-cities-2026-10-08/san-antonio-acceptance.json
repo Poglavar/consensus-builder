@@ -1,0 +1,3937 @@
+{
+  "schemaVersion": 1,
+  "purpose": "Live city parcel qualification with unmodified responses through the repository adapter; IDs and hashes retained, full geometries confined to temporary audit cache except three public samples.",
+  "checkedAt": "2026-10-08T22:26:11.583Z",
+  "city": "san-antonio",
+  "descriptor": {
+    "id": "us-tx-bexar-bcad-public-archive-2022-propid",
+    "adapter": "arcgis",
+    "endpoint": "https://services7.arcgis.com/Q6vsXnxTnYcWB7qg/ArcGIS/rest/services/BEXAR_PARCELS/FeatureServer/0",
+    "idField": "Prop_ID",
+    "idType": "string",
+    "idPattern": "^[0-9]{1,10}$",
+    "objectIdField": "OBJECTID",
+    "idPrefix": "US-TX-BEXAR-BCAD-2022-",
+    "outFields": [
+      "OBJECTID",
+      "Prop_ID"
+    ],
+    "pageSize": 500,
+    "maxFeatures": 5000,
+    "maxBboxKm2": 25
+  },
+  "grid": [
+    {
+      "name": "viewport-0",
+      "bbox": [
+        -98.545,
+        29.463,
+        -98.544,
+        29.464
+      ],
+      "kind": "aligned-grid"
+    },
+    {
+      "name": "viewport-1",
+      "bbox": [
+        -98.544,
+        29.463,
+        -98.543,
+        29.464
+      ],
+      "kind": "aligned-grid"
+    },
+    {
+      "name": "viewport-2",
+      "bbox": [
+        -98.543,
+        29.463,
+        -98.542,
+        29.464
+      ],
+      "kind": "aligned-grid"
+    },
+    {
+      "name": "viewport-3",
+      "bbox": [
+        -98.545,
+        29.464,
+        -98.544,
+        29.465
+      ],
+      "kind": "aligned-grid"
+    },
+    {
+      "name": "viewport-4",
+      "bbox": [
+        -98.544,
+        29.464,
+        -98.543,
+        29.465
+      ],
+      "kind": "aligned-grid"
+    },
+    {
+      "name": "viewport-5",
+      "bbox": [
+        -98.543,
+        29.464,
+        -98.542,
+        29.465
+      ],
+      "kind": "aligned-grid"
+    },
+    {
+      "name": "viewport-6",
+      "bbox": [
+        -98.545,
+        29.465,
+        -98.544,
+        29.466
+      ],
+      "kind": "aligned-grid"
+    },
+    {
+      "name": "viewport-7",
+      "bbox": [
+        -98.544,
+        29.465,
+        -98.543,
+        29.466
+      ],
+      "kind": "aligned-grid"
+    },
+    {
+      "name": "viewport-8",
+      "bbox": [
+        -98.543,
+        29.465,
+        -98.542,
+        29.466
+      ],
+      "kind": "aligned-grid"
+    },
+    {
+      "name": "viewport-9",
+      "bbox": [
+        -98.544,
+        29.462,
+        -98.543,
+        29.463
+      ],
+      "kind": "adjacent-pan"
+    },
+    {
+      "name": "viewport-10",
+      "bbox": [
+        -98.544,
+        29.466,
+        -98.543,
+        29.467
+      ],
+      "kind": "adjacent-pan"
+    },
+    {
+      "name": "viewport-11",
+      "bbox": [
+        -98.546,
+        29.464,
+        -98.545,
+        29.465
+      ],
+      "kind": "adjacent-pan"
+    },
+    {
+      "name": "viewport-12",
+      "bbox": [
+        -98.542,
+        29.464,
+        -98.541,
+        29.465
+      ],
+      "kind": "adjacent-pan"
+    }
+  ],
+  "tests": [
+    {
+      "name": "viewport-0",
+      "passed": true,
+      "elapsedMs": 721,
+      "requestIndexes": [
+        0,
+        0
+      ],
+      "bbox": [
+        -98.545,
+        29.463,
+        -98.544,
+        29.464
+      ],
+      "complete": true,
+      "count": 8,
+      "ids": [
+        {
+          "id": "US-TX-BEXAR-BCAD-2022-434663",
+          "geometrySha256": "68dc1089b97ab3624207c3feff327badd785b47b7e5597dc0a75b99519f7a53f"
+        },
+        {
+          "id": "US-TX-BEXAR-BCAD-2022-434662",
+          "geometrySha256": "0d05128e6b6f88b04bb4fad50888f16b1d95ff95065deeb6e17c4f7d8ff86d53"
+        },
+        {
+          "id": "US-TX-BEXAR-BCAD-2022-434660",
+          "geometrySha256": "d84a4bac7f7f5a788e680bc27f46574ecf86000403b5ebf138e4743de23b5c48"
+        },
+        {
+          "id": "US-TX-BEXAR-BCAD-2022-434661",
+          "geometrySha256": "15c9f820ed140f3482e3c0c332be1369b74463fe5fd0c994fb3349bf8be1fd88"
+        },
+        {
+          "id": "US-TX-BEXAR-BCAD-2022-434653",
+          "geometrySha256": "3c3a7886c32be20bf4d849c159477fcd04ba085cc590218cfebd5a7d5f134ff0"
+        },
+        {
+          "id": "US-TX-BEXAR-BCAD-2022-434642",
+          "geometrySha256": "6c10ebb086fea720b5fdffc1fe904ae6f5d8c98cc3eb889196fe54127b7ebcbc"
+        },
+        {
+          "id": "US-TX-BEXAR-BCAD-2022-434646",
+          "geometrySha256": "4660df96ffcb70afd54a3c936a5b0b42182283bb80b21dbc9239d922b4312eae"
+        },
+        {
+          "id": "US-TX-BEXAR-BCAD-2022-1245399",
+          "geometrySha256": "4c7c8a70df5a53592c3d40c68356397884595a60ddc1cb176ab4cd5a0b0503b1"
+        }
+      ]
+    },
+    {
+      "name": "viewport-1",
+      "passed": true,
+      "elapsedMs": 311,
+      "requestIndexes": [
+        1,
+        1
+      ],
+      "bbox": [
+        -98.544,
+        29.463,
+        -98.543,
+        29.464
+      ],
+      "complete": true,
+      "count": 5,
+      "ids": [
+        {
+          "id": "US-TX-BEXAR-BCAD-2022-434666",
+          "geometrySha256": "7423bd480b4f922327e2b427f4e1a751f422cffff393fc2ca84616fd806f354d"
+        },
+        {
+          "id": "US-TX-BEXAR-BCAD-2022-434665",
+          "geometrySha256": "1b9637dd78a49c3f9271d3736a76a6595a2ded8ec6bd9735524ab66780b5f210"
+        },
+        {
+          "id": "US-TX-BEXAR-BCAD-2022-434664",
+          "geometrySha256": "62642ed0163608d7caa9b7ed9ffb487636383898244888e319056b7f263052a1"
+        },
+        {
+          "id": "US-TX-BEXAR-BCAD-2022-434663",
+          "geometrySha256": "68dc1089b97ab3624207c3feff327badd785b47b7e5597dc0a75b99519f7a53f"
+        },
+        {
+          "id": "US-TX-BEXAR-BCAD-2022-434642",
+          "geometrySha256": "6c10ebb086fea720b5fdffc1fe904ae6f5d8c98cc3eb889196fe54127b7ebcbc"
+        }
+      ]
+    },
+    {
+      "name": "viewport-2",
+      "passed": true,
+      "elapsedMs": 583,
+      "requestIndexes": [
+        2,
+        2
+      ],
+      "bbox": [
+        -98.543,
+        29.463,
+        -98.542,
+        29.464
+      ],
+      "complete": true,
+      "count": 7,
+      "ids": [
+        {
+          "id": "US-TX-BEXAR-BCAD-2022-432921",
+          "geometrySha256": "f474e79210ea71006b3ca6e3904e112e27d498099de7bf81fc032563cc40b302"
+        },
+        {
+          "id": "US-TX-BEXAR-BCAD-2022-432922",
+          "geometrySha256": "c8be348e97e69e75d47686db4e4156af152256e0e4ead6fcac5a63325eaa5f53"
+        },
+        {
+          "id": "US-TX-BEXAR-BCAD-2022-432911",
+          "geometrySha256": "acfbfd18a66fee4bb8ed224cc8ea9131ddc02995d4a6e076a4a98f1c4131a0dc"
+        },
+        {
+          "id": "US-TX-BEXAR-BCAD-2022-432912",
+          "geometrySha256": "1a228b1a5336f981e71b441a9caaf6b425d1d330312486522be8b824546d8de4"
+        },
+        {
+          "id": "US-TX-BEXAR-BCAD-2022-432913",
+          "geometrySha256": "34adaad6f8b512064db83bfe0c22b4d965b75c3ad5726e26d692311b48ae5cd0"
+        },
+        {
+          "id": "US-TX-BEXAR-BCAD-2022-432914",
+          "geometrySha256": "93974a7a9cf2ed6aa9bb66f2f28f193aea1f13144eff9b03338d4fa3095e9c35"
+        },
+        {
+          "id": "US-TX-BEXAR-BCAD-2022-432910",
+          "geometrySha256": "e53ee8f035d91725f7e3686afc62641574b9a429acd8127d96e372a72f5abb16"
+        }
+      ]
+    },
+    {
+      "name": "viewport-3",
+      "passed": true,
+      "elapsedMs": 290,
+      "requestIndexes": [
+        3,
+        3
+      ],
+      "bbox": [
+        -98.545,
+        29.464,
+        -98.544,
+        29.465
+      ],
+      "complete": true,
+      "count": 17,
+      "ids": [
+        {
+          "id": "US-TX-BEXAR-BCAD-2022-434642",
+          "geometrySha256": "6c10ebb086fea720b5fdffc1fe904ae6f5d8c98cc3eb889196fe54127b7ebcbc"
+        },
+        {
+          "id": "US-TX-BEXAR-BCAD-2022-386332",
+          "geometrySha256": "c2fafbce3709e15ba8b51879c684f82de8945b93c15e10558f122471b5ea1d0d"
+        },
+        {
+          "id": "US-TX-BEXAR-BCAD-2022-386333",
+          "geometrySha256": "46113de2274716862bbf1d9d7160c807af5cd06be706b77705ddb4cf23706e50"
+        },
+        {
+          "id": "US-TX-BEXAR-BCAD-2022-386334",
+          "geometrySha256": "c91eaabf1ba16a7a07456da37183e39b6ad2384f069561db9df79eec52733b8a"
+        },
+        {
+          "id": "US-TX-BEXAR-BCAD-2022-386335",
+          "geometrySha256": "968c161b1703668385aa914c37ff0470d1d00803ba8c9b8ae2bbe618486280e4"
+        },
+        {
+          "id": "US-TX-BEXAR-BCAD-2022-386337",
+          "geometrySha256": "e2bba9729e680f1fb480b51636c82b25276892674ef0514de96f3636e6409442"
+        },
+        {
+          "id": "US-TX-BEXAR-BCAD-2022-386338",
+          "geometrySha256": "8f35128cd62f1118f3ce0acd0a5578ffa3a4b962d389d153bc36fe8a711be1fa"
+        },
+        {
+          "id": "US-TX-BEXAR-BCAD-2022-386319",
+          "geometrySha256": "0fc41619333fe66bdeaa9cb7bc636a180194d11611a8b575b0b049aa8906b781"
+        },
+        {
+          "id": "US-TX-BEXAR-BCAD-2022-386318",
+          "geometrySha256": "f6d42a843fbabbd74bb01c6bb586f231314ba65ada7ad83f0662bc47fa5ccf65"
+        },
+        {
+          "id": "US-TX-BEXAR-BCAD-2022-386317",
+          "geometrySha256": "a6e88d93ecd4ae7edcafbbf89116fc96cecbb38e1c5e4209884518730464a601"
+        },
+        {
+          "id": "US-TX-BEXAR-BCAD-2022-386316",
+          "geometrySha256": "e54f97024528bc6e5fddec71c4513defad9e2a15ea8b8cf9f5a05a9063188906"
+        },
+        {
+          "id": "US-TX-BEXAR-BCAD-2022-386315",
+          "geometrySha256": "f72d58465657133ae1339827814760e9920825ff7da5ce20b656337c24045fa8"
+        },
+        {
+          "id": "US-TX-BEXAR-BCAD-2022-386314",
+          "geometrySha256": "35d84fa90007134ab15c5dc477c6c2a76520c01712105e2e3ceb7938e10ee193"
+        },
+        {
+          "id": "US-TX-BEXAR-BCAD-2022-386313",
+          "geometrySha256": "14e8b1d0ce4fa7c7364eed0199aae58a7407750bf02640e89b72d857f3e40170"
+        },
+        {
+          "id": "US-TX-BEXAR-BCAD-2022-1161679",
+          "geometrySha256": "44e14bfbdeba74b8055e33917c01accbb9c383f29274521ed4d78c02687313f3"
+        },
+        {
+          "id": "US-TX-BEXAR-BCAD-2022-434646",
+          "geometrySha256": "4660df96ffcb70afd54a3c936a5b0b42182283bb80b21dbc9239d922b4312eae"
+        },
+        {
+          "id": "US-TX-BEXAR-BCAD-2022-1245399",
+          "geometrySha256": "4c7c8a70df5a53592c3d40c68356397884595a60ddc1cb176ab4cd5a0b0503b1"
+        }
+      ]
+    },
+    {
+      "name": "viewport-4",
+      "passed": true,
+      "elapsedMs": 296,
+      "requestIndexes": [
+        4,
+        4
+      ],
+      "bbox": [
+        -98.544,
+        29.464,
+        -98.543,
+        29.465
+      ],
+      "complete": true,
+      "count": 16,
+      "ids": [
+        {
+          "id": "US-TX-BEXAR-BCAD-2022-434642",
+          "geometrySha256": "6c10ebb086fea720b5fdffc1fe904ae6f5d8c98cc3eb889196fe54127b7ebcbc"
+        },
+        {
+          "id": "US-TX-BEXAR-BCAD-2022-386324",
+          "geometrySha256": "d2d433ee68c9faf31d67ff01cdfa79d5455c6f75534c0e33565d2915340cdf1d"
+        },
+        {
+          "id": "US-TX-BEXAR-BCAD-2022-386323",
+          "geometrySha256": "a229ee66f337cc3a88edf172a42ad899b3ec5abcc8669446e4a059f575752748"
+        },
+        {
+          "id": "US-TX-BEXAR-BCAD-2022-386322",
+          "geometrySha256": "c0d0a34ce3c835190c2cafb47ab5b8d9d7b6aafdc0553fea9c3ddaa6f90b9f1b"
+        },
+        {
+          "id": "US-TX-BEXAR-BCAD-2022-386325",
+          "geometrySha256": "c3732fd7d60fa741f8ce18f6b7caedc434a3f2745ff0309e6e3e032b4c457b21"
+        },
+        {
+          "id": "US-TX-BEXAR-BCAD-2022-386326",
+          "geometrySha256": "95e525e32ffb8e1477bae57d8ec628e850e5024d12110373e319fad672c6a26f"
+        },
+        {
+          "id": "US-TX-BEXAR-BCAD-2022-386328",
+          "geometrySha256": "0b68614d65faea750e3b7413b99b47b23b7e13ea7ece90fb372f1013e327ae7d"
+        },
+        {
+          "id": "US-TX-BEXAR-BCAD-2022-386329",
+          "geometrySha256": "8e70ea1602c53f929ac78a153730e4d62bec6f8e48dddd3b89ab2241305f6609"
+        },
+        {
+          "id": "US-TX-BEXAR-BCAD-2022-386330",
+          "geometrySha256": "c91a2311b9bed2c8cdf343f575ffbeb3112f16734747fcbafe19f9fba76f92a4"
+        },
+        {
+          "id": "US-TX-BEXAR-BCAD-2022-386331",
+          "geometrySha256": "33a2d1cde6e178f242f56d52bace4abd5106d3cd59c07029d5070368128633d1"
+        },
+        {
+          "id": "US-TX-BEXAR-BCAD-2022-386332",
+          "geometrySha256": "c2fafbce3709e15ba8b51879c684f82de8945b93c15e10558f122471b5ea1d0d"
+        },
+        {
+          "id": "US-TX-BEXAR-BCAD-2022-386333",
+          "geometrySha256": "46113de2274716862bbf1d9d7160c807af5cd06be706b77705ddb4cf23706e50"
+        },
+        {
+          "id": "US-TX-BEXAR-BCAD-2022-386321",
+          "geometrySha256": "f52fec03aebcba576356d89a9de8cb844f10ec3570aa3bedc10e91fddb28e05a"
+        },
+        {
+          "id": "US-TX-BEXAR-BCAD-2022-386320",
+          "geometrySha256": "80bf50cc8c76dbecb46b096265d259f07aeb04fb55986dfcab8b4b4978237daf"
+        },
+        {
+          "id": "US-TX-BEXAR-BCAD-2022-386319",
+          "geometrySha256": "0fc41619333fe66bdeaa9cb7bc636a180194d11611a8b575b0b049aa8906b781"
+        },
+        {
+          "id": "US-TX-BEXAR-BCAD-2022-386318",
+          "geometrySha256": "f6d42a843fbabbd74bb01c6bb586f231314ba65ada7ad83f0662bc47fa5ccf65"
+        }
+      ]
+    },
+    {
+      "name": "viewport-5",
+      "passed": true,
+      "elapsedMs": 294,
+      "requestIndexes": [
+        5,
+        5
+      ],
+      "bbox": [
+        -98.543,
+        29.464,
+        -98.542,
+        29.465
+      ],
+      "complete": true,
+      "count": 13,
+      "ids": [
+        {
+          "id": "US-TX-BEXAR-BCAD-2022-432910",
+          "geometrySha256": "e53ee8f035d91725f7e3686afc62641574b9a429acd8127d96e372a72f5abb16"
+        },
+        {
+          "id": "US-TX-BEXAR-BCAD-2022-434642",
+          "geometrySha256": "6c10ebb086fea720b5fdffc1fe904ae6f5d8c98cc3eb889196fe54127b7ebcbc"
+        },
+        {
+          "id": "US-TX-BEXAR-BCAD-2022-386373",
+          "geometrySha256": "0408a2c099fe0ea9a09ca7cd6f2eb2ca537206f0014ef7769babed67565d3df3"
+        },
+        {
+          "id": "US-TX-BEXAR-BCAD-2022-386374",
+          "geometrySha256": "ed4bab0f95200df89ba796bece283786ade4524cc1a4aad2900b170c65504efb"
+        },
+        {
+          "id": "US-TX-BEXAR-BCAD-2022-386380",
+          "geometrySha256": "9371f33d336d08204280cf823746c40364879b610c1c83176d2354bf2a7c1892"
+        },
+        {
+          "id": "US-TX-BEXAR-BCAD-2022-386379",
+          "geometrySha256": "ed7938f4767293e8c186146f9a571a10ad0229915fadeae10552a287647a0c95"
+        },
+        {
+          "id": "US-TX-BEXAR-BCAD-2022-386323",
+          "geometrySha256": "a229ee66f337cc3a88edf172a42ad899b3ec5abcc8669446e4a059f575752748"
+        },
+        {
+          "id": "US-TX-BEXAR-BCAD-2022-386376",
+          "geometrySha256": "da445c44b1dd39597844dcd44f7a2e55714240c5b682937f26b72697f8138792"
+        },
+        {
+          "id": "US-TX-BEXAR-BCAD-2022-386322",
+          "geometrySha256": "c0d0a34ce3c835190c2cafb47ab5b8d9d7b6aafdc0553fea9c3ddaa6f90b9f1b"
+        },
+        {
+          "id": "US-TX-BEXAR-BCAD-2022-386357",
+          "geometrySha256": "d52c441fb904b08fb6f2e7974b6c25203a8b3ee2877d892be88763e3c9a77474"
+        },
+        {
+          "id": "US-TX-BEXAR-BCAD-2022-386356",
+          "geometrySha256": "ea36c376c8789f8902bf18ce6f1975db5eee63c40b8584914f2d812c5f3dfd2c"
+        },
+        {
+          "id": "US-TX-BEXAR-BCAD-2022-386355",
+          "geometrySha256": "eae33d820aa83104992fbcbf90c6372562f1c54baf465134ca3c6fd7131f4243"
+        },
+        {
+          "id": "US-TX-BEXAR-BCAD-2022-386321",
+          "geometrySha256": "f52fec03aebcba576356d89a9de8cb844f10ec3570aa3bedc10e91fddb28e05a"
+        }
+      ]
+    },
+    {
+      "name": "viewport-6",
+      "passed": true,
+      "elapsedMs": 301,
+      "requestIndexes": [
+        6,
+        6
+      ],
+      "bbox": [
+        -98.545,
+        29.465,
+        -98.544,
+        29.466
+      ],
+      "complete": true,
+      "count": 18,
+      "ids": [
+        {
+          "id": "US-TX-BEXAR-BCAD-2022-386318",
+          "geometrySha256": "f6d42a843fbabbd74bb01c6bb586f231314ba65ada7ad83f0662bc47fa5ccf65"
+        },
+        {
+          "id": "US-TX-BEXAR-BCAD-2022-386317",
+          "geometrySha256": "a6e88d93ecd4ae7edcafbbf89116fc96cecbb38e1c5e4209884518730464a601"
+        },
+        {
+          "id": "US-TX-BEXAR-BCAD-2022-386316",
+          "geometrySha256": "e54f97024528bc6e5fddec71c4513defad9e2a15ea8b8cf9f5a05a9063188906"
+        },
+        {
+          "id": "US-TX-BEXAR-BCAD-2022-386315",
+          "geometrySha256": "f72d58465657133ae1339827814760e9920825ff7da5ce20b656337c24045fa8"
+        },
+        {
+          "id": "US-TX-BEXAR-BCAD-2022-386314",
+          "geometrySha256": "35d84fa90007134ab15c5dc477c6c2a76520c01712105e2e3ceb7938e10ee193"
+        },
+        {
+          "id": "US-TX-BEXAR-BCAD-2022-386313",
+          "geometrySha256": "14e8b1d0ce4fa7c7364eed0199aae58a7407750bf02640e89b72d857f3e40170"
+        },
+        {
+          "id": "US-TX-BEXAR-BCAD-2022-386394",
+          "geometrySha256": "f6e922de7a50d07495ab9cf22b3c8c01549b0b0173af376c50840e1f14a2820b"
+        },
+        {
+          "id": "US-TX-BEXAR-BCAD-2022-386395",
+          "geometrySha256": "32866a0aca73f31f83f00e1be6c6d74d37b35de28b6bc601a5ae3b178ce0bf6b"
+        },
+        {
+          "id": "US-TX-BEXAR-BCAD-2022-386396",
+          "geometrySha256": "0116d8bd621ee45a04ae50449e573d57c740f6992560be2b97ed6fabbf8249b2"
+        },
+        {
+          "id": "US-TX-BEXAR-BCAD-2022-386397",
+          "geometrySha256": "a12dd084aa1c4d3210b548597bb53a0377ce6c961e85874555520131b7477387"
+        },
+        {
+          "id": "US-TX-BEXAR-BCAD-2022-386398",
+          "geometrySha256": "1947d1ea0cdd05eba4b0b63c959afc85fff4bc01977b5ac2364eaeadba656d73"
+        },
+        {
+          "id": "US-TX-BEXAR-BCAD-2022-386399",
+          "geometrySha256": "e65a8bfc93183009c5a210e3355fd80cd68ee92c3cbdfc32cee6598a8aa9db72"
+        },
+        {
+          "id": "US-TX-BEXAR-BCAD-2022-386400",
+          "geometrySha256": "3d46a06a4dd7bd390c2f49e7df059c9b75facbdc627f3af08bc9955e87f29302"
+        },
+        {
+          "id": "US-TX-BEXAR-BCAD-2022-386392",
+          "geometrySha256": "843a7ee52ce1afb0df9d57698fb243bafa4df3ccc02c341c570f24d16e212a43"
+        },
+        {
+          "id": "US-TX-BEXAR-BCAD-2022-386391",
+          "geometrySha256": "7d5a4bb5faae110bb9edc289659b2e0c10413a811828ad6046b30d844d46028c"
+        },
+        {
+          "id": "US-TX-BEXAR-BCAD-2022-386390",
+          "geometrySha256": "084aab842144ff024e3b7926102aa9c994d30425a5dc74d0dc1ff3a8d6e26798"
+        },
+        {
+          "id": "US-TX-BEXAR-BCAD-2022-386389",
+          "geometrySha256": "f17d03414056ae3cc8162e9eec78a3e2d96d94636dcd65d839826ba95bf0bb7d"
+        },
+        {
+          "id": "US-TX-BEXAR-BCAD-2022-386388",
+          "geometrySha256": "13f47e2ea96a4ae51b685e9eb5e4f08f345366f61012d1f4dcb8d5ec7242554f"
+        }
+      ]
+    },
+    {
+      "name": "viewport-7",
+      "passed": true,
+      "elapsedMs": 295,
+      "requestIndexes": [
+        7,
+        7
+      ],
+      "bbox": [
+        -98.544,
+        29.465,
+        -98.543,
+        29.466
+      ],
+      "complete": true,
+      "count": 9,
+      "ids": [
+        {
+          "id": "US-TX-BEXAR-BCAD-2022-386321",
+          "geometrySha256": "f52fec03aebcba576356d89a9de8cb844f10ec3570aa3bedc10e91fddb28e05a"
+        },
+        {
+          "id": "US-TX-BEXAR-BCAD-2022-386320",
+          "geometrySha256": "80bf50cc8c76dbecb46b096265d259f07aeb04fb55986dfcab8b4b4978237daf"
+        },
+        {
+          "id": "US-TX-BEXAR-BCAD-2022-386319",
+          "geometrySha256": "0fc41619333fe66bdeaa9cb7bc636a180194d11611a8b575b0b049aa8906b781"
+        },
+        {
+          "id": "US-TX-BEXAR-BCAD-2022-386318",
+          "geometrySha256": "f6d42a843fbabbd74bb01c6bb586f231314ba65ada7ad83f0662bc47fa5ccf65"
+        },
+        {
+          "id": "US-TX-BEXAR-BCAD-2022-386393",
+          "geometrySha256": "3828bb7ff8fa1a48cd23395076fc928d4739c875d8d6adb8703a1a6d4443fbae"
+        },
+        {
+          "id": "US-TX-BEXAR-BCAD-2022-386394",
+          "geometrySha256": "f6e922de7a50d07495ab9cf22b3c8c01549b0b0173af376c50840e1f14a2820b"
+        },
+        {
+          "id": "US-TX-BEXAR-BCAD-2022-386392",
+          "geometrySha256": "843a7ee52ce1afb0df9d57698fb243bafa4df3ccc02c341c570f24d16e212a43"
+        },
+        {
+          "id": "US-TX-BEXAR-BCAD-2022-1358293",
+          "geometrySha256": "f92e881695d5432c8ea6011545f55e34d51616ee9e0438e4bc19d75f20b265fd"
+        },
+        {
+          "id": "US-TX-BEXAR-BCAD-2022-386300",
+          "geometrySha256": "6f4d41a1fca10367855eabcd23647afff324428ffac6e274ef5aa46d4b964dea"
+        }
+      ]
+    },
+    {
+      "name": "viewport-8",
+      "passed": true,
+      "elapsedMs": 295,
+      "requestIndexes": [
+        8,
+        8
+      ],
+      "bbox": [
+        -98.543,
+        29.465,
+        -98.542,
+        29.466
+      ],
+      "complete": true,
+      "count": 12,
+      "ids": [
+        {
+          "id": "US-TX-BEXAR-BCAD-2022-386357",
+          "geometrySha256": "d52c441fb904b08fb6f2e7974b6c25203a8b3ee2877d892be88763e3c9a77474"
+        },
+        {
+          "id": "US-TX-BEXAR-BCAD-2022-386356",
+          "geometrySha256": "ea36c376c8789f8902bf18ce6f1975db5eee63c40b8584914f2d812c5f3dfd2c"
+        },
+        {
+          "id": "US-TX-BEXAR-BCAD-2022-386355",
+          "geometrySha256": "eae33d820aa83104992fbcbf90c6372562f1c54baf465134ca3c6fd7131f4243"
+        },
+        {
+          "id": "US-TX-BEXAR-BCAD-2022-386296",
+          "geometrySha256": "5fb58837de037dcb33f5a2fccb7bae33485f482bf0547aabfd2f06048ed1be38"
+        },
+        {
+          "id": "US-TX-BEXAR-BCAD-2022-386297",
+          "geometrySha256": "f090944512410fc5afcea41391172f478c1c8ced821b7256f42968ca9a53479b"
+        },
+        {
+          "id": "US-TX-BEXAR-BCAD-2022-386298",
+          "geometrySha256": "3e69dc113c63722db5e6ce25320e2ecff8da88d1c902a1ff1fd3b234eba31a74"
+        },
+        {
+          "id": "US-TX-BEXAR-BCAD-2022-386299",
+          "geometrySha256": "72e37596d06719578f020487510f3a5ee30692d71854b33e66afca9e340abb96"
+        },
+        {
+          "id": "US-TX-BEXAR-BCAD-2022-386277",
+          "geometrySha256": "6248a68da30e164fddb8e809e0b5f98ad1c45fd94fed5e05db43c0be7a63974d"
+        },
+        {
+          "id": "US-TX-BEXAR-BCAD-2022-386276",
+          "geometrySha256": "2783fe322e3736d8e1ae0bbbf693899d182aca8ddc07fe3fdb1d934f78deb652"
+        },
+        {
+          "id": "US-TX-BEXAR-BCAD-2022-386275",
+          "geometrySha256": "0c066e7a95f0824b6daf228a3f2a33269cf2a7f3911bffc5a01a86d494529ab9"
+        },
+        {
+          "id": "US-TX-BEXAR-BCAD-2022-386274",
+          "geometrySha256": "a92ce46622396f09ba8608e4646f586212a9b585120b1c7538989262af464c94"
+        },
+        {
+          "id": "US-TX-BEXAR-BCAD-2022-386300",
+          "geometrySha256": "6f4d41a1fca10367855eabcd23647afff324428ffac6e274ef5aa46d4b964dea"
+        }
+      ]
+    },
+    {
+      "name": "viewport-9",
+      "passed": true,
+      "elapsedMs": 298,
+      "requestIndexes": [
+        9,
+        9
+      ],
+      "bbox": [
+        -98.544,
+        29.462,
+        -98.543,
+        29.463
+      ],
+      "complete": true,
+      "count": 12,
+      "ids": [
+        {
+          "id": "US-TX-BEXAR-BCAD-2022-432928",
+          "geometrySha256": "8131a16e1dbdfb5e28d9ab025e94c8f2b444c0cff3481ed3010b4b5007b3a7a8"
+        },
+        {
+          "id": "US-TX-BEXAR-BCAD-2022-434687",
+          "geometrySha256": "a2965095f5c021d37733a0a9f9ec03180c93d00632ebac0cfca51c5a188ab596"
+        },
+        {
+          "id": "US-TX-BEXAR-BCAD-2022-434685",
+          "geometrySha256": "4840b8bffbd7ad06f4ccc7354be75febb1a25c96b62a30ec705ba7c70ca5d63c"
+        },
+        {
+          "id": "US-TX-BEXAR-BCAD-2022-434686",
+          "geometrySha256": "e1f5b7f226f4aad510db21f5a294cc075a970f32051244404d9ed3491ce87395"
+        },
+        {
+          "id": "US-TX-BEXAR-BCAD-2022-432919",
+          "geometrySha256": "5c8a628f3a7436a21848236eef42086d22a2dd92960f54aed5ad6ac46c7a3f78"
+        },
+        {
+          "id": "US-TX-BEXAR-BCAD-2022-434675",
+          "geometrySha256": "6c1752c227bd340063e33a19c6e50268c4339b0a19b8a94818af061195d39457"
+        },
+        {
+          "id": "US-TX-BEXAR-BCAD-2022-434676",
+          "geometrySha256": "e288191de4634a522ad77d5cedabeae05148ab5d16b288fa7b23b8d235cd2da7"
+        },
+        {
+          "id": "US-TX-BEXAR-BCAD-2022-434674",
+          "geometrySha256": "7d095ba8abbc6a2d8ec7d53db75ada1441b321f7bbc85af8897d3c0732de541c"
+        },
+        {
+          "id": "US-TX-BEXAR-BCAD-2022-434666",
+          "geometrySha256": "7423bd480b4f922327e2b427f4e1a751f422cffff393fc2ca84616fd806f354d"
+        },
+        {
+          "id": "US-TX-BEXAR-BCAD-2022-434665",
+          "geometrySha256": "1b9637dd78a49c3f9271d3736a76a6595a2ded8ec6bd9735524ab66780b5f210"
+        },
+        {
+          "id": "US-TX-BEXAR-BCAD-2022-434664",
+          "geometrySha256": "62642ed0163608d7caa9b7ed9ffb487636383898244888e319056b7f263052a1"
+        },
+        {
+          "id": "US-TX-BEXAR-BCAD-2022-434663",
+          "geometrySha256": "68dc1089b97ab3624207c3feff327badd785b47b7e5597dc0a75b99519f7a53f"
+        }
+      ]
+    },
+    {
+      "name": "viewport-10",
+      "passed": true,
+      "elapsedMs": 402,
+      "requestIndexes": [
+        10,
+        10
+      ],
+      "bbox": [
+        -98.544,
+        29.466,
+        -98.543,
+        29.467
+      ],
+      "complete": true,
+      "count": 14,
+      "ids": [
+        {
+          "id": "US-TX-BEXAR-BCAD-2022-386392",
+          "geometrySha256": "843a7ee52ce1afb0df9d57698fb243bafa4df3ccc02c341c570f24d16e212a43"
+        },
+        {
+          "id": "US-TX-BEXAR-BCAD-2022-386245",
+          "geometrySha256": "f1811c0574ce6ccfd00c9a398af8667a3753076f00df69d9cca52d6723939a5a"
+        },
+        {
+          "id": "US-TX-BEXAR-BCAD-2022-386246",
+          "geometrySha256": "8e1c6c8ca7efa0a6740d781e4a535ff7cb8e50ce840adc3f7f667b480c0e7db2"
+        },
+        {
+          "id": "US-TX-BEXAR-BCAD-2022-386247",
+          "geometrySha256": "c0cac954e20204efe6433ec0bfcb2dd533b32d662f76c7c23d4a229818ec4719"
+        },
+        {
+          "id": "US-TX-BEXAR-BCAD-2022-386248",
+          "geometrySha256": "012d9bb2881782228feca276bdbf7e94aa35c20fbb92db9fef8b9a2870c66658"
+        },
+        {
+          "id": "US-TX-BEXAR-BCAD-2022-386249",
+          "geometrySha256": "105bfb54f18787c97b5bbd4fb047c0decc318f05fdaad550b105ca68f2cc5095"
+        },
+        {
+          "id": "US-TX-BEXAR-BCAD-2022-386250",
+          "geometrySha256": "0f98e5bb3293b96ad8229b4c59b0ff9f062dd7cce2a66802d6de1e7a8018d5c4"
+        },
+        {
+          "id": "US-TX-BEXAR-BCAD-2022-386242",
+          "geometrySha256": "35466bd4ddf6f8d91197a79d892715477adbdb1d9cc8f4495f6f55f6154e24f4"
+        },
+        {
+          "id": "US-TX-BEXAR-BCAD-2022-386241",
+          "geometrySha256": "3be9c6c2b29b001e007025eaf8b7d0fcc1a9966ea00516e0fd92837a62326b29"
+        },
+        {
+          "id": "US-TX-BEXAR-BCAD-2022-386240",
+          "geometrySha256": "a338617783818c3df5c2cba0180820366c610025e69b9f2c1fce5df9d052b7fe"
+        },
+        {
+          "id": "US-TX-BEXAR-BCAD-2022-386239",
+          "geometrySha256": "4026d33856e21865f677054bd2168b0f98fd1f1d94c8e7ecd460dc40d078e067"
+        },
+        {
+          "id": "US-TX-BEXAR-BCAD-2022-386236",
+          "geometrySha256": "abb3d075e4b373130a62cac0b9dda5dac24ed2937ce9094625f216fd1f200724"
+        },
+        {
+          "id": "US-TX-BEXAR-BCAD-2022-386234",
+          "geometrySha256": "5b8475478b3d5d103661a1f8881d7d88cedae94602b6c771c3b0f2fda364a180"
+        },
+        {
+          "id": "US-TX-BEXAR-BCAD-2022-386300",
+          "geometrySha256": "6f4d41a1fca10367855eabcd23647afff324428ffac6e274ef5aa46d4b964dea"
+        }
+      ]
+    },
+    {
+      "name": "viewport-11",
+      "passed": true,
+      "elapsedMs": 275,
+      "requestIndexes": [
+        11,
+        11
+      ],
+      "bbox": [
+        -98.546,
+        29.464,
+        -98.545,
+        29.465
+      ],
+      "complete": true,
+      "count": 10,
+      "ids": [
+        {
+          "id": "US-TX-BEXAR-BCAD-2022-386338",
+          "geometrySha256": "8f35128cd62f1118f3ce0acd0a5578ffa3a4b962d389d153bc36fe8a711be1fa"
+        },
+        {
+          "id": "US-TX-BEXAR-BCAD-2022-386339",
+          "geometrySha256": "0d302537529f7e02ca4a33f5b4a98a92d527e4f3d63b746f621528a0c3f8e26a"
+        },
+        {
+          "id": "US-TX-BEXAR-BCAD-2022-386354",
+          "geometrySha256": "17abac517418001fe6017e3f5acc074c19d9d137c72c9b0aa679796c5bf19a2f"
+        },
+        {
+          "id": "US-TX-BEXAR-BCAD-2022-386353",
+          "geometrySha256": "c9f12dcb500bfffdd7c312b7ae2fb99ed46e9f0c81743d3923bb3e904ebdf72e"
+        },
+        {
+          "id": "US-TX-BEXAR-BCAD-2022-386352",
+          "geometrySha256": "f70ea0361e73dca08bafa6004299a813f722c9f35796899ced009d691ea569a2"
+        },
+        {
+          "id": "US-TX-BEXAR-BCAD-2022-386351",
+          "geometrySha256": "47eea5b3395f435162a25d7413defa6b3bf9d04ea7c22fcb7ada0a8d82cc873c"
+        },
+        {
+          "id": "US-TX-BEXAR-BCAD-2022-386313",
+          "geometrySha256": "14e8b1d0ce4fa7c7364eed0199aae58a7407750bf02640e89b72d857f3e40170"
+        },
+        {
+          "id": "US-TX-BEXAR-BCAD-2022-386312",
+          "geometrySha256": "174050c2f74e309d422ca021104d307bc0ef84dc1b1362b33c242f2bd2f11463"
+        },
+        {
+          "id": "US-TX-BEXAR-BCAD-2022-434644",
+          "geometrySha256": "52fbdd50399f20721fb3b53415d02e124c7e7bf9b26856d1b11ed33c83528274"
+        },
+        {
+          "id": "US-TX-BEXAR-BCAD-2022-1245399",
+          "geometrySha256": "4c7c8a70df5a53592c3d40c68356397884595a60ddc1cb176ab4cd5a0b0503b1"
+        }
+      ]
+    },
+    {
+      "name": "viewport-12",
+      "passed": true,
+      "elapsedMs": 539,
+      "requestIndexes": [
+        12,
+        12
+      ],
+      "bbox": [
+        -98.542,
+        29.464,
+        -98.541,
+        29.465
+      ],
+      "complete": true,
+      "count": 18,
+      "ids": [
+        {
+          "id": "US-TX-BEXAR-BCAD-2022-432917",
+          "geometrySha256": "7379d9ac28cbd690af2209287170b04dbdb353f4bd7ad6ac36bebba34c7cb015"
+        },
+        {
+          "id": "US-TX-BEXAR-BCAD-2022-432915",
+          "geometrySha256": "3472707081afce8e8fc8491ec9e3415cd96ecaa41b4a7b3ab82e424c3a1fea2e"
+        },
+        {
+          "id": "US-TX-BEXAR-BCAD-2022-432916",
+          "geometrySha256": "b62980b8c80ffb94008dd6acd83a5a8bd3b5352f3ad29d0bf019f2996e309179"
+        },
+        {
+          "id": "US-TX-BEXAR-BCAD-2022-432910",
+          "geometrySha256": "e53ee8f035d91725f7e3686afc62641574b9a429acd8127d96e372a72f5abb16"
+        },
+        {
+          "id": "US-TX-BEXAR-BCAD-2022-386368",
+          "geometrySha256": "2e40c6c7f36f8644447bd96ca7497adfde3c7a3c44c898e5322a0c1b938bfa19"
+        },
+        {
+          "id": "US-TX-BEXAR-BCAD-2022-386369",
+          "geometrySha256": "c2d400696f81ca4510c1ff5ee769ff2353df361034bbf176c1abbc4ca8a9079d"
+        },
+        {
+          "id": "US-TX-BEXAR-BCAD-2022-386370",
+          "geometrySha256": "078a7500af0fd8fab1d0c8d580588bf57a4e804a1a9d60ec25f8dc7b695a7935"
+        },
+        {
+          "id": "US-TX-BEXAR-BCAD-2022-386371",
+          "geometrySha256": "8495d4f9908a6e8d4053a864ebd7d7312552440cebac0a5a8e352e26970792a4"
+        },
+        {
+          "id": "US-TX-BEXAR-BCAD-2022-386372",
+          "geometrySha256": "ee5afcac3fd29eae47c08bb0b5558ce47d16c82edeb0cb31e9346e1f6ed1bc46"
+        },
+        {
+          "id": "US-TX-BEXAR-BCAD-2022-386373",
+          "geometrySha256": "0408a2c099fe0ea9a09ca7cd6f2eb2ca537206f0014ef7769babed67565d3df3"
+        },
+        {
+          "id": "US-TX-BEXAR-BCAD-2022-386374",
+          "geometrySha256": "ed4bab0f95200df89ba796bece283786ade4524cc1a4aad2900b170c65504efb"
+        },
+        {
+          "id": "US-TX-BEXAR-BCAD-2022-386363",
+          "geometrySha256": "baf52dfb292fb1b85efb203348c6c5f0519844383b83b3fb6d2f2e1d58d7d3ae"
+        },
+        {
+          "id": "US-TX-BEXAR-BCAD-2022-386362",
+          "geometrySha256": "7f26f1b0e36afe42fb89c912cff772a1e5291e92449b8f9aac74ca2ab90728d4"
+        },
+        {
+          "id": "US-TX-BEXAR-BCAD-2022-386361",
+          "geometrySha256": "66192737ddb8f5561bee2a112c65378090c804dac281e609fa88db35592c288d"
+        },
+        {
+          "id": "US-TX-BEXAR-BCAD-2022-386360",
+          "geometrySha256": "bc32abf9b5b1b6377be2aefd5bfb0c14b62e2b2bd613e7580f309f1fe1f1a985"
+        },
+        {
+          "id": "US-TX-BEXAR-BCAD-2022-386359",
+          "geometrySha256": "8b4563734367d92f14029c277b3ddd8c23f801b200549b1392f10d1bf1f45ab8"
+        },
+        {
+          "id": "US-TX-BEXAR-BCAD-2022-386358",
+          "geometrySha256": "89022c739dcafce0735eaac25fb072de2fcde58b7ec5935f066dcc751f76cc5e"
+        },
+        {
+          "id": "US-TX-BEXAR-BCAD-2022-386357",
+          "geometrySha256": "d52c441fb904b08fb6f2e7974b6c25203a8b3ee2877d892be88763e3c9a77474"
+        }
+      ]
+    },
+    {
+      "name": "forced-three-row-pages",
+      "passed": true,
+      "elapsedMs": 23543,
+      "requestIndexes": [
+        13,
+        19
+      ],
+      "count": 18,
+      "geometryPages": 6,
+      "pageSize": 3,
+      "allGeometryHashesMatch": true
+    },
+    {
+      "name": "fresh-ids-0",
+      "passed": true,
+      "elapsedMs": 296,
+      "requestIndexes": [
+        20,
+        20
+      ],
+      "count": 40,
+      "ids": [
+        "US-TX-BEXAR-BCAD-2022-1161679",
+        "US-TX-BEXAR-BCAD-2022-1245399",
+        "US-TX-BEXAR-BCAD-2022-1358293",
+        "US-TX-BEXAR-BCAD-2022-386234",
+        "US-TX-BEXAR-BCAD-2022-386236",
+        "US-TX-BEXAR-BCAD-2022-386239",
+        "US-TX-BEXAR-BCAD-2022-386240",
+        "US-TX-BEXAR-BCAD-2022-386241",
+        "US-TX-BEXAR-BCAD-2022-386242",
+        "US-TX-BEXAR-BCAD-2022-386245",
+        "US-TX-BEXAR-BCAD-2022-386246",
+        "US-TX-BEXAR-BCAD-2022-386247",
+        "US-TX-BEXAR-BCAD-2022-386248",
+        "US-TX-BEXAR-BCAD-2022-386249",
+        "US-TX-BEXAR-BCAD-2022-386250",
+        "US-TX-BEXAR-BCAD-2022-386274",
+        "US-TX-BEXAR-BCAD-2022-386275",
+        "US-TX-BEXAR-BCAD-2022-386276",
+        "US-TX-BEXAR-BCAD-2022-386277",
+        "US-TX-BEXAR-BCAD-2022-386296",
+        "US-TX-BEXAR-BCAD-2022-386297",
+        "US-TX-BEXAR-BCAD-2022-386298",
+        "US-TX-BEXAR-BCAD-2022-386299",
+        "US-TX-BEXAR-BCAD-2022-386300",
+        "US-TX-BEXAR-BCAD-2022-386312",
+        "US-TX-BEXAR-BCAD-2022-386313",
+        "US-TX-BEXAR-BCAD-2022-386314",
+        "US-TX-BEXAR-BCAD-2022-386315",
+        "US-TX-BEXAR-BCAD-2022-386316",
+        "US-TX-BEXAR-BCAD-2022-386317",
+        "US-TX-BEXAR-BCAD-2022-386318",
+        "US-TX-BEXAR-BCAD-2022-386319",
+        "US-TX-BEXAR-BCAD-2022-386320",
+        "US-TX-BEXAR-BCAD-2022-386321",
+        "US-TX-BEXAR-BCAD-2022-386322",
+        "US-TX-BEXAR-BCAD-2022-386323",
+        "US-TX-BEXAR-BCAD-2022-386324",
+        "US-TX-BEXAR-BCAD-2022-386325",
+        "US-TX-BEXAR-BCAD-2022-386326",
+        "US-TX-BEXAR-BCAD-2022-386328"
+      ],
+      "allGeometryHashesMatch": true,
+      "absentIds": []
+    },
+    {
+      "name": "fresh-ids-40",
+      "passed": true,
+      "elapsedMs": 287,
+      "requestIndexes": [
+        21,
+        21
+      ],
+      "count": 40,
+      "ids": [
+        "US-TX-BEXAR-BCAD-2022-386329",
+        "US-TX-BEXAR-BCAD-2022-386330",
+        "US-TX-BEXAR-BCAD-2022-386331",
+        "US-TX-BEXAR-BCAD-2022-386332",
+        "US-TX-BEXAR-BCAD-2022-386333",
+        "US-TX-BEXAR-BCAD-2022-386334",
+        "US-TX-BEXAR-BCAD-2022-386335",
+        "US-TX-BEXAR-BCAD-2022-386337",
+        "US-TX-BEXAR-BCAD-2022-386338",
+        "US-TX-BEXAR-BCAD-2022-386339",
+        "US-TX-BEXAR-BCAD-2022-386351",
+        "US-TX-BEXAR-BCAD-2022-386352",
+        "US-TX-BEXAR-BCAD-2022-386353",
+        "US-TX-BEXAR-BCAD-2022-386354",
+        "US-TX-BEXAR-BCAD-2022-386355",
+        "US-TX-BEXAR-BCAD-2022-386356",
+        "US-TX-BEXAR-BCAD-2022-386357",
+        "US-TX-BEXAR-BCAD-2022-386358",
+        "US-TX-BEXAR-BCAD-2022-386359",
+        "US-TX-BEXAR-BCAD-2022-386360",
+        "US-TX-BEXAR-BCAD-2022-386361",
+        "US-TX-BEXAR-BCAD-2022-386362",
+        "US-TX-BEXAR-BCAD-2022-386363",
+        "US-TX-BEXAR-BCAD-2022-386368",
+        "US-TX-BEXAR-BCAD-2022-386369",
+        "US-TX-BEXAR-BCAD-2022-386370",
+        "US-TX-BEXAR-BCAD-2022-386371",
+        "US-TX-BEXAR-BCAD-2022-386372",
+        "US-TX-BEXAR-BCAD-2022-386373",
+        "US-TX-BEXAR-BCAD-2022-386374",
+        "US-TX-BEXAR-BCAD-2022-386376",
+        "US-TX-BEXAR-BCAD-2022-386379",
+        "US-TX-BEXAR-BCAD-2022-386380",
+        "US-TX-BEXAR-BCAD-2022-386388",
+        "US-TX-BEXAR-BCAD-2022-386389",
+        "US-TX-BEXAR-BCAD-2022-386390",
+        "US-TX-BEXAR-BCAD-2022-386391",
+        "US-TX-BEXAR-BCAD-2022-386392",
+        "US-TX-BEXAR-BCAD-2022-386393",
+        "US-TX-BEXAR-BCAD-2022-386394"
+      ],
+      "allGeometryHashesMatch": true,
+      "absentIds": []
+    },
+    {
+      "name": "fresh-ids-80",
+      "passed": true,
+      "elapsedMs": 283,
+      "requestIndexes": [
+        22,
+        22
+      ],
+      "count": 35,
+      "ids": [
+        "US-TX-BEXAR-BCAD-2022-386395",
+        "US-TX-BEXAR-BCAD-2022-386396",
+        "US-TX-BEXAR-BCAD-2022-386397",
+        "US-TX-BEXAR-BCAD-2022-386398",
+        "US-TX-BEXAR-BCAD-2022-386399",
+        "US-TX-BEXAR-BCAD-2022-386400",
+        "US-TX-BEXAR-BCAD-2022-432910",
+        "US-TX-BEXAR-BCAD-2022-432911",
+        "US-TX-BEXAR-BCAD-2022-432912",
+        "US-TX-BEXAR-BCAD-2022-432913",
+        "US-TX-BEXAR-BCAD-2022-432914",
+        "US-TX-BEXAR-BCAD-2022-432915",
+        "US-TX-BEXAR-BCAD-2022-432916",
+        "US-TX-BEXAR-BCAD-2022-432917",
+        "US-TX-BEXAR-BCAD-2022-432919",
+        "US-TX-BEXAR-BCAD-2022-432921",
+        "US-TX-BEXAR-BCAD-2022-432922",
+        "US-TX-BEXAR-BCAD-2022-432928",
+        "US-TX-BEXAR-BCAD-2022-434642",
+        "US-TX-BEXAR-BCAD-2022-434644",
+        "US-TX-BEXAR-BCAD-2022-434646",
+        "US-TX-BEXAR-BCAD-2022-434653",
+        "US-TX-BEXAR-BCAD-2022-434660",
+        "US-TX-BEXAR-BCAD-2022-434661",
+        "US-TX-BEXAR-BCAD-2022-434662",
+        "US-TX-BEXAR-BCAD-2022-434663",
+        "US-TX-BEXAR-BCAD-2022-434664",
+        "US-TX-BEXAR-BCAD-2022-434665",
+        "US-TX-BEXAR-BCAD-2022-434666",
+        "US-TX-BEXAR-BCAD-2022-434674",
+        "US-TX-BEXAR-BCAD-2022-434675",
+        "US-TX-BEXAR-BCAD-2022-434676",
+        "US-TX-BEXAR-BCAD-2022-434685",
+        "US-TX-BEXAR-BCAD-2022-434686",
+        "US-TX-BEXAR-BCAD-2022-434687"
+      ],
+      "allGeometryHashesMatch": true,
+      "absentIds": []
+    },
+    {
+      "name": "explicit-absence",
+      "passed": true,
+      "elapsedMs": 287,
+      "requestIndexes": [
+        23,
+        23
+      ],
+      "absentIds": [
+        "US-TX-BEXAR-BCAD-2022-9999999999"
+      ],
+      "complete": true
+    },
+    {
+      "name": "footprint",
+      "passed": true,
+      "elapsedMs": 276,
+      "requestIndexes": [
+        24,
+        24
+      ],
+      "selectedParcelId": "US-TX-BEXAR-BCAD-2022-386240",
+      "count": 3,
+      "allGeometryHashesMatch": true
+    },
+    {
+      "name": "source-binding",
+      "passed": true,
+      "elapsedMs": 534,
+      "requestIndexes": [
+        25,
+        25
+      ],
+      "selectedParcelId": "US-TX-BEXAR-BCAD-2022-386240",
+      "coverage": "complete",
+      "siteM2": 875.07,
+      "boundParcels": 1
+    }
+  ],
+  "requests": [
+    {
+      "test": "viewport-0",
+      "url": "https://services7.arcgis.com/Q6vsXnxTnYcWB7qg/ArcGIS/rest/services/BEXAR_PARCELS/FeatureServer/0/query?where=1%3D1&outFields=OBJECTID%2CProp_ID&returnGeometry=true&outSR=4326&f=geojson&orderByFields=OBJECTID&resultRecordCount=500&resultOffset=0&geometry=-98.545%2C29.463%2C-98.544%2C29.464&geometryType=esriGeometryEnvelope&inSR=4326&spatialRel=esriSpatialRelIntersects",
+      "method": "GET",
+      "checkedAt": "2026-10-08T22:26:11.585Z",
+      "httpStatus": 200,
+      "contentType": "application/json; charset=utf-8",
+      "bytes": 6077,
+      "features": [
+        {
+          "transportId": 324140,
+          "properties": {
+            "OBJECTID": 324140,
+            "Prop_ID": "434663"
+          },
+          "geometrySha256": "68dc1089b97ab3624207c3feff327badd785b47b7e5597dc0a75b99519f7a53f"
+        },
+        {
+          "transportId": 324150,
+          "properties": {
+            "OBJECTID": 324150,
+            "Prop_ID": "434662"
+          },
+          "geometrySha256": "0d05128e6b6f88b04bb4fad50888f16b1d95ff95065deeb6e17c4f7d8ff86d53"
+        },
+        {
+          "transportId": 324156,
+          "properties": {
+            "OBJECTID": 324156,
+            "Prop_ID": "434660"
+          },
+          "geometrySha256": "d84a4bac7f7f5a788e680bc27f46574ecf86000403b5ebf138e4743de23b5c48"
+        },
+        {
+          "transportId": 324157,
+          "properties": {
+            "OBJECTID": 324157,
+            "Prop_ID": "434661"
+          },
+          "geometrySha256": "15c9f820ed140f3482e3c0c332be1369b74463fe5fd0c994fb3349bf8be1fd88"
+        },
+        {
+          "transportId": 324408,
+          "properties": {
+            "OBJECTID": 324408,
+            "Prop_ID": "434653"
+          },
+          "geometrySha256": "3c3a7886c32be20bf4d849c159477fcd04ba085cc590218cfebd5a7d5f134ff0"
+        },
+        {
+          "transportId": 324630,
+          "properties": {
+            "OBJECTID": 324630,
+            "Prop_ID": "434642"
+          },
+          "geometrySha256": "6c10ebb086fea720b5fdffc1fe904ae6f5d8c98cc3eb889196fe54127b7ebcbc"
+        },
+        {
+          "transportId": 483964,
+          "properties": {
+            "OBJECTID": 483964,
+            "Prop_ID": "434646"
+          },
+          "geometrySha256": "4660df96ffcb70afd54a3c936a5b0b42182283bb80b21dbc9239d922b4312eae"
+        },
+        {
+          "transportId": 483995,
+          "properties": {
+            "OBJECTID": 483995,
+            "Prop_ID": "1245399"
+          },
+          "geometrySha256": "4c7c8a70df5a53592c3d40c68356397884595a60ddc1cb176ab4cd5a0b0503b1"
+        }
+      ]
+    },
+    {
+      "test": "viewport-1",
+      "url": "https://services7.arcgis.com/Q6vsXnxTnYcWB7qg/ArcGIS/rest/services/BEXAR_PARCELS/FeatureServer/0/query?where=1%3D1&outFields=OBJECTID%2CProp_ID&returnGeometry=true&outSR=4326&f=geojson&orderByFields=OBJECTID&resultRecordCount=500&resultOffset=0&geometry=-98.544%2C29.463%2C-98.543%2C29.464&geometryType=esriGeometryEnvelope&inSR=4326&spatialRel=esriSpatialRelIntersects",
+      "method": "GET",
+      "checkedAt": "2026-10-08T22:26:12.308Z",
+      "httpStatus": 200,
+      "contentType": "application/json; charset=utf-8",
+      "bytes": 2670,
+      "features": [
+        {
+          "transportId": 324047,
+          "properties": {
+            "OBJECTID": 324047,
+            "Prop_ID": "434666"
+          },
+          "geometrySha256": "7423bd480b4f922327e2b427f4e1a751f422cffff393fc2ca84616fd806f354d"
+        },
+        {
+          "transportId": 324087,
+          "properties": {
+            "OBJECTID": 324087,
+            "Prop_ID": "434665"
+          },
+          "geometrySha256": "1b9637dd78a49c3f9271d3736a76a6595a2ded8ec6bd9735524ab66780b5f210"
+        },
+        {
+          "transportId": 324133,
+          "properties": {
+            "OBJECTID": 324133,
+            "Prop_ID": "434664"
+          },
+          "geometrySha256": "62642ed0163608d7caa9b7ed9ffb487636383898244888e319056b7f263052a1"
+        },
+        {
+          "transportId": 324140,
+          "properties": {
+            "OBJECTID": 324140,
+            "Prop_ID": "434663"
+          },
+          "geometrySha256": "68dc1089b97ab3624207c3feff327badd785b47b7e5597dc0a75b99519f7a53f"
+        },
+        {
+          "transportId": 324630,
+          "properties": {
+            "OBJECTID": 324630,
+            "Prop_ID": "434642"
+          },
+          "geometrySha256": "6c10ebb086fea720b5fdffc1fe904ae6f5d8c98cc3eb889196fe54127b7ebcbc"
+        }
+      ]
+    },
+    {
+      "test": "viewport-2",
+      "url": "https://services7.arcgis.com/Q6vsXnxTnYcWB7qg/ArcGIS/rest/services/BEXAR_PARCELS/FeatureServer/0/query?where=1%3D1&outFields=OBJECTID%2CProp_ID&returnGeometry=true&outSR=4326&f=geojson&orderByFields=OBJECTID&resultRecordCount=500&resultOffset=0&geometry=-98.543%2C29.463%2C-98.542%2C29.464&geometryType=esriGeometryEnvelope&inSR=4326&spatialRel=esriSpatialRelIntersects",
+      "method": "GET",
+      "checkedAt": "2026-10-08T22:26:12.619Z",
+      "httpStatus": 200,
+      "contentType": "application/json; charset=utf-8",
+      "bytes": 4093,
+      "features": [
+        {
+          "transportId": 323925,
+          "properties": {
+            "OBJECTID": 323925,
+            "Prop_ID": "432921"
+          },
+          "geometrySha256": "f474e79210ea71006b3ca6e3904e112e27d498099de7bf81fc032563cc40b302"
+        },
+        {
+          "transportId": 323993,
+          "properties": {
+            "OBJECTID": 323993,
+            "Prop_ID": "432922"
+          },
+          "geometrySha256": "c8be348e97e69e75d47686db4e4156af152256e0e4ead6fcac5a63325eaa5f53"
+        },
+        {
+          "transportId": 324129,
+          "properties": {
+            "OBJECTID": 324129,
+            "Prop_ID": "432911"
+          },
+          "geometrySha256": "acfbfd18a66fee4bb8ed224cc8ea9131ddc02995d4a6e076a4a98f1c4131a0dc"
+        },
+        {
+          "transportId": 324161,
+          "properties": {
+            "OBJECTID": 324161,
+            "Prop_ID": "432912"
+          },
+          "geometrySha256": "1a228b1a5336f981e71b441a9caaf6b425d1d330312486522be8b824546d8de4"
+        },
+        {
+          "transportId": 324236,
+          "properties": {
+            "OBJECTID": 324236,
+            "Prop_ID": "432913"
+          },
+          "geometrySha256": "34adaad6f8b512064db83bfe0c22b4d965b75c3ad5726e26d692311b48ae5cd0"
+        },
+        {
+          "transportId": 324386,
+          "properties": {
+            "OBJECTID": 324386,
+            "Prop_ID": "432914"
+          },
+          "geometrySha256": "93974a7a9cf2ed6aa9bb66f2f28f193aea1f13144eff9b03338d4fa3095e9c35"
+        },
+        {
+          "transportId": 324585,
+          "properties": {
+            "OBJECTID": 324585,
+            "Prop_ID": "432910"
+          },
+          "geometrySha256": "e53ee8f035d91725f7e3686afc62641574b9a429acd8127d96e372a72f5abb16"
+        }
+      ]
+    },
+    {
+      "test": "viewport-3",
+      "url": "https://services7.arcgis.com/Q6vsXnxTnYcWB7qg/ArcGIS/rest/services/BEXAR_PARCELS/FeatureServer/0/query?where=1%3D1&outFields=OBJECTID%2CProp_ID&returnGeometry=true&outSR=4326&f=geojson&orderByFields=OBJECTID&resultRecordCount=500&resultOffset=0&geometry=-98.545%2C29.464%2C-98.544%2C29.465&geometryType=esriGeometryEnvelope&inSR=4326&spatialRel=esriSpatialRelIntersects",
+      "method": "GET",
+      "checkedAt": "2026-10-08T22:26:13.202Z",
+      "httpStatus": 200,
+      "contentType": "application/json; charset=utf-8",
+      "bytes": 7902,
+      "features": [
+        {
+          "transportId": 324630,
+          "properties": {
+            "OBJECTID": 324630,
+            "Prop_ID": "434642"
+          },
+          "geometrySha256": "6c10ebb086fea720b5fdffc1fe904ae6f5d8c98cc3eb889196fe54127b7ebcbc"
+        },
+        {
+          "transportId": 324861,
+          "properties": {
+            "OBJECTID": 324861,
+            "Prop_ID": "386332"
+          },
+          "geometrySha256": "c2fafbce3709e15ba8b51879c684f82de8945b93c15e10558f122471b5ea1d0d"
+        },
+        {
+          "transportId": 324864,
+          "properties": {
+            "OBJECTID": 324864,
+            "Prop_ID": "386333"
+          },
+          "geometrySha256": "46113de2274716862bbf1d9d7160c807af5cd06be706b77705ddb4cf23706e50"
+        },
+        {
+          "transportId": 324865,
+          "properties": {
+            "OBJECTID": 324865,
+            "Prop_ID": "386334"
+          },
+          "geometrySha256": "c91eaabf1ba16a7a07456da37183e39b6ad2384f069561db9df79eec52733b8a"
+        },
+        {
+          "transportId": 324868,
+          "properties": {
+            "OBJECTID": 324868,
+            "Prop_ID": "386335"
+          },
+          "geometrySha256": "968c161b1703668385aa914c37ff0470d1d00803ba8c9b8ae2bbe618486280e4"
+        },
+        {
+          "transportId": 324905,
+          "properties": {
+            "OBJECTID": 324905,
+            "Prop_ID": "386337"
+          },
+          "geometrySha256": "e2bba9729e680f1fb480b51636c82b25276892674ef0514de96f3636e6409442"
+        },
+        {
+          "transportId": 324960,
+          "properties": {
+            "OBJECTID": 324960,
+            "Prop_ID": "386338"
+          },
+          "geometrySha256": "8f35128cd62f1118f3ce0acd0a5578ffa3a4b962d389d153bc36fe8a711be1fa"
+        },
+        {
+          "transportId": 325066,
+          "properties": {
+            "OBJECTID": 325066,
+            "Prop_ID": "386319"
+          },
+          "geometrySha256": "0fc41619333fe66bdeaa9cb7bc636a180194d11611a8b575b0b049aa8906b781"
+        },
+        {
+          "transportId": 325068,
+          "properties": {
+            "OBJECTID": 325068,
+            "Prop_ID": "386318"
+          },
+          "geometrySha256": "f6d42a843fbabbd74bb01c6bb586f231314ba65ada7ad83f0662bc47fa5ccf65"
+        },
+        {
+          "transportId": 325071,
+          "properties": {
+            "OBJECTID": 325071,
+            "Prop_ID": "386317"
+          },
+          "geometrySha256": "a6e88d93ecd4ae7edcafbbf89116fc96cecbb38e1c5e4209884518730464a601"
+        },
+        {
+          "transportId": 325076,
+          "properties": {
+            "OBJECTID": 325076,
+            "Prop_ID": "386316"
+          },
+          "geometrySha256": "e54f97024528bc6e5fddec71c4513defad9e2a15ea8b8cf9f5a05a9063188906"
+        },
+        {
+          "transportId": 325081,
+          "properties": {
+            "OBJECTID": 325081,
+            "Prop_ID": "386315"
+          },
+          "geometrySha256": "f72d58465657133ae1339827814760e9920825ff7da5ce20b656337c24045fa8"
+        },
+        {
+          "transportId": 325084,
+          "properties": {
+            "OBJECTID": 325084,
+            "Prop_ID": "386314"
+          },
+          "geometrySha256": "35d84fa90007134ab15c5dc477c6c2a76520c01712105e2e3ceb7938e10ee193"
+        },
+        {
+          "transportId": 325128,
+          "properties": {
+            "OBJECTID": 325128,
+            "Prop_ID": "386313"
+          },
+          "geometrySha256": "14e8b1d0ce4fa7c7364eed0199aae58a7407750bf02640e89b72d857f3e40170"
+        },
+        {
+          "transportId": 429184,
+          "properties": {
+            "OBJECTID": 429184,
+            "Prop_ID": "1161679"
+          },
+          "geometrySha256": "44e14bfbdeba74b8055e33917c01accbb9c383f29274521ed4d78c02687313f3"
+        },
+        {
+          "transportId": 483964,
+          "properties": {
+            "OBJECTID": 483964,
+            "Prop_ID": "434646"
+          },
+          "geometrySha256": "4660df96ffcb70afd54a3c936a5b0b42182283bb80b21dbc9239d922b4312eae"
+        },
+        {
+          "transportId": 483995,
+          "properties": {
+            "OBJECTID": 483995,
+            "Prop_ID": "1245399"
+          },
+          "geometrySha256": "4c7c8a70df5a53592c3d40c68356397884595a60ddc1cb176ab4cd5a0b0503b1"
+        }
+      ]
+    },
+    {
+      "test": "viewport-4",
+      "url": "https://services7.arcgis.com/Q6vsXnxTnYcWB7qg/ArcGIS/rest/services/BEXAR_PARCELS/FeatureServer/0/query?where=1%3D1&outFields=OBJECTID%2CProp_ID&returnGeometry=true&outSR=4326&f=geojson&orderByFields=OBJECTID&resultRecordCount=500&resultOffset=0&geometry=-98.544%2C29.464%2C-98.543%2C29.465&geometryType=esriGeometryEnvelope&inSR=4326&spatialRel=esriSpatialRelIntersects",
+      "method": "GET",
+      "checkedAt": "2026-10-08T22:26:13.493Z",
+      "httpStatus": 200,
+      "contentType": "application/json; charset=utf-8",
+      "bytes": 13380,
+      "features": [
+        {
+          "transportId": 324630,
+          "properties": {
+            "OBJECTID": 324630,
+            "Prop_ID": "434642"
+          },
+          "geometrySha256": "6c10ebb086fea720b5fdffc1fe904ae6f5d8c98cc3eb889196fe54127b7ebcbc"
+        },
+        {
+          "transportId": 324810,
+          "properties": {
+            "OBJECTID": 324810,
+            "Prop_ID": "386324"
+          },
+          "geometrySha256": "d2d433ee68c9faf31d67ff01cdfa79d5455c6f75534c0e33565d2915340cdf1d"
+        },
+        {
+          "transportId": 324819,
+          "properties": {
+            "OBJECTID": 324819,
+            "Prop_ID": "386323"
+          },
+          "geometrySha256": "a229ee66f337cc3a88edf172a42ad899b3ec5abcc8669446e4a059f575752748"
+        },
+        {
+          "transportId": 324843,
+          "properties": {
+            "OBJECTID": 324843,
+            "Prop_ID": "386322"
+          },
+          "geometrySha256": "c0d0a34ce3c835190c2cafb47ab5b8d9d7b6aafdc0553fea9c3ddaa6f90b9f1b"
+        },
+        {
+          "transportId": 324847,
+          "properties": {
+            "OBJECTID": 324847,
+            "Prop_ID": "386325"
+          },
+          "geometrySha256": "c3732fd7d60fa741f8ce18f6b7caedc434a3f2745ff0309e6e3e032b4c457b21"
+        },
+        {
+          "transportId": 324849,
+          "properties": {
+            "OBJECTID": 324849,
+            "Prop_ID": "386326"
+          },
+          "geometrySha256": "95e525e32ffb8e1477bae57d8ec628e850e5024d12110373e319fad672c6a26f"
+        },
+        {
+          "transportId": 324851,
+          "properties": {
+            "OBJECTID": 324851,
+            "Prop_ID": "386328"
+          },
+          "geometrySha256": "0b68614d65faea750e3b7413b99b47b23b7e13ea7ece90fb372f1013e327ae7d"
+        },
+        {
+          "transportId": 324854,
+          "properties": {
+            "OBJECTID": 324854,
+            "Prop_ID": "386329"
+          },
+          "geometrySha256": "8e70ea1602c53f929ac78a153730e4d62bec6f8e48dddd3b89ab2241305f6609"
+        },
+        {
+          "transportId": 324855,
+          "properties": {
+            "OBJECTID": 324855,
+            "Prop_ID": "386330"
+          },
+          "geometrySha256": "c91a2311b9bed2c8cdf343f575ffbeb3112f16734747fcbafe19f9fba76f92a4"
+        },
+        {
+          "transportId": 324857,
+          "properties": {
+            "OBJECTID": 324857,
+            "Prop_ID": "386331"
+          },
+          "geometrySha256": "33a2d1cde6e178f242f56d52bace4abd5106d3cd59c07029d5070368128633d1"
+        },
+        {
+          "transportId": 324861,
+          "properties": {
+            "OBJECTID": 324861,
+            "Prop_ID": "386332"
+          },
+          "geometrySha256": "c2fafbce3709e15ba8b51879c684f82de8945b93c15e10558f122471b5ea1d0d"
+        },
+        {
+          "transportId": 324864,
+          "properties": {
+            "OBJECTID": 324864,
+            "Prop_ID": "386333"
+          },
+          "geometrySha256": "46113de2274716862bbf1d9d7160c807af5cd06be706b77705ddb4cf23706e50"
+        },
+        {
+          "transportId": 325059,
+          "properties": {
+            "OBJECTID": 325059,
+            "Prop_ID": "386321"
+          },
+          "geometrySha256": "f52fec03aebcba576356d89a9de8cb844f10ec3570aa3bedc10e91fddb28e05a"
+        },
+        {
+          "transportId": 325063,
+          "properties": {
+            "OBJECTID": 325063,
+            "Prop_ID": "386320"
+          },
+          "geometrySha256": "80bf50cc8c76dbecb46b096265d259f07aeb04fb55986dfcab8b4b4978237daf"
+        },
+        {
+          "transportId": 325066,
+          "properties": {
+            "OBJECTID": 325066,
+            "Prop_ID": "386319"
+          },
+          "geometrySha256": "0fc41619333fe66bdeaa9cb7bc636a180194d11611a8b575b0b049aa8906b781"
+        },
+        {
+          "transportId": 325068,
+          "properties": {
+            "OBJECTID": 325068,
+            "Prop_ID": "386318"
+          },
+          "geometrySha256": "f6d42a843fbabbd74bb01c6bb586f231314ba65ada7ad83f0662bc47fa5ccf65"
+        }
+      ]
+    },
+    {
+      "test": "viewport-5",
+      "url": "https://services7.arcgis.com/Q6vsXnxTnYcWB7qg/ArcGIS/rest/services/BEXAR_PARCELS/FeatureServer/0/query?where=1%3D1&outFields=OBJECTID%2CProp_ID&returnGeometry=true&outSR=4326&f=geojson&orderByFields=OBJECTID&resultRecordCount=500&resultOffset=0&geometry=-98.543%2C29.464%2C-98.542%2C29.465&geometryType=esriGeometryEnvelope&inSR=4326&spatialRel=esriSpatialRelIntersects",
+      "method": "GET",
+      "checkedAt": "2026-10-08T22:26:13.802Z",
+      "httpStatus": 200,
+      "contentType": "application/json; charset=utf-8",
+      "bytes": 12143,
+      "features": [
+        {
+          "transportId": 324585,
+          "properties": {
+            "OBJECTID": 324585,
+            "Prop_ID": "432910"
+          },
+          "geometrySha256": "e53ee8f035d91725f7e3686afc62641574b9a429acd8127d96e372a72f5abb16"
+        },
+        {
+          "transportId": 324630,
+          "properties": {
+            "OBJECTID": 324630,
+            "Prop_ID": "434642"
+          },
+          "geometrySha256": "6c10ebb086fea720b5fdffc1fe904ae6f5d8c98cc3eb889196fe54127b7ebcbc"
+        },
+        {
+          "transportId": 324804,
+          "properties": {
+            "OBJECTID": 324804,
+            "Prop_ID": "386373"
+          },
+          "geometrySha256": "0408a2c099fe0ea9a09ca7cd6f2eb2ca537206f0014ef7769babed67565d3df3"
+        },
+        {
+          "transportId": 324808,
+          "properties": {
+            "OBJECTID": 324808,
+            "Prop_ID": "386374"
+          },
+          "geometrySha256": "ed4bab0f95200df89ba796bece283786ade4524cc1a4aad2900b170c65504efb"
+        },
+        {
+          "transportId": 324813,
+          "properties": {
+            "OBJECTID": 324813,
+            "Prop_ID": "386380"
+          },
+          "geometrySha256": "9371f33d336d08204280cf823746c40364879b610c1c83176d2354bf2a7c1892"
+        },
+        {
+          "transportId": 324814,
+          "properties": {
+            "OBJECTID": 324814,
+            "Prop_ID": "386379"
+          },
+          "geometrySha256": "ed7938f4767293e8c186146f9a571a10ad0229915fadeae10552a287647a0c95"
+        },
+        {
+          "transportId": 324819,
+          "properties": {
+            "OBJECTID": 324819,
+            "Prop_ID": "386323"
+          },
+          "geometrySha256": "a229ee66f337cc3a88edf172a42ad899b3ec5abcc8669446e4a059f575752748"
+        },
+        {
+          "transportId": 324820,
+          "properties": {
+            "OBJECTID": 324820,
+            "Prop_ID": "386376"
+          },
+          "geometrySha256": "da445c44b1dd39597844dcd44f7a2e55714240c5b682937f26b72697f8138792"
+        },
+        {
+          "transportId": 324843,
+          "properties": {
+            "OBJECTID": 324843,
+            "Prop_ID": "386322"
+          },
+          "geometrySha256": "c0d0a34ce3c835190c2cafb47ab5b8d9d7b6aafdc0553fea9c3ddaa6f90b9f1b"
+        },
+        {
+          "transportId": 325028,
+          "properties": {
+            "OBJECTID": 325028,
+            "Prop_ID": "386357"
+          },
+          "geometrySha256": "d52c441fb904b08fb6f2e7974b6c25203a8b3ee2877d892be88763e3c9a77474"
+        },
+        {
+          "transportId": 325033,
+          "properties": {
+            "OBJECTID": 325033,
+            "Prop_ID": "386356"
+          },
+          "geometrySha256": "ea36c376c8789f8902bf18ce6f1975db5eee63c40b8584914f2d812c5f3dfd2c"
+        },
+        {
+          "transportId": 325049,
+          "properties": {
+            "OBJECTID": 325049,
+            "Prop_ID": "386355"
+          },
+          "geometrySha256": "eae33d820aa83104992fbcbf90c6372562f1c54baf465134ca3c6fd7131f4243"
+        },
+        {
+          "transportId": 325059,
+          "properties": {
+            "OBJECTID": 325059,
+            "Prop_ID": "386321"
+          },
+          "geometrySha256": "f52fec03aebcba576356d89a9de8cb844f10ec3570aa3bedc10e91fddb28e05a"
+        }
+      ]
+    },
+    {
+      "test": "viewport-6",
+      "url": "https://services7.arcgis.com/Q6vsXnxTnYcWB7qg/ArcGIS/rest/services/BEXAR_PARCELS/FeatureServer/0/query?where=1%3D1&outFields=OBJECTID%2CProp_ID&returnGeometry=true&outSR=4326&f=geojson&orderByFields=OBJECTID&resultRecordCount=500&resultOffset=0&geometry=-98.545%2C29.465%2C-98.544%2C29.466&geometryType=esriGeometryEnvelope&inSR=4326&spatialRel=esriSpatialRelIntersects",
+      "method": "GET",
+      "checkedAt": "2026-10-08T22:26:14.091Z",
+      "httpStatus": 200,
+      "contentType": "application/json; charset=utf-8",
+      "bytes": 13894,
+      "features": [
+        {
+          "transportId": 325068,
+          "properties": {
+            "OBJECTID": 325068,
+            "Prop_ID": "386318"
+          },
+          "geometrySha256": "f6d42a843fbabbd74bb01c6bb586f231314ba65ada7ad83f0662bc47fa5ccf65"
+        },
+        {
+          "transportId": 325071,
+          "properties": {
+            "OBJECTID": 325071,
+            "Prop_ID": "386317"
+          },
+          "geometrySha256": "a6e88d93ecd4ae7edcafbbf89116fc96cecbb38e1c5e4209884518730464a601"
+        },
+        {
+          "transportId": 325076,
+          "properties": {
+            "OBJECTID": 325076,
+            "Prop_ID": "386316"
+          },
+          "geometrySha256": "e54f97024528bc6e5fddec71c4513defad9e2a15ea8b8cf9f5a05a9063188906"
+        },
+        {
+          "transportId": 325081,
+          "properties": {
+            "OBJECTID": 325081,
+            "Prop_ID": "386315"
+          },
+          "geometrySha256": "f72d58465657133ae1339827814760e9920825ff7da5ce20b656337c24045fa8"
+        },
+        {
+          "transportId": 325084,
+          "properties": {
+            "OBJECTID": 325084,
+            "Prop_ID": "386314"
+          },
+          "geometrySha256": "35d84fa90007134ab15c5dc477c6c2a76520c01712105e2e3ceb7938e10ee193"
+        },
+        {
+          "transportId": 325128,
+          "properties": {
+            "OBJECTID": 325128,
+            "Prop_ID": "386313"
+          },
+          "geometrySha256": "14e8b1d0ce4fa7c7364eed0199aae58a7407750bf02640e89b72d857f3e40170"
+        },
+        {
+          "transportId": 325383,
+          "properties": {
+            "OBJECTID": 325383,
+            "Prop_ID": "386394"
+          },
+          "geometrySha256": "f6e922de7a50d07495ab9cf22b3c8c01549b0b0173af376c50840e1f14a2820b"
+        },
+        {
+          "transportId": 325388,
+          "properties": {
+            "OBJECTID": 325388,
+            "Prop_ID": "386395"
+          },
+          "geometrySha256": "32866a0aca73f31f83f00e1be6c6d74d37b35de28b6bc601a5ae3b178ce0bf6b"
+        },
+        {
+          "transportId": 325392,
+          "properties": {
+            "OBJECTID": 325392,
+            "Prop_ID": "386396"
+          },
+          "geometrySha256": "0116d8bd621ee45a04ae50449e573d57c740f6992560be2b97ed6fabbf8249b2"
+        },
+        {
+          "transportId": 325398,
+          "properties": {
+            "OBJECTID": 325398,
+            "Prop_ID": "386397"
+          },
+          "geometrySha256": "a12dd084aa1c4d3210b548597bb53a0377ce6c961e85874555520131b7477387"
+        },
+        {
+          "transportId": 325404,
+          "properties": {
+            "OBJECTID": 325404,
+            "Prop_ID": "386398"
+          },
+          "geometrySha256": "1947d1ea0cdd05eba4b0b63c959afc85fff4bc01977b5ac2364eaeadba656d73"
+        },
+        {
+          "transportId": 325409,
+          "properties": {
+            "OBJECTID": 325409,
+            "Prop_ID": "386399"
+          },
+          "geometrySha256": "e65a8bfc93183009c5a210e3355fd80cd68ee92c3cbdfc32cee6598a8aa9db72"
+        },
+        {
+          "transportId": 325416,
+          "properties": {
+            "OBJECTID": 325416,
+            "Prop_ID": "386400"
+          },
+          "geometrySha256": "3d46a06a4dd7bd390c2f49e7df059c9b75facbdc627f3af08bc9955e87f29302"
+        },
+        {
+          "transportId": 325628,
+          "properties": {
+            "OBJECTID": 325628,
+            "Prop_ID": "386392"
+          },
+          "geometrySha256": "843a7ee52ce1afb0df9d57698fb243bafa4df3ccc02c341c570f24d16e212a43"
+        },
+        {
+          "transportId": 325631,
+          "properties": {
+            "OBJECTID": 325631,
+            "Prop_ID": "386391"
+          },
+          "geometrySha256": "7d5a4bb5faae110bb9edc289659b2e0c10413a811828ad6046b30d844d46028c"
+        },
+        {
+          "transportId": 325635,
+          "properties": {
+            "OBJECTID": 325635,
+            "Prop_ID": "386390"
+          },
+          "geometrySha256": "084aab842144ff024e3b7926102aa9c994d30425a5dc74d0dc1ff3a8d6e26798"
+        },
+        {
+          "transportId": 325640,
+          "properties": {
+            "OBJECTID": 325640,
+            "Prop_ID": "386389"
+          },
+          "geometrySha256": "f17d03414056ae3cc8162e9eec78a3e2d96d94636dcd65d839826ba95bf0bb7d"
+        },
+        {
+          "transportId": 325645,
+          "properties": {
+            "OBJECTID": 325645,
+            "Prop_ID": "386388"
+          },
+          "geometrySha256": "13f47e2ea96a4ae51b685e9eb5e4f08f345366f61012d1f4dcb8d5ec7242554f"
+        }
+      ]
+    },
+    {
+      "test": "viewport-7",
+      "url": "https://services7.arcgis.com/Q6vsXnxTnYcWB7qg/ArcGIS/rest/services/BEXAR_PARCELS/FeatureServer/0/query?where=1%3D1&outFields=OBJECTID%2CProp_ID&returnGeometry=true&outSR=4326&f=geojson&orderByFields=OBJECTID&resultRecordCount=500&resultOffset=0&geometry=-98.544%2C29.465%2C-98.543%2C29.466&geometryType=esriGeometryEnvelope&inSR=4326&spatialRel=esriSpatialRelIntersects",
+      "method": "GET",
+      "checkedAt": "2026-10-08T22:26:14.393Z",
+      "httpStatus": 200,
+      "contentType": "application/json; charset=utf-8",
+      "bytes": 9898,
+      "features": [
+        {
+          "transportId": 325059,
+          "properties": {
+            "OBJECTID": 325059,
+            "Prop_ID": "386321"
+          },
+          "geometrySha256": "f52fec03aebcba576356d89a9de8cb844f10ec3570aa3bedc10e91fddb28e05a"
+        },
+        {
+          "transportId": 325063,
+          "properties": {
+            "OBJECTID": 325063,
+            "Prop_ID": "386320"
+          },
+          "geometrySha256": "80bf50cc8c76dbecb46b096265d259f07aeb04fb55986dfcab8b4b4978237daf"
+        },
+        {
+          "transportId": 325066,
+          "properties": {
+            "OBJECTID": 325066,
+            "Prop_ID": "386319"
+          },
+          "geometrySha256": "0fc41619333fe66bdeaa9cb7bc636a180194d11611a8b575b0b049aa8906b781"
+        },
+        {
+          "transportId": 325068,
+          "properties": {
+            "OBJECTID": 325068,
+            "Prop_ID": "386318"
+          },
+          "geometrySha256": "f6d42a843fbabbd74bb01c6bb586f231314ba65ada7ad83f0662bc47fa5ccf65"
+        },
+        {
+          "transportId": 325376,
+          "properties": {
+            "OBJECTID": 325376,
+            "Prop_ID": "386393"
+          },
+          "geometrySha256": "3828bb7ff8fa1a48cd23395076fc928d4739c875d8d6adb8703a1a6d4443fbae"
+        },
+        {
+          "transportId": 325383,
+          "properties": {
+            "OBJECTID": 325383,
+            "Prop_ID": "386394"
+          },
+          "geometrySha256": "f6e922de7a50d07495ab9cf22b3c8c01549b0b0173af376c50840e1f14a2820b"
+        },
+        {
+          "transportId": 325628,
+          "properties": {
+            "OBJECTID": 325628,
+            "Prop_ID": "386392"
+          },
+          "geometrySha256": "843a7ee52ce1afb0df9d57698fb243bafa4df3ccc02c341c570f24d16e212a43"
+        },
+        {
+          "transportId": 655182,
+          "properties": {
+            "OBJECTID": 655182,
+            "Prop_ID": "1358293"
+          },
+          "geometrySha256": "f92e881695d5432c8ea6011545f55e34d51616ee9e0438e4bc19d75f20b265fd"
+        },
+        {
+          "transportId": 655183,
+          "properties": {
+            "OBJECTID": 655183,
+            "Prop_ID": "386300"
+          },
+          "geometrySha256": "6f4d41a1fca10367855eabcd23647afff324428ffac6e274ef5aa46d4b964dea"
+        }
+      ]
+    },
+    {
+      "test": "viewport-8",
+      "url": "https://services7.arcgis.com/Q6vsXnxTnYcWB7qg/ArcGIS/rest/services/BEXAR_PARCELS/FeatureServer/0/query?where=1%3D1&outFields=OBJECTID%2CProp_ID&returnGeometry=true&outSR=4326&f=geojson&orderByFields=OBJECTID&resultRecordCount=500&resultOffset=0&geometry=-98.543%2C29.465%2C-98.542%2C29.466&geometryType=esriGeometryEnvelope&inSR=4326&spatialRel=esriSpatialRelIntersects",
+      "method": "GET",
+      "checkedAt": "2026-10-08T22:26:14.690Z",
+      "httpStatus": 200,
+      "contentType": "application/json; charset=utf-8",
+      "bytes": 6681,
+      "features": [
+        {
+          "transportId": 325028,
+          "properties": {
+            "OBJECTID": 325028,
+            "Prop_ID": "386357"
+          },
+          "geometrySha256": "d52c441fb904b08fb6f2e7974b6c25203a8b3ee2877d892be88763e3c9a77474"
+        },
+        {
+          "transportId": 325033,
+          "properties": {
+            "OBJECTID": 325033,
+            "Prop_ID": "386356"
+          },
+          "geometrySha256": "ea36c376c8789f8902bf18ce6f1975db5eee63c40b8584914f2d812c5f3dfd2c"
+        },
+        {
+          "transportId": 325049,
+          "properties": {
+            "OBJECTID": 325049,
+            "Prop_ID": "386355"
+          },
+          "geometrySha256": "eae33d820aa83104992fbcbf90c6372562f1c54baf465134ca3c6fd7131f4243"
+        },
+        {
+          "transportId": 325258,
+          "properties": {
+            "OBJECTID": 325258,
+            "Prop_ID": "386296"
+          },
+          "geometrySha256": "5fb58837de037dcb33f5a2fccb7bae33485f482bf0547aabfd2f06048ed1be38"
+        },
+        {
+          "transportId": 325261,
+          "properties": {
+            "OBJECTID": 325261,
+            "Prop_ID": "386297"
+          },
+          "geometrySha256": "f090944512410fc5afcea41391172f478c1c8ced821b7256f42968ca9a53479b"
+        },
+        {
+          "transportId": 325273,
+          "properties": {
+            "OBJECTID": 325273,
+            "Prop_ID": "386298"
+          },
+          "geometrySha256": "3e69dc113c63722db5e6ce25320e2ecff8da88d1c902a1ff1fd3b234eba31a74"
+        },
+        {
+          "transportId": 325278,
+          "properties": {
+            "OBJECTID": 325278,
+            "Prop_ID": "386299"
+          },
+          "geometrySha256": "72e37596d06719578f020487510f3a5ee30692d71854b33e66afca9e340abb96"
+        },
+        {
+          "transportId": 325502,
+          "properties": {
+            "OBJECTID": 325502,
+            "Prop_ID": "386277"
+          },
+          "geometrySha256": "6248a68da30e164fddb8e809e0b5f98ad1c45fd94fed5e05db43c0be7a63974d"
+        },
+        {
+          "transportId": 325509,
+          "properties": {
+            "OBJECTID": 325509,
+            "Prop_ID": "386276"
+          },
+          "geometrySha256": "2783fe322e3736d8e1ae0bbbf693899d182aca8ddc07fe3fdb1d934f78deb652"
+        },
+        {
+          "transportId": 325513,
+          "properties": {
+            "OBJECTID": 325513,
+            "Prop_ID": "386275"
+          },
+          "geometrySha256": "0c066e7a95f0824b6daf228a3f2a33269cf2a7f3911bffc5a01a86d494529ab9"
+        },
+        {
+          "transportId": 325521,
+          "properties": {
+            "OBJECTID": 325521,
+            "Prop_ID": "386274"
+          },
+          "geometrySha256": "a92ce46622396f09ba8608e4646f586212a9b585120b1c7538989262af464c94"
+        },
+        {
+          "transportId": 655183,
+          "properties": {
+            "OBJECTID": 655183,
+            "Prop_ID": "386300"
+          },
+          "geometrySha256": "6f4d41a1fca10367855eabcd23647afff324428ffac6e274ef5aa46d4b964dea"
+        }
+      ]
+    },
+    {
+      "test": "viewport-9",
+      "url": "https://services7.arcgis.com/Q6vsXnxTnYcWB7qg/ArcGIS/rest/services/BEXAR_PARCELS/FeatureServer/0/query?where=1%3D1&outFields=OBJECTID%2CProp_ID&returnGeometry=true&outSR=4326&f=geojson&orderByFields=OBJECTID&resultRecordCount=500&resultOffset=0&geometry=-98.544%2C29.462%2C-98.543%2C29.463&geometryType=esriGeometryEnvelope&inSR=4326&spatialRel=esriSpatialRelIntersects",
+      "method": "GET",
+      "checkedAt": "2026-10-08T22:26:14.984Z",
+      "httpStatus": 200,
+      "contentType": "application/json; charset=utf-8",
+      "bytes": 10160,
+      "features": [
+        {
+          "transportId": 323548,
+          "properties": {
+            "OBJECTID": 323548,
+            "Prop_ID": "432928"
+          },
+          "geometrySha256": "8131a16e1dbdfb5e28d9ab025e94c8f2b444c0cff3481ed3010b4b5007b3a7a8"
+        },
+        {
+          "transportId": 323559,
+          "properties": {
+            "OBJECTID": 323559,
+            "Prop_ID": "434687"
+          },
+          "geometrySha256": "a2965095f5c021d37733a0a9f9ec03180c93d00632ebac0cfca51c5a188ab596"
+        },
+        {
+          "transportId": 323569,
+          "properties": {
+            "OBJECTID": 323569,
+            "Prop_ID": "434685"
+          },
+          "geometrySha256": "4840b8bffbd7ad06f4ccc7354be75febb1a25c96b62a30ec705ba7c70ca5d63c"
+        },
+        {
+          "transportId": 323570,
+          "properties": {
+            "OBJECTID": 323570,
+            "Prop_ID": "434686"
+          },
+          "geometrySha256": "e1f5b7f226f4aad510db21f5a294cc075a970f32051244404d9ed3491ce87395"
+        },
+        {
+          "transportId": 323817,
+          "properties": {
+            "OBJECTID": 323817,
+            "Prop_ID": "432919"
+          },
+          "geometrySha256": "5c8a628f3a7436a21848236eef42086d22a2dd92960f54aed5ad6ac46c7a3f78"
+        },
+        {
+          "transportId": 323818,
+          "properties": {
+            "OBJECTID": 323818,
+            "Prop_ID": "434675"
+          },
+          "geometrySha256": "6c1752c227bd340063e33a19c6e50268c4339b0a19b8a94818af061195d39457"
+        },
+        {
+          "transportId": 323828,
+          "properties": {
+            "OBJECTID": 323828,
+            "Prop_ID": "434676"
+          },
+          "geometrySha256": "e288191de4634a522ad77d5cedabeae05148ab5d16b288fa7b23b8d235cd2da7"
+        },
+        {
+          "transportId": 323834,
+          "properties": {
+            "OBJECTID": 323834,
+            "Prop_ID": "434674"
+          },
+          "geometrySha256": "7d095ba8abbc6a2d8ec7d53db75ada1441b321f7bbc85af8897d3c0732de541c"
+        },
+        {
+          "transportId": 324047,
+          "properties": {
+            "OBJECTID": 324047,
+            "Prop_ID": "434666"
+          },
+          "geometrySha256": "7423bd480b4f922327e2b427f4e1a751f422cffff393fc2ca84616fd806f354d"
+        },
+        {
+          "transportId": 324087,
+          "properties": {
+            "OBJECTID": 324087,
+            "Prop_ID": "434665"
+          },
+          "geometrySha256": "1b9637dd78a49c3f9271d3736a76a6595a2ded8ec6bd9735524ab66780b5f210"
+        },
+        {
+          "transportId": 324133,
+          "properties": {
+            "OBJECTID": 324133,
+            "Prop_ID": "434664"
+          },
+          "geometrySha256": "62642ed0163608d7caa9b7ed9ffb487636383898244888e319056b7f263052a1"
+        },
+        {
+          "transportId": 324140,
+          "properties": {
+            "OBJECTID": 324140,
+            "Prop_ID": "434663"
+          },
+          "geometrySha256": "68dc1089b97ab3624207c3feff327badd785b47b7e5597dc0a75b99519f7a53f"
+        }
+      ]
+    },
+    {
+      "test": "viewport-10",
+      "url": "https://services7.arcgis.com/Q6vsXnxTnYcWB7qg/ArcGIS/rest/services/BEXAR_PARCELS/FeatureServer/0/query?where=1%3D1&outFields=OBJECTID%2CProp_ID&returnGeometry=true&outSR=4326&f=geojson&orderByFields=OBJECTID&resultRecordCount=500&resultOffset=0&geometry=-98.544%2C29.466%2C-98.543%2C29.467&geometryType=esriGeometryEnvelope&inSR=4326&spatialRel=esriSpatialRelIntersects",
+      "method": "GET",
+      "checkedAt": "2026-10-08T22:26:15.283Z",
+      "httpStatus": 200,
+      "contentType": "application/json; charset=utf-8",
+      "bytes": 8408,
+      "features": [
+        {
+          "transportId": 325628,
+          "properties": {
+            "OBJECTID": 325628,
+            "Prop_ID": "386392"
+          },
+          "geometrySha256": "843a7ee52ce1afb0df9d57698fb243bafa4df3ccc02c341c570f24d16e212a43"
+        },
+        {
+          "transportId": 325822,
+          "properties": {
+            "OBJECTID": 325822,
+            "Prop_ID": "386245"
+          },
+          "geometrySha256": "f1811c0574ce6ccfd00c9a398af8667a3753076f00df69d9cca52d6723939a5a"
+        },
+        {
+          "transportId": 325826,
+          "properties": {
+            "OBJECTID": 325826,
+            "Prop_ID": "386246"
+          },
+          "geometrySha256": "8e1c6c8ca7efa0a6740d781e4a535ff7cb8e50ce840adc3f7f667b480c0e7db2"
+        },
+        {
+          "transportId": 325829,
+          "properties": {
+            "OBJECTID": 325829,
+            "Prop_ID": "386247"
+          },
+          "geometrySha256": "c0cac954e20204efe6433ec0bfcb2dd533b32d662f76c7c23d4a229818ec4719"
+        },
+        {
+          "transportId": 325834,
+          "properties": {
+            "OBJECTID": 325834,
+            "Prop_ID": "386248"
+          },
+          "geometrySha256": "012d9bb2881782228feca276bdbf7e94aa35c20fbb92db9fef8b9a2870c66658"
+        },
+        {
+          "transportId": 325836,
+          "properties": {
+            "OBJECTID": 325836,
+            "Prop_ID": "386249"
+          },
+          "geometrySha256": "105bfb54f18787c97b5bbd4fb047c0decc318f05fdaad550b105ca68f2cc5095"
+        },
+        {
+          "transportId": 325844,
+          "properties": {
+            "OBJECTID": 325844,
+            "Prop_ID": "386250"
+          },
+          "geometrySha256": "0f98e5bb3293b96ad8229b4c59b0ff9f062dd7cce2a66802d6de1e7a8018d5c4"
+        },
+        {
+          "transportId": 326050,
+          "properties": {
+            "OBJECTID": 326050,
+            "Prop_ID": "386242"
+          },
+          "geometrySha256": "35466bd4ddf6f8d91197a79d892715477adbdb1d9cc8f4495f6f55f6154e24f4"
+        },
+        {
+          "transportId": 326057,
+          "properties": {
+            "OBJECTID": 326057,
+            "Prop_ID": "386241"
+          },
+          "geometrySha256": "3be9c6c2b29b001e007025eaf8b7d0fcc1a9966ea00516e0fd92837a62326b29"
+        },
+        {
+          "transportId": 326062,
+          "properties": {
+            "OBJECTID": 326062,
+            "Prop_ID": "386240"
+          },
+          "geometrySha256": "a338617783818c3df5c2cba0180820366c610025e69b9f2c1fce5df9d052b7fe"
+        },
+        {
+          "transportId": 326067,
+          "properties": {
+            "OBJECTID": 326067,
+            "Prop_ID": "386239"
+          },
+          "geometrySha256": "4026d33856e21865f677054bd2168b0f98fd1f1d94c8e7ecd460dc40d078e067"
+        },
+        {
+          "transportId": 326080,
+          "properties": {
+            "OBJECTID": 326080,
+            "Prop_ID": "386236"
+          },
+          "geometrySha256": "abb3d075e4b373130a62cac0b9dda5dac24ed2937ce9094625f216fd1f200724"
+        },
+        {
+          "transportId": 326102,
+          "properties": {
+            "OBJECTID": 326102,
+            "Prop_ID": "386234"
+          },
+          "geometrySha256": "5b8475478b3d5d103661a1f8881d7d88cedae94602b6c771c3b0f2fda364a180"
+        },
+        {
+          "transportId": 655183,
+          "properties": {
+            "OBJECTID": 655183,
+            "Prop_ID": "386300"
+          },
+          "geometrySha256": "6f4d41a1fca10367855eabcd23647afff324428ffac6e274ef5aa46d4b964dea"
+        }
+      ]
+    },
+    {
+      "test": "viewport-11",
+      "url": "https://services7.arcgis.com/Q6vsXnxTnYcWB7qg/ArcGIS/rest/services/BEXAR_PARCELS/FeatureServer/0/query?where=1%3D1&outFields=OBJECTID%2CProp_ID&returnGeometry=true&outSR=4326&f=geojson&orderByFields=OBJECTID&resultRecordCount=500&resultOffset=0&geometry=-98.546%2C29.464%2C-98.545%2C29.465&geometryType=esriGeometryEnvelope&inSR=4326&spatialRel=esriSpatialRelIntersects",
+      "method": "GET",
+      "checkedAt": "2026-10-08T22:26:15.686Z",
+      "httpStatus": 200,
+      "contentType": "application/json; charset=utf-8",
+      "bytes": 14052,
+      "features": [
+        {
+          "transportId": 324960,
+          "properties": {
+            "OBJECTID": 324960,
+            "Prop_ID": "386338"
+          },
+          "geometrySha256": "8f35128cd62f1118f3ce0acd0a5578ffa3a4b962d389d153bc36fe8a711be1fa"
+        },
+        {
+          "transportId": 324964,
+          "properties": {
+            "OBJECTID": 324964,
+            "Prop_ID": "386339"
+          },
+          "geometrySha256": "0d302537529f7e02ca4a33f5b4a98a92d527e4f3d63b746f621528a0c3f8e26a"
+        },
+        {
+          "transportId": 324967,
+          "properties": {
+            "OBJECTID": 324967,
+            "Prop_ID": "386354"
+          },
+          "geometrySha256": "17abac517418001fe6017e3f5acc074c19d9d137c72c9b0aa679796c5bf19a2f"
+        },
+        {
+          "transportId": 324972,
+          "properties": {
+            "OBJECTID": 324972,
+            "Prop_ID": "386353"
+          },
+          "geometrySha256": "c9f12dcb500bfffdd7c312b7ae2fb99ed46e9f0c81743d3923bb3e904ebdf72e"
+        },
+        {
+          "transportId": 324985,
+          "properties": {
+            "OBJECTID": 324985,
+            "Prop_ID": "386352"
+          },
+          "geometrySha256": "f70ea0361e73dca08bafa6004299a813f722c9f35796899ced009d691ea569a2"
+        },
+        {
+          "transportId": 325021,
+          "properties": {
+            "OBJECTID": 325021,
+            "Prop_ID": "386351"
+          },
+          "geometrySha256": "47eea5b3395f435162a25d7413defa6b3bf9d04ea7c22fcb7ada0a8d82cc873c"
+        },
+        {
+          "transportId": 325128,
+          "properties": {
+            "OBJECTID": 325128,
+            "Prop_ID": "386313"
+          },
+          "geometrySha256": "14e8b1d0ce4fa7c7364eed0199aae58a7407750bf02640e89b72d857f3e40170"
+        },
+        {
+          "transportId": 325167,
+          "properties": {
+            "OBJECTID": 325167,
+            "Prop_ID": "386312"
+          },
+          "geometrySha256": "174050c2f74e309d422ca021104d307bc0ef84dc1b1362b33c242f2bd2f11463"
+        },
+        {
+          "transportId": 483994,
+          "properties": {
+            "OBJECTID": 483994,
+            "Prop_ID": "434644"
+          },
+          "geometrySha256": "52fbdd50399f20721fb3b53415d02e124c7e7bf9b26856d1b11ed33c83528274"
+        },
+        {
+          "transportId": 483995,
+          "properties": {
+            "OBJECTID": 483995,
+            "Prop_ID": "1245399"
+          },
+          "geometrySha256": "4c7c8a70df5a53592c3d40c68356397884595a60ddc1cb176ab4cd5a0b0503b1"
+        }
+      ]
+    },
+    {
+      "test": "viewport-12",
+      "url": "https://services7.arcgis.com/Q6vsXnxTnYcWB7qg/ArcGIS/rest/services/BEXAR_PARCELS/FeatureServer/0/query?where=1%3D1&outFields=OBJECTID%2CProp_ID&returnGeometry=true&outSR=4326&f=geojson&orderByFields=OBJECTID&resultRecordCount=500&resultOffset=0&geometry=-98.542%2C29.464%2C-98.541%2C29.465&geometryType=esriGeometryEnvelope&inSR=4326&spatialRel=esriSpatialRelIntersects",
+      "method": "GET",
+      "checkedAt": "2026-10-08T22:26:15.962Z",
+      "httpStatus": 200,
+      "contentType": "application/json; charset=utf-8",
+      "bytes": 7232,
+      "features": [
+        {
+          "transportId": 324432,
+          "properties": {
+            "OBJECTID": 324432,
+            "Prop_ID": "432917"
+          },
+          "geometrySha256": "7379d9ac28cbd690af2209287170b04dbdb353f4bd7ad6ac36bebba34c7cb015"
+        },
+        {
+          "transportId": 324435,
+          "properties": {
+            "OBJECTID": 324435,
+            "Prop_ID": "432915"
+          },
+          "geometrySha256": "3472707081afce8e8fc8491ec9e3415cd96ecaa41b4a7b3ab82e424c3a1fea2e"
+        },
+        {
+          "transportId": 324438,
+          "properties": {
+            "OBJECTID": 324438,
+            "Prop_ID": "432916"
+          },
+          "geometrySha256": "b62980b8c80ffb94008dd6acd83a5a8bd3b5352f3ad29d0bf019f2996e309179"
+        },
+        {
+          "transportId": 324585,
+          "properties": {
+            "OBJECTID": 324585,
+            "Prop_ID": "432910"
+          },
+          "geometrySha256": "e53ee8f035d91725f7e3686afc62641574b9a429acd8127d96e372a72f5abb16"
+        },
+        {
+          "transportId": 324732,
+          "properties": {
+            "OBJECTID": 324732,
+            "Prop_ID": "386368"
+          },
+          "geometrySha256": "2e40c6c7f36f8644447bd96ca7497adfde3c7a3c44c898e5322a0c1b938bfa19"
+        },
+        {
+          "transportId": 324786,
+          "properties": {
+            "OBJECTID": 324786,
+            "Prop_ID": "386369"
+          },
+          "geometrySha256": "c2d400696f81ca4510c1ff5ee769ff2353df361034bbf176c1abbc4ca8a9079d"
+        },
+        {
+          "transportId": 324796,
+          "properties": {
+            "OBJECTID": 324796,
+            "Prop_ID": "386370"
+          },
+          "geometrySha256": "078a7500af0fd8fab1d0c8d580588bf57a4e804a1a9d60ec25f8dc7b695a7935"
+        },
+        {
+          "transportId": 324797,
+          "properties": {
+            "OBJECTID": 324797,
+            "Prop_ID": "386371"
+          },
+          "geometrySha256": "8495d4f9908a6e8d4053a864ebd7d7312552440cebac0a5a8e352e26970792a4"
+        },
+        {
+          "transportId": 324801,
+          "properties": {
+            "OBJECTID": 324801,
+            "Prop_ID": "386372"
+          },
+          "geometrySha256": "ee5afcac3fd29eae47c08bb0b5558ce47d16c82edeb0cb31e9346e1f6ed1bc46"
+        },
+        {
+          "transportId": 324804,
+          "properties": {
+            "OBJECTID": 324804,
+            "Prop_ID": "386373"
+          },
+          "geometrySha256": "0408a2c099fe0ea9a09ca7cd6f2eb2ca537206f0014ef7769babed67565d3df3"
+        },
+        {
+          "transportId": 324808,
+          "properties": {
+            "OBJECTID": 324808,
+            "Prop_ID": "386374"
+          },
+          "geometrySha256": "ed4bab0f95200df89ba796bece283786ade4524cc1a4aad2900b170c65504efb"
+        },
+        {
+          "transportId": 324983,
+          "properties": {
+            "OBJECTID": 324983,
+            "Prop_ID": "386363"
+          },
+          "geometrySha256": "baf52dfb292fb1b85efb203348c6c5f0519844383b83b3fb6d2f2e1d58d7d3ae"
+        },
+        {
+          "transportId": 324986,
+          "properties": {
+            "OBJECTID": 324986,
+            "Prop_ID": "386362"
+          },
+          "geometrySha256": "7f26f1b0e36afe42fb89c912cff772a1e5291e92449b8f9aac74ca2ab90728d4"
+        },
+        {
+          "transportId": 325012,
+          "properties": {
+            "OBJECTID": 325012,
+            "Prop_ID": "386361"
+          },
+          "geometrySha256": "66192737ddb8f5561bee2a112c65378090c804dac281e609fa88db35592c288d"
+        },
+        {
+          "transportId": 325018,
+          "properties": {
+            "OBJECTID": 325018,
+            "Prop_ID": "386360"
+          },
+          "geometrySha256": "bc32abf9b5b1b6377be2aefd5bfb0c14b62e2b2bd613e7580f309f1fe1f1a985"
+        },
+        {
+          "transportId": 325020,
+          "properties": {
+            "OBJECTID": 325020,
+            "Prop_ID": "386359"
+          },
+          "geometrySha256": "8b4563734367d92f14029c277b3ddd8c23f801b200549b1392f10d1bf1f45ab8"
+        },
+        {
+          "transportId": 325026,
+          "properties": {
+            "OBJECTID": 325026,
+            "Prop_ID": "386358"
+          },
+          "geometrySha256": "89022c739dcafce0735eaac25fb072de2fcde58b7ec5935f066dcc751f76cc5e"
+        },
+        {
+          "transportId": 325028,
+          "properties": {
+            "OBJECTID": 325028,
+            "Prop_ID": "386357"
+          },
+          "geometrySha256": "d52c441fb904b08fb6f2e7974b6c25203a8b3ee2877d892be88763e3c9a77474"
+        }
+      ]
+    },
+    {
+      "test": "forced-three-row-pages",
+      "url": "https://services7.arcgis.com/Q6vsXnxTnYcWB7qg/ArcGIS/rest/services/BEXAR_PARCELS/FeatureServer/0/query?where=1%3D1&outFields=OBJECTID%2CProp_ID&returnGeometry=true&outSR=4326&f=geojson&orderByFields=OBJECTID&resultRecordCount=3&resultOffset=0&geometry=-98.545%2C29.465%2C-98.544%2C29.466&geometryType=esriGeometryEnvelope&inSR=4326&spatialRel=esriSpatialRelIntersects",
+      "method": "GET",
+      "checkedAt": "2026-10-08T22:26:16.503Z",
+      "httpStatus": 200,
+      "contentType": "application/json; charset=utf-8",
+      "bytes": 1383,
+      "features": [
+        {
+          "transportId": 325068,
+          "properties": {
+            "OBJECTID": 325068,
+            "Prop_ID": "386318"
+          },
+          "geometrySha256": "f6d42a843fbabbd74bb01c6bb586f231314ba65ada7ad83f0662bc47fa5ccf65"
+        },
+        {
+          "transportId": 325071,
+          "properties": {
+            "OBJECTID": 325071,
+            "Prop_ID": "386317"
+          },
+          "geometrySha256": "a6e88d93ecd4ae7edcafbbf89116fc96cecbb38e1c5e4209884518730464a601"
+        },
+        {
+          "transportId": 325076,
+          "properties": {
+            "OBJECTID": 325076,
+            "Prop_ID": "386316"
+          },
+          "geometrySha256": "e54f97024528bc6e5fddec71c4513defad9e2a15ea8b8cf9f5a05a9063188906"
+        }
+      ]
+    },
+    {
+      "test": "forced-three-row-pages",
+      "url": "https://services7.arcgis.com/Q6vsXnxTnYcWB7qg/ArcGIS/rest/services/BEXAR_PARCELS/FeatureServer/0/query?where=1%3D1&outFields=OBJECTID%2CProp_ID&returnGeometry=true&outSR=4326&f=geojson&orderByFields=OBJECTID&resultRecordCount=3&resultOffset=3&geometry=-98.545%2C29.465%2C-98.544%2C29.466&geometryType=esriGeometryEnvelope&inSR=4326&spatialRel=esriSpatialRelIntersects",
+      "method": "GET",
+      "checkedAt": "2026-10-08T22:26:18.255Z",
+      "httpStatus": 200,
+      "contentType": "application/json; charset=utf-8",
+      "bytes": 1485,
+      "features": [
+        {
+          "transportId": 325081,
+          "properties": {
+            "OBJECTID": 325081,
+            "Prop_ID": "386315"
+          },
+          "geometrySha256": "f72d58465657133ae1339827814760e9920825ff7da5ce20b656337c24045fa8"
+        },
+        {
+          "transportId": 325084,
+          "properties": {
+            "OBJECTID": 325084,
+            "Prop_ID": "386314"
+          },
+          "geometrySha256": "35d84fa90007134ab15c5dc477c6c2a76520c01712105e2e3ceb7938e10ee193"
+        },
+        {
+          "transportId": 325128,
+          "properties": {
+            "OBJECTID": 325128,
+            "Prop_ID": "386313"
+          },
+          "geometrySha256": "14e8b1d0ce4fa7c7364eed0199aae58a7407750bf02640e89b72d857f3e40170"
+        }
+      ]
+    },
+    {
+      "test": "forced-three-row-pages",
+      "url": "https://services7.arcgis.com/Q6vsXnxTnYcWB7qg/ArcGIS/rest/services/BEXAR_PARCELS/FeatureServer/0/query?where=1%3D1&outFields=OBJECTID%2CProp_ID&returnGeometry=true&outSR=4326&f=geojson&orderByFields=OBJECTID&resultRecordCount=3&resultOffset=6&geometry=-98.545%2C29.465%2C-98.544%2C29.466&geometryType=esriGeometryEnvelope&inSR=4326&spatialRel=esriSpatialRelIntersects",
+      "method": "GET",
+      "checkedAt": "2026-10-08T22:26:19.870Z",
+      "httpStatus": 200,
+      "contentType": "application/json; charset=utf-8",
+      "bytes": 1379,
+      "features": [
+        {
+          "transportId": 325383,
+          "properties": {
+            "OBJECTID": 325383,
+            "Prop_ID": "386394"
+          },
+          "geometrySha256": "f6e922de7a50d07495ab9cf22b3c8c01549b0b0173af376c50840e1f14a2820b"
+        },
+        {
+          "transportId": 325388,
+          "properties": {
+            "OBJECTID": 325388,
+            "Prop_ID": "386395"
+          },
+          "geometrySha256": "32866a0aca73f31f83f00e1be6c6d74d37b35de28b6bc601a5ae3b178ce0bf6b"
+        },
+        {
+          "transportId": 325392,
+          "properties": {
+            "OBJECTID": 325392,
+            "Prop_ID": "386396"
+          },
+          "geometrySha256": "0116d8bd621ee45a04ae50449e573d57c740f6992560be2b97ed6fabbf8249b2"
+        }
+      ]
+    },
+    {
+      "test": "forced-three-row-pages",
+      "url": "https://services7.arcgis.com/Q6vsXnxTnYcWB7qg/ArcGIS/rest/services/BEXAR_PARCELS/FeatureServer/0/query?where=1%3D1&outFields=OBJECTID%2CProp_ID&returnGeometry=true&outSR=4326&f=geojson&orderByFields=OBJECTID&resultRecordCount=3&resultOffset=9&geometry=-98.545%2C29.465%2C-98.544%2C29.466&geometryType=esriGeometryEnvelope&inSR=4326&spatialRel=esriSpatialRelIntersects",
+      "method": "GET",
+      "checkedAt": "2026-10-08T22:26:24.918Z",
+      "httpStatus": 200,
+      "contentType": "application/json; charset=utf-8",
+      "bytes": 1449,
+      "features": [
+        {
+          "transportId": 325398,
+          "properties": {
+            "OBJECTID": 325398,
+            "Prop_ID": "386397"
+          },
+          "geometrySha256": "a12dd084aa1c4d3210b548597bb53a0377ce6c961e85874555520131b7477387"
+        },
+        {
+          "transportId": 325404,
+          "properties": {
+            "OBJECTID": 325404,
+            "Prop_ID": "386398"
+          },
+          "geometrySha256": "1947d1ea0cdd05eba4b0b63c959afc85fff4bc01977b5ac2364eaeadba656d73"
+        },
+        {
+          "transportId": 325409,
+          "properties": {
+            "OBJECTID": 325409,
+            "Prop_ID": "386399"
+          },
+          "geometrySha256": "e65a8bfc93183009c5a210e3355fd80cd68ee92c3cbdfc32cee6598a8aa9db72"
+        }
+      ]
+    },
+    {
+      "test": "forced-three-row-pages",
+      "url": "https://services7.arcgis.com/Q6vsXnxTnYcWB7qg/ArcGIS/rest/services/BEXAR_PARCELS/FeatureServer/0/query?where=1%3D1&outFields=OBJECTID%2CProp_ID&returnGeometry=true&outSR=4326&f=geojson&orderByFields=OBJECTID&resultRecordCount=3&resultOffset=12&geometry=-98.545%2C29.465%2C-98.544%2C29.466&geometryType=esriGeometryEnvelope&inSR=4326&spatialRel=esriSpatialRelIntersects",
+      "method": "GET",
+      "checkedAt": "2026-10-08T22:26:32.022Z",
+      "httpStatus": 200,
+      "contentType": "application/json; charset=utf-8",
+      "bytes": 5433,
+      "features": [
+        {
+          "transportId": 325416,
+          "properties": {
+            "OBJECTID": 325416,
+            "Prop_ID": "386400"
+          },
+          "geometrySha256": "3d46a06a4dd7bd390c2f49e7df059c9b75facbdc627f3af08bc9955e87f29302"
+        },
+        {
+          "transportId": 325628,
+          "properties": {
+            "OBJECTID": 325628,
+            "Prop_ID": "386392"
+          },
+          "geometrySha256": "843a7ee52ce1afb0df9d57698fb243bafa4df3ccc02c341c570f24d16e212a43"
+        },
+        {
+          "transportId": 325631,
+          "properties": {
+            "OBJECTID": 325631,
+            "Prop_ID": "386391"
+          },
+          "geometrySha256": "7d5a4bb5faae110bb9edc289659b2e0c10413a811828ad6046b30d844d46028c"
+        }
+      ]
+    },
+    {
+      "test": "forced-three-row-pages",
+      "url": "https://services7.arcgis.com/Q6vsXnxTnYcWB7qg/ArcGIS/rest/services/BEXAR_PARCELS/FeatureServer/0/query?where=1%3D1&outFields=OBJECTID%2CProp_ID&returnGeometry=true&outSR=4326&f=geojson&orderByFields=OBJECTID&resultRecordCount=3&resultOffset=15&geometry=-98.545%2C29.465%2C-98.544%2C29.466&geometryType=esriGeometryEnvelope&inSR=4326&spatialRel=esriSpatialRelIntersects",
+      "method": "GET",
+      "checkedAt": "2026-10-08T22:26:33.748Z",
+      "httpStatus": 200,
+      "contentType": "application/json; charset=utf-8",
+      "bytes": 3470,
+      "features": [
+        {
+          "transportId": 325635,
+          "properties": {
+            "OBJECTID": 325635,
+            "Prop_ID": "386390"
+          },
+          "geometrySha256": "084aab842144ff024e3b7926102aa9c994d30425a5dc74d0dc1ff3a8d6e26798"
+        },
+        {
+          "transportId": 325640,
+          "properties": {
+            "OBJECTID": 325640,
+            "Prop_ID": "386389"
+          },
+          "geometrySha256": "f17d03414056ae3cc8162e9eec78a3e2d96d94636dcd65d839826ba95bf0bb7d"
+        },
+        {
+          "transportId": 325645,
+          "properties": {
+            "OBJECTID": 325645,
+            "Prop_ID": "386388"
+          },
+          "geometrySha256": "13f47e2ea96a4ae51b685e9eb5e4f08f345366f61012d1f4dcb8d5ec7242554f"
+        }
+      ]
+    },
+    {
+      "test": "forced-three-row-pages",
+      "url": "https://services7.arcgis.com/Q6vsXnxTnYcWB7qg/ArcGIS/rest/services/BEXAR_PARCELS/FeatureServer/0/query?where=1%3D1&outFields=OBJECTID%2CProp_ID&returnGeometry=true&outSR=4326&f=geojson&orderByFields=OBJECTID&resultRecordCount=3&resultOffset=18&geometry=-98.545%2C29.465%2C-98.544%2C29.466&geometryType=esriGeometryEnvelope&inSR=4326&spatialRel=esriSpatialRelIntersects",
+      "method": "GET",
+      "checkedAt": "2026-10-08T22:26:36.877Z",
+      "httpStatus": 200,
+      "contentType": "application/json; charset=utf-8",
+      "bytes": 98,
+      "features": []
+    },
+    {
+      "test": "fresh-ids-0",
+      "url": "https://services7.arcgis.com/Q6vsXnxTnYcWB7qg/ArcGIS/rest/services/BEXAR_PARCELS/FeatureServer/0/query?where=Prop_ID+IN+%28%271161679%27%2C%271245399%27%2C%271358293%27%2C%27386234%27%2C%27386236%27%2C%27386239%27%2C%27386240%27%2C%27386241%27%2C%27386242%27%2C%27386245%27%2C%27386246%27%2C%27386247%27%2C%27386248%27%2C%27386249%27%2C%27386250%27%2C%27386274%27%2C%27386275%27%2C%27386276%27%2C%27386277%27%2C%27386296%27%2C%27386297%27%2C%27386298%27%2C%27386299%27%2C%27386300%27%2C%27386312%27%2C%27386313%27%2C%27386314%27%2C%27386315%27%2C%27386316%27%2C%27386317%27%2C%27386318%27%2C%27386319%27%2C%27386320%27%2C%27386321%27%2C%27386322%27%2C%27386323%27%2C%27386324%27%2C%27386325%27%2C%27386326%27%2C%27386328%27%29&outFields=OBJECTID%2CProp_ID&returnGeometry=true&outSR=4326&f=geojson&orderByFields=OBJECTID&resultRecordCount=500&resultOffset=0",
+      "method": "GET",
+      "checkedAt": "2026-10-08T22:26:40.049Z",
+      "httpStatus": 200,
+      "contentType": "application/json; charset=utf-8",
+      "bytes": 25793,
+      "features": [
+        {
+          "transportId": 324810,
+          "properties": {
+            "OBJECTID": 324810,
+            "Prop_ID": "386324"
+          },
+          "geometrySha256": "d2d433ee68c9faf31d67ff01cdfa79d5455c6f75534c0e33565d2915340cdf1d"
+        },
+        {
+          "transportId": 324819,
+          "properties": {
+            "OBJECTID": 324819,
+            "Prop_ID": "386323"
+          },
+          "geometrySha256": "a229ee66f337cc3a88edf172a42ad899b3ec5abcc8669446e4a059f575752748"
+        },
+        {
+          "transportId": 324843,
+          "properties": {
+            "OBJECTID": 324843,
+            "Prop_ID": "386322"
+          },
+          "geometrySha256": "c0d0a34ce3c835190c2cafb47ab5b8d9d7b6aafdc0553fea9c3ddaa6f90b9f1b"
+        },
+        {
+          "transportId": 324847,
+          "properties": {
+            "OBJECTID": 324847,
+            "Prop_ID": "386325"
+          },
+          "geometrySha256": "c3732fd7d60fa741f8ce18f6b7caedc434a3f2745ff0309e6e3e032b4c457b21"
+        },
+        {
+          "transportId": 324849,
+          "properties": {
+            "OBJECTID": 324849,
+            "Prop_ID": "386326"
+          },
+          "geometrySha256": "95e525e32ffb8e1477bae57d8ec628e850e5024d12110373e319fad672c6a26f"
+        },
+        {
+          "transportId": 324851,
+          "properties": {
+            "OBJECTID": 324851,
+            "Prop_ID": "386328"
+          },
+          "geometrySha256": "0b68614d65faea750e3b7413b99b47b23b7e13ea7ece90fb372f1013e327ae7d"
+        },
+        {
+          "transportId": 325059,
+          "properties": {
+            "OBJECTID": 325059,
+            "Prop_ID": "386321"
+          },
+          "geometrySha256": "f52fec03aebcba576356d89a9de8cb844f10ec3570aa3bedc10e91fddb28e05a"
+        },
+        {
+          "transportId": 325063,
+          "properties": {
+            "OBJECTID": 325063,
+            "Prop_ID": "386320"
+          },
+          "geometrySha256": "80bf50cc8c76dbecb46b096265d259f07aeb04fb55986dfcab8b4b4978237daf"
+        },
+        {
+          "transportId": 325066,
+          "properties": {
+            "OBJECTID": 325066,
+            "Prop_ID": "386319"
+          },
+          "geometrySha256": "0fc41619333fe66bdeaa9cb7bc636a180194d11611a8b575b0b049aa8906b781"
+        },
+        {
+          "transportId": 325068,
+          "properties": {
+            "OBJECTID": 325068,
+            "Prop_ID": "386318"
+          },
+          "geometrySha256": "f6d42a843fbabbd74bb01c6bb586f231314ba65ada7ad83f0662bc47fa5ccf65"
+        },
+        {
+          "transportId": 325071,
+          "properties": {
+            "OBJECTID": 325071,
+            "Prop_ID": "386317"
+          },
+          "geometrySha256": "a6e88d93ecd4ae7edcafbbf89116fc96cecbb38e1c5e4209884518730464a601"
+        },
+        {
+          "transportId": 325076,
+          "properties": {
+            "OBJECTID": 325076,
+            "Prop_ID": "386316"
+          },
+          "geometrySha256": "e54f97024528bc6e5fddec71c4513defad9e2a15ea8b8cf9f5a05a9063188906"
+        },
+        {
+          "transportId": 325081,
+          "properties": {
+            "OBJECTID": 325081,
+            "Prop_ID": "386315"
+          },
+          "geometrySha256": "f72d58465657133ae1339827814760e9920825ff7da5ce20b656337c24045fa8"
+        },
+        {
+          "transportId": 325084,
+          "properties": {
+            "OBJECTID": 325084,
+            "Prop_ID": "386314"
+          },
+          "geometrySha256": "35d84fa90007134ab15c5dc477c6c2a76520c01712105e2e3ceb7938e10ee193"
+        },
+        {
+          "transportId": 325128,
+          "properties": {
+            "OBJECTID": 325128,
+            "Prop_ID": "386313"
+          },
+          "geometrySha256": "14e8b1d0ce4fa7c7364eed0199aae58a7407750bf02640e89b72d857f3e40170"
+        },
+        {
+          "transportId": 325167,
+          "properties": {
+            "OBJECTID": 325167,
+            "Prop_ID": "386312"
+          },
+          "geometrySha256": "174050c2f74e309d422ca021104d307bc0ef84dc1b1362b33c242f2bd2f11463"
+        },
+        {
+          "transportId": 325258,
+          "properties": {
+            "OBJECTID": 325258,
+            "Prop_ID": "386296"
+          },
+          "geometrySha256": "5fb58837de037dcb33f5a2fccb7bae33485f482bf0547aabfd2f06048ed1be38"
+        },
+        {
+          "transportId": 325261,
+          "properties": {
+            "OBJECTID": 325261,
+            "Prop_ID": "386297"
+          },
+          "geometrySha256": "f090944512410fc5afcea41391172f478c1c8ced821b7256f42968ca9a53479b"
+        },
+        {
+          "transportId": 325273,
+          "properties": {
+            "OBJECTID": 325273,
+            "Prop_ID": "386298"
+          },
+          "geometrySha256": "3e69dc113c63722db5e6ce25320e2ecff8da88d1c902a1ff1fd3b234eba31a74"
+        },
+        {
+          "transportId": 325278,
+          "properties": {
+            "OBJECTID": 325278,
+            "Prop_ID": "386299"
+          },
+          "geometrySha256": "72e37596d06719578f020487510f3a5ee30692d71854b33e66afca9e340abb96"
+        },
+        {
+          "transportId": 325502,
+          "properties": {
+            "OBJECTID": 325502,
+            "Prop_ID": "386277"
+          },
+          "geometrySha256": "6248a68da30e164fddb8e809e0b5f98ad1c45fd94fed5e05db43c0be7a63974d"
+        },
+        {
+          "transportId": 325509,
+          "properties": {
+            "OBJECTID": 325509,
+            "Prop_ID": "386276"
+          },
+          "geometrySha256": "2783fe322e3736d8e1ae0bbbf693899d182aca8ddc07fe3fdb1d934f78deb652"
+        },
+        {
+          "transportId": 325513,
+          "properties": {
+            "OBJECTID": 325513,
+            "Prop_ID": "386275"
+          },
+          "geometrySha256": "0c066e7a95f0824b6daf228a3f2a33269cf2a7f3911bffc5a01a86d494529ab9"
+        },
+        {
+          "transportId": 325521,
+          "properties": {
+            "OBJECTID": 325521,
+            "Prop_ID": "386274"
+          },
+          "geometrySha256": "a92ce46622396f09ba8608e4646f586212a9b585120b1c7538989262af464c94"
+        },
+        {
+          "transportId": 325822,
+          "properties": {
+            "OBJECTID": 325822,
+            "Prop_ID": "386245"
+          },
+          "geometrySha256": "f1811c0574ce6ccfd00c9a398af8667a3753076f00df69d9cca52d6723939a5a"
+        },
+        {
+          "transportId": 325826,
+          "properties": {
+            "OBJECTID": 325826,
+            "Prop_ID": "386246"
+          },
+          "geometrySha256": "8e1c6c8ca7efa0a6740d781e4a535ff7cb8e50ce840adc3f7f667b480c0e7db2"
+        },
+        {
+          "transportId": 325829,
+          "properties": {
+            "OBJECTID": 325829,
+            "Prop_ID": "386247"
+          },
+          "geometrySha256": "c0cac954e20204efe6433ec0bfcb2dd533b32d662f76c7c23d4a229818ec4719"
+        },
+        {
+          "transportId": 325834,
+          "properties": {
+            "OBJECTID": 325834,
+            "Prop_ID": "386248"
+          },
+          "geometrySha256": "012d9bb2881782228feca276bdbf7e94aa35c20fbb92db9fef8b9a2870c66658"
+        },
+        {
+          "transportId": 325836,
+          "properties": {
+            "OBJECTID": 325836,
+            "Prop_ID": "386249"
+          },
+          "geometrySha256": "105bfb54f18787c97b5bbd4fb047c0decc318f05fdaad550b105ca68f2cc5095"
+        },
+        {
+          "transportId": 325844,
+          "properties": {
+            "OBJECTID": 325844,
+            "Prop_ID": "386250"
+          },
+          "geometrySha256": "0f98e5bb3293b96ad8229b4c59b0ff9f062dd7cce2a66802d6de1e7a8018d5c4"
+        },
+        {
+          "transportId": 326050,
+          "properties": {
+            "OBJECTID": 326050,
+            "Prop_ID": "386242"
+          },
+          "geometrySha256": "35466bd4ddf6f8d91197a79d892715477adbdb1d9cc8f4495f6f55f6154e24f4"
+        },
+        {
+          "transportId": 326057,
+          "properties": {
+            "OBJECTID": 326057,
+            "Prop_ID": "386241"
+          },
+          "geometrySha256": "3be9c6c2b29b001e007025eaf8b7d0fcc1a9966ea00516e0fd92837a62326b29"
+        },
+        {
+          "transportId": 326062,
+          "properties": {
+            "OBJECTID": 326062,
+            "Prop_ID": "386240"
+          },
+          "geometrySha256": "a338617783818c3df5c2cba0180820366c610025e69b9f2c1fce5df9d052b7fe"
+        },
+        {
+          "transportId": 326067,
+          "properties": {
+            "OBJECTID": 326067,
+            "Prop_ID": "386239"
+          },
+          "geometrySha256": "4026d33856e21865f677054bd2168b0f98fd1f1d94c8e7ecd460dc40d078e067"
+        },
+        {
+          "transportId": 326080,
+          "properties": {
+            "OBJECTID": 326080,
+            "Prop_ID": "386236"
+          },
+          "geometrySha256": "abb3d075e4b373130a62cac0b9dda5dac24ed2937ce9094625f216fd1f200724"
+        },
+        {
+          "transportId": 326102,
+          "properties": {
+            "OBJECTID": 326102,
+            "Prop_ID": "386234"
+          },
+          "geometrySha256": "5b8475478b3d5d103661a1f8881d7d88cedae94602b6c771c3b0f2fda364a180"
+        },
+        {
+          "transportId": 429184,
+          "properties": {
+            "OBJECTID": 429184,
+            "Prop_ID": "1161679"
+          },
+          "geometrySha256": "44e14bfbdeba74b8055e33917c01accbb9c383f29274521ed4d78c02687313f3"
+        },
+        {
+          "transportId": 483995,
+          "properties": {
+            "OBJECTID": 483995,
+            "Prop_ID": "1245399"
+          },
+          "geometrySha256": "4c7c8a70df5a53592c3d40c68356397884595a60ddc1cb176ab4cd5a0b0503b1"
+        },
+        {
+          "transportId": 655182,
+          "properties": {
+            "OBJECTID": 655182,
+            "Prop_ID": "1358293"
+          },
+          "geometrySha256": "f92e881695d5432c8ea6011545f55e34d51616ee9e0438e4bc19d75f20b265fd"
+        },
+        {
+          "transportId": 655183,
+          "properties": {
+            "OBJECTID": 655183,
+            "Prop_ID": "386300"
+          },
+          "geometrySha256": "6f4d41a1fca10367855eabcd23647afff324428ffac6e274ef5aa46d4b964dea"
+        }
+      ]
+    },
+    {
+      "test": "fresh-ids-40",
+      "url": "https://services7.arcgis.com/Q6vsXnxTnYcWB7qg/ArcGIS/rest/services/BEXAR_PARCELS/FeatureServer/0/query?where=Prop_ID+IN+%28%27386329%27%2C%27386330%27%2C%27386331%27%2C%27386332%27%2C%27386333%27%2C%27386334%27%2C%27386335%27%2C%27386337%27%2C%27386338%27%2C%27386339%27%2C%27386351%27%2C%27386352%27%2C%27386353%27%2C%27386354%27%2C%27386355%27%2C%27386356%27%2C%27386357%27%2C%27386358%27%2C%27386359%27%2C%27386360%27%2C%27386361%27%2C%27386362%27%2C%27386363%27%2C%27386368%27%2C%27386369%27%2C%27386370%27%2C%27386371%27%2C%27386372%27%2C%27386373%27%2C%27386374%27%2C%27386376%27%2C%27386379%27%2C%27386380%27%2C%27386388%27%2C%27386389%27%2C%27386390%27%2C%27386391%27%2C%27386392%27%2C%27386393%27%2C%27386394%27%29&outFields=OBJECTID%2CProp_ID&returnGeometry=true&outSR=4326&f=geojson&orderByFields=OBJECTID&resultRecordCount=500&resultOffset=0",
+      "method": "GET",
+      "checkedAt": "2026-10-08T22:26:40.344Z",
+      "httpStatus": 200,
+      "contentType": "application/json; charset=utf-8",
+      "bytes": 28468,
+      "features": [
+        {
+          "transportId": 324732,
+          "properties": {
+            "OBJECTID": 324732,
+            "Prop_ID": "386368"
+          },
+          "geometrySha256": "2e40c6c7f36f8644447bd96ca7497adfde3c7a3c44c898e5322a0c1b938bfa19"
+        },
+        {
+          "transportId": 324786,
+          "properties": {
+            "OBJECTID": 324786,
+            "Prop_ID": "386369"
+          },
+          "geometrySha256": "c2d400696f81ca4510c1ff5ee769ff2353df361034bbf176c1abbc4ca8a9079d"
+        },
+        {
+          "transportId": 324796,
+          "properties": {
+            "OBJECTID": 324796,
+            "Prop_ID": "386370"
+          },
+          "geometrySha256": "078a7500af0fd8fab1d0c8d580588bf57a4e804a1a9d60ec25f8dc7b695a7935"
+        },
+        {
+          "transportId": 324797,
+          "properties": {
+            "OBJECTID": 324797,
+            "Prop_ID": "386371"
+          },
+          "geometrySha256": "8495d4f9908a6e8d4053a864ebd7d7312552440cebac0a5a8e352e26970792a4"
+        },
+        {
+          "transportId": 324801,
+          "properties": {
+            "OBJECTID": 324801,
+            "Prop_ID": "386372"
+          },
+          "geometrySha256": "ee5afcac3fd29eae47c08bb0b5558ce47d16c82edeb0cb31e9346e1f6ed1bc46"
+        },
+        {
+          "transportId": 324804,
+          "properties": {
+            "OBJECTID": 324804,
+            "Prop_ID": "386373"
+          },
+          "geometrySha256": "0408a2c099fe0ea9a09ca7cd6f2eb2ca537206f0014ef7769babed67565d3df3"
+        },
+        {
+          "transportId": 324808,
+          "properties": {
+            "OBJECTID": 324808,
+            "Prop_ID": "386374"
+          },
+          "geometrySha256": "ed4bab0f95200df89ba796bece283786ade4524cc1a4aad2900b170c65504efb"
+        },
+        {
+          "transportId": 324813,
+          "properties": {
+            "OBJECTID": 324813,
+            "Prop_ID": "386380"
+          },
+          "geometrySha256": "9371f33d336d08204280cf823746c40364879b610c1c83176d2354bf2a7c1892"
+        },
+        {
+          "transportId": 324814,
+          "properties": {
+            "OBJECTID": 324814,
+            "Prop_ID": "386379"
+          },
+          "geometrySha256": "ed7938f4767293e8c186146f9a571a10ad0229915fadeae10552a287647a0c95"
+        },
+        {
+          "transportId": 324820,
+          "properties": {
+            "OBJECTID": 324820,
+            "Prop_ID": "386376"
+          },
+          "geometrySha256": "da445c44b1dd39597844dcd44f7a2e55714240c5b682937f26b72697f8138792"
+        },
+        {
+          "transportId": 324854,
+          "properties": {
+            "OBJECTID": 324854,
+            "Prop_ID": "386329"
+          },
+          "geometrySha256": "8e70ea1602c53f929ac78a153730e4d62bec6f8e48dddd3b89ab2241305f6609"
+        },
+        {
+          "transportId": 324855,
+          "properties": {
+            "OBJECTID": 324855,
+            "Prop_ID": "386330"
+          },
+          "geometrySha256": "c91a2311b9bed2c8cdf343f575ffbeb3112f16734747fcbafe19f9fba76f92a4"
+        },
+        {
+          "transportId": 324857,
+          "properties": {
+            "OBJECTID": 324857,
+            "Prop_ID": "386331"
+          },
+          "geometrySha256": "33a2d1cde6e178f242f56d52bace4abd5106d3cd59c07029d5070368128633d1"
+        },
+        {
+          "transportId": 324861,
+          "properties": {
+            "OBJECTID": 324861,
+            "Prop_ID": "386332"
+          },
+          "geometrySha256": "c2fafbce3709e15ba8b51879c684f82de8945b93c15e10558f122471b5ea1d0d"
+        },
+        {
+          "transportId": 324864,
+          "properties": {
+            "OBJECTID": 324864,
+            "Prop_ID": "386333"
+          },
+          "geometrySha256": "46113de2274716862bbf1d9d7160c807af5cd06be706b77705ddb4cf23706e50"
+        },
+        {
+          "transportId": 324865,
+          "properties": {
+            "OBJECTID": 324865,
+            "Prop_ID": "386334"
+          },
+          "geometrySha256": "c91eaabf1ba16a7a07456da37183e39b6ad2384f069561db9df79eec52733b8a"
+        },
+        {
+          "transportId": 324868,
+          "properties": {
+            "OBJECTID": 324868,
+            "Prop_ID": "386335"
+          },
+          "geometrySha256": "968c161b1703668385aa914c37ff0470d1d00803ba8c9b8ae2bbe618486280e4"
+        },
+        {
+          "transportId": 324905,
+          "properties": {
+            "OBJECTID": 324905,
+            "Prop_ID": "386337"
+          },
+          "geometrySha256": "e2bba9729e680f1fb480b51636c82b25276892674ef0514de96f3636e6409442"
+        },
+        {
+          "transportId": 324960,
+          "properties": {
+            "OBJECTID": 324960,
+            "Prop_ID": "386338"
+          },
+          "geometrySha256": "8f35128cd62f1118f3ce0acd0a5578ffa3a4b962d389d153bc36fe8a711be1fa"
+        },
+        {
+          "transportId": 324964,
+          "properties": {
+            "OBJECTID": 324964,
+            "Prop_ID": "386339"
+          },
+          "geometrySha256": "0d302537529f7e02ca4a33f5b4a98a92d527e4f3d63b746f621528a0c3f8e26a"
+        },
+        {
+          "transportId": 324967,
+          "properties": {
+            "OBJECTID": 324967,
+            "Prop_ID": "386354"
+          },
+          "geometrySha256": "17abac517418001fe6017e3f5acc074c19d9d137c72c9b0aa679796c5bf19a2f"
+        },
+        {
+          "transportId": 324972,
+          "properties": {
+            "OBJECTID": 324972,
+            "Prop_ID": "386353"
+          },
+          "geometrySha256": "c9f12dcb500bfffdd7c312b7ae2fb99ed46e9f0c81743d3923bb3e904ebdf72e"
+        },
+        {
+          "transportId": 324983,
+          "properties": {
+            "OBJECTID": 324983,
+            "Prop_ID": "386363"
+          },
+          "geometrySha256": "baf52dfb292fb1b85efb203348c6c5f0519844383b83b3fb6d2f2e1d58d7d3ae"
+        },
+        {
+          "transportId": 324985,
+          "properties": {
+            "OBJECTID": 324985,
+            "Prop_ID": "386352"
+          },
+          "geometrySha256": "f70ea0361e73dca08bafa6004299a813f722c9f35796899ced009d691ea569a2"
+        },
+        {
+          "transportId": 324986,
+          "properties": {
+            "OBJECTID": 324986,
+            "Prop_ID": "386362"
+          },
+          "geometrySha256": "7f26f1b0e36afe42fb89c912cff772a1e5291e92449b8f9aac74ca2ab90728d4"
+        },
+        {
+          "transportId": 325012,
+          "properties": {
+            "OBJECTID": 325012,
+            "Prop_ID": "386361"
+          },
+          "geometrySha256": "66192737ddb8f5561bee2a112c65378090c804dac281e609fa88db35592c288d"
+        },
+        {
+          "transportId": 325018,
+          "properties": {
+            "OBJECTID": 325018,
+            "Prop_ID": "386360"
+          },
+          "geometrySha256": "bc32abf9b5b1b6377be2aefd5bfb0c14b62e2b2bd613e7580f309f1fe1f1a985"
+        },
+        {
+          "transportId": 325020,
+          "properties": {
+            "OBJECTID": 325020,
+            "Prop_ID": "386359"
+          },
+          "geometrySha256": "8b4563734367d92f14029c277b3ddd8c23f801b200549b1392f10d1bf1f45ab8"
+        },
+        {
+          "transportId": 325021,
+          "properties": {
+            "OBJECTID": 325021,
+            "Prop_ID": "386351"
+          },
+          "geometrySha256": "47eea5b3395f435162a25d7413defa6b3bf9d04ea7c22fcb7ada0a8d82cc873c"
+        },
+        {
+          "transportId": 325026,
+          "properties": {
+            "OBJECTID": 325026,
+            "Prop_ID": "386358"
+          },
+          "geometrySha256": "89022c739dcafce0735eaac25fb072de2fcde58b7ec5935f066dcc751f76cc5e"
+        },
+        {
+          "transportId": 325028,
+          "properties": {
+            "OBJECTID": 325028,
+            "Prop_ID": "386357"
+          },
+          "geometrySha256": "d52c441fb904b08fb6f2e7974b6c25203a8b3ee2877d892be88763e3c9a77474"
+        },
+        {
+          "transportId": 325033,
+          "properties": {
+            "OBJECTID": 325033,
+            "Prop_ID": "386356"
+          },
+          "geometrySha256": "ea36c376c8789f8902bf18ce6f1975db5eee63c40b8584914f2d812c5f3dfd2c"
+        },
+        {
+          "transportId": 325049,
+          "properties": {
+            "OBJECTID": 325049,
+            "Prop_ID": "386355"
+          },
+          "geometrySha256": "eae33d820aa83104992fbcbf90c6372562f1c54baf465134ca3c6fd7131f4243"
+        },
+        {
+          "transportId": 325376,
+          "properties": {
+            "OBJECTID": 325376,
+            "Prop_ID": "386393"
+          },
+          "geometrySha256": "3828bb7ff8fa1a48cd23395076fc928d4739c875d8d6adb8703a1a6d4443fbae"
+        },
+        {
+          "transportId": 325383,
+          "properties": {
+            "OBJECTID": 325383,
+            "Prop_ID": "386394"
+          },
+          "geometrySha256": "f6e922de7a50d07495ab9cf22b3c8c01549b0b0173af376c50840e1f14a2820b"
+        },
+        {
+          "transportId": 325628,
+          "properties": {
+            "OBJECTID": 325628,
+            "Prop_ID": "386392"
+          },
+          "geometrySha256": "843a7ee52ce1afb0df9d57698fb243bafa4df3ccc02c341c570f24d16e212a43"
+        },
+        {
+          "transportId": 325631,
+          "properties": {
+            "OBJECTID": 325631,
+            "Prop_ID": "386391"
+          },
+          "geometrySha256": "7d5a4bb5faae110bb9edc289659b2e0c10413a811828ad6046b30d844d46028c"
+        },
+        {
+          "transportId": 325635,
+          "properties": {
+            "OBJECTID": 325635,
+            "Prop_ID": "386390"
+          },
+          "geometrySha256": "084aab842144ff024e3b7926102aa9c994d30425a5dc74d0dc1ff3a8d6e26798"
+        },
+        {
+          "transportId": 325640,
+          "properties": {
+            "OBJECTID": 325640,
+            "Prop_ID": "386389"
+          },
+          "geometrySha256": "f17d03414056ae3cc8162e9eec78a3e2d96d94636dcd65d839826ba95bf0bb7d"
+        },
+        {
+          "transportId": 325645,
+          "properties": {
+            "OBJECTID": 325645,
+            "Prop_ID": "386388"
+          },
+          "geometrySha256": "13f47e2ea96a4ae51b685e9eb5e4f08f345366f61012d1f4dcb8d5ec7242554f"
+        }
+      ]
+    },
+    {
+      "test": "fresh-ids-80",
+      "url": "https://services7.arcgis.com/Q6vsXnxTnYcWB7qg/ArcGIS/rest/services/BEXAR_PARCELS/FeatureServer/0/query?where=Prop_ID+IN+%28%27386395%27%2C%27386396%27%2C%27386397%27%2C%27386398%27%2C%27386399%27%2C%27386400%27%2C%27432910%27%2C%27432911%27%2C%27432912%27%2C%27432913%27%2C%27432914%27%2C%27432915%27%2C%27432916%27%2C%27432917%27%2C%27432919%27%2C%27432921%27%2C%27432922%27%2C%27432928%27%2C%27434642%27%2C%27434644%27%2C%27434646%27%2C%27434653%27%2C%27434660%27%2C%27434661%27%2C%27434662%27%2C%27434663%27%2C%27434664%27%2C%27434665%27%2C%27434666%27%2C%27434674%27%2C%27434675%27%2C%27434676%27%2C%27434685%27%2C%27434686%27%2C%27434687%27%29&outFields=OBJECTID%2CProp_ID&returnGeometry=true&outSR=4326&f=geojson&orderByFields=OBJECTID&resultRecordCount=500&resultOffset=0",
+      "method": "GET",
+      "checkedAt": "2026-10-08T22:26:40.632Z",
+      "httpStatus": 200,
+      "contentType": "application/json; charset=utf-8",
+      "bytes": 26253,
+      "features": [
+        {
+          "transportId": 323548,
+          "properties": {
+            "OBJECTID": 323548,
+            "Prop_ID": "432928"
+          },
+          "geometrySha256": "8131a16e1dbdfb5e28d9ab025e94c8f2b444c0cff3481ed3010b4b5007b3a7a8"
+        },
+        {
+          "transportId": 323559,
+          "properties": {
+            "OBJECTID": 323559,
+            "Prop_ID": "434687"
+          },
+          "geometrySha256": "a2965095f5c021d37733a0a9f9ec03180c93d00632ebac0cfca51c5a188ab596"
+        },
+        {
+          "transportId": 323569,
+          "properties": {
+            "OBJECTID": 323569,
+            "Prop_ID": "434685"
+          },
+          "geometrySha256": "4840b8bffbd7ad06f4ccc7354be75febb1a25c96b62a30ec705ba7c70ca5d63c"
+        },
+        {
+          "transportId": 323570,
+          "properties": {
+            "OBJECTID": 323570,
+            "Prop_ID": "434686"
+          },
+          "geometrySha256": "e1f5b7f226f4aad510db21f5a294cc075a970f32051244404d9ed3491ce87395"
+        },
+        {
+          "transportId": 323817,
+          "properties": {
+            "OBJECTID": 323817,
+            "Prop_ID": "432919"
+          },
+          "geometrySha256": "5c8a628f3a7436a21848236eef42086d22a2dd92960f54aed5ad6ac46c7a3f78"
+        },
+        {
+          "transportId": 323818,
+          "properties": {
+            "OBJECTID": 323818,
+            "Prop_ID": "434675"
+          },
+          "geometrySha256": "6c1752c227bd340063e33a19c6e50268c4339b0a19b8a94818af061195d39457"
+        },
+        {
+          "transportId": 323828,
+          "properties": {
+            "OBJECTID": 323828,
+            "Prop_ID": "434676"
+          },
+          "geometrySha256": "e288191de4634a522ad77d5cedabeae05148ab5d16b288fa7b23b8d235cd2da7"
+        },
+        {
+          "transportId": 323834,
+          "properties": {
+            "OBJECTID": 323834,
+            "Prop_ID": "434674"
+          },
+          "geometrySha256": "7d095ba8abbc6a2d8ec7d53db75ada1441b321f7bbc85af8897d3c0732de541c"
+        },
+        {
+          "transportId": 323925,
+          "properties": {
+            "OBJECTID": 323925,
+            "Prop_ID": "432921"
+          },
+          "geometrySha256": "f474e79210ea71006b3ca6e3904e112e27d498099de7bf81fc032563cc40b302"
+        },
+        {
+          "transportId": 323993,
+          "properties": {
+            "OBJECTID": 323993,
+            "Prop_ID": "432922"
+          },
+          "geometrySha256": "c8be348e97e69e75d47686db4e4156af152256e0e4ead6fcac5a63325eaa5f53"
+        },
+        {
+          "transportId": 324047,
+          "properties": {
+            "OBJECTID": 324047,
+            "Prop_ID": "434666"
+          },
+          "geometrySha256": "7423bd480b4f922327e2b427f4e1a751f422cffff393fc2ca84616fd806f354d"
+        },
+        {
+          "transportId": 324087,
+          "properties": {
+            "OBJECTID": 324087,
+            "Prop_ID": "434665"
+          },
+          "geometrySha256": "1b9637dd78a49c3f9271d3736a76a6595a2ded8ec6bd9735524ab66780b5f210"
+        },
+        {
+          "transportId": 324129,
+          "properties": {
+            "OBJECTID": 324129,
+            "Prop_ID": "432911"
+          },
+          "geometrySha256": "acfbfd18a66fee4bb8ed224cc8ea9131ddc02995d4a6e076a4a98f1c4131a0dc"
+        },
+        {
+          "transportId": 324133,
+          "properties": {
+            "OBJECTID": 324133,
+            "Prop_ID": "434664"
+          },
+          "geometrySha256": "62642ed0163608d7caa9b7ed9ffb487636383898244888e319056b7f263052a1"
+        },
+        {
+          "transportId": 324140,
+          "properties": {
+            "OBJECTID": 324140,
+            "Prop_ID": "434663"
+          },
+          "geometrySha256": "68dc1089b97ab3624207c3feff327badd785b47b7e5597dc0a75b99519f7a53f"
+        },
+        {
+          "transportId": 324150,
+          "properties": {
+            "OBJECTID": 324150,
+            "Prop_ID": "434662"
+          },
+          "geometrySha256": "0d05128e6b6f88b04bb4fad50888f16b1d95ff95065deeb6e17c4f7d8ff86d53"
+        },
+        {
+          "transportId": 324156,
+          "properties": {
+            "OBJECTID": 324156,
+            "Prop_ID": "434660"
+          },
+          "geometrySha256": "d84a4bac7f7f5a788e680bc27f46574ecf86000403b5ebf138e4743de23b5c48"
+        },
+        {
+          "transportId": 324157,
+          "properties": {
+            "OBJECTID": 324157,
+            "Prop_ID": "434661"
+          },
+          "geometrySha256": "15c9f820ed140f3482e3c0c332be1369b74463fe5fd0c994fb3349bf8be1fd88"
+        },
+        {
+          "transportId": 324161,
+          "properties": {
+            "OBJECTID": 324161,
+            "Prop_ID": "432912"
+          },
+          "geometrySha256": "1a228b1a5336f981e71b441a9caaf6b425d1d330312486522be8b824546d8de4"
+        },
+        {
+          "transportId": 324236,
+          "properties": {
+            "OBJECTID": 324236,
+            "Prop_ID": "432913"
+          },
+          "geometrySha256": "34adaad6f8b512064db83bfe0c22b4d965b75c3ad5726e26d692311b48ae5cd0"
+        },
+        {
+          "transportId": 324386,
+          "properties": {
+            "OBJECTID": 324386,
+            "Prop_ID": "432914"
+          },
+          "geometrySha256": "93974a7a9cf2ed6aa9bb66f2f28f193aea1f13144eff9b03338d4fa3095e9c35"
+        },
+        {
+          "transportId": 324408,
+          "properties": {
+            "OBJECTID": 324408,
+            "Prop_ID": "434653"
+          },
+          "geometrySha256": "3c3a7886c32be20bf4d849c159477fcd04ba085cc590218cfebd5a7d5f134ff0"
+        },
+        {
+          "transportId": 324432,
+          "properties": {
+            "OBJECTID": 324432,
+            "Prop_ID": "432917"
+          },
+          "geometrySha256": "7379d9ac28cbd690af2209287170b04dbdb353f4bd7ad6ac36bebba34c7cb015"
+        },
+        {
+          "transportId": 324435,
+          "properties": {
+            "OBJECTID": 324435,
+            "Prop_ID": "432915"
+          },
+          "geometrySha256": "3472707081afce8e8fc8491ec9e3415cd96ecaa41b4a7b3ab82e424c3a1fea2e"
+        },
+        {
+          "transportId": 324438,
+          "properties": {
+            "OBJECTID": 324438,
+            "Prop_ID": "432916"
+          },
+          "geometrySha256": "b62980b8c80ffb94008dd6acd83a5a8bd3b5352f3ad29d0bf019f2996e309179"
+        },
+        {
+          "transportId": 324585,
+          "properties": {
+            "OBJECTID": 324585,
+            "Prop_ID": "432910"
+          },
+          "geometrySha256": "e53ee8f035d91725f7e3686afc62641574b9a429acd8127d96e372a72f5abb16"
+        },
+        {
+          "transportId": 324630,
+          "properties": {
+            "OBJECTID": 324630,
+            "Prop_ID": "434642"
+          },
+          "geometrySha256": "6c10ebb086fea720b5fdffc1fe904ae6f5d8c98cc3eb889196fe54127b7ebcbc"
+        },
+        {
+          "transportId": 325388,
+          "properties": {
+            "OBJECTID": 325388,
+            "Prop_ID": "386395"
+          },
+          "geometrySha256": "32866a0aca73f31f83f00e1be6c6d74d37b35de28b6bc601a5ae3b178ce0bf6b"
+        },
+        {
+          "transportId": 325392,
+          "properties": {
+            "OBJECTID": 325392,
+            "Prop_ID": "386396"
+          },
+          "geometrySha256": "0116d8bd621ee45a04ae50449e573d57c740f6992560be2b97ed6fabbf8249b2"
+        },
+        {
+          "transportId": 325398,
+          "properties": {
+            "OBJECTID": 325398,
+            "Prop_ID": "386397"
+          },
+          "geometrySha256": "a12dd084aa1c4d3210b548597bb53a0377ce6c961e85874555520131b7477387"
+        },
+        {
+          "transportId": 325404,
+          "properties": {
+            "OBJECTID": 325404,
+            "Prop_ID": "386398"
+          },
+          "geometrySha256": "1947d1ea0cdd05eba4b0b63c959afc85fff4bc01977b5ac2364eaeadba656d73"
+        },
+        {
+          "transportId": 325409,
+          "properties": {
+            "OBJECTID": 325409,
+            "Prop_ID": "386399"
+          },
+          "geometrySha256": "e65a8bfc93183009c5a210e3355fd80cd68ee92c3cbdfc32cee6598a8aa9db72"
+        },
+        {
+          "transportId": 325416,
+          "properties": {
+            "OBJECTID": 325416,
+            "Prop_ID": "386400"
+          },
+          "geometrySha256": "3d46a06a4dd7bd390c2f49e7df059c9b75facbdc627f3af08bc9955e87f29302"
+        },
+        {
+          "transportId": 483964,
+          "properties": {
+            "OBJECTID": 483964,
+            "Prop_ID": "434646"
+          },
+          "geometrySha256": "4660df96ffcb70afd54a3c936a5b0b42182283bb80b21dbc9239d922b4312eae"
+        },
+        {
+          "transportId": 483994,
+          "properties": {
+            "OBJECTID": 483994,
+            "Prop_ID": "434644"
+          },
+          "geometrySha256": "52fbdd50399f20721fb3b53415d02e124c7e7bf9b26856d1b11ed33c83528274"
+        }
+      ]
+    },
+    {
+      "test": "explicit-absence",
+      "url": "https://services7.arcgis.com/Q6vsXnxTnYcWB7qg/ArcGIS/rest/services/BEXAR_PARCELS/FeatureServer/0/query?where=Prop_ID+IN+%28%279999999999%27%29&outFields=OBJECTID%2CProp_ID&returnGeometry=true&outSR=4326&f=geojson&orderByFields=OBJECTID&resultRecordCount=500&resultOffset=0",
+      "method": "GET",
+      "checkedAt": "2026-10-08T22:26:40.916Z",
+      "httpStatus": 200,
+      "contentType": "application/json; charset=utf-8",
+      "bytes": 98,
+      "features": []
+    },
+    {
+      "test": "footprint",
+      "url": "https://services7.arcgis.com/Q6vsXnxTnYcWB7qg/ArcGIS/rest/services/BEXAR_PARCELS/FeatureServer/0/query?where=1%3D1&outFields=OBJECTID%2CProp_ID&returnGeometry=true&outSR=4326&f=geojson&orderByFields=OBJECTID&resultRecordCount=500&resultOffset=0&geometry=-98.5433976382019%2C29.4667955153392%2C-98.5431579405188%2C29.4672385234592&geometryType=esriGeometryEnvelope&inSR=4326&spatialRel=esriSpatialRelIntersects",
+      "method": "GET",
+      "checkedAt": "2026-10-08T22:26:41.212Z",
+      "httpStatus": 200,
+      "contentType": "application/json; charset=utf-8",
+      "bytes": 1044,
+      "features": [
+        {
+          "transportId": 326057,
+          "properties": {
+            "OBJECTID": 326057,
+            "Prop_ID": "386241"
+          },
+          "geometrySha256": "3be9c6c2b29b001e007025eaf8b7d0fcc1a9966ea00516e0fd92837a62326b29"
+        },
+        {
+          "transportId": 326062,
+          "properties": {
+            "OBJECTID": 326062,
+            "Prop_ID": "386240"
+          },
+          "geometrySha256": "a338617783818c3df5c2cba0180820366c610025e69b9f2c1fce5df9d052b7fe"
+        },
+        {
+          "transportId": 326067,
+          "properties": {
+            "OBJECTID": 326067,
+            "Prop_ID": "386239"
+          },
+          "geometrySha256": "4026d33856e21865f677054bd2168b0f98fd1f1d94c8e7ecd460dc40d078e067"
+        }
+      ]
+    },
+    {
+      "test": "source-binding",
+      "url": "https://services7.arcgis.com/Q6vsXnxTnYcWB7qg/ArcGIS/rest/services/BEXAR_PARCELS/FeatureServer/0/query?where=1%3D1&outFields=OBJECTID%2CProp_ID&returnGeometry=true&outSR=4326&f=geojson&orderByFields=OBJECTID&resultRecordCount=500&resultOffset=0&geometry=-98.5433976382019%2C29.4667955153392%2C-98.5431579405188%2C29.4672385234592&geometryType=esriGeometryEnvelope&inSR=4326&spatialRel=esriSpatialRelIntersects",
+      "method": "GET",
+      "checkedAt": "2026-10-08T22:26:41.489Z",
+      "httpStatus": 200,
+      "contentType": "application/json; charset=utf-8",
+      "bytes": 1044,
+      "features": [
+        {
+          "transportId": 326057,
+          "properties": {
+            "OBJECTID": 326057,
+            "Prop_ID": "386241"
+          },
+          "geometrySha256": "3be9c6c2b29b001e007025eaf8b7d0fcc1a9966ea00516e0fd92837a62326b29"
+        },
+        {
+          "transportId": 326062,
+          "properties": {
+            "OBJECTID": 326062,
+            "Prop_ID": "386240"
+          },
+          "geometrySha256": "a338617783818c3df5c2cba0180820366c610025e69b9f2c1fce5df9d052b7fe"
+        },
+        {
+          "transportId": 326067,
+          "properties": {
+            "OBJECTID": 326067,
+            "Prop_ID": "386239"
+          },
+          "geometrySha256": "4026d33856e21865f677054bd2168b0f98fd1f1d94c8e7ecd460dc40d078e067"
+        }
+      ]
+    }
+  ],
+  "qualityFile": "/tmp/overnight-cities-2026-10-08/san-antonio-quality.json",
+  "uniqueParcels": 115,
+  "requestCount": 26,
+  "allTestsPassed": true,
+  "finishedAt": "2026-10-08T22:26:42.032Z",
+  "qualityStatus": "passed",
+  "metricCrs": "EPSG:26914",
+  "metricProjection": "+proj=utm +zone=14 +datum=NAD83 +units=m +no_defs",
+  "qualityAudit": {
+    "featureCount": 115,
+    "validNonemptyCount": 115,
+    "invalid": 0,
+    "exactDuplicates": 0,
+    "positiveAreaOverlaps": 0,
+    "operationErrors": 0,
+    "metricCrs": "EPSG:26914",
+    "library": "Shapely 2.2.0 / GEOS"
+  },
+  "browserFile": "research/overnight-cities-2026-10-08/san-antonio-browser-check.json"
+}

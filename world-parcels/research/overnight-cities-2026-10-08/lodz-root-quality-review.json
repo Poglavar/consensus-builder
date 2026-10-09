@@ -1,0 +1,14 @@
+{
+  "checkedAt": "2026-10-09T05:11:39.710715+00:00",
+  "decision": "approved_by_root",
+  "basis": "89 valid distinct native EGiB cadastral polygons across thirteen bounded cells around the unchanged Łódź WUP population-settlement locator. Exact FES polygon intersection is identical for before/after hit counts and all pages. Forced three-row paging, fresh reads of every native ID in batches of eight, explicit absence, full footprint lookup and source binding pass. Metric EPSG32634 topology found no sampled invalidity, duplicate geometry, positive-area overlaps or operation errors. The original point-containing sample remains unchanged and independently matches the fresh full polygon. This is bounded reference geometry, without a citywide completeness, legal-title or survey-accuracy guarantee.",
+  "acceptanceFile": "lodz-intersects-batched-root-acceptance.json",
+  "qualityFile": "lodz-intersects-batched-root-quality.json",
+  "originalSampleReviewFile": "lodz-root-original-sample-review.json",
+  "rootTransportReview": {
+    "jsonOutputUnsupported": "Actual qualified PROPERTYNAME request returned HTTP400 WFS exception stating application/json is not permitted. GML3.2.1 is advertised and verified.",
+    "bboxCountMismatch": "The first failing BBOX viewport had numeric hits13 but data12. Exact FES Intersects over the same projected rectangle returned hits13/results13/hits13, with valid disjoint forced pages. Count checks were preserved.",
+    "urlLength": "An exact native-ID filter for40 keys returned HTTP414 at8223 URL bytes; a separate40-key filter around8191 bytes succeeded. Independent eight-ID readback returned all8 matching polygons over3HTTP200 requests around2042 bytes. Runtime now partitions IDs into groups of8 under one overall request/time/byte budget."
+  },
+  "geometryManipulation": "None. Full source polygons retained unchanged except CRS transformation; no snapping, repair, geographic substitution, part omission or duplicate exclusion."
+}

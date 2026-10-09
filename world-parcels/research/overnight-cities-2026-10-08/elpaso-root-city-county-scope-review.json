@@ -1,0 +1,41 @@
+{
+  "checkedAt": "2026-10-09",
+  "city": "El Paso",
+  "scopeQuestion": "Does this City GIS publication establish a city-only parcel layer or exact city-bound feature?",
+  "evidence": [
+    {
+      "url": "https://opendata.elpasotexas.gov/",
+      "observation": "City Open Data describes parcel data as El Paso County land and lots owned/managed by the El Paso Central Appraisal District (EPCAD), with county parcel shapefiles linked at EPCAD."
+    },
+    {
+      "url": "https://epcad.org/OpenGovernment",
+      "observation": "EPCAD describes its GIS data and shapefiles as El Paso County parcel information and disclaims completeness/update guarantees."
+    },
+    {
+      "url": "https://gis.elpasotexas.gov/arcgis/rest/services/Deeds/FeatureServer/0",
+      "observation": "City GIS publishes a Parcels polygon layer; metadata reports EPSG:6578 and safe GIS system OID OBJECTID. This establishes publisher/service, not city-only feature coverage."
+    },
+    {
+      "url": "https://gis.elpasotexas.gov/accela/rest/services/311/CityLimits/FeatureServer/0",
+      "observation": "City Limits layer geometry was queried at the WUP point with only OBJECTID allowed; the point is inside the municipal city-limit polygon."
+    }
+  ],
+  "scopeConclusion": "The City GIS is the immediate publisher; official City Open Data identifies EPCAD as the countywide parcel source/manager. The city-level WUP centroid is inside the municipal limit, and fresh parcel OBJECTID 130036 from the WUP-centered 13-cell qualification contains it. This supports a city-bound local feature, but the full parcel-layer extent/citywide coverage is not established; retain a county-source/city-publisher caveat.",
+  "existingSampleReview": {
+    "repositorySampleObjectId": 128625,
+    "freshByIdHttpStatus": 200,
+    "freshByIdCount": 1,
+    "returnedFeatureKeys": [
+      "OBJECTID"
+    ],
+    "geometryMatchesExistingSample": true,
+    "containsExactWupPoint": false,
+    "appearedIn13CellQualificationUnion": false
+  },
+  "newWupContainingObjectId": "US-TX-ELPASO-OBJECTID-130036",
+  "wupPointInsideCityLimit": true,
+  "newWupContainingPolygonRetainedOnlyInTmp": true,
+  "repoGeometryChanged": false,
+  "citywideCoverageClaimed": false,
+  "rootLatestManifestReview": "The later79-feature native-manifest run includes originalOID128625, unlike the78-feature offset run. Original sample remains unchanged and does not contain WUP; OID130036 does. See elpaso-root-original-and-paging-review.json."
+}

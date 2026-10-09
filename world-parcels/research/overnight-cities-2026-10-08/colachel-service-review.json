@@ -1,0 +1,45 @@
+{
+  "schemaVersion": 1,
+  "checkedAt": "2026-10-09",
+  "cityRecord": "city-10081-colachel.json",
+  "purpose": "City-specific official registry/cadastre and safe anonymous parcel-geometry discovery.",
+  "scopeLimits": {
+    "maxFullPolygonsRetainedInCityRecord": 3,
+    "maxFullPolygonsRetainedInReview": 3,
+    "maxFullPolygonsRetainedInRepository": 3,
+    "ownerOrAddressDataRetained": false,
+    "credentialsOrTokenValuesRetained": false,
+    "citywideCompletenessAsserted": false
+  },
+  "assessment": "The district portal routes to a survey-number and location based land-record service rather than an anonymous coordinate query; no personal property lookup, CAPTCHA submission, or owner-data request was made. Colachel municipality confirms local identity but its public map material is not parcel geometry.",
+  "registryAssessment": "The Kanniyakumari district administration lists Tamil Nadu land-record services for Patta/FMB/Chitta and urban TSLR, and the official Colachel municipality page identifies Colachel as a municipality in Kanniyakumari district. This establishes relevant government land-record services, but not public anonymous vector parcel access or the ranked point’s parcel coverage.",
+  "searchQueries": [
+    {
+      "language": "Tamil",
+      "query": "குளச்சல் கன்னியாகுமரி நில அளவை நிலப் பதிவுகள் புலப்படம் TSLR அரசு",
+      "scope": "Locate Colachel/Kanniyakumari official land-record services and whether any anonymous parcel geometry is available.",
+      "result": "Kanniyakumari district administration provides the official state land-records link for Patta/FMB/Chitta and TSLR; the official Colachel municipality page confirms its district. Services require locality and survey identifiers; no anonymous vector endpoint was identified.",
+      "actualResultUrls": [
+        "https://kanniyakumari.nic.in/service/land-records-a-register/",
+        "https://www.tnurbantree.tn.gov.in/colachel/",
+        "https://eservices.tn.gov.in/eservicesnew/home.html"
+      ],
+      "executionMethod": "Separate language-specific search followed by official-source/service review. Only anonymous public technical tests were attempted where safe."
+    },
+    {
+      "language": "English",
+      "query": "Colachel Kanniyakumari official cadastral parcel map land records Tamil Nadu",
+      "scope": "Locate Colachel/Kanniyakumari official land-record services and whether any anonymous parcel geometry is available.",
+      "result": "Official sources identify local land-record services and Colachel Municipality, but provide no coordinate-based public polygon API.",
+      "actualResultUrls": [
+        "https://kanniyakumari.nic.in/service/land-records-a-register/",
+        "https://www.tnurbantree.tn.gov.in/colachel/",
+        "https://services.india.gov.in/service/detail/e-services-of-land-records-tamil-nadu"
+      ],
+      "executionMethod": "Separate language-specific search followed by official-source/service review. Only anonymous public technical tests were attempted where safe."
+    }
+  ],
+  "geometryEvidence": null,
+  "privacy": "No full parcel polygon was retained. No owner, address, title, or personal data were requested or retained.",
+  "runtimeAssessment": "not_assessed"
+}

@@ -1,0 +1,58 @@
+{
+  "schemaVersion": "1.0",
+  "checkedAt": "2026-10-09",
+  "cityRecord": "city-9306-xingtai.json",
+  "purpose": "Document city-scope registry evidence and bounded public parcel-geometry route review.",
+  "scopeLimits": {
+    "maxFullPolygonsRetainedInCityRecord": 3,
+    "maxFullPolygonsRetainedInReview": 3,
+    "maxFullPolygonsRetainedInRepository": 3,
+    "ownerOrAddressDataRetained": false,
+    "credentialsOrTokenValuesRetained": false,
+    "citywideCompletenessAsserted": false
+  },
+  "assessment": "City registry activity is confirmed by an attributable municipal press-conference transcript; its online services are application workflows. No anonymous parcel-geometry service was verified.",
+  "registryAssessment": "Xingtai government-news coverage of a municipal government press conference quotes the Xingtai Real Estate Registration Center director and deputy directors describing the center’s city registration workflows (first, transfer, mortgage, cancellation; city service-window channels). Xingtai’s government information portal lists the municipal Natural Resources and Planning Bureau. This establishes local registry activity, but not open parcel geometry.",
+  "officialPrimarySources": [
+    {
+      "url": "https://xt.hebccw.cn/system/2023/06/20/101166935.shtml",
+      "observation": "Xingtai government-news coverage of a municipal government press conference quotes the Xingtai Real Estate Registration Center director and deputy directors describing the center’s city registration workflows (first, transfer, mortgage, cancellation; city service-window channels). Xingtai’s government information portal lists the municipal Natural Resources and Planning Bureau. This establishes local registry activity, but not open parcel geometry."
+    },
+    {
+      "url": "https://info.xingtai.gov.cn/gknb.jsp",
+      "observation": "The transcript records the municipal Real Estate Registration Center director describing first registration, transfer, mortgage and cancellation workflows, window services, and the Hebei integrated application system. Online filing and personal registration information require an applicant workflow. The government pages reviewed did not disclose a public parcel feature service, schema or geometry-only query. No application was initiated."
+    },
+    {
+      "url": "https://hebei.gov.cn/",
+      "observation": "The transcript records the municipal Real Estate Registration Center director describing first registration, transfer, mortgage and cancellation workflows, window services, and the Hebei integrated application system. Online filing and personal registration information require an applicant workflow. The government pages reviewed did not disclose a public parcel feature service, schema or geometry-only query. No application was initiated."
+    }
+  ],
+  "searchQueries": [
+    {
+      "language": "English",
+      "query": "Xingtai China official real estate registration center cadastral GIS parcel map",
+      "result": "City registry activity is confirmed by an attributable municipal press-conference transcript; its online services are application workflows. No anonymous parcel-geometry service was verified.",
+      "method": "Separate English and local-language official-source-focused search."
+    },
+    {
+      "language": "Chinese",
+      "query": "邢台市 不动产登记中心 地籍图 宗地 自然资源和规划局 官方",
+      "result": "City registry activity is confirmed by an attributable municipal press-conference transcript; its online services are application workflows. No anonymous parcel-geometry service was verified.",
+      "method": "Separate English and local-language official-source-focused search."
+    }
+  ],
+  "serviceChecks": [],
+  "geometryEvidence": null,
+  "accessReview": {
+    "publicAnonymousGeometryVerified": false,
+    "completeGeoreferencedPolygonCount": 0,
+    "geometryRetained": false,
+    "ownerAddressTaxOrPersonLookupRequested": false,
+    "authenticationOrCredentialsUsed": false,
+    "captchaOrPersonalFormSubmitted": false,
+    "routeInspectionStatus": "not_verified",
+    "reason": "The transcript records the municipal Real Estate Registration Center director describing first registration, transfer, mortgage and cancellation workflows, window services, and the Hebei integrated application system. Online filing and personal registration information require an applicant workflow. The government pages reviewed did not disclose a public parcel feature service, schema or geometry-only query. No application was initiated."
+  },
+  "privacy": "No parcel/property lookup, owner/address/tax-account query, login, or personal data was used.",
+  "runtimeAssessment": "not_enabled_no_verified_public_geometry"
+}

@@ -1,0 +1,1728 @@
+{
+  "schemaVersion": 1,
+  "purpose": "Independent GEOS topology check of complete runtime parcels projected to metric coordinates; no repair applied. Counts are bounded sample evidence, not whole-city guarantees.",
+  "library": "Shapely 2.2.0",
+  "metricCrs": "EPSG:32720",
+  "featureCount": 244,
+  "validNonemptyCount": 244,
+  "invalidFeatures": [],
+  "exactDuplicateGeometryPairs": [],
+  "positiveAreaOverlapPairsAbove0_01M2": [],
+  "sumPairwiseOverlapM2": 0,
+  "operationErrors": [],
+  "areaM2": {
+    "min": 64.61191295392037,
+    "median": 313.5049679810479,
+    "max": 15713.337040933522
+  },
+  "features": [
+    {
+      "id": "AR-SALTA-DGI-OID-917663",
+      "areaM2": 234.55171797438004,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "AR-SALTA-DGI-OID-917677",
+      "areaM2": 243.24729824132564,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "AR-SALTA-DGI-OID-918583",
+      "areaM2": 475.25842286710025,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "AR-SALTA-DGI-OID-918851",
+      "areaM2": 229.47527275630858,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "AR-SALTA-DGI-OID-918969",
+      "areaM2": 425.5720665643168,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "AR-SALTA-DGI-OID-1016568",
+      "areaM2": 4249.627370683611,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "AR-SALTA-DGI-OID-916205",
+      "areaM2": 335.5765998235292,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "AR-SALTA-DGI-OID-918536",
+      "areaM2": 396.9943260584073,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "AR-SALTA-DGI-OID-918562",
+      "areaM2": 222.8868198636124,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "AR-SALTA-DGI-OID-916466",
+      "areaM2": 237.54525294837532,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "AR-SALTA-DGI-OID-918523",
+      "areaM2": 538.524505659104,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "AR-SALTA-DGI-OID-918702",
+      "areaM2": 252.33777248789997,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "AR-SALTA-DGI-OID-917680",
+      "areaM2": 295.1555031837555,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "AR-SALTA-DGI-OID-918563",
+      "areaM2": 236.04168561616476,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "AR-SALTA-DGI-OID-919004",
+      "areaM2": 247.4714333280476,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "AR-SALTA-DGI-OID-917682",
+      "areaM2": 299.40847983087605,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "AR-SALTA-DGI-OID-918565",
+      "areaM2": 229.08746376154983,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "AR-SALTA-DGI-OID-918964",
+      "areaM2": 239.32007555033098,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "AR-SALTA-DGI-OID-916210",
+      "areaM2": 231.11836006933586,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "AR-SALTA-DGI-OID-918537",
+      "areaM2": 231.80795549750658,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "AR-SALTA-DGI-OID-918989",
+      "areaM2": 351.18022664957414,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "AR-SALTA-DGI-OID-916196",
+      "areaM2": 342.8133666038418,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "AR-SALTA-DGI-OID-918543",
+      "areaM2": 401.8284137115828,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "AR-SALTA-DGI-OID-919013",
+      "areaM2": 290.31052131187585,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "AR-SALTA-DGI-OID-918626",
+      "areaM2": 335.1482937861907,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "AR-SALTA-DGI-OID-918646",
+      "areaM2": 315.1665514316443,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "AR-SALTA-DGI-OID-918860",
+      "areaM2": 281.3125728934361,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "AR-SALTA-DGI-OID-918627",
+      "areaM2": 232.1515828467723,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "AR-SALTA-DGI-OID-918710",
+      "areaM2": 190.28404416799887,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "AR-SALTA-DGI-OID-918978",
+      "areaM2": 264.06239240091924,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "AR-SALTA-DGI-OID-918592",
+      "areaM2": 990.5646314274327,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "AR-SALTA-DGI-OID-919001",
+      "areaM2": 383.6400082700957,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "AR-SALTA-DGI-OID-918642",
+      "areaM2": 325.9396269748194,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "AR-SALTA-DGI-OID-918859",
+      "areaM2": 343.101154349091,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "AR-SALTA-DGI-OID-918864",
+      "areaM2": 169.05465159128144,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "AR-SALTA-DGI-OID-918548",
+      "areaM2": 374.17227858502474,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "AR-SALTA-DGI-OID-918589",
+      "areaM2": 198.71604136729366,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "AR-SALTA-DGI-OID-918721",
+      "areaM2": 581.6548965164842,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "AR-SALTA-DGI-OID-918580",
+      "areaM2": 480.86689429950445,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "AR-SALTA-DGI-OID-917676",
+      "areaM2": 726.3106847605161,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "AR-SALTA-DGI-OID-918573",
+      "areaM2": 235.40250008651162,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "AR-SALTA-DGI-OID-918645",
+      "areaM2": 415.97644339778316,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "AR-SALTA-DGI-OID-916195",
+      "areaM2": 327.43485960705846,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "AR-SALTA-DGI-OID-918996",
+      "areaM2": 297.39676839806793,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "AR-SALTA-DGI-OID-916202",
+      "areaM2": 573.4452518660407,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "AR-SALTA-DGI-OID-918544",
+      "areaM2": 459.90397399580473,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "AR-SALTA-DGI-OID-918999",
+      "areaM2": 299.6163230593136,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "AR-SALTA-DGI-OID-916567",
+      "areaM2": 313.2605354850545,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "AR-SALTA-DGI-OID-918640",
+      "areaM2": 328.69104393245846,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "AR-SALTA-DGI-OID-918703",
+      "areaM2": 800.1408342592025,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "AR-SALTA-DGI-OID-918588",
+      "areaM2": 153.977724599202,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "AR-SALTA-DGI-OID-918979",
+      "areaM2": 343.134279861528,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "AR-SALTA-DGI-OID-918552",
+      "areaM2": 274.4159001585601,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "AR-SALTA-DGI-OID-917664",
+      "areaM2": 375.51307186246464,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "AR-SALTA-DGI-OID-917672",
+      "areaM2": 907.5704134709963,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "AR-SALTA-DGI-OID-918491",
+      "areaM2": 313.9967884547736,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "AR-SALTA-DGI-OID-918650",
+      "areaM2": 1567.4879597967172,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "AR-SALTA-DGI-OID-918666",
+      "areaM2": 596.9754466421193,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "AR-SALTA-DGI-OID-917669",
+      "areaM2": 426.02381405848956,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "AR-SALTA-DGI-OID-918722",
+      "areaM2": 215.4492619329037,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "AR-SALTA-DGI-OID-918541",
+      "areaM2": 2668.0643096839085,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "AR-SALTA-DGI-OID-917970",
+      "areaM2": 257.1541288007109,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "AR-SALTA-DGI-OID-918084",
+      "areaM2": 121.59470288328167,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "AR-SALTA-DGI-OID-918489",
+      "areaM2": 100.64334713925875,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "AR-SALTA-DGI-OID-916060",
+      "areaM2": 119.41791546083395,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "AR-SALTA-DGI-OID-917660",
+      "areaM2": 137.67814806069958,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "AR-SALTA-DGI-OID-915673",
+      "areaM2": 193.60114435271748,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "AR-SALTA-DGI-OID-917997",
+      "areaM2": 208.40877476401377,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "AR-SALTA-DGI-OID-915675",
+      "areaM2": 144.6501721650409,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "AR-SALTA-DGI-OID-917963",
+      "areaM2": 587.7519139708672,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "AR-SALTA-DGI-OID-918480",
+      "areaM2": 135.71039269047577,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "AR-SALTA-DGI-OID-918481",
+      "areaM2": 114.6455311301828,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "AR-SALTA-DGI-OID-918485",
+      "areaM2": 112.49867981216461,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "AR-SALTA-DGI-OID-918704",
+      "areaM2": 255.0481475158327,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "AR-SALTA-DGI-OID-915677",
+      "areaM2": 787.0688722811702,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "AR-SALTA-DGI-OID-918706",
+      "areaM2": 224.45727768240315,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "AR-SALTA-DGI-OID-916057",
+      "areaM2": 130.24628917665848,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "AR-SALTA-DGI-OID-918504",
+      "areaM2": 87.36135673499919,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "AR-SALTA-DGI-OID-917971",
+      "areaM2": 3179.610844465039,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "AR-SALTA-DGI-OID-917985",
+      "areaM2": 301.32557065094517,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "AR-SALTA-DGI-OID-918370",
+      "areaM2": 195.75987316950375,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "AR-SALTA-DGI-OID-918093",
+      "areaM2": 133.7042546329711,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "AR-SALTA-DGI-OID-918603",
+      "areaM2": 87.72114185630276,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "AR-SALTA-DGI-OID-916061",
+      "areaM2": 298.74918746166924,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "AR-SALTA-DGI-OID-918409",
+      "areaM2": 558.7443620282048,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "AR-SALTA-DGI-OID-915595",
+      "areaM2": 261.1924992752709,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "AR-SALTA-DGI-OID-918088",
+      "areaM2": 347.3503312648445,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "AR-SALTA-DGI-OID-918004",
+      "areaM2": 1627.9339100485038,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "AR-SALTA-DGI-OID-915678",
+      "areaM2": 257.54186592339045,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "AR-SALTA-DGI-OID-918090",
+      "areaM2": 221.0233686979586,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "AR-SALTA-DGI-OID-918511",
+      "areaM2": 428.02136382961015,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "AR-SALTA-DGI-OID-917784",
+      "areaM2": 15713.337040933522,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "AR-SALTA-DGI-OID-917990",
+      "areaM2": 319.42740703195096,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "AR-SALTA-DGI-OID-918085",
+      "areaM2": 334.77153309237707,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "AR-SALTA-DGI-OID-917977",
+      "areaM2": 252.34929132632195,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "AR-SALTA-DGI-OID-917979",
+      "areaM2": 477.17006721000945,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "AR-SALTA-DGI-OID-918002",
+      "areaM2": 255.59319600115475,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "AR-SALTA-DGI-OID-918092",
+      "areaM2": 461.41852970532096,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "AR-SALTA-DGI-OID-918494",
+      "areaM2": 334.99995809291596,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "AR-SALTA-DGI-OID-917999",
+      "areaM2": 406.3765154503038,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "AR-SALTA-DGI-OID-918102",
+      "areaM2": 252.26735131668227,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "AR-SALTA-DGI-OID-917974",
+      "areaM2": 265.1313172508046,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "AR-SALTA-DGI-OID-918498",
+      "areaM2": 290.30664620196467,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "AR-SALTA-DGI-OID-918519",
+      "areaM2": 284.0379684873395,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "AR-SALTA-DGI-OID-918108",
+      "areaM2": 391.2227995371219,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "AR-SALTA-DGI-OID-918007",
+      "areaM2": 872.7365484178582,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "AR-SALTA-DGI-OID-918522",
+      "areaM2": 269.5737078467312,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "AR-SALTA-DGI-OID-918488",
+      "areaM2": 648.9825940156167,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "AR-SALTA-DGI-OID-918495",
+      "areaM2": 168.70535132089108,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "AR-SALTA-DGI-OID-918497",
+      "areaM2": 185.17457731558076,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "AR-SALTA-DGI-OID-917819",
+      "areaM2": 283.1729397633812,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "AR-SALTA-DGI-OID-917825",
+      "areaM2": 291.23788802110397,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "AR-SALTA-DGI-OID-915927",
+      "areaM2": 137.714620787952,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "AR-SALTA-DGI-OID-917955",
+      "areaM2": 64.61191295392037,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "AR-SALTA-DGI-OID-917795",
+      "areaM2": 141.57255370528796,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "AR-SALTA-DGI-OID-917824",
+      "areaM2": 299.9151246203195,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "AR-SALTA-DGI-OID-917810",
+      "areaM2": 142.81433326642724,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "AR-SALTA-DGI-OID-917845",
+      "areaM2": 5517.178460602527,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "AR-SALTA-DGI-OID-917755",
+      "areaM2": 137.07722762125982,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "AR-SALTA-DGI-OID-917953",
+      "areaM2": 110.76705742008679,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "AR-SALTA-DGI-OID-916110",
+      "areaM2": 302.0830457098738,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "AR-SALTA-DGI-OID-916113",
+      "areaM2": 297.83151989684103,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "AR-SALTA-DGI-OID-917951",
+      "areaM2": 144.45162072263165,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "AR-SALTA-DGI-OID-916119",
+      "areaM2": 577.8391241483314,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "AR-SALTA-DGI-OID-917751",
+      "areaM2": 262.6919719841257,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "AR-SALTA-DGI-OID-918255",
+      "areaM2": 505.8659803805164,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "AR-SALTA-DGI-OID-916104",
+      "areaM2": 1353.0630639973203,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "AR-SALTA-DGI-OID-916115",
+      "areaM2": 145.53997039262592,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "AR-SALTA-DGI-OID-917965",
+      "areaM2": 237.90184744743965,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "AR-SALTA-DGI-OID-916076",
+      "areaM2": 211.46488364116536,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "AR-SALTA-DGI-OID-916108",
+      "areaM2": 385.81735799267574,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "AR-SALTA-DGI-OID-915651",
+      "areaM2": 410.54364673050816,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "AR-SALTA-DGI-OID-917947",
+      "areaM2": 313.7494004770414,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "AR-SALTA-DGI-OID-915923",
+      "areaM2": 589.8670144449894,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "AR-SALTA-DGI-OID-915931",
+      "areaM2": 291.52227695259444,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "AR-SALTA-DGI-OID-917959",
+      "areaM2": 127.63068622165864,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "AR-SALTA-DGI-OID-916125",
+      "areaM2": 309.0968011291621,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "AR-SALTA-DGI-OID-915647",
+      "areaM2": 405.8366803696982,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "AR-SALTA-DGI-OID-915928",
+      "areaM2": 306.8406618434873,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "AR-SALTA-DGI-OID-915929",
+      "areaM2": 299.0813327045909,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "AR-SALTA-DGI-OID-917748",
+      "areaM2": 965.1662862516675,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "AR-SALTA-DGI-OID-917816",
+      "areaM2": 481.79518472474064,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "AR-SALTA-DGI-OID-918259",
+      "areaM2": 434.0583390201303,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "AR-SALTA-DGI-OID-917757",
+      "areaM2": 143.16565616063315,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "AR-SALTA-DGI-OID-915662",
+      "areaM2": 419.0463546858206,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "AR-SALTA-DGI-OID-917794",
+      "areaM2": 512.3208847704991,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "AR-SALTA-DGI-OID-915648",
+      "areaM2": 515.9283852578384,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "AR-SALTA-DGI-OID-915934",
+      "areaM2": 306.7944972279705,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "AR-SALTA-DGI-OID-917961",
+      "areaM2": 310.47299055141633,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "AR-SALTA-DGI-OID-916064",
+      "areaM2": 369.05052996758303,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "AR-SALTA-DGI-OID-917949",
+      "areaM2": 354.7195147854314,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "AR-SALTA-DGI-OID-917749",
+      "areaM2": 335.03355198351284,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "AR-SALTA-DGI-OID-918252",
+      "areaM2": 703.8506063573375,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "AR-SALTA-DGI-OID-918257",
+      "areaM2": 764.9301925474081,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "AR-SALTA-DGI-OID-917752",
+      "areaM2": 1111.8403518536152,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "AR-SALTA-DGI-OID-917759",
+      "areaM2": 171.91737362415662,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "AR-SALTA-DGI-OID-917745",
+      "areaM2": 522.7713919978369,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "AR-SALTA-DGI-OID-917746",
+      "areaM2": 253.2394271750369,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "AR-SALTA-DGI-OID-917762",
+      "areaM2": 173.77977004158618,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "AR-SALTA-DGI-OID-917741",
+      "areaM2": 339.7213223286712,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "AR-SALTA-DGI-OID-918733",
+      "areaM2": 735.277069383408,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "AR-SALTA-DGI-OID-1019157",
+      "areaM2": 1797.2565615525405,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "AR-SALTA-DGI-OID-918779",
+      "areaM2": 760.3429080165356,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "AR-SALTA-DGI-OID-918793",
+      "areaM2": 567.4827819435776,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "AR-SALTA-DGI-OID-918566",
+      "areaM2": 725.6558908606474,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "AR-SALTA-DGI-OID-918596",
+      "areaM2": 478.34429412459343,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "AR-SALTA-DGI-OID-918619",
+      "areaM2": 399.0861059806292,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "AR-SALTA-DGI-OID-918836",
+      "areaM2": 1141.5914894168468,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "AR-SALTA-DGI-OID-918247",
+      "areaM2": 955.2992650547658,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "AR-SALTA-DGI-OID-1016418",
+      "areaM2": 2012.598147118488,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "AR-SALTA-DGI-OID-918605",
+      "areaM2": 434.5380581910732,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "AR-SALTA-DGI-OID-918800",
+      "areaM2": 751.345461034157,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "AR-SALTA-DGI-OID-918829",
+      "areaM2": 754.7126218454183,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "AR-SALTA-DGI-OID-918234",
+      "areaM2": 728.7013911158218,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "AR-SALTA-DGI-OID-918246",
+      "areaM2": 5339.982242148312,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "AR-SALTA-DGI-OID-917921",
+      "areaM2": 468.3162857509499,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "AR-SALTA-DGI-OID-918145",
+      "areaM2": 480.37197282491917,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "AR-SALTA-DGI-OID-918276",
+      "areaM2": 290.0109078681962,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "AR-SALTA-DGI-OID-916262",
+      "areaM2": 434.736319397585,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "AR-SALTA-DGI-OID-918332",
+      "areaM2": 427.5990616047801,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "AR-SALTA-DGI-OID-915649",
+      "areaM2": 504.335202074142,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "AR-SALTA-DGI-OID-918273",
+      "areaM2": 902.0886432991408,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "AR-SALTA-DGI-OID-918294",
+      "areaM2": 601.1749207967353,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "AR-SALTA-DGI-OID-917915",
+      "areaM2": 554.5170087815559,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "AR-SALTA-DGI-OID-918283",
+      "areaM2": 426.1622403256658,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "AR-SALTA-DGI-OID-918290",
+      "areaM2": 493.0843904166372,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "AR-SALTA-DGI-OID-918133",
+      "areaM2": 633.5597593612549,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "AR-SALTA-DGI-OID-918358",
+      "areaM2": 437.4570134616968,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "AR-SALTA-DGI-OID-917237",
+      "areaM2": 396.13752620118703,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "AR-SALTA-DGI-OID-918285",
+      "areaM2": 449.80407307852624,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "AR-SALTA-DGI-OID-918315",
+      "areaM2": 317.58528901502723,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "AR-SALTA-DGI-OID-915658",
+      "areaM2": 478.7346578065372,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "AR-SALTA-DGI-OID-918114",
+      "areaM2": 710.2918284936079,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "AR-SALTA-DGI-OID-918279",
+      "areaM2": 484.1628779937442,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "AR-SALTA-DGI-OID-916084",
+      "areaM2": 990.6314614463242,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "AR-SALTA-DGI-OID-918152",
+      "areaM2": 430.857586135238,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "AR-SALTA-DGI-OID-917225",
+      "areaM2": 715.1430214664406,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "AR-SALTA-DGI-OID-918320",
+      "areaM2": 425.5554880249115,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "AR-SALTA-DGI-OID-918499",
+      "areaM2": 250.59781138034143,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "AR-SALTA-DGI-OID-918532",
+      "areaM2": 204.82123198881288,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "AR-SALTA-DGI-OID-915596",
+      "areaM2": 195.75583233517142,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "AR-SALTA-DGI-OID-918109",
+      "areaM2": 253.4388018665954,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "AR-SALTA-DGI-OID-918482",
+      "areaM2": 241.54143947262824,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "AR-SALTA-DGI-OID-917987",
+      "areaM2": 204.89287758068215,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "AR-SALTA-DGI-OID-918490",
+      "areaM2": 251.2481295371319,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "AR-SALTA-DGI-OID-918525",
+      "areaM2": 192.98095682110062,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "AR-SALTA-DGI-OID-918530",
+      "areaM2": 253.4477487254378,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "AR-SALTA-DGI-OID-917800",
+      "areaM2": 3808.5029268734816,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "AR-SALTA-DGI-OID-918380",
+      "areaM2": 301.2863201469451,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "AR-SALTA-DGI-OID-918713",
+      "areaM2": 298.0875521077904,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "AR-SALTA-DGI-OID-918089",
+      "areaM2": 119.24203910719986,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "AR-SALTA-DGI-OID-918382",
+      "areaM2": 198.93698754169574,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "AR-SALTA-DGI-OID-918394",
+      "areaM2": 202.77104670858157,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "AR-SALTA-DGI-OID-918372",
+      "areaM2": 301.9124792401894,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "AR-SALTA-DGI-OID-918720",
+      "areaM2": 256.94942303445345,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "AR-SALTA-DGI-OID-917995",
+      "areaM2": 197.6464597830598,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "AR-SALTA-DGI-OID-918101",
+      "areaM2": 263.08187276810435,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "AR-SALTA-DGI-OID-917659",
+      "areaM2": 198.18197961601086,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "AR-SALTA-DGI-OID-918493",
+      "areaM2": 248.634270315553,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "AR-SALTA-DGI-OID-918539",
+      "areaM2": 258.1796197859672,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "AR-SALTA-DGI-OID-918366",
+      "areaM2": 200.89361081836145,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "AR-SALTA-DGI-OID-918486",
+      "areaM2": 248.7768422855888,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "AR-SALTA-DGI-OID-918091",
+      "areaM2": 119.62854800185548,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "AR-SALTA-DGI-OID-918098",
+      "areaM2": 244.3813616781957,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "AR-SALTA-DGI-OID-918492",
+      "areaM2": 139.71632895151816,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "AR-SALTA-DGI-OID-918505",
+      "areaM2": 518.179610137184,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "AR-SALTA-DGI-OID-920007",
+      "areaM2": 502.5880678780781,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "AR-SALTA-DGI-OID-920013",
+      "areaM2": 170.72414903829227,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "AR-SALTA-DGI-OID-920011",
+      "areaM2": 247.07408925893407,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "AR-SALTA-DGI-OID-920016",
+      "areaM2": 837.9604483245605,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "AR-SALTA-DGI-OID-920001",
+      "areaM2": 997.8306969407172,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "AR-SALTA-DGI-OID-920003",
+      "areaM2": 366.1742291896456,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "AR-SALTA-DGI-OID-920000",
+      "areaM2": 601.754412882861,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "AR-SALTA-DGI-OID-920004",
+      "areaM2": 227.90752728109896,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "AR-SALTA-DGI-OID-918510",
+      "areaM2": 716.7524111526503,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "AR-SALTA-DGI-OID-918515",
+      "areaM2": 297.092823895265,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "AR-SALTA-DGI-OID-920010",
+      "areaM2": 219.71361065281522,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "AR-SALTA-DGI-OID-918507",
+      "areaM2": 528.4630583177553,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "AR-SALTA-DGI-OID-918527",
+      "areaM2": 259.55838969847645,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "AR-SALTA-DGI-OID-920005",
+      "areaM2": 570.1677924373556,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "AR-SALTA-DGI-OID-918502",
+      "areaM2": 430.72016488606187,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "AR-SALTA-DGI-OID-917644",
+      "areaM2": 218.2297679347851,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "AR-SALTA-DGI-OID-920008",
+      "areaM2": 4211.757571731238,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "AR-SALTA-DGI-OID-920012",
+      "areaM2": 251.22103567544093,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    }
+  ]
+}

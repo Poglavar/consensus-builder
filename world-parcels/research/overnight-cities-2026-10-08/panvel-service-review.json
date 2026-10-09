@@ -1,0 +1,87 @@
+{
+  "schemaVersion": "1.0",
+  "checkedAt": "2026-10-09",
+  "cityRecord": "city-8148-panvel.json",
+  "purpose": "Document first-party local registry/map evidence and schema-first anonymous geometry review.",
+  "scopeLimits": {
+    "maxFullPolygonsRetainedInCityRecord": 0,
+    "maxFullPolygonsRetainedInReview": 0,
+    "maxFullPolygonsRetainedInRepository": 0,
+    "ownerOrAddressDataRetained": false,
+    "credentialsOrTokenValuesRetained": false,
+    "citywideCompletenessAsserted": false
+  },
+  "assessment": "Official Maharashtra Land Records pages identify the Panvel survey office and city-survey property-card records. The linked public BhuNaksha viewer did not load through the web reader (redirect loop); no safe feature schema, point coverage, or polygon was verified. Official viewer could not be inspected past its redirect loop; no schema-safe geometry endpoint or feature was verified. No property-specific lookup or bypass was attempted.",
+  "registryAssessment": "Maharashtra’s official Land Records Department lists the Panvel Sub-Superintendent of Land Records office and reports 15,386 property cards among Raigad city-survey records for Panvel. The state’s official BhuNaksha map interface is a parcel-map candidate, but its app redirected in a loop and no anonymous safe feature schema was verified. The city’s NAKSHA/drone survey references do not by themselves prove parcel-vector availability at the WUP point.",
+  "officialPrimarySources": [
+    {
+      "url": "https://bhumiabhilekh.maharashtra.gov.in/DistrictSCLR/DistrictInfo?districtId=18",
+      "observation": "Maharashtra’s official Land Records Department lists the Panvel Sub-Superintendent of Land Records office and reports 15,386 property cards among Raigad city-survey records for Panvel. The state’s official BhuNaksha map interface is a parcel-map candidate, but its app redirected in a loop and no anonymous safe feature schema was verified. The city’s NAKSHA/drone survey references do not by themselves prove parcel-vector availability at the WUP point."
+    },
+    {
+      "url": "https://bhumiabhilekh.maharashtra.gov.in/Contact/ContactDS?districtId=18",
+      "observation": "Maharashtra’s official Land Records Department lists the Panvel Sub-Superintendent of Land Records office and reports 15,386 property cards among Raigad city-survey records for Panvel. The state’s official BhuNaksha map interface is a parcel-map candidate, but its app redirected in a loop and no anonymous safe feature schema was verified. The city’s NAKSHA/drone survey references do not by themselves prove parcel-vector availability at the WUP point."
+    },
+    {
+      "url": "https://mahabhunakasha.mahabhumi.gov.in/27/index.jsp",
+      "observation": "Maharashtra’s official Land Records Department lists the Panvel Sub-Superintendent of Land Records office and reports 15,386 property cards among Raigad city-survey records for Panvel. The state’s official BhuNaksha map interface is a parcel-map candidate, but its app redirected in a loop and no anonymous safe feature schema was verified. The city’s NAKSHA/drone survey references do not by themselves prove parcel-vector availability at the WUP point."
+    },
+    {
+      "url": "https://panvelcorporation.maharashtra.gov.in/citizens-charter",
+      "observation": "Maharashtra’s official Land Records Department lists the Panvel Sub-Superintendent of Land Records office and reports 15,386 property cards among Raigad city-survey records for Panvel. The state’s official BhuNaksha map interface is a parcel-map candidate, but its app redirected in a loop and no anonymous safe feature schema was verified. The city’s NAKSHA/drone survey references do not by themselves prove parcel-vector availability at the WUP point."
+    }
+  ],
+  "searchQueries": [
+    {
+      "language": "English",
+      "query": "Panvel official land records city survey property cards cadastral parcel map GIS Maharashtra",
+      "result": "Official Maharashtra Land Records pages identify the Panvel survey office and city-survey property-card records. The linked public BhuNaksha viewer did not load through the web reader (redirect loop); no safe feature schema, point coverage, or polygon was verified.",
+      "method": "Separate English-language search and official source review."
+    },
+    {
+      "language": "Marathi",
+      "query": "पनवेल भूमी अभिलेख नगर भूमापन मालमत्ता पत्रक नकाशा रायगड अधिकृत",
+      "result": "Official Maharashtra Land Records pages identify the Panvel survey office and city-survey property-card records. The linked public BhuNaksha viewer did not load through the web reader (redirect loop); no safe feature schema, point coverage, or polygon was verified.",
+      "method": "Separate local-language search and official source review."
+    }
+  ],
+  "geometryDecision": "No parcel geometry retained; no anonymous schema-safe exact-point geometry response was verified.",
+  "coverageAssessment": {
+    "claimedScope": "Maharashtra’s official Land Records Department lists the Panvel Sub-Superintendent of Land Records office and reports 15,386 property cards among Raigad city-survey records for Panvel. The state’s official BhuNaksha map interface is a parcel-map candidate, but its app redirected in a loop and no anonymous safe feature schema was verified. The city’s NAKSHA/drone survey references do not by themselves prove parcel-vector availability at the WUP point.",
+    "verifiedOpenScope": "Official Maharashtra Land Records pages identify the Panvel survey office and city-survey property-card records. The linked public BhuNaksha viewer did not load through the web reader (redirect loop); no safe feature schema, point coverage, or polygon was verified.",
+    "citywideVerified": false,
+    "countrywideVerified": false
+  },
+  "attempts": [
+    {
+      "source": "https://bhumiabhilekh.maharashtra.gov.in/DistrictSCLR/DistrictInfo?districtId=18",
+      "outcome": "Metadata/source review only; no feature or individual property lookup made.",
+      "fieldsRequested": [],
+      "sensitiveFieldsRequested": false
+    },
+    {
+      "source": "https://bhumiabhilekh.maharashtra.gov.in/Contact/ContactDS?districtId=18",
+      "outcome": "Metadata/source review only; no feature or individual property lookup made.",
+      "fieldsRequested": [],
+      "sensitiveFieldsRequested": false
+    },
+    {
+      "source": "https://mahabhunakasha.mahabhumi.gov.in/27/index.jsp",
+      "outcome": "Metadata/source review only; no feature or individual property lookup made.",
+      "fieldsRequested": [],
+      "sensitiveFieldsRequested": false
+    },
+    {
+      "source": "https://panvelcorporation.maharashtra.gov.in/citizens-charter",
+      "outcome": "Metadata/source review only; no feature or individual property lookup made.",
+      "fieldsRequested": [],
+      "sensitiveFieldsRequested": false
+    }
+  ],
+  "remainingUncertainty": "Whether BhuNaksha exposes anonymous vector geometry for this Panvel point, and which surveyed record unit applies, remain unresolved.",
+  "runtimeAssessment": {
+    "status": "not_assessed",
+    "reason": "No adapter or runtime contract was tested."
+  },
+  "technicalBlocker": "Official viewer could not be inspected past its redirect loop; no schema-safe geometry endpoint or feature was verified. No property-specific lookup or bypass was attempted."
+}

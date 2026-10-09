@@ -1,0 +1,20 @@
+{
+  "checkedAt": "2026-10-09T01:48:12.600694+00:00",
+  "city": "dusseldorf",
+  "sourceId": "de-nrw-lika-flurstueck",
+  "result": "passed_manual_headed_app_check",
+  "loadedParcels": 325,
+  "visibleCenterCount": 59,
+  "selectedParcelId": "DE-NRW-05346600300840______",
+  "detailsIdMatchesSelection": true,
+  "pointerClick": {
+    "x": 600,
+    "y": 409,
+    "pointBasis": "unchanged settlement locator inside the verified parcel"
+  },
+  "mapBounds": "6.780946254730225,51.217351291698165,6.784164905548097,51.218725551497386",
+  "uncaughtPageErrors": 0,
+  "sourceUnavailableWarnings": [],
+  "browserClosed": true,
+  "previewReview": "Restart command initially left the old owned node child serving a stale catalog. The verified child was stopped, gateway restarted and all four added entries read back before checking the map."
+}

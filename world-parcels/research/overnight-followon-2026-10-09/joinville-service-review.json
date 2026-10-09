@@ -1,0 +1,86 @@
+{
+  "schemaVersion": "1.0",
+  "checkedAt": "2026-10-09",
+  "cityRecord": "city-6711-joinville.json",
+  "purpose": "Document first-party local registry/map evidence and bounded anonymous parcel geometry access review.",
+  "scopeLimits": {
+    "maxFullPolygonsRetainedInCityRecord": 1,
+    "maxFullPolygonsRetainedInReview": 0,
+    "maxFullPolygonsRetainedInRepository": 1,
+    "ownerOrAddressDataRetained": false,
+    "credentialsOrTokenValuesRetained": false,
+    "citywideCompletenessAsserted": false
+  },
+  "assessment": "The official municipal SIMGeo page describes the city’s georeferenced information system and public map layers. The official SIMGeo ArcGIS REST sublayer simgeo/lotes/MapServer/3 is polygon geometry, supports Query/Data, and exposes safe objectid (OID) and iq parcel-key fields. A bounded anonymous point-intersection query at the unchanged WUP point returned one polygon (objectid 94825, iq 13-20-25-19-469); an independent returnIdsOnly query returned the same single OID. The layer response flagged exceededTransferLimit even though the ID-only point result contained one OID; the point query was spatially bounded and only the safe-ID geometry response was retained. No wider coverage or runtime qualification is claimed. Exact-ID follow-up query with where=objectid=94825 returned HTTP 200 and one polygon with the same id, iq, and identical geometry as the WUP-point response; this resolves the response-completeness ambiguity for the retained feature.",
+  "registryAssessment": "Joinville’s official municipal SIMGeo documents local georeferenced urban/parcel information, and the official lotes layer returned one polygon for the exact WUP point.",
+  "officialPrimarySources": [
+    {
+      "url": "https://www.joinville.sc.gov.br/servicos/acessar-sistema-de-informacoes-municipais-georreferenciadas-simgeo/",
+      "observation": "Municipal page describes the SIMGeo public georeferenced information system and its map access."
+    },
+    {
+      "url": "https://geo.joinville.sc.gov.br/server/rest/services/simgeo/lotes/MapServer/3",
+      "observation": "Official city ArcGIS sublayer metadata identifies polygon lotes, Query/Data capabilities, maxRecordCount 2000, and safe OID/parcel-key fields."
+    }
+  ],
+  "searchQueries": [
+    {
+      "language": "English",
+      "query": "Joinville Brazil official cadastral parcel map geoprocessamento cadastro imobiliario prefeitura SIMGeo",
+      "result": "The official municipal SIMGeo page describes the city’s georeferenced information system and public map layers. The official SIMGeo ArcGIS REST sublayer simgeo/lotes/MapServer/3 is polygon geometry, supports Query/Data, and exposes safe objectid (OID) and iq parcel-key fields. A bounded anonymous point-intersection query at the unchanged WUP point returned one polygon (objectid 94825, iq 13-20-25-19-469); an independent returnIdsOnly query returned the same single OID. The layer response flagged exceededTransferLimit even though the ID-only point result contained one OID; the point query was spatially bounded and only the safe-ID geometry response was retained. No wider coverage or runtime qualification is claimed.",
+      "method": "Separate English-language web search followed by official-source review.",
+      "scope": "Identify first-party local land-registry/cadastral sources and safe anonymous parcel geometry.",
+      "actualResultUrls": [
+        "https://www.joinville.sc.gov.br/servicos/acessar-sistema-de-informacoes-municipais-georreferenciadas-simgeo/",
+        "https://geo.joinville.sc.gov.br/server/rest/services/simgeo/lotes/MapServer/3",
+        "https://geo.joinville.sc.gov.br/server/rest/services/simgeo/lotes/MapServer/3/query"
+      ]
+    },
+    {
+      "language": "Portuguese",
+      "query": "Joinville cadastro imobiliário mapa de lotes geoprocessamento prefeitura SIMGeo oficial",
+      "result": "The official municipal SIMGeo page describes the city’s georeferenced information system and public map layers. The official SIMGeo ArcGIS REST sublayer simgeo/lotes/MapServer/3 is polygon geometry, supports Query/Data, and exposes safe objectid (OID) and iq parcel-key fields. A bounded anonymous point-intersection query at the unchanged WUP point returned one polygon (objectid 94825, iq 13-20-25-19-469); an independent returnIdsOnly query returned the same single OID. The layer response flagged exceededTransferLimit even though the ID-only point result contained one OID; the point query was spatially bounded and only the safe-ID geometry response was retained. No wider coverage or runtime qualification is claimed.",
+      "method": "Separate local-language web search followed by official-source review.",
+      "scope": "Find first-party local-language registry/cadastral sources and any public parcel-map/geometry route.",
+      "actualResultUrls": [
+        "https://www.joinville.sc.gov.br/servicos/acessar-sistema-de-informacoes-municipais-georreferenciadas-simgeo/",
+        "https://geo.joinville.sc.gov.br/server/rest/services/simgeo/lotes/MapServer/3",
+        "https://geo.joinville.sc.gov.br/server/rest/services/simgeo/lotes/MapServer/3/query"
+      ]
+    }
+  ],
+  "geometryDecision": "One exact-point polygon retained with Esri objectid feature id and iq property only.",
+  "coverageAssessment": {
+    "claimedScope": "Joinville’s official municipal SIMGeo documents local georeferenced urban/parcel information, and the official lotes layer returned one polygon for the exact WUP point.",
+    "verifiedOpenScope": "Exact-point feature response only; no completeness claim.",
+    "citywideVerified": false,
+    "countrywideVerified": false,
+    "geometryVerified": true
+  },
+  "attempts": [
+    {
+      "url": "https://geo.joinville.sc.gov.br/server/rest/services/simgeo/lotes/MapServer/3?f=pjson",
+      "result": "Anonymous metadata GET returned HTTP 200; requested/summarized only non-personal geometry and safe identifier schema."
+    },
+    {
+      "url": "https://geo.joinville.sc.gov.br/server/rest/services/simgeo/lotes/MapServer/3/query",
+      "result": "Bounded point query at WUP lon/lat with geometryType=esriGeometryPoint, inSR=4326, outSR=4326, outFields=objectid,iq, returnGeometry=true, resultRecordCount=3: HTTP 200, one polygon. ReturnIdsOnly companion request: HTTP 200, objectIds=[94825]."
+    },
+    {
+      "url": "https://geo.joinville.sc.gov.br/server/rest/services/simgeo/lotes/MapServer/3/query",
+      "result": "Exact-ID GET with where=objectid=94825, outFields=objectid,iq, returnGeometry=true, outSR=4326 returned HTTP 200, one feature and geometry identical to the bounded WUP-point response."
+    }
+  ],
+  "remainingUncertainty": "Only exact-point response verified; broader city coverage and version/pagination behavior remain unqualified.",
+  "geometryEvidence": {
+    "sampleFile": "city-6711-joinville-samples.geojson",
+    "featureCount": 1,
+    "nativeIdField": "objectid",
+    "safeParcelKeyField": "iq",
+    "nativeId": 94825,
+    "parcelKey": "13-20-25-19-469",
+    "query": "Exact point intersects query, outFields=objectid,iq, returnGeometry=true, inSR=4326, outSR=4326, resultRecordCount=3; companion returnIdsOnly returned [94825].",
+    "exactIdRead": "where=objectid=94825 returned one feature and identical geometry; safe properties only: objectid and iq."
+  },
+  "runtimeAssessment": "not enabled; root may run full adapter qualification."
+}

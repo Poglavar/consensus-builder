@@ -1,0 +1,412 @@
+{
+  "schemaVersion": 1,
+  "purpose": "Independent GEOS topology check of complete runtime parcels projected to metric coordinates; no repair applied. Counts are bounded sample evidence, not whole-city guarantees.",
+  "library": "Shapely 2.2.0",
+  "metricCrs": "EPSG:32634",
+  "featureCount": 56,
+  "validNonemptyCount": 56,
+  "invalidFeatures": [],
+  "exactDuplicateGeometryPairs": [],
+  "positiveAreaOverlapPairsAbove0_01M2": [],
+  "sumPairwiseOverlapM2": 0,
+  "operationErrors": [],
+  "areaM2": {
+    "min": 13.868585868706948,
+    "median": 1196.1459578384497,
+    "max": 95471.56272179396
+  },
+  "features": [
+    {
+      "id": "PL-KRAKOW-EGIB-126105_9.0017.242/13",
+      "areaM2": 3883.2449144547622,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "PL-KRAKOW-EGIB-126105_9.0017.289/6",
+      "areaM2": 1859.1264297088535,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "PL-KRAKOW-EGIB-126105_9.0017.289/11",
+      "areaM2": 23933.352918130415,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "PL-KRAKOW-EGIB-126105_9.0017.240/3",
+      "areaM2": 6676.405169200284,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "PL-KRAKOW-EGIB-126105_9.0017.289/9",
+      "areaM2": 82295.85960756433,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "PL-KRAKOW-EGIB-126105_9.0017.173/10",
+      "areaM2": 540.5816880080877,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "PL-KRAKOW-EGIB-126105_9.0017.242/8",
+      "areaM2": 5994.60126188317,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "PL-KRAKOW-EGIB-126105_9.0017.243/1",
+      "areaM2": 777.3351593876996,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "PL-KRAKOW-EGIB-126105_9.0017.173/30",
+      "areaM2": 684.7448063562556,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "PL-KRAKOW-EGIB-126105_9.0017.298/11",
+      "areaM2": 34.714611766814286,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "PL-KRAKOW-EGIB-126105_9.0017.298/15",
+      "areaM2": 5301.499989513628,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "PL-KRAKOW-EGIB-126105_9.0017.411/3",
+      "areaM2": 141.96053396811888,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "PL-KRAKOW-EGIB-126105_9.0017.270/56",
+      "areaM2": 2113.985897960917,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "PL-KRAKOW-EGIB-126105_9.0017.241",
+      "areaM2": 52.19311430331533,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "PL-KRAKOW-EGIB-126105_9.0017.298/7",
+      "areaM2": 8710.717865032113,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "PL-KRAKOW-EGIB-126105_9.0017.411/10",
+      "areaM2": 758.6329138757947,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "PL-KRAKOW-EGIB-126105_9.0017.411/9",
+      "areaM2": 6783.097062596853,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "PL-KRAKOW-EGIB-126105_9.0017.270/54",
+      "areaM2": 1274.5872585903403,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "PL-KRAKOW-EGIB-126105_9.0017.298/17",
+      "areaM2": 142.24850576229787,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "PL-KRAKOW-EGIB-126105_9.0017.173/29",
+      "areaM2": 749.1280914050654,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "PL-KRAKOW-EGIB-126105_9.0017.270/57",
+      "areaM2": 2021.6133540957833,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "PL-KRAKOW-EGIB-126105_9.0017.173/25",
+      "areaM2": 5064.002566533068,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "PL-KRAKOW-EGIB-126105_9.0017.411/18",
+      "areaM2": 7074.002677021354,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "PL-KRAKOW-EGIB-126105_9.0017.173/19",
+      "areaM2": 19729.17824070673,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "PL-KRAKOW-EGIB-126105_9.0017.173/28",
+      "areaM2": 53.97696129027536,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "PL-KRAKOW-EGIB-126105_9.0017.173/27",
+      "areaM2": 60.206984435262626,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "PL-KRAKOW-EGIB-126105_9.0017.173/22",
+      "areaM2": 119.46748065011155,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "PL-KRAKOW-EGIB-126105_9.0017.173/23",
+      "areaM2": 117.29943199491557,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "PL-KRAKOW-EGIB-126105_9.0017.173/24",
+      "areaM2": 273.74446171206756,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "PL-KRAKOW-EGIB-126105_9.0017.411/8",
+      "areaM2": 578.8195224960548,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "PL-KRAKOW-EGIB-126105_9.0017.411/14",
+      "areaM2": 4451.610394042263,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "PL-KRAKOW-EGIB-126105_9.0017.411/12",
+      "areaM2": 5270.5165335331985,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "PL-KRAKOW-EGIB-126105_9.0017.411/21",
+      "areaM2": 4892.764698278709,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "PL-KRAKOW-EGIB-126105_9.0017.179/1",
+      "areaM2": 3305.7670247204705,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "PL-KRAKOW-EGIB-126105_9.0017.272/12",
+      "areaM2": 3788.2940372047915,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "PL-KRAKOW-EGIB-126105_9.0017.397/3",
+      "areaM2": 4470.411741513235,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "PL-KRAKOW-EGIB-126105_9.0017.272/10",
+      "areaM2": 49.34990204815303,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "PL-KRAKOW-EGIB-126105_9.0017.272/11",
+      "areaM2": 285.95846704514497,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "PL-KRAKOW-EGIB-126105_9.0017.270/58",
+      "areaM2": 8976.088289320965,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "PL-KRAKOW-EGIB-126105_9.0017.272/9",
+      "areaM2": 13.868585868706948,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "PL-KRAKOW-EGIB-126105_9.0017.272/8",
+      "areaM2": 49.14323564897319,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "PL-KRAKOW-EGIB-126105_9.0017.179/8",
+      "areaM2": 862.2478749568909,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "PL-KRAKOW-EGIB-126105_9.0017.173/15",
+      "areaM2": 22851.04358273238,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "PL-KRAKOW-EGIB-126105_9.0017.173/26",
+      "areaM2": 154.91247031809868,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "PL-KRAKOW-EGIB-126104_9.0014.197/3",
+      "areaM2": 95471.56272179396,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "PL-KRAKOW-EGIB-126104_9.0014.1/5",
+      "areaM2": 29224.42216724202,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "PL-KRAKOW-EGIB-126105_9.0017.397/1",
+      "areaM2": 4860.952910228695,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "PL-KRAKOW-EGIB-126105_9.0017.180/1",
+      "areaM2": 1690.857692242597,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "PL-KRAKOW-EGIB-126105_9.0017.464",
+      "areaM2": 232.66721259899043,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "PL-KRAKOW-EGIB-126105_9.0017.411/20",
+      "areaM2": 1117.7046570865593,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "PL-KRAKOW-EGIB-126105_9.0017.298/13",
+      "areaM2": 3811.9740314216683,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "PL-KRAKOW-EGIB-126105_9.0017.270/29",
+      "areaM2": 27.209063093189112,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "PL-KRAKOW-EGIB-126105_9.0017.270/48",
+      "areaM2": 169.60427405550357,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "PL-KRAKOW-EGIB-126105_9.0017.298/14",
+      "areaM2": 87.85801182443524,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "PL-KRAKOW-EGIB-126105_9.0017.298/18",
+      "areaM2": 71.77120973376483,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "PL-KRAKOW-EGIB-126105_9.0017.270/55",
+      "areaM2": 1106.1724111732608,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    }
+  ]
+}

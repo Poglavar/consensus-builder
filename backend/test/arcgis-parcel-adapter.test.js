@@ -40,6 +40,120 @@ function makeFetch(pages) {
 }
 
 describe('createArcgisParcelSource', () => {
+    it('transforms only explicitly tagged Web Mercator GeoJSON and reproduces exact native-ID reads', async () => {
+        const native = feature(1, '1001', polygon(-9209572.792818315, 3232719.554550018,
+            -9209461.473327523, 3232845.481821127));
+        const projected = () => ({ ok: true, status: 200, json: async () => ({
+            type: 'FeatureCollection', crs: { type: 'name', properties: { name: 'EPSG:3857' } },
+            features: [native], exceededTransferLimit: false
+        }) });
+        const { fetchImpl, calls } = makeFetch([projected(), projected()]);
+        const source = createArcgisParcelSource({ ...descriptor, responseSrid: 3857 }, { fetchImpl });
+        const viewport = await source.queryBounds([-82.732, 27.870, -82.729, 27.873]);
+        const coordinates = viewport.features[0].geometry.coordinates[0];
+        const expected = polygon(-82.731, 27.871, -82.730, 27.872).coordinates[0];
+        coordinates.forEach((point, i) => point.forEach((value, axis) => expect(value).toBeCloseTo(expected[i][axis], 10)));
+        const exact = await source.queryIds([viewport.features[0].id]);
+        expect(exact.features).toEqual(viewport.features);
+        expect(calls.every(url => url.searchParams.get('outSR') === '3857')).toBe(true);
+        expect(calls[0].searchParams.get('inSR')).toBe('4326');
+        expect(calls[1].searchParams.has('geometry')).toBe(false);
+        expect(native.geometry.coordinates[0][0]).toEqual([-9209572.792818315, 3232719.554550018]);
+    });
+
+    it('rejects absent/changed projected CRS, unsupported projection and invalid projected coordinates', async () => {
+        for (const crs of [undefined, { type: 'name', properties: { name: 'EPSG:4326' } }]) {
+            const fetchImpl = async () => ({ ok: true, status: 200, json: async () => ({
+                type: 'FeatureCollection', crs, features: [feature(1, '1001')]
+            }) });
+            await expect(createArcgisParcelSource({ ...descriptor, responseSrid: 3857 }, { fetchImpl })
+                .queryIds(['CA-ON-TORONTO-1001'])).rejects.toThrow('projected response CRS');
+        }
+        for (const geometry of [polygon(30000000, 1, 30000001, 2),
+            { type: 'Polygon', coordinates: [[[1, 2, 3], [2, 2, 3], [2, 3, 3], [1, 2, 3]]] }]) {
+            const fetchImpl = async () => ({ ok: true, status: 200, json: async () => ({
+                type: 'FeatureCollection', crs: { type: 'name', properties: { name: 'EPSG:3857' } },
+                features: [feature(1, '1001', geometry)]
+            }) });
+            await expect(createArcgisParcelSource({ ...descriptor, responseSrid: 3857 }, { fetchImpl })
+                .queryIds(['CA-ON-TORONTO-1001'])).rejects.toThrow('invalid projected polygon');
+        }
+        expect(() => createArcgisParcelSource({ ...descriptor, responseSrid: 2177 })).toThrow();
+        expect(() => createArcgisParcelSource({ ...descriptor, responseSrid: 3857, queryFormat: 'esri-json' })).toThrow();
+    });
+
+    it('requests a fixed metric output precision without locally rounding provider geometry', async () => {
+        const native = feature(1, '1001', polygon(-9209572.792818, 3232719.554550,
+            -9209461.473328, 3232845.481821));
+        const projected = geometry => ({ ok: true, status: 200, json: async () => ({
+            type: 'FeatureCollection', crs: { type: 'name', properties: { name: 'EPSG:3857' } },
+            features: [{ ...native, geometry }], exceededTransferLimit: false
+        }) });
+        const { fetchImpl, calls } = makeFetch([projected(native.geometry), projected(native.geometry)]);
+        const source = createArcgisParcelSource({ ...descriptor, responseSrid: 3857, geometryPrecision: 6 }, { fetchImpl });
+        const result = await source.queryBounds([-82.732, 27.870, -82.729, 27.873]);
+        expect((await source.queryIds([result.features[0].id])).features).toEqual(result.features);
+        expect(calls.every(url => url.searchParams.get('geometryPrecision') === '6')).toBe(true);
+        expect(native.geometry.coordinates[0][0]).toEqual([-9209572.792818, 3232719.554550]);
+        const ignoredPrecision = makeFetch([projected(polygon(-9209572.792818315, 3232719.554550,
+            -9209461.473328, 3232845.481821))]);
+        await expect(createArcgisParcelSource({ ...descriptor, responseSrid: 3857, geometryPrecision: 6 }, ignoredPrecision)
+            .queryIds(['CA-ON-TORONTO-1001'])).rejects.toThrow('invalid projected polygon');
+        for (const geometryPrecision of [0, 5, 9, 6.5]) {
+            expect(() => createArcgisParcelSource({ ...descriptor, responseSrid: 3857, geometryPrecision })).toThrow();
+        }
+        expect(() => createArcgisParcelSource({ ...descriptor, geometryPrecision: 6 })).toThrow();
+    });
+
+    it('preserves qualified joined-layer keys in pagination, exact queries and retained properties', async () => {
+        const oid = 'PGIS.PGIS.ParcelsPublic.OBJECTID';
+        const key = 'PGIS.PGIS.ParcelsPublic.PARCELID';
+        const ground = number => ({ type: 'Feature', id: number,
+            properties: { [oid]: number, [key]: `18301669768400330${number}` },
+            geometry: polygon(-82.731, 27.871, -82.730, 27.872) });
+        const { fetchImpl, calls } = makeFetch([
+            response([ground(1)], true), response([ground(2)]), response([ground(1)])
+        ]);
+        const source = createArcgisParcelSource({ ...descriptor, idType: 'string',
+            idField: key, objectIdField: oid, outFields: [oid, key], pageSize: 1 }, { fetchImpl });
+        const bounds = await source.queryBounds([-82.731, 27.871, -82.730, 27.872]);
+        expect(bounds.features.map(f => f.properties.sourceParcelId)).toEqual([
+            '183016697684003301', '183016697684003302'
+        ]);
+        expect(calls[0].searchParams.get('orderByFields')).toBe(oid);
+        expect(calls[1].searchParams.get('resultOffset')).toBe('1');
+        const exact = await source.queryIds([bounds.features[0].id]);
+        expect(calls[2].searchParams.get('where')).toBe(`${key} IN ('183016697684003301')`);
+        expect(calls[2].searchParams.has('geometry')).toBe(false);
+        expect(exact.complete).toBe(true);
+        expect(exact.features[0]).toEqual(bounds.features[0]);
+        expect(exact.features[0].properties.sourceProperties).toEqual({
+            [oid]: 1, [key]: '183016697684003301'
+        });
+        expect(calls.every(url => url.searchParams.get('outFields') === `${oid},${key}`)).toBe(true);
+    });
+
+    it('rejects a joined-layer unit polygon when the provider ignores the fixed land-polygon scope', async () => {
+        const field = 'PGIS.PGIS.ParcelsPublic.PARCELSUBTYPE';
+        const unit = feature(1, '1001');
+        unit.properties[field] = 1;
+        const { fetchImpl, calls } = makeFetch([response([unit])]);
+        const source = createArcgisParcelSource({ ...descriptor,
+            outFields: [...descriptor.outFields, field], attributeFilters: { [field]: 0 } }, { fetchImpl });
+        await expect(source.queryIds(['CA-ON-TORONTO-1001'])).rejects.toThrow('configured ground status');
+        expect(calls[0].searchParams.get('where')).toBe(`(${field} = 0) AND (PARCELID IN (1001))`);
+    });
+
+    it.each(['*', 'schema..key', '.key', 'schema.key.', 'schema.key OR 1=1',
+        'schema.key;DROP', 'schema.key()', 'schema."key"', undefined])(
+        'rejects invalid qualified identity or output columns: %s', field => {
+            expect(() => createArcgisParcelSource({ ...descriptor, idField: field })).toThrow();
+            expect(() => createArcgisParcelSource({ ...descriptor, objectIdField: field })).toThrow();
+            expect(() => createArcgisParcelSource({ ...descriptor,
+                outFields: [...descriptor.outFields, field] })).toThrow();
+        }
+    );
+
     it('projects every viewport corner to the provider CRS while retaining WGS84 geometry and native exact IDs', async () => {
         const ground = feature(1, '1001', polygon(-119.769, 39.161, -119.768, 39.162));
         const { fetchImpl, calls } = makeFetch([response([ground]), response([ground])]);

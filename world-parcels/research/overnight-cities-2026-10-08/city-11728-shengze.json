@@ -1,0 +1,125 @@
+{
+  "name": "Shengze",
+  "country": "China",
+  "countryCode": "CN",
+  "rank": 974,
+  "point": [
+    30.9205407302501,
+    120.644284208873
+  ],
+  "population2025": 562800,
+  "population2025k": 562.8,
+  "populationPlausibility2025": "High",
+  "schemaVersion": 1,
+  "kind": "city_parcel_source_research",
+  "checkedAt": "2026-10-09",
+  "populationUnit": "persons",
+  "status": "complete",
+  "verifiedSample": false,
+  "publicParcelGeometryFound": false,
+  "runtimeReadiness": "not_enabled_no_verified_public_geometry",
+  "adapterReady": false,
+  "priorEvidenceFiles": [],
+  "priorCheck": {
+    "attemptState": "pending",
+    "attemptEvidence": [],
+    "possiblePriorMatches": [],
+    "resolvedPriorMatches": []
+  },
+  "pointBasis": "UN WUP 2025 population-weighted settlement centroid; this is not a municipal boundary or a parcel-coverage claim.",
+  "registryFound": true,
+  "registryBasis": "Official Wujiang District government page identifies the Shengze Natural Resources Office and states that it manages land rights, assists with land and cadastral surveys/registration, and provides archive query services. This is specific local-custodian evidence.",
+  "registryEvidenceUrls": [
+    "https://www.wujiang.gov.cn/zgwj/zgjxsdw/201708/4139f518c7d24c478d324be12b89d7e3.shtml",
+    "https://www.wujiang.gov.cn/zgwj/zfhcxjslm/wj2021_bmfw.shtml"
+  ],
+  "resultCategory": "local_natural_resources_and_cadastre_confirmed_no_public_feature_geometry",
+  "remainingUncertainty": "Whether a separate public Shengze parcel viewer or access service exists; local government system coverage and the WUP point relation to current town boundaries were not resolved.",
+  "scopeLimits": "No citywide completeness is asserted. No owner/address/account/token values retained. At most three complete native parcel geometries may be retained for this city; none was obtained.",
+  "verifiedParcelResponse": null,
+  "source": {
+    "sourceId": "CN-WUJIANG-SHENGZE-NATURAL-RESOURCES",
+    "name": "Suzhou Wujiang Natural Resources and Planning Bureau, Shengze Natural Resources Office",
+    "operator": "苏州市吴江区自然资源和规划局盛泽自然资源所 (Suzhou Wujiang District Natural Resources and Planning Bureau, Shengze Office)",
+    "url": "https://www.wujiang.gov.cn/zgwj/zgjxsdw/201708/4139f518c7d24c478d324be12b89d7e3.shtml",
+    "serviceType": "Local natural-resources office performs land-rights management and assists with land/cadastral surveys, change surveys, registration/certificates, and archive queries. No anonymous parcel geometry map/API was found.",
+    "geometryType": null,
+    "outputCrs": null,
+    "nativeIdField": "Parcel/land-use identifiers maintained in local cadastral and registration records; public native schema not exposed."
+  },
+  "sourceIds": [],
+  "wupCityCode": 11728,
+  "cityId": "wup2025:11728",
+  "queueRank": 974,
+  "centerLatLon": [
+    30.9205407302501,
+    120.644284208873
+  ],
+  "technicalBlocker": "Public official sources confirm local cadastral work and records. Shengze government reporting describes an internal land/resource management system that incorporates parcel maps for administrative workflows, not an open public parcel API. Public real-estate-registration service locations are listed, but no anonymous vector geometry was identified.",
+  "coverageAssessment": {
+    "claimedScope": "Shengze Natural Resources Office has local land-rights, cadastral-survey, registration and archive-query duties. No public GIS geometry is claimed.",
+    "verifiedOpenScope": "Inspected district pages provide office/cadastral-service information and planning notices; the reported parcel-map system is operational/administrative and not an anonymous public geometry service.",
+    "countrywideVerified": false,
+    "citywideVerified": false,
+    "geometryVerified": false
+  },
+  "runtimeAssessment": {
+    "status": "not_enabled_no_verified_full_polygon_sample",
+    "reason": "Public official sources confirm local cadastral work and records. Shengze government reporting describes an internal land/resource management system that incorporates parcel maps for administrative workflows, not an open public parcel API. Public real-estate-registration service locations are listed, but no anonymous vector geometry was identified."
+  },
+  "research": {
+    "executedQueries": [
+      {
+        "language": "Simplified Chinese",
+        "query": "盛泽镇 地籍图 宗地 不动产登记 自然资源所 地图 官方",
+        "scope": "Find Shengze-specific natural-resource/cadastre custodian and public parcel geometry portal.",
+        "result": "Wujiang District government identifies the Shengze Natural Resources Office and its land-rights, cadastral-survey, registration and archive-query duties. Public district material describes parcel maps inside management systems, but not as a public map service.",
+        "method": "Separate Chinese-language search and official Wujiang district/town source review.",
+        "actualResultUrls": [
+          "https://www.wujiang.gov.cn/zgwj/zgjxsdw/201708/4139f518c7d24c478d324be12b89d7e3.shtml",
+          "https://www.wujiang.gov.cn/zgwj/zfhcxjslm/wj2021_bmfw.shtml",
+          "https://www.wujiang.gov.cn/zgwj/ggkjgh/nav_list_2.shtml"
+        ],
+        "executionMethod": "Separate Chinese-language search and official Wujiang district/town source review."
+      },
+      {
+        "language": "English",
+        "query": "Shengze China cadastral parcel map land registry GIS official Wujiang Suzhou",
+        "scope": "Cross-check public parcel vector/map access and locality-specific records.",
+        "result": "English search did not identify an official public parcel vector service for Shengze. Official Chinese district pages show local cadastral duties and registration services; parcel-map system references are administrative/internal.",
+        "method": "Separate English-language search followed by Chinese official-source verification.",
+        "actualResultUrls": [
+          "https://www.wujiang.gov.cn/zgwj/zgjxsdw/201708/4139f518c7d24c478d324be12b89d7e3.shtml",
+          "https://www.wujiang.gov.cn/zgwj/zfhcxjslm/wj2021_bmfw.shtml"
+        ],
+        "executionMethod": "Separate English-language search followed by Chinese official-source verification."
+      }
+    ],
+    "officialSources": [
+      {
+        "url": "https://www.wujiang.gov.cn/zgwj/zgjxsdw/201708/4139f518c7d24c478d324be12b89d7e3.shtml",
+        "observation": "Wujiang District government names the Shengze Natural Resources Office, gives its location, and states it manages local land rights, supports land/cadastral and change surveys, registration/certificates, and archive queries."
+      },
+      {
+        "url": "https://www.wujiang.gov.cn/zgwj/zfhcxjslm/wj2021_bmfw.shtml",
+        "observation": "Official district convenience-services page lists the Shengze town real-estate registration service counter and address."
+      },
+      {
+        "url": "https://cgj.suzhou.gov.cn/srsz/qxdt/202306/443be487d2db40cd8d9ff9da7f8a7fe8.shtml",
+        "observation": "Suzhou City Management Bureau report describes Shengze internal operational systems using parcel maps (宗地图) as part of land/resource management workflows; this is not a public geometry service."
+      },
+      {
+        "url": "https://www.wujiang.gov.cn/zgwj/ggkjgh/nav_list_2.shtml",
+        "observation": "Official Wujiang land-space planning portal publishes Shengze town planning notices; planning polygons are not cadastral parcel geometry."
+      }
+    ]
+  },
+  "rootPrimaryReadback": {
+    "url": "https://www.wujiang.gov.cn/zgwj/zgjxsdw/201708/4139f518c7d24c478d324be12b89d7e3.shtml",
+    "fetch": 200,
+    "contentType": "text/html",
+    "title": "\r\n        盛泽自然资源所_下属单位\r\n    "
+  },
+  "rootReviewNote": "Reviewed the specific local primary evidence, its jurisdiction, source dates and public access limits. Failed readbacks are retained as transport/access outcomes rather than absence. No full public parcel geometry was verified for this city in the bounded discovery pass.",
+  "rootReviewedAt": "2026-10-09T05:07:19.594016+00:00"
+}

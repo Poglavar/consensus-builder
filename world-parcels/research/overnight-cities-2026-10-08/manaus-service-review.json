@@ -1,0 +1,89 @@
+{
+  "reviewDate": "2026-10-09",
+  "scope": "Read-only review of the official Manaus cadastral-map project, public official GIS candidates, and the anonymous Geo360 viewer/bootstrap. No parcel geometry was reconstructed from vector tiles and no property or owner fields were requested.",
+  "officialProject": {
+    "cityPage": "https://www.manaus.am.gov.br/semcom/projeto-mapa-de-manaus-da-prefeitura-atualiza-cadastro-de-345-mil-imoveis-na-capital/",
+    "progressPage": "https://www.manaus.am.gov.br/noticia/levantamento/projeto-de-mapeamento-da-cidade-chega-em-sua-fase-final/",
+    "vendorPage": "https://www.topocart.com.br/post/topocart-executa-as-etapas-finais-do-projeto-mapa-de-manaus",
+    "observations": [
+      "Prefeitura reports about 345,000 property updates and roughly 10,000 additions; another official progress report gives a planning target around 524,000 units. These are project statistics, not GIS layer counts.",
+      "Official municipal material names Topocart as project contractor. The vendor says it implemented Geo360 for the project, making the tenant plausible but not proving that the exposed table equals the official cadastral layer."
+    ]
+  },
+  "officialViewer": {
+    "url": "https://mapademanaus.manaus.am.gov.br/",
+    "inspection": "The web-rendered official page is project status/FAQ information, not an anonymous parcel identify/query interface. It describes property changes via notification/access code and matrícula. No login or property-specific lookup was attempted.",
+    "directRequest": {
+      "method": "GET",
+      "checkedAt": "2026-10-08T21:00:28Z",
+      "status": "connect_timeout",
+      "observation": "Official viewer host timed out again; bundle and anonymous reader bootstrap could not be fetched directly."
+    }
+  },
+  "geo360AnonymousViewer": {
+    "layerPage": "https://tiles-manaus.geo360.com.br/cadastro.lote.html",
+    "metadata": "https://tiles-manaus.geo360.com.br/cadastro.lote.json",
+    "layerType": "pg_tileserv polygon table `cadastro.lote`, vector-tile endpoint up to z22; metadata extent includes the WUP locator.",
+    "bootstrapInspection": {
+      "pageStatus": 200,
+      "htmlBytes": 6524,
+      "checkedAt": "2026-10-08T21:00:29Z",
+      "scriptAssets": [
+        "MapLibre GL JS 2.1.9 from unpkg",
+        "jQuery 3.5.1 from cdnjs"
+      ],
+      "authorizationMarkersFound": false,
+      "observation": "Public layer HTML initializes a MapLibre vector-tile viewer; no authorization/token/CSRF bootstrap marker was present in the inspected page. Metadata and HTML load without a login or token. This establishes anonymous tile access, not full-feature access."
+    },
+    "metadataRequest": {
+      "status": 200,
+      "contentType": "application/json",
+      "bytes": 3941,
+      "checkedAt": "2026-10-08T21:00:30Z",
+      "observation": "Table metadata confirms the polygon tile layer and public tile endpoint; it does not provide a complete GeoJSON parcel feature query."
+    },
+    "boundedTile": {
+      "url": "https://tiles-manaus.geo360.com.br/cadastro.lote/18/87386/133305.pbf?limit=3&properties=id%2Cobjectid",
+      "httpStatus": 200,
+      "contentType": "application/vnd.mapbox-vector-tile",
+      "bytes": 157,
+      "featureTypes": [
+        "polygon",
+        "polygon",
+        "polygon"
+      ],
+      "safeIds": [
+        3793894,
+        3794515,
+        3793893
+      ],
+      "interpretation": "The capped z18 MVT contains quantized/clipped tile geometry; the returned records were not point-filtered. No MVT reconstruction was performed and these are not retained as full parcel polygons."
+    }
+  },
+  "municipalArcGISCandidate": {
+    "url": "https://pmm.manaus.am.gov.br/arcgis/rest/services/PORTAL_TRANSPARENCIA/SEMINF_OBRAS_PORTAL_CIDADAO_SRGS/MapServer/2",
+    "candidateName": "Lotes - SEMEF",
+    "geometryType": "esriGeometryPolygon",
+    "queryCapability": "Metadata indexed as queryable, with safe identifier/status attributes; no owner attributes requested.",
+    "directRequestRetries": [
+      {
+        "url": "https://pmm.manaus.am.gov.br/arcgis/rest/services/PORTAL_TRANSPARENCIA/SEMINF_OBRAS_PORTAL_CIDADAO_SRGS/MapServer/2?f=json",
+        "method": "GET",
+        "checkedAt": "2026-10-08T21:00:36Z",
+        "status": "connect_timeout",
+        "observation": "Bounded retry timed out; no metadata or features returned."
+      }
+    ],
+    "assessment": "Official city candidate, but live query and total/count remain unverified due repeated network timeouts."
+  },
+  "coverage": {
+    "fullParcelGeoJSONVerified": false,
+    "fullPolygonSamplesRetained": 0,
+    "citywideCount": null,
+    "wupPointFullPolygonVerified": false,
+    "citywideCoverage": false,
+    "countrywideCoverage": false
+  },
+  "blocker": "A vector-tile table and official polygon MapServer candidate are discoverable, but neither yielded complete exact parcel geometries in this pass. The official MapServer and project viewer hosts timed out; Geo360 remains a plausible, not technically confirmed, project-layer candidate.",
+  "nextStep": "Retry official service when the host is reachable and verify a complete feature geometry by safe identifier or point query. Preserve the current tile-only distinction; do not infer a feature count from municipal project totals or reconstruct MVT polygons."
+}

@@ -1,0 +1,97 @@
+{
+  "schemaVersion": 1,
+  "kind": "city_parcel_source_research",
+  "checkedAt": "2026-10-09",
+  "name": "Mangaluru",
+  "country": "India",
+  "countryCode": "IN",
+  "populationUnit": "persons",
+  "status": "complete",
+  "registryFound": true,
+  "registryBasis": "Mangalore City Corporation’s own citizen-services portal identifies itself as an official MCC service, lists its Mangaluru address, and provides municipal property-tax services including registering a new property. This supports a city-specific municipal property register, not a public land-title parcel map.",
+  "registryEvidenceUrls": [
+    "https://mccportal.in/",
+    "https://mccportal.in/document/MCC%20PROPERTY%20TAX%20USER_GUIDE.pdf"
+  ],
+  "verifiedSample": false,
+  "publicParcelGeometryFound": false,
+  "runtimeReadiness": "not_enabled_no_verified_public_geometry",
+  "wupCityCode": 9265,
+  "cityId": "wup2025:9265",
+  "centerLatLon": [
+    12.8988733163531,
+    74.8497897377379
+  ],
+  "rank": 516,
+  "queueRank": 516,
+  "population2025": 993566,
+  "population2025k": 993.566,
+  "pointBasis": "UN WUP 2025 population-weighted settlement centroid; this is not a municipal boundary or a parcel-coverage claim.",
+  "technicalBlocker": "The municipal portal exposes citizen transactions and tax services; no anonymous geometry-only parcel schema or full-polygon route was identified. No property identifier, address, owner or tax record was entered or queried.",
+  "scopeLimits": "Evidence supports Mangalore City Corporation’s municipal property registration/tax service. It does not establish the completeness or legal scope of a land-title cadastre, nor vector parcel coverage.",
+  "remainingUncertainty": "No city parcel geometry, public feature schema, or geometry-only endpoint was verified. The property-services portal should not be treated as a public cadastral geometry feed.",
+  "research": {
+    "executedQueries": [
+      {
+        "language": "English",
+        "query": "Mangaluru City Corporation official property register property tax land records",
+        "scope": "Find city-specific registry/cartography basis and safe anonymous geometry routes.",
+        "result": "The MCC portal states it is an official Mangalore City Corporation portal and lists municipal property-tax services including new-property registration. The linked user guide describes the municipal service. No parcel geometry route was advertised or verified; property lookup/payment workflows were not entered.",
+        "actualResultUrls": [
+          "https://mccportal.in/",
+          "https://mccportal.in/document/MCC%20PROPERTY%20TAX%20USER_GUIDE.pdf"
+        ]
+      },
+      {
+        "language": "Kannada",
+        "query": "ಮಂಗಳೂರು ಮಹಾನಗರ ಪಾಲಿಕೆ ಆಸ್ತಿ ತೆರಿಗೆ ಆಸ್ತಿ ನೋಂದಣಿ ಅಧಿಕೃತ",
+        "scope": "Find local-language city-specific registry/cartography basis and safe anonymous geometry routes.",
+        "result": "ಮಂಗಳೂರು ಮಹಾನಗರ ಪಾಲಿಕೆಯ ಅಧಿಕೃತ ನಾಗರಿಕ ಸೇವಾ ಪೋರ್ಟಲ್ ಆಸ್ತಿ ತೆರಿಗೆ ಮತ್ತು ಹೊಸ ಆಸ್ತಿ ನೋಂದಣಿ ಸೇವೆಗಳನ್ನು ನೀಡುತ್ತದೆ. ಇದು ನಗರಪಾಲಿಕೆ ಆಸ್ತಿ/ತೆರಿಗೆ ನೋಂದಣಿ ಸೇವೆಯ ಸಾಕ್ಷಿ ಮಾತ್ರ; ಭೂಹಕ್ಕಿನ ಕೇಡಾಸ್ಟ್ರಲ್ ಜ್ಯಾಮಿತಿಯ ಸಾರ್ವಜನಿಕ ವೆಕ್ಟರ್ ಮೂಲ ಕಂಡುಬಂದಿಲ್ಲ.",
+        "actualResultUrls": [
+          "https://mccportal.in/",
+          "https://mccportal.in/document/MCC%20PROPERTY%20TAX%20USER_GUIDE.pdf"
+        ]
+      }
+    ],
+    "officialSources": [
+      {
+        "url": "https://mccportal.in/",
+        "observation": "Mangalore City Corporation’s own citizen-services portal identifies itself as an official MCC service, lists its Mangaluru address, and provides municipal property-tax services including registering a new property. This supports a city-specific municipal property register, not a public land-title parcel map."
+      },
+      {
+        "url": "https://mccportal.in/document/MCC%20PROPERTY%20TAX%20USER_GUIDE.pdf",
+        "observation": "Mangalore City Corporation’s own citizen-services portal identifies itself as an official MCC service, lists its Mangaluru address, and provides municipal property-tax services including registering a new property. This supports a city-specific municipal property register, not a public land-title parcel map."
+      }
+    ],
+    "metadataReviewFile": "mangaluru-service-review.json",
+    "routeInspectionFile": "/tmp/overnight-cities-2026-10-08/city-9265-mangaluru-route-inspection.json"
+  },
+  "source": {
+    "sourceId": "in-mangaluru-municipal-registry",
+    "name": "Mangaluru local registry/cartography route review",
+    "operator": "Mangalore City Corporation",
+    "url": "https://mccportal.in/",
+    "scope": "Evidence supports Mangalore City Corporation’s municipal property registration/tax service. It does not establish the completeness or legal scope of a land-title cadastre, nor vector parcel coverage.",
+    "nativeIdField": null,
+    "attributesRequested": [],
+    "identityBasis": "No safe parcel feature identifier was retrieved.",
+    "geometryStatus": "city_registry_basis_only_no_geometry"
+  },
+  "coverageAssessment": {
+    "verifiedOpenScope": "Evidence supports Mangalore City Corporation’s municipal property registration/tax service. It does not establish the completeness or legal scope of a land-title cadastre, nor vector parcel coverage.",
+    "notEstablished": [
+      "legal ownership or boundary",
+      "complete citywide parcel coverage",
+      "runtime source binding"
+    ],
+    "wupPointRelation": "No parcel geometry was returned or asserted."
+  },
+  "priorEvidenceFiles": [],
+  "populationPlausibility2025": "Moderate",
+  "rootReviewedAt": "2026-10-09T01:14:01.434685+00:00",
+  "sourceIds": [],
+  "point": [
+    12.8988733163531,
+    74.8497897377379
+  ]
+}

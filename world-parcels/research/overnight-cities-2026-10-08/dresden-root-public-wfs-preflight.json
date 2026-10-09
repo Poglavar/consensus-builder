@@ -1,0 +1,102 @@
+{
+  "checkedAt": "2026-10-09",
+  "officialEndpoint": "https://geodienste.sachsen.de/aaa/public_alkis/vereinf/wfs",
+  "capabilities": {
+    "httpStatus": 200,
+    "file": "getcapabilities.xml",
+    "featureTypes": [
+      "ave:Flurstueck",
+      "ave:FlurstueckPunkt",
+      "ave:GebaeudeBauwerk",
+      "ave:KatasterBezirk",
+      "ave:Nutzung",
+      "ave:NutzungFlurstueck",
+      "ave:VerwaltungsEinheit"
+    ],
+    "parcelDefaultCrs": "EPSG:25833",
+    "otherCrs": [
+      "EPSG:25832"
+    ]
+  },
+  "describeFeatureType": {
+    "httpStatus": 200,
+    "file": "describefeaturetype.xsd",
+    "featureType": "ave:Flurstueck",
+    "safeNativeIdField": "flstkennz",
+    "geometryField": "geometrie",
+    "geometryType": "MultiSurfacePropertyType",
+    "crs": "EPSG:25833",
+    "schemaFields": [
+      "idflurst",
+      "flstkennz",
+      "land",
+      "landschl",
+      "gemarkung",
+      "gemaschl",
+      "flur",
+      "flurschl",
+      "flstnrzae",
+      "flstnrnen",
+      "regbezirk",
+      "regbezschl",
+      "kreis",
+      "kreisschl",
+      "gemeinde",
+      "gmdschl",
+      "oid",
+      "aktualit",
+      "geometrie",
+      "flaeche",
+      "abwrecht",
+      "lagebeztxt",
+      "tntxt"
+    ],
+    "ownerFieldPresent": false
+  },
+  "request": {
+    "method": "GET",
+    "file": "bounded-request.json",
+    "queryParameters": {
+      "service": "WFS",
+      "request": "GetFeature",
+      "version": "2.0.0",
+      "typenames": "ave:Flurstueck",
+      "srsName": "urn:ogc:def:crs:EPSG::25833",
+      "bbox": "1m x 1m bounding box centered on unchanged WUP point in EPSG:25833",
+      "count": 3,
+      "propertyName": [
+        "ave:flstkennz",
+        "ave:geometrie"
+      ],
+      "outputFormat": "application/gml+xml; version=3.1"
+    },
+    "httpStatus": 200,
+    "contentType": "application/gml+xml; version=3.1.1",
+    "returnedFeatureCount": 1,
+    "returnedSafeNativeIds": [
+      "140209___00622001002"
+    ],
+    "exactWupPoint": [
+      51.0412590520933,
+      13.7515873602205
+    ],
+    "exactWupProjectedXY": [
+      412478.544,
+      5655154.559
+    ],
+    "pointInPolygon": true,
+    "pointToBoundaryDistanceMeters": 18.0691
+  },
+  "safeSample": {
+    "file": "safe-sample.geojson",
+    "features": 1,
+    "retainedProperties": [
+      "flstkennz"
+    ],
+    "geometryType": "Polygon",
+    "coordinates": "RFC 7946 WGS84 lon/lat converted directly from source EPSG:25833 with PROJ; no coordinate/geometry repair",
+    "sha256": "3d75dec6ecd61cbb805cfd18c61af7362226b29832dec235c7d5f7d1d998aa7e"
+  },
+  "decision": "One full official parcel polygon was returned for a 1 m x 1 m query centered on the exact WUP locator and source geometry covers the point. This is a primary candidate, not a citywide completeness/runtime qualification.",
+  "note": "Safe primary preflight; full raw response and unrelated attribute values remain temporary. The service ignored PROPERTYNAME. This record is not a complete runtime adapter qualification."
+}

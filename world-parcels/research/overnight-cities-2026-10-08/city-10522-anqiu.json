@@ -1,0 +1,90 @@
+{
+  "schemaVersion": 1,
+  "kind": "city_parcel_source_research",
+  "checkedAt": "2026-10-09",
+  "name": "Anqiu",
+  "nativeName": "安丘",
+  "country": "China",
+  "countryCode": "CN",
+  "populationUnit": "persons",
+  "status": "complete",
+  "registryFound": true,
+  "registryBasis": "The official Weifang Intermediate People’s Court published a case document identifying Anqiu Real Estate Registration Center in a local real-estate registration matter. A Weifang-area report describes Anqiu’s natural-resources bureau producing urban and administrative maps, but that is secondary evidence and not a parcel service. City government domains did not yield a verified public map endpoint.",
+  "registryEvidenceUrls": [
+    "https://www.sdcourt.gov.cn/wfzy/resource/cms/article/442628/39665025/2025051916451337038.pdf",
+    "https://www.weifang.gov.cn/"
+  ],
+  "verifiedSample": false,
+  "publicParcelGeometryFound": false,
+  "sampleGeometryFile": null,
+  "runtimeReadiness": "not_enabled_no_verified_public_geometry",
+  "wupCityCode": 10522,
+  "cityId": "wup2025:10522",
+  "centerLatLon": [
+    36.43799259998,
+    119.209169096759
+  ],
+  "rank": 899,
+  "queueRank": 899,
+  "population2025": 605324,
+  "population2025k": 605.324,
+  "populationPlausibility2025": "High",
+  "pointBasis": "UN WUP 2025 population-weighted settlement centroid; this is not a municipal boundary or a parcel-coverage claim.",
+  "technicalBlocker": "No anonymous parcel geometry route or safe ID schema verified; city portal direct retrieval was inconclusive.",
+  "scopeLimits": "City-specific registration-center evidence is present in the official court source. No public geometry route was verified. City/Weifang administrative mapping references do not establish parcel-vector schema or point coverage.",
+  "remainingUncertainty": "The center’s full service scope and WUP-point parcel availability remain unknown.",
+  "research": {
+    "executedQueries": [
+      {
+        "language": "English",
+        "query": "Anqiu Shandong China official real estate registration center cadastral map GIS",
+        "result": "Primary city-specific evidence is an official court document naming the Anqiu Real Estate Registration Center; no public feature service found.",
+        "method": "English-language search followed by official-source review.",
+        "scope": "Identify city-specific registry/cadastral evidence and a safe public parcel geometry route."
+      },
+      {
+        "language": "Chinese",
+        "query": "安丘市 不动产登记中心 地籍图 GIS 自然资源和规划局 官方",
+        "result": "中文检索找到官方法院材料提及安丘市不动产登记中心；未发现公开宗地几何接口。",
+        "method": "Local-language search followed by official-source review. Separate English and local-language searches plus official-source review; no owner, address, title, tax, account, applicant, or personal fields were queried.",
+        "scope": "Identify city-specific registry/cadastral evidence and a safe public parcel geometry route."
+      }
+    ],
+    "officialSources": [
+      {
+        "url": "https://www.sdcourt.gov.cn/wfzy/resource/cms/article/442628/39665025/2025051916451337038.pdf",
+        "observation": "The official Weifang Intermediate People’s Court published a case document identifying Anqiu Real Estate Registration Center in a local real-estate registration matter. A Weifang-area report describes Anqiu’s natural-resources bureau producing urban and administrative maps, but that is secondary evidence and not a parcel service. City government domains did not yield a verified public map endpoint."
+      },
+      {
+        "url": "https://www.weifang.gov.cn/",
+        "observation": "The official Weifang Intermediate People’s Court published a case document identifying Anqiu Real Estate Registration Center in a local real-estate registration matter. A Weifang-area report describes Anqiu’s natural-resources bureau producing urban and administrative maps, but that is secondary evidence and not a parcel service. City government domains did not yield a verified public map endpoint."
+      }
+    ],
+    "metadataReviewFile": "anqiu-service-review.json",
+    "routeInspectionFile": "/tmp/overnight-cities-2026-10-08/city-10522-anqiu-route-inspection.json"
+  },
+  "coverageAssessment": {
+    "claimedScope": "The official Weifang Intermediate People’s Court published a case document identifying Anqiu Real Estate Registration Center in a local real-estate registration matter. A Weifang-area report describes Anqiu’s natural-resources bureau producing urban and administrative maps, but that is secondary evidence and not a parcel service. City government domains did not yield a verified public map endpoint.",
+    "verifiedOpenScope": "No public parcel geometry or WUP-point parcel presence is asserted.",
+    "citywideVerified": false,
+    "countrywideVerified": false,
+    "geometryVerified": false
+  },
+  "runtimeAssessment": {
+    "enabled": false,
+    "reason": "Root qualification remains separate; local sample/endpoint evidence alone does not authorize runtime configuration.",
+    "status": "not_enabled_no_verified_public_geometry"
+  },
+  "sourceIds": [],
+  "rootPrimaryReadback": {
+    "url": "https://www.sdcourt.gov.cn/wfzy/resource/cms/article/442628/39665025/2025051916451337038.pdf",
+    "fetch": "error",
+    "reason": "<urlopen error timed out>"
+  },
+  "rootReviewNote": "Reviewed the specific primary institution/service evidence and its geographical, access and date limits. Direct readback failures are preserved separately from indexed primary evidence. No public full parcel geometry was verified for this city in this discovery pass.",
+  "rootReviewedAt": "2026-10-09T04:20:40.565226+00:00",
+  "point": [
+    36.43799259998,
+    119.209169096759
+  ]
+}

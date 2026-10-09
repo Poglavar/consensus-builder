@@ -1,0 +1,123 @@
+{
+  "name": "Yitang",
+  "country": "China",
+  "countryCode": "CN",
+  "rank": 988,
+  "point": [
+    34.3184587428505,
+    117.953560684315
+  ],
+  "freshResearch": {
+    "queries": [
+      {
+        "language": "English",
+        "query": "Yitang China Linyi official land registration cadastre map parcel GIS natural resources bureau",
+        "scope": "Locate the city/local land registry or cadastral source and assess anonymous public polygon geometry.",
+        "result": "The official site’s cadastral-map menu entry did not expose a usable public vector service or schema in the reviewed page; no parcel query was submitted. Official registry evidence: Linyi Municipal Natural Resources and Planning Bureau’s official site provides an explicit “地籍图查询” (cadastral map query) entry and describes the bureau’s registration/cadastral duties. Official Linyi bureau materials also identify its municipal real-estate registration center. The WUP settlement is Yitang within Linyi; no anonymous service schema or feature was exposed.",
+        "actualResultUrls": [
+          "https://gtj.linyi.gov.cn/zwgk.htm",
+          "https://www.linyi.gov.cn/bmml/gtzy/gtzy_4778/gtzy_8902.htm",
+          "https://gtj.linyi.gov.cn/info/2559/171823.htm"
+        ],
+        "executionMethod": "Separate English-language web search, followed by review of first-party source pages and service metadata."
+      },
+      {
+        "language": "Chinese",
+        "query": "义堂镇 地籍图查询 不动产登记 临沂市自然资源和规划局",
+        "scope": "Find first-party local-language land registration, cadastral map or city-specific parcel service evidence.",
+        "result": "The official site’s cadastral-map menu entry did not expose a usable public vector service or schema in the reviewed page; no parcel query was submitted. Official registry evidence: Linyi Municipal Natural Resources and Planning Bureau’s official site provides an explicit “地籍图查询” (cadastral map query) entry and describes the bureau’s registration/cadastral duties. Official Linyi bureau materials also identify its municipal real-estate registration center. The WUP settlement is Yitang within Linyi; no anonymous service schema or feature was exposed.",
+        "actualResultUrls": [
+          "https://gtj.linyi.gov.cn/zwgk.htm",
+          "https://www.linyi.gov.cn/bmml/gtzy/gtzy_4778/gtzy_8902.htm",
+          "https://gtj.linyi.gov.cn/info/2559/171823.htm"
+        ],
+        "executionMethod": "Separate Chinese-language web search, followed by review of first-party source pages; no personal property query."
+      }
+    ],
+    "portals": [
+      {
+        "name": "Linyi Natural Resources and Planning Bureau cadastral-map and registration service",
+        "operator": "Linyi Municipal Natural Resources and Planning Bureau / Real Estate Registration Center",
+        "homeUrl": "https://gtj.linyi.gov.cn/zwgk.htm",
+        "observation": "Local cadastral-map query entry and registration custodian found. No anonymous full-parcel API/schema or geometry response was obtained. The official site’s cadastral-map menu entry did not expose a usable public vector service or schema in the reviewed page; no parcel query was submitted."
+      }
+    ],
+    "requests": [],
+    "historicalContext": []
+  },
+  "status": "complete",
+  "verifiedParcelResponse": null,
+  "source": {
+    "sourceId": "CN-10664-LOCAL-CADASTRE-REVIEW",
+    "name": "Linyi Natural Resources and Planning Bureau cadastral-map and registration service",
+    "url": "https://gtj.linyi.gov.cn/zwgk.htm",
+    "operator": "Linyi Municipal Natural Resources and Planning Bureau / Real Estate Registration Center",
+    "serviceType": "Local cadastral-map query entry and registration custodian found. No anonymous full-parcel API/schema or geometry response was obtained.",
+    "layer": null,
+    "geometryType": null,
+    "outputCrs": null,
+    "nativeIdField": null,
+    "nativeIdEvidence": null,
+    "requestedAttributes": [],
+    "personalAttributesRequested": false,
+    "directMetadataSchemaVerified": false,
+    "directGeometryQueryVerified": false,
+    "scope": "Local cadastral-map query entry and registration custodian found. No anonymous full-parcel API/schema or geometry response was obtained. The official site’s cadastral-map menu entry did not expose a usable public vector service or schema in the reviewed page; no parcel query was submitted."
+  },
+  "registryFound": true,
+  "registryBasis": "Linyi Municipal Natural Resources and Planning Bureau’s official site provides an explicit “地籍图查询” (cadastral map query) entry and describes the bureau’s registration/cadastral duties. Official Linyi bureau materials also identify its municipal real-estate registration center. The WUP settlement is Yitang within Linyi; no anonymous service schema or feature was exposed.",
+  "registryEvidenceUrls": [
+    "https://gtj.linyi.gov.cn/zwgk.htm",
+    "https://www.linyi.gov.cn/bmml/gtzy/gtzy_4778/gtzy_8902.htm",
+    "https://gtj.linyi.gov.cn/info/2559/171823.htm"
+  ],
+  "verifiedSample": false,
+  "publicParcelGeometryFound": false,
+  "runtimeReadiness": "not_enabled_no_verified_public_geometry",
+  "adapterReady": false,
+  "priorEvidenceFiles": [],
+  "priorCheck": {
+    "attemptState": "pending",
+    "attemptEvidence": [],
+    "possiblePriorMatches": []
+  },
+  "scopeLimits": "No full parcel geometry or property-owner/address data retained. No owner/address fields were requested. No credentials, tokens, personal records, or gated property lookup were used. At most 0 full polygons retained.",
+  "pointBasis": "UN WUP 2025 population-weighted settlement centroid; this is not a municipal boundary or a parcel-coverage claim.",
+  "resultCategory": "official_local_registry_geometry_unverified",
+  "technicalBlocker": "The official site’s cadastral-map menu entry did not expose a usable public vector service or schema in the reviewed page; no parcel query was submitted.",
+  "remainingUncertainty": "Exact WUP parcel coverage and anonymous geometry availability are unverified.",
+  "nextStep": "If a publicly accessible geometry-only service is documented, inspect its metadata/schema first, then query only a bounded area and retain only a safe source-native parcel ID plus geometry.",
+  "schemaVersion": "1.0",
+  "checkedAt": "2026-10-09",
+  "wupCityCode": 10664,
+  "cityId": "wup2025:10664",
+  "queueRank": 988,
+  "centerLatLon": [
+    34.3184587428505,
+    117.953560684315
+  ],
+  "population2025k": 555.576,
+  "populationUnit": "persons",
+  "population2025": 555576,
+  "populationPlausibility2025": "High",
+  "sourceIds": [],
+  "coverageAssessment": {
+    "claimedScope": "Linyi Municipal Natural Resources and Planning Bureau’s official site provides an explicit “地籍图查询” (cadastral map query) entry and describes the bureau’s registration/cadastral duties. Official Linyi bureau materials also identify its municipal real-estate registration center. The WUP settlement is Yitang within Linyi; no anonymous service schema or feature was exposed.",
+    "verifiedOpenScope": "Local cadastral-map query entry and registration custodian found. No anonymous full-parcel API/schema or geometry response was obtained.",
+    "countrywideVerified": false,
+    "citywideVerified": false
+  },
+  "runtimeAssessment": {
+    "status": "not_enabled_no_verified_public_geometry",
+    "reason": "No full public parcel feature response was obtained for this packet, so no city adapter was enabled or runtime-qualified."
+  },
+  "rootRegistryScopeNote": "The official Linyi bureau planning notice explicitly names Yitang (义堂镇), establishing local jurisdiction. Its own municipal website exposes cadastral-map query and real-estate registration services; those navigation links identify the local service custodian but do not prove an anonymous geometry endpoint or current parcel completeness.",
+  "rootPrimaryReadback": {
+    "url": "https://gtj.linyi.gov.cn/info/2559/171823.htm",
+    "fetch": 200,
+    "contentType": "text/html",
+    "title": "兰山区义堂镇B-yt-02单元控制性详细规划和城市设计---批前公示-临沂市自然资源和规划局"
+  },
+  "rootReviewNote": "Root reviewed the exact primary institutional evidence and specific local jurisdiction, preserving source dates, application/access limits and failed readbacks. Registry presence and public full parcel geometry are separate findings. No public full geometry was verified in this city discovery record.",
+  "rootReviewedAt": "2026-10-09T05:10:15.053712+00:00"
+}

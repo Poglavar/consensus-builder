@@ -1,0 +1,56 @@
+{
+  "schemaVersion": 1,
+  "kind": "parcel_source_service_review",
+  "checkedAt": "2026-10-09",
+  "city": "Ma'anshan",
+  "countryCode": "CN",
+  "wupCityCode": 11282,
+  "rank": 558,
+  "registryFound": true,
+  "registryEvidenceUrls": [
+    "https://www.zhanjiang.gov.cn/attachment/0/243/243382/2000761.pdf",
+    "https://zrzyhgh.mas.gov.cn/"
+  ],
+  "publicAnonymousGeometryVerified": false,
+  "completeGeoreferencedPolygonCount": 0,
+  "geometryRetained": false,
+  "ownerAddressTaxOrPersonLookupRequested": false,
+  "authenticationOrCredentialsUsed": false,
+  "captchaOrPersonalFormSubmitted": false,
+  "accessReview": {
+    "publicAnonymousGeometryVerified": false,
+    "completeGeoreferencedPolygonCount": 0,
+    "geometryRetained": false,
+    "ownerAddressTaxOrPersonLookupRequested": false,
+    "authenticationOrCredentialsUsed": false,
+    "captchaOrPersonalFormSubmitted": false,
+    "routeInspectionStatus": "city_registry_verified_no_geometry_contract",
+    "reason": "The official city natural-resources host did not respond in bounded standard-TLS requests, and no anonymous parcel vector endpoint or schema was verified. The city registration-center identity comes from an official government-published listing rather than the local service portal. Runtime remains disabled.",
+    "nativeIdsUsed": "No safe parcel feature identifier read; no feature attributes requested."
+  },
+  "requestEvidence": [
+    {
+      "url": "https://www.zhanjiang.gov.cn/attachment/0/243/243382/2000761.pdf",
+      "method": "official government-published document listing (search result and source URL)",
+      "status": "listed_official_source",
+      "observation": "Names 马鞍山市不动产登记中心 under Anhui; used only as registry-existence evidence."
+    },
+    {
+      "url": "https://zrzyhgh.mas.gov.cn/",
+      "method": "anonymous HTTPS GET",
+      "status": "no_http_response_timeout",
+      "httpStatusObtained": false,
+      "observation": "Bounded standard-TLS request timed out; no TLS bypass or login attempted."
+    },
+    {
+      "url": "https://zrzyhgh.mas.gov.cn/xwzx/tzgg/2006455431.html",
+      "method": "anonymous HTTPS GET",
+      "status": "no_http_response_timeout",
+      "httpStatusObtained": false,
+      "observation": "Bounded standard-TLS request timed out; no HTTP status was obtained."
+    }
+  ],
+  "technicalBlocker": "The official city natural-resources host did not respond in bounded standard-TLS requests, and no anonymous parcel vector endpoint or schema was verified. The city registration-center identity comes from an official government-published listing rather than the local service portal. Runtime remains disabled.",
+  "sampleDisposition": "No parcel geometry or parcel attributes retained.",
+  "remainingUncertainty": "The official city natural-resources host did not respond in bounded standard-TLS requests, and no anonymous parcel vector endpoint or schema was verified. The city registration-center identity comes from an official government-published listing rather than the local service portal. Runtime remains disabled."
+}

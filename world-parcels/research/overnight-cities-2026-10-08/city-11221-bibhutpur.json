@@ -1,0 +1,105 @@
+{
+  "name": "Bibhutpur",
+  "country": "India",
+  "countryCode": "IN",
+  "rank": 264,
+  "point": [
+    25.7294677045856,
+    86.1122967039628
+  ],
+  "population2025": 1904411,
+  "schemaVersion": 1,
+  "kind": "city_parcel_source_research",
+  "checkedAt": "2026-10-09",
+  "populationUnit": "persons",
+  "status": "complete",
+  "verifiedSample": false,
+  "publicParcelGeometryFound": false,
+  "runtimeReadiness": "not_enabled_no_verified_public_geometry",
+  "priorEvidenceFiles": [],
+  "scopeLimits": "The exact WUP coordinate is not proven to fall within Bibhutipur mauza or selected sheet. DILRMP georeference status is a village workflow flag and does not replace a returned usable map extent. No geometry or personal data was retrieved.",
+  "pointBasis": "UN WUP 2025 population-weighted settlement centroid; this is not a municipal boundary or a parcel-coverage claim.",
+  "registryFound": true,
+  "registryBasis": "Official Bihar DILRMP reports enumerate Bibhutpur tehsil and Bibhutipur mauza, with 8 of 8 sheets digitized, spatially verified, georeferenced, and linked to the record of rights. The official BhuNaksha selector resolves the same mauza and code. Its selected map-info request returned HTTP 200 but null extents and null map-sheet metadata, so no map footprint or parcel geometry was verified at the WUP point.",
+  "resultCategory": "official_local_cadastral_index_zero_extent_geometry_not_verified",
+  "research": {
+    "executedQueries": [
+      {
+        "language": "English",
+        "query": "Bibhutpur official cadastral map land records Samastipur Bihar BhuNaksha",
+        "result": "Official DILRMP village report lists Bibhutpur tehsil and Bibhutipur mauza; 8 of 8 sheets are digitized, spatially verified, georeferenced, and linked with ROR. Public Bihar BhuNaksha selectors resolve the locality and map codes, but map-info returns null extent/sheet fields. Exact WUP-point coverage and geometry remain unverified.",
+        "urls": [
+          "https://dilrmp.gov.in/",
+          "https://bhunaksha.bihar.gov.in/"
+        ],
+        "method": "Separate English search, official DILRMP village-report review, and exact public BhuNaksha selector/map-info request."
+      },
+      {
+        "language": "Hindi",
+        "query": "बिभूतिपुर समस्तीपुर भू नक्शा बिहार भूमि अभिलेख नक्शा आधिकारिक",
+        "result": "Official Bihar BhuNaksha selection resolves Samastipur > Rosera > Bibhutpur > Bibhutipur (mauza 1080). The map-info response is HTTP 200 but returns null EPSG and bounding-box fields, so no point identify or parcel geometry is supportable.",
+        "urls": [
+          "https://bhunaksha.bihar.gov.in/",
+          "https://dilrmp.gov.in/"
+        ],
+        "method": "Separate Hindi-language search and official viewer selector/map-info inspection."
+      }
+    ],
+    "officialSources": [
+      {
+        "url": "https://bhunaksha.bihar.gov.in/",
+        "observation": "Official Bihar cadastral viewer. Public viewer JS exposes ListsAfterLevel, getVVVVExtentGeoref, getPlotAtXY and cadastral WMS routes."
+      },
+      {
+        "url": "https://bhunaksha.bihar.gov.in/rest/MapInfo/getVVVVExtentGeoref",
+        "method": "POST",
+        "httpStatus": 200,
+        "requestBody": "state=10&gisLevels=19,03,17,1080,CS,06,00,&srs=0",
+        "observation": "Resolves district Samastipur, subdivision Rosera, circle Bibhutpur and mauza Bibhutipur, GIS code CS19031710800100600; epsg and xmin/ymin/xmax/ymax are null and map-instance/sheet labels are null."
+      },
+      {
+        "url": "https://dilrmp.gov.in/",
+        "observation": "Official DILRMP village report names Bibhutipur mauza and reports 8/8 map sheets digitized, spatially verified, georeferenced and linked to ROR (report date 2022-12-16); this is workflow/index status, not coordinate-specific geometry."
+      }
+    ],
+    "viewerAndServiceTrace": {
+      "url": "https://bhunaksha.bihar.gov.in/",
+      "clientTrace": "Viewer config and JS expose public cadastral selector, map-info, point-identify and WMS routes. Selection used state 10, district 19, subdivision 03, circle 17, mauza 1080, survey CS, map instance 06, sheet 00. Selected map-info response had null extent and sheet metadata, so point identify was not attempted.",
+      "routes": [
+        "POST /rest/Levels/ListsAfterLevel",
+        "POST /rest/MapInfo/getVVVVExtentGeoref (selected map returns null extent)",
+        "POST /rest/MapInfo/getPlotAtXY (not called without usable extent)",
+        "WMS VILLAGE_MAP / PLOT_LIST (not queried without valid extent)"
+      ]
+    },
+    "attemptedGeometry": {
+      "fullPolygonLimit": 3,
+      "fullPolygonsRetained": 0,
+      "ownerOrAddressDataRequested": false,
+      "outcome": "The exact WUP coordinate is not proven to fall within Bibhutipur mauza or selected sheet. DILRMP georeference status is a village workflow flag and does not replace a returned usable map extent. No geometry or personal data was retrieved."
+    }
+  },
+  "verifiedParcelResponse": null,
+  "source": {
+    "sourceId": "IN-BR-SAMASTIPUR-BIBHUTPUR-BHUNAKSHA",
+    "name": "Bihar BhuNaksha, Bibhutpur circle / Bibhutipur mauza",
+    "url": "https://bhunaksha.bihar.gov.in/",
+    "operator": "Revenue and Land Reforms Department, Government of Bihar",
+    "serviceType": "Official cadastral map viewer and village-map index; the selected mauza resolves but the map-info response contains null extent fields.",
+    "layer": "Cadastral Survey (CS), map instance 06, sheet 00; selector code CS19031710800100600",
+    "geometryType": "Polygon expected by cadastral viewer; no parcel feature returned",
+    "outputCrs": null,
+    "nativeIdField": null,
+    "nativeIdEvidence": "No parcel identify response was requested because the selected map-info response has no usable extent or sheet metadata."
+  },
+  "wupCityCode": 11221,
+  "cityId": "wup2025:11221",
+  "queueRank": 264,
+  "populationPlausibility2025": "Moderate",
+  "centerLatLon": [
+    25.7294677045856,
+    86.1122967039628
+  ],
+  "rootReviewedAt": "2026-10-08T21:46:22.040221+00:00",
+  "sourceIds": []
+}

@@ -1,0 +1,101 @@
+{
+  "name": "Xiamen City",
+  "country": "China",
+  "countryCode": "CN",
+  "rank": 278,
+  "point": [
+    24.4890718445107,
+    118.110504760684
+  ],
+  "freshResearch": {
+    "queries": [
+      {
+        "language": "Chinese",
+        "query": "厦门 地籍图查询 宗地图 查询 i厦门 测绘地理信息中心 官方",
+        "result": "Official iXiamen guide identifies city survey center services including cadastral and parcel map lookup; official real-estate query route requires identity verification.",
+        "urls": [
+          "https://www.ixiamen.org.cn/yyzx/202209/t20220909_94940.htm",
+          "https://www.investxiamen.org.cn/detail/2501.html"
+        ]
+      },
+      {
+        "language": "English",
+        "query": "Xiamen official cadastral parcel map query city surveying center",
+        "result": "Official service catalog describes city cadastral and parcel map services; online query uses the real-name verified iXiamen portal.",
+        "urls": [
+          "https://www.ixiamen.org.cn/yyzx/202209/t20220909_94940.htm",
+          "https://www.investxiamen.org.cn/detail/2501.html"
+        ]
+      }
+    ],
+    "requests": [
+      {
+        "url": "https://www.ixiamen.org.cn/yyzx/202209/t20220909_94940.htm",
+        "method": "GET",
+        "status": 200,
+        "type": "text/html",
+        "observation": "Official iXiamen service page identifies the City Surveying and Basic Geographic Information Center and describes public cadastral maps/parcel maps; linked viewer host is chzx.zygh.xm.gov.cn:9000."
+      },
+      {
+        "url": "https://www.investxiamen.org.cn/detail/2501.html",
+        "method": "GET",
+        "status": 200,
+        "type": "text/html",
+        "observation": "Official municipal investment/government service guide describes cadastral/parcel map query by code, unit number or location after iXiamen identity verification."
+      },
+      {
+        "url": "https://chzx.zygh.xm.gov.cn:9000/",
+        "method": "GET",
+        "status": null,
+        "type": null,
+        "observation": "Direct public shell request timed out in this environment; this does not establish service downtime."
+      }
+    ],
+    "portals": [
+      {
+        "name": "Xiamen City Surveying and Basic Geographic Information Center service catalog",
+        "operator": "Xiamen municipal government/iXiamen",
+        "homeUrl": "https://www.ixiamen.org.cn/yyzx/202209/t20220909_94940.htm",
+        "observation": "Official catalog links the city service center and describes cadastral/parcel maps; described query uses real-name verified iXiamen access."
+      }
+    ]
+  },
+  "status": "complete",
+  "verifiedParcelResponse": null,
+  "source": {
+    "id": "cn-xiamen-survey-cadastral-map-query",
+    "name": "Xiamen City Surveying and Basic Geographic Information Center cadastral/parcel map service",
+    "operator": "Xiamen Municipal Natural Resources and Planning Bureau; iXiamen platform",
+    "url": "https://www.ixiamen.org.cn/yyzx/202209/t20220909_94940.htm"
+  },
+  "coverageAssessment": {
+    "claimedScope": "City-local property and cadastral-map query services as described by official city sources or explicitly attributed city-center reports.",
+    "verifiedOpenScope": "City-specific registry map/service evidence was found, but no anonymous full parcel polygon was verified.",
+    "countrywideVerified": false
+  },
+  "registryFound": true,
+  "registryBasis": "Official Xiamen/iXiamen service information identifies the Xiamen City Surveying and Basic Geographic Information Center service center and says it supplies citizens cadastral maps and parcel maps. The official property-record query guide describes map-based cadastral/parcel-map lookup after iXiamen identity verification.",
+  "verifiedSample": false,
+  "publicParcelGeometryFound": false,
+  "resultCategory": "local_registry_and_parcel_map_service_confirmed_identity_gated",
+  "technicalBlocker": "The described cadastral-map query requires iXiamen real-name identity verification. The linked city service host did not yield a retrievable viewer shell from this environment; no identity, login or protected query was attempted.",
+  "remainingUncertainty": "Whether service returns full parcel polygons or only a map image and individual parcel map documents; access and actual vector/API response were not verified.",
+  "runtimeReadiness": "not_enabled_no_verified_public_geometry",
+  "adapterReady": false,
+  "cityId": "wup2025:11994",
+  "wupCityCode": 11994,
+  "centerLatLon": [
+    24.4890718445107,
+    118.110504760684
+  ],
+  "schemaVersion": 1,
+  "checkedAt": "2026-10-09",
+  "queueRank": 278,
+  "population2025": 1788492,
+  "populationPlausibility2025": "High",
+  "populationUnit": "persons",
+  "pointBasis": "UN WUP 2025 population-weighted settlement centroid; this is not a municipal boundary or a parcel-coverage claim.",
+  "sourceIds": [],
+  "nextStep": "Request a published anonymous map/vector endpoint or evaluate this service only under an approved identity-authenticated workflow.",
+  "rootReviewedAt": "2026-10-08T22:06:54.103695+00:00"
+}

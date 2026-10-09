@@ -1,0 +1,160 @@
+{
+  "name": "Madalla",
+  "country": "Nigeria",
+  "countryCode": "NG",
+  "rank": 939,
+  "point": [
+    9.1643144730879,
+    7.20036962485904
+  ],
+  "population2025": 583367,
+  "population2025k": 583.367,
+  "populationPlausibility2025": "Moderate",
+  "schemaVersion": 1,
+  "kind": "city_parcel_source_research",
+  "checkedAt": "2026-10-09",
+  "populationUnit": "persons",
+  "status": "complete",
+  "verifiedSample": false,
+  "publicParcelGeometryFound": false,
+  "runtimeReadiness": "not_enabled_no_verified_public_geometry",
+  "priorEvidenceFiles": [],
+  "priorCheck": {
+    "attemptState": "pending",
+    "attemptEvidence": [],
+    "possiblePriorMatches": []
+  },
+  "pointBasis": "UN WUP 2025 population-weighted settlement centroid; this is not a municipal boundary or a parcel-coverage claim.",
+  "registryFound": null,
+  "registryBasis": "Preserved as unestablished rather than absent: state land administration and Madalla/Suleja locality evidence do not establish a specific local registry custodian or the exact locator jurisdiction.",
+  "registryEvidenceUrls": [
+    "https://nigerstate.gov.ng/niger-state-ministry-of-lands-and-survey/",
+    "https://nigerstate.gov.ng/wp-content/uploads/2023/12/NIGER-STATE-GUIDELINE-FOR-REGISTRATION-OF-CofO-2023.pdf",
+    "https://ngsirs.gov.ng/area-tax-offices/",
+    "https://nogp.nigerstate.gov.ng/wp-content/uploads/NIGER-STATE-LIST-OF-APPLICATION-FOR-ROW-BY-CONTRACTORS-FROM-2009-TO-2024.pdf"
+  ],
+  "resultCategory": "local_registry_presence_unestablished",
+  "remainingUncertainty": "Whether additional safe anonymous parcel-geometry services or broader source coverage exist; no citywide coverage is claimed.",
+  "scopeLimits": "Review covers the exact unchanged WUP settlement locator and identified official sources only. No owner, address, personal-property, tax, account, token or credential data requested or retained. No citywide completeness claimed.",
+  "verifiedParcelResponse": null,
+  "source": {
+    "sourceId": "NG-7606-madalla-source-review",
+    "name": "Madalla official cadastral/land registry source",
+    "url": "https://nigerstate.gov.ng/niger-state-ministry-of-lands-and-survey/",
+    "operator": "Nigeria",
+    "serviceType": "Official registry/map service evidence; no anonymous parcel geometry verified.",
+    "layer": null,
+    "geometryType": null,
+    "outputCrs": null,
+    "nativeIdField": null,
+    "nativeIdEvidence": "No safe feature query performed; native parcel key not verified.",
+    "requestedAttributes": [],
+    "personalAttributesRequested": false,
+    "directMetadataSchemaVerified": false,
+    "directGeometryQueryVerified": false,
+    "scope": "Niger State official sources document state land administration, Certificate-of-Occupancy/cadastral processing via area offices and the Madalla/Suleja locality. No public anonymous parcel vector endpoint or schema was found; no plot search was performed."
+  },
+  "wupCityCode": 7606,
+  "cityId": "wup2025:7606",
+  "queueRank": 939,
+  "centerLatLon": [
+    9.1643144730879,
+    7.20036962485904
+  ],
+  "sourceIds": [],
+  "adapterReady": false,
+  "technicalBlocker": "Reviewed state Ministry policy, C-of-O guideline and official locality references. These describe application-based processing, not an anonymous cadastral viewer. No personal property record or survey-plan lookup was submitted.",
+  "coverageAssessment": {
+    "claimedScope": "Preserved as unestablished rather than absent: state land administration and Madalla/Suleja locality evidence do not establish a specific local registry custodian or the exact locator jurisdiction.",
+    "verifiedOpenScope": "No public parcel geometry scope verified.",
+    "countrywideVerified": false,
+    "citywideVerified": false
+  },
+  "research": {
+    "queries": [
+      {
+        "language": "English",
+        "query": "Madalla Suleja Niger State official land registry survey cadastral map plot records",
+        "scope": "Find first-party city/local registry, cadastral map and safely accessible parcel geometry.",
+        "result": "Niger State official sources document state land administration, Certificate-of-Occupancy/cadastral processing via area offices and the Madalla/Suleja locality. No public anonymous parcel vector endpoint or schema was found; no plot search was performed.",
+        "actualResultUrls": [
+          "https://nigerstate.gov.ng/niger-state-ministry-of-lands-and-survey/",
+          "https://nigerstate.gov.ng/wp-content/uploads/2023/12/NIGER-STATE-GUIDELINE-FOR-REGISTRATION-OF-CofO-2023.pdf",
+          "https://ngsirs.gov.ng/area-tax-offices/",
+          "https://nogp.nigerstate.gov.ng/wp-content/uploads/NIGER-STATE-LIST-OF-APPLICATION-FOR-ROW-BY-CONTRACTORS-FROM-2009-TO-2024.pdf"
+        ],
+        "executionMethod": "Separate language-specific web search followed by review of official sources and public viewer/service metadata; no personal property query."
+      },
+      {
+        "language": "Hausa",
+        "query": "Madalla ƙasar filaye rajista taswira Niger State land registry survey",
+        "scope": "Find first-party city/local registry, cadastral map and safely accessible parcel geometry.",
+        "result": "Niger State official sources document state land administration, Certificate-of-Occupancy/cadastral processing via area offices and the Madalla/Suleja locality. No public anonymous parcel vector endpoint or schema was found; no plot search was performed.",
+        "actualResultUrls": [
+          "https://nigerstate.gov.ng/niger-state-ministry-of-lands-and-survey/",
+          "https://nigerstate.gov.ng/wp-content/uploads/2023/12/NIGER-STATE-GUIDELINE-FOR-REGISTRATION-OF-CofO-2023.pdf",
+          "https://ngsirs.gov.ng/area-tax-offices/",
+          "https://nogp.nigerstate.gov.ng/wp-content/uploads/NIGER-STATE-LIST-OF-APPLICATION-FOR-ROW-BY-CONTRACTORS-FROM-2009-TO-2024.pdf"
+        ],
+        "executionMethod": "Separate language-specific web search followed by review of official sources and public viewer/service metadata; no personal property query."
+      }
+    ],
+    "officialSources": [
+      {
+        "url": "https://nigerstate.gov.ng/niger-state-ministry-of-lands-and-survey/",
+        "observation": "Official Niger State Ministry page describes statewide management and administration of land and landed property."
+      },
+      {
+        "url": "https://nigerstate.gov.ng/wp-content/uploads/2023/12/NIGER-STATE-GUIDELINE-FOR-REGISTRATION-OF-CofO-2023.pdf",
+        "observation": "Official state C-of-O guideline identifies Suleja within its area schedule, requires survey plan and directs applications to area land offices."
+      },
+      {
+        "url": "https://ngsirs.gov.ng/area-tax-offices/",
+        "observation": "Official Niger State Internal Revenue Service lists an Area Tax Office in Madalla with the address Madalla Suleja; this is locality corroboration, not evidence of a land-record office."
+      },
+      {
+        "url": "https://nogp.nigerstate.gov.ng/wp-content/uploads/NIGER-STATE-LIST-OF-APPLICATION-FOR-ROW-BY-CONTRACTORS-FROM-2009-TO-2024.pdf",
+        "observation": "Official Niger State Urban Development Board list includes Madalla–Suleja infrastructure route, corroborating local administrative naming."
+      }
+    ],
+    "attempts": [
+      {
+        "url": "https://nigerstate.gov.ng/niger-state-ministry-of-lands-and-survey/",
+        "method": "Official public source or service review",
+        "result": "Reviewed state Ministry policy, C-of-O guideline and official locality references. These describe application-based processing, not an anonymous cadastral viewer. No personal property record or survey-plan lookup was submitted."
+      },
+      {
+        "url": "https://nigerstate.gov.ng/wp-content/uploads/2023/12/NIGER-STATE-GUIDELINE-FOR-REGISTRATION-OF-CofO-2023.pdf",
+        "method": "Official public source or service review",
+        "result": "Reviewed state Ministry policy, C-of-O guideline and official locality references. These describe application-based processing, not an anonymous cadastral viewer. No personal property record or survey-plan lookup was submitted."
+      },
+      {
+        "url": "https://ngsirs.gov.ng/area-tax-offices/",
+        "method": "Official public source or service review",
+        "result": "Reviewed state Ministry policy, C-of-O guideline and official locality references. These describe application-based processing, not an anonymous cadastral viewer. No personal property record or survey-plan lookup was submitted."
+      },
+      {
+        "url": "https://nogp.nigerstate.gov.ng/wp-content/uploads/NIGER-STATE-LIST-OF-APPLICATION-FOR-ROW-BY-CONTRACTORS-FROM-2009-TO-2024.pdf",
+        "method": "Official public source or service review",
+        "result": "Reviewed state Ministry policy, C-of-O guideline and official locality references. These describe application-based processing, not an anonymous cadastral viewer. No personal property record or survey-plan lookup was submitted."
+      }
+    ]
+  },
+  "runtimeAssessment": {
+    "status": "not_enabled_no_verified_public_geometry",
+    "reason": "Reviewed state Ministry policy, C-of-O guideline and official locality references. These describe application-based processing, not an anonymous cadastral viewer. No personal property record or survey-plan lookup was submitted."
+  },
+  "discoveryRegistryAssessment": {
+    "registryFound": true,
+    "registryBasis": "Niger State’s official Ministry of Lands and Survey describes state responsibility for land administration. Its official Certificate of Occupancy guideline includes the Suleja area and requires a survey plan and submission to an Area Land Office; official state sources identify Madalla as a Suleja locality. This evidences a nearby/state land-administration route, but not city-specific public GIS or proof of the exact WUP locator’s record jurisdiction."
+  },
+  "rootRegistryDecisionNote": "Preserved as unestablished rather than absent: state land administration and Madalla/Suleja locality evidence do not establish a specific local registry custodian or the exact locator jurisdiction.",
+  "rootPrimaryReadback": {
+    "url": "https://nigerstate.gov.ng/niger-state-ministry-of-lands-and-survey/",
+    "fetch": 200,
+    "contentType": "text/html; charset=UTF-8",
+    "title": "Niger State Ministry of Lands and Survey - Niger State Official Website"
+  },
+  "rootReviewNote": "Reviewed local institutional basis separately from anonymous vector access; direct readback errors are preserved and do not establish absence. No full parcel geometry was retrieved for this city in this discovery pass.",
+  "rootReviewedAt": "2026-10-09T04:44:50.237109+00:00"
+}

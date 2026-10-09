@@ -1,0 +1,19 @@
+{
+  "schemaVersion": 1,
+  "checkedAt": "2026-10-09T07:22:58.977081+00:00",
+  "status": "passed",
+  "cityId": "poznan",
+  "sourceId": "poznan-gml-wfs",
+  "url": "http://127.0.0.1:5640/?city=poznan&backend=http%3A%2F%2F127.0.0.1%3A5640&reduceMotion=1",
+  "renderedParcelLayers": 66,
+  "actualPointerClickPixels": [
+    600,
+    409
+  ],
+  "selectedNativeParcelId": "PL-POZNAN-306401_1.0051.AR_44.27/14",
+  "detailsHeadingMatched": true,
+  "pageErrors": [],
+  "screenshotVisuallyInspected": true,
+  "ownedBrowserClosed": true,
+  "previewScope": "Owned localhost gateway uses actual public parcel adapter and frontend; no database/proposal persistence."
+}

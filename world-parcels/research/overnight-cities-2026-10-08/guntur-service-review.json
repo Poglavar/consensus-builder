@@ -1,0 +1,85 @@
+{
+  "schemaVersion": 1,
+  "checkedAt": "2026-10-09",
+  "sourceId": "in-guntur-city-cadastre",
+  "purpose": "Review city-local registry/cadastral basis and safe anonymous geometry-only routes.",
+  "primaryPublisher": "https://guntur.ap.gov.in/service/land-records/",
+  "sourceUrl": "https://guntur.ap.gov.in/service/land-records/",
+  "registryFound": true,
+  "registryBasis": "The official Guntur District Administration land-records page documents local Pattadhar passbook and land-record services through MeeSeva. The official Andhra Pradesh Bhunaksha portal describes government cadastral mapping integrated with land records; this confirms a local land-record service and state cadastral system, but no Guntur-specific open feature response was verified.",
+  "officialSources": [
+    {
+      "url": "https://guntur.ap.gov.in/service/land-records/",
+      "observation": "The official Guntur District Administration land-records page documents local Pattadhar passbook and land-record services through MeeSeva. The official Andhra Pradesh Bhunaksha portal describes government cadastral mapping integrated with land records; this confirms a local land-record service and state cadastral system, but no Guntur-specific open feature response was verified."
+    },
+    {
+      "url": "https://bhunaksha.ap.gov.in/",
+      "observation": "Official city/state map service route; no private lookup performed."
+    },
+    {
+      "url": "https://bhudhaar.ap.gov.in/",
+      "observation": "Official city/state map service route; no private lookup performed."
+    }
+  ],
+  "searchQueries": [
+    {
+      "language": "English",
+      "query": "Guntur Andhra Pradesh official cadastral map land records Bhunaksha urban survey parcels",
+      "scope": "Find city-local land registry/cadastre source and an anonymous full-polygon geometry route.",
+      "result": "The Guntur district portal lists local land-record and Pattadhar passbook services. The Andhra Pradesh government Bhunaksha site describes the cadastral mapping platform and land-record integration. Direct viewer access did not expose a Guntur-specific safe geometry contract; no map query or identifier-based land record request was made.",
+      "actualResultUrls": [
+        "https://guntur.ap.gov.in/service/land-records/",
+        "https://bhunaksha.ap.gov.in/",
+        "https://bhudhaar.ap.gov.in/"
+      ]
+    },
+    {
+      "language": "Telugu",
+      "query": "గుంటూరు అధికారిక భూ రికార్డులు భూనక్ష పట్టాదారు పాస్‌బుక్ నగర సర్వే మ్యాప్",
+      "scope": "Find city-local land registry/cadastre source and an anonymous full-polygon geometry route.",
+      "result": "గుంటూరు జిల్లా ప్రభుత్వ పోర్టల్ స్థానిక భూ రికార్డులు, పట్టాదారు పాస్‌బుక్ సేవలను పేర్కొంటుంది. ఆంధ్రప్రదేశ్ ప్రభుత్వ భూనక్ష పోర్టల్ కడాస్ట్రల్ మ్యాపింగ్ మరియు భూ రికార్డుల అనుసంధానాన్ని వివరిస్తుంది. గుంటూరుకు ప్రత్యేకంగా పూర్తి జ్యామితి ఇచ్చే సురక్షిత ప్రజా API ధృవీకరించబడలేదు; ఏ సర్వే నంబరు లేదా వ్యక్తిగత రికార్డు శోధించలేదు.",
+      "actualResultUrls": [
+        "https://guntur.ap.gov.in/service/land-records/",
+        "https://bhunaksha.ap.gov.in/",
+        "https://bhudhaar.ap.gov.in/"
+      ]
+    }
+  ],
+  "accessReview": {
+    "publicAnonymousGeometryVerified": false,
+    "completeGeoreferencedPolygonCount": 0,
+    "geometryRetained": false,
+    "ownerAddressTaxOrPersonLookupRequested": false,
+    "authenticationOrCredentialsUsed": false,
+    "captchaOrPersonalFormSubmitted": false,
+    "routeInspectionStatus": "city_land_record_source_found_no_public_geometry_contract",
+    "reason": "Official city-district land-record services and the statewide Bhunaksha cadastre are confirmed, but no anonymous Guntur full-polygon route/schema was verified. The viewer fetch timed out at the web-open layer, which is not evidence that the origin is unavailable.",
+    "nativeIdsUsed": "No parcel feature identifier retrieved."
+  },
+  "requestEvidence": [
+    {
+      "url": "https://guntur.ap.gov.in/service/land-records/",
+      "method": "public official page review",
+      "status": "status_not_exposed_by_web_open",
+      "httpStatusObtained": false,
+      "observation": "The official Guntur District Administration land-records page documents local Pattadhar passbook and land-record services through MeeSeva. The official Andhra Pradesh Bhunaksha portal describes government cadastral mapping integrated with land records; this confirms a local land-record service and state cadastral system, but no Guntur-specific open feature response was verified."
+    },
+    {
+      "url": "https://bhunaksha.ap.gov.in/",
+      "method": "official map-service discovery",
+      "status": "status_not_exposed_by_web_search",
+      "httpStatusObtained": false,
+      "observation": "Official state cadastral/map portal identified; no target-city feature query or personal/property lookup was performed."
+    },
+    {
+      "url": "https://bhunaksha.ap.gov.in/",
+      "method": "public official map page open",
+      "status": "400 Timeout fetching",
+      "httpStatusObtained": true,
+      "observation": "The web-open layer timed out before viewer content was retrieved. This is not evidence of an origin outage; no map request or record lookup was submitted."
+    }
+  ],
+  "technicalBlocker": "Official city-district land-record services and the statewide Bhunaksha cadastre are confirmed, but no anonymous Guntur full-polygon route/schema was verified. The viewer fetch timed out at the web-open layer, which is not evidence that the origin is unavailable.",
+  "sampleDisposition": "No parcel geometry or feature attributes retained.",
+  "remainingUncertainty": "Whether the Bhunaksha interface exposes georeferenced vectors or only maps/documents; whether the WUP locator falls within the municipal survey coverage; citywide completeness."
+}

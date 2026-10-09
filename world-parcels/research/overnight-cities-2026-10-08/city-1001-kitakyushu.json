@@ -1,0 +1,144 @@
+{
+  "name": "Kitakyushu",
+  "country": "Japan",
+  "countryCode": "JP",
+  "rank": 428,
+  "point": [
+    33.8830987643437,
+    130.833414102125
+  ],
+  "freshResearch": {
+    "queries": [
+      {
+        "language": "Japanese",
+        "query": "北九州市 地番図 地籍図 公図 GIS 公開 地図 公式",
+        "scope": "Find a current official Kitakyushu cadastral parcel map and anonymous polygon service.",
+        "result": "The city describes its cadastral survey program and resulting parcel maps/ledgers. Its public tax-information page allows anyone to view an attached map (附属図) for a fee, but at the responsible tax office or via formal request. The official GIS page links the G-motty map hub for urban planning, road network, road-width and other administrative maps; no anonymous full parcel geometry endpoint was found.",
+        "actualResultUrls": [
+          "https://www.city.kitakyushu.lg.jp/contents/05300015.html",
+          "https://www.city.kitakyushu.lg.jp/contents/26000007.html",
+          "https://www.city.kitakyushu.lg.jp/page/dch/map_date/",
+          "https://www.city.kitakyushu.lg.jp/contents/division079.html"
+        ],
+        "executionMethod": "Official source search plus read-only inspection of anonymous public map/service routes."
+      },
+      {
+        "language": "English",
+        "query": "Kitakyushu official land parcel cadastral map GIS public map data",
+        "scope": "Cross-check city GIS application and public property-map access routes.",
+        "result": "The public G-motty ArcGIS Experience is an official regional information/map portal. The public tax-map appendix route is an in-person/paid/request process, and the city’s current open GIS links do not expose a parcel feature layer. No full polygon query or city-specific parcel feature schema was verified.",
+        "actualResultUrls": [
+          "https://www.city.kitakyushu.lg.jp/page/dch/map_date/",
+          "https://www.city.kitakyushu.lg.jp/contents/26000007.html",
+          "https://experience.arcgis.com/experience/f3d6e1d8b9d3483ca5e11cfefff1f5c8/"
+        ],
+        "executionMethod": "Official source search plus read-only inspection of anonymous public map/service routes."
+      }
+    ],
+    "portals": [
+      {
+        "name": "Kitakyushu City GIS / G-motty",
+        "operator": "City of Kitakyushu and regional G-motty information portal",
+        "homeUrl": "https://www.city.kitakyushu.lg.jp/page/dch/map_date/",
+        "observation": "Official city page links GIS and open-data hubs. Its public ArcGIS Experience item is a regional information portal; reviewed city map categories include urban planning, road maps and fixed-asset land-value visualizations, not a full parcel feature service."
+      },
+      {
+        "name": "City cadastral survey and fixed-asset map appendices",
+        "operator": "City of Kitakyushu",
+        "homeUrl": "https://www.city.kitakyushu.lg.jp/contents/05300015.html",
+        "observation": "Official city explains cadastral survey maps and land ledgers. A separate tax-map appendix is available for public viewing for a fee through the responsible tax office or by request; no digital vector export endpoint was identified."
+      }
+    ],
+    "requests": [
+      {
+        "url": "https://www.city.kitakyushu.lg.jp/page/dch/map_date/",
+        "method": "GET",
+        "httpStatus": 200,
+        "contentType": "text/html",
+        "observation": "Official city page links GIS and open-data portals."
+      },
+      {
+        "url": "https://www.city.kitakyushu.lg.jp/contents/05300015.html",
+        "method": "GET",
+        "httpStatus": 200,
+        "contentType": "text/html",
+        "observation": "Official cadastral survey page describes one-lot land-boundary survey and preparation of cadastral maps/ledgers; it is an overview rather than a feature service."
+      },
+      {
+        "url": "https://www.city.kitakyushu.lg.jp/contents/26000007.html",
+        "method": "GET",
+        "httpStatus": 200,
+        "contentType": "text/html",
+        "observation": "Official fixed-asset information page says anyone may view the appendix map for a fee at the responsible city tax office or request a copy; no anonymous remote geometry endpoint is linked."
+      },
+      {
+        "url": "https://www.arcgis.com/sharing/rest/content/items/f3d6e1d8b9d3483ca5e11cfefff1f5c8?f=pjson",
+        "method": "GET",
+        "httpStatus": 200,
+        "contentType": "text/plain; charset=utf-8",
+        "observation": "Public ArcGIS item metadata identifies a published G-motty regional information portal maintained by Kitakyushu; it is a public map hub, not a parcel feature-layer schema."
+      }
+    ],
+    "historicalContext": []
+  },
+  "status": "complete",
+  "verifiedParcelResponse": null,
+  "source": {
+    "sourceId": "JP-KY-KITAKYUSHU-CADASTRE",
+    "name": "Kitakyushu cadastral/tax-map references",
+    "url": "https://www.city.kitakyushu.lg.jp/contents/05300015.html",
+    "operator": "City of Kitakyushu",
+    "serviceType": "Cadastral survey and public tax-map appendix viewing/request workflow; no anonymous geometry service identified.",
+    "layer": "No public full parcel feature layer confirmed. G-motty public map hub provides administrative maps.",
+    "geometryType": "none verified",
+    "outputCrs": "unknown",
+    "nativeIdField": "unknown",
+    "nativeIdEvidence": "No feature-level geometry response obtained."
+  },
+  "coverageAssessment": {
+    "claimedScope": "City conducts cadastral surveys and maintains cadastral maps/ledgers; fixed-asset appendix maps can be viewed by anyone through city tax offices/request route.",
+    "verifiedOpenScope": "Public GIS hub and official map workflow verified, but no full digital parcel polygon or WUP-point coverage retrieved.",
+    "countrywideVerified": false
+  },
+  "registryFound": true,
+  "verifiedSample": false,
+  "resultCategory": "official_cadastre_reference_maps_no_public_vector_service_found",
+  "technicalBlocker": "The official public GIS hub does not expose a parcel feature service; fixed-asset appendix maps are available through an office/request workflow, not an anonymous remote geometry API.",
+  "remainingUncertainty": "Whether a separate city tax map or legal-affairs map service exists behind the current G-motty hub or via downloadable records not linked by the official GIS page.",
+  "nextStep": "Continue only if an official public, city-specific geometry service or download is found; keep the fixed-asset map workflow distinct from open vector access.",
+  "schemaVersion": 1,
+  "checkedAt": "2026-10-08T23:51:19Z",
+  "wupCityCode": 1001,
+  "cityId": "wup2025:1001",
+  "runtimeReadiness": "not_enabled_no_verified_public_geometry",
+  "adapterReady": false,
+  "centerLatLon": [
+    33.8830987643437,
+    130.833414102125
+  ],
+  "queueRank": 428,
+  "population2025": 1206731,
+  "populationPlausibility2025": "Moderate",
+  "populationUnit": "persons",
+  "pointBasis": "UN WUP 2025 population-weighted settlement centroid; this is not a municipal boundary or a parcel-coverage claim.",
+  "publicParcelGeometryFound": false,
+  "rootReviewedAt": "2026-10-08T23:55:03.250694+00:00",
+  "sourceIds": [],
+  "runtimeAssessment": {
+    "decision": "hold",
+    "reason": "Official cadastral-map records exist but no anonymous digital full geometry was found."
+  },
+  "registryBasis": "The official Kitakyushu City cadastral-survey page describes local cadastral maps/ledgers, and its current city fixed-asset service page offers public viewing of appendix maps through the responsible city tax office. These are city-specific mapping/record services; anonymous full-polygon retrieval remains unverified.",
+  "registryEvidenceUrls": [
+    "https://www.city.kitakyushu.lg.jp/contents/05300015.html",
+    "https://www.city.kitakyushu.lg.jp/contents/26000007.html"
+  ],
+  "rootSupplementalResearch": {
+    "checkedAt": "2026-10-08T23:55:03.191812+00:00",
+    "urls": [
+      "https://www.city.kitakyushu.lg.jp/contents/05300015.html",
+      "https://www.city.kitakyushu.lg.jp/contents/26000007.html"
+    ],
+    "observation": "The official Kitakyushu City cadastral-survey page describes local cadastral maps/ledgers, and its current city fixed-asset service page offers public viewing of appendix maps through the responsible city tax office. These are city-specific mapping/record services; anonymous full-polygon retrieval remains unverified."
+  }
+}

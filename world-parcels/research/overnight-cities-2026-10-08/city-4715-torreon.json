@@ -1,0 +1,116 @@
+{
+  "name": "Torreón",
+  "country": "Mexico",
+  "countryCode": "MX",
+  "rank": 417,
+  "point": [
+    25.5481572916593,
+    -103.439943151329
+  ],
+  "freshResearch": {
+    "queries": [
+      {
+        "language": "Spanish",
+        "query": "Torreón mapa catastral parcelas GIS oficial Ayuntamiento visor geográfico catastro",
+        "scope": "Find the official public municipal parcel map/vector service.",
+        "result": "Official Ayuntamiento Catastro describes property-information workflows that require identity and property documentation. Official IMPLAN PGT is a free georeferenced municipal planning viewer, not a cadastral parcel service. No official public parcel vector response was verified.",
+        "actualResultUrls": [
+          "https://www.torreon.gob.mx/",
+          "https://trcimplan.gob.mx/index.html",
+          "https://trcimplan.gob.mx/sig2.html"
+        ],
+        "executionMethod": "Official source search and read-only service inspection."
+      },
+      {
+        "language": "English",
+        "query": "Torreon Mexico official cadastral parcel GIS public map city property lots",
+        "scope": "Cross-check whether a public official English or GIS service exposes city parcels.",
+        "result": "No separate official public parcel-vector endpoint was located. A third-party SIGSA ArcGIS parcel service found during search has a spatial-reference/extent inconsistent with Torreón and was excluded.",
+        "actualResultUrls": [
+          "https://trcimplan.gob.mx/index.html",
+          "https://trcimplan.gob.mx/sig2.html"
+        ],
+        "executionMethod": "Official source search and read-only service inspection."
+      }
+    ],
+    "portals": [
+      {
+        "name": "IMPLAN Torreón georeferenced planning portal",
+        "operator": "Instituto Municipal de Planeación y Competitividad de Torreón",
+        "homeUrl": "https://trcimplan.gob.mx/sig2.html",
+        "observation": "Official PGT is a free planning/georeferenced municipal viewer for planning and socioeconomic/service information; no cadastre layer or parcel feature service was confirmed."
+      },
+      {
+        "name": "Ayuntamiento de Torreón Catastro",
+        "operator": "Municipio de Torreón",
+        "homeUrl": "https://www.torreon.gob.mx/",
+        "observation": "Catastro procedures request personal identity and property/possession documentation; no protected lookup was submitted."
+      }
+    ],
+    "requests": [
+      {
+        "url": "https://trcimplan.gob.mx/sig2.html",
+        "method": "GET",
+        "httpStatus": 200,
+        "contentType": "text/html",
+        "observation": "Official planning-viewer information page; does not identify an open parcel layer."
+      },
+      {
+        "url": "https://procesosgis.sigsa.info/server/rest/services/pf_catastro_predios/MapServer",
+        "method": "GET",
+        "httpStatus": 200,
+        "contentType": "application/json",
+        "observation": "Third-party ArcGIS candidate excluded: declared EPSG:32614 service extent does not match Torreón longitude/UTM zone; not attributable to the city."
+      }
+    ],
+    "historicalContext": []
+  },
+  "status": "complete",
+  "verifiedParcelResponse": null,
+  "source": {
+    "sourceId": "MX-COAH-TORREON-CATASTRO",
+    "name": "Ayuntamiento de Torreón Catastro (procedural service)",
+    "url": "https://www.torreon.gob.mx/",
+    "operator": "Municipio de Torreón",
+    "serviceType": "Property-information application/workflow; not a verified anonymous geometry service.",
+    "layer": "No public parcel layer verified.",
+    "geometryType": "none verified",
+    "outputCrs": "unknown",
+    "nativeIdField": "unknown",
+    "nativeIdEvidence": "No public parcel response obtained; a third-party candidate was rejected on geographic mismatch."
+  },
+  "coverageAssessment": {
+    "claimedScope": "Municipal Catastro handles property/cadastral information; IMPLAN provides a city planning viewer.",
+    "verifiedOpenScope": "No complete public parcel polygons retrieved or identified in an attributable official service.",
+    "countrywideVerified": false
+  },
+  "registryFound": true,
+  "verifiedSample": false,
+  "resultCategory": "official_registry_workflow_no_public_geometry",
+  "technicalBlocker": "Official Catastro information workflow is document/identity-gated; the public IMPLAN viewer is planning-focused. No anonymous parcel geometry service found.",
+  "remainingUncertainty": "Whether a separate public municipal parcel GIS exists outside the official pages inspected.",
+  "nextStep": "Do not query owner/property records; continue only if an official public map service or open-data parcel layer is identified.",
+  "schemaVersion": 1,
+  "checkedAt": "2026-10-08T23:35:00Z",
+  "wupCityCode": 4715,
+  "cityId": "wup2025:4715",
+  "runtimeReadiness": "not_enabled_no_verified_public_geometry",
+  "adapterReady": false,
+  "centerLatLon": [
+    25.5481572916593,
+    -103.439943151329
+  ],
+  "queueRank": 417,
+  "population2025": 1227850,
+  "populationPlausibility2025": "Moderate",
+  "populationUnit": "persons",
+  "pointBasis": "UN WUP 2025 population-weighted settlement centroid; this is not a municipal boundary or a parcel-coverage claim.",
+  "publicParcelGeometryFound": false,
+  "rootReviewedAt": "2026-10-08T23:47:22.529967+00:00",
+  "sourceIds": [],
+  "runtimeAssessment": {
+    "decision": "hold",
+    "reason": "Official parcel workflow exists but no open geometry source was verified."
+  },
+  "registryBasis": "Official city Catastro procedures document property records/workflows; access requires documentation and no account-based or personal-property query was attempted."
+}

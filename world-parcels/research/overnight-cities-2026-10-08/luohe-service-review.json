@@ -1,0 +1,34 @@
+{
+  "schemaVersion": "1.0",
+  "checkedAt": "2026-10-09",
+  "cityRecord": "city-9874-luohe.json",
+  "purpose": "Read-only source discovery and bounded service validation; no runtime or global changes.",
+  "scopeLimits": {
+    "maxFullPolygonsRetainedInThisCityReport": 0,
+    "maxFullPolygonsRetainedAcrossCityReview": 0,
+    "ownerOrAddressDataRetained": false,
+    "accountCredentialsOrPublicTokenValuesRetained": false
+  },
+  "assessment": "Henan procurement evidence identifies Luohe Yancheng District Natural Resources Confirmation, Registration and Transaction Service Center; its cadastral work scope includes surveying, boundaries/ownership checks, parcel codes and parcel/property maps. This is local registry/survey activity, not a verified public parcel geometry service. Official municipal/provincial procurement evidence establishes local cadastral services, but no anonymous public parcel viewer, geometry endpoint, or parcel feature response was verified. No full parcel geometry was retained.",
+  "officialEvidence": [
+    {
+      "url": "https://zfcg.henan.gov.cn/luohe/list2?bz=0&channelCode=&gglb=&gglx=0&pageNo=186&pageSize=15",
+      "observation": "Official Luohe procurement listing; 2025-10-11 procurement notice identifies local natural-resources registration/service activity."
+    },
+    {
+      "url": "https://pdsbfx.zfcg.henan.gov.cn/cmsweb81e27e/nas/webfile2024/luohe/rootfiles/2025/09/12/6d154ec595cd4fa4b85326e37d4d57f8.pdf",
+      "observation": "Official procurement document describing cadastral survey, boundary/ownership checks, parcel coding, parcel/property maps, and geodata storage; not a public parcel data endpoint."
+    }
+  ],
+  "serviceTrace": {
+    "viewerUrl": null,
+    "observedRoutes": [],
+    "notes": "No public anonymous interactive cadastral map or parcel feature service was identified. Procurement evidence establishes city-local cadastral work only."
+  },
+  "geometryValidation": {
+    "schemaConfirmed": false,
+    "featureQueryMade": false,
+    "retainedFullPolygonCount": 0,
+    "reason": "No schema-safe city parcel feature response was established."
+  }
+}

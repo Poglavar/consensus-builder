@@ -1,0 +1,86 @@
+{
+  "schemaVersion": 1,
+  "kind": "city_parcel_source_research",
+  "checkedAt": "2026-10-09",
+  "name": "Zhenjiang",
+  "country": "China",
+  "countryCode": "CN",
+  "populationUnit": "persons",
+  "status": "complete",
+  "registryFound": true,
+  "registryBasis": "The Jiangsu government service catalog identifies Zhenjiang Natural Resources and Planning Bureau registration services, including first registration of household construction, with application/jurisdiction requirements. This confirms a city-local registry function; no anonymous parcel geometry route was verified.",
+  "registryEvidenceUrls": [
+    "https://www.jszwfw.gov.cn/jszwfw/bscx/itemlist/bszn.do?iddept_ql_inf=11321100MB1654428R3000715001006&iddept_yw_inf=11321100MB1654428R300071500100602&ql_kind=07&webId=25"
+  ],
+  "verifiedSample": false,
+  "publicParcelGeometryFound": false,
+  "runtimeReadiness": "not_enabled_no_verified_public_geometry",
+  "wupCityCode": 11392,
+  "cityId": "wup2025:11392",
+  "centerLatLon": [
+    32.2060636016376,
+    119.444958185728
+  ],
+  "rank": 679,
+  "queueRank": 679,
+  "population2025": 781639,
+  "population2025k": 781.639,
+  "pointBasis": "UN WUP 2025 population-weighted settlement centroid; this is not a municipal boundary or a parcel-coverage claim.",
+  "technicalBlocker": "The reviewed official service-catalog route is application-oriented and does not expose public full-parcel geometry or a feature schema.",
+  "scopeLimits": "Public service catalog metadata only. No application, credentials, owner/address/tax data, or property-specific query was used. The government catalog page describes an application service and required materials; no form was submitted and no personal data was entered.",
+  "remainingUncertainty": "A separate municipal mapping endpoint may exist; none was verified in the official pages reviewed.",
+  "research": {
+    "executedQueries": [
+      {
+        "language": "English",
+        "query": "Zhenjiang Jiangsu official real estate registration cadastral map parcel GIS public",
+        "scope": "Find city-specific official property registry and safe public full parcel geometry.",
+        "result": "The official Jiangsu service catalog identifies city registration services and applicant/jurisdiction requirements; no anonymous public parcel geometry service was identified.",
+        "actualResultUrls": [
+          "https://www.jszwfw.gov.cn/jszwfw/bscx/itemlist/bszn.do?iddept_ql_inf=11321100MB1654428R3000715001006&iddept_yw_inf=11321100MB1654428R300071500100602&ql_kind=07&webId=25"
+        ],
+        "executionMethod": "Web search in the stated language followed by review of official public sources."
+      },
+      {
+        "language": "Chinese (Simplified)",
+        "query": "镇江市 不动产登记 地籍图 宗地图 查询 官方 自然资源和规划局",
+        "scope": "Find city-specific official property registry and safe public full parcel geometry.",
+        "result": "江苏政务服务目录列出镇江市自然资源和规划局的不动产登记事项及申请/辖区要求；未发现匿名公开宗地几何服务。",
+        "actualResultUrls": [
+          "https://www.jszwfw.gov.cn/jszwfw/bscx/itemlist/bszn.do?iddept_ql_inf=11321100MB1654428R3000715001006&iddept_yw_inf=11321100MB1654428R300071500100602&ql_kind=07&webId=25"
+        ],
+        "executionMethod": "Web search in the stated language followed by review of official public sources."
+      }
+    ],
+    "officialSources": [
+      {
+        "url": "https://www.jszwfw.gov.cn/jszwfw/bscx/itemlist/bszn.do?iddept_ql_inf=11321100MB1654428R3000715001006&iddept_yw_inf=11321100MB1654428R300071500100602&ql_kind=07&webId=25",
+        "observation": "Jiangsu government service catalog assigns the listed first-registration service to the Zhenjiang bureau and states application and jurisdiction conditions."
+      }
+    ],
+    "metadataReviewFile": "zhenjiang-service-review.json",
+    "routeInspectionFile": "/tmp/overnight-cities-2026-10-08/city-11392-zhenjiang-route-inspection.json"
+  },
+  "source": {
+    "sourceId": "cn-zhenjiang-official-local-registry-review",
+    "name": "Zhenjiang official registry and public mapping route review",
+    "operator": "Zhenjiang city/district or state official authority",
+    "url": "https://www.jszwfw.gov.cn/jszwfw/bscx/itemlist/bszn.do?iddept_ql_inf=11321100MB1654428R3000715001006&iddept_yw_inf=11321100MB1654428R300071500100602&ql_kind=07&webId=25",
+    "scope": "City-specific registry evidence reviewed; no anonymous full-parcel polygon endpoint verified.",
+    "nativeIdField": null,
+    "geometryStatus": "not_verified"
+  },
+  "coverageAssessment": {
+    "verifiedOpenScope": "Official public registry/service information reviewed. No anonymous full parcel geometry was obtained and no sample was retained.",
+    "citywideVerified": false,
+    "countrywideVerified": false
+  },
+  "priorEvidenceFiles": [],
+  "populationPlausibility2025": "High",
+  "rootReviewedAt": "2026-10-09T02:33:40.013985+00:00",
+  "sourceIds": [],
+  "point": [
+    32.2060636016376,
+    119.444958185728
+  ]
+}

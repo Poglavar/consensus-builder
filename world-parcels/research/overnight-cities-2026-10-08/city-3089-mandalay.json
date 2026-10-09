@@ -1,0 +1,100 @@
+{
+  "name": "Mandalay",
+  "country": "Myanmar",
+  "countryCode": "MM",
+  "rank": 324,
+  "point": [
+    21.9461573417692,
+    96.0967576879826
+  ],
+  "population2025": 1541309,
+  "schemaVersion": 1,
+  "kind": "city_parcel_source_research",
+  "checkedAt": "2026-10-09",
+  "populationUnit": "persons",
+  "status": "complete",
+  "verifiedSample": false,
+  "publicParcelGeometryFound": false,
+  "runtimeReadiness": "not_enabled_no_verified_public_geometry",
+  "priorEvidenceFiles": [],
+  "scopeLimits": "The ranked WUP population-weighted point is a settlement locator, not a parcel identity, municipal boundary, or coverage guarantee. No full polygon geometry is retained.",
+  "pointBasis": "UN WUP 2025 population-weighted settlement centroid; this is not a municipal boundary or a parcel-coverage claim.",
+  "registryFound": null,
+  "registryBasis": "The official national portal identifies Mandalay City Development Committee as the city map app operator and describes its land-management role, but the app's stated map functions cover roads, addresses, postal codes, wards and townships. No city cadastral register or public parcel-map service was verified.",
+  "resultCategory": "official_city_map_is_address_locator_no_cadastral_registry_or_geometry_verified",
+  "technicalBlocker": "The only city-specific official map found is described as a street/address locator, not a parcel viewer. Official-source searches did not identify a Mandalay cadastral map or public vector feature service.",
+  "remainingUncertainty": "Whether Mandalay City Development Committee or another municipal department maintains a non-public cadastral/lease register or a separate city parcel viewer; the located government app description does not say.",
+  "nextStep": "Search MCDC's own city-planning and land-management publications for a publicly documented parcel map; test only an anonymous bounded vector endpoint if a direct official service is identified.",
+  "research": {
+    "executedQueries": [
+      {
+        "language": "English",
+        "query": "Mandalay Myanmar official land registry cadastral map GIS municipal land records parcel map",
+        "result": "Official Myanmar National Portal describes MCDC's Mandalay City/Mandalay Map app and says it locates road names, addresses, postal codes, wards and townships; it does not describe cadastral parcel features. No direct open parcel service found.",
+        "urls": [
+          "https://www.myanmar.gov.mm/en/web/guest/mobile-app-gallery/-/asset_publisher/3fLoPJ93cMAT/content/mandalay-city%2F-mandalay-map"
+        ],
+        "method": "Separate English web search and official government app-description review."
+      },
+      {
+        "language": "Burmese",
+        "query": "မန္တလေးမြို့တော် စည်ပင်သာယာရေးကော်မတီ မြေစာရင်းမြေပုံ မြို့ပြအိမ်ခြံမြေ GIS",
+        "result": "မြန်မာနိုင်ငံ အမျိုးသားပေါ်တယ်တွင် မန္တလေးမြို့တော်စည်ပင်သာယာရေးကော်မတီ၏ Mandalay City/Mandalay Map ကို ဖော်ပြထားပြီး လမ်းအမည်၊ လိပ်စာ၊ စာတိုက်သင်္ကေတ၊ ရပ်ကွက်နှင့် မြို့နယ်ကို ရှာနိုင်သည်ဟု ရေးထားသည်။ မြေကွက်/မြေစာရင်း အလွှာ သို့မဟုတ် အများပြည်သူသုံး ပေါ်လီဂွန်ဝန်ဆောင်မှုကို မတွေ့ပါ။",
+        "urls": [
+          "https://www.myanmar.gov.mm/my/mandalay-city-development-council",
+          "https://www.myanmar.gov.mm/en/web/guest/mobile-app-gallery/-/asset_publisher/3fLoPJ93cMAT/content/mandalay-city%2F-mandalay-map"
+        ],
+        "method": "Separate Burmese-language search and official government portal review."
+      }
+    ],
+    "officialSources": [
+      {
+        "url": "https://www.myanmar.gov.mm/en/web/guest/mobile-app-gallery/-/asset_publisher/3fLoPJ93cMAT/content/mandalay-city%2F-mandalay-map",
+        "method": "GET via web reader",
+        "observation": "HTTP 200 official Myanmar National Portal page attributes the app to Mandalay City Development Committee, describes its municipal and land-management remit, and specifies map lookup for roads, addresses, postal codes, wards and townships; no parcel layer described.",
+        "httpStatus": 200,
+        "contentType": "text/html"
+      },
+      {
+        "url": "https://www.myanmar.gov.mm/my/mandalay-city-development-council",
+        "method": "GET via official government search result",
+        "observation": "Official Burmese Mandalay City Development Committee page surfaced; direct web-reader open timed out. It was not used to claim public parcel access.",
+        "httpStatus": null,
+        "contentType": "unknown"
+      }
+    ],
+    "portals": [
+      {
+        "name": "Mandalay City / Mandalay Map",
+        "operator": "Mandalay City Development Committee",
+        "url": "https://www.myanmar.gov.mm/en/web/guest/mobile-app-gallery/-/asset_publisher/3fLoPJ93cMAT/content/mandalay-city%2F-mandalay-map",
+        "observation": "Official map app entry describes city road/address/ward locator functions; no cadastral parcel access described."
+      }
+    ],
+    "viewerAndServiceTrace": {
+      "attempted": true,
+      "summary": "Official government app description was reviewed. It specifies address/location functions and gives mobile-app download links, but no browser viewer or parcel service URL. No HTML/JS route or API metadata was exposed in the official description.",
+      "fullPolygonLimit": 3,
+      "fullPolygonsRetained": 0,
+      "ownerOrAddressDataRequested": false,
+      "credentialsOrTokenValuesRetained": false
+    },
+    "attemptedGeometry": {
+      "fullPolygonLimit": 3,
+      "fullPolygonsRetained": 0,
+      "outcome": "No city parcel vector endpoint was identified; no geometry request was made."
+    }
+  },
+  "verifiedParcelResponse": null,
+  "source": null,
+  "wupCityCode": 3089,
+  "cityId": "wup2025:3089",
+  "queueRank": 324,
+  "populationPlausibility2025": "High",
+  "centerLatLon": [
+    21.9461573417692,
+    96.0967576879826
+  ],
+  "sourceIds": [],
+  "rootReviewedAt": "2026-10-08T22:32:25.810538+00:00"
+}

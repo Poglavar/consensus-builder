@@ -1,0 +1,19 @@
+{
+  "featureCount": 2,
+  "features": [
+    {
+      "id": "CA-WINNIPEG-GISID-71708",
+      "exactGeometryMatch": true,
+      "hausdorffDistanceM": 0.0,
+      "symmetricDifferenceM2": 0.0
+    },
+    {
+      "id": "CA-WINNIPEG-GISID-642648",
+      "exactGeometryMatch": true,
+      "hausdorffDistanceM": 0.0,
+      "symmetricDifferenceM2": 0.0
+    }
+  ],
+  "sourceCoordinatesModified": false,
+  "fullGeometryRetainedInReview": false
+}

@@ -1,0 +1,20 @@
+{
+  "schemaVersion": 1,
+  "checkedAt": "2026-10-09T02:43:18.636181+00:00",
+  "purpose": "Root public-source identity, topology and verified TLS review.",
+  "decision": "approved_by_root",
+  "scope": "143 valid distinct JUPEM Penang cadastral-reference lots verified in thirteen bounded 0.001-degree cells around the unchanged George Town metropolitan WUP locator. The Forestry government GIS host supplies native UPI identity and FID transport IDs; variable-length native UPI strings are preserved without padding, truncation or substitution. Complete object-ID manifests, forced three-row geometry pages (56 parcels over 19 pages), all 143 fresh native-ID reads, explicit absence, footprint and source binding passed in 80 requests. Independent metric EPSG:32647 GEOS found all geometries valid and distinct, with no sampled overlaps above 0.01 m\u00b2 or operation errors. The missing TLS intermediate is supplied from the official GlobalSign CA with certificate and hostname verification enabled for every runtime request; no runtime verification bypass is used. The publisher credits JUPEM 2020 and declares source CRS as ArcGIS WKID 102062; explicit EPSG:4326 output is retained unchanged. This is bounded metropolitan reference geometry, without claims of George Town municipal-only or citywide completeness, legal title, currentness, survey accuracy or long-term key continuity.",
+  "sourceCoordinatesModified": false,
+  "acceptanceFile": "georgetown-forestry-root-acceptance.json",
+  "qualityFile": "georgetown-forestry-root-quality.json",
+  "tls": {
+    "leafHostname": "*.forestry.gov.my",
+    "intermediateSubject": "GlobalSign RSA OV SSL CA 2018",
+    "issuer": "GlobalSign Root CA - R3",
+    "issuerDownload": "https://secure.globalsign.com/cacert/gsrsaovsslca2018.crt",
+    "intermediateDerSha256": "b676ffa3179e8812093a1b5eafee876ae7a6aaf231078dad1bfb21cd2893764a",
+    "intermediatePemFile": "backend/parcels/certificates/globalsign-rsa-ov-ssl-ca-2018.pem",
+    "rejectUnauthorized": true,
+    "runtimeRequestsVerified": 80
+  }
+}

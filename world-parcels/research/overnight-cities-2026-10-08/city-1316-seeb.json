@@ -1,0 +1,101 @@
+{
+  "name": "Seeb",
+  "country": "Oman",
+  "countryCode": "OM",
+  "rank": 861,
+  "point": [
+    23.6356026368553,
+    58.1909434549192
+  ],
+  "population2025": 630072,
+  "population2025k": 630.072,
+  "populationUnit": "persons",
+  "populationPlausibility2025": "High",
+  "schemaVersion": 1,
+  "kind": "city_parcel_source_research",
+  "checkedAt": "2026-10-09",
+  "status": "complete",
+  "registryFound": true,
+  "registryBasis": "Official Ministry site lists land and real-estate registry services and identifies Sultan Haitham City in Wilayat Seeb.",
+  "registryEvidenceUrls": [
+    "https://mohup.gov.om/",
+    "https://geoportal.mm.gov.om/server/rest/services/SeebContract_MIL1/MapServer?f=pjson",
+    "https://geoportal.mm.gov.om/server/rest/services/SeebContract_MIL1/MapServer/11?f=pjson",
+    "https://gov.om/w/get-cadastral-drawing"
+  ],
+  "publicParcelGeometryFound": false,
+  "verifiedSample": false,
+  "runtimeReadiness": "not_enabled_no_verified_public_geometry",
+  "adapterReady": false,
+  "priorEvidenceFiles": [],
+  "scopeLimits": "City-local source discovery only. No full parcel geometry was retained. No owner, address, account/tax identifier, credential, or token value was requested or retained. Citywide/countrywide completeness and runtime suitability are not assessed.",
+  "pointBasis": "UN WUP 2025 population-weighted settlement centroid; this is not a municipal boundary or a parcel-coverage claim.",
+  "resultCategory": "official_local_registry_candidate_geometry_unverified",
+  "technicalBlocker": "The exact official public layer metadata returns an ArcGIS Token Required error code499 inside HTTP200. The actual layer schema and safe native identifier are not exposed anonymously; no feature request is made. The research-tool HTTP403 and direct provider auth envelope are retained separately. Planning/cadastral legal-authority caveats are informational and are not the access gate.",
+  "remainingUncertainty": "Whether this Seeb planning/contract plot layer is a legally authoritative cadastral source, and whether a public safe-key schema can be accessed, remains unknown.",
+  "nextStep": "No runtime qualification was attempted. If more discovery is needed, inspect first-party service metadata and retain geometry only after confirming a safe native feature identifier.",
+  "freshResearch": {
+    "queries": [
+      {
+        "language": "English",
+        "query": "Seeb Oman official cadastral land registry plot map GIS public parcels",
+        "scope": "Find city-local registration/cadastral-map evidence and determine whether anonymous schema-safe parcel geometry is available.",
+        "result": "The Ministry of Housing and Urban Planning provides national land and real-estate services. Its official geoportal indexes a SeebContract_MIL1 map service with a polygon layer named MUSCAT.Plots. The service root metadata was reachable, but the layer-metadata request returned HTTP 403, preventing safe field/schema review; no feature query was made.",
+        "actualResultUrls": [
+          "https://mohup.gov.om/",
+          "https://geoportal.mm.gov.om/server/rest/services/SeebContract_MIL1/MapServer?f=pjson",
+          "https://geoportal.mm.gov.om/server/rest/services/SeebContract_MIL1/MapServer/11?f=pjson",
+          "https://gov.om/w/get-cadastral-drawing"
+        ],
+        "executionMethod": "Separate language-specific web search and official source review; no owner/property-specific query."
+      },
+      {
+        "language": "Arabic",
+        "query": "السيب عمان خريطة قطع أراضي سجل عقاري نظام معلومات جغرافية رسمي",
+        "scope": "Find city-local registration/cadastral-map evidence and determine whether anonymous schema-safe parcel geometry is available.",
+        "result": "تقدم وزارة الإسكان والتخطيط العمراني خدمات الأراضي والتسجيل العقاري على المستوى الوطني. وتعرض بيانات البوابة الجغرافية الرسمية خدمة SeebContract_MIL1 وطبقة مضلعات باسم MUSCAT.Plots؛ نجح طلب بيانات الخدمة الرئيسية، لكن طلب بيانات الطبقة أعاد HTTP 403، لذلك لم يمكن التحقق من الحقول بأمان ولم يُجر طلب معالم.",
+        "actualResultUrls": [
+          "https://mohup.gov.om/",
+          "https://geoportal.mm.gov.om/server/rest/services/SeebContract_MIL1/MapServer?f=pjson",
+          "https://geoportal.mm.gov.om/server/rest/services/SeebContract_MIL1/MapServer/11?f=pjson",
+          "https://gov.om/w/get-cadastral-drawing"
+        ],
+        "executionMethod": "Separate language-specific web search and official source review; no owner/property-specific query."
+      }
+    ]
+  },
+  "officialSources": [
+    {
+      "url": "https://mohup.gov.om/",
+      "observation": "Official Ministry site lists land and real-estate registry services and identifies Sultan Haitham City in Wilayat Seeb."
+    },
+    {
+      "url": "https://geoportal.mm.gov.om/server/rest/services/SeebContract_MIL1/MapServer?f=pjson",
+      "observation": "Official geoportal service metadata lists polygon layer MUSCAT.Plots and spatial reference EPSG:32640; it does not provide a reviewed safe field schema."
+    },
+    {
+      "url": "https://geoportal.mm.gov.om/server/rest/services/SeebContract_MIL1/MapServer/11?f=pjson",
+      "observation": "Layer-metadata request through the public research tool returned HTTP 403; no query or feature data requested."
+    },
+    {
+      "url": "https://gov.om/w/get-cadastral-drawing",
+      "observation": "Gov.om describes the cadastral-drawing application service for land."
+    }
+  ],
+  "verifiedParcelResponse": null,
+  "wupCityCode": 1316,
+  "cityId": "wup2025:1316",
+  "queueRank": 861,
+  "centerLatLon": [
+    23.6356026368553,
+    58.1909434549192
+  ],
+  "sourceIds": [],
+  "runtimeAssessment": {
+    "status": "not_enabled_schema_authentication_required",
+    "reason": "The exact official public layer metadata returns an ArcGIS Token Required error code499 inside HTTP200. The actual layer schema and safe native identifier are not exposed anonymously; no feature request is made. The research-tool HTTP403 and direct provider auth envelope are retained separately. Planning/cadastral legal-authority caveats are informational and are not the access gate.",
+    "rootEvidenceFile": "research/overnight-cities-2026-10-08/seeb-root-layer-schema.json"
+  },
+  "rootPrimarySupplement": "The official municipal service name identifies Seeb and a plots layer, while the Ministry and government cadastral-drawing service document administrative land-mapping/registration functions. No wider plot coverage or title accuracy is inferred from the settlement point.",
+  "rootReviewedAt": "2026-10-09T04:05:24.434873+00:00"
+}

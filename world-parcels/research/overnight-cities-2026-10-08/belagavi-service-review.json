@@ -1,0 +1,85 @@
+{
+  "schemaVersion": 1,
+  "checkedAt": "2026-10-09",
+  "sourceId": "in-belagavi-registry-review",
+  "purpose": "Review city-local registry basis and anonymous geometry-only routes without querying personal/property attributes.",
+  "primaryPublisher": "Belagavi City Corporation; Belagavi District Administration, Government of Karnataka",
+  "sourceUrl": "https://belagavicitycorp.org/WebSiteBGM/ApplicationProcedures.aspx",
+  "registryFound": true,
+  "registryBasis": "Belagavi City Corporation’s application-procedure page requires a CTS extract and map for a trade-licence application, and references a Form III property-tax register extract for building licensing. The Belagavi District Administration separately identifies a Land Records office at the DC Office and links Karnataka’s RTC service. This is city-local survey/record-service evidence; it does not establish an anonymous vector service or a public full-polygon schema.",
+  "officialSources": [
+    {
+      "url": "https://belagavicitycorp.org/WebSiteBGM/ApplicationProcedures.aspx",
+      "observation": "The municipal procedure page lists a CTS extract and map among trade-licence attachments and a Form III property-tax register extract for building licensing. These are local cadastral/municipal record documents, not an open geometry endpoint."
+    },
+    {
+      "url": "https://belagavi.nic.in/en/service/land-records/",
+      "observation": "Belagavi District Administration describes online Pahani/RTC land-record service and gives the District Land Records office location as the DC Office, Belagavi. RTC is a record service; the page does not provide urban parcel vectors."
+    },
+    {
+      "url": "https://belagavi.nic.in/service/%E0%B2%AD%E0%B3%82%E0%B2%AE%E0%B2%BF-%E0%B2%AA%E0%B2%B9%E0%B2%A3%E0%B2%BF%E0%B2%AA%E0%B2%A4%E0%B3%8D%E0%B2%B0%E0%B2%BF%E0%B2%95%E0%B3%86/",
+      "observation": "Kannada-language Belagavi District land-record service page points to the same RTC/Pahani service and local Land Records office."
+    }
+  ],
+  "searchQueries": [
+    {
+      "language": "English",
+      "query": "Belagavi city Karnataka CTS extract map urban land records official municipal corporation",
+      "result": "The city corporation’s published procedures refer to CTS extracts and maps; the district administration identifies a local Land Records office. No safe anonymous full-polygon endpoint or feature schema was exposed.",
+      "urls": [
+        "https://belagavicitycorp.org/WebSiteBGM/ApplicationProcedures.aspx",
+        "https://belagavi.nic.in/en/service/land-records/"
+      ],
+      "scope": "Find official city-specific registry/cadastre evidence and safe anonymous geometry-only routes; do not submit identifiers.",
+      "actualResultUrls": []
+    },
+    {
+      "language": "Kannada",
+      "query": "ಬೆಳಗಾವಿ ನಗರ ಭೂ ದಾಖಲೆ ಭೂಮಾಪನ CTS ನಕ್ಷೆ ಅಧಿಕೃತ ನಗರಪಾಲಿಕೆ",
+      "result": "Kannada-language official district information confirms the Belagavi RTC/Pahani land-record service. Municipal procedures separately reference CTS extracts and maps. No anonymous parcel-vector schema was found.",
+      "urls": [
+        "https://belagavi.nic.in/service/%E0%B2%AD%E0%B3%82%E0%B2%AE%E0%B2%BF-%E0%B2%AA%E0%B2%B9%E0%B2%A3%E0%B2%BF%E0%B2%AA%E0%B2%A4%E0%B3%8D%E0%B2%B0%E0%B2%BF%E0%B2%95%E0%B3%86/",
+        "https://belagavicitycorp.org/WebSiteBGM/ApplicationProcedures.aspx"
+      ],
+      "scope": "Find official city-specific registry/cadastre evidence and safe anonymous geometry-only routes; do not submit identifiers.",
+      "actualResultUrls": []
+    }
+  ],
+  "accessReview": {
+    "publicAnonymousGeometryVerified": false,
+    "completeGeoreferencedPolygonCount": 0,
+    "geometryRetained": false,
+    "ownerAddressTaxOrPersonLookupRequested": false,
+    "authenticationOrCredentialsUsed": false,
+    "captchaOrPersonalFormSubmitted": false,
+    "routeInspectionStatus": "city_local_records_verified_no_public_geometry_contract",
+    "reason": "The municipal source establishes CTS/map documents used in city processes, but the reviewed pages expose no anonymous map layer, vector endpoint, or safe geometry-only field allowlist. No parcel number, owner, address, or property form was submitted.",
+    "nativeIdsUsed": "No safe parcel feature identifier retrieved; no feature attributes requested."
+  },
+  "requestEvidence": [
+    {
+      "url": "https://belagavicitycorp.org/WebSiteBGM/ApplicationProcedures.aspx",
+      "method": "official public page/document review",
+      "status": "status_not_exposed_by_web_open",
+      "httpStatusObtained": false,
+      "observation": "The municipal procedure page lists a CTS extract and map among trade-licence attachments and a Form III property-tax register extract for building licensing. These are local cadastral/municipal record documents, not an open geometry endpoint."
+    },
+    {
+      "url": "https://belagavi.nic.in/en/service/land-records/",
+      "method": "official public page/document review",
+      "status": "status_not_exposed_by_web_open",
+      "httpStatusObtained": false,
+      "observation": "Belagavi District Administration describes online Pahani/RTC land-record service and gives the District Land Records office location as the DC Office, Belagavi. RTC is a record service; the page does not provide urban parcel vectors."
+    },
+    {
+      "url": "https://belagavi.nic.in/service/%E0%B2%AD%E0%B3%82%E0%B2%AE%E0%B2%BF-%E0%B2%AA%E0%B2%B9%E0%B2%A3%E0%B2%BF%E0%B2%AA%E0%B2%A4%E0%B3%8D%E0%B2%B0%E0%B2%BF%E0%B2%95%E0%B3%86/",
+      "method": "official public page/document review",
+      "status": "status_not_exposed_by_web_open",
+      "httpStatusObtained": false,
+      "observation": "Kannada-language Belagavi District land-record service page points to the same RTC/Pahani service and local Land Records office."
+    }
+  ],
+  "technicalBlocker": "The municipal source establishes CTS/map documents used in city processes, but the reviewed pages expose no anonymous map layer, vector endpoint, or safe geometry-only field allowlist. No parcel number, owner, address, or property form was submitted.",
+  "sampleDisposition": "No parcel geometry or feature attributes retained.",
+  "remainingUncertainty": "Whether Belagavi City Corporation or the State Survey, Settlement and Land Records Department publishes an anonymous full-polygon urban CTS layer; whether such coverage includes the WUP point."
+}

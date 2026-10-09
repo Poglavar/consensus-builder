@@ -1,0 +1,338 @@
+{
+  "name": "Sargodha",
+  "country": "Pakistan",
+  "countryCode": "PK",
+  "rank": 452,
+  "point": [
+    32.0741373423495,
+    72.6818543153866
+  ],
+  "freshResearch": {
+    "queries": [
+      {
+        "language": "Urdu",
+        "query": "سرگودھا اراضی ریکارڈ سنٹر تحصیل سرگودھا زمین ریکارڈ سرکاری",
+        "scope": "Identify first-party Sargodha cadastral-record service and local record office.",
+        "result": "District Revenue Office lists the Arazi Record Center Tehsil Sargodha; PLRA notification states computerized record-of-rights work and current registers are held at the local center. The PULSE public map has a Sargodha district cadastral layer.",
+        "urls": [
+          "https://sargodha.punjab.gov.pk/revenue-office",
+          "https://www.punjab-zameen.gov.pk/assets/documents/notifications/TehsilSargodha01mouza.pdf",
+          "https://lis.pulse.gop.pk/"
+        ]
+      },
+      {
+        "language": "English",
+        "query": "Sargodha Pakistan official land records cadastral map public PULSE Sargodha parcel GIS",
+        "scope": "Cross-check official city-bound service and public geometry endpoint.",
+        "result": "Official PULSE viewer source references Punjab Cadastral Maps MapServer and its Sargodha sublayer; the Sargodha feature layer returns full polygon geometry at the WUP point through its public-reader bootstrap token.",
+        "urls": [
+          "https://lis.pulse.gop.pk/",
+          "https://gismaps.punjab-zameen.gov.pk/arcgis/rest/services/VendorMaps/Punjab_Cdastral_Maps/MapServer/30"
+        ]
+      }
+    ],
+    "portals": [
+      {
+        "name": "Arazi Record Center Tehsil Sargodha",
+        "operator": "District Administration Sargodha / Punjab Land Records Authority",
+        "homeUrl": "https://sargodha.punjab.gov.pk/revenue-office",
+        "observation": "Official district revenue office lists the Tehsil Sargodha record center. PLRA notice documents computerized record-of-rights and current registers at that local center."
+      },
+      {
+        "name": "PULSE public land information system",
+        "operator": "Punjab Urban Land Systems Enhancement Project / PLRA",
+        "homeUrl": "https://lis.pulse.gop.pk/",
+        "observation": "Public viewer lists Sargodha and cadastral/parcels layers. Viewer disclaimer says mapped lines are indicative rather than a legal boundary; complete parcel details require login. Public-reader GIS token bootstrap is available from the viewer."
+      }
+    ],
+    "requests": [
+      {
+        "url": "https://lis.pulse.gop.pk/",
+        "method": "GET",
+        "httpStatus": 200,
+        "contentType": "text/html",
+        "observation": "Public viewer shell; source identifies ArcGIS REST services and explicitly offers Continue as Public User."
+      },
+      {
+        "url": "https://lis.pulse.gop.pk/api/gis/token",
+        "method": "GET",
+        "httpStatus": 200,
+        "contentType": "application/json",
+        "observation": "Intended viewer token bootstrap returned a short-lived public-reader token; token value not retained."
+      },
+      {
+        "url": "https://gismaps.punjab-zameen.gov.pk/arcgis/rest/services/VendorMaps/Punjab_Cdastral_Maps/MapServer/30?f=pjson",
+        "method": "GET",
+        "httpStatus": 200,
+        "contentType": "text/plain",
+        "observation": "Metadata identifies the Sargodha Feature Layer, geometry type Polygon, EPSG:3857 source, object ID field OBJECTID, 2,000 max records; sensitive parcel fields were not queried."
+      },
+      {
+        "url": "https://gismaps.punjab-zameen.gov.pk/arcgis/rest/services/VendorMaps/Punjab_Cdastral_Maps/MapServer/30/query",
+        "method": "GET",
+        "httpStatus": 200,
+        "contentType": "application/json",
+        "observation": "Three bounded point queries requested only OBJECTID plus full geometry, returnGeometry=true, outSR=4326. Exact WUP point hit one polygon; other two bounded nearby checks also returned one full polygon each. No owner, address, title, tax, or parcel attribute values requested."
+      }
+    ]
+  },
+  "status": "complete",
+  "source": {
+    "sourceId": "pk-pb-sargodha-pulse-cadastral",
+    "name": "Punjab Cadastral Maps — Sargodha Feature Layer",
+    "url": "https://lis.pulse.gop.pk/",
+    "operator": "Punjab Urban Land Systems Enhancement Project / Punjab Land Records Authority; district record custodian is the Sargodha Arazi Record Center.",
+    "serviceType": "Public ArcGIS REST MapServer query using viewer-provided public-reader token bootstrap.",
+    "layer": "VendorMaps/Punjab_Cdastral_Maps/MapServer/30 (Sargodha)",
+    "geometryType": "POLYGON",
+    "nativeIdField": "OBJECTID",
+    "outputCrs": "WGS 84 longitude/latitude requested; service layer metadata source EPSG:3857",
+    "nativeIdEvidence": "Layer schema declares OBJECTID as OID; geometry-only spatial responses returned IDs 8559909, 8559606, and 7308181."
+  },
+  "coverageAssessment": {
+    "claimedScope": "Official Sargodha local revenue office and PLRA records establish city-bound registry activity. PULSE Sargodha layer returned a full parcel polygon at the exact WUP point and two nearby checks. Portal describes its map lines as indicative and says complete parcel details require login; no legal-boundary or citywide completeness claim is made.",
+    "verifiedOpenScope": "Official Sargodha local revenue office and PLRA records establish city-bound registry activity. PULSE Sargodha layer returned a full parcel polygon at the exact WUP point and two nearby checks. Portal describes its map lines as indicative and says complete parcel details require login; no legal-boundary or citywide completeness claim is made.",
+    "countrywideVerified": false
+  },
+  "registryFound": true,
+  "verifiedSample": true,
+  "resultCategory": "verified_public_geometry_runtime_candidate",
+  "technicalBlocker": "Public-viewer bootstrap and safe ArcGIS geometry reads pass without account login. Thirteen bounded cells, forced paging, all seven fresh OIDs, absence, and a 16.8 m² WUP-centered site pass. Full sampled parcel footprints fail closed: one envelope count is 11 but its ID manifest has 10 entries; the smallest tested envelope count is 8 but has 7 IDs. Arbitrary footprint lookup and source binding therefore remain unqualified. No runtime source is enabled. All seven sampled full geometries are valid and distinct with no material overlap in EPSG:32643. Viewer notices and non-legal OBJECTID identity are informational; no token value is retained.",
+  "remainingUncertainty": "PULSE map is explicitly indicative, not a legal boundary; no authoritative boundary or completeness assurance. Geometry ID is service OBJECTID rather than legal parcel identifier.",
+  "nextStep": "Retain complete-manifest failures for publisher review; qualify arbitrary footprint retrieval before implementing a bounded public-token runtime wrapper.",
+  "schemaVersion": 1,
+  "checkedAt": "2026-10-09",
+  "wupCityCode": 7349,
+  "cityId": "wup2025:7349",
+  "runtimeReadiness": "held_protocol_review",
+  "adapterReady": false,
+  "centerLatLon": [
+    32.0741373423495,
+    72.6818543153866
+  ],
+  "queueRank": 452,
+  "population2025": 1142723,
+  "populationPlausibility2025": "High",
+  "populationUnit": "persons",
+  "pointBasis": "UN WUP 2025 population-weighted settlement centroid; this is not a municipal boundary or a parcel-coverage claim.",
+  "publicParcelGeometryFound": true,
+  "rootReviewedAt": "2026-10-09T00:27:07.816662+00:00",
+  "sourceIds": [
+    "pk-pb-sargodha-pulse-cadastral"
+  ],
+  "verifiedParcelResponse": {
+    "url": "https://gismaps.punjab-zameen.gov.pk/arcgis/rest/services/VendorMaps/Punjab_Cdastral_Maps/MapServer/30/query",
+    "httpStatus": 200,
+    "contentType": "application/json",
+    "featureCount": 3,
+    "geometryType": "POLYGON",
+    "outputCrs": "WGS 84 longitude/latitude",
+    "fullGeometryReturned": true,
+    "clipped": false,
+    "requestSemantics": "ArcGIS MapServer layer query: where=1=1, geometry=<point>, geometryType=esriGeometryPoint, inSR=4326, spatialRel=esriSpatialRelIntersects, outFields=OBJECTID, returnGeometry=true, outSR=4326, resultRecordCount=4. Layer metadata advertises pagination and maxRecordCount 2,000; citywide enumeration completeness not tested.",
+    "samples": [
+      {
+        "featureId": "8559909",
+        "locationBasis": "Exact UN WUP 2025 weighted point [32.0741373423495,72.6818543153866]",
+        "geometryType": "POLYGON",
+        "outputCrs": "WGS 84 longitude/latitude",
+        "coordinates": [
+          [
+            [
+              72.68444051478636,
+              32.07325922575939
+            ],
+            [
+              72.68336096708862,
+              32.072066308064855
+            ],
+            [
+              72.68274787678868,
+              32.07207994827922
+            ],
+            [
+              72.68274688954017,
+              32.07207997035449
+            ],
+            [
+              72.68094360155737,
+              32.07212007496305
+            ],
+            [
+              72.6796887467336,
+              32.07296116316727
+            ],
+            [
+              72.67989460376579,
+              32.07318865515191
+            ],
+            [
+              72.6803279896864,
+              32.07366758407628
+            ],
+            [
+              72.68076137920029,
+              32.074146512775535
+            ],
+            [
+              72.68119477410407,
+              32.07462543896611
+            ],
+            [
+              72.68162817349942,
+              32.075104364931406
+            ],
+            [
+              72.68206157738635,
+              32.0755832891491
+            ],
+            [
+              72.68249498576482,
+              32.07606221161922
+            ],
+            [
+              72.68269002079278,
+              32.07627772633086
+            ],
+            [
+              72.68325250090795,
+              32.07590869936089
+            ],
+            [
+              72.68381497742983,
+              32.07553967014021
+            ],
+            [
+              72.68437744946016,
+              32.07517063790754
+            ],
+            [
+              72.68493991699887,
+              32.074801602662944
+            ],
+            [
+              72.68550237914774,
+              32.07443256440628
+            ],
+            [
+              72.68530734142482,
+              32.074217053718215
+            ],
+            [
+              72.6848739258598,
+              32.07373814061248
+            ],
+            [
+              72.68444051478636,
+              32.07325922575939
+            ]
+          ]
+        ]
+      },
+      {
+        "featureId": "8559606",
+        "locationBasis": "Bounded nearby check at [32.07,72.68] within the same Sargodha urban area",
+        "geometryType": "POLYGON",
+        "outputCrs": "WGS 84 longitude/latitude",
+        "coordinates": [
+          [
+            [
+              72.68054001724629,
+              32.06894893248678
+            ],
+            [
+              72.68010665108861,
+              32.06847000396821
+            ],
+            [
+              72.67954420600776,
+              32.068839019093126
+            ],
+            [
+              72.67898175643532,
+              32.06920803120644
+            ],
+            [
+              72.67875677606735,
+              32.06935563533039
+            ],
+            [
+              72.67919013863178,
+              32.0698345675843
+            ],
+            [
+              72.67962350568777,
+              32.07031349885235
+            ],
+            [
+              72.6797210142186,
+              32.070421258479634
+            ],
+            [
+              72.6799459963832,
+              32.07027365226962
+            ],
+            [
+              72.68050844865058,
+              32.06990463608281
+            ],
+            [
+              72.68107089732469,
+              32.06953561764561
+            ],
+            [
+              72.68097338789556,
+              32.06942785925835
+            ],
+            [
+              72.68054001724629,
+              32.06894893248678
+            ]
+          ]
+        ]
+      },
+      {
+        "featureId": "7308181",
+        "locationBasis": "Bounded nearby check at [32.08,72.70] within Sargodha district layer extent",
+        "geometryType": "POLYGON",
+        "outputCrs": "WGS 84 longitude/latitude",
+        "coordinates": [
+          [
+            [
+              72.69925890991416,
+              32.0797508454457
+            ],
+            [
+              72.69968974641598,
+              32.080231466275436
+            ],
+            [
+              72.70021191014119,
+              32.07989215839023
+            ],
+            [
+              72.69978107184274,
+              32.07941153882105
+            ],
+            [
+              72.69925890991416,
+              32.0797508454457
+            ]
+          ]
+        ]
+      }
+    ],
+    "attributePolicy": "Retained geometry and service object IDs only; no cadastral khasra, owner, address, title, or value fields queried or retained."
+  },
+  "registryBasis": "Official Sargodha district revenue-office listing and PLRA notice identify the local Tehsil Sargodha Arazi Record Center; PULSE supplies a Sargodha-specific cadastral layer.",
+  "runtimeAssessment": {
+    "status": "held_protocol_review",
+    "reason": "Public-viewer bootstrap and safe ArcGIS geometry reads pass without account login. Thirteen bounded cells, forced paging, all seven fresh OIDs, absence, and a 16.8 m² WUP-centered site pass. Full sampled parcel footprints fail closed: one envelope count is 11 but its ID manifest has 10 entries; the smallest tested envelope count is 8 but has 7 IDs. Arbitrary footprint lookup and source binding therefore remain unqualified. No runtime source is enabled. All seven sampled full geometries are valid and distinct with no material overlap in EPSG:32643. Viewer notices and non-legal OBJECTID identity are informational; no token value is retained.",
+    "acceptanceFile": "research/overnight-cities-2026-10-08/sargodha-pulse-parcels-acceptance.json",
+    "qualityFile": "research/overnight-cities-2026-10-08/sargodha-pulse-parcels-quality.json"
+  },
+  "registryEvidenceUrls": [
+    "https://sargodha.punjab.gov.pk/revenue-office",
+    "https://www.punjab-zameen.gov.pk/assets/documents/notifications/TehsilSargodha01mouza.pdf"
+  ]
+}

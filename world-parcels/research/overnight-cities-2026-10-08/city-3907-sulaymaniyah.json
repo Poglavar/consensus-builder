@@ -1,0 +1,95 @@
+{
+  "name": "Sulaymaniyah",
+  "country": "Iraq",
+  "countryCode": "IQ",
+  "rank": 569,
+  "point": [
+    35.564997435463,
+    45.4163644152074
+  ],
+  "population2025": 907815,
+  "populationUnit": "persons",
+  "population2025k": 907.815,
+  "populationPlausibility2025": "High",
+  "schemaVersion": 1,
+  "checkedAt": "2026-10-09",
+  "status": "complete",
+  "registryFound": true,
+  "registryBasis": "Official Kurdistan Regional Government services list the first and second Sulaymaniyah Property Registration Directorates, property-record services, and boundary-demarcation services. These are owner-submitted official procedures; no anonymous parcel viewer was identified.",
+  "registryEvidenceUrls": [
+    "https://services.gov.krd/ku/service/moj-06-ku",
+    "https://services.gov.krd/en/service/moj-09-en"
+  ],
+  "publicParcelGeometryFound": false,
+  "verifiedSample": false,
+  "verifiedParcelResponse": null,
+  "freshResearch": {
+    "queries": [
+      {
+        "language": "English",
+        "query": "Sulaymaniyah official land registry cadastral map property registration Kurdistan Region parcel map GIS",
+        "scope": "Find Sulaymaniyah-specific registry offices and an anonymous public parcel geometry source.",
+        "result": "Kurdistan Regional Government service pages list the first and second Sulaymaniyah Property Registration Directorates and provide property-registration/boundary-demarcation procedures. The services concern owner-submitted official records and maps; no anonymous parcel viewer or vector service was found.",
+        "actualResultUrls": [
+          "https://services.gov.krd/en/service/moj-09-en",
+          "https://services.gov.krd/ar/service/moj-01-ar",
+          "https://services.gov.krd/ku/service/moj-06-ku"
+        ],
+        "executionMethod": "Separate English search followed by official KRG service page review; no owner lookup, account, or login was attempted."
+      },
+      {
+        "language": "Kurdish (Sorani)",
+        "query": "سلێمانی نەخشەی کاداستر تۆمارکردنی خانووبەرە بەڕێوەبەرایەتی فەرمی",
+        "scope": "دۆزینەوەی فەرمانگەی تۆمارکردنی موڵکی سلێمانی و هەبوونی نەخشەی پارسێلی گشتی.",
+        "result": "خزمەتگوزارییە فەرمییەکانی حکومەتی هەرێم ناونیشانی بەڕێوەبەرایەتی تۆمارکردنی خانووبەرەی یەکەم و دووەمی سلێمانی پیشان دەدەن و خزمەتی دیاریکردنی سنووری موڵک باس دەکەن. نەخشەی ڤێکتەری پارسێلی بێ‌هەژمار نەدۆزرایەوە.",
+        "actualResultUrls": [
+          "https://services.gov.krd/ku/service/moj-06-ku",
+          "https://services.gov.krd/en/service/moj-09-en"
+        ],
+        "executionMethod": "گەڕانی سۆرانیی جیاواز و پشکنینی پەڕەکانی خزمەتگوزاریی فەرمی؛ هیچ زانیاریی خاوەن موڵک نەگەڕدرا."
+      },
+      {
+        "language": "Arabic",
+        "query": "السليمانية دائرة التسجيل العقاري خريطة عقارية كادسترية خدمة رسمية",
+        "scope": "العثور على دوائر التسجيل العقاري في السليمانية وخريطة قطع عامة.",
+        "result": "تؤكد بوابة حكومة إقليم كردستان وجود مديريتين للتسجيل العقاري في السليمانية وخدمات رسمية لتسجيل الملكية وتثبيت الحدود. الخدمة تستلزم مستندات/مراجعة للمالك؛ لم نعثر على طبقة قطع أو هندسة متاحة بلا تسجيل.",
+        "actualResultUrls": [
+          "https://services.gov.krd/ar/service/moj-01-ar",
+          "https://services.gov.krd/en/service/moj-09-en"
+        ],
+        "executionMethod": "بحث عربي مستقل ومراجعة صفحات الخدمات الحكومية؛ لم تُجرَ أي مطالبة باسم مالك أو دخول إلى حساب."
+      }
+    ]
+  },
+  "source": {
+    "sourceId": "IQ-3907-SULAYMANIYAH-LAND-REGISTRY",
+    "name": "Sulaymaniyah Property Registration Directorates",
+    "url": "https://services.gov.krd/ku/service/moj-06-ku",
+    "operator": "Kurdistan Regional Government Ministry of Justice / General Directorate of Property Registration",
+    "serviceType": "Local property registration, record-copy and boundary-demarcation services; no anonymous public parcel feature service verified",
+    "layer": null,
+    "geometryType": null,
+    "outputCrs": null,
+    "nativeIdField": null,
+    "nativeIdEvidence": "KRG service pages list the two local registration directorates and explain procedures requiring the applicant’s property record and verification. No public feature identifier/geometry response was queried."
+  },
+  "coverageAssessment": {
+    "claimedScope": "Official Kurdistan Regional Government services list the first and second Sulaymaniyah Property Registration Directorates, property-record services, and boundary-demarcation services. These are owner-submitted official procedures; no anonymous parcel viewer was identified.",
+    "verifiedOpenScope": "Local registry/cadastre service exists, but anonymous full parcel geometry and exact WUP coverage remain unverified.",
+    "countrywideVerified": false
+  },
+  "resultCategory": "official_local_registry_geometry_not_verified",
+  "technicalBlocker": "Official local registration services exist, but no anonymous city parcel map or vector service was found. The KRG procedures require property documents and owner verification for property-specific records.",
+  "remainingUncertainty": "Official local registration services exist, but no anonymous city parcel map or vector service was found. The KRG procedures require property documents and owner verification for property-specific records.",
+  "pointBasis": "UN WUP 2025 population-weighted settlement centroid; this is not a municipal boundary or a parcel-coverage claim.",
+  "wupCityCode": 3907,
+  "cityId": "wup2025:3907",
+  "centerLatLon": [
+    35.564997435463,
+    45.4163644152074
+  ],
+  "queueRank": 569,
+  "sourceIds": [],
+  "rootReviewedAt": "2026-10-09T01:39:35.583478+00:00",
+  "runtimeReadiness": "not_enabled_no_verified_public_geometry"
+}

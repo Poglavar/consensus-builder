@@ -1,0 +1,124 @@
+{
+  "name": "Uyo",
+  "country": "Nigeria",
+  "countryCode": "NG",
+  "rank": 316,
+  "point": [
+    4.9949744304622,
+    7.90703158622981
+  ],
+  "freshResearch": {
+    "queries": [
+      {
+        "language": "English",
+        "query": "Uyo Akwa Ibom official public land registry cadastral parcel map GIS AkwaGIS online survey plan public map",
+        "result": "The official AkwaGIS portal says it manages the Akwa Ibom State land registry and the FAQ identifies the Ministry of Lands in Uyo. Its public land-search page shows an example Uyo Land PIN and says parcel polygons/beacons appear in paid record extracts after a free PIN/plan validation. This statewide lookup is not an anonymous open map/API and no record was searched.",
+        "urls": [
+          "https://akwagis.akwaibomstate.gov.ng/",
+          "https://akwagis.akwaibomstate.gov.ng/land-search",
+          "https://akwagis.akwaibomstate.gov.ng/faqs",
+          "https://akwagis.ak.gov.ng/assets/images/TOR%20AKWAGIS.pdf"
+        ],
+        "method": "Separate English web search and first-party state portal/FAQ inspection; no PIN submitted, account created, or payment made."
+      },
+      {
+        "language": "Ibibio (local-language terms)",
+        "query": "Uyo Ibibio isigung ndöñọ akwa ibom ufọk isung usọ se land survey parcel map",
+        "result": "The mixed Ibibio/local-term search did not surface an independent city-local registry or public parcel service. The first-party AkwaGIS source remains the state-wide service; it specifically identifies Ministry of Lands, Uyo and an AK-UYO Land PIN example, but full polygon detail is behind a paid registry lookup.",
+        "urls": [
+          "https://akwagis.akwaibomstate.gov.ng/faqs",
+          "https://akwagis.akwaibomstate.gov.ng/land-search"
+        ],
+        "method": "Separate local-language-term web search; result assessed against first-party portal pages. No record lookup performed."
+      }
+    ],
+    "portals": [
+      {
+        "name": "AkwaGIS land registry public-search page",
+        "operator": "Akwa Ibom State Government / AkwaGIS",
+        "url": "https://akwagis.akwaibomstate.gov.ng/land-search",
+        "observation": "Official service states that parcel polygons and surveyed beacons are shown in paid read-only extracts after matching a supplied Land PIN or plan/COD number. Example PIN is Uyo-prefixed. No search or paid unlock was performed."
+      },
+      {
+        "name": "AkwaGIS FAQ",
+        "operator": "Akwa Ibom State Government",
+        "url": "https://akwagis.akwaibomstate.gov.ng/faqs",
+        "observation": "Identifies AkwaGIS as the statewide land-administration/registry platform and lists the Ministry of Lands, Uyo; this is state-wide rather than a city-bounded registry."
+      },
+      {
+        "name": "Akwa Ibom State AKWAGIS terms of reference",
+        "operator": "Government of Akwa Ibom State",
+        "url": "https://akwagis.ak.gov.ng/assets/images/TOR%20AKWAGIS.pdf",
+        "observation": "Government document describes the state registry digitization initiative and the Office of the State Surveyor General in Uyo Capital."
+      }
+    ],
+    "requests": [
+      {
+        "url": "https://akwagis.akwaibomstate.gov.ng/land-search",
+        "method": "Official web page open",
+        "status": null,
+        "type": "text/html page content",
+        "observation": "Page content exposes the two-stage public search and paid unlock model; no PIN was submitted."
+      },
+      {
+        "url": "https://akwagis.akwaibomstate.gov.ng/faqs",
+        "method": "Official web page open",
+        "status": null,
+        "type": "text/html page content",
+        "observation": "FAQ content identifies AkwaGIS as the official state platform and Ministry of Lands location as Uyo; no geometry response inspected."
+      }
+    ]
+  },
+  "status": "complete",
+  "verifiedParcelResponse": {
+    "httpStatus": null,
+    "featureType": null,
+    "responseType": null,
+    "responseCrs": null,
+    "returnedFullPolygonCount": 0,
+    "uniqueFullPolygonCount": 0,
+    "wupPointContained": null,
+    "limitations": "No anonymous full parcel polygon response was fetched and independently verified."
+  },
+  "source": {
+    "id": null,
+    "name": "AkwaGIS land registry public-search page",
+    "operator": "Akwa Ibom State Government / AkwaGIS",
+    "url": "https://akwagis.akwaibomstate.gov.ng/land-search",
+    "format": "Public map/registry materials; machine-readable vector format not verified",
+    "access": "Official portal reviewed; city-specific registry/cadastral material documented. No credentials, payment or private record lookup used.",
+    "nativeIdField": null,
+    "geometryCrs": null
+  },
+  "coverageAssessment": {
+    "claimedScope": "Akwa Ibom State Government’s official AkwaGIS registry names the Ministry of Lands in Uyo and illustrates Uyo Land PINs; this confirms an official Uyo-facing registry service, while geometry access requires a paid record extract and statewide coverage is not city-bounded.",
+    "verifiedOpenScope": "No anonymous public full-polygon vector endpoint verified.",
+    "countrywideVerified": false,
+    "citywideVerified": false
+  },
+  "registryFound": true,
+  "registryBasis": "Akwa Ibom State Government’s official AkwaGIS registry names the Ministry of Lands in Uyo and illustrates Uyo Land PINs; this confirms an official Uyo-facing registry service, while geometry access requires a paid record extract and statewide coverage is not city-bounded.",
+  "verifiedSample": false,
+  "publicParcelGeometryFound": false,
+  "resultCategory": "official_registry_geometry_not_public",
+  "technicalBlocker": "AkwaGIS requires a known Land PIN or survey plan/COD to validate, then charges ₦500 to unlock map polygons; no open anonymous vector endpoint is documented.",
+  "remainingUncertainty": "AkwaGIS is statewide and the Uyo PIN example/Ministry location establish Uyo-facing service, but do not establish city-bounded coverage or an open geometry feed.",
+  "nextStep": "Seek an official unmetered Uyo-specific cadastral source or published API. Do not submit guessed identifiers, open paid details, or create an account.",
+  "sourceIds": [],
+  "schemaVersion": 1,
+  "checkedAt": "2026-10-09",
+  "wupCityCode": 8223,
+  "cityId": "wup2025:8223",
+  "queueRank": 316,
+  "population2025": 1567115,
+  "populationPlausibility2025": "Moderate",
+  "populationUnit": "persons",
+  "pointBasis": "UN WUP 2025 population-weighted settlement centroid; this is not a municipal boundary or a parcel-coverage claim.",
+  "centerLatLon": [
+    4.9949744304622,
+    7.90703158622981
+  ],
+  "runtimeReadiness": "not_enabled_no_verified_public_geometry",
+  "adapterReady": false,
+  "rootReviewedAt": "2026-10-08T22:24:15.611909+00:00"
+}

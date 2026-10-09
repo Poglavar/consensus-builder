@@ -1,0 +1,100 @@
+{
+  "schemaVersion": 1,
+  "kind": "city_parcel_source_research",
+  "checkedAt": "2026-10-09",
+  "name": "Yingkou",
+  "country": "China",
+  "countryCode": "CN",
+  "populationUnit": "persons",
+  "status": "complete",
+  "registryFound": null,
+  "registryBasis": "The queue label and point conflict: the point is in the Huaihua area of Hunan, whereas the official Yingkou Natural Resources page places Yingkou in Liaoning around 39°55′–40°30′ N and 121°56′44″–123°02′ E. Because the city identity is unresolved, no Yingkou or Huaihua registry is attached to this row.",
+  "registryEvidenceUrls": [
+    "https://zrzyj.yingkou.gov.cn/govxxgk/zrzyj/2021-07-12/95127723-8057-4783-a0e3-559fd77b3136.html",
+    "https://www.huaihua.gov.cn/huaihua/c100191/202504/ede9772e80dd4acaa8f5f484c55d09a1.shtml",
+    "https://www.huaihua.gov.cn/huaihua/c200023/201805/5d5a1d66296449c6ac6e1009b4f808b2.shtml"
+  ],
+  "verifiedSample": false,
+  "publicParcelGeometryFound": false,
+  "runtimeReadiness": "not_enabled_no_verified_public_geometry",
+  "wupCityCode": 9940,
+  "cityId": "wup2025:9940",
+  "centerLatLon": [
+    27.5516903804313,
+    109.958032960774
+  ],
+  "rank": 677,
+  "queueRank": 677,
+  "population2025": 782210,
+  "population2025k": 782.21,
+  "pointBasis": "UN WUP 2025 population-weighted settlement centroid; this is not a municipal boundary or a parcel-coverage claim.",
+  "technicalBlocker": "The row label Yingkou (cityCode 9940) is geographically incompatible with its UN WUP point, which falls near Huaihua, Hunan. No registry has been attached and no parcel route was queried.",
+  "scopeLimits": "Identity review only. Official Yingkou and Huaihua geography pages were checked; no ownership, address, tax, or parcel query was made.",
+  "remainingUncertainty": "A separate code/name crosswalk or source correction is needed before city-specific registry research can be assigned. This packet preserves the queue identity without silently changing it.",
+  "research": {
+    "executedQueries": [
+      {
+        "language": "English",
+        "query": "Yingkou China official city location natural resources registry cadastral map; verify point identity",
+        "scope": "Find city-specific official property registry and safe public full parcel geometry.",
+        "result": "Official Yingkou extent is incompatible with the queued point; official Huaihua location material is consistent with the point. No registry source was attributed because identity is unresolved.",
+        "actualResultUrls": [
+          "https://zrzyj.yingkou.gov.cn/govxxgk/zrzyj/2021-07-12/95127723-8057-4783-a0e3-559fd77b3136.html",
+          "https://www.huaihua.gov.cn/huaihua/c100191/202504/ede9772e80dd4acaa8f5f484c55d09a1.shtml",
+          "https://www.huaihua.gov.cn/huaihua/c200023/201805/5d5a1d66296449c6ac6e1009b4f808b2.shtml"
+        ],
+        "executionMethod": "Web search in the stated language followed by review of official public sources."
+      },
+      {
+        "language": "Chinese (Simplified)",
+        "query": "营口市 官方 经纬度 边界 怀化市 经纬度 官方 不动产登记 地籍图",
+        "scope": "Find city-specific official property registry and safe public full parcel geometry.",
+        "result": "营口市官方资料定位于辽宁东部约北纬40度、东经122度；队列点位于湖南省怀化一带。身份冲突未解决，因此不把任一城市的不动产登记或地籍服务归给该点。",
+        "actualResultUrls": [
+          "https://zrzyj.yingkou.gov.cn/govxxgk/zrzyj/2021-07-12/95127723-8057-4783-a0e3-559fd77b3136.html",
+          "https://www.huaihua.gov.cn/huaihua/c100191/202504/ede9772e80dd4acaa8f5f484c55d09a1.shtml",
+          "https://www.huaihua.gov.cn/huaihua/c200023/201805/5d5a1d66296449c6ac6e1009b4f808b2.shtml"
+        ],
+        "executionMethod": "Web search in the stated language followed by review of official public sources."
+      }
+    ],
+    "officialSources": [
+      {
+        "url": "https://zrzyj.yingkou.gov.cn/govxxgk/zrzyj/2021-07-12/95127723-8057-4783-a0e3-559fd77b3136.html",
+        "observation": "Official Yingkou Natural Resources page gives the municipality’s geographic extent in Liaoning, far from the queued point."
+      },
+      {
+        "url": "https://www.huaihua.gov.cn/huaihua/c100191/202504/ede9772e80dd4acaa8f5f484c55d09a1.shtml",
+        "observation": "Official Huaihua government geographic description places Huaihua in Hunan near the queued point; this does not resolve the cityCode-to-name mismatch."
+      },
+      {
+        "url": "https://www.huaihua.gov.cn/huaihua/c200023/201805/5d5a1d66296449c6ac6e1009b4f808b2.shtml",
+        "observation": "Official Huaihua planning article gives an approximate municipal location consistent with the queued point; no registry inference made."
+      }
+    ],
+    "metadataReviewFile": "yingkou-service-review.json",
+    "routeInspectionFile": "/tmp/overnight-cities-2026-10-08/city-9940-yingkou-route-inspection.json"
+  },
+  "source": {
+    "sourceId": "cn-yingkou-official-local-registry-review",
+    "name": "Yingkou official registry and public mapping route review",
+    "operator": "Yingkou city/district or state official authority",
+    "url": "https://zrzyj.yingkou.gov.cn/govxxgk/zrzyj/2021-07-12/95127723-8057-4783-a0e3-559fd77b3136.html",
+    "scope": "City-specific registry evidence reviewed; no anonymous full-parcel polygon endpoint verified.",
+    "nativeIdField": null,
+    "geometryStatus": "not_verified"
+  },
+  "coverageAssessment": {
+    "verifiedOpenScope": "Official public registry/service information reviewed. No anonymous full parcel geometry was obtained and no sample was retained.",
+    "citywideVerified": false,
+    "countrywideVerified": false
+  },
+  "priorEvidenceFiles": [],
+  "populationPlausibility2025": "Low",
+  "rootReviewedAt": "2026-10-09T02:33:40.013985+00:00",
+  "sourceIds": [],
+  "point": [
+    27.5516903804313,
+    109.958032960774
+  ]
+}

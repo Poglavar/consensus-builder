@@ -1,0 +1,26 @@
+{
+  "checkedAt": "2026-10-08T23:55:41.374Z",
+  "requestedId": "MX-JUA-PREDIO-{00000000-0000-0000-0000-000000000000}",
+  "requests": [
+    {
+      "url": "https://sigimip.org.mx/server/rest/services/CartografiaBase/FeatureServer/3/query?where=GlobalID+IN+%28%27%7B00000000-0000-0000-0000-000000000000%7D%27%29&f=json&returnCountOnly=true",
+      "method": "GET",
+      "httpStatus": 200,
+      "contentType": "application/json; charset=UTF-8",
+      "count": 0
+    },
+    {
+      "url": "https://sigimip.org.mx/server/rest/services/CartografiaBase/FeatureServer/3/query?where=GlobalID+IN+%28%27%7B00000000-0000-0000-0000-000000000000%7D%27%29&f=json&returnIdsOnly=true",
+      "method": "GET",
+      "httpStatus": 200,
+      "contentType": "application/json; charset=UTF-8",
+      "objectIds": null
+    }
+  ],
+  "features": 0,
+  "absentIds": [
+    "MX-JUA-PREDIO-{00000000-0000-0000-0000-000000000000}"
+  ],
+  "complete": true,
+  "passed": true
+}

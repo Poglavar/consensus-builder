@@ -1,0 +1,15 @@
+{
+  "schemaVersion": 1,
+  "checkedAt": "2026-10-08T21:13:55.594128+00:00",
+  "purpose": "Manual headed local verification of the newly qualified Philadelphia parcel entry, without a browser test suite or mocked provider responses.",
+  "url": "http://localhost:5638/?city=philadelphia&backend=http%3A%2F%2Flocalhost%3A5640&reduceMotion=1",
+  "headed": true,
+  "parcelLayers": 866,
+  "selectedParcelId": "US-PA-PHILADELPHIA-DOR-014N080200",
+  "realMouseSelectionPassed": true,
+  "detailsPanelOpened": true,
+  "pageErrors": [],
+  "browserClosed": true,
+  "screenshotCaptured": false,
+  "limits": "Local uncommitted integration. Owner, pricing and display-area attributes are unavailable in this geometry-only feed; no citywide/legal-accuracy guarantee."
+}

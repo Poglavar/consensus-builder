@@ -1,0 +1,72 @@
+{
+  "schemaVersion": 1,
+  "checkedAt": "2026-10-09",
+  "sourceId": "ir-sarvestan-registry-map-review",
+  "purpose": "City-specific registry/map source review and bounded safe route inspection for the WUP ranked settlement point.",
+  "primaryPublisher": "No city-specific primary registry publisher verified",
+  "sourceUrl": "https://cadastre.ssaa.ir/",
+  "registryFound": null,
+  "registryBasis": "No primary city-specific registry source could be verified for Sarvestan. A national cadastre portal candidate timed out; this does not establish its city coverage or indicate absence of a registry.",
+  "officialSources": [
+    {
+      "url": "https://ssaa.ir/",
+      "observation": "National Organization for Registration of Deeds and Properties portal candidate; no city-specific Sarvestan source was identified in this review."
+    },
+    {
+      "url": "https://cadastre.ssaa.ir/",
+      "observation": "Candidate national cadastre portal timed out on a standard anonymous HTTPS GET; no login or retry bypass was attempted."
+    }
+  ],
+  "searchQueries": [
+    {
+      "language": "English",
+      "query": "Sarvestan Fars Iran cadastral land registry map GIS municipal official",
+      "scope": "Find a city-specific primary registry source and a safe anonymous geometry-only route.",
+      "result": "Searches did not identify an official Sarvestan municipality/county cadastral map or a primary local property-register page. The national cadastral portal hostname cadastre.ssaa.ir could not be fetched within a 20-second timeout; no login, credentials, or retry bypass was used. Non-primary listings were not treated as evidence. No public parcel schema, anonymous geometry route, or local registry coverage was verified.",
+      "actualResultUrls": [
+        "https://cadastre.ssaa.ir/",
+        "https://ssaa.ir/"
+      ],
+      "executionMethod": "English-language web search plus direct anonymous inspection of official public routes."
+    },
+    {
+      "language": "Persian",
+      "query": "سامانه حدنگار کاداستر اراضی سازمان ثبت اسناد و املاک کشور نقشه سروستان فارس",
+      "scope": "Find a city-specific primary registry source and a safe anonymous geometry-only route.",
+      "result": "Searches did not identify an official Sarvestan municipality/county cadastral map or a primary local property-register page. The national cadastral portal hostname cadastre.ssaa.ir could not be fetched within a 20-second timeout; no login, credentials, or retry bypass was used. Non-primary listings were not treated as evidence. No public parcel schema, anonymous geometry route, or local registry coverage was verified.",
+      "actualResultUrls": [
+        "https://cadastre.ssaa.ir/",
+        "https://ssaa.ir/"
+      ],
+      "executionMethod": "Local-language search plus review of primary public official pages; no parcel-specific or private lookup."
+    }
+  ],
+  "accessReview": {
+    "publicAnonymousGeometryVerified": false,
+    "completeGeoreferencedPolygonCount": 0,
+    "geometryRetained": false,
+    "ownerAddressTaxOrPersonLookupRequested": false,
+    "authenticationOrCredentialsUsed": false,
+    "captchaOrPersonalFormSubmitted": false,
+    "routeInspectionStatus": "inspected_no_geometry_only_vector_response",
+    "reason": "English and Persian searches found no primary Sarvestan parcel map route. Candidate national cadastre hostname timed out; no private/login route used.",
+    "nativeIdsUsed": "none",
+    "sampleFile": null
+  },
+  "requestEvidence": [
+    {
+      "url": "https://cadastre.ssaa.ir/",
+      "method": "GET",
+      "status": null,
+      "error": "timeout after 20 seconds",
+      "observation": "No page/schema retrieved; no authentication, credentials, or TLS bypass used."
+    }
+  ],
+  "technicalBlocker": "English and Persian searches found no primary Sarvestan parcel map route. Candidate national cadastre hostname timed out; no private/login route used.",
+  "sampleDisposition": "No full parcel polygons retained; no geometry-only feature response verified.",
+  "remainingUncertainty": "No complete georeferenced polygon or native feature ID was verified at the WUP point; public map viewers may provide display-only or identity-dependent workflows not tested.",
+  "viewerClientInspection": {
+    "candidateMapFound": false,
+    "clientInspection": "English and Persian searches found no primary Sarvestan parcel map route. Candidate national cadastre hostname timed out; no private/login route used."
+  }
+}

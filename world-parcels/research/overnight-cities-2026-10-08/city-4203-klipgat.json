@@ -1,0 +1,126 @@
+{
+  "name": "Klipgat",
+  "country": "South Africa",
+  "countryCode": "ZA",
+  "rank": 396,
+  "point": [
+    -25.4785970466047,
+    28.1150225708436
+  ],
+  "freshResearch": {
+    "queries": [
+      {
+        "language": "English",
+        "query": "Klipgat South Africa official cadastral map parcel GIS land registry North West municipality Chief Surveyor General",
+        "scope": "Find official local cadastral registry/map evidence and test anonymous parcel geometry access.",
+        "result": "Anonymous point query against the official CSG-hosted Erven polygon layer returns one active parcel covering the WUP point. A safe exact-ID query returned a valid five-vertex polygon (about 299.9 m² in EPSG:32735). Esri JSON works; the same service’s GeoJSON query returns HTTP 200 with ArcGIS error 400, so the existing GeoJSON-only adapter is incompatible and no production qualification is claimed.",
+        "actualResultUrls": [
+          "https://csg.dlrrd.gov.za/data.htm",
+          "https://dffeportal.environment.gov.za/hosting/rest/services/CSG_Cadaster/CSG_Cadastral_Data/MapServer",
+          "https://moretele.gov.za/documents/moretele-land-use-scheme/"
+        ],
+        "executionMethod": "Separate English and local-language web searches followed by official portal and bounded public service review."
+      },
+      {
+        "language": "Afrikaans",
+        "query": "Klipgat grondkaart landmeter kadaster grond erwe amptelik GIS Noordwes",
+        "scope": "Find official local cadastral registry/map evidence and test anonymous parcel geometry access.",
+        "result": "Anonymous point query against the official CSG-hosted Erven polygon layer returns one active parcel covering the WUP point. A safe exact-ID query returned a valid five-vertex polygon (about 299.9 m² in EPSG:32735). Esri JSON works; the same service’s GeoJSON query returns HTTP 200 with ArcGIS error 400, so the existing GeoJSON-only adapter is incompatible and no production qualification is claimed.",
+        "actualResultUrls": [
+          "https://csg.dlrrd.gov.za/data.htm",
+          "https://dffeportal.environment.gov.za/hosting/rest/services/CSG_Cadaster/CSG_Cadastral_Data/MapServer",
+          "https://moretele.gov.za/documents/moretele-land-use-scheme/"
+        ],
+        "executionMethod": "Separate English and local-language web searches followed by official portal and bounded public service review."
+      },
+      {
+        "language": "English follow-up",
+        "query": "Klipgat Moretele Local Municipality North West official land use map cadastral registry",
+        "scope": "Find official local cadastral registry/map evidence and test anonymous parcel geometry access.",
+        "result": "Anonymous point query against the official CSG-hosted Erven polygon layer returns one active parcel covering the WUP point. A safe exact-ID query returned a valid five-vertex polygon (about 299.9 m² in EPSG:32735). Esri JSON works; the same service’s GeoJSON query returns HTTP 200 with ArcGIS error 400, so the existing GeoJSON-only adapter is incompatible and no production qualification is claimed.",
+        "actualResultUrls": [
+          "https://csg.dlrrd.gov.za/data.htm",
+          "https://dffeportal.environment.gov.za/hosting/rest/services/CSG_Cadaster/CSG_Cadastral_Data/MapServer",
+          "https://moretele.gov.za/documents/moretele-land-use-scheme/"
+        ],
+        "executionMethod": "Separate English and local-language web searches followed by official portal and bounded public service review."
+      }
+    ]
+  },
+  "status": "complete",
+  "verifiedParcelResponse": "klipgat-sample.geojson",
+  "source": {
+    "sourceId": "ZA-4203-PUBLIC-CADASTRE",
+    "name": "Chief Surveyor-General National Cadastral Layer — Erven",
+    "url": "https://dffeportal.environment.gov.za/hosting/rest/services/CSG_Cadaster/CSG_Cadastral_Data/MapServer/2",
+    "operator": "Chief Surveyor-General; Department of Forestry, Fisheries and the Environment hosts the ArcGIS service",
+    "serviceType": "Anonymous ArcGIS REST polygon layer; safe Esri JSON feature queries succeed. GeoJSON output fails with `Failed to execute query`.",
+    "layer": "Chief Surveyor-General National Cadastral Layer — Erven",
+    "geometryType": "Polygon",
+    "outputCrs": "EPSG:4326",
+    "nativeIdField": "PRCL_KEY",
+    "nativeIdEvidence": "One official registered Erven feature covers the exact WUP point. This single exact-point result establishes local sample coverage only, not citywide completeness.",
+    "scope": "201 valid, distinct Chief Surveyor-General Erven references verified in thirteen bounded cells around the unchanged ranked Klipgat WUP locator. The official DFFE-hosted service advertises GeoJSON but rejects that format in actual queries; explicit native Esri JSON queries succeed. A strict reader preserves every straight-ring coordinate and assigns native holes/components without repair; native curve representations and unsupported or ambiguous rings remain unavailable. Complete object-ID manifests, forced three-row paging (42 rows over fourteen pages), all 201 fresh native PRCL_KEY reads, explicit absence, footprint and source binding passed. Independent GEOS audit in EPSG:32735 found no invalid geometries, duplicates, sampled overlaps above 0.01 m² or operation errors. The sampled records all have publisher statuses R/C/E; no guessed lifecycle filter is applied. Citywide completeness, legal title, survey accuracy and broader identity uniqueness remain unverified.",
+    "id": "za-csg-dffe-erven",
+    "endpoint": "https://dffeportal.environment.gov.za/hosting/rest/services/CSG_Cadaster/CSG_Cadastral_Data/MapServer/2"
+  },
+  "coverageAssessment": {
+    "claimedScope": "Official published cadastral/reference polygons; whole-city completeness unverified.",
+    "verifiedOpenScope": "201 valid, distinct Chief Surveyor-General Erven references verified in thirteen bounded cells around the unchanged ranked Klipgat WUP locator. The official DFFE-hosted service advertises GeoJSON but rejects that format in actual queries; explicit native Esri JSON queries succeed. A strict reader preserves every straight-ring coordinate and assigns native holes/components without repair; native curve representations and unsupported or ambiguous rings remain unavailable. Complete object-ID manifests, forced three-row paging (42 rows over fourteen pages), all 201 fresh native PRCL_KEY reads, explicit absence, footprint and source binding passed. Independent GEOS audit in EPSG:32735 found no invalid geometries, duplicates, sampled overlaps above 0.01 m² or operation errors. The sampled records all have publisher statuses R/C/E; no guessed lifecycle filter is applied. Citywide completeness, legal title, survey accuracy and broader identity uniqueness remain unverified.",
+    "citywideVerified": false,
+    "countrywideVerified": false
+  },
+  "registryFound": true,
+  "verifiedSample": true,
+  "resultCategory": "verified_public_geometry_runtime_enabled",
+  "technicalBlocker": null,
+  "remainingUncertainty": "Municipality-wide completeness, legal title and survey accuracy beyond this bounded evidence remain unverified.",
+  "nextStep": "Inspect the enabled local parcel map and normal parcel selection.",
+  "schemaVersion": 1,
+  "checkedAt": "2026-10-09",
+  "wupCityCode": 4203,
+  "cityId": "wup2025:4203",
+  "runtimeReadiness": "enabled",
+  "adapterReady": true,
+  "centerLatLon": [
+    -25.4785970466047,
+    28.1150225708436
+  ],
+  "population2025k": 1300.816,
+  "populationUnit": "persons",
+  "queueRank": 396,
+  "population2025": 1300816,
+  "populationPlausibility2025": "Moderate",
+  "pointBasis": "UN WUP 2025 population-weighted settlement centroid; this is not a municipal boundary or a parcel-coverage claim.",
+  "publicParcelGeometryFound": true,
+  "sourceIds": [
+    "za-csg-dffe-erven"
+  ],
+  "registryBasis": "An official Chief Surveyor-General cadastral Erven feature covers the ranked WUP locator and has a safe PRCL_KEY identity. This establishes one local sample, not citywide coverage or legal title.",
+  "runtimeAssessment": {
+    "status": "enabled",
+    "reason": "201 valid, distinct Chief Surveyor-General Erven references verified in thirteen bounded cells around the unchanged ranked Klipgat WUP locator. The official DFFE-hosted service advertises GeoJSON but rejects that format in actual queries; explicit native Esri JSON queries succeed. A strict reader preserves every straight-ring coordinate and assigns native holes/components without repair; native curve representations and unsupported or ambiguous rings remain unavailable. Complete object-ID manifests, forced three-row paging (42 rows over fourteen pages), all 201 fresh native PRCL_KEY reads, explicit absence, footprint and source binding passed. Independent GEOS audit in EPSG:32735 found no invalid geometries, duplicates, sampled overlaps above 0.01 m² or operation errors. The sampled records all have publisher statuses R/C/E; no guessed lifecycle filter is applied. Citywide completeness, legal title, survey accuracy and broader identity uniqueness remain unverified.",
+    "acceptanceFile": "research/overnight-cities-2026-10-08/klipgat-csg-acceptance.json",
+    "qualityFile": "research/overnight-cities-2026-10-08/klipgat-csg-quality.json",
+    "qualityReviewFile": "research/overnight-cities-2026-10-08/klipgat-service-review.json"
+  },
+  "rootReviewedAt": "2026-10-08T23:39:53.824168+00:00",
+  "research": {
+    "rootRuntimeDescriptorQualification": {
+      "tests": 23,
+      "requestCount": 81,
+      "uniqueParcels": 201,
+      "allTestsPassed": true,
+      "metricCrs": "EPSG:32735",
+      "gridSizeDegrees": 0.001
+    }
+  },
+  "appCityId": "klipgat",
+  "scopeLimits": "201 valid, distinct Chief Surveyor-General Erven references verified in thirteen bounded cells around the unchanged ranked Klipgat WUP locator. The official DFFE-hosted service advertises GeoJSON but rejects that format in actual queries; explicit native Esri JSON queries succeed. A strict reader preserves every straight-ring coordinate and assigns native holes/components without repair; native curve representations and unsupported or ambiguous rings remain unavailable. Complete object-ID manifests, forced three-row paging (42 rows over fourteen pages), all 201 fresh native PRCL_KEY reads, explicit absence, footprint and source binding passed. Independent GEOS audit in EPSG:32735 found no invalid geometries, duplicates, sampled overlaps above 0.01 m² or operation errors. The sampled records all have publisher statuses R/C/E; no guessed lifecycle filter is applied. Citywide completeness, legal title, survey accuracy and broader identity uniqueness remain unverified.",
+  "runtimeQualification": {
+    "sourceId": "za-csg-dffe-erven",
+    "status": "enabled",
+    "acceptanceFile": "research/overnight-cities-2026-10-08/klipgat-csg-acceptance.json",
+    "qualityFile": "research/overnight-cities-2026-10-08/klipgat-csg-quality.json"
+  }
+}

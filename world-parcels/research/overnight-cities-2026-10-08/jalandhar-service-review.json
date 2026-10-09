@@ -1,0 +1,66 @@
+{
+  "schemaVersion": "1.0",
+  "checkedAt": "2026-10-09",
+  "cityRecord": "city-5907-jalandhar.json",
+  "purpose": "Document local official registry/map evidence and bounded anonymous geometry-route review.",
+  "scopeLimits": {
+    "maxFullPolygonsRetainedInCityRecord": 0,
+    "maxFullPolygonsRetainedInReview": 0,
+    "maxFullPolygonsRetainedInRepository": 0,
+    "ownerOrAddressDataRetained": false,
+    "credentialsOrTokenValuesRetained": false,
+    "citywideCompletenessAsserted": false
+  },
+  "assessment": "Public BhuNaksha hierarchy and selected map extents were available. Five central Jalandhar-1 extents do not reach the locator; this does not establish citywide absence.",
+  "registryAssessment": "Official Punjab cadastral viewer and Jalandhar hierarchy confirmed; exact point village remains unresolved.",
+  "officialPrimarySources": [
+    {
+      "url": "https://gisbhunaksha.punjab.gov.in/",
+      "observation": "Official Punjab public cadastral viewer with anonymous hierarchy and map extent services."
+    },
+    {
+      "url": "https://jamabandi.punjab.gov.in/CadastralMap.aspx/TermsAndConditions.aspx",
+      "observation": "Official Punjab village-wise cadastral map and viewing-only terms."
+    },
+    {
+      "url": "https://jalandhar.nic.in/administrative-setup/",
+      "observation": "District portal identifies Jalandhar-1 and Jalandhar-2."
+    },
+    {
+      "url": "https://jalandharmc.org/",
+      "observation": "Municipal page labels draft cadastral map; not treated as live vector service."
+    }
+  ],
+  "searchQueries": [
+    {
+      "language": "Punjabi",
+      "query": "ਜਲੰਧਰ ਭੂ ਨਕਸ਼ਾ ਕੈਡਾਸਟ੍ਰਲ ਨਕਸ਼ਾ ਅਧਿਕਾਰਿਕ ਜਲੰਧਰ ਨਗਰ ਨਿਗਮ",
+      "result": "Punjab’s official viewer exposes Jalandhar hierarchy. Five selected central Jalandhar-1 map-backed extents do not reach locator.",
+      "method": "Separate Punjabi search and anonymous viewer selector request."
+    },
+    {
+      "language": "English",
+      "query": "Jalandhar official cadastral parcel map land records Punjab BhuNaksha GIS",
+      "result": "Official hierarchy and Jalandhar-1/-2 administration confirmed; no target geometry retained.",
+      "method": "Separate English-language search and viewer review."
+    }
+  ],
+  "serviceChecks": [
+    {
+      "url": "https://gisbhunaksha.punjab.gov.in/rest/Levels/ListsAfterLevel",
+      "method": "POST anonymous hierarchy",
+      "httpStatus": 200,
+      "observation": "Selected state 03/district 01/Jalandhar-1/Kanungo 012/Patwar 117; five map-backed villages."
+    },
+    {
+      "url": "https://gisbhunaksha.punjab.gov.in/rest/MapInfo/getVVVVExtentGeoref",
+      "method": "POST selected village extents",
+      "httpStatus": 200,
+      "observation": "Extents at UTM43N x=557.3–558.3 km; WUP x=554.302 km, y=3466.286 km."
+    }
+  ],
+  "geometryEvidence": null,
+  "privacy": "Only public safe IDs and geometry were retained for Calgary. No owner, address, title, account, or tax attributes were requested; other cities had no geometry retained.",
+  "rootDecision": "pending_root_review",
+  "runtimeAssessment": "not_enabled_no_verified_public_geometry"
+}

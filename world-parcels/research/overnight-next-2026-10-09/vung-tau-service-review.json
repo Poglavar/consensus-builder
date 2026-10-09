@@ -1,0 +1,119 @@
+{
+  "schemaVersion": "1.0",
+  "checkedAt": "2026-10-09",
+  "cityRecord": "city-5805-vung-tau.json",
+  "purpose": "Document separate English/local-language searches, first-party local registry/cadastre evidence, and bounded anonymous geometry discovery.",
+  "scopeLimits": {
+    "maxFullPolygonsRetainedInCityRecord": 0,
+    "maxFullPolygonsRetainedInReview": 0,
+    "maxFullPolygonsRetainedInRepository": 0,
+    "ownerOrAddressDataRetained": false,
+    "credentialsOrTokenValuesRetained": false,
+    "citywideCompletenessAsserted": false
+  },
+  "assessment": "The legacy provincial iLand portal is an official land-information map shell but requires login. After administrative restructuring, Ho Chi Minh City offers a general land-information portal and planning GIS; neither reviewed route exposes anonymous full parcel polygons. The precise administrative custody of the legacy portal after restructuring remains uncertain.",
+  "registryAssessment": "First-party registry, cadastral or land-administration custodian route identified as described in the cited official-source observations; public safe geometry remains unverified.",
+  "officialPrimarySources": [
+    {
+      "url": "https://datdai.baria-vungtau.gov.vn/",
+      "observation": "Former Ba Ria–Vung Tau land-information portal exposes an iLand map shell but presents login controls; no anonymous parcel feature was inspected."
+    },
+    {
+      "url": "https://hcm.mplis.gov.vn/og/",
+      "observation": "Current Ho Chi Minh City land-information portal provides a QR certificate lookup/login route; no public parcel vector layer is documented."
+    },
+    {
+      "url": "https://maps.hcmgis.vn/",
+      "observation": "Official HCMGIS interactive map shows city thematic layers but not a cadastral parcel layer in its visible catalog."
+    },
+    {
+      "url": "https://gisxaydung.tphcm.gov.vn",
+      "observation": "Official 2026 Ho Chi Minh City planning GIS is described as a planning/urban data portal, inheriting legacy Bà Rịa–Vũng Tàu data; not a cadastral parcel geometry route."
+    }
+  ],
+  "searchQueries": [
+    {
+      "language": "English",
+      "query": "Vung Tau official land cadastral map parcel registration GIS Sở Tài nguyên và Môi trường Bà Rịa Vũng Tàu",
+      "resultUrls": [
+        "https://datdai.baria-vungtau.gov.vn/",
+        "https://hcm.mplis.gov.vn/og/",
+        "https://maps.hcmgis.vn/",
+        "https://gisxaydung.tphcm.gov.vn"
+      ],
+      "result": "The English search surfaced the former Bà Rịa–Vũng Tàu iLand portal and current Ho Chi Minh City land-information portal; both are login or document-oriented services.",
+      "scope": "Identify first-party local registry and public parcel geometry; preserve the unchanged WUP settlement locator and avoid owner or address attributes."
+    },
+    {
+      "language": "Vietnamese",
+      "query": "bản đồ địa chính đất đai đăng ký đất đai thành phố Vũng Tàu trang chính thức",
+      "resultUrls": [
+        "https://datdai.baria-vungtau.gov.vn/",
+        "https://hcm.mplis.gov.vn/og/",
+        "https://maps.hcmgis.vn/",
+        "https://gisxaydung.tphcm.gov.vn"
+      ],
+      "result": "The Vietnamese search found the land-map portal and official land-record rules. After administrative restructuring, current ownership of the legacy portal is uncertain; no anonymous geometry route was verified.",
+      "scope": "Find first-party local-language registry/cadastral routes and any anonymous safe parcel geometry service near the unchanged WUP point."
+    }
+  ],
+  "geometryDecision": {
+    "verified": false,
+    "sourceId": null,
+    "sampleCount": 0,
+    "sampleFile": null,
+    "nativeId": null,
+    "nativeIdField": null,
+    "exactWupPointTest": "No source-native full polygon was returned at the WUP point. publicParcelGeometryFound:false means unverified here, not confirmed absence.",
+    "requestEvidence": []
+  },
+  "coverageAssessment": {
+    "claimedScope": "The legacy provincial iLand portal is an official land-information map shell but requires login. After administrative restructuring, Ho Chi Minh City offers a general land-information portal and planning GIS; neither reviewed route exposes anonymous full parcel polygons. The precise administrative custody of the legacy portal after restructuring remains uncertain.",
+    "verifiedOpenScope": "No full parcel geometry was verified and no citywide coverage is asserted.",
+    "citywideVerified": false,
+    "countrywideVerified": false,
+    "geometryVerified": false
+  },
+  "attempts": [
+    {
+      "url": "https://datdai.baria-vungtau.gov.vn/",
+      "result": "Former Ba Ria–Vung Tau land-information portal exposes an iLand map shell but presents login controls; no anonymous parcel feature was inspected."
+    },
+    {
+      "url": "https://hcm.mplis.gov.vn/og/",
+      "result": "Current Ho Chi Minh City land-information portal provides a QR certificate lookup/login route; no public parcel vector layer is documented."
+    },
+    {
+      "url": "https://maps.hcmgis.vn/",
+      "result": "Official HCMGIS interactive map shows city thematic layers but not a cadastral parcel layer in its visible catalog."
+    },
+    {
+      "url": "https://gisxaydung.tphcm.gov.vn",
+      "result": "Official 2026 Ho Chi Minh City planning GIS is described as a planning/urban data portal, inheriting legacy Bà Rịa–Vũng Tàu data; not a cadastral parcel geometry route."
+    }
+  ],
+  "remainingUncertainty": "No public geometry-only response or WUP-point result was verified. Historical provincial portal scope may not reflect current service ownership.",
+  "nextStep": "Use the official source catalog or documented map-service metadata if available; request only safe parcel identifiers and geometry, never owner or address fields.",
+  "runtimeAssessment": "not enabled; no verified full-parcel geometry",
+  "cohort": "overnight-next-1101-1200",
+  "cohortState": "research_complete_pending_root_review",
+  "integrationState": "not_integrated",
+  "rootPrimaryChecks": [
+    {
+      "wupCityCode": 5805,
+      "url": "https://datdai.baria-vungtau.gov.vn/",
+      "checkedAt": "2026-10-09T07:10:48.391401+00:00",
+      "method": "Anonymous read-only GET, standard TLS where advertised; no credentials or property values",
+      "httpStatus": null,
+      "transportOutcome": "<urlopen error [Errno 8] nodename nor servname provided, or not known>"
+    }
+  ],
+  "rootReviewedAt": "2026-10-09T07:13:02.981057+00:00",
+  "rootReview": {
+    "checkedAt": "2026-10-09T07:13:02.981057+00:00",
+    "decision": "Reviewed city identity, canonical population/point, separate searches and saved source/request evidence. No full public parcel geometry verified in this pass.",
+    "custodyScope": "The legacy provincial iLand portal is an official land-information map shell but requires login. After administrative restructuring, Ho Chi Minh City offers a general land-information portal and planning GIS; neither reviewed route exposes anonymous full parcel polygons. The precise administrative custody of the legacy portal after restructuring remains uncertain.",
+    "transportFailuresDoNotProveAbsence": true,
+    "geometryClaimScope": "Investigation outcome only; no worldwide or citywide absence asserted."
+  }
+}

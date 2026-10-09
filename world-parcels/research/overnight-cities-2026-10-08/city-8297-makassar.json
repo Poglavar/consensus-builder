@@ -1,0 +1,129 @@
+{
+  "name": "Makassar",
+  "country": "Indonesia",
+  "countryCode": "ID",
+  "rank": 223,
+  "point": [
+    -5.1630220145631,
+    119.45569862838
+  ],
+  "freshResearch": {
+    "queries": [
+      {
+        "language": "Indonesian",
+        "query": "peta bidang tanah Makassar Kantor Pertanahan Kota Makassar BHUMI ATR BPN persil",
+        "scope": "Find Makassar-specific land-office evidence and a public parcel service.",
+        "result": "The official ATR/BPN Makassar land-office domain publishes city-specific land-measurement and Peta Bidang Tanah (PBT) processing information, establishing a local cadastral registry custodian. The BHUMI public map catalog exposes the Bidang Tanah layer (umum:Persil) with extent including Makassar; however, its public proxy WFS query returned HTTP 403, so no city parcel feature or full geometry was verified.",
+        "actualResultUrls": [
+          "https://kot-makassar.atrbpn.go.id/",
+          "https://kot-makassar.atrbpn.go.id/berita/tak-perlu-lagi-menunggu-tanpa-kepastian",
+          "https://bhumi.atrbpn.go.id/peta",
+          "https://bhumi.atrbpn.go.id/bantuan/katalog_data"
+        ],
+        "executionMethod": "Indonesian-language search, official local land-office source review, public BHUMI catalog and bounded WFS test."
+      },
+      {
+        "language": "English",
+        "query": "Makassar official land office cadastral parcel registry Peta Bidang Tanah public GIS",
+        "scope": "Cross-check city land-office custody and whether public vector access is available.",
+        "result": "Makassar’s official land-office site confirms PBT parcel-measurement workflows. BHUMI documents parcel datasets and the city-wide national layer extent, but its client WFS proxy denied the bounded public query; no Makassar feature was returned.",
+        "actualResultUrls": [
+          "https://kot-makassar.atrbpn.go.id/",
+          "https://bhumi.atrbpn.go.id/bantuan/peta",
+          "https://bhumi.atrbpn.go.id/bantuan/landing"
+        ],
+        "executionMethod": "English-language search plus direct public portal/catalog queries."
+      }
+    ],
+    "portals": [
+      {
+        "name": "Kantor Pertanahan Kota Makassar",
+        "operator": "ATR/BPN",
+        "homeUrl": "https://kot-makassar.atrbpn.go.id/",
+        "observation": "Official city land office describes measurement processing into Peta Bidang Tanah (PBT), establishing a city-level cadastral registry custodian."
+      },
+      {
+        "name": "BHUMI Bidang Tanah",
+        "operator": "ATR/BPN / ATLAS",
+        "homeUrl": "https://bhumi.atrbpn.go.id/peta",
+        "observation": "Public layer catalog lists umum:Persil; bounds cover Indonesia and include Makassar, but full feature query proxy returned HTTP 403."
+      }
+    ],
+    "requests": [
+      {
+        "url": "https://kot-makassar.atrbpn.go.id/",
+        "method": "GET",
+        "httpStatus": 200,
+        "contentType": "text/html",
+        "observation": "Official city land office site shell."
+      },
+      {
+        "url": "https://kot-makassar.atrbpn.go.id/berita/tak-perlu-lagi-menunggu-tanpa-kepastian",
+        "method": "GET",
+        "httpStatus": 200,
+        "contentType": "text/html",
+        "observation": "Official city land-office PBT measurement workflow announcement (public indexed article)."
+      },
+      {
+        "url": "https://bhumi.atrbpn.go.id/panel/items/layers?filter%5Bdefault%5D%5B_eq%5D=true&filter%5Bstatus%5D%5B_eq%5D=published&fields=*,fields.*",
+        "method": "GET",
+        "httpStatus": 200,
+        "contentType": "application/json",
+        "observation": "Public Directus catalog returns Bidang Tanah, layer umum:Persil, data bounds [94.2543556955413,-9.93667708865449] to [140.80540914949,7.65416298406574]; field list includes NIB/area/use/status."
+      },
+      {
+        "url": "https://bhumi.atrbpn.go.id/expapi/bhumigeos/umum/ows?service=WFS&version=2.0.0&request=GetFeature&typeName=umum%3APersil&count=2&outputFormat=application%2Fjson&bbox=119.455%2C-5.164%2C119.456%2C-5.162%2CEPSG%3A4326",
+        "method": "GET",
+        "httpStatus": 403,
+        "contentType": "text/html",
+        "observation": "Actual BHUMI client WFS proxy route; bounded Makassar bbox query denied. No features returned."
+      }
+    ],
+    "historicalContext": []
+  },
+  "status": "complete",
+  "verifiedParcelResponse": null,
+  "source": {
+    "sourceId": "ID-SULSEL-MAKASSAR-ATR-BPN-BHUMI",
+    "name": "Kantor Pertanahan Kota Makassar and BHUMI Bidang Tanah layer",
+    "url": "https://kot-makassar.atrbpn.go.id/",
+    "operator": "Kantor Pertanahan Kota Makassar (ATR/BPN); national viewer BHUMI/ATLAS",
+    "serviceType": "City land office confirms Peta Bidang Tanah measurement workflow. BHUMI public map layer umum:Persil catalog metadata spans Makassar; WFS feature proxy denied bounded request with 403.",
+    "layer": "BHUMI published Bidang Tanah; umum:Persil (public layer catalog metadata)",
+    "geometryType": "POLYGON expected from GeoServer WFS layer, but no geometry returned",
+    "outputCrs": null,
+    "nativeIdField": "NIB (field listed in published layer metadata; city parcel ID not observed)",
+    "nativeIdEvidence": "Official Makassar land-office news describes measured parcels processed into Peta Bidang Tanah (PBT). BHUMI catalog lists umum:Persil with land parcel attributes and geographic bounds including Makassar; the city query was denied before any identifier/geometry was returned."
+  },
+  "coverageAssessment": {
+    "claimedScope": "The official Makassar land office handles cadastral measurement/PBT. BHUMI’s default national Bidang Tanah layer metadata spans the Makassar coordinates.",
+    "verifiedOpenScope": "City registry custodian confirmed; public catalog metadata and geographic extent only. Bounded city WFS query was denied; no Makassar polygon geometry was retrieved.",
+    "countrywideVerified": false
+  },
+  "registryFound": true,
+  "verifiedSample": false,
+  "resultCategory": "official_parcel_catalog_geometry_not_verified",
+  "technicalBlocker": "City registry exists; public BHUMI catalog exposes a national parcel layer and client code uses WFS, but the bounded request to the official viewer’s public feature proxy returned HTTP 403.",
+  "remainingUncertainty": "Whether the national parcel layer returns any current Makassar parcel features when an approved browser origin is used; completeness, NIB semantics, and local layer coverage.",
+  "nextStep": "Use the official BHUMI UI or obtain an authorized public proxy path, repeat a bounded query at Makassar, and confirm full polygon and feature fields.",
+  "schemaVersion": 1,
+  "checkedAt": "2026-10-09",
+  "wupCityCode": 8297,
+  "cityId": "wup2025:8297",
+  "runtimeReadiness": "not_enabled_no_verified_public_geometry",
+  "adapterReady": false,
+  "centerLatLon": [
+    -5.1630220145631,
+    119.45569862838
+  ],
+  "population2025k": 2255.088,
+  "populationUnit": "persons",
+  "queueRank": 223,
+  "population2025": 2255088,
+  "populationPlausibility2025": "High",
+  "pointBasis": "UN WUP 2025 population-weighted settlement centroid; this is not a municipal boundary or a parcel-coverage claim.",
+  "publicParcelGeometryFound": false,
+  "rootReviewedAt": "2026-10-08T21:10:04.693505+00:00",
+  "sourceIds": [],
+  "registryBasis": "City-specific registry evidence is documented in the discovery record."
+}

@@ -1,0 +1,64 @@
+{
+  "schemaVersion": 1,
+  "kind": "city_parcel_service_review",
+  "checkedAt": "2026-10-09",
+  "status": "complete",
+  "name": "Volgograd",
+  "country": "Russian Federation",
+  "countryCode": "RU",
+  "rank": 829,
+  "wupCityCode": 5982,
+  "point": [
+    48.7405648258372,
+    44.5126199833449
+  ],
+  "registryFound": true,
+  "registryBasis": "The state budgetary institution of Volgograd Oblast Center for State Cadastral Valuation publishes the official public-cadastral-map notice and directs users to the federal NSDP map. This supports a public cadastral-map route applicable to Volgograd, but no feature schema, safe geometry+ID allowlist, or parcel at the WUP point was verified.",
+  "registryEvidenceUrls": [
+    "https://volbti.ru/publichnaya-kadastrovaya-karta/",
+    "https://volbti.ru/",
+    "https://nspd.gov.ru/map"
+  ],
+  "verifiedSample": false,
+  "publicParcelGeometryFound": false,
+  "returnedFullPolygonCount": 0,
+  "uniqueFullPolygonCount": 0,
+  "wupPointContained": null,
+  "portals": [
+    {
+      "name": "Federal NSDP public cadastral map, linked by the Volgograd Oblast state cadastral-valuation institution. Public map viewing is documented; no public feature-query schema was verified.",
+      "operator": "Official local, regional or national agency as identified in the source pages",
+      "homeUrl": "https://volbti.ru/publichnaya-kadastrovaya-karta/",
+      "observation": "Official GBU VO Center for State Cadastral Valuation notice (2025-02-06) states the public cadastral map moved to federal NSDP and is publicly accessible without registration or fee."
+    }
+  ],
+  "requests": [
+    {
+      "url": "https://volbti.ru/publichnaya-kadastrovaya-karta/",
+      "method": "GET / public indexed-page inspection",
+      "httpStatus": null,
+      "contentType": null,
+      "observation": "Official GBU VO Center for State Cadastral Valuation notice (2025-02-06) states the public cadastral map moved to federal NSDP and is publicly accessible without registration or fee."
+    },
+    {
+      "url": "https://volbti.ru/",
+      "method": "GET / public indexed-page inspection",
+      "httpStatus": null,
+      "contentType": null,
+      "observation": "Institution homepage identifies it as a state budgetary institution of Volgograd Oblast and links the public cadastral map."
+    },
+    {
+      "url": "https://nspd.gov.ru/map",
+      "method": "GET / public indexed-page inspection",
+      "httpStatus": null,
+      "contentType": null,
+      "observation": "The official NSDP map shell was attempted by anonymous HTTPS GET; the connection timed out before headers/body, so this is not an HTTP status or evidence of service outage."
+    }
+  ],
+  "limitations": "The official map host did not return an HTTP response during the bounded direct inspection. No static feature schema or geometry-only ID allowlist was established, and no parcel query was made.",
+  "scopeLimits": "No protected or personal/property-specific information queried; no anonymous full geometry and stable-ID allowlist verified. No completeness claim.",
+  "runtimeAssessment": {
+    "status": "not_assessed_no_verified_geometry_schema",
+    "reason": "The official map host did not return an HTTP response during the bounded direct inspection. No static feature schema or geometry-only ID allowlist was established, and no parcel query was made."
+  }
+}

@@ -1,0 +1,12 @@
+{
+  "checkedAt": "2026-10-09T05:24:10.846005+00:00",
+  "decision": "approved_by_root",
+  "basis": "Eleven valid distinct native ALKIS cadastral polygons across thirteen bounded cells around the unchanged Dresden WUP settlement locator; 27 distinct full polygons across grid and footprint queries independently audited in metric EPSG32633. Before/after hit counts use the identical projected FES intersection predicate. Forced three-row paging, fresh exact native-ID reads of all 27 polygons in eight-key batches, explicit absence, full footprint lookup and source binding passed. Independent GEOS checks found no sampled invalidity, duplicate geometry, positive-area overlaps or operation errors. Full source geometry and published parcel keys are preserved. This bounded reference evidence does not establish citywide completeness, legal title or survey accuracy.",
+  "acceptanceFile": "dresden-saxony-gml-root-acceptance.json",
+  "qualityFile": "dresden-saxony-gml-root-quality.json",
+  "wideQualityFile": "dresden-saxony-gml-wide-root-quality.json",
+  "wideReadbackReviewFile": "dresden-wide-root-review.json",
+  "originalSampleReviewFile": "dresden-root-point-quality-review.json",
+  "gmlNamespaceReviewFile": "dresden-root-gml32-namespace-proof.json",
+  "geometryManipulation": "None. Full source polygons retained except explicit CRS transformation. No snapping, repair, part omission, overlap exclusion or locator substitution."
+}

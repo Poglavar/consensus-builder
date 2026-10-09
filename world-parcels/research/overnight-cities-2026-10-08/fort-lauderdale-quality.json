@@ -1,0 +1,342 @@
+{
+  "schemaVersion": 1,
+  "purpose": "Independent GEOS topology check of complete runtime parcels projected to metric coordinates; no repair applied. Counts are bounded sample evidence, not whole-city guarantees.",
+  "library": "Shapely 2.2.0",
+  "metricCrs": "EPSG:32617",
+  "featureCount": 46,
+  "validNonemptyCount": 46,
+  "invalidFeatures": [],
+  "exactDuplicateGeometryPairs": [],
+  "positiveAreaOverlapPairsAbove0_01M2": [],
+  "sumPairwiseOverlapM2": 0,
+  "operationErrors": [],
+  "areaM2": {
+    "min": 112.63252979961835,
+    "median": 715.8126549280303,
+    "max": 224860.44638212418
+  },
+  "features": [
+    {
+      "id": "US-FL-FORT-LAUDERDALE-ROW-92851",
+      "areaM2": 29918.991938899897,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "US-FL-FORT-LAUDERDALE-ROW-97983",
+      "areaM2": 37888.23722295477,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "US-FL-FORT-LAUDERDALE-ROW-178045",
+      "areaM2": 38174.1189542956,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "US-FL-FORT-LAUDERDALE-ROW-2016",
+      "areaM2": 224860.44638212418,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "US-FL-FORT-LAUDERDALE-ROW-43159",
+      "areaM2": 10618.791148394761,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "US-FL-FORT-LAUDERDALE-ROW-5943",
+      "areaM2": 187.51450490490524,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "US-FL-FORT-LAUDERDALE-ROW-14090",
+      "areaM2": 180788.0226609024,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "US-FL-FORT-LAUDERDALE-ROW-21183",
+      "areaM2": 123.49348062084391,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "US-FL-FORT-LAUDERDALE-ROW-38019",
+      "areaM2": 198.50237254907958,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "US-FL-FORT-LAUDERDALE-ROW-42912",
+      "areaM2": 2417.267776957292,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "US-FL-FORT-LAUDERDALE-ROW-48008",
+      "areaM2": 127.15971094460035,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "US-FL-FORT-LAUDERDALE-ROW-49329",
+      "areaM2": 112.63252979961835,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "US-FL-FORT-LAUDERDALE-ROW-55954",
+      "areaM2": 215.45627780937656,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "US-FL-FORT-LAUDERDALE-ROW-80002",
+      "areaM2": 125.55153174335362,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "US-FL-FORT-LAUDERDALE-ROW-86200",
+      "areaM2": 4629.993438148768,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "US-FL-FORT-LAUDERDALE-ROW-87053",
+      "areaM2": 123.87199565364281,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "US-FL-FORT-LAUDERDALE-ROW-91086",
+      "areaM2": 126.29261439272322,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "US-FL-FORT-LAUDERDALE-ROW-95920",
+      "areaM2": 125.73568881374372,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "US-FL-FORT-LAUDERDALE-ROW-103765",
+      "areaM2": 187.00915081031738,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "US-FL-FORT-LAUDERDALE-ROW-115572",
+      "areaM2": 873.4800100664077,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "US-FL-FORT-LAUDERDALE-ROW-118433",
+      "areaM2": 126.28244937671037,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "US-FL-FORT-LAUDERDALE-ROW-143285",
+      "areaM2": 128.97472349733516,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "US-FL-FORT-LAUDERDALE-ROW-154057",
+      "areaM2": 123.16461296812287,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "US-FL-FORT-LAUDERDALE-ROW-154298",
+      "areaM2": 126.17016800425566,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "US-FL-FORT-LAUDERDALE-ROW-165791",
+      "areaM2": 127.02276631462291,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "US-FL-FORT-LAUDERDALE-ROW-171605",
+      "areaM2": 6498.079784370658,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "US-FL-FORT-LAUDERDALE-ROW-183059",
+      "areaM2": 237.08681694411194,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "US-FL-FORT-LAUDERDALE-ROW-184921",
+      "areaM2": 127.6022566755088,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "US-FL-FORT-LAUDERDALE-ROW-185421",
+      "areaM2": 274.3891148329803,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "US-FL-FORT-LAUDERDALE-ROW-188345",
+      "areaM2": 112.91222029070647,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "US-FL-FORT-LAUDERDALE-ROW-192420",
+      "areaM2": 125.56337084834831,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "US-FL-FORT-LAUDERDALE-ROW-10899",
+      "areaM2": 756.3999356844868,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "US-FL-FORT-LAUDERDALE-ROW-11225",
+      "areaM2": 735.3231640786028,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "US-FL-FORT-LAUDERDALE-ROW-40767",
+      "areaM2": 769.5364295746389,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "US-FL-FORT-LAUDERDALE-ROW-44392",
+      "areaM2": 16171.796778618127,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "US-FL-FORT-LAUDERDALE-ROW-84596",
+      "areaM2": 22754.95969034657,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "US-FL-FORT-LAUDERDALE-ROW-113756",
+      "areaM2": 967.624753869948,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "US-FL-FORT-LAUDERDALE-ROW-122101",
+      "areaM2": 905.4812496671059,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "US-FL-FORT-LAUDERDALE-ROW-123483",
+      "areaM2": 696.3005585980574,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "US-FL-FORT-LAUDERDALE-ROW-124142",
+      "areaM2": 905.4807649435819,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "US-FL-FORT-LAUDERDALE-ROW-141008",
+      "areaM2": 905.4747324729833,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "US-FL-FORT-LAUDERDALE-ROW-146691",
+      "areaM2": 696.3021457774578,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "US-FL-FORT-LAUDERDALE-ROW-167607",
+      "areaM2": 845.8295335354127,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "US-FL-FORT-LAUDERDALE-ROW-171711",
+      "areaM2": 905.4823967236842,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "US-FL-FORT-LAUDERDALE-ROW-107781",
+      "areaM2": 7384.4473857362245,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "US-FL-FORT-LAUDERDALE-ROW-143830",
+      "areaM2": 8102.029552866912,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    }
+  ]
+}

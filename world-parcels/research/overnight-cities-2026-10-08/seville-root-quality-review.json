@@ -1,0 +1,10 @@
+{
+  "schemaVersion": 1,
+  "checkedAt": "2026-10-09T03:19:25.360561+00:00",
+  "decision": "held_incomplete_and_blocked_exact_id_reads",
+  "reason": "Public full parcel geometry is verified, but operational qualification failed: 13 bounded cells returned 326 distinct polygons and the first 120 fresh exact-ID reads matched; a later exact-ID response had inconsistent/incomplete feature counts, followed by HTTP 403 provider blocks. Absence, footprint and source-binding checks could not complete. Runtime remains disabled; failed evidence is retained without retries or modified geometry. Eight sampled overlap pairs above 0.01 m² total only 0.139 m²; this is recorded separately from the access/completeness blocker.",
+  "sourceCoordinatesModified": false,
+  "acceptanceFile": "seville-catastro-root-acceptance.json",
+  "qualityFile": "seville-catastro-root-quality.json",
+  "fullGeometryRetainedInReview": false
+}

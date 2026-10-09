@@ -1,0 +1,72 @@
+{
+  "schemaVersion": "1.0",
+  "checkedAt": "2026-10-09",
+  "cityRecord": "city-9823-bahraich.json",
+  "purpose": "Document first-party local registry/map evidence and bounded anonymous geometry access review.",
+  "scopeLimits": {
+    "maxFullPolygonsRetainedInCityRecord": 0,
+    "maxFullPolygonsRetainedInReview": 0,
+    "maxFullPolygonsRetainedInRepository": 0,
+    "ownerOrAddressDataRetained": false,
+    "credentialsOrTokenValuesRetained": false,
+    "citywideCompletenessAsserted": false
+  },
+  "assessment": "District Bahraich official site links Bhulekh and identifies six tehsils including Bahraich, with revenue villages; UP Board of Revenue hosts the statewide public land-record/map service. No WUP-point parcel polygon was resolved.",
+  "registryAssessment": "The official Bahraich district administration links Bhulekh and lists a Bahraich tehsil and revenue villages. The Uttar Pradesh Board of Revenue operates the statewide land-record and BhuNaksha services. No target-point village resolution or full parcel geometry sample was verified.",
+  "officialPrimarySources": [
+    {
+      "url": "https://bahraich.nic.in/",
+      "observation": "District Bahraich official site links Bhulekh and identifies six tehsils including Bahraich, with revenue villages; UP Board of Revenue hosts the statewide public land-record/map service. No WUP-point parcel polygon was resolved."
+    },
+    {
+      "url": "https://bahraich.nic.in/administrative-setup/",
+      "observation": "District Bahraich official site links Bhulekh and identifies six tehsils including Bahraich, with revenue villages; UP Board of Revenue hosts the statewide public land-record/map service. No WUP-point parcel polygon was resolved."
+    },
+    {
+      "url": "https://upbhulekh.gov.in/",
+      "observation": "District Bahraich official site links Bhulekh and identifies six tehsils including Bahraich, with revenue villages; UP Board of Revenue hosts the statewide public land-record/map service. No WUP-point parcel polygon was resolved."
+    },
+    {
+      "url": "https://upbhunaksha.gov.in/bhunaksha/09/index.html",
+      "observation": "District Bahraich official site links Bhulekh and identifies six tehsils including Bahraich, with revenue villages; UP Board of Revenue hosts the statewide public land-record/map service. No WUP-point parcel polygon was resolved."
+    }
+  ],
+  "searchQueries": [
+    {
+      "language": "English",
+      "query": "Bahraich India official cadastre cadastral parcel map GIS land registry",
+      "scope": "Identify city-specific land registry/cadastre context and any anonymous full-parcel geometry.",
+      "result": "District Bahraich official site links Bhulekh and identifies six tehsils including Bahraich, with revenue villages; UP Board of Revenue hosts the statewide public land-record/map service. No WUP-point parcel polygon was resolved.",
+      "actualResultUrls": [
+        "https://bahraich.nic.in/",
+        "https://bahraich.nic.in/administrative-setup/",
+        "https://upbhulekh.gov.in/",
+        "https://upbhunaksha.gov.in/bhunaksha/09/index.html"
+      ],
+      "executionMethod": "Separate English search and official-source review; no owner, address, title, tax, token, account, applicant, or property identifier was queried."
+    },
+    {
+      "language": "Hindi",
+      "query": "बहराइच भू नक्शा भूलेख राजस्व ग्राम नक्शा सरकारी उत्तर प्रदेश",
+      "scope": "Identify city-specific land registry/cadastre context and any anonymous full-parcel geometry.",
+      "result": "District Bahraich official site links Bhulekh and identifies six tehsils including Bahraich, with revenue villages; UP Board of Revenue hosts the statewide public land-record/map service. No WUP-point parcel polygon was resolved.",
+      "actualResultUrls": [
+        "https://bahraich.nic.in/",
+        "https://bahraich.nic.in/administrative-setup/",
+        "https://upbhulekh.gov.in/",
+        "https://upbhunaksha.gov.in/bhunaksha/09/index.html"
+      ],
+      "executionMethod": "Separate local-language search and official-source review; no owner, address, title, tax, token, account, applicant, or property identifier was queried."
+    }
+  ],
+  "geometryDecision": "No full parcel geometry retained; no qualifying full polygon response was verified.",
+  "coverageAssessment": {
+    "claimedScope": "The official Bahraich district administration links Bhulekh and lists a Bahraich tehsil and revenue villages. The Uttar Pradesh Board of Revenue operates the statewide land-record and BhuNaksha services. No target-point village resolution or full parcel geometry sample was verified.",
+    "verifiedOpenScope": "No citywide parcel coverage or WUP-point parcel presence is asserted.",
+    "citywideVerified": false,
+    "countrywideVerified": false,
+    "geometryVerified": false
+  },
+  "attempts": [],
+  "remainingUncertainty": "Public anonymous parcel geometry, exact WUP-point coverage, and citywide coverage remain unverified."
+}

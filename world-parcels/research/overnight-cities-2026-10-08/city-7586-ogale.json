@@ -1,0 +1,133 @@
+{
+  "name": "Ogale",
+  "country": "Nigeria",
+  "countryCode": "NG",
+  "rank": 916,
+  "point": [
+    4.7374047121624,
+    7.14418627362462
+  ],
+  "population2025": 595099,
+  "population2025k": 595.099,
+  "populationPlausibility2025": "High",
+  "schemaVersion": 1,
+  "kind": "city_parcel_source_research",
+  "checkedAt": "2026-10-09",
+  "populationUnit": "persons",
+  "status": "complete",
+  "verifiedSample": false,
+  "publicParcelGeometryFound": false,
+  "runtimeReadiness": "not_enabled_no_verified_public_geometry",
+  "priorEvidenceFiles": [],
+  "priorCheck": {
+    "attemptState": "pending",
+    "attemptEvidence": [],
+    "possiblePriorMatches": []
+  },
+  "pointBasis": "UN WUP 2025 population-weighted settlement centroid; this is not a municipal boundary or a parcel-coverage claim.",
+  "registryFound": null,
+  "registryBasis": "Official Eleme LGA pages place its secretariat in Ogale, and Rivers State service information describes state land-administration/registration workflows. The reviewed material does not establish an Ogale-specific parcel registry or map coverage, so local coverage remains uncertain.",
+  "registryEvidenceUrls": [
+    "https://elemelga.rv.gov.ng/contact/",
+    "https://rsipa.riversstateapps.ng/lands-and-survey/",
+    "https://rsipa.riversstateapps.ng/rivers-state-ministry-of-lands-and-survey/"
+  ],
+  "resultCategory": "registry_scope_unconfirmed_geometry_unverified",
+  "remainingUncertainty": "No anonymous, field-safe parcel geometry response was verified; exact point and map coverage remain unresolved.",
+  "scopeLimits": "Review covers the exact unchanged WUP settlement locator and identified official sources only. No owner, address, personal-property, tax, account, token or credential data requested or retained. No citywide completeness claimed.",
+  "verifiedParcelResponse": null,
+  "source": {
+    "sourceId": "NG-7586-ogale-source-review",
+    "name": "Eleme Local Government and Rivers State Ministry of Lands and Survey service information",
+    "url": "https://elemelga.rv.gov.ng/contact/",
+    "operator": "Nigeria",
+    "serviceType": "Local-government location and state land-service evidence; no city-scope parcel map or anonymous geometry verified.",
+    "layer": null,
+    "geometryType": null,
+    "outputCrs": null,
+    "nativeIdField": null,
+    "nativeIdEvidence": "No feature response; no parcel identifier schema verified."
+  },
+  "wupCityCode": 7586,
+  "cityId": "wup2025:7586",
+  "queueRank": 916,
+  "centerLatLon": [
+    4.7374047121624,
+    7.14418627362462
+  ],
+  "sourceIds": [],
+  "adapterReady": false,
+  "technicalBlocker": "Research only; no parcel geometry sample or runtime adapter qualification.",
+  "coverageAssessment": {
+    "claimedScope": "Official Eleme LGA pages place its secretariat in Ogale, and Rivers State service information describes state land-administration/registration workflows. The reviewed material does not establish an Ogale-specific parcel registry or map coverage, so local coverage remains uncertain.",
+    "verifiedOpenScope": "No public parcel geometry scope verified.",
+    "countrywideVerified": false,
+    "citywideVerified": false
+  },
+  "research": {
+    "queries": [
+      {
+        "language": "English",
+        "query": "Ogale Eleme Rivers State official land registry cadastral map land records Ministry Lands",
+        "scope": "Locate primary city/local cadastral or land-registry evidence and any safe public parcel-geometry endpoint.",
+        "result": "Official Eleme LGA information identifies Ogale as the local-government seat. State service material describes land administration, survey, and title-registration workflows, including an online process; it is not an Ogale parcel map and does not establish point coverage. No public parcel layer/API or geometry was found.",
+        "actualResultUrls": [
+          "https://elemelga.rv.gov.ng/contact/",
+          "https://rsipa.riversstateapps.ng/lands-and-survey/",
+          "https://rsipa.riversstateapps.ng/rivers-state-ministry-of-lands-and-survey/"
+        ],
+        "executionMethod": "Separate English-language source search and first-party source/service review; no owner, address, account, token or personal-property attributes requested."
+      },
+      {
+        "language": "Nigerian Pidgin/local place-name variant",
+        "query": "No feature response; no parcel identifier schema verified.",
+        "scope": "Find primary local-language evidence for the same registry/map question.",
+        "result": "Official Eleme LGA information identifies Ogale as the local-government seat. State service material describes land administration, survey, and title-registration workflows, including an online process; it is not an Ogale parcel map and does not establish point coverage. No public parcel layer/API or geometry was found.",
+        "actualResultUrls": [
+          "https://elemelga.rv.gov.ng/contact/",
+          "https://rsipa.riversstateapps.ng/lands-and-survey/",
+          "https://rsipa.riversstateapps.ng/rivers-state-ministry-of-lands-and-survey/"
+        ],
+        "executionMethod": "Separate native/local-language query and first-party source review. For Ogale, searched a Nigerian Pidgin/place-name variant because no standardized Eleme-language registry query term was identified."
+      }
+    ],
+    "officialSources": [
+      {
+        "url": "https://elemelga.rv.gov.ng/contact/",
+        "observation": "Official Eleme LGA pages place its secretariat in Ogale, and Rivers State service information describes state land-administration/registration workflows. The reviewed material does not establish an Ogale-specific parcel registry or map coverage, so local coverage remains uncertain."
+      },
+      {
+        "url": "https://rsipa.riversstateapps.ng/lands-and-survey/",
+        "observation": "Official Eleme LGA pages place its secretariat in Ogale, and Rivers State service information describes state land-administration/registration workflows. The reviewed material does not establish an Ogale-specific parcel registry or map coverage, so local coverage remains uncertain."
+      },
+      {
+        "url": "https://rsipa.riversstateapps.ng/rivers-state-ministry-of-lands-and-survey/",
+        "observation": "Official Eleme LGA pages place its secretariat in Ogale, and Rivers State service information describes state land-administration/registration workflows. The reviewed material does not establish an Ogale-specific parcel registry or map coverage, so local coverage remains uncertain."
+      }
+    ],
+    "attempts": [
+      {
+        "url": "https://elemelga.rv.gov.ng/contact/",
+        "method": "Official location page review",
+        "result": "Confirms Eleme LGA Secretariat address in Ogale; no land parcel map or registry data endpoint."
+      },
+      {
+        "url": "https://rsipa.riversstateapps.ng/lands-and-survey/",
+        "method": "State service information review",
+        "result": "Describes state land/survey workflows including account-based title processing; no public geometry endpoint."
+      }
+    ]
+  },
+  "runtimeAssessment": {
+    "status": "not_enabled_no_verified_public_geometry",
+    "reason": "Research only; no parcel geometry sample or runtime adapter qualification."
+  },
+  "rootPrimaryReadback": {
+    "url": "https://elemelga.rv.gov.ng/contact/",
+    "fetch": 200,
+    "contentType": "text/html; charset=UTF-8",
+    "title": "Contact &#8211; Eleme LGA"
+  },
+  "rootReviewNote": "Reviewed the specific primary institution/service evidence and its geographical, access and date limits. Direct readback failures are preserved separately from indexed primary evidence. No public full parcel geometry was verified for this city in this discovery pass.",
+  "rootReviewedAt": "2026-10-09T04:30:00.451299+00:00"
+}

@@ -1,0 +1,762 @@
+{
+  "schemaVersion": 1,
+  "purpose": "Independent GEOS topology check of complete runtime parcels projected to metric coordinates; no repair applied. Counts are bounded sample evidence, not whole-city guarantees.",
+  "library": "Shapely 2.2.0",
+  "metricCrs": "EPSG:32611",
+  "featureCount": 106,
+  "validNonemptyCount": 106,
+  "invalidFeatures": [],
+  "exactDuplicateGeometryPairs": [],
+  "positiveAreaOverlapPairsAbove0_01M2": [],
+  "sumPairwiseOverlapM2": 0,
+  "operationErrors": [],
+  "areaM2": {
+    "min": 338.6275520372719,
+    "median": 821.7118629276354,
+    "max": 5114.651481586275
+  },
+  "features": [
+    {
+      "id": "US-CA-FRESNO-APN-43613503",
+      "areaM2": 1363.1760160164451,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "US-CA-FRESNO-APN-43614102",
+      "areaM2": 817.8180808707269,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "US-CA-FRESNO-APN-43613502",
+      "areaM2": 1364.361638024524,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "US-CA-FRESNO-APN-43613402",
+      "areaM2": 1661.0662268976157,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "US-CA-FRESNO-APN-43614103",
+      "areaM2": 836.4139389552498,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "US-CA-FRESNO-APN-43614303",
+      "areaM2": 836.4320024908939,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "US-CA-FRESNO-APN-43614302",
+      "areaM2": 817.8527513031004,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "US-CA-FRESNO-APN-43614218",
+      "areaM2": 856.0516302193341,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "US-CA-FRESNO-APN-43614106",
+      "areaM2": 964.1459833357474,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "US-CA-FRESNO-APN-43614105",
+      "areaM2": 662.6057356207834,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "US-CA-FRESNO-APN-43614305",
+      "areaM2": 662.7273404719225,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "US-CA-FRESNO-APN-43614304",
+      "areaM2": 696.2970786477514,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "US-CA-FRESNO-APN-43614104",
+      "areaM2": 702.6876925364621,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "US-CA-FRESNO-APN-43614338",
+      "areaM2": 1187.2646018447558,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "US-CA-FRESNO-APN-43614108",
+      "areaM2": 772.5669121770986,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "US-CA-FRESNO-APN-43614201",
+      "areaM2": 854.2934278045636,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "US-CA-FRESNO-APN-43614109",
+      "areaM2": 822.2221937110686,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "US-CA-FRESNO-APN-43614215",
+      "areaM2": 821.740021332001,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "US-CA-FRESNO-APN-43614214",
+      "areaM2": 821.6461710426945,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "US-CA-FRESNO-APN-43614205",
+      "areaM2": 821.6837045232697,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "US-CA-FRESNO-APN-43614217",
+      "areaM2": 821.9009140290854,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "US-CA-FRESNO-APN-43614112",
+      "areaM2": 822.8334949693296,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "US-CA-FRESNO-APN-43614111",
+      "areaM2": 822.8942338126209,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "US-CA-FRESNO-APN-43614203",
+      "areaM2": 821.8707294789754,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "US-CA-FRESNO-APN-43614216",
+      "areaM2": 821.8190282767821,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "US-CA-FRESNO-APN-43614204",
+      "areaM2": 821.7755623888743,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "US-CA-FRESNO-APN-43614202",
+      "areaM2": 821.9578168245057,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "US-CA-FRESNO-APN-43614110",
+      "areaM2": 822.9488844682086,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "US-CA-FRESNO-APN-43605407",
+      "areaM2": 910.8332188499138,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "US-CA-FRESNO-APN-43614101",
+      "areaM2": 816.9534536600805,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "US-CA-FRESNO-APN-43606155",
+      "areaM2": 2689.0287162491722,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "US-CA-FRESNO-APN-43605415",
+      "areaM2": 1325.0921711619121,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "US-CA-FRESNO-APN-43606301T",
+      "areaM2": 2135.1685524487366,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "US-CA-FRESNO-APN-43605416",
+      "areaM2": 1329.11741763649,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "US-CA-FRESNO-APN-43606152",
+      "areaM2": 2594.2986183414696,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "US-CA-FRESNO-APN-43605406",
+      "areaM2": 912.1650842677872,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "US-CA-FRESNO-APN-43606154",
+      "areaM2": 1131.8573630732903,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "US-CA-FRESNO-APN-43606302",
+      "areaM2": 616.5542203623238,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "US-CA-FRESNO-APN-43614107",
+      "areaM2": 651.3146476785492,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "US-CA-FRESNO-APN-43606143",
+      "areaM2": 1619.2859791284036,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "US-CA-FRESNO-APN-43606303",
+      "areaM2": 635.1525080518246,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "US-CA-FRESNO-APN-43606306",
+      "areaM2": 615.927627025981,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "US-CA-FRESNO-APN-43606307",
+      "areaM2": 615.7539399649559,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "US-CA-FRESNO-APN-43606224",
+      "areaM2": 649.3800385944495,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "US-CA-FRESNO-APN-43606305",
+      "areaM2": 616.097328959848,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "US-CA-FRESNO-APN-43606221",
+      "areaM2": 622.960935999019,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "US-CA-FRESNO-APN-43606304",
+      "areaM2": 641.6228311610512,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "US-CA-FRESNO-APN-43606223",
+      "areaM2": 632.2608844100737,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "US-CA-FRESNO-APN-43606222",
+      "areaM2": 632.2520979586172,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "US-CA-FRESNO-APN-43605403",
+      "areaM2": 910.3418365576524,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "US-CA-FRESNO-APN-43605404",
+      "areaM2": 910.9861461615685,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "US-CA-FRESNO-APN-43606144",
+      "areaM2": 5114.651481586275,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "US-CA-FRESNO-APN-43605402",
+      "areaM2": 911.0238375059149,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "US-CA-FRESNO-APN-43606142",
+      "areaM2": 3402.465700515994,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "US-CA-FRESNO-APN-43606107",
+      "areaM2": 585.3796648537417,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "US-CA-FRESNO-APN-43606104",
+      "areaM2": 585.7429240348885,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "US-CA-FRESNO-APN-43606203",
+      "areaM2": 631.2446325845083,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "US-CA-FRESNO-APN-43606105",
+      "areaM2": 585.5696577714574,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "US-CA-FRESNO-APN-43606126",
+      "areaM2": 585.7643210272568,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "US-CA-FRESNO-APN-43606129",
+      "areaM2": 566.2376875125233,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "US-CA-FRESNO-APN-43606128",
+      "areaM2": 585.7497708015812,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "US-CA-FRESNO-APN-43606106",
+      "areaM2": 585.4605946516608,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "US-CA-FRESNO-APN-43606127",
+      "areaM2": 585.7691753854037,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "US-CA-FRESNO-APN-43606202",
+      "areaM2": 631.1173808893374,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "US-CA-FRESNO-APN-43606204",
+      "areaM2": 622.0827329908373,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "US-CA-FRESNO-APN-43606201",
+      "areaM2": 648.0941150241932,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "US-CA-FRESNO-APN-43622149",
+      "areaM2": 4789.225043090469,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "US-CA-FRESNO-APN-43622150",
+      "areaM2": 1429.7438793049907,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "US-CA-FRESNO-APN-43614307",
+      "areaM2": 653.2506242202314,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "US-CA-FRESNO-APN-43622106",
+      "areaM2": 658.1815112634533,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "US-CA-FRESNO-APN-43622107",
+      "areaM2": 924.9819534653484,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "US-CA-FRESNO-APN-43614347",
+      "areaM2": 1156.9638972671055,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "US-CA-FRESNO-APN-43614324",
+      "areaM2": 338.6275520372719,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "US-CA-FRESNO-APN-43614339",
+      "areaM2": 1025.629853726682,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "US-CA-FRESNO-APN-42827249",
+      "areaM2": 1990.8321357061495,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "US-CA-FRESNO-APN-42827238",
+      "areaM2": 632.9278605331458,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "US-CA-FRESNO-APN-42827208",
+      "areaM2": 637.6843262005643,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "US-CA-FRESNO-APN-42827241",
+      "areaM2": 635.959018110005,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "US-CA-FRESNO-APN-42827240",
+      "areaM2": 642.5929621710436,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "US-CA-FRESNO-APN-42827245",
+      "areaM2": 634.1142065390326,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "US-CA-FRESNO-APN-42827206",
+      "areaM2": 725.241655091459,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "US-CA-FRESNO-APN-42827207",
+      "areaM2": 921.4714096434898,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "US-CA-FRESNO-APN-42827239",
+      "areaM2": 632.7933150074247,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "US-CA-FRESNO-APN-43605409",
+      "areaM2": 907.6366869216363,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "US-CA-FRESNO-APN-43605410",
+      "areaM2": 905.541541250407,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "US-CA-FRESNO-APN-43605304",
+      "areaM2": 905.6985241550959,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "US-CA-FRESNO-APN-43613313",
+      "areaM2": 931.3416198147817,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "US-CA-FRESNO-APN-43605411",
+      "areaM2": 906.3833148406624,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "US-CA-FRESNO-APN-43605302",
+      "areaM2": 905.2974104597433,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "US-CA-FRESNO-APN-43605303",
+      "areaM2": 905.4926282380545,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "US-CA-FRESNO-APN-43605305",
+      "areaM2": 1177.995995512893,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "US-CA-FRESNO-APN-43613501",
+      "areaM2": 908.8754280357047,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "US-CA-FRESNO-APN-43605408",
+      "areaM2": 1257.5096354726727,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "US-CA-FRESNO-APN-43614115",
+      "areaM2": 822.6528268062726,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "US-CA-FRESNO-APN-43614114",
+      "areaM2": 822.7159970455625,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "US-CA-FRESNO-APN-43614113",
+      "areaM2": 822.7679332736017,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "US-CA-FRESNO-APN-43606312",
+      "areaM2": 614.8917581423742,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "US-CA-FRESNO-APN-43606308",
+      "areaM2": 615.582173656522,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "US-CA-FRESNO-APN-43606218",
+      "areaM2": 622.962163644511,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "US-CA-FRESNO-APN-43606309",
+      "areaM2": 568.0677036941729,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "US-CA-FRESNO-APN-43606217",
+      "areaM2": 622.963782877093,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "US-CA-FRESNO-APN-43606310",
+      "areaM2": 615.2447806621053,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "US-CA-FRESNO-APN-43606311",
+      "areaM2": 615.0679243873278,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "US-CA-FRESNO-APN-43606220",
+      "areaM2": 622.9642053502022,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "US-CA-FRESNO-APN-43606219",
+      "areaM2": 622.9534912147917,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "US-CA-FRESNO-APN-43614116",
+      "areaM2": 768.531717262241,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    }
+  ]
+}

@@ -1,0 +1,3627 @@
+{
+  "schemaVersion": 1,
+  "purpose": "Live city parcel qualification with unmodified responses through the repository adapter; IDs and hashes retained, full geometries confined to temporary audit cache except three public samples.",
+  "checkedAt": "2026-10-08T21:20:12.910Z",
+  "city": "las-vegas-final",
+  "descriptor": {
+    "id": "us-nv-clark-assessor-parcels",
+    "name": "Clark County Assessor Parcels",
+    "adapter": "arcgis",
+    "endpoint": "https://maps.clarkcountynv.gov/arcgis/rest/services/GISMO/AssessorMap/FeatureServer/1",
+    "idField": "APN",
+    "idType": "string",
+    "objectIdField": "OID",
+    "idPrefix": "US-NV-CLARK-",
+    "outFields": [
+      "OID",
+      "APN"
+    ],
+    "pageSize": 2000,
+    "maxFeatures": 10000,
+    "maxBboxKm2": 1,
+    "countryCode": "US",
+    "metricSrid": 32611
+  },
+  "grid": [
+    {
+      "name": "viewport-0",
+      "bbox": [
+        -115.166,
+        36.15,
+        -115.165,
+        36.151
+      ],
+      "kind": "aligned-grid"
+    },
+    {
+      "name": "viewport-1",
+      "bbox": [
+        -115.165,
+        36.15,
+        -115.164,
+        36.151
+      ],
+      "kind": "aligned-grid"
+    },
+    {
+      "name": "viewport-2",
+      "bbox": [
+        -115.164,
+        36.15,
+        -115.163,
+        36.151
+      ],
+      "kind": "aligned-grid"
+    },
+    {
+      "name": "viewport-3",
+      "bbox": [
+        -115.166,
+        36.151,
+        -115.165,
+        36.152
+      ],
+      "kind": "aligned-grid"
+    },
+    {
+      "name": "viewport-4",
+      "bbox": [
+        -115.165,
+        36.151,
+        -115.164,
+        36.152
+      ],
+      "kind": "aligned-grid"
+    },
+    {
+      "name": "viewport-5",
+      "bbox": [
+        -115.164,
+        36.151,
+        -115.163,
+        36.152
+      ],
+      "kind": "aligned-grid"
+    },
+    {
+      "name": "viewport-6",
+      "bbox": [
+        -115.166,
+        36.152,
+        -115.165,
+        36.153
+      ],
+      "kind": "aligned-grid"
+    },
+    {
+      "name": "viewport-7",
+      "bbox": [
+        -115.165,
+        36.152,
+        -115.164,
+        36.153
+      ],
+      "kind": "aligned-grid"
+    },
+    {
+      "name": "viewport-8",
+      "bbox": [
+        -115.164,
+        36.152,
+        -115.163,
+        36.153
+      ],
+      "kind": "aligned-grid"
+    },
+    {
+      "name": "viewport-9",
+      "bbox": [
+        -115.165,
+        36.149,
+        -115.164,
+        36.15
+      ],
+      "kind": "adjacent-pan"
+    },
+    {
+      "name": "viewport-10",
+      "bbox": [
+        -115.165,
+        36.153,
+        -115.164,
+        36.154
+      ],
+      "kind": "adjacent-pan"
+    },
+    {
+      "name": "viewport-11",
+      "bbox": [
+        -115.167,
+        36.151,
+        -115.166,
+        36.152
+      ],
+      "kind": "adjacent-pan"
+    },
+    {
+      "name": "viewport-12",
+      "bbox": [
+        -115.163,
+        36.151,
+        -115.162,
+        36.152
+      ],
+      "kind": "adjacent-pan"
+    }
+  ],
+  "tests": [
+    {
+      "name": "viewport-0",
+      "passed": true,
+      "elapsedMs": 1545,
+      "requestIndexes": [
+        0,
+        0
+      ],
+      "bbox": [
+        -115.166,
+        36.15,
+        -115.165,
+        36.151
+      ],
+      "complete": true,
+      "count": 9,
+      "ids": [
+        {
+          "id": "US-NV-CLARK-16204311032",
+          "geometrySha256": "1813dcd13cb86604936b75983b62d4ce7691a28e5129008f09d3793fb4f4524f"
+        },
+        {
+          "id": "US-NV-CLARK-16204311033",
+          "geometrySha256": "4169ca2717accab9a9f7106f08ae2af4e0d97f177722c0a3c27bfaee15f68178"
+        },
+        {
+          "id": "US-NV-CLARK-16204301004",
+          "geometrySha256": "76a76acfe6af4cf0ccad981f186811bd4d040446ce2fbf7460d06773f409aa64"
+        },
+        {
+          "id": "US-NV-CLARK-16204301019",
+          "geometrySha256": "1aaaa76592f3b317a7f5dbb216f247b7d89cc1811bdc5ca769e2c10c5dd31501"
+        },
+        {
+          "id": "US-NV-CLARK-16204301014",
+          "geometrySha256": "a00480c70febe1bad89c44ce4cbd98fe74a28144c1929649882d824938f9fe84"
+        },
+        {
+          "id": "US-NV-CLARK-16204311034",
+          "geometrySha256": "887824c57ff45f786b0e51bd356933a21b8ae0b23903525fc408e3c60a076913"
+        },
+        {
+          "id": "US-NV-CLARK-16204399005",
+          "geometrySha256": "92dfadc169e5d6332d19bcce8a3ed968e7f2665a9811b2f8acef92274881ef0d"
+        },
+        {
+          "id": "US-NV-CLARK-16204399011",
+          "geometrySha256": "79fb18746e630d82c4fc6d168c135a6b59138194738dce834b00cb01600e14c9"
+        },
+        {
+          "id": "US-NV-CLARK-16204399013",
+          "geometrySha256": "92d0842540b98c5fcc6008ae68cd94d7f6b4602a4b7588e6f62a11a2f5e7511e"
+        }
+      ]
+    },
+    {
+      "name": "viewport-1",
+      "passed": true,
+      "elapsedMs": 1170,
+      "requestIndexes": [
+        1,
+        1
+      ],
+      "bbox": [
+        -115.165,
+        36.15,
+        -115.164,
+        36.151
+      ],
+      "complete": true,
+      "count": 17,
+      "ids": [
+        {
+          "id": "US-NV-CLARK-16204301030",
+          "geometrySha256": "56d81b50ab59a2d82f282048a929f55525285668abba7b91f6aaccb5e6318d4d"
+        },
+        {
+          "id": "US-NV-CLARK-16204301019",
+          "geometrySha256": "1aaaa76592f3b317a7f5dbb216f247b7d89cc1811bdc5ca769e2c10c5dd31501"
+        },
+        {
+          "id": "US-NV-CLARK-16204301014",
+          "geometrySha256": "a00480c70febe1bad89c44ce4cbd98fe74a28144c1929649882d824938f9fe84"
+        },
+        {
+          "id": "US-NV-CLARK-16204301021",
+          "geometrySha256": "0db84fb2e9acbba1d3e7c1bd7383731ad7bfabb941c3a516b4fa14491dabdaa6"
+        },
+        {
+          "id": "US-NV-CLARK-16204702003",
+          "geometrySha256": "9859ffb34ae299170367735da41bfa64ab6e13a41947fa03a7e860655f288e91"
+        },
+        {
+          "id": "US-NV-CLARK-16204702004",
+          "geometrySha256": "c84a6ed1ecb60904be4cf640ba9e36a09d61d2e41db94d61c14ae1c29bf1a03d"
+        },
+        {
+          "id": "US-NV-CLARK-16204701002",
+          "geometrySha256": "ae1973dee20f0b582cf9542640c2e7cccb21f8a138d5107ead3f94de81575561"
+        },
+        {
+          "id": "US-NV-CLARK-16204302008",
+          "geometrySha256": "0b9626f37a8b202f5239d5df57cd7f01954f07a47180b933ea7550b10dcbe676"
+        },
+        {
+          "id": "US-NV-CLARK-16204702002",
+          "geometrySha256": "efb77909a235ff7e3cd5235f59642c700ca46c3580f8d2047e289967eed8ba7a"
+        },
+        {
+          "id": "US-NV-CLARK-16204399006",
+          "geometrySha256": "df4734f074006cce846f791c822989e3c4742911bc0b5ccdb2ea7eff43e3f4c2"
+        },
+        {
+          "id": "US-NV-CLARK-16204399005",
+          "geometrySha256": "92dfadc169e5d6332d19bcce8a3ed968e7f2665a9811b2f8acef92274881ef0d"
+        },
+        {
+          "id": "US-NV-CLARK-16204399011",
+          "geometrySha256": "79fb18746e630d82c4fc6d168c135a6b59138194738dce834b00cb01600e14c9"
+        },
+        {
+          "id": "US-NV-CLARK-16204399012",
+          "geometrySha256": "2afea6d1b84e8127fcdad85543b16d4ebfa3f8c0454972900bd36303a389d306"
+        },
+        {
+          "id": "US-NV-CLARK-16204799029",
+          "geometrySha256": "afb4ebb52804e3a9413b34a4c6b36a75df58cf6ab7f35892169f9b9a7df6e202"
+        },
+        {
+          "id": "US-NV-CLARK-16204399013",
+          "geometrySha256": "92d0842540b98c5fcc6008ae68cd94d7f6b4602a4b7588e6f62a11a2f5e7511e"
+        },
+        {
+          "id": "US-NV-CLARK-16204301029",
+          "geometrySha256": "f4525ef87f0a28871d0653e4b004d9c5410a198d3dfb19392dd04de0cf43ceec"
+        },
+        {
+          "id": "US-NV-CLARK-16204799003",
+          "geometrySha256": "c716349ec0c524663b33d7d2e931dd415b5e0e0680e4b4da634798d1b35d4b36"
+        }
+      ]
+    },
+    {
+      "name": "viewport-2",
+      "passed": true,
+      "elapsedMs": 1046,
+      "requestIndexes": [
+        2,
+        2
+      ],
+      "bbox": [
+        -115.164,
+        36.15,
+        -115.163,
+        36.151
+      ],
+      "complete": true,
+      "count": 11,
+      "ids": [
+        {
+          "id": "US-NV-CLARK-16204799027",
+          "geometrySha256": "b7521ee51505e052cf5f9ce3130c4b991e8ee6d0250463bd7176ca70226904da"
+        },
+        {
+          "id": "US-NV-CLARK-16204711003",
+          "geometrySha256": "d9a4af411051234ec5ed92765442f6d435fff091cae563a1917ee33cfdfb1537"
+        },
+        {
+          "id": "US-NV-CLARK-16204702003",
+          "geometrySha256": "9859ffb34ae299170367735da41bfa64ab6e13a41947fa03a7e860655f288e91"
+        },
+        {
+          "id": "US-NV-CLARK-16204702004",
+          "geometrySha256": "c84a6ed1ecb60904be4cf640ba9e36a09d61d2e41db94d61c14ae1c29bf1a03d"
+        },
+        {
+          "id": "US-NV-CLARK-16204703002",
+          "geometrySha256": "bdaf6e17aae0a91a76f4a3d2b621ef2a999fa120690852309a46db150c8f4356"
+        },
+        {
+          "id": "US-NV-CLARK-16204702002",
+          "geometrySha256": "efb77909a235ff7e3cd5235f59642c700ca46c3580f8d2047e289967eed8ba7a"
+        },
+        {
+          "id": "US-NV-CLARK-16204703003",
+          "geometrySha256": "996f8dabe7cf4b027421ab946b3fbace26cabfd0e1e730912d4df2f867b2c3b2"
+        },
+        {
+          "id": "US-NV-CLARK-16204703004",
+          "geometrySha256": "8d78a71b291295ee54a604a90efbdaec825006fa5cfb97023ccc4172578acf5e"
+        },
+        {
+          "id": "US-NV-CLARK-16204702001",
+          "geometrySha256": "18c70f6ebeba42635fd0e40c1087723ef6c3a651e893de1ff359058817851c0b"
+        },
+        {
+          "id": "US-NV-CLARK-16204799012",
+          "geometrySha256": "a63444a1585c1a7144de707a2269141224a80d18952b46fedd55217a89463dce"
+        },
+        {
+          "id": "US-NV-CLARK-16204799003",
+          "geometrySha256": "c716349ec0c524663b33d7d2e931dd415b5e0e0680e4b4da634798d1b35d4b36"
+        }
+      ]
+    },
+    {
+      "name": "viewport-3",
+      "passed": true,
+      "elapsedMs": 1057,
+      "requestIndexes": [
+        3,
+        3
+      ],
+      "bbox": [
+        -115.166,
+        36.151,
+        -115.165,
+        36.152
+      ],
+      "complete": true,
+      "count": 13,
+      "ids": [
+        {
+          "id": "US-NV-CLARK-16204399004",
+          "geometrySha256": "665a3bd20efd0f1287b65a2b51de93193035927cbe787a72561edf33f3066959"
+        },
+        {
+          "id": "US-NV-CLARK-16204311035",
+          "geometrySha256": "f58bc1330393acc72adffd7d426514d18eb2756c1223ec61c9d77e6a19b5b56d"
+        },
+        {
+          "id": "US-NV-CLARK-16204299037",
+          "geometrySha256": "7e274735b12ccc25420fbc73720c0beab4b247474b9c2f61ddacd42bf2142bf5"
+        },
+        {
+          "id": "US-NV-CLARK-16204210083",
+          "geometrySha256": "0a75364e66f1484657a12c0cc1fba526369e0e68015c709d48fc4b173a7d6048"
+        },
+        {
+          "id": "US-NV-CLARK-16204311034",
+          "geometrySha256": "887824c57ff45f786b0e51bd356933a21b8ae0b23903525fc408e3c60a076913"
+        },
+        {
+          "id": "US-NV-CLARK-16204399005",
+          "geometrySha256": "92dfadc169e5d6332d19bcce8a3ed968e7f2665a9811b2f8acef92274881ef0d"
+        },
+        {
+          "id": "US-NV-CLARK-16204210135",
+          "geometrySha256": "30f413ecc80b525aeb7ce1e9c542fd41b5a270e75fda2b13a05dcc8886a20c12"
+        },
+        {
+          "id": "US-NV-CLARK-16204299035",
+          "geometrySha256": "23599db51f6ed58ba46e0bb9f548ae8e21e5d69db0d552cc9a9e23d645fbffa0"
+        },
+        {
+          "id": "US-NV-CLARK-16204399003",
+          "geometrySha256": "62ac951cb65e451248a010b91d7f5f7067f7c6d4c32a7bfb9d890b3a8bd77912"
+        },
+        {
+          "id": "US-NV-CLARK-16204210084",
+          "geometrySha256": "bf23cce5eeeeb08d77c795c007dcfbf1237eb175f6c629e14d0c6ccac473a54b"
+        },
+        {
+          "id": "US-NV-CLARK-16204299024",
+          "geometrySha256": "3506fb784946fc7e19afb5fd51a6f5feae8b848eb9aa4252653a03627ce38c87"
+        },
+        {
+          "id": "US-NV-CLARK-16204210145",
+          "geometrySha256": "5498bd12f66ac0b98c1469cb3863a94a2c8da5710cd4ade282db102707a8fb6b"
+        },
+        {
+          "id": "US-NV-CLARK-16204299043",
+          "geometrySha256": "3a7caee2879964ab1b358843bcf2a6ceb6ac7fe5b09754bb4b2569699ae2e996"
+        }
+      ]
+    },
+    {
+      "name": "viewport-4",
+      "passed": true,
+      "elapsedMs": 1107,
+      "requestIndexes": [
+        4,
+        4
+      ],
+      "bbox": [
+        -115.165,
+        36.151,
+        -115.164,
+        36.152
+      ],
+      "complete": true,
+      "count": 12,
+      "ids": [
+        {
+          "id": "US-NV-CLARK-16204399004",
+          "geometrySha256": "665a3bd20efd0f1287b65a2b51de93193035927cbe787a72561edf33f3066959"
+        },
+        {
+          "id": "US-NV-CLARK-16204699026",
+          "geometrySha256": "03329a80b17e5edba5f563ef6ca661e63dcce4d726f1c4aebf5a83255aaa6189"
+        },
+        {
+          "id": "US-NV-CLARK-16204701002",
+          "geometrySha256": "ae1973dee20f0b582cf9542640c2e7cccb21f8a138d5107ead3f94de81575561"
+        },
+        {
+          "id": "US-NV-CLARK-16204603002",
+          "geometrySha256": "57e9fffa72cf6c2afe79012d5a0e4dd7b63c70be744d17dc9a5961a13989ca15"
+        },
+        {
+          "id": "US-NV-CLARK-16204699019",
+          "geometrySha256": "424cc16b6007c3fb144a0ffdf89c9b169eaad23a2937461c11041ac71292307c"
+        },
+        {
+          "id": "US-NV-CLARK-16204399005",
+          "geometrySha256": "92dfadc169e5d6332d19bcce8a3ed968e7f2665a9811b2f8acef92274881ef0d"
+        },
+        {
+          "id": "US-NV-CLARK-16204799001",
+          "geometrySha256": "9bbc623ebff78c636caf5636b481c7f0f75ccee863bfcf6d9daedfc8f012c879"
+        },
+        {
+          "id": "US-NV-CLARK-16204799029",
+          "geometrySha256": "afb4ebb52804e3a9413b34a4c6b36a75df58cf6ab7f35892169f9b9a7df6e202"
+        },
+        {
+          "id": "US-NV-CLARK-16204299035",
+          "geometrySha256": "23599db51f6ed58ba46e0bb9f548ae8e21e5d69db0d552cc9a9e23d645fbffa0"
+        },
+        {
+          "id": "US-NV-CLARK-16204799003",
+          "geometrySha256": "c716349ec0c524663b33d7d2e931dd415b5e0e0680e4b4da634798d1b35d4b36"
+        },
+        {
+          "id": "US-NV-CLARK-16204299024",
+          "geometrySha256": "3506fb784946fc7e19afb5fd51a6f5feae8b848eb9aa4252653a03627ce38c87"
+        },
+        {
+          "id": "US-NV-CLARK-16204699018",
+          "geometrySha256": "75e593d56659bf970f3541a2eca9801a2ed942fcbe4836e8695fb8ebf6de0c79"
+        }
+      ]
+    },
+    {
+      "name": "viewport-5",
+      "passed": true,
+      "elapsedMs": 1032,
+      "requestIndexes": [
+        5,
+        5
+      ],
+      "bbox": [
+        -115.164,
+        36.151,
+        -115.163,
+        36.152
+      ],
+      "complete": true,
+      "count": 9,
+      "ids": [
+        {
+          "id": "US-NV-CLARK-16204699026",
+          "geometrySha256": "03329a80b17e5edba5f563ef6ca661e63dcce4d726f1c4aebf5a83255aaa6189"
+        },
+        {
+          "id": "US-NV-CLARK-16204603002",
+          "geometrySha256": "57e9fffa72cf6c2afe79012d5a0e4dd7b63c70be744d17dc9a5961a13989ca15"
+        },
+        {
+          "id": "US-NV-CLARK-16204699019",
+          "geometrySha256": "424cc16b6007c3fb144a0ffdf89c9b169eaad23a2937461c11041ac71292307c"
+        },
+        {
+          "id": "US-NV-CLARK-16204799001",
+          "geometrySha256": "9bbc623ebff78c636caf5636b481c7f0f75ccee863bfcf6d9daedfc8f012c879"
+        },
+        {
+          "id": "US-NV-CLARK-16204603003",
+          "geometrySha256": "8fa74ab03de21352490fd7a4d35a6a26553dcc748f3f35f717d7d6a3bcd19378"
+        },
+        {
+          "id": "US-NV-CLARK-16204702001",
+          "geometrySha256": "18c70f6ebeba42635fd0e40c1087723ef6c3a651e893de1ff359058817851c0b"
+        },
+        {
+          "id": "US-NV-CLARK-16204799012",
+          "geometrySha256": "a63444a1585c1a7144de707a2269141224a80d18952b46fedd55217a89463dce"
+        },
+        {
+          "id": "US-NV-CLARK-16204799003",
+          "geometrySha256": "c716349ec0c524663b33d7d2e931dd415b5e0e0680e4b4da634798d1b35d4b36"
+        },
+        {
+          "id": "US-NV-CLARK-16204699018",
+          "geometrySha256": "75e593d56659bf970f3541a2eca9801a2ed942fcbe4836e8695fb8ebf6de0c79"
+        }
+      ]
+    },
+    {
+      "name": "viewport-6",
+      "passed": true,
+      "elapsedMs": 1062,
+      "requestIndexes": [
+        6,
+        6
+      ],
+      "bbox": [
+        -115.166,
+        36.152,
+        -115.165,
+        36.153
+      ],
+      "complete": true,
+      "count": 11,
+      "ids": [
+        {
+          "id": "US-NV-CLARK-16204210079",
+          "geometrySha256": "ddf332085005b24a1b425cfc16bf129d39cc54c8d5c69fdc359cd62d90a75d49"
+        },
+        {
+          "id": "US-NV-CLARK-16204210080",
+          "geometrySha256": "77a853d16baba1d73de9cda6ef563c1e19fb5df2049a26a8a5f2d9f501006f00"
+        },
+        {
+          "id": "US-NV-CLARK-16204210083",
+          "geometrySha256": "0a75364e66f1484657a12c0cc1fba526369e0e68015c709d48fc4b173a7d6048"
+        },
+        {
+          "id": "US-NV-CLARK-16204210058",
+          "geometrySha256": "c4342d436dfbdb2862c7101c7060e40d0c7e22dd4362fe3cd73abf1d39aab7ce"
+        },
+        {
+          "id": "US-NV-CLARK-16204210057",
+          "geometrySha256": "1a2c8f708f87b609786fdd85a628a7a1cdab78e6a7b5efcaccc6f1a262bfa95f"
+        },
+        {
+          "id": "US-NV-CLARK-16204210135",
+          "geometrySha256": "30f413ecc80b525aeb7ce1e9c542fd41b5a270e75fda2b13a05dcc8886a20c12"
+        },
+        {
+          "id": "US-NV-CLARK-16204210143",
+          "geometrySha256": "aca9232b27613a7ab22f1c173537fcc67c533ccc73720136ad82a010f9e22f0a"
+        },
+        {
+          "id": "US-NV-CLARK-16204299001",
+          "geometrySha256": "b875073760b86301711f191d8af7af4322f41f4f9c2e10dd4de5bfb639af6289"
+        },
+        {
+          "id": "US-NV-CLARK-16204299024",
+          "geometrySha256": "3506fb784946fc7e19afb5fd51a6f5feae8b848eb9aa4252653a03627ce38c87"
+        },
+        {
+          "id": "US-NV-CLARK-16204210145",
+          "geometrySha256": "5498bd12f66ac0b98c1469cb3863a94a2c8da5710cd4ade282db102707a8fb6b"
+        },
+        {
+          "id": "US-NV-CLARK-16204299043",
+          "geometrySha256": "3a7caee2879964ab1b358843bcf2a6ceb6ac7fe5b09754bb4b2569699ae2e996"
+        }
+      ]
+    },
+    {
+      "name": "viewport-7",
+      "passed": true,
+      "elapsedMs": 1135,
+      "requestIndexes": [
+        7,
+        7
+      ],
+      "bbox": [
+        -115.165,
+        36.152,
+        -115.164,
+        36.153
+      ],
+      "complete": true,
+      "count": 20,
+      "ids": [
+        {
+          "id": "US-NV-CLARK-16204699030",
+          "geometrySha256": "58fd4883956c77fa34315d8e46ad138519a7292bdfa87fc935889a815939a7d4"
+        },
+        {
+          "id": "US-NV-CLARK-16204299030",
+          "geometrySha256": "c79be8ef6f948f84c08dac4470c58d2e15907778ba7e66cfd8266f55c80df295"
+        },
+        {
+          "id": "US-NV-CLARK-16204299023",
+          "geometrySha256": "05c7b6fa68e75c62324eef2e8154f15a3e268b4c543b1967bfb3c0867c65f3a9"
+        },
+        {
+          "id": "US-NV-CLARK-16204210057",
+          "geometrySha256": "1a2c8f708f87b609786fdd85a628a7a1cdab78e6a7b5efcaccc6f1a262bfa95f"
+        },
+        {
+          "id": "US-NV-CLARK-16204299038",
+          "geometrySha256": "0c8e303e8f0def4f2aa636bcefeb3f8cd024e60a4bd0cb51627b14aa346e8261"
+        },
+        {
+          "id": "US-NV-CLARK-16204699055",
+          "geometrySha256": "a7c6edb16221e98553809a5822dbe53c579806f6f0264e593d929a088335868a"
+        },
+        {
+          "id": "US-NV-CLARK-16204699056",
+          "geometrySha256": "9f72fbf47e3a7a7ed34ec2ba7549f0b0a6ebf49e527cbc0a1ca795d99dd0c6a6"
+        },
+        {
+          "id": "US-NV-CLARK-16204210056",
+          "geometrySha256": "0280d8c86d284ba710692a53d6d0a9d0a8560b4dc05ab420edb01d1f0bf61ef0"
+        },
+        {
+          "id": "US-NV-CLARK-16204699035",
+          "geometrySha256": "0925b123dd06f89cc1c0e5202ef594f600d9e5a93ad8265c56d823e77dda7c3e"
+        },
+        {
+          "id": "US-NV-CLARK-16204210135",
+          "geometrySha256": "30f413ecc80b525aeb7ce1e9c542fd41b5a270e75fda2b13a05dcc8886a20c12"
+        },
+        {
+          "id": "US-NV-CLARK-16204299039",
+          "geometrySha256": "c847e57326732c8c7906d2d00c589733f29860905df8cc7af57426188c97d204"
+        },
+        {
+          "id": "US-NV-CLARK-16204210143",
+          "geometrySha256": "aca9232b27613a7ab22f1c173537fcc67c533ccc73720136ad82a010f9e22f0a"
+        },
+        {
+          "id": "US-NV-CLARK-16204299001",
+          "geometrySha256": "b875073760b86301711f191d8af7af4322f41f4f9c2e10dd4de5bfb639af6289"
+        },
+        {
+          "id": "US-NV-CLARK-16204299024",
+          "geometrySha256": "3506fb784946fc7e19afb5fd51a6f5feae8b848eb9aa4252653a03627ce38c87"
+        },
+        {
+          "id": "US-NV-CLARK-16204699017",
+          "geometrySha256": "a0ce6e8597ec63fe72521eeada3d1279a7674c965b0df1aea3bc8a491bcaf1e3"
+        },
+        {
+          "id": "US-NV-CLARK-16204699018",
+          "geometrySha256": "75e593d56659bf970f3541a2eca9801a2ed942fcbe4836e8695fb8ebf6de0c79"
+        },
+        {
+          "id": "US-NV-CLARK-16204210145",
+          "geometrySha256": "5498bd12f66ac0b98c1469cb3863a94a2c8da5710cd4ade282db102707a8fb6b"
+        },
+        {
+          "id": "US-NV-CLARK-16204210144",
+          "geometrySha256": "8d4db34633431f53d9fb6d63375231ea6facbdbc4e1b4691699fa419f2c0aade"
+        },
+        {
+          "id": "US-NV-CLARK-16204299042",
+          "geometrySha256": "ea28c7aa5b51043a33c8fb4d5cda7b4c22a985f33444791261594217499fb6ac"
+        },
+        {
+          "id": "US-NV-CLARK-16204299043",
+          "geometrySha256": "3a7caee2879964ab1b358843bcf2a6ceb6ac7fe5b09754bb4b2569699ae2e996"
+        }
+      ]
+    },
+    {
+      "name": "viewport-8",
+      "passed": true,
+      "elapsedMs": 1168,
+      "requestIndexes": [
+        8,
+        8
+      ],
+      "bbox": [
+        -115.164,
+        36.152,
+        -115.163,
+        36.153
+      ],
+      "complete": true,
+      "count": 5,
+      "ids": [
+        {
+          "id": "US-NV-CLARK-16204602008",
+          "geometrySha256": "9e153ba24899a8703bfa1f7861c5ce6794c02587d0ca4dd299725b0192a57564"
+        },
+        {
+          "id": "US-NV-CLARK-16204699019",
+          "geometrySha256": "424cc16b6007c3fb144a0ffdf89c9b169eaad23a2937461c11041ac71292307c"
+        },
+        {
+          "id": "US-NV-CLARK-16204602009",
+          "geometrySha256": "e55518fe89b8f274416f63f91fb3fc60ab0f4a5b317fb237291cf0db358629e4"
+        },
+        {
+          "id": "US-NV-CLARK-16204699017",
+          "geometrySha256": "a0ce6e8597ec63fe72521eeada3d1279a7674c965b0df1aea3bc8a491bcaf1e3"
+        },
+        {
+          "id": "US-NV-CLARK-16204699018",
+          "geometrySha256": "75e593d56659bf970f3541a2eca9801a2ed942fcbe4836e8695fb8ebf6de0c79"
+        }
+      ]
+    },
+    {
+      "name": "viewport-9",
+      "passed": true,
+      "elapsedMs": 1406,
+      "requestIndexes": [
+        9,
+        9
+      ],
+      "bbox": [
+        -115.165,
+        36.149,
+        -115.164,
+        36.15
+      ],
+      "complete": true,
+      "count": 10,
+      "ids": [
+        {
+          "id": "US-NV-CLARK-16204301014",
+          "geometrySha256": "a00480c70febe1bad89c44ce4cbd98fe74a28144c1929649882d824938f9fe84"
+        },
+        {
+          "id": "US-NV-CLARK-16204702004",
+          "geometrySha256": "c84a6ed1ecb60904be4cf640ba9e36a09d61d2e41db94d61c14ae1c29bf1a03d"
+        },
+        {
+          "id": "US-NV-CLARK-16204302009",
+          "geometrySha256": "40993909580f7dddca1f4d06831a78d4b0038d164458c6f060b9a3f4187ec2b5"
+        },
+        {
+          "id": "US-NV-CLARK-16204302002",
+          "geometrySha256": "4de8a9ee659a2526477a7ba79c5023faf85274704cb80b20808407d4118e975c"
+        },
+        {
+          "id": "US-NV-CLARK-16204703014",
+          "geometrySha256": "95707dc7aa2afd9ffbf97ce1c2067c381911b7e9b3bd4b338854c8fa1304bd42"
+        },
+        {
+          "id": "US-NV-CLARK-16204302003",
+          "geometrySha256": "802bcd08d6ae34d8d038df208264a71595302b6d1b80e87ec391b6f7b6b6a196"
+        },
+        {
+          "id": "US-NV-CLARK-16204302008",
+          "geometrySha256": "0b9626f37a8b202f5239d5df57cd7f01954f07a47180b933ea7550b10dcbe676"
+        },
+        {
+          "id": "US-NV-CLARK-16204703009",
+          "geometrySha256": "f3a0c967113f0dbed65ce6dc6f98dec184f9cf52e6372b3c79760bd89ad65f49"
+        },
+        {
+          "id": "US-NV-CLARK-16204399006",
+          "geometrySha256": "df4734f074006cce846f791c822989e3c4742911bc0b5ccdb2ea7eff43e3f4c2"
+        },
+        {
+          "id": "US-NV-CLARK-16204799012",
+          "geometrySha256": "a63444a1585c1a7144de707a2269141224a80d18952b46fedd55217a89463dce"
+        }
+      ]
+    },
+    {
+      "name": "viewport-10",
+      "passed": true,
+      "elapsedMs": 1260,
+      "requestIndexes": [
+        10,
+        10
+      ],
+      "bbox": [
+        -115.165,
+        36.153,
+        -115.164,
+        36.154
+      ],
+      "complete": true,
+      "count": 12,
+      "ids": [
+        {
+          "id": "US-NV-CLARK-16204601007",
+          "geometrySha256": "8620e3405e20e1fd7d3f57cb91935db1114326714b2264aba892f50fec98d46f"
+        },
+        {
+          "id": "US-NV-CLARK-16204210054",
+          "geometrySha256": "a5722c6058a279afd2e62295f6d4aa82e9ad46687fdf1ffcf95e84c258933ad2"
+        },
+        {
+          "id": "US-NV-CLARK-16204601006",
+          "geometrySha256": "4ec19765a368b02eacdb3338afeb9629b158ad85c1f05ba995af81cd41541667"
+        },
+        {
+          "id": "US-NV-CLARK-16204601005",
+          "geometrySha256": "878377915ff7a2ed3e6cfb62eddd98c28c87271f9d5b1f55790599a494b4d776"
+        },
+        {
+          "id": "US-NV-CLARK-16204210057",
+          "geometrySha256": "1a2c8f708f87b609786fdd85a628a7a1cdab78e6a7b5efcaccc6f1a262bfa95f"
+        },
+        {
+          "id": "US-NV-CLARK-16204210055",
+          "geometrySha256": "c998b0828b13db56159a4dd5c44486b537725ea297631c53118d70d989daf37c"
+        },
+        {
+          "id": "US-NV-CLARK-16204299038",
+          "geometrySha256": "0c8e303e8f0def4f2aa636bcefeb3f8cd024e60a4bd0cb51627b14aa346e8261"
+        },
+        {
+          "id": "US-NV-CLARK-16204699055",
+          "geometrySha256": "a7c6edb16221e98553809a5822dbe53c579806f6f0264e593d929a088335868a"
+        },
+        {
+          "id": "US-NV-CLARK-16204210056",
+          "geometrySha256": "0280d8c86d284ba710692a53d6d0a9d0a8560b4dc05ab420edb01d1f0bf61ef0"
+        },
+        {
+          "id": "US-NV-CLARK-16204699035",
+          "geometrySha256": "0925b123dd06f89cc1c0e5202ef594f600d9e5a93ad8265c56d823e77dda7c3e"
+        },
+        {
+          "id": "US-NV-CLARK-16204299001",
+          "geometrySha256": "b875073760b86301711f191d8af7af4322f41f4f9c2e10dd4de5bfb639af6289"
+        },
+        {
+          "id": "US-NV-CLARK-16204699017",
+          "geometrySha256": "a0ce6e8597ec63fe72521eeada3d1279a7674c965b0df1aea3bc8a491bcaf1e3"
+        }
+      ]
+    },
+    {
+      "name": "viewport-11",
+      "passed": true,
+      "elapsedMs": 1156,
+      "requestIndexes": [
+        11,
+        11
+      ],
+      "bbox": [
+        -115.167,
+        36.151,
+        -115.166,
+        36.152
+      ],
+      "complete": true,
+      "count": 17,
+      "ids": [
+        {
+          "id": "US-NV-CLARK-16204311041",
+          "geometrySha256": "7fe3e9d580a70c60284c7814aadbfd70941ff43cf30ed6861cf5c351cdc2eb0f"
+        },
+        {
+          "id": "US-NV-CLARK-16204311042",
+          "geometrySha256": "ecffba6a65a357b48d7af7977f516d4f9e02fd098390b860067c749ea37d212d"
+        },
+        {
+          "id": "US-NV-CLARK-16204311035",
+          "geometrySha256": "f58bc1330393acc72adffd7d426514d18eb2756c1223ec61c9d77e6a19b5b56d"
+        },
+        {
+          "id": "US-NV-CLARK-16204311037",
+          "geometrySha256": "1d54c886d9a1c77e8397d04f9da738d252de41d1b125aab0b088d530266075bf"
+        },
+        {
+          "id": "US-NV-CLARK-16204311036",
+          "geometrySha256": "76271f856f8e932c38a4b9b0df0f2dd24b73e184d8b009e00424ac7a55eaacec"
+        },
+        {
+          "id": "US-NV-CLARK-16204299037",
+          "geometrySha256": "7e274735b12ccc25420fbc73720c0beab4b247474b9c2f61ddacd42bf2142bf5"
+        },
+        {
+          "id": "US-NV-CLARK-16204299022",
+          "geometrySha256": "92166a868cd3c9ce17aaf552f9bb4c11ebeb48dad2a41569a895fc757bea7c39"
+        },
+        {
+          "id": "US-NV-CLARK-16204210083",
+          "geometrySha256": "0a75364e66f1484657a12c0cc1fba526369e0e68015c709d48fc4b173a7d6048"
+        },
+        {
+          "id": "US-NV-CLARK-16204311034",
+          "geometrySha256": "887824c57ff45f786b0e51bd356933a21b8ae0b23903525fc408e3c60a076913"
+        },
+        {
+          "id": "US-NV-CLARK-16204210086",
+          "geometrySha256": "30763e27e044d5224f5cbf445aa147de960c34a93b032dc5d774c0d2e7d931e1"
+        },
+        {
+          "id": "US-NV-CLARK-16204299040",
+          "geometrySha256": "9ad92685f68530918dafa1b0548498cb68c26647a5a17504cae26d7349f96741"
+        },
+        {
+          "id": "US-NV-CLARK-16204299035",
+          "geometrySha256": "23599db51f6ed58ba46e0bb9f548ae8e21e5d69db0d552cc9a9e23d645fbffa0"
+        },
+        {
+          "id": "US-NV-CLARK-16204299001",
+          "geometrySha256": "b875073760b86301711f191d8af7af4322f41f4f9c2e10dd4de5bfb639af6289"
+        },
+        {
+          "id": "US-NV-CLARK-16204399003",
+          "geometrySha256": "62ac951cb65e451248a010b91d7f5f7067f7c6d4c32a7bfb9d890b3a8bd77912"
+        },
+        {
+          "id": "US-NV-CLARK-16204210084",
+          "geometrySha256": "bf23cce5eeeeb08d77c795c007dcfbf1237eb175f6c629e14d0c6ccac473a54b"
+        },
+        {
+          "id": "US-NV-CLARK-16204210133",
+          "geometrySha256": "e023224f968aad9e62a3b4ac8262f81f5166a373f5b0f7219ab29b03bff94c88"
+        },
+        {
+          "id": "US-NV-CLARK-16204299043",
+          "geometrySha256": "3a7caee2879964ab1b358843bcf2a6ceb6ac7fe5b09754bb4b2569699ae2e996"
+        }
+      ]
+    },
+    {
+      "name": "viewport-12",
+      "passed": true,
+      "elapsedMs": 1069,
+      "requestIndexes": [
+        12,
+        12
+      ],
+      "bbox": [
+        -115.163,
+        36.151,
+        -115.162,
+        36.152
+      ],
+      "complete": true,
+      "count": 14,
+      "ids": [
+        {
+          "id": "US-NV-CLARK-16204699022",
+          "geometrySha256": "547e97e6b7ca25e50684491baa90fc18227cf92c3bdf8c1c15c8136454aaf7d4"
+        },
+        {
+          "id": "US-NV-CLARK-16204699023",
+          "geometrySha256": "9667c90d1c794985c7d9b91318e89c75545ce71e6d64c87ec99749b0d75b1115"
+        },
+        {
+          "id": "US-NV-CLARK-16204699024",
+          "geometrySha256": "4b1a82dab24a4c56d9665e31ca5fe89c11bf565d5cf6ee456007674929cba7dd"
+        },
+        {
+          "id": "US-NV-CLARK-16204699026",
+          "geometrySha256": "03329a80b17e5edba5f563ef6ca661e63dcce4d726f1c4aebf5a83255aaa6189"
+        },
+        {
+          "id": "US-NV-CLARK-16204604001",
+          "geometrySha256": "1179c25b405298b9fa839ac92bd9ba395e8b6534699747426b0c7894a0639d0b"
+        },
+        {
+          "id": "US-NV-CLARK-16204703002",
+          "geometrySha256": "bdaf6e17aae0a91a76f4a3d2b621ef2a999fa120690852309a46db150c8f4356"
+        },
+        {
+          "id": "US-NV-CLARK-16204703001",
+          "geometrySha256": "42c9260f91bb3643c32e4aaa4c1d238dd2b1b5b09bf3df22c4f3491e78189717"
+        },
+        {
+          "id": "US-NV-CLARK-16204699019",
+          "geometrySha256": "424cc16b6007c3fb144a0ffdf89c9b169eaad23a2937461c11041ac71292307c"
+        },
+        {
+          "id": "US-NV-CLARK-16204604002",
+          "geometrySha256": "56c9cabb83a117969123f4c9d5229b3489b07eca80a084a503b92e246ecad4b7"
+        },
+        {
+          "id": "US-NV-CLARK-16204799001",
+          "geometrySha256": "9bbc623ebff78c636caf5636b481c7f0f75ccee863bfcf6d9daedfc8f012c879"
+        },
+        {
+          "id": "US-NV-CLARK-16204799028",
+          "geometrySha256": "b8083b54b072ef3fa16643a381c5c3f07a8787cd229d481451b45e1d15ace889"
+        },
+        {
+          "id": "US-NV-CLARK-16204603003",
+          "geometrySha256": "8fa74ab03de21352490fd7a4d35a6a26553dcc748f3f35f717d7d6a3bcd19378"
+        },
+        {
+          "id": "US-NV-CLARK-16204799012",
+          "geometrySha256": "a63444a1585c1a7144de707a2269141224a80d18952b46fedd55217a89463dce"
+        },
+        {
+          "id": "US-NV-CLARK-16204799003",
+          "geometrySha256": "c716349ec0c524663b33d7d2e931dd415b5e0e0680e4b4da634798d1b35d4b36"
+        }
+      ]
+    },
+    {
+      "name": "forced-three-row-pages",
+      "passed": false,
+      "elapsedMs": 1690,
+      "requestIndexes": [
+        13,
+        15
+      ],
+      "error": "Parcel provider is unavailable (HTTP 500).",
+      "code": "parcel-source-unavailable"
+    },
+    {
+      "name": "fresh-ids-0",
+      "passed": true,
+      "elapsedMs": 803,
+      "requestIndexes": [
+        16,
+        16
+      ],
+      "count": 40,
+      "ids": [
+        "US-NV-CLARK-16204210054",
+        "US-NV-CLARK-16204210055",
+        "US-NV-CLARK-16204210056",
+        "US-NV-CLARK-16204210057",
+        "US-NV-CLARK-16204210058",
+        "US-NV-CLARK-16204210079",
+        "US-NV-CLARK-16204210080",
+        "US-NV-CLARK-16204210083",
+        "US-NV-CLARK-16204210084",
+        "US-NV-CLARK-16204210086",
+        "US-NV-CLARK-16204210133",
+        "US-NV-CLARK-16204210135",
+        "US-NV-CLARK-16204210143",
+        "US-NV-CLARK-16204210144",
+        "US-NV-CLARK-16204210145",
+        "US-NV-CLARK-16204299001",
+        "US-NV-CLARK-16204299022",
+        "US-NV-CLARK-16204299023",
+        "US-NV-CLARK-16204299024",
+        "US-NV-CLARK-16204299030",
+        "US-NV-CLARK-16204299035",
+        "US-NV-CLARK-16204299037",
+        "US-NV-CLARK-16204299038",
+        "US-NV-CLARK-16204299039",
+        "US-NV-CLARK-16204299040",
+        "US-NV-CLARK-16204299042",
+        "US-NV-CLARK-16204299043",
+        "US-NV-CLARK-16204301004",
+        "US-NV-CLARK-16204301014",
+        "US-NV-CLARK-16204301019",
+        "US-NV-CLARK-16204301021",
+        "US-NV-CLARK-16204301029",
+        "US-NV-CLARK-16204301030",
+        "US-NV-CLARK-16204302002",
+        "US-NV-CLARK-16204302003",
+        "US-NV-CLARK-16204302008",
+        "US-NV-CLARK-16204302009",
+        "US-NV-CLARK-16204311032",
+        "US-NV-CLARK-16204311033",
+        "US-NV-CLARK-16204311034"
+      ],
+      "allGeometryHashesMatch": true,
+      "absentIds": []
+    },
+    {
+      "name": "fresh-ids-40",
+      "passed": true,
+      "elapsedMs": 267,
+      "requestIndexes": [
+        17,
+        17
+      ],
+      "count": 40,
+      "ids": [
+        "US-NV-CLARK-16204311035",
+        "US-NV-CLARK-16204311036",
+        "US-NV-CLARK-16204311037",
+        "US-NV-CLARK-16204311041",
+        "US-NV-CLARK-16204311042",
+        "US-NV-CLARK-16204399003",
+        "US-NV-CLARK-16204399004",
+        "US-NV-CLARK-16204399005",
+        "US-NV-CLARK-16204399006",
+        "US-NV-CLARK-16204399011",
+        "US-NV-CLARK-16204399012",
+        "US-NV-CLARK-16204399013",
+        "US-NV-CLARK-16204601005",
+        "US-NV-CLARK-16204601006",
+        "US-NV-CLARK-16204601007",
+        "US-NV-CLARK-16204602008",
+        "US-NV-CLARK-16204602009",
+        "US-NV-CLARK-16204603002",
+        "US-NV-CLARK-16204603003",
+        "US-NV-CLARK-16204604001",
+        "US-NV-CLARK-16204604002",
+        "US-NV-CLARK-16204699017",
+        "US-NV-CLARK-16204699018",
+        "US-NV-CLARK-16204699019",
+        "US-NV-CLARK-16204699022",
+        "US-NV-CLARK-16204699023",
+        "US-NV-CLARK-16204699024",
+        "US-NV-CLARK-16204699026",
+        "US-NV-CLARK-16204699030",
+        "US-NV-CLARK-16204699035",
+        "US-NV-CLARK-16204699055",
+        "US-NV-CLARK-16204699056",
+        "US-NV-CLARK-16204701002",
+        "US-NV-CLARK-16204702001",
+        "US-NV-CLARK-16204702002",
+        "US-NV-CLARK-16204702003",
+        "US-NV-CLARK-16204702004",
+        "US-NV-CLARK-16204703001",
+        "US-NV-CLARK-16204703002",
+        "US-NV-CLARK-16204703003"
+      ],
+      "allGeometryHashesMatch": true,
+      "absentIds": []
+    },
+    {
+      "name": "fresh-ids-80",
+      "passed": true,
+      "elapsedMs": 287,
+      "requestIndexes": [
+        18,
+        18
+      ],
+      "count": 10,
+      "ids": [
+        "US-NV-CLARK-16204703004",
+        "US-NV-CLARK-16204703009",
+        "US-NV-CLARK-16204703014",
+        "US-NV-CLARK-16204711003",
+        "US-NV-CLARK-16204799001",
+        "US-NV-CLARK-16204799003",
+        "US-NV-CLARK-16204799012",
+        "US-NV-CLARK-16204799027",
+        "US-NV-CLARK-16204799028",
+        "US-NV-CLARK-16204799029"
+      ],
+      "allGeometryHashesMatch": true,
+      "absentIds": []
+    },
+    {
+      "name": "explicit-absence",
+      "passed": true,
+      "elapsedMs": 240,
+      "requestIndexes": [
+        19,
+        19
+      ],
+      "absentIds": [
+        "US-NV-CLARK-999999999999999"
+      ],
+      "complete": true
+    },
+    {
+      "name": "footprint",
+      "passed": true,
+      "elapsedMs": 1110,
+      "requestIndexes": [
+        20,
+        20
+      ],
+      "selectedParcelId": "US-NV-CLARK-16204210133",
+      "count": 6,
+      "allGeometryHashesMatch": true
+    },
+    {
+      "name": "source-binding",
+      "passed": true,
+      "elapsedMs": 1057,
+      "requestIndexes": [
+        21,
+        21
+      ],
+      "selectedParcelId": "US-NV-CLARK-16204210133",
+      "coverage": "complete",
+      "siteM2": 1693.87,
+      "boundParcels": 1
+    }
+  ],
+  "requests": [
+    {
+      "test": "viewport-0",
+      "url": "https://maps.clarkcountynv.gov/arcgis/rest/services/GISMO/AssessorMap/FeatureServer/1/query?where=1%3D1&outFields=OID%2CAPN&returnGeometry=true&outSR=4326&f=geojson&orderByFields=OID&resultRecordCount=2000&resultOffset=0&geometry=-115.166%2C36.15%2C-115.165%2C36.151&geometryType=esriGeometryEnvelope&inSR=4326&spatialRel=esriSpatialRelIntersects",
+      "method": "GET",
+      "checkedAt": "2026-10-08T21:20:12.912Z",
+      "httpStatus": 200,
+      "contentType": "application/geo+json; charset=UTF-8",
+      "bytes": 5871,
+      "features": [
+        {
+          "transportId": 475239,
+          "properties": {
+            "OID": 475239,
+            "APN": "16204311032"
+          },
+          "geometrySha256": "1813dcd13cb86604936b75983b62d4ce7691a28e5129008f09d3793fb4f4524f"
+        },
+        {
+          "transportId": 533450,
+          "properties": {
+            "OID": 533450,
+            "APN": "16204311033"
+          },
+          "geometrySha256": "4169ca2717accab9a9f7106f08ae2af4e0d97f177722c0a3c27bfaee15f68178"
+        },
+        {
+          "transportId": 567868,
+          "properties": {
+            "OID": 567868,
+            "APN": "16204301004"
+          },
+          "geometrySha256": "76a76acfe6af4cf0ccad981f186811bd4d040446ce2fbf7460d06773f409aa64"
+        },
+        {
+          "transportId": 568032,
+          "properties": {
+            "OID": 568032,
+            "APN": "16204301019"
+          },
+          "geometrySha256": "1aaaa76592f3b317a7f5dbb216f247b7d89cc1811bdc5ca769e2c10c5dd31501"
+        },
+        {
+          "transportId": 568138,
+          "properties": {
+            "OID": 568138,
+            "APN": "16204301014"
+          },
+          "geometrySha256": "a00480c70febe1bad89c44ce4cbd98fe74a28144c1929649882d824938f9fe84"
+        },
+        {
+          "transportId": 606160,
+          "properties": {
+            "OID": 606160,
+            "APN": "16204311034"
+          },
+          "geometrySha256": "887824c57ff45f786b0e51bd356933a21b8ae0b23903525fc408e3c60a076913"
+        },
+        {
+          "transportId": 680107,
+          "properties": {
+            "OID": 680107,
+            "APN": "16204399005"
+          },
+          "geometrySha256": "92dfadc169e5d6332d19bcce8a3ed968e7f2665a9811b2f8acef92274881ef0d"
+        },
+        {
+          "transportId": 2339257,
+          "properties": {
+            "OID": 2339257,
+            "APN": "16204399011"
+          },
+          "geometrySha256": "79fb18746e630d82c4fc6d168c135a6b59138194738dce834b00cb01600e14c9"
+        },
+        {
+          "transportId": 2339260,
+          "properties": {
+            "OID": 2339260,
+            "APN": "16204399013"
+          },
+          "geometrySha256": "92d0842540b98c5fcc6008ae68cd94d7f6b4602a4b7588e6f62a11a2f5e7511e"
+        }
+      ]
+    },
+    {
+      "test": "viewport-1",
+      "url": "https://maps.clarkcountynv.gov/arcgis/rest/services/GISMO/AssessorMap/FeatureServer/1/query?where=1%3D1&outFields=OID%2CAPN&returnGeometry=true&outSR=4326&f=geojson&orderByFields=OID&resultRecordCount=2000&resultOffset=0&geometry=-115.165%2C36.15%2C-115.164%2C36.151&geometryType=esriGeometryEnvelope&inSR=4326&spatialRel=esriSpatialRelIntersects",
+      "method": "GET",
+      "checkedAt": "2026-10-08T21:20:14.458Z",
+      "httpStatus": 200,
+      "contentType": "application/geo+json; charset=UTF-8",
+      "bytes": 11982,
+      "features": [
+        {
+          "transportId": 564858,
+          "properties": {
+            "OID": 564858,
+            "APN": "16204301030"
+          },
+          "geometrySha256": "56d81b50ab59a2d82f282048a929f55525285668abba7b91f6aaccb5e6318d4d"
+        },
+        {
+          "transportId": 568032,
+          "properties": {
+            "OID": 568032,
+            "APN": "16204301019"
+          },
+          "geometrySha256": "1aaaa76592f3b317a7f5dbb216f247b7d89cc1811bdc5ca769e2c10c5dd31501"
+        },
+        {
+          "transportId": 568138,
+          "properties": {
+            "OID": 568138,
+            "APN": "16204301014"
+          },
+          "geometrySha256": "a00480c70febe1bad89c44ce4cbd98fe74a28144c1929649882d824938f9fe84"
+        },
+        {
+          "transportId": 571545,
+          "properties": {
+            "OID": 571545,
+            "APN": "16204301021"
+          },
+          "geometrySha256": "0db84fb2e9acbba1d3e7c1bd7383731ad7bfabb941c3a516b4fa14491dabdaa6"
+        },
+        {
+          "transportId": 599042,
+          "properties": {
+            "OID": 599042,
+            "APN": "16204702003"
+          },
+          "geometrySha256": "9859ffb34ae299170367735da41bfa64ab6e13a41947fa03a7e860655f288e91"
+        },
+        {
+          "transportId": 613669,
+          "properties": {
+            "OID": 613669,
+            "APN": "16204702004"
+          },
+          "geometrySha256": "c84a6ed1ecb60904be4cf640ba9e36a09d61d2e41db94d61c14ae1c29bf1a03d"
+        },
+        {
+          "transportId": 614124,
+          "properties": {
+            "OID": 614124,
+            "APN": "16204701002"
+          },
+          "geometrySha256": "ae1973dee20f0b582cf9542640c2e7cccb21f8a138d5107ead3f94de81575561"
+        },
+        {
+          "transportId": 629241,
+          "properties": {
+            "OID": 629241,
+            "APN": "16204302008"
+          },
+          "geometrySha256": "0b9626f37a8b202f5239d5df57cd7f01954f07a47180b933ea7550b10dcbe676"
+        },
+        {
+          "transportId": 635937,
+          "properties": {
+            "OID": 635937,
+            "APN": "16204702002"
+          },
+          "geometrySha256": "efb77909a235ff7e3cd5235f59642c700ca46c3580f8d2047e289967eed8ba7a"
+        },
+        {
+          "transportId": 652198,
+          "properties": {
+            "OID": 652198,
+            "APN": "16204399006"
+          },
+          "geometrySha256": "df4734f074006cce846f791c822989e3c4742911bc0b5ccdb2ea7eff43e3f4c2"
+        },
+        {
+          "transportId": 680107,
+          "properties": {
+            "OID": 680107,
+            "APN": "16204399005"
+          },
+          "geometrySha256": "92dfadc169e5d6332d19bcce8a3ed968e7f2665a9811b2f8acef92274881ef0d"
+        },
+        {
+          "transportId": 2339257,
+          "properties": {
+            "OID": 2339257,
+            "APN": "16204399011"
+          },
+          "geometrySha256": "79fb18746e630d82c4fc6d168c135a6b59138194738dce834b00cb01600e14c9"
+        },
+        {
+          "transportId": 2339258,
+          "properties": {
+            "OID": 2339258,
+            "APN": "16204399012"
+          },
+          "geometrySha256": "2afea6d1b84e8127fcdad85543b16d4ebfa3f8c0454972900bd36303a389d306"
+        },
+        {
+          "transportId": 2339259,
+          "properties": {
+            "OID": 2339259,
+            "APN": "16204799029"
+          },
+          "geometrySha256": "afb4ebb52804e3a9413b34a4c6b36a75df58cf6ab7f35892169f9b9a7df6e202"
+        },
+        {
+          "transportId": 2339260,
+          "properties": {
+            "OID": 2339260,
+            "APN": "16204399013"
+          },
+          "geometrySha256": "92d0842540b98c5fcc6008ae68cd94d7f6b4602a4b7588e6f62a11a2f5e7511e"
+        },
+        {
+          "transportId": 2519121,
+          "properties": {
+            "OID": 2519121,
+            "APN": "16204301029"
+          },
+          "geometrySha256": "f4525ef87f0a28871d0653e4b004d9c5410a198d3dfb19392dd04de0cf43ceec"
+        },
+        {
+          "transportId": 3980280,
+          "properties": {
+            "OID": 3980280,
+            "APN": "16204799003"
+          },
+          "geometrySha256": "c716349ec0c524663b33d7d2e931dd415b5e0e0680e4b4da634798d1b35d4b36"
+        }
+      ]
+    },
+    {
+      "test": "viewport-2",
+      "url": "https://maps.clarkcountynv.gov/arcgis/rest/services/GISMO/AssessorMap/FeatureServer/1/query?where=1%3D1&outFields=OID%2CAPN&returnGeometry=true&outSR=4326&f=geojson&orderByFields=OID&resultRecordCount=2000&resultOffset=0&geometry=-115.164%2C36.15%2C-115.163%2C36.151&geometryType=esriGeometryEnvelope&inSR=4326&spatialRel=esriSpatialRelIntersects",
+      "method": "GET",
+      "checkedAt": "2026-10-08T21:20:15.629Z",
+      "httpStatus": 200,
+      "contentType": "application/geo+json; charset=UTF-8",
+      "bytes": 7922,
+      "features": [
+        {
+          "transportId": 16323,
+          "properties": {
+            "OID": 16323,
+            "APN": "16204799027"
+          },
+          "geometrySha256": "b7521ee51505e052cf5f9ce3130c4b991e8ee6d0250463bd7176ca70226904da"
+        },
+        {
+          "transportId": 578898,
+          "properties": {
+            "OID": 578898,
+            "APN": "16204711003"
+          },
+          "geometrySha256": "d9a4af411051234ec5ed92765442f6d435fff091cae563a1917ee33cfdfb1537"
+        },
+        {
+          "transportId": 599042,
+          "properties": {
+            "OID": 599042,
+            "APN": "16204702003"
+          },
+          "geometrySha256": "9859ffb34ae299170367735da41bfa64ab6e13a41947fa03a7e860655f288e91"
+        },
+        {
+          "transportId": 613669,
+          "properties": {
+            "OID": 613669,
+            "APN": "16204702004"
+          },
+          "geometrySha256": "c84a6ed1ecb60904be4cf640ba9e36a09d61d2e41db94d61c14ae1c29bf1a03d"
+        },
+        {
+          "transportId": 628704,
+          "properties": {
+            "OID": 628704,
+            "APN": "16204703002"
+          },
+          "geometrySha256": "bdaf6e17aae0a91a76f4a3d2b621ef2a999fa120690852309a46db150c8f4356"
+        },
+        {
+          "transportId": 635937,
+          "properties": {
+            "OID": 635937,
+            "APN": "16204702002"
+          },
+          "geometrySha256": "efb77909a235ff7e3cd5235f59642c700ca46c3580f8d2047e289967eed8ba7a"
+        },
+        {
+          "transportId": 638039,
+          "properties": {
+            "OID": 638039,
+            "APN": "16204703003"
+          },
+          "geometrySha256": "996f8dabe7cf4b027421ab946b3fbace26cabfd0e1e730912d4df2f867b2c3b2"
+        },
+        {
+          "transportId": 638081,
+          "properties": {
+            "OID": 638081,
+            "APN": "16204703004"
+          },
+          "geometrySha256": "8d78a71b291295ee54a604a90efbdaec825006fa5cfb97023ccc4172578acf5e"
+        },
+        {
+          "transportId": 3980278,
+          "properties": {
+            "OID": 3980278,
+            "APN": "16204702001"
+          },
+          "geometrySha256": "18c70f6ebeba42635fd0e40c1087723ef6c3a651e893de1ff359058817851c0b"
+        },
+        {
+          "transportId": 3980279,
+          "properties": {
+            "OID": 3980279,
+            "APN": "16204799012"
+          },
+          "geometrySha256": "a63444a1585c1a7144de707a2269141224a80d18952b46fedd55217a89463dce"
+        },
+        {
+          "transportId": 3980280,
+          "properties": {
+            "OID": 3980280,
+            "APN": "16204799003"
+          },
+          "geometrySha256": "c716349ec0c524663b33d7d2e931dd415b5e0e0680e4b4da634798d1b35d4b36"
+        }
+      ]
+    },
+    {
+      "test": "viewport-3",
+      "url": "https://maps.clarkcountynv.gov/arcgis/rest/services/GISMO/AssessorMap/FeatureServer/1/query?where=1%3D1&outFields=OID%2CAPN&returnGeometry=true&outSR=4326&f=geojson&orderByFields=OID&resultRecordCount=2000&resultOffset=0&geometry=-115.166%2C36.151%2C-115.165%2C36.152&geometryType=esriGeometryEnvelope&inSR=4326&spatialRel=esriSpatialRelIntersects",
+      "method": "GET",
+      "checkedAt": "2026-10-08T21:20:16.675Z",
+      "httpStatus": 200,
+      "contentType": "application/geo+json; charset=UTF-8",
+      "bytes": 25522,
+      "features": [
+        {
+          "transportId": 324213,
+          "properties": {
+            "OID": 324213,
+            "APN": "16204399004"
+          },
+          "geometrySha256": "665a3bd20efd0f1287b65a2b51de93193035927cbe787a72561edf33f3066959"
+        },
+        {
+          "transportId": 520815,
+          "properties": {
+            "OID": 520815,
+            "APN": "16204311035"
+          },
+          "geometrySha256": "f58bc1330393acc72adffd7d426514d18eb2756c1223ec61c9d77e6a19b5b56d"
+        },
+        {
+          "transportId": 598670,
+          "properties": {
+            "OID": 598670,
+            "APN": "16204299037"
+          },
+          "geometrySha256": "7e274735b12ccc25420fbc73720c0beab4b247474b9c2f61ddacd42bf2142bf5"
+        },
+        {
+          "transportId": 605451,
+          "properties": {
+            "OID": 605451,
+            "APN": "16204210083"
+          },
+          "geometrySha256": "0a75364e66f1484657a12c0cc1fba526369e0e68015c709d48fc4b173a7d6048"
+        },
+        {
+          "transportId": 606160,
+          "properties": {
+            "OID": 606160,
+            "APN": "16204311034"
+          },
+          "geometrySha256": "887824c57ff45f786b0e51bd356933a21b8ae0b23903525fc408e3c60a076913"
+        },
+        {
+          "transportId": 680107,
+          "properties": {
+            "OID": 680107,
+            "APN": "16204399005"
+          },
+          "geometrySha256": "92dfadc169e5d6332d19bcce8a3ed968e7f2665a9811b2f8acef92274881ef0d"
+        },
+        {
+          "transportId": 2165224,
+          "properties": {
+            "OID": 2165224,
+            "APN": "16204210135"
+          },
+          "geometrySha256": "30f413ecc80b525aeb7ce1e9c542fd41b5a270e75fda2b13a05dcc8886a20c12"
+        },
+        {
+          "transportId": 3731367,
+          "properties": {
+            "OID": 3731367,
+            "APN": "16204299035"
+          },
+          "geometrySha256": "23599db51f6ed58ba46e0bb9f548ae8e21e5d69db0d552cc9a9e23d645fbffa0"
+        },
+        {
+          "transportId": 3921811,
+          "properties": {
+            "OID": 3921811,
+            "APN": "16204399003"
+          },
+          "geometrySha256": "62ac951cb65e451248a010b91d7f5f7067f7c6d4c32a7bfb9d890b3a8bd77912"
+        },
+        {
+          "transportId": 4069487,
+          "properties": {
+            "OID": 4069487,
+            "APN": "16204210084"
+          },
+          "geometrySha256": "bf23cce5eeeeb08d77c795c007dcfbf1237eb175f6c629e14d0c6ccac473a54b"
+        },
+        {
+          "transportId": 4069489,
+          "properties": {
+            "OID": 4069489,
+            "APN": "16204299024"
+          },
+          "geometrySha256": "3506fb784946fc7e19afb5fd51a6f5feae8b848eb9aa4252653a03627ce38c87"
+        },
+        {
+          "transportId": 4072021,
+          "properties": {
+            "OID": 4072021,
+            "APN": "16204210145"
+          },
+          "geometrySha256": "5498bd12f66ac0b98c1469cb3863a94a2c8da5710cd4ade282db102707a8fb6b"
+        },
+        {
+          "transportId": 4072024,
+          "properties": {
+            "OID": 4072024,
+            "APN": "16204299043"
+          },
+          "geometrySha256": "3a7caee2879964ab1b358843bcf2a6ceb6ac7fe5b09754bb4b2569699ae2e996"
+        }
+      ]
+    },
+    {
+      "test": "viewport-4",
+      "url": "https://maps.clarkcountynv.gov/arcgis/rest/services/GISMO/AssessorMap/FeatureServer/1/query?where=1%3D1&outFields=OID%2CAPN&returnGeometry=true&outSR=4326&f=geojson&orderByFields=OID&resultRecordCount=2000&resultOffset=0&geometry=-115.165%2C36.151%2C-115.164%2C36.152&geometryType=esriGeometryEnvelope&inSR=4326&spatialRel=esriSpatialRelIntersects",
+      "method": "GET",
+      "checkedAt": "2026-10-08T21:20:17.734Z",
+      "httpStatus": 200,
+      "contentType": "application/geo+json; charset=UTF-8",
+      "bytes": 17890,
+      "features": [
+        {
+          "transportId": 324213,
+          "properties": {
+            "OID": 324213,
+            "APN": "16204399004"
+          },
+          "geometrySha256": "665a3bd20efd0f1287b65a2b51de93193035927cbe787a72561edf33f3066959"
+        },
+        {
+          "transportId": 434604,
+          "properties": {
+            "OID": 434604,
+            "APN": "16204699026"
+          },
+          "geometrySha256": "03329a80b17e5edba5f563ef6ca661e63dcce4d726f1c4aebf5a83255aaa6189"
+        },
+        {
+          "transportId": 614124,
+          "properties": {
+            "OID": 614124,
+            "APN": "16204701002"
+          },
+          "geometrySha256": "ae1973dee20f0b582cf9542640c2e7cccb21f8a138d5107ead3f94de81575561"
+        },
+        {
+          "transportId": 648849,
+          "properties": {
+            "OID": 648849,
+            "APN": "16204603002"
+          },
+          "geometrySha256": "57e9fffa72cf6c2afe79012d5a0e4dd7b63c70be744d17dc9a5961a13989ca15"
+        },
+        {
+          "transportId": 650851,
+          "properties": {
+            "OID": 650851,
+            "APN": "16204699019"
+          },
+          "geometrySha256": "424cc16b6007c3fb144a0ffdf89c9b169eaad23a2937461c11041ac71292307c"
+        },
+        {
+          "transportId": 680107,
+          "properties": {
+            "OID": 680107,
+            "APN": "16204399005"
+          },
+          "geometrySha256": "92dfadc169e5d6332d19bcce8a3ed968e7f2665a9811b2f8acef92274881ef0d"
+        },
+        {
+          "transportId": 1101029,
+          "properties": {
+            "OID": 1101029,
+            "APN": "16204799001"
+          },
+          "geometrySha256": "9bbc623ebff78c636caf5636b481c7f0f75ccee863bfcf6d9daedfc8f012c879"
+        },
+        {
+          "transportId": 2339259,
+          "properties": {
+            "OID": 2339259,
+            "APN": "16204799029"
+          },
+          "geometrySha256": "afb4ebb52804e3a9413b34a4c6b36a75df58cf6ab7f35892169f9b9a7df6e202"
+        },
+        {
+          "transportId": 3731367,
+          "properties": {
+            "OID": 3731367,
+            "APN": "16204299035"
+          },
+          "geometrySha256": "23599db51f6ed58ba46e0bb9f548ae8e21e5d69db0d552cc9a9e23d645fbffa0"
+        },
+        {
+          "transportId": 3980280,
+          "properties": {
+            "OID": 3980280,
+            "APN": "16204799003"
+          },
+          "geometrySha256": "c716349ec0c524663b33d7d2e931dd415b5e0e0680e4b4da634798d1b35d4b36"
+        },
+        {
+          "transportId": 4069489,
+          "properties": {
+            "OID": 4069489,
+            "APN": "16204299024"
+          },
+          "geometrySha256": "3506fb784946fc7e19afb5fd51a6f5feae8b848eb9aa4252653a03627ce38c87"
+        },
+        {
+          "transportId": 4072016,
+          "properties": {
+            "OID": 4072016,
+            "APN": "16204699018"
+          },
+          "geometrySha256": "75e593d56659bf970f3541a2eca9801a2ed942fcbe4836e8695fb8ebf6de0c79"
+        }
+      ]
+    },
+    {
+      "test": "viewport-5",
+      "url": "https://maps.clarkcountynv.gov/arcgis/rest/services/GISMO/AssessorMap/FeatureServer/1/query?where=1%3D1&outFields=OID%2CAPN&returnGeometry=true&outSR=4326&f=geojson&orderByFields=OID&resultRecordCount=2000&resultOffset=0&geometry=-115.164%2C36.151%2C-115.163%2C36.152&geometryType=esriGeometryEnvelope&inSR=4326&spatialRel=esriSpatialRelIntersects",
+      "method": "GET",
+      "checkedAt": "2026-10-08T21:20:18.842Z",
+      "httpStatus": 200,
+      "contentType": "application/geo+json; charset=UTF-8",
+      "bytes": 12864,
+      "features": [
+        {
+          "transportId": 434604,
+          "properties": {
+            "OID": 434604,
+            "APN": "16204699026"
+          },
+          "geometrySha256": "03329a80b17e5edba5f563ef6ca661e63dcce4d726f1c4aebf5a83255aaa6189"
+        },
+        {
+          "transportId": 648849,
+          "properties": {
+            "OID": 648849,
+            "APN": "16204603002"
+          },
+          "geometrySha256": "57e9fffa72cf6c2afe79012d5a0e4dd7b63c70be744d17dc9a5961a13989ca15"
+        },
+        {
+          "transportId": 650851,
+          "properties": {
+            "OID": 650851,
+            "APN": "16204699019"
+          },
+          "geometrySha256": "424cc16b6007c3fb144a0ffdf89c9b169eaad23a2937461c11041ac71292307c"
+        },
+        {
+          "transportId": 1101029,
+          "properties": {
+            "OID": 1101029,
+            "APN": "16204799001"
+          },
+          "geometrySha256": "9bbc623ebff78c636caf5636b481c7f0f75ccee863bfcf6d9daedfc8f012c879"
+        },
+        {
+          "transportId": 2132017,
+          "properties": {
+            "OID": 2132017,
+            "APN": "16204603003"
+          },
+          "geometrySha256": "8fa74ab03de21352490fd7a4d35a6a26553dcc748f3f35f717d7d6a3bcd19378"
+        },
+        {
+          "transportId": 3980278,
+          "properties": {
+            "OID": 3980278,
+            "APN": "16204702001"
+          },
+          "geometrySha256": "18c70f6ebeba42635fd0e40c1087723ef6c3a651e893de1ff359058817851c0b"
+        },
+        {
+          "transportId": 3980279,
+          "properties": {
+            "OID": 3980279,
+            "APN": "16204799012"
+          },
+          "geometrySha256": "a63444a1585c1a7144de707a2269141224a80d18952b46fedd55217a89463dce"
+        },
+        {
+          "transportId": 3980280,
+          "properties": {
+            "OID": 3980280,
+            "APN": "16204799003"
+          },
+          "geometrySha256": "c716349ec0c524663b33d7d2e931dd415b5e0e0680e4b4da634798d1b35d4b36"
+        },
+        {
+          "transportId": 4072016,
+          "properties": {
+            "OID": 4072016,
+            "APN": "16204699018"
+          },
+          "geometrySha256": "75e593d56659bf970f3541a2eca9801a2ed942fcbe4836e8695fb8ebf6de0c79"
+        }
+      ]
+    },
+    {
+      "test": "viewport-6",
+      "url": "https://maps.clarkcountynv.gov/arcgis/rest/services/GISMO/AssessorMap/FeatureServer/1/query?where=1%3D1&outFields=OID%2CAPN&returnGeometry=true&outSR=4326&f=geojson&orderByFields=OID&resultRecordCount=2000&resultOffset=0&geometry=-115.166%2C36.152%2C-115.165%2C36.153&geometryType=esriGeometryEnvelope&inSR=4326&spatialRel=esriSpatialRelIntersects",
+      "method": "GET",
+      "checkedAt": "2026-10-08T21:20:19.875Z",
+      "httpStatus": 200,
+      "contentType": "application/geo+json; charset=UTF-8",
+      "bytes": 36368,
+      "features": [
+        {
+          "transportId": 597970,
+          "properties": {
+            "OID": 597970,
+            "APN": "16204210079"
+          },
+          "geometrySha256": "ddf332085005b24a1b425cfc16bf129d39cc54c8d5c69fdc359cd62d90a75d49"
+        },
+        {
+          "transportId": 598989,
+          "properties": {
+            "OID": 598989,
+            "APN": "16204210080"
+          },
+          "geometrySha256": "77a853d16baba1d73de9cda6ef563c1e19fb5df2049a26a8a5f2d9f501006f00"
+        },
+        {
+          "transportId": 605451,
+          "properties": {
+            "OID": 605451,
+            "APN": "16204210083"
+          },
+          "geometrySha256": "0a75364e66f1484657a12c0cc1fba526369e0e68015c709d48fc4b173a7d6048"
+        },
+        {
+          "transportId": 631854,
+          "properties": {
+            "OID": 631854,
+            "APN": "16204210058"
+          },
+          "geometrySha256": "c4342d436dfbdb2862c7101c7060e40d0c7e22dd4362fe3cd73abf1d39aab7ce"
+        },
+        {
+          "transportId": 632108,
+          "properties": {
+            "OID": 632108,
+            "APN": "16204210057"
+          },
+          "geometrySha256": "1a2c8f708f87b609786fdd85a628a7a1cdab78e6a7b5efcaccc6f1a262bfa95f"
+        },
+        {
+          "transportId": 2165224,
+          "properties": {
+            "OID": 2165224,
+            "APN": "16204210135"
+          },
+          "geometrySha256": "30f413ecc80b525aeb7ce1e9c542fd41b5a270e75fda2b13a05dcc8886a20c12"
+        },
+        {
+          "transportId": 3894306,
+          "properties": {
+            "OID": 3894306,
+            "APN": "16204210143"
+          },
+          "geometrySha256": "aca9232b27613a7ab22f1c173537fcc67c533ccc73720136ad82a010f9e22f0a"
+        },
+        {
+          "transportId": 3921732,
+          "properties": {
+            "OID": 3921732,
+            "APN": "16204299001"
+          },
+          "geometrySha256": "b875073760b86301711f191d8af7af4322f41f4f9c2e10dd4de5bfb639af6289"
+        },
+        {
+          "transportId": 4069489,
+          "properties": {
+            "OID": 4069489,
+            "APN": "16204299024"
+          },
+          "geometrySha256": "3506fb784946fc7e19afb5fd51a6f5feae8b848eb9aa4252653a03627ce38c87"
+        },
+        {
+          "transportId": 4072021,
+          "properties": {
+            "OID": 4072021,
+            "APN": "16204210145"
+          },
+          "geometrySha256": "5498bd12f66ac0b98c1469cb3863a94a2c8da5710cd4ade282db102707a8fb6b"
+        },
+        {
+          "transportId": 4072024,
+          "properties": {
+            "OID": 4072024,
+            "APN": "16204299043"
+          },
+          "geometrySha256": "3a7caee2879964ab1b358843bcf2a6ceb6ac7fe5b09754bb4b2569699ae2e996"
+        }
+      ]
+    },
+    {
+      "test": "viewport-7",
+      "url": "https://maps.clarkcountynv.gov/arcgis/rest/services/GISMO/AssessorMap/FeatureServer/1/query?where=1%3D1&outFields=OID%2CAPN&returnGeometry=true&outSR=4326&f=geojson&orderByFields=OID&resultRecordCount=2000&resultOffset=0&geometry=-115.165%2C36.152%2C-115.164%2C36.153&geometryType=esriGeometryEnvelope&inSR=4326&spatialRel=esriSpatialRelIntersects",
+      "method": "GET",
+      "checkedAt": "2026-10-08T21:20:20.939Z",
+      "httpStatus": 200,
+      "contentType": "application/geo+json; charset=UTF-8",
+      "bytes": 41398,
+      "features": [
+        {
+          "transportId": 8365,
+          "properties": {
+            "OID": 8365,
+            "APN": "16204699030"
+          },
+          "geometrySha256": "58fd4883956c77fa34315d8e46ad138519a7292bdfa87fc935889a815939a7d4"
+        },
+        {
+          "transportId": 48372,
+          "properties": {
+            "OID": 48372,
+            "APN": "16204299030"
+          },
+          "geometrySha256": "c79be8ef6f948f84c08dac4470c58d2e15907778ba7e66cfd8266f55c80df295"
+        },
+        {
+          "transportId": 59620,
+          "properties": {
+            "OID": 59620,
+            "APN": "16204299023"
+          },
+          "geometrySha256": "05c7b6fa68e75c62324eef2e8154f15a3e268b4c543b1967bfb3c0867c65f3a9"
+        },
+        {
+          "transportId": 632108,
+          "properties": {
+            "OID": 632108,
+            "APN": "16204210057"
+          },
+          "geometrySha256": "1a2c8f708f87b609786fdd85a628a7a1cdab78e6a7b5efcaccc6f1a262bfa95f"
+        },
+        {
+          "transportId": 634370,
+          "properties": {
+            "OID": 634370,
+            "APN": "16204299038"
+          },
+          "geometrySha256": "0c8e303e8f0def4f2aa636bcefeb3f8cd024e60a4bd0cb51627b14aa346e8261"
+        },
+        {
+          "transportId": 651447,
+          "properties": {
+            "OID": 651447,
+            "APN": "16204699055"
+          },
+          "geometrySha256": "a7c6edb16221e98553809a5822dbe53c579806f6f0264e593d929a088335868a"
+        },
+        {
+          "transportId": 667338,
+          "properties": {
+            "OID": 667338,
+            "APN": "16204699056"
+          },
+          "geometrySha256": "9f72fbf47e3a7a7ed34ec2ba7549f0b0a6ebf49e527cbc0a1ca795d99dd0c6a6"
+        },
+        {
+          "transportId": 2110395,
+          "properties": {
+            "OID": 2110395,
+            "APN": "16204210056"
+          },
+          "geometrySha256": "0280d8c86d284ba710692a53d6d0a9d0a8560b4dc05ab420edb01d1f0bf61ef0"
+        },
+        {
+          "transportId": 2110398,
+          "properties": {
+            "OID": 2110398,
+            "APN": "16204699035"
+          },
+          "geometrySha256": "0925b123dd06f89cc1c0e5202ef594f600d9e5a93ad8265c56d823e77dda7c3e"
+        },
+        {
+          "transportId": 2165224,
+          "properties": {
+            "OID": 2165224,
+            "APN": "16204210135"
+          },
+          "geometrySha256": "30f413ecc80b525aeb7ce1e9c542fd41b5a270e75fda2b13a05dcc8886a20c12"
+        },
+        {
+          "transportId": 3099704,
+          "properties": {
+            "OID": 3099704,
+            "APN": "16204299039"
+          },
+          "geometrySha256": "c847e57326732c8c7906d2d00c589733f29860905df8cc7af57426188c97d204"
+        },
+        {
+          "transportId": 3894306,
+          "properties": {
+            "OID": 3894306,
+            "APN": "16204210143"
+          },
+          "geometrySha256": "aca9232b27613a7ab22f1c173537fcc67c533ccc73720136ad82a010f9e22f0a"
+        },
+        {
+          "transportId": 3921732,
+          "properties": {
+            "OID": 3921732,
+            "APN": "16204299001"
+          },
+          "geometrySha256": "b875073760b86301711f191d8af7af4322f41f4f9c2e10dd4de5bfb639af6289"
+        },
+        {
+          "transportId": 4069489,
+          "properties": {
+            "OID": 4069489,
+            "APN": "16204299024"
+          },
+          "geometrySha256": "3506fb784946fc7e19afb5fd51a6f5feae8b848eb9aa4252653a03627ce38c87"
+        },
+        {
+          "transportId": 4072014,
+          "properties": {
+            "OID": 4072014,
+            "APN": "16204699017"
+          },
+          "geometrySha256": "a0ce6e8597ec63fe72521eeada3d1279a7674c965b0df1aea3bc8a491bcaf1e3"
+        },
+        {
+          "transportId": 4072016,
+          "properties": {
+            "OID": 4072016,
+            "APN": "16204699018"
+          },
+          "geometrySha256": "75e593d56659bf970f3541a2eca9801a2ed942fcbe4836e8695fb8ebf6de0c79"
+        },
+        {
+          "transportId": 4072021,
+          "properties": {
+            "OID": 4072021,
+            "APN": "16204210145"
+          },
+          "geometrySha256": "5498bd12f66ac0b98c1469cb3863a94a2c8da5710cd4ade282db102707a8fb6b"
+        },
+        {
+          "transportId": 4072022,
+          "properties": {
+            "OID": 4072022,
+            "APN": "16204210144"
+          },
+          "geometrySha256": "8d4db34633431f53d9fb6d63375231ea6facbdbc4e1b4691699fa419f2c0aade"
+        },
+        {
+          "transportId": 4072023,
+          "properties": {
+            "OID": 4072023,
+            "APN": "16204299042"
+          },
+          "geometrySha256": "ea28c7aa5b51043a33c8fb4d5cda7b4c22a985f33444791261594217499fb6ac"
+        },
+        {
+          "transportId": 4072024,
+          "properties": {
+            "OID": 4072024,
+            "APN": "16204299043"
+          },
+          "geometrySha256": "3a7caee2879964ab1b358843bcf2a6ceb6ac7fe5b09754bb4b2569699ae2e996"
+        }
+      ]
+    },
+    {
+      "test": "viewport-8",
+      "url": "https://maps.clarkcountynv.gov/arcgis/rest/services/GISMO/AssessorMap/FeatureServer/1/query?where=1%3D1&outFields=OID%2CAPN&returnGeometry=true&outSR=4326&f=geojson&orderByFields=OID&resultRecordCount=2000&resultOffset=0&geometry=-115.164%2C36.152%2C-115.163%2C36.153&geometryType=esriGeometryEnvelope&inSR=4326&spatialRel=esriSpatialRelIntersects",
+      "method": "GET",
+      "checkedAt": "2026-10-08T21:20:22.075Z",
+      "httpStatus": 200,
+      "contentType": "application/geo+json; charset=UTF-8",
+      "bytes": 5538,
+      "features": [
+        {
+          "transportId": 102404,
+          "properties": {
+            "OID": 102404,
+            "APN": "16204602008"
+          },
+          "geometrySha256": "9e153ba24899a8703bfa1f7861c5ce6794c02587d0ca4dd299725b0192a57564"
+        },
+        {
+          "transportId": 650851,
+          "properties": {
+            "OID": 650851,
+            "APN": "16204699019"
+          },
+          "geometrySha256": "424cc16b6007c3fb144a0ffdf89c9b169eaad23a2937461c11041ac71292307c"
+        },
+        {
+          "transportId": 660488,
+          "properties": {
+            "OID": 660488,
+            "APN": "16204602009"
+          },
+          "geometrySha256": "e55518fe89b8f274416f63f91fb3fc60ab0f4a5b317fb237291cf0db358629e4"
+        },
+        {
+          "transportId": 4072014,
+          "properties": {
+            "OID": 4072014,
+            "APN": "16204699017"
+          },
+          "geometrySha256": "a0ce6e8597ec63fe72521eeada3d1279a7674c965b0df1aea3bc8a491bcaf1e3"
+        },
+        {
+          "transportId": 4072016,
+          "properties": {
+            "OID": 4072016,
+            "APN": "16204699018"
+          },
+          "geometrySha256": "75e593d56659bf970f3541a2eca9801a2ed942fcbe4836e8695fb8ebf6de0c79"
+        }
+      ]
+    },
+    {
+      "test": "viewport-9",
+      "url": "https://maps.clarkcountynv.gov/arcgis/rest/services/GISMO/AssessorMap/FeatureServer/1/query?where=1%3D1&outFields=OID%2CAPN&returnGeometry=true&outSR=4326&f=geojson&orderByFields=OID&resultRecordCount=2000&resultOffset=0&geometry=-115.165%2C36.149%2C-115.164%2C36.15&geometryType=esriGeometryEnvelope&inSR=4326&spatialRel=esriSpatialRelIntersects",
+      "method": "GET",
+      "checkedAt": "2026-10-08T21:20:23.244Z",
+      "httpStatus": 200,
+      "contentType": "application/geo+json; charset=UTF-8",
+      "bytes": 6088,
+      "features": [
+        {
+          "transportId": 568138,
+          "properties": {
+            "OID": 568138,
+            "APN": "16204301014"
+          },
+          "geometrySha256": "a00480c70febe1bad89c44ce4cbd98fe74a28144c1929649882d824938f9fe84"
+        },
+        {
+          "transportId": 613669,
+          "properties": {
+            "OID": 613669,
+            "APN": "16204702004"
+          },
+          "geometrySha256": "c84a6ed1ecb60904be4cf640ba9e36a09d61d2e41db94d61c14ae1c29bf1a03d"
+        },
+        {
+          "transportId": 614831,
+          "properties": {
+            "OID": 614831,
+            "APN": "16204302009"
+          },
+          "geometrySha256": "40993909580f7dddca1f4d06831a78d4b0038d164458c6f060b9a3f4187ec2b5"
+        },
+        {
+          "transportId": 620269,
+          "properties": {
+            "OID": 620269,
+            "APN": "16204302002"
+          },
+          "geometrySha256": "4de8a9ee659a2526477a7ba79c5023faf85274704cb80b20808407d4118e975c"
+        },
+        {
+          "transportId": 623841,
+          "properties": {
+            "OID": 623841,
+            "APN": "16204703014"
+          },
+          "geometrySha256": "95707dc7aa2afd9ffbf97ce1c2067c381911b7e9b3bd4b338854c8fa1304bd42"
+        },
+        {
+          "transportId": 624602,
+          "properties": {
+            "OID": 624602,
+            "APN": "16204302003"
+          },
+          "geometrySha256": "802bcd08d6ae34d8d038df208264a71595302b6d1b80e87ec391b6f7b6b6a196"
+        },
+        {
+          "transportId": 629241,
+          "properties": {
+            "OID": 629241,
+            "APN": "16204302008"
+          },
+          "geometrySha256": "0b9626f37a8b202f5239d5df57cd7f01954f07a47180b933ea7550b10dcbe676"
+        },
+        {
+          "transportId": 644497,
+          "properties": {
+            "OID": 644497,
+            "APN": "16204703009"
+          },
+          "geometrySha256": "f3a0c967113f0dbed65ce6dc6f98dec184f9cf52e6372b3c79760bd89ad65f49"
+        },
+        {
+          "transportId": 652198,
+          "properties": {
+            "OID": 652198,
+            "APN": "16204399006"
+          },
+          "geometrySha256": "df4734f074006cce846f791c822989e3c4742911bc0b5ccdb2ea7eff43e3f4c2"
+        },
+        {
+          "transportId": 3980279,
+          "properties": {
+            "OID": 3980279,
+            "APN": "16204799012"
+          },
+          "geometrySha256": "a63444a1585c1a7144de707a2269141224a80d18952b46fedd55217a89463dce"
+        }
+      ]
+    },
+    {
+      "test": "viewport-10",
+      "url": "https://maps.clarkcountynv.gov/arcgis/rest/services/GISMO/AssessorMap/FeatureServer/1/query?where=1%3D1&outFields=OID%2CAPN&returnGeometry=true&outSR=4326&f=geojson&orderByFields=OID&resultRecordCount=2000&resultOffset=0&geometry=-115.165%2C36.153%2C-115.164%2C36.154&geometryType=esriGeometryEnvelope&inSR=4326&spatialRel=esriSpatialRelIntersects",
+      "method": "GET",
+      "checkedAt": "2026-10-08T21:20:24.652Z",
+      "httpStatus": 200,
+      "contentType": "application/geo+json; charset=UTF-8",
+      "bytes": 33423,
+      "features": [
+        {
+          "transportId": 561159,
+          "properties": {
+            "OID": 561159,
+            "APN": "16204601007"
+          },
+          "geometrySha256": "8620e3405e20e1fd7d3f57cb91935db1114326714b2264aba892f50fec98d46f"
+        },
+        {
+          "transportId": 592822,
+          "properties": {
+            "OID": 592822,
+            "APN": "16204210054"
+          },
+          "geometrySha256": "a5722c6058a279afd2e62295f6d4aa82e9ad46687fdf1ffcf95e84c258933ad2"
+        },
+        {
+          "transportId": 621107,
+          "properties": {
+            "OID": 621107,
+            "APN": "16204601006"
+          },
+          "geometrySha256": "4ec19765a368b02eacdb3338afeb9629b158ad85c1f05ba995af81cd41541667"
+        },
+        {
+          "transportId": 630269,
+          "properties": {
+            "OID": 630269,
+            "APN": "16204601005"
+          },
+          "geometrySha256": "878377915ff7a2ed3e6cfb62eddd98c28c87271f9d5b1f55790599a494b4d776"
+        },
+        {
+          "transportId": 632108,
+          "properties": {
+            "OID": 632108,
+            "APN": "16204210057"
+          },
+          "geometrySha256": "1a2c8f708f87b609786fdd85a628a7a1cdab78e6a7b5efcaccc6f1a262bfa95f"
+        },
+        {
+          "transportId": 632346,
+          "properties": {
+            "OID": 632346,
+            "APN": "16204210055"
+          },
+          "geometrySha256": "c998b0828b13db56159a4dd5c44486b537725ea297631c53118d70d989daf37c"
+        },
+        {
+          "transportId": 634370,
+          "properties": {
+            "OID": 634370,
+            "APN": "16204299038"
+          },
+          "geometrySha256": "0c8e303e8f0def4f2aa636bcefeb3f8cd024e60a4bd0cb51627b14aa346e8261"
+        },
+        {
+          "transportId": 651447,
+          "properties": {
+            "OID": 651447,
+            "APN": "16204699055"
+          },
+          "geometrySha256": "a7c6edb16221e98553809a5822dbe53c579806f6f0264e593d929a088335868a"
+        },
+        {
+          "transportId": 2110395,
+          "properties": {
+            "OID": 2110395,
+            "APN": "16204210056"
+          },
+          "geometrySha256": "0280d8c86d284ba710692a53d6d0a9d0a8560b4dc05ab420edb01d1f0bf61ef0"
+        },
+        {
+          "transportId": 2110398,
+          "properties": {
+            "OID": 2110398,
+            "APN": "16204699035"
+          },
+          "geometrySha256": "0925b123dd06f89cc1c0e5202ef594f600d9e5a93ad8265c56d823e77dda7c3e"
+        },
+        {
+          "transportId": 3921732,
+          "properties": {
+            "OID": 3921732,
+            "APN": "16204299001"
+          },
+          "geometrySha256": "b875073760b86301711f191d8af7af4322f41f4f9c2e10dd4de5bfb639af6289"
+        },
+        {
+          "transportId": 4072014,
+          "properties": {
+            "OID": 4072014,
+            "APN": "16204699017"
+          },
+          "geometrySha256": "a0ce6e8597ec63fe72521eeada3d1279a7674c965b0df1aea3bc8a491bcaf1e3"
+        }
+      ]
+    },
+    {
+      "test": "viewport-11",
+      "url": "https://maps.clarkcountynv.gov/arcgis/rest/services/GISMO/AssessorMap/FeatureServer/1/query?where=1%3D1&outFields=OID%2CAPN&returnGeometry=true&outSR=4326&f=geojson&orderByFields=OID&resultRecordCount=2000&resultOffset=0&geometry=-115.167%2C36.151%2C-115.166%2C36.152&geometryType=esriGeometryEnvelope&inSR=4326&spatialRel=esriSpatialRelIntersects",
+      "method": "GET",
+      "checkedAt": "2026-10-08T21:20:25.914Z",
+      "httpStatus": 200,
+      "contentType": "application/geo+json; charset=UTF-8",
+      "bytes": 52328,
+      "features": [
+        {
+          "transportId": 466911,
+          "properties": {
+            "OID": 466911,
+            "APN": "16204311041"
+          },
+          "geometrySha256": "7fe3e9d580a70c60284c7814aadbfd70941ff43cf30ed6861cf5c351cdc2eb0f"
+        },
+        {
+          "transportId": 490851,
+          "properties": {
+            "OID": 490851,
+            "APN": "16204311042"
+          },
+          "geometrySha256": "ecffba6a65a357b48d7af7977f516d4f9e02fd098390b860067c749ea37d212d"
+        },
+        {
+          "transportId": 520815,
+          "properties": {
+            "OID": 520815,
+            "APN": "16204311035"
+          },
+          "geometrySha256": "f58bc1330393acc72adffd7d426514d18eb2756c1223ec61c9d77e6a19b5b56d"
+        },
+        {
+          "transportId": 523160,
+          "properties": {
+            "OID": 523160,
+            "APN": "16204311037"
+          },
+          "geometrySha256": "1d54c886d9a1c77e8397d04f9da738d252de41d1b125aab0b088d530266075bf"
+        },
+        {
+          "transportId": 572366,
+          "properties": {
+            "OID": 572366,
+            "APN": "16204311036"
+          },
+          "geometrySha256": "76271f856f8e932c38a4b9b0df0f2dd24b73e184d8b009e00424ac7a55eaacec"
+        },
+        {
+          "transportId": 598670,
+          "properties": {
+            "OID": 598670,
+            "APN": "16204299037"
+          },
+          "geometrySha256": "7e274735b12ccc25420fbc73720c0beab4b247474b9c2f61ddacd42bf2142bf5"
+        },
+        {
+          "transportId": 600169,
+          "properties": {
+            "OID": 600169,
+            "APN": "16204299022"
+          },
+          "geometrySha256": "92166a868cd3c9ce17aaf552f9bb4c11ebeb48dad2a41569a895fc757bea7c39"
+        },
+        {
+          "transportId": 605451,
+          "properties": {
+            "OID": 605451,
+            "APN": "16204210083"
+          },
+          "geometrySha256": "0a75364e66f1484657a12c0cc1fba526369e0e68015c709d48fc4b173a7d6048"
+        },
+        {
+          "transportId": 606160,
+          "properties": {
+            "OID": 606160,
+            "APN": "16204311034"
+          },
+          "geometrySha256": "887824c57ff45f786b0e51bd356933a21b8ae0b23903525fc408e3c60a076913"
+        },
+        {
+          "transportId": 3731359,
+          "properties": {
+            "OID": 3731359,
+            "APN": "16204210086"
+          },
+          "geometrySha256": "30763e27e044d5224f5cbf445aa147de960c34a93b032dc5d774c0d2e7d931e1"
+        },
+        {
+          "transportId": 3731366,
+          "properties": {
+            "OID": 3731366,
+            "APN": "16204299040"
+          },
+          "geometrySha256": "9ad92685f68530918dafa1b0548498cb68c26647a5a17504cae26d7349f96741"
+        },
+        {
+          "transportId": 3731367,
+          "properties": {
+            "OID": 3731367,
+            "APN": "16204299035"
+          },
+          "geometrySha256": "23599db51f6ed58ba46e0bb9f548ae8e21e5d69db0d552cc9a9e23d645fbffa0"
+        },
+        {
+          "transportId": 3921732,
+          "properties": {
+            "OID": 3921732,
+            "APN": "16204299001"
+          },
+          "geometrySha256": "b875073760b86301711f191d8af7af4322f41f4f9c2e10dd4de5bfb639af6289"
+        },
+        {
+          "transportId": 3921811,
+          "properties": {
+            "OID": 3921811,
+            "APN": "16204399003"
+          },
+          "geometrySha256": "62ac951cb65e451248a010b91d7f5f7067f7c6d4c32a7bfb9d890b3a8bd77912"
+        },
+        {
+          "transportId": 4069487,
+          "properties": {
+            "OID": 4069487,
+            "APN": "16204210084"
+          },
+          "geometrySha256": "bf23cce5eeeeb08d77c795c007dcfbf1237eb175f6c629e14d0c6ccac473a54b"
+        },
+        {
+          "transportId": 4069488,
+          "properties": {
+            "OID": 4069488,
+            "APN": "16204210133"
+          },
+          "geometrySha256": "e023224f968aad9e62a3b4ac8262f81f5166a373f5b0f7219ab29b03bff94c88"
+        },
+        {
+          "transportId": 4072024,
+          "properties": {
+            "OID": 4072024,
+            "APN": "16204299043"
+          },
+          "geometrySha256": "3a7caee2879964ab1b358843bcf2a6ceb6ac7fe5b09754bb4b2569699ae2e996"
+        }
+      ]
+    },
+    {
+      "test": "viewport-12",
+      "url": "https://maps.clarkcountynv.gov/arcgis/rest/services/GISMO/AssessorMap/FeatureServer/1/query?where=1%3D1&outFields=OID%2CAPN&returnGeometry=true&outSR=4326&f=geojson&orderByFields=OID&resultRecordCount=2000&resultOffset=0&geometry=-115.163%2C36.151%2C-115.162%2C36.152&geometryType=esriGeometryEnvelope&inSR=4326&spatialRel=esriSpatialRelIntersects",
+      "method": "GET",
+      "checkedAt": "2026-10-08T21:20:27.071Z",
+      "httpStatus": 200,
+      "contentType": "application/geo+json; charset=UTF-8",
+      "bytes": 17439,
+      "features": [
+        {
+          "transportId": 4250,
+          "properties": {
+            "OID": 4250,
+            "APN": "16204699022"
+          },
+          "geometrySha256": "547e97e6b7ca25e50684491baa90fc18227cf92c3bdf8c1c15c8136454aaf7d4"
+        },
+        {
+          "transportId": 34227,
+          "properties": {
+            "OID": 34227,
+            "APN": "16204699023"
+          },
+          "geometrySha256": "9667c90d1c794985c7d9b91318e89c75545ce71e6d64c87ec99749b0d75b1115"
+        },
+        {
+          "transportId": 43209,
+          "properties": {
+            "OID": 43209,
+            "APN": "16204699024"
+          },
+          "geometrySha256": "4b1a82dab24a4c56d9665e31ca5fe89c11bf565d5cf6ee456007674929cba7dd"
+        },
+        {
+          "transportId": 434604,
+          "properties": {
+            "OID": 434604,
+            "APN": "16204699026"
+          },
+          "geometrySha256": "03329a80b17e5edba5f563ef6ca661e63dcce4d726f1c4aebf5a83255aaa6189"
+        },
+        {
+          "transportId": 613944,
+          "properties": {
+            "OID": 613944,
+            "APN": "16204604001"
+          },
+          "geometrySha256": "1179c25b405298b9fa839ac92bd9ba395e8b6534699747426b0c7894a0639d0b"
+        },
+        {
+          "transportId": 628704,
+          "properties": {
+            "OID": 628704,
+            "APN": "16204703002"
+          },
+          "geometrySha256": "bdaf6e17aae0a91a76f4a3d2b621ef2a999fa120690852309a46db150c8f4356"
+        },
+        {
+          "transportId": 647556,
+          "properties": {
+            "OID": 647556,
+            "APN": "16204703001"
+          },
+          "geometrySha256": "42c9260f91bb3643c32e4aaa4c1d238dd2b1b5b09bf3df22c4f3491e78189717"
+        },
+        {
+          "transportId": 650851,
+          "properties": {
+            "OID": 650851,
+            "APN": "16204699019"
+          },
+          "geometrySha256": "424cc16b6007c3fb144a0ffdf89c9b169eaad23a2937461c11041ac71292307c"
+        },
+        {
+          "transportId": 654284,
+          "properties": {
+            "OID": 654284,
+            "APN": "16204604002"
+          },
+          "geometrySha256": "56c9cabb83a117969123f4c9d5229b3489b07eca80a084a503b92e246ecad4b7"
+        },
+        {
+          "transportId": 1101029,
+          "properties": {
+            "OID": 1101029,
+            "APN": "16204799001"
+          },
+          "geometrySha256": "9bbc623ebff78c636caf5636b481c7f0f75ccee863bfcf6d9daedfc8f012c879"
+        },
+        {
+          "transportId": 1101030,
+          "properties": {
+            "OID": 1101030,
+            "APN": "16204799028"
+          },
+          "geometrySha256": "b8083b54b072ef3fa16643a381c5c3f07a8787cd229d481451b45e1d15ace889"
+        },
+        {
+          "transportId": 2132017,
+          "properties": {
+            "OID": 2132017,
+            "APN": "16204603003"
+          },
+          "geometrySha256": "8fa74ab03de21352490fd7a4d35a6a26553dcc748f3f35f717d7d6a3bcd19378"
+        },
+        {
+          "transportId": 3980279,
+          "properties": {
+            "OID": 3980279,
+            "APN": "16204799012"
+          },
+          "geometrySha256": "a63444a1585c1a7144de707a2269141224a80d18952b46fedd55217a89463dce"
+        },
+        {
+          "transportId": 3980280,
+          "properties": {
+            "OID": 3980280,
+            "APN": "16204799003"
+          },
+          "geometrySha256": "c716349ec0c524663b33d7d2e931dd415b5e0e0680e4b4da634798d1b35d4b36"
+        }
+      ]
+    },
+    {
+      "test": "forced-three-row-pages",
+      "url": "https://maps.clarkcountynv.gov/arcgis/rest/services/GISMO/AssessorMap/FeatureServer/1/query?where=1%3D1&outFields=OID%2CAPN&returnGeometry=true&outSR=4326&f=geojson&orderByFields=OID&resultRecordCount=3&resultOffset=0&geometry=-115.165%2C36.152%2C-115.164%2C36.153&geometryType=esriGeometryEnvelope&inSR=4326&spatialRel=esriSpatialRelIntersects",
+      "method": "GET",
+      "checkedAt": "2026-10-08T21:20:28.142Z",
+      "httpStatus": 200,
+      "contentType": "application/geo+json; charset=UTF-8",
+      "bytes": 1266,
+      "exceededTransferLimit": true,
+      "features": [
+        {
+          "transportId": 8365,
+          "properties": {
+            "OID": 8365,
+            "APN": "16204699030"
+          },
+          "geometrySha256": "58fd4883956c77fa34315d8e46ad138519a7292bdfa87fc935889a815939a7d4"
+        },
+        {
+          "transportId": 48372,
+          "properties": {
+            "OID": 48372,
+            "APN": "16204299030"
+          },
+          "geometrySha256": "c79be8ef6f948f84c08dac4470c58d2e15907778ba7e66cfd8266f55c80df295"
+        },
+        {
+          "transportId": 59620,
+          "properties": {
+            "OID": 59620,
+            "APN": "16204299023"
+          },
+          "geometrySha256": "05c7b6fa68e75c62324eef2e8154f15a3e268b4c543b1967bfb3c0867c65f3a9"
+        }
+      ]
+    },
+    {
+      "test": "forced-three-row-pages",
+      "url": "https://maps.clarkcountynv.gov/arcgis/rest/services/GISMO/AssessorMap/FeatureServer/1/query?where=1%3D1&outFields=OID%2CAPN&returnGeometry=true&outSR=4326&f=geojson&orderByFields=OID&resultRecordCount=3&resultOffset=3&geometry=-115.165%2C36.152%2C-115.164%2C36.153&geometryType=esriGeometryEnvelope&inSR=4326&spatialRel=esriSpatialRelIntersects",
+      "method": "GET",
+      "checkedAt": "2026-10-08T21:20:28.846Z",
+      "httpStatus": 200,
+      "contentType": "application/geo+json; charset=UTF-8",
+      "bytes": 1473,
+      "exceededTransferLimit": true,
+      "features": [
+        {
+          "transportId": 632108,
+          "properties": {
+            "OID": 632108,
+            "APN": "16204210057"
+          },
+          "geometrySha256": "1a2c8f708f87b609786fdd85a628a7a1cdab78e6a7b5efcaccc6f1a262bfa95f"
+        },
+        {
+          "transportId": 634370,
+          "properties": {
+            "OID": 634370,
+            "APN": "16204299038"
+          },
+          "geometrySha256": "0c8e303e8f0def4f2aa636bcefeb3f8cd024e60a4bd0cb51627b14aa346e8261"
+        },
+        {
+          "transportId": 651447,
+          "properties": {
+            "OID": 651447,
+            "APN": "16204699055"
+          },
+          "geometrySha256": "a7c6edb16221e98553809a5822dbe53c579806f6f0264e593d929a088335868a"
+        }
+      ]
+    },
+    {
+      "test": "forced-three-row-pages",
+      "url": "https://maps.clarkcountynv.gov/arcgis/rest/services/GISMO/AssessorMap/FeatureServer/1/query?where=1%3D1&outFields=OID%2CAPN&returnGeometry=true&outSR=4326&f=geojson&orderByFields=OID&resultRecordCount=3&resultOffset=6&geometry=-115.165%2C36.152%2C-115.164%2C36.153&geometryType=esriGeometryEnvelope&inSR=4326&spatialRel=esriSpatialRelIntersects",
+      "method": "GET",
+      "checkedAt": "2026-10-08T21:20:29.592Z",
+      "httpStatus": 500,
+      "contentType": "text/html; charset=utf-8",
+      "bytes": 697
+    },
+    {
+      "test": "fresh-ids-0",
+      "url": "https://maps.clarkcountynv.gov/arcgis/rest/services/GISMO/AssessorMap/FeatureServer/1/query?where=APN+IN+%28%2716204210054%27%2C%2716204210055%27%2C%2716204210056%27%2C%2716204210057%27%2C%2716204210058%27%2C%2716204210079%27%2C%2716204210080%27%2C%2716204210083%27%2C%2716204210084%27%2C%2716204210086%27%2C%2716204210133%27%2C%2716204210135%27%2C%2716204210143%27%2C%2716204210144%27%2C%2716204210145%27%2C%2716204299001%27%2C%2716204299022%27%2C%2716204299023%27%2C%2716204299024%27%2C%2716204299030%27%2C%2716204299035%27%2C%2716204299037%27%2C%2716204299038%27%2C%2716204299039%27%2C%2716204299040%27%2C%2716204299042%27%2C%2716204299043%27%2C%2716204301004%27%2C%2716204301014%27%2C%2716204301019%27%2C%2716204301021%27%2C%2716204301029%27%2C%2716204301030%27%2C%2716204302002%27%2C%2716204302003%27%2C%2716204302008%27%2C%2716204302009%27%2C%2716204311032%27%2C%2716204311033%27%2C%2716204311034%27%29&outFields=OID%2CAPN&returnGeometry=true&outSR=4326&f=geojson&orderByFields=OID&resultRecordCount=2000&resultOffset=0",
+      "method": "GET",
+      "checkedAt": "2026-10-08T21:20:29.840Z",
+      "httpStatus": 200,
+      "contentType": "application/geo+json; charset=UTF-8",
+      "bytes": 53111,
+      "features": [
+        {
+          "transportId": 48372,
+          "properties": {
+            "OID": 48372,
+            "APN": "16204299030"
+          },
+          "geometrySha256": "c79be8ef6f948f84c08dac4470c58d2e15907778ba7e66cfd8266f55c80df295"
+        },
+        {
+          "transportId": 59620,
+          "properties": {
+            "OID": 59620,
+            "APN": "16204299023"
+          },
+          "geometrySha256": "05c7b6fa68e75c62324eef2e8154f15a3e268b4c543b1967bfb3c0867c65f3a9"
+        },
+        {
+          "transportId": 475239,
+          "properties": {
+            "OID": 475239,
+            "APN": "16204311032"
+          },
+          "geometrySha256": "1813dcd13cb86604936b75983b62d4ce7691a28e5129008f09d3793fb4f4524f"
+        },
+        {
+          "transportId": 533450,
+          "properties": {
+            "OID": 533450,
+            "APN": "16204311033"
+          },
+          "geometrySha256": "4169ca2717accab9a9f7106f08ae2af4e0d97f177722c0a3c27bfaee15f68178"
+        },
+        {
+          "transportId": 564858,
+          "properties": {
+            "OID": 564858,
+            "APN": "16204301030"
+          },
+          "geometrySha256": "56d81b50ab59a2d82f282048a929f55525285668abba7b91f6aaccb5e6318d4d"
+        },
+        {
+          "transportId": 567868,
+          "properties": {
+            "OID": 567868,
+            "APN": "16204301004"
+          },
+          "geometrySha256": "76a76acfe6af4cf0ccad981f186811bd4d040446ce2fbf7460d06773f409aa64"
+        },
+        {
+          "transportId": 568032,
+          "properties": {
+            "OID": 568032,
+            "APN": "16204301019"
+          },
+          "geometrySha256": "1aaaa76592f3b317a7f5dbb216f247b7d89cc1811bdc5ca769e2c10c5dd31501"
+        },
+        {
+          "transportId": 568138,
+          "properties": {
+            "OID": 568138,
+            "APN": "16204301014"
+          },
+          "geometrySha256": "a00480c70febe1bad89c44ce4cbd98fe74a28144c1929649882d824938f9fe84"
+        },
+        {
+          "transportId": 571545,
+          "properties": {
+            "OID": 571545,
+            "APN": "16204301021"
+          },
+          "geometrySha256": "0db84fb2e9acbba1d3e7c1bd7383731ad7bfabb941c3a516b4fa14491dabdaa6"
+        },
+        {
+          "transportId": 592822,
+          "properties": {
+            "OID": 592822,
+            "APN": "16204210054"
+          },
+          "geometrySha256": "a5722c6058a279afd2e62295f6d4aa82e9ad46687fdf1ffcf95e84c258933ad2"
+        },
+        {
+          "transportId": 597970,
+          "properties": {
+            "OID": 597970,
+            "APN": "16204210079"
+          },
+          "geometrySha256": "ddf332085005b24a1b425cfc16bf129d39cc54c8d5c69fdc359cd62d90a75d49"
+        },
+        {
+          "transportId": 598670,
+          "properties": {
+            "OID": 598670,
+            "APN": "16204299037"
+          },
+          "geometrySha256": "7e274735b12ccc25420fbc73720c0beab4b247474b9c2f61ddacd42bf2142bf5"
+        },
+        {
+          "transportId": 598989,
+          "properties": {
+            "OID": 598989,
+            "APN": "16204210080"
+          },
+          "geometrySha256": "77a853d16baba1d73de9cda6ef563c1e19fb5df2049a26a8a5f2d9f501006f00"
+        },
+        {
+          "transportId": 600169,
+          "properties": {
+            "OID": 600169,
+            "APN": "16204299022"
+          },
+          "geometrySha256": "92166a868cd3c9ce17aaf552f9bb4c11ebeb48dad2a41569a895fc757bea7c39"
+        },
+        {
+          "transportId": 605451,
+          "properties": {
+            "OID": 605451,
+            "APN": "16204210083"
+          },
+          "geometrySha256": "0a75364e66f1484657a12c0cc1fba526369e0e68015c709d48fc4b173a7d6048"
+        },
+        {
+          "transportId": 606160,
+          "properties": {
+            "OID": 606160,
+            "APN": "16204311034"
+          },
+          "geometrySha256": "887824c57ff45f786b0e51bd356933a21b8ae0b23903525fc408e3c60a076913"
+        },
+        {
+          "transportId": 614831,
+          "properties": {
+            "OID": 614831,
+            "APN": "16204302009"
+          },
+          "geometrySha256": "40993909580f7dddca1f4d06831a78d4b0038d164458c6f060b9a3f4187ec2b5"
+        },
+        {
+          "transportId": 620269,
+          "properties": {
+            "OID": 620269,
+            "APN": "16204302002"
+          },
+          "geometrySha256": "4de8a9ee659a2526477a7ba79c5023faf85274704cb80b20808407d4118e975c"
+        },
+        {
+          "transportId": 624602,
+          "properties": {
+            "OID": 624602,
+            "APN": "16204302003"
+          },
+          "geometrySha256": "802bcd08d6ae34d8d038df208264a71595302b6d1b80e87ec391b6f7b6b6a196"
+        },
+        {
+          "transportId": 629241,
+          "properties": {
+            "OID": 629241,
+            "APN": "16204302008"
+          },
+          "geometrySha256": "0b9626f37a8b202f5239d5df57cd7f01954f07a47180b933ea7550b10dcbe676"
+        },
+        {
+          "transportId": 631854,
+          "properties": {
+            "OID": 631854,
+            "APN": "16204210058"
+          },
+          "geometrySha256": "c4342d436dfbdb2862c7101c7060e40d0c7e22dd4362fe3cd73abf1d39aab7ce"
+        },
+        {
+          "transportId": 632108,
+          "properties": {
+            "OID": 632108,
+            "APN": "16204210057"
+          },
+          "geometrySha256": "1a2c8f708f87b609786fdd85a628a7a1cdab78e6a7b5efcaccc6f1a262bfa95f"
+        },
+        {
+          "transportId": 632346,
+          "properties": {
+            "OID": 632346,
+            "APN": "16204210055"
+          },
+          "geometrySha256": "c998b0828b13db56159a4dd5c44486b537725ea297631c53118d70d989daf37c"
+        },
+        {
+          "transportId": 634370,
+          "properties": {
+            "OID": 634370,
+            "APN": "16204299038"
+          },
+          "geometrySha256": "0c8e303e8f0def4f2aa636bcefeb3f8cd024e60a4bd0cb51627b14aa346e8261"
+        },
+        {
+          "transportId": 2110395,
+          "properties": {
+            "OID": 2110395,
+            "APN": "16204210056"
+          },
+          "geometrySha256": "0280d8c86d284ba710692a53d6d0a9d0a8560b4dc05ab420edb01d1f0bf61ef0"
+        },
+        {
+          "transportId": 2165224,
+          "properties": {
+            "OID": 2165224,
+            "APN": "16204210135"
+          },
+          "geometrySha256": "30f413ecc80b525aeb7ce1e9c542fd41b5a270e75fda2b13a05dcc8886a20c12"
+        },
+        {
+          "transportId": 2519121,
+          "properties": {
+            "OID": 2519121,
+            "APN": "16204301029"
+          },
+          "geometrySha256": "f4525ef87f0a28871d0653e4b004d9c5410a198d3dfb19392dd04de0cf43ceec"
+        },
+        {
+          "transportId": 3099704,
+          "properties": {
+            "OID": 3099704,
+            "APN": "16204299039"
+          },
+          "geometrySha256": "c847e57326732c8c7906d2d00c589733f29860905df8cc7af57426188c97d204"
+        },
+        {
+          "transportId": 3731359,
+          "properties": {
+            "OID": 3731359,
+            "APN": "16204210086"
+          },
+          "geometrySha256": "30763e27e044d5224f5cbf445aa147de960c34a93b032dc5d774c0d2e7d931e1"
+        },
+        {
+          "transportId": 3731366,
+          "properties": {
+            "OID": 3731366,
+            "APN": "16204299040"
+          },
+          "geometrySha256": "9ad92685f68530918dafa1b0548498cb68c26647a5a17504cae26d7349f96741"
+        },
+        {
+          "transportId": 3731367,
+          "properties": {
+            "OID": 3731367,
+            "APN": "16204299035"
+          },
+          "geometrySha256": "23599db51f6ed58ba46e0bb9f548ae8e21e5d69db0d552cc9a9e23d645fbffa0"
+        },
+        {
+          "transportId": 3894306,
+          "properties": {
+            "OID": 3894306,
+            "APN": "16204210143"
+          },
+          "geometrySha256": "aca9232b27613a7ab22f1c173537fcc67c533ccc73720136ad82a010f9e22f0a"
+        },
+        {
+          "transportId": 3921732,
+          "properties": {
+            "OID": 3921732,
+            "APN": "16204299001"
+          },
+          "geometrySha256": "b875073760b86301711f191d8af7af4322f41f4f9c2e10dd4de5bfb639af6289"
+        },
+        {
+          "transportId": 4069487,
+          "properties": {
+            "OID": 4069487,
+            "APN": "16204210084"
+          },
+          "geometrySha256": "bf23cce5eeeeb08d77c795c007dcfbf1237eb175f6c629e14d0c6ccac473a54b"
+        },
+        {
+          "transportId": 4069488,
+          "properties": {
+            "OID": 4069488,
+            "APN": "16204210133"
+          },
+          "geometrySha256": "e023224f968aad9e62a3b4ac8262f81f5166a373f5b0f7219ab29b03bff94c88"
+        },
+        {
+          "transportId": 4069489,
+          "properties": {
+            "OID": 4069489,
+            "APN": "16204299024"
+          },
+          "geometrySha256": "3506fb784946fc7e19afb5fd51a6f5feae8b848eb9aa4252653a03627ce38c87"
+        },
+        {
+          "transportId": 4072021,
+          "properties": {
+            "OID": 4072021,
+            "APN": "16204210145"
+          },
+          "geometrySha256": "5498bd12f66ac0b98c1469cb3863a94a2c8da5710cd4ade282db102707a8fb6b"
+        },
+        {
+          "transportId": 4072022,
+          "properties": {
+            "OID": 4072022,
+            "APN": "16204210144"
+          },
+          "geometrySha256": "8d4db34633431f53d9fb6d63375231ea6facbdbc4e1b4691699fa419f2c0aade"
+        },
+        {
+          "transportId": 4072023,
+          "properties": {
+            "OID": 4072023,
+            "APN": "16204299042"
+          },
+          "geometrySha256": "ea28c7aa5b51043a33c8fb4d5cda7b4c22a985f33444791261594217499fb6ac"
+        },
+        {
+          "transportId": 4072024,
+          "properties": {
+            "OID": 4072024,
+            "APN": "16204299043"
+          },
+          "geometrySha256": "3a7caee2879964ab1b358843bcf2a6ceb6ac7fe5b09754bb4b2569699ae2e996"
+        }
+      ]
+    },
+    {
+      "test": "fresh-ids-40",
+      "url": "https://maps.clarkcountynv.gov/arcgis/rest/services/GISMO/AssessorMap/FeatureServer/1/query?where=APN+IN+%28%2716204311035%27%2C%2716204311036%27%2C%2716204311037%27%2C%2716204311041%27%2C%2716204311042%27%2C%2716204399003%27%2C%2716204399004%27%2C%2716204399005%27%2C%2716204399006%27%2C%2716204399011%27%2C%2716204399012%27%2C%2716204399013%27%2C%2716204601005%27%2C%2716204601006%27%2C%2716204601007%27%2C%2716204602008%27%2C%2716204602009%27%2C%2716204603002%27%2C%2716204603003%27%2C%2716204604001%27%2C%2716204604002%27%2C%2716204699017%27%2C%2716204699018%27%2C%2716204699019%27%2C%2716204699022%27%2C%2716204699023%27%2C%2716204699024%27%2C%2716204699026%27%2C%2716204699030%27%2C%2716204699035%27%2C%2716204699055%27%2C%2716204699056%27%2C%2716204701002%27%2C%2716204702001%27%2C%2716204702002%27%2C%2716204702003%27%2C%2716204702004%27%2C%2716204703001%27%2C%2716204703002%27%2C%2716204703003%27%29&outFields=OID%2CAPN&returnGeometry=true&outSR=4326&f=geojson&orderByFields=OID&resultRecordCount=2000&resultOffset=0",
+      "method": "GET",
+      "checkedAt": "2026-10-08T21:20:30.645Z",
+      "httpStatus": 200,
+      "contentType": "application/geo+json; charset=UTF-8",
+      "bytes": 42275,
+      "features": [
+        {
+          "transportId": 4250,
+          "properties": {
+            "OID": 4250,
+            "APN": "16204699022"
+          },
+          "geometrySha256": "547e97e6b7ca25e50684491baa90fc18227cf92c3bdf8c1c15c8136454aaf7d4"
+        },
+        {
+          "transportId": 8365,
+          "properties": {
+            "OID": 8365,
+            "APN": "16204699030"
+          },
+          "geometrySha256": "58fd4883956c77fa34315d8e46ad138519a7292bdfa87fc935889a815939a7d4"
+        },
+        {
+          "transportId": 34227,
+          "properties": {
+            "OID": 34227,
+            "APN": "16204699023"
+          },
+          "geometrySha256": "9667c90d1c794985c7d9b91318e89c75545ce71e6d64c87ec99749b0d75b1115"
+        },
+        {
+          "transportId": 43209,
+          "properties": {
+            "OID": 43209,
+            "APN": "16204699024"
+          },
+          "geometrySha256": "4b1a82dab24a4c56d9665e31ca5fe89c11bf565d5cf6ee456007674929cba7dd"
+        },
+        {
+          "transportId": 102404,
+          "properties": {
+            "OID": 102404,
+            "APN": "16204602008"
+          },
+          "geometrySha256": "9e153ba24899a8703bfa1f7861c5ce6794c02587d0ca4dd299725b0192a57564"
+        },
+        {
+          "transportId": 324213,
+          "properties": {
+            "OID": 324213,
+            "APN": "16204399004"
+          },
+          "geometrySha256": "665a3bd20efd0f1287b65a2b51de93193035927cbe787a72561edf33f3066959"
+        },
+        {
+          "transportId": 434604,
+          "properties": {
+            "OID": 434604,
+            "APN": "16204699026"
+          },
+          "geometrySha256": "03329a80b17e5edba5f563ef6ca661e63dcce4d726f1c4aebf5a83255aaa6189"
+        },
+        {
+          "transportId": 466911,
+          "properties": {
+            "OID": 466911,
+            "APN": "16204311041"
+          },
+          "geometrySha256": "7fe3e9d580a70c60284c7814aadbfd70941ff43cf30ed6861cf5c351cdc2eb0f"
+        },
+        {
+          "transportId": 490851,
+          "properties": {
+            "OID": 490851,
+            "APN": "16204311042"
+          },
+          "geometrySha256": "ecffba6a65a357b48d7af7977f516d4f9e02fd098390b860067c749ea37d212d"
+        },
+        {
+          "transportId": 520815,
+          "properties": {
+            "OID": 520815,
+            "APN": "16204311035"
+          },
+          "geometrySha256": "f58bc1330393acc72adffd7d426514d18eb2756c1223ec61c9d77e6a19b5b56d"
+        },
+        {
+          "transportId": 523160,
+          "properties": {
+            "OID": 523160,
+            "APN": "16204311037"
+          },
+          "geometrySha256": "1d54c886d9a1c77e8397d04f9da738d252de41d1b125aab0b088d530266075bf"
+        },
+        {
+          "transportId": 561159,
+          "properties": {
+            "OID": 561159,
+            "APN": "16204601007"
+          },
+          "geometrySha256": "8620e3405e20e1fd7d3f57cb91935db1114326714b2264aba892f50fec98d46f"
+        },
+        {
+          "transportId": 572366,
+          "properties": {
+            "OID": 572366,
+            "APN": "16204311036"
+          },
+          "geometrySha256": "76271f856f8e932c38a4b9b0df0f2dd24b73e184d8b009e00424ac7a55eaacec"
+        },
+        {
+          "transportId": 599042,
+          "properties": {
+            "OID": 599042,
+            "APN": "16204702003"
+          },
+          "geometrySha256": "9859ffb34ae299170367735da41bfa64ab6e13a41947fa03a7e860655f288e91"
+        },
+        {
+          "transportId": 613669,
+          "properties": {
+            "OID": 613669,
+            "APN": "16204702004"
+          },
+          "geometrySha256": "c84a6ed1ecb60904be4cf640ba9e36a09d61d2e41db94d61c14ae1c29bf1a03d"
+        },
+        {
+          "transportId": 613944,
+          "properties": {
+            "OID": 613944,
+            "APN": "16204604001"
+          },
+          "geometrySha256": "1179c25b405298b9fa839ac92bd9ba395e8b6534699747426b0c7894a0639d0b"
+        },
+        {
+          "transportId": 614124,
+          "properties": {
+            "OID": 614124,
+            "APN": "16204701002"
+          },
+          "geometrySha256": "ae1973dee20f0b582cf9542640c2e7cccb21f8a138d5107ead3f94de81575561"
+        },
+        {
+          "transportId": 621107,
+          "properties": {
+            "OID": 621107,
+            "APN": "16204601006"
+          },
+          "geometrySha256": "4ec19765a368b02eacdb3338afeb9629b158ad85c1f05ba995af81cd41541667"
+        },
+        {
+          "transportId": 628704,
+          "properties": {
+            "OID": 628704,
+            "APN": "16204703002"
+          },
+          "geometrySha256": "bdaf6e17aae0a91a76f4a3d2b621ef2a999fa120690852309a46db150c8f4356"
+        },
+        {
+          "transportId": 630269,
+          "properties": {
+            "OID": 630269,
+            "APN": "16204601005"
+          },
+          "geometrySha256": "878377915ff7a2ed3e6cfb62eddd98c28c87271f9d5b1f55790599a494b4d776"
+        },
+        {
+          "transportId": 635937,
+          "properties": {
+            "OID": 635937,
+            "APN": "16204702002"
+          },
+          "geometrySha256": "efb77909a235ff7e3cd5235f59642c700ca46c3580f8d2047e289967eed8ba7a"
+        },
+        {
+          "transportId": 638039,
+          "properties": {
+            "OID": 638039,
+            "APN": "16204703003"
+          },
+          "geometrySha256": "996f8dabe7cf4b027421ab946b3fbace26cabfd0e1e730912d4df2f867b2c3b2"
+        },
+        {
+          "transportId": 647556,
+          "properties": {
+            "OID": 647556,
+            "APN": "16204703001"
+          },
+          "geometrySha256": "42c9260f91bb3643c32e4aaa4c1d238dd2b1b5b09bf3df22c4f3491e78189717"
+        },
+        {
+          "transportId": 648849,
+          "properties": {
+            "OID": 648849,
+            "APN": "16204603002"
+          },
+          "geometrySha256": "57e9fffa72cf6c2afe79012d5a0e4dd7b63c70be744d17dc9a5961a13989ca15"
+        },
+        {
+          "transportId": 650851,
+          "properties": {
+            "OID": 650851,
+            "APN": "16204699019"
+          },
+          "geometrySha256": "424cc16b6007c3fb144a0ffdf89c9b169eaad23a2937461c11041ac71292307c"
+        },
+        {
+          "transportId": 651447,
+          "properties": {
+            "OID": 651447,
+            "APN": "16204699055"
+          },
+          "geometrySha256": "a7c6edb16221e98553809a5822dbe53c579806f6f0264e593d929a088335868a"
+        },
+        {
+          "transportId": 652198,
+          "properties": {
+            "OID": 652198,
+            "APN": "16204399006"
+          },
+          "geometrySha256": "df4734f074006cce846f791c822989e3c4742911bc0b5ccdb2ea7eff43e3f4c2"
+        },
+        {
+          "transportId": 654284,
+          "properties": {
+            "OID": 654284,
+            "APN": "16204604002"
+          },
+          "geometrySha256": "56c9cabb83a117969123f4c9d5229b3489b07eca80a084a503b92e246ecad4b7"
+        },
+        {
+          "transportId": 660488,
+          "properties": {
+            "OID": 660488,
+            "APN": "16204602009"
+          },
+          "geometrySha256": "e55518fe89b8f274416f63f91fb3fc60ab0f4a5b317fb237291cf0db358629e4"
+        },
+        {
+          "transportId": 667338,
+          "properties": {
+            "OID": 667338,
+            "APN": "16204699056"
+          },
+          "geometrySha256": "9f72fbf47e3a7a7ed34ec2ba7549f0b0a6ebf49e527cbc0a1ca795d99dd0c6a6"
+        },
+        {
+          "transportId": 680107,
+          "properties": {
+            "OID": 680107,
+            "APN": "16204399005"
+          },
+          "geometrySha256": "92dfadc169e5d6332d19bcce8a3ed968e7f2665a9811b2f8acef92274881ef0d"
+        },
+        {
+          "transportId": 2110398,
+          "properties": {
+            "OID": 2110398,
+            "APN": "16204699035"
+          },
+          "geometrySha256": "0925b123dd06f89cc1c0e5202ef594f600d9e5a93ad8265c56d823e77dda7c3e"
+        },
+        {
+          "transportId": 2132017,
+          "properties": {
+            "OID": 2132017,
+            "APN": "16204603003"
+          },
+          "geometrySha256": "8fa74ab03de21352490fd7a4d35a6a26553dcc748f3f35f717d7d6a3bcd19378"
+        },
+        {
+          "transportId": 2339257,
+          "properties": {
+            "OID": 2339257,
+            "APN": "16204399011"
+          },
+          "geometrySha256": "79fb18746e630d82c4fc6d168c135a6b59138194738dce834b00cb01600e14c9"
+        },
+        {
+          "transportId": 2339258,
+          "properties": {
+            "OID": 2339258,
+            "APN": "16204399012"
+          },
+          "geometrySha256": "2afea6d1b84e8127fcdad85543b16d4ebfa3f8c0454972900bd36303a389d306"
+        },
+        {
+          "transportId": 2339260,
+          "properties": {
+            "OID": 2339260,
+            "APN": "16204399013"
+          },
+          "geometrySha256": "92d0842540b98c5fcc6008ae68cd94d7f6b4602a4b7588e6f62a11a2f5e7511e"
+        },
+        {
+          "transportId": 3921811,
+          "properties": {
+            "OID": 3921811,
+            "APN": "16204399003"
+          },
+          "geometrySha256": "62ac951cb65e451248a010b91d7f5f7067f7c6d4c32a7bfb9d890b3a8bd77912"
+        },
+        {
+          "transportId": 3980278,
+          "properties": {
+            "OID": 3980278,
+            "APN": "16204702001"
+          },
+          "geometrySha256": "18c70f6ebeba42635fd0e40c1087723ef6c3a651e893de1ff359058817851c0b"
+        },
+        {
+          "transportId": 4072014,
+          "properties": {
+            "OID": 4072014,
+            "APN": "16204699017"
+          },
+          "geometrySha256": "a0ce6e8597ec63fe72521eeada3d1279a7674c965b0df1aea3bc8a491bcaf1e3"
+        },
+        {
+          "transportId": 4072016,
+          "properties": {
+            "OID": 4072016,
+            "APN": "16204699018"
+          },
+          "geometrySha256": "75e593d56659bf970f3541a2eca9801a2ed942fcbe4836e8695fb8ebf6de0c79"
+        }
+      ]
+    },
+    {
+      "test": "fresh-ids-80",
+      "url": "https://maps.clarkcountynv.gov/arcgis/rest/services/GISMO/AssessorMap/FeatureServer/1/query?where=APN+IN+%28%2716204703004%27%2C%2716204703009%27%2C%2716204703014%27%2C%2716204711003%27%2C%2716204799001%27%2C%2716204799003%27%2C%2716204799012%27%2C%2716204799027%27%2C%2716204799028%27%2C%2716204799029%27%29&outFields=OID%2CAPN&returnGeometry=true&outSR=4326&f=geojson&orderByFields=OID&resultRecordCount=2000&resultOffset=0",
+      "method": "GET",
+      "checkedAt": "2026-10-08T21:20:30.913Z",
+      "httpStatus": 200,
+      "contentType": "application/geo+json; charset=UTF-8",
+      "bytes": 7313,
+      "features": [
+        {
+          "transportId": 16323,
+          "properties": {
+            "OID": 16323,
+            "APN": "16204799027"
+          },
+          "geometrySha256": "b7521ee51505e052cf5f9ce3130c4b991e8ee6d0250463bd7176ca70226904da"
+        },
+        {
+          "transportId": 578898,
+          "properties": {
+            "OID": 578898,
+            "APN": "16204711003"
+          },
+          "geometrySha256": "d9a4af411051234ec5ed92765442f6d435fff091cae563a1917ee33cfdfb1537"
+        },
+        {
+          "transportId": 623841,
+          "properties": {
+            "OID": 623841,
+            "APN": "16204703014"
+          },
+          "geometrySha256": "95707dc7aa2afd9ffbf97ce1c2067c381911b7e9b3bd4b338854c8fa1304bd42"
+        },
+        {
+          "transportId": 638081,
+          "properties": {
+            "OID": 638081,
+            "APN": "16204703004"
+          },
+          "geometrySha256": "8d78a71b291295ee54a604a90efbdaec825006fa5cfb97023ccc4172578acf5e"
+        },
+        {
+          "transportId": 644497,
+          "properties": {
+            "OID": 644497,
+            "APN": "16204703009"
+          },
+          "geometrySha256": "f3a0c967113f0dbed65ce6dc6f98dec184f9cf52e6372b3c79760bd89ad65f49"
+        },
+        {
+          "transportId": 1101029,
+          "properties": {
+            "OID": 1101029,
+            "APN": "16204799001"
+          },
+          "geometrySha256": "9bbc623ebff78c636caf5636b481c7f0f75ccee863bfcf6d9daedfc8f012c879"
+        },
+        {
+          "transportId": 1101030,
+          "properties": {
+            "OID": 1101030,
+            "APN": "16204799028"
+          },
+          "geometrySha256": "b8083b54b072ef3fa16643a381c5c3f07a8787cd229d481451b45e1d15ace889"
+        },
+        {
+          "transportId": 2339259,
+          "properties": {
+            "OID": 2339259,
+            "APN": "16204799029"
+          },
+          "geometrySha256": "afb4ebb52804e3a9413b34a4c6b36a75df58cf6ab7f35892169f9b9a7df6e202"
+        },
+        {
+          "transportId": 3980279,
+          "properties": {
+            "OID": 3980279,
+            "APN": "16204799012"
+          },
+          "geometrySha256": "a63444a1585c1a7144de707a2269141224a80d18952b46fedd55217a89463dce"
+        },
+        {
+          "transportId": 3980280,
+          "properties": {
+            "OID": 3980280,
+            "APN": "16204799003"
+          },
+          "geometrySha256": "c716349ec0c524663b33d7d2e931dd415b5e0e0680e4b4da634798d1b35d4b36"
+        }
+      ]
+    },
+    {
+      "test": "explicit-absence",
+      "url": "https://maps.clarkcountynv.gov/arcgis/rest/services/GISMO/AssessorMap/FeatureServer/1/query?where=APN+IN+%28%27999999999999999%27%29&outFields=OID%2CAPN&returnGeometry=true&outSR=4326&f=geojson&orderByFields=OID&resultRecordCount=2000&resultOffset=0",
+      "method": "GET",
+      "checkedAt": "2026-10-08T21:20:31.202Z",
+      "httpStatus": 200,
+      "contentType": "application/geo+json; charset=UTF-8",
+      "bytes": 42,
+      "features": []
+    },
+    {
+      "test": "footprint",
+      "url": "https://maps.clarkcountynv.gov/arcgis/rest/services/GISMO/AssessorMap/FeatureServer/1/query?where=1%3D1&outFields=OID%2CAPN&returnGeometry=true&outSR=4326&f=geojson&orderByFields=OID&resultRecordCount=2000&resultOffset=0&geometry=-115.16690414093688%2C36.15160317953123%2C-115.16636929562361%2C36.151941216345605&geometryType=esriGeometryEnvelope&inSR=4326&spatialRel=esriSpatialRelIntersects",
+      "method": "GET",
+      "checkedAt": "2026-10-08T21:20:31.445Z",
+      "httpStatus": 200,
+      "contentType": "application/geo+json; charset=UTF-8",
+      "bytes": 30626,
+      "features": [
+        {
+          "transportId": 598670,
+          "properties": {
+            "OID": 598670,
+            "APN": "16204299037"
+          },
+          "geometrySha256": "7e274735b12ccc25420fbc73720c0beab4b247474b9c2f61ddacd42bf2142bf5"
+        },
+        {
+          "transportId": 3731359,
+          "properties": {
+            "OID": 3731359,
+            "APN": "16204210086"
+          },
+          "geometrySha256": "30763e27e044d5224f5cbf445aa147de960c34a93b032dc5d774c0d2e7d931e1"
+        },
+        {
+          "transportId": 3731366,
+          "properties": {
+            "OID": 3731366,
+            "APN": "16204299040"
+          },
+          "geometrySha256": "9ad92685f68530918dafa1b0548498cb68c26647a5a17504cae26d7349f96741"
+        },
+        {
+          "transportId": 3921732,
+          "properties": {
+            "OID": 3921732,
+            "APN": "16204299001"
+          },
+          "geometrySha256": "b875073760b86301711f191d8af7af4322f41f4f9c2e10dd4de5bfb639af6289"
+        },
+        {
+          "transportId": 4069487,
+          "properties": {
+            "OID": 4069487,
+            "APN": "16204210084"
+          },
+          "geometrySha256": "bf23cce5eeeeb08d77c795c007dcfbf1237eb175f6c629e14d0c6ccac473a54b"
+        },
+        {
+          "transportId": 4069488,
+          "properties": {
+            "OID": 4069488,
+            "APN": "16204210133"
+          },
+          "geometrySha256": "e023224f968aad9e62a3b4ac8262f81f5166a373f5b0f7219ab29b03bff94c88"
+        }
+      ]
+    },
+    {
+      "test": "source-binding",
+      "url": "https://maps.clarkcountynv.gov/arcgis/rest/services/GISMO/AssessorMap/FeatureServer/1/query?where=1%3D1&outFields=OID%2CAPN&returnGeometry=true&outSR=4326&f=geojson&orderByFields=OID&resultRecordCount=2000&resultOffset=0&geometry=-115.16690414093688%2C36.15160317953123%2C-115.16636929562361%2C36.151941216345605&geometryType=esriGeometryEnvelope&inSR=4326&spatialRel=esriSpatialRelIntersects",
+      "method": "GET",
+      "checkedAt": "2026-10-08T21:20:32.556Z",
+      "httpStatus": 200,
+      "contentType": "application/geo+json; charset=UTF-8",
+      "bytes": 30626,
+      "features": [
+        {
+          "transportId": 598670,
+          "properties": {
+            "OID": 598670,
+            "APN": "16204299037"
+          },
+          "geometrySha256": "7e274735b12ccc25420fbc73720c0beab4b247474b9c2f61ddacd42bf2142bf5"
+        },
+        {
+          "transportId": 3731359,
+          "properties": {
+            "OID": 3731359,
+            "APN": "16204210086"
+          },
+          "geometrySha256": "30763e27e044d5224f5cbf445aa147de960c34a93b032dc5d774c0d2e7d931e1"
+        },
+        {
+          "transportId": 3731366,
+          "properties": {
+            "OID": 3731366,
+            "APN": "16204299040"
+          },
+          "geometrySha256": "9ad92685f68530918dafa1b0548498cb68c26647a5a17504cae26d7349f96741"
+        },
+        {
+          "transportId": 3921732,
+          "properties": {
+            "OID": 3921732,
+            "APN": "16204299001"
+          },
+          "geometrySha256": "b875073760b86301711f191d8af7af4322f41f4f9c2e10dd4de5bfb639af6289"
+        },
+        {
+          "transportId": 4069487,
+          "properties": {
+            "OID": 4069487,
+            "APN": "16204210084"
+          },
+          "geometrySha256": "bf23cce5eeeeb08d77c795c007dcfbf1237eb175f6c629e14d0c6ccac473a54b"
+        },
+        {
+          "transportId": 4069488,
+          "properties": {
+            "OID": 4069488,
+            "APN": "16204210133"
+          },
+          "geometrySha256": "e023224f968aad9e62a3b4ac8262f81f5166a373f5b0f7219ab29b03bff94c88"
+        }
+      ]
+    }
+  ],
+  "qualityFile": "research/overnight-cities-2026-10-08/las-vegas-final-quality.json",
+  "uniqueParcels": 90,
+  "requestCount": 22,
+  "allTestsPassed": false,
+  "finishedAt": "2026-10-08T21:20:33.619Z",
+  "qualityStatus": "pending-independent-topology-check",
+  "attemptsFile": "las-vegas-retry-attempts.json",
+  "runTestResultsAreRaw": true,
+  "allRequiredCheckCategoriesPassedAcrossAttempts": true,
+  "all13CellsHadAtLeastOneCompleteSuccessfulResponse": true,
+  "forcedThreeRowPaginationPassedOnTargetedRetry": true,
+  "originalServerErrorBodyHashAvailable": false,
+  "qualificationInterpretation": "A failed HTTP 500 attempt is preserved in this raw run. Every affected logical check later succeeded through the same unmodified adapter; see attemptsFile for status/length evidence and successful retry response hashes."
+}

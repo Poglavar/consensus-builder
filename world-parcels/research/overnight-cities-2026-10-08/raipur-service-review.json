@@ -1,0 +1,64 @@
+{
+  "schemaVersion": "1.0",
+  "checkedAt": "2026-10-09",
+  "cityRecord": "city-10523-raipur.json",
+  "purpose": "Document first-party local registry/viewer evidence and bounded anonymous geometry access review.",
+  "scopeLimits": {
+    "maxFullPolygonsRetainedInCityRecord": 0,
+    "maxFullPolygonsRetainedInReview": 0,
+    "maxFullPolygonsRetainedInRepository": 0,
+    "ownerOrAddressDataRetained": false,
+    "credentialsOrTokenValuesRetained": false,
+    "citywideCompletenessAsserted": false
+  },
+  "assessment": "The official CG BhuNaksha client/config and JavaScript were reviewed. Selectors returned district 44 Raipur, tehsil 07 Raipur, RI 03 रायपुर-1-रायपुरा, and revenue village 221 रायपुरा (hasData=true). getVVVVExtentGeoref returned bounds x=916697..919933, y=1022840..1026261 with request srs=0 and no declared CRS; it cannot be compared safely with the WUP locator. Viewer getPlotAtXY returns interactive plot info and its OP=4 handler can return plot data without a safe field allowlist, so neither was queried. WMS layers render maps and do not provide full vector parcel geometry. Municipal map service reviewed exposes boundaries/wards; property-tax searches require property/owner identifiers and were not used. Whether this locator lies in revenue village Raipura or another adjacent mapped area; whether any anonymous vector polygon service exists for the exact point.",
+  "officialPrimarySources": [
+    {
+      "url": "https://raipur.gov.in/service/भू-नक्शा/",
+      "observation": "Official Raipur district BhuNaksha service page; identifies Collectorate (Land Records), Raipur and links the state viewer."
+    },
+    {
+      "url": "https://revenue.cg.nic.in/bhunaksha/",
+      "observation": "Official Chhattisgarh revenue department BhuNaksha viewer."
+    },
+    {
+      "url": "https://www.nagarnigamraipur.nic.in/en/municipal-boundaries",
+      "observation": "Official Raipur Municipal Corporation map page lists municipal boundaries."
+    },
+    {
+      "url": "https://www.nagarnigamraipur.nic.in/",
+      "observation": "Official municipal corporation portal; map index lists municipal/ward GIS data and property tax services."
+    },
+    {
+      "url": "https://nagarnigamraipur.nic.in/sites/default/files/rmctender-rfprevenue.pdf",
+      "observation": "Official municipal GIS-based tax and fee collection procurement document; property administration context, not public parcel geometry."
+    }
+  ],
+  "attempts": [
+    {
+      "url": "https://revenue.cg.nic.in/bhunaksha/",
+      "method": "GET official public viewer HTML and JavaScript/config review",
+      "result": "Viewer exposes village selectors, WMS map render and interactive plot-info calls; no public vector geometry endpoint."
+    },
+    {
+      "url": "https://revenue.cg.nic.in/bhunaksha/rest/MasterData/getDistrict",
+      "method": "anonymous public selector request (viewer-derived route)",
+      "result": "Raipur district selector 44; related selectors resolved tehsil 07, RI 03, Raipura village 221."
+    },
+    {
+      "url": "https://revenue.cg.nic.in/bhunaksha/rest/MapInfo/getVVVVExtentGeoref",
+      "method": "POST selected Raipura village extent",
+      "result": "Extent returned, but CRS was not declared (request srs=0); no coordinate coverage inference made."
+    },
+    {
+      "url": "https://revenue.cg.nic.in/bhunaksha/rest/MapInfo/getPlotAtXY",
+      "method": "not called",
+      "result": "Viewer code indicates unfiltered interactive plot-information response; no safe field allowlist."
+    },
+    {
+      "url": "https://www.mcraipur.in/",
+      "method": "not queried",
+      "result": "Property-tax lookup requires property/owner-related inputs and is outside safe geometry-only scope."
+    }
+  ]
+}

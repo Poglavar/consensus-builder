@@ -1,0 +1,108 @@
+{
+  "name": "Irbid",
+  "country": "Jordan",
+  "countryCode": "JO",
+  "rank": 669,
+  "point": [
+    32.546670425785,
+    35.8615690876832
+  ],
+  "population2025": 792470,
+  "populationUnit": "persons",
+  "population2025k": 792.47,
+  "populationPlausibility2025": "Moderate",
+  "schemaVersion": 1,
+  "checkedAt": "2026-10-09",
+  "status": "complete",
+  "registryFound": true,
+  "registryBasis": "City-local registry evidence is explicit: Greater Irbid Municipality’s official page “government institutions and departments” lists the Irbid Governorate Land Registration Directorate and its contact number among offices in the city. The official DLS 2023 annual report separately names the Irbid Land Registration Directorate and reports its land-registration transactions. This establishes a city-local land registry; it does not verify an anonymous safe parcel geometry endpoint or WUP-point coverage.",
+  "registryEvidenceUrls": [
+    "https://irbid.gov.jo/?page_id=6560",
+    "https://www.dls.gov.jo/EBV4.0/Root_Storage/AR/EB_HomePage/annualreport2023.pdf",
+    "https://maps.dls.gov.jo/dlsweb/",
+    "https://www.dls.gov.jo/Default/Ar/"
+  ],
+  "publicParcelGeometryFound": false,
+  "verifiedSample": false,
+  "verifiedParcelResponse": {
+    "url": null,
+    "httpStatus": null,
+    "contentType": null,
+    "featureType": null,
+    "nativeCrs": null,
+    "responseCount": 0,
+    "responseNumberMatched": "not queried",
+    "requestLimit": 0,
+    "requestFilter": "No anonymous safe polygon feature query was made or verified.",
+    "requestedFields": [],
+    "safeFieldsRetained": [],
+    "featureIds": [],
+    "nativeParcelIdentifier": null,
+    "wupPointContained": null,
+    "sampleGeometryFile": null,
+    "sampleSha256": null,
+    "limitations": "No public parcel polygon or native parcel ID was retrieved."
+  },
+  "freshResearch": {
+    "queries": [
+      {
+        "language": "Arabic",
+        "query": "إربد الأردن دائرة الأراضي والمساحة مديرية تسجيل الأراضي خريطة قطع الأراضي كادسترال GIS رسمي",
+        "scope": "Locate a city-local land registry/cadastre and verify whether anonymous safe parcel geometry is available.",
+        "result": "Root-review follow-up found the Greater Irbid Municipality’s official city directory listing the Irbid Governorate Land Registration Directorate and an official DLS annual report naming the Irbid directorate. This confirms city-local registry presence. The public map still has no verified safe geometry schema; no CAPTCHA or property query was submitted.",
+        "actualResultUrls": [
+          "https://irbid.gov.jo/?page_id=6560",
+          "https://www.dls.gov.jo/EBV4.0/Root_Storage/AR/EB_HomePage/annualreport2023.pdf",
+          "https://maps.dls.gov.jo/dlsweb/",
+          "https://www.dls.gov.jo/Default/Ar/"
+        ],
+        "executionMethod": "Separate Arabic and English searches, followed by review of the official city directory and DLS annual report. The public map interface was inspected only; no form, CAPTCHA, or parcel lookup was submitted."
+      },
+      {
+        "language": "English",
+        "query": "Irbid Jordan official parcel cadastral map land survey department GIS Land and Survey Department",
+        "scope": "Locate a city-local land registry/cadastre and verify whether anonymous safe parcel geometry is available.",
+        "result": "Root-review follow-up found the Greater Irbid Municipality’s official city directory listing the Irbid Governorate Land Registration Directorate and an official DLS annual report naming the Irbid directorate. This confirms city-local registry presence. The public map still has no verified safe geometry schema; no CAPTCHA or property query was submitted.",
+        "actualResultUrls": [
+          "https://irbid.gov.jo/?page_id=6560",
+          "https://www.dls.gov.jo/EBV4.0/Root_Storage/AR/EB_HomePage/annualreport2023.pdf",
+          "https://maps.dls.gov.jo/dlsweb/",
+          "https://www.dls.gov.jo/Default/Ar/"
+        ],
+        "executionMethod": "Separate Arabic and English searches, followed by review of the official city directory and DLS annual report. The public map interface was inspected only; no form, CAPTCHA, or parcel lookup was submitted."
+      }
+    ]
+  },
+  "scopeLimits": "Irbid city Land Registration Directorate is verified, but no anonymous safe parcel-feature schema or geometry response was obtained; the public DLS map has interactive controls/CAPTCHA.",
+  "pointBasis": "UN WUP 2025 population-weighted settlement centroid; this is not a municipal boundary or a parcel-coverage claim.",
+  "source": {
+    "sourceId": "JO-443-LOCAL-CADASTRE-REGISTRY",
+    "name": "Greater Irbid Municipality / Department of Lands and Survey: Irbid Land Registration Directorate",
+    "url": "https://irbid.gov.jo/?page_id=6560",
+    "operator": "Greater Irbid Municipality / Jordan Department of Lands and Survey",
+    "serviceType": "Official city-local land-registration directorate; no anonymous parcel feature endpoint verified",
+    "layer": null,
+    "geometryType": null,
+    "outputCrs": null,
+    "nativeIdField": null,
+    "nativeIdEvidence": "No public parcel feature response or safe native parcel identifier was retrieved."
+  },
+  "wupCityCode": 443,
+  "cityId": "wup2025:443",
+  "queueRank": 669,
+  "sourceIds": [],
+  "adapterReady": false,
+  "runtimeReadiness": "not_enabled_no_verified_public_geometry",
+  "technicalBlocker": "Irbid city Land Registration Directorate is verified, but no anonymous safe parcel-feature schema or geometry response was obtained; the public DLS map has interactive controls/CAPTCHA.",
+  "remainingUncertainty": "Whether an anonymous geometry-only DLS endpoint covers the WUP locator remains unverified.",
+  "coverageAssessment": {
+    "verifiedOpenScope": "No anonymous parcel geometry response verified.",
+    "citywideVerified": false,
+    "countrywideVerified": false
+  },
+  "centerLatLon": [
+    32.546670425785,
+    35.8615690876832
+  ],
+  "rootReviewedAt": "2026-10-09T02:33:40.013985+00:00"
+}

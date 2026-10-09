@@ -1,0 +1,67 @@
+{
+  "schemaVersion": "1.0",
+  "checkedAt": "2026-10-09",
+  "cityRecord": "city-3515-jafar-muhammad-ali.json",
+  "purpose": "Document local registry evidence, language-specific searches and bounded anonymous geometry-route review.",
+  "scopeLimits": {
+    "maxFullPolygonsRetainedInCityRecord": 0,
+    "maxFullPolygonsRetainedInReview": 0,
+    "ownerOrAddressDataRetained": false,
+    "credentialsOrTokenValuesRetained": false,
+    "citywideCompletenessAsserted": false
+  },
+  "assessment": "Unknown. The Iraqi Ministry of Justice publishes a General Directorate of Real Estate Registration and a list of branches, but the local official material reviewed did not identify a branch or cadastral office for this WUP settlement. No countrywide or Baghdad-wide inference is made; the WUP entry also has low population plausibility. No public parcel geometry route or sample verified. No private, owner, or property-record endpoint was queried.",
+  "registryAssessment": "Unknown. The Iraqi Ministry of Justice publishes a General Directorate of Real Estate Registration and a list of branches, but the local official material reviewed did not identify a branch or cadastral office for this WUP settlement. No countrywide or Baghdad-wide inference is made; the WUP entry also has low population plausibility.",
+  "officialPrimarySources": [
+    {
+      "url": "https://www.moj.gov.iq/contact_us.php",
+      "observation": "Official Ministry of Justice contact directory lists the General Directorate of Real Estate Registration and numerous named branches; no local branch for this WUP settlement was confirmed."
+    }
+  ],
+  "searchQueries": [
+    {
+      "language": "English",
+      "query": "Jafar Muhammad Ali Iraq official municipality land registry cadastral maps Baghdad cadastre",
+      "scope": "Find local registry/cadastral custodian and public parcel geometry, bound to this city.",
+      "result": "Search results did not establish an official city-specific registry or parcel geometry source for the named settlement.",
+      "actualResultUrls": [
+        "https://www.moj.gov.iq/contact_us.php"
+      ],
+      "executionMethod": "Separate English-language web search followed by official source and public service review; no owner or property fields requested."
+    },
+    {
+      "language": "Arabic",
+      "query": "جعفر محمد علي العراق مديرية التسجيل العقاري قضاء الموقع الجغرافي",
+      "scope": "Find local registry/cadastral custodian and public parcel geometry, bound to this city.",
+      "result": "The official Ministry of Justice lists the national real-estate registration directorate and named branches, but no branch-specific proof for this WUP settlement was found. No personal or property search was made.",
+      "actualResultUrls": [
+        "https://www.moj.gov.iq/contact_us.php"
+      ],
+      "executionMethod": "Separate local-language web search followed by official-source review; no owner or property fields requested."
+    }
+  ],
+  "geometryDecision": {
+    "publicParcelGeometryFound": false,
+    "verifiedSample": false,
+    "decision": "No public parcel geometry route or sample verified. No private, owner, or property-record endpoint was queried."
+  },
+  "coverageAssessment": {
+    "citywideCompletenessAsserted": false,
+    "scope": "Exact unchanged WUP locator and reviewed city-specific official sources only.",
+    "limits": "No citywide source extent or coverage was verified."
+  },
+  "attempts": [
+    {
+      "url": "https://www.moj.gov.iq/contact_us.php",
+      "method": "Official website/service metadata review",
+      "result": "Official Ministry of Justice contact directory lists the General Directorate of Real Estate Registration and numerous named branches; no local branch for this WUP settlement was confirmed."
+    }
+  ],
+  "sourceCandidate": null,
+  "privacyReview": {
+    "ownerAddressTaxOrAccountValuesRequested": false,
+    "propertyDetailsSubmitted": false,
+    "credentialsOrTokensRetained": false
+  },
+  "sampleGeometryFile": null
+}

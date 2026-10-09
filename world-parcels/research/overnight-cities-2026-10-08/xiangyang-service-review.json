@@ -1,0 +1,45 @@
+{
+  "schemaVersion": "1.0",
+  "checkedAt": "2026-10-09",
+  "cityRecord": "city-9746-xiangyang.json",
+  "purpose": "Document city-local land/property registry or map evidence and bounded anonymous parcel-geometry access review.",
+  "scopeLimits": {
+    "maxFullPolygonsRetainedInCityRecord": 0,
+    "maxFullPolygonsRetainedInReview": 0,
+    "maxFullPolygonsRetainedInRepository": 0,
+    "ownerOrAddressDataRetained": false,
+    "credentialsOrTokenValuesRetained": false,
+    "citywideCompletenessAsserted": false
+  },
+  "assessment": "The official Hubei Provincial Department of Natural Resources describes Xiangyang’s city real-estate registration center and a city cadastral-map visual inquiry service. Public instructions for the Xiangyang online hall say the inquirer first authenticates and searches by property address, certificate number or unit number. This verifies local registry and map inquiry, but does not establish anonymous parcel-vector access. The documented Xiangyang cadastral-map lookup is accessed through the Hubei government service platform after identity verification and requires a known property locator. No anonymous geometry-only vector endpoint or safe feature schema was found; no login or property lookup was attempted.",
+  "officialPrimarySources": [
+    {
+      "url": "https://zrzyt.hubei.gov.cn/bmdt/ztzl/jjbdcdj/bdckpzs/202505/t20250514_5650170.shtml",
+      "observation": "Official provincial natural-resources retrospective explicitly names Xiangyang’s real-estate registration reforms, city online hall, and cadastral-map visual query service."
+    },
+    {
+      "url": "https://news.cjn.cn/hbpd_19912/xy_19928/202307/t4619015.htm",
+      "observation": "Xiangyang Daily report describes the documented citizen workflow as identity verification in Hubei’s government service platform, selection of Xiangyang online registry hall, and lookup by address, certificate or unit number. This secondary report was used only to clarify access conditions."
+    }
+  ],
+  "registryEvidenceUrls": [
+    "https://zrzyt.hubei.gov.cn/bmdt/ztzl/jjbdcdj/bdckpzs/202505/t20250514_5650170.shtml"
+  ],
+  "queries": [
+    {
+      "language": "English",
+      "query": "Xiangyang China official cadastral map parcel real estate registration GIS public query"
+    },
+    {
+      "language": "Chinese",
+      "query": "襄阳市 不动产登记 地籍图 可视化查询 官方 在线办事大厅"
+    }
+  ],
+  "attempts": [
+    {
+      "url": "https://zrzyt.hubei.gov.cn/bmdt/ztzl/jjbdcdj/bdckpzs/202505/t20250514_5650170.shtml",
+      "method": "Review official Xiangyang cadastral-map service description",
+      "result": "City-specific visual query confirmed; additional public instructions require identity verification and known address/certificate/unit number, so no protected parcel query was attempted."
+    }
+  ]
+}

@@ -1,0 +1,156 @@
+{
+  "name": "Dresden",
+  "country": "Germany",
+  "countryCode": "DE",
+  "rank": 989,
+  "point": [
+    51.0412590520933,
+    13.7515873602205
+  ],
+  "freshResearch": {
+    "queries": [
+      {
+        "language": "English",
+        "query": "Dresden Germany official cadastral parcel polygon ALKIS public WFS registry",
+        "scope": "Locate the city/local land registry or cadastral source and assess anonymous public polygon geometry.",
+        "result": "The WFS page offers GML or Shapefile; no direct GeoJSON/compatible response was available in the inspected documentation. No city subset was downloaded or feature response retained; no geometry QA or runtime qualification was performed. Official registry evidence: GeoSN publishes Saxony’s official ALKIS land cadastre, explicitly including the City of Dresden as a municipality choice. Data describe cadastral parcel polygons without ownership data. The WFS supports bounded spatial selection and municipal parcel datasets, but the public form documents output only as GML or Shapefile; no full safe feature response was obtained or retained for this packet.",
+        "actualResultUrls": [
+          "https://www.geodaten.sachsen.de/liegenschaftskataster-3990.html",
+          "https://www.geodaten.sachsen.de/alkis-wfs-4968.html",
+          "https://geoportal.sachsen.de/portal/dokumente/WFS_ALKIS_Anwendungsbeschreibung.pdf"
+        ],
+        "executionMethod": "Separate English-language web search, followed by review of first-party source pages and service metadata."
+      },
+      {
+        "language": "German",
+        "query": "Dresden Flurstück Flurstücke ALKIS WFS Sachsen GeoSN amtlich",
+        "scope": "Find first-party local-language land registration, cadastral map or city-specific parcel service evidence.",
+        "result": "The WFS page offers GML or Shapefile; no direct GeoJSON/compatible response was available in the inspected documentation. No city subset was downloaded or feature response retained; no geometry QA or runtime qualification was performed. Official registry evidence: GeoSN publishes Saxony’s official ALKIS land cadastre, explicitly including the City of Dresden as a municipality choice. Data describe cadastral parcel polygons without ownership data. The WFS supports bounded spatial selection and municipal parcel datasets, but the public form documents output only as GML or Shapefile; no full safe feature response was obtained or retained for this packet.",
+        "actualResultUrls": [
+          "https://www.geodaten.sachsen.de/liegenschaftskataster-3990.html",
+          "https://www.geodaten.sachsen.de/alkis-wfs-4968.html",
+          "https://geoportal.sachsen.de/portal/dokumente/WFS_ALKIS_Anwendungsbeschreibung.pdf"
+        ],
+        "executionMethod": "Separate German-language web search, followed by review of first-party source pages; no personal property query."
+      }
+    ],
+    "portals": [
+      {
+        "name": "GeoSN official Saxony ALKIS cadastral parcel dataset / WFS",
+        "operator": "Landesamt für Geobasisinformation Sachsen (GeoSN)",
+        "homeUrl": "https://www.geodaten.sachsen.de/liegenschaftskataster-3990.html",
+        "observation": "Authoritative state cadastral dataset includes Dresden and safe no-owner parcel data. Bounded WFS capability is documented, but no geometry response was requested/retained in this packet. The WFS page offers GML or Shapefile; no direct GeoJSON/compatible response was available in the inspected documentation. No city subset was downloaded or feature response retained; no geometry QA or runtime qualification was performed."
+      }
+    ],
+    "requests": [],
+    "historicalContext": []
+  },
+  "status": "complete",
+  "verifiedParcelResponse": {
+    "httpStatus": 200,
+    "responseType": "WFS2 / GML3.1.1 primary sample; GML3.2.1 namespace independently verified",
+    "nativeCrs": "EPSG:25833",
+    "responseCrs": "EPSG:4326 transformed sample",
+    "nativeIdField": "flstkennz",
+    "nativeParcelIdentifiers": [
+      "140209___00622001002"
+    ],
+    "returnedFullPolygonCount": 1,
+    "uniqueFullPolygonCount": 1,
+    "wupPointContained": true,
+    "sampleGeometryFile": "city-5626-dresden-samples.geojson",
+    "requestedFields": [
+      "ave:flstkennz",
+      "ave:geometrie"
+    ],
+    "serverHonoredPropertyName": false,
+    "personalOrLocationValuesRetained": false
+  },
+  "source": {
+    "sourceId": "DE-5626-LOCAL-CADASTRE-REVIEW",
+    "name": "GeoSN Saxony simplified ALKIS cadastral parcel polygons",
+    "url": "https://www.geodaten.sachsen.de/liegenschaftskataster-3990.html",
+    "operator": "Landesamt für Geobasisinformation Sachsen (GeoSN)",
+    "serviceType": "Anonymous public WFS2 ALKIS cadastral polygons; advertised GML3.2 supported",
+    "layer": "ave:Flurstueck",
+    "geometryType": "MultiSurface/full Polygon",
+    "outputCrs": "EPSG:25833 source; RFC7946 EPSG:4326 sample",
+    "nativeIdField": "flstkennz",
+    "nativeIdEvidence": "Official DescribeFeatureType string field and actual bounded point and exact-ID WFS responses agree.",
+    "requestedAttributes": [
+      "flstkennz",
+      "geometrie"
+    ],
+    "personalAttributesRequested": false,
+    "directMetadataSchemaVerified": true,
+    "directGeometryQueryVerified": true,
+    "scope": "Eleven valid distinct native ALKIS cadastral polygons across thirteen bounded cells around the unchanged Dresden WUP settlement locator; 27 distinct full polygons across grid and footprint queries independently audited in metric EPSG32633. Before/after hit counts use the identical projected FES intersection predicate. Forced three-row paging, fresh exact native-ID reads of all 27 polygons in eight-key batches, explicit absence, full footprint lookup and source binding passed. Independent GEOS checks found no sampled invalidity, duplicate geometry, positive-area overlaps or operation errors. Full source geometry and published parcel keys are preserved. This bounded reference evidence does not establish citywide completeness, legal title or survey accuracy.",
+    "endpoint": "https://geodienste.sachsen.de/aaa/public_alkis/vereinf/wfs"
+  },
+  "registryFound": true,
+  "registryBasis": "GeoSN publishes Saxony’s official ALKIS land cadastre, explicitly including Dresden as a municipality choice. The anonymous simplified ALKIS WFS provides cadastral parcel identity and complete polygon geometry without ownership fields. Root bounded GML3.2 qualification, fresh native-ID readback and independent topology checks are documented separately from registry presence.",
+  "registryEvidenceUrls": [
+    "https://www.geodaten.sachsen.de/liegenschaftskataster-3990.html",
+    "https://www.geodaten.sachsen.de/alkis-wfs-4968.html",
+    "https://geoportal.sachsen.de/portal/dokumente/WFS_ALKIS_Anwendungsbeschreibung.pdf"
+  ],
+  "verifiedSample": true,
+  "publicParcelGeometryFound": true,
+  "runtimeReadiness": "enabled",
+  "adapterReady": true,
+  "priorEvidenceFiles": [],
+  "priorCheck": {
+    "attemptState": "pending",
+    "attemptEvidence": [],
+    "possiblePriorMatches": []
+  },
+  "scopeLimits": "Eleven valid distinct native ALKIS cadastral polygons across thirteen bounded cells around the unchanged Dresden WUP settlement locator; 27 distinct full polygons across grid and footprint queries independently audited in metric EPSG32633. Before/after hit counts use the identical projected FES intersection predicate. Forced three-row paging, fresh exact native-ID reads of all 27 polygons in eight-key batches, explicit absence, full footprint lookup and source binding passed. Independent GEOS checks found no sampled invalidity, duplicate geometry, positive-area overlaps or operation errors. Full source geometry and published parcel keys are preserved. This bounded reference evidence does not establish citywide completeness, legal title or survey accuracy.",
+  "pointBasis": "UN WUP 2025 population-weighted settlement centroid; this is not a municipal boundary or a parcel-coverage claim.",
+  "resultCategory": "verified_public_geometry_runtime_enabled",
+  "technicalBlocker": null,
+  "remainingUncertainty": "Source currentness, citywide completeness, legal title and survey accuracy remain unverified. Bounded runtime qualification passed.",
+  "nextStep": "Enabled bounded parcel browsing; retain source attribution and evidence scope.",
+  "schemaVersion": "1.0",
+  "checkedAt": "2026-10-09",
+  "wupCityCode": 5626,
+  "cityId": "wup2025:5626",
+  "queueRank": 989,
+  "centerLatLon": [
+    51.0412590520933,
+    13.7515873602205
+  ],
+  "population2025k": 554.612,
+  "populationUnit": "persons",
+  "population2025": 554612,
+  "populationPlausibility2025": "High",
+  "sourceIds": [
+    "dresden-saxony-gml-wfs"
+  ],
+  "coverageAssessment": {
+    "claimedScope": "GeoSN publishes Saxony’s official ALKIS land cadastre, explicitly including Dresden as a municipality choice. The anonymous simplified ALKIS WFS provides cadastral parcel identity and complete polygon geometry without ownership fields. Root bounded GML3.2 qualification, fresh native-ID readback and independent topology checks are documented separately from registry presence.",
+    "verifiedOpenScope": "Eleven valid distinct native ALKIS cadastral polygons across thirteen bounded cells around the unchanged Dresden WUP settlement locator; 27 distinct full polygons across grid and footprint queries independently audited in metric EPSG32633. Before/after hit counts use the identical projected FES intersection predicate. Forced three-row paging, fresh exact native-ID reads of all 27 polygons in eight-key batches, explicit absence, full footprint lookup and source binding passed. Independent GEOS checks found no sampled invalidity, duplicate geometry, positive-area overlaps or operation errors. Full source geometry and published parcel keys are preserved. This bounded reference evidence does not establish citywide completeness, legal title or survey accuracy.",
+    "countrywideVerified": false,
+    "citywideVerified": false
+  },
+  "runtimeAssessment": {
+    "status": "enabled",
+    "reason": "Eleven valid distinct native ALKIS cadastral polygons across thirteen bounded cells around the unchanged Dresden WUP settlement locator; 27 distinct full polygons across grid and footprint queries independently audited in metric EPSG32633. Before/after hit counts use the identical projected FES intersection predicate. Forced three-row paging, fresh exact native-ID reads of all 27 polygons in eight-key batches, explicit absence, full footprint lookup and source binding passed. Independent GEOS checks found no sampled invalidity, duplicate geometry, positive-area overlaps or operation errors. Full source geometry and published parcel keys are preserved. This bounded reference evidence does not establish citywide completeness, legal title or survey accuracy.",
+    "acceptanceFile": "research/overnight-cities-2026-10-08/dresden-saxony-gml-root-acceptance.json",
+    "qualityFile": "research/overnight-cities-2026-10-08/dresden-saxony-gml-root-quality.json",
+    "qualityReviewFile": "research/overnight-cities-2026-10-08/dresden-root-quality-review.json"
+  },
+  "discoveryAssessment": {
+    "verifiedSample": false,
+    "technicalBlocker": "The WFS page offers GML or Shapefile; no direct GeoJSON/compatible response was available in the inspected documentation. No city subset was downloaded or feature response retained; no geometry QA or runtime qualification was performed.",
+    "registryBasis": "GeoSN publishes Saxony’s official ALKIS land cadastre, explicitly including the City of Dresden as a municipality choice. Data describe cadastral parcel polygons without ownership data. The WFS supports bounded spatial selection and municipal parcel datasets, but the public form documents output only as GML or Shapefile; no full safe feature response was obtained or retained for this packet."
+  },
+  "rootReviewNote": "Eleven valid distinct native ALKIS cadastral polygons across thirteen bounded cells around the unchanged Dresden WUP settlement locator; 27 distinct full polygons across grid and footprint queries independently audited in metric EPSG32633. Before/after hit counts use the identical projected FES intersection predicate. Forced three-row paging, fresh exact native-ID reads of all 27 polygons in eight-key batches, explicit absence, full footprint lookup and source binding passed. Independent GEOS checks found no sampled invalidity, duplicate geometry, positive-area overlaps or operation errors. Full source geometry and published parcel keys are preserved. This bounded reference evidence does not establish citywide completeness, legal title or survey accuracy.",
+  "rootReviewedAt": "2026-10-09T05:27:20.152293+00:00",
+  "appCityId": "dresden",
+  "runtimeQualification": {
+    "sourceId": "dresden-saxony-gml-wfs",
+    "status": "enabled",
+    "acceptanceFile": "research/overnight-cities-2026-10-08/dresden-saxony-gml-root-acceptance.json",
+    "qualityFile": "research/overnight-cities-2026-10-08/dresden-saxony-gml-root-quality.json"
+  }
+}

@@ -1,0 +1,19 @@
+{
+  "schemaVersion": 1,
+  "checkedAt": "2026-10-09",
+  "rootDecision": "approved_for_bounded_runtime",
+  "assessment": "Hennepin County assessment parcels on the Minneapolis side of the combined Minneapolis–Saint Paul settlement. Thirteen aligned cells plus four adjacent pans and an expanded 35-view check around the unchanged WUP locator yielded 10 distinct full county parcel geometries. Native EPSG:26915 count and object-ID manifests agreed, forced three-row paging completed, all 10 fresh COUNTY_PIN reads reproduced geometry, and explicit absence, full footprint lookup and complete proposal binding passed. GEOS in EPSG:26915 found no invalid polygons, duplicate geometry, sampled overlaps above 0.01 m² or operation errors. Only OBJECTID transport keys and native COUNTY_PIN identifiers accompany geometry. The exact WUP point returned no parcel; nearby verified polygons remain usable. Hennepin metadata describes taxed, tax-exempt and stacked multi-PID assessment parcels; the small sampled area contains no stacked duplicates, while broader county completeness and topology remain unverified. The endpoint is named Parcels_2025; its current revision and identity continuity after replacement were not established. Saint Paul/Ramsey coverage remains a separate source. Published survey and legal-use notices are retained as scope information.",
+  "acceptanceFile": "minneapolis-hennepin-root-acceptance.json",
+  "qualityFile": "minneapolis-hennepin-root-quality.json",
+  "sampleFeatureCount": 10,
+  "schemaReviewedBeforeGeometry": true,
+  "fieldsRetained": [
+    "OBJECTID",
+    "COUNTY_PIN"
+  ],
+  "sourcePolygonSamplesRetained": 2,
+  "sourceRevisionContinuityVerified": false,
+  "exactLocatorHasParcel": false,
+  "projectionReview": "Fresh-process startup exposed an unresolved EPSG:26915 alias in the temporary research descriptor. The runtime descriptor now contains the exact explicit GRS80 UTM zone 15 definition used by the original harness; all 40 expanded live tests were repeated without registering the EPSG alias. Every native ID and geometry hash matches the independently audited ten-parcel union.",
+  "browserCheckFile": "research/overnight-cities-2026-10-08/minneapolis-browser-check.json"
+}

@@ -1,0 +1,205 @@
+{
+  "name": "San Antonio",
+  "country": "United States of America",
+  "countryCode": "US",
+  "rank": 290,
+  "point": [
+    29.464389001765,
+    -98.5436537993289
+  ],
+  "population2025": 1686163,
+  "schemaVersion": 1,
+  "kind": "city_parcel_source_research",
+  "checkedAt": "2026-10-08T22:33:03.687721+00:00",
+  "populationUnit": "persons",
+  "status": "complete",
+  "verifiedSample": true,
+  "publicParcelGeometryFound": true,
+  "runtimeReadiness": "enabled",
+  "priorEvidenceFiles": [
+    "san-antonio-acceptance.json",
+    "san-antonio-quality.json"
+  ],
+  "scopeLimits": "115 unique full parcel polygons returned through 13 bounded 0.001-degree cells around the WUP locator. All 13 viewport reads, forced 3-row paging (18 features across six pages), 115 fresh exact-ID reads, explicit absent-ID semantics, a footprint query, and source binding passed through the existing ArcGIS adapter. All fresh geometries matched viewport hashes. The exact WUP locator is outside all retained polygons. This verifies a local sample only; city-boundary coverage and citywide completeness remain unverified. The GBRA-hosted item is a 2022 TNRIS-acquired snapshot attributed to Bexar CAD, not a live BCAD/SARA feed. The sample does not establish current assessor state, city boundary coverage, or legal survey accuracy.",
+  "pointBasis": "UN WUP 2025 population-weighted settlement centroid; this is not a municipal boundary or a parcel-coverage claim.",
+  "registryFound": true,
+  "registryBasis": "The City of San Antonio official GIS page directs parcel data requests to Bexar County Appraisal District. The public BEXAR PARCELS item is hosted within GBRA’s named ArcGIS organization, linked by GBRA’s official site to its Open Data hub; its layer credits Bexar CAD via TNRIS.",
+  "resultCategory": "verified_public_geometry_runtime_enabled",
+  "freshResearch": {
+    "queries": [
+      {
+        "language": "English",
+        "query": "San Antonio official GIS parcel map BCAD public parcel data City of San Antonio GIS data",
+        "scope": "Identify local parcel authority and public data guidance.",
+        "result": "City GIS directs parcel data users to Bexar County Appraisal District."
+      },
+      {
+        "language": "English",
+        "query": "Bexar County appraisal district parcel map GIS public property parcel query official TNRIS StratMap Bexar parcels",
+        "scope": "Identify public parcel services and source lineage.",
+        "result": "GBRA-hosted public ArcGIS item metadata identifies BEXAR PARCELS, a polygon layer acquired from TNRIS DataHub in 2022 and credited to Bexar CAD; current layer source version is archival."
+      },
+      {
+        "language": "English",
+        "query": "GBRA official Open Data ArcGIS portal GBRA maps ArcGIS BEXAR PARCELS publisher",
+        "scope": "Verify that the public ArcGIS item is hosted by the official GBRA organization.",
+        "result": "GBRA’s official website links its Open Data hub to ArcGIS. Public GBRA organization metadata on gbra.maps.arcgis.com gives organization ID Q6vsXnxTnYcWB7qg, name Guadalupe-Blanco River Authority and URL key gbra; the public BEXAR PARCELS item has that same orgId and owner mdowning_gbra. GBRA board minutes identify Misty Downing as GIS Administrator. This establishes GBRA as the publisher/host of the public mirror, while Bexar CAD remains the credited underlying parcel source."
+      }
+    ],
+    "officialSources": [
+      {
+        "url": "https://www.sanantonio.gov/GIS/GISdata",
+        "observation": "City GIS directs parcel/building-footprint requests to BCAD."
+      },
+      {
+        "url": "https://www.gbra.org/conditions/",
+        "observation": "GBRA’s official page links “Open Data” to opengbra-gbra.hub.arcgis.com and links interactive maps to ArcGIS."
+      },
+      {
+        "url": "https://www.gbra.org/wp-content/uploads/2021/04/minutes190220.pdf",
+        "observation": "GBRA board minutes list Misty Downing as GIS Administrator."
+      },
+      {
+        "url": "https://www.gbra.org/wp-content/uploads/2021/04/minutes191023.pdf",
+        "observation": "GBRA board minutes describe Misty Downing presenting GBRA’s Geographic Information System and internal Web GIS portal."
+      },
+      {
+        "url": "https://gbra.maps.arcgis.com/sharing/rest/portals/self?f=pjson",
+        "observation": "Public organization metadata from gbra.maps.arcgis.com resolves to GBRA (ID Q6vsXnxTnYcWB7qg, URL key gbra, public access)."
+      },
+      {
+        "url": "https://gbra.maps.arcgis.com/sharing/rest/content/items/ddc97094771f45be81fc6cd4842a1901?f=pjson",
+        "observation": "Public BEXAR PARCELS item is in the GBRA organization, owner mdowning_gbra, access public; snippet says it is from TNRIS DataHub and from 2022."
+      },
+      {
+        "url": "https://gbra.maps.arcgis.com/sharing/rest/community/users/mdowning_gbra?f=pjson",
+        "observation": "Public ArcGIS profile resolves mdowning_gbra to Misty Downing; GBRA board records separately establish her as GIS Administrator."
+      },
+      {
+        "url": "https://services7.arcgis.com/Q6vsXnxTnYcWB7qg/ArcGIS/rest/services/BEXAR_PARCELS/FeatureServer/0",
+        "observation": "Layer 0 is a Polygon Feature Layer; metadata credits Bexar CAD via bcad.org, notes TNRIS acquisition January 2022, defines Prop_ID as nullable string length 10 and native spatial reference EPSG:26914."
+      },
+      {
+        "url": "https://tnris.org/stratmap/land-parcels.html",
+        "observation": "Official statewide program describes county appraisal districts/providers as parcel data sources and identifies the dataset as reference mapping."
+      }
+    ],
+    "publisherAuthority": {
+      "established": true,
+      "organizationId": "Q6vsXnxTnYcWB7qg",
+      "organizationName": "Guadalupe-Blanco River Authority",
+      "organizationUrlKey": "gbra",
+      "publicItemOwner": "mdowning_gbra",
+      "itemOrganizationId": "Q6vsXnxTnYcWB7qg",
+      "basis": "Official GBRA site links its Open Data hub to ArcGIS; the gbra.maps.arcgis.com public portal self-metadata names GBRA; BEXAR PARCELS item metadata carries the same orgId and public access; the named account is an identified GBRA GIS Administrator in board minutes.",
+      "limit": "This proves GBRA publishes the public mirror, not that the hosted item is a current BCAD feed or that GBRA is the underlying cadastral authority. Layer metadata attributes source data to Bexar CAD via TNRIS."
+    }
+  },
+  "verifiedParcelResponse": {
+    "httpStatus": 200,
+    "featureType": "esriGeometryPolygon",
+    "responseType": "ArcGIS FeatureSet JSON through repository ArcGIS adapter",
+    "responseCrs": "EPSG:4326 requested",
+    "safeOutFields": [
+      "OBJECTID",
+      "Prop_ID"
+    ],
+    "adapterQualification": {
+      "successfulViewportCells": 13,
+      "totalViewportCells": 13,
+      "uniqueFullPolygons": 115,
+      "forcedPageSize": 3,
+      "forcedPaginationFeatures": 18,
+      "forcedPaginationPages": 6,
+      "freshExactIdsVerified": 115,
+      "geometryHashesMatched": true,
+      "explicitAbsentId": "US-TX-BEXAR-BCAD-2022-9999999999",
+      "explicitAbsencePassed": true,
+      "footprintQueryPassed": true,
+      "sourceBindingCoverage": "complete",
+      "sourceBindingSelectedId": "US-TX-BEXAR-BCAD-2022-386240",
+      "sourceBindingSiteM2": 875.07,
+      "sourceBindingParcelCount": 1,
+      "requestCount": 26
+    },
+    "wupPointContained": false,
+    "limitations": "Three safe-attribute full polygons retained; all 115 audit geometries remain in temporary cache. Only OBJECTID and Prop_ID were requested. Bounded nearby cells only; the exact WUP point is outside sampled polygons.",
+    "retainedFullPolygonCount": 3
+  },
+  "source": {
+    "sourceId": "us-tx-bexar-bcad-public-archive-2022-propid",
+    "name": "BEXAR PARCELS public GBRA-hosted copy of TNRIS DataHub 2022 parcel data",
+    "operator": "Guadalupe-Blanco River Authority ArcGIS organization (public publisher); underlying parcel attribution is Bexar CAD via TNRIS",
+    "url": "https://services7.arcgis.com/Q6vsXnxTnYcWB7qg/ArcGIS/rest/services/BEXAR_PARCELS/FeatureServer/0",
+    "itemUrl": "https://gbra.maps.arcgis.com/home/item.html?id=ddc97094771f45be81fc6cd4842a1901",
+    "serviceType": "Public ArcGIS FeatureServer polygon layer; GBRA organization-hosted archival copy",
+    "serviceItemId": "ddc97094771f45be81fc6cd4842a1901",
+    "publisherOrganizationId": "Q6vsXnxTnYcWB7qg",
+    "publisherOrganizationName": "Guadalupe-Blanco River Authority",
+    "publisherAccount": "mdowning_gbra",
+    "layer": "0",
+    "geometryType": "Polygon",
+    "nativeIdField": "Prop_ID",
+    "transportObjectIdField": "OBJECTID",
+    "nativeIdType": "string",
+    "nativeIdPattern": "^[0-9]{1,10}$",
+    "nativeCrs": "EPSG:26914",
+    "outputCrs": "EPSG:4326",
+    "safeOutFields": [
+      "OBJECTID",
+      "Prop_ID"
+    ],
+    "sourceAttribution": "Bexar CAD via https://www.bcad.org/; the layer metadata identifies TNRIS DataHub acquisition in January 2022.",
+    "freshness": "January 2022 source acquisition; layer data last edited September 2023. Age is recorded as provenance and was not used as a qualification gate.",
+    "scope": "115 unique full parcel polygons returned through 13 bounded 0.001-degree cells around the WUP locator. All 13 viewport reads, forced 3-row paging (18 features across six pages), 115 fresh exact-ID reads, explicit absent-ID semantics, a footprint query, and source binding passed through the existing ArcGIS adapter. All fresh geometries matched viewport hashes. The exact WUP locator is outside all retained polygons. This verifies a local sample only; city-boundary coverage and citywide completeness remain unverified. The GBRA-hosted item is a 2022 TNRIS-acquired snapshot attributed to Bexar CAD, not a live BCAD/SARA feed. The sample does not establish current assessor state, city boundary coverage, or legal survey accuracy."
+  },
+  "coverageAssessment": {
+    "claimedScope": "Bexar County parcel polygon copy; San Antonio is a settlement locator within the broader county dataset.",
+    "verifiedOpenScope": "115 unique full parcel polygons returned through 13 bounded 0.001-degree cells around the WUP locator. All 13 viewport reads, forced 3-row paging (18 features across six pages), 115 fresh exact-ID reads, explicit absent-ID semantics, a footprint query, and source binding passed through the existing ArcGIS adapter. All fresh geometries matched viewport hashes. The exact WUP locator is outside all retained polygons. This verifies a local sample only; city-boundary coverage and citywide completeness remain unverified. The GBRA-hosted item is a 2022 TNRIS-acquired snapshot attributed to Bexar CAD, not a live BCAD/SARA feed. The sample does not establish current assessor state, city boundary coverage, or legal survey accuracy.",
+    "countywideVerified": false,
+    "citywideVerified": false,
+    "wupPointIsParcel": false,
+    "countrywideVerified": false
+  },
+  "technicalBlocker": "No blocking adapter issue remains for the public GBRA-hosted archival mirror. The direct official SARA/TNRIS feature endpoints were not qualified in this run; this does not affect the completed mirror-sample checks.",
+  "remainingUncertainty": "Whether the current official SARA/TNRIS parcel service is reachable from the runtime, whether the 2022 mirror reflects current BCAD records, and whether the sampled countywide dataset is complete across San Antonio. The WUP locator itself is outside all sampled parcel polygons.",
+  "sourceIds": [
+    "us-tx-bexar-bcad-public-archive-2022-propid"
+  ],
+  "nextStep": "Verify integrated local parcel display and selection.",
+  "wupCityCode": 5956,
+  "cityId": "wup2025:5956",
+  "queueRank": 290,
+  "populationPlausibility2025": "Moderate",
+  "centerLatLon": [
+    29.464389001765,
+    -98.5436537993289
+  ],
+  "adapterReady": true,
+  "rawEvidencePaths": [
+    "/tmp/overnight-cities-2026-10-08/san-antonio-acceptance.json",
+    "/tmp/overnight-cities-2026-10-08/san-antonio-cache.geojson",
+    "/tmp/overnight-cities-2026-10-08/san-antonio-metric.geojson",
+    "/tmp/overnight-cities-2026-10-08/san-antonio-quality.json",
+    "/tmp/overnight-cities-2026-10-08/san-antonio-adapter-sample.geojson",
+    "/private/tmp/sanantonio-gbra-org-self.json",
+    "/private/tmp/sanantonio-gbra-org-item.json",
+    "/private/tmp/sanantonio-gbra-owner.json"
+  ],
+  "qaFile": "san-antonio-quality.json",
+  "appCityId": "sanantonio",
+  "runtimeAssessment": {
+    "status": "enabled",
+    "reason": "115 unique full parcel polygons returned through 13 bounded 0.001-degree cells around the WUP locator. All 13 viewport reads, forced 3-row paging (18 features across six pages), 115 fresh exact-ID reads, explicit absent-ID semantics, a footprint query, and source binding passed through the existing ArcGIS adapter. All fresh geometries matched viewport hashes. The exact WUP locator is outside all retained polygons. This verifies a local sample only; city-boundary coverage and citywide completeness remain unverified. The GBRA-hosted item is a 2022 TNRIS-acquired snapshot attributed to Bexar CAD, not a live BCAD/SARA feed. The sample does not establish current assessor state, city boundary coverage, or legal survey accuracy.",
+    "acceptanceFile": "research/overnight-cities-2026-10-08/san-antonio-acceptance.json",
+    "qualityFile": "research/overnight-cities-2026-10-08/san-antonio-quality.json",
+    "qualityReviewFile": "research/overnight-cities-2026-10-08/san-antonio-service-review.json"
+  },
+  "runtimeQualification": {
+    "sourceId": "us-tx-bexar-bcad-public-archive-2022-propid",
+    "status": "enabled",
+    "acceptanceFile": "research/overnight-cities-2026-10-08/san-antonio-acceptance.json",
+    "qualityFile": "research/overnight-cities-2026-10-08/san-antonio-quality.json"
+  },
+  "rootReviewedAt": "2026-10-08T22:33:03.973220+00:00"
+}

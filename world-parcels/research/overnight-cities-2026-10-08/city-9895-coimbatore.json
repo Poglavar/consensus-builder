@@ -1,0 +1,150 @@
+{
+  "schemaVersion": 1,
+  "kind": "city_parcel_source_research",
+  "checkedAt": "2026-10-09",
+  "country": "India",
+  "countryCode": "IN",
+  "populationUnit": "persons",
+  "status": "complete",
+  "verifiedSample": false,
+  "publicParcelGeometryFound": false,
+  "runtimeReadiness": "not_enabled_no_verified_public_geometry",
+  "priorEvidenceFiles": [],
+  "scopeLimits": "The WUP point is a population-cluster locator, not an official city boundary or parcel identity. Absence of a public polygon in this pass does not establish that no cadastral records exist. No personal owner, address, tax, or account fields were requested or copied; no login, CAPTCHA, credential, or token was used.",
+  "wupCityCode": 9895,
+  "queueRank": 206,
+  "name": "Coimbatore",
+  "centerLatLon": [
+    10.98781818387,
+    76.9795600516915
+  ],
+  "population2025": 2382988,
+  "pointBasis": "UN WUP 2025 population-weighted settlement centroid; this is not a municipal boundary or a parcel-coverage claim.",
+  "registryFound": true,
+  "registryBasis": "The Coimbatore District Administration land e-services page explicitly lists Patta & FMB/Chitta/TSLR, A-Register, Patta and Poramboke workflows and identifies the Assistant Director, Survey and Land Records, District Collectorate, Coimbatore. The district Survey and Land Records page identifies the local office and links town re-survey correlation statements. This establishes local registry and map-document evidence but not public parcel vectors.",
+  "resultCategory": "official_city_land_record_services_and_survey_documents_no_public_parcel_vector",
+  "research": {
+    "executedQueries": [
+      {
+        "language": "English",
+        "query": "Coimbatore cadastral parcel GIS Tamil Nadu official கோயம்புத்தூர் நில வரைபடம்",
+        "method": "web search",
+        "checkedAt": "2026-10-08"
+      },
+      {
+        "language": "Tamil",
+        "query": "கோயம்புத்தூர் நில அளவை வரைபடம் புலப்படம் அரசு GIS",
+        "method": "web search",
+        "checkedAt": "2026-10-08"
+      },
+      {
+        "language": "Tamil",
+        "query": "site:tngis.tn.gov.in கோயம்புத்தூர் நில வரைபடம் புலப்படம்",
+        "method": "web search",
+        "checkedAt": "2026-10-08"
+      },
+      {
+        "language": "English",
+        "query": "Coimbatore official patta FMB town survey land record parcel GIS Tamil Nadu",
+        "method": "web search",
+        "checkedAt": "2026-10-08"
+      }
+    ],
+    "officialSources": [
+      {
+        "url": "https://coimbatore.nic.in/service/eservices-anytime-anywhere-land/",
+        "observation": "Official Coimbatore District Administration e-services page lists View Patta & FMB / Chitta / TSLR Extract, View A-Register Extract, Verify Patta and Verify Poramboke Land, and names the Assistant Director, Survey and Land Records, District Collectorate, Coimbatore."
+      },
+      {
+        "url": "https://coimbatore.nic.in/ta/service/மின்னாளுமை-நிலம்/",
+        "observation": "Tamil-language official Coimbatore District Administration page lists Patta, FMB, Chitta, urban TSLR and A-register services and the local Survey and Land Records office."
+      },
+      {
+        "url": "https://coimbatore.nic.in/survey/",
+        "observation": "Official local Survey and Land Records Department page identifies the Coimbatore office and links Town Re-Survey Correlation Statements; it does not expose parcel vector features."
+      },
+      {
+        "url": "https://coimbatore.nic.in/department/revenue-department/",
+        "observation": "Official Coimbatore District Administration directory includes Special Tahsildar (Town Settlement), Coimbatore North, confirming local urban land administration."
+      },
+      {
+        "url": "https://coimbatorelpa.in/",
+        "observation": "Official Coimbatore Local Planning Authority portal publishes planning reports and static village-map/planning documents; no parcel feature endpoint verified."
+      }
+    ],
+    "requestsAndEndpointChecks": [
+      {
+        "method": "GET",
+        "url": "https://coimbatore.nic.in/service/eservices-anytime-anywhere-land/",
+        "checkedAt": "2026-10-09",
+        "httpStatus": 200,
+        "contentType": "text/html",
+        "observation": "Official Coimbatore district page opened; confirms city-local Patta/FMB/TSLR and other land-record workflows and local office."
+      },
+      {
+        "method": "GET",
+        "url": "https://coimbatore.nic.in/ta/service/மின்னாளுமை-நிலம்/",
+        "checkedAt": "2026-10-09",
+        "httpStatus": 200,
+        "contentType": "text/html",
+        "observation": "Tamil-language local counterpart opened and confirms the same survey/record services."
+      },
+      {
+        "method": "GET",
+        "url": "https://coimbatore.nic.in/survey/",
+        "checkedAt": "2026-10-09",
+        "httpStatus": 200,
+        "contentType": "text/html",
+        "observation": "Official local Survey and Land Records Department page opened; town resurvey correlation statement link visible."
+      },
+      {
+        "method": "GET",
+        "url": "https://coimbatore.nic.in/department/revenue-department/",
+        "checkedAt": "2026-10-09",
+        "httpStatus": 200,
+        "contentType": "text/html",
+        "observation": "Official district revenue directory opened; includes Special Tahsildar (Town Settlement), Coimbatore North."
+      },
+      {
+        "method": "GET",
+        "url": "https://coimbatorelpa.in/",
+        "checkedAt": "2026-10-08",
+        "httpStatus": 200,
+        "contentType": "text/html",
+        "observation": "Official planning authority inspected for local plans/maps; static documents only, no parcel vector endpoint found."
+      },
+      {
+        "method": "GET",
+        "url": "https://tngis.tn.gov.in/apps/cumta/",
+        "checkedAt": "2026-10-08",
+        "httpStatus": "timeout",
+        "contentType": "unavailable",
+        "observation": "This is a Chennai metro/CUMTA application, not evidence of Coimbatore parcel coverage; it timed out and is excluded as a city source."
+      },
+      {
+        "method": "GET",
+        "url": "https://eservices.tn.gov.in/eservicesnew/home.html",
+        "checkedAt": "2026-10-08",
+        "httpStatus": "timeout",
+        "contentType": "unavailable",
+        "observation": "Generic state portal request timed out. No city parcel query was submitted."
+      }
+    ],
+    "coverageAssessment": {
+      "verifiedOpenScope": "Official Coimbatore district land-record workflows, local Survey and Land Records office, town resurvey reference documents and planning maps; no public parcel feature response.",
+      "citywideVerified": false,
+      "countrywideVerified": false,
+      "geometryVerified": false
+    },
+    "blocker": "City-specific official pages establish local registry and survey-document sources, but the available record workflows are not an anonymous vector service. No nonempty public parcel polygon response was obtained; a timed-out Chennai metro GIS application is not evidence for Coimbatore.",
+    "remainingUncertainty": "Whether state e-services or local town-resurvey materials expose a public map API when operational; exact survey locality at WUP centroid; parcel geometry, identity, coverage and update vintage."
+  },
+  "cityId": "wup2025:9895",
+  "populationPlausibility2025": "Moderate",
+  "rootReviewedAt": "2026-10-08T20:54:18.632578+00:00",
+  "sourceIds": [],
+  "point": [
+    10.98781818387,
+    76.9795600516915
+  ]
+}

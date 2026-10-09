@@ -1,0 +1,145 @@
+{
+  "schemaVersion": "1.0",
+  "cityId": "wup2025:4507",
+  "wupCityCode": 4507,
+  "name": "Masetjhaba View",
+  "country": "South Africa",
+  "countryCode": "ZA",
+  "rank": 1056,
+  "queueRank": 1056,
+  "point": [
+    -26.3449086556998,
+    28.3891524973703
+  ],
+  "centerLatLon": [
+    -26.3449086556998,
+    28.3891524973703
+  ],
+  "pointBasis": "UN WUP2025 population-weighted settlement centroid; not a municipal boundary or parcel-coverage claim.",
+  "population2025": 522402,
+  "population2025k": 522.402,
+  "populationUnit": "persons",
+  "populationPlausibility2025": "High",
+  "cohort": "overnight-followon-1001-1100",
+  "checkedAt": "2026-10-09",
+  "status": "complete",
+  "registryFound": true,
+  "registryBasis": "The exact WUP-point query returned an empty feature collection. A bounded 0.002° by 0.002° envelope request requested only OBJECTID, PRCL_KEY and geometry, returning three complete polygons in source-native EPSG:4148. One complete polygon (nearest) is retained; its single ring is closed and it is about 44.974 m from the unchanged WUP point. The server reported exceededTransferLimit, so the capped response and one retained neighbor do not prove point containment or represent all intersecting parcels.",
+  "registryEvidenceUrls": [
+    "https://csg.dlrrd.gov.za/data.htm",
+    "https://csg.dlrrd.gov.za/",
+    "https://dffeportal.environment.gov.za/hosting/rest/services/CSG_Cadaster/CSG_Cadastral_Data/MapServer/2?f=pjson",
+    "https://dffeportal.environment.gov.za/hosting/rest/services/CSG_Cadaster/CSG_Cadastral_Data/MapServer/2/query"
+  ],
+  "verifiedSample": true,
+  "publicParcelGeometryFound": true,
+  "sourceIds": [],
+  "adapterReady": false,
+  "runtimeReadiness": "held_native_geometry_conflicts",
+  "technicalBlocker": "335 full native parcels passed bounded querying and fresh-ID equality, but independent GEOS audit found58 positive-area overlapping pairs totaling88.80118m². The largest overlap is3.27782m²,1.2611%of the smaller parcel, with rectangle width0.26894m. These material conflicting boundaries are preserved without repair or selective exclusion; runtime remains held.",
+  "scopeLimits": "The exact WUP-point query returned an empty feature collection. A bounded 0.002° by 0.002° envelope request requested only OBJECTID, PRCL_KEY and geometry, returning three complete polygons in source-native EPSG:4148. One complete polygon (nearest) is retained; its single ring is closed and it is about 44.974 m from the unchanged WUP point. The server reported exceededTransferLimit, so the capped response and one retained neighbor do not prove point containment or represent all intersecting parcels. No citywide completeness is asserted.",
+  "resultCategory": "verified_public_geometry_runtime_held",
+  "coverageAssessment": {
+    "claimedScope": "The exact WUP-point query returned an empty feature collection. A bounded 0.002° by 0.002° envelope request requested only OBJECTID, PRCL_KEY and geometry, returning three complete polygons in source-native EPSG:4148. One complete polygon (nearest) is retained; its single ring is closed and it is about 44.974 m from the unchanged WUP point. The server reported exceededTransferLimit, so the capped response and one retained neighbor do not prove point containment or represent all intersecting parcels.",
+    "verifiedOpenScope": "The exact WUP-point query returned an empty feature collection. A bounded 0.002° by 0.002° envelope request requested only OBJECTID, PRCL_KEY and geometry, returning three complete polygons in source-native EPSG:4148. One complete polygon (nearest) is retained; its single ring is closed and it is about 44.974 m from the unchanged WUP point. The server reported exceededTransferLimit, so the capped response and one retained neighbor do not prove point containment or represent all intersecting parcels.",
+    "citywideVerified": false,
+    "countrywideVerified": false
+  },
+  "runtimeAssessment": {
+    "status": "held_native_geometry_conflicts",
+    "reason": "335 full native parcels passed bounded querying and fresh-ID equality, but independent GEOS audit found58 positive-area overlapping pairs totaling88.80118m². The largest overlap is3.27782m²,1.2611%of the smaller parcel, with rectangle width0.26894m. These material conflicting boundaries are preserved without repair or selective exclusion; runtime remains held.",
+    "qualityReviewFile": "research/overnight-followon-2026-10-09/masetjhaba-view-root-quality-review.json"
+  },
+  "freshResearch": {
+    "queries": [
+      {
+        "language": "English",
+        "query": "Masetjhaba View South Africa Gauteng land parcel cadastre municipal official",
+        "scope": "Independent fresh city-specific registry and anonymous parcel-geometry search.",
+        "result": "Public CSG polygon service is accessible with a safe ID+geometry query contract, but its exact WUP point request returned zero features; no parcel sample was retained.",
+        "actualResultUrls": [
+          "https://csg.dlrrd.gov.za/data.htm",
+          "https://csg.dlrrd.gov.za/",
+          "https://dffeportal.environment.gov.za/hosting/rest/services/CSG_Cadaster/CSG_Cadastral_Data/MapServer/2?f=pjson",
+          "https://dffeportal.environment.gov.za/hosting/rest/services/CSG_Cadaster/CSG_Cadastral_Data/MapServer/2/query"
+        ],
+        "executionMethod": "Executed web search; first-party source pages or official service metadata inspected."
+      },
+      {
+        "language": "Afrikaans",
+        "query": "Masetjhaba View Gauteng cadastre erwe kaarte land parcels Suid-Afrika",
+        "scope": "Independent fresh city-specific registry and anonymous parcel-geometry search.",
+        "result": "Public CSG polygon service is accessible with a safe ID+geometry query contract, but its exact WUP point request returned zero features; no parcel sample was retained.",
+        "actualResultUrls": [
+          "https://csg.dlrrd.gov.za/data.htm",
+          "https://csg.dlrrd.gov.za/",
+          "https://dffeportal.environment.gov.za/hosting/rest/services/CSG_Cadaster/CSG_Cadastral_Data/MapServer/2?f=pjson",
+          "https://dffeportal.environment.gov.za/hosting/rest/services/CSG_Cadaster/CSG_Cadastral_Data/MapServer/2/query"
+        ],
+        "executionMethod": "Executed web search; first-party source pages or official service metadata inspected."
+      }
+    ],
+    "requests": [
+      {
+        "url": "https://dffeportal.environment.gov.za/hosting/rest/services/CSG_Cadaster/CSG_Cadastral_Data/MapServer/2?f=pjson",
+        "method": "GET",
+        "httpStatus": 200,
+        "contentType": "application/json",
+        "assessment": "Layer 2 Erven; polygon geometry, public query capability, national extent; schema read only. Query fields allowlist used later was OBJECTID,PRCL_KEY plus geometry."
+      },
+      {
+        "url": "https://dffeportal.environment.gov.za/hosting/rest/services/CSG_Cadaster/CSG_Cadastral_Data/MapServer/2/query",
+        "method": "GET",
+        "httpStatus": 200,
+        "contentType": "application/geo+json",
+        "assessment": "Exact point geometry intersects query at [lon=28.3891524973703,lat=-26.3449086556998], requesting only OBJECTID,PRCL_KEY and geometry; empty FeatureCollection."
+      },
+      {
+        "url": "https://dffeportal.environment.gov.za/hosting/rest/services/CSG_Cadaster/CSG_Cadastral_Data/MapServer/2/query",
+        "method": "GET",
+        "httpStatus": 200,
+        "contentType": "application/json;charset=UTF-8",
+        "queryGeometry4326": [
+          28.38815249737,
+          -26.3459086557,
+          28.39015249737,
+          -26.3439086557
+        ],
+        "queryFields": [
+          "OBJECTID",
+          "PRCL_KEY",
+          "geometry"
+        ],
+        "requestedMaxRecords": 3,
+        "responseFeatureCount": 3,
+        "exceededTransferLimit": true,
+        "assessment": "The exact WUP-point query returned an empty feature collection. A bounded 0.002° by 0.002° envelope request requested only OBJECTID, PRCL_KEY and geometry, returning three complete polygons in source-native EPSG:4148. One complete polygon (nearest) is retained; its single ring is closed and it is about 44.974 m from the unchanged WUP point. The server reported exceededTransferLimit, so the capped response and one retained neighbor do not prove point containment or represent all intersecting parcels.",
+        "responseSpatialReferenceWKID": 4148,
+        "geometryOutputCrs": "source-native EPSG:4148",
+        "retainedFeatureCount": 1
+      }
+    ],
+    "portals": [
+      {
+        "url": "https://csg.dlrrd.gov.za/data.htm",
+        "observation": "Chief Surveyor General describes a computerized national cadastral spatial map of land parcels and administrative boundaries and identifies a Gauteng office."
+      },
+      {
+        "url": "https://dffeportal.environment.gov.za/hosting/rest/services/CSG_Cadaster/CSG_Cadastral_Data/MapServer/2",
+        "observation": "Public ArcGIS Erven polygon layer supports queries; schema reviewed, exact-point request allowlisted to OBJECTID and PRCL_KEY with geometry only. No feature returned at the exact WUP point."
+      }
+    ],
+    "historicalContext": []
+  },
+  "remainingUncertainty": "The exact WUP-point query returned an empty feature collection. A bounded 0.002° by 0.002° envelope request requested only OBJECTID, PRCL_KEY and geometry, returning three complete polygons in source-native EPSG:4148. One complete polygon (nearest) is retained; its single ring is closed and it is about 44.974 m from the unchanged WUP point. The server reported exceededTransferLimit, so the capped response and one retained neighbor do not prove point containment or represent all intersecting parcels.",
+  "nextStep": "Preserve source conflicts; investigate an independently coherent native cadastral revision before runtime admission.",
+  "priorEvidenceFiles": [],
+  "priorCheck": {
+    "attemptState": "pending",
+    "attemptEvidence": [],
+    "possiblePriorMatches": []
+  },
+  "sampleFile": "samples/masetjhaba-view-csg-wup4507.geojson",
+  "rootReviewedAt": "2026-10-09T06:00:16.709739+00:00",
+  "rootReviewNote": "Root audited all335 grid/footprint native polygons and reviewed all335 fresh native-ID rereads; transport passes but material conflicting boundaries hold runtime."
+}

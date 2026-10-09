@@ -1,0 +1,83 @@
+{
+  "schemaVersion": "1.0",
+  "checkedAt": "2026-10-09",
+  "cityRecord": "city-6708-purwokerto.json",
+  "purpose": "Document first-party local registry/map evidence and bounded anonymous geometry access review.",
+  "scopeLimits": {
+    "maxFullPolygonsRetainedInCityRecord": 0,
+    "maxFullPolygonsRetainedInReview": 0,
+    "maxFullPolygonsRetainedInRepository": 0,
+    "ownerOrAddressDataRetained": false,
+    "credentialsOrTokenValuesRetained": false,
+    "citywideCompletenessAsserted": false
+  },
+  "assessment": "The viewer’s public map layer is discoverable, but the official JS routes parcel identify through an Authorization-token endpoint; direct anonymous WMS/WFS probes at the documented service path returned 404. No safe public geometry query was established. Whether BHUMI offers a public full-geometry export or service path independent of authenticated identify; registered parcel coverage at the exact WUP point is unverified.",
+  "registryAssessment": "The official ATR/BPN Banyumas office handles local land registration, and the official BHUMI national interactive map advertises a registered “Bidang Tanah” layer. Banyumas Regency’s PENA MAS GIS is only a government-owned land asset inventory, not general private cadastral coverage.",
+  "officialPrimarySources": [
+    {
+      "url": "https://bhumi.atrbpn.go.id/peta",
+      "observation": "Official ATR/BPN BHUMI interactive-map shell (HTTP 200); public HTML loads map JS."
+    },
+    {
+      "url": "https://bhumi.atrbpn.go.id/bantuan/peta",
+      "observation": "Official BHUMI help says the interactive map publishes ATR/BPN spatial data through the ATLAS geoportal."
+    },
+    {
+      "url": "https://bhumi.atrbpn.go.id/bantuan/unsur_peta",
+      "observation": "Official map help describes parcel (“bidang tanah”) layer, coordinate/legend tools, and identifying a parcel using NIB/Hak/NIBEL."
+    },
+    {
+      "url": "https://kab-banyumas.atrbpn.go.id/beritakantah/kantor-pertanahan-kabupaten-banyumas-mengikuti-rapat-kerja-majelis-pendayagunaan-wakaf-pimpinan-daerah-muhammadiyah-banyumas-dalam-acara-ini-juga-disampaikan-materi-mengenaisyarat-dan-tata-cara-pendaftaran-aset-muhammadiyah-wakaf-dan-hak-milik",
+      "observation": "Official Banyumas ATR/BPN office publication confirms the local land office and registration processes in Kabupaten Banyumas."
+    },
+    {
+      "url": "https://bkad.banyumaskab.go.id/page/33887/pena-mas",
+      "observation": "Banyumas Regency official PENA MAS GIS maps government-owned land assets in Purwokerto subdistricts only; not a private cadastral register."
+    }
+  ],
+  "searchQueries": [
+    {
+      "language": "English",
+      "query": "Purwokerto official cadastral parcel map land office spatial data Banyumas GIS ATR BPN",
+      "result": "Found the ATR/BPN BHUMI parcel map and a Banyumas Regency map of government land assets; the local asset map does not represent all private parcels.",
+      "method": "Separate language-specific web search followed by review of first-party city/agency pages; no identity, ownership, or property-specific lookup submitted."
+    },
+    {
+      "language": "Indonesian",
+      "query": "Purwokerto peta bidang tanah resmi ATR BPN Kabupaten Banyumas cadastral map tanah",
+      "result": "Found official BHUMI help describing the registered-parcel layer and the local Banyumas Land Office; its identify path is token-authenticated, and no anonymous vector endpoint was verified.",
+      "method": "Separate language-specific web search followed by review of first-party city/agency pages; no identity, ownership, or property-specific lookup submitted."
+    }
+  ],
+  "geometryDecision": "No full parcel geometry was retained because no anonymous safe-field geometry response was verified.",
+  "coverageAssessment": {
+    "claimedScope": "The official ATR/BPN Banyumas office handles local land registration, and the official BHUMI national interactive map advertises a registered “Bidang Tanah” layer. Banyumas Regency’s PENA MAS GIS is only a government-owned land asset inventory, not general private cadastral coverage.",
+    "verifiedOpenScope": "The viewer’s public map layer is discoverable, but the official JS routes parcel identify through an Authorization-token endpoint; direct anonymous WMS/WFS probes at the documented service path returned 404. No safe public geometry query was established.",
+    "citywideVerified": false,
+    "countrywideVerified": false,
+    "geometryVerified": false
+  },
+  "attempts": [
+    {
+      "url": "https://bhumi.atrbpn.go.id/peta",
+      "method": "Anonymous GET official public map shell and public static JavaScript bundles.",
+      "result": "HTTP 200. JS lists Directus layer id 7b4058e4-b08a-4ffe-b8d6-af7d01212f51, layer umum:Persil, label Bidang Tanah, GeoServer base /bhumigs/umum; source description says registered parcel layer."
+    },
+    {
+      "url": "https://bhumi.atrbpn.go.id/expapi/getPersil",
+      "method": "Static JavaScript trace only; no endpoint request made.",
+      "result": "Viewer uses an Authorization header on an internal getPersil identify route and may mint/login a token; that path was not invoked."
+    },
+    {
+      "url": "https://bhumi.atrbpn.go.id/bhumigs/umum",
+      "method": "Anonymous standard WMS/WFS capabilities probes at documented base plus ordinary wms/wfs/ows variants.",
+      "result": "All tested direct paths returned 404 HTML. No alternative endpoint guessed or authentication bypass attempted."
+    },
+    {
+      "url": "https://bkad.banyumaskab.go.id/page/33887/pena-mas",
+      "method": "Review local government GIS description.",
+      "result": "PENA MAS maps government-owned land parcels for Banyumas Regency, including Purwokerto subdistricts; it is not the general cadastral parcel registry."
+    }
+  ],
+  "remainingUncertainty": "Whether BHUMI offers a public full-geometry export or service path independent of authenticated identify; registered parcel coverage at the exact WUP point is unverified."
+}

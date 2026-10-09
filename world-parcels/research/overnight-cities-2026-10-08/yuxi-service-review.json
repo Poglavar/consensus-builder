@@ -1,0 +1,81 @@
+{
+  "schemaVersion": "1.0",
+  "checkedAt": "2026-10-09",
+  "cityRecord": "city-8467-yuxi.json",
+  "purpose": "Document official city-specific registry evidence, bounded anonymous geometry review and remaining coverage/runtime limits.",
+  "scopeLimits": {
+    "maxFullPolygonsRetainedInCityRecord": 3,
+    "maxFullPolygonsRetainedInReview": 3,
+    "maxFullPolygonsRetainedInRepository": 3,
+    "ownerOrAddressDataRetained": false,
+    "credentialsOrTokenValuesRetained": false,
+    "citywideCompletenessAsserted": false
+  },
+  "assessment": "Current Yuxi municipal government information identifies a municipal real-estate registration center under the Natural Resources and Planning Bureau, responsible for registration-data platforms, sharing and query services. A January 2026 official listing gives registration service outlets across Yuxi districts/counties. No public anonymous cadastral polygon API or feature schema was found.",
+  "registryAssessment": "Current Yuxi municipal government information identifies a municipal real-estate registration center under the Natural Resources and Planning Bureau, responsible for registration-data platforms, sharing and query services. A January 2026 official listing gives registration service outlets across Yuxi districts/counties. No public anonymous cadastral polygon API or feature schema was found.",
+  "officialPrimarySources": [
+    {
+      "url": "https://www.yuxi.gov.cn/yxszfxxgk/jggk1885/20260119/972550.html",
+      "observation": "Current Yuxi municipal government information identifies a municipal real-estate registration center under the Natural Resources and Planning Bureau, responsible for registration-data platforms, sharing and query services. A January 2026 official listing gives registration service outlets across Yuxi districts/counties. No public anonymous cadastral polygon API or feature schema was found."
+    },
+    {
+      "url": "https://www.yuxi.gov.cn/yxszfxxgk/xxgkmlznbb1897/20260106/1403956.html",
+      "observation": "Current Yuxi municipal government information identifies a municipal real-estate registration center under the Natural Resources and Planning Bureau, responsible for registration-data platforms, sharing and query services. A January 2026 official listing gives registration service outlets across Yuxi districts/counties. No public anonymous cadastral polygon API or feature schema was found."
+    },
+    {
+      "url": "https://www.yuxi.gov.cn/yxszfxxgk/bmyjsgkzl1889/20260210/1648414.html",
+      "observation": "Current Yuxi municipal government information identifies a municipal real-estate registration center under the Natural Resources and Planning Bureau, responsible for registration-data platforms, sharing and query services. A January 2026 official listing gives registration service outlets across Yuxi districts/counties. No public anonymous cadastral polygon API or feature schema was found."
+    }
+  ],
+  "searchQueries": [
+    {
+      "language": "Chinese (Simplified)",
+      "query": "玉溪市 不动产登记中心 地籍图 查询 宗地 自然资源和规划局 官方",
+      "result": "Official 2026 city records identify the municipal registration center, its platform/data-query duties and local district/county registration outlets. No anonymous vector parcel interface was identified.",
+      "urls": [
+        "https://www.yuxi.gov.cn/yxszfxxgk/jggk1885/20260119/972550.html",
+        "https://www.yuxi.gov.cn/yxszfxxgk/xxgkmlznbb1897/20260106/1403956.html",
+        "https://www.yuxi.gov.cn/yxszfxxgk/bmyjsgkzl1889/20260210/1648414.html"
+      ]
+    },
+    {
+      "language": "English",
+      "query": "Yuxi China cadastral map land parcel registry public GIS real estate registration",
+      "result": "Official Yuxi government records confirm a city registration center and multiple local registry outlets. No public full-polygon query schema was found.",
+      "urls": [
+        "https://www.yuxi.gov.cn/yxszfxxgk/jggk1885/20260119/972550.html",
+        "https://www.yuxi.gov.cn/yxszfxxgk/xxgkmlznbb1897/20260106/1403956.html",
+        "https://www.yuxi.gov.cn/yxszfxxgk/bmyjsgkzl1889/20260210/1648414.html"
+      ]
+    }
+  ],
+  "serviceChecks": [
+    {
+      "url": "https://www.yuxi.gov.cn/yxszfxxgk/jggk1885/20260119/972550.html",
+      "method": "GET official municipal organizational notice",
+      "observation": "Defines Yuxi Real Estate Registration Center / Basic Geographic Information Center under the Natural Resources and Planning Bureau, with registration-data and query-service responsibilities."
+    },
+    {
+      "url": "https://www.yuxi.gov.cn/yxszfxxgk/xxgkmlznbb1897/20260106/1403956.html",
+      "method": "GET official 2026 service-outlet directory",
+      "observation": "Lists real-estate registration service locations for Yuxi districts and counties, including the central Hongta District service hall."
+    }
+  ],
+  "geometryEvidence": null,
+  "privacy": {
+    "ownerOrAddressDataRequested": false,
+    "ownerOrAddressDataRetained": false,
+    "credentialsOrTokensRequested": false,
+    "credentialsOrTokensRetained": false,
+    "notes": "No owner, address, tax/account, personal-property or credential data were queried or retained."
+  },
+  "runtimeAssessment": {
+    "decision": "hold",
+    "reason": "No verified public full-polygon response was obtained."
+  },
+  "qualification": {
+    "boundedSamples": 0,
+    "adapterQualified": false,
+    "note": "No full polygon schema/response obtained; runtime qualification was not performed."
+  }
+}

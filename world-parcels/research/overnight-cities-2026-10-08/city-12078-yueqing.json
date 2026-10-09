@@ -1,0 +1,133 @@
+{
+  "name": "Yueqing",
+  "country": "China",
+  "countryCode": "CN",
+  "rank": 439,
+  "point": [
+    28.1010748397847,
+    120.940222467353
+  ],
+  "freshResearch": {
+    "queries": [
+      {
+        "language": "Chinese (Simplified)",
+        "query": "乐清市 地籍图 宗地 不动产登记 GIS 地理信息公共服务平台 乐清市自然资源和规划局",
+        "scope": "查找乐清市官方开放宗地图层/宗地完整矢量服务，并核对土地登记机构。",
+        "result": "找到乐清市自然资源和规划局及其明确的不动产确权登记、权籍调查和登记资料职责；温州市公共地理信息平台公开配置包含乐清市地图门户，未发现可匿名读取的宗地完整几何接口。",
+        "actualResultUrls": [
+          "https://www.yueqing.gov.cn/art/2023/3/21/art_1229720229_4156715.html",
+          "https://www.yueqing.gov.cn/attach/0/46f2ab391d8c467dbf7ab3dedefe6dfd.pdf",
+          "https://tdt.wzmap.gov.cn/yueqing/static/html/typicalApp.html"
+        ],
+        "executionMethod": "官方站点检索与公开地图门户HTML/JS配置的只读检查。"
+      },
+      {
+        "language": "English",
+        "query": "Yueqing China official cadastral parcel map GIS land registry public vector",
+        "scope": "Cross-check for an official public parcel map or downloadable complete parcel-vector service.",
+        "result": "The official Yueqing land and planning bureau confirms cadastral-registration functions. The official Wenzhou geospatial platform configuration names a Yueqing city map portal and center, but no public full parcel geometry response was verified.",
+        "actualResultUrls": [
+          "https://www.yueqing.gov.cn/art/2023/3/21/art_1229720229_4156715.html",
+          "https://tdt.wzmap.gov.cn/yueqing/static/html/typicalApp.html"
+        ],
+        "executionMethod": "Official source search and read-only page/config inspection."
+      }
+    ],
+    "portals": [
+      {
+        "name": "Yueqing Platform for Common Geospatial Information Services",
+        "operator": "Yueqing Natural Resources and Planning Bureau / Wenzhou geospatial public-service platform",
+        "homeUrl": "https://zhejiang.tianditu.gov.cn/yueqing/tdtmap.html#/",
+        "observation": "Official Wenzhou portal config defines a Yueqing city viewer, center [28.25,121.00], zoom 9 and map layer IDs [0:3]. The city viewer is a public map, but the inspected configuration/catalog does not identify a cadastral parcel vector layer."
+      },
+      {
+        "name": "Yueqing Natural Resources and Planning Bureau",
+        "operator": "Yueqing Municipal Government",
+        "homeUrl": "https://www.yueqing.gov.cn/art/2023/3/21/art_1229720229_4156715.html",
+        "observation": "The bureau is responsible for unified registration of natural resources and immovable property, cadastral investigation/surveying, and registration information management."
+      }
+    ],
+    "requests": [
+      {
+        "url": "https://tdt.wzmap.gov.cn/yueqing/static/html/typicalApp.html",
+        "method": "GET",
+        "httpStatus": 200,
+        "contentType": "text/html",
+        "observation": "Official city-map application directory shell served successfully."
+      },
+      {
+        "url": "https://tdt.wzmap.gov.cn/wenzhou/static/config.js",
+        "method": "GET",
+        "httpStatus": 200,
+        "contentType": "application/javascript",
+        "observation": "Public configuration includes the Yueqing city viewer, center/zoom and layer-ID range; it does not declare a parcel query endpoint."
+      },
+      {
+        "url": "https://tdt.wzmap.gov.cn/pubApi/site/contentlist?ids=3107%2C3060%2C3063%2C3133%2C3066%2C3062%2C3061%2C3064%2C3065&pageSize=20&pagenum=1&key=&buildDate=&category=",
+        "method": "GET",
+        "httpStatus": 403,
+        "contentType": "text/html",
+        "observation": "The application’s map-list catalogue request returned 403 from this read-only client; no bypass was attempted and no absence inference is made from this response."
+      }
+    ],
+    "historicalContext": []
+  },
+  "status": "complete",
+  "verifiedParcelResponse": null,
+  "source": {
+    "sourceId": "CN-ZJ-WZ-YUEQING-NR-PLANNING",
+    "name": "Yueqing Natural Resources and Planning Bureau / Yueqing public geospatial map",
+    "url": "https://tdt.wzmap.gov.cn/yueqing/static/html/typicalApp.html",
+    "operator": "Yueqing Municipal Natural Resources and Planning Bureau",
+    "serviceType": "City public map portal plus city land-registration agency; no verified open parcel geometry service.",
+    "layer": "Public map layers not identified as cadastral parcels in inspected public configuration.",
+    "geometryType": "none verified",
+    "outputCrs": "unknown",
+    "nativeIdField": "unknown",
+    "nativeIdEvidence": "No parcel-feature response or native parcel field was retrieved."
+  },
+  "coverageAssessment": {
+    "claimedScope": "Yueqing city map portal is configured by the official Wenzhou geospatial platform; local bureau handles cadastral survey and immovable-property registration.",
+    "verifiedOpenScope": "Public map portal/configuration only; no anonymous complete parcel polygons verified. The WUP point is a population-weighted centroid, not a parcel or jurisdiction proof.",
+    "countrywideVerified": false
+  },
+  "registryFound": true,
+  "verifiedSample": false,
+  "resultCategory": "official_registry_workflow_no_public_geometry",
+  "technicalBlocker": "A city-specific official public map portal exists, but the inspected public config does not expose a parcel vector endpoint; the map catalogue request returned 403 and no parcel geometry was obtained.",
+  "remainingUncertainty": "Whether the Yueqing viewer exposes a parcel feature layer through an app-only service or another official open-data catalog remains unresolved.",
+  "nextStep": "Continue only if an official public full-geometry parcel route or non-account-gated vector dataset is identified.",
+  "schemaVersion": 1,
+  "checkedAt": "2026-10-08T23:57:31Z",
+  "wupCityCode": 12078,
+  "cityId": "wup2025:12078",
+  "runtimeReadiness": "not_enabled_no_verified_public_geometry",
+  "adapterReady": false,
+  "centerLatLon": [
+    28.1010748397847,
+    120.940222467353
+  ],
+  "queueRank": 439,
+  "population2025": 1160214,
+  "populationPlausibility2025": "High",
+  "populationUnit": "persons",
+  "pointBasis": "UN WUP 2025 population-weighted settlement centroid; this is not a municipal boundary or a parcel-coverage claim.",
+  "publicParcelGeometryFound": false,
+  "rootReviewedAt": "2026-10-09T00:01:28.209446+00:00",
+  "sourceIds": [],
+  "runtimeAssessment": {
+    "decision": "hold",
+    "reason": "No anonymous full parcel geometry was verified for this city."
+  },
+  "registryBasis": "Yueqing Natural Resources and Planning Bureau states it is responsible for unified immovable-property registration, cadastral investigation/surveying, and registration-information management.",
+  "registryEvidenceUrls": [
+    "https://www.yueqing.gov.cn/art/2023/3/21/art_1229720229_4156715.html",
+    "https://www.yueqing.gov.cn/art/2024/4/11/art_1229145291_2032282.html"
+  ],
+  "appCityId": null,
+  "scopeLimits": [
+    "Do not interpret the WUP population centroid or city map center as a cadastral parcel or legal city boundary.",
+    "No owner/address or property-specific query was made."
+  ],
+  "runtimeQualification": null
+}

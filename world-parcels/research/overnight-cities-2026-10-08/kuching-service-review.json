@@ -1,0 +1,54 @@
+{
+  "schemaVersion": "1.0",
+  "checkedAt": "2026-10-09",
+  "cityRecord": "city-3035-kuching.json",
+  "purpose": "Document first-party local land-registry/map evidence and bounded anonymous geometry-route review.",
+  "scopeLimits": {
+    "maxFullPolygonsRetainedInCityRecord": 3,
+    "maxFullPolygonsRetainedInReview": 3,
+    "maxFullPolygonsRetainedInRepository": 3,
+    "ownerOrAddressDataRetained": false,
+    "credentialsOrTokenValuesRetained": false,
+    "citywideCompletenessAsserted": false
+  },
+  "assessment": "DBKU GISKU public layer descriptions omit cadastral parcels. eLASIS cadastral maps/title searches use account/SarawakPass workflows and map products are paid; no anonymous geometry schema or feature response was verified.",
+  "registryAssessment": "Sarawak Land and Survey Department and its eLASIS services are based in Kuching and provide land registry and cadastral-map products. This establishes local registry activity, not open vector access.",
+  "officialPrimarySources": [
+    {
+      "url": "https://dbku.sarawak.gov.my/page-0-431-433-GISKU.html",
+      "observation": "Official Kuching North City Commission GISKU description lists administrative boundary, tourism, zoning, roads, waterways, commercial and public-service layers; cadastral parcel boundaries are not listed."
+    },
+    {
+      "url": "https://elasis.sarawak.gov.my/",
+      "observation": "Official Sarawak eLASIS portal provides land/cadastral products; the reviewed access path requires SarawakPass/account and cadastral map products are sold."
+    },
+    {
+      "url": "https://landsurvey.sarawak.gov.my/",
+      "observation": "Official Sarawak Land and Survey Department portal; the department’s eLASIS materials describe cadastral map and title-search services, not anonymous downloadable full-polygon features."
+    }
+  ],
+  "searchQueries": [
+    {
+      "language": "English",
+      "query": "Kuching Sarawak official cadastral map land survey eLASIS GIS parcel",
+      "result": "Official Sarawak Land and Survey materials list cadastral-map products and title-search services; product workflow requires SarawakPass/account and maps are purchased.",
+      "method": "Separate local-language/English discovery and first-party public-page review."
+    },
+    {
+      "language": "Malay",
+      "query": "peta kadaster Kuching eLASIS Jabatan Tanah dan Survei GISKU",
+      "result": "Official DBKU GISKU lists administrative boundary, zoning, roads, waterways and municipal facilities, but not cadastral parcels; no anonymous parcel vector layer found.",
+      "method": "Separate local-language/English discovery and first-party public-page review."
+    }
+  ],
+  "serviceChecks": [
+    {
+      "url": "https://elasis.sarawak.gov.my/",
+      "method": "Public page/catalogue review; no property-specific query",
+      "observation": "Reviewed public GISKU layer listing and official eLASIS access/product descriptions only; did not create an account, pay, query property records or retain tokens."
+    }
+  ],
+  "geometryEvidence": null,
+  "privacy": "No parcel features or sensitive attributes retained; no owner/address/property-specific lookup submitted.",
+  "runtimeAssessment": "not_enabled"
+}

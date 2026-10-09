@@ -1,0 +1,111 @@
+{
+  "schemaVersion": 1,
+  "kind": "city_parcel_source_research",
+  "checkedAt": "2026-10-09",
+  "name": "Urmia",
+  "country": "Iran (Islamic Republic of)",
+  "countryCode": "IR",
+  "populationUnit": "persons",
+  "status": "complete",
+  "registryFound": null,
+  "registryBasis": "The official Urmia municipal portal and its citizen-service system are city-specific, but reviewed material describes urban-planning property files and municipal case workflow, not a confirmed title/cadastre registry. Official primary evidence identifying the local title registry was not established; registryFound remains null.",
+  "registryEvidenceUrls": [
+    "https://urmia.ir/",
+    "http://esup.urmia.ir/",
+    "https://www.ssaa.ir/"
+  ],
+  "verifiedSample": false,
+  "publicParcelGeometryFound": false,
+  "runtimeReadiness": "not_enabled_no_verified_public_geometry",
+  "wupCityCode": 857,
+  "cityId": "wup2025:857",
+  "centerLatLon": [
+    37.5460854827203,
+    45.057544025621
+  ],
+  "rank": 771,
+  "queueRank": 771,
+  "population2025": 698050,
+  "population2025k": 698.05,
+  "populationPlausibility2025": "High",
+  "pointBasis": "UN WUP 2025 population-weighted settlement centroid; this is not a municipal boundary or a parcel-coverage claim.",
+  "technicalBlocker": "The municipal e-service is property-case information and may expose property-specific attributes; no record or parcel query was submitted. No public geometry service with a safe ID-and-geometry-only schema was verified.",
+  "scopeLimits": "This does not establish that Urmia lacks a land registry or parcel map.",
+  "remainingUncertainty": "A city-specific official title-registry office or published geometry-only parcel dataset may exist but was not verified.",
+  "research": {
+    "executedQueries": [
+      {
+        "language": "English",
+        "query": "Urmia Iran official land registry cadastral public map GIS",
+        "scope": "Identify city-specific registry evidence and safe public geometry routes.",
+        "result": "The official Urmia municipal portal and its citizen-service system are city-specific, but reviewed material describes urban-planning property files and municipal case workflow, not a confirmed title/cadastre registry. Official primary evidence identifying the local title registry was not established; registryFound remains null. The municipal e-service is property-case information and may expose property-specific attributes; no record or parcel query was submitted. No public geometry service with a safe ID-and-geometry-only schema was verified.",
+        "actualResultUrls": [
+          "https://urmia.ir/",
+          "http://esup.urmia.ir/",
+          "https://www.ssaa.ir/"
+        ],
+        "executionMethod": "Separate official-source-focused search followed by public page and service-description review; no property-specific input submitted."
+      },
+      {
+        "language": "Persian",
+        "query": "ارومیه اداره ثبت اسناد و املاک کاداستر نقشه رسمی",
+        "scope": "Identify local-language primary evidence for city registry and public parcel-map services.",
+        "result": "The official Urmia municipal portal and its citizen-service system are city-specific, but reviewed material describes urban-planning property files and municipal case workflow, not a confirmed title/cadastre registry. Official primary evidence identifying the local title registry was not established; registryFound remains null. The municipal e-service is property-case information and may expose property-specific attributes; no record or parcel query was submitted. No public geometry service with a safe ID-and-geometry-only schema was verified.",
+        "actualResultUrls": [
+          "https://urmia.ir/",
+          "http://esup.urmia.ir/",
+          "https://www.ssaa.ir/"
+        ],
+        "executionMethod": "Separate official-source-focused search followed by public page and service-description review; no property-specific input submitted."
+      }
+    ],
+    "officialSources": [
+      {
+        "url": "https://urmia.ir/",
+        "observation": "The official Urmia municipal portal and its citizen-service system are city-specific, but reviewed material describes urban-planning property files and municipal case workflow, not a confirmed title/cadastre registry. Official primary evidence identifying the local title registry was not established; registryFound remains null. The municipal e-service is property-case information and may expose property-specific attributes; no record or parcel query was submitted. No public geometry service with a safe ID-and-geometry-only schema was verified."
+      },
+      {
+        "url": "http://esup.urmia.ir/",
+        "observation": "The official Urmia municipal portal and its citizen-service system are city-specific, but reviewed material describes urban-planning property files and municipal case workflow, not a confirmed title/cadastre registry. Official primary evidence identifying the local title registry was not established; registryFound remains null. The municipal e-service is property-case information and may expose property-specific attributes; no record or parcel query was submitted. No public geometry service with a safe ID-and-geometry-only schema was verified."
+      },
+      {
+        "url": "https://www.ssaa.ir/",
+        "observation": "The official Urmia municipal portal and its citizen-service system are city-specific, but reviewed material describes urban-planning property files and municipal case workflow, not a confirmed title/cadastre registry. Official primary evidence identifying the local title registry was not established; registryFound remains null. The municipal e-service is property-case information and may expose property-specific attributes; no record or parcel query was submitted. No public geometry service with a safe ID-and-geometry-only schema was verified."
+      }
+    ]
+  },
+  "source": {
+    "type": "manual_primary_source_review",
+    "checkedAt": "2026-10-09",
+    "urls": [
+      "https://urmia.ir/",
+      "http://esup.urmia.ir/",
+      "https://www.ssaa.ir/"
+    ]
+  },
+  "coverageAssessment": {
+    "status": "unknown",
+    "scope": "No safe parcel feature route or complete polygon sample verified.",
+    "notes": "This does not establish that Urmia lacks a land registry or parcel map."
+  },
+  "priorEvidenceFiles": [],
+  "rootReviewedAt": "2026-10-09T03:28:12.559388+00:00",
+  "resultCategory": "registry_presence_unresolved",
+  "runtimeAssessment": {
+    "enabled": false,
+    "status": "not_enabled_no_verified_public_geometry",
+    "reason": "A city-specific official title-registry office or published geometry-only parcel dataset may exist but was not verified."
+  },
+  "rootRegistryDecisionNote": "Local registry presence is unestablished; generic institution pages and search failures do not establish absence.",
+  "rootPrimaryReadback": {
+    "url": "https://urmia.ir/",
+    "fetch": "error",
+    "reason": "<urlopen error timed out>"
+  },
+  "rootReviewNote": "Root reviewed primary local institutional/service evidence and retained the actual access, coverage and identity limits. Direct readback errors are distinct from indexed primary evidence and do not prove absent data. No public full geometry was verified for this city.",
+  "point": [
+    37.5460854827203,
+    45.057544025621
+  ],
+  "sourceIds": []
+}

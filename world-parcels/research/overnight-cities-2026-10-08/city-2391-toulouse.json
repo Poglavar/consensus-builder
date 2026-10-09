@@ -1,0 +1,176 @@
+{
+  "name": "Toulouse",
+  "country": "France",
+  "countryCode": "FR",
+  "rank": 839,
+  "point": [
+    43.6041456701446,
+    1.42516148294357
+  ],
+  "population2025": 642224,
+  "population2025k": 642.224,
+  "populationUnit": "persons",
+  "populationPlausibility2025": "Moderate",
+  "schemaVersion": 1,
+  "kind": "city_parcel_source_research",
+  "checkedAt": "2026-10-09",
+  "status": "complete",
+  "registryFound": true,
+  "registryBasis": "IGN API Carto exposes current Parcellaire Express cadastral parcels in WGS84. The Toulouse municipal authorization service requires cadastral prefix, section, and parcel number, and the official INSEE geographic page confirms commune code 31555. Safe local WFS querying returned two nearby cadastral polygons with native IDU; the exact ranked point returned no feature, so this establishes a nearby city-scope source only, not coverage at the WUP locator.",
+  "registryEvidenceUrls": [
+    "https://www.data.gouv.fr/dataservices/api-carto-module-cadastre",
+    "https://apicarto.ign.fr/api/doc/cadastre.yml",
+    "https://data.geopf.fr/wfs/ows?service=WFS&version=2.0.0&request=DescribeFeatureType&typeNames=CADASTRALPARCELS.PARCELLAIRE_EXPRESS%3Aparcelle",
+    "https://data.geopf.fr/wfs/ows?service=WFS&version=2.0.0&request=GetCapabilities",
+    "https://metropole.toulouse.fr/demarches/faire-une-demande-dautorisation-durbanisme-toulouse",
+    "https://www.insee.fr/fr/metadonnees/geographie/commune/31555-toulouse",
+    "https://apicarto.ign.fr/api/doc/pdf/docUser_moduleCadastre.pdf",
+    "https://www.data.gouv.fr/pages/legal/licences/etalab-2.0"
+  ],
+  "publicParcelGeometryFound": true,
+  "verifiedSample": true,
+  "verifiedParcelResponse": {
+    "httpStatus": 200,
+    "featureType": "MultiPolygon",
+    "responseType": "FeatureCollection",
+    "responseCrs": "EPSG:4326",
+    "returnedFullPolygonCount": 2,
+    "uniqueFullPolygonCount": 2,
+    "wupPointContained": false,
+    "nativeIdField": "idu",
+    "nativeParcelIdentifiers": [
+      "31555827AD0628",
+      "31555828AB0562"
+    ],
+    "requestedFields": [
+      "idu",
+      "geom"
+    ],
+    "sampleGeometryFile": "toulouse-ign-pci-near-wup839.geojson",
+    "sampleSha256": "3d002db3a7b0ee5064bf797df145d9fa784397a2b8f0ec683d7a86d8c8fbbe88",
+    "limitations": "Two full parcels intersecting a tiny Toulouse WGS84 bounding box; exact ranked locator query returned no parcel. No citywide completeness or legal-title claim.",
+    "exactPointRequestFieldsSelected": false,
+    "notes": "API Carto offers no field projection; its exact-point response was empty. For the WFS sample, only idu and geom were requested."
+  },
+  "runtimeReadiness": "enabled",
+  "adapterReady": true,
+  "priorEvidenceFiles": [],
+  "scopeLimits": "85 valid distinct cadastral-reference polygons verified in thirteen bounded 0.001-degree cells around the unchanged WUP settlement locator. Complete counted paging, forced three-row geometry pages, all 85 fresh exact native identities, explicit absence, footprint and source binding passed in 31 requests. Independent metric EPSG:32631 GEOS found all polygons valid and distinct, with no sampled overlaps above 0.01 m² or operation errors. The existing national IGN/DGFiP Parcellaire Express provider and FR-PCI native idu namespace are reused. The exact WUP point returned no parcel; both original bounded-nearby samples have Toulouse INSEE prefix31555 and match fresh complete geometry exactly. No municipality boundary was inferred from the WUP point, and no full-city coverage claim is made. Legal title, survey accuracy, currentness, long-term key continuity and wider municipal completeness remain unverified.",
+  "pointBasis": "UN WUP 2025 population-weighted settlement centroid; this is not a municipal boundary or a parcel-coverage claim.",
+  "resultCategory": "verified_public_geometry_runtime_enabled",
+  "remainingUncertainty": "Legal title, survey accuracy, currentness, long-term identity continuity and citywide completeness remain unverified.",
+  "nextStep": "If a primary public parcel layer is identified or the existing Toulouse provider is considered for extension, complete parent-owned source qualification independently; no runtime/config change made.",
+  "freshResearch": {
+    "queries": [
+      {
+        "language": "English",
+        "query": "Toulouse cadastre parcels official API cadastral parcel map Toulouse Métropole IGN data.gouv.fr",
+        "scope": "Find first-party local registry/cadastre evidence and test only public parcel geometry with a safe native identifier; no owner/address/property lookup.",
+        "result": "IGN API Carto exposes current Parcellaire Express cadastral parcels in WGS84. The Toulouse municipal authorization service requires cadastral prefix, section, and parcel number, and the official INSEE geographic page confirms commune code 31555. Safe local WFS querying returned two nearby cadastral polygons with native IDU; the exact ranked point returned no feature, so this establishes a nearby city-scope source only, not coverage at the WUP locator. The exact WUP point request to IGN API Carto returned an empty FeatureCollection; a roughly 24 m by 22 m nearby WFS bounding box returned two parcels. No exact-point parcel is asserted. Broader WFS schema includes other attributes, but only `idu` and geometry were requested/retained.",
+        "actualResultUrls": [
+          "https://www.data.gouv.fr/dataservices/api-carto-module-cadastre",
+          "https://apicarto.ign.fr/api/doc/cadastre.yml",
+          "https://data.geopf.fr/wfs/ows?service=WFS&version=2.0.0&request=DescribeFeatureType&typeNames=CADASTRALPARCELS.PARCELLAIRE_EXPRESS%3Aparcelle",
+          "https://data.geopf.fr/wfs/ows?service=WFS&version=2.0.0&request=GetCapabilities",
+          "https://metropole.toulouse.fr/demarches/faire-une-demande-dautorisation-durbanisme-toulouse",
+          "https://www.insee.fr/fr/metadonnees/geographie/commune/31555-toulouse",
+          "https://apicarto.ign.fr/api/doc/pdf/docUser_moduleCadastre.pdf",
+          "https://www.data.gouv.fr/pages/legal/licences/etalab-2.0"
+        ],
+        "executionMethod": "Separate language-specific search followed by official-source and public schema review."
+      },
+      {
+        "language": "French",
+        "query": "cadastre parcelles Toulouse API cadastre officiel parcelles cadastrales Toulouse commune géoportail",
+        "scope": "Find first-party local registry/cadastre evidence and test only public parcel geometry with a safe native identifier; no owner/address/property lookup.",
+        "result": "IGN API Carto exposes current Parcellaire Express cadastral parcels in WGS84. The Toulouse municipal authorization service requires cadastral prefix, section, and parcel number, and the official INSEE geographic page confirms commune code 31555. Safe local WFS querying returned two nearby cadastral polygons with native IDU; the exact ranked point returned no feature, so this establishes a nearby city-scope source only, not coverage at the WUP locator. The exact WUP point request to IGN API Carto returned an empty FeatureCollection; a roughly 24 m by 22 m nearby WFS bounding box returned two parcels. No exact-point parcel is asserted. Broader WFS schema includes other attributes, but only `idu` and geometry were requested/retained.",
+        "actualResultUrls": [
+          "https://www.data.gouv.fr/dataservices/api-carto-module-cadastre",
+          "https://apicarto.ign.fr/api/doc/cadastre.yml",
+          "https://data.geopf.fr/wfs/ows?service=WFS&version=2.0.0&request=DescribeFeatureType&typeNames=CADASTRALPARCELS.PARCELLAIRE_EXPRESS%3Aparcelle",
+          "https://data.geopf.fr/wfs/ows?service=WFS&version=2.0.0&request=GetCapabilities",
+          "https://metropole.toulouse.fr/demarches/faire-une-demande-dautorisation-durbanisme-toulouse",
+          "https://www.insee.fr/fr/metadonnees/geographie/commune/31555-toulouse",
+          "https://apicarto.ign.fr/api/doc/pdf/docUser_moduleCadastre.pdf",
+          "https://www.data.gouv.fr/pages/legal/licences/etalab-2.0"
+        ],
+        "executionMethod": "Separate language-specific search followed by official-source and public schema review."
+      },
+      {
+        "language": "French",
+        "query": "Toulouse cadastre parcelles IGN API Carto code INSEE 31555 Toulouse Métropole données parcelles cadastrales",
+        "scope": "Find first-party local registry/cadastre evidence and test only public parcel geometry with a safe native identifier; no owner/address/property lookup.",
+        "result": "IGN API Carto exposes current Parcellaire Express cadastral parcels in WGS84. The Toulouse municipal authorization service requires cadastral prefix, section, and parcel number, and the official INSEE geographic page confirms commune code 31555. Safe local WFS querying returned two nearby cadastral polygons with native IDU; the exact ranked point returned no feature, so this establishes a nearby city-scope source only, not coverage at the WUP locator. The exact WUP point request to IGN API Carto returned an empty FeatureCollection; a roughly 24 m by 22 m nearby WFS bounding box returned two parcels. No exact-point parcel is asserted. Broader WFS schema includes other attributes, but only `idu` and geometry were requested/retained.",
+        "actualResultUrls": [
+          "https://www.data.gouv.fr/dataservices/api-carto-module-cadastre",
+          "https://apicarto.ign.fr/api/doc/cadastre.yml",
+          "https://data.geopf.fr/wfs/ows?service=WFS&version=2.0.0&request=DescribeFeatureType&typeNames=CADASTRALPARCELS.PARCELLAIRE_EXPRESS%3Aparcelle",
+          "https://data.geopf.fr/wfs/ows?service=WFS&version=2.0.0&request=GetCapabilities",
+          "https://metropole.toulouse.fr/demarches/faire-une-demande-dautorisation-durbanisme-toulouse",
+          "https://www.insee.fr/fr/metadonnees/geographie/commune/31555-toulouse",
+          "https://apicarto.ign.fr/api/doc/pdf/docUser_moduleCadastre.pdf",
+          "https://www.data.gouv.fr/pages/legal/licences/etalab-2.0"
+        ],
+        "executionMethod": "Separate language-specific search followed by official-source and public schema review."
+      }
+    ]
+  },
+  "source": {
+    "sourceId": "fr-ign-parcellaire-express",
+    "name": "France IGN/DGFiP Parcellaire Express (PCI)",
+    "url": "https://data.geopf.fr/wfs/ows",
+    "operator": "IGN / Direction générale des Finances publiques",
+    "serviceType": "Public WFS 2.0 cadastral polygon layer",
+    "layer": "CADASTRALPARCELS.PARCELLAIRE_EXPRESS:parcelle",
+    "geometryType": "MultiPolygon",
+    "outputCrs": "EPSG:4326 / CRS:84",
+    "nativeIdField": "idu",
+    "requestedAttributes": [
+      "idu",
+      "numero",
+      "section",
+      "code_insee",
+      "nom_com",
+      "code_dep",
+      "code_com",
+      "code_arr",
+      "com_abs",
+      "contenance"
+    ],
+    "personalAttributesRequested": false,
+    "directMetadataSchemaVerified": true,
+    "directGeometryQueryVerified": true,
+    "scope": "85 valid distinct cadastral-reference polygons verified in thirteen bounded 0.001-degree cells around the unchanged WUP settlement locator. Complete counted paging, forced three-row geometry pages, all 85 fresh exact native identities, explicit absence, footprint and source binding passed in 31 requests. Independent metric EPSG:32631 GEOS found all polygons valid and distinct, with no sampled overlaps above 0.01 m² or operation errors. The existing national IGN/DGFiP Parcellaire Express provider and FR-PCI native idu namespace are reused. The exact WUP point returned no parcel; both original bounded-nearby samples have Toulouse INSEE prefix31555 and match fresh complete geometry exactly. No municipality boundary was inferred from the WUP point, and no full-city coverage claim is made. Legal title, survey accuracy, currentness, long-term key continuity and wider municipal completeness remain unverified."
+  },
+  "wupCityCode": 2391,
+  "cityId": "wup2025:2391",
+  "queueRank": 839,
+  "sourceIds": [
+    "fr-ign-parcellaire-express"
+  ],
+  "centerLatLon": [
+    43.6041456701446,
+    1.42516148294357
+  ],
+  "coverageAssessment": {
+    "verifiedOpenScope": "85 valid distinct cadastral-reference polygons verified in thirteen bounded 0.001-degree cells around the unchanged WUP settlement locator. Complete counted paging, forced three-row geometry pages, all 85 fresh exact native identities, explicit absence, footprint and source binding passed in 31 requests. Independent metric EPSG:32631 GEOS found all polygons valid and distinct, with no sampled overlaps above 0.01 m² or operation errors. The existing national IGN/DGFiP Parcellaire Express provider and FR-PCI native idu namespace are reused. The exact WUP point returned no parcel; both original bounded-nearby samples have Toulouse INSEE prefix31555 and match fresh complete geometry exactly. No municipality boundary was inferred from the WUP point, and no full-city coverage claim is made. Legal title, survey accuracy, currentness, long-term key continuity and wider municipal completeness remain unverified.",
+    "citywideVerified": false,
+    "countrywideVerified": false
+  },
+  "runtimeAssessment": {
+    "status": "enabled",
+    "reason": "85 valid distinct cadastral-reference polygons verified in thirteen bounded 0.001-degree cells around the unchanged WUP settlement locator. Complete counted paging, forced three-row geometry pages, all 85 fresh exact native identities, explicit absence, footprint and source binding passed in 31 requests. Independent metric EPSG:32631 GEOS found all polygons valid and distinct, with no sampled overlaps above 0.01 m² or operation errors. The existing national IGN/DGFiP Parcellaire Express provider and FR-PCI native idu namespace are reused. The exact WUP point returned no parcel; both original bounded-nearby samples have Toulouse INSEE prefix31555 and match fresh complete geometry exactly. No municipality boundary was inferred from the WUP point, and no full-city coverage claim is made. Legal title, survey accuracy, currentness, long-term key continuity and wider municipal completeness remain unverified.",
+    "acceptanceFile": "research/overnight-cities-2026-10-08/toulouse-ign-root-acceptance.json",
+    "qualityFile": "research/overnight-cities-2026-10-08/toulouse-ign-root-quality.json",
+    "qualityReviewFile": "research/overnight-cities-2026-10-08/toulouse-root-quality-review.json"
+  },
+  "sampleFile": "research/overnight-cities-2026-10-08/samples/toulouse-ign-pci-near-wup839.geojson",
+  "appCityId": "toulouse",
+  "runtimeQualification": {
+    "sourceId": "fr-ign-parcellaire-express",
+    "status": "enabled",
+    "acceptanceFile": "research/overnight-cities-2026-10-08/toulouse-ign-root-acceptance.json",
+    "qualityFile": "research/overnight-cities-2026-10-08/toulouse-ign-root-quality.json"
+  },
+  "rootReviewedAt": "2026-10-09T04:02:13.534863+00:00"
+}

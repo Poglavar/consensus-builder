@@ -1,0 +1,121 @@
+{
+  "schemaVersion": 1,
+  "kind": "city_parcel_source_research",
+  "checkedAt": "2026-10-09",
+  "name": "Guilin",
+  "country": "China",
+  "countryCode": "CN",
+  "populationUnit": "persons",
+  "status": "complete",
+  "registryFound": true,
+  "registryBasis": "Official Guangxi tax reporting and Guilin municipal notices establish a city Real Estate Registration and Transaction Center. A separate provincial graphical cadastral lookup requires account and identity authentication; no anonymous public parcel geometry or exact WUP-place coverage was verified.",
+  "registryEvidenceUrls": [
+    "https://guangxi.chinatax.gov.cn/xwdt/jcdt/202603/t20260317_430570.html",
+    "https://guangxi.chinatax.gov.cn/guilin/tzgg_15124/tzgg_15125/201809/t20180926_255111.html",
+    "https://dnr.gxzf.gov.cn/xwzx/zrzx/t17616356.shtml"
+  ],
+  "verifiedSample": false,
+  "publicParcelGeometryFound": false,
+  "runtimeReadiness": "not_enabled_no_verified_public_geometry",
+  "wupCityCode": 10358,
+  "cityId": "wup2025:10358",
+  "centerLatLon": [
+    25.266422929748,
+    110.270823287152
+  ],
+  "rank": 531,
+  "queueRank": 531,
+  "population2025": 973970,
+  "population2025k": 973.97,
+  "pointBasis": "UN WUP 2025 population-weighted settlement centroid; this is not a municipal boundary or a parcel-coverage claim.",
+  "technicalBlocker": "The identified graphical cadastral lookup requires account and identity authentication. City portal and anonymous service schema/geometry were not retrieved; no safe bounded feature query was available.",
+  "scopeLimits": "City registration office existence is verified, but no city-specific open geometry source, exact map extent, or point feature was verified.",
+  "remainingUncertainty": "The exact coverage of the WUP point and public parcel geometry remain unverified. State/provincial cadastral service availability does not establish anonymous city parcel coverage.",
+  "research": {
+    "executedQueries": [
+      {
+        "language": "Chinese (Simplified)",
+        "query": "桂林市不动产登记中心 地籍图查询 官方 桂林市自然资源局",
+        "scope": "Find the municipal real-estate registration office and any public cadastral lookup.",
+        "result": "Found official Guilin city registration-center evidence and a Guangxi-level graphical parcel lookup; the graphical lookup requires account and identity authentication, and no anonymous geometry route was verified.",
+        "actualResultUrls": [
+          "https://guangxi.chinatax.gov.cn/xwdt/jcdt/202603/t20260317_430570.html",
+          "https://dnr.gxzf.gov.cn/xwzx/zrzx/t17616356.shtml"
+        ],
+        "executionMethod": "Separate Chinese-language search and official Guilin/Guangxi source review."
+      },
+      {
+        "language": "English",
+        "query": "Guilin China official cadastral parcel map land registry GIS parcel query government",
+        "scope": "Find city-specific registry evidence and a safe public parcel geometry source.",
+        "result": "Search corroborated the city-level registration and transaction center; no anonymous city parcel feature service or exact WUP coverage was verified.",
+        "actualResultUrls": [
+          "https://guangxi.chinatax.gov.cn/xwdt/jcdt/202603/t20260317_430570.html"
+        ],
+        "executionMethod": "Separate English-language search and first-party official source review."
+      }
+    ],
+    "officialSources": [
+      {
+        "url": "https://guangxi.chinatax.gov.cn/xwdt/jcdt/202603/t20260317_430570.html",
+        "observation": "Official Guangxi tax authority reports a city-level Guilin Real Estate Registration and Transaction Center and integrated local registration services."
+      },
+      {
+        "url": "https://guangxi.chinatax.gov.cn/guilin/tzgg_15124/tzgg_15125/201809/t20180926_255111.html",
+        "observation": "Official Guilin tax branch notice routes urban property-transfer registration through the municipal registration and transaction window."
+      },
+      {
+        "url": "https://dnr.gxzf.gov.cn/xwzx/zrzx/t17616356.shtml",
+        "observation": "Official Guangxi Natural Resources Department describes a graphical cadastral lookup service with account and identity authentication; anonymous parcel geometry is not available through the reviewed workflow."
+      }
+    ]
+  },
+  "source": {
+    "sourceId": "cn-guilin-registration-center-and-authenticated-map",
+    "name": "Guilin Real Estate Registration and Transaction Center; Guangxi cadastral map service",
+    "operator": "Guilin municipal registration service; Guangxi Natural Resources Department",
+    "url": "https://guangxi.chinatax.gov.cn/xwdt/jcdt/202603/t20260317_430570.html",
+    "serviceType": "City registration center plus province-wide authenticated graphical cadastral lookup; no anonymous vector route verified",
+    "geometryType": null,
+    "coordinateReferenceSystem": null,
+    "nativeIdFields": [],
+    "directGeometryQueryVerified": false,
+    "directMetadataSchemaVerified": false,
+    "scope": "Official sources establish a municipal Guilin real-estate registration center. The graphical lookup is province-level and requires identity authentication; no exact WUP-place-specific parcel record or public geometry extent was verified.",
+    "identityBasis": null,
+    "attributesRequested": [],
+    "sampleCount": 0,
+    "geometryStatus": "not_verified"
+  },
+  "coverageAssessment": {
+    "claimedScope": "City/authority-scope evidence is limited to the official source described below.",
+    "verifiedOpenScope": "City registration office existence is verified, but no city-specific open geometry source, exact map extent, or point feature was verified.",
+    "citywideVerified": false,
+    "countrywideVerified": false
+  },
+  "priorEvidenceFiles": [],
+  "populationPlausibility2025": "High",
+  "sourceIds": [],
+  "adapterReady": false,
+  "runtimeAssessment": {
+    "status": "not_enabled",
+    "reason": "held_authenticated_lookup_no_public_geometry: The identified graphical cadastral lookup requires account and identity authentication. City portal and anonymous service schema/geometry were not retrieved; no safe bounded feature query was available."
+  },
+  "accessReview": {
+    "publicAnonymousGeometryVerified": false,
+    "completeGeoreferencedPolygonCount": 0,
+    "geometryRetained": false,
+    "ownerAddressTaxOrPersonLookupRequested": false,
+    "authenticationOrCredentialsUsed": false,
+    "captchaOrPersonalFormSubmitted": false,
+    "routeInspectionStatus": "city_registry_source_review_no_public_geometry",
+    "reason": "The identified graphical cadastral lookup requires account and identity authentication. City portal and anonymous service schema/geometry were not retrieved; no safe bounded feature query was available.",
+    "nativeIdsUsed": null,
+    "sampleFile": null
+  },
+  "point": [
+    25.266422929748,
+    110.270823287152
+  ],
+  "rootReviewedAt": "2026-10-09T01:23:12.168688+00:00"
+}

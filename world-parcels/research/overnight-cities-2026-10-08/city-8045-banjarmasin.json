@@ -1,0 +1,108 @@
+{
+  "schemaVersion": 1,
+  "kind": "city_parcel_source_research",
+  "checkedAt": "2026-10-09",
+  "name": "Banjarmasin",
+  "country": "Indonesia",
+  "countryCode": "ID",
+  "populationUnit": "persons",
+  "status": "complete",
+  "registryFound": true,
+  "registryBasis": "Banjarmasin has an official ATR/BPN municipal land office. ATR/BPN’s national BHUMI documentation describes an interactive public geospatial platform whose main datasets include land parcels, but its first-use disclaimer must be accepted and no city-specific anonymous parcel schema or geometry was verified in this review. The city’s SIGAP asset inventory concerns government assets, not the complete cadastral fabric.",
+  "registryEvidenceUrls": [
+    "https://kot-banjarmasin.atrbpn.go.id/",
+    "https://bhumi.atrbpn.go.id/",
+    "https://bhumi.atrbpn.go.id/bantuan/landing",
+    "https://bhumi.atrbpn.go.id/bantuan/katalog_data",
+    "https://sigap.banjarmasinkota.go.id/"
+  ],
+  "verifiedSample": false,
+  "publicParcelGeometryFound": false,
+  "runtimeReadiness": "not_enabled_no_verified_public_geometry",
+  "wupCityCode": 8045,
+  "cityId": "wup2025:8045",
+  "centerLatLon": [
+    -3.31856715781808,
+    114.599014412603
+  ],
+  "rank": 557,
+  "queueRank": 557,
+  "population2025": 930711,
+  "population2025k": 930.711,
+  "pointBasis": "UN WUP 2025 population-weighted settlement centroid; this is not a municipal boundary or a parcel-coverage claim.",
+  "technicalBlocker": "No city-scoped public parcel layer, safe field schema or full geometry response was verified in BHUMI. The local ATR/BPN office confirms land administration, while SIGAP covers municipal assets. The public first-use disclaimer is informational and is not an automatic eligibility gate.",
+  "scopeLimits": "Banjarmasin-specific registry basis is the official municipal ATR/BPN office. BHUMI is national and its presence does not establish local coverage or a query contract. SIGAP is a public inventory of government assets only.",
+  "remainingUncertainty": "The local ATR/BPN page is an application shell. BHUMI documentation indicates land-parcel layers exist nationally, but the initial-use disclaimer has not been accepted and no anonymous city-specific geometry/schema route was verified. Runtime remains disabled.",
+  "research": {
+    "executedQueries": [
+      {
+        "language": "English",
+        "query": "Banjarmasin Indonesia official land office cadastre parcel map GIS BHUMI",
+        "scope": "Find exact-city land registry evidence and safe public parcel geometry routes.",
+        "result": "The official ATR/BPN Banjarmasin municipal office site is an official land-service office. National BHUMI help pages describe public geospatial data including land parcels, but require first-use disclaimer acceptance; no Banjarmasin parcel schema or geometry route was verified. City SIGAP is a government-asset inventory, not a full parcel registry.",
+        "actualResultUrls": [
+          "https://kot-banjarmasin.atrbpn.go.id/",
+          "https://bhumi.atrbpn.go.id/bantuan/landing",
+          "https://bhumi.atrbpn.go.id/bantuan/katalog_data",
+          "https://sigap.banjarmasinkota.go.id/"
+        ]
+      },
+      {
+        "language": "Indonesian",
+        "query": "Kantor Pertanahan Kota Banjarmasin peta bidang tanah BHUMI data kadaster",
+        "scope": "Memverifikasi kantor pertanahan lokal dan jalur geometri publik yang aman.",
+        "result": "Situs resmi Kantor Pertanahan Kota Banjarmasin tersedia. Panduan BHUMI menyatakan platform peta memuat dataset bidang tanah, dengan penafian yang harus disetujui pada akses pertama. Skema bidang khusus Banjarmasin maupun geometri anonim tidak diverifikasi; SIGAP hanya inventaris aset pemerintah kota.",
+        "actualResultUrls": [
+          "https://kot-banjarmasin.atrbpn.go.id/",
+          "https://bhumi.atrbpn.go.id/bantuan/landing",
+          "https://bhumi.atrbpn.go.id/bantuan/katalog_data",
+          "https://sigap.banjarmasinkota.go.id/"
+        ]
+      }
+    ],
+    "officialSources": [
+      {
+        "url": "https://kot-banjarmasin.atrbpn.go.id/",
+        "observation": "Official ATR/BPN Banjarmasin land-office application; public HTML says JavaScript is needed, and no parcel endpoint or schema was exposed by the inspected page."
+      },
+      {
+        "url": "https://bhumi.atrbpn.go.id/bantuan/landing",
+        "observation": "Official BHUMI help says the platform is an open geospatial land/planning viewer; an initial disclaimer must be agreed to continue and warns information may be incomplete or outdated and that official use requires an information request."
+      },
+      {
+        "url": "https://bhumi.atrbpn.go.id/bantuan/katalog_data",
+        "observation": "Official help describes a geospatial data catalog and lists land parcels among the main BHUMI datasets; help page does not publish a city-specific parcel schema or service endpoint."
+      },
+      {
+        "url": "https://sigap.banjarmasinkota.go.id/",
+        "observation": "Official city SIGAP portal inventories municipal/government assets; this scope is not equivalent to all cadastral parcels."
+      }
+    ],
+    "metadataReviewFile": "banjarmasin-service-review.json",
+    "routeInspectionFile": "/tmp/overnight-cities-2026-10-08/city-8045-banjarmasin-route-inspection.json"
+  },
+  "source": {
+    "sourceId": "id-banjarmasin-public-registry-review",
+    "name": "Banjarmasin city-local registry and public-map review",
+    "operator": "https://kot-banjarmasin.atrbpn.go.id/",
+    "url": "https://kot-banjarmasin.atrbpn.go.id/",
+    "scope": "Banjarmasin-specific registry basis is the official municipal ATR/BPN office. BHUMI is national and its presence does not establish local coverage or a query contract. SIGAP is a public inventory of government assets only.",
+    "nativeIdField": null,
+    "attributesRequested": [],
+    "identityBasis": "No parcel feature identifier was requested or retained.",
+    "geometryStatus": "no_public_geometry_verified"
+  },
+  "coverageAssessment": {
+    "verifiedOpenScope": "Banjarmasin-specific registry basis is the official municipal ATR/BPN office. BHUMI is national and its presence does not establish local coverage or a query contract. SIGAP is a public inventory of government assets only.",
+    "citywideVerified": false,
+    "countrywideVerified": false
+  },
+  "priorEvidenceFiles": [],
+  "populationPlausibility2025": "High",
+  "sourceIds": [],
+  "point": [
+    -3.31856715781808,
+    114.599014412603
+  ],
+  "rootReviewedAt": "2026-10-09T01:31:18.479128+00:00"
+}

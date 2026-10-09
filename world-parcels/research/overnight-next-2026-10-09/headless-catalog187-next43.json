@@ -1,0 +1,16 @@
+{
+  "schemaVersion": 1,
+  "checkedAt": "2026-10-09T07:22:58.977081+00:00",
+  "status": "passed",
+  "files": 8,
+  "tests": 151,
+  "command": "npx vitest run test/gml-parcel-reader.test.js test/gml-wfs-source.test.js test/parcel-catalog-startup.test.js test/parcel-coverage-report.test.js test/parcel-report-evidence.test.js test/coverage-evidence-consistency.test.js test/world-coverage-build.test.js test/frontend-world-coverage.test.js",
+  "providers": 159,
+  "scope": "Poznań fixed-profile reader, paging/identity contracts, parser axis order, catalog startup and regenerated evidence report consistency.",
+  "configuredAppCityCount": 187,
+  "subsequentEvidenceReportVerification": {
+    "checkedAt": "2026-10-09T07:28:33.898681+00:00",
+    "reviewedAndIntegratedCityPackets": 58,
+    "note": "City packets, registry and demographics read back and matched canonical point/population/root review stamps; coverage reports rebuilt after all58 integrations."
+  }
+}

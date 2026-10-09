@@ -1,0 +1,130 @@
+{
+  "schemaVersion": 1,
+  "kind": "city_parcel_source_research",
+  "checkedAt": "2026-10-09",
+  "country": "China",
+  "countryCode": "CN",
+  "populationUnit": "persons",
+  "status": "complete",
+  "verifiedSample": false,
+  "publicParcelGeometryFound": false,
+  "runtimeReadiness": "not_enabled_no_verified_public_geometry",
+  "priorEvidenceFiles": [],
+  "scopeLimits": "The WUP point is a population-cluster locator, not an official city boundary or parcel identity. A viewer, service description, metadata record, or clipped vector tile does not verify a full parcel polygon. No owner or personal data was requested or saved; no login, CAPTCHA, credential, or token was used.",
+  "wupCityCode": 9540,
+  "queueRank": 215,
+  "name": "Tangshan",
+  "centerLatLon": [
+    39.6345731035635,
+    118.17060609
+  ],
+  "population2025": 2286763,
+  "pointBasis": "UN WUP 2025 population-weighted settlement centroid; this is not a municipal boundary or a parcel-coverage claim.",
+  "registryFound": null,
+  "registryBasis": "Whether the historical Tianditu·Tangshan service remains operational or any current city-specific cadastral/registration service exposes anonymous parcel polygons; no parcel count, geometry, or WUP-point coverage verified.",
+  "resultCategory": "official_land_information_and_historical_public_map_no_parcel_geometry_verified",
+  "research": {
+    "executedQueries": [
+      {
+        "language": "English",
+        "query": "Tangshan China official public cadastral parcel GIS map service natural resources",
+        "scope": "Locate current official municipal or provincial cadastral parcel GIS/API.",
+        "result": "Search surfaced a 2017 Tangshan public-service catalogue listing a free Tianditu·Tangshan public geographic-information service and current general map references; no current parcel geometry service found.",
+        "actualResultUrls": [
+          "https://www.tangshan.gov.cn/u/cms/www/201704/27081322d9l3.pdf",
+          "https://hebei.tianditu.gov.cn/"
+        ],
+        "executionMethod": "Web search in English and city/country language; official portals directly inspected where recorded."
+      },
+      {
+        "language": "English",
+        "query": "site:gov.cn Tangshan cadastral parcel map GIS land registry",
+        "scope": "Check central-government-indexed evidence for a public parcel map or registry geometry API.",
+        "result": "No current public parcel polygon endpoint surfaced.",
+        "actualResultUrls": [
+          "https://www.tangshan.gov.cn/"
+        ],
+        "executionMethod": "Web search in English and city/country language; official portals directly inspected where recorded."
+      },
+      {
+        "language": "Chinese",
+        "query": "唐山市 自然资源和规划局 地籍图 查询 地图 地块 服务",
+        "scope": "Search local-language city natural-resources mapping and parcel terminology.",
+        "result": "Results identified land-administration and general map material, including the older Tianditu·Tangshan listing; no anonymously accessible parcel geometry endpoint.",
+        "actualResultUrls": [
+          "https://www.tangshan.gov.cn/u/cms/www/201704/27081322d9l3.pdf",
+          "https://hebei.tianditu.gov.cn/"
+        ],
+        "executionMethod": "Web search in English and city/country language; official portals directly inspected where recorded."
+      },
+      {
+        "language": "Chinese",
+        "query": "唐山市 不动产登记 地图 查询 不动产单元号 地籍图",
+        "scope": "Look for public real-estate registration map/parcel lookup, distinguishing applicant records from open geometry.",
+        "result": "Found registration/workflow references but no public polygon service or sample.",
+        "actualResultUrls": [
+          "https://zhujianju.tangshan.gov.cn/tszjj/gzdt/20220601/1433148.html"
+        ],
+        "executionMethod": "Web search in English and city/country language; official portals directly inspected where recorded."
+      }
+    ],
+    "officialSources": [
+      {
+        "url": "https://www.tangshan.gov.cn/u/cms/www/201704/27081322d9l3.pdf",
+        "observation": "2017 Tangshan municipal public-service list includes free Tianditu·Tangshan geographic information online service. Historical catalog entry only; current service status and cadastral parcel content were not verified."
+      },
+      {
+        "url": "https://hebei.tianditu.gov.cn/",
+        "observation": "Official Hebei Tianditu portal/general geographic information service. Inspected as a current mapping lead; no parcel-feature API or cadastral polygon layer was identified."
+      },
+      {
+        "url": "https://www.peopleapp.com/rmharticle/30029636716",
+        "observation": "Tangshan government-platform workflow context indicates real-name/ID and facial-recognition requirements for transaction services; this is not an anonymous parcel geometry service."
+      }
+    ],
+    "candidateSources": [],
+    "requestsAndEndpointChecks": [
+      {
+        "url": "https://www.tangshan.gov.cn/u/cms/www/201704/27081322d9l3.pdf",
+        "method": "GET",
+        "httpStatus": 200,
+        "contentType": "application/pdf",
+        "observation": "Municipal catalog document accessible; historical listing of Tianditu·Tangshan, not a parcel data response."
+      },
+      {
+        "url": "https://hebei.tianditu.gov.cn/",
+        "method": "GET",
+        "httpStatus": 200,
+        "contentType": "text/html",
+        "observation": "Official provincial general geographic-information portal loaded; no public parcel vector endpoint identified."
+      },
+      {
+        "url": "https://zhujianju.tangshan.gov.cn/tszjj/gzdt/20220601/1433148.html",
+        "method": "GET",
+        "httpStatus": "web search result",
+        "contentType": "text/html",
+        "observation": "Official city bureau page describes Tangyiju transaction service, not public parcel geometry."
+      }
+    ],
+    "coverageAssessment": {
+      "verifiedOpenScope": "Tangshan municipal land/natural-resources information and a listed historical public geographic-information map service; current open parcel-layer scope not established.",
+      "citywideVerified": false,
+      "countrywideVerified": false,
+      "geometryVerified": false,
+      "wupPointCoveredByVerifiedParcelGeometry": false,
+      "candidateLayerCount": null
+    },
+    "blocker": "No current city-specific public cadastral polygon response was verified. The 2017 Tianditu·Tangshan listing is historical; current Hebei map references do not establish parcel-layer availability.",
+    "remainingUncertainty": "Whether the historical Tianditu·Tangshan service remains operational or any current city-specific cadastral/registration service exposes anonymous parcel polygons; no parcel count, geometry, or WUP-point coverage verified."
+  },
+  "cityId": "wup2025:9540",
+  "registryFindingNote": "Available sources establish a historical public geoinformation service and general land administration, but no city-specific cadastral or property-registration service was verified. This is unknown, not evidence that Tangshan lacks a registry.",
+  "registryAdjudication": "unknown_city_specific_registration_evidence_not_verified",
+  "populationPlausibility2025": "High",
+  "rootReviewedAt": "2026-10-08T21:10:04.693505+00:00",
+  "sourceIds": [],
+  "point": [
+    39.6345731035635,
+    118.17060609
+  ]
+}

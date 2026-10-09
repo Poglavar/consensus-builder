@@ -1,0 +1,98 @@
+{
+  "name": "Huizhou",
+  "country": "China",
+  "countryCode": "CN",
+  "rank": 455,
+  "point": [
+    23.0970514842227,
+    114.419997300683
+  ],
+  "freshResearch": {
+    "queries": [
+      {
+        "language": "Chinese (Simplified)",
+        "query": "惠州市 不动产登记 以图查房 地籍图 实名 人脸识别 自然资源局",
+        "scope": "Find city natural-resources bureau parcel-map service and access conditions.",
+        "result": "Huizhou Natural Resources Bureau says citywide real-estate registration information and cadastral/house maps can be queried through its official WeChat account, but the map query requires real-name identity verification and facial recognition.",
+        "urls": [
+          "https://land.huizhou.gov.cn/zwdt/gzdt/content/post_5010824.html",
+          "https://land.huizhou.gov.cn/jhzj/content/post_5768301.html"
+        ]
+      },
+      {
+        "language": "English",
+        "query": "Huizhou city official real estate registration cadastral map inquiry natural resources bureau",
+        "scope": "Cross-check the local registry and map-query service in English-indexed official sources.",
+        "result": "Official bureau pages identify the city real-estate registration service; no anonymous geometry endpoint was documented. The local Chinese notice specifies identity-gated map access.",
+        "urls": [
+          "https://land.huizhou.gov.cn/zwdt/gzdt/content/post_5010824.html",
+          "https://land.huizhou.gov.cn/jhzj/content/post_5768301.html"
+        ]
+      }
+    ],
+    "portals": [
+      {
+        "name": "Huizhou Natural Resources Bureau WeChat Government Services — 以图查房",
+        "operator": "Huizhou Municipal Natural Resources Bureau / real-estate registration service",
+        "homeUrl": "https://land.huizhou.gov.cn/",
+        "observation": "Official notice describes map-based citywide registration query; real-name and face verification are required before range selection and map query."
+      }
+    ],
+    "requests": [
+      {
+        "url": "https://land.huizhou.gov.cn/zwdt/gzdt/content/post_5010824.html",
+        "method": "GET",
+        "observation": "Official city bureau notice; map-query feature described with real-name and facial verification gate."
+      },
+      {
+        "url": "https://land.huizhou.gov.cn/jhzj/content/post_5768301.html",
+        "method": "GET",
+        "observation": "Official city bureau service report supports active land-registration operations; no map geometry inspected."
+      }
+    ]
+  },
+  "status": "complete",
+  "source": {
+    "sourceId": "CN-GD-HUIZHOU-REAL-ESTATE-MAP-QUERY",
+    "name": "Huizhou Natural Resources Bureau map query (以图查房)",
+    "url": "https://land.huizhou.gov.cn/",
+    "operator": "Huizhou Municipal Natural Resources Bureau",
+    "serviceType": "Official WeChat Government Services map-based real-estate registration lookup.",
+    "geometryType": "Not inspected; query requires real-name and face verification before map selection.",
+    "nativeIdField": "Not inspected.",
+    "nativeIdEvidence": "No anonymous schema or response accessed."
+  },
+  "coverageAssessment": {
+    "claimedScope": "Official city bureau says map-based registration information is available citywide through the official service after identity and face verification. This establishes local registry activity, not anonymous vector coverage.",
+    "verifiedOpenScope": "Official city bureau says map-based registration information is available citywide through the official service after identity and face verification. This establishes local registry activity, not anonymous vector coverage.",
+    "countrywideVerified": false
+  },
+  "registryFound": true,
+  "verifiedSample": false,
+  "resultCategory": "identity_gated_registry_no_public_geometry",
+  "technicalBlocker": "Official map query is gated by real-name identity verification and facial recognition; no public anonymous geometry endpoint was identified.",
+  "remainingUncertainty": "No anonymous feature schema, geometry type, coverage or data-use terms verified.",
+  "nextStep": "Use only a city-endorsed anonymous public vector source if one becomes available; do not use identity-gated personal/property lookup.",
+  "schemaVersion": 1,
+  "checkedAt": "2026-10-09",
+  "wupCityCode": 11552,
+  "cityId": "wup2025:11552",
+  "runtimeReadiness": "not_enabled_no_verified_public_geometry",
+  "adapterReady": false,
+  "centerLatLon": [
+    23.0970514842227,
+    114.419997300683
+  ],
+  "queueRank": 455,
+  "population2025": 1137670,
+  "populationPlausibility2025": "High",
+  "populationUnit": "persons",
+  "pointBasis": "UN WUP 2025 population-weighted settlement centroid; this is not a municipal boundary or a parcel-coverage claim.",
+  "publicParcelGeometryFound": false,
+  "rootReviewedAt": "2026-10-09T00:13:07.775882+00:00",
+  "sourceIds": [],
+  "registryBasis": "Huizhou Natural Resources Bureau states that the official city real-estate registration map service operates through its WeChat government service after real-name and facial identity verification.",
+  "registryEvidenceUrls": [
+    "https://land.huizhou.gov.cn/"
+  ]
+}

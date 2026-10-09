@@ -1,0 +1,19 @@
+{
+  "schemaVersion": 1,
+  "checkedAt": "2026-10-09",
+  "cityId": "tembisa",
+  "wupCityCode": 4433,
+  "sourceId": "za-ekurhuleni-stands",
+  "url": "http://localhost:5638/?city=tembisa&backend=http%3A%2F%2Flocalhost%3A5640&reduceMotion=1",
+  "browser": "Dedicated headed Chrome; fresh automation profile",
+  "loadedRepositoryParcels": 366,
+  "latestReportedViewportCount": 366,
+  "selectedParcelId": "ZA-EKU-STAND-S260000000016500000",
+  "normalMapClickMenu": true,
+  "menuAreaM2Rounded": 277,
+  "detailsOpened": true,
+  "detailsIdentityMatches": true,
+  "detailsPanelArea": "N/A; source feature has no area metadata. Map menu computes geometry area.",
+  "uncaughtBrowserErrors": [],
+  "browserClosed": true
+}

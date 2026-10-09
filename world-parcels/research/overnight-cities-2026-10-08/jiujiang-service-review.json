@@ -1,0 +1,63 @@
+{
+  "schemaVersion": "1.0",
+  "checkedAt": "2026-10-09",
+  "cityRecord": "city-11076-jiujiang.json",
+  "purpose": "Document first-party local registry/map evidence and bounded anonymous parcel-geometry access review.",
+  "scopeLimits": {
+    "maxFullPolygonsRetainedInCityRecord": 0,
+    "maxFullPolygonsRetainedInReview": 0,
+    "maxFullPolygonsRetainedInRepository": 0,
+    "ownerOrAddressDataRetained": false,
+    "credentialsOrTokenValuesRetained": false,
+    "citywideCompletenessAsserted": false
+  },
+  "assessment": "Official municipal documentation identifies the local real-estate registry database and parcel/housing vector layers. The public viewer URL was found only through local secondary reporting; the direct host timed out before its landing page loaded. No public geometry or schema was verified.",
+  "registryAssessment": "The official Jiujiang municipal document lists real-estate registry databases with parcel and housing vector layers. This establishes a city registry and internal vector records, not public anonymous geometry. The publicly advertised map viewer host did not respond to a bounded landing-page GET.",
+  "officialPrimarySources": [
+    {
+      "url": "https://www.jiujiang.gov.cn/xxgk/xzwgk/jcgk/zfgb_1/2019n/jjsrmzfgb2019nd8q/dzbxz_165209/202511/P020251105780598083392.pdf",
+      "observation": "The official Jiujiang municipal document lists real-estate registry databases with parcel and housing vector layers. This establishes a city registry and internal vector records, not public anonymous geometry. The publicly advertised map viewer host did not respond to a bounded landing-page GET."
+    },
+    {
+      "url": "https://jje.jiujiang.gov.cn/zwgk_194/zfxxgkzd/202311/t20231127_6304163.html",
+      "observation": "The official Jiujiang municipal document lists real-estate registry databases with parcel and housing vector layers. This establishes a city registry and internal vector records, not public anonymous geometry. The publicly advertised map viewer host did not respond to a bounded landing-page GET."
+    },
+    {
+      "url": "http://106.225.177.5:2022/geoigs/index.html#/",
+      "observation": "The official Jiujiang municipal document lists real-estate registry databases with parcel and housing vector layers. This establishes a city registry and internal vector records, not public anonymous geometry. The publicly advertised map viewer host did not respond to a bounded landing-page GET."
+    }
+  ],
+  "searchQueries": [
+    {
+      "language": "English",
+      "query": "Jiujiang China cadastral map system city registry public land parcel GIS 自然资源局 official",
+      "result": "Official municipal documentation identifies the local real-estate registry database and parcel/housing vector layers. The public viewer URL was found only through local secondary reporting; the direct host timed out before its landing page loaded. No public geometry or schema was verified.",
+      "method": "Separate English-language source search and first-party source/service review; no owner, address, account, token or personal-property attributes requested.",
+      "scope": "Locate primary city/local cadastral or land-registry evidence and any safe public parcel-geometry endpoint."
+    },
+    {
+      "language": "Chinese",
+      "query": "No public feature response; parcel native identifier not verified.",
+      "result": "Official municipal documentation identifies the local real-estate registry database and parcel/housing vector layers. The public viewer URL was found only through local secondary reporting; the direct host timed out before its landing page loaded. No public geometry or schema was verified.",
+      "method": "Separate native/local-language query and first-party source review. For Ogale, searched a Nigerian Pidgin/place-name variant because no standardized Eleme-language registry query term was identified.",
+      "scope": "Find primary local-language evidence for the same registry/map question."
+    }
+  ],
+  "geometryDecision": {
+    "publicParcelGeometryFound": null,
+    "decision": "No geometry retained; public anonymous geometry was not verified."
+  },
+  "coverageAssessment": {
+    "citywideCompletenessAsserted": false,
+    "scope": "Exact unchanged WUP settlement point and reviewed official sources only.",
+    "limits": "No complete citywide source extent or coverage was verified."
+  },
+  "attempts": [
+    {
+      "url": "http://106.225.177.5:2022/geoigs/index.html#/",
+      "method": "Anonymous GET advertised cadastral map landing page, 20-second timeout",
+      "result": "Connection timed out with zero response bytes. No login, property search, or query was attempted."
+    }
+  ],
+  "remainingUncertainty": "No anonymous safe-feature response was verified; registry coverage at the exact WUP point remains unresolved."
+}

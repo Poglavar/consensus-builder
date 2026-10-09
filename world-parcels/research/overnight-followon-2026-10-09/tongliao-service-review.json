@@ -1,0 +1,78 @@
+{
+  "schemaVersion": "1.0",
+  "checkedAt": "2026-10-09",
+  "cityRecord": "city-9430-tongliao.json",
+  "purpose": "Document primary local registry/custody evidence and bounded anonymous full-geometry discovery.",
+  "scopeLimits": {
+    "maxFullPolygonsRetainedInCityRecord": 0,
+    "maxFullPolygonsRetainedInReview": 0,
+    "maxFullPolygonsRetainedInRepository": 0,
+    "ownerOrAddressDataRetained": false,
+    "credentialsOrTokenValuesRetained": false,
+    "citywideCompletenessAsserted": false
+  },
+  "assessment": "City registry and cadastral survey processes are confirmed. The official guide identifies online registration channels, including a private-network address, but no safe anonymous feature layer/full parcel geometry route was established. No geometry query was made.",
+  "registryAssessment": "The Tongliao Natural Resources Bureau’s official registration guide lists city registration halls and processes for land/property rights, requiring cadastral-survey results, parcel maps, and boundary-point coordinates. The named online appointment/login or service channels are not a public anonymous polygon API.",
+  "officialPrimarySources": [
+    {
+      "url": "https://zrzyj.tongliao.gov.cn/bdcdj/bszn/202307/t20230703_682714.html",
+      "observation": "Official Tongliao Natural Resources Bureau registration guide; lists local halls and title-registration workflows and specifies cadastral survey materials."
+    },
+    {
+      "url": "https://zrzyj.tongliao.gov.cn/zwgk/zfxxgk/fdzdgknr/jgjj/zfzcbm/",
+      "observation": "Official bureau organization/functions page identifies the municipal real-estate registration center and city geospatial functions."
+    },
+    {
+      "url": "https://zrzyj.tongliao.gov.cn/xwzx/jrgz/202401/t20240119_676304.html",
+      "observation": "Official bureau account of municipal registration service operations."
+    }
+  ],
+  "searchQueries": [
+    {
+      "language": "English",
+      "query": "Tongliao official property registration cadastral parcel map public GIS land resources",
+      "resultUrls": [
+        "https://zrzyj.tongliao.gov.cn/bdcdj/bszn/202307/t20230703_682714.html",
+        "https://zrzyj.tongliao.gov.cn/zwgk/zfxxgk/fdzdgknr/jgjj/zfzcbm/",
+        "https://zrzyj.tongliao.gov.cn/xwzx/jrgz/202401/t20240119_676304.html"
+      ]
+    },
+    {
+      "language": "Chinese",
+      "query": "通辽 不动产登记中心 地籍图 查询 通辽市 自然资源局 地图 官方",
+      "resultUrls": [
+        "https://zrzyj.tongliao.gov.cn/bdcdj/bszn/202307/t20230703_682714.html",
+        "https://zrzyj.tongliao.gov.cn/zwgk/zfxxgk/fdzdgknr/jgjj/zfzcbm/",
+        "https://zrzyj.tongliao.gov.cn/xwzx/jrgz/202401/t20240119_676304.html"
+      ]
+    }
+  ],
+  "geometryDecision": {
+    "verified": false,
+    "sourceId": null,
+    "sampleCount": 0,
+    "sampleFile": null,
+    "nativeId": null,
+    "nativeIdField": null,
+    "exactWupPointTest": "No source-native complete polygon was returned at the WUP point. `publicParcelGeometryFound:false` means unverified in this research, not confirmed absence.",
+    "requestEvidence": [
+      {
+        "url": "https://zrzyj.tongliao.gov.cn/bdcdj/bszn/202307/t20230703_682714.html",
+        "method": "GET (bounded read)",
+        "httpStatus": 200,
+        "contentType": "text/html",
+        "bytesRead": 50000,
+        "assessment": "Official city registry guide inspected; it documents office/service workflows, not anonymous public parcel geometry."
+      }
+    ]
+  },
+  "coverageAssessment": {
+    "claimedScope": "The Tongliao Natural Resources Bureau’s official registration guide lists city registration halls and processes for land/property rights, requiring cadastral-survey results, parcel maps, and boundary-point coordinates. The named online appointment/login or service channels are not a public anonymous polygon API.",
+    "verifiedOpenScope": "No full parcel geometry was verified and no citywide coverage is asserted.",
+    "citywideVerified": false,
+    "countrywideVerified": false
+  },
+  "attempts": [],
+  "remainingUncertainty": "No public full-polygon vector endpoint was verified; coverage and whether a separate public map exists remain unknown.",
+  "nextStep": "Locate a documented public Tongliao map service returning complete parcel polygons, if any; do not query the internal 10.x registration address."
+}

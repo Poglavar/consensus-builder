@@ -1,0 +1,177 @@
+{
+  "name": "Cuenca",
+  "country": "Ecuador",
+  "countryCode": "EC",
+  "rank": 1149,
+  "point": [
+    -2.89367285074743,
+    -79.0091652498675
+  ],
+  "freshResearch": {
+    "queries": [
+      {
+        "language": "English",
+        "query": "Cuenca Ecuador official municipal cadastral map Geoportal Catastro parcels",
+        "scope": "Identify city-local land registry/cadastral custody and anonymous public parcel geometry. Preserve the exact WUP settlement point. Do not submit owner, address, tax, account, applicant, or private-property values. Public geographic selectors and public native parcel IDs are permitted.",
+        "result": "Separate English-language source discovery; only cited first-party sources are used as evidence.",
+        "actualResultUrls": [
+          "https://cuencaendatos.cuenca.gob.ec/dataset/geoportal-catastros-cuenca",
+          "https://www.cuenca.gob.ec/content/direccion-general-de-avaluos-y-catastros",
+          "https://ide.cuenca.gob.ec/geoportal-web/viewer.jsf?map=1",
+          "https://www.cuenca.gob.ec/sites/default/files/manuales/Plataforma_Virtual_uso_ocupacion_suelo.pdf"
+        ]
+      },
+      {
+        "language": "Spanish",
+        "query": "Cuenca catastro visor catastral GIS predios Ecuador oficial",
+        "scope": "Identify city-local land registry/cadastral custody and anonymous public parcel geometry. Preserve the exact WUP settlement point. Do not submit owner, address, tax, account, applicant, or private-property values. Public geographic selectors and public native parcel IDs are permitted.",
+        "result": "Separate local-language search followed by first-party source review; cited official sources are relevant to the locality and stated scope.",
+        "actualResultUrls": [
+          "https://cuencaendatos.cuenca.gob.ec/dataset/geoportal-catastros-cuenca",
+          "https://www.cuenca.gob.ec/content/direccion-general-de-avaluos-y-catastros"
+        ],
+        "executionMethod": "Separate local-language web search followed by first-party source review."
+      }
+    ],
+    "portals": [
+      {
+        "url": "https://cuencaendatos.cuenca.gob.ec/dataset/geoportal-catastros-cuenca",
+        "operator": "Municipality of Cuenca, Control Municipal",
+        "observation": "Official dataset catalog describes a public Geoportal Catastro containing parcels in Cuenca canton and links its map viewer."
+      },
+      {
+        "url": "https://www.cuenca.gob.ec/content/direccion-general-de-avaluos-y-catastros",
+        "operator": "Cuenca municipal Directorate of Valuations and Cadastre",
+        "observation": "Municipal directorate maintains the urban/rural cadastre, cartography and cadastral databases."
+      },
+      {
+        "url": "https://ide.cuenca.gob.ec/geoportal-web/viewer.jsf?map=1",
+        "operator": "Cuenca municipal Geoportal Catastro",
+        "observation": "Official viewer URL timed out on direct HTTPS GET; no feature schema or parcel geometry was returned."
+      },
+      {
+        "url": "https://www.cuenca.gob.ec/sites/default/files/manuales/Plataforma_Virtual_uso_ocupacion_suelo.pdf",
+        "operator": "Cuenca municipal planning portal manual",
+        "observation": "Shows a Predios layer for planning/land-use context; the manual cautions that its IPRUS information is planning data and does not establish property rights."
+      }
+    ],
+    "requests": [
+      {
+        "url": "https://ide.cuenca.gob.ec/geoportal-web/viewer.jsf?map=1",
+        "method": "GET; anonymous; standard TLS; redirect-following; no credentials or property-value selectors",
+        "httpStatus": null,
+        "contentType": "",
+        "bytesRead": 0,
+        "transportOutcome": "curl exit 28; 25-second connection timeout; no HTTP response."
+      }
+    ],
+    "historicalContext": []
+  },
+  "status": "complete",
+  "verifiedParcelResponse": null,
+  "source": {
+    "sourceId": null,
+    "name": "https://cuencaendatos.cuenca.gob.ec/dataset/geoportal-catastros-cuenca",
+    "url": "https://cuencaendatos.cuenca.gob.ec/dataset/geoportal-catastros-cuenca",
+    "operator": "Municipality of Cuenca, Control Municipal",
+    "serviceType": "Official local registry/cadastral/map evidence reviewed; no safe full-parcel geometry retained.",
+    "layer": null,
+    "geometryType": null,
+    "outputCrs": null,
+    "nativeIdField": null,
+    "nativeIdEvidence": null,
+    "attributesRequested": [],
+    "sampleCount": 0,
+    "sampleFile": null,
+    "directGeometryQueryVerified": false,
+    "directMetadataSchemaVerified": false,
+    "geometryStatus": "not_verified",
+    "operatorNote": "See official source review and anonymous request outcomes; custody, geometry availability and runtime readiness are separate."
+  },
+  "coverageAssessment": {
+    "claimedScope": "Cuenca municipal Avalúos y Catastros office explicitly maintains urban/rural property cadastre and cadastral/cartographic databases. The official Cuenca open-data catalog describes a cantonal parcel geoportal and links ide.cuenca.gob.ec. The advertised viewer request timed out; no Cuenca app shell, bundle or full parcel geometry was fetched in this pass.",
+    "verifiedOpenScope": "No safe source-native full parcel polygon was returned in this investigation.",
+    "countrywideVerified": false,
+    "citywideVerified": false
+  },
+  "registryFound": true,
+  "verifiedSample": false,
+  "resultCategory": "official_local_registry_geometry_unverified",
+  "technicalBlocker": "Cuenca official cadastral geoportal request timed out before an HTTP response; public feature schema/geometry remains unverified. Cusco application responses were excluded as a different city.",
+  "remainingUncertainty": "The official portal link is verified, but viewer reachability, anonymous minimal-field feature schema, native IDs and exact WUP coverage remain unresolved.",
+  "nextStep": "Keep runtime disabled until root review determines whether the official source and returned geometry meet adapter criteria.",
+  "schemaVersion": "1.0",
+  "checkedAt": "2026-10-09",
+  "wupCityCode": 2221,
+  "cityId": "wup2025:2221",
+  "runtimeReadiness": "not_enabled_no_verified_public_geometry",
+  "adapterReady": false,
+  "centerLatLon": [
+    -2.89367285074743,
+    -79.0091652498675
+  ],
+  "population2025k": 482.272,
+  "populationUnit": "persons",
+  "queueRank": 1149,
+  "population2025": 482272,
+  "populationPlausibility2025": "High",
+  "pointBasis": "Exact unchanged UN WUP 2025 city point (latitude, longitude); not an administrative boundary or cadastral result.",
+  "publicParcelGeometryFound": false,
+  "sourceIds": [],
+  "registryBasis": "Cuenca municipal Avalúos y Catastros office explicitly maintains urban/rural property cadastre and cadastral/cartographic databases. The official Cuenca open-data catalog describes a cantonal parcel geoportal and links ide.cuenca.gob.ec. The advertised viewer request timed out; no Cuenca app shell, bundle or full parcel geometry was fetched in this pass.",
+  "registryEvidenceUrls": [
+    "https://cuencaendatos.cuenca.gob.ec/dataset/geoportal-catastros-cuenca",
+    "https://www.cuenca.gob.ec/content/direccion-general-de-avaluos-y-catastros",
+    "https://ide.cuenca.gob.ec/geoportal-web/viewer.jsf?map=1",
+    "https://www.cuenca.gob.ec/sites/default/files/manuales/Plataforma_Virtual_uso_ocupacion_suelo.pdf"
+  ],
+  "runtimeAssessment": {
+    "status": "not_enabled_no_verified_public_geometry",
+    "reason": "Cuenca official cadastral geoportal request timed out before an HTTP response; public feature schema/geometry remains unverified. Cusco application responses were excluded as a different city."
+  },
+  "cohort": "overnight-next-1101-1200",
+  "cohortState": "root_reviewed_integrated_locally",
+  "integrationState": "integrated_locally",
+  "excludedForeignCityEvidence": {
+    "excludedRequests": [
+      {
+        "url": "https://catastroweb.cusco.gob.pe/",
+        "method": "GET; anonymous; standard TLS; redirect-following; no credentials or property-value selectors",
+        "httpStatus": 200,
+        "contentType": "text/html",
+        "bytesRead": 5339,
+        "assessment": "Official municipal app shell; no public feature schema found in static bundle."
+      },
+      {
+        "url": "https://catastroweb.cusco.gob.pe/main.1c4dcdd60efc5e95.js",
+        "method": "GET; anonymous; standard TLS; redirect-following; no credentials or property-value selectors",
+        "httpStatus": 200,
+        "contentType": "application/javascript",
+        "bytesRead": 579077,
+        "assessment": "Static app bundle exposed no safe full-parcel geometry API."
+      }
+    ],
+    "reason": "These actual Cusco/Peru requests were carried into Cuenca/Ecuador by a worker audit lookup. They are preserved here for provenance but do not support any Cuenca service or geometry conclusion."
+  },
+  "rootPrimaryPageReview": {
+    "checkedAt": "2026-10-09T07:25:02.908399+00:00",
+    "method": "Root web open of full official primary pages",
+    "sources": [
+      {
+        "url": "https://cuencaendatos.cuenca.gob.ec/dataset/geoportal-catastros-cuenca",
+        "observation": "Official municipal CKAN record describes the Cuenca canton cadastral geoportal; resource links ide.cuenca.gob.ec/geoportal-web/viewer.jsf?map=1."
+      },
+      {
+        "url": "https://www.cuenca.gob.ec/content/direccion-general-de-avaluos-y-catastros",
+        "observation": "Municipal directorate maintains urban/rural cadastre and cadastral/cartographic databases; source responsibility corroborated directly."
+      }
+    ]
+  },
+  "rootReviewedAt": "2026-10-09T07:25:02.908399+00:00",
+  "rootReview": {
+    "checkedAt": "2026-10-09T07:25:02.908399+00:00",
+    "decision": "Reviewed canonical identity, primary custody scope, separate search and direct-source request evidence. No public full parcel geometry verified; unresolved local custody preserved as null.",
+    "sourceEvidenceLimits": "Transport failure or lack of a verified route is not evidence that parcel geometry does not exist."
+  },
+  "integratedAt": "2026-10-09T07:25:03.115223+00:00"
+}

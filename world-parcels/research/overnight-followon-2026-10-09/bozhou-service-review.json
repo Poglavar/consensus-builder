@@ -1,0 +1,65 @@
+{
+  "schemaVersion": "1.0",
+  "checkedAt": "2026-10-09",
+  "cityRecord": "city-10244-bozhou.json",
+  "purpose": "Document first-party local registry/map evidence and bounded anonymous geometry access review.",
+  "scopeLimits": {
+    "maxFullPolygonsRetainedInCityRecord": 0,
+    "maxFullPolygonsRetainedInReview": 0,
+    "maxFullPolygonsRetainedInRepository": 0,
+    "ownerOrAddressDataRetained": false,
+    "credentialsOrTokenValuesRetained": false,
+    "citywideCompletenessAsserted": false
+  },
+  "assessment": "The Bozhou bureau’s 2026-03-05 notice describes a public online inquiry interface that locates property by map click or keyword and returns basic nature/status information. It distinguishes complete registration records and downloadable cadastral diagrams for rights-holders after facial/e-ID verification. The official service list identifies the municipal registration center and frames legal public queries as application-based. No anonymous WUP-point full geometry was verified; no identity or property query was submitted.",
+  "registryAssessment": "Official Bozhou bureau material names the municipal real-property registration center and describes local cadastral-map/registration services. Complete records and diagrams are explicitly identity-gated; basic public inquiry is distinct.",
+  "officialPrimarySources": [
+    {
+      "url": "https://zrzyj.bozhou.gov.cn/News/show/711875.html",
+      "observation": "The Bozhou bureau’s 2026-03-05 notice describes a public online inquiry interface that locates property by map click or keyword and returns basic nature/status information. It distinguishes complete registration records and downloadable cadastral diagrams for rights-holders after facial/e-ID verification. The official service list identifies the municipal registration center and frames legal public queries as application-based. No anonymous WUP-point full geometry was verified; no identity or property query was submitted."
+    },
+    {
+      "url": "https://zrzyj.bozhou.gov.cn/XxgkContent/show/2505755.html",
+      "observation": "The Bozhou bureau’s 2026-03-05 notice describes a public online inquiry interface that locates property by map click or keyword and returns basic nature/status information. It distinguishes complete registration records and downloadable cadastral diagrams for rights-holders after facial/e-ID verification. The official service list identifies the municipal registration center and frames legal public queries as application-based. No anonymous WUP-point full geometry was verified; no identity or property query was submitted."
+    },
+    {
+      "url": "https://zrzyj.bozhou.gov.cn/News/show/702551.html",
+      "observation": "The Bozhou bureau’s 2026-03-05 notice describes a public online inquiry interface that locates property by map click or keyword and returns basic nature/status information. It distinguishes complete registration records and downloadable cadastral diagrams for rights-holders after facial/e-ID verification. The official service list identifies the municipal registration center and frames legal public queries as application-based. No anonymous WUP-point full geometry was verified; no identity or property query was submitted."
+    },
+    {
+      "url": "https://zrzyj.bozhou.gov.cn/XxgkContent/show/991168.html",
+      "observation": "The Bozhou bureau’s 2026-03-05 notice describes a public online inquiry interface that locates property by map click or keyword and returns basic nature/status information. It distinguishes complete registration records and downloadable cadastral diagrams for rights-holders after facial/e-ID verification. The official service list identifies the municipal registration center and frames legal public queries as application-based. No anonymous WUP-point full geometry was verified; no identity or property query was submitted."
+    }
+  ],
+  "searchQueries": [
+    {
+      "language": "Chinese",
+      "query": "亳州 不动产登记 地籍图 公开查询 亳州市自然资源和规划局",
+      "result": "The Bozhou bureau’s 2026-03-05 notice describes a public online inquiry interface that locates property by map click or keyword and returns basic nature/status information. It distinguishes complete registration records and downloadable cadastral diagrams for rights-holders after facial/e-ID verification. The official service list identifies the municipal registration center and frames legal public queries as application-based. No anonymous WUP-point full geometry was verified; no identity or property query was submitted.",
+      "method": "Separate native/local-language web search and first-party source review.",
+      "scope": "Identify official city-specific cadastral custody and safe anonymous parcel geometry."
+    },
+    {
+      "language": "English",
+      "query": "Bozhou China official property registration cadastral map public query land registry",
+      "result": "The Bozhou bureau’s 2026-03-05 notice describes a public online inquiry interface that locates property by map click or keyword and returns basic nature/status information. It distinguishes complete registration records and downloadable cadastral diagrams for rights-holders after facial/e-ID verification. The official service list identifies the municipal registration center and frames legal public queries as application-based. No anonymous WUP-point full geometry was verified; no identity or property query was submitted.",
+      "method": "Separate English-language web search and first-party source review.",
+      "scope": "Cross-check city-specific registry custody and whether public full parcel geometry can be queried anonymously."
+    }
+  ],
+  "geometryDecision": "No parcel geometry retained; no qualifying safe WUP-point sample was available for retention.",
+  "coverageAssessment": {
+    "claimedScope": "Official Bozhou bureau material names the municipal real-property registration center and describes local cadastral-map/registration services. Complete records and diagrams are explicitly identity-gated; basic public inquiry is distinct.",
+    "verifiedOpenScope": "City registry and public inquiry are evidenced by the local bureau. Anonymous complete geometry at the WUP point and citywide parcel-layer coverage remain unverified.",
+    "citywideVerified": false,
+    "countrywideVerified": false,
+    "geometryVerified": false
+  },
+  "attempts": [
+    {
+      "url": "https://zrzyj.bozhou.gov.cn/News/show/711875.html",
+      "result": "Official service description reviewed; it does not publish a coordinate-to-full-geometry API. No user identity, parcel keyword, or property-specific form was submitted."
+    }
+  ],
+  "remainingUncertainty": "City registry and public inquiry are evidenced by the local bureau. Anonymous complete geometry at the WUP point and citywide parcel-layer coverage remain unverified."
+}

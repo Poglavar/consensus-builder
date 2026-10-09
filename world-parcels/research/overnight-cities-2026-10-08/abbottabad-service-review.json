@@ -1,0 +1,72 @@
+{
+  "schemaVersion": 1,
+  "checkedAt": "2026-10-09",
+  "sourceId": "pk-abbottabad-registry-review",
+  "purpose": "Review city-local registry basis and anonymous geometry-only routes without querying personal/property attributes.",
+  "primaryPublisher": "Urban Area Development Authority Abbottabad (UADAA)",
+  "sourceUrl": "https://uadaa.gkp.pk/map.php",
+  "registryFound": true,
+  "registryBasis": "Urban Area Development Authority Abbottabad (UADAA) publishes the Abbottabad Township Scheme Phase-I master plan and states that official plot and allotment records are provided through its portal. This supports a local planned-township property-record workflow only; it does not establish a citywide land registry or publicly queryable parcel polygons.",
+  "officialSources": [
+    {
+      "url": "https://uadaa.gkp.pk/map.php",
+      "observation": "Urban Area Development Authority Abbottabad (UADAA) publishes the Abbottabad Township Scheme Phase-I master plan and states that official plot and allotment records are provided through its portal. This supports a local planned-township property-record workflow only; it does not establish a citywide land registry or publicly queryable parcel polygons."
+    },
+    {
+      "url": "https://uadaa.gkp.pk/",
+      "observation": "Urban Area Development Authority Abbottabad (UADAA) publishes the Abbottabad Township Scheme Phase-I master plan and states that official plot and allotment records are provided through its portal. This supports a local planned-township property-record workflow only; it does not establish a citywide land registry or publicly queryable parcel polygons."
+    }
+  ],
+  "searchQueries": [
+    {
+      "language": "English",
+      "query": "Abbottabad Pakistan official township plot allotment land records cadastral map GIS",
+      "scope": "Find primary city-local registry/cadastre basis and safe anonymous polygon routes.",
+      "result": "Urban Area Development Authority Abbottabad (UADAA) publishes the Abbottabad Township Scheme Phase-I master plan and states that official plot and allotment records are provided through its portal. This supports a local planned-township property-record workflow only; it does not establish a citywide land registry or publicly queryable parcel polygons. No anonymous geometry schema or feature response was retained.",
+      "actualResultUrls": [
+        "https://uadaa.gkp.pk/map.php",
+        "https://uadaa.gkp.pk/"
+      ]
+    },
+    {
+      "language": "Urdu",
+      "query": "ایبٹ آباد شہری اراضی پلاٹ ریکارڈ کیڈسٹری نقشہ سرکاری UADAA",
+      "scope": "Find native-language city-local registry/cadastre basis and safe anonymous polygon routes.",
+      "result": "Urban Area Development Authority Abbottabad (UADAA) publishes the Abbottabad Township Scheme Phase-I master plan and states that official plot and allotment records are provided through its portal. This supports a local planned-township property-record workflow only; it does not establish a citywide land registry or publicly queryable parcel polygons. No property-specific query was submitted and no anonymous geometry schema was verified.",
+      "actualResultUrls": [
+        "https://uadaa.gkp.pk/map.php",
+        "https://uadaa.gkp.pk/"
+      ]
+    }
+  ],
+  "accessReview": {
+    "publicAnonymousGeometryVerified": false,
+    "completeGeoreferencedPolygonCount": 0,
+    "geometryRetained": false,
+    "ownerAddressTaxOrPersonLookupRequested": false,
+    "authenticationOrCredentialsUsed": false,
+    "captchaOrPersonalFormSubmitted": false,
+    "routeInspectionStatus": "city_local_registry_verified_no_public_geometry_contract",
+    "reason": "The township map is a visual engineering/master-plan presentation and directs users to the portal for official plot/allotment records. No anonymous georeferenced full-polygon parcel schema or feature endpoint was verified; the map covers the planned township, not Abbottabad citywide.",
+    "nativeIdsUsed": "No safe parcel feature identifier retrieved; no feature attributes requested."
+  },
+  "requestEvidence": [
+    {
+      "url": "https://uadaa.gkp.pk/map.php",
+      "method": "official public page/document review",
+      "status": "status_not_exposed_by_web_open",
+      "httpStatusObtained": false,
+      "observation": "Urban Area Development Authority Abbottabad (UADAA) publishes the Abbottabad Township Scheme Phase-I master plan and states that official plot and allotment records are provided through its portal. This supports a local planned-township property-record workflow only; it does not establish a citywide land registry or publicly queryable parcel polygons."
+    },
+    {
+      "url": "https://uadaa.gkp.pk/",
+      "method": "official public page/document review",
+      "status": "status_not_exposed_by_web_open",
+      "httpStatusObtained": false,
+      "observation": "Urban Area Development Authority Abbottabad (UADAA) publishes the Abbottabad Township Scheme Phase-I master plan and states that official plot and allotment records are provided through its portal. This supports a local planned-township property-record workflow only; it does not establish a citywide land registry or publicly queryable parcel polygons."
+    }
+  ],
+  "technicalBlocker": "The township map is a visual engineering/master-plan presentation and directs users to the portal for official plot/allotment records. No anonymous georeferenced full-polygon parcel schema or feature endpoint was verified; the map covers the planned township, not Abbottabad citywide.",
+  "sampleDisposition": "No parcel geometry or feature attributes retained.",
+  "remainingUncertainty": "Whether a separate anonymous vector feature schema or full-polygon route exists; citywide coverage and settlement-point parcel relation."
+}

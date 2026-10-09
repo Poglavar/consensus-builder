@@ -1,0 +1,120 @@
+{
+  "schemaVersion": "1.0",
+  "checkedAt": "2026-10-09",
+  "cityRecord": "city-7498-tomsk.json",
+  "purpose": "Document separate English/local-language research, local land-registry custody scope, direct anonymous request outcomes and safe geometry limits.",
+  "scopeLimits": {
+    "maxFullPolygonsRetainedInCityRecord": 0,
+    "maxFullPolygonsRetainedInReview": 0,
+    "maxFullPolygonsRetainedInRepository": 0,
+    "ownerOrAddressDataRetained": false,
+    "credentialsOrTokenValuesRetained": false,
+    "citywideCompletenessAsserted": false
+  },
+  "assessment": "Tomsk Oblast government source describes Rosreestr as the federal EGRN/public cadastral-map custodian and the public map’s parcel-boundary coverage; this is regional service evidence, not city ownership.",
+  "registryAssessment": "Local or jurisdictionally local land/cadastral custodian supported at the limited scope stated; public geometry and runtime readiness remain separate.",
+  "officialPrimarySources": [
+    {
+      "url": "https://dugs.tomsk.gov.ru/news/front/view?id=116753",
+      "operator": "Tomsk Oblast Department for State Property Management",
+      "observation": "Official regional department describes Rosreestr’s public cadastral map as an anonymous online viewer of EGRN parcel boundaries and public characteristics; this is federal registry data presented for Tomsk Oblast."
+    },
+    {
+      "url": "https://pmr.tomsk.ru/pages/rosreestr",
+      "operator": "Tomsk Oblast property-relations department",
+      "observation": "Official regional Rosreestr information page links to the regional federal registry service and explains local EGRN access; no parcel locator was submitted."
+    },
+    {
+      "url": "https://rcro.tomsk.gov.ru/adm",
+      "operator": "Tomsk Oblast Government",
+      "observation": "Official regional interactive administrative map identifies the Tomsk city area; no parcel feature layer is exposed."
+    }
+  ],
+  "searchQueries": [
+    {
+      "language": "English",
+      "query": "Tomsk Russia official public cadastral map Rosreestr land parcel boundaries",
+      "result": "Separate English-language source discovery; only cited first-party sources are used as evidence.",
+      "method": "Separate English-language search followed by official-source review.",
+      "actualResultUrls": [
+        "https://dugs.tomsk.gov.ru/news/front/view?id=116753",
+        "https://pmr.tomsk.ru/pages/rosreestr",
+        "https://rcro.tomsk.gov.ru/adm"
+      ],
+      "scope": "Identify city-local land registry/cadastral custody and anonymous public parcel geometry. Preserve the exact WUP settlement point. Do not submit owner, address, tax, account, applicant, or private-property values. Public geographic selectors and public native parcel IDs are permitted."
+    },
+    {
+      "language": "Russian",
+      "query": "Томск официальный кадастровый карта Росреестр Томская область",
+      "result": "Separate local-language search followed by first-party source review; cited official sources are relevant to the locality and stated scope.",
+      "method": "Separate local-language web search followed by first-party source review.",
+      "actualResultUrls": [
+        "https://dugs.tomsk.gov.ru/news/front/view?id=116753",
+        "https://pmr.tomsk.ru/pages/rosreestr"
+      ],
+      "scope": "Identify city-local land registry/cadastral custody and anonymous public parcel geometry. Preserve the exact WUP settlement point. Do not submit owner, address, tax, account, applicant, or private-property values. Public geographic selectors and public native parcel IDs are permitted."
+    }
+  ],
+  "geometryDecision": {
+    "verified": false,
+    "sourceId": null,
+    "sampleCount": 0,
+    "sampleFile": null,
+    "nativeId": null,
+    "nativeIdField": null,
+    "exactWupPointTest": "No source-native full polygon was returned at the exact unchanged WUP point. publicParcelGeometryFound:false means unverified in this investigation, not confirmed absence.",
+    "requestEvidence": [
+      {
+        "url": "https://dugs.tomsk.gov.ru/news/front/view?id=116753",
+        "method": "GET; anonymous; standard TLS; redirect-following; no credentials or property-value selectors",
+        "httpStatus": 403,
+        "contentType": "text/plain",
+        "bytesRead": 63,
+        "assessment": "Official region department page returned HTTP 403."
+      },
+      {
+        "url": "https://pmr.tomsk.ru/pages/rosreestr",
+        "method": "GET; anonymous; standard TLS; redirect-following; no credentials or property-value selectors",
+        "httpStatus": 200,
+        "contentType": "text/html;charset=UTF-8",
+        "bytesRead": 465578,
+        "assessment": "Official regional page links the Tomsk Rosreestr service."
+      },
+      {
+        "url": "https://rcro.tomsk.gov.ru/adm",
+        "method": "GET; anonymous; standard TLS; redirect-following; no credentials or property-value selectors",
+        "httpStatus": 403,
+        "contentType": "text/plain",
+        "bytesRead": 63,
+        "assessment": "Official regional administrative-map page returned HTTP 403."
+      }
+    ]
+  },
+  "coverageAssessment": {
+    "claimedScope": "Tomsk Oblast government source describes Rosreestr as the federal EGRN/public cadastral-map custodian and the public map’s parcel-boundary coverage; this is regional service evidence, not city ownership.",
+    "verifiedOpenScope": "No safe source-native full parcel polygon was returned in this investigation.",
+    "citywideVerified": false,
+    "countrywideVerified": false,
+    "geometryVerified": false
+  },
+  "attempts": [
+    "HTTP 403 text/plain; 63 response bytes. Official region department page returned HTTP 403.",
+    "HTTP 200 text/html;charset=UTF-8; 465578 response bytes. Official regional page links the Tomsk Rosreestr service.",
+    "HTTP 403 text/plain; 63 response bytes. Official regional administrative-map page returned HTTP 403."
+  ],
+  "remainingUncertainty": "Tomsk Oblast government source describes Rosreestr as the federal EGRN/public cadastral-map custodian and the public map’s parcel-boundary coverage; this is regional service evidence, not city ownership. Public parcel geometry, coverage, legal/title scope and currentness beyond the evidence stated remain unverified.",
+  "nextStep": "Keep runtime disabled until root review determines whether the official source and returned geometry meet adapter criteria.",
+  "runtimeAssessment": {
+    "status": "not_enabled_no_verified_public_geometry",
+    "reason": "The regional public cadastral map is described by an official Tomsk Oblast source, but no schema-backed anonymous vector feature route was tested or verified."
+  },
+  "cohort": "overnight-next-1101-1200",
+  "cohortState": "research_complete_pending_root_review",
+  "integrationState": "not_integrated",
+  "rootReviewedAt": "2026-10-09T07:25:02.908399+00:00",
+  "rootReview": {
+    "checkedAt": "2026-10-09T07:25:02.908399+00:00",
+    "decision": "Reviewed canonical identity, primary custody scope, separate search and direct-source request evidence. No public full parcel geometry verified; unresolved local custody preserved as null.",
+    "sourceEvidenceLimits": "Transport failure or lack of a verified route is not evidence that parcel geometry does not exist."
+  }
+}

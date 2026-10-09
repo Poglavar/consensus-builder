@@ -1,0 +1,38 @@
+{
+  "schemaVersion": 1,
+  "checkedAt": "2026-10-09T05:48:51.669720+00:00",
+  "kind": "manual_headed_browser_review",
+  "appCityId": "leipzig",
+  "gatewayPort": 5640,
+  "frontendPort": 5638,
+  "observedCatalogSources": 154,
+  "observedAppCities": 180,
+  "locatorLatLon": [
+    51.3403873460544,
+    12.3749392867142
+  ],
+  "zoom": 19,
+  "reportedLoadedParcels": 308,
+  "geometryLayerCount": 308,
+  "pointerScreenPosition": [
+    600,
+    409
+  ],
+  "interaction": "Real pointer down/up at locator; context menu Details item clicked.",
+  "nativeParcelId": "DE-SN-140415___04403____04",
+  "matchesOriginalPointSample": true,
+  "detailsDisplayed": true,
+  "areaField": "N/A; no area metadata requested by the safe source profile",
+  "pageErrors": [],
+  "browserClosed": true,
+  "remainingBrowserSessions": 0,
+  "supplementaryNativeGeometryQualityFile": "leipzig-browser-quality.json",
+  "observedUnmodifiedNativePolygons": 308,
+  "supplementaryQualityResult": {
+    "invalid": 0,
+    "duplicates": 0,
+    "overlapPairsAbove0_01M2": 0,
+    "operationErrors": 0
+  },
+  "scope": "Manual app check and supplementary observed geometry audit; no claim of citywide completeness."
+}

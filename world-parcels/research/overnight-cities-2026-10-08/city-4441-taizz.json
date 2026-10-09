@@ -1,0 +1,117 @@
+{
+  "name": "Ta'izz",
+  "country": "Yemen",
+  "countryCode": "YE",
+  "rank": 311,
+  "point": [
+    13.5796147965543,
+    44.0181305891782
+  ],
+  "freshResearch": {
+    "queries": [
+      {
+        "language": "Arabic",
+        "query": "تعز الهيئة العامة للأراضي والمساحة والتخطيط العمراني خريطة عقارية تعز مخططات GIS",
+        "result": "The official land authority channel (@galsub, linked to galsup.gov.ye) states the Taizz governorate branch participated in rolling out neighborhood-unit plans in Taizz governorate. A 2025 interview with the Taizz branch director says the branch mapped state-land locations, but this is secondary reporting. No public city parcel viewer/API/vector layer was found.",
+        "urls": [
+          "https://t.me/s/galsub/997",
+          "https://galsup.gov.ye/",
+          "https://26sep.net/index.php/newspaper/26interview/97211-26-287"
+        ],
+        "method": "Native-language search, official authority channel, agency link and read-only page inspection."
+      },
+      {
+        "language": "English",
+        "query": "Taiz Yemen official land registry cadastral parcel map GIS public viewer",
+        "result": "Local land authority and neighborhood planning activity surfaced, but no public parcel query service. The agency home timed out in web fetch; that is not evidence the provider is down.",
+        "urls": [
+          "https://galsup.gov.ye/",
+          "https://t.me/s/galsub/997"
+        ],
+        "method": "English search and official channel/page review."
+      }
+    ],
+    "portals": [
+      {
+        "name": "General Authority for Lands, Survey and Urban Planning (official channel)",
+        "operator": "General Authority for Lands, Survey and Urban Planning, Sana’a HQ",
+        "url": "https://t.me/s/galsub/997",
+        "observation": "Self-identifies as the authority’s official channel and links its site. Its post describes Taizz branch involvement in local neighborhood-plan rollout; no open parcel viewer."
+      },
+      {
+        "name": "Taizz land authority branch (reported local operations)",
+        "operator": "Taizz Governorate branch of the General Authority for Lands, Survey and Urban Planning",
+        "url": "https://26sep.net/index.php/newspaper/26interview/97211-26-287",
+        "observation": "Secondary interview with the branch director reports state-land inventory plotted on a property map and a local database. It is not evidence of anonymous full private-parcel geometry."
+      }
+    ],
+    "requests": [
+      {
+        "url": "https://galsup.gov.ye/",
+        "method": "GET web inspection",
+        "status": null,
+        "type": null,
+        "observation": "Web fetch timed out; no provider-down conclusion drawn."
+      },
+      {
+        "url": "https://t.me/s/galsub/997",
+        "method": "GET web inspection",
+        "status": 200,
+        "type": "text/html",
+        "observation": "Official authority channel page links agency site and describes Taizz land-authority planning activity."
+      }
+    ]
+  },
+  "status": "complete",
+  "verifiedParcelResponse": {
+    "httpStatus": null,
+    "featureType": null,
+    "responseType": null,
+    "responseCrs": null,
+    "returnedFullPolygonCount": 0,
+    "uniqueFullPolygonCount": 0,
+    "wupPointContained": null,
+    "limitations": "No full parcel polygon was fetched or independently verified."
+  },
+  "source": {
+    "id": "yemen-taizz-land-authority-local-branch",
+    "name": "General Authority for Lands, Survey and Urban Planning, Taizz branch",
+    "operator": "General Authority for Lands, Survey and Urban Planning",
+    "url": "https://galsup.gov.ye/",
+    "format": "No public vector format verified",
+    "access": "Local land-authority activity confirmed; public map access not established",
+    "nativeIdField": null,
+    "geometryCrs": null
+  },
+  "coverageAssessment": {
+    "claimedScope": "Official agency channel links the agency site and describes local Taizz branch involvement in neighborhood plans. Local branch mapping of state land is only secondary-reported; no public parcel interface was verified.",
+    "verifiedOpenScope": "No anonymous public parcel viewer or vector API was found. Official agency home timed out in fetch, without a provider-down conclusion.",
+    "countrywideVerified": false,
+    "citywideVerified": false
+  },
+  "registryFound": true,
+  "registryBasis": "Official agency channel links the agency site and describes local Taizz branch involvement in neighborhood plans. Local branch mapping of state land is only secondary-reported; no public parcel interface was verified.",
+  "verifiedSample": false,
+  "publicParcelGeometryFound": false,
+  "resultCategory": "local_land_authority_confirmed_public_parcel_geometry_unverified",
+  "technicalBlocker": "No anonymous public parcel viewer or vector API was found. Official agency home timed out in fetch, without a provider-down conclusion.",
+  "remainingUncertainty": "Whether Taizz’s local property map has a public interface and whether WUP point coverage falls within any publicly described plan.",
+  "nextStep": "Find a reachable first-party Taizz branch viewer or open data endpoint before claiming parcel access.",
+  "sourceIds": [],
+  "schemaVersion": 1,
+  "checkedAt": "2026-10-09",
+  "wupCityCode": 4441,
+  "cityId": "wup2025:4441",
+  "queueRank": 311,
+  "population2025": 1586739,
+  "populationPlausibility2025": "Low",
+  "populationUnit": "persons",
+  "pointBasis": "UN WUP 2025 population-weighted settlement centroid; this is not a municipal boundary or a parcel-coverage claim.",
+  "centerLatLon": [
+    13.5796147965543,
+    44.0181305891782
+  ],
+  "runtimeReadiness": "not_enabled_no_verified_public_geometry",
+  "adapterReady": false,
+  "rootReviewedAt": "2026-10-08T22:19:03.228348+00:00"
+}

@@ -1,0 +1,124 @@
+{
+  "schemaVersion": "1.0",
+  "kind": "parcel_source_service_review",
+  "checkedAt": "2026-10-09",
+  "cityRecord": "city-5071-nuremberg.json",
+  "city": "Nuremberg",
+  "countryCode": "DE",
+  "wupCityCode": 5071,
+  "rank": 837,
+  "registryFound": true,
+  "registryEvidenceUrls": [
+    "https://www.vermessungsamt-nuernberg.de/produkte/dienste/geodatendienste.html",
+    "https://geodatenonline.bayern.de/geodatenonline/seiten/wfs_alkis",
+    "https://geoportal.bayern.de/geoportalbayern/seiten/dienste",
+    "https://geodatenonline.bayern.de/geodatenonline/seiten/wms_alkis_parzellarkarte",
+    "https://www.nuernberg.de/internet/geoinformation_bodenordnung/lageplaene.html"
+  ],
+  "publicAnonymousGeometryVerified": false,
+  "completeGeoreferencedPolygonCount": 0,
+  "geometryRetained": false,
+  "ownerAddressTaxOrPersonLookupRequested": false,
+  "authenticationOrCredentialsUsed": false,
+  "captchaOrPersonalFormSubmitted": false,
+  "scopeLimits": {
+    "maxFullPolygonsRetainedInCityRecord": 3,
+    "maxFullPolygonsRetainedInReview": 0,
+    "ownerOrAddressDataRetained": false,
+    "credentialsOrTokenValuesRetained": false,
+    "citywideCompletenessAsserted": false
+  },
+  "searchQueries": [
+    {
+      "language": "English",
+      "query": "Nuremberg official cadastre parcel map geodata service cadastral office Bavaria ALKIS parcels",
+      "result": "The Nuremberg geoinformation office lists local ALKIS WMS/WFS services. Bavaria describes owner-excluded ALKIS WFS parcel features but restricts that WFS to contracted/public-sector customers and authentication. The free WMS is a map image and omits parcel numbers; no feature schema or geometry was queried.",
+      "method": "Separate English web search and official city/state service documentation review; no gated request."
+    },
+    {
+      "language": "German",
+      "query": "Nürnberg amtliche Katasterkarte Flurstück Geodatendienst Bayern ALKIS",
+      "result": "The city Vermessungsamt lists ALKIS cadastral services. The official WFS `ALKIS-vereinfacht ohne Eigentümer` includes Flurstücke but is marked auth-required/paid or restricted to framework-contract users. The OpenData WMS is CC BY 4.0 but only returns cartographic images and lacks parcel numbers; no anonymous polygon schema was available.",
+      "method": "Separate German search and official Nuremberg/Bavaria documentation review; no credentials, purchased data or WFS request."
+    }
+  ],
+  "officialPrimarySources": [
+    {
+      "url": "https://www.vermessungsamt-nuernberg.de/produkte/dienste/geodatendienste.html",
+      "observation": "Nuremberg Office for Geoinformation and Land Management lists official WMS ALKIS layers and the ALKIS-vereinfacht ohne Eigentümer WFS."
+    },
+    {
+      "url": "https://geodatenonline.bayern.de/geodatenonline/seiten/wfs_alkis",
+      "observation": "Bavaria describes WFS 2.0 layer `ave:Flurstueck` as multipolygons in ALKIS-vereinfacht schema, daily updated, owner-excluded, but states it is available only to framework-agreement customers and requires activation."
+    },
+    {
+      "url": "https://geoportal.bayern.de/geoportalbayern/seiten/dienste",
+      "observation": "Official Geoportal metadata marks ALKIS-vereinfacht ohne Eigentümer as paid, authenticated and subject to special use conditions."
+    },
+    {
+      "url": "https://geodatenonline.bayern.de/geodatenonline/seiten/wms_alkis_parzellarkarte",
+      "observation": "Official OpenData WMS provides a cartographic image, not vector geometry, and has no parcel numbers or boundary markers."
+    },
+    {
+      "url": "https://www.nuernberg.de/internet/geoinformation_bodenordnung/lageplaene.html",
+      "observation": "Official Nuremberg page describes city cadastral plans for identified plots/buildings, delivered as paid/certified plan documents."
+    }
+  ],
+  "requestEvidence": [
+    {
+      "url": "https://www.vermessungsamt-nuernberg.de/produkte/dienste/geodatendienste.html",
+      "method": "official source metadata/service-page review; no property-specific query",
+      "status": "official_source_reviewed",
+      "observation": "Nuremberg Office for Geoinformation and Land Management lists official WMS ALKIS layers and the ALKIS-vereinfacht ohne Eigentümer WFS."
+    },
+    {
+      "url": "https://geodatenonline.bayern.de/geodatenonline/seiten/wfs_alkis",
+      "method": "official source metadata/service-page review; no property-specific query",
+      "status": "official_source_reviewed",
+      "observation": "Bavaria describes WFS 2.0 layer `ave:Flurstueck` as multipolygons in ALKIS-vereinfacht schema, daily updated, owner-excluded, but states it is available only to framework-agreement customers and requires activation."
+    },
+    {
+      "url": "https://geoportal.bayern.de/geoportalbayern/seiten/dienste",
+      "method": "official source metadata/service-page review; no property-specific query",
+      "status": "official_source_reviewed",
+      "observation": "Official Geoportal metadata marks ALKIS-vereinfacht ohne Eigentümer as paid, authenticated and subject to special use conditions."
+    },
+    {
+      "url": "https://geodatenonline.bayern.de/geodatenonline/seiten/wms_alkis_parzellarkarte",
+      "method": "official source metadata/service-page review; no property-specific query",
+      "status": "official_source_reviewed",
+      "observation": "Official OpenData WMS provides a cartographic image, not vector geometry, and has no parcel numbers or boundary markers."
+    },
+    {
+      "url": "https://www.nuernberg.de/internet/geoinformation_bodenordnung/lageplaene.html",
+      "method": "official source metadata/service-page review; no property-specific query",
+      "status": "official_source_reviewed",
+      "observation": "Official Nuremberg page describes city cadastral plans for identified plots/buildings, delivered as paid/certified plan documents."
+    }
+  ],
+  "accessReview": {
+    "publicAnonymousGeometryVerified": false,
+    "completeGeoreferencedPolygonCount": 0,
+    "geometryRetained": false,
+    "ownerAddressTaxOrPersonLookupRequested": false,
+    "authenticationOrCredentialsUsed": false,
+    "captchaOrPersonalFormSubmitted": false,
+    "routeInspectionStatus": "official_local_registry_service_review_no_public_geometry_contract",
+    "reason": "The official owner-excluded ALKIS WFS is access-limited to framework-contract customers and requires authentication; no credentials or access request were used. The public OpenData WMS provides a cartographic image (not vector geometry), omits parcel numbers and is not a full polygon response. No parcel service request was made.",
+    "nativeIdsUsed": "No safe native feature identifier was confirmed; no feature attributes requested."
+  },
+  "geometryDecision": "No geometry retained; no safe anonymous full-polygon response was available.",
+  "technicalBlocker": "The official owner-excluded ALKIS WFS is access-limited to framework-contract customers and requires authentication; no credentials or access request were used. The public OpenData WMS provides a cartographic image (not vector geometry), omits parcel numbers and is not a full polygon response. No parcel service request was made.",
+  "sampleDisposition": "No parcel geometry or parcel attributes retained.",
+  "coverageAssessment": {
+    "claimedScope": "The Nuremberg Office for Geoinformation and Land Management offers official cadastral maps and lists ALKIS WMS/WFS services. Bavaria’s official ALKIS WFS contains parcel features (ave:Flurstueck) and is expressly an owner-excluded schema, but the service is limited to public-sector framework-contract customers and requires authentication; the WFS was not queried. The free ALKIS Parzellarkarte WMS is a raster image display, omits parcel numbers and does not return full polygon geometry.",
+    "verifiedOpenScope": "The official owner-excluded ALKIS WFS is access-limited to framework-contract customers and requires authentication; no credentials or access request were used. The public OpenData WMS provides a cartographic image (not vector geometry), omits parcel numbers and is not a full polygon response. No parcel service request was made.",
+    "citywideVerified": false,
+    "countrywideVerified": false
+  },
+  "runtimeAssessment": {
+    "status": "not_assessed",
+    "reason": "Source discovery only; runtime qualification was not performed."
+  },
+  "remainingUncertainty": "Safe native feature key, anonymous access, current local point coverage and exact geometry remain unverified because the vector service is gated; the open WMS is not a full-geometry source."
+}

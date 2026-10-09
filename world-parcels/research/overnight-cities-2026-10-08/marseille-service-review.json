@@ -1,0 +1,109 @@
+{
+  "schemaVersion": 1,
+  "checkedAt": "2026-10-09",
+  "cityRecord": "city-4276-marseille.json",
+  "purpose": "City-specific official registration/cadastre and bounded anonymous parcel-geometry review.",
+  "scopeLimits": {
+    "maxFullPolygonsRetainedInCityRecord": 3,
+    "maxFullPolygonsRetainedInReview": 3,
+    "maxFullPolygonsRetainedInRepository": 3,
+    "ownerOrAddressDataRetained": false,
+    "credentialsOrTokenValuesRetained": false,
+    "citywideCompletenessAsserted": false
+  },
+  "assessment": "One open IGN API Carto request limited to three responses returned one exact point-intersecting parcel, sanitized to retain only safe native IDU and geometry.",
+  "registryAssessment": "City of Marseille lists cadastre consultation/printing through its urban-planning service. Open IGN API Carto retrieves PCI cadastral parcels; the exact ranked-point query restricted to INSEE commune 13055 returned one feature. Cadastral mapping is not legal proof of title.",
+  "searchQueries": [
+    {
+      "language": "French",
+      "query": "Marseille cadastre parcelles cadastrales service public commune INSEE 13055 géométrie API Carto IGN",
+      "scope": "Locate official city-scope registry/cadastre services and test for anonymous safe parcel geometry at the ranked point.",
+      "result": "City of Marseille lists cadastre consultation/printing through its urban-planning service. Open IGN API Carto retrieves PCI cadastral parcels; the exact ranked-point query restricted to INSEE commune 13055 returned one feature. Cadastral mapping is not legal proof of title.",
+      "actualResultUrls": [
+        "https://www.marseille.fr/index.php/logement-urbanisme/plan-local-durbanisme/renseignements-durbanisme",
+        "https://www.data.gouv.fr/dataservices/api-carto-module-cadastre",
+        "https://apicarto.ign.fr/api/doc/pdf/docUser_moduleCadastre.pdf",
+        "https://cadastre.data.gouv.fr/datasets/cadastre-etalab",
+        "https://www.insee.fr/fr/metadonnees/geographie/commune/13055-marseille"
+      ],
+      "executionMethod": "Separate language-specific search followed by official-source review."
+    },
+    {
+      "language": "English",
+      "query": "Marseille France official cadastral parcel geometry API cadastre parcellaire IGN",
+      "scope": "Locate official city-scope registry/cadastre services and test for anonymous safe parcel geometry at the ranked point.",
+      "result": "City of Marseille lists cadastre consultation/printing through its urban-planning service. Open IGN API Carto retrieves PCI cadastral parcels; the exact ranked-point query restricted to INSEE commune 13055 returned one feature. Cadastral mapping is not legal proof of title.",
+      "actualResultUrls": [
+        "https://www.marseille.fr/index.php/logement-urbanisme/plan-local-durbanisme/renseignements-durbanisme",
+        "https://www.data.gouv.fr/dataservices/api-carto-module-cadastre",
+        "https://apicarto.ign.fr/api/doc/pdf/docUser_moduleCadastre.pdf",
+        "https://cadastre.data.gouv.fr/datasets/cadastre-etalab",
+        "https://www.insee.fr/fr/metadonnees/geographie/commune/13055-marseille"
+      ],
+      "executionMethod": "Separate language-specific search followed by official-source review."
+    }
+  ],
+  "officialPrimarySources": [
+    {
+      "url": "https://www.marseille.fr/index.php/logement-urbanisme/plan-local-durbanisme/renseignements-durbanisme",
+      "observation": "City page lists cadastre consultation and printing as a local urban-planning service."
+    },
+    {
+      "url": "https://www.data.gouv.fr/dataservices/api-carto-module-cadastre",
+      "observation": "Official IGN API record: open access, JSON/GeoJSON, WGS84 geometry filtering; PCI Express is available."
+    },
+    {
+      "url": "https://apicarto.ign.fr/api/doc/pdf/docUser_moduleCadastre.pdf",
+      "observation": "IGN documentation: queries official Geoportal WFS sources; bounded geometry requests return GeoJSON; PCI Express is the current recommended product."
+    },
+    {
+      "url": "https://cadastre.data.gouv.fr/datasets/cadastre-etalab",
+      "observation": "Open cadastre catalog documents current PCI coverage, parcel Polygon/MultiPolygon layers, commune-level downloads, Open Licence."
+    },
+    {
+      "url": "https://www.insee.fr/fr/metadonnees/geographie/commune/13055-marseille",
+      "observation": "INSEE confirms Marseille commune code 13055 used in the query."
+    }
+  ],
+  "viewerAndServiceTrace": {
+    "viewerUrl": "https://apicarto.ign.fr/api/cadastre",
+    "apiBase": "https://apicarto.ign.fr/api/cadastre",
+    "observedClientRoutes": [],
+    "notes": "One public PCI parcel intersects the exact WUP settlement point. No surrounding properties or owner/address fields are retained. Cadastre geometry does not establish title boundaries; no citywide completeness is asserted."
+  },
+  "geometryEvidence": {
+    "url": "https://apicarto.ign.fr/api/cadastre",
+    "httpStatus": 200,
+    "contentType": "application/json; charset=utf-8",
+    "featureType": "parcelle",
+    "nativeCrs": "EPSG:4326",
+    "responseCount": 1,
+    "responseNumberMatched": 1,
+    "requestLimit": 3,
+    "requestFilter": "code_insee=13055 and ranked WUP Point [5.40046021068172,43.3060785068726]",
+    "requestedFields": [
+      "geometry"
+    ],
+    "safeFieldsRetained": [
+      "idu",
+      "geometry"
+    ],
+    "featureIds": [
+      "parcelle.94619612"
+    ],
+    "nativeParcelIdentifier": "132048180B0142",
+    "wupPointContained": true,
+    "sampleGeometryFile": "samples/marseille-ign-cadastre-wup581.geojson",
+    "sampleSha256": "108a71131d405c4b8e1e8b390060fbfb488e4d35a5afab23d50e20b4b0ef6a12",
+    "limitations": "One point-intersecting parcel only. Other attributes returned by API were not retained. Cadastral mapping is not title evidence."
+  },
+  "privacy": "No owner/address properties or credentials are retained. Marseille sample retains only native IDU and geometry; no owner/plot report was queried for other cities.",
+  "runtimeAssessment": "sample_only_root_qualification_pending",
+  "rootRuntimeReview": {
+    "status": "approved_by_root",
+    "reason": "331 valid, distinct official cadastral polygons verified in thirteen local 0.001-degree cells around the unchanged WUP settlement locator. Complete pages, forced three-row pagination, all 331 fresh native cadastral-reference reads, valid synthetic absence, footprint and source binding passed. Independent GEOS in EPSG:32631 found no invalid polygons, duplicate geometry, overlaps above 0.01 m² or operation errors. Marseille commune; the unchanged WUP point lies within returned parcel geometry. Wider municipal completeness, legal boundary accuracy and long-term identifier continuity remain unverified.",
+    "checkedAt": "2026-10-09T01:44:14.169970+00:00",
+    "acceptanceFile": "research/overnight-cities-2026-10-08/marseille-ign-root-acceptance.json",
+    "qualityFile": "research/overnight-cities-2026-10-08/marseille-ign-root-quality.json"
+  }
+}

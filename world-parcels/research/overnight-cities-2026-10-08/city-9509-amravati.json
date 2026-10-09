@@ -1,0 +1,109 @@
+{
+  "schemaVersion": 1,
+  "kind": "city_parcel_source_research",
+  "checkedAt": "2026-10-09",
+  "name": "Amravati",
+  "country": "India",
+  "countryCode": "IN",
+  "populationUnit": "persons",
+  "status": "complete",
+  "registryFound": true,
+  "registryBasis": "The official Maharashtra Land Records Department lists an Amravati city-survey office; the Amravati district government points residents to Mahabhumi for land records and Mahabhunakasha maps. This confirms a city-local land-record function. The public viewer exposes plot-search and property-card controls, and no safe geometry-only schema was verified.",
+  "registryEvidenceUrls": [
+    "https://bhumiabhilekh.maharashtra.gov.in/Contact/ContactDS?districtId=20&source=DistrictContact",
+    "https://amravati.gov.in/en/service/land-records/",
+    "https://mahabhunakasha.mahabhumi.gov.in/27/index.html",
+    "https://amravaticorporation.in/en/map/"
+  ],
+  "verifiedSample": false,
+  "publicParcelGeometryFound": false,
+  "runtimeReadiness": "not_enabled_no_verified_public_geometry",
+  "wupCityCode": 9509,
+  "cityId": "wup2025:9509",
+  "centerLatLon": [
+    20.9247934567129,
+    77.7566111733747
+  ],
+  "rank": 689,
+  "queueRank": 689,
+  "population2025": 771610,
+  "population2025k": 771.61,
+  "pointBasis": "UN WUP 2025 population-weighted settlement centroid; this is not a municipal boundary or a parcel-coverage claim.",
+  "technicalBlocker": "The official BhuNaksha viewer offers plot-number search and a property-card information control. Direct anonymous fetch timed out (HTTP status 000), and no geometry-only layer/schema was verified; no parcel selection or property-card request was made.",
+  "scopeLimits": "Official district land-record links and state city-survey directory reviewed in English and Marathi. The public viewer was inspected as indexed/static UI metadata only. No plot number, owner, address, property card, tax, or personal data was queried.",
+  "remainingUncertainty": "A safe geometry-only route could exist within the BhuNaksha viewer, but its service schema and output allowlist could not be verified from the accessible static page.",
+  "research": {
+    "executedQueries": [
+      {
+        "language": "English",
+        "query": "Amravati Maharashtra official city survey land records BhuNaksha parcel map public GIS",
+        "scope": "Find city-specific official registry evidence and safe anonymous full parcel geometry.",
+        "result": "Official Amravati district government links to Maharashtra land records and Mahabhunakasha; the state land-records directory lists a city-survey officer in Amravati. The BhuNaksha public viewer is indexed with parcel-number and property-card controls; no parcel was selected or queried.",
+        "actualResultUrls": [
+          "https://bhumiabhilekh.maharashtra.gov.in/Contact/ContactDS?districtId=20&source=DistrictContact",
+          "https://amravati.gov.in/en/service/land-records/",
+          "https://mahabhunakasha.mahabhumi.gov.in/27/index.html",
+          "https://amravaticorporation.in/en/map/"
+        ],
+        "executionMethod": "English and local-language web searches, followed by official public-page and route metadata review."
+      },
+      {
+        "language": "Marathi",
+        "query": "अमरावती नगर भूमापन अधिकारी भू नकाशा जमिनीचे नकाशे भूमी अभिलेख अधिकृत",
+        "scope": "Find city-specific official registry evidence and safe anonymous full parcel geometry.",
+        "result": "अमरावती जिल्हा शासनाची सेवा-पृष्ठे महाभूमी व महाभूनकाशा नकाशांकडे निर्देश करतात; महाराष्ट्र भूमी अभिलेख विभागाच्या संपर्क पृष्ठावर अमरावतीतील नगर भूमापन अधिकारी आहे. सार्वजनिक दर्शकात भूखंड क्रमांक व मिळकत-पत्रिका नियंत्रणे दिसतात; कोणताही भूखंड निवडलेला नाही.",
+        "actualResultUrls": [
+          "https://bhumiabhilekh.maharashtra.gov.in/Contact/ContactDS?districtId=20&source=DistrictContact",
+          "https://amravati.gov.in/en/service/land-records/",
+          "https://mahabhunakasha.mahabhumi.gov.in/27/index.html",
+          "https://amravaticorporation.in/en/map/"
+        ],
+        "executionMethod": "English and local-language web searches, followed by official public-page and route metadata review."
+      }
+    ],
+    "officialSources": [
+      {
+        "url": "https://bhumiabhilekh.maharashtra.gov.in/Contact/ContactDS?districtId=20&source=DistrictContact",
+        "observation": "Official Maharashtra Land Records contact directory lists Amravati’s special deputy superintendent for village/city/town survey."
+      },
+      {
+        "url": "https://amravati.gov.in/en/service/land-records/",
+        "observation": "Official Amravati district service page links to Mahabhumi for digitally signed records, property cards and Mahabhunakasha maps with land records."
+      },
+      {
+        "url": "https://mahabhunakasha.mahabhumi.gov.in/27/index.html",
+        "observation": "Official viewer is indexed with “Search Plot No”, “Plot Info” and “Property Card Information”. Direct HTTPS fetch timed out and the web retrieval reported a redirect loop; no plot input or map data was requested."
+      },
+      {
+        "url": "https://amravaticorporation.in/en/map/",
+        "observation": "Municipal corporation map page contains a static image map, not a cadastral parcel service."
+      }
+    ],
+    "metadataReviewFile": "amravati-service-review.json",
+    "routeInspectionFile": "temporary route audit outside repository",
+    "sampleFile": null
+  },
+  "source": {
+    "sourceId": "in-amravati-official-land-records",
+    "name": "Amravati city-local registry and parcel-route review",
+    "operator": "Amravati local land-record authority",
+    "url": "https://bhumiabhilekh.maharashtra.gov.in/Contact/ContactDS?districtId=20&source=DistrictContact",
+    "scope": "City-specific registry remit reviewed; no public parcel polygon verified.",
+    "nativeIdField": null,
+    "geometryStatus": "not_verified"
+  },
+  "coverageAssessment": {
+    "claimedScope": "Exact WUP point only; no citywide coverage claim.",
+    "verifiedOpenScope": "Official city-local registry/service information reviewed. No anonymous full parcel geometry was retained.",
+    "citywideVerified": false,
+    "countrywideVerified": false
+  },
+  "priorEvidenceFiles": [],
+  "populationPlausibility2025": "High",
+  "rootReviewedAt": "2026-10-09T02:35:39.834493+00:00",
+  "sourceIds": [],
+  "point": [
+    20.9247934567129,
+    77.7566111733747
+  ]
+}

@@ -1,0 +1,133 @@
+{
+  "name": "Jamshedpur",
+  "country": "India",
+  "countryCode": "IN",
+  "rank": 253,
+  "wupCityCode": 11483,
+  "cityId": "wup2025:11483",
+  "pop2025k": 1956.84,
+  "point": [
+    22.7945831821335,
+    86.2000980620368
+  ],
+  "plausibility": "High",
+  "freshResearch": {
+    "queries": [
+      {
+        "language": "Hindi",
+        "query": "जमशेदपुर शहर जमीन का नक्शा टाटा लीज वार्ड प्लॉट भूमि रिकॉर्ड आधिकारिक",
+        "scope": "Find city-specific land plot schedules and any public parcel geometry for Jamshedpur.",
+        "result": "The East Singhbhum District Administration publishes a Tata Lease agreement and separate Ward 1–19 land schedules. The Ward 1 schedule is a textual plot/area listing (Khata 622) rather than a georeferenced polygon service. The district land-records page links the State Jharkhand revenue portal. The WUP point was not resolved to a Tata lease ward or cadastral plot; no full geometry was obtained.",
+        "actualResultUrls": [
+          "https://jamshedpur.nic.in/tata-lease/",
+          "https://jamshedpur.nic.in/hi/%E0%A4%9F%E0%A4%BE%E0%A4%9F%E0%A4%BE-%E0%A4%B2%E0%A5%80%E0%A4%9C/",
+          "https://jamshedpur.nic.in/service/land-records/"
+        ],
+        "executionMethod": "Hindi-language search followed by official East Singhbhum pages and Ward schedule PDF inspection; attempted direct navigation to the official state records route."
+      },
+      {
+        "language": "English",
+        "query": "Jamshedpur official land records Tata lease ward plot schedules cadastral map Jharkhand",
+        "scope": "Cross-check English primary evidence for city plots and public geometry.",
+        "result": "The District Administration’s official Tata Lease page links a formal lease agreement and plot schedules by city ward (plot number and area), establishing city-specific land/lease records. The state Jharbhoomi link is listed on the district land-records page, but its live page did not return a response through the current network path. No public full-polygon endpoint or WUP-point plot lookup was verified.",
+        "actualResultUrls": [
+          "https://jamshedpur.nic.in/tata-lease/",
+          "https://jamshedpur.nic.in/service/land-records/",
+          "https://jharbhoomi.jharkhand.gov.in/MISROR_REG2/MISROR_REG2"
+        ],
+        "executionMethod": "English query plus official district land-records and Tata Lease page inspection; linked state portal direct request timed out before HTTP response."
+      }
+    ],
+    "portals": [
+      {
+        "name": "East Singhbhum District Administration Tata Lease schedules",
+        "operator": "District Administration East Singhbhum, Government of Jharkhand / NIC-hosted district portal",
+        "homeUrl": "https://jamshedpur.nic.in/tata-lease/",
+        "observation": "Official page lists the Tata Lease agreement and land schedules for Ward 1–7 and 11–19. Ward schedule PDFs contain khata, plot number and area tables, but no georeferenced full parcel polygons were observed. Exact ward and plot at the WUP point remains unresolved."
+      },
+      {
+        "name": "Jharkhand land-record portal",
+        "operator": "Department of Revenue, Registration & Land Reforms, Government of Jharkhand",
+        "homeUrl": "https://jharbhoomi.jharkhand.gov.in/MISROR_REG2/MISROR_REG2",
+        "observation": "The official district page links this state record route. Direct read-only requests did not return an HTTP response; this is a current path/network limitation, not evidence of provider downtime."
+      }
+    ],
+    "requests": [
+      {
+        "url": "https://jamshedpur.nic.in/tata-lease/",
+        "method": "GET",
+        "httpStatus": 200,
+        "contentType": "text/html",
+        "observation": "Official page lists a Tata Lease Agreement and ward-specific land schedules for Ward 1–7 and 11–19."
+      },
+      {
+        "url": "https://cdn.s3waas.gov.in/s33dc4876f3f08201c7c76cb71fa1da439/uploads/2018/05/2018051272.pdf",
+        "method": "GET",
+        "httpStatus": 200,
+        "contentType": "application/pdf",
+        "observation": "Ward 1 schedule PDF; 169 pages of textual Khata 622 plot-number and land-area entries. No full polygon feature or coordinates. It was inspected as a document, not ingested as parcel geometry."
+      },
+      {
+        "url": "https://jamshedpur.nic.in/service/land-records/",
+        "method": "GET",
+        "httpStatus": 200,
+        "contentType": "text/html",
+        "observation": "District land-records page links the Jharbhoomi state portal and lists District Land and Revenue Office at Collectorate Building, Sakchi, Jamshedpur."
+      },
+      {
+        "url": "https://jharbhoomi.jharkhand.gov.in/MISROR_REG2/MISROR_REG2",
+        "method": "GET",
+        "observation": "Read-only request to official linked state records route timed out before HTTP response; no status available."
+      },
+      {
+        "url": "https://jharbhunaksha.jharkhand.gov.in/",
+        "method": "GET",
+        "observation": "Public candidate domain could not be resolved from this network path; no HTTP request reached origin and no provider status is inferred."
+      }
+    ],
+    "historicalContext": []
+  },
+  "status": "complete",
+  "verifiedParcelResponse": null,
+  "source": {
+    "sourceId": "IN-JH-EASTSINGHBHUM-JAMSHEDPUR-TATA-LEASE-WARD-SCHEDULES",
+    "name": "Ward-wise Tata Lease land schedules for Jamshedpur",
+    "url": "https://jamshedpur.nic.in/tata-lease/",
+    "operator": "District Administration East Singhbhum, Government of Jharkhand",
+    "serviceType": "City-specific ward-wise lease land plot schedule (textual records); separate state land-record portal linked by the district.",
+    "layer": "Ward schedules, including Ward 1–7 and 11–19",
+    "geometryType": "Plot IDs and areas in PDF tables; no georeferenced geometry observed.",
+    "outputCrs": null,
+    "nativeIdField": "Ward, Khata number, plot number",
+    "nativeIdEvidence": "Ward 1 PDF is headed WARD 1 / KHATA NO. 622 and tabulates plot numbers and areas."
+  },
+  "coverageAssessment": {
+    "claimedScope": "The district portal publishes city ward-wise Tata lease land schedules; state land records are linked for East Singhbhum.",
+    "verifiedOpenScope": "Ward 1–7 and 11–19 schedule documents are listed. The WUP centroid was not matched to a ward/plot. No coordinate query or full parcel polygon was verified.",
+    "countrywideVerified": false
+  },
+  "registryFound": true,
+  "verifiedSample": false,
+  "resultCategory": "city_lease_land_records_geometry_not_verified",
+  "technicalBlocker": "The city documents expose plot/area tables rather than a feature service, and the linked state portal did not return an HTTP response on this network path.",
+  "remainingUncertainty": "Which ward and plot contain the WUP point; whether the target area has digitized cadastral geometry in the state map service; whether a user-facing map is available through the live state portal.",
+  "nextStep": "Resolve the WUP point to a Jamshedpur ward/plot from a live official state map, then verify whether the corresponding plot is returned as a full geometry.",
+  "schemaVersion": 1,
+  "checkedAt": "2026-10-09",
+  "runtimeReadiness": "not_enabled_no_verified_public_geometry",
+  "adapterReady": false,
+  "centerLatLon": [
+    22.7945831821335,
+    86.2000980620368
+  ],
+  "population2025k": 1956.84,
+  "queueRank": 253,
+  "population2025": 1956840,
+  "populationPlausibility2025": "High",
+  "populationUnit": "persons",
+  "pointBasis": "UN WUP 2025 population-weighted settlement centroid; this is not a municipal boundary or a parcel-coverage claim.",
+  "publicParcelGeometryFound": false,
+  "sourceIds": [],
+  "registryBasis": "The East Singhbhum District Administration publishes city-specific Tata Lease land schedules by Jamshedpur ward. The schedules identify Khata and plot numbers with areas; they confirm ward-level urban lease records but provide no georeferenced polygon, and the WUP point is not resolved to an individual ward or plot.",
+  "rootReviewedAt": "2026-10-08T21:36:07.696017+00:00"
+}

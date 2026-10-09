@@ -1,0 +1,153 @@
+{
+  "schemaVersion": 1,
+  "purpose": "Independent GEOS topology check of complete runtime parcels projected to metric coordinates; no repair applied. Counts are bounded sample evidence, not whole-city guarantees.",
+  "library": "Shapely 2.1.2",
+  "metricCrs": "EPSG:32647",
+  "featureCount": 19,
+  "validNonemptyCount": 19,
+  "invalidFeatures": [],
+  "exactDuplicateGeometryPairs": [],
+  "positiveAreaOverlapPairsAbove0_01M2": [],
+  "sumPairwiseOverlapM2": 0,
+  "operationErrors": [],
+  "areaM2": {
+    "min": 1122.4429588490575,
+    "median": 11682.825659827806,
+    "max": 410224.4862550376
+  },
+  "features": [
+    {
+      "id": "MY-PENANG-0701060003760",
+      "areaM2": 410224.4862550376,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "MY-PENANG-07010600010028",
+      "areaM2": 81101.39159457067,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "MY-PENANG-0701060004287",
+      "areaM2": 14715.869637181997,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "MY-PENANG-070106000124",
+      "areaM2": 17061.363031755023,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "MY-PENANG-070106000127",
+      "areaM2": 5345.555815993195,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "MY-PENANG-0701060001295",
+      "areaM2": 11682.825659827806,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "MY-PENANG-070106000126",
+      "areaM2": 4972.754202743115,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "MY-PENANG-0701060001294",
+      "areaM2": 1936.8683021571096,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "MY-PENANG-070106000133",
+      "areaM2": 1903.9614837703662,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "MY-PENANG-0701060003763",
+      "areaM2": 1122.4429588490575,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "MY-PENANG-0701060003765",
+      "areaM2": 1589.1687730615697,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "MY-PENANG-0701060003766",
+      "areaM2": 1896.8451209694922,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "MY-PENANG-0701060003836",
+      "areaM2": 44532.65131377238,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "MY-PENANG-0701060001313",
+      "areaM2": 14249.46961196568,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "MY-PENANG-0701060001324",
+      "areaM2": 13490.175131473467,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "MY-PENANG-0701060003764",
+      "areaM2": 7755.246303926982,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "MY-PENANG-070106000123",
+      "areaM2": 13409.538477652002,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "MY-PENANG-07010600010029",
+      "areaM2": 14304.298607301884,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "MY-PENANG-070106000218",
+      "areaM2": 6686.319597126718,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    }
+  ]
+}

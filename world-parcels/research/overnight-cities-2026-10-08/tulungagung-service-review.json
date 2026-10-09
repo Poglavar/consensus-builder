@@ -1,0 +1,65 @@
+{
+  "schemaVersion": "1.0",
+  "checkedAt": "2026-10-09",
+  "cityRecord": "city-7527-tulungagung.json",
+  "purpose": "Document city-scope registry evidence and bounded public parcel-geometry route review.",
+  "scopeLimits": {
+    "maxFullPolygonsRetainedInCityRecord": 3,
+    "maxFullPolygonsRetainedInReview": 3,
+    "maxFullPolygonsRetainedInRepository": 3,
+    "ownerOrAddressDataRetained": false,
+    "credentialsOrTokenValuesRetained": false,
+    "citywideCompletenessAsserted": false
+  },
+  "assessment": "The ministry-hosted Kantah Tulungagung portal exists; local government reporting confirms the office's PTSL/certificate work. No safe public cadastral feature route was verified.",
+  "registryAssessment": "The official Indonesian ATR/BPN Tulungagung office portal is on the ministry's `atrbpn.go.id` domain. The official Tulungagung government reports joint local land-certificate/complete-systematic-registration (PTSL) work with Kantor Pertanahan/BPN Kabupaten Tulungagung and names the office head. This confirms a local land-registration authority, but no anonymous parcel geometry service or allowlisted geometry/ID schema was verified.",
+  "officialPrimarySources": [
+    {
+      "url": "https://kab-tulungagung.atrbpn.go.id/",
+      "observation": "Official ATR/BPN Tulungagung office subdomain; inspected page view exposed only the JavaScript-app shell, with no public geometry layer schema."
+    },
+    {
+      "url": "https://kabar.tulungagung.go.id/kepastian-hukum-tanah-untuk-rakyat-tulungagung-bupati-serahkan-ribuan-sertifikat-ptsl/",
+      "observation": "Official Tulungagung government report documents the local Kantor Pertanahan/BPN collaboration in PTSL land registration and certificate issuance and identifies the office head."
+    },
+    {
+      "url": "https://setunggal.tulungagung.go.id/",
+      "observation": "Official municipal SETUNGGAL one-map portal describes general geographic/spatial information, but no cadastral field schema was exposed."
+    },
+    {
+      "url": "https://epbb.tulungagung.go.id/",
+      "observation": "Official municipal revenue portal describes PBB-P2 taxpayer services, requests NOP for lookup and contains taxpayer identity/account fields; it was inspected as a boundary only and no form/query was submitted."
+    }
+  ],
+  "searchQueries": [
+    {
+      "language": "English",
+      "query": "Tulungagung Indonesia official land registry cadastral parcel map Kantor Pertanahan",
+      "result": "The ministry-hosted Kantah Tulungagung portal exists; local government reporting confirms the office's PTSL/certificate work. No safe public cadastral feature route was verified.",
+      "method": "English-language search followed by primary official-source review."
+    },
+    {
+      "language": "Indonesian",
+      "query": "Kantor Pertanahan Kabupaten Tulungagung resmi peta bidang tanah layanan pertanahan",
+      "result": "Sumber resmi Kabupaten Tulungagung menyebut Kantor Pertanahan/BPN Tulungagung dan kerja sama PTSL/sertifikasi tanah. Portal peta satu daerah bersifat umum; tidak ditemukan skema publik bidang tanah yang aman.",
+      "method": "Native-language search followed by primary official-source review."
+    }
+  ],
+  "serviceChecks": [],
+  "geometryEvidence": null,
+  "accessReview": {
+    "publicAnonymousGeometryVerified": false,
+    "completeGeoreferencedPolygonCount": 0,
+    "geometryRetained": false,
+    "ownerAddressTaxOrPersonLookupRequested": false,
+    "authenticationOrCredentialsUsed": false,
+    "captchaOrPersonalFormSubmitted": false,
+    "routeInspectionStatus": "schema_unverified",
+    "reason": "The official Kantah subdomain returns only a JavaScript-app shell in the accessible page view. The municipality's Setunggal portal describes a general one-map geographic-information service, but no cadastral parcel schema was exposed in the inspected page. The official local PBB-P2 portal is a taxpayer-specific bill and record service: it requests an NOP and presents taxpayer name, account/payment details and requests NIK/name/address/phone for copies; no form was submitted and no tax record was queried. ATR/BPN BHUMI's generic help says its data catalog may include land parcels but does not establish Tulungagung coverage or expose a safe field allowlist. No parcel features were requested."
+  },
+  "privacy": "No owner, address, taxpayer, account, title, protected attribute, or property-record lookup was made. No geometry was retained.",
+  "runtimeAssessment": {
+    "status": "not_enabled_no_verified_safe_geometry_schema",
+    "reason": "City-specific land registration is established, but no public, TLS-protected parcel dataset with a documented geometry+stable-ID-only allowlist was located. The official municipal one-map and national BHUMI portals may contain other spatial layers, but the reviewed public descriptions do not establish a safe city parcel feature route. Taxpayer/account interfaces are excluded."
+  }
+}

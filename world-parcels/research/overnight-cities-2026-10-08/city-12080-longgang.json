@@ -1,0 +1,119 @@
+{
+  "schemaVersion": 1,
+  "kind": "city_parcel_source_research",
+  "checkedAt": "2026-10-09",
+  "name": "Longgang",
+  "country": "China",
+  "countryCode": "CN",
+  "populationUnit": "persons",
+  "status": "complete",
+  "registryFound": true,
+  "registryBasis": "Zhejiang’s official portal identifies this Longgang as the county-level city administered by Wenzhou, consistent with the roster point and distinct from Shenzhen’s Longgang District. Longgang city’s official government site publishes a Natural Resources and Planning Construction Bureau section; a public procurement notice by that bureau is for compiling Longgang real-estate cadastral maps of state-owned construction land, confirming city-specific cadastral work.",
+  "registryEvidenceUrls": [
+    "https://www.ezhejiang.gov.cn/wenzhou/2024-03/29/c_653171.htm",
+    "https://zjlg.gov.cn/",
+    "https://zjlg.gov.cn/col/col1229004536/index.html",
+    "https://www.ccgp.gov.cn/cggg/dfgg/jzxcs/202609/t20260919_27361591.htm"
+  ],
+  "verifiedSample": false,
+  "publicParcelGeometryFound": false,
+  "runtimeReadiness": "not_enabled_no_verified_public_geometry",
+  "wupCityCode": 12080,
+  "cityId": "wup2025:12080",
+  "centerLatLon": [
+    27.5851369200658,
+    120.538783495658
+  ],
+  "point": [
+    27.5851369200658,
+    120.538783495658
+  ],
+  "rank": 791,
+  "queueRank": 791,
+  "population2025": 681306,
+  "population2025k": 681.306,
+  "populationPlausibility2025": "High",
+  "pointBasis": "UN WUP 2025 population-weighted settlement centroid; this is not a municipal boundary or a parcel-coverage claim.",
+  "technicalBlocker": "The available official records establish cadastral-map production but do not provide an anonymous parcel-feature service or a safe geometry-and-ID schema. No procurement application, parcel query, or feature request was made.",
+  "scopeLimits": "The official procurement scope is state-owned construction land, not proof of citywide private-parcel coverage. No complete polygon is verified.",
+  "remainingUncertainty": "An anonymous public geometry route and schema remain unverified; this Longgang identity refers to Zhejiang, not the Shenzhen district.",
+  "research": {
+    "executedQueries": [
+      {
+        "language": "English",
+        "query": "Longgang Zhejiang city official land registry cadastral map parcel GIS",
+        "scope": "Identify city-specific registry evidence and safe public parcel geometry routes.",
+        "result": "Zhejiang’s official portal identifies this Longgang as the county-level city administered by Wenzhou, consistent with the roster point and distinct from Shenzhen’s Longgang District. Longgang city’s official government site publishes a Natural Resources and Planning Construction Bureau section; a public procurement notice by that bureau is for compiling Longgang real-estate cadastral maps of state-owned construction land, confirming city-specific cadastral work. The available official records establish cadastral-map production but do not provide an anonymous parcel-feature service or a safe geometry-and-ID schema. No procurement application, parcel query, or feature request was made.",
+        "actualResultUrls": [
+          "https://www.ezhejiang.gov.cn/wenzhou/2024-03/29/c_653171.htm",
+          "https://zjlg.gov.cn/",
+          "https://zjlg.gov.cn/col/col1229004536/index.html",
+          "https://www.ccgp.gov.cn/cggg/dfgg/jzxcs/202609/t20260919_27361591.htm"
+        ],
+        "executionMethod": "Official-source-focused search and public HTML/document review; no property-specific inputs submitted."
+      },
+      {
+        "language": "Chinese",
+        "query": "龙港市 自然资源和规划建设局 不动产地籍图 官方",
+        "scope": "Identify primary local-language evidence for registry/cadastre and anonymous map services.",
+        "result": "Zhejiang’s official portal identifies this Longgang as the county-level city administered by Wenzhou, consistent with the roster point and distinct from Shenzhen’s Longgang District. Longgang city’s official government site publishes a Natural Resources and Planning Construction Bureau section; a public procurement notice by that bureau is for compiling Longgang real-estate cadastral maps of state-owned construction land, confirming city-specific cadastral work. The available official records establish cadastral-map production but do not provide an anonymous parcel-feature service or a safe geometry-and-ID schema. No procurement application, parcel query, or feature request was made.",
+        "actualResultUrls": [
+          "https://www.ezhejiang.gov.cn/wenzhou/2024-03/29/c_653171.htm",
+          "https://zjlg.gov.cn/",
+          "https://zjlg.gov.cn/col/col1229004536/index.html",
+          "https://www.ccgp.gov.cn/cggg/dfgg/jzxcs/202609/t20260919_27361591.htm"
+        ],
+        "executionMethod": "Separate local-language official-source-focused search; no property-specific inputs submitted."
+      }
+    ],
+    "officialSources": [
+      {
+        "url": "https://www.ezhejiang.gov.cn/wenzhou/2024-03/29/c_653171.htm",
+        "observation": "Zhejiang’s official portal identifies this Longgang as the county-level city administered by Wenzhou, consistent with the roster point and distinct from Shenzhen’s Longgang District. Longgang city’s official government site publishes a Natural Resources and Planning Construction Bureau section; a public procurement notice by that bureau is for compiling Longgang real-estate cadastral maps of state-owned construction land, confirming city-specific cadastral work. The available official records establish cadastral-map production but do not provide an anonymous parcel-feature service or a safe geometry-and-ID schema. No procurement application, parcel query, or feature request was made."
+      },
+      {
+        "url": "https://zjlg.gov.cn/",
+        "observation": "Zhejiang’s official portal identifies this Longgang as the county-level city administered by Wenzhou, consistent with the roster point and distinct from Shenzhen’s Longgang District. Longgang city’s official government site publishes a Natural Resources and Planning Construction Bureau section; a public procurement notice by that bureau is for compiling Longgang real-estate cadastral maps of state-owned construction land, confirming city-specific cadastral work. The available official records establish cadastral-map production but do not provide an anonymous parcel-feature service or a safe geometry-and-ID schema. No procurement application, parcel query, or feature request was made."
+      },
+      {
+        "url": "https://zjlg.gov.cn/col/col1229004536/index.html",
+        "observation": "Zhejiang’s official portal identifies this Longgang as the county-level city administered by Wenzhou, consistent with the roster point and distinct from Shenzhen’s Longgang District. Longgang city’s official government site publishes a Natural Resources and Planning Construction Bureau section; a public procurement notice by that bureau is for compiling Longgang real-estate cadastral maps of state-owned construction land, confirming city-specific cadastral work. The available official records establish cadastral-map production but do not provide an anonymous parcel-feature service or a safe geometry-and-ID schema. No procurement application, parcel query, or feature request was made."
+      },
+      {
+        "url": "https://www.ccgp.gov.cn/cggg/dfgg/jzxcs/202609/t20260919_27361591.htm",
+        "observation": "Zhejiang’s official portal identifies this Longgang as the county-level city administered by Wenzhou, consistent with the roster point and distinct from Shenzhen’s Longgang District. Longgang city’s official government site publishes a Natural Resources and Planning Construction Bureau section; a public procurement notice by that bureau is for compiling Longgang real-estate cadastral maps of state-owned construction land, confirming city-specific cadastral work. The available official records establish cadastral-map production but do not provide an anonymous parcel-feature service or a safe geometry-and-ID schema. No procurement application, parcel query, or feature request was made."
+      }
+    ]
+  },
+  "source": {
+    "type": "manual_primary_source_review",
+    "checkedAt": "2026-10-09",
+    "urls": [
+      "https://www.ezhejiang.gov.cn/wenzhou/2024-03/29/c_653171.htm",
+      "https://zjlg.gov.cn/",
+      "https://zjlg.gov.cn/col/col1229004536/index.html",
+      "https://www.ccgp.gov.cn/cggg/dfgg/jzxcs/202609/t20260919_27361591.htm"
+    ]
+  },
+  "coverageAssessment": {
+    "status": "unknown",
+    "scope": "No safe parcel feature route or complete polygon sample verified.",
+    "notes": "The official procurement scope is state-owned construction land, not proof of citywide private-parcel coverage. No complete polygon is verified."
+  },
+  "priorEvidenceFiles": [],
+  "rootReviewedAt": "2026-10-09T03:28:12.559388+00:00",
+  "resultCategory": "registry_found_geometry_unverified",
+  "runtimeAssessment": {
+    "enabled": false,
+    "status": "not_enabled_no_verified_public_geometry",
+    "reason": "An anonymous public geometry route and schema remain unverified; this Longgang identity refers to Zhejiang, not the Shenzhen district."
+  },
+  "rootPrimaryReadback": {
+    "url": "https://www.ezhejiang.gov.cn/wenzhou/2024-03/29/c_653171.htm",
+    "fetch": 200,
+    "contentType": "text/html",
+    "title": "Longgang city"
+  },
+  "rootReviewNote": "Root reviewed primary local institutional/service evidence and retained the actual access, coverage and identity limits. Direct readback errors are distinct from indexed primary evidence and do not prove absent data. No public full geometry was verified for this city.",
+  "sourceIds": []
+}

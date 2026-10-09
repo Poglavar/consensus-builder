@@ -1,0 +1,121 @@
+{
+  "name": "Malacca City",
+  "country": "Malaysia",
+  "countryCode": "MY",
+  "rank": 986,
+  "point": [
+    2.23405701325659,
+    102.24199595037
+  ],
+  "freshResearch": {
+    "queries": [
+      {
+        "language": "English",
+        "query": "Malacca City Malaysia land registry cadastral parcel map official GIS land office",
+        "scope": "Locate the city/local land registry or cadastral source and assess anonymous public polygon geometry.",
+        "result": "The public JUPEM ArcGIS directory advertises cadastral lot layers, but direct HTTPS metadata access failed TLS verification because the server certificate had expired. No TLS bypass was used. The separate TuahGIS parcel-map landing page timed out and its coverage relative to the WUP point is unverified. Official registry evidence: The official Melaka Tengah District and Land Office is the local land-administration office serving the city’s central district. Official Melaka GIS directory metadata exposes JUPEM cadastral lot layers (2021, 2016, 2013 and 2012), but the layer metadata/query was not fetched because the endpoint presented an expired TLS certificate. The point’s source-layer coverage and geometry remain unverified.",
+        "actualResultUrls": [
+          "https://ptg.melaka.gov.my/portal/web/melaka-tengah/home",
+          "https://mygdispatial.melaka.gov.my/arcgis/rest/services/AGENSI/JUPEM/MapServer",
+          "https://smartgis.mphtj.gov.my/peta"
+        ],
+        "executionMethod": "Separate English-language web search, followed by review of first-party source pages and service metadata."
+      },
+      {
+        "language": "Malay",
+        "query": "Peta kadaster lot tanah Kota Melaka rasmi GIS Pejabat Tanah Melaka Tengah",
+        "scope": "Find first-party local-language land registration, cadastral map or city-specific parcel service evidence.",
+        "result": "The public JUPEM ArcGIS directory advertises cadastral lot layers, but direct HTTPS metadata access failed TLS verification because the server certificate had expired. No TLS bypass was used. The separate TuahGIS parcel-map landing page timed out and its coverage relative to the WUP point is unverified. Official registry evidence: The official Melaka Tengah District and Land Office is the local land-administration office serving the city’s central district. Official Melaka GIS directory metadata exposes JUPEM cadastral lot layers (2021, 2016, 2013 and 2012), but the layer metadata/query was not fetched because the endpoint presented an expired TLS certificate. The point’s source-layer coverage and geometry remain unverified.",
+        "actualResultUrls": [
+          "https://ptg.melaka.gov.my/portal/web/melaka-tengah/home",
+          "https://mygdispatial.melaka.gov.my/arcgis/rest/services/AGENSI/JUPEM/MapServer",
+          "https://smartgis.mphtj.gov.my/peta"
+        ],
+        "executionMethod": "Separate Malay-language web search, followed by review of first-party source pages; no personal property query."
+      }
+    ],
+    "portals": [
+      {
+        "name": "Melaka Tengah District and Land Office; Melaka JUPEM cadastral map service",
+        "operator": "Melaka Tengah District and Land Office; Melaka Government GIS / JUPEM",
+        "homeUrl": "https://ptg.melaka.gov.my/portal/web/melaka-tengah/home",
+        "observation": "Local land office and cadastral map service directory found. Anonymous feature schema and point query were not completed. The public JUPEM ArcGIS directory advertises cadastral lot layers, but direct HTTPS metadata access failed TLS verification because the server certificate had expired. No TLS bypass was used. The separate TuahGIS parcel-map landing page timed out and its coverage relative to the WUP point is unverified."
+      }
+    ],
+    "requests": [],
+    "historicalContext": []
+  },
+  "status": "complete",
+  "verifiedParcelResponse": null,
+  "source": {
+    "sourceId": "MY-2289-LOCAL-CADASTRE-REVIEW",
+    "name": "Melaka Tengah District and Land Office; Melaka JUPEM cadastral map service",
+    "url": "https://ptg.melaka.gov.my/portal/web/melaka-tengah/home",
+    "operator": "Melaka Tengah District and Land Office; Melaka Government GIS / JUPEM",
+    "serviceType": "Local land office and cadastral map service directory found. Anonymous feature schema and point query were not completed.",
+    "layer": null,
+    "geometryType": null,
+    "outputCrs": null,
+    "nativeIdField": null,
+    "nativeIdEvidence": null,
+    "requestedAttributes": [],
+    "personalAttributesRequested": false,
+    "directMetadataSchemaVerified": false,
+    "directGeometryQueryVerified": false,
+    "scope": "Local land office and cadastral map service directory found. Anonymous feature schema and point query were not completed. The public JUPEM ArcGIS directory advertises cadastral lot layers, but direct HTTPS metadata access failed TLS verification because the server certificate had expired. No TLS bypass was used. The separate TuahGIS parcel-map landing page timed out and its coverage relative to the WUP point is unverified."
+  },
+  "registryFound": true,
+  "registryBasis": "The official Melaka Tengah District and Land Office is the local land-administration office serving the city’s central district. Official Melaka GIS directory metadata exposes JUPEM cadastral lot layers (2021, 2016, 2013 and 2012), but the layer metadata/query was not fetched because the endpoint presented an expired TLS certificate. The point’s source-layer coverage and geometry remain unverified.",
+  "registryEvidenceUrls": [
+    "https://ptg.melaka.gov.my/portal/web/melaka-tengah/home",
+    "https://mygdispatial.melaka.gov.my/arcgis/rest/services/AGENSI/JUPEM/MapServer",
+    "https://smartgis.mphtj.gov.my/peta"
+  ],
+  "verifiedSample": false,
+  "publicParcelGeometryFound": false,
+  "runtimeReadiness": "not_enabled_no_verified_public_geometry",
+  "adapterReady": false,
+  "priorEvidenceFiles": [],
+  "priorCheck": {
+    "attemptState": "pending",
+    "attemptEvidence": [],
+    "possiblePriorMatches": []
+  },
+  "scopeLimits": "No full parcel geometry or property-owner/address data retained. No owner/address fields were requested. No credentials, tokens, personal records, or gated property lookup were used. At most 0 full polygons retained.",
+  "pointBasis": "UN WUP 2025 population-weighted settlement centroid; this is not a municipal boundary or a parcel-coverage claim.",
+  "resultCategory": "official_local_registry_geometry_unverified",
+  "technicalBlocker": "The public JUPEM ArcGIS directory advertises cadastral lot layers, but direct HTTPS metadata access failed TLS verification because the server certificate had expired. No TLS bypass was used. The separate TuahGIS parcel-map landing page timed out and its coverage relative to the WUP point is unverified.",
+  "remainingUncertainty": "No safe full geometry or source-native parcel ID was retrieved; city-point coverage and layer freshness remain unverified.",
+  "nextStep": "If a publicly accessible geometry-only service is documented, inspect its metadata/schema first, then query only a bounded area and retain only a safe source-native parcel ID plus geometry.",
+  "schemaVersion": "1.0",
+  "checkedAt": "2026-10-09",
+  "wupCityCode": 2289,
+  "cityId": "wup2025:2289",
+  "queueRank": 986,
+  "centerLatLon": [
+    2.23405701325659,
+    102.24199595037
+  ],
+  "population2025k": 555.703,
+  "populationUnit": "persons",
+  "population2025": 555703,
+  "populationPlausibility2025": "Moderate",
+  "sourceIds": [],
+  "coverageAssessment": {
+    "claimedScope": "The official Melaka Tengah District and Land Office is the local land-administration office serving the city’s central district. Official Melaka GIS directory metadata exposes JUPEM cadastral lot layers (2021, 2016, 2013 and 2012), but the layer metadata/query was not fetched because the endpoint presented an expired TLS certificate. The point’s source-layer coverage and geometry remain unverified.",
+    "verifiedOpenScope": "Local land office and cadastral map service directory found. Anonymous feature schema and point query were not completed.",
+    "countrywideVerified": false,
+    "citywideVerified": false
+  },
+  "runtimeAssessment": {
+    "status": "not_enabled_no_verified_public_geometry",
+    "reason": "No full public parcel feature response was obtained for this packet, so no city adapter was enabled or runtime-qualified."
+  },
+  "rootPrimaryReadback": {
+    "url": "https://ptg.melaka.gov.my/portal/web/melaka-tengah/home",
+    "fetch": "error",
+    "reason": "<urlopen error timed out>"
+  },
+  "rootReviewNote": "Root reviewed the exact primary institutional evidence and specific local jurisdiction, preserving source dates, application/access limits and failed readbacks. Registry presence and public full parcel geometry are separate findings. No public full geometry was verified in this city discovery record.",
+  "rootReviewedAt": "2026-10-09T05:10:15.053712+00:00"
+}

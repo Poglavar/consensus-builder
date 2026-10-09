@@ -1,0 +1,64 @@
+{
+  "schemaVersion": "1.0",
+  "checkedAt": "2026-10-09",
+  "cityRecord": "city-5069-ondo.json",
+  "purpose": "Document first-party local cadastral/registry evidence and bounded anonymous geometry access review.",
+  "scopeLimits": {
+    "maxFullPolygonsRetainedInCityRecord": 3,
+    "maxFullPolygonsRetainedInReview": 0,
+    "maxFullPolygonsRetainedInRepository": 24,
+    "ownerOrAddressDataRetained": false,
+    "credentialsOrTokenValuesRetained": false,
+    "citywideCompletenessAsserted": false
+  },
+  "assessment": "Official process requires an applicant to present proof of land ownership to a licensed surveyor, pay fees, then obtain an approved survey plan; verified record copy is retained by the Surveyor General. Public government services describe land certificate, title search, and survey services but expose no map API.",
+  "registryAssessment": "Ondo State Government Office of the Surveyor General guidelines name the Ministry of Lands and Housing as the authority, list an Ondo Area Lands Office in Ondo town, and say the Ministry retains the survey-plan record copy. This is specific local-custodian evidence.",
+  "officialPrimarySources": [
+    {
+      "url": "https://ondostate.gov.ng/wp-content/uploads/2022/12/Survey-Plan-Processess.pdf",
+      "observation": "Ondo State Government Ministry of Land and Housing, Office of the Surveyor General guidelines name an Ondo Area Lands Office on Ademulegun Road; plans are submitted for verification and a record copy is retained by the Office of the Surveyor General."
+    },
+    {
+      "url": "https://www.ondostate.gov.ng/services",
+      "observation": "Ondo State Government service catalogue lists land certificate, title search/verification, building-plan approval and land survey/beaconing services."
+    },
+    {
+      "url": "https://www.ondostate.gov.ng/",
+      "observation": "Official Ondo State Government portal for state agencies and public services."
+    }
+  ],
+  "searchQueries": [
+    {
+      "language": "Yoruba / English",
+      "query": "Ondo ilẹ̀ ìforúkọsílẹ̀ ilẹ̀ maapu cadastral Surveyor General Ondo town official",
+      "result": "Ondo State Government guidelines identify the Ministry of Lands and Housing, Office of the Surveyor General, and an Ondo Area Lands Office. Plans are prepared/verified through applicant workflow; no open map service is listed.",
+      "method": "Separate local-language/English search and first-party Ondo State service guidance review.",
+      "scope": "Find Ondo-town local land and cadastral custodians and any public parcel map."
+    },
+    {
+      "language": "English",
+      "query": "Ondo Town cadastral parcel map GIS official Ondo State land registry survey plan",
+      "result": "Official state services include land certificate, title-search and survey-plan services. The survey-plan guideline provides an Ondo-town area lands office, but requires applicant survey submission; no public parcel geometry layer was verified.",
+      "method": "Separate English-language search; state ministry pages used as primary evidence. Third-party/non-government portals were not treated as authoritative.",
+      "scope": "Cross-check anonymous parcel viewer and local service scope."
+    }
+  ],
+  "geometryDecision": "No complete full polygon with a safely validated native parcel identifier was retained. The inspected sources did not expose an anonymous public full-polygon feature response.",
+  "coverageAssessment": {
+    "claimedScope": "The state Office of the Surveyor General verifies and files land survey plans, and an area land office serves Ondo town. No public full-geometry service is claimed.",
+    "verifiedOpenScope": "Official survey plan is application-based and linked to proof of ownership/fees. Government service pages advertise title/search/survey requests, not anonymous full polygons.",
+    "citywideVerified": false,
+    "countrywideVerified": false,
+    "geometryVerified": false
+  },
+  "attempts": [
+    {
+      "url": "https://ondostate.gov.ng/wp-content/uploads/2022/12/Survey-Plan-Processess.pdf",
+      "method": "GET via official web inspection",
+      "httpStatus": 200,
+      "contentType": "application/pdf",
+      "observation": "Official three-page survey-plan process guideline reviewed. No public full-feature geometry service is linked."
+    }
+  ],
+  "remainingUncertainty": "Whether an additional state GIS or public parcel vector service exists outside inspected land and survey services. The public map geometry schema and city-specific parcel coverage are unverified."
+}

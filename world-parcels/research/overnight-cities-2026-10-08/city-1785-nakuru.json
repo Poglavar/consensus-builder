@@ -1,0 +1,104 @@
+{
+  "name": "Nakuru",
+  "country": "Kenya",
+  "countryCode": "KE",
+  "rank": 955,
+  "point": [
+    -0.28824581102832,
+    36.0820991609143
+  ],
+  "freshResearch": {
+    "queries": [
+      {
+        "language": "English",
+        "query": "Nakuru Kenya official land registry cadastral parcel map GIS county land information management system",
+        "scope": "Find a local custodian, public parcel-map entry point, and safe geometry interface.",
+        "result": "The official national registry directory lists Nakuru Land Registry at Ardhi House, Moi Road, with land registration, adjudication, administration, valuation, survey and mapping services. Nakuru County describes a developing Land Information Management System, but no anonymous public cadastral feature layer/schema was found. Ardhisasa is an account-based land-service portal; no sign-in or record search was attempted.",
+        "actualResultUrls": [
+          "https://www.lands.go.ke/land-registries"
+        ],
+        "executionMethod": "Separate English-language web search; official public source review."
+      },
+      {
+        "language": "Swahili",
+        "query": "Nakuru usajili ardhi ramani ya vipande ramani ya ardhi huduma Kaunti ya Nakuru",
+        "scope": "Find first-party city/local-language registry, cadastral mapping and parcel-service evidence.",
+        "result": "The official national registry directory lists Nakuru Land Registry at Ardhi House, Moi Road, with land registration, adjudication, administration, valuation, survey and mapping services. Nakuru County describes a developing Land Information Management System, but no anonymous public cadastral feature layer/schema was found. Ardhisasa is an account-based land-service portal; no sign-in or record search was attempted.",
+        "actualResultUrls": [
+          "https://www.lands.go.ke/land-registries"
+        ],
+        "executionMethod": "Separate Swahili-language web search and first-party portal review."
+      }
+    ],
+    "portals": [
+      {
+        "name": "Kenya State Department for Lands Nakuru Land Registry and Nakuru County Lands Department",
+        "operator": "State Department for Lands; Nakuru County Government for its LIMS project",
+        "homeUrl": "https://www.lands.go.ke/land-registries",
+        "observation": "The official national registry directory lists Nakuru Land Registry at Ardhi House, Moi Road, with land registration, adjudication, administration, valuation, survey and mapping services. Nakuru County describes a developing Land Information Management System, but no anonymous public cadastral feature layer/schema was found. Ardhisasa is an account-based land-service portal; no sign-in or record search was attempted."
+      }
+    ],
+    "requests": [],
+    "historicalContext": []
+  },
+  "status": "complete",
+  "verifiedParcelResponse": null,
+  "source": {
+    "sourceId": "KE-1785-LOCAL-PARCEL-RESEARCH",
+    "name": "Kenya State Department for Lands Nakuru Land Registry and Nakuru County Lands Department",
+    "url": "https://www.lands.go.ke/land-registries",
+    "operator": "State Department for Lands; Nakuru County Government for its LIMS project",
+    "serviceType": "Official local registry/cadastre evidence reviewed; no anonymous geometry-only feature response verified.",
+    "layer": null,
+    "geometryType": null,
+    "outputCrs": null,
+    "nativeIdField": null,
+    "nativeIdEvidence": null
+  },
+  "coverageAssessment": {
+    "claimedScope": "A named local land registry and county land-service function are confirmed. County LIMS is described as under development; no public parcel geometry is established.",
+    "verifiedOpenScope": "The official national registry directory lists Nakuru Land Registry at Ardhi House, Moi Road, with land registration, adjudication, administration, valuation, survey and mapping services. Nakuru County describes a developing Land Information Management System, but no anonymous public cadastral feature layer/schema was found. Ardhisasa is an account-based land-service portal; no sign-in or record search was attempted.",
+    "countrywideVerified": false,
+    "citywideVerified": false
+  },
+  "registryFound": true,
+  "verifiedSample": false,
+  "resultCategory": "official_registry_geometry_unverified",
+  "technicalBlocker": "No public geometry endpoint was identified. Registration portal is account-based and was not accessed.",
+  "remainingUncertainty": "No evidence that a public parcel layer covers the exact WUP point.",
+  "nextStep": "Revisit only if a public source publishes a schema with safe stable identifiers and an anonymous geometry-only query; keep any future sample bounded and field-allowlisted.",
+  "schemaVersion": "1.0",
+  "checkedAt": "2026-10-09",
+  "wupCityCode": 1785,
+  "cityId": "wup2025:1785",
+  "runtimeReadiness": "not_enabled_no_verified_public_geometry",
+  "adapterReady": false,
+  "centerLatLon": [
+    -0.28824581102832,
+    36.0820991609143
+  ],
+  "population2025k": 574.091,
+  "populationUnit": "persons",
+  "queueRank": 955,
+  "population2025": 574091,
+  "populationPlausibility2025": "Moderate",
+  "pointBasis": "UN WUP 2025 population-weighted settlement centroid; this is not a municipal boundary or a parcel-coverage claim.",
+  "publicParcelGeometryFound": false,
+  "sourceIds": [],
+  "registryBasis": "The official national registry directory lists Nakuru Land Registry at Ardhi House, Moi Road, with land registration, adjudication, administration, valuation, survey and mapping services. Nakuru County describes a developing Land Information Management System, but no anonymous public cadastral feature layer/schema was found. Ardhisasa is an account-based land-service portal; no sign-in or record search was attempted.",
+  "registryEvidenceUrls": [
+    "https://www.lands.go.ke/land-registries"
+  ],
+  "runtimeAssessment": {
+    "status": "not_enabled_no_verified_public_geometry",
+    "reason": "No public geometry endpoint was identified. Registration portal is account-based and was not accessed."
+  },
+  "rootPrimaryReadback": {
+    "url": "https://www.lands.go.ke/land-registries",
+    "fetch": 200,
+    "contentType": "text/html; charset=UTF-8",
+    "title": "Land Registries | State Department for Lands"
+  },
+  "rootReviewNote": "Reviewed the specific local primary evidence, its jurisdiction, source dates and public access limits. Failed readbacks are retained as transport/access outcomes rather than absence. No full public parcel geometry was verified for this city in the bounded discovery pass.",
+  "rootReviewedAt": "2026-10-09T05:07:19.594016+00:00"
+}

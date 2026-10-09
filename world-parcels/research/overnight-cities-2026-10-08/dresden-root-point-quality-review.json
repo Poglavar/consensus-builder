@@ -1,0 +1,21 @@
+{
+  "checkedAt": "2026-10-09T05:14:43.870048+00:00",
+  "nativeParcelId": "140209___00622001002",
+  "sampleCount": 1,
+  "sampleProperties": [
+    "flstkennz"
+  ],
+  "nativeCrs": "EPSG:25833",
+  "nativeAreaM2": 5997.75339200066,
+  "safeSampleProjectedAreaM2": 5997.753308742495,
+  "hausdorffM": 0.00012687298454928613,
+  "symmetricDifferenceM2": 0.02680385782959262,
+  "sourceNativeValid": true,
+  "sampleValid": true,
+  "sourceNativeContainsUnchangedWupPoint": true,
+  "safeSampleContainsUnchangedWupPoint": true,
+  "pointToBoundaryM": 18.069082242240054,
+  "rawResponseSha256": "3ee47cb716cfe4499018d8e0aa27e2c92e2ae9d0b426db94554ec1bb444da02a",
+  "geometryRepaired": false,
+  "note": "Independent root review of source-native closed full polygon against the sanitized CRS-transformed sample. Only safe native ID and geometry are retained; source ignored requested attribute projection but unrelated values remain temporary and are excluded from all committed evidence."
+}

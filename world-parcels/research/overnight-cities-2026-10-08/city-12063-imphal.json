@@ -1,0 +1,113 @@
+{
+  "schemaVersion": 1,
+  "kind": "city_parcel_source_research",
+  "checkedAt": "2026-10-09",
+  "name": "Imphal",
+  "country": "India",
+  "countryCode": "IN",
+  "populationUnit": "persons",
+  "status": "complete",
+  "registryFound": true,
+  "registryBasis": "The Government of Manipur Revenue Department describes the state land-record system, its village/urban-ward record units, and field maps, while the Government of Manipur publishes an Imphal Municipality cadastral map and explicitly directs users to the Directorate of Settlement & Land Record for the official office map. This supports local land-record administration; the published municipal map is planning-only and does not establish open parcel geometry or complete registry coverage at the WUP point.",
+  "registryEvidenceUrls": [
+    "https://manipurrev.nic.in/lrsystem.htm",
+    "https://manipurrev.nic.in/lrPrepare.htm",
+    "https://manipurrev.nic.in/mlr789.htm",
+    "https://manipur.gov.in/wp-content/uploads/2013/02/imphal-west_municipality_cadastral.pdf",
+    "https://elandmanipur.mn.gov.in/about-us"
+  ],
+  "verifiedSample": false,
+  "publicParcelGeometryFound": false,
+  "runtimeReadiness": "not_enabled_no_verified_public_geometry",
+  "wupCityCode": 12063,
+  "cityId": "wup2025:12063",
+  "centerLatLon": [
+    24.770650831557,
+    93.9291264130367
+  ],
+  "rank": 636,
+  "queueRank": 636,
+  "population2025": 824757,
+  "population2025k": 824.757,
+  "pointBasis": "UN WUP 2025 population-weighted settlement centroid; this is not a municipal boundary or a parcel-coverage claim.",
+  "technicalBlocker": "The official Imphal Municipality map is a planning reference image, not a public cadastral polygon contract. No anonymous full-polygon endpoint, safe field schema or citywide completeness was verified.",
+  "scopeLimits": "Source discovery only. Official evidence confirms local registry/land-record services only where stated in registryBasis; it does not establish complete citywide cadastral coverage or parcel geometry at the WUP point. No owner, address, tax, personal-identity, credential or account lookup was submitted or retained. No parcel geometry or feature attributes were retained.",
+  "remainingUncertainty": "The official Imphal Municipality map is a planning reference image, not a public cadastral polygon contract. No anonymous full-polygon endpoint, safe field schema or citywide completeness was verified.",
+  "research": {
+    "executedQueries": [
+      {
+        "language": "English",
+        "query": "Imphal Manipur official land records cadastral map survey map registry",
+        "scope": "Find first-party local registry/cadastre evidence and safe anonymous geometry-only routes; do not submit identity or property identifiers.",
+        "result": "Found Manipur Revenue Department land-record descriptions and a Government of Manipur Imphal Municipality cadastral map. The map explicitly says it is for planning only; the office cadastral map must be obtained from the Directorate of Settlement & Land Record. No anonymous parcel-vector endpoint was verified.",
+        "actualResultUrls": [
+          "https://manipurrev.nic.in/lrsystem.htm",
+          "https://manipurrev.nic.in/lrPrepare.htm",
+          "https://manipurrev.nic.in/mlr789.htm",
+          "https://manipur.gov.in/wp-content/uploads/2013/02/imphal-west_municipality_cadastral.pdf",
+          "https://elandmanipur.mn.gov.in/about-us"
+        ]
+      },
+      {
+        "language": "Meitei",
+        "query": "ꯏꯝꯐꯥꯜ ꯂꯥꯟꯗ ꯔꯦꯀꯣꯔꯗ ꯀꯦꯗꯥꯁ꯭ꯇ꯭ꯔꯦꯜ ꯃꯦꯞ ꯁꯔꯚꯦ",
+        "scope": "Find first-party local registry/cadastre evidence and safe anonymous geometry-only routes; do not submit identity or property identifiers.",
+        "result": "Native-language discovery did not identify a distinct official public Imphal parcel geometry service. The official English government land-record pages and municipality map were used to assess the route; no property identifier was submitted.",
+        "actualResultUrls": [
+          "https://manipurrev.nic.in/lrsystem.htm",
+          "https://manipurrev.nic.in/lrPrepare.htm",
+          "https://manipurrev.nic.in/mlr789.htm",
+          "https://manipur.gov.in/wp-content/uploads/2013/02/imphal-west_municipality_cadastral.pdf",
+          "https://elandmanipur.mn.gov.in/about-us"
+        ]
+      }
+    ],
+    "officialSources": [
+      {
+        "url": "https://manipurrev.nic.in/lrsystem.htm",
+        "observation": "Manipur Revenue Department land-record system describes field maps, Dag Chitha/Jamabandi records and settled village records."
+      },
+      {
+        "url": "https://manipurrev.nic.in/lrPrepare.htm",
+        "observation": "The official preparation page describes records at village level and, in towns, more or less at ward level."
+      },
+      {
+        "url": "https://manipurrev.nic.in/mlr789.htm",
+        "observation": "Government of Manipur Imphal Municipality cadastral PDF is explicitly marked for planning only and says office cadastral maps should be obtained from the Directorate of Settlement & Land Record."
+      },
+      {
+        "url": "https://manipur.gov.in/wp-content/uploads/2013/02/imphal-west_municipality_cadastral.pdf",
+        "observation": "The official Land Resources Department about page places the department in Imphal and describes GIS/survey/record responsibilities; it does not publish city parcel vectors."
+      }
+    ],
+    "metadataReviewFile": "imphal-service-review.json"
+  },
+  "source": {
+    "sourceId": "in-imphal-registry-review",
+    "name": "Imphal local registry/cadastre route review",
+    "operator": "Imphal local land/registry authority (as qualified in registryBasis)",
+    "url": "https://manipurrev.nic.in/lrsystem.htm",
+    "scope": "The official Imphal Municipality map is a planning reference image, not a public cadastral polygon contract. No anonymous full-polygon endpoint, safe field schema or citywide completeness was verified.",
+    "nativeIdField": null,
+    "attributesRequested": [],
+    "identityBasis": "No safe parcel feature identifier was retrieved.",
+    "geometryStatus": "city_registry_basis_only_no_public_geometry_contract"
+  },
+  "coverageAssessment": {
+    "verifiedOpenScope": "The official Imphal Municipality map is a planning reference image, not a public cadastral polygon contract. No anonymous full-polygon endpoint, safe field schema or citywide completeness was verified.",
+    "notEstablished": [
+      "anonymous full-polygon access",
+      "complete citywide cadastral coverage",
+      "runtime source binding"
+    ],
+    "wupPointRelation": "No parcel geometry was returned or asserted."
+  },
+  "priorEvidenceFiles": [],
+  "populationPlausibility2025": "Moderate",
+  "sourceIds": [],
+  "point": [
+    24.770650831557,
+    93.9291264130367
+  ],
+  "rootReviewedAt": "2026-10-09T02:09:36.300766+00:00"
+}

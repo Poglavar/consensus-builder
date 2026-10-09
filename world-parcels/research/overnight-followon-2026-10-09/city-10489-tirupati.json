@@ -1,0 +1,126 @@
+{
+  "schemaVersion": "1.0",
+  "cityId": "wup2025:10489",
+  "wupCityCode": 10489,
+  "name": "Tirupati",
+  "country": "India",
+  "countryCode": "IN",
+  "rank": 1024,
+  "queueRank": 1024,
+  "point": [
+    13.6284336310781,
+    79.4308761482487
+  ],
+  "centerLatLon": [
+    13.6284336310781,
+    79.4308761482487
+  ],
+  "pointBasis": "UN WUP2025 population-weighted settlement centroid; not a municipal boundary or parcel-coverage claim.",
+  "population2025": 539275,
+  "population2025k": 539.275,
+  "populationUnit": "persons",
+  "populationPlausibility2025": "High",
+  "cohort": "overnight-followon-1001-1100",
+  "checkedAt": "2026-10-09",
+  "status": "complete",
+  "registryFound": true,
+  "registryBasis": "The Tirupati district government Land Records service in English and Telugu directly identifies the Tirupati Revenue Collectorate and links the official Andhra Pradesh MeeBhoomi portal. The actual primary English page is HTTP200. The linked portal timed out during the bounded normal-TLS read; no exact local revenue-village selector or anonymous ID-and-full-polygon response is established.",
+  "registryEvidenceUrls": [
+    "https://tirupati.ap.gov.in/service/land-records/",
+    "https://tirupati.ap.gov.in/te/service/land-recordss/",
+    "https://meebhoomi.ap.gov.in/"
+  ],
+  "verifiedSample": false,
+  "publicParcelGeometryFound": false,
+  "sourceIds": [],
+  "adapterReady": false,
+  "runtimeReadiness": "not_enabled_no_verified_public_geometry",
+  "technicalBlocker": "No correct-city, anonymous ID-and-complete-polygon response was established after fresh multilingual discovery and primary-source inspection. This is an unverified access finding, not a claim that public geometry or a registry does not exist.",
+  "scopeLimits": "No full source-native public polygon response was verified in this fresh city investigation; registry custody, map publication and technical geometry retrieval remain separate findings.",
+  "resultCategory": "registry_found_public_geometry_unverified",
+  "coverageAssessment": {
+    "claimedScope": "The Tirupati district government Land Records service in English and Telugu directly identifies the Tirupati Revenue Collectorate and links the official Andhra Pradesh MeeBhoomi portal. The actual primary English page is HTTP200. The linked portal timed out during the bounded normal-TLS read; no exact local revenue-village selector or anonymous ID-and-full-polygon response is established.",
+    "verifiedOpenScope": "No full source-native public polygon response was verified in this fresh city investigation; registry custody, map publication and technical geometry retrieval remain separate findings.",
+    "citywideVerified": false,
+    "countrywideVerified": false
+  },
+  "runtimeAssessment": {
+    "status": "not_enabled",
+    "reason": "No correct-city, anonymous ID-and-complete-polygon response was established after fresh multilingual discovery and primary-source inspection. This is an unverified access finding, not a claim that public geometry or a registry does not exist."
+  },
+  "freshResearch": {
+    "queries": [
+      {
+        "language": "English",
+        "query": "Tirupati official land records cadastral parcel map survey Meebhoomi",
+        "scope": "Fresh city-specific registry and public parcel geometry discovery.",
+        "result": "The Tirupati district government Land Records service in English and Telugu directly identifies the Tirupati Revenue Collectorate and links the official Andhra Pradesh MeeBhoomi portal. The actual primary English page is HTTP200. The linked portal timed out during the bounded normal-TLS read; no exact local revenue-village selector or anonymous ID-and-full-polygon response is established.",
+        "actualResultUrls": [
+          "https://tirupati.ap.gov.in/service/land-records/",
+          "https://tirupati.ap.gov.in/te/service/land-recordss/",
+          "https://meebhoomi.ap.gov.in/"
+        ],
+        "executionMethod": "Executed web search; first-party pages and documented interfaces inspected."
+      },
+      {
+        "language": "Telugu",
+        "query": "తిరుపతి భూమి రికార్డులు సర్వే భూ నక్ష అధికారిక",
+        "scope": "Independent local-language search for local custody and anonymous cadastral geometry.",
+        "result": "The Tirupati district government Land Records service in English and Telugu directly identifies the Tirupati Revenue Collectorate and links the official Andhra Pradesh MeeBhoomi portal. The actual primary English page is HTTP200. The linked portal timed out during the bounded normal-TLS read; no exact local revenue-village selector or anonymous ID-and-full-polygon response is established.",
+        "actualResultUrls": [
+          "https://tirupati.ap.gov.in/service/land-records/",
+          "https://tirupati.ap.gov.in/te/service/land-recordss/",
+          "https://meebhoomi.ap.gov.in/"
+        ],
+        "executionMethod": "Separately executed web search; actual first-party results inspected."
+      }
+    ],
+    "requests": [
+      {
+        "checkedAt": "2026-10-09T05:29:17.779620+00:00",
+        "url": "https://tirupati.ap.gov.in/service/land-records/",
+        "normalTlsVerification": true,
+        "httpStatus": 200,
+        "contentType": "text/html; charset=UTF-8",
+        "finalUrl": "https://tirupati.ap.gov.in/service/land-records/",
+        "bytesRead": 140296,
+        "boundedReadIncomplete": false,
+        "sha256": "c7c1a163d985b52872eef7d87c07bfaf3382ed95d991c9a1bec610c0857315b8",
+        "title": "Land Records | TIRUPATI DISTRICT, Government of Andhra Pradesh | India"
+      },
+      {
+        "checkedAt": "2026-10-09T05:29:18.061532+00:00",
+        "url": "https://meebhoomi.ap.gov.in/",
+        "normalTlsVerification": true,
+        "httpStatus": null,
+        "errorType": "URLError",
+        "error": "<urlopen error timed out>"
+      }
+    ],
+    "portals": [
+      {
+        "homeUrl": "https://tirupati.ap.gov.in/service/land-records/",
+        "observation": "The Tirupati district government Land Records service in English and Telugu directly identifies the Tirupati Revenue Collectorate and links the official Andhra Pradesh MeeBhoomi portal. The actual primary English page is HTTP200. The linked portal timed out during the bounded normal-TLS read; no exact local revenue-village selector or anonymous ID-and-full-polygon response is established."
+      },
+      {
+        "homeUrl": "https://tirupati.ap.gov.in/te/service/land-recordss/",
+        "observation": "The Tirupati district government Land Records service in English and Telugu directly identifies the Tirupati Revenue Collectorate and links the official Andhra Pradesh MeeBhoomi portal. The actual primary English page is HTTP200. The linked portal timed out during the bounded normal-TLS read; no exact local revenue-village selector or anonymous ID-and-full-polygon response is established."
+      },
+      {
+        "homeUrl": "https://meebhoomi.ap.gov.in/",
+        "observation": "The Tirupati district government Land Records service in English and Telugu directly identifies the Tirupati Revenue Collectorate and links the official Andhra Pradesh MeeBhoomi portal. The actual primary English page is HTTP200. The linked portal timed out during the bounded normal-TLS read; no exact local revenue-village selector or anonymous ID-and-full-polygon response is established."
+      }
+    ],
+    "historicalContext": []
+  },
+  "remainingUncertainty": "Public geometry completeness and runtime access remain unqualified; survey accuracy, legal title and source currentness are not independently established.",
+  "nextStep": "Retain the documented technical finding and proceed down the population roster; no executable provider enabled.",
+  "priorEvidenceFiles": [],
+  "priorCheck": {
+    "attemptState": "pending",
+    "attemptEvidence": [],
+    "possiblePriorMatches": []
+  },
+  "rootReviewNote": "The Tirupati district government Land Records service in English and Telugu directly identifies the Tirupati Revenue Collectorate and links the official Andhra Pradesh MeeBhoomi portal. The actual primary English page is HTTP200. The linked portal timed out during the bounded normal-TLS read; no exact local revenue-village selector or anonymous ID-and-full-polygon response is established. No full source-native public polygon response was verified in this fresh city investigation; registry custody, map publication and technical geometry retrieval remain separate findings.",
+  "rootReviewedAt": "2026-10-09T05:33:34.746161+00:00"
+}

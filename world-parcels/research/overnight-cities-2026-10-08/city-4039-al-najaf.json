@@ -1,0 +1,108 @@
+{
+  "schemaVersion": 1,
+  "kind": "city_parcel_source_research",
+  "checkedAt": "2026-10-09",
+  "name": "Al-Najaf",
+  "country": "Iraq",
+  "countryCode": "IQ",
+  "populationUnit": "persons",
+  "status": "complete",
+  "registryFound": true,
+  "registryBasis": "Official Iraqi Ministry of Justice notices identify Najaf Real Estate Registration Directorates One and Two and their records. The same ministry describes a deed-and-property-map request service as currently electronic only in selected Baghdad directorates; the public service information says requests are made by a property owner or authorized representative. The official Najaf Municipality website offers municipal land-allotment applications, not a public parcel map. This confirms a local registration institution, not open parcel coverage.",
+  "registryEvidenceUrls": [
+    "https://www.moj.gov.iq/view.9386/",
+    "https://www.moj.gov.iq/view.7998/",
+    "https://najafmunicipality.com/en/services/",
+    "https://ur.gov.iq/index/show-eservice/40227/10049/cat"
+  ],
+  "verifiedSample": false,
+  "publicParcelGeometryFound": false,
+  "runtimeReadiness": "not_enabled_no_verified_public_geometry",
+  "wupCityCode": 4039,
+  "cityId": "wup2025:4039",
+  "centerLatLon": [
+    32.0238265498771,
+    44.3381279109741
+  ],
+  "rank": 403,
+  "queueRank": 403,
+  "population2025": 1273450,
+  "population2025k": 1273.45,
+  "pointBasis": "UN WUP 2025 population-weighted settlement centroid; this is not a municipal boundary or a parcel-coverage claim.",
+  "technicalBlocker": "The anonymous municipal HTML inspected contains service and land-allotment application links but no public map viewer or vector service. The Ministry’s public property-map service information is owner/authorized-party directed and says electronic availability is currently in Baghdad only. No anonymous geometry-only route for Najaf or the WUP point was identified; no private record or application was queried.",
+  "scopeLimits": "The Ministry of Justice reports local Najaf property-registration offices and 2024/2025 record-archiving work; it also documents that its online deed/map service is limited to selected Baghdad offices. The municipal site contains land-allotment application links. These sources do not publish machine-readable parcel polygons for Najaf. No claim is made that the registry lacks parcel records.",
+  "remainingUncertainty": "An unindexed, in-person, or owner-mediated cadastral service may exist. Public parcel geometry and coverage near the WUP locator remain unverified.",
+  "research": {
+    "executedQueries": [
+      {
+        "language": "English",
+        "query": "Al-Najaf Iraq official land registry cadastral map parcels Najaf municipality",
+        "scope": "Find Najaf-specific registration evidence and anonymous parcel-geometry services.",
+        "result": "The Ministry of Justice identifies Najaf registry directorates and records; its published property-map rollout is limited to selected Baghdad offices. The municipal public site lists services and plot applications but no public geospatial parcel service.",
+        "actualResultUrls": [
+          "https://www.moj.gov.iq/view.9386/",
+          "https://www.moj.gov.iq/view.7998/",
+          "https://najafmunicipality.com/en/services/"
+        ],
+        "executionMethod": "English-language web search followed by official Iraqi Ministry of Justice and Najaf Municipality source inspection."
+      },
+      {
+        "language": "Arabic",
+        "query": "النجف الأشرف خارطة عقارية التسجيل العقاري وزارة العدل بلدية النجف",
+        "scope": "البحث عن دائرة تسجيل محلية وخدمة عامة مجهولة الهوية لإظهار مضلعات العقارات في النجف.",
+        "result": "تؤكد وزارة العدل وجود مديريات التسجيل العقاري الأولى والثانية في النجف. وتوضح معلومات الخدمة الإلكترونية لخارطة العقار أنها متاحة حالياً في مديريات مختارة في بغداد، وأن طلب السند والخارطة يقدمه المالك أو وكيله. لم يُعثر على خدمة عامة مجهولة الهوية لبيانات هندسية عقارية في النجف.",
+        "actualResultUrls": [
+          "https://www.moj.gov.iq/view.9386/",
+          "https://www.moj.gov.iq/view.7998/",
+          "https://ur.gov.iq/index/show-eservice/40227/10049/cat",
+          "https://najafmunicipality.com/"
+        ],
+        "executionMethod": "بحث باللغة العربية ومراجعة صفحات وزارة العدل وبوابة أور وبلدية النجف الرسمية."
+      }
+    ],
+    "officialSources": [
+      {
+        "url": "https://www.moj.gov.iq/view.9386/",
+        "observation": "Ministry of Justice notice dated 2025-06-22 says archival work covered Najaf First and Najaf Second Real Estate Registration Directorates and their sub-offices."
+      },
+      {
+        "url": "https://www.moj.gov.iq/view.7998/",
+        "observation": "Ministry of Justice notice dated 2024-03-26 reports image-archiving of property registers for Najaf Governorate."
+      },
+      {
+        "url": "https://najafmunicipality.com/en/services/",
+        "observation": "Official Municipality of Najaf services page lists electronic applications related to municipal land plots; the inspected page contains no public parcel-map or feature-service link."
+      },
+      {
+        "url": "https://ur.gov.iq/index/show-eservice/40227/10049/cat",
+        "observation": "Unified Iraqi e-government service description says deed/map requests are currently available electronically in Baghdad only and are submitted by the owner or authorized representative; it is not a public city geometry endpoint."
+      }
+    ],
+    "metadataReviewFile": "al-najaf-service-review.json",
+    "routeInspectionFile": "/tmp/overnight-cities-2026-10-08/city-4039-al-najaf-route-inspection.json"
+  },
+  "source": {
+    "sourceId": "iq-najaf-moj-local-register-no-public-parcel-geometry",
+    "name": "Al-Najaf official local land-registration and public-map source review",
+    "operator": "www.moj.gov.iq",
+    "url": "https://www.moj.gov.iq/view.9386/",
+    "scope": "The Ministry of Justice reports local Najaf property-registration offices and 2024/2025 record-archiving work; it also documents that its online deed/map service is limited to selected Baghdad offices. The municipal site contains land-allotment application links. These sources do not publish machine-readable parcel polygons for Najaf. No claim is made that the registry lacks parcel records.",
+    "nativeIdField": null,
+    "attributesRequested": [],
+    "identityBasis": "No feature ID or parcel geometry was returned.",
+    "geometryStatus": "no_anonymous_target_parcel_geometry_verified"
+  },
+  "coverageAssessment": {
+    "verifiedOpenScope": "The Ministry of Justice reports local Najaf property-registration offices and 2024/2025 record-archiving work; it also documents that its online deed/map service is limited to selected Baghdad offices. The municipal site contains land-allotment application links. These sources do not publish machine-readable parcel polygons for Najaf. No claim is made that the registry lacks parcel records.",
+    "citywideVerified": false,
+    "countrywideVerified": false
+  },
+  "priorEvidenceFiles": [],
+  "populationPlausibility2025": "High",
+  "rootReviewedAt": "2026-10-08T23:47:22.529967+00:00",
+  "sourceIds": [],
+  "point": [
+    32.0238265498771,
+    44.3381279109741
+  ]
+}

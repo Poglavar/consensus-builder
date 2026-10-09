@@ -1,0 +1,65 @@
+{
+  "schemaVersion": 1,
+  "checkedAt": "2026-10-09",
+  "sourceId": "cn-xinxiang-city-registration-center",
+  "purpose": "Service review for WUP2025 rank 609 Xinxiang (city code 9530); city-bound registry evidence and safe anonymous parcel-geometry route.",
+  "primaryPublisher": "Xinxiang Municipal Natural Resources and Planning Bureau",
+  "sourceUrl": "https://nrpb.xinxiang.gov.cn/",
+  "registryFound": true,
+  "registryBasis": "The official Xinxiang Municipal Natural Resources and Planning Bureau publishes city land-survey/registration information and identifies the Xinxiang Real Estate Registration and Transaction Center. This establishes a city-bound registry institution; no public anonymous parcel-vector service was verified. Notice-level parcel values were not retained.",
+  "officialSources": [
+    {
+      "url": "https://nrpb.xinxiang.gov.cn/",
+      "observation": "Official Xinxiang Municipal Natural Resources and Planning Bureau portal; provides city-level planning and natural-resource service context."
+    },
+    {
+      "url": "https://nrpb.xinxiang.gov.cn/zwgk/public/6638711/9703373.html",
+      "observation": "An official city bureau land-survey/registration notice names the Xinxiang Real Estate Registration and Transaction Center. Personal and parcel values from the notice were not retained."
+    }
+  ],
+  "searchQueries": [
+    {
+      "language": "English",
+      "query": "Xinxiang China cadastral parcel map official natural resources bureau",
+      "scope": "Find city-bound registry evidence and an anonymous geometry-only parcel route.",
+      "result": "The official Xinxiang Municipal Natural Resources and Planning Bureau site and its city notice establish a local real-estate registration center. No public parcel-vector schema or geometry-only route was identified.",
+      "actualResultUrls": [
+        "https://nrpb.xinxiang.gov.cn/",
+        "https://nrpb.xinxiang.gov.cn/zwgk/public/6638711/9703373.html"
+      ],
+      "executionMethod": "Public English/local-language search and official-page review; no private lookup."
+    },
+    {
+      "language": "Chinese",
+      "query": "新乡市自然资源和规划局 不动产登记中心 地籍图 GIS 公开地图",
+      "scope": "查找新乡市本地不动产登记依据及匿名、仅几何的公开地块接口。",
+      "result": "新乡市自然资源和规划局公开信息可确认市级不动产登记和交易中心；已查看的公开页面没有显示可匿名读取的地籍宗地矢量图层或仅几何接口。未保留公告中的宗地内容。",
+      "actualResultUrls": [
+        "https://nrpb.xinxiang.gov.cn/",
+        "https://nrpb.xinxiang.gov.cn/zwgk/public/6638711/9703373.html"
+      ],
+      "executionMethod": "Public English/local-language search and official-page review; no private lookup."
+    }
+  ],
+  "accessReview": {
+    "publicAnonymousGeometryVerified": false,
+    "completeGeoreferencedPolygonCount": 0,
+    "geometryRetained": false,
+    "ownerAddressTaxOrPersonLookupRequested": false,
+    "authenticationOrCredentialsUsed": false,
+    "captchaOrPersonalFormSubmitted": false,
+    "paymentSubmitted": false,
+    "routeInspectionStatus": "reviewed_no_safe_public_geometry_route_verified",
+    "reason": "The official city natural-resources bureau identifies a municipal real-estate registration center, but reviewed public material did not expose an anonymous vector parcel layer or safe geometry-only schema.",
+    "candidateLayer": null,
+    "candidateSchema": null,
+    "targetGeometryRequest": null
+  },
+  "requestEvidence": [
+    {
+      "method": "public search and page review",
+      "observation": "Institutional and interface information only; no parcel, address, owner, tax-account or identity lookup was submitted. No HTTP feature-response status or feature count is asserted."
+    }
+  ],
+  "routeInspectionFile": "/tmp/overnight-cities-2026-10-08/city-9530-xinxiang-route-inspection.json"
+}

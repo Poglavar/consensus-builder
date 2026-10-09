@@ -1,0 +1,84 @@
+{
+  "name": "Huangshi",
+  "country": "China",
+  "countryCode": "CN",
+  "rank": 639,
+  "point": [
+    30.1883663140681,
+    115.030998730065
+  ],
+  "population2025": 821445,
+  "populationUnit": "persons",
+  "population2025k": 821.445,
+  "populationPlausibility2025": "High",
+  "schemaVersion": 1,
+  "checkedAt": "2026-10-09",
+  "status": "complete",
+  "registryFound": true,
+  "registryBasis": "Official Huangshi government and Natural Resources Bureau sources identify the municipal real-estate registration center and a visual land-record/cadastral-map service. The service description requires identity verification and is tied to registered-property queries; no anonymous public parcel-vector endpoint was verified.",
+  "registryEvidenceUrls": [
+    "https://www.huangshi.gov.cn/xwdt/hsyw/202204/t20220412_895423.html",
+    "https://www.huangshi.gov.cn/xxxgk/2020_zc/2020_gfxwj/202311/t20231123_1071782.html",
+    "https://zrzy.huangshi.gov.cn/"
+  ],
+  "publicParcelGeometryFound": false,
+  "verifiedSample": false,
+  "verifiedParcelResponse": null,
+  "freshResearch": {
+    "queries": [
+      {
+        "language": "Chinese",
+        "query": "黄石市 不动产登记 地籍图 查询可视化系统 官方 地块",
+        "scope": "Locate city-specific registry/cadastre sources and verify anonymous safe public parcel geometry.",
+        "result": "Official city government sources describe the city registry’s visual map service and authentication; the linked service request timed out. No anonymous geometry layer was verified.",
+        "actualResultUrls": [
+          "https://www.huangshi.gov.cn/xwdt/hsyw/202204/t20220412_895423.html",
+          "https://zwfw.hubei.gov.cn/webview/yslb/bdcdj/bdcdj_hs.html"
+        ],
+        "executionMethod": "Separate language-specific search followed by official-source review; no personal lookup or owner/address field request."
+      },
+      {
+        "language": "English",
+        "query": "Huangshi China official cadastral parcel map real estate registry GIS",
+        "scope": "Locate city-specific registry/cadastre sources and verify anonymous safe public parcel geometry.",
+        "result": "Official bureau site confirms the municipal registry center; the city’s described visual cadastral service is identity-authenticated. No public anonymous polygon service found.",
+        "actualResultUrls": [
+          "https://zrzy.huangshi.gov.cn/",
+          "https://zwfw.hubei.gov.cn/webview/yslb/bdcdj/bdcdj_hs.html"
+        ],
+        "executionMethod": "Separate language-specific search followed by official-source review; no personal lookup or owner/address field request."
+      }
+    ]
+  },
+  "scopeLimits": "The official app link timed out in the web fetch; the 2022 city government notice says users query property belonging to themselves and authenticate. No login, identity verification, personal record query, or parcel geometry request was made.",
+  "pointBasis": "UN WUP 2025 population-weighted settlement centroid; this is not a municipal boundary or a parcel-coverage claim.",
+  "source": {
+    "sourceId": "CN-HUANGSHI-REGISTRY-CADASTRE",
+    "name": "Huangshi real-estate registration and cadastral-map visualization service",
+    "url": "https://zwfw.hubei.gov.cn/webview/yslb/bdcdj/bdcdj_hs.html",
+    "operator": "Huangshi Municipal Real Estate Registration Center / Hubei Government Service Network",
+    "serviceType": "Identity-authenticated registered-property query with visual cadastral map",
+    "layer": "Property information and cadastral maps; no public feature layer/schema identified",
+    "geometryType": "unknown",
+    "outputCrs": "unknown",
+    "nativeIdField": "unknown"
+  },
+  "wupCityCode": 10762,
+  "cityId": "wup2025:10762",
+  "queueRank": 639,
+  "sourceIds": [],
+  "adapterReady": false,
+  "runtimeReadiness": "not_enabled_no_verified_public_geometry",
+  "technicalBlocker": "The official app link timed out in the web fetch; the 2022 city government notice says users query property belonging to themselves and authenticate. No login, identity verification, personal record query, or parcel geometry request was made.",
+  "remainingUncertainty": "Exact locator coverage, safe source-native identifier and bounded anonymous geometry retrieval are unverified.",
+  "coverageAssessment": {
+    "verifiedOpenScope": "No parcel geometry sample was retained.",
+    "citywideVerified": false,
+    "countrywideVerified": false
+  },
+  "centerLatLon": [
+    30.1883663140681,
+    115.030998730065
+  ],
+  "rootReviewedAt": "2026-10-09T02:12:55.238180+00:00"
+}

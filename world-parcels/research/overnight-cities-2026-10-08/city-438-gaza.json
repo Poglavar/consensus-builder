@@ -1,0 +1,119 @@
+{
+  "schemaVersion": 1,
+  "kind": "city_parcel_source_research",
+  "checkedAt": "2026-10-09",
+  "status": "complete",
+  "name": "Gaza",
+  "country": "State of Palestine",
+  "countryCode": "PS",
+  "wupCityCode": 438,
+  "cityId": "wup2025:438",
+  "queueRank": 494,
+  "rank": 494,
+  "population2025": 1038285,
+  "population2025k": 1038.285,
+  "populationUnit": "persons",
+  "populationPlausibility2025": "High",
+  "centerLatLon": [
+    31.5220002081115,
+    34.4696721940077
+  ],
+  "point": [
+    31.5220002081115,
+    34.4696721940077
+  ],
+  "pointBasis": "UN WUP 2025 population-weighted settlement centroid; this is not a municipal boundary or a parcel-coverage claim.",
+  "registryFound": true,
+  "verifiedSample": true,
+  "publicParcelGeometryFound": true,
+  "runtimeReadiness": "held_snapshot_identity_and_geometry_review",
+  "technicalBlocker": "The official public map contains embedded Esri polygon feature collections, which current runtime snapshot adapters do not read. The GAZA layer has 1,187 source features; one polygon could not be assigned unambiguously by the strict ring reader, and ten of the other 1,186 polygons are invalid. Safe snapshot-local FID/OBJECTID identities, native legal-ID semantics, replacement continuity, arbitrary footprint queries and actual runtime binding remain unqualified. No geometry was repaired.",
+  "scopeLimits": "Public Palestine Land Authority map snapshot, GAZA cadastral layer only. Schema was reviewed before retaining any feature values. Three full valid nearby polygons are retained with only FID and OBJECTID plus layer identity; their distances to the unchanged WUP locator are 142–227 metres in the source Web Mercator plane. None contains that exact locator. The official 2022 map announcement describes land-lot classifications and digital cadastral mapping; public application metadata dates the inspected application to 2023. The observed snapshot is historical and its current revision was not established. It does not establish complete Gaza city or Gaza Strip coverage. Other map layers and free-text classification/note values are excluded from retained samples.",
+  "sourceIds": [
+    "ps-gaza-pla-public-webmap-snapshot"
+  ],
+  "freshResearch": {
+    "executedQueries": [
+      {
+        "language": "English",
+        "query": "Gaza Palestine official land authority cadastral map parcels GIS غزة سلطة الأراضي خارطة قطع",
+        "method": "Separate fresh web discovery search on 9 October 2026."
+      },
+      {
+        "language": "Arabic",
+        "query": "غزة سلطة الأراضي نظم معلومات جغرافية الخارطة القسائم مدينة غزة",
+        "method": "Separate fresh web discovery search on 9 October 2026."
+      }
+    ],
+    "officialSources": [
+      {
+        "url": "https://pla.gov.ps/ar/1653",
+        "observation": "Official Land Authority map announcement/link or publicly linked ArcGIS map configuration."
+      },
+      {
+        "url": "https://pla.gov.ps/ar/",
+        "observation": "Official Land Authority map announcement/link or publicly linked ArcGIS map configuration."
+      },
+      {
+        "url": "https://www.arcgis.com/apps/View/index.html?appid=3dd310f44e094975b24c188c02247c71",
+        "observation": "Official Land Authority map announcement/link or publicly linked ArcGIS map configuration."
+      },
+      {
+        "url": "https://www.arcgis.com/sharing/rest/content/items/3e936aa1e26d436ba5883b033aa038e3/data?f=json",
+        "observation": "Official Land Authority map announcement/link or publicly linked ArcGIS map configuration."
+      }
+    ],
+    "viewerAndServiceTrace": {
+      "schemaReviewedBeforeGeometry": true,
+      "publicPolygonSamplesRetained": 3,
+      "fieldsRetained": [
+        "FID",
+        "OBJECTID",
+        "sourceLayer",
+        "full polygon geometry"
+      ],
+      "otherSourceFeatureValuesRetained": false,
+      "sourceSnapshotFormatSupportedByRuntime": false
+    }
+  },
+  "priorEvidenceFiles": [],
+  "registryBasis": "The Palestine Land Authority officially links a public interactive cadastral map. Its embedded GAZA polygon layer and three full city-area geometries provide city-bound cadastral-map evidence.",
+  "registryEvidenceUrls": [
+    "https://pla.gov.ps/ar/1653",
+    "https://pla.gov.ps/ar/",
+    "https://www.arcgis.com/apps/View/index.html?appid=3dd310f44e094975b24c188c02247c71",
+    "https://www.arcgis.com/sharing/rest/content/items/3e936aa1e26d436ba5883b033aa038e3/data?f=json"
+  ],
+  "adapterReady": false,
+  "resultCategory": "verified_public_geometry_held_snapshot_review",
+  "sampleFile": "research/overnight-cities-2026-10-08/gaza-gaza-layer-safe-samples.geojson",
+  "sampleFeatureCount": 3,
+  "sampleCrs": "EPSG:4326 reprojected from EPSG:3857",
+  "source": {
+    "sourceId": "ps-gaza-pla-public-webmap-snapshot",
+    "name": "Palestine Land Authority public GAZA cadastral web-map snapshot",
+    "operator": "Palestine Land Authority, Gaza public map",
+    "url": "https://www.arcgis.com/sharing/rest/content/items/3e936aa1e26d436ba5883b033aa038e3/data?f=json",
+    "serviceType": "Public ArcGIS embedded feature-collection snapshot",
+    "nativeIdFields": [],
+    "snapshotLocalIdFields": [
+      "FID",
+      "OBJECTID"
+    ],
+    "crs": "Native EPSG:3857, safe samples reprojected to EPSG:4326",
+    "scope": "Public Palestine Land Authority map snapshot, GAZA cadastral layer only. Schema was reviewed before retaining any feature values. Three full valid nearby polygons are retained with only FID and OBJECTID plus layer identity; their distances to the unchanged WUP locator are 142–227 metres in the source Web Mercator plane. None contains that exact locator. The official 2022 map announcement describes land-lot classifications and digital cadastral mapping; public application metadata dates the inspected application to 2023. The observed snapshot is historical and its current revision was not established. It does not establish complete Gaza city or Gaza Strip coverage. Other map layers and free-text classification/note values are excluded from retained samples."
+  },
+  "coverageAssessment": {
+    "claimedScope": "Public cadastral web-map land-lot classifications.",
+    "verifiedOpenScope": "Public Palestine Land Authority map snapshot, GAZA cadastral layer only. Schema was reviewed before retaining any feature values. Three full valid nearby polygons are retained with only FID and OBJECTID plus layer identity; their distances to the unchanged WUP locator are 142–227 metres in the source Web Mercator plane. None contains that exact locator. The official 2022 map announcement describes land-lot classifications and digital cadastral mapping; public application metadata dates the inspected application to 2023. The observed snapshot is historical and its current revision was not established. It does not establish complete Gaza city or Gaza Strip coverage. Other map layers and free-text classification/note values are excluded from retained samples.",
+    "citywideVerified": false,
+    "countrywideVerified": false
+  },
+  "runtimeAssessment": {
+    "status": "held_snapshot_identity_and_geometry_review",
+    "reason": "The official public map contains embedded Esri polygon feature collections, which current runtime snapshot adapters do not read. The GAZA layer has 1,187 source features; one polygon could not be assigned unambiguously by the strict ring reader, and ten of the other 1,186 polygons are invalid. Safe snapshot-local FID/OBJECTID identities, native legal-ID semantics, replacement continuity, arbitrary footprint queries and actual runtime binding remain unqualified. No geometry was repaired.",
+    "qualityFile": "research/overnight-cities-2026-10-08/gaza-safe-layer-geometry-review.json"
+  },
+  "remainingUncertainty": "Native legal parcel identity, arbitrary footprint retrieval, replacement continuity, current source vintage and broader coverage remain unverified.",
+  "rootReviewedAt": "2026-10-09T01:05:39.556194+00:00"
+}

@@ -1,0 +1,26 @@
+{
+  "schemaVersion": 1,
+  "checkedAt": "2026-10-08T23:29:03.814786+00:00",
+  "city": "Mesa",
+  "appCityId": "mesa",
+  "sourceId": "us-az-mesa-city-parcels",
+  "url": "http://localhost:5638/?city=mesa&backend=http%3A%2F%2Flocalhost%3A5640&reduceMotion=1",
+  "browserMode": "Dedicated headed Chrome via agent-browser",
+  "result": "passed",
+  "loadedParcelCount": 27,
+  "interaction": "Real pointer move/down/up at x=562,y=331, then Details menu click.",
+  "selectedParcelId": "US-MESA-CITY-13911001P",
+  "pointContainedByObservedParcel": true,
+  "detailsHeadingMatched": true,
+  "uncaughtPageErrors": [],
+  "sourceWarningObserved": false,
+  "browserClosed": true,
+  "releaseState": "local_uncommitted_undeployed",
+  "initialPointerObservation": {
+    "point": [
+      640,
+      317
+    ],
+    "outcome": "Point fell outside a parcel and correctly offered Draw a site here; selected a verified interior for the final Details check."
+  }
+}

@@ -1,0 +1,96 @@
+{
+  "schemaVersion": 1,
+  "kind": "city_parcel_source_research",
+  "checkedAt": "2026-10-09",
+  "name": "Abbottabad",
+  "country": "Pakistan",
+  "countryCode": "PK",
+  "populationUnit": "persons",
+  "status": "complete",
+  "registryFound": true,
+  "registryBasis": "Urban Area Development Authority Abbottabad (UADAA) publishes the Abbottabad Township Scheme Phase-I master plan and states that official plot and allotment records are provided through its portal. This supports a local planned-township property-record workflow only; it does not establish a citywide land registry or publicly queryable parcel polygons.",
+  "registryEvidenceUrls": [
+    "https://uadaa.gkp.pk/map.php",
+    "https://uadaa.gkp.pk/"
+  ],
+  "verifiedSample": false,
+  "publicParcelGeometryFound": false,
+  "runtimeReadiness": "not_enabled_no_verified_public_geometry",
+  "wupCityCode": 7045,
+  "cityId": "wup2025:7045",
+  "centerLatLon": [
+    34.1845220778819,
+    73.2320931941917
+  ],
+  "rank": 613,
+  "queueRank": 613,
+  "population2025": 851819,
+  "population2025k": 851.819,
+  "pointBasis": "UN WUP 2025 population-weighted settlement centroid; this is not a municipal boundary or a parcel-coverage claim.",
+  "technicalBlocker": "The township map is a visual engineering/master-plan presentation and directs users to the portal for official plot/allotment records. No anonymous georeferenced full-polygon parcel schema or feature endpoint was verified; the map covers the planned township, not Abbottabad citywide.",
+  "scopeLimits": "Source discovery only. Evidence establishes local registration or land-record services as qualified in registryBasis; citywide cadastre coverage and public vector access are not established. No owner, address, tax, personal-identity, credential or account lookup was submitted or retained. No full parcel geometry was retained.",
+  "remainingUncertainty": "Whether a separate anonymous public parcel-vector service exists and whether the relevant record units cover the settlement point remain unverified.",
+  "research": {
+    "executedQueries": [
+      {
+        "language": "English",
+        "query": "Abbottabad Pakistan official township plot allotment land records cadastral map GIS",
+        "scope": "Find primary city-local registry/cadastre evidence and anonymous geometry-only routes; do not submit property identifiers.",
+        "result": "Urban Area Development Authority Abbottabad (UADAA) publishes the Abbottabad Township Scheme Phase-I master plan and states that official plot and allotment records are provided through its portal. This supports a local planned-township property-record workflow only; it does not establish a citywide land registry or publicly queryable parcel polygons. No anonymous full-polygon schema was verified.",
+        "actualResultUrls": [
+          "https://uadaa.gkp.pk/map.php",
+          "https://uadaa.gkp.pk/"
+        ]
+      },
+      {
+        "language": "Urdu",
+        "query": "ایبٹ آباد شہری اراضی پلاٹ ریکارڈ کیڈسٹری نقشہ سرکاری UADAA",
+        "scope": "Find first-party native-language local registry/cadastre evidence and safe anonymous geometry-only routes.",
+        "result": "Urban Area Development Authority Abbottabad (UADAA) publishes the Abbottabad Township Scheme Phase-I master plan and states that official plot and allotment records are provided through its portal. This supports a local planned-township property-record workflow only; it does not establish a citywide land registry or publicly queryable parcel polygons. No anonymous full-polygon schema was verified.",
+        "actualResultUrls": [
+          "https://uadaa.gkp.pk/map.php",
+          "https://uadaa.gkp.pk/"
+        ]
+      }
+    ],
+    "officialSources": [
+      {
+        "url": "https://uadaa.gkp.pk/map.php",
+        "observation": "Urban Area Development Authority Abbottabad (UADAA) publishes the Abbottabad Township Scheme Phase-I master plan and states that official plot and allotment records are provided through its portal. This supports a local planned-township property-record workflow only; it does not establish a citywide land registry or publicly queryable parcel polygons."
+      },
+      {
+        "url": "https://uadaa.gkp.pk/",
+        "observation": "Urban Area Development Authority Abbottabad (UADAA) publishes the Abbottabad Township Scheme Phase-I master plan and states that official plot and allotment records are provided through its portal. This supports a local planned-township property-record workflow only; it does not establish a citywide land registry or publicly queryable parcel polygons."
+      }
+    ],
+    "metadataReviewFile": "abbottabad-service-review.json"
+  },
+  "source": {
+    "sourceId": "pk-abbottabad-registry-review",
+    "name": "Abbottabad local registry/cadastre route review",
+    "operator": "Urban Area Development Authority Abbottabad (UADAA)",
+    "url": "https://uadaa.gkp.pk/map.php",
+    "scope": "Urban Area Development Authority Abbottabad (UADAA) publishes the Abbottabad Township Scheme Phase-I master plan and states that official plot and allotment records are provided through its portal. This supports a local planned-township property-record workflow only; it does not establish a citywide land registry or publicly queryable parcel polygons.",
+    "nativeIdField": null,
+    "attributesRequested": [],
+    "identityBasis": "No safe parcel feature identifier was retrieved.",
+    "geometryStatus": "city_registry_basis_only_no_public_geometry_contract"
+  },
+  "coverageAssessment": {
+    "verifiedOpenScope": "Urban Area Development Authority Abbottabad (UADAA) publishes the Abbottabad Township Scheme Phase-I master plan and states that official plot and allotment records are provided through its portal. This supports a local planned-township property-record workflow only; it does not establish a citywide land registry or publicly queryable parcel polygons.",
+    "notEstablished": [
+      "anonymous full-polygon access",
+      "complete citywide cadastral coverage",
+      "runtime source binding"
+    ],
+    "wupPointRelation": "No parcel geometry was returned or asserted."
+  },
+  "priorEvidenceFiles": [],
+  "populationPlausibility2025": "High",
+  "sourceIds": [],
+  "point": [
+    34.1845220778819,
+    73.2320931941917
+  ],
+  "rootReviewedAt": "2026-10-09T02:05:58.056454+00:00"
+}

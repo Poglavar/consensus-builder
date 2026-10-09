@@ -1,0 +1,140 @@
+{
+  "schemaVersion": "1.0",
+  "checkedAt": "2026-10-09",
+  "cityRecord": "city-3571-hamedan.json",
+  "purpose": "Document separate English/local-language searches, first-party local registry/cadastre evidence, and bounded anonymous geometry discovery.",
+  "scopeLimits": {
+    "maxFullPolygonsRetainedInCityRecord": 0,
+    "maxFullPolygonsRetainedInReview": 0,
+    "maxFullPolygonsRetainedInRepository": 0,
+    "ownerOrAddressDataRetained": false,
+    "credentialsOrTokenValuesRetained": false,
+    "citywideCompletenessAsserted": false
+  },
+  "assessment": "The national SSAA portal and candidate Hamedan subdomain could not be inspected; targeted Persian searches did not yield a first-party Hamedan office page. The prior local news lead is not primary evidence. City-level registration custody therefore remains unconfirmed, and no parcel geometry was verified. No full parcel polygons or owner/address data were retained.",
+  "registryAssessment": "The identified SSAA URLs are candidate national/provincial routes, but neither could be inspected and no first-party local office or service description was verified. Registry custody for Hamedan is unresolved; this is not evidence that a registry is absent.",
+  "officialPrimarySources": [
+    {
+      "url": "https://www.ssaa.ir/",
+      "observation": "Candidate national Organization for Registration of Deeds and Properties portal. Direct open returned “URL is not accessible via this tool”; this establishes neither a Hamedan office nor a public service."
+    },
+    {
+      "url": "https://hm.ssaa.ir/",
+      "observation": "Candidate Hamedan provincial subdomain inferred from search results; direct open returned “URL is not accessible via this tool.” No official page content or local service was verified."
+    }
+  ],
+  "searchQueries": [
+    {
+      "language": "English",
+      "query": "Hamadan Iran official cadastral map parcel land registry cadastral survey سازمان ثبت اسناد همدان",
+      "resultUrls": [
+        "https://www.ssaa.ir/",
+        "https://hm.ssaa.ir/",
+        "https://www.tasnimnews.ir/fa/news/1405/02/03/3572826/%D8%AB%D8%A8%D8%AA-%D8%A7%D8%B3%D9%86%D8%A7%D8%AF-%D9%87%D9%85%D8%AF%D8%A7%D9%86-%D8%AF%D8%B1-%D9%85%D8%B3%DB%8C%D8%B1-%D8%AA%D8%AD%D9%88%D9%84-%D8%AF%DB%8C%D8%AC%DB%8C%D8%AA%D8%A7%D9%84"
+      ],
+      "result": "The English search did not surface an accessible first-party Hamedan parcel map or geometry service.",
+      "scope": "Identify first-party local registry and public parcel geometry; preserve the unchanged WUP settlement locator and avoid owner or address attributes."
+    },
+    {
+      "language": "Persian",
+      "query": "همدان سازمان ثبت اسناد و املاک نقشه کاداستر اراضی کاداستر",
+      "resultUrls": [
+        "https://www.ssaa.ir/",
+        "https://hm.ssaa.ir/",
+        "https://www.tasnimnews.ir/fa/news/1405/02/03/3572826/%D8%AB%D8%A8%D8%AA-%D8%A7%D8%B3%D9%86%D8%A7%D8%AF-%D9%87%D9%85%D8%AF%D8%A7%D9%86-%D8%AF%D8%B1-%D9%85%D8%B3%DB%8C%D8%B1-%D8%AA%D8%AD%D9%88%D9%84-%D8%AF%DB%8C%D8%AC%DB%8C%D8%AA%D8%A7%D9%84"
+      ],
+      "result": "The Persian search found candidate national and Hamedan registry portal URLs, but the official hosts were inaccessible to the web fetcher. News results were not used as primary evidence.",
+      "scope": "Find first-party local-language registry/cadastral routes and any anonymous safe parcel geometry service near the unchanged WUP point."
+    }
+  ],
+  "geometryDecision": {
+    "verified": false,
+    "sourceId": null,
+    "sampleCount": 0,
+    "sampleFile": null,
+    "nativeId": null,
+    "nativeIdField": null,
+    "exactWupPointTest": "No source-native full polygon was returned at the WUP point. publicParcelGeometryFound:false means unverified here, not confirmed absence.",
+    "requestEvidence": []
+  },
+  "coverageAssessment": {
+    "claimedScope": "Separate English and Persian searches identify the national deeds/real-property registration organization and a likely Hamedan provincial subdomain, but both official sites were inaccessible to the fetcher. No first-party city-level public geometry or safe schema was verified; no owner or parcel-specific request was made.",
+    "verifiedOpenScope": "No full parcel geometry was verified and no citywide coverage is asserted.",
+    "citywideVerified": false,
+    "countrywideVerified": false,
+    "geometryVerified": false
+  },
+  "attempts": [
+    {
+      "url": "https://www.ssaa.ir/",
+      "result": "Organization for Registration of Deeds and Properties national portal; direct web fetch not accessible in this session."
+    },
+    {
+      "url": "https://hm.ssaa.ir/",
+      "result": "Hamedan provincial registry subdomain; direct web fetch not accessible and no official local service page could be inspected."
+    }
+  ],
+  "remainingUncertainty": "Whether an official Hamedan provincial registry/cadastral office or public map is available through another current first-party route; no custody or point coverage is asserted.",
+  "nextStep": "Use the official source catalog or documented map-service metadata if available; request only safe parcel identifiers and geometry, never owner or address fields.",
+  "runtimeAssessment": "not enabled; no verified full-parcel geometry",
+  "cohort": "overnight-next-1101-1200",
+  "cohortState": "research_complete_pending_root_review",
+  "integrationState": "not_integrated",
+  "searchResultContext": [
+    {
+      "url": "https://www.tasnimnews.ir/fa/news/1405/02/03/3572826/%D8%AB%D8%A8%D8%AA-%D8%A7%D8%B3%D9%86%D8%A7%D8%AF-%D9%87%D9%85%D8%AF%D8%A7%D9%86-%D8%AF%D8%B1-%D9%85%D8%B3%DB%8C%D8%B1-%D8%AA%D8%AD%D9%88%D9%84-%D8%AF%DB%8C%D8%AC%D9%8A%D8%AA%D8%A7%D9%84",
+      "observation": "Non-first-party news lead surfaced by search; not used as evidence of open parcel data or as a primary institutional route."
+    }
+  ],
+  "followthroughSearches": [
+    {
+      "language": "Persian",
+      "query": "همدان اداره ثبت اسناد و املاک همدان اداره کل کاداستر نقشه ثبتی رسمی",
+      "resultUrls": [
+        "https://www.ssaa.ir/",
+        "https://hm.ssaa.ir/"
+      ],
+      "result": "Search did not surface inspectable first-party Hamedan registry/cadastral office evidence; the candidate official hosts were inaccessible on direct open."
+    },
+    {
+      "language": "Persian",
+      "query": "\"اداره کل ثبت اسناد و املاک استان همدان\" سایت رسمی",
+      "resultUrls": [
+        "https://www.ssaa.ir/",
+        "https://hm.ssaa.ir/"
+      ],
+      "result": "No inspectable first-party local office page was found. Search hits outside official SSAA domains were not treated as primary evidence."
+    }
+  ],
+  "followthroughAttempts": [
+    {
+      "url": "https://www.ssaa.ir/",
+      "method": "web open of candidate national authority portal",
+      "result": "Tool reported URL not accessible; no portal content or local office/service could be verified."
+    },
+    {
+      "url": "https://hm.ssaa.ir/",
+      "method": "web open of candidate Hamedan provincial portal",
+      "result": "Tool reported URL not accessible; no portal content or local office/service could be verified."
+    }
+  ],
+  "registryDecision": "registryFound:null because city/local registry custody is unconfirmed; this is not a negative finding.",
+  "rootPrimaryChecks": [
+    {
+      "wupCityCode": 3571,
+      "url": "https://www.ssaa.ir/",
+      "checkedAt": "2026-10-09T07:10:48.087996+00:00",
+      "method": "Anonymous read-only GET, standard TLS where advertised; no credentials or property values",
+      "httpStatus": null,
+      "transportOutcome": "<urlopen error [Errno 8] nodename nor servname provided, or not known>"
+    }
+  ],
+  "rootReviewedAt": "2026-10-09T07:13:02.981057+00:00",
+  "rootReview": {
+    "checkedAt": "2026-10-09T07:13:02.981057+00:00",
+    "decision": "Reviewed city identity, canonical population/point, separate searches and saved source/request evidence. No full public parcel geometry verified in this pass.",
+    "custodyScope": "The identified SSAA URLs are candidate national/provincial routes, but neither could be inspected and no first-party local office or service description was verified. Registry custody for Hamedan is unresolved; this is not evidence that a registry is absent.",
+    "transportFailuresDoNotProveAbsence": true,
+    "geometryClaimScope": "Investigation outcome only; no worldwide or citywide absence asserted."
+  }
+}

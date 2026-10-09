@@ -1,0 +1,185 @@
+{
+  "name": "Lodz",
+  "country": "Poland",
+  "countryCode": "PL",
+  "rank": 942,
+  "point": [
+    51.7666527325011,
+    19.4560942606722
+  ],
+  "population2025": 582659,
+  "population2025k": 582.659,
+  "populationPlausibility2025": "High",
+  "schemaVersion": 1,
+  "kind": "city_parcel_source_research",
+  "checkedAt": "2026-10-09",
+  "populationUnit": "persons",
+  "status": "complete",
+  "verifiedSample": true,
+  "publicParcelGeometryFound": true,
+  "runtimeReadiness": "enabled",
+  "priorEvidenceFiles": [],
+  "priorCheck": {
+    "attemptState": "pending",
+    "attemptEvidence": [],
+    "possiblePriorMatches": []
+  },
+  "pointBasis": "UN WUP 2025 population-weighted settlement centroid; this is not a municipal boundary or a parcel-coverage claim.",
+  "registryFound": true,
+  "registryBasis": "Łódź City’s official InterSIT Geoportal describes the city’s EGiB database and its professional WFS as including cadastral parcel geometry and identifier. The WFS GetCapabilities/DescribeFeatureType and one tightly bounded query were successfully inspected. One source parcel contains the exact WUP point. The record verifies a sample at that point, not citywide completeness.",
+  "registryEvidenceUrls": [
+    "https://nowa.mapa.lodz.pl/geoportal-miejski/",
+    "https://nowa.mapa.lodz.pl/dla-profesjonalistow/",
+    "https://nowa.mapa.lodz.pl/en/for-professionals/",
+    "https://igeodeta.log.lodz.pl/cgi-bin/lodz-egib?"
+  ],
+  "resultCategory": "verified_public_geometry_runtime_enabled",
+  "remainingUncertainty": "Citywide completeness, other features around the locator, source currency and legal/survey positional accuracy remain unverified.",
+  "scopeLimits": "89 valid distinct native EGiB cadastral polygons across thirteen bounded cells around the unchanged Łódź WUP population-settlement locator. Exact FES polygon intersection is identical for before/after hit counts and all pages. Forced three-row paging, fresh reads of every native ID in batches of eight, explicit absence, full footprint lookup and source binding pass. Metric EPSG32634 topology found no sampled invalidity, duplicate geometry, positive-area overlaps or operation errors. The original point-containing sample remains unchanged and independently matches the fresh full polygon. This is bounded reference geometry, without a citywide completeness, legal-title or survey-accuracy guarantee.",
+  "verifiedParcelResponse": {
+    "httpStatus": 200,
+    "featureType": "Polygon",
+    "responseType": "WFS FeatureCollection / GML 3.2.1",
+    "responseCrs": "EPSG:3857",
+    "returnedFullPolygonCount": 1,
+    "uniqueFullPolygonCount": 1,
+    "wupPointContained": true,
+    "nativeIdField": "ID_DZIALKI",
+    "nativeParcelIdentifiers": [
+      "106105_9.0006.98/1"
+    ],
+    "geometryField": "msGeometry",
+    "requestedFields": [
+      "ms:ID_DZIALKI",
+      "ms:msGeometry"
+    ],
+    "sampleGeometryFile": "city-3120-lodz-samples.geojson",
+    "sampleSha256": "54b721ea08e3e4fcfc3d52692fbf2823f3132950dac521bc7e1819561347e55b",
+    "limitations": "One source-native parcel from a one-meter EPSG:3857 bbox centered on the unchanged WUP locator. Point-in-polygon confirms containment. Earlier 100m response IDs are reported in the city/service review, but only the exact-point parcel geometry is retained. No citywide completeness, legal title or survey-accuracy claim.",
+    "notes": "WFS 2.0.0; feature type ms:dzialki; DescribeFeatureType fields include native identifier ID_DZIALKI and geometry msGeometry. Only these two fields were requested."
+  },
+  "source": {
+    "sourceId": "PL-3120-lodz-source-review",
+    "name": "Łódź municipal EGiB cadastral parcel polygons",
+    "url": "https://nowa.mapa.lodz.pl/geoportal-miejski/",
+    "operator": "City of Łódź / InterSIT EGiB",
+    "serviceType": "Anonymous WFS 2.0.0 cadastral-polygon service",
+    "layer": "ms:dzialki",
+    "geometryType": "Polygon",
+    "outputCrs": "EPSG:3857 (sample converted to EPSG:4326 RFC7946)",
+    "nativeIdField": "ID_DZIALKI",
+    "nativeIdEvidence": "DescribeFeatureType identifies ID_DZIALKI; only identifier and geometry requested.",
+    "requestedAttributes": [
+      "ID_DZIALKI",
+      "msGeometry"
+    ],
+    "personalAttributesRequested": false,
+    "directMetadataSchemaVerified": true,
+    "directGeometryQueryVerified": true,
+    "scope": "89 valid distinct native EGiB cadastral polygons across thirteen bounded cells around the unchanged Łódź WUP population-settlement locator. Exact FES polygon intersection is identical for before/after hit counts and all pages. Forced three-row paging, fresh reads of every native ID in batches of eight, explicit absence, full footprint lookup and source binding pass. Metric EPSG32634 topology found no sampled invalidity, duplicate geometry, positive-area overlaps or operation errors. The original point-containing sample remains unchanged and independently matches the fresh full polygon. This is bounded reference geometry, without a citywide completeness, legal-title or survey-accuracy guarantee."
+  },
+  "wupCityCode": 3120,
+  "cityId": "wup2025:3120",
+  "queueRank": 942,
+  "centerLatLon": [
+    51.7666527325011,
+    19.4560942606722
+  ],
+  "sourceIds": [
+    "lodz-gml-wfs"
+  ],
+  "adapterReady": true,
+  "technicalBlocker": null,
+  "coverageAssessment": {
+    "claimedScope": "Łódź City’s official InterSIT Geoportal describes the city’s EGiB database and its professional WFS as including cadastral parcel geometry and identifier. The WFS GetCapabilities/DescribeFeatureType and one tightly bounded query were successfully inspected. One source parcel contains the exact WUP point. The record verifies a sample at that point, not citywide completeness.",
+    "verifiedOpenScope": "89 valid distinct native EGiB cadastral polygons across thirteen bounded cells around the unchanged Łódź WUP population-settlement locator. Exact FES polygon intersection is identical for before/after hit counts and all pages. Forced three-row paging, fresh reads of every native ID in batches of eight, explicit absence, full footprint lookup and source binding pass. Metric EPSG32634 topology found no sampled invalidity, duplicate geometry, positive-area overlaps or operation errors. The original point-containing sample remains unchanged and independently matches the fresh full polygon. This is bounded reference geometry, without a citywide completeness, legal-title or survey-accuracy guarantee.",
+    "countrywideVerified": false,
+    "citywideVerified": false
+  },
+  "research": {
+    "queries": [
+      {
+        "language": "English",
+        "query": "Lodz Poland official cadastral parcels EGiB WFS city geoportal geometry identifier",
+        "scope": "Find first-party city/local registry, cadastral map and safely accessible parcel geometry.",
+        "result": "City InterSIT documents the professional WFS for EGiB parcel geometry and identifiers. Anonymous WFS 2.0.0 capabilities/schema succeeded. A one-meter EPSG:3857 bbox query around the exact unchanged WUP point requested only ID_DZIALKI and msGeometry and returned ID_DZIALKI=106105_9.0006.98/1; point-in-polygon confirmed containment. An earlier 100m EPSG:3857 query returned three IDs (106105_9.0006.94/1, 106105_9.0006.93/1, 106105_9.0006.93/4); these are documented but their polygons are not retained.",
+        "actualResultUrls": [
+          "https://nowa.mapa.lodz.pl/geoportal-miejski/",
+          "https://nowa.mapa.lodz.pl/dla-profesjonalistow/",
+          "https://nowa.mapa.lodz.pl/en/for-professionals/",
+          "https://igeodeta.log.lodz.pl/cgi-bin/lodz-egib?"
+        ],
+        "executionMethod": "Separate language-specific web search followed by review of official sources and public viewer/service metadata; no personal property query."
+      },
+      {
+        "language": "Polish",
+        "query": "Łódź InterSIT serwis WFS działki EGiB geometria identyfikator ID_DZIALKI",
+        "scope": "Find first-party city/local registry, cadastral map and safely accessible parcel geometry.",
+        "result": "City InterSIT documents the professional WFS for EGiB parcel geometry and identifiers. Anonymous WFS 2.0.0 capabilities/schema succeeded. A one-meter EPSG:3857 bbox query around the exact unchanged WUP point requested only ID_DZIALKI and msGeometry and returned ID_DZIALKI=106105_9.0006.98/1; point-in-polygon confirmed containment. An earlier 100m EPSG:3857 query returned three IDs (106105_9.0006.94/1, 106105_9.0006.93/1, 106105_9.0006.93/4); these are documented but their polygons are not retained.",
+        "actualResultUrls": [
+          "https://nowa.mapa.lodz.pl/geoportal-miejski/",
+          "https://nowa.mapa.lodz.pl/dla-profesjonalistow/",
+          "https://nowa.mapa.lodz.pl/en/for-professionals/",
+          "https://igeodeta.log.lodz.pl/cgi-bin/lodz-egib?"
+        ],
+        "executionMethod": "Separate language-specific web search followed by review of official sources and public viewer/service metadata; no personal property query."
+      }
+    ],
+    "officialSources": [
+      {
+        "url": "https://nowa.mapa.lodz.pl/geoportal-miejski/",
+        "observation": "Official City Geoportal states the map depicts the county-level EGiB database."
+      },
+      {
+        "url": "https://nowa.mapa.lodz.pl/dla-profesjonalistow/",
+        "observation": "Official InterSIT page documents WFS geometry and identifier for registered parcels and publishes service endpoint."
+      },
+      {
+        "url": "https://nowa.mapa.lodz.pl/en/for-professionals/",
+        "observation": "Official English InterSIT professional page documents the same WFS parcel geometry/identifier service."
+      },
+      {
+        "url": "https://igeodeta.log.lodz.pl/cgi-bin/lodz-egib?",
+        "observation": "Anonymous WFS endpoint used for capabilities, schema and bounded query."
+      }
+    ],
+    "attempts": [
+      {
+        "url": "https://nowa.mapa.lodz.pl/geoportal-miejski/",
+        "method": "Official public source or service review",
+        "result": "Capabilities: WFS 2.0.0; feature type ms:dzialki; default CRS EPSG:2177 and requested response CRS EPSG:3857. DescribeFeatureType confirms native ID field ID_DZIALKI and geometry msGeometry. Supported requested output was application/gml+xml; version=3.2 (GML 3.2.1). One 1m EPSG:3857 bbox query around the exact WUP point with COUNT=3 and PROPERTYNAME=ms:ID_DZIALKI,ms:msGeometry returned one polygon. Polygon was transformed to RFC7946 WGS84 for the retained sample; source-native ID preserved slash. Earlier 100m bbox query returned three nearby safe IDs recorded above, but no extra geometries retained. No owner/address or other attributes were requested."
+      },
+      {
+        "url": "https://nowa.mapa.lodz.pl/dla-profesjonalistow/",
+        "method": "Official public source or service review",
+        "result": "Capabilities: WFS 2.0.0; feature type ms:dzialki; default CRS EPSG:2177 and requested response CRS EPSG:3857. DescribeFeatureType confirms native ID field ID_DZIALKI and geometry msGeometry. Supported requested output was application/gml+xml; version=3.2 (GML 3.2.1). One 1m EPSG:3857 bbox query around the exact WUP point with COUNT=3 and PROPERTYNAME=ms:ID_DZIALKI,ms:msGeometry returned one polygon. Polygon was transformed to RFC7946 WGS84 for the retained sample; source-native ID preserved slash. Earlier 100m bbox query returned three nearby safe IDs recorded above, but no extra geometries retained. No owner/address or other attributes were requested."
+      },
+      {
+        "url": "https://nowa.mapa.lodz.pl/en/for-professionals/",
+        "method": "Official public source or service review",
+        "result": "Capabilities: WFS 2.0.0; feature type ms:dzialki; default CRS EPSG:2177 and requested response CRS EPSG:3857. DescribeFeatureType confirms native ID field ID_DZIALKI and geometry msGeometry. Supported requested output was application/gml+xml; version=3.2 (GML 3.2.1). One 1m EPSG:3857 bbox query around the exact WUP point with COUNT=3 and PROPERTYNAME=ms:ID_DZIALKI,ms:msGeometry returned one polygon. Polygon was transformed to RFC7946 WGS84 for the retained sample; source-native ID preserved slash. Earlier 100m bbox query returned three nearby safe IDs recorded above, but no extra geometries retained. No owner/address or other attributes were requested."
+      },
+      {
+        "url": "https://igeodeta.log.lodz.pl/cgi-bin/lodz-egib?",
+        "method": "Official public source or service review",
+        "result": "Capabilities: WFS 2.0.0; feature type ms:dzialki; default CRS EPSG:2177 and requested response CRS EPSG:3857. DescribeFeatureType confirms native ID field ID_DZIALKI and geometry msGeometry. Supported requested output was application/gml+xml; version=3.2 (GML 3.2.1). One 1m EPSG:3857 bbox query around the exact WUP point with COUNT=3 and PROPERTYNAME=ms:ID_DZIALKI,ms:msGeometry returned one polygon. Polygon was transformed to RFC7946 WGS84 for the retained sample; source-native ID preserved slash. Earlier 100m bbox query returned three nearby safe IDs recorded above, but no extra geometries retained. No owner/address or other attributes were requested."
+      }
+    ]
+  },
+  "runtimeAssessment": {
+    "status": "enabled",
+    "reason": "89 valid distinct native EGiB cadastral polygons across thirteen bounded cells around the unchanged Łódź WUP population-settlement locator. Exact FES polygon intersection is identical for before/after hit counts and all pages. Forced three-row paging, fresh reads of every native ID in batches of eight, explicit absence, full footprint lookup and source binding pass. Metric EPSG32634 topology found no sampled invalidity, duplicate geometry, positive-area overlaps or operation errors. The original point-containing sample remains unchanged and independently matches the fresh full polygon. This is bounded reference geometry, without a citywide completeness, legal-title or survey-accuracy guarantee.",
+    "acceptanceFile": "research/overnight-cities-2026-10-08/lodz-intersects-batched-root-acceptance.json",
+    "qualityFile": "research/overnight-cities-2026-10-08/lodz-intersects-batched-root-quality.json",
+    "qualityReviewFile": "research/overnight-cities-2026-10-08/lodz-root-quality-review.json"
+  },
+  "rootReviewNote": "89 valid distinct native EGiB cadastral polygons across thirteen bounded cells around the unchanged Łódź WUP population-settlement locator. Exact FES polygon intersection is identical for before/after hit counts and all pages. Forced three-row paging, fresh reads of every native ID in batches of eight, explicit absence, full footprint lookup and source binding pass. Metric EPSG32634 topology found no sampled invalidity, duplicate geometry, positive-area overlaps or operation errors. The original point-containing sample remains unchanged and independently matches the fresh full polygon. This is bounded reference geometry, without a citywide completeness, legal-title or survey-accuracy guarantee.",
+  "appCityId": "lodz",
+  "runtimeQualification": {
+    "sourceId": "lodz-gml-wfs",
+    "status": "enabled",
+    "acceptanceFile": "research/overnight-cities-2026-10-08/lodz-intersects-batched-root-acceptance.json",
+    "qualityFile": "research/overnight-cities-2026-10-08/lodz-intersects-batched-root-quality.json"
+  },
+  "rootReviewedAt": "2026-10-09T05:11:40.200652+00:00"
+}

@@ -374,7 +374,9 @@ test.describe('Proposal chain bridge @features', () => {
           new DataView(data.buffer).setBigUint64(8, 0n, true);
           return { data };
         },
-        simulateTransaction: async (tx: { instructions?: Array<{ data: Uint8Array; keys: Array<{ pubkey: { toString: () => string } }> }> }) => {
+        simulateTransaction: async (tx: { instructions?: Array<{ data: Uint8Array; keys: Array<{ pubkey: { toString: () => string } }> }> }, config?: unknown) => {
+          // Mirrors web3.js 1.x: a legacy Transaction takes signers here, never a config object.
+          if (config !== undefined && !Array.isArray(config)) throw new Error('Invalid arguments');
           events.push('simulate');
           const instruction = tx.instructions?.[0];
           if (instruction) {

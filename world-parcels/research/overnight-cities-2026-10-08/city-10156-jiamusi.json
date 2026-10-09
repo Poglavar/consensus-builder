@@ -1,0 +1,110 @@
+{
+  "schemaVersion": 1,
+  "kind": "city_parcel_source_research",
+  "checkedAt": "2026-10-09",
+  "name": "Jiamusi",
+  "country": "China",
+  "countryCode": "CN",
+  "populationUnit": "persons",
+  "status": "complete",
+  "registryFound": true,
+  "registryBasis": "Official Jiamusi real-estate registration information lists the municipal registration center and service points in the urban districts, and the Heilongjiang government service portal hosts Jiamusi’s online registration application/appointment/records entry. These are local registration services covering the city center; the public landing pages do not expose a safe anonymous parcel-geometry schema.",
+  "registryEvidenceUrls": [
+    "https://www.zwfw.hlj.gov.cn/jmopenpub/jmopen_files/webapp/html5/bdczq/index.html",
+    "https://www.jms.gov.cn/"
+  ],
+  "verifiedSample": false,
+  "publicParcelGeometryFound": false,
+  "runtimeReadiness": "not_enabled_no_verified_public_geometry",
+  "wupCityCode": 10156,
+  "cityId": "wup2025:10156",
+  "centerLatLon": [
+    46.8017307123902,
+    130.37660405308
+  ],
+  "rank": 808,
+  "queueRank": 808,
+  "population2025": 673406,
+  "population2025k": 673.406,
+  "populationPlausibility2025": "High",
+  "pointBasis": "UN WUP 2025 population-weighted settlement centroid; this is not a municipal boundary or a parcel-coverage claim.",
+  "technicalBlocker": "Local real-estate registration services are verified, but no public anonymous parcel-feature endpoint with a geometry-and-safe-ID schema was found. The service workflows include registration/certificate lookups and were not submitted.",
+  "scopeLimits": "No safe public parcel geometry, exact WUP-point parcel presence, layer schema, or citywide completeness was verified.",
+  "remainingUncertainty": "No safe public parcel geometry, exact WUP-point parcel presence, layer schema, or citywide completeness was verified.",
+  "research": {
+    "executedQueries": [
+      {
+        "language": "English",
+        "query": "Jiamusi China official real estate registration center cadastral map parcel GIS public API",
+        "scope": "Identify city-local registry evidence and safe anonymous geometry; do not request or retain owner, address, account, title or person attributes.",
+        "result": "Search found the official Heilongjiang government-service registration page for Jiamusi and city-center registration services. The public service page offers online registration/appointment and certificate/progress lookup, but no anonymous geometry-only dataset or safe feature schema was found. No parcel lookup was attempted.",
+        "actualResultUrls": [
+          "https://www.zwfw.hlj.gov.cn/jmopenpub/jmopen_files/webapp/html5/bdczq/index.html",
+          "https://www.jms.gov.cn/"
+        ],
+        "executionMethod": "Separate English/local-language public-source searches and public informational/service/schema review; no personal or account-specific lookup."
+      },
+      {
+        "language": "Chinese",
+        "query": "佳木斯市 不动产登记中心 地籍图 查询 GIS 公开地图 官方",
+        "scope": "Identify city-local registry evidence and safe anonymous geometry; do not request or retain owner, address, account, title or person attributes.",
+        "result": "黑龙江政务服务平台的佳木斯页面展示不动产在线登记、预约和证书/进度查询入口；本地登记中心设有市区服务网点。未找到匿名公开地籍要素服务或只返回几何与安全编号的字段模式；未提交查询。",
+        "actualResultUrls": [
+          "https://www.zwfw.hlj.gov.cn/jmopenpub/jmopen_files/webapp/html5/bdczq/index.html",
+          "https://www.jms.gov.cn/"
+        ],
+        "executionMethod": "Separate English/local-language public-source searches and public informational/service/schema review; no personal or account-specific lookup."
+      }
+    ],
+    "officialSources": [
+      {
+        "url": "https://www.zwfw.hlj.gov.cn/jmopenpub/jmopen_files/webapp/html5/bdczq/index.html",
+        "observation": "Official Heilongjiang government service page for Jiamusi presents online real-estate registration, appointments, certificate and progress inquiry entry points; no anonymous parcel geometry layer is advertised."
+      },
+      {
+        "url": "https://www.jms.gov.cn/",
+        "observation": "Official Jiamusi municipal government portal; no public parcel feature service was located from the reviewed local sources."
+      }
+    ],
+    "metadataReviewFile": "jiamusi-service-review.json",
+    "routeInspectionFile": "/tmp/overnight-cities-2026-10-08/city-10156-route-inspection.json"
+  },
+  "source": {
+    "sourceId": null,
+    "name": null,
+    "operator": null,
+    "url": null,
+    "serviceType": "No verified anonymous geometry-only parcel feature endpoint in this review.",
+    "geometryType": null,
+    "coordinateReferenceSystem": null,
+    "nativeIdFields": [],
+    "directGeometryQueryVerified": false,
+    "directMetadataSchemaVerified": false,
+    "scope": "No safe public parcel geometry, exact WUP-point parcel presence, layer schema, or citywide completeness was verified."
+  },
+  "coverageAssessment": {
+    "citywideCompletenessAsserted": false,
+    "wupPointParcelPresenceAsserted": false,
+    "basis": "No parcel feature was verified; local registry evidence is not a parcel-coverage claim."
+  },
+  "runtimeAssessment": {
+    "state": "not_enabled_no_verified_public_geometry",
+    "reason": "No anonymous parcel geometry route with a verified safe geometry-and-ID schema was established.",
+    "status": "not_enabled_no_verified_public_geometry"
+  },
+  "rootReview": "pending",
+  "rootReviewNote": "Reviewed the specific primary institution/service evidence and its geographical, access and date limits. Direct readback failures are preserved separately from indexed primary evidence. No public full parcel geometry was verified for this city in this discovery pass.",
+  "point": [
+    46.8017307123902,
+    130.37660405308
+  ],
+  "sampleFeatureCount": 0,
+  "sourceIds": [],
+  "rootPrimaryReadback": {
+    "url": "https://www.zwfw.hlj.gov.cn/jmopenpub/jmopen_files/webapp/html5/bdczq/index.html",
+    "fetch": 200,
+    "contentType": "text/html; charset=utf-8",
+    "title": "不动产登记一窗受理服务"
+  },
+  "rootReviewedAt": "2026-10-09T03:57:46.837098+00:00"
+}

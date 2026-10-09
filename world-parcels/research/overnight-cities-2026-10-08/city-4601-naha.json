@@ -1,0 +1,226 @@
+{
+  "schemaVersion": 1,
+  "kind": "city_parcel_source_research",
+  "checkedAt": "2026-10-09",
+  "name": "Naha",
+  "country": "Japan",
+  "countryCode": "JP",
+  "populationUnit": "persons",
+  "status": "complete",
+  "registryFound": true,
+  "registryBasis": "Naha City publishes local cadastral survey results, and a public CC BY 2026 converted MOJ cadastral shapefile for Naha (municipality code 47201) was retrieved anonymously and inspected schema-first. Full static footprint contains 136,440 polygons; bounded samples around the official city-hall reference confirm Naha binding. The WUP locator is outside Naha and the dataset extent, with no feature at that exact point; this does not negate the city-bound source.",
+  "registryEvidenceUrls": [
+    "https://www.city.naha.okinawa.jp/kurasitetuduki/matidukuri/1002523/1002612/index.html",
+    "https://www.city.naha.okinawa.jp/kurasitetuduki/matidukuri/1002523/1002612/1002614.html",
+    "https://www.geospatial.jp/ckan/dataset/aigid-moj-47201",
+    "https://www.geospatial.jp/ckan/api/3/action/package_show?id=aigid-moj-47201",
+    "https://gsic-opendata.s3.ap-northeast-1.amazonaws.com/aigid/aigid-moj/2026/47/aigid-moj-47201/47201_%E9%82%A3%E8%A6%87%E5%B8%82_%E5%85%AC%E5%85%B1%E5%BA%A7%E6%A8%9915%E7%B3%BB_%E7%AD%86R_2026.shp.zip",
+    "https://www.city.naha.okinawa.jp/_res/projects/default_project/_page_/001/003/926/youran2013_1.pdf",
+    "https://nlftp.mlit.go.jp/ksj/gml/data/N03/N03-2026/N03-20260101_47_GML.zip"
+  ],
+  "verifiedSample": true,
+  "publicParcelGeometryFound": true,
+  "runtimeReadiness": "held_snapshot_identity_and_geometry_review",
+  "wupCityCode": 4601,
+  "cityId": "wup2025:4601",
+  "centerLatLon": [
+    26.2485177206029,
+    127.737901051124
+  ],
+  "rank": 484,
+  "queueRank": 484,
+  "population2025": 1060017,
+  "population2025k": 1060.017,
+  "pointBasis": "UN WUP 2025 population-weighted settlement centroid; this is not a municipal boundary or a parcel-coverage claim.",
+  "technicalBlocker": "Existing repository runtime adapters do not support this static Shapefile archive. The full-snapshot composite identifier scan found 136,412 unique nonmissing composite keys across 136,440 features, with 28 duplicate extra rows in 19 key groups and 0 missing keys; duplicate identity resolution remains open. The 257-feature bounded GEOS audit found 2 invalid polygons and 13 positive-area overlap/containment pairs (12 above 0.01 m²; maximum 39.24210 m²). Arbitrary footprint and runtime source binding have not been qualified; no adapter was implemented or enabled.",
+  "scopeLimits": "A public CC BY 2026 Naha converted MOJ snapshot contains 136,440 native EPSG:6683 polygons bound to municipality code 47201. The 13-window city-hall-centered sample returned 257 records; full composite-key scan and GEOS summary are in the recorded Naha full-257 review. The full snapshot has 28 repeated composite-key rows and 0 missing keys; 257 bounded records had distinct nonmissing keys. GEOS on the 257 bounded union found 2 invalid polygons and 13 overlap/containment pairs, so the source needs additional identity and geometry review before any runtime use.",
+  "remainingUncertainty": "The unchanged WUP point [26.2485177206029,127.737901051124] lies outside Naha (official 2026 boundary code 47208 Urasoe) and outside this archive footprint; this is scope information, not a source eligibility blocker. Full source geometry and identity defects/duplicate rows may be non-random; no arbitrary bbox runtime lookup/footprint semantics, exact-ID retrieval or authoritative response binding have been qualified.",
+  "research": {
+    "executedQueries": [
+      {
+        "language": "English",
+        "query": "Naha city cadastral survey results public map official municipal government",
+        "scope": "Find current city-specific registration/map evidence and safe anonymous geometry routes.",
+        "result": "Naha City publishes cadastral survey results for in-person viewing/copy workflows. The 2025 MOJ Naha dataset was downloaded and inspected geometry-only; no shape within 1 km of the WUP point was found. The point-in-polygon check against the official 2026 Okinawa administrative-boundary dataset places the exact point in Urasoe City (47208), outside Naha (47201). A newer 2026 converted archive is listed by a public source, but the direct archive URL redirected to a final HTTP 403; no login or bypass was attempted. No geometry is retained.",
+        "actualResultUrls": [
+          "https://www.city.naha.okinawa.jp/kurasitetuduki/matidukuri/1002523/1002612/index.html",
+          "https://www.city.naha.okinawa.jp/kurasitetuduki/matidukuri/1002523/1002612/1002614.html",
+          "https://front.geospatial.jp/moj-chizu-xml-readme/",
+          "https://www.geospatial.jp/ckan/dataset/9ba85fed-8f1b-4561-9b74-77be195515bc/resource/37352a3e-2671-44c5-b774-15689f35ea64/download/47201-3600-2026.zip"
+        ],
+        "executionMethod": "English-language web search plus direct inspection of public official/local source routes."
+      },
+      {
+        "language": "Japanese",
+        "query": "那覇市 地籍調査 成果 閲覧 地図 公式",
+        "scope": "Find current local-language registration/map evidence and safe anonymous geometry routes.",
+        "result": "Naha City publishes cadastral survey results for in-person viewing/copy workflows. The 2025 MOJ Naha dataset was downloaded and inspected geometry-only; no shape within 1 km of the WUP point was found. The point-in-polygon check against the official 2026 Okinawa administrative-boundary dataset places the exact point in Urasoe City (47208), outside Naha (47201). A newer 2026 converted archive is listed by a public source, but the direct archive URL redirected to a final HTTP 403; no login or bypass was attempted. No geometry is retained.",
+        "actualResultUrls": [
+          "https://www.city.naha.okinawa.jp/kurasitetuduki/matidukuri/1002523/1002612/index.html",
+          "https://www.city.naha.okinawa.jp/kurasitetuduki/matidukuri/1002523/1002612/1002614.html",
+          "https://front.geospatial.jp/moj-chizu-xml-readme/",
+          "https://www.geospatial.jp/ckan/dataset/9ba85fed-8f1b-4561-9b74-77be195515bc/resource/37352a3e-2671-44c5-b774-15689f35ea64/download/47201-3600-2026.zip"
+        ],
+        "executionMethod": "Local-language web search and review of public official source listings; no personal or property lookup."
+      }
+    ]
+  },
+  "source": {
+    "sourceId": "jp-naha-moj-converted-2026",
+    "name": "Naha MOJ registry-map geometry, converted static public snapshot",
+    "operator": "Ministry of Justice source data; converted and published by AIGID / G-space Information Center",
+    "url": "https://gsic-opendata.s3.ap-northeast-1.amazonaws.com/aigid/aigid-moj/2026/47/aigid-moj-47201/47201_%E9%82%A3%E8%A6%87%E5%B8%82_%E5%85%AC%E5%85%B1%E5%BA%A7%E6%A8%9915%E7%B3%BB_%E7%AD%86R_2026.shp.zip",
+    "datasetUrl": "https://www.geospatial.jp/ckan/dataset/aigid-moj-47201",
+    "scope": "A public CC BY 2026 Naha converted MOJ snapshot contains 136,440 native EPSG:6683 polygons bound to municipality code 47201. The 13-window city-hall-centered sample returned 257 records; full composite-key scan and GEOS summary are in the recorded Naha full-257 review. The full snapshot has 28 repeated composite-key rows and 0 missing keys; 257 bounded records had distinct nonmissing keys. GEOS on the 257 bounded union found 2 invalid polygons and 13 overlap/containment pairs, so the source needs additional identity and geometry review before any runtime use.",
+    "nativeIdField": "市区町村C + 大字コード + 丁目コード + 小字コード + 予備コード + 地番",
+    "attributesRequested": [
+      "ID",
+      "市区町村C",
+      "大字コード",
+      "丁目コード",
+      "小字コード",
+      "予備コード",
+      "地番"
+    ],
+    "identityBasis": "Composite city/subarea codes and land parcel identifier are unique in the 257 bounded features, but full snapshot scan found 19 duplicate composite-key groups (28 extra rows). The converter ID column is much more repetitive and is not used alone. Full-snapshot duplicate resolution is not qualified.",
+    "geometryStatus": "static_snapshot_verified; bounded_257_geos_and_full_identity_have_holds",
+    "crs": "JGD2011 / Japan Plane Rectangular CS XV (EPSG:6683)",
+    "sourceFeatureCount": 136440,
+    "archiveBytes": 13583967,
+    "fullSnapshotIdentityCounts": {
+      "records": 136440,
+      "uniqueNonmissingCompositeIds": 136412,
+      "duplicateGroups": 19,
+      "duplicateRowsBeyondFirst": 28,
+      "missingRows": 0
+    }
+  },
+  "coverageAssessment": {
+    "verifiedOpenScope": "A public CC BY 2026 Naha converted MOJ snapshot contains 136,440 native EPSG:6683 polygons bound to municipality code 47201. The 13-window city-hall-centered sample returned 257 records; full composite-key scan and GEOS summary are in /tmp/overnight-cities-2026-10-08/naha-2026-full257-audit.json. The full snapshot has 28 repeated composite-key rows and 0 missing keys; 257 bounded records had distinct nonmissing keys. GEOS on the 257 bounded union found 2 invalid polygons and 13 overlap/containment pairs, so the source needs additional identity and geometry review before any runtime use.",
+    "citywideVerified": false,
+    "countrywideVerified": false
+  },
+  "priorEvidenceFiles": [
+    "/tmp/overnight-cities-2026-10-08/city-4601-naha-route-inspection.json"
+  ],
+  "populationPlausibility2025": "High",
+  "sourceIds": [
+    "jp-naha-moj-converted-2026"
+  ],
+  "point": [
+    26.2485177206029,
+    127.737901051124
+  ],
+  "sampleFile": "research/overnight-cities-2026-10-08/naha-moj-2026-safe-samples.geojson",
+  "sampleFeatureCount": 3,
+  "sampleCrs": "WGS 84 longitude/latitude; reprojected from EPSG:6683",
+  "geometryEvidence": {
+    "type": "public anonymous static Shapefile snapshot",
+    "datasetUrl": "https://www.geospatial.jp/ckan/dataset/aigid-moj-47201",
+    "archiveUrl": "https://gsic-opendata.s3.ap-northeast-1.amazonaws.com/aigid/aigid-moj/2026/47/aigid-moj-47201/47201_%E9%82%A3%E8%A6%87%E5%B8%82_%E5%85%AC%E5%85%B1%E5%BA%A7%E6%A8%9915%E7%B3%BB_%E7%AD%86R_2026.shp.zip",
+    "archivePath": "/tmp/overnight-cities-2026-10-08/naha-aigid-moj-47201-2026.shp.zip",
+    "qualificationFile": "/tmp/overnight-cities-2026-10-08/naha-2026-static-qualification.json",
+    "geometryAuditFile": "/tmp/overnight-cities-2026-10-08/naha-2026-native-geometry-geos.json",
+    "samplePath": "/tmp/overnight-cities-2026-10-08/naha-2026-cityhall-native-samples.geojson",
+    "fullSourceFeatureCount": 136440,
+    "retainedFullNativeSampleCount": 3,
+    "sampleAnchor": "Official Naha City Hall position, 26°12′44″N 127°40′44″E, converted to a 0.001-degree aligned grid reference. This separate city-center point is not the WUP locator.",
+    "sampleGeometryPolicy": "Three complete original source polygon records only; no clipping, repair, simplification or coordinate transform. No owner, address-name, tax, or personal fields were read.",
+    "fullBoundedAuditFile": "/tmp/overnight-cities-2026-10-08/naha-2026-full257-audit.json",
+    "boundedUnionGeosSummary": {
+      "featureCount": 257,
+      "invalidCount": 2,
+      "invalidSourceRecords": [
+        94048,
+        114149
+      ],
+      "duplicateGeometryPairCount": 0,
+      "positiveAreaOverlapOrContainmentPairCount": 13,
+      "overlapAbove0_01m2Count": 12,
+      "maxIntersectionArea_m2": 39.242096453459865,
+      "geosVersion": "3.14.1"
+    }
+  },
+  "runtimeAssessment": {
+    "runtimeEnabled": false,
+    "status": "held_snapshot_identity_and_geometry_review",
+    "reason": "Existing repository runtime adapters do not support this static Shapefile archive. The full-snapshot composite identifier scan found 136,412 unique nonmissing composite keys across 136,440 features, with 28 duplicate extra rows in 19 key groups and 0 missing keys; duplicate identity resolution remains open. The 257-feature bounded GEOS audit found 2 invalid polygons and 13 positive-area overlap/containment pairs (12 above 0.01 m²; maximum 39.24210 m²). Arbitrary footprint and runtime source binding have not been qualified; no adapter was implemented or enabled.",
+    "evidenceFile": "research/overnight-cities-2026-10-08/naha-full257-root-review.json"
+  },
+  "freshResearch": {
+    "executedQueries": [
+      {
+        "language": "English",
+        "query": "Naha city cadastral survey results public map official municipal government",
+        "scope": "Find current city-specific registration/map evidence and safe anonymous geometry routes.",
+        "result": "Naha City publishes cadastral survey results for in-person viewing/copy workflows. The 2025 MOJ Naha dataset was downloaded and inspected geometry-only; no shape within 1 km of the WUP point was found. The point-in-polygon check against the official 2026 Okinawa administrative-boundary dataset places the exact point in Urasoe City (47208), outside Naha (47201). A newer 2026 converted archive is listed by a public source, but the direct archive URL redirected to a final HTTP 403; no login or bypass was attempted. No geometry is retained.",
+        "actualResultUrls": [
+          "https://www.city.naha.okinawa.jp/kurasitetuduki/matidukuri/1002523/1002612/index.html",
+          "https://www.city.naha.okinawa.jp/kurasitetuduki/matidukuri/1002523/1002612/1002614.html",
+          "https://front.geospatial.jp/moj-chizu-xml-readme/",
+          "https://www.geospatial.jp/ckan/dataset/9ba85fed-8f1b-4561-9b74-77be195515bc/resource/37352a3e-2671-44c5-b774-15689f35ea64/download/47201-3600-2026.zip"
+        ],
+        "executionMethod": "English-language web search plus direct inspection of public official/local source routes."
+      },
+      {
+        "language": "Japanese",
+        "query": "那覇市 地籍調査 成果 閲覧 地図 公式",
+        "scope": "Find current local-language registration/map evidence and safe anonymous geometry routes.",
+        "result": "Naha City publishes cadastral survey results for in-person viewing/copy workflows. The 2025 MOJ Naha dataset was downloaded and inspected geometry-only; no shape within 1 km of the WUP point was found. The point-in-polygon check against the official 2026 Okinawa administrative-boundary dataset places the exact point in Urasoe City (47208), outside Naha (47201). A newer 2026 converted archive is listed by a public source, but the direct archive URL redirected to a final HTTP 403; no login or bypass was attempted. No geometry is retained.",
+        "actualResultUrls": [
+          "https://www.city.naha.okinawa.jp/kurasitetuduki/matidukuri/1002523/1002612/index.html",
+          "https://www.city.naha.okinawa.jp/kurasitetuduki/matidukuri/1002523/1002612/1002614.html",
+          "https://front.geospatial.jp/moj-chizu-xml-readme/",
+          "https://www.geospatial.jp/ckan/dataset/9ba85fed-8f1b-4561-9b74-77be195515bc/resource/37352a3e-2671-44c5-b774-15689f35ea64/download/47201-3600-2026.zip"
+        ],
+        "executionMethod": "Local-language web search and review of public official source listings; no personal or property lookup."
+      }
+    ],
+    "officialSources": [
+      {
+        "url": "https://www.city.naha.okinawa.jp/kurasitetuduki/matidukuri/1002523/1002612/index.html",
+        "observation": "Official or linked source reviewed in the city/service evidence record."
+      },
+      {
+        "url": "https://www.city.naha.okinawa.jp/kurasitetuduki/matidukuri/1002523/1002612/1002614.html",
+        "observation": "Official or linked source reviewed in the city/service evidence record."
+      },
+      {
+        "url": "https://front.geospatial.jp/moj-chizu-xml-readme/",
+        "observation": "Official or linked source reviewed in the city/service evidence record."
+      }
+    ]
+  },
+  "rootReviewedAt": "2026-10-09T01:04:39.168149+00:00",
+  "resultCategory": "verified_public_static_geometry_runtime_unqualified",
+  "followthrough2026": {
+    "checkedAt": "2026-10-09",
+    "datasetTitle": "沖縄県-那覇市",
+    "datasetId": "aigid-moj-47201",
+    "resourceName": "47201_那覇市_公共座標15系_筆R_2026.shp.zip",
+    "license": "CC BY",
+    "archiveBytes": 13583967,
+    "schemaFirst": "DBF field names/types/widths inspected without row values. Across full snapshot only ID and 市区町村C values read. In 257 bbox-returned features, also read only 大字コード, 丁目コード, 小字コード, 予備コード, 地番 and 地図名; no owner or human-readable address/name attributes queried.",
+    "qualificationFile": "/tmp/overnight-cities-2026-10-08/naha-2026-static-qualification.json",
+    "samplesFile": "/tmp/overnight-cities-2026-10-08/naha-2026-cityhall-native-samples.geojson",
+    "geosFile": "/tmp/overnight-cities-2026-10-08/naha-2026-native-geometry-geos.json",
+    "runtimeEnabled": false
+  },
+  "followthrough2026FullAudit": {
+    "checkedAt": "2026-10-09",
+    "auditFile": "/tmp/overnight-cities-2026-10-08/naha-2026-full257-audit.json",
+    "boundedFeatures": 257,
+    "geosValid": 255,
+    "geosInvalid": 2,
+    "overlapContainmentPairs": 13,
+    "maxOverlap_m2": 39.242096453459865,
+    "identityUnique": 136412,
+    "identityDuplicateRows": 28,
+    "identityMissing": 0,
+    "pointScopeNote": "The unchanged WUP point [26.2485177206029,127.737901051124] lies outside Naha (official 2026 boundary code 47208 Urasoe) and outside this archive footprint; this is scope information, not a source eligibility blocker."
+  },
+  "sampleGeometryQA": {
+    "summary": "Three original sampled polygons are valid; the complete 257-feature audit has two invalid polygons and material overlaps. No source geometry was repaired or filtered.",
+    "full257EvidenceFile": "research/overnight-cities-2026-10-08/naha-full257-root-review.json"
+  }
+}

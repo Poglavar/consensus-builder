@@ -1,0 +1,39 @@
+{
+  "schemaVersion": "1.0",
+  "checkedAt": "2026-10-09",
+  "cityRecord": "city-10917-chhapra.json",
+  "purpose": "Local registry and public parcel-geometry source review. Queries were separated by English and local language. No owner, address, tax, or private property fields were queried or retained.",
+  "scopeLimits": {
+    "maxFullPolygonsRetainedInCityRecord": 0,
+    "maxFullPolygonsRetainedInReview": 0,
+    "maxFullPolygonsRetainedInRepository": 0,
+    "ownerOrAddressDataRetained": false,
+    "credentialsOrPrivateRecordLookupsUsed": false,
+    "citywideCompletenessAsserted": false
+  },
+  "assessment": "The official Saran district land-records service is linked from the Collectorate in Chapra. Bihar BhuNaksha exposes district/subdivision/circle/mauza/survey/map-sheet selectors; the statewide browser is designed for revenue map viewing, while cadastral edits are for authorized officials. No Chapra urban mauza, point extent or safe full-polygon geometry response was established here. Bihar’s public Revenue Map viewer and land-record pages are the relevant local pathway. No full polygon was returned; geometry presence remains unverified.",
+  "officialPrimarySources": [
+    {
+      "url": "https://saran.nic.in/service/view-khata-and-jamabandi-records-online/",
+      "observation": "The official Saran district land-records service is linked from the Collectorate in Chapra. Bihar BhuNaksha exposes district/subdivision/circle/mauza/survey/map-sheet selectors; the statewide browser is designed for revenue map viewing, while cadastral edits are for authorized officials. No Chapra urban mauza, point extent or safe full-polygon geometry response was established here. Bihar’s public Revenue Map viewer and land-record pages are the relevant local pathway."
+    }
+  ],
+  "searches": [
+    {
+      "language": "English",
+      "query": "Chhapra Saran official cadastral parcel map Bihar land records BhuNaksha"
+    },
+    {
+      "language": "Hindi",
+      "query": "छपरा सारण भू नक्शा भू अभिलेख भूमि मानचित्र बिहार आधिकारिक"
+    }
+  ],
+  "geometryEvidence": null,
+  "decision": {
+    "registryFound": true,
+    "publicParcelGeometryFound": null,
+    "verifiedSample": false,
+    "adapterReady": false
+  },
+  "nextStep": "Trace and inspect a public feature-service schema before any geometry request; restrict any future query to stable safe IDs and geometry."
+}

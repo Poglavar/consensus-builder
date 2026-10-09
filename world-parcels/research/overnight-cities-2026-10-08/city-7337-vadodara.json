@@ -1,0 +1,106 @@
+{
+  "name": "Vadodara",
+  "country": "India",
+  "countryCode": "IN",
+  "rank": 219,
+  "point": [
+    22.3080336950267,
+    73.1834942921218
+  ],
+  "freshResearch": {
+    "queries": [
+      {
+        "language": "Gujarati",
+        "query": "વડોદરા જમીન રેકોર્ડ સિટી સર્વે નકશો સર્વે નંબર મિલકત કાર્ડ",
+        "scope": "Find official Vadodara rural/urban records and urban city-survey parcel references.",
+        "result": "Gujarati Vadodara district government page confirms Revenue Department ROR services for rural and urban land and points to AnyRoR; survey number, khata and entry details are available. It does not claim public full vector geometry.",
+        "actualResultUrls": [
+          "https://vadodara.nic.in/gu/service/%E0%AA%9C%E0%AA%AE%E0%AB%80%E0%AA%A8-%E0%AA%B0%E0%AB%87%E0%AA%95%E0%AB%8B%E0%AA%B0%E0%AB%8D%E0%AA%A1%E0%AB%8D%E0%AA%B8/",
+          "https://anyror.gujarat.gov.in/"
+        ],
+        "executionMethod": "Native-language search and official Gujarati district page review."
+      },
+      {
+        "language": "English",
+        "query": "Vadodara official urban city survey property card cadastral map e-Milkat Gujarat",
+        "scope": "Verify official city survey parcel lookups and whether vector geometry is public.",
+        "result": "Gujarat e-Milkat is the official urban property-card inquiry portal with city survey, ward, survey and sheet selectors. Public search/record access does not itself provide a full parcel polygon response.",
+        "actualResultUrls": [
+          "https://e-milkat.gujarat.gov.in/PropertyCard/GeneralReport.aspx",
+          "https://dilrmp.gov.in/dilrmpold/State-RoR-Web"
+        ],
+        "executionMethod": "Official portal and government service-page review."
+      }
+    ],
+    "portals": [
+      {
+        "name": "Gujarat Revenue Department AnyRoR and Settlement Commissioner e-Milkat",
+        "operator": "Government of Gujarat",
+        "homeUrl": "https://anyror.gujarat.gov.in/",
+        "observation": "Official Gujarat Revenue urban/rural record lookup. Survey number/khata lookups are records; full feature geometry was not retrieved."
+      }
+    ],
+    "requests": [
+      {
+        "url": "https://vadodara.nic.in/service/land-records/",
+        "method": "GET",
+        "httpStatus": 200,
+        "contentType": "text/html",
+        "observation": "Official district land-record page links AnyRoR for urban/rural record lookup. e-Milkat provides urban property-card lookup; its disclaimer says online information is informational and not an official copy. No anonymous full-polygon response was verified."
+      },
+      {
+        "url": "https://e-milkat.gujarat.gov.in/PropertyCard/GeneralReport.aspx",
+        "method": "GET",
+        "httpStatus": 200,
+        "contentType": "text/html",
+        "observation": "Official urban property-card search page provides city-survey, ward, survey and sheet selectors; informational-use disclaimer."
+      }
+    ],
+    "historicalContext": []
+  },
+  "status": "complete",
+  "verifiedParcelResponse": null,
+  "source": {
+    "sourceId": "IN-7337-PUBLIC-CADASTRE",
+    "name": "Gujarat Revenue Department AnyRoR and Settlement Commissioner e-Milkat",
+    "url": "https://anyror.gujarat.gov.in/",
+    "operator": "Government of Gujarat",
+    "serviceType": "Official record lookup UI; no verified full-polygon retrieval route",
+    "layer": "Urban city-survey property-card lookup; no vector parcel layer confirmed",
+    "geometryType": null,
+    "outputCrs": null,
+    "nativeIdField": "Survey number (lookup field)",
+    "nativeIdEvidence": "The public e-Milkat form uses city survey office, ward, survey number and sheet selectors; the official Vadodara city-corporation survey PDF labels City Survey No. No full geometry response was returned."
+  },
+  "coverageAssessment": {
+    "claimedScope": "Official district land-record page links AnyRoR for urban/rural record lookup. e-Milkat provides urban property-card lookup; its disclaimer says online information is informational and not an official copy. No anonymous full-polygon response was verified.",
+    "verifiedOpenScope": "Record searches are confirmed; parcel geometry is not.",
+    "countrywideVerified": false
+  },
+  "registryFound": true,
+  "verifiedSample": false,
+  "resultCategory": "official_record_portals_geometry_not_verified",
+  "technicalBlocker": "Official records provide native city-survey identifiers and map references; a public full geometry service or geometry query was not verified.",
+  "remainingUncertainty": "Whether city-survey maps expose a public full polygon after selecting a Vadodara ward and survey number; legal/data reuse terms.",
+  "nextStep": "Determine whether the official urban city-survey map flow returns a full parcel geometry rather than a rendered map or record-only result.",
+  "schemaVersion": 1,
+  "checkedAt": "2026-10-09",
+  "wupCityCode": 7337,
+  "cityId": "wup2025:7337",
+  "runtimeReadiness": "not_enabled_no_verified_public_geometry",
+  "adapterReady": false,
+  "centerLatLon": [
+    22.3080336950267,
+    73.1834942921218
+  ],
+  "population2025k": 2270.298,
+  "populationUnit": "persons",
+  "queueRank": 219,
+  "population2025": 2270298,
+  "populationPlausibility2025": "High",
+  "pointBasis": "UN WUP 2025 population-weighted settlement centroid; this is not a municipal boundary or a parcel-coverage claim.",
+  "publicParcelGeometryFound": false,
+  "rootReviewedAt": "2026-10-08T21:10:04.693505+00:00",
+  "sourceIds": [],
+  "registryBasis": "City-specific registry evidence is documented in the discovery record."
+}

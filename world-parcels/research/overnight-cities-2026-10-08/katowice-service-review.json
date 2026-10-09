@@ -1,0 +1,113 @@
+{
+  "schemaVersion": 1,
+  "checkedAt": "2026-10-09",
+  "cityRecord": "city-2942-katowice.json",
+  "purpose": "City-specific official EGiB/cadastre and bounded anonymous parcel-geometry review.",
+  "scopeLimits": {
+    "maxFullPolygonsRetainedInCityRecord": 3,
+    "maxFullPolygonsRetainedInReview": 3,
+    "maxFullPolygonsRetainedInRepository": 3,
+    "ownerOrAddressDataRetained": false,
+    "credentialsOrTokenValuesRetained": false,
+    "citywideCompletenessAsserted": false
+  },
+  "assessment": "The official municipal EGiB REST layer returned two Polygon geometries from a 1 km² central-city envelope (request capped at three); only native parcel ID and geometry were retained. The exact ranked WUP point and two nearby envelopes returned no features. The central sample does not establish WUP-point coverage or citywide completeness.",
+  "registryAssessment": "Katowice’s official portal describes EGiB parcel records and publishes an EGiB WMS/WFS service. The ArcGIS Działki layer is polygon geometry, native EPSG:2177, supports JSON/GeoJSON query, and lists IDENT_DZ. This confirms a local cadastral service; a separate official EGiB service page discusses WFS downloads. Registry office/service presence is distinct from proof that any particular WUP locator falls on a returned parcel.",
+  "searchQueries": [
+    {
+      "language": "Polish",
+      "query": "Katowice oficjalna mapa działek ewidencyjnych ewidencja gruntów geoportal EGiB WFS",
+      "scope": "Locate official local EGiB/cadastral parcel services and test safe public polygon geometry near the ranked point.",
+      "result": "The official Katowice spatial-information portal describes EGiB parcels, provides WMS/WFS service links, and its ArcGIS layer metadata exposes a polygon Działki layer in EPSG:2177 with GeoJSON query support and native field IDENT_DZ. The ranked WUP point query and two nearby envelopes returned no features. A separate central-city envelope returned two safe-ID parcel polygons; those samples do not cover the WUP point.",
+      "actualResultUrls": [
+        "https://emapa.katowice.eu/mszkiip/opis-modulow-mapowych/",
+        "https://katowice.eu/dla-mieszkanca/zalatw-sprawe/wg/mapa-zasadnicza-miasta-katowice",
+        "https://emapa.katowice.eu/jarc-gui/views/portal/main.xhtml",
+        "https://emapa.katowice.eu/arcgis/rest/services/Katowice_konfig/MapServer/0",
+        "https://emapa.katowice.eu/arcgis/services/wms_egib_gugik/MapServer/WFSServer?REQUEST=GetCapabilities",
+        "https://www.geoportal.gov.pl/pl/dane/ewidencja-gruntow-i-budynkow-egib/"
+      ],
+      "executionMethod": "Separate Polish-language search followed by review of official city portal and layer metadata; anonymous point and bounded service queries requested only parcel identifiers plus geometry."
+    },
+    {
+      "language": "English",
+      "query": "Katowice Poland official cadastral parcel GIS EGiB WFS map",
+      "scope": "Locate official local EGiB/cadastral parcel services and test safe public polygon geometry near the ranked point.",
+      "result": "GUGIK’s official EGiB service page explains that the register includes land/parcel data and that county WFS downloads can provide parcel geometries. Katowice’s official portal publishes its city EGiB service. The exact WUP point query returned no polygon; two central-city safe-ID samples confirm polygon geometry is retrievable elsewhere in the layer, subject to root qualification.",
+      "actualResultUrls": [
+        "https://www.geoportal.gov.pl/pl/dane/ewidencja-gruntow-i-budynkow-egib/",
+        "https://emapa.katowice.eu/mszkiip/opis-modulow-mapowych/",
+        "https://katowice.eu/dla-mieszkanca/zalatw-sprawe/wg/mapa-zasadnicza-miasta-katowice",
+        "https://emapa.katowice.eu/arcgis/rest/services/Katowice_konfig/MapServer/0",
+        "https://emapa.katowice.eu/arcgis/services/wms_egib_gugik/MapServer/WFSServer?REQUEST=GetCapabilities"
+      ],
+      "executionMethod": "Separate English-language search followed by review of GUGIK and official Katowice sources; bounded anonymous requests retained only safe parcel identifiers and geometry."
+    }
+  ],
+  "officialPrimarySources": [
+    {
+      "url": "https://emapa.katowice.eu/mszkiip/opis-modulow-mapowych/",
+      "observation": "Official city geospatial portal says EGiB includes parcel location, boundaries, area and land-use attributes; it publishes WMS and WFS access routes."
+    },
+    {
+      "url": "https://katowice.eu/dla-mieszkanca/zalatw-sprawe/wg/mapa-zasadnicza-miasta-katowice",
+      "observation": "Official City of Katowice geodesy/cadastre office page lists EGiB record maintenance, requests for EGiB data and city WMS/WFS services."
+    },
+    {
+      "url": "https://emapa.katowice.eu/arcgis/rest/services/Katowice_konfig/MapServer/0",
+      "observation": "Official ArcGIS layer metadata identifies Działki as Polygon with native WKID 2177, GeoJSON query format, maxRecordCount 1000, pagination and IDENT_DZ string field (length 36)."
+    },
+    {
+      "url": "https://emapa.katowice.eu/arcgis/services/wms_egib_gugik/MapServer/WFSServer?REQUEST=GetCapabilities",
+      "observation": "Official portal-linked WFS capabilities list dzialki (Działki), native CRS EPSG:2177 and GEOJSON output. Bounded GetFeature attempts at the exact WUP point and in the central sample envelope returned empty FeatureCollections; successful sample was retrieved through the REST layer."
+    },
+    {
+      "url": "https://www.geoportal.gov.pl/pl/dane/ewidencja-gruntow-i-budynkow-egib/",
+      "observation": "GUGIK describes EGiB as the national ground/building register maintained by local authorities and documents WFS parcel geometry downloads, with a caveat that vector coverage may vary by county."
+    }
+  ],
+  "viewerAndServiceTrace": {
+    "viewerUrl": "https://emapa.katowice.eu/jarc-gui/views/portal/main.xhtml",
+    "apiBase": "https://emapa.katowice.eu/arcgis/rest/services/Katowice_konfig/MapServer/0",
+    "observedClientRoutes": [
+      "https://emapa.katowice.eu/arcgis/services/wms_egib_gugik/MapServer/WFSServer?REQUEST=GetCapabilities"
+    ],
+    "notes": "The official city portal documents EGiB WMS/WFS. WFS GetCapabilities returned dzialki and EPSG:2177; bounded WFS GeoJSON requests returned empty collections. The REST Działki layer returned two city-center polygons with OBJECTID/IDENT_DZ requested and geometry retained. Although outSR=4326 was sent, the response coordinates remained native 2177 and had no GeoJSON CRS member; the sample was transformed locally using EPSG:2177 parameters. No ranking-point polygon was returned."
+  },
+  "geometryEvidence": {
+    "url": "https://emapa.katowice.eu/arcgis/rest/services/Katowice_konfig/MapServer/0/query",
+    "httpStatus": 200,
+    "contentType": "application/geo+json;charset=UTF-8",
+    "featureType": "Działki, layer 0",
+    "nativeCrs": "EPSG:2177",
+    "responseCount": 2,
+    "responseNumberMatched": "not supplied; exceededTransferLimit=true",
+    "requestLimit": 3,
+    "requestFilter": "EPSG:2177 envelope 6572339.5,5564074.5,6573339.5,5565074.5 (central Katowice); exact point and two nearby WUP-centered envelopes returned zero features.",
+    "requestedFields": [
+      "OBJECTID",
+      "IDENT_DZ",
+      "SHAPE"
+    ],
+    "safeFieldsRetained": [
+      "IDENT_DZ",
+      "geometry"
+    ],
+    "featureIds": [
+      "246901_1.0008.AR_2.179/55",
+      "246901_1.0013.AR_18.62"
+    ],
+    "nativeParcelIdentifier": "IDENT_DZ",
+    "wupPointContained": false,
+    "sampleGeometryFile": "samples/katowice-egib-city-sample-603.geojson",
+    "sampleSha256": "287fe3a90d2043814b0e7731acbe8fe7c2fac2af917235a4bac3e777cc4f5ba4",
+    "limitations": "Two city-center polygons only. Point coverage was not established. The server response lacked numberMatched and set exceededTransferLimit=true; no completeness is inferred."
+  },
+  "privacy": "Only the source-native cadastral key IDENT_DZ and geometry are retained. OBJECTID is omitted from sample; fields relating to owners, addresses and other attributes were not requested or retained.",
+  "runtimeAssessment": "sample_only_root_qualification_pending",
+  "rootRuntimeReview": {
+    "status": "held_native_coordinate_contract",
+    "reason": "Official REST GeoJSON and Esri JSON claim EPSG:4326 while returning coordinate values in native EPSG:2177 (for example x=6573053.29,y=5565132.756). Root reproduced this with two bounded Esri JSON queries: the ranked viewport is empty and the central sample returns two native-coordinate polygons under a false 4326 spatialReference, with exceededTransferLimit=true. The current runtime correctly rejects these unsupported coordinates. A truthful native CRS transport and complete enumeration/exact-ID contract remain unqualified; centroid containment is not the hold reason.",
+    "evidenceFile": "research/overnight-cities-2026-10-08/katowice-root-coordinate-review.json"
+  }
+}

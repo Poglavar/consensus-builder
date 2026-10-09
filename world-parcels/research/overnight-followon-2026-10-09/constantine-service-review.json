@@ -1,0 +1,77 @@
+{
+  "schemaVersion": "1.0",
+  "checkedAt": "2026-10-09",
+  "cityRecord": "city-5363-constantine.json",
+  "purpose": "Document independent city-specific registry source review and bounded anonymous geometry access investigation.",
+  "scopeLimits": {
+    "maxFullPolygonsRetainedInCityRecord": 0,
+    "maxFullPolygonsRetainedInReview": 0,
+    "maxFullPolygonsRetainedInRepository": 3,
+    "ownerOrAddressDataRetained": false,
+    "credentialsOrTokenValuesRetained": false,
+    "citywideCompletenessAsserted": false
+  },
+  "assessment": "Searches found office and organizational evidence but no anonymous map service, feature schema or full parcel geometry response.",
+  "registryAssessment": "The Algerian Ministry of Finance publication and its Treasury-hosted official circular identify Constantine East and West cadastral/land-conservation directorates, which are local registration/cadastre authorities.",
+  "officialPrimarySources": [
+    {
+      "title": "Algerian Ministry of Finance, Official Gazette/circular PDF",
+      "url": "https://www.mf.gov.dz/images/pdf/publication/2022_S2C.pdf",
+      "observation": "Official finance ministry text enumerates the Direction du cadastre et de la conservation foncière for Constantine, including Constantine Est and Ouest offices."
+    },
+    {
+      "title": "Official cadastral/conservation organization list, hosted by Ministry of Finance",
+      "url": "https://tresor.mf.gov.dz/wp-content/uploads/2024/04/Circulaire-n%C2%B0-01-du-20-janvier-2022-fr.pdf",
+      "observation": "Identifies Constantine Est/West cadastral and land-conservation directorates; no public parcel endpoint described."
+    }
+  ],
+  "searchQueries": [
+    {
+      "language": "English",
+      "query": "Constantine Algeria official cadastral parcel map land registry cadastre local wilaya service",
+      "executionMethod": "Executed web search",
+      "resultUrls": [
+        "https://www.mf.gov.dz/images/pdf/publication/2022_S2C.pdf",
+        "https://tresor.mf.gov.dz/wp-content/uploads/2024/04/Circulaire-n%C2%B0-01-du-20-janvier-2022-fr.pdf"
+      ]
+    },
+    {
+      "language": "Arabic",
+      "query": "قسنطينة الجزائر مديرية مسح الأراضي والحفظ العقاري المحافظة العقارية موقع رسمي",
+      "executionMethod": "Executed web search",
+      "resultUrls": [
+        "https://www.mf.gov.dz/images/pdf/publication/2022_S2C.pdf",
+        "https://tresor.mf.gov.dz/wp-content/uploads/2024/04/Circulaire-n%C2%B0-01-du-20-janvier-2022-fr.pdf"
+      ]
+    },
+    {
+      "language": "French",
+      "query": "Constantine Algérie cadastre conservation foncière direction de wilaya officielle",
+      "executionMethod": "Executed web search",
+      "resultUrls": [
+        "https://www.mf.gov.dz/images/pdf/publication/2022_S2C.pdf",
+        "https://tresor.mf.gov.dz/wp-content/uploads/2024/04/Circulaire-n%C2%B0-01-du-20-janvier-2022-fr.pdf"
+      ]
+    }
+  ],
+  "geometryDecision": {
+    "publicParcelGeometryFound": false,
+    "sampleFile": null,
+    "details": "Searches found office and organizational evidence but no anonymous map service, feature schema or full parcel geometry response."
+  },
+  "coverageAssessment": {
+    "claimedScope": "The Algerian Ministry of Finance publication and its Treasury-hosted official circular identify Constantine East and West cadastral/land-conservation directorates, which are local registration/cadastre authorities.",
+    "verifiedOpenScope": "Searches found office and organizational evidence but no anonymous map service, feature schema or full parcel geometry response.",
+    "citywideVerified": false,
+    "countrywideVerified": false
+  },
+  "attempts": [
+    {
+      "attempt": "official source/UI and public service inspection",
+      "result": "Searches found office and organizational evidence but no anonymous map service, feature schema or full parcel geometry response.",
+      "credentialsUsed": false,
+      "personalPropertyFieldsRequested": false
+    }
+  ],
+  "remainingUncertainty": "The public availability of cadastral records or digital map geometry for the exact locator remains unverified."
+}

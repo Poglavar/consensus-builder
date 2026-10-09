@@ -1,0 +1,56 @@
+{
+  "schemaVersion": "1.0",
+  "checkedAt": "2026-10-09",
+  "cityRecord": "city-8343-kasur.json",
+  "purpose": "Document first-party local registry/map evidence and bounded anonymous geometry access review.",
+  "scopeLimits": {
+    "maxFullPolygonsRetainedInCityRecord": 0,
+    "maxFullPolygonsRetainedInReview": 0,
+    "maxFullPolygonsRetainedInRepository": 0,
+    "ownerOrAddressDataRetained": false,
+    "credentialsOrTokenValuesRetained": false,
+    "citywideCompletenessAsserted": false
+  },
+  "assessment": "PULSE public viewer advertises a Kasur cadastral polygon layer. Anonymous reader bootstrap succeeded in memory. Layer 13 metadata HTTP 200 identifies Kasur polygons in EPSG:3857, with safe native OBJECTID available; metadata had 27 fields, but no private field names/values were retained. Requests used only outFields=OBJECTID plus geometry. A bounded 0.001-degree locator cell, eight adjacent cells, and one ~0.72 km² window all returned complete empty FeatureCollections. No polygon sample was retained. Viewer’s indicative-line disclaimer is informational about legal use, not an access/schema gate.",
+  "registryAssessment": "Punjab PULSE’s official public viewer lists Kasur under Cadastral Maps. The official Punjab PULSE project describes parcel mapping linked to provincial land records. Kasur is therefore a city/district-specific cadastral source candidate, but these sources do not imply citywide coverage or exact WUP-point parcel presence.",
+  "officialPrimarySources": [
+    {
+      "url": "https://lis.pulse.gop.pk/",
+      "observation": "Punjab PULSE’s official public viewer lists Kasur under Cadastral Maps. The official Punjab PULSE project describes parcel mapping linked to provincial land records. Kasur is therefore a city/district-specific cadastral source candidate, but these sources do not imply citywide coverage or exact WUP-point parcel presence."
+    },
+    {
+      "url": "https://www.pulse.gop.pk/",
+      "observation": "Punjab PULSE’s official public viewer lists Kasur under Cadastral Maps. The official Punjab PULSE project describes parcel mapping linked to provincial land records. Kasur is therefore a city/district-specific cadastral source candidate, but these sources do not imply citywide coverage or exact WUP-point parcel presence."
+    },
+    {
+      "url": "https://gismaps.punjab-zameen.gov.pk/arcgis/rest/services/VendorMaps/Punjab_Cdastral_Maps/MapServer/13",
+      "observation": "Punjab PULSE’s official public viewer lists Kasur under Cadastral Maps. The official Punjab PULSE project describes parcel mapping linked to provincial land records. Kasur is therefore a city/district-specific cadastral source candidate, but these sources do not imply citywide coverage or exact WUP-point parcel presence."
+    }
+  ],
+  "searchQueries": [
+    {
+      "language": "English",
+      "query": "Kasur Punjab PULSE official cadastral map public parcel layer GIS",
+      "result": "PULSE viewer lists a Kasur Cadastral Maps layer. Service metadata confirms Polygon geometry and OBJECTID; bounded queries at and around the WUP locator returned complete empty results.",
+      "method": "Separate English/local-language search and official-source review.",
+      "scope": "Identify current city-specific registry and safe public parcel geometry."
+    },
+    {
+      "language": "Urdu",
+      "query": "قصور پنجاب پلس کڈسٹرل نقشہ زمین ریکارڈ سرکاری",
+      "result": "Official PULSE public viewer identifies Kasur mapping. Only OBJECTID and geometry were requested; no Khasra, owner, address, tax or account values were requested.",
+      "method": "Separate English/local-language search and official-source review.",
+      "scope": "Identify current city-specific registry and safe public parcel geometry."
+    }
+  ],
+  "geometryDecision": "No parcel geometry retained; no qualifying point-level sample was available for retention.",
+  "coverageAssessment": {
+    "claimedScope": "Punjab PULSE’s official public viewer lists Kasur under Cadastral Maps. The official Punjab PULSE project describes parcel mapping linked to provincial land records. Kasur is therefore a city/district-specific cadastral source candidate, but these sources do not imply citywide coverage or exact WUP-point parcel presence.",
+    "verifiedOpenScope": "No citywide parcel coverage or WUP-point parcel presence is asserted.",
+    "citywideVerified": false,
+    "countrywideVerified": false,
+    "geometryVerified": false
+  },
+  "attempts": [],
+  "remainingUncertainty": "No conclusion is made about public polygons elsewhere in Kasur or citywide coverage. Point-neighborhood absence was tested only in the recorded bounded windows."
+}

@@ -1,0 +1,96 @@
+{
+  "schemaVersion": "1.0",
+  "checkedAt": "2026-10-09",
+  "cityRecord": "city-870-osh.json",
+  "purpose": "Document first-party local registry/map evidence and bounded anonymous parcel geometry access review.",
+  "scopeLimits": {
+    "maxFullPolygonsRetainedInCityRecord": 0,
+    "maxFullPolygonsRetainedInReview": 0,
+    "maxFullPolygonsRetainedInRepository": 0,
+    "ownerOrAddressDataRetained": false,
+    "credentialsOrTokenValuesRetained": false,
+    "citywideCompletenessAsserted": false
+  },
+  "assessment": "Municipal land/asset records are evidenced; nationwide private parcel-cadastre custody and city-wide coverage are not established. Public municipal asset points are not private parcel polygons.",
+  "registryAssessment": "Municipal land/asset records are evidenced; nationwide private parcel-cadastre custody and city-wide coverage are not established. Public municipal asset points are not private parcel polygons.",
+  "officialPrimarySources": [
+    {
+      "url": "https://umsosh.kg/ru/",
+      "operator": "Mayor of Osh municipal property office",
+      "observation": "Official office administers municipal land/property records; this scope covers municipal assets rather than all private cadastral parcels."
+    },
+    {
+      "url": "https://umsosh.kg/map/",
+      "operator": "Mayor of Osh municipal property map",
+      "observation": "Public map reports 666 municipal-asset/lease objects; not evidence of full private parcel coverage."
+    },
+    {
+      "url": "https://www.cadastre.kg/svc-portal/map/main.do",
+      "operator": "Kyrgyz Republic Cadastre portal",
+      "observation": "Public cadastral map lead with parcel boundaries, but page includes person/name/PIN workflows. No such query was submitted and no geometry schema was inspected."
+    }
+  ],
+  "searchQueries": [
+    {
+      "language": "Russian",
+      "query": "Osh Kyrgyz official кадастр земельные участки GIS карта Государственный кадастр недвижимость Ош",
+      "result": "Municipal land/asset records are evidenced; nationwide private parcel-cadastre custody and city-wide coverage are not established. Public municipal asset points are not private parcel polygons.",
+      "method": "Separate local-language web search followed by official-source review.",
+      "scope": "Identify first-party local land-registry/cadastral sources and safe anonymous parcel geometry.",
+      "actualResultUrls": [
+        "https://umsosh.kg/ru/",
+        "https://umsosh.kg/map/",
+        "https://www.cadastre.kg/svc-portal/map/main.do"
+      ]
+    },
+    {
+      "language": "English",
+      "query": "Osh Kyrgyzstan official cadastral map parcel registry GIS city land registration",
+      "result": "Municipal land/asset records are evidenced; nationwide private parcel-cadastre custody and city-wide coverage are not established. Public municipal asset points are not private parcel polygons.",
+      "method": "Separate English-language web search followed by official-source review.",
+      "scope": "Identify first-party local land-registry/cadastral sources and safe anonymous parcel geometry.",
+      "actualResultUrls": [
+        "https://umsosh.kg/ru/",
+        "https://umsosh.kg/map/",
+        "https://www.cadastre.kg/svc-portal/map/main.do"
+      ]
+    }
+  ],
+  "geometryDecision": "No full parcel polygon retained; no safe anonymous geometry response was verified.",
+  "coverageAssessment": {
+    "claimedScope": "Municipal land/asset records are evidenced; nationwide private parcel-cadastre custody and city-wide coverage are not established. Public municipal asset points are not private parcel polygons.",
+    "verifiedOpenScope": null,
+    "citywideVerified": false,
+    "countrywideVerified": false,
+    "geometryVerified": false
+  },
+  "attempts": [
+    {
+      "url": "https://umsosh.kg/ru/",
+      "result": "Anonymous read-only GET returned HTTP 200 (text/html; charset=UTF-8), 106905 bytes read; title: УМС г. Ош. SHA-256 of bytes read: 5ffe4a49dfff32d28f44be9902398b9a064a270c5a431936517aae689aa9e2aa. No cookies, credentials, or property-specific parameters were sent."
+    },
+    {
+      "url": "https://umsosh.kg/ru/",
+      "result": "Official office administers municipal land/property records; this scope covers municipal assets rather than all private cadastral parcels."
+    },
+    {
+      "url": "https://umsosh.kg/map/",
+      "result": "Public map reports 666 municipal-asset/lease objects; not evidence of full private parcel coverage."
+    },
+    {
+      "url": "https://www.cadastre.kg/svc-portal/map/main.do",
+      "result": "Public cadastral map lead with parcel boundaries, but page includes person/name/PIN workflows. No such query was submitted and no geometry schema was inspected."
+    }
+  ],
+  "remainingUncertainty": "Exact jurisdiction/point mapping and anonymous public vector geometry remain unverified.",
+  "geometryEvidence": null,
+  "runtimeAssessment": "not enabled; root may run full adapter qualification.",
+  "rootReviewedAt": "2026-10-09T07:13:02.981057+00:00",
+  "rootReview": {
+    "checkedAt": "2026-10-09T07:13:02.981057+00:00",
+    "decision": "Reviewed city identity, canonical population/point, separate searches and saved source/request evidence. No full public parcel geometry verified in this pass.",
+    "custodyScope": "Municipal land/asset records are evidenced; nationwide private parcel-cadastre custody and city-wide coverage are not established. Public municipal asset points are not private parcel polygons.",
+    "transportFailuresDoNotProveAbsence": true,
+    "geometryClaimScope": "Investigation outcome only; no worldwide or citywide absence asserted."
+  }
+}

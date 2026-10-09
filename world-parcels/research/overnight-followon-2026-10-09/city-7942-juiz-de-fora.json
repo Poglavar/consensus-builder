@@ -1,0 +1,130 @@
+{
+  "schemaVersion": "1.0",
+  "cityId": "wup2025:7942",
+  "wupCityCode": 7942,
+  "name": "Juiz de Fora",
+  "country": "Brazil",
+  "countryCode": "BR",
+  "rank": 1068,
+  "queueRank": 1068,
+  "point": [
+    -21.7520452174457,
+    -43.3632723968038
+  ],
+  "centerLatLon": [
+    -21.7520452174457,
+    -43.3632723968038
+  ],
+  "pointBasis": "UN WUP2025 population-weighted settlement centroid; not a municipal boundary or parcel-coverage claim.",
+  "population2025": 518218,
+  "population2025k": 518.218,
+  "populationUnit": "persons",
+  "populationPlausibility2025": "High",
+  "cohort": "overnight-followon-1001-1100",
+  "checkedAt": "2026-10-09",
+  "status": "complete",
+  "registryFound": true,
+  "registryBasis": "The municipal SISURB lot service is explicitly described as registered municipal lots compiled from city and consortium cadastral datasets. Its public polygon layer returned an exact WUP-point intersecting feature, OBJECTID 70049.",
+  "registryEvidenceUrls": [
+    "https://sisurb.pjf.mg.gov.br/server/rest/services/uso_cad_lotes/MapServer/158",
+    "https://sisurb.pjf.mg.gov.br/server/rest/services/uso_cad_lotes/MapServer",
+    "https://sisurb.pjf.mg.gov.br/server/rest/services/uso_cad_lotes/MapServer/158/query"
+  ],
+  "verifiedSample": true,
+  "publicParcelGeometryFound": true,
+  "sourceIds": [
+    "br-juiz-de-fora-sisurb-lotes"
+  ],
+  "adapterReady": true,
+  "runtimeReadiness": "enabled",
+  "technicalBlocker": null,
+  "scopeLimits": "170 distinct full native cadastral-reference polygons around the unchanged WUP settlement locator across thirteen bounded cells. Independent EPSG:32723 GEOS audit of all170 grid and footprint polygons found no invalidity, duplicate geometry, positive-area overlaps above0.01m² or operation errors. Forced three-row paging, all170 fresh exact native-ID reads, explicit absence, footprint lookup and source binding passed. Published native identities and full geometry preserved without repair. This bounded evidence does not establish citywide completeness, legal title, positional accuracy or currentness. Published geocodigo keys are used independently of source OBJECTID; exact locator parcel OBJECTID70049 has native keyLT104196.",
+  "resultCategory": "verified_public_geometry_runtime_enabled",
+  "coverageAssessment": {
+    "claimedScope": "The municipal SISURB lot service is explicitly described as registered municipal lots compiled from city and consortium cadastral datasets. Its public polygon layer returned an exact WUP-point intersecting feature, OBJECTID 70049.",
+    "verifiedOpenScope": "170 distinct full native cadastral-reference polygons around the unchanged WUP settlement locator across thirteen bounded cells. Independent EPSG:32723 GEOS audit of all170 grid and footprint polygons found no invalidity, duplicate geometry, positive-area overlaps above0.01m² or operation errors. Forced three-row paging, all170 fresh exact native-ID reads, explicit absence, footprint lookup and source binding passed. Published native identities and full geometry preserved without repair. This bounded evidence does not establish citywide completeness, legal title, positional accuracy or currentness. Published geocodigo keys are used independently of source OBJECTID; exact locator parcel OBJECTID70049 has native keyLT104196.",
+    "citywideVerified": false,
+    "countrywideVerified": false
+  },
+  "runtimeAssessment": {
+    "status": "enabled",
+    "reason": "170 distinct full native cadastral-reference polygons around the unchanged WUP settlement locator across thirteen bounded cells. Independent EPSG:32723 GEOS audit of all170 grid and footprint polygons found no invalidity, duplicate geometry, positive-area overlaps above0.01m² or operation errors. Forced three-row paging, all170 fresh exact native-ID reads, explicit absence, footprint lookup and source binding passed. Published native identities and full geometry preserved without repair. This bounded evidence does not establish citywide completeness, legal title, positional accuracy or currentness. Published geocodigo keys are used independently of source OBJECTID; exact locator parcel OBJECTID70049 has native keyLT104196.",
+    "acceptanceFile": "research/overnight-followon-2026-10-09/juiz-de-fora-sisurb-root-acceptance.json",
+    "qualityFile": "research/overnight-followon-2026-10-09/juiz-de-fora-sisurb-root-quality.json",
+    "qualityReviewFile": "research/overnight-followon-2026-10-09/juiz-de-fora-root-quality-review.json"
+  },
+  "freshResearch": {
+    "queries": [
+      {
+        "language": "English",
+        "query": "Juiz de Fora Brazil official cadastral parcel map municipal land registry GIS urban lots",
+        "scope": "Fresh independent city-specific registry/cadastral-map search.",
+        "result": "Found official source evidence and a publicly queryable geometry route; bounded result is documented separately.",
+        "actualResultUrls": [
+          "https://sisurb.pjf.mg.gov.br/server/rest/services/uso_cad_lotes/MapServer/158",
+          "https://sisurb.pjf.mg.gov.br/server/rest/services/uso_cad_lotes/MapServer",
+          "https://sisurb.pjf.mg.gov.br/server/rest/services/uso_cad_lotes/MapServer/158/query"
+        ],
+        "executionMethod": "Executed web search independently; first-party primary sources/service metadata inspected where available."
+      },
+      {
+        "language": "Portuguese",
+        "query": "Juiz de Fora cadastro imobiliário mapa de lotes cadastro técnico municipal geoportal prefeitura oficial",
+        "scope": "Fresh independent city-specific registry/cadastral-map search.",
+        "result": "Found official source evidence and a publicly queryable geometry route; bounded result is documented separately.",
+        "actualResultUrls": [
+          "https://sisurb.pjf.mg.gov.br/server/rest/services/uso_cad_lotes/MapServer/158",
+          "https://sisurb.pjf.mg.gov.br/server/rest/services/uso_cad_lotes/MapServer",
+          "https://sisurb.pjf.mg.gov.br/server/rest/services/uso_cad_lotes/MapServer/158/query"
+        ],
+        "executionMethod": "Executed web search independently; first-party primary sources/service metadata inspected where available."
+      }
+    ],
+    "officialSources": [
+      {
+        "title": "Juiz de Fora municipal SISURB ArcGIS lot layer metadata",
+        "url": "https://sisurb.pjf.mg.gov.br/server/rest/services/uso_cad_lotes/MapServer/158",
+        "observation": "Public municipal layer metadata labels the polygon layer PEUS.uso_cad_lotes and describes municipal-cadastral lot geometry."
+      },
+      {
+        "title": "Juiz de Fora municipal SISURB service root",
+        "url": "https://sisurb.pjf.mg.gov.br/server/rest/services/uso_cad_lotes/MapServer",
+        "observation": "Official city service root and lot layer directory."
+      },
+      {
+        "title": "Municipal parcel-query endpoint",
+        "url": "https://sisurb.pjf.mg.gov.br/server/rest/services/uso_cad_lotes/MapServer/158/query",
+        "observation": "Safe exact-point request requested only OBJECTID plus geometry; one polygon returned."
+      }
+    ],
+    "viewerAndServiceTrace": "Exact point intersection query requested `outFields=OBJECTID` only, geometry and EPSG:4326 output, result limit 3. It returned one Polygon; an independent ring test confirms the unchanged WUP point lies inside and the ring is closed. The sample retains OBJECTID and unchanged geometry only.\\nRequest URL: https://sisurb.pjf.mg.gov.br/server/rest/services/uso_cad_lotes/MapServer/158/query?f=geojson&where=1%3D1&geometry=-43.3632723968038%2C-21.7520452174457&geometryType=esriGeometryPoint&inSR=4326&spatialRel=esriSpatialRelIntersects&outFields=OBJECTID&returnGeometry=true&outSR=4326&resultRecordCount=3\\nResult: HTTP 200; one polygon, OBJECTID 70049; unchanged locator contained inside.",
+    "attemptedGeometry": "bounded query returned one full polygon Request URL: https://sisurb.pjf.mg.gov.br/server/rest/services/uso_cad_lotes/MapServer/158/query?f=geojson&where=1%3D1&geometry=-43.3632723968038%2C-21.7520452174457&geometryType=esriGeometryPoint&inSR=4326&spatialRel=esriSpatialRelIntersects&outFields=OBJECTID&returnGeometry=true&outSR=4326&resultRecordCount=3 Result: HTTP 200; one polygon, OBJECTID 70049; unchanged locator contained inside.",
+    "sensitiveFieldsRequested": false,
+    "credentialsUsed": false
+  },
+  "remainingUncertainty": "Qualified bounded source-reference geometry only; whole-city completeness, legal title, survey accuracy, currentness and future revision identity continuity remain unverified.",
+  "nextStep": "Manual browser verification after catalog integration.",
+  "priorEvidenceFiles": [],
+  "priorCheck": {
+    "attemptState": "pending",
+    "attemptEvidence": [],
+    "possiblePriorMatches": []
+  },
+  "sampleFile": "city-7942-juiz-de-fora-samples.geojson",
+  "rootReviewedAt": "2026-10-09T06:05:23.845931+00:00",
+  "rootReviewNote": "Root independently reviewed bounded real-adapter acceptance and all grid/footprint native geometry topology; all fresh native-ID rereads match. Approved.",
+  "source": {
+    "sourceId": "br-juiz-de-fora-sisurb-lotes",
+    "name": "Juiz de Fora SISURB municipal cadastral lots",
+    "operator": "Prefeitura Municipal de Juiz de Fora",
+    "endpoint": "https://sisurb.pjf.mg.gov.br/server/rest/services/uso_cad_lotes/MapServer/158",
+    "scope": "170 distinct full native cadastral-reference polygons around the unchanged WUP settlement locator across thirteen bounded cells. Independent EPSG:32723 GEOS audit of all170 grid and footprint polygons found no invalidity, duplicate geometry, positive-area overlaps above0.01m² or operation errors. Forced three-row paging, all170 fresh exact native-ID reads, explicit absence, footprint lookup and source binding passed. Published native identities and full geometry preserved without repair. This bounded evidence does not establish citywide completeness, legal title, positional accuracy or currentness. Published geocodigo keys are used independently of source OBJECTID; exact locator parcel OBJECTID70049 has native keyLT104196."
+  },
+  "appCityId": "juiz_de_fora",
+  "runtimeQualification": {
+    "sourceId": "br-juiz-de-fora-sisurb-lotes",
+    "status": "enabled",
+    "acceptanceFile": "research/overnight-followon-2026-10-09/juiz-de-fora-sisurb-root-acceptance.json",
+    "qualityFile": "research/overnight-followon-2026-10-09/juiz-de-fora-sisurb-root-quality.json"
+  }
+}

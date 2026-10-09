@@ -1,0 +1,19 @@
+{
+  "schemaVersion": 1,
+  "features": [
+    {
+      "nativeOriginalProperties": {
+        "OBJECTID": 5685467
+      },
+      "runtimeId": "IT-SICILIA-PARCEL-G273~%20~125~%20~%20~298",
+      "rawCoordinateArraysIdentical": true,
+      "topologicallyIdentical": true,
+      "metricSrid": 32633,
+      "hausdorffDistanceM": 0.0,
+      "symmetricDifferenceM2": 0.0,
+      "sourceCoordinatesModified": false
+    }
+  ],
+  "fullGeometryRetainedInReview": false,
+  "sourceCoordinatesModified": false
+}

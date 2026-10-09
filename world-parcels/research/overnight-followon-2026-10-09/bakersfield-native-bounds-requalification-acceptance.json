@@ -1,0 +1,610 @@
+{
+  "schemaVersion": "1.0",
+  "checkedAt": "2026-10-09",
+  "city": "Bakersfield",
+  "purpose": "Bounded requalification evidence only. Runtime/catalog enablement and citywide completeness are not asserted.",
+  "source": {
+    "endpoint": "https://gis.bakersfieldcity.us/webmaps/rest/services/General/Cadastre/MapServer/1",
+    "adapter": "existing ArcGIS parcel source",
+    "idField": "APN_ID",
+    "idType": "string",
+    "idPrefix": "US-BAKERSFIELD-APN-",
+    "objectIdField": "OBJECTID",
+    "outFields": [
+      "OBJECTID",
+      "APN_ID"
+    ],
+    "boundsQueryMode": "object-ids",
+    "idsQueryMode": "object-ids",
+    "pageSize": 100,
+    "maxFeatures": 3000,
+    "boundsSrid": 2229,
+    "boundsProjection": "+proj=lcc +lat_0=33.5 +lon_0=-118 +lat_1=35.4666666666667 +lat_2=34.0333333333333 +x_0=2000000.0001016 +y_0=500000.0001016 +ellps=GRS80 +towgs84=0,0,0,0,0,0,0 +units=us-ft +no_defs +type=crs"
+  },
+  "pointLatLon": [
+    35.3492651317935,
+    -119.024876869726
+  ],
+  "grid": {
+    "stepDegrees": 0.001,
+    "baseLon": -119.025,
+    "baseLat": 35.349000000000004,
+    "offsets": [
+      [
+        -1,
+        -1
+      ],
+      [
+        0,
+        -1
+      ],
+      [
+        1,
+        -1
+      ],
+      [
+        -1,
+        0
+      ],
+      [
+        0,
+        0
+      ],
+      [
+        1,
+        0
+      ],
+      [
+        -1,
+        1
+      ],
+      [
+        0,
+        1
+      ],
+      [
+        1,
+        1
+      ],
+      [
+        0,
+        -2
+      ],
+      [
+        0,
+        2
+      ],
+      [
+        -2,
+        0
+      ],
+      [
+        2,
+        0
+      ]
+    ],
+    "cells": [
+      {
+        "index": 0,
+        "offset": [
+          -1,
+          -1
+        ],
+        "bbox": [
+          -119.026,
+          35.348,
+          -119.025,
+          35.349
+        ],
+        "featureCount": 15,
+        "complete": true,
+        "sourceRequests": 3
+      },
+      {
+        "index": 1,
+        "offset": [
+          0,
+          -1
+        ],
+        "bbox": [
+          -119.025,
+          35.348,
+          -119.024,
+          35.349
+        ],
+        "featureCount": 16,
+        "complete": true,
+        "sourceRequests": 3
+      },
+      {
+        "index": 2,
+        "offset": [
+          1,
+          -1
+        ],
+        "bbox": [
+          -119.024,
+          35.348,
+          -119.023,
+          35.349
+        ],
+        "featureCount": 17,
+        "complete": true,
+        "sourceRequests": 3
+      },
+      {
+        "index": 3,
+        "offset": [
+          -1,
+          0
+        ],
+        "bbox": [
+          -119.026,
+          35.349,
+          -119.025,
+          35.35
+        ],
+        "featureCount": 11,
+        "complete": true,
+        "sourceRequests": 3
+      },
+      {
+        "index": 4,
+        "offset": [
+          0,
+          0
+        ],
+        "bbox": [
+          -119.025,
+          35.349,
+          -119.024,
+          35.35
+        ],
+        "featureCount": 15,
+        "complete": true,
+        "sourceRequests": 3
+      },
+      {
+        "index": 5,
+        "offset": [
+          1,
+          0
+        ],
+        "bbox": [
+          -119.024,
+          35.349,
+          -119.023,
+          35.35
+        ],
+        "featureCount": 16,
+        "complete": true,
+        "sourceRequests": 3
+      },
+      {
+        "index": 6,
+        "offset": [
+          -1,
+          1
+        ],
+        "bbox": [
+          -119.026,
+          35.35,
+          -119.025,
+          35.351
+        ],
+        "featureCount": 8,
+        "complete": true,
+        "sourceRequests": 3
+      },
+      {
+        "index": 7,
+        "offset": [
+          0,
+          1
+        ],
+        "bbox": [
+          -119.025,
+          35.35,
+          -119.024,
+          35.351
+        ],
+        "featureCount": 8,
+        "complete": true,
+        "sourceRequests": 3
+      },
+      {
+        "index": 8,
+        "offset": [
+          1,
+          1
+        ],
+        "bbox": [
+          -119.024,
+          35.35,
+          -119.023,
+          35.351
+        ],
+        "featureCount": 10,
+        "complete": true,
+        "sourceRequests": 3
+      },
+      {
+        "index": 9,
+        "offset": [
+          0,
+          -2
+        ],
+        "bbox": [
+          -119.025,
+          35.347,
+          -119.024,
+          35.348
+        ],
+        "featureCount": 17,
+        "complete": true,
+        "sourceRequests": 3
+      },
+      {
+        "index": 10,
+        "offset": [
+          0,
+          2
+        ],
+        "bbox": [
+          -119.025,
+          35.351,
+          -119.024,
+          35.352
+        ],
+        "featureCount": 3,
+        "complete": true,
+        "sourceRequests": 3
+      },
+      {
+        "index": 11,
+        "offset": [
+          -2,
+          0
+        ],
+        "bbox": [
+          -119.027,
+          35.349,
+          -119.026,
+          35.35
+        ],
+        "featureCount": 17,
+        "complete": true,
+        "sourceRequests": 3
+      },
+      {
+        "index": 12,
+        "offset": [
+          2,
+          0
+        ],
+        "bbox": [
+          -119.023,
+          35.349,
+          -119.022,
+          35.35
+        ],
+        "featureCount": 17,
+        "complete": true,
+        "sourceRequests": 3
+      }
+    ],
+    "returnedRows": 170,
+    "uniqueObjectIdCount": 119,
+    "duplicateCellRows": 51
+  },
+  "supplementalLiteralMetricSquare": {
+    "metricCrs": "EPSG:32611",
+    "sideMeters": 1000,
+    "wgs84Envelope": [
+      -119.03048905750562,
+      35.34466721922126,
+      -119.01926529196452,
+      35.35386282122271
+    ],
+    "returnedFullFootprints": 761,
+    "complete": true,
+    "sourceRequests": 10,
+    "paging": "pageSize=100: count + object-ID manifest + 8 full-geometry pages",
+    "fullyAudited": true
+  },
+  "tests": [
+    {
+      "name": "grid-cell-0",
+      "passed": true,
+      "bbox": [
+        -119.026,
+        35.348,
+        -119.025,
+        35.349
+      ],
+      "featureCount": 15,
+      "complete": true,
+      "allFullPolygons": true
+    },
+    {
+      "name": "grid-cell-1",
+      "passed": true,
+      "bbox": [
+        -119.025,
+        35.348,
+        -119.024,
+        35.349
+      ],
+      "featureCount": 16,
+      "complete": true,
+      "allFullPolygons": true
+    },
+    {
+      "name": "grid-cell-2",
+      "passed": true,
+      "bbox": [
+        -119.024,
+        35.348,
+        -119.023,
+        35.349
+      ],
+      "featureCount": 17,
+      "complete": true,
+      "allFullPolygons": true
+    },
+    {
+      "name": "grid-cell-3",
+      "passed": true,
+      "bbox": [
+        -119.026,
+        35.349,
+        -119.025,
+        35.35
+      ],
+      "featureCount": 11,
+      "complete": true,
+      "allFullPolygons": true
+    },
+    {
+      "name": "grid-cell-4",
+      "passed": true,
+      "bbox": [
+        -119.025,
+        35.349,
+        -119.024,
+        35.35
+      ],
+      "featureCount": 15,
+      "complete": true,
+      "allFullPolygons": true
+    },
+    {
+      "name": "grid-cell-5",
+      "passed": true,
+      "bbox": [
+        -119.024,
+        35.349,
+        -119.023,
+        35.35
+      ],
+      "featureCount": 16,
+      "complete": true,
+      "allFullPolygons": true
+    },
+    {
+      "name": "grid-cell-6",
+      "passed": true,
+      "bbox": [
+        -119.026,
+        35.35,
+        -119.025,
+        35.351
+      ],
+      "featureCount": 8,
+      "complete": true,
+      "allFullPolygons": true
+    },
+    {
+      "name": "grid-cell-7",
+      "passed": true,
+      "bbox": [
+        -119.025,
+        35.35,
+        -119.024,
+        35.351
+      ],
+      "featureCount": 8,
+      "complete": true,
+      "allFullPolygons": true
+    },
+    {
+      "name": "grid-cell-8",
+      "passed": true,
+      "bbox": [
+        -119.024,
+        35.35,
+        -119.023,
+        35.351
+      ],
+      "featureCount": 10,
+      "complete": true,
+      "allFullPolygons": true
+    },
+    {
+      "name": "grid-cell-9",
+      "passed": true,
+      "bbox": [
+        -119.025,
+        35.347,
+        -119.024,
+        35.348
+      ],
+      "featureCount": 17,
+      "complete": true,
+      "allFullPolygons": true
+    },
+    {
+      "name": "grid-cell-10",
+      "passed": true,
+      "bbox": [
+        -119.025,
+        35.351,
+        -119.024,
+        35.352
+      ],
+      "featureCount": 3,
+      "complete": true,
+      "allFullPolygons": true
+    },
+    {
+      "name": "grid-cell-11",
+      "passed": true,
+      "bbox": [
+        -119.027,
+        35.349,
+        -119.026,
+        35.35
+      ],
+      "featureCount": 17,
+      "complete": true,
+      "allFullPolygons": true
+    },
+    {
+      "name": "grid-cell-12",
+      "passed": true,
+      "bbox": [
+        -119.023,
+        35.349,
+        -119.022,
+        35.35
+      ],
+      "featureCount": 17,
+      "complete": true,
+      "allFullPolygons": true
+    },
+    {
+      "name": "literal-1km-square-profile",
+      "passed": true,
+      "featureCount": 761,
+      "complete": true,
+      "bbox": [
+        -119.03048905750562,
+        35.34466721922126,
+        -119.01926529196452,
+        35.35386282122271
+      ],
+      "metricBbox": [
+        315502.4275745367,
+        3913157.892315302,
+        316502.4275745367,
+        3914157.892315302
+      ]
+    },
+    {
+      "name": "selected-native-apn-and-absence",
+      "passed": true,
+      "selectedApn": "14734302",
+      "selectedObjectId": 127663,
+      "absentIds": [
+        "US-BAKERSFIELD-APN-999999999999"
+      ],
+      "geometryHash": "a93604f75c0481cc4c5f7cc1b6b109f9d2f3951c302326db3dadc79d471a1ec9",
+      "matchesBoundedQuery": true
+    },
+    {
+      "name": "wup-point-and-footprint",
+      "passed": true,
+      "objectId": 127663,
+      "apnId": "14734302",
+      "wupPointContained": true,
+      "queryGeometryCount": 2,
+      "geometryHash": "a93604f75c0481cc4c5f7cc1b6b109f9d2f3951c302326db3dadc79d471a1ec9"
+    },
+    {
+      "name": "source-binding",
+      "passed": true,
+      "coverage": "complete",
+      "parcelCount": 1,
+      "siteM2": 1269.24,
+      "selectedParcelId": "US-BAKERSFIELD-APN-14734302"
+    },
+    {
+      "name": "forced-three-row-paging",
+      "passed": true,
+      "cellIndex": 0,
+      "sourceCellCount": 15,
+      "requestedApnIds": [
+        "US-BAKERSFIELD-APN-14739109",
+        "US-BAKERSFIELD-APN-14734301",
+        "US-BAKERSFIELD-APN-14734302"
+      ],
+      "returnedCount": 3,
+      "featurePageCalls": 3,
+      "pageSize": 1,
+      "allIdsMatch": true
+    },
+    {
+      "name": "fresh-independent-native-id-readback",
+      "passed": true,
+      "requestedUniqueGridIds": 119,
+      "batchSizeMax": 80,
+      "batchCount": 2,
+      "batches": [
+        {
+          "offset": 0,
+          "requested": 80,
+          "returned": 80,
+          "complete": true,
+          "absentCount": 0,
+          "allGeometryHashesMatch": true,
+          "featurePages": 1
+        },
+        {
+          "offset": 80,
+          "requested": 39,
+          "returned": 39,
+          "complete": true,
+          "absentCount": 0,
+          "allGeometryHashesMatch": true,
+          "featurePages": 1
+        }
+      ]
+    }
+  ],
+  "allAcceptanceTestsPassed": true,
+  "requestCounts": {
+    "acceptedQualificationHttpRequests": 69,
+    "acceptedQualificationAllHttp200": true,
+    "breakdown": {
+      "thirteenGridCells": 39,
+      "literalMetricSquare": 10,
+      "selectedPlusAbsentNativeIds": 3,
+      "footprintQuery": 3,
+      "sourceBinding": 3,
+      "forcedThreeRowPaging": 5,
+      "freshExactIds119InTwoBatches": 6
+    },
+    "supersededDiagnosticHttpRequests": 112,
+    "previousFailedOversizedProbeHttpRequests": 383,
+    "totalObservedHttpRequestsAcrossAllAttempts": 564,
+    "failedOversizedProbe": {
+      "returnedCount": 761,
+      "reason": "The initial wrong profile was stopped at a mismatched expected-count assertion; its geometry/features were not retained or analyzed."
+    }
+  },
+  "dataHandling": {
+    "requestFields": [
+      "OBJECTID",
+      "APN_ID"
+    ],
+    "fullGeometryAuditUniqueFootprints": 761,
+    "duplicateGridOccurrencesWereHashChecked": true,
+    "ownerAddressTaxAccountAttributesRequestedOrRetained": false,
+    "fullGeometryRetainedInRepository": false,
+    "fullGeometryCacheLocation": "ignored temporary workspace only"
+  },
+  "runtimeAssessment": {
+    "status": "pending-root-review",
+    "reason": "Evidence artifacts prepared; no runtime or catalog enablement decision made."
+  }
+}

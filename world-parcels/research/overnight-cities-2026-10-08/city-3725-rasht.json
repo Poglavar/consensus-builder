@@ -1,0 +1,137 @@
+{
+  "name": "Rasht",
+  "country": "Iran",
+  "countryCode": "IR",
+  "rank": 948,
+  "point": [
+    37.2791300167742,
+    49.5878649204645
+  ],
+  "population2025": 579481,
+  "population2025k": 579.481,
+  "populationPlausibility2025": "High",
+  "schemaVersion": 1,
+  "kind": "city_parcel_source_research",
+  "checkedAt": "2026-10-09",
+  "populationUnit": "persons",
+  "status": "complete",
+  "verifiedSample": false,
+  "publicParcelGeometryFound": false,
+  "runtimeReadiness": "not_enabled_no_verified_public_geometry",
+  "adapterReady": false,
+  "priorEvidenceFiles": [],
+  "priorCheck": {
+    "attemptState": "pending",
+    "attemptEvidence": [],
+    "possiblePriorMatches": [],
+    "resolvedPriorMatches": []
+  },
+  "pointBasis": "UN WUP 2025 population-weighted settlement centroid; this is not a municipal boundary or a parcel-coverage claim.",
+  "registryFound": null,
+  "registryBasis": "No first-party public page identifying a Rasht land-registration office or parcel-map service was located. The official municipal and national SDI entry points could not be reviewed through available fetch tools. A secondary report attributes road-network data publishing to the Rasht municipal ICT organization, but this is not primary evidence of a land registry or parcel layer.",
+  "registryEvidenceUrls": [
+    "https://rasht.ir/",
+    "https://fava.rasht.ir/",
+    "https://iransdi.ncc.gov.ir/"
+  ],
+  "resultCategory": "local_registry_not_confirmed",
+  "remainingUncertainty": "Whether the Rasht municipal SDI includes a current cadastre layer, whether the provincial land-registration offices publish a city-specific public workflow, and whether any public full polygon is available.",
+  "scopeLimits": "The WUP locator is a settlement centroid, not a parcel identity. No citywide completeness is asserted. No owner/address/account/token values retained. At most three complete native parcel geometries may be retained for this city; none was obtained.",
+  "verifiedParcelResponse": null,
+  "source": null,
+  "sourceIds": [],
+  "wupCityCode": 3725,
+  "cityId": "wup2025:3725",
+  "queueRank": 948,
+  "centerLatLon": [
+    37.2791300167742,
+    49.5878649204645
+  ],
+  "technicalBlocker": "The municipal and national SDI shells were not accessible through the available web fetch path, and no official local registry catalogue or anonymous parcel endpoint was found.",
+  "coverageAssessment": {
+    "claimedScope": "No Rasht cadastral or registry extent is claimed. The municipal SDI road-network report is context only and not parcel evidence.",
+    "verifiedOpenScope": "English and Persian searches did not surface first-party Rasht registry or parcel-viewer documentation. A secondary city-news report describes a city road-network layer on Iran SDI, which is non-cadastral and not used to infer parcel availability.",
+    "citywideVerified": false,
+    "countrywideVerified": false,
+    "geometryVerified": false
+  },
+  "runtimeAssessment": {
+    "status": "not_enabled_no_verified_public_geometry",
+    "reason": "The municipal and national SDI shells were not accessible through the available web fetch path, and no official local registry catalogue or anonymous parcel endpoint was found."
+  },
+  "research": {
+    "executedQueries": [
+      {
+        "language": "Persian",
+        "query": "رشت نقشه کاداستر شهرداری رشت اداره ثبت اسناد و املاک گیلان سامانه GIS رسمی",
+        "scope": "Find first-party Rasht cadastral/registry office and public parcel map sources.",
+        "result": "Searches did not return a first-party Rasht registry page or public cadastral layer catalogue. Municipal rasht.ir and FAVA/national SDI endpoints were not accessible via the current web fetch path; a secondary city-news report about road-network publishing is not treated as parcel evidence.",
+        "actualResultUrls": [
+          "https://rasht.ir/",
+          "https://fava.rasht.ir/",
+          "https://iransdi.ncc.gov.ir/"
+        ],
+        "executionMethod": "Separate Persian search and official-domain search; secondary result excluded from registry determination."
+      },
+      {
+        "language": "English",
+        "query": "Rasht Iran official land registry cadastral map GIS Gilan municipality parcel",
+        "scope": "Cross-check official local registration and public feature service.",
+        "result": "No first-party city register or anonymous parcel geometry endpoint was verified. The known municipal and national spatial portals could not be reviewed through the available read-only fetch path.",
+        "actualResultUrls": [
+          "https://rasht.ir/",
+          "https://fava.rasht.ir/",
+          "https://iransdi.ncc.gov.ir/"
+        ],
+        "executionMethod": "Separate English search followed by official-domain review."
+      }
+    ],
+    "officialSources": [
+      {
+        "url": "https://rasht.ir/",
+        "observation": "No first-party public page identifying a Rasht land-registration office or parcel-map service was located. The official municipal and national SDI entry points could not be reviewed through available fetch tools. A secondary report attributes road-network data publishing to the Rasht municipal ICT organization, but this is not primary evidence of a land registry or parcel layer."
+      },
+      {
+        "url": "https://fava.rasht.ir/",
+        "observation": "No first-party public page identifying a Rasht land-registration office or parcel-map service was located. The official municipal and national SDI entry points could not be reviewed through available fetch tools. A secondary report attributes road-network data publishing to the Rasht municipal ICT organization, but this is not primary evidence of a land registry or parcel layer."
+      },
+      {
+        "url": "https://iransdi.ncc.gov.ir/",
+        "observation": "No first-party public page identifying a Rasht land-registration office or parcel-map service was located. The official municipal and national SDI entry points could not be reviewed through available fetch tools. A secondary report attributes road-network data publishing to the Rasht municipal ICT organization, but this is not primary evidence of a land registry or parcel layer."
+      }
+    ],
+    "requests": [
+      {
+        "url": "https://rasht.ir/",
+        "method": "GET / official municipal portal attempt",
+        "status": "browser_fetch_timeout",
+        "observation": "The read-only browser fetch timed out before returning page content; no origin availability conclusion is drawn."
+      },
+      {
+        "url": "https://fava.rasht.ir/",
+        "method": "GET / official municipal ICT portal attempt",
+        "status": "not_accessible_via_web_fetch",
+        "observation": "The web fetch tool could not access the official municipal GIS/ICT portal; no claim about provider state or layer contents is made."
+      },
+      {
+        "url": "https://iransdi.ncc.gov.ir/",
+        "method": "GET / National Cartographic Center SDI attempt",
+        "status": "browser_fetch_timeout",
+        "observation": "The read-only browser fetch timed out before returning page content; no origin availability conclusion is drawn."
+      },
+      {
+        "url": "https://nabzkhabar.ir/%D8%AA%D8%A8%D8%A7%D8%AF%D9%84-%D8%A7%D8%B7%D9%84%D8%A7%D8%B9%D8%A7%D8%AA-%D8%B4%D9%87%D8%B1%DB%8C/",
+        "method": "secondary-source review",
+        "observation": "Reports that Rasht municipal ICT published a road-network layer on Iran SDI; used only as context because it is not first-party and does not establish a parcel layer."
+      }
+    ],
+    "geometryDecision": "No full parcel polygon retained. Tile/raster/document outputs, guessed layers, and unverified points are not parcel geometry."
+  },
+  "rootPrimaryReadback": {
+    "url": "https://rasht.ir/",
+    "fetch": "error",
+    "reason": "<urlopen error timed out>"
+  },
+  "rootReviewNote": "Reviewed the local institutional evidence separately from public geometry. Indexed official evidence and direct readback failures are distinguished; no full polygon response was verified. Registry null indicates uncertainty rather than absence.",
+  "rootReviewedAt": "2026-10-09T04:48:05.515266+00:00"
+}

@@ -1,0 +1,81 @@
+{
+  "schemaVersion": 1,
+  "checkedAt": "2026-10-09",
+  "cityRecord": "city-11033-sitamarhi.json",
+  "purpose": "City-specific official registration/cadastre and bounded anonymous parcel-geometry review.",
+  "scopeLimits": {
+    "maxFullPolygonsRetainedInCityRecord": 3,
+    "maxFullPolygonsRetainedInReview": 3,
+    "maxFullPolygonsRetainedInRepository": 3,
+    "ownerOrAddressDataRetained": false,
+    "credentialsOrTokenValuesRetained": false,
+    "citywideCompletenessAsserted": false
+  },
+  "assessment": "Official local registration/cadastre evidence was found, but no anonymous public parcel feature response was verified at the ranked point.",
+  "registryAssessment": "Sitamarhi District Administration confirms a local land-records office and links to Bihar Revenue & Land Reforms services. Official NIC BhuNaksha is a statewide cadastral-map UI using hierarchical survey selections. No anonymous point-based feature schema or geometry was verified.",
+  "searchQueries": [
+    {
+      "language": "Hindi",
+      "query": "सीतामढ़ी बिहार भू नक्शा जमीन का नक्शा जिला भूमि अभिलेख आधिकारिक",
+      "scope": "Locate official city-scope registry/cadastre services and test for anonymous safe parcel geometry at the ranked point.",
+      "result": "WUP coordinate is not a parcel identity. District portal routes to state services; BhuNaksha requires district/subdivision/circle/mauza/survey/map selections. No exact-point parcel response was obtained and no plot-owner/report data was requested or retained.",
+      "actualResultUrls": [
+        "https://sitamarhi.nic.in/service/land-records/",
+        "https://sitamarhi.nic.in/hi/service/%E0%A4%AD%E0%A5%82%E0%A4%AE%E0%A4%BF-%E0%A4%B0%E0%A4%BF%E0%A4%95%E0%A5%89%E0%A4%B0%E0%A5%8D%E0%A4%A1%E0%A5%8D%E0%A4%B8/",
+        "https://land.bihar.gov.in/landbihar/Default.aspx",
+        "https://bhunaksha.bihar.gov.in/10/index.jsp",
+        "https://gis.bihar.gov.in/DEPTS/Default.aspx"
+      ],
+      "executionMethod": "Separate language-specific search followed by official-source review."
+    },
+    {
+      "language": "English",
+      "query": "Sitamarhi Bihar official land records cadastral parcel map GIS BhuNaksha",
+      "scope": "Locate official city-scope registry/cadastre services and test for anonymous safe parcel geometry at the ranked point.",
+      "result": "WUP coordinate is not a parcel identity. District portal routes to state services; BhuNaksha requires district/subdivision/circle/mauza/survey/map selections. No exact-point parcel response was obtained and no plot-owner/report data was requested or retained.",
+      "actualResultUrls": [
+        "https://sitamarhi.nic.in/service/land-records/",
+        "https://sitamarhi.nic.in/hi/service/%E0%A4%AD%E0%A5%82%E0%A4%AE%E0%A4%BF-%E0%A4%B0%E0%A4%BF%E0%A4%95%E0%A5%89%E0%A4%B0%E0%A5%8D%E0%A4%A1%E0%A5%8D%E0%A4%B8/",
+        "https://land.bihar.gov.in/landbihar/Default.aspx",
+        "https://bhunaksha.bihar.gov.in/10/index.jsp",
+        "https://gis.bihar.gov.in/DEPTS/Default.aspx"
+      ],
+      "executionMethod": "Separate language-specific search followed by official-source review."
+    }
+  ],
+  "officialPrimarySources": [
+    {
+      "url": "https://sitamarhi.nic.in/service/land-records/",
+      "observation": "District administration land-records page links to state service and lists District Collectorate/ADM Office in Sitamarhi."
+    },
+    {
+      "url": "https://sitamarhi.nic.in/hi/service/%E0%A4%AD%E0%A5%82%E0%A4%AE%E0%A4%BF-%E0%A4%B0%E0%A4%BF%E0%A4%95%E0%A5%89%E0%A4%B0%E0%A5%8D%E0%A4%A1%E0%A5%8D%E0%A4%B8/",
+      "observation": "Official Hindi page corroborates local land-record office and Bihar portal."
+    },
+    {
+      "url": "https://land.bihar.gov.in/landbihar/Default.aspx",
+      "observation": "Bihar Revenue & Land Reforms portal lists BhuNaksha among state land-map services."
+    },
+    {
+      "url": "https://bhunaksha.bihar.gov.in/10/index.jsp",
+      "observation": "Official NIC-built BhuNaksha UI uses survey-area/map-sheet selection; no verified point query or safe vector schema."
+    },
+    {
+      "url": "https://gis.bihar.gov.in/DEPTS/Default.aspx",
+      "observation": "Bihar government GIS portal notes some spatial layers require login; no anonymous parcel endpoint was identified."
+    }
+  ],
+  "viewerAndServiceTrace": {
+    "viewerUrl": "https://sitamarhi.nic.in/service/land-records/",
+    "apiBase": null,
+    "observedClientRoutes": [],
+    "notes": "WUP coordinate is not a parcel identity. District portal routes to state services; BhuNaksha requires district/subdivision/circle/mauza/survey/map selections. No exact-point parcel response was obtained and no plot-owner/report data was requested or retained."
+  },
+  "geometryEvidence": null,
+  "privacy": "No owner/address properties or credentials are retained. Marseille sample retains only native IDU and geometry; no owner/plot report was queried for other cities.",
+  "runtimeAssessment": "not_enabled_no_verified_public_geometry",
+  "rootCityBindingReview": {
+    "url": "https://sitamarhi.nic.in/service/land-records/",
+    "observation": "Official service page explicitly identifies City: Sitamarhi for the local land-records office. No private record was queried."
+  }
+}

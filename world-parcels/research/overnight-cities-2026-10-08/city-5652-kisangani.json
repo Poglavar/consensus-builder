@@ -1,0 +1,99 @@
+{
+  "schemaVersion": 1,
+  "kind": "city_parcel_source_research",
+  "checkedAt": "2026-10-09",
+  "name": "Kisangani",
+  "country": "Democratic Republic of the Congo",
+  "countryCode": "CD",
+  "populationUnit": "persons",
+  "status": "complete",
+  "registryFound": true,
+  "registryBasis": "The DRC Ministry of Land Affairs lists four Tshopo land/cadastre jurisdictions, including Kisangani-Nord and Kisangani-Sud. This establishes city-specific official cadastral administration. The public ministry catalogue describes record consultation as a formal requested service; no parcel-specific request or record lookup was made, and no public geometry/schema was found.",
+  "registryEvidenceUrls": [
+    "https://affairesfoncieres.gouv.cd/secretariat/circonscriptions",
+    "https://servicepublic.gouv.cd/service/4671",
+    "https://www.affairesfoncieres.gouv.cd/"
+  ],
+  "verifiedSample": false,
+  "publicParcelGeometryFound": false,
+  "runtimeReadiness": "not_enabled_no_verified_public_geometry",
+  "wupCityCode": 5652,
+  "cityId": "wup2025:5652",
+  "centerLatLon": [
+    0.522230961537621,
+    25.1915027689622
+  ],
+  "rank": 574,
+  "queueRank": 574,
+  "population2025": 900330,
+  "population2025k": 900.33,
+  "pointBasis": "UN WUP 2025 population-weighted settlement centroid; this is not a municipal boundary or a parcel-coverage claim.",
+  "technicalBlocker": "City-specific land/cadastre circuits are confirmed, but the official register-consultation pathway is a formal service request and no public anonymous geometry/schema route was verified. No request form or property record was accessed. Runtime remains disabled.",
+  "scopeLimits": "The official city circuits confirm local cadastral administration. The sample and citywide polygon coverage are unverified; province-level activity is not treated as evidence of citywide public geometry.",
+  "remainingUncertainty": "The official city circuits confirm local cadastral administration. The sample and citywide polygon coverage are unverified; province-level activity is not treated as evidence of citywide public geometry.",
+  "research": {
+    "executedQueries": [
+      {
+        "language": "English",
+        "query": "Kisangani DRC official cadastre land registry cadastral map public parcel GIS",
+        "scope": "Find a Kisangani-bound official registry basis and safe anonymous parcel geometry route.",
+        "result": "The Ministry of Land Affairs publishes Tshopo cadastral circuits including Kisangani-Nord and Kisangani-Sud. Its public-service catalogue describes register consultation via a formal request, not an anonymous geometry service. No public vector schema or parcel features were verified.",
+        "actualResultUrls": [
+          "https://affairesfoncieres.gouv.cd/secretariat/circonscriptions",
+          "https://servicepublic.gouv.cd/service/4671",
+          "https://www.affairesfoncieres.gouv.cd/"
+        ]
+      },
+      {
+        "language": "French",
+        "query": "Kisangani cadastre circonscription foncière parcelles carte cadastrale officiel RDC",
+        "scope": "Confirmer une circonscription cadastrale de Kisangani et rechercher une géométrie publique sans consulter de dossier foncier.",
+        "result": "Le ministère des Affaires foncières répertorie, pour la province de la Tshopo, les circonscriptions « Kisangani-Nord » et « Kisangani-Sud ». Le catalogue officiel indique que la consultation du registre se fait sur demande formelle. Aucun service public de géométrie ou schéma de parcelles n’a été vérifié.",
+        "actualResultUrls": [
+          "https://affairesfoncieres.gouv.cd/secretariat/circonscriptions",
+          "https://servicepublic.gouv.cd/service/4671",
+          "https://www.affairesfoncieres.gouv.cd/"
+        ]
+      }
+    ],
+    "officialSources": [
+      {
+        "url": "https://affairesfoncieres.gouv.cd/secretariat/circonscriptions",
+        "observation": "Official Ministry of Land Affairs directory lists Tshopo with Tshopo I, Tshopo II, Kisangani-Nord, and Kisangani-Sud land/cadastral jurisdictions."
+      },
+      {
+        "url": "https://servicepublic.gouv.cd/service/4671",
+        "observation": "Official public-service catalogue describes access to cadastral/real-estate register information via formal request and staff research. No request or property record was submitted or queried."
+      },
+      {
+        "url": "https://www.affairesfoncieres.gouv.cd/",
+        "observation": "Official Ministry of Land Affairs portal; public information about cadastre, but no anonymous parcel geometry endpoint found."
+      }
+    ],
+    "metadataReviewFile": "kisangani-service-review.json"
+  },
+  "source": {
+    "sourceId": "cd-kisangani-official-land-source",
+    "name": "Kisangani official land/cadastral source review",
+    "operator": "https://affairesfoncieres.gouv.cd/secretariat/circonscriptions",
+    "url": "https://affairesfoncieres.gouv.cd/secretariat/circonscriptions",
+    "scope": "The official city circuits confirm local cadastral administration. The sample and citywide polygon coverage are unverified; province-level activity is not treated as evidence of citywide public geometry.",
+    "nativeIdField": null,
+    "attributesRequested": [],
+    "identityBasis": "No parcel feature identifier was requested or retained.",
+    "geometryStatus": "no_public_geometry_verified"
+  },
+  "coverageAssessment": {
+    "verifiedOpenScope": "The official city circuits confirm local cadastral administration. The sample and citywide polygon coverage are unverified; province-level activity is not treated as evidence of citywide public geometry.",
+    "citywideVerified": false,
+    "countrywideVerified": false
+  },
+  "priorEvidenceFiles": [],
+  "populationPlausibility2025": "High",
+  "sourceIds": [],
+  "point": [
+    0.522230961537621,
+    25.1915027689622
+  ],
+  "rootReviewedAt": "2026-10-09T01:39:35.583478+00:00"
+}

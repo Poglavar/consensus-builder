@@ -1,0 +1,59 @@
+{
+  "schemaVersion": "1.0",
+  "checkedAt": "2026-10-09",
+  "cityRecord": "city-1014-trujillo.json",
+  "purpose": "Read-only city-specific source discovery and bounded access review; no runtime or global changes.",
+  "scopeLimits": {
+    "maxFullPolygonsRetainedInThisCityReport": 0,
+    "maxFullPolygonsRetainedAcrossCityReview": 0,
+    "ownerOrAddressDataRetained": false,
+    "accountCredentialsOrPublicTokenValuesRetained": false
+  },
+  "assessment": "The Municipalidad Provincial de Trujillo’s PLANDET unit is responsible for maintaining the Trujillo cadastral information system and public cartographic geoviewer; the first-party viewer lists cadastral-lot tables. This verifies a city-local cadastre and map service, but the public feature schema and data properties are not constrained by the client. The official public viewer exposes a table-backed GeoJSON route without a field-selection parameter. Its property schema is not published, so a bounded query might return unreviewed fields. No feature request or geometry was made.",
+  "officialEvidence": [
+    {
+      "url": "https://www.munitrujillo.gob.pe/Archivosvirtual/Transparencia/Adjuntos/88867_portalDocumento.pdf",
+      "observation": "Municipal organizational regulation assigns the PLANDET Geomatics and Cadastre subunit to maintain Trujillo’s cadastral information system, maintain the city geoviewer, and issue cadastral-code certificates for Trujillo district."
+    },
+    {
+      "url": "https://www.gob.pe/institucion/munitrujillo/noticias/611539-mpt-presenta-geovisor-cartografico-provincial",
+      "observation": "First-party municipal announcement says the public Geovisor Cartográfico includes lot information, zoning and other geographic layers for the Trujillo metropolitan/provincial area."
+    },
+    {
+      "url": "https://plandet.munitrujillo.gob.pe/",
+      "httpStatus": 200,
+      "observation": "Current PLANDET page identifies the municipal unit responsible for district cadastre, property formalization and territorial planning; it links the public viewer."
+    },
+    {
+      "url": "https://plandet.munitrujillo.gob.pe/visor/",
+      "httpStatus": 200,
+      "observation": "Public map shell publishes table names including `s25_lote_cata`, `s26_lote_cata`, `s27_lote_cata`, `s32_lote_cata`, `s33_lote_cata`, and `sector13_lote_catastral`."
+    },
+    {
+      "url": "https://plandet.munitrujillo.gob.pe/visor/assets/js/layers/polygons.js",
+      "httpStatus": 200,
+      "observation": "Viewer client fetches `api.php?tabla={name}` and appends a bounding-box parameter when supplied. It provides no field-selection parameter; no feature request or geometry was made."
+    },
+    {
+      "url": "https://www.munitrujillo.gob.pe/Archivosvirtual/Transparencia/Adjuntos/14208_portalTransparencia.pdf",
+      "observation": "Municipal performance document reports urban cadastral updates and maintenance of the PLANDET geoviewer; it does not define a safe feature schema."
+    }
+  ],
+  "serviceTrace": {
+    "viewer": {
+      "url": "https://plandet.munitrujillo.gob.pe/visor/",
+      "routes": [
+        "GET `api.php?tabla={name}`; viewer can append `bbox={west,south,east,north}`. No field projection or schema allowlist found.",
+        "Published polygon table names include `s25_lote_cata`, `s26_lote_cata`, `s27_lote_cata`, `s32_lote_cata`, `s33_lote_cata`, and `sector13_lote_catastral`."
+      ],
+      "notes": "The route returns GeoJSON table content without a field allowlist; the map contains both cadastral and administrative/land-use layers and ancillary document interactions. Feature query omitted pending an explicit safe properties schema."
+    },
+    "notes": "Whether the lot layers return only geometry/safe IDs or include sensitive cadastral/property attributes; coverage scope of each lot-table layer and WUP-point inclusion are unverified."
+  },
+  "geometryValidation": {
+    "schemaConfirmed": false,
+    "featureQueryMade": false,
+    "retainedFullPolygonCount": 0,
+    "reason": "The official public viewer exposes a table-backed GeoJSON route without a field-selection parameter. Its property schema is not published, so a bounded query might return unreviewed fields. No feature request or geometry was made."
+  }
+}

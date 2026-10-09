@@ -1,0 +1,121 @@
+{
+  "name": "Huaibei",
+  "country": "China",
+  "countryCode": "CN",
+  "rank": 914,
+  "point": [
+    33.9761314390129,
+    116.788811462295
+  ],
+  "population2025": 596613,
+  "population2025k": 596.613,
+  "populationPlausibility2025": "High",
+  "schemaVersion": 1,
+  "kind": "city_parcel_source_research",
+  "checkedAt": "2026-10-09",
+  "populationUnit": "persons",
+  "status": "complete",
+  "verifiedSample": false,
+  "publicParcelGeometryFound": false,
+  "runtimeReadiness": "not_enabled_no_verified_public_geometry",
+  "priorEvidenceFiles": [],
+  "priorCheck": {
+    "attemptState": "pending",
+    "attemptEvidence": [],
+    "possiblePriorMatches": []
+  },
+  "pointBasis": "UN WUP 2025 population-weighted settlement centroid; this is not a municipal boundary or a parcel-coverage claim.",
+  "registryFound": true,
+  "registryBasis": "The official Huaibei Natural Resources and Planning Bureau describes the city cadastral platform as displaying cadastral zones and parcel information. Its static public map shell loads, but data routes in the frontend are linked to backend service calls requiring a client/access-token flow; no token or parcel endpoint was used.",
+  "registryEvidenceUrls": [
+    "https://zrghj.huaibei.gov.cn/gzdt/jndt/57377631.html",
+    "http://60.172.200.224:9293/hbdj/"
+  ],
+  "resultCategory": "local_registry_evidenced_geometry_unverified",
+  "remainingUncertainty": "No anonymous, field-safe parcel geometry response was verified; exact point and map coverage remain unresolved.",
+  "scopeLimits": "Review covers the exact unchanged WUP settlement locator and identified official sources only. No owner, address, personal-property, tax, account, token or credential data requested or retained. No citywide completeness claimed.",
+  "verifiedParcelResponse": null,
+  "source": {
+    "sourceId": "CN-10468-huaibei-source-review",
+    "name": "Huaibei Natural Resources and Planning Bureau Cadastral Platform",
+    "url": "http://60.172.200.224:9293/hbdj/",
+    "operator": "China",
+    "serviceType": "Public cadastral-map application shell; parcel list/detail backend route observed, no anonymous safe geometry response verified.",
+    "layer": null,
+    "geometryType": null,
+    "outputCrs": null,
+    "nativeIdField": null,
+    "nativeIdEvidence": "No feature response returned; native identifier not verified."
+  },
+  "wupCityCode": 10468,
+  "cityId": "wup2025:10468",
+  "queueRank": 914,
+  "centerLatLon": [
+    33.9761314390129,
+    116.788811462295
+  ],
+  "sourceIds": [],
+  "adapterReady": false,
+  "technicalBlocker": "Research only; no parcel geometry sample or runtime adapter qualification.",
+  "coverageAssessment": {
+    "claimedScope": "The official Huaibei Natural Resources and Planning Bureau describes the city cadastral platform as displaying cadastral zones and parcel information. Its static public map shell loads, but data routes in the frontend are linked to backend service calls requiring a client/access-token flow; no token or parcel endpoint was used.",
+    "verifiedOpenScope": "No public parcel geometry scope verified.",
+    "countrywideVerified": false,
+    "citywideVerified": false
+  },
+  "research": {
+    "queries": [
+      {
+        "language": "English",
+        "query": "Huaibei China official land registry cadastral parcel map GIS natural resources",
+        "scope": "Locate primary city/local cadastral or land-registry evidence and any safe public parcel-geometry endpoint.",
+        "result": "The city bureau documents a cadastral map platform with parcel and building-related functions. The public landing page returned HTTP 200; static JavaScript names parcel and cadastral list/data routes, while associated detail calls use a client-credential/access-token flow. No data API was called because the public-safe field contract could not be established without that flow; no geometry response verified.",
+        "actualResultUrls": [
+          "https://zrghj.huaibei.gov.cn/gzdt/jndt/57377631.html",
+          "http://60.172.200.224:9293/hbdj/"
+        ],
+        "executionMethod": "Separate English-language source search and first-party source/service review; no owner, address, account, token or personal-property attributes requested."
+      },
+      {
+        "language": "Chinese",
+        "query": "No feature response returned; native identifier not verified.",
+        "scope": "Find primary local-language evidence for the same registry/map question.",
+        "result": "The city bureau documents a cadastral map platform with parcel and building-related functions. The public landing page returned HTTP 200; static JavaScript names parcel and cadastral list/data routes, while associated detail calls use a client-credential/access-token flow. No data API was called because the public-safe field contract could not be established without that flow; no geometry response verified.",
+        "actualResultUrls": [
+          "https://zrghj.huaibei.gov.cn/gzdt/jndt/57377631.html",
+          "http://60.172.200.224:9293/hbdj/"
+        ],
+        "executionMethod": "Separate native/local-language query and first-party source review. For Ogale, searched a Nigerian Pidgin/place-name variant because no standardized Eleme-language registry query term was identified."
+      }
+    ],
+    "officialSources": [
+      {
+        "url": "https://zrghj.huaibei.gov.cn/gzdt/jndt/57377631.html",
+        "observation": "The official Huaibei Natural Resources and Planning Bureau describes the city cadastral platform as displaying cadastral zones and parcel information. Its static public map shell loads, but data routes in the frontend are linked to backend service calls requiring a client/access-token flow; no token or parcel endpoint was used."
+      },
+      {
+        "url": "http://60.172.200.224:9293/hbdj/",
+        "observation": "The official Huaibei Natural Resources and Planning Bureau describes the city cadastral platform as displaying cadastral zones and parcel information. Its static public map shell loads, but data routes in the frontend are linked to backend service calls requiring a client/access-token flow; no token or parcel endpoint was used."
+      }
+    ],
+    "attempts": [
+      {
+        "url": "http://60.172.200.224:9293/hbdj/",
+        "method": "Anonymous GET landing page and static JavaScript/config inspection",
+        "result": "HTTP 200 HTML shell (8,504 bytes); static config names cadastral/parcel/building list and parcel detail routes. Related ETL detail calls assemble client identifiers/secrets/access tokens. Did not invoke protected/detail endpoints or use any credential/token; no parcel result."
+      }
+    ]
+  },
+  "runtimeAssessment": {
+    "status": "not_enabled_no_verified_public_geometry",
+    "reason": "Research only; no parcel geometry sample or runtime adapter qualification."
+  },
+  "rootPrimaryReadback": {
+    "url": "https://zrghj.huaibei.gov.cn/gzdt/jndt/57377631.html",
+    "fetch": 200,
+    "contentType": "text/html",
+    "title": "淮北市地籍图查询系统上线_淮北市自然资源和规划局"
+  },
+  "rootReviewNote": "Reviewed the specific primary institution/service evidence and its geographical, access and date limits. Direct readback failures are preserved separately from indexed primary evidence. No public full parcel geometry was verified for this city in this discovery pass.",
+  "rootReviewedAt": "2026-10-09T04:30:00.451299+00:00"
+}

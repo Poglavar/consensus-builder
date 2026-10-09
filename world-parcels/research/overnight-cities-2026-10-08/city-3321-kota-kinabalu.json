@@ -1,0 +1,112 @@
+{
+  "schemaVersion": 1,
+  "kind": "city_parcel_source_research",
+  "checkedAt": "2026-10-09",
+  "name": "Kota Kinabalu",
+  "country": "Malaysia",
+  "countryCode": "MY",
+  "populationUnit": "persons",
+  "status": "complete",
+  "registryFound": true,
+  "registryBasis": "Sabah Lands and Surveys Department lists its Land Registry Section in Kota Kinabalu. Its public services distinguish purchasable land-survey products and title/property search certificates from JTUWMA Pro, a registered-user system for detailed geometric cadastral information. DBKK separately offers local property assessment services. These establish city-local registry/cadastre and municipal assessment services, but no anonymous parcel-vector schema was found; no login, purchase, title search, lot number, or assessment lookup was used.",
+  "registryEvidenceUrls": [
+    "https://jtu.sabah.gov.my/homepage/index.html",
+    "https://jtu.sabah.gov.my/index.cfm?action=OrgAdm&id=808A0F094376BC56&section=About",
+    "https://www.lands.sabah.gov.my/ladess/index.cfm",
+    "https://eservices.dbkk.sabah.gov.my/"
+  ],
+  "verifiedSample": false,
+  "publicParcelGeometryFound": false,
+  "runtimeReadiness": "not_enabled_no_verified_public_geometry",
+  "wupCityCode": 3321,
+  "cityId": "wup2025:3321",
+  "centerLatLon": [
+    5.96793523746999,
+    116.101321452688
+  ],
+  "point": [
+    5.96793523746999,
+    116.101321452688
+  ],
+  "rank": 672,
+  "queueRank": 672,
+  "population2025": 789885,
+  "population2025k": 789.885,
+  "populationPlausibility2025": "High",
+  "pointBasis": "UN WUP 2025 population-weighted settlement centroid; this is not a municipal boundary or a parcel-coverage claim.",
+  "technicalBlocker": "The official department identifies the detailed cadastral map system as registered-user access; other public routes are product purchase or title/property search. No public anonymous geometry-only endpoint or safe field allowlist was found. No credentials, purchase, owner, address, title, parcel, or property-assessment query was made.",
+  "scopeLimits": "Official public-page/document discovery only. No owner, address, tax, personal-identity, credential, account, title, cadastral-number, CPF, or property-specific lookup was submitted or retained. No full parcel geometry was retained. The supplied WUP point is not treated as a legal boundary.",
+  "remainingUncertainty": "Whether Sabah JTU offers a separately documented open geometry-only layer for Kota Kinabalu; scope of any product downloads and exact geometry coverage at the WUP point.",
+  "nextStep": "Use only an officially documented anonymous parcel geometry endpoint with published safe fields; do not use registered-user, purchase, title-search, or assessment flows.",
+  "priorAttemptState": "pending",
+  "priorAttemptEvidence": [],
+  "research": {
+    "executedQueries": [
+      {
+        "language": "English",
+        "query": "Kota Kinabalu Sabah official land registry cadastral map JTUWMA parcel geometry DBKK property assessment",
+        "result": "Sabah JTU identifies its Land Registry Section in Kota Kinabalu and says detailed geometry is served through registered-user JTUWMA Pro; land-survey products and title/property search certificates use the e-Commerce service. DBKK lists local property assessment services. No anonymous full-polygon layer was identified.",
+        "urls": [
+          "https://jtu.sabah.gov.my/homepage/index.html",
+          "https://jtu.sabah.gov.my/index.cfm?action=OrgAdm&id=808A0F094376BC56&section=About",
+          "https://eservices.dbkk.sabah.gov.my/"
+        ],
+        "scope": "Find first-party city-specific registry/cadastre evidence and safe anonymous geometry-only routes; do not submit identifiers.",
+        "method": "Separate language-specific search followed by official city/agency page or document review; no identity, ownership, address or property-specific query submitted."
+      },
+      {
+        "language": "Malay",
+        "query": "Kota Kinabalu kadaster peta lot ukur tanah pejabat tanah carian hak milik JTU Sabah",
+        "result": "Sumber rasmi Jabatan Tanah dan Ukur Sabah menerangkan produk ukur tanah dan carian sijil hak milik/hartanah melalui e-Commerce. JTUWMA Pro pula untuk pengguna berdaftar bagi maklumat kadaster geometri terperinci. Tiada skema poligon lot tanpa nama/pengenalan yang disahkan.",
+        "urls": [
+          "https://jtu.sabah.gov.my/homepage/index.html",
+          "https://www.lands.sabah.gov.my/ladess/index.cfm"
+        ],
+        "scope": "Find first-party city-specific registry/cadastre evidence and safe anonymous geometry-only routes; do not submit identifiers.",
+        "method": "Separate language-specific search followed by official city/agency page or document review; no identity, ownership, address or property-specific query submitted."
+      }
+    ],
+    "officialSources": [
+      {
+        "url": "https://jtu.sabah.gov.my/homepage/index.html",
+        "observation": "The Sabah Lands and Surveys Department describes E-Commerce as a public route to purchase land-survey products and JTUWMA Pro as a registered-user system for access to detailed geometric cadastral-related information. The page does not describe anonymous access to full parcel polygons."
+      },
+      {
+        "url": "https://jtu.sabah.gov.my/index.cfm?action=OrgAdm&id=808A0F094376BC56&section=About",
+        "observation": "The department organization page identifies the Land Registry Section and places it in Kota Kinabalu District, at Wisma Tanah dan Ukur."
+      },
+      {
+        "url": "https://www.lands.sabah.gov.my/ladess/index.cfm",
+        "observation": "Sabah’s LaDESS portal states that applications for title and property search certificates are made through the JTU e-Commerce system. No title or property search was submitted."
+      },
+      {
+        "url": "https://eservices.dbkk.sabah.gov.my/",
+        "observation": "Kota Kinabalu City Hall’s official e-services page lists local property rates/assessment, quick payment, and payment-status services; this is a local municipal record service, not parcel geometry."
+      }
+    ],
+    "metadataReviewFile": "kota-kinabalu-service-review.json"
+  },
+  "source": {
+    "sourceId": "my-kota-kinabalu-registry-review",
+    "name": "Kota Kinabalu local registry/cadastre route review",
+    "operator": "Jabatan Tanah dan Ukur Sabah (Sabah Lands and Surveys Department); Dewan Bandaraya Kota Kinabalu",
+    "url": "https://jtu.sabah.gov.my/homepage/index.html",
+    "scope": "Sabah Lands and Surveys Department lists its Land Registry Section in Kota Kinabalu. Its public services distinguish purchasable land-survey products and title/property search certificates from JTUWMA Pro, a registered-user system for detailed geometric cadastral information. DBKK separately offers local property assessment services. These establish city-local registry/cadastre and municipal assessment services, but no anonymous parcel-vector schema was found; no login, purchase, title search, lot number, or assessment lookup was used.",
+    "nativeIdField": null,
+    "attributesRequested": [],
+    "identityBasis": "No safe parcel feature identifier retrieved.",
+    "geometryStatus": "city_registry_basis_only_no_safe_public_geometry_contract"
+  },
+  "coverageAssessment": {
+    "verifiedOpenScope": "Sabah Lands and Surveys Department lists its Land Registry Section in Kota Kinabalu. Its public services distinguish purchasable land-survey products and title/property search certificates from JTUWMA Pro, a registered-user system for detailed geometric cadastral information. DBKK separately offers local property assessment services. These establish city-local registry/cadastre and municipal assessment services, but no anonymous parcel-vector schema was found; no login, purchase, title search, lot number, or assessment lookup was used.",
+    "notEstablished": [
+      "anonymous safe full-polygon access",
+      "complete citywide cadastral coverage",
+      "runtime source binding"
+    ],
+    "wupPointRelation": "No parcel geometry was returned or asserted."
+  },
+  "publicParcelGeometryCandidateFound": false,
+  "rootReviewedAt": "2026-10-09T02:33:40.013985+00:00",
+  "sourceIds": []
+}

@@ -1,0 +1,128 @@
+{
+  "schemaVersion": "1.0",
+  "checkedAt": "2026-10-09",
+  "cityRecord": "city-7917-vasai-virar.json",
+  "purpose": "Read-only city parcel-source discovery; no runtime, global, catalog, or registry integration.",
+  "scopeLimits": {
+    "maxFullPolygonsRetainedInThisCityReport": 3,
+    "fullPolygonsRetained": 0,
+    "ownerOrAddressDataRetained": false,
+    "accountCredentialsOrPublicTokenValuesRetained": false
+  },
+  "assessment": "The state BhuNaksha portal is an interactive record selector; the official search-index page lists state, category, district, taluka, village and parcel-number controls. Web-reader access reports a redirect loop and direct HTTPS attempts timed out, so public locality access and a city vector route remain unverified.",
+  "registryAssessment": "Official local corporation property-tax services include a Property Mapping link. This confirms a city property-map service, although its city-wide coverage and ability to view parcels without authentication are not established.",
+  "searchQueries": [
+    {
+      "language": "English",
+      "query": "Vasai Virar Maharashtra official land records city survey GIS cadastral map municipal property map parcel",
+      "result": "Found official VVCMC Property Mapping link and Maharashtra state land-record services including BhuNakasha; no city-level anonymous vector endpoint.",
+      "urls": [
+        "https://vvcmc.in/online-property-tax/",
+        "https://bhumiabhilekh.maharashtra.gov.in/",
+        "https://mahabhunakasha.mahabhumi.gov.in/27/index.jsp"
+      ],
+      "method": "Separate English search and public official-source review."
+    },
+    {
+      "language": "Marathi",
+      "query": "वसई विरार अधिकृत भूलेख सिटी सर्वे नकाशा जमिनीचे अभिलेख GIS वसई विरार महानगरपालिका",
+      "result": "महानगरपालिकेचे अधिकृत मराठी पृष्ठ Property Mapping दुवा देते. दुवा नोंदणी/लॉगिन असलेल्या RTS सेवा पृष्ठावर जातो. भूमिअभिलेख विभाग महाभूनकाशा व मालमत्ता पत्रिका दाखवतो; खुली बहुभुज सेवा पडताळलेली नाही.",
+      "urls": [
+        "https://vvcmc.in/online-property-tax/",
+        "https://onlinevvcmc.in/APP/FrmUserPropUpdate.aspx",
+        "https://bhumiabhilekh.maharashtra.gov.in/",
+        "https://mahabhunakasha.mahabhumi.gov.in/27/index.jsp"
+      ],
+      "method": "Separate Marathi search and official corporation/state-page review."
+    }
+  ],
+  "officialSources": [
+    {
+      "url": "https://vvcmc.in/online-property-tax/",
+      "method": "GET via web reader",
+      "observation": "Official Marathi corporation page lists Property Mapping and links to onlinevvcmc.in.",
+      "httpStatus": 200,
+      "contentType": "text/html"
+    },
+    {
+      "url": "https://onlinevvcmc.in/APP/FrmUserPropUpdate.aspx",
+      "method": "GET via web reader following official link",
+      "observation": "RTS page describes registration, document submission, and certificate charges; no anonymous geometry endpoint.",
+      "httpStatus": 200,
+      "contentType": "text/html"
+    },
+    {
+      "url": "https://mahabhunakasha.mahabhumi.gov.in/27/index.jsp",
+      "method": "GET via web search result",
+      "observation": "Statewide map-with-records viewer displays locality and parcel selection controls. Direct open followed a redirect loop; no parcel query made.",
+      "httpStatus": null,
+      "contentType": "unknown"
+    },
+    {
+      "url": "https://mahabhunakasha.mahabhumi.gov.in/27/index.jsp",
+      "method": "anonymous HTTPS GET via requests.Session",
+      "observation": "Direct browser-header GET timed out before HTTP response; web reader reports a redirect loop. No response body or script path available.",
+      "httpStatus": null,
+      "contentType": null,
+      "rawHtmlPath": null,
+      "scriptPaths": []
+    }
+  ],
+  "portals": [
+    {
+      "name": "VVCMC Property Mapping / RTS",
+      "operator": "Vasai-Virar City Municipal Corporation",
+      "url": "https://vvcmc.in/online-property-tax/",
+      "observation": "Property mapping is linked from city property-tax page; target is registration/login workflow."
+    },
+    {
+      "name": "Mahabhunakasha",
+      "operator": "Maharashtra Department of Land Records",
+      "url": "https://mahabhunakasha.mahabhumi.gov.in/27/index.jsp",
+      "observation": "Statewide interactive records map; city-specific anonymous vector route not verified."
+    }
+  ],
+  "viewerAndServiceTrace": {
+    "attempted": true,
+    "summary": "Follow-through tested direct anonymous HTTPS GETs to the BhuNaksha index.jsp and index.html routes with browser headers and redirects enabled. Both connected until timeout before an HTTP response; no cookie/redirect chain or raw HTML/JS paths were obtained. No property/parcel ID was submitted.",
+    "fullPolygonLimit": 3,
+    "fullPolygonsRetained": 0,
+    "ownerOrAddressDataRequested": false,
+    "credentialsOrTokenValuesRetained": false
+  },
+  "geometryAttempt": {
+    "fullPolygonLimit": 3,
+    "fullPolygonsRetained": 0,
+    "ownerOrAddressDataRequested": false,
+    "outcome": "No bounded public vector service was verified, so no geometry query was made."
+  },
+  "remainingUncertainty": "Whether a public city-survey layer exists behind the state map UI and whether VVCMC Property Mapping allows general parcel viewing for unauthenticated visitors.",
+  "nextStep": "Inspect the city map in an anonymous browser session and trace only public geometry-only requests; do not log in or select private property records.",
+  "transportFollowThrough": {
+    "requestMetadata": [
+      {
+        "url": "https://mahabhunakasha.mahabhumi.gov.in/27/index.jsp",
+        "method": "anonymous HTTPS GET via requests.Session with Chrome 131 User-Agent, HTML Accept, Accept-Language en-US,en;q=0.9,mr;q=0.7,id;q=0.6, Referer https://mahabhumi.gov.in/; follow redirects enabled; connect/read timeout 10/25 seconds",
+        "httpStatus": null,
+        "contentType": null,
+        "redirects": [],
+        "cookiesObserved": [],
+        "rawHtmlPath": null,
+        "scriptPaths": [],
+        "assessment": "TCP connect timed out before an HTTP response; no state-selector HTML, cookie, redirect chain, or JavaScript path was obtained. No locality, parcel, or property ID was submitted."
+      },
+      {
+        "url": "https://mahabhunakasha.mahabhumi.gov.in/27/index.html",
+        "method": "anonymous HTTPS GET via requests.Session with the same Chrome/browser headers and state-portal Referer; follow redirects enabled; connect/read timeout 10/25 seconds",
+        "httpStatus": null,
+        "contentType": null,
+        "redirects": [],
+        "cookiesObserved": [],
+        "rawHtmlPath": null,
+        "scriptPaths": [],
+        "assessment": "TCP connect timed out before an HTTP response. The web reader separately reported a redirect loop on index.jsp; it did not expose a server redirect chain or raw HTML/JS. No parcel lookup was made."
+      }
+    ],
+    "directFetchResult": "No HTTP status, Content-Type, redirect response, cookies, raw HTML, or JavaScript paths. Direct connection timed out before response; web reader separately reports a redirect loop for index.jsp. No locality or property identifier was submitted."
+  }
+}

@@ -1,0 +1,122 @@
+{
+  "name": "Shiraz",
+  "country": "Iran",
+  "countryCode": "IR",
+  "rank": 566,
+  "point": [
+    29.6169651553256,
+    52.5178916857819
+  ],
+  "freshResearch": {
+    "queries": [
+      {
+        "language": "English",
+        "query": "Shiraz Iran official cadastral map land registry public municipal GIS parcel map city",
+        "result": "Search surfaced the Shiraz Municipality smart map and municipal e-services domains, but did not expose a first-party public parcel layer. City service guides describe renewal fees/property lookup through municipal platforms, but those are not formal title-cadastre records and the first-party pages were not retrievable for direct verification.",
+        "urls": [
+          "https://shiraz.ir/",
+          "https://map.shiraz.ir/",
+          "https://eshahr.shiraz.ir/",
+          "https://sarv.shiraz.ir/"
+        ]
+      },
+      {
+        "language": "Persian",
+        "query": "شیراز سازمان ثبت اسناد املاک فارس نقشه کاداستر حدنگار سامانه رسمی شهرداری GIS عوارض نوسازی ملک",
+        "result": "نتایج فارسی، سامانه نقشه هوشمند و درگاه خدمات شهرداری شیراز را معرفی می‌کنند. راهنمای خدمات شهری از ثبت/جستجوی ملک و عوارض نوسازی بر اساس کد نوسازی یا انتخاب موقعیت روی نقشه یاد می‌کند؛ این موارد در صورت صحت، سوابق مالی و شهرسازی شهرداری هستند و به‌تنهایی کاداستر ثبتی یا نقشه عمومی قطعات زمین را ثابت نمی‌کنند. صفحات رسمی شهرداری در این بررسی مستقیماً قابل دریافت نبودند.",
+        "urls": [
+          "https://shiraz.ir/",
+          "https://map.shiraz.ir/",
+          "https://eshahr.shiraz.ir/",
+          "https://sarv.shiraz.ir/"
+        ]
+      }
+    ],
+    "portals": [
+      {
+        "url": "https://shiraz.ir/",
+        "observation": "Official Shiraz Municipality domain; direct page retrieval timed out in this environment, so no outage conclusion is made."
+      },
+      {
+        "url": "https://map.shiraz.ir/",
+        "observation": "Municipal smart-map subdomain referenced by city-service material; direct page was not accessible to the web retrieval tool; no geometry/schema conclusion inferred."
+      },
+      {
+        "url": "https://eshahr.shiraz.ir/",
+        "observation": "City citizen-service subdomain. Search-indexed Persian guidance describes renewal-tax/property and map services; direct shell retrieval timed out locally. Those descriptions do not establish a land-title cadastral dataset."
+      },
+      {
+        "url": "https://sarv.shiraz.ir/",
+        "observation": "City-branded service portal referenced for renewal-fee/property self-declaration; direct page was not accessible to the web retrieval tool. No parcel feature query was made."
+      },
+      {
+        "url": "https://www.samanehha.com/web/2550/سایت-شهرداری-شیراز-ورود-به-سایت-خدمات-الکترونیک",
+        "observation": "Persian secondary guide describes municipal smart map, property self-declaration, renewal-code search and municipal-fee services. Used only as a lead to official city subdomains, not as proof of formal cadastral/title data."
+      },
+      {
+        "url": "https://vista.ir/2609/219/0mfgl/کاهش-۳۵-درصدی-عوارض-پروانه-ساختمانی-در-شیراز-فقط-تا-۷-مهر",
+        "observation": "Persian news syndication quotes a Shiraz municipal revenue official describing current municipal renewal fees and the Sarv portal; it supports municipal assessment services but not cadastral land-title geometry."
+      }
+    ],
+    "requests": []
+  },
+  "status": "complete",
+  "verifiedParcelResponse": {
+    "httpStatus": null,
+    "featureType": null,
+    "responseType": null,
+    "responseCrs": null,
+    "returnedFullPolygonCount": 0,
+    "uniqueFullPolygonCount": 0,
+    "wupPointContained": null,
+    "limitations": "No parcel feature response or full polygon was retrieved."
+  },
+  "source": {
+    "id": "city-IR-6300-overnight-research",
+    "name": "Shiraz city property-service and cadastral source review",
+    "operator": "Shiraz Municipality (service attribution not directly verified in this retrieval)",
+    "url": "https://shiraz.ir/",
+    "format": "Municipal smart-map/e-service references; no direct public parcel schema verified",
+    "access": "Public source discovery only; no login, renovation code, property query or feature request used",
+    "nativeIdField": null,
+    "geometryCrs": null
+  },
+  "coverageAssessment": {
+    "claimedScope": "Potential Shiraz Municipality property-assessment and city-map services are referenced, but their current functionality and map layers could not be verified directly. No formal cadastral/title registry coverage or WUP-point parcel geometry is confirmed.",
+    "verifiedOpenScope": "No anonymous parcel-vector endpoint or safe feature schema was found. A municipal smart map, property renewal-tax lookup, or municipal property self-declaration would not by itself establish cadastral land-title data.",
+    "countrywideVerified": false,
+    "citywideVerified": false
+  },
+  "registryFound": null,
+  "registryBasis": "null: a city-specific municipal property/renewal-tax service is reported by secondary Persian-language guides, but current first-party operation and records were not directly verified; formal title/cadastral records are unconfirmed.",
+  "verifiedSample": false,
+  "publicParcelGeometryFound": false,
+  "resultCategory": "city_municipal_property_service_unverified_no_cadastral_vector",
+  "technicalBlocker": "First-party Shiraz city portals timed out or were inaccessible to retrieval; no current primary-source map/service schema or safe parcel geometry route could be inspected.",
+  "remainingUncertainty": "Whether the current Shiraz smart map exposes any parcel-related municipal layer and whether separate cadastral-title maps are publicly viewable remain unknown.",
+  "nextStep": "Retry first-party Shiraz municipal map and citizen-service portals from a permitted network path, inspect layer definitions without login, and distinguish any municipal assessment map from cadastral title geometry.",
+  "sourceIds": [],
+  "schemaVersion": 1,
+  "checkedAt": "2026-10-09",
+  "wupCityCode": 6300,
+  "cityId": "wup2025:6300",
+  "queueRank": 566,
+  "population2025": 914496,
+  "populationPlausibility2025": "Moderate",
+  "populationUnit": "persons",
+  "pointBasis": "UN WUP 2025 population-weighted settlement centroid; this is not a municipal boundary or a parcel-coverage claim.",
+  "centerLatLon": [
+    29.6169651553256,
+    52.5178916857819
+  ],
+  "runtimeReadiness": "not_enabled_no_verified_public_geometry",
+  "adapterReady": false,
+  "scopeLimits": "Source discovery only. No full parcel polygons, owner/address data, account credentials, tokens or feature responses were retained.",
+  "registryEvidenceUrls": [
+    "https://shiraz.ir/",
+    "https://map.shiraz.ir/",
+    "https://eshahr.shiraz.ir/",
+    "https://sarv.shiraz.ir/"
+  ],
+  "rootReviewedAt": "2026-10-09T01:33:52.627254+00:00"
+}

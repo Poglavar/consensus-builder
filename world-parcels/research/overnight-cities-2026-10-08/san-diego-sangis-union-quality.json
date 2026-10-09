@@ -1,0 +1,923 @@
+{
+  "schemaVersion": 1,
+  "purpose": "Independent GEOS topology check of complete runtime parcels projected to metric coordinates; no repair applied. Counts are bounded sample evidence, not whole-city guarantees.",
+  "library": "Shapely 2.1.2",
+  "metricCrs": "EPSG:32611",
+  "featureCount": 129,
+  "validNonemptyCount": 129,
+  "invalidFeatures": [],
+  "exactDuplicateGeometryPairs": [],
+  "positiveAreaOverlapPairsAbove0_01M2": [],
+  "sumPairwiseOverlapM2": 0,
+  "operationErrors": [],
+  "areaM2": {
+    "min": 434.6174656736728,
+    "median": 686.9630757556102,
+    "max": 38051.58980862675
+  },
+  "features": [
+    {
+      "id": "US-CA-SANGIS-PARCEL-5151",
+      "areaM2": 3769.0541260557484,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "US-CA-SANGIS-PARCEL-5152",
+      "areaM2": 3646.502370090109,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "US-CA-SANGIS-PARCEL-156195",
+      "areaM2": 897.3599933518439,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "US-CA-SANGIS-PARCEL-156196",
+      "areaM2": 759.871491667011,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "US-CA-SANGIS-PARCEL-156197",
+      "areaM2": 705.1383086299476,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "US-CA-SANGIS-PARCEL-156198",
+      "areaM2": 620.6341597373666,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "US-CA-SANGIS-PARCEL-156201",
+      "areaM2": 716.4042611449427,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "US-CA-SANGIS-PARCEL-156202",
+      "areaM2": 693.2191581371351,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "US-CA-SANGIS-PARCEL-156203",
+      "areaM2": 773.8078783655552,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "US-CA-SANGIS-PARCEL-156204",
+      "areaM2": 664.7918003161437,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "US-CA-SANGIS-PARCEL-156205",
+      "areaM2": 725.4654110260722,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "US-CA-SANGIS-PARCEL-156206",
+      "areaM2": 1068.147544468748,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "US-CA-SANGIS-PARCEL-156207",
+      "areaM2": 1199.5849442465062,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "US-CA-SANGIS-PARCEL-5349091",
+      "areaM2": 9746.06961341496,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "US-CA-SANGIS-PARCEL-5350267",
+      "areaM2": 23065.57932885127,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "US-CA-SANGIS-PARCEL-283072",
+      "areaM2": 1406.2002174696318,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "US-CA-SANGIS-PARCEL-283073",
+      "areaM2": 1428.7123575924347,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "US-CA-SANGIS-PARCEL-393748",
+      "areaM2": 1151.6065220702103,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "US-CA-SANGIS-PARCEL-393749",
+      "areaM2": 2422.5033923440164,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "US-CA-SANGIS-PARCEL-5350236",
+      "areaM2": 7251.726979082182,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "US-CA-SANGIS-PARCEL-283059",
+      "areaM2": 533.5636403554524,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "US-CA-SANGIS-PARCEL-283066",
+      "areaM2": 878.01679619255,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "US-CA-SANGIS-PARCEL-349094",
+      "areaM2": 611.032726465041,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "US-CA-SANGIS-PARCEL-5349083",
+      "areaM2": 821.3934127852608,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "US-CA-SANGIS-PARCEL-5349084",
+      "areaM2": 534.8421664039141,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "US-CA-SANGIS-PARCEL-5349085",
+      "areaM2": 437.5114920531438,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "US-CA-SANGIS-PARCEL-5349092",
+      "areaM2": 737.7319357895527,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "US-CA-SANGIS-PARCEL-5349096",
+      "areaM2": 805.2609935475839,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "US-CA-SANGIS-PARCEL-5349097",
+      "areaM2": 602.6449941740501,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "US-CA-SANGIS-PARCEL-283054",
+      "areaM2": 500.26796119355635,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "US-CA-SANGIS-PARCEL-283060",
+      "areaM2": 677.995075757173,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "US-CA-SANGIS-PARCEL-283067",
+      "areaM2": 602.9600672968371,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "US-CA-SANGIS-PARCEL-283068",
+      "areaM2": 509.5895312211537,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "US-CA-SANGIS-PARCEL-283069",
+      "areaM2": 565.0634693784177,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "US-CA-SANGIS-PARCEL-283070",
+      "areaM2": 482.3419029160434,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "US-CA-SANGIS-PARCEL-283071",
+      "areaM2": 524.8709231202588,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "US-CA-SANGIS-PARCEL-283074",
+      "areaM2": 494.4502396447882,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "US-CA-SANGIS-PARCEL-283075",
+      "areaM2": 486.48646931670555,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "US-CA-SANGIS-PARCEL-283076",
+      "areaM2": 521.640971452642,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "US-CA-SANGIS-PARCEL-349099",
+      "areaM2": 474.4459678725728,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "US-CA-SANGIS-PARCEL-349106",
+      "areaM2": 508.1575411086497,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "US-CA-SANGIS-PARCEL-349107",
+      "areaM2": 442.50325921982926,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "US-CA-SANGIS-PARCEL-349108",
+      "areaM2": 529.2999151874179,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "US-CA-SANGIS-PARCEL-349109",
+      "areaM2": 448.7365279073513,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "US-CA-SANGIS-PARCEL-393745",
+      "areaM2": 538.1434161269254,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "US-CA-SANGIS-PARCEL-63557",
+      "areaM2": 965.0908745814118,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "US-CA-SANGIS-PARCEL-63558",
+      "areaM2": 1031.2000626036224,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "US-CA-SANGIS-PARCEL-63559",
+      "areaM2": 1025.5348969343233,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "US-CA-SANGIS-PARCEL-63561",
+      "areaM2": 600.3500387384178,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "US-CA-SANGIS-PARCEL-63570",
+      "areaM2": 612.0959215994685,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "US-CA-SANGIS-PARCEL-349088",
+      "areaM2": 548.7789226557081,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "US-CA-SANGIS-PARCEL-349119",
+      "areaM2": 480.0373882087439,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "US-CA-SANGIS-PARCEL-349120",
+      "areaM2": 434.6174656736728,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "US-CA-SANGIS-PARCEL-349121",
+      "areaM2": 617.2795311966399,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "US-CA-SANGIS-PARCEL-349122",
+      "areaM2": 634.9474298823543,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "US-CA-SANGIS-PARCEL-543507",
+      "areaM2": 846.1697169017135,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "US-CA-SANGIS-PARCEL-543508",
+      "areaM2": 1436.2127049672797,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "US-CA-SANGIS-PARCEL-543505",
+      "areaM2": 1271.8393842677058,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "US-CA-SANGIS-PARCEL-543506",
+      "areaM2": 915.4145444731147,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "US-CA-SANGIS-PARCEL-63560",
+      "areaM2": 896.3984029435032,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "US-CA-SANGIS-PARCEL-63569",
+      "areaM2": 568.0941232530071,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "US-CA-SANGIS-PARCEL-256035",
+      "areaM2": 483.87333068312273,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "US-CA-SANGIS-PARCEL-256036",
+      "areaM2": 540.5335783768949,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "US-CA-SANGIS-PARCEL-256037",
+      "areaM2": 529.5283891957715,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "US-CA-SANGIS-PARCEL-256038",
+      "areaM2": 577.6912816221884,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "US-CA-SANGIS-PARCEL-256039",
+      "areaM2": 561.5039210533037,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "US-CA-SANGIS-PARCEL-349089",
+      "areaM2": 497.2518094111174,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "US-CA-SANGIS-PARCEL-349090",
+      "areaM2": 500.0086134604594,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "US-CA-SANGIS-PARCEL-349091",
+      "areaM2": 493.4510773780982,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "US-CA-SANGIS-PARCEL-349092",
+      "areaM2": 495.85806054928173,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "US-CA-SANGIS-PARCEL-349093",
+      "areaM2": 517.9574456808982,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "US-CA-SANGIS-PARCEL-349095",
+      "areaM2": 445.311157043217,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "US-CA-SANGIS-PARCEL-349096",
+      "areaM2": 554.3070935953778,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "US-CA-SANGIS-PARCEL-349097",
+      "areaM2": 445.47080515666823,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "US-CA-SANGIS-PARCEL-349098",
+      "areaM2": 529.379793233481,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "US-CA-SANGIS-PARCEL-50284",
+      "areaM2": 38051.58980862675,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "US-CA-SANGIS-PARCEL-349100",
+      "areaM2": 525.3550114883941,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "US-CA-SANGIS-PARCEL-349101",
+      "areaM2": 513.1024034872366,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "US-CA-SANGIS-PARCEL-349102",
+      "areaM2": 544.0918549009868,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "US-CA-SANGIS-PARCEL-349103",
+      "areaM2": 489.3045209677112,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "US-CA-SANGIS-PARCEL-349104",
+      "areaM2": 548.3211242575431,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "US-CA-SANGIS-PARCEL-349105",
+      "areaM2": 539.8668134643922,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "US-CA-SANGIS-PARCEL-63562",
+      "areaM2": 889.5739651485723,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "US-CA-SANGIS-PARCEL-63563",
+      "areaM2": 908.3159380335416,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "US-CA-SANGIS-PARCEL-63564",
+      "areaM2": 867.8927427409951,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "US-CA-SANGIS-PARCEL-63565",
+      "areaM2": 947.6804876367611,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "US-CA-SANGIS-PARCEL-63566",
+      "areaM2": 839.8648203795644,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "US-CA-SANGIS-PARCEL-63567",
+      "areaM2": 766.0702321313951,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "US-CA-SANGIS-PARCEL-63568",
+      "areaM2": 731.8237553578302,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "US-CA-SANGIS-PARCEL-538918",
+      "areaM2": 1020.9660511855408,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "US-CA-SANGIS-PARCEL-538919",
+      "areaM2": 931.9132372592647,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "US-CA-SANGIS-PARCEL-538920",
+      "areaM2": 610.7312987717826,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "US-CA-SANGIS-PARCEL-538921",
+      "areaM2": 1393.946634234641,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "US-CA-SANGIS-PARCEL-538922",
+      "areaM2": 809.2370000918056,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "US-CA-SANGIS-PARCEL-156208",
+      "areaM2": 1003.8770816886675,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "US-CA-SANGIS-PARCEL-156209",
+      "areaM2": 1018.2764877683105,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "US-CA-SANGIS-PARCEL-156210",
+      "areaM2": 757.8695470879793,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "US-CA-SANGIS-PARCEL-156220",
+      "areaM2": 501.8948763404514,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "US-CA-SANGIS-PARCEL-156221",
+      "areaM2": 567.3451315414954,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "US-CA-SANGIS-PARCEL-186110",
+      "areaM2": 909.073450400137,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "US-CA-SANGIS-PARCEL-5349081",
+      "areaM2": 1039.0321792776917,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "US-CA-SANGIS-PARCEL-5349087",
+      "areaM2": 795.5763186942343,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "US-CA-SANGIS-PARCEL-5349094",
+      "areaM2": 731.683593100679,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "US-CA-SANGIS-PARCEL-50290",
+      "areaM2": 616.9890402746978,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "US-CA-SANGIS-PARCEL-50291",
+      "areaM2": 563.457657810488,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "US-CA-SANGIS-PARCEL-50292",
+      "areaM2": 628.2077580499018,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "US-CA-SANGIS-PARCEL-50293",
+      "areaM2": 612.7576353204762,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "US-CA-SANGIS-PARCEL-159698",
+      "areaM2": 2129.1036408645837,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "US-CA-SANGIS-PARCEL-159700",
+      "areaM2": 1274.4291489150971,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "US-CA-SANGIS-PARCEL-159703",
+      "areaM2": 822.1387291783814,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "US-CA-SANGIS-PARCEL-349123",
+      "areaM2": 688.8713533769053,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "US-CA-SANGIS-PARCEL-349124",
+      "areaM2": 715.2649489484853,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "US-CA-SANGIS-PARCEL-349125",
+      "areaM2": 714.0828182202613,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "US-CA-SANGIS-PARCEL-349126",
+      "areaM2": 596.954549085382,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "US-CA-SANGIS-PARCEL-393746",
+      "areaM2": 1208.1163934316241,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "US-CA-SANGIS-PARCEL-393747",
+      "areaM2": 1191.5675482492702,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "US-CA-SANGIS-PARCEL-393750",
+      "areaM2": 1018.448077889229,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "US-CA-SANGIS-PARCEL-393751",
+      "areaM2": 622.6334811397176,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "US-CA-SANGIS-PARCEL-393752",
+      "areaM2": 709.9198373594461,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "US-CA-SANGIS-PARCEL-5127078",
+      "areaM2": 1303.7168457713228,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "US-CA-SANGIS-PARCEL-283055",
+      "areaM2": 524.8656673653909,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "US-CA-SANGIS-PARCEL-283056",
+      "areaM2": 459.52915353394695,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "US-CA-SANGIS-PARCEL-283057",
+      "areaM2": 538.3184712938905,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "US-CA-SANGIS-PARCEL-283058",
+      "areaM2": 442.5293943213955,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "US-CA-SANGIS-PARCEL-283061",
+      "areaM2": 686.9630757556102,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "US-CA-SANGIS-PARCEL-283062",
+      "areaM2": 706.5024611628719,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "US-CA-SANGIS-PARCEL-283063",
+      "areaM2": 766.1601682738406,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "US-CA-SANGIS-PARCEL-283064",
+      "areaM2": 728.1235702794994,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "US-CA-SANGIS-PARCEL-283065",
+      "areaM2": 824.3750101351076,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    }
+  ]
+}

@@ -1,0 +1,105 @@
+{
+  "schemaVersion": 1,
+  "checkedAt": "2026-10-09",
+  "status": "complete",
+  "name": "Louhajang",
+  "country": "Bangladesh",
+  "countryCode": "BD",
+  "rank": 740,
+  "point": [
+    23.5807535260114,
+    90.1718309828309
+  ],
+  "population2025": 725057,
+  "population2025k": 725.057,
+  "populationUnit": "persons",
+  "populationPlausibility2025": "High",
+  "wupCityCode": 6213,
+  "cityId": "wup2025:6213",
+  "queueRank": 740,
+  "pointBasis": "UN WUP 2025 population-weighted settlement centroid; this is not a municipal boundary or a parcel-coverage claim.",
+  "registryFound": true,
+  "registryBasis": "The official Louhajang Upazila Land Office site identifies the local Assistant Commissioner (Land) office and links land-service workflows; a government land-record map portal provides mouza/sheet/dag search but its interface includes ownership-related records. No feature schema allowing geometry-only retrieval was verified, so no parcel query was made.",
+  "registryEvidenceUrls": [
+    "https://acl.louhajanj.munshiganj.gov.bd/",
+    "https://munshiganj.gov.bd/views/employee-list?designationId=8",
+    "https://settlement.gov.bd/",
+    "https://settlement.gov.bd/Map/MapSearch",
+    "https://land.gov.bd/"
+  ],
+  "publicParcelGeometryFound": false,
+  "publicParcelGeometryCandidateFound": false,
+  "verifiedSample": false,
+  "verifiedParcelResponse": null,
+  "adapterReady": false,
+  "freshResearch": {
+    "queries": [
+      {
+        "language": "Bangla",
+        "query": "লৌহজং উপজেলা ভূমি অফিস মৌজা ম্যাপ খতিয়ান জেলা মুন্সীগঞ্জ সরকারি",
+        "scope": "Resolve the WUP point to local land-office/service scope and assess whether geometry can be queried without owner-bearing attributes.",
+        "result": "সরকারি লৌহজং উপজেলা ভূমি অফিস ও জাতীয় ভূমি/জরিপ মানচিত্র সেবা শনাক্ত হয়েছে। মানচিত্র অনুসন্ধান দাগ/মৌজা-নির্ভর এবং মালিকানা-সম্পর্কিত তথ্যও দেখায়; কেবল জ্যামিতির নিরাপদ স্কিমা যাচাই করা যায়নি।",
+        "actualResultUrls": [
+          "https://acl.louhajanj.munshiganj.gov.bd/",
+          "https://munshiganj.gov.bd/views/employee-list?designationId=8",
+          "https://settlement.gov.bd/",
+          "https://settlement.gov.bd/Map/MapSearch",
+          "https://land.gov.bd/"
+        ],
+        "executionMethod": "Separate English and Bangla discovery; reviewed official upazila office and land-portal descriptions. No dag/plot lookup or personal record search."
+      },
+      {
+        "language": "English",
+        "query": "Louhajang official mouza map land survey upazila land office Munshiganj Bangladesh",
+        "scope": "Resolve the WUP point to local land-office/service scope and assess whether geometry can be queried without owner-bearing attributes.",
+        "result": "Official local land office and national survey/map services were identified. The national map interface is identifier-based and presents ownership-related record fields; no safe geometry-only feature schema was available.",
+        "actualResultUrls": [
+          "https://acl.louhajanj.munshiganj.gov.bd/",
+          "https://munshiganj.gov.bd/views/employee-list?designationId=8",
+          "https://settlement.gov.bd/",
+          "https://settlement.gov.bd/Map/MapSearch",
+          "https://land.gov.bd/"
+        ],
+        "executionMethod": "Separate English and Bangla discovery; reviewed official upazila office and land-portal descriptions. No dag/plot lookup or personal record search."
+      }
+    ]
+  },
+  "coverageAssessment": {
+    "claimedScope": "The WUP point identifies the ranked Louhajang entry. Local registry/cadastral administration is documented, but no parcel geometry was verified at the point.",
+    "verifiedOpenScope": "No safe anonymous full polygon sample was retained.",
+    "citywideVerified": false,
+    "countrywideVerified": false
+  },
+  "source": {
+    "sourceId": "bd-munshiganj-louhajang-land-office",
+    "name": "Louhajang Upazila Land Office / official land records services",
+    "url": "https://acl.louhajanj.munshiganj.gov.bd/",
+    "operator": "Assistant Commissioner (Land), Louhajang, Munshiganj",
+    "serviceType": "Local upazila land administration and national land-record/survey portals; no safe anonymous vector schema verified.",
+    "geometryType": null,
+    "outputCrs": null,
+    "nativeIdField": null
+  },
+  "sourceIds": [],
+  "runtimeReadiness": "not_enabled_no_verified_public_geometry",
+  "runtimeAssessment": {
+    "status": "not_ready_no_verified_anonymous_geometry",
+    "reason": "The official map portal uses plot/mouza identifiers and exposes ownership-related record fields; without a safe geometry-only schema, no feature request was made.",
+    "evidenceFile": "research/overnight-cities-2026-10-08/louhajang-service-review.json"
+  },
+  "technicalBlocker": "The official map portal uses plot/mouza identifiers and exposes ownership-related record fields; without a safe geometry-only schema, no feature request was made.",
+  "remainingUncertainty": "Whether a public map has a documented anonymous vector service, safe non-sensitive field allowlist, and coverage at the exact WUP point remains unverified.",
+  "scopeLimits": "No full parcel polygons, owner names, addresses, applicant, taxpayer, title, assessment, or sale data were requested or retained. No citywide completeness claim.",
+  "rootPrimaryReadback": {
+    "url": "https://acl.louhajanj.munshiganj.gov.bd/",
+    "fetch": 200,
+    "contentType": "text/html; charset=utf-8",
+    "title": "হোম | উপজেলা ভূমি অফিস, লৌহজং উপজেলা"
+  },
+  "rootReviewNote": "Reviewed the local primary institution/service evidence and stated geometry/access/identity limits. Fresh page readback failures are preserved separately and do not imply absent data; matching primary indexed text supplements the direct readback where available. No public geometry was verified for this city.",
+  "centerLatLon": [
+    23.5807535260114,
+    90.1718309828309
+  ],
+  "rootReviewedAt": "2026-10-09T03:06:11.183980+00:00"
+}

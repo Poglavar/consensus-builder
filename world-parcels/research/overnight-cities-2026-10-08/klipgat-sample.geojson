@@ -1,0 +1,150 @@
+{
+  "type": "FeatureCollection",
+  "features": [
+    {
+      "type": "Feature",
+      "id": "ZA-CSG-DFFE-ERVEN-GTSHT0JR043800001487000000",
+      "geometry": {
+        "type": "Polygon",
+        "coordinates": [
+          [
+            [
+              28.11464041000005,
+              -25.479944694999972
+            ],
+            [
+              28.115459347000066,
+              -25.479626856999975
+            ],
+            [
+              28.115632032000068,
+              -25.479651238999967
+            ],
+            [
+              28.116047974000026,
+              -25.479939690999963
+            ],
+            [
+              28.115097882000043,
+              -25.480540612999956
+            ],
+            [
+              28.11464041000005,
+              -25.479944694999972
+            ]
+          ]
+        ]
+      },
+      "properties": {
+        "parcelId": "ZA-CSG-DFFE-ERVEN-GTSHT0JR043800001487000000",
+        "id": "ZA-CSG-DFFE-ERVEN-GTSHT0JR043800001487000000",
+        "sourceId": "za-csg-dffe-erven",
+        "sourceParcelId": "GTSHT0JR043800001487000000",
+        "parcelNumber": "GTSHT0JR043800001487000000",
+        "cadMunicipalityName": null,
+        "ownershipType": "unknown",
+        "sourceProperties": {
+          "OBJECTID": 5734726,
+          "PRCL_KEY": "GTSHT0JR043800001487000000",
+          "PRCL_TYPE": "E",
+          "LSTATUS": "R",
+          "WSTATUS": "C"
+        }
+      }
+    },
+    {
+      "type": "Feature",
+      "id": "ZA-CSG-DFFE-ERVEN-GTSHT0JR065500000175000000",
+      "geometry": {
+        "type": "Polygon",
+        "coordinates": [
+          [
+            [
+              28.113866027000025,
+              -25.479617053999956
+            ],
+            [
+              28.11399859800002,
+              -25.47956558999994
+            ],
+            [
+              28.114076801000063,
+              -25.479731567999977
+            ],
+            [
+              28.113944229000023,
+              -25.47978303199994
+            ],
+            [
+              28.113866027000025,
+              -25.479617053999956
+            ]
+          ]
+        ]
+      },
+      "properties": {
+        "parcelId": "ZA-CSG-DFFE-ERVEN-GTSHT0JR065500000175000000",
+        "id": "ZA-CSG-DFFE-ERVEN-GTSHT0JR065500000175000000",
+        "sourceId": "za-csg-dffe-erven",
+        "sourceParcelId": "GTSHT0JR065500000175000000",
+        "parcelNumber": "GTSHT0JR065500000175000000",
+        "cadMunicipalityName": null,
+        "ownershipType": "unknown",
+        "sourceProperties": {
+          "OBJECTID": 5952912,
+          "PRCL_KEY": "GTSHT0JR065500000175000000",
+          "PRCL_TYPE": "E",
+          "LSTATUS": "R",
+          "WSTATUS": "C"
+        }
+      }
+    },
+    {
+      "type": "Feature",
+      "id": "ZA-CSG-DFFE-ERVEN-GTSHT0JR065500000176000000",
+      "geometry": {
+        "type": "Polygon",
+        "coordinates": [
+          [
+            [
+              28.11399859800002,
+              -25.47956558999994
+            ],
+            [
+              28.11413116900007,
+              -25.479514126999952
+            ],
+            [
+              28.11420937200006,
+              -25.479680104999932
+            ],
+            [
+              28.114076801000063,
+              -25.479731567999977
+            ],
+            [
+              28.11399859800002,
+              -25.47956558999994
+            ]
+          ]
+        ]
+      },
+      "properties": {
+        "parcelId": "ZA-CSG-DFFE-ERVEN-GTSHT0JR065500000176000000",
+        "id": "ZA-CSG-DFFE-ERVEN-GTSHT0JR065500000176000000",
+        "sourceId": "za-csg-dffe-erven",
+        "sourceParcelId": "GTSHT0JR065500000176000000",
+        "parcelNumber": "GTSHT0JR065500000176000000",
+        "cadMunicipalityName": null,
+        "ownershipType": "unknown",
+        "sourceProperties": {
+          "OBJECTID": 5952913,
+          "PRCL_KEY": "GTSHT0JR065500000176000000",
+          "PRCL_TYPE": "E",
+          "LSTATUS": "R",
+          "WSTATUS": "C"
+        }
+      }
+    }
+  ]
+}

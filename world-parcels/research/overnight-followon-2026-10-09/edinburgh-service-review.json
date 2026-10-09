@@ -1,0 +1,104 @@
+{
+  "schemaVersion": "1.0",
+  "checkedAt": "2026-10-09",
+  "cityRecord": "city-2312-edinburgh.json",
+  "purpose": "Document first-party local registry context and bounded anonymous geometry access review.",
+  "scopeLimits": {
+    "maxFullPolygonsRetainedInCityRecord": 1,
+    "maxFullPolygonsRetainedInReview": 0,
+    "maxFullPolygonsRetainedInRepository": 1,
+    "ownerOrAddressDataRetained": false,
+    "credentialsOrTokenValuesRetained": false,
+    "citywideCompletenessAsserted": false
+  },
+  "assessment": "A public RoS INSPIRE WMS GetFeatureInfo request at a 101×101 pixel scale returned the full native MultiPolygon with INSPIRE id gb.ros.lr.SCT0009110317. Its geometry lies about 2.507 m from the unchanged WUP point and does not contain that point. A separate 1×1 sub-meter pixel centered at the exact WUP point returned zero features. One nearby polygon is retained as bounded local evidence; this is not a point hit or citywide coverage claim.",
+  "registryAssessment": "A public RoS INSPIRE WMS GetFeatureInfo request at a 101×101 pixel scale returned the full native MultiPolygon with INSPIRE id gb.ros.lr.SCT0009110317. Its geometry lies about 2.507 m from the unchanged WUP point and does not contain that point. A separate 1×1 sub-meter pixel centered at the exact WUP point returned zero features. One nearby polygon is retained as bounded local evidence; this is not a point hit or citywide coverage claim.",
+  "officialPrimarySources": [
+    {
+      "url": "https://www.data.gov.uk/dataset/29a78bcd-2ab3-4f15-92fc-7fd9cb3d470a/ros-cadastral-parcels-dataset",
+      "observation": "National Data Library metadata names Registers of Scotland as custodian, identifies EPSG:27700, quarterly updates and a public national INSPIRE parcel dataset."
+    },
+    {
+      "url": "https://ros-inspire.themapcloud.com/",
+      "observation": "Primary official source used for local registry or service context; no additional parcel attributes retained."
+    },
+    {
+      "url": "https://ros-inspire.themapcloud.com/maps/wms",
+      "observation": "Public WMS advertises CP.CadastralParcel. Exact point probe returned zero features; coarse pixel returned a nearby polygon which failed exact point containment."
+    },
+    {
+      "url": "https://www.ros.gov.uk/services/get-land-and-property-information/search-property-information",
+      "observation": "Primary official source used for local registry or service context; no additional parcel attributes retained."
+    }
+  ],
+  "searchQueries": [
+    {
+      "language": "English",
+      "query": "Edinburgh Registers of Scotland cadastral parcel public INSPIRE dataset official",
+      "resultUrls": [
+        "https://www.data.gov.uk/dataset/29a78bcd-2ab3-4f15-92fc-7fd9cb3d470a/ros-cadastral-parcels-dataset",
+        "https://ros-inspire.themapcloud.com/",
+        "https://ros-inspire.themapcloud.com/maps/wms",
+        "https://www.ros.gov.uk/services/get-land-and-property-information/search-property-information"
+      ]
+    },
+    {
+      "language": "English (Scotland)",
+      "query": "Registers of Scotland Edinburgh map ownership parcel public INSPIRE boundaries",
+      "resultUrls": [
+        "https://www.data.gov.uk/dataset/29a78bcd-2ab3-4f15-92fc-7fd9cb3d470a/ros-cadastral-parcels-dataset",
+        "https://ros-inspire.themapcloud.com/",
+        "https://ros-inspire.themapcloud.com/maps/wms",
+        "https://www.ros.gov.uk/services/get-land-and-property-information/search-property-information"
+      ]
+    }
+  ],
+  "geometryDecision": {
+    "verified": true,
+    "sourceId": "gb-ros-inspire-cp-wms-gfi",
+    "sampleCount": 1,
+    "sampleFile": "samples/edinburgh-ros-inspire-wup2312.geojson",
+    "nativeId": "gb.ros.lr.SCT0009110317",
+    "nativeIdField": "inspireid",
+    "exactWupPointTest": "Exact 1×1 pixel query returned 0. Nearby GetFeatureInfo polygon does not contain point; local distance 2.507 m.",
+    "requestEvidence": [
+      {
+        "url": "https://ros-inspire.themapcloud.com/maps/wms?service=WMS&version=1.3.0&request=GetFeatureInfo&layers=CP.CadastralParcel&query_layers=CP.CadastralParcel&crs=EPSG:4326&bbox=55.9435001355415,-3.2011869029067204,55.9445001355415,-3.20018690290672&width=101&height=101&i=50&j=50&info_format=application/json&feature_count=3",
+        "method": "GET",
+        "httpStatus": 200,
+        "contentType": "application/json",
+        "assessment": "Coarse pixel returned one nearby parcel; its polygon does not contain the exact WUP coordinate, so it was excluded from retained samples."
+      },
+      {
+        "url": "https://ros-inspire.themapcloud.com/maps/wms?service=WMS&version=1.3.0&request=GetFeatureInfo&layers=CP.CadastralParcel&query_layers=CP.CadastralParcel&crs=EPSG:4326&bbox=55.9439991355415,-3.20068790290672,55.9440011355415,-3.20068590290672&width=1&height=1&i=0&j=0&info_format=application/json&feature_count=1",
+        "method": "GET",
+        "httpStatus": 200,
+        "contentType": "application/json",
+        "assessment": "Sub-meter pixel centered at the exact WUP point returned zero parcel features."
+      }
+    ]
+  },
+  "coverageAssessment": {
+    "claimedScope": "A public RoS INSPIRE WMS GetFeatureInfo request at a 101×101 pixel scale returned the full native MultiPolygon with INSPIRE id gb.ros.lr.SCT0009110317. Its geometry lies about 2.507 m from the unchanged WUP point and does not contain that point. A separate 1×1 sub-meter pixel centered at the exact WUP point returned zero features. One nearby polygon is retained as bounded local evidence; this is not a point hit or citywide coverage claim.",
+    "verifiedOpenScope": "A public RoS INSPIRE WMS GetFeatureInfo request at a 101×101 pixel scale returned the full native MultiPolygon with INSPIRE id gb.ros.lr.SCT0009110317. Its geometry lies about 2.507 m from the unchanged WUP point and does not contain that point. A separate 1×1 sub-meter pixel centered at the exact WUP point returned zero features. One nearby polygon is retained as bounded local evidence; this is not a point hit or citywide coverage claim.",
+    "citywideVerified": false,
+    "countrywideVerified": false
+  },
+  "attempts": [
+    {
+      "url": "https://ros-inspire.themapcloud.com/maps/wms?service=WMS&version=1.3.0&request=GetFeatureInfo&layers=CP.CadastralParcel&query_layers=CP.CadastralParcel&crs=EPSG:4326&bbox=55.9435001355415,-3.2011869029067204,55.9445001355415,-3.20018690290672&width=101&height=101&i=50&j=50&info_format=application/json&feature_count=3",
+      "method": "GET",
+      "httpStatus": 200,
+      "contentType": "application/json",
+      "assessment": "Coarse pixel returned one nearby parcel; its polygon does not contain the exact WUP coordinate, so it was excluded from retained samples."
+    },
+    {
+      "url": "https://ros-inspire.themapcloud.com/maps/wms?service=WMS&version=1.3.0&request=GetFeatureInfo&layers=CP.CadastralParcel&query_layers=CP.CadastralParcel&crs=EPSG:4326&bbox=55.9439991355415,-3.20068790290672,55.9440011355415,-3.20068590290672&width=1&height=1&i=0&j=0&info_format=application/json&feature_count=1",
+      "method": "GET",
+      "httpStatus": 200,
+      "contentType": "application/json",
+      "assessment": "Sub-meter pixel centered at the exact WUP point returned zero parcel features."
+    }
+  ],
+  "remainingUncertainty": "A public RoS INSPIRE WMS GetFeatureInfo request at a 101×101 pixel scale returned the full native MultiPolygon with INSPIRE id gb.ros.lr.SCT0009110317. Its geometry lies about 2.507 m from the unchanged WUP point and does not contain that point. A separate 1×1 sub-meter pixel centered at the exact WUP point returned zero features. One nearby polygon is retained as bounded local evidence; this is not a point hit or citywide coverage claim."
+}

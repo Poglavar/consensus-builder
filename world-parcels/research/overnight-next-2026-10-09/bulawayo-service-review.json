@@ -1,0 +1,75 @@
+{
+  "schemaVersion": "1.0",
+  "checkedAt": "2026-10-09",
+  "cityRecord": "city-109-bulawayo.json",
+  "purpose": "Document first-party local registry/map evidence and bounded anonymous parcel geometry access review.",
+  "scopeLimits": {
+    "maxFullPolygonsRetainedInCityRecord": 0,
+    "maxFullPolygonsRetainedInReview": 0,
+    "maxFullPolygonsRetainedInRepository": 0,
+    "ownerOrAddressDataRetained": false,
+    "credentialsOrTokenValuesRetained": false,
+    "citywideCompletenessAsserted": false
+  },
+  "assessment": "Bulawayo City Council Land Survey Section undertakes title surveys, maintains survey plans, and resolves property-boundary issues. This establishes municipal survey-plan custody; national deed-register ownership and anonymous full parcel geometry are not established.",
+  "registryAssessment": "Bulawayo City Council Land Survey Section undertakes title surveys, maintains survey plans, and resolves property-boundary issues. This establishes municipal survey-plan custody; national deed-register ownership and anonymous full parcel geometry are not established.",
+  "officialPrimarySources": [
+    {
+      "url": "https://www.citybyo.co.zw/Planning/LandSurvey",
+      "operator": "Bulawayo City Council",
+      "observation": "Bulawayo City Council Land Survey Section undertakes title surveys, maintains survey plans, and resolves property-boundary issues. This establishes municipal survey-plan custody; national deed-register ownership and anonymous full parcel geometry are not established."
+    }
+  ],
+  "searchQueries": [
+    {
+      "language": "Ndebele",
+      "query": "Bulawayo umhlaba cadastre land registry map parcel government",
+      "result": "The searches did not surface a primary local Bulawayo cadastral office or public parcel map. Zimbabwe deeds-law material is national and secondary archive results are not proof of city-specific local custody.",
+      "method": "Separate local-language web search followed by official-source review.",
+      "scope": "Identify first-party local land-registry/cadastral sources and safe anonymous parcel geometry.",
+      "actualResultUrls": []
+    },
+    {
+      "language": "English",
+      "query": "Bulawayo Zimbabwe official cadastral parcel land survey title deeds registry government map",
+      "result": "The searches did not surface a primary local Bulawayo cadastral office or public parcel map. Zimbabwe deeds-law material is national and secondary archive results are not proof of city-specific local custody.",
+      "method": "Separate English-language web search followed by official-source review.",
+      "scope": "Identify first-party local land-registry/cadastral sources and safe anonymous parcel geometry.",
+      "actualResultUrls": []
+    }
+  ],
+  "geometryDecision": "No full parcel polygon retained; no safe anonymous geometry response was verified.",
+  "coverageAssessment": {
+    "claimedScope": "Bulawayo City Council Land Survey Section undertakes title surveys, maintains survey plans, and resolves property-boundary issues. This establishes municipal survey-plan custody; national deed-register ownership and anonymous full parcel geometry are not established.",
+    "verifiedOpenScope": null,
+    "citywideVerified": false,
+    "countrywideVerified": false,
+    "geometryVerified": false
+  },
+  "attempts": [],
+  "remainingUncertainty": "No anonymous full parcel polygon or citywide coverage verified; local custodial responsibility has the scope recorded in registryBasis.",
+  "geometryEvidence": null,
+  "runtimeAssessment": "not enabled; root may run full adapter qualification.",
+  "rootPrimaryChecks": [
+    {
+      "wupCityCode": 109,
+      "url": "https://www.citybyo.co.zw/Planning/LandSurvey",
+      "checkedAt": "2026-10-09T07:10:48.907063+00:00",
+      "method": "Anonymous read-only GET, standard TLS where advertised; no credentials or property values",
+      "httpStatus": 200,
+      "finalUrl": "https://www.citybyo.co.zw/Planning/LandSurvey",
+      "contentType": "text/html; charset=utf-8",
+      "bytesRead": 35116,
+      "sha256": "a320c785d093ab476bd73e60bcc4e3f91846e442394c8f4106e8627ce2d201bc",
+      "complete": true
+    }
+  ],
+  "rootReviewedAt": "2026-10-09T07:13:02.981057+00:00",
+  "rootReview": {
+    "checkedAt": "2026-10-09T07:13:02.981057+00:00",
+    "decision": "Reviewed city identity, canonical population/point, separate searches and saved source/request evidence. No full public parcel geometry verified in this pass.",
+    "custodyScope": "Bulawayo City Council Land Survey Section undertakes title surveys, maintains survey plans, and resolves property-boundary issues. This establishes municipal survey-plan custody; national deed-register ownership and anonymous full parcel geometry are not established.",
+    "transportFailuresDoNotProveAbsence": true,
+    "geometryClaimScope": "Investigation outcome only; no worldwide or citywide absence asserted."
+  }
+}

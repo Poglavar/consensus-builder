@@ -1,0 +1,105 @@
+{
+  "name": "Zhangjiagang",
+  "country": "China",
+  "countryCode": "CN",
+  "rank": 477,
+  "point": [
+    31.8674755282185,
+    120.478956051793
+  ],
+  "freshResearch": {
+    "queries": [
+      {
+        "language": "English",
+        "query": "Zhangjiagang official cadastral parcel map real estate registration public GIS",
+        "scope": "Find city-specific official registration/map sources and determine whether anonymous parcel geometry is documented.",
+        "result": "A city-specific cadastral map and real-property lookup service exists, but its official description requires unified government identity authentication and real-name verification. It can return property and registration status fields, so this review stopped at the public service description and did not inspect transaction routes, submit a query, or retain geometry. Anonymous public vector access is not established.",
+        "actualResultUrls": [
+          "https://www.zjg.gov.cn/zjg/zffw_zxxx/202406/1be57f218f8849eaa0ae3e79c34d1985.shtml",
+          "https://www.zjg.gov.cn/zjgszwz/nsjgktdhrmgdgmtdtkkqdttf/202412/42a3131aef3448b4a2411df31c3a230e.shtml",
+          "https://jiangsu.tianditu.gov.cn/"
+        ],
+        "executionMethod": "Separate English and local-language web searches; official source page review; bounded anonymous HTML review where available."
+      },
+      {
+        "language": "Chinese",
+        "query": "张家港 不动产登记 地籍图 在线可视化检索 自然资源和规划局",
+        "scope": "Find city-specific official registration/map sources and determine whether anonymous parcel geometry is documented.",
+        "result": "A city-specific cadastral map and real-property lookup service exists, but its official description requires unified government identity authentication and real-name verification. It can return property and registration status fields, so this review stopped at the public service description and did not inspect transaction routes, submit a query, or retain geometry. Anonymous public vector access is not established.",
+        "actualResultUrls": [
+          "https://www.zjg.gov.cn/zjg/zffw_zxxx/202406/1be57f218f8849eaa0ae3e79c34d1985.shtml",
+          "https://www.zjg.gov.cn/zjgszwz/nsjgktdhrmgdgmtdtkkqdttf/202412/42a3131aef3448b4a2411df31c3a230e.shtml",
+          "https://jiangsu.tianditu.gov.cn/"
+        ],
+        "executionMethod": "Separate English and local-language web searches; official source page review; bounded anonymous HTML review where available."
+      }
+    ]
+  },
+  "status": "complete",
+  "verifiedParcelResponse": null,
+  "source": {
+    "sourceId": "CN-11576-CITY-PARCEL-RESEARCH",
+    "name": "Zhangjiagang municipal real-property registration and cadastral-map query service",
+    "url": "https://www.zjg.gov.cn/zjg/zffw_zxxx/202406/1be57f218f8849eaa0ae3e79c34d1985.shtml",
+    "operator": "Local municipal/city authority sources",
+    "serviceType": "Registry/map source discovery; no anonymous geometry response verified",
+    "layer": null,
+    "geometryType": null,
+    "outputCrs": null,
+    "nativeIdField": null,
+    "nativeIdEvidence": "No public parcel schema or stable anonymous native geometry identifier was verified."
+  },
+  "coverageAssessment": {
+    "claimedScope": "No citywide parcel coverage claim.",
+    "verifiedOpenScope": "No anonymous parcel geometry was retained or verified.",
+    "countrywideVerified": false
+  },
+  "registryFound": true,
+  "verifiedSample": false,
+  "resultCategory": "official_local_registry_or_map_geometry_not_verified",
+  "technicalBlocker": "A city-specific cadastral map and real-property lookup service exists, but its official description requires unified government identity authentication and real-name verification. It can return property and registration status fields, so this review stopped at the public service description and did not inspect transaction routes, submit a query, or retain geometry. Anonymous public vector access is not established.",
+  "remainingUncertainty": "Whether a safe anonymous geometry-only parcel endpoint exists and covers the exact WUP point; local source metadata and currentness are not fully qualified.",
+  "nextStep": "Recheck only if the local authority publishes a geometry-only service or an open-data parcel geometry package with a documented safe schema.",
+  "schemaVersion": 1,
+  "checkedAt": "2026-10-09",
+  "wupCityCode": 11576,
+  "cityId": "wup2025:11576",
+  "runtimeReadiness": "not_enabled_no_verified_public_geometry",
+  "adapterReady": false,
+  "centerLatLon": [
+    31.8674755282185,
+    120.478956051793
+  ],
+  "population2025k": 1068.192,
+  "populationUnit": "persons",
+  "queueRank": 477,
+  "population2025": 1068192,
+  "populationPlausibility2025": "Moderate",
+  "pointBasis": "UN WUP 2025 population-weighted settlement centroid; this is not a municipal boundary or a parcel-coverage claim.",
+  "publicParcelGeometryFound": false,
+  "sourceIds": [],
+  "registryBasis": "A city-specific cadastral map and real-property lookup service exists, but its official description requires unified government identity authentication and real-name verification. It can return property and registration status fields, so this review stopped at the public service description and did not inspect transaction routes, submit a query, or retain geometry. Anonymous public vector access is not established.",
+  "registryEvidenceUrls": [
+    "https://www.zjg.gov.cn/zjg/zffw_zxxx/202406/1be57f218f8849eaa0ae3e79c34d1985.shtml",
+    "https://www.zjg.gov.cn/zjgszwz/nsjgktdhrmgdgmtdtkkqdttf/202412/42a3131aef3448b4a2411df31c3a230e.shtml",
+    "https://jiangsu.tianditu.gov.cn/"
+  ],
+  "rootSupplementalResearch": [
+    {
+      "checkedAt": "2026-10-09",
+      "url": "https://www.zjg.gov.cn/zjg/zffw_zxxx/202406/1be57f218f8849eaa0ae3e79c34d1985.shtml",
+      "observation": "City Natural Resources and Planning Bureau article explicitly describes the city’s online real-property registration information and cadastral-map visualization service. It uses Jiangsu unified government identity authentication and real-name verification before entry. Query modes include unit/parcel code, fuzzy location and map clicking; results can expose property, registration, mortgage and other status fields. No login or data query was attempted."
+    },
+    {
+      "checkedAt": "2026-10-09",
+      "url": "https://www.zjg.gov.cn/zjgszwz/nsjgktdhrmgdgmtdtkkqdttf/202412/42a3131aef3448b4a2411df31c3a230e.shtml",
+      "observation": "City bureau responsibilities include unifying natural-resource and real-property registration, cadastral surveys, registration information platform and record management."
+    },
+    {
+      "checkedAt": "2026-10-09",
+      "url": "https://jiangsu.tianditu.gov.cn/",
+      "observation": "Linked municipal Tianditu map portal; no public parcel schema was verified in this review."
+    }
+  ],
+  "rootReviewedAt": "2026-10-09T00:27:07.816662+00:00"
+}

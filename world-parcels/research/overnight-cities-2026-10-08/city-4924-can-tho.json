@@ -1,0 +1,88 @@
+{
+  "schemaVersion": 1,
+  "kind": "city_parcel_source_research",
+  "checkedAt": "2026-10-09",
+  "name": "Cần Thơ",
+  "country": "Viet Nam",
+  "countryCode": "VN",
+  "populationUnit": "persons",
+  "status": "complete",
+  "registryFound": true,
+  "registryBasis": "The official Cần Thơ Land Registration Office identifies its cadastral registration role and publishes an administrative map page. A city government article describes the city Spatial Planning Platform (SPP) at gis.cantho.gov.vn as providing land-information and land-use-planning lookups, and reports land-information GIS layers and VBDLIS deployment. The advertised SPP is not evidence of anonymous parcel-vector access.",
+  "registryEvidenceUrls": [
+    "https://www.cnvpdkkv4.cantho.gov.vn/home/b%E1%BA%A3n-%C4%91%E1%BB%93-h%C3%A0nh-ch%C3%ADnh-34-t%E1%BB%89nh-th%C3%A0nh",
+    "https://btgdv.cantho.gov.vn/vi/news/dua-nghi-quyet-cua-dang-vao-cuoc-song/can-tho-tiep-tuc-doi-moi-hoan-thien-the-che-chinh-sach-nang-cao-hieu-luc-hieu-qua-quan-ly-va-su-dung-dat-dai-theo-tinh-than-nghi-quyet-so-18-nq-tw-1580.html",
+    "https://gis.cantho.gov.vn/"
+  ],
+  "verifiedSample": false,
+  "publicParcelGeometryFound": false,
+  "runtimeReadiness": "not_enabled_no_verified_public_geometry",
+  "wupCityCode": 4924,
+  "cityId": "wup2025:4924",
+  "centerLatLon": [
+    10.0473827283244,
+    105.735519564939
+  ],
+  "rank": 384,
+  "queueRank": 384,
+  "population2025": 1327741,
+  "population2025k": 1327.741,
+  "populationPlausibility2025": "High",
+  "pointBasis": "UN WUP 2025 population-weighted settlement centroid; this is not a municipal boundary or a parcel-coverage claim.",
+  "technicalBlocker": "The official city SPP/GIS host and the official land-registration-office subdomain fail direct anonymous DNS resolution from this client, with no HTTP response. The public indexed SPP description confirms land-information and planning lookups, but the indexed ArcGIS Instant Apps item prompts the visitor to sign in. No anonymous feature layer, public parcel schema, or geometry-only service could be directly verified.",
+  "scopeLimits": "Reviewed official city government SPP description, the city land-registration-office administrative-map page, and indexed ArcGIS portal metadata. The city office map is described as administrative; the SPP is described as land and planning lookup. No map identify, address, legal parcel identifier, owner field, login, or record query was attempted.",
+  "remainingUncertainty": "Whether the city SPP or a VBDLIS instance provides an anonymous geometry-only map when accessed from a resolving browser/network; whether the advertised layer set contains parcel vectors rather than planning/land-information summaries.",
+  "research": {
+    "executedQueries": [
+      {
+        "language": "Vietnamese",
+        "query": "Cần Thơ cổng GIS SPP tra cứu thông tin đất đai bản đồ địa chính thửa đất",
+        "result": "Found the official city SPP description and official city land-registration-office administrative map. Direct map host DNS failure prevented inspection of HTML/JS/schema."
+      },
+      {
+        "language": "English",
+        "query": "Can Tho official land registration office cadastral map parcel GIS",
+        "result": "Found the city land-registration-office map page and ArcGIS portal references; no anonymous parcel vector route verified."
+      }
+    ],
+    "officialSources": [
+      {
+        "url": "https://www.cnvpdkkv4.cantho.gov.vn/home/b%E1%BA%A3n-%C4%91%E1%BB%93-h%C3%A0nh-ch%C3%ADnh-34-t%E1%BB%89nh-th%C3%A0nh",
+        "observation": "Official Cần Thơ Land Registration Office page titled “Administrative map”; identifies the authoring/updating office and contact. Search/open indexed content was accessible, while direct GET failed DNS resolution."
+      },
+      {
+        "url": "https://btgdv.cantho.gov.vn/vi/news/dua-nghi-quyet-cua-dang-vao-cuoc-song/can-tho-tiep-tuc-doi-moi-hoan-thien-the-che-chinh-sach-nang-cao-hieu-luc-hieu-qua-quan-ly-va-su-dung-dat-dai-theo-tinh-than-nghi-quyet-so-18-nq-tw-1580.html",
+        "observation": "Official city Party Committee article says the city SPP at gis.cantho.gov.vn supports land-information and land-use-planning lookups; it reports 16 GIS layers from the natural-resources department and VBDLIS operation in 6/9 localities at that time. It does not describe an anonymous parcel-vector endpoint."
+      },
+      {
+        "url": "https://gis.cantho.gov.vn/portal/apps/instantgallery/index.html?webmap=2f90698e50684964a78f80d8953f7389",
+        "observation": "Indexed official ArcGIS Instant Apps page displays a sign-in prompt for the item; direct requests to the gis.cantho.gov.vn host could not resolve, so no HTTP status is claimed."
+      }
+    ],
+    "metadataReviewFile": "can-tho-service-review.json",
+    "routeInspectionFile": "/tmp/overnight-cities-2026-10-08/city-4924-can-tho-route-inspection.json"
+  },
+  "source": {
+    "sourceId": "vn-can-tho-spp-and-land-registration-office",
+    "name": "Cần Thơ land-registration office, administrative map and city SPP/GIS portal",
+    "operator": "Cần Thơ Land Registration Office and city natural-resources administration",
+    "url": "https://gis.cantho.gov.vn/",
+    "scope": "The official city SPP/GIS host and the official land-registration-office subdomain fail direct anonymous DNS resolution from this client, with no HTTP response. The public indexed SPP description confirms land-information and planning lookups, but the indexed ArcGIS Instant Apps item prompts the visitor to sign in. No anonymous feature layer, public parcel schema, or geometry-only service could be directly verified.",
+    "nativeIdField": null,
+    "attributesRequested": [],
+    "identityBasis": "No parcel feature was requested or returned; no native parcel identifier was examined.",
+    "geometryStatus": "no_qualifying_anonymous_geometry_route"
+  },
+  "coverageAssessment": {
+    "verifiedOpenScope": "Official local registry/land-office presence and public map routes were inspected. No anonymous parcel polygon geometry was verified for the target city; this is an access result, not a claim that the registry lacks parcel records.",
+    "citywideVerified": false,
+    "countrywideVerified": false
+  },
+  "priorEvidenceFiles": [],
+  "point": [
+    10.0473827283244,
+    105.735519564939
+  ],
+  "rootReviewedAt": "2026-10-08T23:27:05.916367+00:00",
+  "sourceIds": []
+}

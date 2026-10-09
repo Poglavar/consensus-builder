@@ -1,0 +1,110 @@
+{
+  "schemaVersion": "1.0",
+  "cityId": "wup2025:10735",
+  "wupCityCode": 10735,
+  "name": "Bettiah",
+  "country": "India",
+  "countryCode": "IN",
+  "rank": 1032,
+  "queueRank": 1032,
+  "point": [
+    26.7904871822319,
+    84.4917038648478
+  ],
+  "centerLatLon": [
+    26.7904871822319,
+    84.4917038648478
+  ],
+  "pointBasis": "UN WUP2025 population-weighted settlement centroid; not a municipal boundary or parcel-coverage claim.",
+  "population2025": 535979,
+  "population2025k": 535.979,
+  "populationUnit": "persons",
+  "populationPlausibility2025": "Moderate",
+  "cohort": "overnight-followon-1001-1100",
+  "checkedAt": "2026-10-09",
+  "status": "complete",
+  "registryFound": true,
+  "registryBasis": "West Champaran’s official district administration identifies the District Land Records Office at the Bettiah Collectorate and links state land-record services; the official Bhu-Naksha service exposes Bihar district, subdivision, circle and mauza selectors. This establishes local/district land-record service custody, but the WUP point’s revenue village and its anonymous geometry coverage were not resolved.",
+  "registryEvidenceUrls": [
+    "https://westchamparan.nic.in/service/land-records/",
+    "https://westchamparan.nic.in/hi/service/%E0%A4%AD%E0%A5%82%E0%A4%AE%E0%A4%BF-%E0%A4%B0%E0%A4%BF%E0%A4%95%E0%A5%89%E0%A4%B0%E0%A5%8D%E0%A4%A1%E0%A5%8D%E0%A4%B8/",
+    "https://bhunaksha.bihar.gov.in/10/indexmain.jsp?plotNo=b+cbmnbi"
+  ],
+  "verifiedSample": false,
+  "publicParcelGeometryFound": false,
+  "sourceIds": [],
+  "adapterReady": false,
+  "runtimeReadiness": "not_enabled_no_verified_public_geometry",
+  "technicalBlocker": "No source-native, anonymous response containing a stable parcel identifier and complete polygon tied to the WUP point was verified in this city-specific investigation. This is an unverified access finding, not a claim that public geometry does not exist.",
+  "scopeLimits": "No full parcel geometry was retained. Local registry/cadastre custody and public geometry access are treated as separate findings; no citywide or countrywide parcel coverage is claimed.",
+  "resultCategory": "local_land_record_services_city_point_village_unverified",
+  "coverageAssessment": {
+    "claimedScope": "West Champaran’s official district administration identifies the District Land Records Office at the Bettiah Collectorate and links state land-record services; the official Bhu-Naksha service exposes Bihar district, subdivision, circle and mauza selectors. This establishes local/district land-record service custody, but the WUP point’s revenue village and its anonymous geometry coverage were not resolved.",
+    "verifiedOpenScope": "No complete source-native anonymous parcel polygon was verified at the WUP point.",
+    "citywideVerified": false,
+    "countrywideVerified": false
+  },
+  "runtimeAssessment": {
+    "status": "not_enabled_no_verified_public_geometry",
+    "reason": "No source-native, anonymous response containing a stable parcel identifier and complete polygon tied to the WUP point was verified in this city-specific investigation. This is an unverified access finding, not a claim that public geometry does not exist."
+  },
+  "freshResearch": {
+    "queries": [
+      {
+        "language": "English",
+        "query": "Bettiah West Champaran Bihar official land records cadastral map BhuNaksha",
+        "scope": "Fresh city-specific discovery of local registry/cadastre custody and safe public parcel geometry.",
+        "result": "Official West Champaran pages name the District Land Records Office at Bettiah, and the state’s Bhu-Naksha viewer exposes district-to-mauza map selection. The WUP point’s specific mauza and anonymous feature geometry were not established.",
+        "actualResultUrls": [
+          "https://westchamparan.nic.in/service/land-records/",
+          "https://westchamparan.nic.in/hi/service/%E0%A4%AD%E0%A5%82%E0%A4%AE%E0%A4%BF-%E0%A4%B0%E0%A4%BF%E0%A4%95%E0%A5%89%E0%A4%B0%E0%A4%8D%E0%A4%A1%E0%A5%8D%E0%A4%B8/",
+          "https://bhunaksha.bihar.gov.in/10/indexmain.jsp?plotNo=b+cbmnbi"
+        ],
+        "executionMethod": "Executed as a fresh web search; official search results/pages were reviewed."
+      },
+      {
+        "language": "Hindi",
+        "query": "बेतिया जिला भूमि अभिलेख आधिकारिक भू नक्शा राजस्व कार्यालय",
+        "scope": "Independent local-language search for city-specific registry/cadastre custody and anonymous parcel geometry.",
+        "result": "पश्चिम चंपारण की आधिकारिक हिंदी वेबसाइट बेतिया स्थित जिला भूमि अभिलेख कार्यालय बताती है और बिहार का भू-नक्शा पोर्टल उपलब्ध है। WUP बिंदु का सटीक मौजा तथा सुरक्षित पूर्ण भूखंड-ज्यामिति की उपलब्धता स्थापित नहीं हुई।",
+        "actualResultUrls": [
+          "https://westchamparan.nic.in/service/land-records/",
+          "https://westchamparan.nic.in/hi/service/%E0%A4%AD%E0%A5%82%E0%A4%AE%E0%A4%BF-%E0%A4%B0%E0%A4%BF%E0%A4%95%E0%A5%89%E0%A4%B0%E0%A4%8D%E0%A4%A1%E0%A5%8D%E0%A4%B8/",
+          "https://bhunaksha.bihar.gov.in/10/indexmain.jsp?plotNo=b+cbmnbi"
+        ],
+        "executionMethod": "Executed as a separate fresh web search in the local language; official search results/pages were reviewed."
+      }
+    ],
+    "requests": [
+      {
+        "checkedAt": "2026-10-09T05:42:09.587054+00:00",
+        "url": "https://westchamparan.nic.in/service/land-records/",
+        "normalTlsVerification": true,
+        "httpStatus": 200,
+        "contentType": "text/html; charset=UTF-8",
+        "finalUrl": "https://westchamparan.nic.in/service/land-records/",
+        "bytesRead": 140489,
+        "boundedReadIncomplete": false,
+        "sha256": "df74f55d2808d0848a9266fd60e94365af9195e91333510d258b5ddc7dad22d0",
+        "title": "Land Records | Official Website of West Champaran | India"
+      }
+    ],
+    "portals": [
+      {
+        "homeUrl": "https://bhunaksha.bihar.gov.in/10/indexmain.jsp?plotNo=b+cbmnbi",
+        "observation": "First-party municipal portal identified, but no safe anonymous full-polygon point query was verified."
+      }
+    ],
+    "historicalContext": []
+  },
+  "remainingUncertainty": "The WUP point’s revenue village/mauza and whether the official map returns an anonymous complete polygon there remain unverified. Rights-of-records data and identity fields were not queried or retained.",
+  "nextStep": "Retain the bounded custody and geometry findings. Root review may qualify a documented source-native map route before enabling any provider.",
+  "priorEvidenceFiles": [],
+  "priorCheck": {
+    "attemptState": "pending",
+    "attemptEvidence": [],
+    "possiblePriorMatches": []
+  },
+  "rootReviewedAt": "2026-10-09T05:45:07.249008+00:00",
+  "rootReviewNote": "Reviewed exact immutable WUP identity, separate multilingual discovery, cited city custody and actual source observations. West Champaran’s official district administration identifies the District Land Records Office at the Bettiah Collectorate and links state land-record services; the official Bhu-Naksha service exposes Bihar district, subdivision, circle and mauza selectors. This establishes local/district land-record service custody, but the WUP point’s revenue village and its anonymous geometry coverage were not resolved."
+}

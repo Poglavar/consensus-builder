@@ -1,0 +1,34 @@
+{
+  "checkedAt": "2026-10-09T05:25:56.511527+00:00",
+  "purpose": "Manual headed Chrome inspection of real local app parcels and source-native selection; no browser test suite or simulated parcel responses.",
+  "liveCatalog": {
+    "sourceCount": 154,
+    "appCityCount": 179,
+    "actualSourceIds": [
+      "lodz-gml-wfs",
+      "dresden-saxony-gml-wfs"
+    ]
+  },
+  "cities": [
+    {
+      "appCityId": "lodz",
+      "loadedParcels": 162,
+      "selectedAtUnchangedLocator": true,
+      "nativeIdInDetails": "PL-LODZ-106105_9.0006.98/1",
+      "detailsOpenedByRealPointerClick": true,
+      "browserErrors": [],
+      "areaInDetails": "N/A"
+    },
+    {
+      "appCityId": "dresden",
+      "loadedParcels": 13,
+      "selectedAtUnchangedLocator": true,
+      "nativeIdInDetails": "DE-SN-140209___00622001002",
+      "detailsOpenedByRealPointerClick": true,
+      "browserErrors": [],
+      "areaInDetails": "N/A"
+    }
+  ],
+  "browserSessionClosed": true,
+  "sessionListAfterClose": "No active sessions"
+}

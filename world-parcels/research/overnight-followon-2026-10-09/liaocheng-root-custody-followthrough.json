@@ -1,0 +1,46 @@
+{
+  "schemaVersion": "1.0",
+  "checkedAt": "2026-10-09",
+  "cityRecord": "city-9776-liaocheng.json",
+  "city": "Liaocheng",
+  "wupCityCode": 9776,
+  "country": "China",
+  "countryCode": "CN",
+  "purpose": "Check whether the Liaocheng municipal government PDF itself names the registration center or city-specific registration service, independently of secondary reporting.",
+  "assessment": "The primary Liaocheng government PDF is a city-government-office notice issuing an implementation plan for digital government-service redesign. Search-indexed text from the PDF explicitly includes integrated taxes/fees for real-estate registration (“不动产登记‘税费统缴’”) as a city service-process work item. The PDF does not name 聊城市不动产登记中心 or assign that work to the center in the inspected/search-indexed material. Direct web open timed out and direct curl could not resolve the host, so a complete PDF text review was unavailable. The 2026-08-31 story previously cited by the draft is hosted by 10jqka, not an official government domain; it attributes a story to the Liaocheng Natural Resources and Planning Bureau and refers to the city registration center, but remains secondary attribution. Thus the government PDF confirms a local registration service context but not the local custodian institution; keep strict registry custody unresolved pending a first-party source that names the center.",
+  "registryCustody": "city_service_confirmed_custodian_not_confirmed",
+  "registryFound": null,
+  "registryBasis": "Official city notice confirms a municipal digital-service work item for real-estate-registration tax/fee integration, but does not name the local registration center or identify the responsible agency. The article naming the center is carried by 10jqka and is not first-party. Strict local custodian status remains unresolved.",
+  "officialPrimarySources": [
+    {
+      "url": "https://www.liaocheng.gov.cn/resources/public/20240930/66fa25f4fb5e24614e190cbc.pdf",
+      "observation": "First-party Liaocheng Municipal People’s Government Office notice, title: implementation plan for digital workflow redesign to support “efficient completion of one matter.” Search-indexed document text includes real-estate-registration tax/fee integrated payment. It does not name the Liaocheng Real Estate Registration Center or assign it custody. Full direct fetch was unavailable (web open timeout; curl DNS failure)."
+    },
+    {
+      "url": "https://news.10jqka.com.cn/20260831/c679454355.shtml",
+      "observation": "Non-government 10jqka-hosted item, text credits Liaocheng Natural Resources and Planning Bureau as the source and describes a bureau leader’s visit to the city real-estate registration center. This is secondary attribution, not a primary municipal publication; it cannot independently establish the center’s formal local custody."
+    }
+  ],
+  "searchQueries": [
+    {
+      "language": "English",
+      "query": "Liaocheng official real estate registration center municipal government service bureau",
+      "result": "Search did not find an English-language first-party government page naming the Liaocheng registration center. The cited city government PDF was identified by title and search-indexed content, while the 10jqka story was treated as secondary.",
+      "method": "Separate English-language web search and official-source checking."
+    },
+    {
+      "language": "Chinese",
+      "query": "聊城市 不动产登记中心 官方 聊城市人民政府 自然资源和规划局",
+      "result": "Found the first-party city-government-office digital-services plan. Its indexed text covers real-estate-registration tax/fee integration but does not name the registration center or custodian. The 10jqka item names the center but is a secondary carrier attributing its content to the bureau. No personal or property-specific search was performed.",
+      "method": "Separate Chinese-language web search and comparison of primary municipal text with the secondary article."
+    }
+  ],
+  "geometryAssessment": "No geometry or property-specific lookup was attempted.",
+  "recommendation": "If registryFound requires first-party evidence identifying a city-local custodian, retain null until a Liaocheng government or bureau publication explicitly names the center or the center’s own official site/budget is located. The official PDF supports local service context only. No existing city/service packet was edited.",
+  "scopeLimits": {
+    "ownerOrAddressDataRetained": false,
+    "credentialsOrTokenValuesRetained": false,
+    "geometryQueried": false,
+    "citywideGeometryCompletenessAsserted": false
+  }
+}

@@ -1,0 +1,19 @@
+{
+  "schemaVersion": 1,
+  "checkedAt": "2026-10-09T00:46:42.665467+00:00",
+  "city": "auckland",
+  "url": "http://127.0.0.1:5638/?city=auckland&backend=http%3A%2F%2Flocalhost%3A5640&reduceMotion=1",
+  "verificationMethod": "Dedicated headed agent-browser; inspected screenshot, actual pointer click, normal menu and Details panel. Not a browser test suite.",
+  "loadedFeatureCount": 177,
+  "visibleFeatureCount": 43,
+  "pointerCssCoordinates": [
+    600,
+    400
+  ],
+  "selectedParcelId": "nz-linz:5211850",
+  "menuAreaM2": 5995,
+  "normalMenuOpened": true,
+  "detailsIdMatchesSelection": true,
+  "pageErrors": 0,
+  "browserClosed": true
+}

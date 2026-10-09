@@ -1,0 +1,111 @@
+{
+  "schemaVersion": "1.0",
+  "cityId": "wup2025:6305",
+  "wupCityCode": 6305,
+  "name": "Nha Trang",
+  "country": "Vietnam",
+  "countryCode": "VN",
+  "rank": 1099,
+  "queueRank": 1099,
+  "point": [
+    12.2547425943369,
+    109.163689759867
+  ],
+  "centerLatLon": [
+    12.2547425943369,
+    109.163689759867
+  ],
+  "pointBasis": "UN WUP2025 population-weighted settlement locator; not a municipal boundary or parcel-coverage claim.",
+  "population2025": 503051,
+  "population2025k": 503.051,
+  "populationUnit": "persons",
+  "populationPlausibility2025": "Moderate",
+  "cohort": "overnight-followon-1001-1100",
+  "checkedAt": "2026-10-09",
+  "status": "complete",
+  "registryFound": true,
+  "registryBasis": "Khánh Hòa provincial government identifies the provincial Land Registration Office and lists the Nha Trang city branch, including its branch office responsibilities. This is city-specific local registration custody; no public parcel geometry service was verified.",
+  "registryEvidenceUrls": [
+    "https://www.khanhhoa.gov.vn/vi/chi-dao-dieu-hanh-cua-ubnd-tinh/co-cau-to-chuc-cua-van-phong-dang-ky-dat-dai-khanh-hoa-truc-thuoc-so-nong-nghiep-va-moi-truong-tinh-khanh-hoa"
+  ],
+  "verifiedSample": false,
+  "publicParcelGeometryFound": false,
+  "sourceIds": [],
+  "adapterReady": false,
+  "runtimeReadiness": "not_enabled_no_verified_public_geometry",
+  "technicalBlocker": "City-specific registry branch is documented, but no public anonymous geometry-only parcel endpoint or downloadable vector dataset was verified.",
+  "scopeLimits": {
+    "maxFullPolygonsRetained": 0,
+    "ownerOrAddressDataRetained": false,
+    "credentialsOrTokenValuesRetained": false,
+    "citywideCompletenessAsserted": false
+  },
+  "resultCategory": "no_verified_public_geometry",
+  "coverageAssessment": {
+    "claimedScope": "Khánh Hòa provincial government identifies the provincial Land Registration Office and lists the Nha Trang city branch, including its branch office responsibilities. This is city-specific local registration custody; no public parcel geometry service was verified.",
+    "verifiedOpenScope": "No anonymous full parcel geometry response verified in this investigation.",
+    "citywideVerified": false,
+    "countrywideVerified": false,
+    "geometryVerified": false
+  },
+  "runtimeAssessment": {
+    "status": "not_enabled_no_verified_public_geometry",
+    "reason": "City-specific registry branch is documented, but no public anonymous geometry-only parcel endpoint or downloadable vector dataset was verified."
+  },
+  "freshResearch": {
+    "queries": [
+      {
+        "language": "English",
+        "query": "Nha Trang Khánh Hòa official cadastral office land registration branch GIS parcel map",
+        "scope": "Identify first-party city-bound registry custody and safely accessible public parcel geometry.",
+        "result": "Official Khánh Hòa government page identifies the provincial land-registration office and Nha Trang branch. Search results surfaced planning maps but not a first-party public cadastral geometry endpoint; no third-party map or property-specific lookup was used.",
+        "actualResultUrls": [
+          "https://www.khanhhoa.gov.vn/vi/chi-dao-dieu-hanh-cua-ubnd-tinh/co-cau-to-chuc-cua-van-phong-dang-ky-dat-dai-khanh-hoa-truc-thuoc-so-nong-nghiep-va-moi-truong-tinh-khanh-hoa"
+        ],
+        "executionMethod": "Separate English-language web search and official-source review."
+      },
+      {
+        "language": "Vietnamese",
+        "query": "Nha Trang văn phòng đăng ký đất đai chi nhánh bản đồ địa chính Khánh Hòa chính thức",
+        "scope": "Identify first-party city-bound registry custody and safely accessible public parcel geometry.",
+        "result": "Official Khánh Hòa government page identifies the provincial land-registration office and Nha Trang branch. Search results surfaced planning maps but not a first-party public cadastral geometry endpoint; no third-party map or property-specific lookup was used.",
+        "actualResultUrls": [
+          "https://www.khanhhoa.gov.vn/vi/chi-dao-dieu-hanh-cua-ubnd-tinh/co-cau-to-chuc-cua-van-phong-dang-ky-dat-dai-khanh-hoa-truc-thuoc-so-nong-nghiep-va-moi-truong-tinh-khanh-hoa"
+        ],
+        "executionMethod": "Separate local-language web search and official-source review."
+      }
+    ],
+    "portals": [
+      {
+        "name": "https://www.khanhhoa.gov.vn/vi/chi-dao-dieu-hanh-cua-ubnd-tinh/co-cau-to-chuc-cua-van-phong-dang-ky-dat-dai-khanh-hoa-truc-thuoc-so-nong-nghiep-va-moi-truong-tinh-khanh-hoa",
+        "operator": "Relevant local public authority",
+        "homeUrl": "https://www.khanhhoa.gov.vn/vi/chi-dao-dieu-hanh-cua-ubnd-tinh/co-cau-to-chuc-cua-van-phong-dang-ky-dat-dai-khanh-hoa-truc-thuoc-so-nong-nghiep-va-moi-truong-tinh-khanh-hoa",
+        "observation": "Official Khánh Hòa government page identifies the provincial land-registration office and Nha Trang branch. Search results surfaced planning maps but not a first-party public cadastral geometry endpoint; no third-party map or property-specific lookup was used."
+      }
+    ],
+    "requests": [],
+    "historicalContext": []
+  },
+  "source": {
+    "sourceId": "VN-NHA-TRANG-LAND-REGISTRATION-BRANCH",
+    "name": "Nha Trang official parcel/registry source",
+    "url": "https://www.khanhhoa.gov.vn/vi/chi-dao-dieu-hanh-cua-ubnd-tinh/co-cau-to-chuc-cua-van-phong-dang-ky-dat-dai-khanh-hoa-truc-thuoc-so-nong-nghiep-va-moi-truong-tinh-khanh-hoa",
+    "operator": null,
+    "serviceType": "Official local registry custody evidence reviewed; public parcel geometry remains unverified",
+    "layer": null,
+    "geometryType": null,
+    "outputCrs": null,
+    "nativeIdField": null,
+    "nativeIdEvidence": "Khánh Hòa provincial government identifies the provincial Land Registration Office and lists the Nha Trang city branch, including its branch office responsibilities. This is city-specific local registration custody; no public parcel geometry service was verified.",
+    "attributesRequested": [],
+    "sampleCount": 0,
+    "sampleFile": null,
+    "operatorNote": "Use the registryBasis and linked primary evidence for the verified institution; the previous country label was not an operator."
+  },
+  "rootReviewedAt": "2026-10-09T06:45:08.823796+00:00",
+  "rootReview": {
+    "checkedAt": "2026-10-09T06:45:08.823796+00:00",
+    "basis": "Reviewed city-specific English/local-language attempts, local-custody basis, source routes and documented responses. Public geometry remains unverified; access failures and unknown custody do not establish absence.",
+    "primarySourceAuditFile": "research/overnight-followon-2026-10-09/unreviewed-primary-source-audit.json"
+  }
+}

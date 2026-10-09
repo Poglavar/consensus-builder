@@ -1,0 +1,100 @@
+{
+  "name": "Handan",
+  "country": "China",
+  "countryCode": "CN",
+  "rank": 279,
+  "point": [
+    36.5965370723398,
+    114.48766118017
+  ],
+  "freshResearch": {
+    "queries": [
+      {
+        "language": "Chinese",
+        "query": "邯郸市 不动产登记 以图查房 图属一致 官方 地籍图",
+        "result": "Local media republication explicitly sourced to Handan city registration center documents a 2023 map query; 2026 report describes a new multi-platform visual service but lacks a first-party page.",
+        "urls": [
+          "https://finance.sina.cn/2023-09-26/detail-imznztsf4906829.d.html",
+          "https://www.sohu.com/a/991111887_121106842"
+        ]
+      },
+      {
+        "language": "English",
+        "query": "Handan official property registration map parcel query cadastral map",
+        "result": "No English first-party viewer/source was identified; searches surfaced only secondary descriptions of the city map query.",
+        "urls": [
+          "https://finance.sina.cn/2023-09-26/detail-imznztsf4906829.d.html"
+        ]
+      }
+    ],
+    "requests": [
+      {
+        "url": "https://finance.sina.cn/2023-09-26/detail-imznztsf4906829.d.html",
+        "method": "GET",
+        "status": 200,
+        "type": "text/html",
+        "observation": "Sina republication explicitly attributes “以图查房” to Handan city registration center; reports SMS verification, search by address/community, imagery/building selection and natural property attributes without owner personal data."
+      },
+      {
+        "url": "https://www.sohu.com/a/991111887_121106842",
+        "method": "GET",
+        "status": 200,
+        "type": "text/html",
+        "observation": "Secondary republication sourced to New Handan reports a 2026 “图属一致” service on Hebei Government Service Net, Jishiban and city center WeChat; no first-party route verified."
+      },
+      {
+        "url": "https://zrzyj.hd.gov.cn/",
+        "method": "GET",
+        "status": null,
+        "type": null,
+        "observation": "Primary Natural Resources and Planning Bureau site did not produce a retrievable direct page in this attempt; no endpoint or vector response verified."
+      }
+    ],
+    "portals": [
+      {
+        "name": "Handan “以图查房” map-based registration lookup",
+        "operator": "Handan Municipal Real Estate Registration Center (attributed source)",
+        "homeUrl": "https://finance.sina.cn/2023-09-26/detail-imznztsf4906829.d.html",
+        "observation": "Secondary article attributes an SMS-gated imagery/building-unit lookup service to the city registration center; no public parcel polygon service was established."
+      }
+    ]
+  },
+  "status": "complete",
+  "verifiedParcelResponse": null,
+  "source": {
+    "id": "cn-handan-real-estate-registration-map-query",
+    "name": "Handan Real Estate Registration Center map-based property lookup",
+    "operator": "Handan Municipal Real Estate Registration Center (service attribution reported in secondary republications)",
+    "url": "https://finance.sina.cn/2023-09-26/detail-imznztsf4906829.d.html"
+  },
+  "coverageAssessment": {
+    "claimedScope": "City-local property and cadastral-map query services as described by official city sources or explicitly attributed city-center reports.",
+    "verifiedOpenScope": "Secondary city-service reports found, but no primary city registry or anonymous full parcel polygon verified.",
+    "countrywideVerified": false
+  },
+  "registryFound": null,
+  "registryBasis": "Secondary reports attribute map lookup to the municipal registration center; first-party city registry/map confirmation remains unestablished.",
+  "verifiedSample": false,
+  "publicParcelGeometryFound": false,
+  "resultCategory": "secondary_city_registry_lead_primary_confirmation_unestablished",
+  "technicalBlocker": "Reported service requires SMS verification and queries building/unit records over imagery; no primary anonymous parcel-vector viewer/API was found. No login, SMS or protected query was attempted.",
+  "remainingUncertainty": "The first-party viewer and 2026 multi-platform “图属一致” entrypoint could not be verified directly; evidence is secondary republication attributed to Handan city registry center.",
+  "runtimeReadiness": "not_enabled_no_verified_public_geometry",
+  "adapterReady": false,
+  "cityId": "wup2025:9410",
+  "wupCityCode": 9410,
+  "centerLatLon": [
+    36.5965370723398,
+    114.48766118017
+  ],
+  "schemaVersion": 1,
+  "checkedAt": "2026-10-09",
+  "queueRank": 279,
+  "population2025": 1777172,
+  "populationPlausibility2025": "High",
+  "populationUnit": "persons",
+  "pointBasis": "UN WUP 2025 population-weighted settlement centroid; this is not a municipal boundary or a parcel-coverage claim.",
+  "sourceIds": [],
+  "nextStep": "Find a first-party city registration-center service page or public anonymous parcel-vector endpoint; do not use SMS-gated property lookup.",
+  "rootReviewedAt": "2026-10-08T22:06:54.103695+00:00"
+}

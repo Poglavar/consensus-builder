@@ -1,0 +1,128 @@
+{
+  "schemaVersion": 1,
+  "checkedAt": "2026-10-09",
+  "sourceId": "bf-bobo-dioulasso-cadastre-portal-and-city-map-review",
+  "purpose": "Service review for WUP2025 rank 460 Bobo-Dioulasso (city code 378); local registry evidence and safe anonymous full-polygon access status.",
+  "primaryPublisher": "Direction générale des Impôts du Burkina Faso; Commune de Bobo-Dioulasso; Ministry of Economy and Finance",
+  "sourceUrl": "https://mairie-bobo.bf/plan-de-la-ville/",
+  "registryFound": true,
+  "registryBasis": "The official commune site publishes a city-plan page as a static image. National DGI sources document a cadastral office for Bobo-Dioulasso and cadastral-extract workflows; official government sources identify SyC@D/sif.bf as the integrated cadastre/domain procedure platform. The inspected app exposes an Angular shell and authenticated workflow routes, not an anonymous parcel feature/schema contract. No data form or parcel lookup was used.",
+  "officialSources": [
+    {
+      "url": "https://mairie-bobo.bf/plan-de-la-ville/",
+      "observation": "Official municipality page titled “Plan de la ville”; its page includes a static raster city image rather than a parcel vector service."
+    },
+    {
+      "url": "https://dgi.bf/contacts/",
+      "observation": "Official DGI local contacts include a Cadastre and Land Works Service and land one-stop office in Bobo-Dioulasso."
+    },
+    {
+      "url": "https://dgi.bf/faq/",
+      "observation": "DGI describes cadastral extracts and in-person service location for Bobo-Dioulasso; no records were requested."
+    },
+    {
+      "url": "https://gouvernement.gov.bf/actualites/foncier-lancement-de-la-plateforme-https-sif-bf-pour-une-gestion-transparente-des-procedures/",
+      "observation": "Government announcement identifies SyC@D/sif.bf as an integrated cadastral/domain procedure platform, not an anonymous map or open feature endpoint."
+    },
+    {
+      "url": "https://dgi.impots.gov.bf/",
+      "observation": "Anonymous HTTPS currently returns a default nginx welcome page; no TLS bypass was attempted for the www hostname."
+    }
+  ],
+  "searchQueries": [
+    {
+      "language": "English",
+      "query": "Bobo-Dioulasso Burkina Faso official public cadastral map parcel GIS online",
+      "scope": "Find city-local cadastral services and anonymous full-polygon access.",
+      "result": "Official commune publishes a city-plan page; DGI documents a local cadastral service and extracts. Syc@D is a formal land-procedure platform; no anonymous geometry endpoint was verified.",
+      "urls": [
+        "https://mairie-bobo.bf/plan-de-la-ville/",
+        "https://dgi.bf/contacts/",
+        "https://sif.bf/"
+      ]
+    },
+    {
+      "language": "French",
+      "query": "Bobo-Dioulasso cadastre parcelles carte en ligne Burkina Faso officiel",
+      "scope": "Identifier les services cadastraux locaux et un accès anonyme aux géométries complètes.",
+      "result": "La mairie publie un plan de ville sous forme d’image; la DGI documente un service cadastral local. Le portail SyC@D expose une application procédurale, sans contrat public de géométrie anonyme vérifié.",
+      "urls": [
+        "https://mairie-bobo.bf/plan-de-la-ville/",
+        "https://dgi.bf/contacts/",
+        "https://gouvernement.gov.bf/actualites/foncier-lancement-de-la-plateforme-https-sif-bf-pour-une-gestion-transparente-des-procedures/"
+      ]
+    }
+  ],
+  "accessReview": {
+    "publicAnonymousGeometryVerified": false,
+    "completeGeoreferencedPolygonCount": 0,
+    "geometryRetained": false,
+    "ownerAddressTaxAccountOrPersonLookupRequested": false,
+    "authenticationOrCredentialsUsed": false,
+    "captchaOrPersonalFormSubmitted": false,
+    "routeInspectionStatus": "no_public_geometry_contract_verified",
+    "reason": "The publicly indexed Cadastre Burkina host currently returns a default nginx page by anonymous HTTPS, and its www hostname fails standard certificate hostname verification. No TLS bypass was attempted. The official Syc@D portal returns an application shell; static client routes include authentication, geoserver and parcel-procedure APIs, but no public anonymous geometry/schema contract was established. No login or API data call was made."
+  },
+  "requestEvidence": [
+    {
+      "url": "https://mairie-bobo.bf/plan-de-la-ville/",
+      "method": "GET",
+      "status": 200,
+      "contentType": "text/html",
+      "bytes": 177892,
+      "observation": "Official city-plan page contains one raster `carte.png` image, not an embedded vector service or feature layer."
+    },
+    {
+      "url": "https://sif.bf/",
+      "method": "GET",
+      "status": 200,
+      "contentType": "text/html",
+      "bytes": 3324,
+      "observation": "Public SyC@D app shell; no feature results or data form was submitted."
+    },
+    {
+      "url": "https://sif.bf/main.bbbf3952b2957dd6f488.js",
+      "method": "GET",
+      "status": 200,
+      "contentType": "text/javascript",
+      "bytes": 1667997,
+      "observation": "Static Angular client includes authentication routes and procedure endpoints, including parcel and geoserver route names. No auth/API route was called; no schema or anonymous feature contract surfaced."
+    },
+    {
+      "url": "https://dgi.impots.gov.bf/",
+      "method": "GET",
+      "status": 200,
+      "contentType": "text/html",
+      "bytes": 615,
+      "observation": "Live host returned only the default nginx welcome page, not the indexed public map application."
+    },
+    {
+      "url": "https://www.dgi.impots.gov.bf/",
+      "method": "GET",
+      "status": "not_obtained_tls_hostname_mismatch",
+      "httpStatusObtained": false,
+      "observation": "Standard TLS hostname verification rejected the certificate before HTTP response. TLS verification was not bypassed."
+    },
+    {
+      "url": "https://dgi.bf/contacts/",
+      "method": "GET",
+      "status": "indexed_public_page",
+      "observation": "Official DGI contact page lists a Service du Cadastre et des Travaux Fonciers and a Guichet Unique du Foncier in Bobo-Dioulasso; no parcel data requested."
+    },
+    {
+      "url": "https://dgi.bf/faq/",
+      "method": "GET",
+      "status": "indexed_public_page",
+      "observation": "DGI describes cadastral-extract procedures and says the local Bobo service is near the Hôtel administratif; it notes online e-Cadastre extracts were still being deployed."
+    },
+    {
+      "url": "https://gouvernement.gov.bf/actualites/foncier-lancement-de-la-plateforme-https-sif-bf-pour-une-gestion-transparente-des-procedures/",
+      "method": "GET",
+      "status": "indexed_public_page",
+      "observation": "Official government announcement describes SyC@D as a digital system for cadastral, domain and land procedures, with applications for titles/extracts; not an open geometry dataset."
+    }
+  ],
+  "technicalBlocker": "The publicly indexed Cadastre Burkina host currently returns a default nginx page by anonymous HTTPS, and its www hostname fails standard certificate hostname verification. No TLS bypass was attempted. The official Syc@D portal returns an application shell; static client routes include authentication, geoserver and parcel-procedure APIs, but no public anonymous geometry/schema contract was established. No login or API data call was made.",
+  "sampleDisposition": "No parcel polygons or feature attributes retained.",
+  "remainingUncertainty": "City-local DGI cadastre service and municipality map page are verified. The city page’s map is a raster planning/locational image; no cadastral polygon scope or coverage is inferable. The national Syc@D platform handles formal cadastre/domain procedures, but no anonymous full-polygon feed was verified."
+}

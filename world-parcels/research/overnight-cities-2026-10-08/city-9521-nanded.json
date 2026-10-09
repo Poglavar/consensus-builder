@@ -1,0 +1,85 @@
+{
+  "schemaVersion": 1,
+  "checkedAt": "2026-10-09",
+  "status": "complete",
+  "adapterReady": false,
+  "pointBasis": "UN WUP 2025 population-weighted settlement centroid; this is not a municipal boundary or a parcel-coverage claim.",
+  "coverageAssessment": {
+    "verifiedOpenScope": "No parcel geometry sample was retained.",
+    "citywideVerified": false,
+    "countrywideVerified": false
+  },
+  "name": "Nanded",
+  "country": "India",
+  "countryCode": "IN",
+  "rank": 693,
+  "point": [
+    19.1595849876,
+    77.3142669878224
+  ],
+  "population2025": 770215,
+  "populationUnit": "persons",
+  "population2025k": 770.215,
+  "populationPlausibility2025": "High",
+  "wupCityCode": 9521,
+  "cityId": "wup2025:9521",
+  "queueRank": 693,
+  "registryFound": true,
+  "registryBasis": "Maharashtra’s official land-records department identifies the Nanded urban-survey office and states that urban survey maps and property cards are digitized for city/municipal areas and available through the public Bhunakasha portal. This is local land-record evidence; no anonymous safe vector layer or native polygon schema was verified.",
+  "registryEvidenceUrls": [
+    "https://bhumiabhilekh.maharashtra.gov.in/DistrictSCLR/DistrictInfo?districtId=28",
+    "https://mahabhunakasha.mahabhumi.gov.in/27/index.html",
+    "https://nanded.gov.in/"
+  ],
+  "publicParcelGeometryFound": false,
+  "verifiedSample": false,
+  "verifiedParcelResponse": null,
+  "freshResearch": {
+    "queries": [
+      {
+        "language": "Marathi",
+        "query": "नांदेड नगर भूमापन मालमत्ता पत्रक शहर सर्वे नकाशा भू-नकाशा महाराष्ट्र शासन",
+        "scope": "Find city-specific land-record authority and safe anonymous parcel geometry.",
+        "result": "Official Nanded district land-record office material describes urban city-survey maps/property cards and the public Bhunakasha portal. No safe vector schema or geometry endpoint was verified.",
+        "actualResultUrls": [
+          "https://bhumiabhilekh.maharashtra.gov.in/DistrictSCLR/DistrictInfo?districtId=28",
+          "https://mahabhunakasha.mahabhumi.gov.in/27/index.html"
+        ],
+        "executionMethod": "Reviewed official state land-record and Bhunakasha pages; no plot/property search or personal record lookup."
+      },
+      {
+        "language": "English",
+        "query": "Nanded city survey map property card official Maharashtra Bhunakasha parcel polygon GIS",
+        "scope": "Find city-specific land-record authority and safe anonymous parcel geometry.",
+        "result": "Official state/district sources confirm Nanded urban land records and digitized city-survey maps/property cards. Public portal is interactive, but no safe feature schema or anonymous coordinate-to-polygon query was identified.",
+        "actualResultUrls": [
+          "https://bhumiabhilekh.maharashtra.gov.in/DistrictSCLR/DistrictInfo?districtId=28",
+          "https://mahabhunakasha.mahabhumi.gov.in/27/index.html",
+          "https://nanded.gov.in/"
+        ],
+        "executionMethod": "Separate English-language discovery and official-source review. No survey/plot number, owner, or address lookup submitted."
+      }
+    ]
+  },
+  "scopeLimits": "Official portal exposes interactive map/property-card functionality, but a public feature schema was not verified. No parcel lookup or geometry sample retained.",
+  "source": {
+    "sourceId": "IN-MH-NANDED-URBAN-SURVEY",
+    "name": "Maharashtra Land Records urban-survey services and Bhunakasha",
+    "url": "https://mahabhunakasha.mahabhumi.gov.in/27/index.html",
+    "operator": "Maharashtra Department of Land Records / Nanded district urban survey office",
+    "serviceType": "Urban city-survey map and property-card access",
+    "layer": "Urban survey maps/property cards; no public vector layer schema identified",
+    "geometryType": "unknown",
+    "outputCrs": "unknown",
+    "nativeIdField": "survey/plot identifier; not inspected"
+  },
+  "sourceIds": [],
+  "runtimeReadiness": "not_enabled_no_verified_public_geometry",
+  "technicalBlocker": "The interactive public portal exposes map/property-card functions, but no safe anonymous feature schema or response was verified.",
+  "remainingUncertainty": "Exact locator coverage, native polygon identifiers, geometry retrieval, and urban survey boundary completeness remain unverified.",
+  "centerLatLon": [
+    19.1595849876,
+    77.3142669878224
+  ],
+  "rootReviewedAt": "2026-10-09T02:35:39.834493+00:00"
+}

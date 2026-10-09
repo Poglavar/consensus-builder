@@ -1,0 +1,109 @@
+{
+  "schemaVersion": "1.0",
+  "cityId": "wup2025:10812",
+  "wupCityCode": 10812,
+  "name": "Bengbu",
+  "country": "China",
+  "countryCode": "CN",
+  "rank": 1035,
+  "queueRank": 1035,
+  "point": [
+    32.9403263441231,
+    117.354176327203
+  ],
+  "centerLatLon": [
+    32.9403263441231,
+    117.354176327203
+  ],
+  "pointBasis": "UN WUP2025 population-weighted settlement centroid; not a municipal boundary or parcel-coverage claim.",
+  "population2025": 535096,
+  "population2025k": 535.096,
+  "populationUnit": "persons",
+  "populationPlausibility2025": "High",
+  "cohort": "overnight-followon-1001-1100",
+  "checkedAt": "2026-10-09",
+  "status": "complete",
+  "registryFound": true,
+  "registryBasis": "Official Bengbu municipal government sources identify the city Real Estate Registration Center under the Natural Resources and Planning Bureau and document city-wide real-estate registration/electronic certificates. The official municipal service portal provides registration services. No anonymous parcel-polygon geometry source was identified.",
+  "registryEvidenceUrls": [
+    "https://ysj.bengbu.gov.cn/xwdt/ysdt/140816813.html",
+    "https://bb.ahzwfw.gov.cn/?cityCode=340323000000"
+  ],
+  "verifiedSample": false,
+  "publicParcelGeometryFound": false,
+  "sourceIds": [],
+  "adapterReady": false,
+  "runtimeReadiness": "not_enabled_no_verified_public_geometry",
+  "technicalBlocker": "No source-native, anonymous response containing a stable parcel identifier and complete polygon tied to the WUP point was verified in this city-specific investigation. This is an unverified access finding, not a claim that public geometry does not exist.",
+  "scopeLimits": "No full parcel geometry was retained. Local registry/cadastre custody and public geometry access are treated as separate findings; no citywide or countrywide parcel coverage is claimed.",
+  "resultCategory": "city_registry_confirmed_geometry_unverified",
+  "coverageAssessment": {
+    "claimedScope": "Official Bengbu municipal government sources identify the city Real Estate Registration Center under the Natural Resources and Planning Bureau and document city-wide real-estate registration/electronic certificates. The official municipal service portal provides registration services. No anonymous parcel-polygon geometry source was identified.",
+    "verifiedOpenScope": "No complete source-native anonymous parcel polygon was verified at the WUP point.",
+    "citywideVerified": false,
+    "countrywideVerified": false
+  },
+  "runtimeAssessment": {
+    "status": "not_enabled_no_verified_public_geometry",
+    "reason": "No source-native, anonymous response containing a stable parcel identifier and complete polygon tied to the WUP point was verified in this city-specific investigation. This is an unverified access finding, not a claim that public geometry does not exist."
+  },
+  "freshResearch": {
+    "queries": [
+      {
+        "language": "English",
+        "query": "Bengbu China official municipal real-estate registration center cadastral office",
+        "scope": "Fresh city-specific discovery of local registry/cadastre custody and safe public parcel geometry.",
+        "result": "Official municipal materials identify the Bengbu Real Estate Registration Center and city registration-system work; an anonymous public parcel polygon service was not found.",
+        "actualResultUrls": [
+          "https://ysj.bengbu.gov.cn/xwdt/ysdt/140816813.html",
+          "https://bb.ahzwfw.gov.cn/?cityCode=340323000000",
+          "https://www.wuhe.gov.cn/xwzx/ztzl/ztzl/yshj/81310617.html"
+        ],
+        "executionMethod": "Executed as a fresh web search; official search results/pages were reviewed."
+      },
+      {
+        "language": "Chinese",
+        "query": "蚌埠市不动产登记中心 登记工作 地籍调查 地块几何 官方",
+        "scope": "Independent local-language search for city-specific registry/cadastre custody and anonymous parcel geometry.",
+        "result": "蚌埠市政府部门页面说明市不动产登记中心由市自然资源和规划部门负责并推进全市不动产电子证照；政务服务网列出不动产登记服务。未发现匿名公开的完整地块几何接口。",
+        "actualResultUrls": [
+          "https://ysj.bengbu.gov.cn/xwdt/ysdt/140816813.html",
+          "https://bb.ahzwfw.gov.cn/?cityCode=340323000000",
+          "https://www.wuhe.gov.cn/xwzx/ztzl/ztzl/yshj/81310617.html"
+        ],
+        "executionMethod": "Executed as a separate fresh web search in the local language; official search results/pages were reviewed."
+      }
+    ],
+    "requests": [
+      {
+        "checkedAt": "2026-10-09T05:42:10.779397+00:00",
+        "url": "https://ysj.bengbu.gov.cn/xwdt/ysdt/140816813.html",
+        "normalTlsVerification": true,
+        "httpStatus": 200,
+        "contentType": "text/html",
+        "finalUrl": "https://ysj.bengbu.gov.cn/xwdt/ysdt/140816813.html",
+        "bytesRead": 26178,
+        "boundedReadIncomplete": false,
+        "sha256": "8056bc8c8dab2ee65808b72380bec5149dfcdc6bedfbf8d4971c3aff2623cf84",
+        "title": "电子“房本”来了 不动产电子证照打造营商环境新气象_蚌埠市营商环境局"
+      }
+    ],
+    "portals": [
+      {
+        "homeUrl": "https://bb.ahzwfw.gov.cn/?cityCode=340323000000",
+        "observation": "First-party municipal portal identified, but no safe anonymous full-polygon point query was verified."
+      }
+    ],
+    "historicalContext": []
+  },
+  "remainingUncertainty": "The WUP point’s source-native parcel identifier and a safe anonymous complete-polygon response remain unverified; electronic certificate and registration workflows are not parcel-geometry services.",
+  "nextStep": "Retain the bounded custody and geometry findings. Root review may qualify a documented source-native map route before enabling any provider.",
+  "priorEvidenceFiles": [],
+  "priorCheck": {
+    "attemptState": "pending",
+    "attemptEvidence": [],
+    "possiblePriorMatches": []
+  },
+  "rootReviewedAt": "2026-10-09T05:45:07.249008+00:00",
+  "rootReviewNote": "Reviewed exact immutable WUP identity, separate multilingual discovery, cited city custody and actual source observations. Official Bengbu municipal government sources identify the city Real Estate Registration Center under the Natural Resources and Planning Bureau and document city-wide real-estate registration/electronic certificates. The official municipal service portal provides registration services. No anonymous parcel-polygon geometry source was identified."
+}

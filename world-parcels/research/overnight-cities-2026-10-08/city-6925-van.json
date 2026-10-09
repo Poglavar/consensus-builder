@@ -1,0 +1,128 @@
+{
+  "name": "Van",
+  "country": "Türkiye",
+  "countryCode": "TR",
+  "rank": 922,
+  "point": [
+    38.5071088507022,
+    43.3803052768634
+  ],
+  "population2025": 590314,
+  "population2025k": 590.314,
+  "populationPlausibility2025": "Moderate",
+  "schemaVersion": 1,
+  "kind": "city_parcel_source_research",
+  "checkedAt": "2026-10-09",
+  "populationUnit": "persons",
+  "status": "complete",
+  "verifiedSample": false,
+  "publicParcelGeometryFound": false,
+  "runtimeReadiness": "not_enabled_no_verified_public_geometry",
+  "priorEvidenceFiles": [],
+  "priorCheck": {
+    "attemptState": "pending",
+    "attemptEvidence": [],
+    "possiblePriorMatches": []
+  },
+  "pointBasis": "UN WUP 2025 population-weighted settlement centroid; this is not a municipal boundary or a parcel-coverage claim.",
+  "registryFound": true,
+  "registryBasis": "Official TKGM pages identify the Van regional directorate, Van Cadastre Directorate and district land-registry offices; the national Parsel Sorgu service is official. A single exact-point anonymous API request returned HTTP 403; this does not establish parcel absence.",
+  "registryEvidenceUrls": [
+    "https://www.tkgm.gov.tr/e-hizmetler/sik-kullanilanlar/parsel-sorgulama",
+    "https://tkgm.gov.tr/van-bm/bagli-mudurlukler",
+    "https://www.van.gov.tr/tapu-kadastro-15-bolge-mudurlugu"
+  ],
+  "resultCategory": "local_registry_evidenced_geometry_unverified",
+  "remainingUncertainty": "Anonymous public parcel geometry and exact WUP-point coverage were not verified.",
+  "scopeLimits": "Research covers the exact unchanged WUP locator and reviewed official sources only. No owner, address, personal-property, tax, account, token or credential data requested or retained. No citywide completeness claimed.",
+  "verifiedParcelResponse": null,
+  "source": {
+    "sourceId": "TR-6925-van-source-review",
+    "name": "TKGM Parsel Sorgu and Van Cadastre Directorate",
+    "url": "https://www.tkgm.gov.tr/e-hizmetler/sik-kullanilanlar/parsel-sorgulama",
+    "operator": "Türkiye",
+    "serviceType": "Official national public parcel-query service; exact-point access returned HTTP 403.",
+    "layer": null,
+    "geometryType": null,
+    "outputCrs": "EPSG:4326 (adapter input is WGS84; no feature response returned)",
+    "nativeIdField": "mahalleId + adaNo + parselNo",
+    "nativeIdEvidence": "Adapter contract uses mahalleId, adaNo, parselNo; no values returned because HTTP 403."
+  },
+  "wupCityCode": 6925,
+  "cityId": "wup2025:6925",
+  "queueRank": 922,
+  "centerLatLon": [
+    38.5071088507022,
+    43.3803052768634
+  ],
+  "sourceIds": [],
+  "adapterReady": false,
+  "technicalBlocker": "Research only; no parcel sample or runtime adapter qualification.",
+  "coverageAssessment": {
+    "claimedScope": "Official TKGM pages identify the Van regional directorate, Van Cadastre Directorate and district land-registry offices; the national Parsel Sorgu service is official. A single exact-point anonymous API request returned HTTP 403; this does not establish parcel absence.",
+    "verifiedOpenScope": "No anonymous public parcel geometry scope verified.",
+    "countrywideVerified": false,
+    "citywideVerified": false
+  },
+  "research": {
+    "queries": [
+      {
+        "language": "English",
+        "query": "Van Turkey official cadastre land registry parcel map TKGM Van",
+        "scope": "Find primary local registry/cadastre evidence and a public parcel-geometry service.",
+        "result": "TKGM and Van Governorate sources document local cadastral offices and the national parcel-query service. One bounded anonymous exact-point request to the inspected TKGM point endpoint returned HTTP 403. No retry, authentication, bypass, or personal-attribute query was attempted; parcel presence remains unknown.",
+        "actualResultUrls": [
+          "https://www.tkgm.gov.tr/e-hizmetler/sik-kullanilanlar/parsel-sorgulama",
+          "https://tkgm.gov.tr/van-bm/bagli-mudurlukler",
+          "https://www.van.gov.tr/tapu-kadastro-15-bolge-mudurlugu"
+        ],
+        "executionMethod": "Separate English-language search and first-party service review; no property identifiers or personal fields submitted."
+      },
+      {
+        "language": "Turkish",
+        "query": "Van resmi parsel sorgulama kadastro tapu Van Bölge Müdürlüğü",
+        "scope": "Find first-party local-language evidence for the same local registry/map question.",
+        "result": "TKGM and Van Governorate sources document local cadastral offices and the national parcel-query service. One bounded anonymous exact-point request to the inspected TKGM point endpoint returned HTTP 403. No retry, authentication, bypass, or personal-attribute query was attempted; parcel presence remains unknown.",
+        "actualResultUrls": [
+          "https://www.tkgm.gov.tr/e-hizmetler/sik-kullanilanlar/parsel-sorgulama",
+          "https://tkgm.gov.tr/van-bm/bagli-mudurlukler",
+          "https://www.van.gov.tr/tapu-kadastro-15-bolge-mudurlugu"
+        ],
+        "executionMethod": "Separate native-language search and official source review."
+      }
+    ],
+    "officialSources": [
+      {
+        "url": "https://www.tkgm.gov.tr/e-hizmetler/sik-kullanilanlar/parsel-sorgulama",
+        "observation": "Official TKGM pages identify the Van regional directorate, Van Cadastre Directorate and district land-registry offices; the national Parsel Sorgu service is official. A single exact-point anonymous API request returned HTTP 403; this does not establish parcel absence."
+      },
+      {
+        "url": "https://tkgm.gov.tr/van-bm/bagli-mudurlukler",
+        "observation": "Official TKGM pages identify the Van regional directorate, Van Cadastre Directorate and district land-registry offices; the national Parsel Sorgu service is official. A single exact-point anonymous API request returned HTTP 403; this does not establish parcel absence."
+      },
+      {
+        "url": "https://www.van.gov.tr/tapu-kadastro-15-bolge-mudurlugu",
+        "observation": "Official TKGM pages identify the Van regional directorate, Van Cadastre Directorate and district land-registry offices; the national Parsel Sorgu service is official. A single exact-point anonymous API request returned HTTP 403; this does not establish parcel absence."
+      }
+    ],
+    "attempts": [
+      {
+        "url": "https://cbsapi.tkgm.gov.tr/megsiswebapi.v3.1/api/parsel/38.5071088507022/43.3803052768634",
+        "method": "One anonymous GET exact unchanged WUP latitude/longitude using inspected TKGM point adapter",
+        "result": "HTTP 403 Forbidden. No feature response retained; this access failure is not treated as parcel absence."
+      }
+    ]
+  },
+  "runtimeAssessment": {
+    "status": "not_enabled_no_verified_public_geometry",
+    "reason": "Research only; no parcel sample or runtime adapter qualification."
+  },
+  "rootPrimaryReadback": {
+    "url": "https://www.tkgm.gov.tr/e-hizmetler/sik-kullanilanlar/parsel-sorgulama",
+    "fetch": 200,
+    "contentType": "text/html; charset=utf-8",
+    "title": "Tapu ve Kadastro Genel Müdürlüğü (TKGM)"
+  },
+  "rootReviewNote": "Reviewed the specific primary institution/service evidence and its geographical, access and date limits. Direct readback failures are preserved separately from indexed primary evidence. No public full parcel geometry was verified for this city in this discovery pass.",
+  "rootReviewedAt": "2026-10-09T04:30:00.451299+00:00"
+}

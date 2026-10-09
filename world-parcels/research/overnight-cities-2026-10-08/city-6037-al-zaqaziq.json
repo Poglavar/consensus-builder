@@ -1,0 +1,114 @@
+{
+  "name": "Al Zaqaziq",
+  "country": "Egypt",
+  "countryCode": "EG",
+  "rank": 356,
+  "point": [
+    30.5917254132836,
+    31.4902964232729
+  ],
+  "population2025": 1416734,
+  "schemaVersion": 1,
+  "kind": "city_parcel_source_research",
+  "checkedAt": "2026-10-09",
+  "populationUnit": "persons",
+  "status": "complete",
+  "verifiedSample": false,
+  "publicParcelGeometryFound": false,
+  "runtimeReadiness": "not_enabled_no_verified_public_geometry",
+  "priorEvidenceFiles": [],
+  "scopeLimits": "The ranked UN World Urbanization Prospects 2025 point is a population-weighted locator, not a municipal boundary or parcel identity. Official local land/property mapping or registration evidence was found, but no anonymous public parcel polygon was verified for this point. No geometry or owner/address data is retained.",
+  "pointBasis": "UN WUP 2025 population-weighted settlement centroid; this is not a municipal boundary or a parcel-coverage claim.",
+  "registryFound": null,
+  "registryBasis": "Public evidence confirms a local governorate spatial-change system and official urban-map products; the available evidence does not establish that these are a parcel registry covering the WUP locator. Egyptian Survey Authority material identifies broader property-map responsibilities, while the Sharkia-specific asset-map program concerns government land. Registry scope is therefore unresolved.",
+  "resultCategory": "local_land_or_property_admin_evidence_public_parcel_geometry_unverified",
+  "technicalBlocker": "The city/governorate spatial unit portal is login-only; the public planning map is at urban-settlement levels rather than parcel-level geometry. No anonymous geometry endpoint was found.",
+  "remainingUncertainty": "Whether the governorate spatial-change database includes cadastral parcels, whether it covers this point, and whether an authorized public parcel layer exists outside the login-gated portal.",
+  "nextStep": "If needed, ask Sharkia Governorate or the Egyptian Survey Authority for a public parcel map/service and the city-level coverage scope; do not attempt authenticated portal routes without an authorized account.",
+  "freshResearch": {
+    "executedQueries": [
+      {
+        "language": "English",
+        "query": "Al Zaqaziq Egypt official cadastral parcel map land registry GIS Sharkia governorate property registration",
+        "scope": "Find a city/governorate first-party land registry, cadastral map, public GIS viewer, or parcel-vector service.",
+        "result": "Official Sharkia Governorate has a Spatial Changes Unit web application at makani.sharkia.gov.eg, but the public route displays an email/password login. Official GOPP provides a governorate urban-map hierarchy and includes Zagazig city in its administrative listing; this service presents settlement/urban levels, not parcel boundaries. No anonymous parcel geometry endpoint was verified.",
+        "method": "Separate English-language search; official Sharkia Governorate, GOPP and Egyptian Survey Authority sources reviewed."
+      },
+      {
+        "language": "Arabic",
+        "query": "الزقازيق محافظة الشرقية خريطة عقارية سجل عيني مساحي خرائط رسمية",
+        "scope": "البحث عن سجل/خريطة عقارية وخدمة GIS رسمية للزقازيق والشرقية.",
+        "result": "بوابة وحدة المتغيرات المكانية الرسمية لمحافظة الشرقية تفتح على تسجيل الدخول فقط؛ ولا تعرض الصفحة العامة واجهة خريطة أو خدمة هندسية. الخريطة العمرانية الرسمية للشرقية تعرض مستويات المحافظة/المركز/الوحدة/القرية/العزبة، ولا تثبت حدود قطع الملكية. لم يتم اختبار أي مسارات خلف تسجيل الدخول.",
+        "method": "بحث عربي مستقل ومراجعة صفحات حكومية عامة."
+      },
+      {
+        "language": "Arabic",
+        "query": "محافظة الشرقية الزقازيق وحدة المتغيرات المكانية GIS خريطة رسمية",
+        "scope": "تحقق موجه من بوابة الوحدة والخرائط المحلية المتاحة دون دخول.",
+        "result": "الصفحة العامة لوحدة المتغيرات المكانية تحمل هوية ديوان عام محافظة الشرقية لكنها تتطلب بيانات دخول. صفحة الهيئة العامة للتخطيط العمراني للشرقية تشرح قاعدة خرائط عمرانية على مستويات التجمعات، وليست خدمة قطع مساحية عامة.",
+        "method": "بحث عربي مستقل ومراجعة مباشرة للصفحتين الرسميتين."
+      }
+    ],
+    "officialSources": [
+      {
+        "url": "https://makani.sharkia.gov.eg/login",
+        "observation": "Official Sharkia Governorate Spatial Changes Unit application; public page shows login only, with no anonymous map/query."
+      },
+      {
+        "url": "https://gopp.gov.eg/الخريطة-العمرانية-لمحافظة-الشرقية/",
+        "observation": "Official General Organization for Physical Planning Sharkia urban-map page describing settlement boundaries and a governorate-to-village/hamlet hierarchy; not a cadastral parcel viewer."
+      },
+      {
+        "url": "https://www.esa.gov.eg/amlak.aspx",
+        "observation": "Official Egyptian Survey Authority state-property mapping project page lists Sharkia among governorates participating in mapping/state-owned-land inventory; this is not evidence of publicly queryable private parcel data."
+      },
+      {
+        "url": "https://www.esa.gov.eg/main.aspx",
+        "observation": "Official Egyptian Survey Authority describes its historic production of urban/rural property maps and property books; national scope only."
+      }
+    ],
+    "viewerAndServiceTrace": {
+      "attempted": true,
+      "summary": "The public Makani landing route was reviewed and presents only an email/password login for the Sharkia Spatial Changes Unit. No login, credential testing, hidden API call or authentication bypass was attempted. The official GOPP urban-map page describes administrative/settlement-level layers (governorate, center, local unit, village, hamlet) and provides no property-parcel geometry endpoint. ESA’s state-property map inventory lists Sharkia participation but concerns government assets, not a public private-cadastre viewer. No public parcel feature service was found.",
+      "fullPolygonLimit": 3,
+      "fullPolygonsRetained": 0,
+      "ownerOrAddressDataRequested": false,
+      "credentialsOrTokenValuesRetained": false
+    },
+    "attemptedGeometry": {
+      "attempted": false,
+      "status": "no anonymous safe parcel-vector endpoint verified",
+      "retainedFeatures": 0,
+      "fieldsRequested": [],
+      "geometryRetained": false
+    }
+  },
+  "registryEvidenceUrls": [
+    "https://makani.sharkia.gov.eg/login",
+    "https://gopp.gov.eg/الخريطة-العمرانية-لمحافظة-الشرقية/",
+    "https://www.esa.gov.eg/amlak.aspx",
+    "https://www.esa.gov.eg/main.aspx"
+  ],
+  "sourceIds": [],
+  "coverageAssessment": {
+    "claimedScope": "Public evidence confirms a local governorate spatial-change system and official urban-map products; the available evidence does not establish that these are a parcel registry covering the WUP locator. Egyptian Survey Authority material identifies broader property-map responsibilities, while the Sharkia-specific asset-map program concerns government land. Registry scope is therefore unresolved.",
+    "verifiedOpenScope": "The city/governorate spatial unit portal is login-only; the public planning map is at urban-settlement levels rather than parcel-level geometry. No anonymous geometry endpoint was found.",
+    "citywideVerified": false,
+    "countrywideVerified": false
+  },
+  "source": {
+    "name": "Al Zaqaziq local land/property-map evidence",
+    "operator": "Local/state public authority identified in official sources",
+    "url": "https://makani.sharkia.gov.eg/login",
+    "scope": "Public evidence confirms a local governorate spatial-change system and official urban-map products; the available evidence does not establish that these are a parcel registry covering the WUP locator. Egyptian Survey Authority material identifies broader property-map responsibilities, while the Sharkia-specific asset-map program concerns government land. Registry scope is therefore unresolved."
+  },
+  "wupCityCode": 6037,
+  "cityId": "wup2025:6037",
+  "queueRank": 356,
+  "populationPlausibility2025": "Moderate",
+  "centerLatLon": [
+    30.5917254132836,
+    31.4902964232729
+  ],
+  "rootReviewedAt": "2026-10-08T23:01:54.520804+00:00"
+}

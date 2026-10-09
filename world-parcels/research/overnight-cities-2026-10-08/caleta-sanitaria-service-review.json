@@ -1,0 +1,39 @@
+{
+  "schemaVersion": "1.0",
+  "checkedAt": "2026-10-09",
+  "cityRecord": "city-1904-caleta-sanitaria.json",
+  "purpose": "City-specific registry and public parcel-geometry source review. No owner, address, tax, or private property fields were requested or retained.",
+  "scopeLimits": {
+    "maxFullPolygonsRetainedInCityRecord": 0,
+    "maxFullPolygonsRetainedInReview": 0,
+    "maxFullPolygonsRetainedInRepository": 0,
+    "ownerOrAddressDataRetained": false,
+    "credentialsOrPrivateRecordLookupsUsed": false,
+    "citywideCompletenessAsserted": false
+  },
+  "assessment": "The municipality publishes static cadastral plans for Cercado del Callao and announced cadastral polygons/holder reports only for cadastral sectors 06 and 07. WUP label point is not confirmed to lie in those sectors or even on a parcel-covered mainland area; the municipal source is therefore not treated as proven coverage for this locator. Static PDFs are not a feature service. No geometry feature was retained; geometry evidence remains unverified.",
+  "officialPrimarySources": [
+    {
+      "url": "https://www.municallao.gob.pe/portal-anterior/index.php/planos",
+      "observation": "The municipality publishes static cadastral plans for Cercado del Callao and announced cadastral polygons/holder reports only for cadastral sectors 06 and 07. WUP label point is not confirmed to lie in those sectors or even on a parcel-covered mainland area; the municipal source is therefore not treated as proven coverage for this locator. Static PDFs are not a feature service."
+    }
+  ],
+  "searches": [
+    {
+      "language": "English",
+      "query": "Caleta Sanitaria Callao official cadastral map municipal parcel plan sectors Cercado del Callao"
+    },
+    {
+      "language": "Spanish",
+      "query": "Caleta Sanitaria Callao plano catastral catastro municipal plano catastral oficial"
+    }
+  ],
+  "geometryEvidence": null,
+  "decision": {
+    "registryFound": null,
+    "publicParcelGeometryFound": null,
+    "verifiedSample": false,
+    "adapterReady": false
+  },
+  "nextStep": "If a clearly public feature endpoint is later documented, inspect schema first and query only safe stable IDs plus geometry in a bounded viewport."
+}

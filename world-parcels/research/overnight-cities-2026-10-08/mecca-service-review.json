@@ -1,0 +1,13 @@
+{
+  "schemaVersion": "1.0",
+  "checkedAt": "2026-10-09",
+  "cityRecord": "city-1513-mecca.json",
+  "purpose": "Read-only source discovery and bounded service validation; no runtime or global changes.",
+  "scopeLimits": {
+    "maxFullPolygonsRetainedInThisCityReport": 0,
+    "maxFullPolygonsRetainedAcrossCityReview": 0,
+    "ownerOrAddressDataRetained": false,
+    "accountCredentialsOrPublicTokenValuesRetained": false
+  },
+  "assessment": "Saudi Arabia’s Ministry of Municipalities and Housing describes its public U Maps urban-map service as covering Saudi cities and displaying roads, land plots and services. Makkah Municipality also operates a city geospatial explorer, and official Real Estate Registry announcements document initial parcel registration in portions of Makkah neighborhoods. None of the sources establishes that the exact WUP point is within a registered block, and no public parcel layer endpoint was exposed. No full parcel polygons were retained."
+}

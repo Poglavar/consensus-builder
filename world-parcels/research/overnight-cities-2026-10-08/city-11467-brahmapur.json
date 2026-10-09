@@ -1,0 +1,130 @@
+{
+  "name": "Brahmapur",
+  "country": "India",
+  "countryCode": "IN",
+  "rank": 924,
+  "point": [
+    19.3099176636408,
+    84.792017422337
+  ],
+  "population2025": 590028,
+  "population2025k": 590.028,
+  "populationPlausibility2025": "High",
+  "schemaVersion": 1,
+  "kind": "city_parcel_source_research",
+  "checkedAt": "2026-10-09",
+  "populationUnit": "persons",
+  "status": "complete",
+  "verifiedSample": false,
+  "publicParcelGeometryFound": false,
+  "runtimeReadiness": "not_enabled_no_verified_public_geometry",
+  "priorEvidenceFiles": [],
+  "priorCheck": {
+    "attemptState": "pending",
+    "attemptEvidence": [],
+    "possiblePriorMatches": []
+  },
+  "pointBasis": "UN WUP 2025 population-weighted settlement centroid; this is not a municipal boundary or a parcel-coverage claim.",
+  "registryFound": true,
+  "registryBasis": "The official Odisha RTI handbook identifies Tahasil Office Berhampur in Ganjam, its local office, and duties involving mutation, revenue files and record-of-rights maintenance. The district official directory independently lists Berhampur Tahasil. These establish a local land-record custodian; anonymous city polygon access remains unverified.",
+  "registryEvidenceUrls": [
+    "https://bhulekh.ori.nic.in/frmMapView.aspx",
+    "https://bhulekh.ori.nic.in/SearchYourPlot.aspx",
+    "https://services.india.gov.in/service/detail/check-land-records-of-odisha-online-1",
+    "https://rtiodisha.gov.in/Pages/printAllManual/office_id:19151/lang:"
+  ],
+  "resultCategory": "local_registry_evidenced_geometry_unverified",
+  "remainingUncertainty": "Anonymous public parcel geometry and exact WUP-point coverage were not verified.",
+  "scopeLimits": "Research covers the exact unchanged WUP locator and reviewed official sources only. No owner, address, personal-property, tax, account, token or credential data requested or retained. No citywide completeness claimed.",
+  "verifiedParcelResponse": null,
+  "source": {
+    "sourceId": "IN-11467-brahmapur-source-review",
+    "name": "Odisha Bhulekh land-record and plot-map service",
+    "url": "https://bhulekh.ori.nic.in/frmMapView.aspx",
+    "operator": "India",
+    "serviceType": "Official state land-record / plot-map viewer; no anonymous point-based geometry response verified.",
+    "layer": null,
+    "geometryType": null,
+    "outputCrs": null,
+    "nativeIdField": null,
+    "nativeIdEvidence": "No feature response returned; plot identifier not verified."
+  },
+  "wupCityCode": 11467,
+  "cityId": "wup2025:11467",
+  "queueRank": 924,
+  "centerLatLon": [
+    19.3099176636408,
+    84.792017422337
+  ],
+  "sourceIds": [],
+  "adapterReady": false,
+  "technicalBlocker": "Research only; no parcel sample or runtime adapter qualification.",
+  "coverageAssessment": {
+    "claimedScope": "Odisha’s official Bhulekh system provides district/tahasil/village-based land records and a plot-map view across the state; the Government of India service catalogue describes Odisha maps and related records. The exact point’s village/mouza was not resolved, and the record workflow may expose tenant/landholder information, so no property identifiers were submitted.",
+    "verifiedOpenScope": "No anonymous public parcel geometry scope verified.",
+    "countrywideVerified": false,
+    "citywideVerified": false
+  },
+  "research": {
+    "queries": [
+      {
+        "language": "English",
+        "query": "Brahmapur Odisha official land records Bhulekh plot map revenue registry",
+        "scope": "Find primary local registry/cadastre evidence and a public parcel-geometry service.",
+        "result": "Official Odisha Bhulekh offers plot-map view and land-record search, but requires district, tahasil, village and plot information; records can include tenant details. The exact WUP point’s revenue village was not established, so no plot identifier was entered and no geometry was retrieved.",
+        "actualResultUrls": [
+          "https://bhulekh.ori.nic.in/frmMapView.aspx",
+          "https://bhulekh.ori.nic.in/SearchYourPlot.aspx",
+          "https://services.india.gov.in/service/detail/check-land-records-of-odisha-online-1"
+        ],
+        "executionMethod": "Separate English-language search and first-party service review; no property identifiers or personal fields submitted."
+      },
+      {
+        "language": "Odia",
+        "query": "ବ୍ରହ୍ମପୁର ଜମି ରେକର୍ଡ ଭୂ ନକ୍ଷା ତହସିଲ ଓଡ଼ିଶା ସରକାର",
+        "scope": "Find first-party local-language evidence for the same local registry/map question.",
+        "result": "Official Odisha Bhulekh offers plot-map view and land-record search, but requires district, tahasil, village and plot information; records can include tenant details. The exact WUP point’s revenue village was not established, so no plot identifier was entered and no geometry was retrieved.",
+        "actualResultUrls": [
+          "https://bhulekh.ori.nic.in/frmMapView.aspx",
+          "https://bhulekh.ori.nic.in/SearchYourPlot.aspx",
+          "https://services.india.gov.in/service/detail/check-land-records-of-odisha-online-1"
+        ],
+        "executionMethod": "Separate native-language search and official source review."
+      }
+    ],
+    "officialSources": [
+      {
+        "url": "https://bhulekh.ori.nic.in/frmMapView.aspx",
+        "observation": "Odisha’s official Bhulekh system provides district/tahasil/village-based land records and a plot-map view across the state; the Government of India service catalogue describes Odisha maps and related records. The exact point’s village/mouza was not resolved, and the record workflow may expose tenant/landholder information, so no property identifiers were submitted."
+      },
+      {
+        "url": "https://bhulekh.ori.nic.in/SearchYourPlot.aspx",
+        "observation": "Odisha’s official Bhulekh system provides district/tahasil/village-based land records and a plot-map view across the state; the Government of India service catalogue describes Odisha maps and related records. The exact point’s village/mouza was not resolved, and the record workflow may expose tenant/landholder information, so no property identifiers were submitted."
+      },
+      {
+        "url": "https://services.india.gov.in/service/detail/check-land-records-of-odisha-online-1",
+        "observation": "Odisha’s official Bhulekh system provides district/tahasil/village-based land records and a plot-map view across the state; the Government of India service catalogue describes Odisha maps and related records. The exact point’s village/mouza was not resolved, and the record workflow may expose tenant/landholder information, so no property identifiers were submitted."
+      }
+    ],
+    "attempts": [
+      {
+        "url": "https://bhulekh.ori.nic.in/frmMapView.aspx",
+        "method": "Official plot-map page review",
+        "result": "Viewer requires district, tahasil, village, RI circle and plot selection; exact WUP village was not established and no parcel-specific query was made."
+      }
+    ]
+  },
+  "rootPrimarySupplement": "Fresh indexed primary local office evidence reviewed; original direct page failures and state map access limits are retained separately.",
+  "runtimeAssessment": {
+    "status": "not_enabled_no_verified_public_geometry",
+    "reason": "Research only; no parcel sample or runtime adapter qualification."
+  },
+  "rootPrimaryReadback": {
+    "url": "https://bhulekh.ori.nic.in/frmMapView.aspx",
+    "fetch": 200,
+    "contentType": "text/html; charset=utf-8",
+    "title": "\r\n\t.:BHULEKH || ODISHA:.\r\n"
+  },
+  "rootReviewNote": "Reviewed the specific primary institution/service evidence and its geographical, access and date limits. Direct readback failures are preserved separately from indexed primary evidence. No public full parcel geometry was verified for this city in this discovery pass.",
+  "rootReviewedAt": "2026-10-09T04:30:00.451299+00:00"
+}

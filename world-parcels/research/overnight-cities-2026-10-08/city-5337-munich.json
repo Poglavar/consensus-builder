@@ -1,0 +1,148 @@
+{
+  "schemaVersion": 1,
+  "kind": "city_parcel_source_research",
+  "checkedAt": "2026-10-09",
+  "name": "Munich",
+  "country": "Germany",
+  "countryCode": "DE",
+  "wupCityCode": 5337,
+  "cityId": "wup2025:5337",
+  "queueRank": 275,
+  "centerLatLon": [
+    48.1389999770858,
+    11.5578625792139
+  ],
+  "population2025": 1815022,
+  "registryFound": true,
+  "registryBasis": "Current city publisher says its Grundstückvermessung unit maintains the local cadastre covering Munich parcels; the municipal GeoPortal publishes thematic maps. This establishes a local registry.",
+  "registryEvidenceUrls": [
+    "https://stadt.muenchen.de/infos/portrait-geodatenservice.html",
+    "https://geodatenonline.bayern.de/geodatenonline/seiten/wfs_alkis"
+  ],
+  "status": "complete",
+  "verifiedSample": false,
+  "publicParcelGeometryFound": false,
+  "runtimeReadiness": "not_enabled_no_verified_public_geometry",
+  "adapterReady": false,
+  "sourceIds": [],
+  "resultCategory": "official_local_cadastre_anonymous_vectors_401_open_map_raster_only",
+  "technicalBlocker": "Official ALKIS simplified and INSPIRE parcel-vector endpoints returned HTTP401 to anonymous capabilities requests. Open parcel-map WMS is nonqueryable raster; no full polygon response was found.",
+  "remainingUncertainty": "Whether a different current municipality-published anonymous parcel-vector service exists; no public vectors were verified in this bounded discovery.",
+  "scopeLimits": "Local cadastre existence and primary official services are confirmed. Anonymous vector capabilities returned HTTP401. Open parcel cartography is raster/nonqueryable and is not treated as parcel polygons. No actual city parcel vector was retrieved; wide coverage remains unverified.",
+  "coverageAssessment": {
+    "verifiedOpenScope": "Local cadastre existence and primary official services are confirmed. Anonymous vector capabilities returned HTTP401. Open parcel cartography is raster/nonqueryable and is not treated as parcel polygons. No actual city parcel vector was retrieved; wide coverage remains unverified.",
+    "citywideVerified": false,
+    "countrywideVerified": false
+  },
+  "research": {
+    "executedQueries": [
+      {
+        "language": "German",
+        "query": "München Flurstücke ALKIS OpenData Bayern WFS Download amtlich Grundstück Karte",
+        "result": "Primary BVV ALKIS WFS and open raster parcel-cartography services found."
+      },
+      {
+        "language": "English",
+        "query": "Munich official cadastral parcels polygons Bavaria open data WFS",
+        "result": "Primary Bavarian publisher confirms cadastral services; current service contracts inspected."
+      },
+      {
+        "language": "German",
+        "query": "site:muenchen.de Flurkarte Liegenschaftskataster ALKIS GeodatenService",
+        "result": "Official municipal GeodatenService and local ALKIS plan products identified."
+      },
+      {
+        "language": "German",
+        "query": "site:stadt.muenchen.de geodatenservice digitale Flurkarte Katasterauszug",
+        "result": "Official city GeodatenService profile directly states maintenance of the cadastre for all Munich parcels."
+      }
+    ],
+    "officialSources": [
+      {
+        "url": "https://stadt.muenchen.de/infos/portrait-geodatenservice.html",
+        "observation": "Current city publisher says its Grundstückvermessung unit maintains the local cadastre covering Munich parcels; the municipal GeoPortal publishes thematic maps. This establishes a local registry."
+      },
+      {
+        "url": "https://geodatenonline.bayern.de/geodatenonline/seiten/wfs_alkis",
+        "observation": "Primary BVV service contract declares multipolygon ave:Flurstueck and daily ALKIS updates; access limited to participating government/framework customers. Anonymous actual capabilities returned 401."
+      },
+      {
+        "url": "https://geodatenonline.bayern.de/geodatenonline/seiten/wms_alkis_parzellarkarte",
+        "observation": "Official open parcel depiction WMS has no parcel numbers/boundary markers; display product. Actual capabilities HTTP200 declares four raster layers, all queryable=0."
+      },
+      {
+        "url": "https://geodatenonline.bayern.de/opengeodata/OpenDataDetail.html?pn=parzellarkarte",
+        "observation": "Official open data catalog offers parcel cartography in GeoTIFF 1 km tiles, not parcel-vector geometry."
+      },
+      {
+        "url": "https://geodatenonline.bayern.de/geodatenonline/seiten/dienste/rest_flurstueck.html",
+        "observation": "Official parcel-search REST service declares JSON/GeoJSON and requires a personal authentication token. No token used or authenticated request attempted."
+      }
+    ],
+    "requests": [
+      {
+        "name": "munich-wfs",
+        "url": "https://geoservices.bayern.de/wfs/v1/ogc_alkis_ave.cgi?service=WFS&version=2.0.0&request=GetCapabilities",
+        "checkedAt": "2026-10-08T21:46:49.021Z",
+        "method": "GET",
+        "httpStatus": 401,
+        "contentType": "text/html; charset=iso-8859-1",
+        "bytes": 381,
+        "bodySha256": "ff6d14f77e27f7b90cb2f20bce408189f5f388961f3fcd13fe2df2cc0a002dc3",
+        "finalUrl": "https://geoservices.bayern.de/wfs/v1/ogc_alkis_ave.cgi?service=WFS&version=2.0.0&request=GetCapabilities",
+        "prefix": "<!DOCTYPE HTML PUBLIC \"-//IETF//DTD HTML 2.0//EN\"> <html><head> <title>401 Unauthorized</title> </head><body> <h1>Unauthorized</h1> <p>This server could not verify that you are authorized to access th"
+      },
+      {
+        "name": "munich-inspire",
+        "url": "https://geoservices.bayern.de/inspire-ows/v1/alkis/cp/dls/wfs?service=WFS&version=2.0.0&request=GetCapabilities",
+        "checkedAt": "2026-10-08T21:46:49.022Z",
+        "method": "GET",
+        "httpStatus": 401,
+        "contentType": "text/html; charset=iso-8859-1",
+        "bytes": 381,
+        "bodySha256": "ff6d14f77e27f7b90cb2f20bce408189f5f388961f3fcd13fe2df2cc0a002dc3",
+        "finalUrl": "https://geoservices.bayern.de/inspire-ows/v1/alkis/cp/dls/wfs?service=WFS&version=2.0.0&request=GetCapabilities",
+        "prefix": "<!DOCTYPE HTML PUBLIC \"-//IETF//DTD HTML 2.0//EN\"> <html><head> <title>401 Unauthorized</title> </head><body> <h1>Unauthorized</h1> <p>This server could not verify that you are authorized to access th"
+      },
+      {
+        "name": "munich-wms",
+        "url": "https://geoservices.bayern.de/od/wms/alkis/v1/parzellarkarte?service=WMS&version=1.3.0&request=GetCapabilities",
+        "checkedAt": "2026-10-08T21:46:49.022Z",
+        "method": "GET",
+        "httpStatus": 200,
+        "contentType": "text/xml; charset=utf-8",
+        "bytes": 14024,
+        "bodySha256": "30a64bb904bdbcd0da40d2ab8a8452dd17b9edff0dc57a988ef063c566566d7d",
+        "finalUrl": "https://geoservices.bayern.de/od/wms/alkis/v1/parzellarkarte?service=WMS&version=1.3.0&request=GetCapabilities",
+        "prefix": "<?xml version=\"1.0\" encoding=\"utf-8\"?> <WMS_Capabilities version=\"1.3.0\" xmlns=\"http://www.opengis.net/wms\" xmlns:xlink=\"http://www.w3.org/1999/xlink\" xmlns:xsi=\"http://www.w3.org/2001/XMLSchema-insta"
+      }
+    ],
+    "mapCapabilities": {
+      "httpStatus": 200,
+      "geometryFormat": "WMS raster image",
+      "allQueryable": false,
+      "layers": [
+        "by_alkis_parzellarkarte_farbe",
+        "by_alkis_parzellarkarte_grau",
+        "by_alkis_parzellarkarte_umr_gelb",
+        "by_alkis_parzellarkarte_umr_schwarz"
+      ]
+    },
+    "retention": "No full parcel geometry retained. Capabilities and response bodies are temporary; sanitized metadata retained here."
+  },
+  "source": {
+    "id": "de-by-alkis-munich-candidate",
+    "name": "Munich local cadastre / BVV ALKIS services",
+    "operator": "GeodatenService München and Bayerische Vermessungsverwaltung",
+    "url": "https://stadt.muenchen.de/infos/portrait-geodatenservice.html",
+    "serviceType": "Local cadastre and protected ALKIS vectors; open raster parcel cartography."
+  },
+  "populationPlausibility2025": "High",
+  "populationUnit": "persons",
+  "pointBasis": "UN WUP 2025 population-weighted settlement centroid; this is not a municipal boundary or a parcel-coverage claim.",
+  "rootReviewedAt": "2026-10-08T21:49:32.384422+00:00",
+  "point": [
+    48.1389999770858,
+    11.5578625792139
+  ]
+}

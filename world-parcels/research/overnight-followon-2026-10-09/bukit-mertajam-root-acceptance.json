@@ -1,0 +1,2344 @@
+{
+  "schemaVersion": 1,
+  "purpose": "Live bounded city parcel qualification through the existing adapter; complete geometry confined to temporary audits with up to three safe committed native samples.",
+  "checkedAt": "2026-10-09T06:01:50.009Z",
+  "city": "bukit-mertajam-root",
+  "descriptor": {
+    "id": "my-penang-forestry-cadastral-lots",
+    "name": "JUPEM Penang cadastral lots (Forestry GIS host)",
+    "adapter": "arcgis",
+    "endpoint": "https://geoformatik.forestry.gov.my/arcgis/rest/services/PULAU_PINANG_SDE/MapServer/45",
+    "idField": "UPI",
+    "objectIdField": "FID",
+    "idType": "string",
+    "idPrefix": "MY-PENANG-",
+    "outFields": [
+      "FID",
+      "UPI",
+      "MUKIM",
+      "PA",
+      "LOT",
+      "KELUASAN"
+    ],
+    "pageSize": 500,
+    "maxFeatures": 3000,
+    "maxBboxKm2": 1,
+    "countryCode": "MY",
+    "metricSrid": 32647,
+    "cityIds": [
+      "bukit_mertajam"
+    ],
+    "boundsQueryMode": "object-ids",
+    "idsQueryMode": "object-ids",
+    "maxConcurrentQueries": 2,
+    "caCertificate": "certificates/globalsign-rsa-ov-ssl-ca-2018.pem",
+    "operator": "Department of Survey and Mapping Malaysia (JUPEM); Department of Forestry GIS service host",
+    "catalogueUrl": "https://geoformatik.forestry.gov.my/arcgis/rest/services/PULAU_PINANG_SDE/MapServer/45",
+    "attribution": "JUPEM · Penang cadastral lots · Forestry GIS host · adapted",
+    "licenceNote": "Public government cadastral-reference polygons credited JUPEM 2020. Source notices and dataset date informational; legal title, currentness and survey accuracy unverified.",
+    "evidenceFile": "research/overnight-cities-2026-10-08/georgetown-forestry-root-acceptance.json",
+    "scope": "143 valid distinct JUPEM Penang cadastral-reference lots verified in thirteen bounded 0.001-degree cells around the unchanged George Town metropolitan WUP locator. The Forestry government GIS host supplies native UPI identity and FID transport IDs; variable-length native UPI strings are preserved without padding, truncation or substitution. Complete object-ID manifests, forced three-row geometry pages (56 parcels over 19 pages), all 143 fresh native-ID reads, explicit absence, footprint and source binding passed in 80 requests. Independent metric EPSG:32647 GEOS found all geometries valid and distinct, with no sampled overlaps above 0.01 m² or operation errors. The missing TLS intermediate is supplied from the official GlobalSign CA with certificate and hostname verification enabled for every runtime request; no runtime verification bypass is used. The publisher credits JUPEM 2020 and declares source CRS as ArcGIS WKID 102062; explicit EPSG:4326 output is retained unchanged. This is bounded metropolitan reference geometry, without claims of George Town municipal-only or citywide completeness, legal title, currentness, survey accuracy or long-term key continuity."
+  },
+  "grid": [
+    {
+      "name": "viewport-0",
+      "bbox": [
+        100.427,
+        5.373,
+        100.428,
+        5.374
+      ],
+      "kind": "aligned-grid"
+    },
+    {
+      "name": "viewport-1",
+      "bbox": [
+        100.428,
+        5.373,
+        100.429,
+        5.374
+      ],
+      "kind": "aligned-grid"
+    },
+    {
+      "name": "viewport-2",
+      "bbox": [
+        100.429,
+        5.373,
+        100.43,
+        5.374
+      ],
+      "kind": "aligned-grid"
+    },
+    {
+      "name": "viewport-3",
+      "bbox": [
+        100.427,
+        5.374,
+        100.428,
+        5.375
+      ],
+      "kind": "aligned-grid"
+    },
+    {
+      "name": "viewport-4",
+      "bbox": [
+        100.428,
+        5.374,
+        100.429,
+        5.375
+      ],
+      "kind": "aligned-grid"
+    },
+    {
+      "name": "viewport-5",
+      "bbox": [
+        100.429,
+        5.374,
+        100.43,
+        5.375
+      ],
+      "kind": "aligned-grid"
+    },
+    {
+      "name": "viewport-6",
+      "bbox": [
+        100.427,
+        5.375,
+        100.428,
+        5.376
+      ],
+      "kind": "aligned-grid"
+    },
+    {
+      "name": "viewport-7",
+      "bbox": [
+        100.428,
+        5.375,
+        100.429,
+        5.376
+      ],
+      "kind": "aligned-grid"
+    },
+    {
+      "name": "viewport-8",
+      "bbox": [
+        100.429,
+        5.375,
+        100.43,
+        5.376
+      ],
+      "kind": "aligned-grid"
+    },
+    {
+      "name": "viewport-9",
+      "bbox": [
+        100.428,
+        5.372,
+        100.429,
+        5.373
+      ],
+      "kind": "adjacent-pan"
+    },
+    {
+      "name": "viewport-10",
+      "bbox": [
+        100.428,
+        5.376,
+        100.429,
+        5.377
+      ],
+      "kind": "adjacent-pan"
+    },
+    {
+      "name": "viewport-11",
+      "bbox": [
+        100.426,
+        5.374,
+        100.427,
+        5.375
+      ],
+      "kind": "adjacent-pan"
+    },
+    {
+      "name": "viewport-12",
+      "bbox": [
+        100.43,
+        5.374,
+        100.431,
+        5.375
+      ],
+      "kind": "adjacent-pan"
+    }
+  ],
+  "tests": [
+    {
+      "name": "viewport-0",
+      "passed": true,
+      "elapsedMs": 1518,
+      "requestIndexes": [
+        0,
+        2
+      ],
+      "bbox": [
+        100.427,
+        5.373,
+        100.428,
+        5.374
+      ],
+      "complete": true,
+      "count": 1,
+      "ids": [
+        {
+          "id": "MY-PENANG-0701060003760",
+          "geometrySha256": "1fc55bd86a1cfe7cdf97d57268ad928493f385ca666d33ee8c3f8b3ba8bb7fef"
+        }
+      ]
+    },
+    {
+      "name": "viewport-1",
+      "passed": true,
+      "elapsedMs": 881,
+      "requestIndexes": [
+        3,
+        5
+      ],
+      "bbox": [
+        100.428,
+        5.373,
+        100.429,
+        5.374
+      ],
+      "complete": true,
+      "count": 2,
+      "ids": [
+        {
+          "id": "MY-PENANG-07010600010028",
+          "geometrySha256": "2c7bcacf145222d2d18eb0c45f59980884f53114372e75dd62a69502409169a9"
+        },
+        {
+          "id": "MY-PENANG-0701060003760",
+          "geometrySha256": "1fc55bd86a1cfe7cdf97d57268ad928493f385ca666d33ee8c3f8b3ba8bb7fef"
+        }
+      ]
+    },
+    {
+      "name": "viewport-2",
+      "passed": true,
+      "elapsedMs": 925,
+      "requestIndexes": [
+        6,
+        8
+      ],
+      "bbox": [
+        100.429,
+        5.373,
+        100.43,
+        5.374
+      ],
+      "complete": true,
+      "count": 1,
+      "ids": [
+        {
+          "id": "MY-PENANG-07010600010028",
+          "geometrySha256": "2c7bcacf145222d2d18eb0c45f59980884f53114372e75dd62a69502409169a9"
+        }
+      ]
+    },
+    {
+      "name": "viewport-3",
+      "passed": true,
+      "elapsedMs": 1224,
+      "requestIndexes": [
+        9,
+        11
+      ],
+      "bbox": [
+        100.427,
+        5.374,
+        100.428,
+        5.375
+      ],
+      "complete": true,
+      "count": 1,
+      "ids": [
+        {
+          "id": "MY-PENANG-0701060003760",
+          "geometrySha256": "1fc55bd86a1cfe7cdf97d57268ad928493f385ca666d33ee8c3f8b3ba8bb7fef"
+        }
+      ]
+    },
+    {
+      "name": "viewport-4",
+      "passed": true,
+      "elapsedMs": 1332,
+      "requestIndexes": [
+        12,
+        14
+      ],
+      "bbox": [
+        100.428,
+        5.374,
+        100.429,
+        5.375
+      ],
+      "complete": true,
+      "count": 2,
+      "ids": [
+        {
+          "id": "MY-PENANG-07010600010028",
+          "geometrySha256": "2c7bcacf145222d2d18eb0c45f59980884f53114372e75dd62a69502409169a9"
+        },
+        {
+          "id": "MY-PENANG-0701060003760",
+          "geometrySha256": "1fc55bd86a1cfe7cdf97d57268ad928493f385ca666d33ee8c3f8b3ba8bb7fef"
+        }
+      ]
+    },
+    {
+      "name": "viewport-5",
+      "passed": true,
+      "elapsedMs": 1406,
+      "requestIndexes": [
+        15,
+        17
+      ],
+      "bbox": [
+        100.429,
+        5.374,
+        100.43,
+        5.375
+      ],
+      "complete": true,
+      "count": 2,
+      "ids": [
+        {
+          "id": "MY-PENANG-0701060004287",
+          "geometrySha256": "b63e63a4fda984a0ad347a0356e103b5ebae8173d37815a85958ef049b4afb9c"
+        },
+        {
+          "id": "MY-PENANG-07010600010028",
+          "geometrySha256": "2c7bcacf145222d2d18eb0c45f59980884f53114372e75dd62a69502409169a9"
+        }
+      ]
+    },
+    {
+      "name": "viewport-6",
+      "passed": true,
+      "elapsedMs": 1462,
+      "requestIndexes": [
+        18,
+        20
+      ],
+      "bbox": [
+        100.427,
+        5.375,
+        100.428,
+        5.376
+      ],
+      "complete": true,
+      "count": 5,
+      "ids": [
+        {
+          "id": "MY-PENANG-070106000124",
+          "geometrySha256": "678f7db52da9cedb1d9b87aba045e77167896ea9d71a956bbd045090126db747"
+        },
+        {
+          "id": "MY-PENANG-070106000127",
+          "geometrySha256": "aca7ee306baa95cec2d1f97f978caef5074510d2e721e40f8972e8920393f137"
+        },
+        {
+          "id": "MY-PENANG-0701060001295",
+          "geometrySha256": "4d49a1d1eb466e9cc71fbb66ee8c7fdd0787c9e656f96cbfa218e3cad7bf8f75"
+        },
+        {
+          "id": "MY-PENANG-070106000126",
+          "geometrySha256": "8a7d242deed8f6c1e2db9b41e4d2e47812214c47859ecd9a765749cca5502694"
+        },
+        {
+          "id": "MY-PENANG-0701060003760",
+          "geometrySha256": "1fc55bd86a1cfe7cdf97d57268ad928493f385ca666d33ee8c3f8b3ba8bb7fef"
+        }
+      ]
+    },
+    {
+      "name": "viewport-7",
+      "passed": true,
+      "elapsedMs": 1154,
+      "requestIndexes": [
+        21,
+        23
+      ],
+      "bbox": [
+        100.428,
+        5.375,
+        100.429,
+        5.376
+      ],
+      "complete": true,
+      "count": 8,
+      "ids": [
+        {
+          "id": "MY-PENANG-0701060001295",
+          "geometrySha256": "4d49a1d1eb466e9cc71fbb66ee8c7fdd0787c9e656f96cbfa218e3cad7bf8f75"
+        },
+        {
+          "id": "MY-PENANG-070106000126",
+          "geometrySha256": "8a7d242deed8f6c1e2db9b41e4d2e47812214c47859ecd9a765749cca5502694"
+        },
+        {
+          "id": "MY-PENANG-0701060001294",
+          "geometrySha256": "eae7c6935f1c89b68b4b838576106df2d92c1cd63acbf6cd96a93fb480f4d2b9"
+        },
+        {
+          "id": "MY-PENANG-070106000133",
+          "geometrySha256": "12e5a54fe2aff148fdbd0e76ab5355dd540556568c345b1580370c9f5bf9eb28"
+        },
+        {
+          "id": "MY-PENANG-0701060003763",
+          "geometrySha256": "bea2d8efa37d3b2a0d7bfb7d5e912c07c7f0084b229a156f669358a69382d83f"
+        },
+        {
+          "id": "MY-PENANG-0701060004287",
+          "geometrySha256": "b63e63a4fda984a0ad347a0356e103b5ebae8173d37815a85958ef049b4afb9c"
+        },
+        {
+          "id": "MY-PENANG-07010600010028",
+          "geometrySha256": "2c7bcacf145222d2d18eb0c45f59980884f53114372e75dd62a69502409169a9"
+        },
+        {
+          "id": "MY-PENANG-0701060003760",
+          "geometrySha256": "1fc55bd86a1cfe7cdf97d57268ad928493f385ca666d33ee8c3f8b3ba8bb7fef"
+        }
+      ]
+    },
+    {
+      "name": "viewport-8",
+      "passed": true,
+      "elapsedMs": 775,
+      "requestIndexes": [
+        24,
+        26
+      ],
+      "bbox": [
+        100.429,
+        5.375,
+        100.43,
+        5.376
+      ],
+      "complete": true,
+      "count": 4,
+      "ids": [
+        {
+          "id": "MY-PENANG-0701060003765",
+          "geometrySha256": "3456c2b4c33a3c6c4c8f4a63c9da24a10f86333ad118fda99667d4f98fcf9d5f"
+        },
+        {
+          "id": "MY-PENANG-0701060003766",
+          "geometrySha256": "3aa810c77db2d7e4da392a537b3695c7eae78d84a62a371966ddba5da9682a8f"
+        },
+        {
+          "id": "MY-PENANG-0701060004287",
+          "geometrySha256": "b63e63a4fda984a0ad347a0356e103b5ebae8173d37815a85958ef049b4afb9c"
+        },
+        {
+          "id": "MY-PENANG-07010600010028",
+          "geometrySha256": "2c7bcacf145222d2d18eb0c45f59980884f53114372e75dd62a69502409169a9"
+        }
+      ]
+    },
+    {
+      "name": "viewport-9",
+      "passed": true,
+      "elapsedMs": 773,
+      "requestIndexes": [
+        27,
+        29
+      ],
+      "bbox": [
+        100.428,
+        5.372,
+        100.429,
+        5.373
+      ],
+      "complete": true,
+      "count": 2,
+      "ids": [
+        {
+          "id": "MY-PENANG-0701060003836",
+          "geometrySha256": "bdde7f17964edc5f7e286133934d60a146c8758003bd5e23534a7b8a1a5dc46c"
+        },
+        {
+          "id": "MY-PENANG-0701060003760",
+          "geometrySha256": "1fc55bd86a1cfe7cdf97d57268ad928493f385ca666d33ee8c3f8b3ba8bb7fef"
+        }
+      ]
+    },
+    {
+      "name": "viewport-10",
+      "passed": true,
+      "elapsedMs": 762,
+      "requestIndexes": [
+        30,
+        32
+      ],
+      "bbox": [
+        100.428,
+        5.376,
+        100.429,
+        5.377
+      ],
+      "complete": true,
+      "count": 7,
+      "ids": [
+        {
+          "id": "MY-PENANG-0701060001313",
+          "geometrySha256": "ed7fd60cf5ae857553825fb65da233556bdfd6eb09efa49dd3faa8057a8b5503"
+        },
+        {
+          "id": "MY-PENANG-0701060001295",
+          "geometrySha256": "4d49a1d1eb466e9cc71fbb66ee8c7fdd0787c9e656f96cbfa218e3cad7bf8f75"
+        },
+        {
+          "id": "MY-PENANG-0701060001294",
+          "geometrySha256": "eae7c6935f1c89b68b4b838576106df2d92c1cd63acbf6cd96a93fb480f4d2b9"
+        },
+        {
+          "id": "MY-PENANG-0701060001324",
+          "geometrySha256": "053c8348e66a27a089648e0859143ab5ae25a9b817f1bf47863687751554831e"
+        },
+        {
+          "id": "MY-PENANG-0701060003764",
+          "geometrySha256": "753afe1ec26367ed47e00fb6b9bc42a2c41ca2f6b1b952dbc7f5a203778fe771"
+        },
+        {
+          "id": "MY-PENANG-0701060003763",
+          "geometrySha256": "bea2d8efa37d3b2a0d7bfb7d5e912c07c7f0084b229a156f669358a69382d83f"
+        },
+        {
+          "id": "MY-PENANG-0701060004287",
+          "geometrySha256": "b63e63a4fda984a0ad347a0356e103b5ebae8173d37815a85958ef049b4afb9c"
+        }
+      ]
+    },
+    {
+      "name": "viewport-11",
+      "passed": true,
+      "elapsedMs": 893,
+      "requestIndexes": [
+        33,
+        35
+      ],
+      "bbox": [
+        100.426,
+        5.374,
+        100.427,
+        5.375
+      ],
+      "complete": true,
+      "count": 3,
+      "ids": [
+        {
+          "id": "MY-PENANG-070106000123",
+          "geometrySha256": "89f84b60819e4f56b51de3a735bf1fa68de661ee455762ebef957d3cef9c68ca"
+        },
+        {
+          "id": "MY-PENANG-070106000124",
+          "geometrySha256": "678f7db52da9cedb1d9b87aba045e77167896ea9d71a956bbd045090126db747"
+        },
+        {
+          "id": "MY-PENANG-0701060003760",
+          "geometrySha256": "1fc55bd86a1cfe7cdf97d57268ad928493f385ca666d33ee8c3f8b3ba8bb7fef"
+        }
+      ]
+    },
+    {
+      "name": "viewport-12",
+      "passed": true,
+      "elapsedMs": 751,
+      "requestIndexes": [
+        36,
+        38
+      ],
+      "bbox": [
+        100.43,
+        5.374,
+        100.431,
+        5.375
+      ],
+      "complete": true,
+      "count": 2,
+      "ids": [
+        {
+          "id": "MY-PENANG-07010600010028",
+          "geometrySha256": "2c7bcacf145222d2d18eb0c45f59980884f53114372e75dd62a69502409169a9"
+        },
+        {
+          "id": "MY-PENANG-07010600010029",
+          "geometrySha256": "84ffb1fa20c1de5eff8a31445354c3a3652b29b1ccfba32c05509f4787ca5d69"
+        }
+      ]
+    },
+    {
+      "name": "forced-three-row-pages",
+      "passed": true,
+      "elapsedMs": 1782,
+      "requestIndexes": [
+        39,
+        43
+      ],
+      "count": 8,
+      "geometryPages": 3,
+      "pageSize": 3,
+      "allGeometryHashesMatch": true
+    },
+    {
+      "name": "fresh-ids-0",
+      "passed": true,
+      "elapsedMs": 6254,
+      "requestIndexes": [
+        44,
+        46
+      ],
+      "count": 18,
+      "ids": [
+        "MY-PENANG-07010600010028",
+        "MY-PENANG-07010600010029",
+        "MY-PENANG-070106000123",
+        "MY-PENANG-070106000124",
+        "MY-PENANG-070106000126",
+        "MY-PENANG-070106000127",
+        "MY-PENANG-0701060001294",
+        "MY-PENANG-0701060001295",
+        "MY-PENANG-0701060001313",
+        "MY-PENANG-0701060001324",
+        "MY-PENANG-070106000133",
+        "MY-PENANG-0701060003760",
+        "MY-PENANG-0701060003763",
+        "MY-PENANG-0701060003764",
+        "MY-PENANG-0701060003765",
+        "MY-PENANG-0701060003766",
+        "MY-PENANG-0701060003836",
+        "MY-PENANG-0701060004287"
+      ],
+      "allGeometryHashesMatch": true,
+      "absentIds": []
+    },
+    {
+      "name": "explicit-absence",
+      "passed": true,
+      "elapsedMs": 1249,
+      "requestIndexes": [
+        47,
+        48
+      ],
+      "absentIds": [
+        "MY-PENANG-9999999999999"
+      ],
+      "complete": true
+    },
+    {
+      "name": "footprint",
+      "passed": true,
+      "elapsedMs": 874,
+      "requestIndexes": [
+        49,
+        51
+      ],
+      "selectedParcelId": "MY-PENANG-0701060001295",
+      "count": 7,
+      "allGeometryHashesMatch": true
+    },
+    {
+      "name": "source-binding",
+      "passed": true,
+      "elapsedMs": 934,
+      "requestIndexes": [
+        52,
+        54
+      ],
+      "selectedParcelId": "MY-PENANG-0701060001295",
+      "coverage": "complete",
+      "siteM2": 11762.3,
+      "boundParcels": 1
+    }
+  ],
+  "requests": [
+    {
+      "test": "viewport-0",
+      "url": "https://geoformatik.forestry.gov.my/arcgis/rest/services/PULAU_PINANG_SDE/MapServer/45/query?where=1%3D1&geometry=100.427%2C5.373%2C100.428%2C5.374&geometryType=esriGeometryEnvelope&inSR=4326&spatialRel=esriSpatialRelIntersects&f=json&returnCountOnly=true",
+      "method": "GET",
+      "checkedAt": "2026-10-09T06:01:50.011Z",
+      "httpStatus": 200,
+      "contentType": "application/json;charset=UTF-8",
+      "bytes": 11,
+      "count": 1
+    },
+    {
+      "test": "viewport-0",
+      "url": "https://geoformatik.forestry.gov.my/arcgis/rest/services/PULAU_PINANG_SDE/MapServer/45/query?where=1%3D1&geometry=100.427%2C5.373%2C100.428%2C5.374&geometryType=esriGeometryEnvelope&inSR=4326&spatialRel=esriSpatialRelIntersects&f=json&returnIdsOnly=true",
+      "method": "GET",
+      "checkedAt": "2026-10-09T06:01:51.020Z",
+      "httpStatus": 200,
+      "contentType": "application/json;charset=UTF-8",
+      "bytes": 48,
+      "objectIdFieldName": "FID",
+      "objectIds": [
+        330428
+      ]
+    },
+    {
+      "test": "viewport-0",
+      "url": "https://geoformatik.forestry.gov.my/arcgis/rest/services/PULAU_PINANG_SDE/MapServer/45/query?where=1%3D1&outFields=FID%2CUPI%2CMUKIM%2CPA%2CLOT%2CKELUASAN&returnGeometry=true&outSR=4326&f=geojson&objectIds=330428",
+      "method": "GET",
+      "checkedAt": "2026-10-09T06:01:51.278Z",
+      "httpStatus": 200,
+      "contentType": "application/geo+json;charset=UTF-8",
+      "bytes": 2348,
+      "features": [
+        {
+          "transportId": 330428,
+          "properties": {
+            "FID": 330428,
+            "UPI": "0701060003760",
+            "MUKIM": "06",
+            "PA": "PA22610",
+            "LOT": "3760",
+            "KELUASAN": 410301.555
+          },
+          "geometrySha256": "1fc55bd86a1cfe7cdf97d57268ad928493f385ca666d33ee8c3f8b3ba8bb7fef"
+        }
+      ]
+    },
+    {
+      "test": "viewport-1",
+      "url": "https://geoformatik.forestry.gov.my/arcgis/rest/services/PULAU_PINANG_SDE/MapServer/45/query?where=1%3D1&geometry=100.428%2C5.373%2C100.429%2C5.374&geometryType=esriGeometryEnvelope&inSR=4326&spatialRel=esriSpatialRelIntersects&f=json&returnCountOnly=true",
+      "method": "GET",
+      "checkedAt": "2026-10-09T06:01:51.529Z",
+      "httpStatus": 200,
+      "contentType": "application/json;charset=UTF-8",
+      "bytes": 11,
+      "count": 2
+    },
+    {
+      "test": "viewport-1",
+      "url": "https://geoformatik.forestry.gov.my/arcgis/rest/services/PULAU_PINANG_SDE/MapServer/45/query?where=1%3D1&geometry=100.428%2C5.373%2C100.429%2C5.374&geometryType=esriGeometryEnvelope&inSR=4326&spatialRel=esriSpatialRelIntersects&f=json&returnIdsOnly=true",
+      "method": "GET",
+      "checkedAt": "2026-10-09T06:01:51.789Z",
+      "httpStatus": 200,
+      "contentType": "application/json;charset=UTF-8",
+      "bytes": 55,
+      "objectIdFieldName": "FID",
+      "objectIds": [
+        244430,
+        330428
+      ]
+    },
+    {
+      "test": "viewport-1",
+      "url": "https://geoformatik.forestry.gov.my/arcgis/rest/services/PULAU_PINANG_SDE/MapServer/45/query?where=1%3D1&outFields=FID%2CUPI%2CMUKIM%2CPA%2CLOT%2CKELUASAN&returnGeometry=true&outSR=4326&f=geojson&objectIds=244430%2C330428",
+      "method": "GET",
+      "checkedAt": "2026-10-09T06:01:52.102Z",
+      "httpStatus": 200,
+      "contentType": "application/geo+json;charset=UTF-8",
+      "bytes": 3543,
+      "features": [
+        {
+          "transportId": 244430,
+          "properties": {
+            "FID": 244430,
+            "UPI": "07010600010028",
+            "MUKIM": "06",
+            "PA": "PA108990",
+            "LOT": "10028",
+            "KELUASAN": 81116.251
+          },
+          "geometrySha256": "2c7bcacf145222d2d18eb0c45f59980884f53114372e75dd62a69502409169a9"
+        },
+        {
+          "transportId": 330428,
+          "properties": {
+            "FID": 330428,
+            "UPI": "0701060003760",
+            "MUKIM": "06",
+            "PA": "PA22610",
+            "LOT": "3760",
+            "KELUASAN": 410301.555
+          },
+          "geometrySha256": "1fc55bd86a1cfe7cdf97d57268ad928493f385ca666d33ee8c3f8b3ba8bb7fef"
+        }
+      ]
+    },
+    {
+      "test": "viewport-2",
+      "url": "https://geoformatik.forestry.gov.my/arcgis/rest/services/PULAU_PINANG_SDE/MapServer/45/query?where=1%3D1&geometry=100.429%2C5.373%2C100.43%2C5.374&geometryType=esriGeometryEnvelope&inSR=4326&spatialRel=esriSpatialRelIntersects&f=json&returnCountOnly=true",
+      "method": "GET",
+      "checkedAt": "2026-10-09T06:01:52.411Z",
+      "httpStatus": 200,
+      "contentType": "application/json;charset=UTF-8",
+      "bytes": 11,
+      "count": 1
+    },
+    {
+      "test": "viewport-2",
+      "url": "https://geoformatik.forestry.gov.my/arcgis/rest/services/PULAU_PINANG_SDE/MapServer/45/query?where=1%3D1&geometry=100.429%2C5.373%2C100.43%2C5.374&geometryType=esriGeometryEnvelope&inSR=4326&spatialRel=esriSpatialRelIntersects&f=json&returnIdsOnly=true",
+      "method": "GET",
+      "checkedAt": "2026-10-09T06:01:52.697Z",
+      "httpStatus": 200,
+      "contentType": "application/json;charset=UTF-8",
+      "bytes": 48,
+      "objectIdFieldName": "FID",
+      "objectIds": [
+        244430
+      ]
+    },
+    {
+      "test": "viewport-2",
+      "url": "https://geoformatik.forestry.gov.my/arcgis/rest/services/PULAU_PINANG_SDE/MapServer/45/query?where=1%3D1&outFields=FID%2CUPI%2CMUKIM%2CPA%2CLOT%2CKELUASAN&returnGeometry=true&outSR=4326&f=geojson&objectIds=244430",
+      "method": "GET",
+      "checkedAt": "2026-10-09T06:01:53.014Z",
+      "httpStatus": 200,
+      "contentType": "application/geo+json;charset=UTF-8",
+      "bytes": 1236,
+      "features": [
+        {
+          "transportId": 244430,
+          "properties": {
+            "FID": 244430,
+            "UPI": "07010600010028",
+            "MUKIM": "06",
+            "PA": "PA108990",
+            "LOT": "10028",
+            "KELUASAN": 81116.251
+          },
+          "geometrySha256": "2c7bcacf145222d2d18eb0c45f59980884f53114372e75dd62a69502409169a9"
+        }
+      ]
+    },
+    {
+      "test": "viewport-3",
+      "url": "https://geoformatik.forestry.gov.my/arcgis/rest/services/PULAU_PINANG_SDE/MapServer/45/query?where=1%3D1&geometry=100.427%2C5.374%2C100.428%2C5.375&geometryType=esriGeometryEnvelope&inSR=4326&spatialRel=esriSpatialRelIntersects&f=json&returnCountOnly=true",
+      "method": "GET",
+      "checkedAt": "2026-10-09T06:01:53.336Z",
+      "httpStatus": 200,
+      "contentType": "application/json;charset=UTF-8",
+      "bytes": 11,
+      "count": 1
+    },
+    {
+      "test": "viewport-3",
+      "url": "https://geoformatik.forestry.gov.my/arcgis/rest/services/PULAU_PINANG_SDE/MapServer/45/query?where=1%3D1&geometry=100.427%2C5.374%2C100.428%2C5.375&geometryType=esriGeometryEnvelope&inSR=4326&spatialRel=esriSpatialRelIntersects&f=json&returnIdsOnly=true",
+      "method": "GET",
+      "checkedAt": "2026-10-09T06:01:53.730Z",
+      "httpStatus": 200,
+      "contentType": "application/json;charset=UTF-8",
+      "bytes": 48,
+      "objectIdFieldName": "FID",
+      "objectIds": [
+        330428
+      ]
+    },
+    {
+      "test": "viewport-3",
+      "url": "https://geoformatik.forestry.gov.my/arcgis/rest/services/PULAU_PINANG_SDE/MapServer/45/query?where=1%3D1&outFields=FID%2CUPI%2CMUKIM%2CPA%2CLOT%2CKELUASAN&returnGeometry=true&outSR=4326&f=geojson&objectIds=330428",
+      "method": "GET",
+      "checkedAt": "2026-10-09T06:01:54.130Z",
+      "httpStatus": 200,
+      "contentType": "application/geo+json;charset=UTF-8",
+      "bytes": 2348,
+      "features": [
+        {
+          "transportId": 330428,
+          "properties": {
+            "FID": 330428,
+            "UPI": "0701060003760",
+            "MUKIM": "06",
+            "PA": "PA22610",
+            "LOT": "3760",
+            "KELUASAN": 410301.555
+          },
+          "geometrySha256": "1fc55bd86a1cfe7cdf97d57268ad928493f385ca666d33ee8c3f8b3ba8bb7fef"
+        }
+      ]
+    },
+    {
+      "test": "viewport-4",
+      "url": "https://geoformatik.forestry.gov.my/arcgis/rest/services/PULAU_PINANG_SDE/MapServer/45/query?where=1%3D1&geometry=100.428%2C5.374%2C100.429%2C5.375&geometryType=esriGeometryEnvelope&inSR=4326&spatialRel=esriSpatialRelIntersects&f=json&returnCountOnly=true",
+      "method": "GET",
+      "checkedAt": "2026-10-09T06:01:54.560Z",
+      "httpStatus": 200,
+      "contentType": "application/json;charset=UTF-8",
+      "bytes": 11,
+      "count": 2
+    },
+    {
+      "test": "viewport-4",
+      "url": "https://geoformatik.forestry.gov.my/arcgis/rest/services/PULAU_PINANG_SDE/MapServer/45/query?where=1%3D1&geometry=100.428%2C5.374%2C100.429%2C5.375&geometryType=esriGeometryEnvelope&inSR=4326&spatialRel=esriSpatialRelIntersects&f=json&returnIdsOnly=true",
+      "method": "GET",
+      "checkedAt": "2026-10-09T06:01:55.051Z",
+      "httpStatus": 200,
+      "contentType": "application/json;charset=UTF-8",
+      "bytes": 55,
+      "objectIdFieldName": "FID",
+      "objectIds": [
+        244430,
+        330428
+      ]
+    },
+    {
+      "test": "viewport-4",
+      "url": "https://geoformatik.forestry.gov.my/arcgis/rest/services/PULAU_PINANG_SDE/MapServer/45/query?where=1%3D1&outFields=FID%2CUPI%2CMUKIM%2CPA%2CLOT%2CKELUASAN&returnGeometry=true&outSR=4326&f=geojson&objectIds=244430%2C330428",
+      "method": "GET",
+      "checkedAt": "2026-10-09T06:01:55.503Z",
+      "httpStatus": 200,
+      "contentType": "application/geo+json;charset=UTF-8",
+      "bytes": 3543,
+      "features": [
+        {
+          "transportId": 244430,
+          "properties": {
+            "FID": 244430,
+            "UPI": "07010600010028",
+            "MUKIM": "06",
+            "PA": "PA108990",
+            "LOT": "10028",
+            "KELUASAN": 81116.251
+          },
+          "geometrySha256": "2c7bcacf145222d2d18eb0c45f59980884f53114372e75dd62a69502409169a9"
+        },
+        {
+          "transportId": 330428,
+          "properties": {
+            "FID": 330428,
+            "UPI": "0701060003760",
+            "MUKIM": "06",
+            "PA": "PA22610",
+            "LOT": "3760",
+            "KELUASAN": 410301.555
+          },
+          "geometrySha256": "1fc55bd86a1cfe7cdf97d57268ad928493f385ca666d33ee8c3f8b3ba8bb7fef"
+        }
+      ]
+    },
+    {
+      "test": "viewport-5",
+      "url": "https://geoformatik.forestry.gov.my/arcgis/rest/services/PULAU_PINANG_SDE/MapServer/45/query?where=1%3D1&geometry=100.429%2C5.374%2C100.43%2C5.375&geometryType=esriGeometryEnvelope&inSR=4326&spatialRel=esriSpatialRelIntersects&f=json&returnCountOnly=true",
+      "method": "GET",
+      "checkedAt": "2026-10-09T06:01:55.893Z",
+      "httpStatus": 200,
+      "contentType": "application/json;charset=UTF-8",
+      "bytes": 11,
+      "count": 2
+    },
+    {
+      "test": "viewport-5",
+      "url": "https://geoformatik.forestry.gov.my/arcgis/rest/services/PULAU_PINANG_SDE/MapServer/45/query?where=1%3D1&geometry=100.429%2C5.374%2C100.43%2C5.375&geometryType=esriGeometryEnvelope&inSR=4326&spatialRel=esriSpatialRelIntersects&f=json&returnIdsOnly=true",
+      "method": "GET",
+      "checkedAt": "2026-10-09T06:01:56.353Z",
+      "httpStatus": 200,
+      "contentType": "application/json;charset=UTF-8",
+      "bytes": 55,
+      "objectIdFieldName": "FID",
+      "objectIds": [
+        233687,
+        244430
+      ]
+    },
+    {
+      "test": "viewport-5",
+      "url": "https://geoformatik.forestry.gov.my/arcgis/rest/services/PULAU_PINANG_SDE/MapServer/45/query?where=1%3D1&outFields=FID%2CUPI%2CMUKIM%2CPA%2CLOT%2CKELUASAN&returnGeometry=true&outSR=4326&f=geojson&objectIds=233687%2C244430",
+      "method": "GET",
+      "checkedAt": "2026-10-09T06:01:56.777Z",
+      "httpStatus": 200,
+      "contentType": "application/geo+json;charset=UTF-8",
+      "bytes": 1836,
+      "features": [
+        {
+          "transportId": 233687,
+          "properties": {
+            "FID": 233687,
+            "UPI": "0701060004287",
+            "MUKIM": "06",
+            "PA": "PA80559",
+            "LOT": "4287",
+            "KELUASAN": 14718.583
+          },
+          "geometrySha256": "b63e63a4fda984a0ad347a0356e103b5ebae8173d37815a85958ef049b4afb9c"
+        },
+        {
+          "transportId": 244430,
+          "properties": {
+            "FID": 244430,
+            "UPI": "07010600010028",
+            "MUKIM": "06",
+            "PA": "PA108990",
+            "LOT": "10028",
+            "KELUASAN": 81116.251
+          },
+          "geometrySha256": "2c7bcacf145222d2d18eb0c45f59980884f53114372e75dd62a69502409169a9"
+        }
+      ]
+    },
+    {
+      "test": "viewport-6",
+      "url": "https://geoformatik.forestry.gov.my/arcgis/rest/services/PULAU_PINANG_SDE/MapServer/45/query?where=1%3D1&geometry=100.427%2C5.375%2C100.428%2C5.376&geometryType=esriGeometryEnvelope&inSR=4326&spatialRel=esriSpatialRelIntersects&f=json&returnCountOnly=true",
+      "method": "GET",
+      "checkedAt": "2026-10-09T06:01:57.300Z",
+      "httpStatus": 200,
+      "contentType": "application/json;charset=UTF-8",
+      "bytes": 11,
+      "count": 5
+    },
+    {
+      "test": "viewport-6",
+      "url": "https://geoformatik.forestry.gov.my/arcgis/rest/services/PULAU_PINANG_SDE/MapServer/45/query?where=1%3D1&geometry=100.427%2C5.375%2C100.428%2C5.376&geometryType=esriGeometryEnvelope&inSR=4326&spatialRel=esriSpatialRelIntersects&f=json&returnIdsOnly=true",
+      "method": "GET",
+      "checkedAt": "2026-10-09T06:01:57.808Z",
+      "httpStatus": 200,
+      "contentType": "application/json;charset=UTF-8",
+      "bytes": 72,
+      "objectIdFieldName": "FID",
+      "objectIds": [
+        10806,
+        10807,
+        10808,
+        89482,
+        330428
+      ]
+    },
+    {
+      "test": "viewport-6",
+      "url": "https://geoformatik.forestry.gov.my/arcgis/rest/services/PULAU_PINANG_SDE/MapServer/45/query?where=1%3D1&outFields=FID%2CUPI%2CMUKIM%2CPA%2CLOT%2CKELUASAN&returnGeometry=true&outSR=4326&f=geojson&objectIds=10806%2C10807%2C10808%2C89482%2C330428",
+      "method": "GET",
+      "checkedAt": "2026-10-09T06:01:58.266Z",
+      "httpStatus": 200,
+      "contentType": "application/geo+json;charset=UTF-8",
+      "bytes": 4354,
+      "features": [
+        {
+          "transportId": 10806,
+          "properties": {
+            "FID": 10806,
+            "UPI": "070106000124",
+            "MUKIM": "06",
+            "PA": "PA7271",
+            "LOT": "124",
+            "KELUASAN": 17064.549
+          },
+          "geometrySha256": "678f7db52da9cedb1d9b87aba045e77167896ea9d71a956bbd045090126db747"
+        },
+        {
+          "transportId": 10807,
+          "properties": {
+            "FID": 10807,
+            "UPI": "070106000127",
+            "MUKIM": "06",
+            "PA": "PA7271",
+            "LOT": "127",
+            "KELUASAN": 5346.55
+          },
+          "geometrySha256": "aca7ee306baa95cec2d1f97f978caef5074510d2e721e40f8972e8920393f137"
+        },
+        {
+          "transportId": 10808,
+          "properties": {
+            "FID": 10808,
+            "UPI": "0701060001295",
+            "MUKIM": "06",
+            "PA": "PA7271",
+            "LOT": "1295",
+            "KELUASAN": 11684.992
+          },
+          "geometrySha256": "4d49a1d1eb466e9cc71fbb66ee8c7fdd0787c9e656f96cbfa218e3cad7bf8f75"
+        },
+        {
+          "transportId": 89482,
+          "properties": {
+            "FID": 89482,
+            "UPI": "070106000126",
+            "MUKIM": "06",
+            "PA": "PA7271",
+            "LOT": "126",
+            "KELUASAN": 4973.682
+          },
+          "geometrySha256": "8a7d242deed8f6c1e2db9b41e4d2e47812214c47859ecd9a765749cca5502694"
+        },
+        {
+          "transportId": 330428,
+          "properties": {
+            "FID": 330428,
+            "UPI": "0701060003760",
+            "MUKIM": "06",
+            "PA": "PA22610",
+            "LOT": "3760",
+            "KELUASAN": 410301.555
+          },
+          "geometrySha256": "1fc55bd86a1cfe7cdf97d57268ad928493f385ca666d33ee8c3f8b3ba8bb7fef"
+        }
+      ]
+    },
+    {
+      "test": "viewport-7",
+      "url": "https://geoformatik.forestry.gov.my/arcgis/rest/services/PULAU_PINANG_SDE/MapServer/45/query?where=1%3D1&geometry=100.428%2C5.375%2C100.429%2C5.376&geometryType=esriGeometryEnvelope&inSR=4326&spatialRel=esriSpatialRelIntersects&f=json&returnCountOnly=true",
+      "method": "GET",
+      "checkedAt": "2026-10-09T06:01:58.762Z",
+      "httpStatus": 200,
+      "contentType": "application/json;charset=UTF-8",
+      "bytes": 11,
+      "count": 8
+    },
+    {
+      "test": "viewport-7",
+      "url": "https://geoformatik.forestry.gov.my/arcgis/rest/services/PULAU_PINANG_SDE/MapServer/45/query?where=1%3D1&geometry=100.428%2C5.375%2C100.429%2C5.376&geometryType=esriGeometryEnvelope&inSR=4326&spatialRel=esriSpatialRelIntersects&f=json&returnIdsOnly=true",
+      "method": "GET",
+      "checkedAt": "2026-10-09T06:01:59.208Z",
+      "httpStatus": 200,
+      "contentType": "application/json;charset=UTF-8",
+      "bytes": 94,
+      "objectIdFieldName": "FID",
+      "objectIds": [
+        10808,
+        89482,
+        89483,
+        182616,
+        233337,
+        233687,
+        244430,
+        330428
+      ]
+    },
+    {
+      "test": "viewport-7",
+      "url": "https://geoformatik.forestry.gov.my/arcgis/rest/services/PULAU_PINANG_SDE/MapServer/45/query?where=1%3D1&outFields=FID%2CUPI%2CMUKIM%2CPA%2CLOT%2CKELUASAN&returnGeometry=true&outSR=4326&f=geojson&objectIds=10808%2C89482%2C89483%2C182616%2C233337%2C233687%2C244430%2C330428",
+      "method": "GET",
+      "checkedAt": "2026-10-09T06:01:59.662Z",
+      "httpStatus": 200,
+      "contentType": "application/geo+json;charset=UTF-8",
+      "bytes": 6456,
+      "features": [
+        {
+          "transportId": 10808,
+          "properties": {
+            "FID": 10808,
+            "UPI": "0701060001295",
+            "MUKIM": "06",
+            "PA": "PA7271",
+            "LOT": "1295",
+            "KELUASAN": 11684.992
+          },
+          "geometrySha256": "4d49a1d1eb466e9cc71fbb66ee8c7fdd0787c9e656f96cbfa218e3cad7bf8f75"
+        },
+        {
+          "transportId": 89482,
+          "properties": {
+            "FID": 89482,
+            "UPI": "070106000126",
+            "MUKIM": "06",
+            "PA": "PA7271",
+            "LOT": "126",
+            "KELUASAN": 4973.682
+          },
+          "geometrySha256": "8a7d242deed8f6c1e2db9b41e4d2e47812214c47859ecd9a765749cca5502694"
+        },
+        {
+          "transportId": 89483,
+          "properties": {
+            "FID": 89483,
+            "UPI": "0701060001294",
+            "MUKIM": "06",
+            "PA": "PA7271",
+            "LOT": "1294",
+            "KELUASAN": 1937.229
+          },
+          "geometrySha256": "eae7c6935f1c89b68b4b838576106df2d92c1cd63acbf6cd96a93fb480f4d2b9"
+        },
+        {
+          "transportId": 182616,
+          "properties": {
+            "FID": 182616,
+            "UPI": "070106000133",
+            "MUKIM": "06",
+            "PA": "PA7271",
+            "LOT": "133",
+            "KELUASAN": 1904.315
+          },
+          "geometrySha256": "12e5a54fe2aff148fdbd0e76ab5355dd540556568c345b1580370c9f5bf9eb28"
+        },
+        {
+          "transportId": 233337,
+          "properties": {
+            "FID": 233337,
+            "UPI": "0701060003763",
+            "MUKIM": "06",
+            "PA": "PA22611",
+            "LOT": "3763",
+            "KELUASAN": 1122.653
+          },
+          "geometrySha256": "bea2d8efa37d3b2a0d7bfb7d5e912c07c7f0084b229a156f669358a69382d83f"
+        },
+        {
+          "transportId": 233687,
+          "properties": {
+            "FID": 233687,
+            "UPI": "0701060004287",
+            "MUKIM": "06",
+            "PA": "PA80559",
+            "LOT": "4287",
+            "KELUASAN": 14718.583
+          },
+          "geometrySha256": "b63e63a4fda984a0ad347a0356e103b5ebae8173d37815a85958ef049b4afb9c"
+        },
+        {
+          "transportId": 244430,
+          "properties": {
+            "FID": 244430,
+            "UPI": "07010600010028",
+            "MUKIM": "06",
+            "PA": "PA108990",
+            "LOT": "10028",
+            "KELUASAN": 81116.251
+          },
+          "geometrySha256": "2c7bcacf145222d2d18eb0c45f59980884f53114372e75dd62a69502409169a9"
+        },
+        {
+          "transportId": 330428,
+          "properties": {
+            "FID": 330428,
+            "UPI": "0701060003760",
+            "MUKIM": "06",
+            "PA": "PA22610",
+            "LOT": "3760",
+            "KELUASAN": 410301.555
+          },
+          "geometrySha256": "1fc55bd86a1cfe7cdf97d57268ad928493f385ca666d33ee8c3f8b3ba8bb7fef"
+        }
+      ]
+    },
+    {
+      "test": "viewport-8",
+      "url": "https://geoformatik.forestry.gov.my/arcgis/rest/services/PULAU_PINANG_SDE/MapServer/45/query?where=1%3D1&geometry=100.429%2C5.375%2C100.43%2C5.376&geometryType=esriGeometryEnvelope&inSR=4326&spatialRel=esriSpatialRelIntersects&f=json&returnCountOnly=true",
+      "method": "GET",
+      "checkedAt": "2026-10-09T06:01:59.917Z",
+      "httpStatus": 200,
+      "contentType": "application/json;charset=UTF-8",
+      "bytes": 11,
+      "count": 4
+    },
+    {
+      "test": "viewport-8",
+      "url": "https://geoformatik.forestry.gov.my/arcgis/rest/services/PULAU_PINANG_SDE/MapServer/45/query?where=1%3D1&geometry=100.429%2C5.375%2C100.43%2C5.376&geometryType=esriGeometryEnvelope&inSR=4326&spatialRel=esriSpatialRelIntersects&f=json&returnIdsOnly=true",
+      "method": "GET",
+      "checkedAt": "2026-10-09T06:02:00.178Z",
+      "httpStatus": 200,
+      "contentType": "application/json;charset=UTF-8",
+      "bytes": 69,
+      "objectIdFieldName": "FID",
+      "objectIds": [
+        211787,
+        211788,
+        233687,
+        244430
+      ]
+    },
+    {
+      "test": "viewport-8",
+      "url": "https://geoformatik.forestry.gov.my/arcgis/rest/services/PULAU_PINANG_SDE/MapServer/45/query?where=1%3D1&outFields=FID%2CUPI%2CMUKIM%2CPA%2CLOT%2CKELUASAN&returnGeometry=true&outSR=4326&f=geojson&objectIds=211787%2C211788%2C233687%2C244430",
+      "method": "GET",
+      "checkedAt": "2026-10-09T06:02:00.427Z",
+      "httpStatus": 200,
+      "contentType": "application/geo+json;charset=UTF-8",
+      "bytes": 2696,
+      "features": [
+        {
+          "transportId": 211787,
+          "properties": {
+            "FID": 211787,
+            "UPI": "0701060003765",
+            "MUKIM": "06",
+            "PA": "PA22611",
+            "LOT": "3765",
+            "KELUASAN": 1589.462
+          },
+          "geometrySha256": "3456c2b4c33a3c6c4c8f4a63c9da24a10f86333ad118fda99667d4f98fcf9d5f"
+        },
+        {
+          "transportId": 211788,
+          "properties": {
+            "FID": 211788,
+            "UPI": "0701060003766",
+            "MUKIM": "06",
+            "PA": "PA22611",
+            "LOT": "3766",
+            "KELUASAN": 1897.193
+          },
+          "geometrySha256": "3aa810c77db2d7e4da392a537b3695c7eae78d84a62a371966ddba5da9682a8f"
+        },
+        {
+          "transportId": 233687,
+          "properties": {
+            "FID": 233687,
+            "UPI": "0701060004287",
+            "MUKIM": "06",
+            "PA": "PA80559",
+            "LOT": "4287",
+            "KELUASAN": 14718.583
+          },
+          "geometrySha256": "b63e63a4fda984a0ad347a0356e103b5ebae8173d37815a85958ef049b4afb9c"
+        },
+        {
+          "transportId": 244430,
+          "properties": {
+            "FID": 244430,
+            "UPI": "07010600010028",
+            "MUKIM": "06",
+            "PA": "PA108990",
+            "LOT": "10028",
+            "KELUASAN": 81116.251
+          },
+          "geometrySha256": "2c7bcacf145222d2d18eb0c45f59980884f53114372e75dd62a69502409169a9"
+        }
+      ]
+    },
+    {
+      "test": "viewport-9",
+      "url": "https://geoformatik.forestry.gov.my/arcgis/rest/services/PULAU_PINANG_SDE/MapServer/45/query?where=1%3D1&geometry=100.428%2C5.372%2C100.429%2C5.373&geometryType=esriGeometryEnvelope&inSR=4326&spatialRel=esriSpatialRelIntersects&f=json&returnCountOnly=true",
+      "method": "GET",
+      "checkedAt": "2026-10-09T06:02:00.693Z",
+      "httpStatus": 200,
+      "contentType": "application/json;charset=UTF-8",
+      "bytes": 11,
+      "count": 2
+    },
+    {
+      "test": "viewport-9",
+      "url": "https://geoformatik.forestry.gov.my/arcgis/rest/services/PULAU_PINANG_SDE/MapServer/45/query?where=1%3D1&geometry=100.428%2C5.372%2C100.429%2C5.373&geometryType=esriGeometryEnvelope&inSR=4326&spatialRel=esriSpatialRelIntersects&f=json&returnIdsOnly=true",
+      "method": "GET",
+      "checkedAt": "2026-10-09T06:02:00.960Z",
+      "httpStatus": 200,
+      "contentType": "application/json;charset=UTF-8",
+      "bytes": 55,
+      "objectIdFieldName": "FID",
+      "objectIds": [
+        233018,
+        330428
+      ]
+    },
+    {
+      "test": "viewport-9",
+      "url": "https://geoformatik.forestry.gov.my/arcgis/rest/services/PULAU_PINANG_SDE/MapServer/45/query?where=1%3D1&outFields=FID%2CUPI%2CMUKIM%2CPA%2CLOT%2CKELUASAN&returnGeometry=true&outSR=4326&f=geojson&objectIds=233018%2C330428",
+      "method": "GET",
+      "checkedAt": "2026-10-09T06:02:01.213Z",
+      "httpStatus": 200,
+      "contentType": "application/geo+json;charset=UTF-8",
+      "bytes": 3025,
+      "features": [
+        {
+          "transportId": 233018,
+          "properties": {
+            "FID": 233018,
+            "UPI": "0701060003836",
+            "MUKIM": "06",
+            "PA": "PA80689",
+            "LOT": "3836",
+            "KELUASAN": 44540.846
+          },
+          "geometrySha256": "bdde7f17964edc5f7e286133934d60a146c8758003bd5e23534a7b8a1a5dc46c"
+        },
+        {
+          "transportId": 330428,
+          "properties": {
+            "FID": 330428,
+            "UPI": "0701060003760",
+            "MUKIM": "06",
+            "PA": "PA22610",
+            "LOT": "3760",
+            "KELUASAN": 410301.555
+          },
+          "geometrySha256": "1fc55bd86a1cfe7cdf97d57268ad928493f385ca666d33ee8c3f8b3ba8bb7fef"
+        }
+      ]
+    },
+    {
+      "test": "viewport-10",
+      "url": "https://geoformatik.forestry.gov.my/arcgis/rest/services/PULAU_PINANG_SDE/MapServer/45/query?where=1%3D1&geometry=100.428%2C5.376%2C100.429%2C5.377&geometryType=esriGeometryEnvelope&inSR=4326&spatialRel=esriSpatialRelIntersects&f=json&returnCountOnly=true",
+      "method": "GET",
+      "checkedAt": "2026-10-09T06:02:01.467Z",
+      "httpStatus": 200,
+      "contentType": "application/json;charset=UTF-8",
+      "bytes": 11,
+      "count": 7
+    },
+    {
+      "test": "viewport-10",
+      "url": "https://geoformatik.forestry.gov.my/arcgis/rest/services/PULAU_PINANG_SDE/MapServer/45/query?where=1%3D1&geometry=100.428%2C5.376%2C100.429%2C5.377&geometryType=esriGeometryEnvelope&inSR=4326&spatialRel=esriSpatialRelIntersects&f=json&returnIdsOnly=true",
+      "method": "GET",
+      "checkedAt": "2026-10-09T06:02:01.720Z",
+      "httpStatus": 200,
+      "contentType": "application/json;charset=UTF-8",
+      "bytes": 86,
+      "objectIdFieldName": "FID",
+      "objectIds": [
+        10793,
+        10808,
+        89483,
+        89484,
+        211786,
+        233337,
+        233687
+      ]
+    },
+    {
+      "test": "viewport-10",
+      "url": "https://geoformatik.forestry.gov.my/arcgis/rest/services/PULAU_PINANG_SDE/MapServer/45/query?where=1%3D1&outFields=FID%2CUPI%2CMUKIM%2CPA%2CLOT%2CKELUASAN&returnGeometry=true&outSR=4326&f=geojson&objectIds=10793%2C10808%2C89483%2C89484%2C211786%2C233337%2C233687",
+      "method": "GET",
+      "checkedAt": "2026-10-09T06:02:01.978Z",
+      "httpStatus": 200,
+      "contentType": "application/geo+json;charset=UTF-8",
+      "bytes": 3840,
+      "features": [
+        {
+          "transportId": 10793,
+          "properties": {
+            "FID": 10793,
+            "UPI": "0701060001313",
+            "MUKIM": "06",
+            "PA": "PA7535",
+            "LOT": "1313",
+            "KELUASAN": 14252.097
+          },
+          "geometrySha256": "ed7fd60cf5ae857553825fb65da233556bdfd6eb09efa49dd3faa8057a8b5503"
+        },
+        {
+          "transportId": 10808,
+          "properties": {
+            "FID": 10808,
+            "UPI": "0701060001295",
+            "MUKIM": "06",
+            "PA": "PA7271",
+            "LOT": "1295",
+            "KELUASAN": 11684.992
+          },
+          "geometrySha256": "4d49a1d1eb466e9cc71fbb66ee8c7fdd0787c9e656f96cbfa218e3cad7bf8f75"
+        },
+        {
+          "transportId": 89483,
+          "properties": {
+            "FID": 89483,
+            "UPI": "0701060001294",
+            "MUKIM": "06",
+            "PA": "PA7271",
+            "LOT": "1294",
+            "KELUASAN": 1937.229
+          },
+          "geometrySha256": "eae7c6935f1c89b68b4b838576106df2d92c1cd63acbf6cd96a93fb480f4d2b9"
+        },
+        {
+          "transportId": 89484,
+          "properties": {
+            "FID": 89484,
+            "UPI": "0701060001324",
+            "MUKIM": "06",
+            "PA": "PA7271",
+            "LOT": "1324",
+            "KELUASAN": 13492.689
+          },
+          "geometrySha256": "053c8348e66a27a089648e0859143ab5ae25a9b817f1bf47863687751554831e"
+        },
+        {
+          "transportId": 211786,
+          "properties": {
+            "FID": 211786,
+            "UPI": "0701060003764",
+            "MUKIM": "06",
+            "PA": "PA22611",
+            "LOT": "3764",
+            "KELUASAN": 7756.674
+          },
+          "geometrySha256": "753afe1ec26367ed47e00fb6b9bc42a2c41ca2f6b1b952dbc7f5a203778fe771"
+        },
+        {
+          "transportId": 233337,
+          "properties": {
+            "FID": 233337,
+            "UPI": "0701060003763",
+            "MUKIM": "06",
+            "PA": "PA22611",
+            "LOT": "3763",
+            "KELUASAN": 1122.653
+          },
+          "geometrySha256": "bea2d8efa37d3b2a0d7bfb7d5e912c07c7f0084b229a156f669358a69382d83f"
+        },
+        {
+          "transportId": 233687,
+          "properties": {
+            "FID": 233687,
+            "UPI": "0701060004287",
+            "MUKIM": "06",
+            "PA": "PA80559",
+            "LOT": "4287",
+            "KELUASAN": 14718.583
+          },
+          "geometrySha256": "b63e63a4fda984a0ad347a0356e103b5ebae8173d37815a85958ef049b4afb9c"
+        }
+      ]
+    },
+    {
+      "test": "viewport-11",
+      "url": "https://geoformatik.forestry.gov.my/arcgis/rest/services/PULAU_PINANG_SDE/MapServer/45/query?where=1%3D1&geometry=100.426%2C5.374%2C100.427%2C5.375&geometryType=esriGeometryEnvelope&inSR=4326&spatialRel=esriSpatialRelIntersects&f=json&returnCountOnly=true",
+      "method": "GET",
+      "checkedAt": "2026-10-09T06:02:02.229Z",
+      "httpStatus": 200,
+      "contentType": "application/json;charset=UTF-8",
+      "bytes": 11,
+      "count": 3
+    },
+    {
+      "test": "viewport-11",
+      "url": "https://geoformatik.forestry.gov.my/arcgis/rest/services/PULAU_PINANG_SDE/MapServer/45/query?where=1%3D1&geometry=100.426%2C5.374%2C100.427%2C5.375&geometryType=esriGeometryEnvelope&inSR=4326&spatialRel=esriSpatialRelIntersects&f=json&returnIdsOnly=true",
+      "method": "GET",
+      "checkedAt": "2026-10-09T06:02:02.481Z",
+      "httpStatus": 200,
+      "contentType": "application/json;charset=UTF-8",
+      "bytes": 60,
+      "objectIdFieldName": "FID",
+      "objectIds": [
+        10805,
+        10806,
+        330428
+      ]
+    },
+    {
+      "test": "viewport-11",
+      "url": "https://geoformatik.forestry.gov.my/arcgis/rest/services/PULAU_PINANG_SDE/MapServer/45/query?where=1%3D1&outFields=FID%2CUPI%2CMUKIM%2CPA%2CLOT%2CKELUASAN&returnGeometry=true&outSR=4326&f=geojson&objectIds=10805%2C10806%2C330428",
+      "method": "GET",
+      "checkedAt": "2026-10-09T06:02:02.838Z",
+      "httpStatus": 200,
+      "contentType": "application/geo+json;charset=UTF-8",
+      "bytes": 3613,
+      "features": [
+        {
+          "transportId": 10805,
+          "properties": {
+            "FID": 10805,
+            "UPI": "070106000123",
+            "MUKIM": "06",
+            "PA": "PA7271",
+            "LOT": "123",
+            "KELUASAN": 13412.057
+          },
+          "geometrySha256": "89f84b60819e4f56b51de3a735bf1fa68de661ee455762ebef957d3cef9c68ca"
+        },
+        {
+          "transportId": 10806,
+          "properties": {
+            "FID": 10806,
+            "UPI": "070106000124",
+            "MUKIM": "06",
+            "PA": "PA7271",
+            "LOT": "124",
+            "KELUASAN": 17064.549
+          },
+          "geometrySha256": "678f7db52da9cedb1d9b87aba045e77167896ea9d71a956bbd045090126db747"
+        },
+        {
+          "transportId": 330428,
+          "properties": {
+            "FID": 330428,
+            "UPI": "0701060003760",
+            "MUKIM": "06",
+            "PA": "PA22610",
+            "LOT": "3760",
+            "KELUASAN": 410301.555
+          },
+          "geometrySha256": "1fc55bd86a1cfe7cdf97d57268ad928493f385ca666d33ee8c3f8b3ba8bb7fef"
+        }
+      ]
+    },
+    {
+      "test": "viewport-12",
+      "url": "https://geoformatik.forestry.gov.my/arcgis/rest/services/PULAU_PINANG_SDE/MapServer/45/query?where=1%3D1&geometry=100.43%2C5.374%2C100.431%2C5.375&geometryType=esriGeometryEnvelope&inSR=4326&spatialRel=esriSpatialRelIntersects&f=json&returnCountOnly=true",
+      "method": "GET",
+      "checkedAt": "2026-10-09T06:02:03.122Z",
+      "httpStatus": 200,
+      "contentType": "application/json;charset=UTF-8",
+      "bytes": 11,
+      "count": 2
+    },
+    {
+      "test": "viewport-12",
+      "url": "https://geoformatik.forestry.gov.my/arcgis/rest/services/PULAU_PINANG_SDE/MapServer/45/query?where=1%3D1&geometry=100.43%2C5.374%2C100.431%2C5.375&geometryType=esriGeometryEnvelope&inSR=4326&spatialRel=esriSpatialRelIntersects&f=json&returnIdsOnly=true",
+      "method": "GET",
+      "checkedAt": "2026-10-09T06:02:03.373Z",
+      "httpStatus": 200,
+      "contentType": "application/json;charset=UTF-8",
+      "bytes": 55,
+      "objectIdFieldName": "FID",
+      "objectIds": [
+        244430,
+        262027
+      ]
+    },
+    {
+      "test": "viewport-12",
+      "url": "https://geoformatik.forestry.gov.my/arcgis/rest/services/PULAU_PINANG_SDE/MapServer/45/query?where=1%3D1&outFields=FID%2CUPI%2CMUKIM%2CPA%2CLOT%2CKELUASAN&returnGeometry=true&outSR=4326&f=geojson&objectIds=244430%2C262027",
+      "method": "GET",
+      "checkedAt": "2026-10-09T06:02:03.622Z",
+      "httpStatus": 200,
+      "contentType": "application/geo+json;charset=UTF-8",
+      "bytes": 1908,
+      "features": [
+        {
+          "transportId": 244430,
+          "properties": {
+            "FID": 244430,
+            "UPI": "07010600010028",
+            "MUKIM": "06",
+            "PA": "PA108990",
+            "LOT": "10028",
+            "KELUASAN": 81116.251
+          },
+          "geometrySha256": "2c7bcacf145222d2d18eb0c45f59980884f53114372e75dd62a69502409169a9"
+        },
+        {
+          "transportId": 262027,
+          "properties": {
+            "FID": 262027,
+            "UPI": "07010600010029",
+            "MUKIM": "06",
+            "PA": "PA105269",
+            "LOT": "10029",
+            "KELUASAN": 14306.909
+          },
+          "geometrySha256": "84ffb1fa20c1de5eff8a31445354c3a3652b29b1ccfba32c05509f4787ca5d69"
+        }
+      ]
+    },
+    {
+      "test": "forced-three-row-pages",
+      "url": "https://geoformatik.forestry.gov.my/arcgis/rest/services/PULAU_PINANG_SDE/MapServer/45/query?where=1%3D1&geometry=100.428%2C5.375%2C100.429%2C5.376&geometryType=esriGeometryEnvelope&inSR=4326&spatialRel=esriSpatialRelIntersects&f=json&returnCountOnly=true",
+      "method": "GET",
+      "checkedAt": "2026-10-09T06:02:03.874Z",
+      "httpStatus": 200,
+      "contentType": "application/json;charset=UTF-8",
+      "bytes": 11,
+      "count": 8
+    },
+    {
+      "test": "forced-three-row-pages",
+      "url": "https://geoformatik.forestry.gov.my/arcgis/rest/services/PULAU_PINANG_SDE/MapServer/45/query?where=1%3D1&geometry=100.428%2C5.375%2C100.429%2C5.376&geometryType=esriGeometryEnvelope&inSR=4326&spatialRel=esriSpatialRelIntersects&f=json&returnIdsOnly=true",
+      "method": "GET",
+      "checkedAt": "2026-10-09T06:02:04.126Z",
+      "httpStatus": 200,
+      "contentType": "application/json;charset=UTF-8",
+      "bytes": 94,
+      "objectIdFieldName": "FID",
+      "objectIds": [
+        10808,
+        89482,
+        89483,
+        182616,
+        233337,
+        233687,
+        244430,
+        330428
+      ]
+    },
+    {
+      "test": "forced-three-row-pages",
+      "url": "https://geoformatik.forestry.gov.my/arcgis/rest/services/PULAU_PINANG_SDE/MapServer/45/query?where=1%3D1&outFields=FID%2CUPI%2CMUKIM%2CPA%2CLOT%2CKELUASAN&returnGeometry=true&outSR=4326&f=geojson&objectIds=10808%2C89482%2C89483",
+      "method": "GET",
+      "checkedAt": "2026-10-09T06:02:04.661Z",
+      "httpStatus": 200,
+      "contentType": "application/geo+json;charset=UTF-8",
+      "bytes": 1447,
+      "features": [
+        {
+          "transportId": 10808,
+          "properties": {
+            "FID": 10808,
+            "UPI": "0701060001295",
+            "MUKIM": "06",
+            "PA": "PA7271",
+            "LOT": "1295",
+            "KELUASAN": 11684.992
+          },
+          "geometrySha256": "4d49a1d1eb466e9cc71fbb66ee8c7fdd0787c9e656f96cbfa218e3cad7bf8f75"
+        },
+        {
+          "transportId": 89482,
+          "properties": {
+            "FID": 89482,
+            "UPI": "070106000126",
+            "MUKIM": "06",
+            "PA": "PA7271",
+            "LOT": "126",
+            "KELUASAN": 4973.682
+          },
+          "geometrySha256": "8a7d242deed8f6c1e2db9b41e4d2e47812214c47859ecd9a765749cca5502694"
+        },
+        {
+          "transportId": 89483,
+          "properties": {
+            "FID": 89483,
+            "UPI": "0701060001294",
+            "MUKIM": "06",
+            "PA": "PA7271",
+            "LOT": "1294",
+            "KELUASAN": 1937.229
+          },
+          "geometrySha256": "eae7c6935f1c89b68b4b838576106df2d92c1cd63acbf6cd96a93fb480f4d2b9"
+        }
+      ]
+    },
+    {
+      "test": "forced-three-row-pages",
+      "url": "https://geoformatik.forestry.gov.my/arcgis/rest/services/PULAU_PINANG_SDE/MapServer/45/query?where=1%3D1&outFields=FID%2CUPI%2CMUKIM%2CPA%2CLOT%2CKELUASAN&returnGeometry=true&outSR=4326&f=geojson&objectIds=182616%2C233337%2C233687",
+      "method": "GET",
+      "checkedAt": "2026-10-09T06:02:04.920Z",
+      "httpStatus": 200,
+      "contentType": "application/geo+json;charset=UTF-8",
+      "bytes": 1548,
+      "features": [
+        {
+          "transportId": 182616,
+          "properties": {
+            "FID": 182616,
+            "UPI": "070106000133",
+            "MUKIM": "06",
+            "PA": "PA7271",
+            "LOT": "133",
+            "KELUASAN": 1904.315
+          },
+          "geometrySha256": "12e5a54fe2aff148fdbd0e76ab5355dd540556568c345b1580370c9f5bf9eb28"
+        },
+        {
+          "transportId": 233337,
+          "properties": {
+            "FID": 233337,
+            "UPI": "0701060003763",
+            "MUKIM": "06",
+            "PA": "PA22611",
+            "LOT": "3763",
+            "KELUASAN": 1122.653
+          },
+          "geometrySha256": "bea2d8efa37d3b2a0d7bfb7d5e912c07c7f0084b229a156f669358a69382d83f"
+        },
+        {
+          "transportId": 233687,
+          "properties": {
+            "FID": 233687,
+            "UPI": "0701060004287",
+            "MUKIM": "06",
+            "PA": "PA80559",
+            "LOT": "4287",
+            "KELUASAN": 14718.583
+          },
+          "geometrySha256": "b63e63a4fda984a0ad347a0356e103b5ebae8173d37815a85958ef049b4afb9c"
+        }
+      ]
+    },
+    {
+      "test": "forced-three-row-pages",
+      "url": "https://geoformatik.forestry.gov.my/arcgis/rest/services/PULAU_PINANG_SDE/MapServer/45/query?where=1%3D1&outFields=FID%2CUPI%2CMUKIM%2CPA%2CLOT%2CKELUASAN&returnGeometry=true&outSR=4326&f=geojson&objectIds=244430%2C330428",
+      "method": "GET",
+      "checkedAt": "2026-10-09T06:02:05.173Z",
+      "httpStatus": 200,
+      "contentType": "application/geo+json;charset=UTF-8",
+      "bytes": 3543,
+      "features": [
+        {
+          "transportId": 244430,
+          "properties": {
+            "FID": 244430,
+            "UPI": "07010600010028",
+            "MUKIM": "06",
+            "PA": "PA108990",
+            "LOT": "10028",
+            "KELUASAN": 81116.251
+          },
+          "geometrySha256": "2c7bcacf145222d2d18eb0c45f59980884f53114372e75dd62a69502409169a9"
+        },
+        {
+          "transportId": 330428,
+          "properties": {
+            "FID": 330428,
+            "UPI": "0701060003760",
+            "MUKIM": "06",
+            "PA": "PA22610",
+            "LOT": "3760",
+            "KELUASAN": 410301.555
+          },
+          "geometrySha256": "1fc55bd86a1cfe7cdf97d57268ad928493f385ca666d33ee8c3f8b3ba8bb7fef"
+        }
+      ]
+    },
+    {
+      "test": "fresh-ids-0",
+      "url": "https://geoformatik.forestry.gov.my/arcgis/rest/services/PULAU_PINANG_SDE/MapServer/45/query?where=UPI+IN+%28%2707010600010028%27%2C%2707010600010029%27%2C%27070106000123%27%2C%27070106000124%27%2C%27070106000126%27%2C%27070106000127%27%2C%270701060001294%27%2C%270701060001295%27%2C%270701060001313%27%2C%270701060001324%27%2C%27070106000133%27%2C%270701060003760%27%2C%270701060003763%27%2C%270701060003764%27%2C%270701060003765%27%2C%270701060003766%27%2C%270701060003836%27%2C%270701060004287%27%29&f=json&returnCountOnly=true",
+      "method": "GET",
+      "checkedAt": "2026-10-09T06:02:05.657Z",
+      "httpStatus": 200,
+      "contentType": "application/json;charset=UTF-8",
+      "bytes": 12,
+      "count": 18
+    },
+    {
+      "test": "fresh-ids-0",
+      "url": "https://geoformatik.forestry.gov.my/arcgis/rest/services/PULAU_PINANG_SDE/MapServer/45/query?where=UPI+IN+%28%2707010600010028%27%2C%2707010600010029%27%2C%27070106000123%27%2C%27070106000124%27%2C%27070106000126%27%2C%27070106000127%27%2C%270701060001294%27%2C%270701060001295%27%2C%270701060001313%27%2C%270701060001324%27%2C%27070106000133%27%2C%270701060003760%27%2C%270701060003763%27%2C%270701060003764%27%2C%270701060003765%27%2C%270701060003766%27%2C%270701060003836%27%2C%270701060004287%27%29&f=json&returnIdsOnly=true",
+      "method": "GET",
+      "checkedAt": "2026-10-09T06:02:08.491Z",
+      "httpStatus": 200,
+      "contentType": "application/json;charset=UTF-8",
+      "bytes": 159,
+      "objectIdFieldName": "FID",
+      "objectIds": [
+        10793,
+        10805,
+        10806,
+        10807,
+        10808,
+        89482,
+        89483,
+        89484,
+        182616,
+        211786,
+        211787,
+        211788,
+        233018,
+        233337,
+        233687,
+        244430,
+        262027,
+        330428
+      ]
+    },
+    {
+      "test": "fresh-ids-0",
+      "url": "https://geoformatik.forestry.gov.my/arcgis/rest/services/PULAU_PINANG_SDE/MapServer/45/query?where=1%3D1&outFields=FID%2CUPI%2CMUKIM%2CPA%2CLOT%2CKELUASAN&returnGeometry=true&outSR=4326&f=geojson&objectIds=10793%2C10805%2C10806%2C10807%2C10808%2C89482%2C89483%2C89484%2C182616%2C211786%2C211787%2C211788%2C233018%2C233337%2C233687%2C244430%2C262027%2C330428",
+      "method": "GET",
+      "checkedAt": "2026-10-09T06:02:11.306Z",
+      "httpStatus": 200,
+      "contentType": "application/geo+json;charset=UTF-8",
+      "bytes": 12199,
+      "features": [
+        {
+          "transportId": 10793,
+          "properties": {
+            "FID": 10793,
+            "UPI": "0701060001313",
+            "MUKIM": "06",
+            "PA": "PA7535",
+            "LOT": "1313",
+            "KELUASAN": 14252.097
+          },
+          "geometrySha256": "ed7fd60cf5ae857553825fb65da233556bdfd6eb09efa49dd3faa8057a8b5503"
+        },
+        {
+          "transportId": 10805,
+          "properties": {
+            "FID": 10805,
+            "UPI": "070106000123",
+            "MUKIM": "06",
+            "PA": "PA7271",
+            "LOT": "123",
+            "KELUASAN": 13412.057
+          },
+          "geometrySha256": "89f84b60819e4f56b51de3a735bf1fa68de661ee455762ebef957d3cef9c68ca"
+        },
+        {
+          "transportId": 10806,
+          "properties": {
+            "FID": 10806,
+            "UPI": "070106000124",
+            "MUKIM": "06",
+            "PA": "PA7271",
+            "LOT": "124",
+            "KELUASAN": 17064.549
+          },
+          "geometrySha256": "678f7db52da9cedb1d9b87aba045e77167896ea9d71a956bbd045090126db747"
+        },
+        {
+          "transportId": 10807,
+          "properties": {
+            "FID": 10807,
+            "UPI": "070106000127",
+            "MUKIM": "06",
+            "PA": "PA7271",
+            "LOT": "127",
+            "KELUASAN": 5346.55
+          },
+          "geometrySha256": "aca7ee306baa95cec2d1f97f978caef5074510d2e721e40f8972e8920393f137"
+        },
+        {
+          "transportId": 10808,
+          "properties": {
+            "FID": 10808,
+            "UPI": "0701060001295",
+            "MUKIM": "06",
+            "PA": "PA7271",
+            "LOT": "1295",
+            "KELUASAN": 11684.992
+          },
+          "geometrySha256": "4d49a1d1eb466e9cc71fbb66ee8c7fdd0787c9e656f96cbfa218e3cad7bf8f75"
+        },
+        {
+          "transportId": 89482,
+          "properties": {
+            "FID": 89482,
+            "UPI": "070106000126",
+            "MUKIM": "06",
+            "PA": "PA7271",
+            "LOT": "126",
+            "KELUASAN": 4973.682
+          },
+          "geometrySha256": "8a7d242deed8f6c1e2db9b41e4d2e47812214c47859ecd9a765749cca5502694"
+        },
+        {
+          "transportId": 89483,
+          "properties": {
+            "FID": 89483,
+            "UPI": "0701060001294",
+            "MUKIM": "06",
+            "PA": "PA7271",
+            "LOT": "1294",
+            "KELUASAN": 1937.229
+          },
+          "geometrySha256": "eae7c6935f1c89b68b4b838576106df2d92c1cd63acbf6cd96a93fb480f4d2b9"
+        },
+        {
+          "transportId": 89484,
+          "properties": {
+            "FID": 89484,
+            "UPI": "0701060001324",
+            "MUKIM": "06",
+            "PA": "PA7271",
+            "LOT": "1324",
+            "KELUASAN": 13492.689
+          },
+          "geometrySha256": "053c8348e66a27a089648e0859143ab5ae25a9b817f1bf47863687751554831e"
+        },
+        {
+          "transportId": 182616,
+          "properties": {
+            "FID": 182616,
+            "UPI": "070106000133",
+            "MUKIM": "06",
+            "PA": "PA7271",
+            "LOT": "133",
+            "KELUASAN": 1904.315
+          },
+          "geometrySha256": "12e5a54fe2aff148fdbd0e76ab5355dd540556568c345b1580370c9f5bf9eb28"
+        },
+        {
+          "transportId": 211786,
+          "properties": {
+            "FID": 211786,
+            "UPI": "0701060003764",
+            "MUKIM": "06",
+            "PA": "PA22611",
+            "LOT": "3764",
+            "KELUASAN": 7756.674
+          },
+          "geometrySha256": "753afe1ec26367ed47e00fb6b9bc42a2c41ca2f6b1b952dbc7f5a203778fe771"
+        },
+        {
+          "transportId": 211787,
+          "properties": {
+            "FID": 211787,
+            "UPI": "0701060003765",
+            "MUKIM": "06",
+            "PA": "PA22611",
+            "LOT": "3765",
+            "KELUASAN": 1589.462
+          },
+          "geometrySha256": "3456c2b4c33a3c6c4c8f4a63c9da24a10f86333ad118fda99667d4f98fcf9d5f"
+        },
+        {
+          "transportId": 211788,
+          "properties": {
+            "FID": 211788,
+            "UPI": "0701060003766",
+            "MUKIM": "06",
+            "PA": "PA22611",
+            "LOT": "3766",
+            "KELUASAN": 1897.193
+          },
+          "geometrySha256": "3aa810c77db2d7e4da392a537b3695c7eae78d84a62a371966ddba5da9682a8f"
+        },
+        {
+          "transportId": 233018,
+          "properties": {
+            "FID": 233018,
+            "UPI": "0701060003836",
+            "MUKIM": "06",
+            "PA": "PA80689",
+            "LOT": "3836",
+            "KELUASAN": 44540.846
+          },
+          "geometrySha256": "bdde7f17964edc5f7e286133934d60a146c8758003bd5e23534a7b8a1a5dc46c"
+        },
+        {
+          "transportId": 233337,
+          "properties": {
+            "FID": 233337,
+            "UPI": "0701060003763",
+            "MUKIM": "06",
+            "PA": "PA22611",
+            "LOT": "3763",
+            "KELUASAN": 1122.653
+          },
+          "geometrySha256": "bea2d8efa37d3b2a0d7bfb7d5e912c07c7f0084b229a156f669358a69382d83f"
+        },
+        {
+          "transportId": 233687,
+          "properties": {
+            "FID": 233687,
+            "UPI": "0701060004287",
+            "MUKIM": "06",
+            "PA": "PA80559",
+            "LOT": "4287",
+            "KELUASAN": 14718.583
+          },
+          "geometrySha256": "b63e63a4fda984a0ad347a0356e103b5ebae8173d37815a85958ef049b4afb9c"
+        },
+        {
+          "transportId": 244430,
+          "properties": {
+            "FID": 244430,
+            "UPI": "07010600010028",
+            "MUKIM": "06",
+            "PA": "PA108990",
+            "LOT": "10028",
+            "KELUASAN": 81116.251
+          },
+          "geometrySha256": "2c7bcacf145222d2d18eb0c45f59980884f53114372e75dd62a69502409169a9"
+        },
+        {
+          "transportId": 262027,
+          "properties": {
+            "FID": 262027,
+            "UPI": "07010600010029",
+            "MUKIM": "06",
+            "PA": "PA105269",
+            "LOT": "10029",
+            "KELUASAN": 14306.909
+          },
+          "geometrySha256": "84ffb1fa20c1de5eff8a31445354c3a3652b29b1ccfba32c05509f4787ca5d69"
+        },
+        {
+          "transportId": 330428,
+          "properties": {
+            "FID": 330428,
+            "UPI": "0701060003760",
+            "MUKIM": "06",
+            "PA": "PA22610",
+            "LOT": "3760",
+            "KELUASAN": 410301.555
+          },
+          "geometrySha256": "1fc55bd86a1cfe7cdf97d57268ad928493f385ca666d33ee8c3f8b3ba8bb7fef"
+        }
+      ]
+    },
+    {
+      "test": "explicit-absence",
+      "url": "https://geoformatik.forestry.gov.my/arcgis/rest/services/PULAU_PINANG_SDE/MapServer/45/query?where=UPI+IN+%28%279999999999999%27%29&f=json&returnCountOnly=true",
+      "method": "GET",
+      "checkedAt": "2026-10-09T06:02:11.912Z",
+      "httpStatus": 200,
+      "contentType": "application/json;charset=UTF-8",
+      "bytes": 11,
+      "count": 0
+    },
+    {
+      "test": "explicit-absence",
+      "url": "https://geoformatik.forestry.gov.my/arcgis/rest/services/PULAU_PINANG_SDE/MapServer/45/query?where=UPI+IN+%28%279999999999999%27%29&f=json&returnIdsOnly=true",
+      "method": "GET",
+      "checkedAt": "2026-10-09T06:02:12.531Z",
+      "httpStatus": 200,
+      "contentType": "application/json;charset=UTF-8",
+      "bytes": 44,
+      "objectIdFieldName": "FID",
+      "objectIds": null
+    },
+    {
+      "test": "footprint",
+      "url": "https://geoformatik.forestry.gov.my/arcgis/rest/services/PULAU_PINANG_SDE/MapServer/45/query?where=1%3D1&geometry=100.42734947849806%2C5.375808645455128%2C100.4284273918614%2C5.3768042909218545&geometryType=esriGeometryEnvelope&inSR=4326&spatialRel=esriSpatialRelIntersects&f=json&returnCountOnly=true",
+      "method": "GET",
+      "checkedAt": "2026-10-09T06:02:13.162Z",
+      "httpStatus": 200,
+      "contentType": "application/json;charset=UTF-8",
+      "bytes": 11,
+      "count": 8
+    },
+    {
+      "test": "footprint",
+      "url": "https://geoformatik.forestry.gov.my/arcgis/rest/services/PULAU_PINANG_SDE/MapServer/45/query?where=1%3D1&geometry=100.42734947849806%2C5.375808645455128%2C100.4284273918614%2C5.3768042909218545&geometryType=esriGeometryEnvelope&inSR=4326&spatialRel=esriSpatialRelIntersects&f=json&returnIdsOnly=true",
+      "method": "GET",
+      "checkedAt": "2026-10-09T06:02:13.448Z",
+      "httpStatus": 200,
+      "contentType": "application/json;charset=UTF-8",
+      "bytes": 90,
+      "objectIdFieldName": "FID",
+      "objectIds": [
+        10806,
+        10807,
+        10808,
+        89482,
+        89483,
+        89484,
+        89486,
+        182616
+      ]
+    },
+    {
+      "test": "footprint",
+      "url": "https://geoformatik.forestry.gov.my/arcgis/rest/services/PULAU_PINANG_SDE/MapServer/45/query?where=1%3D1&outFields=FID%2CUPI%2CMUKIM%2CPA%2CLOT%2CKELUASAN&returnGeometry=true&outSR=4326&f=geojson&objectIds=10806%2C10807%2C10808%2C89482%2C89483%2C89484%2C89486%2C182616",
+      "method": "GET",
+      "checkedAt": "2026-10-09T06:02:13.749Z",
+      "httpStatus": 200,
+      "contentType": "application/geo+json;charset=UTF-8",
+      "bytes": 4244,
+      "features": [
+        {
+          "transportId": 10806,
+          "properties": {
+            "FID": 10806,
+            "UPI": "070106000124",
+            "MUKIM": "06",
+            "PA": "PA7271",
+            "LOT": "124",
+            "KELUASAN": 17064.549
+          },
+          "geometrySha256": "678f7db52da9cedb1d9b87aba045e77167896ea9d71a956bbd045090126db747"
+        },
+        {
+          "transportId": 10807,
+          "properties": {
+            "FID": 10807,
+            "UPI": "070106000127",
+            "MUKIM": "06",
+            "PA": "PA7271",
+            "LOT": "127",
+            "KELUASAN": 5346.55
+          },
+          "geometrySha256": "aca7ee306baa95cec2d1f97f978caef5074510d2e721e40f8972e8920393f137"
+        },
+        {
+          "transportId": 10808,
+          "properties": {
+            "FID": 10808,
+            "UPI": "0701060001295",
+            "MUKIM": "06",
+            "PA": "PA7271",
+            "LOT": "1295",
+            "KELUASAN": 11684.992
+          },
+          "geometrySha256": "4d49a1d1eb466e9cc71fbb66ee8c7fdd0787c9e656f96cbfa218e3cad7bf8f75"
+        },
+        {
+          "transportId": 89482,
+          "properties": {
+            "FID": 89482,
+            "UPI": "070106000126",
+            "MUKIM": "06",
+            "PA": "PA7271",
+            "LOT": "126",
+            "KELUASAN": 4973.682
+          },
+          "geometrySha256": "8a7d242deed8f6c1e2db9b41e4d2e47812214c47859ecd9a765749cca5502694"
+        },
+        {
+          "transportId": 89483,
+          "properties": {
+            "FID": 89483,
+            "UPI": "0701060001294",
+            "MUKIM": "06",
+            "PA": "PA7271",
+            "LOT": "1294",
+            "KELUASAN": 1937.229
+          },
+          "geometrySha256": "eae7c6935f1c89b68b4b838576106df2d92c1cd63acbf6cd96a93fb480f4d2b9"
+        },
+        {
+          "transportId": 89484,
+          "properties": {
+            "FID": 89484,
+            "UPI": "0701060001324",
+            "MUKIM": "06",
+            "PA": "PA7271",
+            "LOT": "1324",
+            "KELUASAN": 13492.689
+          },
+          "geometrySha256": "053c8348e66a27a089648e0859143ab5ae25a9b817f1bf47863687751554831e"
+        },
+        {
+          "transportId": 89486,
+          "properties": {
+            "FID": 89486,
+            "UPI": "070106000218",
+            "MUKIM": "06",
+            "PA": "PA7271",
+            "LOT": "218",
+            "KELUASAN": 6687.57
+          },
+          "geometrySha256": "5c70c85ecd62b66c9d4333908403ec5ff7fd79c204ba1c4f0e9119fab7f2b80a"
+        },
+        {
+          "transportId": 182616,
+          "properties": {
+            "FID": 182616,
+            "UPI": "070106000133",
+            "MUKIM": "06",
+            "PA": "PA7271",
+            "LOT": "133",
+            "KELUASAN": 1904.315
+          },
+          "geometrySha256": "12e5a54fe2aff148fdbd0e76ab5355dd540556568c345b1580370c9f5bf9eb28"
+        }
+      ]
+    },
+    {
+      "test": "source-binding",
+      "url": "https://geoformatik.forestry.gov.my/arcgis/rest/services/PULAU_PINANG_SDE/MapServer/45/query?where=1%3D1&geometry=100.42734947849806%2C5.375808645455128%2C100.4284273918614%2C5.3768042909218545&geometryType=esriGeometryEnvelope&inSR=4326&spatialRel=esriSpatialRelIntersects&f=json&returnCountOnly=true",
+      "method": "GET",
+      "checkedAt": "2026-10-09T06:02:14.038Z",
+      "httpStatus": 200,
+      "contentType": "application/json;charset=UTF-8",
+      "bytes": 11,
+      "count": 8
+    },
+    {
+      "test": "source-binding",
+      "url": "https://geoformatik.forestry.gov.my/arcgis/rest/services/PULAU_PINANG_SDE/MapServer/45/query?where=1%3D1&geometry=100.42734947849806%2C5.375808645455128%2C100.4284273918614%2C5.3768042909218545&geometryType=esriGeometryEnvelope&inSR=4326&spatialRel=esriSpatialRelIntersects&f=json&returnIdsOnly=true",
+      "method": "GET",
+      "checkedAt": "2026-10-09T06:02:14.342Z",
+      "httpStatus": 200,
+      "contentType": "application/json;charset=UTF-8",
+      "bytes": 90,
+      "objectIdFieldName": "FID",
+      "objectIds": [
+        10806,
+        10807,
+        10808,
+        89482,
+        89483,
+        89484,
+        89486,
+        182616
+      ]
+    },
+    {
+      "test": "source-binding",
+      "url": "https://geoformatik.forestry.gov.my/arcgis/rest/services/PULAU_PINANG_SDE/MapServer/45/query?where=1%3D1&outFields=FID%2CUPI%2CMUKIM%2CPA%2CLOT%2CKELUASAN&returnGeometry=true&outSR=4326&f=geojson&objectIds=10806%2C10807%2C10808%2C89482%2C89483%2C89484%2C89486%2C182616",
+      "method": "GET",
+      "checkedAt": "2026-10-09T06:02:14.632Z",
+      "httpStatus": 200,
+      "contentType": "application/geo+json;charset=UTF-8",
+      "bytes": 4244,
+      "features": [
+        {
+          "transportId": 10806,
+          "properties": {
+            "FID": 10806,
+            "UPI": "070106000124",
+            "MUKIM": "06",
+            "PA": "PA7271",
+            "LOT": "124",
+            "KELUASAN": 17064.549
+          },
+          "geometrySha256": "678f7db52da9cedb1d9b87aba045e77167896ea9d71a956bbd045090126db747"
+        },
+        {
+          "transportId": 10807,
+          "properties": {
+            "FID": 10807,
+            "UPI": "070106000127",
+            "MUKIM": "06",
+            "PA": "PA7271",
+            "LOT": "127",
+            "KELUASAN": 5346.55
+          },
+          "geometrySha256": "aca7ee306baa95cec2d1f97f978caef5074510d2e721e40f8972e8920393f137"
+        },
+        {
+          "transportId": 10808,
+          "properties": {
+            "FID": 10808,
+            "UPI": "0701060001295",
+            "MUKIM": "06",
+            "PA": "PA7271",
+            "LOT": "1295",
+            "KELUASAN": 11684.992
+          },
+          "geometrySha256": "4d49a1d1eb466e9cc71fbb66ee8c7fdd0787c9e656f96cbfa218e3cad7bf8f75"
+        },
+        {
+          "transportId": 89482,
+          "properties": {
+            "FID": 89482,
+            "UPI": "070106000126",
+            "MUKIM": "06",
+            "PA": "PA7271",
+            "LOT": "126",
+            "KELUASAN": 4973.682
+          },
+          "geometrySha256": "8a7d242deed8f6c1e2db9b41e4d2e47812214c47859ecd9a765749cca5502694"
+        },
+        {
+          "transportId": 89483,
+          "properties": {
+            "FID": 89483,
+            "UPI": "0701060001294",
+            "MUKIM": "06",
+            "PA": "PA7271",
+            "LOT": "1294",
+            "KELUASAN": 1937.229
+          },
+          "geometrySha256": "eae7c6935f1c89b68b4b838576106df2d92c1cd63acbf6cd96a93fb480f4d2b9"
+        },
+        {
+          "transportId": 89484,
+          "properties": {
+            "FID": 89484,
+            "UPI": "0701060001324",
+            "MUKIM": "06",
+            "PA": "PA7271",
+            "LOT": "1324",
+            "KELUASAN": 13492.689
+          },
+          "geometrySha256": "053c8348e66a27a089648e0859143ab5ae25a9b817f1bf47863687751554831e"
+        },
+        {
+          "transportId": 89486,
+          "properties": {
+            "FID": 89486,
+            "UPI": "070106000218",
+            "MUKIM": "06",
+            "PA": "PA7271",
+            "LOT": "218",
+            "KELUASAN": 6687.57
+          },
+          "geometrySha256": "5c70c85ecd62b66c9d4333908403ec5ff7fd79c204ba1c4f0e9119fab7f2b80a"
+        },
+        {
+          "transportId": 182616,
+          "properties": {
+            "FID": 182616,
+            "UPI": "070106000133",
+            "MUKIM": "06",
+            "PA": "PA7271",
+            "LOT": "133",
+            "KELUASAN": 1904.315
+          },
+          "geometrySha256": "12e5a54fe2aff148fdbd0e76ab5355dd540556568c345b1580370c9f5bf9eb28"
+        }
+      ]
+    }
+  ],
+  "qualityFile": "research/overnight-followon-2026-10-09/bukit-mertajam-root-quality.json",
+  "uniqueParcels": 18,
+  "requestCount": 55,
+  "allTestsPassed": true,
+  "finishedAt": "2026-10-09T06:02:14.973Z",
+  "qualityStatus": "approved_by_root"
+}

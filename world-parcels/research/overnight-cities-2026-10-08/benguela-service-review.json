@@ -1,0 +1,77 @@
+{
+  "schemaVersion": "1.0",
+  "checkedAt": "2026-10-09",
+  "cityRecord": "city-1055-benguela.json",
+  "purpose": "Document first-party local registry/map evidence and bounded anonymous parcel-geometry access review.",
+  "scopeLimits": {
+    "maxFullPolygonsRetainedInCityRecord": 0,
+    "maxFullPolygonsRetainedInReview": 0,
+    "maxFullPolygonsRetainedInRepository": 0,
+    "ownerOrAddressDataRetained": false,
+    "credentialsOrTokenValuesRetained": false,
+    "citywideCompletenessAsserted": false
+  },
+  "assessment": "Official Angolan sources list the IGCA cadastral office in Benguela and SIAC’s real-estate registration services. The province map page describes administrative boundaries only; no public parcel-layer service, schema or anonymous geometry query was found. No registry account or property lookup was used.",
+  "registryAssessment": "The official Angolan Instituto Geográfico e Cadastral (IGCA) lists an operating Benguela office, and the official SIAC portal lists Registo Predial services for property registration. This establishes local custodianship/registry service, not an open vector parcel map.",
+  "officialPrimarySources": [
+    {
+      "url": "https://www.igca.gov.ao/contactos",
+      "observation": "The official Angolan Instituto Geográfico e Cadastral (IGCA) lists an operating Benguela office, and the official SIAC portal lists Registo Predial services for property registration. This establishes local custodianship/registry service, not an open vector parcel map."
+    },
+    {
+      "url": "https://siac.gov.ao/servicos-administrativos-publicos/",
+      "observation": "The official Angolan Instituto Geográfico e Cadastral (IGCA) lists an operating Benguela office, and the official SIAC portal lists Registo Predial services for property registration. This establishes local custodianship/registry service, not an open vector parcel map."
+    },
+    {
+      "url": "https://siac.gov.ao/subunidades/",
+      "observation": "The official Angolan Instituto Geográfico e Cadastral (IGCA) lists an operating Benguela office, and the official SIAC portal lists Registo Predial services for property registration. This establishes local custodianship/registry service, not an open vector parcel map."
+    },
+    {
+      "url": "https://benguela.gov.ao/web/mapa-de-angola",
+      "observation": "The official Angolan Instituto Geográfico e Cadastral (IGCA) lists an operating Benguela office, and the official SIAC portal lists Registo Predial services for property registration. This establishes local custodianship/registry service, not an open vector parcel map."
+    }
+  ],
+  "searchQueries": [
+    {
+      "language": "English",
+      "query": "Benguela Angola official land cadastre parcel registry map government property survey",
+      "result": "Official Angolan sources list the IGCA cadastral office in Benguela and SIAC’s real-estate registration services. The province map page describes administrative boundaries only; no public parcel-layer service, schema or anonymous geometry query was found. No registry account or property lookup was used.",
+      "method": "Separate English-language search and first-party service review; no property identifiers or personal fields submitted.",
+      "scope": "Find primary local registry/cadastre evidence and a public parcel-geometry service."
+    },
+    {
+      "language": "Portuguese",
+      "query": "Benguela cadastro predial mapa parcelas registo predial serviço oficial",
+      "result": "Official Angolan sources list the IGCA cadastral office in Benguela and SIAC’s real-estate registration services. The province map page describes administrative boundaries only; no public parcel-layer service, schema or anonymous geometry query was found. No registry account or property lookup was used.",
+      "method": "Separate native-language search and official source review.",
+      "scope": "Find first-party local-language evidence for the same local registry/map question."
+    }
+  ],
+  "geometryDecision": {
+    "publicParcelGeometryFound": null,
+    "decision": "No geometry retained; anonymous public parcel geometry was not verified."
+  },
+  "coverageAssessment": {
+    "citywideCompletenessAsserted": false,
+    "scope": "Exact unchanged WUP settlement locator and reviewed official sources only.",
+    "limits": "No public service extent or citywide parcel coverage verified."
+  },
+  "attempts": [
+    {
+      "url": "https://www.igca.gov.ao/contactos",
+      "method": "Official cadastral agency office directory review",
+      "result": "Lists an IGCA office in Benguela; no public map-service endpoint listed."
+    },
+    {
+      "url": "https://siac.gov.ao/servicos-administrativos-publicos/",
+      "method": "Official service catalogue review",
+      "result": "Lists property-register services for real estate and mortgages; no vector geometry interface."
+    },
+    {
+      "url": "https://benguela.gov.ao/web/mapa-de-angola",
+      "method": "Official province map page review",
+      "result": "Shows administrative division mapping, not parcel geometry."
+    }
+  ],
+  "remainingUncertainty": "No anonymous field-safe parcel geometry response was verified; coverage at the exact WUP point remains unresolved."
+}

@@ -1,0 +1,50 @@
+{
+  "schemaVersion": "1.0",
+  "checkedAt": "2026-10-09",
+  "cityRecord": "city-12098-taizhou.json",
+  "purpose": "Document first-party local registry/viewer evidence and bounded anonymous geometry access review.",
+  "scopeLimits": {
+    "maxFullPolygonsRetainedInCityRecord": 0,
+    "maxFullPolygonsRetainedInReview": 0,
+    "maxFullPolygonsRetainedInRepository": 0,
+    "ownerOrAddressDataRetained": false,
+    "credentialsOrTokenValuesRetained": false,
+    "citywideCompletenessAsserted": false
+  },
+  "assessment": "Official Taizhou bureau documents and municipal spatial-data portal were reviewed. Portal access did not reveal a public cadastral feature service, and the Zhejiang public-map host returned HTTP 420 during the read-only request. A superficially similar Jiangsu Taizhou (泰州) portal was excluded because the ranked point is Taizhou, Zhejiang (台州). No geometry request was made. Whether the official TianDiTu Taizhou or spatial-data platform exposes parcel polygons to anonymous clients, and whether that service covers the WUP point.",
+  "officialPrimarySources": [
+    {
+      "url": "https://zjjcmspublic.oss-cn-hangzhou-zwynet-d01-a.internet.cloud.zj.gov.cn/jcms_files/jcms1/web3485/site/attach/0/50356288654b4d2b8bfabd856875eb51.pdf",
+      "observation": "Official Taizhou Natural Resources and Planning Bureau agency-responsibilities document; identifies Taizhou Real Estate Registration Service Center duties including cadastral investigation and registration."
+    },
+    {
+      "url": "https://zjjcmspublic.oss-cn-hangzhou-zwynet-d01-a.internet.cloud.zj.gov.cn/jcms_files/jcms1/web3485/site/attach/0/6b01b6cd516143febb2749ba7cfacd74.pdf",
+      "observation": "Official Taizhou document on TianDiTu Taizhou and municipal spatial database update/fusion; not a parcel geometry endpoint."
+    },
+    {
+      "url": "https://data.zjtz.gov.cn/",
+      "observation": "Official Taizhou spatial data portal; web application loaded but no parcel vector service was confirmed."
+    },
+    {
+      "url": "https://zrzy.zjtz.gov.cn/",
+      "observation": "Official Taizhou Natural Resources and Planning Bureau site; direct access timed out during review."
+    }
+  ],
+  "attempts": [
+    {
+      "url": "https://data.zjtz.gov.cn/",
+      "method": "GET official city spatial data portal",
+      "result": "Web application loaded; no public parcel-vector layer/API identified."
+    },
+    {
+      "url": "https://zhejiang.tianditu.gov.cn/",
+      "method": "GET public map host",
+      "result": "HTTP 420; no layer metadata retrieved."
+    },
+    {
+      "url": "https://zrzy.zjtz.gov.cn/",
+      "method": "GET official bureau site",
+      "result": "Timed out; agency documents were available through official document hosting."
+    }
+  ]
+}

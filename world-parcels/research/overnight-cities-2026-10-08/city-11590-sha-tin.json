@@ -1,0 +1,182 @@
+{
+  "schemaVersion": 1,
+  "kind": "city_parcel_source_research",
+  "checkedAt": "2026-10-09",
+  "name": "Sha Tin",
+  "country": "China, Hong Kong SAR",
+  "countryCode": "HK",
+  "populationUnit": "persons",
+  "status": "complete",
+  "registryFound": true,
+  "registryBasis": "Hong Kong Lands Department and Land Registry provide local land/cadastral services; the Lands Department has a Sha Tin District Lands Office. The CSDI Lands Department Lot dataset is an official public Polygon Feature Layer (EPSG:2326) with safe identifiers OBJECTID, LotID, LotCSUID. A restricted exact-point query found no intersecting lot; a 200 m envelope returned one complete nearby polygon 52.02 m from the WUP point.",
+  "registryEvidenceUrls": [
+    "https://www.landsd.gov.hk/tc/about-us/contact-us.html",
+    "https://www.landreg.gov.hk/en/faq/faq_iris_2.htm",
+    "https://portal.csdi.gov.hk/csdi-webpage/dataset/landsd_rcd_1637217253134_22729",
+    "https://portal.csdi.gov.hk/server/rest/services/common/landsd_rcd_1637217253134_22729/FeatureServer/0?f=pjson",
+    "https://portal.csdi.gov.hk/csdi-webpage/doc/GeoSpatialServices",
+    "https://www.hkmapservice.gov.hk/OneStopSystem/map-search?locale=en"
+  ],
+  "verifiedSample": true,
+  "publicParcelGeometryFound": true,
+  "runtimeReadiness": "enabled",
+  "wupCityCode": 11590,
+  "cityId": "wup2025:11590",
+  "centerLatLon": [
+    22.3934460524814,
+    114.204022607849
+  ],
+  "rank": 806,
+  "queueRank": 806,
+  "population2025": 674476,
+  "population2025k": 674.476,
+  "populationPlausibility2025": "Low",
+  "pointBasis": "UN WUP 2025 population-weighted settlement centroid; this is not a municipal boundary or a parcel-coverage claim.",
+  "scopeLimits": "3 valid distinct public parcel-reference polygons verified in thirteen bounded 0.001-degree cells around the unchanged WUP settlement locator. Complete bounded paging, all 3 fresh native-ID reads, explicit absence, footprint and source binding passed in 20 requests. Independent metric EPSG:32650 GEOS found all geometries valid and distinct, with no sampled overlaps above 0.01 m² or operation errors. Source-native integer LotID is preserved unchanged; OBJECTID is used only for transport paging. The initial generic three-row pagination test could not exercise paging in these sparse cells and is retained separately; a fresh run forced one-row pages on a two-lot cell and reproduced both full geometries. Native source CRS is EPSG:2326 (ArcGIS WKID102140); requested EPSG:4326 output is unchanged. The exact point returned no lot; the original nearby full polygon matches fresh full geometry exactly. This is the CSDI Lot collection, separate from the existing private-lot index API. Citywide completeness, legal title, survey accuracy, currentness and long-term identity continuity remain unverified.",
+  "remainingUncertainty": "Citywide completeness, legal title, currentness, survey accuracy and long-term native GIS identity continuity remain unverified.",
+  "research": {
+    "executedQueries": [
+      {
+        "language": "English",
+        "query": "Sha Tin Hong Kong official Lands Department land registry cadastral lot map API polygon data",
+        "scope": "Identify city-local registry evidence and safe anonymous geometry; do not request or retain owner, address, account, title or person attributes.",
+        "result": "LandsD lists Sha Tin District Lands Office and its open CSDI Lot dataset. Public layer metadata confirms a Polygon Feature Layer in EPSG:2326 with fields OBJECTID, LotID and LotCSUID as safe identifiers plus only geometry length/area. A WUP-point intersection request returned zero features; a bounded 200 m envelope returned one full nearby polygon after allowlisting only the three identifiers.",
+        "actualResultUrls": [
+          "https://www.landsd.gov.hk/en/spatial-data/geospatial-infomation-services/geospatial-portals.html",
+          "https://portal.csdi.gov.hk/csdi-webpage/dataset/landsd_rcd_1637217253134_22729",
+          "https://portal.csdi.gov.hk/server/rest/services/common/landsd_rcd_1637217253134_22729/FeatureServer/0?f=pjson"
+        ],
+        "executionMethod": "Separate English/local-language public-source searches and public informational/service/schema review; no personal or account-specific lookup."
+      },
+      {
+        "language": "Traditional Chinese",
+        "query": "香港 沙田 地政處 土地註冊 地段地籍圖 LandsD Lot API 官方",
+        "scope": "Identify city-local registry evidence and safe anonymous geometry; do not request or retain owner, address, account, title or person attributes.",
+        "result": "地政總署列有沙田地政處；CSDI 官方「地段」資料集由地政總署提供。圖層結構只有安全地段識別碼與幾何量測欄位；以排除其他欄位的方式查詢，WUP 點位未命中，200 米範圍內返回一個完整相鄰地段多邊形。",
+        "actualResultUrls": [
+          "https://www.landsd.gov.hk/tc/about-us/contact-us.html",
+          "https://portal.csdi.gov.hk/csdi-webpage/dataset/landsd_rcd_1637217253134_22729",
+          "https://portal.csdi.gov.hk/server/rest/services/common/landsd_rcd_1637217253134_22729/FeatureServer/0?f=pjson"
+        ],
+        "executionMethod": "Separate English/local-language public-source searches and public informational/service/schema review; no personal or account-specific lookup."
+      }
+    ],
+    "officialSources": [
+      {
+        "url": "https://www.landsd.gov.hk/tc/about-us/contact-us.html",
+        "observation": "Official Lands Department contact page lists the Sha Tin District Lands Office."
+      },
+      {
+        "url": "https://www.landreg.gov.hk/en/faq/faq_iris_2.htm",
+        "observation": "Official Land Registry explains its public IRIS land-record ordering and map-based lot/PRN lookup; this is a records service rather than the polygon source."
+      },
+      {
+        "url": "https://portal.csdi.gov.hk/csdi-webpage/dataset/landsd_rcd_1637217253134_22729",
+        "observation": "Official CSDI dataset “Lot,” provided by Lands Department and categorized as Land Parcel Framework spatial data."
+      },
+      {
+        "url": "https://portal.csdi.gov.hk/server/rest/services/common/landsd_rcd_1637217253134_22729/FeatureServer/0?f=pjson",
+        "observation": "Anonymous service/layer metadata GET returned HTTP 200. Polygon layer in EPSG:2326; fields: OBJECTID (OID), Shape__Length/Area, LotID (integer), LotCSUID (string). Query return fields were restricted to OBJECTID,LotID,LotCSUID."
+      },
+      {
+        "url": "https://www.hkmapservice.gov.hk/OneStopSystem/map-search?locale=en",
+        "observation": "Official LandsD map-service notice describes displayed parcel polygons as approximate-location aids, not legal boundary indications; this is an accuracy caveat, not a blocker to recording sample geometry."
+      }
+    ],
+    "metadataReviewFile": "sha-tin-service-review.json",
+    "routeInspectionFile": "/tmp/overnight-cities-2026-10-08/city-11590-route-inspection.json"
+  },
+  "source": {
+    "sourceId": "hk-landsd-csdi-lot-polygons",
+    "name": "Hong Kong Lands Department CSDI lots",
+    "operator": "Hong Kong Lands Department",
+    "url": "https://portal.csdi.gov.hk/server/rest/services/common/landsd_rcd_1637217253134_22729/FeatureServer/0",
+    "serviceType": "ArcGIS REST FeatureServer",
+    "geometryType": "esriGeometryPolygon",
+    "coordinateReferenceSystem": "EPSG:2326 (native HK80); sample transformed to OGC:CRS84",
+    "nativeIdFields": [
+      "OBJECTID",
+      "LotID",
+      "LotCSUID"
+    ],
+    "directGeometryQueryVerified": true,
+    "directMetadataSchemaVerified": true,
+    "scope": "3 valid distinct public parcel-reference polygons verified in thirteen bounded 0.001-degree cells around the unchanged WUP settlement locator. Complete bounded paging, all 3 fresh native-ID reads, explicit absence, footprint and source binding passed in 20 requests. Independent metric EPSG:32650 GEOS found all geometries valid and distinct, with no sampled overlaps above 0.01 m² or operation errors. Source-native integer LotID is preserved unchanged; OBJECTID is used only for transport paging. The initial generic three-row pagination test could not exercise paging in these sparse cells and is retained separately; a fresh run forced one-row pages on a two-lot cell and reproduced both full geometries. Native source CRS is EPSG:2326 (ArcGIS WKID102140); requested EPSG:4326 output is unchanged. The exact point returned no lot; the original nearby full polygon matches fresh full geometry exactly. This is the CSDI Lot collection, separate from the existing private-lot index API. Citywide completeness, legal title, survey accuracy, currentness and long-term identity continuity remain unverified.",
+    "nativeIdField": "LotID",
+    "requestedAttributes": [
+      "OBJECTID",
+      "LotID",
+      "LotCSUID"
+    ],
+    "personalAttributesRequested": false
+  },
+  "coverageAssessment": {
+    "citywideCompletenessAsserted": false,
+    "wupPointParcelPresenceAsserted": false,
+    "basis": "One nearby polygon was returned within a 200 m envelope; the exact point intersection was empty.",
+    "verifiedOpenScope": "3 valid distinct public parcel-reference polygons verified in thirteen bounded 0.001-degree cells around the unchanged WUP settlement locator. Complete bounded paging, all 3 fresh native-ID reads, explicit absence, footprint and source binding passed in 20 requests. Independent metric EPSG:32650 GEOS found all geometries valid and distinct, with no sampled overlaps above 0.01 m² or operation errors. Source-native integer LotID is preserved unchanged; OBJECTID is used only for transport paging. The initial generic three-row pagination test could not exercise paging in these sparse cells and is retained separately; a fresh run forced one-row pages on a two-lot cell and reproduced both full geometries. Native source CRS is EPSG:2326 (ArcGIS WKID102140); requested EPSG:4326 output is unchanged. The exact point returned no lot; the original nearby full polygon matches fresh full geometry exactly. This is the CSDI Lot collection, separate from the existing private-lot index API. Citywide completeness, legal title, survey accuracy, currentness and long-term identity continuity remain unverified.",
+    "citywideVerified": false,
+    "countrywideVerified": false
+  },
+  "runtimeAssessment": {
+    "status": "enabled",
+    "reason": "3 valid distinct public parcel-reference polygons verified in thirteen bounded 0.001-degree cells around the unchanged WUP settlement locator. Complete bounded paging, all 3 fresh native-ID reads, explicit absence, footprint and source binding passed in 20 requests. Independent metric EPSG:32650 GEOS found all geometries valid and distinct, with no sampled overlaps above 0.01 m² or operation errors. Source-native integer LotID is preserved unchanged; OBJECTID is used only for transport paging. The initial generic three-row pagination test could not exercise paging in these sparse cells and is retained separately; a fresh run forced one-row pages on a two-lot cell and reproduced both full geometries. Native source CRS is EPSG:2326 (ArcGIS WKID102140); requested EPSG:4326 output is unchanged. The exact point returned no lot; the original nearby full polygon matches fresh full geometry exactly. This is the CSDI Lot collection, separate from the existing private-lot index API. Citywide completeness, legal title, survey accuracy, currentness and long-term identity continuity remain unverified.",
+    "acceptanceFile": "research/overnight-cities-2026-10-08/sha-tin-csdi-root-acceptance.json",
+    "qualityFile": "research/overnight-cities-2026-10-08/sha-tin-csdi-root-quality.json",
+    "qualityReviewFile": "research/overnight-cities-2026-10-08/shatin-root-quality-review.json"
+  },
+  "rootReview": "pending",
+  "rootReviewNote": "Separate local registry evidence from geometry-route findings. No owner/address/account data was requested or retained.",
+  "point": [
+    22.3934460524814,
+    114.204022607849
+  ],
+  "sampleFile": "samples/sha-tin-wup806-nearby-lot.geojson",
+  "sampleFeatureCount": 1,
+  "sampleCrs": "OGC:CRS84 (transformed from EPSG:2326)",
+  "geometryEvidence": {
+    "layerSchemaFields": [
+      "OBJECTID",
+      "Shape__Length",
+      "Shape__Area",
+      "LotID",
+      "LotCSUID"
+    ],
+    "allowlistedFields": [
+      "OBJECTID",
+      "LotID",
+      "LotCSUID"
+    ],
+    "exactPointFeatureCount": 0,
+    "nearbyEnvelopeMeters": [
+      200,
+      200
+    ],
+    "sampleFeatureCount": 1,
+    "sampleNativeIds": {
+      "OBJECTID": 367394,
+      "LotID": 1910159279,
+      "LotCSUID": "732000590    &EXT"
+    },
+    "sampleVertexCount": 127,
+    "sampleRingClosed": true,
+    "wupDistanceMeters": 52.02,
+    "wupPointProjectedEPSG2326": [
+      839063.588,
+      828243.745
+    ]
+  },
+  "sourceIds": [
+    "hk-landsd-csdi-lot-polygons"
+  ],
+  "adapterReady": true,
+  "appCityId": "shatin",
+  "resultCategory": "verified_public_geometry_runtime_enabled",
+  "runtimeQualification": {
+    "sourceId": "hk-landsd-csdi-lot-polygons",
+    "status": "enabled",
+    "acceptanceFile": "research/overnight-cities-2026-10-08/sha-tin-csdi-root-acceptance.json",
+    "qualityFile": "research/overnight-cities-2026-10-08/sha-tin-csdi-root-quality.json"
+  },
+  "rootReviewedAt": "2026-10-09T03:36:55.915467+00:00"
+}

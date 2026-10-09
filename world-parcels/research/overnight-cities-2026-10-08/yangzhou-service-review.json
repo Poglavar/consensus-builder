@@ -1,0 +1,58 @@
+{
+  "schemaVersion": "1.0",
+  "checkedAt": "2026-10-09",
+  "cityRecord": "city-11354-yangzhou.json",
+  "purpose": "Document city-scope registry evidence and bounded public parcel-geometry route review.",
+  "scopeLimits": {
+    "maxFullPolygonsRetainedInCityRecord": 3,
+    "maxFullPolygonsRetainedInReview": 3,
+    "maxFullPolygonsRetainedInRepository": 3,
+    "ownerOrAddressDataRetained": false,
+    "credentialsOrTokenValuesRetained": false,
+    "citywideCompletenessAsserted": false
+  },
+  "assessment": "Municipal registry is confirmed by official service guides. The guides describe applicant-based registration processes; no public parcel geometry route was verified.",
+  "registryAssessment": "Yangzhou’s official Jiangsu Government Service Portal lists the Yangzhou Natural Resources and Planning Bureau as the municipal implementing body for real-property first registration, with a municipal service-window location. This establishes local registry activity, not a public cadastral geometry endpoint.",
+  "officialPrimarySources": [
+    {
+      "url": "https://yz.jszwfw.gov.cn/jszwfw/bscx/itemlist/bszn.do?iddept_ql_inf=11321000014407127R3000715001007&iddept_yw_inf=11321000014407127R300071500100701&ql_kind=07&webId=7",
+      "observation": "Yangzhou’s official Jiangsu Government Service Portal lists the Yangzhou Natural Resources and Planning Bureau as the municipal implementing body for real-property first registration, with a municipal service-window location. This establishes local registry activity, not a public cadastral geometry endpoint."
+    },
+    {
+      "url": "https://yz.jszwfw.gov.cn/jszwfw/bscx/itemlist/bszn.do?iddept_ql_inf=11321000014407127R3000715001006&iddept_yw_inf=11321000014407127R300071500100601&ql_kind=07&webId=7",
+      "observation": "Official Yangzhou service guides identify the municipal Natural Resources and Planning Bureau as the statutory implementing authority for first registration of state-owned construction land and housing, with a city registration window. The service requires an application and supporting materials. No application was submitted and no parcel query was made."
+    },
+    {
+      "url": "https://yz.jszwfw.gov.cn/",
+      "observation": "Official Yangzhou service guides identify the municipal Natural Resources and Planning Bureau as the statutory implementing authority for first registration of state-owned construction land and housing, with a city registration window. The service requires an application and supporting materials. No application was submitted and no parcel query was made."
+    }
+  ],
+  "searchQueries": [
+    {
+      "language": "English",
+      "query": "Yangzhou China official real estate registration center cadastral parcel map GIS",
+      "result": "Municipal registry is confirmed by official service guides. The guides describe applicant-based registration processes; no public parcel geometry route was verified.",
+      "method": "Separate official-source-focused web search."
+    },
+    {
+      "language": "Chinese",
+      "query": "扬州市不动产登记中心 地籍图 宗地地图 官方 扬州市自然资源和规划局",
+      "result": "Municipal registry is confirmed by official service guides. The guides describe applicant-based registration processes; no public parcel geometry route was verified.",
+      "method": "Separate official-source-focused web search."
+    }
+  ],
+  "serviceChecks": [],
+  "geometryEvidence": null,
+  "accessReview": {
+    "publicAnonymousGeometryVerified": false,
+    "completeGeoreferencedPolygonCount": 0,
+    "geometryRetained": false,
+    "ownerAddressTaxOrPersonLookupRequested": false,
+    "authenticationOrCredentialsUsed": false,
+    "captchaOrPersonalFormSubmitted": false,
+    "routeInspectionStatus": "not_verified",
+    "reason": "Official Yangzhou service guides identify the municipal Natural Resources and Planning Bureau as the statutory implementing authority for first registration of state-owned construction land and housing, with a city registration window. The service requires an application and supporting materials. No application was submitted and no parcel query was made."
+  },
+  "privacy": "No parcel, owner, address, tax-account, or personal-data lookup was made. No credentials or CAPTCHA were used.",
+  "runtimeAssessment": "not_enabled_no_verified_public_geometry"
+}

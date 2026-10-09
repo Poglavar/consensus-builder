@@ -1,0 +1,50 @@
+{
+  "schemaVersion": "1.0",
+  "checkedAt": "2026-10-09",
+  "cityRecord": "city-6909-asyut.json",
+  "purpose": "Document first-party local land/property registry or map evidence and bounded anonymous parcel-geometry access review.",
+  "scopeLimits": {
+    "maxFullPolygonsRetainedInCityRecord": 0,
+    "maxFullPolygonsRetainedInReview": 0,
+    "maxFullPolygonsRetainedInRepository": 0,
+    "ownerOrAddressDataRetained": false,
+    "credentialsOrTokenValuesRetained": false,
+    "citywideCompletenessAsserted": false
+  },
+  "assessment": "Reviewed the Egyptian Survey Authority’s local branch directory (Asyut detailed-maps office) and public description of property-map/land-book responsibilities. Asyut University reports local GIS/survey field-training collaboration with the governorate Spatial Changes Unit, but this describes internal government mapping and data creation rather than an anonymous public parcel viewer. No public vector geometry route or parcel schema was exposed in the reviewed sources. No coordinate/owner-specific service was queried. Whether an authenticated or unpublished municipal/governorate parcel GIS covers the WUP locator; no point-specific parcel identity or map extent was verified.",
+  "officialPrimarySources": [
+    {
+      "url": "https://www.esa.gov.eg/TrainingBranchs.aspx",
+      "observation": "Official Egyptian Survey Authority branch directory identifies the Asyut detailed-maps office in the city."
+    },
+    {
+      "url": "https://www.esa.gov.eg/main.aspx",
+      "observation": "Official Authority describes urban/rural property maps, property books and related surveying responsibilities."
+    },
+    {
+      "url": "https://www.esa.gov.eg/amlak.aspx",
+      "observation": "Official Survey Authority state-property mapping program lists Asyut among governorates; this is government-asset mapping, not private-parcel public access."
+    },
+    {
+      "url": "https://b.aun.edu.eg/arts/ar/brnamj-almsaht-walkhrayt-wnzm-almlwmat-aljghrafyt-bjamt-asywt-ynzm-lqa-m-whdt-almtghyrat-almkanyt?gvas=red",
+      "observation": "Asyut University report on collaboration with the Governorate Spatial Changes Unit for GIS/survey training and spatial-change work; no public parcel query service claimed."
+    }
+  ],
+  "attempts": [
+    {
+      "url": "https://www.esa.gov.eg/TrainingBranchs.aspx",
+      "method": "GET official Survey Authority local office directory",
+      "result": "Asyut detailed-maps office is identified in the city; directory does not expose geometry."
+    },
+    {
+      "url": "https://www.esa.gov.eg/main.aspx",
+      "method": "GET official Survey Authority map/property record description",
+      "result": "Confirms Survey Authority property maps and books at national level; no public city feature service."
+    },
+    {
+      "url": "https://b.aun.edu.eg/arts/ar/brnamj-almsaht-walkhrayt-wnzm-almlwmat-aljghrafyt-bjamt-asywt-ynzm-lqa-m-whdt-almtghyrat-almkanyt?gvas=red",
+      "method": "GET official Asyut University report",
+      "result": "Confirms local government spatial-change/GIS unit collaboration; no public parcel geometry route."
+    }
+  ]
+}

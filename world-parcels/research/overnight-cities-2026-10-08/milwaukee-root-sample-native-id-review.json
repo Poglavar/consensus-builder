@@ -1,0 +1,24 @@
+{
+  "schemaVersion": 1,
+  "sampleFile": "samples/milwaukee-county-cadastral-wup7846-samples.geojson",
+  "sampleCount": 3,
+  "geometryCoordinatesModified": false,
+  "matches": [
+    {
+      "sampleNativeKeyWasNull": true,
+      "runtimeMapId": "US-WI-MILWAUKEE-MAP-1037412",
+      "geometryMatchesUnmodifiedSample": true
+    },
+    {
+      "sampleNativeKeyWasNull": true,
+      "runtimeMapId": "US-WI-MILWAUKEE-MAP-1115204",
+      "geometryMatchesUnmodifiedSample": true
+    },
+    {
+      "sampleNativeKeyWasNull": true,
+      "runtimeMapId": "US-WI-MILWAUKEE-MAP-1160750",
+      "geometryMatchesUnmodifiedSample": true
+    }
+  ],
+  "identityBasis": "Source Map_ID is a non-null integer field explicitly aliased GIS Polygon ID. Parcel_Key values are null; Map_ID provides public reference geometry identity, without legal-title identity claims."
+}

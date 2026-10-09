@@ -1,0 +1,99 @@
+{
+  "name": "Lviv",
+  "country": "Ukraine",
+  "countryCode": "UA",
+  "rank": 863,
+  "point": [
+    49.8325969216918,
+    24.0242591668418
+  ],
+  "population2025": 627280,
+  "population2025k": 627.28,
+  "populationUnit": "persons",
+  "populationPlausibility2025": "High",
+  "schemaVersion": 1,
+  "kind": "city_parcel_source_research",
+  "checkedAt": "2026-10-09",
+  "status": "complete",
+  "registryFound": true,
+  "registryBasis": "Official regional StateGeoCadastre page describes public cadastral map contents, parcel-location search, and its map.land.gov.ua link.",
+  "registryEvidenceUrls": [
+    "https://lvivska.land.gov.ua/mapua/",
+    "https://land.gov.ua/faq/",
+    "https://map.land.gov.ua/"
+  ],
+  "publicParcelGeometryFound": false,
+  "verifiedSample": false,
+  "runtimeReadiness": "not_enabled_no_verified_public_geometry",
+  "adapterReady": false,
+  "priorEvidenceFiles": [],
+  "scopeLimits": "City-local source discovery only. No full parcel geometry was retained. No owner, address, account/tax identifier, credential, or token value was requested or retained. Citywide/countrywide completeness and runtime suitability are not assessed.",
+  "pointBasis": "UN WUP 2025 population-weighted settlement centroid; this is not a municipal boundary or a parcel-coverage claim.",
+  "resultCategory": "official_local_registry_candidate_geometry_unverified",
+  "technicalBlocker": "The linked map.land.gov.ua route could not be opened by the research tool, and no anonymous geometry service schema was available for safe inspection. No coordinate/property query was made.",
+  "remainingUncertainty": "Whether the public viewer currently serves feature geometries or has access restrictions could not be established from the reachable official materials.",
+  "nextStep": "No runtime qualification was attempted. If more discovery is needed, inspect first-party service metadata and retain geometry only after confirming a safe native feature identifier.",
+  "freshResearch": {
+    "queries": [
+      {
+        "language": "English",
+        "query": "Lviv Ukraine public cadastral map official land parcels cadastral map service",
+        "scope": "Find city-local registration/cadastral-map evidence and determine whether anonymous schema-safe parcel geometry is available.",
+        "result": "The official Lviv regional office of Derzhgeokadastr describes Ukraine’s public cadastral map, including parcel boundaries and location-based search by oblast, district, and settlement. Its linked map.land.gov.ua service route was inaccessible to the web research tool, so no live service schema or geometry was verified.",
+        "actualResultUrls": [
+          "https://lvivska.land.gov.ua/mapua/",
+          "https://map.land.gov.ua/",
+          "https://land.gov.ua/faq/"
+        ],
+        "executionMethod": "Separate language-specific web search and official source review; no owner/property-specific query."
+      },
+      {
+        "language": "Ukrainian",
+        "query": "Львівська область публічна кадастрова карта офіційний Держгеокадастр Львів міська рада кадастр",
+        "scope": "Find city-local registration/cadastral-map evidence and determine whether anonymous schema-safe parcel geometry is available.",
+        "result": "Офіційна сторінка Головного управління Держгеокадастру у Львівській області описує публічну кадастрову карту з межами ділянок і пошуком за місцем розташування (область, район, населений пункт). Посилання на map.land.gov.ua недоступне інструменту дослідження, тому актуальну схему сервісу та геометрію не перевірено.",
+        "actualResultUrls": [
+          "https://lvivska.land.gov.ua/mapua/",
+          "https://map.land.gov.ua/",
+          "https://land.gov.ua/faq/"
+        ],
+        "executionMethod": "Separate language-specific web search and official source review; no owner/property-specific query."
+      }
+    ]
+  },
+  "officialSources": [
+    {
+      "url": "https://lvivska.land.gov.ua/mapua/",
+      "observation": "Official regional StateGeoCadastre page describes public cadastral map contents, parcel-location search, and its map.land.gov.ua link."
+    },
+    {
+      "url": "https://land.gov.ua/faq/",
+      "observation": "Official StateGeoCadastre FAQ describes the public cadastral map as graphical representation of registered parcels and cautions that cadastral data are not address-searchable."
+    },
+    {
+      "url": "https://map.land.gov.ua/",
+      "observation": "The linked public map root could not be opened by the research web tool; no live service status or feature response was established."
+    }
+  ],
+  "verifiedParcelResponse": null,
+  "wupCityCode": 700,
+  "cityId": "wup2025:700",
+  "queueRank": 863,
+  "centerLatLon": [
+    49.8325969216918,
+    24.0242591668418
+  ],
+  "sourceIds": [],
+  "runtimeAssessment": {
+    "status": "not_enabled_no_verified_public_geometry",
+    "reason": "The linked map.land.gov.ua route could not be opened by the research tool, and no anonymous geometry service schema was available for safe inspection. No coordinate/property query was made."
+  },
+  "rootPrimaryReadback": {
+    "url": "https://lvivska.land.gov.ua/mapua/",
+    "fetch": 200,
+    "contentType": "text/html; charset=UTF-8",
+    "title": "Кадастрова карта України &#8211; Головне управління Держгеокадастру у Львівській області"
+  },
+  "rootReviewNote": "Reviewed the specific primary institution/service evidence and its geographical, access and date limits. Direct readback failures are preserved separately from indexed primary evidence. No public full parcel geometry was verified for this city in this discovery pass.",
+  "rootReviewedAt": "2026-10-09T04:12:31.737456+00:00"
+}

@@ -1,0 +1,36 @@
+{
+  "schemaVersion": "1.0",
+  "checkedAt": "2026-10-09",
+  "cityRecord": "city-3966-hai-phong.json",
+  "purpose": "Read-only source discovery and bounded service validation; no runtime or global changes.",
+  "scopeLimits": {
+    "maxFullPolygonsRetainedInThisCityReport": 0,
+    "maxFullPolygonsRetainedAcrossCityReview": 0,
+    "ownerOrAddressDataRetained": false,
+    "accountCredentialsOrPublicTokenValuesRetained": false
+  },
+  "assessment": "The official Hải Phòng IOC land-information dashboard reports city-wide land information, including attribute and spatial parcel counts, establishing local cadastral/land-information activity. The dashboard reports aggregate statistics rather than parcel features. The official IOC land-information dashboard publishes aggregate parcel statistics, not vector features. The separate planning portal was not verified as a cadastral parcel service. No full parcel geometry was retained.",
+  "officialEvidence": [
+    {
+      "url": "https://ioc-ktxh.haiphong.gov.vn/dat-dai",
+      "httpStatus": 200,
+      "observation": "Official Hải Phòng IOC land-information dashboard; current page reports city-wide aggregate attribute/spatial parcel counts and commune-level statistics, not downloadable parcel features."
+    },
+    {
+      "url": "https://quyhoach.haiphong.gov.vn/",
+      "httpStatus": 200,
+      "observation": "Official city planning-map portal reviewed as context; layers were not verified as a city cadastral parcel feature service."
+    }
+  ],
+  "serviceTrace": {
+    "viewerUrl": "https://ioc-ktxh.haiphong.gov.vn/dat-dai",
+    "observedRoutes": [],
+    "notes": "The official land-information portal is a statistics dashboard with aggregate measures. No public vector endpoint or schema for individual cadastral parcels was identified."
+  },
+  "geometryValidation": {
+    "schemaConfirmed": false,
+    "featureQueryMade": false,
+    "retainedFullPolygonCount": 0,
+    "reason": "No schema-safe city parcel feature response was established."
+  }
+}

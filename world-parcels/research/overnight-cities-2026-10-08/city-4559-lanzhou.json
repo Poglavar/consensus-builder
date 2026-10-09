@@ -1,0 +1,118 @@
+{
+  "schemaVersion": 1,
+  "kind": "city_parcel_source_research",
+  "checkedAt": "2026-10-09",
+  "country": "China",
+  "countryCode": "CN",
+  "populationUnit": "persons",
+  "status": "complete",
+  "verifiedSample": false,
+  "publicParcelGeometryFound": false,
+  "runtimeReadiness": "not_enabled_no_verified_public_geometry",
+  "priorEvidenceFiles": [],
+  "scopeLimits": "The WUP point is a population-cluster locator, not an official city boundary or parcel identity. A viewer, service description, metadata record, or clipped vector tile does not verify a full parcel polygon. No owner or personal data was requested or saved; no login, CAPTCHA, credential, or token was used.",
+  "wupCityCode": 4559,
+  "queueRank": 218,
+  "name": "Lanzhou",
+  "centerLatLon": [
+    36.0657004934857,
+    103.804547083942
+  ],
+  "population2025": 2272104,
+  "pointBasis": "UN WUP 2025 population-weighted settlement centroid; this is not a municipal boundary or a parcel-coverage claim.",
+  "registryFound": true,
+  "registryBasis": "Lanzhou natural-resources authority publishes a geographic-information public-service platform and an official real-estate registration-record query procedure. These confirm local mapping and registry functions, not anonymous parcel polygons.",
+  "resultCategory": "official_public_geographic_service_and_registration_workflow_no_parcel_geometry_verified",
+  "research": {
+    "executedQueries": [
+      {
+        "language": "Chinese",
+        "query": "兰州市 自然资源 地籍图 地块 查询 GIS 不动产 登记",
+        "scope": "Search official Lanzhou cadastral parcels, natural-resources GIS and public real-estate query.",
+        "result": "Found Lanzhou geographic-information public-service platform and registration-record query workflow; neither exposed a public parcel polygon service.",
+        "actualResultUrls": [
+          "https://gansu.tianditu.gov.cn/lanzhou/",
+          "https://zwfw.gansu.gov.cn/szgs/bszn/index.do?taskCode=11620100MB153667553622015008000&taskHandleItem=11620100MB15366755362201500800001"
+        ],
+        "executionMethod": "Web search in English and city/country language; official portals directly inspected where recorded."
+      },
+      {
+        "language": "Chinese",
+        "query": "兰州市不动产登记资料查询 兰州地籍图",
+        "scope": "Check municipal registration-record query and map publication for anonymous parcel geometry.",
+        "result": "The official registration procedure is a records-query workflow for eligible/qualified users; no anonymous geometry endpoint found.",
+        "actualResultUrls": [
+          "https://zwfw.gansu.gov.cn/szgs/bszn/index.do?taskCode=11620100MB153667553622015008000&taskHandleItem=11620100MB15366755362201500800001"
+        ],
+        "executionMethod": "Web search in English and city/country language; official portals directly inspected where recorded."
+      },
+      {
+        "language": "English",
+        "query": "Lanzhou China public cadastre parcel polygon map service official GIS",
+        "scope": "Check for English-indexed official public cadastral polygon services.",
+        "result": "No public cadastral polygon endpoint surfaced; official public geographic platform appears to provide general thematic maps and services.",
+        "actualResultUrls": [
+          "https://gansu.tianditu.gov.cn/lanzhou/"
+        ],
+        "executionMethod": "Web search in English and city/country language; official portals directly inspected where recorded."
+      }
+    ],
+    "officialSources": [
+      {
+        "url": "https://gansu.tianditu.gov.cn/lanzhou/",
+        "observation": "Lanzhou public geographic-information service portal; general base maps and public thematic services, no cadastral parcel feature API identified."
+      },
+      {
+        "url": "https://zwfw.gansu.gov.cn/szgs/bszn/index.do?taskCode=11620100MB153667553622015001000&taskHandleItem=11620100MB15366755362201500100001",
+        "observation": "Official municipal natural-resources standard-map service procedure; offers standard maps/general geographic themes, not cadastral parcels."
+      },
+      {
+        "url": "https://zwfw.gansu.gov.cn/szgs/bszn/index.do?taskCode=11620100MB153667553622015008000&taskHandleItem=11620100MB15366755362201500800001",
+        "observation": "Official real-estate registration materials query procedure; a records service, not public parcel geometry."
+      }
+    ],
+    "candidateSources": [],
+    "requestsAndEndpointChecks": [
+      {
+        "url": "https://gansu.tianditu.gov.cn/lanzhou/",
+        "method": "GET",
+        "httpStatus": 200,
+        "contentType": "text/html",
+        "observation": "Official geographic information platform page loaded; general mapping service, no cadastral parcel polygon response."
+      },
+      {
+        "url": "https://zwfw.gansu.gov.cn/szgs/bszn/index.do?taskCode=11620100MB153667553622015001000&taskHandleItem=11620100MB15366755362201500100001",
+        "method": "GET",
+        "httpStatus": "web search result",
+        "contentType": "text/html",
+        "observation": "Official service listing describes a standard map/general mapping service, not parcel-level features."
+      },
+      {
+        "url": "https://zwfw.gansu.gov.cn/szgs/bszn/index.do?taskCode=11620100MB153667553622015008000&taskHandleItem=11620100MB15366755362201500800001",
+        "method": "GET",
+        "httpStatus": "web search result",
+        "contentType": "text/html",
+        "observation": "Official service listing describes real-estate registration material queries; no public geometry response."
+      }
+    ],
+    "coverageAssessment": {
+      "verifiedOpenScope": "Lanzhou city general geographic-information public platform and municipal real-estate registration services; cadastral parcel geometry access is not established.",
+      "citywideVerified": false,
+      "countrywideVerified": false,
+      "geometryVerified": false,
+      "wupPointCoveredByVerifiedParcelGeometry": false,
+      "candidateLayerCount": null
+    },
+    "blocker": "No nonempty, complete public parcel-polygon feature response was verified. Lanzhou’s official public geography service provides general map themes; the real-estate registration-record query is a qualified records workflow, not anonymous parcel geometry.",
+    "remainingUncertainty": "Whether Lanzhou Tianditu or another municipal/national service includes an anonymous public cadastral parcel API; no parcel counts, sample geometry, or WUP-point coverage verified.",
+    "registryAdjudication": "true_city_specific_real_estate_registration_procedure_documented"
+  },
+  "cityId": "wup2025:4559",
+  "populationPlausibility2025": "Moderate",
+  "rootReviewedAt": "2026-10-08T21:10:04.693505+00:00",
+  "sourceIds": [],
+  "point": [
+    36.0657004934857,
+    103.804547083942
+  ]
+}

@@ -1,0 +1,72 @@
+{
+  "schemaVersion": "1.0",
+  "checkedAt": "2026-10-09",
+  "cityRecord": "city-11802-zhuji.json",
+  "purpose": "Document primary local registry/custody evidence and bounded anonymous full-geometry discovery.",
+  "scopeLimits": {
+    "maxFullPolygonsRetainedInCityRecord": 0,
+    "maxFullPolygonsRetainedInReview": 0,
+    "maxFullPolygonsRetainedInRepository": 0,
+    "ownerOrAddressDataRetained": false,
+    "credentialsOrTokenValuesRetained": false,
+    "citywideCompletenessAsserted": false
+  },
+  "assessment": "A primary local registration center is established, but the searches and source inspection did not identify an anonymous full-polygon parcel endpoint. No geometry query was made because the official material located describes service/registration, not a public feature layer.",
+  "registryAssessment": "The official Zhuji Natural Resources and Planning Bureau posts the charter of the Zhuji Real Estate Registration Service Center, a city-level public institution managed by the bureau and responsible for registration of land, houses, forests, and rural land-use rights. This establishes local registration custody/service, not anonymous geometry access.",
+  "officialPrimarySources": [
+    {
+      "url": "https://zjjcmspublic.oss-cn-hangzhou-zwynet-d01-a.internet.cloud.zj.gov.cn/jcms_files/jcms1/web2745/site/attach/0/fdd14dd49473416c9e2b2c6fdfa504ef.pdf",
+      "observation": "Official Zhuji government-cloud PDF: charter of Zhuji Real Estate Registration Service Center; identifies the center, its bureau management, and land/house/forest/rural land registration functions."
+    },
+    {
+      "url": "https://zjjcmspublic.oss-cn-hangzhou-zwynet-d01-a.internet.cloud.zj.gov.cn/jcms_files/jcms1/web2745/site/attach/0/858ff63a46854ff98636bacc4f5ab5ce.pdf",
+      "observation": "Official Zhuji Natural Resources and Planning Bureau annual department final accounts; checked as a first-party source, but not used alone as proof of cadastral access."
+    }
+  ],
+  "searchQueries": [
+    {
+      "language": "English",
+      "query": "Zhuji Zhejiang official property registration cadastral parcel map public GIS natural resources bureau",
+      "resultUrls": [
+        "https://zjjcmspublic.oss-cn-hangzhou-zwynet-d01-a.internet.cloud.zj.gov.cn/jcms_files/jcms1/web2745/site/attach/0/fdd14dd49473416c9e2b2c6fdfa504ef.pdf",
+        "https://www.zhuji.gov.cn/"
+      ]
+    },
+    {
+      "language": "Chinese",
+      "query": "诸暨 市 不动产登记中心 地籍图 公开查询 诸暨市自然资源和规划局",
+      "resultUrls": [
+        "https://zjjcmspublic.oss-cn-hangzhou-zwynet-d01-a.internet.cloud.zj.gov.cn/jcms_files/jcms1/web2745/site/attach/0/fdd14dd49473416c9e2b2c6fdfa504ef.pdf",
+        "https://www.zhuji.gov.cn/"
+      ]
+    }
+  ],
+  "geometryDecision": {
+    "verified": false,
+    "sourceId": null,
+    "sampleCount": 0,
+    "sampleFile": null,
+    "nativeId": null,
+    "nativeIdField": null,
+    "exactWupPointTest": "No source-native complete polygon was returned at the WUP point. `publicParcelGeometryFound:false` means unverified in this research, not confirmed absence.",
+    "requestEvidence": [
+      {
+        "url": "https://zjjcmspublic.oss-cn-hangzhou-zwynet-d01-a.internet.cloud.zj.gov.cn/jcms_files/jcms1/web2745/site/attach/0/fdd14dd49473416c9e2b2c6fdfa504ef.pdf",
+        "method": "GET (bounded read)",
+        "httpStatus": 200,
+        "contentType": "application/pdf",
+        "bytesRead": 50000,
+        "assessment": "Official registration-center charter; no public geometry route exposed in the document."
+      }
+    ]
+  },
+  "coverageAssessment": {
+    "claimedScope": "The official Zhuji Natural Resources and Planning Bureau posts the charter of the Zhuji Real Estate Registration Service Center, a city-level public institution managed by the bureau and responsible for registration of land, houses, forests, and rural land-use rights. This establishes local registration custody/service, not anonymous geometry access.",
+    "verifiedOpenScope": "No full parcel geometry was verified and no citywide coverage is asserted.",
+    "citywideVerified": false,
+    "countrywideVerified": false
+  },
+  "attempts": [],
+  "remainingUncertainty": "Anonymous access to full native parcel polygons and the public scope/completeness of any parcel layer remain unverified.",
+  "nextStep": "Inspect an official Zhuji map or property-registration viewer only if an anonymous full-geometry feature route is documented."
+}

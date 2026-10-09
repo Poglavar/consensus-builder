@@ -1,0 +1,55 @@
+{
+  "schemaVersion": 1,
+  "checkedAt": "2026-10-09",
+  "sourceId": "in-bikaner-registry-map-review",
+  "purpose": "City-specific registry/map source review and bounded safe route inspection for the WUP ranked settlement point (Bikaner).",
+  "primaryPublisher": "Rajasthan Department of Urban Development and Housing; Bikaner Municipal Corporation",
+  "sourceUrl": "https://rajdharaa.rajasthan.gov.in/citizenudh/index",
+  "registryFound": null,
+  "registryBasis": "The Rajasthan Urban GIS portal advertises Khasra/plot layers and a City/ULB selector, and Bikaner Municipal Corporation publishes ward-boundary material and city property/plot statistics. The available evidence does not establish that a Bikaner-bound cadastral registry or parcel-vector route is exposed, so registry presence is left undetermined.",
+  "officialSources": [
+    {
+      "url": "https://rajdharaa.rajasthan.gov.in/citizenudh/index",
+      "observation": "Official Rajasthan Urban GIS presents Khasra and plot layers plus district/city-ULB selectors. Its disclaimer states Khasra/village boundaries are for viewing only and not for legal use. No Khasra or plot identifier was selected or queried."
+    },
+    {
+      "url": "https://bikanermc.org/",
+      "observation": "Official Bikaner Municipal Corporation portal publishes city material including ward-boundary references; no cadastral vector schema found."
+    },
+    {
+      "url": "https://www.lsg.urban.rajasthan.gov.in/content/raj/udh/en/home.html",
+      "observation": "Official Rajasthan local-government portal lists Bikaner among urban local bodies; this does not prove parcel-service coverage."
+    }
+  ],
+  "searchQueries": [
+    {
+      "language": "English",
+      "query": "Bikaner Rajasthan official cadastral parcel map GIS land records urban GIS",
+      "scope": "Find city-specific primary registry evidence and a safe anonymous geometry-only route.",
+      "result": "The Rajasthan Urban GIS portal advertises Khasra/plot layers and a City/ULB selector, and Bikaner Municipal Corporation publishes ward-boundary material and city property/plot statistics. The available evidence does not establish that a Bikaner-bound cadastral registry or parcel-vector route is exposed, so registry presence is left undetermined. The public Rajasthan Urban GIS page lists Khasra, plot, urban-jurisdiction, and other layers but places Khasra and plot lookup behind selectors; no selector was submitted. Its disclaimer says the Khasra/village data is for viewing only and not legal use. The municipal site publishes ward-boundary material, not a parcel feature schema. Direct standard HTTPS shell access timed out without an HTTP status; the public page was inspected via web rendering."
+    },
+    {
+      "language": "Hindi",
+      "query": "बीकानेर राजस्थान आधिकारिक भू नक्शा खसरा नगर निगम GIS भूमि अभिलेख",
+      "scope": "Find city-specific primary registry evidence and a safe anonymous geometry-only route.",
+      "result": "The Rajasthan Urban GIS portal advertises Khasra/plot layers and a City/ULB selector, and Bikaner Municipal Corporation publishes ward-boundary material and city property/plot statistics. The available evidence does not establish that a Bikaner-bound cadastral registry or parcel-vector route is exposed, so registry presence is left undetermined. The public Rajasthan Urban GIS page lists Khasra, plot, urban-jurisdiction, and other layers but places Khasra and plot lookup behind selectors; no selector was submitted. Its disclaimer says the Khasra/village data is for viewing only and not legal use. The municipal site publishes ward-boundary material, not a parcel feature schema. Direct standard HTTPS shell access timed out without an HTTP status; the public page was inspected via web rendering."
+    }
+  ],
+  "requestEvidence": [
+    {
+      "url": "https://rajdharaa.rajasthan.gov.in/citizenudh/index",
+      "method": "GET",
+      "status": null,
+      "contentType": null,
+      "bytes": null,
+      "error": "Direct HTTPS shell request timed out before an HTTP response; public page text was available through the web renderer.",
+      "observation": "No bypass or parcel-level selector/query; static public interface description inspected."
+    }
+  ],
+  "routeInspectionSummary": "The public Rajasthan Urban GIS page lists Khasra, plot, urban-jurisdiction, and other layers but places Khasra and plot lookup behind selectors; no selector was submitted. Its disclaimer says the Khasra/village data is for viewing only and not legal use. The municipal site publishes ward-boundary material, not a parcel feature schema. Direct standard HTTPS shell access timed out without an HTTP status; the public page was inspected via web rendering.",
+  "geometrySampleCount": 0,
+  "geometryRetained": false,
+  "nativeIdField": null,
+  "attributesRequested": [],
+  "runtimeEnabled": false
+}

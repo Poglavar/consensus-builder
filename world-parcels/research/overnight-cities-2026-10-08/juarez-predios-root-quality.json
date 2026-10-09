@@ -1,0 +1,1441 @@
+{
+  "schemaVersion": 1,
+  "purpose": "Independent GEOS topology check of complete runtime parcels projected to metric coordinates; no repair applied. Counts are bounded sample evidence, not whole-city guarantees.",
+  "library": "Shapely 2.2.0",
+  "metricCrs": "EPSG:32613",
+  "featureCount": 203,
+  "validNonemptyCount": 203,
+  "invalidFeatures": [],
+  "exactDuplicateGeometryPairs": [],
+  "positiveAreaOverlapPairsAbove0_01M2": [],
+  "sumPairwiseOverlapM2": 0,
+  "operationErrors": [],
+  "areaM2": {
+    "min": 91.93160798955023,
+    "median": 397.25797942396275,
+    "max": 15612.846198436853
+  },
+  "features": [
+    {
+      "id": "MX-JUA-PREDIO-1-184-084-015",
+      "areaM2": 392.2293443318262,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "MX-JUA-PREDIO-1-184-084-009",
+      "areaM2": 408.8193951017632,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "MX-JUA-PREDIO-1-184-084-019",
+      "areaM2": 151.31471642198935,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "MX-JUA-PREDIO-1-184-083-008",
+      "areaM2": 524.8809109179277,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "MX-JUA-PREDIO-1-184-084-010",
+      "areaM2": 516.0073168424502,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "MX-JUA-PREDIO-1-184-083-007",
+      "areaM2": 495.26401987077384,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "MX-JUA-PREDIO-1-184-083-014",
+      "areaM2": 1002.4644172252043,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "MX-JUA-PREDIO-1-184-084-008",
+      "areaM2": 237.2134113729193,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "MX-JUA-PREDIO-1-184-083-006",
+      "areaM2": 377.8752127056574,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "MX-JUA-PREDIO-1-184-083-005",
+      "areaM2": 395.50552498457967,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "MX-JUA-PREDIO-1-184-083-004",
+      "areaM2": 391.90069076968337,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "MX-JUA-PREDIO-1-184-083-003",
+      "areaM2": 819.3088382582126,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "MX-JUA-PREDIO-1-184-081-016",
+      "areaM2": 398.9218188981636,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "MX-JUA-PREDIO-1-184-081-020",
+      "areaM2": 401.8439320172462,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "MX-JUA-PREDIO-1-184-081-002",
+      "areaM2": 385.5661893879657,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "MX-JUA-PREDIO-1-184-080-021",
+      "areaM2": 323.7246653999608,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "MX-JUA-PREDIO-1-184-081-001",
+      "areaM2": 518.6269138820292,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "MX-JUA-PREDIO-1-184-081-019",
+      "areaM2": 495.5531895810273,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "MX-JUA-PREDIO-1-184-080-008",
+      "areaM2": 2909.0722185073687,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "MX-JUA-PREDIO-1-184-080-010",
+      "areaM2": 813.2926574997124,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "MX-JUA-PREDIO-1-184-081-022",
+      "areaM2": 220.82106364195621,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "MX-JUA-PREDIO-1-184-080-007",
+      "areaM2": 205.15119429797343,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "MX-JUA-PREDIO-1-184-081-023",
+      "areaM2": 262.32355099996494,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "MX-JUA-PREDIO-1-184-080-006",
+      "areaM2": 400.9440822153505,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "MX-JUA-PREDIO-1-184-080-005",
+      "areaM2": 390.8034286599475,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "MX-JUA-PREDIO-1-184-080-004",
+      "areaM2": 405.6416460424224,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "MX-JUA-PREDIO-1-184-080-003",
+      "areaM2": 375.2206051127838,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "MX-JUA-PREDIO-1-184-081-008",
+      "areaM2": 1003.8564528382304,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "MX-JUA-PREDIO-1-184-081-011",
+      "areaM2": 788.5368463580518,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "MX-JUA-PREDIO-1-184-081-004",
+      "areaM2": 393.5641739570335,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "MX-JUA-PREDIO-1-184-081-017",
+      "areaM2": 197.63487612017673,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "MX-JUA-PREDIO-1-184-081-015",
+      "areaM2": 199.37800420112757,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "MX-JUA-PREDIO-1-184-084-001",
+      "areaM2": 492.623297486201,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "MX-JUA-PREDIO-1-184-084-012",
+      "areaM2": 460.5063414253984,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "MX-JUA-PREDIO-1-184-084-011",
+      "areaM2": 594.0069077253609,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "MX-JUA-PREDIO-1-184-084-016",
+      "areaM2": 550.2464609925821,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "MX-JUA-PREDIO-1-184-038-001",
+      "areaM2": 7084.372600073902,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "MX-JUA-PREDIO-1-184-028-022",
+      "areaM2": 348.17425298851373,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "MX-JUA-PREDIO-1-184-028-019",
+      "areaM2": 303.04517293152014,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "MX-JUA-PREDIO-1-184-028-010",
+      "areaM2": 276.82219496237826,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "MX-JUA-PREDIO-1-184-028-008",
+      "areaM2": 541.7168836977261,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "MX-JUA-PREDIO-1-184-028-011",
+      "areaM2": 359.1709734000128,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "MX-JUA-PREDIO-1-184-028-004",
+      "areaM2": 383.9569255495656,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "MX-JUA-PREDIO-1-184-028-006",
+      "areaM2": 407.40759698836735,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "MX-JUA-PREDIO-1-184-081-006",
+      "areaM2": 1366.7460285968593,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "MX-JUA-PREDIO-1-184-081-025",
+      "areaM2": 228.81451441903027,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "MX-JUA-PREDIO-1-184-081-024",
+      "areaM2": 244.08525063918637,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "MX-JUA-PREDIO-1-184-039-001",
+      "areaM2": 7483.448700047844,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "MX-JUA-PREDIO-1-184-028-014",
+      "areaM2": 175.35830425408273,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "MX-JUA-PREDIO-1-184-028-016",
+      "areaM2": 393.6417405522091,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "MX-JUA-PREDIO-1-184-028-015",
+      "areaM2": 228.31406330418451,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "MX-JUA-PREDIO-1-184-029-007",
+      "areaM2": 640.4323582255744,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "MX-JUA-PREDIO-1-184-028-002",
+      "areaM2": 331.7384779364397,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "MX-JUA-PREDIO-1-184-028-013",
+      "areaM2": 488.61154149127896,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "MX-JUA-PREDIO-1-018-402-821",
+      "areaM2": 345.14495942799033,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "MX-JUA-PREDIO-1-184-028-020",
+      "areaM2": 348.3648460054103,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "MX-JUA-PREDIO-1-184-028-003",
+      "areaM2": 377.8092510560935,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "MX-JUA-PREDIO-1-184-028-009",
+      "areaM2": 312.2152225451626,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "MX-JUA-PREDIO-1-184-029-006",
+      "areaM2": 991.497089297068,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "MX-JUA-PREDIO-1-184-028-018",
+      "areaM2": 226.49088002318882,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "MX-JUA-PREDIO-1-184-028-012",
+      "areaM2": 254.08461253786322,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "MX-JUA-PREDIO-1-184-029-001",
+      "areaM2": 405.61482085721724,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "MX-JUA-PREDIO-1-184-028-005",
+      "areaM2": 387.37603609349395,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "MX-JUA-PREDIO-1-184-028-001",
+      "areaM2": 402.78758768184514,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "MX-JUA-PREDIO-1-184-028-007",
+      "areaM2": 379.8127838843013,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "MX-JUA-PREDIO-1-184-074-013",
+      "areaM2": 492.823558662952,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "MX-JUA-PREDIO-1-184-074-007",
+      "areaM2": 1001.0213333058898,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "MX-JUA-PREDIO-1-184-075-010",
+      "areaM2": 406.3413662437025,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "MX-JUA-PREDIO-1-184-075-011",
+      "areaM2": 372.34216039586767,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "MX-JUA-PREDIO-1-184-081-026",
+      "areaM2": 194.05958368095528,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "MX-JUA-PREDIO-1-184-081-021",
+      "areaM2": 217.73220015535443,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "MX-JUA-PREDIO-1-184-080-012",
+      "areaM2": 193.72518389731016,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "MX-JUA-PREDIO-1-184-074-008",
+      "areaM2": 381.45233837836736,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "MX-JUA-PREDIO-1-184-074-009",
+      "areaM2": 397.61322193724254,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "MX-JUA-PREDIO-1-184-074-014",
+      "areaM2": 413.22016959842455,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "MX-JUA-PREDIO-1-184-074-010",
+      "areaM2": 383.9577898140302,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "MX-JUA-PREDIO-1-184-074-011",
+      "areaM2": 407.6316389651721,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "MX-JUA-PREDIO-1-184-075-012",
+      "areaM2": 500.1110229492613,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "MX-JUA-PREDIO-1-184-074-015",
+      "areaM2": 499.41948910790484,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "MX-JUA-PREDIO-1-184-075-013",
+      "areaM2": 499.11022560678373,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "MX-JUA-PREDIO-1-184-075-014",
+      "areaM2": 193.42251447020945,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "MX-JUA-PREDIO-1-184-074-006",
+      "areaM2": 187.34492762242533,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "MX-JUA-PREDIO-1-184-075-002",
+      "areaM2": 401.796254729091,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "MX-JUA-PREDIO-1-184-075-001",
+      "areaM2": 185.51297605518764,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "MX-JUA-PREDIO-1-184-074-004",
+      "areaM2": 395.9216616645731,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "MX-JUA-PREDIO-1-184-074-003",
+      "areaM2": 800.8649193358973,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "MX-JUA-PREDIO-1-184-074-002",
+      "areaM2": 407.18248147484724,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "MX-JUA-PREDIO-1-184-075-008",
+      "areaM2": 439.1424460721328,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "MX-JUA-PREDIO-1-184-075-009",
+      "areaM2": 777.6382579084327,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "MX-JUA-PREDIO-1-184-075-004",
+      "areaM2": 470.4984839433865,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "MX-JUA-PREDIO-1-184-019-015",
+      "areaM2": 332.88621997161897,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "MX-JUA-PREDIO-1-184-019-012",
+      "areaM2": 421.6423000488412,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "MX-JUA-PREDIO-1-184-075-006",
+      "areaM2": 386.18082925004586,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "MX-JUA-PREDIO-1-184-075-007",
+      "areaM2": 377.93581544120036,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "MX-JUA-PREDIO-1-184-019-013",
+      "areaM2": 480.4563309927941,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "MX-JUA-PREDIO-1-184-075-005",
+      "areaM2": 525.4759985953626,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "MX-JUA-PREDIO-1-184-019-004",
+      "areaM2": 442.24299115153667,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "MX-JUA-PREDIO-1-184-019-001",
+      "areaM2": 399.208132030298,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "MX-JUA-PREDIO-1-184-075-003",
+      "areaM2": 2011.8961340864657,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "MX-JUA-PREDIO-1-184-020-018",
+      "areaM2": 232.7693715387589,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "MX-JUA-PREDIO-1-184-020-001",
+      "areaM2": 382.8956274292192,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "MX-JUA-PREDIO-1-184-019-006",
+      "areaM2": 789.2774492958908,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "MX-JUA-PREDIO-1-184-028-017",
+      "areaM2": 243.23271513608697,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "MX-JUA-PREDIO-1-184-019-009",
+      "areaM2": 203.18249420507107,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "MX-JUA-PREDIO-1-184-019-018",
+      "areaM2": 794.1855752102185,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "MX-JUA-PREDIO-1-184-020-017",
+      "areaM2": 272.2734096708206,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "MX-JUA-PREDIO-1-184-020-016",
+      "areaM2": 182.3155444977073,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "MX-JUA-PREDIO-1-184-019-008",
+      "areaM2": 185.53200536461554,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "MX-JUA-PREDIO-1-184-019-010",
+      "areaM2": 411.5913790302272,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "MX-JUA-PREDIO-1-184-019-007",
+      "areaM2": 397.61718507592786,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "MX-JUA-PREDIO-1-184-020-019",
+      "areaM2": 504.564163001384,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "MX-JUA-PREDIO-1-184-019-017",
+      "areaM2": 980.3343229106586,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "MX-JUA-PREDIO-1-184-019-005",
+      "areaM2": 397.9408541118258,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "MX-JUA-PREDIO-1-184-019-014",
+      "areaM2": 402.6290835311322,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "MX-JUA-PREDIO-1-184-019-003",
+      "areaM2": 411.12774404167493,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "MX-JUA-PREDIO-1-184-019-002",
+      "areaM2": 402.41426899823193,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "MX-JUA-PREDIO-0",
+      "areaM2": 91.93160798955023,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "MX-JUA-PREDIO-1-184-020-033",
+      "areaM2": 113.36106184161736,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "MX-JUA-PREDIO-1-184-074-005",
+      "areaM2": 194.01434925540354,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "MX-JUA-PREDIO-1-184-063-001",
+      "areaM2": 15612.846198436853,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "MX-JUA-PREDIO-1-184-063-002",
+      "areaM2": 284.70290159841034,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "MX-JUA-PREDIO-1-184-012-016",
+      "areaM2": 189.7211332594957,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "MX-JUA-PREDIO-1-184-012-005",
+      "areaM2": 179.66865523222245,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "MX-JUA-PREDIO-1-184-012-006",
+      "areaM2": 529.8244313051815,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "MX-JUA-PREDIO-1-184-012-018",
+      "areaM2": 463.7987101024106,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "MX-JUA-PREDIO-1-184-012-001",
+      "areaM2": 334.7530409026473,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "MX-JUA-PREDIO-1-184-012-003",
+      "areaM2": 380.9391194787942,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "MX-JUA-PREDIO-1-184-013-020",
+      "areaM2": 420.41636521935544,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "MX-JUA-PREDIO-1-184-012-015",
+      "areaM2": 389.9698042987664,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "MX-JUA-PREDIO-1-184-012-008",
+      "areaM2": 392.3341383784148,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "MX-JUA-PREDIO-1-184-012-004",
+      "areaM2": 392.34566838849327,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "MX-JUA-PREDIO-1-184-012-019",
+      "areaM2": 367.56558648706005,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "MX-JUA-PREDIO-1-184-012-020",
+      "areaM2": 434.2132359712672,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "MX-JUA-PREDIO-1-184-012-002",
+      "areaM2": 531.447912087894,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "MX-JUA-PREDIO-1-184-012-007",
+      "areaM2": 473.84180551434963,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "MX-JUA-PREDIO-1-184-012-009",
+      "areaM2": 310.0864931074377,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "MX-JUA-PREDIO-1-184-012-010",
+      "areaM2": 338.1338088792849,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "MX-JUA-PREDIO-1-184-012-011",
+      "areaM2": 337.1225212354486,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "MX-JUA-PREDIO-1-184-012-014",
+      "areaM2": 338.816034953811,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "MX-JUA-PREDIO-1-184-012-013",
+      "areaM2": 340.33256286237446,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "MX-JUA-PREDIO-1-184-012-012",
+      "areaM2": 346.106452591682,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "MX-JUA-PREDIO-1-184-088-005",
+      "areaM2": 446.3356869797134,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "MX-JUA-PREDIO-1-184-089-006",
+      "areaM2": 912.260568771136,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "MX-JUA-PREDIO-1-184-088-006",
+      "areaM2": 1062.7653318094224,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "MX-JUA-PREDIO-1-184-088-014",
+      "areaM2": 294.53548778245255,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "MX-JUA-PREDIO-1-184-088-007",
+      "areaM2": 433.44446373127084,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "MX-JUA-PREDIO-1-184-088-004",
+      "areaM2": 262.0035254575812,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "MX-JUA-PREDIO-1-184-088-003",
+      "areaM2": 183.2138642247156,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "MX-JUA-PREDIO-1-184-088-008",
+      "areaM2": 351.10748358413264,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "MX-JUA-PREDIO-1-184-088-002",
+      "areaM2": 353.4638620045957,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "MX-JUA-PREDIO-1-184-088-001",
+      "areaM2": 266.02100241166715,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "MX-JUA-PREDIO-1-184-087-002",
+      "areaM2": 2928.9051803479697,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "MX-JUA-PREDIO-1-184-084-003",
+      "areaM2": 1184.7243330797828,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "MX-JUA-PREDIO-1-184-084-002",
+      "areaM2": 500.41621820123305,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "MX-JUA-PREDIO-1-184-084-007",
+      "areaM2": 1028.1807621868938,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "MX-JUA-PREDIO-1-184-007-016",
+      "areaM2": 507.71204369831503,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "MX-JUA-PREDIO-1-184-007-014",
+      "areaM2": 316.7083263104703,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "MX-JUA-PREDIO-1-184-007-015",
+      "areaM2": 498.72482191558635,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "MX-JUA-PREDIO-1-184-007-001",
+      "areaM2": 786.302209668003,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "MX-JUA-PREDIO-1-184-061-001",
+      "areaM2": 15295.614063311985,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "MX-JUA-PREDIO-1-184-073-016",
+      "areaM2": 383.00963121970256,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "MX-JUA-PREDIO-1-184-079-005",
+      "areaM2": 986.9799125006426,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "MX-JUA-PREDIO-1-184-080-002",
+      "areaM2": 431.5070058326562,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "MX-JUA-PREDIO-1-184-080-001",
+      "areaM2": 416.5458569791674,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "MX-JUA-PREDIO-1-184-079-012",
+      "areaM2": 388.21673796053005,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "MX-JUA-PREDIO-1-184-079-004",
+      "areaM2": 389.31752507299876,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "MX-JUA-PREDIO-1-184-079-003",
+      "areaM2": 401.51965872799326,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "MX-JUA-PREDIO-1-184-079-002",
+      "areaM2": 380.9930426652093,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "MX-JUA-PREDIO-1-184-079-001",
+      "areaM2": 2190.177839428777,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "MX-JUA-PREDIO-1-184-074-012",
+      "areaM2": 789.3134240187505,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "MX-JUA-PREDIO-1-184-073-009",
+      "areaM2": 387.3363156914819,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "MX-JUA-PREDIO-1-184-073-010",
+      "areaM2": 387.041398557171,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "MX-JUA-PREDIO-1-184-073-011",
+      "areaM2": 387.1341091867333,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "MX-JUA-PREDIO-1-184-073-008",
+      "areaM2": 387.67849766141717,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "MX-JUA-PREDIO-1-184-073-015",
+      "areaM2": 516.9010231710513,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "MX-JUA-PREDIO-1-184-073-007",
+      "areaM2": 670.5711632577328,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "MX-JUA-PREDIO-1-184-074-001",
+      "areaM2": 793.6543842558823,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "MX-JUA-PREDIO-1-184-073-006",
+      "areaM2": 391.11849285644286,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "MX-JUA-PREDIO-1-184-073-005",
+      "areaM2": 395.258519552627,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "MX-JUA-PREDIO-1-184-073-004",
+      "areaM2": 392.988695442073,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "MX-JUA-PREDIO-1-184-073-003",
+      "areaM2": 409.7218262302805,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "MX-JUA-PREDIO-1-184-020-007",
+      "areaM2": 136.37193409641398,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "MX-JUA-PREDIO-1-184-020-009",
+      "areaM2": 514.390891062331,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "MX-JUA-PREDIO-1-184-020-003",
+      "areaM2": 314.2135662860263,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "MX-JUA-PREDIO-1-184-029-005",
+      "areaM2": 794.0108929627852,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "MX-JUA-PREDIO-1-184-029-015",
+      "areaM2": 404.5924969143334,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "MX-JUA-PREDIO-1-184-029-004",
+      "areaM2": 405.1930449628762,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "MX-JUA-PREDIO-1-184-029-003",
+      "areaM2": 399.93729303949533,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "MX-JUA-PREDIO-1-184-029-002",
+      "areaM2": 400.5513662482108,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "MX-JUA-PREDIO-1-184-020-010",
+      "areaM2": 391.72654904480277,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "MX-JUA-PREDIO-1-184-020-011",
+      "areaM2": 397.5641001983476,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "MX-JUA-PREDIO-1-184-020-012",
+      "areaM2": 385.6706808763705,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "MX-JUA-PREDIO-1-184-020-013",
+      "areaM2": 421.09092124093775,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "MX-JUA-PREDIO-1-184-020-014",
+      "areaM2": 374.48380424004927,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "MX-JUA-PREDIO-1-184-020-015",
+      "areaM2": 400.48096351009775,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "MX-JUA-PREDIO-1-184-020-008",
+      "areaM2": 499.6279975575838,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "MX-JUA-PREDIO-1-184-020-023",
+      "areaM2": 137.56447172411478,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "MX-JUA-PREDIO-1-184-020-024",
+      "areaM2": 134.72350458850354,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "MX-JUA-PREDIO-1-184-020-006",
+      "areaM2": 400.0869531270724,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "MX-JUA-PREDIO-1-184-020-005",
+      "areaM2": 397.25797942396275,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "MX-JUA-PREDIO-1-184-020-004",
+      "areaM2": 397.2411017843099,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "MX-JUA-PREDIO-1-184-020-020",
+      "areaM2": 258.8068605103836,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "MX-JUA-PREDIO-1-184-020-021",
+      "areaM2": 265.33662377966385,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    }
+  ]
+}

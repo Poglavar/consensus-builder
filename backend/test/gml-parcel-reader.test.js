@@ -1,10 +1,48 @@
 import { describe,it,expect } from 'vitest';
-import { parseGmlParcels } from '../parcels/gml-parcel-reader.js';
+import { MAPSERVER_GML_SCHEMA, SAXONY_GML_SCHEMA, POZNAN_GML_SCHEMA, parseGmlParcels } from '../parcels/gml-parcel-reader.js';
 const ns='www.landregistry.gov.uk',gml='http://www.opengis.net/gml/3.2';
 const ring='530800 180200 530810 180200 530810 180210 530800 180210 530800 180200';
 function feature(id='123',coordinates=ring){return `<wfs:member><lr:PREDEFINED g:id="row"><lr:INSPIREID>${id}</lr:INSPIREID><lr:OWNER>private ignored</lr:OWNER><lr:GEOMETRY><g:Polygon srsName="urn:ogc:def:crs:EPSG::27700" srsDimension="2"><g:exterior><g:LinearRing><g:posList>${coordinates}</g:posList></g:LinearRing></g:exterior></g:Polygon></lr:GEOMETRY></lr:PREDEFINED></wfs:member>`;}
 function xml(features=feature(),attrs='numberMatched="1" numberReturned="1"'){return `<wfs:FeatureCollection xmlns:wfs="http://www.opengis.net/wfs/2.0" xmlns:lr="${ns}" xmlns:g="${gml}" ${attrs}>${features}</wfs:FeatureCollection>`;}
 describe('namespace-aware parcel GML reader',()=>{
+ it('uses the explicit MapServer schema only for GML 3.2 EPSG:3857 ID and geometry',async()=>{
+  const xml=`<wfs:FeatureCollection xmlns:wfs="http://www.opengis.net/wfs/2.0" xmlns:ms="${MAPSERVER_GML_SCHEMA.featureNamespace}" xmlns:g="http://www.opengis.net/gml/3.2" numberMatched="1" numberReturned="1"><wfs:member><ms:dzialki><ms:msGeometry><g:MultiSurface srsName="urn:ogc:def:crs:EPSG::3857" srsDimension="2"><g:surfaceMember><g:Polygon><g:exterior><g:LinearRing><g:posList>2165000 6750000 2165010 6750000 2165010 6750010 2165000 6750010 2165000 6750000</g:posList></g:LinearRing></g:exterior><g:interior><g:LinearRing><g:posList>2165002 6750002 2165004 6750002 2165004 6750004 2165002 6750004 2165002 6750002</g:posList></g:LinearRing></g:interior></g:Polygon></g:surfaceMember></g:MultiSurface></ms:msGeometry><ms:ID_DZIALKI>146501_1.0001.31/1</ms:ID_DZIALKI><ms:NUMER_DZIALKI>ignored</ms:NUMER_DZIALKI></ms:dzialki></wfs:member></wfs:FeatureCollection>`;
+  const result=await parseGmlParcels(xml,{schema:MAPSERVER_GML_SCHEMA});
+  expect(result).toMatchObject({featureCount:1,numberMatched:1,numberReturned:1,sourceCrs:'EPSG:3857'});
+  expect(result.features[0].id).toBe('146501_1.0001.31/1');
+  expect(result.features[0].properties).toEqual({ID_DZIALKI:'146501_1.0001.31/1'});
+  expect(result.features[0].geometry.coordinates).toHaveLength(2);
+  expect(result.features[0].geometry.coordinates[0][0]).toEqual(result.features[0].geometry.coordinates[0].at(-1));
+ });
+ it('rejects a changed custom schema, a non-WFS2 root, and any non-3857 response CRS',async()=>{
+  const xml=`<wfs:FeatureCollection xmlns:wfs="http://www.opengis.net/wfs/2.0" xmlns:ms="${MAPSERVER_GML_SCHEMA.featureNamespace}" xmlns:g="http://www.opengis.net/gml/3.2" numberMatched="1" numberReturned="1"><wfs:member><ms:dzialki><ms:msGeometry><g:Polygon srsName="EPSG:3857"><g:exterior><g:LinearRing><g:posList>2165000 6750000 2165010 6750000 2165010 6750010 2165000 6750010 2165000 6750000</g:posList></g:LinearRing></g:exterior></g:Polygon></ms:msGeometry><ms:ID_DZIALKI>A/1</ms:ID_DZIALKI></ms:dzialki></wfs:member></wfs:FeatureCollection>`;
+  await expect(parseGmlParcels(xml,{schema:{...MAPSERVER_GML_SCHEMA,idField:'NUMER_DZIALKI'}})).rejects.toThrow(/options/);
+  await expect(parseGmlParcels(xml.replace('http://www.opengis.net/wfs/2.0','http://www.opengis.net/wfs'),{schema:MAPSERVER_GML_SCHEMA})).rejects.toThrow(/FeatureCollection/);
+  await expect(parseGmlParcels(xml.replace('EPSG:3857','urn:ogc:def:crs:EPSG::2177'),{schema:MAPSERVER_GML_SCHEMA})).rejects.toThrow(/coordinate system/);
+ });
+ it('parses only the verified Saxony feature, GML namespace, and EPSG:25833 geometry',async()=>{
+  const xml=`<wfs:FeatureCollection xmlns:wfs="http://www.opengis.net/wfs/2.0" xmlns:ave="${SAXONY_GML_SCHEMA.featureNamespace}" xmlns:g="http://www.opengis.net/gml/3.2" numberMatched="1" numberReturned="1"><wfs:member><ave:Flurstueck><ave:geometrie><g:MultiSurface srsName="urn:ogc:def:crs:EPSG::25833" srsDimension="2"><g:surfaceMember><g:Polygon><g:exterior><g:LinearRing><g:posList>412476.5 5655152.5 412480.5 5655152.5 412480.5 5655156.5 412476.5 5655156.5 412476.5 5655152.5</g:posList></g:LinearRing></g:exterior></g:Polygon></g:surfaceMember></g:MultiSurface></ave:geometrie><ave:flstkennz>140209___00622001002</ave:flstkennz></ave:Flurstueck></wfs:member></wfs:FeatureCollection>`;
+  const result=await parseGmlParcels(xml,{schema:SAXONY_GML_SCHEMA});
+  expect(result).toMatchObject({featureCount:1,numberMatched:1,numberReturned:1,sourceCrs:'EPSG:25833'});
+  expect(result.features[0].properties).toEqual({flstkennz:'140209___00622001002'});
+  const [lon,lat]=result.features[0].geometry.coordinates[0][0];
+  expect(lon).toBeCloseTo(13.75159,4);expect(lat).toBeCloseTo(51.04126,4);
+  await expect(parseGmlParcels(xml.replace('www.opengis.net/gml/3.2','www.opengis.net/gml'),{schema:SAXONY_GML_SCHEMA})).rejects.toThrow(/namespace/);
+  await expect(parseGmlParcels(xml.replace('EPSG::25833','EPSG::25832'),{schema:SAXONY_GML_SCHEMA})).rejects.toThrow(/coordinate system/);
+  await expect(parseGmlParcels(xml.replace('ave:Flurstueck','ave:OtherFeature'),{schema:SAXONY_GML_SCHEMA})).rejects.toThrow(/member/);
+ });
+ it('parses the strict Poznań schema with EPSG:2177 northing/easting axis order at the saved WUP point',async()=>{
+  const xml=`<wfs:FeatureCollection xmlns:wfs="http://www.opengis.net/wfs/2.0" xmlns:ms="${POZNAN_GML_SCHEMA.featureNamespace}" xmlns:g="${gml}" numberMatched="1" numberReturned="1"><wfs:member><ms:dzialki><ms:MSGEOMETRY><g:MultiSurface srsName="urn:ogc:def:crs:EPSG::2177" srsDimension="2"><g:surfaceMember><g:Polygon><g:exterior><g:LinearRing><g:posList>5808331.14 6426094.35 5808331.14 6426104.35 5808341.14 6426104.35 5808341.14 6426094.35 5808331.14 6426094.35</g:posList></g:LinearRing></g:exterior></g:Polygon></g:surfaceMember></g:MultiSurface></ms:MSGEOMETRY><ms:ID_DZIALKI>306401_1.0051.AR_44.27/14</ms:ID_DZIALKI><ms:KW>must not be retained</ms:KW><ms:OWNER>must not be retained</ms:OWNER></ms:dzialki></wfs:member></wfs:FeatureCollection>`;
+  const result=await parseGmlParcels(xml,{schema:POZNAN_GML_SCHEMA});
+  expect(result).toMatchObject({featureCount:1,numberMatched:1,numberReturned:1,sourceCrs:'EPSG:2177'});
+  expect(result.features[0].id).toBe('306401_1.0051.AR_44.27/14');
+  expect(result.features[0].properties).toEqual({ID_DZIALKI:'306401_1.0051.AR_44.27/14'});
+  const [lon,lat]=result.features[0].geometry.coordinates[0][0];
+  expect(lon).toBeCloseTo(16.91399539,6);expect(lat).toBeCloseTo(52.40333747,6);
+  expect(result.features[0].geometry.coordinates[0][0]).toEqual(result.features[0].geometry.coordinates[0].at(-1));
+  await expect(parseGmlParcels(xml,{schema:{...POZNAN_GML_SCHEMA,axisOrder:'easting-northing'}})).rejects.toThrow(/options/);
+  await expect(parseGmlParcels(xml.replace('EPSG::2177','EPSG::2178'),{schema:POZNAN_GML_SCHEMA})).rejects.toThrow(/coordinate system/);
+ });
  it('decodes HMLR identity and projected rings, retaining no owner/transport fields',async()=>{
   const result=await parseGmlParcels(xml());expect(result).toMatchObject({featureCount:1,uniqueFeatureCount:1,numberMatched:1,numberReturned:1,sourceCrs:'EPSG:27700'});
   const f=result.features[0];expect(f.id).toBe('123');expect(f.properties).toEqual({INSPIREID:'123'});expect(f.geometry.type).toBe('Polygon');
@@ -42,7 +80,8 @@ describe('namespace-aware parcel GML reader',()=>{
  });
  it('accepts empty full collections and explicit unknown matched count',async()=>{
   expect((await parseGmlParcels(xml('','numberMatched="0" numberReturned="0"'))).features).toEqual([]);
-  expect((await parseGmlParcels(xml(feature(),'numberMatched="unknown" numberReturned="1"'))).numberMatched).toBeUndefined();
+  expect(await parseGmlParcels(xml(feature(),'numberMatched="unknown" numberReturned="1"'))).toMatchObject({numberMatched:undefined,numberMatchedUnknown:true});
+  expect(await parseGmlParcels(xml(feature(),'numberReturned="1"'))).toMatchObject({numberMatched:undefined,numberMatchedUnknown:false});
  });
  it('deduplicates identical native geometry and rejects conflicting native geometry',async()=>{
   const duplicate=await parseGmlParcels(xml(feature()+feature(),'numberMatched="2" numberReturned="2"'));expect(duplicate.featureCount).toBe(2);expect(duplicate.uniqueFeatureCount).toBe(1);expect(duplicate.duplicateNativeCount).toBe(1);

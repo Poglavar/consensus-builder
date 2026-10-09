@@ -1,0 +1,103 @@
+{
+  "name": "Yulin",
+  "country": "China",
+  "countryCode": "CN",
+  "rank": 982,
+  "point": [
+    22.6306726253459,
+    110.150072930059
+  ],
+  "freshResearch": {
+    "queries": [
+      {
+        "language": "English",
+        "query": "Yulin Guangxi China official cadastral parcel map land registry GIS natural resources bureau",
+        "scope": "Locate the local registry/cadastre owner and inspect safe public parcel geometry availability.",
+        "result": "Official Guangxi Natural Resources reporting states Yulin Natural Resources Bureau convened the 2024 citywide rural real-estate registration meeting and directed registration database work. Guangxi’s official registered-property “map inquiry” service requires identity authentication and can return parcel/building attributes; this was not accessed. The National Geo-information Portal is an official map platform, but no anonymous Yulin parcel geometry schema or response was verified.",
+        "actualResultUrls": [
+          "https://dnr.gxzf.gov.cn/xwzx/zrzx/t18352698.shtml"
+        ],
+        "executionMethod": "Separate English-language web search and official page/service review."
+      },
+      {
+        "language": "Chinese",
+        "query": "玉林市 不动产登记中心 地籍图 官方 玉林自然资源局",
+        "scope": "Find first-party local-language land registry, cadastral map or city land-service evidence.",
+        "result": "Official Guangxi Natural Resources reporting states Yulin Natural Resources Bureau convened the 2024 citywide rural real-estate registration meeting and directed registration database work. Guangxi’s official registered-property “map inquiry” service requires identity authentication and can return parcel/building attributes; this was not accessed. The National Geo-information Portal is an official map platform, but no anonymous Yulin parcel geometry schema or response was verified.",
+        "actualResultUrls": [
+          "https://dnr.gxzf.gov.cn/xwzx/zrzx/t18352698.shtml"
+        ],
+        "executionMethod": "Separate Chinese-language web search and official local source review."
+      }
+    ],
+    "portals": [
+      {
+        "name": "Guangxi Natural Resources Department / Yulin Natural Resources Bureau",
+        "operator": "Guangxi Zhuang Autonomous Region Natural Resources Department and Yulin Natural Resources Bureau",
+        "homeUrl": "https://dnr.gxzf.gov.cn/xwzx/zrzx/t18352698.shtml",
+        "observation": "Official Guangxi Natural Resources reporting states Yulin Natural Resources Bureau convened the 2024 citywide rural real-estate registration meeting and directed registration database work. Guangxi’s official registered-property “map inquiry” service requires identity authentication and can return parcel/building attributes; this was not accessed. The National Geo-information Portal is an official map platform, but no anonymous Yulin parcel geometry schema or response was verified."
+      }
+    ],
+    "requests": [],
+    "historicalContext": []
+  },
+  "status": "complete",
+  "verifiedParcelResponse": null,
+  "source": {
+    "sourceId": "CN-10684-LOCAL-CADASTRE-REVIEW",
+    "name": "Guangxi Natural Resources Department / Yulin Natural Resources Bureau",
+    "url": "https://dnr.gxzf.gov.cn/xwzx/zrzx/t18352698.shtml",
+    "operator": "Guangxi Zhuang Autonomous Region Natural Resources Department and Yulin Natural Resources Bureau",
+    "serviceType": "Local registry/cadastre evidence reviewed; no safe anonymous full-polygon response verified.",
+    "layer": null,
+    "geometryType": null,
+    "outputCrs": null,
+    "nativeIdField": null,
+    "nativeIdEvidence": null
+  },
+  "coverageAssessment": {
+    "claimedScope": "A city natural-resources office and registration program are documented. Public map/registration services do not establish an anonymous geometry-only route at this point.",
+    "verifiedOpenScope": "Official Guangxi Natural Resources reporting states Yulin Natural Resources Bureau convened the 2024 citywide rural real-estate registration meeting and directed registration database work. Guangxi’s official registered-property “map inquiry” service requires identity authentication and can return parcel/building attributes; this was not accessed. The National Geo-information Portal is an official map platform, but no anonymous Yulin parcel geometry schema or response was verified.",
+    "countrywideVerified": false,
+    "citywideVerified": false
+  },
+  "registryFound": true,
+  "verifiedSample": false,
+  "resultCategory": "official_local_registry_geometry_unverified",
+  "technicalBlocker": "No geometry-only endpoint was verified. The official Guangxi map-inquiry service requires identity authentication and exposes parcel/property information; no login or parcel query was attempted.",
+  "remainingUncertainty": "The exact point’s relationship to mapped parcels and public-vector availability remain unknown.",
+  "nextStep": "If a public feature service is documented later, inspect metadata first and query only safe stable parcel IDs plus geometry in a bounded viewport.",
+  "schemaVersion": "1.0",
+  "checkedAt": "2026-10-09",
+  "wupCityCode": 10684,
+  "cityId": "wup2025:10684",
+  "runtimeReadiness": "not_enabled_no_verified_public_geometry",
+  "adapterReady": false,
+  "centerLatLon": [
+    22.6306726253459,
+    110.150072930059
+  ],
+  "population2025k": 558.277,
+  "populationUnit": "persons",
+  "queueRank": 982,
+  "population2025": 558277,
+  "populationPlausibility2025": "Moderate",
+  "pointBasis": "UN WUP 2025 population-weighted settlement centroid; this is not a municipal boundary or a parcel-coverage claim.",
+  "publicParcelGeometryFound": false,
+  "sourceIds": [],
+  "registryBasis": "Official Guangxi Natural Resources reporting states Yulin Natural Resources Bureau convened the 2024 citywide rural real-estate registration meeting and directed registration database work. Guangxi’s official registered-property “map inquiry” service requires identity authentication and can return parcel/building attributes; this was not accessed. The National Geo-information Portal is an official map platform, but no anonymous Yulin parcel geometry schema or response was verified.",
+  "registryEvidenceUrls": [
+    "https://dnr.gxzf.gov.cn/xwzx/zrzx/t18352698.shtml"
+  ],
+  "runtimeAssessment": {
+    "status": "not_enabled_no_verified_public_geometry",
+    "reason": "No geometry-only endpoint was verified. The official Guangxi map-inquiry service requires identity authentication and exposes parcel/property information; no login or parcel query was attempted."
+  },
+  "rootPrimaryReadback": {
+    "url": "https://dnr.gxzf.gov.cn/xwzx/zrzx/t18352698.shtml",
+    "fetch": "error",
+    "reason": "<urlopen error _ssl.c:1064: The handshake operation timed out>"
+  },
+  "rootReviewNote": "Reviewed the specific local primary evidence, its jurisdiction, source dates and public access limits. Failed readbacks are retained as transport/access outcomes rather than absence. No full public parcel geometry was verified for this city in the bounded discovery pass.",
+  "rootReviewedAt": "2026-10-09T05:07:19.594016+00:00"
+}

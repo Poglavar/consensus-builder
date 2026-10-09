@@ -1,0 +1,78 @@
+{
+  "schemaVersion": "1.0",
+  "checkedAt": "2026-10-09",
+  "cityRecord": "city-567-thessaloniki.json",
+  "purpose": "City-specific official registry/map evidence and bounded anonymous parcel-geometry review.",
+  "scopeLimits": {
+    "maxFullPolygonsRetainedInCityRecord": 3,
+    "maxFullPolygonsRetainedInReview": 3,
+    "maxFullPolygonsRetainedInRepository": 3,
+    "ownerOrAddressDataRetained": false,
+    "credentialsOrTokenValuesRetained": false,
+    "citywideCompletenessAsserted": false
+  },
+  "assessment": "A city-operated polygon layer returned one parcel intersecting the exact ranked WUP point, with the source-native safe parcel key and full geometry. Only one polygon is retained. The point is a population-weighted locator, not a boundary; this sample does not establish completeness, data currency, legal status or runtime contract.",
+  "registryAssessment": "The Hellenic Cadastre announced the Thessaloniki Cadastral Office and local jurisdiction. The official Thessaloniki municipal ArcGIS layer “Γεωτεμάχια Κτηματολογίου - ΚΑΕΚ” is a polygon layer with safe native identifier KAEK and supports GeoJSON queries. An exact ranked-point query returned one full polygon; this establishes a sampled feature only, not citywide completeness or runtime readiness.",
+  "officialPrimarySources": [
+    {
+      "url": "https://www.ktimatologio.gr/grafeio-tipou/deltia-tipou/1347",
+      "observation": "Official Hellenic Cadastre announcement says Thessaloniki Cadastral Office began operation 2024-04-01 and lists its jurisdiction."
+    },
+    {
+      "url": "https://www.ktimatologio.gr/pliroforiako-yliko/geoxorika/42",
+      "observation": "Official Hellenic Cadastre INSPIRE information says cadastral boundaries can be publicly viewed/downloaded without registration."
+    },
+    {
+      "url": "https://maps.thessaloniki.gr/server/rest/services/DataMapImage/MapServer/160",
+      "observation": "Official Thessaloniki city ArcGIS metadata: Polygon Feature Layer, EPSG:2100, extent covers the WUP point; query formats JSON/GeoJSON; safe fields OBJECTID and KAEK plus geometry; no personal fields listed."
+    }
+  ],
+  "searchQueries": [
+    {
+      "language": "English",
+      "query": "Thessaloniki official cadastral parcels map GIS Hellenic Cadastre municipal parcel layer",
+      "result": "Official Hellenic Cadastre sources identify the Thessaloniki office and public cadastral map/information; city map ArcGIS layer exposes KAEK parcel polygons and the exact WUP point query returned one polygon.",
+      "method": "Separate-language discovery and official-source review."
+    },
+    {
+      "language": "Greek",
+      "query": "Θεσσαλονίκη επίσημος χάρτης κτηματολογικά γεωτεμάχια ΚΑΕΚ πολυγωνικά δεδομένα GIS",
+      "result": "Οι επίσημες πηγές επιβεβαιώνουν το Κτηματολογικό Γραφείο Θεσσαλονίκης και τη δημόσια χαρτογραφική πληροφορία. Το δημοτικό επίπεδο ArcGIS επιστρέφει πολύγωνα γεωτεμαχίων με ασφαλές πεδίο ΚΑΕΚ· το σημείο WUP τέμνει ένα πολύγωνο.",
+      "method": "Separate-language discovery and official-source review."
+    }
+  ],
+  "serviceChecks": [
+    {
+      "method": "GET",
+      "url": "https://maps.thessaloniki.gr/server/rest/services/DataMapImage/MapServer/160/query?where=1%3D1&geometry=22.945560253649%2C40.6343408556323&geometryType=esriGeometryPoint&inSR=4326&spatialRel=esriSpatialRelIntersects&outFields=OBJECTID%2CKAEK&returnGeometry=true&outSR=4326&resultRecordCount=3&f=geojson",
+      "httpStatus": 200,
+      "contentType": "application/geo+json",
+      "observation": "Exact ranked-point query returned one polygon; only safe native parcel key KAEK=190442128009 and geometry were retained. Source OBJECTID was not copied into sample."
+    }
+  ],
+  "geometryEvidence": {
+    "file": "city-567-thessaloniki-samples.geojson",
+    "featureCount": 1,
+    "attributes": [
+      "KAEK"
+    ],
+    "geometryType": "Polygon",
+    "crs": "WGS84",
+    "exactLocatorFeature": true
+  },
+  "privacy": "Only safe source-native parcel identifiers and geometry are retained where returned. No owner, address, title, account or tax data were requested.",
+  "runtimeAssessment": "sample_only_root_qualification_pending",
+  "geometryAttempt": {
+    "attempted": true,
+    "status": "HTTP 200 exact-point query returned one polygon",
+    "fullPolygonLimit": 3,
+    "fullPolygonsRetained": 1,
+    "fieldsRequested": [
+      "KAEK",
+      "geometry"
+    ],
+    "geometryRetained": true,
+    "geojsonFile": "city-567-thessaloniki-samples.geojson"
+  },
+  "remainingUncertainty": "The city layer’s maintenance/currentness, exact legal relationship to the national cadastre, full city coverage and native CRS/query contract outside the point response remain to be qualified."
+}

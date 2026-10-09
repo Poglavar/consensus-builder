@@ -1,0 +1,91 @@
+{
+  "schemaVersion": "1.0",
+  "checkedAt": "2026-10-09",
+  "cityRecord": "city-3481-kagoshima.json",
+  "purpose": "Document distinct English/local-language search evidence, first-party local custody scope, direct anonymous route results and geometry-only limits.",
+  "scopeLimits": {
+    "maxFullPolygonsRetainedInCityRecord": 0,
+    "maxFullPolygonsRetainedInReview": 0,
+    "maxFullPolygonsRetainedInRepository": 0,
+    "ownerOrAddressDataRetained": false,
+    "credentialsOrTokenValuesRetained": false,
+    "citywideCompletenessAsserted": false
+  },
+  "assessment": "Kagoshima City holds/serves the municipal tax cadastral map as paper/office material. Access requires town and lot identifiers plus a paid request; no parcel-specific details were supplied or queried.",
+  "registryAssessment": "City-bound or jurisdictionally local registry/land administration source identified, with the limited scope stated above; parcel geometry/runtime qualification remain separate.",
+  "officialPrimarySources": [
+    {
+      "url": "https://www.city.kagoshima.lg.jp/soumu/zeimu/shisanzei/kurashi/zekin/kote/chisekiz.html",
+      "operator": "Kagoshima City Government, Tax Assets Division",
+      "observation": "Official page says in-city cadastral maps may be viewed/issued but requires town name and land-lot number, in person, for a paid sheet. Recent changes are referred to the Legal Affairs Bureau; no online public geometry service offered."
+    }
+  ],
+  "searchQueries": [
+    {
+      "language": "English",
+      "query": "Kagoshima Japan official public cadastral map GIS parcel open data",
+      "result": "English-language first-party and relevant source discovery; each listed official source was reviewed before use.",
+      "method": "Separate search followed by official-source review.",
+      "actualResultUrls": [
+        "https://www.city.kagoshima.lg.jp/soumu/zeimu/shisanzei/kurashi/zekin/kote/chisekiz.html"
+      ],
+      "scope": "Identify first-party local land-registry/cadastral custody and anonymous public parcel geometry. Preserve the exact WUP settlement point; do not submit owner, address, tax, account, lot/plot or applicant identifiers."
+    },
+    {
+      "language": "Japanese",
+      "query": "鹿児島市 地籍図 公図 閲覧 資産税課",
+      "result": "Search results are recorded below; only the cited first-party pages are treated as evidence. No private parcel fields or locators were requested.",
+      "method": "Separate local-language web search followed by first-party source review.",
+      "actualResultUrls": [
+        "https://www.city.kagoshima.lg.jp/soumu/zeimu/shisanzei/kurashi/zekin/kote/chisekiz.html"
+      ],
+      "scope": "Identify first-party local land-registry/cadastral custody and anonymous public parcel geometry. Preserve the exact WUP settlement point; do not submit owner, address, tax, account, lot/plot or applicant identifiers."
+    }
+  ],
+  "geometryDecision": {
+    "verified": false,
+    "sourceId": null,
+    "sampleCount": 0,
+    "sampleFile": null,
+    "nativeId": null,
+    "nativeIdField": null,
+    "exactWupPointTest": "No source-native full polygon was returned at the exact WUP point; publicParcelGeometryFound:false means unverified in this investigation, not confirmed absence.",
+    "requestEvidence": [
+      {
+        "url": "https://www.city.kagoshima.lg.jp/soumu/zeimu/shisanzei/kurashi/zekin/kote/chisekiz.html",
+        "method": "anonymous read-only GET; redirect-following; standard TLS; no credentials, cookies or property selectors",
+        "httpStatus": 200,
+        "contentType": "text/html",
+        "bytesRead": 21188,
+        "assessment": "Direct official-source GET; response supports only the page/application description recorded in the source review."
+      }
+    ]
+  },
+  "coverageAssessment": {
+    "claimedScope": "Kagoshima City holds/serves the municipal tax cadastral map as paper/office material. Access requires town and lot identifiers plus a paid request; no parcel-specific details were supplied or queried.",
+    "verifiedOpenScope": "No anonymous safe full parcel geometry response was verified in this investigation.",
+    "citywideVerified": false,
+    "countrywideVerified": false,
+    "geometryVerified": false
+  },
+  "attempts": [
+    {
+      "url": "https://www.city.kagoshima.lg.jp/soumu/zeimu/shisanzei/kurashi/zekin/kote/chisekiz.html",
+      "result": "HTTP 200 text/html; 21188 response bytes. Direct official-source GET; response supports only the page/application description recorded in the source review."
+    }
+  ],
+  "remainingUncertainty": "Kagoshima City holds/serves the municipal tax cadastral map as paper/office material. Access requires town and lot identifiers plus a paid request; no parcel-specific details were supplied or queried. Public parcel geometry and extent at the exact WUP point remain unverified.",
+  "nextStep": "Revisit only if an official schema-backed public full-geometry route is documented; request safe IDs and geometry only.",
+  "runtimeAssessment": "not enabled; no full parcel geometry retained",
+  "cohort": "overnight-next-1101-1200",
+  "cohortState": "research_complete_pending_root_review",
+  "integrationState": "not_integrated",
+  "rootReviewedAt": "2026-10-09T07:13:02.981057+00:00",
+  "rootReview": {
+    "checkedAt": "2026-10-09T07:13:02.981057+00:00",
+    "decision": "Reviewed city identity, canonical population/point, separate searches and saved source/request evidence. No full public parcel geometry verified in this pass.",
+    "custodyScope": "Kagoshima City holds/serves the municipal tax cadastral map as paper/office material. Access requires town and lot identifiers plus a paid request; no parcel-specific details were supplied or queried.",
+    "transportFailuresDoNotProveAbsence": true,
+    "geometryClaimScope": "Investigation outcome only; no worldwide or citywide absence asserted."
+  }
+}

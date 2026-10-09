@@ -1,0 +1,126 @@
+{
+  "name": "Warri",
+  "country": "Nigeria",
+  "countryCode": "NG",
+  "rank": 305,
+  "point": [
+    5.53800158869281,
+    5.77085244470964
+  ],
+  "population2025": 1607702,
+  "schemaVersion": 1,
+  "kind": "city_parcel_source_research",
+  "checkedAt": "2026-10-09",
+  "populationUnit": "persons",
+  "status": "complete",
+  "verifiedSample": false,
+  "publicParcelGeometryFound": false,
+  "runtimeReadiness": "not_enabled_no_verified_public_geometry",
+  "priorEvidenceFiles": [],
+  "scopeLimits": "The ranked WUP population-weighted point is a settlement locator, not a parcel identity, municipal boundary, or coverage guarantee. No full polygon geometry is retained.",
+  "pointBasis": "UN WUP 2025 population-weighted settlement centroid; this is not a municipal boundary or a parcel-coverage claim.",
+  "registryFound": null,
+  "registryBasis": "No city-local first-party registry source was verified. Delta State sources document state-wide land administration and planned D’LARMS digitization, but do not establish a Warri-specific registry portal.",
+  "resultCategory": "no_city_specific_registry_or_public_geometry_verified",
+  "technicalBlocker": "No Warri-local primary cadastral or registry portal, open service or live city-specific geometry source was located. State-level registration/digitization references do not meet the city-specific evidence threshold.",
+  "remainingUncertainty": "Whether a Warri/Uvwie Land Registry or survey-office portal exists outside the public state sources searched; status/availability of D’LARMS is unknown.",
+  "nextStep": "Identify an official Warri/Uvwie land registry or Surveyor-General service page and any public map entry; otherwise retain registryFound as null and no geometry claim.",
+  "research": {
+    "executedQueries": [
+      {
+        "language": "English",
+        "query": "Warri Nigeria official land registry GIS parcel map cadastre Delta State Ministry Lands Survey urban development",
+        "result": "Official Delta State sources describe state property-registration and land administration procedures and a 2025 D’LARMS program to digitize records, map parcels and make records available online. Those are state-wide plans/services and do not establish a Warri-specific public parcel viewer or registry route.",
+        "urls": [
+          "https://deltastate.gov.ng/sabzz1/",
+          "https://deltastate.gov.ng/wp-content/uploads/2024/12/Approved-Delta-State-BERAP-2025.pdf",
+          "https://deltastate.gov.ng/wp-content/uploads/2024/07/Delta-State-BPR-Publication-Quarter-2.pdf"
+        ],
+        "method": "Separate English web search; official Delta State service page and budget/program materials inspected."
+      },
+      {
+        "language": "English (local-language terms)",
+        "query": "Warri Itsekiri Urhobo land office cadastre map parcel registry official",
+        "result": "Searches combining Warri’s local Itsekiri/Urhobo context with land-office/cadastral terms returned no first-party city-specific parcel map or public registry endpoint. The Delta-wide Ministry of Lands remains the identifiable state authority; the D’LARMS report describes planned digitization rather than a verified live service.",
+        "urls": [
+          "https://deltastate.gov.ng/sabzz1/",
+          "https://deltastate.gov.ng/wp-content/uploads/2024/12/Approved-Delta-State-BERAP-2025.pdf"
+        ],
+        "method": "Separate search using Warri local-language identifiers; no city-specific primary service located."
+      },
+      {
+        "language": "Nigerian Pidgin (local lingua franca)",
+        "query": "Warri Delta land registry map land survey office how dem go check land paper",
+        "result": "This local-language wording surfaced no first-party Warri city cadastral service. Results returned Delta State-wide C of O/service and D’LARMS references, with the latter described as planned digitization; no Warri-specific public map endpoint was identified.",
+        "urls": [
+          "https://deltastate.gov.ng/sabzz1/",
+          "https://deltastate.gov.ng/wp-content/uploads/2024/12/Approved-Delta-State-BERAP-2025.pdf"
+        ],
+        "method": "Separate exploratory Nigerian Pidgin web query; official state sources distinguished from third-party results."
+      }
+    ],
+    "officialSources": [
+      {
+        "url": "https://deltastate.gov.ng/sabzz1/",
+        "method": "GET via web search result",
+        "observation": "Official state MDA portal lists property registration and land-based administration; jurisdiction is Delta State, not a Warri city-specific registry route.",
+        "httpStatus": 200,
+        "contentType": "text/html"
+      },
+      {
+        "url": "https://deltastate.gov.ng/wp-content/uploads/2024/12/Approved-Delta-State-BERAP-2025.pdf",
+        "method": "GET via web search result",
+        "observation": "Official 2025 BERAP says D’LARMS is to digitize records and create a spatial map of land parcels for online availability; no operational endpoint is linked.",
+        "httpStatus": 200,
+        "contentType": "application/pdf"
+      },
+      {
+        "url": "https://deltastate.gov.ng/wp-content/uploads/2024/07/Delta-State-BPR-Publication-Quarter-2.pdf",
+        "method": "GET via web search result",
+        "observation": "Official state performance report allocates GIS/LIS budget lines to Ministry of Lands and Survey; this is state-wide capability evidence only.",
+        "httpStatus": 200,
+        "contentType": "application/pdf"
+      }
+    ],
+    "portals": [
+      {
+        "name": "Delta State MDA Services / land administration",
+        "operator": "Delta State Ministry of Lands, Survey and Urban Development",
+        "url": "https://deltastate.gov.ng/sabzz1/",
+        "observation": "Lists property registration and land-based administration services (including C of O process/statistics) at state scope; no Warri-specific public parcel viewer or vector route."
+      },
+      {
+        "name": "D’LARMS planned land records digitization",
+        "operator": "Delta State Ministry of Lands & Survey / D’LARMS team",
+        "url": "https://deltastate.gov.ng/wp-content/uploads/2024/12/Approved-Delta-State-BERAP-2025.pdf",
+        "observation": "2025 BERAP describes target digitization and spatial mapping of land parcels for online access; the material reads as planned work, not a live map service."
+      }
+    ],
+    "viewerAndServiceTrace": {
+      "attempted": true,
+      "summary": "No Warri-local primary cadastral or registry portal, open service or live city-specific geometry source was located. State-level registration/digitization references do not meet the city-specific evidence threshold.",
+      "fullPolygonLimit": 3,
+      "fullPolygonsRetained": 0,
+      "ownerOrAddressDataRequested": false,
+      "credentialsOrTokenValuesRetained": false
+    },
+    "attemptedGeometry": {
+      "fullPolygonLimit": 3,
+      "fullPolygonsRetained": 0,
+      "ownerOrAddressDataRequested": false,
+      "outcome": "No full parcel polygon was verified; no geometry has been retained."
+    }
+  },
+  "verifiedParcelResponse": null,
+  "source": null,
+  "wupCityCode": 6276,
+  "cityId": "wup2025:6276",
+  "queueRank": 305,
+  "populationPlausibility2025": "Moderate",
+  "centerLatLon": [
+    5.53800158869281,
+    5.77085244470964
+  ],
+  "sourceIds": [],
+  "rootReviewedAt": "2026-10-08T22:19:03.228348+00:00"
+}

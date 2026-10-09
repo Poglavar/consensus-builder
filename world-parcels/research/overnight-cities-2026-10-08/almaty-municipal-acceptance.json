@@ -1,0 +1,528 @@
+{
+  "schemaVersion": 1,
+  "purpose": "Live city parcel qualification with unmodified responses through the repository adapter; IDs and hashes retained, full geometries confined to temporary audit cache except three public samples.",
+  "checkedAt": "2026-10-08T20:54:31.833Z",
+  "city": "almaty-municipal",
+  "descriptor": {
+    "id": "kz-almaty-municipal",
+    "name": "Almaty municipal GZK cadastral layer 10",
+    "adapter": "arcgis",
+    "endpoint": "https://mapalmaty.kz/arcgis/rest/services/pg/pg_uzo/FeatureServer/10",
+    "idField": "kad_nomer",
+    "idType": "string",
+    "objectIdField": "objectid",
+    "parcelNumberField": "kad_nomer",
+    "idPrefix": "KZ-ALMATY-MUNICIPAL-",
+    "outFields": [
+      "objectid",
+      "kad_nomer"
+    ],
+    "pageSize": 100,
+    "maxFeatures": 10000,
+    "maxBboxKm2": 1,
+    "maxResponseBytes": 4194304,
+    "maxTotalResponseBytes": 25165824,
+    "metricSrid": 32643,
+    "cityIds": [
+      "almaty"
+    ]
+  },
+  "grid": [
+    {
+      "name": "viewport-0",
+      "bbox": [
+        76.908,
+        43.26,
+        76.909,
+        43.261
+      ],
+      "kind": "aligned-grid"
+    },
+    {
+      "name": "viewport-1",
+      "bbox": [
+        76.909,
+        43.26,
+        76.91,
+        43.261
+      ],
+      "kind": "aligned-grid"
+    },
+    {
+      "name": "viewport-2",
+      "bbox": [
+        76.91,
+        43.26,
+        76.911,
+        43.261
+      ],
+      "kind": "aligned-grid"
+    },
+    {
+      "name": "viewport-3",
+      "bbox": [
+        76.908,
+        43.261,
+        76.909,
+        43.262
+      ],
+      "kind": "aligned-grid"
+    },
+    {
+      "name": "viewport-4",
+      "bbox": [
+        76.909,
+        43.261,
+        76.91,
+        43.262
+      ],
+      "kind": "aligned-grid"
+    },
+    {
+      "name": "viewport-5",
+      "bbox": [
+        76.91,
+        43.261,
+        76.911,
+        43.262
+      ],
+      "kind": "aligned-grid"
+    },
+    {
+      "name": "viewport-6",
+      "bbox": [
+        76.908,
+        43.262,
+        76.909,
+        43.263
+      ],
+      "kind": "aligned-grid"
+    },
+    {
+      "name": "viewport-7",
+      "bbox": [
+        76.909,
+        43.262,
+        76.91,
+        43.263
+      ],
+      "kind": "aligned-grid"
+    },
+    {
+      "name": "viewport-8",
+      "bbox": [
+        76.91,
+        43.262,
+        76.911,
+        43.263
+      ],
+      "kind": "aligned-grid"
+    },
+    {
+      "name": "viewport-9",
+      "bbox": [
+        76.909,
+        43.259,
+        76.91,
+        43.26
+      ],
+      "kind": "adjacent-pan"
+    },
+    {
+      "name": "viewport-10",
+      "bbox": [
+        76.909,
+        43.263,
+        76.91,
+        43.264
+      ],
+      "kind": "adjacent-pan"
+    },
+    {
+      "name": "viewport-11",
+      "bbox": [
+        76.907,
+        43.261,
+        76.908,
+        43.262
+      ],
+      "kind": "adjacent-pan"
+    },
+    {
+      "name": "viewport-12",
+      "bbox": [
+        76.911,
+        43.261,
+        76.912,
+        43.262
+      ],
+      "kind": "adjacent-pan"
+    }
+  ],
+  "tests": [
+    {
+      "name": "viewport-0",
+      "passed": false,
+      "elapsedMs": 1027,
+      "requestIndexes": [
+        0,
+        0
+      ],
+      "error": "Parcel provider is unavailable (HTTP 400).",
+      "code": "parcel-source-unavailable"
+    },
+    {
+      "name": "viewport-1",
+      "passed": false,
+      "elapsedMs": 990,
+      "requestIndexes": [
+        1,
+        1
+      ],
+      "error": "Parcel provider is unavailable (HTTP 400).",
+      "code": "parcel-source-unavailable"
+    },
+    {
+      "name": "viewport-2",
+      "passed": false,
+      "elapsedMs": 991,
+      "requestIndexes": [
+        2,
+        2
+      ],
+      "error": "Parcel provider is unavailable (HTTP 400).",
+      "code": "parcel-source-unavailable"
+    },
+    {
+      "name": "viewport-3",
+      "passed": false,
+      "elapsedMs": 1008,
+      "requestIndexes": [
+        3,
+        3
+      ],
+      "error": "Parcel provider is unavailable (HTTP 400).",
+      "code": "parcel-source-unavailable"
+    },
+    {
+      "name": "viewport-4",
+      "passed": false,
+      "elapsedMs": 970,
+      "requestIndexes": [
+        4,
+        4
+      ],
+      "error": "Parcel provider is unavailable (HTTP 400).",
+      "code": "parcel-source-unavailable"
+    },
+    {
+      "name": "viewport-5",
+      "passed": false,
+      "elapsedMs": 1018,
+      "requestIndexes": [
+        5,
+        5
+      ],
+      "error": "Parcel provider is unavailable (HTTP 400).",
+      "code": "parcel-source-unavailable"
+    },
+    {
+      "name": "viewport-6",
+      "passed": false,
+      "elapsedMs": 1082,
+      "requestIndexes": [
+        6,
+        6
+      ],
+      "error": "Parcel provider is unavailable (HTTP 400).",
+      "code": "parcel-source-unavailable"
+    },
+    {
+      "name": "viewport-7",
+      "passed": false,
+      "elapsedMs": 993,
+      "requestIndexes": [
+        7,
+        7
+      ],
+      "error": "Parcel provider is unavailable (HTTP 400).",
+      "code": "parcel-source-unavailable"
+    },
+    {
+      "name": "viewport-8",
+      "passed": false,
+      "elapsedMs": 1851,
+      "requestIndexes": [
+        8,
+        8
+      ],
+      "error": "Parcel provider is unavailable (HTTP 400).",
+      "code": "parcel-source-unavailable"
+    },
+    {
+      "name": "viewport-9",
+      "passed": false,
+      "elapsedMs": 1076,
+      "requestIndexes": [
+        9,
+        9
+      ],
+      "error": "Parcel provider is unavailable (HTTP 400).",
+      "code": "parcel-source-unavailable"
+    },
+    {
+      "name": "viewport-10",
+      "passed": false,
+      "elapsedMs": 1110,
+      "requestIndexes": [
+        10,
+        10
+      ],
+      "error": "Parcel provider is unavailable (HTTP 400).",
+      "code": "parcel-source-unavailable"
+    },
+    {
+      "name": "viewport-11",
+      "passed": false,
+      "elapsedMs": 990,
+      "requestIndexes": [
+        11,
+        11
+      ],
+      "error": "Parcel provider is unavailable (HTTP 400).",
+      "code": "parcel-source-unavailable"
+    },
+    {
+      "name": "viewport-12",
+      "passed": false,
+      "elapsedMs": 1025,
+      "requestIndexes": [
+        12,
+        12
+      ],
+      "error": "Parcel provider is unavailable (HTTP 400).",
+      "code": "parcel-source-unavailable"
+    },
+    {
+      "name": "forced-three-row-pages",
+      "passed": false,
+      "elapsedMs": 0,
+      "requestIndexes": [
+        13,
+        12
+      ],
+      "error": "No cell contains four parcels to test forced pagination"
+    },
+    {
+      "name": "explicit-absence",
+      "passed": false,
+      "elapsedMs": 1033,
+      "requestIndexes": [
+        13,
+        13
+      ],
+      "error": "Parcel provider is unavailable (HTTP 400).",
+      "code": "parcel-source-unavailable"
+    },
+    {
+      "name": "footprint",
+      "passed": false,
+      "elapsedMs": 0,
+      "requestIndexes": [
+        14,
+        13
+      ],
+      "error": "No suitable selected parcel"
+    },
+    {
+      "name": "source-binding",
+      "passed": false,
+      "elapsedMs": 0,
+      "requestIndexes": [
+        14,
+        13
+      ],
+      "error": "No suitable selected parcel"
+    }
+  ],
+  "requests": [
+    {
+      "test": "viewport-0",
+      "url": "https://mapalmaty.kz/arcgis/rest/services/pg/pg_uzo/FeatureServer/10/query?where=1%3D1&outFields=objectid%2Ckad_nomer&returnGeometry=true&outSR=4326&f=geojson&orderByFields=objectid&resultRecordCount=100&resultOffset=0&geometry=76.908%2C43.26%2C76.909%2C43.261&geometryType=esriGeometryEnvelope&inSR=4326&spatialRel=esriSpatialRelIntersects",
+      "method": "GET",
+      "checkedAt": "2026-10-08T20:54:31.835Z",
+      "httpStatus": 400,
+      "contentType": "text/html;charset=utf-8",
+      "bytes": 602
+    },
+    {
+      "test": "viewport-1",
+      "url": "https://mapalmaty.kz/arcgis/rest/services/pg/pg_uzo/FeatureServer/10/query?where=1%3D1&outFields=objectid%2Ckad_nomer&returnGeometry=true&outSR=4326&f=geojson&orderByFields=objectid&resultRecordCount=100&resultOffset=0&geometry=76.909%2C43.26%2C76.91%2C43.261&geometryType=esriGeometryEnvelope&inSR=4326&spatialRel=esriSpatialRelIntersects",
+      "method": "GET",
+      "checkedAt": "2026-10-08T20:54:32.863Z",
+      "httpStatus": 400,
+      "contentType": "text/html;charset=utf-8",
+      "bytes": 602
+    },
+    {
+      "test": "viewport-2",
+      "url": "https://mapalmaty.kz/arcgis/rest/services/pg/pg_uzo/FeatureServer/10/query?where=1%3D1&outFields=objectid%2Ckad_nomer&returnGeometry=true&outSR=4326&f=geojson&orderByFields=objectid&resultRecordCount=100&resultOffset=0&geometry=76.91%2C43.26%2C76.911%2C43.261&geometryType=esriGeometryEnvelope&inSR=4326&spatialRel=esriSpatialRelIntersects",
+      "method": "GET",
+      "checkedAt": "2026-10-08T20:54:33.853Z",
+      "httpStatus": 400,
+      "contentType": "text/html;charset=utf-8",
+      "bytes": 602
+    },
+    {
+      "test": "viewport-3",
+      "url": "https://mapalmaty.kz/arcgis/rest/services/pg/pg_uzo/FeatureServer/10/query?where=1%3D1&outFields=objectid%2Ckad_nomer&returnGeometry=true&outSR=4326&f=geojson&orderByFields=objectid&resultRecordCount=100&resultOffset=0&geometry=76.908%2C43.261%2C76.909%2C43.262&geometryType=esriGeometryEnvelope&inSR=4326&spatialRel=esriSpatialRelIntersects",
+      "method": "GET",
+      "checkedAt": "2026-10-08T20:54:34.845Z",
+      "httpStatus": 400,
+      "contentType": "text/html;charset=utf-8",
+      "bytes": 602
+    },
+    {
+      "test": "viewport-4",
+      "url": "https://mapalmaty.kz/arcgis/rest/services/pg/pg_uzo/FeatureServer/10/query?where=1%3D1&outFields=objectid%2Ckad_nomer&returnGeometry=true&outSR=4326&f=geojson&orderByFields=objectid&resultRecordCount=100&resultOffset=0&geometry=76.909%2C43.261%2C76.91%2C43.262&geometryType=esriGeometryEnvelope&inSR=4326&spatialRel=esriSpatialRelIntersects",
+      "method": "GET",
+      "checkedAt": "2026-10-08T20:54:35.853Z",
+      "httpStatus": 400,
+      "contentType": "text/html;charset=utf-8",
+      "bytes": 602
+    },
+    {
+      "test": "viewport-5",
+      "url": "https://mapalmaty.kz/arcgis/rest/services/pg/pg_uzo/FeatureServer/10/query?where=1%3D1&outFields=objectid%2Ckad_nomer&returnGeometry=true&outSR=4326&f=geojson&orderByFields=objectid&resultRecordCount=100&resultOffset=0&geometry=76.91%2C43.261%2C76.911%2C43.262&geometryType=esriGeometryEnvelope&inSR=4326&spatialRel=esriSpatialRelIntersects",
+      "method": "GET",
+      "checkedAt": "2026-10-08T20:54:36.823Z",
+      "httpStatus": 400,
+      "contentType": "text/html;charset=utf-8",
+      "bytes": 602
+    },
+    {
+      "test": "viewport-6",
+      "url": "https://mapalmaty.kz/arcgis/rest/services/pg/pg_uzo/FeatureServer/10/query?where=1%3D1&outFields=objectid%2Ckad_nomer&returnGeometry=true&outSR=4326&f=geojson&orderByFields=objectid&resultRecordCount=100&resultOffset=0&geometry=76.908%2C43.262%2C76.909%2C43.263&geometryType=esriGeometryEnvelope&inSR=4326&spatialRel=esriSpatialRelIntersects",
+      "method": "GET",
+      "checkedAt": "2026-10-08T20:54:37.842Z",
+      "httpStatus": 400,
+      "contentType": "text/html;charset=utf-8",
+      "bytes": 602
+    },
+    {
+      "test": "viewport-7",
+      "url": "https://mapalmaty.kz/arcgis/rest/services/pg/pg_uzo/FeatureServer/10/query?where=1%3D1&outFields=objectid%2Ckad_nomer&returnGeometry=true&outSR=4326&f=geojson&orderByFields=objectid&resultRecordCount=100&resultOffset=0&geometry=76.909%2C43.262%2C76.91%2C43.263&geometryType=esriGeometryEnvelope&inSR=4326&spatialRel=esriSpatialRelIntersects",
+      "method": "GET",
+      "checkedAt": "2026-10-08T20:54:38.925Z",
+      "httpStatus": 400,
+      "contentType": "text/html;charset=utf-8",
+      "bytes": 602
+    },
+    {
+      "test": "viewport-8",
+      "url": "https://mapalmaty.kz/arcgis/rest/services/pg/pg_uzo/FeatureServer/10/query?where=1%3D1&outFields=objectid%2Ckad_nomer&returnGeometry=true&outSR=4326&f=geojson&orderByFields=objectid&resultRecordCount=100&resultOffset=0&geometry=76.91%2C43.262%2C76.911%2C43.263&geometryType=esriGeometryEnvelope&inSR=4326&spatialRel=esriSpatialRelIntersects",
+      "method": "GET",
+      "checkedAt": "2026-10-08T20:54:39.918Z",
+      "httpStatus": 400,
+      "contentType": "text/html;charset=utf-8",
+      "bytes": 602
+    },
+    {
+      "test": "viewport-9",
+      "url": "https://mapalmaty.kz/arcgis/rest/services/pg/pg_uzo/FeatureServer/10/query?where=1%3D1&outFields=objectid%2Ckad_nomer&returnGeometry=true&outSR=4326&f=geojson&orderByFields=objectid&resultRecordCount=100&resultOffset=0&geometry=76.909%2C43.259%2C76.91%2C43.26&geometryType=esriGeometryEnvelope&inSR=4326&spatialRel=esriSpatialRelIntersects",
+      "method": "GET",
+      "checkedAt": "2026-10-08T20:54:41.775Z",
+      "httpStatus": 400,
+      "contentType": "text/html;charset=utf-8",
+      "bytes": 602
+    },
+    {
+      "test": "viewport-10",
+      "url": "https://mapalmaty.kz/arcgis/rest/services/pg/pg_uzo/FeatureServer/10/query?where=1%3D1&outFields=objectid%2Ckad_nomer&returnGeometry=true&outSR=4326&f=geojson&orderByFields=objectid&resultRecordCount=100&resultOffset=0&geometry=76.909%2C43.263%2C76.91%2C43.264&geometryType=esriGeometryEnvelope&inSR=4326&spatialRel=esriSpatialRelIntersects",
+      "method": "GET",
+      "checkedAt": "2026-10-08T20:54:42.850Z",
+      "httpStatus": 400,
+      "contentType": "text/html;charset=utf-8",
+      "bytes": 602
+    },
+    {
+      "test": "viewport-11",
+      "url": "https://mapalmaty.kz/arcgis/rest/services/pg/pg_uzo/FeatureServer/10/query?where=1%3D1&outFields=objectid%2Ckad_nomer&returnGeometry=true&outSR=4326&f=geojson&orderByFields=objectid&resultRecordCount=100&resultOffset=0&geometry=76.907%2C43.261%2C76.908%2C43.262&geometryType=esriGeometryEnvelope&inSR=4326&spatialRel=esriSpatialRelIntersects",
+      "method": "GET",
+      "checkedAt": "2026-10-08T20:54:43.961Z",
+      "httpStatus": 400,
+      "contentType": "text/html;charset=utf-8",
+      "bytes": 602
+    },
+    {
+      "test": "viewport-12",
+      "url": "https://mapalmaty.kz/arcgis/rest/services/pg/pg_uzo/FeatureServer/10/query?where=1%3D1&outFields=objectid%2Ckad_nomer&returnGeometry=true&outSR=4326&f=geojson&orderByFields=objectid&resultRecordCount=100&resultOffset=0&geometry=76.911%2C43.261%2C76.912%2C43.262&geometryType=esriGeometryEnvelope&inSR=4326&spatialRel=esriSpatialRelIntersects",
+      "method": "GET",
+      "checkedAt": "2026-10-08T20:54:44.952Z",
+      "httpStatus": 400,
+      "contentType": "text/html;charset=utf-8",
+      "bytes": 602
+    },
+    {
+      "test": "explicit-absence",
+      "url": "https://mapalmaty.kz/arcgis/rest/services/pg/pg_uzo/FeatureServer/10/query?where=kad_nomer+IN+%28%2799999999999999999999999%27%29&outFields=objectid%2Ckad_nomer&returnGeometry=true&outSR=4326&f=geojson&orderByFields=objectid&resultRecordCount=100&resultOffset=0",
+      "method": "GET",
+      "checkedAt": "2026-10-08T20:54:45.980Z",
+      "httpStatus": 400,
+      "contentType": "text/html;charset=utf-8",
+      "bytes": 602
+    }
+  ],
+  "qualityFile": "research/overnight-cities-2026-10-08/almaty-municipal-quality.json",
+  "uniqueParcels": 0,
+  "requestCount": 14,
+  "allTestsPassed": false,
+  "finishedAt": "2026-10-08T20:54:47.015Z",
+  "qualityStatus": "not-assessable-no-geometry-from-adapter",
+  "qualificationStatus": "adapter-format-incompatible; native-json-topology-audit-complete-with-overlaps",
+  "upstreamCompatibility": {
+    "featureServerLayer": "https://mapalmaty.kz/arcgis/rest/services/pg/pg_uzo/FeatureServer/10",
+    "layerName": "U006:Кадастр ГЗК",
+    "layerVersion": 10.2,
+    "supportedQueryFormats": [
+      "JSON",
+      "AMF"
+    ],
+    "repositoryArcgisAdapterQueryFormat": "geojson",
+    "repositoryAdapterEvidence": "backend/parcels/arcgis-source.js constructs ArcGIS query requests with f=geojson and requires a GeoJSON FeatureCollection; no descriptor option selects JSON.",
+    "observedFailure": "FeatureServer/10/query and MapServer/10/query both returned HTTP 400 with “Output format not supported” when f=geojson. The same bounded query with f=json returned HTTP 200.",
+    "effect": "All 13 adapter viewport queries and the adapter explicit-absence query failed before any features were parsed. Forced-page test had no dense successful cell; footprint and source-binding could not run on a selected parcel. No adapter geometry was captured.",
+    "noBackendChanges": true
+  },
+  "nativeIdAudit": {
+    "method": "Bounded direct ArcGIS JSON count and attribute-only queries (read-only GET); geometry not requested.",
+    "geometryRequested": false,
+    "returnedFields": [
+      "objectid",
+      "kad_nomer"
+    ],
+    "viewportCount": 13,
+    "successfulViewports": 13,
+    "rowCountAcrossViewports": 130,
+    "uniqueObjectIds": 82,
+    "uniqueKadNomer": 82,
+    "duplicateKadNomerAcrossDistinctObjectids": [],
+    "errors": [],
+    "absentAll9Probe": {
+      "status": 200,
+      "count": 0,
+      "nativeValue": "99999999999999999999999"
+    },
+    "interpretation": "In these 13 bounded cells, kad_nomer was unique per objectid; this supports using kad_nomer as the source-native identity for this sample, while objectid remains the ArcGIS row/paging token. It does not establish uniqueness beyond the sampled extent."
+  },
+  "fullGeometryRetainedInRepository": false,
+  "nativeGeometryAudit": {
+    "file": "almaty-municipal-native-quality.json",
+    "featureCount": 82,
+    "validNonemptyCount": 82,
+    "positiveAreaOverlapPairsAbove0_01M2": 32,
+    "sumPairwiseOverlapM2": 459.64820976321425,
+    "allSixNationalPositiveAreaPairsPersist": true,
+    "fullGeometryRetainedInRepository": false
+  }
+}

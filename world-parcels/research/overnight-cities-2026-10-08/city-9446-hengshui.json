@@ -1,0 +1,109 @@
+{
+  "schemaVersion": 1,
+  "kind": "city_parcel_source_research",
+  "checkedAt": "2026-10-09",
+  "name": "Hengshui",
+  "country": "China",
+  "countryCode": "CN",
+  "populationUnit": "persons",
+  "status": "complete",
+  "registryFound": null,
+  "registryBasis": "No accessible city-first-party real-estate registry source was verified in this pass. The Hengshui government homepage timed out in the web reader (no HTTP status), while search results were either for similarly named Hengyang or third-party directories; these are not used to infer Hengshui registry coverage.",
+  "registryEvidenceUrls": [
+    "https://www.hengshui.gov.cn/",
+    "http://zrgh.hengshui.gov.cn/"
+  ],
+  "verifiedSample": false,
+  "publicParcelGeometryFound": false,
+  "runtimeReadiness": "not_enabled_no_verified_public_geometry",
+  "wupCityCode": 9446,
+  "cityId": "wup2025:9446",
+  "centerLatLon": [
+    37.7345604390485,
+    115.69181039375
+  ],
+  "rank": 870,
+  "queueRank": 870,
+  "population2025": 618465,
+  "population2025k": 618.465,
+  "populationPlausibility2025": "High",
+  "pointBasis": "UN WUP 2025 population-weighted settlement centroid; this is not a municipal boundary or a parcel-coverage claim.",
+  "technicalBlocker": "The official city site request timed out in the web reader; no HTTP response status was obtained. No public parcel feature route or schema was verified.",
+  "scopeLimits": "The target is Hengshui, Hebei. Official host access did not resolve in the web reader, and search results did not establish a Hengshui-specific registry office from a usable primary page. No parcel geometry route was verified.",
+  "remainingUncertainty": "A local registry office or map may exist; direct city-first-party evidence and anonymous schema remain unverified.",
+  "research": {
+    "executedQueries": [
+      {
+        "language": "English",
+        "query": "Hengshui China official cadastral registry parcel map GIS natural resources",
+        "scope": "Identify city-specific registry/cadastral evidence and any safe public parcel geometry route.",
+        "result": "Search results did not provide a usable Hengshui primary registry page; similarly named Hengyang results were excluded.",
+        "actualResultUrls": [
+          "https://www.hengshui.gov.cn/",
+          "http://zrgh.hengshui.gov.cn/"
+        ],
+        "executionMethod": "Separate English and local-language search, followed by official-source review; public map/form inspection stopped before any parcel, owner, address, tax, account, or applicant lookup."
+      },
+      {
+        "language": "Chinese",
+        "query": "衡水市不动产登记中心 自然资源和规划局 地籍图 官方",
+        "scope": "Identify city-specific registry/cadastral evidence and any safe public parcel geometry route.",
+        "result": "Exact and site-scoped searches did not return a verifiable Hengshui first-party registry page; nonprimary directory results were excluded.",
+        "actualResultUrls": [
+          "https://www.hengshui.gov.cn/",
+          "http://zrgh.hengshui.gov.cn/"
+        ],
+        "executionMethod": "Separate English and local-language search, followed by official-source review; public map/form inspection stopped before any parcel, owner, address, tax, account, or applicant lookup."
+      }
+    ],
+    "officialSources": [
+      {
+        "url": "https://www.hengshui.gov.cn/",
+        "observation": "The target is Hengshui, Hebei. Official host access did not resolve in the web reader, and search results did not establish a Hengshui-specific registry office from a usable primary page. No parcel geometry route was verified."
+      },
+      {
+        "url": "http://zrgh.hengshui.gov.cn/",
+        "observation": "The target is Hengshui, Hebei. Official host access did not resolve in the web reader, and search results did not establish a Hengshui-specific registry office from a usable primary page. No parcel geometry route was verified."
+      }
+    ],
+    "metadataReviewFile": "hengshui-service-review.json",
+    "routeInspectionFile": "/tmp/overnight-cities-2026-10-08/city-9446-hengshui-route-inspection.json"
+  },
+  "source": {
+    "sourceId": null,
+    "name": null,
+    "operator": null,
+    "url": null,
+    "serviceType": "No verified anonymous geometry-only parcel endpoint in this review.",
+    "geometryType": null,
+    "coordinateReferenceSystem": null,
+    "nativeIdFields": [],
+    "directGeometryQueryVerified": false,
+    "directMetadataSchemaVerified": false,
+    "scope": "The target is Hengshui, Hebei. Official host access did not resolve in the web reader, and search results did not establish a Hengshui-specific registry office from a usable primary page. No parcel geometry route was verified."
+  },
+  "coverageAssessment": {
+    "claimedScope": "No accessible city-first-party real-estate registry source was verified in this pass. The Hengshui government homepage timed out in the web reader (no HTTP status), while search results were either for similarly named Hengyang or third-party directories; these are not used to infer Hengshui registry coverage.",
+    "verifiedOpenScope": "No public parcel geometry service or point-level response verified.",
+    "citywideVerified": false,
+    "countrywideVerified": false,
+    "geometryVerified": false
+  },
+  "runtimeAssessment": {
+    "status": "not_enabled_no_verified_public_geometry",
+    "reason": "The official city site request timed out in the web reader; no HTTP response status was obtained. No public parcel feature route or schema was verified."
+  },
+  "rootReview": "pending",
+  "point": [
+    37.7345604390485,
+    115.69181039375
+  ],
+  "sourceIds": [],
+  "rootPrimaryReadback": {
+    "url": "https://www.hengshui.gov.cn/",
+    "fetch": "error",
+    "reason": "<urlopen error timed out>"
+  },
+  "rootReviewNote": "Reviewed the specific primary institution/service evidence and its geographical, access and date limits. Direct readback failures are preserved separately from indexed primary evidence. No public full parcel geometry was verified for this city in this discovery pass.",
+  "rootReviewedAt": "2026-10-09T04:12:31.737456+00:00"
+}

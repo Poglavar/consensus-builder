@@ -1,0 +1,102 @@
+{
+  "schemaVersion": 1,
+  "kind": "city_parcel_source_research",
+  "checkedAt": "2026-10-09",
+  "name": "Larkana",
+  "country": "Pakistan",
+  "countryCode": "PK",
+  "populationUnit": "persons",
+  "status": "complete",
+  "registryFound": null,
+  "registryBasis": "The Sindh Board of Revenue portal is province-wide and provides land-record/deh-map services, but no Larkana-specific first-party registry office or parcel coverage was established. Provincial evidence alone is not treated as city-local proof.",
+  "registryEvidenceUrls": [
+    "https://www.sindhzameen.gos.pk/Default.aspx"
+  ],
+  "verifiedSample": false,
+  "publicParcelGeometryFound": false,
+  "runtimeReadiness": "not_enabled_no_verified_public_geometry",
+  "wupCityCode": 3680,
+  "cityId": "wup2025:3680",
+  "centerLatLon": [
+    27.556824137459,
+    68.2095177489328
+  ],
+  "rank": 871,
+  "queueRank": 871,
+  "population2025": 618408,
+  "population2025k": 618.408,
+  "populationPlausibility2025": "Moderate",
+  "pointBasis": "UN WUP 2025 population-weighted settlement centroid; this is not a municipal boundary or a parcel-coverage claim.",
+  "technicalBlocker": "The province-wide portal timed out in the web reader (no HTTP status); no Larkana-specific safe geometry-only schema was verified. No owner, CNIC, survey number, or plot query was made.",
+  "scopeLimits": "Sindh Board of Revenue provides province-wide land-record services. Its portal also exposes identity/record search paths, which were not used. No city-local Larkana registry basis or safe parcel geometry route was verified.",
+  "remainingUncertainty": "Larkana may have local registration/cadastral services, but city-bound primary evidence and geometry access remain unverified.",
+  "research": {
+    "executedQueries": [
+      {
+        "language": "English",
+        "query": "Larkana Sindh Pakistan official land registry cadastral map parcel service",
+        "scope": "Identify city-specific registry/cadastral evidence and any safe public parcel geometry route.",
+        "result": "Only province-wide Sindh Board of Revenue services were established; they do not prove Larkana-specific coverage.",
+        "actualResultUrls": [
+          "https://www.sindhzameen.gos.pk/Default.aspx"
+        ],
+        "executionMethod": "Separate English and local-language search, followed by official-source review; public map/form inspection stopped before any parcel, owner, address, tax, account, or applicant lookup."
+      },
+      {
+        "language": "Sindhi",
+        "query": "لاڙڪاڻو زمين جو رڪارڊ رجسٽري نقشي سرڪاري",
+        "scope": "Identify city-specific registry/cadastral evidence and any safe public parcel geometry route.",
+        "result": "Localized search did not identify city-bound first-party parcel geometry; provincial services were not used as a city-positive finding.",
+        "actualResultUrls": [
+          "https://www.sindhzameen.gos.pk/Default.aspx"
+        ],
+        "executionMethod": "Separate English and local-language search, followed by official-source review; public map/form inspection stopped before any parcel, owner, address, tax, account, or applicant lookup."
+      }
+    ],
+    "officialSources": [
+      {
+        "url": "https://www.sindhzameen.gos.pk/Default.aspx",
+        "observation": "Sindh Board of Revenue provides province-wide land-record services. Its portal also exposes identity/record search paths, which were not used. No city-local Larkana registry basis or safe parcel geometry route was verified."
+      }
+    ],
+    "metadataReviewFile": "larkana-service-review.json",
+    "routeInspectionFile": "/tmp/overnight-cities-2026-10-08/city-3680-larkana-route-inspection.json"
+  },
+  "source": {
+    "sourceId": null,
+    "name": null,
+    "operator": null,
+    "url": null,
+    "serviceType": "No verified anonymous geometry-only parcel endpoint in this review.",
+    "geometryType": null,
+    "coordinateReferenceSystem": null,
+    "nativeIdFields": [],
+    "directGeometryQueryVerified": false,
+    "directMetadataSchemaVerified": false,
+    "scope": "Sindh Board of Revenue provides province-wide land-record services. Its portal also exposes identity/record search paths, which were not used. No city-local Larkana registry basis or safe parcel geometry route was verified."
+  },
+  "coverageAssessment": {
+    "claimedScope": "The Sindh Board of Revenue portal is province-wide and provides land-record/deh-map services, but no Larkana-specific first-party registry office or parcel coverage was established. Provincial evidence alone is not treated as city-local proof.",
+    "verifiedOpenScope": "No public parcel geometry service or point-level response verified.",
+    "citywideVerified": false,
+    "countrywideVerified": false,
+    "geometryVerified": false
+  },
+  "runtimeAssessment": {
+    "status": "not_enabled_no_verified_public_geometry",
+    "reason": "The province-wide portal timed out in the web reader (no HTTP status); no Larkana-specific safe geometry-only schema was verified. No owner, CNIC, survey number, or plot query was made."
+  },
+  "rootReview": "pending",
+  "point": [
+    27.556824137459,
+    68.2095177489328
+  ],
+  "sourceIds": [],
+  "rootPrimaryReadback": {
+    "url": "https://www.sindhzameen.gos.pk/Default.aspx",
+    "fetch": "error",
+    "reason": "<urlopen error [SSL: CERTIFICATE_VERIFY_FAILED] certificate verify failed: Hostname mismatch, certificate is not valid for 'www.sindhzameen.gos.pk'. (_ssl.c:1082)>"
+  },
+  "rootReviewNote": "Reviewed the specific primary institution/service evidence and its geographical, access and date limits. Direct readback failures are preserved separately from indexed primary evidence. No public full parcel geometry was verified for this city in this discovery pass.",
+  "rootReviewedAt": "2026-10-09T04:12:31.737456+00:00"
+}

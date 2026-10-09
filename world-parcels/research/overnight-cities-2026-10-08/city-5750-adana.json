@@ -1,0 +1,128 @@
+{
+  "name": "Adana",
+  "country": "Türkiye",
+  "countryCode": "TR",
+  "rank": 919,
+  "point": [
+    37.0133674018056,
+    35.27607428462
+  ],
+  "population2025": 593872,
+  "population2025k": 593.872,
+  "populationPlausibility2025": "High",
+  "schemaVersion": 1,
+  "kind": "city_parcel_source_research",
+  "checkedAt": "2026-10-09",
+  "populationUnit": "persons",
+  "status": "complete",
+  "verifiedSample": false,
+  "publicParcelGeometryFound": false,
+  "runtimeReadiness": "not_enabled_no_verified_public_geometry",
+  "priorEvidenceFiles": [],
+  "priorCheck": {
+    "attemptState": "pending",
+    "attemptEvidence": [],
+    "possiblePriorMatches": []
+  },
+  "pointBasis": "UN WUP 2025 population-weighted settlement centroid; this is not a municipal boundary or a parcel-coverage claim.",
+  "registryFound": true,
+  "registryBasis": "TKGM and Adana official pages identify the Adana Cadastre Directorate and land-registry offices; the national parcel-query service is official. Exact-point API access returned HTTP 403, which leaves parcel presence and coverage unresolved.",
+  "registryEvidenceUrls": [
+    "https://www.tkgm.gov.tr/e-hizmetler/sik-kullanilanlar/parsel-sorgulama",
+    "https://www.tkgm.gov.tr/kurumsal/organizasyon-yapisi/tasra-teskilati",
+    "https://adana.gov.tr/yoneticilerimiz-gorev-dagilimi"
+  ],
+  "resultCategory": "local_registry_evidenced_geometry_unverified",
+  "remainingUncertainty": "No anonymous, field-safe parcel geometry response was verified; exact point and map coverage remain unresolved.",
+  "scopeLimits": "Review covers the exact unchanged WUP settlement locator and identified official sources only. No owner, address, personal-property, tax, account, token or credential data requested or retained. No citywide completeness claimed.",
+  "verifiedParcelResponse": null,
+  "source": {
+    "sourceId": "TR-5750-adana-source-review",
+    "name": "TKGM Parsel Sorgu and Adana Cadastre Directorate",
+    "url": "https://www.tkgm.gov.tr/e-hizmetler/sik-kullanilanlar/parsel-sorgulama",
+    "operator": "Türkiye",
+    "serviceType": "Official national public parcel-query service; exact-point access blocked by HTTP 403.",
+    "layer": null,
+    "geometryType": null,
+    "outputCrs": "EPSG:4326 (adapter expects WGS84 point; no feature response returned)",
+    "nativeIdField": null,
+    "nativeIdEvidence": "Adapter contract uses mahalleId, adaNo, parselNo; values not returned because HTTP 403."
+  },
+  "wupCityCode": 5750,
+  "cityId": "wup2025:5750",
+  "queueRank": 919,
+  "centerLatLon": [
+    37.0133674018056,
+    35.27607428462
+  ],
+  "sourceIds": [],
+  "adapterReady": false,
+  "technicalBlocker": "Research only; no parcel geometry sample or runtime adapter qualification.",
+  "coverageAssessment": {
+    "claimedScope": "TKGM and Adana official pages identify the Adana Cadastre Directorate and land-registry offices; the national parcel-query service is official. Exact-point API access returned HTTP 403, which leaves parcel presence and coverage unresolved.",
+    "verifiedOpenScope": "No public parcel geometry scope verified.",
+    "countrywideVerified": false,
+    "citywideVerified": false
+  },
+  "research": {
+    "queries": [
+      {
+        "language": "English",
+        "query": "Adana official title registry cadastral office land parcels Tapu ve Kadastro Adana Bölge Müdürlüğü",
+        "scope": "Locate primary city/local cadastral or land-registry evidence and any safe public parcel-geometry endpoint.",
+        "result": "Official TKGM and Adana Governorate pages document the Adana Cadastre Directorate and the public national parcel-query service. One anonymous exact-point request to the inspected TKGM point endpoint returned HTTP 403; no retry/bypass or personal-attribute access was attempted, and no absence is inferred.",
+        "actualResultUrls": [
+          "https://www.tkgm.gov.tr/e-hizmetler/sik-kullanilanlar/parsel-sorgulama",
+          "https://www.tkgm.gov.tr/kurumsal/organizasyon-yapisi/tasra-teskilati",
+          "https://adana.gov.tr/yoneticilerimiz-gorev-dagilimi"
+        ],
+        "executionMethod": "Separate English-language source search and first-party source/service review; no owner, address, account, token or personal-property attributes requested."
+      },
+      {
+        "language": "Turkish",
+        "query": "Adapter contract uses mahalleId, adaNo, parselNo; values not returned because HTTP 403.",
+        "scope": "Find primary local-language evidence for the same registry/map question.",
+        "result": "Official TKGM and Adana Governorate pages document the Adana Cadastre Directorate and the public national parcel-query service. One anonymous exact-point request to the inspected TKGM point endpoint returned HTTP 403; no retry/bypass or personal-attribute access was attempted, and no absence is inferred.",
+        "actualResultUrls": [
+          "https://www.tkgm.gov.tr/e-hizmetler/sik-kullanilanlar/parsel-sorgulama",
+          "https://www.tkgm.gov.tr/kurumsal/organizasyon-yapisi/tasra-teskilati",
+          "https://adana.gov.tr/yoneticilerimiz-gorev-dagilimi"
+        ],
+        "executionMethod": "Separate native/local-language query and first-party source review. For Ogale, searched a Nigerian Pidgin/place-name variant because no standardized Eleme-language registry query term was identified."
+      }
+    ],
+    "officialSources": [
+      {
+        "url": "https://www.tkgm.gov.tr/e-hizmetler/sik-kullanilanlar/parsel-sorgulama",
+        "observation": "TKGM and Adana official pages identify the Adana Cadastre Directorate and land-registry offices; the national parcel-query service is official. Exact-point API access returned HTTP 403, which leaves parcel presence and coverage unresolved."
+      },
+      {
+        "url": "https://www.tkgm.gov.tr/kurumsal/organizasyon-yapisi/tasra-teskilati",
+        "observation": "TKGM and Adana official pages identify the Adana Cadastre Directorate and land-registry offices; the national parcel-query service is official. Exact-point API access returned HTTP 403, which leaves parcel presence and coverage unresolved."
+      },
+      {
+        "url": "https://adana.gov.tr/yoneticilerimiz-gorev-dagilimi",
+        "observation": "TKGM and Adana official pages identify the Adana Cadastre Directorate and land-registry offices; the national parcel-query service is official. Exact-point API access returned HTTP 403, which leaves parcel presence and coverage unresolved."
+      }
+    ],
+    "attempts": [
+      {
+        "url": "https://cbsapi.tkgm.gov.tr/megsiswebapi.v3.1/api/parsel/35.27607428462/37.0133674018056",
+        "method": "Anonymous GET exact unchanged WUP latitude/longitude via inspected TKGM point adapter",
+        "result": "HTTP 403 Forbidden. No response feature retained; access failure is not treated as no parcel."
+      }
+    ]
+  },
+  "runtimeAssessment": {
+    "status": "not_enabled_no_verified_public_geometry",
+    "reason": "Research only; no parcel geometry sample or runtime adapter qualification."
+  },
+  "rootPrimaryReadback": {
+    "url": "https://www.tkgm.gov.tr/e-hizmetler/sik-kullanilanlar/parsel-sorgulama",
+    "fetch": 200,
+    "contentType": "text/html; charset=utf-8",
+    "title": "Tapu ve Kadastro Genel Müdürlüğü (TKGM)"
+  },
+  "rootReviewNote": "Reviewed the specific primary institution/service evidence and its geographical, access and date limits. Direct readback failures are preserved separately from indexed primary evidence. No public full parcel geometry was verified for this city in this discovery pass.",
+  "rootReviewedAt": "2026-10-09T04:30:00.451299+00:00"
+}

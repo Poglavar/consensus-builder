@@ -1,0 +1,342 @@
+{
+  "schemaVersion": 1,
+  "purpose": "Independent GEOS topology check of complete runtime parcels projected to metric coordinates; no repair applied. Counts are bounded sample evidence, not whole-city guarantees.",
+  "library": "Shapely 2.2.0",
+  "metricCrs": "EPSG:32735",
+  "featureCount": 46,
+  "validNonemptyCount": 46,
+  "invalidFeatures": [],
+  "exactDuplicateGeometryPairs": [],
+  "positiveAreaOverlapPairsAbove0_01M2": [],
+  "sumPairwiseOverlapM2": 0,
+  "operationErrors": [],
+  "areaM2": {
+    "min": 0.014504419936566072,
+    "median": 2700.911342414347,
+    "max": 16298.762335023772
+  },
+  "features": [
+    {
+      "id": "ZM-NSDI-LOT-112196",
+      "areaM2": 16298.762335023772,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "ZM-NSDI-LOT-112197",
+      "areaM2": 13733.451646619085,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "ZM-NSDI-LOT-112288",
+      "areaM2": 2439.476140668406,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "ZM-NSDI-LOT-112289",
+      "areaM2": 2322.5162017840735,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "ZM-NSDI-LOT-112290",
+      "areaM2": 2591.1019324984763,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "ZM-NSDI-LOT-112291",
+      "areaM2": 2470.1378433635273,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "ZM-NSDI-LOT-112188",
+      "areaM2": 2929.781688725281,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "ZM-NSDI-LOT-112191",
+      "areaM2": 2866.534142393963,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "ZM-NSDI-LOT-112205",
+      "areaM2": 3300.735045373605,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "ZM-NSDI-LOT-112206",
+      "areaM2": 2859.253966104952,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "ZM-NSDI-LOT-112207",
+      "areaM2": 2705.657653512114,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "ZM-NSDI-LOT-112208",
+      "areaM2": 2830.169351605739,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "ZM-NSDI-LOT-112209",
+      "areaM2": 2783.506678761119,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "ZM-NSDI-LOT-113116",
+      "areaM2": 2183.250141187075,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "ZM-NSDI-LOT-113117",
+      "areaM2": 2342.7662463603474,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "ZM-NSDI-LOT-113118",
+      "areaM2": 2410.671844730454,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "ZM-NSDI-LOT-113119",
+      "areaM2": 2157.953458079139,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "ZM-NSDI-LOT-112296",
+      "areaM2": 2905.161079650109,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "ZM-NSDI-LOT-112297",
+      "areaM2": 2420.3947851946223,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "ZM-NSDI-LOT-112298",
+      "areaM2": 2306.309099529489,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "ZM-NSDI-LOT-113114",
+      "areaM2": 2790.621159668931,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "ZM-NSDI-LOT-113115",
+      "areaM2": 2369.2537001655323,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "ZM-NSDI-LOT-112210",
+      "areaM2": 3074.3981753852377,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "ZM-NSDI-LOT-112211",
+      "areaM2": 5413.999479093454,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "ZM-NSDI-LOT-112212",
+      "areaM2": 1947.743153971313,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "ZM-NSDI-LOT-112202",
+      "areaM2": 3075.7107909585898,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "ZM-NSDI-LOT-112287",
+      "areaM2": 2646.9991423794822,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "ZM-NSDI-LOT-112299",
+      "areaM2": 2473.4137369236187,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "ZM-NSDI-LOT-112300",
+      "areaM2": 2556.757110369135,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "ZM-NSDI-LOT-112301",
+      "areaM2": 2451.1220929919637,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "ZM-NSDI-LOT-112223",
+      "areaM2": 2696.1650313165806,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "ZM-NSDI-LOT-112224",
+      "areaM2": 2734.4312024613805,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "ZM-NSDI-LOT-112225",
+      "areaM2": 3938.4058261798823,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "ZM-NSDI-LOT-112213",
+      "areaM2": 1437.245101671894,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "ZM-NSDI-LOT-129870",
+      "areaM2": 3213.9062625393585,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "ZM-NSDI-LOT-129871",
+      "areaM2": 3043.8436341539496,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "ZM-NSDI-LOT-112219",
+      "areaM2": 511.5888166642152,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "ZM-NSDI-LOT-112222",
+      "areaM2": 2308.553252513598,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "ZM-NSDI-LOT-125025",
+      "areaM2": 0.014504419936566072,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "ZM-NSDI-LOT-112215",
+      "areaM2": 2462.5712340395867,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "ZM-NSDI-LOT-112216",
+      "areaM2": 1671.3675688441353,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "ZM-NSDI-LOT-112217",
+      "areaM2": 2879.0382128557835,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "ZM-NSDI-LOT-112218",
+      "areaM2": 2948.772572159841,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "ZM-NSDI-LOT-112220",
+      "areaM2": 3165.254715450354,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "ZM-NSDI-LOT-112221",
+      "areaM2": 3031.2476828956374,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    },
+    {
+      "id": "ZM-NSDI-LOT-149980",
+      "areaM2": 15664.069468901049,
+      "valid": true,
+      "empty": false,
+      "parts": 1
+    }
+  ]
+}

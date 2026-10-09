@@ -1,0 +1,142 @@
+{
+  "name": "Bazarati",
+  "country": "India",
+  "countryCode": "IN",
+  "rank": 1138,
+  "point": [
+    22.4953847944724,
+    88.5706276658688
+  ],
+  "freshResearch": {
+    "queries": [
+      {
+        "language": "English",
+        "query": "Bazarati India official cadastral land records plot map Bhangar",
+        "scope": "Identify first-party local land-registry/cadastral custody and anonymous public parcel geometry. Preserve the exact WUP settlement point; do not submit owner, address, tax, account, lot/plot or applicant identifiers.",
+        "result": "English-language first-party and relevant source discovery; each listed official source was reviewed before use.",
+        "actualResultUrls": [
+          "https://s24pgs.gov.in/service/land-records/",
+          "https://bksy.wb.gov.in/wp-content/uploads/2023/07/S24PGS_LATLONG_ALLVILLGP.pdf",
+          "https://banglarbhumi.gov.in/BanglarBhumi/Home.action"
+        ]
+      },
+      {
+        "language": "Bengali",
+        "query": "বাজারাটি দক্ষিণ ২৪ পরগনা ভূমি অফিস মৌজা মানচিত্র ক্যানিং",
+        "scope": "Identify first-party local land-registry/cadastral custody and anonymous public parcel geometry. Preserve the exact WUP settlement point; do not submit owner, address, tax, account, lot/plot or applicant identifiers.",
+        "result": "The Bengali search results were not specific to Bazarati/South 24 Parganas; separate English source review established the district and village context.",
+        "actualResultUrls": [],
+        "executionMethod": "Separate local-language web search followed by first-party source review."
+      }
+    ],
+    "portals": [
+      {
+        "url": "https://s24pgs.gov.in/service/land-records/",
+        "operator": "South 24 Parganas District Government",
+        "observation": "Official land-records page links West Bengal BanglarBhumi and district land-record services, including mouza/plot map workflows."
+      },
+      {
+        "url": "https://bksy.wb.gov.in/wp-content/uploads/2023/07/S24PGS_LATLONG_ALLVILLGP.pdf",
+        "operator": "Government of West Bengal",
+        "observation": "Official village/GP directory places Bazarati in Bhangar-I block, Durgapur GP, with village code; establishes local geography only."
+      },
+      {
+        "url": "https://banglarbhumi.gov.in/BanglarBhumi/Home.action",
+        "operator": "Government of West Bengal BanglarBhumi",
+        "observation": "Official record portal timed out on anonymous initial GET; no mouza, plot, applicant or owner selectors submitted."
+      }
+    ],
+    "requests": [
+      {
+        "url": "https://s24pgs.gov.in/service/land-records/",
+        "method": "anonymous read-only GET; redirect-following; standard TLS; no credentials, cookies or property selectors",
+        "httpStatus": 200,
+        "contentType": "text/html; charset=UTF-8",
+        "bytesRead": 120463,
+        "assessment": "Direct official-source GET; response supports only the page/application description recorded in the source review."
+      },
+      {
+        "url": "https://banglarbhumi.gov.in/BanglarBhumi/Home.action",
+        "method": "anonymous read-only GET; redirect-following; standard TLS; no credentials, cookies or property selectors",
+        "httpStatus": null,
+        "contentType": "",
+        "bytesRead": 0,
+        "transportOutcome": "curl exit 28; connection timed out after 20 seconds; no HTTP response"
+      }
+    ],
+    "historicalContext": []
+  },
+  "status": "complete",
+  "verifiedParcelResponse": null,
+  "source": {
+    "sourceId": null,
+    "name": "https://s24pgs.gov.in/service/land-records/",
+    "url": "https://s24pgs.gov.in/service/land-records/",
+    "operator": "South 24 Parganas District Government",
+    "serviceType": "Official local registry/cadastral/map evidence reviewed; no safe full-parcel geometry was retained.",
+    "layer": null,
+    "geometryType": null,
+    "outputCrs": null,
+    "nativeIdField": null,
+    "nativeIdEvidence": null,
+    "attributesRequested": [],
+    "sampleCount": 0,
+    "sampleFile": null,
+    "directGeometryQueryVerified": false,
+    "directMetadataSchemaVerified": false,
+    "geometryStatus": "not_verified",
+    "operatorNote": "See first-party evidence and access limitations in registryBasis, freshResearch and service review."
+  },
+  "coverageAssessment": {
+    "claimedScope": "Bazarati is identified in an official state village list under Bhangar-I/Durgapur, and South 24 Parganas district administers land-record/mouza-map services. Custody is district/state; geometry remains unverified.",
+    "verifiedOpenScope": "No anonymous safe full parcel geometry response was verified in this investigation.",
+    "countrywideVerified": false,
+    "citywideVerified": false
+  },
+  "registryFound": true,
+  "verifiedSample": false,
+  "resultCategory": "official_local_registry_geometry_unverified",
+  "technicalBlocker": "No safe anonymous full-geometry response at the unchanged WUP point was verified; map/custody evidence does not establish runtime readiness.",
+  "remainingUncertainty": "Bazarati is identified in an official state village list under Bhangar-I/Durgapur, and South 24 Parganas district administers land-record/mouza-map services. Custody is district/state; geometry remains unverified. Public parcel geometry and extent at the exact WUP point remain unverified.",
+  "nextStep": "Revisit only if an official schema-backed public full-geometry route is documented; request safe IDs and geometry only.",
+  "schemaVersion": "1.0",
+  "checkedAt": "2026-10-09",
+  "wupCityCode": 11869,
+  "cityId": "wup2025:11869",
+  "runtimeReadiness": "not_enabled_no_verified_public_geometry",
+  "adapterReady": false,
+  "centerLatLon": [
+    22.4953847944724,
+    88.5706276658688
+  ],
+  "population2025k": 487.581,
+  "populationUnit": "persons",
+  "queueRank": 1138,
+  "population2025": 487581,
+  "populationPlausibility2025": "Moderate",
+  "pointBasis": "UN WUP 2025 population-weighted settlement point (latitude, longitude); not a municipal boundary or a parcel-coverage claim.",
+  "publicParcelGeometryFound": false,
+  "sourceIds": [],
+  "registryBasis": "Bazarati is identified in an official state village list under Bhangar-I/Durgapur, and South 24 Parganas district administers land-record/mouza-map services. Custody is district/state; geometry remains unverified.",
+  "registryEvidenceUrls": [
+    "https://s24pgs.gov.in/service/land-records/",
+    "https://bksy.wb.gov.in/wp-content/uploads/2023/07/S24PGS_LATLONG_ALLVILLGP.pdf",
+    "https://banglarbhumi.gov.in/BanglarBhumi/Home.action"
+  ],
+  "runtimeAssessment": {
+    "status": "not_enabled_no_verified_public_geometry",
+    "reason": "No safe anonymous full-geometry response at the unchanged WUP point was verified; map/custody evidence does not establish runtime readiness."
+  },
+  "cohort": "overnight-next-1101-1200",
+  "cohortState": "root_reviewed_integrated_locally",
+  "integrationState": "integrated_locally",
+  "rootReviewedAt": "2026-10-09T07:13:02.981057+00:00",
+  "rootReview": {
+    "checkedAt": "2026-10-09T07:13:02.981057+00:00",
+    "decision": "Reviewed city identity, canonical population/point, separate searches and saved source/request evidence. No full public parcel geometry verified in this pass.",
+    "custodyScope": "Bazarati is identified in an official state village list under Bhangar-I/Durgapur, and South 24 Parganas district administers land-record/mouza-map services. Custody is district/state; geometry remains unverified.",
+    "transportFailuresDoNotProveAbsence": true,
+    "geometryClaimScope": "Investigation outcome only; no worldwide or citywide absence asserted."
+  },
+  "integratedAt": "2026-10-09T07:14:03.673112+00:00"
+}

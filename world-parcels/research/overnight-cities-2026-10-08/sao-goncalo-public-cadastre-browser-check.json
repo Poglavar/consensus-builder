@@ -1,0 +1,23 @@
+{
+  "schemaVersion": 1,
+  "checkedAt": "2026-10-08T22:19:02.590133+00:00",
+  "city": "saogoncalo",
+  "url": "http://localhost:5638/?city=saogoncalo&backend=http%3A%2F%2Flocalhost%3A5640&reduceMotion=1",
+  "localUncommittedUndeployed": true,
+  "browserMode": "Dedicated headed Chrome",
+  "sourceId": "br-sg-prefeitura-geoserver-lote-cadastro",
+  "loadedParcelLayers": 112,
+  "selectedParcelId": "BR-SG-CAD-1041325",
+  "realPointerClick": {
+    "x": 683,
+    "y": 322
+  },
+  "detailsOpened": true,
+  "displayedNativeReferenceMatched": true,
+  "uncaughtPageErrors": [],
+  "sourceAlerts": [],
+  "browserClosed": true,
+  "screenshotCaptured": false,
+  "setupNotes": "Initial browser attempts used the wrong query parameter, then preceded preview gateway readiness. After the correct backend override and a listening gateway were verified, reload loaded 112 real source parcels and selection/details passed. These were local harness failures, not provider absence.",
+  "limitations": "Manual local source wiring and parcel interaction verified. The independent topology audit covers the 90 polygons from the bounded qualification grid, not every polygon that a broader UI view may retrieve. Exact WUP point and municipality-wide completeness remain unverified."
+}

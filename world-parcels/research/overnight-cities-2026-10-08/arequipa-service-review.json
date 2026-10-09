@@ -1,0 +1,85 @@
+{
+  "schemaVersion": 1,
+  "checkedAt": "2026-10-09",
+  "sourceId": "pe-arequipa-city-registry",
+  "purpose": "Review city-local registry basis and anonymous geometry-only routes without querying personal/property attributes.",
+  "primaryPublisher": "Municipalidad Provincial de Arequipa / SUNARP",
+  "sourceUrl": "https://www.gob.pe/institucion/sunarp/informes-publicaciones/5856508-convenio-de-adhesion-de-colaboracion-interinstitucional-entre-la-municipalidad-provincial-de-arequipa-y-la-sunarp-para-el-acceso-a-la-informacion-de-la-base-grafica-registral",
+  "registryFound": true,
+  "registryBasis": "The Municipalidad Provincial de Arequipa lists its urban-development and tax-registration units, including local predial records and property-sector maps. SUNARP’s official government publication records a 2024 agreement specifically with the provincial municipality to provide municipal access to registered-property polygons from the Base Gráfica Registral. The agreement is municipal/institutional access, not an anonymous public feed.",
+  "officialSources": [
+    {
+      "url": "https://www.gob.pe/institucion/sunarp/informes-publicaciones/5856508-convenio-de-adhesion-de-colaboracion-interinstitucional-entre-la-municipalidad-provincial-de-arequipa-y-la-sunarp-para-el-acceso-a-la-informacion-de-la-base-grafica-registral",
+      "observation": "The Municipalidad Provincial de Arequipa lists its urban-development and tax-registration units, including local predial records and property-sector maps. SUNARP’s official government publication records a 2024 agreement specifically with the provincial municipality to provide municipal access to registered-property polygons from the Base Gráfica Registral. The agreement is municipal/institutional access, not an anonymous public feed."
+    },
+    {
+      "url": "https://www.muniarequipa.gob.pe/direccion/",
+      "observation": "The Municipalidad Provincial de Arequipa lists its urban-development and tax-registration units, including local predial records and property-sector maps. SUNARP’s official government publication records a 2024 agreement specifically with the provincial municipality to provide municipal access to registered-property polygons from the Base Gráfica Registral. The agreement is municipal/institutional access, not an anonymous public feed."
+    },
+    {
+      "url": "https://www.muniarequipa.gob.pe/tributos-municipales/",
+      "observation": "The Municipalidad Provincial de Arequipa lists its urban-development and tax-registration units, including local predial records and property-sector maps. SUNARP’s official government publication records a 2024 agreement specifically with the provincial municipality to provide municipal access to registered-property polygons from the Base Gráfica Registral. The agreement is municipal/institutional access, not an anonymous public feed."
+    }
+  ],
+  "searchQueries": [
+    {
+      "language": "English",
+      "query": "Arequipa Peru official municipal cadastre registered parcel polygons SUNARP registry",
+      "scope": "Find primary city-local registry/cadastre basis and safe anonymous polygon routes.",
+      "result": "SUNARP’s government publication documents a 2024 interinstitutional agreement with the Municipalidad Provincial de Arequipa to allow the municipality to view, extract and download registered-property polygons within its jurisdiction. The agreement is institutional access; no public geometry endpoint was identified. The municipal directory lists development and tax-registration offices; no tax lookup was used.",
+      "actualResultUrls": [
+        "https://www.gob.pe/institucion/sunarp/informes-publicaciones/5856508-convenio-de-adhesion-de-colaboracion-interinstitucional-entre-la-municipalidad-provincial-de-arequipa-y-la-sunarp-para-el-acceso-a-la-informacion-de-la-base-grafica-registral",
+        "https://www.muniarequipa.gob.pe/direccion/",
+        "https://www.muniarequipa.gob.pe/tributos-municipales/"
+      ]
+    },
+    {
+      "language": "Spanish",
+      "query": "catastro municipal Arequipa mapa predial Base Gráfica Registral SUNARP convenio",
+      "scope": "Find local-language city-specific registry/cadastre basis and safe anonymous polygon routes.",
+      "result": "La publicación oficial de SUNARP registra un convenio con la Municipalidad Provincial de Arequipa para que el municipio visualice, extraiga y descargue polígonos de predios inscritos de su ámbito. Es acceso institucional, no un servicio vectorial anónimo. El directorio municipal muestra las áreas de desarrollo urbano y registro tributario; no se consultaron padrones ni datos prediales.",
+      "actualResultUrls": [
+        "https://www.gob.pe/institucion/sunarp/informes-publicaciones/5856508-convenio-de-adhesion-de-colaboracion-interinstitucional-entre-la-municipalidad-provincial-de-arequipa-y-la-sunarp-para-el-acceso-a-la-informacion-de-la-base-grafica-registral",
+        "https://www.muniarequipa.gob.pe/direccion/",
+        "https://www.muniarequipa.gob.pe/tributos-municipales/"
+      ]
+    }
+  ],
+  "accessReview": {
+    "publicAnonymousGeometryVerified": false,
+    "completeGeoreferencedPolygonCount": 0,
+    "geometryRetained": false,
+    "ownerAddressTaxOrPersonLookupRequested": false,
+    "authenticationOrCredentialsUsed": false,
+    "captchaOrPersonalFormSubmitted": false,
+    "routeInspectionStatus": "city_registry_verified_no_geometry_contract",
+    "reason": "The documented SUNARP Base Gráfica Registral polygons are provided to the municipality through an interinstitutional agreement, not exposed as an anonymous public route. Public municipal pages are descriptive and did not reveal a geometry-only schema or endpoint. No property or tax form was opened or used.",
+    "nativeIdsUsed": "No safe parcel feature identifier retrieved; no feature attributes requested."
+  },
+  "requestEvidence": [
+    {
+      "url": "https://www.gob.pe/institucion/sunarp/informes-publicaciones/5856508-convenio-de-adhesion-de-colaboracion-interinstitucional-entre-la-municipalidad-provincial-de-arequipa-y-la-sunarp-para-el-acceso-a-la-informacion-de-la-base-grafica-registral",
+      "method": "public government publication search/open",
+      "status": "status_not_exposed_by_web_open",
+      "httpStatusObtained": false,
+      "observation": "SUNARP’s publication page states the municipality may view, extract and download registered parcel polygons within its jurisdiction under agreement CNV-3657; access is for the municipal entity, not a public feature API."
+    },
+    {
+      "url": "https://www.muniarequipa.gob.pe/direccion/",
+      "method": "public page open",
+      "status": "status_not_exposed_by_web_open",
+      "httpStatusObtained": false,
+      "observation": "Municipal directory lists Gerencia de Desarrollo Urbano and Sub Gerencia de Registro Tributario; no parcel data queried."
+    },
+    {
+      "url": "https://www.muniarequipa.gob.pe/tributos-municipales/",
+      "method": "public page open",
+      "status": "status_not_exposed_by_web_open",
+      "httpStatusObtained": false,
+      "observation": "Municipal page describes predial property-tax services and sector maps; no account, taxpayer or parcel lookup used."
+    }
+  ],
+  "technicalBlocker": "The documented SUNARP Base Gráfica Registral polygons are provided to the municipality through an interinstitutional agreement, not exposed as an anonymous public route. Public municipal pages are descriptive and did not reveal a geometry-only schema or endpoint. No property or tax form was opened or used.",
+  "sampleDisposition": "No parcel geometry or feature attributes retained.",
+  "remainingUncertainty": "No anonymous polygon schema, safe native feature ID, or downloadable public geometry was verified. Municipal access conditions and any downstream map remain uninspected."
+}

@@ -1,0 +1,129 @@
+{
+  "name": "Izhevsk",
+  "country": "Russian Federation",
+  "countryCode": "RU",
+  "rank": 932,
+  "point": [
+    56.8470369034892,
+    53.2181357389102
+  ],
+  "population2025": 586811,
+  "population2025k": 586.811,
+  "schemaVersion": 1,
+  "kind": "city_parcel_source_research",
+  "checkedAt": "2026-10-09",
+  "populationUnit": "persons",
+  "status": "complete",
+  "verifiedSample": false,
+  "publicParcelGeometryFound": false,
+  "runtimeReadiness": "not_enabled_no_verified_public_geometry",
+  "priorEvidenceFiles": [],
+  "scopeLimits": "No official anonymous full-polygon endpoint, safe feature schema or exact-point response was verified. Public-map search results were not sufficient to establish current access.",
+  "pointBasis": "UN WUP 2025 population-weighted settlement centroid; this is not a municipal boundary or a parcel-coverage claim.",
+  "registryFound": true,
+  "registryBasis": "A government municipal page from nearby Votkinsk identifies the Udmurtia Rosreestr cadastral/registration authority and an Izhevsk office. This supports a local federal registry presence but is not direct city-government evidence.",
+  "resultCategory": "regional_registry_office_found_no_anonymous_geometry_verified",
+  "technicalBlocker": "No official anonymous vector endpoint or feature schema verified.",
+  "remainingUncertainty": "Current public cadastral-map availability and parcel visibility at the WUP point remain unverified.",
+  "nextStep": "Root review the local registry/map evidence; request an official public schema or coverage statement if city-point parcel geometry is needed, without using account-gated or property-specific searches.",
+  "freshResearch": {
+    "executedQueries": [
+      {
+        "language": "English",
+        "query": "Izhevsk Russia official cadastral map Rosreestr Udmurt Republic city land registry",
+        "result": "Search results identified the federal Rosreestr cadastral/registration authority and an Udmurtia office in Izhevsk via an official neighboring-municipality page; no anonymous city geometry endpoint was verified.",
+        "method": "Separate local-language/English discovery and first-party public-page review."
+      },
+      {
+        "language": "Russian",
+        "query": "Ижевск официальный сайт земельный кадастр Росреестр Удмуртия публичная кадастровая карта",
+        "result": "Russian-language results identified Rosreestr cadastral administration in Izhevsk but no first-party public vector schema or live feature service.",
+        "method": "Separate local-language/English discovery and first-party public-page review."
+      }
+    ],
+    "officialSources": [
+      {
+        "url": "https://www.votkinsk.ru/city/employment_service/rosreestr/",
+        "observation": "Official Votkinsk municipal page describes the Rosreestr Udmurtia cadastral/registration office and gives an Izhevsk branch address; this is state authority evidence but not an Izhevsk city page."
+      },
+      {
+        "url": "https://rosreestr.gov.ru/",
+        "observation": "Federal Rosreestr portal, the national registration/cadastre authority; no anonymous vector service at the WUP point was verified."
+      },
+      {
+        "url": "https://izh.ru/",
+        "observation": "Izhevsk municipal portal reviewed for city land/urban planning context; no local open cadastral geometry layer was verified."
+      }
+    ],
+    "viewerAndServiceTrace": {
+      "attempted": true,
+      "summary": "Reviewed public administrative descriptions only; no account-based rights, parcel, owner or address lookup submitted.",
+      "geometryStatus": "No anonymous full polygon response verified",
+      "fullPolygonLimit": 3,
+      "fullPolygonsRetained": 0,
+      "ownerOrAddressDataRequested": false,
+      "credentialsOrTokenValuesRetained": false
+    },
+    "attemptedGeometry": {
+      "attempted": true,
+      "status": "Reviewed public administrative descriptions only; no account-based rights, parcel, owner or address lookup submitted.",
+      "retainedFeatures": 0,
+      "fieldsRequested": [],
+      "geometryRetained": false,
+      "geojsonFile": null
+    }
+  },
+  "sourceIds": [],
+  "queueRank": 932,
+  "wupCityCode": 6484,
+  "cityId": "wup2025:6484",
+  "populationPlausibility2025": "High",
+  "centerLatLon": [
+    56.8470369034892,
+    53.2181357389102
+  ],
+  "adapterReady": false,
+  "source": {
+    "sourceId": "ru-izhevsk-public-registry-review",
+    "name": "Federal Service for State Registration, Cadastre and Cartography (Rosreestr), Udmurt Republic office",
+    "operator": "Federal Service for State Registration, Cadastre and Cartography (Rosreestr), Udmurt Republic office",
+    "url": "https://rosreestr.gov.ru/",
+    "serviceType": "National state registry/cadastre authority; no public vector service verified.",
+    "geometryType": null,
+    "coordinateReferenceSystem": null,
+    "nativeIdFields": [],
+    "directGeometryQueryVerified": false,
+    "directMetadataSchemaVerified": false,
+    "scope": "No official anonymous full-polygon endpoint, safe feature schema or exact-point response was verified. Public-map search results were not sufficient to establish current access."
+  },
+  "coverageAssessment": {
+    "claimedScope": "No official anonymous full-polygon endpoint, safe feature schema or exact-point response was verified. Public-map search results were not sufficient to establish current access.",
+    "verifiedOpenScope": "No anonymous full-polygon response returned in this review.",
+    "citywideVerified": false,
+    "countrywideVerified": false
+  },
+  "registryEvidenceUrls": [
+    "https://www.votkinsk.ru/city/employment_service/rosreestr/",
+    "https://rosreestr.gov.ru/",
+    "https://izh.ru/"
+  ],
+  "runtimeAssessment": {
+    "status": "not_enabled_no_verified_public_geometry",
+    "reason": "No official anonymous vector endpoint or feature schema verified."
+  },
+  "priorCheck": {
+    "attemptState": "pending",
+    "attemptEvidence": [],
+    "possiblePriorMatches": [],
+    "resolvedPriorMatches": []
+  },
+  "rootPrimaryReadback": {
+    "url": "https://www.votkinsk.ru/city/employment_service/rosreestr/",
+    "fetch": 200,
+    "contentType": "text/html; charset=UTF-8",
+    "title": "ФКП РОСРЕЕСТР - Муниципальное образование Город Воткинск"
+  },
+  "rootSourceDateNote": "The official Votkinsk municipal directory names the cadastral branch in Izhevsk and includes 2023 press releases; institutional location is supported but anonymous geometry and present organizational details remain unverified.",
+  "rootReviewNote": "Reviewed local institutional basis separately from anonymous vector access; direct readback errors are preserved and do not establish absence. No full parcel geometry was retrieved for this city in this discovery pass.",
+  "rootReviewedAt": "2026-10-09T04:44:50.237109+00:00"
+}

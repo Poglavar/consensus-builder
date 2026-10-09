@@ -1,0 +1,126 @@
+{
+  "cityId": "wup2025:6427",
+  "source": "https://geoserver.cirebonkota.go.id/geoserver/bpn/ows",
+  "checkedAt": "2026-10-09",
+  "scope": "Bounded sample and source-contract QA only; not a complete citywide adapter qualification.",
+  "wupPoint": {
+    "lat": -6.71888637851167,
+    "lon": 108.517123333245,
+    "coverageResult": "outside_official_boundary_extent_and_no_features_in_small_bboxes"
+  },
+  "officialCityExtent": {
+    "url": "https://tanahair.indonesia.go.id/sdi/dataset/batas_kota_cirebon",
+    "bboxWestLon": 108.518230847,
+    "bboxEastLon": 108.590813029,
+    "bboxSouthLat": -6.796386794,
+    "bboxNorthLat": -6.691326605,
+    "westwardGapMetersApprox": 122.3
+  },
+  "parcelLayers": {
+    "catalogEndpoint": "https://satupeta.cirebonkota.go.id/api/mapset?limit=100",
+    "publicApprovedLayers": [
+      "bpn:Persil_Kec_Kesambi",
+      "bpn:Persil_Kec_Kejaksan",
+      "bpn:Persil_Kec_Lemahwungkuk",
+      "bpn:Persil_Kec_Pekalipan",
+      "bpn:Persil_Kec_Harjamukti",
+      "bpn:Kel_Kesambi"
+    ],
+    "reportedCatalogRevisionYear": 2025
+  },
+  "wupNeighborhoodChecks": {
+    "bboxWgs84": [
+      108.515123333245,
+      -6.7208863785,
+      108.519123333245,
+      -6.7168863785
+    ],
+    "featureCounts": {
+      "bpn:Persil_Kec_Kesambi": 0,
+      "bpn:Persil_Kec_Kejaksan": 0,
+      "bpn:Persil_Kec_Lemahwungkuk": 0,
+      "bpn:Persil_Kec_Pekalipan": 0,
+      "bpn:Persil_Kec_Harjamukti": 0,
+      "bpn:Kel_Kesambi": 0
+    },
+    "projected50mChecks": {
+      "bboxEpsg23835": [
+        91288.77,
+        756945.14,
+        91388.77,
+        757045.14
+      ],
+      "layers": [
+        "bpn:Persil_Kec_Kesambi",
+        "bpn:Persil_Kec_Kejaksan",
+        "bpn:Persil_Kec_Lemahwungkuk",
+        "bpn:Persil_Kec_Pekalipan",
+        "bpn:Persil_Kec_Harjamukti"
+      ],
+      "allMatched": 0
+    }
+  },
+  "cityCoreProbe": {
+    "layer": "bpn:Persil_Kec_Kejaksan",
+    "bboxEpsg23835": [
+      96027.51,
+      757937.22,
+      96127.51,
+      758037.22
+    ],
+    "wfsHitsNumberMatched": 12,
+    "firstPageLimit": 3,
+    "firstPageNumberReturned": 3,
+    "offsetPageStartIndex": 3,
+    "offsetPageCount": 1,
+    "offsetPageUniqueIds": [
+      "Persil_Kec_Kejaksan.1992"
+    ],
+    "repoSampleIds": [
+      "Persil_Kec_Kejaksan.501",
+      "Persil_Kec_Kejaksan.1805",
+      "Persil_Kec_Kejaksan.1846"
+    ],
+    "repoSampleCount": 3,
+    "approxWupDistanceKm": 4.88,
+    "responseGeometryType": "MultiPolygon"
+  },
+  "privacy": {
+    "requestedWfsProperties": [
+      "geom"
+    ],
+    "savedProperties": [
+      "geometry-only"
+    ],
+    "ownerNameOrAddressRequested": false,
+    "nibRequested": false,
+    "nibSaved": false
+  },
+  "geometryQa": {
+    "engine": "GEOS 3.14.1",
+    "validityByFeature": {
+      "Persil_Kec_Kejaksan.501": true,
+      "Persil_Kec_Kejaksan.1805": true,
+      "Persil_Kec_Kejaksan.1846": true
+    },
+    "pairwiseIntersection": {
+      "pairCount": 3,
+      "positiveAreaOverlaps": 0,
+      "sharedBoundaryPairs": 2,
+      "disjointPairs": 1
+    },
+    "exactDuplicateIds": 0,
+    "geographicBounds": [
+      108.56,
+      -6.7099,
+      108.5606,
+      -6.7094
+    ]
+  },
+  "limitations": [
+    "No 13-cell citywide completeness probe was run.",
+    "WFS bbox coverage and paging behavior were tested only in one city-core 100 m window plus small WUP-point windows.",
+    "The public WFS source is fragmented by district; the production adapter contract is not qualified.",
+    "The WUP centroid is outside the published municipal extent, so the local city-core geometry sample does not establish exact point coverage."
+  ]
+}

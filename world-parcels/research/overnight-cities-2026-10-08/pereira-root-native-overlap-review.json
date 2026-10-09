@@ -1,0 +1,69 @@
+{
+  "url": "https://services3.arcgis.com/Zdpg0E6lri7EggIc/arcgis/rest/services/Terreno_Catastro__AMCO___09052025_/FeatureServer/0/query?objectIds=121984%2C149043%2C151002%2C154388&outFields=OBJECTID%2Cnumero_predial_nacional%2Ccomienzo_vida_util_version%2Cfin_vida_util_version&returnGeometry=true&outSR=9377&f=geojson",
+  "httpStatus": 200,
+  "checkedAt": "2026-10-09T04:25:39.066Z",
+  "nativeCrs": "EPSG:9377",
+  "featureCount": 4,
+  "requestedNativeObjectIds": [
+    121984,
+    149043,
+    151002,
+    154388
+  ],
+  "safeLifecycleValues": [
+    {
+      "OBJECTID": 121984,
+      "numero_predial_nacional": "660010105000000540027000000000",
+      "comienzo_vida_util_version": 1667943176000,
+      "fin_vida_util_version": null
+    },
+    {
+      "OBJECTID": 149043,
+      "numero_predial_nacional": "660010105000000540036000000000",
+      "comienzo_vida_util_version": 1667943198000,
+      "fin_vida_util_version": null
+    },
+    {
+      "OBJECTID": 151002,
+      "numero_predial_nacional": "660010105000000540125900000000",
+      "comienzo_vida_util_version": 1703304123000,
+      "fin_vida_util_version": null
+    },
+    {
+      "OBJECTID": 154388,
+      "numero_predial_nacional": "660010105000000540124000000000",
+      "comienzo_vida_util_version": 1667943176000,
+      "fin_vida_util_version": null
+    }
+  ],
+  "pairs": [
+    {
+      "nativeIds": [
+        "660010105000000540027000000000",
+        "660010105000000540125900000000"
+      ],
+      "overlapM2": 212.26748710269072,
+      "fractionOfSmaller": 0.9999999999999998,
+      "bothValid": true
+    },
+    {
+      "nativeIds": [
+        "660010105000000540036000000000",
+        "660010105000000540125900000000"
+      ],
+      "overlapM2": 201.96395149879865,
+      "fractionOfSmaller": 0.9999999999999999,
+      "bothValid": true
+    },
+    {
+      "nativeIds": [
+        "660010105000000540125900000000",
+        "660010105000000540124000000000"
+      ],
+      "overlapM2": 42.27715914853099,
+      "fractionOfSmaller": 1.0000000000000002,
+      "bothValid": true
+    }
+  ],
+  "decision": "All four conflicting native rows have fin_vida_util_version=null. Source lifecycle expiry does not clear these three full-containment overlaps. No undocumented national-key suffix, geometry repair or selective exclusion was applied."
+}

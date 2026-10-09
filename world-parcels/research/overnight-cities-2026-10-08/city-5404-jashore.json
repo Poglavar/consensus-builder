@@ -1,0 +1,193 @@
+{
+  "name": "Jashore",
+  "country": "Bangladesh",
+  "countryCode": "BD",
+  "rank": 950,
+  "point": [
+    23.1648922914328,
+    89.2106117572925
+  ],
+  "population2025": 578026,
+  "population2025k": 578.026,
+  "populationPlausibility2025": "Moderate",
+  "schemaVersion": 1,
+  "kind": "city_parcel_source_research",
+  "checkedAt": "2026-10-09",
+  "populationUnit": "persons",
+  "status": "complete",
+  "verifiedSample": false,
+  "publicParcelGeometryFound": false,
+  "runtimeReadiness": "not_enabled_no_verified_public_geometry",
+  "adapterReady": false,
+  "priorEvidenceFiles": [],
+  "priorCheck": {
+    "attemptState": "pending",
+    "attemptEvidence": [],
+    "possiblePriorMatches": [],
+    "resolvedPriorMatches": []
+  },
+  "pointBasis": "UN WUP 2025 population-weighted settlement centroid; this is not a municipal boundary or a parcel-coverage claim.",
+  "registryFound": true,
+  "registryBasis": "The official Jessore Zonal Settlement Office publishes Khatian and Mouza-map services; the Ministry of Land Records and Surveys portal offers map display and Khatian search, and states that it displays ongoing survey-stage records. The official district service catalogue describes certified Khatian and Mouza-map copies as application/fee-based. This confirms local survey/record services, not open full feature geometry.",
+  "registryEvidenceUrls": [
+    "https://zsojessore.gov.bd/",
+    "https://settlement.gov.bd/",
+    "https://map.settlement.gov.bd/",
+    "https://jessore.gov.bd/pages/static-pages/6981417735ce18e1c0701fe3",
+    "https://dlrs.gov.bd/site/page/2ac42327-9503-48bb-925b-511cc849c590/Jessore-"
+  ],
+  "resultCategory": "official_registry_map_tiles_no_full_geometry",
+  "remainingUncertainty": "Whether a completed city Mouza dataset exists outside the ongoing survey viewer; which Mouza covers the WUP point; whether certified-map ordering is the only public map route; full geometry schema.",
+  "scopeLimits": "The WUP locator is a settlement centroid, not a parcel identity. No citywide completeness is asserted. No owner/address/account/token values retained. At most three complete native parcel geometries may be retained for this city; none was obtained.",
+  "verifiedParcelResponse": null,
+  "source": {
+    "sourceId": "BD-DLRS-JASHORE-MOUZA-MAP",
+    "name": "DLRS public Mouza map viewer and map-order service",
+    "url": "https://settlement.gov.bd/Map/MapSearch",
+    "operator": "Department of Land Records and Surveys, Ministry of Land, Government of Bangladesh; Jessore Zonal Settlement Office.",
+    "serviceType": "Public Mouza survey viewer with administrative selectors, sheet maps and parcel vector tiles; no full-polygon feature endpoint verified. Certified map purchase/order service is separate.",
+    "layer": "Survey/Mouza parcel rendering through PBF vector tiles; specific city Mouza not resolved.",
+    "geometryType": "Vector tiles (PBF) only in the inspected route; no complete parcel polygon response retained.",
+    "outputCrs": null,
+    "nativeIdField": "District, survey type, upazila/Thana, Mouza code, sheet number and dag number.",
+    "nativeIdEvidence": "Administrative selector returned Jashore district and an ongoing RS survey; Thana list was empty, so no city Mouza/dag ID was resolved."
+  },
+  "sourceIds": [],
+  "wupCityCode": 5404,
+  "cityId": "wup2025:5404",
+  "queueRank": 950,
+  "centerLatLon": [
+    23.1648922914328,
+    89.2106117572925
+  ],
+  "technicalBlocker": "The public map interface exposes parcel rendering as vector tiles and requires district, survey, upazila/Thana, Mouza and sheet selectors. Current selector response returned no Thana data for the tested Jashore RS route; no full-polygon feature response was found.",
+  "coverageAssessment": {
+    "claimedScope": "Jessore/Jashore Zonal Settlement cadastral survey and Mouza map services. No citywide parcel completeness is claimed.",
+    "verifiedOpenScope": "Official public map page and JavaScript expose a Mouza map selector and PBF vector-tile layer. The public Jashore selector returned only an ongoing RS survey and no Thana list for the selected inputs; the route to individual Mouza/sheet is unresolved. Vector tiles are not retained as full parcel polygons.",
+    "citywideVerified": false,
+    "countrywideVerified": false,
+    "geometryVerified": false
+  },
+  "runtimeAssessment": {
+    "status": "not_enabled_no_verified_public_geometry",
+    "reason": "The public map interface exposes parcel rendering as vector tiles and requires district, survey, upazila/Thana, Mouza and sheet selectors. Current selector response returned no Thana data for the tested Jashore RS route; no full-polygon feature response was found."
+  },
+  "research": {
+    "executedQueries": [
+      {
+        "language": "Bengali",
+        "query": "যশোর সরকারি ভূমি রেকর্ড মৌজা ম্যাপ খতিয়ান জরিপ নকশা",
+        "scope": "Find first-party Jashore land-record and cadastral map sources.",
+        "result": "The official Jessore Zonal Settlement office lists Khatian lookup, Mouza maps and citizen applications. The official DLRS map portal displays ongoing survey records and provides a map-order service. The district service catalogue describes certified map and Khatian copies through application and fees.",
+        "actualResultUrls": [
+          "https://zsojessore.gov.bd/",
+          "https://settlement.gov.bd/",
+          "https://map.settlement.gov.bd/",
+          "https://jessore.gov.bd/pages/static-pages/6981417735ce18e1c0701fe3"
+        ],
+        "executionMethod": "Separate Bengali search followed by official zonal, DLRS and district service review."
+      },
+      {
+        "language": "English",
+        "query": "Jashore Bangladesh official cadastral map land records Mouza map parcel GIS",
+        "scope": "Cross-check public viewer data type and local map ordering path.",
+        "result": "Official DLRS sources expose a public Mouza map selector and a separate purchase/order workflow. The viewer script uses PBF parcel vector tiles; no full feature geometry response was identified, and its public Jashore RS selector returned no Thana data in the tested route.",
+        "actualResultUrls": [
+          "https://settlement.gov.bd/Map/MapSearch",
+          "https://map.settlement.gov.bd/",
+          "https://map.settlement.gov.bd/track-order",
+          "https://dlrs.gov.bd/site/page/2ac42327-9503-48bb-925b-511cc849c590/Jessore-"
+        ],
+        "executionMethod": "Separate English search and read-only official map shell, script and administrative selector review."
+      }
+    ],
+    "officialSources": [
+      {
+        "url": "https://zsojessore.gov.bd/",
+        "observation": "The official Jessore Zonal Settlement Office publishes Khatian and Mouza-map services; the Ministry of Land Records and Surveys portal offers map display and Khatian search, and states that it displays ongoing survey-stage records. The official district service catalogue describes certified Khatian and Mouza-map copies as application/fee-based. This confirms local survey/record services, not open full feature geometry."
+      },
+      {
+        "url": "https://settlement.gov.bd/",
+        "observation": "The official Jessore Zonal Settlement Office publishes Khatian and Mouza-map services; the Ministry of Land Records and Surveys portal offers map display and Khatian search, and states that it displays ongoing survey-stage records. The official district service catalogue describes certified Khatian and Mouza-map copies as application/fee-based. This confirms local survey/record services, not open full feature geometry."
+      },
+      {
+        "url": "https://map.settlement.gov.bd/",
+        "observation": "The official Jessore Zonal Settlement Office publishes Khatian and Mouza-map services; the Ministry of Land Records and Surveys portal offers map display and Khatian search, and states that it displays ongoing survey-stage records. The official district service catalogue describes certified Khatian and Mouza-map copies as application/fee-based. This confirms local survey/record services, not open full feature geometry."
+      },
+      {
+        "url": "https://jessore.gov.bd/pages/static-pages/6981417735ce18e1c0701fe3",
+        "observation": "The official Jessore Zonal Settlement Office publishes Khatian and Mouza-map services; the Ministry of Land Records and Surveys portal offers map display and Khatian search, and states that it displays ongoing survey-stage records. The official district service catalogue describes certified Khatian and Mouza-map copies as application/fee-based. This confirms local survey/record services, not open full feature geometry."
+      },
+      {
+        "url": "https://dlrs.gov.bd/site/page/2ac42327-9503-48bb-925b-511cc849c590/Jessore-",
+        "observation": "The official Jessore Zonal Settlement Office publishes Khatian and Mouza-map services; the Ministry of Land Records and Surveys portal offers map display and Khatian search, and states that it displays ongoing survey-stage records. The official district service catalogue describes certified Khatian and Mouza-map copies as application/fee-based. This confirms local survey/record services, not open full feature geometry."
+      }
+    ],
+    "requests": [
+      {
+        "url": "https://settlement.gov.bd/Map/MapSearch",
+        "method": "GET",
+        "httpStatus": 200,
+        "contentType": "text/html; charset=utf-8",
+        "observation": "Official public Mouza map viewer shell. Linked MapSearch.js exposes district/survey/Thana/Mouza/sheet selectors."
+      },
+      {
+        "url": "https://settlement.gov.bd/js/MapSearch.js",
+        "method": "GET",
+        "httpStatus": 200,
+        "contentType": "text/javascript",
+        "observation": "Viewer uses `/tiles/parcels/{rsnum}/{comcod}/{unitcod}/{z}/{x}/{y}.pbf` vector tiles and sheet-map routes; tile output is not treated as full parcel geometry."
+      },
+      {
+        "url": "https://settlement.gov.bd/Map/GetDivisionList",
+        "method": "POST empty form",
+        "httpStatus": 200,
+        "contentType": "application/json",
+        "observation": "Public division selector returned Khulna; no private records requested."
+      },
+      {
+        "url": "https://settlement.gov.bd/Khatian/getdistrictlistdivisionwise",
+        "method": "POST divid=020000000",
+        "httpStatus": 200,
+        "contentType": "application/json",
+        "observation": "Public Khulna division selector lists Jashore district code 020100000 (comcod 4166)."
+      },
+      {
+        "url": "https://settlement.gov.bd/Khatian/GetSurveyListDistrictWise",
+        "method": "POST districtid=020100000,comcod=4166",
+        "httpStatus": 200,
+        "contentType": "application/json",
+        "observation": "Returns RS survey 201901 marked ongoing."
+      },
+      {
+        "url": "https://settlement.gov.bd/Khatian/GetThanaListBySurveyMap",
+        "method": "POST comcod=4166,rsno1=201901,districtid=020100000",
+        "httpStatus": 200,
+        "contentType": "application/json",
+        "observation": "Returns an empty array; no upazila/Thana or Mouza could be selected on that route. No parcel identifier or geometry query was issued."
+      },
+      {
+        "url": "https://map.settlement.gov.bd/",
+        "method": "GET",
+        "httpStatus": 200,
+        "contentType": "text/html",
+        "observation": "Official DLRS map-purchase portal; map products are ordered/tracked, not a public vector feature service."
+      }
+    ],
+    "geometryDecision": "No full parcel polygon retained. Tile/raster/document outputs, guessed layers, and unverified points are not parcel geometry."
+  },
+  "rootPrimaryReadback": {
+    "url": "https://zsojessore.gov.bd/",
+    "fetch": "error",
+    "reason": "<urlopen error [Errno 8] nodename nor servname provided, or not known>"
+  },
+  "rootReviewNote": "Reviewed the local institutional evidence separately from public geometry. Indexed official evidence and direct readback failures are distinguished; no full polygon response was verified. Registry null indicates uncertainty rather than absence.",
+  "rootReviewedAt": "2026-10-09T04:50:18.532255+00:00",
+  "rootGeometryDecisionNote": "Public vector-tile rendering and an empty selector response do not establish complete native parcel retrieval. No runtime source or absence claim follows.",
+  "rootPrimarySupplement": {
+    "code": 5404,
+    "url": "https://jessore.gov.bd/pages/static-pages/6981417735ce18e1c0701fe3",
+    "fetch": "error",
+    "reason": "<urlopen error [SSL: CERTIFICATE_VERIFY_FAILED] certificate verify failed: unable to get local issuer certificate (_ssl.c:1082)>"
+  }
+}

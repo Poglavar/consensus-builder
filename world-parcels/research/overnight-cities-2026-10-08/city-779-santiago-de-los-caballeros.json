@@ -1,0 +1,116 @@
+{
+  "schemaVersion": 1,
+  "kind": "city_parcel_source_research",
+  "checkedAt": "2026-10-09",
+  "name": "Santiago de los Caballeros",
+  "country": "Dominican Republic",
+  "countryCode": "DO",
+  "populationUnit": "persons",
+  "status": "complete",
+  "registryFound": true,
+  "registryBasis": "The Dominican Republic’s official Registro Inmobiliario identifies its Dirección Regional de Mensuras Catastrales Norte as headquartered in Santiago de los Caballeros and gives it jurisdiction over Santiago Province. This is city-specific institutional evidence for the ranked settlement. The same agency publishes a public national parcel-viewer, but its page requires a security-verification step and the advertised downloads/table do not establish a safe geometry-and-ID-only response contract.",
+  "registryEvidenceUrls": [
+    "https://ri.gob.do/?page_id=331",
+    "https://apisandbox.ri.gob.do/",
+    "https://servicios.ri.gob.do/ConsultaParcelario",
+    "https://ri.gob.do/wp-content/uploads/download/Instructivo%20para%20la%20nueva%20consulta%20del%20parcelario.pdf"
+  ],
+  "verifiedSample": false,
+  "publicParcelGeometryFound": false,
+  "runtimeReadiness": "not_enabled_no_verified_public_geometry",
+  "wupCityCode": 779,
+  "cityId": "wup2025:779",
+  "centerLatLon": [
+    19.4585492131198,
+    -70.6940314853587
+  ],
+  "rank": 792,
+  "queueRank": 792,
+  "population2025": 681087,
+  "population2025k": 681.087,
+  "populationPlausibility2025": "High",
+  "pointBasis": "UN WUP 2025 population-weighted settlement centroid; this is not a municipal boundary or a parcel-coverage claim.",
+  "technicalBlocker": "A local cadastral registry and public parcel-viewing page are verified, but the public page requires security verification and advertises KML/Excel outputs without a verified geometry-plus-safe-ID-only schema. No target-point request or download was made; no complete polygon was retained.",
+  "scopeLimits": "Coverage at the exact WUP point, output attributes and public geometry endpoint/schema remain unverified. The national viewer is not evidence of citywide completeness.",
+  "remainingUncertainty": "Coverage at the exact WUP point, output attributes and public geometry endpoint/schema remain unverified. The national viewer is not evidence of citywide completeness.",
+  "research": {
+    "executedQueries": [
+      {
+        "language": "English",
+        "query": "Santiago de los Caballeros Dominican Republic official cadastral registry parcel map public geometry",
+        "scope": "Identify city-local registry evidence and a safe anonymous parcel geometry route; do not query owner, address, tax-account, personal or title data.",
+        "result": "Official Registro Inmobiliario sources identify the North Regional Cadastral Survey Directorate in Santiago and describe the national public cadastral viewer. The viewer advertises coordinate/positional lookup, KML and Excel downloads, and a security verification step; no safe field allowlist was verified and no query was submitted.",
+        "actualResultUrls": [
+          "https://ri.gob.do/?page_id=331",
+          "https://servicios.ri.gob.do/ConsultaParcelario"
+        ],
+        "executionMethod": "Separate English/local-language public-source searches and review of official public pages; no personal parcel lookup."
+      },
+      {
+        "language": "Spanish",
+        "query": "site:ri.gob.do Santiago de los Caballeros Dirección Regional de Mensuras Catastrales consulta parcelario catastral",
+        "scope": "Identify city-local registry evidence and a safe anonymous parcel geometry route; do not query owner, address, tax-account, personal or title data.",
+        "result": "La Dirección Regional de Mensuras Catastrales Norte tiene sede en Santiago de los Caballeros y jurisdicción sobre Santiago. La consulta parcelaria admite coordenadas/designación posicional y ofrece KML/Excel, pero exige verificación de seguridad y no expone un esquema que garantice solo geometría e identificadores; no se envió consulta.",
+        "actualResultUrls": [
+          "https://ri.gob.do/?page_id=331",
+          "https://servicios.ri.gob.do/ConsultaParcelario",
+          "https://ri.gob.do/wp-content/uploads/download/Instructivo%20para%20la%20nueva%20consulta%20del%20parcelario.pdf"
+        ],
+        "executionMethod": "Separate English/local-language public-source searches and review of official public pages; no personal parcel lookup."
+      }
+    ],
+    "officialSources": [
+      {
+        "url": "https://ri.gob.do/?page_id=331",
+        "observation": "Official Registro Inmobiliario directory identifies the North Regional Cadastral Survey Directorate, headquartered in Santiago de los Caballeros, with jurisdiction over Santiago Province."
+      },
+      {
+        "url": "https://servicios.ri.gob.do/ConsultaParcelario",
+        "observation": "Anonymous public page offers coordinate/positional input, parcel-status checkboxes and KML/Excel downloads, then displays a security-verification step before consultation. No query was submitted; the page alone does not establish a safe response-field allowlist."
+      },
+      {
+        "url": "https://ri.gob.do/wp-content/uploads/download/Instructivo%20para%20la%20nueva%20consulta%20del%20parcelario.pdf",
+        "observation": "Official instructions describe map click or coordinate/positional search, parcel layers and export buttons. They do not specify a geometry-only schema."
+      }
+    ],
+    "metadataReviewFile": "santiago-de-los-caballeros-service-review.json",
+    "routeInspectionFile": "/tmp/overnight-cities-2026-10-08/city-779-route-inspection.json"
+  },
+  "source": {
+    "sourceId": null,
+    "name": null,
+    "operator": null,
+    "url": null,
+    "serviceType": "No verified anonymous geometry-only parcel feature endpoint in this review.",
+    "geometryType": null,
+    "coordinateReferenceSystem": null,
+    "nativeIdFields": [],
+    "directGeometryQueryVerified": false,
+    "directMetadataSchemaVerified": false,
+    "scope": "Coverage at the exact WUP point, output attributes and public geometry endpoint/schema remain unverified. The national viewer is not evidence of citywide completeness."
+  },
+  "coverageAssessment": {
+    "citywideCompletenessAsserted": false,
+    "wupPointParcelPresenceAsserted": false,
+    "basis": "No parcel features were received; registry evidence and map/service descriptions are not parcel coverage claims."
+  },
+  "runtimeAssessment": {
+    "state": "not_enabled_no_verified_public_geometry",
+    "reason": "No complete public parcel polygon was verified under a schema that returns only geometry and safe identifiers.",
+    "status": "not_enabled_no_verified_public_geometry"
+  },
+  "rootReview": "pending",
+  "rootReviewNote": "Root reviewed primary local institutional/service evidence and retained the actual access, coverage and identity limits. Direct readback errors are distinct from indexed primary evidence and do not prove absent data. No public full geometry was verified for this city.",
+  "point": [
+    19.4585492131198,
+    -70.6940314853587
+  ],
+  "sourceIds": [],
+  "rootPrimaryReadback": {
+    "url": "https://ri.gob.do/?page_id=331",
+    "fetch": 200,
+    "contentType": "text/html; charset=UTF-8",
+    "title": "Mensuras catastrales - Registro Inmobiliario"
+  },
+  "rootReviewedAt": "2026-10-09T03:28:12.559388+00:00"
+}

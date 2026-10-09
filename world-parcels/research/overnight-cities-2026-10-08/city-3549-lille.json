@@ -1,0 +1,180 @@
+{
+  "name": "Lille",
+  "country": "France",
+  "countryCode": "FR",
+  "rank": 578,
+  "point": [
+    50.6588228758037,
+    3.10526733091648
+  ],
+  "freshResearch": {
+    "queries": [
+      {
+        "language": "French",
+        "query": "Lille cadastre officiel parcelles données ouvertes API Cadastre IGN géométrie",
+        "result": "La Ville de Lille publie une rubrique open data et MEL offre le service cartographique MELMAP. L’API officielle IGN Cadastre, filtrée sur le code communal 59350, a indiqué 60 843 éléments correspondants et renvoyé trois géométries complètes. La requête au point WUP n’a renvoyé aucune parcelle.",
+        "urls": [
+          "https://www.lille.fr/Open-data",
+          "https://www.lillemetropole.fr/melmap",
+          "https://apicarto.ign.fr/api/cadastre",
+          "https://apicarto.ign.fr/api/doc/pdf/docUser_moduleCadastre.pdf"
+        ]
+      },
+      {
+        "language": "English",
+        "query": "Lille official cadastral parcels city code 59350 public GeoJSON API IGN",
+        "result": "Official IGN API returned three full MultiPolygons filtered to Lille commune code 59350. The WUP-point request returned zero; the commune-filtered sample is not a point match or completeness proof.",
+        "urls": [
+          "https://www.lille.fr/Open-data",
+          "https://www.lillemetropole.fr/melmap",
+          "https://apicarto.ign.fr/api/cadastre",
+          "https://apicarto.ign.fr/api/doc/pdf/docUser_moduleCadastre.pdf"
+        ]
+      }
+    ],
+    "portals": [
+      {
+        "url": "https://www.lille.fr/Open-data",
+        "observation": "Official IGN API serves full parcel geometries for the Lille commune code; City and MEL document local open-data/GIS context."
+      },
+      {
+        "url": "https://www.lillemetropole.fr/melmap",
+        "observation": "Official IGN API serves full parcel geometries for the Lille commune code; City and MEL document local open-data/GIS context."
+      },
+      {
+        "url": "https://apicarto.ign.fr/api/cadastre",
+        "observation": "Official IGN API serves full parcel geometries for the Lille commune code; City and MEL document local open-data/GIS context."
+      },
+      {
+        "url": "https://apicarto.ign.fr/api/doc/pdf/docUser_moduleCadastre.pdf",
+        "observation": "Official IGN API serves full parcel geometries for the Lille commune code; City and MEL document local open-data/GIS context."
+      }
+    ],
+    "requests": [
+      {
+        "url": "https://apicarto.ign.fr/api/cadastre/parcelle?code_insee=59350&source_ign=PCI&_limit=3",
+        "method": "GET",
+        "httpStatus": 200,
+        "contentType": "application/json",
+        "numberMatched": 60843,
+        "numberReturned": 3,
+        "geometryType": "MultiPolygon",
+        "responseCrs": "EPSG:4326",
+        "schemaSafeFields": [
+          "idu",
+          "code_insee",
+          "nom_com",
+          "section",
+          "numero",
+          "geometry"
+        ],
+        "cityFilter": "code_insee=59350 (Lille), source_ign=PCI, _limit=3",
+        "sampleFile": "samples/lille-ign-cadastre-code59350.geojson",
+        "sampleSha256": "58d3808cd2eb1b34a5e57ba136729309cdbf03fb99c6c42ab0d817765d4b7bf8",
+        "retainedIdentifiers": [
+          "59350000DR0010",
+          "59350000MT0014",
+          "59350000NZ0150"
+        ],
+        "pointQuery": {
+          "url": "https://apicarto.ign.fr/api/cadastre/parcelle?code_insee=59350&source_ign=PCI&geom=%7B%22type%22%3A%22Point%22%2C%22coordinates%22%3A%5B3.10526733091648%2C50.6588228758037%5D%7D&_limit=3",
+          "httpStatus": 200,
+          "numberMatched": 0,
+          "numberReturned": 0
+        }
+      }
+    ]
+  },
+  "status": "complete",
+  "verifiedParcelResponse": {
+    "httpStatus": 200,
+    "featureType": "MultiPolygon",
+    "responseType": "FeatureCollection",
+    "responseCrs": "EPSG:4326",
+    "returnedFullPolygonCount": 3,
+    "uniqueFullPolygonCount": 3,
+    "wupPointContained": null,
+    "limitations": "Three full city-scoped polygons retained; no citywide pagination/completeness qualification."
+  },
+  "source": {
+    "sourceId": "fr-ign-parcellaire-express",
+    "name": "France IGN/DGFiP Parcellaire Express (PCI)",
+    "operator": "IGN / DGFiP",
+    "url": "https://data.geopf.fr/wfs/ows",
+    "serviceType": "wfs",
+    "layer": "CADASTRALPARCELS.PARCELLAIRE_EXPRESS:parcelle",
+    "geometryType": "Polygon/MultiPolygon",
+    "outputCrs": "EPSG:4326",
+    "nativeIdField": "idu",
+    "scope": "281 valid, distinct official cadastral polygons verified in thirteen local 0.001-degree cells around the unchanged WUP settlement locator. Complete pages, forced three-row pagination, all 281 fresh native cadastral-reference reads, valid synthetic absence, footprint and source binding passed. Independent GEOS in EPSG:32631 found no invalid polygons, duplicate geometry, overlaps above 0.01 m² or operation errors. Lille metropolitan settlement locator near Marcq-en-Barœul, which is a separate commune. The initial query restricted to Lille commune 59350 returned no parcel at the WUP point; the existing nationwide IGN provider verifies nearby ground at the unchanged locator without that municipal restriction. Wider municipal completeness, legal boundary accuracy and long-term identifier continuity remain unverified.",
+    "identityBasis": "Fresh bounded adapter qualification uses the publisher native cadastral key, preserving complete geometry and separate transport IDs."
+  },
+  "coverageAssessment": {
+    "claimedScope": "Official parcel layer contains features identified as Lille.",
+    "verifiedOpenScope": "281 valid, distinct official cadastral polygons verified in thirteen local 0.001-degree cells around the unchanged WUP settlement locator. Complete pages, forced three-row pagination, all 281 fresh native cadastral-reference reads, valid synthetic absence, footprint and source binding passed. Independent GEOS in EPSG:32631 found no invalid polygons, duplicate geometry, overlaps above 0.01 m² or operation errors. Lille metropolitan settlement locator near Marcq-en-Barœul, which is a separate commune. The initial query restricted to Lille commune 59350 returned no parcel at the WUP point; the existing nationwide IGN provider verifies nearby ground at the unchanged locator without that municipal restriction. Wider municipal completeness, legal boundary accuracy and long-term identifier continuity remain unverified.",
+    "countrywideVerified": false,
+    "citywideVerified": false
+  },
+  "registryFound": true,
+  "registryBasis": "Official IGN API serves full parcel geometries for the Lille commune code; City and MEL document local open-data/GIS context.",
+  "verifiedSample": true,
+  "publicParcelGeometryFound": true,
+  "resultCategory": "verified_public_geometry_runtime_enabled",
+  "technicalBlocker": null,
+  "remainingUncertainty": "Whether the source has complete citywide enumeration and whether the WUP population point lies inside the formal municipal boundary remain unverified.",
+  "nextStep": "Qualify source paging/completeness and municipality coverage before considering runtime use; do not infer WUP-point coverage from other city samples.",
+  "sourceIds": [
+    "fr-ign-parcellaire-express"
+  ],
+  "schemaVersion": 1,
+  "checkedAt": "2026-10-09",
+  "wupCityCode": 3549,
+  "cityId": "wup2025:3549",
+  "queueRank": 578,
+  "population2025": 893282,
+  "populationPlausibility2025": "High",
+  "populationUnit": "persons",
+  "pointBasis": "UN WUP 2025 population-weighted settlement centroid; this is not a municipal boundary or a parcel-coverage claim.",
+  "centerLatLon": [
+    50.6588228758037,
+    3.10526733091648
+  ],
+  "runtimeReadiness": "enabled",
+  "adapterReady": false,
+  "scopeLimits": "281 valid, distinct official cadastral polygons verified in thirteen local 0.001-degree cells around the unchanged WUP settlement locator. Complete pages, forced three-row pagination, all 281 fresh native cadastral-reference reads, valid synthetic absence, footprint and source binding passed. Independent GEOS in EPSG:32631 found no invalid polygons, duplicate geometry, overlaps above 0.01 m² or operation errors. Lille metropolitan settlement locator near Marcq-en-Barœul, which is a separate commune. The initial query restricted to Lille commune 59350 returned no parcel at the WUP point; the existing nationwide IGN provider verifies nearby ground at the unchanged locator without that municipal restriction. Wider municipal completeness, legal boundary accuracy and long-term identifier continuity remain unverified.",
+  "registryEvidenceUrls": [
+    "https://www.lille.fr/Open-data",
+    "https://www.lillemetropole.fr/melmap",
+    "https://apicarto.ign.fr/api/cadastre",
+    "https://apicarto.ign.fr/api/doc/pdf/docUser_moduleCadastre.pdf"
+  ],
+  "rootReviewedAt": "2026-10-09T01:44:14.672457+00:00",
+  "appCityId": "lille",
+  "runtimeAssessment": {
+    "status": "enabled",
+    "reason": "281 valid, distinct official cadastral polygons verified in thirteen local 0.001-degree cells around the unchanged WUP settlement locator. Complete pages, forced three-row pagination, all 281 fresh native cadastral-reference reads, valid synthetic absence, footprint and source binding passed. Independent GEOS in EPSG:32631 found no invalid polygons, duplicate geometry, overlaps above 0.01 m² or operation errors. Lille metropolitan settlement locator near Marcq-en-Barœul, which is a separate commune. The initial query restricted to Lille commune 59350 returned no parcel at the WUP point; the existing nationwide IGN provider verifies nearby ground at the unchanged locator without that municipal restriction. Wider municipal completeness, legal boundary accuracy and long-term identifier continuity remain unverified.",
+    "acceptanceFile": "research/overnight-cities-2026-10-08/lille-ign-root-acceptance.json",
+    "qualityFile": "research/overnight-cities-2026-10-08/lille-ign-root-quality.json",
+    "qualityReviewFile": "research/overnight-cities-2026-10-08/lille-service-review.json"
+  },
+  "runtimeQualification": {
+    "sourceId": "fr-ign-parcellaire-express",
+    "status": "enabled",
+    "acceptanceFile": "research/overnight-cities-2026-10-08/lille-ign-root-acceptance.json",
+    "qualityFile": "research/overnight-cities-2026-10-08/lille-ign-root-quality.json"
+  },
+  "discoverySource": {
+    "operator": "Institut national de l’information géographique et forestière (IGN), official Cadastre PCI; Ville de Lille and MEL public GIS",
+    "url": "https://apicarto.ign.fr/api/cadastre/parcelle?code_insee=59350&source_ign=PCI&_limit=3",
+    "format": "Official API Carto Cadastre GeoJSON, EPSG:4326; exact commune filter code_insee=59350",
+    "nativeIdField": "idu",
+    "basis": "Official IGN API serves full parcel geometries for the Lille commune code; City and MEL document local open-data/GIS context.",
+    "urls": [
+      "https://www.lille.fr/Open-data",
+      "https://www.lillemetropole.fr/melmap",
+      "https://apicarto.ign.fr/api/cadastre",
+      "https://apicarto.ign.fr/api/doc/pdf/docUser_moduleCadastre.pdf"
+    ],
+    "scope": "281 valid, distinct official cadastral polygons verified in thirteen local 0.001-degree cells around the unchanged WUP settlement locator. Complete pages, forced three-row pagination, all 281 fresh native cadastral-reference reads, valid synthetic absence, footprint and source binding passed. Independent GEOS in EPSG:32631 found no invalid polygons, duplicate geometry, overlaps above 0.01 m² or operation errors. Lille metropolitan settlement locator near Marcq-en-Barœul, which is a separate commune. The initial query restricted to Lille commune 59350 returned no parcel at the WUP point; the existing nationwide IGN provider verifies nearby ground at the unchanged locator without that municipal restriction. Wider municipal completeness, legal boundary accuracy and long-term identifier continuity remain unverified."
+  }
+}

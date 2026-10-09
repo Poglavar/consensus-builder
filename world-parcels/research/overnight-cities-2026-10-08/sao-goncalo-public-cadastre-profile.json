@@ -1,0 +1,70 @@
+{
+  "schemaVersion": "1.0",
+  "status": "qualified_candidate_pending_root_review_integration",
+  "city": "São Gonçalo",
+  "wupCityCode": 8026,
+  "rank": 292,
+  "centerLatLon": [
+    -22.8357484330541,
+    -43.0260274875774
+  ],
+  "sourceId": "BR-RJ-SAO-GONCALO-GEOSERVER-LOTE-CADASTRO",
+  "adapterDescriptor": {
+    "id": "br-sg-prefeitura-geoserver-lote-cadastro",
+    "name": "São Gonçalo municipal cadastral lots (GeoServer WFS)",
+    "adapter": "wfs",
+    "endpoint": "https://geoserver.pmsg.rj.gov.br/ows",
+    "featureType": "SaoGoncalo:lote_a_cadastro_sg",
+    "idField": "id",
+    "idType": "integer",
+    "idPrefix": "BR-SG-CAD-",
+    "geometryField": "geom",
+    "requestProperties": true,
+    "outFields": [
+      "id"
+    ],
+    "pageSize": 1000,
+    "maxFeatures": 10000,
+    "maxBboxKm2": 25,
+    "countryCode": "BR",
+    "metricSrid": 31983,
+    "scope": "Public WFS parcel layer in São Gonçalo municipality; bounded geometry-only research near the ranked locator, not authoritative legal title determination."
+  },
+  "verifiedQuery": {
+    "service": "WFS 2.0.0 GetFeature",
+    "layer": "SaoGoncalo:lote_a_cadastro_sg",
+    "crs": "CRS:84 bbox; EPSG:4326 GeoJSON response",
+    "geometryField": "geom",
+    "nativeIdField": "id",
+    "nativeIdType": "integer",
+    "requestedAttributes": [
+      "id"
+    ],
+    "ownerAddressFieldsRequested": false,
+    "fullSampleLimit": 3
+  },
+  "qualification": {
+    "gridCells": 13,
+    "rawObservations": 139,
+    "uniqueNativeIds": 90,
+    "freshExactIdReads": 90,
+    "forcedPageSize": 3,
+    "explicitAbsentId": "BR-SG-CAD-999999999",
+    "allAdapterChecksPassed": true,
+    "exactWupPointProbe": "empty; no parcel containment claim",
+    "pairwiseDistinctIdPairsCompared": 4005,
+    "positiveAreaOverlapPairsAbove0_01m2": 0,
+    "operationErrors": 0,
+    "geosValidPolygons": 90,
+    "geosInvalidPolygons": 0,
+    "qaFile": "sao-goncalo-public-cadastre-quality.json",
+    "sampleFile": "sao-goncalo-public-cadastre-samples.geojson",
+    "acceptanceFile": "sao-goncalo-public-cadastre-acceptance.json"
+  },
+  "identityNotes": {
+    "nativeIdField": "id integer",
+    "gmlFeatureId": "ephemeral; observed varying for same native id, not persisted as parcel ID",
+    "permanence": "Native field stable across this live exact-ID re-read only; long-term permanence semantics undocumented."
+  },
+  "scope": "Nearby geometry in bounded WUP-centered cells only. No citywide or exact-center coverage claim; no login, token, owner or address data."
+}

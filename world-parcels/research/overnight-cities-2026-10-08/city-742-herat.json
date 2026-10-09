@@ -1,0 +1,123 @@
+{
+  "schemaVersion": 1,
+  "kind": "city_parcel_source_research",
+  "checkedAt": "2026-10-09",
+  "name": "Herat",
+  "country": "Afghanistan",
+  "countryCode": "AF",
+  "populationUnit": "persons",
+  "status": "complete",
+  "registryFound": true,
+  "registryBasis": "Herat Municipality reports that its citywide IFMS supports municipal sanitation/charges for properties, processing related documents, and property registration in urban nawahi. MUDL separately reports 4,595 property deeds distributed to residents of informal areas of Herat city. These city-specific sources establish municipal property registration and an informal-settlement registration program, but not complete private-parcel coverage or public geometry.",
+  "registryEvidenceUrls": [
+    "https://www.herat-m.gov.af/node/389",
+    "https://mudh.gov.af/dr/categories/%D9%87%D8%B1%D8%A7%D8%AA%C2%A0",
+    "https://www.mudh.gov.af/index.php/en/over-30k-jeribs-land-register-herat",
+    "https://herat-m.gov.af/map",
+    "https://herat-m.gov.af/node/973",
+    "https://herat-m.gov.af/index.php/dr/%D9%85%D8%B9%D9%84%D9%88%D9%85%D8%A7%D8%AA-%D9%86%D9%88%D8%A7%D8%AD%DB%8C",
+    "https://www.herat-m.gov.af/index.php/ps/node/949"
+  ],
+  "verifiedSample": false,
+  "publicParcelGeometryFound": false,
+  "runtimeReadiness": "not_enabled_no_verified_public_geometry",
+  "wupCityCode": 742,
+  "cityId": "wup2025:742",
+  "centerLatLon": [
+    34.3496010365185,
+    62.2071373348177
+  ],
+  "rank": 405,
+  "queueRank": 405,
+  "population2025": 1259425,
+  "population2025k": 1259.425,
+  "pointBasis": "UN WUP 2025 population-weighted settlement centroid; this is not a municipal boundary or a parcel-coverage claim.",
+  "technicalBlocker": "Herat Municipality’s English, Dari and Pashto map pages embed the same static 1600×1110 JPEG city map. It has a scale bar but no georeferenced parcel polygons, GIS client, or geometry endpoint. City-specific IFMS and informal-settlement property-registration sources confirm registry activity but disclose no public parcel feature service. No complete polygon geometry was retrieved.",
+  "scopeLimits": "The Herat Municipality IFMS evidence concerns municipal property registration and sanitation-charge administration in urban nawahi; the MUDL deeds evidence concerns informal areas of Herat city. Neither establishes complete private-parcel coverage or a public feature service. The separate MUDL state-land report is province-level and is not used as evidence of citywide private cadastre.",
+  "remainingUncertainty": "The WUP locator and parcels near it remain unverified. The IFMS scope is municipal property registration/charge administration in urban nawahi, and the MUDL deed report is limited to informal areas; neither establishes complete private-parcel coverage. Other non-public or unindexed registry systems may exist.",
+  "research": {
+    "executedQueries": [
+      {
+        "language": "English",
+        "query": "Herat Afghanistan official municipal land registry cadastral map parcels open GIS",
+        "scope": "Find Herat-specific land-registration evidence and anonymous parcel geometry routes.",
+        "result": "Official Herat Municipality reporting documents an IFMS used for municipal property registration and sanitation-charge administration in urban nawahi. MUDL reports property deeds distributed to residents of informal areas of Herat city. Neither source publishes parcel geometry. The municipal map remains a static image; no public geometry service was verified.",
+        "actualResultUrls": [
+          "https://www.mudh.gov.af/index.php/en/over-30k-jeribs-land-register-herat",
+          "https://herat-m.gov.af/map"
+        ],
+        "executionMethod": "English-language web search followed by official Ministry of Urban Development and Land and Herat Municipality page inspection."
+      },
+      {
+        "language": "Dari",
+        "query": "هرات افغانستان نقشه کادستر ثبت زمین ملکیت اداره اراضی هرات شاروالی",
+        "scope": "یافتن شواهد محلی ثبت زمین و مسیر عمومی ناشناس برای هندسهٔ قطعات در هرات.",
+        "result": "گزارش رسمی شاروالی هرات می‌گوید سیستم IFMS برای ثبت املاک شهری و روند مالیات/صفایی در نواحی شهری استفاده می‌شود. وزارت شهرسازی و اراضی نیز از توزیع ۴٬۵۹۵ سند ملکیت به باشندگان ساحات غیررسمی شهر هرات خبر داده است. این شواهد محدود به ثبت شهری و ساحات غیررسمی است؛ نقشهٔ عمومی شاروالی فقط تصویر ثابت است و هندسهٔ پارسل را منتشر نمی‌کند.",
+        "actualResultUrls": [
+          "https://www.herat-m.gov.af/node/389",
+          "https://mudh.gov.af/dr/categories/%D9%87%D8%B1%D8%A7%D8%AA%C2%A0",
+          "https://herat-m.gov.af/map",
+          "https://herat-m.gov.af/node/973",
+          "https://herat-m.gov.af/index.php/dr/%D9%85%D8%B9%D9%84%D9%88%D9%85%D8%A7%D8%AA-%D9%86%D9%88%D8%A7%D8%AD%DB%8C"
+        ],
+        "executionMethod": "جست‌وجو به زبان دری و بررسی صفحات رسمی وزارت شهرسازی و اراضی و شاروالی هرات."
+      }
+    ],
+    "officialSources": [
+      {
+        "url": "https://www.herat-m.gov.af/node/389",
+        "observation": "Official Dari Herat Municipality report (2019) states that the city IFMS digitizes property sanitation/municipal-charge distribution, financial/administrative paperwork, and property registration in urban nawahi. This is city-specific property-registry evidence, not a published parcel geometry source."
+      },
+      {
+        "url": "https://mudh.gov.af/dr/categories/%D9%87%D8%B1%D8%A7%D8%AA%C2%A0",
+        "observation": "Official MUDL Dari Herat category page reports 4,595 property deeds distributed to residents of informal areas of Herat city under an urban informal-settlement registration program (2021). Scope is the covered informal areas, not all private parcels."
+      },
+      {
+        "url": "https://www.mudh.gov.af/index.php/en/over-30k-jeribs-land-register-herat",
+        "observation": "MUDL report dated 2020 describes survey and registration of state-owned land in western Herat Province; retained only as province/state-land context, not as citywide private-parcel evidence."
+      },
+      {
+        "url": "https://herat-m.gov.af/map",
+        "observation": "Official English municipal map page embeds a single static image titled “Herat City Map” and asks users to download or zoom it."
+      },
+      {
+        "url": "https://herat-m.gov.af/node/973",
+        "observation": "Dari Herat Municipality planning-office notice says the office provides urban-plan and technical map guidance to visitors; it does not publish a parcel geometry endpoint."
+      },
+      {
+        "url": "https://herat-m.gov.af/index.php/dr/%D9%85%D8%B9%D9%84%D9%88%D9%85%D8%A7%D8%AA-%D9%86%D9%88%D8%A7%D8%AD%DB%8C",
+        "observation": "Official Dari page lists informational files for the 15 urban districts; no parcel geometry format or map service was identified in the page content."
+      },
+      {
+        "url": "https://www.herat-m.gov.af/index.php/ps/node/949",
+        "observation": "Official Pashto municipal notice describes a service center for building-plan licensing; it is not a public parcel-map service."
+      }
+    ],
+    "metadataReviewFile": "herat-service-review.json",
+    "routeInspectionFile": "/tmp/overnight-cities-2026-10-08/city-742-herat-route-inspection.json"
+  },
+  "source": {
+    "sourceId": "af-herat-city-ifms-and-informal-settlement-property-registration-no-public-parcels",
+    "name": "Herat municipal IFMS and informal-settlement property-registration evidence review",
+    "operator": "Herat Municipality; Ministry of Urban Development and Land",
+    "url": "https://www.herat-m.gov.af/node/389",
+    "scope": "The Herat Municipality IFMS evidence concerns municipal property registration and sanitation-charge administration in urban nawahi; the MUDL deeds evidence concerns informal areas of Herat city. Neither establishes complete private-parcel coverage or a public feature service. The separate MUDL state-land report is province-level and is not used as evidence of citywide private cadastre.",
+    "nativeIdField": null,
+    "attributesRequested": [],
+    "identityBasis": "No feature ID or parcel geometry was returned.",
+    "geometryStatus": "no_anonymous_target_parcel_geometry_verified"
+  },
+  "coverageAssessment": {
+    "verifiedOpenScope": "The Herat Municipality IFMS evidence concerns municipal property registration and sanitation-charge administration in urban nawahi; the MUDL deeds evidence concerns informal areas of Herat city. Neither establishes complete private-parcel coverage or a public feature service. The separate MUDL state-land report is province-level and is not used as evidence of citywide private cadastre.",
+    "citywideVerified": false,
+    "countrywideVerified": false
+  },
+  "priorEvidenceFiles": [],
+  "populationPlausibility2025": "Moderate",
+  "rootReviewedAt": "2026-10-08T23:47:22.529967+00:00",
+  "sourceIds": [],
+  "point": [
+    34.3496010365185,
+    62.2071373348177
+  ]
+}

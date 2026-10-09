@@ -1,0 +1,91 @@
+{
+  "schemaVersion": "1.0",
+  "checkedAt": "2026-10-09",
+  "cityRecord": "city-3338-blida.json",
+  "purpose": "Document city-local registry evidence and schema-first anonymous public geometry review.",
+  "scopeLimits": {
+    "maxFullPolygonsRetainedInCityRecord": 3,
+    "maxFullPolygonsRetainedInReview": 0,
+    "ownerOrAddressDataRetained": false,
+    "credentialsOrTokenValuesRetained": false,
+    "citywideCompletenessAsserted": false
+  },
+  "assessment": "Blida’s official provincial directory lists both land-cadastre and land-conservation offices. This supports local registry/cadastral administration, but no anonymous parcel geometry service or safe feature schema was verified. No private registry lookup or cadastral-document request was made.",
+  "registryAssessment": "The official Blida Directorate of Commerce page republishes the Wilaya of Blida directory and explicitly lists the provincial Land Cadastre and Topography Directorate and Land Conservation office with local telephone contacts. This is evidence of the responsible local land/cadastre institutions in Blida; it does not establish a public vector service or the precise coverage of the WUP locator.",
+  "officialPrimarySources": [
+    {
+      "url": "https://www.dcwblida.dz/index.php?Itemid=58&id=66&option=com_content&view=article",
+      "observation": "Blida’s official provincial directory lists both land-cadastre and land-conservation offices. This supports local registry/cadastral administration, but no anonymous parcel geometry service or safe feature schema was verified. No private registry lookup or cadastral-document request was made."
+    },
+    {
+      "url": "https://www.dgdn.gov.dz/",
+      "observation": "Blida’s official provincial directory lists both land-cadastre and land-conservation offices. This supports local registry/cadastral administration, but no anonymous parcel geometry service or safe feature schema was verified. No private registry lookup or cadastral-document request was made."
+    },
+    {
+      "url": "https://www.wilayadeblida.dz/",
+      "observation": "Blida’s official provincial directory lists both land-cadastre and land-conservation offices. This supports local registry/cadastral administration, but no anonymous parcel geometry service or safe feature schema was verified. No private registry lookup or cadastral-document request was made."
+    }
+  ],
+  "searchQueries": [
+    {
+      "language": "English",
+      "query": "Blida Algeria official land registry cadastral parcel map GIS conservation foncière cadastral",
+      "result": "Search identified Blida’s official Wilaya directory listing the Land Cadastre and Topography Directorate and Land Conservation office. DGDN information describes digital cadastral documents as a professional-service workflow; no public vector schema or anonymous geometry endpoint was found.",
+      "method": "Separate language-specific search and official source/service review."
+    },
+    {
+      "language": "Arabic",
+      "query": "ولاية البليدة المحافظة العقارية مديرية مسح الأراضي خريطة عقارية عقارات رسمي",
+      "result": "Official Blida directory lists the cadastral/topography directorate and land-conservation office. No anonymous parcel-polygon feature service or safe schema was identified.",
+      "method": "Separate language-specific search and official source/service review."
+    },
+    {
+      "language": "French",
+      "query": "Blida cadastre parcelle carte foncière officielle direction wilaya Blida conservation foncière",
+      "result": "Official Blida directory confirms local cadastre and conservation foncière departments; no public parcel geometry service was exposed.",
+      "method": "Separate language-specific search and official source/service review."
+    },
+    {
+      "language": "Arabic",
+      "query": "site:wilayadeblida.dz مديرية مسح الأراضي والحفظ العقاري البليدة",
+      "result": "Search located the Blida official directory listing land-cadastre and land-conservation departments; no anonymous vector endpoint/schema found.",
+      "method": "Separate language-specific search and official source/service review."
+    }
+  ],
+  "geometryDecision": {
+    "verified": false,
+    "retainedPolygonCount": 0,
+    "reason": "The official local directory confirms responsible offices but exposes no parcel viewer, layer schema, or bounded geometry endpoint. DGDN’s digitization page describes document-request services; no document or property-specific request was submitted."
+  },
+  "coverageAssessment": {
+    "citywideVerified": false,
+    "exactWupPointCoverageVerified": false,
+    "evidence": "Local office existence is verified, but public vector geometry, exact municipal point coverage, and citywide completeness remain unknown."
+  },
+  "attempts": [
+    {
+      "source": "https://www.dcwblida.dz/index.php?Itemid=58&id=66&option=com_content&view=article",
+      "outcome": "Official public source review only. No anonymous safe geometry service/schema was identified, so no parcel feature or personal/property-specific lookup was submitted.",
+      "fieldsRequested": [],
+      "sensitiveFieldsRequested": false
+    },
+    {
+      "source": "https://www.dgdn.gov.dz/",
+      "outcome": "Official public source review only. No anonymous safe geometry service/schema was identified, so no parcel feature or personal/property-specific lookup was submitted.",
+      "fieldsRequested": [],
+      "sensitiveFieldsRequested": false
+    },
+    {
+      "source": "https://www.wilayadeblida.dz/",
+      "outcome": "Official public source review only. No anonymous safe geometry service/schema was identified, so no parcel feature or personal/property-specific lookup was submitted.",
+      "fieldsRequested": [],
+      "sensitiveFieldsRequested": false
+    }
+  ],
+  "remainingUncertainty": "Local office existence is verified, but public vector geometry, exact municipal point coverage, and citywide completeness remain unknown.",
+  "runtimeAssessment": {
+    "status": "not_assessed",
+    "reason": "Source discovery only; no runtime contract or adapter qualification was tested."
+  },
+  "technicalBlocker": "The official local directory confirms responsible offices but exposes no parcel viewer, layer schema, or bounded geometry endpoint. DGDN’s digitization page describes document-request services; no document or property-specific request was submitted."
+}

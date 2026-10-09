@@ -1,0 +1,129 @@
+{
+  "schemaVersion": "1.0",
+  "cityId": "wup2025:5431",
+  "wupCityCode": 5431,
+  "name": "Belkuchi",
+  "country": "Bangladesh",
+  "countryCode": "BD",
+  "rank": 1095,
+  "queueRank": 1095,
+  "point": [
+    24.2698075545558,
+    89.6857818853253
+  ],
+  "centerLatLon": [
+    24.2698075545558,
+    89.6857818853253
+  ],
+  "pointBasis": "UN WUP2025 population-weighted settlement locator; not a municipal boundary or parcel-coverage claim.",
+  "population2025": 505615,
+  "population2025k": 505.615,
+  "populationUnit": "persons",
+  "populationPlausibility2025": "Moderate",
+  "cohort": "overnight-followon-1001-1100",
+  "checkedAt": "2026-10-09",
+  "status": "complete",
+  "registryFound": true,
+  "registryBasis": "The official Belkuchi Upazila land office identifies the local land-administration office. The national DLRS map portal documents survey/mouza/plot selectors but requires property-location selection and shows owner information; no selector was used and no geometry-only result was obtained.",
+  "registryEvidenceUrls": [
+    "https://acl.belkuchi.sirajganj.gov.bd/",
+    "https://settlement.gov.bd/Map/MapSearch",
+    "https://map.land.gov.bd/"
+  ],
+  "verifiedSample": false,
+  "publicParcelGeometryFound": false,
+  "sourceIds": [],
+  "adapterReady": false,
+  "runtimeReadiness": "not_enabled_no_verified_public_geometry",
+  "technicalBlocker": "The official mapping interface is selector-driven and includes owner-table context; no property selector was used. No public geometry-only API or downloadable vector source was verified.",
+  "scopeLimits": {
+    "maxFullPolygonsRetained": 0,
+    "ownerOrAddressDataRetained": false,
+    "credentialsOrTokenValuesRetained": false,
+    "citywideCompletenessAsserted": false
+  },
+  "resultCategory": "no_verified_public_geometry",
+  "coverageAssessment": {
+    "claimedScope": "The official Belkuchi Upazila land office identifies the local land-administration office. The national DLRS map portal documents survey/mouza/plot selectors but requires property-location selection and shows owner information; no selector was used and no geometry-only result was obtained.",
+    "verifiedOpenScope": "No anonymous full parcel geometry response verified in this investigation.",
+    "citywideVerified": false,
+    "countrywideVerified": false,
+    "geometryVerified": false
+  },
+  "runtimeAssessment": {
+    "status": "not_enabled_no_verified_public_geometry",
+    "reason": "The official mapping interface is selector-driven and includes owner-table context; no property selector was used. No public geometry-only API or downloadable vector source was verified."
+  },
+  "freshResearch": {
+    "queries": [
+      {
+        "language": "English",
+        "query": "Belkuchi Sirajganj Bangladesh official land office cadastral parcel map",
+        "scope": "Identify first-party city-bound registry custody and safely accessible public parcel geometry.",
+        "result": "Official local Upazila land-office portal confirms local land administration. Official DLRS mapping interface exposes survey and plot selectors but also a property/owner table; no geographic or parcel identifiers were submitted. No anonymous geometry-only parcel route was verified.",
+        "actualResultUrls": [
+          "https://acl.belkuchi.sirajganj.gov.bd/",
+          "https://settlement.gov.bd/Map/MapSearch",
+          "https://map.land.gov.bd/"
+        ],
+        "executionMethod": "Separate English-language web search and official-source review."
+      },
+      {
+        "language": "Bengali",
+        "query": "বেলকুচি ভূমি অফিস মৌজা নকশা খতিয়ান সরকারি সিরাজগঞ্জ",
+        "scope": "Identify first-party city-bound registry custody and safely accessible public parcel geometry.",
+        "result": "Official local Upazila land-office portal confirms local land administration. Official DLRS mapping interface exposes survey and plot selectors but also a property/owner table; no geographic or parcel identifiers were submitted. No anonymous geometry-only parcel route was verified.",
+        "actualResultUrls": [
+          "https://acl.belkuchi.sirajganj.gov.bd/",
+          "https://settlement.gov.bd/Map/MapSearch",
+          "https://map.land.gov.bd/"
+        ],
+        "executionMethod": "Separate local-language web search and official-source review."
+      }
+    ],
+    "portals": [
+      {
+        "name": "https://acl.belkuchi.sirajganj.gov.bd/",
+        "operator": "Relevant local public authority",
+        "homeUrl": "https://acl.belkuchi.sirajganj.gov.bd/",
+        "observation": "Official local Upazila land-office portal confirms local land administration. Official DLRS mapping interface exposes survey and plot selectors but also a property/owner table; no geographic or parcel identifiers were submitted. No anonymous geometry-only parcel route was verified."
+      },
+      {
+        "name": "https://settlement.gov.bd/Map/MapSearch",
+        "operator": "Relevant local public authority",
+        "homeUrl": "https://settlement.gov.bd/Map/MapSearch",
+        "observation": "Official local Upazila land-office portal confirms local land administration. Official DLRS mapping interface exposes survey and plot selectors but also a property/owner table; no geographic or parcel identifiers were submitted. No anonymous geometry-only parcel route was verified."
+      },
+      {
+        "name": "https://map.land.gov.bd/",
+        "operator": "Relevant local public authority",
+        "homeUrl": "https://map.land.gov.bd/",
+        "observation": "Official local Upazila land-office portal confirms local land administration. Official DLRS mapping interface exposes survey and plot selectors but also a property/owner table; no geographic or parcel identifiers were submitted. No anonymous geometry-only parcel route was verified."
+      }
+    ],
+    "requests": [],
+    "historicalContext": []
+  },
+  "source": {
+    "sourceId": "BD-BELKUCHI-UPAZILA-LAND-OFFICE",
+    "name": "Belkuchi official parcel/registry source",
+    "url": "https://acl.belkuchi.sirajganj.gov.bd/",
+    "operator": null,
+    "serviceType": "Official local registry custody evidence reviewed; public parcel geometry remains unverified",
+    "layer": null,
+    "geometryType": null,
+    "outputCrs": null,
+    "nativeIdField": null,
+    "nativeIdEvidence": "The official Belkuchi Upazila land office identifies the local land-administration office. The national DLRS map portal documents survey/mouza/plot selectors but requires property-location selection and shows owner information; no selector was used and no geometry-only result was obtained.",
+    "attributesRequested": [],
+    "sampleCount": 0,
+    "sampleFile": null,
+    "operatorNote": "Use the registryBasis and linked primary evidence for the verified institution; the previous country label was not an operator."
+  },
+  "rootReviewedAt": "2026-10-09T06:45:08.823796+00:00",
+  "rootReview": {
+    "checkedAt": "2026-10-09T06:45:08.823796+00:00",
+    "basis": "Reviewed city-specific English/local-language attempts, local-custody basis, source routes and documented responses. Public geometry remains unverified; access failures and unknown custody do not establish absence.",
+    "primarySourceAuditFile": "research/overnight-followon-2026-10-09/unreviewed-primary-source-audit.json"
+  }
+}

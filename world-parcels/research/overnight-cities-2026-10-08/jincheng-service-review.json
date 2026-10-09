@@ -1,0 +1,60 @@
+{
+  "schemaVersion": "1.0",
+  "checkedAt": "2026-10-09",
+  "cityRecord": "city-9264-jincheng.json",
+  "purpose": "Document first-party local registry/map evidence and bounded anonymous geometry access review.",
+  "scopeLimits": {
+    "maxFullPolygonsRetainedInCityRecord": 0,
+    "maxFullPolygonsRetainedInReview": 0,
+    "maxFullPolygonsRetainedInRepository": 0,
+    "ownerOrAddressDataRetained": false,
+    "credentialsOrTokenValuesRetained": false,
+    "citywideCompletenessAsserted": false
+  },
+  "assessment": "City-specific Jincheng registry presence is directly confirmed by the official municipal registration-center portal. Its cadastral-map query guide is an image-based instructions page; no account, address, unit number, title number, search, or map selection was used. No public geometry-only service schema or safe allowlist was verified.",
+  "registryAssessment": "The official Jincheng Real Estate Registration and Transaction Center identifies itself as a municipal registration institution under the Jincheng Planning and Natural Resources Bureau; the official city government portal confirms the municipal jurisdiction. Queue coordinates at 35.5000 N, 112.8480 E place this at 晋城, Shanxi. The center provides registration services but does not establish public parcel-vector access.",
+  "officialPrimarySources": [
+    {
+      "url": "https://bdc.jcgov.gov.cn/",
+      "observation": "Official Jincheng Real Estate Registration and Transaction Center site says the center was formed by combining municipal real-estate transaction and land-registration offices and is subordinate to the city planning/natural-resources bureau."
+    },
+    {
+      "url": "https://bdc.jcgov.gov.cn/html/bmfw/yitududong/4622.html",
+      "observation": "Official center page publishes a cadastral-map query guide. The page is an instructions/article page; no property was searched or selected."
+    },
+    {
+      "url": "https://www.jcgov.gov.cn/",
+      "observation": "Official Jincheng municipal government portal corroborates the target jurisdiction; the point corresponds to Jincheng, Shanxi."
+    },
+    {
+      "url": "https://bdc.jcgov.gov.cn/html/wsbs/bszn/qjdc/1751.html",
+      "observation": "Official center describes registration/change/mortgage workflows for existing rights holders and required documents; no transaction or record was accessed."
+    }
+  ],
+  "searchQueries": [
+    {
+      "language": "English",
+      "query": "Jincheng Shanxi official cadastral map GIS real estate registration land registry",
+      "result": "Found the official Jincheng Real Estate Registration and Transaction Center, a city registry, and an official cadastral-map query guide. No map or parcel query was performed.",
+      "method": "Separate English-language search followed by official Jincheng registry portal review.",
+      "scope": "Locate current official city-bound registry, cadastral map, or safe public geometry service."
+    },
+    {
+      "language": "Chinese",
+      "query": "晋城市 不动产登记中心 地籍图查询 地图服务 官方",
+      "result": "Official Jincheng registration-center pages confirm a municipal registrar and publish cadastral-map query instructions. The available guide describes an object-level query, but no property was selected or searched.",
+      "method": "Separate Chinese-language search and official Jincheng city registry-page review.",
+      "scope": "Locate current official city-bound registry, cadastral map, or safe public geometry service."
+    }
+  ],
+  "geometryDecision": "No parcel geometry retained; no anonymous public geometry-only point-level response was verified.",
+  "coverageAssessment": {
+    "claimedScope": "The official Jincheng Real Estate Registration and Transaction Center identifies itself as a municipal registration institution under the Jincheng Planning and Natural Resources Bureau; the official city government portal confirms the municipal jurisdiction. Queue coordinates at 35.5000 N, 112.8480 E place this at 晋城, Shanxi. The center provides registration services but does not establish public parcel-vector access.",
+    "verifiedOpenScope": "The discoverable lookup routes require an object/location key, expose property attributes, or use account/application workflows; no geometry-only response verified.",
+    "citywideVerified": false,
+    "countrywideVerified": false,
+    "geometryVerified": false
+  },
+  "attempts": [],
+  "remainingUncertainty": "Whether a separate Jincheng map service can return geometry plus only safe native IDs without registration/status/property attributes."
+}

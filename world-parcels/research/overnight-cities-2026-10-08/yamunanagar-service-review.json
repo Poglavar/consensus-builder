@@ -1,0 +1,96 @@
+{
+  "schemaVersion": "1.0",
+  "checkedAt": "2026-10-09",
+  "cityRecord": "city-8155-yamunanagar.json",
+  "purpose": "Document city-scope registry evidence and bounded public parcel-geometry route review.",
+  "scopeLimits": {
+    "maxFullPolygonsRetainedInCityRecord": 0,
+    "maxFullPolygonsRetainedInReview": 0,
+    "maxFullPolygonsRetainedInRepository": 0,
+    "ownerOrAddressDataRetained": false,
+    "credentialsOrTokenValuesRetained": false,
+    "citywideCompletenessAsserted": false
+  },
+  "assessment": "The YamunaNagar District Revenue Office maintains district Jamabandi land records and consolidation “Mussavies” maps; it reports district Jamabandis computerized. The district’s official e-governance directory links Web-HALRIS. This verifies local revenue/record-mapping activity, but no public full parcel polygon, safe feature schema, or exact WUP point coverage was verified.",
+  "registryAssessment": "The YamunaNagar District Revenue Office maintains district Jamabandi land records and consolidation “Mussavies” maps; it reports district Jamabandis computerized. The district’s official e-governance directory links Web-HALRIS. This verifies local revenue/record-mapping activity, but no public full parcel polygon, safe feature schema, or exact WUP point coverage was verified.",
+  "officialPrimarySources": [
+    {
+      "url": "https://yamunanagar.nic.in/revenue/",
+      "observation": "Official YamunaNagar District Revenue page says the Sadar Kanungo Branch maintains land ownership/cultivation records, district Jamabandis and Mussavies; it reports all district Jamabandis computerized."
+    },
+    {
+      "url": "https://yamunanagar.nic.in/e-governance/",
+      "observation": "Official district e-governance directory links Web-HALRIS at jamabandi.nic.in."
+    },
+    {
+      "url": "https://haryanait.gov.in/web-halris/",
+      "observation": "Official Haryana IT department describes Web-HALRIS as an integrated deed-registration and land-records system implemented in all tehsils."
+    },
+    {
+      "url": "https://www.dilrmp.gov.in/dilrmpold/MapULPIN/tehsil-level/71",
+      "observation": "Government of India DILRMP page identifies Haryana, district Yamunanagar in map digitization/geo-reference reporting; the page did not expose usable parcel layer/API metadata."
+    }
+  ],
+  "searchQueries": [
+    {
+      "language": "Hindi",
+      "query": "यमुनानगर हरियाणा जमाबंदी भू नक्शा भूमि अभिलेख राजस्व विभाग आधिकारिक",
+      "result": "जिला प्रशासन के राजस्व पृष्ठ में जिला-स्तरीय जमाबंदी रिकॉर्ड रूम और समेकन-काल के मुसावी नक्शे दर्ज हैं; जिले की जमाबंदी कम्प्यूटरीकृत बताई गई है। जिला ई-गवर्नेंस पृष्ठ आधिकारिक Web-HALRIS को लिंक करता है। सार्वजनिक पूर्ण parcel polygon या vector schema सत्यापित नहीं हुआ।",
+      "urls": [
+        "https://yamunanagar.nic.in/revenue/",
+        "https://yamunanagar.nic.in/e-governance/",
+        "https://haryanait.gov.in/web-halris/",
+        "https://jamabandi.nic.in/",
+        "https://www.dilrmp.gov.in/dilrmpold/MapULPIN/tehsil-level/71"
+      ],
+      "scope": "Verify city-local registry/cadastre activity and safe public full geometry routes."
+    },
+    {
+      "language": "English",
+      "query": "Yamunanagar Haryana official cadastral parcel map land records GIS Web HALRIS Jamabandi",
+      "result": "Official district revenue source confirms local computerized Jamabandi records and Mussavie maps held in the district land-record room. The district directory links Haryana Web-HALRIS. The live portal could not be checked from this environment, and no public full-polygon response/schema was verified.",
+      "urls": [
+        "https://yamunanagar.nic.in/revenue/",
+        "https://yamunanagar.nic.in/e-governance/",
+        "https://haryanait.gov.in/web-halris/",
+        "https://jamabandi.nic.in/",
+        "https://www.dilrmp.gov.in/dilrmpold/MapULPIN/tehsil-level/71"
+      ],
+      "scope": "Cross-check source identity, public access conditions, and exact locator coverage."
+    }
+  ],
+  "serviceChecks": [
+    {
+      "url": "https://yamunanagar.nic.in/revenue/",
+      "method": "GET public official source, safe metadata/selector route, or linked map shell; no property/owner/address/account query",
+      "result": "HTTP 200 official district page. Confirms Jamabandis and Mussavies kept by district revenue record room, computerized Jamabandis, registration and land-record copying services."
+    },
+    {
+      "url": "https://yamunanagar.nic.in/e-governance/",
+      "method": "GET public official source, safe metadata/selector route, or linked map shell; no property/owner/address/account query",
+      "result": "HTTP 200 official district e-governance listing; Web-HALRIS linked to jamabandi.nic.in."
+    },
+    {
+      "url": "https://haryanait.gov.in/web-halris/",
+      "method": "GET public official source, safe metadata/selector route, or linked map shell; no property/owner/address/account query",
+      "result": "Official Haryana IT department overview describes land-record and deed-registration modules and implementation across 143 tehsils; no parcel geometry response/schema."
+    },
+    {
+      "url": "https://jamabandi.nic.in/",
+      "method": "GET public official source, safe metadata/selector route, or linked map shell; no property/owner/address/account query",
+      "result": "Official district-linked Web-HALRIS portal; direct shell GET timed out before HTTP status in this environment. No claim of provider outage; no login or property query."
+    },
+    {
+      "url": "https://www.dilrmp.gov.in/dilrmpold/MapULPIN/tehsil-level/71",
+      "method": "GET public official source, safe metadata/selector route, or linked map shell; no property/owner/address/account query",
+      "result": "Government of India DILRMP page is district-specific status context, not a full parcel feature feed."
+    }
+  ],
+  "geometryEvidence": null,
+  "privacy": "No owner, address, applicant, account, taxpayer, or identity data was queried or retained. No credentials, tokens, or full geometry were retained.",
+  "runtimeAssessment": {
+    "status": "not_ready_no_verified_exact_point_full_polygon",
+    "reason": "No city/district public vector schema or full-polygon response at the exact WUP point was verified. Official district links point to the Jamabandi/Web-HALRIS portal, but its live shell timed out before HTTP status in this environment; this is not evidence that the origin is down."
+  },
+  "geometryDisposition": "No full geometry sample: city-specific official source pages and linked map/service routes were inspected, but no safe public full-polygon feature response and schema at the exact WUP locator were verified."
+}
