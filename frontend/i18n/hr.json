@@ -1298,7 +1298,12 @@
                     "settledRefund": "Nitko se nije kladio na pobjedničku stranu, pa se svaka oklada može preuzeti u cijelosti.",
                     "closed": "Prijedlog mora biti aktivan na lancu prije nego što se fond može otvoriti."
                 },
-                "paidOut": "isplaćeno"
+                "paidOut": "isplaćeno",
+                "placedTitle": "Oklada je položena",
+                "placedLine": "{{amount}} na {{side}} je u fondu.",
+                "poolNow": "Fond nakon tvoje oklade",
+                "poolReading": "Čitanje fonda…",
+                "done": "Gotovo"
             },
             "acceptTransfer": {
                 "buttonLabel": "Prihvati prijenos vlasništva",

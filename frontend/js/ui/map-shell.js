@@ -37,8 +37,24 @@
         return place;
     }
 
+    // Whether a pointer-down at `target` is an "outside click" that folds the open sheet away. A
+    // press inside the sheet, on its own button or on another sheet's button is not; neither is any
+    // press while a blocking dialog is open on top of the sheet (the stake dialog, the wallet picker,
+    // a confirm): that press belongs to the dialog, and the sheet it was opened from stays so the
+    // person lands back on it, not on the bare map, when the dialog closes. Pure, tested in
+    // backend/test/frontend-ui-commands.test.js.
+    function pointerDownClosesSheet({ sheet, trigger, target, blockingDialogOpen }) {
+        if (!sheet || !target) return false;
+        if (blockingDialogOpen) return false;
+        if (sheet.contains(target)) return false;
+        if (trigger && trigger.contains(target)) return false;
+        // Another sheet's button toggles through its own click handler.
+        if (target.closest && target.closest('[data-sheet-target]')) return false;
+        return true;
+    }
+
     if (!win || !win.document) {
-        return { placePopover };
+        return { placePopover, pointerDownClosesSheet };
     }
 
     const doc = win.document;
@@ -277,11 +293,7 @@
     function onDocumentPointerDown(event) {
         const sheet = state.openSheet;
         if (!sheet) return;
-        const target = event.target;
-        if (sheet.contains(target)) return;
-        if (state.trigger && state.trigger.contains(target)) return;
-        // Another sheet's button toggles through its own click handler.
-        if (target.closest && target.closest('[data-sheet-target]')) return;
+        if (!pointerDownClosesSheet({ sheet, trigger: state.trigger, target: event.target, blockingDialogOpen: isBlockingDialogOpen() })) return;
         closeSheet({ restoreFocus: false });
     }
 
@@ -367,6 +379,7 @@
         setLockedFor3D,
         syncProposalsBadge,
         isBlockingDialogOpen,
+        pointerDownClosesSheet,
         // The world view (globe); js/ui/world-entry.js owns it. opts: {} | { focus: place }.
         openWorldView: opts => {
             if (!win || !win.WorldEntry) throw new Error('MapShell.openWorldView: js/ui/world-entry.js is not loaded');

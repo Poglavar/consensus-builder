@@ -312,6 +312,23 @@ describe('the floating shell', () => {
         const cramped = MapShell.placePopover({ top: 20, bottom: 60, left: 10, right: 50, width: 40, height: 40 }, { width: 400, height: 100 });
         expect(cramped.maxHeight).toBe(120);
     });
+
+    // A press on the map folds the sheet away; a press inside a dialog opened on top of the sheet
+    // (the stake dialog, the wallet picker) must not, or a bet lands the person back on the bare map.
+    it('closes the sheet on an outside press, but not while a dialog is open on top of it', () => {
+        const node = (inside = []) => ({ contains: other => inside.includes(other), closest: () => null });
+        const target = node();
+        const sheet = node([target]);
+        const trigger = node([target]);
+        const sheetButton = { contains: () => false, closest: selector => (selector === '[data-sheet-target]' ? {} : null) };
+        const map = node();
+        expect(MapShell.pointerDownClosesSheet({ sheet: node(), trigger: null, target: map, blockingDialogOpen: false })).toBe(true);
+        expect(MapShell.pointerDownClosesSheet({ sheet, trigger: null, target, blockingDialogOpen: false })).toBe(false);
+        expect(MapShell.pointerDownClosesSheet({ sheet: node(), trigger, target, blockingDialogOpen: false })).toBe(false);
+        expect(MapShell.pointerDownClosesSheet({ sheet: node(), trigger: null, target: sheetButton, blockingDialogOpen: false })).toBe(false);
+        expect(MapShell.pointerDownClosesSheet({ sheet: node(), trigger: null, target: map, blockingDialogOpen: true })).toBe(false);
+        expect(MapShell.pointerDownClosesSheet({ sheet: null, trigger: null, target: map, blockingDialogOpen: false })).toBe(false);
+    });
 });
 
 describe('the sidebar is gone', () => {

@@ -1276,7 +1276,12 @@
                     "settledRefund": "Nobody bet on the winning side, so every bet can be collected back in full.",
                     "closed": "The proposal must be active on-chain before a pool can open."
                 },
-                "paidOut": "paid out"
+                "paidOut": "paid out",
+                "placedTitle": "Bet placed",
+                "placedLine": "{{amount}} on {{side}} is in the pool.",
+                "poolNow": "The pool after your bet",
+                "poolReading": "Reading the pool…",
+                "done": "Done"
             },
             "acceptTransfer": {
                 "buttonLabel": "Accept ownership transfer",

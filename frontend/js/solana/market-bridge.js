@@ -90,6 +90,43 @@
         return { market, marketAddress: marketAddress.toBase58(), yes, no, wallet: wallet?.toBase58?.() || null, chainStatus };
     }
 
+    // The connected wallet's positions on many proposals' pools in one RPC round trip (the Bets sheet
+    // lists a whole city): { [proposal]: { yes, no } } with a decoded position or null per side, and
+    // {} when no wallet is connected or there is nothing to read.
+    async function readPositions(proposals = [], options = {}) {
+        const client = await dependencies();
+        const wallet = root.solanaWalletManager?.getProvider?.()?.publicKey || null;
+        const accounts = Array.from(new Set((proposals || []).filter(Boolean)));
+        if (!wallet || !accounts.length) return {};
+        const { cluster } = walletContextOrGuest();
+        const connection = root.SolanaChainDataLoader.getConnection(cluster);
+        const sides = [['yes', client.constants.SIDE_YES], ['no', client.constants.SIDE_NO]];
+        const keys = [];
+        accounts.forEach(proposal => {
+            const [market] = client.getMarketPda(proposal, options.programId);
+            sides.forEach(([name, side]) => keys.push({ proposal, name, address: client.getPositionPda(market, wallet, side, options.programId)[0] }));
+        });
+        const infos = [];
+        // getMultipleAccountsInfo takes at most 100 keys per call.
+        for (let start = 0; start < keys.length; start += 100) {
+            const chunk = keys.slice(start, start + 100);
+            const batch = await connection.getMultipleAccountsInfo(chunk.map(item => item.address), 'confirmed');
+            infos.push(...(batch || []));
+        }
+        const result = {};
+        keys.forEach((item, index) => {
+            const entry = result[item.proposal] || (result[item.proposal] = { yes: null, no: null });
+            const info = infos[index];
+            if (!info || !info.data) return;
+            try {
+                entry[item.name] = client.decodePosition(info.data);
+            } catch (error) {
+                console.warn(`[${new Date().toISOString()}] [market] position unreadable for ${item.proposal} ${item.name}:`, error);
+            }
+        });
+        return result;
+    }
+
     // The proposal account's own status name ('Active' | 'Executed' | 'Cancelled' | 'Expired'), which is
     // what the market program resolves from; null when the account is unreadable here.
     async function readChainStatus(connection, proposal) {
@@ -170,5 +207,5 @@
         })], options);
     }
 
-    root.SolanaMarketBridge = { DEVNET_USDC_MINT, readSummary, createMarket, stake, resolve, claim };
+    root.SolanaMarketBridge = { DEVNET_USDC_MINT, readSummary, readPositions, createMarket, stake, resolve, claim };
 })(typeof window !== 'undefined' ? window : null);

@@ -11,7 +11,10 @@
     const CONTENT_ID = 'bets-sheet-content';
     const SEEN_KEY = 'cb.bets.seen';           // per-viewer: the "New" word goes once the sheet was opened
     const FRESH_MS = 20_000;                    // matches the backend's per-city cache
-    const state = { city: null, loadedAt: 0, payload: null, loading: null };
+    // positions: the connected wallet's bets per proposal account (solana/market-bridge.js
+    // readPositions); changed: the proposal account a confirmed transaction just touched, marked on
+    // its row after the next render.
+    const state = { city: null, loadedAt: 0, payload: null, loading: null, positions: {}, changed: null };
 
     function interpolate(text, params) {
         return String(text || '').replace(/\{\{\s*(\w+)\s*\}\}/g, (match, key) => (params && key in params ? params[key] : match));
@@ -81,6 +84,64 @@
 
     function announceChange(proposalAccount) {
         try { doc.dispatchEvent(new root.CustomEvent('proposal-market:changed', { detail: { proposalAccount } })); } catch (_) { }
+    }
+
+    // "Your bets: yes 0.05 USDC" for a row, from the wallet's decoded positions; empty without any.
+    function mineText(row) {
+        const positions = state.positions[row.proposalAccount];
+        if (!positions || !root.BetsModel) return '';
+        const sideWord = side => (side === 'yes' ? t('bets.row.yes', 'Yes') : t('bets.row.no', 'No')).toLowerCase();
+        const lines = ['yes', 'no']
+            .filter(side => positions[side] && root.BetsModel.formatAtomic(positions[side].amount) !== '0')
+            .map(side => t('panel.proposal.market.betLine', '{{side}} {{amount}}', { side: sideWord(side), amount: moneyText(root.BetsModel.formatAtomic(positions[side].amount)) }));
+        return lines.length ? t('panel.proposal.market.yourBets', 'Your bets: {{lines}}', { lines: lines.join('; ') }) : '';
+    }
+
+    function renderMine(li, row) {
+        const text = mineText(row);
+        let mine = li.querySelector('.bets-row__mine');
+        if (!text) { if (mine) mine.remove(); return; }
+        if (!mine) {
+            mine = el('p', 'bets-row__mine');
+            const actions = li.querySelector('.bets-row__actions');
+            if (actions) actions.before(mine); else li.append(mine);
+        }
+        mine.textContent = text;
+    }
+
+    // The wallet's positions for every row with a pool, one RPC round trip, then written into the
+    // rows already on screen (no re-render, so a press in progress is not lost).
+    async function loadPositions(payload) {
+        const bridge = root.SolanaMarketBridge;
+        if (!bridge || typeof bridge.readPositions !== 'function') return;
+        const accounts = (payload && payload.contests ? payload.contests : [])
+            .flatMap(contest => contest.proposals || [])
+            .filter(entry => entry.proposalAccount && entry.market)
+            .map(entry => entry.proposalAccount);
+        if (!walletConnected() || !accounts.length) { state.positions = {}; }
+        else {
+            try {
+                state.positions = await bridge.readPositions(accounts);
+            } catch (error) {
+                console.warn(`[${new Date().toISOString()}] [bets] positions unreadable`, error);
+                state.positions = {};
+            }
+        }
+        if (state.payload !== payload) return;
+        const container = doc.getElementById(CONTENT_ID);
+        if (!container) return;
+        container.querySelectorAll('.bets-row[data-proposal-account]').forEach(li => renderMine(li, { proposalAccount: li.dataset.proposalAccount }));
+    }
+
+    // The row a confirmed transaction just changed: brought into view and marked, so the new chance,
+    // payout and pool are seen next to the person's own bet.
+    function markChanged(container) {
+        if (!state.changed || !container) return;
+        const li = container.querySelector(`.bets-row[data-proposal-account="${state.changed}"]`);
+        state.changed = null;
+        if (!li) return;
+        li.classList.add('is-updated');
+        if (typeof li.scrollIntoView === 'function') { try { li.scrollIntoView({ block: 'nearest' }); } catch (_) { } }
     }
 
     // ---- actions ----------------------------------------------------------------------------
@@ -194,6 +255,7 @@
         if (row.closesAt) meta.append(el('span', null, t('bets.row.closes', 'Closes {{date}}', { date: dateText(row.closesAt) })));
         if (row.agent) meta.append(el('span', null, t('panel.proposal.agent.badge', 'Agent proposal')));
         if (meta.childElementCount) li.append(meta);
+        renderMine(li, row);
 
         const actions = el('div', 'bets-row__actions');
         if (row.state === 'open') {
@@ -258,6 +320,7 @@
             return;
         }
         contests.forEach(contest => container.append(renderContest(contest)));
+        markChanged(container);
     }
 
     // ---- loading ----------------------------------------------------------------------------
@@ -267,7 +330,7 @@
         if (!container) return null;
         const city = cityCode();
         const fresh = state.payload && state.city === city && Date.now() - state.loadedAt < FRESH_MS;
-        if (!options.force && fresh) { render(container, state.payload); return state.payload; }
+        if (!options.force && fresh) { render(container, state.payload); loadPositions(state.payload); return state.payload; }
         if (state.fresh) { options = { ...options, fresh: true }; state.fresh = false; }
         if (state.loading) return state.loading;
         if (!state.payload || state.city !== city) renderStatus(container, t('bets.loading', 'Loading bets…'));
@@ -280,6 +343,7 @@
                 state.city = city;
                 state.loadedAt = Date.now();
                 render(container, payload);
+                loadPositions(payload);
                 return payload;
             } catch (error) {
                 console.error(`[${new Date().toISOString()}] [bets] load failed`, error);
@@ -308,11 +372,17 @@
         const isOpen = () => !!(root.MapShell && typeof root.MapShell.isOpen === 'function' && root.MapShell.isOpen(SHEET_ID));
         // A confirmed pool transaction: re-read past the server's short cache, so the pool that was
         // just opened or bet on shows up at once.
-        doc.addEventListener('proposal-market:changed', () => {
+        doc.addEventListener('proposal-market:changed', event => {
             state.loadedAt = 0;
             state.fresh = true;
+            state.changed = event.detail && event.detail.proposalAccount ? event.detail.proposalAccount : null;
             if (isOpen()) load({ force: true, fresh: true });
         });
+        // A wallet connecting or leaving changes whose bets the rows show.
+        const manager = root.solanaWalletManager;
+        if (manager && typeof manager.on === 'function') {
+            ['accountsChanged', 'disconnect'].forEach(name => manager.on(name, () => { if (isOpen() && state.payload) loadPositions(state.payload); }));
+        }
         root.addEventListener('cityChanged', () => {
             state.payload = null;
             state.city = null;

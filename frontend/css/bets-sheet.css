@@ -165,6 +165,36 @@
     color: var(--cb-text-muted);
 }
 
+/* The connected wallet's own bets on this proposal ("Your bets: yes 0.05 USDC"). */
+.bets-row__mine {
+    margin: var(--cb-space-1) 0 0;
+    font-size: var(--cb-text-sm);
+    font-weight: var(--cb-weight-medium);
+    color: var(--cb-success-soft-ink);
+}
+
+/* The row a confirmed bet just changed keeps a soft tint until the next load, so the new chance,
+   payout and pool are found next to the person's own bet; with motion allowed it settles from a
+   stronger flash. */
+.bets-row.is-updated {
+    background: var(--cb-success-soft);
+    box-shadow: 0 0 0 var(--cb-space-2) var(--cb-success-soft);
+    border-radius: var(--cb-radius-sm);
+}
+
+@media (prefers-reduced-motion: no-preference) {
+    .bets-row.is-updated {
+        animation: bets-row-updated 1.6s ease-out;
+    }
+
+    @keyframes bets-row-updated {
+        from {
+            background: var(--cb-success);
+            box-shadow: 0 0 0 var(--cb-space-2) var(--cb-success);
+        }
+    }
+}
+
 .bets-how {
     font-size: var(--cb-text-sm);
     color: var(--cb-text-muted);

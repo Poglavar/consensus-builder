@@ -28,6 +28,39 @@ describe('Solana market bridge', () => {
         expect(client.readPosition).toHaveBeenCalledTimes(2);
     });
 
+    it('reads the connected wallet\'s positions for a whole list of proposals in one RPC call', async () => {
+        const wallet = { toBase58: () => 'wallet-1' };
+        const client = {
+            constants: { SIDE_YES: 1, SIDE_NO: 0 },
+            getMarketPda: vi.fn(proposal => [{ toBase58: () => `market:${proposal}` }]),
+            getPositionPda: vi.fn((market, _owner, side) => [{ key: `${market.toBase58()}:${side}` }]),
+            decodePosition: vi.fn(data => data)
+        };
+        const connection = {
+            getMultipleAccountsInfo: vi.fn(async keys => keys.map(key => (key.key === 'market:proposal-2:0' ? { data: { amount: 50000n, side: 0 } } : null)))
+        };
+        const window = {
+            solanaWeb3: { Transaction: class Transaction {} },
+            SolanaMarketClient: client,
+            SolanaChainDataLoader: { getConnection: vi.fn(() => connection) },
+            solanaWalletManager: { getCluster: vi.fn(() => 'devnet'), getProvider: vi.fn(() => ({ publicKey: wallet })) }
+        };
+        vm.runInNewContext(bridgeSource, { window });
+
+        const positions = await window.SolanaMarketBridge.readPositions(['proposal-1', 'proposal-2', 'proposal-1', null]);
+        expect(connection.getMultipleAccountsInfo).toHaveBeenCalledTimes(1);
+        expect(connection.getMultipleAccountsInfo.mock.calls[0][0].map(key => key.key))
+            .toEqual(['market:proposal-1:1', 'market:proposal-1:0', 'market:proposal-2:1', 'market:proposal-2:0']);
+        expect(positions).toEqual({
+            'proposal-1': { yes: null, no: null },
+            'proposal-2': { yes: null, no: { amount: 50000n, side: 0 } }
+        });
+
+        window.solanaWalletManager.getProvider = vi.fn(() => null);
+        await expect(window.SolanaMarketBridge.readPositions(['proposal-1'])).resolves.toEqual({});
+        expect(connection.getMultipleAccountsInfo).toHaveBeenCalledTimes(1);
+    });
+
     it('preflights, signs, confirms, and reports every stake transaction state', async () => {
         class Transaction {
             constructor(options) { this.options = options; this.instructions = []; }

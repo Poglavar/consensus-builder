@@ -1314,7 +1314,12 @@
                     "settledRefund": "Nadie apostó al lado ganador, así que cada apuesta puede cobrarse íntegra.",
                     "closed": "La propuesta debe estar activa en cadena antes de que pueda abrirse un fondo."
                 },
-                "paidOut": "cobrado"
+                "paidOut": "cobrado",
+                "placedTitle": "Apuesta realizada",
+                "placedLine": "{{amount}} a {{side}} está en el fondo.",
+                "poolNow": "El fondo tras tu apuesta",
+                "poolReading": "Leyendo el fondo…",
+                "done": "Listo"
             },
             "acceptTransfer": {
                 "buttonLabel": "Aceptar transferencia de propiedad",

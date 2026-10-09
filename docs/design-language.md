@@ -69,6 +69,9 @@ Every non-map page carries the same header: logo, "Back to the map", language. N
 - **Icons:** Font Awesome only; no emoji in labels or chrome, no raster icons.
 - **Motion:** every animation sits under `prefers-reduced-motion: no-preference`.
 - Nothing moves when a panel opens: panels overlay the map, they do not push the controls.
+- A dialog opened from a sheet leaves the sheet open underneath (a press inside the dialog is not
+  an outside click). After a wallet transaction the dialog becomes the receipt: what went in, what
+  changed, read back from the chain, and a Done button. It never closes itself.
 
 ## Phone layout
 
