@@ -139,9 +139,20 @@
         "source": "Izvor",
         "scope": "Pokrivenost",
         "terms": "Uvjeti izvora",
-        "unavailable": "Detaljni metapodaci izvora nisu dostupni. Provjerite podatke o izvoru na karti.",
+        "unavailable": "Detaljni metapodaci izvora nisu dostupni. Pogledajte Izvori i softver u Postavkama → Informacije.",
         "unknown": "Nepoznat",
         "link": "Pročitajte informacije i uvjete izvora"
+    },
+    "mapCredits": {
+        "title": "Izvori i softver",
+        "open": "Izvori",
+        "basemap": "Karta",
+        "parcel": "Izvor čestica za {{city}}",
+        "software": "Softver otvorenog koda",
+        "photo": "Fotografski prikaz",
+        "buildings": "3D zgrade",
+        "none": "Za ovaj grad nije konfiguriran izvor čestica.",
+        "description": "Zasluge za kartu i podatke trenutačnog grada te softver koji ova aplikacija koristi."
     },
     "densityStats": {
         "title": "Pokazatelji geometrije",
@@ -4048,6 +4059,7 @@
             "togglePanel": "Prikaži/sakrij kontrole",
             "streamingTiles": "Učitavanje 3D podataka…",
             "noCoverage": "Ovdje nema fotorealističnog pokrivanja — ostajemo u apstraktnom 3D prikazu.",
+            "loadFailed": "Fotografski prikaz nije moguće učitati. Pokušajte ponovno ili prijeđite na 2D.",
             "carveUnderProposals": "Sakrij stvarne zgrade ispod prijedloga",
             "stateSolid": "Puno",
             "stateGhost": "Prozirno",

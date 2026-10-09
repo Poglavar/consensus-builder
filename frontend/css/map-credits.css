@@ -1,0 +1,43 @@
+/* Provider credits stay legible on the map; detailed data and software credits live in Settings. */
+.map-credits-control {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: flex-end;
+    gap: 4px 8px;
+    max-width: calc(100vw - 20px);
+    padding: 3px 6px;
+    margin: 0;
+    background: var(--cb-surface);
+    color: var(--cb-text);
+    font: var(--cb-text-sm)/var(--cb-leading) var(--cb-font-sans);
+}
+
+.map-credits-control a {
+    color: var(--cb-text);
+    text-decoration: underline;
+    text-underline-offset: 2px;
+}
+
+/* The 2D basemap is covered in model/photo view; Google's visible tiles credit themselves. */
+body.three-mode-active .map-credits-control { display: none; }
+
+#map-credits-title { scroll-margin-top: 12px; }
+
+.map-credits-details {
+    margin: 0;
+    font: var(--cb-text-base)/1.5 var(--cb-font-sans);
+    overflow-wrap: anywhere;
+}
+
+.map-credits-details dt {
+    margin-top: var(--cb-space-3);
+    font-weight: var(--cb-weight-semibold);
+}
+
+.map-credits-details dd { margin: var(--cb-space-1) 0 0; }
+
+.map-credits-software {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 6px 14px;
+}

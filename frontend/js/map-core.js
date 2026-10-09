@@ -97,10 +97,9 @@ function resolveInitialZoom() {
 
 // Initialize the map with city-specific defaults
 const map = L.map('map', {
-    zoomControl: false  // Disable default zoom control
+    zoomControl: false,
+    attributionControl: false // MapCredits keeps provider credits compact; details live in Information.
 });
-const parcelSourceAttribution = CURRENT_CITY_CONFIG?.parcels?.attribution;
-if (parcelSourceAttribution) map.attributionControl.addAttribution(parcelSourceAttribution);
 
 const INITIAL_VIEW = CITY_MAP_CONFIG?.initialView || null;
 const hasDefaultCenter = Array.isArray(CITY_MAP_CONFIG?.defaultCenter) && CITY_MAP_CONFIG.defaultCenter.length === 2;
@@ -150,6 +149,7 @@ if (AT_VIEW && !IS_PROPOSAL_DEEP_LINK) {
 if (BasemapManager) {
     baseTileLayer = BasemapManager.applyBasemap(map, BasemapManager.getStoredBasemapKey());
 }
+window.MapCredits.install(map);
 
 // Add scale control. Bottom-RIGHT, above the shell's bottom button row (css/map.css places it); the
 // lower left belongs to the 2D/3D mode strip. It hides while a docked panel covers that corner.

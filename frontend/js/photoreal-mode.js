@@ -25,7 +25,9 @@
     const LOCK_MAX_WAIT_S = 12;
     const LOCK_SAMPLE_INTERVAL_S = 0.25;
     const FAR_EARTH_LIMIT_M = 1500;       // |ground z| beyond this = a coarse far-earth tile
-    const NO_COVERAGE_TIMEOUT_S = 20;     // nothing streamed at all -> declare no coverage
+    const NO_CONTENT_TIMEOUT_S = 20;
+    const MAX_UNSEATED_WAIT_S = 60;
+    const MAX_BOOTSTRAP_ATTEMPTS = 8;
     const ROAD_BOUNDARY_SAMPLE_SPACING_M = 4;
     const TERRAIN_REFRESH_QUIET_MS = 1400;
     const TERRAIN_REFRESH_MAX_REFITS = 3;
@@ -113,12 +115,15 @@
     let lastProbeSummary = null; // raw round distribution, exposed by ?seat for ground-vs-roof diagnosis
     let lockWaitS = 0;
     let lockAccumS = 0;
-    let reportedProbeFamine = false; // the "no tile geometry to seat on" report fires once per entry
+    let reportedProbeFamine = false; // missing-surface diagnostics fire once per entry
+    let bootstrapAttempts = 0;
+    let bootstrapRevision = -1;
     let seatDebugAccumS = 0;
     let lastFrameNow = 0;
     let sinceAnyLoadS = 0;
     let profT = null; // transition profile timestamps (activate -> lib -> setup -> stream -> seat)
     let statusEl = null;
+    let statusRemovalTimer = null;
     let loaderEl = null;
     let loaderTextEl = null;
     let fpsEl = null;
@@ -133,6 +138,9 @@
     let fpsFrames = 0;
     let fpsSinceS = 0;
     const loadedTileScenes = new Set();
+    const loadedTileDepths = new WeakMap();
+    let tileContentRevision = 0;
+    let lastTileContentAt = 0;
     let tileSeamCaps = new WeakMap();
     let seamScheduled = new WeakMap();
     let seamBoundaryGrid = null;
@@ -168,11 +176,14 @@
 
     // ---- small in-container UI (status toast + tile-streaming indicator) ----
     function setStatus(msg) {
-        const host = containerEl();
+        const host = document.getElementById('map-container');
         if (!host) return;
         if (!statusEl) {
             statusEl = document.createElement('div');
             statusEl.className = 'photoreal-status';
+            statusEl.setAttribute('role', 'status');
+            statusEl.setAttribute('aria-live', 'polite');
+            statusEl.setAttribute('aria-atomic', 'true');
             host.appendChild(statusEl);
         }
         statusEl.textContent = msg || '';
@@ -262,6 +273,8 @@
     }
 
     function removeUiElements() {
+        clearTimeout(statusRemovalTimer);
+        statusRemovalTimer = null;
         [statusEl, loaderEl, fpsEl, seatDebugEl, coverEl, attributionEl].forEach(function (el) {
             if (el) { try { el.remove(); } catch (_) { } }
         });
@@ -280,6 +293,46 @@
         [120, 60], [-120, 60], [120, -60], [-120, -60],
         [180, 0], [-180, 0], [0, 180], [0, -180]
     ];
+
+    // The tile renderer detaches models outside the camera frustum. At high elevations the
+    // initial zero-height camera is below the land, so probing only tiles.group deadlocks.
+    // Probe detached cached models in their ECEF frame and provisionally lower the hidden
+    // world. This keeps the user's camera unchanged and lets normal fine-detail seating run.
+    function bootstrapGround() {
+        if (bootstrapAttempts >= MAX_BOOTSTRAP_ATTEMPTS || !seatNode || !tiles || !loadedTileScenes.size) return false;
+        if (bootstrapRevision === tileContentRevision) return false;
+        const scenes = Array.from(loadedTileScenes).filter(function (scene) { return !scene.parent; });
+        if (!scenes.length) return false;
+        // Repeating misses against the same cached geometry cannot improve the estimate.
+        bootstrapRevision = tileContentRevision;
+        const THREE = window.THREE;
+        scaleNode.updateMatrixWorld(true);
+        const inverse = tiles.group.matrixWorld.clone().invert();
+        scenes.forEach(function (scene) { scene.updateMatrixWorld(true); });
+        const probes = LOCK_PROBE_OFFSETS.slice(0, 5).map(function (xy) {
+            const raycaster = new THREE.Raycaster(new THREE.Vector3(xy[0], xy[1], 10000 + seatNode.position.z),
+                new THREE.Vector3(0, 0, -1), 0, 12000);
+            raycaster.ray.applyMatrix4(inverse);
+            const hits = [];
+            scenes.forEach(function (scene) {
+                const hit = raycaster.intersectObject(scene, true)[0];
+                if (hit) hits.push({ height: hit.point.clone().applyMatrix4(tiles.group.matrixWorld).z,
+                    depth: loadedTileDepths.get(scene) || 0 });
+            });
+            return hits;
+        });
+        const height = window.__photorealGround.selectBootstrapHeight(probes, seatNode.position.z);
+        if (height === null || Math.abs(height) < 1) return false;
+        seatNode.position.z -= height;
+        scaleNode.updateMatrixWorld(true);
+        bootstrapAttempts++;
+        lockSamples = [];
+        sinceAnyLoadS = 0;
+        console.info('[photoreal] provisional terrain alignment', {
+            elevationM: -seatNode.position.z, attempt: bootstrapAttempts, cachedModels: scenes.length
+        });
+        return true;
+    }
 
     // Raycast a spread of points near the scene origin against the streamed tiles and shift
     // the whole world so its STREET surface sits just below the z=0 content. Heights are true
@@ -325,25 +378,27 @@
                 };
             }
         } catch (_) { return; }
-        // No probe hit anything. The stability/timeout gates below are never reached in this state,
-        // so without this report the world simply never seats: the mesh stays hidden and pressing
-        // the globe looks like it does nothing at all. Zero probes past the wait budget means no
-        // Google tile geometry arrived (network, Ion token, or quota) — say so, once, and loudly.
+        // Missing ray hits do not imply a network failure: the initial camera can be below
+        // downloaded terrain. Recover its elevation before reporting an unusable surface.
         if (groundZ === null) {
+            if (bootstrapGround()) return;
             if (!reportedProbeFamine && lockWaitS > LOCK_MAX_WAIT_S) {
                 reportedProbeFamine = true;
                 const progress = Number(tiles.loadProgress);
-                console.error('[photoreal] cannot seat the world: no Google 3D Tiles geometry to probe after '
+                console.warn('[photoreal] no usable terrain surface after '
                     + lockWaitS.toFixed(1) + 's (loadProgress='
                     + (Number.isFinite(progress) ? progress.toFixed(2) : 'n/a')
-                    + '). The mesh stays hidden — check the network tab for failed Cesium Ion / Google tile requests.');
-                setStatus('Photo view could not load Google 3D Tiles — see the console.');
+                    + ', cachedModels=' + loadedTileScenes.size + '). Waiting for terrain alignment.');
             }
             return;
         }
-        // Let the local tiles refine a little before trusting early readings.
+        // A stable coarse tile is not stable ground. Wait for actual content to finish
+        // refining; the bounded startup watchdog handles a stalled stream separately.
         const prog = Number(tiles.loadProgress);
-        if (Number.isFinite(prog) && prog < 0.95 && lockWaitS < LOCK_MAX_WAIT_S * 0.5) return;
+        if (!window.__photorealGround.canFinalizeSeating(prog, performance.now() - lastTileContentAt)) {
+            lockSamples = [];
+            return;
+        }
         lockSamples.push(groundZ);
         if (lockSamples.length > LOCK_STABLE_SAMPLES) lockSamples.shift();
         const spread = Math.max.apply(null, lockSamples) - Math.min.apply(null, lockSamples);
@@ -354,6 +409,7 @@
         lockedGroundZ = use;
         seatNode.position.z -= (use + GROUND_BELOW_CONTENT_M);
         grounded = true;
+        setStatus('');
         // The globe spinner is no longer stopped here — updateLoader syncs it to the "Streaming 3D
         // tiles…" indicator, so it stops exactly when that does (seating can lag a little behind).
         cancelTerrainGridBuild();
@@ -369,6 +425,7 @@
         scheduleSettledTerrainRefresh('ground-lock');
         if (typeof window.setRealisticLayerActive === 'function') window.setRealisticLayerActive(true);
         tiles.group.visible = builtVisible;
+        attributionDirty = true;
         console.log('[photoreal] world seated: ground shifted ' + (use + GROUND_BELOW_CONTENT_M).toFixed(2)
             + ' m (' + (stable ? 'stable' : 'median-after-timeout') + ')');
         if (profT) {
@@ -2128,6 +2185,9 @@
     function onTileModelLoad(ev) {
         if (!ev || !ev.scene) return;
         loadedTileScenes.add(ev.scene);
+        loadedTileDepths.set(ev.scene, ev.tile?.internal?.depth || 0);
+        tileContentRevision++;
+        lastTileContentAt = performance.now();
         ev.scene.traverse(function (o) {
             if (!o.isMesh || !o.material) return;
             if (Array.isArray(o.material)) o.material.forEach(patchTileMaterial);
@@ -2143,6 +2203,7 @@
         if (!ev || !ev.scene) return;
         disposeTileSeamCaps(ev.scene);
         loadedTileScenes.delete(ev.scene);
+        tileContentRevision++;
         seamScheduled.delete(ev.scene);
     }
 
@@ -2225,8 +2286,7 @@
                 let surface0 = null; try { surface0 = sampleTileSurfaceZ(0, 0); } catch (_) { }
                 let terrain0 = null; try { terrain0 = terrainZAt(0, 0); } catch (_) { }
                 if (!seatDebugEl) {
-                    // Fixed to the viewport (not the container) and above the 2D/3D buttons — the
-                    // status toast at top-12px is hidden behind the controls panel on mobile.
+                    // Keep optional diagnostic readings separate from the user-facing status.
                     seatDebugEl = document.createElement('div');
                     seatDebugEl.style.cssText = 'position:fixed;left:50%;bottom:96px;transform:translateX(-50%);'
                         + 'z-index:100000;background:rgba(20,22,28,0.94);color:#fff;'
@@ -2269,18 +2329,20 @@
             if (!profT.firstTile && prog < 1) profT.firstTile = performance.now();
             if (profT.firstTile && !profT.streamed && prog >= 0.95) profT.streamed = performance.now();
         }
-        // No-coverage watchdog: if no tile CONTENT ever arrives, say so and fall back to
-        // abstract 3D. loadProgress alone lies here — a rate-limited session reports 1
-        // ("nothing queued") while the group stays empty forever.
+        // Bound failed startup without confusing empty/culled geometry with geographic coverage.
         if (!grounded) {
             const noContent = !Number.isFinite(prog) || prog === 0
                 || (prog >= 1 && tiles.group && tiles.group.children.length === 0);
-            sinceAnyLoadS = noContent ? sinceAnyLoadS + dtS : -Infinity;
-            if (sinceAnyLoadS > NO_COVERAGE_TIMEOUT_S) {
-                console.warn('[photoreal] no tiles streamed — no Google coverage here?');
-                setStatus(photorealI18n('threeMode.controls.noCoverage',
-                    'No photorealistic coverage here — staying in abstract 3D.'));
+            sinceAnyLoadS = window.__photorealGround.advanceEmptyContentTimer(sinceAnyLoadS, noContent, dtS);
+            if (sinceAnyLoadS > NO_CONTENT_TIMEOUT_S || lockWaitS > MAX_UNSEATED_WAIT_S) {
+                console.warn('[photoreal] terrain alignment timed out', {
+                    cachedModels: loadedTileScenes.size, failedRequests: tiles.stats?.failed || 0,
+                    bootstrapAttempts: bootstrapAttempts
+                });
+                setStatus(photorealI18n('threeMode.controls.loadFailed',
+                    'Photo view could not load. Try again or switch to 2D.'));
                 deactivate({ keepStatus: true, destination: 'model' });
+                hardDisposeTiles(); // a retry must not reuse a failed or exhausted tile session
                 window.requestMapMode('model');
                 return;
             }
@@ -2329,6 +2391,8 @@
         const generation = ++activationGeneration;
         const isCurrent = () => generation === activationGeneration && options.modeRequest.isCurrent();
         activating = true;
+        clearTimeout(statusRemovalTimer);
+        statusRemovalTimer = null;
         setPhotorealLoading(true);
         if (!window.isThreeModeActive?.() || !isCurrent()) return false;
         const btn = toggleBtn();
@@ -2337,6 +2401,7 @@
             const b2 = document.getElementById('mode-2d-toggle'); if (b2) b2.classList.remove('active');
         } catch (_) { }
         document.body.classList.add('realistic-mode-active');
+        setStatus('');
         try {
             // (Entry options like frameProposal/autoRotate are handled by three-mode's own
             // URL-driven entry — by the time this layer attaches, the camera is already
@@ -2377,11 +2442,17 @@
                 if (grounded) {
                     if (typeof window.setRealisticLayerActive === 'function') window.setRealisticLayerActive(true);
                     tiles.group.visible = builtVisible;
+                    attributionDirty = true;
                 }
                 lastFrameNow = 0;
                 sinceAnyLoadS = 0;
                 // A reused session that never seated gets to report again on this entry.
                 reportedProbeFamine = false;
+                lockWaitS = 0;
+                lockAccumS = 0;
+                bootstrapAttempts = 0;
+                bootstrapRevision = -1;
+                if (!grounded) lockSamples = [];
                 if (typeof window.registerThreeModeFrameHook === 'function') {
                     window.registerThreeModeFrameHook(onFrame);
                 }
@@ -2467,6 +2538,8 @@
             lockWaitS = 0;
             lockAccumS = 0;
             reportedProbeFamine = false;
+            bootstrapAttempts = 0;
+            bootstrapRevision = -1;
             lastFrameNow = 0;
             sinceAnyLoadS = 0;
             if (new URLSearchParams(window.location.search || '').get('fps')) {
@@ -2487,8 +2560,9 @@
         } catch (err) {
             if (!isCurrent()) return false;
             console.error('[photoreal] activation failed:', err);
-            setStatus('Failed to load photorealistic 3D.');
+            setStatus(photorealI18n('threeMode.controls.loadFailed', 'Photo view could not load. Try again or switch to 2D.'));
             deactivate({ keepStatus: true, destination: '2d' });
+            hardDisposeTiles();
             return false;
         } finally {
             if (generation === activationGeneration) activating = false;
@@ -2529,7 +2603,8 @@
         else retentionTimer = setTimeout(() => { if (!active && !activating) hardDisposeTiles(); }, RETAIN_TILES_MS);
         if (options.keepStatus) {
             if (loaderEl) loaderEl.classList.remove('visible');
-            setTimeout(function () { removeUiElements(); }, 6000);
+            clearTimeout(statusRemovalTimer);
+            statusRemovalTimer = setTimeout(function () { removeUiElements(); }, 6000);
         } else {
             removeUiElements();
         }
@@ -2612,6 +2687,13 @@
         isActive: function () { return active; },
         isLoading: function () { return loading; },
         getViewer: function () { return tiles; },
+        getLoadDiagnostics: function () {
+            return { grounded: grounded, bootstrapAttempts: bootstrapAttempts,
+                terrainElevationM: seatNode ? -seatNode.position.z : null,
+                cachedModels: loadedTileScenes.size, visibleTiles: tiles?.visibleTiles?.size || 0,
+                failedRequests: tiles?.stats?.failed || 0, waitingSeconds: lockWaitS,
+                emptySeconds: sinceAnyLoadS, progress: tiles ? Number(tiles.loadProgress) : null };
+        },
         // three-mode's Built row drives the mesh while the layer is up.
         setBuiltVisible: function (v) {
             builtVisible = !!v;

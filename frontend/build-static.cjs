@@ -74,6 +74,7 @@ const SAFE_GROUPS = [
             "js/og-metadata.js",
             "js/data-source.js",
             "js/basemap.js",
+            "js/ui/map-credits.js",
             "js/parcels/utils/fetch-config.js",
             "js/parcels/controller.js",
             "js/parcels/activity-listener.js"

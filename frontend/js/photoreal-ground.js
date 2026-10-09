@@ -35,6 +35,38 @@
         return null;
     }
 
+    // A camera starts in the app's zero-height frame, which can be underground anywhere on
+    // Earth. Cached tiles outside its frustum provide a provisional elevation; finer visible
+    // tiles still own the final street-level seating. Prefer the most detailed cached hit at
+    // each probe, then p25 across probes so roofs do not lift the provisional street level.
+    function selectBootstrapHeight(probes, seatOffset) {
+        const offset = finite(seatOffset) ? seatOffset : 0;
+        const heights = [];
+        (probes || []).forEach(function (hits) {
+            const usable = (hits || []).filter(function (hit) {
+                const elevation = hit.height - offset;
+                return finite(hit.height) && elevation >= -600 && elevation <= 9000;
+            }).sort(function (a, b) {
+                return (b.depth || 0) - (a.depth || 0) || b.height - a.height;
+            });
+            if (usable.length) heights.push(usable[0].height);
+        });
+        // A single stray triangle is not enough evidence to move the whole world.
+        if (heights.length < 3) return null;
+        heights.sort(function (a, b) { return a - b; });
+        return heights[Math.floor(heights.length * 0.25)];
+    }
+
+    // Partial loading must reset the empty interval, not disable it with -Infinity forever.
+    function advanceEmptyContentTimer(previous, empty, deltaSeconds) {
+        return empty ? (finite(previous) ? Math.max(0, previous) : 0)
+            + Math.max(0, finite(deltaSeconds) ? deltaSeconds : 0) : 0;
+    }
+
+    function canFinalizeSeating(progress, contentQuietMs) {
+        return finite(progress) && progress >= 0.995 && finite(contentQuietMs) && contentQuietMs >= 1400;
+    }
+
     // A proposed road normally has a useful visible Google surface under its centreline. When that
     // ray lands on a car, canopy or roof, two agreeing samples beyond the corridor edges can safely
     // pull it down. Higher side hits never lift a valid centreline onto adjacent buildings, and
@@ -408,6 +440,9 @@
 
     return {
         selectTopSurfaceHeight: selectTopSurfaceHeight,
+        selectBootstrapHeight: selectBootstrapHeight,
+        advanceEmptyContentTimer: advanceEmptyContentTimer,
+        canFinalizeSeating: canFinalizeSeating,
         selectRoadSurfaceHeight: selectRoadSurfaceHeight,
         roadFloorEncodingRange: roadFloorEncodingRange,
         encodeRoadFloor: encodeRoadFloor,

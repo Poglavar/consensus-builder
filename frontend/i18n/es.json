@@ -139,9 +139,20 @@
         "source": "Fuente",
         "scope": "Cobertura",
         "terms": "Condiciones de la fuente",
-        "unavailable": "Los metadatos detallados de la fuente no están disponibles. Consulta la atribución de la fuente en el mapa.",
+        "unavailable": "Los metadatos detallados de la fuente no están disponibles. Consulta Fuentes y software en Ajustes → Información.",
         "unknown": "Desconocida",
         "link": "Consultar información y condiciones de la fuente"
+    },
+    "mapCredits": {
+        "title": "Fuentes y software",
+        "open": "Fuentes",
+        "basemap": "Mapa",
+        "parcel": "Fuente de parcelas para {{city}}",
+        "software": "Software de código abierto",
+        "photo": "Vista fotográfica",
+        "buildings": "Edificios 3D",
+        "none": "No hay una fuente de parcelas configurada para esta ciudad.",
+        "description": "Créditos del mapa y los datos de la ciudad actual, además del software utilizado por esta aplicación."
     },
     "densityStats": {
         "title": "Estadísticas geométricas",
@@ -4062,6 +4073,7 @@
             "togglePanel": "Mostrar/ocultar controles",
             "streamingTiles": "Cargando datos 3D…",
             "noCoverage": "No hay cobertura fotorrealista aquí — permanecemos en 3D abstracto.",
+            "loadFailed": "No se pudo cargar la vista fotográfica. Inténtalo de nuevo o cambia a 2D.",
             "carveUnderProposals": "Ocultar edificios reales bajo las propuestas",
             "stateSolid": "Sólido",
             "stateGhost": "Transparente",

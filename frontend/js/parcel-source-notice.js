@@ -27,10 +27,10 @@
             if (source.scope) lines.push(t('scope', 'Coverage') + ': ' + source.scope);
             if (source.licenceNote) lines.push(t('terms', 'Source terms') + ': ' + source.licenceNote);
         } else {
-            lines.push(t('unavailable', 'Detailed source metadata is unavailable. Check the source attribution on the map.'));
+            lines.push(t('unavailable', 'Detailed source metadata is unavailable. See Sources & software in Settings → Information.'));
             lines.push(t('source', 'Source') + ': ' + String(parcels.sourceId || parcels.source || city.label || city.id || t('unknown', 'Unknown')));
         }
-        if (unavailable && source) lines.push(t('unavailable', 'Detailed source metadata is unavailable. Check the source attribution on the map.'));
+        if (unavailable && source) lines.push(t('unavailable', 'Detailed source metadata is unavailable. See Sources & software in Settings → Information.'));
         const linkUrl = source && [source.licenceUrl, source.catalogueUrl, source.endpoint].map(safeLink).find(Boolean);
         if (linkUrl) lines.push('{{txLink}}');
         return { message: lines.join('\n\n'), options: linkUrl ? { linkUrl, linkText: t('link', 'Read source information and terms') } : {} };

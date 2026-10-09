@@ -127,6 +127,7 @@
                 'css/photoreal-mode.css',
                 'css/ai-scene.css',
                 'css/map-shell.css',
+                'css/map-credits.css',
                 'css/bets-sheet.css',
                 'css/parcel-menu.css',
                 'css/site-tool.css',
@@ -1260,6 +1261,12 @@
                     </h3>
                     <div class="sheet-section-body">
                         <div class="info-subsection">
+                            <h4 id="map-credits-title" tabindex="-1" data-i18n-key="mapCredits.title">Sources &amp; software</h4>
+                            <p data-i18n-key="mapCredits.description">Map and data credits for the current city, plus the software used by this app.</p>
+                            <dl id="map-credits-details" class="map-credits-details"></dl>
+                        </div>
+                        <hr>
+                        <div class="info-subsection">
                             <h4 data-i18n-key="sidebar.info.contactTitle">Contact</h4>
                             <p>
                                 <span data-i18n-key="sidebar.info.telegramLabel">Telegram</span>: <a
@@ -1754,11 +1761,12 @@
             'js/map-screenshot.js',
             'js/og-metadata.js',
             'js/data-source.js',
-            'js/basemap.js',
+            'js/basemap.js?v=20261009-map-credits',
+            'js/ui/map-credits.js?v=20261009-map-credits',
             'js/parcels/utils/fetch-config.js',
             'js/parcels/controller.js',
             'js/parcels/activity-listener.js',
-            'js/map-core.js?v=20261008-point-parcels',
+            'js/map-core.js?v=20261009-map-credits',
             'js/user-management.js',
             'js/site-intro.js',
             'js/map-controls.js',

@@ -139,9 +139,20 @@
         "source": "Source",
         "scope": "Coverage",
         "terms": "Source terms",
-        "unavailable": "Detailed source metadata is unavailable. Check the source attribution on the map.",
+        "unavailable": "Detailed source metadata is unavailable. See Sources & software in Settings → Information.",
         "unknown": "Unknown",
         "link": "Read source information and terms"
+    },
+    "mapCredits": {
+        "title": "Sources & software",
+        "open": "Sources",
+        "basemap": "Map",
+        "parcel": "Parcel source for {{city}}",
+        "software": "Open-source software",
+        "photo": "Photo view",
+        "buildings": "3D buildings",
+        "none": "No parcel source configured for this city.",
+        "description": "Map and data credits for the current city, plus the software used by this app."
     },
     "densityStats": {
         "title": "Geometry statistics",
@@ -4011,6 +4022,7 @@
             "togglePanel": "Toggle controls",
             "streamingTiles": "Streaming 3D tiles…",
             "noCoverage": "No photorealistic coverage here — staying in abstract 3D.",
+            "loadFailed": "Photo view could not load. Try again or switch to 2D.",
             "carveUnderProposals": "Hide real buildings under proposals",
             "stateSolid": "Solid",
             "stateGhost": "Transparent",

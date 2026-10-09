@@ -10,7 +10,7 @@
             url: 'https://tile.openstreetmap.org/{z}/{x}/{y}.png',
             options: {
                 maxZoom: 19,
-                attribution: '© OpenStreetMap contributors'
+                attribution: '© <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
             }
         },
         maptiler: {
@@ -19,7 +19,7 @@
                 maxZoom: 22,
                 tileSize: 512,
                 zoomOffset: -1,
-                attribution: '© MapTiler © OpenStreetMap contributors'
+                attribution: '© <a href="https://www.maptiler.com/copyright/">MapTiler</a> · © <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
             }
         }
     };
@@ -134,6 +134,7 @@
         storeBasemapKey(targetKey);
         syncBasemapSelector(targetKey);
         try { global.baseTileLayer = baseTileLayer; } catch (_) { }
+        map.fire('basemapchange', { key: targetKey });
         return baseTileLayer;
     }
 
@@ -166,6 +167,7 @@
         initBasemapSelector: initBasemapSelector,
         getTileLoadingStats: getTileLoadingStats,
         getStoredBasemapKey: getStoredBasemapKey,
+        getCurrentBasemapKey: function () { return currentBaseMapKey; },
         // 256px raster for thumbnail stitching (map-screenshot.js assumes 256px tiles).
         THUMBNAIL_TILE_URL: 'https://api.maptiler.com/maps/basic-v2/256/{z}/{x}/{y}.png?key=' + MAPTILER_API_KEY
     };

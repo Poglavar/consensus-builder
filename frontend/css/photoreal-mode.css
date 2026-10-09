@@ -49,20 +49,23 @@ body.realistic-mode-active #mode-walk-toggle {
     cursor: progress;
 }
 
-/* Transient status line (loading / no-coverage) centred at the top of the 3D view. */
-#three-container .photoreal-status {
+/* Map-level feedback survives a failed entry and clears the profile/search control row. */
+#map-container .photoreal-status {
     position: absolute;
     left: 50%;
-    top: 12px;
+    top: calc(var(--map-shell-top-clearance) + var(--map-shell-gap));
     transform: translateX(-50%);
-    z-index: 5;
+    z-index: 1001;
     display: none;
-    max-width: 80%;
-    padding: 6px 12px;
+    width: max-content;
+    max-width: min(420px, calc(100% - 112px));
+    box-sizing: border-box;
+    padding: 10px 12px;
     border-radius: 8px;
     background: rgba(20, 22, 28, 0.86);
     color: #fff;
-    font: 500 12px/1.3 system-ui, sans-serif;
+    font: var(--cb-weight-medium) var(--cb-text-base)/var(--cb-leading) var(--cb-font-sans);
+    overflow-wrap: anywhere;
     text-align: center;
     pointer-events: none;
 }
@@ -70,8 +73,8 @@ body.realistic-mode-active #mode-walk-toggle {
 /* Unobtrusive tile-streaming indicator: spinner + live load percentage. */
 #three-container .photoreal-tile-loader {
     position: absolute;
-    top: 12px;
-    left: 12px;
+    top: calc(var(--map-shell-top-clearance) + var(--map-shell-gap));
+    left: 64px;
     z-index: 6;
     display: none;
     align-items: center;
@@ -82,6 +85,11 @@ body.realistic-mode-active #mode-walk-toggle {
     color: #fff;
     font: 500 11px/1.2 system-ui, sans-serif;
     pointer-events: none;
+}
+
+/* A failure or coverage message replaces the streaming label rather than overlapping it. */
+#map-container:has(> .photoreal-status:not([style*="display: none"])) .photoreal-tile-loader {
+    visibility: hidden;
 }
 
 #three-container .photoreal-tile-loader.visible {
