@@ -1,6 +1,6 @@
 # Reference lens member
 
-Release status (2026-10-02): supporting devnet program upgrades are byte-verified. Production member services and schema registration are separate from the API/frontend deploy and have not been verified live in this release. Complete that setup and a real owner-signed journey before treating fixture-backed tests as attestation evidence.
+Release status (2026-10-02): supporting devnet program upgrades are byte-verified. Production member services and schema registration are separate from the API/frontend deploy and have not been verified live in this release. Complete that setup and a real owner-signed journey before treating fixture-backed tests as attestation evidence. Update 2026-10-09: notary-01 and lifecycle-01 run on the production host as PM2 apps `consensus-builder-lens-member` / `consensus-builder-lifecycle-member`, are public under `https://api.urbangametheory.xyz/lens-members/{notary,lifecycle}` (nginx proxies to :3095/:3096) and announced themselves into the directory; the proposer picks its lens from there.
 
 A **lens** is the list of public keys a proposal names at mint: whose attestations that proposal's
 contract will accept. A **lens member** is one key in such a list, a notary, a court, a cadastre
