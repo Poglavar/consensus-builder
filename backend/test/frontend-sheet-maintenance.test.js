@@ -1,6 +1,7 @@
 // The Settings sheet's "Data & maintenance" section (UI-REWORK.md, Phase 6): local-cache upkeep
-// (parcel coverage/refresh/clear, block/road/proposal clears, wipe all) lives there and nowhere
-// else in the shell, each dataset's upkeep inside its own data-section wrapper so a city that hides
+// (parcel coverage/clear, block/road/proposal clears, wipe all) lives there and nowhere else in the
+// shell; source selectors and parcel refresh live with Layers. Each dataset's upkeep stays in its
+// own data-section wrapper so a city that hides
 // the section hides it too; and runWithButtonBusyState gives a sheet button back its icon and
 // translatable label span after a busy run instead of flattening it to text.
 import { describe, expect, it } from 'vitest';
@@ -25,12 +26,18 @@ function sheetHtml(id) {
 
 const MAINTENANCE = [
     { marker: 'id="showParcelCoverageButton"', section: 'parcels', command: 'parcels.coverage' },
-    { marker: 'id="refreshParcelDataButton"', section: 'parcels', command: 'parcels.refresh' },
     { marker: 'clearLocalParcelData', section: 'parcels', command: 'parcels.clearLocal' },
     { marker: 'onclick="clearBlocks()"', section: 'blocks', command: 'blocks.clear' },
     { marker: 'onclick="clearDetectedRoads()"', section: 'roads', command: 'roads.clear' },
     { marker: 'onclick="clearLocalProposalData()"', section: 'proposals', command: 'proposals.clearLocal' },
     { marker: 'id="wipeLocalDataButton"', section: 'data', command: 'settings.wipeLocalData' }
+];
+
+const LAYERS_DATA_ACTIONS = [
+    { marker: 'id="parcel-source-settings-button"', command: 'settings.parcelSourceSettings' },
+    { marker: 'id="building-source-settings-button"', command: 'settings.buildingSourceSettings' },
+    { marker: 'id="refreshParcelDataButton"', command: 'parcels.refresh' },
+    { marker: 'id="tile-source-select"', command: 'settings.baseMap' }
 ];
 
 describe('Data & maintenance section', () => {
@@ -39,7 +46,7 @@ describe('Data & maintenance section', () => {
     it('holds every local-cache action, and no other sheet does', () => {
         for (const { marker } of MAINTENANCE) {
             expect(settings, marker).toContain(marker);
-            for (const other of ['layers-sheet', 'tools-sheet', 'proposals-sheet', 'activity-sheet']) {
+            for (const other of ['layers-sheet', 'measurement-sheet', 'proposals-sheet', 'bets-sheet', 'activity-sheet']) {
                 expect(sheetHtml(other), `${marker} in ${other}`).not.toContain(marker);
             }
         }
@@ -54,13 +61,30 @@ describe('Data & maintenance section', () => {
         }
     });
 
-    it('lists the actions on the Settings surface (and the palette), not on Layers/Tools/Proposals', () => {
+    it('lists maintenance actions on the Settings surface (and the palette), not on Layers/Proposals', () => {
         for (const { command } of MAINTENANCE) {
             const entry = UiCommands.findCommand(command);
             expect(entry, command).toBeTruthy();
             expect(entry.surfaces, command).toEqual(expect.arrayContaining(['settings', 'palette']));
             for (const surface of ['layers', 'tools', 'proposals']) expect(entry.surfaces, command).not.toContain(surface);
         }
+    });
+
+    it('keeps source selection and parcel refresh with Layers, while advanced data source stays in Settings', () => {
+        const layers = sheetHtml('layers-sheet');
+        for (const { marker, command } of LAYERS_DATA_ACTIONS) {
+            expect(layers, marker).toContain(marker);
+            const entry = UiCommands.findCommand(command);
+            expect(entry, command).toBeTruthy();
+            expect(entry.surfaces, command).toContain('layers');
+            expect(entry.surfaces, command).not.toContain('settings');
+        }
+        const settings = sheetHtml('settings-sheet');
+        expect(settings).toContain('id="data-source-select"');
+        expect(UiCommands.findCommand('settings.dataSource').surfaces).toContain('settings');
+        expect(UiCommands.findCommand('settings.dataSource').modes).toEqual(['2d']);
+        expect(UiCommands.findCommand('parcels.coverage').surfaces).toContain('settings');
+        expect(UiCommands.findCommand('parcels.coverage').modes).toEqual(['2d']);
     });
 
     it('offers the per-dataset clears in the palette only in debug mode, like the sheet', () => {

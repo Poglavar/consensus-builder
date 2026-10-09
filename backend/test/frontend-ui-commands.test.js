@@ -47,7 +47,11 @@ const NOT_COMMANDS = {
     'mode-realistic-toggle': 'map view control',
     'mode-ai-toggle': 'map view control',
     areaMonitorUploadButton: 'permanently disabled (upload not built)',
+    'urban-blocks-browse': 'permanently disabled (browse is not built)',
     showClaimsCounts: 'permanently disabled (claims counts not built)',
+    'aerial-city-visible': 'aerial renderer control created by the world view',
+    'area-monitor-drawing-undo': 'transient area drawing toolbar action',
+    'area-monitor-drawing-cancel': 'transient area drawing toolbar action',
     'dev-badge': 'indicator, not an action',
     'debug-badge': 'indicator, not an action',
     'version-badge': 'indicator, not an action',
@@ -130,22 +134,8 @@ describe('rehoused sidebar controls', () => {
         for (const handler of ['countBlocks()', 'animateFloodfillFromSelected()', 'clearBlocks()']) {
             expect(shellHtml, `updateBlockButtonStates finds button[onclick="${handler}"]`).toContain(`onclick="${handler}"`);
         }
-        // city disabledSections, game title, 3D lock, area-monitor routing, proposals count
-        for (const section of ['data', 'game', 'proposals', 'parcels', 'blocks', 'stations', 'buildings', 'roads', 'areaMonitor', 'measurement', 'info']) {
-            expect(shellHtml, section).toMatch(new RegExp(`class="[^"]*accordion-section[^"]*"[^>]*data-section="${section}"`));
-        }
-        expect(shellHtml).toMatch(/data-section="game"[\s\S]*data-section-title="game"/);
-        // The simulation is a section of the Activity sheet, after the explorer buttons and before
-        // the status line; every one of its controls sits inside that game section.
-        const activity = shellHtml.slice(shellHtml.indexOf('id="activity-sheet"'), shellHtml.indexOf('id="settings-sheet"'));
-        const simulation = activity.indexOf('data-section="game"');
-        expect(simulation).toBeGreaterThan(activity.indexOf('id="activity-agents-button"'));
-        expect(simulation).toBeLessThan(activity.indexOf('id="status"'));
-        for (const id of ['game-play-pause-btn', 'game-datetime', 'game-turns', 'gameCheckbox', 'turn-interval-slider', 'turn-progress-fill']) {
-            expect(activity.indexOf(`id="${id}"`), id).toBeGreaterThan(simulation);
-        }
-        expect(shellHtml).not.toMatch(/id="game-pill|id="game-sheet"|id="show-game-log-btn"|id="show-agents-btn"/);
-        expect(shellHtml).toMatch(/data-section-title="parcels"/);
+        expect(UiCommands.SURFACES).not.toContain('tools');
+        expect(UiCommands.SURFACES).toContain('measurement');
     });
 
     it('turns every interactive control in the sheets into a command, or says why not', () => {
@@ -178,18 +168,18 @@ describe('availability and search', () => {
     });
 
     it('commandsFor keeps a surface to its commands and respects when()', () => {
-        const tools = UiCommands.commandsFor('tools', fakeCtx()).map(c => c.id);
-        expect(tools).toContain('tools.measure');
-        expect(tools).not.toContain('layers.parcels');
+        const measurement = UiCommands.commandsFor('measurement', fakeCtx()).map(c => c.id);
+        expect(measurement).toContain('tools.measure');
+        expect(measurement).not.toContain('layers.parcels');
 
-        const withoutMeasure = UiCommands.commandsFor('tools', fakeCtx(['measureButton'])).map(c => c.id);
+        const withoutMeasure = UiCommands.commandsFor('measurement', fakeCtx(['measureButton'])).map(c => c.id);
         expect(withoutMeasure).not.toContain('tools.measure');
         expect(withoutMeasure).toContain('tools.pinpoint');
     });
 
     it('puts the explorer and the simulation on the Activity sheet surface, and in the palette', () => {
         const activity = UiCommands.commandsFor('activity', fakeCtx()).map(c => c.id);
-        expect(activity).toEqual(expect.arrayContaining(['activity.explorer', 'activity.agents',
+        expect(activity).toEqual(expect.arrayContaining(['activity.explorer',
             'game.enable', 'game.playPause', 'game.interval', 'game.new']));
         expect(UiCommands.SURFACES).not.toContain('game');
         const palette = UiCommands.commandsFor('palette', fakeCtx()).map(c => c.id);
@@ -197,8 +187,40 @@ describe('availability and search', () => {
         // A city that hides the game section loses the simulation, not the explorer.
         const noGame = { ...fakeCtx(), isSectionHidden: section => section === 'game' };
         const withoutGame = UiCommands.commandsFor('activity', noGame).map(c => c.id);
-        expect(withoutGame).toEqual(expect.arrayContaining(['activity.explorer', 'activity.agents']));
+        expect(withoutGame).toEqual(expect.arrayContaining(['activity.explorer']));
         expect(withoutGame.filter(id => id.startsWith('game.'))).toEqual([]);
+    });
+
+    it('keeps watched-area access available in every map mode and reveals its inline list', () => {
+        const list = UiCommands.findCommand('areaMonitor.list');
+        expect(list.surfaces).toContain('activity');
+        expect(list.modes).toEqual(['2d', '3d', 'photo']);
+        expect(UiCommands.REHOUSED_CONTROL_IDS).not.toContain('areaMonitorListButton');
+        for (const mode of ['2d', '3d', 'photo']) {
+            const ctx = { mode, global: {}, isControlAvailable: id => id === 'activity-watched-areas-list', revealControl: vi.fn() };
+            expect(UiCommands.isAvailable('areaMonitor.list', ctx)).toBe(true);
+            UiCommands.runCommand('areaMonitor.list', ctx);
+            expect(ctx.revealControl).toHaveBeenCalledWith('activity-watched-areas-list');
+        }
+    });
+
+    it('places the city road-plan toggle on Layers', () => {
+        expect(UiCommands.findCommand('areaMonitor.cityPlan').surfaces).toContain('layers');
+        expect(UiCommands.findCommand('areaMonitor.cityPlan').surfaces).not.toContain('activity');
+    });
+
+    it('places map data sources and parcel refresh on 2D Layers, with diagnostics in Settings', () => {
+        const layers = UiCommands.commandsFor('layers', fakeCtx()).map(c => c.id);
+        const settings = UiCommands.commandsFor('settings', fakeCtx()).map(c => c.id);
+        expect(layers).toEqual(expect.arrayContaining([
+            'settings.parcelSourceSettings', 'settings.buildingSourceSettings', 'settings.baseMap', 'parcels.refresh'
+        ]));
+        expect(settings).toEqual(expect.arrayContaining(['parcels.coverage', 'settings.dataSource']));
+        expect(settings).not.toContain('parcels.refresh');
+        const model = { mode: 'model', global: {} };
+        for (const id of ['parcels.coverage', 'parcels.refresh', 'settings.dataSource', 'settings.baseMap']) {
+            expect(UiCommands.supportsMode(id, model), id).toBe(false);
+        }
     });
 
     it('treats a throwing when() as unavailable instead of breaking the surface', () => {
@@ -241,6 +263,69 @@ describe('availability and search', () => {
         expect(UiCommands.searchCommands('measure', fakeCtx(['measureButton']), tEn).map(c => c.id)).not.toContain('tools.measure');
         expect(UiCommands.searchCommands('zzzz-no-such-thing', fakeCtx(), tEn)).toEqual([]);
     });
+
+    it('shares the 2D capability rule across command listing, ranking, and execution', () => {
+        const model = { mode: 'model', global: { isThreeModeActive: () => true } };
+        for (const id of ['stations.bus', 'site.draw', 'tools.measure', 'parcel.propose', 'selection.propose']) {
+            expect(UiCommands.supportsMode(id, model), id).toBe(false);
+            expect(UiCommands.isAvailable(id, model), id).toBe(false);
+            expect(UiCommands.rankCommands(id, model, tEn).map(item => item.entry.id)).not.toContain(id);
+            expect(UiCommands.runCommand(id, model), id).toBe(false);
+        }
+        const browse3d = { ...model, global: { showAllProposalsModal: vi.fn(), openBetsSheet: vi.fn(), showGameLogDialog: vi.fn() } };
+        for (const id of ['proposals.list', 'bets.open', 'activity.explorer']) {
+            expect(UiCommands.isAvailable(id, browse3d), id).toBe(true);
+        }
+    });
+
+    it('requires parcel or open-ground context for global station placement', () => {
+        const global = { startTransitStationPlacement: vi.fn() };
+        expect(UiCommands.isAvailable('stations.bus', { mode: '2d', global })).toBe(false);
+        const onParcel = { mode: '2d', global, parcel: { parcelId: 'p-1', isRoad: false } };
+        expect(UiCommands.isAvailable('stations.bus', onParcel)).toBe(true);
+        UiCommands.runCommand('stations.bus', onParcel);
+        expect(global.startTransitStationPlacement).toHaveBeenCalledWith('bus');
+    });
+
+    it('keeps selection proposal dispatch behind a nonempty selection gate', () => {
+        const global = { SelectionTray: { propose: vi.fn() } };
+        const ctx = { mode: '2d', global, selection: { active: false, count: 0 } };
+        expect(UiCommands.isAvailable('selection.propose', ctx)).toBe(false);
+        expect(UiCommands.runCommand('selection.propose', ctx)).toBe(false);
+        expect(global.SelectionTray.propose).not.toHaveBeenCalled();
+    });
+
+    it('honors explicit data-map-modes on control containers while a sheet is closed', () => {
+        const sheet = {
+            style: { display: 'none' },
+            parentElement: null,
+            classList: { contains: name => name === 'map-sheet' },
+            getAttribute: () => null
+        };
+        const section = {
+            style: {}, parentElement: sheet,
+            classList: { contains: () => false },
+            getAttribute: name => name === 'data-map-modes' ? '2d' : null
+        };
+        const control = {
+            disabled: false,
+            style: {},
+            parentElement: section,
+            classList: { contains: () => false },
+            getAttribute: () => null,
+            hasAttribute: () => false
+        };
+        const body = { classList: { contains: () => false } };
+        sheet.parentElement = body;
+        const doc = { body, getElementById: id => id === 'measureButton' ? control : null };
+        const win = { document: doc, __mapModeState: { desired: 'model' } };
+        const ctx = UiCommands.createBrowserContext(win);
+        expect(ctx.mode).toBe('model');
+        expect(ctx.isControlAvailable('measureButton')).toBe(false);
+        expect(ctx.controlUnavailableReason('measureButton')).toBe('disabledIn3D');
+        section.getAttribute = name => name === 'data-map-modes' ? '2d model photo' : null;
+        expect(ctx.isControlAvailable('measureButton')).toBe(true);
+    });
 });
 
 describe('running commands', () => {
@@ -249,9 +334,9 @@ describe('running commands', () => {
         const showGameLogDialog = vi.fn();
         const ctx = { global: { showAllProposalsModal, showGameLogDialog } };
         UiCommands.runCommand('proposals.list', ctx);
-        UiCommands.runCommand('activity.agents', ctx);
+        UiCommands.runCommand('activity.explorer', ctx);
         expect(showAllProposalsModal).toHaveBeenCalledOnce();
-        expect(showGameLogDialog).toHaveBeenCalledWith({ view: 'actors' });
+        expect(showGameLogDialog).toHaveBeenCalledOnce();
     });
 
     it('drives the rehoused control: clicks toggles and buttons, reveals inputs', () => {
@@ -284,7 +369,7 @@ describe('the floating shell', () => {
     it('wires every shell button to a sheet that exists', () => {
         const sheets = new Set(openingTags(shellHtml, 'section')
             .filter(tag => /class="map-sheet\b/.test(tag)).map(tag => attr(tag, 'id')));
-        expect([...sheets].sort()).toEqual(['activity-sheet', 'bets-sheet', 'layers-sheet', 'proposals-sheet', 'settings-sheet', 'tools-sheet']);
+        expect([...sheets].sort()).toEqual(['activity-sheet', 'bets-sheet', 'layers-sheet', 'measurement-sheet', 'proposals-sheet', 'settings-sheet']);
         const triggers = openingTags(shellHtml, 'button').filter(tag => attr(tag, 'data-sheet-target') !== null);
         expect(triggers.length).toBe(6);
         for (const tag of triggers) {

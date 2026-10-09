@@ -1,7 +1,7 @@
 /* Photorealistic base layer (Google Photorealistic 3D Tiles via 3d-tiles-renderer).
    The real-world mesh streams INTO the Three.js #three-container scene when "realistic
    context" is toggled on inside 3D mode — there is no second canvas. This file styles the
-   globe toggle button and the small in-container status/streaming indicators. */
+   aerial-view toggle slot and the small in-container status/streaming indicators. */
 
 /* Walk-through picks points on the abstract Three.js ground; not supported on the
    photoreal mesh yet. */
@@ -12,36 +12,7 @@ body.realistic-mode-active #mode-walk-toggle {
 /* Realistic (real-world) button — slot 4 of the left-edge mode strip, always visible. The slot
    ladder, and the rule that a button is hidden rather than moved, live at the top of map.css. */
 #mode-realistic-toggle.map-mode-realistic-btn {
-    position: absolute;
-    left: var(--map-mode-stack-left);
     top: var(--map-mode-slot-4);
-    z-index: 1001;
-    display: inline-flex;
-    background: white;
-    border: 1px solid rgba(0, 0, 0, 0.2);
-    border-radius: 4px;
-    box-shadow: 0 2px 6px rgba(0, 0, 0, 0.15);
-    padding: 8px 10px;
-    min-width: 40px;
-    min-height: 36px;
-    box-sizing: border-box;
-    font-size: 14px;
-    font-weight: 600;
-    line-height: 1;
-    color: #333;
-    cursor: pointer;
-    align-items: center;
-    justify-content: center;
-}
-
-#mode-realistic-toggle.map-mode-realistic-btn:hover {
-    background: #f5f5f5;
-}
-
-#mode-realistic-toggle.map-mode-realistic-btn.active {
-    background: #1a73e8;
-    color: #fff;
-    border-color: #1a73e8;
 }
 
 #mode-realistic-toggle.map-mode-realistic-btn:disabled {
@@ -178,7 +149,7 @@ body.realistic-mode-active #mode-walk-toggle {
 #three-container .photoreal-attribution {
     position: absolute;
     right: 4px;
-    bottom: 22px;
+    bottom: calc(var(--map-visible-bottom) + var(--cb-space-1));
     z-index: 6;
     display: none;
     align-items: flex-end;

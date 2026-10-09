@@ -11,7 +11,7 @@
     'use strict';
 
     const SURFACES = Object.freeze([
-        'layers', 'tools', 'proposals', 'activity', 'settings', 'parcel-menu', 'selection-tray', 'palette', 'ground-menu'
+        'layers', 'measurement', 'proposals', 'activity', 'settings', 'parcel-menu', 'selection-tray', 'palette', 'ground-menu'
     ]);
 
     // Every control id the old sidebar held that still exists (rehoused into a sheet). Existing code finds these by id, so the test fails if index.html loses one.
@@ -24,7 +24,7 @@
         'showParcelCoverageButton', 'refreshParcelDataButton',
         'debugModeCheckbox',
         // Activity sheet: the explorer buttons and the Simulation section
-        'activity-explorer-button', 'activity-agents-button',
+        'activity-explorer-button',
         'gameCheckbox', 'game-datetime', 'game-turns', 'turn-interval-slider', 'turn-interval-value',
         'turn-progress-fill', 'turn-progress-time', 'game-play-pause-btn',
         // Proposals sheet
@@ -32,7 +32,7 @@
         'shareAppliedProposalsButton',
         // Layers sheet: parcels
         'parcelsCheckbox', 'showAdParcelsCheckbox', 'showParcelNumbers', 'showOwnerCounts',
-        'showProposalCounts', 'showClaimsCounts', 'markMintedCheckbox',
+        'showProposalCounts', 'markMintedCheckbox',
         'highlightOwnershipGovernment', 'highlightOwnershipInstitution', 'highlightOwnershipCompany',
         'highlightOwnershipPrivate',
         'parcels-in-view',
@@ -52,7 +52,6 @@
         'legend-min-0', 'legend-max-0', 'legend-min-1', 'legend-max-1', 'legend-min-2', 'legend-max-2',
         'legend-min-3', 'legend-max-3', 'legend-min-4', 'legend-max-4', 'legend-min-5',
         'amCityPlanToggle', 'amCityPlanLabel', 'areaMonitorDrawButton', 'areaMonitorFromPlanButton',
-        'areaMonitorUploadButton', 'areaMonitorListButton',
         // Activity sheet + toast
         'status', 'status-log-expanded', 'floating-status', 'floating-status-text'
     ]);
@@ -89,6 +88,38 @@
     const revealControl = id => ctx => ctx.revealControl(id);
     const controlAvailable = id => ctx => !ctx || typeof ctx.isControlAvailable !== 'function' || ctx.isControlAvailable(id);
 
+    const MAP_MODES = Object.freeze(['2d', 'model', 'photo']);
+    function normalizeMode(mode) {
+        const value = String(mode || '').trim().toLowerCase();
+        if (value === '3d') return 'model';
+        return MAP_MODES.includes(value) ? value : null;
+    }
+
+    function modeOf(ctx) {
+        if (ctx && normalizeMode(ctx.mode)) return normalizeMode(ctx.mode);
+        const win = ctx && ctx.global;
+        if (!win) return null;
+        const stateMode = normalizeMode(win.__mapModeState && win.__mapModeState.desired);
+        if (stateMode) return stateMode;
+        if (typeof win.isThreeModeActive === 'function' && win.isThreeModeActive()) {
+            if (typeof win.isRealisticModeActive === 'function' && win.isRealisticModeActive()) return 'photo';
+            return 'model';
+        }
+        return '2d';
+    }
+
+    function supportsMode(entryOrId, ctx) {
+        const entry = typeof entryOrId === 'string' ? BY_ID.get(entryOrId) : entryOrId;
+        if (!entry) return false;
+        const mode = modeOf(ctx);
+        if (mode && Array.isArray(entry.modes) && !entry.modes.includes(mode)
+            && !(mode === 'model' && entry.modes.includes('3d'))) return false;
+        if (entry.control && ctx && typeof ctx.isControlSupportedInMode === 'function') {
+            try { if (!ctx.isControlSupportedInMode(entry.control)) return false; } catch (_) { return false; }
+        }
+        return true;
+    }
+
     // Call a method of the map search box (js/ui/map-search.js, window.MapSearch).
     function callSearch(method, ...args) {
         const run = ctx => {
@@ -123,7 +154,11 @@
     function command(spec) {
         const surfaces = Array.isArray(spec.surfaces) ? spec.surfaces.slice() : [];
         if (spec.palette !== false && !surfaces.includes('palette')) surfaces.push('palette');
-        const out = Object.assign({ when: () => true }, spec, { surfaces });
+        const modeBoundGroups = ['layers', 'measurement', 'blocks', 'roads', 'stations', 'areaMonitor', 'site'];
+        const out = Object.assign({ when: () => true }, spec, {
+            ...(spec.modes ? {} : (modeBoundGroups.includes(spec.group) ? { modes: ['2d'] } : {})),
+            surfaces
+        });
         delete out.palette;
         return Object.freeze(out);
     }
@@ -170,6 +205,7 @@
         run.calls = `GroundMenu.runAction:${action}`;
         return Object.assign({
             id: `ground.${action}`, group: 'ground', surfaces: ['ground-menu'], palette: false,
+            modes: ['2d'],
             when: ctx => !!(ctx && ctx.ground) && groundMenuModel().isActionAvailable(action, ctx.ground),
             run
         }, spec);
@@ -209,6 +245,16 @@
     const selectionActive = ctx => !!(ctx && ctx.selection && ctx.selection.active);
     const selectionNonEmpty = ctx => selectionActive(ctx) && ctx.selection.count > 0;
 
+    function stationContextAvailable(type, ctx) {
+        if (!ctx || !ctx.global || typeof ctx.global.startTransitStationPlacement !== 'function') return false;
+        const parcel = ctx.parcel;
+        if (parcel && parcel.parcelId !== undefined && parcel.parcelId !== null && parcel.parcelId !== ''
+            && parcel.isGround !== true && parcel.isRoad !== true) return true;
+        const ground = ctx.ground;
+        const action = ({ bus: 'busStation', tram: 'tramStation', underground: 'undergroundStation', elevated: 'elevatedStation' })[type];
+        return !!(ground && action && groundMenuModel().isActionAvailable(action, ground));
+    }
+
     const DEFINITIONS = [
         // ---- Layers sheet: parcels ----
         control('parcelsCheckbox', { id: 'layers.parcels', group: 'layers', kind: 'toggle', surfaces: ['layers'],
@@ -237,9 +283,9 @@
         // city that hides the section hides them.
         { id: 'parcels.locate', group: 'parcels', surfaces: [], run: callSearch('focus'),
             labelKey: 'mapShell.commands.locateParcel', fallbackLabel: 'Locate a parcel by id', icon: 'fas fa-magnifying-glass-location' },
-        control('showParcelCoverageButton', { id: 'parcels.coverage', group: 'parcels', surfaces: ['settings'],
+        control('showParcelCoverageButton', { id: 'parcels.coverage', group: 'parcels', surfaces: ['settings'], modes: ['2d'],
             labelKey: 'sidebar.parcels.coverageButton', fallbackLabel: 'Show loaded parcels cover', icon: 'fas fa-table-cells' }),
-        control('refreshParcelDataButton', { id: 'parcels.refresh', group: 'parcels', surfaces: ['settings'],
+        control('refreshParcelDataButton', { id: 'parcels.refresh', group: 'parcels', surfaces: ['layers'], modes: ['2d'],
             labelKey: 'sidebar.parcels.refreshButton', fallbackLabel: 'Refresh Parcel Data', icon: 'fas fa-rotate' }),
         { id: 'parcels.clearLocal', group: 'parcels', surfaces: ['settings'], debugOnly: true,
             labelKey: 'sidebar.parcels.clearButton', fallbackLabel: 'Clear Parcel Data From Local Storage', icon: 'fas fa-trash',
@@ -276,64 +322,65 @@
             labelKey: 'sidebar.roads.dguPolygonsToggle', fallbackLabel: 'DGU usage polygons', icon: 'fas fa-draw-polygon' }),
         control('showLegacyRoadCenterlines', { id: 'layers.roadCentrelines', group: 'layers', kind: 'toggle', surfaces: ['layers'],
             labelKey: 'sidebar.roads.centerlinesToggle', fallbackLabel: 'Existing road centrelines', icon: 'fas fa-grip-lines' }),
-        control('toggleRoadAnalysisResults', { id: 'layers.roadAnalysis', group: 'layers', kind: 'toggle', surfaces: ['tools'],
+        control('toggleRoadAnalysisResults', { id: 'layers.roadAnalysis', group: 'layers', kind: 'toggle', surfaces: ['layers'], modes: ['2d'],
             labelKey: 'sidebar.roads.analysisToggle', fallbackLabel: 'Show road analysis results', icon: 'fas fa-chart-line' }),
 
-        // ---- Tools sheet ----
-        control('measureButton', { id: 'tools.measure', group: 'tools', surfaces: ['tools'],
+        // ---- Measurement sheet ----
+        control('measureButton', { id: 'tools.measure', group: 'measurement', surfaces: ['measurement'], modes: ['2d'],
             labelKey: 'sidebar.measurement.measureButton', fallbackLabel: 'Measure', icon: 'fas fa-ruler' }),
-        control('pinpointButton', { id: 'tools.pinpoint', group: 'tools', surfaces: ['tools'],
+        control('pinpointButton', { id: 'tools.pinpoint', group: 'measurement', surfaces: ['measurement'], modes: ['2d'],
             labelKey: 'sidebar.measurement.pinpointButton', fallbackLabel: 'Pinpoint', icon: 'fas fa-location-crosshairs' }),
-        control('clearMeasurementsButton', { id: 'tools.clearMeasurements', group: 'tools', surfaces: ['tools'],
+        control('clearMeasurementsButton', { id: 'tools.clearMeasurements', group: 'measurement', surfaces: ['measurement'], modes: ['2d'],
             labelKey: 'sidebar.measurement.clearButton', fallbackLabel: 'Clear Measurements', icon: 'fas fa-eraser' }),
-        { id: 'blocks.reform', group: 'blocks', surfaces: ['tools'], run: callGlobal('countBlocks'),
+        { id: 'blocks.reform', group: 'blocks', surfaces: ['layers'], modes: ['2d'], run: callGlobal('countBlocks'),
             labelKey: 'sidebar.blocks.reformButton', fallbackLabel: '(Re)form Blocks', icon: 'fas fa-shapes' },
-        { id: 'blocks.fromSelected', group: 'blocks', surfaces: ['tools', 'selection-tray'],
+        { id: 'blocks.fromSelected', group: 'blocks', surfaces: ['layers', 'selection-tray'], modes: ['2d'],
             // An empty multi-selection has no parcel to grow a block from.
             when: ctx => !(ctx && ctx.selection && ctx.selection.active && ctx.selection.count === 0),
             run: callGlobal('animateFloodfillFromSelected'),
             labelKey: 'mapShell.commands.blockFromSelected', fallbackLabel: 'Detect block from the selected parcel', icon: 'fas fa-fill-drip' },
-        control('showBlockListButton', { id: 'blocks.list', group: 'blocks', surfaces: ['tools'],
+        control('showBlockListButton', { id: 'blocks.list', group: 'blocks', surfaces: ['layers'],
             labelKey: 'sidebar.blocks.showListButton', fallbackLabel: 'Show Block List', icon: 'fas fa-list' }),
-        { id: 'blocks.clear', group: 'blocks', surfaces: ['settings'], debugOnly: true, run: callGlobal('clearBlocks'),
+        { id: 'blocks.clear', group: 'blocks', surfaces: ['settings'], modes: ['2d'], debugOnly: true, run: callGlobal('clearBlocks'),
             labelKey: 'sidebar.blocks.clearButton', fallbackLabel: 'Clear Blocks From Local Storage', icon: 'fas fa-trash' },
-        { id: 'stations.bus', group: 'stations', surfaces: ['tools'], run: callGlobal('startTransitStationPlacement', 'bus'),
+        { id: 'stations.bus', group: 'stations', surfaces: ['palette'], modes: ['2d'], when: ctx => stationContextAvailable('bus', ctx), run: callGlobal('startTransitStationPlacement', 'bus'),
             labelKey: 'sidebar.stations.bus', fallbackLabel: 'Bus station', icon: 'fas fa-bus' },
-        { id: 'stations.tram', group: 'stations', surfaces: ['tools'], run: callGlobal('startTransitStationPlacement', 'tram'),
+        { id: 'stations.tram', group: 'stations', surfaces: ['palette'], modes: ['2d'], when: ctx => stationContextAvailable('tram', ctx), run: callGlobal('startTransitStationPlacement', 'tram'),
             labelKey: 'sidebar.stations.tram', fallbackLabel: 'Tram station', icon: 'fas fa-train-tram' },
-        { id: 'stations.underground', group: 'stations', surfaces: ['tools'], run: callGlobal('startTransitStationPlacement', 'underground'),
+        { id: 'stations.underground', group: 'stations', surfaces: ['palette'], modes: ['2d'], when: ctx => stationContextAvailable('underground', ctx), run: callGlobal('startTransitStationPlacement', 'underground'),
             labelKey: 'sidebar.stations.underground', fallbackLabel: 'Underground station', icon: 'fas fa-train-subway' },
-        { id: 'stations.elevated', group: 'stations', surfaces: ['tools'], run: callGlobal('startTransitStationPlacement', 'elevated'),
+        { id: 'stations.elevated', group: 'stations', surfaces: ['palette'], modes: ['2d'], when: ctx => stationContextAvailable('elevated', ctx), run: callGlobal('startTransitStationPlacement', 'elevated'),
             labelKey: 'sidebar.stations.elevated', fallbackLabel: 'Elevated train station', icon: 'fas fa-train' },
-        { id: 'stations.cancel', group: 'stations', surfaces: ['tools'], run: callGlobal('cancelTransitStationPlacement'),
+        { id: 'stations.cancel', group: 'stations', surfaces: ['palette'], modes: ['2d'], when: ctx => !!(ctx && ctx.global && typeof ctx.global.isTransitStationPlacementActive === 'function' && ctx.global.isTransitStationPlacementActive()), run: callGlobal('cancelTransitStationPlacement'),
             labelKey: 'sidebar.stations.cancel', fallbackLabel: 'Cancel placement', icon: 'fas fa-xmark' },
-        control('detectExistingRoadsButton', { id: 'roads.detectExisting', group: 'roads', surfaces: ['tools'],
+        control('detectExistingRoadsButton', { id: 'roads.detectExisting', group: 'roads', surfaces: ['layers'],
             labelKey: 'sidebar.roads.detectExisting', fallbackLabel: 'Detect Existing Roads', icon: 'fas fa-road' }),
-        { id: 'roads.drawOsm', group: 'roads', surfaces: ['tools'], run: callGlobal('drawOSMRoads'),
+        { id: 'roads.drawOsm', group: 'roads', surfaces: ['layers'], run: callGlobal('drawOSMRoads'),
             labelKey: 'sidebar.roads.drawOsm', fallbackLabel: 'Draw Roads from OSM', icon: 'fas fa-road' },
-        { id: 'roads.detectOsm', group: 'roads', surfaces: ['tools'], run: callGlobal('detectRoadsFromOSM'),
+        { id: 'roads.detectOsm', group: 'roads', surfaces: ['layers'], run: callGlobal('detectRoadsFromOSM'),
             labelKey: 'sidebar.roads.detectOsm', fallbackLabel: 'Detect Roads from OSM', icon: 'fas fa-road' },
-        { id: 'roads.drawGup', group: 'roads', surfaces: ['tools'], run: callGlobal('drawGUPRoads'),
+        { id: 'roads.drawGup', group: 'roads', surfaces: ['layers'], run: callGlobal('drawGUPRoads'),
             labelKey: 'sidebar.roads.drawGup', fallbackLabel: 'Draw Roads from GUP', icon: 'fas fa-road' },
-        { id: 'roads.detectGup', group: 'roads', surfaces: ['tools'], run: callGlobal('detectRoadsFromGUP'),
+        { id: 'roads.detectGup', group: 'roads', surfaces: ['layers'], run: callGlobal('detectRoadsFromGUP'),
             labelKey: 'sidebar.roads.detectGup', fallbackLabel: 'Detect Roads from GUP', icon: 'fas fa-road' },
-        { id: 'roads.drawDgu', group: 'roads', surfaces: ['tools'], run: callGlobal('drawWFSRoadParcels'),
+        { id: 'roads.drawDgu', group: 'roads', surfaces: ['layers'], run: callGlobal('drawWFSRoadParcels'),
             labelKey: 'sidebar.roads.drawDgu', fallbackLabel: 'Draw roads from DGU', icon: 'fas fa-road' },
-        { id: 'roads.detectDgu', group: 'roads', surfaces: ['tools'], run: callGlobal('detectRoadsFromWFS'),
+        { id: 'roads.detectDgu', group: 'roads', surfaces: ['layers'], run: callGlobal('detectRoadsFromWFS'),
             labelKey: 'sidebar.roads.detectDgu', fallbackLabel: 'Detect roads from DGU', icon: 'fas fa-road' },
         { id: 'roads.clear', group: 'roads', surfaces: ['settings'], debugOnly: true, run: callGlobal('clearDetectedRoads'),
             labelKey: 'sidebar.roads.clearButton', fallbackLabel: 'Clear Roads from Local Storage', icon: 'fas fa-trash' },
-        control('applyGovernmentRoadPlanButton', { id: 'roads.applyGovernmentPlan', group: 'roads', surfaces: ['tools'],
+        control('applyGovernmentRoadPlanButton', { id: 'roads.applyGovernmentPlan', group: 'roads', surfaces: ['layers'],
             labelKey: 'sidebar.roads.applyGovPlan', fallbackLabel: 'Apply Government Road Plan', icon: 'fas fa-map-location-dot' }),
-        control('analyzeAllRoadsButton', { id: 'roads.analyzeOsm', group: 'roads', surfaces: ['tools'],
+        control('analyzeAllRoadsButton', { id: 'roads.analyzeOsm', group: 'roads', surfaces: ['layers'],
             labelKey: 'sidebar.roads.analyzeOsm', fallbackLabel: 'Analyze Roads OSM', icon: 'fas fa-chart-line' }),
-        control('amCityPlanToggle', { id: 'areaMonitor.cityPlan', group: 'areaMonitor', kind: 'toggle', surfaces: ['tools'],
+        control('amCityPlanToggle', { id: 'areaMonitor.cityPlan', group: 'areaMonitor', kind: 'toggle', surfaces: ['layers'],
             labelKey: 'mapShell.commands.areaMonitorCityPlan', fallbackLabel: 'Area monitor: show the city road plan', icon: 'fas fa-map' }),
-        control('areaMonitorDrawButton', { id: 'areaMonitor.draw', group: 'areaMonitor', surfaces: ['tools'],
+        control('areaMonitorDrawButton', { id: 'areaMonitor.draw', group: 'areaMonitor', surfaces: ['activity'],
             labelKey: 'mapShell.commands.areaMonitorDraw', fallbackLabel: 'Draw a monitored area', icon: 'fas fa-draw-polygon' }),
-        control('areaMonitorFromPlanButton', { id: 'areaMonitor.fromPlan', group: 'areaMonitor', surfaces: ['tools'],
+        control('areaMonitorFromPlanButton', { id: 'areaMonitor.fromPlan', group: 'areaMonitor', surfaces: ['activity'],
             labelKey: 'mapShell.commands.areaMonitorFromPlan', fallbackLabel: 'Draw a monitored area from the plan', icon: 'fas fa-draw-polygon' }),
-        control('areaMonitorListButton', { id: 'areaMonitor.list', group: 'areaMonitor', surfaces: ['tools'],
+        command({ id: 'areaMonitor.list', group: 'areaMonitor', surfaces: ['activity'], modes: ['2d', '3d', 'photo'],
+            when: controlAvailable('activity-watched-areas-list'), run: revealControl('activity-watched-areas-list'),
             labelKey: 'sidebar.areaMonitor.listButton', fallbackLabel: 'List monitored areas', icon: 'fas fa-list' }),
 
         // ---- Proposals sheet ----
@@ -354,8 +401,6 @@
         // config hiding the game section takes the simulation commands with it, not the explorer) ----
         { id: 'activity.explorer', group: 'activity', surfaces: ['activity'], run: callGlobal('showGameLogDialog'),
             labelKey: 'mapShell.commands.activityExplorer', fallbackLabel: 'Open activity explorer', icon: 'fas fa-wave-square' },
-        { id: 'activity.agents', group: 'activity', surfaces: ['activity'], run: callGlobal('showGameLogDialog', { view: 'actors' }),
-            labelKey: 'sidebar.game.showAgents', fallbackLabel: 'Show Agents', icon: 'fas fa-robot' },
         control('gameCheckbox', { id: 'game.enable', group: 'game', kind: 'toggle', surfaces: ['activity'],
             labelKey: 'sidebar.game.enable', fallbackLabel: 'Enable game mode', icon: 'fas fa-gamepad' }),
         { id: 'game.playPause', group: 'game', surfaces: ['activity'], run: callGlobal('toggleGamePlayPause'),
@@ -375,16 +420,16 @@
             labelKey: 'mapShell.commands.openBets', fallbackLabel: 'Open bets', icon: 'fas fa-coins' },
 
         // ---- Parcel menu (ui/parcel-menu.js), in menu order ----
-        parcelCommand('propose', { labelKey: 'parcelMenu.actions.propose', fallbackLabel: 'Propose here', icon: 'fas fa-pen-ruler' }),
+        parcelCommand('propose', { modes: ['2d'], labelKey: 'parcelMenu.actions.propose', fallbackLabel: 'Propose here', icon: 'fas fa-pen-ruler' }),
         parcelCommand('selectMore', { labelKey: 'parcelMenu.actions.selectMore', fallbackLabel: 'Select more', icon: 'fas fa-object-group' }),
         parcelCommand('details', { labelKey: 'parcelMenu.actions.details', fallbackLabel: 'Details', icon: 'fas fa-circle-info' }),
         parcelCommand('history', { labelKey: 'parcelMenu.actions.history', fallbackLabel: 'History', icon: 'fas fa-clock-rotate-left' }),
         parcelCommand('compare', { labelKey: 'parcelMenu.actions.compare', fallbackLabel: 'Compare proposals here', icon: 'fas fa-code-compare' }),
         parcelCommand('tools', { labelKey: 'parcelMenu.actions.tools', fallbackLabel: 'Tools', icon: 'fas fa-screwdriver-wrench' }),
-        parcelCommand('offer', { labelKey: 'parcelMenu.actions.offer', fallbackLabel: 'Offer my land', icon: 'fas fa-handshake' }),
+        parcelCommand('offer', { modes: ['2d'], labelKey: 'parcelMenu.actions.offer', fallbackLabel: 'Offer my land', icon: 'fas fa-handshake' }),
         parcelCommand('view3d', { labelKey: 'parcelMenu.actions.view3d', fallbackLabel: 'View in 3D', icon: 'fas fa-cube' }),
-        parcelCommand('detectBlock', { labelKey: 'parcelMenu.actions.detectBlock', fallbackLabel: 'Detect block', icon: 'fas fa-fill-drip' }),
-        parcelCommand('useAsSite', { labelKey: 'parcelMenu.actions.useAsSite', fallbackLabel: 'Use as site', icon: 'fas fa-draw-polygon' }),
+        parcelCommand('detectBlock', { modes: ['2d'], labelKey: 'parcelMenu.actions.detectBlock', fallbackLabel: 'Detect block', icon: 'fas fa-fill-drip' }),
+        parcelCommand('useAsSite', { modes: ['2d'], labelKey: 'parcelMenu.actions.useAsSite', fallbackLabel: 'Use as site', icon: 'fas fa-draw-polygon' }),
 
         // ---- Ground menu (a click where there is no parcel), in menu order ----
         groundCommand('drawSite', { labelKey: 'groundMenu.actions.drawSite', fallbackLabel: 'Draw a site here', icon: 'fas fa-draw-polygon' }),
@@ -397,17 +442,17 @@
         // ---- Selected road (the proposal card a road click opens; palette) ----
         roadCommand('crossSection', { labelKey: 'panel.road.crossSectionButton', fallbackLabel: 'Edit cross-section', icon: 'fas fa-road' }),
         // The site tool from anywhere (the palette): draw a site with nothing selected.
-        { id: 'site.draw', group: 'site', surfaces: [], when: siteToolIdle,
+        { id: 'site.draw', group: 'site', surfaces: [], modes: ['2d'], when: siteToolIdle,
             run: ctx => ctx.global.SiteTool.start(),
             labelKey: 'siteTool.commands.draw', fallbackLabel: 'Draw site', icon: 'fas fa-draw-polygon' },
 
         // ---- Selection tray (ui/selection-tray.js); Detect block is blocks.fromSelected above ----
-        { id: 'selection.propose', group: 'selection', surfaces: ['selection-tray'], when: selectionNonEmpty,
+        { id: 'selection.propose', group: 'selection', surfaces: ['selection-tray'], modes: ['2d'], when: selectionNonEmpty,
             run: ctx => ctx.global.SelectionTray.propose(),
             labelKey: 'selectionTray.actions.propose', fallbackLabel: 'Propose', icon: 'fas fa-pen-ruler' },
         // The selection's union as an editable site (the site tool), for designs that should not
         // follow the parcel edges exactly.
-        { id: 'selection.useAsSite', group: 'selection', surfaces: ['selection-tray'],
+        { id: 'selection.useAsSite', group: 'selection', surfaces: ['selection-tray'], modes: ['2d'],
             when: ctx => selectionNonEmpty(ctx) && siteToolIdle(ctx),
             run: ctx => ctx.global.SiteTool.startFromSelection(),
             labelKey: 'selectionTray.actions.useAsSite', fallbackLabel: 'Use as site', icon: 'fas fa-draw-polygon' },
@@ -421,9 +466,9 @@
         // ---- Settings sheet ----
         control('parcel-source-notice-button', { id: 'settings.parcelSourceNotice', group: 'settings', surfaces: ['settings'],
             labelKey: 'parcelSourceNotice.title', fallbackLabel: 'Parcel source information', icon: 'fas fa-info-circle' }),
-        control('parcel-source-settings-button', { id: 'settings.parcelSourceSettings', group: 'settings', surfaces: ['settings'],
+        control('parcel-source-settings-button', { id: 'settings.parcelSourceSettings', group: 'settings', surfaces: ['layers'], modes: ['2d'],
             labelKey: 'parcelSources.title', fallbackLabel: 'Choose a parcel source', icon: 'fas fa-database' }),
-        control('building-source-settings-button', { id: 'settings.buildingSourceSettings', group: 'settings', surfaces: ['settings'],
+        control('building-source-settings-button', { id: 'settings.buildingSourceSettings', group: 'settings', surfaces: ['layers'], modes: ['2d'],
             labelKey: 'buildingSources.title', fallbackLabel: 'Choose a building source', icon: 'fas fa-building' }),
         // The city list and "Use my location" live in the search box (city chip, Cities group).
         { id: 'settings.city', group: 'settings', surfaces: [], run: callSearch('showCities'),
@@ -436,9 +481,9 @@
         // Opens the palette itself, so it is not listed in it.
         control('command-palette-button', { id: 'settings.commandPalette', group: 'settings', surfaces: ['settings'], palette: false,
             labelKey: 'commandPalette.open', fallbackLabel: 'Command palette', icon: 'fas fa-terminal' }),
-        control('data-source-select', { id: 'settings.dataSource', group: 'settings', kind: 'input', surfaces: ['settings'],
+        control('data-source-select', { id: 'settings.dataSource', group: 'settings', kind: 'input', surfaces: ['settings'], modes: ['2d'],
             labelKey: 'mapShell.commands.dataSource', fallbackLabel: 'Data source', icon: 'fas fa-database' }),
-        control('tile-source-select', { id: 'settings.baseMap', group: 'settings', kind: 'input', surfaces: ['settings'],
+        control('tile-source-select', { id: 'settings.baseMap', group: 'settings', kind: 'input', surfaces: ['layers'], modes: ['2d'],
             labelKey: 'mapShell.commands.baseMap', fallbackLabel: 'Base map', icon: 'fas fa-map' }),
         control('wipeLocalDataButton', { id: 'settings.wipeLocalData', group: 'settings', surfaces: ['settings'],
             labelKey: 'sidebar.info.wipeDataButton', fallbackLabel: 'Wipe ALL Local Data', icon: 'fas fa-skull-crossbones' }),
@@ -492,6 +537,9 @@
     }
 
     function isAvailable(entry, ctx) {
+        if (typeof entry === 'string') entry = findCommand(entry);
+        if (!entry) return false;
+        if (!supportsMode(entry, ctx)) return false;
         if (sectionHiddenForCity(entry, ctx)) return false;
         if (hiddenOutsideDebug(entry, ctx)) return false;
         try {
@@ -554,7 +602,7 @@
     // [{ entry, label, rank, available, reason }]. The palette shows the unavailable ones greyed.
     function rankCommands(query, ctx, t) {
         const needle = normalize(query).trim();
-        const scored = COMMANDS.filter(entry => entry.surfaces.includes('palette')).map(entry => {
+        const scored = COMMANDS.filter(entry => entry.surfaces.includes('palette') && supportsMode(entry, ctx)).map(entry => {
             const label = labelOf(entry, t);
             const groupKey = `commandPalette.groups.${entry.group}`;
             const translated = typeof t === 'function' ? t(groupKey, entry.group) : null;
@@ -588,15 +636,33 @@
             return false;
         };
         const shell = () => win.MapShell;
+        const controlSupportsMode = el => {
+            const mode = modeOf(ctx);
+            if (!mode) return true;
+            for (let node = el; node && node !== doc.body; node = node.parentElement) {
+                const declared = node.getAttribute && node.getAttribute('data-map-modes');
+                if (declared === null || declared === undefined) continue;
+                const allowed = declared.trim().split(/\s+/).map(normalizeMode).filter(Boolean);
+                if (!allowed.includes(mode) && !(mode === 'model' && allowed.includes('model'))) return false;
+            }
+            return true;
+        };
         const ctx = {
             global: win,
             document: doc,
+            get mode() {
+                return Object.prototype.hasOwnProperty.call(extra, 'mode') ? normalizeMode(extra.mode) : modeOf({ global: win });
+            },
             isDebugMode() {
                 return !!(doc.body && doc.body.classList.contains('debug-mode'));
             },
             isControlAvailable(id) {
                 const el = element(id);
-                return !!el && !el.disabled && !hiddenByConfig(el);
+                return !!el && !el.disabled && !hiddenByConfig(el) && controlSupportsMode(el);
+            },
+            isControlSupportedInMode(id) {
+                const el = element(id);
+                return !el || controlSupportsMode(el);
             },
             // Every wrapper of the section hidden by the city config (applySidebarConfiguration).
             isSectionHidden(section) {
@@ -606,6 +672,7 @@
             controlUnavailableReason(id) {
                 const el = element(id);
                 if (!el) return 'missing';
+                if (!controlSupportsMode(el)) return modeOf(ctx) === 'model' ? 'disabledIn3D' : 'disabled';
                 if (hiddenByConfig(el)) {
                     // A section the city config hid (or a feature flag) vs a control that is
                     // simply not shown right now (e.g. Clear Measurements with nothing measured).
@@ -666,6 +733,7 @@
     function runCommand(id, ctx) {
         const entry = findCommand(id);
         if (!entry) throw new Error(`UiCommands: unknown command ${id}`);
+        if (!isAvailable(entry, ctx)) return false;
         return entry.run(ctx);
     }
 
@@ -675,6 +743,8 @@
         REHOUSED_CONTROL_IDS,
         listCommands,
         findCommand,
+        supportsMode,
+        isAvailable,
         commandsFor,
         searchCommands,
         rankCommands,

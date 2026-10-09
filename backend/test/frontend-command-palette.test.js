@@ -52,17 +52,17 @@ describe('command palette', () => {
 
     it('filters by the query and puts the group with the best match first', () => {
         const groups = view('measure');
-        expect(groups[0].group).toBe('tools');
+        expect(groups[0].group).toBe('measurement');
         expect(groups[0].items[0].entry.id).toBe('tools.measure');
-        expect(groups.flatMap(g => g.items).every(i => /measure/i.test(i.label) || /measure/i.test(i.entry.id))).toBe(true);
+        expect(groups.flatMap(g => g.items).every(i => /measure/i.test(i.label) || /measure/i.test(i.entry.id) || i.entry.group === 'measurement')).toBe(true);
     });
 
     it('keeps an unavailable command visible, after the available ones, with the reason', () => {
         const ctx = fakeCtx({ measureButton: 'disabledIn3D' });
-        const tools = view('measure', ctx).find(g => g.group === 'tools').items;
-        const measure = tools.find(i => i.entry.id === 'tools.measure');
+        const measurement = view('measure', ctx).find(g => g.group === 'measurement').items;
+        const measure = measurement.find(i => i.entry.id === 'tools.measure');
         expect(measure).toMatchObject({ available: false, reason: 'disabledIn3D' });
-        expect(tools[tools.length - 1].entry.id).toBe('tools.measure');
+        expect(measurement[measurement.length - 1].entry.id).toBe('tools.measure');
         // The search box only offers what can run.
         expect(UiCommands.searchCommands('measure', ctx, tEn).map(e => e.id)).not.toContain('tools.measure');
     });
@@ -78,10 +78,10 @@ describe('command palette', () => {
     it('does not let a group of only unavailable matches outrank an available one', () => {
         const ctx = fakeCtx({ measureButton: 'disabled', pinpointButton: 'disabled', clearMeasurementsButton: 'disabled' });
         const groups = Palette.groupPaletteItems([
-            { entry: { group: 'tools' }, label: 'Measure', rank: 0, available: false },
+            { entry: { group: 'measurement' }, label: 'Measure', rank: 0, available: false },
             { entry: { group: 'roads' }, label: 'Measure road', rank: 1, available: true }
         ], groupOrder, { query: 'measure' });
-        expect(groups.map(g => g.group)).toEqual(['roads', 'tools']);
+        expect(groups.map(g => g.group)).toEqual(['roads', 'measurement']);
         expect(ctx.controlUnavailableReason('measureButton')).toBe('disabled');
     });
 

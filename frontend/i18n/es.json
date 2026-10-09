@@ -2212,7 +2212,8 @@
                 },
                 "actions": {
                     "download": "Descargar",
-                    "downloaded": "Descargada"
+                    "downloaded": "Descargada",
+                    "details": "Detalles"
                 },
                 "loadingServer": "Cargando propuestas del servidor…",
                 "serverError": "Error al cargar las propuestas del servidor.",
@@ -2313,7 +2314,12 @@
                     "toUnapply": "por quitar: {n}"
                 },
                 "syncBlockchain": "Actualizar desde la blockchain",
-                "syncBlockchainNoWallet": "Conecta una billetera para sincronizar desde la blockchain"
+                "syncBlockchainNoWallet": "Conecta una billetera para sincronizar desde la blockchain",
+                "navigation": {
+                    "hint2d": "Para proponer, toca un terreno o un espacio abierto en el mapa.",
+                    "hint3d": "Las propuestas se dibujan en el mapa 2D.",
+                    "open2d": "Abrir mapa 2D"
+                }
             },
             "proposalChoice": {
                 "title": "Elegir propuesta",
@@ -4156,11 +4162,11 @@
             "loadingBuildings": "Cargando edificios…"
         },
         "toggle": {
-            "switchTo2d": "Cambiar a 2D",
-            "switchTo3d": "Cambiar a modelo (3D)",
+            "switchTo2d": "Mapa 2D",
+            "switchTo3d": "Modelos 3D",
             "preparing3d": "Preparando la vista 3D",
             "walk": "Camina por tus cambios",
-            "realistic": "Vista foto (Google 3D fotorrealista)",
+            "realistic": "Imágenes aéreas 3D (Google)",
             "ai": "Renderizado fotorrealista con IA",
             "aiNeedsPhoto": "Cambia primero a la vista foto — el render de IA parte de la escena fotorrealista"
         },
@@ -4474,12 +4480,6 @@
                 "country": "en {{place}}",
                 "unknown": "Ubicación desconocida"
             }
-        },
-        "arrival": {
-            "label": "Has llegado a una propuesta",
-            "latest": "Propuesta más reciente",
-            "picked": "Propuesta",
-            "lookAround": "Mirar alrededor"
         }
     },
     "mapShell": {
@@ -4524,7 +4524,17 @@
             "resetSummary": "Restablecer los datos guardados en este navegador…"
         },
         "bets": "Apuestas",
-        "betsNew": "Nuevo"
+        "betsNew": "Nuevo",
+        "reorg": {
+            "blockData": "Datos y análisis de manzanas",
+            "roadData": "Datos y análisis de vías",
+            "watchedAreas": "Áreas vigiladas",
+            "originalCadastre": "Catastro original",
+            "aerialLayer": "Ciudad existente (imágenes de Google)",
+            "planActions": "Acciones del plan",
+            "statusLog": "Estado técnico",
+            "display": "Visualización"
+        }
     },
     "parcelMenu": {
         "label": "Acciones de la parcela",
@@ -4634,7 +4644,8 @@
             "ground": "Terreno",
             "site": "Sitio",
             "road": "Calle",
-            "bets": "Apuestas y fondos"
+            "bets": "Apuestas y fondos",
+            "measurement": "Medición"
         }
     },
     "groundMenu": {
@@ -5026,5 +5037,17 @@
             "faucetSol": "Grifo de Solana",
             "faucetUsdc": "Grifo de USDC de Circle"
         }
+    },
+    "activityFeed": {
+        "filters": "Filtrar actividad",
+        "all": "Todo",
+        "people": "Personas",
+        "agents": "Agentes",
+        "refresh": "Actualizar",
+        "loading": "Cargando actividad reciente…",
+        "error": "No se pudo cargar la actividad. Inténtalo de nuevo.",
+        "empty": "No hay actividad reciente para este filtro.",
+        "partial": "No se pudieron cargar algunas fuentes de actividad.",
+        "prompt": "Abre Actividad para cargar los eventos recientes."
     }
 }

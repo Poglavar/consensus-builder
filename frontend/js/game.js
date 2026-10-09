@@ -105,7 +105,10 @@ const gameState = {
         if (!skipUiUpdate) {
             this.updateGameUI();
         }
-        if (!skipUiUpdate) updateGameLogDialogIfOpen();
+        if (!skipUiUpdate) {
+            updateGameLogDialogIfOpen();
+            if (typeof window !== 'undefined') window.dispatchEvent(new CustomEvent('activity:updated'));
+        }
         // console.log('Game Log:', logEntry);
     },
 
@@ -742,6 +745,19 @@ const activitySource = window.AgentActionEngine.createActivitySource({
     simulation: () => gameState.gameLog,
     live: fetchLiveAgentActivity
 });
+
+// The inline feed shares the explorer's adapters and row bindings. Its refresh action clears the
+// same live cache, while opening the sheet can reuse already-fetched activity without polling.
+window.CbActivityFeedAdapter = {
+    async load({ refresh = false } = {}) {
+        if (refresh) {
+            liveAgentActivity = null;
+            scopedLiveActivity.clear();
+        }
+        return activitySource.load('combined', { ...window.AgentActionEngine.EMPTY_ACTIVITY_FILTER });
+    },
+    bindRowActions() { setupGameLogClickListeners(); }
+};
 
 /** Everything known right now, without fetching; the per-agent log reads this synchronously. */
 function allActivityEvents() {

@@ -2190,7 +2190,8 @@
                 },
                 "actions": {
                     "download": "Download",
-                    "downloaded": "Downloaded"
+                    "downloaded": "Downloaded",
+                    "details": "Details"
                 },
                 "loadingServer": "Loading server proposals…",
                 "serverError": "Failed to load server proposals.",
@@ -2291,7 +2292,12 @@
                     "toUnapply": "to remove: {n}"
                 },
                 "syncBlockchain": "Refresh from blockchain",
-                "syncBlockchainNoWallet": "Connect a wallet to sync from the blockchain"
+                "syncBlockchainNoWallet": "Connect a wallet to sync from the blockchain",
+                "navigation": {
+                    "hint2d": "To propose, tap land or open ground on the map.",
+                    "hint3d": "Proposals are drawn on the 2D map.",
+                    "open2d": "Open 2D map"
+                }
             },
             "proposalChoice": {
                 "title": "Choose proposal",
@@ -4105,11 +4111,11 @@
             "loadingBuildings": "Loading buildings…"
         },
         "toggle": {
-            "switchTo2d": "Switch to 2D",
-            "switchTo3d": "Switch to model (3D)",
+            "switchTo2d": "2D map",
+            "switchTo3d": "3D models",
             "preparing3d": "Preparing 3D view",
             "walk": "Take a walk through your changes",
-            "realistic": "Photo view (Google Photorealistic 3D)",
+            "realistic": "3D aerial imagery (Google)",
             "ai": "AI photorealistic render",
             "aiNeedsPhoto": "Switch to photo view first — the AI render works from the photorealistic scene"
         },
@@ -4423,12 +4429,6 @@
                 "country": "in {{place}}",
                 "unknown": "Location unknown"
             }
-        },
-        "arrival": {
-            "label": "Arrived at a proposal",
-            "latest": "Latest proposal",
-            "picked": "Proposal",
-            "lookAround": "Look around"
         }
     },
     "mapShell": {
@@ -4473,7 +4473,17 @@
             "resetSummary": "Reset data stored in this browser…"
         },
         "bets": "Bets",
-        "betsNew": "New"
+        "betsNew": "New",
+        "reorg": {
+            "blockData": "Block data and analysis",
+            "roadData": "Road data and analysis",
+            "watchedAreas": "Watched areas",
+            "originalCadastre": "Original cadastre",
+            "aerialLayer": "Existing city (Google imagery)",
+            "planActions": "Plan actions",
+            "statusLog": "Technical status",
+            "display": "Display"
+        }
     },
     "parcelMenu": {
         "label": "Parcel actions",
@@ -4583,7 +4593,8 @@
             "ground": "Ground",
             "site": "Site",
             "road": "Road",
-            "bets": "Betting"
+            "bets": "Betting",
+            "measurement": "Measurement"
         }
     },
     "groundMenu": {
@@ -4975,5 +4986,17 @@
             "faucetSol": "Solana faucet",
             "faucetUsdc": "Circle USDC faucet"
         }
+    },
+    "activityFeed": {
+        "filters": "Filter activity",
+        "all": "All",
+        "people": "People",
+        "agents": "Agents",
+        "refresh": "Refresh",
+        "loading": "Loading recent activity…",
+        "error": "Activity could not load. Try again.",
+        "empty": "No recent activity for this filter.",
+        "partial": "Some activity sources could not load.",
+        "prompt": "Open Activity to load recent events."
     }
 }

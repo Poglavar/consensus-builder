@@ -1,0 +1,23 @@
+<!-- Decorative cube-and-sphere thumbnail for the modeled 3D view button. -->
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 128 128">
+  <defs>
+    <linearGradient id="ground" x2="0" y2="1">
+      <stop stop-color="#b9c7d6"/>
+      <stop offset="1" stop-color="#e4eaf0"/>
+    </linearGradient>
+    <radialGradient id="sphere" cx=".28" cy=".23" r=".8">
+      <stop stop-color="#ffffff"/>
+      <stop offset=".4" stop-color="#d4e1ed"/>
+      <stop offset=".8" stop-color="#92a6ba"/>
+      <stop offset="1" stop-color="#5e778f"/>
+    </radialGradient>
+  </defs>
+  <rect width="128" height="128" fill="url(#ground)"/>
+  <path d="M-15 74l158 44M-4 96l117 33M17 44L-4 130M59 50l-18 84M98 52l-13 82M126 53l-8 76" fill="none" stroke="#91a5b9" stroke-opacity=".3" stroke-width="1"/>
+  <ellipse cx="52" cy="76" rx="37" ry="12" fill="#71879c" opacity=".3"/>
+  <path d="M13 28l31-17 35 18-32 19z" fill="#f8fafc"/>
+  <path d="M13 28l34 20v38L13 65z" fill="#c4d1de"/>
+  <path d="M47 48l32-19v38L47 86z" fill="#8ca4bb"/>
+  <ellipse cx="101" cy="119" rx="34" ry="10" fill="#71879c" opacity=".35"/>
+  <circle cx="98" cy="93" r="32" fill="url(#sphere)"/>
+</svg>

@@ -29,7 +29,7 @@ body {
          slot 1  #cadastre-view-toggle    cadastre view   always
          slot 2  #mode-2d-toggle          2D              always
          slot 3  #mode-3d-toggle          model (3D)      always
-         slot 4  #mode-realistic-toggle   photo (globe)   always            [photoreal-mode.css]
+         slot 4  #mode-realistic-toggle   aerial 3D      always            [photoreal-mode.css]
          slot 5  #mode-ai-toggle          AI wand         3D only, inert in model view [ai-scene.css]
          slot 6  #mode-walk-toggle        walk-through    model view, walk-configured cities
 
@@ -57,24 +57,24 @@ body {
 
 #mode-2d-toggle.map-mode-toggle,
 #mode-3d-toggle.map-mode-toggle,
-#cadastre-view-toggle.map-mode-toggle {
+#mode-realistic-toggle.map-mode-realistic-btn {
     position: absolute;
     left: var(--map-mode-stack-left);
-    z-index: 1000;
+    z-index: var(--cb-z-map-chrome);
     /* Centre the label so it — and the loading spinner, which centres on the button — coincide. */
     display: flex;
     align-items: center;
     justify-content: center;
-    background: white;
-    border: 1px solid rgba(0,0,0,0.2);
-    border-radius: 4px;
-    box-shadow: 0 2px 6px rgba(0,0,0,0.15);
-    padding: 8px 10px;
-    min-width: 40px;
-    min-height: 36px;
+    background: var(--cb-surface);
+    border: 1px solid var(--cb-line-glass);
+    border-radius: var(--cb-radius-sm);
+    box-shadow: var(--cb-shadow-sm);
+    padding: var(--cb-space-2);
+    min-width: var(--cb-space-8);
+    min-height: var(--cb-control-height);
     box-sizing: border-box;
-    font-weight: 600;
-    color: #333;
+    font-weight: var(--cb-weight-semibold);
+    color: var(--cb-text);
     cursor: pointer;
 }
 
@@ -88,7 +88,7 @@ body {
 .leaflet-bottom.leaflet-right .leaflet-control-scale {
     position: absolute;
     right: var(--map-shell-edge);
-    bottom: calc(var(--map-shell-bottom-clearance) + var(--map-shell-gap) + 24px);
+    bottom: 32px;
     margin: 0;
 }
 
@@ -105,8 +105,8 @@ body:has(.info-panel.right-dock-panel.visible) .leaflet-control-scale {
 /* Slot 1 — the head of the mode strip (see the ladder at the top of this file). It used to share
    a slot with the walk button and drew over it; the official cadastre is the frame the other
    views are read against, so it anchors the stack rather than trailing after them. */
-#cadastre-view-toggle.map-mode-toggle { top: var(--map-mode-slot-1); }
-#cadastre-view-toggle.map-mode-toggle.active { background: #b91c1c; color: #fff; }
+
+
 
 /* Cadastre view (claims model, rethink-proposals.md §13): the original cadastral parcels are the
    only interactive citizens; every proposal layer dims to context. The clone pane and the base
@@ -148,10 +148,9 @@ body.cadastre-view .leaflet-map-pane > .leaflet-popup-pane {
 }
 .claim-breadcrumb-link:hover { background: var(--cb-primary-soft); color: var(--cb-primary-soft-ink); }
 
-/* Loading spinner over a mode-strip icon while that view composes. three-mode.js sets
+/* Loading spinner over a mode-strip label while that view composes. three-mode.js sets
    .mode-btn-loading on #mode-3d-toggle (model view rendering) or #mode-realistic-toggle (photo view
-   streaming Google tiles). The ring uses currentColor so it reads on both the white 3D/2D buttons
-   and the blue globe button. */
+   streaming Google tiles). The label steps aside while the ring is shown. */
 .map-mode-toggle.mode-btn-loading,
 .map-mode-realistic-btn.mode-btn-loading { pointer-events: none; }
 .map-mode-toggle.mode-btn-loading::after,
@@ -237,67 +236,15 @@ body.cadastre-view .leaflet-map-pane > .leaflet-popup-pane {
     cursor: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='28' height='28' viewBox='0 0 24 24'><path fill='%23222' stroke='white' stroke-width='1' d='M13.5 5.5c1.1 0 2-.9 2-2s-.9-2-2-2-2 .9-2 2 .9 2 2 2zM9.8 8.9L7 23h2.1l1.8-8 2.1 2v6h2v-7.5l-2.1-2 .6-3C14.8 12 16.8 13 19 13v-2c-1.9 0-3.5-1-4.3-2.4l-1-1.6c-.4-.6-1-1-1.7-1-.3 0-.5.1-.8.1L6 8.3V13h2V9.6l1.8-.7'/></svg>") 4 24, crosshair;
 }
 
-/* 3D mode in-view controls */
-#three-container .three-mode-ui-panel {
-    position: absolute;
-    top: 12px;
-    right: 12px;
+/* 3D layer controls share the map's Layers sheet. */
+#model-layer-controls .three-mode-ui-panel {
     display: flex;
     flex-direction: column;
-    align-items: stretch;
-    gap: 8px;
-    padding: 8px 10px;
-    background: rgba(255, 255, 255, 0.95);
-    border: 1px solid rgba(0, 0, 0, 0.12);
-    border-radius: 10px;
-    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
-    pointer-events: auto;
-    z-index: 10;
-}
-
-/* Collapse toggle for the 3D controls panel — hidden on desktop, a gear icon on phones that
-   folds the panel to just itself (JS toggles `.collapsed`, and starts collapsed on phones). */
-#three-container .three-mode-ui-collapse {
-    display: none;
-    align-self: flex-end;
-    width: 34px;
-    height: 34px;
-    padding: 0;
-    margin: -2px -3px 0 auto;
-    border: none;
-    background: transparent;
-    color: #333;
-    font-size: 19px;
-    line-height: 1;
-    cursor: pointer;
-}
-@media (max-width: 767.98px) {
-    #three-container .three-mode-ui-collapse {
-        display: flex;
-        align-items: center;
-        justify-content: center;
-    }
-    #three-container .three-mode-ui-panel.collapsed {
-        /* Shrink to just the gear: release the left edge (the 480px rule pins left+right, which
-           would otherwise leave a full-width blank bar) so it hugs the right as an icon. */
-        left: auto;
-        right: 12px;
-        width: auto;
-        min-width: 0;
-        max-width: none;
-        padding: 3px;
-        gap: 0;
-    }
-    #three-container .three-mode-ui-panel.collapsed > *:not(.three-mode-ui-collapse) {
-        display: none;
-    }
-    #three-container .three-mode-ui-panel.collapsed .three-mode-ui-collapse {
-        margin: 0;
-    }
+    gap: var(--cb-space-2);
 }
 
 /* Floor-plan toggle and source-accuracy status inside the 3D controls. */
-#three-container .three-mode-xray-row {
+#model-layer-controls .three-mode-xray-row {
     display: grid;
     gap: var(--cb-space-2);
     margin-top: var(--cb-space-2);
@@ -306,21 +253,21 @@ body.cadastre-view .leaflet-map-pane > .leaflet-popup-pane {
 }
 
 /* X-ray and its suggested-layouts companion sit side by side; each keeps its pressed state. */
-#three-container .three-mode-xray-buttons {
+#model-layer-controls .three-mode-xray-buttons {
     display: flex;
     flex-wrap: wrap;
     gap: var(--cb-space-2);
 }
 
 /* The existing-buildings checkbox under the two buttons; hidden with the toggle off. */
-#three-container .three-mode-suggested-existing:not([hidden]) {
+#model-layer-controls .three-mode-suggested-existing:not([hidden]) {
     display: flex;
     align-items: center;
     gap: var(--cb-space-2);
     font-size: var(--cb-text-sm);
 }
 
-#three-container .three-mode-xray-button {
+#model-layer-controls .three-mode-xray-button {
     min-height: var(--cb-control-height);
     padding: var(--cb-space-1) var(--cb-space-3);
     border: 1px solid var(--cb-line-strong);
@@ -332,25 +279,25 @@ body.cadastre-view .leaflet-map-pane > .leaflet-popup-pane {
     cursor: pointer;
 }
 
-#three-container .three-mode-xray-button[aria-pressed="true"] {
+#model-layer-controls .three-mode-xray-button[aria-pressed="true"] {
     background: var(--cb-primary);
     border-color: var(--cb-primary);
     color: var(--cb-primary-ink);
 }
 
-#three-container .three-mode-xray-button:focus-visible {
+#model-layer-controls .three-mode-xray-button:focus-visible {
     outline: 2px solid var(--cb-focus);
     outline-offset: 2px;
 }
 
-#three-container .three-mode-xray-note {
+#model-layer-controls .three-mode-xray-note {
     max-width: 240px;
     font-size: var(--cb-text-xs);
     line-height: var(--cb-leading);
     color: var(--cb-text-muted);
 }
 
-#three-container .three-mode-floor-cutaway:not([hidden]) {
+#model-layer-controls .three-mode-floor-cutaway:not([hidden]) {
     display: flex;
     align-items: center;
     justify-content: space-between;
@@ -358,7 +305,7 @@ body.cadastre-view .leaflet-map-pane > .leaflet-popup-pane {
     font-size: var(--cb-text-sm);
 }
 
-#three-container .three-mode-floor-cutaway select {
+#model-layer-controls .three-mode-floor-cutaway select {
     flex: 1;
     min-width: 0;
     max-width: 145px;
@@ -639,7 +586,7 @@ body.cadastre-view .leaflet-map-pane > .leaflet-popup-pane {
 @media (max-width: 767.98px) {
     #three-container .three-mode-parcel-panel {
         top: auto;
-        bottom: 12px;
+        bottom: calc(var(--map-shell-dock-height) + var(--cb-space-3));
         left: var(--map-mode-strip);
         right: 12px;
         width: auto;
@@ -652,12 +599,6 @@ body.cadastre-view .leaflet-map-pane > .leaflet-popup-pane {
         top: 62px;
     }
 
-    /* The expanded settings panel owns the whole top of the view; the pill waits until it
-       folds back to its gear. */
-    #three-container:has(.three-mode-ui-panel:not(.collapsed):not([style*="display: none"])) .three-mode-isolation-banner {
-        display: none !important;
-    }
-
     /* The bottom-docked parcel/proposal panel overlaps the floating status message
        ("Applied building proposal …") on small screens. While an info box is open the box
        takes over that corner, so hide the status to avoid the text bleeding through. */
@@ -666,49 +607,53 @@ body.cadastre-view .leaflet-map-pane > .leaflet-popup-pane {
     }
 }
 
-#three-container .three-mode-radius-row {
+#model-layer-controls .three-mode-radius-row,
+#model-rendering-settings .three-mode-radius-row {
     display: flex;
     flex-direction: column;
     gap: 4px;
 }
 
-#three-container .three-mode-radius-header {
+#model-layer-controls .three-mode-radius-header,
+#model-rendering-settings .three-mode-radius-header {
     display: flex;
     align-items: center;
     justify-content: space-between;
 }
 
-#three-container .three-mode-radius-value {
+#model-layer-controls .three-mode-radius-value,
+#model-rendering-settings .three-mode-radius-value {
     font-size: 12px;
     font-weight: 600;
     color: #2c6cb0;
 }
 
-#three-container .three-mode-radius-slider {
+#model-layer-controls .three-mode-radius-slider,
+#model-rendering-settings .three-mode-radius-slider {
     width: 100%;
     margin: 0;
     accent-color: #2c6cb0;
     cursor: pointer;
 }
 
-#three-container .three-mode-emphasis-row {
+#model-layer-controls .three-mode-emphasis-row {
     display: flex;
     align-items: center;
     gap: 8px;
 }
 
-#three-container .three-mode-decor-toggles {
+#model-layer-controls .three-mode-decor-toggles {
     display: flex;
     flex-direction: column;
     gap: 4px;
 }
 
-#three-container .three-mode-trees-row {
+#model-layer-controls .three-mode-trees-row {
     display: flex;
     align-items: center;
 }
 
-#three-container .three-mode-trees-toggle {
+#model-layer-controls .three-mode-trees-toggle {
     display: flex;
     align-items: center;
     gap: 6px;
@@ -717,57 +662,57 @@ body.cadastre-view .leaflet-map-pane > .leaflet-popup-pane {
 
 /* A toggle that shares its row with nothing takes the panel's whole width, so its label reads on one
    line instead of being squeezed into a column the width of the checkbox plus a word. */
-#three-container .three-mode-wide-row {
+#model-layer-controls .three-mode-wide-row {
     width: 100%;
 }
 
-#three-container .three-mode-wide-toggle {
+#model-layer-controls .three-mode-wide-toggle {
     width: 100%;
 }
 
-#three-container .three-mode-wide-toggle .three-mode-emphasis-label {
+#model-layer-controls .three-mode-wide-toggle .three-mode-emphasis-label {
     flex: 1 1 auto;
     white-space: nowrap;
 }
 
-#three-container .three-mode-trees-toggle input[type="checkbox"] {
+#model-layer-controls .three-mode-trees-toggle input[type="checkbox"] {
     accent-color: #3a6b35;
     cursor: pointer;
     margin: 0;
 }
 
-#three-container .three-mode-facade-label {
+#model-layer-controls .three-mode-facade-label {
     flex: 0 0 70px;
     min-width: 0;
 }
 
-#three-container .three-mode-facade-label .three-mode-emphasis-label {
+#model-layer-controls .three-mode-facade-label .three-mode-emphasis-label {
     flex: 1 1 auto;
 }
 
-#three-container .three-mode-facade-note {
+#model-layer-controls .three-mode-facade-note {
     max-width: 246px;
     color: #667181;
     font-size: 11px;
     line-height: 1.4;
 }
 
-#three-container .three-mode-display-select:disabled {
+#model-layer-controls .three-mode-display-select:disabled {
     opacity: 0.5;
     cursor: default;
 }
 
-#three-container .three-mode-emphasis-label {
+#model-layer-controls .three-mode-emphasis-label {
     font-size: 12px;
     font-weight: 600;
     color: #5a6472;
 }
 
-#three-container .three-mode-emphasis-row .three-mode-segmented {
+#model-layer-controls .three-mode-emphasis-row .three-mode-segmented {
     flex: 1;
 }
 
-#three-container .three-mode-emphasis-row .three-mode-segment {
+#model-layer-controls .three-mode-emphasis-row .three-mode-segment {
     flex: 1;
     padding: 4px 8px;
     font-size: 12px;
@@ -776,7 +721,7 @@ body.cadastre-view .leaflet-map-pane > .leaflet-popup-pane {
 /* Abstract 3D has four Built states but only three Planned states. Two same-width selects avoid
    uneven segmented cells and keep long translated labels fully readable. Photoreal mode retains
    its equal three-button segments. */
-#three-container .three-mode-display-select {
+#model-layer-controls .three-mode-display-select {
     appearance: none;
     flex: 0 0 168px;
     width: 168px;
@@ -798,12 +743,12 @@ body.cadastre-view .leaflet-map-pane > .leaflet-popup-pane {
     transition: border-color 120ms ease, background-color 120ms ease, box-shadow 120ms ease;
 }
 
-#three-container .three-mode-display-select:hover {
+#model-layer-controls .three-mode-display-select:hover {
     border-color: #8f99a7;
     background-color: #fff;
 }
 
-#three-container .three-mode-display-select:focus-visible {
+#model-layer-controls .three-mode-display-select:focus-visible {
     border-color: #2c6cb0;
     box-shadow: 0 0 0 3px rgba(44, 108, 176, 0.2);
     outline: none;
@@ -811,12 +756,12 @@ body.cadastre-view .leaflet-map-pane > .leaflet-popup-pane {
 
 /* Massing / Build-out / Both, with the re-roll dice beside it. The select gives up the width the
    button takes so the row still lines up with the Built and Planned rows above it. */
-#three-container .three-mode-representation-row .three-mode-display-select {
+#model-layer-controls .three-mode-representation-row .three-mode-display-select {
     flex: 0 0 126px;
     width: 126px;
 }
 
-#three-container .three-mode-reroll-btn {
+#model-layer-controls .three-mode-reroll-btn {
     appearance: none;
     flex: 0 0 34px;
     height: 30px;
@@ -829,24 +774,24 @@ body.cadastre-view .leaflet-map-pane > .leaflet-popup-pane {
     transition: border-color 120ms ease, background-color 120ms ease;
 }
 
-#three-container .three-mode-reroll-btn:hover:not(:disabled) {
+#model-layer-controls .three-mode-reroll-btn:hover:not(:disabled) {
     border-color: #8f99a7;
     background: #fff;
 }
 
-#three-container .three-mode-reroll-die {
+#model-layer-controls .three-mode-reroll-die {
     display: inline-block;
 }
 
 /* Re-deriving and re-extruding every proposal blocks the main thread, so the die spins and the
    button locks for the duration — otherwise a slow roll looks like a click that did nothing. */
-#three-container .three-mode-reroll-btn:disabled {
+#model-layer-controls .three-mode-reroll-btn:disabled {
     cursor: progress;
     background: #eceff3;
     border-color: #d7dbe1;
 }
 
-#three-container .three-mode-reroll-btn.is-busy .three-mode-reroll-die {
+#model-layer-controls .three-mode-reroll-btn.is-busy .three-mode-reroll-die {
     animation: three-mode-reroll-spin 600ms linear infinite;
 }
 
@@ -856,19 +801,19 @@ body.cadastre-view .leaflet-map-pane > .leaflet-popup-pane {
 
 /* Reduced motion keeps the busy state legible without the spin: the button still locks and dims. */
 @media (prefers-reduced-motion: reduce) {
-    #three-container .three-mode-reroll-btn.is-busy .three-mode-reroll-die {
+    #model-layer-controls .three-mode-reroll-btn.is-busy .three-mode-reroll-die {
         animation: none;
         opacity: 0.45;
     }
 }
 
-#three-container .three-mode-reroll-btn:focus-visible {
+#model-layer-controls .three-mode-reroll-btn:focus-visible {
     border-color: #2c6cb0;
     box-shadow: 0 0 0 3px rgba(44, 108, 176, 0.2);
     outline: none;
 }
 
-#three-container .three-mode-reset-btn {
+#model-layer-controls .three-mode-reset-btn {
     appearance: none;
     flex: 1;
     border: 1px solid #2c6cb0;
@@ -882,18 +827,18 @@ body.cadastre-view .leaflet-map-pane > .leaflet-popup-pane {
     transition: background 120ms ease;
 }
 
-#three-container .three-mode-reset-btn:hover {
+#model-layer-controls .three-mode-reset-btn:hover {
     background: #24578d;
 }
 
-#three-container .three-mode-segmented {
+#model-layer-controls .three-mode-segmented {
     display: flex;
     border: 1px solid #d4d7dd;
     border-radius: 8px;
     overflow: hidden;
 }
 
-#three-container .three-mode-segment {
+#model-layer-controls .three-mode-segment {
     appearance: none;
     border: none;
     background: #f5f7fa;
@@ -909,83 +854,56 @@ body.cadastre-view .leaflet-map-pane > .leaflet-popup-pane {
     text-overflow: ellipsis;
 }
 
-#three-container .three-mode-segment + .three-mode-segment {
+#model-layer-controls .three-mode-segment + .three-mode-segment {
     border-left: 1px solid #d4d7dd;
 }
 
-#three-container .three-mode-segment:hover {
+#model-layer-controls .three-mode-segment:hover {
     background: #e9ecf1;
 }
 
-#three-container .three-mode-segment--active {
+#model-layer-controls .three-mode-segment--active {
     background: #2c6cb0;
     color: #fff;
 }
 
-/* Phones: the control panel spans the top edge and controls grow to finger height. */
+/* On phones, layer controls grow to finger height inside their sheet. */
 @media (max-width: 480px) {
-    #three-container .three-mode-ui-panel {
-        left: 12px;
-        right: 12px;
-        max-width: none;
-    }
-
-    #three-container .three-mode-emphasis-row .three-mode-segment {
+    #model-layer-controls .three-mode-emphasis-row .three-mode-segment {
         padding: 8px 4px;
         font-size: 11px;
     }
 
-    #three-container .three-mode-display-select {
+    #model-layer-controls .three-mode-display-select {
         flex: 1 1 auto;
         width: auto;
         height: 38px;
     }
 
-    /* The panel now owns the top edge — the loading pill moves to the bottom centre. */
+    /* Keep the loading badge clear of the shared top controls and bottom navigation. */
     #three-container .three-mode-buildings-loader {
         top: auto;
-        bottom: 12px;
+        bottom: calc(var(--map-shell-dock-height) + var(--cb-space-3));
         left: 50%;
         transform: translateX(-50%);
     }
 }
 
 @media (pointer: coarse) {
-    #three-container .three-mode-segment {
+    #model-layer-controls .three-mode-segment {
         padding-top: 10px;
         padding-bottom: 10px;
     }
 
-    #three-container .three-mode-display-select {
+    #model-layer-controls .three-mode-display-select {
         height: 40px;
     }
 }
 
-/* Hide the user bubble and the agent bubbles in 3D mode (the shell's buttons stay: see
-   css/map-shell.css for where Layers and Settings go while the 3D panel owns the top-right) */
-body.three-mode-active #username-display,
+/* Agents are browsed from Activity; the shared profile control remains available in 3D. */
 body.three-mode-active #agent-bubbles-container {
     display: none !important;
-    pointer-events: none;
 }
-
-/* ...except on phones, where the Guest pill is the ONLY way to the wallet and language — hiding it
-   trapped a mobile user in 3D. The pill moves left of the 3D view's settings gear (top-right, ~34px
-   wide at right 16px). */
-@media (max-width: 767.98px) {
-    body.three-mode-active #username-display {
-        display: flex !important;
-        pointer-events: auto;
-        right: 58px;
-        max-width: calc(100vw - 58px - 60px);
-    }
-    /* The expanded 3D settings panel takes the whole top edge; step aside until it folds back
-       to its gear (which stays the way to close it). Photo view hides the panel inline. */
-    body.three-mode-active:has(#three-container .three-mode-ui-panel:not(.collapsed):not([style*="display: none"])) #username-display {
-        display: none !important;
-    }
-}
-
 
 /* Position zoom box below username bubble */
 /* removed zoom-info-control */
@@ -1212,11 +1130,11 @@ body.three-mode-active #agent-bubbles-container {
 }
 
 /* Display-state rows keep one stable label column in both abstract and photoreal 3D. */
-#three-container .three-mode-emphasis-label {
+#model-layer-controls .three-mode-emphasis-label {
     flex: 0 0 70px;
 }
 
-#three-container .three-mode-emphasis-row .three-mode-segment {
+#model-layer-controls .three-mode-emphasis-row .three-mode-segment {
     flex: 1 1 0;
     min-width: 0;
     overflow: hidden;
@@ -1423,16 +1341,60 @@ body.three-mode-active #agent-bubbles-container {
 }
 
 
-/* 2D/3D mode buttons: hover and the pressed look of the active view */
-#mode-2d-toggle.map-mode-toggle:hover,
-#mode-3d-toggle.map-mode-toggle:hover {
-    background: #f5f5f5;
+/* View thumbnails distinguish the map, authored geometry, and aerial mesh. Labels stay readable
+   over every image; the selected border never replaces the artwork with a flat fill. */
+#mode-2d-toggle.map-mode-tile,
+#mode-3d-toggle.map-mode-tile,
+#mode-realistic-toggle.map-mode-tile {
+    width: var(--cb-control-height-lg);
+    height: var(--cb-space-8);
+    padding: 0;
+    border: 2px solid var(--cb-surface);
+    background-color: var(--cb-inverse);
+    background-image: var(--map-mode-art);
+    background-position: center;
+    background-size: cover;
+    color: var(--cb-inverse-ink);
 }
 
-#mode-2d-toggle.map-mode-toggle.active,
-#mode-3d-toggle.map-mode-toggle.active {
-    background: #333;
-    color: #fff;
+#mode-2d-toggle.map-mode-tile { --map-mode-art: url('../assets/view-modes/map.svg'); }
+#mode-3d-toggle.map-mode-tile { --map-mode-art: url('../assets/view-modes/models.svg'); }
+#mode-realistic-toggle.map-mode-tile { --map-mode-art: url('../assets/view-modes/aerial.jpg'); }
+
+.map-mode-tile > span {
+    padding: 0 var(--cb-space-1);
+    border-radius: var(--cb-radius-sm);
+    background: color-mix(in srgb, var(--cb-inverse) 85%, transparent);
+    color: var(--cb-inverse-ink);
+    font-size: var(--cb-text-base);
+    font-weight: var(--cb-weight-bold);
+    line-height: var(--cb-leading);
+    pointer-events: none;
+}
+
+#mode-2d-toggle.map-mode-tile:hover,
+#mode-3d-toggle.map-mode-tile:hover,
+#mode-realistic-toggle.map-mode-tile:hover {
+    border-color: var(--cb-primary);
+}
+
+#mode-2d-toggle.map-mode-tile.active,
+#mode-3d-toggle.map-mode-tile.active,
+#mode-realistic-toggle.map-mode-tile.active {
+    border-color: var(--cb-primary);
+    box-shadow: 0 0 0 2px var(--cb-surface), 0 0 0 var(--cb-space-1) var(--cb-primary);
+}
+
+.map-mode-tile:focus-visible {
+    outline: 2px solid var(--cb-focus);
+    outline-offset: var(--cb-space-1);
+}
+
+.map-mode-tile.mode-btn-loading > span { visibility: hidden; }
+
+.map-mode-tile.mode-btn-loading::after {
+    background: var(--cb-inverse);
+    box-shadow: 0 0 0 var(--cb-space-1) var(--cb-inverse);
 }
 
 /* 3D container overlay on top of the map */
@@ -1453,7 +1415,7 @@ body.three-mode-active #agent-bubbles-container {
 }
 
 /* Provenance of the 3D context buildings (OSM: how many heights are estimated). */
-#three-container .three-mode-source-note {
+#model-layer-controls .three-mode-source-note {
     margin: var(--cb-space-2) 0 0;
     font-size: var(--cb-text-xs);
     color: var(--cb-text-muted);

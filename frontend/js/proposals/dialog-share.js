@@ -69,12 +69,9 @@ function renderProposalListModal() {
         }
     } catch (_) { }
 
-    let modal = document.querySelector('.proposal-list-modal');
-    if (!modal) {
-        modal = document.createElement('div');
-        modal.className = 'proposal-list-modal';
-        document.body.appendChild(modal);
-    }
+    const host = document.getElementById('proposal-list-host');
+    if (!host) return;
+    const modal = ensureProposalListHostModal(host);
 
     // Ensure proposal list translations are loaded from JSON; if newly hydrated, re-render once.
     try {
@@ -392,10 +389,6 @@ function renderProposalListModal() {
 
     modal.innerHTML = `
         <div class="proposal-list-modal-content">
-            <div class="proposal-list-modal-header">
-                <h2 data-i18n-key="modal.roadWidth.proposalList.title">${escapeHtml(modalStrings.title)}</h2>
-                <button type="button" class="proposal-list-modal-close close-circle-btn close-circle-btn--lg" aria-label="${escapeHtml(modalStrings.closeAria)}" data-i18n-key="modal.roadWidth.proposalList.closeAria" data-i18n-attr="aria-label" onclick="closeProposalList({ selectPreviewed: true })">&times;</button>
-            </div>
             ${sourceToggleHtml}
             ${blockchainCantonNote}
             ${filtersToggleHtml}
@@ -405,6 +398,9 @@ function renderProposalListModal() {
                 <div id="proposals-list" class="proposal-tab-content active">
                     ${buildTabContent(chosen.sorted)}
                 </div>
+            </div>
+            <div class="proposal-list-footer">
+                <span class="proposal-list-navigation-hint"></span>
             </div>
         </div>
     `;
@@ -581,6 +577,10 @@ function renderProposalListModal() {
         item.addEventListener('click', handleProposalListItemClick);
     });
 
+    modal.querySelectorAll('.proposal-list-details-btn').forEach(button => {
+        button.addEventListener('click', handleProposalListDetailsClick);
+    });
+
     modal.querySelectorAll('.proposal-download-btn').forEach(button => {
         button.addEventListener('click', handleProposalDownloadClick);
     });
@@ -596,8 +596,26 @@ function renderProposalListModal() {
         if (window.__proposalEpoch) window.__proposalEpoch.injectTimeline(modal);
     } catch (_) { }
 
+    const navigationHint = modal.querySelector('.proposal-list-navigation-hint');
+    if (navigationHint) {
+        if (document.body.classList.contains('three-mode-active')) {
+            navigationHint.textContent = `${t('modal.roadWidth.proposalList.navigation.hint3d', 'Proposals are drawn on the 2D map.')} `;
+            const link = document.createElement('a');
+            link.href = '#';
+            link.textContent = t('modal.roadWidth.proposalList.navigation.open2d', 'Open 2D map');
+            link.addEventListener('click', event => {
+                event.preventDefault();
+                if (typeof window.requestMapMode === 'function') window.requestMapMode('2d');
+            });
+            navigationHint.appendChild(link);
+        } else {
+            navigationHint.textContent = t('modal.roadWidth.proposalList.navigation.hint2d', 'To propose, tap land or open ground on the map.');
+        }
+    }
+
     if (proposalListState.selectedId) {
-        const selectedEl = modal.querySelector(`.proposal-list-item[data-proposal-id="${proposalListState.selectedId}"]`);
+        const selectedEl = Array.from(modal.querySelectorAll('.proposal-list-item'))
+            .find(el => el.getAttribute('data-proposal-id') === String(proposalListState.selectedId));
         if (selectedEl && typeof selectedEl.scrollIntoView === 'function') {
             selectedEl.scrollIntoView({ block: 'nearest' });
         }
@@ -605,54 +623,14 @@ function renderProposalListModal() {
 }
 
 async function showAllProposalsModal() {
-    if (typeof markProposalCountAreaOpened === 'function') markProposalCountAreaOpened();
-    resetParcelSelectionForProposalListInteraction();
-    try { clearProposalInfoHoverOverlay(); } catch (_) { }
-
-    let modal = document.querySelector('.proposal-list-modal');
-    const wasHidden = !modal || modal.style.display !== 'block';
-    if (!modal) {
-        modal = document.createElement('div');
-        modal.className = 'proposal-list-modal';
-        document.body.appendChild(modal);
+    const shell = window.MapShell;
+    const alreadyOpen = !!(shell && shell.isOpen && shell.isOpen('proposals-sheet'));
+    if (shell && !alreadyOpen && typeof shell.openSheet === 'function') {
+        shell.openSheet('proposals-sheet');
+        await mountProposalList();
+        return;
     }
-
-    modal.style.display = 'block';
-    if (wasHidden) {
-        modal.__unregisterEscape = window.ModalEscape?.register(modal, () => closeProposalList());
-    }
-
-    // On the open action only (not on every re-render): fold away an open sheet so the map keeps
-    // the rest of the screen, and request search-box autofocus (honored inside the render, which may be
-    // deferred until i18n is ready).
-    if (wasHidden) {
-        // Not on phones/touch: focusing the search there pops the on-screen keyboard over the list.
-        proposalListState.autofocusSearch = shouldAutofocusProposalListSearch(window);
-        // Enter proposal browse mode: the map stays live (pan/zoom) but only proposals are clickable
-        // (see onParcelClick + the tail of selectAndHighlightProposal).
-        window.proposalListBrowseMode = true;
-        if (window.MapShell) window.MapShell.closeSheets();
-
-        // Show the panel EMPTY and busy first, then hand the browser a frame to draw it in. Building
-        // the list from several hundred proposals is not instant, and until it finishes the click has
-        // no visible effect at all — the panel simply appears late, which reads as a dropped click.
-        modal.setAttribute('aria-busy', 'true');
-        modal.innerHTML = '<div class="proposal-list-loading"><i class="fas fa-spinner fa-spin"></i></div>';
-        if (typeof window !== 'undefined' && typeof window.yieldToBrowser === 'function') {
-            await window.yieldToBrowser();
-        }
-    }
-
-    renderProposalListModal();
-    modal.removeAttribute('aria-busy');
-
-    // Frame all applied proposals to start browsing from an overview. Called AFTER the render (so the
-    // panel exists and its footprint can be padded out) and directly rather than via
-    // requestAnimationFrame, which is throttled — and can silently never fire — when the tab isn't
-    // actively rendering.
-    if (wasHidden) {
-        try { if (typeof fitMapToAppliedProposals === 'function') fitMapToAppliedProposals(); } catch (_) { }
-    }
+    await mountProposalList();
 }
 
 function getSharedInspectorI18nHelper() {

@@ -1,23 +1,21 @@
-// Guards the map mode strip in the lower-left corner: every button owns
-// one declared slot, and no two buttons share one. They are all absolutely positioned at the same `left`, so a shared slot is not a
-// visible layout squeeze — the button later in index.html paints over the other and the covered
-// one becomes unreachable. That has happened twice (walk over the AI wand at 192, then the
-// cadastre grid over walk at 240), each time reported as "the icon is missing".
+// Guards the lower-left utility and mode strip: every strip button owns one declared slot, and no
+// two buttons share one. The original cadastre control belongs in the 2D Layers sheet.
 import { describe, expect, it } from 'vitest';
 import { readFileSync } from 'node:fs';
 
 const read = name => readFileSync(new URL(`../../frontend/css/${name}`, import.meta.url), 'utf8');
 const SOURCES = {
     'map.css': read('map.css'),
+    'map-shell.css': read('map-shell.css'),
     'ai-scene.css': read('ai-scene.css'),
     'photoreal-mode.css': read('photoreal-mode.css')
 };
 const indexHtml = readFileSync(new URL('../../frontend/index.html', import.meta.url), 'utf8');
 
-// The strip, top → bottom. The slot each button is expected to own is the contract, not an
-// observation: moving a button between slots means editing this list on purpose.
+// Top → bottom. The slot each button is expected to own is the contract, not an observation:
+// moving a button between slots means editing this list on purpose.
 const STACK = [
-    { id: 'cadastre-view-toggle', slot: 1 },
+    { id: 'measurement-button', slot: 1 },
     { id: 'mode-2d-toggle', slot: 2 },
     { id: 'mode-3d-toggle', slot: 3 },
     { id: 'mode-realistic-toggle', slot: 4 },
@@ -26,12 +24,13 @@ const STACK = [
 ];
 
 // Every `selector { body }` pair that declares a top offset for the given button id. Slots are top
-// offsets counted up from the bottom row (the lower-left corner is the strip's in every view).
+// offsets counted up from the bottom row.
 function topDeclarationsFor(id) {
+    const selectorNeedle = id === 'measurement-button' ? '.map-utility-button' : `#${id}`;
     const found = [];
     for (const [file, css] of Object.entries(SOURCES)) {
         for (const [, selector, body] of css.matchAll(/([^{}]+)\{([^{}]*)\}/g)) {
-            if (!selector.includes(`#${id}`)) continue;
+            if (!selector.includes(selectorNeedle)) continue;
             const top = body.match(/(?:^|[;{\s])top:\s*([^;]+);/);
             if (top) found.push({ file, selector: selector.trim(), value: top[1].trim() });
         }
@@ -79,8 +78,8 @@ describe('left-edge map mode strip', () => {
         const owners = new Map();
         for (const { id, slot } of STACK) {
             const declarations = topDeclarationsFor(id);
-            expect(declarations.length, `#${id} should declare its top exactly once`).toBe(1);
-            expect(declarations[0].value, `#${id} must sit in a declared slot, not a raw offset`)
+            expect(declarations.length, `${id} should declare its top exactly once`).toBe(1);
+            expect(declarations[0].value, `${id} must sit in a declared slot, not a raw offset`)
                 .toBe(`var(--map-mode-slot-${slot})`);
 
             const clash = owners.get(slot);
@@ -92,5 +91,12 @@ describe('left-edge map mode strip', () => {
 
     it('keeps every stack button in the markup, so a slot cannot quietly go unused', () => {
         for (const { id } of STACK) expect(indexHtml).toContain(`id="${id}"`);
+    });
+
+    it('keeps the original cadastre control in the 2D Layers sheet', () => {
+        const layers = indexHtml.slice(indexHtml.indexOf('id="layers-sheet"'), indexHtml.indexOf('id="measurement-sheet"'));
+        expect(layers).toContain('id="cadastre-view-toggle"');
+        expect(layers).toMatch(/id="cadastre-view-toggle"[^>]*data-map-modes="2d"/);
+        expect(topDeclarationsFor('cadastre-view-toggle')).toEqual([]);
     });
 });

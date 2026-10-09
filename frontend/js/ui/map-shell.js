@@ -1,5 +1,5 @@
 // ui/map-shell.js — the floating map shell that replaced the left sidebar: the Layers/Settings
-// buttons (top-right), the Proposals/Tools/Activity buttons (bottom-right) and the sheets they
+// buttons (top-right), the Proposals/Bets/Activity dock and the sheets they
 // open. A sheet is a popover anchored to its button on desktop and
 // a bottom sheet under 768px; one is open at a time, Esc and an outside click close it. The controls
 // inside the sheets are the old sidebar's, moved with their ids and handlers (see UI-REWORK.md).
@@ -103,6 +103,7 @@
     function openSheet(sheetOrId, options = {}) {
         const sheet = typeof sheetOrId === 'string' ? doc.getElementById(sheetOrId) : sheetOrId;
         if (!sheet) throw new Error(`MapShell: no sheet ${sheetOrId}`);
+        if (!supportsCurrentMode(sheet)) return null;
         if (state.openSheet && state.openSheet !== sheet) closeSheet({ restoreFocus: false });
         const trigger = options.trigger || triggersFor(sheet)[0] || null;
         state.openSheet = sheet;
@@ -111,6 +112,8 @@
         positionSheet(sheet, trigger);
         setExpanded(sheet, true);
         doc.body.classList.add('map-sheet-open');
+        sheetResizeObserver?.observe(sheet);
+        win.requestAnimationFrame?.(updateMapViewportInsets);
         // Sheets that load on demand (Bets) listen for this instead of polling the hidden attribute.
         try { doc.dispatchEvent(new win.CustomEvent('mapshell:sheetopened', { detail: { id: sheet.id } })); } catch (_) { }
         if (options.focus !== false) {
@@ -130,6 +133,9 @@
         state.openSheet = null;
         state.trigger = null;
         doc.body.classList.remove('map-sheet-open');
+        sheetResizeObserver?.unobserve(sheet);
+        updateMapViewportInsets();
+        doc.dispatchEvent(new win.CustomEvent('mapshell:sheetclosed', { detail: { id: sheet.id } }));
         if (options.restoreFocus && trigger && typeof trigger.focus === 'function') {
             try { trigger.focus({ preventScroll: true }); } catch (_) { }
         }
@@ -226,30 +232,84 @@
         });
     }
 
-    // 3D keeps only what drives or navigates it usable: the Buildings and Proposals sections, and
-    // the shell's own buttons (so every sheet can still be opened and closed). Everything else in
-    // the sheets is disabled until 3D ends, remembering what was already disabled.
-    const KEPT_IN_3D = ['buildings', 'proposals'];
+    // A view changes capabilities, not the availability of the app's navigation.
+    // The same mode vocabulary is consumed by UiCommands for menus and keyboard commands.
+    function currentMode() {
+        return doc.body.classList.contains('realistic-mode-active') ? 'photo'
+            : doc.body.classList.contains('three-mode-active') ? '3d' : '2d';
+    }
 
-    function setLockedFor3D(locked) {
-        const scopes = Array.from(doc.querySelectorAll('.map-sheet'));
-        if (locked) {
-            scopes.forEach(scope => {
-                scope.querySelectorAll('input, button, select, textarea').forEach(el => {
-                    const section = el.closest('.accordion-section');
-                    const kept = (section && KEPT_IN_3D.includes(section.dataset.section))
-                        || el.hasAttribute('data-sheet-close') || el.hasAttribute('data-sheet-target');
-                    if (kept) return;
-                    if (!el.disabled) el.setAttribute('data-three-disabled', '1');
-                    el.disabled = true;
-                });
-            });
-        } else {
-            doc.querySelectorAll('[data-three-disabled="1"]').forEach(el => {
-                el.disabled = false;
-                el.removeAttribute('data-three-disabled');
-            });
+    function supportsCurrentMode(el) {
+        const modes = el.getAttribute('data-map-modes');
+        return !modes || modes.split(/\s+/).includes(currentMode());
+    }
+
+    function syncModeAvailability() {
+        const mode = currentMode();
+        doc.querySelectorAll('[data-map-modes]').forEach(el => {
+            const supported = supportsCurrentMode(el);
+            // A supported sheet is available to open, not automatically open.
+            if (!el.classList.contains('map-sheet') || !supported) el.hidden = !supported;
+        });
+        if (state.openSheet?.hidden) closeSheet({ restoreFocus: false });
+        const imagery = doc.getElementById('aerial-city-visible');
+        if (imagery && mode === 'photo' && typeof win.PhotorealMode?.isBuiltVisible === 'function') {
+            imagery.checked = win.PhotorealMode.isBuiltVisible();
         }
+        if (mode === '2d' && win.roadDrawingMode) doc.getElementById('road-info-panel')?.classList.add('visible');
+        observeEditors();
+        updateMapViewportInsets();
+    }
+
+    // Attribution follows the exposed map when a phone sheet opens. The dock never moves.
+    function updateMapViewportInsets() {
+        let inset = 0;
+        if (isMobile() && state.openSheet && !state.openSheet.hidden) {
+            const top = state.openSheet.getBoundingClientRect().top;
+            inset = Math.max(0, win.innerHeight - top);
+        }
+        if (currentMode() === '2d') observedEditors.forEach(editor => {
+            if (isVisible(editor)) inset = Math.max(inset, win.innerHeight - editor.getBoundingClientRect().top);
+        });
+        if (inset) doc.body.style.setProperty('--map-visible-bottom', `${Math.round(inset)}px`);
+        else doc.body.style.removeProperty('--map-visible-bottom');
+    }
+
+    let sheetResizeObserver = null;
+    const observedEditors = new Set();
+    function observeEditors() {
+        if (!sheetResizeObserver) return;
+        observedEditors.forEach(editor => {
+            if (editor.isConnected) return;
+            sheetResizeObserver.unobserve(editor);
+            observedEditors.delete(editor);
+        });
+        doc.querySelectorAll('.map-editor-toolbar, .site-panel, .area-monitor-creation-panel').forEach(editor => {
+            if (observedEditors.has(editor)) return;
+            observedEditors.add(editor);
+            sheetResizeObserver.observe(editor);
+        });
+    }
+
+    function activeAreaDrawingTool() {
+        if (win.AreaMonitorPaint?.isActive()) return win.AreaMonitorPaint;
+        if (win.AreaMonitorDraw?.isActive()) return win.AreaMonitorDraw;
+        return null;
+    }
+
+    function setAreaDrawing(active) {
+        doc.body.classList.toggle('area-monitor-drawing-active', active);
+        const toolbar = doc.getElementById('area-monitor-drawing-toolbar');
+        if (toolbar) toolbar.hidden = !active;
+        if (active) {
+            closeSheets();
+            win.ParcelMenu?.close();
+            win.GroundMenu?.close();
+            win.hideParcelInfoPanel?.();
+            win.hideProposalDetailsPanel?.();
+        }
+        observeEditors();
+        updateMapViewportInsets();
     }
 
     // The Proposals button carries the same count as the "Proposals List (N)" button inside its
@@ -361,7 +421,26 @@
         (win || doc).addEventListener('keydown', onDocumentKeyDown);
         win.addEventListener('resize', () => {
             if (state.openSheet) positionSheet(state.openSheet, state.trigger);
+            updateMapViewportInsets();
         });
+        if (typeof win.ResizeObserver === 'function') sheetResizeObserver = new win.ResizeObserver(updateMapViewportInsets);
+        if (typeof win.MutationObserver === 'function') {
+            new win.MutationObserver(syncModeAvailability).observe(doc.body, { attributes: true, attributeFilter: ['class'] });
+        }
+        doc.getElementById('aerial-city-visible')?.addEventListener('change', event => {
+            win.PhotorealMode?.setBuiltVisible(event.target.checked);
+            win.invalidateThreeView?.();
+        });
+        doc.addEventListener('corridor-drawing-mode-changed', event => {
+            doc.body.classList.toggle('corridor-drawing-active', !!event.detail?.road);
+            if (event.detail?.road) closeSheets();
+        });
+        win.addEventListener('areaMonitorDrawStart', () => setAreaDrawing(true));
+        win.addEventListener('areaMonitorDrawCancel', () => setAreaDrawing(false));
+        win.addEventListener('areaMonitorDrawComplete', () => setAreaDrawing(false));
+        doc.getElementById('area-monitor-drawing-cancel')?.addEventListener('click', () => activeAreaDrawingTool()?.deactivate());
+        doc.getElementById('area-monitor-drawing-undo')?.addEventListener('click', () => activeAreaDrawingTool()?.undoLastVertex());
+        syncModeAvailability();
         watchProposalsBadge();
     }
 
@@ -376,7 +455,7 @@
         revealControl,
         revealSection,
         setSectionBusy,
-        setLockedFor3D,
+        syncModeAvailability,
         syncProposalsBadge,
         isBlockingDialogOpen,
         pointerDownClosesSheet,

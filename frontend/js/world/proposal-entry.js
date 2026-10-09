@@ -47,7 +47,7 @@
             global.WorldView.close();
             global.WorldEntry.finishNavigation();
             // The globe's cover (released in finally) stays over the 3D load.
-            if (arrive) await global.WorldArrival.enter3D(proposal, { kickerKey: arrive });
+            if (arrive) await global.WorldArrival.enter3D(proposal);
         } finally {
             if (fromUrl) global.WorldHandoff.proposalReady(event.proposalId);
             opening = false;

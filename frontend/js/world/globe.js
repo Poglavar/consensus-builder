@@ -2,7 +2,8 @@
 // coverage tier (world-coverage.js), clicking anywhere shows what is available there, a search box
 // flies to a place, and flyTo() dives the camera to a point for the handoff into the 2D map.
 // Browser only; depends on window.whenThreeReady() (index.html import map), window.GlobeMath and
-// window.WorldCoverage. Nothing here touches the app's map or city config: every action is a callback.
+// window.WorldCoverage and window.WorldCityDisplay. Nothing here touches the app's map or city config:
+// every action is a callback.
 //
 // API (window.WorldView)
 //   open(opts) -> Promise<void>   builds #world-view and resolves after the first frame.
@@ -29,6 +30,7 @@
     'use strict';
 
     const GM = global.GlobeMath;
+    const CityDisplay = global.WorldCityDisplay;
     const R_KM = GM.EARTH_RADIUS_KM;
     const FOV = 40;
     const MIN_USER_ALT_KM = 1500;
@@ -42,7 +44,6 @@
     const TIER_COLORS = { live: '#43e6a6', source: COVERAGE_COLORS.partial, none: COVERAGE_COLORS.none, unknown: COVERAGE_COLORS.unknown };
     const COVERAGE_LABELS = { full: 'Full country coverage', partial: 'Some open data', none: 'Checked: none found', unknown: 'Unchecked / inconclusive' };
     const TIER_LABELS = { live: 'In the app', source: 'Open data found', none: 'No open data', unknown: 'Unconfirmed' };
-    const LIVE_LABEL_ORDER = ['new_york', 'zagreb', 'buenos_aires', 'belgrade', 'ljubljana', 'colorado', 'split', 'sibenik'];
 
     let coveragePromise = null;
     let view = null;
@@ -235,11 +236,11 @@
             gl_FragColor = vec4(col * i * 0.95, i);
         }`;
     const POINTS_VERT = `
-        attribute float size; attribute vec3 color; attribute float pulse;
+        attribute float size; attribute vec3 color; attribute float pulse; attribute float opacity;
         uniform float pixelRatio; uniform float time;
-        varying vec3 vColor; varying float vFade; varying float vPulse;
+        varying vec3 vColor; varying float vFade; varying float vPulse; varying float vOpacity;
         void main() {
-            vColor = color; vPulse = pulse;
+            vColor = color; vPulse = pulse; vOpacity = opacity;
             vec4 mv = modelViewMatrix * vec4(position, 1.0);
             vec3 n = normalize(normalMatrix * normalize(position));
             vFade = smoothstep(0.0, 0.25, dot(n, normalize(-mv.xyz)));
@@ -248,15 +249,15 @@
             gl_Position = projectionMatrix * mv;
         }`;
     const POINTS_FRAG = `
-        varying vec3 vColor; varying float vFade; varying float vPulse;
+        varying vec3 vColor; varying float vFade; varying float vPulse; varying float vOpacity;
         void main() {
             vec2 p = gl_PointCoord - 0.5; float r = length(p) * 2.0;
             if (r > 1.0) discard;
             float core = 1.0 - smoothstep(0.42, 0.55, r);
             float ring = vPulse > 0.5 ? smoothstep(0.62, 0.74, r) * (1.0 - smoothstep(0.86, 1.0, r)) : 0.0;
-            float halo = (1.0 - r) * 0.35;
+            float halo = vPulse > 0.5 ? (1.0 - r) * 0.35 : 0.0;
             vec3 col = mix(vColor, vec3(1.0), core * 0.25);
-            float a = max(max(core, ring * 0.9), halo) * vFade;
+            float a = max(max(core, ring * 0.9), halo) * vFade * vOpacity;
             gl_FragColor = vec4(col, a);
         }`;
     const STARS_VERT = `
@@ -291,22 +292,14 @@
         return g;
     }
 
-    function buildCityPoints(THREE, coverage) {
-        const items = [];
-        coverage.liveCities.forEach(c => items.push({ lat: c.lat, lon: c.lon, color: TIER_COLORS.live, size: 15, pulse: 1 }));
-        coverage.cities.forEach(c => items.push({ lat: c.lat, lon: c.lon, color: TIER_COLORS[c.tier] || TIER_COLORS.unknown, size: 8, pulse: 0 }));
-        const pos = new Float32Array(items.length * 3); const col = new Float32Array(items.length * 3);
-        const size = new Float32Array(items.length); const pulse = new Float32Array(items.length);
-        items.forEach((it, i) => {
-            pos.set(GM.latLonToVector(it.lat, it.lon, 1.002), i * 3);
-            col.set(hexToRgb(it.color), i * 3);
-            size[i] = it.size; pulse[i] = it.pulse;
-        });
+    function buildCityPoints(THREE) {
+        // A fixed-size GPU buffer: adding cities to the catalog cannot add draw work.
         const g = new THREE.BufferGeometry();
-        g.setAttribute('position', new THREE.BufferAttribute(pos, 3));
-        g.setAttribute('color', new THREE.BufferAttribute(col, 3));
-        g.setAttribute('size', new THREE.BufferAttribute(size, 1));
-        g.setAttribute('pulse', new THREE.BufferAttribute(pulse, 1));
+        for (const [name, components] of [['position', 3], ['color', 3], ['size', 1], ['pulse', 1], ['opacity', 1]]) {
+            g.setAttribute(name, new THREE.BufferAttribute(new Float32Array(CityDisplay.MAX_MARKERS * components), components)
+                .setUsage(THREE.DynamicDrawUsage));
+        }
+        g.setDrawRange(0, 0);
         return g;
     }
 
@@ -368,7 +361,12 @@
         });
         scene.add(new THREE.Points(starGeo, starMat));
 
-        const cityGeo = buildCityPoints(THREE, coverage);
+        const cityEntries = CityDisplay.rankCities(coverage).map(entry => ({
+            ...entry, vec: GM.latLonToVector(entry.city.lat, entry.city.lon, 1.002),
+            color: hexToRgb(entry.live ? TIER_COLORS.live : TIER_COLORS[entry.city.tier] || TIER_COLORS.unknown),
+            labelWidth: 0, labelHeight: 0
+        }));
+        const cityGeo = buildCityPoints(THREE);
         const cityMat = new THREE.ShaderMaterial({
             uniforms: { pixelRatio, time }, vertexShader: POINTS_VERT, fragmentShader: POINTS_FRAG,
             // Screen-facing circles must not intersect the globe's depth surface. POINTS_VERT
@@ -376,6 +374,8 @@
             transparent: true, depthWrite: false, depthTest: false
         });
         const cityPoints = new THREE.Points(cityGeo, cityMat);
+        // The active points move within a fixed sphere, so do not cache a partial bounding sphere.
+        cityPoints.frustumCulled = false;
         cityPoints.renderOrder = 2;
         scene.add(cityPoints);
         disposables.push(sphereGeo, earthMat, atmoMat, starGeo, starMat, cityGeo, cityMat);
@@ -403,6 +403,8 @@
             reachTimer = null;
             reach.classList.add('world-reach--dismissed');
             reach.setAttribute('aria-hidden', 'true');
+            dirty = true;
+            cityLayoutDirty = true;
         }
         root.appendChild(top);
 
@@ -429,28 +431,29 @@
         legend.append(legendToggle, legendContent);
         overview.appendChild(legend);
         const activity = global.WorldActivity.mount(overview, { t, reducedMotion: reduce, coverage });
+        const activityNode = overview.querySelector('.world-activity');
 
         function setLegendExpanded(expanded) {
             legend.classList.toggle('world-legend--open', expanded);
             legendToggle.setAttribute('aria-expanded', String(expanded));
+            dirty = true;
+            cityLayoutDirty = true;
         }
         legendToggle.addEventListener('click', () => setLegendExpanded(legendToggle.getAttribute('aria-expanded') !== 'true'));
 
         const labelLayer = el('div', 'world-view__labels');
         root.appendChild(labelLayer);
-        const liveLabels = coverage.liveCities
-            .slice().sort((a, b) => LIVE_LABEL_ORDER.indexOf(a.id) - LIVE_LABEL_ORDER.indexOf(b.id))
-            .map(city => {
-                const node = el('button', 'world-city-label', { type: 'button', text: city.name });
-                node.addEventListener('click', ev => {
-                    ev.stopPropagation();
-                    // Pointer taps are resolved with the globe gesture. Keyboard activation is
-                    // still a native button click, so dragging a label never opens its popup.
-                    if (ev.detail === 0) select(coverage.tierAt(city.lat, city.lon));
-                });
-                labelLayer.appendChild(node);
-                return { city, node, vec: GM.latLonToVector(city.lat, city.lon, 1.002), w: 0, h: 0 };
+        const liveLabels = Array.from({ length: CityDisplay.MAX_LABELS }, () => {
+            const node = el('button', 'world-city-label world-city-label--hidden', { type: 'button' });
+            const item = { city: null, node, entry: null, placement: null };
+            node.addEventListener('click', ev => {
+                ev.stopPropagation();
+                // Pointer taps use the shared drag gesture; keyboard activation stays native.
+                if (ev.detail === 0 && item.city) select(coverage.tierAt(item.city.lat, item.city.lon));
             });
+            labelLayer.appendChild(node);
+            return item;
+        });
 
         const pin = el('div', 'world-pin');
         pin.hidden = true;
@@ -505,6 +508,11 @@
         let lastFrame = performance.now();
         let viewport = { w: 1, h: 1 };
         let closed = false;
+        let cityLayoutDirty = true;
+        let lastCityLayout = -Infinity;
+        let cityLayoutSignature = '';
+        let visibleMarkers = [];
+        let blockedCityAreas = [];
 
         function fitAltitude() {
             const vf = FOV * Math.PI / 180;
@@ -524,6 +532,7 @@
             camera.updateProjectionMatrix();
             if (!cam.altitudeKm) cam.altitudeKm = fitAltitude();
             dirty = true;
+            cityLayoutDirty = true;
         }
 
         function placeCamera() {
@@ -666,24 +675,117 @@
         const tmp = new THREE.Vector3();
         function screenOf(vec) {
             tmp.set(vec[0], vec[1], vec[2]);
-            const toCam = camera.position.clone().sub(tmp);
-            if (toCam.dot(tmp) <= 0) return null;
+            if (camera.position.dot(tmp) <= tmp.lengthSq()) return null;
             tmp.project(camera);
             return { x: (tmp.x + 1) / 2 * viewport.w, y: (1 - tmp.y) / 2 * viewport.h };
+        }
+
+        function measureCityLabels() {
+            const node = liveLabels[0].node;
+            const previous = node.textContent;
+            node.textContent = 'M';
+            const style = global.getComputedStyle(node);
+            const context = document.createElement('canvas').getContext('2d');
+            context.font = style.font;
+            const extra = parseFloat(style.paddingLeft) + parseFloat(style.paddingRight)
+                + parseFloat(style.borderLeftWidth) + parseFloat(style.borderRightWidth);
+            const minimumWidth = parseFloat(style.minWidth) || 0;
+            const height = node.offsetHeight;
+            cityEntries.forEach(entry => {
+                if (!entry.live) return;
+                entry.labelWidth = Math.max(minimumWidth, Math.ceil(context.measureText(entry.city.name).width + extra));
+                entry.labelHeight = height;
+            });
+            node.textContent = previous;
+            cityLayoutDirty = true;
+        }
+
+        function cityObstacles() {
+            const nodes = [top, closeBtn, legend, activityNode];
+            if (!reach.hidden && !reach.classList.contains('world-reach--dismissed')) nodes.push(reach);
+            if (!results.hidden) nodes.push(results);
+            if (!popup.hidden && !popup.classList.contains('world-popup--offscreen')) nodes.push(popup);
+            return nodes.filter(node => node && node.isConnected).map(node => node.getBoundingClientRect())
+                .filter(rect => rect.width > 0 && rect.height > 0)
+                .map(rect => ({ x: rect.left, y: rect.top, w: rect.width, h: rect.height }));
+        }
+
+        function updateCityDisplay(now) {
+            // Camera movement projects the catalog at most ten times per second. Only the bounded
+            // label pool follows it every frame; dot positions continue moving smoothly on the GPU.
+            if (!cityLayoutDirty && now - lastCityLayout < 100) return;
+            lastCityLayout = now;
+            const blocked = cityObstacles();
+            const pinnedKeys = [];
+            if (selected) pinnedKeys.push(selected.kind === 'live-city' ? 'live:' + selected.cityId : 'research:' + selected.placeKey);
+            const focused = liveLabels.find(item => item.node === document.activeElement);
+            if (focused?.entry) pinnedKeys.push(focused.entry.key);
+            const signature = JSON.stringify([cam.lat, cam.lon, cam.altitudeKm, viewport, blocked, pinnedKeys]);
+            if (!cityLayoutDirty && signature === cityLayoutSignature) return;
+            cityLayoutDirty = false;
+            cityLayoutSignature = signature;
+            blockedCityAreas = blocked;
+            const candidates = [];
+            for (const entry of cityEntries) {
+                const point = screenOf(entry.vec);
+                if (!point || point.x < 0 || point.y < 0 || point.x > viewport.w || point.y > viewport.h) continue;
+                candidates.push({ entry, x: point.x, y: point.y, labelWidth: entry.labelWidth, labelHeight: entry.labelHeight });
+            }
+            const layout = CityDisplay.layout(candidates,
+                { width: viewport.w, height: viewport.h, altitudeKm: cam.altitudeKm, fov: FOV }, { blocked, pinnedKeys });
+            visibleMarkers = layout.markers;
+            visibleMarkers.forEach((marker, i) => {
+                cityGeo.attributes.position.array.set(marker.entry.vec, i * 3);
+                cityGeo.attributes.color.array.set(marker.entry.color, i * 3);
+                cityGeo.attributes.size.array[i] = marker.size;
+                cityGeo.attributes.pulse.array[i] = marker.glow ? 1 : 0;
+                cityGeo.attributes.opacity.array[i] = marker.opacity;
+            });
+            Object.values(cityGeo.attributes).forEach(attribute => { attribute.needsUpdate = true; });
+            cityGeo.setDrawRange(0, visibleMarkers.length);
+
+            // Reuse each city's existing node so keyboard focus survives a camera/layout update.
+            const wanted = new Set(layout.labels.map(label => label.entry.key));
+            liveLabels.forEach(item => {
+                if (item.entry && wanted.has(item.entry.key)) return;
+                item.city = item.entry = item.placement = null;
+                item.node.classList.add('world-city-label--hidden');
+            });
+            layout.labels.forEach(placement => {
+                const item = liveLabels.find(label => label.entry?.key === placement.entry.key)
+                    || liveLabels.find(label => !label.entry);
+                if (item.entry !== placement.entry) item.node.textContent = placement.entry.city.name;
+                item.entry = placement.entry;
+                item.city = placement.entry.city;
+                item.placement = placement;
+            });
+        }
+
+        function positionCityLabels() {
+            const placed = blockedCityAreas.slice();
+            const bounds = { width: viewport.w, height: viewport.h };
+            for (const item of liveLabels) {
+                const point = item.entry && screenOf(item.entry.vec);
+                const box = point && { x: point.x + item.placement.offsetX, y: point.y + item.placement.offsetY,
+                    w: item.placement.w, h: item.placement.h };
+                const visible = box && CityDisplay.canPlace(box, bounds, placed, 4);
+                item.node.classList.toggle('world-city-label--hidden', !visible);
+                if (!visible) continue;
+                placed.push(box);
+                item.node.style.setProperty('--x', box.x + 'px');
+                item.node.style.setProperty('--y', box.y + 'px');
+            }
         }
 
         function pickAt(clientX, clientY) {
             const rect = renderer.domElement.getBoundingClientRect();
             const x = clientX - rect.left; const y = clientY - rect.top;
-            // Snap to a nearby city dot first: at globe scale a dot is hundreds of km wide.
+            // Snap only to drawn markers; a hidden city must never steal a visible dot's tap.
             let snap = null; let best = Infinity;
-            coverage.liveCities.forEach(c => {
-                const s = screenOf(GM.latLonToVector(c.lat, c.lon, 1.002)); if (!s) return;
-                const d = Math.hypot(s.x - x, s.y - y); if (d < 14 && d < best) { best = d; snap = c; }
-            });
-            if (!snap) coverage.cities.forEach(c => {
-                const s = screenOf(GM.latLonToVector(c.lat, c.lon, 1.002)); if (!s) return;
-                const d = Math.hypot(s.x - x, s.y - y); if (d < 8 && d < best) { best = d; snap = c; }
+            visibleMarkers.forEach(marker => {
+                const s = screenOf(marker.entry.vec); if (!s) return;
+                const d = Math.hypot(s.x - x, s.y - y);
+                if (d < (marker.entry.live ? 14 : 8) && d < best) { best = d; snap = marker.entry.city; }
             });
             if (snap) { select(coverage.tierAt(snap.lat, snap.lon)); return; }
             const ndc = new THREE.Vector3((x / rect.width) * 2 - 1, -(y / rect.height) * 2 + 1, 0.5).unproject(camera);
@@ -701,12 +803,14 @@
             vel.lat = vel.lon = 0;
             renderPopup();
             dirty = true;
+            cityLayoutDirty = true;
         }
 
         function deselect() {
             selected = null;
             popup.hidden = true; pin.hidden = true;
             dirty = true;
+            cityLayoutDirty = true;
         }
 
         let requestState = null; // null | 'sending' | 'done' | 'error'
@@ -829,28 +933,6 @@
                     popup.style.setProperty('--caret', GM.clamp(s.x - x, 18, pw - 18) + 'px');
                 }
             }
-            // Live-city labels: nearest-first greedy placement, skipping overlaps and the far side.
-            // Reserve the desktop activity overlay so city names never compete with its text.
-            const placed = [];
-            if (viewport.w >= 1100) {
-                const bounds = root.querySelector('.world-activity').getBoundingClientRect();
-                placed.push({ x: bounds.left, y: bounds.top, w: bounds.width, h: bounds.height });
-            }
-            const showLabels = true;
-            liveLabels.forEach(item => {
-                const s = showLabels ? screenOf(item.vec) : null;
-                let visible = !!s;
-                if (visible) {
-                    if (!item.w) { item.w = item.node.offsetWidth || 60; item.h = item.node.offsetHeight || 20; }
-                    const box = { x: s.x + 10, y: s.y - item.h / 2, w: item.w, h: item.h };
-                    visible = !placed.some(b => box.x < b.x + b.w + 4 && b.x < box.x + box.w + 4 && box.y < b.y + b.h + 2 && b.y < box.y + box.h + 2);
-                    if (visible) {
-                        placed.push(box);
-                        item.node.style.setProperty('--x', box.x + 'px'); item.node.style.setProperty('--y', box.y + 'px');
-                    }
-                }
-                item.node.classList.toggle('world-city-label--hidden', !visible);
-            });
         }
 
         // ---- search ----
@@ -953,8 +1035,10 @@
             time.value = now / 1000;
             const h = GM.clamp((1400 - cam.altitudeKm) / (1400 - 250), 0, 1);
             earthMat.uniforms.haze.value = 0.88 * h * h * (3 - 2 * h);
-            renderer.render(scene, camera);
             positionOverlays();
+            updateCityDisplay(now);
+            renderer.render(scene, camera);
+            positionCityLabels();
             dirty = false;
         }
 
@@ -996,6 +1080,9 @@
         }
 
         const resizeObserver = new ResizeObserver(() => { resize(); if (!raf) render(performance.now()); });
+        // Loaded activity, translated text and expanded panels can change the available label
+        // area even when reduced motion leaves the camera still.
+        const overlayObserver = new ResizeObserver(() => { dirty = true; cityLayoutDirty = true; schedule(); });
 
         // ---- wiring ----
         const canvas = renderer.domElement;
@@ -1012,13 +1099,17 @@
         root.addEventListener('wheel', onWheel, { passive: false });
         canvas.addEventListener('keydown', onCanvasKey);
         root.addEventListener('keydown', onRootKey);
+        // UI changes also invalidate labels when reduced motion leaves the camera stationary.
+        root.addEventListener('focusin', () => { dirty = true; cityLayoutDirty = true; });
+        root.addEventListener('focusout', () => { dirty = true; cityLayoutDirty = true; });
+        searchInput.addEventListener('input', () => { dirty = true; cityLayoutDirty = true; });
         searchInput.addEventListener('input', onSearchInput);
         searchInput.addEventListener('keydown', onSearchKey);
         searchInput.addEventListener('blur', () => { results.hidden = true; searchInput.setAttribute('aria-expanded', 'false'); });
         searchInput.addEventListener('focus', () => { if (searchInput.value.trim()) onSearchInput(); });
         closeBtn.addEventListener('click', () => { global.WorldView.close(); if (typeof opts.onClose === 'function') opts.onClose(); });
         document.addEventListener('visibilitychange', onVisibility);
-        const onLanguage = () => renderStaticText();
+        const onLanguage = () => { renderStaticText(); measureCityLabels(); dirty = true; };
         if (global.i18n && typeof global.i18n.onChange === 'function') global.i18n.onChange(onLanguage);
         global.addEventListener('i18n:translationsLoaded', onLanguage);
 
@@ -1038,7 +1129,9 @@
         });
         document.body.classList.add('world-view-open');
         renderStaticText();
+        measureCityLabels();
         resizeObserver.observe(root);
+        [top, legend, activityNode, popup, results, reach].forEach(node => { if (node) overlayObserver.observe(node); });
         resize();
         render(performance.now());
         reachTimer = global.setTimeout(dismissReach, 8000);
@@ -1054,6 +1147,7 @@
                 if (raf) cancelAnimationFrame(raf);
                 if (flight) { flight.resolve(false); flight = null; }
                 resizeObserver.disconnect();
+                overlayObserver.disconnect();
                 activity.destroy();
                 document.removeEventListener('visibilitychange', onVisibility);
                 if (global.i18n && typeof global.i18n.offChange === 'function') global.i18n.offChange(onLanguage);

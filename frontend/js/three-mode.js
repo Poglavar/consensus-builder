@@ -232,16 +232,16 @@
     const toggle2dBtn = document.getElementById('mode-2d-toggle');
     const walkBtn = document.getElementById('mode-walk-toggle');
 
-    // Sync the always-visible 2D / 3D / realistic-globe mode buttons so exactly one reads
-    // as "pressed" (.active): 2D when neither 3D nor realistic is on, 3D for abstract 3D,
-    // realistic when the photoreal globe is up. Called on every mode transition (here and
+    // Sync the always-visible map / model / aerial buttons so exactly one reads
+    // as "pressed" (.active): map when neither 3D mode is on, model for authored geometry,
+    // aerial when the photoreal mesh is up. Called on every mode transition (here and
     // from photoreal-mode.js). Exposed globally so photoreal can reuse it.
     function updateModeButtonStates() {
         try {
             const rw = !!(window.PhotorealMode && typeof window.PhotorealMode.isActive === 'function' && window.PhotorealMode.isActive());
-            // Loading spinners on the mode-strip icons: photo (globe) while its tiles compose,
+            // Loading spinners on the mode-strip buttons: photo while its tiles compose,
             // model (3D) while its scene renders. Photo entry passes through 3D init, so photo-loading
-            // wins there — only the globe spins, never both.
+            // wins there — only the aerial button spins, never both.
             // The first click precedes this module's lazy load. Keep that requested mode
             // selected through module evaluation and the deferred scene initialization.
             const pendingMode = window.__pending3DMode;
@@ -254,15 +254,17 @@
             const btn2d = document.getElementById('mode-2d-toggle');
             const btn3d = document.getElementById('mode-3d-toggle');
             const btnRw = document.getElementById('mode-realistic-toggle');
-            if (btn2d) btn2d.classList.toggle('active', !modelSelected && !photoSelected);
-            if (btn3d) { btn3d.classList.toggle('active', modelSelected); btn3d.classList.toggle('mode-btn-loading', modelLoading); }
-            if (btnRw) { btnRw.classList.toggle('active', photoSelected); btnRw.classList.toggle('mode-btn-loading', photoLoading); }
+            for (const [button, active, loading] of [[btn2d, !modelSelected && !photoSelected, false], [btn3d, modelSelected, modelLoading], [btnRw, photoSelected, photoLoading]]) {
+                if (!button) continue;
+                button.classList.toggle('active', active);
+                button.classList.toggle('mode-btn-loading', loading);
+                button.setAttribute('aria-pressed', String(active));
+            }
             // The AI render is a PHOTO of the scene: it only means anything over the photorealistic
-            // mesh. Absent in 2D (there is no scene to render), present but disabled in model view
-            // so the feature is discoverable and says what it needs, live in photo view.
+            // mesh, so it appears only in the view that can supply that image.
             const btnAi = document.getElementById('mode-ai-toggle');
             if (btnAi) {
-                btnAi.hidden = !isActive;
+                btnAi.hidden = !isActive || !rw;
                 btnAi.disabled = !rw;
                 const label = rw
                     ? threeI18n('threeMode.toggle.ai', 'AI photorealistic render')
@@ -1138,8 +1140,10 @@
     }
 
     function ensureBuildingModeControls() {
-        if (!threeContainer) return;
-        if (buildingModeControlsEl && buildingModeControlsEl.parentElement === threeContainer) {
+        const layersHost = document.getElementById('model-layer-controls');
+        const displayHost = document.getElementById('model-rendering-settings');
+        if (!threeContainer || !layersHost || !displayHost) return;
+        if (buildingModeControlsEl && buildingModeControlsEl.parentElement === layersHost) {
             updateDisplayStateControls();
             return;
         }
@@ -1148,22 +1152,6 @@
         buildingModeControlsEl.className = 'three-mode-ui-panel';
         buildingModeControlsEl.setAttribute('role', 'group');
         buildingModeControlsEl.setAttribute('aria-label', threeI18n('threeMode.controls.buildingRenderingAria', 'Building rendering'));
-
-        // Collapse toggle — on phones the panel eats the top of the map, so it folds to a single
-        // gear icon (tap to expand). Hidden on desktop via CSS, where the panel is always open.
-        const collapseToggle = document.createElement('button');
-        collapseToggle.type = 'button';
-        collapseToggle.className = 'three-mode-ui-collapse';
-        collapseToggle.setAttribute('aria-label', threeI18n('threeMode.controls.togglePanel', 'Toggle controls'));
-        collapseToggle.title = collapseToggle.getAttribute('aria-label');
-        collapseToggle.innerHTML = '<span aria-hidden="true">⚙</span>';
-        collapseToggle.addEventListener('click', () => buildingModeControlsEl.classList.toggle('collapsed'));
-        buildingModeControlsEl.appendChild(collapseToggle);
-        try {
-            if (window.matchMedia && window.matchMedia('(max-width: 767.98px)').matches) {
-                buildingModeControlsEl.classList.add('collapsed');
-            }
-        } catch (_) { }
 
         // Radius row — controls how wide a band of built context is loaded/rendered.
         const radiusRow = document.createElement('div');
@@ -1196,7 +1184,7 @@
 
         radiusRow.appendChild(radiusHeader);
         radiusRow.appendChild(radiusSlider);
-        buildingModeControlsEl.appendChild(radiusRow);
+        displayHost.replaceChildren(radiusRow);
 
         // Display-state rows use equal-width selects. Built has one more state than Planned, so
         // segmented buttons divided the same panel into four versus three unequal/truncated cells.
@@ -1422,19 +1410,6 @@
         ineligibleRow.appendChild(ineligibleLabel);
         buildingModeControlsEl.appendChild(ineligibleRow);
 
-        // Show-all reset, only visible while a parcel is isolated.
-        isolationResetEl = document.createElement('div');
-        isolationResetEl.className = 'three-mode-emphasis-row';
-        const showAllBtn = document.createElement('button');
-        showAllBtn.type = 'button';
-        showAllBtn.className = 'three-mode-reset-btn';
-        showAllBtn.textContent = threeI18n('threeMode.controls.showAllParcels', 'Show all parcels');
-        showAllBtn.title = threeI18n('threeMode.controls.showAllParcelsTooltip', 'Clear the parcel isolation and show the whole scene again');
-        showAllBtn.setAttribute('aria-label', showAllBtn.title);
-        showAllBtn.addEventListener('click', () => clearIsolation());
-        isolationResetEl.appendChild(showAllBtn);
-        buildingModeControlsEl.appendChild(isolationResetEl);
-
         // Where the context buildings came from, and how many heights are estimates (OSM).
         buildingsSourceNoteEl = document.createElement('p');
         buildingsSourceNoteEl.className = 'three-mode-source-note';
@@ -1444,7 +1419,7 @@
         // Keep X-ray as a clearly separated final section after scenery and plot diagnostics.
         buildingModeControlsEl.appendChild(xrayRow);
 
-        threeContainer.appendChild(buildingModeControlsEl);
+        layersHost.appendChild(buildingModeControlsEl);
         updateDisplayStateControls();
         updateIsolationButton();
     }
@@ -7014,6 +6989,8 @@
         stationGroup = null;
         proposalInteractionGroup = null;
         proposalDraftGroup = null;
+        buildingModeControlsEl?.remove();
+        document.getElementById('model-rendering-settings')?.replaceChildren();
         threeContainer && (threeContainer.innerHTML = '');
         buildingModeControlsEl = null;
         buildingModeButtons = { built: null, planned: null };
@@ -7170,8 +7147,7 @@
         showRenderingOverlay();
         disableLeafletInteractions();
         closeAllPanelsAndModalsFor3D();
-        // Only the Buildings and Proposals controls stay usable in 3D (MapShell.setLockedFor3D).
-        if (window.MapShell) window.MapShell.setLockedFor3D(true);
+        window.MapShell?.syncModeAvailability();
         if (reuse) {
             sceneAbort = new AbortController();
             const signal = sceneAbort.signal;
@@ -7227,7 +7203,7 @@
         hideRenderingOverlay();
         updateModeButtonStates();
         enableLeafletInteractions();
-        if (window.MapShell) window.MapShell.setLockedFor3D(false);
+        window.MapShell?.syncModeAvailability();
         cancelLoop();
         stopSceneWork();
         pendingModelLoads = 0;
@@ -7790,7 +7766,7 @@
         // Photo mode is view-only: hide the model-mode building controls (radius / built / proposed)
         // and drop any isolation + the "Proposal info" panel, so the whole cut scene and all its
         // proposals are shown. Restored on return to model 3D.
-        if (buildingModeControlsEl) buildingModeControlsEl.style.display = realisticLayerActive ? 'none' : '';
+        window.MapShell?.syncModeAvailability();
         if (realisticLayerActive) {
             isolatedParcelId = null;
             isolatedProposalId = null;

@@ -1128,6 +1128,9 @@
         try { global.map?.removeLayer(placement.alignmentLayer); } catch (_) { }
         try { if (global.map?._container) global.map._container.style.cursor = ''; } catch (_) { }
         placement = null;
+        global.document?.body?.classList.remove('station-placement-active');
+        const toolbar = global.document?.getElementById('station-placement-toolbar');
+        if (toolbar) toolbar.hidden = true;
         global.transitStationPlacementMode = false;
         global.document?.querySelectorAll?.('[data-station-type].is-active').forEach(button => button.classList.remove('is-active'));
     }
@@ -1237,6 +1240,14 @@
             return false;
         }
         cancelTransitStationPlacement();
+        global.MapShell?.closeSheets();
+        global.ParcelMenu?.close();
+        global.GroundMenu?.close();
+        global.hideParcelInfoPanel?.();
+        global.hideProposalDetailsPanel?.();
+        global.document?.body?.classList.add('station-placement-active');
+        const toolbar = global.document?.getElementById('station-placement-toolbar');
+        if (toolbar) toolbar.hidden = false;
         ensurePane(ALIGNMENT_PANE, 632);
         ensurePane(PANE, 634);
         ensurePane(ICON_PANE, 666);
@@ -1328,6 +1339,7 @@
             updateCarriedPlacementPreview(event.latlng);
         };
         placement.onKey = event => {
+            if (global.document.body.classList.contains('three-mode-active')) return;
             if (!placement) return;
             if (event.key === 'Escape') {
                 event.preventDefault();

@@ -66,7 +66,8 @@ describe('buildCoverage', () => {
         registry: JSON.parse(read('world-parcels/registry.json')),
         countryReviews: JSON.parse(read('world-parcels/country-coverage-reviews.json')).reviews,
         countries: JSON.parse(read('world-parcels/countries.geojson')),
-        cityConfigSource: read('frontend/js/city-config.js')
+        cityConfigSource: read('frontend/js/city-config.js'),
+        demographics: JSON.parse(read('world-parcels/report/city-demographics.json'))
     };
     const built = buildCoverage(inputs);
 
@@ -133,10 +134,10 @@ describe('buildCoverage', () => {
             ...overrides
         });
         const source = (sourceId, countryCode, verificationStatus = 'verified_nonempty_sample') => ({ sourceId, countryCode, verificationStatus });
-        const compile = ({ sourceRows = [], reviews = [], probes = [], coverageRows = [], cities = [], cc = 'AA', cityConfigSource = 'const CITY_CONFIGS = {};' } = {}) => {
+        const compile = ({ sourceRows = [], reviews = [], probes = [], coverageRows = [], cities = [], cc = 'AA', cityConfigSource = 'const CITY_CONFIGS = {};', demographics = null } = {}) => {
             const countries = { type: 'FeatureCollection', features: [makeFeature(cc), ...(cc === 'AA' ? [makeFeature('BB')] : [])] };
             return buildCoverage({ registry: registry({ sources: sourceRows, countryProbes: probes, countryCoverage: coverageRows, cities }),
-                countryReviews: reviews, countries, cityConfigSource });
+                countryReviews: reviews, countries, cityConfigSource, demographics });
         };
         const find = (result, cc) => result.countries.find(country => country.cc === cc);
 
@@ -213,16 +214,58 @@ describe('buildCoverage', () => {
                 centerLatLon: [43.84864, 18.35644], parcelStatus: 'temporarily_unavailable', sourceIds: [],
                 researchFile: 'research/cities/sarajevo.json', note
             }] });
-            expect(result.cities).toContainEqual({
+            expect(result.cities.find(city => city.id === 'geonames:3191281')).toMatchObject({
                 id: 'geonames:3191281', name: 'Sarajevo', cc: 'BA', lat: 43.8486, lon: 18.3564,
                 tier: 'unknown', note
             });
         });
+
+        it('joins population by exact IDs, rejects ambiguity and country mismatches, and leaves missing values null', () => {
+            const config = `const CITY_CONFIGS = {
+                alpha: { id: 'alpha', label: 'Same name', map: { defaultCenter: [0.5, 0.5] } },
+                wrong_country: { id: 'wrong_country', label: 'Wrong country', map: { defaultCenter: [0.5, 0.5] } },
+                duplicate: { id: 'duplicate', label: 'Duplicate', map: { defaultCenter: [0.5, 0.5] } },
+                unmatched: { id: 'unmatched', label: 'Same name', map: { defaultCenter: [0.5, 0.5] } }
+            };`;
+            const demographics = {
+                sources: [{ name: 'UN DESA WUP 2025 city populations', url: 'https://population.un.org/wup/downloads?tab=Cities', retrieved: '2026-10-07' }],
+                cities: [
+                    { id: 'wup2025:789', appCityIds: ['alpha'], countryCode: 'AA', population2025: 1234 },
+                    { id: 'wup2025:790', appCityIds: ['wrong_country'], countryCode: 'BB', population2025: 2345 },
+                    { id: 'wup2025:791', appCityIds: ['duplicate'], countryCode: 'AA', population2025: 3456 },
+                    { id: 'wup2025:792', appCityIds: ['duplicate'], countryCode: 'AA', population2025: 4567 },
+                    { id: 'wup2025:793', appCityIds: ['some_other_id'], countryCode: 'AA', name: 'Same name', population2025: 5678 },
+                    { id: 'wup2025:794', appCityIds: [], countryCode: 'BB', population2025: 7890 }
+                ]
+            };
+            const registryCities = [
+                { cityId: 'wup2025:789', countryCode: 'AA', centerLatLon: [0.5, 0.5] },
+                { cityId: 'wup2025:794', countryCode: 'AA', centerLatLon: [0.5, 0.5] }
+            ];
+            const result = compile({ cities: registryCities, cityConfigSource: config, demographics });
+            const liveById = Object.fromEntries(result.liveCities.map(city => [city.id, city]));
+            const researchById = Object.fromEntries(result.cities.map(city => [city.id, city]));
+
+            expect(liveById.alpha.population2025).toBe(1234);
+            expect(liveById.wrong_country.population2025).toBeNull();
+            expect(liveById.duplicate.population2025).toBeNull();
+            expect(liveById.unmatched.population2025).toBeNull();
+            expect(researchById['wup2025:789'].population2025).toBe(1234);
+            expect(researchById['wup2025:794'].population2025).toBeNull();
+            expect(result.populationSource).toMatchObject({
+                title: 'UN DESA WUP 2025 city populations', year: 2025, retrieved: '2026-10-07'
+            });
+        });
     });
 
-    it('matches the committed output byte for byte and stays small', () => {
+    it('matches the committed output byte for byte and keeps outline and per-city payloads small', () => {
         const committed = read('frontend/data/world-coverage.json');
         expect(committed).toBe(`${JSON.stringify(built)}\n`);
-        expect(committed.length).toBeLessThan(400 * 1024);
+        // Allow the catalog to grow without repeatedly lifting a total-file ceiling. Geography
+        // has a fixed budget; city records retain a compact average budget as their count grows.
+        const bytes = value => Buffer.byteLength(JSON.stringify(value));
+        expect(bytes({ ...built, liveCities: [], cities: [] })).toBeLessThan(200 * 1024);
+        expect(bytes(built.liveCities) + bytes(built.cities))
+            .toBeLessThan(256 * (built.liveCities.length + built.cities.length) + 4);
     });
 });

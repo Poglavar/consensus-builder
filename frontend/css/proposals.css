@@ -439,61 +439,47 @@ body.land-fork-editing #parcel-info-panel {
     display: block;
 }
 
-/* Proposal list modal styles */
-.proposal-list-modal {
-    position: fixed;
-    top: 0;
-    left: 0;
-    width: 100%;
-    height: 100%;
-    /* No backdrop: the map stays live and undarkened behind the panel. The overlay ignores pointer
-       events so map drags/clicks pass straight through; only the panel itself (below) is interactive. */
-    background-color: transparent;
-    pointer-events: none;
-    display: none;
-    z-index: 12000; /* Above the shell's sheets (1600) and info panels */
+/* The proposal list lives inside the MapShell Proposals sheet. */
+#proposals-sheet > .map-sheet-body {
+    display: flex;
+    flex-direction: column;
+    min-height: 0;
 }
 
-/* Desktop: a full-height panel docked to the right ~third of the screen, so the map keeps the rest. */
+#proposal-list-host {
+    display: flex;
+    flex: 1 1 auto;
+    flex-direction: column;
+    min-height: 0;
+    overflow: hidden;
+}
+
+.proposal-list-modal {
+    display: flex;
+    flex: 1 1 auto;
+    flex-direction: column;
+    min-height: 0;
+}
+
 .proposal-list-modal-content {
-    position: absolute;
-    /* The same column the docked panels use: below the top row of controls, above the bottom row,
-       opaque, so neither the chrome nor a card behind it shows through. */
-    top: var(--map-shell-top-clearance);
-    right: var(--right-dock-gap);
-    bottom: var(--map-shell-bottom-clearance);
-    width: clamp(360px, 33vw, 560px);
+    position: static;
+    width: 100%;
+    height: 100%;
     max-height: none;
-    background: var(--cb-surface);
-    border-radius: var(--cb-radius-lg);
-    box-shadow: -8px 0 28px rgba(15, 30, 45, 0.22);
+    min-height: 0;
+    background: transparent;
+    border-radius: 0;
+    box-shadow: none;
     display: flex;
     flex-direction: column;
     pointer-events: auto;
 }
 
-/* Mobile: dock to the lower half of the screen, full width. Its own rule (rather than the shared
-   full-screen modal group in game.css) so the map stays visible in the top half. */
 @media (max-width: 767.98px) {
-    .proposal-list-modal-content {
-        top: auto;
-        left: 0;
-        right: 0;
-        bottom: 0;
-        width: 100%;
-        /* 70%: at half the screen the header, source tabs and filter row left room for about one
-           card. The top 30% keeps the map (and the selected proposal on it) in view. */
-        height: 70dvh;
-        max-height: 70dvh;
-        border-radius: 12px 12px 0 0;
-        box-shadow: 0 -8px 24px rgba(15, 30, 45, 0.22);
-    }
-
-    /* Open filters push the list down by a whole form; the sheet grows so the results stay usable
-       (it was ~60px of list under the filters). */
-    .proposal-list-modal-content:has(.proposal-list-controls:not(.is-collapsed)) {
-        height: 90dvh;
-        max-height: 90dvh;
+    #proposals-sheet {
+        bottom: var(--map-shell-dock-height, 52px);
+        height: min(65dvh, calc(100dvh - var(--map-shell-dock-height) - var(--map-shell-top-clearance)));
+        max-height: min(65dvh, calc(100dvh - var(--map-shell-dock-height) - var(--map-shell-top-clearance)));
     }
 
     /* The title gets its own line: squeezed next to the number, status pill and action button it
@@ -749,7 +735,48 @@ body.land-fork-editing #parcel-info-panel {
 .proposal-list-modal-body {
     padding: 0;
     overflow-y: auto;
+    min-height: 0;
     flex: 1;
+}
+
+.proposal-list-footer {
+    flex: 0 0 auto;
+    padding: var(--cb-space-2) var(--cb-space-3);
+    border-top: 1px solid var(--cb-line);
+    color: var(--cb-text-muted);
+    font-size: var(--cb-text-sm);
+    line-height: 1.35;
+}
+
+.proposal-list-navigation-hint a {
+    color: var(--cb-primary-hover);
+    font-weight: var(--cb-weight-semibold);
+    text-decoration: underline;
+}
+
+.proposal-card-actions {
+    display: flex;
+    justify-content: flex-end;
+    margin-top: var(--cb-space-2);
+}
+
+.proposal-list-details-btn {
+    min-height: var(--cb-control-height);
+    padding: var(--cb-space-1) var(--cb-space-3);
+    border: 1px solid var(--cb-line-strong);
+    border-radius: var(--cb-radius-sm);
+    background: var(--cb-surface);
+    color: var(--cb-text);
+    font: inherit;
+    font-size: var(--cb-text-sm);
+    font-weight: var(--cb-weight-semibold);
+    cursor: pointer;
+}
+
+.proposal-list-details-btn:hover,
+.proposal-list-details-btn:focus-visible {
+    border-color: var(--cb-primary);
+    color: var(--cb-primary-hover);
 }
 
 .proposal-tab-content {

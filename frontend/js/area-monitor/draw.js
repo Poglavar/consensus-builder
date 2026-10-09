@@ -137,9 +137,10 @@
     }
 
     function onKeyDown(e) {
+        if (document.body.classList.contains('three-mode-active')) return;
         if (!active) return;
         if (e.key === 'Escape') {
-            // One Escape, one step: the Tools sheet this was started from stays open.
+            // Escape cancels only this drawing; the shell owns its own navigation state.
             e.preventDefault();
             deactivate();
         }

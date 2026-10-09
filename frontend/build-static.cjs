@@ -103,6 +103,7 @@ const SAFE_GROUPS = [
             "js/ui/search-model.js",
             "js/world/world-coverage.js",
             "js/world/globe-math.js",
+            "js/world/globe-city-display.js",
             "js/world/activity-model.js",
             "js/world/activity.js",
             "js/world/proposal-entry.js",

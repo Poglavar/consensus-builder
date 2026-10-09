@@ -31,11 +31,13 @@ beforeEach(() => {
     calls = { undo: 0, finish: 0, exit: 0, cancelStroke: 0, status: [] };
     // eslint-disable-next-line no-new-func
     handle = new Function(
+        'document',
         'undoLastRoadSegment', 'finishRoadDrawing', 'exitRoadDrawingMode', 'cancelActiveRoadStroke',
         'updateStatus', 'translateRoadText', 'hasDrawableCorridor', 'roadFinalizationGate',
         'roadSegmentPlacementInProgress', 'roadHasStarted',
         `${lift('handleRoadKeydown')}; return handleRoadKeydown;`
     )(
+        { body: { classList: { contains: () => false } } },
         () => { calls.undo += 1; },
         () => { calls.finish += 1; },
         () => { calls.exit += 1; },

@@ -30,7 +30,7 @@ Every non-map page carries the same header: logo, "Back to the map", language. N
 | Consent | **Accept** = an owner's binding yes; **Vote** = non-binding support; **Support** = money, as **Pledge** or **Donate** | say yes, consent, boost, back, bid, attest (reserve for lens attestations) |
 | Lifecycle | **Draft → Applied → Published → Minted → Executed**, modifiers **Expired / Withdrawn** | in-memory, unsaved, local, on server, active, inactive |
 | Lifecycle verbs | **Apply / Unapply** (the map), **Publish** (the server), **Mint** (the chain), **Execute** | un-apply, remove from map, upload, save to server |
-| Views | **2D · 3D · Photo**; **Walk** and **AI render** are tools | model view, realistic, photoreal, abstract 3D |
+| Views | **2D (map) · 3D (models) · 3D (aerial imagery)**; **Walk** and **AI render** are tools | a globe icon for aerial imagery, realistic, photoreal, abstract 3D |
 | Uploaded geometry | **building model** | model (alone) |
 | The in-app game | **Simulation** (turns, agents); **Activity** is the log of everything | game, run, batch |
 | People | **owner, author, agent, member**; identity = **profile name** | actor (only as the umbrella in the activity log), user, citizen, username, nickname |
@@ -67,6 +67,8 @@ Every non-map page carries the same header: logo, "Back to the map", language. N
 - **Breakpoint:** phones are `max-width: 767.98px`, desktop `min-width: 768px`. No other edge.
 - **Stacking:** `--cb-z-*` ladder only. No 13001, no 100001, no `!important` z-index.
 - **Icons:** Font Awesome only; no emoji in labels or chrome, no raster icons.
+- **View buttons:** map, geometric-shape and aerial thumbnails sit behind the 2D/3D labels; the two
+  3D buttons have distinct tooltips and accessible names. The selected border preserves the image.
 - **Motion:** every animation sits under `prefers-reduced-motion: no-preference`.
 - Nothing moves when a panel opens: panels overlay the map, they do not push the controls.
 - A dialog opened from a sheet leaves the sheet open underneath (a press inside the dialog is not
@@ -75,11 +77,30 @@ Every non-map page carries the same header: logo, "Back to the map", language. N
 
 ## Phone layout
 
-- The bottom row is a labelled bar (Proposals · Bets · Tools · Activity) across the width; its height is
-  `--map-shell-bar-height`, and `--map-shell-bottom-clearance` grows with it, so the tray, the toast
-  and the scale bar sit above the bar and the dock sheets end above it (the bar stays reachable).
-- Sheets (parcel, proposal, road, block) run edge to edge above the bar; the proposals list is a
-  70dvh modal sheet with its own close.
+- The bottom dock is a labelled bar (Proposals · Bets · Activity) across the width in every view. Its
+  height is `--map-shell-bar-height`; `--map-shell-bottom-clearance` keeps the tray, toast and scale
+  above it.
+- Sheets open above the bottom dock, which stays reachable while a sheet is open. On phones they
+  use the full available width and stop above the dock.
+
+## Map shell structure
+
+- Keep the bottom Proposals · Bets · Activity dock available in 2D, model view and aerial view.
+  The top-right Layers, Settings and Profile controls are shared across those views.
+- The left view strip chooses 2D map, 3D models or 3D aerial imagery. Measure is a 2D utility beside
+  that strip, not a destination in the bottom dock.
+- Layers presents the controls for the selected view: original cadastre in 2D, model appearance in
+  3D models, and existing-city visibility in aerial imagery. Keep these view-specific controls in
+  Layers rather than adding another global panel.
+- Creation starts from map context: selecting a parcel or open ground exposes the actions that apply
+  there. Do not add a global Create command or button.
+- Activity opens to recent events with All, People and Agents filters. Watched areas belong in
+  Activity. Keep Simulation in a folded, clearly labelled section there. Plan actions stay secondary
+  inside Proposals rather than becoming another primary navigation destination.
+- During 2D editing, the active editor temporarily replaces the bottom dock with its existing
+  finish/apply and cancel controls. Reuse the editor's actions; do not add a second generic Done or
+  duplicate finish/cancel commands. A 3D preview keeps the current draft so returning to 2D resumes
+  the same edit.
 
 ## Deferred (known, not yet done)
 

@@ -50,12 +50,8 @@
 
         const panel = document.createElement('div');
         panel.id = 'area-monitor-creation-panel';
-        panel.style.cssText = `
-            position: fixed; top: 50%; left: 50%; transform: translate(-50%, -50%);
-            background: #fff; border-radius: 12px; padding: 24px; z-index: 10000;
-            box-shadow: 0 8px 32px rgba(0,0,0,0.18); min-width: 340px; max-width: 420px;
-            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
-        `;
+        panel.className = 'area-monitor-creation-panel';
+        panel.setAttribute('role', 'dialog');
 
         const lblTitle = t('sidebar.areaMonitor.createTitle') || 'New Area Monitor';
         const lblName = t('sidebar.areaMonitor.nameLabel') || 'Name';
@@ -65,14 +61,11 @@
             ? (t('sidebar.areaMonitor.parcelsFromPolygon') || 'Parcels will be resolved from the polygon when created.')
             : (t('sidebar.areaMonitor.parcelsFound', { count: parcels.length }) || `${parcels.length} parcels found`);
         const createDisabled = !polygonDerived && parcels.length === 0;
-        const lblExtLinks = t('sidebar.areaMonitor.externalLinks') || 'External links (optional)';
-        const lblEojn = t('sidebar.areaMonitor.eojnLabel') || 'EOJN URL';
-        const lblSsc = t('sidebar.areaMonitor.skyscraperCityLabel') || 'SkyscraperCity URL';
         const lblCancel = t('sidebar.areaMonitor.cancelButton') || 'Cancel';
         const lblCreate = t('sidebar.areaMonitor.createButton') || 'Create';
 
         panel.innerHTML = `
-            <h3 style="margin:0 0 16px;font-size:18px;font-weight:600;">${escapeHtml(lblTitle)}</h3>
+            <h3 id="am-creation-title">${escapeHtml(lblTitle)}</h3>
             <div style="margin-bottom:12px;">
                 <label style="display:block;font-size:13px;font-weight:500;margin-bottom:4px;">${escapeHtml(lblName)}</label>
                 <input id="am-name" type="text" placeholder="${escapeAttr(lblPlaceholder)}" maxlength="100"
@@ -81,17 +74,6 @@
             <div style="margin-bottom:12px;font-size:13px;color:#555;">
                 <strong>${escapeHtml(lblParcels)}</strong>
             </div>
-            <details style="margin-bottom:12px;">
-                <summary style="cursor:pointer;font-size:13px;color:#777;">${escapeHtml(lblExtLinks)}</summary>
-                <div style="margin-top:8px;">
-                    <label style="display:block;font-size:12px;color:#aaa;margin-bottom:2px;">${escapeHtml(lblEojn)}</label>
-                    <input id="am-eojn" type="url" placeholder="https://eojn.nn.hr/..." disabled
-                        style="width:100%;padding:6px 8px;border:1px solid #eee;border-radius:4px;font-size:13px;box-sizing:border-box;margin-bottom:8px;background:#f5f5f5;color:#aaa;cursor:not-allowed;" />
-                    <label style="display:block;font-size:12px;color:#aaa;margin-bottom:2px;">${escapeHtml(lblSsc)}</label>
-                    <input id="am-skyscrapercity" type="url" placeholder="https://skyscrapercity.com/..." disabled
-                        style="width:100%;padding:6px 8px;border:1px solid #eee;border-radius:4px;font-size:13px;box-sizing:border-box;background:#f5f5f5;color:#aaa;cursor:not-allowed;" />
-                </div>
-            </details>
             <div style="display:flex;gap:8px;justify-content:flex-end;margin-top:16px;">
                 <button id="am-cancel" style="padding:8px 16px;border:1px solid #ccc;border-radius:6px;background:#fff;cursor:pointer;font-size:13px;">${escapeHtml(lblCancel)}</button>
                 <button id="am-create" ${createDisabled ? 'disabled' : ''} style="padding:8px 16px;border:none;border-radius:6px;background:#2196F3;color:#fff;cursor:pointer;font-size:13px;font-weight:500;${createDisabled ? 'opacity:0.45;cursor:not-allowed;' : ''}">${escapeHtml(lblCreate)}</button>
@@ -99,14 +81,9 @@
             <div id="am-error" style="color:#d32f2f;font-size:12px;margin-top:8px;display:none;"></div>
         `;
 
+        panel.setAttribute('aria-labelledby', 'am-creation-title');
+        document.body.classList.add('area-monitor-creation-active');
         document.body.appendChild(panel);
-
-        // Add backdrop
-        const backdrop = document.createElement('div');
-        backdrop.id = 'area-monitor-backdrop';
-        backdrop.style.cssText = 'position:fixed;top:0;left:0;right:0;bottom:0;background:rgba(0,0,0,0.3);z-index:9999;';
-        backdrop.addEventListener('click', removeCreationPanel);
-        document.body.appendChild(backdrop);
 
         const nameInput = document.getElementById('am-name');
         nameInput.focus();
@@ -120,8 +97,6 @@
             }
 
             const parcelIds = parcels.map(p => p.parcelId);
-            const eojnUrl = document.getElementById('am-eojn')?.value.trim() || null;
-            const skyscraperCityUrl = document.getElementById('am-skyscrapercity')?.value.trim() || null;
 
             const createBtn = document.getElementById('am-create');
             createBtn.disabled = true;
@@ -132,8 +107,8 @@
                     name,
                     polygon,
                     parcelIds,
-                    eojnUrl,
-                    skyscraperCityUrl
+                    eojnUrl: null,
+                    skyscraperCityUrl: null
                 });
 
                 removeCreationPanel();
@@ -157,6 +132,7 @@
     function removeCreationPanel() {
         const panel = document.getElementById('area-monitor-creation-panel');
         if (panel) panel.remove();
+        document.body.classList.remove('area-monitor-creation-active');
         const backdrop = document.getElementById('area-monitor-backdrop');
         if (backdrop) backdrop.remove();
     }
@@ -266,6 +242,108 @@
         const payload = await response.json();
         return Array.isArray(payload?.monitors) ? payload.monitors : [];
     }
+
+    function createMonitorListItem(monitor) {
+        const item = document.createElement('button');
+        item.type = 'button';
+        item.className = 'area-monitor-list-item';
+        const name = document.createElement('span');
+        name.className = 'area-monitor-list-item__name';
+        name.textContent = monitor.name || `Area ${monitor.id}`;
+        const meta = document.createElement('span');
+        meta.className = 'area-monitor-list-item__meta';
+        const parcelText = t('proposals.autoName.parcels', { count: monitor.parcelCount })
+            || `${monitor.parcelCount} parcels`;
+        const createdLabel = formatMonitorDate(monitor.createdAt);
+        meta.textContent = [parcelText, createdLabel].filter(Boolean).join(' · ');
+        item.append(name, meta);
+        item.addEventListener('click', () => openMonitorFromList(monitor.id));
+        return item;
+    }
+
+    async function openMonitorFromList(monitorId) {
+        await prepareMonitorSelection();
+        if (global.AreaMonitorRouting && typeof global.AreaMonitorRouting.openMonitor === 'function') {
+            global.AreaMonitorRouting.openMonitor(monitorId);
+        } else if (global.AreaMonitorRouting && typeof global.AreaMonitorRouting.loadMonitor === 'function') {
+            const basePath = window.location.pathname.replace(/\/monitors\/\d+\/?$/, '');
+            const normalizedBasePath = basePath.endsWith('/') ? basePath : `${basePath}/`;
+            window.history.pushState({ monitorId }, '', `${window.location.origin}${normalizedBasePath}monitors/${monitorId}`);
+            global.AreaMonitorRouting.loadMonitor(monitorId, { fitBounds: true });
+        }
+    }
+
+    let watchedAreasRequest = 0;
+    function isActivitySheetOpen() {
+        return global.MapShell?.isOpen?.('activity-sheet')
+            || document.getElementById('activity-sheet')?.hidden === false;
+    }
+
+    function renderInlineMonitorMessage(host, message, kind = '') {
+        host.replaceChildren();
+        const note = document.createElement('div');
+        note.className = `area-monitor-list-message${kind ? ` area-monitor-list-message--${kind}` : ''}`;
+        note.textContent = message;
+        host.appendChild(note);
+    }
+
+    async function refreshInlineMonitorList() {
+        const host = document.getElementById('activity-watched-areas-list');
+        if (!host || !isActivitySheetOpen()) return false;
+        const requestId = ++watchedAreasRequest;
+        const cityId = getCurrentCityId();
+        renderInlineMonitorMessage(host, t('sidebar.areaMonitor.listLoading') || 'Loading monitored areas…');
+        try {
+            const monitors = await fetchAreaMonitorList();
+            if (requestId !== watchedAreasRequest || !isActivitySheetOpen() || cityId !== getCurrentCityId()) return false;
+            host.replaceChildren();
+            if (!monitors.length) {
+                renderInlineMonitorMessage(host, t('sidebar.areaMonitor.listEmpty') || 'No monitored areas yet.');
+                return true;
+            }
+            const filter = document.createElement('input');
+            filter.type = 'search';
+            filter.className = 'area-monitor-list-filter';
+            filter.placeholder = t('sidebar.areaMonitor.listFilterPlaceholder') || 'Filter by name';
+            filter.setAttribute('aria-label', filter.placeholder);
+            const list = document.createElement('div');
+            list.className = 'area-monitor-list-items';
+            const records = monitors.map(monitor => {
+                const item = createMonitorListItem(monitor);
+                item.dataset.monitorName = String(monitor.name || `Area ${monitor.id}`).toLowerCase();
+                list.appendChild(item);
+                return item;
+            });
+            const noMatch = document.createElement('div');
+            noMatch.className = 'area-monitor-list-message';
+            noMatch.textContent = t('sidebar.areaMonitor.listFilterEmpty') || 'No monitors match the filter.';
+            noMatch.hidden = true;
+            list.appendChild(noMatch);
+            filter.addEventListener('input', () => {
+                const query = filter.value.trim().toLowerCase();
+                let matches = 0;
+                records.forEach(item => {
+                    const visible = !query || item.dataset.monitorName.includes(query);
+                    item.hidden = !visible;
+                    if (visible) matches += 1;
+                });
+                noMatch.hidden = matches > 0;
+            });
+            host.append(filter, list);
+        } catch (error) {
+            if (requestId !== watchedAreasRequest || !isActivitySheetOpen()) return false;
+            renderInlineMonitorMessage(host, t('sidebar.areaMonitor.listError') || 'Failed to load monitored areas.', 'error');
+            console.error('Failed to load watched areas:', error);
+        }
+        return true;
+    }
+
+    document.addEventListener('mapshell:sheetopened', event => {
+        if (event.detail?.id === 'activity-sheet') refreshInlineMonitorList();
+    });
+    global.addEventListener('cityChanged', () => {
+        if (isActivitySheetOpen()) refreshInlineMonitorList();
+    });
 
     // --- Detail panel (shown when viewing an existing monitor) ---
 
@@ -439,7 +517,7 @@
 
         removeMonitorListModal();
 
-        // The Tools sheet is a bottom sheet on phones; fold it away so the drawing has the map.
+        // Fold the Activity sheet away on phones so the selected area has the map.
         if (global.MapShell) global.MapShell.closeSheets();
     }
 
@@ -450,7 +528,6 @@
         const lblLoading = t('sidebar.areaMonitor.listLoading') || 'Loading monitored areas...';
         const lblEmpty = t('sidebar.areaMonitor.listEmpty') || 'No monitored areas yet.';
         const lblError = t('sidebar.areaMonitor.listError') || 'Failed to load monitored areas.';
-        const lblParcelCount = t('proposals.autoName.parcels', { count: 0 }) || '{{count}} parcels';
         const lblFilterPlaceholder = t('sidebar.areaMonitor.listFilterPlaceholder') || 'Filter by name';
         const lblFilterEmpty = t('sidebar.areaMonitor.listFilterEmpty') || 'No monitors match the filter.';
 
@@ -530,39 +607,13 @@
             noMatchEl.textContent = lblFilterEmpty;
 
             monitors.forEach(monitor => {
-                const item = document.createElement('button');
-                const createdLabel = formatMonitorDate(monitor.createdAt);
-                // The shared plural key, so one monitored parcel reads "1 parcel".
-                const parcelText = (t('proposals.autoName.parcels', { count: monitor.parcelCount }))
-                    || lblParcelCount.replace('{{count}}', monitor.parcelCount);
-                const metaParts = [escapeHtml(parcelText)];
-                if (createdLabel) metaParts.push(escapeHtml(createdLabel));
-                const metaLine = metaParts.join(' · ');
-                item.type = 'button';
-                // flex-shrink:0 so items keep their natural height inside the
-                // flex-column scroll container instead of being compressed.
+                const item = createMonitorListItem(monitor);
                 item.style.cssText = `
                     width:100%;box-sizing:border-box;text-align:left;padding:12px 14px;
                     border:1px solid #d9dee5;border-radius:10px;background:#fff;cursor:pointer;
                     display:flex;flex-direction:column;gap:4px;flex-shrink:0;
                     font-family:inherit;
                 `;
-                item.innerHTML = `
-                    <div style="font-size:14px;font-weight:600;color:#1f2937;">${escapeHtml(monitor.name || `Area ${monitor.id}`)}</div>
-                    <div style="font-size:12px;color:#6b7280;">${metaLine}</div>
-                `;
-                item.addEventListener('click', async () => {
-                    await prepareMonitorSelection();
-
-                    if (global.AreaMonitorRouting && typeof global.AreaMonitorRouting.openMonitor === 'function') {
-                        global.AreaMonitorRouting.openMonitor(monitor.id);
-                    } else if (global.AreaMonitorRouting && typeof global.AreaMonitorRouting.loadMonitor === 'function') {
-                        const basePath = window.location.pathname.replace(/\/monitors\/\d+\/?$/, '');
-                        const normalizedBasePath = basePath.endsWith('/') ? basePath : `${basePath}/`;
-                        window.history.pushState({ monitorId: monitor.id }, '', `${window.location.origin}${normalizedBasePath}monitors/${monitor.id}`);
-                        global.AreaMonitorRouting.loadMonitor(monitor.id, { fitBounds: true });
-                    }
-                });
                 content.appendChild(item);
                 itemRecords.push({ element: item, name: (monitor.name || `Area ${monitor.id}`).toLowerCase() });
             });
@@ -797,19 +848,24 @@
         showCreationPanel(e.detail);
     });
 
-    global.addEventListener('areaMonitorDrawCancel', () => {
+    global.addEventListener('areaMonitorDrawCancel', (event) => {
+        if (event.detail?.source === 'paint') deactivatePaintMode();
         setDrawButtonActive(false);
         clearStatus();
     });
 
-    global.addEventListener('areaMonitorDrawStart', () => {
-        setDrawButtonActive(true);
-        updateStatus(t('sidebar.areaMonitor.drawingHint') || 'Click on the map to draw a polygon. Click the first point to close. Press Esc to cancel.');
+    global.addEventListener('areaMonitorDrawStart', (event) => {
+        if (global.MapShell) global.MapShell.closeSheets();
+        if (event.detail?.source !== 'paint') {
+            setDrawButtonActive(true);
+            updateStatus(t('sidebar.areaMonitor.drawingHint') || 'Click on the map to draw a polygon. Click the first point to close. Press Esc to cancel.');
+        }
     });
 
     // Public API
     global.AreaMonitorUI = {
         fetchAreaMonitorList,
+        refreshInlineMonitorList,
         showCreationPanel,
         removeCreationPanel,
         showDetailPanel,

@@ -94,6 +94,68 @@
 
     function roundKey(v) { return (Math.round(v * 10) / 10).toFixed(1); }
 
+    // Candidate lookup for suppressing registry cities already covered by a configured city.
+    // Unit-sphere XYZ buckets avoid longitude wrap and polar crowding; an exact haversine check
+    // still decides every candidate, preserving the radius semantics of the original scan.
+    function filterCoveredRegistryCities(liveCities, registryCities) {
+        if (!liveCities.length || !registryCities.length) return registryCities.slice();
+
+        const indexed = [];
+        let maxRadiusKm = 0;
+        liveCities.forEach(function (city) {
+            const lat = Number(city.lat); const lon = Number(city.lon);
+            if (!Number.isFinite(lat) || !Number.isFinite(lon)) return;
+            const radiusKm = Number(city.radiusKm ?? LIVE_RADIUS_KM);
+            if (radiusKm > maxRadiusKm) maxRadiusKm = Math.min(radiusKm, Math.PI * EARTH_RADIUS_KM);
+            indexed.push(city);
+        });
+        if (!indexed.length) return registryCities.slice();
+
+        function unitSpherePoint(place) {
+            const lat = Number(place.lat) * Math.PI / 180;
+            const lon = Number(place.lon) * Math.PI / 180;
+            const cosLat = Math.cos(lat);
+            return [cosLat * Math.cos(lon), cosLat * Math.sin(lon), Math.sin(lat)];
+        }
+
+        const maxChord = 2 * Math.sin(maxRadiusKm / (2 * EARTH_RADIUS_KM));
+        // A small floor handles zero-radius and tiny-radius cities without zero-sized buckets.
+        const bucketSize = Math.max(Math.min(2, maxChord * (1 + 1e-12) + 1e-12), 1e-6);
+        function bucketCoordinate(value) { return Math.floor((value + 1) / bucketSize); }
+        function bucketKey(x, y, z) { return x + ',' + y + ',' + z; }
+        const buckets = new Map();
+        indexed.forEach(function (city) {
+            const point = unitSpherePoint(city);
+            const x = bucketCoordinate(point[0]); const y = bucketCoordinate(point[1]); const z = bucketCoordinate(point[2]);
+            const key = bucketKey(x, y, z);
+            if (!buckets.has(key)) buckets.set(key, []);
+            buckets.get(key).push(city);
+        });
+
+        function isCovered(city, candidates) {
+            for (const live of candidates) {
+                if (haversineKm(live.lat, live.lon, city.lat, city.lon) <= (live.radiusKm ?? LIVE_RADIUS_KM)) return true;
+            }
+            return false;
+        }
+
+        return registryCities.filter(function (city) {
+            const lat = Number(city.lat); const lon = Number(city.lon);
+            if (!Number.isFinite(lat) || !Number.isFinite(lon)) return true;
+            const point = unitSpherePoint(city);
+            const x = bucketCoordinate(point[0]); const y = bucketCoordinate(point[1]); const z = bucketCoordinate(point[2]);
+            for (let dx = -1; dx <= 1; dx++) {
+                for (let dy = -1; dy <= 1; dy++) {
+                    for (let dz = -1; dz <= 1; dz++) {
+                        const candidates = buckets.get(bucketKey(x + dx, y + dy, z + dz));
+                        if (candidates && isCovered(city, candidates)) return false;
+                    }
+                }
+            }
+            return true;
+        });
+    }
+
     function create(data) {
         if (!data || !Array.isArray(data.countries) || !Array.isArray(data.cities) || !Array.isArray(data.liveCities)) {
             throw new Error('world-coverage: malformed data');
@@ -107,7 +169,7 @@
             countryCount: new Set(liveCities.map(city => typeof city.cc === 'string' ? city.cc.trim() : '').filter(Boolean)).size
         });
         // Registry cities that a configured city already covers are the same place under another name.
-        const cities = data.cities.filter(city => !liveCities.some(l => haversineKm(l.lat, l.lon, city.lat, city.lon) <= (l.radiusKm ?? LIVE_RADIUS_KM)));
+        const cities = filterCoveredRegistryCities(liveCities, data.cities);
         const countryName = cc => (countryByCc.get(cc) || {}).name || cc || '';
 
         function nearest(list, lat, lon, maxKm) {

@@ -8,14 +8,16 @@
     --map-shell-gap: 8px;
     --map-shell-edge: 10px;
     --map-shell-button-size: 40px;
-    /* Clear of the Leaflet attribution line along the bottom edge (the OSM credit must stay visible). */
-    --map-shell-bottom: 24px;
-    /* Phones: the bottom row is a labelled bar (Proposals · Tools · Activity), this tall. */
+    /* Navigation owns the bottom edge. Credits occupy the map above it. */
+    --map-shell-bottom: 0px;
+    /* The bottom row is a labelled bar (Proposals · Bets · Activity), this tall. */
     --map-shell-bar-height: 52px;
+    --map-shell-dock-height: calc(var(--map-shell-bar-height) + var(--cb-space-2) + env(safe-area-inset-bottom, 0px));
+    --map-visible-bottom: var(--map-shell-dock-height);
     /* The rows the floating chrome occupies. A docked panel (parcel, proposal, road, block) starts
        below the top row and ends above the bottom row, so no control moves when a panel opens. */
     --map-shell-top-clearance: calc(var(--map-shell-edge) + var(--map-shell-button-size) + var(--map-shell-gap));
-    --map-shell-bottom-clearance: calc(var(--map-shell-bottom) + var(--map-shell-button-size) + var(--map-shell-gap));
+    --map-shell-bottom-clearance: calc(var(--map-shell-dock-height) + var(--cb-control-height) + var(--map-shell-gap));
 }
 
 /* ---- Hooks for later phases: empty until something mounts in them ---- */
@@ -52,9 +54,159 @@
 }
 
 .map-shell-cluster--bottom-right {
-    bottom: var(--map-shell-bottom);
-    right: var(--map-shell-edge);
+    bottom: 0;
+    left: 0;
+    right: 0;
+    min-height: var(--map-shell-dock-height);
+    box-sizing: border-box;
+    padding: var(--cb-space-1) var(--map-shell-edge) calc(var(--cb-space-1) + env(safe-area-inset-bottom, 0px));
+    align-items: center;
+    justify-content: center;
+    background: var(--cb-glass);
+    border-top: 1px solid var(--cb-line);
 }
+
+.map-shell-cluster--bottom-right .map-shell-button--labelled {
+    flex: 1 1 0;
+    max-width: 200px;
+    height: var(--map-shell-bar-height);
+    border-radius: var(--cb-radius-md);
+    border-color: transparent;
+    box-shadow: none;
+}
+
+.map-utility-button {
+    position: absolute;
+    left: var(--map-mode-stack-left);
+    top: var(--map-mode-slot-1);
+    z-index: var(--cb-z-map-chrome);
+    width: var(--cb-space-8);
+    padding: var(--cb-space-2);
+    border-radius: var(--cb-radius-sm);
+}
+
+.layer-actions > summary {
+    padding: var(--cb-space-3) 0;
+    font-weight: var(--cb-weight-semibold);
+    cursor: pointer;
+}
+
+.layer-actions .btn-group { margin-bottom: var(--cb-space-2); }
+
+.layer-source-actions { margin-bottom: var(--cb-space-3); }
+
+details > summary.sheet-section-title::before {
+    content: '▸';
+}
+
+details[open] > summary.sheet-section-title::before {
+    content: '▾';
+}
+
+#model-layer-controls:empty { display: none; }
+
+#cadastre-view-toggle[aria-pressed="true"] {
+    background: var(--cb-primary-soft);
+    color: var(--cb-primary);
+    border-color: var(--cb-primary);
+}
+
+.map-editor-toolbar {
+    position: absolute;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    z-index: var(--cb-z-sheet);
+    min-height: var(--map-shell-dock-height);
+    box-sizing: border-box;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: var(--cb-space-3);
+    padding: var(--cb-space-2) var(--cb-space-3) calc(var(--cb-space-2) + env(safe-area-inset-bottom, 0px));
+    background: var(--cb-surface);
+    border-top: 1px solid var(--cb-line);
+    font-size: var(--cb-text-sm);
+}
+
+.map-editor-toolbar[hidden] { display: none; }
+
+.map-editor-toolbar-actions,
+#road-drawing-controls > div {
+    display: flex;
+    align-items: center;
+    gap: var(--cb-space-2);
+}
+
+#road-drawing-controls {
+    margin: 0;
+    padding: var(--cb-space-2) var(--cb-space-3) calc(var(--cb-space-2) + env(safe-area-inset-bottom, 0px));
+}
+
+#road-drawing-controls > div {
+    justify-content: center;
+}
+
+#road-drawing-controls > div > .btn {
+    flex: 1 1 0;
+    max-width: 240px;
+    margin: 0;
+}
+
+/* Each 2D editor owns the dock while it is active. Its actual finish/cancel actions stay
+   attached to the editor, and mode changes only hide that UI, preserving the draft. */
+body:not(.three-mode-active):is(.site-tool-active, .station-placement-active, .area-monitor-drawing-active, .area-monitor-creation-active, .corridor-drawing-active) #map-shell-bottom-right {
+    visibility: hidden;
+}
+
+body.three-mode-active :is(.map-editor-toolbar, .site-panel, .area-monitor-creation-panel) {
+    display: none;
+}
+
+body.site-tool-active .site-panel,
+.area-monitor-creation-panel {
+    position: fixed;
+    top: auto;
+    left: var(--map-mode-strip);
+    right: 0;
+    bottom: 0;
+    width: auto;
+    max-width: none;
+    max-height: min(50dvh, calc(100dvh - var(--map-shell-top-clearance)));
+    overflow-y: auto;
+    box-sizing: border-box;
+    padding: var(--cb-space-3) var(--cb-space-4) calc(var(--cb-space-3) + env(safe-area-inset-bottom, 0px));
+    border: 0;
+    border-top: 1px solid var(--cb-line);
+    border-radius: 0;
+    background: var(--cb-surface);
+    color: var(--cb-text);
+    box-shadow: var(--cb-shadow-md);
+    z-index: var(--cb-z-notice);
+}
+
+body.site-tool-active .site-panel__actions {
+    position: sticky;
+    bottom: 0;
+    background: var(--cb-surface);
+    padding-block: var(--cb-space-2);
+}
+
+@media (max-width: 767.98px) {
+    /* Editors retain access to the existing view strip while a draft is being previewed. */
+    body.corridor-drawing-active #road-info-panel {
+        left: var(--map-mode-strip);
+        right: 0;
+        width: auto;
+        max-width: none;
+    }
+}
+
+.leaflet-bottom {
+    bottom: var(--map-visible-bottom);
+}
+body.three-mode-active .leaflet-control-attribution { visibility: hidden; }
+
 
 .map-shell-button {
     position: relative;
@@ -223,6 +375,11 @@
     display: flex;
 }
 
+.map-sheet [hidden],
+[data-map-modes][hidden] {
+    display: none;
+}
+
 .map-sheet-header {
     display: flex;
     align-items: center;
@@ -321,10 +478,10 @@
     }
 }
 
-/* The blocks list lives in the Tools sheet (its markup sits under the Parcel Blocks buttons). It
+/* The blocks list lives in the Layers sheet (its markup sits under the Parcel Blocks buttons). It
    was a fixed overlay from the sidebar days: in a sheet it floated over the sheet itself and
    vanished whenever the sheet closed. Inside the sheet it is an inline list under its buttons. */
-#tools-sheet #blocks-list-container {
+#layers-sheet #blocks-list-container {
     position: static;
     max-height: 40vh;
     margin-top: 8px;
@@ -392,7 +549,7 @@
 }
 
 /* Not on .btn-danger: those are hidden outside debug mode (css/utilities.css), shown below. */
-.map-sheet .btn:not(.grain-score-button):not(.btn-danger) {
+.map-sheet .btn:not(.grain-score-button):not(.btn-danger):not([hidden]) {
     display: flex;
 }
 
@@ -880,20 +1037,6 @@ body.debug-mode .map-sheet .btn-danger,
    the top row and the bottom row of floating controls (--map-shell-top/bottom-clearance, used by
    panels.css and utilities.css), so the buttons and the user bubble stay where they are. */
 
-/* ---- 3D and photo view ---- */
-/* The 3D view's own settings panel owns the top-right corner, so Layers and Settings join the
-   bottom-right cluster, one row above it. */
-body.three-mode-active .map-shell-cluster--top-right {
-    top: auto;
-    bottom: calc(var(--map-shell-bottom) + var(--map-shell-button-size) + var(--map-shell-gap));
-}
-
-/* Photo view: the Google logo and credits line the bottom-right edge (Map Tiles policy), so the
-   bottom-right buttons step up above them. */
-body.realistic-mode-active {
-    --map-shell-bottom: 72px;
-}
-
 /* ---- Boot gate ----
    The shell is painted long before the script list at the end of the body has parsed, so its
    handlers do not exist yet. Until boot-ready.js removes body.app-loading, keep it inert: an early
@@ -910,12 +1053,12 @@ body.app-loading .map-shell-cluster {
 @media (max-width: 767.98px) {
     .map-sheet {
         top: auto;
-        bottom: 0;
+        bottom: var(--map-shell-dock-height);
         left: 0;
         right: 0;
         width: auto;
         max-width: none;
-        max-height: 80vh;
+        max-height: min(70dvh, calc(100dvh - var(--map-shell-dock-height) - var(--map-shell-top-clearance)));
         border-radius: 16px 16px 0 0;
         padding-bottom: env(safe-area-inset-bottom, 0px);
     }
@@ -924,12 +1067,12 @@ body.app-loading .map-shell-cluster {
        label, instead of an icon-only column with a floating count. The bottom clearance grows with
        it so the toast, the tray and the scale bar sit above the bar. */
     :root {
-        --map-shell-bottom-clearance: calc(var(--map-shell-bottom) + var(--map-shell-bar-height) + var(--map-shell-gap));
+        --map-shell-bottom-clearance: calc(var(--map-shell-dock-height) + var(--cb-control-height) + var(--map-shell-gap));
     }
 
     .map-shell-cluster--bottom-right {
-        left: var(--map-shell-edge);
-        right: var(--map-shell-edge);
+        left: 0;
+        right: 0;
         flex-direction: row;
     }
 
@@ -961,10 +1104,6 @@ body.app-loading .map-shell-cluster {
         right: calc(50% - 22px);
     }
 
-    body.three-mode-active .map-shell-cluster--top-right {
-        bottom: var(--map-shell-bottom-clearance);
-    }
-
     /* Clear of the compact search box top-left (css/map-search.css). */
     #map-container .username-display {
         padding: 6px 8px;
@@ -974,11 +1113,25 @@ body.app-loading .map-shell-cluster {
     }
 }
 
-/* Keep a few readable name characters alongside the avatar and connection state on small phones. */
-@media (max-width: 359.98px) {
-    #map-container .username-display { padding: 6px; gap: 3px; }
-    #map-container .username-display .user-avatar { width: 20px; height: 20px; box-sizing: border-box; }
-    #map-container .username-display .wallet-status-icon { margin-left: 0; font-size: 12px; }
+/* Compact the profile before the search and the shared controls compete for the same space. */
+@media (max-width: 419.98px) {
+    #map-container .username-display {
+        width: var(--map-shell-button-size);
+        min-width: var(--map-shell-button-size);
+        padding: 6px;
+        justify-content: center;
+    }
+    #map-container .username-display .user-avatar { width: 28px; height: 28px; box-sizing: border-box; }
+    #map-container .username-display .wallet-status-icon { display: none; }
+    #map-container #username-text {
+        position: absolute;
+        width: 1px;
+        height: 1px;
+        margin: -1px;
+        overflow: hidden;
+        clip-path: inset(50%);
+        white-space: nowrap;
+    }
 }
 
 /* A touch device has no command-key shortcut to use. */

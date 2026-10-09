@@ -1,5 +1,21 @@
 // proposals/list-ui.js — extracted from proposals.js (behavior-preserving relocation).
 
+let _proposalListMountPromise = null;
+
+function ensureProposalListHostModal(host) {
+    let modal = host.querySelector('.proposal-list-modal');
+    if (modal) {
+        if (host.children.length !== 1 || host.firstElementChild !== modal) host.replaceChildren(modal);
+        return modal;
+    }
+    modal = host.ownerDocument.createElement('div');
+    modal.className = 'proposal-list-modal';
+    // The host can contain the temporary mount spinner. Replace that shell so it
+    // cannot remain above the list for the lifetime of the sheet.
+    host.replaceChildren(modal);
+    return modal;
+}
+
 function applyLensPatternToButton(button, entries) {
     const normalized = normalizeLensEntries(entries || []).filter(e => e && e.address);
     if (!normalized.length || typeof getLensPatternDataUrl !== 'function') return;
@@ -665,7 +681,7 @@ function sortProposalDataset(dataset) {
 function buildProposalActionButtons(proposal, isExecuted = false) {
     // Action buttons (Apply to map / Remove from map) are now only available in proposal details modal.
     // Exception: open sale offers (Ownership: Third party · Anyone) get a Buy button so a buyer can
-    // claim the offer directly from the list. stopPropagation so the row click (→ details) doesn't fire.
+    // claim the offer directly from the list. Stop propagation so the row preview doesn't also run.
     const t = getProposalI18nHelper();
     const buttons = [];
     if (!isExecuted && typeof isProposalOpenSaleOffer === 'function' && isProposalOpenSaleOffer(proposal)) {
@@ -673,8 +689,8 @@ function buildProposalActionButtons(proposal, isExecuted = false) {
         const pid = proposal.proposalId || proposal.id || '';
         buttons.push(`<button type="button" class="proposal-buy-btn" title="${buyLabel}" onclick="event.stopPropagation(); claimSaleOffer('${pid}');">🤝 ${buyLabel}</button>`);
     }
-    // No editor dialog anymore: the row click selects the object and the details panel carries
-    // every action (node edit, cross-section, Create proposal, Park, Delete).
+    // The list has no inline editor. Its row previews the proposal; the explicit Details button
+    // opens the details panel with actions such as editing, creating a proposal, parking, or deletion.
     return buttons.join('');
 }
 
@@ -779,6 +795,7 @@ function buildProposalListItemsHtml(dataset, options = {}) {
                     <button class="proposal-delete-btn" onclick="event.stopPropagation(); deleteProposal('${proposalId}')" title="${escapeHtml(deleteTooltip)}">
                         <i class="fas fa-trash"></i>
                     </button>`;
+        const detailsButtonHtml = `<button type="button" class="proposal-list-details-btn" data-proposal-details="${escapeHtml(proposalId)}">${escapeHtml(t('modal.roadWidth.proposalList.actions.details', 'Details'))}</button>`;
 
         // Compact card: a full-width title (no longer squeezed to an ellipsis by the pill + buttons),
         // one dim meta line, and just the state badges. The big thumbnail is dropped for a small
@@ -821,6 +838,7 @@ function buildProposalListItemsHtml(dataset, options = {}) {
                     ${proposal && proposal.proposalRole === 'owner-offer' ? `<span class="proposal-owner-offer-badge" title="${escapeHtml(t('panel.proposal.ownerOffer.badgeTitle', 'The owner offers this land; bids are pledges and donations'))}">${escapeHtml(t('panel.proposal.ownerOffer.badge', 'Owner offer'))}</span>` : ''}
                     ${buyButtonHtml}
                 </div>
+                <div class="proposal-card-actions">${detailsButtonHtml}</div>
             </div>
         `;
     }).join('');
@@ -881,6 +899,7 @@ async function handleProposalListItemClick(event) {
 
     // Izbornik epohe na kartici mijenja godinu, ne otvara prijedlog.
     if (event.target && event.target.closest && event.target.closest('.proposal-epoch-card-select')) return;
+    if (event.target && event.target.closest && event.target.closest('.proposal-list-details-btn')) return;
 
     const proposalIdAttr = item.getAttribute('data-proposal-id');
     if (!proposalIdAttr) return;
@@ -928,10 +947,8 @@ async function handleProposalListItemClick(event) {
     // clear of the list panel) and mark the row — the list stays open and nothing is selected, so
     // browsing ten proposals costs ten previews rather than ten selections.
     //
-    // SELECTING it (open details + close the list + restore the normal, fully-clickable map) happens
-    // when the user clicks the proposal ON THE MAP, or when they close the list on the row they were
-    // previewing — see the browse-mode guard in onParcelClick, the tail of
-    // selectAndHighlightProposal, and closeProposalList({ selectPreviewed: true }).
+    // Opening details is an explicit action on the row's Details button. Selecting a proposal on the
+    // map exits browse mode through the guard in onParcelClick; closing the list clears its preview.
     //
     // "Select" is the word on purpose. In this codebase COMMIT means ending an editing session so a
     // draft becomes a stored record (see reparcellization.js, building-blocks.js), and APPLY means
@@ -949,6 +966,42 @@ async function handleProposalListItemClick(event) {
     }
 }
 
+async function handleProposalListDetailsClick(event) {
+    event.preventDefault();
+    event.stopPropagation();
+    const proposalId = event.currentTarget?.getAttribute('data-proposal-details');
+    if (!proposalId) return;
+
+    let proposal = getProposalByIdOrHash(proposalId);
+    if (!proposal && proposalListState.source === 'server') {
+        try {
+            proposal = await importServerProposal(proposalId);
+        } catch (error) {
+            console.error('Failed to download server proposal for details', proposalId, error);
+            updateStatus(getProposalI18nHelper()('modal.roadWidth.proposalList.downloadError', 'Failed to download proposal'));
+            return;
+        }
+    }
+    if (!proposal) return;
+
+    if (document.body.classList.contains('three-mode-active')) {
+        if (typeof window.requestMapMode !== 'function') return;
+        try { await window.requestMapMode('2d'); } catch (error) {
+            console.error('[ProposalList] could not switch to 2D for proposal details', error);
+            return;
+        }
+        if (document.body.classList.contains('three-mode-active')) return;
+    }
+
+    const resolvedId = getProposalKey(proposal) || proposalId;
+    if (typeof openProposalFromList === 'function') {
+        openProposalFromList(resolvedId, { proposal, centerOnProposal: false, closeSheets: true });
+    } else if (typeof selectAndHighlightProposal === 'function') {
+        closeProposalList();
+        selectAndHighlightProposal(resolvedId, null, false, true);
+    }
+}
+
 function switchProposalTab(clickedTabOrName, maybeTabName) {
     const tabName = typeof maybeTabName === 'string'
         ? maybeTabName
@@ -962,54 +1015,73 @@ function switchProposalTab(clickedTabOrName, maybeTabName) {
     }
 }
 
-// `selectPreviewed` is opt-in, and deliberately not inferred from `clearHighlights`. Of the six
-// callers, two close the list while a selection is already being made (they pass clearHighlights
-// false), and two more close it bare while LEAVING proposals entirely — returnToParcelInfo, and the
-// clear-all-proposals path, where re-selecting would reopen a proposal the user just dismissed or
-// deleted. Only a genuine dismissal of the list asks for it.
 function closeProposalList(options = {}) {
     const normalized = options && typeof options === 'object' ? options : {};
-    const selectPreviewed = normalized.selectPreviewed === true;
-    const clearHighlights = normalized.clearHighlights !== false && !selectPreviewed;
-    // Leaving the list also exits browse mode, so the map returns to normal (parcels clickable
-    // again). This runs BEFORE any selection below: selectAndHighlightProposal closes the list
-    // itself while browse mode is on, and clearing the flag first is what stops that recursing.
+    const fromSheet = normalized.fromSheet === true;
+    const clearHighlights = normalized.clearHighlights === true;
     if (typeof window !== 'undefined') window.proposalListBrowseMode = false;
-
-    // The row the user was looking at when they closed the list. Read from the DOM before the modal
-    // is torn down.
-    let previewedId = null;
-    if (selectPreviewed) {
-        try {
-            const previewing = document.querySelector('.proposal-list-item.is-previewing');
-            previewedId = previewing ? previewing.getAttribute('data-proposal-id') : null;
-        } catch (_) { previewedId = null; }
-    }
 
     const modal = document.querySelector('.proposal-list-modal');
     if (modal) {
-        modal.__unregisterEscape?.();
-        modal.__unregisterEscape = null;
-        modal.style.display = 'none';
-        // When the Proposal List closes, clear any proposal-specific overlays/highlights
-        try { clearProposalInfoHoverOverlay(); } catch (_) { }
-        if (clearHighlights) {
-            try { clearProposalHighlights(); } catch (_) { }
-        }
-        proposalListState.selectedId = null;
+        modal.querySelectorAll('.proposal-list-item.is-previewing').forEach(el => el.classList.remove('is-previewing'));
     }
+    try {
+        if (currentProposalPreviewId && currentProposalPreviewId !== window.currentlyHighlightedProposalId
+            && typeof clearProposalPreview === 'function') clearProposalPreview();
+        clearProposalInfoHoverOverlay();
+    } catch (_) { }
+    const selectedId = window.currentlyHighlightedProposalId || null;
+    const selectedStillExists = !selectedId || !!getProposalByIdOrHash(selectedId);
+    if (clearHighlights || !selectedStillExists) {
+        try { clearProposalHighlights(); } catch (_) { }
+    }
+    proposalListState.selectedId = selectedStillExists ? selectedId : null;
+    if (!fromSheet && window.MapShell?.isOpen?.('proposals-sheet')) window.MapShell.closeSheets();
+}
 
-    // Browsing picked a proposal out; closing the list keeps it. Without this the map was left
-    // showing a highlight belonging to nothing selected, so none of the proposal's own buttons were
-    // reachable and the same proposal had to be found and clicked again on the map.
-    //
-    // No re-centring: the preview already framed it, and moving the map again on a close reads as
-    // the app wandering off on its own.
-    if (previewedId && typeof selectAndHighlightProposal === 'function') {
-        try { selectAndHighlightProposal(previewedId, null, false, true); } catch (error) {
-            console.warn('[closeProposalList] could not select the previewed proposal', error);
+async function mountProposalList() {
+    if (_proposalListMountPromise) return _proposalListMountPromise;
+    const host = document.getElementById('proposal-list-host');
+    if (!host) return false;
+
+    _proposalListMountPromise = (async () => {
+        if (typeof markProposalCountAreaOpened === 'function') markProposalCountAreaOpened();
+        const focusedId = window.currentlyHighlightedProposalId
+            || (window.currentlyHighlightedProposal && getProposalKey(window.currentlyHighlightedProposal))
+            || null;
+        if (!focusedId) resetParcelSelectionForProposalListInteraction();
+        try { clearProposalInfoHoverOverlay(); } catch (_) { }
+        proposalListState.selectedId = focusedId;
+        proposalListState.autofocusSearch = shouldAutofocusProposalListSearch(window);
+        window.proposalListBrowseMode = true;
+        host.setAttribute('aria-busy', 'true');
+        if (!host.querySelector('.proposal-list-modal')) {
+            host.innerHTML = '<div class="proposal-list-loading"><i class="fas fa-spinner fa-spin"></i></div>';
         }
-    }
+        if (typeof window.yieldToBrowser === 'function') await window.yieldToBrowser();
+        if (window.MapShell?.isOpen && !window.MapShell.isOpen('proposals-sheet')) {
+            host.removeAttribute('aria-busy');
+            return false;
+        }
+        renderProposalListModal();
+        host.removeAttribute('aria-busy');
+        return true;
+    })();
+    try { return await _proposalListMountPromise; }
+    finally { _proposalListMountPromise = null; }
+}
+
+function handleProposalSheetOpened(event) {
+    if (event?.detail?.id === 'proposals-sheet') mountProposalList();
+}
+
+function handleProposalSheetClosed(event) {
+    if (event?.detail?.id === 'proposals-sheet') closeProposalList({ fromSheet: true });
+}
+
+if (typeof document !== 'undefined') {
+    document.addEventListener('mapshell:sheetopened', handleProposalSheetOpened);
+    document.addEventListener('mapshell:sheetclosed', handleProposalSheetClosed);
 }
 
 // fitBounds padding that keeps content in the VISIBLE map, clear of whichever right/bottom-docked
@@ -1028,7 +1100,7 @@ function getProposalPanelFitPadding(margin = 40) {
         const listPanel = document.querySelector('.proposal-list-modal-content');
         if (sharePanel) {
             rect = sharePanel.getBoundingClientRect();
-        } else if (listModal && listModal.style.display === 'block' && listPanel) {
+        } else if (listModal && window.MapShell?.isOpen?.('proposals-sheet') && listPanel) {
             rect = listPanel.getBoundingClientRect();
         } else {
             const details = document.getElementById('proposal-details-panel');
@@ -1098,8 +1170,8 @@ function fitMapToAppliedProposals() {
 
 function updateProposalList() {
     const modal = document.querySelector('.proposal-list-modal');
-    if (modal && modal.style.display === 'block') {
-        showAllProposalsModal();
+    if (modal && window.MapShell?.isOpen?.('proposals-sheet')) {
+        renderProposalListModal();
     }
 
     if (typeof refreshBlockInfoProposalTab === 'function') {
@@ -1270,7 +1342,7 @@ function watchProposalCountArrival() {
             _proposalCountViewportTimer = setTimeout(() => {
                 refresh();
                 const list = document.querySelector('.proposal-list-modal');
-                if (list && list.style.display === 'block' && typeof renderProposalListModal === 'function') {
+                if (list && window.MapShell?.isOpen?.('proposals-sheet') && typeof renderProposalListModal === 'function') {
                     renderProposalListModal();
                 }
             }, 350);

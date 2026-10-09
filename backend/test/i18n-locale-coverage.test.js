@@ -22,6 +22,7 @@ const DYNAMIC_KEY_PREFIXES = [
     'gameDialogs.log.',
     'gameDialogs.log.actions.', // activity-action-vocabulary.test.js checks every action type, all four locales
     'gameDialogs.log.row.',
+    'activityFeed.',              // the toolbar filter name is assembled from a runtime category
     'modal.corridor.compass.',
     'modal.corridor.laneTypes.',
     'modal.corridor.presetWidths.',

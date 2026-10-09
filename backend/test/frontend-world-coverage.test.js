@@ -12,6 +12,84 @@ const WorldCoverage = require(path.join(REPO, 'frontend/js/world/world-coverage.
 const data = JSON.parse(readFileSync(path.join(REPO, 'frontend/data/world-coverage.json'), 'utf8'));
 const coverage = WorldCoverage.create(data);
 
+function bruteRegistryCityIds(liveCities, cities) {
+    return cities.filter(city => !liveCities.some(live =>
+        WorldCoverage.haversineKm(live.lat, live.lon, city.lat, city.lon) <= (live.radiusKm ?? WorldCoverage.LIVE_RADIUS_KM)))
+        .map(city => city.id);
+}
+
+function indexedRegistryCityIds(liveCities, cities) {
+    return WorldCoverage.create({ countries: [], liveCities, cities }).cities.map(city => city.id);
+}
+
+describe('registry city suppression spatial index', () => {
+    it('matches brute-force radius behavior at datelines, poles, default/custom boundaries, and zero radius', () => {
+        const customBoundaryRadius = WorldCoverage.haversineKm(30, 40, 30, 40.1);
+        const liveCities = [
+            { id: 'dateline', lat: 0, lon: 179.9, radiusKm: 30 },
+            { id: 'north-pole', lat: 89.9, lon: 0, radiusKm: 20 },
+            { id: 'default-radius', lat: 0, lon: 0 },
+            { id: 'custom-radius', lat: 30, lon: 40, radiusKm: customBoundaryRadius },
+            { id: 'zero-radius', lat: -20, lon: 20, radiusKm: 0 }
+        ];
+        const cities = [
+            { id: 'dateline-hit', lat: 0, lon: -179.9 },
+            { id: 'dateline-miss', lat: 0, lon: 179.2 },
+            { id: 'pole-hit', lat: 89.9, lon: 120 },
+            { id: 'default-hit', lat: 0, lon: 0.5 },
+            { id: 'default-miss', lat: 0, lon: 0.6 },
+            { id: 'custom-boundary', lat: 30, lon: 40.1 },
+            { id: 'custom-outside', lat: 30, lon: 40.1001 },
+            { id: 'zero-exact', lat: -20, lon: 20 },
+            { id: 'zero-nearby', lat: -20, lon: 20.001 },
+            { id: 'far', lat: -45, lon: -90 }
+        ];
+
+        expect(indexedRegistryCityIds(liveCities, cities)).toEqual(bruteRegistryCityIds(liveCities, cities));
+        expect(indexedRegistryCityIds(liveCities, cities)).toEqual([
+            'dateline-miss', 'default-miss', 'custom-outside', 'zero-nearby', 'far'
+        ]);
+    });
+
+    it('matches brute force over deterministic global and clustered synthetic points', () => {
+        let seed = 0x5eed1234;
+        const random = () => {
+            seed = (seed * 1664525 + 1013904223) >>> 0;
+            return seed / 0x100000000;
+        };
+        const radii = [undefined, 0, 1, 60, 250, 5000];
+        const liveCities = Array.from({ length: 120 }, (_, i) => ({
+            id: 'live-' + i, lat: random() * 178 - 89, lon: random() * 360 - 180,
+            radiusKm: radii[Math.floor(random() * radii.length)]
+        }));
+        const cities = Array.from({ length: 600 }, (_, i) => {
+            if (i % 3 === 0) {
+                const live = liveCities[i % liveCities.length];
+                return { id: 'city-' + i, lat: live.lat + (random() - 0.5) * 0.2, lon: live.lon + (random() - 0.5) * 0.2 };
+            }
+            return { id: 'city-' + i, lat: random() * 178 - 89, lon: random() * 360 - 180 };
+        });
+
+        expect(indexedRegistryCityIds(liveCities, cities)).toEqual(bruteRegistryCityIds(liveCities, cities));
+    });
+
+    it('keeps every registry city when the live-city index is empty', () => {
+        const cities = [{ id: 'a', lat: 0, lon: 0 }, { id: 'b', lat: 45, lon: 90 }];
+        expect(indexedRegistryCityIds([], cities)).toEqual(['a', 'b']);
+    });
+
+    it('caps a world-scale radius bucket at the sphere diameter without changing matches', () => {
+        const liveCities = [{ id: 'global-radius', lat: 0, lon: 0, radiusKm: Math.PI * 6371.0088 }];
+        const cities = [
+            { id: 'antipode', lat: 0, lon: 180 },
+            { id: 'south-pole', lat: -90, lon: 120 },
+            { id: 'invalid-coordinate', lat: Number.NaN, lon: 10 }
+        ];
+        expect(indexedRegistryCityIds(liveCities, cities)).toEqual(bruteRegistryCityIds(liveCities, cities));
+        expect(indexedRegistryCityIds(liveCities, cities)).toEqual(['invalid-coordinate']);
+    });
+});
+
 describe('liveSummary', () => {
     it('counts configured live cities and countries, excluding registry-only city and country entries', () => {
         const sample = WorldCoverage.create({

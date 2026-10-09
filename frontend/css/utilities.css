@@ -2338,10 +2338,6 @@ button.status-log-message {
 
 /* Road drawing controls layout */
 @media (min-width: 768px) {
-    #road-drawing-controls {
-        display: block;
-    }
-
     #road-drawing-controls > div {
         display: flex;
         gap: 8px;

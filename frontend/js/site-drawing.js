@@ -446,6 +446,7 @@
     }
 
     function onKeyDown(event) {
+        if (doc.body.classList.contains('three-mode-active')) return;
         if (!isActive() || event.defaultPrevented) return;
         if (typeof win.isEditableTarget === 'function' && win.isEditableTarget(event.target)) return;
         if (event.key === 'Escape') {
@@ -921,6 +922,7 @@
     }
 
     function prepareMap() {
+        win.MapShell?.closeSheets();
         try { win.ParcelMenu && win.ParcelMenu.close(); } catch (_) { }
         try { win.GroundMenu && win.GroundMenu.close(); } catch (_) { }
         try { if (typeof win.hideParcelInfoPanel === 'function') win.hideParcelInfoPanel(); } catch (_) { }
@@ -932,6 +934,7 @@
         if (isActive()) teardown({ keepSynthetic: false });
         if (!claimMap()) return false;
         prepareMap();
+        doc.body.classList.add('site-tool-active');
         reset();
         state.synthetic.clear();
         state.ground = options.ground || null;
@@ -988,6 +991,7 @@
         unwireMap();
         clearLayers();
         state.phase = 'idle';
+        doc.body.classList.remove('site-tool-active');
         doc.body.classList.remove('site-tool-drawing');
         if (state.panel) { state.panel.hidden = true; state.panel.innerHTML = ''; }
         if (win.__mapEditLock) win.__mapEditLock.release(LOCK_OWNER);

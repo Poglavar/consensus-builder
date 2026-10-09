@@ -1,0 +1,66 @@
+/* Watched areas shown inside the Activity sheet. */
+.area-monitor-list-filter {
+    box-sizing: border-box;
+    width: 100%;
+    min-height: var(--cb-control-height);
+    margin: 0 0 var(--cb-space-3);
+    padding: var(--cb-space-2) var(--cb-space-3);
+    border: 1px solid var(--cb-line-strong);
+    border-radius: var(--cb-radius-md);
+    background: var(--cb-surface);
+    color: var(--cb-text);
+    font: inherit;
+}
+
+.area-monitor-list-items {
+    display: flex;
+    flex-direction: column;
+    gap: var(--cb-space-2);
+    max-height: 34vh;
+    overflow-y: auto;
+    overscroll-behavior: contain;
+}
+
+.area-monitor-list-item {
+    display: flex;
+    flex-direction: column;
+    gap: var(--cb-space-1);
+    width: 100%;
+    box-sizing: border-box;
+    padding: var(--cb-space-3);
+    border: 1px solid var(--cb-line);
+    border-radius: var(--cb-radius-md);
+    background: var(--cb-surface);
+    color: inherit;
+    text-align: left;
+    font: inherit;
+    cursor: pointer;
+}
+
+.area-monitor-list-item:hover,
+.area-monitor-list-item:focus-visible {
+    border-color: var(--cb-primary);
+    background: var(--cb-primary-soft);
+}
+
+.area-monitor-list-item__name {
+    font-weight: var(--cb-weight-semibold);
+}
+
+.area-monitor-list-item__meta,
+.area-monitor-list-message {
+    color: var(--cb-text-muted);
+    font-size: var(--cb-text-sm);
+}
+
+.area-monitor-list-message {
+    padding: var(--cb-space-3) 0;
+}
+
+.area-monitor-list-message--error {
+    color: var(--cb-danger);
+}
+
+@media (pointer: coarse) {
+    .area-monitor-list-filter { min-height: var(--cb-control-height-lg); }
+}

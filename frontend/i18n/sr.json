@@ -2170,7 +2170,8 @@
                 },
                 "actions": {
                     "download": "Preuzmi",
-                    "downloaded": "Preuzeto"
+                    "downloaded": "Preuzeto",
+                    "details": "Detalji"
                 },
                 "loadingServer": "Učitavanje predloga sa servera…",
                 "serverError": "Nije uspelo učitavanje predloga sa servera.",
@@ -2271,6 +2272,11 @@
                     "cumulative": "Kumulativno do {year}.",
                     "toApply": "za primenu: {n}",
                     "toUnapply": "za uklanjanje: {n}"
+                },
+                "navigation": {
+                    "hint2d": "Za podnošenje predloga dodirnite zemljište ili otvoren prostor na mapi.",
+                    "hint3d": "Predlozi se crtaju na 2D mapi.",
+                    "open2d": "Otvori 2D mapu"
                 }
             },
             "proposalChoice": {
@@ -4142,11 +4148,11 @@
             "loadingBuildings": "Učitavanje zgrada…"
         },
         "toggle": {
-            "switchTo2d": "Prebaci na 2D",
-            "switchTo3d": "Prebaci na model (3D)",
+            "switchTo2d": "2D mapa",
+            "switchTo3d": "3D modeli",
             "preparing3d": "Priprema 3D prikaza",
             "walk": "Prošetajte kroz svoje izmene",
-            "realistic": "Foto prikaz (Google fotorealistični 3D)",
+            "realistic": "3D snimci iz vazduha (Google)",
             "ai": "AI fotorealistični prikaz",
             "aiNeedsPhoto": "Prvo pređi na foto prikaz — AI render radi iz fotorealistične scene"
         },
@@ -4460,12 +4466,6 @@
                 "country": "Približno: {{place}}",
                 "unknown": "Lokacija nepoznata"
             }
-        },
-        "arrival": {
-            "label": "Stigli ste do predloga",
-            "latest": "Najnoviji predlog",
-            "picked": "Predlog",
-            "lookAround": "Razgledaj"
         }
     },
     "mapShell": {
@@ -4510,7 +4510,17 @@
             "resetSummary": "Resetuj podatke sačuvane u ovom pregledaču…"
         },
         "bets": "Opklade",
-        "betsNew": "Novo"
+        "betsNew": "Novo",
+        "reorg": {
+            "blockData": "Подаци и анализа блокова",
+            "roadData": "Подаци и анализа путева",
+            "watchedAreas": "Надгледана подручја",
+            "originalCadastre": "Изворни катастар",
+            "aerialLayer": "Постојећи град (Google снимци)",
+            "planActions": "Радње плана",
+            "statusLog": "Технички статус",
+            "display": "Приказ"
+        }
     },
     "parcelMenu": {
         "label": "Radnje za parcelu",
@@ -4622,7 +4632,8 @@
             "ground": "Tlo",
             "site": "Lokacija",
             "road": "Put",
-            "bets": "Klađenje"
+            "bets": "Klađenje",
+            "measurement": "Мерење"
         }
     },
     "groundMenu": {
@@ -5014,5 +5025,17 @@
             "faucetSol": "Solana slavina",
             "faucetUsdc": "Circle USDC slavina"
         }
+    },
+    "activityFeed": {
+        "filters": "Филтрирај активности",
+        "all": "Све",
+        "people": "Људи",
+        "agents": "Агенти",
+        "refresh": "Освежи",
+        "loading": "Учитавање недавних активности…",
+        "error": "Активности нису учитане. Покушајте поново.",
+        "empty": "Нема недавних активности за овај филтер.",
+        "partial": "Неки извори активности нису могли да се учитају.",
+        "prompt": "Отворите Активности да учитате недавне догађаје."
     }
 }

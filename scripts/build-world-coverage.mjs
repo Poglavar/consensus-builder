@@ -1,7 +1,9 @@
 #!/usr/bin/env node
-// Compiles the world parcel research (world-parcels/registry.json + world-parcels/countries.geojson)
-// and the app's configured cities (frontend/js/city-config.js, read as TEXT, never imported) into the
-// compact frontend/data/world-coverage.json that the globe (frontend/js/world/) paints and queries.
+// Compiles world parcel research, optional UN WUP 2025 city demographics, and the app's configured
+// cities (frontend/js/city-config.js, read as TEXT, never imported) into the compact
+// frontend/data/world-coverage.json that the globe (frontend/js/world/) paints and queries.
+// Population joins use exact report IDs only; WUP values describe settlements and need not match
+// administrative city boundaries.
 //
 // Operational tiers (city routing), strongest first. Country fills use a separate coverage axis:
 //   full     A dated national-scope review, backed by a verified parcel source and official scope
@@ -43,6 +45,7 @@ const DEFAULTS = {
     registry: path.join(REPO, 'world-parcels/registry.json'),
     countryReviews: path.join(REPO, 'world-parcels/country-coverage-reviews.json'),
     countries: path.join(REPO, 'world-parcels/countries.geojson'),
+    demographics: path.join(REPO, 'world-parcels/report/city-demographics.json'),
     cityConfig: path.join(REPO, 'frontend/js/city-config.js'),
     out: path.join(REPO, 'frontend/data/world-coverage.json'),
     tolerance: 0.06
@@ -221,7 +224,31 @@ export function pointInRings(lat, lon, rings) {
 const isoOf = props => [props.ISO_A2, props.ISO_A2_EH].find(code => /^[A-Z]{2}$/.test(code || '')) || null;
 const truncate = (text, max = 110) => (!text ? '' : text.length <= max ? text : `${text.slice(0, max - 1).trimEnd()}…`);
 
-export function buildCoverage({ registry, countries, cityConfigSource, countryReviews = [], tolerance = DEFAULTS.tolerance }) {
+function demographicPopulation(demographics, cityId, countryCode, idField) {
+    if (!demographics || !Array.isArray(demographics.cities) || !cityId) return null;
+    const matches = demographics.cities.filter(row => idField === 'appCityIds'
+        ? Array.isArray(row.appCityIds) && row.appCityIds.includes(cityId)
+        : row[idField] === cityId);
+    // Never resolve duplicate IDs by name, country, or input order. Any ambiguity or country
+    // disagreement means this population is not safe to attach to the city.
+    if (matches.length !== 1 || !countryCode || matches[0].countryCode !== countryCode) return null;
+    const population = matches[0].population2025;
+    return Number.isFinite(population) && population > 0 ? population : null;
+}
+
+function demographicSourceMetadata(demographics) {
+    const source = demographics?.sources?.find(row => row.name === 'UN DESA WUP 2025 city populations');
+    if (!source) return null;
+    return {
+        title: source.name,
+        url: source.url,
+        year: 2025,
+        ...(source.retrieved ? { retrieved: source.retrieved } : {}),
+        basis: 'UN DESA WUP city settlement estimate; it may not match an administrative city boundary.'
+    };
+}
+
+export function buildCoverage({ registry, countries, cityConfigSource, countryReviews = [], demographics = null, tolerance = DEFAULTS.tolerance }) {
     const sourcesById = new Map(registry.sources.map(s => [s.sourceId, s]));
     const probes = new Map(registry.countryProbes.map(p => [p.countryCode, p]));
     const coverage = new Map(registry.countryCoverage.map(c => [c.countryCode, c]));
@@ -300,6 +327,7 @@ export function buildCoverage({ registry, countries, cityConfigSource, countryRe
                         : 'Candidate source not yet verified');
             const viewerUrl = source?.viewerUrl || source?.catalogueUrl;
             return { id: c.cityId, name: c.name, cc: c.countryCode, lat: Math.round(c.centerLatLon[0] * 1e4) / 1e4, lon: Math.round(c.centerLatLon[1] * 1e4) / 1e4, tier, note,
+                population2025: demographicPopulation(demographics, c.cityId, c.countryCode, 'id'),
                 ...(/^https:\/\//.test(viewerUrl || '') ? { coverageSources: [{ title: source.name, url: viewerUrl }] } : {}) };
         })
         .sort((a, b) => a.id.localeCompare(b.id));
@@ -323,6 +351,7 @@ export function buildCoverage({ registry, countries, cityConfigSource, countryRe
             && source.liveIntegration.cityIds?.includes(city.id)).map(row => row.countryCode).filter(Boolean));
         const cc = cityCountries.size === 1 ? [...cityCountries][0] : source?.countryCode || country?.cc || null;
         return { id: city.id, name: city.name, label: city.label, cc, lat: city.lat, lon: city.lon,
+            population2025: demographicPopulation(demographics, city.id, cc, 'appCityIds'),
             ...(city.sourceId ? { sourceId: city.sourceId } : {}), ...(city.dataVersion ? { dataVersion: city.dataVersion } : {}),
             ...(city.queryMode ? { queryMode: city.queryMode } : {}),
             ...(city.radiusKm ? { radiusKm: city.radiusKm } : {}) };
@@ -333,10 +362,12 @@ export function buildCoverage({ registry, countries, cityConfigSource, countryRe
         .sort((a, b) => a.cc.localeCompare(b.cc))
         .map(({ cc, name, tier, coverage, note, coverageSources, center, rings, regions }) => ({ cc, name, tier, coverage, note,
             ...(coverageSources ? { coverageSources } : {}), center, ...(regions ? { regions } : {}), rings }));
+    const populationSource = demographicSourceMetadata(demographics);
 
     return {
         schemaVersion: 1,
         registryUpdatedAt: registry.updatedAt,
+        ...(populationSource ? { populationSource } : {}),
         tiers: ['live', 'source', 'none', 'unknown'],
         coverageLevels: ['full', 'partial', 'none', 'unknown'],
         liveCities,
@@ -350,11 +381,13 @@ function usage() {
     console.log(`Usage: node scripts/build-world-coverage.mjs --run [options]
 
 Builds frontend/data/world-coverage.json from world-parcels/registry.json,
-world-parcels/country-coverage-reviews.json, world-parcels/countries.geojson and frontend/js/city-config.js.
+world-parcels/country-coverage-reviews.json, world-parcels/countries.geojson,
+world-parcels/report/city-demographics.json and frontend/js/city-config.js.
 
 Options:
   --run               actually build (without it, this help is printed)
   --tolerance <deg>   Douglas-Peucker tolerance in degrees (default ${DEFAULTS.tolerance})
+  --demographics <path> demographics input (default world-parcels/report/city-demographics.json)
   --out <path>        output file (default frontend/data/world-coverage.json)
   --help              show this help`);
 }
@@ -364,13 +397,15 @@ function main(argv) {
     const opt = name => { const i = argv.indexOf(name); return i >= 0 ? argv[i + 1] : undefined; };
     const tolerance = opt('--tolerance') !== undefined ? Number(opt('--tolerance')) : DEFAULTS.tolerance;
     const out = path.resolve(opt('--out') || DEFAULTS.out);
+    const demographicsPath = path.resolve(opt('--demographics') || DEFAULTS.demographics);
     const ts = () => new Date().toISOString();
-    console.log(`[${ts()}] reading registry, outlines and city config`);
+    console.log(`[${ts()}] reading registry, outlines, city config and demographics`);
     const result = buildCoverage({
         registry: JSON.parse(readFileSync(DEFAULTS.registry, 'utf8')),
         countryReviews: JSON.parse(readFileSync(DEFAULTS.countryReviews, 'utf8')).reviews,
         countries: JSON.parse(readFileSync(DEFAULTS.countries, 'utf8')),
         cityConfigSource: readFileSync(DEFAULTS.cityConfig, 'utf8'),
+        demographics: JSON.parse(readFileSync(demographicsPath, 'utf8')),
         tolerance
     });
     const json = JSON.stringify(result);

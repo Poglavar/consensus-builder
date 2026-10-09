@@ -297,6 +297,7 @@
     // --- ESC key ---
 
     function onKeyDown(e) {
+        if (document.body.classList.contains('three-mode-active')) return;
         if (!active) return;
         if (e.key === 'Escape') deactivate();
     }
@@ -311,6 +312,7 @@
         if (active) return;
         if (!getMap()) return;
         active = true;
+        global.dispatchEvent(new CustomEvent('areaMonitorDrawStart', { detail: { source: 'paint' } }));
         path = [];
         closed = false;
         allPlanCoords = null;
@@ -329,6 +331,7 @@
     function deactivate() {
         if (!active) return;
         active = false;
+        global.dispatchEvent(new CustomEvent('areaMonitorDrawCancel', { detail: { source: 'paint' } }));
         const map = getMap();
         map.off('moveend', onMapMove);
         if (_mapLayerAddWatcher) {

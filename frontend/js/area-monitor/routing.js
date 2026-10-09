@@ -93,7 +93,7 @@
         return false;
     }
 
-    // Show the Area monitor controls: open the Tools sheet on that section. Not on phones, where the
+    // Show the watched-area controls in Activity. Not on phones, where the
     // bottom sheet would cover the monitored area this route just brought into view.
     function expandAreaMonitorSection() {
         if (global.innerWidth < 768 || !global.MapShell) return;

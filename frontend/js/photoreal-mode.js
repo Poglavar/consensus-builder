@@ -2695,6 +2695,7 @@
                 emptySeconds: sinceAnyLoadS, progress: tiles ? Number(tiles.loadProgress) : null };
         },
         // three-mode's Built row drives the mesh while the layer is up.
+        isBuiltVisible: function () { return builtVisible; },
         setBuiltVisible: function (v) {
             builtVisible = !!v;
             if (tiles && grounded) tiles.group.visible = builtVisible;

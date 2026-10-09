@@ -2281,6 +2281,15 @@ function handleCreateProposalHotkey(event) {
     const existingModal = document.querySelector('.create-proposal-modal');
     if (existingModal) return;
 
+    const commands = typeof window !== 'undefined' ? window.UiCommands : null;
+    if (!commands || typeof commands.createBrowserContext !== 'function'
+        || typeof commands.isAvailable !== 'function' || typeof commands.runCommand !== 'function') return;
+    const commandContext = commands.createBrowserContext(window);
+    const multi = typeof window !== 'undefined' ? window.multiParcelSelection : null;
+    const commandId = multi && multi.isActive ? 'selection.propose' : 'parcel.propose';
+    // Match the parcel menu or selection tray authoring capability. In model/photo views C has no effect.
+    if (!commands.supportsMode(commandId, commandContext)) return;
+
     // Check if there are any parcels selected (single or multi-selection)
     const selection = getCurrentParcelSelectionContext();
     if (!selection || !selection.ids || selection.ids.length === 0) {
@@ -2296,9 +2305,11 @@ function handleCreateProposalHotkey(event) {
         return;
     }
 
-    // Open the Create Proposal dialog
+    if (!commands.isAvailable(commandId, commandContext)) return;
+
+    // Dispatch the same canonical proposal palette as the selection tray.
     event.preventDefault();
-    showProposalDialog();
+    commands.runCommand(commandId, commandContext);
 }
 
 function attachCreateProposalHotkey() {

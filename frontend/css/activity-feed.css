@@ -1,0 +1,63 @@
+/* Compact, bounded recent feed inside the Activity sheet. */
+#activity-feed {
+    margin: 0 0 var(--cb-space-4);
+}
+
+.activity-feed__filters {
+    display: flex;
+    align-items: center;
+    flex-wrap: wrap;
+    gap: var(--cb-space-2);
+    margin-bottom: var(--cb-space-2);
+}
+
+.activity-feed__filters button {
+    min-height: var(--cb-control-height);
+    padding: var(--cb-space-1) var(--cb-space-3);
+    border: 1px solid var(--cb-line-strong);
+    border-radius: var(--cb-radius-pill);
+    background: var(--cb-surface);
+    color: var(--cb-text);
+    font: inherit;
+    font-size: var(--cb-text-sm);
+    cursor: pointer;
+}
+
+.activity-feed__filters button[aria-pressed="true"] {
+    border-color: var(--cb-primary);
+    background: var(--cb-primary-soft);
+    color: var(--cb-primary-hover);
+}
+
+.activity-feed__filters .activity-feed__refresh {
+    margin-left: auto;
+}
+
+.activity-feed__status {
+    margin: var(--cb-space-1) 0 var(--cb-space-2);
+    color: var(--cb-text-muted);
+    font-size: var(--cb-text-sm);
+}
+
+.activity-feed__status:empty {
+    display: none;
+}
+
+.activity-feed__list {
+    display: grid;
+    gap: var(--cb-space-2);
+}
+
+.activity-feed__list .activity-entry {
+    margin: 0;
+}
+
+@media (prefers-reduced-motion: no-preference) {
+    .activity-feed__filters button {
+        transition: background-color 120ms ease, border-color 120ms ease;
+    }
+}
+
+@media (pointer: coarse) {
+    .activity-feed__filters button { min-height: var(--cb-control-height-lg); }
+}

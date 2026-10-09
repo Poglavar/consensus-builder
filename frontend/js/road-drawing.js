@@ -2266,7 +2266,7 @@ function toggleRoadDrawTool() {
         }
 
         const roadDrawingControls = document.getElementById('road-drawing-controls');
-        if (roadDrawingControls) roadDrawingControls.style.display = 'grid';
+        if (roadDrawingControls) roadDrawingControls.hidden = false;
         map.getContainer().style.cursor = 'crosshair';
         map.getContainer().classList.add('crosshairs-cursor');
 
@@ -2294,7 +2294,7 @@ function toggleRoadDrawTool() {
             const statusElement = document.getElementById('status');
             if (statusElement) updateStatus(statusText);
             const roadDrawingControls = document.getElementById('road-drawing-controls');
-            if (roadDrawingControls) roadDrawingControls.style.display = 'grid';
+            if (roadDrawingControls) roadDrawingControls.hidden = false;
             updateRoadCrossSectionButton();
             updateUndoButtonState();
             map.on('click', handleRoadClick);
@@ -2365,7 +2365,7 @@ function toggleRoadDrawTool() {
             roadDrawButton.classList.remove('active-black-border');
         }
         const roadDrawingControls = document.getElementById('road-drawing-controls');
-        if (roadDrawingControls) roadDrawingControls.style.display = 'none';
+        if (roadDrawingControls) roadDrawingControls.hidden = true;
         map.getContainer().style.cursor = '';
         map.getContainer().classList.remove('crosshairs-cursor');
 
@@ -2438,6 +2438,7 @@ function discardRoadDrawing() {
 
 // Handle keyboard events during road drawing
 function handleRoadKeydown(e) {
+    if (document.body.classList.contains('three-mode-active')) return;
     // Prevent handling if we're typing
     if (e.target.tagName === 'INPUT' || e.target.tagName === 'TEXTAREA' || e.target.tagName === 'SELECT') {
         return;
@@ -2638,6 +2639,7 @@ async function toggleBuildingReferenceLayers() {
 }
 
 function handleRoadDrawHotkey(event) {
+    if (document.body.classList.contains('three-mode-active')) return;
     if (!event) return;
     if (event.ctrlKey || event.metaKey || event.altKey) return;
     if (isEditableTarget(event.target)) return;
@@ -3313,7 +3315,7 @@ function exitRoadDrawingMode() {
     setRoadPanelLabelsForMode('road');
 
     const roadDrawingControls = document.getElementById('road-drawing-controls');
-    if (roadDrawingControls) roadDrawingControls.style.display = 'none';
+    if (roadDrawingControls) roadDrawingControls.hidden = true;
 
     const roadInfoPanel = document.getElementById('road-info-panel');
     if (roadInfoPanel) {

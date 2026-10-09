@@ -58,6 +58,7 @@
             const button = document.getElementById(id);
             if (!button) continue;
             button.classList.toggle('active', mode === state.desired);
+            button.setAttribute('aria-pressed', String(mode === state.desired));
             button.classList.toggle('mode-btn-loading', mode === state.desired && state.pending);
         }
     }

@@ -219,7 +219,7 @@ it('marks pending uploaded-model loads incomplete before the exit path clears th
 
 function warmEnterFixture() {
     const center = { lat: 45.8, lng: 15.9 };
-    const calls = { init: 0, startLoop: 0, retained: 0, rebuild: 0 };
+    const calls = { init: 0, startLoop: 0, retained: 0, rebuild: 0, syncModeAvailability: 0 };
     const context = loadInContext(threeModeDeclarations(['currentSceneKey', 'enter3D']), {
         map: { getCenter: () => center, getZoom: () => 12 },
         window: null,
@@ -239,7 +239,7 @@ function warmEnterFixture() {
         threeContainer: { classList: { add() {} }, removeAttribute() {} },
         document: { body: { classList: { add() {} } } },
         windowMapShell: null,
-        MapShell: { closeSheets() {}, setLockedFor3D() {} },
+        MapShell: { closeSheets() {}, syncModeAvailability() { calls.syncModeAvailability += 1; } },
         scheduleViewAngleHint() {},
         updateModeButtonStates() {},
         getWalkUrlBase: () => null,
@@ -266,7 +266,7 @@ function warmEnterFixture() {
         getCurrentCityId: () => 'test-city',
         getBuildingSourceId: () => 'dgu'
     };
-    context.MapShell = { closeSheets() {}, setLockedFor3D() {} };
+        context.MapShell = { closeSheets() {}, syncModeAvailability() { calls.syncModeAvailability += 1; } };
     vm.runInContext('this.warmSceneKey = currentSceneKey();', context);
     return { context, center, calls };
 }
@@ -278,6 +278,7 @@ it('reuses a warm renderer and camera only when the retained scene key still mat
     await expect(same.context.enter3D()).resolves.toBe(true);
     expect(same.calls.init).toBe(0);
     expect(same.calls.startLoop).toBe(1);
+    expect(same.calls.syncModeAvailability).toBeGreaterThan(0);
     expect(same.context.camera).toBe(camera);
     expect(same.context.renderer).toBe(renderer);
 

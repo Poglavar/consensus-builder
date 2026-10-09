@@ -1,0 +1,18 @@
+{
+  "purpose": "Decorative view-selector backgrounds; these are original illustrations, not geographic data.",
+  "assets": [
+    {
+      "path": "map.svg",
+      "source": "Original SVG street-map illustration."
+    },
+    {
+      "path": "models.svg",
+      "source": "Original SVG cube-and-sphere illustration."
+    },
+    {
+      "path": "aerial.jpg",
+      "source": "Built-in image_gen generation, optimized to a 192px JPEG for the view button.",
+      "prompt": "Use case: photorealistic-natural. Asset type: a square background thumbnail for a 3D aerial-imagery view button in a mapping app. Create a straight-down aerial photograph of a leafy forest edge with an irregular grassy clearing and a narrow curving pale road. Dense, naturally varied green tree canopies and real terrain texture should remain recognizable when reduced to a tiny 44-pixel thumbnail. Fill the square edge to edge. Natural daylight, clear detail and tonal separation. No sky, horizon, globe, satellite device, buildings, text, letters, labels, logos, watermark, border, or interface."
+    }
+  ]
+}
