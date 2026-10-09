@@ -81,13 +81,28 @@
         const connection = root.SolanaChainDataLoader.getConnection(cluster);
         const wallet = root.solanaWalletManager?.getProvider?.()?.publicKey || null;
         const [marketAddress] = client.getMarketPda(proposal);
-        const market = await client.readMarket(connection, proposal);
-        if (!market) return { market: null, marketAddress: marketAddress.toBase58(), wallet: wallet?.toBase58?.() || null };
+        const [market, chainStatus] = await Promise.all([client.readMarket(connection, proposal), readChainStatus(connection, proposal)]);
+        if (!market) return { market: null, marketAddress: marketAddress.toBase58(), wallet: wallet?.toBase58?.() || null, chainStatus };
         const [yes, no] = wallet ? await Promise.all([
             client.readPosition(connection, proposal, wallet, client.constants.SIDE_YES),
             client.readPosition(connection, proposal, wallet, client.constants.SIDE_NO)
         ]) : [null, null];
-        return { market, marketAddress: marketAddress.toBase58(), yes, no, wallet: wallet?.toBase58?.() || null };
+        return { market, marketAddress: marketAddress.toBase58(), yes, no, wallet: wallet?.toBase58?.() || null, chainStatus };
+    }
+
+    // The proposal account's own status name ('Active' | 'Executed' | 'Cancelled' | 'Expired'), which is
+    // what the market program resolves from; null when the account is unreadable here.
+    async function readChainStatus(connection, proposal) {
+        const reader = root.SolanaAcceptanceClient && typeof root.SolanaAcceptanceClient.readProposal === 'function' ? root.SolanaAcceptanceClient.readProposal : null;
+        if (!reader) return null;
+        try {
+            const info = await connection.getAccountInfo(new root.solanaWeb3.PublicKey(proposal), 'confirmed');
+            const decoded = info && info.data ? reader(info.data, proposal) : null;
+            return decoded && decoded.status && decoded.status !== 'Unknown' ? decoded.status : null;
+        } catch (error) {
+            console.warn(`[${new Date().toISOString()}] [market] proposal status unavailable for ${proposal}:`, error);
+            return null;
+        }
     }
 
     function walletContextOrGuest() {

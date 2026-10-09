@@ -95,6 +95,8 @@
         positionSheet(sheet, trigger);
         setExpanded(sheet, true);
         doc.body.classList.add('map-sheet-open');
+        // Sheets that load on demand (Bets) listen for this instead of polling the hidden attribute.
+        try { doc.dispatchEvent(new win.CustomEvent('mapshell:sheetopened', { detail: { id: sheet.id } })); } catch (_) { }
         if (options.focus !== false) {
             try { sheet.focus({ preventScroll: true }); } catch (_) { }
         }

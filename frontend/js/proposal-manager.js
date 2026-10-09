@@ -3655,6 +3655,12 @@ const ProposalManager = {
                         if (boxesDisjoint(boxes[i], boxes[j])) continue;
                         const hit = intersectParents(features[i], features[j]);
                         if (hit && turf.area(hit) > OVERLAP_REFUSAL_M2) {
+                            // Content that partitions nothing (apply/buildings.js contentOnly) may stand
+                            // on a source defect; it is named, not waved through silently.
+                            if (options && options.contentOnly === true) {
+                                console.warn(`[${new Date().toISOString()}] [${formationLabel}] live parcels ${ids[i]} and ${ids[j]} overlap (${Math.round(turf.area(hit))} m², a cadastral source defect); applying as content on them anyway`);
+                                continue;
+                            }
                             const message = `Cannot apply ${formationLabel}: live parcels ${ids[i]} and ${ids[j]} overlap.`;
                             try { this._setLastApplyFailure(idLabel, { code: 'live-fabric-overlap', message, parcelIds: [ids[i], ids[j]] }); } catch (_) { }
                             return { ok: false, ids, features: [], coverage, message };

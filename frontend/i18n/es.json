@@ -1254,7 +1254,56 @@
                 "copyHash": "Copiar hash",
                 "hashCopied": "Copiado",
                 "eventLink": "Evento fuente ↗",
-                "finalVerifier": "El programa de Solana sigue siendo el verificador final."
+                "finalVerifier": "El programa de Solana sigue siendo el verificador final.",
+                "yesSide": "Sí · se construye",
+                "noSide": "No · descartada",
+                "ruleTitle": "Cómo se liquida",
+                "nextTitle": "Qué sigue",
+                "ruleLoading": "Leyendo la regla del fondo…",
+                "nextLoading": "Cargando la propuesta y su fondo…",
+                "connectPosition": "Conecta una billetera Solana para ver tus apuestas.",
+                "history": "Apuestas recientes",
+                "historyEmpty": "No hay apuestas sobre esta propuesta en la actividad reciente.",
+                "historyOpened": "Fondo abierto",
+                "historyBet": "Apuesta",
+                "historySettled": "Liquidado",
+                "historyCollected": "Cobrado",
+                "poolAccount": "Cuenta del fondo",
+                "poolProgram": "Programa del fondo",
+                "noPool": "Esta propuesta aún no tiene fondo.",
+                "yourBets": "Tus apuestas: {{lines}}",
+                "noBets": "No tienes apuestas en esta propuesta.",
+                "betLine": "{{side}} {{amount}}",
+                "collect": "Cobrar las ganancias ({{side}})",
+                "nothingToCollect": "Nada que cobrar.",
+                "settle": "Liquidar {{outcome}} según el estado de la propuesta",
+                "betYes": "Apostar sí",
+                "betNo": "Apostar no",
+                "dialogTitle": "Apostar {{side}}",
+                "dialogCopy": "Apuesta USDC de devnet a si esta propuesta se construye (sí) o se descarta (no). Las apuestas se quedan en el fondo hasta que se liquide.",
+                "preparingCollect": "Preparando el cobro…",
+                "preparingPool": "Preparando el fondo…",
+                "preparingSettle": "Preparando la liquidación…",
+                "collectedMessage": "Ganancias cobradas ({{side}}).",
+                "settledMessage": "Liquidado según el estado en cadena de la propuesta.",
+                "rule": "El fondo lee la cuenta de la propuesta en Solana: ejecutada liquida sí; cancelada o expirada liquida no. Cualquiera puede liquidarlo.",
+                "state": {
+                    "open": "Abierto a apuestas",
+                    "needsPool": "Aún sin fondo",
+                    "settleYes": "Listo para liquidar sí",
+                    "settleNo": "Listo para liquidar no",
+                    "closed": "No abierto a apuestas"
+                },
+                "next": {
+                    "open": "Las apuestas se quedan en el fondo mientras la propuesta está activa; no hay salida anticipada.",
+                    "needsPool": "Cualquier billetera puede abrir el único fondo de esta propuesta activa y luego apostar sí o no.",
+                    "settleYes": "Cualquiera puede liquidarlo; el programa lee Ejecutada directamente de la cuenta de la propuesta.",
+                    "settleNo": "Cualquiera puede liquidarlo; el programa lee el estado de descarte directamente de la cuenta de la propuesta.",
+                    "settledSplit": "El lado ganador se reparte todo el fondo en proporción a sus apuestas. El lado perdedor no recibe nada.",
+                    "settledRefund": "Nadie apostó al lado ganador, así que cada apuesta puede cobrarse íntegra.",
+                    "closed": "La propuesta debe estar activa en cadena antes de que pueda abrirse un fondo."
+                },
+                "paidOut": "cobrado"
             },
             "acceptTransfer": {
                 "buttonLabel": "Aceptar transferencia de propiedad",
@@ -3170,7 +3219,6 @@
                 "lineNoAnchors": "La línea tocó los linderos existentes en menos de dos sitios, así que no hay nada entre lo que trazar. Cruza dos linderos, o empieza en una esquina y cruza uno."
             },
             "assignOwners": "Asignar propietarios",
-            "colNewArea": "Nueva",
             "colOrigArea": "Original",
             "colOwner": "Propietario",
             "colOwners": "Propietarios",
@@ -4446,13 +4494,16 @@
             "chooseCity": "Elegir una ciudad",
             "dataSource": "Fuente de datos",
             "baseMap": "Mapa base",
-            "worldView": "Vista del mundo"
+            "worldView": "Vista del mundo",
+            "openBets": "Abrir apuestas"
         },
         "maintenance": {
             "title": "Datos y mantenimiento",
             "storedTitle": "Guardado en este navegador",
             "resetSummary": "Restablecer los datos guardados en este navegador…"
-        }
+        },
+        "bets": "Apuestas",
+        "betsNew": "Nuevo"
     },
     "parcelMenu": {
         "label": "Acciones de la parcela",
@@ -4561,7 +4612,8 @@
             "selection": "Selección",
             "ground": "Terreno",
             "site": "Sitio",
-            "road": "Calle"
+            "road": "Calle",
+            "bets": "Apuestas y fondos"
         }
     },
     "groundMenu": {
@@ -4903,6 +4955,55 @@
             "previewCaption": "Una supermanzana, {width} × {height} m, a escala. Oscuro: calles. Claro: manzanas.",
             "apply": "Dibujar este plan aquí",
             "caveat": "Esto es una estimación para planificar, no un catastro: las parcelas viven en este navegador durante esta sesión y llevan la procedencia “schelling-point”. La propiedad y la publicación necesitan un registro real."
+        }
+    },
+    "bets": {
+        "tagline": "Apuesta por las ciudades",
+        "intro": "Apuesta sí por las propuestas que crees que se construirán, o no por las que dudas. Los fondos viven en Solana devnet y se liquidan cuando una propuesta se ejecuta o se descarta.",
+        "loading": "Cargando apuestas…",
+        "empty": "Todavía no hay fondos en esta ciudad. Acuña una propuesta para abrir el primero.",
+        "retry": "Intentar de nuevo",
+        "error": {
+            "load": "No se pudieron cargar las apuestas.",
+            "open": "No se pudo abrir la propuesta.",
+            "transaction": "La transacción falló."
+        },
+        "contest": {
+            "title": "¿Qué propuesta se construirá?",
+            "titleSingle": "¿Se construirá esta propuesta?",
+            "land": "Parcela {{parcel}}",
+            "landMore": "Parcela {{parcel}} y {{count}} más",
+            "site": "Sitio dibujado"
+        },
+        "row": {
+            "chance": "{{percent}} de probabilidad",
+            "noBets": "Aún sin apuestas",
+            "pool": "Fondo {{amount}}",
+            "pays": "Paga {{multiple}}×",
+            "yes": "Sí",
+            "no": "No",
+            "yesTitle": "Apuesta a que esta propuesta se construye.",
+            "noTitle": "Apuesta a que esta propuesta no se construye.",
+            "openMarket": "Abrir el fondo",
+            "opened": "Fondo abierto",
+            "settle": "Liquidar el fondo",
+            "settled": "Fondo liquidado",
+            "settling": "Decidido en cadena; cualquiera puede liquidar el fondo",
+            "notMinted": "Aún sin acuñar, así que no hay fondo",
+            "closed": "Decidido en cadena antes de abrir un fondo",
+            "resolvedYes": "Liquidado: sí",
+            "resolvedNo": "Liquidado: no",
+            "closes": "Cierra el {{date}}",
+            "untitled": "Propuesta sin título",
+            "paysTitle": "1 USDC en este lado paga {{multiple}} USDC si gana."
+        },
+        "how": {
+            "title": "Cómo funcionan las apuestas",
+            "pools": "Cada propuesta tiene un fondo sí/no. Tu apuesta entra en el lado que elijas y se queda ahí hasta que la propuesta se decida.",
+            "settle": "La ejecución en cadena liquida sí; la cancelación o la expiración liquidan no. El lado ganador se reparte todo el fondo en proporción a sus apuestas.",
+            "devnet": "Las apuestas usan USDC de devnet, que no tiene valor. Consigue SOL y USDC de devnet en los grifos.",
+            "faucetSol": "Grifo de Solana",
+            "faucetUsdc": "Grifo de USDC de Circle"
         }
     }
 }

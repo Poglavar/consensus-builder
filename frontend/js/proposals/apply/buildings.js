@@ -43,7 +43,17 @@
 
         const step1Time = performance.now();
         const buildingProposal = proposalData.buildingProposal ? { ...proposalData.buildingProposal } : {};
-        const liveParents = this._resolveLiveFormationParents(proposalData, idLabel, 'building', options);
+        // Content buildings (blocks, rows, parcel-based, imported plans) sit on the existing parcels
+        // and partition nothing, so a defect in the cadastral source (two live parcels covering the
+        // same ground) must not refuse them; only a building that forms its own parcel needs a clean
+        // partition. The resolver is told which case this is.
+        const earlyGoalKey = (typeof window !== 'undefined' && window.__applyRoute && typeof window.__applyRoute.normalizeGoalKey === 'function')
+            ? window.__applyRoute.normalizeGoalKey(proposalData.goal)
+            : String(proposalData.goal || '');
+        const authoredCount = Array.isArray(proposalData.geometry?.buildings)
+            ? proposalData.geometry.buildings.filter(feature => feature && feature.geometry).length : 0;
+        const contentOnly = !shouldFormOwnBuildingParcel(proposalData, earlyGoalKey, authoredCount);
+        const liveParents = this._resolveLiveFormationParents(proposalData, idLabel, 'building', { ...options, contentOnly });
         if (!liveParents.ok) return false;
         const uniqueParentIds = liveParents.ids;
         const flatParentIds = liveParents.cadastreIds.slice();

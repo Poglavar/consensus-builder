@@ -969,22 +969,23 @@ export function createProposalCreateHandler(pool) {
     };
 }
 
+// The marketplace/on-chain LIFECYCLE status, past-expiry-aware (shared with GET /markets). A proposal past expires_at reads
+// as 'Expired' even if the stored value is stale. This one expression is used both for the
+// returned lifecycleStatus and for the ?lifecycle= FILTER, so filtering and display agree
+// (case-insensitive — the DB may carry both 'Executed' and 'executed').
+export const EFFECTIVE_STATUS_SQL = `
+    CASE
+        WHEN LOWER(COALESCE(lifecycle_status, '')) NOT IN ('executed', 'cancelled', 'expired')
+            AND expires_at IS NOT NULL AND expires_at <= now()
+        THEN 'Expired'
+        WHEN LOWER(COALESCE(lifecycle_status, '')) = 'executed' THEN 'Executed'
+        WHEN LOWER(COALESCE(lifecycle_status, '')) = 'cancelled' THEN 'Cancelled'
+        WHEN LOWER(COALESCE(lifecycle_status, '')) = 'expired' THEN 'Expired'
+        WHEN LOWER(COALESCE(lifecycle_status, '')) = 'draft' THEN 'draft'
+        ELSE 'Active'
+    END`;
+
 export function setupProposalsRoute(app, pool) {
-    // The marketplace/on-chain LIFECYCLE status, past-expiry-aware. A proposal past expires_at reads
-    // as 'Expired' even if the stored value is stale. This one expression is used both for the
-    // returned lifecycleStatus and for the ?lifecycle= FILTER, so filtering and display agree
-    // (case-insensitive — the DB may carry both 'Executed' and 'executed').
-    const EFFECTIVE_STATUS_SQL = `
-        CASE
-            WHEN LOWER(COALESCE(lifecycle_status, '')) NOT IN ('executed', 'cancelled', 'expired')
-                AND expires_at IS NOT NULL AND expires_at <= now()
-            THEN 'Expired'
-            WHEN LOWER(COALESCE(lifecycle_status, '')) = 'executed' THEN 'Executed'
-            WHEN LOWER(COALESCE(lifecycle_status, '')) = 'cancelled' THEN 'Cancelled'
-            WHEN LOWER(COALESCE(lifecycle_status, '')) = 'expired' THEN 'Expired'
-            WHEN LOWER(COALESCE(lifecycle_status, '')) = 'draft' THEN 'draft'
-            ELSE 'Active'
-        END`;
 
     // The complete public proposal representation. The single and batch endpoints deliberately
     // share this list and serializeProposalRow so a plan does not receive a thinner record than a

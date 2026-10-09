@@ -247,6 +247,8 @@ export function setupDocsRoute(app, pool, { env = process.env } = {}) {
                     buildingFootprints: `${base}/buildings/footprints`,
                     hackathonProof: `${base}/hackathon/proof.json`,
                     prospectiveMarketStatus: `${base}/oracle/markets/prospective/status`,
+                    // Every contest in a city (proposals on the same land) with each proposal's yes/no pool.
+                    markets: `${base}/markets?city={city}`,
                     lensMembers: `${base}/lenses/members`,
                     agentLensMembers: `${base}/agent/lenses/members`,
                     lensSchemas: `${base}/lenses/schemas`

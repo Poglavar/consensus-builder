@@ -1216,7 +1216,56 @@
                 "copyHash": "Copy hash",
                 "hashCopied": "Copied",
                 "eventLink": "Source event ↗",
-                "finalVerifier": "The Solana program remains the final verifier."
+                "finalVerifier": "The Solana program remains the final verifier.",
+                "yesSide": "Yes · gets built",
+                "noSide": "No · dropped",
+                "ruleTitle": "How it settles",
+                "nextTitle": "What happens next",
+                "ruleLoading": "Reading the pool rule…",
+                "nextLoading": "Loading the proposal and its pool…",
+                "connectPosition": "Connect a Solana wallet to see your bets.",
+                "history": "Recent bets",
+                "historyEmpty": "No bets on this proposal in the recent activity feed.",
+                "historyOpened": "Opened the pool",
+                "historyBet": "Bet",
+                "historySettled": "Settled",
+                "historyCollected": "Collected",
+                "poolAccount": "Pool account",
+                "poolProgram": "Pool program",
+                "noPool": "No pool yet for this proposal.",
+                "yourBets": "Your bets: {{lines}}",
+                "noBets": "You have no bets on this proposal.",
+                "betLine": "{{side}} {{amount}}",
+                "collect": "Collect {{side}} winnings",
+                "nothingToCollect": "Nothing to collect.",
+                "settle": "Settle {{outcome}} from the proposal's status",
+                "betYes": "Bet yes",
+                "betNo": "Bet no",
+                "dialogTitle": "Bet {{side}}",
+                "dialogCopy": "Bet devnet USDC on whether this proposal gets built (yes) or is dropped (no). Bets stay in the pool until it settles.",
+                "preparingCollect": "Preparing collection…",
+                "preparingPool": "Preparing the pool…",
+                "preparingSettle": "Preparing settlement…",
+                "collectedMessage": "Collected {{side}} winnings.",
+                "settledMessage": "Settled from the proposal's on-chain status.",
+                "rule": "The pool reads the proposal account on Solana: executed settles yes; cancelled or expired settles no. Anyone can settle it.",
+                "state": {
+                    "open": "Open for bets",
+                    "needsPool": "No pool yet",
+                    "settleYes": "Ready to settle yes",
+                    "settleNo": "Ready to settle no",
+                    "closed": "Not open for bets"
+                },
+                "next": {
+                    "open": "Bets stay in the pool while the proposal is active; there is no early exit.",
+                    "needsPool": "Any wallet can open the one pool for this active proposal, then bet yes or no.",
+                    "settleYes": "Anyone can settle it; the program reads Executed straight from the proposal account.",
+                    "settleNo": "Anyone can settle it; the program reads the dropped status straight from the proposal account.",
+                    "settledSplit": "The winning side shares the whole pool in proportion to its bets. The losing side gets nothing.",
+                    "settledRefund": "Nobody bet on the winning side, so every bet can be collected back in full.",
+                    "closed": "The proposal must be active on-chain before a pool can open."
+                },
+                "paidOut": "paid out"
             },
             "acceptTransfer": {
                 "buttonLabel": "Accept ownership transfer",
@@ -3098,7 +3147,6 @@
             "newPlots": "New plots",
             "colOwner": "Owner",
             "colOrigArea": "Original",
-            "colNewArea": "New",
             "colPlot": "Plot",
             "colOwners": "Owners",
             "colContributed": "Contributed",
@@ -4395,13 +4443,16 @@
             "chooseCity": "Choose a city",
             "dataSource": "Data source",
             "baseMap": "Base map",
-            "worldView": "World view"
+            "worldView": "World view",
+            "openBets": "Open bets"
         },
         "maintenance": {
             "title": "Data & maintenance",
             "storedTitle": "Stored in this browser",
             "resetSummary": "Reset data stored in this browser…"
-        }
+        },
+        "bets": "Bets",
+        "betsNew": "New"
     },
     "parcelMenu": {
         "label": "Parcel actions",
@@ -4510,7 +4561,8 @@
             "selection": "Selection",
             "ground": "Ground",
             "site": "Site",
-            "road": "Road"
+            "road": "Road",
+            "bets": "Betting"
         }
     },
     "groundMenu": {
@@ -4852,6 +4904,55 @@
             "previewCaption": "One superblock, {width} × {height} m, to scale. Dark: streets. Light: blocks.",
             "apply": "Draw this plan here",
             "caveat": "This is an estimate for planning, not a cadastre: the parcels live in this browser for this session and carry provenance “schelling-point”. Ownership and publishing need a real register."
+        }
+    },
+    "bets": {
+        "tagline": "Bet on cities",
+        "intro": "Bet yes on the proposals you believe will be built, or no on the ones you doubt. Pools live on Solana devnet and settle when a proposal is executed or dropped.",
+        "loading": "Loading bets…",
+        "empty": "No pools in this city yet. Mint a proposal to open the first one.",
+        "retry": "Try again",
+        "error": {
+            "load": "Bets could not be loaded.",
+            "open": "The proposal could not be opened.",
+            "transaction": "The transaction failed."
+        },
+        "contest": {
+            "title": "Which proposal gets built?",
+            "titleSingle": "Does this proposal get built?",
+            "land": "Parcel {{parcel}}",
+            "landMore": "Parcel {{parcel}} and {{count}} more",
+            "site": "Drawn site"
+        },
+        "row": {
+            "chance": "{{percent}} chance",
+            "noBets": "No bets yet",
+            "pool": "Pool {{amount}}",
+            "pays": "Pays {{multiple}}×",
+            "yes": "Yes",
+            "no": "No",
+            "yesTitle": "Bet that this proposal gets built.",
+            "noTitle": "Bet that this proposal does not get built.",
+            "openMarket": "Open the pool",
+            "opened": "Pool opened",
+            "settle": "Settle the pool",
+            "settled": "Pool settled",
+            "settling": "Decided on-chain; anyone can settle the pool",
+            "notMinted": "Not minted yet, so no pool",
+            "closed": "Decided on-chain before a pool was opened",
+            "resolvedYes": "Settled yes",
+            "resolvedNo": "Settled no",
+            "closes": "Closes {{date}}",
+            "untitled": "Untitled proposal",
+            "paysTitle": "1 USDC on this side pays {{multiple}} USDC if it wins."
+        },
+        "how": {
+            "title": "How bets work",
+            "pools": "Every proposal has one yes/no pool. Your bet joins the side you pick and stays there until the proposal is decided.",
+            "settle": "Executed on-chain settles yes; cancelled or expired settles no. The winning side shares the whole pool in proportion to its bets.",
+            "devnet": "Bets use devnet USDC, which has no value. Get devnet SOL and USDC from the faucets.",
+            "faucetSol": "Solana faucet",
+            "faucetUsdc": "Circle USDC faucet"
         }
     }
 }

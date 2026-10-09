@@ -73,43 +73,54 @@
         };
     }
 
+    // The card's lifecycle words. Each text comes with a key so the panel can translate it; the English
+    // here is the fallback and what the tests pin.
+    const RULE = 'The pool reads the proposal account on Solana: executed settles yes; cancelled or expired settles no. Anyone can settle it.';
+    const STATE = {
+        open: 'Open for bets', needsPool: 'No pool yet', settleYes: 'Ready to settle yes', settleNo: 'Ready to settle no',
+        settledYes: 'Settled yes', settledNo: 'Settled no', closed: 'Not open for bets'
+    };
+    const NEXT = {
+        open: 'Bets stay in the pool while the proposal is active; there is no early exit.',
+        needsPool: 'Any wallet can open the one pool for this active proposal, then bet yes or no.',
+        settleYes: 'Anyone can settle it; the program reads Executed straight from the proposal account.',
+        settleNo: 'Anyone can settle it; the program reads the dropped status straight from the proposal account.',
+        settledSplit: 'The winning side shares the whole pool in proportion to its bets. The losing side gets nothing.',
+        settledRefund: 'Nobody bet on the winning side, so every bet can be collected back in full.',
+        closed: 'The proposal must be active on-chain before a pool can open.'
+    };
     function lifecycle(lifecycleStatus, marketModel = { exists: false }) {
         const status = String(lifecycleStatus || '').trim().toLowerCase();
         const exists = Boolean(marketModel?.exists);
         const resolved = Boolean(marketModel?.resolved);
+        const terminalNo = status === 'cancelled' || status === 'expired';
         const base = {
-            rule: 'The market reads the proposal account on Solana: Executed resolves YES; Cancelled resolves NO. Resolution is permissionless.',
+            rule: RULE, ruleKey: 'rule',
             canOpen: !exists && status === 'active',
             canStake: exists && !resolved && status === 'active',
-            canResolve: exists && !resolved && (status === 'executed' || status === 'cancelled'),
-            expectedOutcome: status === 'executed' ? 'yes' : status === 'cancelled' ? 'no' : null
+            // Expired is terminal since market v2 (a lens member's expired verdict) and resolves NO
+            // like Cancelled; the program checks the proposal account, so an app-side expiry that has
+            // not reached the chain simply fails the transaction instead of paying anyone.
+            canResolve: exists && !resolved && (status === 'executed' || terminalNo),
+            expectedOutcome: status === 'executed' ? 'yes' : terminalNo ? 'no' : null
         };
+        const words = (stateKey, nextKey) => ({ stateKey, state: STATE[stateKey], nextKey, next: NEXT[nextKey] });
         if (resolved) {
-            const outcome = marketModel.outcome === 'yes' ? 'YES' : 'NO';
             const winningPool = marketModel.outcome === 'yes' ? atomic(marketModel.yesPool) : atomic(marketModel.noPool);
             return {
                 ...base, canOpen: false, canStake: false, canResolve: false,
-                state: `Resolved ${outcome}`,
-                next: winningPool === 0n
-                    ? 'Nobody backed the winning outcome, so every unclaimed position can reclaim its original stake.'
-                    : 'Winning positions split the full pool pro rata. Losing positions have no payout.'
+                ...words(marketModel.outcome === 'yes' ? 'settledYes' : 'settledNo', winningPool === 0n ? 'settledRefund' : 'settledSplit')
             };
         }
-        if (status === 'executed') return { ...base, state: 'Ready to resolve YES', next: 'Anyone can submit resolution; the program verifies Executed directly from the proposal account.' };
-        if (status === 'cancelled') return { ...base, state: 'Ready to resolve NO', next: 'Anyone can submit resolution; the program verifies Cancelled directly from the proposal account.' };
-        if (status === 'expired') return {
-            ...base, canOpen: false, canStake: false, canResolve: false,
-            state: 'Awaiting on-chain cancellation',
-            next: 'The app deadline passed, but Expired is not a terminal status understood by this market program. Stakes stay locked until the proposal is cancelled or executed on-chain.'
-        };
-        if (status === 'active') return {
-            ...base,
-            state: exists ? 'Open for staking' : 'Ready to open',
-            next: exists
-                ? 'Stakes are locked while the proposal remains Active. There is no market deadline or early exit.'
-                : 'Any wallet can open the single market for this Active proposal, then stake YES or NO.'
-        };
-        return { ...base, canOpen: false, canStake: false, canResolve: false, state: 'Not tradeable', next: 'The proposal must be Active on-chain before a market can be opened.' };
+        if (status === 'executed') return { ...base, ...words('settleYes', 'settleYes') };
+        if (terminalNo) return { ...base, ...words('settleNo', 'settleNo') };
+        if (status === 'active') return { ...base, ...words(exists ? 'open' : 'needsPool', exists ? 'open' : 'needsPool') };
+        return { ...base, canOpen: false, canStake: false, canResolve: false, ...words('closed', 'closed') };
+    }
+
+    // What every confirmed transaction says; the specs wait for it.
+    function confirmedText() {
+        return 'Confirmed on Solana.';
     }
 
     function marketHistory(events, proposalIds) {
@@ -150,7 +161,7 @@
         if (status.state === 'preparing') return 'Checking your wallet and preparing the market transaction…';
         if (status.state === 'awaiting_signature') return 'Approve the market transaction in your wallet…';
         if (status.state === 'submitted') return 'Submitted to Solana; waiting for confirmation…';
-        if (status.state === 'confirmed') return 'Confirmed on Solana.';
+        if (status.state === 'confirmed') return confirmedText();
         return '';
     }
 
@@ -163,5 +174,5 @@
         return error?.reason || error?.shortMessage || error?.message || 'Unknown market transaction error.';
     }
 
-    return { USDC_DECIMALS, formatAtomic, parseUsdc, model, lifecycle, marketHistory, oracleEvidence, statusText, errorText };
+    return { USDC_DECIMALS, formatAtomic, parseUsdc, model, lifecycle, confirmedText, marketHistory, oracleEvidence, statusText, errorText };
 });

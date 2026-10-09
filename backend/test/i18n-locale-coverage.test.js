@@ -32,6 +32,8 @@ const DYNAMIC_KEY_PREFIXES = [
     'modal.roadWidth.proposalList.sort.',
     'modal.roadWidth.proposalList.typeLabels.',
     'modal.singleBuilding.',
+    'panel.proposal.market.next.',  // market-view.js lifecycle() nextKey (proposal-market-view.test.js pins the keys)
+    'panel.proposal.market.state.', // and stateKey
     'panel.parcel.ownershipType.',
     'panel.proposal.bindingDrift.coverageKinds.', // plot-crossings.test.js checks all four kinds, all locales
     'proposalDrafts.validation.issues.',

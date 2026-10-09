@@ -31,20 +31,25 @@ describe('proposal market presentation', () => {
         expect(view.errorText({ code: 'CONFIRMATION_UNKNOWN' })).toMatch(/Check the transaction/);
     });
 
-    it('states the exact on-chain resolution lifecycle and never treats app expiry as NO', () => {
+    it('states the exact on-chain resolution lifecycle, with Expired terminal since market v2', () => {
         const open = view.model({ yesPool: 2n, noPool: 1n, resolved: false });
-        expect(view.lifecycle('Active', open)).toMatchObject({ state: 'Open for staking', canStake: true, canResolve: false });
-        expect(view.lifecycle('Executed', open)).toMatchObject({ state: 'Ready to resolve YES', canStake: false, canResolve: true, expectedOutcome: 'yes' });
-        expect(view.lifecycle('Cancelled', open)).toMatchObject({ state: 'Ready to resolve NO', canStake: false, canResolve: true, expectedOutcome: 'no' });
-        expect(view.lifecycle('Expired', open)).toMatchObject({ state: 'Awaiting on-chain cancellation', canStake: false, canResolve: false, expectedOutcome: null });
-        expect(view.lifecycle('Expired', open).next).toMatch(/not a terminal status/);
+        expect(view.lifecycle('Active', open)).toMatchObject({ state: 'Open for bets', stateKey: 'open', canStake: true, canResolve: false });
+        expect(view.lifecycle('Active', { exists: false })).toMatchObject({ state: 'No pool yet', stateKey: 'needsPool', canOpen: true });
+        expect(view.lifecycle('Executed', open)).toMatchObject({ state: 'Ready to settle yes', stateKey: 'settleYes', canStake: false, canResolve: true, expectedOutcome: 'yes' });
+        expect(view.lifecycle('Cancelled', open)).toMatchObject({ state: 'Ready to settle no', stateKey: 'settleNo', canStake: false, canResolve: true, expectedOutcome: 'no' });
+        // Market v2: a lens member's expired verdict makes Expired terminal and the market resolves NO.
+        expect(view.lifecycle('Expired', open)).toMatchObject({ state: 'Ready to settle no', canStake: false, canResolve: true, expectedOutcome: 'no' });
+        expect(view.lifecycle('Expired', open).rule).toMatch(/cancelled or expired settles no/);
+        expect(view.confirmedText()).toBe('Confirmed on Solana.');
     });
 
     it('explains both parimutuel winnings and empty-winning-pool refunds', () => {
         const normal = view.model({ yesPool: 2n, noPool: 1n, resolved: true, outcome: 1 });
-        expect(view.lifecycle('Executed', normal).next).toMatch(/split the full pool/);
+        expect(view.lifecycle('Executed', normal)).toMatchObject({ stateKey: 'settledYes', nextKey: 'settledSplit' });
+        expect(view.lifecycle('Executed', normal).next).toMatch(/shares the whole pool/);
         const refunded = view.model({ yesPool: 0n, noPool: 1n, resolved: true, outcome: 1 });
-        expect(view.lifecycle('Executed', refunded).next).toMatch(/reclaim its original stake/);
+        expect(view.lifecycle('Executed', refunded)).toMatchObject({ nextKey: 'settledRefund' });
+        expect(view.lifecycle('Executed', refunded).next).toMatch(/collected back in full/);
     });
 
     it('builds a deduplicated newest-first transaction history for this market only', () => {

@@ -14,6 +14,7 @@ drifting (`design-tokens.test.js`, `i18n-style.test.js`, `page-chrome.test.js`,
 | The product | **Consensus Builder** | app, guides, every `<title>` ("Page · Consensus Builder"; the landing pages may put the product first) |
 | The organisation | **Urban Game Theory** | one byline per page, the social handles, the API host |
 | The hackathon campaign | **Hyperstition: Markets for Possible Cities** | only `deck.html` and `hackathon-demo.html` |
+| The betting surface | **Bets**, tagline **Bet on cities** | the Bets sheet and every place the pools are sold to a person; "hyperstition" and "prediction market" stay campaign and API words |
 
 Every non-map page carries the same header: logo, "Back to the map", language. No page is a dead end.
 
@@ -35,6 +36,7 @@ Every non-map page carries the same header: logo, "Back to the map", language. N
 | People | **owner, author, agent, member**; identity = **profile name** | actor (only as the umbrella in the activity log), user, citizen, username, nickname |
 | Dismissing | **Cancel** abandons, **Close** keeps, **Done** commits | OK, Dismiss, Back (as dismiss), Keep editing, Leave as is |
 | Destroying | **Unapply** (map), **Delete** (a record), **Discard** (a draft), **Reset** (local data) | clear, wipe, erase, remove, rescind |
+| Betting | **bet** (yes or no on a proposal), **pool** (the money on it), **chance** (the pool share), **pays** (the payout multiple), **settle** | stake, wager, odds, forecast, market (in copy), hyperstition |
 
 ## Copy rules
 
@@ -70,7 +72,7 @@ Every non-map page carries the same header: logo, "Back to the map", language. N
 
 ## Phone layout
 
-- The bottom row is a labelled bar (Proposals · Tools · Activity) across the width; its height is
+- The bottom row is a labelled bar (Proposals · Bets · Tools · Activity) across the width; its height is
   `--map-shell-bar-height`, and `--map-shell-bottom-clearance` grows with it, so the tray, the toast
   and the scale bar sit above the bar and the dock sheets end above it (the bar stays reachable).
 - Sheets (parcel, proposal, road, block) run edge to edge above the bar; the proposals list is a

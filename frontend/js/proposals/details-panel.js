@@ -849,18 +849,18 @@ function showProposalInfo(proposal, currentParcelId = null, preserveScrollPositi
             ${isSolanaPledgeProposal ? `<section class="proposal-market-card proposal-market-summary" data-proposal-account="${nftInfo.tokenId}" data-proposal-id="${safeAgentText(fullProposal?.proposalId || '')}" data-proposal-lifecycle="${safeAgentText(supportLifecycle)}" aria-label="Prediction market">
                 <div class="proposal-funding-head">
                     <div>
-                        <div class="proposal-funding-eyebrow">On-chain prediction market</div>
-                        <h3>Will this proposal execute?</h3>
+                        <div class="proposal-funding-eyebrow">${tProposal('bets.tagline', 'Bet on cities')}</div>
+                        <h3>${tProposal('bets.contest.titleSingle', 'Does this proposal get built?')}</h3>
                     </div>
                     <span class="proposal-funding-state" data-market="state">Loading…</span>
                 </div>
                 <div class="proposal-market-grid" aria-live="polite">
-                    <div><span>YES · executes</span><strong data-market="yes">Loading…</strong><small data-market="yes-odds"></small></div>
-                    <div><span>NO · cancelled</span><strong data-market="no">Loading…</strong><small data-market="no-odds"></small></div>
+                    <div><span>${tProposal('panel.proposal.market.yesSide', 'Yes · gets built')}</span><strong data-market="yes">${tProposal('panel.proposal.pledge.loading', 'Loading…')}</strong><small data-market="yes-odds"></small></div>
+                    <div><span>${tProposal('panel.proposal.market.noSide', 'No · dropped')}</span><strong data-market="no">${tProposal('panel.proposal.pledge.loading', 'Loading…')}</strong><small data-market="no-odds"></small></div>
                 </div>
                 <div class="proposal-market-lifecycle">
-                    <div><strong>Resolution rule</strong><span data-market="rule">Reading the on-chain market rule…</span></div>
-                    <div><strong>What happens next</strong><span data-market="next">Loading proposal and market state…</span></div>
+                    <div><strong>${tProposal('panel.proposal.market.ruleTitle', 'How it settles')}</strong><span data-market="rule">${tProposal('panel.proposal.market.ruleLoading', 'Reading the pool rule…')}</span></div>
+                    <div><strong>${tProposal('panel.proposal.market.nextTitle', 'What happens next')}</strong><span data-market="next">${tProposal('panel.proposal.market.nextLoading', 'Loading the proposal and its pool…')}</span></div>
                 </div>
                 <div class="proposal-market-oracle" data-market="oracle">
                     <strong>${tProposal('panel.proposal.market.oracleTitle', 'Oracle recipe')}</strong>
@@ -870,14 +870,14 @@ function showProposalInfo(proposal, currentParcelId = null, preserveScrollPositi
                         <a data-market="event-link" href="#" target="_blank" rel="noopener" hidden>${tProposal('panel.proposal.market.eventLink', 'Source event ↗')}</a>
                     </div>
                 </div>
-                <div class="proposal-market-you" data-market="you">Connect a Solana wallet to see your market position.</div>
+                <div class="proposal-market-you" data-market="you">${tProposal('panel.proposal.market.connectPosition', 'Connect a Solana wallet to see your bets.')}</div>
                 <div class="proposal-market-controls" data-market="controls"></div>
                 <div class="proposal-market-status" data-market="status" aria-live="polite"></div>
-                <div class="proposal-market-history" data-market="history"><strong>Recent market transactions</strong><span>Loading activity evidence…</span></div>
+                <div class="proposal-market-history" data-market="history"><strong>${tProposal('panel.proposal.market.history', 'Recent bets')}</strong><span>${tProposal('world.activity.loading', 'Loading activity…')}</span></div>
                 <div class="proposal-funding-links">
-                    <a href="https://explorer.solana.com/address/${nftInfo.tokenId}?cluster=devnet" target="_blank" rel="noopener">Proposal account ↗</a>
-                    <a data-market="account-link" href="#" target="_blank" rel="noopener" hidden>Market account ↗</a>
-                    <a href="https://explorer.solana.com/address/${window.SolanaMarketClient?.constants?.PROGRAM_ID || 'GDYnzduynKhKgxDhvvKVarn2s23DtzA26s6hycuUYDRB'}?cluster=devnet" target="_blank" rel="noopener">Market program ↗</a>
+                    <a href="https://explorer.solana.com/address/${nftInfo.tokenId}?cluster=devnet" target="_blank" rel="noopener">${tProposal('panel.proposal.pledge.proposalExplorer', 'Proposal account')} ↗</a>
+                    <a data-market="account-link" href="#" target="_blank" rel="noopener" hidden>${tProposal('panel.proposal.market.poolAccount', 'Pool account')} ↗</a>
+                    <a href="https://explorer.solana.com/address/${window.SolanaMarketClient?.constants?.PROGRAM_ID || 'GDYnzduynKhKgxDhvvKVarn2s23DtzA26s6hycuUYDRB'}?cluster=devnet" target="_blank" rel="noopener">${tProposal('panel.proposal.market.poolProgram', 'Pool program')} ↗</a>
                 </div>
             </section>` : ''}
             ${parcelAcceptancePlaceholder}
@@ -1722,8 +1722,10 @@ async function hydrateProposalPossibilityTimeline(proposalAccount, proposalId, c
     }));
 }
 
+// The side as a word people read ("yes" / "no"), translated.
 function marketSideLabel(side) {
-    return Number(side) === 1 ? 'YES' : 'NO';
+    const t = getProposalI18nHelper();
+    return Number(side) === 1 ? t('bets.row.yes', 'Yes').toLowerCase() : t('bets.row.no', 'No').toLowerCase();
 }
 
 function marketSideValue(side) {
@@ -1850,23 +1852,30 @@ async function hydrateProposalMarketHistory(card, proposalAccount, proposalId) {
         // Local confirmed wallet actions remain useful when the public feed is temporarily offline.
     }
     const history = window.ProposalMarketView.marketHistory(events, [proposalAccount, proposalId]).slice(0, 5);
+    const t = getProposalI18nHelper();
     const heading = document.createElement('strong');
-    heading.textContent = 'Recent market transactions';
+    heading.textContent = t('panel.proposal.market.history', 'Recent bets');
     container.replaceChildren(heading);
     if (!history.length) {
         const empty = document.createElement('span');
-        empty.textContent = 'No transaction-backed market actions found in the recent activity window.';
+        empty.textContent = t('panel.proposal.market.historyEmpty', 'No bets on this proposal in the recent activity feed.');
         container.append(empty);
         return;
     }
+    const LABELS = {
+        createMarket: ['panel.proposal.market.historyOpened', 'Opened the pool'],
+        stake: ['panel.proposal.market.historyBet', 'Bet'],
+        resolve: ['panel.proposal.market.historySettled', 'Settled'],
+        claim: ['panel.proposal.market.historyCollected', 'Collected']
+    };
     history.forEach(event => {
         const row = document.createElement('span');
-        const label = event.action?.type === 'createMarket' ? 'Opened market' : event.action?.type === 'stake' ? 'Staked' : event.action?.type === 'resolve' ? 'Resolved' : 'Claimed';
+        const [labelKey, labelFallback] = LABELS[event.action?.type] || LABELS.claim;
         const actor = event.actor?.name ? `${event.actor.name} · ` : '';
-        row.append(document.createTextNode(`${actor}${label} · `));
+        row.append(document.createTextNode(`${actor}${t(labelKey, labelFallback)} · `));
         const link = document.createElement('a');
         link.href = `https://explorer.solana.com/tx/${encodeURIComponent(event.transaction)}?cluster=devnet`;
-        link.target = '_blank'; link.rel = 'noopener'; link.textContent = 'transaction ↗';
+        link.target = '_blank'; link.rel = 'noopener'; link.textContent = `${t('gameDialogs.log.row.transaction', 'transaction')} ↗`;
         row.append(link);
         container.append(row);
     });
@@ -1874,8 +1883,11 @@ async function hydrateProposalMarketHistory(card, proposalAccount, proposalId) {
 
 function renderProposalMarketCard(card, proposalAccount, lifecycle, summary) {
     const view = window.ProposalMarketView;
+    const t = getProposalI18nHelper();
     const model = view.model(summary?.market, { yes: summary?.yes, no: summary?.no });
-    const lifecycleModel = view.lifecycle(lifecycle, model);
+    // The proposal account's status is what the program resolves from; the app's own lifecycle word
+    // (expiry-aware, possibly ahead of the chain) only stands in when the account could not be read.
+    const lifecycleModel = view.lifecycle(summary?.chainStatus || lifecycle, model);
     const state = card.querySelector('[data-market="state"]');
     const yes = card.querySelector('[data-market="yes"]');
     const no = card.querySelector('[data-market="no"]');
@@ -1886,55 +1898,65 @@ function renderProposalMarketCard(card, proposalAccount, lifecycle, summary) {
     const rule = card.querySelector('[data-market="rule"]');
     const next = card.querySelector('[data-market="next"]');
     const marketAccountLink = card.querySelector('[data-market="account-link"]');
-    if (rule) rule.textContent = lifecycleModel.rule;
-    if (next) next.textContent = lifecycleModel.next;
+    const stateText = t(`panel.proposal.market.state.${lifecycleModel.stateKey}`, lifecycleModel.state);
+    const nextText = t(`panel.proposal.market.next.${lifecycleModel.nextKey}`, lifecycleModel.next);
+    const money = amount => (typeof CbFormat !== 'undefined' && CbFormat.formatMoney
+        ? CbFormat.formatMoney(Number(view.formatAtomic(amount)), 'USDC') : `${view.formatAtomic(amount)} USDC`);
+    const chance = value => (value === null ? t('bets.row.noBets', 'No bets yet')
+        : t('bets.row.chance', '{{percent}} chance', { percent: (typeof CbFormat !== 'undefined' && CbFormat.formatPercent
+            ? CbFormat.formatPercent(value, { ofHundred: true, maxFractionDigits: 1 }) : `${value}%`) }));
+    const connectButton = `<button type="button" class="btn btn-outline-primary" onclick="handleWalletButtonClick()">${safeAgentText(t('panel.proposal.support.connect', 'Connect Solana wallet'))}</button>`;
+    const muted = text => `<span class="proposal-market-muted">${safeAgentText(text)}</span>`;
+    if (rule) rule.textContent = t('panel.proposal.market.rule', lifecycleModel.rule);
+    if (next) next.textContent = nextText;
     if (marketAccountLink && summary?.marketAddress) {
         marketAccountLink.href = `https://explorer.solana.com/address/${encodeURIComponent(summary.marketAddress)}?cluster=devnet`;
         marketAccountLink.hidden = !model.exists;
     }
+    if (state) state.textContent = stateText;
     if (!model.exists) {
-        if (state) state.textContent = lifecycleModel.state;
         if (yes) yes.textContent = '—';
         if (no) no.textContent = '—';
-        if (yesOdds) yesOdds.textContent = 'No stakes yet';
-        if (noOdds) noOdds.textContent = 'No stakes yet';
-        if (mine) mine.textContent = 'No market has been opened for this proposal yet.';
+        if (yesOdds) yesOdds.textContent = t('bets.row.noBets', 'No bets yet');
+        if (noOdds) noOdds.textContent = t('bets.row.noBets', 'No bets yet');
+        if (mine) mine.textContent = t('panel.proposal.market.noPool', 'No pool yet for this proposal.');
         if (controls) controls.innerHTML = !summary?.wallet
-            ? (lifecycleModel.canOpen ? '<button type="button" class="btn btn-outline-primary" onclick="handleWalletButtonClick()">Connect Solana wallet</button>' : `<span class="proposal-market-muted">${safeAgentText(lifecycleModel.next)}</span>`)
+            ? (lifecycleModel.canOpen ? connectButton : muted(nextText))
             : !lifecycleModel.canOpen
-                ? `<span class="proposal-market-muted">${safeAgentText(lifecycleModel.next)}</span>`
-                : `<button type="button" class="btn btn-outline-primary" onclick="settleProposalMarket(${inlineJsArg(proposalAccount)}, 'createMarket')">Open market</button>`;
+                ? muted(nextText)
+                : `<button type="button" class="btn btn-outline-primary" onclick="settleProposalMarket(${inlineJsArg(proposalAccount)}, 'createMarket')">${safeAgentText(t('bets.row.openMarket', 'Open the pool'))}</button>`;
         return;
     }
-    if (state) state.textContent = lifecycleModel.state;
-    if (yes) yes.textContent = `${view.formatAtomic(model.yesPool)} USDC`;
-    if (no) no.textContent = `${view.formatAtomic(model.noPool)} USDC`;
-    if (yesOdds) yesOdds.textContent = model.yesOdds === null ? 'No odds yet' : `${model.yesOdds}% implied odds`;
-    if (noOdds) noOdds.textContent = model.noOdds === null ? 'No odds yet' : `${model.noOdds}% implied odds`;
+    if (yes) yes.textContent = money(model.yesPool);
+    if (no) no.textContent = money(model.noPool);
+    if (yesOdds) yesOdds.textContent = chance(model.yesOdds);
+    if (noOdds) noOdds.textContent = chance(model.noOdds);
+    const betLine = (side, position) => t('panel.proposal.market.betLine', '{{side}} {{amount}}', { side: marketSideLabel(side), amount: money(position.amount) })
+        + (position.claimed ? ` (${t('panel.proposal.market.paidOut', 'paid out')})` : '');
     const positionLines = [];
-    if (model.yesPosition) positionLines.push(`YES: ${view.formatAtomic(model.yesPosition.amount)} USDC${model.yesPosition.claimed ? ' · claimed' : ''}`);
-    if (model.noPosition) positionLines.push(`NO: ${view.formatAtomic(model.noPosition.amount)} USDC${model.noPosition.claimed ? ' · claimed' : ''}`);
-    if (mine) mine.textContent = summary?.wallet ? (positionLines.length ? `Your position — ${positionLines.join('; ')}.` : 'You have no position in this market.') : 'Connect a Solana wallet to see your market position.';
+    if (model.yesPosition) positionLines.push(betLine(1, model.yesPosition));
+    if (model.noPosition) positionLines.push(betLine(0, model.noPosition));
+    if (mine) mine.textContent = summary?.wallet
+        ? (positionLines.length ? t('panel.proposal.market.yourBets', 'Your bets: {{lines}}', { lines: positionLines.join('; ') }) : t('panel.proposal.market.noBets', 'You have no bets on this proposal.'))
+        : t('panel.proposal.market.connectPosition', 'Connect a Solana wallet to see your bets.');
     if (!controls) return;
     if (!summary?.wallet) {
-        controls.innerHTML = (lifecycleModel.canStake || lifecycleModel.canResolve || model.canClaim)
-            ? '<button type="button" class="btn btn-outline-primary" onclick="handleWalletButtonClick()">Connect Solana wallet</button>'
-            : `<span class="proposal-market-muted">${safeAgentText(lifecycleModel.next)}</span>`;
+        controls.innerHTML = (lifecycleModel.canStake || lifecycleModel.canResolve || model.canClaim) ? connectButton : muted(nextText);
         return;
     }
     if (model.resolved) {
-        controls.innerHTML = model.claimSides.map(side => `<button type="button" class="btn btn-success" onclick="settleProposalMarket(${inlineJsArg(proposalAccount)}, 'claim', ${side === 'yes' ? 1 : 0})">Claim ${side.toUpperCase()}</button>`).join('')
-            || '<span class="proposal-market-muted">No claimable position.</span>';
+        controls.innerHTML = model.claimSides.map(side => `<button type="button" class="btn btn-success" onclick="settleProposalMarket(${inlineJsArg(proposalAccount)}, 'claim', ${side === 'yes' ? 1 : 0})">${safeAgentText(t('panel.proposal.market.collect', 'Collect {{side}} winnings', { side: marketSideLabel(side === 'yes' ? 1 : 0) }))}</button>`).join('')
+            || muted(t('panel.proposal.market.nothingToCollect', 'Nothing to collect.'));
         return;
     }
     if (lifecycleModel.canResolve) {
-        controls.innerHTML = `<button type="button" class="btn btn-outline-secondary" onclick="settleProposalMarket(${inlineJsArg(proposalAccount)}, 'resolve')">Resolve ${lifecycleModel.expectedOutcome.toUpperCase()} from proposal status</button>`;
+        controls.innerHTML = `<button type="button" class="btn btn-outline-secondary" onclick="settleProposalMarket(${inlineJsArg(proposalAccount)}, 'resolve')">${safeAgentText(t('panel.proposal.market.settle', "Settle {{outcome}} from the proposal's status", { outcome: marketSideLabel(lifecycleModel.expectedOutcome === 'yes' ? 1 : 0) }))}</button>`;
     } else if (lifecycleModel.canStake) {
         controls.innerHTML = `
-            <button type="button" class="btn btn-market-yes" onclick="openProposalMarketStakeDialog(${inlineJsArg(proposalAccount)}, 1)">Stake YES</button>
-            <button type="button" class="btn btn-market-no" onclick="openProposalMarketStakeDialog(${inlineJsArg(proposalAccount)}, 0)">Stake NO</button>`;
+            <button type="button" class="btn btn-market-yes" onclick="openProposalMarketStakeDialog(${inlineJsArg(proposalAccount)}, 1)">${safeAgentText(t('panel.proposal.market.betYes', 'Bet yes'))}</button>
+            <button type="button" class="btn btn-market-no" onclick="openProposalMarketStakeDialog(${inlineJsArg(proposalAccount)}, 0)">${safeAgentText(t('panel.proposal.market.betNo', 'Bet no'))}</button>`;
     } else {
-        controls.innerHTML = `<span class="proposal-market-muted">${safeAgentText(lifecycleModel.next)}</span>`;
+        controls.innerHTML = muted(nextText);
     }
 }
 
@@ -1942,17 +1964,19 @@ function openProposalMarketStakeDialog(proposalAccount, side) {
     const existing = document.getElementById('proposalMarketOverlay');
     if (existing) existing.remove();
     const overlay = document.createElement('div');
+    const t = getProposalI18nHelper();
     const label = marketSideLabel(side);
+    const title = t('panel.proposal.market.dialogTitle', 'Bet {{side}}', { side: label });
     overlay.id = 'proposalMarketOverlay';
     overlay.className = 'proposal-boost-overlay';
     overlay.addEventListener('click', event => { if (event.target === overlay) overlay.remove(); });
     overlay.innerHTML = `
         <div class="proposal-boost-modal" role="dialog" aria-modal="true" aria-labelledby="proposal-market-title">
-            <div class="proposal-boost-header"><h3 id="proposal-market-title">Stake ${label}</h3><button type="button" class="proposal-boost-close" aria-label="Close market dialog">×</button></div>
+            <div class="proposal-boost-header"><h3 id="proposal-market-title">${safeAgentText(title)}</h3><button type="button" class="proposal-boost-close" aria-label="${safeAgentText(t('common.close', 'Close'))}">×</button></div>
             <div class="proposal-boost-body">
-                <p class="proposal-boost-copy">Stake devnet USDC on whether this proposal executes (YES) or is cancelled (NO). Stakes remain locked until market resolution.</p>
+                <p class="proposal-boost-copy">${safeAgentText(t('panel.proposal.market.dialogCopy', 'Bet devnet USDC on whether this proposal gets built (yes) or is dropped (no). Bets stay in the pool until it settles.'))}</p>
                 <div class="proposal-offer-row proposal-boost-row" style="display:flex; gap:8px; align-items:center;"><input type="text" data-market-amount placeholder="1.00" inputmode="decimal" autocomplete="off"><span class="proposal-market-currency">USDC</span></div>
-                <div class="proposal-boost-actions"><button type="button" class="btn proposal-boost-send" data-market-submit>Stake ${label}</button></div>
+                <div class="proposal-boost-actions"><button type="button" class="btn proposal-boost-send" data-market-submit>${safeAgentText(title)}</button></div>
                 <div class="proposal-market-status" data-market-dialog-status aria-live="polite"></div>
             </div>
         </div>`;
@@ -1983,8 +2007,9 @@ async function submitProposalMarketStake(proposalAccount, side, overlay) {
     if (button) button.disabled = true;
     try {
         const result = await window.SolanaMarketBridge.stake({ proposal: proposalAccount, side, amount, onStatus: item => status(view.statusText(item), item.explorerUrl) });
-        status('Confirmed on Solana.', result.explorerUrl);
-        await recordHumanProposalSupport({ wallet, action: 'stake', proposalId: proposalAccount, amount: rawAmount, result, message: `${proposalSupportActor(wallet).name} staked ${rawAmount} USDC on ${marketSideLabel(side)}.` });
+        status(view.confirmedText(), result.explorerUrl);
+        notifyProposalMarketChanged(proposalAccount);
+        await recordHumanProposalSupport({ wallet, action: 'stake', proposalId: proposalAccount, amount: rawAmount, result, message: `${proposalSupportActor(wallet).name} bet ${rawAmount} USDC on ${marketSideLabel(side)}.` });
         setTimeout(() => { overlay?.remove(); hydrateProposalMarketCard(proposalAccount, currentProposalDetailsContext ? getLifecycleStatus(currentProposalDetailsContext) : ''); }, 300);
     } catch (error) {
         status(view.errorText(error), error?.explorerUrl);
@@ -2001,14 +2026,16 @@ async function settleProposalMarket(proposalAccount, action, side = null) {
     const key = `${action}:${proposalAccount}:${wallet}:${side ?? ''}`;
     if (proposalMarketInFlight.has(key)) return;
     proposalMarketInFlight.add(key);
-    setProposalMarketStatus(card, action === 'claim' ? 'Preparing claim…'
-        : action === 'createMarket' ? 'Preparing market…' : 'Preparing market resolution…');
+    const t = getProposalI18nHelper();
+    setProposalMarketStatus(card, action === 'claim' ? t('panel.proposal.market.preparingCollect', 'Preparing collection…')
+        : action === 'createMarket' ? t('panel.proposal.market.preparingPool', 'Preparing the pool…') : t('panel.proposal.market.preparingSettle', 'Preparing settlement…'));
     try {
         const result = await window.SolanaMarketBridge[action]({ proposal: proposalAccount, ...(side === null ? {} : { side }), onStatus: item => setProposalMarketStatus(card, view.statusText(item), item.explorerUrl) });
-        const message = action === 'claim' ? `Claimed ${marketSideLabel(side)} position.`
-            : action === 'createMarket' ? 'Opened the proposal prediction market.'
-                : 'Market resolved from the proposal’s on-chain terminal status.';
-        setProposalMarketStatus(card, 'Confirmed on Solana.', result.explorerUrl);
+        const message = action === 'claim' ? t('panel.proposal.market.collectedMessage', 'Collected {{side}} winnings.', { side: marketSideLabel(side) })
+            : action === 'createMarket' ? t('panel.proposal.market.historyOpened', 'Opened the pool')
+                : t('panel.proposal.market.settledMessage', "Settled from the proposal's on-chain status.");
+        setProposalMarketStatus(card, view.confirmedText(), result.explorerUrl);
+        notifyProposalMarketChanged(proposalAccount);
         await recordHumanProposalSupport({ wallet, action, proposalId: proposalAccount, result, message: `${proposalSupportActor(wallet).name}: ${message}` });
         hydrateProposalMarketCard(proposalAccount, currentProposalDetailsContext ? getLifecycleStatus(currentProposalDetailsContext) : '');
     } catch (error) {
@@ -2016,6 +2043,11 @@ async function settleProposalMarket(proposalAccount, action, side = null) {
     } finally {
         proposalMarketInFlight.delete(key);
     }
+}
+
+// The Bets sheet (js/bets/bets-sheet.js) refreshes its pools after a confirmed market transaction.
+function notifyProposalMarketChanged(proposalAccount) {
+    try { document.dispatchEvent(new CustomEvent('proposal-market:changed', { detail: { proposalAccount } })); } catch (_) { }
 }
 
 function proposalSupportActor(wallet) {

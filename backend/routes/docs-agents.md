@@ -370,6 +370,16 @@ The repository's `backend/scripts/oracle-fact-demo.mjs` performs the complete dr
 
 ## 9. Markets
 
+### Find the pools in a city
+
+`GET /markets?city={city}` lists every **contest** in a city: proposals that share parcels, grouped, each
+with its yes/no pool when one exists. Per proposal you get `proposalAccount`, `chainStatus` (what the
+market program will resolve from), `bettable` (Active on-chain with an open pool), `canOpenMarket`
+(minted and Active, no pool yet) and `market` (`address`, `yesPool`, `noPool` and `poolAtomic` in
+atomic USDC as decimal strings, `resolved`, `outcome`). Contests with no minted proposal are omitted.
+The answer is cached for 20 seconds; add `&fresh=1` right after your own transaction.
+
+
 Every minted proposal can get a parimutuel prediction market on whether it executes
 (`proposal_market`, program `$(marketProgram)` on devnet, stakes in the same devnet USDC). Anyone may
 create the market, stake YES/NO while the proposal is Active, resolve it once the proposal is Executed

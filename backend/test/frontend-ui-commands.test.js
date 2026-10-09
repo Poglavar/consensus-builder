@@ -284,9 +284,9 @@ describe('the floating shell', () => {
     it('wires every shell button to a sheet that exists', () => {
         const sheets = new Set(openingTags(shellHtml, 'section')
             .filter(tag => /class="map-sheet\b/.test(tag)).map(tag => attr(tag, 'id')));
-        expect([...sheets].sort()).toEqual(['activity-sheet', 'layers-sheet', 'proposals-sheet', 'settings-sheet', 'tools-sheet']);
+        expect([...sheets].sort()).toEqual(['activity-sheet', 'bets-sheet', 'layers-sheet', 'proposals-sheet', 'settings-sheet', 'tools-sheet']);
         const triggers = openingTags(shellHtml, 'button').filter(tag => attr(tag, 'data-sheet-target') !== null);
-        expect(triggers.length).toBe(5);
+        expect(triggers.length).toBe(6);
         for (const tag of triggers) {
             const target = attr(tag, 'data-sheet-target');
             expect(sheets.has(target), target).toBe(true);

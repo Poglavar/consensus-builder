@@ -1,0 +1,540 @@
+{
+ "target_crs": "EPSG:2227 (NAD83 / California zone 3, US ft) for fitting; outputs EPSG:4326",
+ "ground_truth": "DataSF \"Bayview Hunters Point Area B Zone 1\" boundary (research/derived/candlestick_point_zone1_boundary_wgs84.geojson)",
+ "anchor_figure": {
+  "figure": "FEIR Addendum 7 (Aug 2024) Figure 4, Approved 2019 CP Maximum Building Heights, PDF p.22 (project boundary drawn)",
+  "model": "similarity (scale, rotation, translation) page pt -> EPSG:2227",
+  "fit": "least squares on 11 boundary corner pairs (both arms straight and traced within 5 m)",
+  "corner_rms_m": 0.75,
+  "corner_max_m": 1.25,
+  "corner_leave_one_out_rms_m": 1.02,
+  "dense_boundary_check": "median 1.10 m, RMS 2.73 m, p95 6.34 m over the 78% of Zone 1 boundary length traced by the figure line within 10 m (rest: SW State Park edge and Jamestown frontage drawn differently in the figure)",
+  "scale_ft_per_pt": 11.9849,
+  "printed_scale_bar_ft_per_pt": 11.967,
+  "rotation_deg": 0.076,
+  "corners": [
+   {
+    "zone1_E_N_ft": [
+     6015415.774056452,
+     2088223.1486813705
+    ],
+    "figure_page_pt": [
+     178.89866465044906,
+     329.70916381294955
+    ],
+    "residual_m": 0.9601035945902762
+   },
+   {
+    "zone1_E_N_ft": [
+     6016104.836949357,
+     2089149.6020450667
+    ],
+    "figure_page_pt": [
+     236.67325902485754,
+     252.18730365036754
+    ],
+    "residual_m": 0.7045041129395976
+   },
+   {
+    "zone1_E_N_ft": [
+     6016164.603193203,
+     2089229.7759372334
+    ],
+    "figure_page_pt": [
+     241.59590191260213,
+     245.6247741393454
+    ],
+    "residual_m": 0.5324138819993802
+   },
+   {
+    "zone1_E_N_ft": [
+     6015684.0725941695,
+     2089588.0040789542
+    ],
+    "figure_page_pt": [
+     201.42813779122662,
+     215.61698223015992
+    ],
+    "residual_m": 0.08265088990391882
+   },
+   {
+    "zone1_E_N_ft": [
+     6015623.6090557035,
+     2089508.349332444
+    ],
+    "figure_page_pt": [
+     196.51150810706895,
+     222.32314123303513
+    ],
+    "residual_m": 0.6102435209596792
+   },
+   {
+    "zone1_E_N_ft": [
+     6015572.295769973,
+     2089546.6025661067
+    ],
+    "figure_page_pt": [
+     192.07147111656377,
+     219.1545104944962
+    ],
+    "residual_m": 0.4364379296220616
+   },
+   {
+    "zone1_E_N_ft": [
+     6015632.759951844,
+     2089626.256823545
+    ],
+    "figure_page_pt": [
+     197.11897798179416,
+     212.43801281991182
+    ],
+    "residual_m": 0.17932471727754778
+   },
+   {
+    "zone1_E_N_ft": [
+     6015098.648981774,
+     2090024.4284690528
+    ],
+    "figure_page_pt": [
+     152.59834231750574,
+     179.30525462914375
+    ],
+    "residual_m": 0.6994212044441416
+   },
+   {
+    "zone1_E_N_ft": [
+     6015710.655462335,
+     2090840.1995857332
+    ],
+    "figure_page_pt": [
+     203.61856635898584,
+     110.81426130991895
+    ],
+    "residual_m": 1.251401725574163
+   },
+   {
+    "zone1_E_N_ft": [
+     6015176.282643307,
+     2087607.899008646
+    ],
+    "figure_page_pt": [
+     158.72099546075333,
+     380.5705482493795
+    ],
+    "residual_m": 0.7964943016995267
+   },
+   {
+    "zone1_E_N_ft": [
+     6015612.678901236,
+     2087758.371954572
+    ],
+    "figure_page_pt": [
+     195.15238738659536,
+     367.9610470767948
+    ],
+    "residual_m": 1.1279982376350883
+   }
+  ],
+  "matrix_page_to_EPSG2227": [
+   [
+    11.984862944758538,
+    0.01583917158809961,
+    6013266.621709684
+   ],
+   [
+    0.01583917158809961,
+    -11.984862944758538,
+    2092168.687657837
+   ]
+  ]
+ },
+ "chained_figures": {
+  "add7-23": {
+   "figure": "Addendum 7 Fig 5, Proposed 2024 CP Maximum Building Heights, PDF p.23",
+   "fitted_to": "block outlines of the georeferenced Addendum 7 Fig 4",
+   "block_outline_residual_m": {
+    "rms": 0.17,
+    "median": 0.07,
+    "p95": 0.15,
+    "share_of_outline_matched": 0.95
+   },
+   "block_corner_matches": 238,
+   "block_corner_rms_m": 0.32,
+   "scale_ft_per_pt": 12.5001,
+   "rotation_deg": 0.077,
+   "matrix_page_to_EPSG2227": [
+    [
+     12.500071585726904,
+     0.016903008308120308,
+     6013104.471914953
+    ],
+    [
+     0.016903008308120308,
+     -12.500071585726904,
+     2092302.779211767
+    ]
+   ],
+   "printed_scale_bar_ft_per_pt": 12.483
+  },
+  "add7-21": {
+   "figure": "Addendum 7 Fig 3, 2024 Modified Project Variant Land Use Plan, PDF p.21",
+   "fitted_to": "block outlines of the georeferenced Addendum 7 Fig 4",
+   "block_outline_residual_m": {
+    "rms": 0.15,
+    "median": 0.1,
+    "p95": 0.31,
+    "share_of_outline_matched": 1.0
+   },
+   "block_corner_matches": 161,
+   "block_corner_rms_m": 0.07,
+   "scale_ft_per_pt": 8.2905,
+   "rotation_deg": 0.075,
+   "matrix_page_to_EPSG2227": [
+    [
+     8.29049022180305,
+     0.010881033677419768,
+     6013458.567353522
+    ],
+    [
+     0.010881033677419768,
+     -8.29049022180305,
+     2090145.2721128438
+    ]
+   ],
+   "printed_scale_bar_ft_per_pt": 8.279
+  },
+  "d4d24-279": {
+   "figure": "D4D Fig 7.1 Alice Griffith Block Plan, PDF p.279",
+   "fitted_to": "block outlines of the georeferenced Addendum 7 Fig 4",
+   "block_outline_residual_m": {
+    "rms": 0.37,
+    "median": 0.1,
+    "p95": 0.16,
+    "share_of_outline_matched": 0.88
+   },
+   "block_corner_matches": 66,
+   "block_corner_rms_m": 1.45,
+   "scale_ft_per_pt": 5.0564,
+   "rotation_deg": 0.083,
+   "matrix_page_to_EPSG2227": [
+    [
+     5.056398865032938,
+     0.007354385733151406,
+     6014150.479750438
+    ],
+    [
+     0.007354385733151406,
+     -5.056398865032938,
+     2091590.8967272448
+    ]
+   ]
+  },
+  "d4d24-281": {
+   "figure": "D4D Fig 7.2 Candlestick North Block Plan, PDF p.281",
+   "fitted_to": "block outlines of the georeferenced Addendum 7 Fig 4",
+   "block_outline_residual_m": {
+    "rms": 0.54,
+    "median": 0.1,
+    "p95": 0.18,
+    "share_of_outline_matched": 0.91
+   },
+   "block_corner_matches": 66,
+   "block_corner_rms_m": 0.97,
+   "scale_ft_per_pt": 5.0573,
+   "rotation_deg": 0.074,
+   "matrix_page_to_EPSG2227": [
+    [
+     5.05726338669864,
+     0.006505764427671994,
+     6015406.05293918
+    ],
+    [
+     0.006505764427671994,
+     -5.05726338669864,
+     2090682.5921205522
+    ]
+   ]
+  },
+  "d4d24-283": {
+   "figure": "D4D Fig 7.3 Candlestick Center Block Plan, PDF p.283",
+   "fitted_to": "block outlines of the georeferenced Addendum 7 Fig 4",
+   "block_outline_residual_m": {
+    "rms": 0.56,
+    "median": 0.11,
+    "p95": 0.36,
+    "share_of_outline_matched": 0.76
+   },
+   "block_corner_matches": 46,
+   "block_corner_rms_m": 1.84,
+   "scale_ft_per_pt": 5.0575,
+   "rotation_deg": 0.092,
+   "matrix_page_to_EPSG2227": [
+    [
+     5.057503284876641,
+     0.008121716594078442,
+     6014632.935629445
+    ],
+    [
+     0.008121716594078442,
+     -5.057503284876641,
+     2089646.7619237509
+    ]
+   ]
+  },
+  "d4d24-285": {
+   "figure": "D4D Fig 7.4 Candlestick South Block Plan, PDF p.285",
+   "fitted_to": "block outlines of the georeferenced Addendum 7 Fig 4",
+   "block_outline_residual_m": {
+    "rms": 0.57,
+    "median": 0.09,
+    "p95": 0.17,
+    "share_of_outline_matched": 0.92
+   },
+   "block_corner_matches": 39,
+   "block_corner_rms_m": 0.49,
+   "scale_ft_per_pt": 5.0575,
+   "rotation_deg": 0.078,
+   "matrix_page_to_EPSG2227": [
+    [
+     5.057533261718759,
+     0.006894031642988391,
+     6015460.846378936
+    ],
+    [
+     0.006894031642988391,
+     -5.057533261718759,
+     2088963.9437977972
+    ]
+   ]
+  },
+  "devplan-2": {
+   "figure": "DDA Exhibit A Development Plan (map generated May 8 2025), PDF p.2",
+   "fitted_to": "block outlines of the georeferenced Addendum 7 Fig 4",
+   "block_outline_residual_m": {
+    "rms": 0.55,
+    "median": 0.16,
+    "p95": 0.43,
+    "share_of_outline_matched": 0.98
+   },
+   "block_corner_matches": 214,
+   "block_corner_rms_m": 0.24,
+   "scale_ft_per_pt": 21.4892,
+   "rotation_deg": -89.896,
+   "matrix_page_to_EPSG2227": [
+    [
+     0.03897713005440787,
+     -21.489114776549503,
+     6029394.095061599
+    ],
+    [
+     -21.489114776549503,
+     -0.03897713005440787,
+     2097429.863137274
+    ]
+   ]
+  },
+  "d4d24-147": {
+   "figure": "D4D Fig 4.3 Building Heights, PDF p.147 (used only to read tower letters)",
+   "fitted_to": "block outlines of the georeferenced Addendum 7 Fig 4",
+   "block_outline_residual_m": {
+    "rms": 1.67,
+    "median": 1.05,
+    "p95": 3.53,
+    "share_of_outline_matched": 0.82
+   },
+   "block_corner_matches": 204,
+   "block_corner_rms_m": 3.16,
+   "scale_ft_per_pt": 9.298,
+   "rotation_deg": 0.241,
+   "matrix_page_to_EPSG2227": [
+    [
+     9.245024537000067,
+     0.01069649118283853,
+     6013903.052323033
+    ],
+    [
+     0.01069649118283853,
+     -9.245024537000067,
+     2092051.8974762682
+    ]
+   ]
+  }
+ },
+ "independent_checks": {
+  "datasf_recorded_lots": {
+   "what": "DataSF active parcels recorded 2015-2019 inside Zone 1 (never used in any fit) vs georeferenced D4D blocks",
+   "lots": [
+    {
+     "blklot": "5000033",
+     "date_map_add": "2016-08-31",
+     "block_id": "CS-6a",
+     "lot_acres": 1.15,
+     "table_acres": 1.15,
+     "iou": 0.966,
+     "median_m": 0.45,
+     "p90_m": 1.11,
+     "max_m": 1.24
+    },
+    {
+     "blklot": "5000028",
+     "date_map_add": "2016-08-31",
+     "block_id": "CN-11a",
+     "lot_acres": 1.46,
+     "table_acres": 1.46,
+     "iou": 0.964,
+     "median_m": 0.66,
+     "p90_m": 0.92,
+     "max_m": 0.96
+    },
+    {
+     "blklot": "5000027",
+     "date_map_add": "2016-08-31",
+     "block_id": "CN-10a",
+     "lot_acres": 1.31,
+     "table_acres": 1.31,
+     "iou": 0.969,
+     "median_m": 0.52,
+     "p90_m": 0.74,
+     "max_m": 0.79
+    },
+    {
+     "blklot": "5000034",
+     "date_map_add": "2016-08-31",
+     "block_id": "CS-8a",
+     "lot_acres": 1.2,
+     "table_acres": 1.21,
+     "iou": 0.966,
+     "median_m": 0.59,
+     "p90_m": 0.95,
+     "max_m": 1.11
+    },
+    {
+     "blklot": "8804001",
+     "date_map_add": "2015-01-20",
+     "block_id": "AG-2",
+     "lot_acres": 1.23,
+     "table_acres": 1.23,
+     "iou": 0.973,
+     "median_m": 0.46,
+     "p90_m": 0.6,
+     "max_m": 1.32
+    },
+    {
+     "blklot": "8803001",
+     "date_map_add": "2015-01-20",
+     "block_id": "AG-1",
+     "lot_acres": 1.44,
+     "table_acres": 1.45,
+     "iou": 0.972,
+     "median_m": 0.49,
+     "p90_m": 0.71,
+     "max_m": 1.34
+    },
+    {
+     "blklot": "8811001",
+     "date_map_add": "2015-01-20",
+     "block_id": "AG-4",
+     "lot_acres": 1.23,
+     "table_acres": 1.23,
+     "iou": 0.974,
+     "median_m": 0.37,
+     "p90_m": 0.75,
+     "max_m": 1.12
+    },
+    {
+     "blklot": "8812001",
+     "date_map_add": "2015-01-20",
+     "block_id": "AG-5",
+     "lot_acres": 0.81,
+     "table_acres": 0.81,
+     "iou": 0.971,
+     "median_m": 0.25,
+     "p90_m": 0.82,
+     "max_m": 1.29
+    },
+    {
+     "blklot": "5000036",
+     "date_map_add": "2016-08-31",
+     "block_id": "CS-11a",
+     "lot_acres": 1.54,
+     "table_acres": 1.53,
+     "iou": 0.947,
+     "median_m": 1.32,
+     "p90_m": 1.77,
+     "max_m": 1.88
+    },
+    {
+     "blklot": "5000043",
+     "date_map_add": "2019-08-08",
+     "block_id": "CC-1",
+     "lot_acres": 22.25,
+     "table_acres": 22.29,
+     "iou": 0.992,
+     "median_m": 0.33,
+     "p90_m": 1.23,
+     "max_m": 1.8
+    },
+    {
+     "blklot": "5000025",
+     "date_map_add": "2016-08-31",
+     "block_id": "CN-1a",
+     "lot_acres": 1.45,
+     "table_acres": 1.45,
+     "iou": 0.986,
+     "median_m": 0.23,
+     "p90_m": 0.5,
+     "max_m": 0.54
+    },
+    {
+     "blklot": "5000035",
+     "date_map_add": "2016-08-31",
+     "block_id": "CS-9a",
+     "lot_acres": 1.25,
+     "table_acres": 1.25,
+     "iou": 0.96,
+     "median_m": 0.82,
+     "p90_m": 1.19,
+     "max_m": 1.31
+    },
+    {
+     "blklot": "5000026",
+     "date_map_add": "2016-08-31",
+     "block_id": "CN-2a",
+     "lot_acres": 1.31,
+     "table_acres": 1.31,
+     "iou": 0.977,
+     "median_m": 0.37,
+     "p90_m": 0.63,
+     "max_m": 0.67
+    }
+   ]
+  }
+ },
+ "raster_figure_a5_3n": {
+  "image": "figure_a5_3n_innovation_district_heights.jpg",
+  "source": "Candlestick Point D4D 2024 amendment, Figure A5.3N Building Height Block Area Map, PDF p.38 (embedded JPEG, 1154x1332 px)",
+  "world_file": "figure_a5_3n_innovation_district_heights.jgw (EPSG:2227, US survey ft)",
+  "corners_lonlat": {
+   "top_left": [
+    -122.3896537,
+    37.7168541
+   ],
+   "top_right": [
+    -122.382789,
+    37.716989
+   ],
+   "bottom_right": [
+    -122.3825932,
+    37.7106947
+   ],
+   "bottom_left": [
+    -122.3894573,
+    37.7105598
+   ]
+  },
+  "pixel_size_m": 0.525,
+  "rotation_deg_in_EPSG2227": 0.263,
+  "registration": "similarity fitted to the Addendum 7 Fig 5 vector height zones: 16 colour-blob centroid pairs (RMS 2.46 m), then pixel class agreement 94.1%",
+  "note": "Corners are a rotated quadrilateral in lon/lat (State Plane grid north is ~1.15 deg from true north here); use a 4-corner image source (e.g. MapLibre image source), not an axis-aligned bounds overlay."
+ }
+}

@@ -322,7 +322,7 @@ test.describe('Proposal actions @features', () => {
     await expect(success.locator('a[href*="explorer.solana.com/tx/"]')).toBeVisible();
   });
 
-  for (const [side, label, sideValue] of [[1, 'YES', 1], [0, 'NO', 0]] as const) {
+  for (const [side, label, sideValue] of [[1, 'yes', 1], [0, 'no', 0]] as const) {
     test(`proposal market ${label} stake submits its encoded side and confirms through the visible controls`, async ({ mockApi: page }) => {
     await injectMockSolanaWallet(page, { publicKey: SOLANA_WALLET, providerName: 'phantom' });
     await openCity(page);
@@ -337,7 +337,7 @@ test.describe('Proposal actions @features', () => {
     await expandProposalDetails(page);
 
     const market = page.locator('.proposal-market-summary');
-    const stakeButton = market.getByRole('button', { name: `Stake ${label}` });
+    const stakeButton = market.getByRole('button', { name: `Bet ${label}`, exact: true });
     await expect(stakeButton).toBeVisible({ timeout: 10000 });
     await stakeButton.click();
     const dialog = page.locator('#proposalMarketOverlay');
@@ -371,7 +371,7 @@ test.describe('Proposal actions @features', () => {
     await expandProposalDetails(page);
 
     const market = page.locator('.proposal-market-summary');
-    await market.getByRole('button', { name: 'Claim YES' }).click({ timeout: 10000 });
+    await market.getByRole('button', { name: 'Collect yes winnings' }).click({ timeout: 10000 });
     await expect(market.locator('[data-market="status"]')).toContainText('Confirmed on Solana.', { timeout: 10000 });
     expect(await page.evaluate(() => (window as any).__proposalMarketRpcEvents)).toEqual(['send', 'confirm']);
   });

@@ -1238,7 +1238,56 @@
                 "copyHash": "Kopiraj hash",
                 "hashCopied": "Kopirano",
                 "eventLink": "Izvorni događaj ↗",
-                "finalVerifier": "Program na Solani ostaje konačni verifikator."
+                "finalVerifier": "Program na Solani ostaje konačni verifikator.",
+                "yesSide": "Da · bit će izgrađen",
+                "noSide": "Ne · odbačen",
+                "ruleTitle": "Kako se namiruje",
+                "nextTitle": "Što slijedi",
+                "ruleLoading": "Čitanje pravila fonda…",
+                "nextLoading": "Učitavanje prijedloga i njegova fonda…",
+                "connectPosition": "Poveži Solana novčanik da vidiš svoje oklade.",
+                "history": "Nedavne oklade",
+                "historyEmpty": "Nema oklada na ovaj prijedlog u nedavnoj aktivnosti.",
+                "historyOpened": "Otvoren fond",
+                "historyBet": "Oklada",
+                "historySettled": "Namireno",
+                "historyCollected": "Isplaćeno",
+                "poolAccount": "Račun fonda",
+                "poolProgram": "Program fonda",
+                "noPool": "Za ovaj prijedlog još nema fonda.",
+                "yourBets": "Tvoje oklade: {{lines}}",
+                "noBets": "Nemaš oklada na ovaj prijedlog.",
+                "betLine": "{{side}} {{amount}}",
+                "collect": "Preuzmi dobitak ({{side}})",
+                "nothingToCollect": "Nema ništa za preuzeti.",
+                "settle": "Namiri {{outcome}} prema statusu prijedloga",
+                "betYes": "Kladi se na da",
+                "betNo": "Kladi se na ne",
+                "dialogTitle": "Oklada: {{side}}",
+                "dialogCopy": "Kladi se devnet USDC-om hoće li ovaj prijedlog biti izgrađen (da) ili odbačen (ne). Oklade ostaju u fondu dok se ne namiri.",
+                "preparingCollect": "Priprema isplate…",
+                "preparingPool": "Priprema fonda…",
+                "preparingSettle": "Priprema namire…",
+                "collectedMessage": "Dobitak preuzet ({{side}}).",
+                "settledMessage": "Namireno prema statusu prijedloga na lancu.",
+                "rule": "Fond čita račun prijedloga na Solani: izvršeno namiruje da; otkazano ili isteklo namiruje ne. Svatko može namiriti.",
+                "state": {
+                    "open": "Otvoreno za oklade",
+                    "needsPool": "Još nema fonda",
+                    "settleYes": "Spremno za namiru: da",
+                    "settleNo": "Spremno za namiru: ne",
+                    "closed": "Nije otvoreno za oklade"
+                },
+                "next": {
+                    "open": "Oklade ostaju u fondu dok je prijedlog aktivan; nema ranijeg izlaska.",
+                    "needsPool": "Bilo koji novčanik može otvoriti jedini fond za ovaj aktivni prijedlog, a zatim se kladiti na da ili ne.",
+                    "settleYes": "Svatko može namiriti; program čita Izvršeno izravno s računa prijedloga.",
+                    "settleNo": "Svatko može namiriti; program čita status odbačenosti izravno s računa prijedloga.",
+                    "settledSplit": "Pobjednička strana dijeli cijeli fond razmjerno ulozima. Gubitnička strana ne dobiva ništa.",
+                    "settledRefund": "Nitko se nije kladio na pobjedničku stranu, pa se svaka oklada može preuzeti u cijelosti.",
+                    "closed": "Prijedlog mora biti aktivan na lancu prije nego što se fond može otvoriti."
+                },
+                "paidOut": "isplaćeno"
             },
             "acceptTransfer": {
                 "buttonLabel": "Prihvati prijenos vlasništva",
@@ -3178,7 +3227,6 @@
             },
             "algorithmTitle": "Vrsta reparcelacije",
             "assignOwners": "Dodijeli vlasnike",
-            "colNewArea": "Novo",
             "colOrigArea": "Izvorno",
             "colOwner": "Vlasnik",
             "colOwners": "Vlasnici",
@@ -4432,13 +4480,16 @@
             "chooseCity": "Odaberi grad",
             "dataSource": "Izvor podataka",
             "baseMap": "Podloga karte",
-            "worldView": "Pogled na svijet"
+            "worldView": "Pogled na svijet",
+            "openBets": "Otvori oklade"
         },
         "maintenance": {
             "title": "Podaci i održavanje",
             "storedTitle": "Spremljeno u ovom pregledniku",
             "resetSummary": "Resetiraj podatke spremljene u ovom pregledniku…"
-        }
+        },
+        "bets": "Oklade",
+        "betsNew": "Novo"
     },
     "parcelMenu": {
         "label": "Radnje za česticu",
@@ -4549,7 +4600,8 @@
             "selection": "Odabir",
             "ground": "Tlo",
             "site": "Lokacija",
-            "road": "Cesta"
+            "road": "Cesta",
+            "bets": "Klađenje"
         }
     },
     "groundMenu": {
@@ -4891,6 +4943,55 @@
             "previewCaption": "Jedan superblok, {width} × {height} m, u mjerilu. Tamno: ulice. Svijetlo: blokovi.",
             "apply": "Nacrtaj ovaj plan ovdje",
             "caveat": "Ovo je procjena za planiranje, a ne katastar: čestice žive u ovom pregledniku za ovu sesiju i nose podrijetlo „schelling-point”. Vlasništvo i objava traže pravi registar."
+        }
+    },
+    "bets": {
+        "tagline": "Kladi se na gradove",
+        "intro": "Kladi se na da za prijedloge za koje vjeruješ da će biti izgrađeni, ili na ne za one u koje sumnjaš. Fondovi su na Solana devnetu i namiruju se kad se prijedlog izvrši ili odbaci.",
+        "loading": "Učitavanje oklada…",
+        "empty": "U ovom gradu još nema fondova. Iskuj prijedlog da otvoriš prvi.",
+        "retry": "Pokušaj ponovno",
+        "error": {
+            "load": "Oklade se nisu mogle učitati.",
+            "open": "Prijedlog se nije mogao otvoriti.",
+            "transaction": "Transakcija nije uspjela."
+        },
+        "contest": {
+            "title": "Koji će prijedlog biti izgrađen?",
+            "titleSingle": "Hoće li ovaj prijedlog biti izgrađen?",
+            "land": "Čestica {{parcel}}",
+            "landMore": "Čestica {{parcel}} i još {{count}}",
+            "site": "Nacrtano zemljište"
+        },
+        "row": {
+            "chance": "{{percent}} izgleda",
+            "noBets": "Još nema oklada",
+            "pool": "Fond {{amount}}",
+            "pays": "Isplaćuje {{multiple}}×",
+            "yes": "Da",
+            "no": "Ne",
+            "yesTitle": "Kladi se da će ovaj prijedlog biti izgrađen.",
+            "noTitle": "Kladi se da ovaj prijedlog neće biti izgrađen.",
+            "openMarket": "Otvori fond",
+            "opened": "Fond je otvoren",
+            "settle": "Namiri fond",
+            "settled": "Fond je namiren",
+            "settling": "Odlučeno na lancu; svatko može namiriti fond",
+            "notMinted": "Još nije iskovan, pa nema fonda",
+            "closed": "Odlučeno na lancu prije otvaranja fonda",
+            "resolvedYes": "Namireno: da",
+            "resolvedNo": "Namireno: ne",
+            "closes": "Zatvara se {{date}}",
+            "untitled": "Prijedlog bez naslova",
+            "paysTitle": "1 USDC na ovoj strani isplaćuje {{multiple}} USDC ako pobijedi."
+        },
+        "how": {
+            "title": "Kako oklade rade",
+            "pools": "Svaki prijedlog ima jedan fond da/ne. Tvoja oklada ulazi na stranu koju odabereš i ostaje ondje dok se prijedlog ne odluči.",
+            "settle": "Izvršenje na lancu namiruje da; otkazivanje ili istek namiruje ne. Pobjednička strana dijeli cijeli fond razmjerno ulozima.",
+            "devnet": "Oklade koriste devnet USDC, koji nema vrijednost. Devnet SOL i USDC uzmi sa slavina.",
+            "faucetSol": "Solana slavina",
+            "faucetUsdc": "Circle USDC slavina"
         }
     }
 }

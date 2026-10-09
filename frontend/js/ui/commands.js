@@ -369,6 +369,11 @@
         { id: 'activity.statusLog', group: 'activity', surfaces: [], run: callGlobal('openStatusLogDialog'),
             labelKey: 'mapShell.commands.statusLog', fallbackLabel: 'Open the status log', icon: 'fas fa-terminal' },
 
+        // ---- Bets sheet (js/bets/bets-sheet.js): its rows are rendered on open, so the only registered
+        // command is the way in, for the palette. ----
+        { id: 'bets.open', group: 'bets', surfaces: ['palette'], run: callGlobal('openBetsSheet'),
+            labelKey: 'mapShell.commands.openBets', fallbackLabel: 'Open bets', icon: 'fas fa-coins' },
+
         // ---- Parcel menu (ui/parcel-menu.js), in menu order ----
         parcelCommand('propose', { labelKey: 'parcelMenu.actions.propose', fallbackLabel: 'Propose here', icon: 'fas fa-pen-ruler' }),
         parcelCommand('selectMore', { labelKey: 'parcelMenu.actions.selectMore', fallbackLabel: 'Select more', icon: 'fas fa-object-group' }),

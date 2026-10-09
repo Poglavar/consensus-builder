@@ -385,6 +385,7 @@ describe('agent quickstart docs', () => {
         expect(res.body.endpoints.oracleFactDiscovery).toContain('resource=oracle-facts');
         expect(res.body.endpoints.hackathonProof).toBe('https://api.example.test/hackathon/proof.json');
         expect(res.body.endpoints.prospectiveMarketStatus).toBe('https://api.example.test/oracle/markets/prospective/status');
+        expect(res.body.endpoints.markets).toBe('https://api.example.test/markets?city={city}');
         expect(res.body.endpoints).toMatchObject({
             lensMembers: 'https://api.example.test/lenses/members',
             agentLensMembers: 'https://api.example.test/agent/lenses/members',

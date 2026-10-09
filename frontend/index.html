@@ -127,6 +127,7 @@
                 'css/photoreal-mode.css',
                 'css/ai-scene.css',
                 'css/map-shell.css',
+                'css/bets-sheet.css',
                 'css/parcel-menu.css',
                 'css/site-tool.css',
                 'css/selection-tray.css',
@@ -365,7 +366,7 @@
         </button>
         <div id="three-container" aria-hidden="true"></div>
 
-        <!-- Bottom-right: Proposals (count badge mirrors #showProposalsButton), Tools, Activity -->
+        <!-- Bottom-right: Proposals (count badge mirrors #showProposalsButton), Bets, Tools, Activity -->
         <div id="map-shell-bottom-right" class="map-shell-cluster map-shell-cluster--bottom-right">
             <button type="button" id="proposals-button" class="map-shell-button map-shell-button--labelled"
                 data-sheet-target="proposals-sheet" aria-controls="proposals-sheet" aria-expanded="false"
@@ -373,6 +374,14 @@
                 <i class="fas fa-handshake" aria-hidden="true"></i>
                 <span class="map-shell-button-label" data-i18n-key="mapShell.proposals">Proposals</span>
                 <span id="proposals-button-count" class="map-shell-badge" aria-hidden="true">0</span>
+            </button>
+            <button type="button" id="bets-button" class="map-shell-button map-shell-button--labelled"
+                data-sheet-target="bets-sheet" aria-controls="bets-sheet" aria-expanded="false"
+                title="Bets" data-i18n-key="mapShell.bets" data-i18n-attr="title">
+                <i class="fas fa-coins" aria-hidden="true"></i>
+                <span class="map-shell-button-label" data-i18n-key="mapShell.bets">Bets</span>
+                <!-- "New" until the sheet has been opened once on this device (js/bets/bets-sheet.js) -->
+                <span id="bets-button-new" class="map-shell-badge map-shell-badge--text" data-i18n-key="mapShell.betsNew">New</span>
             </button>
             <button type="button" id="tools-button" class="map-shell-button map-shell-button--labelled"
                 data-sheet-target="tools-sheet" aria-controls="tools-sheet" aria-expanded="false"
@@ -978,6 +987,33 @@
                         </button>
                     </div>
                 </div>
+            </div>
+        </section>
+
+        <!-- Bets sheet: the city's contests with each proposal's yes/no pool (js/bets/bets-sheet.js renders the body) -->
+        <section id="bets-sheet" class="map-sheet" role="dialog" aria-labelledby="bets-sheet-title" hidden>
+            <div class="map-sheet-header">
+                <h2 id="bets-sheet-title" class="map-sheet-title" data-i18n-key="mapShell.bets">Bets</h2>
+                <button type="button" class="map-sheet-close close-circle-btn close-circle-btn--lg" data-sheet-close
+                    aria-label="Close" title="Close" data-i18n-key="common.close" data-i18n-attr="aria-label,title">×</button>
+            </div>
+            <div class="map-sheet-body bets-sheet-body">
+                <p class="bets-tagline">
+                    <strong data-i18n-key="bets.tagline">Bet on cities</strong>
+                    <span data-i18n-key="bets.intro">Bet yes on the proposals you believe will be built, or no on the ones you doubt. Pools live on Solana devnet and settle when a proposal is executed or dropped.</span>
+                </p>
+                <div id="bets-sheet-content" class="bets-content" aria-live="polite"></div>
+                <details class="bets-how">
+                    <summary data-i18n-key="bets.how.title">How bets work</summary>
+                    <p data-i18n-key="bets.how.pools">Every proposal has one yes/no pool. Your bet joins the side you pick and stays there until the proposal is decided.</p>
+                    <p data-i18n-key="bets.how.settle">Executed on-chain settles yes; cancelled or expired settles no. The winning side shares the whole pool in proportion to its bets.</p>
+                    <p data-i18n-key="bets.how.devnet">Bets use devnet USDC, which has no value. Get devnet SOL and USDC from the faucets.</p>
+                    <p class="bets-how-links">
+                        <a href="https://faucet.solana.com" target="_blank" rel="noopener" data-i18n-key="bets.how.faucetSol">Solana faucet</a>
+                        ·
+                        <a href="https://faucet.circle.com" target="_blank" rel="noopener" data-i18n-key="bets.how.faucetUsdc">Circle USDC faucet</a>
+                    </p>
+                </details>
             </div>
         </section>
 
@@ -1734,6 +1770,8 @@
             'js/urban-blocks-view.js',
             'js/ui/commands.js',
             'js/ui/map-shell.js',
+            'js/bets/bets-model.js',
+            'js/bets/bets-sheet.js',
             'js/mobile-dock-sheet.js',
             'js/ui/simulation-indicator.js',
             'js/ui/parcel-menu-model.js?v=20261008-geometry-reference',
