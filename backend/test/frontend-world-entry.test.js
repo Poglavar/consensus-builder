@@ -48,7 +48,9 @@ describe('shared routes and first visit', () => {
         { pathname: '/plans/my-plan/score' }, { pathname: '/parcel/HR-335240-1323/2' }, { pathname: '/monitors/4' },
         { pathname: '/', search: '?parcel=HR-1' }, { pathname: '/', search: '?proposalShare=abc' },
         { pathname: '/', search: '?shared=abc' }, { pathname: '/', search: '?focusProposal=abc' }, { pathname: '/', search: '?activity=agent:7' },
-        { pathname: '/', search: '?scene=slug' }, { pathname: '/', search: '?photo' }, { pathname: '/', search: '?model=1' }
+        { pathname: '/', search: '?scene=slug' }, { pathname: '/', search: '?photo' }, { pathname: '/', search: '?model=1' },
+        { pathname: '/bets/Ekpt4qMsJWyyraDfPfq2zkT1JwMsJCKrSmkoNGgHreFR', search: '?city=zg' },
+        { pathname: '/', search: '?city=zg&bets=Ekpt4qMsJWyyraDfPfq2zkT1JwMsJCKrSmkoNGgHreFR' }
     ];
     const plain = [
         { pathname: '/', search: '' }, { pathname: '/', search: '?city=zg' }, { pathname: '/', search: '?lang=hr&reduceMotion=1' },

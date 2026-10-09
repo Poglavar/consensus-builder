@@ -18,6 +18,12 @@ describe('site intro first-visit policy', () => {
         expect(shouldShowSiteIntro('?activity=proposal%3Apark-1&intro=1', null)).toBe(true);
     });
 
+    it('opens bet links directly, in both their forms', () => {
+        expect(shouldShowSiteIntro('?city=zg&bets=Ekpt4qMsJWyyraDfPfq2zkT1JwMsJCKrSmkoNGgHreFR', null)).toBe(false);
+        expect(shouldShowSiteIntro('?city=zg', null, '/bets/Ekpt4qMsJWyyraDfPfq2zkT1JwMsJCKrSmkoNGgHreFR')).toBe(false);
+        expect(shouldShowSiteIntro('?city=zg', null, '/')).toBe(true);
+    });
+
     it('supports an explicit preview query after the intro has been seen', () => {
         expect(shouldShowSiteIntro('?city=zg&intro=1', '1')).toBe(true);
         expect(shouldShowSiteIntro('?city=zg&intro', '1')).toBe(true);

@@ -4995,6 +4995,7 @@
         "loading": "Cargando apuestas…",
         "empty": "Todavía no hay fondos en esta ciudad. Acuña una propuesta para abrir el primero.",
         "retry": "Intentar de nuevo",
+        "copyLink": "Copiar enlace",
         "error": {
             "load": "No se pudieron cargar las apuestas.",
             "open": "No se pudo abrir la propuesta.",

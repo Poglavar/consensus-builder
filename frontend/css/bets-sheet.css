@@ -134,6 +134,28 @@
     color: var(--cb-text-muted);
 }
 
+/* The row's shareable link sits in the meta line as quiet text, sized like the words around it.
+   Three classes outweigh the sheet-wide button rule (css/map-shell.css), which makes every sheet
+   button a full-width bordered row. */
+.map-sheet .bets-row__meta .bets-row__link {
+    display: inline;
+    width: auto;
+    margin: 0;
+    padding: 0;
+    min-height: 0;
+    border: 0;
+    background: transparent;
+    font-size: inherit;
+    line-height: inherit;
+    color: inherit;
+    text-decoration: underline;
+}
+
+.map-sheet .bets-row__meta .bets-row__link:hover {
+    background: transparent;
+    color: var(--cb-text-strong);
+}
+
 .bets-row__actions {
     display: flex;
     gap: var(--cb-space-2);

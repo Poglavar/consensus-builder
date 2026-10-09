@@ -4983,6 +4983,7 @@
         "loading": "Učitavanje oklada…",
         "empty": "U ovom gradu još nema fondova. Iskuj prijedlog da otvoriš prvi.",
         "retry": "Pokušaj ponovno",
+        "copyLink": "Kopiraj link",
         "error": {
             "load": "Oklade se nisu mogle učitati.",
             "open": "Prijedlog se nije mogao otvoriti.",

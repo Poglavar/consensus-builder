@@ -58,10 +58,11 @@
     // Every link form that already says what to show. Mirrors the app's own route handlers:
     // proposals/plans (handleProposalRouteFromUrl, isProposalDeepLinkPath), /parcel/<id> and
     // ?parcel= (parcels/route.js), /monitors/<id> (area-monitor/routing.js), ?proposalShare= and
-    // ?shared= (proposals/sharing-routes.js), ?activity= (game.js), ?scene= (ai-scene-follow.js)
-    // and the view-mode params (?model/?mode3d/?3d, ?photo/?real/?rl/?rw: is3DModeRequestedFromUrl).
-    const SHARED_PATHS = [/^\/proposals\/./i, /^\/plans\/./i, /^\/parcel\/./i, /\/monitors\/\d+\/?$/];
-    const SHARED_PARAMS = ['parcel', 'proposalShare', 'focusProposal', 'shared', 'activity', 'scene', 'model', 'mode3d', '3d', 'photo', 'real', 'rl', 'rw'];
+    // ?shared= (proposals/sharing-routes.js), ?activity= (game.js), ?scene= (ai-scene-follow.js),
+    // /bets/<account> and ?bets= (bets/bets-link.js) and the view-mode params (?model/?mode3d/?3d,
+    // ?photo/?real/?rl/?rw: is3DModeRequestedFromUrl).
+    const SHARED_PATHS = [/^\/proposals\/./i, /^\/plans\/./i, /^\/parcel\/./i, /^\/bets\/./i, /\/monitors\/\d+\/?$/];
+    const SHARED_PARAMS = ['parcel', 'proposalShare', 'focusProposal', 'shared', 'activity', 'scene', 'bets', 'model', 'mode3d', '3d', 'photo', 'real', 'rl', 'rw'];
 
     // A user zooming out through the map scale opens the globe at the last map centre. Keep the
     // decision pure; the UI separately proves a native zoom gesture happened.

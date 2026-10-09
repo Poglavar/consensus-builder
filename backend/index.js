@@ -56,6 +56,7 @@ import { setupHackathonCasesRoute } from './routes/hackathon-cases.js';
 import { setupHackathonOperationsRoute } from './routes/hackathon-operations.js';
 import { setupTransactionsRoute } from './routes/transactions.js';
 import { setupMarketsRoute } from './routes/markets.js';
+import { setupBetsShareRoute } from './routes/bets-share.js';
 import { isAgentPath } from './utils/x402-payment.js';
 import { setupRoadCorridorRoute } from './routes/road-corridor.js';
 import { setupReparcellizationRoute } from './routes/reparcellization.js';
@@ -493,6 +494,7 @@ export function createApp({
     setupHackathonOperationsRoute(app, activePool, { env }); // redacted scheduled-job outcomes and freshness
     setupTransactionsRoute(app, activePool); // devnet transaction explorer, derived from the chain
     setupMarketsRoute(app, activePool, { env }); // contests per city with each proposal's prediction market (Bets sheet)
+    setupBetsShareRoute(app, activePool, { env }); // /bets/<account>: link preview for one bet, then on to the app
     setupRoadCorridorRoute(app, activePool);
     setupReparcellizationRoute(app);
     setupGeoRoute(app);

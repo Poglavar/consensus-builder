@@ -4944,6 +4944,7 @@
         "loading": "Loading bets…",
         "empty": "No pools in this city yet. Mint a proposal to open the first one.",
         "retry": "Try again",
+        "copyLink": "Copy link",
         "error": {
             "load": "Bets could not be loaded.",
             "open": "The proposal could not be opened.",

@@ -12,8 +12,8 @@
     const SEEN_KEY = 'cb.bets.seen';           // per-viewer: the "New" word goes once the sheet was opened
     const FRESH_MS = 20_000;                    // matches the backend's per-city cache
     // positions: the connected wallet's bets per proposal account (solana/market-bridge.js
-    // readPositions); changed: the proposal account a confirmed transaction just touched, marked on
-    // its row after the next render.
+    // readPositions); changed: the proposal account a confirmed transaction just touched, or the one
+    // a shared bet link points at, marked on its row after the next render.
     const state = { city: null, loadedAt: 0, payload: null, loading: null, positions: {}, changed: null };
 
     function interpolate(text, params) {
@@ -133,8 +133,34 @@
         container.querySelectorAll('.bets-row[data-proposal-account]').forEach(li => renderMine(li, { proposalAccount: li.dataset.proposalAccount }));
     }
 
-    // The row a confirmed transaction just changed: brought into view and marked, so the new chance,
-    // payout and pool are seen next to the person's own bet.
+    // The shareable link to one row's bet (js/bets/bets-link.js): this origin, the current city and
+    // the language the page was opened in.
+    function linkFor(proposalAccount) {
+        const link = root.BetsLink;
+        if (!link || !proposalAccount) return null;
+        const manager = root.CityConfigManager;
+        const city = manager && typeof manager.getCurrentCityId === 'function' ? manager.getCurrentCityId() : null;
+        let lang = null;
+        try { lang = new URL(root.location.href).searchParams.get('lang'); } catch (_) { lang = null; }
+        try { return link.build({ origin: root.location.origin, city, proposalAccount, lang }); } catch (_) { return null; }
+    }
+
+    // Put the row's link on the clipboard; the shared helper shows "Copied".
+    async function copyLink(proposalAccount) {
+        const href = linkFor(proposalAccount);
+        if (!href) return false;
+        if (typeof root.copyTextWithFeedback === 'function') return root.copyTextWithFeedback(href);
+        try {
+            await root.navigator.clipboard.writeText(href);
+            return true;
+        } catch (error) {
+            console.warn(`[${new Date().toISOString()}] [bets] link not copied`, error);
+            return false;
+        }
+    }
+
+    // The row a confirmed transaction just changed, or the one a shared link names: brought into
+    // view and marked, so the chance, payout and pool are seen next to the person's own bet.
     function markChanged(container) {
         if (!state.changed || !container) return;
         const li = container.querySelector(`.bets-row[data-proposal-account="${state.changed}"]`);
@@ -254,6 +280,13 @@
         if (row.pool !== null && row.pool !== undefined) meta.append(el('span', null, t('bets.row.pool', 'Pool {{amount}}', { amount: moneyText(row.pool) })));
         if (row.closesAt) meta.append(el('span', null, t('bets.row.closes', 'Closes {{date}}', { date: dateText(row.closesAt) })));
         if (row.agent) meta.append(el('span', null, t('panel.proposal.agent.badge', 'Agent proposal')));
+        if (row.proposalAccount) {
+            // Every bet has a link worth passing on, whatever state its pool is in.
+            const share = el('button', 'btn btn-quiet bets-row__link', t('bets.copyLink', 'Copy link'));
+            share.type = 'button';
+            share.addEventListener('click', () => copyLink(row.proposalAccount));
+            meta.append(share);
+        }
         if (meta.childElementCount) li.append(meta);
         renderMine(li, row);
 
@@ -393,8 +426,29 @@
     if (doc.readyState === 'loading') doc.addEventListener('DOMContentLoaded', init);
     else init();
 
-    root.openBetsSheet = function openBetsSheet() {
+    // Open the sheet; with a proposal account, on that row (marked and brought into view once the
+    // contests render, the same way a row a transaction just changed is).
+    root.openBetsSheet = function openBetsSheet(options = {}) {
+        const proposalAccount = options && options.proposalAccount ? String(options.proposalAccount) : null;
+        if (proposalAccount) state.changed = proposalAccount;
         if (root.MapShell && typeof root.MapShell.openSheet === 'function') root.MapShell.openSheet(SHEET_ID);
     };
-    root.BetsSheet = { load, render, SHEET_ID };
+
+    // A shared bet link (/bets/<account>?city=… or ?bets=<account>): open the sheet on that row once
+    // the app has booted. The link is left in the address bar, like ?focusProposal=, so a reload
+    // lands on the same row.
+    async function openFromUrl() {
+        const link = root.BetsLink && typeof root.BetsLink.parse === 'function' ? root.BetsLink.parse(root.location) : null;
+        if (!link) return;
+        try {
+            if (typeof root.whenAppBooted === 'function') await root.whenAppBooted();
+            root.openBetsSheet({ proposalAccount: link.proposalAccount });
+        } catch (error) {
+            console.warn(`[${new Date().toISOString()}] [bets] the bet link could not open`, error);
+        }
+    }
+    if (doc.readyState === 'complete') openFromUrl();
+    else root.addEventListener('load', openFromUrl, { once: true });
+
+    root.BetsSheet = { load, render, linkFor, copyLink, SHEET_ID };
 })(typeof window !== 'undefined' ? window : null);

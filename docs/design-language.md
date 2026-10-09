@@ -74,6 +74,10 @@ Every non-map page carries the same header: logo, "Back to the map", language. N
 - A dialog opened from a sheet leaves the sheet open underneath (a press inside the dialog is not
   an outside click). After a wallet transaction the dialog becomes the receipt: what went in, what
   changed, read back from the chain, and a Done button. It never closes itself.
+- Everything worth passing on has a link to exactly itself, and the link opens on that thing: a bet
+  is `/bets/<proposal account>?city=…` (`js/bets/bets-link.js`), which opens the Bets sheet on that
+  row and unfurls with the proposal's title, chance and pool. "Copy link" sits on the row and on the
+  receipt; the copy feedback is the shared "Copied".
 
 ## Phone layout
 

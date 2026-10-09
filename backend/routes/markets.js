@@ -21,8 +21,8 @@ const CACHE_TTL_MS = 20_000;
 const ACCOUNTS_PER_RPC = 100;
 const MAX_PROPOSALS = 2000;
 
-const PROPOSALS_SQL = `
-    SELECT
+// The columns rowToProposal reads; the bet link route (bets-share.js) selects one row by account.
+export const PROPOSAL_COLUMNS_SQL = `
         id, proposal_id, city,
         COALESCE(title, name, proposal_data->>'title', proposal_data->>'name') AS title,
         COALESCE(proposal_data->>'goal', type) AS goal,
@@ -32,7 +32,10 @@ const PROPOSALS_SQL = `
         (agent_payment_id IS NOT NULL) AS agent,
         proposal_data->>'proposalRole' AS proposal_role,
         COALESCE(screenshot_url, onchain_data->>'imageUrl') AS screenshot_url,
-        COALESCE(building_proposal->>'blockName', structure_proposal->>'blockName', proposal_data->'buildingProposal'->>'blockName') AS site_name
+        COALESCE(building_proposal->>'blockName', structure_proposal->>'blockName', proposal_data->'buildingProposal'->>'blockName') AS site_name`;
+
+const PROPOSALS_SQL = `
+    SELECT ${PROPOSAL_COLUMNS_SQL}
     FROM proposal
     WHERE city = $1 AND LOWER(COALESCE(lifecycle_status, '')) <> 'draft'
     ORDER BY created_at DESC
@@ -41,6 +44,7 @@ const PROPOSALS_SQL = `
 export function rowToProposal(row) {
     return {
         id: row.id,
+        city: row.city || null,
         proposalId: row.proposal_id,
         title: row.title,
         goal: row.goal,

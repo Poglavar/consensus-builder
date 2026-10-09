@@ -4983,6 +4983,7 @@
         "loading": "Učitavanje opklada…",
         "empty": "U ovom gradu još nema fondova. Iskuj predlog da otvoriš prvi.",
         "retry": "Pokušaj ponovo",
+        "copyLink": "Kopiraj link",
         "error": {
             "load": "Opklade nisu mogle da se učitaju.",
             "open": "Predlog nije mogao da se otvori.",

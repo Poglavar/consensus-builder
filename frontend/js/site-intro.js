@@ -16,12 +16,14 @@
         return dx < 0 ? 1 : -1;
     }
 
-    function shouldShowSiteIntro(search, seenValue) {
+    // A link that names what to show (an activity, a proposal, a bet) opens it, never the explainer.
+    function shouldShowSiteIntro(search, seenValue, pathname = '') {
         let forced = false;
         try {
             const params = new URLSearchParams(search || '');
             forced = params.has('intro');
-            if (!forced && (params.get('activity') || params.get('focusProposal'))) return false;
+            if (!forced && (params.get('activity') || params.get('focusProposal') || params.get('bets'))) return false;
+            if (!forced && /^\/bets\/./.test(String(pathname || ''))) return false;
         } catch (_) { /* ignore */ }
         return forced || seenValue !== '1';
     }
@@ -177,7 +179,7 @@
         global.closeSiteIntro = closeSiteIntro;
 
         const showIfDue = () => {
-            if (shouldShowSiteIntro(global.location?.search, readSeen())) openSiteIntro();
+            if (shouldShowSiteIntro(global.location?.search, readSeen(), global.location?.pathname)) openSiteIntro();
         };
         // A first-visit globe (js/ui/world-entry.js) is up: the intro waits until the visitor lands
         // in a city — after the reload into it, or when the globe closes in place.

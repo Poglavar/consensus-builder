@@ -2031,6 +2031,15 @@ function renderProposalMarketPlaced(overlay, proposalAccount, side, amount) {
     if (actions) {
         actions.before(pool);
         actions.replaceChildren();
+        // The receipt is the moment people pass a bet on: its link (js/bets/bets-link.js) sits beside Done.
+        const sheet = window.BetsSheet;
+        if (sheet && typeof sheet.linkFor === 'function' && sheet.linkFor(proposalAccount)) {
+            const share = node('button', 'btn', t('bets.copyLink', 'Copy link'));
+            share.type = 'button';
+            share.setAttribute('data-market-link', '');
+            share.addEventListener('click', () => sheet.copyLink(proposalAccount));
+            actions.append(share);
+        }
         const done = node('button', 'btn btn-primary', t('panel.proposal.market.done', 'Done'));
         done.type = 'button';
         done.setAttribute('data-market-done', '');

@@ -5934,8 +5934,8 @@
             url.searchParams.delete('world');
             if (options.at && window.WorldEntryModel) url.searchParams.set('at', window.WorldEntryModel.formatAt(options.at));
             if (options.clearRoute) {
-                if (/^\/(proposals|plans|parcel)\//.test(url.pathname)) url.pathname = '/';
-                ['proposalShare', 'shared', 'parcel'].forEach(param => url.searchParams.delete(param));
+                if (/^\/(proposals|plans|parcel|bets)\//.test(url.pathname)) url.pathname = '/';
+                ['proposalShare', 'shared', 'parcel', 'bets'].forEach(param => url.searchParams.delete(param));
             }
             window.location.href = url.toString();
             return true;

@@ -88,6 +88,7 @@ test.describe('Bets sheet @features', () => {
   // and the dialog removed itself 300 ms after confirming, so a bet ended on the bare map.
   test('a confirmed bet shows its receipt over the sheet and the changed row behind it', async ({ mockApi: page }) => {
     await mockMarkets(page);
+    await captureClipboard(page);
     await injectMockSolanaWallet(page, { publicKey: SOLANA_WALLET, providerName: 'phantom' });
     await openCity(page);
     await connectWalletByConnectorId(page, 'solana-phantom');
@@ -115,6 +116,10 @@ test.describe('Bets sheet @features', () => {
     await expect(page.locator('#bets-sheet')).toBeVisible();
     await expect(row).toHaveClass(/is-updated/);
     await expect(row.locator('.bets-row__mine')).toHaveText('Your bets: no 0.05 USDC');
+    // The receipt carries the bet's link beside Done.
+    await dialog.locator('[data-market-link]').click();
+    const expectedLink = await page.evaluate((account) => `${location.origin}/bets/${account}?city=${(window as any).CityConfigManager.getCurrentCityId()}`, PROPOSAL_ACCOUNT);
+    await expect.poll(() => page.evaluate(() => (window as any).__copied)).toEqual([expectedLink]);
     await dialog.locator('[data-market-done]').click();
     await expect(dialog).toHaveCount(0);
     await expect(page.locator('#bets-sheet')).toBeVisible();
@@ -129,5 +134,42 @@ test.describe('Bets sheet @features', () => {
     await page.locator('#bets-sheet .bets-row').first().locator('.btn-market-no').click();
     await expect(page.locator('#proposalMarketOverlay')).toBeVisible();
     await expect(page.locator('#proposalMarketOverlay h3')).toHaveText('Bet no');
+  });
+
+  // A shared bet link (js/bets/bets-link.js): the sheet opens by itself on that row, marked and in
+  // view, the first-visit explainer stays out of the way, and the row's "Copy link" puts the same
+  // link (the shareable path form, with the city) on the clipboard.
+  async function captureClipboard(page: import('@playwright/test').Page): Promise<void> {
+    await page.addInitScript(() => {
+      (window as any).__copied = [];
+      Object.defineProperty(navigator, 'clipboard', {
+        configurable: true,
+        value: { writeText: async (text: string) => { (window as any).__copied.push(text); } }
+      });
+    });
+  }
+
+  test('a bet link opens the sheet on its row, and the row copies that link', async ({ mockApi: page }) => {
+    await mockMarkets(page);
+    await captureClipboard(page);
+    await page.goto(`/?city=zg&bets=${PROPOSAL_ACCOUNT}&reduceMotion=1`);
+    const sheet = page.locator('#bets-sheet');
+    await expect(sheet).toBeVisible();
+    await expect(page.locator('#site-intro-modal')).toBeHidden();
+    const row = sheet.locator(`.bets-row[data-proposal-account="${PROPOSAL_ACCOUNT}"]`);
+    await expect(row).toHaveClass(/is-updated/);
+    await expect(page.locator('#bets-button-new')).toBeHidden();
+    // Only a minted proposal has a link; the unminted rival row has none.
+    await expect(sheet.locator('.bets-row__link')).toHaveCount(1);
+    await row.locator('.bets-row__link').click();
+    const expected = await page.evaluate((account) => `${location.origin}/bets/${account}?city=${(window as any).CityConfigManager.getCurrentCityId()}`, PROPOSAL_ACCOUNT);
+    await expect.poll(() => page.evaluate(() => (window as any).__copied)).toEqual([expected]);
+  });
+
+  test('the path form of a bet link opens the sheet too', async ({ mockApi: page }) => {
+    await mockMarkets(page);
+    await page.goto(`/bets/${PROPOSAL_ACCOUNT}?city=zg&reduceMotion=1`);
+    await expect(page.locator('#bets-sheet')).toBeVisible();
+    await expect(page.locator(`#bets-sheet .bets-row[data-proposal-account="${PROPOSAL_ACCOUNT}"]`)).toHaveClass(/is-updated/);
   });
 });
