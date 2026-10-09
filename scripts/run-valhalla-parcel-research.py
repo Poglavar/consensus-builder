@@ -64,13 +64,17 @@ ROOT_REVIEW_TASKS = [
 ]
 ROOT_TASK_PROMPTS = dict(ROOT_REVIEW_TASKS)
 ENGLISH_PRIMARY_COUNTRIES = {"US", "GB", "IE", "CA", "AU", "NZ"}
-SAFE_SAMPLE_ID_KEYS = {
-    "id", "fid", "objectid", "parcelid", "parcel_id", "parid", "lotid", "lot_id", "loteid",
-    "idlote", "lote", "parcelno", "parcelnumber", "parcel_ref", "refcat", "refcadastral",
-    "nationalcadastralref", "localid", "identifier", "gid", "globalid",
-}
+SAFE_SAMPLE_ID_KEYS = {"id", "objectid", "parcel_id"}
 SENSITIVE_KEY = re.compile(r"owner|titular|address|street|cpf|email|phone|person|birth|tax|account|titleholder|surveyornam", re.I)
-SYSTEMIC_ERROR = re.compile(r"\b(?:401|403|429)\b|rate.?limit|too many requests|unauthori[sz]ed|authentication|not logged in|token expired|account quota|billing quota", re.I)
+SYSTEMIC_ERROR = re.compile(
+    r"usage[_ -]limit[_ -]reached|usage limit reached|billing limit reached|"
+    r"invalid[_ -]api[_ -]key|authentication required|authentication failed|"
+    r"could not refresh (?:the )?(?:codex )?access token|codex auth token expired|"
+    r"codex (?:account )?quota exceeded",
+    re.I,
+)
+SYSTEMIC_ERROR_CODES = {"usage_limit_reached", "quota_exceeded", "billing_hard_limit", "auth_required",
+                        "authentication_failed", "invalid_api_key", "token_expired"}
 REVIEW_SCHEMA = {
     "type": "object", "additionalProperties": False,
     "properties": {
@@ -192,6 +196,8 @@ def validate_sample_file(path: Path) -> tuple[int, list[str]]:
         if not isinstance(props, dict) or not props:
             errors.append(f"sample feature {index} lacks a safe native ID: {path}")
             continue
+        if len(props) != 1:
+            errors.append(f"sample feature {index} must retain one canonical/native ID property only: {path}")
         keys = set()
         for key, val in props.items():
             normalized = re.sub(r"[^a-z0-9_]", "", str(key).lower())
@@ -203,6 +209,31 @@ def validate_sample_file(path: Path) -> tuple[int, list[str]]:
         if not keys:
             errors.append(f"sample feature {index} has no safe ID field: {path}")
     return len(polygons), errors
+
+
+def systemic_codex_failure(returncode: int | None, stdout_text: str, stderr_text: str) -> bool:
+    """Detect Codex authentication/usage failures, not source-server HTTP failures."""
+    if not returncode:
+        return False
+    if SYSTEMIC_ERROR.search(stderr_text):
+        return True
+    for line in stdout_text.splitlines():
+        try:
+            event = json.loads(line)
+        except (ValueError, TypeError):
+            continue
+        if not isinstance(event, dict) or event.get("type") not in {"turn.failed", "error"}:
+            continue
+        error = event.get("error", event)
+        if not isinstance(error, dict):
+            continue
+        code = str(error.get("codex_error_info", error.get("code", error.get("type", "")))).casefold()
+        if code in SYSTEMIC_ERROR_CODES:
+            return True
+        message = " ".join(str(error.get(key, "")) for key in ("message", "detail", "reason"))
+        if SYSTEMIC_ERROR.search(message):
+            return True
+    return False
 
 
 def validate_packet(root: Path, queue_city: dict[str, Any], cohort_dir: Path) -> dict[str, Any]:
@@ -519,7 +550,7 @@ class Runner:
                         item["error"] = f"invalid last-message JSON: {exc}"
                 stderr_text = item.get("stderrPath").read_text(errors="replace") if item.get("stderrPath") and item["stderrPath"].exists() else item.get("error", "")
                 stdout_text = item.get("stdoutPath").read_text(errors="replace") if item.get("stdoutPath") and item["stdoutPath"].exists() else ""
-                systemic = bool(returncode and SYSTEMIC_ERROR.search(stderr_text + "\n" + stdout_text))
+                systemic = systemic_codex_failure(returncode, stdout_text, stderr_text)
                 result = {"call": item["call"], "returncode": returncode, "answer": answer,
                           "stdoutPath": str(item.get("stdoutPath", "")), "stderrPath": str(item.get("stderrPath", "")),
                           "answerPath": str(item.get("answerPath", "")), "timedOut": item.get("timedOut", False),
@@ -550,11 +581,19 @@ class Runner:
             self.state["cities"][code] = existing
         return existing
 
-    def _build_research_prompt(self, city: dict[str, Any], cohort_dir: Path, attempt: int) -> str:
+    def _build_research_prompt(self, city: dict[str, Any], cohort_dir: Path, attempt: int,
+                               previous_errors: list[str] | None = None) -> str:
         code = city["cityCode"]
         slug = city_slug(city["name"])
         city_file = f"city-{code}-{slug}.json"
         review_file = f"{slug}-service-review.json"
+        retry_block = ""
+        if previous_errors:
+            retry_block = """
+
+This is an artifact-validation retry. The previous validation errors are listed below. Correct only these packet/schema issues in your existing city and service-review files and the referenced sample file when the error explicitly names it. Do not repeat web searches, network/API requests, or source investigation. You may normalize each retained sample feature's properties to exactly `{{"id": <the same existing verified native identity>}}` and move source-field/composite-key provenance into city/service-review metadata. Preserve each geometry object byte-for-byte/coordinate-for-coordinate, feature count, and native identity value; do not drop, simplify, transform, or reconstruct polygon coordinates. If the evidence cannot support a correction, leave the source finding held and clearly state the limitation.
+Previous validator/turn errors:
+""" + "\n".join(f"- {error}" for error in previous_errors)
         return f"""You are one of three parallel anonymous cadastral-source researchers in a resumable WUP city queue.
 
 Your single immutable WUP queue record is:
@@ -567,6 +606,8 @@ Write only `{city_file}`, `{review_file}`, and at most one sample GeoJSON contai
 
 Preserve `cityCode={code}`, rank {city.get('rank')}, country `{city.get('country')}` / `{city.get('iso2')}`, exact WUP point `{city.get('point')}` in latitude/longitude order, `population2025={round(float(city.get('pop2025k')) * 1000)}` persons, `population2025k={city.get('pop2025k')}`, and `populationUnit="persons"`. Do not shift a coordinate to force a parcel hit. A zero exact-point hit, map extent miss, timeout, login wall, or unusable UI is not evidence of citywide absence.
 
+For retained GeoJSON samples, put exactly one canonical native identity in `properties`, preferably `{{"id": "<stable-native-identity>"}}`. Put native source field names, source-specific field mapping, and composite-key provenance in the city/service-review metadata, not in retained GeoJSON feature properties. Do not retain raw source-specific attribute sets. Existing legacy samples with only `OBJECTID` or `PARCEL_ID` remain valid. Never use an internal synthetic row number as the native identity unless source evidence proves that is the stable parcel identity.
+
 Required city JSON core schema example (include these fields with accurate evidence; additional established packet fields are welcome):
 ```json
 {{"cityCode": {code}, "queueRank": {city.get('rank')}, "country": {json.dumps(city.get('country'))}, "countryCode": {json.dumps(city.get('iso2'))}, "point": {json.dumps(city.get('point'))}, "population2025": {round(float(city.get('pop2025k')) * 1000)}, "population2025k": {city.get('pop2025k')}, "populationUnit": "persons", "status": "complete", "freshResearch": {{"queries": [{{"language": "English", "query": "...", "result": "...", "actualResultUrls": ["https://..."]}}, {{"language": "native/local", "query": "...", "result": "...", "actualResultUrls": ["https://..."]}}]}}, "registryFound": null}}
@@ -576,7 +617,7 @@ Perform separate first-party discovery queries in English and the country's loca
 
 Record every attempted route/request and distinguish a city/local registry custodian from general national agency prose. Use `registryFound=true` only when a local registry/cadastre/map/procedure is actually evidenced; otherwise use `null` (never `false`). Do not present packet completion as source integration/admission. Keep `runtimeReadiness` held unless the serial reviewer qualifies a real adapter independently.
 
-The paired service review must link back to the city file and document query and request outcomes, scope limits, safe field allowlist, and uncertainty. Mark the packet complete only after accurately recording all executed attempts. Never invent a successful query, registry, or geometry. End with a short machine-readable completion summary in your final response."""
+The paired service review must link back to the city file and document query and request outcomes, scope limits, safe field allowlist, and uncertainty. Mark the packet complete only after accurately recording all executed attempts. Never invent a successful query, registry, or geometry. End with a short machine-readable completion summary in your final response.{retry_block}"""
 
     def _build_review_prompt(self, city_items: list[dict[str, Any]], root_task_ids: list[str], identity_items: list[dict[str, Any]] | None = None) -> str:
         identities = identity_items or []
@@ -706,7 +747,10 @@ Output MUST be a single JSON object satisfying the supplied schema: `reviewedIds
                 entry["status"] = "running"
                 entry["lastAttemptAt"] = utc_now()
                 entry["lastError"] = None
-                calls.append(self._call("research", f"city:{code}", self._build_research_prompt(city, cohort_dir, entry["attempts"]), RESEARCH_MODEL, "low"))
+                calls.append(self._call("research", f"city:{code}",
+                                        self._build_research_prompt(city, cohort_dir, entry["attempts"],
+                                                                    entry.get("lastValidationErrors")),
+                                        RESEARCH_MODEL, "low"))
             if parallel_reviewer is not None and attempt_round == 0:
                 calls.append(parallel_reviewer)
             self.save_state()
@@ -726,12 +770,17 @@ Output MUST be a single JSON object satisfying the supplied schema: `reviewedIds
                     entry["packetPath"] = str(packet["cityPath"])
                     entry["reviewPath"] = str(packet["reviewPath"])
                     entry["lastError"] = None
+                    entry.pop("lastValidationErrors", None)
                     entry["lastResearchAt"] = utc_now()
                     self.state["completedCount"] = int(self.state.get("completedCount", 0)) + 1
                 else:
                     error = result.get("error") or (
                         f"Codex exit {result['returncode']}" if result["returncode"] != 0
                         else "packet validation: " + "; ".join(packet.get("errors", [])))
+                    feedback = list(packet.get("errors", []))
+                    if result["returncode"] != 0:
+                        feedback.append(f"Codex turn exited {result['returncode']}: {error}")
+                    entry["lastValidationErrors"] = feedback or [error]
                     entry["lastError"] = error
                     entry["lastAttemptAt"] = utc_now()
                     entry["systemicFailure"] = result.get("systemic", False)
@@ -797,8 +846,6 @@ Output MUST be a single JSON object satisfying the supplied schema: `reviewedIds
             answer = self._read_review_answer(result) if result else None
             if result:
                 systemic = systemic or bool(result.get("systemic"))
-            if answer:
-                systemic = systemic or bool(answer.get("systemicFailure"))
             reviewed = set(answer.get("reviewedIds", [])) if answer else set()
             held_ids = set(answer.get("heldIds", [])) if answer else set()
             if answer and not (set(answer.get("reviewedIds", [])) <= required):
