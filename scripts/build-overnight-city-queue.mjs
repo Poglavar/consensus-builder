@@ -14,7 +14,7 @@ const DEFAULT_OUTPUT = path.join(ROOT, 'world-parcels/research/overnight-cities-
 const WUP_DOWNLOAD_PAGE = 'https://population.un.org/wup/downloads?tab=Cities';
 const WUP_BULK_FILE = 'WUP2025-DB-DEGURBA-Cities-Population-Surface-Data.csv.gz';
 const WUP_BULK_URL = 'https://population.un.org/wup/assets/Download/Cities/WUP2025-DB-DEGURBA-Cities-Population-Surface-Data.csv.gz';
-const USAGE = `Usage: node scripts/build-overnight-city-queue.mjs --run --source /path/to/${WUP_BULK_FILE} [--output /path/to/output]\nWithout --run, this command only prints help.`;
+const USAGE = `Usage: node scripts/build-overnight-city-queue.mjs --run --source /path/to/${WUP_BULK_FILE} [--output /path/to/output] [--start-rank 1 --end-rank 1000]\nWithout --run, this command only prints help.`;
 function argValue(flag) {
     const i = process.argv.indexOf(flag);
     return i >= 0 ? process.argv[i + 1] : null;
@@ -328,8 +328,14 @@ async function main() {
     if (!sourcePath) throw new Error('Pass --source pointing to the official UN WUP 2025 bulk city CSV.gz file.');
     if (!existsSync(sourcePath)) throw new Error(`Population source does not exist: ${sourcePath}`);
     const outputDir = path.resolve(argValue('--output') || DEFAULT_OUTPUT);
+    const startRank = Number(argValue('--start-rank') || 1);
+    const endRank = Number(argValue('--end-rank') || 1000);
+    if (!Number.isSafeInteger(startRank) || !Number.isSafeInteger(endRank) || startRank < 1 || endRank < startRank) {
+        throw new Error('Rank bounds must be positive integers with end-rank >= start-rank.');
+    }
+    const rosterFile = startRank === 1 && endRank === 1000 ? 'ranked-top1000.json' : 'ranked-population.json';
     const all = await readPopulationRows(path.resolve(sourcePath));
-    const top = all.slice(0, 1000).map((row, i) => ({ rank: i + 1, ...row, aliases: nameVariants(row.name) }));
+    const top = all.slice(startRank - 1, endRank).map((row, i) => ({ rank: i + startRank, ...row, aliases: nameVariants(row.name) }));
     const { byCode: registryByCode, byAlias: registryByAlias } = registryEvidence(top);
     const capital = capitalRosterEvidence(top);
     const research = researchFileEvidenceIndexed(top);
@@ -365,7 +371,7 @@ async function main() {
     const output = {
         schemaVersion: 1,
         generatedAt: new Date().toISOString(),
-        scope: 'Top 1,000 UN WUP 2025 Degree of Urbanization city settlements by mid-year population, including source plausibility flags.',
+        scope: `UN WUP 2025 Degree of Urbanization city settlement population ranks ${startRank}–${endRank}, including source plausibility flags.`,
         source: {
             organization: 'United Nations, Department of Economic and Social Affairs, Population Division',
             publication: 'World Urbanization Prospects: The 2025 Revision, Online Edition',
@@ -389,7 +395,7 @@ async function main() {
     };
 
     mkdirSync(outputDir, { recursive: true });
-    writeJson(path.join(outputDir, 'ranked-top1000.json'), output);
+    writeJson(path.join(outputDir, rosterFile), output);
     writeJson(path.join(outputDir, 'skip-ledger.json'), {
         schemaVersion: 1,
         attempted: attempted.map(city => ({ rank: city.rank, cityCode: city.cityCode, name: city.name, country: city.country, iso2: city.iso2, pop2025k: city.pop2025k, plausibility: city.plausibility, evidence: city.attemptEvidence, resolvedPriorMatches: city.resolvedPriorMatches, identityDecision: city.identityDecision })),
@@ -397,7 +403,7 @@ async function main() {
     });
     writeJson(path.join(outputDir, 'pending-queue.json'), {
         schemaVersion: 1,
-        sourceRoster: 'ranked-top1000.json',
+        sourceRoster: rosterFile,
         selectionMethod: 'WUP 2025 population descending; remove confirmed prior attempts and hold identity-review candidates for manual resolution.',
         cityCount: pending.length,
         cities: pending.map(({ attemptState, attemptEvidence, possiblePriorMatches, resolvedPriorMatches, identityDecision, ...city }) => city)

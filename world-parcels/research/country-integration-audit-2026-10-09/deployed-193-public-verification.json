@@ -1,0 +1,67 @@
+{
+  "checkedAt": "2026-10-09T10:08:20.125640+00:00",
+  "releaseCommit": "f38401a202c87050a4ca91dc6005060000ba465d",
+  "frontendBuild": "deploy-425",
+  "backendCommit": "f38401a202c87050a4ca91dc6005060000ba465d",
+  "configuredCities": 193,
+  "providers": 165,
+  "cityChecks": [
+    {
+      "city": "orlando",
+      "sourceId": "orlando-ocpa-arcgis",
+      "features": 1,
+      "idMatches": true,
+      "geometryType": "Polygon",
+      "complete": true
+    },
+    {
+      "city": "dublin",
+      "sourceId": "ie-tailte-hvd-freehold",
+      "features": 1,
+      "idMatches": true,
+      "geometryType": "Polygon",
+      "complete": true
+    },
+    {
+      "city": "riga",
+      "sourceId": "lv-vzd-geolatvija-vraa-wfs",
+      "features": 1,
+      "idMatches": true,
+      "geometryType": "MultiPolygon",
+      "complete": true
+    },
+    {
+      "city": "tallinn",
+      "sourceId": "ee-maaamet-kataster-wfs",
+      "features": 1,
+      "idMatches": true,
+      "geometryType": "Polygon",
+      "complete": true
+    },
+    {
+      "city": "vilnius",
+      "sourceId": "lt-inspire-cp-wfs",
+      "features": 1,
+      "idMatches": true,
+      "geometryType": "Polygon",
+      "complete": true
+    },
+    {
+      "city": "jundiai",
+      "sourceId": "br-jundiai-geojundiai-lotes-jund-gid",
+      "features": 1,
+      "idMatches": true,
+      "geometryType": "MultiPolygon",
+      "complete": true
+    }
+  ],
+  "testSummary": {
+    "parcelReleasePassed": 382,
+    "parcelReleaseFiles": 16,
+    "concurrentAppPassed": 29,
+    "concurrentAppFailed": 1,
+    "failure": "Pre-existing control-coverage assertion for the disabled urban-blocks-browse button; introduced before the city release."
+  },
+  "publicCityConfigMatchesCommittedBytes": true,
+  "publicCityConfigSha256": "e2e059b522f23279c6eed5c59155874806984249e5986516d57eabe44b5b6427"
+}
