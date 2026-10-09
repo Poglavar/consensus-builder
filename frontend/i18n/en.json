@@ -616,7 +616,108 @@
             "showGameLog": "Activity",
             "showGameLogCount": "Activity ({{count}})",
             "showAgents": "Agents",
-            "showAgentsCount": "Agents ({{count}})"
+            "showAgentsCount": "Agents ({{count}})",
+            "comparison": {
+                "title": "Compare proposals",
+                "intro": "Compare authored design totals using the same study area and assumptions.",
+                "close": "Close comparison",
+                "wholeProposals": "Compare whole proposals",
+                "alternative": {
+                    "defaultName": "Alternative {{side}}",
+                    "name": "Name for alternative {{side}}",
+                    "proposals": "Proposals for alternative {{side}}"
+                },
+                "proposal": {
+                    "fallback": "Untitled proposal",
+                    "search": "Filter proposals",
+                    "useApplied": "Use current plan (all applied)",
+                    "none": "No matching proposals."
+                },
+                "compare": "Compare alternatives",
+                "load": "Load snapshot",
+                "save": "Save snapshot",
+                "copyLink": "Copy comparison link",
+                "calculating": "Comparing…",
+                "difference": "Difference (B − A)",
+                "caveat": "Proposed design totals on a shared study area. Existing buildings and net demolition effects are not included.",
+                "engineVersion": "Engine {{version}}",
+                "scope": {
+                    "cadastre": "Shared study area",
+                    "source": "Shared study area: {{source}}",
+                    "missing": "Shared study area could not be resolved from immutable cadastral parcels.",
+                    "missingParcels": "No immutable cadastral parcels were available for the study area.",
+                    "union": "Combined sites of both alternatives",
+                    "fixed": "Pinned study area"
+                },
+                "preview": {
+                    "caption": "Top-down view · same scale · heights not shown",
+                    "label": "Alternative {{side}} on shared study area",
+                    "unavailable": "Preview unavailable",
+                    "buildings": "Building footprints",
+                    "site": "Proposal site",
+                    "boundary": "Study area boundary"
+                },
+                "result": {
+                    "ready": "Comparison ready.",
+                    "invalid": "This comparison result is incomplete."
+                },
+                "saved": {
+                    "meta": "Saved {{date}} · engine {{version}}",
+                    "readOnly": "Saved comparison (read-only). Recalculate only when you choose to use the pinned inputs.",
+                    "unknownDate": "Unknown date",
+                    "unknownVersion": "unknown"
+                },
+                "recalculate": "Recalculate pinned inputs",
+                "selectionDirty": "Selections changed. Compare again to update the results.",
+                "issue": {
+                    "unknown": "Unspecified comparison issue"
+                },
+                "download": {
+                    "filename": "proposal-comparison.json"
+                },
+                "link": {
+                    "copied": "Comparison link copied."
+                },
+                "metrics": {
+                    "proposalCount": "Proposals",
+                    "siteAreaM2": "Site area",
+                    "buildingCount": "Buildings",
+                    "buildingFootprintM2": "Proposed building footprint",
+                    "grossFloorAreaM2": "Gross floor area",
+                    "floorAreaRatio": "Floor area ratio",
+                    "housingUnits": "Homes",
+                    "people": "People",
+                    "jobs": "Estimated jobs",
+                    "parkAreaM2": "Green space",
+                    "squareAreaM2": "Paved open space",
+                    "waterAreaM2": "Waterbody area",
+                    "roadAreaM2": "Road and rail area"
+                },
+                "assumptions": {
+                    "title": "Shared assumptions",
+                    "floorHeightM": "Floor-to-floor height (m)",
+                    "housingShare": "Residential floor area share (%)",
+                    "efficiency": "Net-to-gross efficiency (%)",
+                    "avgApartmentM2": "Average home size (m²)",
+                    "personsPerApartment": "People per home",
+                    "m2PerJob": "Floor area per job (m²)"
+                },
+                "error": {
+                    "engineMissing": "The comparison engine is unavailable.",
+                    "invalidAssumptions": "Check the shared assumptions and try again.",
+                    "needProposals": "Choose at least one proposal for each alternative.",
+                    "compare": "Could not compare these alternatives. Please try again.",
+                    "snapshotMissing": "The saved comparison is unavailable.",
+                    "noResult": "There is no comparison result to save.",
+                    "downloadUnavailable": "Could not create the comparison download.",
+                    "snapshot": "The saved comparison file is invalid.",
+                    "linkTooLarge": "This comparison is too large to fit in a share link.",
+                    "clipboardUnavailable": "Clipboard access is unavailable. Copy the link from your browser address bar.",
+                    "link": "Could not create a comparison link.",
+                    "hash": "The comparison link is invalid or incomplete."
+                },
+                "includedProposals": "Included proposals ({{count}})"
+            }
         },
         "gameDialogs": {
             "log": {

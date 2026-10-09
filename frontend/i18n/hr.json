@@ -599,7 +599,108 @@
             "showAgents": "Agenti",
             "showAgentsCount": "Agenti ({{count}})",
             "showGameLog": "Prikaži zapisnik igre",
-            "showGameLogCount": "Prikaži zapisnik igre ({{count}})"
+            "showGameLogCount": "Prikaži zapisnik igre ({{count}})",
+            "comparison": {
+                "title": "Usporedi prijedloge",
+                "intro": "Usporedi ukupne vrijednosti autorskih rješenja za isto područje i uz iste pretpostavke.",
+                "close": "Zatvori usporedbu",
+                "wholeProposals": "Usporedi cijele prijedloge",
+                "alternative": {
+                    "defaultName": "Alternativa {{side}}",
+                    "name": "Naziv alternative {{side}}",
+                    "proposals": "Prijedlozi za alternativu {{side}}"
+                },
+                "proposal": {
+                    "fallback": "Prijedlog bez naziva",
+                    "search": "Filtriraj prijedloge",
+                    "useApplied": "Upotrijebi trenutačni plan (sve primijenjeno)",
+                    "none": "Nema odgovarajućih prijedloga."
+                },
+                "compare": "Usporedi alternative",
+                "load": "Učitaj snimku",
+                "save": "Spremi snimku",
+                "copyLink": "Kopiraj poveznicu usporedbe",
+                "calculating": "Uspoređivanje…",
+                "difference": "Razlika (B − A)",
+                "caveat": "Ukupne vrijednosti predloženih rješenja za zajedničko područje. Postojeće zgrade i neto učinci rušenja nisu uključeni.",
+                "engineVersion": "Verzija alata: {{version}}",
+                "scope": {
+                    "cadastre": "Zajedničko područje",
+                    "source": "Zajedničko područje: {{source}}",
+                    "missing": "Zajedničko područje nije moguće odrediti iz nepromjenjivih katastarskih čestica.",
+                    "missingParcels": "Za ovo područje nema nepromjenjivih katastarskih čestica.",
+                    "union": "Spojena područja obiju alternativa",
+                    "fixed": "Zadano područje"
+                },
+                "preview": {
+                    "caption": "Tlocrt · isto mjerilo · visine nisu prikazane",
+                    "label": "Alternativa {{side}} na zajedničkom području",
+                    "unavailable": "Pretpregled nije dostupan",
+                    "buildings": "Tlocrti zgrada",
+                    "site": "Lokacija prijedloga",
+                    "boundary": "Granica područja usporedbe"
+                },
+                "result": {
+                    "ready": "Usporedba je spremna.",
+                    "invalid": "Rezultat usporedbe nije potpun."
+                },
+                "saved": {
+                    "meta": "Spremljeno {{date}} · verzija alata {{version}}",
+                    "readOnly": "Spremljena usporedba (samo za čitanje). Ponovno izračunaj tek kada odlučiš upotrijebiti zadane ulazne podatke.",
+                    "unknownDate": "Nepoznat datum",
+                    "unknownVersion": "nepoznato"
+                },
+                "recalculate": "Ponovno izračunaj zadane ulazne podatke",
+                "selectionDirty": "Odabiri su promijenjeni. Ponovno pokreni usporedbu za ažuriranje rezultata.",
+                "issue": {
+                    "unknown": "Nespecificiran problem usporedbe"
+                },
+                "download": {
+                    "filename": "usporedba-prijedloga.json"
+                },
+                "link": {
+                    "copied": "Poveznica usporedbe je kopirana."
+                },
+                "metrics": {
+                    "proposalCount": "Prijedlozi",
+                    "siteAreaM2": "Površina lokacije",
+                    "buildingCount": "Zgrade",
+                    "buildingFootprintM2": "Tlocrtna površina predloženih zgrada",
+                    "grossFloorAreaM2": "Bruto razvijena površina",
+                    "floorAreaRatio": "Koeficijent izgrađenosti",
+                    "housingUnits": "Stanovi",
+                    "people": "Stanovnici",
+                    "jobs": "Procijenjena radna mjesta",
+                    "parkAreaM2": "Zelene površine",
+                    "squareAreaM2": "Popločene otvorene površine",
+                    "waterAreaM2": "Površina vodenih tijela",
+                    "roadAreaM2": "Površina cesta i pruga"
+                },
+                "assumptions": {
+                    "title": "Zajedničke pretpostavke",
+                    "floorHeightM": "Visina između etaža (m)",
+                    "housingShare": "Udio bruto površine za stanovanje (%)",
+                    "efficiency": "Iskoristivost neto/bruto (%)",
+                    "avgApartmentM2": "Prosječna površina stana (m²)",
+                    "personsPerApartment": "Stanovnika po stanu",
+                    "m2PerJob": "Površina po radnom mjestu (m²)"
+                },
+                "error": {
+                    "engineMissing": "Alat za usporedbu nije dostupan.",
+                    "invalidAssumptions": "Provjeri zajedničke pretpostavke i pokušaj ponovno.",
+                    "needProposals": "Odaberi barem jedan prijedlog za svaku alternativu.",
+                    "compare": "Alternative nije moguće usporediti. Pokušaj ponovno.",
+                    "snapshotMissing": "Spremljena usporedba nije dostupna.",
+                    "noResult": "Nema rezultata usporedbe za spremanje.",
+                    "downloadUnavailable": "Nije moguće izraditi datoteku za preuzimanje usporedbe.",
+                    "snapshot": "Datoteka spremljene usporedbe nije valjana.",
+                    "linkTooLarge": "Usporedba je prevelika za poveznicu za dijeljenje.",
+                    "clipboardUnavailable": "Međuspremnik nije dostupan. Kopiraj poveznicu iz adresne trake preglednika.",
+                    "link": "Nije moguće izraditi poveznicu usporedbe.",
+                    "hash": "Poveznica usporedbe nije valjana ili nije potpuna."
+                },
+                "includedProposals": "Uključeni prijedlozi ({{count}})"
+            }
         },
         "city": {
             "detectTooltip": "Koristi moju lokaciju za odabir najbližeg grada"

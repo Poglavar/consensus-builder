@@ -113,6 +113,7 @@
                 'css/modals.css',
                 'css/parcel-sources.css',
                 'css/proposals.css',
+                'css/proposal-comparison.css',
                 'css/grain-score.css',
                 'css/proposal-editor.css',
                 'css/structure-geometry-editor.css',
@@ -932,6 +933,10 @@
                     <div class="btn-group">
                         <button id="showProposalsButton" class="btn btn-info sheet-action--primary" onclick="showAllProposalsModal()"
                             data-i18n-key="sidebar.proposals.listButton" data-i18n-params='{"count":0}'>Proposals List (0)</button>
+                        <button id="compareProposalsButton" class="btn btn-info" onclick="ProposalComparison.open()">
+                            <i class="fas fa-code-compare" aria-hidden="true"></i>
+                            <span data-i18n-key="sidebar.proposals.comparison.title">Compare proposals</span>
+                        </button>
                         <button id="planStatsButton" class="btn btn-info plan-stats-button">
                             <i class="fas fa-chart-pie" aria-hidden="true"></i>
                             <span class="plan-stats-label"
@@ -1634,10 +1639,8 @@
             'js/ens/ens-name.js'
         ]);
     </script>
-    <!-- pako is DECODE-ONLY legacy support. Share links are short server-side ids now, and nothing
-         calls compressBytes any more — but decodeSharedPayload() in js/proposals/sharing.js still
-         inflates the old `z.`-prefixed (and bare legacy) payloads, and throws without pako. Do not
-         drop it: every compressed link already shared would stop resolving. -->
+    <!-- pako decodes already-shared legacy plans and encodes/decodes self-contained, read-only
+         comparison snapshots. Ordinary proposal and plan sharing uses short server-side ids. -->
     <script src="vendor/pako-2.1.0/pako.min.js"></script>
     <!-- ethers was pinned only to `@6`, so a CDN minor bump could change wallet-signing behaviour
          with no commit to bisect. Now frozen at the 6.17.0 that `@6` resolved to.
@@ -1883,6 +1886,9 @@
             'js/proposals/bootstrap.js',
             'js/proposals/sharing.js',
             'js/proposals/plan-yield.js',
+            'js/proposals/proposal-comparison.js',
+            'js/proposals/comparison-snapshot.js',
+            'js/proposals/proposal-comparison-ui.js',
             'js/proposals/site-stats.js',
             'js/proposals/maintenance.js',
             'js/proposals/demolition-prefetch.js',

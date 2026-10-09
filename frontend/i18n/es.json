@@ -791,7 +791,108 @@
             "showAgents": "Agentes",
             "showAgentsCount": "Agentes ({{count}})",
             "showGameLog": "Mostrar registro del juego",
-            "showGameLogCount": "Mostrar registro del juego ({{count}})"
+            "showGameLogCount": "Mostrar registro del juego ({{count}})",
+            "comparison": {
+                "title": "Comparar propuestas",
+                "intro": "Compara los totales de diseño con la misma zona de estudio y los mismos supuestos.",
+                "close": "Cerrar comparación",
+                "wholeProposals": "Comparar propuestas completas",
+                "alternative": {
+                    "defaultName": "Alternativa {{side}}",
+                    "name": "Nombre de la alternativa {{side}}",
+                    "proposals": "Propuestas para la alternativa {{side}}"
+                },
+                "proposal": {
+                    "fallback": "Propuesta sin título",
+                    "search": "Filtrar propuestas",
+                    "useApplied": "Usar el plan actual (todas las propuestas aplicadas)",
+                    "none": "No hay propuestas que coincidan."
+                },
+                "compare": "Comparar alternativas",
+                "load": "Cargar instantánea",
+                "save": "Guardar instantánea",
+                "copyLink": "Copiar enlace de comparación",
+                "calculating": "Comparando…",
+                "difference": "Diferencia (B − A)",
+                "caveat": "Totales de diseño propuesto sobre una zona de estudio común. No se incluyen los edificios existentes ni los efectos netos de demolición.",
+                "engineVersion": "Versión del motor: {{version}}",
+                "scope": {
+                    "cadastre": "Zona de estudio común",
+                    "source": "Zona de estudio común: {{source}}",
+                    "missing": "No se pudo determinar la zona común a partir de parcelas catastrales inmutables.",
+                    "missingParcels": "No hay parcelas catastrales inmutables disponibles para la zona de estudio.",
+                    "union": "Conjunto de las ubicaciones de ambas alternativas",
+                    "fixed": "Zona de estudio fijada"
+                },
+                "preview": {
+                    "caption": "Vista en planta · misma escala · sin alturas",
+                    "label": "Alternativa {{side}} en la zona de estudio común",
+                    "unavailable": "Vista previa no disponible",
+                    "buildings": "Huellas de edificios",
+                    "site": "Emplazamiento de la propuesta",
+                    "boundary": "Límite de la zona de estudio"
+                },
+                "result": {
+                    "ready": "La comparación está lista.",
+                    "invalid": "El resultado de la comparación está incompleto."
+                },
+                "saved": {
+                    "meta": "Guardada {{date}} · motor {{version}}",
+                    "readOnly": "Comparación guardada (solo lectura). Vuelve a calcular únicamente si decides usar las entradas fijadas.",
+                    "unknownDate": "Fecha desconocida",
+                    "unknownVersion": "desconocido"
+                },
+                "recalculate": "Volver a calcular con las entradas fijadas",
+                "selectionDirty": "Han cambiado las selecciones. Vuelve a comparar para actualizar los resultados.",
+                "issue": {
+                    "unknown": "Incidencia de comparación sin especificar"
+                },
+                "download": {
+                    "filename": "comparacion-propuestas.json"
+                },
+                "link": {
+                    "copied": "Enlace de comparación copiado."
+                },
+                "metrics": {
+                    "proposalCount": "Propuestas",
+                    "siteAreaM2": "Superficie del emplazamiento",
+                    "buildingCount": "Edificios",
+                    "buildingFootprintM2": "Huella de edificios propuestos",
+                    "grossFloorAreaM2": "Superficie construida bruta",
+                    "floorAreaRatio": "Edificabilidad",
+                    "housingUnits": "Viviendas",
+                    "people": "Personas",
+                    "jobs": "Empleos estimados",
+                    "parkAreaM2": "Espacio verde",
+                    "squareAreaM2": "Espacio abierto pavimentado",
+                    "waterAreaM2": "Superficie de masas de agua",
+                    "roadAreaM2": "Superficie viaria y ferroviaria"
+                },
+                "assumptions": {
+                    "title": "Supuestos compartidos",
+                    "floorHeightM": "Altura entre plantas (m)",
+                    "housingShare": "Porcentaje de superficie residencial (%)",
+                    "efficiency": "Eficiencia neta/bruta (%)",
+                    "avgApartmentM2": "Tamaño medio de vivienda (m²)",
+                    "personsPerApartment": "Personas por vivienda",
+                    "m2PerJob": "Superficie por empleo (m²)"
+                },
+                "error": {
+                    "engineMissing": "El motor de comparación no está disponible.",
+                    "invalidAssumptions": "Revisa los supuestos compartidos e inténtalo de nuevo.",
+                    "needProposals": "Elige al menos una propuesta para cada alternativa.",
+                    "compare": "No se pudieron comparar estas alternativas. Inténtalo de nuevo.",
+                    "snapshotMissing": "La comparación guardada no está disponible.",
+                    "noResult": "No hay ningún resultado que guardar.",
+                    "downloadUnavailable": "No se pudo crear la descarga de la comparación.",
+                    "snapshot": "El archivo de comparación guardada no es válido.",
+                    "linkTooLarge": "La comparación es demasiado grande para compartirla mediante un enlace.",
+                    "clipboardUnavailable": "El portapapeles no está disponible. Copia el enlace desde la barra de direcciones del navegador.",
+                    "link": "No se pudo crear el enlace de comparación.",
+                    "hash": "El enlace de comparación no es válido o está incompleto."
+                },
+                "includedProposals": "Propuestas incluidas ({{count}})"
+            }
         },
         "areaMonitor": {
             "title": "Monitor de zona",

@@ -28,7 +28,7 @@
         'gameCheckbox', 'game-datetime', 'game-turns', 'turn-interval-slider', 'turn-interval-value',
         'turn-progress-fill', 'turn-progress-time', 'game-play-pause-btn',
         // Proposals sheet
-        'showProposalsButton', 'planStatsButton', 'roosterScoreButton', 'mintedProposalsButton',
+        'showProposalsButton', 'compareProposalsButton', 'planStatsButton', 'roosterScoreButton', 'mintedProposalsButton',
         'shareAppliedProposalsButton',
         // Layers sheet: parcels
         'parcelsCheckbox', 'showAdParcelsCheckbox', 'showParcelNumbers', 'showOwnerCounts',
@@ -339,6 +339,8 @@
         // ---- Proposals sheet ----
         { id: 'proposals.list', group: 'proposals', surfaces: ['proposals'], run: callGlobal('showAllProposalsModal'),
             labelKey: 'mapShell.commands.proposalsList', fallbackLabel: 'Open the proposals list', icon: 'fas fa-list-ul' },
+        control('compareProposalsButton', { id: 'proposals.compare', group: 'proposals', surfaces: ['proposals'],
+            labelKey: 'sidebar.proposals.comparison.title', fallbackLabel: 'Compare proposals', icon: 'fas fa-code-compare' }),
         control('planStatsButton', { id: 'proposals.planStats', group: 'proposals', surfaces: ['proposals'],
             labelKey: 'sidebar.proposals.planStats.buttonLabel', fallbackLabel: 'Plan Stats', icon: 'fas fa-chart-pie' }),
         control('roosterScoreButton', { id: 'proposals.grainScore', group: 'proposals', surfaces: ['proposals'],

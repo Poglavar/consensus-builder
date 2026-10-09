@@ -412,6 +412,14 @@
             pickers.appendChild(wrap);
         });
         top.appendChild(pickers);
+        const whole = el('button', 'btn btn-sm btn-outline-primary',
+            t('sidebar.proposals.comparison.wholeProposals', 'Compare whole proposals'));
+        whole.type = 'button';
+        whole.addEventListener('click', () => {
+            dialog.close();
+            global.ProposalComparison.open({ proposalIds: state.picked.slice() });
+        });
+        pickers.appendChild(whole);
         const svg = api().previewSvg(parcel.feature && parcel.feature.geometry, effects.map((e, i) => ({
             geometry: e.clip, className: `parcel-compare-svg__take parcel-compare-svg__take--${SIDES[i]}`
         })), { label: t('parcelCompare.previewLabel', 'Parcel outline with each proposal’s ground on it'), size: 160 });
