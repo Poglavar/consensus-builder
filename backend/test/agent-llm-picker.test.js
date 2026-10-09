@@ -6,6 +6,7 @@
 // repaired. An unknown candidateId is a parcel nobody planned or measured, and posting it would be
 // a proposal over land the runner never looked at.
 import { describe, it, expect, vi } from 'vitest';
+import { resolveCall } from '../../../agents/lib/llm-cost/llm.mjs';
 import {
     buildPickRequests,
     parsePicks,
@@ -69,7 +70,7 @@ describe('buildPickRequests', () => {
 
     it('defaults to the configured model and a real token ceiling', () => {
         expect(requests[0].params.model).toBe(DEFAULT_MODEL);
-        expect(DEFAULT_MODEL).toBe('claude-opus-5');
+        expect(DEFAULT_MODEL).toBe(resolveCall('anthropic').model);
         expect(requests[0].params.max_tokens).toBe(4000);
         const custom = buildPickRequests({ runId: RUN_ID, day: DAY, entries: [{ persona: PERSONA, candidates: [candidate(1)] }], model: 'claude-sonnet-5', maxTokens: 800 });
         expect(custom[0].params.model).toBe('claude-sonnet-5');
