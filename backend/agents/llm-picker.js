@@ -9,8 +9,11 @@
 
 import { computeCost } from '../../../agents/lib/llm-cost/index.mjs';
 import * as batchHarness from '../../../agents/lib/llm-cost/batch.mjs';
+import { resolveCall } from '../../../agents/lib/llm-cost/llm.mjs';
 
-export const DEFAULT_MODEL = 'claude-opus-5';
+// No pinned model: the shared layer's Anthropic default (agents/lib/llm-cost/defaults.json) runs
+// unless AGENT_LLM_MODEL overrides it, so moving to a newer model is a change there, not here.
+export const DEFAULT_MODEL = resolveCall('anthropic').model;
 
 // Where the batch spend lands in the shared ledger (`llm-cost --repo consensus-builder`).
 const LEDGER_REPO = 'consensus-builder';
